@@ -312,11 +312,19 @@
 
   <target name="compile-debug" depends="setupPlatform">
 	<ant dir="src/classes" target="compile-debug"/>
+        <antcall target="compile-debug-native"/>
+  </target>
+  
+  <target name="compile-debug-native" unless="build.javaonly">
 	<ant dir="src/native" target="compile-debug"/>
   </target>
 
   <target name="compile-opt" depends="setupPlatform">
 	<ant dir="src/classes" target="compile-opt"/>
+        <antcall target="compile-opt-native"/>
+  </target>
+  
+  <target name="compile-opt-native" unless="build.javaonly">
 	<ant dir="src/native" target="compile-opt"/>
   </target>
 
@@ -325,9 +333,19 @@
   <target name="jar-debug" depends="compile-debug">
 	<ant dir="src/classes" target="jar-debug"/>
   </target>
+  
+  <target name="jar-debug-javaonly">
+        <property name="build.javaonly" value="true"/>
+        <antcall target="jar-debug"/>
+  </target>
 
   <target name="jar-opt" depends="compile-opt">
 	<ant dir="src/classes" target="jar-opt"/>
+  </target>
+
+  <target name="jar-opt-javaonly">
+        <property name="build.javaonly" value="true"/>
+        <antcall target="jar-opt"/>
   </target>
 
   <target name="jar" depends="jar-debug,jar-opt" />
@@ -398,62 +416,88 @@
     <delete dir="${dist}"/>
   </target>
 
-  <target name="clean">
+  <target name="clean" depends="setupPlatform">
+    <!-- Delete the ${build}, and ${dist} directory trees for current platform -->
+    <delete dir="${build}/${platform}"/>	
+    <delete dir="${dist}/${platform}"/>
+  </target>
+  
+  <target name="clean-all">
     <!-- Delete the ${build}, and ${dist} directory trees  -->
     <delete dir="${build}"/>	
     <delete dir="${dist}"/>
   </target>
 
+    <target name="clean-javaonly" depends="setupPlatform">
+        <!-- Delete only the java portions of $[build} for the current platform -->
+        <delete dir="${build}/${platform}/debug/classes"/>
+        <delete dir="${build}/${platform}/debug/lib/ext"/>
+        <delete dir="${build}/${platform}/opt/classes"/>
+        <delete dir="${build}/${platform}/opt/lib/ext"/>
+  </target>
+
   <description>
 The following ant targets are available ("jar-opt" is the default):
 
-      all           - execute targets jar-debug and dist.
+      all            - execute targets jar-debug and dist.
 
-      clean         - removes WS/build/ and WS/dist/
+      clean          - removes WS/build/ and WS/dist/ for current platform
+      
+      clean-all      - removes WS/build/ and WS/dist/ for all platforms
 
-      clean-dist    - removes WS/dist.
+      clean-dist     - removes WS/dist.
+      
+      clean-javaonly - removes java portion of WS/build for current platform 
 
-      compile       - execute targets compile-debug and compile-opt.
+      compile        - execute targets compile-debug and compile-opt.
  
-      compile-debug - builds all classes and native layer in WS/src into 
+      compile-debug  - builds all classes and native layer in WS/src into 
                       class files under WS/build/${platform}/debug/classes/ and
                       native files under WS/build/${platform}/debug/native/
 
-      compile-opt   - builds all classes and native layer in WS/src into 
+      compile-opt    - builds all classes and native layer in WS/src into 
                       class files under WS/build/${platform}/opt/classes/ and
                       native files under WS/build/${platform}/opt/native/
 
-      dist          - creates the distribution jar, native library and javadoc
+      dist           - creates the distribution jar, native library and javadoc
                       under WS/dist/${platform}.
 
-      docs          - builds all classes in WS/src into javadoc under 
+      docs           - builds all classes in WS/src into javadoc under 
                       WS/build/javadocs.
 
-      docs-jcp      - builds JCP docs of all classes in WS/src into javadoc under 
-                      WS/build/javadocs/docs-jcp.
+      docs-jcp       - builds JCP docs of all classes in WS/src into javadoc 
+                      under WS/build/javadocs/docs-jcp.
 
-      docs-private  - builds private docs of all classes in WS/src into javadoc under 
-                      WS/build/javadocs/docs-private.
+      docs-private   - builds private docs of all classes in WS/src into javadoc 
+                      under WS/build/javadocs/docs-private.
 
-      docs-public   - builds public docs of all classes in WS/src into javadoc under 
-                      WS/build/javadocs/docs-public.
+      docs-public    - builds public docs of all classes in WS/src into javadoc 
+                      under WS/build/javadocs/docs-public.
 
-      echo          - echo some useful information, such as user.home,
+      echo           - echo some useful information, such as user.home,
                       ant.home, java.home and platform.
 
-      jar           - execute targets jar-debug and jar-opt.
+      jar            - execute targets jar-debug and jar-opt.
 
-      jar-debug     - creates WS/build/${platform}/debug/lib for all jar
+      jar-debug      - creates WS/build/${platform}/debug/lib for all jar
                       files and libraries from class and native code files under 
                       WS/build/${platform}/debug/classes and 
                       WS/build/${platform}/debug/native.
+                      
+      jar-debug-javaonly 
+                     - compiles only the java portion of Java3D and builds
+                      jars in same locations as jar-debug
 
-      jar-opt       - creates WS/build/${platform}/opt/lib for all jar
+      jar-opt        - creates WS/build/${platform}/opt/lib for all jar
                       files and libraries from class and native code files under 
                       WS/build/${platform}/opt/classes and 
                       WS/build/${platform}/opt/native.
+                      
+      jar-opt-javaonly 
+                     - compiles only the java portion of Java3D and builds
+                      jars in same location as jar-opt
 
-      rpm           - creates a i586 rpm for installation in /usr/java/jdk1.5.0
+      rpm            - creates a i586 rpm for installation in /usr/java/jdk1.5.0
                       the rpm is placed in dist/rpm
   </description>
 </project>
