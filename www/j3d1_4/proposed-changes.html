@@ -88,9 +88,16 @@ FOR POSSIBLE RENDER-TO-TEXTURE SUPPORT GOES HERE...</span><br>
 </h4>
 <p><span style="color: rgb(204, 0, 0); font-style: italic;">DESCRIPTION
 FOR POSSIBLE STENCIL SUPPORT GOES HERE; NOTE THAT THIS WILL NOT INCLUDE
-ANY MULTI-PASS EFFECTS for 1.4...</span><br>
+ANY MULTIPASS EFFECTS for 1.4...</span><br>
 </p>
-<h4>3. Miscellaneous features</h4>
+<h4>3. Move picking into core</h4>
+<p>We should consider moving some of the picking utilities (e.g.,
+PickCanvas and PickResult)
+into the core API. Before doing this, we would need to scope out the
+effort involved, and assess the
+potential benefit.<br>
+</p>
+<h4>4. Miscellaneous features</h4>
 <p>This is a list of miscellaneous features that are being considered
 for addition to
 the API.<br>
@@ -109,7 +116,7 @@ glyph in a 3D font: a
 public <code>GeometryArray&nbsp;getGlyphGeometry(</code><code>int&nbsp;glyphCode</code><code>)</code>
 method in the <code>Font3D</code> class</li>
 </ul>
-<h4>4. List of features to deprecate</h4>
+<h4>5. List of features to deprecate</h4>
 <p>This is a list of miscellaneous features that are being considered
 for deprecation in
 the API.<br>
@@ -121,7 +128,7 @@ the API.<br>
 implement
 efficiently)</li>
 </ul>
-<p>This is in addition to the API being proposed for deprecation in
+<p>These are in addition to the API being proposed for deprecation in
 section I.<br>
 </p>
 <h3>III. Future Features</h3>
@@ -130,9 +137,28 @@ consideration for a future (e.g., 1.5/2.0)
 version of the Java&nbsp;3D API.
 </p>
 <ul>
-  <li>Multi-pass rendering</li>
-  <li>Extensibility</li>
-  <li>Pluggable renderers</li>
+  <li>Multipass rendering</li>
+  <li>Shadow map support</li>
+  <li>Additional texture formats:
+    <ul>
+      <li>NIO buffer support</li>
+      <li>Texture compression formats</li>
+    </ul>
+  </li>
+  <li>Extensibility:
+    <ul>
+      <li>Access to the native context (JOGL integration)</li>
+      <li>Geometry extensibility</li>
+      <li>Additional node types (e.g., haptic rendering)</li>
+      <li>Extensible geometry processing algorithms</li>
+    </ul>
+  </li>
+  <li>Plug-in capability
+    <ul>
+      <li>Rendering Device Interface (pluggable renderers)</li>
+      <li>Visibility structure</li>
+    </ul>
+  </li>
 </ul>
 <p><font color="gray">Page last updated &#8212;
 $Date$
