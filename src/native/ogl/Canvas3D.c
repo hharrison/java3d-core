@@ -2670,10 +2670,10 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
    glXGetFBConfigAttrib((Display *) display, fbConfigList[0], 
 			GLX_DRAWABLE_TYPE, &val);
    /* fprintf(stderr, "GLX_DRAWABLE_TYPE returns %d\n", val); */
-   
-   if ((val & GLX_PBUFFER_BIT) != 0) {
+
+   if (getJavaBoolEnv(env,"usePbuffer") && (val & GLX_PBUFFER_BIT) != 0) {
        /* fprintf(stderr, "Using pbuffer %d\n", val); */
-       
+
        /* Initialize the attribute list to be used for choosing FBConfig */
        
        attrCount = 0;
@@ -2703,8 +2703,9 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
        XSetWindowAttributes win_attrs;
        Colormap		cmap;
        unsigned long	win_mask;
-       
+
        /* fprintf(stderr, "Using pixmap %d\n", val); */
+
        vinfo = glXGetVisualFromFBConfig((Display*)display, fbConfigList[0]);
        if (vinfo == NULL) {
 	   fprintf(stderr, "Java 3D ERROR : glXGetVisualFromFBConfig failed\n");
@@ -2881,7 +2882,9 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
 
 	return (jint) hpbufdc;
     }
-    
+
+    /* fprintf(stderr, "***** Use Bitmap for offscreen  ******\n"); */
+
     /* create a DIB */
     memset(&bih, 0, sizeof(BITMAPINFOHEADER));
     
@@ -2891,7 +2894,7 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
     bih.biPlanes = 1;
     
     
-    // by MIK OF CLASSX
+    /* by MIK OF CLASSX */
     if (getJavaBoolEnv(env, "transparentOffScreen")) {
     	bih.biBitCount = 32;
     }
@@ -3128,7 +3131,7 @@ void initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo){
 
     ctxInfo->implicit_multisample = getJavaBoolEnv(env, "implicitAntialiasing");
     
-    // by MIK OF CLASSX
+    /* by MIK OF CLASSX */
     ctxInfo->alphaClearValue = (getJavaBoolEnv(env, "transparentOffScreen") ? 0.0f : 1.0f);
 
     /* ARB extensions */

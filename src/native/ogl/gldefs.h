@@ -521,7 +521,7 @@ typedef struct {
     */    
     jboolean implicit_multisample;    
     
-    // by MIK OF CLASSX
+    /* by MIK OF CLASSX */
     /*
       Used by transparentOffScreen feature.
       This is the value of the alpha channel

@@ -86,7 +86,7 @@ Java_javax_media_j3d_NativeScreenInfo_queryGLX13(
     int major, minor;
     int errorBase, eventBase;
     Display* dpy = (Display*)display;
-    // It should be cleaner to return both the major and minor to the caller.
+    /* It should be cleaner to return both the major and minor to the caller. */
 
     if (!glXQueryExtension(dpy, &errorBase, &eventBase)) {
 	fprintf(stderr, "Java 3D ERROR : GLX extension is not supported\n");

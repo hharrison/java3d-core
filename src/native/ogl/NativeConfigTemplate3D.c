@@ -319,7 +319,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
     glxAttrs[index++] = GLX_BLUE_SIZE;
     glxAttrs[index++] = mx_ptr[BLUE_SIZE];
     
-    // by MIK OF CLASSX
+    /* by MIK OF CLASSX */
     if (getJavaBoolEnv(env, "transparentOffScreen")) {
     	glxAttrs[index++] = GLX_ALPHA_SIZE;
     	glxAttrs[index++] = 1;
@@ -335,10 +335,13 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
 
     (*env)->ReleaseIntArrayElements(env, attrList, mx_ptr, JNI_ABORT);
 
-    fbConfigList = find_DB_AA_S_FBConfigs(display, screen, glxAttrs, sVal,
-					  dbVal, antialiasVal, index);
-    
-    if(fbConfigList == NULL) { //  Try with Pixmap, if Pbuffer fail. */
+    /* Get Pbuffer-capabale visual unless j3d.usePbuffer property is FALSE */
+    if (getJavaBoolEnv(env,"usePbuffer")) {
+	fbConfigList = find_DB_AA_S_FBConfigs(display, screen, glxAttrs, sVal,
+					      dbVal, antialiasVal, index);
+    }
+
+    if(fbConfigList == NULL) { /*  Try with Pixmap, if Pbuffer fail. */
 	
 	glxAttrs[drawableIndex] = (GLX_PIXMAP_BIT | GLX_WINDOW_BIT);
 	
@@ -347,7 +350,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
 	
     }
     
-    if(fbConfigList == NULL) { // Try with Window only, if Pixmap fail.
+    if(fbConfigList == NULL) { /* Try with Window only, if Pixmap fail. */
 	glxAttrs[drawableIndex] =  GLX_WINDOW_BIT;
 	
 	fbConfigList = find_DB_AA_S_FBConfigs(display, screen, glxAttrs, sVal,
@@ -1159,7 +1162,7 @@ int chooseSTDPixelFormat(
 	/* We are here b/c there is no support for Pbuffer on the HW.
 	   This is a fallback path, we will hardcore the value. */  
 	
-	// by MIK OF CLASSX
+	/* by MIK OF CLASSX */
 	pfd.iPixelType = PFD_TYPE_RGBA;
 	if (getJavaBoolEnv(env, "transparentOffScreen")) {
 	    pfd.cRedBits   = 8;
@@ -1193,7 +1196,7 @@ int chooseSTDPixelFormat(
     return pFormat;
 }
 
-PixelFormatInfo * newPixelFormatInfo(HDC hdc)
+PixelFormatInfo * newPixelFormatInfo(HDC hdc, jboolean usePbuffer)
 {
     PFNWGLGETEXTENSIONSSTRINGARBPROC  wglGetExtensionsStringARB = NULL;
 
@@ -1238,7 +1241,7 @@ PixelFormatInfo * newPixelFormatInfo(HDC hdc)
     /* fprintf(stderr, "WGL Supported extensions: %s.\n",
        pFormatInfo->supportedExtensions);    */
 
-    if(isSupportedWGL(pFormatInfo->supportedExtensions, "WGL_ARB_pixel_format")) { 
+    if (isSupportedWGL(pFormatInfo->supportedExtensions, "WGL_ARB_pixel_format")) {
 	pFormatInfo->wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)
 	    wglGetProcAddress("wglChoosePixelFormatARB");
 	    
@@ -1252,7 +1255,8 @@ PixelFormatInfo * newPixelFormatInfo(HDC hdc)
 	    /* fprintf(stderr, "wglChoosePixelFormatARB is supported.\n"); */
 	    pFormatInfo->supportARB = GL_TRUE;
 
-	    if(isSupportedWGL( pFormatInfo->supportedExtensions, "WGL_ARB_pbuffer")) {
+	    if (usePbuffer &&
+		isSupportedWGL(pFormatInfo->supportedExtensions, "WGL_ARB_pbuffer")) {
 		/* Get pbuffer entry points */
 		pFormatInfo->wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC)
 		    wglGetProcAddress("wglCreatePbufferARB");
@@ -1278,7 +1282,7 @@ PixelFormatInfo * newPixelFormatInfo(HDC hdc)
 		else {
 		    printErrorMessage("Problem in getting WGL_ARB_pbuffer functions !\n");
 		}
-	    }	    
+	    }
 	}
 	else {
 	    printErrorMessage("Problem in getting WGL_ARB_pixel_format functions !\n");
@@ -1310,14 +1314,11 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
     HGLRC hrc;
     HDC   hdc;
     int pixelFormat;
-    int wglAttrs[MAX_WGL_ATTRS_LENGTH]; 
+    int wglAttrs[MAX_WGL_ATTRS_LENGTH];
     int index, lastIndex;
-    PixelFormatInfo *pFormatInfo = NULL;    
+    PixelFormatInfo *pFormatInfo = NULL;
     jlong * offScreenPFListPtr;
     PIXELFORMATDESCRIPTOR dummy_pfd = getDummyPFD();
-
-
-    /* fprintf(stderr, "In NativeConfigTemplate.\n"); */
 
     /*
      * Select any pixel format and bound current context to
@@ -1360,7 +1361,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 	return -1;
     }
 
-    pFormatInfo = newPixelFormatInfo(hdc);
+    pFormatInfo = newPixelFormatInfo(hdc, getJavaBoolEnv(env,"usePbuffer"));
     
     offScreenPFListPtr = (*env)->GetLongArrayElements(env, offScreenPFArray, NULL);
 
@@ -1386,7 +1387,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 	wglAttrs[index++] = WGL_BLUE_BITS_ARB;
 	wglAttrs[index++] = mx_ptr[BLUE_SIZE];
 	
-	// by MIK OF CLASSX
+	/* by MIK OF CLASSX */
 	if (getJavaBoolEnv(env, "transparentOffScreen")) {
 	    wglAttrs[index++] = WGL_ALPHA_BITS_ARB;
 	    wglAttrs[index++] = 1;

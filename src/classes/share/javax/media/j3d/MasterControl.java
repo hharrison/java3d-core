@@ -90,21 +90,26 @@ class MasterControl {
     
     /**
      * by MIK OF CLASSX
-     * the flag to indicate whether the background of the offscreen canvas must be transparent or not
-     * false by default
+     *
+     * the flag to indicate whether the background of the offscreen
+     * canvas must be transparent or not false by default
      */
     boolean transparentOffScreen = false;
-    
-
-
 
     /**
-     * the flag to indicate whether should renderer view frustum culling be true. 
-     * true by default.
+     * Flag to indicate whether Pbuffers are used for off-screen
+     * rendering; true by default.  Set by the "j3d.usePbuffer"
+     * property, When this flag is set to false, Bitmap (Windows) or
+     * Pixmap (UNIX) rendering will be used
      */
-    // Set by the -Dj3d.viewFrustumCulling property, When this flag is
-    // set to false, the renderer view frustum culling is turned off.
+    boolean usePbuffer = true;
 
+    /**
+     * Flag to indicate whether should renderer view frustum culling is done;
+     * true by default.
+     * Set by the -Dj3d.viewFrustumCulling property, When this flag is
+     * set to false, the renderer view frustum culling is turned off.
+     */
     boolean viewFrustumCulling = true;
 
     /**
@@ -476,7 +481,11 @@ class MasterControl {
 					  "compaction");
 
 	// by MIK OF CLASSX
-	transparentOffScreen = getBooleanProperty("j3d.transparentOffScreen", transparentOffScreen,"transparent OffScreen");
+	transparentOffScreen = getBooleanProperty("j3d.transparentOffScreen", transparentOffScreen, "transparent OffScreen");
+
+	usePbuffer = getBooleanProperty("j3d.usePbuffer",
+					usePbuffer,
+					"Off-screen Pbuffer");
 
 	viewFrustumCulling = getBooleanProperty("j3d.viewFrustumCulling", viewFrustumCulling,"View frustum culling in the renderer is");
 	
