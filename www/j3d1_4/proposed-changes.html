@@ -31,7 +31,8 @@ Shaders in Java&nbsp;3D 1.4</a> page.
 </h4>
 <p>We propose to add a notification mechansim for scene graph structure
 changes: additions, deletions, and
-moves of branch graphs to/from a live scene graph. We propose adding <code>add/removeGraphChangeListener(</code><code>GraphChangeListener</code><code>)</code>
+moves of branch graphs to/from a live scene graph. We propose
+adding <code>add/removeGraphChangeListener(</code><code>GraphChangeListener</code><code>)</code>
 methods to <code>VirtualUniverse</code> and a new <code>GraphChangeListener</code>
 interface with <code>graphAdded</code>, <code>graphRemoved</code>,
 and <code>graphMoved</code> methods that get called when any branch
@@ -45,8 +46,8 @@ the API.
 <ul>
   <li>Name string for all scene graph objects: add public <code>get/setName(String)</code>
 to <code>SceneGraphObject</code> class</li>
-  <li><span style="font-style: italic; color: rgb(64, 192, 64);">Anything
-else???</span></li>
+  <li>Additional blending functions, for example: <code>BLEND_SRC_COLOR,
+BLEND_ONE_MINUS_SRC_COLOR, BLEND_DST_COLOR, BLEND_ONE_MINUS_DST_COLOR</code></li>
 </ul>
 <h4>4. List of features to deprecate</h4>
 <p>This is a list of miscellaneous features that we propose to
@@ -78,23 +79,37 @@ future major release (e.g., a 2.0 release).<br>
 possible inclusion
 into the 1.4 API.
 </p>
-<h4>1. Something...<br>
+<h4>1. Render to texture<br>
 </h4>
-<p><span style="font-style: italic; color: rgb(64, 192, 64);">Something
-goes here (maybe)...</span><br>
+<p><span style="color: rgb(204, 0, 0); font-style: italic;">DESCRIPTION
+FOR POSSIBLE RENDER-TO-TEXTURE SUPPORT GOES HERE...</span><br>
 </p>
-<h4>2. Miscellaneous features</h4>
+<h4>2. Stencil buffer support<br>
+</h4>
+<p><span style="color: rgb(204, 0, 0); font-style: italic;">DESCRIPTION
+FOR POSSIBLE STENCIL SUPPORT GOES HERE; NOTE THAT THIS WILL NOT INCLUDE
+ANY MULTI-PASS EFFECTS for 1.4...</span><br>
+</p>
+<h4>3. Miscellaneous features</h4>
 <p>This is a list of miscellaneous features that are being considered
 for addition to
 the API.<br>
 </p>
 <ul>
   <li>API support for&nbsp; retained alpha buffers</li>
-  <li>Ability to query properties from a GraphicsConfiguration</li>
-  <li><span style="font-style: italic; color: rgb(64, 192, 64);">Anything
-else???</span></li>
+  <li>Ability to query properties from a <code>GraphicsConfiguration</code></li>
+  <li>Better support for off-screen configuration parameters (e.g., an
+attribute in <code>GraphicsConfigTemplate3D</code> indicating whether
+the requested <code>GraphicsConfiguration</code> is used for on-screen
+rendering,
+off-screen rendering, or both)<br>
+  </li>
+  <li>Method to retrieve the geometry data from the tessellation of a
+glyph in a 3D font: a
+public <code>GeometryArray&nbsp;getGlyphGeometry(</code><code>int&nbsp;glyphCode</code><code>)</code>
+method in the <code>Font3D</code> class</li>
 </ul>
-<h4>3. List of features to deprecate</h4>
+<h4>4. List of features to deprecate</h4>
 <p>This is a list of miscellaneous features that are being considered
 for deprecation in
 the API.<br>
@@ -115,11 +130,9 @@ consideration for a future (e.g., 1.5/2.0)
 version of the Java&nbsp;3D API.
 </p>
 <ul>
+  <li>Multi-pass rendering</li>
   <li>Extensibility</li>
   <li>Pluggable renderers</li>
-  <li>Retained alpha buffers</li>
-  <li><span style="font-style: italic; color: rgb(64, 192, 64);">Anything
-else???</span></li>
 </ul>
 <p><font color="gray">Page last updated &#8212;
 $Date$
