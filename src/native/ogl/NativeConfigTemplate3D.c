@@ -16,6 +16,10 @@
  * of the Java 3D API.
  */
 
+#if defined(__linux__)
+#define _GNU_SOURCE 1
+#endif
+
 #include <jni.h>
 #include <math.h>
 #include <stdlib.h>
@@ -26,6 +30,7 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <dlfcn.h>
 #endif
 
 #ifdef WIN32
@@ -47,7 +52,11 @@ GLXFBConfig *find_S_FBConfigs(jlong display,
 
     GLXFBConfig *fbConfigList = NULL;
     int          numFBConfigs, index;
-    
+    MYPFNGLXCHOOSEFBCONFIG pGLXChooseFbConfig = NULL;
+
+    pGLXChooseFbConfig =
+	(MYPFNGLXCHOOSEFBCONFIG) dlsym(RTLD_DEFAULT, "glXChooseFBConfig");
+
     J3D_ASSERT((sIndex+3) < MAX_GLX_ATTRS_LENGTH);
     
     if (sVal == REQUIRED || sVal== PREFERRED) {
@@ -57,8 +66,8 @@ GLXFBConfig *find_S_FBConfigs(jlong display,
 	glxAttrs[index++] = True;
 	glxAttrs[index] = None;
 	
-	fbConfigList = glXChooseFBConfig((Display*)display, screen,
-					 glxAttrs, &numFBConfigs);
+	fbConfigList = pGLXChooseFbConfig((Display*)display, screen,
+					  glxAttrs, &numFBConfigs);
 	    
 	if(fbConfigList != NULL) {
 	    return fbConfigList;
@@ -85,8 +94,8 @@ GLXFBConfig *find_S_FBConfigs(jlong display,
 	    }
 	}
 	*/
-	fbConfigList = glXChooseFBConfig((Display*)display, screen,
-					 glxAttrs, &numFBConfigs);
+	fbConfigList = pGLXChooseFbConfig((Display*)display, screen,
+					  glxAttrs, &numFBConfigs);
 	
 	if(fbConfigList != NULL) {
 	    return fbConfigList;
@@ -99,8 +108,8 @@ GLXFBConfig *find_S_FBConfigs(jlong display,
 	glxAttrs[index++] = True;
 	glxAttrs[index] = None;
 	
-	fbConfigList = glXChooseFBConfig((Display*)display, screen,
-					 glxAttrs, &numFBConfigs);
+	fbConfigList = pGLXChooseFbConfig((Display*)display, screen,
+					  glxAttrs, &numFBConfigs);
 	
 	if(fbConfigList != NULL) {
 	    return fbConfigList;
@@ -270,7 +279,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
     int status, major, minor;    
 
     Display *dpy = (Display *) display;
-    
+
     fbConfigListPtr = (*env)->GetLongArrayElements(env, fbConfigArray, NULL);
     mx_ptr = (*env)->GetIntArrayElements(env, attrList, NULL);
 

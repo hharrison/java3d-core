@@ -35,7 +35,7 @@
 
     <!-- Create the library file-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="ld">
-	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  CompressedGeometryRetained.o  GeometryArrayRetained.o  Attributes.o  Lights.o NativeAPIInfo.o -G -z lazyload -L/usr/openwin/lib -ldga -ldl -lGL -lX11 -lXext -lm -lsocket -lnsl -lc  -R/usr/openwin/lib -L${java.home}/lib/sparc -ljawt -L${java.home}/lib/sparc/server -ljvm  -o libj3dcore-ogl.so"/>
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  CompressedGeometryRetained.o  GeometryArrayRetained.o  Attributes.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/openwin/lib -ldga -ldl -lGL -lX11 -lXext -lm -lsocket -lnsl -lc  -R/usr/openwin/lib -L${java.home}/lib/sparc -L${java.home}/lib/sparc/motif21 -ljawt -L${java.home}/lib/sparc/server -ljvm  -o libj3dcore-ogl.so"/>
     </exec>
 
     <!-- Copy the copyright library file -->
@@ -56,7 +56,7 @@
 
     <!-- Create the library file-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs/sparcv9" executable="ld">
-	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  CompressedGeometryRetained.o  GeometryArrayRetained.o  Attributes.o  Lights.o NativeAPIInfo.o -G -z lazyload -L/usr/openwin/lib/sparcv9 -ldga -ldl -lGL -lX11 -lXext  -lm -lsocket -lnsl -lc -R/usr/openwin/lib/sparcv9 -L${java.home}/lib/sparcv9 -ljawt -L${java.home}/lib/sparcv9/server -ljvm  -o libj3dcore-ogl.so"/>
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  CompressedGeometryRetained.o  GeometryArrayRetained.o  Attributes.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/openwin/lib/sparcv9 -ldga -ldl -lGL -lX11 -lXext  -lm -lsocket -lnsl -lc -R/usr/openwin/lib/sparcv9 -L${java.home}/lib/sparcv9 -L${java.home}/lib/sparcv9/motif21 -ljawt -L${java.home}/lib/sparcv9/server -ljvm  -o libj3dcore-ogl.so"/>
     </exec>
 
     <!-- Copy the copyright library file -->

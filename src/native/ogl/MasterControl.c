@@ -44,11 +44,11 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#if defined(SOLARIS) && defined(__sparc)
 #pragma weak glXInitThreadsSUN
 #pragma weak glXDisableXineramaSUN
 #pragma weak XPanoramiXQueryExtension
 
-#ifdef SOLARIS
 extern int glXInitThreadsSUN();
 extern int glXDisableXineramaSUN(Display *dpy);
 
@@ -63,7 +63,8 @@ extern int glXDisableXineramaSUN(Display *dpy);
  */
 extern Bool XPanoramiXQueryExtension(Display *dpy,
 				     int *event_base, int *error_base);
-#endif /* SOLARIS */
+#endif /* SOLARIS && __sparc */
+
 #endif /* SOLARIS || __linux__ */
 
 /* defined in Canvas3D.c */
@@ -74,23 +75,17 @@ JNIEXPORT jboolean JNICALL
 Java_javax_media_j3d_MasterControl_initializeJ3D(
     JNIEnv *env, jobject obj, jboolean disableXinerama)
 {
-    jboolean glIsMTSafe = JNI_FALSE;
+    jboolean glIsMTSafe = JNI_TRUE;
 
-#ifdef WIN32
-    glIsMTSafe = JNI_TRUE;
-    return glIsMTSafe;
-#endif /* WIN32 */
+    /* Nothing to do for non-sparc-solaris platforms */
 
-#ifdef __linux__
-    glIsMTSafe = JNI_TRUE;
-    return glIsMTSafe;
-#endif /* __linux__ */
-
-#ifdef SOLARIS
+#if defined(SOLARIS) && defined(__sparc)
     Display* dpy;
     int event_base, error_base;
     const char *glxExtStr = NULL;
     
+    glIsMTSafe = JNI_FALSE;
+
     dpy = XOpenDisplay(NULL);
     glxExtStr = glXGetClientString((Display*)dpy, GLX_EXTENSIONS);
 
@@ -146,7 +141,7 @@ Java_javax_media_j3d_MasterControl_initializeJ3D(
 	    DPRINT((stderr, "but Xinerama is not in use.\n"));
 	}
     }
-#endif /* SOLARIS */
+#endif /* SOLARIS && __sparc */
 
     return glIsMTSafe;
 }
@@ -209,6 +204,10 @@ Java_javax_media_j3d_MasterControl_getThreadConcurrency(JNIEnv *env,
 #ifdef SOLARIS
     return (jint) thr_getconcurrency();
 #endif /* SOLARIS */
+
+#ifdef __linux__
+    return -1;
+#endif /* __linux__ */
 
 #ifdef WIN32
     return -1;

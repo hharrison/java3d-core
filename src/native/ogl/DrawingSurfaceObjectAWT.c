@@ -28,11 +28,7 @@
 #endif /* DEBUG */
 
 
-#if defined(SOLARIS) || defined(__linux__)
-#pragma weak JAWT_GetAWT
-#endif
-
-#ifdef SOLARIS
+#if defined(SOLARIS) && defined(__sparc)
 #pragma weak XDgaGetXineramaInfo
 
 /*
@@ -43,7 +39,7 @@
  * standard or replaced with a fully supported API.
  */
 #include "panoramiXext.h"
-#endif /* SOLARIS */
+#endif /* SOLARIS && __sparc */
 
 
 JNIEXPORT jlong JNICALL
@@ -64,6 +60,7 @@ Java_javax_media_j3d_MasterControl_getAWT(
 	fprintf(stderr, "AWT not found\n");
 	return 0;
     }
+
     return (jlong)awt;
 }
 
@@ -114,6 +111,7 @@ Java_javax_media_j3d_DrawingSurfaceObjectAWT_getDrawingSurfaceWindowIdAWT(
 	(JAWT_X11DrawingSurfaceInfo*) dsi->platformInfo;
     window = (jint)xds->drawable;
 
+#ifdef __sparc
     if (xineramaDisabled) {
 	XineramaInfo xineramaInfo;
 
@@ -143,6 +141,7 @@ Java_javax_media_j3d_DrawingSurfaceObjectAWT_getDrawingSurfaceWindowIdAWT(
 	    fprintf(stderr, "Get Xinerama subwid, screen %d failed\n", screen);
 	}
     }
+#endif /* __sparc */
 #endif /* SOLARIS */
 
 #ifdef __linux__

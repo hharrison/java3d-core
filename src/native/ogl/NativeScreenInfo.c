@@ -16,6 +16,10 @@
  * of the Java 3D API.
  */
 
+#if defined(__linux__)
+#define _GNU_SOURCE 1
+#endif
+
 #include <jni.h>
 #include <math.h>
 #include <stdio.h>
@@ -26,6 +30,7 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <dlfcn.h>
 #endif
 
 #ifdef WIN32
@@ -33,8 +38,6 @@
 #endif
 
 #if defined(SOLARIS) || defined(__linux__)
-
-#pragma weak glXChooseFBConfig
 
 
 /*
@@ -79,7 +82,7 @@ Java_javax_media_j3d_NativeScreenInfo_queryGLX13(
     jlong display)
 {
     /* Fix for Issue 20 */
-    void (*tmpfp)();
+    MYPFNGLXCHOOSEFBCONFIG tmpfp;
     int major, minor;
     int errorBase, eventBase;
     Display* dpy = (Display*)display;
@@ -111,7 +114,7 @@ Java_javax_media_j3d_NativeScreenInfo_queryGLX13(
     
 #elseif
     
-    tmpfp = (void (*)())glXChooseFBConfig;
+    tmpfp = (MYPFNGLXCHOOSEFBCONFIG)dlsym(RTLD_DEFAULT, "glXChooseFBConfig");
 
     if (tmpfp == NULL) {
 	glXQueryVersion(dpy, &major, &minor);

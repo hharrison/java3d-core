@@ -345,46 +345,9 @@ extern void APIENTRY glTexSubImage3DEXT (GLenum, GLint, GLint, GLint, GLint, GLs
 #ifndef GLX_SUN_video_resize
 #define GLX_SUN_video_resize 1
 extern int glXVideoResizeSUN( Display *, GLXDrawable, float);
-extern int glXgetVideoResizeSUN( Display *, GLXDrawable, float *);
 #endif
 
-#pragma weak glXVideoResizeSUN
-#pragma weak glBlendColor
-#pragma weak glBlendColorEXT
-#pragma weak glColorTable
-#pragma weak glColorTableSGI
-#pragma weak glGetColorTableParameterivSGI
-#pragma weak glGetColorTableParameteriv
-#pragma weak glMultiDrawArraysSUN
-#pragma weak glMultiDrawArraysEXT
-#pragma weak glMultiDrawElementsSUN
-#pragma weak glMultiDrawElementsEXT
-#pragma weak glLockArraysEXT
-#pragma weak glUnlockArraysEXT
-#pragma weak glClientActiveTextureARB
-#pragma weak glMultiTexCoord2fvARB
-#pragma weak glMultiTexCoord3fvARB
-#pragma weak glMultiTexCoord4fvARB
-#pragma weak glGlobalAlphaFactorfSUN
-#pragma weak glLoadTransposeMatrixdARB
-#pragma weak glMultTransposeMatrixdARB    
-#pragma weak glActiveTextureARB
-#pragma weak glCombinerInputNV
-#pragma weak glCombinerOutputNV
-#pragma weak glFinalCombinerInputNV
-#pragma weak glCombinerParameterfvNV
-#pragma weak glCombinerParameterivNV
-#pragma weak glCombinerParameterfNV
-#pragma weak glCombinerParameteriNV
-#pragma weak glSharpenTexFuncSGIS
-#pragma weak glDetailTexFuncSGIS
-#pragma weak glTexFilterFuncSGIS
-/* [jk] mostly needed by older NVIDIA drivers */
-#pragma weak glTexImage3DEXT
-#pragma weak glTexSubImage3DEXT
-#pragma weak glTexImage3D
-#pragma weak glTexSubImage3D
-#endif /* SOLARIS */
+#endif /* SOLARIS || __linux__ */
 
 #ifndef APIENTRY
 #define APIENTRY
@@ -425,6 +388,12 @@ typedef void (APIENTRY * MYPFNGLCOMBINERPARAMETERINV) (GLenum pname, GLint param
 typedef void (APIENTRY * MYPFNGLSHARPENTEXFUNCSGI) (GLenum target, GLsizei n, const GLfloat *points);
 typedef void (APIENTRY * MYPFNGLDETAILTEXFUNCSGI) (GLenum target, GLsizei n, const GLfloat *points);
 typedef void (APIENTRY * MYPFNGLTEXFILTERFUNCSGI) (GLenum target, GLenum filter, GLsizei n, const GLfloat *points);
+
+#if defined(SOLARIS) || defined(__linux__)
+typedef GLXFBConfig * (APIENTRY * MYPFNGLXCHOOSEFBCONFIG) (Display *dpy, int screen, const int *attrib_list, int *nelements);
+typedef int (APIENTRY * MYPFNGLXVIDEORESIZESUN) (Display * dpy, GLXDrawable draw, float factor);
+#endif /* SOLARIS || __linux__ */
+
 
 /* define the structure to hold the properties of graphics context */
 typedef struct {
@@ -619,6 +588,11 @@ typedef struct {
     MYPFNGLSHARPENTEXFUNCSGI glSharpenTexFuncSGIS;
     MYPFNGLDETAILTEXFUNCSGI glDetailTexFuncSGIS;
     MYPFNGLTEXFILTERFUNCSGI glTexFilterFuncSGIS;
+
+#if defined(SOLARIS) || defined(__linux__)
+    MYPFNGLXVIDEORESIZESUN glXVideoResizeSUN;
+#endif /* SOLARIS || __linux__ */
+
 } GraphicsContextPropertiesInfo;
 
 

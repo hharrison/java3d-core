@@ -34,7 +34,7 @@
 
     <!-- Create the library file-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="ld">
-	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  CompressedGeometryRetained.o  GeometryArrayRetained.o  Attributes.o  Lights.o NativeAPIInfo.o -G -z lazyload -L/usr/X11R6/lib -ldl -lGL -lX11 -lXext -lm -lnsl -lc  -R/usr/openwin/lib -L${java.home}/lib/i386 -ljawt -L${java.home}/lib/i386/server -ljvm  -o libj3dcore-ogl.so"/>
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  CompressedGeometryRetained.o  GeometryArrayRetained.o  Attributes.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/X11R6/lib -ldl -lGL -lX11 -lXext -lm -lnsl -lc  -R/usr/openwin/lib -L${java.home}/lib/i386 -ljawt -L${java.home}/lib/i386/server -ljvm  -o libj3dcore-ogl.so"/>
     </exec>
 
     <!-- Copy the copyright library file -->
