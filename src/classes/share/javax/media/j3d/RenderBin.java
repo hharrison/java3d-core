@@ -319,8 +319,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
     Vector3d localeTranslation = new Vector3d();
 
     // Separate dlists that were added/removed in this snapshot
-    UnorderList addDlist = new UnorderList(5, RenderAtomListInfo.class);
-    UnorderList removeDlist = new UnorderList(5, RenderAtomListInfo.class);
+    private HashSet addDlist = new HashSet();
+    private HashSet removeDlist = new HashSet();
 
     // Separate dlists per rinfo that were added/removed in this snapshot
     ArrayList addDlistPerRinfo = new ArrayList(5);
@@ -863,6 +863,18 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	    }
 	}
 
+	// Remove entries that are found on both the add and remove lists
+	if (addDlist.size() > 0 && removeDlist.size() > 0) {
+	    RenderAtomListInfo arr[] = new RenderAtomListInfo[addDlist.size()];
+	    arr = (RenderAtomListInfo []) addDlist.toArray(arr);
+	    for (i = 0; i < arr.length; i++) {
+		if (removeDlist.contains(arr[i])) {
+		    addDlist.remove(arr[i]);
+		    removeDlist.remove(arr[i]);
+		}
+	    }
+	}
+
 	if (addDlist.size() > 0 || removeDlist.size() > 0) {
 	    Canvas3D canvasList[][] = view.getCanvasList(false);
 	    Canvas3D cv;
@@ -963,7 +975,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	}
 
 	if ((size = addDlist.size()) > 0) {
-	    arr = (RenderAtomListInfo []) addDlist.toArray(false);
+	    arr = new RenderAtomListInfo[size];
+	    arr = (RenderAtomListInfo []) addDlist.toArray(arr);
 	    for (i = 0; i < size; i++) {
 		ra = arr[i];
 		GeometryArrayRetained geo = (GeometryArrayRetained)ra.geometry();
@@ -984,7 +997,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	}
 
 	if ((size = removeDlist.size()) > 0) {
-	    arr = (RenderAtomListInfo []) removeDlist.toArray(false);
+	    arr = new RenderAtomListInfo[size];
+	    arr = (RenderAtomListInfo []) removeDlist.toArray(arr);
 	    for (i = 0; i < size; i++) {
 		ra = arr[i];
 		sharedDList.remove(ra);
@@ -1026,7 +1040,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 
 	// Add the newly added dlist to the sharedList
 	if ((size = addDlist.size()) > 0) {
-	    arr = (RenderAtomListInfo []) addDlist.toArray(false);
+	    arr = new RenderAtomListInfo[size];
+	    arr = (RenderAtomListInfo []) addDlist.toArray(arr);
 	    for (i = 0; i <size; i++) {
 		sharedDList.add(arr[i]);
 		// Fix for Issue 5: add the render atom to the list of users
@@ -1038,7 +1053,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 
 	// Remove the newly removed dlist from the sharedList
 	if ((size = removeDlist.size()) > 0) {
-	    arr = (RenderAtomListInfo []) removeDlist.toArray(false);
+	    arr = new RenderAtomListInfo[size];
+	    arr = (RenderAtomListInfo []) removeDlist.toArray(arr);
 	    for (i = 0; i < size; i++) {
 		sharedDList.remove(arr[i]);
 		// Fix for Issue 5: remove this render atom from the list of users
@@ -1053,7 +1069,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	    cv = canvases[j];
 
 	    if ((size = addDlist.size()) > 0) {
-		arr = (RenderAtomListInfo []) addDlist.toArray(false);
+		arr = new RenderAtomListInfo[size];
+		arr = (RenderAtomListInfo []) addDlist.toArray(arr);
 		for (i = 0; i <size; i++) {
 		    ra = arr[i];
 		    GeometryArrayRetained geo = (GeometryArrayRetained) ra.geometry();
@@ -1068,7 +1085,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		}
 	    }
 	    if ((size = removeDlist.size()) > 0) {
-		arr = (RenderAtomListInfo []) removeDlist.toArray(false);
+		arr = new RenderAtomListInfo[size];
+		arr = (RenderAtomListInfo []) removeDlist.toArray(arr);
 		for (i = 0; i < size; i++) {
 		    GeometryArrayRetained geo =
 			(GeometryArrayRetained) arr[i].geometry();
