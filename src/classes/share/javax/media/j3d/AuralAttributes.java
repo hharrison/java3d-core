@@ -1105,7 +1105,7 @@ public class AuralAttributes extends NodeComponent {
      * the specified array.
      * The array must be large enough to hold all of the points. 
      * The individual array elements must be allocated by the caller.
-     * @return attenuation array of pairs of distance and frequency cutoff values
+     * @param attenuation array of pairs of distance and frequency cutoff values
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */  
