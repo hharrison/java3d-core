@@ -31,25 +31,21 @@
     <mkdir dir="${build}/${platform}/debug/classes"/>
 
     <!-- Create the directories used for compiling generated files -->
-    <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
     <mkdir dir="${build-debug-gen}/tools"/>
     <mkdir dir="${build-debug-gen}/classes/javax/media/j3d"/>
 
-    <!-- Compile and execute the program to create the build time stamp class -->
-    <javac srcdir="${build-tools}"
-           destdir="${build-debug-gen}/tools"
-	   source="1.4"
-	   target="1.4"
-	   debug="yes"
-           deprecation="on">
-    </javac>
-
-    <!-- Execute the time stamp generator -->
-    <java classname="MakeJ3dBuildInfo"
-	  classpath="${build-debug-gen}/tools">
-	  <arg value="-debug"/>
-	  <arg value="${build-debug-gen}/classes"/>
-    </java>
+    <!-- Copy VersionInfo.java file and change tags for this build -->
+    <copy file="${build-tools}/VersionInfo.java"
+          todir="${build-debug-gen}/classes/javax/media/j3d"
+          overwrite="true">
+        <filterset>
+            <filter token="VERSION_BUILD" value="${version_build}"/>
+            <filter token="VERSION_BASE" value="${version_base}"/>
+            <filter token="IS_DEBUG" value="true"/>
+            <filter token="DEV_PHASE" value="true"/>
+            <filter token="TIME_STAMP" value="${buildtime_verbose}"/>
+        </filterset>
+    </copy>
 
     <!-- Compile the java code from ${src} into ${build}/${platform}/debug/classes -->
     <javac srcdir="${src}/classes/share:${src}/classes/${ostype}:${core_utils_src}/classes/share:${build-debug-gen}/classes"
@@ -74,35 +70,31 @@
     <mkdir dir="${build}/${platform}/opt/classes"/>
 
     <!-- Create the directories used for compiling generated files -->
-    <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
     <mkdir dir="${build-opt-gen}/tools"/>
     <mkdir dir="${build-opt-gen}/classes/javax/media/j3d"/>
 
-    <!-- Compile and execute the program to create the build time stamp class -->
-    <javac srcdir="${build-tools}"
-           destdir="${build-opt-gen}/tools"
-	   source="1.4"
-	   target="1.4"
-	   debug="no"
-           deprecation="on">
-    </javac>
-
-    <!-- Execute the time stamp generator -->
-    <java classname="MakeJ3dBuildInfo"
-	  classpath="${build-opt-gen}/tools">
-	  <arg value="${build-opt-gen}/classes"/>
-    </java>
+    <!-- Copy VersionInfo.java file and change tags for this build -->
+    <copy file="${build-tools}/VersionInfo.java"
+          todir="${build-opt-gen}/classes/javax/media/j3d"
+          overwrite="true">
+        <filterset>
+            <filter token="VERSION_BUILD" value="${version_build}"/>
+            <filter token="VERSION_BASE" value="${version_base}"/>
+            <filter token="IS_DEBUG" value="false"/>
+            <filter token="DEV_PHASE" value="${dev_phase}"/>
+            <filter token="TIME_STAMP" value="${buildtime_verbose}"/>
+        </filterset>
+    </copy>
 
     <!-- Compile the java code from ${src} into ${build}/${platform}/opt/classes -->
-    <javac srcdir="${src}/classes/share:${src}/classes/${ostype}:${core_utils_src}/classes/share:${build-opt-gen}/classes"
-           destdir="${build}/${platform}/opt/classes"
-	   source="1.4"
-	   target="1.4"
-	   debug="no"
+    <javac srcdir="${src}/classes/share:${src}/classes/${ostype}:${core_utils_src}/classes/share:${build-opt-gen}/classes"            destdir="${build}/${platform}/opt/classes"
+           source="1.4"
+           target="1.4"
+           debug="no"
            deprecation="off">
-	   <classpath refid="vecmath.opt.classpath"/>
+           <classpath refid="vecmath.opt.classpath"/>
     </javac>
-
+                                                                                                     
     <!-- Copy the I18N property files while retaining package location -->
     <copy todir="${build}/${platform}/opt/classes">
         <fileset dir="${src}/classes/share" includes="**/*.properties"/>
@@ -113,6 +105,15 @@
   <target name="jar-debug">
     <!-- Create the j3dcore and j3dutils jars directory -->
     <mkdir dir="${build}/${platform}/debug/lib/ext"/>
+
+    <copy todir="${build-debug-gen}"
+          overwrite="true">
+        <fileset dir="${src}/classes" includes="J3dVersion"/>
+        <fileset dir="${core_utils_src}/classes" includes="ToolsVersion"/>
+        <filterset>
+            <filter token="VERSION_BASE" value="${version_base}"/>
+        </filterset>
+    </copy>
 
     <!-- Copy the copyright file and all license files for j3dcore.jar -->
     <copy todir="${build}/${platform}/debug/classes/javax">
@@ -128,14 +129,14 @@
 
     <!-- Put everything in ${build}/${platform}/debug/classes/javax into the j3dcore.jar file -->
     <jar jarfile="${build}/${platform}/debug/lib/ext/j3dcore.jar"
-         manifest="${src}/classes/J3dVersion" update="yes"
+         manifest="${build-debug-gen}/J3dVersion" update="yes"
 	 compress="false">
 	<fileset dir="${build}/${platform}/debug/classes" includes="javax/**/*"/>
     </jar>
 
     <!-- Put everything in ${build}/${platform}/debug/classes/com into the j3dutils.jar file -->
     <jar jarfile="${build}/${platform}/debug/lib/ext/j3dutils.jar"
-         manifest="${core_utils_src}/classes/ToolsVersion" update="yes"
+         manifest="${build-debug-gen}/ToolsVersion" update="yes"
  	 compress="false">
 	<fileset dir="${build}/${platform}/debug/classes" includes="com/**/*"/>
     </jar>
@@ -145,6 +146,15 @@
     <!-- Create the j3dcore and j3dutils jars directory -->
     <mkdir dir="${build}/${platform}/opt/lib/ext"/>
 
+    <copy todir="${build-opt-gen}"
+          overwrite="true">
+        <fileset dir="${src}/classes" includes="J3dVersion"/>
+        <fileset dir="${core_utils_src}/classes" includes="ToolsVersion"/>
+        <filterset>
+            <filter token="VERSION_BASE" value="${version_base}"/>
+        </filterset>
+    </copy>
+                                                                                                     
     <!-- Copy the copyright file and all license files for j3dcore.jar -->
     <copy todir="${build}/${platform}/opt/classes/javax">
       <fileset dir="${src}/.." includes="COPYRIGHT.txt"/>
@@ -159,14 +169,14 @@
 
     <!-- Put everything in ${build}/${platform}/opt/classes/javax into the j3dcore.jar file -->
     <jar jarfile="${build}/${platform}/opt/lib/ext/j3dcore.jar"
-         manifest="${src}/classes/J3dVersion" update="yes"
+         manifest="${build-opt-gen}/J3dVersion" update="yes"
 	 compress="false">
 	<fileset dir="${build}/${platform}/opt/classes" includes="javax/**/*"/>
     </jar>
 
     <!-- Put everything in ${build}/${platform}/opt/classes/com into the j3dutils.jar file -->
     <jar jarfile="${build}/${platform}/opt/lib/ext/j3dutils.jar"
-         manifest="${core_utils_src}/classes/ToolsVersion" update="yes"
+         manifest="${build-opt-gen}/ToolsVersion" update="yes"
 	 compress="false">
 	<fileset dir="${build}/${platform}/opt/classes" includes="com/**/*"/>
     </jar>

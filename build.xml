@@ -16,6 +16,21 @@
 
 <project name="Java 3D" default="jar-opt" basedir=".">
 
+  <!-- ************************* -->
+  <!-- Build Specific properties -->
+
+  <!-- Version number of build -->
+  <property name="version_base" value="1.3.2"/>
+
+  <!-- Build number, eg pre6, build6 -->
+  <property name="version_build" value="pre7"/>
+
+  <!-- End of Build Specific properties -->
+  <!-- ******************************** -->
+
+  <!-- True for all non FCS builds -->
+  <property name="dev_phase" value="true"/>
+  
   <!-- Set global properties for this build -->
   <property name="vecmath_home" location="../vecmath"/>
   <property name="core_utils_home" location="../j3d-core-utils"/>
@@ -26,11 +41,11 @@
   <property name="build-tools" location="build-tools"/>
   <property name="build"   location="build"/>
   <property name="dist"    location="dist"/>
-  <property name="version" value="1_3_2_b5"/>
+  <property name="version" value="${version_base}_${version_build}"/>
   <property name="docname" value="java3d-${version}-doc"/>
-  <property environment="env"/>
-  <property file="build.properties"/>
-    
+  <property name="build.comp" value="gcc"/>
+  <property name="build.rend" value="ogl"/>
+
   <target name="echo" depends="setupPlatform">	
     <echo message="user.name       = ${user.name}"/>
     <echo message="user.home       = ${user.home}"/>
@@ -62,18 +77,22 @@
     <property name="platform" value="windows-i586-${build.comp}"/>
   </target>
 
-  <target name="setupPlatform" depends="setupSolaris, setupLinux, setupWindows">	
-
+  <target name="setupPlatform" depends="setupSolaris, setupLinux, setupWindows">
+    <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
+    <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
   </target>
 
 
   <target name="init">
     <!-- Create the time stamp -->
     <tstamp>
-	<format property="buildtime"
+        <format property="buildtime_verbose" pattern="dd MMM yyyy HH:mm:ss z"/>
+        <format property="buildtime" pattern="yyMMddHHmm"/>
+	<format property="buildtime_old"
 		pattern="yyyy-MM-dd'T'HH:mm:ss"/>
     </tstamp>
-    <echo message="buildtime = ${buildtime}"/>
+  
+    <echo message="buildtime = ${buildtime_verbose}"/>
 
     <!-- Create the base build directory -->
     <mkdir dir="${build}"/>
@@ -144,7 +163,8 @@
       <mkdir dir="${build}/rpm/BUILD"/>
       <mkdir dir="${build}/rpm/RPMS"/>
 
-      <copy file="build-tools/java3d-rpm.spec" todir="${build}/rpm/SPECS">
+      <copy file="build-tools/java3d-rpm.spec" 
+            todir="${build}/rpm/SPECS">
           <filterset>
               <filter token="VERSION" value="${version}"/>
           </filterset>
@@ -166,7 +186,7 @@
       <rpm specFile="java3d-rpm.spec"
            topDir="${build}/rpm"/>
 
-      <copy file="${build}/rpm/RPMS/i586/java3d-${version}-1.i586.rpm" todir="dist"/>
+      <copy file="${build}/rpm/RPMS/i586/java3d-${version}-1.i586.rpm" todir="dist/linux-i586"/>
   </target>
 
   <target name="clean-dist">

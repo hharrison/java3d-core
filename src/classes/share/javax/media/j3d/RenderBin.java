@@ -5729,7 +5729,7 @@ System.out.println("......tb.soleUser= " +
 	}
 
 	// Assertion check in debug mode
-	if (J3dBuildInfo.isDebug && dirtyDepthSortRenderAtom.contains(ra)) {
+	if (VersionInfo.isDebug && dirtyDepthSortRenderAtom.contains(ra)) {
 	    System.err.println("removeARenderAtom: ERROR: RenderAtom not removed from dirty list");
 	}
     }

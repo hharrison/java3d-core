@@ -37,7 +37,7 @@ class J3dDebug  {
     // uncovering potential bugs during code development. This
     // variable should be turned off during production release as it
     // may cause performance hit.
-    static final boolean devPhase = true;
+    static final boolean devPhase = VersionInfo.devPhase;
 
     // This is a property variable. It allows a true/false be sent to
     // J3d from command line, to on/off code segments.  To avoid

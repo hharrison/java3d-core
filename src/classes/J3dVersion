@@ -3,7 +3,7 @@ Specification-Title: Java 3D API Specification
 Specification-Version: 1.3
 Specification-Vendor: Sun Microsystems, Inc.
 Implementation-Title: Java 3D Core Runtime Environment
-Implementation-Version: 1.3.2
+Implementation-Version: @VERSION_BASE@
 Implementation-Vendor: Sun Microsystems, Inc.
 Extension-Name: javax.media.j3d
 Implementation-Vendor-Id: com.sun

@@ -219,7 +219,7 @@ public class VirtualUniverse extends Object {
     static {
 	// Print out version information unless this is a
 	// non-debuggable, release (fcs) build
-	if(J3dDebug.devPhase || J3dBuildInfo.isDebug) {
+	if(J3dDebug.devPhase || VersionInfo.isDebug) {
 	    String versionStr = VersionInfo.getVersion();
 	    if (J3dDebug.devPhase) {
 		System.err.println("Java 3D pre-release version: " + versionStr);
@@ -231,7 +231,7 @@ public class VirtualUniverse extends Object {
 	}
 
 	// Print out debugging information for debug builds
-	if(J3dBuildInfo.isDebug) {
+	if(VersionInfo.isDebug) {
 	    System.err.println("Initializing Java 3D runtime system:");
 	    System.err.println("    version = " + VersionInfo.getVersion());
 	    System.err.println("    vendor = " + VersionInfo.getVendor());
@@ -255,7 +255,7 @@ public class VirtualUniverse extends Object {
 	createMC();
 
 	// Print out debugging information for debug builds
-	if(J3dBuildInfo.isDebug) {
+	if(VersionInfo.isDebug) {
 	    System.err.println("Java 3D system initialized");
 	    System.err.print("    graphics library = ");
 	    switch (mc.getRenderingAPI()) {
