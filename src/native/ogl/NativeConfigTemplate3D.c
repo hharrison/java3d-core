@@ -40,10 +40,13 @@
 /* check if the extension is supported  */
 extern int isExtensionSupported(const char *allExtensions, const char *extension); 
 
+/* by MIK OF CLASSX */
+extern jboolean getJavaBoolEnv(JNIEnv *env, char* envStr);
+
 #if defined(SOLARIS) || defined(__linux__)
 
 /* Fix for issue 20 */
-#define  MAX_GLX_ATTRS_LENGTH 25
+#define  MAX_GLX_ATTRS_LENGTH 100
 
 GLXFBConfig *find_S_FBConfigs(jlong display,
 			      jint screen,
@@ -315,6 +318,13 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
     glxAttrs[index++] = mx_ptr[GREEN_SIZE];
     glxAttrs[index++] = GLX_BLUE_SIZE;
     glxAttrs[index++] = mx_ptr[BLUE_SIZE];
+    
+    // by MIK OF CLASSX
+    if (getJavaBoolEnv(env, "transparentOffScreen")) {
+    	glxAttrs[index++] = GLX_ALPHA_SIZE;
+    	glxAttrs[index++] = 1;
+    }
+
     glxAttrs[index++] = GLX_DEPTH_SIZE;
     glxAttrs[index++] = mx_ptr[DEPTH_SIZE];
     glxAttrs[index] = None;
@@ -1149,13 +1159,23 @@ int chooseSTDPixelFormat(
 	/* We are here b/c there is no support for Pbuffer on the HW.
 	   This is a fallback path, we will hardcore the value. */  
 	
-        pfd.cRedBits   = 0;
-	pfd.cGreenBits = 0;
-	pfd.cBlueBits  = 0;
-	pfd.cDepthBits = 32;
-	
+	// by MIK OF CLASSX
 	pfd.iPixelType = PFD_TYPE_RGBA;
-	pfd.cColorBits = 24;
+	if (getJavaBoolEnv(env, "transparentOffScreen")) {
+	    pfd.cRedBits   = 8;
+	    pfd.cGreenBits = 8;
+	    pfd.cBlueBits  = 8;
+	    pfd.cAlphaBits = 8;
+	    pfd.cColorBits = 32;
+	}
+	else {
+	    pfd.cRedBits   = 8;
+	    pfd.cGreenBits = 8;
+	    pfd.cBlueBits  = 8;
+	    pfd.cAlphaBits = 0;
+	    pfd.cColorBits = 24;
+	}
+	pfd.cDepthBits = 32;
 	pfd.iLayerType = PFD_MAIN_PLANE;
 	pfd.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_BITMAP | PFD_SUPPORT_GDI;
 
@@ -1365,6 +1385,13 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 	wglAttrs[index++] = mx_ptr[GREEN_SIZE];
 	wglAttrs[index++] = WGL_BLUE_BITS_ARB;
 	wglAttrs[index++] = mx_ptr[BLUE_SIZE];
+	
+	// by MIK OF CLASSX
+	if (getJavaBoolEnv(env, "transparentOffScreen")) {
+	    wglAttrs[index++] = WGL_ALPHA_BITS_ARB;
+	    wglAttrs[index++] = 1;
+	}
+
 	wglAttrs[index++] = WGL_DEPTH_BITS_ARB;
 	wglAttrs[index++] = mx_ptr[DEPTH_SIZE];
 	

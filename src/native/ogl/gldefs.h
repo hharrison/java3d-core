@@ -520,6 +520,14 @@ typedef struct {
       multisampling API to enable/disable scene antialiasing. 
     */    
     jboolean implicit_multisample;    
+    
+    // by MIK OF CLASSX
+    /*
+      Used by transparentOffScreen feature.
+      This is the value of the alpha channel
+      of the background.
+    */  
+    GLfloat alphaClearValue;
 
     /* GL_SGIS_sharpen_texture */
     jboolean textureSharpenAvailable;

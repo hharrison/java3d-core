@@ -87,6 +87,15 @@ class MasterControl {
      */
     private UnorderList views = new UnorderList(1, View.class);
 
+    
+    /**
+     * by MIK OF CLASSX
+     * the flag to indicate whether the background of the offscreen canvas must be transparent or not
+     * false by default
+     */
+    boolean transparentOffScreen = false;
+    
+
     /**
      * the flag to indicate whether the geometry should be locked or not
      */
@@ -455,6 +464,10 @@ class MasterControl {
 	doCompaction = getBooleanProperty("j3d.docompaction", doCompaction,
 					  "compaction");
 
+	// by MIK OF CLASSX
+	transparentOffScreen = getBooleanProperty("j3d.transparentOffScreen", transparentOffScreen,"transparent OffScreen");
+
+	
 	sortShape3DBounds =
 	    getBooleanProperty("j3d.sortShape3DBounds", sortShape3DBounds,
 			       "Shape3D bounds enabled for transparency sorting",

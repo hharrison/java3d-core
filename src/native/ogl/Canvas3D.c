@@ -38,18 +38,6 @@
 #endif /* DEBUG */
 
 
-#ifndef FALSE
-#define FALSE 0
-#endif
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-
-#ifndef BOOL
-#define BOOL int
-#endif
-
 static char *gl_VERSION;
 static char *gl_VENDOR;
                          
@@ -382,7 +370,8 @@ void checkTextureExtensions(
     }
 }
 
-BOOL getJavaBoolEnv(JNIEnv *env, char* envStr)
+jboolean
+getJavaBoolEnv(JNIEnv *env, char* envStr)
 {
     JNIEnv table = *env;
     jclass cls;
@@ -392,31 +381,31 @@ BOOL getJavaBoolEnv(JNIEnv *env, char* envStr)
     cls = (jclass) (*(table->FindClass))(env, "javax/media/j3d/VirtualUniverse");
 
     if (cls == NULL) {
-	return FALSE;
+	return JNI_FALSE;
     }
     
     fieldID = (jfieldID) (*(table->GetStaticFieldID))(env, cls, "mc",
 						      "Ljavax/media/j3d/MasterControl;");
     if (fieldID == NULL) {
-	return FALSE;	
+	return JNI_FALSE;	
     }
 
     obj = (*(table->GetStaticObjectField))(env, cls, fieldID);
 
     if (obj == NULL) {
-	return FALSE;
+	return JNI_FALSE;
     }
 
     cls = (jclass) (*(table->FindClass))(env, "javax/media/j3d/MasterControl");    
 
     if (cls == NULL) {
-	return FALSE;
+	return JNI_FALSE;
     }
 
     fieldID = (jfieldID) (*(table->GetFieldID))(env, cls, envStr, "Z");
 
     if (fieldID == NULL ) {
-	return FALSE;
+	return JNI_FALSE;
     }
 
     return (*(table->GetBooleanField))(env, obj, fieldID);
@@ -426,7 +415,8 @@ BOOL getJavaBoolEnv(JNIEnv *env, char* envStr)
 /*
  * get properties from current context
  */
-BOOL getPropertiesFromCurrentContext(
+static jboolean
+getPropertiesFromCurrentContext(
     JNIEnv *env,
     jobject obj,
     GraphicsContextPropertiesInfo *ctxInfo,
@@ -456,7 +446,7 @@ BOOL getPropertiesFromCurrentContext(
     glversion = (char *)glGetString(GL_VERSION);
     if (glversion == NULL) {
 	fprintf(stderr, "glversion == null\n");
-	return FALSE;
+	return JNI_FALSE;
     }
     gl_VERSION = glversion;
     tmpVersionStr = strdup(glversion);
@@ -469,7 +459,7 @@ BOOL getPropertiesFromCurrentContext(
     extensionStr = (char *)glGetString(GL_EXTENSIONS);
     if (extensionStr == NULL) {
         fprintf(stderr, "extensionStr == null\n");
-        return FALSE;
+        return JNI_FALSE;
     }
     tmpExtensionStr = strdup(extensionStr);
 
@@ -988,7 +978,7 @@ BOOL getPropertiesFromCurrentContext(
     /* clearing up the memory */
     free(tmpExtensionStr);
     free(tmpVersionStr);
-    return TRUE;
+    return JNI_TRUE;
 }
 
 
@@ -1723,7 +1713,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
 #endif
     
     if(!pa2d) {
-	glClearColor((float)r, (float)g, (float)b, 1.0f);
+	glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
 	glClear(GL_COLOR_BUFFER_BIT); 
     }
     else {
@@ -1813,7 +1803,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
 	     if(xzoom > 1.0f || yzoom > 1.0f)
 		{
 		/* else don't need to clear the background with background color */
-		glClearColor((float)r, (float)g, (float)b, 1.0f);
+		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
 		glClear(GL_COLOR_BUFFER_BIT); 
 	    }
 	    glPixelZoom(1.0, -1.0);
@@ -1823,7 +1813,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
 	    break;
 	case javax_media_j3d_Background_SCALE_FIT_MIN:
 	    if(xzoom != yzoom ) {
-		glClearColor((float)r, (float)g, (float)b, 1.0f);
+		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
 		glClear(GL_COLOR_BUFFER_BIT); 
 	    }
 	    zoom = xzoom < yzoom? xzoom:yzoom;
@@ -1865,7 +1855,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
 	        
 	case javax_media_j3d_Background_SCALE_NONE_CENTER:
 	    if(xzoom > 1.0f || yzoom > 1.0f){
-		glClearColor((float)r, (float)g, (float)b, 1.0f);
+		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
 		glClear(GL_COLOR_BUFFER_BIT); 
 	    }
 	    if(xzoom >= 1.0f){
@@ -1957,7 +1947,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_textureclear(JNIEnv *env,
     fprintf(stderr, "Canvas3D.textureclear()\n");  
 #endif 
     if(!pa2d){
-	glClearColor((float)r, (float)g, (float)b, 1.0f); 
+	glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue); 
 	glClear(GL_COLOR_BUFFER_BIT); 
     }
     /* glPushAttrib(GL_DEPTH_BUFFER_BIT); */
@@ -2092,7 +2082,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_textureclear(JNIEnv *env,
 	switch(imageScaleMode) {
 	case javax_media_j3d_Background_SCALE_NONE:
 	    if(xzoom > 1.0f || yzoom > 1.0f){
-		glClearColor((float)r, (float)g, (float)b, 1.0f);
+		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
 		glClear(GL_COLOR_BUFFER_BIT); 
 	    }
 	    texMinU = 0.0f; 
@@ -2111,7 +2101,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_textureclear(JNIEnv *env,
 	    break;
 	case javax_media_j3d_Background_SCALE_FIT_MIN:
 	    if(xzoom != yzoom){
-		glClearColor((float)r, (float)g, (float)b, 1.0f);
+		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
 		glClear(GL_COLOR_BUFFER_BIT); 
 	    }
 
@@ -2174,7 +2164,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_textureclear(JNIEnv *env,
 	    break;
 	case javax_media_j3d_Background_SCALE_NONE_CENTER:
 	    if(xzoom > 1.0f || yzoom > 1.0f){
-		glClearColor((float)r, (float)g, (float)b, 1.0f);
+		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
 		glClear(GL_COLOR_BUFFER_BIT); 
 	    }
 	    if(xzoom >= 1.0f){
@@ -2899,7 +2889,16 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
     bih.biWidth = width;
     bih.biHeight = height;
     bih.biPlanes = 1;
-    bih.biBitCount = 24;
+    
+    
+    // by MIK OF CLASSX
+    if (getJavaBoolEnv(env, "transparentOffScreen")) {
+    	bih.biBitCount = 32;
+    }
+    else {
+    	bih.biBitCount = 24;
+    }
+
     bih.biCompression = BI_RGB;    
     
     bitmapHdc = CreateCompatibleDC(hdc);
@@ -3128,6 +3127,9 @@ void initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo){
     ctxInfo->multi_draw_arrays_ext = JNI_FALSE;
 
     ctxInfo->implicit_multisample = getJavaBoolEnv(env, "implicitAntialiasing");
+    
+    // by MIK OF CLASSX
+    ctxInfo->alphaClearValue = (getJavaBoolEnv(env, "transparentOffScreen") ? 0.0f : 1.0f);
 
     /* ARB extensions */
     ctxInfo->arb_transpose_matrix = JNI_FALSE;
@@ -3541,6 +3543,6 @@ jboolean JNICALL Java_javax_media_j3d_Canvas3D_validGraphicsMode(
 #endif
 
 #if defined(SOLARIS) || defined(__linux__)
-    return TRUE;
+    return JNI_TRUE;
 #endif
 }
