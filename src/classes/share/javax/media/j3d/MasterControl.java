@@ -1541,10 +1541,9 @@ class MasterControl {
 	View v;
 	J3dThreadData lastRunThread = null;
 	waitTimestamp++;
-	sleepTime = Long.MAX_VALUE;
+	sleepTime = 0L;
 
-	boolean threadToRun = false;
-	boolean needToSetWork = false;
+	boolean threadToRun = false; // Not currently used
 
 	// Fix for Issue 12: loop through the list of threads, calling
 	// computeCycleTime() exactly once per view. This ensures that
@@ -1555,7 +1554,9 @@ class MasterControl {
 	    thread = threads[i];
 	    if (thread.view != v) {
 		thread.view.computeCycleTime();
-		if (thread.view.sleepTime < sleepTime) {
+		// Set sleepTime to the value needed to satify the
+		// minimum cycle time of the slowest view
+		if (thread.view.sleepTime > sleepTime) {
 		    sleepTime = thread.view.sleepTime;
 		}
 	    }
@@ -1571,12 +1572,6 @@ class MasterControl {
 	    if ((thread.lastUpdateTime > thread.lastRunTime) &&
 		!thread.thread.userStop) {
 		
-		if (!thread.view.isMinCycleTimeAchieve) {
-		    thread.needsRun = false;
-		    needToSetWork = true;
-		    continue;
-		}
-
 		if (thread.thread.lastWaitTimestamp == waitTimestamp) {
 		    // This renderer thread is repeated. We must wait 
 		    // until all previous renderer threads done before
@@ -1650,32 +1645,16 @@ class MasterControl {
 	}
 	    
 
-	if (needToSetWork && !threadToRun) {
-	    // Modified the following in the course of fixing Issue 12:
-	    //
-	    // 1. don't modify sleepTime by subtracting a value that
-	    // doesn't even represent time!
-	    //
-	    // 2. use sleep(sleepTime) rather than wait(sleepTime)
-	    //
-	    // Note that this will need to be redone anyway for Issue 11
-
-	    // BUG: sleepTime -= (currentTime - lastTime);
-
-	    if (sleepTime > 0) {
-		// OLD: runMonitor(SLEEP, null, null, null, null);
-
-		// System.err.println("MasterControl: sleep(" + sleepTime + ")");
-		try {
-		    Thread.sleep(sleepTime);
-		} catch (InterruptedException e) {
-		    System.err.println(e);
-		}
-		// System.err.println("MasterControl: done sleeping");
+	// Sleep for the amount of time needed to satisfy the minimum
+	// cycle time for all views.
+	if (sleepTime > 0) {
+	    // System.err.println("MasterControl: sleep(" + sleepTime + ")");
+	    try {
+		Thread.sleep(sleepTime);
+	    } catch (InterruptedException e) {
+		System.err.println(e);
 	    }
-	    // Need to invoke MC to do work 
-	    // next time after sleep
-	    setWork();
+	    // System.err.println("MasterControl: done sleeping");
 	}
 
     }
