@@ -927,7 +927,7 @@ public class Canvas3D extends Canvas {
     CanvasViewEventCatcher canvasViewEventCatcher;
     
     // The parent window for this canvas.
-    Container parent;
+    private Container parent;
 
     // flag that indicates if light has changed
     boolean lightChanged = false;
@@ -1495,6 +1495,11 @@ public class Canvas3D extends Canvas {
 	if (rdr != null) {
 	    rdr.userStop = false;
 	}
+        
+        // Fix for issue 102 removing strong reference and avoiding memory leak
+        // due retention of parent container
+        
+        this.parent = null;
     }
 
     // This decides if the canvas is active
