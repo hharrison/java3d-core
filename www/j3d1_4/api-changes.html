@@ -52,8 +52,8 @@ I. New/deprecated fields, constructors, methods
     SceneGraphObject
     ----------------
     New methods:
-        public void setName(String name)
-        public String getName()
+	public void setName(String name)
+	public String getName()
 
 
 II. Reparented classes
@@ -65,51 +65,71 @@ III. New classes and interfaces (in javax.media.j3d)
 
     ShaderAppearance
     ----------------
-        public class ShaderAppearance extends Appearance
+	public class ShaderAppearance extends Appearance
 
-    ShaderAttributes
-    ----------------
-	public class ShaderAttributes extends NodeComponent
+    ShaderAttributeSet
+    ------------------
+	public class ShaderAttributeSet extends NodeComponent
+
+    ShaderAttribute
+    ---------------
+	public abstract class ShaderAttribute extends NodeComponent
+
+    ShaderAttributeBinding
+    ----------------------
+	public class ShaderAttributeBinding extends ShaderAttribute
+
+    ShaderAttributeObject
+    ---------------------
+	public abstract class ShaderAttributeObject extends ShaderAttribute
+
+    ShaderAttributeValue
+    --------------------
+	public class ShaderAttributeValue extends ShaderAttributeObject
+
+    ShaderAttributeArray
+    --------------------
+	public class ShaderAttributeArray extends ShaderAttributeObject
 
     Shader
     ------
-        public abstract class Shader extends NodeComponent
+	public abstract class Shader extends NodeComponent
 
     ShaderProgram
     -------------
-        public abstract class ShaderProgram extends NodeComponent
+	public abstract class ShaderProgram extends NodeComponent
 
     CgShader
     --------
-        public abstract class CgShader extends Shader
+	public abstract class CgShader extends Shader
 
     CgFragmentShader
     ----------------
-        public class CgFragmentShader extends CgShader
+	public class CgFragmentShader extends CgShader
 
     CgVertexShader
     --------------
-        public class CgVertexShader extends CgShader
+	public class CgVertexShader extends CgShader
 
     CgShaderProgram
     ---------------
-        public class CgShaderProgram extends ShaderProgram
+	public class CgShaderProgram extends ShaderProgram
 
     GLSLShader
     ----------
-        public abstract class GLSLShader extends Shader
+	public abstract class GLSLShader extends Shader
 
     GLSLFragmentShader
     ------------------
-        public class GLSLFragmentShader extends GLSLShader
+	public class GLSLFragmentShader extends GLSLShader
 
     GLSLVertexShader
     ----------------
-        public class GLSLVertexShader extends GLSLShader
+	public class GLSLVertexShader extends GLSLShader
 
     GLSLShaderProgram
     -----------------
-        public class GLSLShaderProgram extends ShaderProgram
+	public class GLSLShaderProgram extends ShaderProgram
 </pre>
 <p><font color="gray">Page last updated &#8212;
 $Date$
