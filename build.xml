@@ -26,7 +26,7 @@
   <property name="build-tools" location="build-tools"/>
   <property name="build"   location="build"/>
   <property name="dist"    location="dist"/>
-  <property name="version" value="1_3_2"/>
+  <property name="version" value="1_3_2_b5"/>
   <property name="docname" value="java3d-${version}-doc"/>
   <property environment="env"/>
   <property file="build.properties"/>
@@ -118,7 +118,7 @@
 	<ant dir="src/classes" target="docs-jcp"/>
   </target>
 
-  <target name="docs-public" depends="setupPlatform">
+  <target name="docs-public" depends="setupPlatform" unless="nojavadoc">
 	<ant dir="src/classes" target="docs-public"/>
   </target>
 
@@ -136,6 +136,38 @@
   </target>
 
   <target name="all" depends="jar-debug,dist,docs-jcp,docs-private"/>
+
+  <target name="rpm" description="Build rpm package" depends="dist">
+      <mkdir dir="${build}/rpm"/>
+      <mkdir dir="${build}/rpm/SPECS"/>
+      <mkdir dir="${build}/rpm/SOURCES"/>
+      <mkdir dir="${build}/rpm/BUILD"/>
+      <mkdir dir="${build}/rpm/RPMS"/>
+
+      <copy file="build-tools/java3d-rpm.spec" todir="${build}/rpm/SPECS">
+          <filterset>
+              <filter token="VERSION" value="${version}"/>
+          </filterset>
+      </copy>
+
+      <tar destfile="${build}/rpm/SOURCES/java3d-${version}.tar.gz"
+           compression="gzip">
+          <tarfileset dir="${dist}/linux-i586"
+                      includes="lib/**"
+          />
+          <tarfileset dir="release-info"
+                      includes="BINARY-CODE-LICENSE.txt"
+          />
+          <tarfileset dir="."
+                      includes="COPYRIGHT.txt README-FIRST.txt"
+          />
+      </tar>
+
+      <rpm specFile="java3d-rpm.spec"
+           topDir="${build}/rpm"/>
+
+      <copy file="${build}/rpm/RPMS/i586/java3d-${version}-1.i586.rpm" todir="dist"/>
+  </target>
 
   <target name="clean-dist">
     <!-- Delete the ${dist} directory tree  -->
@@ -197,5 +229,7 @@ The following ant targets are available ("jar-opt" is the default):
                       WS/build/${platform}/opt/classes and 
                       WS/build/${platform}/opt/native.
 
+      rpm           - creates a i586 rpm for installation in /usr/java/jdk1.5.0
+                      the rpm is placed in dist/rpm
   </description>
 </project>
