@@ -8,29 +8,51 @@
 <body>
 <h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.4:
 Stencil Buffer</h2>
-<h3><span style="color: rgb(0, 153, 0);"><i>ROUGH DRAFT: This API
-is a Work in Progress</i></span></h3>
-<hr>
+<p><span style="color: rgb(204, 0, 0);"><i>NOTE: THIS DOES NOT INCLUDE
+ANY MULTIPASS SUPPORT&nbsp;</i></span>
+</p>
 <p>This page describes the proposed API changes for stencil buffer
 support in Java&nbsp;3D
-1.4...
+1.4. The GraphicsConfigTemplate3D class is used to find a
+GraphicsConfiguration object with the desired attributes. These
+attributes include number of color bits (red, green, and blue size),
+depth buffer size, and whether or not double-buffering, stereo, or
+antialiasing is needed. The GraphicsConfiguration is used in turn used
+to create a Canvas3D into which Java&nbsp;3D can render.<br>
 </p>
-<p>NOTE: THIS WILL NOT INCLUDE ANY MULTIPASS SUPPORT in 1.4
+<p>We propose to add a
+new StencilSize attribute to GraphicsConfigTemplate3D that will allow
+an application to create a Canvas3D (on-screen or off-screen) with a
+stencil buffer. We also propose to add new attributes to the
+RenderingAttributes object that will allow an application to control
+the stencil test and update. These will work in a similar manner to the
+equivalent OpenGL methods. Note that since multipass support is not yet
+available, applications wishing to use stencil will need to make use of
+OrderedGroup (or use mixed-mode / immediate-mode rendering).<br>
 </p>
-<p>The proposed API is:</p>
+<p>The proposed API changes are:<br>
+</p>
 <ul>
-  <li>New classes</li>
-  <ul>
-    <pre>public class XXXXX extends YYYYY<br>    method: setXxxxx()<br></pre>
-  </ul>
   <li>New methods in existing classes:<br>
   </li>
   <ul>
-    <pre>XXXXX<br>    method: setXxxxx()<br></pre>
+    <pre>GraphicsConfigTemplate3D<br>    method: setStencilSize(int) // default=0<br><br>RenderingAttributes<br>    method: setStencilEnable(boolean enable)<br>    method: setStencilOp(int fail, int zfail, int zpass)<br>    method: setStencilFunc(int func, int ref, int mask)<br>    method: setStencilMask(int mask)<br></pre>
   </ul>
 </ul>
-<p>More info here...
+<p>Issues:<br>
 </p>
+<ol>
+  <li>How/when is the stencil buffer cleared? Implicitly at the start
+of a frame? Explicitly? The latter seems problematic.<br>
+    <span style="font-style: italic;">[Current plan is to clear
+implicitly
+at the start of each frame and not provide explicit control]</span><br>
+  </li>
+  <li>Does the OpenGL stencil functionality map cleanly to DirectX? If
+not, then stencil support may not be available for the D3D version of
+Java&nbsp;3D.<br>
+  </li>
+</ol>
 <p><font color="gray">Page last updated &#8212;
 $Date$
 </font></p>
