@@ -14,6 +14,7 @@ package javax.media.j3d;
 
 import javax.vecmath.*;
 import java.lang.Math;
+import com.sun.j3d.internal.HashCodeUtil;
 
 /**
  * A BoundingPolytope defines a polyhedral bounding region using the
@@ -514,10 +515,10 @@ public class BoundingPolytope extends Bounds {
 	long bits = 1L;
 
 	for (int i = 0; i < planes.length; i++) {
-	    bits = 31L * bits + Double.doubleToLongBits(planes[i].x);
-	    bits = 31L * bits + Double.doubleToLongBits(planes[i].y);
-	    bits = 31L * bits + Double.doubleToLongBits(planes[i].z);
-	    bits = 31L * bits + Double.doubleToLongBits(planes[i].w);
+	    bits = 31L * bits + HashCodeUtil.doubleToLongBits(planes[i].x);
+	    bits = 31L * bits + HashCodeUtil.doubleToLongBits(planes[i].y);
+	    bits = 31L * bits + HashCodeUtil.doubleToLongBits(planes[i].z);
+	    bits = 31L * bits + HashCodeUtil.doubleToLongBits(planes[i].w);
 	}
 
 	return (int) (bits ^ (bits >> 32));

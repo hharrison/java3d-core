@@ -13,7 +13,7 @@
 package javax.media.j3d;
 
 import javax.vecmath.*;
-import java.lang.*;
+import com.sun.j3d.internal.HashCodeUtil;
 
 /**
  * A generalized transform object represented internally as a 4x4
@@ -3921,7 +3921,7 @@ public class Transform3D {
 	long bits = 1L;
 
 	for (int i = 0; i < 16; i++) {
-	    bits = 31L * bits + Double.doubleToLongBits(mat[i]);
+	    bits = 31L * bits + HashCodeUtil.doubleToLongBits(mat[i]);
 	}
 	return (int) (bits ^ (bits >> 32));
     }

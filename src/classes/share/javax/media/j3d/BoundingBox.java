@@ -13,6 +13,7 @@
 package javax.media.j3d;
 
 import javax.vecmath.*;
+import com.sun.j3d.internal.HashCodeUtil;
 
 /**
  *  This class defines an axis aligned bounding box which is used for
@@ -418,12 +419,12 @@ public class BoundingBox extends Bounds {
      */
     public int hashCode() {
 	long bits = 1L;
-	bits = 31L * bits + Double.doubleToLongBits(lower.x);
-	bits = 31L * bits + Double.doubleToLongBits(lower.y);
-	bits = 31L * bits + Double.doubleToLongBits(lower.z);
-	bits = 31L * bits + Double.doubleToLongBits(upper.x);
-	bits = 31L * bits + Double.doubleToLongBits(upper.y);
-	bits = 31L * bits + Double.doubleToLongBits(upper.z);
+	bits = 31L * bits + HashCodeUtil.doubleToLongBits(lower.x);
+	bits = 31L * bits + HashCodeUtil.doubleToLongBits(lower.y);
+	bits = 31L * bits + HashCodeUtil.doubleToLongBits(lower.z);
+	bits = 31L * bits + HashCodeUtil.doubleToLongBits(upper.x);
+	bits = 31L * bits + HashCodeUtil.doubleToLongBits(upper.y);
+	bits = 31L * bits + HashCodeUtil.doubleToLongBits(upper.z);
 	return (int) (bits ^ (bits >> 32));
     }
 

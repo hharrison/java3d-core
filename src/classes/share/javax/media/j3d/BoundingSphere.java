@@ -14,6 +14,7 @@ package javax.media.j3d;
 
 import javax.vecmath.*;
 import java.lang.Math;
+import com.sun.j3d.internal.HashCodeUtil;
 
 /**
  * This class defines a spherical bounding region which is defined by a
@@ -406,10 +407,10 @@ public class BoundingSphere extends Bounds {
      */
     public int hashCode() {
 	long bits = 1L;
-	bits = 31L * bits + Double.doubleToLongBits(radius);
-	bits = 31L * bits + Double.doubleToLongBits(center.x);
-	bits = 31L * bits + Double.doubleToLongBits(center.y);
-	bits = 31L * bits + Double.doubleToLongBits(center.z);
+	bits = 31L * bits + HashCodeUtil.doubleToLongBits(radius);
+	bits = 31L * bits + HashCodeUtil.doubleToLongBits(center.x);
+	bits = 31L * bits + HashCodeUtil.doubleToLongBits(center.y);
+	bits = 31L * bits + HashCodeUtil.doubleToLongBits(center.z);
 	return (int) (bits ^ (bits >> 32));
     }
 
