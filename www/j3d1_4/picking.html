@@ -23,17 +23,18 @@ created PickInfo class.<br>
 The proposed API are :<br>
 </p>
 <ul>
-  <li>New methods in existing classes:<big style="font-weight: bold;">&nbsp;&nbsp;
-    <br>
-    </big></li>
+  <li>New methods in existing classes:&nbsp;&nbsp; <br>
+  </li>
 </ul>
 <h4 style="font-weight: bold; margin-left: 40px;"><span
- style="font-weight: normal;">The following 4 methods will be added to <span
- style="font-weight: bold;">Locale</span> and <span
- style="font-weight: bold;">BranchGroup</span> :</span><small><span
+ style="font-weight: normal;">The following 4 methods will be added to <a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/Locale.html#pickAll%28int,%20int,%20javax.media.j3d.PickShape%29"><span
+ style="font-weight: bold;">Locale</span></a> and <a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/BranchGroup.html#pickAll%28int,%20int,%20javax.media.j3d.PickShape%29"><span
+ style="font-weight: bold;">BranchGroup</span></a> :</span><span
  style="font-weight: normal;">&nbsp;
 </span><br>
-</small></h4>
+</h4>
 <div style="font-weight: bold; margin-left: 80px;"><span
  style="font-weight: normal;">method: public
 PickInfo[] pickAll(
@@ -80,11 +81,9 @@ ALL_GEOM_INFO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 - request for all intersection geometry information. &nbsp;</code>&nbsp;&nbsp;
 &nbsp;<br>
 </div>
-<p style="margin-left: 40px;"></p>
 <div style="margin-left: 40px;">
 NOTES : <br>
 </div>
-<p></p>
 <div style="margin-left: 80px;">If <code>CLOSEST_INTERSECTION_POINT</code>
 is not set, PickInfo.closestIntersectionPoint is set to null.<br>
 If <code>CLOSEST_GEOM_INFO</code> is
@@ -108,93 +107,91 @@ and
 <code>ALL_GEOM_INFO</code> are set.<br>
 </div>
 <ul>
-  <li><small> </small>New classes</li>
+  <li>New classes</li>
 </ul>
-<div style="margin-left: 40px;">public class <span
- style="font-weight: bold;">PickInfo</span> extends Object<small>&nbsp;&nbsp;&nbsp;
-</small></div>
-<p style="margin-left: 80px;"><span style="font-style: italic;"></span><span
- style="font-style: italic;">/** </span><span
- style="font-style: italic;">Retrieves
+<div style="margin-left: 40px;">public class <a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/PickInfo.html"><span
+ style="font-weight: bold;">PickInfo</span></a> extends
+Object&nbsp;&nbsp;&nbsp;
+</div>
+<p style="margin-left: 80px;"><span style="font-style: italic;">/**
+Retrieves
 the reference to the SceneGraphPath in this PickInfo object. */</span><br>
 method: public
-SceneGraphPath getSceneGraphPath()<span style="font-weight: bold;"><br>
-</span></p>
-<p style="margin-left: 80px;"><span style="font-style: italic;">/*</span><span
- style="font-style: italic;">* Retrieves
+SceneGraphPath getSceneGraphPath()<br>
+</p>
+<p style="margin-left: 80px;"><span style="font-style: italic;">/**
+Retrieves
 the reference to the picked node, either a Shape3D or a Morph, in
-this PickInfo object. */</span><span style="font-weight: bold;"><br>
-</span><span style="font-style: italic;"></span>method: public Node
-getNode()<span style="font-weight: bold;"><br>
-</span><span style="font-style: italic;"><br>
-/** Retrieves
+this PickInfo object. */</span><br>
+method: public Node
+getNode()<br>
+<br>
+<span style="font-style: italic;">/** Retrieves
 the reference to the LocalToVworld transform of the picked node in
-this PickInfo object. */</span><span style="font-weight: bold;"><br>
-</span><span style="font-style: italic;"></span>method: public
-Transform3D getLocalToVWorld()<span style="font-style: italic;"></span><br>
-<span style="font-weight: bold;"></span></p>
-<p style="margin-left: 80px;">/*<span style="font-style: italic;">*
+this PickInfo object. */</span><br>
+method: public
+Transform3D getLocalToVWorld()<br>
+</p>
+<p style="margin-left: 80px;"><span style="font-style: italic;">/**
 Retrieves
 the reference to the closest intersection point in this PickInfo
-object. */</span><span style="font-weight: bold;"><br>
-</span>method: public
-Point3d getClosestIntersectionPoint()<span style="font-weight: bold;"><br>
-</span></p>
-<p style="margin-left: 80px;">/*<span style="font-style: italic;">*
+object. */</span><br>
+method: public
+Point3d getClosestIntersectionPoint()<br>
+</p>
+<p style="margin-left: 80px;"><span style="font-style: italic;">/**
 Retrieves
 the distance between the start point of the pickShape and the
-intersection point. */</span><span style="font-weight: bold;"><br>
-</span><span style="font-style: italic;"></span>method: public
-double getDistance()<span style="font-weight: bold;"><br>
-</span></p>
-<p style="margin-left: 80px;">/*<span style="font-style: italic;">*
+intersection point. */</span><br>
+method: public
+double getDistance()<br>
+</p>
+<p style="margin-left: 80px;"><span style="font-style: italic;">/**
 Retrieves
 the reference to the array of intersection results in this PickInfo
-object. */</span><span style="font-weight: bold;"><br>
-</span><span style="font-style: italic;"></span>method: public
+object. */</span><br>
+method: public
 IntersectionInfo[] getIntersectionInfos()<br>
 </p>
-<p style="margin-left: 40px;"><big><small>public class
-<span style="font-weight: bold;">PickInfo.IntersectionInfo</span>
+<p style="margin-left: 40px;">public class
+<a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/PickInfo.IntersectionInfo.html"><span
+ style="font-weight: bold;">PickInfo.IntersectionInfo</span></a>
 extends Object&nbsp; ( inner
-class )</small><br style="font-weight: bold;">
-</big><span style="font-style: italic;"></span></p>
+class )<br>
+</p>
 <div style="margin-left: 80px;"><span style="font-style: italic;">/**
 Retrieves
 the index to the intersected geometry in the picked node, either a
 Shape3D or Morph. */</span><br>
 method: public
-int getGeometryIndex()&nbsp;<span style="font-weight: bold;"> <br>
+int getGeometryIndex()&nbsp; <br>
 <br>
-</span>/*<span style="font-style: italic;">* Retrieves
+<span style="font-style: italic;">/** Retrieves
 the reference to the intersected geometry in the picked object,
-either a Shape3D or Morph. */</span><span style="font-style: italic;"></span><br>
+either a Shape3D or Morph. */</span><br>
 method: public
-Geometry getGeometry() <span style="font-style: italic;"></span><br>
+Geometry getGeometry() <br>
 <br>
-/*<span style="font-style: italic;">* Retrieves
+<span style="font-style: italic;">/** Retrieves
 the interpolation weights for each of the verticies of the&nbsp;
 intersected primitive. */</span><br>
 method: public
-float[] getWeights()<span style="font-style: italic;"></span><br>
+float[] getWeights()<br>
 <br>
-/*<span style="font-style: italic;">* Retrieves
+<span style="font-style: italic;">/** Retrieves
 the reference to the intersection point of the picked geometry in this
 IntersectionInfo object. */</span><br>
 method: public
-Point3d getIntersectionPoint()<span style="font-weight: bold;"><br>
-</span><span style="font-style: italic;"></span><span
- style="font-weight: bold;"></span><br>
+Point3d getIntersectionPoint()<br>
+<br>
 <span style="font-style: italic;">/** Retrieves
 the vertex indices of the intersected primitive in the geometry. */</span><br>
 method: public int[] getVertexIndices()<br>
+<br>
 </div>
-<p style="margin-left: 40px;">
-</p>
-<p style="margin-left: 40px;"></p>
-<p style="margin-left: 40px;"></p>
-<p><br>
-<font color="gray">Page last updated &#8212;
+<p><font color="gray">Page last updated &#8212;
 $Date$
 </font></p>
 </body>
