@@ -432,7 +432,9 @@ BOOL getPropertiesFromCurrentContext(
     GraphicsContextPropertiesInfo *ctxInfo,
     jlong hdc,
     int pixelFormat,
-    int stencilSize)
+    int stencilSize,
+    jlong fbConfigListPtr,
+    jboolean offScreen)
 {
     JNIEnv table = *env; 
 
@@ -446,10 +448,8 @@ BOOL getPropertiesFromCurrentContext(
     
     
 #ifdef WIN32
-    PFNWGLGETPIXELFORMATATTRIBIVEXTPROC wglGetPixelFormatAttribivEXT = NULL;
     PIXELFORMATDESCRIPTOR pfd;
-    int attr[3];
-    int piValues[2];
+    PixelFormatInfo *PixelFormatInfoPtr = (PixelFormatInfo *)fbConfigListPtr;
 #endif
     
     /* get OpenGL version */
@@ -472,6 +472,11 @@ BOOL getPropertiesFromCurrentContext(
         return FALSE;
     }
     tmpExtensionStr = strdup(extensionStr);
+
+    /*
+      fprintf(stderr, " pixelFormat : %d\n", pixelFormat);
+      fprintf(stderr, " extensionStr : %s\n", tmpExtensionStr);
+    */
     
     ctxInfo->versionStr = strdup(glversion);
     ctxInfo->extensionStr = strdup(extensionStr);
@@ -683,27 +688,23 @@ BOOL getPropertiesFromCurrentContext(
     }
 #endif
 
-#ifdef WIN32  /* This is fine, but might need cleanup. -- Chien */
-    wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)
-	wglGetProcAddress("wglGetPixelFormatAttribivARB");
-
-    if (wglGetPixelFormatAttribivEXT == NULL) {
-	wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)
-	    wglGetProcAddress("wglGetPixelFormatAttribivEXT");
-    } 
-
-    ctxInfo->arb_multisample = JNI_FALSE;    
-    if (wglGetPixelFormatAttribivEXT != NULL) {
-	attr[0] = WGL_SAMPLE_BUFFERS_ARB;
-	attr[1] = WGL_SAMPLES_ARB;
-	attr[2] = 0;
-
-	if (wglGetPixelFormatAttribivEXT((HDC) hdc, pixelFormat, 0, 2, attr, piValues)) {
-	    if ((piValues[0] == TRUE) && (piValues[1] > 1)) {
-		ctxInfo->arb_multisample = JNI_TRUE;
-	    }
-	} 
+#ifdef WIN32
+    if(offScreen) {
+	ctxInfo->arb_multisample = PixelFormatInfoPtr->offScreenHasMultisample;
     }
+    else {
+	ctxInfo->arb_multisample = PixelFormatInfoPtr->onScreenHasMultisample;
+    }
+
+    /*
+      fprintf(stderr, "Canvas3D - onScreenHasMultisample = %d, offScreenHasMultisample = %d\n",
+      PixelFormatInfoPtr->onScreenHasMultisample,
+      PixelFormatInfoPtr->offScreenHasMultisample);
+    
+      fprintf(stderr, "Canvas3D - ctxInfo->arb_multisample = %d, offScreen = %d\n",
+      ctxInfo->arb_multisample, offScreen);
+    */
+    
 #endif
     
     /*
@@ -719,9 +720,6 @@ BOOL getPropertiesFromCurrentContext(
      */
     checkTextureExtensions(env, obj, tmpExtensionStr, versionNumbers[1],
 				ctxInfo);
-
-
-
     
     /* ... */
     
@@ -1302,7 +1300,7 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
     ctxInfo->context = gctx;
     
     if (!getPropertiesFromCurrentContext(env, obj, ctxInfo, (jlong) hdc, PixelFormatID,
-					 stencilSize)) {
+					 stencilSize, fbConfigListPtr, offScreen)) {
 	return 0;
     }
 
@@ -3452,7 +3450,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     
     /* get current context properties */
     if (getPropertiesFromCurrentContext(env, obj, ctxInfo, (jlong) hdc, PixelFormatID,
-					stencilSize)) {
+					stencilSize, fbConfigListPtr, offScreen)) {
 	/* put the properties to the Java side */
 	setupCanvasProperties(env, obj, ctxInfo);
     }

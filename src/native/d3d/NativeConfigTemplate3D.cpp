@@ -17,10 +17,8 @@ extern "C" JNIEXPORT
 jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isStereoAvailable(
     JNIEnv *env,
     jobject obj,
-    jlong ctx,
-    jlong display,
-    jint screen,
-    jint pixelFormat)
+    jlong pFormatInfo,
+    jboolean offScreen)
 {
     // DirectX 8.0 don't support stereo
     return false;
@@ -31,23 +29,20 @@ extern "C" JNIEXPORT
 jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isDoubleBufferAvailable(
     JNIEnv *env,
     jobject obj,
-    jlong ctx,
-    jlong display,
-    jint screen,
-    jint pixelFormat)
+    jlong pFormatInfo,
+    jboolean offScreen)
 { 
     // D3D always support double buffer
     return true;
 }
 
 extern "C" JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultiSamplesAvailable(
+jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(
     JNIEnv *env,
     jobject obj,
-    jlong ctx,
-    jlong display,
-    jint screen,
-    jint pixelFormat)
+    jlong pFormatInfo,
+    jboolean offScreen,
+    jint screen)
 {
     BOOL antialiasingSupport = false;
 
@@ -73,10 +68,8 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasing
 extern "C" JNIEXPORT
 jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingAccumAvailable(JNIEnv *env,
     jobject obj,
-    jlong ctx,
-    jlong display,
-    jint screen,
-    jint pixelFormat)
+    jlong pFormatInfo,
+    jboolean offScreen)
 {
     return JNI_FALSE;
 }
@@ -127,8 +120,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
     }
 
     if (mx_ptr[ANTIALIASING] == REQUIRED) {
-	if (Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultiSamplesAvailable(
-			     env, obj, ctx, 0, screen, 0) == JNI_TRUE)
+	if (Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(env, obj, 0, JNI_TRUE, screen) == JNI_TRUE)
 	    {
 		retValue |= (1 << 31);
 	    } else {

@@ -380,7 +380,6 @@ class Renderer extends J3dThread {
 			Integer reqType = (Integer) m[nmesg].args[2];
 			Canvas3D c = (Canvas3D) secondArg;
 			if (reqType == MasterControl.SET_GRAPHICSCONFIG_FEATURES) {
-			    GraphicsConfiguration gc = c.graphicsConfiguration;
 			    NativeConfigTemplate3D nct = 
 				GraphicsConfigTemplate3D.nativeTemplate;
 			    if (c.offScreen) {
@@ -389,16 +388,17 @@ class Renderer extends J3dThread {
 				c.doubleBufferAvailable = false;
 				c.stereoAvailable = false;
 			    } else {
-				c.doubleBufferAvailable = nct.hasDoubleBuffer(gc);
-				c.stereoAvailable = nct.hasStereo(gc);
+				c.doubleBufferAvailable = nct.hasDoubleBuffer(c);
+				c.stereoAvailable = nct.hasStereo(c);
 			    }
 			    c.sceneAntialiasingMultiSamplesAvailable =
-				nct.hasSceneAntialiasingMultiSamples(gc);
+				nct.hasSceneAntialiasingMultisample(c);
+
 			    if (c.sceneAntialiasingMultiSamplesAvailable) {
 				c.sceneAntialiasingAvailable = true;
 			    } else {
 				c.sceneAntialiasingAvailable = 
-				    nct.hasSceneAntialiasingAccum(gc);
+				    nct.hasSceneAntialiasingAccum(c);
 			    }
 			    GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
 			} else if (reqType == MasterControl.SET_QUERYPROPERTIES){
@@ -935,6 +935,7 @@ class Renderer extends J3dThread {
 		        // full screen anti-aliasing setup
 			if (canvas.view.getSceneAntialiasingEnable() &&
 			    canvas.sceneAntialiasingAvailable) {
+			    
 			    if (!VirtualUniverse.mc.isD3D() && 
 				((canvas.extensionsSupported & Canvas3D.ARB_MULTISAMPLE) == 0) || 
 				!canvas.sceneAntialiasingMultiSamplesAvailable) {
@@ -981,13 +982,18 @@ class Renderer extends J3dThread {
 				    }
 				}				
 			    } else {
+
 				if (!canvas.antialiasingSet) {
+				    // System.out.println("Renderer : Enable FullSceneAntialiasing");
+
 				    canvas.setFullSceneAntialiasing(canvas.ctx, true);
 				    canvas.antialiasingSet = true;
 				}
 			    }
 		        } else {
+
 			    if (canvas.antialiasingSet) {
+				// System.out.println("Renderer : Disable SceneAntialiasing");
 				canvas.setFullSceneAntialiasing(canvas.ctx, false);
 				canvas.antialiasingSet = false;
 			    }

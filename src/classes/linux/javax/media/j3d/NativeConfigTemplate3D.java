@@ -60,7 +60,7 @@ class NativeConfigTemplate3D {
     native boolean isStereoAvailable(long display, int screen, int vid);
     native boolean isDoubleBufferAvailable(long display, int screen, int vid);
     native boolean isSceneAntialiasingAccumAvailable(long display, int screen, int vid);
-    native boolean isSceneAntialiasingMultiSamplesAvailable(long display, int screen, int vid);
+    native boolean isSceneAntialiasingMultisampleAvailable(long display, int screen, int vid);
 
 
     /*
@@ -201,7 +201,9 @@ class NativeConfigTemplate3D {
 
 
     // Return whether stereo is available.
-    boolean hasStereo(GraphicsConfiguration gc) {
+    boolean hasStereo(Canvas3D c3d) {
+	GraphicsConfiguration gc = c3d.graphicsConfiguration;
+
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
@@ -214,7 +216,9 @@ class NativeConfigTemplate3D {
     }
 
     // Return whether a double buffer is available.
-    boolean hasDoubleBuffer(GraphicsConfiguration gc) {
+    boolean hasDoubleBuffer(Canvas3D c3d) {
+	GraphicsConfiguration gc = c3d.graphicsConfiguration;
+
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
@@ -227,7 +231,9 @@ class NativeConfigTemplate3D {
     }
 
     // Return whether scene antialiasing is available.
-    boolean hasSceneAntialiasingAccum(GraphicsConfiguration gc) {
+    boolean hasSceneAntialiasingAccum(Canvas3D c3d) {
+	GraphicsConfiguration gc = c3d.graphicsConfiguration;
+
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
@@ -241,7 +247,9 @@ class NativeConfigTemplate3D {
 
 
     // Return whether scene antialiasing is available.
-    boolean hasSceneAntialiasingMultiSamples(GraphicsConfiguration gc) {
+    boolean hasSceneAntialiasingMultisample(Canvas3D c3d) {
+	GraphicsConfiguration gc = c3d.graphicsConfiguration;
+
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
@@ -250,7 +258,7 @@ class NativeConfigTemplate3D {
 	int screen = nativeScreenInfo.getScreen();
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
-	return isSceneAntialiasingMultiSamplesAvailable(display, screen, vid);
+	return isSceneAntialiasingMultisampleAvailable(display, screen, vid);
     }
     
     // Ensure that the native libraries are loaded

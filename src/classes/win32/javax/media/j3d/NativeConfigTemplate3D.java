@@ -49,10 +49,10 @@ class NativeConfigTemplate3D {
     static native void freePixelFormatInfo(long pFormatInfo);
 
     // Native methods to return whether a particular attribute is available
-    native boolean isStereoAvailable(long ctx, long display, int screen, int pixelFormat);
-    native boolean isDoubleBufferAvailable(long ctx, long display, int screen, int pixelFormat);
-    native boolean isSceneAntialiasingAccumAvailable(long ctx, long display, int screen, int pixelFormat);
-    native boolean isSceneAntialiasingMultiSamplesAvailable(long ctx, long display, int screen, int pixelFormat);
+    native boolean isStereoAvailable(long pFormatInfo, boolean offScreen);
+    native boolean isDoubleBufferAvailable(long pFormatInfo, boolean offScreen);
+    native boolean isSceneAntialiasingAccumAvailable(long pFormatInfo, boolean offScreen);
+    native boolean isSceneAntialiasingMultisampleAvailable(long pFormatInfo, boolean offScreen, int screen);
 
     /**
      *  Chooses the best PixelFormat for Java 3D apps.
@@ -179,56 +179,30 @@ class NativeConfigTemplate3D {
 
 
     // Return whether stereo is available.
-    boolean hasStereo(GraphicsConfiguration gc) {
-        Win32GraphicsDevice gd =
-            (Win32GraphicsDevice)((Win32GraphicsConfig)gc).getDevice();
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
-
-	int display = nativeScreenInfo.getDisplay();
-	int screen = nativeScreenInfo.getScreen();
-	// Temporary until Win32 GraphicsConfig stuff complete
-	int pixelFormat = ((J3dGraphicsConfig) gc).getPixelFormat();
-
-	return isStereoAvailable(0, display, screen, pixelFormat);
+    boolean hasStereo(Canvas3D c3d) {
+	return isStereoAvailable(c3d.fbConfig, c3d.offScreen);
     }
 
     // Return whether a double buffer is available.
-    boolean hasDoubleBuffer(GraphicsConfiguration gc) {
-        Win32GraphicsDevice gd =
-            (Win32GraphicsDevice)((Win32GraphicsConfig)gc).getDevice();
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
-	int display = nativeScreenInfo.getDisplay();
-	int screen = nativeScreenInfo.getScreen();
-	// Temporary until Win32 GraphicsConfig stuff complete
-	int pixelFormat = ((J3dGraphicsConfig) gc).getPixelFormat();
-
-	return isDoubleBufferAvailable(0, display, screen, pixelFormat);
+    boolean hasDoubleBuffer(Canvas3D c3d) {
+	return isDoubleBufferAvailable(c3d.fbConfig, c3d.offScreen);
     }
 
     // Return whether scene antialiasing is available.
-    boolean hasSceneAntialiasingAccum(GraphicsConfiguration gc) {
-        Win32GraphicsDevice gd =
-            (Win32GraphicsDevice)((Win32GraphicsConfig)gc).getDevice();
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
-	int display = nativeScreenInfo.getDisplay();
-	int screen = nativeScreenInfo.getScreen();
-	// Temporary until Win32 GraphicsConfig stuff complete
-	int pixelFormat = ((J3dGraphicsConfig) gc).getPixelFormat();
-
-	return isSceneAntialiasingAccumAvailable(0, display, screen, pixelFormat);
+    boolean hasSceneAntialiasingAccum(Canvas3D c3d) {
+	return isSceneAntialiasingAccumAvailable(c3d.fbConfig, c3d.offScreen);
     }
     
     // Return whether scene antialiasing is available.
-    boolean hasSceneAntialiasingMultiSamples(GraphicsConfiguration gc) {
-        Win32GraphicsDevice gd =
-            (Win32GraphicsDevice)((Win32GraphicsConfig)gc).getDevice();
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
-	int display = nativeScreenInfo.getDisplay();
-	int screen = nativeScreenInfo.getScreen();
-	// Temporary until Win32 GraphicsConfig stuff complete
-	int pixelFormat = ((J3dGraphicsConfig) gc).getPixelFormat();
+    boolean hasSceneAntialiasingMultisample(Canvas3D c3d) {
+	GraphicsConfiguration gc = c3d.graphicsConfiguration;
 
-	return isSceneAntialiasingMultiSamplesAvailable(0, display, screen, pixelFormat);
+        Win32GraphicsDevice gd =
+	    (Win32GraphicsDevice)((Win32GraphicsConfig)gc).getDevice();
+ 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
+	int screen = nativeScreenInfo.getScreen();
+	/* Fix to issue 77 */ 
+	return isSceneAntialiasingMultisampleAvailable(c3d.fbConfig, c3d.offScreen, screen);
     }
        
     // Ensure that the native libraries are loaded

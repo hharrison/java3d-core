@@ -136,19 +136,26 @@ GLXFBConfig *find_AA_S_FBConfigs(jlong display,
 	glxExtensions = (const char *) glXGetClientString((Display*)display, GLX_EXTENSIONS);
 	
 	if(isExtensionSupported(glxExtensions, "GLX_ARB_multisample")){
+	    static const int SAMPLE_LENGTH = 5;
+	    static const int samples[] = {8,6,4,3,2};
+	    int i, samplesIndex;
 	    
 	    index = antialiasIndex;
 	    glxAttrs[index++] = GLX_SAMPLE_BUFFERS_ARB;
 	    glxAttrs[index++] = 1;
 	    glxAttrs[index++] = GLX_SAMPLES_ARB;
-	    glxAttrs[index++] = 2;
+	    samplesIndex = index++; /* Will assign samples in the sample selection loop */
 	    glxAttrs[index] = None;
 
-	    fbConfigList = find_S_FBConfigs(display, screen, 
-					    glxAttrs, sVal, index);
+	    for(i=0; i < SAMPLE_LENGTH; i++) {
+		/* fprintf(stderr, "find_AA_S_FBConfigs samples = %d\n", samples[i]); */
+		glxAttrs[samplesIndex] = samples[i];
+		fbConfigList = find_S_FBConfigs(display, screen, 
+						glxAttrs, sVal, index);
 	    
-	    if(fbConfigList != NULL) {
-		return fbConfigList;
+		if(fbConfigList != NULL) {
+		    return fbConfigList;
+		}
 	    }
 	}
     }
@@ -473,7 +480,7 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasing
 }
 
 JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultiSamplesAvailable(
+jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(
     JNIEnv *env,
     jobject obj,
     jlong display,
@@ -841,24 +848,32 @@ int find_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
 	}
 	
 	if(supportMS) {
-
+	    static const int SAMPLE_LENGTH = 5;
+	    static const int samples[] = {8,6,4,3,2};
+	    int i, samplesIndex;
+	    
 	    index = antialiasIndex;
 	    wglAttrs[index++] = WGL_SAMPLE_BUFFERS_ARB;
 	    wglAttrs[index++] = 1;
 	    wglAttrs[index++] = WGL_SAMPLES_ARB;
-	    wglAttrs[index++] = 2;  
+	    samplesIndex = index++; /* Will assign samples in the sample selection loop */
 	    /*
 	     * Terminate by 2 zeros to avoid driver bugs
 	     * that assume attributes always come in pairs.
 	     */
 	    wglAttrs[index] = 0;
 	    wglAttrs[index+1] = 0;
-	    
-	    pFormat = find_S_PixelFormat(hdc, pFormatInfo,
-					 wglAttrs, sVal, index);
-	    
-	    if(pFormat >= 0) {
-		return pFormat;
+
+
+	    for(i=0; i < SAMPLE_LENGTH; i++) {
+		/* fprintf(stderr, "find_AA_S_PixelFormat samples = %d\n", samples[i]); */
+		
+		wglAttrs[samplesIndex] = samples[i];
+		pFormat = find_S_PixelFormat(hdc, pFormatInfo,
+					     wglAttrs, sVal, index);
+		if(pFormat >= 0) {
+		    return pFormat;
+		}
 	    }
 	}
     }
@@ -984,6 +999,96 @@ int find_DB_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
     return -1;
 }
 
+/* Fix to issue 77 */ 
+/* Check PixelFormat capabilities and cache the info. into pFormatInfo structure */
+void checkPixelFormat(HDC hdc,
+		      PixelFormatInfo *pFormatInfo,
+		      GLboolean offScreen )
+{
+    int wglAttrs[3];
+    int piValues[2];
+    int pf = -1;
+    GLboolean hasMultisample = GL_FALSE;
+    GLboolean hasStereo  = GL_FALSE;
+    GLboolean hasDoubleBuffer = GL_FALSE;
+    GLboolean hasAccum = GL_FALSE;
+    PIXELFORMATDESCRIPTOR pfd;
+
+    /* fprintf(stderr, "*** checkPixelFormat : offScreen = %d\n", offScreen); */
+    
+    if(!offScreen) {
+	pf = pFormatInfo->onScreenPFormat;
+    }
+    else {
+	pf = pFormatInfo->offScreenPFormat;
+    }
+
+    /* Assert that pf is valid */
+    J3D_ASSERT(pf >= 0); 
+    piValues[0] = GL_FALSE;
+    piValues[1] = -1;    
+    
+    if( pFormatInfo->supportARB &&
+        isSupportedWGL( pFormatInfo->supportedExtensions, "WGL_ARB_multisample")){	
+	wglAttrs[0] = WGL_SAMPLE_BUFFERS_ARB;
+	wglAttrs[1] = WGL_SAMPLES_ARB;
+	wglAttrs[2] = 0;
+	if (pFormatInfo->wglGetPixelFormatAttribivARB(hdc, pf, 0, 2,
+						      wglAttrs, piValues)) {
+	    if ((piValues[0]) && (piValues[1] > 1)) {
+		hasMultisample = GL_TRUE;		
+	    }
+	}
+	/*
+	  fprintf(stderr, "*** checkPixelFormat : hasMultisample = %d numSamples %d\n",
+	  hasMultisample, piValues[1]);
+	*/
+    }
+
+    DescribePixelFormat(hdc, pf, sizeof(pfd), &pfd);
+
+    if (pfd.dwFlags & PFD_STEREO) {
+	hasStereo = GL_TRUE;
+    }
+    if (pfd.dwFlags & PFD_DOUBLEBUFFER) {
+	hasDoubleBuffer = GL_TRUE;
+    }
+    if (pfd.cAccumRedBits > 0) {
+	hasAccum = GL_TRUE;
+    }
+
+    /*
+      fprintf(stderr, "hasStereo = %d,  hasDoubleBuffer %d, hasAccum %d\n",
+       hasStereo, hasDoubleBuffer, hasAccum);
+    */
+
+    if(pFormatInfo->onScreenPFormat == pFormatInfo->offScreenPFormat) {
+	pFormatInfo->onScreenHasMultisample = hasMultisample;
+	pFormatInfo->onScreenHasStereo = hasStereo;
+	pFormatInfo->onScreenHasDoubleBuffer = hasDoubleBuffer;
+	pFormatInfo->onScreenHasAccum = hasAccum;
+
+	pFormatInfo->offScreenHasMultisample = hasMultisample;
+	pFormatInfo->offScreenHasStereo = hasStereo;
+	pFormatInfo->offScreenHasDoubleBuffer = hasDoubleBuffer;
+	pFormatInfo->offScreenHasAccum = hasAccum;
+    }
+    else if(!offScreen) {
+	pFormatInfo->onScreenHasMultisample = hasMultisample;
+	pFormatInfo->onScreenHasStereo = hasStereo;
+	pFormatInfo->onScreenHasDoubleBuffer = hasDoubleBuffer;
+	pFormatInfo->onScreenHasAccum = hasAccum;
+    }
+    else {
+	pFormatInfo->offScreenHasMultisample = hasMultisample;
+	pFormatInfo->offScreenHasStereo = hasStereo;
+	pFormatInfo->offScreenHasDoubleBuffer = hasDoubleBuffer;
+	pFormatInfo->offScreenHasAccum = hasAccum;
+    }
+    
+}
+
+		      
 int chooseSTDPixelFormat(
     JNIEnv   *env,
     jint      screen,
@@ -1071,12 +1176,21 @@ int chooseSTDPixelFormat(
 PixelFormatInfo * newPixelFormatInfo(HDC hdc)
 {
     PFNWGLGETEXTENSIONSSTRINGARBPROC  wglGetExtensionsStringARB = NULL;
-    
+
     PixelFormatInfo *pFormatInfo = (PixelFormatInfo *) malloc(sizeof(PixelFormatInfo));
 
     /* Initialize pFormatInfo */
     pFormatInfo->onScreenPFormat = -1;
+    pFormatInfo->onScreenHasMultisample = GL_FALSE;    
+    pFormatInfo->onScreenHasStereo = GL_FALSE;    
+    pFormatInfo->onScreenHasDoubleBuffer = GL_FALSE;    
+    pFormatInfo->onScreenHasAccum = GL_FALSE;    
+
     pFormatInfo->offScreenPFormat = -1;
+    pFormatInfo->offScreenHasMultisample = GL_FALSE;
+    pFormatInfo->offScreenHasStereo = GL_FALSE;
+    pFormatInfo->offScreenHasDoubleBuffer = GL_FALSE;
+    pFormatInfo->offScreenHasAccum = GL_FALSE;
     pFormatInfo->drawToPbuffer = GL_FALSE;
 
     pFormatInfo->supportARB = GL_FALSE;
@@ -1144,13 +1258,13 @@ PixelFormatInfo * newPixelFormatInfo(HDC hdc)
 		else {
 		    printErrorMessage("Problem in getting WGL_ARB_pbuffer functions !\n");
 		}
-	    }
+	    }	    
 	}
 	else {
 	    printErrorMessage("Problem in getting WGL_ARB_pixel_format functions !\n");
 	}
     }
-
+    
     return pFormatInfo;
 }
 
@@ -1181,7 +1295,10 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
     PixelFormatInfo *pFormatInfo = NULL;    
     jlong * offScreenPFListPtr;
     PIXELFORMATDESCRIPTOR dummy_pfd = getDummyPFD();
-    
+
+
+    /* fprintf(stderr, "In NativeConfigTemplate.\n"); */
+
     /*
      * Select any pixel format and bound current context to
      * it so that we can get the wglChoosePixelFormatARB entry point.
@@ -1275,12 +1392,15 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 								     wglAttrs, sVal, dbVal, 
 								     antialiasVal, index);
 	    
-	    if(pFormatInfo->onScreenPFormat >= 0) {
-
+	    if(pFormatInfo->onScreenPFormat >= 0) {		
 		/* Since the return pixel format support pbuffer,
-		   copy OnScreenPFormat to offScreenPFormat */
+		   we can use it for onScreen and offScreen. */
 		pFormatInfo->drawToPbuffer = GL_TRUE;
 		pFormatInfo->offScreenPFormat = pFormatInfo->onScreenPFormat;
+
+		/* Fix to issue 77 */
+		checkPixelFormat(hdc, pFormatInfo, GL_FALSE );
+		
 		offScreenPFListPtr[0] = (jlong) pFormatInfo;
 		(*env)->ReleaseLongArrayElements(env, offScreenPFArray, offScreenPFListPtr, 0);
 
@@ -1333,10 +1453,18 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 	return -1;
     }    
 
+    /* Fix to issue 77 */
+    checkPixelFormat(hdc, pFormatInfo, GL_FALSE );
+    
     /* Create offScreen with standard ChoosePixelFormat */
     pFormatInfo->offScreenPFormat = chooseSTDPixelFormat( env, screen, attrList, hdc, GL_TRUE);
 
     /* fprintf(stderr, "********* offScreenPFormat = %d\n", pFormatInfo->offScreenPFormat ); */
+
+    /* Fix to issue 77 */
+    if(pFormatInfo->offScreenPFormat >= 0) {
+	checkPixelFormat(hdc, pFormatInfo, GL_TRUE );
+    }
     
     offScreenPFListPtr[0] = (jlong) pFormatInfo;
     (*env)->ReleaseLongArrayElements(env, offScreenPFArray, offScreenPFListPtr, 0);
@@ -1377,17 +1505,13 @@ JNIEXPORT
 jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isStereoAvailable(
     JNIEnv *env,
     jobject obj,
-    jlong ctxInfo,
-    jlong display,
-    jint screen,
-    jint pixelFormat)
+    jlong pFormatInfo,
+    jboolean offScreen)
 {
-    HDC hdc;          /* HW Device Context */
-
-    PIXELFORMATDESCRIPTOR pfd;
-
+    
     static GLboolean first_time = GL_TRUE;
     static GLboolean force_no_stereo = GL_FALSE;
+    PixelFormatInfo *pfInfo = (PixelFormatInfo *) pFormatInfo;
 
     if (first_time) {
         if (getenv("J3D_NO_STEREO") != NULL) {
@@ -1400,18 +1524,19 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isStereoAvailable(
     if (force_no_stereo)
         return JNI_FALSE;
 
-    hdc = getMonitorDC(screen);
+    if(offScreen) {
+	/* fprintf(stderr, "offScreen isStereoAvailable %d\n",
+	   pfInfo->offScreenHasStereo); */
+	
+	return pfInfo->offScreenHasStereo;
+    }
+    else {
+	/* fprintf(stderr, "onScreen isStereoAvailable %d\n",
+	   pfInfo->onScreenHasStereo); */
+	
+	return pfInfo->onScreenHasStereo;
+    }
 
-    /* Check the chosen PixelFormat to see if it is stereo capable */
-    DescribePixelFormat(hdc, pixelFormat, sizeof(pfd), &pfd);
-
-    DeleteDC(hdc);
-    if (pfd.dwFlags & PFD_STEREO) 
-        return JNI_TRUE;
-    else
-        return JNI_FALSE;
-
-    return JNI_TRUE;
 }
 
 
@@ -1419,169 +1544,69 @@ JNIEXPORT
 jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isDoubleBufferAvailable(
     JNIEnv *env,
     jobject obj,
-    jlong ctxInfo,
-    jlong display,    
-    jint screen,
-    jint pixelFormat)
+    jlong pFormatInfo,
+    jboolean offScreen)
 {
-    HDC hdc;          /* HW Device Context */
 
-    PIXELFORMATDESCRIPTOR pfd;
+    PixelFormatInfo *pfInfo = (PixelFormatInfo *) pFormatInfo;
+    if(offScreen) {
+	/* fprintf(stderr, "offScreen isDoubleBufferAvailable %d\n",
+	   pfInfo->offScreenHasDoubleBuffer); */
+	
+	return pfInfo->offScreenHasDoubleBuffer;
+    }
+    else {
+	/* fprintf(stderr, "onScreen isDoubleBufferAvailable %d\n",
+	   pfInfo->onScreenHasDoubleBuffer); */
+	
+	return pfInfo->onScreenHasDoubleBuffer;
+    }
 
-    hdc = getMonitorDC(screen);
-    
-    /* Check the chosen PixelFormat to see if it is doubleBuffer capable */
-    DescribePixelFormat(hdc, pixelFormat, sizeof(pfd), &pfd);
-
-    DeleteDC(hdc);
-    if (pfd.dwFlags & PFD_DOUBLEBUFFER)
-        return JNI_TRUE;
-    else
-        return JNI_FALSE;
 }
-
-
 
 JNIEXPORT
 jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingAccumAvailable(
     JNIEnv *env,
     jobject obj,
-    jlong ctxInfo,
-    jlong display,
-    jint screen,
-    jint pixelFormat)
+    jlong pFormatInfo,
+    jboolean offScreen)
 {
-    HDC hdc;          /* HW Device Context */
-    PIXELFORMATDESCRIPTOR pfd;
-
-    hdc = getMonitorDC(screen);
-    /* Check the chosen PixelFormat to see if it is sceneAntialiasing capable */
-    DescribePixelFormat(hdc, pixelFormat, sizeof(pfd), &pfd);
-
-    DeleteDC(hdc);
-    if (pfd.cAccumRedBits > 0)
-        return JNI_TRUE;
-    else
-        return JNI_FALSE;
+    PixelFormatInfo *pfInfo = (PixelFormatInfo *) pFormatInfo;
+    if(offScreen) {
+	/* fprintf(stderr, "offScreen isSceneAntialiasingAccumAvailable %d\n",
+	   pfInfo->offScreenHasAccum); */
+	
+	return pfInfo->offScreenHasAccum;
+    }
+    else {
+	/* fprintf(stderr, "onScreen isSceneAntialiasingAccumAvailable %d\n",
+	   pfInfo->onScreenHasAccum); */
+	
+	return pfInfo->onScreenHasAccum;
+    }
 }
 
 JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultiSamplesAvailable(
+jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(
     JNIEnv *env,
     jobject obj,
-    jlong ctxInfo,
-    jlong display,
-    jint screen,
-    jint pixelFormat)
+    jlong pFormatInfo,
+    jboolean offScreen,
+    jint screen)
 {
-    /*
-     * Issue 16: this routine is commented out (and JNI_FALSE is
-     * returned) until a solution can be found that doesn't affect the
-     * current WGL context for the calling thread, or we need to
-     * define and implement a mechanism to revalidate the current
-     * context.
-     */
-    return JNI_FALSE;
-
-#if 0
-    static char szAppName[] = "Choose Pixel Format";
-    HWND hwnd;
-    HGLRC hrc;
-    HDC   hdc;
-    int attr[3];
-    int piValues[2];
-    int pf;
-    BOOL support;
-    
-    static PIXELFORMATDESCRIPTOR pfd = {
-	sizeof(PIXELFORMATDESCRIPTOR),
-	1,                      /* Version number */
-	PFD_DRAW_TO_WINDOW |
-	PFD_SUPPORT_OPENGL,
-	PFD_TYPE_RGBA,
-	16,                     /* 16 bit color depth */
-	0, 0, 0,                /* RGB bits and pixel sizes */
-	0, 0, 0,                /* Do not care about them */
-	0, 0,                   /* no alpha buffer info */
-	0, 0, 0, 0, 0,          /* no accumulation buffer */
-	8,                      /* 8 bit depth buffer */
-	0,                      /* no stencil buffer */
-	0,                      /* no auxiliary buffers */
-	PFD_MAIN_PLANE,         /* layer type */
-	0,                      /* reserved, must be 0 */
-	0,                      /* no layer mask */
-	0,                      /* no visible mask */
-	0                       /* no damage mask */
-    };
-
-    PFNWGLGETPIXELFORMATATTRIBIVEXTPROC wglGetPixelFormatAttribivEXT = NULL;
-
-    hwnd = createDummyWindow((const char *)szAppName);
- 
-    if (!hwnd) {
-	return -1;
+    /* Fix to issue 77 */ 
+    PixelFormatInfo *pfInfo = (PixelFormatInfo *) pFormatInfo;
+    if(offScreen) {
+	/* fprintf(stderr, "offScreen isSceneAntialiasingMultisampleAvailable %d\n", 
+	   pfInfo->offScreenHasMultisample); */
+	
+	return pfInfo->offScreenHasMultisample;
     }
-    hdc = GetDC(hwnd);
-
-    pf = ChoosePixelFormat(hdc, &pfd);
-    if (!pf) {
-	printErrorMessage("Failed in ChoosePixelFormat");
-	DestroyWindow(hwnd);
-	UnregisterClass(szAppName, (HINSTANCE)NULL);
-	return -1;
+    else {
+	/* fprintf(stderr, "onScreen isSceneAntialiasingMultisampleAvailable %d\n",
+	   pfInfo->onScreenHasMultisample); */
+	
+	return pfInfo->onScreenHasMultisample;
     }
-
-    SetPixelFormat(hdc, pf, &pfd);
-    
-    hrc = wglCreateContext(hdc);
-    if (!hrc) {
-	printErrorMessage("Failed in wglCreateContext");
-	DestroyWindow(hwnd);
-	UnregisterClass(szAppName, (HINSTANCE)NULL);
-	return -1;
-    }
-    
-    if (!wglMakeCurrent(hdc, hrc)) {
-	printErrorMessage("Failed in wglMakeCurrent");
-	ReleaseDC(hwnd, hdc);
-	wglDeleteContext(hrc);
-	DestroyWindow(hwnd);
-	UnregisterClass(szAppName, (HINSTANCE)NULL);
-	return -1;
-    }
-
-    wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)
-	wglGetProcAddress("wglGetPixelFormatAttribivARB");
-
-    if (wglGetPixelFormatAttribivEXT == NULL) {
-	wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)
-	    wglGetProcAddress("wglGetPixelFormatAttribivEXT");
-
-	if (wglGetPixelFormatAttribivEXT == NULL) {
-	    ReleaseDC(hwnd, hdc);
-	    wglDeleteContext(hrc);
-	    DestroyWindow(hwnd);
-	    UnregisterClass(szAppName, (HINSTANCE)NULL);	    	    
-	    return FALSE;
-	} 
-    }
-
-    attr[0] = WGL_SAMPLE_BUFFERS_ARB;
-    attr[1] = WGL_SAMPLES_ARB;
-    attr[2] = 0;
-    support = FALSE;
-    
-    if (wglGetPixelFormatAttribivEXT(hdc, pixelFormat, 0, 2, attr, piValues)) {
-	if ((piValues[0] == TRUE) && (piValues[1] > 1)) {
-	    support = TRUE;
-	}
-    } 
-
-    ReleaseDC(hwnd, hdc);
-    wglDeleteContext(hrc);
-    DestroyWindow(hwnd);
-    UnregisterClass(szAppName, (HINSTANCE)NULL);
-    return support;
-#endif /* 0 */
 }
 #endif /* WIN32 */

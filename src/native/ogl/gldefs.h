@@ -602,16 +602,28 @@ typedef struct {
 typedef struct PixelFormatInfoRec PixelFormatInfo;
 
 struct PixelFormatInfoRec {
-    /* Information about pixel format(s) */
+    /* Information about onScreen pixel format */
     int onScreenPFormat;        /* PixelFormat for onScreen */
+    GLboolean  onScreenHasMultisample;  /* TRUE if WGL_SAMPLE_BUFFERS_ARB is TRUE and
+					   WGL_SAMPLES_ARB > 1 */
+    GLboolean  onScreenHasStereo;
+    GLboolean  onScreenHasDoubleBuffer;
+    GLboolean  onScreenHasAccum;
+    /* Information about onScreen pixel format */
     int offScreenPFormat;       /* PixelFormat for offScreen */
+    GLboolean  offScreenHasMultisample;  /* TRUE if WGL_SAMPLE_BUFFERS_ARB is TRUE and
+					    WGL_SAMPLES_ARB > 1 */
+    GLboolean  offScreenHasStereo;
+    GLboolean  offScreenHasDoubleBuffer;
+    GLboolean  offScreenHasAccum;
     GLboolean  drawToPbuffer;   /* value of DRAW_TO_PBUFFER attr for offScreenPFormat */
-
+    
     /* Information about extension support */
+    char* supportedExtensions;  /* list of supported ARB extensions */
     GLboolean  supportARB;	/* TRUE if wgl*PixelFormat*ARB functions supported */
     GLboolean  supportPbuffer;  /* TRUE if wgl*Pbuffer functions supported */
-    char* supportedExtensions;  /* list of supported ARB extensions */
-
+    
+    
     /* handle to ARB functions */
     PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB; 
     PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB;
@@ -620,9 +632,6 @@ struct PixelFormatInfoRec {
     PFNWGLRELEASEPBUFFERDCARBPROC wglReleasePbufferDCARB;
     PFNWGLDESTROYPBUFFERARBPROC wglDestroyPbufferARB;
     PFNWGLQUERYPBUFFERARBPROC wglQueryPbufferARB;
-    
-    /* TODO include multi-samples buffer */
-
 };
 
 #endif /* WIN32 */
