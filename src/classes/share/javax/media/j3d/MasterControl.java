@@ -449,6 +449,15 @@ class MasterControl {
     // attribute is set to false.
     boolean sortShape3DBounds = false;
 
+    //Set by -Dj3d.forceReleaseView property.
+    //Setting this flag as true disables the bug fix 4267395 in View deactivate().
+    //The bug 4267395 can lock-up *some* systems, but the bug fix can
+    //produce memory leaks in applications which creates and destroy Canvas3D
+    //from time to time.
+    //Set as true if you have memory leaks after disposing Canvas3D.
+    //Default false value does affect Java3D View dispose behavior.
+    boolean forceReleaseView = false;
+
     /**
      * Constructs a new MasterControl object.  Note that there is
      * exatly one MasterControl object, created statically by
@@ -493,6 +502,11 @@ class MasterControl {
 	    getBooleanProperty("j3d.sortShape3DBounds", sortShape3DBounds,
 			       "Shape3D bounds enabled for transparency sorting",
 			       "Shape3D bounds *ignored* for transparency sorting");
+
+	forceReleaseView =
+	    getBooleanProperty("j3d.forceReleaseView", forceReleaseView,
+			       "forceReleaseView  after Canvas3D dispose enabled",
+			       "forceReleaseView  after Canvas3D dispose disabled");
 
 	useCombiners = getBooleanProperty("j3d.usecombiners", useCombiners,
 					  "Using NV_register_combiners if available",

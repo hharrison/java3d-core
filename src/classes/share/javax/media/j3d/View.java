@@ -3307,6 +3307,15 @@ public class View extends Object {
 	// This is a temporary fix for bug 4267395 
 	// TODO:cleanup in RenderBin after View detach
 	// universe.addViewIdToFreeList(viewId);
+	
+	// using new property -Dj3d.forceReleaseView to disable bug fix 4267395
+	// this bug fix can produce memory leaks in *some* applications which creates 
+	// and destroy Canvas3D from time to time. This just add the view in the 
+	// FreeList earlier.
+	if (VirtualUniverse.mc.forceReleaseView) {
+	    universe.addViewIdToFreeList(viewId);
+	}
+
 
 	J3dMessage vpMessage = VirtualUniverse.mc.getMessage();
 	vpMessage.universe = universe;
