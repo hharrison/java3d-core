@@ -217,22 +217,58 @@ public class VirtualUniverse extends Object {
     }
 
     static {
-	if(J3dBuildInfo.isDebug) {
-	    System.out.println("Initializing Java 3D runtime system:");
-	    System.out.println("    version = " + VersionInfo.getVersion());
-	    System.out.println("    vendor = " + VersionInfo.getVendor());
-	    System.out.println("    specification.version = " +
-			       VersionInfo.getSpecificationVersion());
-	    System.out.println("    specification.vendor = " +
-			       VersionInfo.getSpecificationVendor());
+	// Print out version information unless this is a
+	// non-debuggable, release (fcs) build
+	if(J3dDebug.devPhase || J3dBuildInfo.isDebug) {
+	    String versionStr = VersionInfo.getVersion();
+	    if (J3dDebug.devPhase) {
+		System.err.println("Java 3D pre-release version: " + versionStr);
+	    }
+	    else {
+		System.err.println("Java 3D version: " + versionStr);
+	    }
+	    System.err.println();
 	}
 
+	// Print out debugging information for debug builds
+	if(J3dBuildInfo.isDebug) {
+	    System.err.println("Initializing Java 3D runtime system:");
+	    System.err.println("    version = " + VersionInfo.getVersion());
+	    System.err.println("    vendor = " + VersionInfo.getVendor());
+	    System.err.println("    specification.version = " +
+			       VersionInfo.getSpecificationVersion());
+	    System.err.println("    specification.vendor = " +
+			       VersionInfo.getSpecificationVendor());
+	    System.err.println();
+	}
+
+	// Load the native libraries and create the static
+	// MasterControl object
 	MasterControl.loadLibraries();
 	createMC();
 
+	// Print out debugging information for debug builds
 	if(J3dBuildInfo.isDebug) {
-	    System.out.println("Java 3D system initialized");
-	    System.out.println();
+	    System.err.println("Java 3D system initialized");
+	    System.err.print("    graphics library = ");
+	    switch (mc.getRenderingAPI()) {
+	    case MasterControl.RENDER_OPENGL_SOLARIS:
+		System.err.println("Solaris OpenGL");
+		break;
+	    case MasterControl.RENDER_OPENGL_LINUX:
+		System.err.println("Linux OpenGL");
+		break;
+	    case MasterControl.RENDER_OPENGL_WIN32:
+		System.err.print("Windows OpenGL");
+		break;
+	    case MasterControl.RENDER_DIRECT3D:
+		System.err.println("Windows Direct3D");
+		break;
+	    default:
+		System.err.println("UNKNOWN");
+		break;
+	    }
+	    System.err.println();
 	}
     }
 

@@ -631,7 +631,7 @@ BOOL getPropertiesFromCurrentContext(
 
 
     if (isExtensionSupported(tmpExtensionStr, "GL_EXT_compiled_vertex_array") &&
-	getJavaBoolEnv(env, "isCompliedVertexArray")) {
+	getJavaBoolEnv(env, "isCompiledVertexArray")) {
 	ctxInfo->compiled_vertex_array_ext = JNI_TRUE;
     }
 

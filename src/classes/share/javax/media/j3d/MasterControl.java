@@ -297,7 +297,6 @@ class MasterControl {
 
     // Flag that indicates whether to shared display context or not
     boolean isSharedCtx = false;
-    boolean sharedCtxOverride = false;
 
     // Flag that tells us to use NV_register_combiners
     boolean useCombiners = false;
@@ -344,7 +343,7 @@ class MasterControl {
 
     // Flag that indicates whether J3DGraphics2D uses texturemapping
     // instead of drawpixel for composite the buffers
-    boolean isJ3dG2dDrawPixel = true;
+    boolean isJ3dG2dDrawPixel = false;
 
     // flag that indicates whether BackgroundRetained uses texturemapping
     // or drawpixel clear the background
@@ -361,7 +360,7 @@ class MasterControl {
     boolean implicitAntialiasing = false;
 
     // False to disable compiled vertex array extensions if support
-    boolean isCompliedVertexArray = true;
+    boolean isCompiledVertexArray = true;
 
     // False to disable rescale normal if OGL support
     boolean isForceNormalized = false;
@@ -443,156 +442,36 @@ class MasterControl {
 
 	if(J3dDebug.devPhase) {
 	    // Check to see whether debug mode is allowed
-	    Boolean j3dDebug =
-		(Boolean) java.security.AccessController.doPrivileged(
-		    new java.security.PrivilegedAction() {
-		    public Object run() {
-			String str = System.getProperty("j3d.debug", "false");
-			return new Boolean(str);
-		    }
-		});
-	    J3dDebug.debug = j3dDebug.booleanValue();
-	    
-	    // Get graphic library.
-	    //System.err.println("In Development Phase : \n");
-	    
-	    if(renderingAPI == RENDER_OPENGL_SOLARIS)
-		System.err.print("Graphics Library : Solaris OpenGL");
-	    else if(renderingAPI == RENDER_OPENGL_WIN32)
-		System.err.print("Graphics Library : Win32 OpenGL");
-	    else if(renderingAPI == RENDER_DIRECT3D)
-		System.err.println("Graphics Library : Direct3D");
-
-	    System.err.println();
-
-	    // Get package info.
-	    ClassLoader classLoader = getClass().getClassLoader();
-	    if (classLoader != null) {
-		// it is null in case of plugin
-		J3dDebug.pkgInfo(classLoader, "javax.media.j3d",
-				 "SceneGraphObject");
-	    }
- 
-	    if(J3dDebug.debug) {
-		J3dDebug.pkgInfo(classLoader, "javax.vecmath", "Point3d");
-		J3dDebug.pkgInfo(classLoader, "com.sun.j3d.utils.universe", "SimpleUniverse");
-		
-		// Reminder statement.
-		System.err.println("For production release : Set J3dDebug.devPhase to false.\n");
-		System.err.println("MasterControl: J3dDebug.debug = " + J3dDebug.debug);
-	    }
+	    J3dDebug.debug = getBooleanProperty("j3d.debug", false,
+						"J3dDebug.debug");
 	}
 
 	// Check to see whether shared contexts are allowed
 	if (getRenderingAPI() != RENDER_DIRECT3D) {
-	    Boolean j3dSharedCtx =
-		(Boolean) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty("j3d.sharedctx");
-			      if (str == null) {
-				  return Boolean.FALSE;
-			      } else {
-				  sharedCtxOverride = true;
-				  return new Boolean(str);
-			      }
-			  }
-		      });
-	    isSharedCtx = j3dSharedCtx.booleanValue();
-	    if (sharedCtxOverride) {
-		if (isSharedCtx) 
-		    System.err.println("Java 3D: shared contexts enabled");
-		else
-		    System.err.println("Java 3D: shared contexts disabled");
-	    }
+	    isSharedCtx =
+		getBooleanProperty("j3d.sharedctx", isSharedCtx, "shared contexts");
 	}
 
-	Boolean j3dDisableCompile =
-		(Boolean) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty("j3d.disablecompile");
-			      if (str == null) {
-				  return Boolean.FALSE;
-			      } else {
-				  return Boolean.TRUE;
-			      }
-			  }
-		      });
-	disableCompile = j3dDisableCompile.booleanValue();
-	if (disableCompile) {
-	    System.err.println("Java 3D: Compile disabled");
+	doCompaction = getBooleanProperty("j3d.docompaction", doCompaction,
+					  "compaction");
+
+	sortShape3DBounds =
+	    getBooleanProperty("j3d.sortShape3DBounds", sortShape3DBounds,
+			       "Shape3D bounds enabled for transparency sorting",
+			       "Shape3D bounds *ignored* for transparency sorting");
+
+	useCombiners = getBooleanProperty("j3d.usecombiners", useCombiners,
+					  "Using NV_register_combiners if available",
+					  "NV_register_combiners disabled");
+
+	if (getProperty("j3d.disablecompile") != null) {
+	    disableCompile = true;
+	    System.err.println("Java 3D: BranchGroup.compile disabled");
 	}
 
-	Boolean j3dDoCompaction =
-		(Boolean) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty("j3d.docompaction");
-			      if (str == null) {
-				  return Boolean.TRUE;
-			      } else {
-				  return Boolean.FALSE;
-			      }
-			  }
-		      });
-	doCompaction = j3dDoCompaction.booleanValue();
-	if (!doCompaction) {
-	    System.err.println("Java 3D: Disabling compaction.");
-	}
-
-	Boolean j3dUseCombiners =
-		(Boolean) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty("j3d.usecombiners");
-			      if (str == null) {
-				  return Boolean.FALSE;
-			      } else {
-				  return Boolean.TRUE;
-			      }
-			  }
-		      });
-	useCombiners = j3dUseCombiners.booleanValue();
-	if (useCombiners) {
-	    System.err.println("Java 3D: Using NV_register_combiners if available");
-	}
-
-	Boolean j3dDisableSeparateSpecularColor =
-		(Boolean) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty(
-					     "j3d.disableSeparateSpecular");
-			      if (str == null) {
-				  return Boolean.FALSE;
-			      } else {
-				  return Boolean.TRUE;
-			      }
-			  }
-		      });
-	disableSeparateSpecularColor = 
-		j3dDisableSeparateSpecularColor.booleanValue();
-	if (disableSeparateSpecularColor) {
-	    System.err.println(
-		"Java 3D: Separate Specular Color disabled if possible");
-	}
-
-	Boolean j3dSortShape3DBounds =
-		(Boolean) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty("j3d.sortShape3DBounds");
-			      if (str == null) {
-				  return Boolean.FALSE;
-			      } else {
-				  return Boolean.TRUE;
-			      }
-			  }
-		      });
-	sortShape3DBounds = j3dSortShape3DBounds.booleanValue();
-	if (sortShape3DBounds) {
-	    System.err.println("Java 3D: Shape3D bounds enabled for transparency sorting");
+	if (getProperty("j3d.disableSeparateSpecular") != null) {
+	    disableSeparateSpecularColor = true;
+	    System.err.println("Java 3D: separate specular color disabled if possible");
 	}
 
 	// Get the maximum number of texture units
@@ -606,91 +485,37 @@ class MasterControl {
 		}
 	    });
 
-
 	textureUnitMax = textureUnitLimit.intValue();
 	if (textureUnitMax != defaultTextureUnitMax) {
 	    System.err.println("Java 3D: maximum number of texture units = " +
 			       textureUnitMax);
 	}
 
-	Boolean j3dDisplayList =
-		(Boolean) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty("j3d.displaylist", "true");
-			      return new Boolean(str);
-			  }
-		      });
+	isDisplayList = getBooleanProperty("j3d.displaylist", isDisplayList,
+					   "display list");
 
-	isDisplayList = j3dDisplayList.booleanValue();
-	if (!isDisplayList) {
-	    System.err.println("Java 3D: Display List disabled");
-	}
+	implicitAntialiasing =
+	    getBooleanProperty("j3d.implicitAntialiasing",
+			       implicitAntialiasing,
+			       "implicit antialiasing");
 
+	isCompiledVertexArray =
+	    getBooleanProperty("j3d.compiledVertexArray",
+			       isCompiledVertexArray,
+			       "compiled vertex array");
 
-	Boolean j3dimplicitAntialiasing =
-		(Boolean) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty("j3d.implicitAntialiasing", "false");
-			      return new Boolean(str);
-			  }
-		      });
-
-	implicitAntialiasing = j3dimplicitAntialiasing.booleanValue();
-	if (implicitAntialiasing) {
-	    System.err.println("Java 3D: Implicit Antialiasing enabled");
-	}
+	isForceNormalized =
+	    getBooleanProperty("j3d.forceNormalized", isForceNormalized,
+			       "force normalized");
 
 
-	Boolean j3dcompliedVertexArray =
-		(Boolean) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty("j3d.compliedVertexArray", "true");
-			      return new Boolean(str);
-			  }
-		      });
+	boolean j3dOptimizeSpace =
+	    getBooleanProperty("j3d.optimizeForSpace", true,
+			       "optimize for space");
 
-	isCompliedVertexArray = j3dcompliedVertexArray.booleanValue();
-	if (!isCompliedVertexArray) {
-	    System.err.println("Java 3D: Complied vertex array disabled");
-	}
-
-
-
-	Boolean j3dforceNormalized =
-		(Boolean) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty("j3d.forceNormalized", "false");
-			      return new Boolean(str);
-			  }
-		      });
-
-	isForceNormalized = j3dforceNormalized.booleanValue();
-	if (isForceNormalized) {
-	    System.err.println("Java 3D: Force Normalized");
-	}
-
-
-	Boolean j3dOptimizeSpace =
-		(Boolean) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty("j3d.optimizeForSpace", "true");
-			      return new Boolean(str);
-			  }
-
-		});
-
-
-	if (!j3dOptimizeSpace.booleanValue()) {
-	    System.err.println("Java 3D: Optimize For Space disabled");
-	}	    
 	// Build Display list for by-ref geometry and infrequently changing geometry
 	// ONLY IF (isDisplayList is true and optimizeForSpace if False)
-	if (isDisplayList && !j3dOptimizeSpace.booleanValue()) {
+	if (isDisplayList && !j3dOptimizeSpace) {
 	    buildDisplayListIfPossible = true;
 	}
 	else {
@@ -698,80 +523,36 @@ class MasterControl {
 	}
 
 	// Check to see whether Renderer can run without DSI lock
-	Boolean j3dRenderLock =
-	    (Boolean) java.security.AccessController.doPrivileged(
-	    new java.security.PrivilegedAction() {
-		public Object run() {
-		    String str = System.getProperty("j3d.renderLock", "false");
-		    return new Boolean(str);
-		}
-	    });
-	doDsiRenderLock = j3dRenderLock.booleanValue();
-        // Don't print this out now that the default is false
-	//if (!doDsiRenderLock) {
-	//    System.err.println("Java 3D: render lock disabled");
-	//}
+	doDsiRenderLock = getBooleanProperty("j3d.renderLock",
+					     doDsiRenderLock,
+					     "render lock");
 
 	// Check to see whether J3DGraphics2D uses texturemapping
-	// or drawpixel for composite the buffers
-	Boolean j3dG2DRender =
-	    (Boolean) java.security.AccessController.doPrivileged(
-	           new java.security.PrivilegedAction() {
-		     public Object run() {
-			 String str = System.getProperty("j3d.g2ddrawpixel", "false");
-			return new Boolean(str);
-		     }
-		   });
-	isJ3dG2dDrawPixel = j3dG2DRender.booleanValue();
-
-	if(J3dDebug.devPhase) {
-	    if (!isJ3dG2dDrawPixel) {
-		System.err.println("Java 3D: render Graphics2D DrawPixel disabled");
-	    } else {
-		System.err.println("Java 3D: render Graphics2D DrawPixel enabled");
-	    }
-	}
+	// or drawpixel to composite the buffers
+	isJ3dG2dDrawPixel = getBooleanProperty("j3d.g2ddrawpixel",
+					       isJ3dG2dDrawPixel,
+					       "Graphics2D DrawPixel");
 
 	// Check to see whether BackgroundRetained uses texturemapping
 	// or drawpixel clear the background
 	if (!isD3D()) {
-	    Boolean j3dBackgroundTexture =
-		(Boolean) java.security.AccessController.doPrivileged(
-	           new java.security.PrivilegedAction() {
-		     public Object run() {
-			 String str = System.getProperty("j3d.backgroundtexture", "true");
-			return new Boolean(str);
-		     }
-		   });
-	    isBackgroundTexture = j3dBackgroundTexture.booleanValue();
-
-	    if(J3dDebug.devPhase) {
-		if (!isBackgroundTexture) {
-		    System.err.println("Java 3D: background texture is disabled");
-		} else {
-		    System.err.println("Java 3D: background texture is enabled");
-		}
-	    }
+	    isBackgroundTexture =
+		getBooleanProperty("j3d.backgroundtexture",
+				   isBackgroundTexture,
+				   "background texture");
 	} else {
-	    // D3D always use background texture and use
+	    // D3D always uses background texture and uses
 	    // canvas.clear() instead of canvas.textureclear() in Renderer
 	    isBackgroundTexture = false;
 	}
-	
-        // Check to see if stereo mode is sharing the Z-buffer for both
-        // eyes.
-        Boolean j3dSharedStereoZBuffer =
-            (Boolean) java.security.AccessController.doPrivileged(
-            new java.security.PrivilegedAction() {
-                public Object run() {
-		    String defaultValue = (isWin32 ? "true" : "false");
-                    String str = System.getProperty("j3d.sharedstereozbuffer",
-						    defaultValue);
-                    return new Boolean(str);
-                }
-            });
-        sharedStereoZBuffer = j3dSharedStereoZBuffer.booleanValue();
-        j3dSharedStereoZBuffer = null;
+
+        // Check to see if stereo mode is sharing the Z-buffer for both eyes.
+	boolean defaultSharedStereoZBuffer =
+	    getRenderingAPI() != RENDER_OPENGL_SOLARIS;
+	sharedStereoZBuffer = 
+	    getBooleanProperty("j3d.sharedstereozbuffer",
+			       defaultSharedStereoZBuffer,
+			       "shared stereo Z buffer");
 
 	// Get the maximum number of concurrent threads (CPUs)
 	final int defaultThreadLimit = getNumberOfProcessor()+1;
@@ -826,17 +607,10 @@ class MasterControl {
 	}
 
 	// See if Xinerama should be disabled for better performance.
-	Boolean j3dDisableXinerama =
-	    (Boolean) java.security.AccessController.doPrivileged(
-	    new java.security.PrivilegedAction() {
-		public Object run() {
-		    String str = System.getProperty("j3d.disableXinerama",
-						    "false");
-		    return new Boolean(str);
-		}
-	    });
-
-	boolean disableXinerama = j3dDisableXinerama.booleanValue();
+	boolean disableXinerama = false;
+	if (getProperty("j3d.disableXinerama") != null) {
+	    disableXinerama = true;
+	}
 
 	// Initialize the native J3D library
 	if (!initializeJ3D(disableXinerama)) {
@@ -862,32 +636,41 @@ class MasterControl {
 	FreeListManager.createFreeLists();
     }
 
-    static public String getProperty(final String s) {
-
+    private static String getProperty(final String prop) {
 	return (String) java.security.AccessController.doPrivileged(
 	    new java.security.PrivilegedAction() {
 		public Object run() {
-		    return System.getProperty(s);
+		    return System.getProperty(prop);
 		}
    	    });
     }
 
+    private static boolean getBooleanProperty(String prop,
+					      boolean defaultValue,
+					      String trueMsg,
+					      String falseMsg) {
+	boolean value = defaultValue;
+	String propValue = getProperty(prop);
+
+	if (propValue != null) {
+	    value = Boolean.valueOf(propValue).booleanValue();
+	    System.err.println("Java 3D: " + (value ? trueMsg : falseMsg));
+	}
+	return value;
+    }
+
+    private static boolean getBooleanProperty(String prop,
+					      boolean defaultValue,
+					      String msg) {
+	return getBooleanProperty(prop,
+				  defaultValue,
+				  (msg + " enabled"),
+				  (msg + " disabled"));
+    }
+
+    // Java 3D only supports native threads
     boolean isGreenThreadUsed() {
-
-	String javaVMInfo =
-		(String) java.security.AccessController.doPrivileged(
-		      new java.security.PrivilegedAction() {
-                          public Object run() {
-			      String str = System.getProperty("java.vm.info");
-				return str;
-			  }
-		      });
-
-	String greenThreadStr = new String("green threads");
-	if (javaVMInfo.indexOf(greenThreadStr) == -1)
-	    return false;
-	else
-	    return true;
+	return false;
     }
 
 
@@ -919,30 +702,27 @@ class MasterControl {
 		public Object run() {
 		    
 		    String osName = System.getProperty("os.name");
-		    /* System.out.println(" os.name is " + osName ); */
+		    // System.err.println(" os.name is " + osName );
 		    // If it is a Windows OS, we want to support
 		    // dynamic native library selection (ogl, d3d)
 		    if((osName.length() > 8) && 
 		       ((osName.substring(0,7)).equals("Windows"))){
 			
-			/* 
-			 * TODO : Will support a more flexible dynamic 
-			 * selection scheme via the use of Preferences API.
-			 *
-			 */
+			// TODO : Will support a more flexible dynamic 
+			// selection scheme via the use of Preferences API.
 			String str = System.getProperty("j3d.rend");
 			if ((str == null) || (!str.equals("d3d"))) {
-			    /* System.out.println("(1) ogl case : j3d.rend is " + str ); */
+			    // System.err.println("(1) ogl case : j3d.rend is " + str );
 			    System.loadLibrary("j3dcore-ogl");
 
 			}
 			else {
-			    /* System.out.println("(2) d3d case : j3d.rend is " + str); */
+			    // System.err.println("(2) d3d case : j3d.rend is " + str);
 			    System.loadLibrary("j3dcore-d3d");
 			}
 		    }
 		    else {
-			/* System.out.println("(3) ogl case"); */
+			// System.err.println("(3) ogl case");
 			System.loadLibrary("j3dcore-ogl");
 		    }
 		    return null;

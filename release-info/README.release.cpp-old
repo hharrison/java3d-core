@@ -277,12 +277,12 @@ Compiled Vertex Array
 Compiled Vertex Array extension is used in IndexedGeometryArray
 when it's USE_COORD_INDEX_ONLY flag is set and it is not in display list mode.
 You may disable the use of this extension by setting the new property,
-j3d.compliedVertexArray, to false.
+j3d.compiledVertexArray, to false.
 
 Compiled Vertex Array extension is used extensively, on SUN XVR-4000, for
 all GeometryArray type when display list mode is not used.
 You may disable the use of this extension by setting the new property,
-j3d.compliedVertexArray, to false.
+j3d.compiledVertexArray, to false.
 
 
 ===========================
