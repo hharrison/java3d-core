@@ -13,14 +13,14 @@
 programmable shading specification for
 Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.4 that you can
 review, you are in the wrong place; or more accurately, the right
-place at the wrong time. Come back in about 2 months and things should
+place at the wrong time. Come back in about 1-2 months and things should
 be in state where you can review a fairly complete draft
 specification. If, on the other hand, you'd like to help us define and
 evolve the programmable shading API in Java&nbsp;3D 1.4, please read
 on.
 </p>
 
-<p>This is a very rough first draft of what we are thinking in terms
+<p>This is a rough first draft of what we are thinking in terms
 of programmable shader support in Java 3D&nbsp;1.4. As we mentioned at
 JavaOne, we plan to do the 1.4 API specification under the auspices of
 the Java Community Process (JCP). However, we very much want to
@@ -45,18 +45,18 @@ in Java&nbsp;3D is:</p>
 public abstract class Shader extends NodeComponent
 </pre>
 </ul>
-<li>Concrete GL2 shader classes:</li>
+<li>Concrete GLSL shader classes:</li>
 <ul>
-<pre>public class GL2ShaderProgram extends ShaderProgram
-    method: {add/remove/get}Shader(GL2Shader) // set of shader objs
-    method: {add/remove}ErrorListener(GL2ErrorListener)
+<pre>public class GLSLShaderProgram extends ShaderProgram
+    method: {add/remove/get}Shader(GLSLShader) // set of shader objs
+    method: {add/remove}ErrorListener(GLSLErrorListener)
     method: validate(Canvas3D) ???
 
-public abstract class GL2Shader extends Shader
-    public class GL2VertexShader extends GL2Shader
+public abstract class GLSLShader extends Shader
+    public class GLSLVertexShader extends GLSLShader
 	method: set/getShaderSource(String)
 	method: validate(Canvas3D) ???
-    public class GL2FragmentShader extends GL2Shader
+    public class GLSLFragmentShader extends GLSLShader
 	method: set/getShaderSource(String)
 	method: validate(Canvas3D) ???
 </pre>
@@ -105,23 +105,23 @@ String fragmentShaderFile = "my-fragment-shader-file-name";
 String vertexShaderSource;
 String fragmentShaderSource;
 
-// Read CG vertex and fragment shader source code from text files
+// Read GLSL vertex and fragment shader source code from text files
 vertexShaderSource = TextFileUtils.readFully(vertexShaderFile);
 fragmentShaderSource = TextFileUtils.readFully(fragmentShaderSource);
 
-// Create CG vertex and fragment shader objects using the given source code
-CgVertexShader vertexShader = new CgVertexShader(vertexShaderSource);
-CgFragmentShader fragmentShader = new CgFragmentShader(fragmentShaderSource);
+// Create GLSL vertex and fragment shader objects using the given source code
+GLSLVertexShader vertexShader = new GLSLVertexShader(vertexShaderSource);
+GLSLFragmentShader fragmentShader = new GLSLFragmentShader(fragmentShaderSource);
 
-// Create the CG shader program object and attach the vertex and
+// Create the GLSL shader program object and attach the vertex and
 // fragment shader objects; add an error listener
-CgShaderProgram shaderProgram = new CgShaderProgram();
+GLSLShaderProgram shaderProgram = new GLSLShaderProgram();
 shaderProgram.setVertexShader(vertexShader);
 shaderProgram.setFragmentShader(fragmentShader);
-shaderProgram.addErrorListener(myCgErrorListener);
+shaderProgram.addErrorListener(myGLSLErrorListener);
 
-// Use CG shader program object in appearance
-appearance.setShaderProgram(shaderProgram);
+// Use GLSL shader program object in appearance
+shaderAppearance.setShaderProgram(shaderProgram);
 </pre>
 </ul>
 <h4>Shader Parameters</h4>
@@ -144,7 +144,7 @@ etc. Several Java&nbsp;3D state attributes are automatically available
 to the shader program as pre-defined uniform parameters. The
 application doesn't need to do anything to pass these parameters in to
 the shader program. The implementation of each shader language (e.g.,
-Cg, GL2) defines its own mapping from Java&nbsp;3D attribute to uniform
+Cg, GLSL) defines its own mapping from Java&nbsp;3D attribute to uniform
 variable name.<br>
 <br>
 We need additional API to allow applications to pass in uniform
@@ -165,7 +165,7 @@ Attribute<br>
 <td style="vertical-align: top; text-decoration: underline;">Cg
 shader variable<br>
 </td>
-<td style="vertical-align: top; text-decoration: underline;">GL2
+<td style="vertical-align: top; text-decoration: underline;">GLSL
 shader variable<br>
 </td>
 </tr>
@@ -204,6 +204,8 @@ varying parameters...<br> TODO: Finish this...<br>
 </li>
 </ol>
 <p>TODO: more info here.
+</p>
+<p><font color="gray">Page last updated &mdash; $Date$ </font>
 </p>
 </body>
 </html>
