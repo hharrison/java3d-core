@@ -135,16 +135,27 @@ list is for automated CVS change messages and discussion of those
 changes.</p>
 <h3><a name="Project_Highlights"></a>Project Highlights</h3>
 <p><b>Release project Source code</b> </p>
-<p>The current, experimental fork of the of the Java&nbsp;3D source
-code is an early access of version 1.3.2. It is
-available for download from the CVS repository of this project. For a
+<p>The Java&nbsp;3D source
+code is available for download from the CVS repository of this project.
+The trunk of the CVS repository is a stable (pre-fcs) version of
+Java&nbsp;3D 1.3.2. A Java&nbsp;3D 1.4 development branch, <code>dev-1_4</code>,
+is also available in the CVS repository. For a
 description of the CVS tags used in this project, please refer to <a
  href="https://java3d.dev.java.net/cvs-tags.html">"Using CVS Tags in
-Java&nbsp;3D Projects"</a>.<br>
+Java&nbsp;3D Projects"</a>. Daily builds for both <a
+ href="https://java3d.dev.java.net/binary-builds.html#Daily_builds_1.3.2">1.3.2</a>
+and <a
+ href="https://java3d.dev.java.net/binary-builds.html#Daily_builds_1.4.0">1.4.0</a>
+are
+available and are built from the CVS source trees.<br>
 </p>
-<p>This source release differs from the the current 1.3.1 release in
-the following
-ways:<br>
+<p><span style="font-weight: bold;">Java&nbsp;3D 1.3.2</span><br>
+</p>
+<p>
+</p>
+<p>The 1.3.2 version of Java&nbsp;3D on java.net differs from the 1.3.1
+release in
+the following ways:
 </p>
 <ol>
   <li>The <code>com.sun.j3d.*</code> packages have been split out into
@@ -153,68 +164,65 @@ their own project (<a href="https://j3d-core-utils.dev.java.net/">j3d-core-utils
   </li>
   <li>The Headspace AudioEngine has been removed. The JavaSound
 AudioEngine, which is not fully functional, is now the only available
-AudioDevice<br>
+AudioDevice. It is disabled by default.<br>
   </li>
-  <li>The internal documentation has been cleaned up for
-public
-consumption (although <span style="font-weight: bold;">much </span>work
-is needed on the actual content)<br>
-  </li>
-  <li>Some minor bug fixes have been incorporated<br>
+  <li>Many bug fixes have been incorporated<br>
   </li>
 </ol>
 <p>The reason the Headspace AudioEngine was removed is that we do not
 have
 the rights to ship the source code for the native Headspace sound
 mixer. Our plan
-going forward is to implement an AudioEngine using <a
- href="https://joal.dev.java.net/">JOAL</a>.</p>
-<p><span style="font-weight: bold;">Java&nbsp;3D 1.3.x bug fixes</span><br>
-</p>
-<p>We will work with the community to address bugs identified in
-Java&nbsp;3D
-1.3.1, and will release new versions of Java&nbsp;3D 1.3.x as
-needed.
-Bug fixes will be immediately available in the CVS source, or from the
-weekly builds on this site. We will release official 1.3.x versions no
-more often than twice a year.<br>
-</p>
+going forward is to enourage the development community to implement an
+AudioEngine using <a href="https://joal.dev.java.net/">JOAL</a>.</p>
 <p><span style="font-weight: bold;">Java&nbsp;3D 1.4</span><br>
 </p>
-<p>We will file a new JSR (or revive the existing <a
+<p>A description of the set of <a href="j3d1_4/proposed-changes.html">proposed
+Java&nbsp;3D
+1.4 API changes</a> is now available. The main focus of the proposed
+1.4
+API is&nbsp; the addition of <a href="j3d1_4/shaders.html">programmable
+shaders</a>. Our goal is to
+minimize large scale changes to the system in order to deliver 1.4 as
+quickly as possible. We encourage members of the development community
+to review this proposed set of changes and provide feedback. We also
+hope that community members will help us design and implement the 1.4
+version of the Java&nbsp;3D API.<br>
+</p>
+<p>Once the majority of the API changes are decided upon for
+Java&nbsp;3D 1.4, we will file
+a new JSR (or revive the existing <a
  href="http://jcp.org/en/jsr/detail?id=189" target="_blank">JSR-189</a>)
 under the Java
-Community Process (JCP) shortly, and form an Expert Group of community
-members to
-design and implement the next version of the Java&nbsp;3D API. We
-envision 1.4
-including features such as programmable shaders. Our goal is to
-minimize large scale changes to the system in order to deliver 1.4 as
-quickly as possible. This initial direction could be changed by the
-Expert Group.<br>
-</p>
-<p>17-Sep-2004 - We have just posted a <i>very</i> rough first draft
-of what we
-are thinking for <a href="j3d1_4/shaders.html">Programmable Shaders in
-Java&nbsp;3D 1.4</a>.<br>
+Community Process (JCP). At this time, we don't anticipate forming a
+JCP Expert Group, since we will already have reviewed the API publicly
+in the java.net community.<br>
 </p>
 <p><span style="font-weight: bold;">Java&nbsp;3D 1.5/2.0</span><br>
 </p>
-<p>The scope of this release will be driven by the JSR Expert Group.
+<p>The scope of this release will be driven by the level of interest
+and community support that we get.
 Our initial
 thoughts are that this work will include large scale changes to support
-features such as extensibility and pluggable renderers.<br>
+features such as extensibility and pluggable renderers. Click the
+following link for a <a
+ href="j3d1_4/proposed-changes.html#Future_Features">list of
+possible 1.5/2.0 features</a>.<br>
 </p>
 <h3><a name="Project_Suggestions"></a>Project Suggestions</h3>
-<p>Here are some project ideas for the j3d-core project. Please see the
+<p>The main areas in j3d-core for which we need help from the community
+are:
+</p>
+<ul>
+  <li>Bug fixes (see the <a
+ href="https://java3d.dev.java.net/servlets/ProjectIssues">list of open
+issues</a>)</li>
+  <li>Testing and example programs for programmable shaders</li>
+</ul>
+<p>Please see the
 <a href="https://j3d-core-utils.dev.java.net/#Project_Suggestions">Project
 Suggestions</a> in the <a href="https://j3d-core-utils.dev.java.net/">j3d-core-utils</a>
 project for more ideas.</p>
-<ul>
-  <li>DirectX build environment for MinGW (using gcc)<br>
-  </li>
-  <li>DirectX 9 port</li>
-</ul>
 <h3><a name="Examples"></a>Examples</h3>
 <p>The <a href="https://j3d-examples.dev.java.net/">j3d-examples</a>
 project includes a set of simple example programs. The <a
