@@ -417,6 +417,9 @@
           <fileset dir="${dist}/${platform}"
                       includes="lib/**"
           />
+          <fileset dir="${dist}/${platform}"
+                      includes="bin/**"
+          />
           <fileset dir="release-info"
                       includes="BINARY-CODE-LICENSE.txt"
           />
