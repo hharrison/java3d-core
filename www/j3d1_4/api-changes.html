@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+ -->
+
+<!--
+************************************************************************
+*
+* NOTE: This file must be edited by hand to avoid Mozilla Composer
+* putting all preformatted lines into a single line with "<br>"
+* replacing ASCII newlines (which, in turn, causes problems with some
+* editors).
+*
+************************************************************************
+-->
+
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>List of Proposed Java 3D 1.4 API Changes</title>
+</head>
+<body>
+<h2>List of Proposed Java&nbsp;3D<sup><font size="-2">TM</font></sup>
+1.4 API Changes</h2>
+<p>This document conatains a list of the proposed API changes to the
+Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.4 API
+that deviate from the 1.3 API.
+</p>
+<p>Note: the most up-to-date version of
+this list is in the <code>dev-1_4</code> branch of the <code>docs/api-changes.txt</code>
+file, which is updated to record the addition or deprecation of
+any public or protected class, interface, field, constructor, or method
+to the Java&nbsp;3D API.
+</p>
+<p>No incompatible changes to the Java&nbsp;3D 1.3 API are allowed.</p>
+<pre>
+I. New/deprecated fields, constructors, methods
+
+    SceneGraphObject
+    ----------------
+    New methods:
+        public void setName(String name)
+        public String getName()
+
+
+II. Reparented classes
+
+    NONE
+
+
+III. New classes and interfaces (in javax.media.j3d)
+
+    ShaderAppearance
+    ----------------
+        public class ShaderAppearance extends Appearance
+
+    Shader
+    ------
+        public abstract class Shader extends NodeComponent
+
+    ShaderProgram
+    -------------
+        public abstract class ShaderProgram extends NodeComponent
+
+    CgShader
+    --------
+        public abstract class CgShader extends Shader
+
+    CgFragmentShader
+    ----------------
+        public class CgFragmentShader extends CgShader
+
+    CgVertexShader
+    --------------
+        public class CgVertexShader extends CgShader
+
+    CgShaderProgram
+    ---------------
+        public class CgShaderProgram extends ShaderProgram
+
+    GLSLShader
+    ----------
+        public abstract class GLSLShader extends Shader
+
+    GLSLFragmentShader
+    ------------------
+        public class GLSLFragmentShader extends GLSLShader
+
+    GLSLVertexShader
+    ----------------
+        public class GLSLVertexShader extends GLSLShader
+
+    GLSLShaderProgram
+    -----------------
+        public class GLSLShaderProgram extends ShaderProgram
+</pre>
+</body>
+</html>
