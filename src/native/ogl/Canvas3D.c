@@ -892,14 +892,26 @@ BOOL getPropertiesFromCurrentContext(
     if(ctxInfo->multi_draw_arrays_ext) {
 	ctxInfo->glMultiDrawArraysEXT = glMultiDrawArraysEXT;
 	ctxInfo->glMultiDrawElementsEXT = glMultiDrawElementsEXT;
+	if ((ctxInfo->glMultiDrawArraysEXT == NULL) ||
+	    (ctxInfo->glMultiDrawElementsEXT == NULL)) {
+	    ctxInfo->multi_draw_arrays_ext = JNI_FALSE;
+	}
     }
     else if (ctxInfo->multi_draw_arrays_sun) {
 	ctxInfo->glMultiDrawArraysEXT = glMultiDrawArraysSUN;
 	ctxInfo->glMultiDrawElementsEXT = glMultiDrawElementsSUN;
+	if ((ctxInfo->glMultiDrawArraysEXT == NULL) ||
+	    (ctxInfo->glMultiDrawElementsEXT == NULL)) {
+	    ctxInfo->multi_draw_arrays_ext = JNI_FALSE;
+	}
     }
     if(ctxInfo->compiled_vertex_array_ext) {
 	ctxInfo->glLockArraysEXT = glLockArraysEXT;
 	ctxInfo->glUnlockArraysEXT = glUnlockArraysEXT;
+	if ((ctxInfo->glLockArraysEXT == NULL) ||
+	    (ctxInfo->glUnlockArraysEXT == NULL)) {
+	    ctxInfo->compiled_vertex_array_ext = JNI_FALSE;
+	}
     }
     
     if(ctxInfo->arb_multitexture){
@@ -908,14 +920,28 @@ BOOL getPropertiesFromCurrentContext(
 	ctxInfo->glMultiTexCoord3fvARB = glMultiTexCoord3fvARB;
 	ctxInfo->glMultiTexCoord4fvARB = glMultiTexCoord4fvARB;
 	ctxInfo->glActiveTextureARB = glActiveTextureARB;
+	if ((ctxInfo->glClientActiveTextureARB == NULL) ||
+	    (ctxInfo->glMultiTexCoord2fvARB == NULL) ||
+	    (ctxInfo->glMultiTexCoord3fvARB == NULL) ||
+	    (ctxInfo->glMultiTexCoord4fvARB == NULL) ||
+	    (ctxInfo->glActiveTextureARB == NULL)) {
+	    ctxInfo->arb_multitexture = JNI_FALSE;
+	}
     }
     if(ctxInfo->arb_transpose_matrix) {
 	ctxInfo->glLoadTransposeMatrixdARB = glLoadTransposeMatrixdARB;
 	ctxInfo->glMultTransposeMatrixdARB = glMultTransposeMatrixdARB; 
+	if ((ctxInfo->glLoadTransposeMatrixdARB == NULL) ||
+	    (ctxInfo->glMultTransposeMatrixdARB == NULL)) {
+	    ctxInfo->arb_transpose_matrix = JNI_FALSE;
+	}
     }
-    if(ctxInfo->global_alpha_sun)
+    if(ctxInfo->global_alpha_sun) {
 	ctxInfo->glGlobalAlphaFactorfSUN = glGlobalAlphaFactorfSUN;
-
+	if (ctxInfo->glGlobalAlphaFactorfSUN == NULL) {
+	    ctxInfo->global_alpha_sun = JNI_FALSE;
+	}
+    }
 
     glXGetConfig((Display *) display, (XVisualInfo *) vinfo, GLX_STENCIL_SIZE, &stencilSize);
     

@@ -61,7 +61,7 @@ class VersionInfo extends Object {
      * This will typically by null for final, released builds, but
      * should be non-null for all other builds.
      */
-    private static final String VERSION_BUILD = "build3";
+    private static final String VERSION_BUILD = "build4";
 
     /**
      * Time and date stamp appended to the end of the version string.
