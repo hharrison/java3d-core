@@ -24,42 +24,41 @@ Java&nbsp;3D version 1.4</a> is also available.
 <p>This list of high priority features will almost certainly make it
 into the 1.4 API.
 </p>
-<h4>1. Programmable shaders</h4>
-<p>The addition of shaders to the Java&nbsp;3D API is the primary focus
-for the 1.4. For more information see the <a href="shaders.html">Programmable
-Shaders in Java&nbsp;3D 1.4</a> page.
-</p>
-<h4>2. Scene graph structure change listeners<br>
-</h4>
-<p>We propose to add a notification mechansim for scene graph structure
-changes: additions, deletions, and
-moves of branch graphs to/from a live scene graph. We propose
-adding <code>add/removeGraphChangeListener(</code><code>GraphChangeListener</code><code>)</code>
-methods to <code>VirtualUniverse</code> and a new <code>GraphChangeListener</code>
-interface with <code>graphAdded</code>, <code>graphRemoved</code>,
-and <code>graphMoved</code> methods that get called when any branch
-graph is added (attached),
-removed (detached), or moved, respectively.<br>
-</p>
-<h4>3. Miscellaneous features</h4>
-<p>This is a list of miscellaneous features that we propose to add to
-the API.
+<h4>1. Proposed API to be added</h4>
+<p>This is a list of features that we propose to add to
+the API.<br>
 </p>
 <ul>
-  <li>Name string for all scene graph objects: add public <code>get/setName(String)</code>
-to <code>SceneGraphObject</code> class</li>
-  <li>Allow getParent() to be called on live/compiled scene graph: add
-public <code>ALLOW_PARENT_READ</code> capability bit (default=<code>false</code>)
-to <code>Node </code>class</li>
-  <li>Ability to get the Locale from a live node: add public <code>getLocale()</code>
+  <li><a href="shaders.html">Programmable
+Shaders</a></li>
+  <li><a href="graph-change-listener.html">Scene graph structure change
+listeners</a></li>
+  <li><a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/SceneGraphObject.html#setName%28java.lang.String%29">Name
+string</a> for all scene graph objects: add public <a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/SceneGraphObject.html#setName%28java.lang.String%29"><code>get/setName(String)</code></a>
+to <code>SceneGraphObject</code>
+class</li>
+  <li>New <a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/Node.html#ALLOW_PARENT_READ"><code>ALLOW_PARENT_READ</code></a>
+capability bit in <code>Node</code>
+class that will allow <a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/Node.html#getParent%28%29"><code>getParent()</code></a>
+to be called on live/compiled scene graph</li>
+  <li>Ability to get the locale from a live node: add public <code>getLocale()</code>
 method and <code>ALLOW_LOCALE_READ</code> capability bit to <code>Node</code>
 class<br>
   </li>
-  <li>Additional blending functions, for example: <code>BLEND_SRC_COLOR,
-BLEND_ONE_MINUS_SRC_COLOR, BLEND_DST_COLOR, BLEND_ONE_MINUS_DST_COLOR</code></li>
+  <li>Additional blending functions, for example: <code>BLEND_SRC_COLOR</code>,
+    <code>BLEND_ONE_MINUS_SRC_COLOR</code>, <code>BLEND_DST_COLOR</code>,
+    <code>BLEND_ONE_MINUS_DST_COLOR</code>, etc.</li>
+  <li><a href="picking.html">Additional core picking methods</a> (in
+Locale and BranchGroup)</li>
+  <li><a href="stencil.html">Stencil buffer</a><br>
+  </li>
 </ul>
-<h4>4. List of features to deprecate</h4>
-<p>This is a list of miscellaneous features that we propose to
+<h4>2. Proposed API to be deprecated</h4>
+<p>This is a list of features that we propose to
 deprecate in
 the API.<br>
 </p>
@@ -68,6 +67,10 @@ the API.<br>
 acceptance)</li>
   <li><code>Sensor</code> prediction (has never been implemented)<br>
   </li>
+  <li><code>PickPoint</code> (not fully implemented, cannot be used for
+geometry-based picking; use PickBounds with
+a
+BoundingSphere that has a small radius)</li>
 </ul>
 <p>Note that none of these features will actually be removed. It
 instead
@@ -83,39 +86,13 @@ future major release (e.g., a 2.0 release).<br>
 possible inclusion
 into the 1.4 API.
 </p>
-<h4>1. Render to texture<br>
-</h4>
-<p><span style="font-style: italic; color: rgb(0, 153, 0);">DESCRIPTION
-FOR POSSIBLE RENDER-TO-TEXTURE SUPPORT GOES HERE...</span>
-</p>
-<h4>2. Stencil buffer support<br>
-</h4>
-<p><span style="font-style: italic; color: rgb(0, 153, 0);">DESCRIPTION
-FOR POSSIBLE STENCIL SUPPORT GOES HERE; NOTE THAT THIS WILL NOT INCLUDE
-ANY MULTIPASS EFFECTS for 1.4...</span>
-</p>
-<h4>3. Move picking into core</h4>
-<p>We should consider moving some of the picking utilities (e.g.,
-PickCanvas and PickResult)
-into the core API. Before doing this, we would need to scope out the
-effort involved, and assess the
-potential benefit.<br>
-</p>
-<h4>4. Lightweight Canvas3D (e.g., JCanvas3D)</h4>
-<p>We should consider adding a lightweight JCanvas3D that is similar to
-JGLCanvas in JOGL. Adding this into core may be beyond the
-scope of 1.4. Probably can be done as a utility, although it
-may require some core changes.
-<span style="color: rgb(204, 0, 0);">Note: this feature will not happen
-without an someone from the community volunteering
-to drive it.</span>
-</p>
-<h4>5. Miscellaneous features</h4>
-<p>This is a list of miscellaneous features that are being considered
+<h4>1. Possible API to be added</h4>
+<p>This is a list of features that are being considered
 for addition to
 the API.<br>
 </p>
 <ul>
+  <li><a href="render-texture.html">Render to texture</a></li>
   <li>Non-power-of-two textures</li>
   <li>Point sprites</li>
   <li>Ability for nested ViewSpecificGroup nodes to replace the set of
@@ -128,6 +105,15 @@ attribute in <code>GraphicsConfigTemplate3D</code> indicating whether
 the requested <code>GraphicsConfiguration</code> is used for on-screen
 rendering,
 off-screen rendering, or both)</li>
+  <li>Enhance <code>getLocalToVWorld()</code> to return a valid result
+for non-live graphs.</li>
+  <li><a href="lightweight-canvas3d.html">Lightweight Canvas3D (e.g.,
+JCanvas3D)</a>. <span style="color: rgb(204, 0, 0);">Note: this
+feature
+will not
+happen
+without an someone from the community volunteering
+to drive it.</span></li>
   <li>Add a new attribute for depth test function to
 RenderingAttributes: public <code>get/setDepthTestFunction(int&nbsp;function)</code>
 methods that takes as values one of: <code>ALWAYS, NEVER,
@@ -145,20 +131,29 @@ method in the <code>Font3D</code> class. <span
  style="color: rgb(204, 0, 0);">Note: this feature will not
 happen
 without an someone from the community volunteering
-to drive it.</span></li>
+to drive it.</span><span style="color: rgb(204, 0, 0);"></span></li>
 </ul>
-<h4>6. List of features to deprecate</h4>
-<p>This is a list of miscellaneous features that are being considered
+<h4>2. Possible API to be deprecated</h4>
+<p>This is a list of features that are being considered
 for deprecation in
 the API.<br>
 </p>
 <ul>
-  <li><code>SharedGroup</code> (many bugs, <em>very</em> difficult to
-implement
-efficiently)</li>
+  <li><code></code><code>Morph</code> (expensive, picking doesn't work,
+can be done
+in a utility)</li>
 </ul>
 <p>These are in addition to the API being proposed for deprecation in
 section I.<br>
+</p>
+<br>
+<h4><br>
+</h4>
+<h4><br>
+</h4>
+<p><br>
+</p>
+<p><br>
 </p>
 <h3><a name="Future_Features"></a>III. Future Features</h3>
 <p>Here is an unprioritized list of possible features under

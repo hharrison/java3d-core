@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Java 3D 1.4: Graph Change Listener</title>
+</head>
+<body>
+<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.4:
+Graph Change Listener</h2>
+<p>This page describes a proposed Java&nbsp;3D 1.4 feature to add a
+notification mechansim for scene graph structure
+changes: additions, deletions, and
+moves of branch graphs to/from a live scene graph. We propose
+adding <code>add/removeGraphChangeListener(</code><code>GraphChangeListener</code><code>)</code>
+methods to <code>VirtualUniverse</code> and a new <code>GraphChangeListener</code>
+interface with <code>graphAdded</code>, <code>graphRemoved</code>,
+and <code>graphMoved</code> methods that get called when any branch
+graph is added (attached),
+removed (detached), or moved, respectively.
+</p>
+<p>The proposed API is:</p>
+<ul>
+  <li>New classes</li>
+  <ul>
+    <pre>public class XXXXX extends YYYYY<br>    method: setXxxxx()<br></pre>
+  </ul>
+  <li>New methods in existing classes:<br>
+  </li>
+  <ul>
+    <pre>XXXXX<br>    method: setXxxxx()<br></pre>
+  </ul>
+</ul>
+<p>More info here...
+</p>
+<p><font color="gray">Page last updated &#8212;
+$Date$
+</font></p>
+</body>
+</html>

@@ -2,187 +2,117 @@
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1"
-    http-equiv="content-type">
-  <title>Java 3D 1.4 Shaders</title>
+ http-equiv="content-type">
+  <title>Java 3D 1.4: Programmable Shaders</title>
 </head>
 <body>
-<h2>Shaders in Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.4</h2>
-<h4>Introduction and pointer to discussion forum</h4>
-
-<p>Here is the latest rough first draft of what we are thinking in
-terms of programmable shader support in Java&nbsp;3D<sup><font
-size="-2">TM</font></sup> for 1.4. We plan to formalize the 1.4 API
-specification under the auspices of the Java Community Process
-(JCP). However, we very much want to involve the larger community in
-API discussions for programmable shaders, so please join in the
-discussion.
+<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.4:
+Programmable Shaders</h2>
+<p>This is the latest draft of the proposed Java&nbsp;3D<sup><font
+ size="-2">TM</font></sup>
+1.4 API changes for programmable shaders.<br>
 </p>
-
 <p>We have created a thread on the Java&nbsp;3D discussion forum for
 discussing <a
-href="http://www.javadesktop.org/forums/thread.jspa?threadID=5056"
-target="_blank">Java&nbsp;3D Programmable Shaders</a>. Feel free to
+ href="http://www.javadesktop.org/forums/thread.jspa?threadID=5056"
+ target="_blank">Java&nbsp;3D Programmable Shaders</a>. Feel free to
 post your comments on our ideas, or post some ideas of your own.
 </p>
-
 <h4>Class Hierarchy for Shader Objects</h4>
 <p>The proposed class hierarchy for programmable shaders
 in Java&nbsp;3D is:</p>
 <ul>
-<li>Abstract shader base classes:</li>
-<ul>
-<pre>public abstract class ShaderProgram extends NodeComponent
-public abstract class Shader extends NodeComponent
-</pre>
+  <li>Abstract shader base classes:</li>
+  <ul>
+    <pre>public abstract class ShaderProgram extends NodeComponent<br>public abstract class Shader extends NodeComponent<br></pre>
+  </ul>
+  <li>Concrete GLSL shader classes:</li>
+  <ul>
+    <pre>public class GLSLShaderProgram extends ShaderProgram<br>    method: {add/remove/get}Shader(GLSLShader) // set of shader objs<br>    method: {add/remove}ErrorListener(GLSLErrorListener)<br>    method: validate(Canvas3D) ???<br><br>public abstract class GLSLShader extends Shader<br>    public class GLSLVertexShader extends GLSLShader<br>	method: set/getShaderSource(String)<br>	method: validate(Canvas3D) ???<br>    public class GLSLFragmentShader extends GLSLShader<br>	method: set/getShaderSource(String)<br>	method: validate(Canvas3D) ???<br></pre>
+  </ul>
+  <li>Concrete Cg shader classes:</li>
+  <ul>
+    <pre>public class CgShaderProgram extends ShaderProgram<br>    method: {set/get}VertexShader(CgVertexShader)<br>    method: {set/get}FragmentShader(CgFramentShader)<br>    method: {add/remove}ErrorListener(CgErrorListener)<br>    method: validate(Canvas3D) ???<br><br>public abstract class CgShader extends Shader<br>    public class CgVertexShader extends CgShader<br>	method: set/getShaderSource(String)<br>	method: validate(Canvas3D) ???<br>    public class CgFragmentShader extends CgShader<br>	method: set/getShaderSource(String)<br>	method: validate(Canvas3D) ???<br></pre>
+  </ul>
+  <li>New ShaderAppearance class:</li>
+  <ul>
+    <pre>public class ShaderAppearance extends Appearance<br>    method: set/getShaderProgram(ShaderProgram)<br>    method: set/getShaderAttributeSet(ShaderAttributeSet)<br></pre>
+  </ul>
+  <li>New ShaderAttributeSet class:</li>
+  <ul>
+    <pre>public class ShaderAttributeSet extends NodeComponent<br>    method: put/get(ShaderAttribute)<br>    ...<br></pre>
+  </ul>
 </ul>
-<li>Concrete GLSL shader classes:</li>
-<ul>
-<pre>public class GLSLShaderProgram extends ShaderProgram
-    method: {add/remove/get}Shader(GLSLShader) // set of shader objs
-    method: {add/remove}ErrorListener(GLSLErrorListener)
-    method: validate(Canvas3D) ???
-
-public abstract class GLSLShader extends Shader
-    public class GLSLVertexShader extends GLSLShader
-	method: set/getShaderSource(String)
-	method: validate(Canvas3D) ???
-    public class GLSLFragmentShader extends GLSLShader
-	method: set/getShaderSource(String)
-	method: validate(Canvas3D) ???
-</pre>
-</ul>
-<li>Concrete Cg shader classes:</li>
-<ul>
-<pre>public class CgShaderProgram extends ShaderProgram
-    method: {set/get}VertexShader(CgVertexShader)
-    method: {set/get}FragmentShader(CgFramentShader)
-    method: {add/remove}ErrorListener(CgErrorListener)
-    method: validate(Canvas3D) ???
-
-public abstract class CgShader extends Shader
-    public class CgVertexShader extends CgShader
-	method: set/getShaderSource(String)
-	method: validate(Canvas3D) ???
-    public class CgFragmentShader extends CgShader
-	method: set/getShaderSource(String)
-	method: validate(Canvas3D) ???
-</pre>
-</ul>
-<li>New ShaderAppearance class:</li>
-<ul>
-<pre>public class ShaderAppearance extends Appearance
-    method: set/getShaderProgram(ShaderProgram)
-    method: set/getShaderAttributeSet(ShaderAttributeSet)
-</pre>
-</ul>
-
-<li>New ShaderAttributeSet class:</li>
-<ul>
-<pre>public class ShaderAttributeSet extends NodeComponent
-    method: put/get(ShaderAttribute)
-    ...
-</pre>
-</ul>
-
-</ul>
-
 <p>Click on the following link for a current look at the <a
-href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/index.html">javadoc-generated
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/index.html">javadoc-generated
 API definitions</a> for the proposed 1.4 API.
 </p>
-
 <h4>Example Usage</h4>
 <p>This is an example code excerpt showing how one might use the new
 programmable shader API in a Java&nbsp;3D program.
 </p>
 <ul>
-<pre>String vertexShaderFile = "my-vertex-shader-file-name";
-String fragmentShaderFile = "my-fragment-shader-file-name";
-String vertexShaderSource;
-String fragmentShaderSource;
-
-// Read GLSL vertex and fragment shader source code from text files
-vertexShaderSource = StringIO.readFully(vertexShaderFile);
-fragmentShaderSource = StringIO.readFully(fragmentShaderSource);
-
-// Create GLSL vertex and fragment shader objects using the given source code
-GLSLVertexShader vertexShader = new GLSLVertexShader(vertexShaderSource);
-GLSLFragmentShader fragmentShader = new GLSLFragmentShader(fragmentShaderSource);
-
-// Create the GLSL shader program object and attach the vertex and
-// fragment shader objects; add an error listener
-GLSLShaderProgram shaderProgram = new GLSLShaderProgram();
-shaderProgram.setVertexShader(vertexShader);
-shaderProgram.setFragmentShader(fragmentShader);
-shaderProgram.addErrorListener(myGLSLErrorListener);
-
-// Use GLSL shader program object in appearance
-shaderAppearance.setShaderProgram(shaderProgram);
-</pre>
+  <pre>String vertexShaderFile = "my-vertex-shader-file-name";<br>String fragmentShaderFile = "my-fragment-shader-file-name";<br>String vertexShaderSource;<br>String fragmentShaderSource;<br><br>// Read GLSL vertex and fragment shader source code from text files<br>vertexShaderSource = StringIO.readFully(vertexShaderFile);<br>fragmentShaderSource = StringIO.readFully(fragmentShaderSource);<br><br>// Create GLSL vertex and fragment shader objects using the given source code<br>GLSLVertexShader vertexShader = new GLSLVertexShader(vertexShaderSource);<br>GLSLFragmentShader fragmentShader = new GLSLFragmentShader(fragmentShaderSource);<br><br>// Create the GLSL shader program object and attach the vertex and<br>// fragment shader objects; add an error listener<br>GLSLShaderProgram shaderProgram = new GLSLShaderProgram();<br>shaderProgram.setVertexShader(vertexShader);<br>shaderProgram.setFragmentShader(fragmentShader);<br>shaderProgram.addErrorListener(myGLSLErrorListener);<br><br>// Use GLSL shader program object in appearance<br>shaderAppearance.setShaderProgram(shaderProgram);<br></pre>
 </ul>
 <h4>Shader Parameters</h4>
-
 <p>Programmable shaders define two types of parameters: uniform and
 varying. As the names imply, uniform parameters are constant (within a
 primitive), while varying parameters can vary on per-vertex or
 per-fragment basis.
 </p>
-
 <ol>
-
-<li><b>Uniform parameters</b> (attributes) are those parameters whose
+  <li><b>Uniform parameters</b> (attributes) are those parameters whose
 value is constant during the rendering of a primitive. Their values
 may change from primitive to primitive, but are constant for each
 vertex (for vertex shaders) or fragment (for fragment shaders) of a
 single primitive. Examples of uniform parameters include a
 transformation matrix, a texture map, lights, lookup tables,
 etc.<br>
-<br>
-
+    <br>
 We have created a new ShaderAttributeSet for allowing applications to
 specify uniform shader attributes. There are two ways in which values
 can be specified for uniform attributes: explicitly, by providing a
-value; and implicitly, by defining a binding between a Java 3D system
+value; and implicitly, by defining a binding between a Java&nbsp;3D system
 attribute and a uniform attribute. This functionality is provided by
 two subclasses of ShaderAttribute: ShaderAttributeObject, which is
 used to specify explicitly defined attributes; and
 ShaderAttributeBinding, which is used to specify implicitly defined,
 automatically tracked attributes. See the javadoc for the new <a
-href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/ShaderAttributeSet.html">ShaderAttributeSet</a>
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/ShaderAttributeSet.html">ShaderAttributeSet</a>
 and <a
-href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/ShaderAttribute.html">ShaderAttribute</a>
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/ShaderAttribute.html">ShaderAttribute</a>
 classes for more details.<br>
-<br>
-
-<b>Issues</b><br>
-
-<ul>
-
-<li>Should j3dAttrName be specified as a type-safe enum or object
+    <br>
+    <b>Issues</b><br>
+    <ul>
+      <li>Should j3dAttrName be specified as a type-safe enum or object
 instead of a String?
-    <ul><font color="gray"><li>No; we will use a String</li></font>
-</ul></li>
-
-<li>How do we handle passing arrays to the shader, especially for
+        <ul>
+          <font color="gray"><li>No; we will use a String</li>
+          </font>
+        </ul>
+      </li>
+      <li>How do we handle passing arrays to the shader, especially for
 system parameters such as lights? One possibility is:
-
-<ul>
-   "var"       - scalar variable "var"<br>
-   "arr[0]"    - array element 0 of "arr"<br>
-   "arr[1,3]"  - subarray composed of elements 1 through 3 of "arr"<br>
-   "arr[]"     - entire array "arr"<br>
-</ul>
+        <ul>
+"var" - scalar variable "var"<br>
+"arr[0]" - array element 0 of "arr"<br>
+"arr[1,3]" - subarray composed of elements 1 through 3 of "arr"<br>
+"arr[]" - entire array "arr"<br>
+        </ul>
 Alternatively, an object with a string or type-safe enum, a state
 (scalar, array element, subarray, or entire array), and indices (as
 needed).
-    <ul><font color="gray"><li>TBD, but since they will be String objects, we will probably
-do something like the first suggestion</li></font>
-</ul></li>
-</ul>
-
-<br>
-<b>Automatic variables</b><br>
-
+        <ul>
+          <font color="gray"><li>TBD, but since they will be String
+objects, we will probably
+do something like the first suggestion</li>
+          </font>
+        </ul>
+      </li>
+    </ul>
+    <br>
+    <b>Automatic variables</b><br>
 Depending on the shading language (and profile) being used, several
 Java&nbsp;3D state attributes are automatically made available to the
 shader program as pre-defined uniform attributes. The application
@@ -190,65 +120,65 @@ doesn't need to do anything to pass these attributes in to the shader
 program. The implementation of each shader language (e.g., Cg, GLSL)
 defines its own mapping from Java&nbsp;3D attribute to uniform
 variable name.<br>
-<br>
-
+    <br>
 A partial list of Java&nbsp;3D attributes that are mapped to shader
-attributes follows:
-</li>
-<br>
-<table style="text-align: left;" border="1" cellspacing="2"
-cellpadding="2">
-<tbody>
-<tr>
-<td style="vertical-align: top; text-decoration: underline;">Java&nbsp;3D
+attributes follows: </li>
+  <br>
+  <table style="text-align: left;" border="1" cellspacing="2"
+ cellpadding="2">
+    <tbody>
+      <tr>
+        <td style="vertical-align: top; text-decoration: underline;">Java&nbsp;3D
 Attribute<br>
-</td>
-<td style="vertical-align: top; text-decoration: underline;">Cg
+        </td>
+        <td style="vertical-align: top; text-decoration: underline;">Cg
 shader variable<br>
-</td>
-<td style="vertical-align: top; text-decoration: underline;">GLSL
+        </td>
+        <td style="vertical-align: top; text-decoration: underline;">GLSL
 shader variable<br>
-</td>
-</tr>
-<tr>
-<td style="vertical-align: top;">ModelViewProjection<br>
-</td>
-<td style="vertical-align: top;">glstate.matrix.mvp<br>
-</td>
-<td style="vertical-align: top;">gl_ModelViewProjectionMatrix<br>
-</td>
-</tr>
-<tr>
-<td style="vertical-align: top;">Light[<i>n</i>] pos<br>
-</td>
-<td style="vertical-align: top;">glstate.light[<i>n</i>].position </td>
-<td style="vertical-align: top;">gl_LightSource[<i>n</i>].position </td>
-</tr>
-<tr>
-<td style="vertical-align: top;">...<br>
-</td>
-<td style="vertical-align: top;">...<br>
-</td>
-<td style="vertical-align: top;">...<br>
-</td>
-</tr>
-</tbody>
-</table>
-<br>
-<li><b>Varying parameters</b> are those parameters that are specified
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">ModelViewProjection<br>
+        </td>
+        <td style="vertical-align: top;">glstate.matrix.mvp<br>
+        </td>
+        <td style="vertical-align: top;">gl_ModelViewProjectionMatrix<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">Light[<i>n</i>] pos<br>
+        </td>
+        <td style="vertical-align: top;">glstate.light[<i>n</i>].position
+        </td>
+        <td style="vertical-align: top;">gl_LightSource[<i>n</i>].position
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">...<br>
+        </td>
+        <td style="vertical-align: top;">...<br>
+        </td>
+        <td style="vertical-align: top;">...<br>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <li><b>Varying parameters</b> are those parameters that are specified
 as per-vertex attributes. They are are interpolated across a primitive
 similarly to colors and texture coordinates in the fixed function
 pipeline.<br>
-<br>
+    <br>
 We need additional API to allow applications to pass in per-vertex
-varying parameters...<br> TODO: Finish this...<br>
-</li>
+varying parameters...<br>
+TODO: Finish this...<br>
+  </li>
 </ol>
 <p>TODO: more info here.
 </p>
-<p><font color="gray">Page last updated &mdash;
+<p><font color="gray">Page last updated &#8212;
 $Date$
-</font>
-</p>
+</font></p>
 </body>
 </html>
