@@ -23,7 +23,6 @@ class NativeConfigTemplate3D {
     private final static boolean debug = false;
 
     NativeConfigTemplate3D() {
-	VirtualUniverse.createMC();
     }
 
     //  These definitions should match those in win32 NativeConfigTemplate3D.java

@@ -1127,8 +1127,6 @@ public class Canvas3D extends Canvas {
 		(J3dI18N.getString("Canvas3D17"));
 	}
 
-	VirtualUniverse.createMC();
-
 	this.offScreen = offScreen;
 	this.graphicsConfiguration = graphicsConfiguration;
 

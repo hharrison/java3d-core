@@ -144,9 +144,6 @@ public class VirtualUniverse extends Object {
     // Root ThreadGroup for creating Java 3D threads
     static ThreadGroup rootThreadGroup;
 
-    // Lock for MasterControl Object creation
-    static Object mcLock = new Object();
-    
     // Properties object for getProperties
     private static J3dQueryProps properties = null;
 
@@ -190,20 +187,6 @@ public class VirtualUniverse extends Object {
         renderingEnvironmentStructure = new
 	            RenderingEnvironmentStructure(this);
 
-    }
-
-    static void createMC() {
-	synchronized (mcLock) {
-	    if (mc == null) {
-		mc = new MasterControl();
-	    }
-	}
-    }
-
-    static void destroyMC() {
-	synchronized (mcLock) {
-	    mc = null;
-	}
     }
 
     /**
@@ -252,7 +235,7 @@ public class VirtualUniverse extends Object {
 	// Load the native libraries and create the static
 	// MasterControl object
 	MasterControl.loadLibraries();
-	createMC();
+	mc = new MasterControl();
 
 	// Print out debugging information for debug builds
 	if(VersionInfo.isDebug) {

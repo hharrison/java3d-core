@@ -2792,6 +2792,19 @@ class MasterControl {
 	J3dDebug.doAssert((Screen3D.deviceRendererMap.get(gd) != null),
 			  "Screen3D.deviceRendererMap.get(gd) != null");
 
+	// Create the master control thread if it isn't already created
+	boolean needToSetWork = false;
+	synchronized (mcThreadLock) {
+	    if (mcThread == null) {
+		//System.err.println("Calling createMasterControlThread()");
+		createMasterControlThread();
+		needToSetWork = true;
+	    }
+	}
+	if (needToSetWork) {
+	    setWork();
+	}
+
 	// Fix for Issue 72 : call createRenderer rather than getting
 	// the renderer from the canvas.screen object
 	Renderer rdr = createRenderer(c.graphicsConfiguration);

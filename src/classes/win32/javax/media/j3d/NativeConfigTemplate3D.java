@@ -22,7 +22,6 @@ class NativeConfigTemplate3D {
     private final static boolean debug = false;
 
     NativeConfigTemplate3D() {
-	VirtualUniverse.createMC();
     }
 
     // This definition should match those in solaris NativeConfigTemplate3D.java

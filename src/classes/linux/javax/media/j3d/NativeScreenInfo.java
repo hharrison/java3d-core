@@ -55,7 +55,6 @@ class NativeScreenInfo {
     }
 
     NativeScreenInfo(GraphicsDevice graphicsDevice) {
-	VirtualUniverse.createMC();
 	// Open a new static display connection if one is not already opened
 	getStaticDisplay();
 
