@@ -242,6 +242,13 @@ public class VirtualUniverse extends Object {
 	    System.err.println();
 	}
 
+	// Java 3D cannot run in headless mode, so we will throw a
+	// HeadlessException if isHeadless() is true. This avoids a
+	// cryptic error message from MasterControl.loadLibraries().
+	if (java.awt.GraphicsEnvironment.isHeadless()) {
+	    throw new java.awt.HeadlessException();
+	}
+
 	// Load the native libraries and create the static
 	// MasterControl object
 	MasterControl.loadLibraries();
