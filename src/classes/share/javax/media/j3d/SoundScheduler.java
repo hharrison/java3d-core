@@ -162,10 +162,18 @@ class SoundScheduler extends J3dStructure {
      */
     SoundScheduler(VirtualUniverse u, View v) {
 	super(u, J3dThread.SOUND_SCHEDULER);
-	// vworldToVpc.setIdentity();
+
+	// Assertion check view & universe
+	if (v == null) {
+	    System.err.println("WARNING: SoundScheduler constructed with null view");
+	}
+	if (u == null) {
+	    System.err.println("WARNING: SoundScheduler constructed with null universe");
+	}
+
 	universe = u;
 	view = v;
-	reset(v);
+	reset();
     }
 
 
@@ -803,7 +811,7 @@ class SoundScheduler extends J3dStructure {
 	else {
 	    // previous not ready, force reset call to see if everything
 	    // ready now or not
-	    reset(view);
+	    reset();
 	    if (ready) {
 		if (debugFlag)
 		    debugPrint(" checkState Now ready to run");
@@ -819,83 +827,47 @@ class SoundScheduler extends J3dStructure {
 	return runState;
     }
 
-    synchronized void reset(View v) {
-	int fieldsNotSet = 0;
-	if (v == null) {
-	    if (debugFlag)
-		debugPrint(".reset() called with null view");
-	    view = null;
-	    viewPlatform = null;
-	    universe = null;
-	    // clearly not ready to run
-	    // QUESTION: doesn't this leave the possibility that
-	    //     the SoundScheduler may never be woken up???
+    synchronized void reset() {
+	// Return quickly if universe, view, physical env, or audio
+	// device are null
+	if (universe == null ||
+	    view == null ||
+	    view.physicalEnvironment == null ||
+	    view.physicalEnvironment.audioDevice == null) {
+
+	    audioDevice = null;
 	    ready = false;
 	    return;
 	}
-	else {
-	    if (debugFlag)
-		debugPrint(".reset() called with view = " + v);
-	    view = v;
-	    // TODO: Does not support multiple canvases per view, thus
-	    //      multiple GraphicsContext3Ds
-	    // QUESTION: what does that mean for sound -
-	    //      being applied to only ONE graphics context?
-	    // GET FIRST Canvas
-	    Canvas3D canvas = view.getFirstCanvas();
-	    if (canvas != null) {
-		graphicsCtx = canvas.getGraphicsContext3D();
-	    }
-	}
 
-	// Set AudioDevice if possible
-	if (v.physicalEnvironment == null) {
-	    if (debugFlag)
-		debugPrint(".reset: physicalEnvironment null");
-	    audioDevice = null;
-	    fieldsNotSet++;
-	}
-	else if (v.physicalEnvironment.audioDevice == null) {
-	    if (audioDevice == null) {
-		if (debugFlag)
-		    debugPrint(".reset: audioDevice null");
-		fieldsNotSet++;
-	    }
-	    // otherwise audioDevice set before so leave it unchanged
-	}
-	else {
-	    audioDevice = v.physicalEnvironment.audioDevice;
-	}
+	// Set AudioDevice
+	audioDevice = view.physicalEnvironment.audioDevice;
 
-	// Get viewPlatform and Universe
-	// If any of these are null at anytime, we can't render
-	ViewPlatform vp = v.getViewPlatform();
-
-	if (vp == null  ||  vp.retained == null) {
-	    if (debugFlag)
-		debugPrint(".reset: viewPlatform null");
+	// Get viewPlatform; if it is null or not live, we can't render
+	ViewPlatform vp = view.getViewPlatform();
+	if (vp == null || vp.retained == null) {
+	    // System.err.println("    vp is null");
 	    viewPlatform = null;
-	    fieldsNotSet++;
-	}
-	else {
-	    viewPlatform = (ViewPlatformRetained)vp.retained;
-	    if (viewPlatform.universe == null) {
-		if (debugFlag)
-		    debugPrint(".reset: vP.retained.univ null");
-		universe = null;
-		fieldsNotSet++;
-	    }
-	    else {
-		// If we've reached this block then viewPlatform and univ
-		// as set below will NOT be null.
-		universe = viewPlatform.universe;
-	    }
-	}
-	if (fieldsNotSet > 0 || audioDevice == null) {
-	    // still not ready to run
 	    ready = false;
-            return;
-        }
+	    return;
+	}
+
+	viewPlatform = (ViewPlatformRetained)vp.retained;
+	if (!vp.isLive()) {
+	    ready = false;
+	    return;
+	}
+
+	// TODO: Does not support multiple canvases per view, thus
+	//      multiple GraphicsContext3Ds
+	// QUESTION: what does that mean for sound -
+	//      being applied to only ONE graphics context?
+	// GET FIRST Canvas
+	Canvas3D canvas = view.getFirstCanvas();
+	if (canvas != null) {
+	    graphicsCtx = canvas.getGraphicsContext3D();
+	}
+
 	// now the render loop can be run successfully
 	audioDevice3DL2 = null;
 	audioDevice3D = null;

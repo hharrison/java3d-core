@@ -3260,7 +3260,7 @@ public class View extends Object {
 	    universe.waitForMC();
 	}
         if (soundScheduler != null) {
-            soundScheduler.reset(this);
+            soundScheduler.reset();
         }	
 
 	J3dMessage vpMessage = VirtualUniverse.mc.getMessage();
