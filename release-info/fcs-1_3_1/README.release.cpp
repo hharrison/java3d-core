@@ -11,19 +11,6 @@
  * $State$
  */
 #endif
-
-========================================================================
-========================================================================
-
-NOTE: THIS FILE REFERS TO THE 1.3.1 BINARY RELEASE OF THE JAVA 3D API
-AND, AS SUCH, IS OUT OF DATE.
-
-IT NEEDS TO BE UPDATED FOR the 1.3.2 RELEASE.
-
-========================================================================
-========================================================================
-
-
 Java 3D(TM) 1.3.1
 #if defined(WIN32OGL)
 README file for Win32/OpenGL
@@ -65,7 +52,7 @@ REQUIREMENTS
 #if defined(SOLARIS)
 This version of Java 3D(TM) for Solaris/SPARC requires the following:
 
-  Java 2 Runtime or SDK version 1.4 or later from Sun Microsystems.
+  Java 2 Runtime or SDK version 1.3.1 or later from Sun Microsystems.
   (http://java.sun.com/j2se/)
 
   Frame Buffer with OpenGL support (XVR-500, XVR-1000, XVR1200, XVR-4000,
@@ -83,14 +70,14 @@ This version of Java 3D(TM) for Solaris/SPARC requires the following:
   PATCHES
 
   There are no patches required for Solaris 8.  However, Java 2
-  versions 1.4 and 1.4.1 do require patches.  These patches must be
+  versions 1.3.1, 1.4 and 1.4.1 do require patches.  These patches must be
   installed before trying to install Java 3D.
 
 
   Solaris 7 requires the Kernel Update patch (106541-06 or later)
   which fixes a bug on multi-processor systems that can lock up
   the window system when running a Java 3D program with more than
-  one active window.  Also, Java 2 versions 1.4 and 1.4.1 require
+  one active window.  Also, Java 2 versions 1.3.1, 1.4 and 1.4.1 require
   patches.  These patches must be installed before trying to install
   Java 3D.
 
@@ -101,7 +88,7 @@ This version of Java 3D(TM) for Solaris/SPARC requires the following:
 This version of Java 3D(TM) for WindowsNT 4.0,
 Windows 98, Windows ME and Windows 2000 requires the following:
 
-        Java 2 (Runtime or SDK) version 1.4 or later from Sun
+        Java 2 (Runtime or SDK) version 1.3.1 or later from Sun
 	Microsystems (http://java.sun.com/jdk/).  This includes
 	the Java Plug-In (JPI) to update Java(TM) in your browser.
 
@@ -113,7 +100,7 @@ Windows 98, Windows ME and Windows 2000 requires the following:
 This version of Java 3D(TM) for Windows 98, Mindows ME and Windows 2000
 requires the following:
 
-        Java 2 (Runtime or SDK) version 1.4 or later from Sun
+        Java 2 (Runtime or SDK) version 1.3.1 or later from Sun
 	Microsystems (http://java.sun.com/jdk/).  This includes
 	the Java Plug-In (JPI) to update Java(TM) in your browser.
 
@@ -277,12 +264,12 @@ Compiled Vertex Array
 Compiled Vertex Array extension is used in IndexedGeometryArray
 when it's USE_COORD_INDEX_ONLY flag is set and it is not in display list mode.
 You may disable the use of this extension by setting the new property,
-j3d.compiledVertexArray, to false.
+j3d.compliedVertexArray, to false.
 
 Compiled Vertex Array extension is used extensively, on SUN XVR-4000, for
 all GeometryArray type when display list mode is not used.
 You may disable the use of this extension by setting the new property,
-j3d.compiledVertexArray, to false.
+j3d.compliedVertexArray, to false.
 
 
 ===========================
