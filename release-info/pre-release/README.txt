@@ -11,4 +11,5 @@ and Windows operating environments at
 "http://java.sun.com/products/java-media/3D/" or at
 "http://j3d-core.dev.java.net/servlets/ProjectDocumentList".  For other
 operating environments, contact the vendor that produces the
-environment.
+environment.  A list of these can be found at
+"http://java.sun.com/products/java-media/3D/ports.html"

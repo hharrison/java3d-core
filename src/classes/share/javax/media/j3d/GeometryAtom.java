@@ -226,6 +226,35 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
     // value is up-to-date
 
     void updateCentroid() {
+	// New for 1.3.2
+	// If the sortShape3DBounds flag is set, the bounds of the
+	// Shape3D node will be used in place of the computed
+	// GeometryArray bounds for transparency sorting for those
+	// Shape3D nodes whose boundsAutoCompute attribute is set to
+	// false.
+	if (VirtualUniverse.mc.sortShape3DBounds &&
+	    !source.boundsAutoCompute) {
+
+	    synchronized(lockObj) {
+		if (centroid == null) {
+		    centroid = new Point3d[geometryArray.length];
+		    for (int j = 0; j < centroid.length; j++) {
+			centroid[j] = new Point3d(source.localBounds.getCenter());
+			source.getCurrentLocalToVworld(0).transform(centroid[j]);
+		    }
+                }
+		else {
+		    for (int j = 0; j < centroid.length; j++) {
+			centroid[j].set(source.localBounds.getCenter());
+			source.getCurrentLocalToVworld(0).transform(centroid[j]);
+		    }
+		}
+	    }
+
+	    return;
+	}
+	// End of new for 1.3.2
+	
 	synchronized(lockObj) {
 	    for (int j = 0; j < geometryArray.length; j++) {
 		if (geometryArray[j] == null)

@@ -418,6 +418,13 @@ class MasterControl {
     // successfully disabled.
     boolean xineramaDisabled = false;
 
+    // Set by the -Dj3d.sortShape3DBounds property, When this flag is
+    // set to true, the bounds of the Shape3D node will be used in
+    // place of the computed GeometryArray bounds for transparency
+    // sorting for those Shape3D nodes whose boundsAutoCompute
+    // attribute is set to false.
+    boolean sortShape3DBounds = false;
+
     /**
      * Constructs a new MasterControl object.  Note that there is
      * exatly one MasterControl object, created statically by
@@ -569,6 +576,23 @@ class MasterControl {
 	if (disableSeparateSpecularColor) {
 	    System.err.println(
 		"Java 3D: Separate Specular Color disabled if possible");
+	}
+
+	Boolean j3dSortShape3DBounds =
+		(Boolean) java.security.AccessController.doPrivileged(
+		      new java.security.PrivilegedAction() {
+                          public Object run() {
+			      String str = System.getProperty("j3d.sortShape3DBounds");
+			      if (str == null) {
+				  return Boolean.FALSE;
+			      } else {
+				  return Boolean.TRUE;
+			      }
+			  }
+		      });
+	sortShape3DBounds = j3dSortShape3DBounds.booleanValue();
+	if (sortShape3DBounds) {
+	    System.err.println("Java 3D: Shape3D bounds enabled for transparency sorting");
 	}
 
 	// Get the maximum number of texture units

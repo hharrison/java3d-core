@@ -736,6 +736,13 @@ class Shape3DRetained extends LeafRetained {
 	ms.locale = locale;
 	ms.parent = parent;
 
+	// New 1.3.2
+	// Used when user supplied their own bounds for transparency sorting
+	// GeometryAtom uses this to change how it computes the centroid
+	ms.boundsAutoCompute = boundsAutoCompute;
+	ms.localBounds = localBounds;
+	// End new 1.3.2
+
         OrderedPath op = (OrderedPath)s.orderedPaths.get(index);
         if (op.pathElements.size() == 0) {
             ms.orderedPath = null;
