@@ -356,8 +356,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 
 
     // Temporary dirtylist
-    ArrayList dirtyDepthSortRenderAtom = new ArrayList(5);
-    int numDirtyTinfo = 0;
+    private LinkedHashSet dirtyDepthSortRenderAtom = new LinkedHashSet();
+    private int numDirtyTinfo = 0;
 
     // Eye position in vworld
     Point3d eyeInVworld = new Point3d();
@@ -837,8 +837,9 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	    
 	    if (size > 0) {
 		TransparentRenderingInfo dirtyList = null, rList;
-		for (i = 0; i < size; i++) {
-		    RenderAtom renderAtom = (RenderAtom)dirtyDepthSortRenderAtom.get(i);
+		Iterator dirtyDepthSortIterator = dirtyDepthSortRenderAtom.iterator();
+		while (dirtyDepthSortIterator.hasNext()) {
+		    RenderAtom renderAtom = (RenderAtom)dirtyDepthSortIterator.next();
 		    if (!renderAtom.inRenderBin())
 			continue;
 		    renderAtom.dirtyMask &= ~RenderAtom.IN_SORTED_POS_DIRTY_TRANSP_LIST;
@@ -848,7 +849,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		}
 
 		if (dirtyList != null) {
-		    //		    System.out.println("====> sort Some");
+		    // System.out.println("====> sort Some");
 		    dirtyList = depthSortAll(dirtyList);
 		    // Now merge the newly sorted list with the old one
 		    transparentInfo = mergeDepthSort(transparentInfo, dirtyList);
@@ -3450,9 +3451,15 @@ System.out.println("......tb.soleUser= " +
 				// when the render is running
 				ra.geometryAtom.updateCentroid();
 				//				System.out.println("========> adding to the dirty list .., transpSortMode = "+transpSortMode);
-				dirtyDepthSortRenderAtom.add(ra);
+				if (dirtyDepthSortRenderAtom.add(ra)) {
+				    numDirtyTinfo += ra.rListInfo.length;
+				}
+				/*
+				else {
+				    System.err.println("processTransformChanged: attempt to add RenderAtom already in dirty list");
+				}
+				*/
 				ra.dirtyMask |= RenderAtom.IN_SORTED_POS_DIRTY_TRANSP_LIST;
-				numDirtyTinfo += ra.rListInfo.length;
 				
 			    }
 			    continue;
@@ -5715,11 +5722,15 @@ System.out.println("......tb.soleUser= " +
 	    dirtyOrientedRAs.remove(dirtyOrientedRAs.indexOf(ra));
 	    ra.dirtyMask &= ~RenderAtom.IN_DIRTY_ORIENTED_RAs;
 	}
-	// TODO: Should I remove the ra from dirtyDepthSortRenderAtom?
 	if (ra.inDepthSortList()) {
-	    dirtyDepthSortRenderAtom.remove(dirtyDepthSortRenderAtom.indexOf(ra));
+	    dirtyDepthSortRenderAtom.remove(ra);
 	    ra.dirtyMask &= ~RenderAtom.IN_SORTED_POS_DIRTY_TRANSP_LIST;
 	    numDirtyTinfo -= ra.rListInfo.length;
+	}
+
+	// Assertion check in debug mode
+	if (J3dBuildInfo.isDebug && dirtyDepthSortRenderAtom.contains(ra)) {
+	    System.err.println("removeARenderAtom: ERROR: RenderAtom not removed from dirty list");
 	}
     }
 
@@ -5990,9 +6001,15 @@ System.out.println("......tb.soleUser= " +
 	    computeDirtyAcrossTransparentBins(r);
 	    //	    System.out.println("update Centroid 2, ga = "+r.geometryAtom);
 	    r.geometryAtom.updateCentroid();
-	    dirtyDepthSortRenderAtom.add(r);
+	    if (dirtyDepthSortRenderAtom.add(r)) {
+		numDirtyTinfo += r.rListInfo.length;
+	    }
+	    /*
+	    else {
+		System.err.println("addTransparentObject: attempt to add RenderAtom already in dirty list");
+	    }
+	    */
 	    r.dirtyMask |= RenderAtom.IN_SORTED_POS_DIRTY_TRANSP_LIST;
-	    numDirtyTinfo += r.rListInfo.length;
 	    // System.out.println("transparentInfo  ="+transparentInfo);
 	}
     }
@@ -6199,6 +6216,7 @@ System.out.println("......tb.soleUser= " +
 	  t = t.next;
 	  }
 	*/
+
 	while (input1 != null && input2 != null) {
 	    lastInput1 = input1;
 	    nextN = input2.next;
@@ -6226,8 +6244,6 @@ System.out.println("......tb.soleUser= " +
 		//		System.out.println("===> path3");
 		input1 = input1.next;
 	    }
-		
-		    
 	}
 	if (input1 == null && input2 != null) {
 	    // add at then end
@@ -6289,6 +6305,17 @@ System.out.println("......tb.soleUser= " +
 		    transparentInfo.prev = null;
 	    }
 	    else {
+		if (t == dirtyList) {
+		    // This means that the the item has already been
+		    // added to the dirtyList and is at the head of
+		    // the list; since we ensure no duplicate
+		    // renderAtoms, this should never happen. If it
+		    // does, don't try to add it again.
+		    System.err.println("collectDirtyTRInfo: ERROR: t == dirtyList");
+		    continue;
+		}
+
+		// assert(t.prev != null);
 		t.prev.next = t.next;
 		if (t.next != null)
 		    t.next.prev = t.prev;
