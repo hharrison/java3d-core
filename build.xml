@@ -28,9 +28,6 @@
   <!-- End of Build Specific properties -->
   <!-- ******************************** -->
 
-  <!-- True for all non FCS builds -->
-  <property name="dev_phase" value="true"/>
-  
   <!-- Set global properties for this build -->
   <property name="vecmath_home" location="../vecmath"/>
   <property name="core_utils_home" location="../j3d-core-utils"/>
@@ -41,8 +38,6 @@
   <property name="build-tools" location="build-tools"/>
   <property name="build"   location="build"/>
   <property name="dist"    location="dist"/>
-  <property name="version" value="${version_base}_${version_build}"/>
-  <property name="docname" value="java3d-${version}-doc"/>
   <property name="build.comp" value="gcc"/>
   <property name="build.rend" value="ogl"/>
 
@@ -59,27 +54,56 @@
     <echo message="core_utils_home = ${core_utils_home}"/>
     <echo message="ostype          = ${ostype}"/>
     <echo message="platform        = ${platform}"/>
+    <echo message="version         = ${version}"/>
+    <echo message="daily_build     = ${daily_build}"/>
+    <echo message="dev_phase       = ${dev_phase}"/>
   </target>
 
-  <target name="setupSolaris" depends="init" if="isSolarisOnSparc">	
+  <target name="setupSolaris" if="isSolarisOnSparc">	
     <property name="ostype" value="solaris"/>
     <property name="platform" value="solaris-sparc-${build.comp}"/>
   </target>
 
-  <target name="setupLinux" depends="init" if="isLinuxOnX86">	
+  <target name="setupLinux" if="isLinuxOnX86">	
     <property name="ostype" value="linux"/>
     <property name="platform" value="linux-i586"/>
   </target>
 
   <!-- win32 should be rename as windows -->
-  <target name="setupWindows" depends="init" if="isWindowsOnX86">	
+  <target name="setupWindows" if="isWindowsOnX86">	
     <property name="ostype" value="win32"/>
     <property name="platform" value="windows-i586-${build.comp}"/>
   </target>
 
-  <target name="setupPlatform" depends="setupSolaris, setupLinux, setupWindows">
+  <target name="setupDaily" unless="build.stable">
+    <echo message="setupDaily"/>
+    <property name="daily_build" value="true"/>
+    <property name="version" value="${version_base}_${version_build}_${buildtime}"/>
+  </target>
+
+  <target name="setupStable" if="build.stable">
+    <echo message="setupStable"/>
+    <property name="daily_build" value="false"/>
+    <property name="version" value="${version_base}_${version_build}"/>
+  </target>
+
+  <target name="setupProduction" if="build.production">
+    <echo message="setupProduction"/>
+    <property name="daily_build" value="false"/>
+    <property name="version" value="${version_base}"/>
+    <property name="dev_phase" value="false"/>
+  </target>
+
+  <target name="setupDevPhase" unless="build.production" depends="setupDaily,setupStable">
+    <echo message="setupDevPhase"/>
+    <property name="dev_phase" value="true"/>
+  </target>
+
+  <target name="setupPlatform"
+       depends="init, setupProduction, setupDevPhase ,setupSolaris, setupLinux, setupWindows">
     <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
     <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
+    <property name="docname" value="java3d-${version}-doc"/>
   </target>
 
 
@@ -88,8 +112,6 @@
     <tstamp>
         <format property="buildtime_verbose" pattern="dd MMM yyyy HH:mm:ss z"/>
         <format property="buildtime" pattern="yyMMddHHmm"/>
-	<format property="buildtime_old"
-		pattern="yyyy-MM-dd'T'HH:mm:ss"/>
     </tstamp>
   
     <echo message="buildtime = ${buildtime_verbose}"/>
@@ -164,7 +186,8 @@
       <mkdir dir="${build}/rpm/RPMS"/>
 
       <copy file="build-tools/java3d-rpm.spec" 
-            todir="${build}/rpm/SPECS">
+            todir="${build}/rpm/SPECS"
+            overwrite="true">
           <filterset>
               <filter token="VERSION" value="${version}"/>
           </filterset>

@@ -43,7 +43,9 @@
             <filter token="VERSION_BASE" value="${version_base}"/>
             <filter token="IS_DEBUG" value="true"/>
             <filter token="DEV_PHASE" value="true"/>
-            <filter token="TIME_STAMP" value="${buildtime_verbose}"/>
+            <filter token="DAILY_BUILD" value="${daily_build}"/>
+            <filter token="BUILDTIME" value="${buildtime}"/>
+            <filter token="BUILDTIME_VERBOSE" value="${buildtime_verbose}"/>
         </filterset>
     </copy>
 
@@ -82,7 +84,9 @@
             <filter token="VERSION_BASE" value="${version_base}"/>
             <filter token="IS_DEBUG" value="false"/>
             <filter token="DEV_PHASE" value="${dev_phase}"/>
-            <filter token="TIME_STAMP" value="${buildtime_verbose}"/>
+            <filter token="DAILY_BUILD" value="${daily_build}"/>
+            <filter token="BUILDTIME" value="${buildtime}"/>
+            <filter token="BUILDTIME_VERBOSE" value="${buildtime_verbose}"/>
         </filterset>
     </copy>
 

@@ -78,6 +78,32 @@ class VersionInfo extends Object {
     // TCK tests, who are releasing their own implementation of Java 3D
     // are permitted to change these constants.
     // -------------------------------------------------------------------
+
+    /**
+     * Constant that indicates whether or not this is
+     * a debug build.
+     */
+    static final boolean isDebug = @IS_DEBUG@;
+
+    /**
+     * This static final variable is used to turn on/off debugging,
+     * checking, and initializing codes that may be preferred in
+     * development phase but not necessarily required in the
+     * production release.
+     *  
+     * Beside for debugging, use this variable to do initialization,
+     * checking objects existence, and other checks that may help in
+     * uncovering potential bugs during code development. This
+     * variable should be turned off during production release as it
+     * may cause performance hit.
+     */
+    static final boolean devPhase = @DEV_PHASE@;
+
+    /**
+     * This flag is set to true for daily builds and false for stable builds.
+     */
+    private static final boolean dailyBuild = @DAILY_BUILD@;
+
     /**
      * String identifying the particular build of Java 3D, for
      * example, beta1, build47, rc1, etc.  This string may only
@@ -87,8 +113,14 @@ class VersionInfo extends Object {
      * This will typically by null for final, released builds, but
      * should be non-null for all other builds.
      */
-    private static final String VERSION_BUILD = "@VERSION_BUILD@";
+    private static final String VERSION_BUILD = devPhase ? "@VERSION_BUILD@" : null;
 
+    /**
+     * Date stamp
+     *
+     * This is only used for daily builds.
+     */
+    private static final String BUILDTIME = dailyBuild ? "@BUILDTIME@" : null;
 
     /**
      * Specification version (major and minor version only). This
@@ -139,34 +171,13 @@ class VersionInfo extends Object {
     private static final String VENDOR;
 
     /**
-     * Constant that indicates whether or not this is
-     * a debug build.
-     */
-    static final boolean isDebug = @IS_DEBUG@;
-
-    /**
-     * This static final variable is used to turn on/off debugging,
-     * checking, and initializing codes that may be preferred in
-     * development phase but not necessarily required in the
-     * production release.
-     *  
-     * Beside for debugging, use this variable to do initialization,
-     * checking objects existence, and other checks that may help in
-     * uncovering potential bugs during code development. This
-     * variable should be turned off during production release as it
-     * may cause performance hit.
-     */
-    static final boolean devPhase = @DEV_PHASE@;
-
-    /**
-     * Time and date stamp appended to the end of the version string.
+     * Verbose time and date stamp appended to the end of the version string.
      * This is appended to the version string
      * after the build identifier (and after the first space, which
      * will automatically be added) and before the optional dev
-     * string.  This string should be null if no time stamp is desired
-     * (it will be null for production builds).
+     * string.  This string is only used for non-fcs (non-production) builds.
      */
-    private static final String VERSION_TIME_STAMP = devPhase ? "@TIME_STAMP@" : null;
+    private static final String BUILDTIME_VERBOSE = devPhase ? "@BUILDTIME_VERBOSE@" : null;
 
     // The static initializer composes the version and vendor strings
     static {
@@ -182,12 +193,16 @@ class VersionInfo extends Object {
 	    tmpVersion += "-" + VERSION_BUILD;
 	}
 
+	if (BUILDTIME != null) {
+	    tmpVersion += "-" + BUILDTIME;
+	}
+
 	if (VERSION_SUFFIX != null) {
 	    tmpVersion += "-" + VERSION_SUFFIX;
 	}
 
-	if (VERSION_TIME_STAMP != null) {
-	    tmpVersion += " " + VERSION_TIME_STAMP;
+	if (BUILDTIME_VERBOSE != null) {
+	    tmpVersion += " " + BUILDTIME_VERBOSE;
 	}
 
 	if (VERSION_DEV_STRING != null) {
