@@ -1194,7 +1194,7 @@ class MasterControl {
      */
     void createMasterControlThread() {
 	running = true;
-	workToDo = false;
+	workToDo = true;
 	state = RUNNING;
 	java.security.AccessController.doPrivileged(
 	    new java.security.PrivilegedAction() {
@@ -2785,7 +2785,7 @@ class MasterControl {
 	renderMessage.args[1] = arg;
 	renderMessage.args[2] = mtype;
 	rdr.rendererStructure.addMessage(renderMessage);
-	VirtualUniverse.mc.setWorkForRequestRenderer();
+	setWorkForRequestRenderer();
     }
 
     // Fix for Issue 18
@@ -2804,30 +2804,28 @@ class MasterControl {
 	J3dDebug.doAssert((Screen3D.deviceRendererMap.get(gd) != null),
 			  "Screen3D.deviceRendererMap.get(gd) != null");
 
-	// Create the master control thread if it isn't already created
-	boolean needToSetWork = false;
 	synchronized (mcThreadLock) {
+	    // Create the master control thread if it isn't already created
 	    if (mcThread == null) {
 		//System.err.println("Calling createMasterControlThread()");
 		createMasterControlThread();
-		needToSetWork = true;
+	    }
+
+	    // Fix for Issue 72 : call createRenderer rather than getting
+	    // the renderer from the canvas.screen object
+	    Renderer rdr = createRenderer(c.graphicsConfiguration);
+	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage.threads = J3dThread.RENDER_THREAD;
+	    createMessage.type = J3dMessage.CREATE_OFFSCREENBUFFER;
+	    createMessage.universe = null;
+	    createMessage.view = null;
+	    createMessage.args[0] = c;
+	    rdr.rendererStructure.addMessage(createMessage);
+	    synchronized (requestObjList) {
+		setWorkForRequestRenderer();
+		pendingRequest = true;
 	    }
 	}
-	if (needToSetWork) {
-	    setWork();
-	}
-
-	// Fix for Issue 72 : call createRenderer rather than getting
-	// the renderer from the canvas.screen object
-	Renderer rdr = createRenderer(c.graphicsConfiguration);
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
-	createMessage.threads = J3dThread.RENDER_THREAD;
-	createMessage.type = J3dMessage.CREATE_OFFSCREENBUFFER;
-	createMessage.universe = null;
-	createMessage.view = null;
-	createMessage.args[0] = c;
-	rdr.rendererStructure.addMessage(createMessage);
-	VirtualUniverse.mc.setWorkForRequestRenderer();
     }
 
 
@@ -2837,14 +2835,14 @@ class MasterControl {
     void doWork() {
 	runMonitor(CHECK_FOR_WORK, null, null, null, null);
 
-	if (pendingRequest) {
-	    synchronized (timeLock) {
-		synchronized (requestObjList) {
+	synchronized (timeLock) {
+	    synchronized (requestObjList) {
+		if (pendingRequest) {
 		    handlePendingRequest();
 		}
 	    }
 	}
-	    
+
 	if (!running) {
 	    return;
 	}
@@ -3085,7 +3083,7 @@ class MasterControl {
 	    setWork();
 	}
 
-	if (rendererRun) {
+	if (rendererRun || requestRenderWorkToDo) {
 	    running = true;
 	}
 
@@ -3376,9 +3374,9 @@ class MasterControl {
 	    break;
         case SET_WORK_FOR_REQUEST_RENDERER:
 	    requestRenderWorkToDo = true;
+	    workToDo = true;
 	    if (state == WAITING_FOR_CPU || state == WAITING_FOR_THREADS ||
 			state == SLEEPING) {
-	        workToDo = true;
 		notify();
 	    }
 	    break;

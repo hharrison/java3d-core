@@ -21,8 +21,22 @@ package javax.media.j3d;
  */
 class MasterControlThread extends Thread {
 
+    private static int numInstances = 0;
+    private int instanceNum = -1;
+
+    private static synchronized int newInstanceNum() {
+	return (++numInstances);
+    }
+
+    private int getInstanceNum() {
+	if (instanceNum == -1)
+	    instanceNum = newInstanceNum();
+	return instanceNum;
+    }
+
     MasterControlThread(ThreadGroup threadGroup) {
-	super(threadGroup, "J3D-MasterControl");
+	super(threadGroup, "");
+	setName("J3D-MasterControl-" + getInstanceNum());
 	VirtualUniverse.mc.createMCThreads();
 	this.start();
     }
@@ -43,6 +57,5 @@ class MasterControlThread extends Thread {
 	    J3dDebug.doDebug(J3dDebug.masterControl, J3dDebug.LEVEL_1,
 			     "MC: MasterControl Thread Terminate");
 	}
-
     }
 } 
