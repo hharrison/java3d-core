@@ -896,7 +896,7 @@ class MasterControl {
 	}
 	else {
 	    if (canvasBitCount > 31) {
-		throw new InternalError();
+		throw new RuntimeException("Cannot render to more than 32 Canvas3Ds");
 	    }
 	    return (1 << canvasBitCount++);
 	}
@@ -2948,8 +2948,22 @@ class MasterControl {
 	    } else if (type == PHYSICAL_ENV_CHANGE) {
 		evaluatePhysicalEnv((View) o);
 	    } else if (type == EMPTY_UNIVERSE) {
-		if (views.isEmpty()) {
-		    destroyUniverseThreads((VirtualUniverse) o);
+		// Issue 81: We need to process this message as long
+		// as there are no views associated with this
+		// universe. Previously, this message was ignored if
+		// there were views associated with *any* universe,
+		// which led to a memory / thread leak.
+	        boolean foundView = false;
+		VirtualUniverse univ = (VirtualUniverse) o;
+		View v[] = (View []) views.toArray(false);
+		for (int j = views.size() - 1; j >= 0; j--) {
+		    if (v[j].universe == univ) {
+			foundView = true;
+			break;
+		    }
+		}
+		if (!foundView) {
+		    destroyUniverseThreads(univ);
 		    threadListsChanged = true;
 		}
 	    } else if (type == START_RENDERER) {

@@ -16,6 +16,8 @@ import javax.vecmath.*;
 import java.lang.Math;
 import java.util.Vector;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.Enumeration;
 import java.awt.*;
 import java.awt.event.*;
@@ -2312,6 +2314,8 @@ public class View extends Object {
      * @since Java 3D 1.3
      */
     public void removeAllCanvas3Ds() {
+	LinkedList tmpCanvases = new LinkedList();
+
 	synchronized(canvasList) {
 	    int numCanvases = canvases.size();
 
@@ -2321,22 +2325,33 @@ public class View extends Object {
 
 		cv = (Canvas3D) canvases.elementAt(index);
 
+		// Record list of canvases to be deleted;
+		tmpCanvases.add(cv);
+
 		canvases.removeElementAt(index);
 		removeFromCanvasList(cv);
 		canvasesDirty = true;
-
-		// reset canvas will set view to null also
-		VirtualUniverse.mc.postRequest(MasterControl.RESET_CANVAS, 
-                                      cv);
-		cv.pendingView = null;
-
-		if (cv.added) {
-		    cv.active = false;
-		}
 	    }
-
-	    computeCanvasesCached();
 	}
+
+	// ISSUE 83: postRequest must *not* be called while holding
+	// canvasList lock. Holding the lock can cause a deadlock.
+
+	Iterator iterator = tmpCanvases.iterator();
+	while (iterator.hasNext()) {
+	    Canvas3D cv = (Canvas3D)iterator.next();
+
+	    // reset canvas will set view to null also
+	    VirtualUniverse.mc.postRequest(MasterControl.RESET_CANVAS, 
+					   cv);
+	    cv.pendingView = null;
+
+	    if (cv.added) {
+		cv.active = false;
+	    }
+	}
+
+	computeCanvasesCached();
 
 	evaluateActive();
 
@@ -2387,7 +2402,7 @@ public class View extends Object {
 	}
     }
 
-    // Locks are already acquired before this is called.
+    // Locks are not acquired before this is called.
     void computeCanvasesCached() {
 
         synchronized (canvasList) {
