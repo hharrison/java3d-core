@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+ -->
+
+<!-- Ant file for building native utilities files for Linux -->
+<project name="Java 3D" default="compile">
+
+  <target name="compile">
+
+    <echo message="Executing 64 bit native utilities build [${bldType}]"/>
+
+    <!-- Create the build directories linux -->
+    <mkdir dir="${build}/${platform}/${bldType}/native/share/objs"/>
+    <mkdir dir="${build}/${platform}/${bldType}/lib/ia64"/>
+
+    <!-- Compile the c source files; based on build-linux-amd64.xml-->
+    <exec dir="${build}/${platform}/${bldType}/native/share/objs" executable="gcc">
+	<arg line=" -I/include -I${java.home}/../include -I${java.home}/../include/linux -I/usr/openwin/include -I${javahUtilsTarget} -${bldFlag} -DLINUX -c ${core_utils_src}/native/share/J3DTimer.c"/>
+    </exec>
+
+    <!-- Create the library file; based on build-linux-amd64.xml-->
+    <!-- Must use gcc to link, not ld, hence also need -shared; refer to http://www.gelato.unsw.edu.au/linux-ia64/0006/0212.html -->
+    <!-- Removed -R/usr/openwin/lib - an ld specific option (should be a filename, not a dir?!?) -->
+    <exec dir="${build}/${platform}/${bldType}/native/share/objs" executable="gcc">
+	<arg line="J3DTimer.o -G -z lazyload -lc -shared -o libj3dutils.so"/>
+    </exec>
+
+    <!-- Copy the copyright library file -->
+    <copy file="${build}/${platform}/${bldType}/native/share/objs/libj3dutils.so" 
+	 todir="${build}/${platform}/${bldType}/lib/ia64"/>
+
+  </target>
+
+  <target name="dist">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/${platform}/lib/ia64"/>
+
+    <!-- Copy the library files -->
+    <copy file="${build}/${platform}/opt/lib/ia64/libj3dutils.so"
+	 todir="${dist}/${platform}/lib/ia64"/>
+  </target>
+
+
+</project>

@@ -35,6 +35,12 @@
 	<property name="coreUtilsLibDependency" value="lib/amd64/libj3dutils.so"/>
   </target>
 
+  <target name="nativeSetup-debug-linux-ia64" if="isLinuxOnIA64">
+	<property name="bldFlag" value="g"/>
+	<property name="coreLibDependency" value="lib/ia64/libj3dcore-ogl.so"/>
+	<property name="coreUtilsLibDependency" value="lib/ia64/libj3dutils.so"/>
+  </target>
+
   <target name="nativeSetup-debug-win32" if="isWindowsOnX86">
 	<property name="bldFlag" 
 	         value="-DWIN32 -DDEBUG -D_WINDOWS"/>
@@ -43,7 +49,7 @@
   </target>
 
 
-  <target name="nativeSetup-debug" depends="nativeSetup-debug-solaris, nativeSetup-debug-linux, nativeSetup-debug-linux-amd64, nativeSetup-debug-win32">
+  <target name="nativeSetup-debug" depends="nativeSetup-debug-solaris, nativeSetup-debug-linux, nativeSetup-debug-linux-amd64, nativeSetup-debug-linux-ia64, nativeSetup-debug-win32">
 	<property name="bldType" value="debug"/>
 	<property name="javahCoreSrc"     
 	 location="${src}/classes/share/javax/media/j3d"/>
@@ -73,6 +79,12 @@
 	<property name="coreUtilsLibDependency" value="lib/amd64/libj3dutils.so"/>
   </target>
 
+  <target name="nativeSetup-opt-linux-ia64" if="isLinuxOnIA64">
+	<property name="bldFlag" value="O"/>
+	<property name="coreLibDependency" value="lib/ia64/libj3dcore-ogl.so"/>
+	<property name="coreUtilsLibDependency" value="lib/ia64/libj3dutils.so"/>
+  </target>
+
   <target name="nativeSetup-opt-win32" if="isWindowsOnX86">
 	<property name="bldFlag" 
 	         value="-DWIN32 -DNDEBUG -D_WINDOWS"/>
@@ -80,7 +92,7 @@
 	<property name="coreUtilsLibDependency" value="bin/j3dutils.dll"/>
   </target>
 
-  <target name="nativeSetup-opt" depends="nativeSetup-opt-solaris, nativeSetup-opt-linux, nativeSetup-opt-linux-amd64, nativeSetup-opt-win32">
+  <target name="nativeSetup-opt" depends="nativeSetup-opt-solaris, nativeSetup-opt-linux, nativeSetup-opt-linux-amd64, nativeSetup-opt-linux-ia64, nativeSetup-opt-win32">
 	<property name="bldType" value="opt"/>
 	<property name="javahCoreSrc"     
 	 location="${src}/classes/share/javax/media/j3d"/>

@@ -164,6 +164,11 @@
     <property name="platform" value="linux-amd64"/>
   </target>
 
+  <target name="setupLinuxIA64" if="isLinuxOnIA64">	
+    <property name="ostype" value="linux"/>
+    <property name="platform" value="linux-ia64"/>
+  </target>
+
   <!-- win32 should be rename as windows -->
   <target name="setupWindows" if="isWindowsOnX86">	
     <property name="ostype" value="win32"/>
@@ -171,7 +176,7 @@
   </target>
 
   <target name="setupPlatform"
-       depends="init, setupBuildType, setupSolaris, setupLinux, setupLinuxAmd64, setupWindows">
+       depends="init, setupBuildType, setupSolaris, setupLinux, setupLinuxAmd64, setupLinuxIA64, setupWindows">
     <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
     <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
     <property name="docname" value="java3d-${version_file}-doc"/>
@@ -303,6 +308,10 @@
 
     <condition property="isLinuxOnAmd64">
         <os name="linux" arch="amd64"/>
+    </condition>
+
+    <condition property="isLinuxOnIA64">
+        <os name="linux" arch="ia64"/>
     </condition>
 
     <condition property="isSolarisOnSparc">
