@@ -369,6 +369,13 @@ class LightBin extends Object implements ObjectUpdate {
 
 	int frameCount = VirtualUniverse.mc.frameCount;
 
+	// TODO: When working on issue 15 and 88, we realise that the 
+	// logic in this method flaw. As we are ready into 1.3.2beta1 
+	// phase, and there isn't an existing issue related to the logic
+	// error in method, we decided not to fix it for now. This method
+	// should have the logic as in EnvironmentSet.updateAttributes();
+	// The fix to issue 15 and 88.
+
 	// within frames
 	if (cv.lightBin != this) {
 
@@ -424,7 +431,7 @@ class LightBin extends Object implements ObjectUpdate {
 	    
 	    cv.canvasDirty &= ~Canvas3D.LIGHTBIN_DIRTY;
 	}
-	else if ((pointLts.size() > 0) && ((cv.canvasDirty & Canvas3D.VWORLD_SCALE_DIRTY) != 0 )) {
+	else if ((pointLts.size() > 0) && ((cv.canvasDirty & Canvas3D.VIEW_MATRIX_DIRTY) != 0 )) {
             if (geometryBackground == null) {
 		scale = cv.canvasViewCache.getVworldToCoexistenceScale();
                 cv.setModelViewMatrix(cv.ctx, cv.vpcToEc.mat, 

@@ -289,7 +289,7 @@ class Renderer extends J3dThread {
 						 Canvas3D.LIGHTENABLES_DIRTY |
 						 Canvas3D.AMBIENTLIGHT_DIRTY |
 						 Canvas3D.MODELCLIP_DIRTY |
-						 Canvas3D.VWORLD_SCALE_DIRTY |
+						 Canvas3D.VIEW_MATRIX_DIRTY |
 						 Canvas3D.FOG_DIRTY));
 			 // Force reload of transform next frame
 			 cv.modelMatrix = null;
@@ -1279,6 +1279,11 @@ class Renderer extends J3dThread {
                                  }
                                 }
 
+				// Force view matrix dirty for each eye.
+				if (useStereo) {
+				    canvas.canvasDirty |= Canvas3D.VIEW_MATRIX_DIRTY;
+				}
+				
 			        // render opaque geometry
                                 renderBin.renderOpaque(canvas);
 

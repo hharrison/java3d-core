@@ -488,7 +488,7 @@ class CanvasViewCache extends Object {
 	if(cvc != null)
 	    copyComputedCanvasViewCache(cvc, doInfinite);
 
-	canvas.canvasDirty |= Canvas3D.VWORLD_SCALE_DIRTY;
+	canvas.canvasDirty |= Canvas3D.VIEW_MATRIX_DIRTY;
 
         // reset screen view dirty mask if canvas is offScreen. Note:
 	// there is only one canvas per offscreen, so it is ok to

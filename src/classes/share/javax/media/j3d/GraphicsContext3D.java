@@ -2424,10 +2424,9 @@ public class GraphicsContext3D extends Object   {
 	    canvas3d.enableMask = enableMask;
 	}
 
+	// Force LightBin.updateAttributes and EnvironmentSet.updateAttributes 
+	// to use the within frame case.
 	canvas3d.lightBin = null;
-
-
-	// Mark the envset as dirty for the canvas for scene graph rendering
 	canvas3d.environmentSet = null;
 
 	if (fog != null) {
@@ -2472,6 +2471,10 @@ public class GraphicsContext3D extends Object   {
 		canvas3d.canvasDirty |= Canvas3D.MODELCLIP_DIRTY;
 	    }
 	}
+
+	// Force EnvironmentSet.updateAttributes to  use the within frame case.
+	canvas3d.environmentSet = null;
+
     }
 
     

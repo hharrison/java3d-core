@@ -299,7 +299,7 @@ public class Canvas3D extends Canvas {
     static final int RENDERMOLECULE_DIRTY      = 0x1000;
     static final int FOG_DIRTY                 = 0x2000;
     static final int MODELCLIP_DIRTY           = 0x4000;    
-    static final int VWORLD_SCALE_DIRTY        = 0x8000;
+    static final int VIEW_MATRIX_DIRTY         = 0x8000;
 
     // Use to notify D3D Canvas when window change
     static final int RESIZE = 1;
