@@ -96,6 +96,17 @@ class MasterControl {
     boolean transparentOffScreen = false;
     
 
+
+
+    /**
+     * the flag to indicate whether should renderer view frustum culling be true. 
+     * true by default.
+     */
+    // Set by the -Dj3d.viewFrustumCulling property, When this flag is
+    // set to false, the renderer view frustum culling is turned off.
+
+    boolean viewFrustumCulling = true;
+
     /**
      * the flag to indicate whether the geometry should be locked or not
      */
@@ -467,6 +478,7 @@ class MasterControl {
 	// by MIK OF CLASSX
 	transparentOffScreen = getBooleanProperty("j3d.transparentOffScreen", transparentOffScreen,"transparent OffScreen");
 
+	viewFrustumCulling = getBooleanProperty("j3d.viewFrustumCulling", viewFrustumCulling,"View frustum culling in the renderer is");
 	
 	sortShape3DBounds =
 	    getBooleanProperty("j3d.sortShape3DBounds", sortShape3DBounds,

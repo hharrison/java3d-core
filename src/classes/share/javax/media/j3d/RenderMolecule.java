@@ -1868,10 +1868,12 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	*/
 	// Send down the model view only once, if its not of type text
 	if ((primaryMoleculeType & (TEXT3D_MOLECULE| ORIENTEDSHAPE3D_MOLECULE)) == 0) {
+
 	    if (primaryRenderAtomList != null) {
 		if ((primaryRenderMethod != VirtualUniverse.mc.getDisplayListRenderMethod()) ||
 		    modeSupportDL) {
 		    if (primaryMoleculeType != SEPARATE_DLIST_PER_RINFO_MOLECULE) {
+
 
 			if ((primaryRenderMethod != VirtualUniverse.mc.getDisplayListRenderMethod()) &&
 			    (pass == TextureBin.USE_DISPLAYLIST)) {
@@ -1898,6 +1900,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    }
 	}
 	else {	// TEXT3D or ORIENTEDSHAPE3D    
+
 	    if (primaryRenderAtomList != null) {
 		if (pass == TextureBin.USE_DISPLAYLIST) {
 		    pass = TextureBin.USE_VERTEXARRAY;
@@ -1957,11 +1960,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	int bitMask = geometryType | Canvas3D.MATERIAL_DIRTY|
 	    Canvas3D.COLORINGATTRS_DIRTY|
 	    Canvas3D.TRANSPARENCYATTRS_DIRTY;
-
-	/*
-	  System.out.println("RM : updateAttributes " + this +
-	  " dirtyBits is " + dirtyBits);
-	*/
 	
 	// If beginning of a frame then reload all the attributes
 	if ((cv.canvasDirty & bitMask) != 0) {
@@ -2132,10 +2130,14 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	}
 	
 	if ((primaryMoleculeType & (TEXT3D_MOLECULE| ORIENTEDSHAPE3D_MOLECULE)) == 0) {
+	    /* System.out.println("updateAttributes  setModelViewMatrix (1)"); */
+
 	    Transform3D modelMatrix =
 	        trans[localToVworldIndex[NodeRetained.LAST_LOCAL_TO_VWORLD]];
 	    
 	    if (cv.modelMatrix != modelMatrix) {
+		/* System.out.println("updateAttributes  setModelViewMatrix (2)"); */
+
 		cv.setModelViewMatrix(cv.ctx, cv.vworldToEc.mat, 
 				      modelMatrix);
 	    }

@@ -37,13 +37,15 @@ class DisplayListRenderMethod implements RenderMethod {
     public boolean render(RenderMolecule rm, Canvas3D cv, int pass,
 			  RenderAtomListInfo ra,
 			  int dirtyBits) {
-
-        if (rm.doInfinite || rm.vwcBounds.intersect(cv.viewFrustum)) {
+	
+        if (rm.doInfinite || 
+	    !VirtualUniverse.mc.viewFrustumCulling ||
+	    rm.vwcBounds.intersect(cv.viewFrustum)) {
 	    cv.updateState(pass, dirtyBits);
 	    cv.callDisplayList(cv.ctx, rm.displayListId,
 			       rm.isNonUniformScale);
 	    return true;
-	}
+	}	
 	return false;
     }
 

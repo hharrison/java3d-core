@@ -48,7 +48,8 @@ class CompressedGeometryRenderMethod implements RenderMethod {
 		}
 	    }
 	    else {
-		if (ra.renderAtom.localeVwcBounds.intersect(cv.viewFrustum)) {
+		if (!VirtualUniverse.mc.viewFrustumCulling ||
+		    ra.renderAtom.localeVwcBounds.intersect(cv.viewFrustum)) {
 		    cv.updateState(pass, dirtyBits);
 		    cv.raIsVisible = true;
 		    renderCompressedGeo(ra, rm, cv);
