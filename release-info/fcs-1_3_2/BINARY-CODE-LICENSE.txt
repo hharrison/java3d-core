@@ -1,0 +1,15 @@
+=====================================================================
+BEGIN LICENSE PLACEHOLDER
+=====================================================================
+
+Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+
+This software is licensed under terms that are yet to be disclosed.
+Until such time as these terms are disclosed, you may not do anything
+at all with this binary release.
+
+=====================================================================
+END LICENSE PLACEHOLDER
+=====================================================================
+
+TODO: remove the above placeholder and put the actual license here.
