@@ -16,17 +16,70 @@
 
 <project name="Java 3D" default="jar-opt" basedir=".">
 
-  <!-- ************************* -->
-  <!-- Build Specific properties -->
+  <!--
+  *********************************************************************
+  *
+  * The following properties may be set on the command line to
+  * specify the compiler used or the renderer to be built. They are
+  * specified using "ant -Dprop.name=value", where the actual
+  * property and and value are substituted for "prop.name" and
+  * "value"
+  *
+  *   build.comp=gcc    Use GCC compilers (default, all platforms)
+  *   build.comp=forte  Use Forte compilers (Solaris only)
+  *   build.comp=vc     Use Visual C++ compilers (Windows only)
+  *
+  *   build.rend=ogl    build OpenGL native library (default)
+  *   build.rend=d3d    build DirectX (D3D) native library
+  *
+  * For example:
+  *
+  *   ant -Dbuild.comp=vc -Dbuild.rend=d3d
+  *
+  *********************************************************************
+  -->
 
-  <!-- Version number of build -->
-  <property name="version_base" value="1.3.2"/>
+  <!-- *************************************** -->
+  <!-- *** Begin build-specific properties *** -->
+  <!-- *************************************** -->
 
-  <!-- Build number, eg pre6, build6 -->
-  <property name="version_build" value="pre7"/>
+  <!--
+  * The following two properties specify the version and build number
+  * of Java 3D being built.  The "version_base" property specifies
+  * the dot-dot base version number of Java 3D; it must contain
+  * exactly three integer numbers separated by "periods ("."). The
+  * version_base_file property must be the same version number as
+  * version_base with "_" replacing ".". The version_build property
+  * specifies the build number (e.g., pre6, build6, beta1, rc1). It
+  * is ignored for production builds.
+  -->
 
-  <!-- End of Build Specific properties -->
-  <!-- ******************************** -->
+  <property name="version_base"       value="1.3.2"/>
+  <property name="version_base_file"  value="1_3_2"/>
+  <property name="version_build"      value="pre7"/>
+
+  <!-- ************************************* -->
+  <!-- *** End build-specific properties *** -->
+  <!-- ************************************* -->
+
+  <!--
+  *********************************************************************
+  *
+  * A build of Java 3D is one of the following three types: daily
+  * build, stable build, production build. Daily builds are identified
+  * with a "preN_YYMMDDHHMM" suffix; stable builds are identified with
+  * a "buildN" suffix; production builds are identified with an "rcN"
+  * suffix or with no suffix.
+  *
+  * The default is to do a daily build. One of the following
+  * properties may be set on the command line to do a different kind
+  * of build:
+  *
+  *   build.stable=true      Do a stable build
+  *   build.production=true  Do a production (RC or FCS) build
+  *
+  *********************************************************************
+  -->
 
   <!-- Set global properties for this build -->
   <property name="vecmath_home" location="../vecmath"/>
@@ -55,6 +108,8 @@
     <echo message="ostype          = ${ostype}"/>
     <echo message="platform        = ${platform}"/>
     <echo message="version         = ${version}"/>
+    <echo message="version_file    = ${version_file}"/>
+    <echo message="version_rpm     = ${version_rpm}"/>
     <echo message="daily_build     = ${daily_build}"/>
     <echo message="dev_phase       = ${dev_phase}"/>
   </target>
@@ -78,20 +133,26 @@
   <target name="setupDaily" unless="build.stable">
     <echo message="setupDaily"/>
     <property name="daily_build" value="true"/>
-    <property name="version" value="${version_base}_${version_build}_${buildtime}"/>
+    <property name="version" value="${version_base}-${version_build}-${buildtime}"/>
+    <property name="version_file" value="${version_base_file}-${version_build}-${buildtime}"/>
+    <property name="version_rpm" value="${version_base}_${version_build}_${buildtime}"/>
   </target>
 
   <target name="setupStable" if="build.stable">
     <echo message="setupStable"/>
     <property name="daily_build" value="false"/>
-    <property name="version" value="${version_base}_${version_build}"/>
+    <property name="version" value="${version_base}-${version_build}"/>
+    <property name="version_file" value="${version_base_file}-${version_build}"/>
+    <property name="version_rpm" value="${version_base}_${version_build}"/>
   </target>
 
   <target name="setupProduction" if="build.production">
     <echo message="setupProduction"/>
     <property name="daily_build" value="false"/>
-    <property name="version" value="${version_base}"/>
     <property name="dev_phase" value="false"/>
+    <property name="version" value="${version_base}"/>
+    <property name="version_file" value="${version_base_file}"/>
+    <property name="version_rpm" value="${version_base}"/>
   </target>
 
   <target name="setupDevPhase" unless="build.production" depends="setupDaily,setupStable">
@@ -103,7 +164,7 @@
        depends="init, setupProduction, setupDevPhase ,setupSolaris, setupLinux, setupWindows">
     <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
     <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
-    <property name="docname" value="java3d-${version}-doc"/>
+    <property name="docname" value="java3d-${version_file}-doc"/>
   </target>
 
 
@@ -179,23 +240,25 @@
   <target name="all" depends="jar-debug,dist,docs-jcp,docs-private"/>
 
   <target name="rpm" description="Build rpm package" depends="dist">
-      <mkdir dir="${build}/rpm"/>
-      <mkdir dir="${build}/rpm/SPECS"/>
-      <mkdir dir="${build}/rpm/SOURCES"/>
-      <mkdir dir="${build}/rpm/BUILD"/>
-      <mkdir dir="${build}/rpm/RPMS"/>
+      <mkdir dir="${build}/${platform}/rpm"/>
+      <mkdir dir="${build}/${platform}/rpm/SPECS"/>
+      <mkdir dir="${build}/${platform}/rpm/SOURCES"/>
+      <mkdir dir="${build}/${platform}/rpm/BUILD"/>
+      <mkdir dir="${build}/${platform}/rpm/RPMS"/>
 
       <copy file="build-tools/java3d-rpm.spec" 
-            todir="${build}/rpm/SPECS"
+            todir="${build}/${platform}/rpm/SPECS"
             overwrite="true">
           <filterset>
               <filter token="VERSION" value="${version}"/>
+              <filter token="VERSION_FILE" value="${version_file}"/>
+              <filter token="VERSION_RPM" value="${version_rpm}"/>
           </filterset>
       </copy>
 
-      <tar destfile="${build}/rpm/SOURCES/java3d-${version}.tar.gz"
+      <tar destfile="${build}/${platform}/rpm/SOURCES/java3d-${version_file}.tar.gz"
            compression="gzip">
-          <tarfileset dir="${dist}/linux-i586"
+          <tarfileset dir="${dist}/${platform}"
                       includes="lib/**"
           />
           <tarfileset dir="release-info"
@@ -207,9 +270,11 @@
       </tar>
 
       <rpm specFile="java3d-rpm.spec"
-           topDir="${build}/rpm"/>
+           topDir="${build}/${platform}/rpm"/>
 
-      <copy file="${build}/rpm/RPMS/i586/java3d-${version}-1.i586.rpm" todir="dist/linux-i586"/>
+      <copy
+        file="${build}/${platform}/rpm/RPMS/i586/java3d-${version_rpm}-1.i586.rpm"
+        tofile="dist/${platform}/java3d-${version_file}-1-i586.rpm"/>
   </target>
 
   <target name="clean-dist">

@@ -1,11 +1,11 @@
 Summary: Java 3D @VERSION@
 Name: java3d
-Version:@VERSION@
+Version:@VERSION_RPM@
 Release: 1
 Copyright: JDL
 Group: System Environment/Base
 BuildRoot: /var/tmp/%{name}-buildroot
-Source:java3d-@VERSION@.tar.gz
+Source:java3d-@VERSION_FILE@.tar.gz
 Prefix:/usr/java/jdk1.5.0
 
 %description
