@@ -110,7 +110,11 @@ class NativeConfigTemplate3D {
 	    return null;
 	}	    
 
-	GraphicsConfiguration gc1 = new J3dGraphicsConfig(gd, pixelFormat);
+	// Fix to issue 97 -- 
+	// Pass in 0 for pixel format to the AWT. 
+	// ATI driver will lockup pixelFormat, if it is passed to AWT.
+	GraphicsConfiguration gc1 = new J3dGraphicsConfig(gd, 0);
+
 	// We need to cache the offScreen pixelformat that glXChoosePixelFormat()
 	// returns, since this is not cached with J3dGraphicsConfig and there
 	// are no public constructors to allow us to extend it.

@@ -1133,7 +1133,8 @@ public class Canvas3D extends Canvas {
 	this.graphicsConfiguration = graphicsConfiguration;
 
 	// Needed for Win32 only.
-	vid = nativeWSobj.getCanvasVid(graphicsConfiguration);
+	// Fix to issue 97 -- We will stop using vid. Need to cleanup code.
+	vid = 0;
 
 	// Fix for issue 20.
 	// Needed for Linux and Solaris.

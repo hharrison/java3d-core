@@ -972,7 +972,7 @@ int find_DB_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
     if (dbVal == UNNECESSARY || dbVal== PREFERRED) {
 	index = dbIndex;
 	wglAttrs[index++] = WGL_DOUBLE_BUFFER_ARB;
-	wglAttrs[index++] = TRUE;
+	wglAttrs[index++] = FALSE;  // Partial fix to issue 100.
 	/*
 	 * Terminate by 2 zeros to avoid driver bugs
 	 * that assume attributes always come in pairs.
