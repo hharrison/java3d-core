@@ -1757,6 +1757,15 @@ public class Canvas3D extends Canvas {
 	if ((offScreenCanvasSize.width != bufferRetained.width) ||
 		(offScreenCanvasSize.height != bufferRetained.height)) {
 
+	    // NOTE: the setOffScreenBuffer method really shouldn't
+	    // make any GLX calls (which the native create/destroy
+	    // OffScreenBuffer methods do). It should send a message
+	    // to the Renderer thread and have it done there, although
+	    // that would be problematic if called from a
+	    // Behavior. As it is, there is a small, but non-zero
+	    // chance of a similar bug cropping up for a system with
+	    // multiple views and multiple on-screen canvases.
+
 	    if (window != 0) {
 		destroyOffScreenBuffer(ctx, screen.display, window);
 		removeCtx(true);
@@ -3948,7 +3957,11 @@ public class Canvas3D extends Canvas {
 						    new Long(screen.display), 
 						    new Integer(window), 
 						    new Long(ctx)});
-	    if (!offscreen) {
+	    // Fix for Issue 19
+	    // Wait for the context to be freed unless called from
+	    // a Behavior or from a Rendering thread
+	    if (!(Thread.currentThread() instanceof BehaviorScheduler) &&
+		!(Thread.currentThread() instanceof Renderer)) {
 		while (ctxTimeStamp != 0) {
 		    MasterControl.threadYield();
 		}
