@@ -51,6 +51,10 @@ to <code>SceneGraphObject</code> class</li>
   <li>Allow getParent() to be called on live/compiled scene graph: add
 public <code>ALLOW_PARENT_READ</code> capability bit (default=<code>false</code>)
 to <code>Node </code>class</li>
+  <li>Ability to get the Locale from a live node: add public <code>getLocale()</code>
+method and <code>ALLOW_LOCALE_READ</code> capability bit to <code>Node</code>
+class<br>
+  </li>
   <li>Additional blending functions, for example: <code>BLEND_SRC_COLOR,
 BLEND_ONE_MINUS_SRC_COLOR, BLEND_DST_COLOR, BLEND_ONE_MINUS_DST_COLOR</code></li>
 </ul>
@@ -60,13 +64,8 @@ deprecate in
 the API.<br>
 </p>
 <ul>
-  <li>Collision: <code>WakeupOnCollision{Entry,Exit,Movement}</code>
-(misnamed, not useful for most applications)<br>
-  </li>
   <li><code>CompressedGeometry</code> (no HW support, lack of industry
 acceptance)</li>
-  <li><code>WakeupOnAWTBehavior</code> (listeners + <code>WakeupOnBehaviorPost</code>
-is more robust)</li>
   <li><code>Sensor</code> prediction (has never been implemented)<br>
   </li>
 </ul>
@@ -86,14 +85,14 @@ into the 1.4 API.
 </p>
 <h4>1. Render to texture<br>
 </h4>
-<p><span style="color: rgb(204, 0, 0); font-style: italic;">DESCRIPTION
-FOR POSSIBLE RENDER-TO-TEXTURE SUPPORT GOES HERE...</span><br>
+<p><span style="font-style: italic; color: rgb(0, 153, 0);">DESCRIPTION
+FOR POSSIBLE RENDER-TO-TEXTURE SUPPORT GOES HERE...</span>
 </p>
 <h4>2. Stencil buffer support<br>
 </h4>
-<p><span style="color: rgb(204, 0, 0); font-style: italic;">DESCRIPTION
+<p><span style="font-style: italic; color: rgb(0, 153, 0);">DESCRIPTION
 FOR POSSIBLE STENCIL SUPPORT GOES HERE; NOTE THAT THIS WILL NOT INCLUDE
-ANY MULTIPASS EFFECTS for 1.4...</span><br>
+ANY MULTIPASS EFFECTS for 1.4...</span>
 </p>
 <h4>3. Move picking into core</h4>
 <p>We should consider moving some of the picking utilities (e.g.,
@@ -105,33 +104,48 @@ potential benefit.<br>
 <h4>4. Lightweight Canvas3D (e.g., JCanvas3D)</h4>
 <p>We should consider adding a lightweight JCanvas3D that is similar to
 JGLCanvas in JOGL. Adding this into core may be beyond the
-scope of 1.4. Perhaps this can be done as a utility, although it
-may require some core changes.</p>
+scope of 1.4. Probably can be done as a utility, although it
+may require some core changes.
+<span style="color: rgb(204, 0, 0);">Note: this feature will not happen
+without an someone from the community volunteering
+to drive it.</span>
+</p>
 <h4>5. Miscellaneous features</h4>
 <p>This is a list of miscellaneous features that are being considered
 for addition to
 the API.<br>
 </p>
 <ul>
-  <li>Add a new attribute for depth test function to
-RenderingAttributes: public <code>get/setDepthTestFunction(int&nbsp;function)</code>
-methods that takes as values one of: <code>ALWAYS, NEVER,
-EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER, GREATER_OR_EQUAL</code>.
-The default value would be <code>LESS_OR_EQUAL</code> for backward
-compatibility.</li>
   <li>Non-power-of-two textures</li>
+  <li>Point sprites</li>
+  <li>Ability for nested ViewSpecificGroup nodes to replace the set of
+views in addition to
+current intersection semantics</li>
   <li>API support for&nbsp; retained alpha buffers</li>
   <li>Ability to query properties from a <code>GraphicsConfiguration</code></li>
   <li>Better support for off-screen configuration parameters (e.g., an
 attribute in <code>GraphicsConfigTemplate3D</code> indicating whether
 the requested <code>GraphicsConfiguration</code> is used for on-screen
 rendering,
-off-screen rendering, or both)<br>
-  </li>
+off-screen rendering, or both)</li>
+  <li>Add a new attribute for depth test function to
+RenderingAttributes: public <code>get/setDepthTestFunction(int&nbsp;function)</code>
+methods that takes as values one of: <code>ALWAYS, NEVER,
+EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER, GREATER_OR_EQUAL</code>.
+The default value would be <code>LESS_OR_EQUAL</code> for backward
+compatibility. <span style="color: rgb(204, 0, 0);">Note: this feature
+will not
+happen
+without an someone from the community volunteering
+to drive it.</span></li>
   <li>Method to retrieve the geometry data from the tessellation of a
 glyph in a 3D font: a
 public <code>GeometryArray&nbsp;getGlyphGeometry(</code><code>int&nbsp;glyphCode</code><code>)</code>
-method in the <code>Font3D</code> class</li>
+method in the <code>Font3D</code> class. <span
+ style="color: rgb(204, 0, 0);">Note: this feature will not
+happen
+without an someone from the community volunteering
+to drive it.</span></li>
 </ul>
 <h4>6. List of features to deprecate</h4>
 <p>This is a list of miscellaneous features that are being considered
@@ -139,8 +153,6 @@ for deprecation in
 the API.<br>
 </p>
 <ul>
-  <li><code>Billboard</code> (use <code>OrientedShape3D</code> instead)<br>
-  </li>
   <li><code>SharedGroup</code> (many bugs, <em>very</em> difficult to
 implement
 efficiently)</li>
