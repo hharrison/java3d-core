@@ -484,7 +484,11 @@ getPropertiesFromCurrentContext(
 
     /* *********************************************************/
     /* setup the graphics context properties */
-    if (versionNumbers[1] >= 2) { /* check 1.2 core and above */
+
+    /* check 1.2 core and above */
+    if ((versionNumbers[0] > 1) ||
+	(versionNumbers[0] == 1 && versionNumbers[1] >= 2)) {
+
 	/* 1.2 core */
         ctxInfo->rescale_normal_ext = JNI_TRUE;
 	ctxInfo->rescale_normal_ext_enum = GL_RESCALE_NORMAL;
