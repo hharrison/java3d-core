@@ -1,4 +1,3 @@
-
 /*
  * $RCSfile$
  *
@@ -329,9 +328,11 @@ public class Canvas3D extends Canvas {
     //
     volatile boolean offScreenRendering = false;
 
-    // Flag that indicates whether canvas is waiting for off-screen
-    // rendering to be completed
-    boolean waitingForOffScreenRendering = false;
+    //
+    // Flag that indicates we are waiting for an off-screen buffer to be
+    // created or destroyed by the Renderer.
+    //
+    volatile boolean offScreenBufferPending = false;
 
     //
     // ImageComponent used for off-screen rendering
@@ -1411,7 +1412,7 @@ public class Canvas3D extends Canvas {
 	    validCanvas = false;
 	}
 
-	removeCtx(false);
+	removeCtx();
 
 	synchronized (drawingSurfaceObject) {
 
@@ -1776,6 +1777,9 @@ public class Canvas3D extends Canvas {
         if (offScreenRendering)
             throw new RestrictedAccessException(J3dI18N.getString("Canvas3D2"));
 
+	// Check that offScreenBufferPending is not already set
+	J3dDebug.doAssert(!offScreenBufferPending, "!offScreenBufferPending");
+
 	if (buffer != null) {
 	    ImageComponent2DRetained bufferRetained =
 		(ImageComponent2DRetained)buffer.retained;
@@ -1803,9 +1807,10 @@ public class Canvas3D extends Canvas {
 	    (offScreenCanvasSize.height != height)) {
 
 	    if (window != 0) {
+		removeCtx();
 		// Fix for Issue 18.
 		// Will do destroyOffScreenBuffer in the Renderer thread. 
-		removeCtx(true);
+		sendDestroyOffScreenBuffer();
 		window = 0;
 	    }
 
@@ -1814,13 +1819,13 @@ public class Canvas3D extends Canvas {
 	    this.setSize(offScreenCanvasSize);
 
 	    if (width > 0 && height > 0) {
-		VirtualUniverse.mc.sendCreateOffScreenBuffer(this);
+		sendCreateOffScreenBuffer();
 	    }
 
 	    ctx = 0; 
 	}
 	else if (ctx != 0) {
-	    removeCtx(false);
+	    removeCtx();
 	}
 
         offScreenBuffer = buffer;
@@ -4023,25 +4028,76 @@ public class Canvas3D extends Canvas {
     }
     
 
-    private void removeCtx(boolean destroyOffscreen) {
+    // Send a createOffScreenBuffer message to Renderer (via
+    // MasterControl) and wait for it to be done
+    private void sendCreateOffScreenBuffer() {
+	// Wait for the buffer to be created unless called from
+	// a Behavior or from a Rendering thread
+	if (!(Thread.currentThread() instanceof BehaviorScheduler) &&
+	    !(Thread.currentThread() instanceof Renderer)) {
+
+	    offScreenBufferPending = true;
+	}
+
+	// Send message to Renderer thread to perform createOffScreenBuffer.
+	VirtualUniverse.mc.sendCreateOffScreenBuffer(this);
+
+	// Wait for off-screen buffer to be created
+	while (offScreenBufferPending) {
+	    MasterControl.threadYield();
+	}
+    }
+
+    // Send a destroyOffScreenBuffer message to Renderer (via
+    // MasterControl) and wait for it to be done
+    private void sendDestroyOffScreenBuffer() {
+	// Nothing to do unless screen.renderer is non-null
+	if ((screen == null) || (screen.renderer == null)) {
+	    return;
+	}
+
+	// Wait for the buffer to be destroyed unless called from
+	// a Behavior or from a Rendering thread
+	Thread currentThread = Thread.currentThread();
+	if (!(currentThread instanceof BehaviorScheduler) &&
+	    !(currentThread instanceof Renderer)) {
+
+	    offScreenBufferPending = true;
+	}
+
+	// Fix for Issue 18
+	// Send message to Renderer thread to perform destroyOffScreenBuffer.
+	VirtualUniverse.mc.postRequest(MasterControl.FREE_CONTEXT, 
+				       new Object[]{this, 
+						    new Long(screen.display), 
+						    new Integer(window), 
+						    new Long(0),
+						    Boolean.TRUE});
+
+	// Wait for off-screen buffer to be destroyed
+	while (offScreenBufferPending) {
+	    MasterControl.threadYield();
+	}
+    }
+
+    private void removeCtx() {
 	if ((screen != null) && 
 	    (screen.renderer != null) &&
 	    (ctx != 0)) {
 
-	    // Fix for Issue 18
-	    // Pass destroyOffscreen boolean Renderer thread to perform destroyOffScreenBuffer.
 	    VirtualUniverse.mc.postRequest(MasterControl.FREE_CONTEXT, 
 					   new Object[]{this, 
 							new Long(screen.display), 
 							new Integer(window), 
 							new Long(ctx),
-							new Boolean(destroyOffscreen)});
-	    
+							Boolean.FALSE});
+
 	    // Fix for Issue 19
 	    // Wait for the context to be freed unless called from
 	    // a Behavior or from a Rendering thread
-	    if (!(Thread.currentThread() instanceof BehaviorScheduler) &&
-		!(Thread.currentThread() instanceof Renderer)) {
+	    Thread currentThread = Thread.currentThread();
+	    if (!(currentThread instanceof BehaviorScheduler) &&
+		!(currentThread instanceof Renderer)) {
 		while (ctxTimeStamp != 0) {
 		    MasterControl.threadYield();
 		}

@@ -445,8 +445,6 @@ class Renderer extends J3dThread {
 		if (renderType == J3dMessage.CREATE_OFFSCREENBUFFER) {
 		    // Fix for issue 18.
 		    // Fix for issue 20.
-		    /* System.out.println("Renderer offScreenBuffer - fbConfig = " 
-		       + canvas.fbConfig); */
 		    canvas.window = 
 			canvas.createOffScreenBuffer(canvas.ctx, 
 						     canvas.screen.display,
@@ -454,6 +452,7 @@ class Renderer extends J3dThread {
 						     canvas.fbConfig,
 						     canvas.offScreenCanvasSize.width, 
 						     canvas.offScreenCanvasSize.height);
+		    canvas.offScreenBufferPending = false;
 		    m[nmesg++].decRefcount();
 		    continue;
 		} 
@@ -1495,9 +1494,10 @@ class Renderer extends J3dThread {
 	    // Since we are now the renderer thread, 
 	    // we can safely execute destroyOffScreenBuffer.
 	    if(destroyOffScreenBuffer) {
-		cv.makeCtxCurrent();
 		cv.destroyOffScreenBuffer(ctx, display, cv.fbConfig, window);
+		cv.offScreenBufferPending = false;
 	    }
+
 	    if (ctx != 0) {
 		int idx = listOfCtxs.indexOf(new Long(ctx));
 		if (idx >= 0) {
