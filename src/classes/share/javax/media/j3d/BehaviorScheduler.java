@@ -172,9 +172,9 @@ class BehaviorScheduler extends J3dThread {
 			    behav.processStimulus(wakeupCond.trigEnum);
 			}
 			catch (RuntimeException e) {
-			    if (wakeupCond != null) {
-				wakeupCond.cleanTree(behaviorStructure);
-			    }
+			    // Force behavior condition to be unset
+			    // Issue 21: don't call cleanTree here
+			    behavret.conditionSet = false;
 			    System.err.println("Exception occurred during Behavior execution:");
 			    e.printStackTrace();
 			}

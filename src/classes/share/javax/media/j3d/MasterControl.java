@@ -1537,7 +1537,7 @@ class MasterControl {
 
 	threads = (J3dThreadData []) renderWorkThreads.toArray(false);
 	size = renderWorkThreads.arraySize();
-	View v = null;
+	View v;
 	J3dThreadData lastRunThread = null;
 	waitTimestamp++;
 	sleepTime = Long.MAX_VALUE;
@@ -1545,16 +1545,27 @@ class MasterControl {
 	boolean threadToRun = false;
 	boolean needToSetWork = false;
 
+	// Fix for Issue 12: loop through the list of threads, calling
+	// computeCycleTime() exactly once per view. This ensures that
+	// all threads for a given view see consistent values for
+	// isMinCycleTimeAchieve and sleepTime.
+	v = null;
 	for (i=0; i<size; i++) {
 	    thread = threads[i];
-	    if (thread.canvas == null) { // Only for swap thread
-		((Object []) thread.threadArgs)[3] = null;
-	    }
 	    if (thread.view != v) {
 		thread.view.computeCycleTime();
 		if (thread.view.sleepTime < sleepTime) {
 		    sleepTime = thread.view.sleepTime;
 		}
+	    }
+	    v = thread.view;
+	}
+
+	v = null;
+	for (i=0; i<size; i++) {
+	    thread = threads[i];
+	    if (thread.canvas == null) { // Only for swap thread
+		((Object []) thread.threadArgs)[3] = null;
 	    }
 	    if ((thread.lastUpdateTime > thread.lastRunTime) &&
 		!thread.thread.userStop) {
@@ -1639,9 +1650,27 @@ class MasterControl {
 	    
 
 	if (needToSetWork && !threadToRun) {
-	    sleepTime -= (currentTime - lastTime);
+	    // Modified the following in the course of fixing Issue 12:
+	    //
+	    // 1. don't modify sleepTime by subtracting a value that
+	    // doesn't even represent time!
+	    //
+	    // 2. use sleep(sleepTime) rather than wait(sleepTime)
+	    //
+	    // Note that this will need to be redone anyway for Issue 11
+
+	    // BUG: sleepTime -= (currentTime - lastTime);
+
 	    if (sleepTime > 0) {
-		runMonitor(SLEEP, null, null, null, null);
+		// OLD: runMonitor(SLEEP, null, null, null, null);
+
+		// System.err.println("MasterControl: sleep(" + sleepTime + ")");
+		try {
+		    Thread.sleep(sleepTime);
+		} catch (InterruptedException e) {
+		    System.err.println(e);
+		}
+		// System.err.println("MasterControl: done sleeping");
 	    }
 	    // Need to invoke MC to do work 
 	    // next time after sleep
