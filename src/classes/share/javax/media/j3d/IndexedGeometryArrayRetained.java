@@ -51,21 +51,26 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
   void createIndexedGeometryArrayData(int indexCount) {
     this.indexCount    = indexCount;
     this.validIndexCount    = indexCount;
+
+
+    boolean notUCIO = (this.vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0;
     
     if((this.vertexFormat & GeometryArray.COORDINATES) != 0)
     	this.indexCoord    = new int[indexCount];
     
-    if((this.vertexFormat & GeometryArray.NORMALS) != 0)
+    if(((this.vertexFormat & GeometryArray.NORMALS) != 0) && notUCIO)
     	this.indexNormal    = new int[indexCount];
     
-    if((this.vertexFormat & GeometryArray.COLOR) != 0)
+    if(((this.vertexFormat & GeometryArray.COLOR) != 0) && notUCIO)
     	this.indexColor   = new int[indexCount];
     
     if((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
 	this.indexTexCoord = new Object[this.texCoordSetCount];
-	for (int i = 0; i < this.texCoordSetCount; i++) {
-	    this.indexTexCoord[i] = new int[indexCount];
-	}
+        if(notUCIO) {
+            for (int i = 0; i < this.texCoordSetCount; i++) {
+                this.indexTexCoord[i] = new int[indexCount];
+            }
+        }
 	maxTexCoordIndices = new int[texCoordSetCount];
     }
   }
@@ -581,8 +586,13 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    }
 	}
 	else {
-	    maxColorIndex = maxCoordIndex;
-	    this.indexColor[index] = colorIndex;
+	    if ((vertexFormat & GeometryArray.COLOR) != 0) {
+                if (this.indexColor == null) {
+                    this.indexColor = new int[indexCount];
+        	    System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained1"));
+                }
+            }
+            this.indexColor[index] = colorIndex;
 	}
 
     }
@@ -613,7 +623,12 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    }
 	}
 	else {
-	    maxColorIndex = maxCoordIndex;
+	    if ((vertexFormat & GeometryArray.COLOR) != 0) {
+                if (this.indexColor == null) {
+                    this.indexColor = new int[indexCount];
+        	    System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained1"));
+                }
+            }
 	    for (i=0, j = index; i < num;i++, j++) {
 		this.indexColor[j] = colorIndices[i];
 	    }
@@ -644,7 +659,12 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    }
 	}
 	else {
-	    maxNormalIndex = maxCoordIndex;
+	    if ((vertexFormat & GeometryArray.NORMALS) != 0) { 
+                if (this.indexNormal == null) {
+                    this.indexNormal = new int[indexCount];
+        	    System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained2"));
+                }
+            }
 	    this.indexNormal[index] = normalIndex;
 	}
 
@@ -676,7 +696,12 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    }
 	}
 	else {
-	    maxNormalIndex = maxCoordIndex;
+	    if ((vertexFormat & GeometryArray.NORMALS) != 0) {
+                if (this.indexNormal == null) {
+                    this.indexNormal = new int[indexCount];
+        	    System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained2"));
+                }
+            }
 	    for (i=0, j = index; i < num;i++, j++) {
 		this.indexNormal[j] = normalIndices[i];
 	    }
@@ -709,7 +734,13 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    }
 	}
 	else {
-	    maxTexCoordIndices[texCoordSet] = maxCoordIndex;
+	    if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+                if (indices == null) {
+                    indices = new int[indexCount];
+                    this.indexTexCoord[texCoordSet] = indices;
+        	    System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained3"));
+                }
+            }
 	    indices[index] = texCoordIndex;
 	}
 
@@ -746,7 +777,13 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 
       }
       else {
-	  maxTexCoordIndices[texCoordSet] = maxCoordIndex;
+	  if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+              if (indices == null) {
+                  indices = new int[indexCount];
+                  this.indexTexCoord[texCoordSet] = indices;
+        	  System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained3"));
+              }
+          }
 	  for (i=0, j = index; i < num;i++, j++) {
 	      indices[j] = texCoordIndices[i];
 	  }
@@ -786,6 +823,13 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * @return the color index
      */
     final int getColorIndex(int index) {
+	if (((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) &&
+	   ((vertexFormat & GeometryArray.COLOR) != 0)) {
+            if (this.indexColor == null) {
+                this.indexColor = new int[indexCount];
+                System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained1"));
+            }
+        }
 	return this.indexColor[index];
     }
 
@@ -797,6 +841,13 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      */
   final void getColorIndices(int index, int colorIndices[]) {
     int i, j, num = colorIndices.length;
+    if (((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) &&
+       ((vertexFormat & GeometryArray.COLOR) != 0)) {
+        if (this.indexColor == null) {
+            this.indexColor = new int[indexCount];
+            System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained1"));
+        }
+    }
 
     for (i=0, j = index;i < num;i++, j++)
       {
@@ -811,6 +862,13 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * @return the normal index
      */
     final int getNormalIndex(int index) {
+	if (((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) &&
+           ((vertexFormat & GeometryArray.NORMALS) != 0)) {
+            if (this.indexNormal == null) {
+                this.indexNormal = new int[indexCount];
+                System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained2"));
+            }
+        }
 	return this.indexNormal[index];
     }
 
@@ -822,6 +880,13 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      */
   final void getNormalIndices(int index, int normalIndices[]) {
     int i, j, num = normalIndices.length;
+    if (((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) &&
+       ((vertexFormat & GeometryArray.NORMALS) != 0)) {
+        if (this.indexNormal == null) {
+            this.indexNormal = new int[indexCount];
+            System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained2"));
+        }
+    }
 
     for (i=0, j = index;i < num;i++, j++)
       {
@@ -837,7 +902,16 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * @return the texture coordinate index
      */
     final int getTextureCoordinateIndex(int texCoordSet, int index) {
-	return ((int[])this.indexTexCoord[texCoordSet])[index];
+	int [] indices = (int[])this.indexTexCoord[texCoordSet];
+        if (((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) &&
+	   ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0)) {
+            if (indices == null) {
+                indices = new int[indexCount];
+                this.indexTexCoord[texCoordSet] = indices;
+                System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained3"));
+            }
+        }
+	return indices[index];
     }
 
     /**
@@ -850,6 +924,14 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
   final void getTextureCoordinateIndices(int texCoordSet, int index, int texCoordIndices[]) {
     int i, j, num = texCoordIndices.length;
     int [] indices = (int[])this.indexTexCoord[texCoordSet];
+    if (((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) &&
+       ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0)) {
+        if (indices == null) {
+            indices = new int[indexCount];
+            this.indexTexCoord[texCoordSet] = indices;
+            System.err.println(J3dI18N.getString("IndexedGeometryArrayRetained3"));
+        }
+    }
 
     for (i=0, j = index;i < num;i++, j++)
       {
@@ -1390,16 +1472,19 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	compileIndexCount = new int[numMerge];
 	compileIndexOffset = new int[numMerge];
 	indexCoord = new int[indexCount];
-	if ((vertexFormat  & GeometryArray.COLOR) != 0) 
-	    indexColor = new int[indexCount];
-	if ((vertexFormat  &  GeometryArray.NORMALS) != 0) 
-	    indexNormal = new int[indexCount];
-	// We only merge if texCoordSetCount = 1
-	if ((vertexFormat  &  GeometryArray.TEXTURE_COORDINATE) != 0) {
-	    indexTexCoord = new Object[1];
-	    indexTexCoord[0] = new int[indexCount];
-	    texCoord = (int[])indexTexCoord[0];
-	}
+        boolean notUCIO = (vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0;
+        if (notUCIO) {
+            if ((vertexFormat  & GeometryArray.COLOR) != 0)
+                indexColor = new int[indexCount];
+            if ((vertexFormat  &  GeometryArray.NORMALS) != 0)
+                indexNormal = new int[indexCount];
+            // We only merge if texCoordSetCount = 1
+            if ((vertexFormat  &  GeometryArray.TEXTURE_COORDINATE) != 0) {
+                indexTexCoord = new Object[1];
+                indexTexCoord[0] = new int[indexCount];
+                texCoord = (int[])indexTexCoord[0];
+            }
+        }
 	int curDataOffset = 0;
 	int curIndexOffset = 0;
 	for (int i = 0; i < numMerge; i++) {
@@ -1409,12 +1494,14 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    // Copy all the indices
 	    for (int j = 0; j < curIndexCount; j++) {
 		indexCoord[j+curIndexOffset] = geo.indexCoord[j+geo.initialIndexIndex]+curDataOffset;
-		if ((vertexFormat  & GeometryArray.COLOR) != 0) 
-		    indexColor[j+curIndexOffset] = geo.indexColor[j+geo.initialIndexIndex]+curDataOffset;
-		if ((vertexFormat  &  GeometryArray.NORMALS) != 0) 
-		    indexNormal[j+curIndexOffset] = geo.indexNormal[j+geo.initialIndexIndex]+curDataOffset;
-		if ((vertexFormat  &  GeometryArray.TEXTURE_COORDINATE) != 0) 
-		    texCoord[j+curIndexOffset] = ((int[])geo.indexTexCoord[0])[j+geo.initialIndexIndex]+curDataOffset;
+                if (notUCIO) {
+	            if ((vertexFormat  & GeometryArray.COLOR) != 0) 
+	                indexColor[j+curIndexOffset] = geo.indexColor[j+geo.initialIndexIndex]+curDataOffset;
+	            if ((vertexFormat  &  GeometryArray.NORMALS) != 0) 
+	                indexNormal[j+curIndexOffset] = geo.indexNormal[j+geo.initialIndexIndex]+curDataOffset;
+	            if ((vertexFormat  &  GeometryArray.TEXTURE_COORDINATE) != 0) 
+	                texCoord[j+curIndexOffset] = ((int[])geo.indexTexCoord[0])[j+geo.initialIndexIndex]+curDataOffset;
+                }
 	    }
 	    maxCoordIndex = geo.maxCoordIndex +curDataOffset;
 	    compileIndexOffset[i] = curIndexOffset;
