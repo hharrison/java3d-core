@@ -2753,10 +2753,11 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
     JNIEnv table = *env;
 
     /*
-      fprintf(stderr, "****** CreateOffScreenBuffer ******\n");     
-      fprintf(stderr, "display 0x%x,  pFormat %d, width %d, height %d\n",
-      (int) display,  pFormatInfoPtr->offScreenPFormat, width, height);
+    fprintf(stderr, "****** CreateOffScreenBuffer ******\n");
+    fprintf(stderr, "display 0x%x,  pFormat %d, width %d, height %d\n",
+	    (int) display,  pFormatInfoPtr->offScreenPFormat, width, height);
     */
+
     cv_class =  (jclass) (*(table->GetObjectClass))(env, obj);
     offScreenBuffer_field =
 	(jfieldID) (*(table->GetFieldID))(env, cv_class, "offScreenBufferInfo", "J");
@@ -2802,7 +2803,7 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
 	return 0;
     }
     
-    if (pFormatInfoPtr->supportPbuffer) {
+    if (pFormatInfoPtr->drawToPbuffer) {
 	
 	/* fprintf(stderr, "***** Use PBuffer for offscreen  ******\n"); */
 	
@@ -2814,6 +2815,10 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
 	    
 	if(hpbuf == NULL) {
 	    printErrorMessage("In Canvas3D : wglCreatePbufferARB FAIL.");
+	    ReleaseDC(hwnd, hdc);
+	    wglDeleteContext(hrc);
+	    DestroyWindow(hwnd);
+	    UnregisterClass(szAppName, (HINSTANCE)NULL);
 	    return 0;
 	}
 	
@@ -2821,9 +2826,19 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
 	
 	if(hpbufdc == NULL) {
 	    printErrorMessage("In Canvas3D : Can't get pbuffer's device context.");
+	    ReleaseDC(hwnd, hdc);
+	    wglDeleteContext(hrc);
+	    DestroyWindow(hwnd);
+	    UnregisterClass(szAppName, (HINSTANCE)NULL);
 	    return 0;
 	}		
 	
+	/*
+	fprintf(stderr,
+		"Successfully created PBuffer = 0x%x, hdc = 0x%x\n",
+		(int)hpbuf, (int)hpbufdc);
+	*/
+
 	/* Destroy all dummy objects */
 	ReleaseDC(hwnd, hdc);
 	wglDeleteContext(hrc);
@@ -2930,15 +2945,19 @@ void JNICALL Java_javax_media_j3d_Canvas3D_destroyOffScreenBuffer(
     offScreenBufferInfo =
 	(OffScreenBufferInfo *) (*(table->GetLongField))(env, obj, offScreenBuffer_field);
 
-    /* fprintf(stderr,"Canvas3D_destroyOffScreenBuffer : offScreenBufferInfo 0x%x\n",
-       offScreenBufferInfo);
+    /*
+    fprintf(stderr,"Canvas3D_destroyOffScreenBuffer : offScreenBufferInfo 0x%x\n",
+	    offScreenBufferInfo);
     */
+
     if(offScreenBufferInfo == NULL) {
 	return;
     }
 
     if(offScreenBufferInfo->isPbuffer) {
-	/* fprintf(stderr,"Canvas3D_destroyOffScreenBuffer : Pbuffer\n"); */
+	/*
+	fprintf(stderr,"Canvas3D_destroyOffScreenBuffer : Pbuffer\n");
+	*/
 
 	pFormatInfoPtr->wglReleasePbufferDCARB(offScreenBufferInfo->hpbuf, hpbufdc);
 	pFormatInfoPtr->wglDestroyPbufferARB(offScreenBufferInfo->hpbuf);
@@ -3149,7 +3168,7 @@ void cleanupCtxInfo(GraphicsContextPropertiesInfo* ctxInfo){
 
 #ifdef WIN32
 HWND createDummyWindow(const char* szAppName) {
-    static char szTitle[]="A Simple C OpenGL Program";
+    static const char *szTitle = "Dummy Window";
     WNDCLASS wc;   /* windows class sruct */
    
     HWND hWnd; 
@@ -3176,8 +3195,10 @@ HWND createDummyWindow(const char* szAppName) {
 
 				 /* Register the window class */
     
-    if(RegisterClass( &wc )==0)
-	fprintf(stdout, "Couldn't register class\n");
+    if(RegisterClass( &wc )==0) {
+	printErrorMessage("createDummyWindow: couldn't register class");
+	return NULL;
+    }
   
     /* Create a main window for this application instance. */
 
@@ -3196,7 +3217,8 @@ HWND createDummyWindow(const char* szAppName) {
 
     /* If window could not be created, return zero */
     if ( !hWnd ){
-	fprintf(stdout, "Couldn't Create window\n");
+	printErrorMessage("createDummyWindow: couldn't create window");
+	UnregisterClass(szAppName, (HINSTANCE)NULL);
 	return NULL;
     }
     return hWnd; 
@@ -3218,7 +3240,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     JNIEnv table = *env;
     jlong gctx;
     int stencilSize=0;
-    long newWin;
+    jint newWin;
     int PixelFormatID=0;
     GraphicsContextPropertiesInfo* ctxInfo = (GraphicsContextPropertiesInfo *)malloc(sizeof(GraphicsContextPropertiesInfo)); 
 	
@@ -3280,7 +3302,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
 	    glWin = XCreateWindow((Display *)display, root, 0, 0, width, height, 0,
 				  vinfo->depth, InputOutput, vinfo->visual,
 				  win_mask, &win_attrs);
-	    newWin = (unsigned long)glWin; 
+	    newWin = (jint)glWin; 
 	}
     }
     else if(window == 0 && offScreen){
@@ -3309,7 +3331,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     HDC hdc;          /* HW Device Context */
     DWORD err;
     LPTSTR errString;
-    HWND hWnd;
+    HWND hDummyWnd = 0;
     static char szAppName[] = "OpenGL";
     jlong vinfo = 0;
     jboolean result;
@@ -3321,13 +3343,25 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
       fprintf(stderr, "window is  0x%x, offScreen %d\n", window, offScreen);
     */
     
+    /*
+     * vid must be valid PixelFormat returned
+     * by wglChoosePixelFormat() or wglChoosePixelFormatARB.
+     */
+    if (vid <= 0) {
+	printErrorMessage("Canvas3D_createQueryContext: PixelFormat is invalid");
+	return;
+    }
+
+    PixelFormatID = (int)vid;
+
     /* onscreen rendering and window is 0 now */
     if(window == 0 && !offScreen){
 	/* fprintf(stderr, "CreateQueryContext : window == 0 && !offScreen\n"); */
-	hWnd = createDummyWindow((const char *)szAppName);
-	if (!hWnd)
-	    return; 
-	hdc =  GetDC(hWnd);
+	hDummyWnd = createDummyWindow(szAppName);
+	if (!hDummyWnd) {
+	    return;
+	}
+	hdc =  GetDC(hDummyWnd);
     }
     else if(window == 0 && offScreen){
 	/* fprintf(stderr, "CreateQueryContext : window == 0 && offScreen\n"); */
@@ -3340,19 +3374,8 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
 	hdc =  (HDC) window;
     }
 
-    newWin = (int)hdc;
+    newWin = (jint)hdc;
    
-    /*
-     * vid must be a PixelFormat returned
-     * by wglChoosePixelFormat() or wglChoosePixelFormatARB.
-     */
-    if (vid <= 0) {
-	printErrorMessage("Canvas3D_createQueryContext: PixelFormat is invalid");
-	return;
-    }
-    else {
-	PixelFormatID = vid;
-    }
     SetPixelFormat(hdc, PixelFormatID, NULL);
 
     hrc = wglCreateContext( hdc );
@@ -3401,11 +3424,11 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
 #endif /* SOLARIS */
 #ifdef WIN32
 	/* Release DC */
-	ReleaseDC(hWnd, hdc);
+	ReleaseDC(hDummyWnd, hdc);
 	/* Destroy context */
 	/* This will free ctxInfo also */
 	Java_javax_media_j3d_Canvas3D_destroyContext(env, obj, display,newWin, (jlong)ctxInfo);
-	DestroyWindow(hWnd);
+	DestroyWindow(hDummyWnd);
 	UnregisterClass(szAppName, (HINSTANCE)NULL);
 #endif /* WIN32 */
     }

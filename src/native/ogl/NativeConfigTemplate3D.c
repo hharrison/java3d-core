@@ -674,7 +674,7 @@ void printErrorMessage(char *message)
 }
 
 /* Fix for issue 76 */
-#define  MAX_WGL_ATTRS_LENGTH 30
+#define  MAX_WGL_ATTRS_LENGTH 100
 
 
 int find_Stencil_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
@@ -1068,7 +1068,8 @@ PixelFormatInfo * newPixelFormatInfo(HDC hdc)
     /* Initialize pFormatInfo */
     pFormatInfo->onScreenPFormat = -1;
     pFormatInfo->offScreenPFormat = -1;
-    
+    pFormatInfo->drawToPbuffer = GL_FALSE;
+
     pFormatInfo->supportARB = GL_FALSE;
     pFormatInfo->supportPbuffer = GL_FALSE;
     pFormatInfo->supportedExtensions = NULL;
@@ -1144,6 +1145,7 @@ PixelFormatInfo * newPixelFormatInfo(HDC hdc)
     return pFormatInfo;
 }
 
+
 JNIEXPORT
 jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
     JNIEnv   *env,
@@ -1216,7 +1218,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
     
     offScreenPFListPtr = (*env)->GetLongArrayElements(env, offScreenPFArray, NULL);
 
-    if(pFormatInfo->supportARB) {
+    if (pFormatInfo->supportARB) {
 
 	mx_ptr = (*env)->GetIntArrayElements(env, attrList, NULL);
 	
@@ -1227,6 +1229,8 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 	
 	wglAttrs[index++] = WGL_SUPPORT_OPENGL_ARB;
 	wglAttrs[index++] = TRUE;
+	wglAttrs[index++] = WGL_ACCELERATION_ARB; 
+	wglAttrs[index++] = WGL_FULL_ACCELERATION_ARB;
 	wglAttrs[index++] = WGL_DRAW_TO_WINDOW_ARB; 
 	wglAttrs[index++] = TRUE;
 	wglAttrs[index++] = WGL_RED_BITS_ARB;
@@ -1263,9 +1267,10 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 								     antialiasVal, index);
 	    
 	    if(pFormatInfo->onScreenPFormat >= 0) {
-		
+
 		/* Since the return pixel format support pbuffer,
 		   copy OnScreenPFormat to offScreenPFormat */
+		pFormatInfo->drawToPbuffer = GL_TRUE;
 		pFormatInfo->offScreenPFormat = pFormatInfo->onScreenPFormat;
 		offScreenPFListPtr[0] = (jlong) pFormatInfo;
 		(*env)->ReleaseLongArrayElements(env, offScreenPFArray, offScreenPFListPtr, 0);
@@ -1278,10 +1283,10 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 
 		return (jint) pFormatInfo->onScreenPFormat;
 	    }
-	    
 	}
 
 	/* Create a onScreen without Pbuffer */
+	pFormatInfo->drawToPbuffer = GL_FALSE;
 	index = lastIndex;
 	
 	/*
@@ -1294,21 +1299,19 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 	pFormatInfo->onScreenPFormat = find_DB_AA_S_PixelFormat( hdc, pFormatInfo,
 								 wglAttrs, sVal, dbVal, 
 								 antialiasVal, index);
-	
     } 
-    
-    
-    if(pFormatInfo->onScreenPFormat < 0) { /* Fallback to use standard ChoosePixelFormat. */
+    else {
 	/* fprintf(stderr, "Fallback to use standard ChoosePixelFormat.\n"); */
-	
+
 	pFormatInfo->onScreenPFormat =  (jint) chooseSTDPixelFormat( env, screen,
 								     attrList, hdc, GL_FALSE);
-	
     }
-    
+
     if(pFormatInfo->onScreenPFormat < 0) {
+	/*
 	printErrorMessage("In NativeConfigTemplate : Can't choose a onScreen pixel format");
-	
+	*/
+
 	offScreenPFListPtr[0] = (jlong) pFormatInfo; 
 	(*env)->ReleaseLongArrayElements(env, offScreenPFArray, offScreenPFListPtr, 0);
 

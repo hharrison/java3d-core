@@ -628,11 +628,16 @@ typedef struct {
 typedef struct PixelFormatInfoRec PixelFormatInfo;
 
 struct PixelFormatInfoRec {
+    /* Information about pixel format(s) */
     int onScreenPFormat;        /* PixelFormat for onScreen */
     int offScreenPFormat;       /* PixelFormat for offScreen */
-    GLboolean  supportARB;	/* TRUE if ARB is supported */
-    GLboolean  supportPbuffer;  /* TRUE if Pbuffer is supported */
+    GLboolean  drawToPbuffer;   /* value of DRAW_TO_PBUFFER attr for offScreenPFormat */
+
+    /* Information about extension support */
+    GLboolean  supportARB;	/* TRUE if wgl*PixelFormat*ARB functions supported */
+    GLboolean  supportPbuffer;  /* TRUE if wgl*Pbuffer functions supported */
     char* supportedExtensions;  /* list of supported ARB extensions */
+
     /* handle to ARB functions */
     PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB; 
     PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB;

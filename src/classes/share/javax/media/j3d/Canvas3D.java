@@ -1768,8 +1768,7 @@ public class Canvas3D extends Canvas {
      * @since Java 3D 1.2
      */
     public void setOffScreenBuffer(ImageComponent2D buffer) {
-	ImageComponent2DRetained bufferRetained =
-	    (ImageComponent2DRetained)buffer.retained;
+	int width, height;
 
         if (!offScreen)
             throw new IllegalStateException(J3dI18N.getString("Canvas3D1"));
@@ -1777,21 +1776,32 @@ public class Canvas3D extends Canvas {
         if (offScreenRendering)
             throw new RestrictedAccessException(J3dI18N.getString("Canvas3D2"));
 
-	if (bufferRetained.byReference &&
-	    !(bufferRetained.bImage[0] instanceof BufferedImage)) {
+	if (buffer != null) {
+	    ImageComponent2DRetained bufferRetained =
+		(ImageComponent2DRetained)buffer.retained;
 
-	    throw new IllegalArgumentException(J3dI18N.getString("Canvas3D15"));
+	    if (bufferRetained.byReference &&
+		!(bufferRetained.bImage[0] instanceof BufferedImage)) {
+
+		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D15"));
+	    }
+
+	    if (bufferRetained.format == ImageComponent.FORMAT_CHANNEL8) {
+		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D16"));
+	    }
+
+	    width = bufferRetained.width;
+	    height = bufferRetained.height;
 	}
-
-	if (bufferRetained.format == ImageComponent.FORMAT_CHANNEL8) {
-            throw new IllegalArgumentException(J3dI18N.getString("Canvas3D16"));
+	else {
+	    width = height = 0;
 	}
 
 	// TODO: illegalSharing
 	
-	if ((offScreenCanvasSize.width != bufferRetained.width) ||
-	    (offScreenCanvasSize.height != bufferRetained.height)) {
-	    
+	if ((offScreenCanvasSize.width != width) ||
+	    (offScreenCanvasSize.height != height)) {
+
 	    if (window != 0) {
 		// Fix for Issue 18.
 		// Will do destroyOffScreenBuffer in the Renderer thread. 
@@ -1800,15 +1810,16 @@ public class Canvas3D extends Canvas {
 	    }
 
             // set the canvas dimension according to the buffer dimension
-	    offScreenCanvasSize.setSize(bufferRetained.width,
-				    	bufferRetained.height);
+	    offScreenCanvasSize.setSize(width, height);
 	    this.setSize(offScreenCanvasSize);
 
-	    VirtualUniverse.mc.sendCreateOffScreenBuffer(this);
+	    if (width > 0 && height > 0) {
+		VirtualUniverse.mc.sendCreateOffScreenBuffer(this);
+	    }
 
 	    ctx = 0; 
 	}
-	if (ctx != 0) {
+	else if (ctx != 0) {
 	    removeCtx(false);
 	}
 
@@ -1817,7 +1828,6 @@ public class Canvas3D extends Canvas {
         synchronized(dirtyMaskLock) {
             cvDirtyMask |= Canvas3D.MOVED_OR_RESIZED_DIRTY;
         }
-
     }
 
 

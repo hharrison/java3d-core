@@ -160,7 +160,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
         if (value < 0)
             return;
 
-        depthSize = value;
+	depthSize = value;
     }
 
     /**
@@ -368,5 +368,36 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
 		break;
 	    }
 	}
+    }
+
+
+    // Return a string representing the value, one of:
+    // REQUIRED, PREFERRED, or UNNECESSARY
+    private static final String enumStr(int val) {
+	switch (val) {
+	case REQUIRED:
+	    return "REQUIRED";
+	case PREFERRED:
+	    return "PREFERRED";
+	case UNNECESSARY:
+	    return "UNNECESSARY";
+	}
+
+	return "UNDEFINED";
+    }
+
+    /**
+     * Returns a string representation of this object.
+     * @return a string representation of this object.
+     */
+    public String toString() {
+	return
+	    "redSize : " + redSize + ", " +
+	    "greenSize : " + greenSize + ", " +
+	    "blueSize : " + blueSize + ", " +
+	    "depthSize : " + depthSize + ", " +
+	    "doubleBuffer : " + enumStr(doubleBuffer) + ", " +
+	    "sceneAntialiasing : " + enumStr(sceneAntialiasing) + ", " +
+	    "stereo : " + enumStr(stereo);
     }
 }
