@@ -11,23 +11,183 @@ Picking Changes</h2>
 <h3><span style="color: rgb(0, 153, 0);"><i>ROUGH DRAFT: This API
 is a Work in Progress</i></span></h3>
 <hr>
-<p>This page describes proposed picking changes in Java&nbsp;3D 1.4...
+<p>This page describes the proposed picking changes in Java 3D 1.4. The
+main motivation is to improve picking performance. It eliminates the
+need to rely on picking utility for extra pick information, such as the
+color, normal and texture coordinates of the intersection points. This
+information will be returned, from the core picking methods, in a newly
+created PickInfo class.<br>
+&nbsp;
+<br>
+<span style="font-weight: bold;">The proposed API is:</span><br>
 </p>
-<p>The proposed API is:</p>
-<ul>
-  <li>New classes</li>
-  <ul>
-    <pre>public class XXXXX extends YYYYY<br>    method: setXxxxx()<br></pre>
-  </ul>
-  <li>New methods in existing classes:<br>
-  </li>
-  <ul>
-    <pre>XXXXX<br>    method: setXxxxx()<br></pre>
-  </ul>
-</ul>
-<p>More info here...
+<h4><big style="font-weight: bold;">The following 4 methods will be
+added to
+Locale and BranchGroup :</big><big style="font-weight: bold;"></big>&nbsp;
+<br>
+</h4>
+<div style="margin-left: 40px;"><span style="font-weight: bold;">public
+PickInfo[] pickAll(
+int mode, int flags, PickShape pickShape )</span><br>
+<span style="font-weight: bold;">public PickInfo[]
+pickAllSorted( int mode, int flags, PickShape pickShape )</span><br>
+<span style="font-weight: bold;">public PickInfo pickClosest(
+int mode, int flags, PickShape pickShape )</span><br>
+<span style="font-weight: bold;">public PickInfo pickAny( int
+mode, int flags, PickShape pickShape )</span><br>
+</div>
+<p>
+<br>
+Where <br>
 </p>
-<p><font color="gray">Page last updated &#8212;
+<div style="margin-left: 40px;"><span style="font-weight: bold;">mode</span>
+is an enum of [ Bounds, Geometry ] <br>
+<span style="font-weight: bold;">flags</span>
+is a mask indicating which components are present in each returned
+PickInfo object. This is specified as one or more individual flags that
+are bitwise "OR"ed together to describe the returned per PickInfo data.
+<br>
+The flags include: <br>
+<code>SCENEGRAPHPATH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;
+- request for computed SceneGraphPath;&nbsp;&nbsp; </code>&nbsp; <br>
+<code>NODE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; - request
+for computed intersected Node;</code><br>
+<code>LOCAL_TO_VWORLD &nbsp;
+&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; - request for computed local to virtual world transform;</code><br>
+<code>CLOSEST_INTERSECTION_POINT &nbsp; -
+request for
+closest intersection point.</code><br>
+<code>DISTANCE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;
+&nbsp; &nbsp;&nbsp; &nbsp; &nbsp; -
+request for the closest distance of the intersection.</code><br>
+<code>CLOSEST_GEOM_INFO&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;
+&nbsp;&nbsp; - request for
+ONLY the closest intersection geometry information.</code><br>
+<code>ALL_GEOM_INFO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp;&nbsp;&nbsp;
+- request for all intersection geometry information. &nbsp;</code>&nbsp;&nbsp;
+&nbsp;<br>
+</div>
+<p></p>
+<p>
+<br>
+NOTES : <br>
+</p>
+<div style="margin-left: 40px;">If <code>CLOSEST_INTERSECTION_POINT</code>
+is not set
+return PickInfo.closestIntersectionPoint is set to null.<br>
+If <code>CLOSEST_GEOM_INFO</code> is
+set the return PickInfo.intersectionInfos is of length 1, and
+pickInfo.geomPickInfo
+contains the
+information of the closest pick.<br>
+If <code>ALL_GEOM_INFO</code> is set
+the return PickInfo.intersectionInfos contains all intersections of the
+pickable node
+in sorted order.<br>
+If both <code>CLOSEST_GEOM_INFO</code>
+and
+<code>ALL_GEOM_INFO</code> are not set, PickInfo.intersectionInfos is
+set to null.<br>
+An<span style="font-style: italic;"> </span>IllegalArgumentException<span
+ style="font-style: italic;"></span>
+is thrown if&nbsp;<span style="font-style: italic;"> </span>both<span
+ style="font-style: italic;"> </span><code>CLOSEST_GEOM_INFO</code>
+and
+<code>ALL_GEOM_INFO</code> are set.<br>
+</div>
+<p> <br>
+<br>
+&nbsp;&nbsp;&nbsp; <big style="font-weight: bold;">* New classes</big></p>
+<big style="font-weight: bold;">public class PickInfo extends Object</big>&nbsp;&nbsp;&nbsp;
+<p style="margin-left: 40px;"><span style="font-style: italic;"></span>
+<span style="font-style: italic;">/** </span><span
+ style="font-style: italic;">Retrieves
+the reference to the SceneGraphPath in this PickInfo object. */</span><br>
+<span style="font-weight: bold;">public
+SceneGraphPath getSceneGraphPath()<br>
+</span></p>
+<p style="margin-left: 40px;"><span style="font-style: italic;">/*</span><span
+ style="font-style: italic;">* Retrieves
+the reference to the picked node, either a Shape3D or a Morph, in
+this PickInfo object. */</span><span style="font-weight: bold;"><br>
+</span><span style="font-style: italic;"></span><span
+ style="font-weight: bold;">public Node getNode()<br>
+</span><span style="font-style: italic;"><br>
+/** Retrieves
+the reference to the LocalToVworld transform of the picked node in
+this PickInfo object. */</span><span style="font-weight: bold;"><br>
+</span><span style="font-style: italic;"></span><span
+ style="font-weight: bold;">public
+Transform3D getLocalToVWorld()</span><span style="font-style: italic;"></span><br>
+<span style="font-weight: bold;"></span></p>
+<p style="margin-left: 40px;">/*<span style="font-style: italic;">*
+Retrieves
+the reference to the closest intersection point in this PickInfo
+object. */</span><span style="font-weight: bold;"><br>
+</span><span style="font-weight: bold;">public
+Point3d getClosestIntersectionPoint()<br>
+</span></p>
+<p style="margin-left: 40px;">/*<span style="font-style: italic;">*
+Retrieves
+the distance between the start point of the pickShape and the
+intersection point. */</span><span style="font-weight: bold;"><br>
+</span><span style="font-style: italic;"></span><span
+ style="font-weight: bold;">public
+double getDistance()<br>
+</span></p>
+<p style="margin-left: 40px;">/*<span style="font-style: italic;">*
+Retrieves
+the reference to the array of intersection results in this PickInfo
+object. */</span><span style="font-weight: bold;"><br>
+</span><span style="font-style: italic;"></span><span
+ style="font-weight: bold;">public
+IntersectionInfo[] getIntersectionInfos()</span><br>
+</p>
+<p><big><span style="font-weight: bold;">public class
+PickInfo.IntersectionInfo extends Object&nbsp; ( inner
+class )</span><br style="font-weight: bold;">
+</big><span style="font-style: italic;"></span></p>
+<div style="margin-left: 40px;"><span style="font-style: italic;">/**
+Retrieves
+the index to the intersected geometry in the picked node, either a
+Shape3D or Morph. */</span><br>
+<span style="font-weight: bold;">public
+int getGeometryIndex()&nbsp; <br>
+<br>
+</span>/*<span style="font-style: italic;">* Retrieves
+the reference to the intersected geometry in the picked object,
+either a Shape3D or Morph. */</span><span style="font-style: italic;"></span><br>
+<span style="font-weight: bold;">public
+Geometry getGeometry()</span> <span style="font-style: italic;"></span><br>
+<br>
+/*<span style="font-style: italic;">* Retrieves
+the interpolation weights for each of the verticies of the&nbsp;
+intersected primitive. */</span><br>
+<span style="font-weight: bold;">public
+float[] getWeights()</span><span style="font-style: italic;"></span><br>
+<br>
+/*<span style="font-style: italic;">* Retrieves
+the reference to the intersection point of the picked geometry in this
+IntersectionInfo object. */</span><br>
+<span style="font-weight: bold;">public
+Point3d getIntersectionPoint()<br>
+</span><span style="font-style: italic;"></span><span
+ style="font-weight: bold;"></span><br>
+<span style="font-style: italic;">/** Retrieves
+the vertex indices of the intersected primitive in the geometry. */</span><br>
+<span style="font-weight: bold;">public int[] getVertexIndices()</span><br>
+</div>
+<p>
+</p>
+<p></p>
+<p></p>
+<p><br>
+<font color="gray">Page last updated &#8212;
 $Date$
 </font></p>
 </body>
