@@ -1536,7 +1536,11 @@ public class Canvas3D extends Canvas {
     }
 
     void setFrustumPlanes(Vector4d[] planes) {
-	viewFrustum.set(planes);
+	
+	if(VirtualUniverse.mc.viewFrustumCulling) {
+	    /* System.out.println("Canvas3D.setFrustumPlanes()"); */
+	    viewFrustum.set(planes);
+	}
     }
 
 
