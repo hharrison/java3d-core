@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+ -->
+
+<!-- Win32 ant file for d3d renderer -->
+<project name="Java 3D" default="compile">
+
+  <target name="compile">
+
+    <echo message="Executing 32 bit native renderer build [${bldType}]"/>
+
+    <!-- Create the build directories for sparc -->
+    <mkdir dir="${build}/${platform}/${bldType}/native/d3d/objs"/>
+    <mkdir dir="${build}/${platform}/${bldType}/bin"/>
+    
+    <property name="javaInclude"
+     location="${java.home}/../include"/>
+
+    <property name="javaWin32Include"
+     location="${java.home}/../include/win32"/>
+
+    <property name="oglsrc"     location="${src}/native/ogl"/>
+    <property name="d3dsrc"     location="${src}/native/d3d"/>
+
+    <!-- Compile the c source files-->
+    <exec dir="${build}/${platform}/${bldType}/native/d3d/objs" executable="cl">
+	<arg line="-I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${src}/native/ogl&quot; -I&quot;${javahCoreTarget}&quot; -nologo -MT -W3 -GX -Ox -YX -FD ${bldFlag} -DD3D -DJ3D_BUILDVERTICES -c &quot;${oglsrc}/DrawingSurfaceObjectAWT.c&quot; &quot;${oglsrc}/MasterControl.c&quot; &quot;${d3dsrc}/D3dVertexBuffer.cpp&quot; &quot;${d3dsrc}/D3dDisplayList.cpp&quot; &quot;${d3dsrc}/D3dDriverInfo.cpp&quot; &quot;${d3dsrc}/D3dDeviceInfo.cpp&quot; &quot;${d3dsrc}/D3dCtx.cpp&quot; &quot;${d3dsrc}/D3dUtil.cpp&quot; &quot;${d3dsrc}/D3dImageComponent.cpp&quot; &quot;${d3dsrc}/GeometryArrayRetained.cpp&quot; &quot;${d3dsrc}/Canvas3D.cpp&quot; &quot;${d3dsrc}/GraphicsContext3D.cpp&quot; &quot;${d3dsrc}/CompressedGeometryRetained.cpp&quot; &quot;${d3dsrc}/Attributes.cpp&quot; &quot;${d3dsrc}/Lights.cpp&quot; &quot;${d3dsrc}/NativeConfigTemplate3D.cpp&quot; &quot;${d3dsrc}/NativeWSInfo.cpp&quot; &quot;${d3dsrc}/NativeAPIInfo.c&quot; &quot;${d3dsrc}/RasterRetained.cpp&quot;"/>
+    </exec>
+
+    <!-- Create the library file-->
+    <exec dir="${build}/${platform}/${bldType}/native/d3d/objs" executable="link">
+	<arg line="-nologo -dll -subsystem:windows -pdb:none -machine:I386 /ignore:4089 -out:j3dcore-d3d.dll D3dVertexBuffer.obj D3dDisplayList.obj D3dDriverInfo.obj D3dDeviceInfo.obj D3dCtx.obj D3dUtil.obj D3dImageComponent.obj GeometryArrayRetained.obj Canvas3D.obj GraphicsContext3D.obj CompressedGeometryRetained.obj Attributes.obj Lights.obj NativeConfigTemplate3D.obj NativeWSInfo.obj NativeAPIInfo.obj RasterRetained.obj DrawingSurfaceObjectAWT.obj MasterControl.obj kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ddraw.lib d3d8.lib d3dx8.lib dxerr8.lib dxguid.lib user32.lib delayimp.lib -DELAYLOAD:jawt.dll -LIBPATH:&quot;${java.home}\..\lib&quot; jawt.lib"/>
+    </exec>
+
+    <!-- Copy the copyright library file -->
+    <copy file="${build}/${platform}/${bldType}/native/d3d/objs/j3dcore-d3d.dll" 
+	 todir="${build}/${platform}/${bldType}/bin"/>
+
+  </target>
+
+  <target name="dist">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/${platform}/bin"/>
+
+    <!-- Copy the library files -->
+    <copy file="${build}/${platform}/opt/bin/j3dcore-d3d.dll"
+	 todir="${dist}/${platform}/bin"/>
+
+  </target>
+
+</project>

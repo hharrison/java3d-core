@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+ -->
+
+<!-- Ant file for building native  ogl renderer files for Windows-i586 -->
+<project name="Java 3D" default="compile">
+
+  <target name="compile">
+
+    <echo message="Executing 32 bit native renderer build [${bldType}]"/>
+
+    <!-- Create the build directories for sparc -->
+    <mkdir dir="${build}/${platform}/${bldType}/native/ogl/objs"/>
+    <mkdir dir="${build}/${platform}/${bldType}/bin"/>
+    
+    <property name="javaInclude"
+     location="${java.home}/../include"/>
+
+    <property name="javaWin32Include"
+     location="${java.home}/../include/win32"/>
+
+    <property name="oglsrc"     location="${src}/native/ogl"/>
+
+    <!-- Compile the c source files-->
+    <!-- Inhibit all warning for native build. Remove -w to switch warning on -->
+
+    <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
+	<arg line="-w -D_WINGDI_ -D_JNI_IMPLEMENTATION_ -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; ${bldFlag} -c &quot;${oglsrc}/DrawingSurfaceObjectAWT.c&quot; &quot;${oglsrc}/Canvas3D.c&quot; &quot;${oglsrc}/GraphicsContext3D.c&quot; &quot;${oglsrc}/NativeWSInfo.c&quot; &quot;${oglsrc}/NativeScreenInfo.c&quot; &quot;${oglsrc}/NativeConfigTemplate3D.c&quot; &quot;${oglsrc}/MasterControl.c&quot; &quot;${oglsrc}/RasterRetained.c&quot; &quot;${oglsrc}/CompressedGeometryRetained.c&quot; &quot;${oglsrc}/GeometryArrayRetained.c&quot; &quot;${oglsrc}/Attributes.c&quot; &quot;${oglsrc}/Lights.c&quot; &quot;${oglsrc}/NativeAPIInfo.c&quot;"/>
+    </exec>
+
+    <!-- Create the library file-->
+    <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
+	<arg line="-shared -o j3dcore-ogl.dll DrawingSurfaceObjectAWT.o Canvas3D.o GraphicsContext3D.o NativeWSInfo.o NativeScreenInfo.o NativeConfigTemplate3D.o MasterControl.o RasterRetained.o CompressedGeometryRetained.o GeometryArrayRetained.o Attributes.o Lights.o NativeAPIInfo.o -Wl,--kill-at -L&quot;${java.home}\..\lib&quot; -lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -lopengl32 -ljawt"/>
+    </exec>
+
+    <!-- Copy the copyright library file -->
+    <copy file="${build}/${platform}/${bldType}/native/ogl/objs/j3dcore-ogl.dll" 
+	 todir="${build}/${platform}/${bldType}/bin"/>
+
+  </target>
+
+  <target name="dist">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/${platform}/bin"/>
+
+    <!-- Copy the library files -->
+    <copy file="${build}/${platform}/opt/bin/j3dcore-ogl.dll"
+	 todir="${dist}/${platform}/bin"/>
+
+  </target>
+
+</project>

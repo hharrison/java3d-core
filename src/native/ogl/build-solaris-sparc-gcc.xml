@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+ -->
+
+<!-- Ant file for building native  ogl renderer files for Solaris -->
+<project name="Java 3D" default="compile">
+
+  <target name="compile">
+
+    <echo message="Executing 32 bit native renderer build [${bldType}]"/>
+
+    <!-- Create the build directories for sparc -->
+    <mkdir dir="${build}/${platform}/${bldType}/native/ogl/objs"/>
+    <mkdir dir="${build}/${platform}/${bldType}/lib/sparc"/>
+    
+    <property name="oglsrc"     location="${src}/native/ogl"/>
+
+    <!-- Compile the c source files-->
+    <!-- Inhibit all warning for 32 bit build. Any warning will be caught in the 64 bit build -->
+    <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
+	<arg line="-w -m32 -mcpu=v9 -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} -${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/CompressedGeometryRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+    </exec>
+
+    <!-- Create the library file-->
+    <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="ld">
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  CompressedGeometryRetained.o  GeometryArrayRetained.o  Attributes.o  Lights.o NativeAPIInfo.o -G -z lazyload -L/usr/openwin/lib -ldga -ldl -lGL -lX11 -lXext -lm -lsocket -lnsl -lc  -R/usr/openwin/lib -L${java.home}/lib/sparc -ljawt -L${java.home}/lib/sparc/server -ljvm  -o libj3dcore-ogl.so"/>
+    </exec>
+
+    <!-- Copy the copyright library file -->
+    <copy file="${build}/${platform}/${bldType}/native/ogl/objs/libj3dcore-ogl.so" 
+	 todir="${build}/${platform}/${bldType}/lib/sparc"/>
+
+<!-- ********************************************************************** -->
+    <echo message="Executing 64 bit native renderer build [${bldType}]"/>
+
+    <!-- Create the build directories for sparcv9 -->
+    <mkdir dir="${build}/${platform}/${bldType}/native/ogl/objs/sparcv9"/>
+    <mkdir dir="${build}/${platform}/${bldType}/lib/sparcv9"/>
+
+    <!-- Compile the c source files-->
+    <exec dir="${build}/${platform}/${bldType}/native/ogl/objs/sparcv9" executable="gcc">
+	<arg line="-m64 -mcpu=v9 -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} -${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/CompressedGeometryRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+    </exec>
+
+    <!-- Create the library file-->
+    <exec dir="${build}/${platform}/${bldType}/native/ogl/objs/sparcv9" executable="ld">
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  CompressedGeometryRetained.o  GeometryArrayRetained.o  Attributes.o  Lights.o NativeAPIInfo.o -G -z lazyload -L/usr/openwin/lib/sparcv9 -ldga -ldl -lGL -lX11 -lXext  -lm -lsocket -lnsl -lc -R/usr/openwin/lib/sparcv9 -L${java.home}/lib/sparcv9 -ljawt -L${java.home}/lib/sparcv9/server -ljvm  -o libj3dcore-ogl.so"/>
+    </exec>
+
+    <!-- Copy the copyright library file -->
+    <copy file="${build}/${platform}/${bldType}/native/ogl/objs/sparcv9/libj3dcore-ogl.so" 
+	 todir="${build}/${platform}/${bldType}/lib/sparcv9"/>
+
+  </target>
+
+  <target name="dist">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/${platform}/lib/sparc"/>
+    <mkdir dir="${dist}/${platform}/lib/sparcv9"/>
+
+    <!-- Copy the library files -->
+    <copy file="${build}/${platform}/opt/lib/sparc/libj3dcore-ogl.so"
+	 todir="${dist}/${platform}/lib/sparc"/>
+
+    <copy file="${build}/${platform}/opt/lib/sparcv9/libj3dcore-ogl.so"
+	 todir="${dist}/${platform}/lib/sparcv9"/>
+  </target>
+
+</project>

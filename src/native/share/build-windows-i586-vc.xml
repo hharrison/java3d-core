@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+ -->
+
+<!-- Ant file for building native utilities files for Windows-i586 -->
+<project name="Java 3D" default="compile">
+
+  <target name="compile">
+
+    <echo message="Executing 32 bit native utilities build [${bldType}]"/>
+
+    <!-- Create the build directories sparc -->
+    <mkdir dir="${build}/${platform}/${bldType}/native/share/objs"/>
+    <mkdir dir="${build}/${platform}/${bldType}/bin"/>
+
+    <property name="javaInclude"
+     location="${java.home}/../include"/>
+
+    <property name="javaWin32Include"
+     location="${java.home}/../include/win32"/>
+
+    <property name="sharesrc"
+     location="${core_utils_src}/native/share"/>
+
+    <!-- Compile the c source files-->
+    <exec dir="${build}/${platform}/${bldType}/native/share/objs" executable="cl">
+	<arg line="-I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahUtilsTarget}&quot; ${bldFlag} -c &quot;${sharesrc}/J3DTimer.c&quot;"/>
+    </exec>
+
+    <!-- Create the library file-->
+    <exec dir="${build}/${platform}/${bldType}/native/share/objs" executable="link">
+	<arg line="-nologo -dll -subsystem:windows -pdb:none -machine:I386 -out:j3dutils.dll J3DTimer.obj  delayimp.lib -LIBPATH:&quot;${java.home}\..\lib&quot; jawt.lib"/>
+    </exec>
+
+    <!-- Copy the copyright library file -->
+    <copy file="${build}/${platform}/${bldType}/native/share/objs/j3dutils.dll" 
+	 todir="${build}/${platform}/${bldType}/bin"/>
+
+  </target>
+
+  <target name="dist">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/${platform}/bin"/>
+
+    <!-- Copy the library files -->
+    <copy file="${build}/${platform}/opt/bin/j3dutils.dll"
+	 todir="${dist}/${platform}/bin"/>
+  </target>
+
+</project>

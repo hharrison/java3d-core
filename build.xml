@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+ -->
+
+<project name="Java 3D" default="jar-opt" basedir=".">
+
+  <!-- Set global properties for this build -->
+  <property name="vecmath_home" location="../vecmath"/>
+  <property name="core_utils_home" location="../j3d-core-utils"/>
+
+  <property name="src"     location="src"/>
+  <property name="vecmath_src" location="${vecmath_home}/src"/>
+  <property name="core_utils_src" location="${core_utils_home}/src"/>
+  <property name="build-tools" location="build-tools"/>
+  <property name="build"   location="build"/>
+  <property name="dist"    location="dist"/>
+  <property name="version" value="1_3_2"/>
+  <property name="docname" value="java3d-${version}-doc"/>
+  <property environment="env"/>
+  <property file="build.properties"/>
+    
+  <target name="echo" depends="setupPlatform">	
+    <echo message="user.name       = ${user.name}"/>
+    <echo message="user.home       = ${user.home}"/>
+    <echo message="java.home       = ${java.home}"/>
+    <echo message="ant.home        = ${ant.home}"/>
+    <echo message="O/S arch        = ${os.arch}"/>
+    <echo message="O/S name        = ${os.name}"/>	
+    <echo message="build.rend      = ${build.rend}"/>
+    <echo message="build.comp      = ${build.comp}"/>
+    <echo message="vecmath_home    = ${vecmath_home}"/>
+    <echo message="core_utils_home = ${core_utils_home}"/>
+    <echo message="ostype          = ${ostype}"/>
+    <echo message="platform        = ${platform}"/>
+  </target>
+
+  <target name="setupSolaris" depends="init" if="isSolarisOnSparc">	
+    <property name="ostype" value="solaris"/>
+    <property name="platform" value="solaris-sparc-${build.comp}"/>
+  </target>
+
+  <target name="setupLinux" depends="init" if="isLinuxOnX86">	
+    <property name="ostype" value="linux"/>
+    <property name="platform" value="linux-i586"/>
+  </target>
+
+  <!-- win32 should be rename as windows -->
+  <target name="setupWindows" depends="init" if="isWindowsOnX86">	
+    <property name="ostype" value="win32"/>
+    <property name="platform" value="windows-i586-${build.comp}"/>
+  </target>
+
+  <target name="setupPlatform" depends="setupSolaris, setupLinux, setupWindows">	
+
+  </target>
+
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp>
+	<format property="buildtime"
+		pattern="yyyy-MM-dd'T'HH:mm:ss"/>
+    </tstamp>
+    <echo message="buildtime = ${buildtime}"/>
+
+    <!-- Create the base build directory -->
+    <mkdir dir="${build}"/>
+
+    <!-- ========== determine platform ========== -->
+    <condition property="isWindowsOnX86">
+	<os family="windows" arch="x86"/>
+    </condition> 
+
+    <condition property="isLinuxOnX86">
+        <os name="linux" arch="i386"/>
+    </condition>
+
+    <condition property="isSolarisOnSparc">
+        <os name="SunOS" arch="sparc"/>
+    </condition>   
+  </target>
+
+  <target name="compile-debug" depends="setupPlatform">
+	<ant dir="src/classes" target="compile-debug"/>
+	<ant dir="src/native" target="compile-debug"/>
+  </target>
+
+  <target name="compile-opt" depends="setupPlatform">
+	<ant dir="src/classes" target="compile-opt"/>
+	<ant dir="src/native" target="compile-opt"/>
+  </target>
+
+  <target name="compile" depends="compile-debug,compile-opt" />
+
+  <target name="jar-debug" depends="compile-debug">
+	<ant dir="src/classes" target="jar-debug"/>
+  </target>
+
+  <target name="jar-opt" depends="compile-opt">
+	<ant dir="src/classes" target="jar-opt"/>
+  </target>
+
+  <target name="jar" depends="jar-debug,jar-opt" />
+
+  <target name="docs-jcp" depends="setupPlatform">
+	<ant dir="src/classes" target="docs-jcp"/>
+  </target>
+
+  <target name="docs-public" depends="setupPlatform">
+	<ant dir="src/classes" target="docs-public"/>
+  </target>
+
+  <target name="docs-private" depends="setupPlatform">
+	<ant dir="src/classes" target="docs-private"/>
+  </target>
+
+  <target name="docs" depends="setupPlatform">
+	<ant dir="src/classes" target="docs"/>
+  </target>
+
+  <target name="dist" depends="jar-opt,docs-public">
+	<ant dir="src/classes" target="dist"/>
+	<ant dir="src/native" target="dist"/>
+  </target>
+
+  <target name="all" depends="jar-debug,dist,docs-jcp,docs-private"/>
+
+  <target name="clean-dist">
+    <!-- Delete the ${dist} directory tree  -->
+    <delete dir="${dist}"/>
+  </target>
+
+  <target name="clean">
+    <!-- Delete the ${build}, and ${dist} directory trees  -->
+    <delete dir="${build}"/>	
+    <delete dir="${dist}"/>
+  </target>
+
+  <description>
+The following ant targets are available ("jar-opt" is the default):
+
+      all           - execute targets jar-debug and dist.
+
+      clean         - removes WS/build/ and WS/dist/
+
+      clean-dist    - removes WS/dist.
+
+      compile       - execute targets compile-debug and compile-opt.
+ 
+      compile-debug - builds all classes and native layer in WS/src into 
+                      class files under WS/build/${platform}/debug/classes/ and
+                      native files under WS/build/${platform}/debug/native/
+
+      compile-opt   - builds all classes and native layer in WS/src into 
+                      class files under WS/build/${platform}/opt/classes/ and
+                      native files under WS/build/${platform}/opt/native/
+
+      dist          - creates the distribution jar, native library and javadoc
+                      under WS/dist/${platform}.
+
+      docs          - builds all classes in WS/src into javadoc under 
+                      WS/build/javadocs.
+
+      docs-jcp      - builds JCP docs of all classes in WS/src into javadoc under 
+                      WS/build/javadocs/docs-jcp.
+
+      docs-private  - builds private docs of all classes in WS/src into javadoc under 
+                      WS/build/javadocs/docs-private.
+
+      docs-public   - builds public docs of all classes in WS/src into javadoc under 
+                      WS/build/javadocs/docs-public.
+
+      echo          - echo some useful information, such as user.home,
+                      ant.home, java.home and platform.
+
+      jar           - execute targets jar-debug and jar-opt.
+
+      jar-debug     - creates WS/build/${platform}/debug/lib for all jar
+                      files and libraries from class and native code files under 
+                      WS/build/${platform}/debug/classes and 
+                      WS/build/${platform}/debug/native.
+
+      jar-opt       - creates WS/build/${platform}/opt/lib for all jar
+                      files and libraries from class and native code files under 
+                      WS/build/${platform}/opt/classes and 
+                      WS/build/${platform}/opt/native.
+
+  </description>
+</project>

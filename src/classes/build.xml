@@ -1,0 +1,287 @@
+<?xml version="1.0"?>
+
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+ -->
+
+<!-- Ant file for building java classes and jar files -->
+<project name="Java 3D" default="jar-opt">
+
+  <path id="vecmath.debug.classpath">
+    <pathelement location="${vecmath_home}/build/debug/lib/ext/vecmath.jar"/>
+  </path>
+
+  <path id="vecmath.opt.classpath">
+    <pathelement location="${vecmath_home}/build/opt/lib/ext/vecmath.jar"/>
+  </path>
+
+  <target name="compile-debug">
+
+    <!-- Create the debug build directory structure used for compile -->
+    <mkdir dir="${build}/${platform}/debug/classes"/>
+
+    <!-- Create the directories used for compiling generated files -->
+    <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
+    <mkdir dir="${build-debug-gen}/tools"/>
+    <mkdir dir="${build-debug-gen}/classes/javax/media/j3d"/>
+
+    <!-- Compile and execute the program to create the build time stamp class -->
+    <javac srcdir="${build-tools}"
+           destdir="${build-debug-gen}/tools"
+	   source="1.4"
+	   target="1.4"
+	   debug="yes"
+           deprecation="on">
+    </javac>
+
+    <!-- Execute the time stamp generator -->
+    <java classname="MakeJ3dBuildInfo"
+	  classpath="${build-debug-gen}/tools">
+	  <arg value="-debug"/>
+	  <arg value="${build-debug-gen}/classes"/>
+    </java>
+
+    <!-- Compile the java code from ${src} into ${build}/${platform}/debug/classes -->
+    <javac srcdir="${src}/classes/share:${src}/classes/${ostype}:${core_utils_src}/classes/share:${build-debug-gen}/classes"
+           destdir="${build}/${platform}/debug/classes"
+	   source="1.4"
+	   target="1.4"
+	   debug="yes"
+           deprecation="off">
+	   <classpath refid="vecmath.debug.classpath"/>
+    </javac>
+
+    <!-- Copy the I18N property files while retaining package location -->
+    <copy todir="${build}/${platform}/debug/classes">
+        <fileset dir="${src}/classes/share" includes="**/*.properties"/>
+        <fileset dir="${core_utils_src}/classes/share" includes="**/*.properties"/>
+    </copy>
+  </target>
+
+  <target name="compile-opt">
+
+    <!-- Create the opt build directory structure used for compile -->
+    <mkdir dir="${build}/${platform}/opt/classes"/>
+
+    <!-- Create the directories used for compiling generated files -->
+    <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
+    <mkdir dir="${build-opt-gen}/tools"/>
+    <mkdir dir="${build-opt-gen}/classes/javax/media/j3d"/>
+
+    <!-- Compile and execute the program to create the build time stamp class -->
+    <javac srcdir="${build-tools}"
+           destdir="${build-opt-gen}/tools"
+	   source="1.4"
+	   target="1.4"
+	   debug="no"
+           deprecation="on">
+    </javac>
+
+    <!-- Execute the time stamp generator -->
+    <java classname="MakeJ3dBuildInfo"
+	  classpath="${build-opt-gen}/tools">
+	  <arg value="${build-opt-gen}/classes"/>
+    </java>
+
+    <!-- Compile the java code from ${src} into ${build}/${platform}/opt/classes -->
+    <javac srcdir="${src}/classes/share:${src}/classes/${ostype}:${core_utils_src}/classes/share:${build-opt-gen}/classes"
+           destdir="${build}/${platform}/opt/classes"
+	   source="1.4"
+	   target="1.4"
+	   debug="no"
+           deprecation="off">
+	   <classpath refid="vecmath.opt.classpath"/>
+    </javac>
+
+    <!-- Copy the I18N property files while retaining package location -->
+    <copy todir="${build}/${platform}/opt/classes">
+        <fileset dir="${src}/classes/share" includes="**/*.properties"/>
+        <fileset dir="${core_utils_src}/classes/share" includes="**/*.properties"/>
+    </copy>
+  </target>
+
+  <target name="jar-debug">
+    <!-- Create the j3dcore and j3dutils jars directory -->
+    <mkdir dir="${build}/${platform}/debug/lib/ext"/>
+
+    <!-- Copy the copyright file and all license files for j3dcore.jar -->
+    <copy todir="${build}/${platform}/debug/classes/javax">
+      <fileset dir="${src}/.." includes="COPYRIGHT.txt"/>
+      <fileset dir="${src}/.." includes="*LICENSE*.txt"/>
+    </copy>
+
+    <!-- Copy the copyright file and all license files for j3dutils.jar -->
+    <copy todir="${build}/${platform}/debug/classes/com">
+      <fileset dir="${core_utils_home}" includes="COPYRIGHT.txt"/>
+      <fileset dir="${core_utils_home}" includes="*LICENSE*.txt"/>
+    </copy>
+
+    <!-- Put everything in ${build}/${platform}/debug/classes/javax into the j3dcore.jar file -->
+    <jar jarfile="${build}/${platform}/debug/lib/ext/j3dcore.jar"
+         manifest="${src}/classes/J3dVersion" update="yes"
+	 compress="false">
+	<fileset dir="${build}/${platform}/debug/classes" includes="javax/**/*"/>
+    </jar>
+
+    <!-- Put everything in ${build}/${platform}/debug/classes/com into the j3dutils.jar file -->
+    <jar jarfile="${build}/${platform}/debug/lib/ext/j3dutils.jar"
+         manifest="${core_utils_src}/classes/ToolsVersion" update="yes"
+ 	 compress="false">
+	<fileset dir="${build}/${platform}/debug/classes" includes="com/**/*"/>
+    </jar>
+  </target>
+
+  <target name="jar-opt">
+    <!-- Create the j3dcore and j3dutils jars directory -->
+    <mkdir dir="${build}/${platform}/opt/lib/ext"/>
+
+    <!-- Copy the copyright file and all license files for j3dcore.jar -->
+    <copy todir="${build}/${platform}/opt/classes/javax">
+      <fileset dir="${src}/.." includes="COPYRIGHT.txt"/>
+      <fileset dir="${src}/.." includes="*LICENSE*.txt"/>
+    </copy>
+
+    <!-- Copy the copyright file and all license files for j3dutils.jar -->
+    <copy todir="${build}/${platform}/opt/classes/com">
+      <fileset dir="${core_utils_home}" includes="COPYRIGHT.txt"/>
+      <fileset dir="${core_utils_home}" includes="*LICENSE*.txt"/>
+    </copy>
+
+    <!-- Put everything in ${build}/${platform}/opt/classes/javax into the j3dcore.jar file -->
+    <jar jarfile="${build}/${platform}/opt/lib/ext/j3dcore.jar"
+         manifest="${src}/classes/J3dVersion" update="yes"
+	 compress="false">
+	<fileset dir="${build}/${platform}/opt/classes" includes="javax/**/*"/>
+    </jar>
+
+    <!-- Put everything in ${build}/${platform}/opt/classes/com into the j3dutils.jar file -->
+    <jar jarfile="${build}/${platform}/opt/lib/ext/j3dutils.jar"
+         manifest="${core_utils_src}/classes/ToolsVersion" update="yes"
+	 compress="false">
+	<fileset dir="${build}/${platform}/opt/classes" includes="com/**/*"/>
+    </jar>
+  </target>
+
+  <target name="docs-jcp">
+    <!-- Create the build directory structure used by docs -->
+    <mkdir dir="${build}/${platform}/javadocs/docs-jcp"/>
+
+    <!-- Compile the javadoc from ${src} into ${build}/javadocs -->
+    <javadoc packagenames="javax.media.j3d.*,
+                           javax.vecmath.*"
+             maxmemory="128m"
+             destdir="${build}/${platform}/javadocs/docs-jcp"
+             windowtitle="Java 3D ${version}">
+	     <sourcepath>
+		<pathelement location="${src}/classes/share"/>
+		<pathelement location="${src}/classes/${ostype}"/>
+		<pathelement location="${core_utils_src}/classes/share"/>
+		<pathelement location="${vecmath_src}"/>
+             </sourcepath>
+    </javadoc>
+
+    <!-- Copy the copyright file -->
+    <copy todir="${build}/${platform}/javadocs/docs-jcp">
+      <fileset dir="${src}/.." includes="COPYRIGHT.txt"/>
+    </copy>
+  </target>
+
+  <target name="docs-private">
+    <!-- Create the build directory structure used by docs -->
+    <mkdir dir="${build}/${platform}/javadocs/docs-private"/>
+
+    <!--
+      ** TODO: there is an implicit dependency on "compile-opt",
+      ** since the J3dBuildInfo source file is only built as part of
+      ** that target. We don't want to make this an explicit
+      ** dependency because we don't want the time stamp regenerated.
+      **
+      ** Ideally, we should make a "time-stamp-opt" target that only
+      ** creates J3DBuildInfo.java if it doesn't exist, and a
+      ** "force-time-stamp-opt" target that unconditionally creates
+      ** it. The "docs-*" targets would depend on "time-stamp-opt"
+      ** while the "compile-opt" target would depend on
+      ** "force-time-stamp-opt"
+      -->
+
+    <!-- Compile the javadoc from ${src} into ${build}/javadocs -->
+    <javadoc packagenames="javax.media.j3d.*,
+                           com.sun.j3d.*,
+                           javax.vecmath.*"
+             maxmemory="128m"
+	     private="true"
+             destdir="${build}/${platform}/javadocs/docs-private"
+             windowtitle="Java 3D ${version}">
+	     <sourcepath>
+		<pathelement location="${src}/classes/share"/>
+		<pathelement location="${src}/classes/${ostype}"/>
+		<pathelement location="${build}/${platform}/opt/gen/classes"/>
+		<pathelement location="${core_utils_src}/classes/share"/>
+		<pathelement location="${vecmath_src}"/>
+             </sourcepath>
+    </javadoc>
+
+    <!-- Copy the copyright file -->
+    <copy todir="${build}/${platform}/javadocs/docs-private">
+      <fileset dir="${src}/.." includes="COPYRIGHT.txt"/>
+    </copy>
+  </target>
+
+  <target name="docs-public">
+    <!-- Create the build directory structure used by docs -->
+    <mkdir dir="${build}/${platform}/javadocs/docs-public"/>
+
+    <!-- Compile the javadoc from ${src} into ${build}/javadocs -->
+    <javadoc packagenames="javax.media.j3d.*,
+			   com.sun.j3d.audioengines.*,
+			   com.sun.j3d.loaders.*,
+			   com.sun.j3d.utils.*,
+                           javax.vecmath.*"
+             maxmemory="128m"
+             destdir="${build}/${platform}/javadocs/docs-public"
+             windowtitle="Java 3D ${version}">
+	     <sourcepath>
+		<pathelement location="${src}/classes/share"/>
+		<pathelement location="${src}/classes/${ostype}"/>
+		<pathelement location="${core_utils_src}/classes/share"/>
+		<pathelement location="${vecmath_src}"/>
+             </sourcepath>
+    </javadoc>
+
+    <!-- Copy the copyright file -->
+    <copy todir="${build}/${platform}/javadocs/docs-public">
+      <fileset dir="${src}/.." includes="COPYRIGHT.txt"/>
+    </copy>
+  </target>
+
+  <target name="docs" depends="docs-jcp,docs-public,docs-private"/>
+
+  <target name="dist">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/${platform}/lib/ext"/>
+
+    <!-- Copy the jar files -->
+    <copy todir="${dist}/${platform}/lib/ext">
+      <fileset dir="${build}/${platform}/opt/lib/ext" includes="*.jar"/>
+      <fileset dir="${vecmath_home}/build/opt/lib/ext" includes="vecmath.jar"/>
+    </copy>
+
+    <!-- Create the docs distribution directory -->
+    <mkdir dir="${dist}/${platform}/javadocs"/>
+
+    <!-- Put everything in ${build}/javadocs into the zip docname file -->
+    <zip zipfile="${dist}/${platform}/javadocs/${docname}.zip" 
+	 basedir="${build}/${platform}/javadocs/docs-public"/>
+  </target>
+
+</project>
