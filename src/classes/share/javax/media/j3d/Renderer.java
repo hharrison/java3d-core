@@ -326,7 +326,7 @@ class Renderer extends J3dThread {
 		// from MasterControl freeContext(View v)
 		cv = (Canvas3D) args[1];
 		removeCtx(cv, cv.screen.display, cv.window, cv.ctx,
-			  true, true);
+			  true, true, false);
 	    } else if (mtype == MasterControl.RESETCANVAS_CLEANUP) {
 		// from MasterControl RESET_CANVAS postRequest
 		cv = (Canvas3D) args[1];
@@ -342,10 +342,14 @@ class Renderer extends J3dThread {
 			  ((Long) obj[1]).longValue(),
 			  ((Integer) obj[2]).intValue(),
 			  ((Long) obj[3]).longValue(), 
-			  false, !c.offScreen);
+			  false, !c.offScreen, 
+			  ((Boolean)obj[4]).booleanValue());
+		
 	    } 
 	    return;
 	} else { // RENDER || REQUESTRENDER
+
+
             int renderType;
 	    nmesg = 0;
 	    int totalMessages = 0;
@@ -446,6 +450,19 @@ class Renderer extends J3dThread {
 		    m[nmesg++].decRefcount();
                     continue;
                 }
+
+
+		if (renderType == J3dMessage.CREATE_OFFSCREENBUFFER) {
+		    // Fix for issue 18.
+		    canvas.window = 
+			canvas.createOffScreenBuffer(canvas.ctx, 
+						     canvas.screen.display,
+						     canvas.vid,
+						     canvas.offScreenCanvasSize.width, 
+						     canvas.offScreenCanvasSize.height);
+		    m[nmesg++].decRefcount();
+		    continue;
+		} 
 
 		if (!canvas.validCanvas && 
                     (renderType != J3dMessage.RENDER_OFFSCREEN)) {
@@ -600,22 +617,24 @@ class Renderer extends J3dThread {
 		    }
 		    m[nmesg++].decRefcount();
 		} else { // retained mode rendering
+
 		    m[nmesg++].decRefcount();
 
 		    ImageComponent2DRetained offBufRetained = null;
 		    
-                    if (renderType == J3dMessage.RENDER_OFFSCREEN) {
+		    if (renderType == J3dMessage.RENDER_OFFSCREEN) {
+			
                         if (canvas.window == 0 || !canvas.active) {
                             canvas.offScreenRendering = false;
                             continue;
 			} else {
 			    offBufRetained = (ImageComponent2DRetained)
-					canvas.offScreenBuffer.retained;
-
+				canvas.offScreenBuffer.retained;
+			    
 			    if (offBufRetained.isByReference()) {
                     	        offBufRetained.geomLock.getLock();
                                 offBufRetained.evaluateExtensions(
-					canvas.extensionsSupported);
+				     canvas.extensionsSupported);
 			    }
 			}
                     } else if (!canvas.active) {
@@ -632,6 +651,7 @@ class Renderer extends J3dThread {
   	            // gets yanked from us during a remove.
 
                     if (canvas.useSharedCtx) {
+
                         if (sharedCtx == 0) {
                             display = canvas.screen.display;
 
@@ -669,8 +689,9 @@ class Renderer extends J3dThread {
 			    canvas.drawingSurfaceObject.unLock();
                        }
                     }
-            	    if (canvas.ctx == 0) {
 
+            	    if (canvas.ctx == 0) {
+			
 			display = canvas.screen.display;
 
 			// Always lock for context create			
@@ -766,6 +787,7 @@ class Renderer extends J3dThread {
 			}
 			canvas.drawingSurfaceObject.unLock();			    
             	    } else {
+
 			if (canvas.isRunning) {
                     	    canvas.makeCtxCurrent();
 			}
@@ -1454,10 +1476,19 @@ class Renderer extends J3dThread {
     // Canvas3D postRequest() offScreen rendering since the
     // user thread will not wait for it. Also we can just
     // reuse it as Canvas3D did not destroy.
-    void removeCtx(Canvas3D cv, long display, int window, long ctx,
-		   boolean resetCtx, boolean freeBackground) {
+    private void removeCtx(Canvas3D cv, long display, int window, long ctx,
+			   boolean resetCtx, boolean freeBackground, 
+			   boolean destroyOffScreenBuffer) {
+	
 
 	synchronized (VirtualUniverse.mc.contextCreationLock) {
+	    // Fix for issue 18.
+	    // Since we are now the renderer thread, 
+	    // we can safely execute destroyOffScreenBuffer.
+	    if(destroyOffScreenBuffer) {
+		cv.makeCtxCurrent();
+		cv.destroyOffScreenBuffer(ctx, display, window);
+	    }
 	    if (ctx != 0) {
 		int idx = listOfCtxs.indexOf(new Long(ctx));
 		if (idx >= 0) {

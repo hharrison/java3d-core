@@ -1753,21 +1753,13 @@ public class Canvas3D extends Canvas {
 	}
 
 	// TODO: illegalSharing
-
+	
 	if ((offScreenCanvasSize.width != bufferRetained.width) ||
-		(offScreenCanvasSize.height != bufferRetained.height)) {
-
-	    // NOTE: the setOffScreenBuffer method really shouldn't
-	    // make any GLX calls (which the native create/destroy
-	    // OffScreenBuffer methods do). It should send a message
-	    // to the Renderer thread and have it done there, although
-	    // that would be problematic if called from a
-	    // Behavior. As it is, there is a small, but non-zero
-	    // chance of a similar bug cropping up for a system with
-	    // multiple views and multiple on-screen canvases.
-
+	    (offScreenCanvasSize.height != bufferRetained.height)) {
+	    
 	    if (window != 0) {
-		destroyOffScreenBuffer(ctx, screen.display, window);
+		// Fix for Issue 18.
+		// Will do destroyOffScreenBuffer in the Renderer thread. 
 		removeCtx(true);
 		window = 0;
 	    }
@@ -1777,13 +1769,12 @@ public class Canvas3D extends Canvas {
 				    	bufferRetained.height);
 	    this.setSize(offScreenCanvasSize);
 
-            // create off screen buffer
-            window = createOffScreenBuffer(ctx, screen.display, vid,
-			offScreenCanvasSize.width, offScreenCanvasSize.height);
-	    ctx = 0;
+	    sendCreateOffScreenBuffer();
+
+	    ctx = 0; 
 	}
 	if (ctx != 0) {
-	    removeCtx(true);
+	    removeCtx(false);
 	}
 
         offScreenBuffer = buffer;
@@ -1845,6 +1836,7 @@ public class Canvas3D extends Canvas {
      * @since Java 3D 1.2
      */
     public void renderOffScreenBuffer() {
+
 
         if (!offScreen)
             throw new IllegalStateException(J3dI18N.getString("Canvas3D1"));
@@ -1917,7 +1909,9 @@ public class Canvas3D extends Canvas {
         offScreenRendering = true;
 
         if (view.inCanvasCallback) {
+
 	    if (screen.renderer == null) {
+	
 		// It is possible that screen.renderer = null when this View
 		// is shared by another onScreen Canvas and this callback
 		// is from that Canvas. In this case it need one more
@@ -1933,6 +1927,7 @@ public class Canvas3D extends Canvas {
 	    // the renderer message queue, and call renderer doWork
 	    // to do the offscreen rendering now
 	    if (Thread.currentThread() == screen.renderer) {
+
 		J3dMessage createMessage = VirtualUniverse.mc.getMessage();
 		createMessage.threads = J3dThread.RENDER_THREAD;
 		createMessage.type = J3dMessage.RENDER_OFFSCREEN;
@@ -1956,6 +1951,7 @@ public class Canvas3D extends Canvas {
 		// the renderer thread
 		screen.renderer.doWork(0);
 	    } else {
+
 		// TODO: 
 		// Now we are in trouble, this will cause deadlock if
 		// waitForOffScreenRendering() is invoked
@@ -1970,6 +1966,7 @@ public class Canvas3D extends Canvas {
 	    }
 
         } else if (Thread.currentThread() instanceof BehaviorScheduler) {
+
 	    // If called from behavior scheduler, send a message directly to 
 	    // the renderer message queue.
 	    // Note that we didn't use 
@@ -1986,6 +1983,7 @@ public class Canvas3D extends Canvas {
             VirtualUniverse.mc.setWorkForRequestRenderer();
 
  	} else {
+
             // send a message to renderBin
             J3dMessage createMessage = VirtualUniverse.mc.getMessage();
             createMessage.threads = J3dThread.UPDATE_RENDER;
@@ -2221,6 +2219,7 @@ public class Canvas3D extends Canvas {
     }
 
     void doSwap() {
+
 	if (firstPaintCalled && useDoubleBuffer) {
 	    try {
 		if (validCtx && (ctx != 0) && (view != null)) {
@@ -3947,16 +3946,37 @@ public class Canvas3D extends Canvas {
     final void endScene() {
 	endScene(ctx);
     }
+    
 
-    void removeCtx(boolean offscreen) {
+    // Fix for Issue 18
+    // Pass CreateOffScreenBuffer to the Renderer thread for execution.
+    private void sendCreateOffScreenBuffer() {
+	
+	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	createMessage.threads = J3dThread.RENDER_THREAD;
+	createMessage.type = J3dMessage.CREATE_OFFSCREENBUFFER;
+	createMessage.universe = this.view.universe;
+	createMessage.view = this.view;
+	createMessage.args[0] = this;
+	screen.renderer.rendererStructure.addMessage(createMessage);
+	VirtualUniverse.mc.setWorkForRequestRenderer();
+	
+    }
+
+    private void removeCtx(boolean destroyOffscreen) {
 	if ((screen != null) && 
 	    (screen.renderer != null) &&
 	    (ctx != 0)) {
+
+	    // Fix for Issue 18
+	    // Pass destroyOffscreen boolean Renderer thread to perform destroyOffScreenBuffer.
 	    VirtualUniverse.mc.postRequest(MasterControl.FREE_CONTEXT, 
 					   new Object[]{this, 
-						    new Long(screen.display), 
-						    new Integer(window), 
-						    new Long(ctx)});
+							new Long(screen.display), 
+							new Integer(window), 
+							new Long(ctx),
+							new Boolean(destroyOffscreen)});
+	    
 	    // Fix for Issue 19
 	    // Wait for the context to be freed unless called from
 	    // a Behavior or from a Rendering thread

@@ -83,6 +83,7 @@ class J3dMessage extends Object {
     static final int VIEWSPECIFICGROUP_CLEAR        = 58;
     static final int ORDERED_GROUP_TABLE_CHANGED    = 59;
     static final int BEHAVIOR_REEVALUATE            = 60;
+    static final int CREATE_OFFSCREENBUFFER	    = 61;
 
     /**
      * This is the time snapshot at which this change occured
