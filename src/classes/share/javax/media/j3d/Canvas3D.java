@@ -1909,8 +1909,12 @@ public class Canvas3D extends Canvas {
 	if (!isRunning)
             throw new RestrictedAccessException(J3dI18N.getString("Canvas3D11"));
 
-	if (!active)
+	// Fix to issue 66
+	if ((!active) || (pendingView == null)) {
+	    /* No rendering is performed if this Canvas3D object has not been 
+	       added to an active View. */
 	    return;
+	}
 
 	// determine the offScreen boundary
 	// do the boundary determination here because setCanvasLocation can
@@ -1953,8 +1957,24 @@ public class Canvas3D extends Canvas {
 
         offScreenRendering = true;
 
-        if (view.inCanvasCallback) {
+	// Fix to issue 66.
+	/* This is an attempt to do the following check in one atomic operation :
+	   ((view != null) && (view.inCanvasCallback)) */
+	
+	boolean inCanvasCallback = false;
+	try {
+	    inCanvasCallback = view.inCanvasCallback;
+	    
+	} catch (NullPointerException npe) {
+	    /* Do nothing here */
+	}
 
+        if (inCanvasCallback) {
+	    // Here we assume that view is stable if inCanvasCallback
+	    // is true. This assumption is valid among all j3d threads as 
+	    // all access to view is synchronized by MasterControl.
+	    // Issue : user threads access to view isn't synchronize hence
+	    // is model will break.
 	    if (screen.renderer == null) {
 	
 		// It is possible that screen.renderer = null when this View
@@ -2028,13 +2048,14 @@ public class Canvas3D extends Canvas {
             VirtualUniverse.mc.setWorkForRequestRenderer();
 
  	} else {
-
             // send a message to renderBin
+	    // Fix for issue 66 : Since view might not been set yet, 
+	    // we have to use pendingView instead.
             J3dMessage createMessage = VirtualUniverse.mc.getMessage();
             createMessage.threads = J3dThread.UPDATE_RENDER;
             createMessage.type = J3dMessage.RENDER_OFFSCREEN;
-            createMessage.universe = this.view.universe;
-            createMessage.view = this.view;
+            createMessage.universe = this.pendingView.universe;
+            createMessage.view = this.pendingView;
             createMessage.args[0] = this;
 	    createMessage.args[1] = offScreenBuffer;
             VirtualUniverse.mc.processMessage(createMessage);
