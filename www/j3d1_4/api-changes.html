@@ -56,6 +56,34 @@ I. New/deprecated fields, constructors, methods
 	public String getName()
 
 
+    GeometryArray (incomplete list)
+    -------------
+    New fields:
+	public static final int ALLOW_VERTEX_ATTR_READ
+	public static final int ALLOW_VERTEX_ATTR_WRITE
+	public static final int VERTEX_ATTRIBUTES
+
+    New constructors:
+	public GeometryArray(int vertexCount,
+			     int vertexFormat,
+			     int texCoordSetCount,
+			     int[] texCoordSetMap,
+			     int vertexAttrCount,
+			     int[] vertexAttrFormats,
+			     String[] vertexAttrNames)
+
+    New methods:
+	public int getVertexAttrCount()
+	public void getVertexAttrFormats(int[] vertexAttrFormats)
+	public void getVertexAttrNames(String[] vertexAttrNames)
+
+
+    Node
+    ----
+    New fields:
+	public static final int ALLOW_PARENT_READ
+
+
 II. Reparented classes
 
     NONE
