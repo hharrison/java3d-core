@@ -14,8 +14,8 @@
  * $State$
  */
  -->
-  <meta http-equiv="content-type"
- content="text/html; charset=ISO-8859-1">
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
   <title>README-build: build instructions for the j3d-core project</title>
 </head>
 <body>
@@ -23,21 +23,29 @@
 the Java&nbsp;3D Packages</span></h3>
 <p><span style="text-decoration: underline;"><span
  style="font-weight: bold;"></span></span><span
- style="font-weight: bold; text-decoration: underline;"> </span>To
-build the Java&nbsp;3D packages, you must have the following three CVS
+ style="font-weight: bold; text-decoration: underline;"> </span></p>
+<p>To
+build the Java&nbsp;3D packages, you must checkout the following three
+CVS
 repositories:<br>
 </p>
 <ul>
-  <li>j3d-core<br>
-  </li>
-  <li>j3d-core-utils<br>
-  </li>
-  <li>vecmath<br>
-  </li>
+  <li><a href="http://j3d-core.dev.java.net/">j3d-core</a></li>
+  <li><a href="http://j3d-core-utils.dev.java.net/">j3d-core-utils</a></li>
+  <li><a href="http://vecmath.dev.java.net/">vecmath</a></li>
 </ul>
 <p>These three top-level directories must be named exactly as
-shown above and they must be sibling directories.<br>
+shown above and they must be sibling directories. To ensure this, run
+the cvs checkout command for each of the respositories from the same
+parent
+directory. For example:<br>
 </p>
+<ul>
+  <code>cd &lt;cvs-root-dir&gt;</code><br>
+  <code>cvs checkout vecmath</code><br>
+  <code>cvs checkout j3d-core</code><br>
+  <code>cvs checkout j3d-core-utils</code>
+</ul>
 <p>NOTE: you must first build the javax.vecmath package before building
 the Java&nbsp;3D core and utilities packages. See the <a
  href="../vecmath/README-build.html">README-build.html</a> file in the
@@ -114,7 +122,7 @@ and native libraries.
 <p>Steps:
 </p>
 <ul>
-  <code> cd &lt;java3d-root-dir&gt;/j3d-core<br>
+  <code> cd &lt;cvs-root-dir&gt;/j3d-core<br>
 ant</code>
 </ul>
 <p>The above steps build both the Java and native code for
@@ -147,10 +155,9 @@ can be set to "vc".<br>
 build.properties can be modified to use "d3d" (Direct3D API for
 rendering) besides the default value "ogl".<br>
 </p>
-<p>NOTE: You can also modify the properties through ant property
-command
-options
-e.g. "ant -Dbuild.comp=forte"<br>
+<p>NOTE: You can also modify the properties via command-line options to
+ant,
+for example, "ant&nbsp;-Dbuild.comp=vc"<br>
 </p>
 <h3><span style="font-weight: bold; text-decoration: underline;">Running
 Java&nbsp;3D</span></h3>
@@ -158,7 +165,7 @@ Java&nbsp;3D</span></h3>
  href="../j3d-examples/README-build.html">README-build.html</a> in
 j3d-examples for
 details
-building Java&nbsp;3D example programs.<br>
+on building and running Java&nbsp;3D example programs.<br>
 </p>
 </body>
 </html>
