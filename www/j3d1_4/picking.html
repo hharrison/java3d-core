@@ -13,36 +13,44 @@ is a Work in Progress</i></span></h3>
 <hr>
 <p>This page describes the proposed picking changes in Java 3D 1.4. The
 main motivation is to improve picking performance. It eliminates the
-need to rely on picking utility for extra pick information, such as the
+need to rely on the picking utility for extra pick information, such as
+the
 color, normal and texture coordinates of the intersection points. This
-information will be returned, from the core picking methods, in a newly
+information will be returned, by the new core picking APIs, in a newly
 created PickInfo class.<br>
 &nbsp;
 <br>
-<span style="font-weight: bold;">The proposed API is:</span><br>
+The proposed API are :<br>
 </p>
-<h4><big style="font-weight: bold;">The following 4 methods will be
-added to
-Locale and BranchGroup :</big><big style="font-weight: bold;"></big>&nbsp;
-<br>
-</h4>
-<div style="margin-left: 40px;"><span style="font-weight: bold;">public
+<ul>
+  <li>New methods in existing classes:<big style="font-weight: bold;">&nbsp;&nbsp;
+    <br>
+    </big></li>
+</ul>
+<h4 style="font-weight: bold; margin-left: 40px;"><span
+ style="font-weight: normal;">The following 4 methods will be added to <span
+ style="font-weight: bold;">Locale</span> and <span
+ style="font-weight: bold;">BranchGroup</span> :</span><small><span
+ style="font-weight: normal;">&nbsp;
+</span><br>
+</small></h4>
+<div style="font-weight: bold; margin-left: 80px;"><span
+ style="font-weight: normal;">method: public
 PickInfo[] pickAll(
 int mode, int flags, PickShape pickShape )</span><br>
-<span style="font-weight: bold;">public PickInfo[]
+<span style="font-weight: normal;">method: public PickInfo[]
 pickAllSorted( int mode, int flags, PickShape pickShape )</span><br>
-<span style="font-weight: bold;">public PickInfo pickClosest(
+<span style="font-weight: normal;">method: public PickInfo pickClosest(
 int mode, int flags, PickShape pickShape )</span><br>
-<span style="font-weight: bold;">public PickInfo pickAny( int
+<span style="font-weight: normal;">method: public PickInfo pickAny( int
 mode, int flags, PickShape pickShape )</span><br>
 </div>
-<p>
-<br>
+<p style="margin-left: 40px;">
 Where <br>
 </p>
-<div style="margin-left: 40px;"><span style="font-weight: bold;">mode</span>
+<div style="margin-left: 80px;">mode
 is an enum of [ Bounds, Geometry ] <br>
-<span style="font-weight: bold;">flags</span>
+flags
 is a mask indicating which components are present in each returned
 PickInfo object. This is specified as one or more individual flags that
 are bitwise "OR"ed together to describe the returned per PickInfo data.
@@ -50,13 +58,13 @@ are bitwise "OR"ed together to describe the returned per PickInfo data.
 The flags include: <br>
 <code>SCENEGRAPHPATH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &nbsp;
-- request for computed SceneGraphPath;&nbsp;&nbsp; </code>&nbsp; <br>
+- request for computed SceneGraphPath. &nbsp; </code>&nbsp; <br>
 <code>NODE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &nbsp;&nbsp; - request
-for computed intersected Node;</code><br>
+for computed intersected Node.</code><br>
 <code>LOCAL_TO_VWORLD &nbsp;
 &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
-&nbsp; - request for computed local to virtual world transform;</code><br>
+&nbsp; - request for computed local to virtual world transform.</code><br>
 <code>CLOSEST_INTERSECTION_POINT &nbsp; -
 request for
 closest intersection point.</code><br>
@@ -65,28 +73,27 @@ closest intersection point.</code><br>
 &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; -
 request for the closest distance of the intersection.</code><br>
 <code>CLOSEST_GEOM_INFO&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;
-&nbsp;&nbsp; - request for
-ONLY the closest intersection geometry information.</code><br>
-<code>ALL_GEOM_INFO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; - request for only the closest intersection geometry
+information.</code><code><br>
+ALL_GEOM_INFO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &nbsp; &nbsp;&nbsp;&nbsp;
 - request for all intersection geometry information. &nbsp;</code>&nbsp;&nbsp;
 &nbsp;<br>
 </div>
-<p></p>
-<p>
-<br>
+<p style="margin-left: 40px;"></p>
+<div style="margin-left: 40px;">
 NOTES : <br>
-</p>
-<div style="margin-left: 40px;">If <code>CLOSEST_INTERSECTION_POINT</code>
-is not set
-return PickInfo.closestIntersectionPoint is set to null.<br>
+</div>
+<p></p>
+<div style="margin-left: 80px;">If <code>CLOSEST_INTERSECTION_POINT</code>
+is not set, PickInfo.closestIntersectionPoint is set to null.<br>
 If <code>CLOSEST_GEOM_INFO</code> is
-set the return PickInfo.intersectionInfos is of length 1, and
-pickInfo.geomPickInfo
+set, PickInfo.intersectionInfos is of length 1, and
+PickInfo.intersectionInfos[0]
 contains the
 information of the closest pick.<br>
-If <code>ALL_GEOM_INFO</code> is set
-the return PickInfo.intersectionInfos contains all intersections of the
+If <code>ALL_GEOM_INFO</code> is set, PickInfo.intersectionInfos
+contains all intersections of the
 pickable node
 in sorted order.<br>
 If both <code>CLOSEST_GEOM_INFO</code>
@@ -100,92 +107,92 @@ is thrown if&nbsp;<span style="font-style: italic;"> </span>both<span
 and
 <code>ALL_GEOM_INFO</code> are set.<br>
 </div>
-<p> <br>
-<br>
-&nbsp;&nbsp;&nbsp; <big style="font-weight: bold;">* New classes</big></p>
-<big style="font-weight: bold;">public class PickInfo extends Object</big>&nbsp;&nbsp;&nbsp;
-<p style="margin-left: 40px;"><span style="font-style: italic;"></span>
-<span style="font-style: italic;">/** </span><span
+<ul>
+  <li><small> </small>New classes</li>
+</ul>
+<div style="margin-left: 40px;">public class <span
+ style="font-weight: bold;">PickInfo</span> extends Object<small>&nbsp;&nbsp;&nbsp;
+</small></div>
+<p style="margin-left: 80px;"><span style="font-style: italic;"></span><span
+ style="font-style: italic;">/** </span><span
  style="font-style: italic;">Retrieves
 the reference to the SceneGraphPath in this PickInfo object. */</span><br>
-<span style="font-weight: bold;">public
-SceneGraphPath getSceneGraphPath()<br>
+method: public
+SceneGraphPath getSceneGraphPath()<span style="font-weight: bold;"><br>
 </span></p>
-<p style="margin-left: 40px;"><span style="font-style: italic;">/*</span><span
+<p style="margin-left: 80px;"><span style="font-style: italic;">/*</span><span
  style="font-style: italic;">* Retrieves
 the reference to the picked node, either a Shape3D or a Morph, in
 this PickInfo object. */</span><span style="font-weight: bold;"><br>
-</span><span style="font-style: italic;"></span><span
- style="font-weight: bold;">public Node getNode()<br>
+</span><span style="font-style: italic;"></span>method: public Node
+getNode()<span style="font-weight: bold;"><br>
 </span><span style="font-style: italic;"><br>
 /** Retrieves
 the reference to the LocalToVworld transform of the picked node in
 this PickInfo object. */</span><span style="font-weight: bold;"><br>
-</span><span style="font-style: italic;"></span><span
- style="font-weight: bold;">public
-Transform3D getLocalToVWorld()</span><span style="font-style: italic;"></span><br>
+</span><span style="font-style: italic;"></span>method: public
+Transform3D getLocalToVWorld()<span style="font-style: italic;"></span><br>
 <span style="font-weight: bold;"></span></p>
-<p style="margin-left: 40px;">/*<span style="font-style: italic;">*
+<p style="margin-left: 80px;">/*<span style="font-style: italic;">*
 Retrieves
 the reference to the closest intersection point in this PickInfo
 object. */</span><span style="font-weight: bold;"><br>
-</span><span style="font-weight: bold;">public
-Point3d getClosestIntersectionPoint()<br>
+</span>method: public
+Point3d getClosestIntersectionPoint()<span style="font-weight: bold;"><br>
 </span></p>
-<p style="margin-left: 40px;">/*<span style="font-style: italic;">*
+<p style="margin-left: 80px;">/*<span style="font-style: italic;">*
 Retrieves
 the distance between the start point of the pickShape and the
 intersection point. */</span><span style="font-weight: bold;"><br>
-</span><span style="font-style: italic;"></span><span
- style="font-weight: bold;">public
-double getDistance()<br>
+</span><span style="font-style: italic;"></span>method: public
+double getDistance()<span style="font-weight: bold;"><br>
 </span></p>
-<p style="margin-left: 40px;">/*<span style="font-style: italic;">*
+<p style="margin-left: 80px;">/*<span style="font-style: italic;">*
 Retrieves
 the reference to the array of intersection results in this PickInfo
 object. */</span><span style="font-weight: bold;"><br>
-</span><span style="font-style: italic;"></span><span
- style="font-weight: bold;">public
-IntersectionInfo[] getIntersectionInfos()</span><br>
+</span><span style="font-style: italic;"></span>method: public
+IntersectionInfo[] getIntersectionInfos()<br>
 </p>
-<p><big><span style="font-weight: bold;">public class
-PickInfo.IntersectionInfo extends Object&nbsp; ( inner
-class )</span><br style="font-weight: bold;">
+<p style="margin-left: 40px;"><big><small>public class
+<span style="font-weight: bold;">PickInfo.IntersectionInfo</span>
+extends Object&nbsp; ( inner
+class )</small><br style="font-weight: bold;">
 </big><span style="font-style: italic;"></span></p>
-<div style="margin-left: 40px;"><span style="font-style: italic;">/**
+<div style="margin-left: 80px;"><span style="font-style: italic;">/**
 Retrieves
 the index to the intersected geometry in the picked node, either a
 Shape3D or Morph. */</span><br>
-<span style="font-weight: bold;">public
-int getGeometryIndex()&nbsp; <br>
+method: public
+int getGeometryIndex()&nbsp;<span style="font-weight: bold;"> <br>
 <br>
 </span>/*<span style="font-style: italic;">* Retrieves
 the reference to the intersected geometry in the picked object,
 either a Shape3D or Morph. */</span><span style="font-style: italic;"></span><br>
-<span style="font-weight: bold;">public
-Geometry getGeometry()</span> <span style="font-style: italic;"></span><br>
+method: public
+Geometry getGeometry() <span style="font-style: italic;"></span><br>
 <br>
 /*<span style="font-style: italic;">* Retrieves
 the interpolation weights for each of the verticies of the&nbsp;
 intersected primitive. */</span><br>
-<span style="font-weight: bold;">public
-float[] getWeights()</span><span style="font-style: italic;"></span><br>
+method: public
+float[] getWeights()<span style="font-style: italic;"></span><br>
 <br>
 /*<span style="font-style: italic;">* Retrieves
 the reference to the intersection point of the picked geometry in this
 IntersectionInfo object. */</span><br>
-<span style="font-weight: bold;">public
-Point3d getIntersectionPoint()<br>
+method: public
+Point3d getIntersectionPoint()<span style="font-weight: bold;"><br>
 </span><span style="font-style: italic;"></span><span
  style="font-weight: bold;"></span><br>
 <span style="font-style: italic;">/** Retrieves
 the vertex indices of the intersected primitive in the geometry. */</span><br>
-<span style="font-weight: bold;">public int[] getVertexIndices()</span><br>
+method: public int[] getVertexIndices()<br>
 </div>
-<p>
+<p style="margin-left: 40px;">
 </p>
-<p></p>
-<p></p>
+<p style="margin-left: 40px;"></p>
+<p style="margin-left: 40px;"></p>
 <p><br>
 <font color="gray">Page last updated &#8212;
 $Date$
