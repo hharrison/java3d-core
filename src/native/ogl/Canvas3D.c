@@ -1241,7 +1241,7 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
      * by wglChoosePixelFormat() or wglChoosePixelFormatARB.
      */
 
-    if(!offScreen) {  // Fix to issue 97 
+    if(!offScreen) {  // Fix to issue 104 
 	if ((PixelFormatInfoPtr == NULL) || (PixelFormatInfoPtr->onScreenPFormat <= 0)) {
 	    printErrorMessage("Canvas3D_createNewContext: onScreen PixelFormat is invalid");
 	    return 0;
@@ -3352,7 +3352,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
      * by wglChoosePixelFormat() or wglChoosePixelFormatARB.
      */    
 
-    // Fix to issue 97
+    // Fix to issue 104
     if(!offScreen) {
 	if ((PixelFormatInfoPtr == NULL) || (PixelFormatInfoPtr->onScreenPFormat <= 0)) {
 	    printErrorMessage("Canvas3D_createNewContext: onScreen PixelFormat is invalid");

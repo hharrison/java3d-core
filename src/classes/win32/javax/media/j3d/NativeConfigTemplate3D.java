@@ -110,7 +110,7 @@ class NativeConfigTemplate3D {
 	    return null;
 	}	    
 
-	// Fix to issue 97 -- 
+	// Fix to issue 104 -- 
 	// Pass in 0 for pixel format to the AWT. 
 	// ATI driver will lockup pixelFormat, if it is passed to AWT.
 	GraphicsConfiguration gc1 = new J3dGraphicsConfig(gd, 0);
