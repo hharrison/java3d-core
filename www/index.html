@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="content-type">
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
   <title>The Java 3D API Core</title>
 </head>
 <body>
@@ -22,17 +22,27 @@ and build
 instructions</a> for information on downloading and building j3d-core.</p>
 <h3>License</h3>
 <p>The source code for the core Java&nbsp;3D API reference
-implementation is licensed under terms that are yet to be disclosed.
-Until such time as these terms are disclosed, you may not do anything
-at all with the source code in this CVS repository.<br>
+implementation
+is licensed under the <a href="http://java3d.dev.java.net/jrl.html">Java
+Research License (JRL)</a> for non-commercial use. The JRL allows users
+to download, build, and modify the source code in the
+j3d-core project for research use, subject to the terms of the license.
 </p>
-<p>The API specification will continue to evolve as part of the
-<a href="http://jcp.org/">Java Community Process (JCP)</a>.
-We welcome community participation, and encourage developers to
-contribute both bug fixes and new implementation code to the API.
-The terms under which we will license this source code will facilitate
-this, while ensuring that the API is not fragmented with incompatible
-versions being released.<br>
+<p>Java&nbsp;3D is also licensed for commercial use under a new
+no-fee <a href="http://java3d.dev.java.net/jdl-java3d.pdf">Java
+Distribution License (JDL)</a>. The JDL
+allows commercial use of Java&nbsp;3D with or without modification, as
+long as compatibility with the entire API Specification is maintained.
+This includes passing the TCK tests for Java&nbsp;3D, and retaining the
+javax namespace as defined by the JCP.
+</p>
+<p>
+The API specification will continue to evolve as part of the Java
+Community Process (JCP). We welcome community participation, and
+encourage developers to contribute both bug fixes and new
+implementation code to the API. The combination of the JRL and the JDL
+was chosen to facilitate this, while ensuring the integrity and
+compatibility of the API.<br>
 </p>
 <h3>Downloads</h3>
 <p>Three types of binary builds are available in the <a
@@ -40,11 +50,18 @@ versions being released.<br>
 &amp; Files</a>
 section of this project on java.net: Release (or FCS) builds;
 Experimental (early access) builds; and Daily/Weekly builds. The latest
-release build of Java 3D v1.3.1 is available. A fairly stable
-experimental build, labeled as Java 3D v 1.3.2-buildXX is now
+release build of Java&nbsp;3D v1.3.1 is available. A fairly stable
+experimental build, labeled as Java&nbsp;3D v 1.3.2-build3 is now
 available. We will set up daily or weekly builds in the near future.<br>
 </p>
-<h3>Project highlights</h3>
+<h3>How to Contribute</h3>
+<p>We invite developers to contribute to Java&nbsp;3D. Please refer to
+the
+<a href="http://java3d.dev.java.net/contribute.html">Contributing to
+Java&nbsp;3D</a> section in the parent java3d project to learn
+how to contribute to this project or any other Java&nbsp;3D-related
+project.</p>
+<h3><a name="Project_Highlights"></a>Project Highlights</h3>
 <p><b>Release project Source code</b> </p>
 <p>The current, experimental fork of the of the Java&nbsp;3D source
 code is an early access of version 1.3.2. It is
@@ -68,8 +85,8 @@ public
 consumption (although <span style="font-weight: bold;">much </span>work
 is needed on the actual content)<br>
   </li>
-  <li>Some minor bug fixes have been incorporated [TODO: list fixed
-bugs]</li>
+  <li>Some minor bug fixes have been incorporated<br>
+  </li>
 </ol>
 <p>The reason the Headspace AudioEngine was removed is that we do not
 have
@@ -117,56 +134,43 @@ project for more ideas.</p>
   </li>
   <li>DirectX 9 port</li>
 </ul>
-<h3>How to Contribute</h3>
-<p>Anyone who wants to contribute source code, even in the form of
-e-mailed bug fixes,
-must have a signed contributor agreement [TODO link] on file. The
-Java&nbsp;3D
-team regrets that we are unable to even look at submitted bug fixes
-unless this author
-has the
-contributor agreement on file. This may seems harsh, but it is a policy
-designed to protect the project from patent infringement and copyright
-issues. We encourage all developers to download the agreement [TODO
-link], sign it, and
-fax it
-to the number indicated [TODO link]. Then you are more than welcome to
-send in fixes for your favorite bugs!<br>
-</p>
-<p>We invite anyone to be a project <span style="font-style: italic;">observer</span>.
-As the community matures and contributors demonstrate their
-familiarity
-with the API internals they will be invited to join the project as a
-<span style="font-style: italic;">developer</span> with full CVS commit
-privilege. The last thing we want is
-lots of people hacking on the source in the central repository and
-destabilizing the API, so we will be taking a cautious approach.<br>
-</p>
-<p>The <a href="http://jcp.org/">Java Community Process</a> (JCP) also
-has a significant impact on how people can
-contribute to the project. Although the source of the API is available,
-and we actively encourage the community to contribute to it's
-development, the API itself (that is, the public and protected classes,
-interfaces, methods, fields, and so forth in the <code>javax.media.j3d</code>
-and <code>javax.vecmath</code> packages) are
-controlled by the JCP and can not be freely modified.
-Modifications to the API will be created within the Java&nbsp;3D JSRs
-by an Expert Group of JCP members. A call for experts will be
-made once this process is launched.
-</p>
 <h3>Examples</h3>
 <p>The <a href="http://j3d-examples.dev.java.net/">j3d-examples</a>
 project includes a set of simple example programs. The <a
- href="http://java.sun.com/products/java-media/3D/flythrough.html">Java
-3D Fly Through v 2.0 Beta</a> sample application shows you how to take
-advantage of the capabilities of Java 3D technology. You can download
+ href="http://java.sun.com/products/java-media/3D/flythrough.html">Java&nbsp;3D
+Fly Through v 2.0 Beta</a> sample application shows you how to take
+advantage of the capabilities of Java&nbsp;3D technology. You can
+download
 the source code via <a href="http://java3d.netbeans.org">http://java3d.netbeans.org</a>.<br>
 </p>
-<h3>Feedback</h3>
-<p>[TODO: list of feedback and participation options including mailing
-lists, issue tracking, project owners/contacts, discussion forum,
-wikis, etc.]<br>
-<br>
+<h3>Feedback and Discussion<br>
+</h3>
+<p>We have created two Java&nbsp;3D mailing lists in the parent <a
+ href="http://java3d.dev.java.net/">java3d</a> project: <a
+ href="mailto:announce@java3d.dev.java.net">announce@java3d.dev.java.net</a>
+and <a href="mailto:interest@java3d.dev.java.net">interest@java3d.dev.java.net</a>.
+<a href="http://java3d.dev.java.net/servlets/ProjectMailingListList">Click
+here to subscribe</a> to either of these lists. The annouce list is a
+low-volume moderated mailing list for announcing Java&nbsp;3D-related
+news
+and information. The interest list is an open mailing list for
+discussing all aspects of Java&nbsp;3D, the reference implementation
+for the
+Java&nbsp;3D core, vecmath, utilities, example programs, etc.</p>
+<p>For those who prefer a forum to a mailing list, we have created the
+<a href="https://java3d.dev.java.net/servlets/ProjectForumView">Java&nbsp;3D
+forum</a>, hosted as part of the JavaDesktop Community. Messages
+posted on the forum are cross-posted to <a
+ href="mailto:interest@java3d.dev.java.net">interest@java3d.dev.java.net</a>
+and vice-versa.<br>
+</p>
+<p>Finally, each sub-project has its own cvs and issues mailing
+lists.&nbsp;<a href="servlets/ProjectMailingListList">Click here to
+subscribe</a> to either of these lists. The <a
+ href="mailto:cvs@j3d-core.dev.java.net">cvs@j3d-core.dev.java.net</a>
+list is for automated CVS change messages and discussion of those
+changes. The <a href="mailto:issues@j3d-core.dev.java.net">issues@j3d-core.dev.java.net</a>
+list is for automated issue tracking.<br>
 </p>
 </body>
 </html>
