@@ -401,6 +401,8 @@ typedef struct {
 
     /* version and extension info */
     char *versionStr;
+    char *vendorStr;
+    char *rendererStr;
     char *extensionStr;
     int versionNumbers[2];
 	 

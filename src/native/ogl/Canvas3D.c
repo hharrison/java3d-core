@@ -38,9 +38,6 @@
 #endif /* DEBUG */
 
 
-static char *gl_VERSION;
-static char *gl_VENDOR;
-                         
 static void initializeCtxInfo(JNIEnv *env, GraphicsContextPropertiesInfo* ctxInfo);
 static void cleanupCtxInfo(GraphicsContextPropertiesInfo* ctxInfo);
 static void disableAttribFor2D(GraphicsContextPropertiesInfo *ctxProperties);
@@ -66,9 +63,10 @@ HWND createDummyWindow(const char* szAppName);
 #endif
 
 /*
- * extract the version numbers
- * when return , numbers[0] contains major version number
+ * Extract the version numbers from a copy of the version string.
+ * Upon return, numbers[0] contains major version number
  * numbers[1] contains minor version number
+ * Note that the passed in version string is modified.
  */
 void extractVersionInfo(char *versionStr, int* numbers){
     char *majorNumStr;
@@ -430,7 +428,9 @@ getPropertiesFromCurrentContext(
     JNIEnv table = *env; 
 
     /* version and extension */
-    char *glversion;
+    char *glVersion;
+    char *glVendor;
+    char *glRenderer;
     char *extensionStr;
     char *tmpVersionStr;
     char *tmpExtensionStr;
@@ -443,20 +443,7 @@ getPropertiesFromCurrentContext(
     PixelFormatInfo *PixelFormatInfoPtr = (PixelFormatInfo *)fbConfigListPtr;
 #endif
     
-    /* get OpenGL version */
-    glversion = (char *)glGetString(GL_VERSION);
-    if (glversion == NULL) {
-	fprintf(stderr, "glversion == null\n");
-	return JNI_FALSE;
-    }
-    gl_VERSION = glversion;
-    tmpVersionStr = strdup(glversion);
-    gl_VENDOR = (char *)glGetString(GL_VENDOR);
-    if (gl_VENDOR == NULL) {
-        gl_VENDOR = "<unkown vendor>";
-    }
-    
-    /* Get the extension */
+    /* Get the list of extension */
     extensionStr = (char *)glGetString(GL_EXTENSIONS);
     if (extensionStr == NULL) {
         fprintf(stderr, "extensionStr == null\n");
@@ -464,15 +451,34 @@ getPropertiesFromCurrentContext(
     }
     tmpExtensionStr = strdup(extensionStr);
 
+    /* Get the OpenGL version */
+    glVersion = (char *)glGetString(GL_VERSION);
+    if (glVersion == NULL) {
+	fprintf(stderr, "glVersion == null\n");
+	return JNI_FALSE;
+    }
+    tmpVersionStr = strdup(glVersion);
+
+    /* Get the OpenGL vendor and renderer */
+    glVendor = (char *)glGetString(GL_VENDOR);
+    if (glVendor == NULL) {
+        glVendor = "<UNKNOWN>";
+    }
+    glRenderer = (char *)glGetString(GL_RENDERER);
+    if (glRenderer == NULL) {
+        glRenderer = "<UNKNOWN>";
+    }
+
     /*
       fprintf(stderr, " pixelFormat : %d\n", pixelFormat);
       fprintf(stderr, " extensionStr : %s\n", tmpExtensionStr);
     */
     
-    ctxInfo->versionStr = strdup(glversion);
+    ctxInfo->versionStr = strdup(glVersion);
+    ctxInfo->vendorStr = strdup(glVendor);
+    ctxInfo->rendererStr = strdup(glRenderer);
     ctxInfo->extensionStr = strdup(extensionStr);
 
-    
     /* find out the version, major and minor version number */
     extractVersionInfo(tmpVersionStr, versionNumbers);
 
@@ -1021,6 +1027,12 @@ void setupCanvasProperties(
     
     rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "nativeGraphicsVersion", "Ljava/lang/String;");
     (*(table->SetObjectField))(env, obj, rsc_field, (*env)->NewStringUTF(env, ctxInfo->versionStr));
+
+    rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "nativeGraphicsVendor", "Ljava/lang/String;");
+    (*(table->SetObjectField))(env, obj, rsc_field, (*env)->NewStringUTF(env, ctxInfo->vendorStr));
+
+    rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "nativeGraphicsRenderer", "Ljava/lang/String;");
+    (*(table->SetObjectField))(env, obj, rsc_field, (*env)->NewStringUTF(env, ctxInfo->rendererStr));
 
     if (ctxInfo->textureAnisotropicFilterAvailable) {
 
@@ -3002,6 +3014,8 @@ initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo)
     
     /* version and extension info */
     ctxInfo->versionStr = NULL;
+    ctxInfo->vendorStr = NULL;
+    ctxInfo->rendererStr = NULL;
     ctxInfo->extensionStr = NULL;
     ctxInfo->versionNumbers[0] = 1;
     ctxInfo->versionNumbers[1] = 1; 
@@ -3118,9 +3132,15 @@ cleanupCtxInfo(GraphicsContextPropertiesInfo* ctxInfo)
 {
     if( ctxInfo->versionStr != NULL)
 	free(ctxInfo->versionStr);
+    if( ctxInfo->vendorStr != NULL)
+	free(ctxInfo->vendorStr);
+    if( ctxInfo->rendererStr != NULL)
+	free(ctxInfo->rendererStr);
     if( ctxInfo->extensionStr != NULL)
 	free(ctxInfo->extensionStr);
     ctxInfo->versionStr = NULL;
+    ctxInfo->vendorStr = NULL;
+    ctxInfo->rendererStr = NULL;
     ctxInfo->extensionStr = NULL;
 }
 

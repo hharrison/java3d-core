@@ -589,8 +589,10 @@ public class Canvas3D extends Canvas {
     // constructor to allow Java 3D to extend it.
     static Hashtable fbConfigTable = new Hashtable();
 
-    // The native graphics version and renderer information 
-    String nativeGraphicsVersion = null;
+    // The native graphics version, vendor, and renderer information 
+    private String nativeGraphicsVersion = "<UNKNOWN>";
+    private String nativeGraphicsVendor = "<UNKNOWN>";
+    private String nativeGraphicsRenderer = "<UNKNOWN>";
     
     NativeWSInfo nativeWSobj = new NativeWSInfo();
     boolean firstPaintCalled = false;
@@ -3546,9 +3548,13 @@ public class Canvas3D extends Canvas {
         values.add(new Integer(numTexUnitSupported));
 
 	keys.add("native.version");
-	if(nativeGraphicsVersion == null)
-	    nativeGraphicsVersion = ""; 
 	values.add(nativeGraphicsVersion);
+
+	keys.add("native.vendor");
+	values.add(nativeGraphicsVendor);
+
+	keys.add("native.renderer");
+	values.add(nativeGraphicsRenderer);
 
 	// Now Create read-only properties object
 	queryProps =
