@@ -724,6 +724,10 @@ class AppearanceRetained extends NodeComponentRetained {
 
 	mirrorApp.source = source;
 	mirrorApp.sgApp = this;
+
+	// Fix for Issue 33: copy the changedFrequent mask to mirror
+	mirrorApp.changedFrequent = changedFrequent;
+
 	if (material != null) { 
 	    mirrorApp.material = (MaterialRetained)material.mirror;
 	} else {
