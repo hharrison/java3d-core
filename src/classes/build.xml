@@ -39,13 +39,16 @@
           todir="${build-debug-gen}/classes/javax/media/j3d"
           overwrite="true">
         <filterset>
-            <filter token="VERSION_BUILD" value="${version_build}"/>
-            <filter token="VERSION_BASE" value="${version_base}"/>
-            <filter token="IS_DEBUG" value="true"/>
-            <filter token="DEV_PHASE" value="true"/>
-            <filter token="DAILY_BUILD" value="${daily_build}"/>
+            <filter token="BUILD_TYPE" value="${build.type}"/>
             <filter token="BUILDTIME" value="${buildtime}"/>
             <filter token="BUILDTIME_VERBOSE" value="${buildtime_verbose}"/>
+            <filter token="IS_DEBUG" value="true"/>
+            <filter token="IS_DEV_PHASE" value="true"/>
+            <filter token="IS_PRODUCTION" value="${is_production}"/>
+            <filter token="USE_VERBOSE_BUILDTIME" value="${use_verbose_buildtime}"/>
+            <filter token="VERSION_BASE" value="${version_base}"/>
+            <filter token="VERSION_BUILD" value="${version_build}"/>
+            <filter token="VERSION_SUFFIX" value="${version_suffix}"/>
         </filterset>
     </copy>
 
@@ -80,13 +83,16 @@
           todir="${build-opt-gen}/classes/javax/media/j3d"
           overwrite="true">
         <filterset>
-            <filter token="VERSION_BUILD" value="${version_build}"/>
-            <filter token="VERSION_BASE" value="${version_base}"/>
-            <filter token="IS_DEBUG" value="false"/>
-            <filter token="DEV_PHASE" value="${dev_phase}"/>
-            <filter token="DAILY_BUILD" value="${daily_build}"/>
+            <filter token="BUILD_TYPE" value="${build.type}"/>
             <filter token="BUILDTIME" value="${buildtime}"/>
             <filter token="BUILDTIME_VERBOSE" value="${buildtime_verbose}"/>
+            <filter token="IS_DEBUG" value="false"/>
+            <filter token="IS_DEV_PHASE" value="${is_dev_phase}"/>
+            <filter token="IS_PRODUCTION" value="${is_production}"/>
+            <filter token="USE_VERBOSE_BUILDTIME" value="${use_verbose_buildtime}"/>
+            <filter token="VERSION_BASE" value="${version_base}"/>
+            <filter token="VERSION_BUILD" value="${version_build}"/>
+            <filter token="VERSION_SUFFIX" value="${version_suffix}"/>
         </filterset>
     </copy>
 

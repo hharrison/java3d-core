@@ -80,40 +80,71 @@ class VersionInfo extends Object {
     // -------------------------------------------------------------------
 
     /**
-     * Constant that indicates whether or not this is
-     * a debug build.
+     * Constant that indicates whether or not this is a debug build.
      */
     static final boolean isDebug = @IS_DEBUG@;
 
     /**
-     * This static final variable is used to turn on/off debugging,
-     * checking, and initializing codes that may be preferred in
-     * development phase but not necessarily required in the
-     * production release.
-     *  
-     * Beside for debugging, use this variable to do initialization,
-     * checking objects existence, and other checks that may help in
-     * uncovering potential bugs during code development. This
-     * variable should be turned off during production release as it
-     * may cause performance hit.
+     * This static final variable is used to enable debugging and
+     * assertion checking during the development phase of a particular
+     * version of Java 3D. It is disabled for "opt" production builds
+     * (beta, release candidate, fcs, and patch builds). It is enabled
+     * for all "debug" builds and for daily and stable "opt" builds.
+     *
+     * <p>
+     * This parameter is controlled by ant via the build.xml file. The
+     * default value is true.
      */
-    static final boolean devPhase = @DEV_PHASE@;
+    static final boolean isDevPhase = @IS_DEV_PHASE@;
 
     /**
-     * This flag is set to true for daily builds and false for stable builds.
+     * This static final variable is used indicate a production
+     * (beta, release candidate, fcs, or patch) build.
+     * <p>
+     * This parameter is controlled by ant via the build.xml file. The
+     * default value is false.
      */
-    private static final boolean dailyBuild = @DAILY_BUILD@;
+    static final boolean isProduction = @IS_PRODUCTION@;
+
+    /**
+     * If this flag is set to true, the verbose buildtime string
+     * will be appended to the version string)
+     * <p>
+     * This parameter is controlled by ant via the build.xml file. The
+     * default value is true.
+     */
+    private static final boolean useVerboseBuildTime = @USE_VERBOSE_BUILDTIME@;
+
+    /**
+     * String identifying the type of  Java 3D build, one of:
+     * "daily", "stable", "beta", "fcs", or "patch". The default value
+     * is "daily".
+     */
+    private static final String BUILD_TYPE = "@BUILD_TYPE@";
+
+    /**
+     * String identifying the build number of Java 3D in the format
+     * "buildNN", where "NN" is the sequential build number, for
+     * example, build47.  This string contain only letters and
+     * numbers, It must not contain any other characters or spaces.
+     *
+     * For production builds, this string appears parenthetically,
+     * after the first space.
+     */
+    private static final String VERSION_BUILD = "@VERSION_BUILD@";
 
     /**
      * String identifying the particular build of Java 3D, for
-     * example, beta1, build47, rc1, etc.  This string may only
-     * contain letters, numbers, periods, dashes, or underscores. It
-     * must not contain any other characters or spaces.
+     * example, "-beta1", "-build47", "-rc1", "_01", etc. Note that
+     * this includes the leading dash or underscore. It will typically
+     * be empty for FCS builds. This string may only contain letters,
+     * numbers, periods, dashes, or underscores. It must not contain
+     * any other characters or spaces.
      *
-     * This will typically by null for final, released builds, but
-     * should be non-null for all other builds.
+     * This us used as part of the j3d.version that appears before the
+     * optional first space.
      */
-    private static final String VERSION_BUILD = "@VERSION_BUILD@";
+    private static final String VERSION_SUFFIX = "@VERSION_SUFFIX@";
 
     /**
      * Date stamp
@@ -150,13 +181,13 @@ class VersionInfo extends Object {
     private static final String VERSION_BASE = "@VERSION_BASE@";
 
     /**
-     * Qualifier indicating that the version of Java 3D is
-     * experimental.  This must <i>not</i> be modified by deverlopers.
+     * Boolean flag indicating that the version of Java 3D is
+     * experimental.  This must <i>not</i> be modified by developers.
      * All non-official builds <i>must</i> contain the string
      * <code>"experimental"</code> as part of the release name that
      * appears before the optional first space.
      */
-    private static final String VERSION_SUFFIX = "experimental";
+    private static final boolean isExperimental = !isProduction;
 
     /**
      * The composite version string.  This is composed in the static
@@ -171,11 +202,19 @@ class VersionInfo extends Object {
     private static final String VENDOR;
 
     /**
+     * Build type string, one of "fcs", "fcs-patch", or "", that is
+     * appended to the end of the version string after the build
+     * identifier (and after the first space, which will automatically
+     * be added) and before the optional verbose time and date stamp.
+     */
+    private static final String BUILD_QUALIFIER = "@BUILD_QUALIFIER@";
+
+    /**
      * Verbose time and date stamp appended to the end of the version string.
      * This is appended to the version string
      * after the build identifier (and after the first space, which
      * will automatically be added) and before the optional dev
-     * string.  This string is only used for non-fcs (non-production) builds.
+     * string.  This string is only used for non-fcs builds.
      */
     private static final String BUILDTIME_VERBOSE = "@BUILDTIME_VERBOSE@";
 
@@ -190,6 +229,12 @@ class VersionInfo extends Object {
 
     // The static initializer composes the version and vendor strings
     static {
+	final boolean isPatchBuild = BUILD_TYPE.equals("patch");
+	final boolean isFcsBuild = BUILD_TYPE.equals("fcs");
+	final boolean isBetaBuild = BUILD_TYPE.equals("beta");
+	final boolean isStableBuild = BUILD_TYPE.equals("stable");
+	final boolean isDailyBuild = BUILD_TYPE.equals("daily");
+
 	// Assign the vendor by concatenating primary and developer
 	// vendor strings
 	String tmpVendor = VENDOR_PRIMARY;
@@ -198,19 +243,40 @@ class VersionInfo extends Object {
 	}
 
 	String tmpVersion = VERSION_BASE;
-	if (devPhase && isNonEmpty(VERSION_BUILD)) {
-	    tmpVersion += "-" + VERSION_BUILD;
+	if (isNonEmpty(VERSION_SUFFIX)) {
+	    if (isPatchBuild) {
+		tmpVersion += "_";
+	    }
+	    else {
+		tmpVersion += "-";
+	    }
+	    tmpVersion += VERSION_SUFFIX;
 	}
 
-	if (dailyBuild && isNonEmpty(BUILDTIME)) {
+	if (isDailyBuild && isNonEmpty(BUILDTIME)) {
 	    tmpVersion += "-" + BUILDTIME;
 	}
 
-	if (isNonEmpty(VERSION_SUFFIX)) {
-	    tmpVersion += "-" + VERSION_SUFFIX;
+	if (isExperimental) {
+	    tmpVersion += "-experimental";
 	}
 
-	if (devPhase && isNonEmpty(BUILDTIME_VERBOSE)) {
+	// Append the optional fields that follow the first space
+
+	if (isProduction) {
+	    if (isFcsBuild) {
+		tmpVersion += " fcs";
+	    }
+	    else if (isPatchBuild) {
+		tmpVersion += " fcs+patch";
+	    }
+
+	    if (isNonEmpty(VERSION_BUILD)) {
+		tmpVersion += " (" + VERSION_BUILD + ")";
+	    }
+	}
+
+	if (useVerboseBuildTime && isNonEmpty(BUILDTIME_VERBOSE)) {
 	    tmpVersion += " " + BUILDTIME_VERBOSE;
 	}
 

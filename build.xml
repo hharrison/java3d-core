@@ -34,7 +34,7 @@
   *
   * For example:
   *
-  *   ant -Dbuild.comp=vc -Dbuild.rend=d3d
+  *   ant -Dbuild.comp=vc -Dbuild.rend=d3d ...
   *
   *********************************************************************
   -->
@@ -44,19 +44,37 @@
   <!-- *************************************** -->
 
   <!--
-  * The following two properties specify the version and build number
-  * of Java 3D being built.  The "version_base" property specifies
-  * the dot-dot base version number of Java 3D; it must contain
-  * exactly three integer numbers separated by "periods ("."). The
-  * version_base_file property must be the same version number as
-  * version_base with "_" replacing ".". The version_build property
-  * specifies the build number (e.g., pre6, build6, beta1, rc1). It
-  * is ignored for production builds.
+  * The following property specifies the build number of the current
+  * Java 3D version being built. This build number is a monotonically
+  * increasing number that is incremented for each new stable, beta,
+  * fcs, or patch build.  Each non-daily build will have a unique
+  * build number that is greater than the previous build's build
+  * number.
   -->
+  <property name="version_buildnum"   value="9"/>
 
+  <!--
+  * The following property specifies the beta revision of the current
+  * Java 3D version being built. It is ignored for non-beta builds.
+  -->
+  <property name="version_betastr"    value="beta1"/>
+
+  <!--
+  * The following property specifies the patch revision of the current
+  * Java 3D version being built. It is ignored for non-beta builds.
+  -->
+  <property name="version_patchstr"   value="01"/>
+
+  <!--
+  * The following properties specify the current version of Java 3D.
+  * The "version_base" property specifies the dot-dot base version
+  * number of Java 3D; it must contain exactly three integer numbers
+  * separated by "periods ("."). The version_base_file property must
+  * be the same version number as version_base with "_" replacing ".".
+  -->
   <property name="version_base"       value="1.3.2"/>
   <property name="version_base_file"  value="1_3_2"/>
-  <property name="version_build"      value="pre9"/>
+
 
   <!-- ************************************* -->
   <!-- *** End build-specific properties *** -->
@@ -65,18 +83,27 @@
   <!--
   *********************************************************************
   *
-  * A build of Java 3D is one of the following three types: daily
-  * build, stable build, production build. Daily builds are identified
-  * with a "preN_YYMMDDHHMM" suffix; stable builds are identified with
-  * a "buildN" suffix; production builds are identified with an "rcN"
-  * suffix or with no suffix.
+  * A build of Java 3D is one of the following five types: daily
+  * build, stable build, beta build (or release candidate), fcs build,
+  * patch build. Daily builds are identified with a "-preN-YYMMDDHHMM"
+  * suffix; stable builds are identified with a "-buildN" suffix; beta
+  * builds are identified with a "-betaN" or "-rcN" suffix; fcs builds
+  * have no suffix; and patch builds are identified with an "_N"
+  * suffix.
   *
-  * The default is to do a daily build. One of the following
-  * properties may be set on the command line to do a different kind
+  * The default is to do a daily build. This may be overriden by setting
+  * the build.type property on the command line to do a different kind
   * of build:
   *
-  *   build.stable=true      Do a stable build
-  *   build.production=true  Do a production (RC or FCS) build
+  *   build.type=daily   Do a daily build (default)
+  *   build.type=stable  Do a stable build : -buildN
+  *   build.type=beta    Do a beta or RC production build : -betaN or -rcN
+  *   build.type=fcs     Do an FCS production build : [no suffix]
+  *   build.type=patch   Do an FCS+patch production build : _PP
+  *
+  * For example:
+  *
+  *   ant -Dbuild.type=stable ...
   *
   *********************************************************************
   -->
@@ -95,23 +122,31 @@
   <property name="build.rend" value="ogl"/>
 
   <target name="echo" depends="setupPlatform">	
+    <echo message="platform        = ${platform}"/>
+    <echo message="ostype          = ${ostype}"/>
+    <echo message="os.arch         = ${os.arch}"/>
+    <echo message="os.name         = ${os.name}"/>	
+    <echo message="ant.home        = ${ant.home}"/>
+    <echo message="java.home       = ${java.home}"/>
+    <echo message="core_utils_home = ${core_utils_home}"/>
+    <echo message="vecmath_home    = ${vecmath_home}"/>
     <echo message="user.name       = ${user.name}"/>
     <echo message="user.home       = ${user.home}"/>
-    <echo message="java.home       = ${java.home}"/>
-    <echo message="ant.home        = ${ant.home}"/>
-    <echo message="O/S arch        = ${os.arch}"/>
-    <echo message="O/S name        = ${os.name}"/>	
+
+    <echo message=""/>
+    <echo message="build.type      = ${build.type}"/>
     <echo message="build.rend      = ${build.rend}"/>
     <echo message="build.comp      = ${build.comp}"/>
-    <echo message="vecmath_home    = ${vecmath_home}"/>
-    <echo message="core_utils_home = ${core_utils_home}"/>
-    <echo message="ostype          = ${ostype}"/>
-    <echo message="platform        = ${platform}"/>
+    <echo message="is_dev_phase    = ${is_dev_phase}"/>
+    <echo message="is_production   = ${is_production}"/>
+    <echo message="use_verbose_buildtime = ${use_verbose_buildtime}"/>
+
+    <echo message="version_build   = ${version_build}"/>
+    <echo message="version_suffix  = ${version_suffix}"/>
+
     <echo message="version         = ${version}"/>
     <echo message="version_file    = ${version_file}"/>
     <echo message="version_rpm     = ${version_rpm}"/>
-    <echo message="daily_build     = ${daily_build}"/>
-    <echo message="dev_phase       = ${dev_phase}"/>
   </target>
 
   <target name="setupSolaris" if="isSolarisOnSparc">	
@@ -135,41 +170,113 @@
     <property name="platform" value="windows-i586-${build.comp}"/>
   </target>
 
-  <target name="setupDaily" unless="build.stable">
-    <echo message="setupDaily"/>
-    <property name="daily_build" value="true"/>
-    <property name="version" value="${version_base}-${version_build}-${buildtime}"/>
-    <property name="version_file" value="${version_base_file}-${version_build}-${buildtime}"/>
-    <property name="version_rpm" value="${version_base}_${version_build}_${buildtime}"/>
+  <target name="setupPlatform"
+       depends="init, setupBuildType, setupSolaris, setupLinux, setupLinuxAmd64, setupWindows">
+    <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
+    <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
+    <property name="docname" value="java3d-${version_file}-doc"/>
   </target>
 
-  <target name="setupStable" if="build.stable">
-    <echo message="setupStable"/>
-    <property name="daily_build" value="false"/>
-    <property name="version" value="${version_base}-${version_build}"/>
-    <property name="version_file" value="${version_base_file}-${version_build}"/>
-    <property name="version_rpm" value="${version_base}_${version_build}"/>
+
+  <target name="setupBuildType" depends="initBuildType, setupBuildPatch, setupBuildFcs, setupBuildBeta, setupBuildStable, setupBuildDaily, checkBuildType">
+    <echo message="build.type = ${build.type}"/>
   </target>
 
-  <target name="setupProduction" if="build.production">
-    <echo message="setupProduction"/>
-    <property name="daily_build" value="false"/>
-    <property name="dev_phase" value="false"/>
+  <target name="initBuildType">
+    <!-- Default value is "daily", overridden on command line -->
+    <property name="build.type" value="daily"/>
+    <property name="buildType_${build.type}" value="true"/>
+  </target>
+
+
+  <!-- Set properties for PATCH build -->
+  <target name="setupBuildPatch" if="buildType_patch">
+    <property name="buildTypeSet" value="true"/>
+
+    <property name="is_dev_phase" value="false"/>
+    <property name="is_production" value="true"/>
+    <property name="use_verbose_buildtime" value="false"/>
+
+    <property name="version_build" value="build${version_buildnum}"/>
+    <property name="version_suffix" value="${version_patchstr}"/>
+
+    <property name="version" value="${version_base}_${version_suffix}"/>
+    <property name="version_file" value="${version_base_file}_${version_suffix}"/>
+    <property name="version_rpm" value="${version_base}_${version_suffix}"/>
+  </target>
+
+
+  <!-- Set properties for FCS build -->
+  <target name="setupBuildFcs" if="buildType_fcs">
+    <property name="buildTypeSet" value="true"/>
+
+    <property name="is_dev_phase" value="false"/>
+    <property name="is_production" value="true"/>
+    <property name="use_verbose_buildtime" value="false"/>
+
+    <property name="version_build" value="build${version_buildnum}"/>
+    <property name="version_suffix" value=""/>
+
     <property name="version" value="${version_base}"/>
     <property name="version_file" value="${version_base_file}"/>
     <property name="version_rpm" value="${version_base}"/>
   </target>
 
-  <target name="setupDevPhase" unless="build.production" depends="setupDaily,setupStable">
-    <echo message="setupDevPhase"/>
-    <property name="dev_phase" value="true"/>
+
+  <!-- Set properties for BETA build -->
+  <target name="setupBuildBeta" if="buildType_beta">
+    <property name="buildTypeSet" value="true"/>
+
+    <property name="is_dev_phase" value="false"/>
+    <property name="is_production" value="true"/>
+    <property name="use_verbose_buildtime" value="true"/>
+
+    <property name="version_build" value="build${version_buildnum}"/>
+    <property name="version_suffix" value="${version_betastr}"/>
+
+    <property name="version" value="${version_base}-${version_suffix}"/>
+    <property name="version_file" value="${version_base_file}-${version_suffix}"/>
+    <property name="version_rpm" value="${version_base}_${version_suffix}"/>
   </target>
 
-  <target name="setupPlatform"
-       depends="init, setupProduction, setupDevPhase ,setupSolaris, setupLinux, setupLinuxAmd64, setupWindows">
-    <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
-    <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
-    <property name="docname" value="java3d-${version_file}-doc"/>
+
+  <!-- Set properties for STABLE build -->
+  <target name="setupBuildStable" if="buildType_stable">
+    <property name="buildTypeSet" value="true"/>
+
+    <property name="is_dev_phase" value="true"/>
+    <property name="is_production" value="false"/>
+    <property name="use_verbose_buildtime" value="true"/>
+
+    <property name="version_build" value="build${version_buildnum}"/>
+    <property name="version_suffix" value="${version_build}"/>
+
+    <property name="version" value="${version_base}-${version_suffix}"/>
+    <property name="version_file" value="${version_base_file}-${version_suffix}"/>
+    <property name="version_rpm" value="${version_base}_${version_suffix}"/>
+  </target>
+
+
+  <!-- Set properties for DAILY build -->
+  <target name="setupBuildDaily" if="buildType_daily">
+    <property name="buildTypeSet" value="true"/>
+
+    <property name="is_dev_phase" value="true"/>
+    <property name="is_production" value="false"/>
+    <property name="use_verbose_buildtime" value="true"/>
+
+    <property name="version_build" value="pre${version_buildnum}"/>
+    <property name="version_suffix" value="${version_build}"/>
+
+    <property name="version" value="${version_base}-${version_suffix}-${buildtime}"/>
+    <property name="version_file" value="${version_base_file}-${version_suffix}-${buildtime}"/>
+    <property name="version_rpm" value="${version_base}_${version_suffix}_${buildtime}"/>
+  </target>
+
+
+  <!-- Check buildType -->
+  <target name="checkBuildType" unless="buildTypeSet">
+    <fail message="Unknown build.type = ${build.type}"/>
   </target>
 
 

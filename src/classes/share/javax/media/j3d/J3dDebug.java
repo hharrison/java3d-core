@@ -14,7 +14,7 @@ package javax.media.j3d;
 
 class J3dDebug  {
 
-    // For production release devPhase must be set to false.
+    // For production release devPhase is set to false.
     
     // Do no debugging.
     static final int NO_DEBUG			= 0;
@@ -37,7 +37,7 @@ class J3dDebug  {
     // uncovering potential bugs during code development. This
     // variable should be turned off during production release as it
     // may cause performance hit.
-    static final boolean devPhase = VersionInfo.devPhase;
+    static final boolean devPhase = VersionInfo.isDevPhase;
 
     // This is a property variable. It allows a true/false be sent to
     // J3d from command line, to on/off code segments.  To avoid
