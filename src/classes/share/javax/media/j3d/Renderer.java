@@ -442,16 +442,6 @@ class Renderer extends J3dThread {
 
                 renderType = m[nmesg].type;
 
-                if ((canvas.view == null) || !canvas.firstPaintCalled) {
-                    // This happen when the canvas just remove from the View
-                    if (renderType == J3dMessage.RENDER_OFFSCREEN) {
-                        canvas.offScreenRendering = false;
-		    }
-		    m[nmesg++].decRefcount();
-                    continue;
-                }
-
-
 		if (renderType == J3dMessage.CREATE_OFFSCREENBUFFER) {
 		    // Fix for issue 18.
 		    canvas.window = 
@@ -463,6 +453,15 @@ class Renderer extends J3dThread {
 		    m[nmesg++].decRefcount();
 		    continue;
 		} 
+
+                if ((canvas.view == null) || !canvas.firstPaintCalled) {
+                    // This happen when the canvas just remove from the View
+                    if (renderType == J3dMessage.RENDER_OFFSCREEN) {
+                        canvas.offScreenRendering = false;
+		    }
+		    m[nmesg++].decRefcount();
+                    continue;
+                }
 
 		if (!canvas.validCanvas && 
                     (renderType != J3dMessage.RENDER_OFFSCREEN)) {

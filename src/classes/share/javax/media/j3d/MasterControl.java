@@ -944,9 +944,10 @@ class MasterControl {
     /**
      * Create a Renderer if it is not already done so.
      * This is used for GraphicsConfigTemplate3D passing 
-     * graphics call to RequestRenderer. 
+     * graphics call to RequestRenderer, and for creating
+     * an off-screen buffer for an off-screen Canvas3D.
      */
-    Renderer createRenderer(GraphicsConfiguration gc) {
+    private Renderer createRenderer(GraphicsConfiguration gc) {
 	final GraphicsDevice gd = gc.getDevice();
 
 	Renderer rdr = (Renderer) Screen3D.deviceRendererMap.get(gd);
@@ -2782,6 +2783,36 @@ class MasterControl {
 	rdr.rendererStructure.addMessage(renderMessage);
 	VirtualUniverse.mc.setWorkForRequestRenderer();
     }
+
+    // Fix for Issue 18
+    // Pass CreateOffScreenBuffer to the Renderer thread for execution.
+    void sendCreateOffScreenBuffer(Canvas3D c) {
+	// Assertion check that the renderer has already been created.
+	// If it hasn't, this is very, very bad because it opens up
+	// the possibility of an MT race condition since this method
+	// can be called from the user's thread, possibly at the same
+	// time as the MasterControl thread is trying to create a new
+	// Renderer.  Fortunately, this should never happen since both
+	// the GraphicsTemplate3D methods that return a valid Graphics
+	// Configuration and the Canvas3D constructor will ultimately
+	// cause a renderer to be created via sendRenderMessage().
+	GraphicsDevice gd = c.graphicsConfiguration.getDevice();
+	J3dDebug.doAssert((Screen3D.deviceRendererMap.get(gd) != null),
+			  "Screen3D.deviceRendererMap.get(gd) != null");
+
+	// Fix for Issue 72 : call createRenderer rather than getting
+	// the renderer from the canvas.screen object
+	Renderer rdr = createRenderer(c.graphicsConfiguration);
+	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	createMessage.threads = J3dThread.RENDER_THREAD;
+	createMessage.type = J3dMessage.CREATE_OFFSCREENBUFFER;
+	createMessage.universe = null;
+	createMessage.view = null;
+	createMessage.args[0] = c;
+	rdr.rendererStructure.addMessage(createMessage);
+	VirtualUniverse.mc.setWorkForRequestRenderer();
+    }
+
 
     /**
      * This is the MasterControl work method for Java 3D

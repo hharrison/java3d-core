@@ -1772,7 +1772,7 @@ public class Canvas3D extends Canvas {
 				    	bufferRetained.height);
 	    this.setSize(offScreenCanvasSize);
 
-	    sendCreateOffScreenBuffer();
+	    VirtualUniverse.mc.sendCreateOffScreenBuffer(this);
 
 	    ctx = 0; 
 	}
@@ -3959,21 +3959,6 @@ public class Canvas3D extends Canvas {
 	endScene(ctx);
     }
     
-
-    // Fix for Issue 18
-    // Pass CreateOffScreenBuffer to the Renderer thread for execution.
-    private void sendCreateOffScreenBuffer() {
-	
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
-	createMessage.threads = J3dThread.RENDER_THREAD;
-	createMessage.type = J3dMessage.CREATE_OFFSCREENBUFFER;
-	createMessage.universe = this.view.universe;
-	createMessage.view = this.view;
-	createMessage.args[0] = this;
-	screen.renderer.rendererStructure.addMessage(createMessage);
-	VirtualUniverse.mc.setWorkForRequestRenderer();
-	
-    }
 
     private void removeCtx(boolean destroyOffscreen) {
 	if ((screen != null) && 
