@@ -1757,7 +1757,7 @@ public class BoundingBox extends Bounds {
      * @param frustum  
      * @return true if they intersect 
      */
-    boolean intersect( CachedFrustum frustum ) {
+    boolean intersect(CachedFrustum frustum ) {
 
 	if (boundsIsEmpty)
 	    return false;
@@ -1768,101 +1768,45 @@ public class BoundingBox extends Bounds {
 	// System.out.println("intersect frustum with box="+this.toString()); 
 	// System.out.println("frustum "+frustum.toString()); 
 	// check if box and bounding box  of frustum intersect 
-        if (upper.x > frustum.lower.x && 
-	    lower.x < frustum.upper.x &&
-            upper.y > frustum.lower.y && 
-	    lower.y < frustum.upper.y &&
-            upper.z > frustum.lower.z && 
-	    lower.z < frustum.upper.z ) {
-	    // check if all box points out any frustum plane  
-	    int i = 5;
-	    while (i>=0){
-		Vector4d vc = frustum.clipPlanes[i--];
-		if ((( upper.x*vc.x + upper.y*vc.y + 
-		       upper.z*vc.z + vc.w ) < EPS ) &&
-		    (( upper.x*vc.x + lower.y*vc.y + 
-		       upper.z*vc.z + vc.w ) < EPS ) &&
-		    (( upper.x*vc.x + lower.y*vc.y + 
-		       lower.z*vc.z + vc.w ) < EPS ) &&
-		    (( upper.x*vc.x + upper.y*vc.y + 
-		       lower.z*vc.z + vc.w ) < EPS ) &&
-		    (( lower.x*vc.x + upper.y*vc.y + 
-		       upper.z*vc.z + vc.w ) < EPS ) &&
-		    (( lower.x*vc.x + lower.y*vc.y + 
-		       upper.z*vc.z + vc.w ) < EPS ) &&
-		    (( lower.x*vc.x + lower.y*vc.y + 
-		       lower.z*vc.z + vc.w ) < EPS ) &&
-		    (( lower.x*vc.x +  upper.y*vc.y + 
-		       lower.z*vc.z + vc.w ) < EPS )) {
-		    // all corners outside this frustum plane
-		    return false;
-		}
-	    }
+        if ((upper.x < frustum.lower.x) || 
+	    (lower.x > frustum.upper.x) ||
+            (upper.y < frustum.lower.y) || 
+	    (lower.y > frustum.upper.y) ||
+            (upper.z < frustum.lower.z) ||
+	    (lower.z > frustum.upper.z) ) {
 	    
-	    // check if any box corner  is inside of the frustum silhoette edges in the 3 views 
-	    // y-z
-	    Point4d edge;
-	    for (i=frustum.nxEdges-1; i >=0; i--){
-		edge = frustum.xEdges[frustum.xEdgeList[i]];
-		if ( ((upper.y*edge.y + 
-		       upper.z*edge.z + edge.w ) < EPS ) ||
-		     (( upper.y*edge.y + 
-			lower.z*edge.z + edge.w ) < EPS) ||
-		     (( lower.y*edge.y + 
-			upper.z*edge.z + edge.w ) < EPS ) ||
-		     (( lower.y*edge.y + 
-			lower.z*edge.z + edge.w ) < EPS )) {
-		    break;
-		}
-	    }
-
-	    if ( i < 0) {
-		return false; // all box corners outside yz silhouette edges
-	    }
-
-
-	    // x-z
-	    for(i=frustum.nyEdges-1; i >=0; i--){
-		edge = frustum.yEdges[frustum.yEdgeList[i]];
-		if ((( upper.x*edge.x + 
-		       upper.z*edge.z + edge.w ) < EPS ) ||
-		    (( upper.x*edge.x + 
-		       lower.z*edge.z + edge.w ) < EPS ) ||
-		    (( lower.x*edge.x + 
-		       upper.z*edge.z + edge.w ) < EPS ) ||
-		    (( lower.x*edge.x + 
-		       lower.z*edge.z + edge.w ) < EPS ) ) {
-		    break;
-		}
-	    }
-	    if (i < 0) {
-		return false; // all box corners outside xz silhouette edges
-	    }
-
-	    // x-y
-	    for(i=frustum.nzEdges-1; i >=0; i--){
-		edge = frustum.zEdges[frustum.zEdgeList[i]];
-		if ((( upper.y*edge.y + 
-		       upper.z*edge.z + edge.w ) < EPS ) || 
-		    (( upper.y*edge.y + 
-		       lower.z*edge.z + edge.w ) < EPS ) ||
-		    (( lower.y*edge.y + 
-		       upper.z*edge.z + edge.w ) < EPS ) ||
-		    (( lower.y*edge.y +
-		       lower.z*edge.z + edge.w ) < EPS ) ) {
-		    break;
-		}
-	    }
-	    
-	    if (i < 0) {
-                return false; // all box corners outside xy silhouette edges
-	   }
-	} else {
-	    // System.out.println("false box and bounding box  of frustum do not intersect"); 
+	    // System.out.println("*** box and bounding box of frustum do not intersect");
 	    return false;
 	}
+
+	// check if all box points out any frustum plane  
+	int i = 5;
+	while (i>=0){
+	    Vector4d vc = frustum.clipPlanes[i--];
+	    if ((( upper.x*vc.x + upper.y*vc.y + 
+		   upper.z*vc.z + vc.w ) < 0.0 ) &&
+		(( upper.x*vc.x + lower.y*vc.y + 
+		   upper.z*vc.z + vc.w ) < 0.0 ) &&
+		(( upper.x*vc.x + lower.y*vc.y + 
+		   lower.z*vc.z + vc.w ) < 0.0 ) &&
+		(( upper.x*vc.x + upper.y*vc.y + 
+		   lower.z*vc.z + vc.w ) < 0.0 ) &&
+		(( lower.x*vc.x + upper.y*vc.y + 
+		   upper.z*vc.z + vc.w ) < 0.0 ) &&
+		(( lower.x*vc.x + lower.y*vc.y + 
+		   upper.z*vc.z + vc.w ) < 0.0 ) &&
+		(( lower.x*vc.x + lower.y*vc.y + 
+		   lower.z*vc.z + vc.w ) < 0.0 ) &&
+		(( lower.x*vc.x +  upper.y*vc.y + 
+		   lower.z*vc.z + vc.w ) < 0.0 )) {
+		// all corners outside this frustum plane
+		// System.out.println("*** all corners outside this frustum plane");
+		return false;
+	    }
+	}
+	    
 	return true;
-     }
+    }
 
     /** 
      * Returns a string representation of this class.

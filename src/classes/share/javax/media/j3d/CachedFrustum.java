@@ -32,21 +32,12 @@ import javax.vecmath.*;
 
 class CachedFrustum {
 
-    static final double EPSILON = .000001;
+    static final double EPSILON = 1.0E-8;
     Vector4d[] clipPlanes;
     Point3d[]  verts;
-    Point4d[]  xEdges; // silhouette edges in yz plane
-    Point4d[]  yEdges; // silhouette edges in xz plane
-    Point4d[]  zEdges; // silhouette edges in xy plane
-    int nxEdges, nyEdges, nzEdges;
-    int[] xEdgeList;
-    int[] yEdgeList;
-    int[] zEdgeList;
     Point3d upper,lower;  // bounding box of frustum
     Point3d center;  //  center of frustum
 
-    // re-used temporary from computeEdges
-    Point3d edge = new Point3d();
 
     /**
      * Constructs and initializes a new CachedFrustum using the values
@@ -59,15 +50,9 @@ class CachedFrustum {
 	 throw new IllegalArgumentException(J3dI18N.getString("CachedFrustum0"));
       }
       clipPlanes = new Vector4d[6];
-      xEdges     = new Point4d[12];
-      yEdges     = new Point4d[12];
-      zEdges     = new Point4d[12];
       verts      = new Point3d[8];
       upper      = new Point3d();
       lower      = new Point3d();
-      xEdgeList  = new int[12];
-      yEdgeList  = new int[12];
-      zEdgeList  = new int[12];
       center     = new Point3d();
 
       for(i=0;i<8;i++){
@@ -76,11 +61,6 @@ class CachedFrustum {
 
       for(i=0;i<6;i++){
 	 clipPlanes[i] = new Vector4d( planes[i] );
-      }
-      for(i=0;i<12;i++){
-	xEdges[i] = new Point4d();
-	yEdges[i] = new Point4d();
-	zEdges[i] = new Point4d();
       }
       computeValues(clipPlanes);
     }
@@ -94,13 +74,7 @@ class CachedFrustum {
       clipPlanes = new Vector4d[6];
       upper      = new Point3d();
       lower      = new Point3d();
-      xEdges     = new Point4d[12];
-      yEdges     = new Point4d[12];
-      zEdges     = new Point4d[12];
       verts      = new Point3d[8];
-      xEdgeList  = new int[12];
-      yEdgeList  = new int[12];
-      zEdgeList  = new int[12];
       center     = new Point3d();
 
       for(i=0;i<8;i++){
@@ -108,11 +82,6 @@ class CachedFrustum {
       }
       for(i=0;i<6;i++){
 	 clipPlanes[i] = new Vector4d();
-      }
-      for(i=0;i<12;i++){
-	xEdges[i] = new Point4d();
-	yEdges[i] = new Point4d();
-	zEdges[i] = new Point4d();
       }
 
     }
@@ -211,201 +180,8 @@ class CachedFrustum {
 	center.y = center.y*0.125;
 	center.z = center.z*0.125;
 
-	// to find the sil. edges in the xz plane check the sign y component of the normals
-	// from the plane equation and see if they are opposite
-	// xz plane
-	i = 0;
-	if( (clipPlanes[0].y * clipPlanes[4].y) <= 0.0 ) yEdgeList[i++] = 0; // front-left
-	if( (clipPlanes[2].y * clipPlanes[4].y) <= 0.0 ) yEdgeList[i++] = 1; // front-top
-	if( (clipPlanes[1].y * clipPlanes[4].y) <= 0.0 ) yEdgeList[i++] = 2; // front-right
-	if( (clipPlanes[3].y * clipPlanes[4].y) <= 0.0 ) yEdgeList[i++] = 3; // front-bottom
-	if( (clipPlanes[0].y * clipPlanes[3].y) <= 0.0 ) yEdgeList[i++] = 4; // middle-left
-	if( (clipPlanes[0].y * clipPlanes[2].y) <= 0.0 ) yEdgeList[i++] = 5; // middle-top
-	if( (clipPlanes[1].y * clipPlanes[2].y) <= 0.0 ) yEdgeList[i++] = 6; // middle-right
-	if( (clipPlanes[1].y * clipPlanes[3].y) <= 0.0 ) yEdgeList[i++] = 7; // middle-bottom
-	if( (clipPlanes[0].y * clipPlanes[5].y) <= 0.0 ) yEdgeList[i++] = 8; // back-left
-	if( (clipPlanes[2].y * clipPlanes[5].y) <= 0.0 ) yEdgeList[i++] = 9; // back-top
-	if( (clipPlanes[1].y * clipPlanes[5].y) <= 0.0 ) yEdgeList[i++] =10; // back-right
-	if( (clipPlanes[3].y * clipPlanes[5].y) <= 0.0 ) yEdgeList[i++] =11; // back-bottom
-	nyEdges = i;
-
-	// yz plane
-	i = 0;
-	if( (clipPlanes[0].x * clipPlanes[4].x) <= 0.0 ) xEdgeList[i++] = 0; // front-left
-	if( (clipPlanes[2].x * clipPlanes[4].x) <= 0.0 ) xEdgeList[i++] = 1; // front-top
-	if( (clipPlanes[1].x * clipPlanes[4].x) <= 0.0 ) xEdgeList[i++] = 2; // front-right
-	if( (clipPlanes[3].x * clipPlanes[4].x) <= 0.0 ) xEdgeList[i++] = 3; // front-bottom
-	if( (clipPlanes[0].x * clipPlanes[3].x) <= 0.0 ) xEdgeList[i++] = 4; // middle-left
-	if( (clipPlanes[0].x * clipPlanes[2].x) <= 0.0 ) xEdgeList[i++] = 5; // middle-top
-	if( (clipPlanes[1].x * clipPlanes[2].x) <= 0.0 ) xEdgeList[i++] = 6; // middle-right
-	if( (clipPlanes[1].x * clipPlanes[3].x) <= 0.0 ) xEdgeList[i++] = 7; // middle-bottom
-	if( (clipPlanes[0].x * clipPlanes[5].x) <= 0.0 ) xEdgeList[i++] = 8; // back-left
-	if( (clipPlanes[2].x * clipPlanes[5].x) <= 0.0 ) xEdgeList[i++] = 9; // back-top
-	if( (clipPlanes[1].x * clipPlanes[5].x) <= 0.0 ) xEdgeList[i++] =10; // back-right
-	if( (clipPlanes[3].x * clipPlanes[5].x) <= 0.0 ) xEdgeList[i++] =11; // back-bottom
-	nxEdges = i;
-
-	// xy plane
-	i = 0;
-	if( (clipPlanes[0].z * clipPlanes[4].z) <= 0.0 ) zEdgeList[i++] = 0; // front-left
-	if( (clipPlanes[2].z * clipPlanes[4].z) <= 0.0 ) zEdgeList[i++] = 1; // front-top
-	if( (clipPlanes[1].z * clipPlanes[4].z) <= 0.0 ) zEdgeList[i++] = 2; // front-right
-	if( (clipPlanes[3].z * clipPlanes[4].z) <= 0.0 ) zEdgeList[i++] = 3; // front-bottom
-	if( (clipPlanes[0].z * clipPlanes[3].z) <= 0.0 ) zEdgeList[i++] = 4; // middle-left
-	if( (clipPlanes[0].z * clipPlanes[2].z) <= 0.0 ) zEdgeList[i++] = 5; // middle-top
-	if( (clipPlanes[1].z * clipPlanes[2].z) <= 0.0 ) zEdgeList[i++] = 6; // middle-right
-	if( (clipPlanes[1].z * clipPlanes[3].z) <= 0.0 ) zEdgeList[i++] = 7; // middle-bottom
-	if( (clipPlanes[0].z * clipPlanes[5].z) <= 0.0 ) zEdgeList[i++] = 8; // back-left
-	if( (clipPlanes[2].z * clipPlanes[5].z) <= 0.0 ) zEdgeList[i++] = 9; // back-top
-	if( (clipPlanes[1].z * clipPlanes[5].z) <= 0.0 ) zEdgeList[i++] =10; // back-right
-	if( (clipPlanes[3].z * clipPlanes[5].z) <= 0.0 ) zEdgeList[i++] =11; // back-bottom
-	nzEdges = i;
-
-	// compute each edge
-	computeEdges( clipPlanes, 0, 4, xEdges[0], yEdges[0], zEdges[0]); // front-left
-	computeEdges( clipPlanes, 2, 4, xEdges[1], yEdges[1], zEdges[1]); // front-top
-	computeEdges( clipPlanes, 1, 4, xEdges[2], yEdges[2], zEdges[2]);
-	computeEdges( clipPlanes, 3, 4, xEdges[3], yEdges[3], zEdges[3]);
-	computeEdges( clipPlanes, 0, 3, xEdges[4], yEdges[4], zEdges[4]);
-	computeEdges( clipPlanes, 0, 2, xEdges[5], yEdges[5], zEdges[5]);
-	computeEdges( clipPlanes, 1, 2, xEdges[6], yEdges[6], zEdges[6]);
-	computeEdges( clipPlanes, 1, 3, xEdges[7], yEdges[7], zEdges[7]);
-	computeEdges( clipPlanes, 0, 5, xEdges[8], yEdges[8], zEdges[8]);
-	computeEdges( clipPlanes, 2, 5, xEdges[9], yEdges[9], zEdges[9]);
-	computeEdges( clipPlanes, 1, 5, xEdges[10], yEdges[10], zEdges[10]);
-	computeEdges( clipPlanes, 3, 5, xEdges[11], yEdges[11], zEdges[11]);
-
-	/*
-      int k;
-      System.out.println("clipPlanes=");
-      for( k=0;k<6;k++){
-      System.out.println(clipPlanes[k].toString());
-      }
-      System.out.println("corners="+"\n"+
-      verts[0].toString()+"\n"+
-      verts[1].toString()+"\n"+
-      verts[2].toString()+"\n"+
-      verts[3].toString()+"\n"+
-      verts[4].toString()+"\n"+
-      verts[5].toString()+"\n"+
-      verts[6].toString()+"\n"+
-      verts[7].toString());
-      System.out.println("\nxEdges=");
-      for(k=0;k<nxEdges;k++){
-      System.out.println(xEdges[xEdgeList[k]].toString());
-      }
-      System.out.println("\nyEdges=");
-      for(k=0;k<nxEdges;k++){
-      System.out.println(yEdges[xEdgeList[k]].toString());
-      }
-      System.out.println("\nzEdges=");
-      for(k=0;k<nxEdges;k++){
-      System.out.println(zEdges[xEdgeList[k]].toString());
-      }
-      */
-
     }
-    private void computeEdges( Vector4d[] planes, int i, int j, Point4d xEdge,
-			       Point4d yEdge, Point4d zEdge) {
 
-	double mag,x,y,z,xm,ym,zm,w;
-
-	// compute vector that is intersection of two planes
-
-	edge.x = planes[i].y*planes[j].z - planes[j].y*planes[i].z;
-	edge.y = planes[j].x*planes[i].z - planes[i].x*planes[j].z;
-	edge.z = planes[i].x*planes[j].y - planes[j].x*planes[i].y;
-
-	mag = 1.0/Math.sqrt( edge.x*edge.x + edge.y*edge.y + edge.z*edge.z);
-
-	edge.x = mag*edge.x;
-	edge.y = mag*edge.y;
-	edge.z = mag*edge.z;
-
-	xm = Math.abs(edge.x);
-	ym = Math.abs(edge.y);
-	zm = Math.abs(edge.z);
-
-	// compute point on the intersection vector
-	// see Graphics Gems III pg. 233
-
-	if( zm >= xm && zm >= ym ){                // z greatest magnitude
-	    w = (planes[i].x*planes[j].y + planes[i].z*planes[j].y);
-	    if( w == 0.0)
-		w = 1.0;
-	    else
-		w = 1.0/w;
-	    x = (planes[i].y*planes[j].w - planes[j].y*planes[i].w) * w;
-	    y = (planes[j].x*planes[i].w - planes[i].x*planes[j].w) * w;
-	    z = 0.0;
-	} else if( xm >= ym && xm >= zm){          // x greatest magnitude
-	    w = (planes[i].y*planes[j].z + planes[i].z*planes[j].y);
-	    if( w == 0.0)
-		w = 1.0;
-	    else
-		w = 1.0/w;
-	    x = 0.0;
-	    y = (planes[i].z*planes[j].w - planes[j].z*planes[i].w) * w;
-	    z = (planes[j].y*planes[i].w - planes[i].y*planes[j].w) * w;
-	} else {                                                  // y greatest magnitude
-	    w = (planes[i].x*planes[j].z + planes[i].z*planes[j].x);
-	    if( w == 0.0)
-		w = 1.0;
-	    else
-		w = 1.0/w;
-	    x = (planes[i].z*planes[j].w - planes[j].z*planes[i].w) * w;
-	    y = 0.0;
-	    z = (planes[j].x*planes[i].w - planes[i].x*planes[j].w) * w;
-	}
-
-	// compute the noramls to the edges in for silhouette testing
-	/*
-	  System.out.println("\nplane1="+planes[i].toString());
-	  System.out.println("plane2="+planes[j].toString());
-	  System.out.println("point="+x+" "+y+" "+z);
-	  System.out.println("edge="+edge.x+" "+edge.y+" "+edge.z);
-	  */
-	// x=0 edges
-
-	xEdge.x = 0.0;
-	xEdge.y = -edge.z;
-	xEdge.z = edge.y;
-	xEdge.w = -(xEdge.y*y + xEdge.z*z);
-
-	if( (center.y*xEdge.y + center.z*xEdge.z + xEdge.w) > 0.0 ){
-	    xEdge.y = edge.z;
-	    xEdge.z = -edge.y;
-	    xEdge.w = -(xEdge.y*y + xEdge.z*z);
-	}
-
-	// y=0 edges
-	yEdge.x = -edge.z;
-	yEdge.y = 0.0;
-	yEdge.z = edge.x;
-	yEdge.w = -(yEdge.x*x + yEdge.z*z);
-	if( (center.y*yEdge.y + center.z*yEdge.z + yEdge.w) > 0.0 ){
-            yEdge.x = edge.z;
-            yEdge.z = -edge.x;
-            yEdge.w = -(yEdge.x*x + yEdge.z*z);
-	}
-
-	// z=0 edges
-	zEdge.x = -edge.y;
-	zEdge.y = edge.x;
-	zEdge.z = 0.0;
-	zEdge.w = -(zEdge.y*y + zEdge.x*x);
-
-	if( (center.x*zEdge.x + center.y*zEdge.y + zEdge.w) > 0.0 ){
-            zEdge.x = edge.y;
-            zEdge.y = -edge.x;
-            zEdge.w = -(zEdge.y*y + zEdge.x*x);
-	}
-	/*
-	  System.out.println("xedge="+xEdge.x+" "+xEdge.y+" "+xEdge.z+" "+xEdge.w);
-	  System.out.println("yedge="+yEdge.y+" "+yEdge.y+" "+yEdge.z+" "+yEdge.w);
-	  System.out.println("zedge="+zEdge.z+" "+zEdge.y+" "+zEdge.z+" "+zEdge.w);
-	  */
-    }
     private void computeVertex( int a, int b, int c, Point3d vert) {
 	double det,x,y,z;
 
@@ -413,7 +189,9 @@ class CachedFrustum {
 	    clipPlanes[a].z*clipPlanes[b].x*clipPlanes[c].y - clipPlanes[a].z*clipPlanes[b].y*clipPlanes[c].x -
 	    clipPlanes[a].y*clipPlanes[b].x*clipPlanes[c].z - clipPlanes[a].x*clipPlanes[b].z*clipPlanes[c].y;
 
+
 	if( det*det < EPSILON ){
+	    // System.out.println("************** Two planes are parallel : det = " + det);
 	    return;       // two planes are parallel
 	}
 
