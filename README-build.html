@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
+<html>
+<head>
 <!--
 /*
  * $RCSfile$
@@ -13,135 +14,151 @@
  * $State$
  */
  -->
-
-<html>
-<head>
-   
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="content-type">
-  <title>README-build</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>README-build: build instructions for the j3d-core project</title>
 </head>
-  <body>
- <span style="font-weight: bold; text-decoration: underline;">Building the 
-Java 3D Packages<br>
- <br>
- </span>To build the Java 3D packages, you must have the following three CVS<br>
- repositories:<br>
- <br>
- &nbsp;&nbsp;&nbsp; j3d-core<br>
- &nbsp;&nbsp;&nbsp; j3d-core-utils<br>
- &nbsp;&nbsp;&nbsp; vecmath<br>
- <br>
- NOTE: these three top-level directories must be named exactly as shown<br>
- above and they must be sibling directories.<br>
- <br>
- NOTE: you must first build the javax.vecmath pacakge before building<br>
- the Java 3D core and utilities packages.&nbsp; See the <a
- href="../vecmath/README-build.html">README-build.html</a><br>
- file in the "vecmath" directory for instructions.<br>
- <span style="font-weight: bold; text-decoration: underline;"><br>
- <br>
- System Requirements<br>
- <br>
- </span>The following operating environments have been tested:<br>
- 
+<body>
+<h3><span style="font-weight: bold; text-decoration: underline;">Building
+the Java&nbsp;3D Packages</span></h3>
+<p><span style="text-decoration: underline;"><span
+ style="font-weight: bold;"></span></span><span
+ style="font-weight: bold; text-decoration: underline;"> </span>To
+build the Java&nbsp;3D packages, you must have the following three CVS
+repositories:<br>
+</p>
 <ul>
-   <li>Solaris: Sparc (Ultra60 or better) running Solaris 9 with Forte C compiler 
-version 6.2 or GNU gcc version 3.3.2</li>
-   <li>Linux: i386/i586 running SuSE 9 or RedHat 9.0</li>
-   <li>Windows: Windows/XP with Microsoft Visual C++ 6.0 or the gcc that comes 
-with <a href="http://www.mingw.org">MinGW version 3.1.0-1</a> (Windows 2000 
-should work, but is untested)<br>
-   </li>
- 
+  <li>j3d-core<br>
+  </li>
+  <li>j3d-core-utils<br>
+  </li>
+  <li>vecmath<br>
+  </li>
 </ul>
- The following software must be installed:<br>
- 
+<p>These three top-level directories must be named exactly as
+shown above and they must be sibling directories.<br>
+</p>
+<p>NOTE: you must first build the javax.vecmath package before building
+the Java&nbsp;3D core and utilities packages. See the <a
+ href="../vecmath/README-build.html">README-build.html</a> file in the
+"vecmath" directory for instructions.<br>
+</p>
+<h3><span style="font-weight: bold; text-decoration: underline;"></span><span
+ style="text-decoration: underline;">System Requirements</span></h3>
+<p><span style="font-weight: bold; text-decoration: underline;"></span></p>
+<p><span style="font-weight: bold; text-decoration: underline;"></span>The
+following operating environments have been tested:<br>
+</p>
 <ul>
-   <li><a href="http://java.sun.com/j2se">JDK 1.4.2&nbsp;</a> <br>
-   </li>
-   <li><a href="http://jakarta.apache.org/ant">Apache Ant 1.6.1&nbsp;</a> 
-    <br>
-   </li>
-   <li>C Compiler (Either one of the following depending on the platform)&nbsp;&nbsp;&nbsp;&nbsp;</li>
- 
+  <li>Solaris: Sparc (Ultra60 or better) running Solaris 9 with Forte C
+compiler version 6.2 or GNU gcc version 3.3.2</li>
+  <li>Linux: i386/i586 running SuSE 9 or RedHat 9.0</li>
+  <li>Windows: Windows/XP with Microsoft Visual C++ 6.0 or the gcc that
+comes with <a href="http://www.mingw.org">MinGW version 3.1.0-1</a>
+(Windows 2000 should work, but is untested)<br>
+  </li>
 </ul>
- 
-<div style="margin-left: 40px;">- Solaris <br>
- Sun ONE Studio 8 (formerly Forte Tools)'s Compiler or GNU Compiler Collection, 
-<a href="http://gcc.gnu.org">GCC version 3.3.2</a>&nbsp; <br>
- <br>
- </div>
- 
-<div style="margin-left: 40px;">- Linux<br>
- GNU Compiler Collection, <a href="http://gcc.gnu.org">GCC version 3.2.2</a> 
-<br>
- </div>
- <br>
- 
-<div style="margin-left: 40px;">- Windows<br>
- </div>
- 
-<div style="margin-left: 40px;">Microsoft Visual C++ 6.0 or later or GNU Compiler
-Collection, GCC version 3.2.3 that comes with<br>
- </div>
- 
-<div style="margin-left: 40px;"><a href="http://www.mingw.org">MinGW version 
-3.1.0-1</a> <br>
- </div>
- <br>
- <br>
- <span style="font-weight: bold; text-decoration: underline;">Building Java 
-3D</span><br>
- Before you start building, please check that your PATH must include the following 
-directories:<br>
- &nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp; &lt;ant-root-dir&gt;/bin<br>
- &nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp; &lt;jdk-root_dir&gt;/bin<br>
- &nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp; &lt;compiler-root-dir&gt;/bin<br>
- <br>
- The default target, jar-opt, creates an optimized jar files&nbsp; and native 
-libraries.<br>
- <br>
- Steps:<br>
- <br>
- &nbsp;&nbsp;&nbsp; cd &lt;java3d-root-dir&gt;/j3d-core<br>
- &nbsp;&nbsp;&nbsp; ant<br>
- <br>
- The above steps build both the Java and native code for javax.media.j3d and 
-com.sun.j3d.* packages.&nbsp; <br>
- <br>
- The build will be placed in j3d-core/build/&lt;platform&gt;/opt where &lt;platform&gt; 
-is determined from the ant echo command:<br>
- "ant echo".<br>
- <br>
- To see other targets that are available, type "ant -projecthelp".&nbsp; Note 
-that ant must be run from the top-level directory.<br>
- <br>
- The default compiler for native code compilation is set to "gcc". This value 
-is set in the <a href="build.properties">build.properties</a> file located
+<p> The following software must be installed:<br>
+</p>
+<ul>
+  <li><a href="http://java.sun.com/j2se">JDK 1.4.2 </a><br>
+  </li>
+  <li><a href="http://jakarta.apache.org/ant">Apache Ant 1.6.1</a><br>
+  </li>
+  <li>C Compiler (Either one of the following depending on the platform)<br>
+  </li>
+  <ul>
+    <li>Solaris:<br>
+    </li>
+    <ul>
+      <li>Sun ONE Studio 8 (formerly Forte Tools)'s Compiler or GNU
+Compiler Collection, <a href="http://gcc.gnu.org">GCC version 3.3.2</a><br>
+      </li>
+    </ul>
+    <li>Linux:<br>
+    </li>
+    <ul>
+      <li>GNU Compiler Collection, <a href="http://gcc.gnu.org">GCC
+version 3.2.2</a><br>
+      </li>
+    </ul>
+    <li>Windows<br>
+    </li>
+    <ul>
+      <li>Microsoft Visual C++ 6.0 or later or GNU Compiler
+Collection, GCC version 3.2.3 that comes with<a
+ href="http://www.mingw.org"> MinGW version 3.1.0-1</a><span
+ style="font-weight: bold; text-decoration: underline;"><br>
+        </span></li>
+    </ul>
+  </ul>
+</ul>
+<h3><span style="font-weight: bold; text-decoration: underline;">Building
+Java&nbsp;3D</span></h3>
+<p><span style="font-weight: bold; text-decoration: underline;"></span><span
+ style="font-weight: bold; text-decoration: underline;"></span>Before
+you start building, your PATH must include the
+following directories:
+</p>
+<ul>
+  <li>&lt;ant-root-dir&gt;/bin<br>
+  </li>
+  <li>&lt;jdk-root-dir&gt;/bin<br>
+  </li>
+  <li>&lt;compiler-root-dir&gt;/bin<br>
+  </li>
+</ul>
+<p>The default target, jar-opt, creates an optimized jar files
+and native libraries.
+</p>
+<p>Steps:
+</p>
+<ul>
+  <code> cd &lt;java3d-root-dir&gt;/j3d-core<br>
+ant</code>
+</ul>
+<p>The above steps build both the Java and native code for
+javax.media.j3d and com.sun.j3d.*
+packages.
+</p>
+<p>The build will be placed in j3d-core/build/&lt;platform&gt;/opt
+where &lt;platform&gt; is determined from the <code>ant
+echo</code> command:
+</p>
+<ul>
+  <code>ant echo</code>
+</ul>
+To see other targets that are available, type "ant
+-projecthelp". Note that ant must be run from the top-level
+directory.
+<p>The default compiler for native code compilation is set to "gcc".
+This
+value is set in the <a href="build.properties">build.properties</a>
+file located
 in the j3d-core directory. The compiler property is "build.comp".<br>
- <br>
- On a Solaris platform with Forte compiler installed,&nbsp; build.comp can 
-be set to "forte". On a Windows platform installed Visual C++, build.properties
+</p>
+<p>On a Solaris platform with Forte compiler installed,
+build.comp
+can be set to "forte". On a Windows platform installed Visual C++,
+build.properties
 can be set to "vc".<br>
- <br>
- SPECIAL: For Windows platform only, the property "build.rend" in build.properties 
-can be modified to use "d3d" (Direct3D API for rendering) besides the default 
-value "ogl".<br>
- <br>
- NOTE: You can also modify the properties through ant property command options
+</p>
+<p>NOTE: For Windows platform only, the property "build.rend" in
+build.properties can be modified to use "d3d" (Direct3D API for
+rendering) besides the default value "ogl".<br>
+</p>
+<p>NOTE: You can also modify the properties through ant property
+command
+options
 e.g. "ant -Dbuild.comp=forte"<br>
- <br>
- <br>
- <span style="font-weight: bold; text-decoration: underline;">Running Java 
-3D</span><br>
- <br>
- To run Java 3D, please refer to j3d-examples/<a
- href="../j3d-examples/README-build.html">README-build.html</a> for details
-building Java 3D example programs. <br>
- <br>
- <br>
- <br>
- <br>
+</p>
+<h3><span style="font-weight: bold; text-decoration: underline;">Running
+Java&nbsp;3D</span></h3>
+<p>To run Java&nbsp;3D, please refer to <a
+ href="../j3d-examples/README-build.html">README-build.html</a> in
+j3d-examples for
+details
+building Java&nbsp;3D example programs.<br>
+</p>
 </body>
 </html>
