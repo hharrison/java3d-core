@@ -10,40 +10,57 @@
 Improvements</h2>
 <p>This page lists the possible improvements to the implementation
 of Java&nbsp;3D<sup><font size="-2">TM</font></sup> version 1.4 that do
-not require API changes. This list is not prioritized, nor are any of
-these improvements guaranteed to be implemented. Click on the following
+not require API changes. Click on the following
 link to see a description of the <a href="proposed-changes.html">proposed
 Java&nbsp;3D
 1.4 API changes</a>.
 </p>
 <h4>List of possible improvements</h4>
+<p>Here is a list of newly-filed issues that represent possible
+improvements to Java&nbsp;3D. This list is not prioritized, nor are any
+of
+these improvements guaranteed to be implemented.
+</p>
 <ul>
   <li>Texture optimizations:</li>
   <ul>
-    <li>Sub-texture image optimization</li>
-    <li>Native support for ABGR format</li>
-    <li>Use Pixel Buffer Objects</li>
+    <li>Sub-texture image optimization (<a
+ href="https://java3d.dev.java.net/issues/show_bug.cgi?id=117">Issue 117</a>)</li>
+    <li>Native support for ABGR format (<a
+ href="https://java3d.dev.java.net/issues/show_bug.cgi?id=85">Issue 85</a>)</li>
+    <li>Use Pixel Buffer Objects (<a
+ href="https://java3d.dev.java.net/issues/show_bug.cgi?id=118">Issue 118</a>)</li>
   </ul>
   <li>Geometry optimization:</li>
   <ul>
-    <li>Use Vertex Buffer Objects</li>
+    <li>Use Vertex Buffer Objects (<a
+ href="https://java3d.dev.java.net/issues/show_bug.cgi?id=119">Issue 119</a>)</li>
   </ul>
-  <li>SetLive/ ClearLive MT cleanup</li>
-  <li>Stop using finalize() to cleanup state</li>
-  <li>Collection class usage:</li>
+  <li>SetLive/ ClearLive MT cleanup (<a
+ href="https://java3d.dev.java.net/issues/show_bug.cgi?id=120">Issue 120</a>)</li>
+  <li>Stop using finalize() to cleanup state (<a
+ href="https://java3d.dev.java.net/issues/show_bug.cgi?id=121">Issue 121</a>)</li>
+  <li>Collection class usage: (<a
+ href="https://java3d.dev.java.net/issues/show_bug.cgi?id=122">Issue 122</a>)</li>
   <ul>
     <li>Use Set versus List when appropriate</li>
     <li>Use generic Collection rather than j3d-specific classes (e.g.,
-UnorderList)<br>
-    </li>
+UnorderList)</li>
   </ul>
-  <li>Eliminate memory free lists</li>
-  <li>Improve picking performance / reduce garbage generation (if
-picking does not move into core)</li>
+  <li>Eliminate memory free lists (<a
+ href="https://java3d.dev.java.net/issues/show_bug.cgi?id=123">Issue 123</a>)</li>
+  <li>Improve picking performance / reduce garbage generation (<a
+ href="https://java3d.dev.java.net/issues/show_bug.cgi?id=124">Issue 124</a>)</li>
   <li>Optimize CanvasViewCache to eliminate redundant operations &amp;
-garbage generation<br>
+garbage generation (<a
+ href="https://java3d.dev.java.net/issues/show_bug.cgi?id=125">Issue 125</a>)
   </li>
 </ul>
+<p>Note that these new issues are in addition to any other issues that
+have been filed. For a complete list, <a
+ href="https://java3d.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=java3d&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED">query
+the list of issues</a>.
+</p>
 <p><font color="gray">Page last updated &#8212;
 $Date$
 </font></p>
