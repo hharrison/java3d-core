@@ -1265,7 +1265,7 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateCombinerNative
 
 
     device->SetTextureStageState(ts, D3DTSS_COLOROP, 
-				 combineFunctionTable[(combineRgbMode << 2) + combineRgbScale]);
+				 combineFunctionTable[(combineRgbMode << 2) + combineRgbScale - 1]);
 
     if (combineRgbMode !=  javax_media_j3d_TextureAttributes_COMBINE_INTERPOLATE) {
 	device->SetTextureStageState(ts, D3DTSS_COLORARG1, 
@@ -1284,7 +1284,7 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateCombinerNative
     }
 
     device->SetTextureStageState(ts, D3DTSS_ALPHAOP, 
-				 combineFunctionTable[(combineAlphaMode << 2) + combineAlphaScale]);
+				 combineFunctionTable[(combineAlphaMode << 2) + combineAlphaScale - 1]);
 
     if (combineAlphaMode != javax_media_j3d_TextureAttributes_COMBINE_INTERPOLATE) {
 	device->SetTextureStageState(ts, D3DTSS_ALPHAARG1, 
