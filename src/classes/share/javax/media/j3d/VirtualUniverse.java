@@ -222,10 +222,10 @@ public class VirtualUniverse extends Object {
 	if(J3dDebug.devPhase || VersionInfo.isDebug) {
 	    String versionStr = VersionInfo.getVersion();
 	    if (J3dDebug.devPhase) {
-		System.err.println("Java 3D pre-release version: " + versionStr);
+		System.err.println("Java 3D [dev] " + versionStr);
 	    }
 	    else {
-		System.err.println("Java 3D version: " + versionStr);
+		System.err.println("Java 3D " + versionStr);
 	    }
 	    System.err.println();
 	}
