@@ -1,3 +1,4 @@
+
 /*
  * $RCSfile$
  *
@@ -558,19 +559,20 @@ public class Canvas3D extends Canvas {
     // the visual id.
     int vid = 0;
 
-    // The visInfo field is only used when running X11.  It contains a pointer
-    // to the native XVisualInfo structure, since in some cases the visual id
+    // Fix for issue 20.
+    // The fbConfig is only used when running X11.  It contains a pointer
+    // to the native GLXFBConfig structure list, since in some cases the visual id
     // alone isn't sufficient for the native OpenGL renderer (e.g., when using
     // Solaris OpenGL with Xinerama mode disabled).
-    long visInfo = 0;
+    long fbConfig = 0;  
 
-    // visInfoTable is a static hashtable which allows getBestConfiguration()
+    // fbConfigTable is a static hashtable which allows getBestConfiguration()
     // in NativeConfigTemplate3D to map a GraphicsConfiguration to the pointer
-    // to the actual XVisualInfo that glXChooseVisual() returns.  The Canvas3D
+    // to the actual GLXFBConfig that glXChooseFBConfig() returns.  The Canvas3D
     // doesn't exist at the time getBestConfiguration() is called, and
     // X11GraphicsConfig neither maintains this pointer nor provides a public
     // constructor to allow Java 3D to extend it.
-    static Hashtable visInfoTable = new Hashtable();
+    static Hashtable fbConfigTable = new Hashtable();
 
     // The native graphics version and renderer information 
     String nativeGraphicsVersion = null;
@@ -741,7 +743,7 @@ public class Canvas3D extends Canvas {
     static final int STENCIL_BUFFER              = 0x1000;
 
     // The following three variables are set by
-    // createContext()/createQueryContext() callback
+    // createNewContext()/createQueryContext() callback
     // Supported Extensions
     int extensionsSupported = 0;
 
@@ -800,16 +802,19 @@ public class Canvas3D extends Canvas {
     /* native int getTextureColorTableSize(long ctx); */
 
     // This is the native method for creating the underlying graphics context.
-    native long createContext(long display, int window, int vid, long visInfo,
-			      long shareCtx, boolean isSharedCtx,
-			      boolean offScreen);
+    native long createNewContext(long display, int window, int vid, long fbConfig,
+				 long shareCtx, boolean isSharedCtx,
+				 boolean offScreen);
 
-    native void createQueryContext(long display, int window, int vid, boolean offScreen, int width, int height);
+    native void createQueryContext(long display, int window, int vid, long fbConfig, 
+				   boolean offScreen, int width, int height);
+
     native static void destroyContext(long display, int window, long context);
 
     // This is the native for creating offscreen buffer
-    native int createOffScreenBuffer(long ctx, long display, int vid, int width, int height);
-    native void destroyOffScreenBuffer(long ctx, long display, int window);
+    native int createOffScreenBuffer(long ctx, long display, int window, long fbConfig, int width, int height);
+
+    native void destroyOffScreenBuffer(long ctx, long display, long fbConfig, int window);
 
     // This is the native for reading the image from the offscreen buffer
     native void readOffScreenBuffer(long ctx, int format, int width, int height);
@@ -1112,13 +1117,25 @@ public class Canvas3D extends Canvas {
 	this.offScreen = offScreen;
 	this.graphicsConfiguration = graphicsConfiguration;
 
-	Object visInfoObject;
+	// Needed for  Win32 only.
 	vid = nativeWSobj.getCanvasVid(graphicsConfiguration);
-	visInfoObject = visInfoTable.get(graphicsConfiguration);
 
-	if ((visInfoObject != null) && (visInfoObject instanceof Long)) {
-	    visInfo = ((Long)visInfoObject).longValue();
+	// Fix for issue 20.
+	// Needed for Linux and Solaris.
+	Object fbConfigObject;  
+	fbConfigObject = fbConfigTable.get(graphicsConfiguration);
+	if ((fbConfigObject != null) && 
+	    (fbConfigObject instanceof Long)) {
+	    fbConfig = ((Long)fbConfigObject).longValue();
+	    // System.out.println("Canvas3D creation FBConfig = " + fbConfig);
+
+	    if (fbConfig == 0) {	    
+		throw new IllegalArgumentException
+		    (J3dI18N.getString("Canvas3D23"));
+	    }
 	}
+	
+
 
 	if (offScreen) {
 	    screen = new Screen3D(graphicsConfiguration, offScreen);
@@ -3371,7 +3388,7 @@ public class Canvas3D extends Canvas {
 	// inside the native code after setting the various 
 	// fields in this object
 	createQueryContext(screen.display, window, vid,
-			   offScreen, 10, 10);
+			   fbConfig, offScreen, 10, 10);
     }
 
     /**

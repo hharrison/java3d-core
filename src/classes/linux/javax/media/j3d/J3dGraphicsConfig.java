@@ -36,8 +36,10 @@ class J3dGraphicsConfig {
     }
 
     static boolean isValidConfig(GraphicsConfiguration gc) {
-	// Check to see if a valid visInfo pointer has been cached.
-	Object visInfoObject = Canvas3D.visInfoTable.get(gc);
-	return (visInfoObject != null) && (visInfoObject instanceof Long);
+	// Check to see if a valid FBConfig pointer has been cached.
+	Object fbConfigObject = Canvas3D.fbConfigTable.get(gc);
+	return ((fbConfigObject != null) && 
+		(fbConfigObject instanceof Long));
+
     }
 }

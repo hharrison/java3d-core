@@ -1580,7 +1580,7 @@ public class GraphicsContext3D extends Object   {
 		if (canvas3d.useSharedCtx) {
 		    if (canvas3d.screen.renderer.sharedCtx == 0) {
 			synchronized (VirtualUniverse.mc.contextCreationLock) {
-			    canvas3d.screen.renderer.sharedCtx = canvas3d.createContext(
+			    canvas3d.screen.renderer.sharedCtx = canvas3d.createNewContext(
 					canvas3d.screen.display,
 					canvas3d.window, canvas3d.vid, 0, true,
 					canvas3d.offScreen);
@@ -1595,10 +1595,10 @@ public class GraphicsContext3D extends Object   {
 		if (canvas3d.ctx == 0) {
 		    synchronized (VirtualUniverse.mc.contextCreationLock) {
 			canvas3d.ctx =
-			    canvas3d.createContext(canvas3d.screen.display, 
+			    canvas3d.createNewContext(canvas3d.screen.display, 
 						   canvas3d.window,
 						   canvas3d.vid,
-						   canvas3d.visInfo,
+						   canvas3d.fbConfig,
 						   0, false,
 						   canvas3d.offScreen);
 			if (canvas3d.ctx == 0) {

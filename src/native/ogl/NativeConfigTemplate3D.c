@@ -37,151 +37,210 @@ extern int isExtensionSupported(const char *allExtensions, const char *extension
 
 #if defined(SOLARIS) || defined(__linux__)
 
-XVisualInfo *findVisualInfoSwitchDoubleBufferAndStereo(jlong display,
-						       jint screen,
-						       int* glxAttrs,
-						       int sVal, int sIndex,
-						       int dbVal, int dbIndex ) {
-    int stereoLoop;
-    int doubleBufferLoop;
-    XVisualInfo *vis_info = NULL;
+/* Fix for issue 20 */
+#define  MAX_GLX_ATTRS_LENGTH 25
 
-    int i, j;
-    /*
-     * set all "enums" to user's preferred state
-     */
-    if (dbVal == REQUIRED || dbVal == PREFERRED)
-	glxAttrs[dbIndex] = GLX_DOUBLEBUFFER;
-    else
-        glxAttrs[dbIndex] = GLX_USE_GL;
+GLXFBConfig *find_S_FBConfigs(jlong display,
+			      jint screen,
+			      int* glxAttrs,
+			      int sVal, int sIndex) {
 
-    if (sVal == REQUIRED || sVal == PREFERRED)
-	glxAttrs[sIndex] = GLX_STEREO;
-    else
-        glxAttrs[sIndex] = GLX_USE_GL;
+    GLXFBConfig *fbConfigList = NULL;
+    int          numFBConfigs, index;
+    
+    J3D_ASSERT((sIndex+3) < MAX_GLX_ATTRS_LENGTH);
+    
+    if (sVal == REQUIRED || sVal== PREFERRED) {
 
-    vis_info = glXChooseVisual((Display*)display, screen, glxAttrs);
-    if (vis_info == NULL) {
-        /*
-         * coudn't match visual with default values - try
-         * enabling UNNECESSARY attributes.
-         */
-	if(sVal == UNNECESSARY)
-	    stereoLoop = 1;
-	else
-	    stereoLoop = 0;
-
-	if(dbVal == UNNECESSARY)
-	    doubleBufferLoop = 1;
-	else
-	    doubleBufferLoop = 0;
+	index = sIndex;
+	glxAttrs[index++] = GLX_STEREO;
+	glxAttrs[index++] = True;
+	glxAttrs[index] = None;
 	
-	i = 0; 
-	while(i <= stereoLoop && vis_info == NULL ) {
-	    if (sVal == UNNECESSARY)
-		glxAttrs[sIndex] = i? GLX_STEREO : GLX_USE_GL;
-	    j = 0; 
-	    while(j <= doubleBufferLoop && vis_info == NULL) {
-		if(dbVal == UNNECESSARY) {
-		    glxAttrs[dbIndex] = j? GLX_USE_GL: GLX_DOUBLEBUFFER;
-		}
-		vis_info = glXChooseVisual((Display*)display, screen, glxAttrs);
-		j++; 
-	    } /* end of doubleBufferLoop */
-	    i++; 
-	} /* end of stereoLoop */    
+	fbConfigList = glXChooseFBConfig((Display*)display, screen,
+					 glxAttrs, &numFBConfigs);
+	    
+	if(fbConfigList != NULL) {
+	    return fbConfigList;
+	}
+    }
+    
+    if (sVal == UNNECESSARY || sVal== PREFERRED) {
+	/* This is a workaround to BugId : 5106472 in Solaris OGL.
+	   We can't set glxAttrs with GLX_STEREO follow by a boolean */
+
+	index = sIndex;
+	glxAttrs[index] = None;
+	
+	/* For debug only
+	{   
+	    int i=0;
+	    fprintf(stderr, "find_S_FBConfigs sVal = %d\n", sVal);    
+
+	    while(glxAttrs[i] != None) {
+		fprintf(stderr, "glxAttrs[%d] = %x", i, glxAttrs[i]);
+		i++;
+		fprintf(stderr, " glxAttrs[%d] = %x\n", i, glxAttrs[i]);    
+		i++;
+	    }
+	}
+	*/
+	fbConfigList = glXChooseFBConfig((Display*)display, screen,
+					 glxAttrs, &numFBConfigs);
+	
+	if(fbConfigList != NULL) {
+	    return fbConfigList;
+	}
     }
 
-    if (vis_info == NULL) {
-        /*
-         * still coudn't match visual with default values - try 
-         * disabling PREFERRED attributes.
-         */
-        /* restore default values */
-        if (sVal == REQUIRED || sVal == PREFERRED)
-            glxAttrs[sIndex] = GLX_STEREO;
-        else
-            glxAttrs[sIndex] = GLX_USE_GL;
-
-        if (dbVal == REQUIRED || dbVal == PREFERRED)
-            glxAttrs[dbIndex] = GLX_DOUBLEBUFFER;
-        else
-            glxAttrs[dbIndex] = GLX_USE_GL;
-
-	if(sVal == PREFERRED)
-	    stereoLoop = 1;
-	else
-	    stereoLoop = 0;
+    if (sVal == UNNECESSARY) {
+	index = sIndex;
+	glxAttrs[index++] = GLX_STEREO;
+	glxAttrs[index++] = True;
+	glxAttrs[index] = None;
 	
-	if(dbVal == PREFERRED)
-	    doubleBufferLoop = 1;
-	else
-	    doubleBufferLoop = 0;
+	fbConfigList = glXChooseFBConfig((Display*)display, screen,
+					 glxAttrs, &numFBConfigs);
 	
-	i = 0; 
-	while(i <= stereoLoop && vis_info == NULL ) {
-	    if (sVal == PREFERRED)
-		glxAttrs[sIndex] = i?  GLX_USE_GL : GLX_STEREO ;
-	    j = 0; 
-	    while(j <= doubleBufferLoop && vis_info == NULL) {
-		if(dbVal == PREFERRED) {
-		    glxAttrs[dbIndex] = j? GLX_DOUBLEBUFFER : GLX_USE_GL;
-		}
-		vis_info = glXChooseVisual((Display*)display, screen, glxAttrs);
-		j++; 
-	    } /* end of doubleBufferLoop */
-	    i++; 
-	} /* end of stereoLoop */
+	if(fbConfigList != NULL) {
+	    return fbConfigList;
+	}
     }
 
-    if (vis_info == NULL) {
+    return NULL;
+}
 
-        /*
-         * STILL coudn't match visual with default values - try 
-         * disabling PREFERRED attributes and enabling UNNECESSARY.
-         */
+GLXFBConfig *find_AA_S_FBConfigs(jlong display,
+				 jint screen,
+				 int* glxAttrs,
+				 int sVal, 
+				 int antialiasVal, int antialiasIndex) {
+
+    const char *glxExtensions = NULL;
+    GLXFBConfig *fbConfigList = NULL;
+    int index = antialiasIndex;
+
+
+    J3D_ASSERT((antialiasIndex+7) < MAX_GLX_ATTRS_LENGTH);
+
+    if(antialiasVal == REQUIRED || antialiasVal== PREFERRED) {
+	glxExtensions = (const char *) glXGetClientString((Display*)display, GLX_EXTENSIONS);
 	
-        /* restore default values */
-        if (sVal == REQUIRED || sVal == PREFERRED)
-            glxAttrs[sIndex] = GLX_STEREO;
-        else
-            glxAttrs[sIndex] = GLX_USE_GL;
+	if(isExtensionSupported(glxExtensions, "GLX_ARB_multisample")){
+	    
+	    index = antialiasIndex;
+	    glxAttrs[index++] = GLX_SAMPLE_BUFFERS_ARB;
+	    glxAttrs[index++] = 1;
+	    glxAttrs[index++] = GLX_SAMPLES_ARB;
+	    glxAttrs[index++] = 1;
+	    glxAttrs[index] = None;
 
-        if (dbVal == REQUIRED || dbVal == PREFERRED)
-            glxAttrs[dbIndex] = GLX_DOUBLEBUFFER;
-        else
-            glxAttrs[dbIndex] = GLX_USE_GL;
-
-	if(sVal != REQUIRED)
-	    stereoLoop = 1;
-	else
-	    stereoLoop = 0;
-	
-	if(dbVal != REQUIRED)
-	    doubleBufferLoop = 1;
-	else
-	    doubleBufferLoop = 0;
-
-	i = 0; 
-	while(i <= stereoLoop && vis_info == NULL ) {
-	    if (sVal == PREFERRED || sVal == UNNECESSARY)
-		glxAttrs[sIndex] = i? GLX_USE_GL : GLX_STEREO ;
-	    j = 0; 
-	    while(j <= doubleBufferLoop && vis_info == NULL) {
-		if(dbVal == PREFERRED || dbVal == UNNECESSARY) {
-		    glxAttrs[dbIndex] = j? GLX_DOUBLEBUFFER : GLX_USE_GL;
-		}
-		vis_info = glXChooseVisual((Display*)display, screen, glxAttrs);
-		j++; 
-	    } /* end of doubleBufferLoop */
-	    i++; 
-	} /* end of stereoLoop */
+	    fbConfigList = find_S_FBConfigs(display, screen, 
+					    glxAttrs, sVal, index);
+	    
+	    if(fbConfigList != NULL) {
+		return fbConfigList;
+	    }
+	}
     }
-    return vis_info;
+    
+    if ( antialiasVal == REQUIRED ) {
+	index = antialiasIndex;
+        glxAttrs[index++] = GLX_ACCUM_RED_SIZE;
+        glxAttrs[index++] = 8;
+        glxAttrs[index++] = GLX_ACCUM_GREEN_SIZE;
+        glxAttrs[index++] = 8;
+        glxAttrs[index++] = GLX_ACCUM_BLUE_SIZE;
+        glxAttrs[index++] = 8;
+	glxAttrs[index] = None;
+	
+	fbConfigList = find_S_FBConfigs(display, screen, 
+					glxAttrs, sVal, index);
+	
+	if(fbConfigList != NULL) {
+	    return fbConfigList;
+	}
+    }
+    
+    glxAttrs[antialiasIndex] = None;
+
+    if (antialiasVal == UNNECESSARY || antialiasVal == PREFERRED) {
+	fbConfigList = find_S_FBConfigs(display, screen, 
+					glxAttrs, sVal, index);
+	
+	if(fbConfigList != NULL) {
+	    return fbConfigList;
+	}
+    }
+    /* We will stop trying even if no fbConfigList is found and 
+       antialiasVal = UNNECESSARY */
+
+    return NULL;
+    
+}
+
+GLXFBConfig *find_DB_AA_S_FBConfigs(jlong display,
+				    jint screen,
+				    int* glxAttrs,
+				    int sVal, int dbVal,
+				    int antialiasVal, int dbIndex) {
+
+    GLXFBConfig *fbConfigList = NULL;
+    int index = dbIndex;
+
+    J3D_ASSERT((dbIndex+3) < MAX_GLX_ATTRS_LENGTH);
+
+    if (dbVal == REQUIRED || dbVal== PREFERRED) {
+	    
+	    index = dbIndex;
+	    glxAttrs[index++] = GLX_DOUBLEBUFFER;
+            glxAttrs[index++] = True;
+	    glxAttrs[index] = None;
+
+	    fbConfigList = find_AA_S_FBConfigs(display, screen, 
+					       glxAttrs, sVal, 
+					       antialiasVal, index);
+	    
+	    if(fbConfigList != NULL) {
+		return fbConfigList;
+	    }
+    }
+    
+    if (dbVal == UNNECESSARY || dbVal== PREFERRED) {
+	index = dbIndex;
+	glxAttrs[index++] = GLX_DOUBLEBUFFER;
+	glxAttrs[index++] = False;
+	glxAttrs[index] = None;
+
+	fbConfigList = find_AA_S_FBConfigs(display, screen, 
+					   glxAttrs, sVal, 
+					   antialiasVal, index);
+	
+	if(fbConfigList != NULL) {
+	    return fbConfigList;
+	}
+    }
+
+    if (dbVal == UNNECESSARY) {
+	index = dbIndex;
+	glxAttrs[index++] = GLX_DOUBLEBUFFER;
+	glxAttrs[index++] = True;
+	glxAttrs[index] = None;
+
+	fbConfigList = find_AA_S_FBConfigs(display, screen, 
+					   glxAttrs, sVal, 
+					   antialiasVal, index);
+	
+	if(fbConfigList != NULL) {
+	    return fbConfigList;
+	}
+    }
+
+    return NULL;
 }
 
 /*
- * Uses the past in array to choose the best OpenGL visual.
+ * Uses the passed in array to choose the best OpenGL visual.
  * When the "best" visual cannot be used, the "enums" (three
  * state attributes) are looped through setting/resetting in all
  * combinations in hopes of finding an valid visual.
@@ -193,34 +252,47 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
     jlong      display,
     jint       screen,
     jintArray  attrList,
-    jlongArray vInfArray)
+    jlongArray fbConfigArray)
 {
-    VisualID vis_id = 0;
     jint *mx_ptr;
-    int   glxAttrs[256];  /* value, attr pair plus a None */
+    int   glxAttrs[MAX_GLX_ATTRS_LENGTH];  /* value, attr pair plus a None */
     int   index;
-    XVisualInfo *vis_info = NULL;
+    GLXFBConfig *fbConfigList = NULL;
 
     /* use to cycle through when attr is not REQUIRED */
     int sVal;
-    int sIndex;
-
-    int dbVal;
-    int dbIndex;
-    
+    int dbVal;    
     int antialiasVal;
-    int antialiasIndex;
 
-    const char *glxExtensions = NULL;
-    jlong *visInfo = (*env)->GetLongArrayElements(env, vInfArray, NULL);
+    int drawableIndex;
     
+    jlong *fbConfigListPtr = NULL;
+    int status, major, minor;    
+
+    Display *dpy = (Display *) display;
+    
+    fbConfigListPtr = (*env)->GetLongArrayElements(env, fbConfigArray, NULL);
     mx_ptr = (jint *)(*env)->GetPrimitiveArrayCritical(env, attrList, NULL);
 
     /*
      * convert Java 3D values to GLX
      */
     index = 0;
-    glxAttrs[index++] = GLX_RGBA;  /* only interested in RGB visuals */
+
+    /* Specify pbuffer as default */    
+    /* Fix for Issue 20 */
+    glxAttrs[index++] = GLX_DRAWABLE_TYPE;
+    drawableIndex = index;
+    glxAttrs[index++] = (GLX_PBUFFER_BIT | GLX_WINDOW_BIT);
+    
+    /* only interested in RGBA type */
+    glxAttrs[index++] = GLX_RENDER_TYPE;
+    glxAttrs[index++] = GLX_RGBA_BIT; 
+
+    /* only interested in FBConfig with associated X Visual type */
+    glxAttrs[index++] = GLX_X_RENDERABLE;
+    glxAttrs[index++] = True;
+    
     glxAttrs[index++] = GLX_RED_SIZE;
     glxAttrs[index++] = mx_ptr[RED_SIZE];
     glxAttrs[index++] = GLX_GREEN_SIZE;
@@ -229,107 +301,81 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
     glxAttrs[index++] = mx_ptr[BLUE_SIZE];
     glxAttrs[index++] = GLX_DEPTH_SIZE;
     glxAttrs[index++] = mx_ptr[DEPTH_SIZE];
-
+    glxAttrs[index] = None;
     
-    dbIndex = index++;
     dbVal = mx_ptr[DOUBLEBUFFER];
-
-    sIndex = index++;
     sVal = mx_ptr[STEREO];
-
-    antialiasIndex = index++;
     antialiasVal = mx_ptr[ANTIALIASING]; 
 
-    /* glxAttrs[index] = None; */
 
     (*env)->ReleasePrimitiveArrayCritical(env, attrList, mx_ptr, 0);
 
+    fbConfigList = find_DB_AA_S_FBConfigs(display, screen, glxAttrs, sVal,
+					  dbVal, antialiasVal, index);
     
-    if(antialiasVal == REQUIRED || antialiasVal== PREFERRED) {
-	/* try GLX_ARB_multisample */
-	glxExtensions = (const char *)glXGetClientString((Display*)display, GLX_EXTENSIONS);
-
+    if(fbConfigList == NULL) { //  Try with Pixmap, if Pbuffer fail. */
 	
-	if(isExtensionSupported(glxExtensions, "GLX_ARB_multisample")){
-	    /* path 1: */
-	    /* Query the visual with mulitsamples */
-	    
-	    index = antialiasIndex;
-	    glxAttrs[index++] = GLX_SAMPLE_BUFFERS_ARB;
-	    glxAttrs[index++] = 1;
-	    glxAttrs[index++] = GLX_SAMPLES_ARB;
-	    glxAttrs[index++] = 1;
-	    glxAttrs[index++] = None;
-	    vis_info = findVisualInfoSwitchDoubleBufferAndStereo(display, screen, glxAttrs, sVal, sIndex,
-								 dbVal, dbIndex);
-	    
-	    if(vis_info != NULL) {
-		vis_id = XVisualIDFromVisual(vis_info->visual);
-		visInfo[0] = (jlong)vis_info;
-		(*env)->ReleaseLongArrayElements(env, vInfArray, visInfo, 0);
-		return vis_id;
-	    }
-	}
-    }
-
-    /* normal path */
-    if ( antialiasVal == REQUIRED || antialiasVal == PREFERRED) {
-	/* step 1 : enable antialiasing */
-	index = antialiasIndex;
-        glxAttrs[index++] = GLX_ACCUM_RED_SIZE;
-        glxAttrs[index++] = 8;
-        glxAttrs[index++] = GLX_ACCUM_GREEN_SIZE;
-        glxAttrs[index++] = 8;
-        glxAttrs[index++] = GLX_ACCUM_BLUE_SIZE;
-        glxAttrs[index++] = 8;
-	glxAttrs[index++] = None;
-	vis_info = findVisualInfoSwitchDoubleBufferAndStereo(display, screen, glxAttrs, sVal, sIndex,
-							     dbVal, dbIndex);
+	glxAttrs[drawableIndex] = (GLX_PIXMAP_BIT | GLX_WINDOW_BIT);
 	
-	if( vis_info == NULL) {
-	    /* try disable antialiasing if it is PREFERRED */
-	    if(antialiasVal == PREFERRED) {
-		glxAttrs[antialiasIndex] = None;
-		vis_info = findVisualInfoSwitchDoubleBufferAndStereo(display, screen, glxAttrs, sVal, sIndex,
-								     dbVal, dbIndex);
-	    }
-	}
-
-	visInfo[0] = (jlong)vis_info;
-	(*env)->ReleaseLongArrayElements(env, vInfArray, visInfo, 0);
-
-	if( vis_info != NULL) {
-	    vis_id = XVisualIDFromVisual(vis_info->visual);
-	    return vis_id;
-	} else {
-	    return 0; 
-	}
+	fbConfigList = find_DB_AA_S_FBConfigs(display, screen, glxAttrs, sVal,
+					      dbVal, antialiasVal, index);
+	
     }
     
+    if(fbConfigList == NULL) { // Try with Window only, if Pixmap fail.
+	glxAttrs[drawableIndex] =  GLX_WINDOW_BIT;
+	
+	fbConfigList = find_DB_AA_S_FBConfigs(display, screen, glxAttrs, sVal,
+					      dbVal, antialiasVal, index);
+	
+    }
     
-    glxAttrs[antialiasIndex] = None;
-    vis_info = findVisualInfoSwitchDoubleBufferAndStereo(display, screen, glxAttrs, sVal, sIndex,
-							 dbVal, dbIndex);
-     
-    visInfo[0] = (jlong)vis_info;
-    (*env)->ReleaseLongArrayElements(env, vInfArray, visInfo, 0);
+    fbConfigListPtr[0] = (jlong)fbConfigList;
+    (*env)->ReleaseLongArrayElements(env, fbConfigArray, fbConfigListPtr, 0);
 
-    if( vis_info != NULL) {
-	vis_id = XVisualIDFromVisual(vis_info->visual);
-	return vis_id;
+    /* For debug only.
+       if(fbConfigList != NULL) {
+       int val;
+       
+       glXGetFBConfigAttrib(dpy, fbConfigList[0], 
+       GLX_FBCONFIG_ID, &val);
+       
+       fprintf(stderr, "display 0x%x, fbConfigList 0x%x, fbConfig 0x%x, fbConfigId %d\n",
+       (int) display, (int) fbConfigList, (int) fbConfigList[0], val);
+       
+       }
+       else {
+       fprintf(stderr, "display 0x%x, fbConfigList 0x%x\n",
+       (int) display, (int) fbConfigList);
+       }
+    */
+    
+    if(fbConfigList != NULL) {
+	int vis_id;
+	
+	if(glXGetFBConfigAttrib(dpy, fbConfigList[0], GLX_VISUAL_ID, &vis_id) != Success) {
+	    fprintf(stderr, "Java 3D ERROR: unable to get VisualID\n");
+	    return 0;
+	}
+
+	/* fprintf(stderr, "********* VisualID = %d\n", vis_id ); */
+	
+	return (jint) vis_id;
+	
     } else {
 	return 0; 
     }
-}
+}    
 
 
 JNIEXPORT 
-void JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_freeVisual(
+void JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_freeFBConfig(
      JNIEnv *env,
      jclass  class,	/* this is a static native method */
-     jlong   visInfo)
+     jlong   fbConfigListPtr)
 {
-    XFree((XVisualInfo *)visInfo);
+    GLXFBConfig *fbConfigList = (GLXFBConfig *) fbConfigListPtr;
+    XFree(fbConfigList);
 }
 
 

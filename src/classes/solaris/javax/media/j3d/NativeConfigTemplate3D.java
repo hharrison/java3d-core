@@ -26,7 +26,7 @@ class NativeConfigTemplate3D {
 	VirtualUniverse.createMC();
     }
 
-    // These definitions should match those in win32 NativeConfigTemplate3D.java
+    //  These definitions should match those in win32 NativeConfigTemplate3D.java
     final static int RED_SIZE		= 0;
     final static int GREEN_SIZE		= 1;
     final static int BLUE_SIZE		= 2;
@@ -39,14 +39,14 @@ class NativeConfigTemplate3D {
     final static int NUM_ITEMS		= 9;
 
     // Native method to get an OpenGL visual id and a pointer to the
-    // XVisualInfo struct itself.
+    // GLXFBConfig structure list itself.
     native int chooseOglVisual(long display, int screen,
-			       int[] attrList, long[] visInfo);
+			       int[] attrList, long[] fbConfig);
 
-    // Native method to free an XVisualInfo struct.  This is static since it
-    // may need to be called to clean up the Canvas3D visInfoTable after the
+    // Native method to free an GLXFBConfig struct.  This is static since it
+    // may need to be called to clean up the Canvas3D fbConfigTable after the
     // NativeConfigTemplate3D has been disposed of.
-    static native void freeVisual(long visInfo);
+    static native void freeFbConfig(long fbConfig);
 
     // Native methods to return whether a particular attribute is available
     native boolean isStereoAvailable(long display, int screen, int vid);
@@ -55,8 +55,8 @@ class NativeConfigTemplate3D {
     native boolean isSceneAntialiasingMultiSamplesAvailable(long display, int screen, int vid);
 
 
-    /**
-     *  Chooses the best visual for Java 3D apps.
+    /*
+     *  Chooses the best FBConfig for Java 3D apps.
      */
     GraphicsConfiguration
       getBestConfiguration(GraphicsConfigTemplate3D template,
@@ -64,6 +64,10 @@ class NativeConfigTemplate3D {
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc[0]).getDevice();
+
+	if (!NativeScreenInfo.isGLX13()) {
+	    return null;
+	}
 
 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
 
@@ -84,7 +88,7 @@ class NativeConfigTemplate3D {
 	if ((bounds.x != 0 || bounds.y != 0) &&
 	    (! VirtualUniverse.mc.xineramaDisabled)) {
 	    // Xinerama is being used.  The screen needs to be set to 0 since
-	    // glxChooseVisual will not return a valid visual otherwise.
+	    // glxChooseFBConfig will not return a valid visual otherwise.
 	    screen = 0;
 	    if (debug) {
 		System.out.println("  Non-primary Xinerama screen:");
@@ -94,7 +98,7 @@ class NativeConfigTemplate3D {
 	}
 
         int[] attrList;   // holds the list of attributes to be translated
-                          // for glxChooseVisual call
+                          // for glxChooseFBConfig call
 
         attrList = new int[NUM_ITEMS];
 
@@ -108,17 +112,17 @@ class NativeConfigTemplate3D {
         attrList[STEREO] = template.getStereo();
         attrList[ANTIALIASING] = template.getSceneAntialiasing();
 
-	long[] visInfo = new long[1];
-        int visID = chooseOglVisual(display, screen, attrList, visInfo);
+	long[] fbConfig = new long[1];
+        int visID = chooseOglVisual(display, screen, attrList, fbConfig);
 	if (debug) {
 	    System.out.println("  chooseOglVisual() returns " + visID);
-	    System.out.println("  pointer to XVisualInfo is " + visInfo[0]);
+	    System.out.println("  pointer to GLXFBConfig is " + fbConfig[0]);
 	    System.out.println();
 	}
 
-        if (visID == 0 || visInfo[0] == 0) {
+        if (visID == 0 || fbConfig[0] == 0) {
 	    return null;  // no valid visual was found
-	}
+	}	
 
         // search list of graphics configurations for config
         // with matching visualId
@@ -128,22 +132,22 @@ class NativeConfigTemplate3D {
                 gc1 = gc[i];
                 break;
             }
-
+	
 	// To support disabling Solaris OpenGL Xinerama mode, we need to cache
-	// the pointer to the actual XVisualInfo that glXChooseVisual()
+	// the pointer to the actual GLXFBConfig that glXChooseFBConfig()
 	// returns, since this is not cached with X11GraphicsConfig and there
-	// are no public constructors to allow us to extend it.
-	synchronized (Canvas3D.visInfoTable) {
-	    if (Canvas3D.visInfoTable.get(gc1) == null)
-		Canvas3D.visInfoTable.put(gc1, new Long(visInfo[0]));
+	// are no public constructors to allow us to extend it.	
+	synchronized (Canvas3D.fbConfigTable) {
+	    if (Canvas3D.fbConfigTable.get(gc1) == null)
+		Canvas3D.fbConfigTable.put(gc1, new Long(fbConfig[0]));
 	    else
-		freeVisual(visInfo[0]);
+		freeFbConfig(fbConfig[0]);
 	}
 
         return gc1;
     }
 
-    /**
+    /*
      * Determine if a given GraphicsConfiguration object can be used
      * by Java 3D.
      */
@@ -152,6 +156,10 @@ class NativeConfigTemplate3D {
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
+
+	if (!NativeScreenInfo.isGLX13()) {
+	    return false;
+	}
 
 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
 
@@ -173,13 +181,13 @@ class NativeConfigTemplate3D {
         attrList[STEREO] = template.getStereo();
         attrList[ANTIALIASING] = template.getSceneAntialiasing();
 	
-	long[] visInfo = new long[1];
-        int visID = chooseOglVisual(display, screen, attrList, visInfo);
-
-        if (visID == 0 || visInfo[0] == 0)
-            return false;  // no valid visual was found
+	long[] fbConfig = new long[1];
+        int visID = chooseOglVisual(display, screen, attrList, fbConfig);
+	
+        if (visID == 0 || fbConfig[0] == 0)
+	    return false;  // no valid visual was found
 	else
-	    return true;
+	    return true;	
     }
 
 

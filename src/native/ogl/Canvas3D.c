@@ -423,7 +423,7 @@ BOOL getPropertiesFromCurrentContext(
     jlong hdc,
     int pixelFormat,
     long display,
-    jlong vinfo)
+    int stencilSize)
 {
     JNIEnv table = *env; 
 
@@ -434,7 +434,7 @@ BOOL getPropertiesFromCurrentContext(
     char *tmpExtensionStr;
     int   versionNumbers[2];
     char *cgHwStr = 0;
-    int stencilSize;
+    
     
 #ifdef WIN32
     PFNWGLGETPIXELFORMATATTRIBIVEXTPROC wglGetPixelFormatAttribivEXT = NULL;
@@ -942,10 +942,8 @@ BOOL getPropertiesFromCurrentContext(
 	    ctxInfo->global_alpha_sun = JNI_FALSE;
 	}
     }
-
-    glXGetConfig((Display *) display, (XVisualInfo *) vinfo, GLX_STENCIL_SIZE, &stencilSize);
     
-#endif
+#endif /* Solaris or Linux */
 
     if (stencilSize > 1) {
       ctxInfo->extMask |= javax_media_j3d_Canvas3D_STENCIL_BUFFER;
@@ -1081,33 +1079,46 @@ LONG WINAPI WndProc( HWND hWnd, UINT msg,
 #endif /*end of WIN32 */
 
 
-
-
 JNIEXPORT
-jlong JNICALL Java_javax_media_j3d_Canvas3D_createContext(
+jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
     JNIEnv *env, 
     jobject obj, 
     jlong display,
     jint window, 
     jint vid,
-    jlong visInfo,
+    jlong fbConfigListPtr,
     jlong sharedCtxInfo,
     jboolean isSharedCtx,
     jboolean offScreen)
 {
     jlong gctx;
     jlong sharedCtx;
-
+    int stencilSize=0;
+    
     static GLboolean first_time = GL_TRUE;
     static GLboolean force_normalize = GL_FALSE;
     
     GraphicsContextPropertiesInfo *ctxInfo = NULL;
     GraphicsContextPropertiesInfo *sharedCtxStructure;
     int PixelFormatID=0;
-    
+        
 #if defined(SOLARIS) || defined(__linux__)
+
+    /* Fix for issue 20 */
+
     GLXContext ctx;
     jlong hdc;
+
+    GLXFBConfig *fbConfigList = NULL;
+    
+    fbConfigList = (GLXFBConfig *)fbConfigListPtr;
+
+    /*
+      fprintf(stderr, "Canvas3D_createNewContext: \n");
+      fprintf(stderr, "fbConfigListPtr 0x%x\n", (int) fbConfigListPtr);
+      fprintf(stderr, "fbConfigList 0x%x, fbConfigList[0] 0x%x\n",
+      (int) fbConfigList, (int) fbConfigList[0]);
+    */
     
     if(sharedCtxInfo == 0)
 	sharedCtx = 0;
@@ -1117,37 +1128,47 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createContext(
     }
 
     if (display == 0) {
-	fprintf(stderr, "Canvas3D_createContext: display is null\n");
+	fprintf(stderr, "Canvas3D_createNewContext: display is null\n");
 	ctx = NULL;
     }
-    else if (visInfo == 0) {
+    else if((fbConfigList == NULL) || (fbConfigList[0] == NULL)) {
 	/*
-	 * visInfo must be a valid pointer to an XVisualInfo struct returned
-	 * by glXChooseVisual() for a physical screen.  The visual id in vid
+	 * fbConfig must be a valid pointer to an GLXFBConfig struct returned
+	 * by glXChooseFBConfig() for a physical screen.  The visual id in vid
 	 * is not sufficient for handling OpenGL with Xinerama mode disabled:
 	 * it doesn't distinguish between the physical screens making up the
 	 * virtual screen when the X server is running in Xinerama mode.
 	 */
-	fprintf(stderr, "Canvas3D_createContext: visual is null\n");
+	fprintf(stderr, "Canvas3D_createNewContext: FBConfig is null\n");
 	ctx = NULL;
     }
     else {
-	ctx = glXCreateContext((Display *)display, (XVisualInfo *)visInfo,
-	 		       (GLXContext)sharedCtx, True);
+        ctx = glXCreateNewContext((Display *)display, fbConfigList[0],
+				  GLX_RGBA_TYPE, (GLXContext)sharedCtx, True);
     }
-
     
     if (ctx == NULL) {
- 	fprintf(stderr, "Canvas3D_createContext: couldn't create context\n");
+        fprintf(stderr, "Canvas3D_createNewContext: couldn't create context\n");
 	return 0;
     } 
 
-    if (!glXMakeCurrent((Display *)display, (GLXDrawable)window, 
-			(GLXContext)ctx)) {
-        fprintf( stderr, "Canvas3D_createContext: couldn't make current\n");
+    /* There is a known interportability issue between Solaris and Linux(Nvidia)
+       on the new glxMakeContextCurrent() call. Bug Id  5109045.
+       if (!glXMakeContextCurrent((Display *)display, (GLXDrawable)window,
+       (GLXDrawable)window,(GLXContext)ctx)) {
+    */
+
+    if (!glXMakeCurrent((Display *)display, (GLXDrawable)window,(GLXContext)ctx)) {
+	
+        fprintf( stderr, "Canvas3D_createNewContext: couldn't make current\n");
         return 0;
     }
 
+
+    glXGetFBConfigAttrib((Display *) display, fbConfigList[0], 
+			 GLX_STENCIL_SIZE, &stencilSize);
+
+    
     gctx = (jlong)ctx;
 #endif /* SOLARIS */
 
@@ -1219,7 +1240,6 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createContext(
 	PixelFormatID = vid;
     }
 
-
     SetPixelFormat(hdc, PixelFormatID, &pfd);
 
     hrc = wglCreateContext( hdc );
@@ -1257,9 +1277,10 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createContext(
     
     /* initialize the structure */
     initializeCtxInfo(env, ctxInfo);
-    ctxInfo->context = gctx; 
-
-    if (!getPropertiesFromCurrentContext(env, obj, ctxInfo, (jlong) hdc, PixelFormatID,  display, (jlong) visInfo)) {
+    ctxInfo->context = gctx;
+    
+    if (!getPropertiesFromCurrentContext(env, obj, ctxInfo, (jlong) hdc, PixelFormatID,
+					 display, stencilSize)) {
 	return 0;
     }
 
@@ -2546,57 +2567,6 @@ int getTextureColorTableSize(
     return size;
 }
 
-/* we want to use this if available: */
-#define GLX_SGIX_pbuffer 1
-
-#ifndef GLX_VERSION_1_3
-#ifdef GLX_SGIX_pbuffer
-#ifdef __linux__
-typedef XID GLXPbuffer;
-typedef struct __GLXFBConfigRec *GLXFBConfig;
-typedef struct __GLXFBConfigRec *GLXFBConfigSGIX;
-extern GLXFBConfig * glXChooseFBConfig (Display *dpy, int screen, const int *attrib_list, int *nelements);
-extern GLXPbuffer glXCreatePbuffer (Display *dpy, GLXFBConfig config, const int *attrib_list);
-extern void glXDestroyPbuffer (Display *dpy, GLXPbuffer pbuf);
-extern GLXFBConfigSGIX *glXChooseFBConfigSGIX(Display *dpy, int screen, const int *attribList, int *nitems);
-extern GLXPbuffer glXCreateGLXPbufferSGIX(Display *dpy, GLXFBConfig config, unsigned int width, unsigned int height, const int *attribList);
-extern void glXDestroyGLXPbufferSGIX(Display *dpy, GLXPbuffer pbuf);
-#define GLX_DRAWABLE_TYPE               0x8010
-#define GLX_PBUFFER_BIT                 0x00000004
-#define GLX_RENDER_TYPE                 0x8011
-#define GLX_RGBA_BIT                    0x00000001
-#define GLX_MAX_PBUFFER_WIDTH           0x8016
-#define GLX_MAX_PBUFFER_HEIGHT          0x8017
-#define GLX_PRESERVED_CONTENTS          0x801B
-#define GLX_PBUFFER_HEIGHT              0x8040  /* New for GLX 1.3 */
-#define GLX_PBUFFER_WIDTH               0x8041  /* New for GLX 1.3 */
-#define GLX_LARGEST_PBUFFER             0x801C
-#define GLX_LARGEST_PBUFFER_SGIX        GLX_LARGEST_PBUFFER
-#else
-
-#define GLX_DRAWABLE_TYPE GLX_DRAWABLE_TYPE_SGIX
-#define GLX_PBUFFER_BIT   GLX_PBUFFER_BIT_SGIX
-#define GLX_RENDER_TYPE   GLX_RENDER_TYPE_SGIX
-#define GLX_RGBA_BIT      GLX_RGBA_BIT_SGIX
-#endif
-#endif /* GLX_SGIX_pbuffer */
-#else
-#ifdef __linux__
-typedef struct __GLXFBConfigRec *GLXFBConfigSGIX;
-#endif /* __linux__ */
-#endif /* GLX_VERSION_1_3 */
-
-#if defined(SOLARIS) || defined(__linux__)
-#pragma weak glXChooseFBConfig
-#pragma weak glXCreatePbuffer
-#pragma weak glXDestroyPbuffer
-#pragma weak glXChooseFBConfigSGIX
-#pragma weak glXCreateGLXPbufferSGIX
-#pragma weak glXDestroyGLXPbufferSGIX
-#endif /* SOLARIS */
-
-
-
 /* For dvr support */
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_videoResize(
@@ -2650,146 +2620,121 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
     jobject obj,
     jlong ctxInfo,    
     jlong display,
-    jint vid,
+    jint window,
+    jlong fbConfigListPtr,
     jint width,
     jint height)
 {
     
 #if defined(SOLARIS) || defined(__linux__)
-   XVisualInfo *vinfo, template;
-   int nitems, depth, redSize;
-   Display *dpy;
-   static GLboolean pbufferSupported = GL_FALSE;
-   static GLboolean pbufferExtSupported = GL_FALSE;
-   int major, minor;
+
+    /* Fix for issue 20 */
+    
    const char *extStr;
-   int status;
+   int attrCount, configAttr[10];
+   GLXPbuffer pbuff = None;
+   GLXFBConfig *fbConfigList = (GLXFBConfig *)fbConfigListPtr;
+   int val;
 
-   dpy = (Display *)display;
+   /*
+     glXGetFBConfigAttrib((Display *) display, fbConfigList[0], 
+     GLX_FBCONFIG_ID, &val);
+     fprintf(stderr, "GLX_FBCONFIG_ID returns %d\n", val);
+     
+     fprintf(stderr, "display 0x%x, fbConfigList[0] 0x%x, width %d, height %d\n",
+     (int) display, (int) fbConfigList[0], width, height);
+       
+   */
 
-   if (dpy == NULL)
-        dpy = XOpenDisplay(NULL);
+   
+   /* Query DRAWABLE_TYPE. Will use Pbuffer if fbConfig support it,
+      else will try for Pixmap. If neither one exists, flag error message
+      and return None */
+   
+   glXGetFBConfigAttrib((Display *) display, fbConfigList[0], 
+			GLX_DRAWABLE_TYPE, &val);
+   /* fprintf(stderr, "GLX_DRAWABLE_TYPE returns %d\n", val); */
+   
+   if ((val & GLX_PBUFFER_BIT) != 0) {
 
-   template.visualid = vid;
-   vinfo = XGetVisualInfo(dpy, VisualIDMask, &template, &nitems);
-   if (nitems != 1) {
-      fprintf(stderr, "Warning Canvas3D_createContext got unexpected number of matching visuals %d\n", nitems);
+
+       /* fprintf(stderr, "Using pbuffer %d\n", val); */
+       
+       /* Initialize the attribute list to be used for choosing FBConfig */
+       
+       attrCount = 0;
+       configAttr[attrCount++] = GLX_PBUFFER_WIDTH;
+       configAttr[attrCount++] = width;
+       configAttr[attrCount++] = GLX_PBUFFER_HEIGHT;
+       configAttr[attrCount++] = height;
+       configAttr[attrCount++] = GLX_PRESERVED_CONTENTS;
+       configAttr[attrCount++] = GL_TRUE;
+       configAttr[attrCount++] = None;
+       
+
+       pbuff = glXCreatePbuffer((Display *) display, fbConfigList[0], configAttr);
+       
+       if (pbuff == None) {
+	   fprintf(stderr, "Java 3D ERROR : glXCreateGLXPbuffer() returns None\n");	   
+       }
+
+       return pbuff;
+   }
+   else if((val & GLX_PIXMAP_BIT) != 0) {
+       Pixmap pixmap;
+       GLXPixmap glxpixmap = None;
+       XVisualInfo *vinfo;
+       Window root;
+       Window glWin; 
+       XSetWindowAttributes win_attrs;
+       Colormap		cmap;
+       unsigned long	win_mask;
+       
+       /* fprintf(stderr, "Using pixmap %d\n", val); */
+       vinfo = glXGetVisualFromFBConfig((Display*)display, fbConfigList[0]);
+       if (vinfo == NULL) {
+	   fprintf(stderr, "Java 3D ERROR : glXGetVisualFromFBConfig failed\n");
+       }
+       else {
+	   /* fprintf(stderr, "found a %d-bit visual (visual ID = 0x%x)\n",
+	      vinfo->depth, vinfo->visualid); */
+
+	   /* fall back to pixmap */
+	    root = RootWindow((Display *)display, vinfo->screen);
+    
+	    /* Create a colormap */
+	    cmap = XCreateColormap((Display *)display, root, vinfo->visual, AllocNone);
+
+	    /* Create a window */
+	    win_attrs.colormap = cmap;
+	    win_attrs.border_pixel = 0;
+	    win_mask = CWColormap | CWBorderPixel;
+	    glWin = XCreateWindow((Display *)display, root, 0, 0, 1, 1, 0,
+				  vinfo->depth, InputOutput, vinfo->visual,
+				  win_mask, &win_attrs);
+	   
+	   /* fprintf(stderr, "glWin %d\n",(int) glWin); */
+	   
+	   pixmap = XCreatePixmap((Display*)display, (GLXDrawable)glWin,
+				  width, height, vinfo->depth);
+
+	   /* fprintf(stderr, "XCreatePixmap returns %d\n", (int) pixmap); */
+	   
+	   glxpixmap = glXCreatePixmap((Display*)display, fbConfigList[0], pixmap, NULL); 
+	   if (glxpixmap == None) {
+	       fprintf(stderr, "Java 3D ERROR : glXCreateGLXPixmap() returns None\n");
+	   }    
+       }
+
+       /* fprintf(stderr, "glxpixmap %d\n",(int) glxpixmap); */
+       return glxpixmap;
+   }
+   else {
+       fprintf(stderr, "Java 3D ERROR : FBConfig doesn't support pbuffer or pixmap returns None\n");
+       return None;
    }
 
-   glXGetConfig (dpy, vinfo, GLX_BUFFER_SIZE, &depth);
-   glXGetConfig (dpy, vinfo, GLX_RED_SIZE, &redSize);
-
-   if (status = glXQueryVersion(dpy, &major, &minor)) {
-
-#if 0
-       /* don't use the 1.3 pbuffer interface for now. */
-	if ((major > 1) || (major == 1 && minor >= 3))
-	    pbufferSupported = GL_TRUE;
-	else 
-#endif
-	{
-	    extStr = glXQueryExtensionsString(dpy, DefaultScreen(dpy));
-	    if ((extStr != NULL) && (strstr(extStr, "GLX_SGIX_pbuffer"))) {
-		pbufferExtSupported = GL_TRUE;
-	    }
-	}
-   }
-
-#if defined(GLX_VERSION_1_3) || defined(GLX_SGIX_pbuffer)
-   if (pbufferExtSupported || pbufferSupported) {
-
-
-        int attrCount, configAttr[10], numConfig, val;
-        GLXPbuffer pbuff;
-
-        /* Initialize the attribute list to be used for choosing FBConfig */
-        attrCount = 0;
-        configAttr[attrCount++] = GLX_DRAWABLE_TYPE;
-        configAttr[attrCount++] = GLX_PBUFFER_BIT;
-        configAttr[attrCount++] = GLX_RENDER_TYPE;
-        configAttr[attrCount++] = GLX_RGBA_BIT;
-        configAttr[attrCount++] = GLX_RED_SIZE;
-        configAttr[attrCount++] = redSize;
-        configAttr[attrCount++] = None;
-/*
-        configAttr[attrCount++] = GLX_DEPTH_SIZE;
-        configAttr[attrCount++] = depth;
-*/
-
-
-#ifdef GLX_VERSION_1_3
-	if (pbufferSupported) {
-            GLXFBConfig *fbconfiglst;
-
-            fbconfiglst = glXChooseFBConfig(dpy, DefaultScreen(dpy),
-                        configAttr, &numConfig);
-
-            if (numConfig < 1) {
-                fprintf(stderr, "# of configs returned is %d\n", numConfig);
-                return None;
-            }
-
-	    attrCount = 0;
-            configAttr[attrCount++] = GLX_PBUFFER_WIDTH;
-            configAttr[attrCount++] = width;
-            configAttr[attrCount++] = GLX_PBUFFER_HEIGHT;
-            configAttr[attrCount++] = height;
-            configAttr[attrCount++] = GLX_PRESERVED_CONTENTS;
-            configAttr[attrCount++] = GL_TRUE;
-            configAttr[attrCount++] = None;
-	
-
-            pbuff = glXCreatePbuffer(dpy, fbconfiglst[0], configAttr);
-	}
-#endif /* GLX_VERSION_1_3 */
-
-#ifdef GLX_SGIX_pbuffer
-	if (pbufferExtSupported && !pbufferSupported) {
-            GLXFBConfigSGIX *fbconfiglst;
-
-
-            /* Determine what config to use according to config_attr */
-            fbconfiglst = glXChooseFBConfigSGIX(dpy, DefaultScreen(dpy),
-                        configAttr, &numConfig);
-
-            if (numConfig < 1) {
-                fprintf(stderr, "# of configs returned is %d\n", numConfig);
-                return None;
-            }
-
-           attrCount = 0;
-            configAttr[attrCount++] = GLX_PRESERVED_CONTENTS;
-            configAttr[attrCount++] = GL_TRUE;
-            configAttr[attrCount++] = None;
-            pbuff = glXCreateGLXPbufferSGIX(dpy, fbconfiglst[0], width, height,
-                        configAttr );
-	}
-#endif /* GLX_SGIX_pbuffer */
-        if (pbuff == None) {
-            fprintf(stderr, "glXCreateGLXPbuffer() returns None\n");
-        }
-
-        return pbuff;
-
-   } else 
-#endif /* GLX_VERSION_1_3 || GLX_SGIX_pbuffer */
-
-   {
-        Pixmap pixmap;
-        GLXPixmap glxpixmap;
-
-        /* fall back to pixmap */
-        pixmap = XCreatePixmap(dpy, DefaultRootWindow(dpy), width, height, 
-				vinfo->depth);
-
-        glxpixmap = glXCreateGLXPixmap(dpy, vinfo, pixmap);
-        if (glxpixmap == None) {
-           fprintf(stderr, "glXCreateGLXPixmap() returns None\n");
-        }
-
-        return glxpixmap;
-   }
-
+   
 #endif /* SOLARIS */
 
 #ifdef WIN32
@@ -2857,45 +2802,25 @@ void JNICALL Java_javax_media_j3d_Canvas3D_destroyOffScreenBuffer(
     jobject obj,
     jlong ctxInfo,    
     jlong display,
+    jlong fbConfigListPtr,
     jint window)
 {
 #if defined(SOLARIS) || defined(__linux__)
-   Display *dpy = (Display*)display;
-     
-   GLboolean pbufferSupported = GL_FALSE;
-   GLboolean pbufferExtSupported = GL_TRUE;
-   int major, minor;
-   char *extStr;
-
-   if (glXQueryVersion(dpy, &major, &minor)) {
-
-#if 0
-       /* don't use the 1.3 pbuffer interface for now. */
-	if ((major > 1) || (major == 1 && minor >= 3))
-	    pbufferSupported = GL_TRUE;
-	else 
-#endif
-	{
-	    extStr = (char *)glXQueryExtensionsString(dpy, 
-		DefaultScreen(dpy));
-	    if ((extStr != NULL) && (strstr(extStr, "GLX_SGIX_pbuffer"))) {
-		pbufferExtSupported = GL_TRUE;
-	    }
-	}
-   }
-
-#if defined(GLX_VERSION_1_3) || defined(GLX_SGIX_pbuffer)
-   
-   if (pbufferSupported) {
-	glXDestroyPbuffer(dpy, (GLXPbuffer)window);
-   } else if (pbufferExtSupported) {
-	glXDestroyGLXPbufferSGIX(dpy, (GLXPbuffer)window);
-   } else
-#endif
- 
-   {
-	glXDestroyGLXPixmap(dpy, (GLXPixmap)window);
-   }
+    /*  Fix for Issue 20 */
+    GLXFBConfig *fbConfigList = (GLXFBConfig *)fbConfigListPtr;
+    int val;
+    
+    glXGetFBConfigAttrib((Display *) display, (GLXFBConfig) fbConfigList[0], 
+			 GLX_DRAWABLE_TYPE, &val);
+    /* fprintf(stderr, "GLX_DRAWABLE_TYPE returns %d\n", val); */
+    
+    if((val & GLX_PBUFFER_BIT) != 0) {
+	glXDestroyPbuffer((Display *) display, (GLXPbuffer)window);
+    }
+    else if((val & GLX_PIXMAP_BIT) != 0) {
+	glXDestroyPixmap((Display *) display, (GLXPixmap)window);
+    }
+    
 #endif /* SOLARIS */
 
 #ifdef WIN32
@@ -3159,17 +3084,22 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     jlong display,
     jint window,
     jint vid,
+    jlong fbConfigListPtr,
     jboolean offScreen,
     jint width,
     jint height)
 {
     JNIEnv table = *env;
     jlong gctx;
+    int stencilSize=0;
     long newWin;
     int PixelFormatID=0;
     GraphicsContextPropertiesInfo* ctxInfo = (GraphicsContextPropertiesInfo *)malloc(sizeof(GraphicsContextPropertiesInfo)); 
 	
 #if defined(SOLARIS) || defined(__linux__)
+
+    /* Fix for issue 20 */
+
     XVisualInfo *vinfo, template;
     int nitems;
     GLXContext ctx;
@@ -3180,46 +3110,71 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     Colormap		cmap;
     unsigned long	win_mask;
     jlong hdc;
-    
-    template.visualid = vid;
-    vinfo = XGetVisualInfo((Display *)display, VisualIDMask, &template, &nitems);
-    if (nitems != 1) {
-	fprintf(stderr, "Warning Canvas3D_createQueryContext got unexpected number of matching visuals %d\n", nitems);
-    }
 
-    ctx = glXCreateContext((Display *)display, vinfo, NULL, True);
+    GLXFBConfig *fbConfigList = NULL;
+    
+    fbConfigList = (GLXFBConfig *)fbConfigListPtr;    
+
+    /*
+      fprintf(stderr, "Canvas3D_createQueryContext:\n");
+      fprintf(stderr, "fbConfigListPtr 0x%x\n", (int) fbConfigListPtr);
+      fprintf(stderr, "fbConfigList 0x%x, fbConfigList[0] 0x%x\n",
+      (int) fbConfigList, (int) fbConfigList[0]);
+    */
+
+    ctx = glXCreateNewContext((Display *)display, fbConfigList[0],
+			      GLX_RGBA_TYPE, NULL, True);
+    
     if (ctx == NULL) {
-	fprintf(stderr, "Error Canvas3D_createQueryContext: couldn't create context.\n");
+	fprintf(stderr, "Java 3D ERROR : Canvas3D_createQueryContext: couldn't create context.\n");
     }
    
    
     /* create window if window == 0 and offscreen == true */
     if(window == 0 && !offScreen) {
-     
-	root = RootWindow((Display *)display, vinfo->screen);
-    
-	/* Create a colormap */
-	cmap = XCreateColormap((Display *)display, root, vinfo->visual, AllocNone);
 
-	/* Create a window */
-	win_attrs.colormap = cmap;
-	win_attrs.border_pixel = 0;
-	win_attrs.event_mask = KeyPressMask | ExposureMask | StructureNotifyMask;
-	win_mask = CWColormap | CWBorderPixel | CWEventMask;
-	glWin = XCreateWindow((Display *)display, root, 0, 0, width, height, 0, vinfo->depth,
-			      InputOutput, vinfo->visual, win_mask, &win_attrs);
-	newWin = (unsigned long)glWin; 
+	vinfo = glXGetVisualFromFBConfig((Display*)display, fbConfigList[0]);
+	if (vinfo == NULL) {
+	    fprintf(stderr, "Java 3D ERROR : glXGetVisualFromFBConfig failed\n");
+	}
+	else {
+	    /* fprintf(stderr, "found a %d-bit visual (visual ID = 0x%x)\n",
+	       vinfo->depth, vinfo->visualid);
+	    */
+	    root = RootWindow((Display *)display, vinfo->screen);
+    
+	    /* Create a colormap */
+	    cmap = XCreateColormap((Display *)display, root, vinfo->visual, AllocNone);
+
+	    /* Create a window */
+	    win_attrs.colormap = cmap;
+	    win_attrs.border_pixel = 0;
+	    win_attrs.event_mask = KeyPressMask | ExposureMask | StructureNotifyMask;
+	    win_mask = CWColormap | CWBorderPixel | CWEventMask;
+	    glWin = XCreateWindow((Display *)display, root, 0, 0, width, height, 0,
+				  vinfo->depth, InputOutput, vinfo->visual,
+				  win_mask, &win_attrs);
+	    newWin = (unsigned long)glWin; 
+	}
     }
     else if(window == 0 && offScreen){
-	newWin = Java_javax_media_j3d_Canvas3D_createOffScreenBuffer( env, obj, 0, display, vid, width, height);
+	newWin = Java_javax_media_j3d_Canvas3D_createOffScreenBuffer( env, obj, 0,
+								      display, window,
+								      fbConfigListPtr,
+								      width, height);
     }
     else if(window != 0) {
 	newWin = window;
     }
-
+    
     result = glXMakeCurrent((Display *)display, (GLXDrawable)newWin, (GLXContext)ctx);
     if (result == GL_FALSE)
-	fprintf(stderr, "glXMakeCurrent fails\n");
+	fprintf(stderr, "Java 3D ERROR : glXMakeCurrent fails\n");
+
+    glXGetFBConfigAttrib((Display *) display, fbConfigList[0], 
+			 GLX_STENCIL_SIZE, &stencilSize);
+
+
     gctx = (jlong)ctx;
 #endif
 
@@ -3264,7 +3219,8 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
 	hdc =  GetDC(hWnd);
     }
     else if(window == 0 && offScreen){
-	hdc = (HDC)Java_javax_media_j3d_Canvas3D_createOffScreenBuffer( env, obj, 0, display, vid, width, height);
+	hdc = (HDC)Java_javax_media_j3d_Canvas3D_createOffScreenBuffer( env, obj, 0, display,
+									window, vid, width, height);
 	pfd.dwFlags = PFD_DRAW_TO_BITMAP | PFD_SUPPORT_OPENGL |
 	    PFD_SUPPORT_GDI;
 	vid = -1;
@@ -3329,7 +3285,8 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     ctxInfo->context = gctx;
     
     /* get current context properties */
-    if (getPropertiesFromCurrentContext(env, obj, ctxInfo, (jlong) hdc, PixelFormatID, display, (jlong) vinfo)) {
+    if (getPropertiesFromCurrentContext(env, obj, ctxInfo, (jlong) hdc, PixelFormatID, display,
+					stencilSize)) {
 	/* put the properties to the Java side */
 	setupCanvasProperties(env, obj, ctxInfo);
     }
@@ -3353,7 +3310,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
 #endif /* WIN32 */
     }
     else if(window == 0 && offScreen) {
-	Java_javax_media_j3d_Canvas3D_destroyOffScreenBuffer(env, obj, gctx, display, newWin);
+	Java_javax_media_j3d_Canvas3D_destroyOffScreenBuffer(env, obj, gctx, display, fbConfigListPtr,  newWin);
 	Java_javax_media_j3d_Canvas3D_destroyContext(env, obj, display, newWin, (jlong)ctxInfo);
     }
     else if(window != 0){

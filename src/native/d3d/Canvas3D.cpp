@@ -46,13 +46,13 @@ jboolean JNICALL Java_javax_media_j3d_Canvas3D_useSharedCtx(
 
 
 extern "C" JNIEXPORT
-jlong JNICALL Java_javax_media_j3d_Canvas3D_createContext(
+jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
     JNIEnv  *env,
     jobject  obj,
     jlong    display,
     jint     window, 
     jint     vid,    
-    jlong    visInfo,
+    jlong    fbConfigListPtr,
     jlong    sharedCtx,
     jboolean isSharedCtx,
     jboolean offScreen)
@@ -106,6 +106,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     jlong display,
     jint window,
     jint vid,
+    jlong fbConfigListPtr,
     jboolean offScreen,
     jint width,
     jint height)
@@ -821,7 +822,8 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
     jobject obj,
     jlong ctx,
     jlong display,
-    jint vid,
+    jint window,
+    jlong fbConfigListPtr,
     jint width,
     jint height)
 {
@@ -864,6 +866,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_destroyOffScreenBuffer(
     jobject obj,
     jlong ctx,
     jlong display,
+    jlong fbConfigListPtr,
     jint window)
 {
     // do nothing, since the old buffer will destory 

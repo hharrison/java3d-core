@@ -444,10 +444,14 @@ class Renderer extends J3dThread {
 
 		if (renderType == J3dMessage.CREATE_OFFSCREENBUFFER) {
 		    // Fix for issue 18.
+		    // Fix for issue 20.
+		    /* System.out.println("Renderer offScreenBuffer - fbConfig = " 
+		       + canvas.fbConfig); */
 		    canvas.window = 
 			canvas.createOffScreenBuffer(canvas.ctx, 
 						     canvas.screen.display,
-						     canvas.vid,
+						     canvas.window,
+						     canvas.fbConfig,
 						     canvas.offScreenCanvasSize.width, 
 						     canvas.offScreenCanvasSize.height);
 		    m[nmesg++].decRefcount();
@@ -665,10 +669,10 @@ class Renderer extends J3dThread {
 
 			    synchronized (VirtualUniverse.mc.contextCreationLock) {
 				sharedCtx =
-				    canvas.createContext(canvas.screen.display,
+				    canvas.createNewContext(canvas.screen.display,
 							 canvas.window,
 							 canvas.vid,
-							 canvas.visInfo,
+							 canvas.fbConfig,
 							 0, true,
 							 canvas.offScreen);
 				if (sharedCtx == 0) {
@@ -704,9 +708,9 @@ class Renderer extends J3dThread {
 
 			synchronized (VirtualUniverse.mc.contextCreationLock) {
 			    canvas.ctx =
-				canvas.createContext(canvas.screen.display, 
+				canvas.createNewContext(canvas.screen.display, 
 						     canvas.window, canvas.vid,
-						     canvas.visInfo, sharedCtx,
+						     canvas.fbConfig, sharedCtx,
 						     false, canvas.offScreen);
 
 
@@ -1486,7 +1490,7 @@ class Renderer extends J3dThread {
 	    // we can safely execute destroyOffScreenBuffer.
 	    if(destroyOffScreenBuffer) {
 		cv.makeCtxCurrent();
-		cv.destroyOffScreenBuffer(ctx, display, window);
+		cv.destroyOffScreenBuffer(ctx, display, cv.fbConfig, window);
 	    }
 	    if (ctx != 0) {
 		int idx = listOfCtxs.indexOf(new Long(ctx));
