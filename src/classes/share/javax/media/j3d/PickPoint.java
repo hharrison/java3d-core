@@ -53,7 +53,7 @@ public final class PickPoint extends PickShape {
 
     /**
      * Gets the position of this PickPoint.
-     * @return the current pick point.
+     * @param location returns the current pick point.
      */
     public void get(Point3d location) {
 	location.x = this.location.x;

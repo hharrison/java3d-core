@@ -110,7 +110,7 @@ public class RotPosScalePathInterpolator extends PathInterpolator {
     /**
      * Retrieves the quat value at the specified index.
      * @param index the index of the value requested
-     * @return the interpolator's quat value at the index
+     * @param quat returns the interpolator's quat value at the index
      */
     public void getQuat(int index, Quat4f quat) {
 	quat.set(this.quats[index]);
@@ -131,7 +131,7 @@ public class RotPosScalePathInterpolator extends PathInterpolator {
     /**
      * Retrieves the position value at the specified index.
      * @param index the index of the value requested
-     * @return the interpolator's position value at the index
+     * @param position returns the interpolator's position value at the index
      */
     public void getPosition(int index, Point3f position) {
 	position.set(this.positions[index]);
