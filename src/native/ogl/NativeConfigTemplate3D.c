@@ -1175,6 +1175,16 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasing
     jint screen,
     jint pixelFormat)
 {
+    /*
+     * Issue 16: this routine is commented out (and JNI_FALSE is
+     * returned) until a solution can be found that doesn't affect the
+     * current WGL context for the calling thread, or we need to
+     * define and implement a mechanism to revalidate the current
+     * context.
+     */
+    return JNI_FALSE;
+
+#if 0
     static char szAppName[] = "Choose Pixel Format";
     HWND hwnd;
     HGLRC hrc;
@@ -1273,5 +1283,6 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasing
     DestroyWindow(hwnd);
     UnregisterClass(szAppName, (HINSTANCE)NULL);
     return support;
+#endif /* 0 */
 }
 #endif /* WIN32 */
