@@ -113,14 +113,14 @@ class VersionInfo extends Object {
      * This will typically by null for final, released builds, but
      * should be non-null for all other builds.
      */
-    private static final String VERSION_BUILD = devPhase ? "@VERSION_BUILD@" : null;
+    private static final String VERSION_BUILD = "@VERSION_BUILD@";
 
     /**
      * Date stamp
      *
      * This is only used for daily builds.
      */
-    private static final String BUILDTIME = dailyBuild ? "@BUILDTIME@" : null;
+    private static final String BUILDTIME = "@BUILDTIME@";
 
     /**
      * Specification version (major and minor version only). This
@@ -177,35 +177,44 @@ class VersionInfo extends Object {
      * will automatically be added) and before the optional dev
      * string.  This string is only used for non-fcs (non-production) builds.
      */
-    private static final String BUILDTIME_VERBOSE = devPhase ? "@BUILDTIME_VERBOSE@" : null;
+    private static final String BUILDTIME_VERBOSE = "@BUILDTIME_VERBOSE@";
+
+    private static boolean isNonEmpty(String str) {
+	if ((str == null) || (str.length() == 0)) {
+	    return false;
+	}
+	else {
+	    return true;
+	}
+    }
 
     // The static initializer composes the version and vendor strings
     static {
 	// Assign the vendor by concatenating primary and developer
 	// vendor strings
 	String tmpVendor = VENDOR_PRIMARY;
-	if (VENDOR_DEVELOPER != null) {
+	if (isNonEmpty(VENDOR_DEVELOPER)) {
 	    tmpVendor += " & " + VENDOR_DEVELOPER;
 	}
 
 	String tmpVersion = VERSION_BASE;
-	if (VERSION_BUILD != null) {
+	if (devPhase && isNonEmpty(VERSION_BUILD)) {
 	    tmpVersion += "-" + VERSION_BUILD;
 	}
 
-	if (BUILDTIME != null) {
+	if (dailyBuild && isNonEmpty(BUILDTIME)) {
 	    tmpVersion += "-" + BUILDTIME;
 	}
 
-	if (VERSION_SUFFIX != null) {
+	if (isNonEmpty(VERSION_SUFFIX)) {
 	    tmpVersion += "-" + VERSION_SUFFIX;
 	}
 
-	if (BUILDTIME_VERBOSE != null) {
+	if (devPhase && isNonEmpty(BUILDTIME_VERBOSE)) {
 	    tmpVersion += " " + BUILDTIME_VERBOSE;
 	}
 
-	if (VERSION_DEV_STRING != null) {
+	if (isNonEmpty(VERSION_DEV_STRING)) {
 	    tmpVersion += " " + VERSION_DEV_STRING;
 	}
 
