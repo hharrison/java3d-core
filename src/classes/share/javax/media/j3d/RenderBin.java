@@ -203,7 +203,9 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 			      RenderMolecule.RENDER_MOLECULE_LIST, null);
 
     // List of renderAtoms that have a shared dlist (due to geo.refCount > 1)
-    UnorderList sharedDList = new UnorderList(5, RenderAtomListInfo.class);
+    // Fix for Issue 5: change this to a Set rather than a list to
+    // avoid duplicates entried
+    Collection sharedDList = new HashSet();
 
     ArrayList dirtyRenderMoleculeList = new ArrayList(5);
 
@@ -943,12 +945,19 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
     }
     
     
+    // Shared context case
     void updateDlistRendererResource(Renderer rdr) {
-	int i, value = 0;
+	int i;
 	int size = 0;
 	RenderAtomListInfo arr[];
 	RenderAtomListInfo ra;
 	
+	// TODO: there is a possible problem in the case of multiple
+	// renderers (i.e., multiple screens).  Unless the
+	// MasterControl sends us a separate message for each
+	// renderer, we won't create a new display list for renderers
+	// other than the one passed into this method.
+
 	if (rdr == null) {
 	    return;
 	}
@@ -963,7 +972,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		// it is built for no longer matches the context
 		// used in the renderer, create a dlist
 		sharedDList.add(ra);
-		geo.incrDlistRefCount(rdr.rendererBit);
+		geo.addDlistUser(this, ra);
 
 		if (((geo.resourceCreationMask & rdr.rendererBit) == 0) ||
 		    (geo.getDlistTimeStamp(rdr.rendererBit) != 
@@ -981,10 +990,10 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		sharedDList.remove(ra);
 
 		GeometryArrayRetained geo = (GeometryArrayRetained)ra.geometry();
-		value = geo.decrDlistRefCount(rdr.rendererBit);
+		geo.removeDlistUser(this, ra);
 		//		System.out.println("========> geo.refcount = "+geo.refCount);
 		// add this geometry's dlist to be freed
-		if (value == 0) {
+		if (geo.isDlistUserSetEmpty(this)) {
 		    rdr.displayListResourceFreeList.add(geo.dlistObj);
 		    geo.resourceCreationMask &= ~rdr.rendererBit;
 		    // All Dlist on all renderer have been freed, then return dlistID
@@ -1007,8 +1016,9 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	}
     }
     
+    // Non-shared context case
     void updateDlistCanvasResource(Canvas3D[] canvases)  {
-	int i, j, value;
+	int i, j;
 	Canvas3D cv;
 	int size = 0;
 	RenderAtomListInfo arr[];
@@ -1019,6 +1029,10 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	    arr = (RenderAtomListInfo []) addDlist.toArray(false);
 	    for (i = 0; i <size; i++) {
 		sharedDList.add(arr[i]);
+		// Fix for Issue 5: add the render atom to the list of users
+		// of its geometry for this RenderBin
+		GeometryArrayRetained geo = (GeometryArrayRetained) arr[i].geometry();
+		geo.addDlistUser(this, arr[i]);
 	    }
 	}
 
@@ -1027,6 +1041,10 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	    arr = (RenderAtomListInfo []) removeDlist.toArray(false);
 	    for (i = 0; i < size; i++) {
 		sharedDList.remove(arr[i]);
+		// Fix for Issue 5: remove this render atom from the list of users
+		// of its geometry for this RenderBin
+		GeometryArrayRetained geo = (GeometryArrayRetained) arr[i].geometry();
+		geo.removeDlistUser(this, arr[i]);
 	    }
 	}
 		    
@@ -1040,7 +1058,6 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		    ra = arr[i];
 		    GeometryArrayRetained geo = (GeometryArrayRetained) ra.geometry();
 
-		    geo.incrDlistRefCount(cv.canvasBit);
 		    if ((cv.ctx != 0) &&
 			((geo.resourceCreationMask & cv.canvasBit) == 0) || 
 			(geo.getDlistTimeStamp(cv.canvasBit) != 
@@ -1056,9 +1073,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		    GeometryArrayRetained geo =
 			(GeometryArrayRetained) arr[i].geometry();
 
-		    value = geo.decrDlistRefCount(canvases[j].canvasBit);
 		    // add this geometry's dlist to be freed
-		    if (value == 0) {
+		    if (geo.isDlistUserSetEmpty(this)) {
 			if (cv.ctx != 0) {
 			    canvases[j].displayListResourceFreeList.add(geo.dlistObj);
 			}
@@ -3124,8 +3140,8 @@ System.out.println("......tb.soleUser= " +
 	if (size > 0) {
 	    RenderAtomListInfo ra;
 	    GeometryArrayRetained geo;
-	    RenderAtomListInfo arr[] =
-		(RenderAtomListInfo []) sharedDList.toArray(false);	
+	    RenderAtomListInfo arr[] = new RenderAtomListInfo[size];
+	    arr = (RenderAtomListInfo []) sharedDList.toArray(arr);	
 	    int bitMask = cv.canvasBit;
 
 	    // We need two passes to avoid extra buildDisplayList
@@ -3173,8 +3189,8 @@ System.out.println("......tb.soleUser= " +
 
 	size =  sharedDList.size();
 	if (size > 0) {
-	    RenderAtomListInfo arr[] =
-		(RenderAtomListInfo []) sharedDList.toArray(false);	
+	    RenderAtomListInfo arr[] = new RenderAtomListInfo[size];
+	    arr = (RenderAtomListInfo []) sharedDList.toArray(arr);	
 	    RenderAtomListInfo ra;
 
 	    if (!setCtx) {
@@ -6702,6 +6718,7 @@ System.out.println("......tb.soleUser= " +
 
 
     void freeAllDisplayListResources(Canvas3D cv) {
+
 	int i;
 	int size = renderMoleculeList.size();
 	Renderer rdr = cv.screen.renderer;
@@ -6717,25 +6734,25 @@ System.out.println("......tb.soleUser= " +
 
 	size =  sharedDList.size();
 	if (size > 0) {
-	    RenderAtomListInfo arr[] =
-		(RenderAtomListInfo []) sharedDList.toArray(false);
-	    
+	    RenderAtomListInfo arr[] = new RenderAtomListInfo[size];
+	    arr = (RenderAtomListInfo []) sharedDList.toArray(arr);	
+
 	    GeometryArrayRetained geo; 
 	    int mask = (cv.useSharedCtx ? rdr.rendererBit : cv.canvasBit);
 
 	    for (i = 0; i < size; i++) {
 		geo = (GeometryArrayRetained)arr[i].geometry();
+		// Fix for Issue 5: free all native display lists and clear the
+		// context creation bits for this canvas, but don't do anything
+		// with the geo's user list.
 		if (geo.dlistId > 0) {
-		    if (!cv.useSharedCtx) {
-			cv.freeDisplayList(cv.ctx, geo.dlistId);
-		    }
-
-		    if (geo.decrDlistRefCount(mask) == 0) {
-			geo.resourceCreationMask &= ~mask;
-			if (cv.useSharedCtx) {
-			    cv.freeDisplayList(cv.ctx, geo.dlistId);
-			}
-		    }
+		    // TODO: for the shared ctx case, we really should
+		    // only free the display lists if this is the last
+		    // Canvas in the renderer.  However, since the
+		    // display lists will be recreated, it doesn't
+		    // really matter.
+		    cv.freeDisplayList(cv.ctx, geo.dlistId);
+		    geo.resourceCreationMask &= ~mask;
 		}
 	    }
 	}
@@ -6758,8 +6775,8 @@ System.out.println("......tb.soleUser= " +
 
 	size =  sharedDList.size();
 	if (size > 0) {
-	    RenderAtomListInfo arr[] =
-		(RenderAtomListInfo []) sharedDList.toArray(false);	
+	    RenderAtomListInfo arr[] = new RenderAtomListInfo[size];
+	    arr = (RenderAtomListInfo []) sharedDList.toArray(arr);	
 	    GeometryArrayRetained geo; 
 
 	    for (i = 0; i < size; i++) {

@@ -2334,7 +2334,11 @@ void JNICALL Java_javax_media_j3d_Canvas3D_newDisplayList(
     jlong ctxInfo,
     jint id)
 {
-    
+    if (id <= 0) {
+	fprintf(stderr, "JAVA 3D ERROR : glNewList(%d) -- IGNORED\n", id);
+	return;
+    }
+
     glNewList(id, GL_COMPILE);
 }
 
@@ -2391,6 +2395,19 @@ void JNICALL Java_javax_media_j3d_Canvas3D_callDisplayList(
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
     jlong ctx = ctxProperties->context;
+    static int numInvalidLists = 0;
+
+    if (id <= 0) {
+	if (numInvalidLists < 3) {
+	    fprintf(stderr, "JAVA 3D ERROR : glCallList(%d) -- IGNORED\n", id);
+	    ++numInvalidLists;
+	}
+	else if (numInvalidLists == 3) {
+	    fprintf(stderr, "JAVA 3D : further glCallList error messages discarded\n");
+	    ++numInvalidLists;
+	}
+	return;
+    }
 
     /* resale_normal_ext */
     if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
@@ -2412,6 +2429,11 @@ void JNICALL Java_javax_media_j3d_Canvas3D_freeDisplayList(
     jint id)
 {
     
+    if (id <= 0) {
+	fprintf(stderr, "JAVA 3D ERROR : glDeleteLists(%d,1) -- IGNORED\n", id);
+	return;
+    }
+
     glDeleteLists(id, 1);
 }
 

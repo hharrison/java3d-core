@@ -16,6 +16,9 @@ import com.sun.j3d.internal.Distance;
 import javax.vecmath.*;
 import java.lang.Math;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Vector;
 import java.util.Enumeration;
 import com.sun.j3d.internal.ByteBufferWrapper;
@@ -220,7 +223,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     byte[][] mirrorUnsignedByteRefColors= new byte[1][];
     float[][] mirrorInterleavedColorPointer = null;
 
-    
     // This native method builds a native representation of this object, then
     // returns the nativeId.
     native int build(int geoType);
@@ -263,19 +265,21 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     // or a unique canvas otherwise
     int resourceCreationMask = 0x0;
 
+    // Fix for Issue 5
+    //
+    // Replace the per-canvas reference count with a per-RenderBin set
+    // of users.  The per-RenderBin set of users of this display list
+    // is defined as a HashMap where:
+    //
+    //   key   = the RenderBin
+    //   value = a set of RenderAtomListInfo objects using this
+    //           geometry array for display list purposes
+    private HashMap dlistUsers = null;
 
-    // Reference count of renderMolecules per dlist created, this is either
-    // per renderer for useSharedCtx  or per Canvas for non-shared ctx
-    // note since
-    // renderer and canvasindex starts from 1, the first entry of this
-    // array will never be used.
-    int[] renderMolPerDlist = new int[2];
-
-    // timestamp used to create display list; same as above, this is either
+    // timestamp used to create display list. This is either
     // one per renderer for useSharedCtx, or one per Canvas for non-shared
     // ctx
-    long[] timeStampPerDlist = new long[2];
-
+    private long[] timeStampPerDlist = new long[2];
 
     // Unique display list Id, if this geometry is shared
     int dlistId = -1;
@@ -9803,40 +9807,58 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
     }
 
-    void incrDlistRefCount(int bit) {
-	int index = getIndex(bit);
-	int[] newList = null;
-	int i;
-	synchronized(renderMolPerDlist) {
-	    if (index >= renderMolPerDlist.length) {
-		newList = new int[index * 2];
-		for (i = 0; i < renderMolPerDlist.length; i++) {
-		    newList[i] = renderMolPerDlist[i];
-		}
-		newList[index] = 1;
-
-		// This must be the last statment for 
-		// sync. to work correctly
-		renderMolPerDlist = newList;
-	    }
-	    else {
-		renderMolPerDlist[index]++;
-	    }
+    // Add the specified render atom as a user of this geometry array
+    // (for the specified render bin)
+    void addDlistUser(RenderBin renderBin, RenderAtomListInfo ra) {
+	if (dlistUsers == null) {
+	    dlistUsers = new HashMap(2, 1.0f);
 	}
+
+	Set raSet = (Set)dlistUsers.get(renderBin);
+	if (raSet == null) {
+	    raSet = new HashSet();
+	    dlistUsers.put(renderBin, raSet);
+	}
+	raSet.add(ra);
     }
 
-    int decrDlistRefCount(int rdrBit) {
-	int index = getIndex(rdrBit);
-	synchronized(renderMolPerDlist) {
-	    if (index >= renderMolPerDlist.length) {
-		// In case of sharedDlist it is possible that
-		// decrDlistRefCount is invoke for cleanup
-		// from another canvas
-		return -1;
-	    }
-	    renderMolPerDlist[index]--;
-	    return renderMolPerDlist[index];
+    // Remove the specified render atom from the set of users of this
+    // geometry array (for the specified render bin)
+    void removeDlistUser(RenderBin renderBin, RenderAtomListInfo ra) {
+	if (dlistUsers == null) {
+	    // Nothing to do
+	    return;
 	}
+
+	Set raSet = (Set)dlistUsers.get(renderBin);
+	if (raSet == null) {
+	    // Nothing to do
+	    return;
+	}
+	raSet.remove(ra);
+    }
+
+    // Returns true if the set of render atoms using this geometry
+    // array in the specified render bin is empty.
+    boolean isDlistUserSetEmpty(RenderBin renderBin) {
+	if (dlistUsers == null) {
+	    return true;
+	}
+
+	Set raSet = (Set)dlistUsers.get(renderBin);
+	if (raSet == null) {
+	    return true;
+	}
+	return raSet.isEmpty();
+    }
+
+    // This method is used for debugging only
+    int numDlistUsers(RenderBin renderBin) {
+	if (isDlistUserSetEmpty(renderBin)) {
+	    return 0;
+	}
+	Set raSet = (Set)dlistUsers.get(renderBin);
+	return raSet.size();
     }
 
     void setDlistTimeStamp(int rdrBit, long timeStamp) {
