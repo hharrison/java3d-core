@@ -410,6 +410,21 @@
         file="${build}/${platform}/rpm/RPMS/i586/java3d-${version_rpm}-1.i586.rpm"
         tofile="dist/${platform}/java3d-${version_file}-1-i586.rpm"/>
   </target>
+  
+  <target name="release" description="Package distribution for release" depends="dist">
+      <mkdir dir="${dist}/release"/>
+      <zip destfile="${dist}/release/java3d-${version_file}-${platform}.zip">
+          <fileset dir="${dist}/${platform}"
+                      includes="lib/**"
+          />
+          <fileset dir="release-info"
+                      includes="BINARY-CODE-LICENSE.txt"
+          />
+          <fileset dir="."
+                      includes="COPYRIGHT.txt README-FIRST.txt"
+          />
+      </zip>
+  </target>
 
   <target name="clean-dist">
     <!-- Delete the ${dist} directory tree  -->
