@@ -63,7 +63,10 @@ int getTextureColorTableSize(
 
 
 #ifdef WIN32
-  extern HDC getMonitorDC(int screen);
+extern void printErrorMessage(char *message);
+extern PIXELFORMATDESCRIPTOR getDummyPFD();
+extern HDC getMonitorDC(int screen);
+HWND createDummyWindow(const char* szAppName);
 #endif
 
 /*
@@ -422,7 +425,6 @@ BOOL getPropertiesFromCurrentContext(
     GraphicsContextPropertiesInfo *ctxInfo,
     jlong hdc,
     int pixelFormat,
-    long display,
     int stencilSize)
 {
     JNIEnv table = *env; 
@@ -672,7 +674,7 @@ BOOL getPropertiesFromCurrentContext(
     }
 #endif
 
-#ifdef WIN32
+#ifdef WIN32  /* This is fine, but might need cleanup. -- Chien */
     wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)
 	wglGetProcAddress("wglGetPixelFormatAttribivARB");
 
@@ -1052,7 +1054,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_destroyContext(
     
 #if defined(SOLARIS) || defined(__linux__)
     /*
-    glXMakeCurrent((Display *)display, (GLXDrawable)window, NULL);
+    glXMakeCurrent((Display *)display, None, NULL);
     */
     glXDestroyContext((Display *)display, (GLXContext)context);
 #endif /* SOLARIS */
@@ -1178,69 +1180,56 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
     jboolean rescale = JNI_FALSE;
     JNIEnv table = *env;
     DWORD err;
-    LPTSTR errString;
-
-       
-    static PIXELFORMATDESCRIPTOR pfd = {
-	sizeof(PIXELFORMATDESCRIPTOR),
-	1,                      /* Version number */
-	PFD_DRAW_TO_WINDOW |
-	PFD_SUPPORT_OPENGL|
-	PFD_DOUBLEBUFFER,
-	PFD_TYPE_RGBA,
-	24,                     /* 24 bit color depth */
-	0, 0, 0,                /* RGB bits and pixel sizes */
-	0, 0, 0,                /* Do not care about them */
-	0, 0,                   /* no alpha buffer info */
-	0, 0, 0, 0, 0,          /* no accumulation buffer */
-	32,                     /* 16 bit depth buffer */
-	0,                      /* no stencil buffer */
-	0,                      /* no auxiliary buffers */
-	PFD_MAIN_PLANE,         /* layer type */
-	0,                      /* reserved, must be 0 */
-	0,                      /* no layer mask */
-	0,                      /* no visible mask */
-	0                       /* no damage mask */
-    };
-
+    LPTSTR errString;    
     jboolean result;
-
-    /* hWnd = (HWND) window; */
-    /* or could use: hDC = GetDC(hWnd); */
     
+    /* Fix for issue 76 */
+
+    
+    /*
+      fprintf(stderr, "Canvas3D_createNewContext: \n");
+      fprintf(stderr, "vid %d window 0x%x\n", vid, window);
+    */
     if(sharedCtxInfo == 0)
 	sharedCtx = 0;
     else {
 	sharedCtxStructure = (GraphicsContextPropertiesInfo *)sharedCtxInfo;
 	sharedCtx = sharedCtxStructure->context;
     }
-
     
     hdc =  (HDC) window;
-    
-    if (offScreen)  {
-	pfd.dwFlags = PFD_DRAW_TO_BITMAP | PFD_SUPPORT_OPENGL |
-	    PFD_SUPPORT_GDI;
-	vid = -1;
-	sharedCtx = 0;
-    }
 
-    /* vid of -1 means no vid was specified - do the old way */
-    if (vid == -1) {
-	/* choose the "pixel format", terminology is equivalent */
-	/* to UNIX "visual" */
-	PixelFormatID = ChoosePixelFormat(hdc, &pfd);
+    /* Need to handle onScreen and offScreen differently */
+    /* vid is for onScreen and fbConfigListPtr is for offScreen */ 
+    /*
+     * vid must be a PixelFormat returned
+     * by wglChoosePixelFormat() or wglChoosePixelFormatARB.
+     */
 
-	if(PixelFormatID == 0) {
-	    fprintf(stderr,"\nERROR: pixel format ID = 0");
+    if(!offScreen) {
+	/* fprintf(stderr, "Canvas3D_createNewContext: onScreen PixelFormat is %d\n", vid); */
+
+	if (vid <= 0) {
+	    printErrorMessage("Canvas3D_createNewContext: onScreen PixelFormat is invalid");
 	    return 0;
 	}
+	else {
+	    PixelFormatID = vid;	
+	}
     }
-    else {
-	PixelFormatID = vid;
+    else { /* offScreen case */
+	PixelFormatInfo *PixelFormatInfoPtr = (PixelFormatInfo *)fbConfigListPtr;
+	    
+	if ((PixelFormatInfoPtr == NULL) || (PixelFormatInfoPtr->offScreenPFormat <= 0)) {
+	    printErrorMessage("Canvas3D_createNewContext: offScreen PixelFormat is invalid");
+	    return 0;
+	}
+	else {
+	    PixelFormatID = PixelFormatInfoPtr->offScreenPFormat;
+	}
     }
-
-    SetPixelFormat(hdc, PixelFormatID, &pfd);
+    
+    SetPixelFormat(hdc, PixelFormatID, NULL);
 
     hrc = wglCreateContext( hdc );
 
@@ -1280,7 +1269,7 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
     ctxInfo->context = gctx;
     
     if (!getPropertiesFromCurrentContext(env, obj, ctxInfo, (jlong) hdc, PixelFormatID,
-					 display, stencilSize)) {
+					 stencilSize)) {
 	return 0;
     }
 
@@ -2620,7 +2609,7 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
     jobject obj,
     jlong ctxInfo,    
     jlong display,
-    jint window,
+    jint vid,
     jlong fbConfigListPtr,
     jint width,
     jint height)
@@ -2656,8 +2645,6 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
    /* fprintf(stderr, "GLX_DRAWABLE_TYPE returns %d\n", val); */
    
    if ((val & GLX_PBUFFER_BIT) != 0) {
-
-
        /* fprintf(stderr, "Using pbuffer %d\n", val); */
        
        /* Initialize the attribute list to be used for choosing FBConfig */
@@ -2737,62 +2724,165 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
    
 #endif /* SOLARIS */
 
-#ifdef WIN32
-    int PixelFormatID=0;
-    int dpy = (int)display;
-    HDC hdc;          /* HW Device Context */
-    jboolean rescale = JNI_FALSE;
-    JNIEnv table = *env;
+#ifdef WIN32   
+    /* Fix for issue 76 */
+   int dpy = (int)display;   
+    static char szAppName[] = "CreateOffScreen";
+    HWND hwnd;
+    HGLRC hrc;
+    HDC   hdc;
+    int pixelFormat;
+    PixelFormatInfo *pFormatInfoPtr = (PixelFormatInfo *)fbConfigListPtr;
+    int piAttrs[2];
     
-   HBITMAP hbitmap, oldhbitmap;
+    HPBUFFERARB hpbuf = NULL;  /* Handle to the Pbuffer */
+    HDC hpbufdc = NULL;        /* Handle to the Pbuffer's device context */
 
-   BITMAPINFOHEADER bih;
-   void *ppvBits;
-   int err;
-   LPTSTR errString;
-   HDC hdcMonitor;
+    HDC bitmapHdc;
+    HBITMAP hbitmap;
+    
+    BITMAPINFOHEADER bih;
+    void *ppvBits;
+    int err;
+    LPTSTR errString;
+    OffScreenBufferInfo *offScreenBufferInfo = NULL; 
+    
+    PIXELFORMATDESCRIPTOR dummy_pfd = getDummyPFD();
+    jclass cv_class;
+    jfieldID offScreenBuffer_field;
+    JNIEnv table = *env;
 
-   /* create a DIB */
-   memset(&bih, 0, sizeof(BITMAPINFOHEADER));
+    /*
+      fprintf(stderr, "****** CreateOffScreenBuffer ******\n");     
+      fprintf(stderr, "display 0x%x,  pFormat %d, width %d, height %d\n",
+      (int) display,  pFormatInfoPtr->offScreenPFormat, width, height);
+    */
+    cv_class =  (jclass) (*(table->GetObjectClass))(env, obj);
+    offScreenBuffer_field =
+	(jfieldID) (*(table->GetFieldID))(env, cv_class, "offScreenBufferInfo", "J");
+    
+    /*
+     * Select any pixel format and bound current context to
+     * it so that we can get the wglChoosePixelFormatARB entry point.
+     * Otherwise wglxxx entry point will always return null.
+     * That's why we need to create a dummy window also.
+     */
+    hwnd = createDummyWindow((const char *)szAppName);
+    
+    if (!hwnd) {
+	return 0;
+    }
+    hdc = GetDC(hwnd);
 
-   bih.biSize = sizeof(BITMAPINFOHEADER);
-   bih.biWidth = width;
-   bih.biHeight = height;
-   bih.biPlanes = 1;
-   bih.biBitCount = 24;
-   bih.biCompression = BI_RGB;
+    pixelFormat = ChoosePixelFormat(hdc, &dummy_pfd);
 
-   /* create a new device context */
+    if (pixelFormat<1) {
+	printErrorMessage("In Canvas3D : Failed in ChoosePixelFormat");
+	DestroyWindow(hwnd);
+	UnregisterClass(szAppName, (HINSTANCE)NULL);
+	return 0;
+    }
 
-   if (dpy == 0) {
-       hdc = CreateCompatibleDC(0);
-   } else {
-       /*
-	* Should be getMonitorDC(screen)
-        * but display and screen are the same under windows
-        * They are return from NativeScreenInfo
-	*/
-       hdcMonitor = getMonitorDC((int) display);       
-       hdc = CreateCompatibleDC(hdcMonitor);
-       DeleteDC(hdcMonitor);
-       
-   }
-   hbitmap = CreateDIBSection(hdc, (BITMAPINFO *)&bih,
-				DIB_PAL_COLORS, &ppvBits, NULL, 0);
+    SetPixelFormat(hdc, pixelFormat, NULL);
+    
+    hrc = wglCreateContext(hdc);
+    if (!hrc) {
+	printErrorMessage("In Canvas3D : Failed in wglCreateContext");
+	DestroyWindow(hwnd);
+	UnregisterClass(szAppName, (HINSTANCE)NULL);
+	return 0;
+    }
+    
+    if (!wglMakeCurrent(hdc, hrc)) {
+	printErrorMessage("In Canvas3D : Failed in wglMakeCurrent");
+	ReleaseDC(hwnd, hdc);
+	wglDeleteContext(hrc);
+	DestroyWindow(hwnd);
+	UnregisterClass(szAppName, (HINSTANCE)NULL);
+	return 0;
+    }
+    
+    if (pFormatInfoPtr->supportPbuffer) {
+	
+	/* fprintf(stderr, "***** Use PBuffer for offscreen  ******\n"); */
+	
+	piAttrs[0] = 0;
+	piAttrs[1] = 0;
+		
+	hpbuf = pFormatInfoPtr->wglCreatePbufferARB( hdc, pFormatInfoPtr->offScreenPFormat,
+						     width, height, piAttrs);
+	    
+	if(hpbuf == NULL) {
+	    printErrorMessage("In Canvas3D : wglCreatePbufferARB FAIL.");
+	    return 0;
+	}
+	
+	hpbufdc = pFormatInfoPtr->wglGetPbufferDCARB(hpbuf);
+	
+	if(hpbufdc == NULL) {
+	    printErrorMessage("In Canvas3D : Can't get pbuffer's device context.");
+	    return 0;
+	}		
+	
+	/* Destroy all dummy objects */
+	ReleaseDC(hwnd, hdc);
+	wglDeleteContext(hrc);
+	DestroyWindow(hwnd);
+	UnregisterClass(szAppName, (HINSTANCE)NULL);
+	
+	offScreenBufferInfo  =
+	    (OffScreenBufferInfo *) malloc(sizeof(OffScreenBufferInfo));
+	offScreenBufferInfo->isPbuffer = GL_TRUE;
+	offScreenBufferInfo->hpbuf = hpbuf;
 
-   if (!hbitmap) {
+	(*(table->SetLongField))(env, obj, offScreenBuffer_field, (jlong)offScreenBufferInfo);
+
+	return (jint) hpbufdc;
+    }
+    
+    /* create a DIB */
+    memset(&bih, 0, sizeof(BITMAPINFOHEADER));
+    
+    bih.biSize = sizeof(BITMAPINFOHEADER);
+    bih.biWidth = width;
+    bih.biHeight = height;
+    bih.biPlanes = 1;
+    bih.biBitCount = 24;
+    bih.biCompression = BI_RGB;    
+    
+    bitmapHdc = CreateCompatibleDC(hdc);
+    
+    hbitmap = CreateDIBSection(bitmapHdc, (BITMAPINFO *)&bih,
+			       DIB_PAL_COLORS, &ppvBits, NULL, 0);
+    
+    
+    if (!hbitmap) {
 	err = GetLastError();
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-			FORMAT_MESSAGE_FROM_SYSTEM,
-			NULL, err, 0, (LPTSTR)&errString, 0, NULL);
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		      FORMAT_MESSAGE_FROM_SYSTEM,
+		      NULL, err, 0, (LPTSTR)&errString, 0, NULL);
 	fprintf(stderr, "CreateDIBSection failed: %s\n", errString);
-   }
+    }
+    
+    SelectObject(bitmapHdc, hbitmap);
+    
+    /* Choosing and setting of pixel format is done in createContext */    
+    
+    /* Destroy all dummy objects and fall BitMap  */    
+    ReleaseDC(hwnd, hdc);
+    wglDeleteContext(hrc);
+    DestroyWindow(hwnd);
+    UnregisterClass(szAppName, (HINSTANCE)NULL);
 
-   oldhbitmap = SelectObject(hdc, hbitmap);
+    offScreenBufferInfo  =
+	(OffScreenBufferInfo *) malloc(sizeof(OffScreenBufferInfo));
+    offScreenBufferInfo->isPbuffer = GL_FALSE;
+    offScreenBufferInfo->hpbuf = 0;
+    
+    (*(table->SetLongField))(env, obj, offScreenBuffer_field, (jlong)offScreenBufferInfo);
 
-   /* Choosing and setting of pixel format is done in createContext */
-
-   return ((jint)hdc);
+    return ((jint)bitmapHdc);
+    
 #endif /* WIN32 */
 }
 
@@ -2805,6 +2895,10 @@ void JNICALL Java_javax_media_j3d_Canvas3D_destroyOffScreenBuffer(
     jlong fbConfigListPtr,
     jint window)
 {
+    jclass cv_class;
+    jfieldID offScreenBuffer_field;
+    JNIEnv table = *env;
+
 #if defined(SOLARIS) || defined(__linux__)
     /*  Fix for Issue 20 */
     GLXFBConfig *fbConfigList = (GLXFBConfig *)fbConfigListPtr;
@@ -2824,12 +2918,44 @@ void JNICALL Java_javax_media_j3d_Canvas3D_destroyOffScreenBuffer(
 #endif /* SOLARIS */
 
 #ifdef WIN32
-   HBITMAP oldhbitmap;
-   HDC hdc = (HDC) window;
+    /* Fix for issue 76 */
+    PixelFormatInfo *pFormatInfoPtr = (PixelFormatInfo *)fbConfigListPtr;
+    OffScreenBufferInfo *offScreenBufferInfo = NULL;
+    HDC hpbufdc = (HDC) window;
+    
+    cv_class =  (jclass) (*(table->GetObjectClass))(env, obj);
+    offScreenBuffer_field =
+	(jfieldID) (*(table->GetFieldID))(env, cv_class, "offScreenBufferInfo", "J");
 
-   oldhbitmap = SelectObject(hdc, NULL);
-   DeleteObject(oldhbitmap);
-   DeleteDC(hdc);
+    offScreenBufferInfo =
+	(OffScreenBufferInfo *) (*(table->GetLongField))(env, obj, offScreenBuffer_field);
+
+    /* fprintf(stderr,"Canvas3D_destroyOffScreenBuffer : offScreenBufferInfo 0x%x\n",
+       offScreenBufferInfo);
+    */
+    if(offScreenBufferInfo == NULL) {
+	return;
+    }
+
+    if(offScreenBufferInfo->isPbuffer) {
+	/* fprintf(stderr,"Canvas3D_destroyOffScreenBuffer : Pbuffer\n"); */
+
+	pFormatInfoPtr->wglReleasePbufferDCARB(offScreenBufferInfo->hpbuf, hpbufdc);
+	pFormatInfoPtr->wglDestroyPbufferARB(offScreenBufferInfo->hpbuf);
+    }
+    else {
+	HBITMAP oldhbitmap;
+	HDC hdc = (HDC) window;
+	
+	/* fprintf(stderr,"Canvas3D_destroyOffScreenBuffer : BitMap\n"); */
+	oldhbitmap = SelectObject(hdc, NULL);
+	DeleteObject(oldhbitmap);
+	DeleteDC(hdc);
+    }
+    
+    free(offScreenBufferInfo);
+    (*(table->SetLongField))(env, obj, offScreenBuffer_field, (jlong)0);
+
 #endif /* WIN32 */
 }
 
@@ -3130,7 +3256,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     }
    
    
-    /* create window if window == 0 and offscreen == true */
+    /* onscreen rendering and window is 0 now */
     if(window == 0 && !offScreen) {
 
 	vinfo = glXGetVisualFromFBConfig((Display*)display, fbConfigList[0]);
@@ -3186,74 +3312,48 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     HWND hWnd;
     static char szAppName[] = "OpenGL";
     jlong vinfo = 0;
-    
-    static PIXELFORMATDESCRIPTOR pfd = {
-	sizeof(PIXELFORMATDESCRIPTOR),
-	1,                      /* Version number */
-	PFD_DRAW_TO_WINDOW |
-	PFD_SUPPORT_OPENGL|
-	PFD_DOUBLEBUFFER,
-	PFD_TYPE_RGBA,
-	24,                     /* 24 bit color depth */
-	0, 0, 0,                /* RGB bits and pixel sizes */
-	0, 0, 0,                /* Donnot care about them  */
-	0, 0,                   /* no alpha buffer info */
-	0, 0, 0, 0, 0,          /* no accumulation buffer */
-	32,                     /* 16 bit depth buffer */
-	0,                      /* no stencil buffer */
-	0,                      /* no auxiliary buffers */
-	PFD_MAIN_PLANE,         /* layer type */
-	0,                      /* reserved, must be 0 */
-	0,                      /* no layer mask */
-	0,                      /* no visible mask */
-	0                       /* no damage mask */
-    };
-
     jboolean result;
 
+    /* Fix for issue 76 */
+    
+    /*
+      fprintf(stderr, "Canvas3D_createQueryContext:\n");
+      fprintf(stderr, "window is  0x%x, offScreen %d\n", window, offScreen);
+    */
+    
     /* onscreen rendering and window is 0 now */
     if(window == 0 && !offScreen){
+	/* fprintf(stderr, "CreateQueryContext : window == 0 && !offScreen\n"); */
 	hWnd = createDummyWindow((const char *)szAppName);
 	if (!hWnd)
 	    return; 
 	hdc =  GetDC(hWnd);
     }
     else if(window == 0 && offScreen){
+	/* fprintf(stderr, "CreateQueryContext : window == 0 && offScreen\n"); */
 	hdc = (HDC)Java_javax_media_j3d_Canvas3D_createOffScreenBuffer( env, obj, 0, display,
-									window, vid, width, height);
-	pfd.dwFlags = PFD_DRAW_TO_BITMAP | PFD_SUPPORT_OPENGL |
-	    PFD_SUPPORT_GDI;
-	vid = -1;
+									vid, fbConfigListPtr,
+									width, height);
     }
-    else if(window != 0 && offScreen){
-	pfd.dwFlags = PFD_DRAW_TO_BITMAP | PFD_SUPPORT_OPENGL |
-	    PFD_SUPPORT_GDI;
-	vid = -1;
-	hdc =  (HDC) window;
-    }
-    else if(window !=0 && !offScreen){
+    else if(window != 0){
+	/* fprintf(stderr, "CreateQueryContext : window != 0 0x%x\n", window); */
 	hdc =  (HDC) window;
     }
 
     newWin = (int)hdc;
    
-    /* vid of -1 means no vid was specified - do the old way */
-    if (vid == -1) {
-	/*
-	 * choose the "pixel format", terminology is equivalent
-	 * to UNIX "visual"
-	 */
-	PixelFormatID = ChoosePixelFormat(hdc, &pfd);
-
-	if(PixelFormatID == 0) {
-	    fprintf(stderr,"\nERROR: pixel format ID = 0");
-	    return; 
-	}
+    /*
+     * vid must be a PixelFormat returned
+     * by wglChoosePixelFormat() or wglChoosePixelFormatARB.
+     */
+    if (vid <= 0) {
+	printErrorMessage("Canvas3D_createQueryContext: PixelFormat is invalid");
+	return;
     }
-    else
+    else {
 	PixelFormatID = vid;
-
-    SetPixelFormat(hdc, PixelFormatID, &pfd);
+    }
+    SetPixelFormat(hdc, PixelFormatID, NULL);
 
     hrc = wglCreateContext( hdc );
     
@@ -3285,7 +3385,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     ctxInfo->context = gctx;
     
     /* get current context properties */
-    if (getPropertiesFromCurrentContext(env, obj, ctxInfo, (jlong) hdc, PixelFormatID, display,
+    if (getPropertiesFromCurrentContext(env, obj, ctxInfo, (jlong) hdc, PixelFormatID,
 					stencilSize)) {
 	/* put the properties to the Java side */
 	setupCanvasProperties(env, obj, ctxInfo);

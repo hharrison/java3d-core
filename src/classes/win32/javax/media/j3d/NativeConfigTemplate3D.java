@@ -19,6 +19,7 @@ import sun.awt.Win32GraphicsConfig;
 import java.awt.GraphicsConfigTemplate;
 
 class NativeConfigTemplate3D {
+    private final static boolean debug = false;
 
     NativeConfigTemplate3D() {
 	VirtualUniverse.createMC();
@@ -40,7 +41,12 @@ class NativeConfigTemplate3D {
      * selects the proper visual
      */
     native int
-      choosePixelFormat(long ctx, int screen, int[] attrList);
+	choosePixelFormat(long ctx, int screen, int[] attrList, long[] pFormatInfo);
+
+    // Native method to free an PixelFormatInfo struct.  This is static since it
+    // may need to be called to clean up the Canvas3D fbConfigTable after the
+    // NativeConfigTemplate3D has been disposed of.
+    static native void freePixelFormatInfo(long pFormatInfo);
 
     // Native methods to return whether a particular attribute is available
     native boolean isStereoAvailable(long ctx, long display, int screen, int pixelFormat);
@@ -58,6 +64,17 @@ class NativeConfigTemplate3D {
         Win32GraphicsDevice gd =
             (Win32GraphicsDevice)((Win32GraphicsConfig)gc[0]).getDevice();
 
+	/*  Not ready to enforce ARB extension in J3D1.3.2, but will likely to 
+	    do so in J3D 1.4.
+	System.out.println("getBestConfiguration : Checking WGL ARB support\n");
+	
+	if (!NativeScreenInfo.isWglARB()) {
+	    Thread.dumpStack();
+	    System.out.println("getBestConfiguration : WGL ARB support fail\n");
+	    return null;
+	}
+	*/
+
 	// holds the list of attributes to be tramslated
 	//	    for glxChooseVisual call
 	int attrList[] = new int[NUM_ITEMS];
@@ -72,12 +89,40 @@ class NativeConfigTemplate3D {
 	attrList[ANTIALIASING] = template.getSceneAntialiasing();
 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
 	int screen = nativeScreenInfo.getScreen();	
-	int pixelFormat = choosePixelFormat(0, screen, attrList);
-	if (pixelFormat  == -1) {
+
+	long[] pFormatInfo = new long[1];
+
+	/* Deliberately set this to -1. pFormatInfo is not use in 
+	   D3D, so this value will be unchange in the case of D3D.
+	   In the case of OGL, the return value should be 0 or a 
+	   positive valid address.
+	*/
+	pFormatInfo[0] = -1;
+
+	int pixelFormat = choosePixelFormat(0, screen, attrList, pFormatInfo);
+	if (debug) {
+	    System.out.println("  choosePixelFormat() returns " + pixelFormat);
+	    System.out.println("  pFormatInfo is " + pFormatInfo[0]);
+	    System.out.println();
+	}
+
+	if (pixelFormat  < 0) {
 	    // current mode don't support the minimum config
 	    return null;
 	}	    
-	return new J3dGraphicsConfig(gd, pixelFormat);
+
+	GraphicsConfiguration gc1 = new J3dGraphicsConfig(gd, pixelFormat);
+	// We need to cache the offScreen pixelformat that glXChoosePixelFormat()
+	// returns, since this is not cached with J3dGraphicsConfig and there
+	// are no public constructors to allow us to extend it.
+	synchronized (Canvas3D.fbConfigTable) {
+	    if (Canvas3D.fbConfigTable.get(gc1) == null)
+		Canvas3D.fbConfigTable.put(gc1, new Long(pFormatInfo[0]));
+	    else 
+		freePixelFormatInfo(pFormatInfo[0]);
+	}
+
+	return gc1;
     }
 
     /**
@@ -89,6 +134,17 @@ class NativeConfigTemplate3D {
 
         Win32GraphicsDevice gd =
             (Win32GraphicsDevice)((Win32GraphicsConfig) gc).getDevice();
+
+	/*  Not ready to enforce ARB extension in J3D1.3.2, but will likely to 
+	    do so in J3D 1.4.
+	System.out.println("isGraphicsConfigSupported : Checking WGL ARB support\n");
+
+	if (!NativeScreenInfo.isWglARB()) {
+	    Thread.dumpStack();
+	    System.out.println("isGraphicsConfigSupported : WGL ARB support fail\n");
+	    return false;
+	}
+	*/
 
 	// holds the list of attributes to be tramslated
 	//	    for glxChooseVisual call
@@ -106,9 +162,16 @@ class NativeConfigTemplate3D {
 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
 	int screen = nativeScreenInfo.getScreen();	
 
-	int pixelFormat = choosePixelFormat(0, screen, attrList);
+	long[] pFormatInfo = new long[1];
 
-	if (pixelFormat  == -1) {
+	int pixelFormat = choosePixelFormat(0, screen, attrList, pFormatInfo);
+	if (debug) {
+	    System.out.println("  choosePixelFormat() returns " + pixelFormat);
+	    System.out.println("  pFormatInfo is " + pFormatInfo[0]);
+	    System.out.println();
+	}
+
+	if (pixelFormat < 0) {
 	    // current mode don't support the minimum config
 	    return false;
 	} else return true;

@@ -450,7 +450,7 @@ class Renderer extends J3dThread {
 		    canvas.window = 
 			canvas.createOffScreenBuffer(canvas.ctx, 
 						     canvas.screen.display,
-						     canvas.window,
+						     canvas.vid,
 						     canvas.fbConfig,
 						     canvas.offScreenCanvasSize.width, 
 						     canvas.offScreenCanvasSize.height);

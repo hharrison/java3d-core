@@ -132,7 +132,7 @@ GLXFBConfig *find_AA_S_FBConfigs(jlong display,
 	    glxAttrs[index++] = GLX_SAMPLE_BUFFERS_ARB;
 	    glxAttrs[index++] = 1;
 	    glxAttrs[index++] = GLX_SAMPLES_ARB;
-	    glxAttrs[index++] = 1;
+	    glxAttrs[index++] = 2;
 	    glxAttrs[index] = None;
 
 	    fbConfigList = find_S_FBConfigs(display, screen, 
@@ -272,7 +272,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
     Display *dpy = (Display *) display;
     
     fbConfigListPtr = (*env)->GetLongArrayElements(env, fbConfigArray, NULL);
-    mx_ptr = (jint *)(*env)->GetPrimitiveArrayCritical(env, attrList, NULL);
+    mx_ptr = (*env)->GetIntArrayElements(env, attrList, NULL);
 
     /*
      * convert Java 3D values to GLX
@@ -307,8 +307,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
     sVal = mx_ptr[STEREO];
     antialiasVal = mx_ptr[ANTIALIASING]; 
 
-
-    (*env)->ReleasePrimitiveArrayCritical(env, attrList, mx_ptr, 0);
+    (*env)->ReleaseIntArrayElements(env, attrList, mx_ptr, JNI_ABORT);
 
     fbConfigList = find_DB_AA_S_FBConfigs(display, screen, glxAttrs, sVal,
 					  dbVal, antialiasVal, index);
@@ -522,6 +521,34 @@ jboolean JNICALL Java_javax_media_j3d_J3dGraphicsConfig_isValidVisualID(
 
 extern HWND createDummyWindow(const char* szAppName);
 
+
+PIXELFORMATDESCRIPTOR getDummyPFD() {
+    
+    /*  Dummy pixel format.  -- Chien */
+    static PIXELFORMATDESCRIPTOR dummy_pfd = {
+	sizeof(PIXELFORMATDESCRIPTOR),
+	1,                      /* Version number */
+	PFD_DRAW_TO_WINDOW |
+	PFD_SUPPORT_OPENGL,
+	PFD_TYPE_RGBA,
+	16,                     /* 16 bit color depth */
+	0, 0, 0,                /* RGB bits and pixel sizes */
+	0, 0, 0,                /* Do not care about them */
+	0, 0,                   /* no alpha buffer info */
+	0, 0, 0, 0, 0,          /* no accumulation buffer */
+	8,                      /* 8 bit depth buffer */
+	0,                      /* no stencil buffer */
+	0,                      /* no auxiliary buffers */
+	PFD_MAIN_PLANE,         /* layer type */
+	0,                      /* reserved, must be 0 */
+	0,                      /* no layer mask */
+	0,                      /* no visible mask */
+	0                       /* no damage mask */
+    };
+
+    return dummy_pfd;
+}
+
 /*
 void printPixelDescriptor(PIXELFORMATDESCRIPTOR *pfd)
 {
@@ -570,10 +597,9 @@ void printPixelDescriptor(PIXELFORMATDESCRIPTOR *pfd)
     printf("\n");
 
 }
-
 */
 
-BOOL isSupportedWGL(const char * extensions, const char *extension_string) {    
+BOOL isSupportedWGL(const char *extensions, const char *extension_string) {    
     /* get the list of supported extensions */
     const char *p = extensions; 
 
@@ -597,33 +623,39 @@ HDC getMonitorDC(int screen)
     return CreateDC("DISPLAY", NULL, NULL, NULL);     
 }
 
-int findPixelFormatSwitchDoubleBufferAndStereo (PIXELFORMATDESCRIPTOR* pfd, HDC hdc, int *mx_ptr)
+int find_DB_S_STDPixelFormat(PIXELFORMATDESCRIPTOR* pfd, HDC hdc,
+			     int *mx_ptr, GLboolean offScreen)
 {
 
     int pf;
+    PIXELFORMATDESCRIPTOR newpfd;
     
     pf = ChoosePixelFormat(hdc, pfd);
+    
+    if(!offScreen) {
+	/* onScreen : Check if pixel format support min. requirement */
+	DescribePixelFormat(hdc, pf, sizeof(newpfd), &newpfd);
 
-    /* Check if pixel format support min. requirement */
-    DescribePixelFormat(hdc, pf, sizeof(*pfd), pfd);
+	if ((newpfd.cRedBits < (unsigned char) mx_ptr[RED_SIZE]) || 
+	    (newpfd.cGreenBits < (unsigned char) mx_ptr[GREEN_SIZE]) ||
+	    (newpfd.cBlueBits  < (unsigned char) mx_ptr[BLUE_SIZE]) ||
+	    (newpfd.cDepthBits < (unsigned char) mx_ptr[DEPTH_SIZE]) ||
+	    ((mx_ptr[DOUBLEBUFFER] == REQUIRED) &&
+	     ((newpfd.dwFlags & PFD_DOUBLEBUFFER) == 0)) ||
+	    ((mx_ptr[STEREO] == REQUIRED) && ((newpfd.dwFlags & PFD_STEREO) == 0)))
+	    {
+		return -1;
+	    }
+	
+	if ((mx_ptr[ANTIALIASING] == REQUIRED) &&
+	    ((newpfd.cAccumRedBits <= 0) ||
+	     (newpfd.cAccumGreenBits <= 0) ||
+	     (newpfd.cAccumBlueBits  <= 0)))
+	    {
+		return -1;
+	    }
+    }
     
-    if ((pfd->cRedBits < (unsigned char) mx_ptr[RED_SIZE]) || 
-	(pfd->cGreenBits < (unsigned char) mx_ptr[GREEN_SIZE]) ||
-	(pfd->cBlueBits  < (unsigned char) mx_ptr[BLUE_SIZE]) ||
-	(pfd->cDepthBits < (unsigned char) mx_ptr[DEPTH_SIZE]) ||
-	((mx_ptr[DOUBLEBUFFER] == REQUIRED) && ((pfd->dwFlags & PFD_DOUBLEBUFFER) == 0)) ||
-	((mx_ptr[STEREO] == REQUIRED) && ((pfd->dwFlags & PFD_STEREO) == 0)))
-	{
-	    return -1;
-	}
-    
-    if ((mx_ptr[ANTIALIASING] == REQUIRED) &&
-	((pfd->cAccumRedBits <= 0) ||
-	 (pfd->cAccumGreenBits <= 0) ||
-	 (pfd->cAccumBlueBits  <= 0)))
-	{
-	    return -1;
-	}
     return pf; 
 }
 
@@ -637,70 +669,508 @@ void printErrorMessage(char *message)
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		  FORMAT_MESSAGE_FROM_SYSTEM,
 		  NULL, err, 0, (LPTSTR)&errString, 0, NULL);    
-    fprintf(stderr, "%s - %s\n", message, errString);
+    fprintf(stderr, "Java 3D ERROR : %s - %s\n", message, errString);
     LocalFree(errString);
 }
 
-/* Prefer multiSample in following order
-   4, 5, 6, 3, 7, 8, 2, 9, 10, 11, ...
-*/
-int getMultiSampleScore(int s)
-{
-    static int multiSampleScore[9] = {9999, 9999, 6, 3, 0, 1, 2, 4, 5};
+/* Fix for issue 76 */
+#define  MAX_WGL_ATTRS_LENGTH 30
 
-    if (s < 9) {
-	return multiSampleScore[s];
+
+int find_Stencil_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
+			     int* wglAttrs, int sIndex) {
+    
+    int pFormat, availableFormats, index;
+    
+    J3D_ASSERT((sIndex+4) < MAX_WGL_ATTRS_LENGTH);
+    
+
+    index = sIndex;
+    wglAttrs[index++] = WGL_STENCIL_BITS_ARB;
+    wglAttrs[index++] = 1;
+    /*
+     * Terminate by 2 zeros to avoid driver bugs
+     * that assume attributes always come in pairs.
+     */
+    wglAttrs[index] = 0;
+    wglAttrs[index+1] = 0;
+
+    pFormat = -1;
+    
+    if ((pFormatInfo->wglChoosePixelFormatARB(hdc, wglAttrs, NULL, 1,
+					      &pFormat, &availableFormats)) && (availableFormats > 0)) {
+	
+	/* fprintf(stderr, "wglChoosePixelFormatARB : pFormat %d availableFormats %d\n",
+	   pFormat, availableFormats); */
+	return pFormat;
     }
-    return s-2;
+    
+    /* fprintf(stderr, "wglChoosePixelFormatARB (TRY 1): FAIL\n"); */
+    
+    index = sIndex;
+    /*
+     * Terminate by 2 zeros to avoid driver bugs
+     * that assume attributes always come in pairs.
+     */
+    wglAttrs[index] = 0;
+    wglAttrs[index+1] = 0;
+	
+    pFormat = -1;
+
+    if ((pFormatInfo->wglChoosePixelFormatARB(hdc, wglAttrs, NULL, 1,
+					      &pFormat, &availableFormats)) && (availableFormats > 0)) {
+
+	/* fprintf(stderr, "wglChoosePixelFormatARB : pFormat %d availableFormats %d\n",
+	   pFormat, availableFormats); */
+	
+	return pFormat;
+    }
+    
+    /* fprintf(stderr, "wglChoosePixelFormatARB (TRY 2): FAIL\n"); */
+    return -1;
+}
+
+int find_S_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
+		       int* wglAttrs, int sVal, int sIndex) {
+    
+    int pFormat, index;
+    
+    J3D_ASSERT((sIndex+4) < MAX_WGL_ATTRS_LENGTH);
+    
+    if (sVal == REQUIRED || sVal== PREFERRED) {
+
+	index = sIndex;
+	wglAttrs[index++] = WGL_STEREO_ARB;
+	wglAttrs[index++] = TRUE;
+	/*
+	 * Terminate by 2 zeros to avoid driver bugs
+	 * that assume attributes always come in pairs.
+	 */
+	wglAttrs[index] = 0;
+	wglAttrs[index+1] = 0;
+	
+	pFormat = find_Stencil_PixelFormat(hdc, pFormatInfo,
+					   wglAttrs, index);
+	/* fprintf(stderr,"STEREO REQUIRED or PREFERRED ***pFormat  %d\n", pFormat); */
+	    
+	if(pFormat >= 0) {
+	    return pFormat;
+	}	
+    }
+    
+    if (sVal == UNNECESSARY || sVal== PREFERRED) {
+	
+	index = sIndex;
+	wglAttrs[index++] = WGL_STEREO_ARB;
+	wglAttrs[index++] = FALSE;
+	/*
+	 * Terminate by 2 zeros to avoid driver bugs
+	 * that assume attributes always come in pairs.
+	 */
+	wglAttrs[index] = 0;
+	wglAttrs[index+1] = 0;
+	
+	pFormat = find_Stencil_PixelFormat(hdc, pFormatInfo,
+					   wglAttrs, index);
+	
+	/* fprintf(stderr,"STEREO UNNECC. or PREFERRED ***pFormat  %d\n", pFormat); */
+	
+	if(pFormat >= 0) {
+	    return pFormat;
+	}
+    }
+
+    if (sVal == UNNECESSARY) {
+	index = sIndex;
+	wglAttrs[index++] = WGL_STEREO_ARB;
+	wglAttrs[index++] = TRUE;
+	/*
+	 * Terminate by 2 zeros to avoid driver bugs
+	 * that assume attributes always come in pairs.
+	 */
+	wglAttrs[index] = 0;
+	wglAttrs[index+1] = 0;
+	
+	pFormat = find_Stencil_PixelFormat(hdc, pFormatInfo,
+					   wglAttrs, index);
+
+	/* fprintf(stderr,"STEREO UNNECC. ***pFormat  %d\n", pFormat); */
+
+	if(pFormat >= 0) {
+	    return pFormat;
+	}
+    }
+    
+    return -1;
 }
 
 
-/* Max no of format wglChoosePixelFormatEXT can return  */
-#define NFORMAT 100
+int find_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
+			   int* wglAttrs, int sVal,
+			   int antialiasVal, int antialiasIndex) {
+    
+    int index;
+    int pFormat;
+    GLboolean supportMS = GL_FALSE;
+    
+    J3D_ASSERT((antialiasIndex+8) < MAX_WGL_ATTRS_LENGTH);
 
-int getExtPixelFormat(int *nativeConfigAttrs)
+    if(antialiasVal == REQUIRED || antialiasVal== PREFERRED) {
+
+	if(isSupportedWGL(pFormatInfo->supportedExtensions, "WGL_ARB_multisample")) {	
+	    supportMS = GL_TRUE;
+	}
+	else {
+	    /* Under Wildcat III it doesn't use wglGetExtensionString */
+	    char *supportedExtensions = (char *) glGetString(GL_EXTENSIONS);	    
+
+	    /* fprintf(stderr, "GL Supported extensions: %s.\n", supportedExtensions); */
+	    
+	    if (isSupportedWGL(supportedExtensions, "GL_ARB_multisample")) {	    
+		supportMS = GL_TRUE;
+	    }
+	}
+	
+	if(supportMS) {
+
+	    index = antialiasIndex;
+	    wglAttrs[index++] = WGL_SAMPLE_BUFFERS_ARB;
+	    wglAttrs[index++] = 1;
+	    wglAttrs[index++] = WGL_SAMPLES_ARB;
+	    wglAttrs[index++] = 2;  
+	    /*
+	     * Terminate by 2 zeros to avoid driver bugs
+	     * that assume attributes always come in pairs.
+	     */
+	    wglAttrs[index] = 0;
+	    wglAttrs[index+1] = 0;
+	    
+	    pFormat = find_S_PixelFormat(hdc, pFormatInfo,
+					 wglAttrs, sVal, index);
+	    
+	    if(pFormat >= 0) {
+		return pFormat;
+	    }
+	}
+    }
+    
+    if ( antialiasVal == REQUIRED ) {
+
+	index = antialiasIndex;
+        wglAttrs[index++] = WGL_ACCUM_RED_BITS_ARB;
+        wglAttrs[index++] = 8;
+        wglAttrs[index++] = WGL_ACCUM_GREEN_BITS_ARB;
+        wglAttrs[index++] = 8;
+        wglAttrs[index++] = WGL_ACCUM_BLUE_BITS_ARB;
+        wglAttrs[index++] = 8;
+	/*
+	 * Terminate by 2 zeros to avoid driver bugs
+	 * that assume attributes always come in pairs.
+	 */
+	wglAttrs[index] = 0;
+	wglAttrs[index+1] = 0;
+	
+	pFormat = find_S_PixelFormat(hdc, pFormatInfo,
+				     wglAttrs, sVal, index);
+	
+	if(pFormat >= 0) {
+	    return pFormat;
+	}
+    }
+    
+    /*
+     * Terminate by 2 zeros to avoid driver bugs
+     * that assume attributes always come in pairs.
+     */
+    index = antialiasIndex;
+    wglAttrs[index] = 0;
+    wglAttrs[index+1] = 0;
+
+    if (antialiasVal == UNNECESSARY || antialiasVal == PREFERRED) {
+
+	pFormat = find_S_PixelFormat(hdc, pFormatInfo,
+				     wglAttrs, sVal, index);
+	
+	if(pFormat >= 0) {
+	    return pFormat;
+	}
+	
+    }
+
+    return -1;
+    
+}
+
+
+int find_DB_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
+			      int* wglAttrs, int sVal, int dbVal,
+			      int antialiasVal, int dbIndex) {
+    
+    int index = dbIndex;
+    int pFormat;
+    
+    J3D_ASSERT((dbIndex+4) < MAX_WGL_ATTRS_LENGTH); 
+
+    if (dbVal == REQUIRED || dbVal== PREFERRED) {
+	    
+	index = dbIndex;
+	wglAttrs[index++] = WGL_DOUBLE_BUFFER_ARB;
+	wglAttrs[index++] = TRUE;
+	/*
+	 * Terminate by 2 zeros to avoid driver bugs
+	 * that assume attributes always come in pairs.
+	 */
+	wglAttrs[index] = 0;
+	wglAttrs[index+1] = 0;
+
+ 	pFormat = find_AA_S_PixelFormat(hdc, pFormatInfo,
+					wglAttrs, sVal, 
+					antialiasVal, index);
+	    
+	if(pFormat >= 0) {
+	    return pFormat;
+	}
+    }
+    
+    if (dbVal == UNNECESSARY || dbVal== PREFERRED) {
+	index = dbIndex;
+	wglAttrs[index++] = WGL_DOUBLE_BUFFER_ARB;
+	wglAttrs[index++] = TRUE;
+	/*
+	 * Terminate by 2 zeros to avoid driver bugs
+	 * that assume attributes always come in pairs.
+	 */
+	wglAttrs[index] = 0;
+	wglAttrs[index+1] = 0;
+
+	pFormat = find_AA_S_PixelFormat(hdc, pFormatInfo,
+					wglAttrs, sVal, 
+					antialiasVal, index);
+	
+	if(pFormat >= 0) {
+	    return pFormat;
+	}
+    }
+
+    if (dbVal == UNNECESSARY) {
+	index = dbIndex;
+	wglAttrs[index++] = WGL_DOUBLE_BUFFER_ARB;
+	wglAttrs[index++] = TRUE;
+	/*
+	 * Terminate by 2 zeros to avoid driver bugs
+	 * that assume attributes always come in pairs.
+	 */
+	wglAttrs[index] = 0;
+	wglAttrs[index+1] = 0;
+
+ 	pFormat = find_AA_S_PixelFormat(hdc, pFormatInfo,
+					wglAttrs, sVal, 
+					antialiasVal, index);
+	
+	if(pFormat >= 0) {
+	    return pFormat;
+	}
+    }
+
+    return -1;
+}
+
+int chooseSTDPixelFormat(
+    JNIEnv   *env,
+    jint      screen,
+    jintArray attrList,
+    HDC       hdc,
+    GLboolean offScreen)
 {
-    static const BOOL debug = FALSE;
+    int *mx_ptr;
+    int   dbVal;  /* value for double buffering */
+    int   sVal;   /* value for stereo */
+    int   pFormat = -1;  /* PixelFormat */
+    PIXELFORMATDESCRIPTOR pfd;
+
+    /* fprintf(stderr, "chooseSTDPixelFormat : screen 0x%x, offScreen %d hdc 0x%x\n",
+       screen, offScreen, hdc);  */
+    
+    ZeroMemory(&pfd, sizeof(PIXELFORMATDESCRIPTOR));
+    pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+    pfd.nVersion = 1;  /*TODO: when would this change? */
+    pfd.iPixelType = PFD_TYPE_RGBA;
+
+    /*
+     * Convert Java 3D values to PixelFormat
+     */
+    mx_ptr = (*env)->GetIntArrayElements(env, attrList, NULL);
+
+    if(!offScreen) {
+	
+	pfd.cRedBits   = (unsigned char) mx_ptr[RED_SIZE];
+	pfd.cGreenBits = (unsigned char) mx_ptr[GREEN_SIZE];
+	pfd.cBlueBits  = (unsigned char) mx_ptr[BLUE_SIZE];
+	pfd.cDepthBits = (unsigned char) mx_ptr[DEPTH_SIZE];
+	
+	if (mx_ptr[DOUBLEBUFFER] == REQUIRED || mx_ptr[DOUBLEBUFFER] == PREFERRED)
+	    dbVal = PFD_DOUBLEBUFFER;
+	else 
+	    dbVal = PFD_DOUBLEBUFFER_DONTCARE;
+	
+	sVal = 0;
+	if (mx_ptr[STEREO] == REQUIRED || mx_ptr[STEREO] == PREFERRED) {
+	    sVal = PFD_STEREO;
+	} else {
+	    sVal = PFD_STEREO_DONTCARE;
+	}
+    
+	pfd.dwFlags = dbVal | sVal | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
+
+	pfd.cStencilBits = 1;
+	
+	if (mx_ptr[ANTIALIASING] == REQUIRED) {
+	    pfd.cAccumRedBits   = 8;
+	    pfd.cAccumGreenBits = 8;
+	    pfd.cAccumBlueBits  = 8;
+	}
+
+    }
+    else { /* Offscreen setting. */
+	/* We are here b/c there is no support for Pbuffer on the HW.
+	   This is a fallback path, we will hardcore the value. */  
+	
+        pfd.cRedBits   = 0;
+	pfd.cGreenBits = 0;
+	pfd.cBlueBits  = 0;
+	pfd.cDepthBits = 32;
+	
+	pfd.iPixelType = PFD_TYPE_RGBA;
+	pfd.cColorBits = 24;
+	pfd.iLayerType = PFD_MAIN_PLANE;
+	pfd.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_BITMAP | PFD_SUPPORT_GDI;
+
+    }
+    
+    pFormat = find_DB_S_STDPixelFormat(&pfd, hdc, mx_ptr, offScreen);
+
+    if (pFormat == -1) {
+	/* try disable stencil buffer */
+	pfd.cStencilBits = 0;
+	pFormat =  find_DB_S_STDPixelFormat(&pfd, hdc, mx_ptr, offScreen);
+    }
+    
+    (*env)->ReleaseIntArrayElements(env, attrList, mx_ptr, JNI_ABORT);
+    return pFormat;
+}
+
+PixelFormatInfo * newPixelFormatInfo(HDC hdc)
+{
+    PFNWGLGETEXTENSIONSSTRINGARBPROC  wglGetExtensionsStringARB = NULL;
+    
+    PixelFormatInfo *pFormatInfo = (PixelFormatInfo *) malloc(sizeof(PixelFormatInfo));
+
+    /* Initialize pFormatInfo */
+    pFormatInfo->onScreenPFormat = -1;
+    pFormatInfo->offScreenPFormat = -1;
+    
+    pFormatInfo->supportARB = GL_FALSE;
+    pFormatInfo->supportPbuffer = GL_FALSE;
+    pFormatInfo->supportedExtensions = NULL;
+    pFormatInfo->wglChoosePixelFormatARB = NULL; 
+    pFormatInfo->wglGetPixelFormatAttribivARB = NULL;
+    pFormatInfo->wglCreatePbufferARB = NULL;
+    pFormatInfo->wglGetPbufferDCARB = NULL;
+    pFormatInfo->wglReleasePbufferDCARB = NULL;
+    pFormatInfo->wglDestroyPbufferARB = NULL;
+    pFormatInfo->wglQueryPbufferARB = NULL;
+    
+    wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
+	wglGetProcAddress("wglGetExtensionsStringARB");
+    if (wglGetExtensionsStringARB == NULL) {
+	printErrorMessage("wglGetExtensionsStringARB not support !\n");
+	/* Doesn't support extensions, return to use standard choosePixelFormat. */
+	return pFormatInfo;  
+    }
+    
+    /* get the list of supported extensions */
+    pFormatInfo->supportedExtensions = (char *)wglGetExtensionsStringARB(hdc);    
+    
+    /* fprintf(stderr, "WGL Supported extensions: %s.\n",
+       pFormatInfo->supportedExtensions);    */
+
+    if(isSupportedWGL(pFormatInfo->supportedExtensions, "WGL_ARB_pixel_format")) { 
+	pFormatInfo->wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)
+	    wglGetProcAddress("wglChoosePixelFormatARB");
+	    
+	pFormatInfo->wglGetPixelFormatAttribivARB =
+	    (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)
+	    wglGetProcAddress("wglGetPixelFormatAttribivARB");
+
+	if ((pFormatInfo->wglChoosePixelFormatARB != NULL) &&
+	    (pFormatInfo->wglGetPixelFormatAttribivARB != NULL)){
+
+	    /* fprintf(stderr, "wglChoosePixelFormatARB is supported.\n"); */
+	    pFormatInfo->supportARB = GL_TRUE;
+
+	    if(isSupportedWGL( pFormatInfo->supportedExtensions, "WGL_ARB_pbuffer")) {
+		/* Get pbuffer entry points */
+		pFormatInfo->wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC)
+		    wglGetProcAddress("wglCreatePbufferARB");
+		pFormatInfo->wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC)
+		    wglGetProcAddress("wglGetPbufferDCARB");
+		pFormatInfo->wglReleasePbufferDCARB = (PFNWGLRELEASEPBUFFERDCARBPROC)
+		    wglGetProcAddress("wglReleasePbufferDCARB");
+		pFormatInfo->wglDestroyPbufferARB = (PFNWGLDESTROYPBUFFERARBPROC)
+		    wglGetProcAddress("wglDestroyPbufferARB"); 
+		pFormatInfo->wglQueryPbufferARB = (PFNWGLQUERYPBUFFERARBPROC)
+		    wglGetProcAddress("wglQueryPbufferARB");		    
+		
+		if((pFormatInfo->wglCreatePbufferARB != NULL) &&
+		   (pFormatInfo->wglGetPbufferDCARB != NULL) &&
+		   (pFormatInfo->wglReleasePbufferDCARB != NULL) &&
+		   (pFormatInfo->wglDestroyPbufferARB != NULL) &&
+		   (pFormatInfo->wglQueryPbufferARB != NULL)) {
+		    
+		    pFormatInfo->supportPbuffer = GL_TRUE;
+		    /* fprintf(stderr, "WGL support Pbuffer\n"); */
+		    
+		}
+		else {
+		    printErrorMessage("Problem in getting WGL_ARB_pbuffer functions !\n");
+		}
+	    }
+	}
+	else {
+	    printErrorMessage("Problem in getting WGL_ARB_pixel_format functions !\n");
+	}
+    }
+
+    return pFormatInfo;
+}
+
+JNIEXPORT
+jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
+    JNIEnv   *env,
+    jobject   obj,
+    jlong     ctxInfo,
+    jint      screen,
+    jintArray attrList,
+    jlongArray offScreenPFArray)
+{
+    static const BOOL debug = TRUE;
     static char szAppName[] = "Choose Pixel Format";
 
-    static PIXELFORMATDESCRIPTOR pfd = {
-	sizeof(PIXELFORMATDESCRIPTOR),
-	1,                      /* Version number */
-	PFD_DRAW_TO_WINDOW |
-	PFD_SUPPORT_OPENGL,
-	PFD_TYPE_RGBA,
-	16,                     /* 16 bit color depth */
-	0, 0, 0,                /* RGB bits and pixel sizes */
-	0, 0, 0,                /* Do not care about them */
-	0, 0,                   /* no alpha buffer info */
-	0, 0, 0, 0, 0,          /* no accumulation buffer */
-	8,                      /* 8 bit depth buffer */
-	0,                      /* no stencil buffer */
-	0,                      /* no auxiliary buffers */
-	PFD_MAIN_PLANE,         /* layer type */
-	0,                      /* reserved, must be 0 */
-	0,                      /* no layer mask */
-	0,                      /* no visible mask */
-	0                       /* no damage mask */
-    };
+    int *mx_ptr;
+    int dbVal;  /* value for double buffering */
+    int sVal;   /* value for stereo */
+    int antialiasVal; /* value for antialias */
 
-    HWND hwnd;
+    HWND  hwnd;
     HGLRC hrc;
     HDC   hdc;
-    int attr[22];
-    int piValues[12];
-    int i, idx;
-    int pNumFormats[NFORMAT], nAvailableFormat;
-    const char* supportedExtensions;
-    int score;
-    int highestScore, highestScorePF;
-    int highestScoreAlpha, lowestScoreMultiSample;
-
-    /* declare function pointers for WGL functions */
-    PFNWGLGETEXTENSIONSSTRINGEXTPROC  wglGetExtensionsStringEXT = NULL;
-    PFNWGLCHOOSEPIXELFORMATEXTPROC wglChoosePixelFormatEXT = NULL;
-    PFNWGLGETPIXELFORMATATTRIBIVEXTPROC wglGetPixelFormatAttribivEXT = NULL;    
-
+    int pixelFormat;
+    int wglAttrs[MAX_WGL_ATTRS_LENGTH]; 
+    int index, lastIndex;
+    PixelFormatInfo *pFormatInfo = NULL;    
+    jlong * offScreenPFListPtr;
+    PIXELFORMATDESCRIPTOR dummy_pfd = getDummyPFD();
+    
     /*
      * Select any pixel format and bound current context to
      * it so that we can get the wglChoosePixelFormatARB entry point.
@@ -714,26 +1184,27 @@ int getExtPixelFormat(int *nativeConfigAttrs)
     }
     hdc = GetDC(hwnd);
 
-    pNumFormats[0] = ChoosePixelFormat(hdc, &pfd);
-    if (!pNumFormats[0]) {
-	printErrorMessage("Failed in ChoosePixelFormat");
+    pixelFormat = ChoosePixelFormat(hdc, &dummy_pfd);
+
+    if (pixelFormat<1) {
+	printErrorMessage("In NativeConfigTemplate : Failed in ChoosePixelFormat");
 	DestroyWindow(hwnd);
 	UnregisterClass(szAppName, (HINSTANCE)NULL);
 	return -1;
     }
 
-    SetPixelFormat(hdc, pNumFormats[0], &pfd);
+    SetPixelFormat(hdc, pixelFormat, NULL);
     
     hrc = wglCreateContext(hdc);
     if (!hrc) {
-	printErrorMessage("Failed in wglCreateContext");
+	printErrorMessage("In NativeConfigTemplate : Failed in wglCreateContext");
 	DestroyWindow(hwnd);
 	UnregisterClass(szAppName, (HINSTANCE)NULL);
 	return -1;
     }
     
     if (!wglMakeCurrent(hdc, hrc)) {
-	printErrorMessage("Failed in wglMakeCurrent");
+	printErrorMessage("In NativeConfigTemplate : Failed in wglMakeCurrent");
 	ReleaseDC(hwnd, hdc);
 	wglDeleteContext(hrc);
 	DestroyWindow(hwnd);
@@ -741,382 +1212,152 @@ int getExtPixelFormat(int *nativeConfigAttrs)
 	return -1;
     }
 
-    wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
-	wglGetProcAddress("wglGetExtensionsStringARB");
-
-    if (wglGetExtensionsStringEXT == NULL) {
-	wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)
-	    wglGetProcAddress("wglGetExtensionsStringEXT");
-	if (wglGetExtensionsStringEXT == NULL) {
-	    if (debug) {
-		printf("wglGetExtensionsStringEXT/ARB not support !\n");
-	    }
-	    ReleaseDC(hwnd, hdc);
-	    wglDeleteContext(hrc);
-	    DestroyWindow(hwnd);
-	    UnregisterClass(szAppName, (HINSTANCE)NULL);	    
-	    return -1;
-	}
-	if (debug) {
-	    printf("Support wglGetExtensionsStringEXT\n");
-	}
-    } else {
-	if (debug) {	
-	    printf("Support wglGetExtensionsStringARB\n");
-	}
-    }
+    pFormatInfo = newPixelFormatInfo(hdc);
     
-    /* get the list of supported extensions */
-    supportedExtensions = (const char *)wglGetExtensionsStringEXT(hdc);    
+    offScreenPFListPtr = (*env)->GetLongArrayElements(env, offScreenPFArray, NULL);
 
-    if (debug) {
-	fprintf(stderr, "WGL Supported extensions: %s.\n", supportedExtensions);    
-    }
-    
-    if (!isSupportedWGL(supportedExtensions, "WGL_ARB_multisample") &&
-	!isSupportedWGL(supportedExtensions, "WGL_EXT_multisample") &&
-	!isSupportedWGL(supportedExtensions, "WGL_SGIS_multisample")) {	
+    if(pFormatInfo->supportARB) {
 
-	/* Under Wildcat III it doesn't use wglGetExtensionString */
-	supportedExtensions = (char *) glGetString(GL_EXTENSIONS);
-
-	if (debug) {
-	    fprintf(stderr, "GL Supported extensions: %s.\n", supportedExtensions);    
-	}
+	mx_ptr = (*env)->GetIntArrayElements(env, attrList, NULL);
 	
-	if (!isSupportedWGL(supportedExtensions, "GL_ARB_multisample") &&
-	    !isSupportedWGL(supportedExtensions, "GL_EXT_multisample") &&
-	    !isSupportedWGL(supportedExtensions, "GL_SGIS_multisample")) {	    
-	    ReleaseDC(hwnd, hdc);
-	    wglDeleteContext(hrc);
-	    DestroyWindow(hwnd);
-	    UnregisterClass(szAppName, (HINSTANCE)NULL);	    
-	    return -1;
-	}
-    }
-    
-    wglChoosePixelFormatEXT = (PFNWGLCHOOSEPIXELFORMATEXTPROC)
-	wglGetProcAddress("wglChoosePixelFormatARB");
-    
-    if (wglChoosePixelFormatEXT == NULL) {
-	wglChoosePixelFormatEXT = (PFNWGLCHOOSEPIXELFORMATEXTPROC)
-	    wglGetProcAddress("wglChoosePixelFormatEXT");
-	if (wglChoosePixelFormatEXT == NULL) {
-	    if (debug) {
-		printf("wglChoosePixelFormatARB/EXT not support !\n");
-	    }
-	    ReleaseDC(hwnd, hdc);
-	    wglDeleteContext(hrc);
-	    DestroyWindow(hwnd);
-	    UnregisterClass(szAppName, (HINSTANCE)NULL);	    	    
-	    return -1;
-	} 
-	if (debug) {
-	    printf("Support wglChoosePixelFormatEXT\n");
-	}
-    } else {
-	if (debug) {
-	    printf("Support wglChoosePixelFormatARB\n");
-	}	
-    }
-    
-    idx = 0;
-    attr[idx++] = WGL_SUPPORT_OPENGL_EXT;
-    attr[idx++] = TRUE;
-    attr[idx++] = WGL_DRAW_TO_WINDOW_EXT; 
-    attr[idx++] = TRUE;
-    attr[idx++] = WGL_RED_BITS_EXT;
-    attr[idx++] = nativeConfigAttrs[RED_SIZE];
-    attr[idx++] = WGL_GREEN_BITS_EXT;
-    attr[idx++] = nativeConfigAttrs[GREEN_SIZE];
-    attr[idx++] = WGL_BLUE_BITS_EXT;
-    attr[idx++] = nativeConfigAttrs[BLUE_SIZE];
-    attr[idx++] = WGL_DEPTH_BITS_EXT;
-    attr[idx++] = nativeConfigAttrs[DEPTH_SIZE];
-
-    if (nativeConfigAttrs[DOUBLEBUFFER] == REQUIRED) {
-	attr[idx++] = WGL_DOUBLE_BUFFER_EXT;
-	attr[idx++] = TRUE;
-    }
-    if (nativeConfigAttrs[STEREO] == REQUIRED) {    
-	attr[idx++] = WGL_STEREO_EXT;
-	attr[idx++] = TRUE;
-    }
-
-    if (nativeConfigAttrs[ANTIALIASING] == REQUIRED) {        
-	attr[idx++] = WGL_SAMPLE_BUFFERS_ARB;
-	attr[idx++] = TRUE;
-	attr[idx++] = WGL_SAMPLES_ARB;
-	attr[idx++] = 2;
-    }
-
-    /*
-     * Terminate by 2 zeros to avoid driver bugs
-     * that assume attributes always come in pairs.
-     */
-    attr[idx++] = 0;
-    attr[idx++] = 0;
+	/*
+	 * convert Java 3D values to WGL
+	 */
+	index = 0;
 	
-    if (!wglChoosePixelFormatEXT(hdc, (const int *)attr, NULL, NFORMAT,
-				 pNumFormats, &nAvailableFormat)) {
-	printErrorMessage("Failed in wglChoosePixelFormatEXT");
-	ReleaseDC(hwnd, hdc);
-	wglDeleteContext(hrc);
-	DestroyWindow(hwnd);
-	UnregisterClass(szAppName, (HINSTANCE)NULL);	    
-	return -1;
-    }
-    
-    if (debug) {
-	printf("No. of available pixel format is: %d\n", nAvailableFormat);
-    }
+	wglAttrs[index++] = WGL_SUPPORT_OPENGL_ARB;
+	wglAttrs[index++] = TRUE;
+	wglAttrs[index++] = WGL_DRAW_TO_WINDOW_ARB; 
+	wglAttrs[index++] = TRUE;
+	wglAttrs[index++] = WGL_RED_BITS_ARB;
+	wglAttrs[index++] = mx_ptr[RED_SIZE];
+	wglAttrs[index++] = WGL_GREEN_BITS_ARB;
+	wglAttrs[index++] = mx_ptr[GREEN_SIZE];
+	wglAttrs[index++] = WGL_BLUE_BITS_ARB;
+	wglAttrs[index++] = mx_ptr[BLUE_SIZE];
+	wglAttrs[index++] = WGL_DEPTH_BITS_ARB;
+	wglAttrs[index++] = mx_ptr[DEPTH_SIZE];
+	
+	lastIndex = index;
+	
+	dbVal = mx_ptr[DOUBLEBUFFER];
+	sVal = mx_ptr[STEREO];
+	antialiasVal = mx_ptr[ANTIALIASING];
+	
+	(*env)->ReleaseIntArrayElements(env, attrList, mx_ptr, JNI_ABORT);
+	
+	if(pFormatInfo->supportPbuffer) {	
+	    
+	    wglAttrs[index++] = WGL_DRAW_TO_PBUFFER_ARB;
+	    wglAttrs[index++] = TRUE;
+	    
+	    /*
+	     * Terminate by 2 zeros to avoid driver bugs
+	     * that assume attributes always come in pairs.
+	     */
+	    wglAttrs[index] = 0;
+	    wglAttrs[index+1] = 0;
 
-    if (nAvailableFormat <= 0) {
-	ReleaseDC(hwnd, hdc);
-	wglDeleteContext(hrc);
-	DestroyWindow(hwnd);
-	UnregisterClass(szAppName, (HINSTANCE)NULL);	    
-	return -1;
-    }
-    
-    wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)
-	wglGetProcAddress("wglGetPixelFormatAttribivARB");
+  	    pFormatInfo->onScreenPFormat = find_DB_AA_S_PixelFormat( hdc, pFormatInfo,
+								     wglAttrs, sVal, dbVal, 
+								     antialiasVal, index);
+	    
+	    if(pFormatInfo->onScreenPFormat >= 0) {
+		
+		/* Since the return pixel format support pbuffer,
+		   copy OnScreenPFormat to offScreenPFormat */
+		pFormatInfo->offScreenPFormat = pFormatInfo->onScreenPFormat;
+		offScreenPFListPtr[0] = (jlong) pFormatInfo;
+		(*env)->ReleaseLongArrayElements(env, offScreenPFArray, offScreenPFListPtr, 0);
 
-    if (wglGetPixelFormatAttribivEXT == NULL) {
-	wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)
-	    wglGetProcAddress("wglGetPixelFormatAttribivEXT");
+		/* Destroy all dummy objects */
+		ReleaseDC(hwnd, hdc);
+		wglDeleteContext(hrc);
+		DestroyWindow(hwnd);
+		UnregisterClass(szAppName, (HINSTANCE)NULL);
 
-	if (wglGetPixelFormatAttribivEXT == NULL) {
-	    if (debug) {
-		printf("wglGetPixelFormatAttribivEXT/ARB not support !\n");
-	    }
-	    ReleaseDC(hwnd, hdc);
-	    wglDeleteContext(hrc);
-	    DestroyWindow(hwnd);
-	    UnregisterClass(szAppName, (HINSTANCE)NULL);	    	    
-	    return -1;
-	} 
-	if (debug) {
-	    printf("Support wglGetPixelFormatAttribivEXT\n");
-	}
-    } else {
-	if (debug) {
-	    printf("Support wglGetPixelFormatAttribivARB\n");
-	}	
-    }
-
-    idx = 0;
-    attr[idx++] = WGL_ACCELERATION_EXT;
-    attr[idx++] = WGL_RED_BITS_EXT;
-    attr[idx++] = WGL_GREEN_BITS_EXT;
-    attr[idx++] = WGL_BLUE_BITS_EXT;
-    attr[idx++] = WGL_ALPHA_BITS_EXT;    
-    attr[idx++] = WGL_DEPTH_BITS_EXT;
-    attr[idx++] = WGL_STENCIL_BITS_EXT;
-    attr[idx++] = WGL_SAMPLE_BUFFERS_ARB;
-    attr[idx++] = WGL_SAMPLES_ARB;
-    attr[idx++] = WGL_DOUBLE_BUFFER_EXT;
-    attr[idx++] = WGL_STEREO_EXT;
-    attr[idx] = 0;
-
-    /* Select the best pixel format based on score */
-    highestScore = 0;
-    highestScorePF = -1;
-    highestScoreAlpha = 0;
-    lowestScoreMultiSample = 9999;
-    
-    for (i=0; i < nAvailableFormat; i++) {
-	if (!wglGetPixelFormatAttribivEXT(hdc, pNumFormats[i], 0, idx, attr, piValues)) {
-	    printErrorMessage("Failed in wglGetPixelFormatAttribivEXT");
-	    ReleaseDC(hwnd, hdc);
-	    wglDeleteContext(hrc);
-	    DestroyWindow(hwnd);
-	    UnregisterClass(szAppName, (HINSTANCE)NULL);
-	    return -1;
-	}
-	if (debug) {
-	    printf("Format %d\n", pNumFormats[i]);
-
-	    if (piValues[0] == WGL_FULL_ACCELERATION_EXT) {
-		printf("WGL_FULL_ACCELERATION_EXT");
-	    } else if (piValues[0] == WGL_GENERIC_ACCELERATION_EXT) {
-		printf("WGL_GENERIC_ACCELERATION_EXT");		
-	    } else {
-		printf("WGL_NO_ACCELERATION_EXT");		
-	    }
-
-	    printf(" R %d, G %d, B %d, A %d, Depth %d, Stencil %d",
-		   piValues[1], piValues[2], piValues[3], piValues[4],
-		   piValues[5], piValues[6]);
-
-	    if (piValues[7] == TRUE) {
-		printf(" MultiSample %d", piValues[8]);
-	    }
-
-	    if (piValues[9] == TRUE) {
-		printf(" DoubleBuffer");
+		return (jint) pFormatInfo->onScreenPFormat;
 	    }
 	    
-	    if (piValues[10] == TRUE) {
-		printf(" Stereo");
-	    }
-	    printf("\n");
 	}
 
-	/* Red, Green, Blue are fixed under windows so they are not checked */
-	score = 0;
-
-	if (piValues[0] == WGL_FULL_ACCELERATION_EXT) {
-	    score += 20000;
-	} else if (piValues[0] == WGL_GENERIC_ACCELERATION_EXT) {
-	    score += 10000;
-	}
-	if ((nativeConfigAttrs[DOUBLEBUFFER] == PREFERRED) &&
-	    (piValues[9] == TRUE)) {
-	    score += 5000;
-	}
-	if (piValues[4] > 0) { /* Alpha */
-	    score += 2500;
-	}
-	if ((nativeConfigAttrs[STEREO] == PREFERRED) &&
-	    (piValues[10] == TRUE)) {
-	    score += 1250;
-	}
-	if ((nativeConfigAttrs[ANTIALIASING] == PREFERRED) &&
-	    (piValues[7] == TRUE)) {
-	    score += 624;
-	}
+	/* Create a onScreen without Pbuffer */
+	index = lastIndex;
 	
-	/* Stencil bit * 10 + Depth bit */	
-	score += piValues[6]*10 + piValues[5];
-
-	if (score > highestScore) {
-	    highestScore = score;
-	    highestScorePF = i;	    
-	    highestScoreAlpha = piValues[4];
-	    lowestScoreMultiSample = getMultiSampleScore(piValues[8]);
-	} else if (score == highestScore) {
-	    if (piValues[4] > highestScoreAlpha) {
-		highestScore = score;
-		highestScorePF = i;	    
-		highestScoreAlpha = piValues[4];
-		lowestScoreMultiSample = getMultiSampleScore(piValues[8]);
-	    } else if (piValues[4] == highestScoreAlpha) {
-		if (getMultiSampleScore(piValues[8]) < lowestScoreMultiSample) { 
-		    highestScore = score;
-		    highestScorePF = i;	    
-		    highestScoreAlpha = piValues[4];
-		    lowestScoreMultiSample = getMultiSampleScore(piValues[8]);
-		} 
-	    }
-	}
-
+	/*
+	 * Terminate by 2 zeros to avoid driver bugs
+	 * that assume attributes always come in pairs.
+	 */
+	wglAttrs[index] = 0;
+	wglAttrs[index+1] = 0;
+	
+	pFormatInfo->onScreenPFormat = find_DB_AA_S_PixelFormat( hdc, pFormatInfo,
+								 wglAttrs, sVal, dbVal, 
+								 antialiasVal, index);
+	
+    } 
+    
+    
+    if(pFormatInfo->onScreenPFormat < 0) { /* Fallback to use standard ChoosePixelFormat. */
+	/* fprintf(stderr, "Fallback to use standard ChoosePixelFormat.\n"); */
+	
+	pFormatInfo->onScreenPFormat =  (jint) chooseSTDPixelFormat( env, screen,
+								     attrList, hdc, GL_FALSE);
+	
     }
+    
+    if(pFormatInfo->onScreenPFormat < 0) {
+	printErrorMessage("In NativeConfigTemplate : Can't choose a onScreen pixel format");
+	
+	offScreenPFListPtr[0] = (jlong) pFormatInfo; 
+	(*env)->ReleaseLongArrayElements(env, offScreenPFArray, offScreenPFListPtr, 0);
 
-    if (debug) {
-	printf("Select Pixel Format %d\n", pNumFormats[highestScorePF]);
-    }
+	/* We are done with dummy context, so destroy all dummy objects */
+	ReleaseDC(hwnd, hdc);
+	wglDeleteContext(hrc);
+	DestroyWindow(hwnd);
+	UnregisterClass(szAppName, (HINSTANCE)NULL);
 
+	return -1;
+    }    
+
+    /* Create offScreen with standard ChoosePixelFormat */
+    pFormatInfo->offScreenPFormat = chooseSTDPixelFormat( env, screen, attrList, hdc, GL_TRUE);
+
+    /* fprintf(stderr, "********* offScreenPFormat = %d\n", pFormatInfo->offScreenPFormat ); */
+    
+    offScreenPFListPtr[0] = (jlong) pFormatInfo;
+    (*env)->ReleaseLongArrayElements(env, offScreenPFArray, offScreenPFListPtr, 0);
+
+    /* We are done with dummy context, so destroy all dummy objects */
     ReleaseDC(hwnd, hdc);
     wglDeleteContext(hrc);
     DestroyWindow(hwnd);
     UnregisterClass(szAppName, (HINSTANCE)NULL);
-    return pNumFormats[highestScorePF];
+
+    return (jint) pFormatInfo->onScreenPFormat;
 }
 
 
-JNIEXPORT
-jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
-    JNIEnv   *env,
-    jobject   obj,
-    jlong     ctxInfo,
-    jint      screen,
-    jintArray attrList)
+JNIEXPORT 
+void JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_freePixelFormatInfo(
+     JNIEnv *env,
+     jclass  class,	/* this is a static native method */
+     jlong   pFormatInfo)
 {
-    int *mx_ptr;
-    int   dbVal;  /* value for double buffering */
-    int   sVal;   /* value for stereo */
-    HDC   hdc;
-    int pf;  /* PixelFormat */
-    PIXELFORMATDESCRIPTOR pfd;
-     
-    mx_ptr = (int *)(*env)->GetIntArrayElements(env, attrList, NULL);
-
-    if (mx_ptr[ANTIALIASING] != UNNECESSARY) {
-	pf = getExtPixelFormat(mx_ptr);
-	if (pf > 0) {
-	    return pf;
-	}
-
-	/* fallback to use standard ChoosePixelFormat and accumulation buffer */
+    PixelFormatInfo *pfInfo = (PixelFormatInfo *) pFormatInfo;
+    if(pfInfo->supportedExtensions != NULL) {
+	free(pfInfo->supportedExtensions);
+	pfInfo->supportedExtensions = NULL;
     }
-
-    hdc = getMonitorDC(screen);
-    
-    ZeroMemory(&pfd, sizeof(PIXELFORMATDESCRIPTOR));
-    pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-    pfd.nVersion = 1;  /*TODO: when would this change? */
-    pfd.iPixelType = PFD_TYPE_RGBA;
-
-    /*
-     * Convert Java 3D values to PixelFormat
-     */
-
-    pfd.cRedBits   = (unsigned char) mx_ptr[RED_SIZE];
-    pfd.cGreenBits = (unsigned char) mx_ptr[GREEN_SIZE];
-    pfd.cBlueBits  = (unsigned char) mx_ptr[BLUE_SIZE];
-    pfd.cDepthBits = (unsigned char) mx_ptr[DEPTH_SIZE];
-
-    if (mx_ptr[DOUBLEBUFFER] == REQUIRED || mx_ptr[DOUBLEBUFFER] == PREFERRED)
-	dbVal = PFD_DOUBLEBUFFER;
-    else 
-	dbVal = PFD_DOUBLEBUFFER_DONTCARE;
-
-    sVal = 0;
-    if (mx_ptr[STEREO] == REQUIRED || mx_ptr[STEREO] == PREFERRED) {
-	sVal = PFD_STEREO;
-    } else {
-	sVal = 0;
-    }
-    
-    pfd.dwFlags = dbVal | sVal | PFD_SUPPORT_OPENGL;
-    pfd.cStencilBits = 2;
-    
-    if (mx_ptr[ANTIALIASING] == REQUIRED || mx_ptr[ANTIALIASING] == PREFERRED) {
-	pfd.cAccumRedBits   = 8;
-	pfd.cAccumGreenBits = 8;
-	pfd.cAccumBlueBits  = 8;
-    }
-
-    pf = findPixelFormatSwitchDoubleBufferAndStereo(&pfd, hdc, mx_ptr); 
-
-    if (pf == -1) {
-	/* try disable stencil buffer */
-	pfd.cStencilBits = 0;
-	pf =  findPixelFormatSwitchDoubleBufferAndStereo(&pfd, hdc, mx_ptr);
-
-	if (pf == -1) {
-	    /* try disable accumulate buffer */
-	    if (mx_ptr[ANTIALIASING] == PREFERRED) {
-		pfd.cStencilBits = 2;
-		pfd.cAccumRedBits   = 0;
-		pfd.cAccumGreenBits = 0;
-		pfd.cAccumBlueBits  = 0;
-		pf =  findPixelFormatSwitchDoubleBufferAndStereo(&pfd, hdc, mx_ptr);
-
-		if (pf == -1) {
-		    /* try disable stencil buffer */
-		    pfd.cStencilBits = 0;
-		    pf =  findPixelFormatSwitchDoubleBufferAndStereo(&pfd, hdc, mx_ptr);
-		}
-	    }
-	}
-    }
-    
-    DeleteDC(hdc);
-
-    (*env)->ReleaseIntArrayElements(env, attrList, mx_ptr, JNI_ABORT);
-    return pf;
+    pfInfo->wglChoosePixelFormatARB = NULL; 
+    pfInfo->wglGetPixelFormatAttribivARB = NULL;
+    pfInfo->wglCreatePbufferARB = NULL;
+    pfInfo->wglGetPbufferDCARB = NULL;
+    pfInfo->wglReleasePbufferDCARB = NULL;
+    pfInfo->wglDestroyPbufferARB = NULL;
+    pfInfo->wglQueryPbufferARB = NULL;
+    free(pfInfo);
 }
 
 

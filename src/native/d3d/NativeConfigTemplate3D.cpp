@@ -87,7 +87,8 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
     jobject   obj,
     jlong ctx,
     jint screen,
-    jintArray attrList)
+    jintArray attrList,
+    jlongArray offScreenPFArray)
 {
     int depth, red, green, blue;
     int retValue = -1;

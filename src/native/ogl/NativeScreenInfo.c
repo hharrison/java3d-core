@@ -18,6 +18,7 @@
 
 #include <jni.h>
 #include <math.h>
+#include <stdio.h>
 
 #include "gldefs.h"
 
@@ -125,4 +126,108 @@ Java_javax_media_j3d_NativeScreenInfo_queryGLX13(
     return JNI_TRUE;
 }
 
-#endif
+#endif /* Solaris and Linux */
+
+
+#ifdef WIN32
+
+extern HWND createDummyWindow(const char* szAppName);
+extern void printErrorMessage(char *message);
+extern PIXELFORMATDESCRIPTOR getDummyPFD();
+extern BOOL isSupportedWGL(const char *extensions, const char *extension_string);    
+
+/*
+ * Class:     javax_media_j3d_NativeScreenInfo
+ * Method:    queryWglARB
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL
+Java_javax_media_j3d_NativeScreenInfo_queryWglARB(
+    JNIEnv *env,
+    jclass cls)
+{
+
+    static const BOOL debug = TRUE;
+    static char szAppName[] = "Choose Pixel Format";
+
+    PIXELFORMATDESCRIPTOR dummy_pfd = getDummyPFD();    
+    HWND hwnd;
+    HGLRC hrc;
+    HDC   hdc;
+    int pixelFormat;
+    const char* supportedExtensions;
+    
+    /* declare function pointers for WGL functions */
+    PFNWGLGETEXTENSIONSSTRINGARBPROC  wglGetExtensionsStringARB = NULL;
+    
+    /*
+     * Select any pixel format and bound current context to
+     * it so that we can get the wglChoosePixelFormatARB entry point.
+     * Otherwise wglxxx entry point will always return null.
+     * That's why we need to create a dummy window also.
+     */
+    hwnd = createDummyWindow((const char *)szAppName);
+
+    if (!hwnd) {
+	return JNI_FALSE;
+    }
+    hdc = GetDC(hwnd);
+
+    pixelFormat = ChoosePixelFormat(hdc, &dummy_pfd);
+    
+    if (pixelFormat<1) {
+	printErrorMessage("Failed in ChoosePixelFormat");
+	DestroyWindow(hwnd);
+	UnregisterClass(szAppName, (HINSTANCE)NULL);
+	return JNI_FALSE;
+    }
+
+    SetPixelFormat(hdc, pixelFormat, NULL);
+    
+    hrc = wglCreateContext(hdc);
+    if (!hrc) {
+	printErrorMessage("Failed in wglCreateContext");
+	DestroyWindow(hwnd);
+	UnregisterClass(szAppName, (HINSTANCE)NULL);
+	return JNI_FALSE;
+    }
+    
+    if (!wglMakeCurrent(hdc, hrc)) {
+	printErrorMessage("Failed in wglMakeCurrent");
+	ReleaseDC(hwnd, hdc);
+	wglDeleteContext(hrc);
+	DestroyWindow(hwnd);
+	UnregisterClass(szAppName, (HINSTANCE)NULL);
+	return JNI_FALSE;
+    }
+
+    wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
+	wglGetProcAddress("wglGetExtensionsStringARB");
+    if (wglGetExtensionsStringARB == NULL) {
+	/* printErrorMessage("wglGetExtensionsStringARB not support !\n"); */
+	return JNI_FALSE;
+    }
+    else {
+
+	/* get the list of supported extensions */
+	supportedExtensions = (const char *)wglGetExtensionsStringARB(hdc);    
+	
+	if (debug) {
+	    fprintf(stderr, "WGL Supported extensions: %s.\n", supportedExtensions);    
+	}
+
+	if(!isSupportedWGL(supportedExtensions, "WGL_ARB_pixel_format")) {
+	    fprintf(stderr, "WGL_ARB_pixel_format not supported.\n");
+	    return JNI_FALSE;
+	}
+    }
+    
+    ReleaseDC(hwnd, hdc);
+    wglDeleteContext(hrc);
+    DestroyWindow(hwnd);
+    UnregisterClass(szAppName, (HINSTANCE)NULL);
+    return JNI_TRUE;
+
+    
+}
+#endif /*  WIN32 */

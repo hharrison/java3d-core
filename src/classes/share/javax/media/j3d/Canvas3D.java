@@ -559,12 +559,26 @@ public class Canvas3D extends Canvas {
     // the visual id.
     int vid = 0;
 
-    // Fix for issue 20.
+
+    // fbConfig is a pointer to the fbConfig object that is associated with 
+    // the GraphicsConfiguration object used to create this Canvas.
+    //
+    // For Unix : Fix for issue 20.
     // The fbConfig is only used when running X11.  It contains a pointer
     // to the native GLXFBConfig structure list, since in some cases the visual id
     // alone isn't sufficient for the native OpenGL renderer (e.g., when using
     // Solaris OpenGL with Xinerama mode disabled).
+    //
+    // For Windows : Fix for issue 76.  This is use as a holder of the
+    // PixelFormat structure ( see also gldef.h ) to allow value such
+    // as offScreen's pixelformat, and ARB function pointers to be stored.
     long fbConfig = 0;  
+
+    // offScreenBufferInfo is a pointer to additional information about the
+    // offScreenBuffer in this Canvas.
+    //
+    // For Windows : Fix for issue 76.
+    long offScreenBufferInfo = 0;
 
     // fbConfigTable is a static hashtable which allows getBestConfiguration()
     // in NativeConfigTemplate3D to map a GraphicsConfiguration to the pointer
@@ -812,7 +826,7 @@ public class Canvas3D extends Canvas {
     native static void destroyContext(long display, int window, long context);
 
     // This is the native for creating offscreen buffer
-    native int createOffScreenBuffer(long ctx, long display, int window, long fbConfig, int width, int height);
+    native int createOffScreenBuffer(long ctx, long display, int vid, long fbConfig, int width, int height);
 
     native void destroyOffScreenBuffer(long ctx, long display, long fbConfig, int window);
 
@@ -1117,7 +1131,7 @@ public class Canvas3D extends Canvas {
 	this.offScreen = offScreen;
 	this.graphicsConfiguration = graphicsConfiguration;
 
-	// Needed for  Win32 only.
+	// Needed for Win32 only.
 	vid = nativeWSobj.getCanvasVid(graphicsConfiguration);
 
 	// Fix for issue 20.
@@ -1127,15 +1141,16 @@ public class Canvas3D extends Canvas {
 	if ((fbConfigObject != null) && 
 	    (fbConfigObject instanceof Long)) {
 	    fbConfig = ((Long)fbConfigObject).longValue();
-	    // System.out.println("Canvas3D creation FBConfig = " + fbConfig);
-
+	    /* System.out.println("Canvas3D creation FBConfig = " + fbConfig + 
+	       " offScreen is " + offScreen );
+	    */
+	    // This check is needed for Unix and Win-ogl only. fbConfig should 
+	    // remain as -1, default value, for D3D case. 
 	    if (fbConfig == 0) {	    
 		throw new IllegalArgumentException
 		    (J3dI18N.getString("Canvas3D23"));
 	    }
 	}
-	
-
 
 	if (offScreen) {
 	    screen = new Screen3D(graphicsConfiguration, offScreen);
@@ -3388,7 +3403,7 @@ public class Canvas3D extends Canvas {
 	// inside the native code after setting the various 
 	// fields in this object
 	createQueryContext(screen.display, window, vid,
-			   fbConfig, offScreen, 10, 10);
+			   fbConfig, offScreen, 1, 1);
     }
 
     /**

@@ -72,6 +72,7 @@
 
 #ifndef D3D
 #include <GL/gl.h>
+#include "wglext.h"
 #include "gl_1_2.h"
 #include "glext.h"
 #endif
@@ -389,27 +390,6 @@ extern int glXgetVideoResizeSUN( Display *, GLXDrawable, float *);
 #define APIENTRY
 #endif
 
-#ifdef WIN32
-
-/* declare function prototype for WGL related functions*/
-typedef const char * (APIENTRY * PFNWGLGETEXTENSIONSSTRINGEXTPROC) (HDC hdc);
-typedef BOOL (APIENTRY * PFNWGLCHOOSEPIXELFORMATEXTPROC)(HDC hdc,
-							 const int *piAttribIList,
-							 const FLOAT *pfAttriFList,
-							 UINT nMaxFormats,
-							 int *piFormats,
-							 UINT *nNumFormats);
-typedef BOOL (APIENTRY * PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)(HDC hdc,
-							      int iPixelFormat,
-							      int iLayerPlane,
-							      UINT nAttributes,
-							      const int *piAttributes,
-							      int *piValues);
-
-	      
-
-#endif /* WIN32 */
-
 /* define function prototypes */
 typedef void (APIENTRY * MYPFNGLBLENDCOLORPROC) (GLclampf red, GLclampf green,
 						GLclampf blue, GLclampf alpha);
@@ -641,5 +621,48 @@ typedef struct {
     MYPFNGLTEXFILTERFUNCSGI glTexFilterFuncSGIS;
 } GraphicsContextPropertiesInfo;
 
-#endif /* J3D_BUILDVERTICES */
+
+#ifdef WIN32
+
+/* define the structure to hold the info. of a pixel format */
+typedef struct PixelFormatInfoRec PixelFormatInfo;
+
+struct PixelFormatInfoRec {
+    int onScreenPFormat;        /* PixelFormat for onScreen */
+    int offScreenPFormat;       /* PixelFormat for offScreen */
+    GLboolean  supportARB;	/* TRUE if ARB is supported */
+    GLboolean  supportPbuffer;  /* TRUE if Pbuffer is supported */
+    char* supportedExtensions;  /* list of supported ARB extensions */
+    /* handle to ARB functions */
+    PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB; 
+    PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB;
+    PFNWGLCREATEPBUFFERARBPROC  wglCreatePbufferARB;
+    PFNWGLGETPBUFFERDCARBPROC wglGetPbufferDCARB;
+    PFNWGLRELEASEPBUFFERDCARBPROC wglReleasePbufferDCARB;
+    PFNWGLDESTROYPBUFFERARBPROC wglDestroyPbufferARB;
+    PFNWGLQUERYPBUFFERARBPROC wglQueryPbufferARB;
+    
+    /* TODO include multi-samples buffer */
+
+};
+
+#endif /* WIN32 */
+
+/* define the structure to hold the info. of a offScreen buffer */
+typedef struct OffScreenBufferInfoRec OffScreenBufferInfo;
+
+struct OffScreenBufferInfoRec {
+    GLboolean isPbuffer; /* GL_TRUE if Pbuffer is used. */
+
+#if defined(SOLARIS) || defined(__linux__)
+#endif
+    
+#ifdef WIN32
+    HPBUFFERARB hpbuf;  /* Handle to the Pbuffer */
+#endif /* WIN32 */
+
+};
+
+
+#endif /* D3D */
 #endif /* _Java3D_gldefs_h_ */
