@@ -3,91 +3,67 @@
 <head>
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
-  <title>j3d-core Project</title>
+  <title>The Java 3D API Core</title>
 </head>
 <body>
-<div id="projecthome" dir="ltr">
-<h1>j3d-core &#8211; The Java&nbsp;3D API Core</h1>
-<p> </p>
-<table border="0" cellpadding="0" cellspacing="0">
-  <tbody>
-    <tr>
-      <td width="16"><img src="buttonbar_left.gif" alt="" width="16"
- height="34"></td>
-      <td background="buttonbar_bg.gif" valign="top">
-      <table border="0" cellpadding="0" cellspacing="0"
- style="margin-top: 6px;">
-        <tbody>
-          <tr>
-<!--Edit this section to add or remove sections and to customize your button links. -->
-<!-- link --><td><img src="bullet.gif" alt="*" border="0" hspace="4"></td>
-            <td><a href="http://www.java.net"
- style="color: white; text-decoration: none; font-family: Arial,sans-serif; font-size: 11px; font-weight: bold; white-space: nowrap;">java.net</a></td>
-<!-- link --> <td><img src="bullet.gif" alt="*" border="0" hspace="4"></td>
-            <td><a href="http://vecmath.dev.java.net"
- style="color: white; text-decoration: none; font-family: Arial,sans-serif; font-size: 11px; font-weight: bold; white-space: nowrap;">Vecmath
-API</a></td>
-<!-- link --> <td><img src="bullet.gif" alt="*" border="0" hspace="4"></td>
-            <td><a href="https://j3d-examples.dev.java.net"
- style="color: white; text-decoration: none; font-family: Arial,sans-serif; font-size: 11px; font-weight: bold; white-space: nowrap;">Java&nbsp;3D
-Examples</a></td>
-<!-- link --> <td><img src="bullet.gif" alt="*" border="0" hspace="4"></td>
-            <td><a href="http://weblogs.java.net/"
- style="color: white; text-decoration: none; font-family: Arial,sans-serif; font-size: 11px; font-weight: bold; white-space: nowrap;">blogs</a></td>
-<!-- link --> <td><img src="bullet.gif" alt="*" border="0" hspace="4"></td>
-            <td><a href="http://wiki.java.net/bin/view/Main/WebHome"
- style="color: white; text-decoration: none; font-family: Arial,sans-serif; font-size: 11px; font-weight: bold; white-space: nowrap;">wiki</a></td>
-<!-- link --><td><img src="bullet.gif" alt="*" border="0" hspace="4"></td>
-            <td><a href="ProjectPages.html#faq"
- style="color: white; text-decoration: none; font-family: Arial,sans-serif; font-size: 11px; font-weight: bold; white-space: nowrap;">faq</a></td>
-          </tr>
-        </tbody>
-      </table>
-      </td>
-      <td width="22"><img src="buttonbar_right.gif" alt="" width="22"
- height="34"></td>
-    </tr>
-  </tbody>
-</table>
-<!-- Toolbar Ends -->
-<p>Core Java 3D API and Reference Implementation<br>
-&nbsp; </p>
-</div>
+This project contains the source code
+for the core Java 3D API
+package, <code>javax.media.j3d</code>.<br>
+<br>
+Related projects include: <a href="http://vecmath.dev.java.net/">vecmath</a>
+(the 3D vector math package), <a
+ href="http://j3d-core-utils.dev.java.net/">j3d-core-utils</a> (the
+Java 3D core utilities), and <a
+ href="http://j3d-examples.dev.java.net/">j3d-examples</a> (the Java 3D
+example programs). The vecmath and j3d-core-utils projects are required
+to build j3d-core. Refer to the build instructions [TODO: link] for
+more information.<br>
 <h3>License</h3>
-<p>The core Java&nbsp;3D API source code is available for research use
+<p>The source code for the core Java&nbsp;3D API reference
+implementation is available for research use
 under the
-Java Research License (JRL)
-&lt;TODO: license link&gt;.
+Java Research License (JRL) [TODO: license link].
 It is also available for commercial use
-under the Java Developers License (JDL)
-&lt;TODO: license link&gt;.
-We welcome community
-participation in the JSR process, and encourage developers to
+under the Java Distribution License (JDL) [TODO: license link].
+The API specification will continue to evolve as part of the Java
+Community Process (JCP). We welcome community
+participation, and encourage developers to
 contribute both bug fixes and
-new implementation code to the API. The JRL and JDL licenses were chosen to
+new implementation code to the API. The JRL and JDL licenses were
+chosen to
 facilitate this, while ensuring that the API is not fragmented with
 incompatible versions being released.<br>
 </p>
 <h3>Project highlights</h3>
 <p><b>Release project Source code</b> </p>
-<p>The release of the Java&nbsp;3D source code based on Java&nbsp;3D 1.3.1 is
+<p>This release of the Java3D source code based on Java3D 1.3.1 is
 available for download from the CVS repository of this project. <br>
 </p>
-<p>This source release is not identical to the 1.3.1 release in a
-couple of areas<br>
+<p>This source release differs from the 1.3.1 release in the following
+ways:<br>
 </p>
 <ol>
-  <li>Java&nbsp;3D internal documentation has been upgraded for public
+  <li>The Java3D internal documentation has been upgraded for public
 consumption</li>
-  <li>The Headspace sound mixer has been replaced with a JavaSound
-implementation</li>
-  <li>Some minor bug fixes have been incorporated (TODO list fixed bugs)<br>
+  <li>Apache Ant is now used to build Java 3D<br>
   </li>
+  <li>The Headspace AudioEngine has been removed. The JavaSound
+AudioEngine, which is not fully functional, is now the only available
+AudioDevice<br>
+  </li>
+  <li>Some minor bug fixes have been incorporated [TODO: list fixed
+bugs]</li>
 </ol>
-<p><span style="font-weight: bold;">Java&nbsp;3D 1.3.x bug fixes</span><br>
+The reason the Headspace AudioEngine was removed is that we do not have
+the rights to ship the source code for the native Headspace sound
+mixer. Our plan
+going forward is to implement an AudioEngine using <a
+ href="http://joal.dev.java.net/">JOAL</a>.<br>
+<p><span style="font-weight: bold;">Java3D 1.3.x bug fixes</span><br>
 </p>
-<p>We will work with the community to address bugs identified in Java&nbsp;3D
-1.3.1 and the will release new versions of Java&nbsp;3D 1.3.x as needed.
+<p>We will work with the community to address bugs identified in Java
+3D
+1.3.1 and the will release new versions of Java 3D 1.3.x as needed.
 Bugfixes will be immediately available in the cvs source, or from the
 weekly builds on this site. We will release official 1.3.x versions no
 more often than twice a year.<br>
@@ -95,17 +71,65 @@ more often than twice a year.<br>
 <p><span style="font-weight: bold;">Java&nbsp;3D 1.4</span><br>
 </p>
 <p>We will form a JSR and work with the community to
-design and implement the next release of Java&nbsp;3D. We envision 1.4
+design and implement the next release of Java 3D. We envision 1.4
 including features such a programmable shaders. Our current aim is to
 minimize large scale changes to the system in order to deliver 1.4 as
 quickly as possible. This initial direction may be changed by the JSR.<br>
 </p>
-<p><span style="font-weight: bold;">Java&nbsp;3D 1.5/2.0</span><br>
+<p><span style="font-weight: bold;">Java3D 1.5/2.0</span><br>
 </p>
 <p>The scope of this release will be driven by the JSR. Our initial
 thoughts are that this work will include large scale changes to support
 features such as extensibility and pluggable renderers.<br>
 </p>
+<h3><a name="Project_Suggestions"></a>Project Suggestions</h3>
+Here are some project ideas for the j3d-core project. Please see the <a
+ href="http://j3d-core-utils.dev.java.net/#Project_Suggestions">Project
+Suggestions</a> in the <a href="http://j3d-core-utils.dev.java.net/">j3d-core-utils</a>
+project for more ideas.<br>
+<br>
+<ul>
+  <li>DirectX build environment for MinGW (using gcc)<br>
+  </li>
+  <li>DirectX 9 port</li>
+  <li>.....</li>
+  <li>JOAL-based audio engine</li>
+  <li>Character Animation utility</li>
+  <li>Terrain utility</li>
+  <li>Collision Avoidance utility</li>
+  <li>CSG (geometry boolean operators) utility</li>
+  <li>Loaders</li>
+</ul>
+<h3>How to Contribute</h3>
+Anyone who wants to contribute source code (even emailed bug fixes)
+must have a signed contributors agreement on file. The Java 3D team
+won't even look at emailed bug fixes unless this author has the
+contributor agreement on file. This seems onourous but it is a policy
+designed to protect the project from patent infringement etc which is
+obviously in the best interest of Java 3D.<br>
+<br>
+So sign the agreement, fax it to the contact indicated and start
+sending fixes for your favourite bugs ;-)<br>
+<br>
+As the community matures and contributors demonstrate their familiarity
+with the API internals they will be invited to join the project as a
+developer with full CVS commit privaledge. The last thing we want is
+lots of people hacking on the source in the central repository and
+destabalizing the API so we will be taking a cautious approach. We are
+not intending that Sun is the only organisation with the rights to
+grant developer privaledge, we would like to form a governance board
+with community members which will assume this mantel and help guide the
+project.<br>
+<br>
+The JCP process also has a signifcant impact on how people can
+contribute to the project. Although the source of the API is available
+and we actively encourage the community to contribute to it's
+development the API itself (javax.media.j3d.* and javax.vecmath.*) are
+controlled by the JCP process and can not be freely modified.
+Modifications to the API will be created within the Java 3D JSR's by a
+group of JSR members. A call for nominations for JSR members will be
+made once this process is kicked off.<br>
+<br>
 <h3>Releases</h3>
 <p>TODO links to code </p>
 <h3>Examples</h3>
@@ -113,6 +137,8 @@ features such as extensibility and pluggable renderers.<br>
 <h3>Feedback</h3>
 <p>TODO list of feedback and participation options including mailing
 lists,
-project owners/contacts, discussion forum, wikis etc </p>
+project owners/contacts, discussion forum, wikis etc<br>
+<br>
+</p>
 </body>
 </html>
