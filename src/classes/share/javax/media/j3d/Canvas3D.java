@@ -1458,6 +1458,7 @@ public class Canvas3D extends Canvas {
 	    this.removeKeyListener(eventCatcher);
 	    this.removeMouseListener(eventCatcher);
 	    this.removeMouseMotionListener(eventCatcher);
+	    this.removeMouseWheelListener(eventCatcher);
 	    eventCatcher.reset();
 	}
 
