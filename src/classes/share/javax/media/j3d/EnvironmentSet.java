@@ -445,7 +445,6 @@ class EnvironmentSet extends Object implements ObjectUpdate{
             if (cv.sceneAmbient.x != sceneAmbient.x ||
                 cv.sceneAmbient.y != sceneAmbient.y ||
                 cv.sceneAmbient.z != sceneAmbient.z ) {
-
                 cv.setSceneAmbient(cv.ctx,
                         sceneAmbient.x, sceneAmbient.y, sceneAmbient.z);
 
@@ -483,81 +482,77 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 				Canvas3D.MODELCLIP_DIRTY);
 
 	} 
-	// across frames
-	else if ((cv.canvasDirty & (Canvas3D.LIGHTENABLES_DIRTY| 
+	else { 
+	    // across frames
+	    if ((cv.canvasDirty & (Canvas3D.LIGHTENABLES_DIRTY| 
 				    Canvas3D.AMBIENTLIGHT_DIRTY|
 				    Canvas3D.FOG_DIRTY|
 				    Canvas3D.MODELCLIP_DIRTY)) != 0)  {
+		if ((cv.canvasDirty & Canvas3D.LIGHTENABLES_DIRTY) != 0) {
+		    cv.setLightEnables(cv.ctx, enableMask, renderBin.maxLights);
+		    cv.enableMask = enableMask;
+		}
 
-	    if ((cv.canvasDirty & Canvas3D.LIGHTENABLES_DIRTY) != 0) {
-		cv.setLightEnables(cv.ctx, enableMask, renderBin.maxLights);
-                cv.enableMask = enableMask;
-	    }
-
-	    if ((cv.canvasDirty & Canvas3D.AMBIENTLIGHT_DIRTY) != 0) {
-		cv.setSceneAmbient(cv.ctx, sceneAmbient.x,
-				   sceneAmbient.y, 
-				   sceneAmbient.z);
-                cv.sceneAmbient.x = sceneAmbient.x;
-                cv.sceneAmbient.y = sceneAmbient.y;
-                cv.sceneAmbient.z = sceneAmbient.z;
-	    }
+		if ((cv.canvasDirty & Canvas3D.AMBIENTLIGHT_DIRTY) != 0) {
+		    cv.setSceneAmbient(cv.ctx, sceneAmbient.x,
+				       sceneAmbient.y, 
+				       sceneAmbient.z);
+		    cv.sceneAmbient.x = sceneAmbient.x;
+		    cv.sceneAmbient.y = sceneAmbient.y;
+		    cv.sceneAmbient.z = sceneAmbient.z;
+		}
 	    
-	    if ((cv.canvasDirty & Canvas3D.FOG_DIRTY) != 0) {
-		if (fog != null) {
-                    scale = lightBin.geometryBackground == null?
-			cv.canvasViewCache.getVworldToCoexistenceScale():
-			cv.canvasViewCache.getInfVworldToCoexistenceScale();
-		    fog.update(cv.ctx, scale);
-		} else {
-		    cv.disableFog(cv.ctx);
+		if ((cv.canvasDirty & Canvas3D.FOG_DIRTY) != 0) {
+		    if (fog != null) {
+			scale = lightBin.geometryBackground == null?
+			    cv.canvasViewCache.getVworldToCoexistenceScale():
+			    cv.canvasViewCache.getInfVworldToCoexistenceScale();
+			fog.update(cv.ctx, scale);
+		    } else {
+			cv.disableFog(cv.ctx);
+		    }
+		    cv.fog = fog;
 		}
-                cv.fog = fog;
-	    }
 	
-	    if ((cv.canvasDirty & Canvas3D.MODELCLIP_DIRTY) != 0) {
-	        if (modelClip != null) {
-		    modelClip.update(cv, enableMCMask);
-	        } else {
-		    cv.disableModelClip(cv.ctx);
+		if ((cv.canvasDirty & Canvas3D.MODELCLIP_DIRTY) != 0) {
+		    if (modelClip != null) {
+			modelClip.update(cv, enableMCMask);
+		    } else {
+			cv.disableModelClip(cv.ctx);
+		    }
+		    cv.modelClip = modelClip;
 		}
-                cv.modelClip = modelClip;
+
+		cv.canvasDirty &= ~(Canvas3D.LIGHTENABLES_DIRTY|
+				    Canvas3D.AMBIENTLIGHT_DIRTY |
+				    Canvas3D.FOG_DIRTY |
+				    Canvas3D.MODELCLIP_DIRTY);
 	    }
 
-	    cv.canvasDirty &= ~(Canvas3D.LIGHTENABLES_DIRTY|
-				Canvas3D.AMBIENTLIGHT_DIRTY |
-				Canvas3D.FOG_DIRTY |
-				Canvas3D.MODELCLIP_DIRTY);
-	}
-	else if ((cv.canvasDirty &  Canvas3D.VWORLD_SCALE_DIRTY) != 0) {
-	    if (fog instanceof LinearFogRetained) {
-	        if (fog != null) {
-                    scale = lightBin.geometryBackground == null?
-			cv.canvasViewCache.getVworldToCoexistenceScale():
-			cv.canvasViewCache.getInfVworldToCoexistenceScale();
-		    fog.update(cv.ctx, scale);
-	        } else {
-		    cv.disableFog(cv.ctx);
-	        }
-                cv.fog = fog;
-	    }
-
-	    if (modelClip != null) {
-		modelClip.update(cv, enableMCMask);
-                cv.modelClip = modelClip;
-	    }
-	}
-	else if (cv.useStereo) {
-
-	    // if using stereo, the vworldToEc matrix will be different
+	    // Update modelClip and fog if view matrix changed.
+	    // Note : If using stereo, the vworldToEc matrix will be different
 	    // for each stereo pass, in this case, we will need to
-	    // update modelClip
+	    // update modelClip and fog.
 
-	    if (modelClip != null) {
-		modelClip.update(cv, enableMCMask);
-                cv.modelClip = modelClip;
-	    }
+	    if (((cv.canvasDirty &  Canvas3D.VWORLD_SCALE_DIRTY) != 0) || 
+		cv.useStereo) {	
+		if (fog instanceof LinearFogRetained) {
+		    if (fog != null) {
+			scale = lightBin.geometryBackground == null?
+			    cv.canvasViewCache.getVworldToCoexistenceScale():
+			    cv.canvasViewCache.getInfVworldToCoexistenceScale();
+			fog.update(cv.ctx, scale);
+		    } else {
+			cv.disableFog(cv.ctx);
+		    }
+		    cv.fog = fog;
+		}
+
+		if (modelClip != null) {
+		    modelClip.update(cv, enableMCMask);
+		    cv.modelClip = modelClip;
+		}
+	    }   
 	}
-    }	
-    
+    }
 }

@@ -2411,9 +2411,11 @@ public class GraphicsContext3D extends Object   {
 	    sceneAmbient.z = 1.0f;
 	}
 	
-	canvas3d.canvasDirty |= Canvas3D.AMBIENTLIGHT_DIRTY;
 	canvas3d.setSceneAmbient(canvas3d.ctx, sceneAmbient.x,
 				 sceneAmbient.y, sceneAmbient.z);
+
+	canvas3d.canvasDirty |= Canvas3D.AMBIENTLIGHT_DIRTY;
+	canvas3d.sceneAmbient.set(sceneAmbient);  
 
 	if (canvas3d.enableMask != enableMask) {
 	    canvas3d.canvasDirty |= Canvas3D.LIGHTENABLES_DIRTY;
