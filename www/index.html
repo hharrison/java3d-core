@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="content-type">
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
   <title>The Java 3D API Core</title>
 </head>
 <body>
@@ -37,22 +37,27 @@ incompatible versions being released.<br>
 </p>
 <h3>Project highlights</h3>
 <p><b>Release project Source code</b> </p>
-<p>This release of the Java&nbsp;3D source code based on Java&nbsp;3D
-1.3.1 is
-available for download from the CVS repository of this project. <br>
+<p>The current, experimental fork of the of the Java&nbsp;3D source
+code is an early access of version 1.3.2. It is
+available for download from the CVS repository of this project.<br>
 </p>
-<p>This source release differs from the 1.3.1 release in the following
+<p>This source release differs from the the current 1.3.1 release in
+the following
 ways:<br>
 </p>
 <ol>
-  <li>The Java&nbsp;3D internal documentation has been upgraded for
-public
-consumption</li>
+  <li>The <code>com.sun.j3d.*</code> packages have been split out into
+their own project (<a href="http://j3d-core-utils.dev.java.net/">j3d-core-utils</a>).</li>
   <li>Apache Ant is now used to build Java&nbsp;3D<br>
   </li>
   <li>The Headspace AudioEngine has been removed. The JavaSound
 AudioEngine, which is not fully functional, is now the only available
 AudioDevice<br>
+  </li>
+  <li>The internal documentation has been cleaned up for
+public
+consumption (although <span style="font-weight: bold;">much </span>work
+is needed on the actual content)<br>
   </li>
   <li>Some minor bug fixes have been incorporated [TODO: list fixed
 bugs]</li>
@@ -67,7 +72,7 @@ going forward is to implement an AudioEngine using <a
 </p>
 <p>We will work with the community to address bugs identified in
 Java&nbsp;3D
-1.3.1 and the will release new versions of Java&nbsp;3D 1.3.x as
+1.3.1, and will release new versions of Java&nbsp;3D 1.3.x as
 needed.
 Bug fixes will be immediately available in the CVS source, or from the
 weekly builds on this site. We will release official 1.3.x versions no
@@ -75,15 +80,21 @@ more often than twice a year.<br>
 </p>
 <p><span style="font-weight: bold;">Java&nbsp;3D 1.4</span><br>
 </p>
-<p>We will form a JSR and work with the community to
-design and implement the next release of Java&nbsp;3D. We envision 1.4
-including features such a programmable shaders. Our current aim is to
+<p>We will file a new JSR (or revive the existing <a
+ href="http://jcp.org/en/jsr/detail?id=189">JSR-189</a>) under the Java
+Community Process (JCP) shortly, and form an Expert Group of community
+members to
+design and implement the next version of the Java&nbsp;3D API. We
+envision 1.4
+including features such as programmable shaders. Our goal is to
 minimize large scale changes to the system in order to deliver 1.4 as
-quickly as possible. This initial direction may be changed by the JSR.<br>
+quickly as possible. This initial direction could be changed by the
+Expert Group.<br>
 </p>
 <p><span style="font-weight: bold;">Java&nbsp;3D 1.5/2.0</span><br>
 </p>
-<p>The scope of this release will be driven by the JSR. Our initial
+<p>The scope of this release will be driven by the JSR Expert Group.
+Our initial
 thoughts are that this work will include large scale changes to support
 features such as extensibility and pluggable renderers.<br>
 </p>
@@ -98,44 +109,49 @@ project for more ideas.</p>
   <li>DirectX 9 port</li>
 </ul>
 <h3>How to Contribute</h3>
-<p>[TODO: kcr: rewrite (and run spell check)]</p>
-<p>Anyone who wants to contribute source code, even e-mailed bug fixes,
-must have a signed contributor agreement on file. The Java&nbsp;3D
-team is unable to even look at submitted bug fixes unless this author
+<p>Anyone who wants to contribute source code, even in the form of
+e-mailed bug fixes,
+must have a signed contributor agreement [TODO link] on file. The
+Java&nbsp;3D
+team regrets that we are unable to even look at submitted bug fixes
+unless this author
 has the
 contributor agreement on file. This may seems harsh, but it is a policy
-designed to protect the project from patent infringement, etc.<br>
-</p>
-<p>We encourage all developers to download the agreement, sign it, and
+designed to protect the project from patent infringement and copyright
+issues. We encourage all developers to download the agreement [TODO
+link], sign it, and
 fax it
 to the number indicated [TODO link]. Then you are more than welcome to
 send in fixes for your favorite bugs!<br>
 </p>
-<p>As the community matures and contributors demonstrate their
+<p>We invite anyone to be a project <span style="font-style: italic;">observer</span>.
+As the community matures and contributors demonstrate their
 familiarity
 with the API internals they will be invited to join the project as a
-developer with full CVS commit privilege. The last thing we want is
+<span style="font-style: italic;">developer</span> with full CVS commit
+privilege. The last thing we want is
 lots of people hacking on the source in the central repository and
-destabilizing the API so we will be taking a cautious approach. We are
-not intending that Sun is the only organization with the rights to
-grant developer privilege, we would like to form a governance board
-with community members which will assume this mantel and help guide the
-project.<br>
+destabilizing the API, so we will be taking a cautious approach.<br>
 </p>
-<p>The JCP process also has a significant impact on how people can
+<p>The <a href="http://jcp.org/">Java Community Process</a> (JCP) also
+has a significant impact on how people can
 contribute to the project. Although the source of the API is available,
 and we actively encourage the community to contribute to it's
-development, the API itself (javax.media.j3d.* and javax.vecmath.*) are
-controlled by the JCP process and can not be freely modified.
+development, the API itself (that is, the public and protected classes,
+interfaces, methods, fields, and so forth in the <code>javax.media.j3d</code>
+and <code>javax.vecmath</code> packages) are
+controlled by the JCP and can not be freely modified.
 Modifications to the API will be created within the Java&nbsp;3D JSR's
-by a
-group of JSR members. A call for nominations for JSR members will be
-made once this process is kicked off.
+by an Expert Group of JCP members. A call for experts will be
+made once this process is launched.
 </p>
 <h3>Releases</h3>
 <p>[TODO: links to code] </p>
 <h3>Examples</h3>
-<p>[TODO: links to examples] </p>
+<p>The <a href="http://j3d-examples.dev.java.net/">j3d-examples</a>
+project includes a set of simple example programs.<br>
+</p>
+<p>[TODO: links to other examples, e.g., j3dfly] </p>
 <h3>Feedback</h3>
 <p>[TODO: list of feedback and participation options including mailing
 lists,
