@@ -46,7 +46,7 @@ class NativeConfigTemplate3D {
     // Native method to free an GLXFBConfig struct.  This is static since it
     // may need to be called to clean up the Canvas3D fbConfigTable after the
     // NativeConfigTemplate3D has been disposed of.
-    static native void freeFbConfig(long fbConfig);
+    static native void freeFBConfig(long fbConfig);
 
     // Native methods to return whether a particular attribute is available
     native boolean isStereoAvailable(long display, int screen, int vid);
@@ -141,7 +141,7 @@ class NativeConfigTemplate3D {
 	    if (Canvas3D.fbConfigTable.get(gc1) == null)
 		Canvas3D.fbConfigTable.put(gc1, new Long(fbConfig[0]));
 	    else
-		freeFbConfig(fbConfig[0]);
+		freeFBConfig(fbConfig[0]);
 	}
 
         return gc1;
