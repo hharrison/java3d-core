@@ -16,7 +16,9 @@ Changes</a>. Click
 <a href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/index.html">here</a>
 for the
 <a href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/index.html">latest
-javadocs for the proposed 1.4 API</a> (built from the dev-1_4 branch).<br>
+javadocs for the proposed 1.4 API</a> (built from the dev-1_4 branch).
+A list of other <a href="improvements.html">possible improvements to
+Java&nbsp;3D version 1.4</a> is also available.
 </p>
 <h3>I. High Priority Features</h3>
 <p>This list of high priority features will almost certainly make it
@@ -97,12 +99,23 @@ into the core API. Before doing this, we would need to scope out the
 effort involved, and assess the
 potential benefit.<br>
 </p>
-<h4>4. Miscellaneous features</h4>
+<h4>4. Lightweight Canvas3D (e.g., JCanvas3D)</h4>
+<p>We should consider adding a lightweight JCanvas3D that is similar to
+JGLCanvas in JOGL. Adding this into core may be beyond the
+scope of 1.4. Perhaps this can be done as a utility, although it
+may require some core changes.</p>
+<h4>5. Miscellaneous features</h4>
 <p>This is a list of miscellaneous features that are being considered
 for addition to
 the API.<br>
 </p>
 <ul>
+  <li>Add a new attribute for depth test function to
+RenderingAttributes: public <code>get/setDepthTestFunction(int&nbsp;function)</code>
+methods that takes as values one of: <code>ALWAYS, NEVER,
+EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER, GREATER_OR_EQUAL</code>.
+The default value would be <code>LESS_OR_EQUAL</code> for backward
+compatibility.</li>
   <li>API support for&nbsp; retained alpha buffers</li>
   <li>Ability to query properties from a <code>GraphicsConfiguration</code></li>
   <li>Better support for off-screen configuration parameters (e.g., an
@@ -116,7 +129,7 @@ glyph in a 3D font: a
 public <code>GeometryArray&nbsp;getGlyphGeometry(</code><code>int&nbsp;glyphCode</code><code>)</code>
 method in the <code>Font3D</code> class</li>
 </ul>
-<h4>5. List of features to deprecate</h4>
+<h4>6. List of features to deprecate</h4>
 <p>This is a list of miscellaneous features that are being considered
 for deprecation in
 the API.<br>

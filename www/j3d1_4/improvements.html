@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Possible Java 3D 1.4 Improvements</title>
+</head>
+<body>
+<h2>Possible Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.4
+Improvements</h2>
+<p>This page highlights the possible improvements to the implementation
+of Java&nbsp;3D<sup><font size="-2">TM</font></sup> version 1.4 that do
+not require API changes. The set of <a href="proposed-changes.html">proposed
+Java&nbsp;3D
+1.4 API changes</a> is also available.
+</p>
+<h4>List of Improvements<br>
+</h4>
+<ul>
+  <li>Texture optimizations:</li>
+  <ul>
+    <li>Sub-texture image optimization</li>
+  </ul>
+  <ul>
+    <li>Native support for ABGR format<br>
+    </li>
+  </ul>
+  <li>SetLive/ ClearLive MT cleanup<br>
+  </li>
+  <li>Collection class usage:<br>
+  </li>
+  <ul>
+    <li>Use Set versus List when appropriate</li>
+    <li>Use generic Collection rather than j3d-specific classes (e.g.,
+UnorderList)<br>
+    </li>
+  </ul>
+  <li>Eliminate memory free lists</li>
+  <li>Improve picking performance / reduce garbage generation (if
+picking does not move into core)</li>
+  <li>Optimize CanvasViewCache to eliminate redundant operations &amp;
+garbage generation<br>
+  </li>
+</ul>
+<p><font color="gray">Page last updated &#8212;
+$Date$
+</font></p>
+</body>
+</html>
