@@ -1303,6 +1303,17 @@ VOID D3dCtx::setCanvasProperty(JNIEnv *env, jobject obj)
 
     id = env->GetFieldID(canvasCls, "textureHeightMax", "I");
     env->SetIntField(obj, id, deviceInfo->maxTextureHeight);    
+
+    if (deviceInfo->maxTextureDepth > 0) {
+	id = env->GetFieldID(canvasCls, "texture3DWidthMax", "I");
+	env->SetIntField(obj, id, deviceInfo->maxTextureWidth);    
+
+	id = env->GetFieldID(canvasCls, "texture3DHeightMax", "I");
+	env->SetIntField(obj, id, deviceInfo->maxTextureHeight);    
+
+	id = env->GetFieldID(canvasCls, "texture3DDepthMax", "I");
+	env->SetIntField(obj, id, deviceInfo->maxTextureDepth);
+    }
 }
 
 VOID D3dCtx::createVertexBuffer() 

@@ -1015,8 +1015,19 @@ void setupCanvasProperties(
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &param);
     rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "textureWidthMax", "I");
     (*(table->SetIntField))(env, obj, rsc_field, param);
-    
+
     rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "textureHeightMax", "I");
+    (*(table->SetIntField))(env, obj, rsc_field, param);
+
+    param = -1;
+    glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &param);
+    rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "texture3DWidthMax", "I");
+    (*(table->SetIntField))(env, obj, rsc_field, param);
+
+    rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "texture3DHeightMax", "I");
+    (*(table->SetIntField))(env, obj, rsc_field, param);
+
+    rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "texture3DDepthMax", "I");
     (*(table->SetIntField))(env, obj, rsc_field, param);
 }
 

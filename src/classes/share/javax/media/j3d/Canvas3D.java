@@ -751,11 +751,14 @@ public class Canvas3D extends Canvas {
     // Texture Boundary Width Max
     int   textureBoundaryWidthMax = 0;
 
-    // Texture Width Max
+    // Texture Width, Height Max
     int   textureWidthMax = 0;
-
-    // Texture Height Max
     int   textureHeightMax = 0;
+
+    // Texture3D Width, Heigh, Depth Max
+    int   texture3DWidthMax = -1;
+    int   texture3DHeightMax = -1;
+    int   texture3DDepthMax = -1;
 
     // Cached position & size for CanvasViewCache.
     // We don't want to call canvas.getxx method in Renderer
@@ -3448,6 +3451,15 @@ public class Canvas3D extends Canvas {
 
         keys.add("textureHeightMax");
         values.add(new Integer(textureHeightMax));
+
+        keys.add("texture3DWidthMax");
+        values.add(new Integer(texture3DWidthMax));
+
+        keys.add("texture3DHeightMax");
+        values.add(new Integer(texture3DHeightMax));
+
+        keys.add("texture3DDepthMax");
+        values.add(new Integer(texture3DDepthMax));
 
         keys.add("textureBoundaryWidthMax");
         values.add(new Integer(textureBoundaryWidthMax));
