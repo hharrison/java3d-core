@@ -1,9 +1,9 @@
 This interrim build runs on JDK version 1.4.2 and higher.
 To install this build, chdir to the "jre" directory within the jdk
-and unjar (or unzip) the jar file.  For example, if your JDK is installed
+and unzip (or unjar) the zip file.  For example, if your JDK is installed
 in /usr/java/j2sdk1.5.0, you would install this as follows:
 
 	cd /usr/java/j2sdk1.5.0/jre
-	jar xvf /path-to-downloaded-jar-file.jar
+	unzip /path-to-extracted-files/j3d-jre-*.zip
 
 You may need to be "root" to do this on Solaris or Linux.

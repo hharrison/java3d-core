@@ -412,19 +412,28 @@
   </target>
   
   <target name="release" description="Package distribution for release" depends="dist">
+      <property name="staging" location="${dist}/${platform}/staging"/>
+      <property name="release_name" value="java3d-${version_file}-${platform}"/>
       <mkdir dir="${dist}/release"/>
+      <mkdir dir="${staging}/${release_name}"/>
+      <zip destfile="${staging}/${release_name}/j3d-jre-${version_file}-${platform}.zip">
+          <fileset dir="${dist}/${platform}"
+              includes="lib/**"
+          />
+          <fileset dir="${dist}/${platform}"
+              includes="bin/**"
+          />
+      </zip>
+      <copy todir="${staging}/${release_name}">
+          <fileset dir="." includes="COPYRIGHT.txt"/>
+          <fileset dir="." includes="LICENSE*.txt"/>
+          <fileset dir="release-info/pre-release"
+              includes="HOW-TO-INSTALL.txt  README.txt"
+          />
+      </copy>
       <zip destfile="${dist}/release/java3d-${version_file}-${platform}.zip">
-          <fileset dir="${dist}/${platform}"
-                      includes="lib/**"
-          />
-          <fileset dir="${dist}/${platform}"
-                      includes="bin/**"
-          />
-          <fileset dir="release-info"
-                      includes="BINARY-CODE-LICENSE.txt"
-          />
-          <fileset dir="."
-                      includes="COPYRIGHT.txt README-FIRST.txt"
+          <fileset dir="${dist}/${platform}/staging"
+              includes="${release_name}/**"
           />
       </zip>
   </target>
