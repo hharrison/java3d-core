@@ -27,17 +27,52 @@ into the 1.4 API.
 for the 1.4. For more information see the <a href="shaders.html">Programmable
 Shaders in Java&nbsp;3D 1.4</a> page.
 </p>
-<h4>2. Another feature...</h4>
-<p>This is another feature...</p>
+<h4>2. Scene graph structure change listeners<br>
+</h4>
+<p>We propose to add a notification mechansim for scene graph structure
+changes: additions, deletions, and
+moves of branch graphs to/from a live scene graph. We propose adding <code>add/removeGraphChangeListener(</code><code>GraphChangeListener</code><code>)</code>
+methods to <code>VirtualUniverse</code> and a new <code>GraphChangeListener</code>
+interface with <code>graphAdded</code>, <code>graphRemoved</code>,
+and <code>graphMoved</code> methods that get called when any branch
+graph is added (attached),
+removed (detached), or moved, respectively.<br>
+</p>
 <h4>3. Miscellaneous features</h4>
 <p>This is a list of miscellaneous features that we propose to add to
 the API.
 </p>
 <ul>
-  <li>Name string added to all scene graph objects. Need public
-get/setName(String) in SceneGraphObject</li>
-  <li>What else...</li>
+  <li>Name string for all scene graph objects: add public <code>get/setName(String)</code>
+to <code>SceneGraphObject</code> class</li>
+  <li><span style="font-style: italic; color: rgb(64, 192, 64);">Anything
+else???</span></li>
 </ul>
+<h4>4. List of features to deprecate</h4>
+<p>This is a list of miscellaneous features that we propose to
+deprecate in
+the API.<br>
+</p>
+<ul>
+  <li>Collision: <code>WakeupOnCollision{Entry,Exit,Movement}</code>
+(misnamed, not useful for most applications)<br>
+  </li>
+  <li><code>CompressedGeometry</code> (no HW support, lack of industry
+acceptance)</li>
+  <li><code>WakeupOnAWTBehavior</code> (listeners + <code>WakeupOnBehaviorPost</code>
+is more robust)</li>
+  <li><code>Sensor</code> prediction (has never been implemented)<br>
+  </li>
+</ul>
+<p>Note that none of these features will actually be removed. It
+instead
+reflects a decrease of emphasis on these features. While they should
+continue
+to function normally, no additional effort is likely to be put into
+them (for example, compressed geometry will not be supported with
+programmable shaders). This action paves the way to remove them from a
+future major release (e.g., a 2.0 release).<br>
+</p>
 <h3>II. Medium Priority Features</h3>
 <p>This list of medium priority features is under discussion for
 possible inclusion
@@ -45,7 +80,8 @@ into the 1.4 API.
 </p>
 <h4>1. Something...<br>
 </h4>
-<p>Something...<br>
+<p><span style="font-style: italic; color: rgb(64, 192, 64);">Something
+goes here (maybe)...</span><br>
 </p>
 <h4>2. Miscellaneous features</h4>
 <p>This is a list of miscellaneous features that are being considered
@@ -53,9 +89,26 @@ for addition to
 the API.<br>
 </p>
 <ul>
-  <li>a</li>
-  <li>b</li>
+  <li>API support for&nbsp; retained alpha buffers</li>
+  <li>Ability to query properties from a GraphicsConfiguration</li>
+  <li><span style="font-style: italic; color: rgb(64, 192, 64);">Anything
+else???</span></li>
 </ul>
+<h4>3. List of features to deprecate</h4>
+<p>This is a list of miscellaneous features that are being considered
+for deprecation in
+the API.<br>
+</p>
+<ul>
+  <li><code>Billboard</code> (use <code>OrientedShape3D</code> instead)<br>
+  </li>
+  <li><code>SharedGroup</code> (many bugs, <em>very</em> difficult to
+implement
+efficiently)</li>
+</ul>
+<p>This is in addition to the API being proposed for deprecation in
+section I.<br>
+</p>
 <h3>III. Future Features</h3>
 <p>Here is an unprioritized list of possible features under
 consideration for a future (e.g., 1.5/2.0)
@@ -64,6 +117,9 @@ version of the Java&nbsp;3D API.
 <ul>
   <li>Extensibility</li>
   <li>Pluggable renderers</li>
+  <li>Retained alpha buffers</li>
+  <li><span style="font-style: italic; color: rgb(64, 192, 64);">Anything
+else???</span></li>
 </ul>
 <p><font color="gray">Page last updated &#8212;
 $Date$
