@@ -3,11 +3,11 @@
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>Java 3D 1.4: Graph Change Listener</title>
+  <title>Java 3D 1.4: Graph Structure Change Listener</title>
 </head>
 <body>
 <h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.4:
-Graph Change Listener</h2>
+Graph Structure Change Listener</h2>
 <h3><span style="color: rgb(0, 153, 0);"><i>ROUGH DRAFT: This API
 is a Work in Progress</i></span></h3>
 <hr>
@@ -15,10 +15,11 @@ is a Work in Progress</i></span></h3>
 notification mechansim for scene graph structure
 changes: additions, deletions, and
 moves of branch graphs to/from a live scene graph. We propose
-adding <code>add/removeGraphChangeListener(</code><code>GraphChangeListener</code><code>)</code>
-methods to <code>VirtualUniverse</code> and a new <code>GraphChangeListener</code>
-interface with <code>graphAdded</code>, <code>graphRemoved</code>,
-and <code>graphMoved</code> methods that get called when any branch
+adding <code>add/removeGraphStructureChangeListener(</code><code>GraphStructureChangeListener</code><code>)</code>
+methods to <code>VirtualUniverse</code> and a new <code>GraphStructureChangeListener</code>
+interface with <code>branchGroupAdded</code>,&nbsp;<code>branchGroup</code><code>Removed</code>,
+and <code>branchGroup</code><code>Moved</code> methods that get called
+when any branch
 graph is added (attached),
 removed (detached), or moved, respectively.
 </p>
