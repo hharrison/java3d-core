@@ -204,7 +204,7 @@ VOID D3dDriverInfo::release()
 
 VOID printInfo() 
 {
-    printf("Java 3D 1.3.2, Windows version is %d.%d ", 
+    printf("Java 3D 1.3.3, Windows version is %d.%d ", 
 	   osvi.dwMajorVersion, osvi.dwMinorVersion);
     
     printf("Build: %d, ", LOWORD(osvi.dwBuildNumber)); 

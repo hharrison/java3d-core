@@ -1,4 +1,4 @@
-This binary release of Java 3D 1.3.2-experimental is an intermediate
+This binary release of Java 3D 1.3.3-experimental is an intermediate
 build made available for testing purposes only. The code is untested
 and presumed incompatible with the Java 3D(TM) API specification. You
 must only use this code in accordance with the terms under which the
