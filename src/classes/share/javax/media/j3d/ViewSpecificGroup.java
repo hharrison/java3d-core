@@ -26,13 +26,27 @@ import java.util.Enumeration;
  *
  * <p>
  * All nodes except ViewPlatform may appear as a descendant of
- * ViewSpecificGroup (including another ViewSpecificGroup).  Behavior
+ * ViewSpecificGroup, including another ViewSpecificGroup.  If a
+ * ViewSpecificGroup is a descendant of a ViewSpecificGroup, the
+ * effect is to intersect the view sets of the ViewSpecificGroup nodes
+ * in the hierarchy; each ViewSpecificGroup encountered when
+ * traversing the scene graph further restricts the set of views on
+ * which its descendants are rendered.  More formally, descendant
+ * nodes of ViewSpecificGroups are rendered in (or apply to) only
+ * those views that are contained in the set of views of every
+ * ViewSpecificGroup in the scene graph path from the Locale to the
+ * Node.
+ *
+ * <p>
+ * Behavior
  * nodes may appear under a ViewSpecificGroup, but are not affected by
  * it--the Behavior scheduler is per-universe rather than per-View.
  * BoundingLeaf nodes are similarly unaffected by being under a
  * ViewSpecificGroup.  A BoundingLeaf under a ViewSpecificGroup
  * provides a valid bounds for any node that refers to it,
  * irrespective of the view.
+ *
+ * <p>
  * The rest of the leaf nodes either: A) are only rendered within the
  * specified view(s), for example, Shape3D, Morph, and Sound; or B)
  * only affect other objects when they are rendered in the specified
