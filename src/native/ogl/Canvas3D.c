@@ -41,8 +41,9 @@
 static char *gl_VERSION;
 static char *gl_VENDOR;
                          
-void initializeCtxInfo(JNIEnv *env, GraphicsContextPropertiesInfo* ctxInfo);
-void cleanupCtxInfo(GraphicsContextPropertiesInfo* ctxInfo);
+static void initializeCtxInfo(JNIEnv *env, GraphicsContextPropertiesInfo* ctxInfo);
+static void cleanupCtxInfo(GraphicsContextPropertiesInfo* ctxInfo);
+static void disableAttribFor2D(GraphicsContextPropertiesInfo *ctxProperties);
 
 /*
  * Class:     javax_media_j3d_Canvas3D
@@ -1382,31 +1383,16 @@ void JNICALL Java_javax_media_j3d_Canvas3D_composite(
     jbyte *byteData;
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
-    GLboolean tex3d, texCubeMap;
     
     table = *env;
    
 #ifdef VERBOSE
     fprintf(stderr, "Canvas3D.composite()\n");
 #endif
-    /* temporarily disable fragment operations */
-    /* TODO: the GL_TEXTURE_BIT may not be necessary */
+    /* Temporarily disable fragment and most 3D operations */
+    /* TODO: the GL_TEXTURE_BIT may not be necessary here */
     glPushAttrib(GL_ENABLE_BIT|GL_TEXTURE_BIT|GL_DEPTH_BUFFER_BIT);
-    
-    if(ctxProperties->texture3DAvailable) 
-	tex3d = glIsEnabled(ctxProperties->texture_3D_ext_enum);
-
-    if(ctxProperties->textureCubeMapAvailable) 
-	texCubeMap = glIsEnabled(ctxProperties->texture_cube_map_ext_enum);
-    
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_FOG);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    if(ctxProperties->texture3DAvailable) 
-	glDisable(ctxProperties->texture_3D_ext_enum);
-    if(ctxProperties->textureCubeMapAvailable) 
-	glDisable(ctxProperties->texture_cube_map_ext_enum);
+    disableAttribFor2D(ctxProperties);
 
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1470,13 +1456,6 @@ void JNICALL Java_javax_media_j3d_Canvas3D_composite(
 
     (*(table->ReleasePrimitiveArrayCritical))(env, imageYdown, byteData, 0);
 
-    /* re-enable fragment operation if necessary */
-    if(ctxProperties->texture3DAvailable)
-	if (tex3d) glEnable(ctxProperties->texture_3D_ext_enum);
-    
-    if(ctxProperties->textureCubeMapAvailable)
-	if (texCubeMap) glEnable(ctxProperties->texture_cube_map_ext_enum);
-    
     /* Java 3D always clears the Z-buffer */
     glDepthMask(GL_TRUE);
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -1551,33 +1530,17 @@ void JNICALL Java_javax_media_j3d_Canvas3D_texturemapping(
     jbyte *byteData;
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
-    GLboolean tex3d, texCubeMap;
     
     table = *env;
     gltype = GL_RGBA;
     
-    /* temporary disable fragment operation */
-    glPushAttrib(GL_ENABLE_BIT|GL_TEXTURE_BIT|GL_DEPTH_BUFFER_BIT);
-    
-    if (ctxProperties->texture3DAvailable) {
-	tex3d = glIsEnabled(ctxProperties->texture_3D_ext_enum);
-    }
-    
-    if (ctxProperties->textureCubeMapAvailable) {
-	texCubeMap = glIsEnabled(ctxProperties->texture_cube_map_ext_enum);
-    }
-    glDisable(GL_ALPHA_TEST);
-    glDisable(GL_BLEND);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_FOG);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    if (ctxProperties->texture3DAvailable) {
-	glDisable(ctxProperties->texture_3D_ext_enum);
-    }
-    if (ctxProperties->textureCubeMapAvailable) {
-	glDisable(ctxProperties->texture_cube_map_ext_enum);
-    }
+    /* Temporarily disable fragment and most 3D operations */
+    glPushAttrib(GL_ENABLE_BIT|GL_TEXTURE_BIT|GL_DEPTH_BUFFER_BIT|GL_POLYGON_BIT);
+    disableAttribFor2D(ctxProperties);
+
+    /* Reset the polygon mode */
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
     /* glGetIntegerv(GL_TEXTURE_BINDING_2D,&binding); */
     glDepthMask(GL_FALSE);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -1665,14 +1628,6 @@ void JNICALL Java_javax_media_j3d_Canvas3D_texturemapping(
     glTexCoord2f(texMinU, texMinV); glVertex2f(mapMinX,mapMaxY);
     glEnd();
 
-    /* re-enable fragment operation if necessary */
-    if (ctxProperties->texture3DAvailable)
-	if (tex3d) glEnable(ctxProperties->texture_3D_ext_enum);
-    
-    if (ctxProperties->textureCubeMapAvailable)
-	if (texCubeMap) glEnable(ctxProperties->texture_cube_map_ext_enum);
-
-
     /* Java 3D always clears the Z-buffer */
     glDepthMask(GL_TRUE);
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -1717,8 +1672,6 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
 	glClear(GL_COLOR_BUFFER_BIT); 
     }
     else {
-	GLboolean tex3d, texCubeMap;
-
 	/* Do a cool image blit */
 	pa2d_class = (jclass) (*(table->GetObjectClass))(env, pa2d);
 	format_field = (jfieldID) (*(table->GetFieldID))(env, pa2d_class, 
@@ -1735,27 +1688,10 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
 	pixels = (GLubyte *) (*(table->GetPrimitiveArrayCritical))(env, 
 								   pixels_obj, NULL);
 
-	/* temporarily disable fragment operations */
+	/* Temporarily disable fragment and most 3D operations */
 	/* TODO: the GL_TEXTURE_BIT may not be necessary */
 	glPushAttrib(GL_ENABLE_BIT|GL_TEXTURE_BIT); 
-	
-	if(ctxProperties->texture3DAvailable)
-	    tex3d = glIsEnabled(ctxProperties->texture_3D_ext_enum);
-
-	if(ctxProperties->textureCubeMapAvailable)
-	    texCubeMap = glIsEnabled(ctxProperties->texture_cube_map_ext_enum);
-
-	glDisable(GL_ALPHA_TEST);                 
-	glDisable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_FOG);
-	glDisable(GL_LIGHTING);
-	glDisable(GL_TEXTURE_2D);
-	if(ctxProperties->texture3DAvailable)
-	    glDisable(ctxProperties->texture_3D_ext_enum);
-	
-	if(ctxProperties->textureCubeMapAvailable)
-	    glDisable(ctxProperties->texture_cube_map_ext_enum);
+	disableAttribFor2D(ctxProperties);
 
 	/* loaded identity modelview and projection matrix */
 	glMatrixMode(GL_PROJECTION); 
@@ -1889,15 +1825,10 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
 	    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 	    break;
 	}
-	/* re-enable fragment operation if necessary */
+
+	/* Restore attributes */
 	glPopAttrib();
 		
-	if(ctxProperties->texture3DAvailable)
-	    if (tex3d) glEnable(ctxProperties->texture_3D_ext_enum);
-
-	if(ctxProperties->textureCubeMapAvailable)
-	    if (texCubeMap) glEnable(ctxProperties->texture_cube_map_ext_enum);
-
 	(*(table->ReleasePrimitiveArrayCritical))(env, pixels_obj, 
 						  (jbyte *)pixels, 0);
     }
@@ -1952,9 +1883,6 @@ void JNICALL Java_javax_media_j3d_Canvas3D_textureclear(JNIEnv *env,
     }
     /* glPushAttrib(GL_DEPTH_BUFFER_BIT); */
     if (pa2d) { 
-	GLboolean tex3d, texCubeMap; 
-	  
-	
 	/* Do a cool image blit */ 
 	pa2d_class = (jclass) (*(table->GetObjectClass))(env, pa2d);
 
@@ -1980,25 +1908,10 @@ void JNICALL Java_javax_media_j3d_Canvas3D_textureclear(JNIEnv *env,
 	fprintf(stderr, "width = %d height = %d \n", width, height);
 #endif
 	
-	/* temporary disable fragment operation */ 
+	/* Temporarily disable fragment and most 3D operations */
 	glPushAttrib(GL_ENABLE_BIT|GL_TEXTURE_BIT|GL_POLYGON_BIT); 
+	disableAttribFor2D(ctxProperties);
 
-	if(ctxProperties->texture3DAvailable) 
-	    tex3d = glIsEnabled(ctxProperties->texture_3D_ext_enum);
-	if(ctxProperties->textureCubeMapAvailable) 
-	    texCubeMap = glIsEnabled(ctxProperties->texture_cube_map_ext_enum);
-	glDisable(GL_ALPHA_TEST);                  
-	glDisable(GL_BLEND); 
-	glDisable(GL_DEPTH_TEST); 
-	glDisable(GL_FOG); 
-	glDisable(GL_LIGHTING);
-	
-	if(ctxProperties->texture3DAvailable)
-	    glDisable(ctxProperties->texture_3D_ext_enum);
-	
-	if(ctxProperties->textureCubeMapAvailable)
-	    glDisable(ctxProperties->texture_cube_map_ext_enum);
-	
 	Java_javax_media_j3d_Canvas3D_resetTexCoordGeneration(env, obj, ctxInfo); 
 
 	glEnable(GL_TEXTURE_2D);
@@ -2218,13 +2131,8 @@ void JNICALL Java_javax_media_j3d_Canvas3D_textureclear(JNIEnv *env,
 	glPopMatrix();
 	
 	glMatrixMode(GL_MODELVIEW);      	
-	/* re-enable fragment operation if necessary */
+	/* Restore attributes */
 	glPopAttrib();	
-	if(ctxProperties->texture3DAvailable)
-	    if (tex3d) glEnable(ctxProperties->texture_3D_ext_enum); 
-	
-	if(ctxProperties->textureCubeMapAvailable)
-	    if (texCubeMap) glEnable(ctxProperties->texture_cube_map_ext_enum); 
 	
 	(*(table->ReleasePrimitiveArrayCritical))(env, pixels_obj,  
 						  (jbyte *)pixels, 0); 
@@ -3087,7 +2995,9 @@ void JNICALL Java_javax_media_j3d_Canvas3D_readOffScreenBuffer(
                 byteData, 0);
 }
 
-void initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo){
+static void
+initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo)
+{
     ctxInfo->context = 0; 
     
     /* version and extension info */
@@ -3203,7 +3113,9 @@ void initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo){
 #endif /* SOLARIS || __linux__ */
 }
 
-void cleanupCtxInfo(GraphicsContextPropertiesInfo* ctxInfo){
+static void
+cleanupCtxInfo(GraphicsContextPropertiesInfo* ctxInfo)
+{
     if( ctxInfo->versionStr != NULL)
 	free(ctxInfo->versionStr);
     if( ctxInfo->extensionStr != NULL)
@@ -3548,4 +3460,58 @@ jboolean JNICALL Java_javax_media_j3d_Canvas3D_validGraphicsMode(
 #if defined(SOLARIS) || defined(__linux__)
     return JNI_TRUE;
 #endif
+}
+
+
+/*
+ * Function to disable most rendering attributes when doing a 2D
+ * clear, image copy, or image composite operation. Note that the
+ * caller must save/restore the attributes with
+ * pushAttrib(GL_ENABLE_BIT|...) and popAttrib()
+ */
+static void
+disableAttribFor2D(GraphicsContextPropertiesInfo *ctxProperties)
+{
+    int i;
+
+    glDisable(GL_ALPHA_TEST);
+    glDisable(GL_BLEND);
+    glDisable(GL_COLOR_LOGIC_OP);
+    glDisable(GL_COLOR_MATERIAL);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_FOG);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+    glDisable(GL_POLYGON_STIPPLE);
+    glDisable(GL_STENCIL_TEST);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_GEN_Q);
+    glDisable(GL_TEXTURE_GEN_R);
+    glDisable(GL_TEXTURE_GEN_S);
+    glDisable(GL_TEXTURE_GEN_T);
+
+    for (i = 0; i < 6; i++) {
+	glDisable(GL_CLIP_PLANE0 + i);
+    }
+
+    if (ctxProperties->texture3DAvailable) {
+	glDisable(ctxProperties->texture_3D_ext_enum);
+    }
+
+    if (ctxProperties->textureCubeMapAvailable) {
+	glDisable(ctxProperties->texture_cube_map_ext_enum);
+    }
+
+    if (ctxProperties->textureRegisterCombinersAvailable) {
+        glDisable(GL_REGISTER_COMBINERS_NV);
+    }
+
+    if (ctxProperties->textureColorTableAvailable) {
+	glDisable(GL_TEXTURE_COLOR_TABLE_SGI);
+    }
+
+    if (ctxProperties->global_alpha_sun) {
+	glDisable(GL_GLOBAL_ALPHA_SUN);
+    }
 }
