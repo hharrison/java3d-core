@@ -6,6 +6,6 @@ The copyright notice for this product is in COPYRIGHT.txt
 
 The binary code license for this product is in BINARY-CODE-LICENSE.txt
 
-Instructions for installation are in HOW-TO-INSTALL.txt
+Instructions for installation are in HOW-TO-INSTALL.html
 
-The release notes for this product are in RELEASE-NOTES.txt
+The release notes for this product are in RELEASE-NOTES.html

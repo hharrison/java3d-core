@@ -1,0 +1,388 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+-->
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Java 3D 1.3.2 Release Notes</title>
+</head>
+<body>
+<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.3.2 Release Notes</h2>
+<p>This file contains important release information for users of the
+Java&nbsp;3D<sup><font size="-2">TM</font></sup> API, version 1.3.2.
+</p>
+<ul>
+  <a href="#System_Requirements">System Requirements</a>
+(<a href="#Solaris_Sparc">Solaris/Sparc</a>, <a href="#Linux">Linux</a>,
+  <a href="#Windows">Windows</a>)<br>
+  <a href="#Changes_Since_1.3.1">Changes Since 1.3.1</a><br>
+  <a href="#More_Information">More Information</a><br>
+</ul>
+<p><a href="HOW-TO-INSTALL.html">Click here</a> for instructions on
+<a href="HOW-TO-INSTALL.html">how
+to install</a> the developer's release of
+Java&nbsp;3D
+version 1.3.2.</p>
+<p><span style="font-style: italic;">NOTE: It is recommended that any
+previous version of Java&nbsp;3D be
+uninstalled before installing this version.</span>
+</p>
+<h3><a name="System_Requirements"></a>System Requirements</h3>
+<p>The 1.3.2 version of the Java&nbsp;3D API has been released for
+Solaris/Sparc, Linux (both x86 and amd64), and Windows.
+</p>
+<h4><a name="Solaris_Sparc"></a>Solaris/Sparc</h4>
+<p>
+The 1.3.2 version of Java&nbsp;3D for Solaris/SPARC requires the
+following:
+</p>
+<ul>
+  <li>JDK 1.4.2 or later from Sun Microsystems: <a
+ href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+  <li>Solaris 8 or later</li>
+  <li>Frame Buffer with OpenGL support (XVR-500, XVR-1000, XVR-600,
+XVR-1200, XVR-4000, Expert3D, Elite3D, Creator3D, and PGX)</li>
+  <li>OpenGL 1.3 for Solaris or later. To find your current version,
+use: "<code>pkginfo -l SUNWglrt</code>". OpenGL for Solaris can be
+obtained at: <a href="http://www.sun.com/software/graphics/opengl/">http://www.sun.com/software/graphics/opengl/</a></li>
+</ul>
+<h4><a name="Linux"></a>Linux<br>
+</h4>
+<p>The 1.3.2 version of Java&nbsp;3D for Linux (x86 or amd64) requires
+the
+following:<br>
+</p>
+<ul>
+  <li>JDK 1.4.2 or later from Sun Microsystems: <a
+ href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+  <li>Graphics adapter with driver that supports the GLX
+extension: GLX
+1.3 or later and OpenGL 1.2 or later<br>
+  </li>
+</ul>
+<h4><a name="Windows"></a>Windows<br>
+</h4>
+<p>The 1.3.2 version of Java&nbsp;3D for Windows 2000, and Windows/XP
+requires the following:<br>
+</p>
+<ul>
+  <li>JDK 1.4.2 or later from Sun Microsystems: <a
+ href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+  <li>Windows 2000 or Windows/XP</li>
+  <li>Support for either OpenGL or DirectX as shown below.<br>
+  </li>
+</ul>
+<ul>
+  <span style="font-weight: bold;">OpenGL version</span><br>
+  <ul>
+The (default) OpenGL renderer of Java&nbsp;3D requires OpenGL 1.1 or
+later,
+available from Microsoft or from your graphics card manufacturer.
+  </ul>
+</ul>
+<ul>
+  <span style="font-weight: bold;">DirectX version</span><br>
+  <ul>
+The (optional) DirectX renderer of Java&nbsp;3D requires DirectX 8.0 or
+later, which available from Microsoft at: <a
+ href="http://www.microsoft.com/windows/directx/">http://www.microsoft.com/windows/directx/</a>
+. The DirectX version of
+Java&nbsp;3D is selected by setting the "<code>j3d.rend</code>" system
+property
+to "<code>d3d</code>",
+for example: "<code>java -Dj3d.rend=d3d ClassName</code>"
+  </ul>
+</ul>
+<h3><a name="Changes_Since_1.3.1"></a>Changes Since 1.3.1</h3>
+<h4>Miscellaneous</h4>
+<ul>
+  <li>Improved the speed and quality of scene antialiasing (from 2
+samples to possibly 8 samples) if pbuffer is supported</li>
+  <li>Eliminated memory bloat for IndexedGeometryArrays with
+USE_COORD_INDEX_ONLY flags set</li>
+  <li>MouseWheelEvent now supported in WakeupOnAWTEvent, MouseBehavior,
+ViewPlatformAWTBehavior, and OrbitBehavior</li>
+  <li>Wavefront ".obj" loader now properly handles transparency
+attribute
+of the model (but not transparency mapping).</li>
+</ul>
+<h4>Java 3D Sound</h4>
+<p>
+Java&nbsp;3D sound is rendered via the use of a concrete implementation
+of
+the abstract AudioEngine3DL2 class. In version 1.3.1 we provided two
+such implementations that could be used to render 3D sounds:
+JavaSoundMixer and HeadspaceMixer. The 1.3.2 release no longer
+includes the HeadspaceMixer implementation. Only JavaSoundMixer is
+available, and it is disabled by default for users of the
+Viewer.createAudioDevice() method (see the j3d.audiodevice property
+below).
+</p>
+<h4>System Properties</h4>
+<ul>
+  <li><code>j3d.rend</code> - Specified the renderer that will be used
+for Java&nbsp;3D.
+Recognized values are "ogl" and "d3d" (Windows-only). The default
+value is "ogl".</li>
+  <li><code>j3d.viewFrustumCulling</code> - If this flag is set to
+false, the renderer
+view frustum culling is turned off. The default value is true. Note:
+Java&nbsp;3D uses a 2 pass view culling. The first pass is a loose
+view culling of the spatial tree, and the second pass is a tight view
+frustum culling in the renderer before sending the geometry down to
+the low level graphics API. The j3d.viewFrustumCulling property is to
+control the renderer view frustum culling, and it will not affect the
+first pass view culling.</li>
+  <li><code>j3d.transparentOffScreen</code> - If this flag is set to
+true the background
+of the off screen canvas is set to transparent. The default value is
+false.</li>
+  <li><code>j3d.usePbuffer</code> - If this flag is set to false
+pbuffer will not be use
+for off screen rendering. The default value is true.</li>
+  <li><code>j3d.audiodevice</code> - Takes the name of a concrete
+subclass of
+com.sun.j3d.audioengines.AudioEngine3DL2 that will be constructed by
+Viewer.createAudioDevice(). The default value is null, which means
+that audio is disabled by default for applications that call
+Viewer.createAudioDevice(). For more information see the <a
+ href="http://www.javadesktop.org/forums/thread.jspa?threadID=6102">topic
+on Java&nbsp;3D Sound</a> in the Java&nbsp;3D forum.</li>
+  <li><code>j3d.forceReleaseView</code> - If this flag is set to true,
+the view is
+released after the Canvas3D is removed from the view. Can be used if
+you have memory leaks after disposing Canvas3D. Note: Setting this
+flag as true disables the bug fix 4267395 in View deactivate(). The
+default value is false.</li>
+</ul>
+<h4>Issues Fixed<br>
+</h4>
+<table cellpadding="2" cellspacing="2" border="0"
+ style="text-align: left;">
+  <tbody>
+    <tr>
+      <td style="text-align: right;">3</td>
+      <td>lg3d: gets unsatisified link error on various ATI cards</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">4</td>
+      <td>Speed of OffScreen Canvas3D</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">5</td>
+      <td>Frequent native exception: Canvas3D.destroyContext</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">10</td>
+      <td>Canvas Redraw Issue</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">11</td>
+      <td>Seemingly inconsistent delays in updating attributes</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">12</td>
+      <td>Frame counter isn't always incremented correctly</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">13</td>
+      <td>J3DTimer fails on Windows XP with P4 3GHz</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">14</td>
+      <td>Random NullPException in uninitialized SoundSheduler</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">15</td>
+      <td>Model Clip planes not correctly set when view changes</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">16</td>
+      <td>Issue with Runtime instantiation of Canvas3D</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">18</td>
+      <td>Geometry missing in OnScreenCanvas when OffScreenCanvas is
+resized</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">19</td>
+      <td>Resizing off-screen Canvas3D hangs on Solaris</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">20</td>
+      <td>Off-screen rendering doesn't work on Linux</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">21</td>
+      <td>Exception in WakeupOnElapsedFrames behavior stops renderer
+from running when it should</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">23</td>
+      <td>Enhancement to Reduce Memory Bloat in IndexedGeometryArray</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">26</td>
+      <td>Texture3D not displaying when size over 512X512</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">27</td>
+      <td>Shapes mistakenly culled when they are visible</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">28</td>
+      <td>Combine Mode &amp; Missing Texture in OffScreen snapshot on
+Win/XP</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">33</td>
+      <td>Texture updates fail w/ Multitextured BY_REF Geoms</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">36</td>
+      <td>Vector3d hashCode() method distinguishes between -0.0 and 0.0</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">38</td>
+      <td>ConfiguredUniverse throws an exception when using Java Web
+Start</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">65</td>
+      <td>WakeupOnAWTEvent does not support MouseWheelEvent</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">66</td>
+      <td>NullPointerException in renderOffScreenBuffer</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">71</td>
+      <td>OGL: OffScreen canvas ignore GraphicsConfigTemplate under
+windows</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">72</td>
+      <td>Exception in setOffScreenBuffer when Canvas3D not in View</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">73</td>
+      <td>Quat4f#interpolate: incorrect when q1*q2&lt;0</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">74</td>
+      <td>Texture/color math difference (D3D vs OGL)</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">76</td>
+      <td>OffScreen rendering should use Pbuffer on Windows / OpenGL</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">77</td>
+      <td>Scene antialiasing is disabled on Windows / OpenGL</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">80</td>
+      <td>libj3dcore-ogl.so fails to load on Linux systems without
+certain GL extensions</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">81</td>
+      <td>SimpleUniverse.cleanup() doesn't dispose of all threads</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">83</td>
+      <td>Deadlock when removing Canvas3D and universe</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">86</td>
+      <td>ModelClip affects Java2D graphics in mixed-mode rendering...</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">88</td>
+      <td>Ambient Lighting corrupted by Mixed-Mode rendering...</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">91</td>
+      <td>add new key/s to Canvas3D.queryProperties() for graphics card
+info</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">94</td>
+      <td>glCallList error</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">95</td>
+      <td>NullPointerException reading PathInterpolator behavior with
+SceneGraphFileReader</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">96</td>
+      <td>ViewSpecificGroup documentation needs clarification</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">98</td>
+      <td>Random Lockup when adding a Canvas3D to JTabbedPane</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">99</td>
+      <td>New - Cannot build native bits in j3d-core with Sun Studio 10</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">100</td>
+      <td>Offscreen Capture crash JVM</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">101</td>
+      <td>Memory leak in com.sun.j3d.utils.geometry.Primitive</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">102</td>
+      <td>memory leak:: Canvas3D holds a reference to parent container</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">103</td>
+      <td>Memory leak:: View deactivate not full enabled</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">104</td>
+      <td>Java3D based application fail to start on ATI 8.10 driver</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">105</td>
+      <td>Build for IA64 (Itanium) 64-bit Linux</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">111</td>
+      <td>Java 3D doesn't recognize OpenGL 2.0</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">112</td>
+      <td>Calling Virtual Universe seems to hang</td>
+    </tr>
+  </tbody>
+</table>
+<h3><a name="More_Information"></a>More Information<br>
+</h3>
+<p>For the latest information on Java&nbsp;3D, see the <a
+ href="https://java3d.dev.java.net/">main Java&nbsp;3D project page</a>
+on
+java.net.<br>
+</p>
+<p>Click <a
+ href="https://java3d.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=java3d&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED">here</a>
+for a list of open issues.</p>
+</body>
+</html>
