@@ -137,6 +137,7 @@ public class VirtualUniverse extends Object {
     boolean enableKey = false;
     boolean enableMouse = false;
     boolean enableMouseMotion = false;
+    boolean enableMouseWheel = false;
 
     // Keep track of how many active View use this universe
     int activeViewCount = 0;
@@ -623,6 +624,10 @@ public class VirtualUniverse extends Object {
 	if (enableMouseMotion) {
 	    enableMouseMotionEvents();
 	}
+	if (enableMouseWheel) {
+	    enableMouseWheelEvents();
+	}
+
     }
 
     void enableComponentEvents() {
@@ -854,6 +859,58 @@ public class VirtualUniverse extends Object {
                         // offscreen canvas does not have event catcher
                         if (cv.eventCatcher != null)
 		            cv.eventCatcher.enableMouseMotionEvents();
+	            }
+	        }
+	    }
+	}
+    }
+
+    void disableMouseWheelEvents() {
+	Enumeration cvs;
+	Canvas3D cv;
+	View views[];
+        ViewPlatformRetained vp;
+	Object[] vps = getViewPlatformList();
+
+	enableMouseWheel = false;
+
+	if (vps != null) {
+	    for (int i=0; i<vps.length; i++) {
+                vp =(ViewPlatformRetained)vps[i];               
+		views = vp.getViewList();
+		for (int j=views.length-1; j>=0; j--) {
+                    cvs = views[j].getAllCanvas3Ds();
+	            while(cvs.hasMoreElements()) {
+		        cv = (Canvas3D) cvs.nextElement();
+                        // offscreen canvas does not have event catcher
+                        if (cv.eventCatcher != null)
+		            cv.eventCatcher.disableMouseWheelEvents();
+	            }
+	        }
+	    }
+	}
+    }
+
+    void enableMouseWheelEvents() {
+	Enumeration cvs;
+	Canvas3D cv;
+	View views[];
+        ViewPlatformRetained vp;
+	Object[] vps = getViewPlatformList();
+
+	enableMouseWheel = true;
+
+	if (vps != null) {
+	    for (int i=0; i<vps.length; i++) {
+                vp =(ViewPlatformRetained)vps[i];               
+		views = vp.getViewList();
+		for (int j=views.length-1; j>=0; j--) {
+                    cvs = views[j].getAllCanvas3Ds();
+	            while(cvs.hasMoreElements()) {
+		        cv = (Canvas3D) cvs.nextElement();
+                        // offscreen canvas does not have event catcher
+                        if (cv.eventCatcher != null)
+		            cv.eventCatcher.enableMouseWheelEvents();
 	            }
 	        }
 	    }

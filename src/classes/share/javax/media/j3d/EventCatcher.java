@@ -22,22 +22,23 @@ import java.awt.event.*;
  * 1.1 event model.  Most events are sent to the canvas for processing.
  */
 class EventCatcher extends Object implements ComponentListener, FocusListener,
-		KeyListener, MouseListener, MouseMotionListener, WindowListener {
+		KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, WindowListener {
 
     // The canvas associated with this event catcher
-    Canvas3D canvas;
+    private Canvas3D canvas;
     static final boolean DEBUG = false;
-    boolean stopped = false;
+    private boolean stopped = false;
 
     /**
      * flags for event listeners
      */
-    boolean	componentEvents = false;
-    boolean	focusEvents = false;
-    boolean	keyEvents = false;
-    boolean	mouseEvents = false;
-    boolean	mouseMotionEvents = false;
-    boolean     mouseListenerAdded = false;
+    private boolean componentEvents = false;
+    private boolean focusEvents = false;
+    private boolean keyEvents = false;
+    private boolean mouseEvents = false;
+    private boolean mouseMotionEvents = false;
+    private boolean mouseWheelEvents = false;
+    private boolean mouseListenerAdded = false;
 
     EventCatcher(Canvas3D c) {
 	canvas = c;
@@ -143,6 +144,21 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	if (mouseMotionEvents) {
 	    canvas.removeMouseMotionListener(this);
 	    mouseMotionEvents = false;
+	}
+    }
+
+    void enableMouseWheelEvents() {
+	if (!mouseWheelEvents) {
+	    canvas.addMouseWheelListener(this);
+	    mouseWheelEvents = true;
+	}
+    }
+
+
+    void disableMouseWheelEvents() {
+	if (mouseWheelEvents) {
+	    canvas.removeMouseWheelListener(this);
+	    mouseWheelEvents = false;
 	}
     }
 
@@ -270,7 +286,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
     }
 
     public void mouseExited(MouseEvent e) {
-        if (mouseEvents)
+        if (mouseEvents) 
 	    canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
 	    System.out.println(e);
@@ -294,6 +310,8 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
     }
 
     public void mouseDragged(MouseEvent e) {
+	// Note : We don't have to test for mouseMotionEvent here because 
+	// this routine will never be called unless mouseMotionEvent is enabled.
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
 	    System.out.println(e);
@@ -301,11 +319,23 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
     }
 
     public void mouseMoved(MouseEvent e) {
+	// Note : We don't have to test for mouseMotionEvent here because 
+	// this routine will never be called unless mouseMotionEvent is enabled.
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
 	    System.out.println(e);
 	}
     }
+    
+    public void mouseWheelMoved(MouseWheelEvent e) {
+	// Note : We don't have to test for mouseWheelEvent here because 
+	// this routine will never be called unless mouseWheelEvent is enabled.
+	canvas.sendEventToBehaviorScheduler(e);
+	if (DEBUG) {
+	    System.out.println(e);
+	}
+    }
+    
 
     public void windowActivated(WindowEvent e) {
 	windowOpened(e);
@@ -381,8 +411,10 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	componentEvents = false;
 	mouseEvents = false;
 	mouseMotionEvents = false;
-	mouseListenerAdded = false;
+	mouseWheelEvents = false;
+	mouseListenerAdded = false;	
 	stopped = false;
     }
+		
 }
 

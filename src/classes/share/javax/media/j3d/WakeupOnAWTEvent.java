@@ -108,7 +108,6 @@ public final class WakeupOnAWTEvent extends WakeupCriterion {
      * set every time the condition met.
      */
     void resetBehaviorCondition(BehaviorStructure bs) {
-	
 	if (enableAWTEventTS != bs.awtEventTimestamp) {
 	    if ((AwtId >= ComponentEvent.COMPONENT_FIRST &&
 		 AwtId <= ComponentEvent.COMPONENT_LAST) ||
@@ -128,7 +127,15 @@ public final class WakeupOnAWTEvent extends WakeupCriterion {
 		if ((AwtId == MouseEvent.MOUSE_DRAGGED) || 
 		    (AwtId == MouseEvent.MOUSE_MOVED)) {
 		    behav.universe.enableMouseMotionEvents();
-		} else {
+		}
+		else if (AwtId == MouseEvent.MOUSE_WHEEL) {
+		    behav.universe.enableMouseWheelEvents();
+		}
+		else if (AwtId == MouseEvent.MOUSE_CLICKED ||
+			 AwtId == MouseEvent.MOUSE_ENTERED ||
+			 AwtId == MouseEvent.MOUSE_EXITED ||
+			 AwtId == MouseEvent.MOUSE_PRESSED ||
+			 AwtId == MouseEvent.MOUSE_RELEASED) {
 		    behav.universe.enableMouseEvents();
 		}
 	    } else {
@@ -137,6 +144,9 @@ public final class WakeupOnAWTEvent extends WakeupCriterion {
 		}
 		if ((EventMask & AWTEvent.MOUSE_MOTION_EVENT_MASK) != 0) {
 		    behav.universe.enableMouseMotionEvents();
+		}
+		if ((EventMask & AWTEvent.MOUSE_WHEEL_EVENT_MASK) != 0) {
+		    behav.universe.enableMouseWheelEvents();
 		}
 	    }
 	    enableAWTEventTS = bs.awtEventTimestamp;
