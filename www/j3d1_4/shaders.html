@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+    http-equiv="content-type">
+  <title>Java 3D 1.4 Shaders</title>
+</head>
+<body>
+<h2>Shaders in Java 3D<sup><font size="-2">TM</font></sup> 1.4</h2>
+<h4>Introduction and pointer to discussion forum</h4>
+
+<p>If you wandered over here looking for a completed draft
+programmable shading specification for
+Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.4 that you can
+review, you are in the wrong place; or more accurately, the right
+place at the wrong time. Come back in about 2 months and things should
+be in state where you can review a fairly complete draft
+specification. If, on the other hand, you'd like to help us define and
+evolve the programmable shading API in Java&nbsp;3D 1.4, please read
+on.
+</p>
+
+<p>This is a very rough first draft of what we are thinking in terms
+of programmable shader support in Java 3D&nbsp;1.4. As we mentioned at
+JavaOne, we plan to do the 1.4 API specification under the auspices of
+the Java Community Process (JCP). However, we very much want to
+involve the larger community in API discussions for programmable
+shaders, so please join in the discussion.
+</p>
+
+<p>We have created a thread on the Java&nbsp;3D discussion forum for
+discussing <a
+href="http://www.javadesktop.org/forums/forum.jspa?forumID=55"
+target="_blank">Java&nbsp;3D Programmable Shaders</a>. Feel free to
+post your comments on our ideas, or post some ideas of your own.
+</p>
+
+<h4>Class Hierarchy for Shader Objects</h4>
+<p>The proposed class hierarchy for programmable shaders
+in Java&nbsp;3D is:</p>
+<ul>
+<li>Abstract shader base classes:</li>
+<ul>
+<pre>public abstract class ShaderProgram extends NodeComponent
+public abstract class Shader extends NodeComponent
+</pre>
+</ul>
+<li>Concrete GL2 shader classes:</li>
+<ul>
+<pre>public class GL2ShaderProgram extends ShaderProgram
+    method: {add/remove/get}Shader(GL2Shader) // set of shader objs
+    method: {add/remove}ErrorListener(GL2ErrorListener)
+    method: validate(Canvas3D) ???
+
+public abstract class GL2Shader extends Shader
+    public class GL2VertexShader extends GL2Shader
+	method: set/getShaderSource(String)
+	method: validate(Canvas3D) ???
+    public class GL2FragmentShader extends GL2Shader
+	method: set/getShaderSource(String)
+	method: validate(Canvas3D) ???
+</pre>
+</ul>
+<li>Concrete Cg shader classes:</li>
+<ul>
+<pre>public class CgShaderProgram extends ShaderProgram
+    method: {set/get}VertexShader(CgVertexShader)
+    method: {set/get}FragmentShader(CgFramentShader)
+    method: {add/remove}ErrorListener(CgErrorListener)
+    method: validate(Canvas3D) ???
+
+public abstract class CgShader extends Shader
+    public class CgVertexShader extends CgShader
+	method: set/getShaderSource(String)
+	method: validate(Canvas3D) ???
+    public class CgFragmentShader extends CgShader
+	method: set/getShaderSource(String)
+	method: validate(Canvas3D) ???
+</pre>
+</ul>
+<li>Changes to existing Appearance class (or maybe create new
+ShaderAppearance subclass):</li>
+<ul>
+<pre>public class Appearance extends NodeComponent
+    ...
+    method: set/getShaderProgram(ShaderProgram)
+</pre>
+</ul>
+</ul>
+
+<p>Click on the following link for a preliminary look at the <a
+href="javax/media/j3d/ShaderProgram.html">javadoc-generated API
+definitions</a> for the newly proposed classes. Note that this is only
+the javadoc for the <i>new</i> classes. We know that there are lots of
+broken links for the existing classes.
+</p>
+
+<h4>Example Usage</h4>
+<p>This is an example code excerpt showing how one might use the new
+programmable shader API in a Java&nbsp;3D program.
+</p>
+<ul>
+<pre>String vertexShaderFile = "my-vertex-shader-file-name";
+String fragmentShaderFile = "my-fragment-shader-file-name";
+String vertexShaderSource;
+String fragmentShaderSource;
+
+// Read CG vertex and fragment shader source code from text files
+vertexShaderSource = TextFileUtils.readFully(vertexShaderFile);
+fragmentShaderSource = TextFileUtils.readFully(fragmentShaderSource);
+
+// Create CG vertex and fragment shader objects using the given source code
+CgVertexShader vertexShader = new CgVertexShader(vertexShaderSource);
+CgFragmentShader fragmentShader = new CgFragmentShader(fragmentShaderSource);
+
+// Create the CG shader program object and attach the vertex and
+// fragment shader objects; add an error listener
+CgShaderProgram shaderProgram = new CgShaderProgram();
+shaderProgram.setVertexShader(vertexShader);
+shaderProgram.setFragmentShader(fragmentShader);
+shaderProgram.addErrorListener(myCgErrorListener);
+
+// Use CG shader program object in appearance
+appearance.setShaderProgram(shaderProgram);
+</pre>
+</ul>
+<h4>Shader Parameters</h4>
+
+<p>Programmable shaders define two types of parameters: uniform and
+varying. As the names imply, uniform parameters are constant (within a
+primitive), while varying parameters can vary on per-vertex or
+per-fragment basis.
+</p>
+
+<ol>
+
+<li><b>Uniform parameters</b> (attributes) are those parameters whose
+value is constant during the rendering of a primitive. Their values
+may change from primitive to primitive, but are constant for each
+vertex (for vertex shaders) or fragment (for fragment shaders) of a
+single primitive. Examples of uniform parameters include a
+transformation matrix, a texture map, lights, lookup tables,
+etc. Several Java&nbsp;3D state attributes are automatically available
+to the shader program as pre-defined uniform parameters. The
+application doesn't need to do anything to pass these parameters in to
+the shader program. The implementation of each shader language (e.g.,
+Cg, GL2) defines its own mapping from Java&nbsp;3D attribute to uniform
+variable name.<br>
+<br>
+We need additional API to allow applications to pass in uniform
+parameters that do not correspond to a pre-defined Java&nbsp;3D
+attribute...<br> TODO: Finish this...<br>
+<br>
+A partial list of Java&nbsp;3D attributes that are mapped to shader
+attributes follows:
+</li>
+<br>
+<table style="text-align: left;" border="1" cellspacing="2"
+cellpadding="2">
+<tbody>
+<tr>
+<td style="vertical-align: top; text-decoration: underline;">Java&nbsp;3D
+Attribute<br>
+</td>
+<td style="vertical-align: top; text-decoration: underline;">Cg
+shader variable<br>
+</td>
+<td style="vertical-align: top; text-decoration: underline;">GL2
+shader variable<br>
+</td>
+</tr>
+<tr>
+<td style="vertical-align: top;">ModelViewProjection<br>
+</td>
+<td style="vertical-align: top;">glstate.matrix.mvp<br>
+</td>
+<td style="vertical-align: top;">gl_ModelViewProjectionMatrix<br>
+</td>
+</tr>
+<tr>
+<td style="vertical-align: top;">Light[<i>n</i>] pos<br>
+</td>
+<td style="vertical-align: top;">glstate.light[<i>n</i>].position </td>
+<td style="vertical-align: top;">gl_LightSource[<i>n</i>].position </td>
+</tr>
+<tr>
+<td style="vertical-align: top;">...<br>
+</td>
+<td style="vertical-align: top;">...<br>
+</td>
+<td style="vertical-align: top;">...<br>
+</td>
+</tr>
+</tbody>
+</table>
+<br>
+<li><b>Varying parameters</b> are those parameters that are specified
+as per-vertex attributes. They are are interpolated across a primitive
+similarly to colors and texture coordinates in the fixed function
+pipeline.<br>
+<br>
+We need additional API to allow applications to pass in per-vertex
+varying parameters...<br> TODO: Finish this...<br>
+</li>
+</ol>
+<p>TODO: more info here.
+</p>
+</body>
+</html>
