@@ -124,6 +124,11 @@
     <property name="platform" value="linux-i586"/>
   </target>
 
+  <target name="setupLinuxAmd64" if="isLinuxOnAmd64">	
+    <property name="ostype" value="linux"/>
+    <property name="platform" value="linux-amd64"/>
+  </target>
+
   <!-- win32 should be rename as windows -->
   <target name="setupWindows" if="isWindowsOnX86">	
     <property name="ostype" value="win32"/>
@@ -161,7 +166,7 @@
   </target>
 
   <target name="setupPlatform"
-       depends="init, setupProduction, setupDevPhase ,setupSolaris, setupLinux, setupWindows">
+       depends="init, setupProduction, setupDevPhase ,setupSolaris, setupLinux, setupLinuxAmd64, setupWindows">
     <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
     <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
     <property name="docname" value="java3d-${version_file}-doc"/>
@@ -187,6 +192,10 @@
 
     <condition property="isLinuxOnX86">
         <os name="linux" arch="i386"/>
+    </condition>
+
+    <condition property="isLinuxOnAmd64">
+        <os name="linux" arch="amd64"/>
     </condition>
 
     <condition property="isSolarisOnSparc">
