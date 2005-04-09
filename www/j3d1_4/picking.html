@@ -69,9 +69,9 @@ for computed intersected Node.</code><br>
 <code>CLOSEST_INTERSECTION_POINT &nbsp; -
 request for
 closest intersection point.</code><br>
-<code>DISTANCE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&nbsp;
-&nbsp; &nbsp;&nbsp; &nbsp; &nbsp; -
+<code>CLOSEST_DISTANCE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;
+-
 request for the closest distance of the intersection.</code><br>
 <code>CLOSEST_GEOM_INFO&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;
 &nbsp;&nbsp; - request for only the closest intersection geometry
@@ -143,9 +143,9 @@ Point3d getClosestIntersectionPoint()<br>
 <p style="margin-left: 80px;"><span style="font-style: italic;">/**
 Retrieves
 the distance between the start point of the pickShape and the
-intersection point. */</span><br>
+closest intersection point. */</span><br>
 method: public
-double getDistance()<br>
+double getClosestDistance()<br>
 </p>
 <p style="margin-left: 80px;"><span style="font-style: italic;">/**
 Retrieves
@@ -172,13 +172,7 @@ int getGeometryIndex()&nbsp; <br>
 the reference to the intersected geometry in the picked object,
 either a Shape3D or Morph. */</span><br>
 method: public
-Geometry getGeometry() <br>
-<br>
-<span style="font-style: italic;">/** Retrieves
-the interpolation weights for each of the verticies of the&nbsp;
-intersected primitive. */</span><br>
-method: public
-float[] getWeights()<br>
+Geometry getGeometry() <span style="font-style: italic;"></span><br>
 <br>
 <span style="font-style: italic;">/** Retrieves
 the reference to the intersection point of the picked geometry in this
@@ -186,9 +180,22 @@ IntersectionInfo object. */</span><br>
 method: public
 Point3d getIntersectionPoint()<br>
 <br>
+<span style="font-style: italic;">/**
+Retrieves
+the distance between the start point of the pickShape and the&nbsp;
+intersection point. */</span><br>
+method: public
+double getDistance()<br>
+<br>
 <span style="font-style: italic;">/** Retrieves
 the vertex indices of the intersected primitive in the geometry. */</span><br>
 method: public int[] getVertexIndices()<br>
+<br>
+<span style="font-style: italic;">/** Retrieves
+the interpolation weights for each of the verticies of the&nbsp;
+intersected primitive. */</span><br>
+method: public
+float[] getWeights()<br>
 <br>
 </div>
 <p><font color="gray">Page last updated &#8212;
