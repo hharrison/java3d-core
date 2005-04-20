@@ -26,15 +26,30 @@ Java&nbsp;3D version 1.4</a> is also available.
   <tbody>
     <tr>
       <td
- style="text-align: left; vertical-align: top; background-color: rgb(255, 255, 225);">
+ style="text-align: left; vertical-align: top; background-color: rgb(255, 255, 225); width: 60%;">
       <h3>1.4 Committed Features<br>
       </h3>
       <p>This list of high priority features will almost certainly make
 it
 into the 1.4 version of the Java&nbsp;3D API.</p>
+      <div style="margin-left: 26px;">In Process:<br>
+      </div>
       <ul>
         <li><a href="shaders.html">Programmable
 Shaders</a></li>
+        <li>Additional blending functions, for example: <code>BLEND_SRC_COLOR</code>,
+          <code>BLEND_ONE_MINUS_SRC_COLOR</code>, <code>BLEND_DST_COLOR</code>,
+          <code>BLEND_ONE_MINUS_DST_COLOR</code>, etc.</li>
+        <li><a href="picking.html">Additional
+core picking methods</a> (in
+Locale and BranchGroup)</li>
+        <li><a href="stencil.html">Stencil
+buffer</a><br>
+        </li>
+      </ul>
+      <div style="margin-left: 26px;">Completed:<br>
+      </div>
+      <ul>
         <li><a href="graph-change-listener.html">Scene
 graph structure change
 listeners</a></li>
@@ -56,15 +71,6 @@ method and <a
  href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/Node.html#ALLOW_LOCALE_READ"><code>ALLOW_LOCALE_READ</code></a>
 capability bit to <code>Node</code>
 class<br>
-        </li>
-        <li>Additional blending functions, for example: <code>BLEND_SRC_COLOR</code>,
-          <code>BLEND_ONE_MINUS_SRC_COLOR</code>, <code>BLEND_DST_COLOR</code>,
-          <code>BLEND_ONE_MINUS_DST_COLOR</code>, etc.</li>
-        <li><a href="picking.html">Additional
-core picking methods</a> (in
-Locale and BranchGroup)</li>
-        <li><a href="stencil.html">Stencil
-buffer</a><br>
         </li>
       </ul>
       <p>This is a list of features that we propose to <a
@@ -100,24 +106,8 @@ in a utility)</li>
 possible inclusion
 into the 1.4 or 1.5 API (or beyond). </p>
       <ul>
-        <li>Non-power-of-two textures</li>
-        <li>Point sprites</li>
-        <li><a href="vsg-op.html">Ability
-for nested ViewSpecificGroup nodes
-to replace the set of views</a><br>
-        </li>
-        <li>API support for&nbsp; retained alpha buffers</li>
-        <li>Ability to query properties from a <code>GraphicsConfiguration</code></li>
-        <li>Better support for off-screen configuration parameters
-(e.g., an
-attribute in <code>GraphicsConfigTemplate3D</code> indicating whether
-the requested <code>GraphicsConfiguration</code> is used for on-screen
-rendering,
-off-screen rendering, or both)</li>
-        <li>Enhance <code>getLocalToVWorld()</code> to return a valid
-result
-for non-live graphs.</li>
-        <li><a href="lightweight-canvas3d.html">Lightweight
+        <li><a
+ href="file:///home/kcr/java3d/1.3.3/j3d-core/www/j3d1_4/lightweight-canvas3d.html">Lightweight
 Canvas3D (e.g.,
 JCanvas3D)</a>. <span style="color: rgb(204, 0, 0);">Note: this
 feature
@@ -143,7 +133,27 @@ method in the <code>Font3D</code> class. <span
  style="color: rgb(204, 0, 0);">Note: this feature will not
 happen
 without an someone from the community volunteering
-to drive it.</span><span style="color: rgb(204, 0, 0);"></span></li>
+to drive it.</span></li>
+      </ul>
+      <span style="color: rgb(204, 0, 0);"></span>
+      <ul>
+        <li>Non-power-of-two textures</li>
+        <li>Point sprites</li>
+        <li><a href="vsg-op.html">Ability
+for nested ViewSpecificGroup nodes
+to replace the set of views</a><br>
+        </li>
+        <li>API support for&nbsp; retained alpha buffers</li>
+        <li>Ability to query properties from a <code>GraphicsConfiguration</code></li>
+        <li>Better support for off-screen configuration parameters
+(e.g., an
+attribute in <code>GraphicsConfigTemplate3D</code> indicating whether
+the requested <code>GraphicsConfiguration</code> is used for on-screen
+rendering,
+off-screen rendering, or both)</li>
+        <li>Enhance <code>getLocalToVWorld()</code> to return a valid
+result
+for non-live graphs.</li>
         <li>Additional texture formats:
           <ul>
             <li>NIO buffer support</li>
@@ -155,7 +165,7 @@ to drive it.</span><span style="color: rgb(204, 0, 0);"></span></li>
     </tr>
     <tr>
       <td
- style="text-align: left; vertical-align: top; background-color: rgb(255, 255, 203);">
+ style="text-align: left; vertical-align: top; background-color: rgb(255, 255, 203); width: 60%;">
       <h3>1.5 Proposed Major Features</h3>
       <p>This list of high priority features is being seriously
 considered for the 1.5 version of the Java&nbsp;3D API.</p>
@@ -168,7 +178,7 @@ considered for the 1.5 version of the Java&nbsp;3D API.</p>
     </tr>
     <tr>
       <td
- style="text-align: left; vertical-align: top; background-color: rgb(255, 255, 182);">
+ style="text-align: left; vertical-align: top; background-color: rgb(255, 255, 182); width: 60%;">
       <h3>1.6 Possible Major Features</h3>
       <p><span style="font-style: italic;">Not yet planned</span><br>
       </p>
@@ -176,7 +186,7 @@ considered for the 1.5 version of the Java&nbsp;3D API.</p>
     </tr>
     <tr>
       <td
- style="text-align: left; vertical-align: top; background-color: rgb(255, 255, 164);">
+ style="text-align: left; vertical-align: top; background-color: rgb(255, 255, 164); width: 60%;">
       <h3><a name="Future_Features"></a>2.0 Possible Major Features</h3>
       <p>Here is an unprioritized list of possible features under
 consideration for a future 2.0 version of the Java&nbsp;3D API. </p>
