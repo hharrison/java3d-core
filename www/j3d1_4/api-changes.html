@@ -69,12 +69,12 @@ I. New/deprecated fields, constructors, methods
 			     int texCoordSetCount,
 			     int[] texCoordSetMap,
 			     int vertexAttrCount,
-			     int[] vertexAttrFormats,
+			     int[] vertexAttrSizes,
 			     String[] vertexAttrNames)
 
     New methods:
 	public int getVertexAttrCount()
-	public void getVertexAttrFormats(int[] vertexAttrFormats)
+	public void getVertexAttrSizes(int[] vertexAttrSizes)
 	public void getVertexAttrNames(String[] vertexAttrNames)
 
 
@@ -93,6 +93,26 @@ I. New/deprecated fields, constructors, methods
     New methods:
 	public void addGraphStructureChangeListener(GraphStructureChangeListener listener)
 	public void removeGraphStructureChangeListener(GraphStructureChangeListener listener)
+	public void addShaderErrorListener(ShaderErrorListener listener)
+	public void removeShaderErrorListener(ShaderErrorListener listener)
+
+
+    Locale
+    ------
+    New methods:
+	public PickInfo[] pickAll( int mode, int flags, PickShape pickShape )
+	public PickInfo[] pickAllSorted( int mode, int flags, PickShape pickShape )
+	public PickInfo pickClosest( int mode, int flags, PickShape pickShape )
+	public PickInfo pickAny( int mode, int flags, PickShape pickShape )
+
+
+    BranchGroup
+    -----------
+    New methods:
+	public PickInfo[] pickAll( int mode, int flags, PickShape pickShape )
+	public PickInfo[] pickAllSorted( int mode, int flags, PickShape pickShape )
+	public PickInfo pickClosest( int mode, int flags, PickShape pickShape )
+	public PickInfo pickAny( int mode, int flags, PickShape pickShape )
 
 
     Sensor
@@ -151,45 +171,41 @@ III. New classes and interfaces (in javax.media.j3d)
     ------
 	public abstract class Shader extends NodeComponent
 
+    SourceCodeShader
+    ----------------
+	public class SourceCodeShader extends Shader
+
     ShaderProgram
     -------------
 	public abstract class ShaderProgram extends NodeComponent
-
-    CgShader
-    --------
-	public abstract class CgShader extends Shader
-
-    CgFragmentShader
-    ----------------
-	public class CgFragmentShader extends CgShader
-
-    CgVertexShader
-    --------------
-	public class CgVertexShader extends CgShader
 
     CgShaderProgram
     ---------------
 	public class CgShaderProgram extends ShaderProgram
 
-    GLSLShader
-    ----------
-	public abstract class GLSLShader extends Shader
-
-    GLSLFragmentShader
-    ------------------
-	public class GLSLFragmentShader extends GLSLShader
-
-    GLSLVertexShader
-    ----------------
-	public class GLSLVertexShader extends GLSLShader
-
     GLSLShaderProgram
     -----------------
 	public class GLSLShaderProgram extends ShaderProgram
 
+    ShaderError
+    -----------
+	public class ShaderError extends Object
+
+    ShaderErrorListener
+    -------------------
+	public interface ShaderErrorListener
+
     GraphStructureChangeListener
     ----------------------------
 	public interface GraphStructureChangeListener
+
+    PickInfo
+    --------
+	public class PickInfo extends Object
+
+    PickInfo.IntersectionInfo
+    -------------------------
+	public class PickInfo.IntersectionInfo extends Object
 
 
 IV. Deprecated classes and interfaces (in javax.media.j3d)
