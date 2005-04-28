@@ -76,6 +76,69 @@ I. New/deprecated fields, constructors, methods
 	public int getVertexAttrCount()
 	public void getVertexAttrSizes(int[] vertexAttrSizes)
 	public void getVertexAttrNames(String[] vertexAttrNames)
+	public void setVertexAttr(int vertexAttrNum, int index,
+				  float[] vertexAttr)
+	public void setVertexAttr(int vertexAttrNum, int index,
+				  Point2f vertexAttr)
+	public void setVertexAttr(int vertexAttrNum, int index,
+				  Point3f vertexAttr)
+	public void setVertexAttr(int vertexAttrNum, int index,
+				  Point4f vertexAttr)
+	public void setVertexAttrs(int vertexAttrNum, int index,
+				   float[] vertexAttrs)
+	public void setVertexAttrs(int vertexAttrNum, int index,
+				   Point2f[] vertexAttrs)
+	public void setVertexAttrs(int vertexAttrNum, int index,
+				   Point3f[] vertexAttrs)
+	public void setVertexAttrs(int vertexAttrNum, int index,
+				   Point4f[] vertexAttrs)
+	public void setVertexAttrs(int vertexAttrNum, int index,
+				   float[] vertexAttrs,
+				   int start, int length)
+	public void setVertexAttrs(int vertexAttrNum, int index,
+				   Point2f[] vertexAttrs,
+				   int start, int length)
+	public void setVertexAttrs(int vertexAttrNum, int index,
+				   Point3f[] vertexAttrs,
+				   int start, int length)
+	public void setVertexAttrs(int vertexAttrNum, int index,
+				   Point4f[] vertexAttrs,
+				   int start, int length)
+	public void getVertexAttr(int vertexAttrNum, int index,
+				  float[] vertexAttr)
+	public void getVertexAttr(int vertexAttrNum, int index,
+				  Point2f vertexAttr)
+	public void getVertexAttr(int vertexAttrNum, int index,
+				  Point3f vertexAttr)
+	public void getVertexAttr(int vertexAttrNum, int index,
+				  Point4f vertexAttr)
+	public void getVertexAttrs(int vertexAttrNum, int index,
+				   float[] vertexAttrs)
+	public void getVertexAttrs(int vertexAttrNum, int index,
+				   Point2f[] vertexAttrs)
+	public void getVertexAttrs(int vertexAttrNum, int index,
+				   Point3f[] vertexAttrs)
+	public void getVertexAttrs(int vertexAttrNum, int index,
+				   Point4f[] vertexAttrs)
+	public void setInitialVertexAttrIndex(int vertexAttrNum,
+					      int initialVertexAttrIndex)
+	public int getInitialVertexAttrIndex(int vertexAttrNum)
+	public void setVertexAttrRefBuffer(int vertexAttrNum, J3DBuffer vertexAttrs)
+	public J3DBuffer getVertexAttrRefBuffer(int vertexAttrNum)
+	public void setVertexAttrRefFloat(int vertexAttrNum, float[] vertexAttrs)
+	public float[] getVertexAttrRefFloat(int vertexAttrNum)
+
+
+    TriangleArray
+    -------------
+    New constructors:
+	public TriangleArray(int vertexCount,
+			     int vertexFormat,
+			     int texCoordSetCount,
+			     int[] texCoordSetMap,
+			     int vertexAttrCount,
+			     int[] vertexAttrSizes,
+			     String[] vertexAttrNames)
 
 
     Node
