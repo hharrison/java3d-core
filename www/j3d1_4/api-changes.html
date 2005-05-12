@@ -49,6 +49,12 @@ to the Java&nbsp;3D API.
 <pre>
 I. New/deprecated fields, constructors, methods
 
+    Canvas3D
+    --------
+    New methods:
+	public boolean isShadingLanguageSupported(int shadingLanguage)
+
+
     SceneGraphObject
     ----------------
     New methods:
@@ -69,13 +75,11 @@ I. New/deprecated fields, constructors, methods
 			     int texCoordSetCount,
 			     int[] texCoordSetMap,
 			     int vertexAttrCount,
-			     int[] vertexAttrSizes,
-			     String[] vertexAttrNames)
+			     int[] vertexAttrSizes)
 
     New methods:
 	public int getVertexAttrCount()
 	public void getVertexAttrSizes(int[] vertexAttrSizes)
-	public void getVertexAttrNames(String[] vertexAttrNames)
 	public void setVertexAttr(int vertexAttrNum, int index,
 				  float[] vertexAttr)
 	public void setVertexAttr(int vertexAttrNum, int index,
@@ -137,8 +141,7 @@ I. New/deprecated fields, constructors, methods
 			     int texCoordSetCount,
 			     int[] texCoordSetMap,
 			     int vertexAttrCount,
-			     int[] vertexAttrSizes,
-			     String[] vertexAttrNames)
+			     int[] vertexAttrSizes)
 
 
     Node
@@ -193,6 +196,28 @@ I. New/deprecated fields, constructors, methods
 	public void setPredictionPolicy(int policy)
 	public int getPredictionPolicy()
 	public void getRead(Transform3D read, long deltaT)
+
+
+    RenderingAttributes
+    -----------
+    New fields:
+	public static final int ALLOW_DEPTH_TEST_FUNCTION_READ
+	public static final int ALLOW_DEPTH_TEST_FUNCTION_WRITE
+
+    New constructors:
+	public RenderingAttributes(boolean depthBufferEnable,
+				   boolean depthBufferWriteEnable,
+				   int depthTestFunction,
+				   float alphaTestValue,
+				   int alphaTestFunction,
+				   boolean visible,
+				   boolean ignoreVertexColors,
+				   boolean rasterOpEnable,
+				   int rasterOp)
+
+    New methods:
+	public void setDepthTestFunction(int function)
+	public int getDepthTestFunction()
 
 
 II. Reparented classes

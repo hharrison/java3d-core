@@ -70,8 +70,14 @@ to be called on live/compiled scene graph</li>
 method and <a
  href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/Node.html#ALLOW_LOCALE_READ"><code>ALLOW_LOCALE_READ</code></a>
 capability bit to <code>Node</code>
-class<br>
-        </li>
+class</li>
+        <li>Add a new attribute for depth test function to
+RenderingAttributes: public <a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/RenderingAttributes.html#setDepthTestFunction%28int%29"><code>get/setDepthTestFunction(int&nbsp;function)</code></a>
+methods that takes as values one of: <code>ALWAYS, NEVER,
+EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER, GREATER_OR_EQUAL</code>.
+The default value is <code>LESS_OR_EQUAL</code> for backward
+compatibility.</li>
       </ul>
       <p>This is a list of features that we propose to <a
  href="#Footnote_1">deprecate<sup>1</sup></a> in
@@ -110,16 +116,6 @@ into the 1.4 or 1.5 API (or beyond). </p>
 Canvas3D (e.g.,
 JCanvas3D)</a>. <span style="color: rgb(204, 0, 0);">Note: this
 feature
-will not
-happen
-without an someone from the community volunteering
-to drive it.</span></li>
-        <li>Add a new attribute for depth test function to
-RenderingAttributes: public <code>get/setDepthTestFunction(int&nbsp;function)</code>
-methods that takes as values one of: <code>ALWAYS, NEVER,
-EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER, GREATER_OR_EQUAL</code>.
-The default value would be <code>LESS_OR_EQUAL</code> for backward
-compatibility. <span style="color: rgb(204, 0, 0);">Note: this feature
 will not
 happen
 without an someone from the community volunteering
