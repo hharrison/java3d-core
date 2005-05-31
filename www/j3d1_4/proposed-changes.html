@@ -78,6 +78,10 @@ methods that takes as values one of: <code>ALWAYS, NEVER,
 EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER, GREATER_OR_EQUAL</code>.
 The default value is <code>LESS_OR_EQUAL</code> for backward
 compatibility.</li>
+        <li>Method to retrieve the geometry data from the tessellation
+of a glyph in a 3D font: a public <a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/Font3D.html#getGlyphGeometry%28char%29"><code>GeometryArray&nbsp;getGlyphGeometry(char&nbsp;glyphCode)</code></a>
+method in the <code>Font3D</code> class</li>
       </ul>
       <p>This is a list of features that we propose to <a
  href="#Footnote_1">deprecate<sup>1</sup></a> in
@@ -117,15 +121,6 @@ Canvas3D (e.g.,
 JCanvas3D)</a>. <span style="color: rgb(204, 0, 0);">Note: this
 feature
 will not
-happen
-without an someone from the community volunteering
-to drive it.</span></li>
-        <li>Method to retrieve the geometry data from the tessellation
-of a
-glyph in a 3D font: a
-public <code>GeometryArray&nbsp;getGlyphGeometry(</code><code>int&nbsp;glyphCode</code><code>)</code>
-method in the <code>Font3D</code> class. <span
- style="color: rgb(204, 0, 0);">Note: this feature will not
 happen
 without an someone from the community volunteering
 to drive it.</span></li>
