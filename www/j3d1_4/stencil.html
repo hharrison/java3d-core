@@ -21,7 +21,7 @@ antialiasing is needed. The GraphicsConfiguration is used in turn used
 to create a Canvas3D into which Java&nbsp;3D can render.<br>
 </p>
 <p>We propose to add a
-new StencilSize attribute to GraphicsConfigTemplate3D that will allow
+new stencilSize attribute to GraphicsConfigTemplate3D that will allow
 an application to create a Canvas3D (on-screen or off-screen) with a
 stencil buffer. We also propose to add new attributes to the
 RenderingAttributes object that will allow an application to control
@@ -30,13 +30,19 @@ equivalent OpenGL methods. Note that since multipass support is not yet
 available, applications wishing to use stencil will need to make use of
 OrderedGroup (or use mixed-mode / immediate-mode rendering).<br>
 </p>
+<p>See the new javadoc for more information: <a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/GraphicsConfigTemplate3D.html#setStencilSize%28int%29">GraphicsConfigTemplate3D.setStencilSize</a>,
+<a
+ href="http://javadesktop.org/java3d/javadoc/1.4.0-latest/javax/media/j3d/RenderingAttributes.html">RenderingAttributes</a>.
+</p>
 <p>The proposed API changes are:<br>
 </p>
 <ul>
-  <li>New methods in existing classes:<br>
+  <li>New fields and set methods in existing classes (will also add get
+methods):<br>
   </li>
   <ul>
-    <pre>GraphicsConfigTemplate3D<br>    method: setStencilSize(int) // default=0<br><br>RenderingAttributes<br>    method: setStencilEnable(boolean enable)<br>    method: setStencilOp(int fail, int zfail, int zpass)<br>    method: setStencilFunc(int func, int ref, int mask)<br>    method: setStencilMask(int mask)<br></pre>
+    <pre>GraphicsConfigTemplate3D<br>    method: setStencilSize(int) // default=0<br><br>RenderingAttributes<br>    fields: ALLOW_STENCIL_ATTRIBUTES_READ/WRITE<br>    fields: STENCIL_KEEP, STENCIL_ZERO, STENCIL_REPLACE,<br>    fields: STENCIL_INCR, STENCIL_DECR, STENCIL_INVERT<br>    method: setStencilEnable(boolean enable)<br>    method: setStencilOp(int fail, int zfail, int zpass)<br>    method: setStencilFunction(int func, int ref, int mask)<br>    method: setStencilWriteMask(int mask)<br></pre>
   </ul>
 </ul>
 <p>Issues:<br>
