@@ -109,7 +109,14 @@ public class ModelClip extends Leaf {
     public static final int ALLOW_SCOPE_WRITE =
     CapabilityBits.MODEL_CLIP_ALLOW_SCOPE_WRITE;
 
-
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_SCOPE_READ,
+        ALLOW_ENABLE_READ,
+        ALLOW_INFLUENCING_BOUNDS_READ,
+        ALLOW_PLANE_READ
+    };
+                
     /**
      * Constructs a ModelClip node with default parameters.  The default
      * values are as follows:
@@ -128,6 +135,9 @@ public class ModelClip extends Leaf {
      */
     public ModelClip() {
 	// Just use the defaults
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+        
     }
 
 
@@ -137,7 +147,10 @@ public class ModelClip extends Leaf {
      * @param planes an array of 6 model clipping planes
      */
     public ModelClip(Vector4d[] planes) {
-	((ModelClipRetained)this.retained).initPlanes(planes);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((ModelClipRetained)this.retained).initPlanes(planes);
     }
 
 
@@ -149,6 +162,9 @@ public class ModelClip extends Leaf {
      * @param enables an array of 6 enable flags
      */
     public ModelClip(Vector4d[] planes, boolean[] enables) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+        
 	((ModelClipRetained)this.retained).initPlanes(planes);
 	((ModelClipRetained)this.retained).initEnables(enables);
     }

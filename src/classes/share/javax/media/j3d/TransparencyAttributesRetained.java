@@ -38,16 +38,6 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
     int srcBlendFunction = TransparencyAttributes.BLEND_SRC_ALPHA;
     int dstBlendFunction = TransparencyAttributes.BLEND_ONE_MINUS_SRC_ALPHA;
 
-    // Here are some blend functions that are used in multi-pass only
-    static final int BLEND_ZERO                = 0;
-    static final int BLEND_ONE                 = 1;
-    static final int BLEND_SRC_ALPHA           = 2;
-    static final int BLEND_ONE_MINUS_SRC_ALPHA = 3;
-    static final int BLEND_DST_COLOR           = 4;
-    static final int BLEND_SRC_COLOR           = 5;
-    static final int BLEND_ONE_MINUS_SRC_COLOR = 6;
-    static final int BLEND_CONSTANT_COLOR      = 7;
-
     /**
      * Sets the transparency mode for this
      * appearance component object.

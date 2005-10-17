@@ -99,7 +99,7 @@ class SoundStructure extends J3dStructure {
 		break;
 	    case J3dMessage.SOUNDSCAPE_CHANGED:
 	    case J3dMessage.AURALATTRIBUTES_CHANGED:
-		// TODO: this needs to be changed
+		// XXXX: this needs to be changed
 		changeNodeAttrib(m);
 		break;
 	    case J3dMessage.TRANSFORM_CHANGED:
@@ -115,7 +115,7 @@ class SoundStructure extends J3dStructure {
 	    case J3dMessage.VIEWSPECIFICGROUP_CHANGED:
 		updateViewSpecificGroupChanged(m);
 		break;
-	    // TODO: case J3dMessage.BOUNDINGLEAF_CHANGED
+	    // XXXX: case J3dMessage.BOUNDINGLEAF_CHANGED
 	    }
 
 	    /*
@@ -187,7 +187,7 @@ class SoundStructure extends J3dStructure {
 	    }
 	}
 	    /*
-	    // TODO:
+	    // XXXX:
             if (node instanceof AuralAttributesRetained) {
             }
             else if (node instanceof ViewPlatformRetained) {
@@ -326,7 +326,7 @@ class SoundStructure extends J3dStructure {
             if (debugFlag)
                 debugPrint("         Sound node dirty bit = " + attribDirty);
             if ((attribDirty & SoundRetained.PRIORITY_DIRTY_BIT) > 0) {
-		// TODO: shuffle in SoundScheduler
+		// XXXX: shuffle in SoundScheduler
 		/*
                 shuffleSound((SoundRetained) node);
 		*/
@@ -346,7 +346,7 @@ class SoundStructure extends J3dStructure {
 /*
             }
 */
-// TODO: have no dirty flag for soundscape, just auralAttributes...
+// XXXX: have no dirty flag for soundscape, just auralAttributes...
 //          what if reference to AA changes in soundscape???
         }
 
@@ -400,7 +400,7 @@ class SoundStructure extends J3dStructure {
             View[] views = vpLists[i].getViewList();
             for (int j=(views.length-1); j>=0; j--) {
                 View v = (View)(views[j]);
-// TODO: Shouldn't this be done with messages??
+// XXXX: Shouldn't this be done with messages??
                 v.soundScheduler.loadSound(sound, forceLoad);
             }
         }        
@@ -501,7 +501,7 @@ class SoundStructure extends J3dStructure {
 
 
 /*
-// TODO: how is immediate mode handled? below code taken from SoundSchedule
+// XXXX: how is immediate mode handled? below code taken from SoundSchedule
 // Don't know how we'll process immediate mode sounds;
 // Append immediate mode sounds to live sounds list
         if (graphicsCtx != null) {

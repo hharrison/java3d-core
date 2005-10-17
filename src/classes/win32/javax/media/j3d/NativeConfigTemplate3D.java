@@ -34,7 +34,8 @@ class NativeConfigTemplate3D {
     final static int DOUBLEBUFFER	= 6;
     final static int STEREO		= 7;
     final static int ANTIALIASING	= 8;
-    final static int NUM_ITEMS		= 9;
+    final static int STENCIL_SIZE       = 9;
+    final static int NUM_ITEMS		= 10;
     
     /**
      * selects the proper visual
@@ -52,6 +53,7 @@ class NativeConfigTemplate3D {
     native boolean isDoubleBufferAvailable(long pFormatInfo, boolean offScreen);
     native boolean isSceneAntialiasingAccumAvailable(long pFormatInfo, boolean offScreen);
     native boolean isSceneAntialiasingMultisampleAvailable(long pFormatInfo, boolean offScreen, int screen);
+    native int getStencilSize(long pFormatInfo, boolean offScreen);
 
     /**
      *  Chooses the best PixelFormat for Java 3D apps.
@@ -86,6 +88,9 @@ class NativeConfigTemplate3D {
 	attrList[DOUBLEBUFFER] = template.getDoubleBuffer();
 	attrList[STEREO] = template.getStereo();
 	attrList[ANTIALIASING] = template.getSceneAntialiasing();
+    	attrList[STENCIL_SIZE] = template.getStencilSize();
+	// System.out.println("NativeConfigTemplate3D : getStencilSize " + 
+	// attrList[STENCIL_SIZE]);
 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
 	int screen = nativeScreenInfo.getScreen();	
 
@@ -119,10 +124,14 @@ class NativeConfigTemplate3D {
 	// returns, since this is not cached with J3dGraphicsConfig and there
 	// are no public constructors to allow us to extend it.
 	synchronized (Canvas3D.fbConfigTable) {
-	    if (Canvas3D.fbConfigTable.get(gc1) == null)
-		Canvas3D.fbConfigTable.put(gc1, new Long(pFormatInfo[0]));
-	    else 
+	    if (Canvas3D.fbConfigTable.get(gc1) == null) {
+                GraphicsConfigInfo gcInfo = new GraphicsConfigInfo();
+                gcInfo.setFBConfig(pFormatInfo[0]);
+                gcInfo.setRequestedStencilSize(attrList[STENCIL_SIZE]);
+		Canvas3D.fbConfigTable.put(gc1, gcInfo);
+            } else {
 		freePixelFormatInfo(pFormatInfo[0]);
+            }
 	}
 
 	return gc1;
@@ -161,6 +170,9 @@ class NativeConfigTemplate3D {
 	attrList[DOUBLEBUFFER] = template.getDoubleBuffer();
 	attrList[STEREO] = template.getStereo();
         attrList[ANTIALIASING] = template.getSceneAntialiasing();
+    	attrList[STENCIL_SIZE] = template.getStencilSize();
+	// System.out.println("NativeConfigTemplate3D : getStencilSize " + 
+	// attrList[STENCIL_SIZE]);
 
 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
 	int screen = nativeScreenInfo.getScreen();	
@@ -177,7 +189,8 @@ class NativeConfigTemplate3D {
 	if (pixelFormat < 0) {
 	    // current mode don't support the minimum config
 	    return false;
-	} else return true;
+	} else 
+            return true;
     }
 
 
@@ -186,6 +199,11 @@ class NativeConfigTemplate3D {
 	return isStereoAvailable(c3d.fbConfig, c3d.offScreen);
     }
 
+    // Return the stencil of this canvas.
+    int getStencilSize(Canvas3D c3d) {
+        return getStencilSize(c3d.fbConfig, c3d.offScreen);
+    }
+    
     // Return whether a double buffer is available.
     boolean hasDoubleBuffer(Canvas3D c3d) {
 	return isDoubleBufferAvailable(c3d.fbConfig, c3d.offScreen);

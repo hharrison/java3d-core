@@ -111,6 +111,14 @@ public class Shape3D extends Leaf {
     public static final int ALLOW_APPEARANCE_OVERRIDE_WRITE =
 	CapabilityBits.SHAPE3D_ALLOW_APPEARANCE_OVERRIDE_WRITE;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_GEOMETRY_READ,
+        ALLOW_APPEARANCE_READ,
+        ALLOW_COLLISION_BOUNDS_READ,        
+        ALLOW_APPEARANCE_OVERRIDE_READ        
+    };
+    
     /**
      * Constructs a Shape3D node with default parameters.  The default
      * values are as follows:
@@ -127,6 +135,8 @@ public class Shape3D extends Leaf {
      * that default values are used for all appearance attributes.
      */
     public Shape3D() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);        
     }
 
     /**
@@ -141,7 +151,10 @@ public class Shape3D extends Leaf {
      * this shape node.
      */
     public Shape3D(Geometry geometry) {
-	((Shape3DRetained)retained).setGeometry(geometry, 0);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((Shape3DRetained)retained).setGeometry(geometry, 0);
     }
 
     /**
@@ -155,7 +168,10 @@ public class Shape3D extends Leaf {
      * @param appearance the appearance component of the shape node
      */
     public Shape3D(Geometry geometry, Appearance appearance) {
-	((Shape3DRetained)retained).setGeometry(geometry, 0);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((Shape3DRetained)retained).setGeometry(geometry, 0);
 	((Shape3DRetained)retained).setAppearance(appearance);
     }
 

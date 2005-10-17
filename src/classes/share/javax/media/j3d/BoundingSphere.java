@@ -1073,7 +1073,7 @@ public class BoundingSphere extends Bounds {
 	Point3d dir = new Point3d();  // normalized direction of ray
 	Point3d oc  = new Point3d();  // vector from sphere center to ray origin
 
-	oc.x = center.x - origin.x;   // TODO check if this method is still needed
+	oc.x = center.x - origin.x;   // XXXX: check if this method is still needed
 	oc.y = center.y - origin.y;
 	oc.z = center.z - origin.z;
 

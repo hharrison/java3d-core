@@ -64,6 +64,11 @@ public class Switch extends Group {
      */
     public static final int CHILD_MASK = -3;
 
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_SWITCH_READ
+    };
+    
     /**
      * Constructs a Switch node with default parameters.
      * The default values are as follows:
@@ -73,6 +78,8 @@ public class Switch extends Group {
      * </ul>
      */
     public Switch() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);        
     }
 
     /**
@@ -81,7 +88,10 @@ public class Switch extends Group {
      * @param whichChild the initial child selection index
      */
     public Switch(int whichChild) {
-	((SwitchRetained)this.retained).setWhichChild(whichChild, true);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);        
+
+        ((SwitchRetained)this.retained).setWhichChild(whichChild, true);
     }
 
     /**
@@ -91,7 +101,10 @@ public class Switch extends Group {
      * @param childMask the initial child selection mask
      */
     public Switch(int whichChild, BitSet childMask){
-	((SwitchRetained)this.retained).setWhichChild(whichChild, true);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);        
+
+        ((SwitchRetained)this.retained).setWhichChild(whichChild, true);
 	((SwitchRetained)this.retained).setChildMask(childMask);
     }
 

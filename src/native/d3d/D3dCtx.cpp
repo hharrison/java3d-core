@@ -20,14 +20,14 @@ D3dCtxVector d3dCtxList;
  * D3dCtx ctx* = new D3dCtx(env, obj, hwnd, offScreen, vid);
  * if (ctx->initialize(env, obj)) {
  *     delete ctx;
- * } 
+ * }
  * d3dCtxList.push_back(ctx);
- * 
+ *
  *
  * When ctx remove :
  *
  * d3dCtxList.erase(find(d3dCtxList.begin(), d3dCtxList.end(), ctx);
- * delete ctx; 
+ * delete ctx;
  *
  */
 
@@ -37,10 +37,10 @@ D3dCtx::D3dCtx(JNIEnv* env, jobject obj, HWND _hwnd, BOOL _offScreen,
 	       jint vid)
 {
     int i;
-
+    jniEnv = env;
     monitor = NULL;
     hwnd = _hwnd;
-    pD3D = NULL;    
+    pD3D = NULL;
     pDevice = NULL;
     offScreen = _offScreen;
     offScreenWidth = 0;
@@ -57,6 +57,7 @@ D3dCtx::D3dCtx(JNIEnv* env, jobject obj, HWND _hwnd, BOOL _offScreen,
     inToggle = false;
     useFreeList0 = true;
     reIndexifyTable = NULL;
+	bFastDrawQuads = getSystemProperty(env,"j3d.d3dForceFastQuads","true");
 
     // set default RenderingState variable
     cullMode = D3DCULL_CW;
@@ -107,37 +108,37 @@ D3dCtx::D3dCtx(JNIEnv* env, jobject obj, HWND _hwnd, BOOL _offScreen,
     bindTextureId = NULL;
     bindTextureIdLen = 0;
 
-    textureTable = (LPDIRECT3DTEXTURE8 *) malloc(
-  	  	       sizeof(LPDIRECT3DTEXTURE8) * TEXTURETABLESIZE);
+    textureTable = (LPDIRECT3DTEXTURE9 *) malloc(
+  	  	       sizeof(LPDIRECT3DTEXTURE9) * TEXTURETABLESIZE);
 
     if (textureTable == NULL) {
 	error(OUTOFMEMORY);
 	exit(1);
     }
-    ZeroMemory(textureTable, sizeof(LPDIRECT3DTEXTURE8)*TEXTURETABLESIZE);
+    ZeroMemory(textureTable, sizeof(LPDIRECT3DTEXTURE9)*TEXTURETABLESIZE);
     textureTableLen = TEXTURETABLESIZE;
 
     bindTextureId = NULL;
 
-    volumeTable = (LPDIRECT3DVOLUMETEXTURE8 *) malloc(
-  	  	       sizeof(LPDIRECT3DVOLUMETEXTURE8) * TEXTURETABLESIZE);
+    volumeTable = (LPDIRECT3DVOLUMETEXTURE9 *) malloc(
+  	  	       sizeof(LPDIRECT3DVOLUMETEXTURE9) * TEXTURETABLESIZE);
 
     if (volumeTable == NULL) {
 	error(OUTOFMEMORY);
 	exit(1);
     }
-    ZeroMemory(volumeTable, sizeof(LPDIRECT3DVOLUMETEXTURE8)*TEXTURETABLESIZE);
+    ZeroMemory(volumeTable, sizeof(LPDIRECT3DVOLUMETEXTURE9)*TEXTURETABLESIZE);
     volumeTableLen = TEXTURETABLESIZE;
 
 
-    cubeMapTable = (LPDIRECT3DCUBETEXTURE8 *) malloc(
-  	  	       sizeof(LPDIRECT3DCUBETEXTURE8) * TEXTURETABLESIZE);
+    cubeMapTable = (LPDIRECT3DCUBETEXTURE9 *) malloc(
+  	  	       sizeof(LPDIRECT3DCUBETEXTURE9) * TEXTURETABLESIZE);
 
     if (cubeMapTable == NULL) {
 	error(OUTOFMEMORY);
 	exit(1);
     }
-    ZeroMemory(cubeMapTable, sizeof(LPDIRECT3DCUBETEXTURE8)*TEXTURETABLESIZE);
+    ZeroMemory(cubeMapTable, sizeof(LPDIRECT3DCUBETEXTURE9)*TEXTURETABLESIZE);
     cubeMapTableLen = TEXTURETABLESIZE;
 
 
@@ -152,14 +153,14 @@ D3dCtx::D3dCtx(JNIEnv* env, jobject obj, HWND _hwnd, BOOL _offScreen,
     if (d3dDriverList == NULL) {
 
 	// keep trying to initialize even though
-	// last time it fail. 
+	// last time it fail.
         D3dDriverInfo::initialize(env);
     }
 
     if (d3dDriverList == NULL) {
 	/*
 	 * This happen when either
-	 * (1) D3D v8.0 not install or
+	 * (1) D3D v9.0 not install or
 	 * (2) Not enough memory    or
 	 * (3) No adapter found in the system.
 	 */
@@ -167,13 +168,13 @@ D3dCtx::D3dCtx(JNIEnv* env, jobject obj, HWND _hwnd, BOOL _offScreen,
         return;
     }
 
-    pD3D = Direct3DCreate8( D3D_SDK_VERSION );
+    pD3D = Direct3DCreate9( D3D_SDK_VERSION );
 
     if (pD3D == NULL) {
         error(D3DNOTFOUND);
 	return;
     }
-    // find current monitor handle before 
+    // find current monitor handle before
     // get current display mode
     monitor = findMonitor();
 
@@ -185,7 +186,7 @@ D3dCtx::D3dCtx(JNIEnv* env, jobject obj, HWND _hwnd, BOOL _offScreen,
 	warning(NEEDSWITCHMODE);
     }
 
-    // find the adapter for this 
+    // find the adapter for this
     setDriverInfo();
 
     GetWindowRect(topHwnd, &savedTopRect);
@@ -193,9 +194,9 @@ D3dCtx::D3dCtx(JNIEnv* env, jobject obj, HWND _hwnd, BOOL _offScreen,
 
     for (i=0; i < 4; i++) {
 	rasterRect[i].sx = 0;
-	rasterRect[i].sy = 0;    
+	rasterRect[i].sy = 0;
 	rasterRect[i].sz = 0;
-	rasterRect[i].rhw = 0;    
+	rasterRect[i].rhw = 0;
     }
 
     rasterRect[0].tu = 0;
@@ -216,7 +217,7 @@ D3dCtx::D3dCtx(JNIEnv* env, jobject obj, HWND _hwnd, BOOL _offScreen,
     GetWindowRect(hwnd, &windowRect);
 }
 
-D3dCtx::~D3dCtx() 
+D3dCtx::~D3dCtx()
 {
     release();
     SafeRelease(pD3D);
@@ -270,7 +271,7 @@ VOID D3dCtx::releaseTexture()
     D3dImageComponent::remove(&BackgroundImageList, this);
     unlockBackground();
 
-    // free list0 
+    // free list0
     freeList();
     // free list1
     freeList();
@@ -281,7 +282,7 @@ VOID D3dCtx::setViewport()
     int renderWidth = getWidth();
     int renderHeight = getHeight();
     HRESULT hr;
-    D3DVIEWPORT8 vp = {0, 0, renderWidth, renderHeight, 0.0f, 1.0f};
+    D3DVIEWPORT9 vp = {0, 0, renderWidth, renderHeight, 0.0f, 1.0f};
 
     hr = pDevice->SetViewport( &vp );
 
@@ -314,14 +315,15 @@ VOID D3dCtx::releaseVB()
     while (p != NULL) {
 	vbVector = p->vbVector;
 	if (vbVector != NULL) {
-	    for (r = vbVector->begin(); r != vbVector->end(); ++r) {
+	   for (ITER_LPD3DVERTEXBUFFER r = vbVector->begin();
+			  r != vbVector->end(); ++r) {
 		if (*r == p) {
 		    vbVector->erase(r);
 		    found = true;
 		    break;
 		}
 	    }
-	} 
+	}
 	q = p;
 	p = p->next;
 	delete q;
@@ -352,7 +354,7 @@ VOID D3dCtx::release()
     quadIndexBufferSize = 0;
     releaseVB();
 
-    // trying to free VertexBuffer 
+    // trying to free VertexBuffer
     // This will crash the driver if Indices/StreamSource
     // Not set before.
     //	pDevice->SetIndices(NULL, 0);
@@ -360,7 +362,7 @@ VOID D3dCtx::release()
     SafeRelease(depthStencilSurface);
     SafeRelease(frontSurface);
     SafeRelease(backSurface);
-    
+
     SafeRelease(pDevice);
     currDisplayListID = 0;
     multiTextureSupport = false;
@@ -397,7 +399,7 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 	oldWidth = offScreenWidth;
 	offScreenWidth = driverInfo->desktopMode.Width;
 	needBiggerRenderSurface = true;
-	
+
     }
 
     if (offScreenHeight > driverInfo->desktopMode.Height) {
@@ -410,7 +412,7 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 	needBiggerRenderSurface = true;
     }
     */
-    
+
     if (!bFullScreen) {
 	getScreenRect(hwnd, &savedClientRect);
 	CopyMemory(&screenRect, &savedClientRect, sizeof (RECT));
@@ -419,21 +421,22 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
     dwBehavior = findBehavior();
 
     if (debug) {
-	printf("Use %s, ", driverInfo->adapterIdentifier.Description);
-	
+	printf("[Java3D]: Use %s, ", driverInfo->adapterIdentifier.Description);
+
 	if (deviceInfo->isHardwareTnL &&
-	    (dwBehavior == D3DCREATE_SOFTWARE_VERTEXPROCESSING)) {
+	    (dwBehavior == D3DCREATE_SOFTWARE_VERTEXPROCESSING))
+	{
 	    // user select non-TnL device
 	    printf("Hardware Rasterizer\n");
 	} else {
-	    printf("%s \n",   deviceInfo->deviceName);
+	    printf("%s (TnL) \n",   deviceInfo->deviceName);
 	}
     }
 
     setPresentParams(env, obj);
-	
+
     if (debug) {
-	printf("\nCreate device :\n");
+	printf("\n[Java3D]: Create device :\n");
 	printInfo(&d3dPresent);
     }
 
@@ -441,27 +444,75 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
     if ((d3dPresent.BackBufferWidth <= 0) ||
 	(d3dPresent.BackBufferHeight <= 0)) {
 	if (debug) {
-	    printf("D3D: Can't create device of buffer size %dx%d\n",
+	    printf("[Java3D]: D3D: Can't create device of buffer size %dx%d\n",
 		   d3dPresent.BackBufferWidth,
 		   d3dPresent.BackBufferHeight);
 	}
 	return false;
     }
 
-    hr = pD3D->CreateDevice(driverInfo->iAdapter,
+if(bUseNvPerfHUD)
+{
+   // using NVIDIA NvPerfHUD profiler
+   printf("\n[Java3D]: running in NVIDIA NvPerfHUD mode:");
+   UINT adapterToUse=driverInfo->iAdapter;
+   D3DDEVTYPE deviceType=deviceInfo->deviceType;
+   DWORD behaviorFlags = dwBehavior;
+   bool isHUDavail = false;
+
+   // Look for 'NVIDIA NVPerfHUD' adapter
+   // If it is present, override default settings
+   for (UINT adapter=0;adapter<pD3D->GetAdapterCount(); adapter++)
+   {
+    D3DADAPTER_IDENTIFIER9 identifier;
+    HRESULT Res=pD3D->GetAdapterIdentifier(adapter,0,&identifier);
+    printf("\n Adapter identifier : %s",identifier.Description);
+    if (strcmp(identifier.Description,"NVIDIA NVPerfHUD")==0)
+	{
+	     adapterToUse=adapter;
+		 deviceType=D3DDEVTYPE_REF;
+		 behaviorFlags = D3DCREATE_HARDWARE_VERTEXPROCESSING;
+         isHUDavail = true;
+         printf("\n[Java3D]: found  a NVIDIA NvPerfHUD adapter");
+		 break;
+	}
+   }
+   hr = pD3D->CreateDevice( adapterToUse,
+		                      deviceType,
+							  topHwnd,
+                              behaviorFlags,
+                              &d3dPresent,
+							  &pDevice);
+   if(!FAILED(hr)&& isHUDavail)
+   {
+     printf("\n[Java3D]: Using NVIDIA NvPerfHUD ! \n");
+   }
+   else
+   {
+	    printf("\n[Java3D]: No suitable device found for NVIDIA NvPerfHUD ! \n");
+   }
+}
+else
+{
+   // NORMAL Mode
+     hr = pD3D->CreateDevice(driverInfo->iAdapter,
 			    deviceInfo->deviceType,
 			    topHwnd,
 			    dwBehavior,
 			    &d3dPresent,
 			    &pDevice);
+}
 
-    if (FAILED(hr) && (requiredDeviceID < 0)) {
+
+    if (FAILED(hr) && (requiredDeviceID < 0))
+	{
+      printf("\n[Java3D]: Using D3DDEVTYPE_REF mode.\n");
 	if (deviceInfo->deviceType != D3DDEVTYPE_REF) {
 	// switch to reference mode
 	    warning(CREATEDEVICEFAIL, hr);
 	    deviceInfo  = driverInfo->d3dDeviceList[DEVICE_REF];
-	    dwBehavior = findBehavior();	
-	    deviceInfo->findDepthStencilFormat(minZDepth);    
+	    dwBehavior = findBehavior();
+	    deviceInfo->findDepthStencilFormat(minZDepth);
 	    d3dPresent.AutoDepthStencilFormat =
 		deviceInfo->depthStencilFormat;
 	    if (deviceInfo->depthStencilFormat == D3DFMT_UNKNOWN) {
@@ -471,8 +522,8 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 		return false;
 	    }
 	    if (debug) {
-		printf("Fallback to create reference device :\n");
-		printInfo(&d3dPresent);	
+		printf("[Java3D]: Fallback to create reference device :\n");
+		printInfo(&d3dPresent);
 	    }
 
     	    hr = pD3D->CreateDevice(driverInfo->iAdapter,
@@ -482,12 +533,12 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 				    &d3dPresent,
 				    &pDevice);
 	}
-    }		       
+    }
 
     /*
     if (offScreen && needBiggerRenderSurface) {
-	IDirect3DSurface8 *pRenderTarget;
-	IDirect3DSurface8 *pStencilDepthTarget;
+	IDirect3DSurface9 *pRenderTarget;
+	IDirect3DSurface9 *pStencilDepthTarget;
 
 	hr = pDevice->CreateRenderTarget(oldWidth,
 					 oldHeight,
@@ -495,9 +546,9 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 					 D3DMULTISAMPLE_NONE,
 					 true,
 					 &pRenderTarget);
-	
+
 	if (FAILED(hr)) {
-	    printf("Fail to CreateRenderTarget %s\n", DXGetErrorString8(hr));
+	    printf("Fail to CreateRenderTarget %s\n", DXGetErrorString9(hr));
 	} else {
 	    hr = pDevice->CreateDepthStencilSurface(oldWidth,
 						    oldHeight,
@@ -505,13 +556,13 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 						    D3DMULTISAMPLE_NONE,
 						    &pStencilDepthTarget);
 	    if (FAILED(hr)) {
-		printf("Fail to CreateDepthStencilSurface %s\n", DXGetErrorString8(hr));
+		printf("Fail to CreateDepthStencilSurface %s\n", DXGetErrorString9(hr));
 		pRenderTarget->Release();
 	    } else {
 		hr = pDevice->SetRenderTarget(pRenderTarget,
 					     pStencilDepthTarget);
 		if (FAILED(hr)) {
-		    printf("Fail to SetRenderTarget %s\n", DXGetErrorString8(hr));
+		    printf("Fail to SetRenderTarget %s\n", DXGetErrorString9(hr));
 		    pRenderTarget->Release();
 		    pStencilDepthTarget->Release();
 		} else {
@@ -541,8 +592,12 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 	bindTextureIdLen = 1;
     }
 
-    jclass canvasCls =  env->GetObjectClass(obj);
-    jfieldID id = env->GetFieldID(canvasCls, "numTexCoordSupported", "I");    
+
+     jclass canvasCls =  env->GetObjectClass(obj);
+     jfieldID id;
+
+    // TODO check it !!!!
+	 id = env->GetFieldID(canvasCls, "maxTexCoordSets", "I"); //was numtexCoordSupported
     env->SetIntField(obj, id, TEXSTAGESUPPORT);
 
     if (bindTextureIdLen > 1) {
@@ -551,9 +606,11 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 	    bindTextureIdLen = TEXSTAGESUPPORT;
 	}
 	multiTextureSupport = true;
-	id = env->GetFieldID(canvasCls, "multiTexAccelerated", "Z");    
+	id = env->GetFieldID(canvasCls, "multiTexAccelerated", "Z");
 	env->SetBooleanField(obj, id, JNI_TRUE);
-	id = env->GetFieldID(canvasCls, "numTexUnitSupported", "I");    
+
+	// TODO check it !!!!
+	id = env->GetFieldID(canvasCls, "maxTextureUnits", "I"); //was numTexUnitSupported
 	env->SetIntField(obj, id, bindTextureIdLen);
     } else {
 	bindTextureIdLen = 1;
@@ -573,10 +630,10 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 
     if (debug && (deviceInfo != NULL)) {
 	if (multiTextureSupport) {
-	    printf("Max Texture Unit Stage support : %d \n", 
+	    printf("Max Texture Unit Stage support : %d \n",
 		   deviceInfo->maxTextureBlendStages);
 
-	    printf("Max Simultaneous Texture unit support : %d \n", 
+	    printf("Max Simultaneous Texture unit support : %d \n",
 		   deviceInfo->maxSimultaneousTextures);
 	} else {
 	    printf("MultiTexture support : false\n");
@@ -606,7 +663,7 @@ INT D3dCtx::resize(JNIEnv *env, jobject obj)
     BOOL moveRequest;
 
 
-    GetWindowRect(hwnd, &windowRect);		    
+    GetWindowRect(hwnd, &windowRect);
 
     if ((windowRect.right == screenRect.right) &&
 	(windowRect.left == screenRect.left) &&
@@ -624,22 +681,22 @@ INT D3dCtx::resize(JNIEnv *env, jobject obj)
 	moveRequest = false;
     }
 
-        
+
     HMONITOR oldMonitor = monitor;
     monitor =  findMonitor();
 
-    getScreenRect(hwnd, &screenRect);		
+    getScreenRect(hwnd, &screenRect);
 
     if (monitor != oldMonitor) {
-	enumDisplayMode(&devmode);	
+	enumDisplayMode(&devmode);
 	setDriverInfo();
 	release();
 	initialize(env, obj);
-	return RECREATEDDRAW;	
-    } 
+	return RECREATEDDRAW;
+    }
 
      if (!moveRequest) {
-	 
+
 	 retValue = resetSurface(env, obj);
 	 if (retValue != RECREATEDFAIL) {
 	     return retValue;
@@ -656,16 +713,16 @@ INT D3dCtx::toggleMode(BOOL _bFullScreen, JNIEnv *env, jobject obj)
     INT retValue;
 
     if ((pDevice == NULL) ||
-	(!_bFullScreen &&	
+	(!_bFullScreen &&
 	 !deviceInfo->canRenderWindowed)) {
 	// driver did not support window mode
 	return NOCHANGE;
     }
-    
+
     int onScreenCount = 0;
-  
-    for (D3dCtx **p = d3dCtxList.begin(); p != d3dCtxList.end(); p++) {
-	if (!(*p)->offScreen && 
+
+    for (ITER_D3dCtxVector p = d3dCtxList.begin(); p != d3dCtxList.end(); p++) {
+	if (!(*p)->offScreen &&
 	    //	    (monitor == (*p)->monitor) &&
 	    (++onScreenCount > 1)) {
 	    // don't toggle if there are more than one onScreen ctx exists
@@ -683,7 +740,7 @@ INT D3dCtx::toggleMode(BOOL _bFullScreen, JNIEnv *env, jobject obj)
     if (retValue != RECREATEDFAIL) {
 	forceResize = true;
     } else {
-	// Switch back to window mode if fall to toggle fullscreen 
+	// Switch back to window mode if fall to toggle fullscreen
 	// and vice versa
 	bFullScreen = !bFullScreen;
 	release();
@@ -729,7 +786,7 @@ VOID D3dCtx::setPresentParams(JNIEnv *env, jobject obj)
 	GetWindowRect(hwnd, &savedClientRect);
 
 	d3dPresent.Windowed = false;
-	d3dPresent.hDeviceWindow = topHwnd;	    
+	d3dPresent.hDeviceWindow = topHwnd;
 
 	if ((antialiasing != UNNECESSARY) &&
 	    deviceInfo->supportAntialiasing()) {
@@ -741,7 +798,10 @@ VOID D3dCtx::setPresentParams(JNIEnv *env, jobject obj)
 	d3dPresent.BackBufferHeight = driverInfo->desktopMode.Height;
 	d3dPresent.BackBufferFormat = driverInfo->desktopMode.Format;
 	d3dPresent.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
-	d3dPresent.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+	if (deviceInfo->supportRasterPresImmediate)
+	    d3dPresent.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+	else
+		d3dPresent.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 
     } else {
 	d3dPresent.Windowed = true;
@@ -757,7 +817,11 @@ VOID D3dCtx::setPresentParams(JNIEnv *env, jobject obj)
 	d3dPresent.BackBufferHeight = getHeight();
 	d3dPresent.BackBufferFormat = driverInfo->desktopMode.Format;
 	d3dPresent.FullScreen_RefreshRateInHz = 0;
-	d3dPresent.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
+
+	if (deviceInfo->supportRasterPresImmediate)
+	    d3dPresent.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+	else
+		d3dPresent.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 
     }
 
@@ -788,15 +852,15 @@ INT D3dCtx::resetSurface(JNIEnv *env, jobject obj)
 	setPresentParams(env, obj);
 	if (debug) {
 	    printf("\nReset Device :\n");
-	    printInfo(&d3dPresent);	
-	}	
+	    printInfo(&d3dPresent);
+	}
 
 	// Must release any non default pool surface, otherwise
 	// Reset() will fail
 	SafeRelease(depthStencilSurface);
 	SafeRelease(frontSurface);
 	SafeRelease(backSurface);
-	
+
 	releaseVB();
 	SafeRelease(lineModeIndexBuffer);
 	quadIndexBufferSize = 0;
@@ -822,12 +886,12 @@ INT D3dCtx::resetSurface(JNIEnv *env, jobject obj)
 }
 
 
-VOID D3dCtx::error(int idx) 
+VOID D3dCtx::error(int idx)
 {
      error(getErrorMessage(idx));
 }
 
-VOID D3dCtx::error(int idx, HRESULT hr) 
+VOID D3dCtx::error(int idx, HRESULT hr)
 {
     error(getErrorMessage(idx), hr);
 }
@@ -835,37 +899,37 @@ VOID D3dCtx::error(int idx, HRESULT hr)
 
 VOID D3dCtx::warning(int idx)
 {
-    printf("%s\n", getErrorMessage(idx));
+    printf("[Java3D] Warning : %s\n", getErrorMessage(idx));
 }
 
-VOID D3dCtx::warning(int idx, HRESULT hr) 
+VOID D3dCtx::warning(int idx, HRESULT hr)
 {
-    printf("%s - %s\n", getErrorMessage(idx), DXGetErrorString8(hr));
+    printf("[Java3D] Warning : %s - %s\n", getErrorMessage(idx), DXGetErrorString9(hr));
 }
 
 
-VOID D3dCtx::error(char *s) 
+VOID D3dCtx::error(char *s)
 {
     showError(hwnd, s, bFullScreen);
 }
 
-VOID D3dCtx::error(char *s, HRESULT hr) 
+VOID D3dCtx::error(char *s, HRESULT hr)
 {
     char message[400];
-    sprintf(message, "%s - %s", s, DXGetErrorString8(hr));
-    showError(hwnd, message, bFullScreen);    	
+    sprintf(message, "%s - %s", s, DXGetErrorString9(hr));
+    showError(hwnd, message, bFullScreen);
 }
 
 
 VOID D3dCtx::d3dWarning(int idx)
 {
-    printf("%s\n", getErrorMessage(idx));
+    printf("[Java3D] Warning: %s\n", getErrorMessage(idx));
 }
- 
-VOID D3dCtx::d3dWarning(int idx, HRESULT hr) 
+
+VOID D3dCtx::d3dWarning(int idx, HRESULT hr)
 {
-    printf("%s - %s\n", 
-	   getErrorMessage(idx), DXGetErrorString8(hr));
+    printf("[Java3D] Warning: %s - %s\n",
+	   getErrorMessage(idx), DXGetErrorString9(hr));
 
 }
 
@@ -889,7 +953,7 @@ VOID D3dCtx::showError(HWND hwnd, char *s, BOOL bFullScreen)
 	firstError = false;
 	if (bFullScreen) {
 	    // In full screen mode, we can't see message box
-	    printf("[Java 3D] %s\n", s);
+	    printf("[Java3D] Error: %s\n", s);
 	    exit(1);
 	} else {
 	    MessageBox(hwnd, s, "Java 3D",  MB_OK|MB_ICONERROR);
@@ -898,7 +962,7 @@ VOID D3dCtx::showError(HWND hwnd, char *s, BOOL bFullScreen)
 }
 
 
-DWORD D3dCtx::getWidth() 
+DWORD D3dCtx::getWidth()
 {
     if (!offScreen) {
 	return screenRect.right - screenRect.left;
@@ -909,7 +973,7 @@ DWORD D3dCtx::getWidth()
 }
 
 
-DWORD D3dCtx::getHeight() 
+DWORD D3dCtx::getHeight()
 {
     if (!offScreen) {
 	return screenRect.bottom - screenRect.top;
@@ -927,10 +991,10 @@ D3dDeviceInfo* D3dCtx::selectDevice(int deviceID,
     D3dDeviceInfo *pDevice;
 
     for (int i=0; i < numDeviceTypes; i++) {
-	pDevice = driverInfo->d3dDeviceList[i];	
+	pDevice = driverInfo->d3dDeviceList[i];
 	if ((((deviceID == DEVICE_HAL) || (deviceID == DEVICE_HAL_TnL)) &&
 	     (pDevice->deviceType == D3DDEVTYPE_HAL)) ||
-	    (deviceID == DEVICE_REF) && 
+	    (deviceID == DEVICE_REF) &&
 	    (pDevice->deviceType == D3DDEVTYPE_REF)) {
 	    if ((*bFullScreen && !pDevice->fullscreenCompatible) ||
 		(!*bFullScreen && !pDevice->desktopCompatible)) {
@@ -943,7 +1007,7 @@ D3dDeviceInfo* D3dCtx::selectDevice(int deviceID,
 		exit(1);
 	    }
 	    if (pDevice->maxZBufferDepthSize == 0) {
-		if (pDevice->deviceType == D3DDEVTYPE_HAL) {		
+		if (pDevice->deviceType == D3DDEVTYPE_HAL) {
 		    d3dError(HALNOTCOMPATIBLE);
 		} else {
 		    // should not happen, REF device always support
@@ -964,7 +1028,7 @@ D3dDeviceInfo* D3dCtx::selectDevice(int deviceID,
 		exit(1);
 	    }
 	    return pDevice;
-	} 
+	}
     }
 
 
@@ -989,7 +1053,7 @@ D3dDeviceInfo* D3dCtx::selectBestDevice(D3dDriverInfo *driverInfo,
 
 	    if (pDevice->depthStencilFormat == D3DFMT_UNKNOWN) {
 		if (pDevice->deviceType == D3DDEVTYPE_REF) {
-		    d3dError(DEPTHSTENCILNOTFOUND);		    
+		    d3dError(DEPTHSTENCILNOTFOUND);
 		    return NULL;
 		} else {
 		    continue;
@@ -1015,7 +1079,7 @@ D3dDeviceInfo* D3dCtx::selectBestDevice(D3dDriverInfo *driverInfo,
 		    }
 		}
 	    }
-	} 
+	}
     }
 
     if (bestDevice == NULL) {
@@ -1023,7 +1087,7 @@ D3dDeviceInfo* D3dCtx::selectBestDevice(D3dDriverInfo *driverInfo,
 	d3dError(DEVICENOTFOUND);
 	return NULL;
     }
-    
+
     // TODO: suggest another display mode for user
     /*
     if (bestDevice->deviceType == D3DDEVTYPE_REF) {
@@ -1053,14 +1117,14 @@ VOID D3dCtx::setDeviceFromProperty(JNIEnv *env)
 
     if ( systemClass != NULL )
     {
-        jmethodID method = env->GetStaticMethodID( 
+        jmethodID method = env->GetStaticMethodID(
             systemClass, "getProperty",
             "(Ljava/lang/String;)Ljava/lang/String;" );
         if ( method != NULL )
         {
             jstring name = env->NewStringUTF( "j3d.d3ddevice" );
             jstring property = reinterpret_cast<jstring>(
-					 env->CallStaticObjectMethod( 
+					 env->CallStaticObjectMethod(
 					     systemClass, method, name ));
 	    jboolean isCopy;
 
@@ -1086,12 +1150,12 @@ VOID D3dCtx::setDeviceFromProperty(JNIEnv *env)
             }
 	    name = env->NewStringUTF( "j3d.d3ddriver" );
 	    property = reinterpret_cast<jstring>(
-				 env->CallStaticObjectMethod( 
+				 env->CallStaticObjectMethod(
 				     systemClass, method, name ));
             if ( property != NULL )
             {
                 const char* chars = env->GetStringUTFChars(
-					   property, &isCopy);		
+					   property, &isCopy);
 		 if ( chars != 0 )
                 {
 		    // atoi() return 0, our default value, on error.
@@ -1112,14 +1176,14 @@ VOID D3dCtx::setFullScreenFromProperty(JNIEnv *env)
 
     if ( systemClass != NULL )
     {
-        jmethodID method = env->GetStaticMethodID( 
+        jmethodID method = env->GetStaticMethodID(
             systemClass, "getProperty",
             "(Ljava/lang/String;)Ljava/lang/String;" );
         if ( method != NULL )
         {
             jstring name = env->NewStringUTF( "j3d.fullscreen" );
             jstring property = reinterpret_cast<jstring>(
-                env->CallStaticObjectMethod( 
+                env->CallStaticObjectMethod(
                     systemClass, method, name ));
             if ( property != NULL )
             {
@@ -1149,14 +1213,14 @@ VOID D3dCtx::setVBLimitProperty(JNIEnv *env)
 
     if ( systemClass != NULL )
     {
-        jmethodID method = env->GetStaticMethodID( 
+        jmethodID method = env->GetStaticMethodID(
             systemClass, "getProperty",
             "(Ljava/lang/String;)Ljava/lang/String;" );
         if ( method != NULL )
         {
             jstring name = env->NewStringUTF( "j3d.vertexbufferlimit" );
             jstring property = reinterpret_cast<jstring>(
-                env->CallStaticObjectMethod( 
+                env->CallStaticObjectMethod(
                     systemClass, method, name ));
             if ( property != NULL )
             {
@@ -1190,14 +1254,14 @@ VOID D3dCtx::setDebugProperty(JNIEnv *env)
 
     if ( systemClass != NULL )
     {
-        jmethodID method = env->GetStaticMethodID( 
+        jmethodID method = env->GetStaticMethodID(
             systemClass, "getProperty",
             "(Ljava/lang/String;)Ljava/lang/String;" );
         if ( method != NULL )
         {
             jstring name = env->NewStringUTF( "j3d.debug" );
             jstring property = reinterpret_cast<jstring>(
-                env->CallStaticObjectMethod( 
+                env->CallStaticObjectMethod(
                     systemClass, method, name ));
             if ( property != NULL )
             {
@@ -1219,6 +1283,41 @@ VOID D3dCtx::setDebugProperty(JNIEnv *env)
     }
 }
 
+BOOL D3dCtx::getSystemProperty(JNIEnv *env, char *strName, char *strValue)
+{
+    jclass systemClass = env->FindClass( "javax/media/j3d/MasterControl" );
+
+    if ( systemClass != NULL )
+    {
+        jmethodID method = env->GetStaticMethodID(
+            systemClass, "getProperty",
+            "(Ljava/lang/String;)Ljava/lang/String;" );
+        if ( method != NULL )
+        {
+            jstring name = env->NewStringUTF( strName );
+            jstring property = reinterpret_cast<jstring>(
+                env->CallStaticObjectMethod(
+                    systemClass, method, name ));
+            if ( property != NULL )
+            {
+                jboolean isCopy;
+                const char * chars = env->GetStringUTFChars(property, &isCopy );
+                if ( chars != 0 && stricmp( chars, strValue ) == 0 )
+					{
+						env->ReleaseStringUTFChars( property, chars );
+                        return true;
+                    }
+					else
+					{
+                       env->ReleaseStringUTFChars( property, chars );
+			           return false;
+		            }
+            }
+	    }
+    }
+	return false;
+}
+
 VOID D3dCtx::setImplicitMultisamplingProperty(JNIEnv *env)
 {
     jclass cls = env->FindClass("javax/media/j3d/VirtualUniverse");
@@ -1227,7 +1326,7 @@ VOID D3dCtx::setImplicitMultisamplingProperty(JNIEnv *env)
 	implicitMultisample = false;
 	return;
     }
-    
+
     jfieldID fieldID = env->GetStaticFieldID(cls, "mc", "Ljavax/media/j3d/MasterControl;");
 
     if (fieldID == NULL) {
@@ -1242,7 +1341,7 @@ VOID D3dCtx::setImplicitMultisamplingProperty(JNIEnv *env)
 	return;
     }
 
-    cls = env->FindClass("javax/media/j3d/MasterControl");    
+    cls = env->FindClass("javax/media/j3d/MasterControl");
 
     if (cls == NULL) {
 	implicitMultisample = false;
@@ -1262,7 +1361,7 @@ VOID D3dCtx::setImplicitMultisamplingProperty(JNIEnv *env)
 
 
 // Callback to notify Canvas3D which mode it is currently running
-VOID D3dCtx::setCanvasProperty(JNIEnv *env, jobject obj) 
+VOID D3dCtx::setCanvasProperty(JNIEnv *env, jobject obj)
 {
     int mask = javax_media_j3d_Canvas3D_EXT_ABGR |
 	       javax_media_j3d_Canvas3D_EXT_BGR;
@@ -1276,11 +1375,11 @@ VOID D3dCtx::setCanvasProperty(JNIEnv *env, jobject obj)
     }
 
     jclass canvasCls =  env->GetObjectClass(obj);
-    jfieldID id = env->GetFieldID(canvasCls, "fullScreenMode", "Z");    
+    jfieldID id = env->GetFieldID(canvasCls, "fullScreenMode", "Z");
     env->SetBooleanField(obj, id, bFullScreen);
-    id = env->GetFieldID(canvasCls, "fullscreenWidth", "I");        
+    id = env->GetFieldID(canvasCls, "fullscreenWidth", "I");
     env->SetIntField(obj, id, driverInfo->desktopMode.Width);
-    id = env->GetFieldID(canvasCls, "fullscreenHeight", "I");        
+    id = env->GetFieldID(canvasCls, "fullscreenHeight", "I");
     env->SetIntField(obj, id, driverInfo->desktopMode.Height);
 
     id = env->GetFieldID(canvasCls, "textureExtendedFeatures", "I");
@@ -1288,35 +1387,54 @@ VOID D3dCtx::setCanvasProperty(JNIEnv *env, jobject obj)
 
     id = env->GetFieldID(canvasCls, "extensionsSupported", "I");
     env->SetIntField(obj, id, mask);
-		     
+
 
     id = env->GetFieldID(canvasCls, "nativeGraphicsVersion", "Ljava/lang/String;");
-    char *version = "DirectX 8.0 or above";
+    char *version = "DirectX 9.0 or above";
     env->SetObjectField(obj, id, env->NewStringUTF(version));
 
-    float degree = deviceInfo->maxAnisotropy;
+    float degree = float(deviceInfo->maxAnisotropy);
     id = env->GetFieldID(canvasCls, "anisotropicDegreeMax", "F");
     env->SetFloatField(obj, id, degree);
 
     id = env->GetFieldID(canvasCls, "textureWidthMax", "I");
-    env->SetIntField(obj, id, deviceInfo->maxTextureWidth);    
+    env->SetIntField(obj, id, deviceInfo->maxTextureWidth);
 
     id = env->GetFieldID(canvasCls, "textureHeightMax", "I");
-    env->SetIntField(obj, id, deviceInfo->maxTextureHeight);    
+    env->SetIntField(obj, id, deviceInfo->maxTextureHeight);
 
     if (deviceInfo->maxTextureDepth > 0) {
 	id = env->GetFieldID(canvasCls, "texture3DWidthMax", "I");
-	env->SetIntField(obj, id, deviceInfo->maxTextureWidth);    
+	env->SetIntField(obj, id, deviceInfo->maxTextureWidth);
 
 	id = env->GetFieldID(canvasCls, "texture3DHeightMax", "I");
-	env->SetIntField(obj, id, deviceInfo->maxTextureHeight);    
+	env->SetIntField(obj, id, deviceInfo->maxTextureHeight);
 
 	id = env->GetFieldID(canvasCls, "texture3DDepthMax", "I");
 	env->SetIntField(obj, id, deviceInfo->maxTextureDepth);
+
+	// issue 135
+	// private String nativeGraphicsVendor = "<UNKNOWN>";
+    // private String nativeGraphicsRenderer = "<UNKNOWN>";
+	id = env->GetFieldID(canvasCls, "nativeGraphicsVendor", "Ljava/lang/String;");
+	//char *nGVendor = driverInfo->adapterIdentifier.DeviceName ;
+      char *nGVendor = deviceInfo->deviceVendor ;
+      env->SetObjectField(obj, id, env->NewStringUTF(nGVendor));
+	//  printf("DEBUG vendor : %s ", nGVendor);
+
+	id = env->GetFieldID(canvasCls, "nativeGraphicsRenderer", "Ljava/lang/String;");
+	//	    char *nGRenderer = driverInfo->adapterIdentifier.Description;
+        char *nGRenderer = deviceInfo->deviceRenderer;
+	    env->SetObjectField(obj, id, env->NewStringUTF(nGRenderer));
+
+
     }
 }
 
-VOID D3dCtx::createVertexBuffer() 
+
+
+
+VOID D3dCtx::createVertexBuffer()
 {
     if (srcVertexBuffer != NULL) {
 	// Each pDevice has its own vertex buffer,
@@ -1328,27 +1446,45 @@ VOID D3dCtx::createVertexBuffer()
     if (dstVertexBuffer != NULL) {
 	dstVertexBuffer->Release();
     }
+    DWORD usage_D3DVERTEX = D3DUSAGE_DONOTCLIP|
+				            D3DUSAGE_WRITEONLY|
+				            D3DUSAGE_SOFTWAREPROCESSING;
+
+	DWORD usage_D3DTLVERTEX= D3DUSAGE_DONOTCLIP|
+		                     D3DUSAGE_SOFTWAREPROCESSING;
+
+//# if NVIDIA_DEBUG
+	if(deviceInfo->isHardwareTnL)
+    {
+	// remove SoftwareProcessing
+    usage_D3DVERTEX = D3DUSAGE_DONOTCLIP|
+				      D3DUSAGE_WRITEONLY;
+
+	usage_D3DTLVERTEX = D3DUSAGE_DONOTCLIP;
+   }
+// # endif
 
     HRESULT hr =
 	pDevice->CreateVertexBuffer(sizeof(D3DVERTEX),
-				    D3DUSAGE_DONOTCLIP|
-				    D3DUSAGE_WRITEONLY|
-				    D3DUSAGE_SOFTWAREPROCESSING,
+				    usage_D3DVERTEX,
 				    D3DFVF_XYZ,
 				    D3DPOOL_MANAGED,
-				    &srcVertexBuffer);
+				    &srcVertexBuffer,
+					NULL);
 
     if (FAILED(hr)) {
+    printf("\n[Java3D] Failed to create VertexBuffer (D3DVERTEX)\n");
 	error(CREATEVERTEXBUFFER, hr);
+
     }
 
     hr = pDevice->CreateVertexBuffer(sizeof(D3DTLVERTEX),
-				     D3DUSAGE_DONOTCLIP|
-				     D3DUSAGE_SOFTWAREPROCESSING,
+				     usage_D3DTLVERTEX,
 				     D3DFVF_XYZRHW|D3DFVF_TEX1,
 				     D3DPOOL_MANAGED,
-				     &dstVertexBuffer);
+				     &dstVertexBuffer,NULL);
     if (FAILED(hr)) {
+	printf("\n[Java3D] Warning: Failed to create VertexBuffer (D3DTLVERTEX)\n");
 	error(CREATEVERTEXBUFFER, hr);
     }
 }
@@ -1377,34 +1513,39 @@ VOID D3dCtx::transform(D3DVERTEX *worldCoord, D3DTLVERTEX *screenCoord) {
 	if (!softwareVertexProcessing) {
 	    // ProcessVertices() only work in software vertex
 	    // processing mode
-	    pDevice->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING,
-				    TRUE);
+	    //pDevice->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING, TRUE);
+		pDevice->SetSoftwareVertexProcessing(TRUE);
 	}
 
 	pDevice->SetRenderState(D3DRS_CLIPPING, FALSE);
-	hr = srcVertexBuffer->Lock(0, 0, (BYTE **)&pv, 0);
+	hr = srcVertexBuffer->Lock(0, 0, (VOID **)&pv, 0);
 	if (FAILED(hr)) {
 	    if (debug) {
-		printf("Fail to lock buffer %s\n", DXGetErrorString8(hr));
+		printf("[Java3D] Fail to lock buffer %s\n", DXGetErrorString9(hr));
 	    }
 	} else {
 	    pv[0].x = worldCoord->x;
 	    pv[0].y = worldCoord->y;
 	    pv[0].z = worldCoord->z;
- 
+
 	    srcVertexBuffer->Unlock();
-	    pDevice->SetStreamSource(0, srcVertexBuffer,
-				     sizeof(D3DVERTEX));
-	    pDevice->SetVertexShader(D3DFVF_XYZ);
+	    pDevice->SetStreamSource(0, srcVertexBuffer,0, sizeof(D3DVERTEX));
+
+	    //pDevice->SetVertexShader(D3DFVF_XYZ);
+		 pDevice->SetVertexShader(NULL);
+	     pDevice->SetFVF(D3DFVF_XYZ);
+
 	    hr = pDevice->ProcessVertices(0, 0, 1,
-					  dstVertexBuffer, 0);
-	    
+					  dstVertexBuffer,
+					  NULL,
+					  0);
+
 	    if (FAILED(hr)) {
 		if (debug) {
-		    printf("Fail to processVertices %s\n", DXGetErrorString8(hr));
+		    printf("[Java3D] Fail to processVertices %s\n", DXGetErrorString9(hr));
 		}
 	    } else {
-		hr = dstVertexBuffer->Lock(0, 0, (BYTE **)&tlpv,  D3DLOCK_READONLY);
+		hr = dstVertexBuffer->Lock(0, 0, (VOID **)&tlpv,  D3DLOCK_READONLY);
 		if (SUCCEEDED(hr)) {
 		    screenCoord->sx = tlpv[0].sx;
 		    screenCoord->sy = tlpv[0].sy;
@@ -1420,12 +1561,12 @@ VOID D3dCtx::transform(D3DVERTEX *worldCoord, D3DTLVERTEX *screenCoord) {
 	}
 	pDevice->SetRenderState(D3DRS_CLIPPING, TRUE);
 	if (!softwareVertexProcessing) {
-	    pDevice->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING,
-				    FALSE);
+	    //pDevice->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING, FALSE);
+		pDevice->SetSoftwareVertexProcessing(FALSE);
 	}
 	// restore original texture state
 	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, texState);
-    } 
+    }
 }
 
 
@@ -1437,13 +1578,13 @@ VOID D3dCtx::getScreenRect(HWND hwnd, RECT *rect) {
     if ((deviceInfo->isHardware) &&
 	(numDriver > 1)) {
 
-	MONITORINFO info;	
+	MONITORINFO info;
 	HMONITOR hMonitor = driverInfo->hMonitor;
 
 	info.cbSize = sizeof(MONITORINFO);
 	if (hMonitor == NULL) {
-	    hMonitor = MonitorFromWindow(hwnd,  
-					 MONITOR_DEFAULTTONEAREST);    
+	    hMonitor = MonitorFromWindow(hwnd,
+					 MONITOR_DEFAULTTONEAREST);
 	}
 	GetMonitorInfo(hMonitor, &info);
 	monitorLeft = info.rcMonitor.left;
@@ -1463,20 +1604,20 @@ VOID D3dCtx::getScreenRect(HWND hwnd, RECT *rect) {
  * Return NULL if this window intersect several monitor
  */
 
-HMONITOR D3dCtx::findMonitor() 
+HMONITOR D3dCtx::findMonitor()
 {
 
     if ((osvi.dwMajorVersion < 4) ||
 	(numDriver < 2)) {
 	return NULL;
-    }    
+    }
 
     RECT rect;
-    MONITORINFO info;    
-    HMONITOR hmonitor = MonitorFromWindow(hwnd,  
-					  MONITOR_DEFAULTTONEAREST);    
+    MONITORINFO info;
+    HMONITOR hmonitor = MonitorFromWindow(hwnd,
+					  MONITOR_DEFAULTTONEAREST);
     info.cbSize = sizeof(MONITORINFO);
-    GetMonitorInfo(hmonitor, &info);    
+    GetMonitorInfo(hmonitor, &info);
     GetWindowRect(hwnd, &rect);
 
     if ((info.rcMonitor.left <= rect.left) &&
@@ -1502,7 +1643,7 @@ D3dDeviceInfo* D3dCtx::setDeviceInfo(D3dDriverInfo *driverInfo,
 				     int minZDepth)
 {
     if (requiredDeviceID >= 0) {
-	return selectDevice(requiredDeviceID, driverInfo, 
+	return selectDevice(requiredDeviceID, driverInfo,
 			    bFullScreen, minZDepth);
     } else {
 	return selectBestDevice(driverInfo, bFullScreen,
@@ -1528,7 +1669,7 @@ VOID D3dCtx::setDriverInfo()
 		if (d3dDriverList[i]->hMonitor == monitor) {
 		    newDriver = d3dDriverList[i];
 		    break;
-		} 
+		}
 	    }
 	}
     } else {
@@ -1545,26 +1686,27 @@ VOID D3dCtx::setDriverInfo()
 VOID D3dCtx::setDefaultAttributes()
 {
 
-    pDevice->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING, 
-			    softwareVertexProcessing);
+    /*pDevice->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING,
+			    softwareVertexProcessing);*/
+	pDevice->SetSoftwareVertexProcessing(softwareVertexProcessing);
 
     pDevice->SetRenderState(D3DRS_SPECULARMATERIALSOURCE,
 			    D3DMCS_MATERIAL);
     pDevice->SetRenderState(D3DRS_AMBIENTMATERIALSOURCE,
 			    D3DMCS_MATERIAL);
     pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
-    // Default specular is FALSE 
+    // Default specular is FALSE
     pDevice->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
     // Texture & CULL mode  default value for D3D is different from OGL
 
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
 
-    // Default in D3D is D3DCMP_LESSEQUAL, OGL is D3DCMP_LESS 
+    // Default in D3D is D3DCMP_LESSEQUAL, OGL is D3DCMP_LESS
 
     // Set Range based fog
-    pDevice->SetRenderState(D3DRS_RANGEFOGENABLE, 
+    pDevice->SetRenderState(D3DRS_RANGEFOGENABLE,
 			    deviceInfo->rangeFogEnable);
-    
+
     // disable antialiasing (default is true in D3D)
     if (!implicitMultisample) {
 	pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
@@ -1582,13 +1724,13 @@ VOID D3dCtx::setDefaultAttributes()
 	    pDevice->SetTextureStageState(i, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	    pDevice->SetTextureStageState(i, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 	    pDevice->SetTextureStageState(i, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	    pDevice->SetTextureStageState(i, D3DTSS_MIPFILTER, D3DTEXF_LINEAR); 
-	    pDevice->SetTextureStageState(i, D3DTSS_MAGFILTER, D3DTEXF_LINEAR); 	    
+	    //pDevice->SetTextureStageState(i, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
+	    //pDevice->SetTextureStageState(i, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
 	    bindTextureId[i] = -1;
 	}
     }
 
-    
+
     for (int i=0; i < TEXSTAGESUPPORT; i++) {
 	texGenMode[i] = TEX_GEN_NONE;
 	texTransformSet[i] = false;
@@ -1599,11 +1741,11 @@ VOID D3dCtx::setDefaultAttributes()
     }
 }
 
-VOID D3dCtx::enumDisplayMode(DEVMODE* dmode) 
+VOID D3dCtx::enumDisplayMode(DEVMODE* dmode)
 {
 
     MONITORINFOEX mi;
-    
+
     if (monitor == NULL) {
 	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, dmode );
     } else {
@@ -1613,22 +1755,70 @@ VOID D3dCtx::enumDisplayMode(DEVMODE* dmode)
 	EnumDisplaySettings( mi.szDevice, ENUM_CURRENT_SETTINGS, dmode);
     }
 }
-
-DWORD D3dCtx::findBehavior() 
+// check what kind of Vertex processing will be used
+DWORD D3dCtx::findBehavior()
 {
+	bForceHwdVertexProcess = getSystemProperty(jniEnv,"j3d.d3dVertexProcess","hardware");
+	bForceMixVertexProcess = getSystemProperty(jniEnv,"j3d.d3dVertexProcess","mixed");
+	bForceSWVertexProcess = getSystemProperty(jniEnv,"j3d.d3dVertexProcess","software");
+
+	bUseNvPerfHUD = getSystemProperty(jniEnv,"j3d.useNvPerfHUD","true");
+
+	if (bUseNvPerfHUD) // must have bForceHwdVertexProcess as true
+	{
+		printf("\n[Java3D]: using j3d.useNvPerfHUD=true\n");
+     bForceHwdVertexProcess = true;
+	 bForceMixVertexProcess =  false;
+	 bForceSWVertexProcess = false;
+	}
+
+    if (bForceHwdVertexProcess)
+	{
+      softwareVertexProcessing = FALSE;
+	  printf("\n[Java3D]: using d3dVertexProcess=hardware\n");
+	  return D3DCREATE_HARDWARE_VERTEXPROCESSING;
+	}
+
+	if (bForceMixVertexProcess)
+	{
+      printf("\n[Java3D]: using d3dVertexProcess=mixed\n");
+      softwareVertexProcessing = FALSE;
+	  return D3DCREATE_MIXED_VERTEXPROCESSING;
+	}
+
+	if (bForceSWVertexProcess)
+	{
+      printf("\n[Java3D]: using d3dVertexProcess=software\n");
+      softwareVertexProcessing = TRUE;
+	  return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+	}
+	// high-end video cards: NV25 and above
+	if (deviceInfo->isHardwareTnL && deviceInfo->supportShaders11 &&
+	     ((requiredDeviceID < 0) || (requiredDeviceID == DEVICE_HAL_TnL)))
+	   {
+        if (debug){printf("\n[Java3D]: using hardware Vertex Processing.\n");}
+	    softwareVertexProcessing = FALSE;
+	    return D3DCREATE_HARDWARE_VERTEXPROCESSING;
+       }
+    // midle-end video cards
     if (deviceInfo->isHardwareTnL &&
-	((requiredDeviceID < 0) || (requiredDeviceID == DEVICE_HAL_TnL))) {
-	softwareVertexProcessing = FALSE;
-	return D3DCREATE_MIXED_VERTEXPROCESSING;
-    } else {
-	softwareVertexProcessing = TRUE;
-	return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
-    }
+	   ((requiredDeviceID < 0) || (requiredDeviceID == DEVICE_HAL_TnL)))
+	   {
+        if (debug){printf("\n[Java3D]: using mixed Vertex Processing.\n");}
+	    softwareVertexProcessing = FALSE;
+	    return D3DCREATE_MIXED_VERTEXPROCESSING;
+       }
+	 else // low-end vcards use Software Vertex Processing
+	  {
+		if (debug){printf("\n[Java3D]: using software Vertex Processing.\n");}
+        softwareVertexProcessing = TRUE;
+	    return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+      }
 }
 
-VOID D3dCtx::printInfo(D3DPRESENT_PARAMETERS *d3dPresent) 
+VOID D3dCtx::printInfo(D3DPRESENT_PARAMETERS *d3dPresent)
 {
-    
+
     if (d3dPresent->Windowed) {
 	printf("Window ");
     } else {
@@ -1652,11 +1842,11 @@ VOID D3dCtx::setWindowMode()
 	    SetWindowLong(topHwnd, GWL_STYLE, winStyle);
 	    SetWindowPos(topHwnd, HWND_NOTOPMOST, savedTopRect.left, savedTopRect.top,
 			 savedTopRect.right - savedTopRect.left,
-			 savedTopRect.bottom - savedTopRect.top, 
+			 savedTopRect.bottom - savedTopRect.top,
 			 SWP_SHOWWINDOW);
 	} else {
 	    SetWindowLong(topHwnd, GWL_STYLE,
-			  WS_POPUP|WS_SYSMENU|WS_VISIBLE);	    
+			  WS_POPUP|WS_SYSMENU|WS_VISIBLE);
 	}
     }
 
@@ -1672,7 +1862,7 @@ VOID D3dCtx::setAmbientLightMaterial()
     pDevice->GetMaterial(&savedMaterial);
     pDevice->GetLightEnable(0, &savedLightEnable);
 
-    CopyColor(ambientMaterial.Ambient, 
+    CopyColor(ambientMaterial.Ambient,
 	      currentColor_r,
 	      currentColor_g,
 	      currentColor_b,
@@ -1700,18 +1890,19 @@ VOID D3dCtx::restoreDefaultLightMaterial()
     pDevice->LightEnable(0, savedLightEnable);
 }
 
-VOID D3dCtx::freeVBList(D3dVertexBufferVector *v) 
+VOID D3dCtx::freeVBList(D3dVertexBufferVector *v)
 {
-    LPD3DVERTEXBUFFER *p, r;
+    //LPD3DVERTEXBUFFER *p;
+	LPD3DVERTEXBUFFER r;
 
     lockGeometry();
 
-    for (p = v->begin(); p != v->end(); ++p) {
+   for (ITER_LPD3DVERTEXBUFFER p = v->begin(); p != v->end(); ++p) {
 	// Remove itself from current ctx  vertexBufferTable list
 	r = (*p)->next;
 	if (r != NULL) {
 	    r->previous = (*p)->previous;
-	} 
+	}
 	(*p)->previous->next = r;
 	// Now we can free current VB
 	delete (*p);
@@ -1721,9 +1912,9 @@ VOID D3dCtx::freeVBList(D3dVertexBufferVector *v)
 }
 
 
-VOID D3dCtx::freeResourceList(LPDIRECT3DRESOURCE8Vector *v)
+VOID D3dCtx::freeResourceList(LPDIRECT3DRESOURCE9Vector *v)
 {
-    LPDIRECT3DRESOURCE8 *s;
+    ITER_LPDIRECT3DRESOURCE9 s;
 
     lockSurfaceList();
     for (s = v->begin(); s != v->end(); ++s) {
@@ -1754,7 +1945,7 @@ VOID D3dCtx::freeList()
     }
 }
 
-VOID D3dCtx::freeVB(LPD3DVERTEXBUFFER vb) 
+VOID D3dCtx::freeVB(LPD3DVERTEXBUFFER vb)
 {
     if (vb != NULL) {
 	lockSurfaceList();
@@ -1768,14 +1959,14 @@ VOID D3dCtx::freeVB(LPD3DVERTEXBUFFER vb)
 }
 
 
-VOID D3dCtx::freeResource(LPDIRECT3DRESOURCE8 res) 
+VOID D3dCtx::freeResource(LPDIRECT3DRESOURCE9 res)
 {
     if (res != NULL) {
 	lockSurfaceList();
 	if (useFreeList0) {
 	    freeResourceList0.push_back(res);
 	} else {
-	    freeResourceList1.push_back(res);	    
+	    freeResourceList1.push_back(res);
 	}
 	unlockSurfaceList();
     }
@@ -1785,14 +1976,18 @@ BOOL D3dCtx::createFrontBuffer()
 {
     HRESULT hr;
 
-    hr = pDevice->CreateImageSurface(driverInfo->desktopMode.Width,
+	/*CreateImageSurface*/
+    hr = pDevice->CreateOffscreenPlainSurface(
+		             driverInfo->desktopMode.Width,
 				     driverInfo->desktopMode.Height,
 				     D3DFMT_A8R8G8B8,
-				     &frontSurface);
+					 D3DPOOL_SCRATCH,
+				     &frontSurface,
+					 NULL);
     if (FAILED(hr)) {
 	if (debug) {
-	    printf("[Java3D] Fail to CreateImageSurface %s\n",
-		   DXGetErrorString8(hr));
+	    printf("[Java3D] Fail to CreateOffscreenPlainSurface %s\n",
+		   DXGetErrorString9(hr));
 	}
 	frontSurface = NULL;
 	return false;
@@ -1800,5 +1995,74 @@ BOOL D3dCtx::createFrontBuffer()
     return true;
 }
 
+jboolean  D3dCtx::getJavaBoolEnv(JNIEnv *env, char* envStr)
+{
+   jclass systemClass = env->FindClass( "javax/media/j3d/MasterControl" );
+
+   if ( systemClass != NULL )
+    {
+        jmethodID method = env->GetStaticMethodID(
+            systemClass, "getProperty",
+            "(Ljava/lang/String;)Ljava/lang/String;" );
+        if ( method != NULL )
+        {
+            jstring name = env->NewStringUTF( envStr );
+            jstring property = reinterpret_cast<jstring>(
+                env->CallStaticObjectMethod(
+                    systemClass, method, name ));
+            if ( property != NULL )
+            {
+                jboolean isCopy;
+                const char * chars = env->GetStringUTFChars(
+                    property, &isCopy );
+                if ( chars != 0 )
+                {
+                    if ( stricmp( chars, "true" ) == 0 )
+					{
+                        env->ReleaseStringUTFChars( property, chars );
+						return true;
+                    }
+					else
+					{
+					  env->ReleaseStringUTFChars( property, chars );
+			          return false;
+		            }
+                    env->ReleaseStringUTFChars( property, chars );
+                }
+            }
+	    }
+    }
+	return false;
+}
+
+
+
+/**
+// this routine is not safe using current D3D routines
+VOID D3dCtx::getDXVersion(CHAR* strResult)
+{
+	HRESULT hr;
+  //  TCHAR strResult[128];
+
+    DWORD dwDirectXVersion = 0;
+    TCHAR strDirectXVersion[10];
+
+    hr = GetDXVersion( &dwDirectXVersion, strDirectXVersion, 10 );
+    if( SUCCEEDED(hr) )
+    {
+        strcpy( strResult, "DirectX ");
+        if( dwDirectXVersion > 0 )
+
+            strcpy( strResult, strDirectXVersion );
+        else
+            strcpy( strResult, "not installed") );
+    }
+    else
+    {
+      strcpy( strResult, "Unknown version of DirectX installed");
+    }
+
+}
+	**/
 
 

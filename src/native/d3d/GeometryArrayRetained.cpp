@@ -22,6 +22,7 @@
 /*
  * This correspond to the constant in d3dtypes.h
  * under D3D 7.0/8.0 header and may not portable :
+ * Still valid with D3D 9.0 (aces)
  * D3DFVF_TEXTUREFORMAT1 3       
  * D3DFVF_TEXTUREFORMAT2 0       
  * D3DFVF_TEXTUREFORMAT3 1       
@@ -62,12 +63,12 @@ void copyIndexVertexToVB(D3dCtx *d3dCtx,
 
     if (cDirty & javax_media_j3d_GeometryArrayRetained_INDEX_CHANGED) {
 	jint *src = strideData->indexPtr + strideData->initialIndexIndex;
-	LPDIRECT3DINDEXBUFFER8 indexBuffer = d3dCtx->pVB->indexBuffer;
+	LPDIRECT3DINDEXBUFFER9 indexBuffer = d3dCtx->pVB->indexBuffer;
 	D3DINDEXBUFFER_DESC desc;
 	BYTE *bptr;
 
 	indexBuffer->GetDesc(&desc);
-	hr = indexBuffer->Lock(0, 0, &bptr,  0);
+	hr = indexBuffer->Lock(0, 0, (VOID**)&bptr,  0);
 	if (FAILED(hr)) {
 	    D3dCtx::d3dWarning(LOCKINDEXVBFAIL, hr);
 	    return;
@@ -359,7 +360,7 @@ void copyVertexToVB(D3dCtx *d3dCtx,
 		    // buildGA() & modeulateAlpha
 		    // Currently buildGA() will not use byte color
 		    // so this code should never execute.
-		    jbyte alpha = (jbyte) 255*strideData->alpha;
+		    jbyte alpha = (jbyte)(255*strideData->alpha);
 		    if (strideData->useAlpha) {
 			srcStride = strideData->diffuseStride - 3;
 			while (wdst < wendptr) {
@@ -1066,7 +1067,7 @@ void copyOneVertexToVB(D3dCtx *d3dCtx,
 
 
 float* allocateVB(D3dCtx *d3dCtx, 
-		  LPDIRECT3DDEVICE8 device,
+		  LPDIRECT3DDEVICE9 device,
 		  int vcount,
 		  int maxVertexLimit,
 		  jint *cdirty)
@@ -1111,13 +1112,15 @@ float* allocateVB(D3dCtx *d3dCtx,
 					    D3DUSAGE_WRITEONLY,
 					    vb->vertexFormat,
 					    D3DPOOL_DEFAULT,
-					    &vb->buffer);
+					    &vb->buffer,
+						NULL);
 	} else {
 	    hr = device->CreateVertexBuffer(vb->stride*vcount,
 					    D3DUSAGE_WRITEONLY|D3DUSAGE_POINTS,
 					    vb->vertexFormat,
 					    D3DPOOL_DEFAULT,
-					    &vb->buffer);	    
+					    &vb->buffer,
+						NULL);	    
 	}
 	if (FAILED(hr)) {
 	    vb->buffer = NULL;
@@ -1129,7 +1132,7 @@ float* allocateVB(D3dCtx *d3dCtx,
 	*cdirty = javax_media_j3d_GeometryArrayRetained_VERTEX_CHANGED;
     }
 
-    hr = vb->buffer->Lock(0, 0, (BYTE**) &ptr,  0);
+    hr = vb->buffer->Lock(0, 0,(VOID**) &ptr,  0);
 
     if (FAILED(hr)) {
 	D3dCtx::d3dWarning(LOCKVBFAIL, hr);
@@ -1147,7 +1150,7 @@ float* allocateVB(D3dCtx *d3dCtx,
 
 
 BOOL createCopyVBVertex(D3dCtx *d3dCtx,
-			LPDIRECT3DDEVICE8 device,
+			LPDIRECT3DDEVICE9 device,
 			D3DDRAWPRIMITIVESTRIDEDDATA *strideData,
 			int vcount, jint cDirty,
 			jdouble* xform,
@@ -1170,7 +1173,7 @@ BOOL createCopyVBVertex(D3dCtx *d3dCtx,
     } else {
 	// use the same VB
 	HRESULT hr;
-	hr = vb->buffer->Lock(0, 0, (BYTE**)&vbptr, 0);
+	hr = vb->buffer->Lock(0, 0, (VOID**)&vbptr, 0);
 
 	if (FAILED(hr)) {
 	    D3dCtx::d3dWarning(LOCKVBFAIL, hr);
@@ -1210,7 +1213,7 @@ void splitVertexToMultipleVB(D3dCtx *d3dCtx,
     float* oldTexCoords[D3DDP_MAXTEXCOORD];
     int vc;
     int texSetUsed = d3dCtx->texSetUsed;
-    LPDIRECT3DDEVICE8 device = d3dCtx->pDevice;
+    LPDIRECT3DDEVICE9 device = d3dCtx->pDevice;
     jfloat fr, fg, fb, fa;
     jbyte br, bg, bb, ba;
     boolean success;
@@ -1508,7 +1511,7 @@ BOOL reIndexifyIndexVertexToVBs(D3dCtx *d3dCtx,
 {
     LPD3DVERTEXBUFFER vb = d3dCtx->pVB;
     HRESULT hr;
-    LPDIRECT3DDEVICE8 device = d3dCtx->pDevice;
+    LPDIRECT3DDEVICE9 device = d3dCtx->pDevice;
 
     int vbSize;
 
@@ -1558,13 +1561,15 @@ BOOL reIndexifyIndexVertexToVBs(D3dCtx *d3dCtx,
 						 D3DUSAGE_WRITEONLY,
 						 vb->vertexFormat,
 						 D3DPOOL_DEFAULT,
-						 &vb->buffer);
+						 &vb->buffer,
+						 NULL);
 	     } else {
 		 hr = device->CreateVertexBuffer(vb->stride*vbSize,
 						 D3DUSAGE_WRITEONLY|D3DUSAGE_POINTS,
 						 vb->vertexFormat,
 						 D3DPOOL_DEFAULT,
-						 &vb->buffer);
+						 &vb->buffer,
+						 NULL);
 		 vb->isPointFlagUsed = true;
 	     }
 	     
@@ -1588,13 +1593,15 @@ BOOL reIndexifyIndexVertexToVBs(D3dCtx *d3dCtx,
 					   D3DUSAGE_WRITEONLY,
 					   D3DFMT_INDEX16,   
 					   D3DPOOL_DEFAULT,
-					   &vb->indexBuffer);
+					   &vb->indexBuffer,
+					   NULL);
 	} else {
 	    hr = device->CreateIndexBuffer(vbSize*sizeof(UINT),
 					   D3DUSAGE_WRITEONLY,
 					   D3DFMT_INDEX32,   
 					   D3DPOOL_DEFAULT,
-					   &vb->indexBuffer);
+					   &vb->indexBuffer,
+					   NULL);
 	}
 	
 	if (FAILED(hr)) {
@@ -1610,7 +1617,7 @@ BOOL reIndexifyIndexVertexToVBs(D3dCtx *d3dCtx,
     float *vbptr;
     // Note that DWORD (use for color) is of same size 
     // as float (use for vertex/normal)
-    hr = vb->buffer->Lock(0, 0, (BYTE**)&vbptr,  0);
+    hr = vb->buffer->Lock(0, 0, (VOID**)&vbptr,  0);
     if (FAILED(hr)) {
 	D3dCtx::d3dWarning(LOCKVBFAIL, hr);
 	// recreate it next time
@@ -1628,7 +1635,7 @@ BOOL reIndexifyIndexVertexToVBs(D3dCtx *d3dCtx,
        BYTE *bptr;
 
        vb->indexBuffer->GetDesc(&desc);
-       hr = vb->indexBuffer->Lock(0, 0, &bptr,  0);
+       hr = vb->indexBuffer->Lock(0, 0, (VOID**)&bptr,  0);
        if (FAILED(hr)) {
 	   D3dCtx::d3dWarning(LOCKINDEXVBFAIL, hr);
 	   vb->buffer->Unlock();
@@ -1848,35 +1855,37 @@ void splitIndexVertexToMultipleVB(D3dCtx *d3dCtx,
 
 // This is used by quad polygon line mode
 void DrawPolygonLine(D3dCtx *d3dCtx,
-		     LPDIRECT3DDEVICE8 device,
+		     LPDIRECT3DDEVICE9 device,
 		     DWORD vertexFormat,
 		     D3DDRAWPRIMITIVESTRIDEDDATA *strideData)
 {
     HRESULT hr;
     float *vbptr;
 
-    hr = d3dCtx->pVB->buffer->Lock(0, 0, (BYTE**) &vbptr, 0 );
+    hr = d3dCtx->pVB->buffer->Lock(0, 0, (VOID**) &vbptr, 0 );
     if (FAILED(hr)) {
 	D3dCtx::d3dWarning(LOCKVBFAIL, hr);
 	return;
     }
     // DisplayList will not use in this case, so xform = nxform = NULL
     copyVertexToVB(d3dCtx, strideData, 4, &vbptr,
-		   javax_media_j3d_GeometryArrayRetained_VERTEX_CHANGED, true,
-		   NULL, NULL);
+		           javax_media_j3d_GeometryArrayRetained_VERTEX_CHANGED, true,
+		           NULL, NULL);
     d3dCtx->pVB->buffer->Unlock();
-    device->SetStreamSource(0, d3dCtx->pVB->buffer, 
-			    d3dCtx->pVB->stride); 
-    device->SetIndices(d3dCtx->lineModeIndexBuffer, 0);
-    device->SetVertexShader(vertexFormat);
+    device->SetStreamSource(0, d3dCtx->pVB->buffer, 0,
+			                d3dCtx->pVB->stride); 
+    device->SetIndices(d3dCtx->lineModeIndexBuffer);
+    //device->SetVertexShader(vertexFormat);
+	device->SetVertexShader(NULL);
+	device->SetFVF(vertexFormat);
 
-    device->DrawIndexedPrimitive(D3DPT_LINESTRIP, 0, 4, 0, 4);
+    device->DrawIndexedPrimitive(D3DPT_LINESTRIP,0, 0, 4, 0, 4);
 }
 
 
 // This is used by indexed quad polygon line mode
 void DrawIndexPolygonLine(D3dCtx *d3dCtx,
-			  LPDIRECT3DDEVICE8 device,
+			  LPDIRECT3DDEVICE9 device,
 			  DWORD vertexFormat,
 			  D3DDRAWPRIMITIVESTRIDEDDATA *strideData,
 			  jint idx0, jint idx1, jint idx2, jint idx3)
@@ -1884,7 +1893,7 @@ void DrawIndexPolygonLine(D3dCtx *d3dCtx,
     HRESULT hr;
     float *vbptr;
 
-    hr = d3dCtx->pVB->buffer->Lock(0, 0, (BYTE**) &vbptr, 0 );
+    hr = d3dCtx->pVB->buffer->Lock(0, 0, (VOID**) &vbptr, 0 );
     if (FAILED(hr)) {
 	D3dCtx::d3dWarning(LOCKVBFAIL, hr);
 	return;
@@ -1904,18 +1913,21 @@ void DrawIndexPolygonLine(D3dCtx *d3dCtx,
 		      NULL, NULL);
 
     d3dCtx->pVB->buffer->Unlock();
-    device->SetStreamSource(0, d3dCtx->pVB->buffer, 
-			    d3dCtx->pVB->stride); 
-    device->SetVertexShader(vertexFormat);
-    device->SetIndices(d3dCtx->lineModeIndexBuffer, 0);
+    device->SetStreamSource(0, d3dCtx->pVB->buffer, 0,
+			               d3dCtx->pVB->stride); 
+    //device->SetVertexShader(vertexFormat);
+	device->SetVertexShader(NULL);
+	device->SetFVF(vertexFormat);
 
-    device->DrawIndexedPrimitive(D3DPT_LINESTRIP, 0, 4, 0, 4);
+    device->SetIndices(d3dCtx->lineModeIndexBuffer);
+
+    device->DrawIndexedPrimitive(D3DPT_LINESTRIP,0, 0, 4, 0, 4);
 }
 
 
 void renderGeometry(JNIEnv *env, 
 		    D3dCtx *d3dCtx,
-		    LPDIRECT3DDEVICE8 device,
+		    LPDIRECT3DDEVICE9 device,
 		    jobject geo,
 		    jint geo_type,
 		    D3DDRAWPRIMITIVESTRIDEDDATA *strideData,
@@ -1998,9 +2010,9 @@ void renderGeometry(JNIEnv *env,
 
 	} else {
 	    // Found the vb in the list of vbVector
-	    for (LPD3DVERTEXBUFFER *s = vbVector->begin(); 
+	    for (ITER_LPD3DVERTEXBUFFER s = vbVector->begin(); 
 		 s != vbVector->end(); ++s) {
-		if ((*s)->ctx == d3dCtx) {
+		 if ((*s)->ctx == d3dCtx) {
 		    vb = *s;
 		    break;
 		}
@@ -2061,13 +2073,15 @@ void renderGeometry(JNIEnv *env,
 					    D3DUSAGE_WRITEONLY,
 					    vertexFormat,
 					    D3DPOOL_DEFAULT,
-					    &vb->buffer);
+					    &vb->buffer,
+						NULL);
 	} else {
 	    hr = device->CreateVertexBuffer(vb->stride*vb->vcount,
 					    D3DUSAGE_WRITEONLY|D3DUSAGE_POINTS,
 					    vertexFormat,
 					    D3DPOOL_DEFAULT,
-					    &vb->buffer);
+					    &vb->buffer,
+						NULL);
 	    vb->isPointFlagUsed = true;
 	}
 
@@ -2122,7 +2136,7 @@ void renderGeometry(JNIEnv *env,
     // Note that DWORD (use for color) is of same size 
     // as float (use for vertex/normal)
 
-    hr = vb->buffer->Lock(0, 0, (BYTE**)&vbptr,  0);
+    hr = vb->buffer->Lock(0, 0, (VOID**)&vbptr,  0);
     if (FAILED(hr)) {
 	D3dCtx::d3dWarning(LOCKVBFAIL, hr);
 	// recreate it next time
@@ -2573,7 +2587,7 @@ void renderGeometry(JNIEnv *env,
 
 void renderIndexGeometry(JNIEnv *env, 
 			 D3dCtx *d3dCtx,
-			 LPDIRECT3DDEVICE8 device,
+			 LPDIRECT3DDEVICE9 device,
 			 jobject geo,
 			 jint geo_type,
 			 D3DDRAWPRIMITIVESTRIDEDDATA *strideData,
@@ -2638,8 +2652,8 @@ void renderIndexGeometry(JNIEnv *env,
 	    env->SetLongField(geo, fieldID, reinterpret_cast<long>(vbVector));	    
 	} else {
 	    // Found the vb in the list of vbVector
-	    for (LPD3DVERTEXBUFFER *s = vbVector->begin(); 
-		 s != vbVector->end(); ++s) {
+	     for (ITER_LPD3DVERTEXBUFFER s = vbVector->begin(); 
+		      s != vbVector->end(); ++s) {
 		if ((*s)->ctx == d3dCtx) {
 		    vb = *s;
 		    break;
@@ -2704,13 +2718,15 @@ void renderIndexGeometry(JNIEnv *env,
 					    D3DUSAGE_WRITEONLY,
 					    vertexFormat,
 					    D3DPOOL_DEFAULT,
-					    &vb->buffer);
+					    &vb->buffer,
+						NULL);
 	} else {
 	    hr = device->CreateVertexBuffer(vb->stride*vb->vcount,
 					    D3DUSAGE_WRITEONLY|D3DUSAGE_POINTS,
 					    vertexFormat,
 					    D3DPOOL_DEFAULT,
-					    &vb->buffer);
+					    &vb->buffer,
+						NULL);
 	    vb->isPointFlagUsed = true;
 	}
 
@@ -2745,13 +2761,15 @@ void renderIndexGeometry(JNIEnv *env,
 					   D3DUSAGE_WRITEONLY,
 					   D3DFMT_INDEX16,
 					   D3DPOOL_DEFAULT,
-					   &vb->indexBuffer);
+					   &vb->indexBuffer,
+					   NULL);
 	} else {
 	    hr = device->CreateIndexBuffer(vb->indexCount*sizeof(UINT),
 					   D3DUSAGE_WRITEONLY,
 					   D3DFMT_INDEX32,
 					   D3DPOOL_DEFAULT,
-					   &vb->indexBuffer);
+					   &vb->indexBuffer,
+					   NULL);
 	}
 	
 	if (FAILED(hr)) {
@@ -2799,7 +2817,7 @@ void renderIndexGeometry(JNIEnv *env,
 
     // Note that DWORD (use for color) is of same size 
     // as float (use for vertex/normal)
-    hr = vb->buffer->Lock(0, 0, (BYTE**)&vbptr,  0);
+    hr = vb->buffer->Lock(0, 0, (VOID**)&vbptr,  0);
     if (FAILED(hr)) {
 	D3dCtx::d3dWarning(LOCKVBFAIL, hr);
 	// recreate it next time
@@ -2927,7 +2945,10 @@ void renderIndexGeometry(JNIEnv *env,
 		    renderTypeSet = true;
 		    expandQuadIndex = true;
 		    // fall through
-		} else { // polygon line mode
+		} 
+		// start quad WireFrame
+		else { 
+			// polygon line mode
 		    // we don't want to see extra line appear in the
 		    // diagonal of quads if it splits into two
 		    // triangles. This is REALLY SLOW !!!
@@ -3037,6 +3058,9 @@ void renderIndexGeometry(JNIEnv *env,
 		    // Don't call vb->Renderer() at the end
 		    return;
 		}
+		
+		//end Quad WireFrame
+
 		// fall through
         case GEO_TYPE_INDEXED_TRI_SET:
 	    if (renderTypeSet == false) {
@@ -3151,7 +3175,7 @@ inline void setDefaultTextureCoordPointers(D3dCtx *d3dCtx,
  */
 void setTextureCoordPointers(JNIEnv *env,
 			     D3dCtx* d3dCtx,  
-			     LPDIRECT3DDEVICE8 device, 
+			     LPDIRECT3DDEVICE9 device, 
 			     D3DDRAWPRIMITIVESTRIDEDDATA *strideData,
 			     jint pass,
 			     jint texoff,
@@ -3647,9 +3671,9 @@ void executeGeometryArrayVA(
 /* execute geometry array with java array format */
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
-    JNIEnv *env, 
+   JNIEnv *env, 
     jobject obj,
-    jlong ctx,    
+    jlong ctxInfo,    
     jobject geo,
     jint geo_type, 
     jboolean isNonUniformScale,
@@ -3666,6 +3690,10 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
     jbyteArray  cbdata,    
     jint initialNormalIndex,
     jobject ndata,
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jintArray vertexAttrIndices,
+    jobjectArray vertexAttrData,
     jint pass,  
     jint texCoordMapLength,
     jintArray 	tcoordsetmap,
@@ -3741,13 +3769,13 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
 	}	
     }
 
-    executeGeometryArrayVA(env, obj, ctx, geo, geo_type,
-			   isNonUniformScale, false, 0,
-			   multiScreen, ignoreVertexColors,
+    executeGeometryArrayVA(env, obj, ctxInfo, geo, geo_type,
+			   isNonUniformScale, false, 0, multiScreen, ignoreVertexColors,
 			   vcount, vformat,  vdefined, initialCoordIndex,
 			   fverts, dverts, initialColorIndex,
 			   fclrs, bclrs, initialNormalIndex,
-			   norms, pass, texCoordMapLength,
+			   norms, 
+			   pass, texCoordMapLength,
 			   tcoordsetmap,numActiveTexUnit, tunitstatemap,
 			   texindices,texStride,texCoordPointer, NULL,
 			   NULL, cdirty);
@@ -3763,12 +3791,12 @@ extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
     JNIEnv *env, 
     jobject obj,
-    jlong ctx,
+    jlong ctxInfo,    
     jobject geo,
     jint geo_type, 
     jboolean isNonUniformScale,
     jboolean multiScreen,
-    jboolean ignoreVertexColors,				   
+    jboolean ignoreVertexColors,
     jint vcount,
     jint vformat,
     jint vdefined,
@@ -3780,7 +3808,11 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
     jbyteArray  cbdata,
     jint initialNormalIndex,
     jfloatArray ndata,
-    jint pass, // or texUnitIndex
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jintArray vertexAttrIndices,
+    jobjectArray vertexAttrData,
+    jint pass,  
     jint texCoordMapLength,
     jintArray 	tcoordsetmap,
     jint numActiveTexUnit,
@@ -3788,7 +3820,7 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
     jintArray texindices,
     jint texStride,
     jobjectArray texCoords,
-    jint cDirty) 
+    jint cdirty)
    {
     
     jfloat *fverts = NULL;
@@ -3847,7 +3879,7 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
 	    
 	}	
     }
-    executeGeometryArrayVA(env, obj, ctx, geo, geo_type,
+    executeGeometryArrayVA(env, obj, ctxInfo, geo, geo_type,
 			   isNonUniformScale, false, 0,
 			   multiScreen, ignoreVertexColors,
 			   vcount, vformat,  vdefined, initialCoordIndex,
@@ -3856,7 +3888,7 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
 			   norms, pass, texCoordMapLength,
 			   tcoordsetmap,numActiveTexUnit, tunitstatemap,
 			   texindices,texStride,texCoordPointer,
-			   NULL, NULL, cDirty);
+			   NULL, NULL, cdirty);
     
     if (floatCoordDefined) {
 	env->ReleasePrimitiveArrayCritical( vfcoords, fverts, 0); 
@@ -3910,12 +3942,12 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_disableGlobalAlpha(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_GeometryArrayRetained_setVertexFormat(
-    JNIEnv *env,
+    JNIEnv *env, 
     jobject obj,
+    jlong ctxInfo,
     jint vformat,
     jboolean useAlpha,
-    jboolean ignoreVertexColors,
-    jlong ctx)
+    jboolean ignoreVertexColors)
 {
     // not use in D3D
 }
@@ -4100,17 +4132,24 @@ void executeGeometryArray(JNIEnv *env,
 }
 
 
+/*
+ * Class:     javax_media_j3d_GeometryArrayRetained
+ * Method:    buildGA
+ * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZFZIIII[II[II[I[D[D[F)V
+ */
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGA(JNIEnv *env, 
-		jobject obj, jlong ctx, jobject geo, jint geo_type, 
-                jboolean isNonUniformScale, jboolean updateAlpha, float alpha,
+		jobject obj, jlong ctx, jobject geo, 
+		jint geo_type, 
+        jboolean isNonUniformScale, jboolean updateAlpha, float alpha,
 		jboolean ignoreVertexColors,
 		jint startVIndex,
-  	        jint vcount, jint vformat, 
+  	    jint vcount, jint vformat, 
 		jint texCoordSetCount, 
-                jintArray texCoordSetMapArray,
+        jintArray texCoordSetMapArray,
 		jint texCoordMapLength,
 		jintArray texUnitOffset, 
+		jint vertexAttrCount, jintArray vertexAttrSizes,
 		jdoubleArray xform, jdoubleArray nxform,			
 		jfloatArray varray)
 {
@@ -4160,8 +4199,7 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGA(JNIEnv *env,
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_GeometryArrayRetained_execute(JNIEnv *env,
-                jobject obj, jlong ctx,
-		jobject geo, jint geo_type,
+                jobject obj, jlong ctx,jobject geo, jint geo_type,
                 jboolean isNonUniformScale, jboolean useAlpha,
                 jboolean multiScreen,
                 jboolean ignoreVertexColors,
@@ -4169,10 +4207,11 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_execute(JNIEnv *env,
                 jint vcount, jint vformat, jint texCoordSetCount,
                 jintArray texCoordSetMapArray,
                 jint texCoordMapLength, jintArray texUnitOffset,
-		jint numActiveTexUnit,
-		jintArray tunitstatemap,
+		        jint numActiveTexUnit,
+		        jintArray tunitstatemap,
+				jint vertexAttrCount, jintArray vertexAttrSizes,
                 jfloatArray varray, jfloatArray carray,
-		jint texUnitIndex, jint cDirty)
+		        jint texUnitIndex, jint cDirty)
 {
     jfloat *verts = NULL;
 
@@ -4260,13 +4299,13 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_freeD3DArray
 
     if (vbVector != NULL) {
 	// clearLive() invoke this in Renderer thread
-	for (LPD3DVERTEXBUFFER *s = vbVector->begin(); 
+		for (ITER_LPD3DVERTEXBUFFER s = vbVector->begin(); 
 	     s != vbVector->end(); ++s) {
 	    // This notify vb that parent vector is already free
 	    // so there is no need  to remove itself from vbVector
 	    (*s)->vbVector = NULL;
 	    (*s)->ctx->freeVB(*s);
-	}
+	    }
 	env->SetLongField(geo, fieldID, 0);
 	vbVector->clear();
 	delete vbVector;
@@ -4466,7 +4505,9 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
                 jint initialIndexIndex,
 		jint indexCount,
 		jint vcount,
-                jint vformat, jint texCoordSetCount,
+                jint vformat,
+		jint vertexAttrCount, jintArray vertexAttrSizes,
+		jint texCoordSetCount,
                 jintArray texCoordSetMapArray,
                 jint texCoordMapLength, jintArray texUnitOffset,
 		jint numActiveTexUnit,
@@ -4573,6 +4614,8 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeome
   	        jint indexCount,
 	        jint vertexCount,
 	        jint vformat, 
+		jint vertexAttrCount,
+		jintArray vertexAttrSizes,
 		jint texCoordSetCount,
 		jintArray texCoordSetMapArray,
 		jint texCoordMapLength,
@@ -4773,6 +4816,9 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
     jfloatArray cfdata,
     jbyteArray  cbdata,
     jfloatArray ndata,
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jobjectArray vertexAttrData,
     jint pass,  
     jint texCoordMapLength,
     jintArray 	tcoordsetmap,
@@ -4917,6 +4963,9 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
     jfloatArray cfdata,
     jbyteArray  cbdata,
     jobject ndata,
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jobjectArray vertexAttrData,
     jint pass,  
     jint texCoordMapLength,
     jintArray 	tcoordsetmap,
@@ -5124,6 +5173,12 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForBuffer(
 			   javax_media_j3d_GeometryArrayRetained_VERTEX_CHANGED);
 }
 
+/* execute geometry array with java array format */
+/*
+ * Class:     javax_media_j3d_GeometryArrayRetained
+ * Method:    buildGAForByRef
+ * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZFZIIII[F[DI[F[BI[FI[I[I[[FI[I[II[Ljava/lang/Object;[D[D)V
+ */
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
@@ -5147,7 +5202,11 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
     jbyteArray  cbdata,
     jint initialNormalIndex,
     jfloatArray ndata,
-    jint texCoordMapLength,
+	jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jintArray vertexAttrIndices,
+    jobjectArray vertexAttrData,
+	jint texCoordMapLength,
     jintArray 	tcoordsetmap,
     jintArray texindices,
     jint texStride,

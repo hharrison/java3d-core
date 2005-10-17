@@ -215,7 +215,7 @@ public class BoundingBox extends Bounds {
 	   else if(bounds[i].boundId == BOUNDING_POLYTOPE) {
 	       BoundingPolytope polytope = (BoundingPolytope)bounds[i];
 
-	       for(i=0;i<polytope.nVerts;i++) { // TODO handle polytope with no verts
+	       for(i=0;i<polytope.nVerts;i++) { // XXXX: handle polytope with no verts
 		   if( polytope.verts[i].x < lower.x )
 		       lower.x = polytope.verts[i].x;
 		   if( polytope.verts[i].y < lower.y )

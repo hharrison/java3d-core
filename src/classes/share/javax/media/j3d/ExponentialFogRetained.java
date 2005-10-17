@@ -21,7 +21,10 @@ import java.util.ArrayList;
  */
 class ExponentialFogRetained extends FogRetained {
     // Fog density
-    float density = 1.0f;
+    private float density = 1.0f;
+
+    // Issue 144: density in Eye Coordinates (EC)
+    private float densityInEc;
 
     // dirty bits for ExponentialFog
     static final int DENSITY_CHANGED	= FogRetained.LAST_DEFINED_BIT << 1;
@@ -108,7 +111,9 @@ class ExponentialFogRetained extends FogRetained {
     native void update(long ctx, float red, float green, float blue, float density);
 
     void update(long ctx, double scale) {
-	update(ctx, color.x, color.y, color.z, density);
+        // Issue 144: recompute the density in EC, and send it to native code
+	validateDistancesInEc(scale);
+	update(ctx, color.x, color.y, color.z, densityInEc);
     }
 
 
@@ -128,6 +133,8 @@ class ExponentialFogRetained extends FogRetained {
 	    ((ExponentialFogRetained)mirrorFog).density = ((Float)((Object[])objs[4])[4]).floatValue();
 	    
 	}
+        // Issue 144: store the local to vworld scale used to transform the density
+	((ExponentialFogRetained)mirrorFog).setLocalToVworldScale(getLastLocalToVworld().getDistanceScale());	
 
 	super.updateMirrorObject(objs);
     }
@@ -142,6 +149,18 @@ class ExponentialFogRetained extends FogRetained {
  
          return efr;
     }
-  
+
+    // Issue 144: method to recompute the density in EC by multiplying the specified
+    // density by the inverse of the local to EC scale
+    /**
+     * Scale distances from local to eye coordinate.
+     */
+    protected void validateDistancesInEc(double vworldToCoexistenceScale) {
+        // vworldToCoexistenceScale can be used here since
+        // CoexistenceToEc has a unit scale
+        double localToEcScale = getLocalToVworldScale() * vworldToCoexistenceScale;
+
+        densityInEc = (float)(density / localToEcScale);
+    }
 
 }

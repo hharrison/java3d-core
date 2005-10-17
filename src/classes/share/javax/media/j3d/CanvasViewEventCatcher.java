@@ -42,7 +42,10 @@ class CanvasViewEventCatcher extends ComponentAdapter {
 		System.out.println("It is canvas!");
 	    }
 	    synchronized(canvas) {
-		canvas.cvDirtyMask |= Canvas3D.MOVED_OR_RESIZED_DIRTY; 
+                synchronized (canvas.dirtyMaskLock) {
+                    canvas.cvDirtyMask[0] |= Canvas3D.MOVED_OR_RESIZED_DIRTY;
+                    canvas.cvDirtyMask[1] |= Canvas3D.MOVED_OR_RESIZED_DIRTY;
+                }
 		canvas.resizeGraphics2D = true;
 	    }
 	    
@@ -60,9 +63,12 @@ class CanvasViewEventCatcher extends ComponentAdapter {
 	    System.out.println("Component moved " + e);
 	}
 
-	synchronized(canvas) {	    
-	    canvas.cvDirtyMask |= Canvas3D.MOVED_OR_RESIZED_DIRTY;
-	}
+        synchronized(canvas) {
+            synchronized (canvas.dirtyMaskLock) {
+                canvas.cvDirtyMask[0] |= Canvas3D.MOVED_OR_RESIZED_DIRTY;
+                canvas.cvDirtyMask[1] |= Canvas3D.MOVED_OR_RESIZED_DIRTY;
+            }
+        }
 	// Can't sync. with canvas lock since canvas.getLocationOnScreen()
 	// required Component lock. The order is reverse of 
 	// removeNotify() lock sequence which required Component lock

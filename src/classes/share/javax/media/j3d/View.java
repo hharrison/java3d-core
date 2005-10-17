@@ -3305,7 +3305,7 @@ public class View extends Object {
 	}
 
 	// This is a temporary fix for bug 4267395 
-	// TODO:cleanup in RenderBin after View detach
+	// XXXX:cleanup in RenderBin after View detach
 	// universe.addViewIdToFreeList(viewId);
 	
 	// using new property -Dj3d.forceReleaseView to disable bug fix 4267395

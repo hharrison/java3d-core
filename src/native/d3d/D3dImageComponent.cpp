@@ -20,7 +20,7 @@ D3dImageComponent::D3dImageComponent()
 
 D3dImageComponent::D3dImageComponent(D3dCtx *_ctx, 
 				     int _hashCode,
-				     LPDIRECT3DTEXTURE8 _surf)
+				     LPDIRECT3DTEXTURE9 _surf)
 {
     ctx = _ctx;
     hashCode = _hashCode;
@@ -46,7 +46,7 @@ VOID D3dImageComponent::init()
 D3dImageComponent* D3dImageComponent::add(D3dImageComponent *list,
 					  D3dCtx *ctx, 
 					  int hashCode,
-					  LPDIRECT3DTEXTURE8 surf)
+					  LPDIRECT3DTEXTURE9 surf)
 {
     D3dImageComponent *p = list->next;
  

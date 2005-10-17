@@ -60,7 +60,7 @@ package javax.media.j3d;
 
 class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 
-    // TODO: set to false when release
+    // XXXX: set to false when release
     final static boolean debug = false;
 
     /**

@@ -76,7 +76,7 @@ public class BoundingPolytope extends Bounds {
 					   planes[i].z*invMag, planes[i].w*invMag );
 	    
 	}
-	computeAllVerts();  // TODO lazy evaluate
+	computeAllVerts();  // XXXX: lazy evaluate
     }
 
     /**
@@ -111,7 +111,7 @@ public class BoundingPolytope extends Bounds {
 	mag[4] = 1.0;
 	mag[5] = 1.0;
 
-	computeAllVerts(); // TODO lazy evaluate
+	computeAllVerts(); // XXXX: lazy evaluate
     }
 
 
@@ -131,7 +131,7 @@ public class BoundingPolytope extends Bounds {
 	    boundsIsEmpty = true;
 	    boundsIsInfinite = false;
 	    initEmptyPolytope();
-	    computeAllVerts(); // TODO lazy evaluate
+	    computeAllVerts(); // XXXX: lazy evaluate
 	    return;
 	}
        
@@ -156,7 +156,7 @@ public class BoundingPolytope extends Bounds {
 	    mag[3] = 1.0;
 	    mag[4] = 1.0;
 	    mag[5] = 1.0;
-	    computeAllVerts(); // TODO lazy evaluate
+	    computeAllVerts(); // XXXX: lazy evaluate
 	   
 	} else if( boundsObject.boundId == BOUNDING_BOX ){
 	    BoundingBox box = (BoundingBox)boundsObject;
@@ -176,7 +176,7 @@ public class BoundingPolytope extends Bounds {
 	    mag[3] = 1.0;
 	    mag[4] = 1.0;
 	    mag[5] = 1.0;
-	    computeAllVerts(); // TODO lazy evaluate
+	    computeAllVerts(); // XXXX: lazy evaluate
 	   
 	} else if( boundsObject.boundId == BOUNDING_POLYTOPE ) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
@@ -215,7 +215,7 @@ public class BoundingPolytope extends Bounds {
 	    boundsIsEmpty = true;
 	    boundsIsInfinite = false;
 	    initEmptyPolytope();
-	    computeAllVerts(); // TODO lazy evaluate
+	    computeAllVerts(); // XXXX: lazy evaluate
 	    return;
 	}
 	// find first non empty bounds object
@@ -227,7 +227,7 @@ public class BoundingPolytope extends Bounds {
 	    boundsIsEmpty = true;
 	    boundsIsInfinite = false;
 	    initEmptyPolytope();
-	    computeAllVerts(); // TODO lazy evaluate
+	    computeAllVerts(); // XXXX: lazy evaluate
 	    return; 
 	}
        
@@ -253,7 +253,7 @@ public class BoundingPolytope extends Bounds {
 	    mag[4] = 1.0;
 	    mag[5] = 1.0;
 
-	    computeAllVerts(); // TODO lazy evaluate
+	    computeAllVerts(); // XXXX: lazy evaluate
 	} else if( boundsObjects[i].boundId == BOUNDING_BOX ){
 	    BoundingBox box = (BoundingBox)boundsObjects[i];
 	    planes = new Vector4d[6];
@@ -273,7 +273,7 @@ public class BoundingPolytope extends Bounds {
 	    mag[4] = 1.0;
 	    mag[5] = 1.0;
 
-	    computeAllVerts(); // TODO lazy evaluate
+	    computeAllVerts(); // XXXX: lazy evaluate
 	} else if( boundsObjects[i].boundId == BOUNDING_POLYTOPE ) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObjects[i];
 	    planes = new Vector4d[polytope.planes.length];
@@ -320,7 +320,7 @@ public class BoundingPolytope extends Bounds {
 	    if( planes.length <= 0 ) {
 		boundsIsEmpty = true;
 		boundsIsInfinite = false;
-		computeAllVerts(); // TODO lazy evaluate
+		computeAllVerts(); // XXXX: lazy evaluate
 		return;
 	    }
 
@@ -332,7 +332,7 @@ public class BoundingPolytope extends Bounds {
 		this.planes[i] = new Vector4d( planes[i].x*invMag, planes[i].y*invMag,
 					       planes[i].z*invMag, planes[i].w*invMag );
 	    } 
-	    computeAllVerts();  // TODO lazy evaluate
+	    computeAllVerts();  // XXXX: lazy evaluate
 
 	}
     
@@ -373,7 +373,7 @@ public class BoundingPolytope extends Bounds {
 	if( boundsObject == null )  {
 	    boundsIsEmpty = true;
 	    boundsIsInfinite = false;
-	    computeAllVerts(); // TODO lazy evaluate
+	    computeAllVerts(); // XXXX: lazy evaluate
 	      
 	}else if( boundsObject.boundId == BOUNDING_SPHERE ) {
 	    BoundingSphere sphere = (BoundingSphere)boundsObject;
@@ -391,7 +391,7 @@ public class BoundingPolytope extends Bounds {
 
 	    boundsIsEmpty = boundsObject.boundsIsEmpty;
 	    boundsIsInfinite = boundsObject.boundsIsInfinite;
-	    computeAllVerts(); // TODO lazy evaluate
+	    computeAllVerts(); // XXXX: lazy evaluate
 
 	} else if( boundsObject.boundId == BOUNDING_BOX){
 	    BoundingBox box = (BoundingBox)boundsObject;
@@ -422,7 +422,7 @@ public class BoundingPolytope extends Bounds {
 	    
 	    boundsIsEmpty = boundsObject.boundsIsEmpty;
 	    boundsIsInfinite = boundsObject.boundsIsInfinite;
-	    computeAllVerts(); // TODO lazy evaluate
+	    computeAllVerts(); // XXXX: lazy evaluate
 
 	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
@@ -1627,7 +1627,7 @@ public class BoundingPolytope extends Bounds {
 		}
 	    }
 	}
-	// TODO correctly compute centroid
+	// XXXX: correctly compute centroid
 	
 	x=y=z=0.0; 
 	Point3d newVerts[] = new Point3d[nVerts];

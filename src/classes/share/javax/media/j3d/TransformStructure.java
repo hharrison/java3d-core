@@ -182,7 +182,7 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
 	    }
 	    processCurrentLocalToVworld();
 	    
-	    // TODO: temporary -- processVwcBounds will be
+	    // XXXX: temporary -- processVwcBounds will be
 	    // done in GeometryStructure
 	    if (objectList.size() > 0) { 
 		processGeometryAtomVwcBounds();
@@ -393,7 +393,7 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
 	    tg  = (TransformGroupRetained)dirtyTransformGroups.get(i);
 	    // Check if the transformGroup is still alive
 	    
-	    // TODO: This is a hack, should be fixed after EA
+	    // XXXX: This is a hack, should be fixed after EA
 	    // Null pointer checking should be removed!
 	    // should call trans = tg.getCurrentChildLocalToVworld(key);
 	    synchronized(tg) {

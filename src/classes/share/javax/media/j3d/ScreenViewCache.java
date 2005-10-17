@@ -37,7 +37,12 @@ class ScreenViewCache extends Object {
 
     // Mask that indicates Screen3D view dependence info. has changed,
     // and CanvasViewCache may need to recompute the final view matries. 
-    int scrvcDirtyMask = 0;
+    // Issue 163: Array of dirty bits is used because the Renderer and
+    // RenderBin run asynchronously. Now that they each have a separate
+    // instance of CanvasViewCache (due to the fix for Issue 109), they
+    // need separate dirty bits. Array element 0 is used for the Renderer and
+    // element 1 is used for the RenderBin.
+    int[] scrvcDirtyMask = new int[2];
     
     //
     // Tracker-base coordinate system to image-plate coordinate
@@ -72,17 +77,20 @@ class ScreenViewCache extends Object {
      * Take snapshot of all per-screen API parameters.
      */
     synchronized void snapshot() {
-	
-	// accumulate the dirty bits for offscreen because
-	// the dirty bits will not be processed until renderOffScreen
-	// or triggered by RenderBin at some little time
-	if (screen.offScreen)
-	    scrvcDirtyMask |= screen.scrDirtyMask;
-	else
-	    scrvcDirtyMask = screen.scrDirtyMask;
 
-	screen.scrDirtyMask = 0;
-	physicalScreenWidth = screen.physicalScreenWidth;
+        // accumulate the dirty bits for offscreen because
+        // the dirty bits will not be processed until renderOffScreen
+        // or triggered by RenderBin at some little time
+        if (screen.offScreen) {
+            scrvcDirtyMask[0] |= screen.scrDirtyMask;
+            scrvcDirtyMask[1] |= screen.scrDirtyMask;
+        } else {
+            scrvcDirtyMask[0] = screen.scrDirtyMask;
+            scrvcDirtyMask[1] = screen.scrDirtyMask;
+        }
+        screen.scrDirtyMask = 0;
+
+        physicalScreenWidth = screen.physicalScreenWidth;
 	physicalScreenHeight = screen.physicalScreenHeight;
 	screenWidth = screen.screenSize.width;
 	screenHeight = screen.screenSize.height;

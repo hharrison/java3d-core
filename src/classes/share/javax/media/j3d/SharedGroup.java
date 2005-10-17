@@ -67,11 +67,17 @@ public class SharedGroup extends Group {
     public static final int
     ALLOW_LINK_READ = CapabilityBits.SHARED_GROUP_ALLOW_LINK_READ;
 
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_LINK_READ
+    };
 
     /**
      * Constructs and initializes a new SharedGroup node object.
      */
     public SharedGroup() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);                
     }
 
 
@@ -82,10 +88,12 @@ public class SharedGroup extends Group {
      * @since Java 3D 1.3
      */
     public Link[] getLinks() {
-	if (isLiveOrCompiled())
-	    if (!this.getCapability(ALLOW_LINK_READ))
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_LINK_READ)) {
 			throw new CapabilityNotSetException(J3dI18N.getString("SharedGroup1"));
-		return ((SharedGroupRetained)retained).getLinks();	
+            }
+        }
+        return ((SharedGroupRetained)retained).getLinks();	
     }
 
 

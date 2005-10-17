@@ -27,7 +27,7 @@
 
     <!-- Compile the c source files; based on build-linux-amd64.xml-->
     <exec dir="${build}/${platform}/${bldType}/native/share/objs" executable="gcc">
-	<arg line=" -I/include -I${java.home}/../include -I${java.home}/../include/linux -I/usr/openwin/include -I${javahUtilsTarget} -${bldFlag} -DLINUX -c ${core_utils_src}/native/share/J3DTimer.c"/>
+	<arg line=" -I/include -I${java.home}/../include -I${java.home}/../include/linux -I/usr/openwin/include -I${javahUtilsTarget} ${bldFlag} -DLINUX -c ${core_utils_src}/native/share/J3DTimer.c"/>
     </exec>
 
     <!-- Create the library file; based on build-linux-amd64.xml-->

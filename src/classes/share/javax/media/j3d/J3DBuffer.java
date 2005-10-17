@@ -25,21 +25,11 @@ import com.sun.j3d.internal.ByteOrderWrapper;
  * <code>rewind</code> on the read-only view, so that elements 0
  * through <code>buffer.limit()-1</code> will be available internally.
  *
- * <p>
- * NOTE: Use of this class requires version 1.4 of the
- * Java<sup><font size="-2">TM</font></sup>&nbsp;2 Platform.
- * Any attempt to access this class on an earlier version of the
- * Java&nbsp;2 Platform will fail with a NoClassDefFoundError.
- * Refer to the documentation for version 1.4 of the Java&nbsp;2 SDK
- * for a description of the
- * <code>
- * <a href="http://java.sun.com/j2se/1.4/docs/api/java/nio/package-summary.html">java.nio</a>
- * </code> package.
- *
  * @see GeometryArray#setCoordRefBuffer(J3DBuffer)
  * @see GeometryArray#setColorRefBuffer(J3DBuffer)
  * @see GeometryArray#setNormalRefBuffer(J3DBuffer)
  * @see GeometryArray#setTexCoordRefBuffer(int,J3DBuffer)
+ * @see GeometryArray#setVertexAttrRefBuffer(int,J3DBuffer)
  * @see GeometryArray#setInterleavedVertexBuffer(J3DBuffer)
  * @see CompressedGeometry#CompressedGeometry(CompressedGeometryHeader,J3DBuffer)
  *

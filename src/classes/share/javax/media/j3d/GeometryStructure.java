@@ -168,7 +168,6 @@ class GeometryStructure extends J3dStructure {
 		case J3dMessage.MORPH_CHANGED: {
 		    int comp = ((Integer)m.args[1]).intValue();
 		    if (comp == MorphRetained.GEOMETRY_CHANGED) {
-			// TODO: Optimize this case.
 			processBoundsChanged((Object []) m.args[3], false);
 		    }
 		    else if (comp == MorphRetained.APPEARANCE_CHANGED) {

@@ -23,7 +23,7 @@ class CapabilityBits extends Object {
     // Node extends SceneGraphObject
     static final int NODE_ENABLE_COLLISION_REPORTING			= 0;
     static final int NODE_ENABLE_PICK_REPORTING				= 1;
-    static final int NODE_ALLOW_PICK					= 2;
+    private static final int NODE_UNUSED_BIT				= 2;
     static final int NODE_ALLOW_BOUNDS_READ				= 3;
     static final int NODE_ALLOW_BOUNDS_WRITE				= 4;
     static final int NODE_ALLOW_PICKABLE_READ				= 5;
@@ -241,6 +241,11 @@ class CapabilityBits extends Object {
     static final int ALTERNATE_APPEARANCE_ALLOW_SCOPE_READ		= 16;
     static final int ALTERNATE_APPEARANCE_ALLOW_SCOPE_WRITE		= 17;
 
+    // Additional Node bits (must go after all existing Node subclass bits)
+    static final int NODE_ALLOW_PARENT_READ			        = 46;
+    static final int NODE_ALLOW_LOCALE_READ			        = 47;
+
+
     // NodeComponent extends SceneGraphObject
 
     // Appearance extends NodeComponent 
@@ -266,6 +271,12 @@ class CapabilityBits extends Object {
     static final int APPEARANCE_ALLOW_POINT_ATTRIBUTES_WRITE		= 19;
     static final int APPEARANCE_ALLOW_TEXTURE_UNIT_STATE_READ		= 20;
     static final int APPEARANCE_ALLOW_TEXTURE_UNIT_STATE_WRITE		= 21;
+
+    // ShaderAppearance extends Appearance 
+    static final int SHADER_APPEARANCE_ALLOW_SHADER_PROGRAM_READ	= 22;
+    static final int SHADER_APPEARANCE_ALLOW_SHADER_PROGRAM_WRITE	= 23;
+    static final int SHADER_APPEARANCE_ALLOW_SHADER_ATTRIBUTE_SET_READ	= 24;
+    static final int SHADER_APPEARANCE_ALLOW_SHADER_ATTRIBUTE_SET_WRITE	= 25;
 
     // AuralAttributes extends NodeComponent 
     static final int AURAL_ATTRIBUTES_ALLOW_ATTRIBUTE_GAIN_READ		= 0;
@@ -362,6 +373,10 @@ class CapabilityBits extends Object {
     static final int
 	RENDERING_ATTRIBUTES_ALLOW_IGNORE_VERTEX_COLORS_WRITE		= 10;
     static final int RENDERING_ATTRIBUTES_ALLOW_DEPTH_ENABLE_WRITE	= 11;
+    static final int RENDERING_ATTRIBUTES_ALLOW_DEPTH_TEST_FUNCTION_READ = 12;
+    static final int RENDERING_ATTRIBUTES_ALLOW_DEPTH_TEST_FUNCTION_WRITE = 13;
+    static final int RENDERING_ATTRIBUTES_ALLOW_STENCIL_ATTRIBUTES_READ = 14;
+    static final int RENDERING_ATTRIBUTES_ALLOW_STENCIL_ATTRIBUTES_WRITE = 15;
 
     // TexCoordGeneration extends NodeComponent 
     static final int TEX_COORD_GENERATION_ALLOW_ENABLE_READ		= 0;
@@ -415,6 +430,20 @@ class CapabilityBits extends Object {
     static final int TEXTURE_UNIT_STATE_ALLOW_STATE_READ		= 0;
     static final int TEXTURE_UNIT_STATE_ALLOW_STATE_WRITE		= 1;
 
+    // ShaderProgram extends NodeComponent 
+    static final int SHADER_PROGRAM_ALLOW_SHADERS_READ			= 0;
+    static final int SHADER_PROGRAM_ALLOW_NAMES_READ			= 1;
+
+    // ShaderAttributeSet extends NodeComponent 
+    static final int SHADER_ATTRIBUTE_SET_ALLOW_ATTRIBUTES_READ		= 0;
+    static final int SHADER_ATTRIBUTE_SET_ALLOW_ATTRIBUTES_WRITE	= 1;
+
+    // ShaderAttribute extends NodeComponent 
+
+    // ShaderAttributeObject extends ShaderAttribute
+    static final int SHADER_ATTRIBUTE_OBJECT_ALLOW_VALUE_READ		= 0;
+    static final int SHADER_ATTRIBUTE_OBJECT_ALLOW_VALUE_WRITE		= 1;
+
     // Geometry extends NodeComponent
     // NOTE: additional bits are below the subclasses
 
@@ -445,6 +474,12 @@ class CapabilityBits extends Object {
     static final int GEOMETRY_ARRAY_ALLOW_REF_DATA_WRITE		= 19;
     static final int GEOMETRY_ARRAY_ALLOW_COUNT_WRITE			= 20;
     static final int GEOMETRY_ARRAY_ALLOW_REF_DATA_READ			= 21;
+    static final int GEOMETRY_ARRAY_ALLOW_VERTEX_ATTR_READ		= 22;
+    static final int GEOMETRY_ARRAY_ALLOW_VERTEX_ATTR_WRITE		= 23;
+
+    // Additional GeometryArray bits (must go after IndexedGeometryArray bits)
+    static final int INDEXED_GEOMETRY_ARRAY_ALLOW_VERTEX_ATTR_INDEX_READ = 24;
+    static final int INDEXED_GEOMETRY_ARRAY_ALLOW_VERTEX_ATTR_INDEX_WRITE = 25;
 
     // CompressedGeometry extends Geometry 
     static final int COMPRESSED_GEOMETRY_ALLOW_COUNT_READ		= 0;

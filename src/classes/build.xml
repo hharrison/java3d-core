@@ -139,14 +139,14 @@
 
     <!-- Put everything in ${build}/${platform}/debug/classes/javax into the j3dcore.jar file -->
     <jar jarfile="${build}/${platform}/debug/lib/ext/j3dcore.jar"
-         manifest="${build-debug-gen}/J3dVersion" update="yes"
+         manifest="${build-debug-gen}/J3dVersion" update="no"
 	 compress="false">
 	<fileset dir="${build}/${platform}/debug/classes" includes="javax/**/*"/>
     </jar>
 
     <!-- Put everything in ${build}/${platform}/debug/classes/com into the j3dutils.jar file -->
     <jar jarfile="${build}/${platform}/debug/lib/ext/j3dutils.jar"
-         manifest="${build-debug-gen}/ToolsVersion" update="yes"
+         manifest="${build-debug-gen}/ToolsVersion" update="no"
  	 compress="false">
 	<fileset dir="${build}/${platform}/debug/classes" includes="com/**/*"/>
     </jar>
@@ -179,14 +179,14 @@
 
     <!-- Put everything in ${build}/${platform}/opt/classes/javax into the j3dcore.jar file -->
     <jar jarfile="${build}/${platform}/opt/lib/ext/j3dcore.jar"
-         manifest="${build-opt-gen}/J3dVersion" update="yes"
+         manifest="${build-opt-gen}/J3dVersion" update="no"
 	 compress="false">
 	<fileset dir="${build}/${platform}/opt/classes" includes="javax/**/*"/>
     </jar>
 
     <!-- Put everything in ${build}/${platform}/opt/classes/com into the j3dutils.jar file -->
     <jar jarfile="${build}/${platform}/opt/lib/ext/j3dutils.jar"
-         manifest="${build-opt-gen}/ToolsVersion" update="yes"
+         manifest="${build-opt-gen}/ToolsVersion" update="no"
 	 compress="false">
 	<fileset dir="${build}/${platform}/opt/classes" includes="com/**/*"/>
     </jar>
@@ -306,4 +306,24 @@
 	 basedir="${build}/${platform}/javadocs/docs-public"/>
   </target>
 
+  <target name="install-debug">
+    <copy todir="${java.home}/lib/ext">
+        <fileset dir="${build}/${platform}/debug/lib/ext" includes="*.jar"/>
+        <fileset dir="${vecmath_home}/build/opt/lib/ext" includes="vecmath.jar"/>
+    </copy>
+    <copy todir="${java.home}/${install.bin}">
+       <fileset dir="${build}/${platform}/debug/${install.bin}" includes="*"/>
+    </copy>
+  </target>
+ 
+  <target name="uninstall">
+    <delete>
+        <fileset dir="${java.home}/lib/ext" includes="j3dcore.jar, j3dutils.jar, vecmath.jar"/>
+    </delete>
+    <delete>
+       <fileset dir="${java.home}/${install.bin}" includes="libj3dcore*.so, libj3dutils.so"/>
+       <fileset dir="${java.home}/${install.bin}" includes="j3dcore*.dll, j3dutils.dll"/>
+    </delete>
+  </target>
+ 
 </project>

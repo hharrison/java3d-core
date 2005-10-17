@@ -42,11 +42,13 @@ class RenderingAttributesStructure extends J3dStructure implements ObjectUpdate 
 	for (int i=0; i < nMsg; i++) {
 	    m = messages[i];
 	    switch (m.type) {
-		// Apperance is always updated immediately, since rBin needs
+		// Appearance is always updated immediately, since rBin needs
 		// the most up-to-date values for restructuring
 	    case J3dMessage.APPEARANCE_CHANGED:
-	    case J3dMessage.TEXTURE_UNIT_STATE_CHANGED: // TODO: Is this correct?
+	    case J3dMessage.SHADER_APPEARANCE_CHANGED:
+	    case J3dMessage.TEXTURE_UNIT_STATE_CHANGED:
 		{
+		    // System.out.println("1 RAS : J3dMessage type : " + m.type);
 		    int component = ((Integer)m.args[1]).intValue();
 		    NodeComponentRetained nc = (NodeComponentRetained)m.args[0];
 		    nc.mirror.changedFrequent = ((Integer)m.args[3]).intValue();
@@ -69,7 +71,11 @@ class RenderingAttributesStructure extends J3dStructure implements ObjectUpdate 
 	    case J3dMessage.TRANSPARENCYATTRIBUTES_CHANGED:
 	    case J3dMessage.MATERIAL_CHANGED:
 	    case J3dMessage.TEXCOORDGENERATION_CHANGED:
+	    case J3dMessage.SHADER_ATTRIBUTE_CHANGED: 
+	    case J3dMessage.SHADER_ATTRIBUTE_SET_CHANGED:
 		{
+		    // System.out.println("2 RAS : J3dMessage type : " + m.type);
+
 		    NodeComponentRetained nc = (NodeComponentRetained)m.args[0];
 		    nc.mirror.changedFrequent = ((Integer)m.args[3]).intValue();
 		    if (nc.mirror.changedFrequent != 0) {
@@ -105,8 +111,6 @@ class RenderingAttributesStructure extends J3dStructure implements ObjectUpdate 
 		    NodeComponentRetained nc = (NodeComponentRetained)m.args[0];
 		    nc.mirror.changedFrequent = ((Integer)m.args[4]).intValue();
 
-
-
 		    if (nc.mirror.changedFrequent != 0) {
 			objList.add(m);
 			addMirrorObj = true;
@@ -118,11 +122,9 @@ class RenderingAttributesStructure extends J3dStructure implements ObjectUpdate 
 		    }
 		}
 		break;
-
 	    case J3dMessage.TEXTURE_CHANGED: 
 		{
 		    NodeComponentRetained nc = (NodeComponentRetained)m.args[0];
-		    int attrMask = ((Integer)m.args[1]).intValue();
 		    nc.mirror.changedFrequent = ((Integer)m.args[3]).intValue();
 		    
 		    objList.add(m);
@@ -190,6 +192,7 @@ class RenderingAttributesStructure extends J3dStructure implements ObjectUpdate 
 		updateTextureAttributes((Object[])m.args);
 	    }
 	    else if (m.type == J3dMessage.APPEARANCE_CHANGED ||
+		     m.type == J3dMessage.SHADER_APPEARANCE_CHANGED ||
 		     m.type == J3dMessage.TEXTURE_UNIT_STATE_CHANGED){
 		NodeComponentRetained nc = (NodeComponentRetained)m.args[0];
 		nc.mirror.compChanged = 0;
@@ -206,12 +209,13 @@ class RenderingAttributesStructure extends J3dStructure implements ObjectUpdate 
     }
 
 
-    void updateNodeComponent(Object[] args) {
-      NodeComponentRetained n = (NodeComponentRetained)args[0];
-      n.updateMirrorObject(((Integer)args[1]).intValue(), args[2]);
+    private void updateNodeComponent(Object[] args) {
+	// System.out.println("RAS : updateNodeComponent : " + this);	    
+	NodeComponentRetained n = (NodeComponentRetained)args[0];
+	n.updateMirrorObject(((Integer)args[1]).intValue(), args[2]);
     }
 
-    void updateTextureAttributes(Object[] args) {
+    private void updateTextureAttributes(Object[] args) {
       TextureAttributesRetained n = (TextureAttributesRetained)args[0];
       n.updateMirrorObject(((Integer)args[1]).intValue(), args[2], args[3]);
     }

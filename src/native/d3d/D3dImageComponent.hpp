@@ -18,7 +18,7 @@
 class D3dImageComponent {
 public:
 
-    LPDIRECT3DTEXTURE8  surf;
+    LPDIRECT3DTEXTURE9  surf;
     D3dCtx               *ctx;
     int                 hashCode;
     D3dImageComponent    *next;
@@ -26,7 +26,7 @@ public:
     D3dImageComponent();
 
     D3dImageComponent(D3dCtx *ctx, int hashCode,
-		      LPDIRECT3DTEXTURE8 surf);
+		      LPDIRECT3DTEXTURE9 surf);
 
     ~D3dImageComponent();
 
@@ -37,7 +37,7 @@ public:
 
     static D3dImageComponent* add(D3dImageComponent *list,
 				  D3dCtx *ctx, int hashCode,
-				  LPDIRECT3DTEXTURE8 surf);
+				  LPDIRECT3DTEXTURE9 surf);
 
     static VOID remove(D3dImageComponent *list, D3dCtx *ctx, int hashCode);
     static VOID remove(D3dImageComponent *list, D3dCtx *ctx); 

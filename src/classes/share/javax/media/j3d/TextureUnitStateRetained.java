@@ -592,17 +592,6 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 	return (texture != null && texture.enable);
     }
 
-    // use by D3D to simulate OGL blend mode using multi-pass
-    final boolean needBlend2Pass(Canvas3D cv) {
-	return ((texAttrs != null) && 
-		VirtualUniverse.mc.isD3D() &&
-		((cv.textureExtendedFeatures &
-		      Canvas3D.TEXTURE_LERP) == 0) &&
-		(texAttrs.textureMode == TextureAttributes.BLEND) &&
-		(texture.format != Texture.ALPHA) &&
-		(texture.format != Texture.INTENSITY));
-    }
-
     void handleFrequencyChange(int bit) {
         switch (bit) {
         case TextureUnitState.ALLOW_STATE_WRITE: {

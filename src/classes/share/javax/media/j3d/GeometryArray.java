@@ -17,7 +17,8 @@ import javax.vecmath.*;
 
 /**
  * The GeometryArray object contains separate arrays of positional
- * coordinates, colors, normals, and texture coordinates that
+ * coordinates, colors, normals, texture coordinates, and vertex
+ * attributes that
  * describe point, line, or polygon geometry.  This class is extended
  * to create the various primitive types (such as lines,
  * triangle strips, etc.).
@@ -29,7 +30,8 @@ import javax.vecmath.*;
  * <li>
  * <b>By Copying:</b>
  * The existing methods for setting positional coordinates, colors,
- * normals, and texture coordinates (such as <code>setCoordinate</code>,
+ * normals, texture coordinates, and vertex attributes
+ * (such as <code>setCoordinate</code>,
  * <code>setColors</code>, etc.)  copy the data into this
  * GeometryArray.  This is appropriate for many applications and
  * offers an application much flexibility in organizing its data.
@@ -41,9 +43,11 @@ import javax.vecmath.*;
  * this feature, set the <code>BY_REFERENCE</code> bit in the
  * <code>vertexFormat</code> field of the constructor for this
  * GeometryArray.  In this mode, the various set methods for
- * coordinates, normals, colors, and texture coordinates are not used.
+ * coordinates, normals, colors, texture coordinates, and vertex attributes
+ * are not used.
  * Instead, new methods are used to set a reference to user-supplied
- * coordinate, color, normal, and texture coordinate arrays (such as
+ * coordinate, color, normal, texture coordinate, and vertex attribute
+ * arrays (such as
  * <code>setCoordRefFloat</code>, <code>setColorRefFloat</code>,
  * etc.).  Data in any array that is referenced by a live or compiled
  * GeometryArray object may only be modified via the
@@ -131,6 +135,24 @@ public abstract class GeometryArray extends Geometry {
    */
   public static final int
     ALLOW_TEXCOORD_WRITE = CapabilityBits.GEOMETRY_ARRAY_ALLOW_TEXCOORD_WRITE;
+
+  /**
+   * Specifies that this GeometryArray allows reading the array of
+   * vertex attributes.
+   *
+   * @since Java 3D 1.4
+   */
+  public static final int
+    ALLOW_VERTEX_ATTR_READ = CapabilityBits.GEOMETRY_ARRAY_ALLOW_VERTEX_ATTR_READ;
+
+  /**
+   * Specifies that this GeometryArray allows writing the array of
+   * vertex attributes.
+   *
+   * @since Java 3D 1.4
+   */
+  public static final int
+    ALLOW_VERTEX_ATTR_WRITE = CapabilityBits.GEOMETRY_ARRAY_ALLOW_VERTEX_ATTR_WRITE;
 
   /**
    * Specifies that this GeometryArray allows reading the count or
@@ -268,15 +290,12 @@ public abstract class GeometryArray extends Geometry {
      * is only valid in conjunction with the <code>BY_REFERENCE</code>
      * flag.
      *
-     * <p>
-     * NOTE: Use of this class requires version 1.4 of the
-     * Java<sup><font size="-2">TM</font></sup>&nbsp;2 Platform.
-     *
      * @see J3DBuffer
      * @see #setCoordRefBuffer(J3DBuffer)
      * @see #setColorRefBuffer(J3DBuffer)
      * @see #setNormalRefBuffer(J3DBuffer)
      * @see #setTexCoordRefBuffer(int,J3DBuffer)
+     * @see #setVertexAttrRefBuffer(int,J3DBuffer)
      * @see #setInterleavedVertexBuffer(J3DBuffer)
      *
      * @since Java 3D 1.3
@@ -287,17 +306,30 @@ public abstract class GeometryArray extends Geometry {
      * Specifies that only the coordinate indices are used for indexed
      * geometry arrays.  In this mode, the values from the coordinate
      * index array are used as a single set of index values to access
-     * the vertex data for all four vertex components (coord, color,
-     * normal, and texCoord).  The color, normal, and texCoord index arrays
-     * are ignored.  This flag is only valid for indexed geometry arrays
+     * the vertex data for all five vertex components (coord, color,
+     * normal, texCoord, and vertexAttr).  The color, normal, texCoord,
+     * and vertexAttr index arrays are neither allocated nor used. Any
+     * attempt to access the color, normal, texCoord,
+     * or vertexAttr index arrays will result in a NullPointerException.
+     * This flag is only valid for indexed geometry arrays
      * (subclasses of IndexedGeometryArray).
      *
      * @since Java 3D 1.3
      */
     public static final int USE_COORD_INDEX_ONLY = 0x200;
 
+    /**
+     * Specifies that this GeometryArray contains one or more arrays of
+     * vertex attributes. These attributes are used in programmable
+     * shading.
+     *
+     * @since Java 3D 1.4
+     */
+    public static final int VERTEX_ATTRIBUTES = 0x1000;
+
+
     // Used to keep track of the last bit (for adding new bits only)
-    private static final int LAST_FORMAT_BIT = 0x800;
+    private static final int LAST_FORMAT_BIT = 0x1000;
 
 
     // Scratch arrays for converting Point[234]f to TexCoord[234]f
@@ -306,11 +338,26 @@ public abstract class GeometryArray extends Geometry {
     private TexCoord4f [] texCoord4fArray = null;
     private TexCoord2f texCoord2fScratch = null;
     private TexCoord3f texCoord3fScratch = null;
+    
+    private static final int[] defTexCoordMap = { 0 };
 
- 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_COLOR_READ,
+        ALLOW_COORDINATE_READ,
+        ALLOW_COUNT_READ,
+        ALLOW_FORMAT_READ,
+        ALLOW_NORMAL_READ,
+        ALLOW_REF_DATA_READ,
+        ALLOW_TEXCOORD_READ,
+        ALLOW_VERTEX_ATTR_READ        
+    };
+    
 
     // non-public, no parameter constructor
     GeometryArray() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
 
@@ -321,12 +368,15 @@ public abstract class GeometryArray extends Geometry {
      * <ul>
      * texCoordSetCount : 1<br>
      * texCoordSetMap : { 0 }<br>
+     * vertexAttrCount : 0<br>
+     * vertexAttrSizes : null<br>
      * validVertexCount : vertexCount<br>
      * initialVertexIndex : 0<br>
      * initialCoordIndex : 0<br>
      * initialColorIndex : 0<br>
      * initialNormalIndex : 0<br>
      * initialTexCoordIndex : 0<br>
+     * initialVertexAttrIndex : 0<br>
      * all data array values : 0.0<br>
      * all data array references : null<br>
      * </ul>
@@ -355,46 +405,29 @@ public abstract class GeometryArray extends Geometry {
      * <code>USE_COORD_INDEX_ONLY</code>,
      * to indicate that only the coordinate indices are used for indexed
      * geometry arrays.
-     * @exception IllegalArgumentException if vertexCount < 0, if
-     * vertexFormat does NOT include <code>COORDINATES</code>,
-     * if the <code>USE_COORD_INDEX_ONLY</code> bit is set for non-indexed
-     * geometry arrays (that is, GeometryArray objects that are not a
-     * subclass of IndexedGeometryArray),
-     * if the <code>INTERLEAVED</code> bit is set without the
-     * <code>BY_REFERENCE</code> bit being set,
-     * or if the <code>USE_NIO_BUFFER</code> bit is set without the
-     * <code>BY_REFERENCE</code> bit being set.
+     *
+     * @exception IllegalArgumentException if vertexCount &lt; 0
+     *
+     * @exception IllegalArgumentException if vertexFormat does <b>not</b>
+     * include <code>COORDINATES</code>
+     *
+     * @exception IllegalArgumentException if the <code>USE_COORD_INDEX_ONLY</code>
+     * bit is set for non-indexed geometry arrays (that is, GeometryArray objects
+     * that are not a subclass of IndexedGeometryArray)
+     *
+     * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
+     * bit is set without the <code>BY_REFERENCE</code> bit being set
+     *
+     * @exception IllegalArgumentException if the <code>USE_NIO_BUFFER</code>
+     * bit is set without the <code>BY_REFERENCE</code> bit being set
+     *
+     * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
+     * bit and the <code>VERTEX_ATTRIBUTES</code> bit are both set
      */
     public GeometryArray(int vertexCount, int vertexFormat) {
-
-        if (vertexCount < 0)
-	    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray96"));
-
-        if ((vertexFormat & COORDINATES) == 0)
-	  throw new IllegalArgumentException(J3dI18N.getString("GeometryArray0"));
-
-        if ((vertexFormat & INTERLEAVED) != 0 &&
-	    (vertexFormat & BY_REFERENCE) == 0)
-	    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray80"));
-
-        if ((vertexFormat & USE_NIO_BUFFER) != 0 &&
-	    (vertexFormat & BY_REFERENCE) == 0)
-	    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray117"));
-
-        if ((vertexFormat & TEXTURE_COORDINATE) != 0) {
-	    if ((vertexFormat & TEXTURE_COORDINATE_2) != 0) {
-	        texCoord2fArray = new TexCoord2f[1];
-	        texCoord2fScratch = new TexCoord2f();
-	    }
-	    else if ((vertexFormat & TEXTURE_COORDINATE_3) != 0) {
-	        texCoord3fArray = new TexCoord3f[1];
-	        texCoord3fScratch = new TexCoord3f();
-	    } else if ((vertexFormat & TEXTURE_COORDINATE_4) != 0) {
-	        texCoord4fArray = new TexCoord4f[1];
-	    }
-	}
-
-	((GeometryArrayRetained)this.retained).createGeometryArrayData(vertexCount, vertexFormat);
+        this(vertexCount, vertexFormat,
+            ((vertexFormat & TEXTURE_COORDINATE) != 0 ? 1 : 0),
+            ((vertexFormat & TEXTURE_COORDINATE) != 0 ? defTexCoordMap : null));
     }
 
 
@@ -467,48 +500,59 @@ public abstract class GeometryArray extends Geometry {
      *
      * <p>
      * <ul>
-     * <table BORDER=1 CELLSPACING=1 CELLPADDING=1>
+     * <table BORDER=1 CELLSPACING=2 CELLPADDING=2>
      * <tr>
      * <td><center><b>Index</b></center></td>
      * <td><center><b>Element</b></center></td>
-     * <td><center><b>Description</b></center></td>
+     * <td><b>Description</b></td>
      * </tr>
      * <tr>
      * <td><center>0</center></td>
      * <td><center>1</center></td>
-     * <td><center>Use tex coord set 1 for tex unit 0</center></td>
+     * <td>Use tex coord set 1 for tex unit 0</td>
      * </tr>
      * <tr>
      * <td><center>1</center></td>
      * <td><center>-1</center></td>
-     * <td><center>Use no tex coord set for tex unit 1</center></td>
+     * <td>Use no tex coord set for tex unit 1</td>
      * </tr>
      * <tr>
      * <td><center>2</center></td>
      * <td><center>0</center></td>
-     * <td><center>Use tex coord set 0 for tex unit 2</center></td>
+     * <td>Use tex coord set 0 for tex unit 2</td>
      * </tr>
      * <tr>
      * <td><center>3</center></td>
      * <td><center>1</center></td>
-     * <td><center>Reuse tex coord set 1 for tex unit 3</center></td>
+     * <td>Reuse tex coord set 1 for tex unit 3</td>
      * </tr>
      * </table>
      * </ul>
      * <p>
      *
+     * @exception IllegalArgumentException if vertexCount &lt; 0
+     *
+     * @exception IllegalArgumentException if vertexFormat does <b>not</b>
+     * include <code>COORDINATES</code>
+     *
+     * @exception IllegalArgumentException if the <code>USE_COORD_INDEX_ONLY</code>
+     * bit is set for non-indexed geometry arrays (that is, GeometryArray objects
+     * that are not a subclass of IndexedGeometryArray)
+     *
+     * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
+     * bit is set without the <code>BY_REFERENCE</code> bit being set
+     *
+     * @exception IllegalArgumentException if the <code>USE_NIO_BUFFER</code>
+     * bit is set without the <code>BY_REFERENCE</code> bit being set
+     *
+     * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
+     * bit and the <code>VERTEX_ATTRIBUTES</code> bit are both set
+     *
      * @exception IllegalArgumentException if
-     * <code>vertexCount&nbsp;<&nbsp;0</code>, if vertexFormat does
-     * NOT include <code>COORDINATES</code>, if the
-     * <code>INTERLEAVED</code> bit is set without the
-     * <code>BY_REFERENCE</code> bit being set, if the
-     * <code>USE_NIO_BUFFER</code> bit is set without the
-     * <code>BY_REFERENCE</code> bit being set, if
-     * the <code>USE_COORD_INDEX_ONLY</code> bit is set for non-indexed
-     * geometry arrays (that is, GeometryArray objects that are not a
-     * subclass of IndexedGeometryArray), if
-     * <code>texCoordSetCount&nbsp;<&nbsp;0</code>, or if any element
-     * in <code>texCoordSetMap[]&nbsp;>=&nbsp;texCoordSetCount</code>.
+     * <code>texCoordSetCount&nbsp;&lt;&nbsp;0</code>
+     *
+     * @exception IllegalArgumentException if any element in
+     * <code>texCoordSetMap[]&nbsp;&gt;=&nbsp;texCoordSetCount</code>.
      *
      * @since Java 3D 1.2
      */
@@ -516,20 +560,196 @@ public abstract class GeometryArray extends Geometry {
 			 int vertexFormat,
 			 int texCoordSetCount,
 			 int[] texCoordSetMap) {
+	this(vertexCount, vertexFormat, texCoordSetCount, texCoordSetMap, 0, null);
+    }
+
+
+    /**
+     * Constructs an empty GeometryArray object with the specified
+     * number of vertices, vertex format, number of texture coordinate
+     * sets, texture coordinate mapping array, vertex attribute count,
+     * and vertex attribute sizes array.
+     *
+     * @param vertexCount the number of vertex elements in this
+     * GeometryArray<p>
+     *
+     * @param vertexFormat a mask indicating which components are
+     * present in each vertex.  This is specified as one or more
+     * individual flags that are bitwise "OR"ed together to describe
+     * the per-vertex data.
+     * The flags include: <code>COORDINATES</code>, to signal the inclusion of
+     * vertex positions--always present; <code>NORMALS</code>, to signal
+     * the inclusion of per vertex normals; one of <code>COLOR_3</code> or
+     * <code>COLOR_4</code>, to signal the inclusion of per vertex
+     * colors (without or with alpha information); one of
+     * <code>TEXTURE_COORDINATE_2</code> or <code>TEXTURE_COORDINATE_3</code>
+     * or <code>TEXTURE_COORDINATE_4</code>,
+     * to signal the
+     * inclusion of per-vertex texture coordinates (2D , 3D or 4D);
+     * <code>VERTEX_ATTRIBUTES</code>, to signal
+     * the inclusion of one or more arrays of vertex attributes;
+     * <code>BY_REFERENCE</code>, to indicate that the data is passed
+     * by reference
+     * rather than by copying; <code>INTERLEAVED</code>, to indicate
+     * that the referenced
+     * data is interleaved in a single array;
+     * <code>USE_NIO_BUFFER</code>, to indicate that the referenced data
+     * is accessed via a J3DBuffer object that wraps an NIO buffer;
+     * <code>USE_COORD_INDEX_ONLY</code>,
+     * to indicate that only the coordinate indices are used for indexed
+     * geometry arrays.<p>
+     *
+     * @param texCoordSetCount the number of texture coordinate sets
+     * in this GeometryArray object.  If <code>vertexFormat</code>
+     * does not include one of <code>TEXTURE_COORDINATE_2</code> or
+     * <code>TEXTURE_COORDINATE_3</code>, the
+     * <code>texCoordSetCount</code> parameter is not used.<p>
+     *
+     * <a name="texCoordSetMap">
+     * @param texCoordSetMap an array that maps texture coordinate
+     * sets to texture units.  The array is indexed by texture unit
+     * number for each texture unit in the associated Appearance
+     * object.  The values in the array specify the texture coordinate
+     * set within this GeometryArray object that maps to the
+     * corresponding texture
+     * unit.  All elements within the array must be less than
+     * <code>texCoordSetCount</code>.  A negative value specifies that
+     * no texture coordinate set maps to the texture unit
+     * corresponding to the index.  If there are more texture units in
+     * any associated Appearance object than elements in the mapping
+     * array, the extra elements are assumed to be -1.  The same
+     * texture coordinate set may be used for more than one texture
+     * unit.  Each texture unit in every associated Appearance must
+     * have a valid source of texture coordinates: either a
+     * non-negative texture coordinate set must be specified in the
+     * mapping array or texture coordinate generation must be enabled.
+     * Texture coordinate generation will take precedence for those
+     * texture units for which a texture coordinate set is specified
+     * and texture coordinate generation is enabled.  If
+     * <code>vertexFormat</code> does not include one of
+     * <code>TEXTURE_COORDINATE_2</code> or
+     * <code>TEXTURE_COORDINATE_3</code> or
+     * <code>TEXTURE_COORDINATE_4</code>, the
+     * <code>texCoordSetMap</code> array is not used.  The following example
+     * illustrates the use of the <code>texCoordSetMap</code> array.
+     *
+     * <p>
+     * <ul>
+     * <table BORDER=1 CELLSPACING=2 CELLPADDING=2>
+     * <tr>
+     * <td><center><b>Index</b></center></td>
+     * <td><center><b>Element</b></center></td>
+     * <td><b>Description</b></td>
+     * </tr>
+     * <tr>
+     * <td><center>0</center></td>
+     * <td><center>1</center></td>
+     * <td>Use tex coord set 1 for tex unit 0</td>
+     * </tr>
+     * <tr>
+     * <td><center>1</center></td>
+     * <td><center>-1</center></td>
+     * <td>Use no tex coord set for tex unit 1</td>
+     * </tr>
+     * <tr>
+     * <td><center>2</center></td>
+     * <td><center>0</center></td>
+     * <td>Use tex coord set 0 for tex unit 2</td>
+     * </tr>
+     * <tr>
+     * <td><center>3</center></td>
+     * <td><center>1</center></td>
+     * <td>Reuse tex coord set 1 for tex unit 3</td>
+     * </tr>
+     * </table>
+     * </ul>
+     * <p>
+     *
+     * @param vertexAttrCount the number of vertex attributes
+     * in this GeometryArray object. If <code>vertexFormat</code>
+     * does not include <code>VERTEX_ATTRIBUTES</code>, the
+     * <code>vertexAttrCount</code> parameter must be 0.<p>
+     *
+     * @param vertexAttrSizes is an array that specifes the size of
+     * each vertex attribute. Each element in the array specifies the
+     * number of components in the attribute, from 1 to 4. The length
+     * of the array must be equal to <code>vertexAttrCount</code>.<p>
+     *
+     * @exception IllegalArgumentException if vertexCount &lt; 0
+     *
+     * @exception IllegalArgumentException if vertexFormat does <b>not</b>
+     * include <code>COORDINATES</code>
+     *
+     * @exception IllegalArgumentException if the <code>USE_COORD_INDEX_ONLY</code>
+     * bit is set for non-indexed geometry arrays (that is, GeometryArray objects
+     * that are not a subclass of IndexedGeometryArray)
+     *
+     * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
+     * bit is set without the <code>BY_REFERENCE</code> bit being set
+     *
+     * @exception IllegalArgumentException if the <code>USE_NIO_BUFFER</code>
+     * bit is set without the <code>BY_REFERENCE</code> bit being set
+     *
+     * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
+     * bit and the <code>VERTEX_ATTRIBUTES</code> bit are both set
+     *
+     * @exception IllegalArgumentException if
+     * <code>texCoordSetCount&nbsp;&lt;&nbsp;0</code>
+     *
+     * @exception IllegalArgumentException if any element in
+     * <code>texCoordSetMap[]&nbsp;&gt;=&nbsp;texCoordSetCount</code>.
+     *
+     * @exception IllegalArgumentException if
+     * <code>vertexAttrCount&nbsp;&gt;&nbsp;0</code> and the
+     * <code>VERTEX_ATTRIBUTES</code> bit is not set
+     *
+     * @exception IllegalArgumentException if
+     * <code>vertexAttrCount&nbsp;&lt;&nbsp;0</code>
+     *
+     * @exception IllegalArgumentException if
+     * <code>vertexAttrSizes.length&nbsp;!=&nbsp;vertexAttrCount</code>
+     *
+     * @exception IllegalArgumentException if any element in
+     * <code>vertexAttrSizes[]</code> is <code>&lt; 1</code> or
+     * <code>&gt; 4</code>.
+     *
+     * @since Java 3D 1.4
+     */
+    public GeometryArray(int vertexCount,
+			 int vertexFormat,
+			 int texCoordSetCount,
+			 int[] texCoordSetMap,
+			 int vertexAttrCount,
+			 int[] vertexAttrSizes) {
 
         if (vertexCount < 0)
             throw new IllegalArgumentException(J3dI18N.getString("GeometryArray96"));
 
+        if (texCoordSetCount < 0)
+            throw new IllegalArgumentException(J3dI18N.getString("GeometryArray124"));
+
+        if (vertexAttrCount < 0)
+            throw new IllegalArgumentException(J3dI18N.getString("GeometryArray125"));
+
         if ((vertexFormat & COORDINATES) == 0)
-          throw new IllegalArgumentException(J3dI18N.getString("GeometryArray0"
-));
+          throw new IllegalArgumentException(J3dI18N.getString("GeometryArray0"));
 
         if ((vertexFormat & INTERLEAVED) != 0 &&
             (vertexFormat & BY_REFERENCE) == 0)
             throw new IllegalArgumentException(J3dI18N.getString("GeometryArray80"));
 
+        if ((vertexFormat & INTERLEAVED) != 0 &&
+                (vertexFormat & VERTEX_ATTRIBUTES) != 0) {
+            throw new IllegalArgumentException(J3dI18N.getString("GeometryArray128"));
+        }
+
+        if ((vertexFormat & USE_COORD_INDEX_ONLY) != 0 &&
+                !(this instanceof IndexedGeometryArray)) {
+            throw new IllegalArgumentException(J3dI18N.getString("GeometryArray135"));
+        }
+
         if ((vertexFormat & USE_NIO_BUFFER) != 0 &&
-	    (vertexFormat & BY_REFERENCE) == 0)
+            (vertexFormat & BY_REFERENCE) == 0)
 	    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray117"));
 
 	if ((vertexFormat & TEXTURE_COORDINATE) != 0) {
@@ -556,8 +776,36 @@ public abstract class GeometryArray extends Geometry {
 	        texCoord4fArray = new TexCoord4f[1];
 	    }
 	}
-
-        ((GeometryArrayRetained)this.retained).createGeometryArrayData(vertexCount, vertexFormat, texCoordSetCount, texCoordSetMap);
+        
+        if ((vertexFormat & VERTEX_ATTRIBUTES) != 0) {
+            if (vertexAttrCount > 0) {
+                if (vertexAttrCount != vertexAttrSizes.length) {
+                    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray132"));
+                }
+                
+                for (int i = 0; i < vertexAttrSizes.length; i++) {
+                    if (vertexAttrSizes[i] < 1 || vertexAttrSizes[i] > 4) {
+                        throw new IllegalArgumentException(J3dI18N.getString("GeometryArray133"));
+                    }
+                }
+            } else {
+                if (vertexAttrSizes != null && vertexAttrSizes.length != 0) {
+                    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray132"));
+                }
+            }
+        } else {
+            if (vertexAttrCount > 0) {
+                throw new IllegalArgumentException(J3dI18N.getString("GeometryArray131"));
+            }
+        }
+        
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+        
+        ((GeometryArrayRetained)this.retained).createGeometryArrayData(
+	    vertexCount, vertexFormat,
+	    texCoordSetCount, texCoordSetMap,
+	    vertexAttrCount, vertexAttrSizes);
 
     }
 
@@ -636,7 +884,35 @@ public abstract class GeometryArray extends Geometry {
      */
     public void getTexCoordSetMap(int[] texCoordSetMap) {
         ((GeometryArrayRetained)this.retained).getTexCoordSetMap(texCoordSetMap);
-	return; 
+    }
+
+
+    /**
+     * Retrieves the number of vertex attributes in this GeometryArray
+     * object.
+     *
+     * @return the number of vertex attributes in this GeometryArray
+     * object
+     *
+     * @since Java 3D 1.4
+     */
+    public int getVertexAttrCount() {
+        return ((GeometryArrayRetained)this.retained).getVertexAttrCount();
+    }
+
+
+    /**
+     * Retrieves the vertex attribute sizes array from this
+     * GeometryArray object.
+     *
+     * @param vertexAttrSizes an array that will receive a copy of
+     * the vertex attribute sizes array.  The array must hold at least
+     * <code>vertexAttrCount</code> elements.
+     *
+     * @since Java 3D 1.4
+     */
+    public void getVertexAttrSizes(int[] vertexAttrSizes) {
+        ((GeometryArrayRetained)this.retained).getVertexAttrSizes(vertexAttrSizes);
     }
 
 
@@ -688,27 +964,30 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalArgumentException if any of the following are
      * true:
      * <ul>
-     * <code>validVertexCount < 0</code>,<br>
-     * <code>initialVertexIndex + validVertexCount > vertexCount</code>,<br>
-     * <code>initialCoordIndex + validVertexCount > vertexCount</code>,<br>
-     * <code>initialColorIndex + validVertexCount > vertexCount</code>,<br>
-     * <code>initialNormalIndex + validVertexCount > vertexCount</code>,<br>
-     * <code>initialTexCoordIndex + validVertexCount > vertexCount</code>
+     * <code>validVertexCount &lt; 0</code>,<br>
+     * <code>initialVertexIndex + validVertexCount &gt; vertexCount</code>,<br>
+     * <code>initialCoordIndex + validVertexCount &gt; vertexCount</code>,<br>
+     * <code>initialColorIndex + validVertexCount &gt; vertexCount</code>,<br>
+     * <code>initialNormalIndex + validVertexCount &gt; vertexCount</code>,<br>
+     * <code>initialTexCoordIndex + validVertexCount &gt; vertexCount</code>,<br>
+     * <code>initialVertexAttrIndex + validVertexCount &gt; vertexCount</code>
      * </ul>
      * <p>
      * @exception ArrayIndexOutOfBoundsException if the geometry data format
      * is <code>BY_REFERENCE</code> and any the following
      * are true for non-null array references:
      * <ul>
-     * <code>CoordRef.length</code> < <i>num_words</i> *
+     * <code>CoordRef.length</code> &lt; <i>num_words</i> *
      * (<code>initialCoordIndex + validVertexCount</code>),<br>
-     * <code>ColorRef.length</code> < <i>num_words</i> *
+     * <code>ColorRef.length</code> &lt; <i>num_words</i> *
      * (<code>initialColorIndex + validVertexCount</code>),<br>
-     * <code>NormalRef.length</code> < <i>num_words</i> *
+     * <code>NormalRef.length</code> &lt; <i>num_words</i> *
      * (<code>initialNormalIndex + validVertexCount</code>),<br>
-     * <code>TexCoordRef.length</code> < <i>num_words</i> *
+     * <code>TexCoordRef.length</code> &lt; <i>num_words</i> *
      * (<code>initialTexCoordIndex + validVertexCount</code>),<br>
-     * <code>InterleavedVertices.length</code> < <i>words_per_vertex</i> *
+     * <code>VertexAttrRef.length</code> &lt; <i>num_words</i> *
+     * (<code>initialVertexAttrIndex + validVertexCount</code>),<br>
+     * <code>InterleavedVertices.length</code> &lt; <i>words_per_vertex</i> *
      * (<code>initialVertexIndex + validVertexCount</code>)<br>
      * </ul>
      * where <i>num_words</i> depends on which variant of
@@ -727,7 +1006,7 @@ public abstract class GeometryArray extends Geometry {
 	    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray96"));
 
 	((GeometryArrayRetained)this.retained).setValidVertexCount(validVertexCount);
-	// NOTE: the checks for initial*Index + validVertexCount >
+	// NOTE: the checks for initial*Index + validVertexCount &gt;
 	// vertexCount need to be done in the retained method
     }
 
@@ -770,61 +1049,99 @@ public abstract class GeometryArray extends Geometry {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
     void duplicateAttributes(NodeComponent originalNodeComponent,
-			     boolean forceDuplicate) {
+                             boolean forceDuplicate) {
 
-      super.duplicateAttributes(originalNodeComponent, forceDuplicate);
-      // vertexFormat and vertexCount are copied in subclass when constructor
-      //  public GeometryArray(int vertexCount, int vertexFormat) is used
-      // in cloneNodeComponent()
-      GeometryArrayRetained src = (GeometryArrayRetained) originalNodeComponent.retained;
-      GeometryArrayRetained dst = (GeometryArrayRetained) retained;
-      int format = src.getVertexFormat();
-      if ((format & BY_REFERENCE) == 0) {
-	  System.arraycopy(src.vertexData, 0, dst.vertexData, 0,
-			   src.vertexData.length);
-	  dst.setInitialVertexIndex(src.getInitialVertexIndex());
-	  
-      } else {
-	  dst.setInitialCoordIndex(src.getInitialCoordIndex());
-	  dst.setInitialColorIndex(src.getInitialColorIndex());
-	  dst.setInitialNormalIndex(src.getInitialNormalIndex());
-	  int setCount = src.getTexCoordSetCount();
-	  for (int i=0; i < setCount; i++) {
-	      dst.setInitialTexCoordIndex(i, src.getInitialTexCoordIndex(i));
-	  }
-	  if ((format & INTERLEAVED) == 0) {
-	      dst.setCoordRefFloat(src.getCoordRefFloat());
-	      dst.setCoordRefDouble(src.getCoordRefDouble());	      
-	      dst.setCoordRef3f(src.getCoordRef3f());
-	      dst.setCoordRef3d(src.getCoordRef3d());
-              dst.setColorRefFloat(src.getColorRefFloat());
-	      dst.setColorRefByte(src.getColorRefByte());
-	      if ((format & WITH_ALPHA) == 0) {
-		  dst.setColorRef3f(src.getColorRef3f());
-		  dst.setColorRef3b(src.getColorRef3b());
-	      } else {
-		  dst.setColorRef4f(src.getColorRef4f());
-		  dst.setColorRef4b(src.getColorRef4b());
-	      }
-	      dst.setNormalRefFloat(src.getNormalRefFloat());
-	      dst.setNormalRef3f(src.getNormalRef3f());	   
-	      for (int i=0; i < setCount; i++) {   
-		  dst.setTexCoordRefFloat(i, src.getTexCoordRefFloat(i));
-	      }
-	      if ((format & TEXTURE_COORDINATE_2) != 0) {
-		  for (int i=0; i < setCount; i++) {   
-		      dst.setTexCoordRef2f(i, src.getTexCoordRef2f(i));
-		  }
-	      } 
-	      if ((format & TEXTURE_COORDINATE_3) != 0) {
-		  for (int i=0; i < setCount; i++) {   
-		      dst.setTexCoordRef3f(i, src.getTexCoordRef3f(i));
-		  }
-	      }
-	  } else {
-	      dst.setInterleavedVertices(src.getInterleavedVertices());
-	  } 
-      }
+        super.duplicateAttributes(originalNodeComponent, forceDuplicate);
+        // vertexFormat and vertexCount are copied in subclass when constructor
+        //  public GeometryArray(int vertexCount, int vertexFormat) is used
+        // in cloneNodeComponent()
+        GeometryArrayRetained src = (GeometryArrayRetained) originalNodeComponent.retained;
+        GeometryArrayRetained dst = (GeometryArrayRetained) retained;
+        int format = src.getVertexFormat();
+        if ((format & BY_REFERENCE) == 0) {
+            System.arraycopy(src.vertexData, 0, dst.vertexData, 0,
+                    src.vertexData.length);
+            dst.setInitialVertexIndex(src.getInitialVertexIndex());
+
+        } else {
+            dst.setInitialCoordIndex(src.getInitialCoordIndex());
+            dst.setInitialColorIndex(src.getInitialColorIndex());
+            dst.setInitialNormalIndex(src.getInitialNormalIndex());
+            int setCount = src.getTexCoordSetCount();
+            int vAttrCount = src.getVertexAttrCount();
+            for (int i=0; i < setCount; i++) {
+                dst.setInitialTexCoordIndex(i, src.getInitialTexCoordIndex(i));
+            }
+            if ((format & INTERLEAVED) == 0) {
+                if ((format & USE_NIO_BUFFER) == 0) {
+                    // Java arrays
+                    dst.setCoordRefFloat(src.getCoordRefFloat());
+                    dst.setCoordRefDouble(src.getCoordRefDouble());
+                    dst.setCoordRef3f(src.getCoordRef3f());
+                    dst.setCoordRef3d(src.getCoordRef3d());
+                    dst.setColorRefFloat(src.getColorRefFloat());
+                    dst.setColorRefByte(src.getColorRefByte());
+                    if ((format & WITH_ALPHA) == 0) {
+                        dst.setColorRef3f(src.getColorRef3f());
+                        dst.setColorRef3b(src.getColorRef3b());
+                    } else {
+                        dst.setColorRef4f(src.getColorRef4f());
+                        dst.setColorRef4b(src.getColorRef4b());
+                    }
+                    dst.setNormalRefFloat(src.getNormalRefFloat());
+                    dst.setNormalRef3f(src.getNormalRef3f());
+
+                    switch (src.getVertexAttrType()) {
+                    case GeometryArrayRetained.AF:
+                        for (int i=0; i < vAttrCount; i++) {
+                            dst.setVertexAttrRefFloat(i, src.getVertexAttrRefFloat(i));
+                        }
+                        break;
+                    }
+
+                    switch (src.getTexCoordType()) {
+                    case GeometryArrayRetained.TF:
+                        for (int i=0; i < setCount; i++) {
+                            dst.setTexCoordRefFloat(i, src.getTexCoordRefFloat(i));
+                        }
+                        break;
+                    case GeometryArrayRetained.T2F:
+                        for (int i=0; i < setCount; i++) {
+                            dst.setTexCoordRef2f(i, src.getTexCoordRef2f(i));
+                        }
+                        break;
+                    case GeometryArrayRetained.T3F:
+                        for (int i=0; i < setCount; i++) {
+                            dst.setTexCoordRef3f(i, src.getTexCoordRef3f(i));
+                        }
+                        break;
+                    }
+                } else {
+                    // NIO buffer
+                    dst.setCoordRefBuffer(src.getCoordRefBuffer());
+                    dst.setColorRefBuffer(src.getColorRefBuffer());
+                    dst.setNormalRefBuffer(src.getNormalRefBuffer());
+
+                    switch (src.getVertexAttrType()) {
+                    case GeometryArrayRetained.AF:
+                        for (int i=0; i < vAttrCount; i++) {
+                            dst.setVertexAttrRefBuffer(i, src.getVertexAttrRefBuffer(i));
+                        }
+                        break;
+                    }
+
+                    switch (src.getTexCoordType()) {
+                    case GeometryArrayRetained.TF:
+                        for (int i=0; i < setCount; i++) {
+                            dst.setTexCoordRefBuffer(i, src.getTexCoordRefBuffer(i));
+                        }
+                        break;
+                    }
+                }
+            } else {
+                dst.setInterleavedVertices(src.getInterleavedVertices());
+            }
+        }
     }
 
 
@@ -848,15 +1165,15 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalArgumentException if either of the following are
      * true:
      * <ul>
-     * <code>initialVertexIndex < 0</code> or<br>
-     * <code>initialVertexIndex + validVertexCount > vertexCount</code><br>
+     * <code>initialVertexIndex &lt; 0</code> or<br>
+     * <code>initialVertexIndex + validVertexCount &gt; vertexCount</code><br>
      * </ul>
      *
      * @exception ArrayIndexOutOfBoundsException if the geometry data format
      * is <code>INTERLEAVED</code>, the InterleavedVertices array is
      * non-null, and:
      * <ul>
-     * <code>InterleavedVertices.length</code> < <i>num_words</i> *
+     * <code>InterleavedVertices.length</code> &lt; <i>num_words</i> *
      * (<code>initialVertexIndex + validVertexCount</code>)<br>
      * </ul>
      * where <i>num_words</i> depends on which vertex formats are enabled.
@@ -2271,7 +2588,7 @@ public abstract class GeometryArray extends Geometry {
 
 
 	if (((((GeometryArrayRetained)this.retained).vertexFormat) & 
-		(TEXTURE_COORDINATE_2 | TEXTURE_COORDINATE_3)) != 0)
+		(TEXTURE_COORDINATE_2 | TEXTURE_COORDINATE_4)) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray95"));
 
 	((GeometryArrayRetained)this.retained).setTextureCoordinates(
@@ -2338,7 +2655,7 @@ public abstract class GeometryArray extends Geometry {
      *
      * @param index starting destination vertex index in this geometry array
      * @param texCoords source array of 2*n , 3*n or 4*n values containing 
-     * n new * texture coordinates
+     * n new texture coordinates
      * @param start starting source vertex index in <code>texCoords</code>
      * array.
      * @param length number of texture Coordinates to be copied.
@@ -2530,6 +2847,581 @@ public abstract class GeometryArray extends Geometry {
 	((GeometryArrayRetained)this.retained).setTextureCoordinates(
 		texCoordSet, index, texCoords, start, length);
     }
+
+
+    /**
+     * Sets the vertex attribute associated with the vertex at the
+     * specified index in the specified vertex attribute number for
+     * this object.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index destination vertex index in this geometry array
+     * @param vertexAttr source array of 1, 2, 3 or 4 values containing
+     * the new vertex attribute
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range, or if the vertexAttr array is
+     * too small.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttr(int vertexAttrNum, int index,
+			      float[] vertexAttr) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttrs(
+		vertexAttrNum, index, vertexAttr, 0, 1);
+    }
+
+    /**
+     * Sets the vertex attribute associated with the vertex at the
+     * specified index in the specified vertex attribute number for
+     * this object.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index destination vertex index in this geometry array
+     * @param vertexAttr the Point2f containing the new vertex attribute
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 2.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttr(int vertexAttrNum, int index,
+			      Point2f vertexAttr) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 2) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttr(
+		vertexAttrNum, index, vertexAttr);
+    }
+
+    /**
+     * Sets the vertex attribute associated with the vertex at the
+     * specified index in the specified vertex attribute number for
+     * this object.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index destination vertex index in this geometry array
+     * @param vertexAttr the Point3f containing the new vertex attribute
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 3.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttr(int vertexAttrNum, int index,
+			      Point3f vertexAttr) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 3) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttr(
+		vertexAttrNum, index, vertexAttr);
+    }
+
+    /**
+     * Sets the vertex attribute associated with the vertex at the
+     * specified index in the specified vertex attribute number for
+     * this object.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index destination vertex index in this geometry array
+     * @param vertexAttr the Point4f containing the new vertex attribute
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 4.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttr(int vertexAttrNum, int index,
+			      Point4f vertexAttr) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 4) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttr(
+		vertexAttrNum, index, vertexAttr);
+    }
+
+    /**
+     * Sets the vertex attributes associated with the vertices starting at
+     * the specified index in the specified vertex attribute number
+     * for this object.  The entire source array is copied to this
+     * geometry array.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index starting destination vertex index in this geometry array
+     * @param vertexAttrs source array of 1*n, 2*n, 3*n, or 4*n values
+     * containing n new vertex attributes
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range, or if the vertexAttr array is
+     * too large.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttrs(int vertexAttrNum, int index,
+			       float[] vertexAttrs) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	((GeometryArrayRetained)this.retained).setVertexAttrs(
+		vertexAttrNum, index, vertexAttrs, 0, vertexAttrs.length / size);
+    }
+
+    /**
+     * Sets the vertex attributes associated with the vertices starting at
+     * the specified index in the specified vertex attribute number
+     * for this object.  The entire source array is copied to this
+     * geometry array.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index starting destination vertex index in this geometry array
+     * @param vertexAttrs source array of Point2f objects containing new
+     * vertex attributes
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range, or if the vertexAttr array is
+     * too large.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 2.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttrs(int vertexAttrNum, int index,
+			       Point2f[] vertexAttrs) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 2) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttrs(
+		vertexAttrNum, index, vertexAttrs, 0, vertexAttrs.length);
+    }
+
+    /**
+     * Sets the vertex attributes associated with the vertices starting at
+     * the specified index in the specified vertex attribute number
+     * for this object.  The entire source array is copied to this
+     * geometry array.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index starting destination vertex index in this geometry array
+     * @param vertexAttrs source array of Point3f objects containing new
+     * vertex attributes
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range, or if the vertexAttr array is
+     * too large.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 3.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttrs(int vertexAttrNum, int index,
+			       Point3f[] vertexAttrs) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 3) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttrs(
+		vertexAttrNum, index, vertexAttrs, 0, vertexAttrs.length);
+    }
+
+    /**
+     * Sets the vertex attributes associated with the vertices starting at
+     * the specified index in the specified vertex attribute number
+     * for this object.  The entire source array is copied to this
+     * geometry array.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index starting destination vertex index in this geometry array
+     * @param vertexAttrs source array of Point4f objects containing new
+     * vertex attributes
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range, or if the vertexAttr array is
+     * too large.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 4.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttrs(int vertexAttrNum, int index,
+			       Point4f[] vertexAttrs) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 4) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttrs(
+		vertexAttrNum, index, vertexAttrs, 0, vertexAttrs.length);
+    }
+
+    /**
+     * Sets the vertex attributes associated with the vertices
+     * starting at the specified index in the specified vertex
+     * attribute number for this object using data in
+     * <code>vertexAttrs</code> starting at index <code>start</code> and
+     * ending at index <code>start+length</code>.
+     *
+     * @param index starting destination vertex index in this geometry array
+     * @param vertexAttrs source array of 1*n, 2*n, 3*n, or 4*n values
+     * containing n new vertex attributes
+     * @param start starting source vertex index in <code>vertexAttrs</code>
+     * array.
+     * @param length number of vertex attributes to be copied.
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if any of index,
+     * (index+length), or vertexAttrNum are out of range, or if
+     * vertexAttrs is too small.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttrs(int vertexAttrNum, int index,
+			       float[] vertexAttrs,
+			       int start, int length) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttrs(
+		vertexAttrNum, index, vertexAttrs, start, length);
+    }
+
+    /**
+     * Sets the vertex attributes associated with the vertices
+     * starting at the specified index in the specified vertex
+     * attribute number for this object using data in
+     * <code>vertexAttrs</code> starting at index <code>start</code> and
+     * ending at index <code>start+length</code>.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index starting destination vertex index in this geometry array
+     * @param vertexAttrs source array of Point2f objects containing new
+     * vertex attributes
+     * @param start starting source vertex index in <code>vertexAttrs</code>
+     * array.
+     * @param length number of vertex attributes to be copied.
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if any of index,
+     * (index+length), or vertexAttrNum are out of range, or if
+     * vertexAttrs is too small.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 2.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttrs(int vertexAttrNum, int index,
+			       Point2f[] vertexAttrs,
+			       int start, int length) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 2) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttrs(
+		vertexAttrNum, index, vertexAttrs, start, length);
+    }
+
+    /**
+     * Sets the vertex attributes associated with the vertices
+     * starting at the specified index in the specified vertex
+     * attribute number for this object using data in
+     * <code>vertexAttrs</code> starting at index <code>start</code> and
+     * ending at index <code>start+length</code>.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index starting destination vertex index in this geometry array
+     * @param vertexAttrs source array of Point3f objects containing new
+     * vertex attributes
+     * @param start starting source vertex index in <code>vertexAttrs</code>
+     * array.
+     * @param length number of vertex attributes to be copied.
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if any of index,
+     * (index+length), or vertexAttrNum are out of range, or if
+     * vertexAttrs is too small.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 3.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttrs(int vertexAttrNum, int index,
+			       Point3f[] vertexAttrs,
+			       int start, int length) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 3) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttrs(
+		vertexAttrNum, index, vertexAttrs, start, length);
+    }
+
+    /**
+     * Sets the vertex attributes associated with the vertices
+     * starting at the specified index in the specified vertex
+     * attribute number for this object using data in
+     * <code>vertexAttrs</code> starting at index <code>start</code> and
+     * ending at index <code>start+length</code>.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index starting destination vertex index in this geometry array
+     * @param vertexAttrs source array of Point4f objects containing new
+     * vertex attributes
+     * @param start starting source vertex index in <code>vertexAttrs</code>
+     * array.
+     * @param length number of vertex attributes to be copied.
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if any of index,
+     * (index+length), or vertexAttrNum are out of range, or if
+     * vertexAttrs is too small.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 4.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttrs(int vertexAttrNum, int index,
+			       Point4f[] vertexAttrs,
+			       int start, int length) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray126"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 4) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttrs(
+		vertexAttrNum, index, vertexAttrs, start, length);
+    }
+
 
   /**
    * Gets the coordinate associated with the vertex at
@@ -3714,6 +4606,384 @@ public abstract class GeometryArray extends Geometry {
 					texCoordSet, index, texCoords);
     }
 
+    /**
+     * Gets the vertex attribute associated with the vertex at
+     * the specified index in the specified vertex attribute number
+     * for this object.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index source vertex index in this geometry array
+     * @param vertexAttr array of 1, 2, 3 or 4 values that will receive the
+     * vertex attribute
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range, or if the vertexAttr array is
+     * too small.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @since Java 3D 1.4
+     */
+    public void getVertexAttr(int vertexAttrNum, int index,
+			      float[] vertexAttr) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_READ)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray127"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	((GeometryArrayRetained)this.retained).getVertexAttr(
+				vertexAttrNum, index, vertexAttr);
+    }
+
+    /**
+     * Gets the vertex attribute associated with the vertex at
+     * the specified index in the specified vertex attribute number
+     * for this object.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index source vertex index in this geometry array
+     * @param vertexAttr the vector that will receive the vertex attributes
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 2.
+     *
+     * @since Java 3D 1.4
+     */
+    public void getVertexAttr(int vertexAttrNum, int index,
+			      Point2f vertexAttr) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_READ)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray127"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 2) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).getVertexAttr(
+				vertexAttrNum, index, vertexAttr);
+    }
+
+    /**
+     * Gets the vertex attribute associated with the vertex at
+     * the specified index in the specified vertex attribute number
+     * for this object.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index source vertex index in this geometry array
+     * @param vertexAttr the vector that will receive the vertex attributes
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 3.
+     *
+     * @since Java 3D 1.4
+     */
+    public void getVertexAttr(int vertexAttrNum, int index,
+			      Point3f vertexAttr) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_READ)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray127"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 3) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).getVertexAttr(
+				vertexAttrNum, index, vertexAttr);
+    }
+
+    /**
+     * Gets the vertex attribute associated with the vertex at
+     * the specified index in the specified vertex attribute number
+     * for this object.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index source vertex index in this geometry array
+     * @param vertexAttr the vector that will receive the vertex attributes
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 4.
+     *
+     * @since Java 3D 1.4
+     */
+    public void getVertexAttr(int vertexAttrNum, int index,
+			      Point4f vertexAttr) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_READ)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray127"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 4) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).getVertexAttr(
+				vertexAttrNum, index, vertexAttr);
+    }
+
+    /**
+     * Gets the vertex attributes associated with the vertices starting at
+     * the specified index in the specified vertex attribute number
+     * for this object.  The length of the destination
+     * array determines the number of vertex attributes copied.
+     * A maximum of <code>vertexCount-index</code> vertex attributes
+     * are copied.  If the destination array is larger than is needed
+     * to hold the vertex attributes, the excess locations in the
+     * array are not modified.  If the destination array is smaller
+     * than is needed to hold the vertex attributes, only as
+     * many vertex attributes as the array will hold are copied.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index starting source vertex index in this geometry array
+     * @param vertexAttrs destination array of 1*n, 2*n, 3*n, or 4*n values
+     * that will receive n new vertex attributes
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @since Java 3D 1.4
+     */
+    public void getVertexAttrs(int vertexAttrNum, int index,
+			       float[] vertexAttrs) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_READ)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray127"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	((GeometryArrayRetained)this.retained).getVertexAttrs(
+				vertexAttrNum, index, vertexAttrs);
+    }
+
+    /**
+     * Gets the vertex attributes associated with the vertices starting at
+     * the specified index in the specified vertex attribute number
+     * for this object.  The length of the destination
+     * array determines the number of vertex attributes copied.
+     * A maximum of <code>vertexCount-index</code> vertex attributes
+     * are copied.  If the destination array is larger than is needed
+     * to hold the vertex attributes, the excess locations in the
+     * array are not modified.  If the destination array is smaller
+     * than is needed to hold the vertex attributes, only as
+     * many vertex attributes as the array will hold are copied.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index starting source vertex index in this geometry array
+     * @param vertexAttrs destination array of Point2f objects that will
+     * receive the vertex attributes
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 2.
+     *
+     * @since Java 3D 1.4
+     */
+    public void getVertexAttrs(int vertexAttrNum, int index,
+			       Point2f[] vertexAttrs) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_READ)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray127"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 2) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).getVertexAttrs(
+				vertexAttrNum, index, vertexAttrs);
+    }
+
+    /**
+     * Gets the vertex attributes associated with the vertices starting at
+     * the specified index in the specified vertex attribute number
+     * for this object.  The length of the destination
+     * array determines the number of vertex attributes copied.
+     * A maximum of <code>vertexCount-index</code> vertex attributes
+     * are copied.  If the destination array is larger than is needed
+     * to hold the vertex attributes, the excess locations in the
+     * array are not modified.  If the destination array is smaller
+     * than is needed to hold the vertex attributes, only as
+     * many vertex attributes as the array will hold are copied.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index starting source vertex index in this geometry array
+     * @param vertexAttrs destination array of Point3f objects that will
+     * receive the vertex attributes
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 3.
+     *
+     * @since Java 3D 1.4
+     */
+    public void getVertexAttrs(int vertexAttrNum, int index,
+			       Point3f[] vertexAttrs) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_READ)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray127"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 3) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).getVertexAttrs(
+				vertexAttrNum, index, vertexAttrs);
+    }
+
+    /**
+     * Gets the vertex attributes associated with the vertices starting at
+     * the specified index in the specified vertex attribute number
+     * for this object.  The length of the destination
+     * array determines the number of vertex attributes copied.
+     * A maximum of <code>vertexCount-index</code> vertex attributes
+     * are copied.  If the destination array is larger than is needed
+     * to hold the vertex attributes, the excess locations in the
+     * array are not modified.  If the destination array is smaller
+     * than is needed to hold the vertex attributes, only as
+     * many vertex attributes as the array will hold are copied.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param index starting source vertex index in this geometry array
+     * @param vertexAttrs destination array of Point4f objects that will
+     * receive the vertex attributes
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception ArrayIndexOutOfBoundsException if the index or
+     * vertexAttrNum is out of range.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE</code>.
+     *
+     * @exception IllegalStateException if the size of the specified
+     * vertex attribute number is not 4.
+     *
+     * @since Java 3D 1.4
+     */
+    public void getVertexAttrs(int vertexAttrNum, int index,
+			       Point4f[] vertexAttrs) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_VERTEX_ATTR_READ)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray127"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+	}
+
+	int size = ((GeometryArrayRetained)this.retained).vertexAttrSizes[vertexAttrNum];
+	if (size != 4) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray134"));
+	}
+
+	((GeometryArrayRetained)this.retained).getVertexAttrs(
+				vertexAttrNum, index, vertexAttrs);
+    }
+
 
     //------------------------------------------------------------------
     // By-reference methods
@@ -3742,14 +5012,14 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalArgumentException if either of the following are
      * true:
      * <ul>
-     * <code>initialCoordIndex < 0</code> or<br>
-     * <code>initialCoordIndex + validVertexCount > vertexCount</code><br>
+     * <code>initialCoordIndex &lt; 0</code> or<br>
+     * <code>initialCoordIndex + validVertexCount &gt; vertexCount</code><br>
      * </ul>
      * <p>
      * @exception ArrayIndexOutOfBoundsException if
      * the CoordRef array is non-null and:
      * <ul>
-     * <code>CoordRef.length</code> < <i>num_words</i> *
+     * <code>CoordRef.length</code> &lt; <i>num_words</i> *
      * (<code>initialCoordIndex + validVertexCount</code>)<br>
      * </ul>
      * where <i>num_words</i> depends on which variant of
@@ -3820,14 +5090,14 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalArgumentException if either of the following are
      * true:
      * <ul>
-     * <code>initialColorIndex < 0</code> or<br>
-     * <code>initialColorIndex + validVertexCount > vertexCount</code><br>
+     * <code>initialColorIndex &lt; 0</code> or<br>
+     * <code>initialColorIndex + validVertexCount &gt; vertexCount</code><br>
      * </ul>
      * <p>
      * @exception ArrayIndexOutOfBoundsException if
      * the ColorRef array is non-null and:
      * <ul>
-     * <code>ColorRef.length</code> < <i>num_words</i> *
+     * <code>ColorRef.length</code> &lt; <i>num_words</i> *
      * (<code>initialColorIndex + validVertexCount</code>)<br>
      * </ul>
      * where <i>num_words</i> depends on which variant of
@@ -3898,14 +5168,14 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalArgumentException if either of the following are
      * true:
      * <ul>
-     * <code>initialNormalIndex < 0</code> or<br>
-     * <code>initialNormalIndex + validVertexCount > vertexCount</code><br>
+     * <code>initialNormalIndex &lt; 0</code> or<br>
+     * <code>initialNormalIndex + validVertexCount &gt; vertexCount</code><br>
      * </ul>
      * <p>
      * @exception ArrayIndexOutOfBoundsException if normals
      * the NormalRef array is non-null and:
      * <ul>
-     * <code>NormalRef.length</code> < <i>num_words</i> *
+     * <code>NormalRef.length</code> &lt; <i>num_words</i> *
      * (<code>initialNormalIndex + validVertexCount</code>)<br>
      * </ul>
      * where <i>num_words</i> depends on which variant of
@@ -3979,14 +5249,14 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalArgumentException if either of the following are
      * true:
      * <ul>
-     * <code>initialTexCoordIndex < 0</code> or<br>
-     * <code>initialTexCoordIndex + validVertexCount > vertexCount</code><br>
+     * <code>initialTexCoordIndex &lt; 0</code> or<br>
+     * <code>initialTexCoordIndex + validVertexCount &gt; vertexCount</code><br>
      * </ul>
      * <p>
      * @exception ArrayIndexOutOfBoundsException if
      * the TexCoordRef array is non-null and:
      * <ul>
-     * <code>TexCoordRef.length</code> < <i>num_words</i> *
+     * <code>TexCoordRef.length</code> &lt; <i>num_words</i> *
      * (<code>initialTexCoordIndex + validVertexCount</code>)<br>
      * </ul>
      * where <i>num_words</i> depends on which variant of
@@ -4054,6 +5324,109 @@ public abstract class GeometryArray extends Geometry {
 
 
     /**
+     * Sets the initial vertex attribute index for the specified
+     * vertex attribute number for this GeometryArray object.  This
+     * index specifies the first vertex attribute within the array
+     * of vertex attributes referenced by this geometry array that
+     * is actually used in rendering or other operations such as
+     * picking and collision.  This attribute is initialized to 0.
+     * This attribute is only used when the data mode for this
+     * geometry array object is <code>BY_REFERENCE</code>
+     * and is <i>not</i> </code>INTERLEAVED</code>.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     * @param initialVertexAttrIndex the new initial vertex attribute index.
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     * <p>
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is not <code>BY_REFERENCE</code> or if the data mode
+     * is <code>INTERLEAVED</code>.
+     * <p>
+     * @exception IllegalArgumentException if either of the following are
+     * true:
+     * <ul>
+     * <code>initialVertexAttrIndex &lt; 0</code> or<br>
+     * <code>initialVertexAttrIndex + validVertexCount &gt; vertexCount</code><br>
+     * </ul>
+     * <p>
+     * @exception ArrayIndexOutOfBoundsException if
+     * the VertexAttrRef array is non-null and:
+     * <ul>
+     * <code>VertexAttrRef.length</code> &lt; <i>num_words</i> *
+     * (<code>initialVertexAttrIndex + validVertexCount</code>)<br>
+     * </ul>
+     * where <i>num_words</i> is the size of the specified
+     * vertexAttrNum (1, 2, 3, or 4).
+     * <p>
+     * @exception ArrayIndexOutOfBoundsException if vertexAttrNum is
+     * out of range.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setInitialVertexAttrIndex(int vertexAttrNum,
+					  int initialVertexAttrIndex) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_COUNT_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray90"));
+	    }
+	}
+
+        if (initialVertexAttrIndex < 0) {
+	    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray97"));
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) == 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray83"));
+	}
+
+	if ((format & INTERLEAVED) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray84"));
+	}
+
+	((GeometryArrayRetained)this.retained).setInitialVertexAttrIndex(
+		vertexAttrNum, initialVertexAttrIndex);
+
+	// NOTE: the check for initialVertexAttrIndex + validVertexCount >
+	// vertexCount needs to be done in the retained method
+    }
+
+
+    /**
+     * Gets the initial vertex attribute index for the specified
+     * vertex attribute number for this GeometryArray object.
+     * This attribute is only used when the data mode for this
+     * geometry array object is <code>BY_REFERENCE</code>
+     * and is <i>not</i> </code>INTERLEAVED</code>.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     *
+     * @return the current initial vertex attribute index for the specified
+     * vertex attribute number
+     *
+     * @exception ArrayIndexOutOfBoundsException if vertexAttrNum is
+     * out of range.
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @since Java 3D 1.4
+     */
+    public int getInitialVertexAttrIndex(int vertexAttrNum) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_COUNT_READ)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray91"));
+	    }
+	}
+
+	return ((GeometryArrayRetained)this.retained).getInitialVertexAttrIndex(
+		vertexAttrNum);
+    }
+
+
+    /**
      * Sets the coordinate buffer reference to the specified
      * buffer object.  The buffer contains either a java.nio.FloatBuffer
      * or java.nio.DoubleBuffer object containing single or double
@@ -4081,7 +5454,7 @@ public abstract class GeometryArray extends Geometry {
      * java.nio.FloatBuffer or a java.nio.DoubleBuffer object.
      *
      * @exception ArrayIndexOutOfBoundsException if
-     * <code>coords.getBuffer().limit() <
+     * <code>coords.getBuffer().limit() &lt;
      * 3 * (initialCoordIndex + validVertexCount)</code>.
      *
      * @exception ArrayIndexOutOfBoundsException if this GeometryArray
@@ -4164,7 +5537,7 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalArgumentException if the specified array is
      * non-null and any other coordinate reference is also non-null.
      * @exception ArrayIndexOutOfBoundsException if
-     * <code>coords.length < 3 * (initialCoordIndex + validVertexCount)</code>.
+     * <code>coords.length &lt; 3 * (initialCoordIndex + validVertexCount)</code>.
      *
      * @exception ArrayIndexOutOfBoundsException if this GeometryArray
      * object is a subclass of IndexedGeometryArray, and any element
@@ -4253,7 +5626,7 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalArgumentException if the specified array is
      * non-null and any other coordinate reference is also non-null.
      * @exception ArrayIndexOutOfBoundsException if
-     * <code>coords.length < 3 * (initialCoordIndex + validVertexCount)</code>.
+     * <code>coords.length &lt; 3 * (initialCoordIndex + validVertexCount)</code>.
      *
      * @exception ArrayIndexOutOfBoundsException if this GeometryArray
      * object is a subclass of IndexedGeometryArray, and any element
@@ -4456,7 +5829,7 @@ public abstract class GeometryArray extends Geometry {
      * @exception ArrayIndexOutOfBoundsException if none of the
      * <code>COLOR</code> bits are set in the
      * <code>vertexFormat</code>, or if
-     * <code>colors.getBuffer().limit() < </code> <i>num_words</i> <code> *
+     * <code>colors.getBuffer().limit() &lt; </code> <i>num_words</i> <code> *
      * (initialColorIndex + validVertexCount)</code>,
      * where <i>num_words</i> is 3 or 4 depending on the vertex color format.
      *
@@ -4549,7 +5922,7 @@ public abstract class GeometryArray extends Geometry {
      * @exception ArrayIndexOutOfBoundsException if none of the
      * <code>COLOR</code> bits are set in the
      * <code>vertexFormat</code>, or if
-     * <code>colors.length < </code> <i>num_words</i> <code> *
+     * <code>colors.length &lt; </code> <i>num_words</i> <code> *
      * (initialColorIndex + validVertexCount)</code>,
      * where <i>num_words</i> is 3 or 4 depending on the vertex color format.
      *
@@ -4646,7 +6019,7 @@ public abstract class GeometryArray extends Geometry {
      * @exception ArrayIndexOutOfBoundsException if none of the
      * <code>COLOR</code> bits are set in the
      * <code>vertexFormat</code>, or if
-     * <code>colors.length < </code> <i>num_words</i> <code> *
+     * <code>colors.length &lt; </code> <i>num_words</i> <code> *
      * (initialColorIndex + validVertexCount)</code>,
      * where <i>num_words</i> is 3 or 4 depending on the vertex color format.
      *
@@ -4978,7 +6351,7 @@ public abstract class GeometryArray extends Geometry {
      * @exception ArrayIndexOutOfBoundsException if
      * <code>NORMALS</code> bit is not set in the
      * <code>vertexFormat</code>, or if
-     * <code>normals.getBuffer().limit() <
+     * <code>normals.getBuffer().limit() &lt;
      * 3 * (initialNormalIndex + validVertexCount)</code>.
      *
      * @exception ArrayIndexOutOfBoundsException if this GeometryArray
@@ -5064,7 +6437,7 @@ public abstract class GeometryArray extends Geometry {
      * @exception ArrayIndexOutOfBoundsException if
      * <code>NORMALS</code> bit is not set in the
      * <code>vertexFormat</code>, or if
-     * <code>normals.length < 3 * (initialNormalIndex + validVertexCount)</code>.
+     * <code>normals.length &lt; 3 * (initialNormalIndex + validVertexCount)</code>.
      *
      * @exception ArrayIndexOutOfBoundsException if this GeometryArray
      * object is a subclass of IndexedGeometryArray, and any element
@@ -5186,7 +6559,7 @@ public abstract class GeometryArray extends Geometry {
 
 
     /**
-     * Sets the texture coordinate array reference for the specified
+     * Sets the texture coordinate buffer reference for the specified
      * texture coordinate set to the
      * specified buffer object.  The buffer contains a java.nio.FloatBuffer
      * object containing <i>s</i>,
@@ -5223,7 +6596,7 @@ public abstract class GeometryArray extends Geometry {
      * <code>TEXTURE_COORDINATE</code> bits are set in the
      * <code>vertexFormat</code>, or if texCoordSet is out of range,
      * or if
-     * <code>texCoords.getBuffer().limit() < </code> <i>num_words</i>
+     * <code>texCoords.getBuffer().limit() &lt; </code> <i>num_words</i>
      * <code> * (initialTexCoordIndex + validVertexCount)</code>,
      * where <i>num_words</i> is 2, 3, or 4 depending on the vertex
      * texture coordinate format.
@@ -5336,7 +6709,7 @@ public abstract class GeometryArray extends Geometry {
      * <code>TEXTURE_COORDINATE</code> bits are set in the
      * <code>vertexFormat</code>, or if texCoordSet is out of range,
      * or if
-     * <code>texCoords.length < </code> <i>num_words</i> <code> *
+     * <code>texCoords.length &lt; </code> <i>num_words</i> <code> *
      * (initialTexCoordIndex + validVertexCount)</code>,
      * where <i>num_words</i> is 2, 3, or 4 depending on the vertex
      * texture coordinate format.
@@ -5543,11 +6916,265 @@ public abstract class GeometryArray extends Geometry {
 							texCoordSet);
     }
 
+
+    /**
+     * Sets the vertex attribute buffer reference for the specified
+     * vertex attribute number to the specified buffer object. The
+     * buffer contains a java.nio.FloatBuffer object containing 1, 2,
+     * 3, or 4 values for each vertex (for a total of 1*<i>n</i>,
+     * 2*<i>n</i>, 3*<i>n</i>, or 4*<i>n</i> values, where <i>n</i> is
+     * the number of vertices).
+     * If the vertexAttr buffer reference is null and vertex
+     * attributes are enabled (that is, the vertexFormat includes
+     * <code>VERTEX_ATTRIBUTES</code>), the entire geometry array
+     * object is treated as if it were null--any Shape3D node that
+     * uses this geometry array will not be drawn.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     *
+     * @param vertexAttrs a J3DBuffer object to which a reference will
+     * be set.  The buffer contains an NIO buffer of 1*<i>n</i>,
+     * 2*<i>n</i>, 3*<i>n</i>, or 4*<i>n</i> float values.
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is not <code>BY_REFERENCE</code>,
+     * is not <code>USE_NIO_BUFFER</code>, or is <code>INTERLEAVED</code>.
+     *
+     * @exception IllegalArgumentException if the java.nio.Buffer
+     * contained in the specified J3DBuffer is not a
+     * java.nio.FloatBuffer object.
+     *
+     * @exception ArrayIndexOutOfBoundsException if vertexAttrNum is out of
+     * range, or if
+     * <code>vertexAttrs.getBuffer().limit() &lt; </code> <i>num_words</i>
+     * <code> * (initialVertexAttrIndex + validVertexCount)</code>,
+     * where <i>num_words</i> is the size of the specified
+     * vertexAttrNum (1, 2, 3, or 4).
+     *
+     * @exception ArrayIndexOutOfBoundsException if this GeometryArray
+     * object is a subclass of IndexedGeometryArray, and any element
+     * in the range
+     * <code>[initialIndexIndex, initialIndexIndex+validIndexCount-1]</code>
+     * in the vertex attribute index array is greater than or equal to the
+     * number of vertices defined by the vertexAttrs object,
+     * <code>vertexAttrs.getBuffer().limit() / </code> <i>num_words</i>.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttrRefBuffer(int vertexAttrNum, J3DBuffer vertexAttrs) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_REF_DATA_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray86"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+
+	if ((format & USE_NIO_BUFFER) == 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray118"));
+	}
+
+	if ((format & INTERLEAVED) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray84"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttrRefBuffer(
+		vertexAttrNum, vertexAttrs);
+    }
+
+
+    /**
+     * Gets the vertex attribute array buffer reference for the specified
+     * vertex attribute number.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     *
+     * @return the current vertex attribute array buffer reference
+     * for the specified vertex attribute number
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is not <code>BY_REFERENCE</code>,
+     * is not <code>USE_NIO_BUFFER</code>, or is <code>INTERLEAVED</code>.
+     *
+     * @exception ArrayIndexOutOfBoundsException if vertexAttrNum is out
+     *  of range.
+     *
+     * @since Java 3D 1.4
+     */
+    public J3DBuffer getVertexAttrRefBuffer(int vertexAttrNum) {
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_REF_DATA_READ) &&
+		!this.getCapability(J3D_1_2_ALLOW_REF_DATA_READ)) {
+
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray87"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+
+	if ((format & USE_NIO_BUFFER) == 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray118"));
+	}
+
+	if ((format & INTERLEAVED) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray84"));
+	}
+
+	return ((GeometryArrayRetained)this.retained).getVertexAttrRefBuffer(vertexAttrNum);
+    }
+
+
+    /*
+     * XXXX: add the following to the javadoc if we ever add double-precision
+     * methods for vertex attribtues.
+     *
+     *-----------------------------------------------------------------
+     * Only one of <code>vertexAttrRefFloat</code>, or
+     * <code>vertexAttrRefDouble</code> may be non-null (or they may
+     * all be null).  An attempt to set more than one of these
+     * attributes to a non-null reference will result in an exception
+     * being thrown.
+     *
+     * If all vertexAttr array references are null and vertex
+     * ...
+     * @exception IllegalArgumentException if the specified array is
+     * non-null and any other vertexAttr reference is also non-null.
+     * ...
+     *-----------------------------------------------------------------
+     */
+
+    /**
+     * Sets the float vertex attribute array reference for the
+     * specified vertex attribute number to the specified array.  The
+     * array contains 1, 2, 3, or 4 floating-point values for each
+     * vertex (for a total of 1*<i>n</i>, 2*<i>n</i>, 3*<i>n</i>, or
+     * 4*<i>n</i> values, where <i>n</i> is the number of vertices).
+     *
+     * If the vertexAttr array reference is null and vertex
+     * attributes are enabled (that is, the vertexFormat includes
+     * <code>VERTEX_ATTRIBUTES</code>), the entire geometry array
+     * object is treated as if it were null--any Shape3D node that
+     * uses this geometry array will not be drawn.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     *
+     * @param vertexAttrs an array of 1*<i>n</i>, 2*<i>n</i>,
+     * 3*<i>n</i>, or 4*<i>n</i> values to which a reference will be
+     * set.
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is not <code>BY_REFERENCE</code>,
+     * is <code>USE_NIO_BUFFER</code>, or is <code>INTERLEAVED</code>.
+     *
+     * @exception ArrayIndexOutOfBoundsException if vertexAttrNum is
+     * out of range, or if
+     * <code>vertexAttrs.length &lt; </code> <i>num_words</i> <code> *
+     * (initialVertexAttrIndex + validVertexCount)</code>,
+     * where <i>num_words</i> is the size of the specified
+     * vertexAttrNum (1, 2, 3, or 4).
+     *
+     * @exception ArrayIndexOutOfBoundsException if this GeometryArray
+     * object is a subclass of IndexedGeometryArray, and any element
+     * in the range
+     * <code>[initialIndexIndex, initialIndexIndex+validIndexCount-1]</code>
+     * in the vertex attribute index array is greater than or equal to the
+     * number of vertices defined by the vertexAttrs array,
+     * <code>vertexAttrs.length / </code> <i>num_words</i>.
+     *
+     * @since Java 3D 1.4
+     */
+    public void setVertexAttrRefFloat(int vertexAttrNum, float[] vertexAttrs) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_REF_DATA_WRITE)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray86"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) == 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray83"));
+	}
+
+	if ((format & USE_NIO_BUFFER) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray119"));
+	}
+
+	if ((format & INTERLEAVED) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray84"));
+	}
+
+	((GeometryArrayRetained)this.retained).setVertexAttrRefFloat(
+		vertexAttrNum, vertexAttrs);
+
+	// NOTE: the checks for multiple non-null references, and the
+	// array length check need to be done in the retained method
+    }
+
+
+    /**
+     * Gets the float vertex attribute array reference for the specified
+     * vertex attribute number.
+     *
+     * @param vertexAttrNum vertex attribute number in this geometry array
+     *
+     * @return the current float vertex attribute array reference
+     * for the specified vertex attribute number
+     *
+     * @exception CapabilityNotSetException if the appropriate capability is
+     * not set and this object is part of a live or compiled scene graph
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is not <code>BY_REFERENCE</code>,
+     * is <code>USE_NIO_BUFFER</code>, or is <code>INTERLEAVED</code>.
+     *
+     * @exception ArrayIndexOutOfBoundsException if vertexAttrNum is
+     * out of range.
+     *
+     * @since Java 3D 1.4
+     */
+    public float[] getVertexAttrRefFloat(int vertexAttrNum) {
+
+	if (isLiveOrCompiled()) {
+	    if (!this.getCapability(ALLOW_REF_DATA_READ) &&
+		!this.getCapability(J3D_1_2_ALLOW_REF_DATA_READ)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray87"));
+	    }
+	}
+
+	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE) == 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray83"));
+	}
+
+	if ((format & USE_NIO_BUFFER) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray119"));
+	}
+
+	if ((format & INTERLEAVED) != 0) {
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray84"));
+	}
+
+	return ((GeometryArrayRetained)this.retained).getVertexAttrRefFloat(
+		vertexAttrNum);
+    }
+
+
     /**
      * Sets the interleaved vertex array reference to the specified
      * array.  The vertex components must be stored in a predetermined
      * order in the array.  The order is: texture coordinates, colors,
-     * normals, and positional coordinates.  In the case of texture
+     * normals, and positional coordinates.
+     * Vertex attributes are not supported in interleaved mode.
+     * In the case of texture
      * coordinates, the values for each texture coordinate set
      * are stored in order from 0 through texCoordSetCount-1.  Only those
      * components that are enabled appear in the vertex.  The number
@@ -5584,7 +7211,7 @@ public abstract class GeometryArray extends Geometry {
      * or is <code>USE_NIO_BUFFER</code>.
      *
      * @exception ArrayIndexOutOfBoundsException if
-     * <code>vertexData.length</code> < <i>words_per_vertex</i> *
+     * <code>vertexData.length</code> &lt; <i>words_per_vertex</i> *
      * (<code>initialVertexIndex + validVertexCount</code>),
      * where <i>words_per_vertex</i> depends on which formats are enabled.
      *
@@ -5652,7 +7279,9 @@ public abstract class GeometryArray extends Geometry {
      * buffer object. The buffer must contain a java.nio.FloatBuffer object.
      * The vertex components must be stored in a predetermined
      * order in the buffer.  The order is: texture coordinates, colors,
-     * normals, and positional coordinates.  In the case of texture
+     * normals, and positional coordinates.
+     * Vertex attributes are not supported in interleaved mode.
+     * In the case of texture
      * coordinates, the values for each texture coordinate set
      * are stored in order from 0 through texCoordSetCount-1.  Only those
      * components that are enabled appear in the vertex.  The number
@@ -5696,7 +7325,7 @@ public abstract class GeometryArray extends Geometry {
      * java.nio.FloatBuffer object.
      *
      * @exception ArrayIndexOutOfBoundsException if
-     * <code>vertexData.getBuffer().limit()</code> < <i>words_per_vertex</i> *
+     * <code>vertexData.getBuffer().limit()</code> &lt; <i>words_per_vertex</i> *
      * (<code>initialVertexIndex + validVertexCount</code>),
      * where <i>words_per_vertex</i> depends on which formats are enabled.
      *

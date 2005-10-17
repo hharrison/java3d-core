@@ -21,6 +21,9 @@
 #endif /* DEBUG */
 
 
+extern void throwAssert(JNIEnv *env, char *str);
+
+
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_RasterRetained_execute(JNIEnv *env, 
 		jobject obj, jlong ctxInfo, jobject geo, 
@@ -149,9 +152,11 @@ void JNICALL Java_javax_media_j3d_RasterRetained_execute(JNIEnv *env,
         case FORMAT_BYTE_LA:
             glformat = GL_LUMINANCE_ALPHA;
             break;
+
         case FORMAT_BYTE_GRAY:
-        case FORMAT_USHORT_GRAY:	    
-            /* TODO: throw exception */
+        case FORMAT_USHORT_GRAY:
+	default:
+	    throwAssert(env, "illegal format");
             break;
         }
 	glDrawPixels(w_raster, h_raster, glformat, GL_UNSIGNED_BYTE, 
@@ -374,7 +379,8 @@ void JNICALL Java_javax_media_j3d_RasterRetained_executeTiled(JNIEnv *env,
             break;
         case FORMAT_BYTE_GRAY:
         case FORMAT_USHORT_GRAY:	    
-            /* TODO: throw exception */
+	default:
+	    throwAssert(env, "illegal format");
             break;
         }
 	fprintf(stderr, "w_raster = %d, h_raster = %d, glformat = %d\n",w_raster, h_raster, glformat);

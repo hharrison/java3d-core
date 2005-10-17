@@ -15,6 +15,9 @@
 
 #include "gldefs.h"
 
+extern void throwAssert(JNIEnv *env, char *str);
+
+
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_GraphicsContext3D_readRasterNative(
     JNIEnv *env, jobject obj, jlong ctxInfo,
@@ -79,9 +82,11 @@ void JNICALL Java_javax_media_j3d_GraphicsContext3D_readRasterNative(
         case FORMAT_BYTE_LA:
             gltype = GL_LUMINANCE_ALPHA;
             break;
+
         case FORMAT_BYTE_GRAY:
         case FORMAT_USHORT_GRAY:	    
-            /* TODO: throw exception */
+	default:
+	    throwAssert(env, "illegal format");
             break;
         }
 	byteData = (jbyte *)(*(table->GetPrimitiveArrayCritical))(env,

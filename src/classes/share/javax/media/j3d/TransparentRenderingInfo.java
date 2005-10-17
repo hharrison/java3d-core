@@ -11,10 +11,9 @@
  */
 
 package javax.media.j3d;
-import javax.vecmath.*;
-import java.util.*;
 
-class TransparentRenderingInfo extends Object {
+
+class TransparentRenderingInfo extends Object implements com.sun.j3d.utils.scenegraph.transparency.TransparencySortGeom {
     // For DepthSortedTransparency, rm is the rendermolecule
     // that this rInfo is part of
     // For non depth sorted transparency, rm is one of the rendermolecules
@@ -24,8 +23,9 @@ class TransparentRenderingInfo extends Object {
     RenderAtomListInfo rInfo;
     TransparentRenderingInfo prev;
     TransparentRenderingInfo next;
+    GeometryAtom geometryAtom;
     double zVal; // Used in DepthSorted Transparency
-    // TODO: Add Dirty info
+    // XXXX: Add Dirty info
 
     /**
      * update state before rendering transparent objects 
@@ -34,7 +34,8 @@ class TransparentRenderingInfo extends Object {
 
 	TextureBin textureBin = rm.textureBin;
 	AttributeBin attributeBin = textureBin.attributeBin;
-
+        ShaderBin shaderBin = textureBin.shaderBin;
+        
 	// Get a collection to check if switch is on
 
 	RenderMolecule rm = textureBin.transparentRMList ;
@@ -57,40 +58,44 @@ class TransparentRenderingInfo extends Object {
 	    return false;
 	}
 
-	if (cv.environmentSet != attributeBin.environmentSet) {
-		
-	    boolean visible = (attributeBin.definingRenderingAttributes == null ||
-				   attributeBin.definingRenderingAttributes.visible);
+        // XXXX : Code cleanup needed : The following code segment should simply test
+        //        each bin independently and update it if necessary.
+        if (cv.environmentSet != attributeBin.environmentSet) {
+            
+            boolean visible = (attributeBin.definingRenderingAttributes == null ||
+                    attributeBin.definingRenderingAttributes.visible);
+            
+            if ( (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
+                    == View.VISIBILITY_DRAW_VISIBLE && !visible) ||
+                    (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
+                    == View.VISIBILITY_DRAW_INVISIBLE && visible)) {
+                return false;
+            }
+            attributeBin.environmentSet.lightBin.updateAttributes(cv);
+            attributeBin.environmentSet.updateAttributes(cv);
+            attributeBin.updateAttributes(cv);
+            shaderBin.updateTransparentAttributes(cv);
+        } else if (cv.attributeBin != attributeBin) {
+            boolean visible = (attributeBin.definingRenderingAttributes == null ||
+                    attributeBin.definingRenderingAttributes.visible);
+            
+            if ( (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
+                    == View.VISIBILITY_DRAW_VISIBLE && !visible) ||
+                    (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
+                    == View.VISIBILITY_DRAW_INVISIBLE && visible)) {
+                return false;
+            }
+            attributeBin.updateAttributes(cv);
+            shaderBin.updateTransparentAttributes(cv);
+        } else if (cv.shaderBin != shaderBin) {
+            shaderBin.updateTransparentAttributes(cv);
+        } 
 
-	    if ( (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
-		  == View.VISIBILITY_DRAW_VISIBLE && !visible) ||
-		 (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
-		  == View.VISIBILITY_DRAW_INVISIBLE && visible)) {
-		return false;
-	    }
-	    attributeBin.environmentSet.lightBin.updateAttributes(cv);
-	    attributeBin.environmentSet.updateAttributes(cv);
-	    attributeBin.updateAttributes(cv);
-	}
-	else {
-	    if (cv.attributeBin != attributeBin) {
-		boolean visible = (attributeBin.definingRenderingAttributes == null ||
-				   attributeBin.definingRenderingAttributes.visible);
-
-		if ( (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
-		      == View.VISIBILITY_DRAW_VISIBLE && !visible) ||
-		     (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
-		      == View.VISIBILITY_DRAW_INVISIBLE && visible)) {
-		    return false;
-		}
-		attributeBin.updateAttributes(cv);
-	    } 
-	}
-	return true;
+        return true;
     }
 
     void render(Canvas3D cv) {
-	if (updateState(cv)) {
+	if (updateState(cv)) {      
 	    rm.textureBin.render(cv, rm.textureBin.transparentRMList);
 	}
     }
@@ -100,5 +105,26 @@ class TransparentRenderingInfo extends Object {
 	if (updateState(cv)) {
 	    rm.textureBin.render(cv, this);
 	}
+    }
+
+    public double getDistanceSquared() {
+        return zVal;
+    }
+
+    public Geometry getGeometry() {
+        // XXXX: verify 0 is always the correct index. Assumption is that for 
+        // Shape3D with multiple geometry each geometry is put in it's 
+        // own geometryAtom.
+        if (geometryAtom.geometryArray[0]==null)
+            return null;
+        return (Geometry)geometryAtom.geometryArray[0].source;
+    }
+
+    public void getLocalToVWorld(Transform3D localToVW) {
+        localToVW.set(rm.localToVworld[NodeRetained.LAST_LOCAL_TO_VWORLD]);
+    }
+
+    public Shape3D getShape3D() {
+        return (Shape3D)geometryAtom.source.source;
     }
 }

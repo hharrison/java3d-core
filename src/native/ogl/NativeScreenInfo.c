@@ -16,7 +16,7 @@
  * of the Java 3D API.
  */
 
-#if defined(__linux__)
+#if defined(LINUX)
 #define _GNU_SOURCE 1
 #endif
 
@@ -26,7 +26,7 @@
 
 #include "gldefs.h"
 
-#if defined(SOLARIS) || defined(__linux__)
+#if defined(UNIX)
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -37,7 +37,7 @@
 #include <windows.h>
 #endif
 
-#if defined(SOLARIS) || defined(__linux__)
+#if defined(UNIX)
 
 
 /*
@@ -94,38 +94,40 @@ Java_javax_media_j3d_NativeScreenInfo_queryGLX13(
 	return JNI_FALSE;
     }
 
-#if 0 /* Temporary disable this code segment because the ATI driver incorrectly
-	 return 1.2 */
-    
-    /* Check for glX 1.3 and higher */
-    if (glXQueryVersion(dpy, &major, &minor)) {
-	/* fprintf(stderr, "Checking glX version : %d.%d\n",major, minor); */
-	if (!(major == 1 && minor >= 3)) {
-	    fprintf(stderr, "Java 3D ERROR : GLX version = %d.%d\n", major, minor);
-	    fprintf(stderr, "    GLX version 1.3 or higher is required\n");
-	    return JNI_FALSE;
-	}
-    }
-    else {
+    /* Query the GLX version number */
+    if (!glXQueryVersion(dpy, &major, &minor)) {
 	fprintf(stderr, "Java 3D ERROR : Unable to query GLX version\n");
 	fprintf(stderr, "    GLX version 1.3 or higher is required\n");
 	return JNI_FALSE;
     }
-    
-#elseif
-    
+    /*fprintf(stderr, "Checking GLX version : %d.%d\n", major, minor);*/
+
     tmpfp = (MYPFNGLXCHOOSEFBCONFIG)dlsym(RTLD_DEFAULT, "glXChooseFBConfig");
 
     if (tmpfp == NULL) {
-	glXQueryVersion(dpy, &major, &minor);
 	fprintf(stderr, "Java 3D ERROR : glXChooseFBConfig not found\n");
 	fprintf(stderr, "    GLX version = %d.%d\n", major, minor);
 	fprintf(stderr, "    GLX version 1.3 or higher is required\n");
 	return JNI_FALSE;
     }
 
-#endif
-    
+    /* Check for GLX 1.3 and higher */
+    if (!(major == 1 && minor >= 3)) {
+	fprintf(stderr, "Java 3D WARNING : reported GLX version = %d.%d\n", major, minor);
+	fprintf(stderr, "    GLX version 1.3 or higher is required\n");
+
+	fprintf(stderr,
+		"    The reported version number may be incorrect.  There is a known\n");
+	fprintf(stderr,
+		"    ATI driver bug in glXQueryVersion that incorrectly reports the GLX\n");
+	fprintf(stderr,
+		"    version as 1.2 when it really is 1.3, so Java 3D will attempt to\n");
+	fprintf(stderr,
+		"    run anyway.\n");
+
+	/*return JNI_FALSE;*/
+    }
+
     return JNI_TRUE;
 }
 

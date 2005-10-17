@@ -131,7 +131,10 @@ public class Texture2D extends Texture {
      */
     public static final int DETAIL_MODULATE = 1;
 
-
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+	ALLOW_DETAIL_TEXTURE_READ
+    };
 
     /**
      * Constructs a texture object using default values.
@@ -149,6 +152,9 @@ public class Texture2D extends Texture {
      */
     public Texture2D() {
 	super();
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
     }
 
   /**
@@ -173,6 +179,9 @@ public class Texture2D extends Texture {
 	    int		height){
 
 	super(mipMapMode, format, width, height);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
 
@@ -209,6 +218,9 @@ public class Texture2D extends Texture {
                    int          boundaryWidth) {
 
         super(mipMapMode, format, width, height, boundaryWidth);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**

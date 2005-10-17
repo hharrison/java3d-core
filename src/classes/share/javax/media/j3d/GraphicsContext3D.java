@@ -183,7 +183,7 @@ public class GraphicsContext3D extends Object   {
     boolean lightsChanged = false;
 
     // A boolean that indicates the sounds have changed
-    // TODO: the soundsChanged flag are set like lights methods set 
+    // XXXX: the soundsChanged flag are set like lights methods set 
     //       lightsChanged? but where is this supposed to be check???
     //       lightsChanged tested in 'draw'; but Sound are not processed
     //       in draw.
@@ -285,27 +285,29 @@ public class GraphicsContext3D extends Object   {
 					      // when a new command is to be
 					      // added to the list
 
-    static Integer commands[]   = new Integer[NCOMMANDS];
-    static Integer stereoModes[] = {new Integer(STEREO_LEFT), 
-				   new Integer(STEREO_RIGHT),
-				   new Integer(STEREO_BOTH)};
+    private static Integer[] commands = new Integer[NCOMMANDS];
+    private static Integer[] stereoModes = {
+        new Integer(STEREO_LEFT),
+        new Integer(STEREO_RIGHT),
+        new Integer(STEREO_BOTH)
+    };
 
     // dirty bits
-    static final int BUFFER_MODE	= 0x1;
+    private static final int BUFFER_MODE	= 0x1;
     private int dirtyMask = 0;
 
 
     // multi-texture
-    int numActiveTexUnit = 0;
-    int lastActiveTexUnitIndex = 0;
-    boolean toSimulateMultiTex = true;
+    private int numActiveTexUnit = 0;
+    private int lastActiveTexUnitIndex = 0;
+    private boolean toSimulateMultiTex = false;
 
     // for read raster
-    volatile boolean readRasterReady = false;
+    private volatile boolean readRasterReady = false;
 
     // for runMonitor
-    boolean gcReady = false;
-    int waiting = 0;
+    private boolean gcReady = false;
+    private int waiting = 0;
 
 
     /**
@@ -381,7 +383,12 @@ public class GraphicsContext3D extends Object   {
 		enableLighting = false;
 	    }
 
-	    if (((AppearanceRetained)appearance.retained).texUnitState != null) {
+            if (appearance instanceof ShaderAppearance) {
+                // TODO : handle ShaderProgram and ShaderAttributeSet
+                System.err.println("ShaderProgram not implemented for immediate mode rendering");
+            }
+
+            if (((AppearanceRetained)appearance.retained).texUnitState != null) {
 		TextureUnitStateRetained[] texUnitState = 
 		    ((AppearanceRetained)appearance.retained).texUnitState;
 
@@ -626,9 +633,8 @@ public class GraphicsContext3D extends Object   {
 	if (fog != null) {
 	    ((FogRetained)fog.retained).setInImmCtx(true);
 
-
-	    if (fog.retained instanceof LinearFogRetained)
-		updateFogState((LinearFogRetained)fog.retained);
+            // Issue 144: updateFogState now called unconditionally
+            updateFogState((FogRetained)fog.retained);
 	}
     }
 
@@ -912,8 +918,9 @@ public class GraphicsContext3D extends Object   {
     }
 
 
-    void updateFogState(LinearFogRetained lfog) {
-	lfog.localToVworldScale = modelTransform.getDistanceScale();
+    void updateFogState(FogRetained fogRet) {
+        // Issue 144: update localToVWorldScale for all types of Fog
+        fogRet.setLocalToVworldScale(modelTransform.getDistanceScale());
     }
 
 
@@ -1280,7 +1287,7 @@ public class GraphicsContext3D extends Object   {
         if (view != null) {
             SoundScheduler soundScheduler = getSoundScheduler();
             if (soundScheduler == null) {
-		// TODO: Re-implement
+		// XXXX: Re-implement
                 // start up SoundScheduler since it hasn't already been started
             }
         }
@@ -1291,13 +1298,13 @@ public class GraphicsContext3D extends Object   {
 	   this.modelTransform.transform(cs.direction, cs.xformDirection);
            cs.xformDirection.normalize();
 	   this.modelTransform.transform(cs.position, cs.xformPosition);
-           // TODO (Question) Is drawTranform equivalent to Vworld-to-Local?
+           // XXXX (Question) Is drawTranform equivalent to Vworld-to-Local?
            cs.trans.setWithLock(drawTransform);
 
    	} else if (sound instanceof PointSoundRetained) {
 	   PointSoundRetained ps = (PointSoundRetained) sound;
            this.modelTransform.transform(ps.position, ps.xformPosition);
-           // TODO (Question) Is drawTranform equivalent to Vworld-to-Local?
+           // XXXX (Question) Is drawTranform equivalent to Vworld-to-Local?
            ps.trans.setWithLock(drawTransform);
        }
     }
@@ -1559,7 +1566,7 @@ public class GraphicsContext3D extends Object   {
 	else
 	    back = this.black;
 
-	// TODO: This should ideally be done by the renderer (or by the
+	// XXXX: This should ideally be done by the renderer (or by the
 	// canvas itself) when the canvas is first added to a view.
 	/*
 	if ((canvas3d.screen.renderer != null) &&
@@ -1575,7 +1582,7 @@ public class GraphicsContext3D extends Object   {
 
         try {
 	    if (canvas3d.drawingSurfaceObject.renderLock()) {
-		// TODO : Fix texture
+		// XXXX : Fix texture
 		/*
 		if (canvas3d.useSharedCtx) {
 		    if (canvas3d.screen.renderer.sharedCtx == 0) {
@@ -1594,13 +1601,7 @@ public class GraphicsContext3D extends Object   {
 		
 		if (canvas3d.ctx == 0) {
 		    synchronized (VirtualUniverse.mc.contextCreationLock) {
-			canvas3d.ctx =
-			    canvas3d.createNewContext(canvas3d.screen.display, 
-						   canvas3d.window,
-						   canvas3d.vid,
-						   canvas3d.fbConfig,
-						   0, false,
-						   canvas3d.offScreen);
+			canvas3d.ctx = canvas3d.createNewContext(0, false);
 			if (canvas3d.ctx == 0) {
 			    canvas3d.drawingSurfaceObject.unLock();
 			    return;
@@ -1608,8 +1609,8 @@ public class GraphicsContext3D extends Object   {
 
 			canvas3d.ctxTimeStamp =
 			    VirtualUniverse.mc.getContextTimeStamp();
-			canvas3d.screen.renderer.listOfCtxs.add(
-								new Long(canvas3d.ctx));
+                        canvas3d.screen.renderer.listOfCtxs.add(
+                                new Long(canvas3d.ctx));
 			canvas3d.screen.renderer.listOfCanvases.add(canvas3d);
 
 			canvas3d.beginScene();
@@ -1618,42 +1619,20 @@ public class GraphicsContext3D extends Object   {
 			    canvas3d.graphics2D.init();
 			}
 
-                        // query for the number of texture units
-			// supported
-                        if (canvas3d.multiTexAccelerated) {
-                            canvas3d.numTexUnitSupported =
-                                    canvas3d.getTextureUnitCount(canvas3d.ctx);
-                        }
-			
-			// enable separate specular color
+                        // enable separate specular color
 			canvas3d.enableSeparateSpecularColor();
 		    }
 
                     // create the cache texture state in canvas
                     // for state download checking purpose
-
                     if (canvas3d.texUnitState == null) {
-                        canvas3d.texUnitState =
-                                new TextureUnitStateRetained[
-                                        canvas3d.numTexUnitSupported];
-                        for (int t = 0; t < canvas3d.numTexUnitSupported; t++) {
-                            canvas3d.texUnitState[t] =
-                                        new TextureUnitStateRetained();
-                            canvas3d.texUnitState[t].texture = null;
-                            canvas3d.texUnitState[t].mirror = null;
-                        }
+                        canvas3d.createTexUnitState();
                     }
 
-
-                    // also create the texture unit state map
-                    // which is a mapping from texture unit state to
-                    // the actual underlying texture unit
-
+                    // Create the texture unit state map
                     if (canvas3d.texUnitStateMap == null) {
-                        canvas3d.texUnitStateMap = 
-                                        new int[canvas3d.numTexUnitSupported];
+                        canvas3d.createTexUnitStateMap();
                     }
-
 
 		    canvas3d.drawingSurfaceObject.contextValidated();
 		    canvas3d.screen.renderer.currentCtx = canvas3d.ctx;
@@ -1830,7 +1809,7 @@ public class GraphicsContext3D extends Object   {
 	//	rb.setVworldToVpc(vp.getVworldToVpc());
 	//	rb.setVpcToVworld(vp.getVpcToVworld());
 
-	// TODO: Fix this
+	// XXXX: Fix this
 	rb.vpcToVworld = vpR.getVpcToVworld();
 	rb.vworldToVpc = vpR.getVworldToVpc();
 
@@ -1890,7 +1869,7 @@ public class GraphicsContext3D extends Object   {
 		switch(stereoMode) {
 		case STEREO_RIGHT:
 		    vpcToEc = cvCache.getRightVpcToEc();
-		    // TODO: move this under check for 
+		    // XXXX: move this under check for 
 		    // (dirtyMask & BUFFER_MODE) above after testing
 		    // PureImmediate mode
 		    canvas3d.setProjectionMatrix(canvas3d.ctx,
@@ -1901,7 +1880,7 @@ public class GraphicsContext3D extends Object   {
 		case STEREO_BOTH:
 		default:
 		    vpcToEc = cvCache.getLeftVpcToEc();
-		    // TODO: move this under check for 
+		    // XXXX: move this under check for 
 		    // (dirtyMask & BUFFER_MODE) above after testing
 		    // PureImmediate mode
 		    canvas3d.setProjectionMatrix(canvas3d.ctx,
@@ -2000,7 +1979,7 @@ public class GraphicsContext3D extends Object   {
 	        if ((geometry.retained instanceof IndexedGeometryArrayRetained) &&
 		    ((((GeometryArrayRetained)geometry.retained).vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0)) {
 		    if (geoRetained.dirtyFlag != 0) {
-			geoRetained.mirrorGeometry = (GeometryRetained) 
+			geoRetained.mirrorGeometry =
 			    ((IndexedGeometryArrayRetained)geoRetained).cloneNonIndexedGeometry();
 			// Change the source geometry dirtyFlag
 			// drawGeo.execute() will change the
@@ -2030,7 +2009,7 @@ public class GraphicsContext3D extends Object   {
 		drawGeo = (GeometryRetained)geometry.retained;
 	    }
 
-	    if (!toSimulateMultiTex) {
+            if (!toSimulateMultiTex) {
 		drawGeo.execute(canvas3d, null, isNonUniformScale,
 				false, alpha, 
 				((canvas3d.view.getScreens()).length > 1), 
@@ -2038,30 +2017,19 @@ public class GraphicsContext3D extends Object   {
 				ignoreVertexColors, 
 				-1);
 	    } else {
-		// TODO: need to leverage the code in textureBin
+		// NOTE: we really should leverage the code in textureBin
 		boolean startToSimulate = false;
-		if (numActiveTexUnit < 1) {
-		    // no active texture unit
-		    drawGeo.execute(canvas3d, null, isNonUniformScale,
-				false, alpha, 
-				((canvas3d.view.getScreens()).length > 1), 
-				canvas3d.screen.screen,
-				ignoreVertexColors, 
-				0);
-		} else if (numActiveTexUnit == 1) {
-		    // one active texture unit
-		    drawGeo.execute(canvas3d, null, isNonUniformScale,
-				    false,   alpha, 
-				((canvas3d.view.getScreens()).length > 1), 
-				canvas3d.screen.screen,
-				ignoreVertexColors, 
-				lastActiveTexUnitIndex);
-		} else {
-		    // simulate multiple texture units
-		    AppearanceRetained app = 
-				(AppearanceRetained)appearance.retained;
 
-		    // first turn off fog
+		    // simulate multiple texture units
+                    AppearanceRetained app =
+                            (AppearanceRetained)appearance.retained;
+
+                    assert VirtualUniverse.mc.allowSimulatedMultiTexture;
+                    assert numActiveTexUnit > 1;
+                    assert app.texUnitState != null;
+                    assert app.texUnitState.length > 1;
+
+                    // first turn off fog
 		    if (fog != null)
 			canvas3d.setFogEnableFlag(canvas3d.ctx, false);
 
@@ -2088,16 +2056,20 @@ public class GraphicsContext3D extends Object   {
 
 		    // adjust the depth test back to what it was
 		    // and adjust the blend func to what it it was
-		    if (startToSimulate) {
-		        app.transparencyAttributes.updateNative(
-				canvas3d.ctx, alpha, geometryType,
-				polygonMode, lineAA, pointAA);
-		    }
+                    if (startToSimulate) {
+                        if (app.transparencyAttributes != null) {
+                            app.transparencyAttributes.updateNative(
+                                    canvas3d.ctx, alpha, geometryType,
+                                    polygonMode, lineAA, pointAA);
+                        } else {
+                            canvas3d.resetTransparency(canvas3d.ctx, geometryType,
+                                    polygonMode, lineAA, pointAA);
+                        }
+                    }
 
 		    if (fog != null) {
 			canvas3d.setFogEnableFlag(canvas3d.ctx, true);
 		    }
-		}
 	    }
 	    if (geoRetained != null)
 	        geoRetained.geomLock.unLock();
@@ -2229,7 +2201,7 @@ public class GraphicsContext3D extends Object   {
            throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D21"));
         }
 
-	// TODO: implement illegal argument exception
+	// XXXX: implement illegal argument exception
 	/*
 	if (ras.image.byReference &&
 	    !(ras.image.imageReference instanceof BufferedImage)) {
@@ -2419,7 +2391,7 @@ public class GraphicsContext3D extends Object   {
 
 	if (canvas3d.enableMask != enableMask) {
 	    canvas3d.canvasDirty |= Canvas3D.LIGHTENABLES_DIRTY;
-	    // TODO: 32 => renderBin.maxLights
+	    // XXXX: 32 => renderBin.maxLights
 	    canvas3d.setLightEnables(canvas3d.ctx, enableMask, 32);
 	    canvas3d.enableMask = enableMask;
 	}
@@ -2481,16 +2453,16 @@ public class GraphicsContext3D extends Object   {
 
     boolean updateState(RenderBin rb, int geometryType) {
 
-	boolean useAlpha = false;;
-	toSimulateMultiTex = true;
-	numActiveTexUnit = 0;
+	boolean useAlpha = false;
+	toSimulateMultiTex = false;
+        numActiveTexUnit = 0;
 	lastActiveTexUnitIndex = 0;
 
 	// Update Appearance
 	if (appearance != null) {
 	    AppearanceRetained app = (AppearanceRetained) appearance.retained;
 
-	    // If the material is not null then check if the one in the canvas
+            // If the material is not null then check if the one in the canvas
 	    // is equivalent to the one being sent down. If Yes, do nothing
 	    // Otherwise, cache the sent down material and mark the canvas
 	    // dirty flag so that the compiled/compiled-retained rendering
@@ -2514,75 +2486,95 @@ public class GraphicsContext3D extends Object   {
 		}
 	    }
 
+            // Set flag indicating whether we are using shaders
+            boolean useShaders = false;
+            if (app instanceof ShaderAppearanceRetained) {
+                if (((ShaderAppearanceRetained)app).shaderProgram != null) {
+                    useShaders = true;
+                }
+            }
+
+            // Set the number of available texture units; this depends on
+            // whether or not shaders are being used.
+            int availableTextureUnits =
+                    useShaders ? canvas3d.maxTextureImageUnits : canvas3d.maxTextureUnits;
+
             int prevNumActiveTexUnit = canvas3d.getNumActiveTexUnit();
 
+            // Get the number of active texture units.
+            // Note that this total number now includes disabled units.
 	    if (app.texUnitState != null) {
-		boolean d3dBlendMode = false;
-
 		TextureUnitStateRetained tus;
 
 		for (int i = 0; i < app.texUnitState.length; i++) {
 		    tus = app.texUnitState[i];
 		    if (tus != null && tus.isTextureEnabled()) {
-			numActiveTexUnit++;
 			lastActiveTexUnitIndex = i;
-			useAlpha = useAlpha ||
-				 (tus.texAttrs.textureMode ==
-				  TextureAttributes.BLEND);
-			if (tus.needBlend2Pass(canvas3d)) {
-		            // use multi-pass if one of the stage use blend mode
-			    d3dBlendMode = true;
-			}
+                        numActiveTexUnit = i + 1;
+                        if (tus.texAttrs != null) {
+                            useAlpha = useAlpha ||
+                                    (tus.texAttrs.textureMode ==
+                                    TextureAttributes.BLEND);
+                        }
 		    }
 		}
 
-		if (canvas3d.numTexUnitSupported >= numActiveTexUnit &&
-			canvas3d.multiTexAccelerated && !d3dBlendMode) {
-
-		    int j = 0;
+               if (numActiveTexUnit <= availableTextureUnits) {
+                    // Normal, single-pass rendering case
 
                     // update all active texture unit states
-
 		    for (int i = 0; i < app.texUnitState.length; i++) {
-			if ((app.texUnitState[i] != null) &&
+                        if (i >= availableTextureUnits) {
+                            // This can happen if there are disabled units at
+                            // the end of the array
+                            break;
+                        }
+
+                        if ((app.texUnitState[i] != null) &&
 				    app.texUnitState[i].isTextureEnabled()) {
-			    app.texUnitState[i].updateNative(j, canvas3d, 
+			    app.texUnitState[i].updateNative(i, canvas3d, 
 								false, false);
-			    canvas3d.setTexUnitStateMap(i, j++);
-			} 
+			} else {
+                            canvas3d.resetTexture(canvas3d.ctx, i);
+                        }
 		    }
 
                     // reset the remaining texture units
-
-                    for (int i = j; i < prevNumActiveTexUnit; i++) {
-			if (canvas3d.texUnitState[i].texture != null) {
-                            canvas3d.resetTexture(canvas3d.ctx, i);
-			    canvas3d.texUnitState[i].texture = null;
-			}
+                    for (int i = app.texUnitState.length; i < prevNumActiveTexUnit; i++) {
+                        canvas3d.resetTexture(canvas3d.ctx, i);
                     }
 
                     // set the number active texture unit in Canvas3D
                     canvas3d.setNumActiveTexUnit(numActiveTexUnit);
 
-                    // set the active texture unit back to 0
-                    canvas3d.activeTextureUnit(canvas3d.ctx, 0);
-
-		    toSimulateMultiTex = false;
-
-		} else {
+		} else if (!useShaders && VirtualUniverse.mc.allowSimulatedMultiTexture) {
+                    // Simulated (multi-pass) multi-texture rendering
+                    
+                    toSimulateMultiTex = true;
 
                     // will fall back to the multi-pass case;
                     // reset all the texture units first
-
                     for (int i = 0; i < prevNumActiveTexUnit; i++) {
-			if (canvas3d.texUnitState[i].texture != null) {
-                            canvas3d.resetTexture(canvas3d.ctx, i);
-			    canvas3d.texUnitState[i].texture = null;
-			}
+                        canvas3d.resetTexture(canvas3d.ctx, i);
                     }
+
+                    // set the number active texture unit in Canvas3D
+                    canvas3d.setNumActiveTexUnit(1);
                 }
+                else {
+                // Exceeded limit, and not using simulated multi-texture
+
+                    // disable all the texture units
+                    for (int i = 0; i < prevNumActiveTexUnit; i++) {
+                        canvas3d.resetTexture(canvas3d.ctx, i);
+                    }
+                    canvas3d.setNumActiveTexUnit(0);
+                }
+ 
+                // set the active texture unit back to 0
+                canvas3d.activeTextureUnit(canvas3d.ctx, 0);
 	    } else {
-		// if texUnitState is null, let's disable
+                // if texUnitState is null, let's disable
 		// all texture units first
 		if (canvas3d.multiTexAccelerated) {
 		    if (canvas3d.texUnitState != null) {
@@ -2599,9 +2591,9 @@ public class GraphicsContext3D extends Object   {
                     canvas3d.activeTextureUnit(canvas3d.ctx, 0);
 		}
 
-	        if ((canvas3d.texUnitState != null) && 
-		    (canvas3d.texUnitState[0] != null) &&
-		    (canvas3d.texUnitState[0].texture != app.texture)) {
+                if ((canvas3d.texUnitState != null) &&
+                        (canvas3d.texUnitState[0] != null) &&
+                        (canvas3d.texUnitState[0].texture != app.texture)) {
 
 		    // If the image is by reference, check if the image
 		    // should be processed
@@ -2616,7 +2608,6 @@ public class GraphicsContext3D extends Object   {
 			    }
 			}
 		        app.texture.updateNative(canvas3d);
-			canvas3d.setTexUnitStateMap(0, 0);
 		        canvas3d.canvasDirty |= Canvas3D.TEXTUREBIN_DIRTY|Canvas3D.TEXTUREATTRIBUTES_DIRTY;
 			numActiveTexUnit = 1;
 		        lastActiveTexUnitIndex = 0;
@@ -2728,7 +2719,7 @@ public class GraphicsContext3D extends Object   {
 
 	    if (app.renderingAttributes != null) {
 		ignoreVertexColors =app.renderingAttributes.ignoreVertexColors;
-		app.renderingAttributes.updateNative(canvas3d.ctx,
+		app.renderingAttributes.updateNative(canvas3d,
 				canvas3d.depthBufferWriteEnableOverride,
 				canvas3d.depthBufferEnableOverride);
 		canvas3d.canvasDirty |= Canvas3D.ATTRIBUTEBIN_DIRTY|Canvas3D.TEXTUREATTRIBUTES_DIRTY;

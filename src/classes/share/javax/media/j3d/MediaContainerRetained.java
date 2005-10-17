@@ -141,7 +141,7 @@ class MediaContainerRetained extends NodeComponentRetained {
      * @param stream InputStream that references the sound data
      */
     void setInputStream(InputStream stream, boolean forceLoad) {
-        // %%% TODO AudioDevice not intellegent enough to process InputStreams yet
+        // XXXX: AudioDevice not intellegent enough to process InputStreams yet
         // can NOT set stream field unless the other related fields are null
         if (stream != null) {
             if (url != null || urlString != null)

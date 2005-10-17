@@ -473,6 +473,24 @@ public class AuralAttributes extends NodeComponent {
      public static final int
     ALLOW_VELOCITY_SCALE_FACTOR_WRITE = CapabilityBits.AURAL_ATTRIBUTES_ALLOW_VELOCITY_SCALE_FACTOR_WRITE;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_ATTRIBUTE_GAIN_READ,
+        ALLOW_DECAY_FILTER_READ,
+        ALLOW_DECAY_TIME_READ,
+        ALLOW_DENSITY_READ,
+        ALLOW_DIFFUSION_READ,
+        ALLOW_DISTANCE_FILTER_READ,
+        ALLOW_FREQUENCY_SCALE_FACTOR_READ,
+        ALLOW_REFLECTION_COEFFICIENT_READ,
+        ALLOW_REFLECTION_DELAY_READ,
+        ALLOW_REVERB_COEFFICIENT_READ,
+        ALLOW_REVERB_DELAY_READ,
+        ALLOW_REVERB_ORDER_READ,
+        ALLOW_ROLLOFF_READ,
+        ALLOW_VELOCITY_SCALE_FACTOR_READ        
+    };
+    
     /** *****************
      *   
      *  Constructors
@@ -501,6 +519,8 @@ public class AuralAttributes extends NodeComponent {
      */  
     public AuralAttributes() {
          // Just use default values
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -523,6 +543,9 @@ public class AuralAttributes extends NodeComponent {
                       Point2f[]         distanceFilter,
                       float      	frequencyScaleFactor,
                       float      	velocityScaleFactor) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((AuralAttributesRetained)this.retained).setAttributeGain(gain);
         ((AuralAttributesRetained)this.retained).setRolloff(rolloff);
         ((AuralAttributesRetained)this.retained).setReflectionCoefficient(
@@ -558,6 +581,9 @@ public class AuralAttributes extends NodeComponent {
                       float[]           frequencyCutoff,
                       float      	frequencyScaleFactor,
                       float      	velocityScaleFactor) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((AuralAttributesRetained)this.retained).setAttributeGain(gain);
         ((AuralAttributesRetained)this.retained).setRolloff(rolloff);
         ((AuralAttributesRetained)this.retained).setReflectionCoefficient(
@@ -606,6 +632,9 @@ public class AuralAttributes extends NodeComponent {
 			   float[]	frequencyCutoff,
 			   float	frequencyScaleFactor,
 			   float	velocityScaleFactor) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((AuralAttributesRetained)this.retained).setAttributeGain(gain);
         ((AuralAttributesRetained)this.retained).setRolloff(rolloff);
         ((AuralAttributesRetained)this.retained).setReflectionCoefficient(

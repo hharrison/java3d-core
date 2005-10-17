@@ -19,6 +19,7 @@
 #include <jni.h>
 
 #include "javax_media_j3d_MasterControl.h"
+#include "javax_media_j3d_NativeAPIInfo.h"
 
 JNIEXPORT
 jint JNICALL Java_javax_media_j3d_NativeAPIInfo_getRenderingAPI(
@@ -32,7 +33,7 @@ jint JNICALL Java_javax_media_j3d_NativeAPIInfo_getRenderingAPI(
     return (jint)javax_media_j3d_MasterControl_RENDER_OPENGL_SOLARIS;
 #endif /* SOLARIS */
 
-#ifdef __linux__
+#ifdef LINUX
     return (jint)javax_media_j3d_MasterControl_RENDER_OPENGL_LINUX;
-#endif /* __linux__ */
+#endif /* LINUX */
 }

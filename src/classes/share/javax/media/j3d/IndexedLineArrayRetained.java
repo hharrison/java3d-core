@@ -25,15 +25,16 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
     IndexedLineArrayRetained() {
         this.geoType = GEO_TYPE_INDEXED_LINE_SET;
     }
-
-    boolean intersect(PickShape pickShape, double dist[],  Point3d iPnt) {
-	Point3d pnts[] = new Point3d[2];
+    
+    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
+        Point3d pnts[] = new Point3d[2];
 	double sdist[] = new double[1];
 	double minDist = Double.MAX_VALUE;
 	double x = 0, y = 0, z = 0;
-	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
+        int count = 0;
+        int minICount = 0; 
+        int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
 		 initialVertexIndex : initialCoordIndex);
-
 	pnts[0] = new Point3d();
 	pnts[1] = new Point3d();
     
@@ -44,15 +45,16 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
 	    while (i < validVertexCount) {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
-
+                count += 2;
 		if (intersectLineAndRay(pnts[0], pnts[1], pickRay.origin,
 					pickRay.direction, sdist,
 					iPnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
@@ -70,20 +72,21 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
 	    while (i < validVertexCount) {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
+                count += 2;
 		if (intersectLineAndRay(pnts[0], pnts[1],
 					pickSegment.start, 
 					dir, sdist, iPnt) &&
 		    (sdist[0] <= 1.0)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
 		    }
-
 		}
 	    }
 	    break;
@@ -94,12 +97,14 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
 	    while (i < validVertexCount) {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
+                count += 2;
 		if (intersectBoundingBox(pnts, bbox, sdist, iPnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
@@ -115,12 +120,14 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
 	    while (i < validVertexCount) {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
+                count += 2;
 		if (intersectBoundingSphere(pnts, bsphere, sdist, iPnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
@@ -135,12 +142,14 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
 	    while (i < validVertexCount) {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
+                count += 2;
 		if (intersectBoundingPolytope(pnts, bpolytope, sdist, iPnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
@@ -154,12 +163,14 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
 	    while (i < validVertexCount) {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
+                count += 2;
 		if (intersectCylinder(pnts, pickCylinder, sdist, iPnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
@@ -173,12 +184,14 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
 	    while (i < validVertexCount) {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
+                count += 2;
 		if (intersectCone(pnts, pickCone, sdist, iPnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
@@ -194,15 +207,22 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
 	} 
 
 	if (minDist < Double.MAX_VALUE) {
-	    dist[0] = minDist;
+            assert(minICount >=2);
+            int[] vertexIndices = iInfo.getVertexIndices();
+            if (vertexIndices == null) {
+                vertexIndices = new int[2];
+                iInfo.setVertexIndices(vertexIndices);
+            }
+            vertexIndices[0] = minICount - 2;
+            vertexIndices[1] = minICount - 1;
 	    iPnt.x = x;
 	    iPnt.y = y;
 	    iPnt.z = z;
-	    return true;
+ 	    return true;
 	}
 	return false;
    
-    }
+    }    
   
     boolean intersect(Point3d[] pnts) {
 	Point3d[] points = new Point3d[2];

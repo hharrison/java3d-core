@@ -61,6 +61,12 @@ public class Clip extends Leaf {
      public static final int
     ALLOW_BACK_DISTANCE_WRITE = CapabilityBits.CLIP_ALLOW_BACK_DISTANCE_WRITE;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_APPLICATION_BOUNDS_READ,
+        ALLOW_BACK_DISTANCE_READ
+    };
+    
     /**
      * Constructs a Clip node with default parameters.  The default
      * values are as follows:
@@ -72,12 +78,17 @@ public class Clip extends Leaf {
      */
     public Clip () {
 	// Just use the defaults
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
      * Constructs a Clip node with the specified back clip distance.
      */
     public Clip(double backDistance) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((ClipRetained)this.retained).initBackDistance(backDistance);
     }
 

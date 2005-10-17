@@ -80,6 +80,12 @@ public class PointLight extends Light {
   public static final int
     ALLOW_ATTENUATION_WRITE = CapabilityBits.POINT_LIGHT_ALLOW_ATTENUATION_WRITE;
 
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+	ALLOW_POSITION_READ,
+	ALLOW_ATTENUATION_READ
+    };
+
     /**
      * Constructs a PointLight node with default parameters.
      * The default values are as follows:
@@ -89,6 +95,8 @@ public class PointLight extends Light {
      * </ul>
      */
     public PointLight() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -101,6 +109,10 @@ public class PointLight extends Light {
 		      Point3f position,
 		      Point3f attenuation) { 
 	super(color);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((PointLightRetained)this.retained).initPosition(position);
 	((PointLightRetained)this.retained).initAttenuation(attenuation);
     }
@@ -117,6 +129,10 @@ public class PointLight extends Light {
 		      Point3f position,
 		      Point3f attenuation) { 
 	super(lightOn, color);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((PointLightRetained)this.retained).initPosition(position);
 	((PointLightRetained)this.retained).initAttenuation(attenuation);
     }

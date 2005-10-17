@@ -31,10 +31,18 @@ public abstract class DepthComponent extends NodeComponent {
     public static final int
     ALLOW_DATA_READ = CapabilityBits.DEPTH_COMPONENT_ALLOW_DATA_READ;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_SIZE_READ,
+        ALLOW_DATA_READ
+    };
+    
     /**
      * default constructor
      */
     DepthComponent() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**

@@ -33,7 +33,7 @@ class TimerThread extends Thread {
     // Wakeup {all?} Sound Scheduler{s} for every sample time reach
     // QUESTION: this sampling time is set to a very large value so Sound
     //          Schedulers are not pinged often unless explicitly requested
-    // TODO: need a way to remove/null this condition when all
+    // XXXX: need a way to remove/null this condition when all
     //          soundschedulers are halted
     private WakeupOnElapsedTime soundSchedCond = 
         new WakeupOnElapsedTime(120000);  // every 2 minutes
@@ -61,7 +61,7 @@ class TimerThread extends Thread {
     }
 
     void addSoundSchedCond(long wakeupTime) {
-        // TODO: there are potentially multiple sound schedulers.
+        // XXXX: there are potentially multiple sound schedulers.
         //     this code will force a wait up on ALL sound schedulers
         //     even though only one needs to process the sound that
         //     this wakeup condition is triggered by.

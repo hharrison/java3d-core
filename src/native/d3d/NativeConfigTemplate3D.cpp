@@ -131,3 +131,18 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
     return retValue;
 }
 
+
+
+/*
+ * Class:     javax_media_j3d_NativeConfigTemplate3D
+ * Method:    getStencilSize
+ * Signature: (JZ)I
+ * @TODO: FIX THIS !!!!! 
+ */
+JNIEXPORT jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_getStencilSize
+  (JNIEnv *, jobject, jlong, jboolean)
+{
+ // dummy value
+
+  return 8;
+}

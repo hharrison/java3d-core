@@ -19,6 +19,21 @@
 
   <target name="compile">
 
+    <!--
+    /*
+     * TODO: To compile CG, do the following steps:
+     *
+     * 1. define the following property:
+     *      <property name="cg_home" location="c:/Program Files/NVIDIA Corporation/Cg"/>
+     *
+     * 2. Add the following to the "compile" command:
+     *      -I&quot;${cg_home}\include&quot;
+     *
+     * 3. Add the following the the "link" command:
+     *      -L&quot;${cg_home}\lib&quot; -lcg -lcgGL
+     */
+    -->
+
     <echo message="Executing 32 bit native renderer build [${bldType}]"/>
 
     <!-- Create the build directories for sparc -->
@@ -37,12 +52,12 @@
     <!-- Inhibit all warning for native build. Remove -w to switch warning on -->
 
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="-w -D_WINGDI_ -D_JNI_IMPLEMENTATION_ -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; ${bldFlag} -c &quot;${oglsrc}/DrawingSurfaceObjectAWT.c&quot; &quot;${oglsrc}/Canvas3D.c&quot; &quot;${oglsrc}/GraphicsContext3D.c&quot; &quot;${oglsrc}/NativeWSInfo.c&quot; &quot;${oglsrc}/NativeScreenInfo.c&quot; &quot;${oglsrc}/NativeConfigTemplate3D.c&quot; &quot;${oglsrc}/MasterControl.c&quot; &quot;${oglsrc}/RasterRetained.c&quot; &quot;${oglsrc}/CompressedGeometryRetained.c&quot; &quot;${oglsrc}/GeometryArrayRetained.c&quot; &quot;${oglsrc}/Attributes.c&quot; &quot;${oglsrc}/Lights.c&quot; &quot;${oglsrc}/NativeAPIInfo.c&quot;"/>
+	<arg line="-w -D_WINGDI_ -D_JNI_IMPLEMENTATION_ -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; ${bldFlag} -c &quot;${oglsrc}/DrawingSurfaceObjectAWT.c&quot; &quot;${oglsrc}/Canvas3D.c&quot; &quot;${oglsrc}/GraphicsContext3D.c&quot; &quot;${oglsrc}/NativeWSInfo.c&quot; &quot;${oglsrc}/NativeScreenInfo.c&quot; &quot;${oglsrc}/NativeConfigTemplate3D.c&quot; &quot;${oglsrc}/MasterControl.c&quot; &quot;${oglsrc}/RasterRetained.c&quot; &quot;${oglsrc}/GeometryArrayRetained.c&quot; &quot;${oglsrc}/Attributes.c&quot; &quot;${oglsrc}/CgShaderProgram.c&quot; &quot;${oglsrc}/GLSLShaderProgram.c&quot; &quot;${oglsrc}/Lights.c&quot; &quot;${oglsrc}/NativeAPIInfo.c&quot;"/>
     </exec>
 
     <!-- Create the library file-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="-shared -o j3dcore-ogl.dll DrawingSurfaceObjectAWT.o Canvas3D.o GraphicsContext3D.o NativeWSInfo.o NativeScreenInfo.o NativeConfigTemplate3D.o MasterControl.o RasterRetained.o CompressedGeometryRetained.o GeometryArrayRetained.o Attributes.o Lights.o NativeAPIInfo.o -Wl,--kill-at -L&quot;${java.home}\..\lib&quot; -lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -lopengl32 -ljawt"/>
+	<arg line="-shared -o j3dcore-ogl.dll DrawingSurfaceObjectAWT.o Canvas3D.o GraphicsContext3D.o NativeWSInfo.o NativeScreenInfo.o NativeConfigTemplate3D.o MasterControl.o RasterRetained.o GeometryArrayRetained.o Attributes.o CgShaderProgram.o GLSLShaderProgram.o Lights.o NativeAPIInfo.o -Wl,--kill-at -L&quot;${java.home}\..\lib&quot; -lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -lopengl32 -ljawt"/>
     </exec>
 
     <!-- Copy the copyright library file -->

@@ -32,7 +32,7 @@
 #include <winbase.h>
 #endif /* WIN32 */
 
-#if defined(SOLARIS) || defined(__linux__)
+#if defined(UNIX)
 #include <unistd.h>
 #ifdef SOLARIS
 #include <thread.h>
@@ -65,7 +65,7 @@ extern Bool XPanoramiXQueryExtension(Display *dpy,
 				     int *event_base, int *error_base);
 #endif /* SOLARIS && __sparc */
 
-#endif /* SOLARIS || __linux__ */
+#endif /* UNIX_ */
 
 /* defined in Canvas3D.c */
 extern int isExtensionSupported(const char *allExtensions,
@@ -174,9 +174,9 @@ DWORD countBits(DWORD mask)
 JNIEXPORT jint JNICALL Java_javax_media_j3d_MasterControl_getNumberOfProcessor
   (JNIEnv *env, jobject obj)
 {
-#if defined(SOLARIS) || defined(__linux__)
+#if defined(UNIX)
     return sysconf(_SC_NPROCESSORS_ONLN);
-#endif /* SOLARIS || __linux__ */
+#endif /* UNIX_ */
 
 #ifdef WIN32
     SYSTEM_INFO sysInfo;
@@ -205,9 +205,9 @@ Java_javax_media_j3d_MasterControl_getThreadConcurrency(JNIEnv *env,
     return (jint) thr_getconcurrency();
 #endif /* SOLARIS */
 
-#ifdef __linux__
+#ifdef LINUX
     return -1;
-#endif /* __linux__ */
+#endif /* LINUX */
 
 #ifdef WIN32
     return -1;
@@ -233,9 +233,9 @@ Java_javax_media_j3d_MasterControl_setThreadConcurrency(JNIEnv *env,
     /* No-op on windows */
 #endif /* WIN32 */
 
-#ifdef __linux__
+#ifdef LINUX
     /* No-op on linux */
-#endif /* __linux__ */
+#endif /* LINUX */
 }
 
 
@@ -254,7 +254,7 @@ jint JNICALL Java_javax_media_j3d_MasterControl_getMaximumLights(
     return 8;
 #endif /* WIN32 */
 
-#ifdef __linux__
+#ifdef LINUX
     return 8;
-#endif /* __linux__ */
+#endif /* LINUX */
 }

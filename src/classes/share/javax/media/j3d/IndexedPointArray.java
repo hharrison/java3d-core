@@ -26,25 +26,26 @@ public class IndexedPointArray extends IndexedGeometryArray {
     }
 
     /**
-     * Constructs an empty IndexedPointArray object with the specified
-     * number of vertices, vertex format, and number of indices.
-     * @param vertexCount the number of vertex elements in this object
-     * @param vertexFormat a mask indicating which components are
-     * present in each vertex.  This is specified as one or more
-     * individual flags that are bitwise "OR"ed together to describe
-     * the per-vertex data.
-     * The flags include: COORDINATES, to signal the inclusion of
-     * vertex positions--always present; NORMALS, to signal 
-     * the inclusion of per vertex normals; one of COLOR_3,
-     * COLOR_4, to signal the inclusion of per vertex
-     * colors (without or with color information); and one of 
-     * TEXTURE_COORDINATE_2, TEXTURE_COORDINATE_3 or TEXTURE_COORDINATE_4, 
-     * to signal the
-     * inclusion of per-vertex texture coordinates 2D, 3D or 4D.
-     * @param indexCount the number of indices in this object.  This
-     * count is the maximum number of vertices that will be rendered.
+     * Constructs an empty IndexedPointArray object using the specified
+     * parameters.
+     *
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int)}
+     * for a description of this parameter.
+     *
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int)}
+     * for a description of this parameter.
+     *
+     * @param indexCount
+     * see {@link IndexedGeometryArray#IndexedGeometryArray(int,int,int)}
+     * for a description of this parameter.
+     *
      * @exception IllegalArgumentException if vertexCount is less than 1
      * or indexCount is less than 1
+     * ;<br>
+     * See {@link GeometryArray#GeometryArray(int,int)}
+     * for more exceptions that can be thrown
      */
     public IndexedPointArray(int vertexCount, int vertexFormat, int indexCount) {
 	super(vertexCount,vertexFormat, indexCount);
@@ -57,63 +58,34 @@ public class IndexedPointArray extends IndexedGeometryArray {
     }
 
     /**
-     * Constructs an empty IndexedPointArray object with the specified
-     * number of vertices, vertex format, number of texture coordinate
-     * sets, texture coordinate mapping array, and number of indices.
+     * Constructs an empty IndexedPointArray object using the specified
+     * parameters.
      *
-     * @param vertexCount the number of vertex elements in this object<p>
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param vertexFormat a mask indicating which components are
-     * present in each vertex.  This is specified as one or more
-     * individual flags that are bitwise "OR"ed together to describe
-     * the per-vertex data.
-     * The flags include: COORDINATES, to signal the inclusion of
-     * vertex positions--always present; NORMALS, to signal 
-     * the inclusion of per vertex normals; one of COLOR_3,
-     * COLOR_4, to signal the inclusion of per vertex
-     * colors (without or with color information); and one of 
-     * TEXTURE_COORDINATE_2, TEXTURE_COORDINATE_3 or TEXTURE_COORDINATE_4, 
-     * to signal the
-     * inclusion of per-vertex texture coordinates 2D, 3D or 4D.<p>
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param texCoordSetCount the number of texture coordinate sets
-     * in this GeometryArray object.  If <code>vertexFormat</code>
-     * does not include one of <code>TEXTURE_COORDINATE_2</code>,
-     * <code>TEXTURE_COORDINATE_3 or
-     * <code>TEXTURE_COORDINATE_4</code>, the
-     * <code>texCoordSetCount</code> parameter is not used.<p>
+     * @param texCoordSetCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param texCoordSetMap an array that maps texture coordinate
-     * sets to texture units.  The array is indexed by texture unit
-     * number for each texture unit in the associated Appearance
-     * object.  The values in the array specify the texture coordinate
-     * set within this GeometryArray object that maps to the
-     * corresponding texture
-     * unit.  All elements within the array must be less than
-     * <code>texCoordSetCount</code>.  A negative value specifies that
-     * no texture coordinate set maps to the texture unit
-     * corresponding to the index.  If there are more texture units in
-     * any associated Appearance object than elements in the mapping
-     * array, the extra elements are assumed to be -1.  The same
-     * texture coordinate set may be used for more than one texture
-     * unit.  Each texture unit in every associated Appearance must
-     * have a valid source of texture coordinates: either a
-     * non-negative texture coordinate set must be specified in the
-     * mapping array or texture coordinate generation must be enabled.
-     * Texture coordinate generation will take precedence for those
-     * texture units for which a texture coordinate set is specified
-     * and texture coordinate generation is enabled.  If
-     * <code>vertexFormat</code> does not include one of
-     * <code>TEXTURE_COORDINATE_2</code>,
-     * <code>TEXTURE_COORDINATE_3</code> or
-     * <code>TEXTURE_COORDINATE_4</code>, the
-     * <code>texCoordSetMap</code> array is not used.<p>
+     * @param texCoordSetMap
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param indexCount the number of indices in this object.  This
-     * count is the maximum number of vertices that will be rendered.
+     * @param indexCount
+     * see {@link IndexedGeometryArray#IndexedGeometryArray(int,int,int,int[],int)}
+     * for a description of this parameter.
      *
      * @exception IllegalArgumentException if vertexCount is less than 1
      * or indexCount is less than 1
+     * ;<br>
+     * See {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for more exceptions that can be thrown
      *
      * @since Java 3D 1.2
      */
@@ -125,6 +97,62 @@ public class IndexedPointArray extends IndexedGeometryArray {
 
 	super(vertexCount, vertexFormat,
 	      texCoordSetCount, texCoordSetMap,
+	      indexCount);
+
+        if (vertexCount < 1) 
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedPointArray0")); 
+
+        if (indexCount < 1 )
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedPointArray1"));
+    }
+
+    /**
+     * Constructs an empty IndexedPointArray object using the specified
+     * parameters.
+     *
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param texCoordSetMap
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexAttrCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexAttrSizes
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param indexCount
+     * see {@link IndexedGeometryArray#IndexedGeometryArray(int,int,int,int[],int,int[],int)}
+     * for a description of this parameter.
+     *
+     * @exception IllegalArgumentException if vertexCount is less than 1
+     * or indexCount is less than 1
+     * ;<br>
+     * See {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for more exceptions that can be thrown
+     *
+     * @since Java 3D 1.4
+     */
+    public IndexedPointArray(int vertexCount,
+			     int vertexFormat,
+			     int texCoordSetCount,
+			     int[] texCoordSetMap,
+			     int vertexAttrCount,
+			     int[] vertexAttrSizes,
+			     int indexCount) {
+
+	super(vertexCount, vertexFormat,
+	      texCoordSetCount, texCoordSetMap,
+	      vertexAttrCount, vertexAttrSizes,
 	      indexCount);
 
         if (vertexCount < 1) 
@@ -148,22 +176,26 @@ public class IndexedPointArray extends IndexedGeometryArray {
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
-	IndexedPointArrayRetained rt = (IndexedPointArrayRetained) retained;
-	int texSetCount = rt.getTexCoordSetCount();	
-        IndexedPointArray p;
-	if (texSetCount == 0) {
-	    p = new IndexedPointArray(rt.getVertexCount(),
-				      rt.getVertexFormat(),
-				      rt.getIndexCount());
-	} else {
-	    int texMap[] = new int[rt.getTexCoordSetMapLength()];
-	    rt.getTexCoordSetMap(texMap);	    
-	    p = new IndexedPointArray(rt.getVertexCount(),
-				      rt.getVertexFormat(),
-				      texSetCount,
-				      texMap,
-				      rt.getIndexCount());
-	}
+        IndexedPointArrayRetained rt = (IndexedPointArrayRetained) retained;
+        int texSetCount = rt.getTexCoordSetCount();
+        int[] texMap = null;
+        int vertexAttrCount = rt.getVertexAttrCount();
+        int[] vertexAttrSizes = null;
+        if (texSetCount > 0) {
+            texMap = new int[rt.getTexCoordSetMapLength()];
+            rt.getTexCoordSetMap(texMap);
+        }
+        if (vertexAttrCount > 0) {
+            vertexAttrSizes = new int[vertexAttrCount];
+            rt.getVertexAttrSizes(vertexAttrSizes);
+        }
+        IndexedPointArray p = new IndexedPointArray(rt.getVertexCount(),
+                rt.getVertexFormat(),
+                texSetCount,
+                texMap,
+                vertexAttrCount,
+                vertexAttrSizes,
+                rt.getIndexCount());
         p.duplicateNodeComponent(this);
         return p;
     }

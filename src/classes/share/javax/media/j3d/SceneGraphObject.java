@@ -15,9 +15,37 @@ package javax.media.j3d;
 import java.util.Hashtable;
 
 /**
- * SceneGraphObject is a common superclass for
- * all scene graph component objects.  This includes Node,
- * Geometry, Appearance, etc.
+ * SceneGraphObject is the common superclass for all scene graph
+ * objects. Scene graph objects are classified into two main types:
+ * nodes and node components. The Node object is the common superclass
+ * of all nodes, which includes TransformGroup, Shape3D, etc.
+ * The NodeComponent object is the common superclass of all node
+ * components, which includes Geometry, Appearance, etc.
+ *
+ * <p>
+ * All scene graph objects have a name, a user data object, a set of
+ * capability bits, and a set of capabilityIsFrequent bits.
+ *
+ * <p>
+ * Capability bits control whether a particular attribute in a node or
+ * node component is readable or writable. For live or compiled scene
+ * graphs, only those attributes whose capabilities are set before the
+ * scene graph is compiled or made live may be read or written. The
+ * default value for all <i>read</i> capability bits is true, meaning
+ * that all attributes may be read by default. The default value for
+ * all <i>write</i> capability bits is false, meaning that no
+ * attributes may be written by default. Read capability bits are
+ * defined as those capability bits of the form <code>ALLOW_*_READ</code>,
+ * plus the <code>ALLOW_INTERSECT</code> capability bit. Write
+ * capability bits are defined as those capability bits of the form
+ * <code>ALLOW_*_WRITE</code>, plus the <code>ALLOW_CHILDREN_EXTEND</code>
+ * and <code>ALLOW_DETACH</code> capability bits.
+ *
+ * <p>
+ * NOTE that the <code>ENABLE_COLLISION_REPORTING</code> and
+ * <code>ENABLE_PICK_REPORTING</code> bits are not really capability bits,
+ * although they are set with the setCapability method. The default value
+ * for each of the <code>ENABLE_*_REPORTING bits</code> is false.
  */
 public abstract class SceneGraphObject extends Object {
    // Any global flags? (e.g., execution cullable, collideable)
@@ -43,6 +71,9 @@ public abstract class SceneGraphObject extends Object {
     // A reference to user data
     private Object userData = null;
 
+    // Optional name for object.
+    private String objectName = null;
+
     // use for cloneTree/cloneNode only, set to null after the operation
     Hashtable nodeHashtable = null;
 
@@ -52,10 +83,13 @@ public abstract class SceneGraphObject extends Object {
      * Constructs a SceneGraphObject with default parameters.  The default
      * values are as follows:
      * <ul>
-     * capability bits : clear (all bits)<br>
+     * all <i>read</i> capability bits : set (true)<br>
+     * all <i>write</i> capability bits : clear (false)<br>
+     * all capabilityIsFrequent bits : set (true)<br>
      * isLive : false<br>
      * isCompiled : false<br>
      * user data : null<br>
+     * name : null<br>
      * </ul>
      */
     public SceneGraphObject() {
@@ -76,7 +110,18 @@ public abstract class SceneGraphObject extends Object {
 	//	this.retained = new <ClassName>Retained();
 	//	this.retained.setSource(this);
     }
-  
+
+    /**
+     * Method to set default read capability bits to true
+     */
+    void setDefaultReadCapabilities(int[] bits) {
+        if (true /*VirtualUniverse.mc.defaultReadCapability*/) {
+            for (int i=0; i < bits.length; i++) {
+                setCapability(bits[i]);
+            }
+        }
+    }
+
     /**
      * Retrieves the specified capability bit.  Note that only one capability
      * bit may be retrieved per method invocation--capability bits cannot
@@ -331,6 +376,28 @@ public abstract class SceneGraphObject extends Object {
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
     }
 
+    /**
+     * Sets the name of this object. Object names are for information
+     * only.
+     *
+     * @param name the new name of this object
+     *
+     * @since Java 3D 1.4
+     */
+    public void setName( String name ) {
+        objectName = name;
+    }
+
+    /**
+     * Returns the name of this object.
+     *
+     * @return the name of this object
+     *
+     * @since Java 3D 1.4
+     */             
+    public String getName() {
+	return objectName;
+    }
 
     /**
      * Copies all SceneGraphObject information from
@@ -353,6 +420,7 @@ public abstract class SceneGraphObject extends Object {
         // Duplicate any class specific data here.
 	capabilityBits = originalNode.capabilityBits;
         userData = originalNode.userData;
+        objectName = originalNode.objectName;
     }
 
 
@@ -402,4 +470,25 @@ public abstract class SceneGraphObject extends Object {
 	    return originalNodeComponent;
 	}
     }
+
+    // Internal method to make a prefix out of the name of this object
+    String getNamePrefix() {
+	String name = getName();
+
+	if (name != null) {
+	    return "[" + name + "] ";
+	}
+
+	return "";
+    }
+
+    /**
+     * Returns a String representation of this SceneGraphObject.
+     * If its name is non-null, then it is concatenated with
+     * super.toString().
+     */
+    public String toString() {
+	return getNamePrefix() + super.toString();
+    }
+
 }

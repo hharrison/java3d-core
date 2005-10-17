@@ -171,7 +171,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	    ((biType == BufferedImage.TYPE_BYTE_GRAY) &&
 	     (format == ImageComponent.FORMAT_CHANNEL8)) ||
 	    (is4ByteRGBAOr3ByteRGB(ri))) {
-	    /* ||TODO: Don't do short for now!
+	    /* ||XXXX: Don't do short for now!
 	       ((biType ==  BufferedImage.TYPE_USHORT_GRAY) &&
 	       (format == ImageComponent.FORMAT_CHANNEL8)
 	    */
@@ -1293,7 +1293,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	
 	if (source.isLive()) {
 
-	    //TODO: check whether this is needed
+	    //XXXX: check whether this is needed
 	    freeSurface();
 
 	    // send a SUBIMAGE_CHANGED message in order to 
@@ -1336,7 +1336,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 
         if (source.isLive()) {
 
-            // TODO: check whether this is needed
+            // XXXX: check whether this is needed
             freeSurface();
 
             // send a SUBIMAGE_CHANGED message in order to

@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+ -->
+
+<!-- Ant file for building native  ogl renderer files for Solaris -->
+<project name="Java 3D" default="compile">
+
+  <target name="compile">
+
+    <echo message="Executing 32 bit native renderer build [${bldType}]"/>
+
+    <!-- Create the build directories for i386 -->
+    <mkdir dir="${build}/${platform}/${bldType}/native/ogl/objs"/>
+    <mkdir dir="${build}/${platform}/${bldType}/lib/i386"/>
+    
+    <property name="oglsrc"     location="${src}/native/ogl"/>
+
+    <!-- Compile the c source files-->
+    <!-- Inhibit all warning for 32 bit build. Any warning will be caught in the 64 bit build -->
+    <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
+	<arg line="-w -m32 -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+    </exec>
+
+    <!-- Create the library file-->
+    <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="ld">
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/openwin/lib -ldl -lGL -lX11 -lXext -lm -lsocket -lnsl -lc  -R/usr/openwin/lib -L${java.home}/lib/i386 -L${java.home}/lib/i386/motif21 -ljawt -L${java.home}/lib/i386/server -ljvm  -o libj3dcore-ogl.so"/>
+    </exec>
+
+    <!-- Copy the copyright library file -->
+    <copy file="${build}/${platform}/${bldType}/native/ogl/objs/libj3dcore-ogl.so" 
+	 todir="${build}/${platform}/${bldType}/lib/i386"/>
+
+    <!--
+    /*
+     *  TODO: only do the 64-bit build if isSolarisOnX86_64 property is
+     *  set, indicating that a 64-bit JVM is available
+     */
+     -->
+
+<!-- ********************************************************************** -->
+    <echo message="Executing 64 bit native renderer build [${bldType}]"/>
+
+    <!-- Create the build directories for amd64 -->
+    <mkdir dir="${build}/${platform}/${bldType}/native/ogl/objs/amd64"/>
+    <mkdir dir="${build}/${platform}/${bldType}/lib/amd64"/>
+
+    <!-- Compile the c source files-->
+    <exec dir="${build}/${platform}/${bldType}/native/ogl/objs/amd64" executable="gcc">
+	<arg line="-m64 -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+    </exec>
+
+    <!-- Create the library file-->
+    <exec dir="${build}/${platform}/${bldType}/native/ogl/objs/amd64" executable="ld">
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/openwin/lib/amd64 -ldl -lGL -lX11 -lXext  -lm -lsocket -lnsl -lc -R/usr/openwin/lib/amd64 -L${java.home}/lib/amd64 -L${java.home}/lib/amd64/motif21 -ljawt -L${java.home}/lib/amd64/server -ljvm  -o libj3dcore-ogl.so"/>
+    </exec>
+
+    <!-- Copy the copyright library file -->
+    <copy file="${build}/${platform}/${bldType}/native/ogl/objs/amd64/libj3dcore-ogl.so" 
+	 todir="${build}/${platform}/${bldType}/lib/amd64"/>
+
+  </target>
+
+  <target name="dist">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/${platform}/lib/i386"/>
+    <mkdir dir="${dist}/${platform}/lib/amd64"/>
+
+    <!-- Copy the library files -->
+    <copy file="${build}/${platform}/opt/lib/i386/libj3dcore-ogl.so"
+	 todir="${dist}/${platform}/lib/i386"/>
+
+    <copy file="${build}/${platform}/opt/lib/amd64/libj3dcore-ogl.so"
+	 todir="${dist}/${platform}/lib/amd64"/>
+  </target>
+
+</project>

@@ -580,97 +580,6 @@ class Shape3DRetained extends LeafRetained {
         return (appearance == null ? null: (Appearance) appearance.source);
     }
 
-  
-    /**
-     * Check if the geometry component of this shape node under path
-     * intersects with the pickShape.
-     * This is an expensive method. It should only be called if and only
-     * if the path's bound intersects pickShape.  
-     * @exception IllegalArgumentException if <code>path</code> is
-     * invalid.
-     */
-
-      boolean intersect(SceneGraphPath path,
-		      PickShape pickShape, double[] dist) {
-	
-	// This method will not do bound intersect check, as it assume
-	// caller has already done that. ( For performance and code
-	// simplification reasons. )
-       
-	Transform3D localToVworld = path.getTransform();
-	int i;
-
-	if (localToVworld == null) {
-	    throw new IllegalArgumentException(J3dI18N.getString("Shape3DRetained3"));   
-	}
-	
-	// Support OrientedShape3D here.
-	// TODO - BugId : 4363899 - APIs issue : OrientedShape3D's intersect needs view
-	//                          info. temp. fix use the primary view.
-	if (this instanceof OrientedShape3DRetained) {
-	    Transform3D orientedTransform = ((OrientedShape3DRetained)this).
-		getOrientedTransform(getPrimaryViewIdx());
-	    localToVworld.mul(orientedTransform);
-	}
-
-	Transform3D t3d = VirtualUniverse.mc.getTransform3D(null);
-	t3d.invert(localToVworld);	
-	PickShape newPS = pickShape.transform(t3d);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t3d);
-
-	// TODO: For optimization - Should do a geobounds check of
-	// each geometry first. But this doesn't work for
-	// OrientedShape3D case...
-	int geomListSize = geometryList.size();
-   	Point3d iPnt = getPoint3d();
-	GeometryRetained geometry;
-
-	if (dist == null) {
-	    for (i=0; i < geomListSize; i++) {
-		geometry =  (GeometryRetained) geometryList.get(i);	     
-		if (geometry != null) {
-		    if (geometry.mirrorGeometry != null) {
-			geometry = geometry.mirrorGeometry;
-		    }
-		    if (geometry.intersect(newPS, null, iPnt)) {
-			freePoint3d(iPnt);
-			return true;
-		    }
-		}
-	    }
-	} else {
-	    double minDist = Double.POSITIVE_INFINITY;
-	    // TODO : BugId 4351579 -- Need to return the index of nearest
-	    //                         intersected geometry too.
-
-	    for (i=0; i < geomListSize; i++) {
-		geometry =  (GeometryRetained) geometryList.get(i);
-		if (geometry != null) {
-		    if (geometry.mirrorGeometry != null) {
-			geometry = geometry.mirrorGeometry;
-		    }
-		    if (geometry.intersect(newPS, dist, iPnt)) {
-			localToVworld.transform(iPnt);
-			dist[0] = pickShape.distance(iPnt);
-			if (minDist > dist[0]) {
-			    minDist = dist[0];
-			}
-		    }
-		}
-	    }
-	
-	    if (minDist < Double.POSITIVE_INFINITY) {
-		dist[0] = minDist;
-		freePoint3d(iPnt);
-		return true;
-	    }	
-	}
-
-	freePoint3d(iPnt);
-	
-	return false;
-      }
-
     void setAppearanceOverrideEnable(boolean flag) {
 	if (((Shape3D)this.source).isLive()) {
 	    
@@ -703,7 +612,153 @@ class Shape3DRetained extends LeafRetained {
     boolean getAppearanceOverrideEnable() {
 	return appearanceOverrideEnable;
     }
+    
+    boolean intersect(PickInfo pickInfo, PickShape pickShape, int flags ) {
+          
+        Transform3D localToVworld = pickInfo.getLocalToVWorldRef();
+        
+        // Support OrientedShape3D here.
+	// Note - BugId : 4363899 - APIs issue : OrientedShape3D's intersect needs view
+	//                          info. temp. fix use the primary view.
+	if (this instanceof OrientedShape3DRetained) {
+	    Transform3D orientedTransform = ((OrientedShape3DRetained)this).
+		getOrientedTransform(getPrimaryViewIdx());
+	    localToVworld.mul(orientedTransform);
+	}
+        
+ 	Transform3D t3d = new Transform3D();
+	t3d.invert(localToVworld);
+	PickShape newPS = pickShape.transform(t3d);
 
+	// Note: For optimization - Should do a geobounds check of
+	// each geometry first. But this doesn't work for
+	// OrientedShape3D case...
+	int geomListSize = geometryList.size();
+	GeometryRetained geometry;
+
+        if (((flags & PickInfo.CLOSEST_INTERSECTION_POINT) == 0) &&
+                ((flags & PickInfo.CLOSEST_DISTANCE) == 0) &&
+                ((flags & PickInfo.CLOSEST_GEOM_INFO) == 0) &&
+                ((flags & PickInfo.ALL_GEOM_INFO) == 0)) {
+            
+            for (int i=0; i < geomListSize; i++) {
+                geometry =  (GeometryRetained) geometryList.get(i);
+                if (geometry != null) {
+                    if (geometry.mirrorGeometry != null) {
+                        geometry = geometry.mirrorGeometry;
+                    }
+                    if (geometry.intersect(newPS, null, 0, null)) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            double distance;
+            double minDist = Double.POSITIVE_INFINITY;
+            Point3d closestIPnt = new Point3d();
+            Point3d iPnt = new Point3d();
+            Point3d iPntVW = new Point3d();            
+            PickInfo.IntersectionInfo closestInfo = null;
+            PickInfo.IntersectionInfo intersectionInfo
+                    = pickInfo.createIntersectionInfo();
+            
+            if ((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                closestInfo = pickInfo.createIntersectionInfo();
+            }
+            
+            for (int i=0; i < geomListSize; i++) {
+                geometry =  (GeometryRetained) geometryList.get(i);
+                if (geometry != null) {
+                    if (geometry.mirrorGeometry != null) {
+                        geometry = geometry.mirrorGeometry;
+                    }
+                    if (geometry.intersect(newPS, intersectionInfo, flags, iPnt)) {
+                        
+                        iPntVW.set(iPnt);
+                        localToVworld.transform(iPntVW);
+                        distance = pickShape.distance(iPntVW);
+                        
+                        if (minDist > distance) {
+                            minDist = distance;
+                            closestIPnt.set(iPnt);
+                            
+                            if ((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                closestInfo.setGeometry((Geometry) geometry.source);
+                                closestInfo.setGeometryIndex(i);
+                                closestInfo.setIntersectionPoint(closestIPnt);
+                                closestInfo.setDistance(distance);
+                                closestInfo.setVertexIndices(intersectionInfo.getVertexIndices());
+                            }
+                        }
+                        
+                        if ((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            
+                            intersectionInfo.setGeometry((Geometry) geometry.source);
+                            intersectionInfo.setGeometryIndex(i);
+                            intersectionInfo.setIntersectionPoint(iPnt);
+                            intersectionInfo.setDistance(distance);
+                           // VertexIndices has been computed in intersect method.
+                            pickInfo.insertIntersectionInfo(intersectionInfo);
+                            intersectionInfo = pickInfo.createIntersectionInfo();
+                        }
+                    }
+                }
+            }
+            
+            if (minDist < Double.POSITIVE_INFINITY) {
+                if ((flags & PickInfo.CLOSEST_DISTANCE) != 0) {
+                    pickInfo.setClosestDistance(minDist);
+                }
+                if((flags & PickInfo.CLOSEST_INTERSECTION_POINT) != 0) {
+                    pickInfo.setClosestIntersectionPoint(closestIPnt);
+                }
+		if ((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                    pickInfo.insertIntersectionInfo(closestInfo);
+                }
+                return true;
+            }
+        }
+        
+	return false;
+       
+    }    
+    
+    
+    /**
+     * Check if the geometry component of this shape node under path
+     * intersects with the pickShape.
+     * This is an expensive method. It should only be called if and only
+     * if the path's bound intersects pickShape.  
+     * @exception IllegalArgumentException if <code>path</code> is
+     * invalid.
+     */
+ 
+    boolean intersect(SceneGraphPath path,
+            PickShape pickShape, double[] dist) {
+        
+        int flags;
+        PickInfo pickInfo = new PickInfo();
+        
+        Transform3D localToVworld = path.getTransform();
+        if (localToVworld == null) {
+	    throw new IllegalArgumentException(J3dI18N.getString("Shape3DRetained3"));   
+	}
+        pickInfo.setLocalToVWorldRef( localToVworld);
+        //System.out.println("Shape3DRetained.intersect() : ");
+        if (dist == null) {
+            //System.out.println("      no dist request ....");
+            return intersect(pickInfo, pickShape, 0);
+        }
+        
+        flags = PickInfo.CLOSEST_DISTANCE;
+        if (intersect(pickInfo, pickShape, flags)) {
+            dist[0] = pickInfo.getClosestDistance();
+            return true;
+        }
+        
+        return false;
+          
+      }
 
     /**
      * This sets the immedate mode context flag

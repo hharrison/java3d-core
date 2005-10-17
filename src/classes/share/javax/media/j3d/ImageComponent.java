@@ -195,10 +195,19 @@ public abstract class ImageComponent extends NodeComponent {
     public static final int
     ALLOW_IMAGE_WRITE = CapabilityBits.IMAGE_COMPONENT_ALLOW_IMAGE_WRITE;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_SIZE_READ,
+        ALLOW_SIZE_READ,
+        ALLOW_FORMAT_READ
+    };
+    
     /**
      * Not a public constructor, for internal use
      */
     ImageComponent() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);        
     }
 
     /**
@@ -220,6 +229,9 @@ public abstract class ImageComponent extends NodeComponent {
      * width or height are not positive.
      */  
     public ImageComponent(int format, int width, int height) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((ImageComponentRetained)this.retained).processParams(format, width, height, 1);
     }
 
@@ -249,6 +261,8 @@ public abstract class ImageComponent extends NodeComponent {
 			  int height,
 			  boolean byReference,
 			  boolean yUp) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
 
  	((ImageComponentRetained)this.retained).setYUp(yUp);
  	((ImageComponentRetained)this.retained).setByReference(byReference);

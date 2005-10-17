@@ -84,6 +84,9 @@ class J3dMessage extends Object {
     static final int ORDERED_GROUP_TABLE_CHANGED    = 59;
     static final int BEHAVIOR_REEVALUATE            = 60;
     static final int CREATE_OFFSCREENBUFFER	    = 61;
+    static final int SHADER_ATTRIBUTE_CHANGED       = 62;
+    static final int SHADER_ATTRIBUTE_SET_CHANGED   = 63;
+    static final int SHADER_APPEARANCE_CHANGED 	    = 64;    
 
     /**
      * This is the time snapshot at which this change occured

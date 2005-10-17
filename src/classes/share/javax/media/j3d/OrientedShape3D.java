@@ -144,6 +144,14 @@ public class OrientedShape3D extends Shape3D {
 	CapabilityBits.ORIENTED_SHAPE3D_ALLOW_SCALE_WRITE;
 
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+	ALLOW_MODE_READ,
+	ALLOW_AXIS_READ,
+	ALLOW_POINT_READ,
+	ALLOW_SCALE_READ
+    };
+
     /**
      * Constructs an OrientedShape3D node with default parameters.
      * The default values are as follows:
@@ -157,6 +165,8 @@ public class OrientedShape3D extends Shape3D {
      */
     public OrientedShape3D() {
 	super();
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
 
@@ -182,6 +192,10 @@ public class OrientedShape3D extends Shape3D {
 			   Vector3f axis) {
 
 	super(geometry, appearance);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((OrientedShape3DRetained)retained).initAlignmentMode(mode);
         ((OrientedShape3DRetained)retained).initAlignmentAxis(axis);
     }
@@ -203,6 +217,10 @@ public class OrientedShape3D extends Shape3D {
 			   Point3f point) {
 
 	super(geometry, appearance);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((OrientedShape3DRetained)retained).initAlignmentMode(mode);
         ((OrientedShape3DRetained)retained).initRotationPoint(point);
 
@@ -240,6 +258,9 @@ public class OrientedShape3D extends Shape3D {
 
 	super(geometry, appearance);
 
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((OrientedShape3DRetained)retained).initAlignmentMode(mode);
         ((OrientedShape3DRetained)retained).initAlignmentAxis(axis);
         ((OrientedShape3DRetained)retained).
@@ -271,6 +292,9 @@ public class OrientedShape3D extends Shape3D {
 			   double scale) {
 
 	super(geometry, appearance);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
 
         ((OrientedShape3DRetained)retained).initAlignmentMode(mode);
         ((OrientedShape3DRetained)retained).initRotationPoint(point);

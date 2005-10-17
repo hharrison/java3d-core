@@ -49,9 +49,9 @@ void JNICALL Java_javax_media_j3d_GraphicsContext3D_readRasterNative(
 		d3dCtx->createFrontBuffer())) {
 
 	    
-	    HRESULT hr = device->GetFrontBuffer(d3dCtx->frontSurface);
+	    HRESULT hr = device->GetFrontBufferData(0,d3dCtx->frontSurface);//iSwapChain as 0
 	    if (FAILED(hr)) {
-		printf("GetFrontBuffer fail %s\n", DXGetErrorString8(hr));
+		printf("GetFrontBuffer fail %s\n", DXGetErrorString9(hr));
 		return;
 	    }
 
@@ -77,10 +77,10 @@ void JNICALL Java_javax_media_j3d_GraphicsContext3D_readRasterNative(
 	    }
 	} else {
 	    if (d3dCtx->backSurface == NULL) {
-		HRESULT hr = device->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO,
+		HRESULT hr = device->GetBackBuffer(0,0, D3DBACKBUFFER_TYPE_MONO, //isSwapChain as 0
 						   &d3dCtx->backSurface);
 		if (FAILED(hr)) {
-		    printf("GetBackBuffer fail %s\n", DXGetErrorString8(hr));
+		    printf("GetBackBuffer fail %s\n", DXGetErrorString9(hr));
 		    return;
 		}
 	    }
@@ -114,7 +114,7 @@ void JNICALL Java_javax_media_j3d_GraphicsContext3D_readRasterNative(
 	    if (FAILED(hr)) {
 		if (debug) {
 		    printf("[Java3D] Fail to get depth stencil surface %s\n",
-			   DXGetErrorString8(hr));
+			   DXGetErrorString9(hr));
 		}
 		return;
 	    }

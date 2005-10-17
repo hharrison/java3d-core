@@ -7,11 +7,19 @@
  *
  * $Revision$
  * $Date$
- * $State$
+ * $State$_WIN32_WINNT
  */
 
 #if !defined(AFX_STDAFX_H)
 #define AFX_STDAFX_H
+
+#ifndef WINVER
+#define WINVER 0x0501
+#endif
+
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif
 
 #if _MSC_VER > 1000
 #pragma once
@@ -35,9 +43,9 @@
 #include <jni.h>
 #include <math.h>
 #define D3D_OVERLOADS
-#include <d3d8.h>
-#include <dxerr8.h>
-#include <d3dx8.h>
+#include <d3d9.h>
+#include <dxerr9.h>
+#include <d3dx9.h>
 #include <vector>
 #include <algorithm>
 using namespace std ;
@@ -52,3 +60,4 @@ using namespace std ;
 #include "D3dDisplayList.hpp"
 #include "D3dImageComponent.hpp"
 #endif
+

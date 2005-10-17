@@ -440,7 +440,26 @@ public abstract class Sound extends Leaf {
      */
     public static final int INFINITE_LOOPS = -1;
 
-
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_CHANNELS_USED_READ,
+        ALLOW_CONT_PLAY_READ,
+        ALLOW_DURATION_READ,
+        ALLOW_ENABLE_READ,
+        ALLOW_INITIAL_GAIN_READ,
+        ALLOW_IS_PLAYING_READ,
+        ALLOW_IS_READY_READ,
+        ALLOW_LOOP_READ,
+        ALLOW_MUTE_READ,
+        ALLOW_PAUSE_READ,
+        ALLOW_PRIORITY_READ,
+        ALLOW_RATE_SCALE_FACTOR_READ,
+        ALLOW_RELEASE_READ,
+        ALLOW_SCHEDULING_BOUNDS_READ,
+        ALLOW_SOUND_DATA_READ  
+    };
+    
+    
     /**
      * Constructs and initializes a new Sound node using default
      * parameters.  The following defaults values are used:
@@ -460,6 +479,8 @@ public abstract class Sound extends Leaf {
      * </ul>
      */
     public Sound() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     } 
 
     /**
@@ -471,6 +492,9 @@ public abstract class Sound extends Leaf {
      * @param initialGain overall amplitude scale factor applied to sound source
      */
     public Sound(MediaContainer soundData, float initialGain) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((SoundRetained)this.retained).setSoundData(soundData);
         ((SoundRetained)this.retained).setInitialGain(initialGain);
     } 
@@ -498,6 +522,9 @@ public abstract class Sound extends Leaf {
                  boolean enable,
                  Bounds  region,
                  float   priority ) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((SoundRetained)this.retained).setSoundData(soundData);
         ((SoundRetained)this.retained).setInitialGain(initialGain);
         ((SoundRetained)this.retained).setLoop(loopCount);
@@ -533,6 +560,9 @@ public abstract class Sound extends Leaf {
                  Bounds  region,
                  float   priority,
                  float   rateFactor ) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+        
         ((SoundRetained)this.retained).setSoundData(soundData);
         ((SoundRetained)this.retained).setInitialGain(initialGain);
         ((SoundRetained)this.retained).setLoop(loopCount);

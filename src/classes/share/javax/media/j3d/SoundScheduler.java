@@ -102,7 +102,7 @@ class SoundScheduler extends J3dStructure {
      * This prioritized sound list is NO longer re-create instead sounds
      * are insert, shuffled or removed as messages are processed.
      */
-    // TODO: (Enhancement) should have a seperate list for
+    // XXXX: (Enhancement) should have a seperate list for
     //       background sound and a list for positional sounds
     ArrayList prioritizedSounds = new ArrayList();
 
@@ -322,7 +322,7 @@ class SoundScheduler extends J3dStructure {
 		auralAttribsChanged = true;
 	    }
 	    else if (node instanceof ViewPlatformRetained) {
-		// TODO: don't support multiple viewPlatforms per scheduler
+		// XXXX: don't support multiple viewPlatforms per scheduler
 		/*
 		// useful for resetting VP ??
 		addViewPlatform((ViewPlatformRetained) node);
@@ -753,7 +753,7 @@ class SoundScheduler extends J3dStructure {
 	    debugPrint(".deactivate()");
 	//
 
-	// TODO: The following code is clearly erroneous.
+	// XXXX: The following code is clearly erroneous.
 	// The indendation, along with the 2nd test of
 	// "if (debugFlag)" in the else clause, suggests that
 	// the intent was to make the else clause apply to
@@ -858,7 +858,7 @@ class SoundScheduler extends J3dStructure {
 	    return;
 	}
 
-	// TODO: Does not support multiple canvases per view, thus
+	// XXXX: Does not support multiple canvases per view, thus
 	//      multiple GraphicsContext3Ds
 	// QUESTION: what does that mean for sound -
 	//      being applied to only ONE graphics context?
@@ -929,7 +929,7 @@ class SoundScheduler extends J3dStructure {
 	int numActiveSounds = 0;
 	if (debugFlag)
 	    debugPrint(" renderChanges begun");
-	// TODO: BUG?? should wait if audioDevice is NULL or nSounds = 0
+	// XXXX: BUG?? should wait if audioDevice is NULL or nSounds = 0
 	//          when a new sound is added or deleted from list, or
 	//          when the audioDevice is set into PhysicalEnvironment
 
@@ -955,7 +955,7 @@ class SoundScheduler extends J3dStructure {
 		    if (debugFlag)
 			debugPrint("        "+ nIntersected +
 				   " active SoundScapes found");
-		    // TODO: (Performance) calling clone everytime, even
+		    // XXXX: (Performance) calling clone everytime, even
 		    //     though closest AA has NOT changed, is expensive
 		    aaRetained = (AuralAttributesRetained)
 			(findClosestAAttribs(nIntersected)).clone();
@@ -1007,7 +1007,7 @@ class SoundScheduler extends J3dStructure {
 	    if (!prioritizedSounds.isEmpty()) {
 		prioritizedSounds.clear();
 	    }
-	    // TODO: sync soundStructure sound list
+	    // XXXX: sync soundStructure sound list
 	    UnorderList retainedSounds = universe.soundStructure.getSoundList(view);
 	    // QUESTION: what is in this sound list??
 	    //          mirror node or actual node???
@@ -1020,7 +1020,7 @@ class SoundScheduler extends J3dStructure {
 		addPrioritizedSound((SoundRetained)retainedSounds.get(i));
 		nRetainedSounds++;
 	    }
-	    // TODO: sync canvases
+	    // XXXX: sync canvases
 	    Enumeration canvases = view.getAllCanvas3Ds();
 	    while (canvases.hasMoreElements()) {
 		Canvas3D canvas = (Canvas3D)canvases.nextElement();
@@ -1300,7 +1300,7 @@ class SoundScheduler extends J3dStructure {
 	    if (attribs != null) {
 	        synchronized (attribs) {
 /*
-		// TODO: remove use of aaDirty from AuralAttrib node
+		// XXXX: remove use of aaDirty from AuralAttrib node
 		if ((attribs != lastAA) || attribs.aaDirty)
 */
 		    if (debugFlag) {
@@ -1476,7 +1476,7 @@ class SoundScheduler extends J3dStructure {
 	// Sounds that have finished playing are not put into list
 	if ((soundAtom.status == SoundSchedulerAtom.SOUND_COMPLETE) &&
 	    (soundAtom.enabled != SoundSchedulerAtom.PENDING_ON )) {
-	    // TODO:/QUESTION test for immediate mode (?)
+	    // XXXX:/QUESTION test for immediate mode (?)
 
 	    // Unless the sound has been re-started, there's no need
 	    // to process sound the finished playing the last time thru
@@ -2050,7 +2050,7 @@ class SoundScheduler extends J3dStructure {
 	synchronized (prioritizedSounds) {
 	    nAtoms = prioritizedSounds.size();
 	    for (int i=0; i<nAtoms; i++) {
-		// TODO: (Enhancement) Get all sound node fields here
+		// XXXX: (Enhancement) Get all sound node fields here
 		//          and store locally for performance
 		soundAtom = (SoundSchedulerAtom)prioritizedSounds.get(i);
 		mirSound = soundAtom.sound;
@@ -2070,7 +2070,7 @@ class SoundScheduler extends J3dStructure {
 		// check to see if aural attributes changed and have to be updated
 		// must be done before list of sound processed so that Aural Attributes
 		// that affect Sound fields can be set in AudioDevice
-		// TODO: this is not effient if auralAttribs always the same
+		// XXXX: this is not effient if auralAttribs always the same
 		if (sound.getInImmCtx()) {
 		    if (graphicsCtx !=null && graphicsCtx.auralAttributes !=null) {
 			aaImmed = (AuralAttributesRetained)
@@ -2154,7 +2154,7 @@ class SoundScheduler extends J3dStructure {
 		case SoundSchedulerAtom.MAKE_SILENT:
 		    // change status to silent AFTER calling render so
 		    // that a currently audible sound will be muted.
-		    // TODO: why set status AFTER??
+		    // XXXX: why set status AFTER??
 		    render(false, soundAtom, attribs);
 		    soundAtom.status = SoundSchedulerAtom.SOUND_SILENT;
 		    numActiveSounds++;
@@ -2373,7 +2373,7 @@ class SoundScheduler extends J3dStructure {
 		if (debugFlag)
 		    debugPrint("silenceAll " + nAtoms + " Sounds");
 		for (int i=0; i<nAtoms; i++) {
-		    // TODO: (Enhancement) Get all sound node fields here
+		    // XXXX: (Enhancement) Get all sound node fields here
 		    //          and store locally for performance
 		    soundAtom = (SoundSchedulerAtom)prioritizedSounds.get(i);
 		    mirSound = soundAtom.sound;
@@ -2430,7 +2430,7 @@ class SoundScheduler extends J3dStructure {
 		if (debugFlag)
 		    debugPrint(":pauseAll " + nAtoms + " Sounds");
 		for (int i=0; i<nAtoms; i++) {
-		    // TODO: (Enhancement) Get all sound node fields here
+		    // XXXX: (Enhancement) Get all sound node fields here
 		    //          and store locally for performance
 		    SoundSchedulerAtom soundAtom =
 			(SoundSchedulerAtom)prioritizedSounds.get(i);
@@ -2475,7 +2475,7 @@ class SoundScheduler extends J3dStructure {
 		    debugPrint(": resumeAll " + nAtoms + " Sounds ");
 
 		for (int i=0; i<nAtoms; i++) {
-		    // TODO: (Enhancement) Get all sound node fields here
+		    // XXXX: (Enhancement) Get all sound node fields here
 		    //          and store locally for performance
 		    SoundSchedulerAtom soundAtom  =
 			(SoundSchedulerAtom)prioritizedSounds.get(i);
@@ -2528,7 +2528,7 @@ class SoundScheduler extends J3dStructure {
 		    debugPrint(": stopAll " + nAtoms + " Sounds ");
 
 		for (int i=0; i<nAtoms; i++) {
-		    // TODO: (Enhancement) Get all sound node fields here
+		    // XXXX: (Enhancement) Get all sound node fields here
 		    //          and store locally for performance
 		    SoundSchedulerAtom soundAtom =
 			(SoundSchedulerAtom)prioritizedSounds.get(i);
@@ -2547,7 +2547,7 @@ class SoundScheduler extends J3dStructure {
 	    debugPrint(".stopAllSounds exited");
     }
 
-	    // TODO: Mute All Sounds, complementary to Stop All Sounds
+	    // XXXX: Mute All Sounds, complementary to Stop All Sounds
 	    //     "should return from run loop - but simply WAIT until sounds
 	    //     are unmuted. " ???
 
@@ -2618,7 +2618,7 @@ class SoundScheduler extends J3dStructure {
 	// Set Transform
 
 	/*
-	// TODO: per sound tranforms can now be passed to AudioDevice
+	// XXXX: per sound tranforms can now be passed to AudioDevice
 	//     modify and execute the code below
 
 	//     MoveAppBoundingLeaf > ~/Current/MoveAppBoundingLeaf.outted,
@@ -2652,7 +2652,7 @@ class SoundScheduler extends J3dStructure {
 		    }
 		    audioDevice3D.setVworldXfrm(index, xform);
 		    soundAtom.clearStateDirtyFlag( SoundRetained.XFORM_DIRTY_BIT);
-	// TODO: make sure position and direction are already transformed and stored
+	// XXXX: make sure position and direction are already transformed and stored
 	//     into xformXxxxxxx fields.
 		}
 	//      ^^^^^^^^^^^^^^^^^^^^^
@@ -2679,7 +2679,7 @@ class SoundScheduler extends J3dStructure {
 	    ConeSoundRetained cn = (ConeSoundRetained)mirrorPtSound;
 	    ConeSoundRetained cnSound = (ConeSoundRetained)mirrorPtSound.sgSound;
 	    if (updateAll ||
-		// TODO: test for XFORM_DIRTY only in for 1.2
+		// XXXX: test for XFORM_DIRTY only in for 1.2
 		soundAtom.testDirtyFlag(soundAtom.attribsDirty,
 					(SoundRetained.DIRECTION_DIRTY_BIT |
 					 SoundRetained.XFORM_DIRTY_BIT) ) ) {
@@ -2992,7 +2992,7 @@ class SoundScheduler extends J3dStructure {
 	    soundAtom.sampleLength = duration;
 	    soundAtom.loopLength = soundAtom.sampleLength;
 
-	    // TODO: for most this will be 0 but not all
+	    // XXXX: for most this will be 0 but not all
 	    soundAtom.loopStartOffset = 0;
 	    soundAtom.attackLength = 0;    // portion of sample before loop section
 	    soundAtom.releaseLength = 0;   // portion of sample after loop section
@@ -3027,7 +3027,7 @@ class SoundScheduler extends J3dStructure {
 			atomFound++;
 			// orginal app node pass into method
 			// QUESTION: is mirror node still correct?
-			// TODO: ensure only mirror nodes passed into method
+			// XXXX: ensure only mirror nodes passed into method
 			if (atomFound == nthInstance) {
 			    returnAtom = soundAtom;
 			    break;

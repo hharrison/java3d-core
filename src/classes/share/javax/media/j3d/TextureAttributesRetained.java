@@ -525,9 +525,11 @@ class TextureAttributesRetained extends NodeComponentRetained {
 				int[] combineRgbFcn, int[] combineAlphaFcn,
 				int combineRgbScale, int combineAlphaScale);
 
-    native void restoreBlend1Pass(long ctx);
-    native void updateBlend2Pass(long ctx);
-
+    // NOTE: the following native methods are not used any more, since
+    // we no longer do simulated multi-pass by default
+    // (and with shaders, this won't work anyway)
+//    native void restoreBlend1Pass(long ctx);
+//    native void updateBlend2Pass(long ctx);
 
     void updateNative(Canvas3D cv, boolean simulate, int textureFormat) {
 
@@ -653,31 +655,31 @@ class TextureAttributesRetained extends NodeComponentRetained {
 	    case TextureAttributes.COMBINE:
 	    case TextureAttributes.REPLACE:
 	         cv.setBlendFunc(cv.ctx,
-			TransparencyAttributesRetained.BLEND_ONE,
-	                TransparencyAttributesRetained.BLEND_ZERO);
+			TransparencyAttributes.BLEND_ONE,
+	                TransparencyAttributes.BLEND_ZERO);
 		 break;
 	    case TextureAttributes.MODULATE:
 	         cv.setBlendFunc(cv.ctx,
-			TransparencyAttributesRetained.BLEND_DST_COLOR,
-	                TransparencyAttributesRetained.BLEND_ZERO);
+			TransparencyAttributes.BLEND_DST_COLOR,
+	                TransparencyAttributes.BLEND_ZERO);
 		 break;
 	    case TextureAttributes.DECAL:
 		 if (textureFormat == Texture.RGBA) {
 	             cv.setBlendFunc(cv.ctx,
-			TransparencyAttributesRetained.BLEND_SRC_ALPHA,
-	                TransparencyAttributesRetained.BLEND_ONE_MINUS_SRC_ALPHA);
+			TransparencyAttributes.BLEND_SRC_ALPHA,
+	                TransparencyAttributes.BLEND_ONE_MINUS_SRC_ALPHA);
 		 } else {
 	             cv.setBlendFunc(cv.ctx,
-			TransparencyAttributesRetained.BLEND_ONE,
-	                TransparencyAttributesRetained.BLEND_ZERO);
+			TransparencyAttributes.BLEND_ONE,
+	                TransparencyAttributes.BLEND_ZERO);
 		 }
 		 break;
 	    case TextureAttributes.BLEND:
 		cv.setBlendColor(cv.ctx, textureBlendColor.x, textureBlendColor.y,
 				 textureBlendColor.z, textureBlendColor.w);
 		cv.setBlendFunc(cv.ctx,
-				TransparencyAttributesRetained.BLEND_CONSTANT_COLOR,
-				TransparencyAttributesRetained.BLEND_ONE_MINUS_SRC_COLOR);
+				TransparencyAttributes.BLEND_CONSTANT_COLOR,
+				TransparencyAttributes.BLEND_ONE_MINUS_SRC_COLOR);
 		break;
 	    }
 	}

@@ -81,23 +81,31 @@ class CompressedGeometryRetained extends GeometryRetained {
     private GeometryRetained pickGeometry = null ;
 
     /**
-     * Native method that returns availability of a native by-reference
+     * Formerly native method that returns availability of a native by-reference
      * rendering API for compressed geometry.
      */
-    native boolean decompressByRef(long ctx) ;
+    private boolean decompressByRef(long ctx) {
+	return false;
+    }
 
     /**
-     * Native method that returns availability of hardware acceleration for
-     * compressed geometry of the given version.
+     * Formerly native method that returns availability of hardware
+     * rendering (and acceleration) for compressed geometry of the
+     * given version.
      */
-    native boolean decompressHW(long ctx, int majorVersion, int minorVersion) ;
+    private boolean decompressHW(long ctx, int majorVersion, int minorVersion) {
+	return false;
+    }
 
     /**
-     * Native method that does the rendering
+     * Formerly native method that does HW compressed geometry rendering
      */
-    native void execute(long  ctx, int version, int bufferType,
-			int bufferContents, int renderFlags,
-			int offset, int size, byte[] geometry) ;
+    private void execute(long  ctx, int version, int bufferType,
+			 int bufferContents, int renderFlags,
+			 int offset, int size, byte[] geometry) {
+
+	assert false : "This method should never be called!";
+    }
 
     /**
      * Method for calling native execute() method on behalf of the J3D renderer.
@@ -107,7 +115,7 @@ class CompressedGeometryRetained extends GeometryRetained {
 		 boolean multiScreen, int screen,
 		 boolean ignoreVertexColors, int pass) {
 
-	// TODO: alpha udpate
+	// XXXX: alpha udpate
 	execute(cv.ctx, packedVersion, bufferType, bufferContents,
 		renderFlags, offset, size, compressedGeometry) ;
     }
@@ -313,12 +321,12 @@ class CompressedGeometryRetained extends GeometryRetained {
     // The following intersect() methods are used to implement geometry-based
     // picking and collision.
     //
-    boolean intersect(PickShape pickShape, double dist[], Point3d iPnt) {
+    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
 	GeometryRetained geom = getPickGeometry() ;
 	return (geom != null ?
-		geom.intersect(pickShape, dist, iPnt) : false);
+		geom.intersect(pickShape, iInfo, flags, iPnt) : false);
     }
-
+    
     boolean intersect(Bounds targetBound) {
 	GeometryRetained geom = getPickGeometry() ;
 	return (geom != null ? geom.intersect(targetBound) : false);

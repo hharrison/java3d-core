@@ -41,6 +41,11 @@ public class DirectionalLight extends Light {
   public static final int
     ALLOW_DIRECTION_WRITE = CapabilityBits.DIRECTIONAL_LIGHT_ALLOW_DIRECTION_WRITE;
 
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+	ALLOW_DIRECTION_READ
+    };
+    
     /**
      * Constructs a DirectionalLight node with default parameters.
      * The default values are as follows:
@@ -49,6 +54,8 @@ public class DirectionalLight extends Light {
      * </ul>
      */
     public DirectionalLight() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -59,6 +66,10 @@ public class DirectionalLight extends Light {
      */
     public DirectionalLight(Color3f color, Vector3f direction) {
 	super(color);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((DirectionalLightRetained)this.retained).initDirection(direction);
     }
 
@@ -71,6 +82,10 @@ public class DirectionalLight extends Light {
      */
     public DirectionalLight(boolean lightOn, Color3f color, Vector3f direction) {
 	super(lightOn, color);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((DirectionalLightRetained)this.retained).initDirection(direction);
     }
 

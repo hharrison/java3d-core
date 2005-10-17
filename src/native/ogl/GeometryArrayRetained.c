@@ -47,24 +47,20 @@ static float EPS = 0.0001f;
     	    iaFormat = GL_T2F_C4F_N3F_V3F; break;\
 	default:				\
     	    useInterleavedArrays = 0; break;	\
-	} 
+	}
 
 
-
-/* This hardcoded value should be fixed for 1.3 */
-#define NUM_TEXTURE_UNITS 64
-
-
-extern void enableTexCoordPointer(GraphicsContextPropertiesInfo *, int, int,
-					int, int, void *);
-extern void disableTexCoordPointer(GraphicsContextPropertiesInfo *, int);
+static void enableTexCoordPointer(GraphicsContextPropertiesInfo *, int, int,
+				  int, int, void *);
+static void disableTexCoordPointer(GraphicsContextPropertiesInfo *, int);
+static void clientActiveTextureUnit(GraphicsContextPropertiesInfo *, int);
 
 /* 
  * texUnitIndex < 0  implies send all texture unit state info in one pass
  * texUnitIndex >= 0 implies one texture unit state info in one pass using
  *		     the underlying texture unit 0
  */
-void
+static void
 executeTexture(int texUnitIndex, int texCoordSetMapLen,
 	       int texSize, int bstride, int texCoordoff,
 	       jint texCoordSetMapOffset[], 
@@ -143,6 +139,39 @@ executeTexture(int texUnitIndex, int texCoordSetMapLen,
     }
 }
 
+static void
+resetTexture(jlong ctxInfo)
+{
+    int i;
+
+    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
+
+    if(ctxProperties->arb_multitexture) {
+	/* Disable texture coordinate arrays for all texture units */
+	for (i = 0; i < ctxProperties->maxTexCoordSets; i++) {
+	    disableTexCoordPointer(ctxProperties, i);
+	}
+	/* Reset client active texture unit to 0 */
+	clientActiveTextureUnit(ctxProperties, 0);
+    } else {
+	disableTexCoordPointer(ctxProperties, 0);
+    }
+}
+
+
+static void
+resetVertexAttrs(jlong ctxInfo, int vertexAttrCount)
+{
+    int i;
+
+    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
+
+    /* Disable specified vertex attr arrays */
+    for (i = 0; i < vertexAttrCount; i++) {
+	ctxProperties->disableVertexAttrArray(ctxProperties, i);
+    }
+}
+
 
 /*
  * glLockArrays() is invoked only for indexed geometry, and the
@@ -166,21 +195,23 @@ unlockArray(GraphicsContextPropertiesInfo *ctxProperties)
 }
 
 
-void
-executeGeometryArray(JNIEnv *env, 
-		     jobject obj, jlong ctxInfo, jobject geo, jint geo_type, 
-		     jboolean isNonUniformScale, jboolean useAlpha,
-		     jboolean multiScreen,						
-		     jboolean ignoreVertexColors,
-		     jint startVIndex,
-		     jint vcount, jint vformat, 
-		     jint texCoordSetCount,
-		     jintArray texCoordSetMap, jint texCoordSetMapLen,
-		     jintArray texUnitOffset, 
-		     jint numActiveTexUnit,
-		     jintArray texUnitStateMapArray,
-		     jfloatArray varray, jobject varrayBuffer, jfloatArray carray,
-		     jint texUnitIndex, jint cDirty)
+static void
+executeGeometryArray(
+    JNIEnv *env,
+    jobject obj, jlong ctxInfo, jobject geo, jint geo_type,
+    jboolean isNonUniformScale, jboolean useAlpha,
+    jboolean multiScreen,
+    jboolean ignoreVertexColors,
+    jint startVIndex,
+    jint vcount, jint vformat,
+    jint texCoordSetCount,
+    jintArray texCoordSetMap, jint texCoordSetMapLen,
+    jintArray texUnitOffset,
+    jint numActiveTexUnit,
+    jintArray texUnitStateMapArray,
+    jint vertexAttrCount, jintArray vertexAttrSizes,
+    jfloatArray varray, jobject varrayBuffer, jfloatArray carray,
+    jint texUnitIndex, jint cDirty)
 {
     jclass geo_class;
     JNIEnv table;
@@ -210,13 +241,16 @@ executeGeometryArray(JNIEnv *env,
     jfieldID start_field;
     GLint *start;
     int cstride = 0;
+    int vAttrStride = 0;
+    int vAttrOff;
+    jint *vAttrSizesPtr = NULL;
     table = *env;
 
     geo_class =  (jclass) (*(table->GetObjectClass))(env, geo);
 
-
     /* This matches the code in GeometryArrayRetained.java */
     stride = coordoff = normoff = coloroff = texCoordoff = 0;
+    vAttrOff = 0;
     if ((vformat & GA_COORDINATES) != 0) {
 	stride += 3;
     }
@@ -253,6 +287,20 @@ executeGeometryArray(JNIEnv *env,
 	coordoff += texStride;
     }
 
+    if ((vformat & GA_VERTEX_ATTRIBUTES) != 0) {
+	if (vertexAttrSizes != NULL) {
+	    vAttrSizesPtr = table->GetIntArrayElements(env, vertexAttrSizes, NULL);
+	}
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vAttrStride += vAttrSizesPtr[i];
+	}
+	stride += vAttrStride;
+	normoff += vAttrStride;
+	coloroff += vAttrStride;
+	coordoff += vAttrStride;
+	texCoordoff += vAttrStride;
+    }
+
     bstride = stride*sizeof(float);
 
     /*
@@ -277,17 +325,22 @@ executeGeometryArray(JNIEnv *env,
     }
 
     /* begin critical region */
+    verts = NULL;
     if(varray != NULL) {
 	verts = (jfloat *) (*(table->GetPrimitiveArrayCritical))(env, varray, NULL);
-	if(verts == NULL)
-	    return;
     }
     else if(varrayBuffer != NULL) {
 	verts = (jfloat *) (*(table->GetDirectBufferAddress))(env, varrayBuffer );
-	if(verts == NULL)
-	    return;
     }
-	    
+    if (verts == NULL) {
+	/* This should never happen */
+	fprintf(stderr, "JAVA 3D ERROR : unable to get vertex pointer\n");
+	if (vAttrSizesPtr != NULL) {
+	    table->ReleaseIntArrayElements(env, vertexAttrSizes, vAttrSizesPtr, JNI_ABORT);
+	}
+	return;
+    }
+
     /* using byRef interleaved array and has a separate pointer, then .. */
     cstride = stride;
     if (carray != NULL) { 
@@ -369,6 +422,17 @@ executeGeometryArray(JNIEnv *env,
 				numActiveTexUnit, texUnitStateMap, 
 				startVertex, ctxInfo);
 	    } 
+
+	    if (vformat & GA_VERTEX_ATTRIBUTES) {
+		jfloat *vAttrPtr = &startVertex[vAttrOff];
+
+		for (i = 0; i < vertexAttrCount; i++) {
+		    ctxProperties->enableVertexAttrArray(ctxProperties, i);
+		    ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
+						     GL_FLOAT, bstride, vAttrPtr);
+		    vAttrPtr += vAttrSizesPtr[i];
+		}
+	    }
 	}  
 
 	switch (geo_type) {
@@ -451,6 +515,17 @@ executeGeometryArray(JNIEnv *env,
 				numActiveTexUnit, texUnitStateMap, 
 				startVertex, ctxInfo);
 	    } 
+
+	    if (vformat & GA_VERTEX_ATTRIBUTES) {
+		jfloat *vAttrPtr = &startVertex[vAttrOff];
+
+		for (i = 0; i < vertexAttrCount; i++) {
+		    ctxProperties->enableVertexAttrArray(ctxProperties, i);
+		    ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
+						     GL_FLOAT, bstride, vAttrPtr);
+		    vAttrPtr += vAttrSizesPtr[i];
+		}
+	    }
 	}
 	switch (geo_type){
 	  case GEO_TYPE_QUAD_SET : glDrawArrays(GL_QUADS, 0, vcount);break;
@@ -465,6 +540,14 @@ executeGeometryArray(JNIEnv *env,
 	glDisable(GL_NORMALIZE);
     }
 
+    if (vformat & GA_VERTEX_ATTRIBUTES) {
+	resetVertexAttrs(ctxInfo, vertexAttrCount);
+    }
+
+    if (vformat & GA_TEXTURE_COORDINATE) {
+	resetTexture(ctxInfo);
+    }
+
     if (carray != NULL) 
 	(*(table->ReleasePrimitiveArrayCritical))(env, carray, clrs, 0);
 
@@ -477,74 +560,104 @@ executeGeometryArray(JNIEnv *env,
 						texUnitStateMap, 0);
     if(varray != NULL)
 	(*(table->ReleasePrimitiveArrayCritical))(env, varray, verts, 0); 
+
+    if (vAttrSizesPtr != NULL) {
+	table->ReleaseIntArrayElements(env, vertexAttrSizes, vAttrSizesPtr, JNI_ABORT);
+    }
 }
 
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_GeometryArrayRetained_execute(JNIEnv *env, 
-		jobject obj, jlong ctxInfo, jobject geo, jint geo_type, 
-                jboolean isNonUniformScale, jboolean useAlpha,
-		jboolean multiScreen,						
-		jboolean ignoreVertexColors,
-		jint startVIndex,
-		jint vcount, jint vformat, 
-		jint texCoordSetCount,
-                jintArray texCoordSetMap, jint texCoordSetMapLen,
-		jintArray texUnitOffset, 
-		jint numActiveTexUnit,
-		jintArray texUnitStateMapArray,
-		jfloatArray varray, jfloatArray carray,
-		jint texUnitIndex, jint cDirty) {
-    
-   
+
+/*
+ * Class:     javax_media_j3d_GeometryArrayRetained
+ * Method:    execute
+ * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZZZIIII[II[II[II[I[F[FII)V
+ */
+JNIEXPORT void JNICALL
+Java_javax_media_j3d_GeometryArrayRetained_execute(JNIEnv *env, 
+    jobject obj, jlong ctxInfo, jobject geo, jint geo_type,
+    jboolean isNonUniformScale, jboolean useAlpha,
+    jboolean multiScreen,
+    jboolean ignoreVertexColors,
+    jint startVIndex,
+    jint vcount, jint vformat,
+    jint texCoordSetCount,
+    jintArray texCoordSetMap, jint texCoordSetMapLen,
+    jintArray texUnitOffset,
+    jint numActiveTexUnit,
+    jintArray texUnitStateMapArray,
+    jint vertexAttrCount, jintArray vertexAttrSizes,
+    jfloatArray varray, jfloatArray carray,
+    jint texUnitIndex, jint cDirty)
+{
+
+#ifdef VERBOSE
+    fprintf(stderr, "GeometryArrayRetained.execute() -- calling executeGeometryArray\n");
+#endif /* VERBOSE */
+
     /* call executeGeometryArray */
-    executeGeometryArray(env, obj, ctxInfo, geo, geo_type,  isNonUniformScale,  useAlpha,
+    executeGeometryArray(env, obj, ctxInfo, geo, geo_type, isNonUniformScale, useAlpha,
 			 multiScreen, ignoreVertexColors, startVIndex, vcount, vformat,
 			 texCoordSetCount, texCoordSetMap, texCoordSetMapLen,
 			 texUnitOffset, numActiveTexUnit, texUnitStateMapArray,
+			 vertexAttrCount, vertexAttrSizes,
 			 varray, NULL, carray, texUnitIndex, cDirty);
-    
+
 }
 
 /* interleaved data with nio buffer as data format */
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeInterleavedBuffer(JNIEnv *env, 
-		jobject obj, jlong ctxInfo, jobject geo, jint geo_type, 
-                jboolean isNonUniformScale, jboolean useAlpha,
-		jboolean multiScreen,						
-		jboolean ignoreVertexColors,
-		jint startVIndex,
-		jint vcount, jint vformat, 
-		jint texCoordSetCount,
-                jintArray texCoordSetMap, jint texCoordSetMapLen,
-		jintArray texUnitOffset, 
-		jint numActiveTexUnit,
-		jintArray texUnitStateMapArray,
-		jobject varray, jfloatArray carray,
-								jint texUnitIndex, jint cDirty) {
-    
+JNIEXPORT void JNICALL
+Java_javax_media_j3d_GeometryArrayRetained_executeInterleavedBuffer(
+    JNIEnv *env, 
+    jobject obj, jlong ctxInfo, jobject geo, jint geo_type, 
+    jboolean isNonUniformScale, jboolean useAlpha,
+    jboolean multiScreen,						
+    jboolean ignoreVertexColors,
+    jint startVIndex,
+    jint vcount, jint vformat, 
+    jint texCoordSetCount,
+    jintArray texCoordSetMap, jint texCoordSetMapLen,
+    jintArray texUnitOffset, 
+    jint numActiveTexUnit,
+    jintArray texUnitStateMapArray,
+    jobject varray, jfloatArray carray,
+    jint texUnitIndex, jint cDirty)
+{
+
+#ifdef VERBOSE
+    fprintf(stderr, "GeometryArrayRetained.executeInterleavedBuffer() -- calling executeGeometryArray\n");
+#endif /* VERBOSE */
+
     /* call executeGeometryArray */
     executeGeometryArray(env, obj, ctxInfo, geo, geo_type,  isNonUniformScale,  useAlpha,
 			 multiScreen, ignoreVertexColors, startVIndex, vcount, vformat,
 			 texCoordSetCount, texCoordSetMap, texCoordSetMapLen,
 			 texUnitOffset, numActiveTexUnit, texUnitStateMapArray,
+			 0, NULL,
 			 NULL, varray, carray, texUnitIndex, cDirty);
 
 }
 
+
+/*
+ * Class:     javax_media_j3d_GeometryArrayRetained
+ * Method:    buildGA
+ * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZFZIIII[II[II[I[D[D[F)V
+ */
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGA(JNIEnv *env, 
-		jobject obj, jlong ctxInfo, jobject geo, 
-		jint geo_type, 
-                jboolean isNonUniformScale, jboolean updateAlpha, float alpha,
-		jboolean ignoreVertexColors,
-		jint startVIndex,
-  	        jint vcount, jint vformat, 
-		jint texCoordSetCount,
-		jintArray texCoordSetMapArray,
-		jint texCoordSetMapLen,
-		jintArray texUnitOffset, 
-		jdoubleArray xform, jdoubleArray nxform,
-		jfloatArray varray)
+    void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGA(JNIEnv *env, 
+    jobject obj, jlong ctxInfo, jobject geo, 
+    jint geo_type, 
+    jboolean isNonUniformScale, jboolean updateAlpha, float alpha,
+    jboolean ignoreVertexColors,
+    jint startVIndex,
+    jint vcount, jint vformat, 
+    jint texCoordSetCount,
+    jintArray texCoordSetMapArray,
+    jint texCoordSetMapLen,
+    jintArray texUnitOffset, 
+    jint vertexAttrCount, jintArray vertexAttrSizes,
+    jdoubleArray xform, jdoubleArray nxform,
+    jfloatArray varray)
 {
     jclass geo_class;
     JNIEnv table;
@@ -554,6 +667,9 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGA(JNIEnv *env,
     jint i, j;
 	size_t bstride;
     jint texStride, *texCoordSetMapOffset;
+    int vAttrStride = 0;
+    int vAttrOff;
+    jint *vAttrSizesPtr = NULL;
     GLsizei *strips;
     jfloat vertex[3];
     jfloat normal[3];
@@ -569,18 +685,22 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGA(JNIEnv *env,
     float color[4];
     jdouble *xform_ptr = NULL;
     jdouble *nxform_ptr = NULL;
-    
 
     jint k;
 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
       
+#ifdef VERBOSE
+    fprintf(stderr, "GeometryArrayRetained.buildGA()\n");
+#endif /* VERBOSE */
+
     table = *env;
     geo_class =  (jclass) (*(table->GetObjectClass))(env, geo);
 
     /* This matches the code in GeometryArrayRetained.java */
     stride = coordoff = normoff = coloroff = texCoordoff = 0;
+    vAttrOff = 0;
     if ((vformat & GA_COORDINATES) != 0) {
 	stride += 3;
     } 
@@ -623,6 +743,20 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGA(JNIEnv *env,
 	coordoff += texStride;
     }
 
+    if ((vformat & GA_VERTEX_ATTRIBUTES) != 0) {
+	if (vertexAttrSizes != NULL) {
+	    vAttrSizesPtr = table->GetIntArrayElements(env, vertexAttrSizes, NULL);
+	}
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vAttrStride += vAttrSizesPtr[i];
+	}
+	stride += vAttrStride;
+	normoff += vAttrStride;
+	coloroff += vAttrStride;
+	coordoff += vAttrStride;
+	texCoordoff += vAttrStride;
+    }
+
     bstride = stride*sizeof(float);
     /* Start send down from the startVIndex */
     initialOffset = startVIndex * stride;
@@ -630,6 +764,7 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGA(JNIEnv *env,
     coloroff += initialOffset;
     coordoff += initialOffset;
     texCoordoff += initialOffset;
+    vAttrOff += initialOffset;
 
     /* 
      * process alpha for geometryArray without alpha
@@ -740,6 +875,38 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 		    }
 		}
 
+		if (vformat & GA_VERTEX_ATTRIBUTES) {
+		    int vaIdx, vaOff;
+
+		    vaOff = vAttrOff;
+		    for (vaIdx = 0; vaIdx < vertexAttrCount; vaIdx++) {
+#ifdef VERBOSE
+			fprintf(stderr, "vertexAttrs[%d] = (", vaIdx);
+			for (k = 0; k < vAttrSizesPtr[vaIdx]; k++) {
+			    fprintf(stderr, "%g, ",
+				    verts[vaOff+k]);
+			}
+			fprintf(stderr, ")\n");
+#endif /* VERBOSE */
+			switch (vAttrSizesPtr[vaIdx]) {
+			case 1:
+			    ctxProperties->vertexAttr1fv(ctxProperties, vaIdx, &verts[vaOff]);
+			    break;
+			case 2:
+			    ctxProperties->vertexAttr2fv(ctxProperties, vaIdx, &verts[vaOff]);
+			    break;
+			case 3:
+			    ctxProperties->vertexAttr3fv(ctxProperties, vaIdx, &verts[vaOff]);
+			    break;
+			case 4:
+			    ctxProperties->vertexAttr4fv(ctxProperties, vaIdx, &verts[vaOff]);
+			    break;
+			}
+
+			vaOff += vAttrSizesPtr[vaIdx];
+		    }
+		}
+
 		if (vformat & GA_TEXTURE_COORDINATE) {
 
 		    if (texCoordSetMapLen > 0) {
@@ -833,6 +1000,7 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 		coloroff += stride;
 		coordoff += stride;
 		texCoordoff += stride;
+		vAttrOff += stride;
 	    }
 	    glEnd();
 	}
@@ -914,6 +1082,38 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 		    else {
 			glColor3fv(&verts[coloroff]);
 		    }
+		}
+	    }
+
+	    if (vformat & GA_VERTEX_ATTRIBUTES) {
+		int vaIdx, vaOff;
+
+		vaOff = vAttrOff;
+		for (vaIdx = 0; vaIdx < vertexAttrCount; vaIdx++) {
+#ifdef VERBOSE
+		    fprintf(stderr, "vertexAttrs[%d] = (", vaIdx);
+		    for (k = 0; k < vAttrSizesPtr[vaIdx]; k++) {
+			fprintf(stderr, "%g, ",
+				verts[vaOff+k]);
+		    }
+		    fprintf(stderr, ")\n");
+#endif /* VERBOSE */
+		    switch (vAttrSizesPtr[vaIdx]) {
+		    case 1:
+			ctxProperties->vertexAttr1fv(ctxProperties, vaIdx, &verts[vaOff]);
+			break;
+		    case 2:
+			ctxProperties->vertexAttr2fv(ctxProperties, vaIdx, &verts[vaOff]);
+			break;
+		    case 3:
+			ctxProperties->vertexAttr3fv(ctxProperties, vaIdx, &verts[vaOff]);
+			break;
+		    case 4:
+			ctxProperties->vertexAttr4fv(ctxProperties, vaIdx, &verts[vaOff]);
+			break;
+		    }
+
+		    vaOff += vAttrSizesPtr[vaIdx];
 		}
 	    }
 
@@ -1012,13 +1212,14 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 	    coloroff += stride;
 	    coordoff += stride;
 	    texCoordoff += stride;
+	    vAttrOff += stride;
 	}
 	glEnd();
     }
     /* Restore the  vertex format */
     vformat = saveVformat;
 
-    
+
     (*(table->ReleasePrimitiveArrayCritical))(env, varray, verts, 0);
 
     if (texCoordSetMapLen > 0)
@@ -1030,35 +1231,48 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 
     if (nxform_ptr != NULL)
         (*(table->ReleasePrimitiveArrayCritical))(env, nxform, nxform_ptr, 0);
+
+    if (vAttrSizesPtr != NULL) {
+	table->ReleaseIntArrayElements(env, vertexAttrSizes, vAttrSizesPtr, JNI_ABORT);
+    }
 }
 
-void enableTexCoordPointer(
+static void
+enableTexCoordPointer(
     GraphicsContextPropertiesInfo *ctxProperties,
     int texUnit,
     int texSize,
     int texDataType,
     int stride,
-    void *pointer) {
-
-    if (ctxProperties->arb_multitexture) {
-        ctxProperties->glClientActiveTextureARB(texUnit + GL_TEXTURE0_ARB);
-    }
+    void *pointer)
+{
+    clientActiveTextureUnit(ctxProperties, texUnit);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glTexCoordPointer(texSize, texDataType, stride, pointer);
 }
 
-
-void disableTexCoordPointer(
+static void
+disableTexCoordPointer(
     GraphicsContextPropertiesInfo *ctxProperties,
-    int texUnit) {
-
-    if (ctxProperties->glClientActiveTextureARB != NULL) {
-        ctxProperties->glClientActiveTextureARB(texUnit + GL_TEXTURE0_ARB);
-    }
+    int texUnit)
+{
+    clientActiveTextureUnit(ctxProperties, texUnit);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
-void executeGeometryArrayVA(
+static void
+clientActiveTextureUnit(
+    GraphicsContextPropertiesInfo *ctxProperties,
+    int texUnit)
+{
+    if (ctxProperties->arb_multitexture) {
+        ctxProperties->glClientActiveTextureARB(texUnit + GL_TEXTURE0_ARB);
+    }
+}
+
+
+static void
+executeGeometryArrayVA(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    
@@ -1078,6 +1292,10 @@ void executeGeometryArrayVA(
     jbyte*  bclrs,
     jint initialNormalIndex,
     jfloat* norms,
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jintArray vertexAttrIndices,
+    jfloat ** vertexAttrPointer,
     jint pass,  
     jint texCoordMapLength,
     jintArray 	tcoordsetmap,
@@ -1102,6 +1320,8 @@ void executeGeometryArrayVA(
     GLint *start;
 
     jint coordoff, coloroff, normoff;
+    jint* initialVAttrIndices;
+    jint* vAttrSizes;
     int texSet;
     jint *texCoordSetMap;
     jint* initialTexIndices;
@@ -1111,10 +1331,15 @@ void executeGeometryArrayVA(
     jboolean floatColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_FLOAT) != 0);
     jboolean byteColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_BYTE) != 0);
     jboolean normalsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_NORMAL_FLOAT) != 0);
+    jboolean vattrDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_VATTR_FLOAT) != 0);
     jboolean textureDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_TEXCOORD_FLOAT) != 0);
 
     table = *env;    
-   
+
+#ifdef VERBOSE
+    fprintf(stderr, "executeGeometryArrayVA()\n");
+#endif /* VERBOSE */
+
     /* Enable normalize for non-uniform scale (which rescale can't handle) */
     if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
 	glEnable(GL_NORMALIZE);
@@ -1150,9 +1375,31 @@ void executeGeometryArrayVA(
 	glNormalPointer(GL_FLOAT, 0, &(norms[normoff]));
     }
 
+    if (vattrDefined) {
+	float *pVertexAttrs;
+	int sz, initIdx;
+
+	vAttrSizes = (jint *) (*(table->GetPrimitiveArrayCritical))(env, vertexAttrSizes, NULL);
+	initialVAttrIndices = (jint *) (*(table->GetPrimitiveArrayCritical))(env, vertexAttrIndices, NULL);
+
+	for (i = 0; i < vertexAttrCount; i++) {
+	    pVertexAttrs = vertexAttrPointer[i];
+	    sz = vAttrSizes[i];
+	    initIdx = initialVAttrIndices[i];
+
+	    ctxProperties->enableVertexAttrArray(ctxProperties, i);
+	    ctxProperties->vertexAttrPointer(ctxProperties, i, sz,
+					     GL_FLOAT, 0,
+					     &pVertexAttrs[initIdx * sz]);
+	}
+
+	(*(table->ReleasePrimitiveArrayCritical))(env, vertexAttrSizes, vAttrSizes, 0);
+	(*(table->ReleasePrimitiveArrayCritical))(env, vertexAttrIndices, initialVAttrIndices, 0);
+    }
+
     if (textureDefined) {
 
-	int j = 0, tus = 0;
+	int tus = 0;
 	float *ptexCoords;
 
 	initialTexIndices = (jint *) (*(table->GetPrimitiveArrayCritical))(env,texindices, NULL);
@@ -1194,6 +1441,8 @@ void executeGeometryArrayVA(
 		disableTexCoordPointer(ctxProperties, 0);
 	    }
 	}
+        /* Reset client active texture unit to 0 */
+        clientActiveTextureUnit(ctxProperties, 0);
     }
 
     if (geo_type == GEO_TYPE_TRI_STRIP_SET || 
@@ -1250,15 +1499,26 @@ void executeGeometryArrayVA(
     }
 
 
+    if (vattrDefined) {
+	resetVertexAttrs(ctxInfo, vertexAttrCount);
+    }
+
     if (textureDefined) {
+	resetTexture(ctxInfo);
+
 	(*(table->ReleasePrimitiveArrayCritical))(env, tcoordsetmap, texCoordSetMap, 0);
 	(*(table->ReleasePrimitiveArrayCritical))(env, texindices, initialTexIndices, 0);
     }    
 }
 
 /* execute geometry array with java array format */
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
+/*
+ * Class:     javax_media_j3d_GeometryArrayRetained
+ * Method:    executeVA
+ * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZZIIII[F[DI[F[BI[FI[I[I[[FII[II[I[II[Ljava/lang/Object;I)V
+ */
+JNIEXPORT void JNICALL
+Java_javax_media_j3d_GeometryArrayRetained_executeVA(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    
@@ -1278,6 +1538,10 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
     jbyteArray  cbdata,
     jint initialNormalIndex,
     jfloatArray ndata,
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jintArray vertexAttrIndices,
+    jobjectArray vertexAttrData,
     jint pass,  
     jint texCoordMapLength,
     jintArray 	tcoordsetmap,
@@ -1302,26 +1566,41 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
     jdouble *dverts = NULL;
     jbyte *bclrs = NULL;
     jfloat *fclrs = NULL, *norms = NULL;
-    jfloat* texCoordPointer[NUM_TEXTURE_UNITS];
-    jarray texobjs[NUM_TEXTURE_UNITS];
+    jarray *vaobjs = NULL;
+    jfloat **vertexAttrPointer = NULL;
+    jfloat **texCoordPointer = NULL;
+    jarray *texobjs = NULL;
     jint* texUnitStateMap = NULL;
     int i;
 
- 
     jboolean floatCoordDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COORD_FLOAT) != 0);
     jboolean doubleCoordDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COORD_DOUBLE) != 0);
     jboolean floatColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_FLOAT) != 0);
     jboolean byteColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_BYTE) != 0);
     jboolean normalsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_NORMAL_FLOAT) != 0);
+    jboolean vattrDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_VATTR_FLOAT) != 0);
     jboolean textureDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_TEXCOORD_FLOAT) != 0);
 
+    if (vattrDefined) {
+	vaobjs = (jarray *)malloc(vertexAttrCount * sizeof(jarray));
+	vertexAttrPointer = (jfloat **)malloc(vertexAttrCount * sizeof(jfloat *));
+
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vaobjs[i] = (*(table->GetObjectArrayElement))(env, vertexAttrData, i);
+	}
+    }
+
     if (textureDefined) {
+	texobjs = (jarray*)malloc(texCoordMapLength * sizeof(jarray));
+	texCoordPointer = (jfloat**)malloc(texCoordMapLength * sizeof(jfloat*));
+
 	for (i = 0; i < texCoordMapLength; i++) {
 	    texobjs[i] = (*(table->GetObjectArrayElement))(env, texCoords, i);
 	}
     }
+
     geo_class =  (jclass) (*(table->GetObjectClass))(env, geo);
-    
+
     if (geo_type == GEO_TYPE_TRI_STRIP_SET || 
 	geo_type == GEO_TYPE_TRI_FAN_SET   || 
 	geo_type == GEO_TYPE_LINE_STRIP_SET) {
@@ -1335,6 +1614,13 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
 							"stripStartOffsetIndices", "[I");
 	start_array = (jarray)(*(table->GetObjectField))(env, geo,
 							 start_field);
+    }
+
+    /* Get vertex attribute arrays */
+    if (vattrDefined) {
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vertexAttrPointer[i] = (jfloat *) (*(table->GetPrimitiveArrayCritical))(env, vaobjs[i], NULL);
+	}
     }
 
     /* get texture arrays */
@@ -1369,16 +1655,36 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
 	norms = (jfloat *) (*(table->GetPrimitiveArrayCritical))(env,ndata, NULL);
     }
 
+#ifdef VERBOSE
+    fprintf(stderr, "GeometryArrayRetained.executeVA() -- calling executeGeometryArrayVA\n");
+#endif /* VERBOSE */
+
     executeGeometryArrayVA(env, obj, ctxInfo, geo, geo_type,
 			   isNonUniformScale,  multiScreen, ignoreVertexColors,
 			   vcount, vformat,  vdefined, initialCoordIndex,
 			   fverts, dverts, initialColorIndex,
 			   fclrs, bclrs, initialNormalIndex,
-			   norms, pass, texCoordMapLength,
+			   norms,
+			   vertexAttrCount, vertexAttrSizes,
+			   vertexAttrIndices, vertexAttrPointer,
+			   pass, texCoordMapLength,
 			   tcoordsetmap,numActiveTexUnit, texUnitStateMap,
 			   texindices,texStride,texCoordPointer,cdirty, sarray, strip_len, start_array);
 
     
+    if (vattrDefined) {
+	for (i = 0; i < vertexAttrCount; i++) {
+	    (*(table->ReleasePrimitiveArrayCritical))(env, vaobjs[i], vertexAttrPointer[i], 0);
+	}
+    }
+
+    if (vaobjs != NULL) {
+	free(vaobjs);
+    }
+    if (vertexAttrPointer != NULL) {
+	free(vertexAttrPointer);
+    }
+
     if (textureDefined) {
 	for (i = 0; i < texCoordMapLength; i++) {
 	    if (texCoordPointer[i] != NULL) {
@@ -1388,6 +1694,13 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
 	if (texUnitStateMap != NULL) {
 	    (*(table->ReleasePrimitiveArrayCritical))(env, tunitstatemap, texUnitStateMap, 0);
 	}
+    }
+    
+    if (texobjs != NULL) {
+	free(texobjs);
+    }
+    if (texCoordPointer != NULL) {
+	free(texCoordPointer);
     }
    
     if (normalsDefined) {
@@ -1409,12 +1722,15 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVA(
     else if (doubleCoordDefined) {
 	(*env)->ReleasePrimitiveArrayCritical(env, vdcoords, dverts, 0); 
     }
-    
 }
       
 /* execute geometry array with java array format */
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
+/*
+ * Class:     javax_media_j3d_GeometryArrayRetained
+ * Method:    executeVABuffer
+ * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZZIIIILjava/lang/Object;ILjava/lang/Object;[F[BILjava/lang/Object;I[I[I[Ljava/lang/Object;II[II[I[II[Ljava/lang/Object;I)V
+ */
+JNIEXPORT void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    
@@ -1434,6 +1750,10 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
     jbyteArray  cbdata,    
     jint initialNormalIndex,
     jobject ndata,
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jintArray vertexAttrIndices,
+    jobjectArray vertexAttrData,
     jint pass,  
     jint texCoordMapLength,
     jintArray 	tcoordsetmap,
@@ -1457,8 +1777,10 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
     jdouble *dverts = NULL ;
     jbyte *bclrs = NULL;
     jfloat *fclrs = NULL, *norms = NULL;
-    jfloat* texCoordPointer[NUM_TEXTURE_UNITS];
-    jarray texobjs[NUM_TEXTURE_UNITS];
+    jarray *vaobjs = NULL;
+    jfloat **vertexAttrPointer = NULL;
+    jfloat **texCoordPointer = NULL;
+    jarray *texobjs = NULL;
     jint* texUnitStateMap = NULL;
     int i;
     
@@ -1467,10 +1789,22 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
     jboolean floatColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_FLOAT) != 0);
     jboolean byteColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_BYTE) != 0);
     jboolean normalsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_NORMAL_FLOAT) != 0);
+    jboolean vattrDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_VATTR_FLOAT) != 0);
     jboolean textureDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_TEXCOORD_FLOAT) != 0);
 
-    
+    if (vattrDefined) {
+	vaobjs = (jarray *)malloc(vertexAttrCount * sizeof(jarray));
+	vertexAttrPointer = (jfloat **)malloc(vertexAttrCount * sizeof(jfloat *));
+
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vaobjs[i] = (*(table->GetObjectArrayElement))(env, vertexAttrData, i);
+	}
+    }
+
     if (textureDefined) {
+	texobjs = (jarray*)malloc(texCoordMapLength * sizeof(jarray));
+	texCoordPointer = (jfloat**)malloc(texCoordMapLength * sizeof(jfloat*));
+
 	for (i = 0; i < texCoordMapLength; i++) {
 	    texobjs[i] = (*(table->GetObjectArrayElement))(env, texCoords, i);
 	}
@@ -1523,6 +1857,13 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
 	norms = (jfloat *)(*(table->GetDirectBufferAddress))(env, ndata);
     }
 
+    /* get vertex attr arrays */
+    if (vattrDefined) {
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vertexAttrPointer[i] = (jfloat *) (*(table->GetDirectBufferAddress))(env, vaobjs[i]);
+	}
+    }
+
     /* get texture arrays */
     if (textureDefined) {
 	for (i = 0; i < texCoordMapLength; i++) {
@@ -1537,14 +1878,28 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
     }
 
 
+#ifdef VERBOSE
+    fprintf(stderr, "GeometryArrayRetained.executeVABuffer() -- calling executeGeometryArrayVA\n");
+#endif /* VERBOSE */
+
     executeGeometryArrayVA(env, obj, ctxInfo, geo, geo_type,
 			   isNonUniformScale, multiScreen, ignoreVertexColors,
 			   vcount, vformat,  vdefined, initialCoordIndex,
 			   fverts, dverts, initialColorIndex,
 			   fclrs, bclrs, initialNormalIndex,
-			   norms, pass, texCoordMapLength,
+			   norms,
+			   vertexAttrCount, vertexAttrSizes,
+			   vertexAttrIndices, vertexAttrPointer,
+			   pass, texCoordMapLength,
 			   tcoordsetmap,numActiveTexUnit, texUnitStateMap,
 			   texindices,texStride,texCoordPointer,cdirty, sarray, strip_len, start_array);
+
+    if (vaobjs != NULL) {
+	free(vaobjs);
+    }
+    if (vertexAttrPointer != NULL) {
+	free(vertexAttrPointer);
+    }
 
     if (textureDefined) {
     	if (texUnitStateMap != NULL) {
@@ -1552,6 +1907,13 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
 	}
     }
     
+    if (texobjs != NULL) {
+	free(texobjs);
+    }
+    if (texCoordPointer != NULL) {
+	free(texCoordPointer);
+    }
+
     if(floatColorsDefined && cfdata != NULL)
 	(*(table->ReleasePrimitiveArrayCritical))(env, cfdata, fclrs, 0);
     else if(byteColorsDefined && cbdata != NULL)
@@ -1581,18 +1943,30 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_disableGlobalAlpha(
     }
 }
 
+
+/*
+ * Class:     javax_media_j3d_GeometryArrayRetained
+ * Method:    setVertexFormat
+ * Signature: (JIZZI[I)V
+ */
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_GeometryArrayRetained_setVertexFormat(
     JNIEnv *env, 
     jobject obj,
+    jlong ctxInfo,
     jint vformat,
     jboolean useAlpha,
-    jboolean ignoreVertexColors,
-    jlong ctxInfo) {
-
+    jboolean ignoreVertexColors)
+{
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
-    
+
+#ifdef VERBOSE
+    fprintf(stderr,
+	    "GeometryArrayRetained.setVertexFormat() : vformat = %d\n",
+	    vformat);
+#endif /* VERBOSE */
+
     /* Enable and disable the appropriate pointers */
     if (vformat & GA_NORMALS) {
 	glEnableClientState(GL_NORMAL_ARRAY);
@@ -1616,7 +1990,6 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_setVertexFormat(
 	    glDisable(GL_GLOBAL_ALPHA_SUN);
 	}
     }
-	
 
     if (vformat & GA_COORDINATES) {
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -1626,9 +1999,11 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_setVertexFormat(
     }
 }
 
-JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_GeometryArrayRetained_globalAlphaSUN
-    (JNIEnv *env, jobject obj, jlong ctxInfo)
+JNIEXPORT jboolean JNICALL
+Java_javax_media_j3d_GeometryArrayRetained_globalAlphaSUN(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo)
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
@@ -1640,24 +2015,26 @@ jboolean JNICALL Java_javax_media_j3d_GeometryArrayRetained_globalAlphaSUN
 }
 
 
-
-void  executeIndexedGeometryArray(JNIEnv *env, 
-		jobject obj, jlong ctxInfo, jobject geo, jint geo_type, 
-                jboolean isNonUniformScale, jboolean useAlpha,
-		jboolean multiScreen,
-		jboolean ignoreVertexColors,
-		jint initialIndexIndex,
-		jint indexCount,
-		jint vertexCount,
-										               jint vformat, 
-		jint texCoordSetCount,
-                jintArray texCoordSetMap, jint texCoordSetMapLen,
-		jintArray texUnitOffset, 
-		jint numActiveTexUnit,
-		jintArray texUnitStateMapArray,
-		jfloatArray varray, jobject varrayBuffer, jfloatArray carray,
-		jint texUnitIndex, jint cDirty,
-		jintArray indexCoord)
+static void
+executeIndexedGeometryArray(
+    JNIEnv *env,
+    jobject obj, jlong ctxInfo, jobject geo, jint geo_type,
+    jboolean isNonUniformScale, jboolean useAlpha,
+    jboolean multiScreen,
+    jboolean ignoreVertexColors,
+    jint initialIndexIndex,
+    jint indexCount,
+    jint vertexCount,
+    jint vformat,
+    jint vertexAttrCount, jintArray vertexAttrSizes,
+    jint texCoordSetCount,
+    jintArray texCoordSetMap, jint texCoordSetMapLen,
+    jintArray texUnitOffset,
+    jint numActiveTexUnit,
+    jintArray texUnitStateMapArray,
+    jfloatArray varray, jobject varrayBuffer, jfloatArray carray,
+    jint texUnitIndex, jint cDirty,
+    jintArray indexCoord)
 {
     jclass geo_class;
     JNIEnv table;
@@ -1685,18 +2062,28 @@ void  executeIndexedGeometryArray(JNIEnv *env,
 
     jint texSize, texStride, *texCoordSetMapOffset = NULL, 
 				*texUnitStateMap = NULL;
-    
+
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
 
     int cstride = 0;
+    int vAttrStride = 0;
+    int vAttrOff;
+    jint *vAttrSizesPtr = NULL;
+
     table = *env;
 
-    /*    fprintf(stderr, "Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeometry \n");*/
+#ifdef VERBOSE
+    fprintf(stderr,
+	    "executeIndexedGeometryArray: vertexAttrCount = %d\n",
+	    vertexAttrCount);
+#endif /* VERBOSE */
+
     geo_class =  (jclass) (*(table->GetObjectClass))(env, geo);
 
     /* This matches the code in GeometryArrayRetained.java */
     stride = coordoff = normoff = coloroff = texCoordoff = 0;
+    vAttrOff = 0;
     if ((vformat & GA_COORDINATES) != 0) {
 	stride += 3;
     }
@@ -1731,6 +2118,20 @@ void  executeIndexedGeometryArray(JNIEnv *env,
 	normoff += texStride;
 	coloroff += texStride;
 	coordoff += texStride;
+    }
+
+    if ((vformat & GA_VERTEX_ATTRIBUTES) != 0) {
+	if (vertexAttrSizes != NULL) {
+	    vAttrSizesPtr = table->GetIntArrayElements(env, vertexAttrSizes, NULL);
+	}
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vAttrStride += vAttrSizesPtr[i];
+	}
+	stride += vAttrStride;
+	normoff += vAttrStride;
+	coloroff += vAttrStride;
+	coordoff += vAttrStride;
+	texCoordoff += vAttrStride;
     }
 
     bstride = stride*sizeof(float);
@@ -1831,13 +2232,24 @@ void  executeIndexedGeometryArray(JNIEnv *env,
 
 	    if (vformat & GA_TEXTURE_COORDINATE) {
 
-/* TODO: texCoordoff == 0 ???*/
+		/* XXXX: texCoordoff == 0 ???*/
                 executeTexture(texUnitIndex, texCoordSetMapLen,
                                 texSize, bstride, texCoordoff,
                                 texCoordSetMapOffset, 
 				numActiveTexUnit, texUnitStateMap, 
 				verts, ctxInfo);
 	    } 
+
+	    if (vformat & GA_VERTEX_ATTRIBUTES) {
+		jfloat *vAttrPtr = &verts[vAttrOff];
+
+		for (i = 0; i < vertexAttrCount; i++) {
+		    ctxProperties->enableVertexAttrArray(ctxProperties, i);
+		    ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
+						     GL_FLOAT, bstride, vAttrPtr);
+		    vAttrPtr += vAttrSizesPtr[i];
+		}
+	    }
 	}  
 
 	switch (geo_type) {
@@ -1923,15 +2335,25 @@ void  executeIndexedGeometryArray(JNIEnv *env,
 
 	    if (vformat & GA_TEXTURE_COORDINATE) {
 
-/* TODO: texCoordoff == 0 ???*/
+		/* XXXX: texCoordoff == 0 ???*/
                 executeTexture(texUnitIndex, texCoordSetMapLen,
-                                texSize, bstride, texCoordoff,
-                                texCoordSetMapOffset, 
-				numActiveTexUnit, texUnitStateMap, 
-				verts, ctxInfo);
-	    } 
-	}
+			       texSize, bstride, texCoordoff,
+			       texCoordSetMapOffset,
+			       numActiveTexUnit, texUnitStateMap,
+			       verts, ctxInfo);
+	    }
 
+	    if (vformat & GA_VERTEX_ATTRIBUTES) {
+		jfloat *vAttrPtr = &verts[vAttrOff];
+
+		for (i = 0; i < vertexAttrCount; i++) {
+		    ctxProperties->enableVertexAttrArray(ctxProperties, i);
+		    ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
+						     GL_FLOAT, bstride, vAttrPtr);
+		    vAttrPtr += vAttrSizesPtr[i];
+		}
+	    }
+	}
 
 	lockArray(ctxProperties, vertexCount);	  
 	
@@ -1944,7 +2366,15 @@ void  executeIndexedGeometryArray(JNIEnv *env,
     }
 
     unlockArray(ctxProperties);
-    
+
+    if (vformat & GA_VERTEX_ATTRIBUTES) {
+	resetVertexAttrs(ctxInfo, vertexAttrCount);
+    }
+
+    if (vformat & GA_TEXTURE_COORDINATE) {
+	resetTexture(ctxInfo);
+    }
+
     /* clean up if we turned on normalize */
 
     if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
@@ -1965,69 +2395,88 @@ void  executeIndexedGeometryArray(JNIEnv *env,
     if (texUnitStateMap != NULL)
         (*(table->ReleasePrimitiveArrayCritical))(env, texUnitStateMapArray, 
 						texUnitStateMap, 0);
-}
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeometry(JNIEnv *env, 
-		jobject obj, jlong ctxInfo, jobject geo, jint geo_type, 
-                jboolean isNonUniformScale, jboolean useAlpha,
-		jboolean multiScreen,
-		jboolean ignoreVertexColors,
-		jint initialIndexIndex,
-		jint indexCount,
-		jint vertexCount,
-										               jint vformat, 
-		jint texCoordSetCount,
-                jintArray texCoordSetMap, jint texCoordSetMapLen,
-		jintArray texUnitOffset, 
-		jint numActiveTexUnit,
-		jintArray texUnitStateMapArray,
-		jfloatArray varray, jfloatArray carray,
-		jint texUnitIndex, jint cDirty,
-		jintArray indexCoord)
-{
-    executeIndexedGeometryArray(env, obj, ctxInfo, geo, geo_type,
-			   isNonUniformScale, useAlpha, multiScreen,
-			   ignoreVertexColors,
-			   initialIndexIndex,
-			   indexCount,
-			   vertexCount,
-			   vformat, 
-			   texCoordSetCount,
-			   texCoordSetMap, texCoordSetMapLen,
-			   texUnitOffset, 
-			   numActiveTexUnit,
-			   texUnitStateMapArray,
-			   varray, NULL, carray,
-			   texUnitIndex, cDirty,
-			   indexCoord);
+    if (vAttrSizesPtr != NULL) {
+	table->ReleaseIntArrayElements(env, vertexAttrSizes, vAttrSizesPtr, JNI_ABORT);
+    }
 }
 
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeometryBuffer(JNIEnv *env, 
-		jobject obj, jlong ctxInfo, jobject geo, jint geo_type, 
-                jboolean isNonUniformScale, jboolean useAlpha,
-		jboolean multiScreen,
-		jboolean ignoreVertexColors,
-		jint initialIndexIndex,
-		jint indexCount,
-		jint vertexCount,
-										               jint vformat, 
-		jint texCoordSetCount,
-                jintArray texCoordSetMap, jint texCoordSetMapLen,
-		jintArray texUnitOffset, 
-		jint numActiveTexUnit,
-		jintArray texUnitStateMapArray,
-		jobject varray, jfloatArray carray,
-		jint texUnitIndex, jint cDirty,
-		jintArray indexCoord)
+JNIEXPORT void JNICALL
+Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeometry(
+    JNIEnv *env, 
+    jobject obj, jlong ctxInfo, jobject geo, jint geo_type, 
+    jboolean isNonUniformScale, jboolean useAlpha,
+    jboolean multiScreen,
+    jboolean ignoreVertexColors,
+    jint initialIndexIndex,
+    jint indexCount,
+    jint vertexCount,
+    jint vformat, 
+    jint vertexAttrCount, jintArray vertexAttrSizes,
+    jint texCoordSetCount,
+    jintArray texCoordSetMap, jint texCoordSetMapLen,
+    jintArray texUnitOffset, 
+    jint numActiveTexUnit,
+    jintArray texUnitStateMapArray,
+    jfloatArray varray, jfloatArray carray,
+    jint texUnitIndex, jint cDirty,
+    jintArray indexCoord)
 {
+
+#ifdef VERBOSE
+    fprintf(stderr, "IndexedGeometryArrayRetained.executeIndexedGeometry() -- calling executeIndexedGeometryArray\n");
+#endif /* VERBOSE */
+
+    executeIndexedGeometryArray(env, obj, ctxInfo, geo, geo_type,
+				isNonUniformScale, useAlpha, multiScreen,
+				ignoreVertexColors,
+				initialIndexIndex,
+				indexCount,
+				vertexCount,
+				vformat,
+				vertexAttrCount, vertexAttrSizes,
+				texCoordSetCount,
+				texCoordSetMap, texCoordSetMapLen,
+				texUnitOffset, 
+				numActiveTexUnit,
+				texUnitStateMapArray,
+				varray, NULL, carray,
+				texUnitIndex, cDirty,
+				indexCoord);
+}
+
+JNIEXPORT void JNICALL
+Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeometryBuffer(
+    JNIEnv *env,
+    jobject obj, jlong ctxInfo, jobject geo, jint geo_type,
+    jboolean isNonUniformScale, jboolean useAlpha,
+    jboolean multiScreen,
+    jboolean ignoreVertexColors,
+    jint initialIndexIndex,
+    jint indexCount,
+    jint vertexCount,
+    jint vformat,
+    jint texCoordSetCount,
+    jintArray texCoordSetMap, jint texCoordSetMapLen,
+    jintArray texUnitOffset,
+    jint numActiveTexUnit,
+    jintArray texUnitStateMapArray,
+    jobject varray, jfloatArray carray,
+    jint texUnitIndex, jint cDirty,
+    jintArray indexCoord)
+{
+
+#ifdef VERBOSE
+    fprintf(stderr, "IndexedGeometryArrayRetained.executeIndexedGeometryBuffer() -- calling executeIndexedGeometryArray\n");
+#endif /* VERBOSE */
+
     executeIndexedGeometryArray(env, obj, ctxInfo, geo, geo_type,
 			   isNonUniformScale, useAlpha, multiScreen,
 			   ignoreVertexColors,
 			   initialIndexIndex,
 			   indexCount,
 			   vertexCount,
-			   vformat, 
+			   vformat,
+			   0, NULL,
 			   texCoordSetCount,
 			   texCoordSetMap, texCoordSetMapLen,
 			   texUnitOffset, 
@@ -2039,7 +2488,8 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 }
 
 
-void executeIndexedGeometryArrayVA(
+static void
+executeIndexedGeometryArrayVA(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    
@@ -2058,6 +2508,9 @@ void executeIndexedGeometryArrayVA(
     jfloat* fclrs,
     jbyte*  bclrs,
     jfloat* norms,
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jfloat ** vertexAttrPointer,
     jint pass,  
     jint texCoordMapLength,
     jintArray 	tcoordsetmap,
@@ -2069,7 +2522,7 @@ void executeIndexedGeometryArrayVA(
     jintArray indexCoord,
     jarray sarray,
     jsize strip_len)
-  {
+{
     int primType;
     JNIEnv table;
     jint i;
@@ -2083,6 +2536,7 @@ void executeIndexedGeometryArrayVA(
     jboolean floatColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_FLOAT) != 0);
     jboolean byteColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_BYTE) != 0);
     jboolean normalsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_NORMAL_FLOAT) != 0);
+    jboolean vattrDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_VATTR_FLOAT) != 0);
     jboolean textureDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_TEXCOORD_FLOAT) != 0);
   
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
@@ -2091,9 +2545,17 @@ void executeIndexedGeometryArrayVA(
     int texSet;
     jint *texCoordSetMap, *texUnitStateMap;
     GLsizei *countArray;
+    jint* vAttrSizes;
     jint offset = 0;
+
     table = *env;
     
+#ifdef VERBOSE
+    fprintf(stderr,
+	    "executeIndexedGeometryArrayVA: vertexAttrCount = %d\n",
+	    vertexAttrCount);
+#endif /* VERBOSE */
+
     /* Enable normalize for non-uniform scale (which rescale can't handle) */
     if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
 	glEnable(GL_NORMALIZE);
@@ -2122,9 +2584,28 @@ void executeIndexedGeometryArrayVA(
 	glNormalPointer(GL_FLOAT, 0, norms);
     }
 
+    if (vattrDefined) {
+	float *pVertexAttrs;
+	int sz;
+
+	vAttrSizes = (jint *) (*(table->GetPrimitiveArrayCritical))(env, vertexAttrSizes, NULL);
+
+	for (i = 0; i < vertexAttrCount; i++) {
+	    pVertexAttrs = vertexAttrPointer[i];
+	    sz = vAttrSizes[i];
+
+	    ctxProperties->enableVertexAttrArray(ctxProperties, i);
+	    ctxProperties->vertexAttrPointer(ctxProperties, i, sz,
+					     GL_FLOAT, 0,
+					     pVertexAttrs);
+	}
+
+	(*(table->ReleasePrimitiveArrayCritical))(env, vertexAttrSizes, vAttrSizes, 0);
+    }
+
     if (textureDefined) {
 
-	int j = 0, tus = 0;
+	int tus = 0;
 	float *ptexCoords;
 	
 	texCoordSetMap = (jint *) (*(table->GetPrimitiveArrayCritical))(env,tcoordsetmap, NULL);
@@ -2164,6 +2645,8 @@ void executeIndexedGeometryArrayVA(
 		 */
 	    }
 	}
+        /* Reset client active texture unit to 0 */
+        clientActiveTextureUnit(ctxProperties, 0);
     }
     indices = (jint *) (*(table->GetPrimitiveArrayCritical))(env, indexCoord, NULL);
 
@@ -2237,7 +2720,13 @@ void executeIndexedGeometryArrayVA(
 
     (*(table->ReleasePrimitiveArrayCritical))(env, indexCoord, indices, 0);
     
+    if (vattrDefined) {
+	resetVertexAttrs(ctxInfo, vertexAttrCount);
+    }
+
     if (textureDefined) {
+	resetTexture(ctxInfo);
+
 	(*(table->ReleasePrimitiveArrayCritical))(env, tcoordsetmap, texCoordSetMap, 0);
 	if (texUnitStateMap != NULL)
 	    (*(table->ReleasePrimitiveArrayCritical))(env, tunitstatemap, texUnitStateMap, 0);
@@ -2265,6 +2754,9 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
     jfloatArray cfdata,
     jbyteArray  cbdata,
     jfloatArray ndata,
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jobjectArray vertexAttrData,
     jint pass,  
     jint texCoordMapLength,
     jintArray 	tcoordsetmap,
@@ -2286,23 +2778,41 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
     jdouble *dverts = NULL;
     jbyte *bclrs = NULL;
     jfloat *fclrs = NULL, *norms = NULL;
-    jfloat* texCoordPointer[NUM_TEXTURE_UNITS];
-    jarray texobjs[NUM_TEXTURE_UNITS];
+    jarray *vaobjs = NULL;
+    jfloat **vertexAttrPointer = NULL;
+    jfloat **texCoordPointer = NULL;
+    jarray *texobjs = NULL;
 
     jboolean floatCoordDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COORD_FLOAT) != 0);
     jboolean doubleCoordDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COORD_DOUBLE) != 0);
     jboolean floatColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_FLOAT) != 0);
     jboolean byteColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_BYTE) != 0);
     jboolean normalsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_NORMAL_FLOAT) != 0);
+    jboolean vattrDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_VATTR_FLOAT) != 0);
     jboolean textureDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_TEXCOORD_FLOAT) != 0);
+
     table = *env;    
-    geo_class =  (jclass) (*(table->GetObjectClass))(env, geo);
+
+    if (vattrDefined) {
+	vaobjs = (jarray *)malloc(vertexAttrCount * sizeof(jarray));
+	vertexAttrPointer = (jfloat **)malloc(vertexAttrCount * sizeof(jfloat *));
+
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vaobjs[i] = (*(table->GetObjectArrayElement))(env, vertexAttrData, i);
+	}
+    }
 
     if (textureDefined) {
+	texobjs = (jarray*)malloc(texCoordMapLength * sizeof(jarray));
+	texCoordPointer = (jfloat**)malloc(texCoordMapLength * sizeof(jfloat*));
+
 	for (i = 0; i < texCoordMapLength; i++) {
 	    texobjs[i] = (jarray)(*(table->GetObjectArrayElement))(env, texCoords, i);
 	}
     }
+
+    geo_class =  (jclass) (*(table->GetObjectClass))(env, geo);
+
     if (geo_type == GEO_TYPE_INDEXED_TRI_STRIP_SET || 
 	geo_type == GEO_TYPE_INDEXED_TRI_FAN_SET   || 
 	geo_type == GEO_TYPE_INDEXED_LINE_STRIP_SET) {
@@ -2313,7 +2823,15 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 	strip_len = (jsize)(*(table->GetArrayLength))(env, sarray);
 
     }
-        /* get texture arrays */
+
+    /* Get vertex attribute arrays */
+    if (vattrDefined) {
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vertexAttrPointer[i] = (jfloat *) (*(table->GetPrimitiveArrayCritical))(env, vaobjs[i], NULL);
+	}
+    }
+
+    /* get texture arrays */
     if (textureDefined) {
 	for (i = 0; i < texCoordMapLength; i++) {
 	    if (texobjs[i] != NULL)
@@ -2343,6 +2861,10 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 	norms = (jfloat *) (*(table->GetPrimitiveArrayCritical))(env,ndata, NULL);
     }
 
+#ifdef VERBOSE
+    fprintf(stderr, "IndexedGeometryArrayRetained.executeIndexedGeometryVA() -- calling executeIndexedGeometryArrayVA\n");
+#endif /* VERBOSE */
+
     executeIndexedGeometryArrayVA(env, 
 				  obj,
 				  ctxInfo,    
@@ -2361,6 +2883,9 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 				  fclrs,
 				  bclrs,
 				  norms,
+				  vertexAttrCount,
+				  vertexAttrSizes,
+				  vertexAttrPointer,
 				  pass,  
 				  texCoordMapLength,
 				  tcoordsetmap,
@@ -2391,12 +2916,32 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 	(*(table->ReleasePrimitiveArrayCritical))(env, ndata, norms, 0);
     }
 
+    if (vattrDefined) {
+	for (i = 0; i < vertexAttrCount; i++) {
+	    (*(table->ReleasePrimitiveArrayCritical))(env, vaobjs[i], vertexAttrPointer[i], 0);
+	}
+    }
+
+    if (vaobjs != NULL) {
+	free(vaobjs);
+    }
+    if (vertexAttrPointer != NULL) {
+	free(vertexAttrPointer);
+    }
+
     if (textureDefined) {
 	for (i = 0; i < texCoordMapLength; i++) {
 	    if (texCoordPointer[i] != NULL) {
 		(*(table->ReleasePrimitiveArrayCritical))(env, texobjs[i], texCoordPointer[i], 0);
 	    }
 	}
+    }
+
+    if (texobjs != NULL) {
+	free(texobjs);
+    }
+    if (texCoordPointer != NULL) {
+	free(texCoordPointer);
     }
 }
 
@@ -2420,6 +2965,9 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
     jfloatArray cfdata,
     jbyteArray  cbdata,
     jobject ndata,
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jobjectArray vertexAttrData,
     jint pass,  
     jint texCoordMapLength,
     jintArray 	tcoordsetmap,
@@ -2441,23 +2989,38 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
     jdouble *dverts = NULL;
     jbyte *bclrs = NULL;
     jfloat *fclrs = NULL, *norms = NULL;
-    jfloat* texCoordPointer[NUM_TEXTURE_UNITS];
-    jarray texobjs[NUM_TEXTURE_UNITS];
+    jarray *vaobjs = NULL;
+    jfloat **vertexAttrPointer = NULL;
+    jfloat **texCoordPointer = NULL;
+    jarray *texobjs = NULL;
 
     jboolean floatCoordDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COORD_FLOAT) != 0);
     jboolean doubleCoordDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COORD_DOUBLE) != 0);
     jboolean floatColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_FLOAT) != 0);
     jboolean byteColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_BYTE) != 0);
     jboolean normalsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_NORMAL_FLOAT) != 0);
+    jboolean vattrDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_VATTR_FLOAT) != 0);
     jboolean textureDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_TEXCOORD_FLOAT) != 0);
-    table = *env;    
-    geo_class =  (jclass) (*(table->GetObjectClass))(env, geo);
-    
+
+    table = *env;
+
+    if (vattrDefined) {
+	vaobjs = (jarray *)malloc(vertexAttrCount * sizeof(jarray));
+	vertexAttrPointer = (jfloat **)malloc(vertexAttrCount * sizeof(jfloat *));
+
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vaobjs[i] = (*(table->GetObjectArrayElement))(env, vertexAttrData, i);
+	}
+    }
+
     if (textureDefined) {
 	for (i = 0; i < texCoordMapLength; i++) {
 	    texobjs[i] = (jarray)(*(table->GetObjectArrayElement))(env, texCoords, i);
 	}
     }
+
+    geo_class =  (jclass) (*(table->GetObjectClass))(env, geo);
+
     if (geo_type == GEO_TYPE_INDEXED_TRI_STRIP_SET || 
 	geo_type == GEO_TYPE_INDEXED_TRI_FAN_SET   || 
 	geo_type == GEO_TYPE_INDEXED_LINE_STRIP_SET) {
@@ -2468,6 +3031,14 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 	strip_len = (jsize)(*(table->GetArrayLength))(env, sarray);
 
     }
+
+    /* Get vertex attribute arrays */
+    if (vattrDefined) {
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vertexAttrPointer[i] = (jfloat *) (*(table->GetDirectBufferAddress))(env, vaobjs[i]);
+	}
+    }
+
     /* get texture arrays */
     if (textureDefined) {
 	for (i = 0; i < texCoordMapLength; i++) {
@@ -2478,14 +3049,14 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 	    
 	}	
     }
-    
+
     /* get coordinate array */
     if (floatCoordDefined) {
 	fverts= (jfloat *)(*(table->GetDirectBufferAddress))(env, vcoords );
     } else if (doubleCoordDefined) {
 	dverts= (jdouble *)(*(table->GetDirectBufferAddress))(env, vcoords ); 
     }
-    
+
     /* get color array */
     if (floatColorsDefined) {
 	if(cfdata != NULL)
@@ -2499,11 +3070,15 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 	else
 	    bclrs = (jbyte *)(*(table->GetDirectBufferAddress))(env, cdataBuffer);
     }
-    
+
     /* get normal array */
     if (normalsDefined) {
 	norms = (jfloat *)(*(table->GetDirectBufferAddress))(env, ndata);
     }
+
+#ifdef VERBOSE
+    fprintf(stderr, "IndexedGeometryArrayRetained.executeIndexedGeometryVABuffer() -- calling executeIndexedGeometryArrayVA\n");
+#endif /* VERBOSE */
 
     executeIndexedGeometryArrayVA(env, 
 				  obj,
@@ -2523,6 +3098,9 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 				  fclrs,
 				  bclrs,
 				  norms,
+				  vertexAttrCount,
+				  vertexAttrSizes,
+				  vertexAttrPointer,
 				  pass,  
 				  texCoordMapLength,
 				  tcoordsetmap,
@@ -2539,26 +3117,42 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 	(*(table->ReleasePrimitiveArrayCritical))(env, cfdata, fclrs, 0);
     else if(byteColorsDefined && cbdata != NULL)
 	(*(table->ReleasePrimitiveArrayCritical))(env, cbdata, bclrs, 0);
+
+    if (vaobjs != NULL) {
+	free(vaobjs);
+    }
+    if (vertexAttrPointer != NULL) {
+	free(vertexAttrPointer);
+    }
+
+    if (texobjs != NULL) {
+	free(texobjs);
+    }
+    if (texCoordPointer != NULL) {
+	free(texCoordPointer);
+    }
 }
 
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeometry(JNIEnv *env, 
-		jobject obj, jlong ctxInfo, jobject geo, 
-		jint geo_type, 
-                jboolean isNonUniformScale, jboolean updateAlpha, float alpha,
-		jboolean ignoreVertexColors,
-		jint initialIndexIndex,
-  	        jint validIndexCount,
-	        jint vertexCount,
-	        jint vformat, 
-		jint texCoordSetCount,
-		jintArray texCoordSetMapArray,
-		jint texCoordSetMapLen,
-		jintArray texUnitOffset, 
-		jdoubleArray xform, jdoubleArray nxform,
-		jfloatArray varray, jintArray indexCoord)
+JNIEXPORT void JNICALL
+Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeometry(
+    JNIEnv *env, 
+    jobject obj, jlong ctxInfo, jobject geo, 
+    jint geo_type, 
+    jboolean isNonUniformScale, jboolean updateAlpha, float alpha,
+    jboolean ignoreVertexColors,
+    jint initialIndexIndex,
+    jint validIndexCount,
+    jint vertexCount,
+    jint vformat, 
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jint texCoordSetCount,
+    jintArray texCoordSetMapArray,
+    jint texCoordSetMapLen,
+    jintArray texUnitOffset, 
+    jdoubleArray xform, jdoubleArray nxform,
+    jfloatArray varray, jintArray indexCoord)
 {
-
     jclass geo_class;
     JNIEnv table;
     jboolean useAlpha = JNI_FALSE;
@@ -2566,7 +3160,7 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeome
     jfloat *verts;
     jint *indices;
     jint i;
-	size_t bstride;
+    size_t bstride;
     jint texStride, *texCoordSetMapOffset, texSize;
     GLsizei *countArray;
     GLenum iaFormat;
@@ -2584,15 +3178,23 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeome
     jint** multiDrawElementsIndices = NULL;
     jint allocated = 0;
     int offset = 0;
+    int vAttrStride = 0;
+    int vAttrOff;
+    jint *vAttrSizesPtr = NULL;
 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
-      
+
+#ifdef VERBOSE
+    fprintf(stderr, "IndexedGeometryArrayRetained.buildIndexedGeometry()\n");
+#endif /* VERBOSE */
+
     table = *env;
     geo_class =  (jclass) (*(table->GetObjectClass))(env, geo);
 
     /* This matches the code in GeometryArrayRetained.java */
     stride = coordoff = normoff = coloroff = texCoordoff = 0;
+    vAttrOff = 0;
     if ((vformat & GA_COORDINATES) != 0) {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	stride += 3;
@@ -2600,6 +3202,7 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeome
     else {
 	glDisableClientState(GL_VERTEX_ARRAY);
     }
+
     if ((vformat & GA_NORMALS) != 0) {
 	glEnableClientState(GL_NORMAL_ARRAY);
 	stride += 3;
@@ -2618,6 +3221,7 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeome
     else {
 	glDisableClientState(GL_COLOR_ARRAY);
     }
+
     if ((vformat & GA_TEXTURE_COORDINATE) != 0) {
         if ((vformat & GA_TEXTURE_COORDINATE_2) != 0) {
 	    texSize = 2;
@@ -2633,6 +3237,20 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeome
 	normoff += texStride;
 	coloroff += texStride;
 	coordoff += texStride;
+    }
+
+    if ((vformat & GA_VERTEX_ATTRIBUTES) != 0) {
+	if (vertexAttrSizes != NULL) {
+	    vAttrSizesPtr = table->GetIntArrayElements(env, vertexAttrSizes, NULL);
+	}
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vAttrStride += vAttrSizesPtr[i];
+	}
+	stride += vAttrStride;
+	normoff += vAttrStride;
+	coloroff += vAttrStride;
+	coordoff += vAttrStride;
+	texCoordoff += vAttrStride;
     }
 
     bstride = stride*sizeof(float);
@@ -2798,7 +3416,18 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeome
                                 texCoordSetMapOffset, 
 				texCoordSetMapLen, NULL, 
 				verts, ctxInfo);
-	    } 
+	    }
+
+	    if (vformat & GA_VERTEX_ATTRIBUTES) {
+		jfloat *vAttrPtr = &verts[vAttrOff];
+
+		for (i = 0; i < vertexAttrCount; i++) {
+		    ctxProperties->enableVertexAttrArray(ctxProperties, i);
+		    ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
+						     GL_FLOAT, bstride, vAttrPtr);
+		    vAttrPtr += vAttrSizesPtr[i];
+		}
+	    }
 	}  
 
 	switch (geo_type) {
@@ -2910,6 +3539,17 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeome
 				texCoordSetMapLen, NULL, 
 				verts, ctxInfo);
 	    } 
+
+	    if (vformat & GA_VERTEX_ATTRIBUTES) {
+		jfloat *vAttrPtr = &verts[vAttrOff];
+
+		for (i = 0; i < vertexAttrCount; i++) {
+		    ctxProperties->enableVertexAttrArray(ctxProperties, i);
+		    ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
+						     GL_FLOAT, bstride, vAttrPtr);
+		    vAttrPtr += vAttrSizesPtr[i];
+		}
+	    }
 	}
 	lockArray(ctxProperties, vertexCount);	
 	switch (geo_type){
@@ -2922,6 +3562,14 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeome
 
     unlockArray(ctxProperties);
     
+    if (vformat & GA_VERTEX_ATTRIBUTES) {
+	resetVertexAttrs(ctxInfo, vertexAttrCount);
+    }
+
+    if (vformat & GA_TEXTURE_COORDINATE) {
+	resetTexture(ctxInfo);
+    }
+
     if (tmpNormalArray != NULL) {
 	free(tmpNormalArray);
     }
@@ -2943,12 +3591,20 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeome
 
     if (nxform_ptr != NULL)
         (*(table->ReleasePrimitiveArrayCritical))(env, nxform, nxform_ptr, 0);
+
+    if (vAttrSizesPtr != NULL) {
+	table->ReleaseIntArrayElements(env, vertexAttrSizes, vAttrSizesPtr, JNI_ABORT);
+    }
 }
 
 
 /* execute geometry array with java array format */
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
+/*
+ * Class:     javax_media_j3d_GeometryArrayRetained
+ * Method:    buildGAForByRef
+ * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZFZIIII[F[DI[F[BI[FI[I[I[[FI[I[II[Ljava/lang/Object;[D[D)V
+ */
+JNIEXPORT void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    
@@ -2969,6 +3625,10 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
     jbyteArray  cbdata,
     jint initialNormalIndex,
     jfloatArray ndata,
+    jint vertexAttrCount,
+    jintArray vertexAttrSizes,
+    jintArray vertexAttrIndices,
+    jobjectArray vertexAttrData,
     jint texCoordMapLength,
     jintArray 	tcoordsetmap,
     jintArray texindices,
@@ -2998,22 +3658,39 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
     jfloat* fvptr = NULL, *nptr = NULL, *fcptr = NULL;
     jdouble* dvptr = NULL;
     jbyte* bcptr = NULL;
-    jfloat* texCoordPointer[NUM_TEXTURE_UNITS];
-    jarray texobjs[NUM_TEXTURE_UNITS];
+    jarray *vaobjs = NULL;
+    jfloat **vertexAttrPointer = NULL;
+    jfloat **texCoordPointer = NULL;
+    jarray *texobjs = NULL;
     jint *tunitstatemap = NULL;
+    int offset = 0;
+
     jboolean floatCoordDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COORD_FLOAT) != 0);
     jboolean doubleCoordDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COORD_DOUBLE) != 0);
     jboolean floatColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_FLOAT) != 0);
     jboolean byteColorsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COLOR_BYTE) != 0);
     jboolean normalsDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_NORMAL_FLOAT) != 0);
+    jboolean vattrDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_VATTR_FLOAT) != 0);
     jboolean textureDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_TEXCOORD_FLOAT) != 0);
-    int offset = 0;
 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
       
     table = *env;
+
+    if (vattrDefined) {
+	vaobjs = (jarray *)malloc(vertexAttrCount * sizeof(jarray));
+	vertexAttrPointer = (jfloat **)malloc(vertexAttrCount * sizeof(jfloat *));
+
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vaobjs[i] = (*(table->GetObjectArrayElement))(env, vertexAttrData, i);
+	}
+    }
+
     if (textureDefined) {
+	texobjs = (jarray*)malloc(texCoordMapLength * sizeof(jarray));
+	texCoordPointer = (jfloat**)malloc(texCoordMapLength * sizeof(jfloat*));
+
 	for (i = 0; i < texCoordMapLength; i++) {
 	    texobjs[i] = (*(table->GetObjectArrayElement))(env, texCoords, i);
 	}
@@ -3051,6 +3728,14 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
 	floatColorsDefined = JNI_FALSE;
 	byteColorsDefined = JNI_FALSE;
     }    
+
+    /* get vertex attr arrays */
+    if (vattrDefined) {
+	for (i = 0; i < vertexAttrCount; i++) {
+	    vertexAttrPointer[i] = (jfloat *) (*(table->GetPrimitiveArrayCritical))(env, vaobjs[i], NULL);
+	}
+    }
+
     /* get texture arrays */
     if (textureDefined) {
 	tunitstatemap = (int *)malloc(texCoordMapLength * sizeof(int));
@@ -3077,7 +3762,6 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
     else {
 	glDisableClientState(GL_VERTEX_ARRAY);
     }
-    
     
     /* get color array */
     if (floatColorsDefined) {
@@ -3225,15 +3909,37 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
 	vformat |= GA_WITH_ALPHA;
 
     }	
+
+#ifdef VERBOSE
+    fprintf(stderr, "GeometryArrayRetained.buildGAForByRef() -- calling executeGeometryArrayVA\n");
+#endif /* VERBOSE */
+
     executeGeometryArrayVA(env, obj, ctxInfo, geo, geo_type,
 			   isNonUniformScale,  JNI_FALSE, ignoreVertexColors,
 			   vcount, vformat,  vdefined, initialCoordIndex,
 			   fvptr, dvptr, initialColorIndex,
 			   fcptr, bcptr, initialNormalIndex,
-			   nptr, -1, texCoordMapLength,
+			   nptr,
+			   vertexAttrCount, vertexAttrSizes,
+			   vertexAttrIndices, vertexAttrPointer,
+			   -1, texCoordMapLength,
 			   tcoordsetmap, texCoordMapLength, tunitstatemap,
 			   texindices,texStride,texCoordPointer,0, sarray, 
 			   strip_len, start_array);
+
+    if (vattrDefined) {
+	for (i = 0; i < vertexAttrCount; i++) {
+	    (*(table->ReleasePrimitiveArrayCritical))(env, vaobjs[i], vertexAttrPointer[i], 0);
+	}
+    }
+
+    if (vaobjs != NULL) {
+	free(vaobjs);
+    }
+    if (vertexAttrPointer != NULL) {
+	free(vertexAttrPointer);
+    }
+
     if (textureDefined) {
 	if (tunitstatemap != NULL) {
 	    free(tunitstatemap);
@@ -3245,6 +3951,13 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
 	}
     }
    
+    if (texobjs != NULL) {
+	free(texobjs);
+    }
+    if (texCoordPointer != NULL) {
+	free(texCoordPointer);
+    }
+
     if (normalsDefined) {
 	(*env)->ReleasePrimitiveArrayCritical(env, ndata, norms, 0);
 	if (tmpNormalArray != NULL) {
@@ -3282,6 +3995,8 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
 }
 
 
+/* NOTE: NIO buffers are no longer supported in display lists. */
+#if 0
 /* execute geometry array with java array format */
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForBuffer(
@@ -3332,8 +4047,8 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForBuffer(
     jfloat* fvptr = NULL, *nptr = NULL, *fcptr = NULL;
     jdouble* dvptr = NULL;
     jbyte* bcptr = NULL;
-    jfloat* texCoordPointer[NUM_TEXTURE_UNITS];
-    jarray texobjs[NUM_TEXTURE_UNITS];
+    jfloat **texCoordPointer = NULL;
+    jarray *texobjs = NULL;
     jint *tunitstatemap = NULL;
     jboolean floatCoordDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COORD_FLOAT) != 0);
     jboolean doubleCoordDefined = ((vdefined & javax_media_j3d_GeometryArrayRetained_COORD_DOUBLE) != 0);
@@ -3347,7 +4062,11 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForBuffer(
     jlong ctx = ctxProperties->context;
       
     table = *env;
+
     if (textureDefined) {
+	texobjs = (jarray*)malloc(texCoordMapLength * sizeof(jarray));
+	texCoordPointer = (jfloat**)malloc(texCoordMapLength * sizeof(jfloat*));
+
 	for (i = 0; i < texCoordMapLength; i++) {
 	    texobjs[i] = (*(table->GetObjectArrayElement))(env, texCoords, i);
 	}
@@ -3416,6 +4135,9 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForBuffer(
     if(fverts == NULL && dverts == NULL) {
 	return;
     }    
+
+    /* TODO KCR : get vertex attr arrays */
+
     /* get color array */
     if (floatColorsDefined) {
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -3556,12 +4278,20 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForBuffer(
 	vformat |= GA_WITH_ALPHA;
 
     }	
+
+#ifdef VERBOSE
+    fprintf(stderr, "GeometryArrayRetained.buildGAForBuffer() -- calling executeGeometryArrayVA\n");
+#endif /* VERBOSE */
+
     executeGeometryArrayVA(env, obj, ctxInfo, geo, geo_type,
 			   isNonUniformScale,  JNI_FALSE, ignoreVertexColors,
 			   vcount, vformat,  vdefined, initialCoordIndex,
 			   fvptr, dvptr, initialColorIndex,
 			   fcptr, bcptr, initialNormalIndex,
-			   nptr, -1, texCoordMapLength,
+			   nptr,
+			   /* TODO: vertexAttrCount, vertexAttrSizes, */
+			   /* TODO: vertexAttrIndices, vertexAttrPointer, */
+			   -1, texCoordMapLength,
 			   tcoordsetmap, texCoordMapLength, tunitstatemap,
 			   texindices,texStride,texCoordPointer,0, sarray, strip_len, start_array);
     if (textureDefined) {
@@ -3575,6 +4305,13 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForBuffer(
 	}
     }
    
+    if (texobjs != NULL) {
+	free(texobjs);
+    }
+    if (texCoordPointer != NULL) {
+	free(texCoordPointer);
+    }
+
     if (tmpNormalArray != NULL) {
 	free(tmpNormalArray);
     }
@@ -3596,4 +4333,5 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForBuffer(
     }
 }
 
+#endif /* 0 */
 

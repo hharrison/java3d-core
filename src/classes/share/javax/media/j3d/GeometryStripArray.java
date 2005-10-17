@@ -31,18 +31,15 @@ public abstract class GeometryStripArray extends GeometryArray {
      * Constructs an empty GeometryStripArray object with the specified
      * number of vertices, vertex format, and
      * array of per-strip vertex counts.
-     * @param vertexCount the number of vertex elements in this array
-     * @param vertexFormat a mask indicating which components are
-     * present in each vertex.  This is specified as one or more
-     * individual flags that are bitwise "OR"ed together to describe
-     * the per-vertex data.
-     * The flags include: COORDINATES, to signal the inclusion of
-     * vertex positions--always present; NORMALS, to signal 
-     * the inclusion of per vertex normals; one of COLOR_3,
-     * COLOR_4, to signal the inclusion of per vertex
-     * colors (without or with color information); and one of 
-     * TEXTURE_COORDINATE_2 or TEXTURE_COORDINATE_3, to signal the
-     * inclusion of per-vertex texture coordinates 2D or 3D.
+     *
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int)}
+     * for a description of this parameter.
+     *
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int)}
+     * for a description of this parameter.
+     *
      * @param stripVertexCounts array that specifies
      * the count of the number of vertices for each separate strip.
      * The length of this array is the number of separate strips.
@@ -50,7 +47,10 @@ public abstract class GeometryStripArray extends GeometryArray {
      * of valid vertices that are rendered (validVertexCount).
      *
      * @exception IllegalArgumentException if
-     * <code>validVertexCount > vertexCount</code>
+     * <code>validVertexCount &gt; vertexCount</code>
+     * ;<br>
+     * See {@link GeometryArray#GeometryArray(int,int)}
+     * for more exceptions that can be thrown
      */
     public GeometryStripArray(int vertexCount,
 			      int vertexFormat,
@@ -66,50 +66,21 @@ public abstract class GeometryStripArray extends GeometryArray {
      * sets, texture coordinate mapping array, and
      * array of per-strip vertex counts.
      *
-     * @param vertexCount the number of vertex elements in this array<p>
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param vertexFormat a mask indicating which components are
-     * present in each vertex.  This is specified as one or more
-     * individual flags that are bitwise "OR"ed together to describe
-     * the per-vertex data.
-     * The flags include: COORDINATES, to signal the inclusion of
-     * vertex positions--always present; NORMALS, to signal 
-     * the inclusion of per vertex normals; one of COLOR_3,
-     * COLOR_4, to signal the inclusion of per vertex
-     * colors (without or with color information); and one of 
-     * TEXTURE_COORDINATE_2 or TEXTURE_COORDINATE_3, to signal the
-     * inclusion of per-vertex texture coordinates 2D or 3D.<p>
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param texCoordSetCount the number of texture coordinate sets
-     * in this GeometryArray object.  If <code>vertexFormat</code>
-     * does not include one of <code>TEXTURE_COORDINATE_2</code> or
-     * <code>TEXTURE_COORDINATE_3</code>, the
-     * <code>texCoordSetCount</code> parameter is not used.<p>
+     * @param texCoordSetCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param texCoordSetMap an array that maps texture coordinate
-     * sets to texture units.  The array is indexed by texture unit
-     * number for each texture unit in the associated Appearance
-     * object.  The values in the array specify the texture coordinate
-     * set within this GeometryArray object that maps to the
-     * corresponding texture
-     * unit.  All elements within the array must be less than
-     * <code>texCoordSetCount</code>.  A negative value specifies that
-     * no texture coordinate set maps to the texture unit
-     * corresponding to the index.  If there are more texture units in
-     * any associated Appearance object than elements in the mapping
-     * array, the extra elements are assumed to be -1.  The same
-     * texture coordinate set may be used for more than one texture
-     * unit.  Each texture unit in every associated Appearance must
-     * have a valid source of texture coordinates: either a
-     * non-negative texture coordinate set must be specified in the
-     * mapping array or texture coordinate generation must be enabled.
-     * Texture coordinate generation will take precedence for those
-     * texture units for which a texture coordinate set is specified
-     * and texture coordinate generation is enabled.  If
-     * <code>vertexFormat</code> does not include one of
-     * <code>TEXTURE_COORDINATE_2</code> or
-     * <code>TEXTURE_COORDINATE_3</code>, the
-     * <code>texCoordSetMap</code> array is not used.<p>
+     * @param texCoordSetMap
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
      * @param stripVertexCounts array that specifies
      * the count of the number of vertices for each separate strip.
@@ -118,7 +89,10 @@ public abstract class GeometryStripArray extends GeometryArray {
      * of valid vertices that are rendered (validVertexCount).
      *
      * @exception IllegalArgumentException if
-     * <code>validVertexCount > vertexCount</code>
+     * <code>validVertexCount &gt; vertexCount</code>
+     * ;<br>
+     * See {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for more exceptions that can be thrown
      *
      * @since Java 3D 1.2
      */
@@ -130,6 +104,62 @@ public abstract class GeometryStripArray extends GeometryArray {
 
 	super(vertexCount, vertexFormat,
 	      texCoordSetCount, texCoordSetMap);
+	((GeometryStripArrayRetained)this.retained).setStripVertexCounts(stripVertexCounts);
+    }
+
+    /**
+     * Constructs an empty GeometryStripArray object with the
+     * specified number of vertices, vertex format, number of texture
+     * coordinate sets, texture coordinate mapping array, vertex
+     * attribute count, vertex attribute sizes array, and array of
+     * per-strip vertex counts.
+     *
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param texCoordSetMap
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexAttrCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexAttrSizes
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param stripVertexCounts array that specifies
+     * the count of the number of vertices for each separate strip.
+     * The length of this array is the number of separate strips.
+     * The sum of the elements in this array defines the total number
+     * of valid vertices that are rendered (validVertexCount).
+     *
+     * @exception IllegalArgumentException if
+     * <code>validVertexCount &gt; vertexCount</code>
+     * ;<br>
+     * See {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for more exceptions that can be thrown
+     *
+     * @since Java 3D 1.4
+     */
+    public GeometryStripArray(int vertexCount,
+			      int vertexFormat,
+			      int texCoordSetCount,
+			      int[] texCoordSetMap,
+			      int vertexAttrCount,
+			      int[] vertexAttrSizes,
+			      int[] stripVertexCounts) {
+
+	super(vertexCount, vertexFormat,
+	      texCoordSetCount, texCoordSetMap,
+	      vertexAttrCount, vertexAttrSizes);
+
 	((GeometryStripArrayRetained)this.retained).setStripVertexCounts(stripVertexCounts);
     }
 

@@ -30,11 +30,10 @@ class J3dGraphicsConfig {
     }
 
     static boolean isValidConfig(GraphicsConfiguration gc) {	
-	// Check to see if a valid fbConfig pointer has been cached.
+	// Check to see if a valid FBConfig pointer has been cached.
 	Object fbConfigObject = Canvas3D.fbConfigTable.get(gc);
 	return ((fbConfigObject != null) && 
-		(fbConfigObject instanceof Long));
-	
+		(fbConfigObject instanceof GraphicsConfigInfo));
     }
 
 

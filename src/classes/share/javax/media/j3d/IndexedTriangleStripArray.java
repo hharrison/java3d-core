@@ -31,35 +31,36 @@ public class IndexedTriangleStripArray extends IndexedGeometryStripArray {
     }
 
     /**
-     * Constructs an empty IndexedTriangleStripArray object with the specified
-     * number of vertices, vertex format, number of indices, and
-     * array of per-strip index counts.
-     * @param vertexCount the number of vertex elements in this object
-     * @param vertexFormat a mask indicating which components are
-     * present in each vertex.  This is specified as one or more
-     * individual flags that are bitwise "OR"ed together to describe
-     * the per-vertex data.
-     * The flags include: COORDINATES, to signal the inclusion of
-     * vertex positions--always present; NORMALS, to signal 
-     * the inclusion of per vertex normals; one of COLOR_3,
-     * COLOR_4, to signal the inclusion of per vertex
-     * colors (without or with color information); and one of 
-     * TEXTURE_COORDINATE_2, TEXTURE_COORDINATE_3 or TEXTURE_COORDINATE_4, 
-     * to signal the
-     * inclusion of per-vertex texture coordinates 2D, 3D or 4D.
-     * @param indexCount the number of indices in this object.  This
-     * count is the maximum number of vertices that will be rendered.
-     * @param stripIndexCounts array that specifies
-     * the count of the number of indices for each separate strip.
-     * The length of this array is the number of separate strips.
+     * Constructs an empty IndexedTriangleStripArray object using the
+     * specified parameters.
+     *
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int)}
+     * for a description of this parameter.
+     *
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int)}
+     * for a description of this parameter.
+     *
+     * @param indexCount
+     * see {@link IndexedGeometryArray#IndexedGeometryArray(int,int,int)}
+     * for a description of this parameter.
+     *
+     * @param stripIndexCounts
+     * see {@link IndexedGeometryStripArray#IndexedGeometryStripArray(int,int,int,int[])}
+     * for a description of this parameter.
+     *
      * @exception IllegalArgumentException if vertexCount is less than 1,
      * or indexCount is less than 3,
      * or any element in the stripIndexCounts array is less than 3
+     * ;<br>
+     * See {@link IndexedGeometryStripArray#IndexedGeometryStripArray(int,int,int,int[])}
+     * for more exceptions that can be thrown
      */
     public IndexedTriangleStripArray(int vertexCount,
 				     int vertexFormat,
 				     int indexCount,
-				     int stripIndexCounts[]) {
+				     int[] stripIndexCounts) {
 
 	super(vertexCount, vertexFormat, indexCount, stripIndexCounts);
 
@@ -71,69 +72,39 @@ public class IndexedTriangleStripArray extends IndexedGeometryStripArray {
     }
 
     /**
-     * Constructs an empty IndexedTriangleStripArray object with the specified
-     * number of vertices, vertex format, number of texture coordinate
-     * sets, texture coordinate mapping array, number of indices, and
-     * array of per-strip index counts.
+     * Constructs an empty IndexedTriangleStripArray object using the
+     * specified parameters.
      *
-     * @param vertexCount the number of vertex elements in this object<p>
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param vertexFormat a mask indicating which components are
-     * present in each vertex.  This is specified as one or more
-     * individual flags that are bitwise "OR"ed together to describe
-     * the per-vertex data.
-     * The flags include: COORDINATES, to signal the inclusion of
-     * vertex positions--always present; NORMALS, to signal 
-     * the inclusion of per vertex normals; one of COLOR_3,
-     * COLOR_4, to signal the inclusion of per vertex
-     * colors (without or with color information); and one of 
-     * TEXTURE_COORDINATE_2, TEXTURE_COORDINATE_3 or TEXTURE_COORDINATE_4, 
-     * to signal the
-     * inclusion of per-vertex texture coordinates 2D, 3D or 4D.<p>
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param texCoordSetCount the number of texture coordinate sets
-     * in this GeometryArray object.  If <code>vertexFormat</code>
-     * does not include one of <code>TEXTURE_COORDINATE_2</code> or
-     * <code>TEXTURE_COORDINATE_3</code> or
-     * <code>TEXTURE_COORDINATE_4</code>, the
-     * <code>texCoordSetCount</code> parameter is not used.<p>
+     * @param texCoordSetCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param texCoordSetMap an array that maps texture coordinate
-     * sets to texture units.  The array is indexed by texture unit
-     * number for each texture unit in the associated Appearance
-     * object.  The values in the array specify the texture coordinate
-     * set within this GeometryArray object that maps to the
-     * corresponding texture
-     * unit.  All elements within the array must be less than
-     * <code>texCoordSetCount</code>.  A negative value specifies that
-     * no texture coordinate set maps to the texture unit
-     * corresponding to the index.  If there are more texture units in
-     * any associated Appearance object than elements in the mapping
-     * array, the extra elements are assumed to be -1.  The same
-     * texture coordinate set may be used for more than one texture
-     * unit.  Each texture unit in every associated Appearance must
-     * have a valid source of texture coordinates: either a
-     * non-negative texture coordinate set must be specified in the
-     * mapping array or texture coordinate generation must be enabled.
-     * Texture coordinate generation will take precedence for those
-     * texture units for which a texture coordinate set is specified
-     * and texture coordinate generation is enabled.  If
-     * <code>vertexFormat</code> does not include one of
-     * <code>TEXTURE_COORDINATE_2</code>,
-     * <code>TEXTURE_COORDINATE_3</code> or
-     * <code>TEXTURE_COORDINATE_4</code>, the
-     * <code>texCoordSetMap</code> array is not used.<p>
+     * @param texCoordSetMap
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param indexCount the number of indices in this object.  This
-     * count is the maximum number of vertices that will be rendered.<p>
+     * @param indexCount
+     * see {@link IndexedGeometryArray#IndexedGeometryArray(int,int,int,int[],int)}
+     * for a description of this parameter.
      *
-     * @param stripIndexCounts array that specifies
-     * the count of the number of indices for each separate strip.
-     * The length of this array is the number of separate strips.
+     * @param stripIndexCounts
+     * see {@link IndexedGeometryStripArray#IndexedGeometryStripArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
      *
      * @exception IllegalArgumentException if vertexCount is less than 1,
      * or indexCount is less than 3,
      * or any element in the stripIndexCounts array is less than 3
+     * ;<br>
+     * See {@link IndexedGeometryStripArray#IndexedGeometryStripArray(int,int,int,int[],int,int[])}
+     * for more exceptions that can be thrown
      *
      * @since Java 3D 1.2
      */
@@ -142,10 +113,72 @@ public class IndexedTriangleStripArray extends IndexedGeometryStripArray {
 				     int texCoordSetCount,
 				     int[] texCoordSetMap,
 				     int indexCount,
-				     int stripIndexCounts[]) {
+				     int[] stripIndexCounts) {
 
 	super(vertexCount, vertexFormat,
 	      texCoordSetCount, texCoordSetMap,
+	      indexCount, stripIndexCounts);
+
+        if (vertexCount < 1) 
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedTriangleStripArray0")); 
+
+        if (indexCount < 3 )
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedTriangleStripArray1"));
+    }
+
+    /**
+     * Constructs an empty IndexedTriangleStripArray object using the
+     * specified parameters.
+     *
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param texCoordSetMap
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexAttrCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexAttrSizes
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param indexCount
+     * see {@link IndexedGeometryArray#IndexedGeometryArray(int,int,int,int[],int,int[],int)}
+     * for a description of this parameter.
+     *
+     * @param stripIndexCounts
+     * see {@link IndexedGeometryStripArray#IndexedGeometryStripArray(int,int,int,int[],int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @exception IllegalArgumentException if vertexCount is less than 1,
+     * or indexCount is less than 3,
+     * or any element in the stripIndexCounts array is less than 3
+     * ;<br>
+     * See {@link IndexedGeometryStripArray#IndexedGeometryStripArray(int,int,int,int[],int,int[],int,int[])}
+     * for more exceptions that can be thrown
+     *
+     * @since Java 3D 1.4
+     */
+    public IndexedTriangleStripArray(int vertexCount,
+				     int vertexFormat,
+				     int texCoordSetCount,
+				     int[] texCoordSetMap,
+				     int vertexAttrCount,
+				     int[] vertexAttrSizes,
+				     int indexCount,
+				     int[] stripIndexCounts) {
+
+	super(vertexCount, vertexFormat,
+	      texCoordSetCount, texCoordSetMap,
+	      vertexAttrCount, vertexAttrSizes,
 	      indexCount, stripIndexCounts);
 
         if (vertexCount < 1) 
@@ -169,28 +202,31 @@ public class IndexedTriangleStripArray extends IndexedGeometryStripArray {
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
-	IndexedTriangleStripArrayRetained rt =
-	    (IndexedTriangleStripArrayRetained) retained;
+        IndexedTriangleStripArrayRetained rt =
+                (IndexedTriangleStripArrayRetained) retained;
         int stripIndexCounts[] = new int[rt.getNumStrips()];
-	rt.getStripIndexCounts(stripIndexCounts);
-	int texSetCount = rt.getTexCoordSetCount();
-	IndexedTriangleStripArray l;
-	if (texSetCount == 0) {
-	    l = new IndexedTriangleStripArray(rt.getVertexCount(),
-					      rt.getVertexFormat(),
-					      rt.getIndexCount(),
-					      stripIndexCounts);
-	} else {
-	    int texMap[] = new int[rt.getTexCoordSetMapLength()];
-	    rt.getTexCoordSetMap(texMap);
-	    l = new IndexedTriangleStripArray(rt.getVertexCount(),
-					      rt.getVertexFormat(),
-					      texSetCount,
-					      texMap,
-					      rt.getIndexCount(),
-					      stripIndexCounts);
-	}
-        l.duplicateNodeComponent(this);
-        return l;
+        rt.getStripIndexCounts(stripIndexCounts);
+        int texSetCount = rt.getTexCoordSetCount();
+        int[] texMap = null;
+        int vertexAttrCount = rt.getVertexAttrCount();
+        int[] vertexAttrSizes = null;
+        if (texSetCount > 0) {
+            texMap = new int[rt.getTexCoordSetMapLength()];
+            rt.getTexCoordSetMap(texMap);
+        }
+        if (vertexAttrCount > 0) {
+            vertexAttrSizes = new int[vertexAttrCount];
+            rt.getVertexAttrSizes(vertexAttrSizes);
+        }
+        IndexedTriangleStripArray t = new IndexedTriangleStripArray(rt.getVertexCount(),
+                rt.getVertexFormat(),
+                texSetCount,
+                texMap,
+                vertexAttrCount,
+                vertexAttrSizes,
+                rt.getIndexCount(),
+                stripIndexCounts);
+        t.duplicateNodeComponent(this);
+        return t;
     }
 }

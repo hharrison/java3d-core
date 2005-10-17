@@ -32,15 +32,10 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
    /**
     * Set stripIndexCount data into local array
     */
-   void setStripIndexCounts(int stripIndexCounts[]){
-
+   void setStripIndexCounts(int stripIndexCounts[]) {
 	int i, num = stripIndexCounts.length, total = 0;
 
-	
-
-
-
-	for (i=0; i < num; i++) {
+        for (i=0; i < num; i++) {
 	    total += stripIndexCounts[i];
 	    if (this instanceof IndexedLineStripArrayRetained) {
 		if (stripIndexCounts[i] < 2) {
@@ -65,7 +60,8 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
 	int newCoordMax =0;
 	int newColorIndex=0;
 	int newNormalIndex=0;
-	int newTexCoordIndex[]=null;
+	int[] newTexCoordIndex = null;
+        int[] newVertexAttrIndex = null;
 	
 	newCoordMax = computeMaxIndex(initialIndexIndex, total, indexCoord);
 	doErrorCheck(newCoordMax);
@@ -78,8 +74,17 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
 		newTexCoordIndex = new int[texCoordSetCount];
 		for (i = 0; i < texCoordSetCount; i++) {
 		   newTexCoordIndex[i] =  computeMaxIndex(initialIndexIndex,total,
-								  (int[])indexTexCoord[i]);
+								  indexTexCoord[i]);
 		   doTexCoordCheck(newTexCoordIndex[i], i);
+		}
+	    }
+	    if ((vertexFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+		newVertexAttrIndex = new int[vertexAttrCount];
+		for (i = 0; i < vertexAttrCount; i++) {
+		   newVertexAttrIndex[i] = computeMaxIndex(initialIndexIndex,
+                                                           total,
+                                                           indexVertexAttr[i]);
+		   doTexCoordCheck(newVertexAttrIndex[i], i);
 		}
 	    }
 	    if ((vertexFormat & GeometryArray.NORMALS) != 0) {
@@ -103,6 +108,11 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
 		    maxTexCoordIndices[i] = newTexCoordIndex[i];
 		}
 	    }
+	    if ((vertexFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+		for (i = 0; i < vertexAttrCount; i++) {
+		    maxVertexAttrIndices[i] = newVertexAttrIndex[i];
+		}
+	    }
 	    maxNormalIndex = newNormalIndex;
 	}
 	else {
@@ -111,6 +121,11 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
 	    if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
 		for (i = 0; i < texCoordSetCount; i++) {
 		    maxTexCoordIndices[i] = maxCoordIndex;
+		}
+	    }
+	    if ((vertexFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+		for (i = 0; i < vertexAttrCount; i++) {
+		    maxVertexAttrIndices[i] = maxCoordIndex;
 		}
 	    }
 	}
@@ -123,7 +138,7 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
 
     }
 
-  Object cloneNonIndexedGeometry() {
+  GeometryArrayRetained cloneNonIndexedGeometry() {
       GeometryStripArrayRetained obj = null;
       int i;
       switch (this.geoType) {
@@ -137,11 +152,14 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
           obj = new TriangleStripArrayRetained();
           break;
       }
-      obj.createGeometryArrayData(validIndexCount, (vertexFormat & ~(GeometryArray.BY_REFERENCE|GeometryArray.INTERLEAVED|GeometryArray.USE_NIO_BUFFER)),  texCoordSetCount, texCoordSetMap);
+      obj.createGeometryArrayData(validIndexCount,
+              (vertexFormat & ~(GeometryArray.BY_REFERENCE|GeometryArray.INTERLEAVED|GeometryArray.USE_NIO_BUFFER)),
+              texCoordSetCount, texCoordSetMap,
+              vertexAttrCount, vertexAttrSizes);
       obj.unIndexify(this); 
       obj.setStripVertexCounts(stripIndexCounts);
 
-      return (Object)obj;
+      return obj;
     }    
 
 

@@ -27,21 +27,19 @@ public abstract class IndexedGeometryStripArray extends IndexedGeometryArray {
      * Constructs an empty IndexedGeometryStripArray object with the specified
      * number of vertices, vertex format, number of indices, and
      * array of per-strip index counts.
-     * @param vertexCount the number of vertex elements in this array
-     * @param vertexFormat a mask indicating which components are
-     * present in each vertex.  This is specified as one or more
-     * individual flags that are bitwise "OR"ed together to describe
-     * the per-vertex data.
-     * The flags include: COORDINATES, to signal the inclusion of
-     * vertex positions--always present; NORMALS, to signal 
-     * the inclusion of per vertex normals; one of COLOR_3,
-     * COLOR_4, to signal the inclusion of per vertex
-     * colors (without or with color information); and one of 
-     * TEXTURE_COORDINATE_2, TEXTURE_COORDINATE_3 or TEXTURE_COORDINATE_4, 
-     * to signal the
-     * inclusion of per-vertex texture coordinates 2D, 3D or 4D.
-     * @param indexCount the number of indices in this object.  This
-     * count is the maximum number of vertices that will be rendered.
+     *
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int)}
+     * for a description of this parameter.
+     *
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int)}
+     * for a description of this parameter.
+     *
+     * @param indexCount
+     * see {@link IndexedGeometryArray#IndexedGeometryArray(int,int,int)}
+     * for a description of this parameter.
+     *
      * @param stripIndexCounts array that specifies
      * the count of the number of indices for each separate strip.
      * The length of this array is the number of separate strips.
@@ -49,7 +47,10 @@ public abstract class IndexedGeometryStripArray extends IndexedGeometryArray {
      * of valid indexed vertices that are rendered (validIndexCount).
      *
      * @exception IllegalArgumentException if
-     * <code>validIndexCount > indexCount</code>
+     * <code>validIndexCount &gt; indexCount</code>
+     * ;<br>
+     * See {@link GeometryArray#GeometryArray(int,int)}
+     * for more exceptions that can be thrown
      */
     public IndexedGeometryStripArray(int vertexCount,
 				     int vertexFormat,
@@ -67,56 +68,25 @@ public abstract class IndexedGeometryStripArray extends IndexedGeometryArray {
      * sets, texture coordinate mapping array, number of indices, and
      * array of per-strip index counts.
      *
-     * @param vertexCount the number of vertex elements in this object<p>
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param vertexFormat a mask indicating which components are
-     * present in each vertex.  This is specified as one or more
-     * individual flags that are bitwise "OR"ed together to describe
-     * the per-vertex data.
-     * The flags include: COORDINATES, to signal the inclusion of
-     * vertex positions--always present; NORMALS, to signal 
-     * the inclusion of per vertex normals; one of COLOR_3,
-     * COLOR_4, to signal the inclusion of per vertex
-     * colors (without or with color information); and one of 
-     * TEXTURE_COORDINATE_2, TEXTURE_COORDINATE_3 or TEXTURE_COORDINATE_4, 
-     * to signal the
-     * inclusion of per-vertex texture coordinates 2D, 3D or 4D.<p>
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param texCoordSetCount the number of texture coordinate sets
-     * in this GeometryArray object.  If <code>vertexFormat</code>
-     * does not include one of <code>TEXTURE_COORDINATE_2</code>,
-     * <code>TEXTURE_COORDINATE_3</code> or
-     * <code>TEXTURE_COORDINATE_4</code>, the
-     * <code>texCoordSetCount</code> parameter is not used.<p>
+     * @param texCoordSetCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param texCoordSetMap an array that maps texture coordinate
-     * sets to texture units.  The array is indexed by texture unit
-     * number for each texture unit in the associated Appearance
-     * object.  The values in the array specify the texture coordinate
-     * set within this GeometryArray object that maps to the
-     * corresponding texture
-     * unit.  All elements within the array must be less than
-     * <code>texCoordSetCount</code>.  A negative value specifies that
-     * no texture coordinate set maps to the texture unit
-     * corresponding to the index.  If there are more texture units in
-     * any associated Appearance object than elements in the mapping
-     * array, the extra elements are assumed to be -1.  The same
-     * texture coordinate set may be used for more than one texture
-     * unit.  Each texture unit in every associated Appearance must
-     * have a valid source of texture coordinates: either a
-     * non-negative texture coordinate set must be specified in the
-     * mapping array or texture coordinate generation must be enabled.
-     * Texture coordinate generation will take precedence for those
-     * texture units for which a texture coordinate set is specified
-     * and texture coordinate generation is enabled.  If
-     * <code>vertexFormat</code> does not include one of
-     * <code>TEXTURE_COORDINATE_2</code>,
-     * <code>TEXTURE_COORDINATE_3</code> or
-     * <code>TEXTURE_COORDINATE_4</code>, the
-     * <code>texCoordSetMap</code> array is not used.<p>
+     * @param texCoordSetMap
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for a description of this parameter.
      *
-     * @param indexCount the number of indices in this object.  This
-     * count is the maximum number of vertices that will be rendered.<p>
+     * @param indexCount
+     * see {@link IndexedGeometryArray#IndexedGeometryArray(int,int,int,int[],int)}
+     * for a description of this parameter.
      *
      * @param stripIndexCounts array that specifies
      * the count of the number of indices for each separate strip.
@@ -125,7 +95,10 @@ public abstract class IndexedGeometryStripArray extends IndexedGeometryArray {
      * of valid indexed vertices that are rendered (validIndexCount).
      *
      * @exception IllegalArgumentException if
-     * <code>validIndexCount > indexCount</code>
+     * <code>validIndexCount &gt; indexCount</code>
+     * ;<br>
+     * See {@link GeometryArray#GeometryArray(int,int,int,int[])}
+     * for more exceptions that can be thrown
      *
      * @since Java 3D 1.2
      */
@@ -139,6 +112,69 @@ public abstract class IndexedGeometryStripArray extends IndexedGeometryArray {
 	super(vertexCount, vertexFormat,
 	      texCoordSetCount, texCoordSetMap,
 	      indexCount);
+	((IndexedGeometryStripArrayRetained)this.retained).
+	    setStripIndexCounts(stripIndexCounts);
+    }
+
+    /**
+     * Constructs an empty IndexedGeometryStripArray object with the
+     * specified number of vertices, vertex format, number of texture
+     * coordinate sets, texture coordinate mapping array, vertex
+     * attribute count, vertex attribute sizes array, number of
+     * indices, and array of per-strip index counts.
+     *
+     * @param vertexCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexFormat
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param texCoordSetMap
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexAttrCount
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param vertexAttrSizes
+     * see {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for a description of this parameter.
+     *
+     * @param indexCount
+     * see {@link IndexedGeometryArray#IndexedGeometryArray(int,int,int,int[],int,int[],int)}
+     * for a description of this parameter.
+     *
+     * @param stripIndexCounts array that specifies
+     * the count of the number of indices for each separate strip.
+     * The length of this array is the number of separate strips.
+     * The sum of the elements in this array defines the total number
+     * of valid indexed vertices that are rendered (validIndexCount).
+     *
+     * @exception IllegalArgumentException if
+     * <code>validIndexCount &gt; indexCount</code>
+     * ;<br>
+     * See {@link GeometryArray#GeometryArray(int,int,int,int[],int,int[])}
+     * for more exceptions that can be thrown
+     *
+     * @since Java 3D 1.4
+     */
+    public IndexedGeometryStripArray(int vertexCount,
+				     int vertexFormat,
+				     int texCoordSetCount,
+				     int[] texCoordSetMap,
+				     int vertexAttrCount,
+				     int[] vertexAttrSizes,
+				     int indexCount,
+				     int[] stripIndexCounts) {
+
+	super(vertexCount, vertexFormat,
+	      texCoordSetCount, texCoordSetMap,
+	      vertexAttrCount, vertexAttrSizes,
+	      indexCount);
+
 	((IndexedGeometryStripArrayRetained)this.retained).
 	    setStripIndexCounts(stripIndexCounts);
     }

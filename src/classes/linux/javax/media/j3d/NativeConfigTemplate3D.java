@@ -43,7 +43,8 @@ class NativeConfigTemplate3D {
     final static int DOUBLEBUFFER	= 6;
     final static int STEREO		= 7;
     final static int ANTIALIASING	= 8;
-    final static int NUM_ITEMS		= 9;
+    final static int STENCIL_SIZE       = 9;
+    final static int NUM_ITEMS		= 10;
 
     // Native method to get an OpenGL visual id and a pointer to the
     // GLXFBConfig structure list itself.
@@ -60,6 +61,7 @@ class NativeConfigTemplate3D {
     native boolean isDoubleBufferAvailable(long display, int screen, int vid);
     native boolean isSceneAntialiasingAccumAvailable(long display, int screen, int vid);
     native boolean isSceneAntialiasingMultisampleAvailable(long display, int screen, int vid);
+    native int getStencilSize(long display, int screen, int vid);
 
 
     /*
@@ -118,6 +120,9 @@ class NativeConfigTemplate3D {
         attrList[DOUBLEBUFFER] = template.getDoubleBuffer();
         attrList[STEREO] = template.getStereo();
         attrList[ANTIALIASING] = template.getSceneAntialiasing();
+    	attrList[STENCIL_SIZE] = template.getStencilSize();
+	// System.out.println("NativeConfigTemplate3D : getStencilSize " +
+	// attrList[STENCIL_SIZE]);
 
 	long[] fbConfig = new long[1];
         int visID = chooseOglVisual(display, screen, attrList, fbConfig);
@@ -146,10 +151,14 @@ class NativeConfigTemplate3D {
 	// returns, since this is not cached with X11GraphicsConfig and there
 	// are no public constructors to allow us to extend it.	
 	synchronized (Canvas3D.fbConfigTable) {
-	    if (Canvas3D.fbConfigTable.get(gc1) == null)
-		Canvas3D.fbConfigTable.put(gc1, new Long(fbConfig[0]));
-	    else
+	    if (Canvas3D.fbConfigTable.get(gc1) == null) {
+                GraphicsConfigInfo gcInfo = new GraphicsConfigInfo();
+                gcInfo.setFBConfig(fbConfig[0]);
+                gcInfo.setRequestedStencilSize(attrList[STENCIL_SIZE]);
+		Canvas3D.fbConfigTable.put(gc1, gcInfo);
+            } else {
 		freeFBConfig(fbConfig[0]);
+            }
 	}
 
         return gc1;
@@ -188,6 +197,9 @@ class NativeConfigTemplate3D {
         attrList[DOUBLEBUFFER] = template.getDoubleBuffer();
         attrList[STEREO] = template.getStereo();
         attrList[ANTIALIASING] = template.getSceneAntialiasing();
+    	attrList[STENCIL_SIZE] = template.getStencilSize();
+	// System.out.println("NativeConfigTemplate3D : getStencilSize " + 
+	// attrList[STENCIL_SIZE]);
 	
 	long[] fbConfig = new long[1];
         int visID = chooseOglVisual(display, screen, attrList, fbConfig);
@@ -212,6 +224,22 @@ class NativeConfigTemplate3D {
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
 	return isStereoAvailable(display, screen, vid);
+    }
+
+
+    // Return the stencil of this canvas.
+    int getStencilSize(Canvas3D c3d) {
+	GraphicsConfiguration gc = c3d.graphicsConfiguration;
+
+        X11GraphicsDevice gd =
+            (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
+	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
+
+	long display = nativeScreenInfo.getDisplay();
+	int screen = nativeScreenInfo.getScreen();
+	int vid = ((X11GraphicsConfig)gc).getVisual();
+
+	return getStencilSize(display, screen, vid);
     }
 
     // Return whether a double buffer is available.

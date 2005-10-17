@@ -517,7 +517,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
         // don't remove this group node
         mergeFlag = SceneGraphObjectRetained.DONT_MERGE;
 
-	// TODO: complete this
+	// XXXX: complete this
     }
     
     void setLive(SetLiveState s) {
@@ -549,7 +549,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	    s.viewScopedNodeList = new ArrayList();
 	    s.scopedNodesViewList = new ArrayList();
 	}
-	// TODO: This is a hack since removeNodeData is called before
+	// XXXX: This is a hack since removeNodeData is called before
 	// children are clearLives
 	int[] tempIndex = null;
 	// Don't keep the indices if everything will be cleared

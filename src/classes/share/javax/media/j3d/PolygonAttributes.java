@@ -146,6 +146,14 @@ public class PolygonAttributes extends NodeComponent {
      */
     public static final int CULL_FRONT = 2;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_CULL_FACE_READ,
+        ALLOW_MODE_READ,
+        ALLOW_NORMAL_FLIP_READ,
+        ALLOW_OFFSET_READ
+    };
+    
     /**
      * Constructs a PolygonAttributes object with default parameters.
      * The default values are as follows:
@@ -159,6 +167,8 @@ public class PolygonAttributes extends NodeComponent {
      */
     public PolygonAttributes() {
 	// Just use defaults for all attributes
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -216,6 +226,9 @@ public class PolygonAttributes extends NodeComponent {
        if (cullFace < CULL_NONE || cullFace > CULL_FRONT)
          throw new IllegalArgumentException(J3dI18N.getString("PolygonAttributes12"));  
 
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+       
        ((PolygonAttributesRetained)this.retained).initPolygonMode(polygonMode);
        ((PolygonAttributesRetained)this.retained).initCullFace(cullFace);
        ((PolygonAttributesRetained)this.retained).initPolygonOffset(polygonOffset);

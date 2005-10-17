@@ -77,6 +77,13 @@ public abstract class Fog extends Leaf {
     public static final int
     ALLOW_SCOPE_WRITE = CapabilityBits.FOG_ALLOW_SCOPE_WRITE;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_INFLUENCING_BOUNDS_READ,
+        ALLOW_COLOR_READ,
+        ALLOW_SCOPE_READ        
+    };
+    
     /**
      * Constructs a Fog node with default parameters.  The default
      * values are as follows:
@@ -89,6 +96,8 @@ public abstract class Fog extends Leaf {
      */
     public Fog() {
 	// Just use the defaults
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -96,7 +105,10 @@ public abstract class Fog extends Leaf {
      * @param color the fog color
      */
     public Fog(Color3f color) {
-	((FogRetained)this.retained).initColor(color);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((FogRetained)this.retained).initColor(color);
     }
 
     /**
@@ -106,7 +118,10 @@ public abstract class Fog extends Leaf {
      * @param b the blue component of the fog color
      */
     public Fog(float r, float g, float b) {
-	((FogRetained)this.retained).initColor(r, g, b);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((FogRetained)this.retained).initColor(r, g, b);
     }
 
     /**

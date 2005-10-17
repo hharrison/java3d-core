@@ -241,7 +241,7 @@ class SoundSchedulerAtom extends Object {
     }
  
 
-// TODO: remove this
+// XXXX: remove this
 // just set the state after debug no longer needed
     void setEnableState(int state) {
         enabled = state;
@@ -269,7 +269,7 @@ class SoundSchedulerAtom extends Object {
         }
     }   
  
-// TODO: remove this
+// XXXX: remove this
 // just set the state after debug no longer needed
     void setMuteState(int state) {
         muted = state;
@@ -297,7 +297,7 @@ class SoundSchedulerAtom extends Object {
         }
     }   
  
-// TODO: remove this
+// XXXX: remove this
 // just set the state after debug no longer needed
     void setPauseState(int state) {
         paused = state;
@@ -603,8 +603,8 @@ class SoundSchedulerAtom extends Object {
         return (action);
     } // end of calcInactiveSchedAction
 
-// TODO isPLaying
-// TODO setLoadingState
+// XXXX: isPLaying
+// XXXX: setLoadingState
 
     // Debug print mechanism for Sound nodes
     static final boolean debugFlag = false;

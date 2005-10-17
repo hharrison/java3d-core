@@ -108,6 +108,11 @@ public class ViewPlatform extends Leaf {
     public static final int
     ALLOW_POLICY_WRITE = CapabilityBits.VIEW_PLATFORM_ALLOW_POLICY_WRITE;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_POLICY_READ
+    };
+    
     /**
      * Constructs a ViewPlatform object with default parameters.
      * The default values are as follows:
@@ -117,6 +122,8 @@ public class ViewPlatform extends Leaf {
      * </ul>
      */
     public ViewPlatform() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**

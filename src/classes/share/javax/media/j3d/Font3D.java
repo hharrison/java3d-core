@@ -178,6 +178,49 @@ public class Font3D extends NodeComponent {
       bounds.setUpper(upper);
     }
 
+    // BY MIK OF CLASSX
+    /**
+     * Returns a GeometryArray of a glyph in this Font3D.
+     *
+     * @param c character from which to generate a tessellated glyph.
+     *
+     * @return a GeometryArray
+     *
+     * @since Java 3D 1.4
+     */
+    public GeometryArray getGlyphGeometry(char c) {
+        char code[] = { c };
+        GlyphVector gv = font.createGlyphVector(frc, code);
+
+        // triangulate the glyph
+        GeometryArrayRetained glyph_gar = triangulateGlyphs(gv, code[0]);
+
+        // Assume that triangulateGlyphs returns a triangle array with only coords & normals
+        // (and without by-ref, interleaved, etc.)
+        assert glyph_gar instanceof TriangleArrayRetained :
+            "Font3D: GeometryArray is not an instance of TrangleArray";
+        assert glyph_gar.getVertexFormat() == (GeometryArray.COORDINATES | GeometryArray.NORMALS) :
+            "Font3D: Illegal GeometryArray format -- only coordinates and normals expected";
+
+        // create a correctly sized TriangleArray
+        TriangleArray ga = new TriangleArray(glyph_gar.getVertexCount(),glyph_gar.getVertexFormat());
+        
+        // temp storage for coords, normals
+        float tmp[] = new float[3];
+
+        int vertexCount = ga.getVertexCount();
+        for(int i=0; i<vertexCount; i++) {
+            // copy the glyph geometry to the TriangleArray
+            glyph_gar.getCoordinate(i,tmp);
+            ga.setCoordinate(i,tmp);
+
+            glyph_gar.getNormal(i,tmp);
+            ga.setNormal(i,tmp);
+        }
+
+        return ga;
+    }
+
 
   // Triangulate glyph with 'unicode' if not already done.
     GeometryArrayRetained triangulateGlyphs(GlyphVector gv, char c) {
@@ -415,7 +458,7 @@ public class Font3D extends NodeComponent {
 	      }
 	    }
 
-	    // TODO: Should use IndexedTriangleArray to avoid 
+	    // XXXX: Should use IndexedTriangleArray to avoid 
 	    // duplication of vertices. To create triangles for
 	    // side faces, every vertex is duplicated currently.
 	    TriangleArray triAry = new TriangleArray(vertCnt,

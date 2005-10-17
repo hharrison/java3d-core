@@ -411,6 +411,15 @@ public class TextureAttributes extends NodeComponent {
      */
     public static final int COMBINE_ONE_MINUS_SRC_ALPHA	= 3;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_BLEND_COLOR_READ,
+        ALLOW_COLOR_TABLE_READ,
+        ALLOW_COMBINE_READ,
+        ALLOW_MODE_READ,
+        ALLOW_TRANSFORM_READ        
+    };
+    
     /**
      * Constructs a TextureAttributes object with default parameters.
      * The default values are as follows:
@@ -441,6 +450,8 @@ public class TextureAttributes extends NodeComponent {
      * </ul>
      */
     public TextureAttributes()  {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
   
     /**
@@ -474,7 +485,10 @@ public class TextureAttributes extends NodeComponent {
 	    throw new IllegalArgumentException(J3dI18N.getString("TextureAttributes9"));
 	}
 
-	((TextureAttributesRetained)this.retained).initTextureMode(textureMode);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((TextureAttributesRetained)this.retained).initTextureMode(textureMode);
 	((TextureAttributesRetained)this.retained).initTextureBlendColor(textureBlendColor);
 	((TextureAttributesRetained)this.retained).initTextureTransform(transform);
 	((TextureAttributesRetained)this.retained).initPerspectiveCorrectionMode(perspCorrectionMode);

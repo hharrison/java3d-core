@@ -20,6 +20,8 @@ package javax.media.j3d;
 
 import java.util.*;
 import java.awt.*;
+import java.io.File;
+
 
 class MasterControl {
 
@@ -76,6 +78,8 @@ class MasterControl {
     static final Integer SET_GRAPHICSCONFIG_FEATURES = new Integer(19);
     static final Integer SET_QUERYPROPERTIES = new Integer(20);    
     static final Integer SET_VIEW = new Integer(21);
+
+    private static boolean librariesLoaded = false;
 
     /**
      * reference to MasterControl thread
@@ -197,6 +201,9 @@ class MasterControl {
     // Only one Timer thread in the system.
     TimerThread timerThread;
 
+    // Only one Notification thread in the system.
+    private NotificationThread notificationThread;
+
     /**
      * This flag indicates that MC is running
      */
@@ -305,9 +312,11 @@ class MasterControl {
 
     // This is a time stamp used when context is created
     private long contextTimeStamp = 0;
-
-    // This is a counter for canvas bit
-    private int canvasBitCount = 0;
+    
+    // This is an array of  canvasIds in used
+    private boolean[] canvasIds = null;
+    private int canvasFreeIndex = 0;
+    private Object canvasIdLock = new Object();
 
     // This is a counter for rendererBit
     private int rendererCount = 0;
@@ -335,15 +344,28 @@ class MasterControl {
     // Flag that indicates whether separate specular color is disabled or not
     boolean disableSeparateSpecularColor = false;
 
-    // Maximum number of texture units
-    int textureUnitMax = 100;
-
     // Flag that indicates whether DisplayList is used or not
     boolean isDisplayList = true;
 
     // If this flag is set, then by-ref geometry will not be
     // put in display list
     boolean buildDisplayListIfPossible = false;
+    
+    // If this flag is set, then geometry arrays with vertex attributes can
+    // be in display list.
+    boolean vertexAttrsInDisplayList = false;
+
+    // The global shading language being used. Using a ShaderProgram
+    // with a shading language other than the one specified by
+    // globalShadingLanguage will cause a ShaderError to be generated,
+    static int globalShadingLanguage = Shader.SHADING_LANGUAGE_GLSL;
+
+    // Flags indicating whether the Cg or GLSL libraries are available; we still need
+    // to check for the actual extension support when the Canvas3D with its associated context
+    // is created. Note that these are qualifed by the above globalShadingLanguage, so at
+    // most one of these two flags will be true;
+    static boolean cgLibraryAvailable = false;
+    static boolean glslLibraryAvailable = false;
 
     
     // REQUESTCLEANUP messages argument
@@ -390,6 +412,9 @@ class MasterControl {
     // False to disable rescale normal if OGL support
     boolean isForceNormalized = false;
 
+    // True to allow simulated (multi-pass) multi-texture
+    boolean allowSimulatedMultiTexture = false;
+
     // Hashtable that maps a GraphicsDevice to its associated
     // Screen3D--this is only used for on-screen Canvas3Ds
     Hashtable deviceScreenMap = new Hashtable();
@@ -417,12 +442,22 @@ class MasterControl {
     private ArrayList timestampUpdateList = new ArrayList(3);
 
     private UnorderList freeMessageList = new UnorderList(8);
+    
+    // System properties containing the native library search PATH
+    // The order listed is the order in which they will be searched
+    private static final String[] systemPathProps = {
+        "sun.boot.library.path",
+        "java.library.path"
+    };
 
     long awt;
     native long getAWT();
 
     // Method to initialize the native J3D library
     private native boolean initializeJ3D(boolean disableXinerama);
+
+    // Method to verify whether the native Cg library is available
+    private static native boolean loadNativeCgLibrary(String[] libpath);
 
     // Method to get number of procesor
     private native int getNumberOfProcessor();
@@ -464,7 +499,8 @@ class MasterControl {
      * VirtualUniverse.
      */
     MasterControl() {
-
+        assert librariesLoaded;
+        
 	// Get AWT handle
 	awt = getAWT();
 
@@ -522,23 +558,6 @@ class MasterControl {
 	    System.err.println("Java 3D: separate specular color disabled if possible");
 	}
 
-	// Get the maximum number of texture units
-	final int defaultTextureUnitMax = textureUnitMax;
-	Integer textureUnitLimit =
-	    (Integer) java.security.AccessController.doPrivileged(
-	    new java.security.PrivilegedAction() {
-		public Object run() {
-		    return Integer.getInteger("j3d.textureUnitMax",
-					      defaultTextureUnitMax);
-		}
-	    });
-
-	textureUnitMax = textureUnitLimit.intValue();
-	if (textureUnitMax != defaultTextureUnitMax) {
-	    System.err.println("Java 3D: maximum number of texture units = " +
-			       textureUnitMax);
-	}
-
 	isDisplayList = getBooleanProperty("j3d.displaylist", isDisplayList,
 					   "display list");
 
@@ -553,24 +572,41 @@ class MasterControl {
 			       "compiled vertex array");
 
 	isForceNormalized =
-	    getBooleanProperty("j3d.forceNormalized", isForceNormalized,
+	    getBooleanProperty("j3d.forceNormalized",
+			       isForceNormalized,
 			       "force normalized");
 
+        allowSimulatedMultiTexture =
+	    getBooleanProperty("j3d.simulatedMultiTexture",
+			       allowSimulatedMultiTexture,
+			       "simulated multi-texture");
 
-	boolean j3dOptimizeSpace =
+	if (allowSimulatedMultiTexture) {
+	    System.err.println("************************************************************************");
+	    System.err.println(J3dI18N.getString("MasterControl2"));
+	    System.err.println(J3dI18N.getString("MasterControl3"));
+	    System.err.println("************************************************************************");
+	}
+
+        boolean j3dOptimizeSpace =
 	    getBooleanProperty("j3d.optimizeForSpace", true,
 			       "optimize for space");
 
-	// Build Display list for by-ref geometry and infrequently changing geometry
-	// ONLY IF (isDisplayList is true and optimizeForSpace if False)
-	if (isDisplayList && !j3dOptimizeSpace) {
-	    buildDisplayListIfPossible = true;
-	}
-	else {
-	    buildDisplayListIfPossible = false;
-	}
+        if (isDisplayList) {
+            // Build Display list for by-ref geometry
+            // ONLY IF optimizeForSpace is false
+            if (!j3dOptimizeSpace) {
+                buildDisplayListIfPossible = true;
+            }
 
-	// Check to see whether Renderer can run without DSI lock
+            // Build display lists for geometry with vertex attributes
+            // ONLY if we are in GLSL mode and GLSL shaders are available
+            if (glslLibraryAvailable) {
+                vertexAttrsInDisplayList = true;
+            }
+        }
+
+        // Check to see whether Renderer can run without DSI lock
 	doDsiRenderLock = getBooleanProperty("j3d.renderLock",
 					     doDsiRenderLock,
 					     "render lock");
@@ -682,6 +718,16 @@ class MasterControl {
 
 	// create the freelists
 	FreeListManager.createFreeLists();
+
+	// create an array canvas use registers
+	// The 32 limit can be lifted once the
+	// resourceXXXMasks in other classes 
+	// are change not to use integer.
+	canvasIds = new boolean[32];
+	for(int i=0; i<canvasIds.length; i++) {
+	    canvasIds[i] = false;
+	}
+	canvasFreeIndex = 0;
     }
 
     private static String getProperty(final String prop) {
@@ -728,7 +774,9 @@ class MasterControl {
      * the MasterControl object is created.
      */
     static void loadLibraries() {
-       	// This works around a native load library bug
+        assert !librariesLoaded;
+
+        // This works around a native load library bug
        	try {
             java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
             toolkit = null;   // just making sure GC collects this
@@ -745,37 +793,113 @@ class MasterControl {
 	});
 
 	// Load the native J3D library
-       	java.security.AccessController.doPrivileged(new 
+        final String oglLibraryName = "j3dcore-ogl";
+        final String d3dLibraryName = "j3dcore-d3d";
+        final String libraryName = (String)
+        java.security.AccessController.doPrivileged(new
 	    java.security.PrivilegedAction() {
 		public Object run() {
-		    
-		    String osName = System.getProperty("os.name");
-		    // System.err.println(" os.name is " + osName );
-		    // If it is a Windows OS, we want to support
-		    // dynamic native library selection (ogl, d3d)
-		    if((osName.length() > 8) && 
-		       ((osName.substring(0,7)).equals("Windows"))){
-			
-			// TODO : Will support a more flexible dynamic 
-			// selection scheme via the use of Preferences API.
-			String str = System.getProperty("j3d.rend");
-			if ((str == null) || (!str.equals("d3d"))) {
-			    // System.err.println("(1) ogl case : j3d.rend is " + str );
-			    System.loadLibrary("j3dcore-ogl");
+		    String libName = oglLibraryName;
 
-			}
-			else {
-			    // System.err.println("(2) d3d case : j3d.rend is " + str);
-			    System.loadLibrary("j3dcore-d3d");
+		    // If it is a Windows OS, we want to support dynamic native library selection (ogl, d3d)
+		    String osName = System.getProperty("os.name");
+		    if (osName != null && osName.startsWith("Windows")) {
+			// XXXX : Should eventually support a more flexible dynamic 
+			// selection scheme via an API call.
+			String str = System.getProperty("j3d.rend");
+			if (str != null && str.equals("d3d")) {
+			    libName = d3dLibraryName;
 			}
 		    }
-		    else {
-			// System.err.println("(3) ogl case");
-			System.loadLibrary("j3dcore-ogl");
-		    }
-		    return null;
+
+                    System.loadLibrary(libName);
+		    return libName;
 		}
 	    });
+
+        // Get the global j3d.shadingLanguage property
+	final String slStr = getProperty("j3d.shadingLanguage");
+	if (slStr != null) {
+	    boolean found = false;
+	    if (slStr.equals("GLSL")) {
+		globalShadingLanguage = Shader.SHADING_LANGUAGE_GLSL;
+		found = true;
+	    }
+	    else if (slStr.equals("Cg")) {
+		globalShadingLanguage = Shader.SHADING_LANGUAGE_CG;
+		found = true;
+	    }
+
+	    if (found) {
+		System.err.println("Java 3D: Setting global shading language to " + slStr);
+	    }
+	    else {
+		System.err.println("Java 3D: Unrecognized shading language: " + slStr);
+	    }
+	}
+
+        // Check whether the Cg library is available
+        if (globalShadingLanguage == Shader.SHADING_LANGUAGE_CG) {
+            String cgLibraryName = libraryName + "-cg";
+            String[] libpath = setupLibPath(systemPathProps, cgLibraryName);
+            if (loadNativeCgLibrary(libpath)) {
+                cgLibraryAvailable = true;
+            }
+        }
+        
+        // Check whether the GLSL library is available
+        if (globalShadingLanguage == Shader.SHADING_LANGUAGE_GLSL) {
+            if (libraryName == oglLibraryName) {
+                // No need to verify that GLSL is available, since GLSL is part
+                // of OpenGL as an extension (or part of core in 2.0)
+                glslLibraryAvailable = true;
+            }
+        }
+
+        assert !(glslLibraryAvailable && cgLibraryAvailable) :
+            "ERROR: cannot support both GLSL and CG at the same time";
+
+        librariesLoaded = true;
+    }
+
+
+    /**
+     * Parse the specified System properties containing a PATH and return an
+     * array of Strings, where each element is an absolute filename consisting of
+     * the individual component of the path concatenated with the (relative)
+     * library file name. Only those absolute filenames that exist are included.
+     * If no absolute filename is found, we will try the relative library name.
+     */
+    private static String[] setupLibPath(String[] props, String libName) {
+        ArrayList pathList = new ArrayList();
+
+        String filename = System.mapLibraryName(libName);
+        for (int n = 0; n < props.length; n++) {
+            String pathString = getProperty(props[n]);
+            boolean done = false;
+            int posStart = 0;
+            while (!done) {
+                int posEnd = pathString.indexOf(File.pathSeparator, posStart);
+                if (posEnd == -1) {
+                    posEnd = pathString.length();
+                    done = true;
+                }
+                String pathDir = pathString.substring(posStart, posEnd);
+                File pathFile = new File(pathDir, filename);
+                if (pathFile.exists()) {
+                    pathList.add(pathFile.getAbsolutePath());
+                }
+
+                posStart = posEnd + 1;
+            }
+        }
+
+        // If no absolute path names exist, add in the relative library name
+        if (pathList.size() == 0) {
+            pathList.add(filename);
+        }
+
+        return (String[])pathList.toArray(new String[0]);
     }
 
 
@@ -835,6 +959,14 @@ class MasterControl {
      */
     int getRendererBit() {
         return (1 << rendererCount++);
+    }
+
+
+    /**
+     * This returns the a unused renderer bit
+     */
+    int getRendererId() {
+        return rendererCount++;
     }
 
     /**
@@ -900,28 +1032,39 @@ class MasterControl {
 	FreeListManager.freeObject(FreeListManager.TEXTURE3D, new Integer(id));
     }
 
-    int getCanvasBit() {
-	// Master control need to keep count itself
-	MemoryFreeList cbId =
-	    FreeListManager.getFreeList(FreeListManager.CANVASBIT);
-	if (cbId.size() > 0) {
-	    return ((Integer)FreeListManager.
-		    getObject(FreeListManager.CANVASBIT)).intValue();
-	}
-	else {
-	    if (canvasBitCount > 31) {
+    int getCanvasId() {
+        int i;
+
+	synchronized(canvasIdLock) {
+	    // Master control need to keep count itself        
+	    for(i=canvasFreeIndex; i<canvasIds.length; i++) {
+		if(canvasIds[i] == false)
+		    break;
+	    }
+
+	    if ( canvasFreeIndex >= canvasIds.length) {
 		throw new RuntimeException("Cannot render to more than 32 Canvas3Ds");
 	    }
-	    return (1 << canvasBitCount++);
+
+	    canvasIds[i] = true;
+	    canvasFreeIndex = i + 1;
+	}
+
+        return i;
+        
+    }
+
+    void freeCanvasId(int canvasId) {
+        // Valid range is [0, 31]
+	synchronized(canvasIdLock) {
+
+	    canvasIds[canvasId] = false;
+	    if(canvasFreeIndex > canvasId) {
+		canvasFreeIndex = canvasId;
+	    }
 	}
     }
-
-
-    void freeCanvasBit(int canvasBit) {
-	FreeListManager.freeObject(FreeListManager.CANVASBIT,
-				   new Integer(canvasBit));
-    }
-
+    
     Transform3D getTransform3D(Transform3D val) {
 	Transform3D t;
 	t = (Transform3D)
@@ -1096,6 +1239,10 @@ class MasterControl {
 			timerThread.finish();
 			timerThread = null;		
 		    }    
+		    if (notificationThread != null) {
+			notificationThread.finish();
+			notificationThread = null;
+		    }
 		    requestObjList.clear();
 		    requestTypeList.clear();
 		    return true;
@@ -1210,7 +1357,14 @@ class MasterControl {
 	}
 	setWork();
     }
-		
+
+    /**
+     * This takes the specified notification message and sends it to the
+     * notification thread for processing.
+     */
+    void sendNotification(J3dNotification notification) {
+        notificationThread.addNotification(notification);
+    }
 
     /**
      * Create and start the MasterControl Thread.
@@ -2050,6 +2204,19 @@ class MasterControl {
 	      }
 	});
 	timerThread.start();
+
+        // Create notification thread
+	java.security.AccessController.doPrivileged(
+			    new java.security.PrivilegedAction() {
+              public Object run() {
+		  synchronized (rootThreadGroup) {
+		      notificationThread = new NotificationThread(rootThreadGroup);
+		      notificationThread.setPriority(threadPriority);
+		  }
+		  return null;
+	      }
+	});
+	notificationThread.start();
     }
 
     /**
@@ -2099,6 +2266,10 @@ class MasterControl {
 		timerThread.finish();
 		timerThread = null;
 	    }
+            if (notificationThread != null) {
+                notificationThread.finish();
+                notificationThread = null;
+            }
 
 	    // shouldn't all of these be synchronized ???
 	    synchronized (VirtualUniverse.mc.deviceScreenMap) {
@@ -2112,8 +2283,11 @@ class MasterControl {
 	    // list here because other structure may release them
 	    // later 
 
-	    FreeListManager.clearList(FreeListManager.CANVASBIT);
-	    canvasBitCount = 0;
+	    for(int i=0; i<canvasIds.length; i++) {
+		canvasIds[i] = false;
+	    }
+	    canvasFreeIndex = 0;
+	    
 	    renderOnceList.clear();
 	    timestampUpdateList.clear();
 
@@ -3441,7 +3615,7 @@ class MasterControl {
     static {
 	/*
         // Determine whether the JVM is version JDK1.5 or later.
-        // TODO: replace this with code that checks for the existence
+        // XXXX: replace this with code that checks for the existence
 	// of a class or method that is defined in 1.5, but not in 1.4
         String versionString =
             (String) java.security.AccessController.doPrivileged(

@@ -342,10 +342,19 @@ class CanvasViewCache extends Object {
      * NOTE: This is probably not needed, but we'll do it for symmetry
      * with the ScreenViewCache and ViewCache objects.
      */
-    synchronized void snapshot() {
-	cvcDirtyMask = canvas.cvDirtyMask;
-	canvas.cvDirtyMask = 0;
-	useStereo = canvas.useStereo;
+    synchronized void snapshot(boolean computeFrustum) {
+        // Issue 109 : determine the the correct index to use -- either the
+        // Renderer or RenderBin
+        int dirtyIndex = computeFrustum ?
+            Canvas3D.RENDER_BIN_DIRTY_IDX : Canvas3D.RENDERER_DIRTY_IDX;
+
+        synchronized (canvas.dirtyMaskLock) {
+            // Issue 109 : read/clear the dirty bits for the correct index
+            cvcDirtyMask = canvas.cvDirtyMask[dirtyIndex];
+            canvas.cvDirtyMask[dirtyIndex] = 0;
+        }
+
+        useStereo = canvas.useStereo;
 	monoscopicViewPolicy = canvas.monoscopicViewPolicy;
 	leftManualEyeInImagePlate.set(canvas.leftManualEyeInImagePlate);
 	rightManualEyeInImagePlate.set(canvas.rightManualEyeInImagePlate);
@@ -384,13 +393,29 @@ class CanvasViewCache extends Object {
     private void doComputeDerivedData(boolean currentFlag,
 	CanvasViewCache cvc, BoundingBox frustumBBox, boolean doInfinite) {
 
-	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
+        // Issue 109 : determine the the correct index to use -- either the
+        // Renderer or RenderBin
+        int dirtyIndex = (frustumBBox != null) ?
+            Canvas3D.RENDER_BIN_DIRTY_IDX : Canvas3D.RENDERER_DIRTY_IDX;
+        int scrvcDirtyMask;
+        
+        // Issue 109 : read/clear the dirty bits for the correct index
+        synchronized (screenViewCache) {
+            scrvcDirtyMask = screenViewCache.scrvcDirtyMask[dirtyIndex];
+            // reset screen view dirty mask if canvas is offScreen. Note:
+            // there is only one canvas per offscreen, so it is ok to
+            // do the reset here.
+            if (canvas.offScreen) {
+                screenViewCache.scrvcDirtyMask[dirtyIndex] = 0;
+            }
+        }
+
+        if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
 	    if(cvcDirtyMask != 0)
 		System.out.println("cvcDirtyMask : " +  cvcDirtyMask);
 
-	    if(screenViewCache.scrvcDirtyMask != 0)
-		System.out.println("scrvcDirtyMask : "+
-				   screenViewCache.scrvcDirtyMask);
+	    if(scrvcDirtyMask != 0)
+		System.out.println("scrvcDirtyMask : "+ scrvcDirtyMask);
 
 	    if(viewCache.vcDirtyMask != 0)
 		System.out.println("vcDirtyMask : " +  viewCache.vcDirtyMask);
@@ -406,13 +431,13 @@ class CanvasViewCache extends Object {
 
 	// This flag is use to force a computation when a ViewPlatformTransform
 	// is detected. No sync. needed. We're doing a read of t/f.
-	// TODO: Peeking at the dirty flag is a hack. Need to revisit this.
+	// XXXX: Peeking at the dirty flag is a hack. Need to revisit this.
 	boolean vprNotDirty = (viewCache.vpRetained.vprDirtyMask == 0);
 
 	if(!canvas.offScreen &&
 	   (vprNotDirty) &&
 	   (cvcDirtyMask == 0) &&
-	   (screenViewCache.scrvcDirtyMask == 0) &&
+	   (scrvcDirtyMask == 0) &&
 	   (viewCache.vcDirtyMask == 0) &&
 	    !(updateLastTime && (doInfinite != lastDoInfinite))) {
 	    if(frustumBBox != null)
@@ -439,7 +464,7 @@ class CanvasViewCache extends Object {
 
 	// System.out.println("vpcToVworld is \n" + vpcToVworld);
 
-	try {
+        try {
 	    vworldToVpc.invert(vpcToVworld);
 	}
 	catch (SingularMatrixException e) {
@@ -484,18 +509,12 @@ class CanvasViewCache extends Object {
 	if (frustumBBox != null)
 	    computefrustumBBox(frustumBBox);
 
-	// Copy the computed data into cvc.
+	// Issue 109: cvc should *always* be null
+        assert cvc == null;
 	if(cvc != null)
 	    copyComputedCanvasViewCache(cvc, doInfinite);
 
 	canvas.canvasDirty |= Canvas3D.VIEW_MATRIX_DIRTY;
-
-        // reset screen view dirty mask if canvas is offScreen. Note:
-	// there is only one canvas per offscreen, so it is ok to
-	// do the reset here.
-	if (canvas.offScreen) {
-	    screenViewCache.scrvcDirtyMask = 0;
-	}
 
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1)) {
 	    // Print some data :
@@ -908,7 +927,7 @@ class CanvasViewCache extends Object {
      */
     private void cacheEyePosition() {
 	if (viewCache.compatibilityModeEnable) {
-	    // TODO: Compute compatibility mode eye position in ImagePlate???
+	    // XXXX: Compute compatibility mode eye position in ImagePlate???
 	    cacheEyePosScreenRelative(leftManualEyeInImagePlate,
 				      rightManualEyeInImagePlate);
 	}
@@ -965,7 +984,7 @@ class CanvasViewCache extends Object {
 
     private void computePlateToVworld() {
 	if (viewCache.compatibilityModeEnable) {
-	    // TODO: implement this correctly for compat mode
+	    // XXXX: implement this correctly for compat mode
 	    leftPlateToVworld.setIdentity();
 	    vworldToLeftPlate.setIdentity();
 	}
@@ -1027,7 +1046,7 @@ class CanvasViewCache extends Object {
         // Concatenate headToLeftImagePlate with leftPlateToVworld
 
 	if (viewCache.compatibilityModeEnable) {
-	    // TODO: implement this correctly for compat mode
+	    // XXXX: implement this correctly for compat mode
 	    headToVworld.setIdentity();
 	}
 	else {
@@ -1054,7 +1073,7 @@ class CanvasViewCache extends Object {
 	// Create a transform with the view platform to coexistence scale
 	tMat1.set(viewPlatformScale);
 
-	// TODO: Is this really correct to ignore HMD?
+	// XXXX: Is this really correct to ignore HMD?
 
 	if (viewCache.viewPolicy != View.HMD_VIEW) {
 	    switch (viewCache.coexistenceCenterInPworldPolicy) {
@@ -1161,7 +1180,7 @@ class CanvasViewCache extends Object {
 
     private void computeCoexistenceToPlate() {
 	if (viewCache.compatibilityModeEnable) {
-	    // TODO: implement this correctly
+	    // XXXX: implement this correctly
 	    coexistenceToLeftPlate.setIdentity();
 	    return;
 	}
@@ -1334,7 +1353,7 @@ class CanvasViewCache extends Object {
 	    B = scale * -backClipDistance;
 	}
 
-	// TODO: Can optimize for HMD case.
+	// XXXX: Can optimize for HMD case.
 	if (true /*viewCache.viewPolicy != View.HMD_VIEW*/) {
 
 	    // Call buildProjView to build the projection and view matrices.
@@ -1392,7 +1411,7 @@ class CanvasViewCache extends Object {
 		}
 	    }
 	}
-	// TODO: The following code has never been ported
+	// XXXX: The following code has never been ported
 //      else {
 //	    Point3d cen_eye;
 //
@@ -1467,14 +1486,14 @@ class CanvasViewCache extends Object {
 	ecToCc.setIdentity();
 
 
-	// TODO: we have no concept of glass correction in the Java 3D API
+	// XXXX: we have no concept of glass correction in the Java 3D API
 	//
 	// Correction in apparent 3D position of window due to glass/CRT
 	// and spherical/cylinderical curvarure of CRT.
 	// This boils down to producing modified values of Lx Ly Hx Hy
 	// and is different for hot spot vs. window center corrections.
 	//
-	/* TODO:
+	/* XXXX:
 	double		cx, cy;
 	if(viewPolicy != HMD_VIEW && enable_crt_glass_correction) {
 	    if (correction_point == CORRECTION_POINT_WINDOW_CENTER) {
@@ -1812,20 +1831,20 @@ class CanvasViewCache extends Object {
     }
 
     Transform3D getImagePlateToVworld() {
-	// TODO: Document -- This will return the transform of left plate.
+	// XXXX: Document -- This will return the transform of left plate.
 	return leftPlateToVworld;
     }
 
 
 
     Transform3D getLastVworldToImagePlate() {
-	// TODO: Document -- This will return the transform of left plate.
+	// XXXX: Document -- This will return the transform of left plate.
 	return lastVworldToLeftPlate;
 
     }
 
     Transform3D getVworldToImagePlate() {
-	// TODO: Document -- This will return the transform of left plate.
+	// XXXX: Document -- This will return the transform of left plate.
 	return vworldToLeftPlate;
     }
 

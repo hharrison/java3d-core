@@ -803,7 +803,7 @@ class AlternateAppearanceRetained extends LeafRetained {
 
 //	AlternateAppearance alternate appearance = (AlternateAppearance) originalNode;
 
-//	// TODO: clone appearance
+//	// XXXX: clone appearance
 
 //	setInfluencingBounds(alternate appearance.getInfluencingBounds());
 

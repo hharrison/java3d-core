@@ -72,7 +72,12 @@ public class Soundscape extends Leaf {
      public static final int
     ALLOW_ATTRIBUTES_WRITE = CapabilityBits.SOUNDSCAPE_ALLOW_ATTRIBUTES_WRITE;
 
-    /**
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_APPLICATION_BOUNDS_READ,
+        ALLOW_ATTRIBUTES_READ        
+    };
+     /**
      * Constructs and initializes a new Sound node using following
      * defaults:
      *<UL>   application region: null (no active region)</UL>
@@ -80,6 +85,8 @@ public class Soundscape extends Leaf {
      */  
     public Soundscape() {
          // Just use default values
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -90,6 +97,9 @@ public class Soundscape extends Leaf {
      */  
     public Soundscape(Bounds region,
                       AuralAttributes attributes) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((SoundscapeRetained)this.retained).setApplicationBounds(region);
         ((SoundscapeRetained)this.retained).setAuralAttributes(attributes);
     }

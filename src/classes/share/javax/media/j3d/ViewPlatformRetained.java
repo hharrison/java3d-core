@@ -164,7 +164,6 @@ class ViewPlatformRetained extends LeafRetained {
     /**
      * This sets the view that is associated with this view platform.
      */
-    // TODO: This must be changed to a list of views!
     void setView(View v) {
 	synchronized (viewList) {
 	    if (!viewList.contains(v)) {

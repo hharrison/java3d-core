@@ -534,6 +534,22 @@ public abstract class Texture extends NodeComponent {
      */
     public static final int ANISOTROPIC_SINGLE_VALUE = 1;
 
+       // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_ANISOTROPIC_FILTER_READ,
+        ALLOW_BOUNDARY_COLOR_READ,
+        ALLOW_BOUNDARY_MODE_READ,        
+        ALLOW_ENABLE_READ,
+        ALLOW_FILTER4_READ,
+        ALLOW_FILTER_READ,        
+        ALLOW_FORMAT_READ,
+        ALLOW_IMAGE_READ,
+        ALLOW_LOD_RANGE_READ,
+        ALLOW_MIPMAP_MODE_READ,        
+        ALLOW_SHARPEN_TEXTURE_READ,
+        ALLOW_SIZE_READ        
+    };
+    
     /**
      * Constructs a Texture object with default parameters.
      * The default values are as follows:
@@ -566,6 +582,8 @@ public abstract class Texture extends NodeComponent {
      */
     public Texture() {
 	// Just use default values
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -600,6 +618,9 @@ public abstract class Texture extends NodeComponent {
 	    (format != RGB) && (format != RGBA)) {
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture1"));
 	}
+        
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
 
 	int widPower = getPowerOf2(width);
 	if (widPower == -1)
@@ -653,6 +674,9 @@ public abstract class Texture extends NodeComponent {
 	    (format != RGB) && (format != RGBA)) {
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture1"));
 	}
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
 
 	int widPower = getPowerOf2(width);
 	if (widPower == -1)
@@ -1722,7 +1746,8 @@ public abstract class Texture extends NodeComponent {
 	  rt.initImage(i, image);
 	}
       }
-      // TODO: clone new v1.2 attributes
+      // XXXX: clone new v1.2 attributes?
+      // NOTE: This sppears to have already been done
     }
 
  /** 

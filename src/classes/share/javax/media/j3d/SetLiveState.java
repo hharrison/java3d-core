@@ -243,7 +243,7 @@ class SetLiveState extends Object {
 	localToVworldIndex = null;
 	localToVworldKeys = null;
 	
-        // TODO: optimization for targetThreads computation, require
+        // XXXX: optimization for targetThreads computation, require
         // cleanup in GroupRetained.doSetLive()
 	//transformTargetThreads = 0;
 

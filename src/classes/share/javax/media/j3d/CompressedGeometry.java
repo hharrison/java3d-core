@@ -14,11 +14,10 @@ package javax.media.j3d;
 
 /**
  * The compressed geometry object is used to store geometry in a
- * compressed format.  Using compressed geometry reduces the amount
- * of memory needed by a Java 3D application and increases the speed
- * objects can be sent over the network.  Once geometry decompression
- * hardware support becomes available, increased rendering performance
- * will also result from the use of compressed geometry.
+ * compressed format. Using compressed geometry may increase the speed
+ * objects can be sent over the network. Note that the geometry will
+ * be decompressed in memory, so the application will not see any
+ * memory savings.
  * <p>
  * Compressed geometry may be passed to this CompressedGeometry object
  * in one of two ways: by copying the data into this object using the
@@ -49,6 +48,8 @@ package javax.media.j3d;
  * the results are undefined.
  * </li>
  * </ul>
+ *
+ * @deprecated As of Java 3D version 1.4.
  */
 public class CompressedGeometry extends Geometry {
 
@@ -87,10 +88,21 @@ public class CompressedGeometry extends Geometry {
     ALLOW_REF_DATA_READ =
 	CapabilityBits.COMPRESSED_GEOMETRY_ALLOW_REF_DATA_READ;
 
+
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+	ALLOW_COUNT_READ,
+	ALLOW_HEADER_READ,
+	ALLOW_GEOMETRY_READ,
+	ALLOW_REF_DATA_READ
+    };
+
     /**
      * Package scoped default constructor for use by cloneNodeComponent.
      */
     CompressedGeometry() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -156,6 +168,9 @@ public class CompressedGeometry extends Geometry {
 	    throw new IllegalArgumentException
 		(J3dI18N.getString("CompressedGeometry0")) ;
 
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	// Create a separate copy of the given header.
 	cgHeader = new CompressedGeometryHeader() ;
 	hdr.copy(cgHeader) ;
@@ -174,33 +189,10 @@ public class CompressedGeometry extends Geometry {
     }
 
     /**
-     * Creates a new CompressedGeometry NodeComponent.  The
-     * specified compressed geometry data is accessed by reference
-     * from the specified buffer.
-     * If the version number of compressed geometry, as specified by
-     * the CompressedGeometryHeader, is incompatible with the
-     * supported version of compressed geometry in the current version
-     * of Java 3D, the compressed geometry object will not be
-     * rendered.
+     * This constructor is not implemented.
      *
-     * @param hdr the compressed geometry header.  This is copied
-     * into the CompressedGeometry NodeComponent.
-     *
-     * @param compressedGeometry a buffer containing an NIO byte buffer
-     * of compressed geometry data.  The
-     * geometry must conform to the format described in Appendix B of
-     * the <i>Java 3D API Specification</i>.
-     *
-     * @exception UnsupportedOperationException this method is not
-     * yet implemented
-     *
-     * @exception IllegalArgumentException if a problem is detected with the
-     * header,
-     * or if the java.nio.Buffer contained in the specified J3DBuffer
-     * is not a java.nio.ByteBuffer object.
-     *
-     * @see CompressedGeometryHeader
-     * @see Canvas3D#queryProperties
+     * @exception UnsupportedOperationException this constructor is not
+     * implemented
      *
      * @since Java 3D 1.3
      */
@@ -323,7 +315,6 @@ public class CompressedGeometry extends Geometry {
 	// the same number of Shape3D objects as TriangleArray using 1/2
 	// to 2/3 of the vertices, with only a marginal performance penalty.
 	//
-	// TODO revisit this
 	return decompressor.toTriangleStripArrays(cgr) ;
     }
 
@@ -345,9 +336,7 @@ public class CompressedGeometry extends Geometry {
     /**
      * Gets the compressed geometry data reference.
      *
-     * @return the current compressed geometry data reference;
-     * null is returned if this compressed geometry object was created
-     * with a J3DBuffer reference rather than a byte array.
+     * @return the current compressed geometry data reference.
      *
      * @exception IllegalStateException if the data access mode for this
      * object is not by-reference.
@@ -372,14 +361,11 @@ public class CompressedGeometry extends Geometry {
 
 
     /**
-     * Gets the compressed geometry data buffer reference.
+     * Gets the compressed geometry data buffer reference, which is
+     * always null since NIO buffers are not supported for
+     * CompressedGeometry objects.
      *
-     * @return the current compressed geometry data buffer reference;
-     * null is returned if this compressed geometry object was created
-     * with a byte array reference rather than a J3DBuffer.
-     *
-     * @exception IllegalStateException if the data access mode for this
-     * object is not by-reference.
+     * @return null
      *
      * @exception CapabilityNotSetException if appropriate capability is
      *  not set and this object is part of live or compiled scene graph
@@ -392,11 +378,6 @@ public class CompressedGeometry extends Geometry {
 		throw new CapabilityNotSetException
 		    (J3dI18N.getString("CompressedGeometry6")) ;
 
-	if (!isByReference())
-	    throw new IllegalStateException
-		(J3dI18N.getString("CompressedGeometry8")) ;
-
-	// TODO: implement this when NIO buffer support is added
 	return null;
     }
 

@@ -115,6 +115,12 @@ public class ColoringAttributes extends NodeComponent {
      */
     public static final int SHADE_GOURAUD = 3;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_COLOR_READ,
+        ALLOW_SHADE_MODEL_READ
+    };
+    
     /**
      * Constructs a ColoringAttributes node with default parameters.
      * The default values are as follows:
@@ -125,6 +131,8 @@ public class ColoringAttributes extends NodeComponent {
      */
     public ColoringAttributes() {
 	// Just use default attributes
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -134,7 +142,10 @@ public class ColoringAttributes extends NodeComponent {
      * SHADE_FLAT, or SHADE_GOURAUD
      */
     public ColoringAttributes(Color3f color, int shadeModel) {
-	((ColoringAttributesRetained)this.retained).initColor(color);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((ColoringAttributesRetained)this.retained).initColor(color);
 	((ColoringAttributesRetained)this.retained).initShadeModel(shadeModel);
   
     }
@@ -149,7 +160,10 @@ public class ColoringAttributes extends NodeComponent {
      */
     public ColoringAttributes(float red, float green, float blue,
 			      int shadeModel) {
-	((ColoringAttributesRetained)this.retained).initColor(red, green,blue);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((ColoringAttributesRetained)this.retained).initColor(red, green,blue);
 	((ColoringAttributesRetained)this.retained).initShadeModel(shadeModel);
     }
 
@@ -315,7 +329,8 @@ public class ColoringAttributes extends NodeComponent {
      * Capability read bit set will be displayed.
      */
     public String toString() {
-        StringBuffer str=new StringBuffer("ColoringAttributes:");
+        StringBuffer str = new StringBuffer(getNamePrefix());
+        str.append("javax.media.j3d.ColoringAttributes: ");
         String shadingModes[] = { "FASTEST", "NICEST", "SHADE_FLAT",
                                                      "SHADE_GOURAUD" };
 

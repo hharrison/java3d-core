@@ -12,9 +12,9 @@
 
 package javax.media.j3d;
 
+import java.awt.image.BufferedImage;
 import java.util.*;
 import javax.vecmath.*;
-import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 
 /**
@@ -949,7 +949,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
         super.doSetLive(backgroundGroup, refCount);
 
-	// TODO: for now, do setLive for all the defined images.
+	// XXXX: for now, do setLive for all the defined images.
 	// But in theory, we only need to setLive those within the
 	// baseLevel and maximumLevel range. But then we'll need
 	// setLive and clearLive image when the range changes.
@@ -1366,8 +1366,9 @@ abstract class TextureRetained extends NodeComponentRetained {
 		yoffset = image.height - yoffset - height;
 
 	    } else {
+                // Fix issue 132
 		imageData = ((DataBufferByte)
-			image.bImage[0].getData().getDataBuffer()).getData();
+			((BufferedImage)image.bImage[0]).getRaster().getDataBuffer()).getData();
 
 	        // based on the yUp flag in the associated ImageComponent,
 	        // adjust the yoffset
@@ -2031,12 +2032,12 @@ abstract class TextureRetained extends NodeComponentRetained {
 	if (arg == null) {
 	    // no subimage info, so the entire image is to be updated
 	    info.entireImage = true;
-
-	} else if ((arg.width >= width/2) && (arg.height >= height/2)) {
-
-	    // if the subimage dimension is close to the complete dimension,
-            // use the full update (it's more efficient)
-	    info.entireImage = true;
+        // Fix issue 117 using ogl subimage always
+//	} else if ((arg.width >= width/2) && (arg.height >= height/2)) {
+//
+//	    // if the subimage dimension is close to the complete dimension,
+//            // use the full update (it's more efficient)
+//	    info.entireImage = true;
 	} else {
 	    info.entireImage = false;
 	}
@@ -2137,30 +2138,30 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    mirrorTexture.addImageUpdateInfo(level, face, null);
 
 	} else if ((component & IMAGES_CHANGED) != 0) {
-
+	    
 	    Object [] arg = (Object []) value;
 	    ImageComponent [] images = (ImageComponent[])arg[0];
-            int face = ((Integer)arg[1]).intValue();
-
+	    int face = ((Integer)arg[1]).intValue();
+	    
 	    for (int i = 0; i < images.length; i++) {
-
+		
 		// first remove texture from the userList of the current
-                // referencing image
-	        if (mirrorTexture.images[face][i] != null) {
-	            mirrorTexture.images[face][i].removeUser(mirror);
-	        }
-
-	        // assign the new image and add texture to the userList
-	        if (images[i] == null) {
-	            mirrorTexture.images[face][i] = null;
-	        } else {
-	            mirrorTexture.images[face][i] = 
-				(ImageComponentRetained)images[i].retained;
-	            mirrorTexture.images[face][i].addUser(mirror);
-                }
+		// referencing image
+		if (mirrorTexture.images[face][i] != null) {
+		    mirrorTexture.images[face][i].removeUser(mirror);
+		}
+		
+		// assign the new image and add texture to the userList
+		if (images[i] == null) {
+		    mirrorTexture.images[face][i] = null;
+		} else {
+		    mirrorTexture.images[face][i] = 
+			(ImageComponentRetained)images[i].retained;
+		    mirrorTexture.images[face][i].addUser(mirror);
+		}
 	    }
 	    mirrorTexture.updateResourceCreationMask();
-
+	    
 	    // NOTE: the old images have to be removed from the
 	    // renderBins' NodeComponentList and new image have to be
 	    // added to the lists. This will be taken care of
@@ -2169,7 +2170,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	} else if ((component & BASE_LEVEL_CHANGED) != 0) {
 	    int level = ((Integer)value).intValue();
-
+	    
 	    if (level < mirrorTexture.baseLevel) {
 
 		// add texture to the userList of those new levels of 

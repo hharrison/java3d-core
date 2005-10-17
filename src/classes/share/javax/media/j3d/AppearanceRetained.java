@@ -83,9 +83,6 @@ class AppearanceRetained extends NodeComponentRetained {
     static final int POINT              = 0x0200;
     static final int TEXTURE_UNIT_STATE = 0x0400;
 
-    static final int ALL_COMPONENTS = (MATERIAL|TEXTURE|TEXCOORD_GEN|TEXTURE_ATTR|COLOR|TRANSPARENCY|
-				       RENDERING|POLYGON|LINE|POINT|TEXTURE_UNIT_STATE);
-
     static final int ALL_SOLE_USERS = 0;
 
     // A pointer to the scene graph appearance object
@@ -876,11 +873,18 @@ class AppearanceRetained extends NodeComponentRetained {
 
     }
 
-    /**
-     * This setLive routine first calls the superclass's method, then
-     * it adds itself to the list of lights
-     */
     void setLive(boolean backgroundGroup, int refCount) {
+	// System.out.println("AppearceRetained.setLive()");
+	doSetLive(backgroundGroup, refCount);
+	markAsLive();
+    }
+
+    /**
+     * This method calls the setLive method of all appearance bundle
+     * objects.
+     */
+    void doSetLive(boolean backgroundGroup, int refCount) {
+	// System.out.println("AppearceRetained.doSetLive()");
 	
 	if (material != null) {	    
 	
@@ -938,12 +942,11 @@ class AppearanceRetained extends NodeComponentRetained {
 	// Increment the reference count and initialize the appearance
 	// mirror object
         super.doSetLive(backgroundGroup, refCount);
-	super.markAsLive();
     }
 
     /**
-     * This clearLive routine first calls the superclass's method, then
-     * it removes itself to the list of lights
+     * This method calls the clearLive method of all appearance bundle
+     * objects.
      */
     void clearLive(int refCount) {
 	super.clearLive(refCount);

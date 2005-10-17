@@ -206,6 +206,17 @@ public class Text3D extends Geometry {
      */
     public static final int PATH_DOWN = 3;
 
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+	ALLOW_FONT3D_READ,
+	ALLOW_STRING_READ,
+	ALLOW_POSITION_READ,
+	ALLOW_ALIGNMENT_READ,
+	ALLOW_PATH_READ,
+	ALLOW_CHARACTER_SPACING_READ,
+	ALLOW_BOUNDING_BOX_READ
+    };
+
     /**
      * Constructs a Text3D object with default parameters.
      * The default values are as follows:
@@ -219,6 +230,8 @@ public class Text3D extends Geometry {
      * </ul>
      */
     public Text3D() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -227,6 +240,9 @@ public class Text3D extends Geometry {
      * @see Font3D
      */
     public Text3D(Font3D font3D) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((Text3DRetained)this.retained).setFont3D(font3D);
     }
 
@@ -239,6 +255,9 @@ public class Text3D extends Geometry {
      * @see Font3D
      */
     public Text3D(Font3D font3D, String string) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((Text3DRetained)this.retained).setFont3D(font3D);
 	((Text3DRetained)this.retained).setString(string);
     }
@@ -252,6 +271,9 @@ public class Text3D extends Geometry {
      * @see Font3D
      */
     public Text3D(Font3D font3D, String string, Point3f position) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((Text3DRetained)this.retained).setFont3D(font3D);
 	((Text3DRetained)this.retained).setString(string);
 	((Text3DRetained)this.retained).setPosition(position);
@@ -268,6 +290,9 @@ public class Text3D extends Geometry {
      */
     public Text3D(Font3D font3D, String string, Point3f position,
 		  int alignment, int path) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((Text3DRetained)this.retained).setFont3D(font3D);
 	((Text3DRetained)this.retained).setString(string);
 	((Text3DRetained)this.retained).setPosition(position);

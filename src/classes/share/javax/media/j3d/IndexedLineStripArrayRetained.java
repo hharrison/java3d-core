@@ -29,14 +29,14 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
         geoType = GEO_TYPE_INDEXED_LINE_STRIP_SET;
     }
 
-
-    boolean intersect(PickShape pickShape, double dist[],  Point3d iPnt) {
+    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
 	Point3d pnts[] = new Point3d[2];
 	double sdist[] = new double[1];
 	double minDist = Double.MAX_VALUE;
 	double x = 0, y = 0, z = 0;
 	int scount, j, i = 0;
 	int count = 0;
+        int minICount = 0; 
 
 	pnts[0] = new Point3d();
 	pnts[1] = new Point3d();
@@ -54,14 +54,15 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 		    if (intersectLineAndRay(pnts[0], pnts[1], pickRay.origin,
 					    pickRay.direction, sdist,
 					    iPnt)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-			    x = iPnt.x;
-			    y = iPnt.y;
-			    z = iPnt.z;
+                            minICount = count;
+                            x = iPnt.x;
+                            y = iPnt.y;
+                            z = iPnt.z;
 			}
 		    }
 		    pnts[0].set(pnts[1]);
@@ -85,14 +86,15 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 					    pickSegment.start, 
 					    dir, sdist, iPnt) &&
 			(sdist[0] <= 1.0)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-			    x = iPnt.x;
-			    y = iPnt.y;
-			    z = iPnt.z;
+                            minICount = count;
+                            x = iPnt.x;
+                            y = iPnt.y;
+                            z = iPnt.z;
 			}
 		    }
 		    pnts[0].set(pnts[1]);			
@@ -111,14 +113,15 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 		    getVertexData(indexCoord[count++], pnts[1]);
 
 		    if (intersectBoundingBox(pnts, bbox, sdist, iPnt)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-			    x = iPnt.x;
-			    y = iPnt.y;
-			    z = iPnt.z;
+                            minICount = count;
+                            x = iPnt.x;
+                            y = iPnt.y;
+                            z = iPnt.z;
 			}
 		    }
 		    pnts[0].set(pnts[1]);			   
@@ -138,14 +141,15 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 		    getVertexData(indexCoord[count++], pnts[1]);
 
 		    if (intersectBoundingSphere(pnts, bsphere, sdist, iPnt)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-			    x = iPnt.x;
-			    y = iPnt.y;
-			    z = iPnt.z;
+                            minICount = count;
+                            x = iPnt.x;
+                            y = iPnt.y;
+                            z = iPnt.z;
 			}
 		    }
 		    pnts[0].set(pnts[1]);
@@ -164,14 +168,15 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 		    getVertexData(indexCoord[count++], pnts[1]);
 
 		    if (intersectBoundingPolytope(pnts, bpolytope, sdist, iPnt)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-			    x = iPnt.x;
-			    y = iPnt.y;
-			    z = iPnt.z;
+                            minICount = count;
+                            x = iPnt.x;
+                            y = iPnt.y;
+                            z = iPnt.z;
 			}
 		    }
 		    pnts[0].set(pnts[1]);
@@ -189,14 +194,15 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 		    getVertexData(indexCoord[count++], pnts[1]);
 
 		    if (intersectCylinder(pnts, pickCylinder, sdist, iPnt)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-			    x = iPnt.x;
-			    y = iPnt.y;
-			    z = iPnt.z;
+                            minICount = count;
+                            x = iPnt.x;
+                            y = iPnt.y;
+                            z = iPnt.z;
 			}
 		    }
 		    pnts[0].set(pnts[1]);
@@ -214,14 +220,15 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 		    getVertexData(indexCoord[count++], pnts[1]);
 
 		    if (intersectCone(pnts, pickCone, sdist, iPnt)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-			    x = iPnt.x;
-			    y = iPnt.y;
-			    z = iPnt.z;
+                            minICount = count;
+                            x = iPnt.x;
+                            y = iPnt.y;
+                            z = iPnt.z;
 			}
 		    }
 		    pnts[0].set(pnts[1]);
@@ -236,14 +243,20 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 	} 
 
 	if (minDist < Double.MAX_VALUE) {
-	    dist[0] = minDist;
+            assert(minICount >=2);
+            int[] vertexIndices = iInfo.getVertexIndices();
+            if (vertexIndices == null) {
+                vertexIndices = new int[2];
+                iInfo.setVertexIndices(vertexIndices);
+            }
+            vertexIndices[0] = minICount - 2;
+            vertexIndices[1] = minICount - 1;
 	    iPnt.x = x;
 	    iPnt.y = y;
 	    iPnt.z = z;
 	    return true;
 	}
 	return false;
-   
     }
       
     // intersect pnts[] with every triangle in this object

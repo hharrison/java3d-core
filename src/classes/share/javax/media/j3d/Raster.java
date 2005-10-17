@@ -180,6 +180,17 @@ public class Raster extends Geometry {
     ALLOW_CLIP_MODE_WRITE = CapabilityBits.RASTER_ALLOW_CLIP_MODE_WRITE;
 
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+	ALLOW_POSITION_READ,
+	ALLOW_OFFSET_READ,
+	ALLOW_IMAGE_READ,
+	ALLOW_DEPTH_COMPONENT_READ,
+	ALLOW_SIZE_READ,
+	ALLOW_TYPE_READ,
+	ALLOW_CLIP_MODE_READ
+    };
+
     /**
      * Constructs a Raster object with default parameters.
      * The default values are as follows:
@@ -195,6 +206,8 @@ public class Raster extends Geometry {
      * </ul>
      */
     public Raster() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -222,6 +235,9 @@ public class Raster extends Geometry {
                   int height,
                   ImageComponent2D image,
                   DepthComponent depthComponent) {
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
 
         ((RasterRetained)this.retained).setPosition(pos);
         ((RasterRetained)this.retained).setType(type);
@@ -251,6 +267,9 @@ public class Raster extends Geometry {
                   Dimension size,
                   ImageComponent2D image, 
                   DepthComponent depthComponent) { 
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
 
         ((RasterRetained)this.retained).setPosition(pos);
         ((RasterRetained)this.retained).setType(type);
@@ -288,6 +307,9 @@ public class Raster extends Geometry {
 		  Point dstOffset,
 		  ImageComponent2D image,
 		  DepthComponent depthComponent) {
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
 
         ((RasterRetained)this.retained).setPosition(pos);
         ((RasterRetained)this.retained).setType(type);

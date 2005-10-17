@@ -92,7 +92,13 @@ public class AlternateAppearance extends Leaf {
     public static final int ALLOW_SCOPE_WRITE =
 	CapabilityBits.ALTERNATE_APPEARANCE_ALLOW_SCOPE_WRITE;
 
-
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_INFLUENCING_BOUNDS_READ,
+        ALLOW_APPEARANCE_READ,
+        ALLOW_SCOPE_READ
+    };
+    
     /**
      * Constructs an AlternateAppearance node with default
      * parameters.  The default values are as follows:
@@ -106,8 +112,21 @@ public class AlternateAppearance extends Leaf {
      */
     public AlternateAppearance() {
 	// Just use the defaults
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+        
     }
 
+    /**
+     * Constructs an AlternateAppearance node with the specified appearance.
+     * @param appearance the appearance that is used for those nodes affected
+     * by this AlternateAppearance node.
+     */
+    public AlternateAppearance(Appearance appearance) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+	((AlternateAppearanceRetained)retained).initAppearance(appearance);
+    }
 
     /**
      * Creates the retained mode AlternateAppearanceRetained object that this
@@ -117,17 +136,6 @@ public class AlternateAppearance extends Leaf {
 	this.retained = new AlternateAppearanceRetained();
 	this.retained.setSource(this);
     }
-
-
-    /**
-     * Constructs an AlternateAppearance node with the specified appearance.
-     * @param appearance the appearance that is used for those nodes affected
-     * by this AlternateAppearance node.
-     */
-    public AlternateAppearance(Appearance appearance) {
-	((AlternateAppearanceRetained)retained).initAppearance(appearance);
-    }
-
 
     /**
      * Sets the appearance of this AlternateAppearance node.

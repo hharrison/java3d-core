@@ -220,6 +220,14 @@ public abstract class Light extends Leaf {
     public static final int
     ALLOW_SCOPE_WRITE = CapabilityBits.LIGHT_ALLOW_SCOPE_WRITE;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_STATE_READ,
+        ALLOW_COLOR_READ,
+        ALLOW_INFLUENCING_BOUNDS_READ,
+        ALLOW_SCOPE_READ
+    };
+    
     /**
      * Constructs a Light node with default parameters.  The default
      * values are as follows:
@@ -232,6 +240,8 @@ public abstract class Light extends Leaf {
      * </ul>
      */
     public Light() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -239,7 +249,10 @@ public abstract class Light extends Leaf {
      * @param color the color of the light source
      */
     public Light(Color3f color) {
-	((LightRetained)this.retained).initColor(color);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((LightRetained)this.retained).initColor(color);
     }
 
     /**
@@ -249,7 +262,10 @@ public abstract class Light extends Leaf {
      * @param color the color of the light source
      */
     public Light(boolean lightOn, Color3f color) {
-	((LightRetained)this.retained).initEnable(lightOn);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((LightRetained)this.retained).initEnable(lightOn);
 	((LightRetained)this.retained).initColor(color);
     }
 

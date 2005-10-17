@@ -30,15 +30,16 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
     TriangleStripArrayRetained() {
 	this.geoType = GEO_TYPE_TRI_STRIP_SET;
     }
-
-    boolean intersect(PickShape pickShape, double dist[],  Point3d iPnt) {
+    
+    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
 	Point3d pnts[] = new Point3d[3];
 	double sdist[] = new double[1];
 	double minDist = Double.MAX_VALUE;
 	double x = 0, y = 0, z = 0;
+        int count = 0;
+        int minICount = 0;         
 	int i = 0;
 	int j, end;
-
 	pnts[0] = new Point3d();
 	pnts[1] = new Point3d();
 	pnts[2] = new Point3d();
@@ -52,18 +53,21 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 		end = j + stripVertexCounts[i++];
 		getVertexData(j++, pnts[0]);
 		getVertexData(j++, pnts[1]);
+                count += 2;
 		while (j < end) {
 		    getVertexData(j++, pnts[2]);
+                    count++;                    
 		    if (intersectRay(pnts, pickRay, sdist, iPnt)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
+                            minICount = count;
 			    x = iPnt.x;
 			    y = iPnt.y;
 			    z = iPnt.z;
-			}
+                        }
 		    }
 		    pnts[0].set(pnts[1]);
 		    pnts[1].set(pnts[2]);
@@ -78,15 +82,18 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 		end = j + stripVertexCounts[i++];
 		getVertexData(j++, pnts[0]);
 		getVertexData(j++, pnts[1]);
+                count += 2;
 		while (j < end) {
 		    getVertexData(j++, pnts[2]);
+                    count++;
 		    if (intersectSegment(pnts, pickSegment.start, 
 					 pickSegment.end, sdist, iPnt)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
+                            minICount = count;
 			    x = iPnt.x;
 			    y = iPnt.y;
 			    z = iPnt.z;
@@ -106,14 +113,17 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 		end = j + stripVertexCounts[i++];
 		getVertexData(j++, pnts[0]);
 		getVertexData(j++, pnts[1]);
+                count += 2;
 		while (j < end) {
 		    getVertexData(j++, pnts[2]);
+                    count++;
 		    if (intersectBoundingBox(pnts, bbox, sdist, iPnt)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
+                            minICount = count;
 			    x = iPnt.x;
 			    y = iPnt.y;
 			    z = iPnt.z;
@@ -133,15 +143,18 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 		end = j + stripVertexCounts[i++];
 		getVertexData(j++, pnts[0]);
 		getVertexData(j++, pnts[1]);
+                count += 2;
 		while (j < end) {
 		    getVertexData(j++, pnts[2]);
+                    count++;
 		    if (intersectBoundingSphere(pnts, bsphere, sdist,
 						iPnt)) { 
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
+                            minICount = count;
 			    x = iPnt.x;
 			    y = iPnt.y;
 			    z = iPnt.z;
@@ -161,15 +174,18 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 		end = j + stripVertexCounts[i++];
 		getVertexData(j++, pnts[0]);
 		getVertexData(j++, pnts[1]);
+                count += 2;                
 		while (j < end) {
 		    getVertexData(j++, pnts[2]);
-		    if (intersectBoundingPolytope(pnts, bpolytope,
+                    count++;
+                    if (intersectBoundingPolytope(pnts, bpolytope,
 						  sdist, iPnt)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
+                            minICount = count;
 			    x = iPnt.x;
 			    y = iPnt.y;
 			    z = iPnt.z;
@@ -188,14 +204,17 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 		end = j + stripVertexCounts[i++];
 		getVertexData(j++, pnts[0]);
 		getVertexData(j++, pnts[1]);
+                count += 2;
 		while (j < end) {
 		    getVertexData(j++, pnts[2]);
-		    if (intersectCylinder(pnts, pickCylinder, sdist, iPnt)) {
-			if (dist == null) {
+                    count++;
+                    if (intersectCylinder(pnts, pickCylinder, sdist, iPnt)) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
+                            minICount = count;
 			    x = iPnt.x;
 			    y = iPnt.y;
 			    z = iPnt.z;
@@ -214,14 +233,17 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 		end = j + stripVertexCounts[i++];
 		getVertexData(j++, pnts[0]);
 		getVertexData(j++, pnts[1]);
+                count += 2;
 		while (j < end) {
 		    getVertexData(j++, pnts[2]);
+                    count++;
 		    if (intersectCone(pnts, pickCone, sdist, iPnt)) {
-			if (dist == null) {
+			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
+                            minICount = count;
 			    x = iPnt.x;
 			    y = iPnt.y;
 			    z = iPnt.z;
@@ -240,7 +262,15 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	} 
 
 	if (minDist < Double.MAX_VALUE) {
-	    dist[0] = minDist;
+            assert(minICount >=3);
+            int[] vertexIndices = iInfo.getVertexIndices();
+            if (vertexIndices == null) {
+                vertexIndices = new int[3];
+                iInfo.setVertexIndices(vertexIndices);
+            }
+            vertexIndices[0] = minICount - 3;
+            vertexIndices[1] = minICount - 2;
+            vertexIndices[2] = minICount - 1;
 	    iPnt.x = x;
 	    iPnt.y = y;
 	    iPnt.z = z;

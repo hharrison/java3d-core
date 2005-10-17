@@ -23,15 +23,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(SOLARIS) || defined(__linux__)
+#if defined(SOLARIS) || defined(LINUX)
 #define GLX_GLEXT_PROTOTYPES
 #define GLX_GLXEXT_PROTOTYPES
+#define UNIX
+
 #include <limits.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
-#include "gl_1_2.h"
 #include "glext.h"
 #endif
 
@@ -73,7 +74,6 @@
 #ifndef D3D
 #include <GL/gl.h>
 #include "wglext.h"
-#include "gl_1_2.h"
 #include "glext.h"
 #endif
 
@@ -84,7 +84,6 @@
 #include "javax_media_j3d_Canvas3D.h"
 #include "javax_media_j3d_ColoringAttributes.h"
 #include "javax_media_j3d_ColoringAttributesRetained.h"
-#include "javax_media_j3d_CompressedGeometryRetained.h"
 #include "javax_media_j3d_DepthComponentRetained.h"
 #include "javax_media_j3d_DetailTextureImage.h"
 #include "javax_media_j3d_DirectionalLightRetained.h"
@@ -106,6 +105,7 @@
 #include "javax_media_j3d_Material.h"
 #include "javax_media_j3d_MaterialRetained.h"
 #include "javax_media_j3d_ModelClipRetained.h"
+#include "javax_media_j3d_NativeAPIInfo.h"
 #include "javax_media_j3d_NativeConfigTemplate3D.h"
 #include "javax_media_j3d_NodeRetained.h"
 #include "javax_media_j3d_PointAttributesRetained.h"
@@ -132,10 +132,11 @@
 #include "javax_media_j3d_TextureUnitStateRetained.h"
 #include "javax_media_j3d_TransparencyAttributes.h"
 #include "javax_media_j3d_TransparencyAttributesRetained.h"
-
-#ifndef GL_SUNX_geometry_compression
-#define GL_COMPRESSED_GEOM_ACCELERATED_SUNX   0x81D0
-#endif /* GL_SUNX_geometry_compression */
+#include "javax_media_j3d_GLSLShaderProgramRetained.h"
+#include "javax_media_j3d_CgShaderProgramRetained.h"
+#include "javax_media_j3d_Shader.h"
+#include "javax_media_j3d_ShaderAttributeObjectRetained.h"
+#include "javax_media_j3d_ShaderError.h"
 
 /*
  * Define these constants here as a workaround for conflicting
@@ -259,9 +260,25 @@
 #define GA_TEXTURE_COORDINATE_3  javax_media_j3d_GeometryArray_TEXTURE_COORDINATE_3	
 #define GA_TEXTURE_COORDINATE_4  javax_media_j3d_GeometryArray_TEXTURE_COORDINATE_4	
 #define GA_TEXTURE_COORDINATE    javax_media_j3d_GeometryArray_TEXTURE_COORDINATE
+#define GA_VERTEX_ATTRIBUTES     javax_media_j3d_GeometryArray_VERTEX_ATTRIBUTES
 #define GA_BY_REFERENCE          javax_media_j3d_GeometryArray_BY_REFERENCE
 				
 				
+/*
+ * These match the constants in ShaderAttributeObjectRetained
+ */
+
+#define TYPE_INTEGER javax_media_j3d_ShaderAttributeObjectRetained_TYPE_INTEGER
+#define TYPE_FLOAT javax_media_j3d_ShaderAttributeObjectRetained_TYPE_FLOAT
+#define TYPE_TUPLE2I javax_media_j3d_ShaderAttributeObjectRetained_TYPE_TUPLE2I
+#define TYPE_TUPLE2F javax_media_j3d_ShaderAttributeObjectRetained_TYPE_TUPLE2F
+#define TYPE_TUPLE3I javax_media_j3d_ShaderAttributeObjectRetained_TYPE_TUPLE3I
+#define TYPE_TUPLE3F javax_media_j3d_ShaderAttributeObjectRetained_TYPE_TUPLE3F
+#define TYPE_TUPLE4I javax_media_j3d_ShaderAttributeObjectRetained_TYPE_TUPLE4I
+#define TYPE_TUPLE4F javax_media_j3d_ShaderAttributeObjectRetained_TYPE_TUPLE4F
+#define TYPE_MATRIX3F javax_media_j3d_ShaderAttributeObjectRetained_TYPE_MATRIX3F
+#define TYPE_MATRIX4F javax_media_j3d_ShaderAttributeObjectRetained_TYPE_MATRIX4F
+
 
 /*
  * These match the constants in NativeConfigTemplate3D
@@ -281,7 +298,7 @@
 #define DOUBLEBUFFER	javax_media_j3d_NativeConfigTemplate3D_DOUBLEBUFFER
 #define STEREO		javax_media_j3d_NativeConfigTemplate3D_STEREO
 #define ANTIALIASING	javax_media_j3d_NativeConfigTemplate3D_ANTIALIASING
-
+#define STENCIL_SIZE	javax_media_j3d_NativeConfigTemplate3D_STENCIL_SIZE
 
 /* set this to the number of indices (from above) */
 #define NUM_ITEMS	(javax_media_j3d_NativeConfigTemplate3D_NUM_ITEMS + 2)
@@ -302,8 +319,26 @@
 #define J3D_RGB          javax_media_j3d_Texture_RGB
 #define J3D_RGBA         javax_media_j3d_Texture_RGBA
 
+
+/*
+ * These match the constants in TransparencyAttributes.java
+ */
+#define BLEND_ZERO javax_media_j3d_TransparencyAttributes_BLEND_ZERO
+#define BLEND_ONE javax_media_j3d_TransparencyAttributes_BLEND_ONE
+#define BLEND_SRC_ALPHA javax_media_j3d_TransparencyAttributes_BLEND_SRC_ALPHA
+#define BLEND_ONE_MINUS_SRC_ALPHA javax_media_j3d_TransparencyAttributes_BLEND_ONE_MINUS_SRC_ALPHA
+#define BLEND_DST_COLOR javax_media_j3d_TransparencyAttributes_BLEND_DST_COLOR
+#define BLEND_ONE_MINUS_DST_COLOR javax_media_j3d_TransparencyAttributes_BLEND_ONE_MINUS_DST_COLOR
+#define BLEND_SRC_COLOR javax_media_j3d_TransparencyAttributes_BLEND_SRC_COLOR
+#define BLEND_ONE_MINUS_SRC_COLOR javax_media_j3d_TransparencyAttributes_BLEND_ONE_MINUS_SRC_COLOR
+#define BLEND_CONSTANT_COLOR javax_media_j3d_TransparencyAttributes_BLEND_CONSTANT_COLOR
+#define MAX_BLEND_FUNC_TABLE_SIZE javax_media_j3d_TransparencyAttributes_MAX_BLEND_FUNC_TABLE_SIZE
+
+
+
+
 #ifndef D3D
-#if defined(SOLARIS) || defined(__linux__)
+#if defined(UNIX)
 extern void APIENTRY glBlendColor (GLclampf, GLclampf, GLclampf, GLclampf);
 extern void APIENTRY glBlendColorEXT (GLclampf, GLclampf, GLclampf, GLclampf);
 extern void APIENTRY glColorTable (GLenum, GLenum, GLsizei, GLenum, GLenum, const GLvoid *);
@@ -347,7 +382,7 @@ extern void APIENTRY glTexSubImage3DEXT (GLenum, GLint, GLint, GLint, GLint, GLs
 extern int glXVideoResizeSUN( Display *, GLXDrawable, float);
 #endif
 
-#endif /* SOLARIS || __linux__ */
+#endif /* UNIX_ */
 
 #ifndef APIENTRY
 #define APIENTRY
@@ -389,14 +424,41 @@ typedef void (APIENTRY * MYPFNGLSHARPENTEXFUNCSGI) (GLenum target, GLsizei n, co
 typedef void (APIENTRY * MYPFNGLDETAILTEXFUNCSGI) (GLenum target, GLsizei n, const GLfloat *points);
 typedef void (APIENTRY * MYPFNGLTEXFILTERFUNCSGI) (GLenum target, GLenum filter, GLsizei n, const GLfloat *points);
 
-#if defined(SOLARIS) || defined(__linux__)
+#if defined(UNIX)
 typedef GLXFBConfig * (APIENTRY * MYPFNGLXCHOOSEFBCONFIG) (Display *dpy, int screen, const int *attrib_list, int *nelements);
 typedef int (APIENTRY * MYPFNGLXVIDEORESIZESUN) (Display * dpy, GLXDrawable draw, float factor);
-#endif /* SOLARIS || __linux__ */
+#endif /* UNIX_ */
 
+
+/* Typedef for context properties struct */
+typedef struct GraphicsContextPropertiesInfoRec GraphicsContextPropertiesInfo;
+
+/* Typedefs for language-independent vertex attribute functions */
+typedef void (*MYPFNVERTEXATTRPOINTER)(GraphicsContextPropertiesInfo *ctxProperties,
+				       int index, int size, int type, int stride,
+				       const void *pointer);
+typedef void (*MYPFNENABLEVERTEXATTRARRAY)(GraphicsContextPropertiesInfo *ctxProperties,
+					   int index);
+typedef void (*MYPFNDISABLEVERTEXATTRARRAY)(GraphicsContextPropertiesInfo *ctxProperties,
+					    int index);
+typedef void (*MYPFNVERTEXATTR1FV)(GraphicsContextPropertiesInfo *ctxProperties,
+				   int index, const float *v);
+typedef void (*MYPFNVERTEXATTR2FV)(GraphicsContextPropertiesInfo *ctxProperties,
+				   int index, const float *v);
+typedef void (*MYPFNVERTEXATTR3FV)(GraphicsContextPropertiesInfo *ctxProperties,
+				   int index, const float *v);
+typedef void (*MYPFNVERTEXATTR4FV)(GraphicsContextPropertiesInfo *ctxProperties,
+				   int index, const float *v);
+
+
+/* Typedefs for (opaque) GLSL context info */
+typedef struct GLSLCtxInfoRec GLSLCtxInfo;
+
+/* Typedefs for (opaque) Cg context info */
+typedef struct CgCtxInfoRec CgCtxInfo;
 
 /* define the structure to hold the properties of graphics context */
-typedef struct {
+struct GraphicsContextPropertiesInfoRec {
     jlong context;
 
     /* version and extension info */
@@ -423,7 +485,8 @@ typedef struct {
     /* GL_ARB_imaging subset */
     /* GL_EXT_blend_color or GL_BLEND_COLOR */
     jboolean blend_color_ext;
-    GLenum blendFunctionTable[8]; 
+    GLenum blendFunctionTable[MAX_BLEND_FUNC_TABLE_SIZE];
+    
     /* GL_SGI_color_table or GL_COLOR_TABLE */
     jboolean color_table_ext;
 
@@ -461,8 +524,6 @@ typedef struct {
     jboolean global_alpha_sun;
     /* GL_SUNX_constant_data */
     jboolean constant_data_sun;
-    /* GL_SUNX_geometry_compression */
-    jboolean geometry_compression_sunx;
 	 
     /* GL_EXT_abgr */
     jboolean abgr_ext;
@@ -477,7 +538,11 @@ typedef struct {
 
     /* GL_ARB_multitexture */
     jboolean arb_multitexture;
-    int textureUnitCount;
+    int maxTexCoordSets; /* maximum number of texture coordinate sets */
+    int maxTextureUnits; /* number of fixed-function texture units */
+    int maxTextureImageUnits; /* number of fragment shader texture units */
+    int maxVertexTextureImageUnits; /* number of vertex shader texture units */
+    int maxCombinedTextureImageUnits; /* total number of shader texture units */
 
     /* GL_SGI_texture_color_table */
     jboolean textureColorTableAvailable;
@@ -557,16 +622,11 @@ typedef struct {
 
     /* GL_SGIX_texture_lod_bias */
     jboolean textureLodBiasAvailable;
-    
-    jboolean geometry_compression_accelerated;
-    int geometry_compression_accelerated_major_version;
-    int geometry_compression_accelerated_minor_version;
-    int geometry_compression_accelerated_subminor_version;
-	 
+
     /* extension mask */
     jint extMask;
     jint textureExtMask;
-	 
+
     /* function pointers */
     MYPFNGLBLENDCOLORPROC glBlendColor;
     MYPFNGLBLENDCOLOREXTPROC glBlendColorEXT;
@@ -599,11 +659,36 @@ typedef struct {
     MYPFNGLDETAILTEXFUNCSGI glDetailTexFuncSGIS;
     MYPFNGLTEXFILTERFUNCSGI glTexFilterFuncSGIS;
 
-#if defined(SOLARIS) || defined(__linux__)
+#if defined(UNIX)
     MYPFNGLXVIDEORESIZESUN glXVideoResizeSUN;
-#endif /* SOLARIS || __linux__ */
+#endif /* UNIX_ */
 
-} GraphicsContextPropertiesInfo;
+    /* Shading language support */
+    jboolean shadingLanguageGLSL;
+    jboolean shadingLanguageCg;
+
+    /* Function pointers for language-independent vertex attribute functions */
+    MYPFNVERTEXATTRPOINTER vertexAttrPointer;
+    MYPFNENABLEVERTEXATTRARRAY enableVertexAttrArray;
+    MYPFNDISABLEVERTEXATTRARRAY disableVertexAttrArray;
+    MYPFNVERTEXATTR1FV vertexAttr1fv;
+    MYPFNVERTEXATTR2FV vertexAttr2fv;
+    MYPFNVERTEXATTR3FV vertexAttr3fv;
+    MYPFNVERTEXATTR4FV vertexAttr4fv;
+
+    /* Pointer to currently bound shader program */
+    jlong shaderProgramId;
+
+    /* Implementation-dependent maximum number of vertex attributes */
+    int maxVertexAttrs;
+
+    /* GLSL shader context information */
+    GLSLCtxInfo *glslCtxInfo;
+
+    /* Cg shader context information */
+    CgCtxInfo *cgCtxInfo;
+
+};
 
 
 #ifdef WIN32
@@ -619,6 +704,8 @@ struct PixelFormatInfoRec {
     GLboolean  onScreenHasStereo;
     GLboolean  onScreenHasDoubleBuffer;
     GLboolean  onScreenHasAccum;
+    int        onScreenStencilSize;
+    
     /* Information about onScreen pixel format */
     int offScreenPFormat;       /* PixelFormat for offScreen */
     GLboolean  offScreenHasMultisample;  /* TRUE if WGL_SAMPLE_BUFFERS_ARB is TRUE and
@@ -626,6 +713,8 @@ struct PixelFormatInfoRec {
     GLboolean  offScreenHasStereo;
     GLboolean  offScreenHasDoubleBuffer;
     GLboolean  offScreenHasAccum;
+    int        offScreenStencilSize;
+    
     GLboolean  drawToPbuffer;   /* value of DRAW_TO_PBUFFER attr for offScreenPFormat */
     
     /* Information about extension support */
@@ -652,7 +741,7 @@ typedef struct OffScreenBufferInfoRec OffScreenBufferInfo;
 struct OffScreenBufferInfoRec {
     GLboolean isPbuffer; /* GL_TRUE if Pbuffer is used. */
 
-#if defined(SOLARIS) || defined(__linux__)
+#if defined(UNIX)
 #endif
     
 #ifdef WIN32

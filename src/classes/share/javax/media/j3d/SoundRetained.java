@@ -448,7 +448,7 @@ abstract class SoundRetained extends LeafRetained
             if (debugFlag)
 		debugPrint("setSchedulingBounds for a NULL region");
         }
-        // TODO: test that this works - could not new Bounds() since
+        // XXXX: test that this works - could not new Bounds() since
         //       Bounds is an abstract class and can't be instantiated
         dispatchAttribChange(BOUNDS_DIRTY_BIT, region);
 	if (source != null && source.isLive()) {
@@ -501,7 +501,7 @@ abstract class SoundRetained extends LeafRetained
 	} else {
 	    boundingLeaf = null;
 	}
-        // TODO: since BoundingLeaf constructor only takes Bounds 
+        // XXXX: since BoundingLeaf constructor only takes Bounds 
         //       test if region passed into dispatchAttribChange correctly.
         dispatchAttribChange(BOUNDING_LEAF_DIRTY_BIT, region);
 	if (source != null && source.isLive()) {
@@ -628,7 +628,7 @@ abstract class SoundRetained extends LeafRetained
             }
             loadedAtoms[atomCount-1] = atom;  // store reference to new atom
             // all atoms sample durations SHOULD be the same so store it in node
-            this.duration = atom.sampleLength; // TODO: refine later? in ms
+            this.duration = atom.sampleLength; // XXXX: refine later? in ms
         }
         else {  // atom is NOT loaded or has been unloaded; remove from list
             if (atomCount == 0)
@@ -1004,7 +1004,7 @@ abstract class SoundRetained extends LeafRetained
         ms.inImmCtx = inImmCtx;
         ms.setSoundData(getSoundData());
 
-// TODO: copy ms.atoms array from this.atoms
+// XXXX: copy ms.atoms array from this.atoms
 
         ms.parent = parent;
         ms.inSharedGroup = false;
@@ -1136,7 +1136,7 @@ abstract class SoundRetained extends LeafRetained
 
 	super.clearLive(s);
 
-// TODO: if (inSharedGroup)
+// XXXX: if (inSharedGroup)
 
         if (s.inSharedGroup) {
             for (int i=0; i<s.keys.length; i++) {
@@ -1195,7 +1195,7 @@ abstract class SoundRetained extends LeafRetained
 /*
     // This makes passed in sound look just like this sound
 // QUESTION: DOesn't appread to be called
-// TODO:      ...if so, remove...
+// XXXX:      ...if so, remove...
     synchronized void update(SoundRetained sound) {
         if (debugFlag)
             debugPrint("Sound.update ******** entered ***** this = " + this +
@@ -1219,13 +1219,13 @@ abstract class SoundRetained extends LeafRetained
 // QUESTION: With code below, no sound schedulingRegion found
 //        sound.schedulingRegion = schedulingRegion;
 //        sound.boundingLeaf = boundingLeaf;
-// TODO: clone of region used in Traverse code, why not here???
+// XXXX: clone of region used in Traverse code, why not here???
 //        if (schedulingRegion != null)
 //            sound.schedulingRegion = (Bounds)schedulingRegion.clone();
-// TODO:  BoundingLeafRetained boundingLeaf ...
+// XXXX:  BoundingLeafRetained boundingLeaf ...
 //        WHAT ABOUT transformedRegion??
 
-// TODO: Update ALL fields
+// XXXX: Update ALL fields
 // ALL THE BELOW USED TO COMMENTED OUT vvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         sound.sampleLength = sampleLength;
         sound.loopStartOffset = loopStartOffset;

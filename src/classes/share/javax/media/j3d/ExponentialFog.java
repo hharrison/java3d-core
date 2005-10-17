@@ -46,6 +46,11 @@ public class ExponentialFog extends Fog {
     public static final int
     ALLOW_DENSITY_WRITE = CapabilityBits.EXPONENTIAL_FOG_ALLOW_DENSITY_WRITE;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+	ALLOW_DENSITY_READ
+    };
+
     /**
      * Constructs an ExponentialFog node with default parameters.
      * The default values are as follows:
@@ -55,6 +60,8 @@ public class ExponentialFog extends Fog {
      */
     public ExponentialFog() {
 	// Just use the defaults
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -63,6 +70,9 @@ public class ExponentialFog extends Fog {
      */
     public ExponentialFog(Color3f color) {
 	super(color);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -73,6 +83,10 @@ public class ExponentialFog extends Fog {
      */
     public ExponentialFog(Color3f color, float density) {
 	super(color);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((ExponentialFogRetained)this.retained).initDensity(density);
     }
 
@@ -84,6 +98,9 @@ public class ExponentialFog extends Fog {
      */
     public ExponentialFog(float r, float g, float b) {
 	super(r, g, b);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -96,6 +113,10 @@ public class ExponentialFog extends Fog {
      */
     public ExponentialFog(float r, float g, float b, float density) {
 	super(r, g, b);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((ExponentialFogRetained)this.retained).initDensity(density);
     }
 

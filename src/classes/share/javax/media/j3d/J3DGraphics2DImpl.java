@@ -140,7 +140,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 		    }
 		}
 		// Behavior Scheduler or other threads
-		// TODO: may not be legal for behaviorScheduler
+		// XXXX: may not be legal for behaviorScheduler
 		// May cause deadlock if it is in behaviorScheduler
 		// and we wait for Renderer to finish
 		boolean renderRun = (Thread.currentThread() != 
@@ -589,13 +589,13 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 
     public final void drawArc(int x, int y, int width, int height,
 			      int startAngle, int arcAngle) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.drawArc(x, y, width, height, startAngle, arcAngle);
     }
 
     public final void drawGlyphVector(GlyphVector g, float x, float y) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.drawGlyphVector(g, x, y);
     }
@@ -619,29 +619,29 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 	    }
 	    validate(minx, miny, maxx, maxy);
 	} else {
-	    // TODO: call validate with bounding box of primitive
-	    // TODO: Need to consider Stroke width
+	    // XXXX: call validate with bounding box of primitive
+	    // XXXX: Need to consider Stroke width
 	    validate();
 	}
 	offScreenGraphics2D.drawLine(x1, y1, x2, y2);
     }
 
     public final void drawOval(int x, int y, int width, int height) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.drawOval(x, y, width, height);
     }
 
     public final void drawPolygon(int xPoints[], int yPoints[],
 				  int nPoints) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.drawPolygon(xPoints,  yPoints, nPoints);
     }
 
     public final void drawPolyline(int xPoints[], int yPoints[],
 				   int nPoints) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.drawPolyline(xPoints,  yPoints, nPoints);
     }
@@ -661,7 +661,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 
     public final void drawRoundRect(int x, int y, int width, int height,
 				    int arcWidth, int arcHeight) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.drawRoundRect(x, y, width, height, arcWidth,
 				      arcHeight);
@@ -669,14 +669,14 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 
     public final void drawString(AttributedCharacterIterator iterator,
 				 int x, int y) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.drawString(iterator, x, y);
     }
 
     public final void drawString(AttributedCharacterIterator iterator,
 				 float x, float y) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.drawString(iterator, x, y);
     }
@@ -706,20 +706,20 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 
     public final void fillArc(int x, int y, int width, int height,
 			      int startAngle, int arcAngle) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.fillArc(x, y, width, height, startAngle, arcAngle);
     }
 
     public final void fillOval(int x, int y, int width, int height) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.fillOval(x, y, width, height);
     }
 
     public final void fillRoundRect(int x, int y, int width, int height,
 				    int arcWidth, int arcHeight) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.fillRoundRect(x, y, width, height, arcWidth, 
 				      arcHeight);
@@ -810,59 +810,59 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 
     public void draw3DRect(int x, int y, int width, int height,
                            boolean raised) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.draw3DRect(x, y, width, height, raised);
     }
 
     public void drawBytes(byte data[], int offset, int length, int x, int y) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.drawBytes(data,  offset, length, x, y);
     }
  
     public void drawChars(char data[], int offset, int length, int x, int y) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.drawChars(data,  offset, length, x, y);
     }
 
     public void drawPolygon(Polygon p) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.drawPolygon(p);
     }
 
     public void drawRect(int x, int y, int width, int height) {
-	// TODO: call validate with bounding box of primitive
-	// TODO: need to consider Stroke width
+	// XXXX: call validate with bounding box of primitive
+	// XXXX: need to consider Stroke width
 	validate();
 	offScreenGraphics2D.drawRect(x, y, width, height);
     }
 
     public void fill3DRect(int x, int y, int width, int height,
                            boolean raised) {
-	// TODO: call validate with bounding box of primitive
-	// TODO: need to consider Stroke width
+	// XXXX: call validate with bounding box of primitive
+	// XXXX: need to consider Stroke width
 	validate();
 	offScreenGraphics2D.fill3DRect(x, y, width, height, raised);
     }
 
     public void fillPolygon(Polygon p) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.fillPolygon(p);
     }
 
     public final void fillPolygon(int xPoints[], int yPoints[],
                                      int nPoints) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.fillPolygon(xPoints, yPoints, nPoints);
     }
 
     public final void fillRect(int x, int y, int width, int height) {
-	// TODO: call validate with bounding box of primitive
+	// XXXX: call validate with bounding box of primitive
 	validate();
 	offScreenGraphics2D.fillRect(x, y, width, height);
     }
@@ -888,7 +888,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 	    doDrawAndFlushImage(img, x, y, observer);
 	} else { 
 	    // Behavior Scheduler or other threads
-	    // TODO: may not be legal for behaviorScheduler
+	    // XXXX: may not be legal for behaviorScheduler
 	    // May cause deadlock if it is in behaviorScheduler
 	    // and we wait for Renderer to finish
 	    boolean renderRun = (Thread.currentThread() != 

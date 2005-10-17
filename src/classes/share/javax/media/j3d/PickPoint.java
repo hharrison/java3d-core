@@ -20,6 +20,10 @@ import javax.vecmath.*;
  *
  * @see BranchGroup#pickAll
  * @see Locale#pickAll
+ * @see PickBounds
+ *
+ * @deprecated As of Java 3D version 1.4, use PickBounds with a
+ * BoundingSphere that has a small radius.
  */
 public final class PickPoint extends PickShape {
 

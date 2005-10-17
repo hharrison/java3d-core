@@ -27,7 +27,7 @@ void JNICALL Java_javax_media_j3d_DirectionalLightRetained_updateLight(
     jfloat diry,
     jfloat dirz)
 {
-    D3DLIGHT8 d3dLight;
+    D3DLIGHT9 d3dLight;
 
     GetDevice();
 
@@ -71,7 +71,7 @@ void JNICALL Java_javax_media_j3d_PointLightRetained_updateLight(
     jfloat posy,
     jfloat posz)
 {
-    D3DLIGHT8 d3dLight;
+    D3DLIGHT9 d3dLight;
 
     GetDevice();
 
@@ -119,7 +119,7 @@ void JNICALL Java_javax_media_j3d_SpotLightRetained_updateLight(
     jfloat diry,
     jfloat dirz)
 {
-    D3DLIGHT8 d3dLight;
+    D3DLIGHT9 d3dLight;
 
     GetDevice();
 

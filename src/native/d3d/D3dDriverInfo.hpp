@@ -26,7 +26,7 @@ extern int d3dDepthTable[D3DDEPTHFORMATSIZE];
 class D3dDriverInfo {
 public:
     // DDraw Driver info
-    D3DADAPTER_IDENTIFIER8 adapterIdentifier;
+    D3DADAPTER_IDENTIFIER9 adapterIdentifier;
     // Desktop display mode for this adapter
     D3DDISPLAYMODE desktopMode; 
     // monitor handle for this adapter
@@ -56,6 +56,6 @@ extern const DWORD numDeviceTypes;
 extern const D3DDEVTYPE deviceTypes[2];
 extern int requiredDeviceID;   // force to use HAL/REF or exit   
 extern int requiredDriverID;   // force to use specific adapte
-extern D3DLIGHT8 ambientLight; // constant ambient light
+extern D3DLIGHT9 ambientLight; // constant ambient light
 extern BOOL implicitMultisample; 
 #endif

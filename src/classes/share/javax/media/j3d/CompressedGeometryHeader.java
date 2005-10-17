@@ -25,6 +25,8 @@ import javax.vecmath.*;
  * provided.
  *
  * @see CompressedGeometry
+ *
+ * @deprecated As of Java 3D version 1.4.
  */
 public class CompressedGeometryHeader extends Object {
 

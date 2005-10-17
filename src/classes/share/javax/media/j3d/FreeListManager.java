@@ -25,10 +25,9 @@ class FreeListManager {
     static final int DISPLAYLIST = 4;
     static final int TEXTURE2D = 5;
     static final int TEXTURE3D = 6;
-    static final int CANVASBIT = 7;
-    static final int VECTOR3D = 8;
-    static final int POINT3D = 9;
-    static int MAXINT = 9;
+    static final int VECTOR3D = 7;
+    static final int POINT3D = 8;
+    static int MAXINT = 8;
     
     // what list we are going to shrink next
     private static int currlist = 0;
@@ -44,7 +43,6 @@ class FreeListManager {
 	freelist[DISPLAYLIST] = new IntegerFreeList();
 	freelist[TEXTURE2D] = new IntegerFreeList();
 	freelist[TEXTURE3D] = new IntegerFreeList();
-	freelist[CANVASBIT] = new IntegerFreeList();
 	freelist[POINT3D] = new MemoryFreeList("javax.vecmath.Point3d");
 	freelist[VECTOR3D] = new MemoryFreeList("javax.vecmath.Vector3d");
     }

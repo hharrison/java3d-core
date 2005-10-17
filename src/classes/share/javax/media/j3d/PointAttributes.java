@@ -65,6 +65,12 @@ public class PointAttributes extends NodeComponent {
     public static final int
     ALLOW_ANTIALIASING_WRITE = CapabilityBits.POINT_ATTRIBUTES_ALLOW_ANTIALIASING_WRITE;
 
+       // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_SIZE_READ,
+        ALLOW_ANTIALIASING_READ
+    };
+    
     /**
      * Constructs a PointAttributes object with default parameters.
      * The default values are as follows:
@@ -74,6 +80,8 @@ public class PointAttributes extends NodeComponent {
      * </ul>
      */
      public PointAttributes(){
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
       }
 
     /**
@@ -82,8 +90,10 @@ public class PointAttributes extends NodeComponent {
      * @param pointAntialiasing flag to set point antialising ON or OFF
      */
      public PointAttributes(float pointSize, boolean pointAntialiasing){
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
 
-       ((PointAttributesRetained)this.retained).initPointSize(pointSize);
+        ((PointAttributesRetained)this.retained).initPointSize(pointSize);
        ((PointAttributesRetained)this.retained).initPointAntialiasingEnable(pointAntialiasing);
      }
 

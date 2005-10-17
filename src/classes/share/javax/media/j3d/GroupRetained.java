@@ -238,6 +238,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	if(oldchildr != null) {
 	    oldchildr.setParent(null);
 	    checkClearLive(oldchildr, messages, 0, index, null);
+            universe.notifyStructureChangeListeners(false, this.source, (BranchGroup)oldchildr.source);
 	}
 	removeChildrenData(index);
 
@@ -249,6 +250,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    return;
 	}
 	
+        universe.notifyStructureChangeListeners(true, this.source, (BranchGroup)child);
 	NodeRetained childr = (NodeRetained) child.retained;
 	childr.setParent(this);
 	children.set(index, childr);
@@ -276,6 +278,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	if (this.source.isLive()) {
 	    universe.resetWaitMCFlag();
 	    synchronized (universe.sceneGraphLock) {
+                universe.notifyStructureChangeListeners(true, this.source, (BranchGroup)child);
 	        doInsertChild(child, index);
 		universe.setLiveState.clear();	
 	    }
@@ -324,8 +327,10 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	if (this.source.isLive()) {
 	    universe.resetWaitMCFlag();
 	    synchronized (universe.sceneGraphLock) {
+              NodeRetained childr = (NodeRetained)children.get(index);
 	      doRemoveChild(index, null, 0);
 	      universe.setLiveState.clear();	
+              universe.notifyStructureChangeListeners(false, this.source, (BranchGroup)childr.source);
 	    }
 	    universe.waitForMC();
 	} else {
@@ -454,6 +459,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	if (this.source.isLive()) {
 	    universe.resetWaitMCFlag();
 	    synchronized (universe.sceneGraphLock) {
+                universe.notifyStructureChangeListeners(true, this.source, (BranchGroup)child);
 	        doAddChild(child, null, 0);
 		universe.setLiveState.clear();	
 	    }
@@ -492,8 +498,13 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	if (this.source.isLive()) {
 	    universe.resetWaitMCFlag();
 	    synchronized (universe.sceneGraphLock) {
+                GroupRetained oldParent = (GroupRetained)((BranchGroupRetained)bg.retained).parent;
 	        doMoveTo(bg);
 		universe.setLiveState.clear();	
+                if (oldParent==null)
+                    universe.notifyStructureChangeListeners(((BranchGroupRetained)bg.retained).locale, this.source, bg);
+                else
+                    universe.notifyStructureChangeListeners(oldParent.source, this.source, bg);
 	    }
 	    universe.waitForMC();
 	} else {
@@ -632,7 +643,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	}
 
 	/*
-	// TODO: lights may remove twice or more during clearLive(),
+	// XXXX: lights may remove twice or more during clearLive(),
 	// one from itself and one call from every LightRetained
 	// reference this.  So there is case that this procedure get
 	// called when light already removed.
@@ -1828,7 +1839,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    }
 	    s.transformTargets = newTargets;
 	    
-	    // TODO - optimization for targetThreads computation, require
+	    // XXXX: optimization for targetThreads computation, require
 	    // cleanup in GroupRetained.doSetLive()
 	    //s.transformTargetThreads = 0;
 	}
@@ -2441,14 +2452,23 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	return super.getEffectiveBounds();
     }
     
-    // returns true if children cannot be read/written
+    // returns true if children cannot be read/written and none of the
+    // children can read their parent (i.e., "this") group node
     boolean isStaticChildren() {
 	if (source.getCapability(Group.ALLOW_CHILDREN_READ) ||
 	    source.getCapability(Group.ALLOW_CHILDREN_WRITE)) {
 	    return false;
 	}
+
+	for (int i = children.size() - 1; i >= 0; i--) {
+	    SceneGraphObjectRetained nodeR =
+		(SceneGraphObjectRetained) children.get(i);
+	    if (nodeR != null && nodeR.source.getCapability(Node.ALLOW_PARENT_READ)) {
+		return false;
+	    }
+	}
+
 	return true;
-	
     }
 
 
@@ -2644,7 +2664,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    }
 	}
 	// Has its own copy
-	// TODO: Handle the case of
+	// XXXX: Handle the case of
 	// was non-zero, gone to zero?
 	if (savedParentLights != null) {
 	    if (allocatedLights) {

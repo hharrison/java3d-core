@@ -96,6 +96,8 @@ class Renderer extends J3dThread {
 
     // an unique bit to identify this renderer
     int rendererBit = 0;
+    // an unique number to identify this renderer : ( rendererBit = 1 << rendererId)
+    int rendererId = 0;
 
     // List of renderMolecules that are dirty due to additions
     // or removal of renderAtoms from their display list set
@@ -116,10 +118,6 @@ class Renderer extends J3dThread {
     // Texture that should be reload
     ArrayList textureReloadList = new ArrayList();
 
-
-    // This is a local copy of canvas view cache. It is used as a data storage for the
-    // renderer. Note: This isn't the "real" canvasViewCache references by the Canvas.
-    CanvasViewCache copyOfCvCache = new CanvasViewCache(null, null, null);
 
     J3dMessage[] renderMessage;
 
@@ -178,7 +176,8 @@ class Renderer extends J3dThread {
 	setName("J3D-Renderer-" + getInstanceNum());
 
 	type = J3dThread.RENDER_THREAD;
-        rendererBit = VirtualUniverse.mc.getRendererBit();
+	rendererId = VirtualUniverse.mc.getRendererId();
+        rendererBit = (1 << rendererId);
         renderMessage = new J3dMessage[1];
     }
 
@@ -391,7 +390,25 @@ class Renderer extends J3dThread {
 				c.doubleBufferAvailable = nct.hasDoubleBuffer(c);
 				c.stereoAvailable = nct.hasStereo(c);
 			    }
-			    c.sceneAntialiasingMultiSamplesAvailable =
+
+			    // Setup stencil related variables.
+                            c.actualStencilSize = nct.getStencilSize(c);
+                            boolean userOwnsStencil = c.requestedStencilSize > 0;
+                            
+                            c.userStencilAvailable = 
+                                    (userOwnsStencil && (c.actualStencilSize > 0));
+                            c.systemStencilAvailable =
+                                    (!userOwnsStencil && (c.actualStencilSize > 0));
+
+                            /*
+			      System.out.println("Renderer :check for nct configuration");
+			      System.out.println("-- userStencilAvailable " + 
+			      c.userStencilAvailable);
+			      System.out.println("-- systemStencilAvailable " + 
+			      c.systemStencilAvailable);
+			    */
+
+                            c.sceneAntialiasingMultiSamplesAvailable =
 				nct.hasSceneAntialiasingMultisample(c);
 
 			    if (c.sceneAntialiasingMultiSamplesAvailable) {
@@ -667,13 +684,7 @@ class Renderer extends J3dThread {
 			    }
 
 			    synchronized (VirtualUniverse.mc.contextCreationLock) {
-				sharedCtx =
-				    canvas.createNewContext(canvas.screen.display,
-							 canvas.window,
-							 canvas.vid,
-							 canvas.fbConfig,
-							 0, true,
-							 canvas.offScreen);
+				sharedCtx = canvas.createNewContext(0, true);
 				if (sharedCtx == 0) {
 				    canvas.drawingSurfaceObject.unLock();
 				    if ((offBufRetained != null) &&
@@ -706,15 +717,9 @@ class Renderer extends J3dThread {
 			}
 
 			synchronized (VirtualUniverse.mc.contextCreationLock) {
-			    canvas.ctx =
-				canvas.createNewContext(canvas.screen.display, 
-						     canvas.window, canvas.vid,
-						     canvas.fbConfig, sharedCtx,
-						     false, canvas.offScreen);
+			    canvas.ctx = canvas.createNewContext(sharedCtx, false);
 
-
-
-			    if (canvas.ctx == 0) {
+                            if (canvas.ctx == 0) {
 				canvas.drawingSurfaceObject.unLock();			    
 				if ((offBufRetained != null) &&
 				    offBufRetained.isByReference()) {
@@ -737,56 +742,29 @@ class Renderer extends J3dThread {
 				    NodeComponentRetained nc = (NodeComponentRetained)renderBin.nodeComponentList.get(i);
 				    nc.evaluateExtensions(canvas.extensionsSupported);
 				}
-			    }
-		
+                            }
 
-			    // query for the number of texture units supported
-			    if (canvas.multiTexAccelerated) {
-			        canvas.numTexUnitSupported = 
-					canvas.getTextureUnitCount(canvas.ctx);
-				if (VirtualUniverse.mc.textureUnitMax < canvas.numTexUnitSupported) {
-				    canvas.numTexUnitSupported = VirtualUniverse.mc.textureUnitMax;
-				}
-			    }
-
-			    // enable separate specular color
+                            // enable separate specular color
 			    canvas.enableSeparateSpecularColor();
-
 			}
 
+                        // create the cache texture state in canvas
+                        // for state download checking purpose
+                        if (canvas.texUnitState == null) {
+                            canvas.createTexUnitState();
+                        }
 
-			// create the cache texture state in canvas
-			// for state download checking purpose
+                        // Create the texture unit state map
+                        if (canvas.texUnitStateMap == null) {
+                            canvas.createTexUnitStateMap();
+                        }
 
-			if (canvas.texUnitState == null) {
-			    canvas.texUnitState = 
-				new TextureUnitStateRetained[
-					canvas.numTexCoordSupported];
-			    for (int t = 0; t < canvas.numTexCoordSupported;
-					t++) {
-				canvas.texUnitState[t] = 
-					new TextureUnitStateRetained();
-				canvas.texUnitState[t].texture = null;
-				canvas.texUnitState[t].mirror = null;
-			    }
-			}
+                        canvas.resetImmediateRendering(Canvas3D.NOCHANGE);
+                        canvas.drawingSurfaceObject.contextValidated();
 
-
-			// also create the texture unit state map
-			// which is a mapping from texture unit state to
-			// the actual underlying texture unit
-
-        		if (canvas.texUnitStateMap == null) {
-            		    canvas.texUnitStateMap = 
-					new int[canvas.numTexCoordSupported];
-        		}
-			
-			canvas.resetImmediateRendering(Canvas3D.NOCHANGE);
-			canvas.drawingSurfaceObject.contextValidated();
-			
-			if (!canvas.useSharedCtx) {
-			    canvas.needToRebuildDisplayList = true;
-			}
+                        if (!canvas.useSharedCtx) {
+                            canvas.needToRebuildDisplayList = true;
+                        }
 			canvas.drawingSurfaceObject.unLock();			    
             	    } else {
 
@@ -819,30 +797,22 @@ class Renderer extends J3dThread {
 
 			// save the BACKGROUND_IMAGE_DIRTY before canvas.updateViewCache
 			// clean it
-			background_image_update = 
-			    ((canvas.cvDirtyMask & Canvas3D.BACKGROUND_IMAGE_DIRTY) != 0);
-
-			// copyOfcvCache is a copy of canvas view
-		        // cache.  It is used as a data storage for the
-		        // renderer.  Note: This isn't the "real"
-		        // canvasViewCache references by the Canvas.
-		        //
-		        // Note : For performance reason, copyOfcvCache
-		        // doesn't contain are valid canvasViewCache info.,
-		        // only data needed by the renderer are stored.
-		        //
-		        // The valid data are : useStereo, canvasWidth,
-		        // canvasHeight, leftProjection, rightProjection,
-		        // leftVpcToEc, rightVpcToEc, leftFrustumPlanes,
-		        // rightFrustumPlanes, vpcToVworld and vworldToVpc.
+                        synchronized (canvas.dirtyMaskLock) {
+                            background_image_update = 
+                                ((canvas.cvDirtyMask[Canvas3D.RENDERER_DIRTY_IDX] & Canvas3D.BACKGROUND_IMAGE_DIRTY) != 0);
+                        }
 
 			if (VirtualUniverse.mc.doDsiRenderLock) {
 			    canvas.drawingSurfaceObject.unLock();
 			}
 
+                        // Issue 109 : removed copyOfCvCache now that we have
+                        // a separate canvasViewCache for computing view frustum
+                        CanvasViewCache cvCache = canvas.canvasViewCache;
+
 			// Deadlock if we include updateViewCache in
 			// drawingSurfaceObject sync.
-			canvas.updateViewCache(false, copyOfCvCache, null,
+			canvas.updateViewCache(false, null, null,
 					       renderBin.geometryBackground != null);
 
 			if ((VirtualUniverse.mc.doDsiRenderLock) &&
@@ -856,8 +826,8 @@ class Renderer extends J3dThread {
 								
                         // setup viewport
                         canvas.setViewport(canvas.ctx, 0, 0,
-                           copyOfCvCache.getCanvasWidth(),
-                           copyOfCvCache.getCanvasHeight());
+                           cvCache.getCanvasWidth(),
+                           cvCache.getCanvasHeight());
 
 
 
@@ -915,7 +885,7 @@ class Renderer extends J3dThread {
 
 
 		        // stereo setup
-                        boolean useStereo = copyOfCvCache.getUseStereo();
+                        boolean useStereo = cvCache.getUseStereo();
                         if (useStereo) {
                             num_stereo_passes = 2;
                             stereo_mode = Canvas3D.FIELD_LEFT;
@@ -942,7 +912,7 @@ class Renderer extends J3dThread {
 				num_accum_passes = NUM_ACCUMULATION_SAMPLES;
 
 				System.arraycopy(
-						 copyOfCvCache.getLeftProjection().mat,
+						 cvCache.getLeftProjection().mat,
                                 0, accumLeftProjMat, 0, 16);
 
 
@@ -960,7 +930,7 @@ class Renderer extends J3dThread {
 
 				if (useStereo) {
 				    System.arraycopy(
-					copyOfCvCache.getRightProjection().mat,
+					cvCache.getRightProjection().mat,
 					0, accumRightProjMat, 0, 16);
 				    accumRightX = accumRightProjMat[3];
 				    accumRightY = accumRightProjMat[7];
@@ -968,13 +938,13 @@ class Renderer extends J3dThread {
 
 				if (renderBin.geometryBackground != null) {
 				    System.arraycopy(
-					copyOfCvCache.getInfLeftProjection().mat,
+					cvCache.getInfLeftProjection().mat,
 					0, accumInfLeftProjMat, 0, 16);
 				    accumInfLeftX = accumInfLeftProjMat[3];
 				    accumInfLeftY = accumInfLeftProjMat[7];
 				    if (useStereo) {
 					System.arraycopy(
-					    copyOfCvCache.getInfRightProjection().mat,
+					    cvCache.getInfRightProjection().mat,
 					    0, accumInfRightProjMat, 0, 16);
 				        accumInfRightX = accumInfRightProjMat[3];
 				        accumInfRightY = accumInfRightProjMat[7];
@@ -1044,8 +1014,8 @@ class Renderer extends J3dThread {
 			canvas.beginScene();
 
 			// this is if the background image resizes with the canvas
-			int winWidth = copyOfCvCache.getCanvasWidth();
-			int winHeight = copyOfCvCache.getCanvasHeight();
+			int winWidth = cvCache.getCanvasWidth();
+			int winHeight = cvCache.getCanvasHeight();
 
 
 		        // clear background if not full screen antialiasing
@@ -1217,7 +1187,7 @@ class Renderer extends J3dThread {
 				    // setup rendering matrices
 				    if (pass == 0) {
                                         canvas.vpcToEc = 
-					    copyOfCvCache.getInfLeftVpcToEc();
+					    cvCache.getInfLeftVpcToEc();
 	    	                        if (doAccum) {
                                             canvas.setProjectionMatrix(
 						canvas.ctx,
@@ -1225,11 +1195,11 @@ class Renderer extends J3dThread {
 				        } else {
                                             canvas.setProjectionMatrix(
 						canvas.ctx,
-					       	copyOfCvCache.getInfLeftProjection().mat);
+					       	cvCache.getInfLeftProjection().mat);
 				        }
 				    } else {
                                         canvas.vpcToEc = 
-					    copyOfCvCache.getInfRightVpcToEc();
+					    cvCache.getInfRightVpcToEc();
 	    	                        if (doAccum) {
                                             canvas.setProjectionMatrix(
 						canvas.ctx,
@@ -1237,11 +1207,11 @@ class Renderer extends J3dThread {
 				        } else {
                                             canvas.setProjectionMatrix(
 						canvas.ctx,
-					       copyOfCvCache.getInfRightProjection().mat);
+					       cvCache.getInfRightProjection().mat);
 				        }
                                     }
                                     canvas.vworldToEc.mul(canvas.vpcToEc,
-                                        copyOfCvCache.getInfVworldToVpc());
+                                        cvCache.getInfVworldToVpc());
 
 				    // render background geometry
 				    renderBin.renderBackground(canvas);
@@ -1249,33 +1219,33 @@ class Renderer extends J3dThread {
 
 			        // setup rendering matrices
                                 if (pass == 0) {
-                            	    canvas.vpcToEc = copyOfCvCache.getLeftVpcToEc();
+                            	    canvas.vpcToEc = cvCache.getLeftVpcToEc();
 			            if (doAccum) {
                                         canvas.setProjectionMatrix(
 						canvas.ctx, accumLeftProjMat);
                                     } else {
                                         canvas.setProjectionMatrix(canvas.ctx,
-					copyOfCvCache.getLeftProjection().mat);
+					cvCache.getLeftProjection().mat);
 				    }
 			        } else {
-                            	    canvas.vpcToEc = copyOfCvCache.getRightVpcToEc();
+                            	    canvas.vpcToEc = cvCache.getRightVpcToEc();
 			            if (doAccum) {
                                         canvas.setProjectionMatrix(
 						canvas.ctx, accumRightProjMat);
                                     } else {
                                         canvas.setProjectionMatrix(canvas.ctx,
-						copyOfCvCache.getRightProjection().mat);
+						cvCache.getRightProjection().mat);
 				    }
 			        } 
                                 canvas.vworldToEc.mul(canvas.vpcToEc,
-                                        copyOfCvCache.getVworldToVpc());
+                                        cvCache.getVworldToVpc());
 
 
-                                synchronized (copyOfCvCache) {
+                                synchronized (cvCache) {
                                  if (pass == 0) {
-                                     canvas.setFrustumPlanes(copyOfCvCache.getLeftFrustumPlanesInVworld());
+                                     canvas.setFrustumPlanes(cvCache.getLeftFrustumPlanesInVworld());
                                  } else {
-                                     canvas.setFrustumPlanes(copyOfCvCache.getRightFrustumPlanesInVworld());
+                                     canvas.setFrustumPlanes(cvCache.getRightFrustumPlanesInVworld());
                                  }
                                 }
 
@@ -1464,7 +1434,6 @@ class Renderer extends J3dThread {
 	dirtyDlistPerRinfoList.clear();
 	textureIdResourceFreeList.clear();
 	displayListResourceFreeList.clear();
-	copyOfCvCache = new CanvasViewCache(null, null, null);
 	onScreen = null;
 	offScreen = null;
 	m = null;
@@ -1630,12 +1599,15 @@ class Renderer extends J3dThread {
 	    // restore current context
 	    currentCanvas.makeCtxCurrent();
 	}
-	if (texture.equals("2D")){
-	    VirtualUniverse.mc.freeTexture2DId(texId);
-	}
-	else if(texture.equals("3D")){
-	    VirtualUniverse.mc.freeTexture3DId(texId);
-	}
+        // Issue 162: TEMPORARY FIX -- don't free the texture ID, since it will
+        // be freed once per canvas / screen and will subsequently cause the ID
+        // to be used for multiple textures.
+//	if (texture.equals("2D")){
+//	    VirtualUniverse.mc.freeTexture2DId(texId);
+//	}
+//	else if(texture.equals("3D")){
+//	    VirtualUniverse.mc.freeTexture3DId(texId);
+//	}
     }
 
 

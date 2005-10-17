@@ -155,7 +155,7 @@ class DisplayListRenderMethod implements RenderMethod {
 	Transform3D staticNormalTransform;
 
 	if ((rm.primaryRenderAtomList != null) &&
-                (rm.texCoordSetMapLen <= cv.numTexCoordSupported)) {
+                (rm.texCoordSetMapLen <= cv.maxTexCoordSets)) {
 
 	    cv.newDisplayList(cv.ctx, rm.displayListId);
 
@@ -195,7 +195,7 @@ class DisplayListRenderMethod implements RenderMethod {
 
 	geo = (GeometryArrayRetained)ra.geometry();
 	if ((geo.texCoordSetMap != null) && 
-		(geo.texCoordSetMap.length > cv.numTexCoordSupported)) {
+		(geo.texCoordSetMap.length > cv.maxTexCoordSets)) {
 	    return;
         }
 
@@ -224,7 +224,7 @@ class DisplayListRenderMethod implements RenderMethod {
 	
 	geo = (GeometryArrayRetained)ra.geometry();
 	if ((rm.primaryRenderAtomList != null) &&
-                (rm.texCoordSetMapLen <= cv.numTexCoordSupported)) {
+                (rm.texCoordSetMapLen <= cv.maxTexCoordSets)) {
 
 	    id = ra.renderAtom.dlistIds[ra.index];
 	    cv.newDisplayList(cv.ctx, id);

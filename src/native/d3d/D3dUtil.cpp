@@ -20,7 +20,7 @@ HANDLE backgroundSema = CreateSemaphore(NULL, 1, 1,
 HANDLE geometrySema = CreateSemaphore(NULL, 1, 1,
 				      "Java3d_GeometryArrayLock");
 HANDLE surfaceListSema = CreateSemaphore(NULL, 1, 1, "Java3d_SurfaceListLock");
-			
+
 BOOL firstError = true;
 BOOL firstWarning = true;
 BOOL debug;
@@ -33,7 +33,7 @@ BOOL useFreePointerList0 = true;
 char *D3dErrorMessage[] = {
     "Can't found 3D Driver !",
     "Current display driver did not support renderer inside window. Now switch to full screen mode...",
-    "DirectX 8.0 or above is required for this version of Java3D.",
+    "DirectX 9.0 or above is required for this version of Java3D.",
     "Your graphics card did not support >= 16 bit color mode which Java 3D required.",
     "Please switch your display mode to at least 16 bit color depth.",
     "No compatible device found, please switch to other display mode and try again !",
@@ -47,7 +47,7 @@ char *D3dErrorMessage[] = {
     "Graphics card did not support Hardware acceleration",
     "Graphics card did not support Transform and light hardware acceleration",
     "No Stencil buffer found in current display mode. DecalGroup may not work correctly.",
-    "Can't found a valid texture format, please try to use reference mode",
+    "Can't found a valid texture format, please try to use reference mode. DirectX SDK must be installed to use reference mode",
     "Fail to create offscreen image for background",
     "Fail to create Vertex Buffer",
     "Fail to Reset() D3D device, try Recreate device again.",
@@ -94,7 +94,7 @@ D3DFORMAT d3dFormatTable[] = {
     D3DFMT_X8L8V8U8,
     D3DFMT_Q8W8V8U8,
     D3DFMT_V16U16,
-    D3DFMT_W11V11U10,
+//  D3DFMT_W11V11U10,
     D3DFMT_UYVY,
     D3DFMT_YUY2,
     D3DFMT_DXT1,
@@ -116,7 +116,7 @@ D3DFORMAT d3dFormatTable[] = {
 
 char *d3dFormatTableChar[] = {
     "D3DFMT_UNKNOWN",
-    "D3DFMT_R8G8B8", 
+    "D3DFMT_R8G8B8",
     "D3DFMT_A8R8G8B8",
     "D3DFMT_X8R8G8B8",
     "D3DFMT_R5G6B5",
@@ -137,7 +137,7 @@ char *d3dFormatTableChar[] = {
     "D3DFMT_X8L8V8U8",
     "D3DFMT_Q8W8V8U8",
     "D3DFMT_V16U16",
-    "D3DFMT_W11V11U10",
+ // "D3DFMT_W11V11U10",
     "D3DFMT_UYVY",
     "D3DFMT_YUY2",
     "D3DFMT_DXT1",
@@ -200,9 +200,9 @@ D3DCUBEMAP_FACES textureCubeMapFace[] = {
 typedef struct _PIXELFORMAT {
     DWORD dwRGBBitCount;
     DWORD dwRBitMask;
-    DWORD dwGBitMask;    
-    DWORD dwBBitMask;    
-    DWORD dwRGBAlphaBitMask;    
+    DWORD dwGBitMask;
+    DWORD dwBBitMask;
+    DWORD dwRGBAlphaBitMask;
     BOOL  noAlpha;
 } PIXELFORMAT;
 
@@ -213,7 +213,7 @@ typedef struct _DEPTHPIXELFORMAT {
 } DEPTHPIXELFORMAT;
 
 
-char *getSwapEffectName(D3DSWAPEFFECT swapEffect) 
+char *getSwapEffectName(D3DSWAPEFFECT swapEffect)
 {
     int t = (int) swapEffect;
     if ((t < 0) || (t > 4)) {
@@ -222,7 +222,7 @@ char *getSwapEffectName(D3DSWAPEFFECT swapEffect)
     return swapEffectTable[t];
 }
 
-char *getMultiSampleName(D3DMULTISAMPLE_TYPE mtype) 
+char *getMultiSampleName(D3DMULTISAMPLE_TYPE mtype)
 {
     int t = (int) mtype;
     if ((t < 0) || (t > 16)) {
@@ -238,7 +238,7 @@ char* getPixelFormatName(D3DFORMAT f)
 	if (f == d3dFormatTable[i]) {
 	    return d3dFormatTableChar[i];
 	}
-    } 
+    }
     // should not happen
     return d3dFormatTableChar[0];
 }
@@ -246,7 +246,7 @@ char* getPixelFormatName(D3DFORMAT f)
 // If there is a new D3DFORMAT, just add it here and
 // our copy procedures can handle any format specific
 // as bit mask.
-VOID computePixelFormat(PIXELFORMAT *ddpf, D3DFORMAT format) 
+VOID computePixelFormat(PIXELFORMAT *ddpf, D3DFORMAT format)
 {
     switch (format) {
         case D3DFMT_R8G8B8:
@@ -257,7 +257,7 @@ VOID computePixelFormat(PIXELFORMAT *ddpf, D3DFORMAT format)
 	    ddpf->dwBBitMask = 0x000000ff;
 	    ddpf->noAlpha = true;
 	    break;
-        case D3DFMT_A8R8G8B8: 
+        case D3DFMT_A8R8G8B8:
 	    ddpf->dwRGBBitCount = 32;
 	    ddpf->dwRGBAlphaBitMask = 0xff000000;
 	    ddpf->dwRBitMask = 0x00ff0000;
@@ -289,7 +289,7 @@ VOID computePixelFormat(PIXELFORMAT *ddpf, D3DFORMAT format)
 	    ddpf->dwBBitMask = 0x001f;
 	    ddpf->noAlpha = true;
 	    break;
-        case D3DFMT_A1R5G5B5: 
+        case D3DFMT_A1R5G5B5:
 	    ddpf->dwRGBBitCount = 16;
 	    ddpf->dwRGBAlphaBitMask = 0x8000;
 	    ddpf->dwRBitMask = 0x7c00;
@@ -361,7 +361,7 @@ VOID computePixelFormat(PIXELFORMAT *ddpf, D3DFORMAT format)
 	    ddpf->dwBBitMask = 0;
 	    ddpf->noAlpha = false;
 	    break;
-        default: 
+        default:
 	    printf("Unsupport format %d\n ", format);
 	    ddpf->dwRGBBitCount = 8;
 	    ddpf->dwRGBAlphaBitMask = 0;
@@ -376,12 +376,12 @@ VOID computePixelFormat(PIXELFORMAT *ddpf, D3DFORMAT format)
 
 
 /*
- * Right now only format D3DFMT_D16_LOCKABLE 
+ * Right now only format D3DFMT_D16_LOCKABLE
  * is lockable by application. So can't use
  * with stencil buffer (in DecalGroup) together
  */
-VOID computeDepthPixelFormat(DEPTHPIXELFORMAT *ddpf, 
-			     D3DFORMAT format) 
+VOID computeDepthPixelFormat(DEPTHPIXELFORMAT *ddpf,
+			     D3DFORMAT format)
 {
     switch (format) {
         case D3DFMT_D16_LOCKABLE:
@@ -392,17 +392,17 @@ VOID computeDepthPixelFormat(DEPTHPIXELFORMAT *ddpf,
         case D3DFMT_D15S1:
 	    ddpf->dwZBufferBitDepth = 16;
 	    ddpf->dwZBitMask = 0xfffe;
-	    break;	    
+	    break;
         case D3DFMT_D32:
 	    ddpf->dwZBufferBitDepth = 32;
 	    ddpf->dwZBitMask = 0xffffffff;
-	    break;	    
+	    break;
         case D3DFMT_D24S8:
         case D3DFMT_D24X8:
         case D3DFMT_D24X4S4:
 	    ddpf->dwZBufferBitDepth = 32;
 	    ddpf->dwZBitMask = 0xffffff00;
-	    break;	    	    
+	    break;
         default:
 	    printf("Unknown depth buffer format %d\n", format);
     }
@@ -412,13 +412,13 @@ VOID computeDepthPixelFormat(DEPTHPIXELFORMAT *ddpf,
 /*
  *  Set the correct D3DTSS_TEXTURETRANSFORMFLAGS
  */
-void setTexTransformStageFlag(D3dCtx* d3dCtx,  
-			      LPDIRECT3DDEVICE8 device, 
-			      int tus, int ts, int genMode) 
+void setTexTransformStageFlag(D3dCtx* d3dCtx,
+			      LPDIRECT3DDEVICE9 device,
+			      int tus, int ts, int genMode)
 {
     /*
      * In case of automatic texture generation, disable
-     * texture unit transform stage will cause crash in 
+     * texture unit transform stage will cause crash in
      * reference device mode.
      */
     if ((!d3dCtx->texTransformSet[tus]) &&
@@ -428,7 +428,7 @@ void setTexTransformStageFlag(D3dCtx* d3dCtx,
 				     D3DTTFF_DISABLE);
     } else {
 	D3DXMATRIX *m;
-	
+
 	switch (ts) {
 	case 2:
 	    // Adjust for 2D texture transform in D3D
@@ -463,18 +463,18 @@ void setTexTransformStageFlag(D3dCtx* d3dCtx,
 		m = &d3dCtx->texTransform[tus];
 		(*m)._31 = (*m)._41;
 		(*m)._32 = (*m)._42;
-		device->SetTransform((D3DTRANSFORMSTATETYPE) 
+		device->SetTransform((D3DTRANSFORMSTATETYPE)
 				     (D3DTS_TEXTURE0 + tus), m);
 		d3dCtx->texTranslateSet[tus] = true;
 	    }
 
 	    device->SetTextureStageState(tus,
-					 D3DTSS_TEXTURETRANSFORMFLAGS, 
+					 D3DTSS_TEXTURETRANSFORMFLAGS,
 					 D3DTTFF_COUNT2);
 	    break;
 	case 3:
 	    device->SetTextureStageState(tus,
-					 D3DTSS_TEXTURETRANSFORMFLAGS, 
+					 D3DTSS_TEXTURETRANSFORMFLAGS,
 					 D3DTTFF_COUNT3);
 	    break;
 	case 4:
@@ -482,15 +482,15 @@ void setTexTransformStageFlag(D3dCtx* d3dCtx,
 		// The texture transform matrix is funky that only the
 		// upper 3x3 matrix is used if we are not using
 		// automatic texture generation. In case of Object
-		// Linear we are need to workaround by doing our 
+		// Linear we are need to workaround by doing our
 		// own texture transform when generate texture
 		// coordinate.
 		device->SetTextureStageState(tus,
 					     D3DTSS_TEXTURETRANSFORMFLAGS,
-					     D3DTTFF_DISABLE);	 
-	    } else {   
+					     D3DTTFF_DISABLE);
+	    } else {
 		device->SetTextureStageState(tus,
-					     D3DTSS_TEXTURETRANSFORMFLAGS, 
+					     D3DTSS_TEXTURETRANSFORMFLAGS,
 					     D3DTTFF_COUNT4|D3DTTFF_PROJECTED);
 	    }
 	    break;
@@ -503,18 +503,18 @@ void setTexTransformStageFlag(D3dCtx* d3dCtx,
 }
 
 /*
- * Set the corresponding D3D texture coordinate 
+ * Set the corresponding D3D texture coordinate
  * mapping mode.
  */
 inline int setTextureStage(D3dCtx *d3dCtx,
-			   LPDIRECT3DDEVICE8 device, 
+			   LPDIRECT3DDEVICE9 device,
 			   int mapTexStage,
 			   jint texStage)
 {
     DWORD mode = 0;
     int genMode = d3dCtx->texGenMode[mapTexStage];
 
-    //    printf("Set TexStage mapTexStage = %d, texStage = %d, genMode = %d\n", 
+    //    printf("Set TexStage mapTexStage = %d, texStage = %d, genMode = %d\n",
     //           mapTexStage, texStage, genMode);
 
     switch (genMode) {
@@ -523,10 +523,10 @@ inline int setTextureStage(D3dCtx *d3dCtx,
     case TEX_GEN_INVALID:
 	// optimize for general case
 	device->SetTextureStageState(mapTexStage,
-				     D3DTSS_TEXCOORDINDEX, 
+				     D3DTSS_TEXCOORDINDEX,
 				     texStage);
 	return genMode;
-    case TEX_EYE_LINEAR: 
+    case TEX_EYE_LINEAR:
 	mode = D3DTSS_TCI_CAMERASPACEPOSITION;
 	break;
     case TEX_SPHERE_MAP:
@@ -547,21 +547,21 @@ inline int setTextureStage(D3dCtx *d3dCtx,
     // there is no texture coordinate defined in that texStage in VB.
     // This also clear the texStage previously set.
     device->SetTextureStageState(mapTexStage,
-				 D3DTSS_TEXCOORDINDEX, 
+				 D3DTSS_TEXCOORDINDEX,
 				 mode | texStage);
 
     return TEX_GEN_AUTO;
 }
 
 
-void getTexWidthHeight(D3dDeviceInfo *deviceInfo, 
+void getTexWidthHeight(D3dDeviceInfo *deviceInfo,
 		       jint* width, jint *height)
 {
     int texWidth, texHeight;
-    
+
     texWidth = *width;
     texHeight = *height;
-    
+
 
     // Found a texture bigger than width/height
     if (deviceInfo->texturePow2Only) {
@@ -620,7 +620,7 @@ D3DFORMAT getTexFormat(jint internalFormat) {
         default:
 	    printf("CreateTextureSurface: Unknown internal Format %d \n", internalFormat);
 	    return D3DFMT_UNKNOWN;
-    } 
+    }
 
 }
 
@@ -628,7 +628,7 @@ D3dCtx* findCtx(HWND hwnd)
 {
     D3dCtx *ctx = NULL;
 
-    for (D3dCtx **p = d3dCtxList.begin(); p != d3dCtxList.end(); p++) {
+   	for (ITER_D3dCtxVector p = d3dCtxList.begin(); p != d3dCtxList.end(); p++) {
 	if ((*p)->hwnd == hwnd) {
 	    ctx = *p;
 	    break;
@@ -638,7 +638,7 @@ D3dCtx* findCtx(HWND hwnd)
 }
 
 
-inline VOID lock() 
+inline VOID lock()
 {
     if (hSema != NULL) {
 	WaitForSingleObject(hSema, INFINITE);
@@ -653,7 +653,7 @@ inline VOID unlock()
 }
 
 
-inline VOID lockSurfaceList() 
+inline VOID lockSurfaceList()
 {
     if (surfaceListSema != NULL) {
 	WaitForSingleObject(surfaceListSema, INFINITE);
@@ -681,7 +681,7 @@ inline VOID unlockBackground()
     }
 }
 
-inline VOID lockImage() 
+inline VOID lockImage()
 {
     if (imageSema != NULL) {
 	WaitForSingleObject(imageSema, INFINITE);
@@ -697,7 +697,7 @@ inline VOID unlockImage()
 
 
 
-inline VOID lockGeometry() 
+inline VOID lockGeometry()
 {
     if (geometrySema != NULL) {
 	WaitForSingleObject(geometrySema, INFINITE);
@@ -711,28 +711,28 @@ inline VOID unlockGeometry()
     }
 }
 
-VOID freePointer(void * ptr) 
+VOID freePointer(void * ptr)
 {
     if (ptr != NULL) {
 	lockSurfaceList();
 	if (useFreePointerList0) {
 	    freePointerList0.push_back(ptr);
 	} else {
-	    freePointerList1.push_back(ptr);	    
+	    freePointerList1.push_back(ptr);
 	}
 	unlockSurfaceList();
     }
 }
 
 
-char *getErrorMessage(int idx) 
+char *getErrorMessage(int idx)
 {
     return D3dErrorMessage[idx];
 }
 
 
 
-HWND getTopWindow(HWND hwnd) 
+HWND getTopWindow(HWND hwnd)
 {
     HWND desktop = GetDesktopWindow();
     HWND parent = GetParent(hwnd);
@@ -745,7 +745,7 @@ HWND getTopWindow(HWND hwnd)
 }
 
 
-DWORD firstBit(DWORD mask) 
+DWORD firstBit(DWORD mask)
 {
     int i;
 
@@ -760,23 +760,23 @@ DWORD firstBit(DWORD mask)
 }
 
 // create a DirectDraw Texture surface of specific width and height
-LPDIRECT3DTEXTURE8 createTextureSurface(D3dCtx *d3dCtx,
+LPDIRECT3DTEXTURE9 createTextureSurface(D3dCtx *d3dCtx,
 					jint numLevels,
 					jint internalFormat,
-					jint width, jint height) 
+					jint width, jint height)
 {
-    LPDIRECT3DTEXTURE8 pTexture;
+    LPDIRECT3DTEXTURE9 pTexture;
     D3DFORMAT format;
     HRESULT hr;
 
-    LPDIRECT3DDEVICE8 pDevice = d3dCtx->pDevice;
+    LPDIRECT3DDEVICE9 pDevice = d3dCtx->pDevice;
     D3dDeviceInfo *deviceInfo = d3dCtx->deviceInfo;
 
     if (!deviceInfo->supportMipmap) {
 	numLevels = 1;
-    }     
+    }
 
-    getTexWidthHeight(deviceInfo, &width, &height); 
+    getTexWidthHeight(deviceInfo, &width, &height);
     format = getTexFormat(internalFormat);
 
     // If format not support, the utility function will adjust the
@@ -787,29 +787,29 @@ LPDIRECT3DTEXTURE8 createTextureSurface(D3dCtx *d3dCtx,
 
     if (FAILED(hr)) {
 	printf("Fail to create texture surface %dx%d, format %d, level %d : %s\n",
-	       width, height, format, numLevels, DXGetErrorString8(hr));
+	       width, height, format, numLevels, DXGetErrorString9(hr));
 	return NULL;
     }
-    
+
     return pTexture;
 }
 
 
 
 // create a DirectDraw Texture surface of specific width and height
-LPDIRECT3DVOLUMETEXTURE8 createVolumeTexture(D3dCtx *d3dCtx,
+LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
 					     jint numLevels,
 					     jint internalFormat,
-					     jint width, 
+					     jint width,
 					     jint height,
-					     jint depth) 
+					     jint depth)
 {
-    LPDIRECT3DVOLUMETEXTURE8 pTexture;
+    LPDIRECT3DVOLUMETEXTURE9 pTexture;
     int texWidth, texHeight, texDepth;
     D3DFORMAT format;
     HRESULT hr;
 
-    LPDIRECT3DDEVICE8 pDevice = d3dCtx->pDevice;
+    LPDIRECT3DDEVICE9 pDevice = d3dCtx->pDevice;
     D3dDeviceInfo *deviceInfo = d3dCtx->deviceInfo;
 
     texWidth = width;
@@ -819,7 +819,7 @@ LPDIRECT3DVOLUMETEXTURE8 createVolumeTexture(D3dCtx *d3dCtx,
 
     if (!deviceInfo->supportMipmap) {
 	numLevels = 1;
-    }     
+    }
 
 
     // Found a texture bigger than width/height
@@ -887,25 +887,25 @@ LPDIRECT3DVOLUMETEXTURE8 createVolumeTexture(D3dCtx *d3dCtx,
 	if (debug) {
 	    printf("Fail to create volume texture %dx%dx%d, format %d, level %d : %s\n",
 		   texWidth, texHeight, texDepth, format, numLevels,
-		   DXGetErrorString8(hr));
+		   DXGetErrorString9(hr));
 	}
 	return NULL;
     }
-    
+
     return pTexture;
 }
 
 
 // copy data from DirectDraw surface to memory
 // and reverse the Y axis
-void copyDataFromSurface(jint internalFormat, 
+void copyDataFromSurface(jint internalFormat,
 			 jint xoffset, jint yoffset,
 			 jint subWidth, jint subHeight,
-			 jbyte *data, 
-			 LPDIRECT3DSURFACE8 surf) 
+			 jbyte *data,
+			 LPDIRECT3DSURFACE9 surf)
 {
     D3DSURFACE_DESC ddsd;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     PIXELFORMAT ddpf;
     HRESULT hr;
 
@@ -929,7 +929,7 @@ void copyDataFromSurface(jint internalFormat,
 			D3DLOCK_READONLY);
 
     if (FAILED(hr)) {
-	printf("Fail to lock surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to lock surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 
@@ -941,9 +941,9 @@ void copyDataFromSurface(jint internalFormat,
 
     unsigned char *destRow = (unsigned char *) data;
     unsigned char *srcRow = ((unsigned char *) lockedRect.pBits) +
-	xoffset*((int) ceil((float) ddpf.dwRGBBitCount/8.0)) + 
+	xoffset*((int) ceil((float) ddpf.dwRGBBitCount/8.0)) +
 	(yoffset*lockedRect.Pitch);
-    
+
 
     if ((internalFormat == FORMAT_BYTE_RGBA) ||
     	(internalFormat == FORMAT_BYTE_RGB)) {
@@ -969,7 +969,7 @@ void copyDataFromSurface(jint internalFormat,
 			*src++;
 			*dst++ = (byte) 0xff;
 		    }
-		    srcRow += lockedRect.Pitch; 
+		    srcRow += lockedRect.Pitch;
 		    destRow -= dstPitch;
 		}
 	    } else {
@@ -985,21 +985,21 @@ void copyDataFromSurface(jint internalFormat,
 			*dst++ = b1;
 			*dst++ = *src++;
 		    }
-		    srcRow += lockedRect.Pitch; 
+		    srcRow += lockedRect.Pitch;
 		    destRow -= dstPitch;
 		}
 	    }
 	} else { // handle less common format
 	    int rshift = firstBit(ddpf.dwRBitMask) +
-		           countBits(ddpf.dwRBitMask) - 8;
-	    int gshift = firstBit(ddpf.dwGBitMask) + 
-		           countBits(ddpf.dwGBitMask) - 8; 
+		           ucountBits(ddpf.dwRBitMask) - 8;
+	    int gshift = firstBit(ddpf.dwGBitMask) +
+		           ucountBits(ddpf.dwGBitMask) - 8;
 	    int bshift = firstBit(ddpf.dwBBitMask) +
-		           countBits(ddpf.dwBBitMask) - 8; 
+		           ucountBits(ddpf.dwBBitMask) - 8;
 	    int ashift = firstBit(ddpf.dwRGBAlphaBitMask) +
-		           countBits(ddpf.dwRGBAlphaBitMask) - 8; 
+		           ucountBits(ddpf.dwRGBAlphaBitMask) - 8;
 
-	    if ((ddpf.dwRGBBitCount <= 32) && 
+	    if ((ddpf.dwRGBBitCount <= 32) &&
 		(ddpf.dwRGBBitCount > 24)) {
 
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1028,7 +1028,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 			if (bshift >= 0) {
 			    *dst++ = (byte) ((mask & ddpf.dwBBitMask) >>
-					     bshift); 
+					     bshift);
 			} else {
 			    t = (mask & ddpf.dwBBitMask) << -bshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
@@ -1048,7 +1048,7 @@ void copyDataFromSurface(jint internalFormat,
 		    srcRow += lockedRect.Pitch;
 		    destRow -= dstPitch;
 		}
-	    } else if ((ddpf.dwRGBBitCount <= 24) && 
+	    } else if ((ddpf.dwRGBBitCount <= 24) &&
 		       (ddpf.dwRGBBitCount > 16)) {
 		for (int i=yoffset; i < ylimit; i++) {
 		    src = srcRow;
@@ -1094,7 +1094,7 @@ void copyDataFromSurface(jint internalFormat,
 		    srcRow += lockedRect.Pitch;
 		    destRow -= dstPitch;
 		}
-	    } else if ((ddpf.dwRGBBitCount <= 16) && 
+	    } else if ((ddpf.dwRGBBitCount <= 16) &&
 		       (ddpf.dwRGBBitCount > 8)) {
 
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1111,7 +1111,7 @@ void copyDataFromSurface(jint internalFormat,
 			    t = (mask & ddpf.dwRBitMask) << -rshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
 			}
-			
+
 			if (gshift >= 0) {
 			    *dst++ = (byte) ((mask & ddpf.dwGBitMask) >>
 					     gshift);
@@ -1121,7 +1121,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 			if (bshift >= 0) {
 			    *dst++ = (byte) ((mask & ddpf.dwBBitMask) >>
-					     bshift); 
+					     bshift);
 			} else {
 			    t = (mask & ddpf.dwBBitMask) << -bshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
@@ -1155,7 +1155,7 @@ void copyDataFromSurface(jint internalFormat,
 			    t = (mask & ddpf.dwRBitMask) << -rshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
 			}
-			
+
 			if (gshift >= 0) {
 			    *dst++ = (byte) ((mask & ddpf.dwGBitMask) >>
 					     gshift);
@@ -1165,7 +1165,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 			if (bshift >= 0) {
 			    *dst++ = (byte) ((mask & ddpf.dwBBitMask) >>
-					     bshift); 
+					     bshift);
 			} else {
 			    t = (mask & ddpf.dwBBitMask) << -bshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
@@ -1186,12 +1186,12 @@ void copyDataFromSurface(jint internalFormat,
 		    destRow -= dstPitch;
 		}
 	    }
-	}  
+	}
     } else if (internalFormat == FORMAT_BYTE_LA) {
-	int gshift = firstBit(ddpf.dwGBitMask) + 
-	    countBits(ddpf.dwGBitMask) - 8; 
+	int gshift = firstBit(ddpf.dwGBitMask) +
+	    ucountBits(ddpf.dwGBitMask) - 8;
 	int ashift = firstBit(ddpf.dwRGBAlphaBitMask) +
-	    countBits(ddpf.dwRGBAlphaBitMask) - 8; 
+	    ucountBits(ddpf.dwRGBAlphaBitMask) - 8;
 	dstPitch = subWidth << 1;
 	destRow += (subHeight-1)*dstPitch;
 
@@ -1215,13 +1215,13 @@ void copyDataFromSurface(jint internalFormat,
 			*dst++ = *src++;
 		    }
 		}
-		srcRow += lockedRect.Pitch; 
+		srcRow += lockedRect.Pitch;
 		destRow -= dstPitch;
 	    }
 	} else { // handle less common format
-	    int gshift = firstBit(ddpf.dwGBitMask) + 
-		           countBits(ddpf.dwGBitMask) - 8; 
-	    if ((ddpf.dwRGBBitCount <= 32) && 
+	    int gshift = firstBit(ddpf.dwGBitMask) +
+		           ucountBits(ddpf.dwGBitMask) - 8;
+	    if ((ddpf.dwRGBBitCount <= 32) &&
 		(ddpf.dwRGBBitCount > 24)) {
 
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1237,7 +1237,7 @@ void copyDataFromSurface(jint internalFormat,
 			    *dst++ = (byte) ((mask & ddpf.dwGBitMask) >>
 					     gshift);
 			} else {
-			    t = (mask & ddpf.dwGBitMask) << -gshift;			    
+			    t = (mask & ddpf.dwGBitMask) << -gshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
 			}
 			if (ddpf.noAlpha) {
@@ -1255,7 +1255,7 @@ void copyDataFromSurface(jint internalFormat,
 		    srcRow += lockedRect.Pitch;
 		    destRow -= dstPitch;
 		}
-	    } else if ((ddpf.dwRGBBitCount <= 24) && 
+	    } else if ((ddpf.dwRGBBitCount <= 24) &&
 		       (ddpf.dwRGBBitCount > 16)) {
 		for (int i=yoffset; i < ylimit; i++) {
 		    src = srcRow;
@@ -1269,7 +1269,7 @@ void copyDataFromSurface(jint internalFormat,
 			    *dst++ = (byte) ((mask & ddpf.dwGBitMask) >>
 					     gshift);
 			} else {
-			    t = (mask & ddpf.dwGBitMask) << -gshift;			    
+			    t = (mask & ddpf.dwGBitMask) << -gshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
 			}
 			if (ddpf.noAlpha) {
@@ -1287,7 +1287,7 @@ void copyDataFromSurface(jint internalFormat,
 		    srcRow += lockedRect.Pitch;
 		    destRow -= dstPitch;
 		}
-	    } else if ((ddpf.dwRGBBitCount <= 16) && 
+	    } else if ((ddpf.dwRGBBitCount <= 16) &&
 		       (ddpf.dwRGBBitCount > 8)) {
 		for (int i=yoffset; i < ylimit; i++) {
 		    src = srcRow;
@@ -1300,7 +1300,7 @@ void copyDataFromSurface(jint internalFormat,
 			    *dst++ = (byte) ((mask & ddpf.dwGBitMask) >>
 					     gshift);
 			} else {
-			    t = (mask & ddpf.dwGBitMask) << -gshift;			    
+			    t = (mask & ddpf.dwGBitMask) << -gshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
 			}
 			if (ddpf.noAlpha) {
@@ -1328,7 +1328,7 @@ void copyDataFromSurface(jint internalFormat,
 			    *dst++ = (byte) ((mask & ddpf.dwGBitMask) >>
 					     gshift);
 			} else {
-			    t = (mask & ddpf.dwGBitMask) << -gshift;			    
+			    t = (mask & ddpf.dwGBitMask) << -gshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
 			}
 			if (ddpf.noAlpha) {
@@ -1347,11 +1347,11 @@ void copyDataFromSurface(jint internalFormat,
 		    destRow -= dstPitch;
 		}
 	    }
-	}  
+	}
 
     } else if (internalFormat == FORMAT_BYTE_GRAY) {
-	int gshift = firstBit(ddpf.dwGBitMask) + 
-	    countBits(ddpf.dwGBitMask) - 8; 
+	int gshift = firstBit(ddpf.dwGBitMask) +
+	           ucountBits(ddpf.dwGBitMask) - 8;
 	dstPitch = subWidth;
 	destRow += (subHeight-1)*dstPitch;
 
@@ -1370,13 +1370,13 @@ void copyDataFromSurface(jint internalFormat,
 		    *dst++ = b2;
 		    *src++;
 		}
-		srcRow += lockedRect.Pitch; 
+		srcRow += lockedRect.Pitch;
 		destRow -= dstPitch;
 	    }
 	} else { // handle less common format
-	    int gshift = firstBit(ddpf.dwGBitMask) + 
-		           countBits(ddpf.dwGBitMask) - 8; 
-	    if ((ddpf.dwRGBBitCount <= 32) && 
+	    int gshift = firstBit(ddpf.dwGBitMask) +
+		           ucountBits(ddpf.dwGBitMask) - 8;
+	    if ((ddpf.dwRGBBitCount <= 32) &&
 		(ddpf.dwRGBBitCount > 24)) {
 
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1392,14 +1392,14 @@ void copyDataFromSurface(jint internalFormat,
 			    *dst++ = (byte) ((mask & ddpf.dwGBitMask) >>
 					     gshift);
 			} else {
-			    t = (mask & ddpf.dwGBitMask) << -gshift;			    
+			    t = (mask & ddpf.dwGBitMask) << -gshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
 		    destRow -= dstPitch;
 		}
-	    } else if ((ddpf.dwRGBBitCount <= 24) && 
+	    } else if ((ddpf.dwRGBBitCount <= 24) &&
 		       (ddpf.dwRGBBitCount > 16)) {
 		for (int i=yoffset; i < ylimit; i++) {
 		    src = srcRow;
@@ -1413,14 +1413,14 @@ void copyDataFromSurface(jint internalFormat,
 			    *dst++ = (byte) ((mask & ddpf.dwGBitMask) >>
 					     gshift);
 			} else {
-			    t = (mask & ddpf.dwGBitMask) << -gshift;			    
+			    t = (mask & ddpf.dwGBitMask) << -gshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
 		    destRow -= dstPitch;
 		}
-	    } else if ((ddpf.dwRGBBitCount <= 16) && 
+	    } else if ((ddpf.dwRGBBitCount <= 16) &&
 		       (ddpf.dwRGBBitCount > 8)) {
 		for (int i=yoffset; i < ylimit; i++) {
 		    src = srcRow;
@@ -1433,7 +1433,7 @@ void copyDataFromSurface(jint internalFormat,
 			    *dst++ = (byte) ((mask & ddpf.dwGBitMask) >>
 					     gshift);
 			} else {
-			    t = (mask & ddpf.dwGBitMask) << -gshift;			    
+			    t = (mask & ddpf.dwGBitMask) << -gshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
 			}
 		    }
@@ -1450,7 +1450,7 @@ void copyDataFromSurface(jint internalFormat,
 			    *dst++ = (byte) ((mask & ddpf.dwGBitMask) >>
 					     gshift);
 			} else {
-			    t = (mask & ddpf.dwGBitMask) << -gshift;			    
+			    t = (mask & ddpf.dwGBitMask) << -gshift;
 			    *dst++ = (t <= 0xff ? (byte) t : 0xff);
 			}
 		    }
@@ -1458,7 +1458,7 @@ void copyDataFromSurface(jint internalFormat,
 		    destRow -= dstPitch;
 		}
 	    }
-	}  
+	}
 
     } else {
 	// FORMAT_USHORT_GRAY
@@ -1468,21 +1468,21 @@ void copyDataFromSurface(jint internalFormat,
 
     hr = surf->UnlockRect();
     if (FAILED(hr)) {
-	printf("Fail to unlock surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 
 }
 
 
-void copyDataToSurfaceABGR(jint internalFormat, 
+void copyDataToSurfaceABGR(jint internalFormat,
 			   PIXELFORMAT *ddpf,
 			   unsigned char* pRect,
 			   DWORD rectPitch,
 			   jbyte *data,
 			   jint xoffset, jint yoffset,
-			   DWORD xlimit, DWORD ylimit, 
-			   jint subWidth) 
+			   DWORD xlimit, DWORD ylimit,
+			   jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -1510,7 +1510,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    *dst++ = a;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount == 16) &&
 		   (ddpf->dwRBitMask == 0xf00) &&
@@ -1529,20 +1529,20 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    *dst++ = (a << 4) | r;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask); 
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask); 
-	    int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	    int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
-	    int gshift = firstBit(ddpf->dwGBitMask);	  
-	    int bshift = firstBit(ddpf->dwBBitMask);	  
-	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	    int gshift = firstBit(ddpf->dwGBitMask);
+	    int bshift = firstBit(ddpf->dwBBitMask);
+	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	    DWORD mask;
 
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += (xoffset << 2);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1569,7 +1569,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			    (b << bshift)  | (a << ashift);
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
@@ -1577,7 +1577,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 			*dst++ = (byte) ((mask >> 24) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -1606,14 +1606,14 @@ void copyDataToSurfaceABGR(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			       (b << bshift)  | (a << ashift);
 			*dst++ = (byte)  (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 			*dst++ = (byte) ((mask >> 16) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -1642,13 +1642,13 @@ void copyDataToSurfaceABGR(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			    (b << bshift)  | (a << ashift);
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += xoffset;
@@ -1676,31 +1676,31 @@ void copyDataToSurfaceABGR(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			*dst++ = (byte) ((r << rshift) | (g << gshift) | 
+			*dst++ = (byte) ((r << rshift) | (g << gshift) |
 					 (b << bshift) | (a << ashift));
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -1710,7 +1710,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    src++;
 		    src++;
@@ -1730,7 +1730,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -1738,7 +1738,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -1750,7 +1750,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    src++;
 		    src++;
@@ -1770,14 +1770,14 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 		  	   (b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -1789,7 +1789,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    src++;
 		    src++;
@@ -1809,13 +1809,13 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	   	  	   (b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -1826,7 +1826,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    src++;
 		    src++;
@@ -1846,22 +1846,22 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | (g << gshift) | 
+		    *dst++ = (byte) ((r << rshift) | (g << gshift) |
 			             (b << bshift)  | (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+    } else if (internalFormat == ALPHA) {
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -1881,7 +1881,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -1902,7 +1902,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -1922,7 +1922,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -1939,26 +1939,26 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    *dst++ = (byte) (a << ashift);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -1987,7 +1987,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -1995,7 +1995,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -2026,14 +2026,14 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -2064,13 +2064,13 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -2100,16 +2100,16 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst++ = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
 				     (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -2118,14 +2118,14 @@ void copyDataToSurfaceABGR(jint internalFormat,
 }
 
 
-void copyDataToSurfaceBGR(jint internalFormat, 
+void copyDataToSurfaceBGR(jint internalFormat,
 			  PIXELFORMAT *ddpf,
 			  unsigned char* pRect,
 			  DWORD rectPitch,
 			  jbyte *data,
 			  jint xoffset, jint yoffset,
-			  DWORD xlimit, DWORD ylimit, 
-			  jint subWidth) 
+			  DWORD xlimit, DWORD ylimit,
+			  jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -2153,7 +2153,7 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    *dst++ = 0xff;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 
 	} else if ((ddpf->dwRGBBitCount == 16) &&
@@ -2172,18 +2172,18 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    *dst++ = 0xf0 | r;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask); 
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask); 
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
-	    int gshift = firstBit(ddpf->dwGBitMask);	  
-	    int bshift = firstBit(ddpf->dwBBitMask);	  
+	    int gshift = firstBit(ddpf->dwGBitMask);
+	    int bshift = firstBit(ddpf->dwBBitMask);
 	    DWORD mask;
 
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += (xoffset << 2);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -2205,15 +2205,15 @@ void copyDataToSurfaceBGR(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
-			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 			*dst++ = (byte) ((mask >> 16) & 0xff);
 			*dst++ = (byte) ((mask >> 24) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -2237,14 +2237,14 @@ void copyDataToSurfaceBGR(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
-			       (b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+			mask = (r << rshift) | (g << gshift) |
+			       (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst++ = (byte)  (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 			*dst++ = (byte) ((mask >> 16) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -2268,13 +2268,13 @@ void copyDataToSurfaceBGR(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
-			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += xoffset;
@@ -2297,29 +2297,29 @@ void copyDataToSurfaceBGR(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			*dst++ = (byte) ((r << rshift) | (g << gshift) | 
-					 (b << bshift) | ddpf->dwRGBAlphaBitMask);	  
+			*dst++ = (byte) ((r << rshift) | (g << gshift) |
+					 (b << bshift) | ddpf->dwRGBAlphaBitMask);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -2344,15 +2344,15 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
-			(b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+		    mask = (r << rshift) | (g << gshift) |
+			(b << bshift)  | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -2379,14 +2379,14 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
-		  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+		    mask = (r << rshift) | (g << gshift) |
+		  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -2413,13 +2413,13 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
-	   	  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+		    mask = (r << rshift) | (g << gshift) |
+	   	  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -2445,23 +2445,23 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | (g << gshift) | 
-			             (b << bshift)  |ddpf->dwRGBAlphaBitMask);	   
+		    *dst++ = (byte) ((r << rshift) | (g << gshift) |
+			             (b << bshift)  |ddpf->dwRGBAlphaBitMask);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
+    } else if (internalFormat == ALPHA) {
 	byte m1 = (byte) (ddpf->dwRGBAlphaBitMask & 0xff);
 	byte m2 = (byte) ((ddpf->dwRGBAlphaBitMask >> 8) & 0xff);
 	byte m3 = (byte) ((ddpf->dwRGBAlphaBitMask >> 16) & 0xff);
 	byte m4 = (byte) ((ddpf->dwRGBAlphaBitMask >> 24) & 0xff);
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -2475,7 +2475,7 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    *dst++ = m4;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -2490,7 +2490,7 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    *dst++ = m3;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -2504,7 +2504,7 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    *dst++ = m2;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -2516,23 +2516,23 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    *dst++ = m1;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
 	DWORD mask;
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -2556,7 +2556,7 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -2564,7 +2564,7 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -2590,14 +2590,14 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
-	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;  
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -2623,13 +2623,13 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
-	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;  
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -2654,16 +2654,16 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst++ = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
-				     ddpf->dwRGBAlphaBitMask);  
+				     ddpf->dwRGBAlphaBitMask);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -2676,14 +2676,14 @@ void copyDataToSurfaceBGR(jint internalFormat,
  * but the pixel is written in the destination buffer
  * from right to left. This is used for CubeMapping.
  */
-void copyDataToSurfaceRGBARev(jint internalFormat, 
+void copyDataToSurfaceRGBARev(jint internalFormat,
 			      PIXELFORMAT *ddpf,
 			      unsigned char* pRect,
 			      DWORD rectPitch,
 			      jbyte *data,
 			      jint xoffset, jint yoffset,
-			      DWORD xlimit, DWORD ylimit, 
-			      jint subWidth) 
+			      DWORD xlimit, DWORD ylimit,
+			      jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -2716,7 +2716,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    *dst-- = b;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount == 16) &&
 		   (ddpf->dwRBitMask == 0xf00) &&
@@ -2736,19 +2736,19 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask); 
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask); 
-	    int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	    int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
-	    int gshift = firstBit(ddpf->dwGBitMask);	  
-	    int bshift = firstBit(ddpf->dwBBitMask);	  
-	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	    int gshift = firstBit(ddpf->dwGBitMask);
+	    int bshift = firstBit(ddpf->dwBBitMask);
+	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	    DWORD mask;
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += ((xlimit << 2) - 1);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -2775,7 +2775,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			    (b << bshift)  | (a << ashift);
 			*dst-- = (byte) ((mask >> 24) & 0xff);
 			*dst-- = (byte) ((mask >> 16) & 0xff);
@@ -2784,7 +2784,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -2814,14 +2814,14 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			       (b << bshift)  | (a << ashift);
 			*dst-- = (byte) ((mask >> 16) & 0xff);
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte)  (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -2850,13 +2850,13 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			    (b << bshift)  | (a << ashift);
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte) (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += (xlimit-1);
@@ -2884,31 +2884,31 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			*dst-- = (byte) ((r << rshift) | (g << gshift) | 
+			*dst-- = (byte) ((r << rshift) | (g << gshift) |
 					 (b << bshift) | (a << ashift));
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) -1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -2921,7 +2921,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -2938,7 +2938,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift)  | (a << ashift);
 
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
@@ -2947,7 +2947,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -2962,7 +2962,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -2979,14 +2979,14 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 		  	   (b << bshift)  | (a << ashift);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -3001,7 +3001,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -3018,13 +3018,13 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	   	  	   (b << bshift)  | (a << ashift);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -3038,7 +3038,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -3055,22 +3055,22 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | (g << gshift) | 
+		    *dst-- = (byte) ((r << rshift) | (g << gshift) |
 			             (b << bshift)  | (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+    } else if (internalFormat == ALPHA) {
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -3090,7 +3090,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -3111,7 +3111,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -3131,7 +3131,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit-1);
@@ -3148,25 +3148,25 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    *dst-- = (byte) (a << ashift);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -3195,7 +3195,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
@@ -3203,7 +3203,7 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -3234,14 +3234,14 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -3272,13 +3272,13 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit-1);
@@ -3308,16 +3308,16 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst-- = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
 				     (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -3327,14 +3327,14 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 
 
 
-void copyDataToSurfaceABGRRev(jint internalFormat, 
+void copyDataToSurfaceABGRRev(jint internalFormat,
 			      PIXELFORMAT *ddpf,
 			      unsigned char* pRect,
 			      DWORD rectPitch,
 			      jbyte *data,
 			      jint xoffset, jint yoffset,
-			      DWORD xlimit, DWORD ylimit, 
-			      jint subWidth) 
+			      DWORD xlimit, DWORD ylimit,
+			      jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -3365,7 +3365,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    *dst-- = b;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount == 16) &&
 		   (ddpf->dwRBitMask == 0xf00) &&
@@ -3384,20 +3384,20 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    *dst-- = (g << 4) | b;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask); 
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask); 
-	    int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	    int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
-	    int gshift = firstBit(ddpf->dwGBitMask);	  
-	    int bshift = firstBit(ddpf->dwBBitMask);	  
-	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	    int gshift = firstBit(ddpf->dwGBitMask);
+	    int bshift = firstBit(ddpf->dwBBitMask);
+	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	    DWORD mask;
 
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += ((xlimit << 2) - 1);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -3424,7 +3424,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			    (b << bshift)  | (a << ashift);
 			*dst-- = (byte) ((mask >> 24) & 0xff);
 			*dst-- = (byte) ((mask >> 16) & 0xff);
@@ -3432,7 +3432,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 			*dst-- = (byte) (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -3461,14 +3461,14 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			       (b << bshift)  | (a << ashift);
 			*dst-- = (byte) ((mask >> 16) & 0xff);
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte)  (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -3497,13 +3497,13 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			    (b << bshift)  | (a << ashift);
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte) (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += (xlimit-1);
@@ -3531,31 +3531,31 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			*dst-- = (byte) ((r << rshift) | (g << gshift) | 
+			*dst-- = (byte) ((r << rshift) | (g << gshift) |
 					 (b << bshift) | (a << ashift));
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -3565,7 +3565,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    src++;
 		    src++;
@@ -3585,7 +3585,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift)  | (a << ashift);
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
@@ -3593,7 +3593,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -3605,7 +3605,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    src++;
 		    src++;
@@ -3625,14 +3625,14 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 		  	   (b << bshift)  | (a << ashift);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -3644,7 +3644,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    src++;
 		    src++;
@@ -3664,13 +3664,13 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	   	  	   (b << bshift)  | (a << ashift);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -3681,7 +3681,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    src++;
 		    src++;
@@ -3701,22 +3701,22 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | (g << gshift) | 
+		    *dst-- = (byte) ((r << rshift) | (g << gshift) |
 			             (b << bshift)  | (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+    } else if (internalFormat == ALPHA) {
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -3737,7 +3737,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -3758,7 +3758,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -3778,7 +3778,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xlimit;
@@ -3795,26 +3795,26 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    *dst-- = (byte) (a << ashift);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -3843,7 +3843,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
@@ -3851,7 +3851,7 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -3882,14 +3882,14 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -3920,13 +3920,13 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -3956,16 +3956,16 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst-- = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
 				     (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -3975,14 +3975,14 @@ void copyDataToSurfaceABGRRev(jint internalFormat,
 }
 
 
-void copyDataToSurfaceBGRRev(jint internalFormat, 
+void copyDataToSurfaceBGRRev(jint internalFormat,
 			     PIXELFORMAT *ddpf,
 			     unsigned char* pRect,
 			     DWORD rectPitch,
 			     jbyte *data,
 			     jint xoffset, jint yoffset,
-			     DWORD xlimit, DWORD ylimit, 
-			     jint subWidth) 
+			     DWORD xlimit, DWORD ylimit,
+			     jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -4013,7 +4013,7 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    *dst-- = b;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 
 	} else if ((ddpf->dwRGBBitCount == 16) &&
@@ -4032,18 +4032,18 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    *dst-- = (g << 4) | b;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask); 
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask); 
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
-	    int gshift = firstBit(ddpf->dwGBitMask);	  
-	    int bshift = firstBit(ddpf->dwBBitMask);	  
+	    int gshift = firstBit(ddpf->dwGBitMask);
+	    int bshift = firstBit(ddpf->dwBBitMask);
 	    DWORD mask;
 
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += ((xlimit << 2) - 1);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -4065,15 +4065,15 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
-			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst-- = (byte) ((mask >> 24) & 0xff);
 			*dst-- = (byte) ((mask >> 16) & 0xff);
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte) (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -4097,14 +4097,14 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
-			       (b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+			mask = (r << rshift) | (g << gshift) |
+			       (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst-- = (byte) ((mask >> 16) & 0xff);
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte)  (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -4128,13 +4128,13 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
-			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte) (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += (xlimit - 1);
@@ -4157,29 +4157,29 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 			} else {
 			    r = (*src++) << -rDiscard;
 			}
-			*dst-- = (byte) ((r << rshift) | (g << gshift) | 
-					 (b << bshift) | ddpf->dwRGBAlphaBitMask);	  
+			*dst-- = (byte) ((r << rshift) | (g << gshift) |
+					 (b << bshift) | ddpf->dwRGBAlphaBitMask);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -4204,15 +4204,15 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
-			(b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+		    mask = (r << rshift) | (g << gshift) |
+			(b << bshift)  | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -4239,14 +4239,14 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
-		  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+		    mask = (r << rshift) | (g << gshift) |
+		  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -4273,13 +4273,13 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
-	   	  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;	  
+		    mask = (r << rshift) | (g << gshift) |
+	   	  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -4305,23 +4305,23 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | (g << gshift) | 
-			             (b << bshift)  |ddpf->dwRGBAlphaBitMask);	   
+		    *dst-- = (byte) ((r << rshift) | (g << gshift) |
+			             (b << bshift)  |ddpf->dwRGBAlphaBitMask);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
+    } else if (internalFormat == ALPHA) {
 	byte m1 = (byte) (ddpf->dwRGBAlphaBitMask & 0xff);
 	byte m2 = (byte) ((ddpf->dwRGBAlphaBitMask >> 8) & 0xff);
 	byte m3 = (byte) ((ddpf->dwRGBAlphaBitMask >> 16) & 0xff);
 	byte m4 = (byte) ((ddpf->dwRGBAlphaBitMask >> 24) & 0xff);
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -4335,7 +4335,7 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    *dst-- = m1;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -4350,7 +4350,7 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    *dst-- = m1;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -4364,7 +4364,7 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    *dst-- = m1;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -4376,23 +4376,23 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    *dst-- = m1;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
 	DWORD mask;
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -4416,7 +4416,7 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
@@ -4425,7 +4425,7 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -4451,14 +4451,14 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
-	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;  
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -4484,13 +4484,13 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
-	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;  
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -4515,16 +4515,16 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst-- = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
-				     ddpf->dwRGBAlphaBitMask);  
+				     ddpf->dwRGBAlphaBitMask);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -4533,14 +4533,14 @@ void copyDataToSurfaceBGRRev(jint internalFormat,
 }
 
 
-void copyDataToSurfaceRGBRev(jint internalFormat, 
+void copyDataToSurfaceRGBRev(jint internalFormat,
 			     PIXELFORMAT *ddpf,
 			     unsigned char* pRect,
 			     DWORD rectPitch,
 			     jbyte *data,
 			     jint xoffset, jint yoffset,
-			     DWORD xlimit, DWORD ylimit, 
-			     jint subWidth) 
+			     DWORD xlimit, DWORD ylimit,
+			     jint subWidth)
 {
    unsigned char *src;
     unsigned char *dst;
@@ -4573,7 +4573,7 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    *dst-- = b;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount == 16) &&
 		   (ddpf->dwRBitMask == 0xf00) &&
@@ -4591,18 +4591,18 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    *dst-- = (g << 4) | b;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask); 
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask); 
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
-	    int gshift = firstBit(ddpf->dwGBitMask);	  
-	    int bshift = firstBit(ddpf->dwBBitMask);	  
+	    int gshift = firstBit(ddpf->dwGBitMask);
+	    int bshift = firstBit(ddpf->dwBBitMask);
 	    DWORD mask;
 
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += ((xlimit << 2) - 1);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -4624,15 +4624,15 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 			} else {
 			    b = (*src++) >> -bDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
-			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;	   
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst-- = (byte) ((mask >> 24) & 0xff);
 			*dst-- = (byte) ((mask >> 16) & 0xff);
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte) (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -4656,14 +4656,14 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 			} else {
 			    b = (*src++) >> -bDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
-			       (b << bshift)  | ddpf->dwRGBAlphaBitMask;	   
+			mask = (r << rshift) | (g << gshift) |
+			       (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst-- = (byte) ((mask >> 16) & 0xff);
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte)  (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -4687,13 +4687,13 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 			} else {
 			    b = (*src++) >> -bDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte) (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += (xlimit - 1);
@@ -4716,29 +4716,29 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 			} else {
 			    b = (*src++) >> -bDiscard;
 			}
-			*dst-- = (byte) ((r << rshift) | (g << gshift) | 
+			*dst-- = (byte) ((r << rshift) | (g << gshift) |
 					 (b << bshift) |  ddpf->dwRGBAlphaBitMask);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -4763,7 +4763,7 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
@@ -4771,7 +4771,7 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -4798,14 +4798,14 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 		  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -4832,13 +4832,13 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	   	  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -4864,23 +4864,23 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | (g << gshift) | 
+		    *dst-- = (byte) ((r << rshift) | (g << gshift) |
 			             (b << bshift)  | ddpf->dwRGBAlphaBitMask);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
+    } else if (internalFormat == ALPHA) {
 	byte m1 = (byte) (ddpf->dwRGBAlphaBitMask & 0xff);
 	byte m2 = (byte) ((ddpf->dwRGBAlphaBitMask >> 8) & 0xff);
 	byte m3 = (byte) ((ddpf->dwRGBAlphaBitMask >> 16) & 0xff);
 	byte m4 = (byte) ((ddpf->dwRGBAlphaBitMask >> 24) & 0xff);
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -4894,7 +4894,7 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    *dst-- = m1;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -4909,7 +4909,7 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    *dst-- = m1;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -4923,7 +4923,7 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    *dst-- = m1;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -4935,23 +4935,23 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    *dst-- = m1;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
 	DWORD mask;
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -4976,7 +4976,7 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
@@ -4984,7 +4984,7 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
         } else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -5011,14 +5011,14 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -5045,13 +5045,13 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -5077,16 +5077,16 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst-- = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
 				     ddpf->dwRGBAlphaBitMask);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -5094,14 +5094,14 @@ void copyDataToSurfaceRGBRev(jint internalFormat,
     }
 }
 
-void copyDataToSurfaceLARev(jint internalFormat, 
+void copyDataToSurfaceLARev(jint internalFormat,
 			    PIXELFORMAT *ddpf,
 			    unsigned char* pRect,
 			    DWORD rectPitch,
 			    jbyte *data,
 			    jint xoffset, jint yoffset,
-			    DWORD xlimit, DWORD ylimit, 
-			    jint subWidth) 
+			    DWORD xlimit, DWORD ylimit,
+			    jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -5132,7 +5132,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    *dst-- = l;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount == 16) &&
 		   (ddpf->dwRBitMask == 0xf00) &&
@@ -5149,20 +5149,20 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    *dst-- = (l << 4) | l;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	    int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	    int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
 	    int gshift = firstBit(ddpf->dwGBitMask);
 	    int bshift = firstBit(ddpf->dwBBitMask);
-	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	    DWORD mask;
 
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += ((xlimit << 2) - 1);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -5179,7 +5179,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | (a << ashift);
 			*dst-- = (byte) ((mask >> 24) & 0xff);
 			*dst-- = (byte) ((mask >> 16) & 0xff);
@@ -5187,7 +5187,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 			*dst-- = (byte) (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -5206,14 +5206,14 @@ void copyDataToSurfaceLARev(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | (a << ashift);
 			*dst-- = (byte) ((mask >> 16) & 0xff);
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte)  (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -5232,13 +5232,13 @@ void copyDataToSurfaceLARev(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | (a << ashift);
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte) (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += (xlimit - 1);
@@ -5256,32 +5256,32 @@ void copyDataToSurfaceLARev(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			*dst-- = (byte) ((l << rshift) | (l << gshift) | 
+			*dst-- = (byte) ((l << rshift) | (l << gshift) |
 					 (l << bshift) | (a << ashift));
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
 
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -5292,7 +5292,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -5309,7 +5309,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift)  | (a << ashift);
 
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
@@ -5318,7 +5318,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -5331,7 +5331,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -5348,14 +5348,14 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 		  	   (b << bshift)  | (a << ashift);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -5368,7 +5368,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -5385,13 +5385,13 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	   	  	   (b << bshift)  | (a << ashift);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -5403,7 +5403,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -5420,22 +5420,22 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | (g << gshift) | 
+		    *dst-- = (byte) ((r << rshift) | (g << gshift) |
 			             (b << bshift)  | (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+    } else if (internalFormat == ALPHA) {
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -5455,7 +5455,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -5476,7 +5476,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -5496,7 +5496,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -5513,25 +5513,25 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    *dst-- = (byte) (a << ashift);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -5560,7 +5560,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
@@ -5568,7 +5568,7 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -5599,14 +5599,14 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -5637,13 +5637,13 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -5673,16 +5673,16 @@ void copyDataToSurfaceLARev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst-- = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
 				     (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -5690,14 +5690,14 @@ void copyDataToSurfaceLARev(jint internalFormat,
     }
 }
 
-void copyDataToSurfaceGrayRev(jint internalFormat, 
+void copyDataToSurfaceGrayRev(jint internalFormat,
 			      PIXELFORMAT *ddpf,
 			      unsigned char* pRect,
 			      DWORD rectPitch,
 			      jbyte *data,
 			      jint xoffset, jint yoffset,
-			      DWORD xlimit, DWORD ylimit, 
-			      jint subWidth) 
+			      DWORD xlimit, DWORD ylimit,
+			      jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -5728,7 +5728,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = l;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount == 16) &&
 		   (ddpf->dwRBitMask == 0xf00) &&
@@ -5744,18 +5744,18 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (l << 4) | l;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask);
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
 	    int gshift = firstBit(ddpf->dwGBitMask);
 	    int bshift = firstBit(ddpf->dwBBitMask);
 	    DWORD mask;
 
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += ((xlimit << 2) - 1);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -5767,7 +5767,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 			} else {
 			    l = (*src++) << -rDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | ddpf->dwRGBAlphaBitMask;
 			*dst-- = (byte) ((mask >> 24) & 0xff);
 			*dst-- = (byte) ((mask >> 16) & 0xff);
@@ -5775,7 +5775,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 			*dst-- = (byte) (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -5789,14 +5789,14 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 			} else {
 			    l = (*src++) << -rDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | ddpf->dwRGBAlphaBitMask;
 			*dst-- = (byte) ((mask >> 16) & 0xff);
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte)  (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -5810,13 +5810,13 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 			} else {
 			    l = (*src++) << -rDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | ddpf->dwRGBAlphaBitMask;
 			*dst-- = (byte) ((mask >> 8) & 0xff);
 			*dst-- = (byte) (mask & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += (xlimit - 1);
@@ -5829,32 +5829,32 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 			} else {
 			    l = (*src++) << -rDiscard;
 			}
-			*dst-- = (byte) ((l << rshift) | (l << gshift) | 
-					 (l << bshift) | ddpf->dwRGBAlphaBitMask); 
+			*dst-- = (byte) ((l << rshift) | (l << gshift) |
+					 (l << bshift) | ddpf->dwRGBAlphaBitMask);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
 
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -5865,7 +5865,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = l >> aDiscard;
 		    } else {
-			a = l << -aDiscard;			
+			a = l << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -5882,7 +5882,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift)  | (a << ashift);
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
@@ -5890,7 +5890,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -5903,7 +5903,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = l >> aDiscard;
 		    } else {
-			a = l << -aDiscard;			
+			a = l << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -5920,14 +5920,14 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 		  	   (b << bshift)  | (a << ashift);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -5940,7 +5940,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = l >> aDiscard;
 		    } else {
-			a = l << -aDiscard;			
+			a = l << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -5957,13 +5957,13 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	   	  	   (b << bshift)  | (a << ashift);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -5975,7 +5975,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = l >> aDiscard;
 		    } else {
-			a = l << -aDiscard;			
+			a = l << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -5992,22 +5992,22 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | (g << gshift) | 
+		    *dst-- = (byte) ((r << rshift) | (g << gshift) |
 			             (b << bshift)  | (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+    } else if (internalFormat == ALPHA) {
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -6026,7 +6026,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -6046,7 +6046,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -6065,7 +6065,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -6081,25 +6081,25 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (byte) (a << ashift);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -6127,7 +6127,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
@@ -6135,7 +6135,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -6165,14 +6165,14 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -6202,13 +6202,13 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -6237,16 +6237,16 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    *dst-- = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst-- = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
 				     (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -6255,14 +6255,14 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 }
 
 
-void copyDataToSurfaceGrayRev(jint internalFormat, 
+void copyDataToSurfaceGrayRev(jint internalFormat,
 			      PIXELFORMAT *ddpf,
 			      unsigned char* pRect,
 			      DWORD rectPitch,
 			      jshort *data,
 			      jint xoffset, jint yoffset,
-			      DWORD xlimit, DWORD ylimit, 
-			      jint subWidth) 
+			      DWORD xlimit, DWORD ylimit,
+			      jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -6272,12 +6272,12 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
     unsigned char *destRow = pRect + rectPitch*yoffset;
 
 
-    if (internalFormat == ALPHA) {	
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+    if (internalFormat == ALPHA) {
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -6297,7 +6297,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -6318,7 +6318,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -6338,7 +6338,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -6355,25 +6355,25 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (byte) (a << ashift);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += ((xlimit << 2) - 1);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -6402,7 +6402,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 24) & 0xff);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
@@ -6410,7 +6410,7 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -6441,14 +6441,14 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 16) & 0xff);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -6479,13 +6479,13 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift) | (a << ashift);
 		    *dst-- = (byte) ((mask >> 8) & 0xff);
 		    *dst-- = (byte) (mask & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += (xlimit - 1);
@@ -6515,47 +6515,47 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    *dst-- =  (byte) ((r << rshift) | 
-				      (g << gshift) | 
+		    *dst-- =  (byte) ((r << rshift) |
+				      (g << gshift) |
 				      (b << bshift) |
 				      (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
 	printf("Texture format %d not support.\n", internalFormat);
-    } 
+    }
 }
 
 
 
 /*
  *  Copy data to Texture memory surface *pRect
- *  with  pitch = rectPitch 
+ *  with  pitch = rectPitch
  *  Note that rectPitch >= surface width since
  *  D3D may allocate extra width in texture memory
  *  for other purpose or for alignment. Addional
- *  offset = (xoffset, yoffset) is added to copy 
- *  data in texture memory. 
+ *  offset = (xoffset, yoffset) is added to copy
+ *  data in texture memory.
  *
  * The source image has width = subWidth and
  * pointer *data.
- *  
+ *
  *
  */
-void copyDataToSurfaceRGBA(jint internalFormat, 
+void copyDataToSurfaceRGBA(jint internalFormat,
 			   PIXELFORMAT *ddpf,
 			   unsigned char* pRect,
 			   DWORD rectPitch,
 			   jbyte *data,
 			   jint xoffset, jint yoffset,
-			   DWORD xlimit, DWORD ylimit, 
-			   jint subWidth) 
+			   DWORD xlimit, DWORD ylimit,
+			   jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -6588,7 +6588,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    *dst++ = *src++;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount == 16) &&
 		   (ddpf->dwRBitMask == 0xf00) &&
@@ -6607,20 +6607,20 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    *dst++ = (a << 4) | r;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask); 
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask); 
-	    int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	    int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
-	    int gshift = firstBit(ddpf->dwGBitMask);	  
-	    int bshift = firstBit(ddpf->dwBBitMask);	  
-	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	    int gshift = firstBit(ddpf->dwGBitMask);
+	    int bshift = firstBit(ddpf->dwBBitMask);
+	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	    DWORD mask;
 
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += (xoffset << 2);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -6647,7 +6647,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			    (b << bshift)  | (a << ashift);
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
@@ -6655,7 +6655,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 			*dst++ = (byte) ((mask >> 24) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -6684,14 +6684,14 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			       (b << bshift)  | (a << ashift);
 			*dst++ = (byte)  (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 			*dst++ = (byte) ((mask >> 16) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -6720,13 +6720,13 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			    (b << bshift)  | (a << ashift);
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += xoffset;
@@ -6754,32 +6754,32 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			*dst++ = (byte) ((r << rshift) | (g << gshift) | 
+			*dst++ = (byte) ((r << rshift) | (g << gshift) |
 					 (b << bshift) | (a << ashift));
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
 
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -6792,7 +6792,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -6809,7 +6809,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -6817,7 +6817,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -6832,7 +6832,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -6849,14 +6849,14 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 		  	   (b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -6871,7 +6871,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -6888,13 +6888,13 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	   	  	   (b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -6908,7 +6908,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -6925,22 +6925,22 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | (g << gshift) | 
+		    *dst++ = (byte) ((r << rshift) | (g << gshift) |
 			             (b << bshift)  | (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+    } else if (internalFormat == ALPHA) {
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -6960,7 +6960,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -6981,7 +6981,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -7001,7 +7001,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -7018,25 +7018,25 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    *dst++ = (byte) (a << ashift);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -7065,7 +7065,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -7073,7 +7073,7 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -7104,14 +7104,14 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -7142,13 +7142,13 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -7178,16 +7178,16 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst++ = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
 				     (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -7196,14 +7196,14 @@ void copyDataToSurfaceRGBA(jint internalFormat,
 }
 
 
-void copyDataToSurfaceRGB(jint internalFormat, 
+void copyDataToSurfaceRGB(jint internalFormat,
 			  PIXELFORMAT *ddpf,
 			  unsigned char* pRect,
 			  DWORD rectPitch,
 			  jbyte *data,
 			  jint xoffset, jint yoffset,
-			  DWORD xlimit, DWORD ylimit, 
-			  jint subWidth) 
+			  DWORD xlimit, DWORD ylimit,
+			  jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -7237,7 +7237,7 @@ void copyDataToSurfaceRGB(jint internalFormat,
 
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount == 16) &&
 		   (ddpf->dwRBitMask == 0xf00) &&
@@ -7255,18 +7255,18 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    *dst++ = 0xf0 | r;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask); 
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask); 
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
-	    int gshift = firstBit(ddpf->dwGBitMask);	  
-	    int bshift = firstBit(ddpf->dwBBitMask);	  
+	    int gshift = firstBit(ddpf->dwGBitMask);
+	    int bshift = firstBit(ddpf->dwBBitMask);
 	    DWORD mask;
 
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += (xoffset << 2);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -7288,15 +7288,15 @@ void copyDataToSurfaceRGB(jint internalFormat,
 			} else {
 			    b = (*src++) >> -bDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
-			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;	   
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 			*dst++ = (byte) ((mask >> 16) & 0xff);
 			*dst++ = (byte) ((mask >> 24) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -7320,14 +7320,14 @@ void copyDataToSurfaceRGB(jint internalFormat,
 			} else {
 			    b = (*src++) >> -bDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
-			       (b << bshift)  | ddpf->dwRGBAlphaBitMask;	   
+			mask = (r << rshift) | (g << gshift) |
+			       (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst++ = (byte)  (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 			*dst++ = (byte) ((mask >> 16) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -7351,13 +7351,13 @@ void copyDataToSurfaceRGB(jint internalFormat,
 			} else {
 			    b = (*src++) >> -bDiscard;
 			}
-			mask = (r << rshift) | (g << gshift) | 
+			mask = (r << rshift) | (g << gshift) |
 			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += xoffset;
@@ -7380,29 +7380,29 @@ void copyDataToSurfaceRGB(jint internalFormat,
 			} else {
 			    b = (*src++) >> -bDiscard;
 			}
-			*dst++ = (byte) ((r << rshift) | (g << gshift) | 
+			*dst++ = (byte) ((r << rshift) | (g << gshift) |
 					 (b << bshift) |  ddpf->dwRGBAlphaBitMask);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -7427,7 +7427,7 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -7435,7 +7435,7 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -7462,14 +7462,14 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 		  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -7496,13 +7496,13 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	   	  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -7528,23 +7528,23 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | (g << gshift) | 
+		    *dst++ = (byte) ((r << rshift) | (g << gshift) |
 			             (b << bshift)  | ddpf->dwRGBAlphaBitMask);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
+    } else if (internalFormat == ALPHA) {
 	byte m1 = (byte) (ddpf->dwRGBAlphaBitMask & 0xff);
 	byte m2 = (byte) ((ddpf->dwRGBAlphaBitMask >> 8) & 0xff);
 	byte m3 = (byte) ((ddpf->dwRGBAlphaBitMask >> 16) & 0xff);
 	byte m4 = (byte) ((ddpf->dwRGBAlphaBitMask >> 24) & 0xff);
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -7558,7 +7558,7 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    *dst++ = m4;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -7573,7 +7573,7 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    *dst++ = m3;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -7587,7 +7587,7 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    *dst++ = m2;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -7599,23 +7599,23 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    *dst++ = m1;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
 	DWORD mask;
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -7640,7 +7640,7 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -7648,7 +7648,7 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
         } else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -7675,14 +7675,14 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -7709,13 +7709,13 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -7741,16 +7741,16 @@ void copyDataToSurfaceRGB(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst++ = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
 				     ddpf->dwRGBAlphaBitMask);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -7759,14 +7759,14 @@ void copyDataToSurfaceRGB(jint internalFormat,
 }
 
 
-void copyDataToSurfaceLA(jint internalFormat, 
+void copyDataToSurfaceLA(jint internalFormat,
 			 PIXELFORMAT *ddpf,
 			 unsigned char* pRect,
 			 DWORD rectPitch,
 			 jbyte *data,
 			 jint xoffset, jint yoffset,
-			 DWORD xlimit, DWORD ylimit, 
-			 jint subWidth) 
+			 DWORD xlimit, DWORD ylimit,
+			 jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -7797,7 +7797,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    *dst++ = *src++;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount == 16) &&
 		   (ddpf->dwRBitMask == 0xf00) &&
@@ -7814,20 +7814,20 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    *dst++ = (a << 4) | l;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	    int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	    int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
 	    int gshift = firstBit(ddpf->dwGBitMask);
 	    int bshift = firstBit(ddpf->dwBBitMask);
-	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	    DWORD mask;
 
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += (xoffset << 2);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -7844,7 +7844,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | (a << ashift);
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
@@ -7852,7 +7852,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 			*dst++ = (byte) ((mask >> 24) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -7871,14 +7871,14 @@ void copyDataToSurfaceLA(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | (a << ashift);
 			*dst++ = (byte)  (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 			*dst++ = (byte) ((mask >> 16) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -7897,13 +7897,13 @@ void copyDataToSurfaceLA(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | (a << ashift);
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += xoffset;
@@ -7921,32 +7921,32 @@ void copyDataToSurfaceLA(jint internalFormat,
 			} else {
 			    a = (*src++) >> -aDiscard;
 			}
-			*dst++ = (byte) ((l << rshift) | (l << gshift) | 
+			*dst++ = (byte) ((l << rshift) | (l << gshift) |
 					 (l << bshift) | (a << ashift));
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
 
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -7957,7 +7957,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -7974,7 +7974,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -7982,7 +7982,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -7995,7 +7995,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -8012,14 +8012,14 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 		  	   (b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -8032,7 +8032,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -8049,13 +8049,13 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	   	  	   (b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -8067,7 +8067,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = (*src++) >> aDiscard;
 		    } else {
-			a = (*src++) << -aDiscard;			
+			a = (*src++) << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -8084,22 +8084,22 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | (g << gshift) | 
+		    *dst++ = (byte) ((r << rshift) | (g << gshift) |
 			             (b << bshift)  | (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+    } else if (internalFormat == ALPHA) {
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -8119,7 +8119,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -8140,7 +8140,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -8160,7 +8160,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -8177,25 +8177,25 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    *dst++ = (byte) (a << ashift);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -8224,7 +8224,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -8232,7 +8232,7 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -8263,14 +8263,14 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -8301,13 +8301,13 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -8337,16 +8337,16 @@ void copyDataToSurfaceLA(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst++ = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
 				     (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -8354,14 +8354,14 @@ void copyDataToSurfaceLA(jint internalFormat,
     }
 }
 
-void copyDataToSurfaceGray(jint internalFormat, 
+void copyDataToSurfaceGray(jint internalFormat,
 			   PIXELFORMAT *ddpf,
 			   unsigned char* pRect,
 			   DWORD rectPitch,
 			   jbyte *data,
 			   jint xoffset, jint yoffset,
-			   DWORD xlimit, DWORD ylimit, 
-			   jint subWidth) 
+			   DWORD xlimit, DWORD ylimit,
+			   jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -8393,7 +8393,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = 0xff;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount == 16) &&
 		   (ddpf->dwRBitMask == 0xf00) &&
@@ -8409,18 +8409,18 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = 0xf0 | l;
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else { // handle less common (even weird) format
-	    int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	    int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	    int bDiscard = 8-countBits(ddpf->dwBBitMask);
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
 	    int gshift = firstBit(ddpf->dwGBitMask);
 	    int bshift = firstBit(ddpf->dwBBitMask);
 	    DWORD mask;
 
-	    if ((ddpf->dwRGBBitCount <= 32) && 
+	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += (xoffset << 2);
 		for (int i=yoffset; i < ylimit; i++) {
@@ -8432,7 +8432,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 			} else {
 			    l = (*src++) << -rDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | ddpf->dwRGBAlphaBitMask;
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
@@ -8440,7 +8440,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 			*dst++ = (byte) ((mask >> 24) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 24) &&
 		       (ddpf->dwRGBBitCount > 16)) {
@@ -8454,14 +8454,14 @@ void copyDataToSurfaceGray(jint internalFormat,
 			} else {
 			    l = (*src++) << -rDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | ddpf->dwRGBAlphaBitMask;
 			*dst++ = (byte)  (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 			*dst++ = (byte) ((mask >> 16) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if ((ddpf->dwRGBBitCount <= 16) &&
 		       (ddpf->dwRGBBitCount > 8)) {
@@ -8475,13 +8475,13 @@ void copyDataToSurfaceGray(jint internalFormat,
 			} else {
 			    l = (*src++) << -rDiscard;
 			}
-			mask = (l << rshift) | (l << gshift) | 
+			mask = (l << rshift) | (l << gshift) |
 			       (l << bshift) | ddpf->dwRGBAlphaBitMask;
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
 	    } else if (ddpf->dwRGBBitCount <= 8) {
 		destRow += xoffset;
@@ -8494,32 +8494,32 @@ void copyDataToSurfaceGray(jint internalFormat,
 			} else {
 			    l = (*src++) << -rDiscard;
 			}
-			*dst++ = (byte) ((l << rshift) | (l << gshift) | 
-					 (l << bshift) | ddpf->dwRGBAlphaBitMask); 
+			*dst++ = (byte) ((l << rshift) | (l << gshift) |
+					 (l << bshift) | ddpf->dwRGBAlphaBitMask);
 		    }
 		    srcRow += srcPitch;
-		    destRow += rectPitch; 
+		    destRow += rectPitch;
 		}
-	    } else { 
-		// should not happen, RGBBitCount > 32. Even DirectX 
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
 		// RGB mask can't address it.
-		printf("Texture memory with RGBBitCount = %d not support. \n", 
+		printf("Texture memory with RGBBitCount = %d not support. \n",
 		       ddpf->dwRGBBitCount);
 	    }
 	}
     } else if (internalFormat == LUMINANCE_ALPHA) {
 
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -8530,7 +8530,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = l >> aDiscard;
 		    } else {
-			a = l << -aDiscard;			
+			a = l << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -8547,7 +8547,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -8555,7 +8555,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -8568,7 +8568,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = l >> aDiscard;
 		    } else {
-			a = l << -aDiscard;			
+			a = l << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -8585,14 +8585,14 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 		  	   (b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -8605,7 +8605,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = l >> aDiscard;
 		    } else {
-			a = l << -aDiscard;			
+			a = l << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -8622,13 +8622,13 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	   	  	   (b << bshift)  | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -8640,7 +8640,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    if (aDiscard >= 0) {
 			a = l >> aDiscard;
 		    } else {
-			a = l << -aDiscard;			
+			a = l << -aDiscard;
 		    }
 		    if (rDiscard >= 0) {
 			r = l >> rDiscard;
@@ -8657,22 +8657,22 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			b = l << -bDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | (g << gshift) | 
+		    *dst++ = (byte) ((r << rshift) | (g << gshift) |
 			             (b << bshift)  | (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
-    } else if (internalFormat == ALPHA) {	
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+    } else if (internalFormat == ALPHA) {
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -8691,7 +8691,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -8711,7 +8711,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -8730,7 +8730,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -8746,25 +8746,25 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = (byte) (a << ashift);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
-	
-	if ((ddpf->dwRGBBitCount <= 32) && 
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -8792,7 +8792,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -8800,7 +8800,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -8830,14 +8830,14 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -8867,13 +8867,13 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 	 		   (b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -8902,16 +8902,16 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    *dst++ = (byte) ((r << rshift) | 
-				     (g << gshift) | 
+		    *dst++ = (byte) ((r << rshift) |
+				     (g << gshift) |
 				     (b << bshift) |
 				     (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
@@ -8925,28 +8925,28 @@ void copyDataToSurfaceGray(jint internalFormat,
  * Copy data from memory to DirectDraw surface
  *
  * Source image with WIDTH = tilew, the subimage with
- * dimension (subWidth, subHeight) is copy with 
+ * dimension (subWidth, subHeight) is copy with
  * offset = (imgXOffset, imgYOffset) from the start
  * pointer *data.
  *
- * Destination frame buffer is copy with 
+ * Destination frame buffer is copy with
  * offset = (xoffset, yoffset)
  *
  */
 void copyDataToSurface(jint storedFormat,
-		       jint internalFormat, 
+		       jint internalFormat,
 		       jint xoffset, jint yoffset,
 		       jint imgXOffset, jint imgYOffset,
 		       jint subWidth, jint subHeight,
-		       jint tilew, jbyte *data, 
-		       LPDIRECT3DTEXTURE8 surf,
-		       jint level) 
+		       jint tilew, jbyte *data,
+		       LPDIRECT3DTEXTURE9 surf,
+		       jint level)
 {
     D3DSURFACE_DESC ddsd;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     PIXELFORMAT ddpf;
     HRESULT hr;
-    
+
     if (surf == NULL) {
 	return;
     }
@@ -8971,58 +8971,58 @@ void copyDataToSurface(jint storedFormat,
 
 
     if (FAILED(hr)) {
-	printf("Fail to lock surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to lock surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
     int offset = tilew*imgYOffset + imgXOffset;
     switch (storedFormat) {
         case  FORMAT_BYTE_RGBA :
 	    // This is the one we use when byReference = false
-	    copyDataToSurfaceRGBA(internalFormat, &ddpf, 
+	    copyDataToSurfaceRGBA(internalFormat, &ddpf,
 				  (unsigned char *) lockedRect.pBits,
 				  lockedRect.Pitch,
-				  data + (offset << 2), 
-				  xoffset, yoffset, 
+				  data + (offset << 2),
+				  xoffset, yoffset,
 				  xlimit, ylimit, tilew);
 	    break;
         case FORMAT_BYTE_RGB:
-	    copyDataToSurfaceRGB(internalFormat, &ddpf, 
+	    copyDataToSurfaceRGB(internalFormat, &ddpf,
 				 (unsigned char *) lockedRect.pBits,
 				 lockedRect.Pitch,
-				 data + 3*offset, 
-				 xoffset, yoffset, 
+				 data + 3*offset,
+				 xoffset, yoffset,
 				 xlimit, ylimit, tilew);
 	    break;
         case FORMAT_BYTE_ABGR:
-	    copyDataToSurfaceABGR(internalFormat, &ddpf, 
+	    copyDataToSurfaceABGR(internalFormat, &ddpf,
 				  (unsigned char *) lockedRect.pBits,
 				  lockedRect.Pitch,
-				  data + (offset << 2), 
-				  xoffset, yoffset, 
+				  data + (offset << 2),
+				  xoffset, yoffset,
 				  xlimit, ylimit, tilew);
 	    break;
         case FORMAT_BYTE_BGR:
-	    copyDataToSurfaceBGR(internalFormat, &ddpf, 
+	    copyDataToSurfaceBGR(internalFormat, &ddpf,
 				 (unsigned char *) lockedRect.pBits,
 				 lockedRect.Pitch,
-				 data + 3*offset, 
-				 xoffset, yoffset, 
+				 data + 3*offset,
+				 xoffset, yoffset,
 				 xlimit, ylimit, tilew);
 	    break;
         case FORMAT_BYTE_LA:
-	    copyDataToSurfaceLA(internalFormat, &ddpf, 
+	    copyDataToSurfaceLA(internalFormat, &ddpf,
 				(unsigned char *) lockedRect.pBits,
 				lockedRect.Pitch,
-				data + (offset << 1), 
-				xoffset, yoffset, 
+				data + (offset << 1),
+				xoffset, yoffset,
 				xlimit, ylimit, tilew);
 	    break;
         case FORMAT_BYTE_GRAY:
 	    copyDataToSurfaceGray(internalFormat, &ddpf,
 				  (unsigned char *) lockedRect.pBits,
 				  lockedRect.Pitch,
-				  data + offset, 
-				  xoffset, yoffset, 
+				  data + offset,
+				  xoffset, yoffset,
 				  xlimit, ylimit, tilew);
 	    break;
         default: // should not happen
@@ -9032,21 +9032,21 @@ void copyDataToSurface(jint storedFormat,
 
     hr = surf->UnlockRect(level);
     if (FAILED(hr)) {
-	printf("Fail to unlock surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 }
 
 
 
-void copyDataToSurfaceGray(jint internalFormat, 
+void copyDataToSurfaceGray(jint internalFormat,
 			   PIXELFORMAT *ddpf,
 			   unsigned char* pRect,
 			   DWORD rectPitch,
 			   jshort *data,
 			   jint xoffset, jint yoffset,
-			   DWORD xlimit, DWORD ylimit, 
-			   jint subWidth) 
+			   DWORD xlimit, DWORD ylimit,
+			   jint subWidth)
 {
     unsigned char *src;
     unsigned char *dst;
@@ -9056,12 +9056,12 @@ void copyDataToSurfaceGray(jint internalFormat,
     unsigned char *destRow = pRect + rectPitch*yoffset;
 
 
-    if (internalFormat == ALPHA) {	
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+    if (internalFormat == ALPHA) {
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -9081,7 +9081,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -9102,7 +9102,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -9122,7 +9122,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -9139,26 +9139,26 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = (byte) (a << ashift);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else if ((internalFormat == LUMINANCE) ||
 	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-countBits(ddpf->dwRBitMask);
-	int gDiscard = 8-countBits(ddpf->dwGBitMask);
-	int bDiscard = 8-countBits(ddpf->dwBBitMask);
-	int aDiscard = 8-countBits(ddpf->dwRGBAlphaBitMask);
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	int rshift = firstBit(ddpf->dwRBitMask);
 	int gshift = firstBit(ddpf->dwGBitMask);
 	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);	  
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
 
-	if ((ddpf->dwRGBBitCount <= 32) && 
+	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -9187,7 +9187,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
@@ -9195,7 +9195,7 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 24) &&
 		   (ddpf->dwRGBBitCount > 16)) {
@@ -9226,14 +9226,14 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if ((ddpf->dwRGBBitCount <= 16) &&
 		   (ddpf->dwRGBBitCount > 8)) {
@@ -9264,13 +9264,13 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    mask = (r << rshift) | (g << gshift) | 
+		    mask = (r << rshift) | (g << gshift) |
 			(b << bshift) | (a << ashift);
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else if (ddpf->dwRGBBitCount <= 8) {
 	    destRow += xoffset;
@@ -9300,21 +9300,21 @@ void copyDataToSurfaceGray(jint internalFormat,
 		    } else {
 			a = l << -aDiscard;
 		    }
-		    *dst++ =  (byte) ((r << rshift) | 
-				      (g << gshift) | 
+		    *dst++ =  (byte) ((r << rshift) |
+				      (g << gshift) |
 				      (b << bshift) |
 				      (a << ashift));
 		}
 		srcRow += srcPitch;
-		destRow += rectPitch; 
+		destRow += rectPitch;
 	    }
 	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf->dwRGBBitCount);
 	}
     } else {
 	printf("Texture format %d not support.\n", internalFormat);
-    } 
+    }
 }
 
 
@@ -9325,14 +9325,14 @@ void copyDataToSurface(jint storedFormat,
 		       jint imgXOffset, jint imgYOffset,
 		       jint subWidth, jint subHeight,
 		       jint tilew, jshort *data,
-		       LPDIRECT3DTEXTURE8 surf,
+		       LPDIRECT3DTEXTURE9 surf,
 		       jint level)
 {
     D3DSURFACE_DESC ddsd;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     PIXELFORMAT ddpf;
     HRESULT hr;
-    
+
     if (surf == NULL) {
 	return;
     }
@@ -9351,22 +9351,22 @@ void copyDataToSurface(jint storedFormat,
     hr = surf->LockRect(level, &lockedRect, NULL, 0);
 
     if (FAILED(hr)) {
-	printf("Fail to lock surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to lock surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 
     int offset = tilew*imgYOffset + imgXOffset;
 
-    copyDataToSurfaceGray(internalFormat, &ddpf, 
+    copyDataToSurfaceGray(internalFormat, &ddpf,
 			  (unsigned char *) lockedRect.pBits,
 			  lockedRect.Pitch,
-			  data + (offset << 1), 
-			  xoffset, yoffset, 
+			  data + (offset << 1),
+			  xoffset, yoffset,
 			  xlimit, ylimit, tilew);
-    
+
     hr = surf->UnlockRect(level);
     if (FAILED(hr)) {
-	printf("Fail to unlock surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 }
@@ -9376,14 +9376,14 @@ void copyDataToSurface(jint storedFormat,
 // and reverse the Y axis
 void copyDepthFromSurface(jint xoffset, jint yoffset,
 			  jint subWidth, jint subHeight,
-			  jint *data, 
-			  LPDIRECT3DSURFACE8 surf) 
+			  jint *data,
+			  LPDIRECT3DSURFACE9 surf)
 {
     D3DSURFACE_DESC ddsd;
     DEPTHPIXELFORMAT ddpf;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     HRESULT hr;
-    
+
     if (surf == NULL) {
 	return;
     }
@@ -9403,7 +9403,7 @@ void copyDepthFromSurface(jint xoffset, jint yoffset,
 
     if (FAILED(hr)) {
 	if (debug) {
-	    printf("Fail to lock depth surface: %s\n", DXGetErrorString8(hr));
+	    printf("Fail to lock depth surface: %s\n", DXGetErrorString9(hr));
 	}
 	return;
     }
@@ -9414,7 +9414,7 @@ void copyDepthFromSurface(jint xoffset, jint yoffset,
     jint *dst;
     unsigned char *src;
     unsigned char *srcRow = ((unsigned char *) lockedRect.pBits) +
-	xoffset*((int) ceil((float) ddpf.dwZBufferBitDepth/8.0)) + 
+	xoffset*((int) ceil((float) ddpf.dwZBufferBitDepth/8.0)) +
 	(yoffset*lockedRect.Pitch);
 
     int zshift = firstBit(ddpf.dwZBitMask);
@@ -9432,7 +9432,7 @@ void copyDepthFromSurface(jint xoffset, jint yoffset,
 		b2 = *src++;
 		b3 = *src++;
 		b4 = *src++;
-		mask = (b4 << 24) | (b3 << 16) | 
+		mask = (b4 << 24) | (b3 << 16) |
 		       (b2 << 8) | b1;
 		*dst++ =  (mask & ddpf.dwZBitMask) >> zshift;
 	    }
@@ -9480,13 +9480,13 @@ void copyDepthFromSurface(jint xoffset, jint yoffset,
 	}
     } else {
 	// This is not support by D3D 8 either
-	printf("[Java 3D] %d bit Z  buffer not support !\n", 
+	printf("[Java 3D] %d bit Z  buffer not support !\n",
 	       ddpf.dwZBufferBitDepth);
     }
 
     hr = surf->UnlockRect();
     if (FAILED(hr)) {
-	printf("Fail to unlock depth surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock depth surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 }
@@ -9496,14 +9496,14 @@ void copyDepthFromSurface(jint xoffset, jint yoffset,
 // and reverse the Y axis
 void copyDepthFromSurface(jint xoffset, jint yoffset,
 			  jint subWidth, jint subHeight,
-			  jfloat *data, 
-			  LPDIRECT3DSURFACE8 surf) 
+			  jfloat *data,
+			  LPDIRECT3DSURFACE9 surf)
 {
     D3DSURFACE_DESC ddsd;
     DEPTHPIXELFORMAT ddpf;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     HRESULT hr;
-    
+
     if (surf == NULL) {
 	return;
     }
@@ -9524,7 +9524,7 @@ void copyDepthFromSurface(jint xoffset, jint yoffset,
 
     if (FAILED(hr)) {
 	if (debug) {
-	    printf("Fail to lock depth surface: %s\n", DXGetErrorString8(hr));
+	    printf("Fail to lock depth surface: %s\n", DXGetErrorString9(hr));
 	}
 	return;
     }
@@ -9535,11 +9535,11 @@ void copyDepthFromSurface(jint xoffset, jint yoffset,
     jfloat *dst;
     unsigned char *src;
     unsigned char *srcRow = ((unsigned char *) lockedRect.pBits) +
-	xoffset*((int) ceil((float) ddpf.dwZBufferBitDepth/8.0)) + 
+	xoffset*((int) ceil((float) ddpf.dwZBufferBitDepth/8.0)) +
 	(yoffset*lockedRect.Pitch);
 
     int zshift = firstBit(ddpf.dwZBitMask);
-    float maxdepth = 1 << ddpf.dwZBufferBitDepth;
+    float maxdepth = float( 1 << ddpf.dwZBufferBitDepth);
 
     destRow += (subHeight-1)*subWidth;
 
@@ -9554,7 +9554,7 @@ void copyDepthFromSurface(jint xoffset, jint yoffset,
 		b2 = *src++;
 		b3 = *src++;
 		b4 = *src++;
-		mask = (b4 << 24) | (b3 << 16) | 
+		mask = (b4 << 24) | (b3 << 16) |
 		       (b2 << 8) | b1;
 		*dst++ =  (((mask & ddpf.dwZBitMask) >>
 				    zshift))/ maxdepth;
@@ -9606,13 +9606,13 @@ void copyDepthFromSurface(jint xoffset, jint yoffset,
 	}
     } else {
 	// This is not support by D3D 8 either
-	printf("[Java 3D] %d bit Z  buffer not support !\n", 
+	printf("[Java 3D] %d bit Z  buffer not support !\n",
 	       ddpf.dwZBufferBitDepth);
     }
 
     hr = surf->UnlockRect();
     if (FAILED(hr)) {
-	printf("Fail to unlock depth surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock depth surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 }
@@ -9624,14 +9624,14 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 			      jint src_xoffset, jint src_yoffset,
 			      jint subWidth, jint subHeight,
 			      jint src_width, jint src_height,
-			      jint *data, 
-			      LPDIRECT3DSURFACE8 surf) 
+			      jint *data,
+			      LPDIRECT3DSURFACE9 surf)
 {
     D3DSURFACE_DESC ddsd;
     DEPTHPIXELFORMAT ddpf;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     HRESULT hr;
-    
+
     if (surf == NULL) {
 	return;
     }
@@ -9652,12 +9652,12 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 
     if (FAILED(hr)) {
 	if (debug) {
-	    printf("Fail to lock depth surface: %s\n", DXGetErrorString8(hr));
+	    printf("Fail to lock depth surface: %s\n", DXGetErrorString9(hr));
 	}
 	return;
     }
     jint *src;
-    jint *srcRow = data + src_xoffset + 
+    jint *srcRow = data + src_xoffset +
 	(src_yoffset + subHeight-1)*src_width;
     unsigned char *dst;
     unsigned char *destRow = ((unsigned char *) lockedRect.pBits) +
@@ -9677,7 +9677,7 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 	    for (int j=dst_xoffset; j < xlimit; j++) {
 		mask = *src++;
 		if (mask < maxValue) {
-		    mask = mask << zshift; 
+		    mask = mask << zshift;
 		} else {
 		    mask = ddpf.dwZBitMask;
 		}
@@ -9698,7 +9698,7 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 	    for (int j=dst_xoffset; j < xlimit; j++) {
 		mask = *src++;
 		if (mask < maxValue) {
-		    mask = mask << zshift; 
+		    mask = mask << zshift;
 		} else {
 		    mask = ddpf.dwZBitMask;
 		}
@@ -9718,7 +9718,7 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 	    for (int j=dst_xoffset; j < xlimit; j++) {
 		mask = *src++;
 		if (mask < maxValue) {
-		    mask = mask << zshift; 
+		    mask = mask << zshift;
 		} else {
 		    mask = ddpf.dwZBitMask;
 		}
@@ -9749,7 +9749,7 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 
     hr = surf->UnlockRect();
     if (FAILED(hr)) {
-	printf("Fail to unlock depth surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock depth surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 
@@ -9762,14 +9762,14 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 			      jint src_xoffset, jint src_yoffset,
 			      jint subWidth, jint subHeight,
 			      jint src_width, jint src_height,
-			      jfloat *data, 
-			      LPDIRECT3DSURFACE8 surf) 
+			      jfloat *data,
+			      LPDIRECT3DSURFACE9 surf)
 {
     D3DSURFACE_DESC ddsd;
     DEPTHPIXELFORMAT ddpf;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     HRESULT hr;
-    
+
     if (surf == NULL) {
 	return;
     }
@@ -9791,12 +9791,12 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 
     if (FAILED(hr)) {
 	if (debug) {
-	    printf("Fail to lock depth surface: %s\n", DXGetErrorString8(hr));
+	    printf("Fail to lock depth surface: %s\n", DXGetErrorString9(hr));
 	}
 	return;
     }
     jfloat *src;
-    jfloat *srcRow = data + src_xoffset + 
+    jfloat *srcRow = data + src_xoffset +
 	(src_yoffset + subHeight-1)*src_width;
     unsigned char *dst;
     unsigned char *destRow = ((unsigned char *) lockedRect.pBits) +
@@ -9805,7 +9805,7 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
     int zshift = firstBit(ddpf.dwZBitMask);
     DWORD mask;
     int maxValue = ddpf.dwZBitMask >> zshift;
-    float maxdepth = 1 << ddpf.dwZBufferBitDepth;
+    float maxdepth = float( 1 << ddpf.dwZBufferBitDepth);
 
     if ((ddpf.dwZBufferBitDepth <= 32) &&
 	(ddpf.dwZBufferBitDepth > 24)) {
@@ -9814,9 +9814,9 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 	    src = srcRow;
 	    dst = destRow;
 	    for (int j=dst_xoffset; j < xlimit; j++) {
-		mask = (DWORD) (*src++)*maxdepth;
+		mask = DWORD((*src++)*maxdepth);
 		if (mask < maxValue) {
-		    mask = mask << zshift; 
+		    mask = mask << zshift;
 		} else {
 		    mask = ddpf.dwZBitMask;
 		}
@@ -9835,9 +9835,9 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 	    src = srcRow;
 	    dst = destRow;
 	    for (int j=dst_xoffset; j < xlimit; j++) {
-		mask = (DWORD) (*src++)*maxdepth;
+		mask = DWORD((*src++)*maxdepth);
 		if (mask < maxValue) {
-		    mask = mask << zshift; 
+		    mask = mask << zshift;
 		} else {
 		    mask = ddpf.dwZBitMask;
 		}
@@ -9855,9 +9855,9 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 	    src = srcRow;
 	    dst = destRow;
 	    for (int j=dst_xoffset; j < xlimit; j++) {
-		mask = (DWORD) (*src++)*maxdepth;
+		mask = DWORD((*src++)*maxdepth);
 		if (mask < maxValue) {
-		    mask = mask << zshift; 
+		    mask = mask << zshift;
 		} else {
 		    mask = ddpf.dwZBitMask;
 		}
@@ -9873,7 +9873,7 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 	    src = srcRow;
 	    dst = destRow;
 	    for (int j=dst_xoffset; j < xlimit; j++) {
-		mask = (DWORD) (*src++)*maxdepth;
+		mask = DWORD((*src++)*maxdepth);
 		if (mask < maxValue) {
 		    *dst++ = (byte) ((mask << zshift) & 0xff);
 		} else {
@@ -9888,7 +9888,7 @@ void copyDepthToSurfaceAlways(jint dst_xoffset, jint dst_yoffset,
 
     hr = surf->UnlockRect();
     if (FAILED(hr)) {
-	printf("Fail to unlock depth surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock depth surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 
@@ -9900,14 +9900,14 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 			   jint src_xoffset, jint src_yoffset,
 			   jint subWidth, jint subHeight,
 			   jint src_width, jint src_height,
-			   jint *data, 
-			   LPDIRECT3DSURFACE8 surf) 
+			   jint *data,
+			   LPDIRECT3DSURFACE9 surf)
 {
     D3DSURFACE_DESC ddsd;
     DEPTHPIXELFORMAT ddpf;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     HRESULT hr;
-    
+
     if (surf == NULL) {
 	return;
     }
@@ -9929,13 +9929,13 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 
     if (FAILED(hr)) {
 	if (debug) {
-	    printf("Fail to lock depth surface: %s\n", DXGetErrorString8(hr));
+	    printf("Fail to lock depth surface: %s\n", DXGetErrorString9(hr));
 	}
 	return;
     }
 
     jint *src;
-    jint *srcRow = data + src_xoffset + 
+    jint *srcRow = data + src_xoffset +
 	(src_yoffset + subHeight-1)*src_width;
     unsigned char *dst;
     unsigned char *destRow = ((unsigned char *) lockedRect.pBits) +
@@ -9960,14 +9960,14 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 		b2 = *dst++;
 		b3 = *dst++;
 		b4 = *dst++;
-		zmask = (b4 << 24) | (b3 << 16) | 
+		zmask = (b4 << 24) | (b3 << 16) |
 		       (b2 << 8) | b1;
 		zmask =  (zmask & ddpf.dwZBitMask) >> zshift;
 		mask = *src++;
-		if (mask < zmask) { 
+		if (mask < zmask) {
 		    // z depth test pass
 		    if (mask < maxValue) {
-			mask = mask << zshift; 
+			mask = mask << zshift;
 		    } else {
 			mask = ddpf.dwZBitMask;
 		    }
@@ -9976,7 +9976,7 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
-		} 
+		}
 	    }
 	    srcRow -= src_width;
 	    destRow += lockedRect.Pitch;
@@ -9991,16 +9991,16 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 		b1 = *dst++;
 		b2 = *dst++;
 		b3 = *dst++;
-		zmask = (b3 << 16) | (b2 << 8) | b1;		
+		zmask = (b3 << 16) | (b2 << 8) | b1;
 		zmask =  (zmask & ddpf.dwZBitMask) >> zshift;
 		mask = *src++;
-		if (mask < zmask) { 		
+		if (mask < zmask) {
 		    if (mask < maxValue) {
-			mask = mask << zshift; 
+			mask = mask << zshift;
 		    } else {
 			mask = ddpf.dwZBitMask;
 		    }
-		    dst -= 3;		    
+		    dst -= 3;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
@@ -10018,12 +10018,12 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 	    for (int j=dst_xoffset; j < xlimit; j++) {
 		b1 = *dst++;
 		b2 = *dst++;
-		zmask = (b2 << 8) | b1;		
+		zmask = (b2 << 8) | b1;
 		zmask =  (zmask & ddpf.dwZBitMask) >> zshift;
 		mask = *src++;
-		if (mask < zmask) { 				
+		if (mask < zmask) {
 		    if (mask < maxValue) {
-			mask = mask << zshift; 
+			mask = mask << zshift;
 		    } else {
 			mask = ddpf.dwZBitMask;
 		    }
@@ -10043,7 +10043,7 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 	    for (int j=dst_xoffset; j < xlimit; j++) {
 		zmask =  (*dst++ & ddpf.dwZBitMask) >> zshift;
 		mask = *src++;
-		if (mask < zmask) { 				
+		if (mask < zmask) {
 		    dst--;
 		    if (mask < maxValue) {
 			*dst++ = (byte) ((mask << zshift) & 0xff);
@@ -10060,7 +10060,7 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 
     hr = surf->UnlockRect();
     if (FAILED(hr)) {
-	printf("Fail to unlock depth surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock depth surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 
@@ -10073,14 +10073,14 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 			   jint src_xoffset, jint src_yoffset,
 			   jint subWidth, jint subHeight,
 			   jint src_width, jint src_height,
-			   jfloat *data, 
-			   LPDIRECT3DSURFACE8 surf) 
+			   jfloat *data,
+			   LPDIRECT3DSURFACE9 surf)
 {
     D3DSURFACE_DESC ddsd;
     DEPTHPIXELFORMAT ddpf;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     HRESULT hr;
-    
+
     if (surf == NULL) {
 	return;
     }
@@ -10102,12 +10102,12 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 
     if (FAILED(hr)) {
 	if (debug) {
-	    printf("Fail to lock depth surface: %s\n", DXGetErrorString8(hr));
+	    printf("Fail to lock depth surface: %s\n", DXGetErrorString9(hr));
 	}
 	return;
     }
     jfloat *src;
-    jfloat *srcRow = data + src_xoffset + 
+    jfloat *srcRow = data + src_xoffset +
 	(src_yoffset + subHeight-1)*src_width;
     unsigned char *dst;
     unsigned char *destRow = ((unsigned char *) lockedRect.pBits) +
@@ -10118,7 +10118,7 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
     DWORD b1, b2, b3, b4;
     DWORD zmask;
     int maxValue = ddpf.dwZBitMask >> zshift;
-    float maxdepth = 1 << ddpf.dwZBufferBitDepth;
+    float maxdepth = float(1 << ddpf.dwZBufferBitDepth);
 
     if ((ddpf.dwZBufferBitDepth <= 32) &&
 	(ddpf.dwZBufferBitDepth > 24)) {
@@ -10131,14 +10131,14 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 		b2 = *dst++;
 		b3 = *dst++;
 		b4 = *dst++;
-		zmask = (b4 << 24) | (b3 << 16) | 
+		zmask = (b4 << 24) | (b3 << 16) |
 		       (b2 << 8) | b1;
 		zmask =  (zmask & ddpf.dwZBitMask) >> zshift;
-		mask = (DWORD) (*src++)*maxdepth;
-		if (mask < zmask) { 
+		mask = DWORD((*src++)*maxdepth);
+		if (mask < zmask) {
 		    // z depth test pass
 		    if (mask < maxValue) {
-			mask = mask << zshift; 
+			mask = mask << zshift;
 		    } else {
 			mask = ddpf.dwZBitMask;
 		    }
@@ -10147,7 +10147,7 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
 		    *dst++ = (byte) ((mask >> 24) & 0xff);
-		} 
+		}
 	    }
 	    srcRow -= src_width;
 	    destRow += lockedRect.Pitch;
@@ -10162,16 +10162,16 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 		b1 = *dst++;
 		b2 = *dst++;
 		b3 = *dst++;
-		zmask = (b3 << 16) | (b2 << 8) | b1;		
+		zmask = (b3 << 16) | (b2 << 8) | b1;
 		zmask =  (zmask & ddpf.dwZBitMask) >> zshift;
-		mask = (DWORD) (*src++)*maxdepth;
-		if (mask < zmask) { 		
+		mask = DWORD((*src++)*maxdepth);
+		if (mask < zmask) {
 		    if (mask < maxValue) {
-			mask = mask << zshift; 
+			mask = mask << zshift;
 		    } else {
 			mask = ddpf.dwZBitMask;
 		    }
-		    dst -= 3;		    
+		    dst -= 3;
 		    *dst++ = (byte) (mask & 0xff);
 		    *dst++ = (byte) ((mask >> 8) & 0xff);
 		    *dst++ = (byte) ((mask >> 16) & 0xff);
@@ -10189,12 +10189,12 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 	    for (int j=dst_xoffset; j < xlimit; j++) {
 		b1 = *dst++;
 		b2 = *dst++;
-		zmask = (b2 << 8) | b1;		
+		zmask = (b2 << 8) | b1;
 		zmask =  (zmask & ddpf.dwZBitMask) >> zshift;
-		mask = (DWORD) (*src++)*maxdepth;
-		if (mask < zmask) { 				
+		mask = DWORD((*src++)*maxdepth);
+		if (mask < zmask) {
 		    if (mask < maxValue) {
-			mask = mask << zshift; 
+			mask = mask << zshift;
 		    } else {
 			mask = ddpf.dwZBitMask;
 		    }
@@ -10213,8 +10213,8 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 	    dst = destRow;
 	    for (int j=dst_xoffset; j < xlimit; j++) {
 		zmask =  (*dst++ & ddpf.dwZBitMask) >> zshift;
-		mask = (DWORD) (*src++)*maxdepth;
-		if (mask < zmask) { 				
+		mask = DWORD((*src++)*maxdepth);
+		if (mask < zmask) {
 		    dst--;
 		    if (mask < maxValue) {
 			*dst++ = (byte) ((mask << zshift) & 0xff);
@@ -10231,7 +10231,7 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 
     hr = surf->UnlockRect();
     if (FAILED(hr)) {
-	printf("Fail to unlock depth surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock depth surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 
@@ -10240,13 +10240,13 @@ void copyDepthToSurfaceCmp(jint dst_xoffset, jint dst_yoffset,
 // copy data to DirectDraw depth surface from memory
 // and reverse the Y axis
 void copyDepthToSurface(D3dCtx *d3dCtx,
-			LPDIRECT3DDEVICE8 device,
+			LPDIRECT3DDEVICE9 device,
 			jint dst_xoffset, jint dst_yoffset,
 			jint src_xoffset, jint src_yoffset,
 			jint subWidth, jint subHeight,
 			jint src_width, jint src_height,
-			jint *data, 
-			LPDIRECT3DSURFACE8 surf) 
+			jint *data,
+			LPDIRECT3DSURFACE9 surf)
 {
 
     if (!d3dCtx->zWriteEnable) {
@@ -10260,7 +10260,7 @@ void copyDepthToSurface(D3dCtx *d3dCtx,
 				 src_width, src_height,
 				 data, surf);
     } else {
-	// Currently ZFUNC must be D3DCMP_LESS 
+	// Currently ZFUNC must be D3DCMP_LESS
 	copyDepthToSurfaceCmp(dst_xoffset, dst_yoffset,
 			      src_xoffset, src_yoffset,
 			      subWidth, subHeight,
@@ -10273,13 +10273,13 @@ void copyDepthToSurface(D3dCtx *d3dCtx,
 // copy data to DirectDraw depth surface from memory
 // and reverse the Y axis
 void copyDepthToSurface(D3dCtx *d3dCtx,
-			LPDIRECT3DDEVICE8 device,
+			LPDIRECT3DDEVICE9 device,
 			jint dst_xoffset, jint dst_yoffset,
 			jint src_xoffset, jint src_yoffset,
 			jint subWidth, jint subHeight,
 			jint src_width, jint src_height,
-			jfloat *data, 
-			LPDIRECT3DSURFACE8 surf) 
+			jfloat *data,
+			LPDIRECT3DSURFACE9 surf)
 {
     if (!d3dCtx->zWriteEnable) {
 	return;
@@ -10292,7 +10292,7 @@ void copyDepthToSurface(D3dCtx *d3dCtx,
 				 src_width, src_height,
 				 data, surf);
     } else {
-	// Currently ZFUNC must be D3DCMP_LESS 
+	// Currently ZFUNC must be D3DCMP_LESS
 	copyDepthToSurfaceCmp(dst_xoffset, dst_yoffset,
 			      src_xoffset, src_yoffset,
 			      subWidth, subHeight,
@@ -10305,12 +10305,12 @@ void copyDepthToSurface(D3dCtx *d3dCtx,
 void compositeDataToSurface(jint px, jint py,
 			    jint xoffset, jint yoffset,
 			    jint subWidth, jint subHeight,
-			    jint dataWidth, 
-			    jbyte *data, 
-			    LPDIRECT3DSURFACE8 surf) 
+			    jint dataWidth,
+			    jbyte *data,
+			    LPDIRECT3DSURFACE9 surf)
 {
     D3DSURFACE_DESC ddsd;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     PIXELFORMAT ddpf;
 
     HRESULT hr;
@@ -10334,7 +10334,7 @@ void compositeDataToSurface(jint px, jint py,
     hr = surf->LockRect(&lockedRect, NULL, 0);
 
     if (FAILED(hr)) {
-	printf("Fail to lock rendering surface: %s\n",  DXGetErrorString8(hr));
+	printf("Fail to lock rendering surface: %s\n",  DXGetErrorString9(hr));
 	return;
     }
 
@@ -10344,8 +10344,8 @@ void compositeDataToSurface(jint px, jint py,
     DWORD srcPitch;
     int offset = (xoffset + yoffset*dataWidth) << 2;
     unsigned char *srcRow = (unsigned char *) data + offset;
-    unsigned char *destRow = ((unsigned char *) lockedRect.pBits) + 
-	((px + xoffset) << 2) + (py + yoffset)*lockedRect.Pitch; 
+    unsigned char *destRow = ((unsigned char *) lockedRect.pBits) +
+	((px + xoffset) << 2) + (py + yoffset)*lockedRect.Pitch;
     unsigned char a2;
     float inv = 1.0f/255.0f;
     ddpf.noAlpha = true;
@@ -10353,7 +10353,7 @@ void compositeDataToSurface(jint px, jint py,
     if (ddpf.dwRGBAlphaBitMask != 0) {
 	ddpf.noAlpha = false;
     }
-	
+
     srcPitch = dataWidth << 2;
 
     if ((ddpf.dwRGBBitCount == 32) &&
@@ -10378,13 +10378,13 @@ void compositeDataToSurface(jint px, jint py,
 			*dst++ = 0xff;
 		    } else {
 			a2 = 255-a;
-			*dst++ = (*dst * a2 + b * a)*inv;
-			*dst++ = (*dst * a2 + g * a)*inv;
-			*dst++ = (*dst * a2 + r * a)*inv;
+			*dst++ = (unsigned char)((*dst * a2 + b * a)*inv);
+			*dst++ = (unsigned char)((*dst * a2 + g * a)*inv);
+			*dst++ = (unsigned char)((*dst * a2 + r * a)*inv);
 			if (ddpf.noAlpha) {
 			    *dst++ = a;
 			} else {
-			    *dst++ = (*dst * a2 + a * a)*inv;
+			    *dst++ = (unsigned char)((*dst * a2 + a * a)*inv);
 			}
 		    }
 		 } else {
@@ -10392,22 +10392,22 @@ void compositeDataToSurface(jint px, jint py,
 		 }
 	    }
 	    srcRow += srcPitch;
-	    destRow += lockedRect.Pitch; 
+	    destRow += lockedRect.Pitch;
 	}
     } else { // handle less common (even weird) format
 	int rshift = firstBit(ddpf.dwRBitMask) +
-	    countBits(ddpf.dwRBitMask) - 8;
-	int gshift = firstBit(ddpf.dwGBitMask) + 
-	    countBits(ddpf.dwGBitMask) - 8; 
+	    ucountBits(ddpf.dwRBitMask) - 8;
+	int gshift = firstBit(ddpf.dwGBitMask) +
+	    ucountBits(ddpf.dwGBitMask) - 8;
 	int bshift = firstBit(ddpf.dwBBitMask) +
-	    countBits(ddpf.dwBBitMask) - 8; 
+	    ucountBits(ddpf.dwBBitMask) - 8;
 	int ashift = firstBit(ddpf.dwRGBAlphaBitMask) +
-	    countBits(ddpf.dwRGBAlphaBitMask) - 8; 
+	    ucountBits(ddpf.dwRGBAlphaBitMask) - 8;
 
 	DWORD mask, dmask;
 	DWORD dr, dg, db, da;
 
-	if ((ddpf.dwRGBBitCount <= 32) && 
+	if ((ddpf.dwRGBBitCount <= 32) &&
 	    (ddpf.dwRGBBitCount > 24)) {
 	    for (int i=yoffset; i < ylimit; i++) {
 		src = srcRow;
@@ -10422,7 +10422,7 @@ void compositeDataToSurface(jint px, jint py,
 			if (a != 0xff) {
 			    dmask = (*(dst+3) << 24) |
 				(*(dst+2) << 16) |
-				(*(dst+1) << 8) | 
+				(*(dst+1) << 8) |
 				*dst;
 			    if (rshift >= 0) {
 				dr = (byte) ((dmask & ddpf.dwRBitMask) >>
@@ -10454,12 +10454,12 @@ void compositeDataToSurface(jint px, jint py,
 				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) <<
 						 -ashift);
 				}
-				a = (da * a2 + a * a)*inv;
+				a = DWORD((da * a2 + a * a)*inv);
 			    }
 
-			    g = (dg * a2 + g * a)*inv;
-			    b = (db * a2 + b * a)*inv;
-			    r = (dr * a2 + r * a)*inv;
+			    g = DWORD((dg * a2 + g * a)*inv);
+			    b = DWORD((db * a2 + b * a)*inv);
+			    r = DWORD((dr * a2 + r * a)*inv);
 			}
 			if (rshift >= 0) {
 			    mask = (r << rshift) & ddpf.dwRBitMask;
@@ -10492,7 +10492,7 @@ void compositeDataToSurface(jint px, jint py,
 		    }
 		}
 		srcRow += srcPitch;
-		destRow += lockedRect.Pitch; 
+		destRow += lockedRect.Pitch;
 	    }
 	} else if ((ddpf.dwRGBBitCount <= 24) &&
 		   (ddpf.dwRGBBitCount > 16)) {
@@ -10539,11 +10539,11 @@ void compositeDataToSurface(jint px, jint py,
 				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) <<
 						 -ashift);
 				}
-				a = (da * a2 + a * a)*inv;
+				a = DWORD((da * a2 + a * a)*inv);
 			    }
-			    g = (dg * a2 + g * a)*inv;
-			    b = (db * a2 + b * a)*inv;
-			    r = (dr * a2 + r * a)*inv;
+			    g = DWORD((dg * a2 + g * a)*inv);
+			    b = DWORD((db * a2 + b * a)*inv);
+			    r = DWORD((dr * a2 + r * a)*inv);
 			}
 			if (rshift >= 0) {
 			    mask = (r << rshift) & ddpf.dwRBitMask;
@@ -10575,7 +10575,7 @@ void compositeDataToSurface(jint px, jint py,
 		    }
 		}
 		srcRow += srcPitch;
-		destRow += lockedRect.Pitch; 
+		destRow += lockedRect.Pitch;
 	    }
 	} else if ((ddpf.dwRGBBitCount <= 16) &&
 		   (ddpf.dwRGBBitCount > 8)) {
@@ -10624,12 +10624,12 @@ void compositeDataToSurface(jint px, jint py,
 				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) <<
 						 -ashift);
 				}
-				a = (da * a2 + a * a)*inv;
-			    } 
+				a = DWORD( (da * a2 + a * a)*inv);
+			    }
 
-			    g = (dg * a2 + g * a)*inv;
-			    b = (db * a2 + b * a)*inv;
-			    r = (dr * a2 + r * a)*inv;
+			    g = DWORD((dg * a2 + g * a)*inv);
+			    b = DWORD((db * a2 + b * a)*inv);
+			    r = DWORD((dr * a2 + r * a)*inv);
 			}
 
 			if (rshift >= 0) {
@@ -10662,7 +10662,7 @@ void compositeDataToSurface(jint px, jint py,
 		    }
 		}
 		srcRow += srcPitch;
-		destRow += lockedRect.Pitch; 
+		destRow += lockedRect.Pitch;
 	    }
 	} else if (ddpf.dwRGBBitCount <= 8) {
 	    for (int i=yoffset; i < ylimit; i++) {
@@ -10706,12 +10706,12 @@ void compositeDataToSurface(jint px, jint py,
 				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) <<
 						 -ashift);
 				}
-				a = (da * a2 + a * a)*inv;
+				a = DWORD((da * a2 + a * a)*inv);
 			    }
 
-			    g = (dg * a2 + g * a)*inv;
-			    b = (db * a2 + b * a)*inv;
-			    r = (dr * a2 + r * a)*inv;
+			    g = DWORD((dg * a2 + g * a)*inv);
+			    b = DWORD((db * a2 + b * a)*inv);
+			    r = DWORD((dr * a2 + r * a)*inv);
 			}
 			if (rshift >= 0) {
 			    mask = (r << rshift) & ddpf.dwRBitMask;
@@ -10741,19 +10741,19 @@ void compositeDataToSurface(jint px, jint py,
 		    }
 		}
 		srcRow += srcPitch;
-		destRow += lockedRect.Pitch; 
+		destRow += lockedRect.Pitch;
 	    }
-	} else { 
-	    // should not happen, RGBBitCount > 32. Even DirectX 
+	} else {
+	    // should not happen, RGBBitCount > 32. Even DirectX
 	    // RGB mask can't address it.
-	    printf("Texture memory with RGBBitCount = %d not support. \n", 
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
 		   ddpf.dwRGBBitCount);
 	}
     }
 
     hr = surf->UnlockRect();
     if (FAILED(hr)) {
-	printf("Fail to unlock rendering surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock rendering surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 }
@@ -10767,13 +10767,13 @@ void copyDataToVolume(jint storedFormat,
 		      jint imgZOffset,
 		      jint subWidth, jint subHeight, jint subDepth,
 		      jint tilew, jint tileh,
-		      jbyte* data, 
-		      LPDIRECT3DVOLUMETEXTURE8 surf,
+		      jbyte* data,
+		      LPDIRECT3DVOLUMETEXTURE9 surf,
 		      jint level)
 {
 
     D3DVOLUME_DESC ddsd;
-    D3DLOCKED_BOX lockedBox; 
+    D3DLOCKED_BOX lockedBox;
     PIXELFORMAT ddpf;
     HRESULT hr;
     UINT i;
@@ -10792,7 +10792,7 @@ void copyDataToVolume(jint storedFormat,
     // case the hardware memory buffer may smaller than the
     // texture pass in.
 
-    if ((xoffset >= width) || 
+    if ((xoffset >= width) ||
 	(yoffset >= height) ||
 	(zoffset >= depth)) {
 	return;
@@ -10806,7 +10806,7 @@ void copyDataToVolume(jint storedFormat,
 
 
     if (FAILED(hr)) {
-	printf("Fail to lock volume: %s\n", DXGetErrorString8(hr));
+	printf("Fail to lock volume: %s\n", DXGetErrorString9(hr));
 	return;
     }
 
@@ -10824,12 +10824,12 @@ void copyDataToVolume(jint storedFormat,
 	    srcSlicePitch <<= 2;
 
 	    for (i = zoffset; i < zlimit; i++) {
-		copyDataToSurfaceRGBA(internalFormat, &ddpf, 
+		copyDataToSurfaceRGBA(internalFormat, &ddpf,
 				      p,
 				      lockedBox.RowPitch,
 				      data,
-				      xoffset, yoffset, 
-				      xlimit, ylimit, 
+				      xoffset, yoffset,
+				      xlimit, ylimit,
 				      tilew);
 		p += lockedBox.SlicePitch;
 		data += srcSlicePitch;
@@ -10841,12 +10841,12 @@ void copyDataToVolume(jint storedFormat,
 	    srcSlicePitch *= 3;
 
 	    for (i = zoffset; i < zlimit; i++) {
-		copyDataToSurfaceRGB(internalFormat, &ddpf, 
+		copyDataToSurfaceRGB(internalFormat, &ddpf,
 				     p,
 				     lockedBox.RowPitch,
 				     data,
-				     xoffset, yoffset, 
-				     xlimit, ylimit, 
+				     xoffset, yoffset,
+				     xlimit, ylimit,
 				     tilew);
 		p += lockedBox.SlicePitch;
 		data += srcSlicePitch;
@@ -10857,12 +10857,12 @@ void copyDataToVolume(jint storedFormat,
 	    srcSlicePitch <<= 2;
 
 	    for (i = zoffset; i < zlimit; i++) {
-		copyDataToSurfaceABGR(internalFormat, &ddpf, 
+		copyDataToSurfaceABGR(internalFormat, &ddpf,
 				      p,
 				      lockedBox.RowPitch,
 				      data,
-				      xoffset, yoffset, 
-				      xlimit, ylimit, 
+				      xoffset, yoffset,
+				      xlimit, ylimit,
 				      tilew);
 		p += lockedBox.SlicePitch;
 		data += srcSlicePitch;
@@ -10873,11 +10873,11 @@ void copyDataToVolume(jint storedFormat,
 	    srcSlicePitch *= 3;
 
 	    for (i = zoffset; i < zlimit; i++) {
-		copyDataToSurfaceBGR(internalFormat, &ddpf, 
+		copyDataToSurfaceBGR(internalFormat, &ddpf,
 				     p,
 				     lockedBox.RowPitch,
 				     data,
-				     xoffset, yoffset, 
+				     xoffset, yoffset,
 				     xlimit, ylimit,
 				     tilew);
 		p += lockedBox.SlicePitch;
@@ -10889,12 +10889,12 @@ void copyDataToVolume(jint storedFormat,
 	    srcSlicePitch <<= 1;
 
 	    for (i = zoffset; i < zlimit; i++) {
-		copyDataToSurfaceLA(internalFormat, &ddpf, 
+		copyDataToSurfaceLA(internalFormat, &ddpf,
 				    p,
 				    lockedBox.RowPitch,
 				    data,
-				    xoffset, yoffset, 
-				    xlimit, ylimit, 
+				    xoffset, yoffset,
+				    xlimit, ylimit,
 				    tilew);
 		p += lockedBox.SlicePitch;
 		data += srcSlicePitch;
@@ -10908,8 +10908,8 @@ void copyDataToVolume(jint storedFormat,
 				      p,
 				      lockedBox.RowPitch,
 				      data,
-				      xoffset, yoffset, 
-				      xlimit, ylimit, 
+				      xoffset, yoffset,
+				      xlimit, ylimit,
 				      tilew);
 		p += lockedBox.SlicePitch;
 		data += srcSlicePitch;
@@ -10922,7 +10922,7 @@ void copyDataToVolume(jint storedFormat,
 
     hr = surf->UnlockBox(level);
     if (FAILED(hr)) {
-	printf("Fail to unlock volume: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock volume: %s\n", DXGetErrorString9(hr));
 	return;
     }
 }
@@ -10936,12 +10936,12 @@ void copyDataToVolume(jint storedFormat,
 		      jint imgZOffset,
 		      jint subWidth, jint subHeight, jint subDepth,
 		      jint tilew, jint tileh,
-		      jshort* data, 
-		      LPDIRECT3DVOLUMETEXTURE8 surf,
+		      jshort* data,
+		      LPDIRECT3DVOLUMETEXTURE9 surf,
 		      jint level)
 {
     D3DVOLUME_DESC ddsd;
-    D3DLOCKED_BOX lockedBox; 
+    D3DLOCKED_BOX lockedBox;
     PIXELFORMAT ddpf;
     HRESULT hr;
     UINT i;
@@ -10958,7 +10958,7 @@ void copyDataToVolume(jint storedFormat,
     computePixelFormat(&ddpf, ddsd.Format);
 
 
-    if ((xoffset >= width) || 
+    if ((xoffset >= width) ||
 	(yoffset >= height) ||
 	(zoffset >= depth)) {
 	return;
@@ -10972,7 +10972,7 @@ void copyDataToVolume(jint storedFormat,
     hr = surf->LockBox(level, &lockedBox, NULL, 0);
 
     if (FAILED(hr)) {
-	printf("Fail to lock volume: %s\n", DXGetErrorString8(hr));
+	printf("Fail to lock volume: %s\n", DXGetErrorString9(hr));
 	return;
     }
 
@@ -10984,12 +10984,12 @@ void copyDataToVolume(jint storedFormat,
     data += (imgOffset << 1);
 
     for (i = zoffset; i < zlimit; i++) {
-	copyDataToSurfaceGray(internalFormat, &ddpf, 
+	copyDataToSurfaceGray(internalFormat, &ddpf,
 			      p,
 			      lockedBox.RowPitch,
 			      data,
-			      xoffset, yoffset, 
-			      xlimit, ylimit, 
+			      xoffset, yoffset,
+			      xlimit, ylimit,
 			      tilew);
 	p += lockedBox.SlicePitch;
 	data += srcSlicePitch;
@@ -10997,13 +10997,13 @@ void copyDataToVolume(jint storedFormat,
 
     hr = surf->UnlockBox(level);
     if (FAILED(hr)) {
-	printf("Fail to unlock volume: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock volume: %s\n", DXGetErrorString9(hr));
 	return;
     }
 }
 
 
-LPDIRECT3DTEXTURE8 createSurfaceFromImage(JNIEnv *env,
+LPDIRECT3DTEXTURE9 createSurfaceFromImage(JNIEnv *env,
 					  jobject pa2d,
 					  jlong ctx,
 					  int width,
@@ -11033,22 +11033,22 @@ LPDIRECT3DTEXTURE8 createSurfaceFromImage(JNIEnv *env,
 	    internalFormat = LUMINANCE_ALPHA;
 	    break;
         case FORMAT_BYTE_GRAY:
-        case FORMAT_USHORT_GRAY:	    
+        case FORMAT_USHORT_GRAY:
 	    internalFormat = LUMINANCE;
 	    break;
         default:
 	    printf("Format %d not support for Image Component\n",  internalFormat);
 	    return NULL;
     }
-	     
 
-    LPDIRECT3DTEXTURE8 surf;
 
-    surf = createTextureSurface(d3dCtx, 1, internalFormat, 
+    LPDIRECT3DTEXTURE9 surf;
+
+    surf = createTextureSurface(d3dCtx, 1, internalFormat,
 				width, height);
 
     if (surf == NULL) {
-	return NULL; 
+	return NULL;
     }
 
     if (imageYdown != NULL) {
@@ -11058,7 +11058,7 @@ LPDIRECT3DTEXTURE8 createSurfaceFromImage(JNIEnv *env,
 	    copyDataToSurface(storedFormat, internalFormat, 0, 0, 0, 0,
 			      width, height, width, byteData, surf, 0);
 	    env->ReleasePrimitiveArrayCritical(imageYdown, byteData, 0);
-	    
+
 	} else {
 	    jshort *shortData = (jshort *)(env->GetPrimitiveArrayCritical(
 								  imageYdown, NULL));
@@ -11070,23 +11070,24 @@ LPDIRECT3DTEXTURE8 createSurfaceFromImage(JNIEnv *env,
     return surf;
 }
 
-VOID createLineModeIndexBuffer(D3dCtx *d3dCtx) 
+VOID createLineModeIndexBuffer(D3dCtx *d3dCtx)
 {
     HRESULT hr;
     WORD *wptr;
 
     hr = d3dCtx->pDevice->CreateIndexBuffer(6*sizeof(WORD),
 					    D3DUSAGE_WRITEONLY,
-					    D3DFMT_INDEX16,   
+					    D3DFMT_INDEX16,
 					    D3DPOOL_DEFAULT,
-					    &d3dCtx->lineModeIndexBuffer);
+					    &d3dCtx->lineModeIndexBuffer,
+						NULL);
     if (FAILED(hr)) {
 	D3dCtx::d3dWarning(CREATEINDEXVBFAIL, hr);
 	return;
     }
 
 
-    hr = d3dCtx->lineModeIndexBuffer->Lock(0, 0, (BYTE **) &wptr,  0);
+    hr = d3dCtx->lineModeIndexBuffer->Lock(0, 0, (VOID **) &wptr,  0);
     if (FAILED(hr)) {
 	D3dCtx::d3dWarning(LOCKINDEXVBFAIL, hr);
 	return;
@@ -11101,12 +11102,12 @@ VOID createLineModeIndexBuffer(D3dCtx *d3dCtx)
     d3dCtx->lineModeIndexBuffer->Unlock();
 }
 
-// Return TRUE if index is adjust smaller 
-BOOL createQuadIndices(D3dCtx *d3dCtx, int vcount) 
+// Return TRUE if index is adjust smaller
+BOOL createQuadIndices(D3dCtx *d3dCtx, int vcount)
 {
-    DWORD dwIndexCount = (vcount*3) >> 1;    
+    DWORD dwIndexCount = (vcount*3) >> 1;
     WORD *q;
-    LPDIRECT3DDEVICE8 device = d3dCtx->pDevice;
+    LPDIRECT3DDEVICE9 device = d3dCtx->pDevice;
     HRESULT hr;
     BOOL adjustIdx = FALSE;
 
@@ -11119,31 +11120,33 @@ BOOL createQuadIndices(D3dCtx *d3dCtx, int vcount)
 
     if (dwIndexCount > d3dCtx->quadIndexBufferSize) {
 	d3dCtx->freeResource(d3dCtx->quadIndexBuffer);
-	hr = device->CreateIndexBuffer(dwIndexCount*sizeof(WORD), 
+	hr = device->CreateIndexBuffer(dwIndexCount*sizeof(WORD),
 				       D3DUSAGE_WRITEONLY,
 				       D3DFMT_INDEX16,
 				       D3DPOOL_MANAGED,
-				       &d3dCtx->quadIndexBuffer);
+				       &d3dCtx->quadIndexBuffer,
+					   NULL);
 	if (FAILED(hr)) {
+		printf("[Java3D] Error CREATEINDEXVBFAIL \n");
 	    D3dCtx::d3dWarning(CREATEINDEXVBFAIL, hr);
-	    d3dCtx->quadIndexBufferSize = 0;	    
+	    d3dCtx->quadIndexBufferSize = 0;
 	    d3dCtx->quadIndexBuffer = NULL;
-	    if (d3dCtx->quadIndexBufferSize > 0) {	    
+	    if (d3dCtx->quadIndexBufferSize > 0) {
 		// indices has successfully set before, we prevent
 		// setting this when indices did not set before.
 		// It is becasue there is a bug in Nvidia driver which
 		// will crash in this case.
-		device->SetIndices(NULL, 0); 
+		device->SetIndices(NULL);
 	    }
 	    return adjustIdx;
-	} 
+	}
 
 	d3dCtx->quadIndexBufferSize = dwIndexCount;
-	hr = d3dCtx->quadIndexBuffer->Lock(0, 0, (BYTE **) &q, 0);
+	hr = d3dCtx->quadIndexBuffer->Lock(0, 0, (VOID **) &q, 0);
 	if (FAILED(hr)) {
 	    D3dCtx::d3dWarning(LOCKINDEXVBFAIL, hr);
-	    if (d3dCtx->quadIndexBufferSize > 0) {	    
-		device->SetIndices(NULL, 0); 
+	    if (d3dCtx->quadIndexBufferSize > 0) {
+		device->SetIndices(NULL);
 	    }
 	    return adjustIdx;
 	}
@@ -11153,10 +11156,10 @@ BOOL createQuadIndices(D3dCtx *d3dCtx, int vcount)
 	while (j < dwIndexCount) {
 	    q[j++] = ++i;   // q[0] = 0
 	    q[j++] = i+1;   // q[1] = 1
-	    q[j++] = i+2;   // q[2] = 2	    
-	    q[j++] = i++;   // q[3] = 0	    			    
-	    q[j++] = ++i;   // q[4] = 2	    			    
-	    q[j++] = ++i;   // q[5] = 3	    			    
+	    q[j++] = i+2;   // q[2] = 2
+	    q[j++] = i++;   // q[3] = 0
+	    q[j++] = ++i;   // q[4] = 2
+	    q[j++] = ++i;   // q[5] = 3
 	}
 
 	d3dCtx->quadIndexBuffer->Unlock();
@@ -11189,27 +11192,27 @@ int getPrimitiveNum(int primitive, int vcount)
 
 
 /*
- * Note that tThe condition width == height always holds 
+ * Note that tThe condition width == height always holds
  * when this function is invoked.
  */
-LPDIRECT3DCUBETEXTURE8 createCubeMapTexture(D3dCtx *d3dCtx,
+LPDIRECT3DCUBETEXTURE9 createCubeMapTexture(D3dCtx *d3dCtx,
 					    jint numLevels,
 					    jint internalFormat,
-					    jint width, 
+					    jint width,
 					    jint height)
 {
-    LPDIRECT3DCUBETEXTURE8 pTexture;
+    LPDIRECT3DCUBETEXTURE9 pTexture;
     D3DFORMAT format;
     HRESULT hr;
 
-    LPDIRECT3DDEVICE8 pDevice = d3dCtx->pDevice;
+    LPDIRECT3DDEVICE9 pDevice = d3dCtx->pDevice;
     D3dDeviceInfo *deviceInfo = d3dCtx->deviceInfo;
 
     if (!deviceInfo->supportMipmap) {
 	numLevels = 1;
-    }     
+    }
 
-    getTexWidthHeight(deviceInfo, &width, &height); 
+    getTexWidthHeight(deviceInfo, &width, &height);
     format = getTexFormat(internalFormat);
 
     // If format not support, the utility function will adjust the
@@ -11221,30 +11224,30 @@ LPDIRECT3DCUBETEXTURE8 createCubeMapTexture(D3dCtx *d3dCtx,
     if (FAILED(hr)) {
 	if (debug) {
 	    printf("Fail to create cube texture surface %dx%d, format %d, level %d : %s\n",
-		   width, height, format, numLevels, DXGetErrorString8(hr));
+		   width, height, format, numLevels, DXGetErrorString9(hr));
 	}
 	return NULL;
     }
-    
+
     return pTexture;
 }
 
 
-void copyDataToCubeMap(jint storedFormat, 
+void copyDataToCubeMap(jint storedFormat,
 		       jint internalFormat,
 		       jint xoffset, jint yoffset,
 		       jint imgXOffset, jint imgYOffset,
 		       jint subWidth, jint subHeight,
-		       jint tilew, 
-		       jshort *data, LPDIRECT3DCUBETEXTURE8 surf,
+		       jint tilew,
+		       jshort *data, LPDIRECT3DCUBETEXTURE9 surf,
 		       jint level,
 		       jint face)
 {
     D3DSURFACE_DESC ddsd;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     PIXELFORMAT ddpf;
     HRESULT hr;
-    
+
     if (surf == NULL) {
 	return;
     }
@@ -11260,11 +11263,11 @@ void copyDataToCubeMap(jint storedFormat,
     DWORD xlimit = min(xoffset + subWidth, width);
     DWORD ylimit = min(yoffset + subHeight, height);
 
-    hr = surf->LockRect(textureCubeMapFace[face], level, 
+    hr = surf->LockRect(textureCubeMapFace[face], level,
 			&lockedRect, NULL, 0);
 
     if (FAILED(hr)) {
-	printf("Fail to lock surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to lock surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 
@@ -11272,25 +11275,25 @@ void copyDataToCubeMap(jint storedFormat,
 
     if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 	(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-	copyDataToSurfaceGray(internalFormat, &ddpf, 
+	copyDataToSurfaceGray(internalFormat, &ddpf,
 			      (unsigned char *) lockedRect.pBits,
 			      lockedRect.Pitch,
-			      data + 
-			      ((offset+tilew*(ylimit-yoffset)) << 1), 
-			      xoffset, yoffset, 
+			      data +
+			      ((offset+tilew*(ylimit-yoffset)) << 1),
+			      xoffset, yoffset,
 			      xlimit, ylimit, -tilew);
     } else {
-	copyDataToSurfaceGrayRev(internalFormat, &ddpf, 
+	copyDataToSurfaceGrayRev(internalFormat, &ddpf,
 			      (unsigned char *) lockedRect.pBits,
 				 lockedRect.Pitch,
-				 data + (offset << 1), 
-				 xoffset, yoffset, 
+				 data + (offset << 1),
+				 xoffset, yoffset,
 				 xlimit, ylimit, tilew);
     }
 
     hr = surf->UnlockRect(textureCubeMapFace[face], level);
     if (FAILED(hr)) {
-	printf("Fail to unlock surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 }
@@ -11301,17 +11304,17 @@ void copyDataToCubeMap(jint storedFormat,
 		       jint xoffset, jint yoffset,
 		       jint imgXOffset, jint imgYOffset,
 		       jint subWidth, jint subHeight,
-		       jint tilew, 
-		       jbyte* data, 
-		       LPDIRECT3DCUBETEXTURE8 surf,
+		       jint tilew,
+		       jbyte* data,
+		       LPDIRECT3DCUBETEXTURE9 surf,
 		       jint level,
 		       jint face)
 {
     D3DSURFACE_DESC ddsd;
-    D3DLOCKED_RECT lockedRect; 
+    D3DLOCKED_RECT lockedRect;
     PIXELFORMAT ddpf;
     HRESULT hr;
-    
+
     if (surf == NULL) {
 	return;
     }
@@ -11337,7 +11340,7 @@ void copyDataToCubeMap(jint storedFormat,
 
 
     if (FAILED(hr)) {
-	printf("Fail to lock surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to lock surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
     int offset = tilew*imgYOffset + imgXOffset;
@@ -11347,118 +11350,118 @@ void copyDataToCubeMap(jint storedFormat,
 	    // This is the one we use when byReference = false
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-		// Copy the pixel from bottom to up and 
+		// Copy the pixel from bottom to up and
 		// left to right in this case to match OGL definition
-		copyDataToSurfaceRGBA(internalFormat, &ddpf, 
+		copyDataToSurfaceRGBA(internalFormat, &ddpf,
 				      (unsigned char *) lockedRect.pBits,
 				      lockedRect.Pitch,
-				      data + 
+				      data +
 				      ((offset + tilew*(ylimit-yoffset-1)) << 2),
-				      xoffset, yoffset, 
+				      xoffset, yoffset,
 				      xlimit, ylimit, -tilew);
 	    } else {
-		// Copy the pixel from up to bottom and 
+		// Copy the pixel from up to bottom and
 		// right to left in this case to match OGL definition
-		copyDataToSurfaceRGBARev(internalFormat, &ddpf, 
+		copyDataToSurfaceRGBARev(internalFormat, &ddpf,
 					 (unsigned char *) lockedRect.pBits,
 					 lockedRect.Pitch,
 					 data + (offset << 2),
-					 xoffset, yoffset, 
+					 xoffset, yoffset,
 					 xlimit, ylimit, tilew);
 	    }
 	    break;
         case FORMAT_BYTE_RGB:
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-		copyDataToSurfaceRGB(internalFormat, &ddpf, 
+		copyDataToSurfaceRGB(internalFormat, &ddpf,
 				     (unsigned char *) lockedRect.pBits,
 				     lockedRect.Pitch,
-				     data + 
+				     data +
 				     3*(offset + tilew*(ylimit-yoffset-1)),
-				     xoffset, yoffset, 
+				     xoffset, yoffset,
 				     xlimit, ylimit, -tilew);
 	    } else {
-		copyDataToSurfaceRGBRev(internalFormat, &ddpf, 
+		copyDataToSurfaceRGBRev(internalFormat, &ddpf,
 					(unsigned char *) lockedRect.pBits,
 					lockedRect.Pitch,
 					data + 3*offset,
-					xoffset, yoffset, 
+					xoffset, yoffset,
 					xlimit, ylimit, tilew);
 	    }
 	    break;
         case FORMAT_BYTE_ABGR:
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-		copyDataToSurfaceABGR(internalFormat, &ddpf, 
+		copyDataToSurfaceABGR(internalFormat, &ddpf,
 				      (unsigned char *) lockedRect.pBits,
 				      lockedRect.Pitch,
-				      data + 
-				      ((offset+tilew*(ylimit-yoffset-1)) << 2), 
-				      xoffset, yoffset, 
+				      data +
+				      ((offset+tilew*(ylimit-yoffset-1)) << 2),
+				      xoffset, yoffset,
 				      xlimit, ylimit, -tilew);
 	    } else {
-		copyDataToSurfaceABGRRev(internalFormat, &ddpf, 
+		copyDataToSurfaceABGRRev(internalFormat, &ddpf,
 					 (unsigned char *) lockedRect.pBits,
 					 lockedRect.Pitch,
-					 data + (offset << 2), 
-					 xoffset, yoffset, 
+					 data + (offset << 2),
+					 xoffset, yoffset,
 					 xlimit, ylimit, tilew);
 	    }
 	    break;
         case FORMAT_BYTE_BGR:
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-		copyDataToSurfaceBGR(internalFormat, &ddpf, 
+		copyDataToSurfaceBGR(internalFormat, &ddpf,
 				     (unsigned char *) lockedRect.pBits,
 				     lockedRect.Pitch,
-				     data + 
+				     data +
 				     3*(offset + tilew*(ylimit-yoffset-1)),
-				     xoffset, yoffset, 
+				     xoffset, yoffset,
 				     xlimit, ylimit, -tilew);
 	    } else {
-		copyDataToSurfaceBGRRev(internalFormat, &ddpf, 
+		copyDataToSurfaceBGRRev(internalFormat, &ddpf,
 					(unsigned char *) lockedRect.pBits,
 					lockedRect.Pitch,
-					data + 3*offset, 
-					xoffset, yoffset, 
+					data + 3*offset,
+					xoffset, yoffset,
 					xlimit, ylimit, tilew);
 	    }
 	    break;
         case FORMAT_BYTE_LA:
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-		copyDataToSurfaceLA(internalFormat, &ddpf, 
+		copyDataToSurfaceLA(internalFormat, &ddpf,
 				    (unsigned char *) lockedRect.pBits,
 				    lockedRect.Pitch,
-				    data + 
-				    ((offset+tilew*(ylimit-yoffset-1)) << 1), 
-				    xoffset, yoffset, 
-				    xlimit, ylimit, -tilew);		
+				    data +
+				    ((offset+tilew*(ylimit-yoffset-1)) << 1),
+				    xoffset, yoffset,
+				    xlimit, ylimit, -tilew);
 	    } else {
-		copyDataToSurfaceLARev(internalFormat, &ddpf, 
+		copyDataToSurfaceLARev(internalFormat, &ddpf,
 				       (unsigned char *) lockedRect.pBits,
 				       lockedRect.Pitch,
-				       data + (offset << 1), 
-				       xoffset, yoffset, 
+				       data + (offset << 1),
+				       xoffset, yoffset,
 				       xlimit, ylimit, tilew);
 	    }
 	    break;
         case FORMAT_BYTE_GRAY:
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
-		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {	    
+		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
 		copyDataToSurfaceGray(internalFormat, &ddpf,
 				      (unsigned char *) lockedRect.pBits,
 				      lockedRect.Pitch,
-				      data + 
-				      offset + tilew*(ylimit-yoffset-1), 
-				      xoffset, yoffset, 
+				      data +
+				      offset + tilew*(ylimit-yoffset-1),
+				      xoffset, yoffset,
 				      xlimit, ylimit, -tilew);
 	    } else {
 		copyDataToSurfaceGrayRev(internalFormat, &ddpf,
 					 (unsigned char *) lockedRect.pBits,
 					 lockedRect.Pitch,
-					 data + offset, 
-					 xoffset, yoffset, 
+					 data + offset,
+					 xoffset, yoffset,
 					 xlimit, ylimit, tilew);
 	    }
 	    break;
@@ -11469,54 +11472,57 @@ void copyDataToCubeMap(jint storedFormat,
 
     hr = surf->UnlockRect(textureCubeMapFace[face], level);
     if (FAILED(hr)) {
-	printf("Fail to unlock surface: %s\n", DXGetErrorString8(hr));
+	printf("Fail to unlock surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 }
 
 
 void drawTextureRect(D3dCtx *d3dCtx,
-		     LPDIRECT3DDEVICE8 device,
-		     LPDIRECT3DTEXTURE8 surf,
+		     LPDIRECT3DDEVICE9 device,
+		     LPDIRECT3DTEXTURE9 surf,
 		     D3DTLVERTEX screenCoord,
-		     int startx, int starty, 
+		     int startx, int starty,
 		     int endx, int endy,
 		     int scaleWidth, int scaleHeight,
-		     boolean texModeRepeat) 
+		     boolean texModeRepeat)
 {
-	LPDIRECT3DTEXTURE8 texture = NULL;
+	LPDIRECT3DTEXTURE9 texture = NULL;
 	DWORD transflag, minstate, magstate, texcoordstate;
 	DWORD wrapU, wrapV;
 	DWORD colorOp, colorArg, alphaOp, alphaArg;
 	D3DMATRIX m;
+
+	magstate = 1;
+	minstate = 1;
 
 	int h = endy - starty;
 	int w = endx - startx;
 
 	device->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
 
-	device->GetTexture(0, (LPDIRECT3DBASETEXTURE8 *) &texture);    
+	device->GetTexture(0, (LPDIRECT3DBASETEXTURE9 *) &texture);
 
 	device->GetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS,
 				     &transflag);
 	if (transflag != D3DTTFF_DISABLE) {
 	    device->GetTransform(D3DTS_TEXTURE0, &m);
 	}
-
-	device->GetTextureStageState(0, D3DTSS_MINFILTER, &minstate);
-	device->GetTextureStageState(0, D3DTSS_MAGFILTER, &magstate);
+    //alessandro
+	//device->GetTextureStageState(0, D3DTSS_MINFILTER, &minstate);
+	//device->GetTextureStageState(0, D3DTSS_MAGFILTER, &magstate);
 	device->GetTextureStageState(0, D3DTSS_TEXCOORDINDEX, &texcoordstate);
 	device->SetTexture(0, surf);
 	device->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS,
 				     D3DTTFF_DISABLE);
 
 	if ((w == scaleWidth) && (h == scaleHeight)) {
-	    device->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
-	    device->SetTextureStageState(0, D3DTSS_MAGFILTER,
-					 D3DTEXF_POINT);
+	   // alessandro
+		// device->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
+	   // device->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
 	} else {
-	    device->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-	    device->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+	   // device->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+	   // device->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
 	}
 	device->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
 	device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -11550,10 +11556,10 @@ void drawTextureRect(D3dCtx *d3dCtx,
 		// no need to draw multiple time
 		tumax = scaleWidth/(float) ddsd.Width;
 		tvmax = scaleHeight/(float) ddsd.Height;
-		device->GetTextureStageState(0, D3DTSS_ADDRESSU, &wrapU);
-		device->GetTextureStageState(0, D3DTSS_ADDRESSV, &wrapV);
-		device->SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
-		device->SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+		device->GetSamplerState (0, D3DSAMP_ADDRESSU, &wrapU);
+		device->GetSamplerState (0, D3DSAMP_ADDRESSV, &wrapV);
+		device->SetSamplerState (0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+		device->SetSamplerState (0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 		multipleDraw = false;
 	    } else {
 		tumax = endx/(float) ddsd.Width;
@@ -11562,7 +11568,7 @@ void drawTextureRect(D3dCtx *d3dCtx,
 	    }
 	} else {
 	    tumax = endx/(float) ddsd.Width;
-	    tvmax = endy/(float) ddsd.Height;	    
+	    tvmax = endy/(float) ddsd.Height;
 	    multipleDraw = false;
 	}
 
@@ -11571,11 +11577,11 @@ void drawTextureRect(D3dCtx *d3dCtx,
 	d3dCtx->rasterRect[0].tv = tvmax;
 	d3dCtx->rasterRect[1].tu = tumin;
 	d3dCtx->rasterRect[1].tv = tvmin;
-	d3dCtx->rasterRect[2].tu = tumax;	
-	d3dCtx->rasterRect[2].tv = tvmax;	
-	d3dCtx->rasterRect[3].tu = tumax;	
+	d3dCtx->rasterRect[2].tu = tumax;
+	d3dCtx->rasterRect[2].tv = tvmax;
+	d3dCtx->rasterRect[3].tu = tumax;
 	d3dCtx->rasterRect[3].tv = tvmin;
-	
+
 	d3dCtx->rasterRect[0].sx = screenCoord.sx;
 	d3dCtx->rasterRect[0].sz = screenCoord.sz;
 	d3dCtx->rasterRect[0].rhw = screenCoord.rhw;
@@ -11593,7 +11599,11 @@ void drawTextureRect(D3dCtx *d3dCtx,
 	d3dCtx->rasterRect[3].rhw = screenCoord.rhw;
 
 	if ((h > 0) && (w > 0)) {
-	    device->SetVertexShader(D3DFVF_XYZRHW|D3DFVF_TEX1);
+	    //device->SetVertexShader(D3DFVF_XYZRHW|D3DFVF_TEX1);
+		//device->SetVertexShader(vertexFormat);
+	    device->SetVertexShader(NULL);
+	    device->SetFVF(D3DFVF_XYZRHW|D3DFVF_TEX1);
+
 	    if (!multipleDraw) {
 		d3dCtx->rasterRect[0].sy = screenCoord.sy + scaleHeight;
 		d3dCtx->rasterRect[2].sx = screenCoord.sx + scaleWidth;
@@ -11601,7 +11611,7 @@ void drawTextureRect(D3dCtx *d3dCtx,
 		d3dCtx->rasterRect[3].sx = screenCoord.sx + scaleWidth;
 		device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,
 					2,
-					d3dCtx->rasterRect, 
+					d3dCtx->rasterRect,
 					sizeof(D3DTLVERTEX));
 	    } else {
 		d3dCtx->rasterRect[0].sy = screenCoord.sy + h;
@@ -11612,7 +11622,7 @@ void drawTextureRect(D3dCtx *d3dCtx,
 		    for (int j=0; j < ceil(scaleWidth/((double) w)); j++) {
 			device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,
 						2,
-						d3dCtx->rasterRect, 
+						d3dCtx->rasterRect,
 						sizeof(D3DTLVERTEX));
 			d3dCtx->rasterRect[0].sx += w;
 			d3dCtx->rasterRect[1].sx += w;
@@ -11648,8 +11658,8 @@ void drawTextureRect(D3dCtx *d3dCtx,
 	if (d3dCtx->fillMode != D3DFILL_SOLID) {
 	    device->SetRenderState(D3DRS_FILLMODE, d3dCtx->fillMode);
 	}
-	device->SetTextureStageState(0, D3DTSS_MINFILTER, minstate);
-	device->SetTextureStageState(0, D3DTSS_MAGFILTER, magstate);
+	//device->SetTextureStageState(0, D3DTSS_MINFILTER, minstate);
+	//device->SetTextureStageState(0, D3DTSS_MAGFILTER, magstate);
 	device->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, texcoordstate);
 
 	device->SetTextureStageState(0, D3DTSS_COLOROP, colorOp);
@@ -11658,9 +11668,23 @@ void drawTextureRect(D3dCtx *d3dCtx,
 	device->SetTextureStageState(0, D3DTSS_ALPHAARG1, alphaArg);
 
 	if (texModeRepeat && !multipleDraw) {
-	    device->SetTextureStageState(0, D3DTSS_ADDRESSU, wrapU);
-	    device->SetTextureStageState(0, D3DTSS_ADDRESSV, wrapV);
+	    device->SetSamplerState (0, D3DSAMP_ADDRESSU, wrapU);
+	    device->SetSamplerState (0, D3DSAMP_ADDRESSV, wrapV);
 	}
 	device->SetRenderState(D3DRS_CULLMODE, d3dCtx->cullMode);
 	device->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
+}
+
+DWORD ucountBits(DWORD mask) 
+{
+    DWORD count = 0;
+    int i;
+    
+    for (i=sizeof(DWORD)*8-1; i >=0 ; i--) {
+	if ((mask & 0x01) > 0) {
+	    count++;
+	}
+	mask >>= 1;
+    }
+    return count;
 }

@@ -554,8 +554,67 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetRenderingAttributes(
         glEnable(GL_DEPTH_TEST);
     }
     glAlphaFunc(GL_ALWAYS, 0.0f);
+    glDepthFunc(GL_LEQUAL);
     glEnable(GL_COLOR_MATERIAL);
     glDisable(GL_COLOR_LOGIC_OP);
+
+}
+
+GLenum getFunctionValue(jint func) {
+    switch (func) {
+    case javax_media_j3d_RenderingAttributes_ALWAYS:
+	func = GL_ALWAYS;
+	break;
+    case javax_media_j3d_RenderingAttributes_NEVER:
+	func = GL_NEVER;
+	break;
+    case javax_media_j3d_RenderingAttributes_EQUAL:
+	func = GL_EQUAL;
+	break;
+    case javax_media_j3d_RenderingAttributes_NOT_EQUAL:
+	func = GL_NOTEQUAL;
+	break;
+    case javax_media_j3d_RenderingAttributes_LESS:
+	func = GL_LESS;
+	break;
+    case javax_media_j3d_RenderingAttributes_LESS_OR_EQUAL:
+	func = GL_LEQUAL;
+	break;
+    case javax_media_j3d_RenderingAttributes_GREATER:
+	func = GL_GREATER;
+	break;
+    case javax_media_j3d_RenderingAttributes_GREATER_OR_EQUAL:
+	func = GL_GEQUAL;
+	break;
+    }
+
+    return func;
+}
+
+GLenum getStencilOpValue(jint op) {
+    switch (op) {
+    case javax_media_j3d_RenderingAttributes_STENCIL_KEEP:
+	op = GL_KEEP;
+	break;
+    case javax_media_j3d_RenderingAttributes_STENCIL_ZERO:
+	op = GL_ZERO;
+	break;
+    case javax_media_j3d_RenderingAttributes_STENCIL_REPLACE:
+	op = GL_REPLACE;
+	break;
+    case javax_media_j3d_RenderingAttributes_STENCIL_INCR:
+	op = GL_INCR;
+	break;
+    case javax_media_j3d_RenderingAttributes_STENCIL_DECR:
+	op = GL_DECR;
+	break;
+    case javax_media_j3d_RenderingAttributes_STENCIL_INVERT:
+	op = GL_INVERT;
+	break;
+    }
+
+    return op;
+
 }
 
 JNIEXPORT
@@ -567,16 +626,28 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
     jboolean db_enable_override,
     jboolean db_enable,
     jboolean db_write_enable,
+    jint db_func,
     jfloat at_value,
     jint at_func,
     jboolean ignoreVertexColors,
     jboolean rasterOpEnable,
-    jint rasterOp)
+    jint rasterOp,
+    jboolean userStencilAvailable,
+    jboolean stencilEnable, 
+    jint stencilFailOp,
+    jint stencilZFailOp,
+    jint stencilZPassOp,
+    jint stencilFunction,
+    jint stencilReferenceValue,
+    jint stencilCompareMask,
+    jint stencilWriteMask)
 {
     if (db_enable_override == JNI_FALSE) {
         if (db_enable == JNI_TRUE) {
             glEnable(GL_DEPTH_TEST);
-        } else {
+	    glDepthFunc( getFunctionValue(db_func));
+	    
+	} else {
             glDisable(GL_DEPTH_TEST);
         }
     } 
@@ -593,6 +664,7 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
         glDisable(GL_ALPHA_TEST);
     } else {
         glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(getFunctionValue(at_func), at_value);
     }
 
     if (ignoreVertexColors == JNI_TRUE) {
@@ -600,47 +672,81 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
     }
     else {
 	glEnable(GL_COLOR_MATERIAL);
-    }	
-
-    switch (at_func) {
-	case javax_media_j3d_RenderingAttributes_ALWAYS:
-	    glAlphaFunc(GL_ALWAYS, at_value);
-	    break;
-	case javax_media_j3d_RenderingAttributes_NEVER:
-	    glAlphaFunc(GL_NEVER, at_value);
-	    break;
-	case javax_media_j3d_RenderingAttributes_EQUAL:
-	    glAlphaFunc(GL_EQUAL, at_value);
-	    break;
-	case javax_media_j3d_RenderingAttributes_NOT_EQUAL:
-	    glAlphaFunc(GL_NOTEQUAL, at_value);
-	    break;
-	case javax_media_j3d_RenderingAttributes_LESS:
-	    glAlphaFunc(GL_LESS, at_value);
-	    break;
-	case javax_media_j3d_RenderingAttributes_LESS_OR_EQUAL:
-	    glAlphaFunc(GL_LEQUAL, at_value);
-	    break;
-	case javax_media_j3d_RenderingAttributes_GREATER:
-	    glAlphaFunc(GL_GREATER, at_value);
-	    break;
-	case javax_media_j3d_RenderingAttributes_GREATER_OR_EQUAL:
-	    glAlphaFunc(GL_GEQUAL, at_value);
-	    break;
     }
-
+    
     if (rasterOpEnable == JNI_TRUE) {
 	glEnable(GL_COLOR_LOGIC_OP);
 	switch (rasterOp) {
+	case javax_media_j3d_RenderingAttributes_ROP_CLEAR:
+	    glLogicOp(GL_CLEAR);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_AND:
+	    glLogicOp(GL_AND);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_AND_REVERSE:
+	    glLogicOp(GL_AND_REVERSE);
+	    break;
 	case javax_media_j3d_RenderingAttributes_ROP_COPY:
 	    glLogicOp(GL_COPY);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_AND_INVERTED:
+	    glLogicOp(GL_AND_INVERTED);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_NOOP:
+	    glLogicOp(GL_NOOP);
 	    break;
 	case javax_media_j3d_RenderingAttributes_ROP_XOR:
 	    glLogicOp(GL_XOR);
 	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_OR:
+	    glLogicOp(GL_OR);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_NOR:
+	    glLogicOp(GL_NOR);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_EQUIV:
+	    glLogicOp(GL_EQUIV);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_INVERT:
+	    glLogicOp(GL_INVERT);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_OR_REVERSE:
+	    glLogicOp(GL_OR_REVERSE);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_COPY_INVERTED:
+	    glLogicOp(GL_COPY_INVERTED);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_OR_INVERTED:
+	    glLogicOp(GL_OR_INVERTED);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_NAND:
+	    glLogicOp(GL_NAND);
+	    break;
+	case javax_media_j3d_RenderingAttributes_ROP_SET:
+	    glLogicOp(GL_SET);
+	    break;
 	}
-    } else
+    } else {
 	glDisable(GL_COLOR_LOGIC_OP);
+    }
+
+    if (userStencilAvailable == JNI_TRUE) {
+        if (stencilEnable == JNI_TRUE) {
+            glEnable(GL_STENCIL_TEST);
+
+	    glStencilOp(getStencilOpValue(stencilFailOp),
+			getStencilOpValue(stencilZFailOp),
+			getStencilOpValue(stencilZPassOp));
+
+	    glStencilFunc(getFunctionValue(stencilFunction),
+			  stencilReferenceValue, stencilCompareMask);
+
+	    glStencilMask(stencilWriteMask);
+	    
+	} else {
+            glDisable(GL_STENCIL_TEST);
+        }
+    }
 }
 
 JNIEXPORT
@@ -741,7 +847,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetLineAttributes(
     glLineWidth(1.0f);
     glDisable(GL_LINE_STIPPLE);
 
-    /* TODO: Polygon Mode check, blend enable */
+    /* XXXX: Polygon Mode check, blend enable */
     glDisable (GL_LINE_SMOOTH);
 }
 
@@ -773,7 +879,7 @@ void JNICALL Java_javax_media_j3d_LineAttributesRetained_updateNative(
 	glEnable(GL_LINE_STIPPLE);
     }
 
-    /* TODO: Polygon Mode check, blend enable */
+    /* XXXX: Polygon Mode check, blend enable */
     if (lineAntialiasing == JNI_TRUE) {
         glEnable (GL_LINE_SMOOTH);
     } else {
@@ -789,7 +895,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetPointAttributes(
 {
     glPointSize(1.0f);
 
-    /* TODO: Polygon Mode check, blend enable */
+    /* XXXX: Polygon Mode check, blend enable */
     glDisable (GL_POINT_SMOOTH);
 }
 
@@ -803,7 +909,7 @@ void JNICALL Java_javax_media_j3d_PointAttributesRetained_updateNative(
 {
     glPointSize(pointSize);
 
-    /* TODO: Polygon Mode check, blend enable */
+    /* XXXX: Polygon Mode check, blend enable */
     if (pointAntialiasing == JNI_TRUE) {
         glEnable (GL_POINT_SMOOTH);
     } else {
@@ -3409,18 +3515,6 @@ void JNICALL Java_javax_media_j3d_TextureUnitStateRetained_updateTextureUnitStat
      */
 }
 
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_setDepthFunc(
-    JNIEnv * env, 
-    jobject obj,
-    jlong ctxInfo,    
-    jint func)
-{
-    if (func == javax_media_j3d_RenderingAttributesRetained_LESS) 
-	glDepthFunc(GL_LESS);
-    else if (func == javax_media_j3d_RenderingAttributesRetained_LEQUAL)
-	glDepthFunc(GL_LEQUAL);
-}
 
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_setBlendColor(
@@ -3502,4 +3596,116 @@ void JNICALL Java_javax_media_j3d_Canvas3D_updateTexUnitStateMap(
      * execute; for display list, texture unit has to match
      * texture unit state.
      */ 
+}
+
+
+/*
+ * strJavaToC
+ *
+ * Returns a copy of the specified Java String object as a new,
+ * null-terminated "C" string. The caller must free this string.
+ */
+char *
+strJavaToC(JNIEnv *env, jstring str)
+{
+    JNIEnv table = *env;
+    jclass oom;
+
+    const char *strUTFBytes;	/* Array of UTF-8 bytes */
+    char *cString = NULL;	/* Null-terminated "C" string */
+
+    if (str == NULL) {
+	return NULL;
+    }
+
+    strUTFBytes = table->GetStringUTFChars(env, str, NULL);
+    if (strUTFBytes == NULL) {
+	/* Just return, since GetStringUTFChars will throw OOM if it returns NULL */
+	return NULL;
+    }
+
+    cString = strdup(strUTFBytes);
+    table->ReleaseStringUTFChars(env, str, strUTFBytes);
+    if (cString == NULL) {
+	if ((oom = table->FindClass(env, "java/lang/OutOfMemoryError")) != NULL) {
+	    table->ThrowNew(env, oom, "strdup");
+	}
+	return NULL;
+    }
+
+    return cString;
+}
+
+
+/*
+ * createShaderError
+ *
+ * Constructs a new ShaderError object from the given error code,
+ * error message, and detail message.
+ */
+jobject
+createShaderError(
+    JNIEnv *env,
+    int errorCode,
+    const char *errorMsg,
+    const char *detailMsg)
+{
+    JNIEnv table = *env;
+    jclass shaderErrorClass;
+    jobject shaderError;
+    jmethodID methodID;
+    jstring errorMsgString = NULL;
+    jstring detailMsgString = NULL;
+
+    if (errorMsg != NULL) {
+	if ((errorMsgString = table->NewStringUTF(env, errorMsg)) == NULL) {
+	    return NULL;
+	}
+    }
+
+    if (detailMsg != NULL) {
+	if ((detailMsgString = table->NewStringUTF(env, detailMsg)) == NULL) {
+	    return NULL;
+	}
+    }
+
+    shaderErrorClass = (*(table->FindClass))(env, "javax/media/j3d/ShaderError");
+    if (shaderErrorClass == NULL) {
+	return NULL;
+    }
+
+    methodID = table->GetMethodID(env, shaderErrorClass,
+				  "<init>",
+				  "(ILjava/lang/String;)V");
+    if (methodID == NULL) {
+	return NULL;
+    }
+
+    shaderError = table->NewObject(env, shaderErrorClass, methodID,
+				   errorCode, errorMsgString);
+    if (shaderError == NULL) {
+	return NULL;
+    }
+
+    methodID = table->GetMethodID(env, shaderErrorClass,
+				  "setDetailMessage",
+				  "(Ljava/lang/String;)V");
+    if (methodID == NULL) {
+	return NULL;
+    }
+
+    table->CallVoidMethod(env, shaderError, methodID,
+			  detailMsgString);
+
+    return shaderError;
+}
+
+
+void
+throwAssert(JNIEnv *env, char *str)
+{
+    jclass rte;
+    if ((rte = (*env)->FindClass(env, "java/lang/AssertionError")) != NULL) {
+	(*env)->ThrowNew(env, rte, str);
+    }
 }

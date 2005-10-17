@@ -60,6 +60,12 @@ public class MediaContainer extends NodeComponent {
      public static final int
     ALLOW_URL_WRITE = CapabilityBits.MEDIA_CONTAINER_ALLOW_URL_WRITE;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_CACHE_READ,
+        ALLOW_URL_READ
+    };
+    
     /**
      * Constructs a MediaContainer object with default parameters.
      * The default values are as follows:
@@ -72,6 +78,8 @@ public class MediaContainer extends NodeComponent {
      */  
     public MediaContainer() {
          // Just use default values
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -81,6 +89,9 @@ public class MediaContainer extends NodeComponent {
      * @exception SoundException if the URL is not valid or cannot be opened
      */  
     public MediaContainer(String path) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((MediaContainerRetained)this.retained).setURLString(path);
     }
 
@@ -91,6 +102,9 @@ public class MediaContainer extends NodeComponent {
      * @exception SoundException if the URL is not valid or cannot be opened
      */  
     public MediaContainer(URL url) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((MediaContainerRetained)this.retained).setURLObject(url);
     }
 
@@ -102,6 +116,9 @@ public class MediaContainer extends NodeComponent {
      * @since Java 3D 1.2
      */  
     public MediaContainer(InputStream stream) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((MediaContainerRetained)this.retained).setInputStream(stream);
     }
 

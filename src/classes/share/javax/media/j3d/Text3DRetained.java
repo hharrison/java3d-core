@@ -472,7 +472,7 @@ class Text3DRetained extends GeometryRetained {
 				// use its bounds and not localBounds.
 				// bounds is actually a reference to
 				// mirrorShape3D.source.localBounds.
-				// TODO : Should only need to update distinct localBounds.
+				// XXXX : Should only need to update distinct localBounds.
 				s.getCombineBounds((BoundingBox)s.bounds);
 			    }
 
@@ -838,45 +838,39 @@ class Text3DRetained extends GeometryRetained {
       super.markAsLive();
     }
 
-
-    boolean intersect(PickShape pickShape, double dist[], Point3d iPnt) {
-	Transform3D tempT3D = VirtualUniverse.mc.getTransform3D(null);
+    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
+	Transform3D tempT3D = new Transform3D();
 	GeometryArrayRetained geo = null;
 	int sIndex = -1;
 	PickShape newPS;
-	double x = 0, y = 0, z = 0;
 	double minDist = Double.MAX_VALUE;
-
+        double distance =0.0;
+        Point3d closestIPnt = new Point3d();
+        
 	for (int i=0; i < numChars; i++) {
 	    geo= geometryList[i];
 	    if (geo != null) {
 		tempT3D.invert(charTransforms[i]);
 		newPS = pickShape.transform(tempT3D);
-		if (geo.intersect(newPS, dist, iPnt)) {
-		    if (dist == null) {
+		if (geo.intersect(newPS, iInfo, flags, iPnt)) {
+		    if (flags == 0) {
 			return true;
 		    }
-		    if (dist[0] < minDist) {
+                    distance = newPS.distance(iPnt);
+		    if (distance < minDist) {
 			sIndex = i;
-			minDist = dist[0];
-			x = iPnt.x;
-			y = iPnt.y;
-			z = iPnt.z;
+			minDist = distance;
+                        closestIPnt.set(iPnt);
 		    }    
 		}
 	    }
 	}
 	
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, tempT3D);
-
 	if (sIndex >= 0) {
 	    // We need to transform iPnt to the vworld to compute the actual distance.
 	    // In this method we'll transform iPnt by its char. offset. Shape3D will
 	    // do the localToVworld transform.
-	    iPnt.x = x;
-	    iPnt.y = y;
-	    iPnt.z = z;
-	    dist[0] = minDist;
+	    iPnt.set(closestIPnt);
 	    charTransforms[sIndex].transform(iPnt);
 	    return true;
 	} 

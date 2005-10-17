@@ -306,7 +306,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setViewport(
 	width = d3dCtx->devmode.dmPelsWidth;
 	height = d3dCtx->devmode.dmPelsHeight;
     }
-    D3DVIEWPORT8 vp = {x, y, width, height, 0.0f, 1.0f};
+    D3DVIEWPORT9 vp = {x, y, width, height, 0.0f, 1.0f};
 
     device->SetViewport(&vp);
 }
@@ -422,11 +422,21 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
     jboolean db_enable_override,
     jboolean db_enable,
     jboolean db_write_enable,
+	jint db_func,
     jfloat at_value,
     jint at_func,
     jboolean ignoreVertexColors,
     jboolean rasterOpEnable,
-    jint rasterOp)
+    jint rasterOp,
+	jboolean userStencilAvailable,
+    jboolean stencilEnable, 
+    jint stencilFailOp,
+    jint stencilZFailOp,
+    jint stencilZPassOp,
+    jint stencilFunction,
+    jint stencilReferenceValue,
+    jint stencilCompareMask,
+    jint stencilWriteMask)
 {
 
     GetDevice();
@@ -499,7 +509,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetPolygonAttributes(
     device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
     device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
     d3dCtx->twoSideLightingEnable = false;
-    device->SetRenderState(D3DRS_ZBIAS, 0);
+    device->SetRenderState(D3DRS_DEPTHBIAS, 0);
 }
 
 
@@ -535,7 +545,7 @@ void JNICALL Java_javax_media_j3d_PolygonAttributesRetained_updateNative(
 	}
     }
 
-    device->SetRenderState(D3DRS_ZBIAS, zbias_w);
+    device->SetRenderState(D3DRS_DEPTHBIAS, zbias_w);
 
     if (cullFace == javax_media_j3d_PolygonAttributes_CULL_NONE) {
 	d3dCtx->cullMode = D3DCULL_NONE;
@@ -582,14 +592,16 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetLineAttributes(
 
     // D3D don't support Line width
     // glLineWidth(1);
-
+    //D3D9 doesnot support line Patterns
+	// must update this to use ID3DXLine Interface
+/*
     D3DLINEPATTERN pattern;
     pattern.wRepeatFactor = 0;
     pattern.wLinePattern = 0;
     device->SetRenderState(D3DRS_LINEPATTERN, 
 			   *((LPDWORD) (&pattern)));
     
-
+*/
 }
 
 
@@ -608,7 +620,8 @@ void JNICALL Java_javax_media_j3d_LineAttributesRetained_updateNative(
 {
     GetDevice();
 
-    D3DLINEPATTERN pattern;
+	//Alessandro
+    //D3DLINEPATTERN pattern;
     
     /*    
     if (lineWidth > 1) {
@@ -619,12 +632,14 @@ void JNICALL Java_javax_media_j3d_LineAttributesRetained_updateNative(
     }
     */
     // glLineWidth(lineWidth);
-
+  /** Alessandro
     if (linePattern == javax_media_j3d_LineAttributes_PATTERN_SOLID) {
 	pattern.wRepeatFactor = 0;
 	pattern.wLinePattern = 0;
 
     } else {
+	**/
+
 	/*
 	if (!d3dCtx->deviceInfo->linePatternSupport) {
 	    if (debug && !isLinePatternMessOutput) {
@@ -633,6 +648,7 @@ void JNICALL Java_javax_media_j3d_LineAttributesRetained_updateNative(
 	    }
 	}
 	*/
+	/** alessandro
         if (linePattern == javax_media_j3d_LineAttributes_PATTERN_DASH) { // dashed lines 
 	    pattern.wRepeatFactor = 1;
 	    pattern.wLinePattern = 0x00ff;
@@ -650,7 +666,7 @@ void JNICALL Java_javax_media_j3d_LineAttributesRetained_updateNative(
 
     device->SetRenderState(D3DRS_LINEPATTERN, 
 			   *((LPDWORD) (&pattern)));
-
+      **/
     /*
       if (lineAntialiasing == JNI_TRUE) {
       glEnable (GL_LINE_SMOOTH);
@@ -1378,7 +1394,7 @@ void JNICALL Java_javax_media_j3d_MaterialRetained_updateNative(
 	jint colorTarget,
         jboolean lightEnable)
 {
-    D3DMATERIAL8 material;
+    D3DMATERIAL9 material;
 
     GetDevice();
 
@@ -1650,8 +1666,8 @@ void JNICALL Java_javax_media_j3d_TextureRetained_bindTexture(
 	if (objectId >= d3dCtx->textureTableLen) {
 	    DWORD i;
 	    DWORD len = max(objectId+1, d3dCtx->textureTableLen << 1);
-	    LPDIRECT3DTEXTURE8 *newTable = (LPDIRECT3DTEXTURE8 *) 
-		malloc(sizeof(LPDIRECT3DTEXTURE8) * len);
+	    LPDIRECT3DTEXTURE9 *newTable = (LPDIRECT3DTEXTURE9 *) 
+		malloc(sizeof(LPDIRECT3DTEXTURE9) * len);
 
 	    if (newTable == NULL) {
 		printf("Not enough memory to alloc texture table of size %d.\n", len);
@@ -1698,31 +1714,31 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilterModes(
     switch (minFilter) {
         case javax_media_j3d_Texture_FASTEST:
         case javax_media_j3d_Texture_BASE_LEVEL_POINT:
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_MINFILTER, D3DTEXF_POINT); 
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_MIPFILTER, D3DTEXF_POINT); 
+	    device->SetSamplerState(d3dCtx->texUnitStage,
+					 D3DSAMP_MINFILTER, D3DTEXF_POINT); 
+	    device->SetSamplerState (d3dCtx->texUnitStage,
+					 D3DSAMP_MIPFILTER, D3DTEXF_POINT); 
 	    break;
         case javax_media_j3d_Texture_BASE_LEVEL_LINEAR:
-            d3dCtx->texLinearMode = true;
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_MINFILTER, D3DTEXF_LINEAR); 
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_MIPFILTER, D3DTEXF_POINT); 
+                    d3dCtx->texLinearMode = true;
+	    device->SetSamplerState (d3dCtx->texUnitStage,
+					 D3DSAMP_MINFILTER, D3DTEXF_LINEAR); 
+	    device->SetSamplerState (d3dCtx->texUnitStage,
+					 D3DSAMP_MIPFILTER, D3DTEXF_POINT); 
 	    break;
         case javax_media_j3d_Texture_MULTI_LEVEL_POINT:
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_MINFILTER, D3DTEXF_POINT); 
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_MIPFILTER, D3DTEXF_LINEAR); 
+	    device->SetSamplerState (d3dCtx->texUnitStage,
+					 D3DSAMP_MINFILTER, D3DTEXF_POINT); 
+	    device->SetSamplerState (d3dCtx->texUnitStage,
+					 D3DSAMP_MIPFILTER, D3DTEXF_LINEAR); 
 	    break;
         case javax_media_j3d_Texture_NICEST:
         case javax_media_j3d_Texture_MULTI_LEVEL_LINEAR:
             d3dCtx->texLinearMode = true;
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_MINFILTER, D3DTEXF_LINEAR); 
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_MIPFILTER, D3DTEXF_LINEAR); 
+	    device->SetSamplerState (d3dCtx->texUnitStage,
+					 D3DSAMP_MINFILTER, D3DTEXF_LINEAR); 
+	    device->SetSamplerState (d3dCtx->texUnitStage,
+					 D3DSAMP_MIPFILTER, D3DTEXF_LINEAR); 
 	    break;
     }
 
@@ -1730,14 +1746,14 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilterModes(
     switch (magFilter) {
         case javax_media_j3d_Texture_FASTEST:
         case javax_media_j3d_Texture_BASE_LEVEL_POINT:
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_MAGFILTER, D3DTEXF_POINT); 
+	    device->SetSamplerState (d3dCtx->texUnitStage,
+					 D3DSAMP_MAGFILTER, D3DTEXF_POINT); 
 	    break;
         case javax_media_j3d_Texture_NICEST:
         case javax_media_j3d_Texture_BASE_LEVEL_LINEAR:
             d3dCtx->texLinearMode = true;
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_MAGFILTER, D3DTEXF_LINEAR); 
+	    device->SetSamplerState (d3dCtx->texUnitStage,
+					 D3DSAMP_MAGFILTER, D3DTEXF_LINEAR); 
 	    break;
     }
 
@@ -1797,19 +1813,19 @@ void updateTextureBoundary(JNIEnv *env,
 
     switch (boundaryModeS) {
         case javax_media_j3d_Texture_WRAP: 
-	    device->SetTextureStageState(d3dCtx->texUnitStage, 
-					 D3DTSS_ADDRESSU,
+	    device->SetSamplerState (d3dCtx->texUnitStage, 
+					 D3DSAMP_ADDRESSU,
 					 D3DTADDRESS_WRAP);
 	    break;
         case javax_media_j3d_Texture_CLAMP:
 	    if (!d3dCtx->texLinearMode || !d3dCtx->deviceInfo->texBorderModeSupport) {
-		device->SetTextureStageState(d3dCtx->texUnitStage,
-					     D3DTSS_ADDRESSU,
+		device->SetSamplerState (d3dCtx->texUnitStage,
+					     D3DSAMP_ADDRESSU,
 					     D3DTADDRESS_CLAMP);
 	    } else {
 		useBorderMode = TRUE;
-		device->SetTextureStageState(d3dCtx->texUnitStage,
-					     D3DTSS_ADDRESSU,
+		device->SetSamplerState (d3dCtx->texUnitStage,
+					     D3DSAMP_ADDRESSU,
 					     D3DTADDRESS_BORDER);
 	    }
 	    break;
@@ -1817,19 +1833,19 @@ void updateTextureBoundary(JNIEnv *env,
 
     switch (boundaryModeT) {
         case javax_media_j3d_Texture_WRAP: 
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_ADDRESSV,
+	    device->SetSamplerState (d3dCtx->texUnitStage,
+					 D3DSAMP_ADDRESSV,
 					 D3DTADDRESS_WRAP);
 	    break;
         case javax_media_j3d_Texture_CLAMP:
 	    if (!d3dCtx->texLinearMode || !d3dCtx->deviceInfo->texBorderModeSupport) {
-		device->SetTextureStageState(d3dCtx->texUnitStage,
-					     D3DTSS_ADDRESSV,
-					     D3DTADDRESS_CLAMP);
+		device->SetSamplerState (d3dCtx->texUnitStage,
+					     D3DSAMP_ADDRESSV,					     
+						 D3DTADDRESS_CLAMP);
 	    } else {
 		useBorderMode = TRUE;
-		device->SetTextureStageState(d3dCtx->texUnitStage,
-					     D3DTSS_ADDRESSV,
+		device->SetSamplerState (d3dCtx->texUnitStage,
+					     D3DSAMP_ADDRESSV,
 					     D3DTADDRESS_BORDER);
 	    }
 	    break;
@@ -1838,19 +1854,19 @@ void updateTextureBoundary(JNIEnv *env,
     if (boundaryModeR >= 0) {
 	switch (boundaryModeR) {
         case javax_media_j3d_Texture_WRAP: 
-	    device->SetTextureStageState(d3dCtx->texUnitStage,
-					 D3DTSS_ADDRESSW,
+	    device->SetSamplerState (d3dCtx->texUnitStage,
+					 D3DSAMP_ADDRESSW,
 					 D3DTADDRESS_WRAP);
 	    break;
         case javax_media_j3d_Texture_CLAMP:
 	    if (!d3dCtx->texLinearMode || !d3dCtx->deviceInfo->texBorderModeSupport) {
-		device->SetTextureStageState(d3dCtx->texUnitStage,
-					     D3DTSS_ADDRESSW,
+		device->SetSamplerState (d3dCtx->texUnitStage,
+					     D3DSAMP_ADDRESSW,
 					     D3DTADDRESS_CLAMP);
 	    } else {
 		useBorderMode = TRUE;
-		device->SetTextureStageState(d3dCtx->texUnitStage,
-					     D3DTSS_ADDRESSW,
+		device->SetSamplerState (d3dCtx->texUnitStage,
+					     D3DSAMP_ADDRESSW,
 					     D3DTADDRESS_BORDER);
 	    }
 	    break;
@@ -1861,8 +1877,8 @@ void updateTextureBoundary(JNIEnv *env,
 	D3DCOLOR color = D3DCOLOR_COLORVALUE(boundaryRed, boundaryGreen,
 					     boundaryBlue, boundaryAlpha);
 
-	device->SetTextureStageState(d3dCtx->texUnitStage,
-				     D3DTSS_BORDERCOLOR,
+	device->SetSamplerState (d3dCtx->texUnitStage,
+				     D3DSAMP_BORDERCOLOR,
 				      *((DWORD *) &color));
     }
 }
@@ -1918,24 +1934,24 @@ void updateTextureAnisotropicFilter(
 	DWORD deg = degree + 0.5f; // round float to int
 	// This will overwrite the previous setting in 
 	// updateTextureFilterModes()
-	device->SetTextureStageState(d3dCtx->texUnitStage,
-				     D3DTSS_MINFILTER,
+	device->SetSamplerState (d3dCtx->texUnitStage,
+				     D3DSAMP_MINFILTER,
 				     D3DTEXF_ANISOTROPIC);
-	device->SetTextureStageState(d3dCtx->texUnitStage,
-				     D3DTSS_MAGFILTER,
+	device->SetSamplerState (d3dCtx->texUnitStage,
+				     D3DSAMP_MAGFILTER,
 				     D3DTEXF_ANISOTROPIC);
-	device->SetTextureStageState(d3dCtx->texUnitStage,
-				     D3DTSS_MIPFILTER,
+	device->SetSamplerState (d3dCtx->texUnitStage,
+				     D3DSAMP_MIPFILTER,
 				     D3DTEXF_ANISOTROPIC);
 
-	device->SetTextureStageState(d3dCtx->texUnitStage,
-				     D3DTSS_MAXANISOTROPY, deg);
+	device->SetSamplerState (d3dCtx->texUnitStage,
+				     D3DSAMP_MAXANISOTROPY, deg);
     } else {
 	// updateTextureFilterModes() will always invoke before
 	// updateTextureAnisotropicFilter() to set Filter mode
 	// correctly.
-	device->SetTextureStageState(d3dCtx->texUnitStage,
-				     D3DTSS_MAXANISOTROPY, 1);	
+	device->SetSamplerState (d3dCtx->texUnitStage,
+				     D3DSAMP_MAXANISOTROPY, 1);	
     }
 				 
 }
@@ -2010,7 +2026,7 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureSubImage(
 	return;
     }
 
-    LPDIRECT3DTEXTURE8 surf = d3dCtx->textureTable[currBindTex];
+    LPDIRECT3DTEXTURE9 surf = d3dCtx->textureTable[currBindTex];
 
     if ((surf == NULL) ||
 	((level > 0) && (!d3dCtx->deviceInfo->supportMipmap))) {
@@ -2074,7 +2090,7 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureImage(
 	return;
     }
 
-    LPDIRECT3DTEXTURE8 surf = d3dCtx->textureTable[currBindTex];
+    LPDIRECT3DTEXTURE9 surf = d3dCtx->textureTable[currBindTex];
 
     if (level == 0) {
 	if (surf != NULL) {
@@ -2225,8 +2241,8 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_bindTexture(
 	if (objectId >= d3dCtx->volumeTableLen) {
 	    DWORD i;
 	    DWORD len = max(objectId+1, d3dCtx->volumeTableLen << 1);
-	    LPDIRECT3DVOLUMETEXTURE8 *newTable = (LPDIRECT3DVOLUMETEXTURE8 *) 
-		malloc(sizeof(LPDIRECT3DVOLUMETEXTURE8) * len);
+	    LPDIRECT3DVOLUMETEXTURE9 *newTable = (LPDIRECT3DVOLUMETEXTURE9 *) 
+		malloc(sizeof(LPDIRECT3DVOLUMETEXTURE9) * len);
 
 	    if (newTable == NULL) {
 		printf("Not enough memory to alloc volume texture table of size %d.\n", len);
@@ -2371,7 +2387,7 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureImage(
 	return;
     }
 
-    LPDIRECT3DVOLUMETEXTURE8 surf = d3dCtx->volumeTable[currBindTex];
+    LPDIRECT3DVOLUMETEXTURE9 surf = d3dCtx->volumeTable[currBindTex];
 
     if (level == 0) {
 	if (surf != NULL) {
@@ -2465,7 +2481,7 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureSubImage(
 	return;
     }
 
-    LPDIRECT3DVOLUMETEXTURE8 surf = d3dCtx->volumeTable[currBindTex];
+    LPDIRECT3DVOLUMETEXTURE9 surf = d3dCtx->volumeTable[currBindTex];
 
     if ((surf == NULL) ||
 	((level > 0) && (!d3dCtx->deviceInfo->supportMipmap))) {
@@ -2520,8 +2536,8 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_bindTexture(
 	if (objectId >= d3dCtx->cubeMapTableLen) {
 	    DWORD i;
 	    DWORD len = max(objectId+1, d3dCtx->cubeMapTableLen << 1);
-	    LPDIRECT3DCUBETEXTURE8 *newTable = (LPDIRECT3DCUBETEXTURE8 *) 
-		malloc(sizeof(LPDIRECT3DCUBETEXTURE8) * len);
+	    LPDIRECT3DCUBETEXTURE9 *newTable = (LPDIRECT3DCUBETEXTURE9 *) 
+		malloc(sizeof(LPDIRECT3DCUBETEXTURE9) * len);
 
 	    if (newTable == NULL) {
 		printf("Not enough memory to alloc cubeMap table of size %d.\n", len);
@@ -2641,7 +2657,7 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureSubImage(
 	return;
     }
 
-    LPDIRECT3DCUBETEXTURE8 surf = d3dCtx->cubeMapTable[currBindTex];
+    LPDIRECT3DCUBETEXTURE9 surf = d3dCtx->cubeMapTable[currBindTex];
 
     if ((surf == NULL) ||
 	((level > 0) && (!d3dCtx->deviceInfo->supportMipmap))) {
@@ -2707,7 +2723,7 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureImage(
 	return;
     }
 
-    LPDIRECT3DCUBETEXTURE8 surf = d3dCtx->cubeMapTable[currBindTex];
+    LPDIRECT3DCUBETEXTURE9 surf = d3dCtx->cubeMapTable[currBindTex];
 
     if (level == 0) {
 	if (surf != NULL) {

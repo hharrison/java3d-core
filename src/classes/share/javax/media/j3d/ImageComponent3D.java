@@ -622,7 +622,7 @@ public class ImageComponent3D extends ImageComponent {
 						    rt.height,
 						    rt.depth);
 
-	// TODO : replace by this to duplicate other attributes
+	// XXXX : replace by this to duplicate other attributes
 	/*
 	ImageComponent3D img = new ImageComponent3D(rt.format,
 	                                            rt.width,

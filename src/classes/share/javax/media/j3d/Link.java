@@ -34,11 +34,18 @@ public class Link extends Leaf {
     public static final int
     ALLOW_SHARED_GROUP_WRITE = CapabilityBits.LINK_ALLOW_SHARED_GROUP_WRITE;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_SHARED_GROUP_READ
+    };
+    
     /**
      * Constructs a Link node object that does not yet point to a
      * SharedGroup node.
      */
     public Link() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -47,7 +54,10 @@ public class Link extends Leaf {
      * @param sharedGroup the SharedGroup node
      */
     public Link(SharedGroup sharedGroup) {
-	((LinkRetained)this.retained).setSharedGroup(sharedGroup);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((LinkRetained)this.retained).setSharedGroup(sharedGroup);
     }
 
     /**

@@ -66,7 +66,11 @@ public class TextureUnitState extends NodeComponent {
     public static final int ALLOW_STATE_WRITE =
 	CapabilityBits.TEXTURE_UNIT_STATE_ALLOW_STATE_WRITE;
 
-
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_STATE_READ
+    };
+    
     /**
      * Constructs a TextureUnitState component object using defaults for all
      * state variables. All component object references are initialized
@@ -74,6 +78,8 @@ public class TextureUnitState extends NodeComponent {
      */
     public TextureUnitState() {
 	// Just use default values
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -90,6 +96,8 @@ public class TextureUnitState extends NodeComponent {
     public TextureUnitState(Texture texture,
 			     TextureAttributes textureAttributes,
 			     TexCoordGeneration texCoordGeneration) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
 
 	((TextureUnitStateRetained)this.retained).initTexture(texture);
 	((TextureUnitStateRetained)this.retained).initTextureAttributes(

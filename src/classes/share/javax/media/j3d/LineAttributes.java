@@ -169,7 +169,13 @@ public class LineAttributes extends NodeComponent {
      */
     public static final int PATTERN_USER_DEFINED = 4;
 
-
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_ANTIALIASING_READ,
+        ALLOW_PATTERN_READ,
+        ALLOW_WIDTH_READ        
+    };
+    
     /**
      * Constructs a LineAttributes object with default parameters.
      * The default values are as follows:
@@ -182,6 +188,8 @@ public class LineAttributes extends NodeComponent {
      * </ul>
      */
      public LineAttributes(){
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
       }
 
     /**
@@ -196,6 +204,9 @@ public class LineAttributes extends NodeComponent {
 
        if (linePattern < PATTERN_SOLID || linePattern > PATTERN_DASH_DOT)
 	 throw new IllegalArgumentException(J3dI18N.getString("LineAttributes0"));
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
 
        ((LineAttributesRetained)this.retained).initLineWidth(lineWidth);
        ((LineAttributesRetained)this.retained).initLinePattern(linePattern);

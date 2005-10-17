@@ -228,6 +228,16 @@ public class Background extends Leaf {
      */
     public static final int SCALE_NONE_CENTER = 5; 
     
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_APPLICATION_BOUNDS_READ,
+        ALLOW_COLOR_READ,
+        ALLOW_GEOMETRY_READ,
+        ALLOW_IMAGE_READ,
+        ALLOW_IMAGE_SCALE_MODE_READ
+    };
+    
+    
     /**
      * Constructs a Background node with default parameters.  The default
      * values are as follows:
@@ -242,6 +252,8 @@ public class Background extends Leaf {
      */
     public Background () {
 	// Just use the defaults
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -250,7 +262,10 @@ public class Background extends Leaf {
      * objects in the scene.
      */
     public Background(Color3f color) {
-	((BackgroundRetained)this.retained).setColor(color);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((BackgroundRetained)this.retained).setColor(color);
     }
 
     /**
@@ -259,7 +274,10 @@ public class Background extends Leaf {
      * objects in the scene.
      */
     public Background(float r, float g, float b) {
-	((BackgroundRetained)this.retained).setColor(r, g, b);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((BackgroundRetained)this.retained).setColor(r, g, b);
     }
 
     /**
@@ -273,7 +291,10 @@ public class Background extends Leaf {
      * @param image pixel array object used as the background image
      */
     public Background(ImageComponent2D image) {
-	((BackgroundRetained)this.retained).setImage(image);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((BackgroundRetained)this.retained).setImage(image);
     }
 
     /**
@@ -290,7 +311,10 @@ public class Background extends Leaf {
      * contains an illegal node.
      */
     public Background(BranchGroup branch) {
-	((BackgroundRetained)this.retained).setGeometry(branch);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((BackgroundRetained)this.retained).setGeometry(branch);
     }
 
     /**

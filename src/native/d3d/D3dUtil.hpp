@@ -70,7 +70,7 @@
          
 #define GetDevice()  \
          GetCtx() \
-         LPDIRECT3DDEVICE8 device = d3dCtx->pDevice; \
+         LPDIRECT3DDEVICE9 device = d3dCtx->pDevice; \
          if (device == NULL)  return;
 
 #define GetCtx2() \
@@ -80,7 +80,7 @@
          
 #define GetDevice2()  \
          GetCtx2(); \
-         LPDIRECT3DDEVICE8 device = d3dCtx->pDevice; \
+         LPDIRECT3DDEVICE9 device = d3dCtx->pDevice; \
          if (device == NULL)  return 0;
 
 #define CopyColor(c, red, green, blue, alpha)  \
@@ -118,6 +118,9 @@ extern vector<void *> freePointerList0;
 extern vector<void *> freePointerList1;
 extern BOOL useFreePointerList0;
 
+//ISSUE 135 a iterator to void *
+typedef vector<void *>::iterator ITER_VOID;
+
 extern HANDLE hSema; // handle to semaphore
 extern BOOL firstError;
 extern BOOL debug;
@@ -136,21 +139,21 @@ extern VOID lockGeometry();
 extern VOID unlockGeometry();
 extern VOID lockSurfaceList();
 extern VOID unlockSurfaceList();
-extern VOID freeSurface(LPDIRECT3DBASETEXTURE8 surf);
+extern VOID freeSurface(LPDIRECT3DBASETEXTURE9 surf);
 extern VOID freePointer(void* surf);
 extern VOID freePointerList();
 extern VOID setWindowCallback(HWND topHwnd, HWND hwnd);
 extern char* getErrorMessage(int idx);
 extern HWND getTopWindow(HWND hwnd);
 
-extern LPDIRECT3DTEXTURE8 createTextureSurface(D3dCtx *d3dCtx,
+extern LPDIRECT3DTEXTURE9 createTextureSurface(D3dCtx *d3dCtx,
 					       jint numLevels,
 					       jint internalFormat,
 					       jint width, 
 					       jint height);
 
 
-extern LPDIRECT3DVOLUMETEXTURE8 createVolumeTexture(D3dCtx *d3dCtx,
+extern LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
 						    jint numLevels,
 						    jint internalFormat,
 						    jint width, 
@@ -158,7 +161,7 @@ extern LPDIRECT3DVOLUMETEXTURE8 createVolumeTexture(D3dCtx *d3dCtx,
 						    jint depth);
 
 
-extern LPDIRECT3DCUBETEXTURE8 createCubeMapTexture(D3dCtx *d3dCtx,
+extern LPDIRECT3DCUBETEXTURE9 createCubeMapTexture(D3dCtx *d3dCtx,
 						   jint numLevels,
 						   jint internalFormat,
 						   jint width, 
@@ -170,7 +173,7 @@ extern void copyDataToSurface(jint format,
 			      jint xoffset, jint yoffset,
 			      jint imgXOffset, jint imgYOffset,
 			      jint width, jint height,  jint tilew,
-			      jshort *data, LPDIRECT3DTEXTURE8 surf,
+			      jshort *data, LPDIRECT3DTEXTURE9 surf,
 			      jint level);
 
 extern void copyDataToSurface(jint format,
@@ -179,7 +182,7 @@ extern void copyDataToSurface(jint format,
 			      jint imgXOffset, jint imgYOffset,
 			      jint width, jint height, jint tilew,
 			      jbyte* data, 
-			      LPDIRECT3DTEXTURE8 surf,
+			      LPDIRECT3DTEXTURE9 surf,
 			      jint level);
 
 extern void copyDataToVolume(jint format, 
@@ -190,7 +193,7 @@ extern void copyDataToVolume(jint format,
 			     jint imgZOffset,
 			     jint width, jint height,  jint depth,
 			     jint tilew, jint tileh,
-			     jshort *data, LPDIRECT3DVOLUMETEXTURE8 surf,
+			     jshort *data, LPDIRECT3DVOLUMETEXTURE9 surf,
 			     jint level);
 
 
@@ -203,7 +206,7 @@ extern void copyDataToVolume(jint format,
 			     jint width, jint height, jint depth,
 			     jint tilew, jint tileh,
 			     jbyte* data, 
-			     LPDIRECT3DVOLUMETEXTURE8 surf,
+			     LPDIRECT3DVOLUMETEXTURE9 surf,
 			     jint level);
 
 extern void copyDataToCubeMap(jint format, 
@@ -212,7 +215,7 @@ extern void copyDataToCubeMap(jint format,
 			      jint imgXOffset, jint imgYOffset,
 			      jint width, jint height,
 			      jint tilew, 
-			      jshort *data, LPDIRECT3DCUBETEXTURE8 surf,
+			      jshort *data, LPDIRECT3DCUBETEXTURE9 surf,
 			      jint level,
 			      jint face);
 
@@ -224,7 +227,7 @@ extern void copyDataToCubeMap(jint format,
 			      jint width, jint height,
 			      jint tilew, 
 			      jbyte* data, 
-			      LPDIRECT3DCUBETEXTURE8 surf,
+			      LPDIRECT3DCUBETEXTURE9 surf,
 			      jint level,
 			      jint face);
 
@@ -232,50 +235,50 @@ extern void copyDataToCubeMap(jint format,
 extern void copyDepthFromSurface(jint xoffset, jint yoffset,
 				 jint subWidth, jint subHeight,
 				 jint *data, 
-				 LPDIRECT3DSURFACE8 surf);
+				 LPDIRECT3DSURFACE9 surf);
 
 extern void copyDepthFromSurface(jint xoffset, jint yoffset,
 				 jint subWidth, jint subHeight,
 				 jfloat *data, 
-				 LPDIRECT3DSURFACE8 surf);
+				 LPDIRECT3DSURFACE9 surf);
 
 extern void copyDepthToSurface(D3dCtx *d3dCtx,
-			       LPDIRECT3DDEVICE8 device,
+			       LPDIRECT3DDEVICE9 device,
 			       jint dst_xoffset, jint dst_yoffset,
 			       jint src_xoffset, jint src_yoffset,
 			       jint subWidth, jint subHeight,
 			       jint src_width, jint src_height,
 			       jint *data, 
-			       LPDIRECT3DSURFACE8 surf);
+			       LPDIRECT3DSURFACE9 surf);
 
 extern void copyDepthToSurface(D3dCtx *d3dCtx,
-			       LPDIRECT3DDEVICE8 device,
+			       LPDIRECT3DDEVICE9 device,
 			       jint dst_xoffset, jint dst_yoffset,
 			       jint src_xoffset, jint src_yoffset,
 			       jint subWidth, jint subHeight,
 			       jint src_width, jint src_height,
 			       jfloat *data, 
-			       LPDIRECT3DSURFACE8 surf);
+			       LPDIRECT3DSURFACE9 surf);
 
 extern void copyDataFromSurface(jint internalFormat,
 				jint xoffset, jint yoffset,
 				jint width, jint height, 
-				jbyte *data, LPDIRECT3DSURFACE8 surf);
+				jbyte *data, LPDIRECT3DSURFACE9 surf);
 
 void compositeDataToSurface(jint px, jint py,
 			    jint xoffset, jint yoffset,
 			    jint subWidth, jint subHeight,
 			    jint dataWidth, 
 			    jbyte *data, 
-			    LPDIRECT3DSURFACE8 surf);
+			    LPDIRECT3DSURFACE9 surf);
 
 // extern BOOL isIdentity(jdouble *matrix);
 
-extern void CopyTextureStage(LPDIRECT3DDEVICE8 device, 
+extern void CopyTextureStage(LPDIRECT3DDEVICE9 device, 
 			     int fromLevel, int toLevel);
 
 
-extern LPDIRECT3DTEXTURE8 createSurfaceFromImage(JNIEnv *env,
+extern LPDIRECT3DTEXTURE9 createSurfaceFromImage(JNIEnv *env,
 						 jobject pa2d,
 						 jlong ctx,
 						 int width,
@@ -292,19 +295,20 @@ extern char *getSwapEffectName(D3DSWAPEFFECT swapEffect);
 extern int getPrimitiveNum(int primitive, int vcount);
 extern int getMaxNumVertex(int primitive, int vcount);
 extern void drawTextureRect(D3dCtx *d3dCtx,
-			    LPDIRECT3DDEVICE8 device,
-			    LPDIRECT3DTEXTURE8 tex,
+			    LPDIRECT3DDEVICE9 device,
+			    LPDIRECT3DTEXTURE9 tex,
 			    D3DTLVERTEX screenCoord,
 			    int startx, int starty,
 			    int endx, int endy,
 			    int scaleWidth, int scaleHeight,
 			    boolean texModeRepeat);
 extern int  setTextureStage(D3dCtx *d3dCtx,
-			    LPDIRECT3DDEVICE8 device, 
+			    LPDIRECT3DDEVICE9 device, 
 			    int mapTexStage,
 			    jint texStage);
 extern void setTexTransformStageFlag(D3dCtx* d3dCtx,  
-				     LPDIRECT3DDEVICE8 device, 
+				     LPDIRECT3DDEVICE9 device, 
 				     int tus, int ts, int genMode); 
+DWORD ucountBits(DWORD mask) ;
 #endif
 

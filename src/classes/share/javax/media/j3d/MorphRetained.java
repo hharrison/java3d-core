@@ -56,7 +56,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      */
     GeometryArrayRetained geometryArrays[];
 
-    int numGeometryArrays = 0;
+    private int numGeometryArrays = 0;
 
     /**
      * The weight vector the morph node.
@@ -200,6 +200,13 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    }
 	    doErrorCheck(prevGeo, geo);
 	}
+
+	// Check the first one for vertex attributes
+	geo = (GeometryArrayRetained)geometryArrays[0].retained;
+	if ((geo.vertexFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+	    throw new UnsupportedOperationException(J3dI18N.getString("MorphRetained9"));
+	}
+
 	// Check if the first one is in Immediate context
 	if (geometryArrays[0] != null) {
 	    geo = (GeometryArrayRetained)geometryArrays[0].retained;
@@ -452,8 +459,58 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     boolean getAppearanceOverrideEnable() {
 	return appearanceOverrideEnable;
     }
+   
+    boolean intersect(PickInfo pickInfo, PickShape pickShape, int flags ) {
 
+        Transform3D localToVworld = pickInfo.getLocalToVWorldRef();
 
+	Transform3D vworldToLocal = new Transform3D();
+	vworldToLocal.invert(localToVworld);
+	PickShape newPS = pickShape.transform(vworldToLocal);
+
+	GeometryRetained geo = (GeometryRetained) (morphedGeometryArray.retained);
+
+        if (geo.mirrorGeometry != null) {
+            geo = geo.mirrorGeometry;
+        }
+        
+        if (((flags & PickInfo.CLOSEST_INTERSECTION_POINT) == 0) &&
+                ((flags & PickInfo.CLOSEST_DISTANCE) == 0) &&
+                ((flags & PickInfo.CLOSEST_GEOM_INFO) == 0) &&
+                ((flags & PickInfo.ALL_GEOM_INFO) == 0)) {
+            return geo.intersect(newPS, null, 0, null);
+        } else {
+            Point3d closestIPnt = new Point3d();
+            Point3d iPnt = new Point3d();
+            Point3d iPntVW = new Point3d();
+            PickInfo.IntersectionInfo intersectionInfo
+                    = pickInfo.createIntersectionInfo();
+
+            if (geo.intersect(newPS, intersectionInfo, flags, iPnt)) {
+                
+                iPntVW.set(iPnt);
+                localToVworld.transform(iPntVW);
+                double distance = pickShape.distance(iPntVW);
+                if ((flags & PickInfo.CLOSEST_DISTANCE) != 0) {
+                    pickInfo.setClosestDistance(distance);
+                }
+                if((flags & PickInfo.CLOSEST_INTERSECTION_POINT) != 0) {
+                    pickInfo.setClosestIntersectionPoint(iPnt);
+                } else if ((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                    intersectionInfo.setGeometry((Geometry) geo.source);
+                    intersectionInfo.setGeometryIndex(0);
+                    intersectionInfo.setIntersectionPoint(iPnt);
+                    intersectionInfo.setDistance(distance);
+                    // VertexIndices has been computed in intersect method.
+                    pickInfo.insertIntersectionInfo(intersectionInfo);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
     /**
      * Check if the geometry component of this shape node under path
      *  intersects with the pickShape.
@@ -461,48 +518,38 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      *  contains the closest distance of intersection if it is not
      *  equal to null.
      */
-    boolean intersect(SceneGraphPath path, PickShape pickShape,
-		      double[] dist) {
-
+    boolean intersect(SceneGraphPath path,
+            PickShape pickShape, double[] dist) {
+        
 	// This method will not do bound intersect check, as it assume caller
 	// has already done that. ( For performance and code simplification
 	// reasons. )
 
-	Transform3D localToVworld = path.getTransform();
-
+        int flags;
+        PickInfo pickInfo = new PickInfo();
+        
+        Transform3D localToVworld = path.getTransform();
 	if (localToVworld == null) {
 	    throw new RuntimeException(J3dI18N.getString("MorphRetained5"));   
 	}
 
-	Transform3D vworldToLocal = VirtualUniverse.mc.getTransform3D(null);
-	vworldToLocal.invert(localToVworld);
-	PickShape newPS = pickShape.transform(vworldToLocal);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, vworldToLocal);
-
-	Point3d iPnt = Shape3DRetained.getPoint3d();
-
-	GeometryRetained geo = (GeometryRetained) (morphedGeometryArray.retained);
-
-	if (geo.mirrorGeometry != null) {
-	    geo = geo.mirrorGeometry;
-	}
-
-	boolean isIntersect;
-	if (dist != null) {
-	    isIntersect = geo.intersect(newPS, dist, iPnt);
-	    if (isIntersect) {
-		// compute the real distance since the dist return
-		// above distance may scaled (non-uniform) by transform3d
-		localToVworld.transform(iPnt);
-		dist[0] = pickShape.distance(iPnt);
-	    } 
-	} else {
-	    isIntersect = geo.intersect(newPS, null, iPnt);
-	}
-	Shape3DRetained.freePoint3d(iPnt);
-	return isIntersect;
-    }
-
+        pickInfo.setLocalToVWorldRef( localToVworld);
+        //System.out.println("MorphRetained.intersect() : ");
+        if (dist == null) {
+            //System.out.println("      no dist request ....");
+            return intersect(pickInfo, pickShape, 0);
+        }
+        
+        flags = PickInfo.CLOSEST_DISTANCE;
+        if (intersect(pickInfo, pickShape, flags)) {
+            dist[0] = pickInfo.getClosestDistance();
+            return true;
+        }
+        
+        return false;
+          
+      }    
+   
     /**
      * Sets the Morph node's weight vector
      * @param wieghts the new vector of weights for the morph node
@@ -571,8 +618,8 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
         } else {
             return super.getBounds();
         }
-    } 
-  
+    }
+
     Bounds getEffectiveBounds() {
         if(boundsAutoCompute) {
 	    return getBounds();
@@ -603,6 +650,11 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    }
 	}
     } 
+
+    // Return the number of geometry arrays in this MorphRetained object.
+    int getNumGeometryArrays() {
+	return numGeometryArrays;
+    }
 
     // If the geometry of a morph changes, make sure that the
     // validVertexCount has not changed
@@ -1767,8 +1819,8 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	        }		
 	        if ((vFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
 	            for (k = 0; k < texCoordSetCount; k++) {
-	                 morphedGeo.setTextureCoordinateIndices(k, 0, 
-	            			(int[]) igeo.indexTexCoord[k]);
+	                 morphedGeo.setTextureCoordinateIndices(k, 0,
+                                 igeo.indexTexCoord[k]);
 	            }
 	        }
             }
@@ -1797,7 +1849,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 
         super.compile(compState);
 
-        // TODO: for now keep the static transform in the parent tg
+        // XXXX: for now keep the static transform in the parent tg
         compState.keepTG = true;
 
         if (J3dDebug.devPhase && J3dDebug.debug) {

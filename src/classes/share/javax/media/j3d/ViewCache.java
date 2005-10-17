@@ -312,8 +312,7 @@ class ViewCache extends Object {
 	    trackerBaseToHeadTracker.setIdentity();
 	}
 
-	// TODO: implement head to vworld tracking if userHeadToVworldEnable
-	// is set
+	// XXXX: implement head to vworld tracking if userHeadToVworldEnable is set
     	userHeadToVworld.setIdentity();
     }
 

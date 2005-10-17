@@ -24,12 +24,10 @@ class LinearFogRetained extends FogRetained {
     /**
      * Fog front and back   distance
      */
-    double frontDistance = 0.1;
-    double backDistance = 1.0;
-    double localToVworldScale = 1.0;
-    double frontDistanceInEc;
-    double backDistanceInEc;
-    double vworldToCoexistenceScale;
+    private double frontDistance = 0.1;
+    private double backDistance = 1.0;
+    private double frontDistanceInEc;
+    private double backDistanceInEc;
 
     // dirty bits for LinearFog
     static final int FRONT_DISTANCE_CHANGED	= FogRetained.LAST_DEFINED_BIT << 1;
@@ -169,29 +167,21 @@ class LinearFogRetained extends FogRetained {
 	    ((LinearFogRetained)mirrorFog).backDistance = ((Double)((Object[])objs[4])[5]).doubleValue();
 	    
 	}
-	((LinearFogRetained)mirrorFog).localToVworldScale = 
-	    getLastLocalToVworld().getDistanceScale();	
-
+	((LinearFogRetained)mirrorFog).setLocalToVworldScale(getLastLocalToVworld().getDistanceScale());	
 
 	super.updateMirrorObject(objs);
     }
 
     /**
      * Scale distances from local to eye coordinate
-     */  
-
-    void validateDistancesInEc(double vworldToCoexistenceScale) {
+     */
+    protected void validateDistancesInEc(double vworldToCoexistenceScale) {
         // vworldToCoexistenceScale can be used here since
         // CoexistenceToEc has a unit scale
-        double localToEcScale = localToVworldScale * vworldToCoexistenceScale;
+        double localToEcScale = getLocalToVworldScale() * vworldToCoexistenceScale;
 
         frontDistanceInEc = frontDistance * localToEcScale;
         backDistanceInEc = backDistance * localToEcScale;
     }
 
-    // Called on mirror object
-    void updateTransformChange() {
-	super.updateTransformChange();
-        localToVworldScale = sgFog.getLastLocalToVworld().getDistanceScale();
-    }
 }

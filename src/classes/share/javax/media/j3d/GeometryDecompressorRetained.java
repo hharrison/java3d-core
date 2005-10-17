@@ -57,7 +57,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
     // normal-per-vertex data collected from the HelloUniverse.cg file
     // (seagull, '57 Chevy, dinosaur).
     //
-    // TODO: get fudge values for other vertex combinations
+    // XXXX: get fudge values for other vertex combinations
     private static final float bytesPerVertexFudge = 5.3f ;
 
     // Used for benchmarking if so configured.

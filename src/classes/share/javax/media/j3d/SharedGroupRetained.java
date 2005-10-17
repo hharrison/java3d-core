@@ -329,7 +329,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
         s.transformTargets = savedTransformTargets;
         s.hashkeyIndex = savedHashkeyIndex;
 /*
-// TODO : port this
+// XXXX : port this
         for (int i=0; i < children.size(); i++) {
             if ((childContains[i][0] & ILLEGAL_LEAF_MASK) != 0) {
                 throw new IllegalSharingException(J3dI18N.getString("SharedGroupRetained0"));            }
@@ -472,7 +472,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
         s.switchTargets = null;
 
 
-	// TODO: This is a hack since removeNodeData is called before
+	// XXXX: This is a hack since removeNodeData is called before
 	// children are clearLives
 	int[] tempIndex = null;
 	// Don't keep the indices if everything will be cleared
@@ -778,7 +778,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
     public void propagateTargetThreads(int type, int childTargetThreads) {
         if (type == TargetsInterface.TRANSFORM_TARGETS) {
             LinkRetained ln;
-	    // TODO : For now we'll OR more than exact.
+	    // XXXX : For now we'll OR more than exact.
             //targetThreads = localTargetThreads | childTargetThreads;
 	    targetThreads = targetThreads | childTargetThreads;
             for(int i=0; i<parents.size(); i++) {

@@ -50,10 +50,18 @@ public class BoundingLeaf extends Leaf {
     public static final int
     ALLOW_REGION_WRITE = CapabilityBits.BOUNDING_LEAF_ALLOW_REGION_WRITE;
 
-    /**
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_REGION_READ
+    };
+    
+        /**
      * Constructs a BoundingLeaf node with a null (empty) bounding region.
      */
     public BoundingLeaf() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+        
 	((BoundingLeafRetained)this.retained).createBoundingLeaf();
     }
 
@@ -62,6 +70,9 @@ public class BoundingLeaf extends Leaf {
      * @param region the bounding region of this leaf node
      */
     public BoundingLeaf(Bounds region) {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+        
 	((BoundingLeafRetained)this.retained).createBoundingLeaf();
 	((BoundingLeafRetained)this.retained).initRegion(region);
     }

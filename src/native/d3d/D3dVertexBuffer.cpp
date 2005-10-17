@@ -62,7 +62,7 @@ VOID D3dVertexBuffer::render(D3dCtx *d3dCtx)
 
     if ((buffer != NULL) && (numVertices != NULL)) {
 	// device is already check for NULL in callDisplayList
-	LPDIRECT3DDEVICE8 device = d3dCtx->pDevice; 
+	LPDIRECT3DDEVICE9 device = d3dCtx->pDevice; 
 	BOOL setAmbientLight = false;
 
 	if (((vertexFormat & D3DFVF_DIFFUSE) == 0) && 
@@ -95,9 +95,10 @@ VOID D3dVertexBuffer::render(D3dCtx *d3dCtx)
 		device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 		if (d3dCtx->deviceInfo->maxPointSize < d3dCtx->pointSize) {
 		    // Use software vertex processing mode
-		    device->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING,
-					   TRUE);
+		    //device->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING, TRUE);
+			device->SetSoftwareVertexProcessing(TRUE);
 		}
+		
 		oldPrimitiveType = primitiveType;
 		// For Polygon D3DFill_POINT mode we need to
 		// temporary switch primitive to point list
@@ -106,9 +107,11 @@ VOID D3dVertexBuffer::render(D3dCtx *d3dCtx)
 	    }
 	}
 
-	device->SetStreamSource(0, buffer, stride); 
-	device->SetVertexShader(vertexFormat);
-
+	device->SetStreamSource(0, buffer,0, stride); 
+	//device->SetVertexShader(vertexFormat);
+	device->SetVertexShader(NULL);
+	device->SetFVF(vertexFormat);
+	
 	int startIdx=0;
 	int vc, i;
 
@@ -123,10 +126,10 @@ VOID D3dVertexBuffer::render(D3dCtx *d3dCtx)
 	    }
 	} else {
 	    if (indexBuffer != NULL) {
-		device->SetIndices(indexBuffer, 0); 	
+		device->SetIndices(indexBuffer); 	
 		for (i = 0; i < stripLen; i++) {
 		    vc = numVertices[i];
-		    device->DrawIndexedPrimitive(primitiveType,
+		    device->DrawIndexedPrimitive(primitiveType,0,
 						 0,
 						 vcount,
 						 startIdx,
@@ -136,9 +139,9 @@ VOID D3dVertexBuffer::render(D3dCtx *d3dCtx)
 	    } else {
 		if (d3dCtx->quadIndexBufferSize > 0) {
 		    // Index is successfully set
-		    device->SetIndices(d3dCtx->quadIndexBuffer, 0); 	
-		    device->DrawIndexedPrimitive(D3DPT_TRIANGLELIST,
-						 0,
+		    device->SetIndices(d3dCtx->quadIndexBuffer); 	
+		    device->DrawIndexedPrimitive(D3DPT_TRIANGLELIST,0,
+				         0,
 						 numVertices[0],
 						 0,
 						 numVertices[0] >> 1);
@@ -156,8 +159,10 @@ VOID D3dVertexBuffer::render(D3dCtx *d3dCtx)
 	if (renderPoint) {
 	    device->SetRenderState(D3DRS_CULLMODE, d3dCtx->cullMode);
 	    device->SetRenderState(D3DRS_FILLMODE, d3dCtx->fillMode);
-	    device->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING,
+        /** device->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING,
 				   d3dCtx->softwareVertexProcessing);
+        **/ 
+		device->SetSoftwareVertexProcessing(d3dCtx->softwareVertexProcessing);
 	    primitiveType = oldPrimitiveType;
 	} else if (restorePointSize) {
 	    device->SetRenderState(D3DRS_POINTSIZE, 

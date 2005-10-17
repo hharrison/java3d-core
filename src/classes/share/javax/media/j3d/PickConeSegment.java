@@ -233,7 +233,7 @@ public final class PickConeSegment extends PickCone {
 	    double distToEdge;
 	    for (i=0;i<ptope.nVerts;i++) {
 		for (j=i;i<ptope.nVerts;i++) {
-		    // TODO: make BoundingPolytope.pointInPolytope available to package
+		    // XXXX: make BoundingPolytope.pointInPolytope available to package
 		    // scope
 		    midpt.x = (ptope.verts[i].x + ptope.verts[j].x) * 0.5;
 		    midpt.y = (ptope.verts[i].y + ptope.verts[j].y) * 0.5;

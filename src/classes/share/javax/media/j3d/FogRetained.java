@@ -90,6 +90,9 @@ abstract class FogRetained extends LeafRetained{
     // Is true, if the mirror fog is viewScoped
     boolean isViewScoped = false;
 
+    // Scale value extracted from localToVworld transform
+    private double localToVworldScale = 1.0;
+
     FogRetained() {
 	localBounds = new BoundingBox();
 	((BoundingBox)localBounds).setLower( 1.0, 1.0, 1.0);
@@ -750,6 +753,8 @@ abstract class FogRetained extends LeafRetained{
      }
 
     void updateTransformChange() {
+	super.updateTransformChange();
+        setLocalToVworldScale(sgFog.getLastLocalToVworld().getDistanceScale());
     }
 
     // Called on mirror object
@@ -785,5 +790,19 @@ abstract class FogRetained extends LeafRetained{
     void getMirrorObjects(ArrayList leafList, HashKey key) {
 	leafList.add(mirrorFog);
     }
-    
+
+    /**
+     * Scale distances from local to eye coordinate
+     */
+    protected void validateDistancesInEc(double vworldToCoexistenceScale) {
+        assert false : "subclasses should override this method";
+    }
+
+    double getLocalToVworldScale() {
+        return localToVworldScale;
+    }
+
+    void setLocalToVworldScale(double localToVworldScale) {
+        this.localToVworldScale = localToVworldScale;
+    }
 }

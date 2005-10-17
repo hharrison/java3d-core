@@ -61,11 +61,18 @@ public class TransformGroup extends Group {
   public static final int
     ALLOW_TRANSFORM_WRITE = CapabilityBits.TRANSFORM_GROUP_ALLOW_TRANSFORM_WRITE;
 
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_TRANSFORM_READ
+    };
+
     /**
      * Constructs and initializes a TransformGroup using an
      * identity transform.
      */
     public TransformGroup() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);        
     }
 
     /**
@@ -74,11 +81,14 @@ public class TransformGroup extends Group {
      * @param t1 the transform3D object
      * @exception BadTransformException if the transform is not affine.
      */
-    public TransformGroup(Transform3D t1) {
+    public TransformGroup(Transform3D t1) {        
 	if (!t1.isAffine()) {
 	    throw new BadTransformException(J3dI18N.getString("TransformGroup0"));
 	}
-
+        
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+        
 	((TransformGroupRetained)this.retained).setTransform(t1);
     }
 

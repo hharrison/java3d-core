@@ -128,7 +128,7 @@ public class PhysicalBody extends Object {
     synchronized void notifyUsers() {
 	for (int i=users.size()-1; i>=0; i--) {
 	    View view = (View)users.get(i);
-            // TODO: notifyUsers should have a parameter denoting field changed
+            // XXXX: notifyUsers should have a parameter denoting field changed
             if (view.soundScheduler != null) {
                 view.soundScheduler.setListenerFlag(
                         SoundScheduler.EAR_POSITIONS_CHANGED |

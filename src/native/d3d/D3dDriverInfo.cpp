@@ -47,7 +47,7 @@ D3DFORMAT d3dDepthFormat[D3DDEPTHFORMATSIZE] = {D3DFMT_D15S1,
 
 // This should match the depth bit in the above array
 int d3dDepthTable[D3DDEPTHFORMATSIZE] = {15, 24, 24, 16, 16, 32};
-D3DLIGHT8 ambientLight; 
+D3DLIGHT9 ambientLight; 
 
 D3dDriverInfo::D3dDriverInfo()
 {
@@ -97,7 +97,41 @@ VOID computeRGBDepth(D3dDriverInfo *pDriver)
 
 }
 
-VOID buildDriverList(LPDIRECT3D8 pD3D)
+
+VOID setInfo(D3dDeviceInfo* pDevice,D3DADAPTER_IDENTIFIER9 *identifier)
+{ 
+	 char* str = (char *)"UNKNOW Vendor             ";
+	 
+     switch( identifier->VendorId )
+     {
+     // A more complete list can be found from http://www.pcidatabase.com/vendors.php?sort=id
+     case 0x1002:   str = (char *) "ATI Technologies Inc.";                break;
+     case 0x1013:   str = (char *) "Cirrus Logic.";                        break;
+     case 0x1023:   str = (char *) "Trident Microsistems.";                break;
+     case 0x102B:   str = (char *) "Matrox Electronic Systems Ltd.";       break;     
+     case 0x108E:   str = (char *) "Sun Microsystems.";                    break;
+     case 0x10DE:   str = (char *) "NVIDIA Corporation";                   break;
+     case 0x121A:   str = (char *) "3dfx Interactive Inc";                 break;
+	 case 0x3D3D:   str = (char *) "3Dlabs Inc, Ltd.";                     break;
+     case 0x5333:   str = (char *) "S3 Graphics Co., Ltd.";                break;
+     case 0x8086:   str = (char *) "Intel Corporation";                    break;
+     default:      sprintf( str, "vendor ID %x.",identifier->VendorId);
+		 break;
+     }
+     pDevice->deviceVendor = str;
+        
+     pDevice->deviceRenderer = identifier->Description;
+ 
+     char version[ 128 ];
+     sprintf( version, "%d.%d.%d.%d", HIWORD( identifier->DriverVersion.HighPart ),
+		      LOWORD( identifier->DriverVersion.HighPart ), 
+			  HIWORD( identifier->DriverVersion.LowPart ), 
+			  LOWORD( identifier->DriverVersion.LowPart ) );
+     pDevice->deviceVersion = (char *)version;
+}
+
+
+VOID buildDriverList(LPDIRECT3D9 pD3D)
 {
     numDriver =  pD3D->GetAdapterCount();
 
@@ -120,16 +154,17 @@ VOID buildDriverList(LPDIRECT3D8 pD3D)
     {
 	pDriver = new D3dDriverInfo();
 	d3dDriverList[i] = pDriver;
-        pD3D->GetAdapterIdentifier(i, D3DENUM_NO_WHQL_LEVEL,
+        pD3D->GetAdapterIdentifier(i, 0,
 				     &pDriver->adapterIdentifier);
         pD3D->GetAdapterDisplayMode(i, &pDriver->desktopMode);
 	computeRGBDepth(pDriver);
 	pDriver->hMonitor = pD3D->GetAdapterMonitor(i);
 	pDriver->iAdapter = i;
 
+    
 	for (int j = 0; j < numDeviceTypes; j++ )
         {
-	    D3DCAPS8 d3dCaps;
+	    D3DCAPS9 d3dCaps;
             D3dDeviceInfo* pDevice = pDriver->d3dDeviceList[j];
             pDevice->deviceType = deviceTypes[j];
             pD3D->GetDeviceCaps(i, deviceTypes[j], &d3dCaps);
@@ -152,7 +187,9 @@ VOID buildDriverList(LPDIRECT3D8 pD3D)
 		strcpy(pDevice->deviceName, "Hardware Rasterizer");
 	    } else {
 		strcpy(pDevice->deviceName, "Reference Rasterizer");
-	    }
+		}
+       	//issue 135 put here info about vendor and device model
+		setInfo(pDevice, &pDriver->adapterIdentifier);
 
 	    for (int k=0; k < D3DDEPTHFORMATSIZE; k++) {
 		pDevice->depthFormatSupport[k] =
@@ -176,12 +213,13 @@ VOID buildDriverList(LPDIRECT3D8 pD3D)
 	    DWORD bitmask = 1 << 2;
 	    pDevice->multiSampleSupport = 0;
 	    for (int mtype = D3DMULTISAMPLE_2_SAMPLES; 
-		 mtype <= D3DMULTISAMPLE_16_SAMPLES; mtype++) {
+		      mtype <= D3DMULTISAMPLE_16_SAMPLES; mtype++) {
 		// consider desktop mode only for multisampling
 		if (SUCCEEDED(pD3D->CheckDeviceMultiSampleType(i, deviceTypes[j],
 							       pDriver->desktopMode.Format,
 							       TRUE,
-							       (D3DMULTISAMPLE_TYPE) mtype))) {
+							       (D3DMULTISAMPLE_TYPE) mtype,NULL)
+								   )) {
 		    pDevice->multiSampleSupport |= bitmask;
 		}
 		bitmask <<= 1;
@@ -204,7 +242,7 @@ VOID D3dDriverInfo::release()
 
 VOID printInfo() 
 {
-    printf("Java 3D 1.3.3, Windows version is %d.%d ", 
+    printf("Java 3D 1.4, Windows version is %d.%d ", 
 	   osvi.dwMajorVersion, osvi.dwMinorVersion);
     
     printf("Build: %d, ", LOWORD(osvi.dwBuildNumber)); 
@@ -217,7 +255,7 @@ VOID printInfo()
 	printf("Windows 95/98");
 	break;
     case VER_PLATFORM_WIN32_NT:
-	printf("Windows NT");
+	printf("Windows NT/2000/XP");
 	break;
     }
 
@@ -226,7 +264,7 @@ VOID printInfo()
     D3dDriverInfo *pDriver;
     for (int i=0; i < numDriver; i++) {
 	pDriver  = d3dDriverList[i];
-	D3DADAPTER_IDENTIFIER8 *id = &pDriver->adapterIdentifier;
+	D3DADAPTER_IDENTIFIER9 *id = &pDriver->adapterIdentifier;
 	D3DDISPLAYMODE *dm = &pDriver->desktopMode;
         printf("\n[Display Driver] %s, %s, Product %d\n",
 	       id->Driver, id->Description,
@@ -234,8 +272,9 @@ VOID printInfo()
 	printf("                 Version %d.%d, Build %d, VendorId %d\n",
 	       LOWORD(id->DriverVersion.HighPart),	       
 	       HIWORD(id->DriverVersion.LowPart),	       
-	       LOWORD(id->DriverVersion.LowPart));
-	printf("                 DeviceId 0x%x, SubSysId 0x%x, Revision 0x%d\n",
+	       LOWORD(id->DriverVersion.LowPart),		   
+		   id->VendorId);
+	printf("                 DeviceId %d, SubSysId %d, Revision %d\n",
 	       id->VendorId, id->DeviceId,
 	       id->SubSysId, id->Revision);
 	printf("  [Desktop Mode] %dx%d ", 
@@ -262,19 +301,22 @@ VOID printInfo()
 // Construct the D3dDriverList by enumerate all the drivers
 VOID D3dDriverInfo::initialize(JNIEnv *env) 
 {
-    HINSTANCE hD3D8DLL = LoadLibrary( "D3D8.DLL" );
+    HINSTANCE hD3D9DLL = LoadLibrary( "D3D9.DLL" );
 
-    // Simply see if D3D8.dll exists.
-    if ( hD3D8DLL == NULL )
+    // Simply see if D3D9.dll exists.
+    if ( hD3D9DLL == NULL )
     {
 	D3dCtx::d3dError(D3DNOTFOUND);
 	return;
     }
-    FreeLibrary(hD3D8DLL);
+    FreeLibrary(hD3D9DLL);
 
 
-    LPDIRECT3D8 pD3D = Direct3DCreate8( D3D_SDK_VERSION );
-
+    LPDIRECT3D9 pD3D = Direct3DCreate9( D3D_SDK_VERSION );
+	printf("[Java3D] Using DirectX D3D 9.0 or higher.\n");
+	if (debug){
+		printf("[Java3D] DirectX D3D renderer build 1.4.2005.10.10\n");
+	}
     if (pD3D == NULL) {
 	D3dCtx::d3dError(D3DNOTFOUND);
 	return;
@@ -314,7 +356,6 @@ VOID D3dDriverInfo::initialize(JNIEnv *env)
     CopyColor(ambientLight.Ambient, 1.0f, 1.0f, 1.0f, 1.0f);
     CopyColor(ambientLight.Specular, 0, 0, 0, 1.0f);
 }
-
 
 
 

@@ -22,15 +22,17 @@ class D3dVertexBuffer;
 typedef D3dVertexBuffer* LPD3DVERTEXBUFFER;
 typedef vector<LPD3DVERTEXBUFFER> D3dVertexBufferVector;
 
+//ISSUE 135 iterator for D3dVertexBuffer
+typedef vector<LPD3DVERTEXBUFFER>::iterator ITER_LPD3DVERTEXBUFFER;
 
 class D3dVertexBuffer {
 public:
 
     // Actual buffer memory to hold all the vertices
-    LPDIRECT3DVERTEXBUFFER8 buffer;
+    LPDIRECT3DVERTEXBUFFER9 buffer;
 
     // Indexed buffer for rendering IndexedGeometry
-    LPDIRECT3DINDEXBUFFER8 indexBuffer;
+    LPDIRECT3DINDEXBUFFER9 indexBuffer;
 
     // D3D type of this Vertex Buffer
     D3DPRIMITIVETYPE        primitiveType;
@@ -55,6 +57,11 @@ public:
     // Stride of each vertex in the buffer
     // compute from above vertexFormat
     UINT                    stride;
+
+	UINT                    numCoorTexSupported;
+
+
+
 
     // Number of strips used for StripGeometryArray
     // For each strip i the number of vertex is

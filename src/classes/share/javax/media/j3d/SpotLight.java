@@ -94,6 +94,13 @@ public class SpotLight extends PointLight {
   public static final int
     ALLOW_DIRECTION_READ = CapabilityBits.SPOT_LIGHT_ALLOW_DIRECTION_READ;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+	ALLOW_SPREAD_ANGLE_READ,
+	ALLOW_CONCENTRATION_READ,
+	ALLOW_DIRECTION_READ
+    };
+
     /**
      * Constructs a SpotLight node with default parameters.
      * The default values are as follows:
@@ -104,6 +111,8 @@ public class SpotLight extends PointLight {
      * </ul>
      */
     public SpotLight() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -124,6 +133,10 @@ public class SpotLight extends PointLight {
 		     float spreadAngle,
 		     float concentration) {
 	super(color, position, attenuation);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((SpotLightRetained)this.retained).initDirection(direction);
 	((SpotLightRetained)this.retained).initSpreadAngle(spreadAngle);
 	((SpotLightRetained)this.retained).initConcentration(concentration);
@@ -148,6 +161,10 @@ public class SpotLight extends PointLight {
 		     float spreadAngle,
 		     float concentration) {
 	super(lightOn, color, position, attenuation);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
 	((SpotLightRetained)this.retained).initDirection(direction);
 	((SpotLightRetained)this.retained).initSpreadAngle(spreadAngle);
 	((SpotLightRetained)this.retained).initConcentration(concentration);

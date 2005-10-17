@@ -147,6 +147,12 @@ public class ConeSound extends PointSound {
   public static final int
     ALLOW_ANGULAR_ATTENUATION_WRITE = CapabilityBits.CONE_SOUND_ALLOW_ANGULAR_ATTENUATION_WRITE;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+	ALLOW_DIRECTION_READ,
+	ALLOW_ANGULAR_ATTENUATION_READ
+    };
+
     /**
      * Constructs and initializes a new ConeSound node using default
      * parameters.  The following default values are used:
@@ -159,6 +165,8 @@ public class ConeSound extends PointSound {
     public ConeSound() {
         // Uses default values defined in ConeSoundRetained.java
        super();
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -177,6 +185,10 @@ public class ConeSound extends PointSound {
                       Vector3f direction) {
 
         super(soundData, initialGain, position );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((ConeSoundRetained)this.retained).setDirection(direction);
     }
 
@@ -201,6 +213,10 @@ public class ConeSound extends PointSound {
                       float dirX, float dirY, float dirZ) {
 
         super(soundData, initialGain, posX, posY, posZ );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((ConeSoundRetained)this.retained).setDirection(dirX, dirY, dirZ);
     }
 
@@ -248,6 +264,10 @@ public class ConeSound extends PointSound {
 
         super(soundData, initialGain, loopCount, release, continuous, enable,
                       region, priority, position, frontDistanceAttenuation );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((ConeSoundRetained)this.retained).setBackDistanceGain(
                       backDistanceAttenuation);
         ((ConeSoundRetained)this.retained).setDirection(direction);
@@ -301,6 +321,10 @@ public class ConeSound extends PointSound {
         super(soundData, initialGain, loopCount, release, continuous, enable,
                      region, priority, posX, posY, posZ, 
                      frontDistance, frontDistanceGain );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((ConeSoundRetained)this.retained).setDirection(dirX, dirY, dirZ);
         ((ConeSoundRetained)this.retained).setBackDistanceGain(
                      backDistance, backDistanceGain );
@@ -346,6 +370,10 @@ public class ConeSound extends PointSound {
 
         super(soundData, initialGain, loopCount, release, continuous, enable,
                       region, priority, position, distanceAttenuation );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((ConeSoundRetained)this.retained).setDirection(direction);
         ((ConeSoundRetained)this.retained).setAngularAttenuation(
                       angularAttenuation);
@@ -402,6 +430,10 @@ public class ConeSound extends PointSound {
         super(soundData, initialGain, loopCount, release, continuous, enable,
                      region, priority, posX, posY, posZ, 
                      distance, distanceGain );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((ConeSoundRetained)this.retained).setDirection(dirX, dirY, dirZ);
         ((ConeSoundRetained)this.retained).setAngularAttenuation(angle,
                      angularGain, frequencyCutoff);
@@ -444,6 +476,10 @@ public class ConeSound extends PointSound {
 
         super(soundData, initialGain, loopCount, release, continuous, enable,
                       region, priority, position, frontDistanceAttenuation );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((ConeSoundRetained)this.retained).setBackDistanceGain(
                       backDistanceAttenuation);
         ((ConeSoundRetained)this.retained).setDirection(direction);
@@ -497,6 +533,10 @@ public class ConeSound extends PointSound {
         super(soundData, initialGain, loopCount, release, continuous, enable,
                      region, priority, posX, posY, posZ, 
                      frontDistance, frontDistanceGain );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((ConeSoundRetained)this.retained).setBackDistanceGain(
                      backDistance, backDistanceGain );
         ((ConeSoundRetained)this.retained).setDirection(dirX, dirY, dirZ);

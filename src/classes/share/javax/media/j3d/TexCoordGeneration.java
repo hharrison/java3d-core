@@ -230,6 +230,14 @@ public class TexCoordGeneration extends NodeComponent {
      */
     public static final int TEXTURE_COORDINATE_4 = 2;
 
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_ENABLE_READ,
+        ALLOW_FORMAT_READ,
+        ALLOW_MODE_READ,
+        ALLOW_PLANE_READ        
+    };
+    
     /**
      * Constructs a TexCoordGeneration object with default parameters.
      * The default values are as follows:
@@ -245,6 +253,8 @@ public class TexCoordGeneration extends NodeComponent {
      */
     public TexCoordGeneration() {
 	// Just use the defaults
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -259,7 +269,10 @@ public class TexCoordGeneration extends NodeComponent {
      * @see Canvas3D#queryProperties
      */
     public TexCoordGeneration(int genMode, int format) {
-	((TexCoordGenerationRetained)this.retained).initGenMode(genMode);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((TexCoordGenerationRetained)this.retained).initGenMode(genMode);
 	((TexCoordGenerationRetained)this.retained).initFormat(format);
     }
 
@@ -276,7 +289,10 @@ public class TexCoordGeneration extends NodeComponent {
      * @see Canvas3D#queryProperties
      */
     public TexCoordGeneration(int genMode, int format, Vector4f planeS) {
-	((TexCoordGenerationRetained)this.retained).initGenMode(genMode);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((TexCoordGenerationRetained)this.retained).initGenMode(genMode);
 	((TexCoordGenerationRetained)this.retained).initFormat(format);
 	((TexCoordGenerationRetained)this.retained).initPlaneS(planeS);
     }
@@ -296,7 +312,10 @@ public class TexCoordGeneration extends NodeComponent {
      */
     public TexCoordGeneration(int genMode, int format, Vector4f planeS, 
 			      Vector4f planeT) {
-	((TexCoordGenerationRetained)this.retained).initGenMode(genMode);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((TexCoordGenerationRetained)this.retained).initGenMode(genMode);
 	((TexCoordGenerationRetained)this.retained).initFormat(format);
 	((TexCoordGenerationRetained)this.retained).initPlaneS(planeS);
 	((TexCoordGenerationRetained)this.retained).initPlaneT(planeT);
@@ -317,7 +336,10 @@ public class TexCoordGeneration extends NodeComponent {
      */
     public TexCoordGeneration(int genMode, int format, Vector4f planeS, 
 			      Vector4f planeT, Vector4f planeR) {
-	((TexCoordGenerationRetained)this.retained).initGenMode(genMode);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((TexCoordGenerationRetained)this.retained).initGenMode(genMode);
 	((TexCoordGenerationRetained)this.retained).initFormat(format);
 	((TexCoordGenerationRetained)this.retained).initPlaneS(planeS);
 	((TexCoordGenerationRetained)this.retained).initPlaneT(planeT);
@@ -343,7 +365,10 @@ public class TexCoordGeneration extends NodeComponent {
     public TexCoordGeneration(int genMode, int format, Vector4f planeS, 
 			      Vector4f planeT, Vector4f planeR,
 			      Vector4f planeQ) {
-	((TexCoordGenerationRetained)this.retained).initGenMode(genMode);
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((TexCoordGenerationRetained)this.retained).initGenMode(genMode);
 	((TexCoordGenerationRetained)this.retained).initFormat(format);
 	((TexCoordGenerationRetained)this.retained).initPlaneS(planeS);
 	((TexCoordGenerationRetained)this.retained).initPlaneT(planeT);

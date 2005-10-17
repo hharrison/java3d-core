@@ -99,6 +99,13 @@ public class PointSound extends Sound {
   public static final int
     ALLOW_DISTANCE_GAIN_WRITE = CapabilityBits.POINT_SOUND_ALLOW_DISTANCE_GAIN_WRITE;
 
+
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_POSITION_READ,
+        ALLOW_DISTANCE_GAIN_READ
+    };
+
     /**
      * Constructs and initializes a new PointSound node using default
      * parameters.  The following default values are used:
@@ -111,6 +118,9 @@ public class PointSound extends Sound {
     public PointSound() {
 	// Uses default values defined for Sound and PointSound nodes
         super();
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
     }   
 
     /**
@@ -126,6 +136,10 @@ public class PointSound extends Sound {
                       float initialGain,
                       Point3f position) {
         super(soundData, initialGain);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((PointSoundRetained)this.retained).setPosition(position);
     }   
 
@@ -144,6 +158,10 @@ public class PointSound extends Sound {
                       float initialGain,
                       float posX, float posY, float posZ ) {
         super(soundData, initialGain);
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((PointSoundRetained)this.retained).setPosition(posX,posY,posZ);
     }   
 
@@ -180,6 +198,10 @@ public class PointSound extends Sound {
 
         super(soundData, initialGain, loopCount, release, continuous, 
                    enable, region, priority );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((PointSoundRetained)this.retained).setPosition(position);
         ((PointSoundRetained)this.retained).setDistanceGain(distanceGain);
     }   
@@ -215,6 +237,10 @@ public class PointSound extends Sound {
 
         super(soundData, initialGain, loopCount, release,
               continuous, enable, region, priority );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((PointSoundRetained)this.retained).setPosition(posX,posY,posZ);
         ((PointSoundRetained)this.retained).setDistanceGain(distanceGain);
     }   
@@ -249,6 +275,10 @@ public class PointSound extends Sound {
 
         super(soundData, initialGain, loopCount, release, continuous, 
                 enable, region, priority );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((PointSoundRetained)this.retained).setPosition(position);
         ((PointSoundRetained)this.retained).setDistanceGain(
                         attenuationDistance, attenuationGain);
@@ -286,6 +316,10 @@ public class PointSound extends Sound {
 
         super(soundData, initialGain, loopCount, release,
               continuous, enable, region, priority );
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         ((PointSoundRetained)this.retained).setPosition(posX,posY,posZ);
         ((PointSoundRetained)this.retained).setDistanceGain(
                         attenuationDistance, attenuationGain);

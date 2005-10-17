@@ -25,13 +25,15 @@ class PointArrayRetained extends GeometryArrayRetained {
 	this.geoType = GEO_TYPE_POINT_SET;
     }
 
-    boolean intersect(PickShape pickShape, double dist[],  Point3d iPnt) {
+    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
 	double sdist[] = new double[1];
 	double minDist = Double.MAX_VALUE;
 	double x = 0, y = 0, z = 0;
-	Point3d pnt = new Point3d();
+        int count = 0;
+        int minICount = 0;         
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
 		 initialVertexIndex : initialCoordIndex);
+	Point3d pnt = new Point3d();
     
 	switch (pickShape.getPickType()) {
 	case PickShape.PICKRAY:
@@ -39,13 +41,15 @@ class PointArrayRetained extends GeometryArrayRetained {
 
 	    while (i < validVertexCount) {
 		getVertexData(i++, pnt);
-		if (intersectPntAndRay(pnt, pickRay.origin,
+                count++;
+                if (intersectPntAndRay(pnt, pickRay.origin,
 				       pickRay.direction, sdist)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = pnt.x;
 			y = pnt.y;
 			z = pnt.z;
@@ -61,14 +65,16 @@ class PointArrayRetained extends GeometryArrayRetained {
 			     pickSegment.end.z - pickSegment.start.z);
 	    while (i < validVertexCount) {
 		getVertexData(i++, pnt);
+                count++;
 		if (intersectPntAndRay(pnt, pickSegment.start, 
 					dir, sdist) &&
 		    (sdist[0] <= 1.0)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = pnt.x;
 			y = pnt.y;
 			z = pnt.z;
@@ -84,13 +90,15 @@ class PointArrayRetained extends GeometryArrayRetained {
 
 	    while (i < validVertexCount) {
 		getVertexData(i++, pnt);
+                count++;
 		if (bounds.intersect(pnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    sdist[0] = pickShape.distance(pnt);
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = pnt.x;
 			y = pnt.y;
 			z = pnt.z;
@@ -104,13 +112,14 @@ class PointArrayRetained extends GeometryArrayRetained {
 
 	    while (i < validVertexCount) {
 		getVertexData(i++, pnt);
-
+                count++;
 		if (intersectCylinder(pnt, pickCylinder, sdist)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = pnt.x;
 			y = pnt.y;
 			z = pnt.z;
@@ -123,13 +132,14 @@ class PointArrayRetained extends GeometryArrayRetained {
 
 	    while (i < validVertexCount) {
 		getVertexData(i++, pnt);
-
+                count++;
 		if (intersectCone(pnt, pickCone, sdist)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
+                        minICount = count;
 			x = pnt.x;
 			y = pnt.y;
 			z = pnt.z;
@@ -145,14 +155,19 @@ class PointArrayRetained extends GeometryArrayRetained {
 	} 
 
 	if (minDist < Double.MAX_VALUE) {
-	    dist[0] = minDist;
+            assert(minICount >=1);
+            int[] vertexIndices = iInfo.getVertexIndices();
+            if (vertexIndices == null) {
+                vertexIndices = new int[1];
+                iInfo.setVertexIndices(vertexIndices);
+            }
+            vertexIndices[0] = minICount - 1;
 	    iPnt.x = x;
 	    iPnt.y = y;
 	    iPnt.z = z;
 	    return true;
 	}
 	return false;
-   
     }
 
     boolean intersect(Point3d[] pnts) {

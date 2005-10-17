@@ -59,29 +59,35 @@ public class Sensor {
 
     /**
      * Set predictor type to do no prediction; this is the default.
+     *
+     * @deprecated As of Java 3D version 1.4, prediction is not a
+     * supported feature.
      */
     public static final int PREDICT_NONE = 1;
 
     /**
-     * Set predictor type to generate the SensorRead to correspond with 
-     * the next frame time.
+     * @deprecated As of Java 3D version 1.4, prediction is not a
+     * supported feature.
      */
     public static final int PREDICT_NEXT_FRAME_TIME = 2;
 
     /**
      * Use no prediction policy; this is the default.
+     *
+     * @deprecated As of Java 3D version 1.4, prediction is not a
+     * supported feature.
      */
     public static final int NO_PREDICTOR = 16;
 
     /**
-     * Set the predictor policy to assume the sensor is predicting head 
-     * position/orientation.
+     * @deprecated As of Java 3D version 1.4, prediction is not a
+     * supported feature.
      */
     public static final int HEAD_PREDICTOR = 32;
 
     /**
-     * Set the predictor policy to assume the sensor is predicting hand 
-     * position/orientation.
+     * @deprecated As of Java 3D version 1.4, prediction is not a
+     * supported feature.
      */
     public static final int HAND_PREDICTOR = 64;
 
@@ -110,11 +116,11 @@ public class Sensor {
     // size of the sensor read buffer
     int sensorReadCount;
 
-    // Default prediction policy: don't predict
-    int predictionPolicy = NO_PREDICTOR; 
+    // Prediction policy -- unused
+    private int predictionPolicy = NO_PREDICTOR; 
 
-    // Default Predictor none
-    int predictorType = PREDICT_NONE;
+    // Predictor type -- unused
+    private int predictorType = PREDICT_NONE;
 
     // This sensor's associated device
     InputDevice device;
@@ -135,12 +141,6 @@ public class Sensor {
     Matrix3d temp_rot = new Matrix3d(); 
     Matrix3d local_svd = new Matrix3d(); 
 
-    // Prediction workspace -- these may go away when the readings array
-    //  is used.
-    static int MAX_PREDICTION_LENGTH = 20;
-    Transform3D[]  previousReads = new Transform3D[MAX_PREDICTION_LENGTH];
-    long[] times = new long[MAX_PREDICTION_LENGTH];
- 
 
     /**
      * Constructs a Sensor object for the specified input device using
@@ -149,8 +149,8 @@ public class Sensor {
      * sensor read count : 30<br>
      * sensor button count : 0<br>
      * hot spot : (0,0,0)<br>
-     * predictor : PREDICT_NONE<br>
-     * prediction policy : NO_PREDICTOR<br>
+     * predictor : PREDICT_NONE &mdash; <i>this attribute is unused</i><br>
+     * prediction policy : NO_PREDICTOR &mdash; <i>this attribute is unused</i><br>
      * </ul>
      * @param device the Sensor's associated device.
      */
@@ -237,11 +237,6 @@ public class Sensor {
         }
         currentIndex = 0;
         this.hotspot = new Point3d(hotspot);
-
-        // prediction initialization
-        for(int i=0 ; i<MAX_PREDICTION_LENGTH ; i++)  {
-            previousReads[i] = new Transform3D();
-        }
     }
 
     //  argument of 0 is last reading (ie, currentIndex), argument 
@@ -252,11 +247,16 @@ public class Sensor {
     }
 
     /**
-     * This function sets the type of predictor to use with this sensor.
+     * Sets the type of predictor to use with this sensor.
+     * Since prediction is not implemented (and never has been), this
+     * attribute has no effect.
      * @param predictor predictor type one of PREDICT_NONE or
      * PREDICT_NEXT_FRAME_TIME
      * @exception IllegalArgumentException if an invalid predictor type
      *  is specified.
+     *
+     * @deprecated As of Java 3D version 1.4, prediction is not a
+     * supported feature.
      */
     public void setPredictor(int predictor){
        if (predictor != PREDICT_NONE && predictor != PREDICT_NEXT_FRAME_TIME) {
@@ -267,20 +267,27 @@ public class Sensor {
     }
 
     /**
-     * This function returns the type of predictor used by this sensor.
-     * @return returns the predictor type. One of PREDICT_NONE or
-     * PREDICT_NEXT_FRAME_TIME.
+     * Returns the type of predictor used by this sensor.
+     * @return the predictor type.
+     *
+     * @deprecated As of Java 3D version 1.4, prediction is not a
+     * supported feature.
      */ 
     public int getPredictor(){
 	return predictorType;
     }
 
     /**
-     * This function sets the prediction policy use by this sensor.
+     * Sets the prediction policy use by this sensor.
+     * Since prediction is not implemented (and never has been), this
+     * attribute has no effect.
      * @param policy prediction policy one of NO_PREDICTOR, HEAD_PREDICTOR,
      * or HAND_PREDICTOR
      * @exception IllegalArgumentException if an invalid prediction policy
      *  is specified.
+     *
+     * @deprecated As of Java 3D version 1.4, prediction is not a
+     * supported feature.
      */
     public void setPredictionPolicy(int policy){
 	if (policy != NO_PREDICTOR && policy != HEAD_PREDICTOR &&
@@ -291,9 +298,11 @@ public class Sensor {
     }
 
     /**
-     * This function returns the prediction policy used by this sensor.
-     * @return returns the prediction policy. one of NO_PREDICTOR,
-     * HEAD_PREDICTOR, or HAND_PREDICTOR.
+     * Returns the prediction policy used by this sensor.
+     * @return the prediction policy.
+     *
+     * @deprecated As of Java 3D version 1.4, prediction is not a
+     * supported feature.
      */ 
     public int getPredictionPolicy(){
 	return predictionPolicy;
@@ -332,79 +341,30 @@ public class Sensor {
     }
 
     /**
-     * Computes the sensor reading consistent with the prediction policy
-     * and copies that value into the specified argument; calling this method
-     * with a prediction policy of NO_PREDICTOR will return the last sensor 
-     * reading; calling this method with a prediction policy of HAND_PREDICTOR,
-     * or HEAD_PREDICTOR will extrapolate previous sensor readings to the
-     * current time.
-     * @param read The matrix that will receive the predicted sensor reading
+     * Retrieves the last sensor reading and copies that value into
+     * the specified argument.
+     *
+     * @param read the matrix that will receive the sensor reading
      */
-    public void getRead(Transform3D read){
-        long time;
-
+    public void getRead(Transform3D read) {
         if(demand_driven == true)
              device.pollAndProcessInput();
 
-        time =  System.currentTimeMillis();
-
-        // before using prediction, fill in some values
-        if(num_reads_so_far < 40*SENSOR_READ_COUNT_BUFFER) {
-            num_reads_so_far++;
-	    read.set(readings[currentIndex].read);
-            return;
-        }
-
-	switch(predictionPolicy) {
-	case NO_PREDICTOR:
-	    read.set(readings[currentIndex].read);
-	    break;
-        case HAND_PREDICTOR:
-	    read.set(readings[currentIndex].read);
-            //getPredictedRead(read, time, 3, 2);     
-            break;
-        case HEAD_PREDICTOR:
-	    read.set(readings[currentIndex].read);
-            //getPredictedRead(read, time, 3, 2);     
-            break;
-	}
+	read.set(readings[currentIndex].read);
     }
 
     /**
-     * Computes the sensor reading consistent as of time deltaT in the future
-     * and copies that value into the specified argument; the reading is
-     * computed using the current prediction policy; a prediction policy of
-     * NO_PREDICTOR will yield the most recent sensor reading for any
-     * deltaT argument (i.e., this method is the same as getRead for a prediction
-     * policy of NO_PREDICTOR).  The time argument must be >= 0.
-     * @param read the matrix that will receive the predicted sensor reading
-     * @param deltaT the time delta into the future for this read
+     * Retrieves the last sensor reading and copies that value into
+     * the specified argument.
+     *
+     * @param read the matrix that will receive the sensor reading
+     * @param deltaT this parameter is ignored
+     *
+     * @deprecated As of Java 3D version 1.4, prediction is not a
+     * supported feature; use <code>getRead(Transform3D)</code> instead.
      */
     public void getRead(Transform3D read, long deltaT){
-        long current_time;
-
-        if(deltaT < 0L)  {
-             throw new IllegalArgumentException(J3dI18N.getString("Sensor2"));
-        }
-
-        if(demand_driven == true)
-             device.pollAndProcessInput();
-
-        current_time =  System.currentTimeMillis();
-
-        switch(predictionPolicy) {
-        case NO_PREDICTOR:
-            read.set(readings[currentIndex].read);
-            break;
-        case HAND_PREDICTOR:
-            read.set(readings[currentIndex].read);
-            //getPredictedRead(read, current_time + deltaT, 3, 2);
-            break;
-        case HEAD_PREDICTOR:
-            read.set(readings[currentIndex].read);
-            //getPredictedRead(read, current_time + deltaT, 3, 2);
-            break;
-        }
+	getRead(read);
     }
 
     /**
@@ -565,133 +525,5 @@ public class Sensor {
         readings[temp].set(read);
         currentIndex = temp;
    }
-
-    /**
-     * This routine does an nth order fit of the last num_readings, which
-     * can be plotted on a graph of time vs. sensor reading.  There is a
-     * separate fit done for each of the 16 matrix elements, then an SVD
-     * done on the final matrix.  The curve that is produced takes into
-     * account non-constant times between each sample (it is fully general).
-     * This curve can then be used to produce a prediction for any 
-     * time in the future by simply inserting a time value and using the 
-     * solution matrix.
-     */
-     void getPredictedRead(Transform3D transform, long time, int num_readings, 
-                              int order) {
-
-       int index = currentIndex;  // lock in current_index for MT-safety
-       long time_basis = readings[index].time;
-       long tempTime;
-
-       time -= time_basis;
-
-       GMatrix A = new GMatrix(num_readings, order+1);
-
-       for(int i=0 ; i<num_readings ; i++) {
-           A.setElement(i, 0, 1.0);
-           tempTime = lastTimeRelative(num_readings-i-1, index, time_basis);
-           A.setElement(i, 1, (double)tempTime);
-           for(int j=2; j<=order ; j++) {
-               // powerAndDiv(time, n) = times^n/n
-               A.setElement(i, j, powerAndDiv(tempTime, j));
-           }
-        }
-
-       GMatrix A_Transpose = new GMatrix(A);
-       A_Transpose.transpose();
-       GMatrix M = new GMatrix(order+1, order+1);
-       M.mul(A_Transpose, A);
-       try {
-          M.invert();
-       } catch (SingularMatrixException e) {
-          System.out.println("SINGULAR MATRIX EXCEPTION in prediction");
-          System.out.println(M);
-       }
-
-       // TODO: can be class scope
-       double[] transformArray = new double[16];
-       GMatrix solMatrix = new GMatrix(order+1, num_readings);
-       solMatrix.mul(M,A_Transpose);
-
-       GVector P = new GVector(order+1);
-
-       // fill in the time for which we are trying to predict a sensor value
-       GVector predTimeVec = new GVector(order+1);
-       predTimeVec.setElement(0, 1);
-       predTimeVec.setElement(1, time);
-       for(int i=2 ; i<=order ; i++) {
-          predTimeVec.setElement(i, powerAndDiv(time, i));
-       }
-
-       GVector R = new GVector(num_readings);
-
-       for(int transElement=0 ; transElement<16 ; transElement++) {
-
-             for(int i=0 ; i<num_readings ; i++) {
-                R.setElement(i, lastReadRelative(num_readings-i-1, index, 
-                                                           transElement));
-             }       
-
-             P.mul(solMatrix,R);
-             transformArray[transElement] =  P.dot(predTimeVec);
-       }
-
-       //Matrix4d temp = new Matrix4d(transformArray);
-       //localSVD(temp);
-       //transform.set(temp);
-       transform.set(transformArray);
-       transform.normalize();
-     }
-
-    /**
-     * Extracts the kth most recent sensor reading and copies that value into
-     * the specified argument; where 0 is the most recent sensor reading, 1 is
-     * the next most recent sensor reading, etc.  
-     * @param read The matrix that will receive the most recent sensor reading
-     * @param k  The kth previous sensor reading
-     */
-    double lastReadRelative(int kth, int base_index, int mat_element){
-        // kth should be < sensorReadCount
-      return 
-      readings[previousIndexRelative(kth, base_index)].read.mat[mat_element];
-    }
-
-    /**
-     * Returns the time associated with the kth most recent sensor reading;
-     * where 0 is the most recent sensor reading, 1 is the next most recent
-     * sensor reading, etc.  However, unlike the public method, returns
-     * the kth reading relative to the index given, instead of the 
-     * current_index and returns the time relative to timeBasis.
-     * @return the time associated with the kthmost recent sensor reading.
-     */
-    long lastTimeRelative(int k, int base_index, long timeBasis){
-        // kth should be < sensorReadCount
-        long time;
-        time = timeBasis - readings[previousIndexRelative(k, base_index)].time;
-        return time;
-    }
-
-    //  argument of 0 is last reading, argument of 1 means next to last 
-    // index, etc.  , but all of these are relative to *base_index*
-    int previousIndexRelative(int k, int base_index){
-        int temp = base_index - k;
-        return(temp >= 0 ? temp : MaxSensorReadIndex + temp + 1);
-    }
-
-    // this method returns  (value^order)/order
-    double powerAndDiv(double value, int order) {
-
-       if(order == 0)
-           return 1;
-       else if(order == 1)
-           return value;
-
-       double total = 1.0;
-       for(int i=0 ; i< order ; i++)
-           total *= value;
-
-       total = total / (double)order;
-       return total;
-    }
 
 }

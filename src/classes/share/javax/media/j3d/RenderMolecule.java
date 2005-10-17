@@ -45,7 +45,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 				AppearanceRetained.TRANSPARENCY|
 				AppearanceRetained.COLOR);
 
-    // TODO: use definingMaterial etc. instead of these
+    // XXXX: use definingMaterial etc. instead of these
     // when sole user is completely implement
     PolygonAttributesRetained polygonAttributes = null;
     LineAttributesRetained lineAttributes = null;
@@ -740,7 +740,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    k++;
 	}
 
-	// TODO: Add tags
+	// XXXX: Add tags
 	switch (ga.geoType) {
 	case GeometryRetained.GEO_TYPE_POINT_SET:
 	case GeometryRetained.GEO_TYPE_INDEXED_POINT_SET:
@@ -788,7 +788,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    return (false);
 	}
 	/*
-	// TODO : Check this 
+	// XXXX : Check this 
 	if (useDisplayList &&
 	    (ga.geometry.isEditable ||
 	     ga.geometry.refCount > 1 ||
@@ -811,7 +811,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    return (false);
 	}
 
-	// TODO: Its is necessary to have same vformat for dl,
+	// XXXX: Its is necessary to have same vformat for dl,
 	// Howabout iteration, should we have 2 vformats in rm?
 	if (geo instanceof GeometryArrayRetained) {
 	    GeometryArrayRetained gr = (GeometryArrayRetained)geo;
@@ -845,7 +845,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	        return (false);
 	    }
 	} else {
-            //TODO: compare isEditable
+            //XXXX: compare isEditable
 	    if (this.vertexFormat != -1) {
 	        return (false);
 	    }
@@ -1143,7 +1143,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		renderBin.orientedRAs.remove(renderBin.orientedRAs.indexOf(r));
 	    }
 
-	    if ((textureBin.attributeBin.environmentSet.lightBin.geometryBackground == null) &&
+	    if ((textureBin.environmentSet.lightBin.geometryBackground == null) &&
 		!isOpaqueOrInOG && renderBin.transpSortMode == View.TRANSPARENCY_SORT_GEOMETRY) {
 		renderBin.removeTransparentObject(r);
 	    }
@@ -1318,7 +1318,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 
 		}
 		// If transparent and not in bg geometry and is depth sorted transparency
-		if (!isOpaqueOrInOG && (textureBin.attributeBin.environmentSet.lightBin.geometryBackground == null)&&
+		if (!isOpaqueOrInOG && (textureBin.environmentSet.lightBin.geometryBackground == null)&&
 		    (renderBin.transpSortMode == View.TRANSPARENCY_SORT_GEOMETRY)) {
 		    GeometryRetained geo = null;
 		    int k = 0;
@@ -1401,36 +1401,11 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
     }
 
     boolean canBeInDisplayList(GeometryRetained geo, GeometryAtom ga) {
-	boolean inDL = false;
-	inDL =  geo.canBeInDisplayList(ga.alphaEditable);
-	// If can not in DL, then check if all the attrs affecting
-	// it are infrequently changing, if yes then put it
-	// Exclude Morph and indexed-by-ref-use-index-coord only  for now
-	// in displayList if OptimizeForSpace if false
+        if (ga.source.sourceNode instanceof MorphRetained) {
+            return false;
+        }
 
-	//	System.out.println("inDL = "+inDL);
-	//	System.out.println("geo.cachedChangedFrequent = "+geo.cachedChangedFrequent);
-	//	System.out.println("inDL = "+inDL);
-	//	System.out.println("COLOR = "+((((GeometryArrayRetained)geo).vertexFormat&
-	//					     GeometryArray.COLOR) != 0));
-	//	System.out.println("Before: inDL = "+inDL);
-	//	System.out.println("VirtualUniverse.mc.buildDisplayListIfPossible = "+VirtualUniverse.mc.buildDisplayListIfPossible);
-	if (VirtualUniverse.mc.buildDisplayListIfPossible &&
-	    !inDL &&
-	    !(ga.source.sourceNode instanceof MorphRetained ||
-	      (geo instanceof GeometryArrayRetained &&
-	       ((((GeometryArrayRetained)geo).vertexFormat & (GeometryArray.USE_NIO_BUFFER|GeometryArray.INTERLEAVED)) ==(GeometryArray.USE_NIO_BUFFER|GeometryArray.INTERLEAVED))) ||
-	      (geo instanceof IndexedGeometryArrayRetained &&
-	       ((((IndexedGeometryArrayRetained)geo).vertexFormat & (GeometryArray.BY_REFERENCE|GeometryArray.USE_COORD_INDEX_ONLY)) == (GeometryArray.BY_REFERENCE|GeometryArray.USE_COORD_INDEX_ONLY))))) {
-	    // Check if geometry is frequentlyEditable
-	    boolean alphaFreqEditable = ga.source.isAlphaFrequentlyEditable(geo);
-	    inDL = !((geo.cachedChangedFrequent != 0) ||
-		     ((!(geo instanceof GeometryArrayRetained) && alphaFreqEditable)||
-		      (alphaFreqEditable && ((((GeometryArrayRetained)geo).vertexFormat&
-					      GeometryArray.COLOR) != 0))));
-	}
-	//	System.out.println("After: inDL = "+inDL);
-	return inDL;
+	return geo.canBeInDisplayList(ga.alphaEditable);
     }
 
     // If dlist will be altered due to alpha or ignoreVertexColors, then don't
@@ -1498,7 +1473,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	RenderAtomListInfo r;
 	int index;
 
-	renderAtom.envSet = textureBin.attributeBin.environmentSet;
+	renderAtom.envSet = textureBin.environmentSet;
 	renderAtom.renderMolecule = this;
 	renderAtom.dirtyMask &= ~RenderAtom.NEED_SEPARATE_LOCALE_VWC_BOUNDS;
 
@@ -1732,8 +1707,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 
     void evalAlphaUsage(RenderingAttributesRetained renderAttrs,
 			TextureUnitStateRetained[] texUnits) {
-        RenderingAttributesRetained ra;
-        TextureAttributesRetained ta;
         boolean alphaBlend, alphaTest, textureBlend = false;
 
         alphaBlend =
@@ -1847,7 +1820,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	// we'll have to punt to vertex array as well.
 
 	if ((pass != TextureBin.USE_DISPLAYLIST) ||	
-	    (texCoordSetMapLen > cv.numTexCoordSupported) ||
+	    (texCoordSetMapLen > cv.maxTexCoordSets) ||
 	    (VirtualUniverse.mc.isD3D() &&
 	      (((definingPolygonAttributes != null) &&
 		((isQuadGeometryArray &&
@@ -1862,7 +1835,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 
 	/*
 	System.out.println("texCoord " + texCoordSetMapLen + " " +
-			   cv.numTexCoordSupported + " " + modeSupportDL);
+			   cv.maxTexCoordSets + " " + modeSupportDL);
 
 	System.out.println("primaryMoleculeType = "+primaryMoleculeType+" primaryRenderAtomList ="+primaryRenderAtomList+" separateDlistRenderAtomList ="+separateDlistRenderAtomList+" vertexArrayRenderAtomList ="+vertexArrayRenderAtomList);
 	*/
@@ -1934,7 +1907,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    
 	}
 	
-	// TODO: In the case of independent primitives such as quads,
+	// XXXX: In the case of independent primitives such as quads,
 	// it would still be better to call multi draw arrays
 	if (vertexArrayRenderAtomList != null) {
 	    if (pass == TextureBin.USE_DISPLAYLIST) {
@@ -2171,7 +2144,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
         // instead.
 
 	if ((pass != TextureBin.USE_DISPLAYLIST) ||
-	    (texCoordSetMapLen > cv.numTexCoordSupported) ||
+	    (texCoordSetMapLen > cv.maxTexCoordSets) ||
                        	     (VirtualUniverse.mc.isD3D() &&
 			     (((definingPolygonAttributes != null) &&
 			       ((isQuadGeometryArray &&
@@ -2188,7 +2161,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	//	System.out.println("r.isOpaque = "+isOpaque+" rinfo = "+tinfo.rInfo+" groupType = "+tinfo.rInfo.groupType);
 	// Only support individual dlist or varray
 	// If this rInfo is a part of a bigger dlist, render as VA
-	// TODO: What to do with Text3D, Raster, CG?
+	// XXXX: What to do with Text3D, Raster, CG?
 	if ((tinfo.rInfo.groupType & RenderAtom.SEPARATE_DLIST_PER_RINFO) != 0) {
 	    RenderAtomListInfo save= tinfo.rInfo.next;
 	    // Render only one geometry
@@ -2353,7 +2326,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 
     void checkEquivalenceWithLeftNeighbor(RenderMolecule rm, int dirtyBits) {
 	boolean reload_color = reloadColor(rm);
-	// TODO : For now ignore the dirtyBits being sent in
+	// XXXX : For now ignore the dirtyBits being sent in
 	dirtyAttrsAcrossRms = ALL_DIRTY_BITS ;
 	
 	
@@ -2701,6 +2674,30 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	boolean newVal = isOpaque() || inOrderedGroup;
 	return (isOpaqueOrInOG != newVal);
 	
+    }
+
+    // Issue 129: method to add or remove all rendering atoms in this
+    // RenderMolecule to or from the transparent info list when we are
+    // in depth sorted transparency mode and the RenderMolecule
+    // changes from opaque to transparent or vice versa.
+    void addRemoveTransparentObject(RenderBin renderBin, boolean add) {
+	addRemoveTransparentObject(renderBin, add, primaryRenderAtomList);
+	addRemoveTransparentObject(renderBin, add, separateDlistRenderAtomList);
+	addRemoveTransparentObject(renderBin, add, vertexArrayRenderAtomList);
+    }
+    
+    private void addRemoveTransparentObject(RenderBin renderBin,
+					    boolean add,
+					    RenderAtomListInfo rinfo) {
+	while (rinfo != null) {
+	    if (add) {
+		renderBin.addTransparentObject(rinfo.renderAtom);
+	    }
+	    else {
+		renderBin.removeTransparentObject(rinfo.renderAtom);
+	    }
+	    rinfo = rinfo.next;
+	}
     }
 
     void evalMaterialCachedState() {
@@ -3118,7 +3115,3 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	}
     }
 }
-
-
-
-

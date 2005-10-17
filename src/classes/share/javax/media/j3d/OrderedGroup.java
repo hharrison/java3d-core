@@ -72,6 +72,10 @@ public class OrderedGroup extends Group {
     public static final int ALLOW_CHILD_INDEX_ORDER_WRITE =
 	CapabilityBits.ORDERED_GROUP_ALLOW_CHILD_INDEX_ORDER_WRITE;
 
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_CHILD_INDEX_ORDER_READ
+    };
 
     /**
      * Constructs and initializes a new OrderedGroup node object.
@@ -79,6 +83,8 @@ public class OrderedGroup extends Group {
      * that its children are rendered in increasing index order.
      */
     public OrderedGroup() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);        
     }
 
 

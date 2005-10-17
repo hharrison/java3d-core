@@ -285,7 +285,21 @@ public class Appearance extends NodeComponent {
   public static final int ALLOW_TEXTURE_UNIT_STATE_WRITE =
     CapabilityBits.APPEARANCE_ALLOW_TEXTURE_UNIT_STATE_WRITE;
 
-
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_COLORING_ATTRIBUTES_READ,
+        ALLOW_LINE_ATTRIBUTES_READ,
+        ALLOW_MATERIAL_READ,
+        ALLOW_POINT_ATTRIBUTES_READ,
+        ALLOW_POLYGON_ATTRIBUTES_READ,
+        ALLOW_RENDERING_ATTRIBUTES_READ,
+        ALLOW_TEXGEN_READ,
+        ALLOW_TEXTURE_ATTRIBUTES_READ,
+        ALLOW_TEXTURE_READ,
+        ALLOW_TEXTURE_UNIT_STATE_READ,
+        ALLOW_TRANSPARENCY_ATTRIBUTES_READ        
+    };
+    
     /**
      * Constructs an Appearance component object using defaults for all
      * state variables. All component object references are initialized 
@@ -293,6 +307,8 @@ public class Appearance extends NodeComponent {
      */
     public Appearance() {
 	// Just use default values
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -919,7 +935,7 @@ public class Appearance extends NodeComponent {
 	if ((nc != null) && nc.getDuplicateOnCloneTree())
 	    return true;
 
-	// TODO: TextureUnitState
+	// XXXX: TextureUnitState
 	
 	return false;
     }

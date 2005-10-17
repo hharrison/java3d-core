@@ -103,7 +103,11 @@ public class Material extends NodeComponent {
      */
     public static final int AMBIENT_AND_DIFFUSE = 4;
 
-
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_COMPONENT_READ
+    };
+    
     /**
      * Constructs and initializes a Material object using default parameters.
      * The default values are as follows:
@@ -119,6 +123,8 @@ public class Material extends NodeComponent {
      */
     public Material() {
 	// Just use the defaults
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -139,7 +145,10 @@ public class Material extends NodeComponent {
 		    Color3f diffuseColor,
 		    Color3f specularColor,
 		    float shininess) {
-      ((MaterialRetained)this.retained).createMaterial(ambientColor,
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
+        ((MaterialRetained)this.retained).createMaterial(ambientColor,
 		    emissiveColor, diffuseColor, specularColor, 
 		    shininess);
     }
@@ -602,7 +611,8 @@ public class Material extends NodeComponent {
 	 * Capability read bit set will be displayed.
 	 */
 	public String toString() {
-		StringBuffer str=new StringBuffer("Material Object:");
+		StringBuffer str = new StringBuffer(getNamePrefix());
+		str.append("javax.media.j3d.Material: ");
 		Color3f color=new Color3f();
 		try {
 			getAmbientColor(color);

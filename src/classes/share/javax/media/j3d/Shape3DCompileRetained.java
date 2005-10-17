@@ -424,81 +424,139 @@ class Shape3DCompileRetained extends Shape3DRetained {
      * @exception IllegalArgumentException if <code>path</code> is
      * invalid.
      */
-
     boolean intersect(SceneGraphPath path,
-		      PickShape pickShape, double[] dist) {
-	
-	// This method will not do bound intersect check, as it assume
-	// caller has already done that. ( For performance and code
-	// simplification reasons. )
-       
-	Transform3D localToVworld = path.getTransform();
-	int i;
-
-	if (localToVworld == null) {
+            PickShape pickShape, double[] dist) {
+        
+        int flags;
+        PickInfo pickInfo = new PickInfo();
+        
+        Transform3D localToVworld = path.getTransform();
+        if (localToVworld == null) {
 	    throw new IllegalArgumentException(J3dI18N.getString("Shape3DRetained3"));   
 	}
-	
-	Transform3D t3d = VirtualUniverse.mc.getTransform3D(null);
-	t3d.invert(localToVworld);	
-	PickShape newPS = pickShape.transform(t3d);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t3d);
-
-	Shape3D shape  = (Shape3D) path.getObject();
+        pickInfo.setLocalToVWorldRef( localToVworld);
+        
+        Shape3D shape  = (Shape3D) path.getObject();
 	// Get the geometries for this shape only, since the compiled
 	// geomtryList contains several shapes
-	ArrayList glist =  (ArrayList) geometryInfo.get(shape.id);	     
+	ArrayList glist =  (ArrayList) geometryInfo.get(shape.id);	        
+        
+        // System.out.println("Shape3DCompileRetained.intersect() : ");
+        if (dist == null) {
+            // System.out.println("      no dist request ....");
+            return intersect(pickInfo, pickShape, 0, glist);
+        }
+        
+        flags = PickInfo.CLOSEST_DISTANCE;
+        if (intersect(pickInfo, pickShape, flags, glist)) {
+            dist[0] = pickInfo.getClosestDistance();
+            return true;
+        }
+        
+        return false;
+          
+      }
+    
+      boolean intersect(PickInfo pickInfo, PickShape pickShape, int flags,
+              ArrayList geometryList) {
+          
+        Transform3D localToVworld = pickInfo.getLocalToVWorldRef();
+                
+ 	Transform3D t3d = new Transform3D();
+	t3d.invert(localToVworld);
+	PickShape newPS = pickShape.transform(t3d);     
 
-	int geomListSize = glist.size();
-
-	Point3d iPnt = Shape3DRetained.getPoint3d();
+	int geomListSize = geometryList.size();
 	GeometryRetained geometry;
 
-	if (dist == null) {
-	    for (i=0; i < geomListSize; i++) {
-		Geometry g =  (Geometry) glist.get(i);	     
-		if (g != null && g.retained != null) {
-		    geometry = (GeometryRetained)g.retained;
+        if (((flags & PickInfo.CLOSEST_INTERSECTION_POINT) == 0) &&
+            ((flags & PickInfo.CLOSEST_DISTANCE) == 0) &&
+            ((flags & PickInfo.CLOSEST_GEOM_INFO) == 0) &&
+            ((flags & PickInfo.ALL_GEOM_INFO) == 0)) {
+            
+	    for (int i=0; i < geomListSize; i++) {
+		geometry =  (GeometryRetained) geometryList.get(i);	     
+		if (geometry != null) {
 		    if (geometry.mirrorGeometry != null) {
 			geometry = geometry.mirrorGeometry;
 		    }
-		    
-		    if (geometry.intersect(newPS, null, iPnt)) {
-			Shape3DRetained.freePoint3d(iPnt);
+                    // Need to modify this method
+		    // if (geometry.intersect(newPS, null, null)) {
+                    if (geometry.intersect(newPS, null, 0, null)) {
 			return true;
 		    }
 		}
 	    }
-	} else {
+	}
+        else {
+            double distance;
 	    double minDist = Double.POSITIVE_INFINITY;
-	    // TODO : BugId 4351579 -- Need to return the index of nearest
-	    //                         intersected geometry too.
-
-	    for (i=0; i < geomListSize; i++) {
-		Geometry g =  (Geometry) glist.get(i);
-		if (g != null && g.retained != null) {
-		    geometry = (GeometryRetained)g.retained;
+            Point3d closestIPnt = new Point3d();
+            Point3d iPnt = new Point3d();            
+            Point3d iPntVW = new Point3d();            
+            PickInfo.IntersectionInfo closestInfo = null;            
+            PickInfo.IntersectionInfo intersectionInfo
+                    = pickInfo.createIntersectionInfo();
+            
+            if ((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                closestInfo = pickInfo.createIntersectionInfo();
+            }
+            
+	    for (int i=0; i < geomListSize; i++) {
+		geometry =  (GeometryRetained) geometryList.get(i);
+		if (geometry != null) {
 		    if (geometry.mirrorGeometry != null) {
 			geometry = geometry.mirrorGeometry;
 		    }
-		    if (geometry.intersect(newPS, dist, iPnt)) {
-			localToVworld.transform(iPnt);
-			dist[0] = pickShape.distance(iPnt);
-			if (minDist > dist[0]) {
-			    minDist = dist[0];
-			}
+                    if (geometry.intersect(newPS, intersectionInfo, flags, iPnt)) {  
+
+                        iPntVW.set(iPnt);
+                        localToVworld.transform(iPntVW);
+			distance = pickShape.distance(iPntVW);
+                       
+			if (minDist > distance) {
+			    minDist = distance; 
+                            closestIPnt.set(iPnt);
+                            
+                            if ((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                closestInfo.setGeometry((Geometry) geometry.source);
+                                closestInfo.setGeometryIndex(i);
+                                closestInfo.setIntersectionPoint(closestIPnt);
+                                closestInfo.setDistance(distance);
+                                closestInfo.setVertexIndices(intersectionInfo.getVertexIndices());
+                            }
+                        }
+                        
+                        if ((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            
+                            intersectionInfo.setGeometry((Geometry) geometry.source);
+                            intersectionInfo.setGeometryIndex(i);
+                            intersectionInfo.setIntersectionPoint(iPnt);
+                            intersectionInfo.setDistance(distance);
+                           // VertexIndices has been computed in intersect method.                            
+                            pickInfo.insertIntersectionInfo(intersectionInfo);
+                            intersectionInfo = pickInfo.createIntersectionInfo();
+                        }                        
 		    }
 		}
 	    }
-	
-	    if (minDist < Double.POSITIVE_INFINITY) {
-		dist[0] = minDist;
-		Shape3DRetained.freePoint3d(iPnt);
+            
+	    if (minDist < Double.POSITIVE_INFINITY) {                 
+                if ((flags & PickInfo.CLOSEST_DISTANCE) != 0) {
+                    pickInfo.setClosestDistance(minDist);
+                }
+                if((flags & PickInfo.CLOSEST_INTERSECTION_POINT) != 0) {
+                    pickInfo.setClosestIntersectionPoint(closestIPnt);
+                }
+                if ((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                    pickInfo.insertIntersectionInfo(closestInfo);  
+                }
 		return true;
 	    }	
 	}
-
-	Shape3DRetained.freePoint3d(iPnt);
+        
 	return false;
-    }
+       
+    }            
+
 }

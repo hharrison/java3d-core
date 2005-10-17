@@ -15,7 +15,7 @@ package javax.media.j3d;
 
 class NodeData {
     // per path node data
-    // TODO: replace per path mirror objects with node data
-    // TODO: move other basic node's data here
+    // XXXX: replace per path mirror objects with node data
+    // XXXX: move other basic node's data here
     SwitchState switchState = null;
 }

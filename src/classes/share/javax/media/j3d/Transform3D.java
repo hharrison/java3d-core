@@ -4588,7 +4588,7 @@ public class Transform3D {
 	double[] svdScales = new double[3];
 
 
-	// TODO: initialize to 0's if alread allocd? Should not have to, since
+	// XXXX: initialize to 0's if alread allocd? Should not have to, since
 	// no operations depend on these being init'd to zero.
 
 	int converged, negCnt=0;
@@ -4833,7 +4833,7 @@ public class Transform3D {
 	    }
 	}
 
-	// TODO: could eliminate use of t1 and t1 by making a new method which
+	// XXXX: could eliminate use of t1 and t1 by making a new method which
 	// transposes and multiplies two matricies
 	transpose_mat(u1, t1);
 	transpose_mat(v1, t2);

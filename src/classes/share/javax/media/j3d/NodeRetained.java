@@ -374,7 +374,26 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	return;
     }    
     
-    
+    /**
+     * Compute the LocalToVworld of this node even though it is not live. We
+     * assume the graph is attached at the origin of a locale
+     */
+    void computeNonLiveLocalToVworld(Transform3D t, Node caller) {
+        NodeRetained n = getParent();
+        
+        if (n==null)
+            t.setIdentity();
+        else
+            n.computeNonLiveLocalToVworld(t, caller);
+        
+        if (this instanceof TransformGroupRetained && this.source!=caller) {
+            Transform3D trans = new Transform3D();
+            ((TransformGroupRetained)this).getTransform(trans);
+            t.mul(trans);
+        }
+        
+    }
+        
     /**
      * Get the localToVworld transform for a node.
      */
@@ -413,7 +432,19 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	HashKey newKey = new HashKey(key);	
 	computeLocalToVworld(this, this, newKey, t);	
     }
-    
+
+
+    /**
+     * Get the Locale to which the node is attached
+     */
+    Locale getLocale() {
+	if (inSharedGroup) {
+	    throw new IllegalSharingException(J3dI18N.getString("NodeRetained0"));
+	}
+
+	return locale;
+    }
+
 
     /**
      * Get the current localToVworld transform for a node
@@ -868,6 +899,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 
     boolean isStatic() {
 	if (source.getCapability(Node.ALLOW_LOCAL_TO_VWORLD_READ) ||
+	    source.getCapability(Node.ALLOW_PARENT_READ) ||
 	    source.getCapability(Node.ENABLE_PICK_REPORTING) ||
 	    source.getCapability(Node.ENABLE_COLLISION_REPORTING) ||
 	    source.getCapability(Node.ALLOW_BOUNDS_READ) ||

@@ -667,7 +667,7 @@ class BehaviorStructure extends J3dStructure {
 
 		if (awtCond.AwtId != 0) {
 		    if (awtCond.AwtId == id) {
-			// TODO: how do we clone this event (do we need to?)
+			// XXXX: how do we clone this event (do we need to?)
 			// Bug: 4181321
 			awtCond.addAWTEvent(evt);
 		    }

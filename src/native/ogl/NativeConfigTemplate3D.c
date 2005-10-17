@@ -16,7 +16,7 @@
  * of the Java 3D API.
  */
 
-#if defined(__linux__)
+#if defined(LINUX)
 #define _GNU_SOURCE 1
 #endif
 
@@ -26,7 +26,7 @@
 
 #include "gldefs.h"
 
-#if defined(SOLARIS) || defined(__linux__)
+#if defined(UNIX)
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -43,41 +43,105 @@ extern int isExtensionSupported(const char *allExtensions, const char *extension
 /* by MIK OF CLASSX */
 extern jboolean getJavaBoolEnv(JNIEnv *env, char* envStr);
 
-#if defined(SOLARIS) || defined(__linux__)
+#if defined(UNIX)
 
 /* Fix for issue 20 */
 #define  MAX_GLX_ATTRS_LENGTH 100
 
+
 GLXFBConfig *find_S_FBConfigs(jlong display,
 			      jint screen,
 			      int* glxAttrs,
-			      int sVal, int sIndex) {
+			      int stencilVal,
+			      int sIndex) {
+
 
     GLXFBConfig *fbConfigList = NULL;
     int          numFBConfigs, index;
     MYPFNGLXCHOOSEFBCONFIG pGLXChooseFbConfig = NULL;
+    GLboolean userReq = GL_TRUE;
 
     pGLXChooseFbConfig =
 	(MYPFNGLXCHOOSEFBCONFIG) dlsym(RTLD_DEFAULT, "glXChooseFBConfig");
 
     J3D_ASSERT((sIndex+3) < MAX_GLX_ATTRS_LENGTH);
+
+    /* if user not use stencil we will request one of internal use. */
+    if (stencilVal < 1) {
+	userReq = GL_FALSE;
+	stencilVal = 1;
+    }
+
+    index = sIndex;
+    glxAttrs[index++] = GLX_STENCIL_SIZE;
+    glxAttrs[index++] = stencilVal;
+    glxAttrs[index] = None;
+	
+    fbConfigList = pGLXChooseFbConfig((Display*)display, screen,
+				      glxAttrs, &numFBConfigs);
+	
     
-    if (sVal == REQUIRED || sVal== PREFERRED) {
+    if(fbConfigList != NULL) {
+	return fbConfigList;
+    }
+
+    /*
+      fprintf(stderr, "Stencil : find_S_FBConfigs (TRY 1): FAIL -- stencilVal = %d\n",
+      stencilVal);
+    */
+    
+    if (userReq == GL_TRUE) {
+	/* fprintf(stderr, "    userReq :  *** FAILED ***\n"); */
+	return NULL;
+    }
+    
+    index = sIndex;
+    glxAttrs[index] = None;	
+	
+    fbConfigList = pGLXChooseFbConfig((Display*)display, screen,
+				      glxAttrs, &numFBConfigs);
+	
+    
+    if(fbConfigList != NULL) {
+	return fbConfigList;
+    }
+    
+    /* 
+       fprintf(stderr, "Stencil : find_S_FBConfigs (TRY 2): FAIL -- stencilVal = %d\n",
+       stencilVal);
+    */
+    
+    return NULL;
+
+}
+
+GLXFBConfig *find_S_S_FBConfigs(jlong display,
+			      jint screen,
+			      int* glxAttrs,
+			      int stereoVal,
+			      int stencilVal,
+			      int sIndex) {
+
+    GLXFBConfig *fbConfigList = NULL;
+    int          numFBConfigs, index;
+
+    J3D_ASSERT((sIndex+3) < MAX_GLX_ATTRS_LENGTH);
+    
+    if (stereoVal == REQUIRED || stereoVal== PREFERRED) {
 
 	index = sIndex;
 	glxAttrs[index++] = GLX_STEREO;
 	glxAttrs[index++] = True;
 	glxAttrs[index] = None;
+
+	fbConfigList = find_S_FBConfigs(display, screen, glxAttrs, stencilVal, index);
 	
-	fbConfigList = pGLXChooseFbConfig((Display*)display, screen,
-					  glxAttrs, &numFBConfigs);
-	    
 	if(fbConfigList != NULL) {
 	    return fbConfigList;
 	}
     }
     
-    if (sVal == UNNECESSARY || sVal== PREFERRED) {
+    if (stereoVal == UNNECESSARY || stereoVal== PREFERRED) {
 	/* This is a workaround to BugId : 5106472 in Solaris OGL.
 	   We can't set glxAttrs with GLX_STEREO follow by a boolean */
 
@@ -87,7 +151,7 @@ GLXFBConfig *find_S_FBConfigs(jlong display,
 	/* For debug only
 	{   
 	    int i=0;
-	    fprintf(stderr, "find_S_FBConfigs sVal = %d\n", sVal);    
+	    fprintf(stderr, "find_S_S_FBConfigs stereoVal = %d\n", stereoVal);    
 
 	    while(glxAttrs[i] != None) {
 		fprintf(stderr, "glxAttrs[%d] = %x", i, glxAttrs[i]);
@@ -97,22 +161,25 @@ GLXFBConfig *find_S_FBConfigs(jlong display,
 	    }
 	}
 	*/
-	fbConfigList = pGLXChooseFbConfig((Display*)display, screen,
-					  glxAttrs, &numFBConfigs);
-	
+
+	fbConfigList = find_S_FBConfigs(display, screen, glxAttrs, stencilVal, index);
+
 	if(fbConfigList != NULL) {
 	    return fbConfigList;
 	}
     }
 
-    if (sVal == UNNECESSARY) {
+    if (stereoVal == UNNECESSARY) {
 	index = sIndex;
 	glxAttrs[index++] = GLX_STEREO;
 	glxAttrs[index++] = True;
 	glxAttrs[index] = None;
 	
-	fbConfigList = pGLXChooseFbConfig((Display*)display, screen,
-					  glxAttrs, &numFBConfigs);
+	/*
+	  fbConfigList = pGLXChooseFbConfig((Display*)display, screen,
+	  glxAttrs, &numFBConfigs);
+	*/
+	fbConfigList = find_S_FBConfigs(display, screen, glxAttrs, stencilVal, index);
 	
 	if(fbConfigList != NULL) {
 	    return fbConfigList;
@@ -122,11 +189,13 @@ GLXFBConfig *find_S_FBConfigs(jlong display,
     return NULL;
 }
 
-GLXFBConfig *find_AA_S_FBConfigs(jlong display,
-				 jint screen,
-				 int* glxAttrs,
-				 int sVal, 
-				 int antialiasVal, int antialiasIndex) {
+GLXFBConfig *find_AA_S_S_FBConfigs(jlong display,
+				   jint screen,
+				   int* glxAttrs,
+				   int stereoVal, 
+				   int antialiasVal,
+				   int stencilVal,
+				   int antialiasIndex) {
 
     const char *glxExtensions = NULL;
     GLXFBConfig *fbConfigList = NULL;
@@ -151,10 +220,10 @@ GLXFBConfig *find_AA_S_FBConfigs(jlong display,
 	    glxAttrs[index] = None;
 
 	    for(i=0; i < SAMPLE_LENGTH; i++) {
-		/* fprintf(stderr, "find_AA_S_FBConfigs samples = %d\n", samples[i]); */
+		/* fprintf(stderr, "find_AA_S_S_FBConfigs samples = %d\n", samples[i]); */
 		glxAttrs[samplesIndex] = samples[i];
-		fbConfigList = find_S_FBConfigs(display, screen, 
-						glxAttrs, sVal, index);
+		fbConfigList = find_S_S_FBConfigs(display, screen, glxAttrs, stereoVal,
+						  stencilVal, index);
 	    
 		if(fbConfigList != NULL) {
 		    return fbConfigList;
@@ -173,8 +242,8 @@ GLXFBConfig *find_AA_S_FBConfigs(jlong display,
         glxAttrs[index++] = 8;
 	glxAttrs[index] = None;
 	
-	fbConfigList = find_S_FBConfigs(display, screen, 
-					glxAttrs, sVal, index);
+	fbConfigList = find_S_S_FBConfigs(display, screen, glxAttrs,
+					  stereoVal, stencilVal, index);
 	
 	if(fbConfigList != NULL) {
 	    return fbConfigList;
@@ -184,8 +253,8 @@ GLXFBConfig *find_AA_S_FBConfigs(jlong display,
     glxAttrs[antialiasIndex] = None;
 
     if (antialiasVal == UNNECESSARY || antialiasVal == PREFERRED) {
-	fbConfigList = find_S_FBConfigs(display, screen, 
-					glxAttrs, sVal, index);
+	fbConfigList = find_S_S_FBConfigs(display, screen, glxAttrs,
+					  stereoVal, stencilVal, index);
 	
 	if(fbConfigList != NULL) {
 	    return fbConfigList;
@@ -198,11 +267,13 @@ GLXFBConfig *find_AA_S_FBConfigs(jlong display,
     
 }
 
-GLXFBConfig *find_DB_AA_S_FBConfigs(jlong display,
+GLXFBConfig *find_DB_AA_S_S_FBConfigs(jlong display,
 				    jint screen,
 				    int* glxAttrs,
-				    int sVal, int dbVal,
-				    int antialiasVal, int dbIndex) {
+				    int stereoVal, int dbVal,
+				    int antialiasVal,
+				    int stencilVal,
+				    int dbIndex) {
 
     GLXFBConfig *fbConfigList = NULL;
     int index = dbIndex;
@@ -216,9 +287,9 @@ GLXFBConfig *find_DB_AA_S_FBConfigs(jlong display,
             glxAttrs[index++] = True;
 	    glxAttrs[index] = None;
 
-	    fbConfigList = find_AA_S_FBConfigs(display, screen, 
-					       glxAttrs, sVal, 
-					       antialiasVal, index);
+	    fbConfigList = find_AA_S_S_FBConfigs(display, screen, glxAttrs,
+						 stereoVal, antialiasVal,
+						 stencilVal, index);
 	    
 	    if(fbConfigList != NULL) {
 		return fbConfigList;
@@ -230,31 +301,31 @@ GLXFBConfig *find_DB_AA_S_FBConfigs(jlong display,
 	glxAttrs[index++] = GLX_DOUBLEBUFFER;
 	glxAttrs[index++] = False;
 	glxAttrs[index] = None;
-
-	fbConfigList = find_AA_S_FBConfigs(display, screen, 
-					   glxAttrs, sVal, 
-					   antialiasVal, index);
+	
+	fbConfigList = find_AA_S_S_FBConfigs(display, screen, glxAttrs,
+					     stereoVal, antialiasVal,
+					     stencilVal, index);
 	
 	if(fbConfigList != NULL) {
 	    return fbConfigList;
 	}
     }
-
+    
     if (dbVal == UNNECESSARY) {
 	index = dbIndex;
 	glxAttrs[index++] = GLX_DOUBLEBUFFER;
 	glxAttrs[index++] = True;
 	glxAttrs[index] = None;
-
-	fbConfigList = find_AA_S_FBConfigs(display, screen, 
-					   glxAttrs, sVal, 
-					   antialiasVal, index);
+	
+	fbConfigList = find_AA_S_S_FBConfigs(display, screen, glxAttrs,
+					     stereoVal, antialiasVal,
+					     stencilVal, index);
 	
 	if(fbConfigList != NULL) {
 	    return fbConfigList;
 	}
     }
-
+    
     return NULL;
 }
 
@@ -279,9 +350,10 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
     GLXFBConfig *fbConfigList = NULL;
 
     /* use to cycle through when attr is not REQUIRED */
-    int sVal;
-    int dbVal;    
-    int antialiasVal;
+    int dbVal;  /* value for double buffering */
+    int stereoVal;   /* value for stereo */
+    int antialiasVal; /* value for antialias */
+    int stencilVal; /* value for stencil size */
 
     int drawableIndex;
     
@@ -330,32 +402,28 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
     glxAttrs[index] = None;
     
     dbVal = mx_ptr[DOUBLEBUFFER];
-    sVal = mx_ptr[STEREO];
+    stereoVal = mx_ptr[STEREO];
     antialiasVal = mx_ptr[ANTIALIASING]; 
+    stencilVal = mx_ptr[STENCIL_SIZE];
 
     (*env)->ReleaseIntArrayElements(env, attrList, mx_ptr, JNI_ABORT);
 
-    /* Get Pbuffer-capabale visual unless j3d.usePbuffer property is FALSE */
+    /* Get Pbuffer-capable visual unless j3d.usePbuffer property is FALSE */
     if (getJavaBoolEnv(env,"usePbuffer")) {
-	fbConfigList = find_DB_AA_S_FBConfigs(display, screen, glxAttrs, sVal,
-					      dbVal, antialiasVal, index);
+	fbConfigList = find_DB_AA_S_S_FBConfigs(display, screen, glxAttrs, stereoVal,
+						dbVal, antialiasVal, stencilVal, index);
     }
 
     if(fbConfigList == NULL) { /*  Try with Pixmap, if Pbuffer fail. */
-	
 	glxAttrs[drawableIndex] = (GLX_PIXMAP_BIT | GLX_WINDOW_BIT);
-	
-	fbConfigList = find_DB_AA_S_FBConfigs(display, screen, glxAttrs, sVal,
-					      dbVal, antialiasVal, index);
-	
+	fbConfigList = find_DB_AA_S_S_FBConfigs(display, screen, glxAttrs, stereoVal,
+						dbVal, antialiasVal, stencilVal, index);
     }
     
     if(fbConfigList == NULL) { /* Try with Window only, if Pixmap fail. */
-	glxAttrs[drawableIndex] =  GLX_WINDOW_BIT;
-	
-	fbConfigList = find_DB_AA_S_FBConfigs(display, screen, glxAttrs, sVal,
-					      dbVal, antialiasVal, index);
-	
+	glxAttrs[drawableIndex] =  GLX_WINDOW_BIT;	
+	fbConfigList = find_DB_AA_S_S_FBConfigs(display, screen, glxAttrs, stereoVal,
+						dbVal, antialiasVal, stencilVal, index);
     }
     
     fbConfigListPtr[0] = (jlong)fbConfigList;
@@ -442,6 +510,29 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isStereoAvailable(
     glXGetConfig(dpy, vinfo, GLX_STEREO, &stereoFlag);
 
     return (stereoFlag ? JNI_TRUE : JNI_FALSE);
+}
+
+JNIEXPORT jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_getStencilSize(
+     JNIEnv *env,
+     jobject obj,
+     jlong display,
+     jint screen,
+     jint vid)
+{
+    Display *dpy = (Display*) display;
+    XVisualInfo *vinfo, template;
+    int nitems;
+    int stencilVal = 0;
+
+    template.visualid = vid;
+    vinfo = XGetVisualInfo(dpy, VisualIDMask, &template, &nitems);
+    if (nitems != 1) {
+	fprintf(stderr, "Warning Canvas3D_getStencilSize got unexpected number of matching visuals %d\n", nitems);
+    }
+
+    glXGetConfig(dpy, vinfo, GLX_STENCIL_SIZE, &stencilVal);
+
+    return stencilVal;
 }
 
 JNIEXPORT
@@ -543,7 +634,7 @@ jboolean JNICALL Java_javax_media_j3d_J3dGraphicsConfig_isValidVisualID(
    return (nitems == 1);
 
 }
-#endif /* SOLARIS || __linux__ */
+#endif /* UNIX_ */
 
 
 #ifdef WIN32
@@ -652,10 +743,12 @@ HDC getMonitorDC(int screen)
     return CreateDC("DISPLAY", NULL, NULL, NULL);     
 }
 
+/* NOTE : Since OpenGL 1.2 or greater is required. This is method will not be
+ *        called. Need to remove in Java 3D 1.5
+ */
 int find_DB_S_STDPixelFormat(PIXELFORMATDESCRIPTOR* pfd, HDC hdc,
-			     int *mx_ptr, GLboolean offScreen)
-{
-
+			     int *mx_ptr, GLboolean offScreen, int stencilVal)
+{    
     int pf;
     PIXELFORMATDESCRIPTOR newpfd;
     
@@ -669,6 +762,7 @@ int find_DB_S_STDPixelFormat(PIXELFORMATDESCRIPTOR* pfd, HDC hdc,
 	    (newpfd.cGreenBits < (unsigned char) mx_ptr[GREEN_SIZE]) ||
 	    (newpfd.cBlueBits  < (unsigned char) mx_ptr[BLUE_SIZE]) ||
 	    (newpfd.cDepthBits < (unsigned char) mx_ptr[DEPTH_SIZE]) ||
+	    (newpfd.cStencilBits < (unsigned char) mx_ptr[STENCIL_SIZE]) ||
 	    ((mx_ptr[DOUBLEBUFFER] == REQUIRED) &&
 	     ((newpfd.dwFlags & PFD_DOUBLEBUFFER) == 0)) ||
 	    ((mx_ptr[STEREO] == REQUIRED) && ((newpfd.dwFlags & PFD_STEREO) == 0)))
@@ -706,37 +800,53 @@ void printErrorMessage(char *message)
 #define  MAX_WGL_ATTRS_LENGTH 100
 
 
-int find_Stencil_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
-			     int* wglAttrs, int sIndex) {
+int find_S_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
+		       int* wglAttrs, int stencilVal, int sIndex) {
     
     int pFormat, availableFormats, index;
-    
-    J3D_ASSERT((sIndex+4) < MAX_WGL_ATTRS_LENGTH);
-    
-
-    index = sIndex;
-    wglAttrs[index++] = WGL_STENCIL_BITS_ARB;
-    wglAttrs[index++] = 1;
-    /*
-     * Terminate by 2 zeros to avoid driver bugs
-     * that assume attributes always come in pairs.
-     */
-    wglAttrs[index] = 0;
-    wglAttrs[index+1] = 0;
-
-    pFormat = -1;
-    
-    if ((pFormatInfo->wglChoosePixelFormatARB(hdc, wglAttrs, NULL, 1,
-					      &pFormat, &availableFormats)) && (availableFormats > 0)) {
+    GLboolean userReq = GL_TRUE;
 	
-	/* fprintf(stderr, "wglChoosePixelFormatARB : pFormat %d availableFormats %d\n",
-	   pFormat, availableFormats); */
-	return pFormat;
+    J3D_ASSERT((sIndex+4) < MAX_WGL_ATTRS_LENGTH);
+    /* if user not use stencil we will request one of internal use. */
+    if (stencilVal < 1) {
+	userReq = GL_FALSE;
+	stencilVal = 1;
     }
     
-    /* fprintf(stderr, "wglChoosePixelFormatARB (TRY 1): FAIL\n"); */
-    
     index = sIndex;
+    wglAttrs[index++] = WGL_STENCIL_BITS_ARB;
+    wglAttrs[index++] = stencilVal;
+    /*
+     * Terminate by 2 zeros to avoid driver bugs
+     * that assume attributes always come in pairs.
+     */
+    wglAttrs[index] = 0;
+    wglAttrs[index+1] = 0;
+
+    pFormat = -1;
+    
+    if ((pFormatInfo->wglChoosePixelFormatARB(hdc, wglAttrs, NULL, 1,
+					      &pFormat, &availableFormats)) && (availableFormats > 0)) {
+	
+	/*
+	  fprintf(stderr, "Stencil : wglChoosePixelFormatARB : pFormat %d availableFormats %d\n",
+	  pFormat, availableFormats);
+	*/
+	return pFormat;
+    }
+
+    /*
+      fprintf(stderr, "Stencil : wglChoosePixelFormatARB (TRY 1): FAIL -- stencilVal = %d\n",
+      stencilVal);
+    */
+    
+    if (userReq == GL_TRUE) {
+	/* fprintf(stderr, "    userReq :  *** FAILED ***\n"); */
+	return -1;
+    }
+
+    index = sIndex;
+
     /*
      * Terminate by 2 zeros to avoid driver bugs
      * that assume attributes always come in pairs.
@@ -745,28 +855,28 @@ int find_Stencil_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
     wglAttrs[index+1] = 0;
 	
     pFormat = -1;
-
+    
     if ((pFormatInfo->wglChoosePixelFormatARB(hdc, wglAttrs, NULL, 1,
 					      &pFormat, &availableFormats)) && (availableFormats > 0)) {
-
+	
 	/* fprintf(stderr, "wglChoosePixelFormatARB : pFormat %d availableFormats %d\n",
 	   pFormat, availableFormats); */
-	
-	return pFormat;
+	    
+	    return pFormat;
     }
     
     /* fprintf(stderr, "wglChoosePixelFormatARB (TRY 2): FAIL\n"); */
     return -1;
 }
 
-int find_S_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
-		       int* wglAttrs, int sVal, int sIndex) {
+int find_S_S_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo, int* wglAttrs,
+			 int stereoVal, int stencilVal, int sIndex) {
     
     int pFormat, index;
     
     J3D_ASSERT((sIndex+4) < MAX_WGL_ATTRS_LENGTH);
     
-    if (sVal == REQUIRED || sVal== PREFERRED) {
+    if (stereoVal == REQUIRED || stereoVal== PREFERRED) {
 
 	index = sIndex;
 	wglAttrs[index++] = WGL_STEREO_ARB;
@@ -778,8 +888,8 @@ int find_S_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
 	wglAttrs[index] = 0;
 	wglAttrs[index+1] = 0;
 	
-	pFormat = find_Stencil_PixelFormat(hdc, pFormatInfo,
-					   wglAttrs, index);
+	pFormat = find_S_PixelFormat(hdc, pFormatInfo, wglAttrs,
+				     stencilVal, index);
 	/* fprintf(stderr,"STEREO REQUIRED or PREFERRED ***pFormat  %d\n", pFormat); */
 	    
 	if(pFormat >= 0) {
@@ -787,7 +897,7 @@ int find_S_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
 	}	
     }
     
-    if (sVal == UNNECESSARY || sVal== PREFERRED) {
+    if (stereoVal == UNNECESSARY || stereoVal== PREFERRED) {
 	
 	index = sIndex;
 	wglAttrs[index++] = WGL_STEREO_ARB;
@@ -799,8 +909,8 @@ int find_S_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
 	wglAttrs[index] = 0;
 	wglAttrs[index+1] = 0;
 	
-	pFormat = find_Stencil_PixelFormat(hdc, pFormatInfo,
-					   wglAttrs, index);
+	pFormat = find_S_PixelFormat(hdc, pFormatInfo, wglAttrs,
+				     stencilVal, index);
 	
 	/* fprintf(stderr,"STEREO UNNECC. or PREFERRED ***pFormat  %d\n", pFormat); */
 	
@@ -809,7 +919,7 @@ int find_S_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
 	}
     }
 
-    if (sVal == UNNECESSARY) {
+    if (stereoVal == UNNECESSARY) {
 	index = sIndex;
 	wglAttrs[index++] = WGL_STEREO_ARB;
 	wglAttrs[index++] = TRUE;
@@ -820,8 +930,8 @@ int find_S_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
 	wglAttrs[index] = 0;
 	wglAttrs[index+1] = 0;
 	
-	pFormat = find_Stencil_PixelFormat(hdc, pFormatInfo,
-					   wglAttrs, index);
+	pFormat = find_S_PixelFormat(hdc, pFormatInfo, wglAttrs,
+				     stencilVal, index);
 
 	/* fprintf(stderr,"STEREO UNNECC. ***pFormat  %d\n", pFormat); */
 
@@ -834,9 +944,9 @@ int find_S_PixelFormat(HDC hdc, PixelFormatInfo * pFormatInfo,
 }
 
 
-int find_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
-			   int* wglAttrs, int sVal,
-			   int antialiasVal, int antialiasIndex) {
+int find_AA_S_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
+			     int* wglAttrs, int stereoVal, int antialiasVal,
+			     int stencilVal, int antialiasIndex) {
     
     int index;
     int pFormat;
@@ -879,11 +989,11 @@ int find_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
 
 
 	    for(i=0; i < SAMPLE_LENGTH; i++) {
-		/* fprintf(stderr, "find_AA_S_PixelFormat samples = %d\n", samples[i]); */
+		/* fprintf(stderr, "find_AA_S_S_PixelFormat samples = %d\n", samples[i]); */
 		
 		wglAttrs[samplesIndex] = samples[i];
-		pFormat = find_S_PixelFormat(hdc, pFormatInfo,
-					     wglAttrs, sVal, index);
+		pFormat = find_S_S_PixelFormat(hdc, pFormatInfo, wglAttrs,
+					       stereoVal, stencilVal, index);
 		if(pFormat >= 0) {
 		    return pFormat;
 		}
@@ -907,8 +1017,8 @@ int find_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
 	wglAttrs[index] = 0;
 	wglAttrs[index+1] = 0;
 	
-	pFormat = find_S_PixelFormat(hdc, pFormatInfo,
-				     wglAttrs, sVal, index);
+	pFormat = find_S_S_PixelFormat(hdc, pFormatInfo, wglAttrs,
+				       stereoVal, stencilVal, index);
 	
 	if(pFormat >= 0) {
 	    return pFormat;
@@ -925,8 +1035,8 @@ int find_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
 
     if (antialiasVal == UNNECESSARY || antialiasVal == PREFERRED) {
 
-	pFormat = find_S_PixelFormat(hdc, pFormatInfo,
-				     wglAttrs, sVal, index);
+	pFormat = find_S_S_PixelFormat(hdc, pFormatInfo, wglAttrs,
+				       stereoVal, stencilVal, index);
 	
 	if(pFormat >= 0) {
 	    return pFormat;
@@ -939,9 +1049,9 @@ int find_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
 }
 
 
-int find_DB_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
-			      int* wglAttrs, int sVal, int dbVal,
-			      int antialiasVal, int dbIndex) {
+int find_DB_AA_S_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
+				int* wglAttrs, int stereoVal, int dbVal,
+				int antialiasVal, int stencilVal, int dbIndex) {
     
     int index = dbIndex;
     int pFormat;
@@ -960,9 +1070,9 @@ int find_DB_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
 	wglAttrs[index] = 0;
 	wglAttrs[index+1] = 0;
 
- 	pFormat = find_AA_S_PixelFormat(hdc, pFormatInfo,
-					wglAttrs, sVal, 
-					antialiasVal, index);
+ 	pFormat = find_AA_S_S_PixelFormat(hdc, pFormatInfo,
+					  wglAttrs, stereoVal, 
+					  antialiasVal, stencilVal, index);
 	    
 	if(pFormat >= 0) {
 	    return pFormat;
@@ -972,7 +1082,7 @@ int find_DB_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
     if (dbVal == UNNECESSARY || dbVal== PREFERRED) {
 	index = dbIndex;
 	wglAttrs[index++] = WGL_DOUBLE_BUFFER_ARB;
-	wglAttrs[index++] = FALSE;  // Partial fix to issue 100.
+	wglAttrs[index++] = FALSE;  /* Partial fix to issue 100. */
 	/*
 	 * Terminate by 2 zeros to avoid driver bugs
 	 * that assume attributes always come in pairs.
@@ -980,9 +1090,9 @@ int find_DB_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
 	wglAttrs[index] = 0;
 	wglAttrs[index+1] = 0;
 
-	pFormat = find_AA_S_PixelFormat(hdc, pFormatInfo,
-					wglAttrs, sVal, 
-					antialiasVal, index);
+	pFormat = find_AA_S_S_PixelFormat(hdc, pFormatInfo,
+					  wglAttrs, stereoVal, 
+					  antialiasVal, stencilVal, index);
 	
 	if(pFormat >= 0) {
 	    return pFormat;
@@ -1000,9 +1110,9 @@ int find_DB_AA_S_PixelFormat( HDC hdc, PixelFormatInfo * pFormatInfo,
 	wglAttrs[index] = 0;
 	wglAttrs[index+1] = 0;
 
- 	pFormat = find_AA_S_PixelFormat(hdc, pFormatInfo,
-					wglAttrs, sVal, 
-					antialiasVal, index);
+ 	pFormat = find_AA_S_S_PixelFormat(hdc, pFormatInfo,
+					  wglAttrs, stereoVal, 
+					  antialiasVal, stencilVal, index);
 	
 	if(pFormat >= 0) {
 	    return pFormat;
@@ -1024,7 +1134,9 @@ void checkPixelFormat(HDC hdc,
     GLboolean hasMultisample = GL_FALSE;
     GLboolean hasStereo  = GL_FALSE;
     GLboolean hasDoubleBuffer = GL_FALSE;
-    GLboolean hasAccum = GL_FALSE;
+    GLboolean hasAccum
+	= GL_FALSE;
+    int       stencilSize = 0;
     PIXELFORMATDESCRIPTOR pfd;
 
     /* fprintf(stderr, "*** checkPixelFormat : offScreen = %d\n", offScreen); */
@@ -1069,10 +1181,12 @@ void checkPixelFormat(HDC hdc,
     if (pfd.cAccumRedBits > 0) {
 	hasAccum = GL_TRUE;
     }
-
+    
+    stencilSize = pfd.cStencilBits;
+    
     /*
-      fprintf(stderr, "hasStereo = %d,  hasDoubleBuffer %d, hasAccum %d\n",
-       hasStereo, hasDoubleBuffer, hasAccum);
+      fprintf(stderr, "hasStereo = %d,  hasDoubleBuffer %d, hasAccum %d stencilSize %d\n",
+	    hasStereo, hasDoubleBuffer, hasAccum, pfd.cStencilBits);
     */
 
     if(pFormatInfo->onScreenPFormat == pFormatInfo->offScreenPFormat) {
@@ -1080,23 +1194,27 @@ void checkPixelFormat(HDC hdc,
 	pFormatInfo->onScreenHasStereo = hasStereo;
 	pFormatInfo->onScreenHasDoubleBuffer = hasDoubleBuffer;
 	pFormatInfo->onScreenHasAccum = hasAccum;
+	pFormatInfo->onScreenStencilSize = stencilSize;
 
 	pFormatInfo->offScreenHasMultisample = hasMultisample;
 	pFormatInfo->offScreenHasStereo = hasStereo;
 	pFormatInfo->offScreenHasDoubleBuffer = hasDoubleBuffer;
 	pFormatInfo->offScreenHasAccum = hasAccum;
+	pFormatInfo->offScreenStencilSize = stencilSize;
     }
     else if(!offScreen) {
 	pFormatInfo->onScreenHasMultisample = hasMultisample;
 	pFormatInfo->onScreenHasStereo = hasStereo;
 	pFormatInfo->onScreenHasDoubleBuffer = hasDoubleBuffer;
 	pFormatInfo->onScreenHasAccum = hasAccum;
+	pFormatInfo->onScreenStencilSize = stencilSize;
     }
     else {
 	pFormatInfo->offScreenHasMultisample = hasMultisample;
 	pFormatInfo->offScreenHasStereo = hasStereo;
 	pFormatInfo->offScreenHasDoubleBuffer = hasDoubleBuffer;
 	pFormatInfo->offScreenHasAccum = hasAccum;
+	pFormatInfo->offScreenStencilSize = stencilSize;
     }
     
 }
@@ -1111,16 +1229,18 @@ int chooseSTDPixelFormat(
 {
     int *mx_ptr;
     int   dbVal;  /* value for double buffering */
-    int   sVal;   /* value for stereo */
+    int   stereoVal;   /* value for stereo */
     int   pFormat = -1;  /* PixelFormat */
     PIXELFORMATDESCRIPTOR pfd;
+    int   stencilVal = 0; /* value for stencil size */
+    GLboolean userReq = GL_TRUE;
 
     /* fprintf(stderr, "chooseSTDPixelFormat : screen 0x%x, offScreen %d hdc 0x%x\n",
        screen, offScreen, hdc);  */
     
     ZeroMemory(&pfd, sizeof(PIXELFORMATDESCRIPTOR));
     pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-    pfd.nVersion = 1;  /*TODO: when would this change? */
+    pfd.nVersion = 1;  /* When would this change? */
     pfd.iPixelType = PFD_TYPE_RGBA;
 
     /*
@@ -1140,16 +1260,23 @@ int chooseSTDPixelFormat(
 	else 
 	    dbVal = PFD_DOUBLEBUFFER_DONTCARE;
 	
-	sVal = 0;
+	stereoVal = 0;
 	if (mx_ptr[STEREO] == REQUIRED || mx_ptr[STEREO] == PREFERRED) {
-	    sVal = PFD_STEREO;
+	    stereoVal = PFD_STEREO;
 	} else {
-	    sVal = PFD_STEREO_DONTCARE;
+	    stereoVal = PFD_STEREO_DONTCARE;
 	}
     
-	pfd.dwFlags = dbVal | sVal | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
+	pfd.dwFlags = dbVal | stereoVal | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
 
-	pfd.cStencilBits = 1;
+	/* if user not use stencil we will request one of internal use. */
+	stencilVal = mx_ptr[STENCIL_SIZE];
+	if (stencilVal < 1) {
+	    userReq = GL_FALSE;
+	    stencilVal = 1;
+	}
+	
+	pfd.cStencilBits = stencilVal;
 	
 	if (mx_ptr[ANTIALIASING] == REQUIRED) {
 	    pfd.cAccumRedBits   = 8;
@@ -1161,6 +1288,8 @@ int chooseSTDPixelFormat(
     else { /* Offscreen setting. */
 	/* We are here b/c there is no support for Pbuffer on the HW.
 	   This is a fallback path, we will hardcore the value. */  
+
+	/* NOTE : Stencil size isn't handle for Offscreen */
 	
 	/* by MIK OF CLASSX */
 	pfd.iPixelType = PFD_TYPE_RGBA;
@@ -1184,12 +1313,13 @@ int chooseSTDPixelFormat(
 
     }
     
-    pFormat = find_DB_S_STDPixelFormat(&pfd, hdc, mx_ptr, offScreen);
+    pFormat = find_DB_S_STDPixelFormat(&pfd, hdc, mx_ptr, offScreen, stencilVal);
 
-    if (pFormat == -1) {
+    if ((pFormat == -1) && (userReq == GL_FALSE)) {
 	/* try disable stencil buffer */
 	pfd.cStencilBits = 0;
-	pFormat =  find_DB_S_STDPixelFormat(&pfd, hdc, mx_ptr, offScreen);
+	stencilVal = 0;
+	pFormat =  find_DB_S_STDPixelFormat(&pfd, hdc, mx_ptr, offScreen, stencilVal);
     }
     
     (*env)->ReleaseIntArrayElements(env, attrList, mx_ptr, JNI_ABORT);
@@ -1208,12 +1338,14 @@ PixelFormatInfo * newPixelFormatInfo(HDC hdc, jboolean usePbuffer)
     pFormatInfo->onScreenHasStereo = GL_FALSE;    
     pFormatInfo->onScreenHasDoubleBuffer = GL_FALSE;    
     pFormatInfo->onScreenHasAccum = GL_FALSE;    
+    pFormatInfo->onScreenStencilSize = 0;    
 
     pFormatInfo->offScreenPFormat = -1;
     pFormatInfo->offScreenHasMultisample = GL_FALSE;
     pFormatInfo->offScreenHasStereo = GL_FALSE;
     pFormatInfo->offScreenHasDoubleBuffer = GL_FALSE;
     pFormatInfo->offScreenHasAccum = GL_FALSE;
+    pFormatInfo->offScreenStencilSize = 0;    
     pFormatInfo->drawToPbuffer = GL_FALSE;
 
     pFormatInfo->supportARB = GL_FALSE;
@@ -1307,9 +1439,10 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 
     int *mx_ptr;
     int dbVal;  /* value for double buffering */
-    int sVal;   /* value for stereo */
+    int stereoVal;   /* value for stereo */
     int antialiasVal; /* value for antialias */
-
+    int stencilVal; /* value for stencil size */
+    
     HWND  hwnd;
     HGLRC hrc;
     HDC   hdc;
@@ -1366,6 +1499,8 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
     offScreenPFListPtr = (*env)->GetLongArrayElements(env, offScreenPFArray, NULL);
 
     if (pFormatInfo->supportARB) {
+	
+	/* fprintf(stderr, "Using non standard ChoosePixelFormat.\n"); */
 
 	mx_ptr = (*env)->GetIntArrayElements(env, attrList, NULL);
 	
@@ -1399,8 +1534,9 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 	lastIndex = index;
 	
 	dbVal = mx_ptr[DOUBLEBUFFER];
-	sVal = mx_ptr[STEREO];
+	stereoVal = mx_ptr[STEREO];
 	antialiasVal = mx_ptr[ANTIALIASING];
+	stencilVal = mx_ptr[STENCIL_SIZE];
 	
 	(*env)->ReleaseIntArrayElements(env, attrList, mx_ptr, JNI_ABORT);
 	
@@ -1416,9 +1552,10 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 	    wglAttrs[index] = 0;
 	    wglAttrs[index+1] = 0;
 
-  	    pFormatInfo->onScreenPFormat = find_DB_AA_S_PixelFormat( hdc, pFormatInfo,
-								     wglAttrs, sVal, dbVal, 
-								     antialiasVal, index);
+  	    pFormatInfo->onScreenPFormat = find_DB_AA_S_S_PixelFormat( hdc, pFormatInfo,
+								       wglAttrs, stereoVal,
+								       dbVal, antialiasVal,
+								       stencilVal, index);
 	    
 	    if(pFormatInfo->onScreenPFormat >= 0) {		
 		/* Since the return pixel format support pbuffer,
@@ -1453,12 +1590,13 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 	wglAttrs[index] = 0;
 	wglAttrs[index+1] = 0;
 	
-	pFormatInfo->onScreenPFormat = find_DB_AA_S_PixelFormat( hdc, pFormatInfo,
-								 wglAttrs, sVal, dbVal, 
-								 antialiasVal, index);
+	pFormatInfo->onScreenPFormat = find_DB_AA_S_S_PixelFormat( hdc, pFormatInfo,
+								   wglAttrs, stereoVal,
+								   dbVal, antialiasVal,
+								   stencilVal, index);
     } 
     else {
-	/* fprintf(stderr, "Fallback to use standard ChoosePixelFormat.\n"); */
+	 fprintf(stderr, "Fallback to use standard ChoosePixelFormat.\n");
 
 	pFormatInfo->onScreenPFormat =  (jint) chooseSTDPixelFormat( env, screen,
 								     attrList, hdc, GL_FALSE);
@@ -1563,6 +1701,29 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isStereoAvailable(
 	   pfInfo->onScreenHasStereo); */
 	
 	return pfInfo->onScreenHasStereo;
+    }
+
+}
+
+JNIEXPORT jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_getStencilSize(
+    JNIEnv *env,
+    jobject obj,
+    jlong pFormatInfo,
+    jboolean offScreen)
+{
+
+    PixelFormatInfo *pfInfo = (PixelFormatInfo *) pFormatInfo;
+    if(offScreen) {
+	/* fprintf(stderr, "offScreen getStencilSize %d\n",
+	   pfInfo->offScreenStencilSize); */
+	
+	return pfInfo->offScreenStencilSize;
+    }
+    else {
+	/* fprintf(stderr, "onScreen getStencilSize %d\n",
+	   pfInfo->onScreenStencilSize); */
+	
+	return pfInfo->onScreenStencilSize;
     }
 
 }

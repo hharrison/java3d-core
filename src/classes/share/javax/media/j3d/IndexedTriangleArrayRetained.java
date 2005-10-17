@@ -27,14 +27,15 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	this.geoType = GEO_TYPE_INDEXED_TRI_SET;
     }
 
-    boolean intersect(PickShape pickShape, double dist[],  Point3d iPnt) {
+    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
 	Point3d pnts[] = new Point3d[3];
 	double sdist[] = new double[1];
 	double minDist = Double.MAX_VALUE;
 	double x = 0, y = 0, z = 0;
+        int count = 0;
+        int minICount = 0;         
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
 		 initialVertexIndex : initialCoordIndex);
-
 	pnts[0] = new Point3d();
 	pnts[1] = new Point3d();
 	pnts[2] = new Point3d();
@@ -47,15 +48,17 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
 		getVertexData(indexCoord[i++], pnts[2]);
+                count += 3;
 		if (intersectRay(pnts, pickRay, sdist, iPnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-			x = iPnt.x;
-			y = iPnt.y;
-			z = iPnt.z;
+                        minICount = count;
+                        x = iPnt.x;
+                        y = iPnt.y;
+                        z = iPnt.z;
 		    }
 		}
 	    }
@@ -66,18 +69,19 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
 		getVertexData(indexCoord[i++], pnts[2]);
-		if (intersectSegment(pnts, pickSegment.start,
-				     pickSegment.end, sdist, iPnt)
-		    && (sdist[0] <= 1.0)) {
-		    if (dist == null) {
+                count += 3;
+                if (intersectSegment(pnts, pickSegment.start,
+				     pickSegment.end, sdist, iPnt)) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-			x = iPnt.x;
-			y = iPnt.y;
-			z = iPnt.z;
-			}
+                        minICount = count;
+                        x = iPnt.x;
+                        y = iPnt.y;
+                        z = iPnt.z;
+                    }
 		}
 	    }
 	    break;
@@ -89,15 +93,17 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
 		getVertexData(indexCoord[i++], pnts[2]);
+                count += 3;
 		if (intersectBoundingBox(pnts, bbox, sdist, iPnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-			x = iPnt.x;
-			y = iPnt.y;
-			    z = iPnt.z;
+                        minICount = count;
+                        x = iPnt.x;
+                        y = iPnt.y;
+                        z = iPnt.z;
 		    }
 		}
 	    }
@@ -110,15 +116,17 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
 		getVertexData(indexCoord[i++], pnts[2]);
+                count += 3;
 		if (intersectBoundingSphere(pnts, bsphere, sdist, iPnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-			x = iPnt.x;
-			y = iPnt.y;
-			z = iPnt.z;
+                        minICount = count;
+                        x = iPnt.x;
+                        y = iPnt.y;
+                        z = iPnt.z;
 		    }
 		}
 	    }
@@ -131,16 +139,18 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
 		getVertexData(indexCoord[i++], pnts[2]);
-		if (intersectBoundingPolytope(pnts, bpolytope,
+                count += 3;
+                if (intersectBoundingPolytope(pnts, bpolytope,
 					      sdist,iPnt)) { 
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-			x = iPnt.x;
-			y = iPnt.y;
-			z = iPnt.z;
+                        minICount = count;
+                        x = iPnt.x;
+                        y = iPnt.y;
+                        z = iPnt.z;
 		    }
 		}
 	    }
@@ -151,16 +161,18 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
 		getVertexData(indexCoord[i++], pnts[2]);
+                count += 3;
 		if (intersectCylinder(pnts, pickCylinder, sdist,
 				      iPnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-			x = iPnt.x;
-			y = iPnt.y;
-			z = iPnt.z;
+                        minICount = count;
+                        x = iPnt.x;
+                        y = iPnt.y;
+                        z = iPnt.z;
 		    }
 		}
 	    }
@@ -172,15 +184,17 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
 		getVertexData(indexCoord[i++], pnts[2]);
+                count += 3;
 		if (intersectCone(pnts, pickCone, sdist, iPnt)) {
-		    if (dist == null) {
+		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-			x = iPnt.x;
-			y = iPnt.y;
-			z = iPnt.z;
+                        minICount = count;
+                        x = iPnt.x;
+                        y = iPnt.y;
+                        z = iPnt.z;
 		    }
 		}
 	    }
@@ -194,7 +208,15 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 
     
 	if (minDist < Double.MAX_VALUE) {
-	    dist[0] = minDist;
+            assert(minICount >= 3);
+            int[] vertexIndices = iInfo.getVertexIndices();
+            if (vertexIndices == null) {
+                vertexIndices = new int[3];
+                iInfo.setVertexIndices(vertexIndices);
+            }
+            vertexIndices[0] = minICount - 3;
+            vertexIndices[1] = minICount - 2;
+            vertexIndices[2] = minICount - 1;
 	    iPnt.x = x;
 	    iPnt.y = y;
 	    iPnt.z = z;
@@ -202,7 +224,6 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	}
 	return false;
     }
-  
   
     // intersect pnts[] with every triangle in this object
     boolean intersect(Point3d[] pnts) {

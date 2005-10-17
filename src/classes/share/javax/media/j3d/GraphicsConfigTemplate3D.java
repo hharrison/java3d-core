@@ -39,6 +39,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
     int redSize;
     int sceneAntialiasing;
     int stereo;
+    int stencilSize;
 
     // Temporary variables use for passing argument to/from Request Renderer
     Object testCfg;
@@ -66,12 +67,14 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      * redSize : 2<br>
      * greenSize : 2<br>
      * blueSize : 2<br>
+     * stencilSize : 0<br>
      * </ul>
      */
     public GraphicsConfigTemplate3D() {
         doubleBuffer = REQUIRED;
         stereo = UNNECESSARY;
         depthSize = 16;
+        stencilSize = 0;
         redSize = greenSize = blueSize = 2;
         sceneAntialiasing = UNNECESSARY;
     }
@@ -169,6 +172,35 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      */
     public int getDepthSize() {
         return depthSize;
+    }
+
+    /**
+     * Sets the stencil buffer size requirement.
+     * This is the minimum requirement.
+     * If no GraphicsConfiguration is found that meets or
+     * exceeds this minimum requirement, null will be returned in
+     * getBestConfiguration().
+     *
+     * @param value the value to set this field to
+     *
+     * @since Java 3D 1.4
+     */
+    public void setStencilSize(int value) {
+        if (value < 0)
+            return;
+        
+	stencilSize = value;
+    }
+
+    /**
+     * Retrieves the size of the stencil buffer.
+     *
+     * @return the current value of the stencilSize attribute
+     *
+     * @since Java 3D 1.4
+     */
+    public int getStencilSize() {
+        return stencilSize;
     }
 
     /**
@@ -298,7 +330,8 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
 	if (gc == null) {
 	    return false;
 	}
-	synchronized (globalLock) {
+
+        synchronized (globalLock) {
 	    testCfg = gc;
 	    threadWaiting = true;
 	    if (Thread.currentThread() instanceof BehaviorScheduler) {

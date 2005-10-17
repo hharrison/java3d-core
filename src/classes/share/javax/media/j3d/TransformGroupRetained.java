@@ -92,7 +92,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
     // User copy.
     CachedTargets[] cachedTargets = null;
 
-    // Contains per path data, TODO: move to NodeRetained
+    // Contains per path data, XXXX: move to NodeRetained
     TransformGroupData[] perPathData = null;
 
 
@@ -512,7 +512,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
       int len;
       Object obj;
       
-      // TODO - optimization for targetThreads computation, require
+      // XXXX - optimization for targetThreads computation, require
       // cleanup in GroupRetained.doSetLive()
       //int savedTargetThreads = 0;
       //savedTargetThreads = s.transformTargetThreads;
@@ -765,7 +765,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
             }
         }
         }
-	// TODO: recontruct targetThreads
+	// XXXX: recontruct targetThreads
     }
 
    
@@ -1155,7 +1155,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         // type is ignored here, only need for SharedGroup
 	
         if (type == TargetsInterface.TRANSFORM_TARGETS) {
-	    // TODO : For now we'll OR more than exact.
+	    // XXXX : For now we'll OR more than exact.
 	    //targetThreads = localTargetThreads | childTargetThreads;
 	    targetThreads = targetThreads | childTargetThreads;
             if (parentTransformLink != null) {

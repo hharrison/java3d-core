@@ -642,7 +642,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
         else
             if (debugFlag)
                 debugPrint("reset aa; aa.frequencyCutoff = null");
-	// TODO: (Enhancement) Why are these dirtyFlag cleared rather than aa->this
+	// XXXX: (Enhancement) Why are these dirtyFlag cleared rather than aa->this
         this.aaDirty = false;
 	aa.aaDirty = false;
     }

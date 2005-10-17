@@ -71,7 +71,7 @@ public abstract class PickCylinder extends PickShape {
 
     // This is a duplicate of the same method, declared private inside of 
     // BoundingPolytope
-    // TODO: remove this once the original method is available (public) in
+    // XXXX: remove this once the original method is available (public) in
     // BoundingPolytope
     static boolean pointInPolytope(BoundingPolytope ptope, 
 				   double x, double y, double z ){

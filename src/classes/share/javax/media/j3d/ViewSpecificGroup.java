@@ -71,11 +71,17 @@ public class ViewSpecificGroup extends Group {
     public static final int
     ALLOW_VIEW_WRITE = CapabilityBits.VIEW_SPECIFIC_GROUP_ALLOW_VIEW_WRITE;
 
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_VIEW_READ
+    };
 
     /**
      * Constructs and initializes a new ViewSpecificGroup node object.
      */
     public ViewSpecificGroup() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);        
     }
 
 
@@ -324,7 +330,7 @@ public class ViewSpecificGroup extends Group {
      */
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 
-	// TODO: implement this
+	// XXXX: implement this?
         super.duplicateAttributes(originalNode, forceDuplicate);
 
         ViewSpecificGroupRetained attr = (ViewSpecificGroupRetained) originalNode.retained;

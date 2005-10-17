@@ -229,11 +229,10 @@ abstract class GeometryRetained extends NodeComponentRetained {
 	return 0 ;
     }
 
-    abstract boolean intersect(PickShape pickShape, double dist[], Point3d iPnt);
+    abstract boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo, int flags, Point3d iPnt);   
     abstract boolean intersect(Bounds targetBound);
     abstract boolean intersect(Point3d[] pnts);
     abstract boolean intersect(Transform3D thisToOtherVworld, GeometryRetained geom);
-
 
     boolean intersect(Transform3D thisLocalToVworld, 
 		      Transform3D otherLocalToVworld, GeometryRetained  geom) {
@@ -256,15 +255,69 @@ abstract class GeometryRetained extends NodeComponentRetained {
     }
 
 
+    // Return a flag indicating whether or not this Geometry object can be in
+    // a display list.
+    //
+    // XXXX: Note that for IndexedGeometryArray objects, the original
+    // vertex format is used in making this determination, even when it has
+    // been unindexified. This should be fixed by using the vertex format of
+    // the mirror geometry if there is one.
     boolean canBeInDisplayList(boolean alphaEditable) {
+        // Check global flag to see whether we can build display lists
+        if (!VirtualUniverse.mc.isDisplayList) {
+            return false;
+        }
 
-	return (VirtualUniverse.mc.isDisplayList) &&
-	    !(this.isEditable || 
-	      (!(this instanceof GeometryArrayRetained) && alphaEditable)||
-	      (alphaEditable && ((((GeometryArrayRetained)this).vertexFormat&
-				  GeometryArray.COLOR) != 0)) ||
-	      (((((GeometryArrayRetained)this).vertexFormat & 
-		 GeometryArray.BY_REFERENCE) != 0) && !VirtualUniverse.mc.buildDisplayListIfPossible));
+        // Can't build display lists if geometry is editable
+        // XXXX: should look at isFrequent bit and allow DL if
+        // infrequently writable
+        if (this.isEditable) {
+            return false;
+        }
+
+        if (this instanceof GeometryArrayRetained) {
+            int vFormat = ((GeometryArrayRetained)this).vertexFormat;
+
+            // If geometry has vertex attributes, check whether
+            // vertex attributes are allowed in display lists
+            if (((vFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) &&
+                    !VirtualUniverse.mc.vertexAttrsInDisplayList) {
+                return false;
+            }
+
+            // Can't build display lists if alpha is editable and
+            // geometry array has colors
+            if (alphaEditable && ((vFormat & GeometryArray.COLOR) != 0)) {
+                return false;
+            }
+
+            // Only build DL for by-ref geometry when system property is set.
+            // Exclude NIO buffers and use-coord-index-only
+            if ((vFormat &  GeometryArray.BY_REFERENCE) != 0) {
+                if (!VirtualUniverse.mc.buildDisplayListIfPossible) {
+                    return false;
+                }
+
+                // XXXX: we could change this to allow display lists for
+                // non-interleaved NIO buffers, but we would first need to
+                // update the now-obsolete buildGAForBuffer method to handle
+                // vertex attrs
+                if ((vFormat & GeometryArray.USE_NIO_BUFFER) != 0) {
+                    return false;
+                }
+
+                if ((vFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) {
+                    return false;
+                }
+            }
+
+            return true;
+        } else {
+            // Can't build display lists for other kind of geometry
+            // NOTE: This method is not called for any type of Geometry
+            // other than GeometryArray, so we shouldn't even get here.
+            return false;
+        }
     }
 
     void computeCentroid() {

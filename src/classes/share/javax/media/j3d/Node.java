@@ -109,7 +109,34 @@ public abstract class Node extends SceneGraphObject {
      */
     public static final int
     ALLOW_LOCAL_TO_VWORLD_READ = CapabilityBits.NODE_ALLOW_LOCAL_TO_VWORLD_READ;
-    
+
+    /**
+     * Specifies that this Node allows read access to its parent Group node.
+     *
+     * @since Java 3D 1.4
+     */
+    public static final int
+	ALLOW_PARENT_READ = CapabilityBits.NODE_ALLOW_PARENT_READ;
+
+    /**
+     * Specifies that this Node allows read access to its Locale.
+     *
+     * @since Java 3D 1.4
+     */
+    public static final int
+        ALLOW_LOCALE_READ = CapabilityBits.NODE_ALLOW_LOCALE_READ;
+
+   // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_BOUNDS_READ,
+        ALLOW_PICKABLE_READ,
+        ALLOW_COLLIDABLE_READ,
+        ALLOW_AUTO_COMPUTE_BOUNDS_READ,
+        ALLOW_LOCAL_TO_VWORLD_READ,
+        ALLOW_PARENT_READ,
+        ALLOW_LOCALE_READ
+    };
+
     // for checking for cycles
     private boolean visited = false;
 
@@ -125,18 +152,22 @@ public abstract class Node extends SceneGraphObject {
      * </ul>
      */
     public Node() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
-     * Retrieves the parent of this Node.  This method is only valid
-     * during the construction of the scene graph.
+
      * @return the parent of this node, or null if this node has no parent
-     * @exception RestrictedAccessException if this object is part of live
-     * or compiled scene graph
+     * @exception CapabilityNotSetException if appropriate capability is
+     * not set and this object is part of live or compiled scene graph
      */
     public Node getParent() {
-	if (isLiveOrCompiled())
-            throw new RestrictedAccessException(J3dI18N.getString("Node0"));
+	if (isLiveOrCompiled()) {
+	    if(!this.getCapability(ALLOW_PARENT_READ)) {
+		throw new CapabilityNotSetException(J3dI18N.getString("Node0"));
+	    }
+	}
 
 	NodeRetained nr = ((NodeRetained)this.retained).getParent();
 	return (nr == null ? null :  (Node) nr.getSource());
@@ -245,24 +276,36 @@ public abstract class Node extends SceneGraphObject {
      * of all transforms in the scene graph from the root down to
      * <code>this</code> node.  It is only valid
      * for nodes that are part of a live scene graph.
+     * If the node is not part of a live scene graph then the coordinates are
+     * calculated as if the graph was attached at the origin of a locale.
      * @param t the object that will receive the local coordinates to
      * Vworld coordinates transform.
-     * @exception RestrictedAccessException if the node is <em>not</em>
+     * @exception RestrictedAccessException if the node is compiled but not 
      * part of a live scene graph
      * @exception CapabilityNotSetException if appropriate capability is
-     * not set and this node is part of live scene graph
+     * not set and this node is part of live or compiled scene graph
      * @exception IllegalSharingException if the node is a descendant
      * of a SharedGroup node.
      */
     public void getLocalToVworld(Transform3D t) {
-	if (!isLive())
-	    throw new RestrictedAccessException(J3dI18N.getString("Node7"));
-
-	if(!this.getCapability(ALLOW_LOCAL_TO_VWORLD_READ))
-	    throw new CapabilityNotSetException(J3dI18N.getString("Node8"));
-
-	((NodeRetained)this.retained).getLocalToVworld(t);
+        if (isLiveOrCompiled()) {
+            if(!this.getCapability(ALLOW_LOCAL_TO_VWORLD_READ))
+                    throw new CapabilityNotSetException(J3dI18N.getString("Node8"));
+        }
+        
+	if (!isLive()) {
+            // TODO Support compiled graphs
+            if (isCompiled())
+                throw new RestrictedAccessException(J3dI18N.getString("Node7"));
+            
+            // In 1.4 we support getLocalToVworld for non live nodes
+            ((NodeRetained)this.retained).computeNonLiveLocalToVworld(t, this);
+	    //throw new RestrictedAccessException(J3dI18N.getString("Node7"));
+        } else {
+            ((NodeRetained)this.retained).getLocalToVworld(t);
+        }
     }
+    
 
     /**
      * Retrieves the local coordinates to virtual world coordinates
@@ -281,15 +324,44 @@ public abstract class Node extends SceneGraphObject {
      * @exception IllegalArgumentException if the specified path does
      * not contain a valid Locale, or if the last node in the path is
      * different from this node
+     * @exception IllegalSharingException if the node is not a descendant
+     * of a SharedGroup node.
      */
     public void getLocalToVworld(SceneGraphPath path, Transform3D t) {
-	if (!isLive())
+	if (!isLive()) {
 	    throw new RestrictedAccessException(J3dI18N.getString("Node7"));
-
-	if(!this.getCapability(ALLOW_LOCAL_TO_VWORLD_READ))
-	    throw new CapabilityNotSetException(J3dI18N.getString("Node8"));
+        } 
+        
+        if(!this.getCapability(ALLOW_LOCAL_TO_VWORLD_READ))
+            throw new CapabilityNotSetException(J3dI18N.getString("Node8"));
 
         ((NodeRetained)this.retained).getLocalToVworld(path,t);
+        
+    }
+
+    /**
+     * Retrieves the locale to which this node is attached. If the
+     * node is not part of a live scene graph, null is returned.
+     *
+     * @return the locale to which this node is attached.
+     *
+     * @exception CapabilityNotSetException if appropriate capability is
+     * not set and this node is part of live scene graph
+     * @exception IllegalSharingException if the node is a descendant
+     * of a SharedGroup node.
+     *
+     * @since Java 3D 1.4
+     */
+    public Locale getLocale() {
+	if (!isLive()) {
+	    return null;
+	}
+
+	if(!this.getCapability(ALLOW_LOCALE_READ)) {
+	    throw new CapabilityNotSetException(J3dI18N.getString("Node17"));
+	}
+
+	return ((NodeRetained)this.retained).getLocale();
     }
 
     /**

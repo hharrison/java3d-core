@@ -293,7 +293,7 @@ class LinkRetained extends LeafRetained {
 
 	super.compile(compState);
 
-        // TODO: for now keep the static transform in the parent tg
+        // XXXX: for now keep the static transform in the parent tg
         compState.keepTG = true;
 
         // don't remove this group node

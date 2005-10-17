@@ -60,6 +60,13 @@ public class Group extends Node {
     ALLOW_COLLISION_BOUNDS_WRITE =
         CapabilityBits.GROUP_ALLOW_COLLISION_BOUNDS_WRITE;
 
+    // Array for setting default read capabilities
+    private static final int[] readCapabilities = {
+        ALLOW_CHILDREN_READ,
+        ALLOW_COLLISION_BOUNDS_READ
+    };
+    
+    
     /**
      * Creates the retained mode GroupRetained object that this
      * Group component object will point to.
@@ -528,5 +535,7 @@ public class Group extends Node {
      * </ul>
      */
     public Group() {
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);        
     }
 }
