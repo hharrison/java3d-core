@@ -696,11 +696,10 @@ public class PickInfo extends Object {
                         ((flags & CLOSEST_GEOM_INFO) != 0) ||
                         ((flags & CLOSEST_INTERSECTION_POINT) != 0) ||
                         ((flags & ALL_GEOM_INFO) != 0)) {
-
-                        pickInfo.setNodeRef((Node) s3dCR.srcList[n]);
-                        Transform3D l2vw = geomAtoms[i].source.getCurrentLocalToVworld();
 			if(pickInfo == null)
 			    pickInfo = new PickInfo();
+                        pickInfo.setNodeRef((Node) s3dCR.srcList[n]);
+                        Transform3D l2vw = geomAtoms[i].source.getCurrentLocalToVworld();
 			pickInfo.setLocalToVWorldRef(l2vw);
                     }
 
@@ -751,11 +750,10 @@ public class PickInfo extends Object {
                     ((flags & CLOSEST_GEOM_INFO) != 0) ||
                     ((flags & CLOSEST_INTERSECTION_POINT) != 0) ||
                     ((flags & ALL_GEOM_INFO) != 0)) {
-
-                    pickInfo.setNodeRef((Node) srcNode.source);                    
-                    Transform3D l2vw = geomAtoms[i].source.getCurrentLocalToVworld();
 		    if(pickInfo == null) 
 			pickInfo = new PickInfo();
+                    pickInfo.setNodeRef((Node) srcNode.source);                    
+                    Transform3D l2vw = geomAtoms[i].source.getCurrentLocalToVworld();
                     pickInfo.setLocalToVWorldRef(l2vw);
                 }
 
