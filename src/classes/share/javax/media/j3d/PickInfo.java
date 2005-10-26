@@ -803,7 +803,12 @@ public class PickInfo extends Object {
             // Order is impt. Need to do in reverse order.    
             for(int i = pickInfoListSize - 1; i >= 0; i--) {
                 pickInfo = (PickInfo) pickInfoList.get(i);
+                
                 pickNode = pickInfo.getNode();
+                if( pickNode == null) {
+                    // Use the piggy reference from getPickInfos()
+                    pickNode = pickInfo.getNodeRef();    
+                }
                 
                 if (pickNode instanceof Shape3D) {
 
