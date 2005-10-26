@@ -1,0 +1,319 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>The Java 3D API - Introduction</title>
+</head>
+<body>
+<h2>Introduction to the Java 3D API</h2>
+<p>The Java 3D API is an application
+programming interface used for writing three-dimensional graphics
+applications and applets. It gives developers high-level constructs for
+creating and manipulating 3D geometry and for constructing the
+structures used in rendering that geometry. Application developers can
+describe very large virtual worlds using these constructs, which
+provide Java 3D with enough information to render these worlds
+efficiently.
+</p>
+<p>Java 3D delivers Java's "write once, run anywhere"
+benefit to
+developers of 3D graphics applications. Java 3D is part of the
+JavaMedia suite of APIs, making it available on a wide range of
+platforms. It also integrates well with the Internet because
+applications and applets written using the Java 3D API have access to
+the entire set of Java classes.
+</p>
+<p>The Java 3D API draws its ideas from existing
+graphics APIs and from
+new technologies. Java 3D's low-level graphics constructs synthesize
+the best ideas found in low-level APIs such as Direct3D, OpenGL,
+QuickDraw3D, and XGL. Similarly, its higher-level constructs synthesize
+the best ideas found in several scene graph-based systems. Java 3D
+introduces some concepts not commonly considered part of the graphics
+environment, such as 3D spatial sound. Java 3D's sound capabilities
+help to provide a more immersive experience for the user.<br>
+</p>
+<p><i>NOTE: Prior to version 1.4, the
+Java&nbsp;3D API was formally specified by a
+separate Java&nbsp;3D API Specification Guide, published separately
+from the javadoc. As of version 1.4,
+the javadoc-generated API reference is definitive. Relevant portions of
+the guide have been included here and supersede any previously
+published
+information.</i>
+</p>
+<p>
+</p>
+<h2>Programming Paradigm</h2>
+Java 3D is an object-oriented API. Applications construct individual
+graphics elements as separate objects and connect them together into a
+treelike structure called a <em>scene graph</em>. The application
+manipulates these objects using their predefined accessor, mutator, and
+node-linking methods.
+<h3>The Scene Graph Programming
+Model</h3>
+Java 3D's scene graph-based programming model provides a simple and
+flexible mechanism for representing and rendering scenes. The scene
+graph contains a complete description of the entire scene, or virtual
+universe. This includes the geometric data, the attribute information,
+and the viewing information needed to render the scene from a
+particular point of view. The "<a href="SceneGraphOverview.html">Scene
+Graph Basics</a>" document provides more information on the Java 3D
+scene graph programming model.
+<p>The Java 3D API improves on previous graphics APIs
+by eliminating many
+of the bookkeeping and programming chores that those APIs impose. Java
+3D allows the programmer to think about geometric objects rather than
+about triangles-about the scene and its composition rather than about
+how to write the rendering code for efficiently displaying the scene.
+</p>
+<p>
+</p>
+<h3>Rendering Modes</h3>
+Java 3D includes three different rendering modes: immediate mode,
+retained mode, and compiled-retained mode (see "<a href="Rendering.html">Execution
+and Rendering Model</a>").
+Each successive rendering mode allows Java 3D more freedom in
+optimizing an application's execution. Most Java 3D applications will
+want to take advantage of the convenience and performance benefits that
+the retained and compiled-retained modes provide.
+<h4>Immediate Mode</h4>
+Immediate mode leaves little room for global
+optimization at the scene graph level. Even so, Java 3D has raised the
+level of abstraction and accelerates immediate mode rendering on a
+per-object basis. An application must provide a Java 3D draw method
+with a complete set of points, lines, or triangles, which are then
+rendered by the high-speed Java 3D renderer. Of course, the application
+can build these lists of points, lines, or triangles in any manner it
+chooses.
+<h4>Retained Mode</h4>
+Retained mode requires an application to construct a scene graph and
+specify which elements of that scene graph may change during rendering.
+The scene graph describes the objects in the virtual universe, the
+arrangement of those objects, and how the application animates those
+objects.
+<h4>Compiled-Retained Mode</h4>
+Compiled-retained mode, like retained mode, requires the application to
+construct a scene graph and specify which elements of the scene graph
+may change during rendering. Additionally, the application can compile
+some or all of the subgraphs that make up a complete scene graph. Java
+3D compiles these graphs into an internal format. The compiled
+representation of the scene graph may bear little resemblance to the
+original tree structure provided by the application, however, it is
+functionally equivalent. Compiled-retained mode provides the highest
+performance.
+<h3>Extensibility</h3>
+Most Java 3D classes expose only accessor and mutator methods. Those
+methods operate only on that object's internal state, making it
+meaningless for an application to override them. Therefore, Java 3D
+does not provide the capability to override the behavior of Java 3D
+attributes. To make Java 3D work correctly, applications must call "<code>super.setXxxxx</code>"
+for any attribute state set method that is overridden.
+<p>Applications can extend Java 3D's classes and add
+their own methods.
+However, they may not override Java 3D's scene graph traversal
+semantics because the nodes do not contain explicit traversal and draw
+methods. Java 3D's renderer retains those semantics internally.
+</p>
+<p>Java 3D <em>does</em> provide hooks for mixing
+Java 3D-controlled scene graph rendering and user-controlled rendering
+using Java 3D's immediate mode constructs (see "<a
+ href="Immediate.html#Mixed">Mixed-Mode Rendering</a>"). Alternatively,
+the application can
+stop Java 3D's renderer and do all its drawing in immediate mode (see "<a
+ href="Immediate.html#PureImmediate">Pure Immediate-Mode Rendering</a>").
+</p>
+<p>Behaviors require applications to extend the
+Behavior object and to
+override its methods with user-written Java code. These extended
+objects should contain references to those scene graph objects that
+they will manipulate at run time. The "<a href="Behaviors.html">Behaviors
+and Interpolators</a>" document describes Java 3D's behavior
+model.
+</p>
+<p>
+</p>
+<h2>High Performance</h2>
+Java 3D's programming model allows the Java 3D API to do the mundane
+tasks, such as scene graph traversal, managing attribute state changes,
+and so forth, thereby simplifying the application's job. Java 3D does
+this without sacrificing performance. At first glance, it might appear
+that this approach would create more work for the API; however, it
+actually has the opposite effect. Java 3D's higher level of abstraction
+changes not only the amount but, more important, also the kind of work
+the API must perform. Java 3D does not need to impose the same type of
+constraints as do APIs with a lower level of abstraction, thus allowing
+Java 3D to introduce optimizations not possible with these lower-level
+APIs.
+<p>Additionally, leaving the details of rendering to
+Java 3D allows it to
+tune the rendering to the underlying hardware. For example, relaxing
+the strict rendering order imposed by other APIs allows parallel
+traversal as well as parallel rendering. Knowing which portions of the
+scene graph cannot be modified at run time allows Java 3D to flatten
+the tree, pretransform geometry, or represent the geometry in a native
+hardware format without the need to keep the original data.
+</p>
+<p>
+</p>
+<h3>Layered Implementation</h3>
+Besides optimizations at the scene graph level, one of the more
+important factors that determines the performance of Java 3D is the
+time it takes to render the visible geometry. Java 3D implementations
+are layered to take advantage of the native, low-level API that is
+available on a given system. In particular, Java 3D implementations
+that use Direct3D and OpenGL are available. This means that Java 3D
+rendering will be accelerated across the same wide range of systems
+that are supported by these lower-level APIs.
+<h3>Target Hardware Platforms</h3>
+Java 3D is aimed at a wide range of 3D-capable hardware and software
+platforms, from low-cost PC game cards and software renderers at the
+low end, through midrange workstations, all the way up to very
+high-performance specialized 3D image generators.
+<p>Java 3D implementations are expected to provide
+useful rendering rates
+on most modern PCs, especially those with 3D graphics accelerator
+cards. On midrange workstations, Java 3D is expected to provide
+applications with nearly full-speed hardware performance.
+</p>
+<p>Finally, Java 3D is designed to scale as the
+underlying hardware
+platforms increase in speed over time. Tomorrow's 3D PC game
+accelerators will support more complex virtual worlds than high-priced
+workstations of a few years ago. Java 3D is prepared to meet this
+increase in hardware performance.
+</p>
+<p>
+</p>
+<h2>Structuring the Java 3D Program</h2>
+<p>This section illustrates how a developer might
+structure a Java 3D application. The simple application in this example
+creates a scene graph that draws an object in the middle of a window
+and rotates the object about its center point.
+</p>
+<h3>Java 3D Application Scene
+Graph</h3>
+<p>The scene graph for the sample application is shown below.
+</p>
+<p>The scene graph consists of superstructure
+components&#8212;a VirtualUniverse
+object and a Locale object&#8212;and a set of branch graphs. Each branch
+graph is a subgraph that is rooted by a BranchGroup node that is
+attached to the superstructure. For more information, see "<a
+ href="SceneGraphOverview.html">Scene Graph Basics</a>."
+</p>
+<p>
+<img style="width: 500px; height: 263px;" alt="Application scene graph"
+ title="Application scene graph" src="intro.gif"></p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 1 &#8211; </i>Application Scene Graph</b></font>
+</ul>
+<p>
+A VirtualUniverse object defines a named universe. Java 3D permits the
+creation of more than one universe, though the vast majority of
+applications will use just one. The VirtualUniverse object provides a
+grounding for scene graphs. All Java 3D scene graphs must connect to a
+VirtualUniverse object to be displayed. For more information, see "<a
+ href="VirtualUniverse.html">Scene Graph Superstructure</a>."
+</p>
+<p>Below the VirtualUniverse object is a Locale object.
+The Locale object
+defines the origin, in high-resolution coordinates, of its attached
+branch graphs. A virtual universe may contain as many Locales as
+needed. In this example, a single Locale object is defined with its
+origin at (0.0, 0.0, 0.0).
+</p>
+<p>The scene graph itself starts with the <a href="../BranchGroup.html">BranchGroup</a>
+nodes.
+A BranchGroup serves as the root of a
+subgraph, called a <em>branch graph</em>, of the scene graph. Only
+BranchGroup objects can attach to Locale objects.
+</p>
+<p>In this example there are two branch graphs and,
+thus, two BranchGroup
+nodes. Attached to the left BranchGroup are two subgraphs. One subgraph
+consists of a user-extended Behavior leaf node. The Behavior node
+contains Java code for manipulating the transformation matrix
+associated with the object's geometry.
+</p>
+<p>The other subgraph in this BranchGroup consists of a
+TransformGroup
+node that specifies the position (relative to the Locale), orientation,
+and scale of the geometric objects in the virtual universe. A single
+child, a Shape3D leaf node, refers to two component objects: a Geometry
+object and an Appearance object. The Geometry object describes the
+geometric shape of a 3D object (a cube in our simple example). The
+Appearance object describes the appearance of the geometry (color,
+texture, material reflection characteristics, and so forth).
+</p>
+<p>The right BranchGroup has a single subgraph that
+consists of a
+TransformGroup node and a ViewPlatform leaf node. The TransformGroup
+specifies the position (relative to the Locale), orientation, and scale
+of the ViewPlatform. This transformed ViewPlatform object defines the
+end user's view within the virtual universe.
+</p>
+<p>Finally, the ViewPlatform is referenced by a View
+object that specifies
+all of the parameters needed to render the scene from the point of view
+of the ViewPlatform. Also referenced by the View object are other
+objects that contain information, such as the drawing canvas into which
+Java 3D renders, the screen that contains the canvas, and information
+about the physical environment.
+</p>
+<p>
+</p>
+<h3>Recipe for a Java 3D Program</h3>
+<p>The following steps are taken by the example program to create the
+scene graph elements and link them together. Java 3D will then render
+the scene graph and display the graphics in a window on the screen:</p>
+<ul>
+1. Create a Canvas3D object and add it to the Applet panel.
+  <p>2. Create a BranchGroup as the root of the scene branch graph.</p>
+  <p>3. Construct a Shape3D node with a TransformGroup node above it.</p>
+  <p>4. Attach a RotationInterpolator behavior to the TransformGroup.</p>
+  <p>5. Call the simple universe utility function to do the following:</p>
+  <ul>
+a. Establish a virtual universe with a single high-resolution Locale
+(see "<a href="SceneGraphOverview.html">Scene Graph Basics</a>").
+    <p>b. Create the PhysicalBody, PhysicalEnvironment, View, and
+ViewPlat-form objects.</p>
+    <p>c. Create a BranchGroup as the root of the view platform branch
+graph.</p>
+    <p>d. Insert the view platform branch graph into the Locale.</p>
+  </ul>
+6. Insert the scene branch graph into the simple universe's Locale.
+</ul>
+<p>The Java 3D renderer then starts running in an infinite loop. The
+renderer conceptually performs the following operations:</p>
+<pre>    while(true) {<br>        Process input<br>        If (request to exit) break<br>        Perform Behaviors<br>        Traverse the scene graph and render visible objects<br>    }<br>    Cleanup and exit<br></pre>
+<h3>HelloUniverse: A Sample Java
+3D Program</h3>
+<p><a href="HelloUniverse.html">Click here</a> to see code fragments
+from a simple program, <code>HelloUniverse.java</code>,
+that creates a cube and a RotationInterpolator behavior object that
+rotates the cube at a constant rate of pi/2 radians per second.<br>
+</p>
+<h2>Other Documents<br>
+</h2>
+<p>Here are other documents that provide explanatory material,
+previously included as part of
+the Java 3D API Specification Guide.<br>
+</p>
+<ul>
+  <li><a href="Concepts.html">Java 3D Concepts</a></li>
+  <li><a href="SceneGraphOverview.html">Scene Graph Basics</a></li>
+  <li><a href="VirtualUniverse.html">Scene Graph Superstructure</a></li>
+  <li><a href="SceneGraphSharing.html">Reusing Scene Graphs</a></li>
+  <li><a href="ViewModel.html">View Model</a></li>
+  <li><a href="Behaviors.html">Behaviors and Interpolators</a></li>
+  <li><a href="Rendering.html">Execution and Rendering Model</a></li>
+  <li><a href="Immediate.html">Immediate-Mode Rendering</a></li>
+</ul>
+<p><br>
+</p>
+</body>
+</html>

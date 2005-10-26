@@ -192,7 +192,15 @@
     </jar>
   </target>
 
-  <target name="docs-jcp">
+  <target name="setup-docs">
+    <!-- use javadoc.bottom.new once we have the spec license from the JCP PMO -->
+    <property name="javadoc.bottom.new"
+       value="&lt;font size=&quot;-1&quot;&gt;Copyright 2005 Sun Microsystems, Inc. All rights reserved. Use is subject to &lt;a href=&quot;{@docRoot}/LICENSE-SPEC.html&quot;&gt;license terms&lt;/a&gt;."/>
+    <property name="javadoc.bottom"
+       value="&lt;font size=&quot;-1&quot;&gt;Copyright 2005 Sun Microsystems, Inc. All rights reserved. Use is subject to license terms."/>
+  </target>
+
+  <target name="docs-jcp" depends="setup-docs">
     <!-- Create the build directory structure used by docs -->
     <mkdir dir="${build}/${platform}/javadocs/docs-jcp"/>
 
@@ -201,6 +209,7 @@
                            javax.vecmath.*"
              maxmemory="128m"
              destdir="${build}/${platform}/javadocs/docs-jcp"
+	     bottom="${javadoc.bottom}"
              windowtitle="Java 3D ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
@@ -210,13 +219,14 @@
              </sourcepath>
     </javadoc>
 
-    <!-- Copy the copyright file -->
+    <!-- Copy the copyright and license files -->
     <copy todir="${build}/${platform}/javadocs/docs-jcp">
       <fileset dir="${src}/.." includes="COPYRIGHT.txt"/>
+      <fileset dir="${src}/.." includes="LICENSE-SPEC.html"/>
     </copy>
   </target>
 
-  <target name="docs-private">
+  <target name="docs-private" depends="setup-docs">
     <!-- Create the build directory structure used by docs -->
     <mkdir dir="${build}/${platform}/javadocs/docs-private"/>
 
@@ -241,6 +251,7 @@
              maxmemory="128m"
 	     private="true"
              destdir="${build}/${platform}/javadocs/docs-private"
+	     bottom="${javadoc.bottom}"
              windowtitle="Java 3D ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
@@ -251,13 +262,14 @@
              </sourcepath>
     </javadoc>
 
-    <!-- Copy the copyright file -->
+    <!-- Copy the copyright and license files -->
     <copy todir="${build}/${platform}/javadocs/docs-private">
       <fileset dir="${src}/.." includes="COPYRIGHT.txt"/>
+      <fileset dir="${src}/.." includes="LICENSE-SPEC.html"/>
     </copy>
   </target>
 
-  <target name="docs-public">
+  <target name="docs-public" depends="setup-docs">
     <!-- Create the build directory structure used by docs -->
     <mkdir dir="${build}/${platform}/javadocs/docs-public"/>
 
@@ -271,6 +283,7 @@
 			   com.sun.j3d.utils.scenegraph.io.state.*"
              maxmemory="128m"
              destdir="${build}/${platform}/javadocs/docs-public"
+	     bottom="${javadoc.bottom}"
              windowtitle="Java 3D ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
@@ -280,9 +293,10 @@
              </sourcepath>
     </javadoc>
 
-    <!-- Copy the copyright file -->
+    <!-- Copy the copyright and license files -->
     <copy todir="${build}/${platform}/javadocs/docs-public">
       <fileset dir="${src}/.." includes="COPYRIGHT.txt"/>
+      <fileset dir="${src}/.." includes="LICENSE-SPEC.html"/>
     </copy>
   </target>
 

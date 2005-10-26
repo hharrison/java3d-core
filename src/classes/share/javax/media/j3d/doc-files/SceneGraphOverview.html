@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Java 3D API - Scene Graph Overview</title>
+</head>
+<body>
+<h2>Scene Graph Basics</h2>
+<p>A scene graph consists of Java 3D
+objects, called <em>nodes</em>,
+arranged in a tree structure. The user creates one or more scene
+subgraphs and attaches them to a virtual universe. The individual
+connections between Java 3D nodes always represent a directed
+relationship: parent to child. Java 3D restricts scene graphs in one
+major way: Scene graphs may not contain cycles. Thus, a Java 3D scene
+graph is a directed acyclic graph (DAG). See <a href="#Figure_1">Figure
+1</a>.
+</p>
+<p>Java 3D refines the <a href="../Node.html">Node</a> object class
+into two subclasses: <a href="../Group.html">Group</a>
+and
+<a href="../Leaf.html">Leaf</a> node objects. Group node objects group
+together one or more child
+nodes. A group node can point to zero or more children but can have
+only one parent. The SharedGroup node cannot have any parents (although
+it allows sharing portions of a scene graph, as described in "<a
+ href="SceneGraphSharing.html">Reusing Scene Graphs</a>").
+Leaf node objects contain the actual definitions of shapes (geometry),
+lights, fog, sounds, and so forth. A leaf node has no children and only
+one parent. The semantics of the various group and leaf nodes are
+described in subsequent chapters. </p>
+<h2>Scene Graph Structure</h2>
+<p>A scene graph organizes and controls the rendering
+of its constituent objects. The Java 3D renderer draws a scene graph in
+a consistent way that allows for concurrence. The Java 3D renderer can
+draw one object independently of other objects. Java 3D can allow such
+independence because its scene graphs have a particular form and cannot
+share state among branches of a tree.
+</p>
+<h3>Spatial Separation</h3>
+<p>The hierarchy of the scene graph encourages a natural spatial
+grouping
+on the geometric objects found at the leaves of the graph. Internal
+nodes act to group their children together. A group node also defines a
+spatial bound that contains all the geometry defined by its
+descendants. Spatial grouping allows for efficient implementation of
+operations such as proximity detection, collision detection, view
+frustum culling, and occlusion culling.
+</p>
+<p><a name="Figure_1"></a><img style="width: 500px; height: 341px;"
+ alt="Directed Acyclic Graph" title="Directed Acyclic Graph"
+ src="DAG.gif"></p>
+<p> </p>
+<ul>
+  <font size="-1"><b><i>Figure 1</i> &#8211; A Java
+3D Scene Graph Is a DAG
+(Directed Acyclic Graph)</b></font>
+</ul>
+<p> </p>
+<h3>State Inheritance</h3>
+<p>A leaf node's state is defined by the nodes in a direct path between
+the scene graph's root and the leaf. Because a leaf's graphics context
+relies only on a linear path between the root and that node, the Java
+3D renderer can decide to traverse the scene graph in whatever order it
+wishes. It can traverse the scene graph from left to right and top to
+bottom, in level order from right to left, or even in parallel. The
+only exceptions to this rule are spatially bounded attributes such as
+lights and fog.
+</p>
+<p>This characteristic is in marked contrast to many older scene
+graph-based APIs (including PHIGS and SGI's Inventor) where, if a node
+above or to the left of a node changes the graphics state, the change
+affects the graphics state of all nodes below it or to its right. </p>
+<p>The most common node object, along the path from the root to the
+leaf,
+that changes the graphics state is the TransformGroup object. The
+TransformGroup object can change the position, orientation, and scale
+of the objects below it. </p>
+<p>Most graphics state attributes are set by a Shape3D leaf node
+through
+its constituent Appearance object, thus allowing parallel rendering.
+The Shape3D node also has a constituent Geometry object that specifies
+its geometry-this permits different shape objects to share common
+geometry without sharing material attributes (or vice versa). </p>
+<p> </p>
+<h3>Rendering</h3>
+<p>The Java 3D renderer incorporates all graphics state changes made in
+a
+direct path from a scene graph root to a leaf object in the drawing of
+that leaf object. Java 3D provides this semantic for both retained and
+compiled-retained modes.
+</p>
+<p> </p>
+<h2>Scene Graph Objects</h2>
+<p>A Java 3D scene graph consists of a collection of Java 3D node
+objects
+connected in a tree structure. These node objects reference other scene
+graph objects called <em>node component objects</em>.
+All scene graph node and component objects are subclasses of a common
+<a href="../SceneGraphObject.html">SceneGraphObject</a> class. The
+SceneGraphObject class is an abstract class
+that defines methods that are common among nodes and component objects.
+</p>
+<p>Scene graph objects are constructed by creating a new instance of
+the
+desired class and are accessed and manipulated using the object's <code>set</code>
+and <code>get</code>
+methods. Once a scene graph object is created and connected to other
+scene graph objects to form a subgraph, the entire subgraph can be
+attached to a virtual universe---via a high-resolution <a
+ href="../Locale.html">Locale</a>
+object-making the object <em>live</em>. Prior to attaching a subgraph
+to a virtual
+universe, the entire subgraph can be <em>compiled</em> into an
+optimized, internal format (see the
+<code><a href="../BranchGroup.html#compile%28%29">BranchGroup.compile()</a></code>
+method). </p>
+<p>An important characteristic of all scene graph objects is that
+they can
+be accessed or modified only during the creation of a scene graph,
+except where explicitly allowed. Access to most <code>set</code> and <code>get</code>
+methods of objects that are part of a live or compiled scene graph is
+restricted. Such restrictions provide the scene graph compiler with
+usage information it can use in optimally compiling or rendering a
+scene graph. Each object has a set of capability bits that enable
+certain functionality when the object is live or compiled. By default,
+all capability bits are disabled (cleared). Only those <code>set</code>
+and <code>get</code>
+methods corresponding to capability bits that are explicitly enabled
+(set) prior to the object being compiled or made live are legal.<br>
+</p>
+<p> </p>
+<h2>Scene Graph Superstructure
+Objects</h2>
+Java 3D defines two scene graph superstructure objects,
+<a href="../VirtualUniverse.html">VirtualUniverse</a>
+and <a href="../Locale.html">Locale</a>, which are used to contain
+collections of subgraphs that
+comprise the scene graph. These objects are described in more detail in
+"<a href="VirtualUniverse.html">Scene Graph Superstructure</a>."
+<p> </p>
+<h3>VirtualUniverse Object</h3>
+A <a href="../VirtualUniverse.html">VirtualUniverse</a> object
+consists of a list of Locale objects that
+contain a collection of scene graph nodes that exist in the universe.
+Typically, an application will need only one VirtualUniverse, even for
+very large virtual databases. Operations on a VirtualUniverse include
+enumerating the Locale objects contained within the universe. See "<a
+ href="VirtualUniverse.html#VirtualUniverse">Scene Graph
+Superstructure: VirtualUniverse Object</a>," for more information.
+<p> </p>
+<h3>Locale Object</h3>
+The <a href="../Locale.html">Locale</a> object acts as a container for
+a collection of subgraphs of
+the scene graph that are rooted by a BranchGroup node. A Locale also
+defines a location within the virtual universe using high-resolution
+coordinates (HiResCoord) to specify its position. The HiResCoord serves
+as the origin for all scene graph objects contained within the Locale.
+<p>A Locale has no parent in the scene graph but is implicitly
+attached to
+a virtual universe when it is constructed. A Locale may reference an
+arbitrary number of BranchGroup nodes but has no explicit children. </p>
+<p>The coordinates of all scene graph objects are relative to the
+HiResCoord of the Locale in which they are contained. Operations on a
+Locale include setting or getting the HiResCoord of the Locale, adding
+a subgraph, and removing a subgraph (see "<a
+ href="VirtualUniverse.html#Locale">Scene Graph Superstructure: Locale
+Object</a>," for more information). </p>
+<p> </p>
+<h2>Scene Graph Viewing Objects</h2>
+Java 3D defines five scene graph viewing objects that are not part of
+the scene graph per se but serve to define the viewing parameters and
+to provide hooks into the physical world. These objects are <a
+ href="../Canvas3D.html">Canvas3D</a>,
+<a href="../Screen3D.html">Screen3D</a>, <a href="../View.html">View</a>,
+<a href="../PhysicalBody.html">PhysicalBody</a>, and <a
+ href="../PhysicalEnvironment.html">PhysicalEnvironment</a>. They are
+described in more detail in the "<a href="ViewModel.html">View Model</a>"
+document.<br>
+<p> </p>
+<h3>Canvas3D Object</h3>
+The <a href="../Canvas3D.html">Canvas3D</a> object encapsulates all of
+the parameters associated with
+the window being rendered into.
+When a Canvas3D object is attached to a View object, the Java 3D
+traverser renders the specified view onto the canvas. Multiple Canvas3D
+objects can point to the same View object.
+<p> </p>
+<h3>Screen3D Object</h3>
+The <a href="../Screen3D.html">Screen3D</a> object encapsulates all of
+the
+parameters associated with the physical screen containing the canvas,
+such as the width and height of the screen in pixels, the physical
+dimensions of the screen, and various physical calibration values.
+<p> </p>
+<h3>View Object</h3>
+The <a href="../View.html">View</a> object specifies information
+needed to render the scene graph.
+<a href="#Figure_2">Figure
+2</a> shows a View object attached to a simple scene graph for
+viewing the scene.
+<p>The View object is the central Java 3D object for coordinating all
+aspects of viewing.
+All viewing parameters in Java 3D are directly contained either within
+the View object or within objects pointed to by a View object. Java 3D
+supports multiple simultaneously active View objects, each of which can
+render to one or more canvases. </p>
+<p> </p>
+<h3>PhysicalBody Object</h3>
+The PhysicalBody object encapsulates all of the
+parameters associated with the physical body, such as head position,
+right and left eye position, and so forth.
+<p> </p>
+<h3>PhysicalEnvironment Object</h3>
+<p>The PhysicalEnvironment object encapsulates all of the parameters
+associated with the physical environment, such as calibration
+information for the tracker base for the head or hand tracker.<br>
+</p>
+<p><a name="Figure_2"></a><br>
+</p>
+<p><img style="width: 489px; height: 339px;" alt="Viewing a Scene Graph"
+ title="Viewing a Scene Graph" src="ViewBranch.gif">
+</p>
+<p> </p>
+<ul>
+  <font size="-1"><b><i>Figure 2</i> &#8211; Viewing a Scene Graph</b></font>
+</ul>
+</body>
+</html>
