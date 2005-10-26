@@ -794,7 +794,8 @@ public class PickInfo extends Object {
         }
         
         // We're done with PICK_BOUNDS case, but there is still more work for PICK_GEOMETRY case.
-        if((mode == PICK_GEOMETRY) && ((pickInfoListSize = pickInfoList.size()) > 0)) {
+        if((mode == PICK_GEOMETRY) && (pickInfoList != null) && 
+	   ((pickInfoListSize = pickInfoList.size()) > 0)) {
             
             //System.out.println("PickInfo.pick() - In geometry case : pickInfoList.size() is " + pickInfoListSize);
             PickInfo pickInfo = null;
