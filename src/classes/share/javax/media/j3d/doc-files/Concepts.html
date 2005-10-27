@@ -7,5 +7,289 @@
 </head>
 <body>
 <h2>Java 3D Concepts</h2>
+<p>The Java 3D API specification serves to define objects, methods, and
+their actions precisely. Describing how to use an API belongs in a
+tutorial or programmer's
+reference manual, and is well beyond the scope of this specification.
+However, a short introduction to the main concepts in Java 3D will
+provide the context for understanding the detailed, but isolated,
+specification found in the class and method descriptions. We introduce
+some of the key Java 3D concepts and illustrate them with some simple
+program fragments.
+</p>
+<p>
+</p>
+<h2>Basic Scene Graph Concepts</h2>
+<p>A scene graph is a "tree" structure that contains data arranged in a
+hierarchical manner. The scene graph consists of parent nodes, child
+nodes, and data objects. The parent nodes, called Group nodes, organize
+and, in some cases, control how Java 3D interprets their descendants.
+Group nodes serve as the glue that holds a scene graph together. Child
+nodes can be either Group nodes or Leaf nodes. Leaf nodes have no
+children. They encode the core semantic elements of a scene graph- for
+example, what to draw (geometry), what to play (audio), how to
+illuminate objects (lights), or what code to execute (behaviors). Leaf
+nodes refer to data objects, called NodeComponent objects.
+NodeComponent objects are not scene graph nodes, but they contain the
+data that Leaf nodes require, such as the geometry to draw or the sound
+sample to play.
+</p>
+<p>A Java 3D application builds and manipulates a scene graph by
+constructing Java 3D objects and then later modifying those objects by
+using their methods. A Java 3D program first constructs a scene graph,
+then, once built, hands that scene graph to Java 3D for processing.
+</p>
+<p>The structure of a scene graph determines the relationships among
+the
+objects in the graph and determines which objects a programmer can
+manipulate as a single entity. Group nodes provide a single point for
+handling or manipulating all the nodes beneath it. A programmer can
+tune a scene graph appropriately by thinking about what manipulations
+an application will need to perform. He or she can make a particular
+manipulation easy or difficult by grouping or regrouping nodes in
+various ways.
+</p>
+<p>
+</p>
+<h3>Constructing a Simple Scene
+Graph</h3>
+<p>The following code constructs a simple scene graph consisting of a
+group node and two leaf
+nodes.<br>
+</p>
+<p><font size="-1"><b><a name="Listing_1">
+<i>Listing 1</i> &#8211; Code for Constructing a Simple Scene Graph
+</a></b></font></p>
+<hr>
+<pre>Shape3D myShape1 = new Shape3D(myGeometry1, myAppearance1);<br>Shape3D myShape2 = new Shape3D(myGeometry2);<br>myShape2.setAppearance(myAppearance2);<br><br>Group myGroup = new Group();<br>myGroup.addChild(myShape1);<br>myGroup.addChild(myShape2);<br></pre>
+<hr>
+<p>It first constructs one leaf node, the first of two Shape3D
+nodes, using a constructor that takes both a Geometry and an Appearance
+NodeComponent object. It then constructs the second Shape3D node, with
+only a Geometry object. Next, since the second Shape3D node was created
+without an Appearance object, it supplies the missing Appearance object
+using the Shape3D node's <code>setAppearance</code> method. At this
+point both leaf nodes have been fully constructed. The code next
+constructs a group node to hold the two leaf nodes. It
+uses the Group node's <code>addChild</code> method to add the two leaf
+nodes as children to the group node, finishing the construction of the
+scene graph. <a href="#Figure_1">Figure
+1</a>
+shows the constructed scene graph, all the nodes, the node component
+objects, and the variables used in constructing the scene graph.
+</p>
+<p><a name="Figure_1"></a><img style="width: 491px; height: 279px;"
+ alt="A Simple Scene Graph" title="A Simple Scene Graph"
+ src="Concepts1.gif">
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 1</i> &#8211; A Simple Scene Graph</b></font>
+</ul>
+<h3>A Place For Scene Graphs</h3>
+Once a scene graph has been constructed, the
+question becomes what to do with it? Java 3D cannot start rendering a
+scene graph until a program "gives" it the scene graph. The program
+does this by inserting the scene graph into the virtual universe.
+<p>Java 3D places restrictions on how a program can insert a scene
+graph
+into a universe.
+</p>
+<p>A Java 3D environment consists of two superstructure objects,
+VirtualUniverse and Locale, and one or more graphs, rooted by a special
+BranchGroup node. <a href="#Figure_2">Figure 2</a> shows these objects
+in context with other scene graph objects.
+</p>
+<p>The VirtualUniverse object defines a universe. A universe allows a
+Java
+3D program to create a separate and distinct arena for defining objects
+and their relationships to one another. Typically, Java 3D programs
+have only one VirtualUniverse object. Programs that have more than one
+VirtualUniverse may share NodeComponent objects but not scene graph
+node objects.
+</p>
+<p>The Locale object specifies a fixed position within the universe.
+That
+fixed position defines an origin for all scene graph nodes beneath it.
+The Locale object allows a programmer to specify that origin very
+precisely and with very high dynamic range. A Locale can accurately
+specify a location anywhere in the known physical universe and at the
+precision of Plank's distance. Typically, Java 3D programs have only
+one Locale object with a default origin of (0, 0, 0). Programs that
+have more than one Locale object will set the location of the
+individual Locale objects so that they provide an appropriate local
+origin for the nodes beneath them. For example, to model the Mars
+landing, a programmer might create one Locale object with an origin at
+Cape Canaveral and another with an origin located at the landing site
+on Mars.
+</p>
+<p><a name="Figure_2"></a><img style="width: 500px; height: 286px;"
+ alt="Content Branch, View Branch, Superstructure"
+ title="Superstructure" src="Concepts2.gif">
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 2</i> &#8211; Content Branch, View Branch, and
+Superstructure</b></font>
+</ul>
+<p>
+The BranchGroup node serves as the root of a <em>branch graph</em>.
+Collectively, the BranchGroup node and all of its children form the
+branch graph. The two kinds of branch graphs are called content
+branches and view branches. A <em>content branch</em> contains only
+content-related leaf nodes, while a <em>view branch</em>
+contains a ViewPlatform leaf node and may contain other content-related
+leaf nodes. Typically, a universe contains more than one branch
+graph-one view branch, and any number of content branches.
+</p>
+<p>Besides serving as the root of a branch graph, the BranchGroup node
+has
+two special properties: It alone may be inserted into a Locale object,
+and it may be compiled. Java 3D treats uncompiled and compiled branch
+graphs identically, though compiled branch graphs will typically render
+more efficiently.
+</p>
+<p>We could not insert the scene graph created by our simple example (<a
+ href="#Listing_1">Listing
+1</a>) into a Locale because it does not have a BranchGoup node for
+its root. <a href="#Listing_2">Listing 2</a>
+shows a modified version of our first code example that creates a
+simple content branch graph and the minimum of superstructure objects.
+Of special note, Locales do not have children, and they are not part of
+the scene graph. The method for inserting a branch graph is <code>addBranchGraph</code>,
+whereas <code>addChild</code> is the method for adding children to all
+group nodes.</p>
+<p><font size="-1"><b>
+<i><a name="Listing_2"></a>Listing 2</i> &#8211; Code for Constructing a
+Scene Graph and Some
+Superstructure Objects
+</b></font></p>
+<hr>
+<pre>Shape3D myShape1 = new Shape3D(myGeometry1, myAppearance1);<br>Shape3D myShape2 = new Shape3D(myGeometry2, myAppearance2);<br><br>BranchGroup myBranch = new BranchGroup();<br>myBranch.addChild(myShape1);<br>myBranch.addChild(myShape2);<br>myBranch.compile();<br><br>VirtualUniverse myUniverse = new VirtualUniverse();<br>Locale myLocale = new Locale(myUniverse);<br>myLocale.addBranchGraph(myBranch);<br></pre>
+<hr>
+<h3>SimpleUniverse Utility</h3>
+Most Java 3D programs build an identical set of superstructure and view
+branch objects, so the Java 3D utility packages provide a <code>universe</code>
+package for constructing and manipulating the objects in a view branch.
+The classes in the <code>universe</code> package provide a quick means
+for building a single view (single window) application. <a
+ href="#Listing_3">Listing 3</a>
+shows a code fragment for using the SimpleUniverse class. Note that the
+SimpleUniverse constructor takes a Canvas3D as an argument, in this
+case referred to by the variable <code>myCanvas</code>.
+<p><font size="-1"><b><i><a name="Listing_3"></a>Listing 3</i> &#8211; Code
+for Constructing a Scene Graph Using the Universe
+Package
+</b></font></p>
+<hr>
+<pre>import com.sun.j3d.utils.universe.*;<br><br>Shape3D myShape1 = new Shape3D(myGeometry1, myAppearance1);<br>Shape3D myShape2 = new Shape3D(myGeometry2, myAppearance2);<br><br>BranchGroup myBranch = new BranchGroup();<br>myBranch.addChild(myShape1);<br>myBranch.addChild(myShape2);<br>myBranch.compile();<br><br>SimpleUniverse myUniv = new SimpleUniverse(myCanvas);<br>myUniv.addBranchGraph(myBranch);<br></pre>
+<hr>
+<h3>Processing a Scene Graph</h3>
+When given a scene graph, Java 3D processes that scene graph as
+efficiently as possible. How a Java 3D implementation processes a scene
+graph can vary, as long as the implementation conforms to the semantics
+of the API. In general, a Java 3D implementation will render all
+visible objects, play all enabled sounds, execute all triggered
+behaviors, process any identified input devices, and check for and
+generate appropriate collision events.
+<p>The order that a particular Java 3D implementation renders objects
+onto
+the display is carefully not defined. One implementation might render
+the first Shape3D object and then the second. Another might first
+render the second Shape3D node before it renders the first one. Yet
+another implementation may render both Shape3D nodes in parallel.
+</p>
+<p>
+</p>
+<h2>Features of Java 3D</h2>
+Java 3D allows a programmer to specify a broad range of information. It
+allows control over the shape of objects, their color, and
+transparency. It allows control over background effects, lighting, and
+environmental effects such as fog. It allows control over the placement
+of all objects (even nonvisible objects such as lights and behaviors)
+in the scene graph and over their orientation and scale. It allows
+control over how those objects move, rotate, stretch, shrink, or morph
+over time. It allows control over what code should execute, what sounds
+should play, and how they should sound and change over time.
+<p>Java 3D provides different techniques for controlling the effect of
+various features. Some techniques act fairly locally, such as getting
+the color of a vertex. Other techniques have broader influence, such as
+changing the color or appearance of an entire object. Still other
+techniques apply to a broad number of objects. In the first two cases,
+the programmer can modify a particular object or an object associated
+with the affected object. In the latter case, Java 3D provides a means
+for specifying more than one object spatially.
+</p>
+<p>
+</p>
+<h3>Bounds</h3>
+Bounds objects allow a programmer to define a volume in space. There
+are three ways to specify this volume: as a box, a sphere, or a set of
+planes enclosing a space.
+<p>Bounds objects specify a volume in which particular operations
+apply.
+Environmental effects such as lighting, fog, alternate appearance, and
+model clipping planes use bounds objects to specify their region of
+influence. Any object that falls within the space defined by the bounds
+object has the particular environmental effect applied. The proper use
+of bounds objects can ensure that these environmental effects are
+applied only to those objects in a particular volume, such as a light
+applying only to the objects within a single room.
+</p>
+<p>Bounds objects are also used to specify a region of action.
+Behaviors
+and sounds execute or play only if they are close enough to the viewer.
+The use of behavior and sound bounds objects allows Java 3D to cull
+away those behaviors and sounds that are too far away to affect the
+viewer (listener). By using bounds properly, a programmer can ensure
+that only the relevant behaviors and sounds execute or play.
+</p>
+<p>Finally, bounds objects are used to specify a region of application
+for
+per-view operations such as background, clip, and soundscape selection.
+For example, the background node whose region of application is closest
+to the viewer is selected for a given view.
+</p>
+<p>
+</p>
+<h3>Nodes</h3>
+All scene graph nodes have an implicit location in space of (0, 0, 0).
+For objects that exist in space, this implicit location provides a
+local coordinate system for that object, a fixed reference point. Even
+abstract objects that may not seem to have a well-defined location,
+such as behaviors and ambient lights, have this implicit location. An
+object's location provides an origin for its local coordinate system
+and, just as importantly, an origin for any bounding volume information
+associated with that object.
+<h3>Live and/or Compiled</h3>
+All scene graph objects, including nodes and node component objects,
+are either part of an active universe or not. An object is said to be <em>live</em>
+if it is part of an active universe. Additionally, branch graphs are
+either <em>compiled</em>
+or not. When a node is either live or compiled, Java 3D enforces access
+restrictions to nodes and node component objects. Java 3D allows only
+those operations that are enabled by the program before a node or node
+component becomes live or is compiled. It is best to set capabilities
+when you build your content. <a href="#Listing_4">Listing 4</a> shows
+an example where we create a TransformGroup node and
+enable it for writing.
+<p><font size="-1"><b><i><a name="Listing_4"></a>Listing 4</i> </b></font><font
+ size="-1"><b>&#8211; C</b></font><font size="-1"><b>apabilities Example
+</b></font></p>
+<hr>
+<pre>TransformGroup myTrans = new TransformGroup();<br>myTrans.setCapability(Transform.ALLOW_TRANSFORM_WRITE);<br></pre>
+<hr>
+<p>By setting the capability to write the transform, Java 3D will allow
+the following code to execute:
+</p>
+<pre>myTrans.setTransform3D(myT3D);<br></pre>
+However, the following code will cause an exception:
+<pre>myTrans.getTransform3D(myT3D);<br></pre>
+The reason for the exception is that the TransformGroup is not enabled
+for reading (<code>ALLOW_TRANSFORM_READ</code>).
+<p>It is important to ensure that all needed capabilities are set and
+that
+unnecessary capabilities are not set. The process of compiling a branch
+graph examines the capability bits and uses that information to reduce
+the amount of computation needed to run a program.
+</p>
 </body>
 </html>
