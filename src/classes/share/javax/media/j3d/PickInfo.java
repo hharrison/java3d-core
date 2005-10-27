@@ -841,6 +841,10 @@ public class PickInfo extends Object {
 		    for (int j = 0; j < ((Shape3D)pickNode).numGeometries(); j++) {
 			Geometry geo = ((Shape3D)pickNode).getGeometry(j);
 			
+			if(geo == null) {
+			    continue;
+			}
+
 			if(!geo.getCapability(Geometry.ALLOW_INTERSECT)) {
 			    throw new CapabilityNotSetException(J3dI18N.getString("PickInfo1"));
 			}
@@ -903,6 +907,10 @@ public class PickInfo extends Object {
 		    int numGeo = ((MorphRetained)(pickNode.retained)).getNumGeometryArrays();
 		    for (int j = 0; j < numGeo; j++) {
 			GeometryArray geo = ((Morph)pickNode).getGeometryArray(j);
+
+			if(geo == null) {
+			    continue;
+			}
 
 			if(!geo.getCapability(Geometry.ALLOW_INTERSECT)) {
 			    throw new CapabilityNotSetException(J3dI18N.getString("PickInfo1"));
