@@ -7,5 +7,259 @@
 </head>
 <body>
 <h2>Scene Graph Superstructure</h2>
+<p>Java 3D's superstructure consists of one or more
+VirtualUniverse objects, each of which contains a set of one or more
+high-resolution Locale objects. The Locale objects, in turn, contain
+collections of subgraphs that comprise the scene graph (see <a
+ href="#Figure_1">Figure
+1</a>).
+</p>
+<p>
+</p>
+<h2>The Virtual Universe</h2>
+Java 3D defines the concept of a <em>virtual universe</em>
+as a three-dimensional space with an associated set of objects. Virtual
+universes serve as the largest unit of aggregate representation, and
+can also be thought of as databases. Virtual universes can be very
+large, both in physical space units and in content. Indeed, in most
+cases a single virtual universe will serve an application's entire
+needs.
+<p>Virtual universes are separate entities in that no node object may
+exist in more than one virtual universe at any one time. Likewise, the
+objects in one virtual universe are not visible in, nor do they
+interact with objects in, any other virtual universe.
+</p>
+<p>To support large virtual universes, Java 3D introduces the concept
+of Locales that have <em>high-resolution coordinates</em>
+as an origin. Think of high-resolution coordinates as "tie-downs" that
+precisely anchor the locations of objects specified using less precise
+floating-point coordinates that are within the range of influence of
+the high-resolution coordinates.
+</p>
+<p>A Locale, with its associated high-resolution coordinates, serves as
+the next level of representation down from a virtual universe. All
+virtual universes contain one or more high-resolution-coordinate
+Locales, and all other objects are attached to a Locale.
+High-resolution coordinates act as an upper-level translation-only
+transform node. For example, the coordinates of all objects that are
+attached to a particular Locale are all relative to the location of
+that Locale's high-resolution coordinates.
+</p>
+<p><a name="Figure_1"></a><img style="width: 500px; height: 340px;"
+ alt="The Virtual Universe" title="The Virtual Universe"
+ src="VirtualUniverse.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 1</i> &#8211; The Virtual Universe</b></font>
+</ul>
+<p>
+While a virtual universe is similar to the traditional computer
+graphics concept of a scene graph, a given virtual universe can become
+so large that it is often better to think of a scene graph as the
+descendant of a high-resolution-coordinate Locale.
+</p>
+<p>
+</p>
+<h2>Establishing a Scene</h2>
+To construct a three-dimensional scene, the programmer must execute a
+Java 3D program. The Java 3D application must first create a
+VirtualUniverse object and attach at least one Locale to it. Then the
+desired scene graph is constructed, starting with a BranchGroup node
+and including at least one ViewPlatform object, and the scene graph is
+attached to the Locale. Finally, a View object that references the
+ViewPlatform object (see "<a href="intro.html#Structuring">Structuring
+the Java 3D Program</a>")
+is constructed. As soon as a scene graph containing a ViewPlatform is
+attached to the VirtualUniverse, Java 3D's rendering loop is engaged,
+and the scene will appear on the drawing canvas(es) associated with the
+View object.
+<h2>Loading a Virtual Universe</h2>
+Java 3D is a runtime application programming
+interface (API), not a file format. As an API, Java 3D provides no
+direct mechanism for loading or storing a virtual universe.
+Constructing a scene graph involves the execution of a Java 3D program.
+However, loaders to convert a number of standard 3D file formats to or
+from Java 3D virtual universes are expected to be generally available.
+<h2>Coordinate Systems</h2>
+By default, Java 3D coordinate systems are right-handed, with the
+orientation semantics being that +<em>y</em> is the local gravitational
+up, +<em>x</em> is horizontal to the right, and +<em>z</em> is directly
+toward the viewer. The default units are meters.
+<h2>High-Resolution Coordinates</h2>
+Double-precision floating-point, single-precision floating-point, or
+even fixed-point representations of three-dimensional coordinates are
+sufficient to represent and display rich 3D scenes. Unfortunately,
+scenes are not worlds, let alone universes. If one ventures even a
+hundred miles away from the (0.0, 0.0, 0.0) origin using only
+single-precision floating-point coordinates, representable points
+become quite quantized, to at very best a third of an inch (and much
+more coarsely than that in practice).
+<p>To "shrink" down to a small size (say the size of an IC transistor),
+even very near (0.0, 0.0, 0.0), the same problem arises.
+</p>
+<p>If a large contiguous virtual universe is to be supported, some form
+of
+higher-resolution addressing is required. Thus the choice of 256-bit
+positional components for "high-resolution" positions.
+</p>
+<p>
+</p>
+<h3>Java 3D High-Resolution
+Coordinates</h3>
+Java 3D high-resolution coordinates consist of three 256-bit
+fixed-point numbers, one each for <em>x</em>, <em>y</em>, and <em>z</em>.
+The fixed point is at bit 128, and the value 1.0 is defined to be
+exactly 1 meter. This coordinate system is sufficient to describe a
+universe in excess of several hundred billion light years across, yet
+still define objects smaller than a proton (down to below the planck
+length). <a href="#Table_1">Table
+1</a> shows how many bits are needed above or below the fixed point
+to represent the range of interesting physical dimensions.
+<p><a name="Table_1"></a>
+<table bordercolorlight="#FFFFFF" bordercolordark="#000000" border="1"
+ cellpadding="5" cellspacing="0">
+  <caption><font size="-1"><b> <i>Table 1</i> &#8211;
+Java 3D High-Resolution Coordinates </b></font></caption><tbody>
+    <tr bgcolor="#cccccc" valign="top">
+      <th><font color="#003366" size="-1">2<sup>n</sup> Meters </font></th>
+      <th><font color="#003366" size="-1">Units </font></th>
+    </tr>
+    <tr valign="top">
+      <td> 87.29</td>
+      <td>Universe (20 billion light years)&nbsp; <br>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td> 69.68</td>
+      <td>Galaxy (100,000 light years) </td>
+    </tr>
+    <tr valign="top">
+      <td> 53.07</td>
+      <td>Light year </td>
+    </tr>
+    <tr valign="top">
+      <td> 43.43</td>
+      <td>Solar system diameter </td>
+    </tr>
+    <tr valign="top">
+      <td> 23.60</td>
+      <td>Earth diameter </td>
+    </tr>
+    <tr valign="top">
+      <td> 10.65</td>
+      <td>Mile </td>
+    </tr>
+    <tr valign="top">
+      <td> 9.97</td>
+      <td>Kilometer </td>
+    </tr>
+    <tr valign="top">
+      <td> 0.00</td>
+      <td>Meter </td>
+    </tr>
+    <tr valign="top">
+      <td> -19.93</td>
+      <td>Micron </td>
+    </tr>
+    <tr valign="top">
+      <td> -33.22</td>
+      <td>Angstrom </td>
+    </tr>
+    <tr valign="top">
+      <td> -115.57</td>
+      <td>Planck length </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+<p>A 256-bit fixed-point number also has the advantage of being able to
+directly represent nearly any reasonable single-precision
+floating-point value <em>exactly</em>.
+</p>
+<p>High-resolution coordinates in Java 3D are used only to embed more
+traditional floating point coordinate systems within a much
+higher-resolution substrate. In this way a visually seamless virtual
+universe of any conceivable size or scale can be created, without worry
+about numerical accuracy.
+</p>
+<p>
+</p>
+<h3>Java 3D Virtual World
+Coordinates</h3>
+Within a given virtual world coordinate system, positions are expressed
+by three floating point numbers. The virtual world coordinate scale is
+in meters, but this can be affected by scale changes in the object
+hierarchy.
+<h3>Details of High-Resolution
+Coordinates</h3>
+High-resolution coordinates are represented as signed,
+two's-complement, fixed-point numbers consisting of 256 bits. Although
+Java 3D keeps the internal representation of high-resolution
+coordinates opaque, users specify such coordinates using 8-element
+integer arrays. Java 3D treats the integer found at index 0 as
+containing the most significant bits and the integer found at index 7
+as containing the least significant bits of the high-resolution
+coordinate. The binary point is located at bit position 128, or between
+the integers at index 3 and 4. A high-resolution coordinate of 1.0 is 1
+meter.
+<p>The semantics of how file loaders deal with high-resolution
+coordinates
+is up to the individual file loader, as Java 3D does not directly
+define any file-loading semantics. However, some general advice can be
+given (note that this advice is <em>not</em> officially part of the
+Java 3D specification).
+</p>
+<p>For "small" virtual universes (on the order of hundreds of meters
+across in relative scale), a single Locale with high-resolution
+coordinates at location (0.0, 0.0, 0.0) as the root node (below the
+VirtualUniverse object) is sufficient; a loader can automatically
+construct this node during the loading process, and the point in
+high-resolution coordinates does not need any direct representation in
+the external file.
+</p>
+<p>Larger virtual universes are expected to be constructed usually like
+computer directory hierarchies, that is, as a "root" virtual universe
+containing mostly external file references to embedded virtual
+universes. In this case, the file reference object (user-specific data
+hung off a Java 3D group or hi-res node) defines the location for the
+data to be read into the current virtual universe.
+</p>
+<p>The data file's contents should be parented to the file object node
+while being read, thus inheriting the high-resolution coordinates of
+the file object as the new relative virtual universe origin of the
+embedded scene graph. If this scene graph itself contains
+high-resolution coordinates, it will need to be offset (translated) by
+the amount in the file object's high-resolution coordinates and then
+added to the larger virtual universe as new high-resolution
+coordinates, with their contents hung off below them. Once again, this
+procedure is not part of the official Java 3D specification, but some
+more details on the care and use of high-resolution coordinates in
+external file formats will probably be available as a Java 3D
+application note.
+</p>
+<p>Authoring tools that directly support high-resolution coordinates
+should create additional high-resolution coordinates as a user creates
+new geometry "sufficiently" far away (or of different scale) from
+existing high-resolution coordinates.
+</p>
+<p><strong>Semantics of widely moving objects</strong>. Most fixed and
+nearly-fixed objects stay attached to the same high-resolution Locale.
+Objects that make wide changes in position or scale may periodically
+need to be reparented to a more appropriate high-resolution Locale. If
+no appropriate high-resolution Locale exists, the application may need
+to create a new one.
+</p>
+<p><strong>Semantics of viewing</strong>. The ViewPlatform object and
+the
+associated nodes in its hierarchy are very often widely moving objects.
+Applications will typically attach the view platform to the most
+appropriate high-resolution Locale. For display, all objects will first
+have their positions translated by the difference between the location
+of their high-resolution Locale and the view platform's high-resolution
+Locale. (In the common case of the Locales being the same, no
+translation is necessary.)
+</p>
 </body>
 </html>

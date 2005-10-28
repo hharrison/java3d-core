@@ -281,10 +281,6 @@ enable it for writing.
 the following code to execute:
 </p>
 <pre>myTrans.setTransform3D(myT3D);<br></pre>
-However, the following code will cause an exception:
-<pre>myTrans.getTransform3D(myT3D);<br></pre>
-The reason for the exception is that the TransformGroup is not enabled
-for reading (<code>ALLOW_TRANSFORM_READ</code>).
 <p>It is important to ensure that all needed capabilities are set and
 that
 unnecessary capabilities are not set. The process of compiling a branch
