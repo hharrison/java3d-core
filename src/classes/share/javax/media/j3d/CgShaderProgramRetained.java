@@ -15,19 +15,12 @@ package javax.media.j3d;
 /**
  * The CgShaderProgram object is a concrete implementation of a
  * ShaderProgram node component for NVIDIA's Cg shader language.
- *
- * @see SourceCodeShader
- *
- * @since Java 3D 1.4
  */
 
 class CgShaderProgramRetained extends ShaderProgramRetained {
     
     /**
      * Constructs a Cg shader program node component.
-     *
-     * <br>
-     * TODO: ADD MORE DOCUMENTATION HERE.
      */
     CgShaderProgramRetained() {
     }

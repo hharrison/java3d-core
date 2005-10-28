@@ -20,43 +20,7 @@ import javax.vecmath.*;
 
 /**
  * The ShaderAttributeSet object provides uniform attributes to shader
- * programs. Uniform attributes (variables) are those attributes whose
- * values are constant during the rendering of a primitive. Their
- * values may change from primitive to primitive, but are constant for
- * each vertex (for vertex shaders) or fragment (for fragment shaders)
- * of a single primitive. Examples of uniform attributes include a
- * transformation matrix, a texture map, lights, lookup tables, etc.
- * The ShaderAttributeSet object contains a set of ShaderAttribute
- * objects. Each ShaderAttribute object defines the value of a single
- * uniform shader variable. The set of attributes is unique with respect
- * to attribute names: no two attributes in the set will have the same
- * name.
- *
- * <p>
- * There are two ways in which values can be specified for uniform
- * attributes: explicitly, by providing a value; and implicitly, by
- * defining a binding between a Java 3D system attribute and a uniform
- * attribute. This functionality is provided by two subclasses of
- * ShaderAttribute: ShaderAttributeObject, which is used to specify
- * explicitly defined attributes; and ShaderAttributeBinding, which is
- * used to specify implicitly defined, automatically tracked attributes.
- *
- * <p>
- * Depending on the shading language (and profile) being used, several
- * Java 3D state attributes are automatically made available to the
- * shader program as pre-defined uniform attributes. The application
- * doesn't need to do anything to pass these attributes in to the
- * shader program. The implementation of each shader language (e.g.,
- * Cg, GLSL) defines its own bindings from Java 3D attribute to uniform
- * variable name. A list of these attributes for each shader language
- * can be found in the concrete subclass of ShaderProgram for that
- * shader language.
- *
- * @see ShaderAttribute
- * @see ShaderProgram
- * @see ShaderAppearance#setShaderAttributeSet
- *
- * @since Java 3D 1.4
+ * programs.
  */
 
 class ShaderAttributeSetRetained extends NodeComponentRetained {

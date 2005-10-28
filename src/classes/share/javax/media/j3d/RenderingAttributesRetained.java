@@ -88,8 +88,6 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      * not set and this object is part of live or compiled scene graph
      *
      * @see View#setVisibilityPolicy
-     *
-     * @since Java 3D 1.2
      */
     final void initVisible(boolean state){
 	visible = state;
@@ -105,8 +103,6 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      * not set and this object is part of live or compiled scene graph
      *
      * @see View#setVisibilityPolicy
-     *
-     * @since Java 3D 1.2
      */
     final void setVisible(boolean  state){	
 	// Optimize : If new state equal to current state, should I simply return ?
@@ -128,8 +124,6 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      * if the object is invisible.
      * @exception CapabilityNotSetException if appropriate capability is 
      * not set and this object is part of live or compiled scene graph
-     *
-     * @since Java 3D 1.2
      */
     final boolean getVisible() {
    	return visible;
@@ -308,7 +302,6 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      * ALWAYS, NEVER, EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER,
      * GREATER_OR_EQUAL.
      * Default value is LESS_OR_EQUAL
-     * @since Java 3D 1.4
      */
     final void initDepthTestFunction(int function){
 	depthTestFunction = function;
@@ -323,7 +316,6 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      * ALWAYS, NEVER, EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER,
      * GREATER_OR_EQUAL
      * Default value is LESS_OR_EQUAL
-     * @since Java 3D 1.4
      */
     final void setDepthTestFunction(int function){
 	initDepthTestFunction(function);
@@ -335,7 +327,6 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      * @return the current depth test function
      * @exception CapabilityNotSetException if appropriate capability is 
      * not set and this object is part of live or compiled scene graph
-     * @since Java 3D 1.4
      */
     final int getDepthTestFunction(){
         return depthTestFunction;
