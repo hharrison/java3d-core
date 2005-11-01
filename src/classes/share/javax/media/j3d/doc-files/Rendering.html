@@ -7,7 +7,142 @@
 </head>
 <body>
 <h2>Execution and Rendering Model</h2>
-<p><br>
+<p>Java&nbsp;3D's execution and rendering model assumes the
+existence of a <a href="../VirtualUniverse.html">VirtualUniverse</a>
+object and an attached scene graph. This
+scene graph can be minimal and not noticeable from an application's
+perspective when using immediate-mode rendering, but it must exist.
+</p>
+<p>Java&nbsp;3D's execution model intertwines with its rendering modes
+and
+with
+behaviors and their scheduling. This chapter first describes the three
+rendering modes, then describes how an application starts up a
+Java&nbsp;3D
+environment, and finally it discusses how the various rendering modes
+work within this framework.
+</p>
+<p>
+</p>
+<h2>Three Major Rendering Modes</h2>
+<p>Java&nbsp;3D supports three different modes for rendering scenes:
+immediate
+mode, retained mode, and compiled-retained mode. These three levels of
+API support represent a potentially large variation in graphics
+processing speed and in on-the-fly restructuring.
+</p>
+<p></p>
+<h3>Immediate Mode</h3>
+<p>Immediate mode allows maximum flexibility at some cost in rendering
+speed. The application programmer can either use or ignore the scene
+graph structure inherent in Java&nbsp;3D's design. The programmer can
+choose
+to draw geometry directly or to define a scene graph. Immediate mode
+can be either used independently or mixed with retained and/or
+compiled-retained mode rendering. The immediate-mode API is described
+in the "<a href="Immediate.html">Immediate-Mode Rendering</a>" section.</p>
+<p>
+</p>
+<h3>Retained Mode</h3>
+<p>Retained mode allows a great deal of the flexibility provided by
+immediate mode while also providing a substantial increase in rendering
+speed. All objects defined in the scene graph are accessible and
+manipulable. The scene graph itself is fully manipulable. The
+application programmer can rapidly construct the scene graph, create
+and delete nodes, and instantly "see" the effect of edits. Retained
+mode also allows maximal access to objects through a general pick
+capability.
+</p>
+<p>Java&nbsp;3D's retained mode allows a programmer to construct
+objects,
+insert objects into a database, compose objects, and add behaviors to
+objects.
+</p>
+<p>In retained mode, Java&nbsp;3D knows that the programmer has defined
+objects, knows how the programmer has combined those objects into
+compound objects or scene graphs, and knows what behaviors or actions
+the programmer has attached to objects in the database. This knowledge
+allows Java&nbsp;3D to perform many optimizations. It can construct
+specialized data structures that hold an object's geometry in a manner
+that enhances the speed at which the Java&nbsp;3D system can render it.
+It
+can compile object behaviors so that they run at maximum speed when
+invoked. It can flatten transformation manipulations and state changes
+where possible in the scene graph.
+</p>
+<p>
+</p>
+<h3>Compiled-Retained Mode</h3>
+<p>Compiled-retained mode allows the Java&nbsp;3D API to perform an
+arbitrarily
+complex series of optimizations including, but not restricted to,
+geometry compression, scene graph flattening, geometry grouping, and
+state change clustering.
+</p>
+<p>Compiled-retained mode provides hooks for end-user manipulation and
+picking. Pick operations return the closest object (in scene graph
+space) associated with the picked geometry.
+</p>
+<p>Java&nbsp;3D's compiled-retained mode ensures effective graphics
+rendering
+speed in yet one more way. A programmer can request that Java&nbsp;3D
+compile an object or a scene graph. Once it is compiled, the programmer
+has minimal access to the internal structure of the object or scene
+graph. Capability flags provide access to specified components that the
+application program may need to modify on a continuing basis.
+</p>
+<p>A compiled object or scene graph consists of whatever internal
+structures Java&nbsp;3D wishes to create to ensure that objects or
+scene
+graphs render at maximal rates. Because Java&nbsp;3D knows that the
+majority
+of the compiled object's or scene graph's components will not change,
+it can perform an extraordinary number of optimizations, including the
+fusing of multiple objects into one conceptual object, turning an
+object into compressed geometry or even breaking an object up into
+like-kind components and reassembling the like-kind components into new
+"conceptual objects."
+</p>
+<p>
+</p>
+<h2>Instantiating the Render Loop</h2>
+<p>From an application's perspective, Java&nbsp;3D's render loop runs
+continuously. Whenever an application adds a scene branch to the
+virtual world, that scene branch is instantly visible. This high-level
+view of the render loop permits concurrent implementations of
+Java&nbsp;3D
+as well as serial implementations. The remainder of this section
+describes the Java&nbsp;3D render loop bootstrap process from a
+serialized
+perspective. Differences that would appear in concurrent
+implementations are noted as well.
+</p>
+<p></p>
+<h3>An Application-Level
+Perspective</h3>
+<p>First the application must construct its scene graphs. It does this
+by
+constructing scene graph nodes and component objects and linking them
+into self-contained trees with a BranchGroup node as a root. The
+application next must obtain a reference to any constituent nodes or
+objects within that branch that it may wish to manipulate. It sets the
+capabilities of all the objects to match their anticipated use and only
+then compiles the branch using the BranchGroup's <code>compile</code>
+method. Whether it compiles the branch, the application can add it to
+the virtual universe by adding the BranchGroup to a Locale object. The
+application repeats this process for each branch it wishes to create.
+Note that for concurrent Java&nbsp;3D implementations, whenever an
+application adds a branch to the active virtual universe, that branch
+becomes visible.
+</p>
+<p></p>
+<h3>Retained and
+Compiled-Retained Rendering Modes</h3>
+<p>This initialization process is identical for retained and
+compiled-retained modes. In both modes, the application builds a scene
+graph. In compiled-retained mode, the application compiles the scene
+graph. Then the application inserts the (possibly compiled) scene graph
+into the virtual universe.
 </p>
 </body>
 </html>

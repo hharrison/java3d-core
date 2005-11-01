@@ -255,6 +255,14 @@ import java.util.*;
  * serialize a Canvas3D object will result in an
  * UnsupportedOperationException being thrown.
  *
+ * <p>
+ * <b>Additional Information</b>
+ * <p>
+ * For more information, see the
+ * <a href="doc-files/intro.html">Introduction to the Java 3D API</a> and
+ * <a href="doc-files/ViewModel.html">View Model</a>
+ * documents.
+ *
  * @see Screen3D
  * @see View
  * @see GraphicsContext3D

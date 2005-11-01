@@ -46,6 +46,10 @@ import java.util.Hashtable;
  * <code>ENABLE_PICK_REPORTING</code> bits are not really capability bits,
  * although they are set with the setCapability method. The default value
  * for each of the <code>ENABLE_*_REPORTING bits</code> is false.
+ *
+ * <p>
+ * For more information, see the
+ * <a href="doc-files/intro.html">Introduction to the Java 3D API</a>.
  */
 public abstract class SceneGraphObject extends Object {
    // Any global flags? (e.g., execution cullable, collideable)

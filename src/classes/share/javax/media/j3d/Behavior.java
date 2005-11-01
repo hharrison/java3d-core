@@ -179,6 +179,14 @@ import java.util.Enumeration;
  * instance of a Behavior. Sharing wakeup criteria among different
  * instances of a Behavior is illegal.
  *
+ * <p>
+ * <b>Additional Information</b>
+ * <p>
+ * For more information, see the
+ * <a href="doc-files/intro.html">Introduction to the Java 3D API</a> and
+ * <a href="doc-files/Behaviors.html">Behaviors and Interpolators</a>
+ * documents.
+ *
  * @see WakeupCondition
  */
 

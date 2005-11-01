@@ -7,7 +7,108 @@
 </head>
 <body>
 <h2>Immediate-Mode Rendering</h2>
-<p><br>
+<p>Java&nbsp;3D is fundamentally a scene graph-based API. Most of
+the constructs in the API are biased toward retained mode and
+compiled-retained mode rendering. However, there are some applications
+that want both the control and the flexibility that immediate-mode
+rendering offers.
 </p>
+<p>Immediate-mode applications can either use or ignore Java&nbsp;3D's
+scene
+graph structure. By using immediate mode, end-user applications have
+more freedom, but this freedom comes at the expense of performance. In
+immediate mode, Java&nbsp;3D has no high-level information concerning
+graphical objects or their composition. Because it has minimal global
+knowledge, Java&nbsp;3D can perform only localized optimizations on
+behalf
+of the application programmer.
+</p>
+<p>
+</p>
+<h2>Two Styles of Immediate-Mode
+Rendering</h2>
+Use of Java&nbsp;3D's immediate mode falls into one of two categories:
+pure
+immediate-mode rendering and mixed-mode rendering in which immediate
+mode and retained or compiled-retained mode interoperate and render to
+the same canvas. The Java&nbsp;3D renderer is idle in pure immediate
+mode,
+distinguishing it from mixed-mode rendering.
+<h3>Pure Immediate-Mode
+Rendering</h3>
+Pure immediate-mode rendering provides for those applications and
+applets that do not want Java&nbsp;3D to do any automatic rendering of
+the
+scene graph. Such applications may not even wish to build a scene graph
+to represent their graphical data. However, they use Java&nbsp;3D's
+attribute objects to set graphics state and Java&nbsp;3D's geometric
+objects
+to render geometry.
+<hr noshade="noshade"><b>Note:</b> Scene antialiasing is not supported
+in pure immediate mode.
+<hr noshade="noshade">A pure immediate mode application must create a
+minimal set of Java&nbsp;3D
+objects before rendering. In addition to a Canvas3D object, the
+application must create a View object, with its associated PhysicalBody
+and PhysicalEnvironment objects, and the following scene graph
+elements: a VirtualUniverse object, a high-resolution Locale object, a
+BranchGroup node object, a TransformGroup node object with associated
+transform, and, finally, a ViewPlatform leaf node object that defines
+the position and orientation within the virtual universe that generates
+the view (see <a href="#Figure_1">Figure
+1</a>).
+<p><a name="Figure_1"></a><img style="width: 500px; height: 359px;"
+ alt="Minimal Immediate-Mode Structure"
+ title="Minimal Immediate-Mode Structure" src="Immediate1.gif"></p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 1</i> &#8211; Minimal Immediate-Mode Structure</b></font>
+</ul>
+<p>
+Java&nbsp;3D provides utility functions that create much of this
+structure
+on behalf of a pure immediate-mode application, making it less
+noticeable from the application's perspective-but the structure must
+exist.
+</p>
+<p>All rendering is done completely under user control. It is necessary
+for the user to clear the 3D canvas, render all geometry, and swap the
+buffers. Additionally, rendering the right and left eye for stereo
+viewing becomes the sole responsibility of the application.
+</p>
+<p>In pure immediate mode, the user must stop the Java&nbsp;3D
+renderer, via
+the Canvas3D object <code>stopRenderer()</code>
+method, prior to adding the Canvas3D object to an active View object
+(that is, one that is attached to a live ViewPlatform object).
+</p>
+<p>
+</p>
+<h3>Mixed-Mode Rendering</h3>
+Mixing immediate mode and retained or compiled-retained mode requires
+more structure than pure immediate mode. In mixed mode, the
+Java&nbsp;3D
+renderer is running continuously, rendering the scene graph into the
+canvas.
+<p>The basic Java&nbsp;3D <em>stereo</em> rendering loop, executed for
+each
+Canvas3D, is as follows:
+</p>
+<pre><hr><br>clear canvas (both eyes)<br></pre>
+<pre>call preRender()                           <strong><kbd>// user-supplied method<br></kbd></strong>set left eye view<br>render opaque scene graph objects<br>call renderField(FIELD_LEFT)               <strong><kbd>// user-supplied method<br></kbd></strong>render transparent scene graph objects<br>set right eye view<br>render opaque scene graph objects again<br>call renderField(FIELD_RIGHT)              <strong><kbd>// user-supplied method<br></kbd></strong>render transparent scene graph objects again<br>call postRender()                          <strong><kbd>// user-supplied method<br></kbd></strong>synchronize and swap buffers<br></pre>
+<pre>call postSwap()                            <strong><kbd>// user-supplied method<br></kbd></strong><br><hr></pre>
+The basic Java&nbsp;3D <em>monoscopic</em> rendering loop is as
+follows:
+<pre><hr><br>clear canvas<br></pre>
+<pre>call preRender()                            <strong><kbd>// user-supplied method<br></kbd></strong>set view<br>render opaque scene graph objects<br>call renderField(FIELD_ALL)                 <strong><kbd>// user-supplied method<br></kbd></strong>render transparent scene graph objects<br>call postRender()                           <strong><kbd>// user-supplied method<br></kbd></strong>synchronize and swap buffers<br></pre>
+<pre>call postSwap()                             <strong><kbd>// user-supplied method<br></kbd></strong><br><hr></pre>
+In both cases, the entire loop, beginning with clearing the canvas and
+ending with swapping the buffers, defines a frame. The application is
+given the opportunity to render immediate-mode geometry at any of the
+clearly identified spots in the rendering loop. A user specifies his or
+her own rendering methods by extending the Canvas3D class and
+overriding the <code>preRender</code>, <code>postRender</code>, <code>postSwap</code>,
+and/or <code>renderField</code> methods.
 </body>
 </html>

@@ -20,6 +20,11 @@ import java.lang.reflect.Constructor;
  * The Node class provides an abstract class for all Group and Leaf Nodes.
  * It provides a common framework for constructing a Java 3D scene graph,
  * specifically bounding volumes.
+ *
+ * <p>
+ * For more information, see the
+ * <a href="doc-files/intro.html">Introduction to the Java 3D API</a>.
+ *
  * <p>
  * NOTE: Applications should <i>not</i> extend this class directly.
  */

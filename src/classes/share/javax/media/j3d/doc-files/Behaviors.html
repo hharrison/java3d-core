@@ -7,7 +7,590 @@
 </head>
 <body>
 <h2>Behaviors and Interpolators</h2>
-<p><br>
+<p><a href="../Behavior.html">Behavior</a> nodes provide the means for
+animating objects, processing keyboard and mouse inputs, reacting to
+movement, and enabling and processing pick events. Behavior nodes
+contain Java code and state variables. A Behavior node's Java code can
+interact with Java objects, change node values within a Java&nbsp;3D
+scene
+graph, change the behavior's internal state-in general, perform any
+computation it wishes.
 </p>
+<p>Simple behaviors can add surprisingly interesting effects to a scene
+graph. For example, one can animate a rigid object by using a Behavior
+node to repetitively modify the TransformGroup node that points to the
+object one wishes to animate. Alternatively, a Behavior node can track
+the current position of a mouse and modify portions of the scene graph
+in response.</p>
+<h2>Behavior Object</h2>
+<p>A Behavior leaf node object contains a scheduling region and two
+methods: an <code>initialize</code> method called once when the
+behavior becomes "live" and a <code>processStimulus</code>
+method called whenever appropriate by the Java&nbsp;3D behavior
+scheduler.
+The Behavior object also contains the state information needed by its <code>initialize</code>
+and <code>processStimulus</code> methods.
+</p>
+<p>The <em>scheduling region</em> defines a spatial volume that serves
+to enable the scheduling of Behavior nodes. A Behavior node is <em>active</em>
+(can receive stimuli) whenever an active ViewPlatform's activation
+volume intersects a Behavior object's scheduling region. Only active
+behaviors can receive stimuli.
+</p>
+<p>The <em>scheduling interval</em> defines a
+partial order of execution for behaviors that wake up in response to
+the same wakeup condition (that is, those behaviors that are processed
+at the same "time"). Given a set of behaviors whose wakeup conditions
+are satisfied at the same time, the behavior scheduler will execute all
+behaviors in a lower scheduling interval before executing any behavior
+in a higher scheduling interval. Within a scheduling interval,
+behaviors can be executed in any order, or in parallel. Note that this
+partial ordering is only guaranteed for those behaviors that wake up at
+the same time in response to the same wakeup condition, for example,
+the set of behaviors that wake up every frame in response to a
+WakeupOnElapsedFrames(0) wakeup condition.
+</p>
+<p>The <code>processStimulus</code> method receives and processes a
+behavior's ongoing messages. The Java&nbsp;3D behavior scheduler
+invokes a
+Behavior node's <code>processStimulus</code>
+method when an active ViewPlatform's activation volume intersects a
+Behavior object's scheduling region and all of that behavior's wakeup
+criteria are satisfied. The <code>processStimulus</code> method
+performs its computations and actions (possibly including the
+registration of state change information that could cause Java&nbsp;3D
+to
+wake other Behavior objects), establishes its next wakeup condition,
+and finally exits.
+</p>
+<p>A typical behavior will modify one or more nodes or node components
+in
+the scene graph. These modifications can happen in parallel with
+rendering. In general, applications cannot count on behavior execution
+being synchronized with rendering. There are two exceptions to this
+general rule:
+</p>
+<ul>
+  <li>All modifications to scene graph objects (not including geometry
+by-reference or texture by-reference) made from the <code>processStimulus</code>
+method of a single behavior instance are guaranteed to take effect in
+the same rendering frame</li>
+</ul>
+<ul>
+  <li>All modifications to scene graph objects (not including geometry
+by-reference or texture by-reference) made from the <code>processStimulus</code>
+methods of the set of behaviors that wake up in response to a
+WakeupOnElapsedFrames(0) wakeup condition are guaranteed to take effect
+in the same rendering frame.</li>
+</ul>
+<p>Note that modifications to geometry by-reference or texture
+by-reference are not guaranteed to show up in the same frame as other
+scene graph changes.
+</p>
+<h3>Code Structure</h3>
+<p>When the Java&nbsp;3D behavior scheduler invokes a Behavior object's
+<code>processStimulus</code>
+method, that method may perform any computation it wishes. Usually, it
+will change its internal state and specify its new wakeup conditions.
+Most probably, it will manipulate scene graph elements. However, the
+behavior code can change only those aspects of a scene graph element
+permitted by the capabilities associated with that scene graph element.
+A scene graph's capabilities restrict behavioral manipulation to those
+manipulations explicitly allowed.
+</p>
+<p>The application must provide the Behavior object with references to
+those scene graph elements that the Behavior object will manipulate.
+The application provides those references as arguments to the
+behavior's constructor when it creates the Behavior object.
+Alternatively, the Behavior object itself can obtain access to the
+relevant scene graph elements either when Java&nbsp;3D invokes its <code>initialize</code>
+method or each time Java&nbsp;3D invokes its <code>processStimulus</code>
+method.
+</p>
+<p>Behavior methods have a very rigid structure. Java&nbsp;3D assumes
+that
+they
+always run to completion (if needed, they can spawn threads). Each
+method's basic structure consists of the following:
+</p>
+<ul>
+  <li>Code to decode and extract references from the WakeupCondition
+enumeration that caused the object's awakening.</li>
+</ul>
+<ul>
+  <li>Code to perform the manipulations associated with the
+WakeupCondition.</li>
+</ul>
+<ul>
+  <li>Code to establish this behavior's new WakeupCondition.</li>
+</ul>
+<ul>
+  <li>A path to Exit (so that execution returns to the Java&nbsp;3D
+behavior
+scheduler).</li>
+</ul>
+<h3>WakeupCondition Object</h3>
+<p>A <a href="../WakeupCondition.html">WakeupCondition</a> object is
+an
+abstract class specialized to fourteen
+different WakeupCriterion objects and to four combining objects
+containing multiple WakeupCriterion objects.
+</p>
+<p>A Behavior node provides the Java&nbsp;3D behavior scheduler with a
+WakeupCondition object. When that object's WakeupCondition has been
+satisfied, the behavior scheduler hands that same WakeupCondition back
+to the Behavior via an enumeration.
+</p>
+<p>
+</p>
+<h3>WakeupCriterion Object</h3>
+<p>Java&nbsp;3D provides a rich set of wakeup criteria that Behavior
+objects
+can use in specifying a complex WakeupCondition. These wakeup criteria
+can cause Java&nbsp;3D's behavior scheduler to invoke a behavior's <code>processStimulus</code>
+method whenever
+</p>
+<ul>
+  <li>The center of an active ViewPlatform enters a specified region.</li>
+</ul>
+<ul>
+  <li>The center of an active ViewPlatform exits a specified region.</li>
+</ul>
+<ul>
+  <li>A behavior is activated.</li>
+</ul>
+<ul>
+  <li>A behavior is deactivated.</li>
+</ul>
+<ul>
+  <li>A specified TransformGroup node's transform changes.</li>
+</ul>
+<ul>
+  <li>Collision is detected between a specified Shape3D node's Geometry
+object and any other object.</li>
+</ul>
+<ul>
+  <li>Movement occurs between a specified Shape3D node's Geometry
+object and any other object with which it collides.</li>
+</ul>
+<ul>
+  <li>A specified Shape3D node's Geometry object no longer collides
+with any other object.</li>
+</ul>
+<ul>
+  <li>A specified Behavior object posts a specific event.</li>
+</ul>
+<ul>
+  <li>A specified AWT event occurs.</li>
+</ul>
+<ul>
+  <li>A specified time interval elapses.</li>
+</ul>
+<ul>
+  <li>A specified number of frames have been drawn.</li>
+</ul>
+<ul>
+  <li>The center of a specified Sensor enters a specified region.</li>
+</ul>
+<ul>
+  <li>The center of a specified Sensor exits a specified region.</li>
+</ul>
+<p>A Behavior object constructs a <a href="../WakeupCriterion.html">WakeupCriterion</a>
+by constructing the
+appropriate criterion object. The Behavior object must provide the
+appropriate arguments (usually a reference to some scene graph object
+and possibly a region of interest). Thus, to specify a
+WakeupOnViewPlatformEntry, a behavior would specify the region that
+will cause the behavior to execute if an active ViewPlatform enters it.
+</p>
+<h3>Composing WakeupCriterion
+Objects</h3>
+<p>A Behavior object can combine multiple WakeupCriterion objects into
+a
+more powerful, composite WakeupCondition. Java&nbsp;3D behaviors
+construct a
+composite WakeupCondition in one of the following ways:
+</p>
+<ul>
+  <li><a href="../WakeupAnd.html">WakeupAnd</a>: An array of
+WakeupCriterion objects ANDed together.</li>
+</ul>
+<pre>            WakeupCriterion &amp;&amp; WakeupCriterion &amp;&amp; ...<br></pre>
+<ul>
+  <li><a href="../WakeupOr.html">WakeupOr</a>: An array of
+WakeupCriterion objects ORed together.</li>
+</ul>
+<pre>            WakeupCriterion || WakeupCriterion || ...<br></pre>
+<ul>
+  <li><a href="../WakeupAndOfOrs.html">WakeupAndOfOrs</a>: An array of
+WakeupOr WakeupCondition objects that
+are then ANDed together.</li>
+</ul>
+<pre>            WakeupOr &amp;&amp; WakeupOr &amp;&amp; ...<br></pre>
+<ul>
+  <li><a href="../WakeupOrOfAnds.html">WakeupOrOfAnds</a>: An array of
+WakeupAnd WakeupCondition objects
+that are then ORed together.</li>
+</ul>
+<pre>            WakeupAnd || WakeupAnd || ...<br></pre>
+<h2>Composing Behaviors</h2>
+<p>Behavior objects can condition themselves to awaken only when
+signaled
+by another Behavior node. The <a href="../WakeupOnBehaviorPost.html">WakeupOnBehaviorPost</a>
+WakeupCriterion
+takes as arguments a reference to a Behavior node and an integer. These
+two arguments allow a behavior to limit its wakeup criterion to a
+specific post by a specific behavior.
+</p>
+<p>The WakeupOnBehaviorPost WakeupCriterion permits behaviors to chain
+their computations, allowing parenthetical computations-one behavior
+opens a door and the second closes the same door, or one behavior
+highlights an object and the second unhighlights the same object.
+</p>
+<p>
+</p>
+<h2>Scheduling</h2>
+<p>As a virtual universe grows large, Java&nbsp;3D must carefully
+husband
+its
+resources to ensure adequate performance. In a 10,000-object virtual
+universe with 400 or so Behavior nodes, a naive implementation of Java
+3D could easily end up consuming the majority of its compute cycles in
+executing the behaviors associated with the 400 Behavior objects before
+it draws a frame. In such a situation, the frame rate could easily drop
+to unacceptable levels.
+</p>
+<p>Behavior objects are usually associated with geometric objects in
+the
+virtual universe. In our example of 400 Behavior objects scattered
+throughout a 10,000-object virtual universe, only a few of these
+associated geometric objects would be visible at a given time. A
+sizable fraction of the Behavior nodes-those associated with nonvisible
+objects-need not be executed. Only those relatively few Behavior
+objects that are associated with visible objects must be executed.
+</p>
+<p>Java&nbsp;3D mitigates the problem of a large number of Behavior
+nodes in
+a
+high-population virtual universe through execution culling-choosing to
+invoke only those behaviors that have high relevance.
+</p>
+<p>Java&nbsp;3D requires each behavior to have a <em>scheduling region</em>
+and to post a wakeup condition. Together a behavior's scheduling region
+and wakeup condition provide Java&nbsp;3D's behavior scheduler with
+sufficient domain knowledge to selectively prune behavior invocations
+and invoke only those behaviors that absolutely need to be executed.
+</p>
+<p>
+</p>
+<h2>How Java&nbsp;3D Performs
+Execution Culling</h2>
+<p>Java&nbsp;3D finds all scheduling regions associated with Behavior
+nodes
+and
+constructs a scheduling/volume tree. It also creates an AND/OR tree
+containing all the Behavior node wakeup criteria. These two data
+structures provide the domain knowledge Java&nbsp;3D needs to prune
+unneeded
+behavior execution (to perform "execution triage").
+</p>
+<p>Java&nbsp;3D must track a behavior's wakeup conditions only if an
+active
+ViewPlatform object's activation volume intersects with that Behavior
+object's scheduling region. If the ViewPlatform object's activation
+volume does not intersect with a behavior's scheduling region,
+Java&nbsp;3D
+can safely ignore that behavior's wakeup criteria.
+</p>
+<p>In essence, the Java&nbsp;3D scheduler performs the following
+checks:
+</p>
+<ul>
+  <li>Find all Behavior objects with scheduling regions that intersect
+the active ViewPlatform object's activation volume.</li>
+</ul>
+<ul>
+  <li>For each Behavior object within the ViewPlatform's activation
+volume, if that behavior's WakeupCondition is <code>true</code>,
+schedule that Behavior object for execution.</li>
+</ul>
+<p>Java&nbsp;3D's behavior scheduler executes those Behavior objects
+that
+have
+been scheduled by calling the behavior's <code>processStimulus</code>
+method.
+</p>
+<h2>Interpolator Behaviors</h2>
+<p>This section describes Java&nbsp;3D's predefined <a
+ href="../Interpolator.html">Interpolator</a> behaviors.
+They are called <em>interpolators</em>
+because they smoothly interpolate between the two extreme values that
+an interpolator can produce. Interpolators perform simple behavioral
+acts, yet they provide broad functionality.
+</p>
+<p>The Java&nbsp;3D API provides interpolators for a number of
+functions:
+manipulating transforms within a TransformGroup, modifying the values
+of a Switch node, and modifying Material attributes such as color and
+transparency.
+</p>
+<p>These predefined Interpolator behaviors share the same mechanism for
+specifying and later for converting a temporal value into an alpha
+value. Interpolators consist of two portions: a generic portion that
+all interpolators share and a domain-specific portion.
+</p>
+<p>The generic portion maps time in milliseconds onto a value in the
+range
+[0.0, 1.0] inclusive. The domain-specific portion maps an alpha value
+in the range [0.0, 1.0] onto a value appropriate to the predefined
+behavior's range of outputs. An alpha value of 0.0 generates an
+interpolator's minimum value, an alpha value of 1.0 generates an
+interpolator's maximum value, and an alpha value somewhere in between
+generates a value proportionally in between the minimum and maximum
+values.
+</p>
+<h3>Mapping Time to Alpha</h3>
+<p>Several parameters control the mapping of time onto an alpha value
+(see
+the javadoc for the <a href="../Alpha.html">Alpha</a> object for a
+description of the API).
+That mapping is deterministic as long as its parameters do not change.
+Thus, two different interpolators with the same parameters will
+generate the same alpha value given the same time value. This means
+that two interpolators that do not communicate can still precisely
+coordinate their activities, even if they reside in different threads
+or even different processors-as long as those processors have
+consistent clocks.
+</p>
+<p><a href="#Figure_1">Figure
+1</a>
+shows the components of an interpolator's time-to-alpha mapping. Time
+is represented on the horizontal axis. Alpha is represented on the
+vertical axis. As we move from left to right, we see the alpha value
+start at 0.0, rise to 1.0, and then decline back to 0.0 on the
+right-hand side.
+</p>
+<p>On the left-hand side, the trigger time defines
+when this interpolator's waveform begins in milliseconds. The region
+directly to the right of the trigger time, labeled Phase Delay, defines
+a time period where the waveform does not change. During phase delays
+alpha is either 0 or 1, depending on which region it precedes.
+</p>
+<p>Phase delays provide an important means for offsetting multiple
+interpolators from one another, especially where the interpolators have
+all the same parameters. The next four regions, labeled <b>&#945;</b>
+increasing, <b>&#945;</b> at 1, <b>&#945;</b> decreasing, and
+<b>&#945;</b> at 0, all specify durations for
+the corresponding values
+of alpha.
+</p>
+<p>Interpolators have a loop count that determines how many times to
+repeat the sequence of alpha increasing, alpha at 1, alpha decreasing,
+and alpha at 0; they also have associated mode flags that enable either
+the increasing or decreasing portions, or both, of the waveform.
+</p>
+<p><a name="Figure_1"></a><img style="width: 500px; height: 141px;"
+ alt="Time-to-Alpha Mapping" title="Time-to-Alpha Mapping"
+ src="Behaviors1.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 1</i> &#8211; An Interpolator's Generic
+Time-to-Alpha Mapping Sequence</b></font>
+</ul>
+<p>
+Developers can use the loop count in conjunction with the mode flags to
+generate various kinds of actions. Specifying a loop count of 1 and
+enabling the mode flag for only the alpha-increasing and alpha-at-1
+portion of the waveform, we would get the waveform shown in <a
+ href="#Figure_2">Figure
+2</a>.
+</p>
+<p><a name="Figure_2"></a><img style="width: 241px; height: 100px;"
+ alt="Alpha Increasing" title="Alpha Increasing" src="Behaviors2.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 2</i> &#8211; An Interpolator Set to a Loop
+Count of 1 with Mode Flags Set to Enable
+Only the Alpha-Increasing and Alpha-at-1 Portion of the Waveform</b></font>
+</ul>
+<p>
+In <a href="#Figure_2">Figure
+2</a>,
+the alpha value is 0 before the combination of trigger time plus the
+phase delay duration. The alpha value changes from 0 to 1 over a
+specified interval of time, and thereafter the alpha value remains 1
+(subject to the reprogramming of the interpolator's parameters). A
+possible use of a single alpha-increasing value might be to combine it
+with a rotation interpolator to program a door opening.
+</p>
+<p>Similarly, by specifying a loop count of 1 and
+a mode flag that enables only the alpha-decreasing and alpha-at-0
+portion of the waveform, we would get the waveform shown in <a
+ href="#Figure_3">Figure
+3</a>.
+</p>
+<p>In <a href="#Figure_3">Figure
+3</a>,
+the alpha value is 1 before the combination of trigger time plus the
+phase delay duration. The alpha value changes from 1 to 0 over a
+specified interval; thereafter the alpha value remains 0 (subject to
+the reprogramming of the interpolator's parameters). A possible use of
+a single <b>&#945;</b>-decreasing value might be to combine it with a
+rotation
+interpolator to program a door closing.
+</p>
+<p><a name="Figure_3"></a><img style="width: 241px; height: 88px;"
+ alt="Alpha Decreasing" title="Alpha Decreasing" src="Behaviors3.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 3</i> &#8211; An Interpolator Set to a Loop
+Count of 1 with Mode Flags Set to Enable
+Only the Alpha-Decreasing and Alpha-at-0 Portion of the Waveform</b></font>
+</ul>
+<p>
+We can combine both of the above waveforms by specifying a loop count
+of 1 and setting the mode flag to enable both the alpha-increasing and
+alpha-at-1 portion of the waveform as well as the alpha-decreasing and
+alpha-at-0 portion of the waveform. This combination would result in
+the waveform shown in <a href="#Figure_4">Figure
+4</a>.
+</p>
+<p><a name="Figure_4"></a><img style="width: 241px; height: 100px;"
+ alt="Alpha Increasing &amp; Decreasing"
+ title="Alpha Increasing &amp; Decreasing" src="Behaviors4.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 4</i> &#8211; An Interpolator Set to a Loop
+Count of 1 with Mode Flags
+Set to Enable All Portions of the Waveform</b></font>
+</ul>
+<p>
+In <a href="#Figure_4">Figure
+4</a>,
+the alpha value is 0 before the combination of trigger time plus the
+phase delay duration. The alpha value changes from 0 to 1 over a
+specified period of time, remains at 1 for another specified period of
+time, then changes from 1 to 0 over a third specified period of time;
+thereafter the alpha value remains 0 (subject to the reprogramming of
+the interpolator's parameters). A possible use of an alpha-increasing
+value followed by an alpha-decreasing value might be to combine it with
+a rotation interpolator to program a door swinging open and then
+closing.
+</p>
+<p>By increasing the loop count, we can get
+repetitive behavior, such as a door swinging open and closed some
+number of times. At the extreme, we can specify a loop count of -1
+(representing infinity).
+</p>
+<p>We can construct looped versions of the waveforms shown in <a
+ href="#Figure_2">Figure
+2</a>, <a href="#Figure_3">Figure
+3</a>, and <a href="#Figure_4">Figure
+4</a>. <a href="#Figure_5">Figure
+5</a> shows a looping interpolator with mode flags set to enable
+only the alpha-increasing and alpha-at-1 portion of the waveform.
+</p>
+<p><a name="Figure_5"></a><img style="width: 500px; height: 99px;"
+ alt="Alpha Increasing Infinite Loop"
+ title="Alpha Increasing Infinite Loop" src="Behaviors5.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 5</i> &#8211; An Interpolator Set to Loop
+Infinitely and Mode Flags Set to Enable
+Only the Alpha-Increasing and Alpha-at-1 Portion of the Waveform</b></font>
+</ul>
+<p>
+In <a href="#Figure_5">Figure
+5</a>, alpha goes from 0 to 1 over a fixed duration of time, stays
+at 1 for another fixed duration of time, and then repeats.
+</p>
+<p>Similarly, <a href="#Figure_6">Figure
+6</a> shows a looping interpolator with mode flags set to enable
+only the alpha-decreasing and alpha-at-0 portion of the waveform.
+</p>
+<p><a name="Figure_6"></a><img style="width: 500px; height: 97px;"
+ alt="Alpha Decreasing Infinite Loop"
+ title="Alpha Decreasing Infinite Loop" src="Behaviors6.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 6</i> &#8211; An Interpolator Set to Loop
+Infinitely and Mode Flags Set to Enable
+Only the Alpha-Decreasing and Alpha-at-0 Portion of the Waveform</b></font>
+</ul>
+<p>
+Finally, <a href="#Figure_7">Figure
+7</a> shows a looping interpolator with both the increasing and
+decreasing portions of the waveform enabled.
+</p>
+<p>In all three cases shown by <a href="#Figure_5">Figure
+5</a>, <a href="#Figure_6">Figure
+6</a>, and <a href="#Figure_7">Figure
+7</a>, we can compute the exact value of alpha at any point in time.
+</p>
+<p><a name="Figure_7"></a><img style="width: 500px; height: 99px;"
+ alt="Alpha Increasing &amp; Decreasing  Infinite Loop"
+ title="Alpha Increasing &amp; Decreasing  Infinite Loop"
+ src="Behaviors7.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 7</i> &#8211; An Interpolator Set to Loop
+Infinitely and Mode Flags Set
+to Enable All Portions of the Waveform</b></font>
+</ul>
+<p>
+Java&nbsp;3D's preprogrammed behaviors permit other behaviors to change
+their parameters. When such a change occurs, the alpha value changes to
+match the state of the newly parameterized interpolator.
+</p>
+<h3>Acceleration of Alpha</h3>
+<p>Commonly, developers want alpha to change slowly at first and then
+to
+speed up until the change in alpha reaches some appropriate rate. This
+is analogous to accelerating your car up to the speed limit-it does not
+start off immediately at the speed limit. Developers specify this
+"ease-in, ease-out" behavior through two additional parameters, the <code>increasingAlphaRampDuration</code>
+and the <code>decreasing-AlphaRampDuration</code>.
+</p>
+<p>Each of these parameters specifies a period within the increasing or
+decreasing alpha duration region during which the "change in alpha" is
+accelerated (until it reaches its maximum per-unit-of-time step size)
+and then symmetrically decelerated. <a href="#Figure_8">Figure
+8</a> shows three general examples of how the <code>increasingAlphaRampDuration</code>
+method can be used to modify the alpha waveform. A value of 0 for the
+increasing ramp duration implies that <b>&#945;</b>
+is not accelerated; it changes at a constant rate. A value of 0.5 or
+greater (clamped to 0.5) for this increasing ramp duration implies that
+the change in <b>&#945;</b> is accelerated during the first half of the
+period and
+then decelerated during the second half of the period. For a value of <em>n</em>
+that is less than 0.5, alpha is accelerated for duration <em>n</em>,
+held constant for duration (1.0 - 2<em>n</em>), then decelerated for
+duration <em>n</em> of the period.
+</p>
+<p><a name="Figure_8"></a><img style="width: 500px; height: 354px;"
+ alt="Alpha acceleration" title="Alpha acceleration"
+ src="Behaviors8.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 8</i> &#8211; How an Alpha-Increasing Waveform
+Changes with Various
+Values of increasing-AlphaRampDuration</b></font>
+</ul>
 </body>
 </html>

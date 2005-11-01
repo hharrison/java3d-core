@@ -1,0 +1,556 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Java 3D 1.4 Change Log</title>
+</head>
+<body>
+<h1>Java&nbsp;3D API version 1.4 Change Log</h1>
+<p>Here are the proposed changes for Java&nbsp;3D version 1.4. These
+proposed changes are a results of discussion and collaboration with the
+Java&nbsp;3D community on java.net (see
+<a href="https://java3d.dev.java.net">https://java3d.dev.java.net</a>).
+They are already part of daily and periodic stable builds available on
+java.net.</p>
+<h2>I. Proposed Changes<br>
+</h2>
+<p>Here is the list of proposed changes for the Java&nbsp;3D 1.4 API:<br>
+</p>
+<ol>
+  <li><a href="#Programmable_shader_support">Programmable shader support</a></li>
+  <li><a href="#Default_values">Default values for read capability bits</a></li>
+  <li><a href="#Picking">Picking</a></li>
+  <li><a href="#Stencil">Stencil</a></li>
+  <li><a href="#Rendering_attributes">Rendering attributes</a></li>
+  <li><a href="#Other_minor_features">Other minor features</a></li>
+  <li><a href="#Deprecated_API">Deprecated API</a><br>
+  </li>
+</ol>
+<p>For a complete description of these changes, please see the
+proposed API specification (javadoc) for the 1.4 version of the
+Java&nbsp;3D API.
+</p>
+<h3><a name="Programmable_shader_support"></a>1. Programmable shader
+support<br>
+</h3>
+<p>We propose to add programmable shader support to Java&nbsp;3D 1.4
+This is
+the primary new feature of this release.<br>
+</p>
+<p>The following new classes and interfaces are added in
+the <code>javax.media.j3d</code> package:<br>
+</p>
+<ul>
+  <code>public class <span style="font-weight: bold;">ShaderAppearance</span>
+extends Appearance<br>
+public class <span style="font-weight: bold;">ShaderAttributeSet</span>
+extends
+NodeComponent<br>
+public abstract class <span style="font-weight: bold;">ShaderAttribute</span>
+extends
+NodeComponent<br>
+public class <span style="font-weight: bold;">ShaderAttributeBinding</span>
+extends
+ShaderAttribute<br>
+public abstract class <span style="font-weight: bold;">ShaderAttributeObject</span>
+extends ShaderAttribute<br>
+public class <span style="font-weight: bold;">ShaderAttributeValue</span>
+extends
+ShaderAttributeObject<br>
+public class <span style="font-weight: bold;">ShaderAttributeArray</span>
+extends
+ShaderAttributeObject<br>
+public abstract class <span style="font-weight: bold;">Shader</span>
+extends
+NodeComponent<br>
+public class <span style="font-weight: bold;">SourceCodeShader</span>
+extends Shader<br>
+public abstract class <span style="font-weight: bold;">ShaderProgram</span>
+extends
+NodeComponent<br>
+public class <span style="font-weight: bold;">CgShaderProgram</span>
+extends
+ShaderProgram<br>
+public class <span style="font-weight: bold;">GLSLShaderProgram</span>
+extends
+ShaderProgram<br>
+public class <span style="font-weight: bold;">ShaderError</span>
+extends Object<br>
+public interface <span style="font-weight: bold;">ShaderErrorListener</span><br>
+  <br>
+  </code>
+</ul>
+<p>The following new classes are added in the
+<code>javax.vecmath</code> package:<br>
+</p>
+<ul>
+  <code>public abstract class <span style="font-weight: bold;">Tuple2i</span>
+implements Serializable, Cloneable<br>
+public class <span style="font-weight: bold;">Point2i</span> extends
+Tuple2i<br>
+  </code>
+</ul>
+<p>The following new fields, constructors, and methods are added to
+existing classes:<br>
+</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;">Canvas3D</span><br>
+New method:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public boolean isShadingLanguageSupported(int
+shadingLanguage)<br>
+  <br>
+  </code><code><span
+ style="font-weight: bold; text-decoration: underline;">VirtualUniverse</span><br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void
+addShaderErrorListener(ShaderErrorListener listener)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void
+removeShaderErrorListener(ShaderErrorListener listener)<br>
+  <br>
+  </code><code></code><code><span
+ style="font-weight: bold; text-decoration: underline;">GeometryArray</span><br>
+New fields:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ALLOW_VERTEX_ATTR_READ<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ALLOW_VERTEX_ATTR_WRITE<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int VERTEX_ATTRIBUTES<br>
+  <br>
+New constructor:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public GeometryArray(... int
+vertexAttrCount, int[]
+vertexAttrSizes)<br>
+  <br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public int getVertexAttrCount()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getVertexAttrSizes(int[]
+vertexAttrSizes)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttr(int vertexAttrNum,
+int index, float[]
+vertexAttr)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttr(int vertexAttrNum,
+int index, Point2f
+vertexAttr)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttr(int vertexAttrNum,
+int index, Point3f
+vertexAttr)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttr(int vertexAttrNum,
+int index, Point4f
+vertexAttr)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrs(int vertexAttrNum,
+int index, float[]
+vertexAttrs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrs(int vertexAttrNum,
+int index, Point2f[]
+vertexAttrs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrs(int vertexAttrNum,
+int index, Point3f[]
+vertexAttrs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrs(int vertexAttrNum,
+int index, Point4f[]
+vertexAttrs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrs(int vertexAttrNum,
+int index,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float[]
+vertexAttrs, int
+start, int length)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrs(int vertexAttrNum,
+int index,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Point2f[]
+vertexAttrs, int
+start, int length)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrs(int vertexAttrNum,
+int index,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Point3f[]
+vertexAttrs, int
+start, int length)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrs(int vertexAttrNum,
+int index,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Point4f[]
+vertexAttrs, int
+start, int length)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getVertexAttr(int vertexAttrNum,
+int index, float[]
+vertexAttr)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getVertexAttr(int vertexAttrNum,
+int index, Point2f
+vertexAttr)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getVertexAttr(int vertexAttrNum,
+int index, Point3f
+vertexAttr)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getVertexAttr(int vertexAttrNum,
+int index, Point4f
+vertexAttr)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getVertexAttrs(int vertexAttrNum,
+int index, float[]
+vertexAttrs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getVertexAttrs(int vertexAttrNum,
+int index, Point2f[]
+vertexAttrs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getVertexAttrs(int vertexAttrNum,
+int index, Point3f[]
+vertexAttrs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getVertexAttrs(int vertexAttrNum,
+int index, Point4f[]
+vertexAttrs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setInitialVertexAttrIndex(int
+vertexAttrNum, int
+initialVertexAttrIndex)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public int getInitialVertexAttrIndex(int
+vertexAttrNum)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrRefBuffer(int
+vertexAttrNum, J3DBuffer vertexAttrs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public J3DBuffer getVertexAttrRefBuffer(int
+vertexAttrNum)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrRefFloat(int
+vertexAttrNum, float[] vertexAttrs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public float[] getVertexAttrRefFloat(int
+vertexAttrNum)<br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">IndexedGeometryArray</span><br>
+New fields:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int
+ALLOW_VERTEX_ATTR_INDEX_READ<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int
+ALLOW_VERTEX_ATTR_INDEX_WRITE<br>
+  <br>
+New constructor:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public IndexedGeometryArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  <br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setInitialVertexAttrIndex(int
+vertexAttrNum, int
+initialVertexAttrIndex)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrIndex(int
+vertexAttrNum, int
+index, int
+vertexAttrIndex)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setVertexAttrIndices(int
+vertexAttrNum, int
+index, int[]
+vertexAttrIndices)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public int getVertexAttrIndex(int
+vertexAttrNum, int index)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getVertexAttrIndices(int
+vertexAttrNum, int
+index, int[]
+vertexAttrIndices)<br>
+  <br>
+  </code>
+</ul>
+<p>The following new constructors are added to
+existing GeometryArray subclasses:</p>
+<ul>
+  <code> <span style="font-weight: bold; text-decoration: underline;">PointArray</span><br>
+public PointArray(... int vertexAttrCount,
+int[] vertexAttrSizes)<br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">LineArray</span><br>
+public LineArray(... int vertexAttrCount, int[]
+vertexAttrSizes)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">TriangleArray</span><br>
+public TriangleArray(... int vertexAttrCount,
+int[] vertexAttrSizes)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">QuadArray</span><br>
+public QuadArray(... int vertexAttrCount, int[]
+vertexAttrSizes)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">GeometryStripArray</span><br>
+public GeometryStripArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">LineStripArray</span><br>
+public LineStripArray(... int vertexAttrCount,
+int[] vertexAttrSizes ...)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">TriangleStripArray</span><br>
+public TriangleStripArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  <br>
+  <br>
+  <span style="text-decoration: underline; font-weight: bold;">TriangleFanArray</span><br>
+public TriangleFanArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">IndexedPointArray</span><br>
+public IndexedPointArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">IndexedLineArray</span><br>
+public IndexedLineArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">IndexedTriangleArray</span><br>
+public IndexedTriangleArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">IndexedQuadArray</span><br>
+public IndexedQuadArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">IndexedGeometryStripArray</span><br>
+public IndexedGeometryStripArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">IndexedLineStripArray</span><br>
+public IndexedLineStripArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">IndexedTriangleStripArray</span><br>
+public IndexedTriangleStripArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  <br>
+  <br>
+  <span style="text-decoration: underline; font-weight: bold;">IndexedTriangleFanArray</span><br>
+public IndexedTriangleFanArray(... int
+vertexAttrCount, int[] vertexAttrSizes ...)<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3><a name="Default_values"></a>2. Default values for read capability
+bits<br>
+</h3>
+<p>Capability bits control whether data in a Java&nbsp;3D scene graph
+object
+may be read or written when it is part of a live or compiled subgraph.
+We propose to change the default value for all read capability bits to
+true, meaning that all attributes may be read by default (the default
+value for all write capability bits will remain false, meaning that no
+attributes may be written by default). Note that read capability bits
+are defined as those capability bits of the form <code>ALLOW_*_READ</code>,
+plus the <code>ALLOW_INTERSECT</code> capability bit.<br>
+</p>
+<code></code>
+<p><br>
+</p>
+<h3><a name="Picking"></a>3. Picking<br>
+</h3>
+<p>We propose to add a new PickInfo class (with an inner class to hold
+intersection information), and new core picking methods that return
+objects of this new class type.<br>
+</p>
+<p>New Classes:<br>
+</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;"></span>public
+class <span style="font-weight: bold;">PickInfo</span> extends Object<br>
+public class <span style="font-weight: bold;">PickInfo.IntersectionInfo</span>
+extends
+Object<br>
+  </code>
+</ul>
+<p>New methods:<br>
+</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;">Locale</span><br>
+public PickInfo[] pickAll( int mode, int flags,
+PickShape pickShape )<br>
+public PickInfo[] pickAllSorted( int mode, int
+flags, PickShape pickShape )<br>
+public PickInfo pickClosest( int mode, int
+flags, PickShape pickShape )<br>
+public PickInfo pickAny( int mode, int flags,
+PickShape pickShape )<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">BranchGroup</span><br>
+public PickInfo[] pickAll( int mode, int flags,
+PickShape pickShape )<br>
+public PickInfo[] pickAllSorted( int mode, int
+flags, PickShape pickShape )<br>
+public PickInfo pickClosest( int mode, int
+flags, PickShape pickShape )<br>
+public PickInfo pickAny( int mode, int flags,
+PickShape pickShape )</code>
+</ul>
+<p><br>
+</p>
+<h3><a name="Stencil"></a>4. Stencil<br>
+</h3>
+<p>We propose new stencil functionality. Here are the proposed new
+fields and methods:<br>
+</p>
+<ul>
+  <code> </code><code><span
+ style="font-weight: bold; text-decoration: underline;">RenderingAttributes</span><br>
+New fields:<br>
+  </code><code>&nbsp;&nbsp;&nbsp;&nbsp;public static final int
+ALLOW_STENCIL_ATTRIBUTES_READ<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int
+ALLOW_STENCIL_ATTRIBUTES_WRITE<br>
+  </code><code>&nbsp;&nbsp;&nbsp; public static final int STENCIL_KEEP<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int STENCIL_ZERO<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int STENCIL_REPLACE<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int STENCIL_INCR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int STENCIL_DECR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int STENCIL_INVERT<br>
+  <br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp; public void setStencilEnable(boolean enable)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public boolean getStencilEnable()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setStencilOp(int failOp, int
+zFailOp, int zPassOp)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setStencilOp(int[] stencilOps)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getStencilOp(int[] stencilOps)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setStencilFunction(int function,
+int refValue, int compareMask)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setStencilFunction(int[] params)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getStencilFunction(int[] params)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setStencilWriteMask(int mask)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public int getStencilWriteMask()<br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">GraphicsConfigTemplate3D</span><br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setStencilSize(int value)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public int getStencilSize()<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3><a name="Rendering_attributes"></a>5. Rendering attributes<br>
+</h3>
+<p>We propose to add new rendering attributes/modes to enable
+applications to specify the depth test function, additional raster
+operations, and additional blending modes. The new fields and methods
+are as follows:<br>
+</p>
+<ul>
+  <code> <span style="text-decoration: underline; font-weight: bold;">RenderingAttributes</span><br>
+New fields:<br>
+&nbsp;&nbsp;&nbsp; public static final int
+ALLOW_DEPTH_TEST_FUNCTION_READ<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int
+ALLOW_DEPTH_TEST_FUNCTION_WRITE<br>
+&nbsp;&nbsp;&nbsp; public static final int ROP_CLEAR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_AND<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_AND_REVERSE<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_AND_INVERTED<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_NOOP<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_OR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_NOR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_EQUIV<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_INVERT<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_OR_REVERSE<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_COPY_INVERTED<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_OR_INVERTED<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_NAND<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ROP_SET<br>
+  <br>
+New methods:<br>
+  </code><code>&nbsp;&nbsp;&nbsp; public void setDepthTestFunction(int
+function)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public int getDepthTestFunction()<br>
+  </code><br>
+  <code></code><code><span
+ style="font-weight: bold; text-decoration: underline;">TransparencyAttributes</span><br>
+New fields:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int BLEND_DST_COLOR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int
+BLEND_ONE_MINUS_DST_COLOR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int BLEND_SRC_COLOR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int
+BLEND_ONE_MINUS_SRC_COLOR<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3><a name="Other_minor_features"></a>6. Other minor features<br>
+</h3>
+<p>We propose to add the following new features: a name for all scene
+graph objects; the ability to get the Locale or parent from a live or
+compiled scene graph, a scene graph structure change listener, and a
+method to get the tessellated glyph geometry for a character in a 3D
+font.
+</p>
+<p>The following new class has been added:</p>
+<ul>
+  <code>public interface <span style="font-weight: bold;">GraphStructureChangeListener</span><br>
+  </code>
+</ul>
+<p>The new fields and methods are as follows:</p>
+<ul>
+  <code> <span style="font-weight: bold; text-decoration: underline;">VirtualUniverse</span><br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void
+addGraphStructureChangeListener(GraphStructureChangeListener listener)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void
+removeGraphStructureChangeListener(GraphStructureChangeListener
+listener)<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">SceneGraphObject</span><br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setName(String name)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public String getName()<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">Node</span><br>
+New fields:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ALLOW_PARENT_READ<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int ALLOW_LOCALE_READ<br>
+  <br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public Locale getLocale()<br>
+  <br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">Font3D</span><br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public GeometryArray getGlyphGeometry(char c)<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3><a name="Deprecated_API"></a>7. Deprecated API<br>
+</h3>
+<p>We propose to deprecate the following classes:</p>
+<ul>
+  <code> <span style="font-weight: bold;">CompressedGeometry</span><br>
+  <span style="font-weight: bold;">CompressedGeometryHeader</span><br>
+  <span style="font-weight: bold;">PickPoint</span><br>
+  <span style="font-weight: bold;">Morph</span><br>
+  </code>
+</ul>
+<p>We propose to deprecate the following fields and methods:</p>
+<ul>
+  <code> <span style="font-weight: bold; text-decoration: underline;">Sensor</span><br>
+Deprecated fields:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int PREDICT_NONE<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int PREDICT_NEXT_FRAME_TIME<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int NO_PREDICTOR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int HEAD_PREDICTOR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public static final int HAND_PREDICTOR<br>
+  <br>
+Deprecated methods:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setPredictor(int predictor)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public int getPredictor()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void setPredictionPolicy(int policy)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public int getPredictionPolicy()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public void getRead(Transform3D read, long
+deltaT)<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3>II. Accepted Changes</h3>
+<p><br>
+</p>
+<h3>III. Deferred Changes</h3>
+<p><br>
+</p>
+</body>
+</html>

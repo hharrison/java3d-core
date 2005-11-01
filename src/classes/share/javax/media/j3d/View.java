@@ -389,6 +389,14 @@ import com.sun.j3d.utils.universe.*; // Needed for Support of DVR.
  * the viewing frustum for the left and right eye.<P>
  * </UL>
  *
+ * <p>
+ * <b>Additional Information</b>
+ * <p>
+ * For more information, see the
+ * <a href="doc-files/intro.html">Introduction to the Java 3D API</a> and
+ * <a href="doc-files/ViewModel.html">View Model</a>
+ * documents.
+ *
  * @see Canvas3D
  * @see PhysicalBody
  * @see PhysicalEnvironment

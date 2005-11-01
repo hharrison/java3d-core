@@ -16,6 +16,10 @@ import java.util.Hashtable;
 /**
  * NodeComponent is a common superclass for all scene graph node
  * component objects such as: Geometry, Appearance, Material, Texture, etc.
+ *
+ * <p>
+ * For more information, see the
+ * <a href="doc-files/intro.html">Introduction to the Java 3D API</a>.
  */
 public abstract class NodeComponent extends SceneGraphObject {
 

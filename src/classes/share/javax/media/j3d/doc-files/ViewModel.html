@@ -7,7 +7,1058 @@
 </head>
 <body>
 <h2>View Model</h2>
-<p><br>
+<p>Java&nbsp;3D introduces a new view model that takes Java's
+vision of "write once, run anywhere" and generalizes it to include
+display devices and six-degrees-of-freedom input peripherals such as
+head trackers. This "write once, view everywhere" nature of the new
+view model means that an application or applet written using the Java
+3D view model can render images to a broad range of display devices,
+including standard computer displays, multiple-projection display
+rooms, and head-mounted displays, without modification of the scene
+graph. It also means that the same application, once again without
+modification, can render stereoscopic views and can take advantage of
+the input from a head tracker to control the rendered view.
 </p>
+<p>Java&nbsp;3D's view model achieves this versatility by cleanly
+separating
+the virtual and the physical world. This model distinguishes between
+how an application positions, orients, and scales a ViewPlatform object
+(a viewpoint) within the virtual world and how the Java&nbsp;3D
+renderer
+constructs the final view from that viewpoint's position and
+orientation. The application controls the ViewPlatform's position and
+orientation; the renderer computes what view to render using this
+position and orientation, a description of the end-user's physical
+environment, and the user's position and orientation within the
+physical environment.
+</p>
+<p>This document first explains why Java&nbsp;3D chose a different view
+model
+and some of the philosophy behind that choice. It next describes how
+that model operates in the simple case of a standard computer screen
+without head tracking&#8212;the most common case. Finally, it presents
+advanced material that was originally published in Appendix C of the
+API specification guide.
+</p>
+<p>
+</p>
+<h2>Why a New Model?</h2>
+<p>Camera-based view models, as found in low-level APIs, give
+developers
+control over all rendering parameters. This makes sense when dealing
+with custom applications, less sense when dealing with systems that
+wish to have broader applicability: systems such as viewers or browsers
+that load and display whole worlds as a single unit or systems where
+the end users view, navigate, display, and even interact with the
+virtual world.
+</p>
+<p>Camera-based view models emulate a camera in the virtual world, not
+a
+human in a virtual world. Developers must continuously reposition a
+camera to emulate "a human in the virtual world."
+</p>
+<p>The Java&nbsp;3D view model incorporates head tracking directly, if
+present,
+with no additional effort from the developer, thus providing end users
+with the illusion that they actually exist inside a virtual world.
+</p>
+<p>The Java&nbsp;3D view model, when operating in a non-head-tracked
+environment and rendering to a single, standard display, acts very much
+like a traditional camera-based view model, with the added
+functionality of being able to generate stereo views transparently.
+</p>
+<p>
+</p>
+<h3>The Physical Environment
+Influences the View</h3>
+<p>Letting the application control all viewing parameters is not
+reasonable in systems in which the physical environment dictates some
+of the view parameters.
+</p>
+<p>One example of this is a head-mounted display (HMD), where the
+optics
+of the head-mounted display directly determine the field of view that
+the application should use. Different HMDs have different optics,
+making it unreasonable for application developers to hard-wire such
+parameters or to allow end users to vary that parameter at will.
+</p>
+<p>Another example is a system that automatically computes view
+parameters
+as a function of the user's current head position. The specification of
+a world and a predefined flight path through that world may not exactly
+specify an end-user's view. HMD users would expect to look and thus see
+to their left or right even when following a fixed path through the
+environment-imagine an amusement park ride with vehicles that follow
+fixed paths to present content to their visitors, but visitors can
+continue to move their heads while on those rides.
+</p>
+<p>Depending on the physical details of the end-user's environment, the
+values of the viewing parameters, particularly the viewing and
+projection matrices, will vary widely. The factors that influence the
+viewing and projection matrices include the size of the physical
+display, how the display is mounted (on the user's head or on a table),
+whether the computer knows the user's head location in three space, the
+head mount's actual field of view, the display's pixels per inch, and
+other such parameters. For more information, see "<a
+ href="#View_Model_Details">View Model Details</a>."
+</p>
+<p>
+</p>
+<h2>Separation of Physical and
+Virtual</h2>
+<p>The Java&nbsp;3D view model separates the virtual environment, where
+the
+application programmer has placed objects in relation to one another,
+from the physical environment, where the user exists, sees computer
+displays, and manipulates input devices.
+</p>
+<p>Java&nbsp;3D also defines a fundamental correspondence between the
+user's
+physical world and the virtual world of the graphic application. This
+physical-to-virtual-world correspondence defines a single common space,
+a space where an action taken by an end user affects objects within the
+virtual world and where any activity by objects in the virtual world
+affects the end user's view.
+</p>
+<p>
+</p>
+<h3>The Virtual World</h3>
+<p>The virtual world is a common space in which virtual objects exist.
+The
+virtual world coordinate system exists relative to a high-resolution
+Locale-each Locale object defines the origin of virtual world
+coordinates for all of the objects attached to that Locale. The Locale
+that contains the currently active ViewPlatform object defines the
+virtual world coordinates that are used for rendering. Java3D
+eventually transforms all coordinates associated with scene graph
+elements into this common virtual world space.
+</p>
+<h3>The Physical World</h3>
+<p>The physical world is just that-the real, physical world. This is
+the
+space in which the physical user exists and within which he or she
+moves his or her head and hands. This is the space in which any
+physical trackers define their local coordinates and in which several
+calibration coordinate systems are described.
+</p>
+<p>The physical world is a space, not a common coordinate system
+between
+different execution instances of Java&nbsp;3D. So while two different
+computers at two different physical locations on the globe may be
+running at the same time, there is no mechanism directly within
+Java&nbsp;3D
+to relate their local physical world coordinate systems with each
+other. Because of calibration issues, the local tracker (if any)
+defines the local physical world coordinate system known to a
+particular instance of Java&nbsp;3D.
+</p>
+<p>
+</p>
+<h2>The Objects That Define the
+View</h2>
+<p>Java&nbsp;3D distributes its view model parameters across several
+objects,
+specifically, the View object and its associated component objects, the
+PhysicalBody object, the PhysicalEnvironment object, the Canvas3D
+object, and the Screen3D object. <a href="#Figure_1">Figure
+1</a> shows graphically the central role of the View object and the
+subsidiary role of its component objects.
+</p>
+<p><a name="Figure_1"></a><img style="width: 500px; height: 355px;"
+ alt="View Object + Other Components"
+ title="View Object + Other Components" src="ViewModel1.gif"></p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 1</i> &#8211; View Object, Its Component
+Objects, and Their
+Interconnection</b></font>
+</ul>
+<p>
+The view-related objects shown in <a href="#Figure_1">Figure
+1</a>
+and their roles are as follows. For each of these objects, the portion
+of the API that relates to modifying the virtual world and the portion
+of the API that is relevant to non-head-tracked standard display
+configurations are derived in this chapter. The remainder of the
+details are described in "<a href="#View_Model_Details">View Model
+Details</a>."
+</p>
+<ul>
+  <li><a href="../ViewPlatform.html"><em>ViewPlatform</em></a>: A leaf
+node that locates a view within a
+scene graph. The ViewPlatform's parents specify its location,
+orientation, and scale within the virtual universe. See "<a
+ href="#ViewPlatform_Place">ViewPlatform: A Place in the Virtual World</a>,"
+for more
+information. </li>
+</ul>
+<ul>
+  <li><a href="../View.html"><em>View</em></a>: The main view object.
+It contains many pieces of
+view state.</li>
+</ul>
+<ul>
+  <li><a href="../Canvas3D.html"><em>Canvas3D</em></a>: The 3D version
+of the Abstract Windowing
+Toolkit
+(AWT) Canvas object. It represents a window in which Java&nbsp;3D will
+draw
+images. It contains a reference to a Screen3D object and information
+describing the Canvas3D's size, shape, and location within the Screen3D
+object.</li>
+</ul>
+<ul>
+  <li><a href="../Screen3D.html"><em>Screen3D</em></a>: An object that
+contains information describing
+the display screen's physical properties. Java&nbsp;3D places
+display-screen
+information in a separate object to prevent the duplication of screen
+information within every Canvas3D object that shares a common screen.</li>
+</ul>
+<ul>
+  <li><a href="../PhysicalBody.html">PhysicalBody</a>: An object that
+contains calibration information
+describing the user's physical body.</li>
+</ul>
+<ul>
+  <li><a href="../PhysicalEnvironment.html">PhysicalEnvironment</a>: An
+object that contains calibration
+information describing the physical world, mainly information that
+describes the environment's six-degrees-of freedom tracking hardware,
+if present.</li>
+</ul>
+<p>Together, these objects describe the geometry of viewing rather than
+explicitly providing a viewing or projection matrix. The Java&nbsp;3D
+renderer uses this information to construct the appropriate viewing and
+projection matrices. The geometric focus of these view objects provides
+more flexibility in generating views-a flexibility needed to support
+alternative display configurations.
+</p>
+<h2><a name="ViewPlatform_Place"></a>ViewPlatform: A Place in the
+Virtual World</h2>
+<p>A ViewPlatform leaf node defines a coordinate system, and thus a
+reference frame with its associated origin or reference point, within
+the virtual world. The ViewPlatform serves as a point of attachment for
+View objects and as a base for determining a renderer's view.
+</p>
+<p><a href="#Figure_2">Figure
+2</a>
+shows a portion of a scene graph containing a ViewPlatform node. The
+nodes directly above a ViewPlatform determine where that ViewPlatform
+is located and how it is oriented within the virtual world. By
+modifying the Transform3D object associated with a TransformGroup node
+anywhere directly above a ViewPlatform, an application or behavior can
+move that ViewPlatform anywhere within the virtual world. A simple
+application might define one TransformGroup node directly above a
+ViewPlatform, as shown in <a href="#Figure_2">Figure
+2</a>.
+</p>
+<p>A VirtualUniverse may have many different ViewPlatforms, but a
+particular View object can attach itself only to a single ViewPlatform.
+Thus, each rendering onto a Canvas3D is done from the point of view of
+a single ViewPlatform.
+</p>
+<p><a name="Figure_2"></a><img style="width: 500px; height: 359px;"
+ alt="View Platform Branch Graph" title="View Platform Branch Graph"
+ src="ViewModel2.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 2</i> &#8211; A Portion of a Scene Graph
+Containing a ViewPlatform Object</b></font>
+</ul>
+<p>
+</p>
+<h3>Moving through the Virtual
+World</h3>
+<p>An application navigates within the virtual world by modifying a
+ViewPlatform's parent TransformGroup. Examples of applications that
+modify a ViewPlatform's location and orientation include browsers,
+object viewers that provide navigational controls, applications that do
+architectural walkthroughs, and even search-and-destroy games.
+</p>
+<p>Controlling the ViewPlatform object can produce very interesting and
+useful results. Our first simple scene graph (see <a
+ href="intro.html#Figure_1">"Introduction," Figure 1</a>)
+defines a scene graph for a simple application that draws an object in
+the center of a window and rotates that object about its center point.
+In that figure, the Behavior object modifies the TransformGroup
+directly above the Shape3D node.
+</p>
+<p>An alternative application scene graph, shown in <a href="#Figure_3">Figure
+3</a>,
+leaves the central object alone and moves the ViewPlatform around the
+world. If the shape node contains a model of the earth, this
+application could generate a view similar to that seen by astronauts as
+they orbit the earth.
+</p>
+<p>Had we populated this world with more objects, this scene graph
+would allow navigation through the world via the Behavior node.
+</p>
+<p><a name="Figure_3"></a><img style="width: 500px; height: 289px;"
+ alt="Simple Scene Graph with View Control"
+ title="Simple Scene Graph with View Control" src="ViewModel3.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 3</i> &#8211; A Simple Scene Graph with View
+Control</b></font>
+</ul>
+<p>
+Applications and behaviors manipulate a <a
+ href="../TransformGroup.html">TransformGroup</a> through its
+access methods. These methods allow an application to retrieve and
+set the Group node's Transform3D object. Transform3D Node methods
+include <code>getTransform</code> and <code>setTransform</code>.
+</p>
+<p>
+</p>
+<h3>Dropping in on a Favorite
+Place</h3>
+<p>A scene graph may contain multiple <a href="../ViewPlatform.html">ViewPlatform</a>
+objects. If a user detaches a <a href="../View.html">View</a> object
+from a ViewPlatform and then
+reattaches that View to a different ViewPlatform, the image on the
+display will now be rendered from the point of view of the new
+ViewPlatform.</p>
+<h3>Associating Geometry with a
+ViewPlatform</h3>
+<p>Java&nbsp;3D does not have any built-in semantics for displaying a
+visible
+manifestation of a ViewPlatform within the virtual world (an <em>avatar</em>).
+However, a developer can construct and manipulate an avatar using
+standard Java&nbsp;3D constructs.
+</p>
+<p>A developer can construct a small scene graph consisting of a
+TransformGroup node, a behavior leaf node, and a shape node and insert
+it directly under the BranchGroup node associated with the ViewPlatform
+object. The shape node would contain a geometric model of the avatar's
+head. The behavior node would change the TransformGroup's transform
+periodically to the value stored in a View object's <code>UserHeadToVworld</code><strong>
+</strong>parameter (see "<a href="#View_Model_Details">View Model
+Details</a>").
+The avatar's virtual head, represented by the shape node, will now move
+around in lock-step with the ViewPlatform's TransformGroup<em> and </em>any
+relative position and orientation changes of the user's actual physical
+head (if a system has a head tracker).
+</p>
+<p>
+</p>
+<h2><a name="Generating_View"></a>Generating a View</h2>
+<p>Java&nbsp;3D generates viewing matrices in one of a few different
+ways,
+depending on whether the end user has a head-mounted or a room-mounted
+display environment and whether head tracking is enabled. This section
+describes the computation for a non-head-tracked, room-mounted
+display-a standard computer display. Other environments are described
+in "<a href="#View_Model_Details">View Model Details</a>."
+</p>
+<p>In the absence of head tracking, the ViewPlatform's origin specifies
+the virtual eye's location and orientation within the virtual world.
+However, the eye location provides only part of the information needed
+to render an image. The renderer also needs a projection matrix. In the
+default mode, Java&nbsp;3D uses the projection policy, the specified
+field-of-view information, and the front and back clipping distances to
+construct a viewing frustum.
+</p>
+<p>
+</p>
+<h3>Composing Model and Viewing
+Transformations</h3>
+<p><a href="#Figure_4">Figure
+4</a>
+shows a simple scene graph. To draw the object labeled "S,"
+Java&nbsp;3D
+internally constructs the appropriate model, view platform, eye, and
+projection matrices. Conceptually, the model transformation for a
+particular object is computed by concatenating all the matrices in a
+direct path between the object and the VirtualUniverse. The view matrix
+is then computed-again, conceptually-by concatenating all the matrices
+between the VirtualUniverse object and the ViewPlatform attached to the
+current View object. The eye and projection matrices are constructed
+from the View object and its associated component objects.
+</p>
+<p><a name="Figure_4"></a><img style="width: 500px; height: 332px;"
+ alt="Object and ViewPlatform Transform"
+ title="Object and ViewPlatform Transform" src="ViewModel4.gif"></p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 4</i> &#8211; Object and ViewPlatform
+Transformations</b></font>
+</ul>
+<p>In our scene graph, what we would normally consider the
+model transformation would consist of the following three
+transformations: <strong>LT</strong>1<strong>T</strong>2. By
+multiplying <strong>LT</strong>1<strong>T</strong>2
+by a vertex in the shape object, we would transform that vertex into
+the virtual universe's coordinate system. What we would normally
+consider the view platform transformation would be (<strong>LT</strong>v1)-1
+or <strong>T</strong>v1<sup>-1</sup><strong>L</strong>-1.
+This presents a problem since coordinates in the virtual universe are
+256-bit fixed-point values, which cannot be used to represent
+transformed points efficiently.
+</p>
+<p>Fortunately, however, there is a solution to this problem. Composing
+the model and view platform transformations gives us
+</p>
+<dl>
+  <dt><br>
+  </dt>
+  <dd> <strong>T</strong>v1<sup>-1</sup><strong>L</strong>-1<strong>LT</strong>1<strong>T</strong>2
+= <strong>T</strong>v1<sup>-1</sup><strong>IT</strong>1<strong>T</strong>2
+= <strong>T</strong>v1<sup>-1</sup><strong>T</strong>1<strong>T</strong>2,
+  </dd>
+</dl>
+<p>the matrix that takes vertices in an object's local coordinate
+system
+and places them in the ViewPlatform's coordinate system. Note that the
+high-resolution Locale transformations cancel each other out, which
+removes the need to actually transform points into high-resolution
+VirtualUniverse coordinates. The general formula of the matrix that
+transforms object coordinates to ViewPlatform coordinates is <strong>T</strong>vn<sup>-1</sup>...<strong>T</strong>v2<sup>-1</sup><strong>T</strong>v1<sup>-1</sup><strong>T</strong>1<strong>T</strong>2...<strong>T</strong>m.
+</p>
+<p>As mentioned earlier, the View object contains the remainder of the
+view information, specifically, the eye matrix, <strong>E</strong>,
+that takes points in the View-Platform's local coordinate system and
+translates them into the user's eye coordinate system, and the
+projection matrix, <strong>P</strong>, that projects objects in the
+eye's coordinate system into clipping coordinates. The final
+concatenation of matrices for rendering our shape object "S" on the
+specified Canvas3D is <strong>PET</strong>v1<sup>-1</sup><strong>T</strong>1<strong>T</strong>2.
+In general this is <strong>PET</strong>vn<sup>-1</sup>...<strong>T</strong>v2<sup>-1</sup><strong>T</strong>v1<sup>-1</sup><strong>T</strong>1<strong>T</strong>2...<strong>T</strong>m.
+</p>
+<p>The details of how Java&nbsp;3D constructs the matrices <strong>E</strong>
+and <strong>P</strong> in different end-user configurations are
+described in "<a href="#View_Model_Details">View Model Details</a>."
+</p>
+<p>
+</p>
+<h3>Multiple Locales</h3>
+<p>Java&nbsp;3D supports multiple high-resolution Locales. In some
+cases,
+these
+Locales are close enough to each other that they can "see" each other,
+meaning that objects can be rendered even though they are not in the
+same Locale as the ViewPlatform object that is attached to the View.
+Java&nbsp;3D automatically handles this case without the application
+having
+to do anything. As in the previous example, where the ViewPlatform and
+the object being rendered are attached to the same Locale, Java&nbsp;3D
+internally constructs the appropriate matrices for cases in which the
+ViewPlatform and the object being rendered are <em>not</em> attached
+to the same Locale.
+</p>
+<p>Let's take two Locales, L1 and L2, with the View attached to a
+ViewPlatform in L1. According to our general formula, the modeling
+transformation-the transformation that takes points in object
+coordinates and transforms them into VirtualUniverse coordinates-is <strong>LT</strong>1<strong>T</strong>2...<strong>T</strong>m.
+In our specific example, a point in Locale L2 would be transformed into
+VirtualUniverse coordinates by <strong>L</strong>2<strong>T</strong>1<strong>T</strong>2...<strong>T</strong>m.
+The view platform transformation would be (<strong>L</strong>1<strong>T</strong>v1<strong>T</strong>v1...<strong>T</strong>vn)-1
+or <strong>T</strong>vn<sup>-1</sup>...<strong>T</strong>v2<sup>-1</sup><strong>T</strong>v1<sup>-1</sup><strong>L</strong>1<sup>-1</sup>.
+Composing these two matrices gives us
+</p>
+<dl>
+  <dt><br>
+  </dt>
+  <dd> <strong>T</strong>vn<sup>-1</sup>...<strong>T</strong>v2<sup>-1</sup><strong>T</strong>v1<sup>-1</sup><strong>L</strong>1<sup>-1</sup><strong>L</strong>2<strong>T</strong>1<strong>T</strong>2...<strong>T</strong>m.
+  </dd>
+</dl>
+<p>Thus, to render objects in another Locale, it is sufficient to
+compute <strong>L</strong>1<sup>-1</sup><strong>L</strong>2
+and use that as the starting matrix when composing the model
+transformations. Given that a Locale is represented by a single
+high-resolution coordinate position, the transformation <strong>L</strong>1<sup>-1</sup><strong>L</strong>2
+is a simple translation by <strong>L</strong>2 - <strong>L</strong>1.
+Again, it is not actually necessary to transform points into
+high-resolution VirtualUniverse coordinates.
+</p>
+<p>In general, Locales that are close enough that the difference in
+their
+high-resolution coordinates can be represented in double precision by a
+noninfinite value are close enough to be rendered. In practice, more
+sophisticated culling techniques can be used to render only those
+Locales that really are "close enough."
+</p>
+<p>
+</p>
+<h2>A Minimal Environment</h2>
+<p>An application must create a minimal set of Java&nbsp;3D objects
+before
+Java
+3D can render to a display device. In addition to a Canvas3D object,
+the application must create a View object, with its associated
+PhysicalBody and PhysicalEnvironment objects, and the following scene
+graph elements:
+</p>
+<ul>
+  <li>A VirtualUniverse object</li>
+</ul>
+<ul>
+  <li>A high-resolution Locale object</li>
+</ul>
+<ul>
+  <li>A BranchGroup node object</li>
+</ul>
+<ul>
+  <li>A TransformGroup node object with associated transform</li>
+</ul>
+<ul>
+  <li>A ViewPlatform leaf node object that defines the position and
+orientation within the virtual universe for generating views</li>
+</ul>
+<hr>
+<h2><a name="View_Model_Details"></a>View Model Details</h2>
+<p>An application programmer writing a 3D
+graphics program that will deploy on a variety of platforms must
+anticipate the likely end-user environments and must carefully
+construct the view transformations to match those characteristics using
+a low-level API. This appendix addresses many of the issues an
+application must face and describes the sophisticated features that
+Java&nbsp;3D's advanced view model provides.
+</p>
+<p>
+</p>
+<h2>An Overview of the
+Java&nbsp;3D
+View Model</h2>
+Both camera-based and Java&nbsp;3D-based view models allow a programmer
+to
+specify the shape of a view frustum and, under program control, to
+place, move, and reorient that frustum within the virtual environment.
+However, how they do this varies enormously. Unlike the camera-based
+system, the Java&nbsp;3D view model allows slaving the view frustum's
+position and orientation to that of a six-degrees-of-freedom tracking
+device. By slaving the frustum to the tracker, Java&nbsp;3D can
+automatically modify the view frustum so that the generated images
+match the end-user's viewpoint exactly.
+<p>Java&nbsp;3D must handle two rather different head-tracking
+situations.
+In one case, we rigidly attach a tracker's <em>base</em>,
+and thus its coordinate frame, to the display environment. This
+corresponds to placing a tracker base in a fixed position and
+orientation relative to a projection screen within a room, to a
+computer display on a desk, or to the walls of a multiple-wall
+projection display. In the second head-tracking situation, we rigidly
+attach a tracker's <em>sensor</em>, not its base, to the display
+device. This corresponds to rigidly attaching one of that tracker's
+sensors to a head-mounted display and placing the tracker base
+somewhere within the physical environment.
+</p>
+<p>
+</p>
+<h2>Physical Environments and
+Their Effects</h2>
+Imagine an application where the end user sits on a magic carpet. The
+application flies the user through the virtual environment by
+controlling the carpet's location and orientation within the virtual
+world. At first glance, it might seem that the application also
+controls what the end user will see-and it does, but only
+superficially.
+<p>The following two examples show how end-user environments can
+significantly affect how an application must construct viewing
+transformations.
+</p>
+<p>
+</p>
+<h3>A Head-Mounted Example</h3>
+Imagine that the end user sees the magic carpet and the virtual world
+with a head-mounted display and head tracker. As the application flies
+the carpet through the virtual world, the user may turn to look to the
+left, to the right, or even toward the rear of the carpet. Because the
+head tracker keeps the renderer informed of the user's gaze direction,
+it might not need to draw the scene directly in front of the magic
+carpet. The view that the renderer draws on the head-mount's display
+must match what the end user would see if the experience had occurred
+in the real world.
+<h3>A Room-Mounted Example</h3>
+Imagine a slightly different scenario where the end user sits in a
+darkened room in front of a large projection screen. The application
+still controls the carpet's flight path; however, the position and
+orientation of the user's head barely influences the image drawn on the
+projection screen. If a user looks left or right, then he or she sees
+only the darkened room. The screen does not move. It's as if the screen
+represents the magic carpet's "front window" and the darkened room
+represents the "dark interior" of the carpet.
+<p>By adding a left and right screen, we give the magic carpet rider a
+more complete view of the virtual world surrounding the carpet. Now our
+end user sees the view to the left or right of the magic carpet by
+turning left or right.
+</p>
+<p>
+</p>
+<h3>Impact of Head Position and
+Orientation on the Camera</h3>
+In the head-mounted example, the user's head position and orientation
+significantly affects a camera model's camera position and orientation
+but hardly has any effect on the projection matrix. In the room-mounted
+example, the user's head position and orientation contributes little to
+a camera model's camera position and orientation; however, it does
+affect the projection matrix.
+<p>From a camera-based perspective, the application developer must
+construct the camera's position and orientation by combining the
+virtual-world component (the position and orientation of the magic
+carpet) and the physical-world component (the user's instantaneous head
+position and orientation).
+</p>
+<p>Java&nbsp;3D's view model incorporates the appropriate abstractions
+to
+compensate automatically for such variability in end-user hardware
+environments.
+</p>
+<p>
+</p>
+<h2>The Coordinate Systems</h2>
+The basic view model consists of eight or nine coordinate systems,
+depending on whether the end-user environment consists of a
+room-mounted display or a head-mounted display. First, we define the
+coordinate systems used in a room-mounted display environment. Next, we
+define the added coordinate system introduced when using a head-mounted
+display system.
+<h3>Room-Mounted Coordinate
+Systems</h3>
+The room-mounted coordinate system is divided into the virtual
+coordinate system and the physical coordinate system. <a
+ href="#Figure_5">Figure
+5</a>
+shows these coordinate systems graphically. The coordinate systems
+within the grayed area exist in the virtual world; those outside exist
+in the physical world. Note that the coexistence coordinate system
+exists in both worlds.
+<h4>The Virtual Coordinate
+Systems</h4>
+<h5> The Virtual World Coordinate System</h5>
+The virtual world coordinate system encapsulates
+the unified coordinate system for all scene graph objects in the
+virtual environment. For a given View, the virtual world coordinate
+system is defined by the Locale object that contains the ViewPlatform
+object attached to the View. It is a right-handed coordinate system
+with +<em>x</em> to the right, +<em>y</em> up, and +<em>z</em> toward
+the viewer.
+<h5> The ViewPlatform Coordinate System</h5>
+The ViewPlatform coordinate system is the local coordinate system of
+the ViewPlatform leaf node to which the View is attached.
+<p><a name="Figure_5"></a><img style="width: 500px; height: 181px;"
+ alt="Display Rigidly Attached to Tracker Base"
+ title="Display Rigidly Attached to Tracker Base" src="ViewModel5.gif"></p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 5</i> &#8211; Display Rigidly Attached to the
+Tracker Base</b></font>
+</ul>
+<p>
+</p>
+<h5> The Coexistence Coordinate System</h5>
+A primary implicit goal of any view model is to map a specified local
+portion of the physical world onto a specified portion of the virtual
+world. Once established, one can legitimately ask where the user's head
+or hand is located within the virtual world or where a virtual object
+is located in the local physical world. In this way the physical user
+can interact with objects inhabiting the virtual world, and vice versa.
+To establish this mapping, Java&nbsp;3D defines a special coordinate
+system,
+called coexistence coordinates, that is defined to exist in both the
+physical world and the virtual world.
+<p>The coexistence coordinate system exists half in the virtual world
+and
+half in the physical world. The two transforms that go from the
+coexistence coordinate system to the virtual world coordinate system
+and back again contain all the information needed to expand or shrink
+the virtual world relative to the physical world. It also contains the
+information needed to position and orient the virtual world relative to
+the physical world.
+</p>
+<p>Modifying the transform that maps the coexistence coordinate system
+into the virtual world coordinate system changes what the end user can
+see. The Java&nbsp;3D application programmer moves the end user within
+the
+virtual world by modifying this transform.
+</p>
+<p>
+</p>
+<h4>The Physical Coordinate
+Systems</h4>
+<h5> The Head Coordinate System</h5>
+The head coordinate system allows an application to import its user's
+head geometry. The coordinate system provides a simple consistent
+coordinate frame for specifying such factors as the location of the
+eyes and ears.
+<h5> The Image Plate Coordinate System</h5>
+The image plate coordinate system corresponds with the physical
+coordinate system of the image generator. The image plate is defined as
+having its origin at the lower left-hand corner of the display area and
+as lying in the display area's <em>XY</em>
+plane. Note that image plate is a different coordinate system than
+either left image plate or right image plate. These last two coordinate
+systems are defined in head-mounted environments only.
+<h5> The Head Tracker Coordinate System</h5>
+The head tracker coordinate system corresponds to the
+six-degrees-of-freedom tracker's sensor attached to the user's head.
+The head tracker's coordinate system describes the user's instantaneous
+head position.
+<h5> The Tracker Base Coordinate System</h5>
+The tracker base coordinate system corresponds to the emitter
+associated with absolute position/orientation trackers. For those
+trackers that generate relative position/orientation information, this
+coordinate system is that tracker's initial position and orientation.
+In general, this coordinate system is rigidly attached to the physical
+world.
+<h3>Head-Mounted Coordinate
+Systems</h3>
+Head-mounted coordinate systems divide the same virtual coordinate
+systems and the physical coordinate systems. <a href="#Figure_6">Figure
+6</a>
+shows these coordinate systems graphically. As with the room-mounted
+coordinate systems, the coordinate systems within the grayed area exist
+in the virtual world; those outside exist in the physical world. Once
+again, the coexistence coordinate system exists in both worlds. The
+arrangement of the coordinate system differs from those for a
+room-mounted display environment. The head-mounted version of
+Java&nbsp;3D's
+coordinate system differs in another way. It includes two image plate
+coordinate systems, one for each of an end-user's eyes.
+<h5> The Left Image Plate and Right Image Plate Coordinate Systems</h5>
+The left image plate and right image plate
+coordinate systems correspond with the physical coordinate system of
+the image generator associated with the left and right eye,
+respectively. The image plate is defined as having its origin at the
+lower left-hand corner of the display area and lying in the display
+area's <em>XY</em> plane. Note that the left image plate's <em>XY</em>
+plane does not necessarily lie parallel to the right image plate's <em>XY</em>
+plane. Note that the left image plate and the right image plate are
+different coordinate systems than the room-mounted display
+environment's image plate coordinate system.
+<p><a name="Figure_6"></a><img style="width: 499px; height: 162px;"
+ alt="Display Rigidly Attached to Head Tracker"
+ title="Display Rigidly Attached to Head Tracker" src="ViewModel6.gif"></p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 6</i> &#8211; Display Rigidly Attached to the
+Head Tracker (Sensor)</b></font>
+</ul>
+<p>
+</p>
+<h2>The Screen3D Object</h2>
+A Screen3D object represents one independent display device. The most
+common environment for a Java&nbsp;3D application is a desktop computer
+with
+or without a head tracker. <a href="#Figure_7">Figure
+7</a> shows a scene graph fragment for a display environment designed
+for such an end-user environment. <a href="#Figure_8">Figure
+8</a> shows a display environment that matches the scene graph
+fragment in <a href="#Figure_7">Figure
+7</a>.
+<p><a name="Figure_7"></a><img style="width: 499px; height: 185px;"
+ alt="Environment with Single Screen3D Object"
+ title="Environment with Single Screen3D Object" src="ViewModel7.gif"></p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 7</i> &#8211; A Portion of a Scene Graph
+Containing a Single Screen3D
+Object</b></font>
+</ul>
+<p>
+<a name="Figure_8"></a><img style="width: 500px; height: 237px;"
+ alt="Single-Screen Display Environment"
+ title="Single-Screen Display Environment" src="ViewModel8.gif"></p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 8</i> &#8211; A Single-Screen Display
+Environment</b></font>
+</ul>
+<p>
+A multiple-projection wall display presents a more exotic environment.
+Such environments have multiple screens, typically three or more. <a
+ href="#Figure_9">Figure
+9</a> shows a scene graph fragment representing such a system, and <a
+ href="#Figure_10">Figure
+10</a> shows the corresponding display environment.
+</p>
+<p><a name="Figure_9"></a><img style="width: 500px; height: 196px;"
+ alt="Environment with Three Screen3D Object"
+ title="Environment with Three Screen3D Object" src="ViewModel9.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 9</i> &#8211; A Portion of a Scene Graph
+Containing Three Screen3D
+Objects</b></font>
+</ul>
+<p>
+<a name="Figure_10"></a><img style="width: 700px; height: 241px;"
+ alt="Three-Screen Display Environment"
+ title="Three-Screen Display Environment" src="ViewModel10.gif"></p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 10</i> &#8211; A Three-Screen Display
+Environment</b></font>
+</ul>
+<p>
+A multiple-screen environment requires more care during the
+initialization and calibration phase. Java&nbsp;3D must know how the
+Screen3Ds are placed with respect to one another, the tracking device,
+and the physical portion of the coexistence coordinate system.
+</p>
+<p>
+</p>
+<h2>Viewing in Head-Tracked Environments</h2>
+<p>The "<a href="#Generating_View">Generating a View</a>" section
+describes how Java&nbsp;3D generates a view for a standard flat-screen
+display with no head tracking. In this section, we describe how
+Java&nbsp;3D
+generates a view in a room-mounted, head-tracked display
+environment-either a computer monitor with shutter glasses and head
+tracking or a multiple-wall display with head-tracked shutter glasses.
+Finally, we describe how Java&nbsp;3D generates view matrices in a
+head-mounted and head-tracked display environment.
+</p>
+<h3>A Room-Mounted Display with
+Head Tracking</h3>
+When head tracking combines with a room-mounted
+display environment (for example, a standard flat-screen display), the
+ViewPlatform's origin and orientation serve as a base for constructing
+the view matrices. Additionally, Java&nbsp;3D uses the end-user's head
+position and orientation to compute where an end-user's eyes are
+located in physical space. Each eye's position serves to offset the
+corresponding virtual eye's position relative to the ViewPlatform's
+origin. Each eye's position also serves to specify that eye's frustum
+since the eye's position relative to a Screen3D uniquely specifies that
+eye's view frustum. Note that Java&nbsp;3D will access the PhysicalBody
+object to obtain information describing the user's interpupilary
+distance and tracking hardware, values it needs to compute the
+end-user's eye positions from the head position information.
+<h3>A Head-Mounted Display with
+Head Tracking</h3>
+In a head-mounted environment, the ViewPlatform's origin and
+orientation also serves as a base for constructing view matrices. And,
+as in the head-tracked, room-mounted environment, Java&nbsp;3D also
+uses the
+end-user's head position and orientation to modify the ViewPlatform's
+position and orientation further. In a head-tracked, head-mounted
+display environment, an end-user's eyes do not move relative to their
+respective display screens, rather, the display screens move relative
+to the virtual environment. A rotation of the head by an end user can
+radically affect the final view's orientation. In this situation, Java
+3D combines the position and orientation from the ViewPlatform with the
+position and orientation from the head tracker to form the view matrix.
+The view frustum, however, does not change since the user's eyes do not
+move relative to their respective display screen, so Java&nbsp;3D can
+compute the projection matrix once and cache the result.
+<p>If any of the parameters of a View object are updated, this will
+effect
+a change in the implicit viewing transform (and thus image) of any
+Canvas3D that references that View object.
+</p>
+<p>
+</p>
+<h2>Compatibility Mode</h2>
+<p>A camera-based view model allows application programmers to think
+about
+the images displayed on the computer screen as if a virtual camera took
+those images. Such a view model allows application programmers to
+position and orient a virtual camera within a virtual scene, to
+manipulate some parameters of the virtual camera's lens (specify its
+field of view), and to specify the locations of the near and far
+clipping planes.
+</p>
+<p>Java&nbsp;3D allows applications to enable compatibility mode for
+room-mounted, non-head-tracked display environments or to disable
+compatibility mode using the following methods. Camera-based viewing
+functions are available only in compatibility mode. The <code>setCompatibilityModeEnable</code>
+method turns compatibility mode on or off. Compatibility mode is
+disabled by default.
+</p>
+<hr noshade="noshade">
+<p><b>Note:</b> Use of these view-compatibility
+functions will disable some of Java&nbsp;3D's view model features and
+limit
+the portability of Java&nbsp;3D programs. These methods are primarily
+intended to help jump-start porting of existing applications.
+</p>
+<hr noshade="noshade">
+<h3>Overview of the
+Camera-Based View Model</h3>
+The traditional camera-based view model, shown in <a href="#Figure_11">Figure
+11</a>,
+places a virtual camera inside a geometrically specified world. The
+camera "captures" the view from its current location, orientation, and
+perspective. The visualization system then draws that view on the
+user's display device. The application controls the view by moving the
+virtual camera to a new location, by changing its orientation, by
+changing its field of view, or by controlling some other camera
+parameter.
+<p>The various parameters that users control in a
+camera-based view model specify the shape of a viewing volume (known as
+a frustum because of its truncated pyramidal shape) and locate that
+frustum within the virtual environment. The rendering pipeline uses the
+frustum to decide which objects to draw on the display screen. The
+rendering pipeline does not draw objects outside the view frustum, and
+it clips (partially draws) objects that intersect the frustum's
+boundaries.
+</p>
+<p>Though a view frustum's specification may have many items in common
+with those of a physical camera, such as placement, orientation, and
+lens settings, some frustum parameters have no physical analog. Most
+noticeably, a frustum has two parameters not found on a physical
+camera: the near and far clipping planes.
+</p>
+<p><a name="Figure_11"></a><img style="width: 500px; height: 202px;"
+ alt="Camera-Based View Model" title="Camera-Based View Model"
+ src="ViewModel11.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 11</i> &#8211; The Camera-Based View Model</b></font>
+</ul>
+<p>
+The location of the near and far clipping planes allows the application
+programmer to specify which objects Java&nbsp;3D should not draw.
+Objects
+too far away from the current eyepoint usually do not result in
+interesting images. Those too close to the eyepoint might obscure the
+interesting objects. By carefully specifying near and far clipping
+planes, an application programmer can control which objects the
+renderer will not be drawing.
+</p>
+<p>From the perspective of the display device, the virtual camera's
+image
+plane corresponds to the display screen. The camera's placement,
+orientation, and field of view determine the shape of the view frustum.
+</p>
+<p>
+</p>
+<h3>Using the Camera-Based View
+Model</h3>
+<p>The camera-based view model allows Java&nbsp;3D to bridge the gap
+between
+existing 3D code and Java&nbsp;3D's view model. By using the
+camera-based
+view model methods, a programmer retains the familiarity of the older
+view model but gains some of the flexibility afforded by Java&nbsp;3D's
+new
+view model.
+</p>
+<p>The traditional camera-based view model is supported in Java&nbsp;3D
+by
+helping methods in the Transform3D object. These methods were
+explicitly designed to resemble as closely as possible the view
+functions of older packages and thus should be familiar to most 3D
+programmers. The resulting Transform3D objects can be used to set
+compatibility-mode transforms in the View object.
+</p>
+<p>
+</p>
+<h4>Creating a Viewing Matrix</h4>
+<p>The Transform3D object provides a <code>lookAt</code> utility
+method
+to create a
+viewing matrix. This method specifies the position and orientation of
+a viewing transform. It works similarly to the equivalent function in
+OpenGL. The inverse of this transform can be used to control the
+ViewPlatform object within the scene graph. Alternatively, this
+transform can be passed directly to the View's <code>VpcToEc</code>
+transform via the compatibility-mode viewing functions. The <code>setVpcToEc</code><code></code>
+method is used to set the viewing matrix when in compatibility mode.
+</p>
+<h4>Creating a Projection
+Matrix</h4>
+<p>The Transform3D object provides three methods for
+creating a projection matrix: <code>frustum</code>, <code>perspective</code>,
+and <code>ortho</code>. All three map points from eye coordinates
+(EC) to clipping coordinates (CC). Eye coordinates are defined such
+that (0, 0, 0) is at the eye and the projection plane is at <em>z</em>
+= -1.<br>
+</p>
+<p>The <code>frustum</code> method
+establishes a perspective projection with the eye at the apex of a
+symmetric view frustum. The transform maps points from eye coordinates
+to clipping coordinates. The clipping coordinates generated by the
+resulting transform are in a right-handed coordinate system (as are all
+other coordinate systems in Java&nbsp;3D).
+</p>
+<p>The arguments define the frustum and its associated perspective
+projection: <code>(left</code>, <code>bottom</code>, <code>-near)</code>
+and <code>(right</code>, <code>top</code>, <code>-near)</code>
+specify the point on the near clipping plane that maps onto the
+lower-left and upper-right corners of the window, respectively. The <code>-far</code>
+parameter specifies the far clipping plane. See <a href="#Figure_12">Figure
+12</a>.
+</p>
+<p>The <code>perspective</code> method establishes a perspective
+projection with the eye at the apex of a symmetric view frustum,
+centered about the <em>Z</em>-axis,
+with a fixed field of view. The resulting perspective projection
+transform mimics a standard camera-based view model. The transform maps
+points from eye coordinates to clipping coordinates. The clipping
+coordinates generated by the resulting transform are in a right-handed
+coordinate system.
+</p>
+<p>The arguments define the frustum and its associated perspective
+projection: <code>-near</code> and <code>-far</code> specify the near
+and far clipping planes; <code>fovx</code> specifies the field of view
+in the <em>X</em> dimension, in radians; and <code>aspect</code>
+specifies the aspect ratio of the window. See <a href="#Figure_13">Figure
+13</a>.
+</p>
+<p><a name="Figure_12"></a><img style="width: 500px; height: 209px;"
+ alt="Perspective Viewing Frustum" title="Perspective Viewing Frustum"
+ src="ViewModel12.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 12</i> &#8211; A Perspective Viewing Frustum</b></font>
+</ul>
+<p>
+<a name="Figure_13"></a><img style="width: 500px; height: 212px;"
+ alt="Perspective View Model Arguments"
+ title="Perspective View Model Arguments" src="ViewModel13.gif"></p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 13</i> &#8211; Perspective View Model Arguments</b></font>
+</ul>
+<p>
+The <code>ortho</code> method
+establishes a parallel projection. The orthographic projection
+transform mimics a standard camera-based video model. The transform
+maps points from eye coordinates to clipping coordinates. The clipping
+coordinates generated by the resulting transform are in a right-handed
+coordinate system.
+</p>
+<p>The arguments define a rectangular box used for projection: <code>(left</code>,
+<code>bottom</code>, <code>-near)</code> and <code>(right</code>, <code>top</code>,
+<code>-near)</code>
+specify the point on the near clipping plane that maps onto the
+lower-left and upper-right corners of the window, respectively. The <code>-far</code>
+parameter specifies the far clipping plane. See <a href="#Figure_14">Figure
+14</a>.
+</p>
+<p><a name="Figure_14"></a><img style="width: 500px; height: 220px;"
+ alt="Orthographic View Model" title="Orthographic View Model"
+ src="ViewModel14.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 14</i> &#8211; Orthographic View Model</b></font>
+</ul>
+<p>
+</p>
+<p>The <code>setLeftProjection</code>
+and <code>setRightProjection</code> methods are used to set the
+projection matrices for the left eye and right eye, respectively, when
+in compatibility mode.</p>
 </body>
 </html>

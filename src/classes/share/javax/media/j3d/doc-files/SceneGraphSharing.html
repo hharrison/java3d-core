@@ -7,7 +7,244 @@
 </head>
 <body>
 <h2>Reusing Scene Graphs</h2>
-<p><br>
+<p>
+Java&nbsp;3D provides application programmers
+with two different means for reusing scene graphs. First, multiple
+scene graphs can share a common subgraph. Second, the node hierarchy of
+a common subgraph can be cloned, while still sharing large component
+objects such as geometry and texture objects. In the first case,
+changes in the shared subgraph affect all scene graphs that refer to
+the shared subgraph. In the second case, each instance is unique-a
+change in one instance does not affect any other instance.
 </p>
+<h2>Sharing Subgraphs</h2>
+<p>An application that wishes to share a subgraph from multiple places
+in
+a scene graph must do so through the use of the <a href="../Link.html">Link</a>
+leaf node and an
+associated <a href="../SharedGroup.html">SharedGroup</a> node. The
+SharedGroup node serves as the root of
+the shared subgraph. The Link leaf node refers to the SharedGroup node.
+It does not incorporate the shared scene graph directly into its scene
+graph.
+</p>
+<p>A SharedGroup node allows multiple Link leaf nodes to share its
+subgraph as shown in <a href="#Figure_1">Figure
+1</a> below.<br>
+</p>
+<p><a name="Figure_1"></a><img style="width: 500px; height: 476px;"
+ alt="Sharing a Subgraph" title="Sharing a Subgraph"
+ src="SceneGraphSharing1.gif">
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 1</i> &#8211; Sharing a Subgraph</b></font>
+</ul>
+<h2>Cloning Subgraphs</h2>
+<p>An application developer may wish to reuse a common subgraph without
+completely sharing that subgraph. For example, the developer may wish
+to create a parking lot scene consisting of multiple cars, each with a
+different color. The developer might define three basic types of cars,
+such as convertible, truck, and sedan. To create the parking lot scene,
+the application will instantiate each type of car several times. Then
+the application can change the color of the various instances to create
+more variety in the scene. Unlike shared subgraphs, each instance is a
+separate copy of the scene graph definition: Changes to one instance do
+not affect any other instance.
+</p>
+<p>Java&nbsp;3D provides the <a href="../Node.html#cloneTree%28%29"><code>cloneTree</code></a>
+method for this
+purpose. The <code>cloneTree</code>
+method allows the programmer to change some attributes (NodeComponent
+objects) in a scene graph, while at the same time sharing the majority
+of the scene graph data-the geometry.
+</p>
+<h3>References to Node Component
+Objects</h3>
+<p>When <code>cloneTree</code> reaches a leaf node,
+there are two possible actions for handling the leaf node's
+NodeComponent objects (such as Material, Texture, and so forth). First,
+the cloned leaf node can reference the original leaf node's
+NodeComponent object-the NodeComponent object itself is not duplicated.
+Since the cloned leaf node shares the NodeComponent object with the
+original leaf node, changing the data in the NodeComponent object will
+effect a change in both nodes. This mode would also be used for objects
+that are read-only at run time.
+</p>
+<p>Alternatively, the NodeComponent object can be duplicated, in which
+case the new leaf node would reference the duplicated object. This mode
+allows data referenced by the newly created leaf node to be modified
+without that modification affecting the original leaf node.
+</p>
+<p><a href="#Figure_2">Figure
+2</a>
+shows two instances of NodeComponent objects that are shared and one
+NodeComponent element that is duplicated for the cloned subgraph.
+</p>
+<p><a name="Figure_2"></a><img style="width: 499px; height: 287px;"
+ alt="Referenced and Duplicated NodeComponent Objects"
+ title="Referenced / Duplicated NodeComponens"
+ src="SceneGraphSharing2.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 2</i> &#8211; Referenced and Duplicated
+NodeComponent Objects</b></font>
+</ul>
+<h3>References to Other Scene
+Graph Nodes</h3>
+Leaf nodes that contain references to other nodes
+(for example, Light nodes reference a Group node) can create a problem
+for the <code>cloneTree</code> method. After the <code>cloneTree</code>
+operation is performed, the reference in the cloned leaf node will
+still refer to the node in the original subgraph-a situation that is
+most likely incorrect (see <a href="#Figure_3">Figure
+3</a>).
+<p>To handle these ambiguities, a callback mechanism is provided.
+</p>
+<p><a name="Figure_3"></a><img style="width: 499px; height: 240px;"
+ alt="References to Other Scene Graph Nodes"
+ title="References to Other Nodes" src="SceneGraphSharing3.gif">
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 3</i> &#8211; References to Other Scene Graph
+Nodes</b></font>
+</ul>
+<p>
+A leaf node that needs to update referenced nodes upon being duplicated
+by a call to <code>cloneTree</code> must implement the <code>updateNodeReferences</code>
+method. By using this method, the cloned leaf node can determine if any
+nodes referenced by it have been duplicated and, if so, update the
+appropriate references to their cloned counterparts.
+</p>
+<p>Suppose, for instance, that the leaf node Lf1 in <a href="#Figure_3">Figure
+3</a> implemented the <code>updateNodeReferences</code> method. Once
+all nodes had been duplicated, the <code>clone-Tree</code> method
+would then call each cloned leaf's node <code>updateNodeReferences</code>
+method. When cloned leaf node Lf2's method was called, Lf2 could ask if
+the node N1 had been duplicated during the <code>cloneTree</code>
+operation. If the node had been duplicated, leaf Lf2 could then update
+its internal state with the cloned node, N2 (see <a href="#Figure_4">Figure
+4</a>).
+</p>
+<p><a name="Figure_4"></a><img style="width: 499px; height: 190px;"
+ alt="Updated Subgraph after updateNodeReferences Call"
+ title="Subgraph after updateNodeReferences"
+ src="SceneGraphSharing4.gif">
+</p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 4</i> &#8211; Updated Subgraph after
+updateNodeReferences Call</b></font>
+</ul>
+<p>
+All predefined Java&nbsp;3D nodes will automatically have their <code>updateNodeReferences</code>
+method defined. Only subclassed nodes that reference other nodes need
+to have this method overridden by the user.
+</p>
+<h3>Dangling References</h3>
+Because <code>cloneTree</code> is able to start
+the cloning operation from any node, there is a potential for creating
+dangling references. A dangling reference can occur only when a leaf
+node that contains a reference to another scene graph node is cloned.
+If the referenced node is not cloned, a dangling reference situation
+exists: There are now two leaf nodes that access the same node (<a
+ href="#Figure_5">Figure
+5</a>). A dangling reference is discovered when a leaf node's <code>updateNodeReferences</code>
+method calls the <code>getNewNodeReference</code> method and the
+cloned subgraph does not contain a counterpart to the node being looked
+up.
+<p><a name="Figure_5"></a><img style="width: 499px; height: 232px;"
+ alt="Dangling Reference" title="Dangling Reference"
+ src="SceneGraphSharing5.gif"></p>
+<p>
+</p>
+<ul>
+  <font size="-1"><b><i>Figure 5</i> &#8211; Dangling Reference: Bold Nodes
+Are Being Cloned</b></font>
+</ul>
+<p>
+When a dangling reference is discovered, <code>cloneTree</code> can
+handle it in one of two ways. If <code>cloneTree</code> is called
+without the <code>allowDanglingReferences</code> parameter set to <code>true</code>,
+a dangling reference will result in a <code>DanglingReferenceException</code>
+being thrown. The user can catch this exception if desired. If <code>cloneTree</code>
+is called with the <code>allowDanglingReferences</code> parameter set
+to <code>true</code>, the <code>update-NodeReferences</code> method
+will return a reference to the same object passed into the <code>getNewNodeReference</code>
+method. This will result in the <code>cloneTree</code> operation
+completing with dangling references, as in <a href="#Figure_5">Figure
+5</a>.
+</p>
+<h3>Subclassing Nodes</h3>
+All Java&nbsp;3D predefined nodes (for example, Interpolators and LOD
+nodes)
+automatically handle all node reference and duplication operations.
+When a user subclasses a Leaf object or a NodeComponent object, certain
+methods must be provided in order to ensure the proper operation of <code>cloneTree</code>.
+<p>Leaf node subclasses (for example, Behaviors) that contain any user
+node-specific data that needs to be duplicated during a <code>cloneTree</code>
+operation must define the following two methods:
+</p>
+<pre><b>Node cloneNode(boolean forceDuplicate);<br>void duplicateNode(Node n, boolean forceDuplicate)<br></b></pre>
+The <code>cloneNode</code> method consists of three lines:
+<pre><hr><br><code>UserSubClass usc = new UserSubClass();<br>usc.duplicateNode(this, forceDuplicate);</code><br>return usc;<br><br><hr></pre>
+The <code>duplicateNode</code> method must first call <code>super.duplicateNode</code>
+before duplicating any necessary user-specific data or setting any
+user-specific state.
+<p>NodeComponent subclasses that contain any user node-specific data
+must define the following two methods:
+</p>
+<pre><b>NodeComponent cloneNodeComponent();<br>void duplicateNodeComponent(NodeComponent nc, boolean forceDuplicate);<br></b></pre>
+The <code>cloneNodeComponent</code> method consists of three lines:
+<pre><hr><br><code>UserNodeComponent unc = new UserNodeComponent();<br>unc.duplicateNodeComponent(this, forceDuplicate);</code><br>return un;<br><br><hr></pre>
+The <code>duplicateNodeComponent</code> must first call <code>super.duplicateNodeComponent</code>
+and then can duplicate any user-specific data or set any user-specific
+state as necessary.
+<h3>NodeReferenceTable Object</h3>
+The NodeReferenceTable object is used by a leaf node's <code>updateNodeReferences</code>
+method called by the <code>cloneTree</code>
+operation. The NodeReferenceTable maps nodes from the original subgraph
+to the new nodes in the cloned subgraph. This information can than be
+used to update any cloned leaf node references to reference nodes in
+the cloned subgraph. This object can be created only by Java&nbsp;3D.
+<h3>Example: User Behavior Node</h3>
+The following is an example of a user-defined Behavior object to show
+properly how to define a node to be compatible with the <code>cloneTree</code>
+operation.
+<hr>
+<pre>class RotationBehavior extends Behavior {<br>    TransformGroup objectTransform;<br>    WakeupOnElapsedFrames w;<br></pre>
+<pre>    Matrix4d rotMat = new Matrix4d();<br>    Matrix4d objectMat = new Matrix4d();<br>    Transform3D t = new Transform3D();<br></pre>
+<pre><i>    // Override Behavior's initialize method to set up wakeup<br>    // criteria<br></i></pre>
+<pre>    public void initialize() {<br></pre>
+<pre><i>        // Establish initial wakeup criteria<br></i></pre>
+<pre>        wakeupOn(w);<br>   }<br></pre>
+<pre><i>    // Override Behavior's stimulus method to handle the event<br></i></pre>
+<pre>    public void processStimulus(Enumeration criteria) {<br></pre>
+<pre><i>        // Rotate by another PI/120.0 radians<br></i></pre>
+<pre>        objectMat.mul(objectMat, rotMat);<br>        t.set(objectMat);<br>        objectTransform.setTransform(t);<br></pre>
+<pre><i>        // Set wakeup criteria for next time<br></i></pre>
+<pre>        wakeupOn(w);<br>    }<br></pre>
+<pre><i>    // Constructor for rotation behavior.<br></i></pre>
+<pre>    public RotationBehavior(TransformGroup tg, int numFrames) {<br>        w = new WakeupOnElapsedFrames(numFrames);<br>        objectTransform = tg;<br></pre>
+<pre><i>        objectMat.setIdentity();<br></i></pre>
+<pre><i>        // Create a rotation matrix that rotates PI/120.0<br>        // radians per frame<br>        rotMat.rotX(Math.PI/120.0);<br></i></pre>
+<pre><i>        // Note: When this object is duplicated via cloneTree,<br>        // the cloned RotationBehavior node needs to point to<br>        // the TransformGroup in the just-cloned tree.    <br>    }<br></i></pre>
+<pre><i>    // Sets a new TransformGroup.<br></i></pre>
+<pre>    public void setTransformGroup(TransformGroup tg) {<br>        objectTransform = tg;<br></pre>
+<pre><i>    }<br></i></pre>
+<pre><i>    // The next two methods are needed for cloneTree to operate<br>    // correctly.<br>    // cloneNode is needed to provide a new instance of the user<br>    // derived subclass.<br></i></pre>
+<pre>    public Node cloneNode(boolean forceDuplicate) {<br></pre>
+<pre><i>        // Get all data from current node needed for<br>        // the constructor<br>        int numFrames = w.getElapsedFrameCount();<br></i></pre>
+<pre>        RotationBehavior r =<br>            new RotationBehavior(objectTransform, numFrames);<br>        r.duplicateNode(this, forceDuplicate);<br>        return r;<br>    }<br></pre>
+<pre><i>    // duplicateNode is needed to duplicate all super class<br>    // data as well as all user data.<br></i></pre>
+<pre>    public void duplicateNode(Node originalNode, boolean <br>     forceDuplicate) {<br>        super.duplicateNode(originalNode, forceDuplicate);<br></pre>
+<pre><i>        // Nothing to do here - all unique data was handled<br>        // in the constructor in the cloneNode routine.<br>    }<br></i></pre>
+<pre><i>    // Callback for when this leaf is cloned. For this object<br>    // we want to find the cloned TransformGroup node that this<br>    // clone Leaf node should reference.<br></i></pre>
+<pre>    public void updateNodeReferences(NodeReferenceTable t) {<br></pre>
+<pre><i>        super.updateNodeReferences(t);<br></i></pre>
+<pre><i>        // Update node's TransformGroup to proper reference<br></i></pre>
+<pre>        TransformGroup newTg =<br>         (TransformGroup)t.getNewObjectReference(<br>            objectTransform);<br>        setTransformGroup(newTg);<br>    }<br>}<br></pre>
 </body>
 </html>

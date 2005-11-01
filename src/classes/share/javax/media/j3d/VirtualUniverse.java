@@ -33,6 +33,12 @@ import java.util.Map;
  * A VirtualUniverse object defines methods to enumerate its Locale
  * objects and to remove them from the virtual universe.
  *
+ * <p>
+ * For more information, see the
+ * <a href="doc-files/intro.html">Introduction to the Java 3D API</a> and
+ * <a href="doc-files/VirtualUniverse.html">Scene Graph Superstructure</a>
+ * documents.
+ *
  * @see Locale
  */
 

@@ -29,6 +29,12 @@ import java.util.ArrayList;
  * coordinates, and methods to add, remove, and enumerate the branch
  * graphs.
  *
+ * <p>
+ * For more information, see the
+ * <a href="doc-files/intro.html">Introduction to the Java 3D API</a> and
+ * <a href="doc-files/VirtualUniverse.html">Scene Graph Superstructure</a>
+ * documents.
+ *
  * @see VirtualUniverse
  * @see HiResCoord
  * @see BranchGroup

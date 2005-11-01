@@ -68,6 +68,15 @@ import java.util.Hashtable;
  * specified (setHeadTrackerToLeftImagePlate and
  * setHeadTrackerToRightImagePlate methods).</LI><P></UL>
  * </UL><P>
+ *
+ * <p>
+ * <b>Additional Information</b>
+ * <p>
+ * For more information, see the
+ * <a href="doc-files/intro.html">Introduction to the Java 3D API</a> and
+ * <a href="doc-files/ViewModel.html">View Model</a>
+ * documents.
+ *
  * @see Canvas3D
  * @see Canvas3D#getScreen3D
  */
