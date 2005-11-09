@@ -268,11 +268,25 @@ abstract class GeometryRetained extends NodeComponentRetained {
             return false;
         }
 
-        // Can't build display lists if geometry is editable
-        // XXXX: should look at isFrequent bit and allow DL if
-        // infrequently writable
+        // Can't build display lists if geometry is frequently writable
+        //
+        // Issue 181 : to fix performance regression from 1.3.2, we will allow
+        // editable geometry if the optimizeForSpace property is set false and
+        // the cachedChangedFrequent flag is set; note this will basically
+        // restore the 1.3.2 behavior, which isn't completely correct.
+        // Eventually, we should fix the bug that is causing the
+        // cachedChangedFrequent bit to be wrong; we can then remove the
+        // erroneous dependency on optimizeForSpace.
         if (this.isEditable) {
-            return false;
+            if (cachedChangedFrequent != 0) {
+                return false;
+            }
+
+            // TODO: remove the following when cachedChangedFrequent is fixed
+            // to correctly reflect the state
+            if (!VirtualUniverse.mc.buildDisplayListIfPossible) {
+                return false;
+            }
         }
 
         if (this instanceof GeometryArrayRetained) {
