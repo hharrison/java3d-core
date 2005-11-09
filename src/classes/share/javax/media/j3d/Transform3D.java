@@ -498,15 +498,20 @@ public class Transform3D {
 
     /**
      * Returns the sign of the determinant of this matrix; a return value
-     * of true indicates a positive determinant; a return value of false
-     * indicates a negative determinant.  In general, an orthogonal matrix
+     * of true indicates a non-negative determinant; a return value of false
+     * indicates a negative determinant. A value of true will be returned if
+     * the determinant is NaN. In general, an orthogonal matrix
      * with a positive determinant is a pure rotation matrix; an orthogonal
      * matrix with a negative determinant is a both a rotation and a
      * reflection matrix.
-     * @return  determinant sign : true means positive, false means negative
+     * @return  determinant sign : true means non-negative, false means negative
      */
     public final boolean getDeterminantSign() {
-	    return (determinant() >= 0);
+        double det = determinant();
+        if (Double.isNaN(det)) {
+            return true;
+        }
+        return det >= 0;
     }
 
     /**
@@ -571,11 +576,23 @@ public class Transform3D {
 	}
     }
 
+    // Fix for Issue 167 -- don't classify matrices with Infinity or NaN values
+    // as affine
+    private final boolean isInfOrNaN() {
+        for (int i = 0; i < 16; i++) {
+            if (Double.isNaN(mat[i]) || Double.isInfinite(mat[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private final void classifyAffine() {
-	if (almostZero(mat[12]) &&
-	    almostZero(mat[13]) &&
-	    almostZero(mat[14]) &&
-	    almostOne(mat[15])) {
+        if (!isInfOrNaN() &&
+                almostZero(mat[12]) &&
+                almostZero(mat[13]) &&
+                almostZero(mat[14]) &&
+                almostOne(mat[15])) {
 	    type |= AFFINE;
 	} else {
 	    type &= ~AFFINE;
