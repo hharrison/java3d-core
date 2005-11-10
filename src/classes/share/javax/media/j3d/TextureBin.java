@@ -1520,7 +1520,6 @@ class TextureBin extends Object implements ObjectUpdate {
 		startList = r;
 		r.nextMap = null;
 		r.prevMap = null;
-		startList.dirtyAttrsAcrossRms = RenderMolecule.ALL_DIRTY_BITS;
 	    }
 	    else {
 		r.nextMap = startList;
@@ -1528,7 +1527,9 @@ class TextureBin extends Object implements ObjectUpdate {
 		startList = r;
 		startList.nextMap.checkEquivalenceWithLeftNeighbor(r,RenderMolecule.ALL_DIRTY_BITS);
 	    }
-		    
+            // Issue 67 : since we are adding the new RM at the head, we must
+            // set all dirty bits unconditionally
+            startList.dirtyAttrsAcrossRms = RenderMolecule.ALL_DIRTY_BITS;
 	}
 	else {
 	    // Insert the renderMolecule next to a RM that has equivalent 
