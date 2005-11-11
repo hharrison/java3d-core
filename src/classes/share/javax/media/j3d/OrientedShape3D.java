@@ -53,6 +53,10 @@ import javax.vecmath.*;
  * for drawing roughly-symmetrical objects.  A typical use might
  * consist of a quadrilateral that contains a texture of a tree.
  *
+ * <p>
+ * Note that in a multiple View system, picking and interestion test 
+ * is done with the primary View only.
+ *
  * @see Billboard
  *
  * @since Java 3D 1.2
