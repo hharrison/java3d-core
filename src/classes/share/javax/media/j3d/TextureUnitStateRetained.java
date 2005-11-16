@@ -527,6 +527,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 
 
     void setInImmCtx(boolean flag) {
+        super.setInImmCtx(flag);
 	if (texture != null)
 	    texture.setInImmCtx(flag);
 	if (texAttrs != null)
@@ -536,10 +537,10 @@ class TextureUnitStateRetained extends NodeComponentRetained {
     }
 
     boolean getInImmCtx() {
-        return (inImmCtx ||
-		((texture != null) && (texture.getInImmCtx())) ||
-		((texAttrs != null) && (texAttrs.getInImmCtx())) ||
-		((texGen != null) && (texGen.getInImmCtx())));
+        return (super.getInImmCtx() ||
+                ((texture != null) && (texture.getInImmCtx())) ||
+                ((texAttrs != null) && (texAttrs.getInImmCtx())) ||
+                ((texGen != null) && (texGen.getInImmCtx())));
     }
 
 

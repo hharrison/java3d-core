@@ -106,17 +106,17 @@ public class GraphicsContext3D extends Object   {
 // Graphics state
 //
 // current user specified graphics state
-    Background uBackground = null;
-    Fog uFog = null;
-    Appearance uAppearance = null;
-    Vector uLights = new Vector();
-    HiResCoord uHiRes = new HiResCoord();
-    Vector uSounds = new Vector();
-    AuralAttributes uAuralAttributes = null;
-    boolean uBufferOverride = false;
-    boolean uFrontBufferRendering = false;
-    int uStereoMode = STEREO_BOTH;
-    ModelClip uModelClip = null;
+    private Background uBackground = null;
+    private Fog uFog = null;
+    private Appearance uAppearance = null;
+    private Vector uLights = new Vector();
+    private HiResCoord uHiRes = new HiResCoord();
+    private Vector uSounds = new Vector();
+    private AuralAttributes uAuralAttributes = null;
+    private boolean uBufferOverride = false;
+    private boolean uFrontBufferRendering = false;
+    private int uStereoMode = STEREO_BOTH;
+    private ModelClip uModelClip = null;
 
 // Current rendering graphics state
     // Current background
@@ -351,8 +351,7 @@ public class GraphicsContext3D extends Object   {
 	    }
 	    appearance = defaultAppearance;
 	}
-	
-	NodeComponentRetained nc = ((AppearanceRetained)appearance.retained).material;
+	     
         uAppearance = appearance;
         if ((canvas3d.view == null) || 
 	    (canvas3d.view.universe == null) ||
@@ -368,154 +367,206 @@ public class GraphicsContext3D extends Object   {
     }
     
     void doSetAppearance(Appearance appearance) {
-	
-	if (appearance != null) {   
-	    NodeComponentRetained nc;
-	    nc = ((AppearanceRetained)appearance.retained).material;
-	    if (nc != null) {
-		nc.setInImmCtx(true);
-		enableLighting = ((MaterialRetained) nc).lightingEnable;
-		dRed = ((MaterialRetained) nc).diffuseColor.x;
-		dGreen = ((MaterialRetained) nc).diffuseColor.y;
-		dBlue = ((MaterialRetained) nc).diffuseColor.z;
-	    }
-	    else {
-		enableLighting = false;
-	    }
-
-            if (appearance instanceof ShaderAppearance) {
-                // TODO : handle ShaderProgram and ShaderAttributeSet
-                System.err.println("ShaderProgram not implemented for immediate mode rendering");
+        // Appearance can't be null. See setAppearance().
+        assert(appearance != null);
+        
+        NodeComponentRetained nc;
+        nc = ((AppearanceRetained)appearance.retained).material;
+        if (nc != null) {
+            nc.setInImmCtx(true);
+            enableLighting = ((MaterialRetained) nc).lightingEnable;
+            dRed = ((MaterialRetained) nc).diffuseColor.x;
+            dGreen = ((MaterialRetained) nc).diffuseColor.y;
+            dBlue = ((MaterialRetained) nc).diffuseColor.z;
+        } else {
+            enableLighting = false;
+        }
+        
+        if(appearance instanceof ShaderAppearance){ 
+            // Handle ShaderProgramRetained.
+            ShaderProgramRetained spR = ((ShaderAppearanceRetained)appearance.retained).shaderProgram;
+            if(spR != null) {
+                spR.setInImmCtx(true);
+                Shader[] sArray = spR.getShaders();
+                if(sArray != null) {
+                    for (int i = 0 ; i < sArray.length; i++) {
+                        if (sArray[i] != null) {
+                            ((ShaderRetained)sArray[i].retained).setInImmCtx(true);
+                        }
+                    }
+                }
             }
 
-            if (((AppearanceRetained)appearance.retained).texUnitState != null) {
-		TextureUnitStateRetained[] texUnitState = 
-		    ((AppearanceRetained)appearance.retained).texUnitState;
-
-		for (int i = 0 ; i < texUnitState.length; i++) {
-		    if (texUnitState[i] != null) {
-			texUnitState[i].setInImmCtx(true);	    
-		    }
-		}
-	    }
-
-	    nc = ((AppearanceRetained)appearance.retained).texture;
-	    if (nc != null) {
-		nc.setInImmCtx(true);
-	    }
-
-	    nc = ((AppearanceRetained)appearance.retained).texCoordGeneration;
-	    if (nc != null) {
-		nc.setInImmCtx(true);
-	    }
-
-	    nc = ((AppearanceRetained)appearance.retained).textureAttributes;
-	    if (nc != null) {
-		nc.setInImmCtx(true);
-	    }
-
-	    nc = ((AppearanceRetained)appearance.retained).coloringAttributes;
-	    if (nc != null) {
-		nc.setInImmCtx(true);
-		red = ((ColoringAttributesRetained)nc).color.x;
-		green = ((ColoringAttributesRetained)nc).color.y;
-		blue = ((ColoringAttributesRetained)nc).color.z;
-	    }
-	    else {
-		red = 1.0f;
-		green = 1.0f;
-		blue = 1.0f;
-	    }
-
-	    nc = ((AppearanceRetained)appearance.retained).transparencyAttributes;
-	    if (nc != null) {
-		nc.setInImmCtx(true);
-		alpha = 1.0f - ((TransparencyAttributesRetained) nc).transparency;
-	    } else {
-		alpha = 1.0f;
-	    }
-
-	    nc = ((AppearanceRetained)appearance.retained).renderingAttributes;
-	    if (nc != null) {
-		nc.setInImmCtx(true);
-		visible = ((RenderingAttributesRetained)nc).visible;
-	    }
-	    else
-		visible = true;
-
-	    nc = ((AppearanceRetained)appearance.retained).polygonAttributes;
-	    if (nc != null) {
-		nc.setInImmCtx(true);
-		polygonMode = ((PolygonAttributesRetained)nc).polygonMode;
-	    }
-	    else {
-		polygonMode = PolygonAttributes.POLYGON_FILL;
-	    }
-
-	    nc = ((AppearanceRetained)appearance.retained).lineAttributes;
-	    if (nc != null) {
-		nc.setInImmCtx(true);
-		lineAA = ((LineAttributesRetained)nc).lineAntialiasing;
-
-	    }
-	    else {
-		lineAA = false;
-	    }
-
-	    nc = ((AppearanceRetained)appearance.retained).pointAttributes;
-	    if (nc != null) {
-		if (nc.source.isLive())
-		    nc.setInImmCtx(true);
-		pointAA = ((PointAttributesRetained)nc).pointAntialiasing;
-	    }
-	    else {
-		pointAA = false;
-	    }
-
-	    
-	    if (this.appearance != null) {
-		AppearanceRetained app = (AppearanceRetained)this.appearance.retained;
-		app.setInImmCtx(false);
-		if (app.material != null) {
-		    app.material.setInImmCtx(false);
-		}
-		if (app.texUnitState != null) {
-		    for (int i = 0; i < app.texUnitState.length; i++) {
-			if (app.texUnitState[0] != null)
-			    app.texUnitState[0].setInImmCtx(false);
-		    }
-		}
-		if (app.texture != null) {
-		    app.texture.setInImmCtx(false);
-		}
-		if (app.texCoordGeneration != null) {
-		    app.texCoordGeneration.setInImmCtx(false);
-		}
-		if (app.textureAttributes != null) {
-		    app.textureAttributes.setInImmCtx(false);
-		}
-		if (app.coloringAttributes != null) {
-		    app.coloringAttributes.setInImmCtx(false);
-		}
-		if (app.transparencyAttributes != null) {
-		    app.transparencyAttributes.setInImmCtx(false);
-		}
-		if (app.renderingAttributes != null) {
-		    app.renderingAttributes.setInImmCtx(false);
-		}
-		if (app.polygonAttributes != null) {
-		    app.polygonAttributes.setInImmCtx(false);
-		}
-		if (app.lineAttributes != null) {
-		    app.lineAttributes.setInImmCtx(false);
-		}
-		if (app.pointAttributes != null) {
-		    app.pointAttributes.setInImmCtx(false);
-		}
-	    }
-	    ((AppearanceRetained)appearance.retained).setInImmCtx(true);	
-	}
-	this.appearance = appearance;
+            //Handle ShaderAttributeSetRetained.
+            ShaderAttributeSetRetained sasR = 
+                        ((ShaderAppearanceRetained)appearance.retained).shaderAttributeSet;
+            if(sasR != null) {
+                sasR.setInImmCtx(true);
+                ShaderAttribute[] saArray = sasR.getAll();
+                if(saArray != null) {
+                    for (int i = 0 ; i < saArray.length; i++) {
+                        if (saArray[i] != null) {
+                            ((ShaderAttributeRetained)saArray[i].retained).setInImmCtx(true);
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (((AppearanceRetained)appearance.retained).texUnitState != null) {
+            TextureUnitStateRetained[] texUnitState =
+                    ((AppearanceRetained)appearance.retained).texUnitState;
+            
+            for (int i = 0 ; i < texUnitState.length; i++) {
+                if (texUnitState[i] != null) {
+                    texUnitState[i].setInImmCtx(true);
+                }
+            }
+        }
+        
+        nc = ((AppearanceRetained)appearance.retained).texture;
+        if (nc != null) {
+            nc.setInImmCtx(true);
+        }
+        
+        nc = ((AppearanceRetained)appearance.retained).texCoordGeneration;
+        if (nc != null) {
+            nc.setInImmCtx(true);
+        }
+        
+        nc = ((AppearanceRetained)appearance.retained).textureAttributes;
+        if (nc != null) {
+            nc.setInImmCtx(true);
+        }
+        
+        nc = ((AppearanceRetained)appearance.retained).coloringAttributes;
+        if (nc != null) {
+            nc.setInImmCtx(true);
+            red = ((ColoringAttributesRetained)nc).color.x;
+            green = ((ColoringAttributesRetained)nc).color.y;
+            blue = ((ColoringAttributesRetained)nc).color.z;
+        } else {
+            red = 1.0f;
+            green = 1.0f;
+            blue = 1.0f;
+        }
+        
+        nc = ((AppearanceRetained)appearance.retained).transparencyAttributes;
+        if (nc != null) {
+            nc.setInImmCtx(true);
+            alpha = 1.0f - ((TransparencyAttributesRetained) nc).transparency;
+        } else {
+            alpha = 1.0f;
+        }
+        
+        nc = ((AppearanceRetained)appearance.retained).renderingAttributes;
+        if (nc != null) {
+            nc.setInImmCtx(true);
+            visible = ((RenderingAttributesRetained)nc).visible;
+        } else
+            visible = true;
+        
+        nc = ((AppearanceRetained)appearance.retained).polygonAttributes;
+        if (nc != null) {
+            nc.setInImmCtx(true);
+            polygonMode = ((PolygonAttributesRetained)nc).polygonMode;
+        } else {
+            polygonMode = PolygonAttributes.POLYGON_FILL;
+        }
+        
+        nc = ((AppearanceRetained)appearance.retained).lineAttributes;
+        if (nc != null) {
+            nc.setInImmCtx(true);
+            lineAA = ((LineAttributesRetained)nc).lineAntialiasing;
+            
+        } else {
+            lineAA = false;
+        }
+        
+        nc = ((AppearanceRetained)appearance.retained).pointAttributes;
+        if (nc != null) {
+            if (nc.source.isLive())
+                nc.setInImmCtx(true);
+            pointAA = ((PointAttributesRetained)nc).pointAntialiasing;
+        } else {
+            pointAA = false;
+        }
+        
+        // Reset the inImmCtx flag of this.appearance.
+        if (this.appearance != null) {
+            AppearanceRetained app = (AppearanceRetained)this.appearance.retained;
+            app.setInImmCtx(false);
+            if (app.material != null) {
+                app.material.setInImmCtx(false);
+            }
+            
+            if(app instanceof ShaderAppearanceRetained){
+                // Handle ShaderProgramRetained.
+                ShaderProgramRetained spR = ((ShaderAppearanceRetained)app).shaderProgram;
+                if(spR != null) {
+                    spR.setInImmCtx(false);
+                    Shader[] sArray = spR.getShaders();
+                    if(sArray != null) {
+                        for (int i = 0 ; i < sArray.length; i++) {
+                            if (sArray[i] != null) {
+                                ((ShaderRetained)sArray[i].retained).setInImmCtx(false);
+                            }
+                        }
+                    }
+                }
+                
+                //Handle ShaderAttributeSetRetained.
+                ShaderAttributeSetRetained sasR = ((ShaderAppearanceRetained)app).shaderAttributeSet;
+                if(sasR != null) {
+                    sasR.setInImmCtx(false);
+                    ShaderAttribute[] saArray = sasR.getAll();
+                    if(saArray != null) {
+                        for (int i = 0 ; i < saArray.length; i++) {
+                            if (saArray[i] != null) {
+                                ((ShaderAttributeRetained)saArray[i].retained).setInImmCtx(false);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if (app.texUnitState != null) {
+                for (int i = 0; i < app.texUnitState.length; i++) {
+                    if (app.texUnitState[0] != null)
+                        app.texUnitState[0].setInImmCtx(false);
+                }
+            }
+            if (app.texture != null) {
+                app.texture.setInImmCtx(false);
+            }
+            if (app.texCoordGeneration != null) {
+                app.texCoordGeneration.setInImmCtx(false);
+            }
+            if (app.textureAttributes != null) {
+                app.textureAttributes.setInImmCtx(false);
+            }
+            if (app.coloringAttributes != null) {
+                app.coloringAttributes.setInImmCtx(false);
+            }
+            if (app.transparencyAttributes != null) {
+                app.transparencyAttributes.setInImmCtx(false);
+            }
+            if (app.renderingAttributes != null) {
+                app.renderingAttributes.setInImmCtx(false);
+            }
+            if (app.polygonAttributes != null) {
+                app.polygonAttributes.setInImmCtx(false);
+            }
+            if (app.lineAttributes != null) {
+                app.lineAttributes.setInImmCtx(false);
+            }
+            if (app.pointAttributes != null) {
+                app.pointAttributes.setInImmCtx(false);
+            }
+        }
+        
+        ((AppearanceRetained)appearance.retained).setInImmCtx(true);   
+        this.appearance = appearance;
     }
 
     /**
@@ -2489,8 +2540,22 @@ public class GraphicsContext3D extends Object   {
             // Set flag indicating whether we are using shaders
             boolean useShaders = false;
             if (app instanceof ShaderAppearanceRetained) {
-                if (((ShaderAppearanceRetained)app).shaderProgram != null) {
+                ShaderProgramRetained spR = ((ShaderAppearanceRetained)app).shaderProgram;
+                if ( spR != null) {
+                    spR.updateNative(canvas3d, true);
+
+                    ShaderAttributeSetRetained sasR = 
+                                ((ShaderAppearanceRetained)app).shaderAttributeSet;
+                    
+                    if (sasR != null) {
+                        sasR.updateNative(canvas3d, spR);
+                    }
+                    
                     useShaders = true;
+                }
+                else {
+                    canvas3d.shaderProgram.updateNative(canvas3d, false);
+                    useShaders = false;
                 }
             }
 
@@ -2519,7 +2584,7 @@ public class GraphicsContext3D extends Object   {
 		    }
 		}
 
-               if (numActiveTexUnit <= availableTextureUnits) {
+		if (numActiveTexUnit <= availableTextureUnits) {
                     // Normal, single-pass rendering case
 
                     // update all active texture unit states
@@ -2802,11 +2867,16 @@ public class GraphicsContext3D extends Object   {
     }
 
     void initializeState() {
-
+       
 	canvas3d.setSceneAmbient(canvas3d.ctx, 0.0f, 0.0f, 0.0f);
 	canvas3d.disableFog(canvas3d.ctx);
 	canvas3d.resetRenderingAttributes(canvas3d.ctx,false, false);
-
+        
+        if(canvas3d.shaderProgram != null) {
+            canvas3d.shaderProgram.updateNative(canvas3d, false);
+            canvas3d.shaderProgram = null;
+        }
+        
         // reset the previously enabled texture units
 
         int prevNumActiveTexUnit = canvas3d.getNumActiveTexUnit();
@@ -2842,6 +2912,7 @@ public class GraphicsContext3D extends Object   {
 
 
     void resetAppearance() {
+        //System.out.println("GC3D.resetAppearance ....");
 
 	if (canvas3d.material != null) {
 	    canvas3d.updateMaterial(canvas3d.ctx, 
@@ -2850,8 +2921,13 @@ public class GraphicsContext3D extends Object   {
 	    canvas3d.canvasDirty |= Canvas3D.MATERIAL_DIRTY;
 	}
 
-        // reset the previously enabled texture units
+        if(canvas3d.shaderProgram != null) {
+            canvas3d.shaderProgram.updateNative(canvas3d, false);
+            canvas3d.shaderProgram = null;
+            // ShaderBin doesn't use dirty bit.
+        }
 
+        // reset the previously enabled texture units
         int prevNumActiveTexUnit = canvas3d.getNumActiveTexUnit();
 
 	if (prevNumActiveTexUnit > 0) {

@@ -30,7 +30,7 @@ class NodeComponentRetained extends SceneGraphObjectRetained {
     int refCnt = 0;		// this is used in compile
 
     // This is true when this appearance is referenced in an immediate mode context
-    boolean inImmCtx = false;
+    private boolean inImmCtx = false;
 
     // A list of NodeRetained Objects that refer, directly or indirectly, to this
     // NodeComponentRetained
