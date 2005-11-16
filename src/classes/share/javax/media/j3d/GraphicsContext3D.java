@@ -2543,22 +2543,24 @@ public class GraphicsContext3D extends Object   {
                 ShaderProgramRetained spR = ((ShaderAppearanceRetained)app).shaderProgram;
                 if ( spR != null) {
                     spR.updateNative(canvas3d, true);
-
-                    ShaderAttributeSetRetained sasR = 
-                                ((ShaderAppearanceRetained)app).shaderAttributeSet;
+                    
+                    ShaderAttributeSetRetained sasR =
+                            ((ShaderAppearanceRetained)app).shaderAttributeSet;
                     
                     if (sasR != null) {
                         sasR.updateNative(canvas3d, spR);
                     }
                     
+                    canvas3d.shaderProgram = spR;
                     useShaders = true;
                 }
-                else {
-                    canvas3d.shaderProgram.updateNative(canvas3d, false);
-                    useShaders = false;
-                }
             }
-
+            else if (canvas3d.shaderProgram != null) {                
+                canvas3d.shaderProgram.updateNative(canvas3d, false);
+                canvas3d.shaderProgram = null;
+                useShaders = false;
+            }
+            
             // Set the number of available texture units; this depends on
             // whether or not shaders are being used.
             int availableTextureUnits =
