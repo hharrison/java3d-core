@@ -27,6 +27,11 @@
 #include <dlfcn.h>
 #endif
 
+#ifdef DEBUG
+/* Uncomment the following for VERBOSE debug messages */
+/* #define VERBOSE */
+#endif /* DEBUG */
+
 
 extern char *strJavaToC(JNIEnv *env, jstring str);
 extern void throwAssert(JNIEnv *env, char *str);
@@ -89,7 +94,7 @@ Java_javax_media_j3d_MasterControl_loadNativeCgLibrary(
 
 #ifdef COMPILE_CG_SHADERS
 
-    /* Remove the following print statement when the native Cg code is done */
+    /* Remove the following print statement when the native Cg code is stable */
     fprintf(stderr, "*** JAVA 3D : loading experimental native Cg library\n");
 
     /* Get number of entries in libpath array */
@@ -290,58 +295,50 @@ createCgShaderContext(
 
     /* Use GL_ARB_vertex_program extension if supported by video card */
     if (cgWrapperInfo->cgGLIsProfileSupported(CG_PROFILE_ARBVP1)) {
+#ifdef VERBOSE
 	fprintf(stderr, "Using CG_PROFILE_ARBVP1\n");
+#endif /* VERBOSE */
 	cgCtxInfo->vProfile = CG_PROFILE_ARBVP1;
     }
     else if (cgWrapperInfo->cgGLIsProfileSupported(CG_PROFILE_VP20)) {
+#ifdef VERBOSE
 	fprintf(stderr, "Using CG_PROFILE_VP20\n");
+#endif /* VERBOSE */
 	cgCtxInfo->vProfile = CG_PROFILE_VP20;
     }
     else {
 	fprintf(stderr,
-		"ERROR: Vertex programming extensions (GL_ARB_vertex_program or\n"
-		"GL_NV_vertex_program) not supported, exiting...\n");
-	free(cgCtxInfo);
-	return NULL;
-    }
-
-    if ((lastError = cgWrapperInfo->cgGetError()) != 0) {
-	fprintf(stderr, "FATAL ERROR IN CREATING VERTEX SHADER PROFILE:\n");
-	fprintf(stderr, "\t%s\n", cgWrapperInfo->cgGetErrorString(lastError));
+		"JAVA 3D ERROR : No CG vertex program profile is supported\n");
 	free(cgCtxInfo);
 	return NULL;
     }
 
     /* Use GL_ARB_fragment_program extension if supported by video card */
     if (cgWrapperInfo->cgGLIsProfileSupported(CG_PROFILE_ARBFP1)) {
+#ifdef VERBOSE
 	fprintf(stderr, "Using CG_PROFILE_ARBFP1\n");
+#endif /* VERBOSE */
 	cgCtxInfo->fProfile = CG_PROFILE_ARBFP1;
     }
     else if (cgWrapperInfo->cgGLIsProfileSupported(CG_PROFILE_FP20)) {
+#ifdef VERBOSE
 	fprintf(stderr, "Using CG_PROFILE_FP20\n");
+#endif /* VERBOSE */
 	cgCtxInfo->fProfile = CG_PROFILE_FP20;
     }
     else {
 	fprintf(stderr,
-		"Fragment programming extensions (GL_ARB_fragment_program or\n"
-		"GL_NV_fragment_program) not supported, exiting...\n");
+		"JAVA 3D ERROR : No CG fragment program profile is supported\n");
 	free(cgCtxInfo);
 	return NULL;
     }
 
-    if ((lastError = cgWrapperInfo->cgGetError()) != 0) {
-	fprintf(stderr, "FATAL ERROR IN CREATING FRAGMENT SHADER PROFILE:\n");
-	fprintf(stderr, "\t%s\n", cgWrapperInfo->cgGetErrorString(lastError));
-	free(cgCtxInfo);
-	return NULL;
-    }
-
-    /*
+#ifdef VERBOSE
     fprintf(stderr, "createCgShaderContext: SUCCESS\n");
     fprintf(stderr, "    cgCtx = 0x%x\n", cgCtxInfo->cgCtx);
     fprintf(stderr, "    vProfile = 0x%x\n", cgCtxInfo->vProfile);
     fprintf(stderr, "    fProfile = 0x%x\n", cgCtxInfo->fProfile);
-    */
+#endif /* VERBOSE */
 
     return cgCtxInfo;
 }
@@ -372,9 +369,9 @@ checkCgShaderExtensions(
 	if (ctxInfo->cgCtxInfo != NULL) {
             CgWrapperInfo *cgWrapperInfo = ctxInfo->cgCtxInfo->cgWrapperInfo;
 
-	    /*
+#ifdef VERBOSE
 	    fprintf(stderr, "Cg ctx is available\n");
-	    */
+#endif /* VERBOSE */
 	    ctxInfo->shadingLanguageCg = JNI_TRUE;
 
             /* TODO: Query Cg texture sampler limits */
@@ -383,7 +380,7 @@ checkCgShaderExtensions(
             ctxInfo->maxCombinedTextureImageUnits = ctxInfo->maxTextureUnits;
 
             /* TODO: Query max vertex attrs */
-            ctxInfo->maxVertexAttrs = 2;
+            ctxInfo->maxVertexAttrs = 7;
 
 	    /* Initialize shader vertex attribute function pointers */
 	    ctxInfo->vertexAttrPointer = cgVertexAttrPointer;
@@ -394,11 +391,11 @@ checkCgShaderExtensions(
 	    ctxInfo->vertexAttr3fv = cgVertexAttr;
 	    ctxInfo->vertexAttr4fv = cgVertexAttr;
 	}
-	/*
+#ifdef VERBOSE
 	else {
 	    fprintf(stderr, "ERROR: Cg ctx *not* available\n");
 	}
-	*/
+#endif /* VERBOSE */
     }
 #endif /* COMPILE_CG_SHADERS */
 
@@ -429,7 +426,9 @@ Java_javax_media_j3d_CgShaderProgramRetained_createNativeShader(
     jclass oom;
     CgShaderInfo *cgShaderInfo;
 
+#ifdef VERBOSE
     fprintf(stderr, "CgShaderProgramRetained.createNativeShader\n");
+#endif /* VERBOSE */
 
     cgShaderInfo = (CgShaderInfo*)malloc(sizeof(CgShaderInfo));
     if (cgShaderInfo == NULL) {
@@ -492,7 +491,9 @@ Java_javax_media_j3d_CgShaderProgramRetained_destroyNativeShader(
 
     CgShaderInfo *cgShaderInfo = (CgShaderInfo *)shaderId;
 
+#ifdef VERBOSE
     fprintf(stderr, "CgShaderProgramRetained.destroyNativeShader\n");
+#endif /* VERBOSE */
 
     if (cgShaderInfo != NULL) {
 	if (cgShaderInfo->cgShader != 0) {
@@ -532,8 +533,6 @@ Java_javax_media_j3d_CgShaderProgramRetained_compileNativeShader(
 
 #ifdef COMPILE_CG_SHADERS
 
-    /* TODO: implement this */
-
     GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
     CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
     CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
@@ -542,7 +541,9 @@ Java_javax_media_j3d_CgShaderProgramRetained_compileNativeShader(
     CGerror lastError;
     GLcharARB *shaderString = NULL;
 
+#ifdef VERBOSE
     fprintf(stderr, "CgShaderProgramRetained.compileNativeShader\n");
+#endif /* VERBOSE */
 
     /* Assertion check the cgShaderInfo pointer */
     if (cgShaderInfo == NULL) {
@@ -563,6 +564,7 @@ Java_javax_media_j3d_CgShaderProgramRetained_compileNativeShader(
     }
 
     /* create the shader */
+#ifdef VERBOSE
     if (cgShaderInfo->shaderType == javax_media_j3d_Shader_SHADER_TYPE_VERTEX) { 
 	fprintf(stderr, "Create vertex shader\n");
     }
@@ -571,20 +573,17 @@ Java_javax_media_j3d_CgShaderProgramRetained_compileNativeShader(
     }
     fprintf(stderr, "cgCtx = 0x%x\n", cgCtxInfo->cgCtx);
     fprintf(stderr, "shaderProfile = 0x%x\n", cgShaderInfo->shaderProfile);
+#endif /* VERBOSE */
+
     cgShaderInfo->cgShader = cgWrapperInfo->cgCreateProgram(cgCtxInfo->cgCtx,
 	    CG_SOURCE, shaderString,
 	    cgShaderInfo->shaderProfile, NULL, NULL);
+
+#ifdef VERBOSE
     fprintf(stderr, "    cgShader = 0x%x\n", cgShaderInfo->cgShader);
+#endif /* VERBOSE */
 
     free(shaderString);
-
-#ifdef OUT__XXX__OUT
-    cgShaderInfo->cgShader = 0;
-    shaderError = createShaderError(env,
-				    javax_media_j3d_ShaderError_COMPILE_ERROR,
-				    "Cg shader compile error",
-				    "NOT YET IMPLEMENTED...");
-#endif /* OUT__XXX__OUT */
 
     if ((lastError = cgWrapperInfo->cgGetError()) != 0) {
 	char *detailMsg = getErrorLog(ctxProperties, lastError);
@@ -631,7 +630,9 @@ Java_javax_media_j3d_CgShaderProgramRetained_createNativeShaderProgram(
     CgShaderProgramInfo *shaderProgramInfo =
 	(CgShaderProgramInfo*)malloc(sizeof(CgShaderProgramInfo));
 
+#ifdef VERBOSE
     fprintf(stderr, "CgShaderProgramRetained.createNativeShaderProgram\n");
+#endif /* VERBOSE */
 
     shaderProgramInfo->vShader = NULL;
     shaderProgramInfo->fShader = NULL;
@@ -673,7 +674,9 @@ Java_javax_media_j3d_CgShaderProgramRetained_destroyNativeShaderProgram(
 
     CgShaderProgramInfo *shaderProgramInfo = (CgShaderProgramInfo*)shaderProgramId;
 
+#ifdef VERBOSE
     fprintf(stderr, "CgShaderProgramRetained.destroyNativeShaderProgram\n");
+#endif /* VERBOSE */
 
     if (shaderProgramInfo != NULL) {
 	if (shaderProgramInfo->vtxAttrs != NULL) {
@@ -725,7 +728,9 @@ Java_javax_media_j3d_CgShaderProgramRetained_linkNativeShaderProgram(
 
     CgShaderProgramInfo *shaderProgramInfo = (CgShaderProgramInfo*)shaderProgramId;
 
+#ifdef VERBOSE
     fprintf(stderr, "CgShaderProgramRetained.linkNativeShaderProgram\n");
+#endif /* VERBOSE */
 
     /*
      * NOTE: we assume that the caller has already verified that there
@@ -825,7 +830,10 @@ Java_javax_media_j3d_CgShaderProgramRetained_lookupNativeVertexAttrNames(
     shaderProgramInfo->numVtxAttrs = numAttrNames;
     shaderProgramInfo->vtxAttrs = (CGparameter *)malloc(numAttrNames * sizeof(CGparameter));
 
+#ifdef VERBOSE
     fprintf(stderr, "CgShaderProgramRetained.lookupNativeVertexAttrNames()\n");
+#endif /* VERBOSE */
+
     for (i = 0; i < numAttrNames; i++) {
         attrName = (*env)->GetObjectArrayElement(env, attrNames, i);
         attrNameString = strJavaToC(env, attrName);
@@ -833,7 +841,9 @@ Java_javax_media_j3d_CgShaderProgramRetained_lookupNativeVertexAttrNames(
 	shaderProgramInfo->vtxAttrs[i] =
 	    cgWrapperInfo->cgGetNamedParameter(shaderProgramInfo->vShader->cgShader,
 					       attrNameString);
+#ifdef VERBOSE
 	fprintf(stderr, "    %s : 0x%x\n", attrNameString, shaderProgramInfo->vtxAttrs[i]);
+#endif /* VERBOSE */
 	if (shaderProgramInfo->vtxAttrs[i] == NULL) {
 	    errPtr[i] = JNI_TRUE;
 	}
@@ -864,7 +874,7 @@ cgToJ3dType(CGtype type)
 	return TYPE_INTEGER;
 
     /*
-     * TODO: add ShaderAttribute support for setting samplers. In the
+     * XXXX: add ShaderAttribute support for setting samplers. In the
      * mean time, the binding between sampler and texture unit will
      * need to be specified in the shader itself (which it already is
      * in most example shaders).
@@ -1031,7 +1041,9 @@ Java_javax_media_j3d_CgShaderProgramRetained_lookupNativeShaderAttrNames(
         attrName = (*env)->GetObjectArrayElement(env, attrNames, i);
         attrNameString = (GLcharARB *)strJavaToC(env, attrName);
 
+#ifdef VERBOSE
 	fprintf(stderr, "lookup %s\n", attrNameString);
+#endif /* VERBOSE */
 
 	/*
 	 * Get uniform attribute location -- note that we need to
@@ -1064,8 +1076,10 @@ Java_javax_media_j3d_CgShaderProgramRetained_lookupNativeShaderAttrNames(
 		isArrayPtr[i] = vIsArray;
 		typePtr[i] = cgToJ3dType(vType);
 
+#ifdef VERBOSE
 		fprintf(stderr, "    vLoc = %d, vType = %d, vSize = %d, vIsArray = %d\n",
 			vLoc, vType, vSize, vIsArray);
+#endif /* VERBOSE */
 	    }
 	}
 
@@ -1079,8 +1093,10 @@ Java_javax_media_j3d_CgShaderProgramRetained_lookupNativeShaderAttrNames(
 		isArrayPtr[i] = fIsArray;
 		typePtr[i] = cgToJ3dType(fType);
 
+#ifdef VERBOSE
 		fprintf(stderr, "    fLoc = %d, fType = %d, fSize = %d, fIsArray = %d\n",
 			fLoc, fType, fSize, fIsArray);
+#endif /* VERBOSE */
 	    }
 	}
 
@@ -1110,7 +1126,10 @@ Java_javax_media_j3d_CgShaderProgramRetained_lookupNativeShaderAttrNames(
 	 * was not found in either the vertex or the fragment program
 	 */
         if (err || (cgParamInfo->vParam == NULL && cgParamInfo->fParam == NULL)) {
-	    /* TODO: distinguish between (err) and (vParam and fParam both NULL) */
+	    /*
+	     * TODO: distinguish between (err) and (vParam and fParam both NULL)
+	     * so we can report a more helpful error message
+	     */
 	    free(cgParamInfo);
 	    locPtr[i] = (jlong)-1;
         }
@@ -1158,6 +1177,7 @@ Java_javax_media_j3d_CgShaderProgramRetained_useShaderProgram(
 
     CgShaderProgramInfo *shaderProgramInfo = (CgShaderProgramInfo*)shaderProgramId;
 
+    /* Disable shader profiles */
     cgWrapperInfo->cgGLDisableProfile(cgCtxInfo->vProfile);
     cgWrapperInfo->cgGLDisableProfile(cgCtxInfo->fProfile);
 
@@ -1165,15 +1185,19 @@ Java_javax_media_j3d_CgShaderProgramRetained_useShaderProgram(
 	if (shaderProgramInfo->vShader != NULL) {
 	    cgWrapperInfo->cgGLBindProgram(shaderProgramInfo->vShader->cgShader);
 	    cgWrapperInfo->cgGLEnableProfile(shaderProgramInfo->vShader->shaderProfile);
+	} else {
+	    cgWrapperInfo->cgGLUnbindProgram(cgCtxInfo->vProfile);
 	}
 
 	if (shaderProgramInfo->fShader != NULL) {
 	    cgWrapperInfo->cgGLBindProgram(shaderProgramInfo->fShader->cgShader);
 	    cgWrapperInfo->cgGLEnableProfile(shaderProgramInfo->fShader->shaderProfile);
+	} else {
+	    cgWrapperInfo->cgGLUnbindProgram(cgCtxInfo->fProfile);
 	}
-    }
-    else {
-	/* TODO: Unbind old shader program */
+    } else {
+	cgWrapperInfo->cgGLUnbindProgram(cgCtxInfo->vProfile);
+	cgWrapperInfo->cgGLUnbindProgram(cgCtxInfo->fProfile);
     }
 
     ctxProperties->shaderProgramId = shaderProgramId;
@@ -1536,8 +1560,38 @@ cgVertexAttrPointer(
     int index, int size, int type, int stride,
     const void *pointer)
 {
-    /* TODO: implement this */
-    fprintf(stderr, "cgVertexAttrPointer: not implemented\n");
+#ifdef COMPILE_CG_SHADERS
+
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgShaderProgramInfo *shaderProgramInfo =
+	(CgShaderProgramInfo *)ctxProperties->shaderProgramId;
+
+#ifdef VERBOSE
+    fprintf(stderr, "cgVertexAttrPointer()\n");
+#endif /* VERBOSE */
+
+    if (shaderProgramInfo != NULL && index < shaderProgramInfo->numVtxAttrs) {
+	cgWrapperInfo->cgGLSetParameterPointer(shaderProgramInfo->vtxAttrs[index],
+					       size,
+					       type,
+					       stride,
+					       pointer);
+    }
+#ifdef VERBOSE
+    else {
+	if (shaderProgramInfo == NULL) {
+	    fprintf(stderr,
+		    "    shaderProgramInfo is NULL\n");
+	} else {
+	    fprintf(stderr,
+		    "    index (%d) out of range; numVtxAttrs = %d\n",
+		    index, shaderProgramInfo->numVtxAttrs);
+	}
+    }
+#endif /* VERBOSE */
+
+#endif /* COMPILE_CG_SHADERS */
 }
 
 static void
@@ -1545,8 +1599,34 @@ cgEnableVertexAttrArray(
     GraphicsContextPropertiesInfo *ctxProperties,
     int index)
 {
-    /* TODO: implement this */
-    fprintf(stderr, "cgEnableVertexAttrArray: not implemented\n");
+#ifdef COMPILE_CG_SHADERS
+
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgShaderProgramInfo *shaderProgramInfo =
+	(CgShaderProgramInfo *)ctxProperties->shaderProgramId;
+
+#ifdef VERBOSE
+    fprintf(stderr, "cgEnableVertexAttrArray()\n");
+#endif /* VERBOSE */
+
+    if (shaderProgramInfo != NULL && index < shaderProgramInfo->numVtxAttrs) {
+	cgWrapperInfo->cgGLEnableClientState(shaderProgramInfo->vtxAttrs[index]);
+    }
+#ifdef VERBOSE
+    else {
+	if (shaderProgramInfo == NULL) {
+	    fprintf(stderr,
+		    "    shaderProgramInfo is NULL\n");
+	} else {
+	    fprintf(stderr,
+		    "    index (%d) out of range; numVtxAttrs = %d\n",
+		    index, shaderProgramInfo->numVtxAttrs);
+	}
+    }
+#endif /* VERBOSE */
+
+#endif /* COMPILE_CG_SHADERS */
 }
 
 static void
@@ -1554,8 +1634,34 @@ cgDisableVertexAttrArray(
     GraphicsContextPropertiesInfo *ctxProperties,
     int index)
 {
-    /* TODO: implement this */
-    fprintf(stderr, "cgDisableVertexAttrArray: not implemented\n");
+#ifdef COMPILE_CG_SHADERS
+
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgShaderProgramInfo *shaderProgramInfo =
+	(CgShaderProgramInfo *)ctxProperties->shaderProgramId;
+
+#ifdef VERBOSE
+    fprintf(stderr, "cgDisableVertexAttrArray()\n");
+#endif /* VERBOSE */
+
+    if (shaderProgramInfo != NULL && index < shaderProgramInfo->numVtxAttrs) {
+	cgWrapperInfo->cgGLDisableClientState(shaderProgramInfo->vtxAttrs[index]);
+    }
+#ifdef VERBOSE
+    else {
+	if (shaderProgramInfo == NULL) {
+	    fprintf(stderr,
+		    "    shaderProgramInfo is NULL\n");
+	} else {
+	    fprintf(stderr,
+		    "    index (%d) out of range; numVtxAttrs = %d\n",
+		    index, shaderProgramInfo->numVtxAttrs);
+	}
+    }
+#endif /* VERBOSE */
+
+#endif /* COMPILE_CG_SHADERS */
 }
 
 static void
@@ -1656,160 +1762,4 @@ JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUnifor
 JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix4fArray
   (JNIEnv *, jobject, jlong, jlong, jlong, jint, jfloatArray);
 
-
-
 #endif
-
-
-
-
-
-#if 0
-/*
- * Class:     javax_media_j3d_CgShaderProgram
- * Method:    updateNative
- * Signature: (JLjava/lang/String;Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_javax_media_j3d_CgShaderProgram_updateNative(
-    JNIEnv *env,
-    jobject obj,
-    jlong ctxInfo,
-    jstring vertexShader,
-    jstring fragmentShader)
-{
-#ifndef COMPILE_CG_SHADERS
-    static GLboolean firstTime = GL_TRUE;
-
-    if (firstTime) {
-	fprintf(stderr, "Java 3D ERROR : CgShader code not compiled\n");
-	firstTime = GL_FALSE;
-    }
-    return;
-#endif /* !COMPILE_CG_SHADERS */
-
-#ifdef COMPILE_CG_SHADERS
-    /* Null-terminated "C" strings */
-    char *vertexShaderString = NULL;
-    char *fragmentShaderString = NULL;
-
-    /* Process vertex shader */
-    /*
-    fprintf(stderr, "    vertexShader == 0x%x\n", vertexShader);
-    */
-    if (vertexShader != 0) {
-	vertexShaderString = strJavaToC(env, vertexShader);
-	if (vertexShaderString == NULL) {
-	    return;
-	}
-
-	/*
-	 * TODO: need to check whether the shader has changed and free up the
-	 * old shader before allocating a new one (like we do for texture)
-	 */
-	if (vContext == 0) {
-	    /* Use GL_ARB_vertex_program extension if supported by video card */
-	    if (cgGLIsProfileSupported(CG_PROFILE_ARBVP1)) {
-		fprintf(stderr, "Using CG_PROFILE_ARBVP1\n");
-		vProfile = CG_PROFILE_ARBVP1;
-	    }
-	    else if (cgGLIsProfileSupported(CG_PROFILE_VP20)) {
-		fprintf(stderr, "Using CG_PROFILE_VP20\n");
-		vProfile = CG_PROFILE_VP20;
-	    }
-	    else {
-		fprintf(stderr,
-			"ERROR: Vertex programming extensions (GL_ARB_vertex_program or\n"
-			"GL_NV_vertex_program) not supported, exiting...\n");
-		return;
-	    }
-
-	    cgSetErrorCallback(cgErrorCallback);
-
-	    vContext = cgCreateContext();
-
-	    /* create the vertex shader */
-	    fprintf(stderr,
-		    "CgShaderProgram_updateNative: create vertex shader program\n");
-	    vShader = cgCreateProgram(vContext,
-				      CG_SOURCE, vertexShaderString,
-				      vProfile, NULL, NULL);
-	}
-	free(vertexShaderString);
-
-	/*
-	fprintf(stderr,
-		"CgShaderProgram_updateNative: load/bind/enable vertex shader program\n");
-	*/
-	cgGLLoadProgram(vShader);
-	cgGLBindProgram(vShader);
-	cgGLEnableProfile(vProfile);
-    }
-    else {
-	if (vProfile != 0) {
-	    cgGLDisableProfile(vProfile);
-	}
-    }
-
-    /* Process fragment shader */
-    /*
-    fprintf(stderr, "    fragmentShader == 0x%x\n", fragmentShader);
-    */
-    if (fragmentShader != 0) {
-	fragmentShaderString = strJavaToC(env, fragmentShader);
-	if (fragmentShaderString == NULL) {
-	    return;
-	}
-
-	/*
-	 * TODO: need to check whether the shader has changed and free up the
-	 * old shader before allocating a new one (like we do for texture)
-	 */
-	if (fContext == 0) {
-	    /* Use GL_ARB_fragment_program extension if supported by video card */
-	    if (cgGLIsProfileSupported(CG_PROFILE_ARBFP1)) {
-		fprintf(stderr, "Using CG_PROFILE_ARBFP1\n");
-		fProfile = CG_PROFILE_ARBFP1;
-	    }
-	    else if (cgGLIsProfileSupported(CG_PROFILE_FP20)) {
-		fprintf(stderr, "Using CG_PROFILE_FP20\n");
-		fProfile = CG_PROFILE_FP20;
-	    }
-	    else {
-		fprintf(stderr,
-			"Fragment programming extensions (GL_ARB_fragment_program or\n"
-			"GL_NV_fragment_program) not supported, exiting...\n");
-		return;
-	    }
-
-	    cgSetErrorCallback(cgErrorCallback);
-
-	    fContext = cgCreateContext();
-
-	    /* create the fragment shader */
-	    fprintf(stderr,
-		    "CgShaderProgram_updateNative: create fragment shader program\n");
-	    fShader = cgCreateProgram(fContext,
-				      CG_SOURCE, fragmentShaderString,
-				      fProfile, NULL, NULL);
-	}
-	free(fragmentShaderString);
-
-	cgGLLoadProgram(fShader);
-	cgGLBindProgram(fShader);
-	/*
-	fprintf(stderr,
-		"CgShaderProgram_updateNative: load/bind/enable fragment shader program\n");
-	*/
-	cgGLEnableProfile(fProfile);
-    }
-    else {
-	if (fProfile != 0) {
-	    cgGLDisableProfile(fProfile);
-	}
-    }
-#endif /* COMPILE_CG_SHADERS */
-
-}
-/* KCR: END CG SHADER HACK */
-
-#endif /* 0 */

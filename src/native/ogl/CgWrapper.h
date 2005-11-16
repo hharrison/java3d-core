@@ -52,6 +52,10 @@ typedef CGtype (*PFNCGGETARRAYTYPE)(CGparameter);
 typedef int (*PFNCGGETARRAYSIZE)(CGparameter, int);
 typedef CGparameter (*PFNCGGETARRAYPARAMETER)(CGparameter, int);
 typedef void (*PFNCGSETPARAMETER1F)(CGparameter, float);
+typedef void (*PFNCGGLSETPARAMETERPOINTER)(CGparameter, GLint, GLenum,
+					   GLsizei, const GLvoid *);
+typedef void (*PFNCGGLENABLECLIENTSTATE)(CGparameter);
+typedef void (*PFNCGGLDISABLECLIENTSTATE)(CGparameter);
 
 #endif /* COMPILE_CG_SHADERS */
 
@@ -101,6 +105,10 @@ struct CgWrapperInfoRec {
     PFNCGGETARRAYSIZE cgGetArraySize;
     PFNCGGETARRAYPARAMETER cgGetArrayParameter;
     PFNCGSETPARAMETER1F cgSetParameter1f;
+
+    PFNCGGLSETPARAMETERPOINTER cgGLSetParameterPointer;
+    PFNCGGLENABLECLIENTSTATE cgGLEnableClientState;
+    PFNCGGLDISABLECLIENTSTATE cgGLDisableClientState;
 
 #endif /* COMPILE_CG_SHADERS */
 };

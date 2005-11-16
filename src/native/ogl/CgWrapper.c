@@ -51,6 +51,9 @@ j3dLoadCgFunctionPointers(CgWrapperInfo *cgWrapperInfo)
     cgWrapperInfo->cgGetArraySize = &cgGetArraySize;
     cgWrapperInfo->cgGetArrayParameter = &cgGetArrayParameter;
     cgWrapperInfo->cgSetParameter1f = &cgSetParameter1f;
+    cgWrapperInfo->cgGLSetParameterPointer = &cgGLSetParameterPointer;
+    cgWrapperInfo->cgGLEnableClientState = &cgGLEnableClientState;
+    cgWrapperInfo->cgGLDisableClientState = &cgGLDisableClientState;
 
     return;
 }
