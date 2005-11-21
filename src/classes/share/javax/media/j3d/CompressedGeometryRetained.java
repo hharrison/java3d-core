@@ -316,15 +316,16 @@ class CompressedGeometryRetained extends GeometryRetained {
 	gdr.getBoundingBox(geoBounds) ;
 	return pickGeometry ;
     }
-
+    
     //
     // The following intersect() methods are used to implement geometry-based
     // picking and collision.
     //
-    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
-	GeometryRetained geom = getPickGeometry() ;
-	return (geom != null ?
-		geom.intersect(pickShape, iInfo, flags, iPnt) : false);
+    boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
+                      GeometryRetained geom, int geomIndex) {
+	GeometryRetained geomR = getPickGeometry() ;
+	return (geomR != null ?
+		geomR.intersect(pickShape, pickInfo, flags, iPnt, geom, geomIndex) : false);
     }
     
     boolean intersect(Bounds targetBound) {

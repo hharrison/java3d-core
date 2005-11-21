@@ -1008,7 +1008,8 @@ public class PickInfo extends Object {
         }
         
         void setIntersectionPoint(Point3d intersectionPoint) {
-            this.intersectionPoint = intersectionPoint;
+	    assert(intersectionPoint != null);
+	    this.intersectionPoint = new Point3d(intersectionPoint);
         }
         
         void setDistance(double distance) {
@@ -1016,7 +1017,11 @@ public class PickInfo extends Object {
         }       
         
         void setVertexIndices(int[] vertexIndices) {
-	    this.vertexIndices = vertexIndices;
+	    assert(vertexIndices != null);
+	    this.vertexIndices = new int[vertexIndices.length];
+	    for(int i=0; i<vertexIndices.length; i++) {
+		this.vertexIndices[i] = vertexIndices[i];
+	    }
 	}
 
         

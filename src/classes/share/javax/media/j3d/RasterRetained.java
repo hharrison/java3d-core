@@ -687,9 +687,10 @@ class RasterRetained extends GeometryRetained {
                                         ImageComponentUpdateInfo value) {
     }
 
-     boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
-	return false;
-    }
+    boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
+                      GeometryRetained geom, int geomIndex) {
+         return false;
+     }   
     
     boolean intersect(Bounds targetBound) {
 	return false;

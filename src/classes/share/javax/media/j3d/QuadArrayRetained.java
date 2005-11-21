@@ -26,14 +26,16 @@ class QuadArrayRetained extends GeometryArrayRetained {
     QuadArrayRetained() {
 	this.geoType = GEO_TYPE_QUAD_SET;
     }
-
-    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
+        
+    boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
+                      GeometryRetained geom, int geomIndex) {
+        
 	Point3d pnts[] = new Point3d[4];
 	double sdist[] = new double[1];
 	double minDist = Double.MAX_VALUE;
 	double x = 0, y = 0, z = 0;
-        int count = 0;
-        int minICount = 0; 
+        int[] vtxIndexArr = new int[4];
+        
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
 		 initialVertexIndex : initialCoordIndex);
 	pnts[0] = new Point3d();
@@ -46,22 +48,28 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    PickRay pickRay= (PickRay) pickShape;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-		getVertexData(i++, pnts[2]);
-		getVertexData(i++, pnts[3]);
-                count += 4;
+                for(int j=0; j<4; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectRay(pnts, pickRay, sdist, iPnt)) {
 		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -69,11 +77,10 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    PickSegment pickSegment = (PickSegment) pickShape;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-		getVertexData(i++, pnts[2]);
-		getVertexData(i++, pnts[3]);
-                count += 4;
+                for(int j=0; j<4; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectSegment(pnts, pickSegment.start,
 				     pickSegment.end, sdist, iPnt)) {
 		    if (flags == 0) {
@@ -81,11 +88,18 @@ class QuadArrayRetained extends GeometryArrayRetained {
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -93,22 +107,28 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    BoundingBox bbox = (BoundingBox) 
 		               ((PickBounds) pickShape).bounds;
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-		getVertexData(i++, pnts[2]);
-		getVertexData(i++, pnts[3]);
-                count += 4;
+                for(int j=0; j<4; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectBoundingBox(pnts, bbox, sdist, iPnt)) {
 		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -117,22 +137,28 @@ class QuadArrayRetained extends GeometryArrayRetained {
 		                     ((PickBounds) pickShape).bounds;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-		getVertexData(i++, pnts[2]);
-		getVertexData(i++, pnts[3]);
-                count += 4;
+                for(int j=0; j<4; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectBoundingSphere(pnts, bsphere, sdist, iPnt)) {
 		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -142,22 +168,28 @@ class QuadArrayRetained extends GeometryArrayRetained {
 		                      ((PickBounds) pickShape).bounds;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-		getVertexData(i++, pnts[2]);
-		getVertexData(i++, pnts[3]);
-                count += 4;
+                for(int j=0; j<4; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectBoundingPolytope(pnts, bpolytope, sdist, iPnt)) {
 		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -165,22 +197,28 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    PickCylinder pickCylinder= (PickCylinder) pickShape;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-		getVertexData(i++, pnts[2]);
-		getVertexData(i++, pnts[3]);
-                count += 4;
+                for(int j=0; j<4; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectCylinder(pnts, pickCylinder, sdist, iPnt)) {
 		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -188,22 +226,28 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    PickCone pickCone= (PickCone) pickShape;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-		getVertexData(i++, pnts[2]);
-		getVertexData(i++, pnts[3]);
-                count += 4;
+                for(int j=0; j<4; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectCone(pnts, pickCone, sdist, iPnt)) {
 		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -215,16 +259,6 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	} 
 
 	if (minDist < Double.MAX_VALUE) {
-            assert(minICount >= 4);
-            int[] vertexIndices = iInfo.getVertexIndices();
-            if (vertexIndices == null) {
-                vertexIndices = new int[4];
-                iInfo.setVertexIndices(vertexIndices);
-            }
-            vertexIndices[0] = minICount - 4;
-            vertexIndices[1] = minICount - 3;
-            vertexIndices[2] = minICount - 2;
-            vertexIndices[3] = minICount - 1;
 	    iPnt.x = x;
 	    iPnt.y = y;
 	    iPnt.z = z;

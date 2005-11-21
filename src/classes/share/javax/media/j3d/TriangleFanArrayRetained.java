@@ -32,19 +32,18 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	this.geoType = GEO_TYPE_TRI_FAN_SET;
     }
 
-    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
+    boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
+                      GeometryRetained geom, int geomIndex) {
 	Point3d pnts[] = new Point3d[3];
 	double sdist[] = new double[1];
 	double minDist = Double.MAX_VALUE;
 	double x = 0, y = 0, z = 0;
 	int i = 0;
 	int j, end;
-        int count = 0, fSCount;
-        int minICount = 0; 
-        int minFSCount = 0;
 	pnts[0] = new Point3d();
 	pnts[1] = new Point3d();
 	pnts[2] = new Point3d();
+        int[] vtxIndexArr = new int[3];
 
 	switch (pickShape.getPickType()) {
 	case PickShape.PICKRAY:
@@ -53,28 +52,35 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {  
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-                fSCount = count;
-		getVertexData(j++, pnts[0]);
-		getVertexData(j++, pnts[1]);
-                count += 2;
+                for(int k=0; k<2; k++) {
+                    vtxIndexArr[k] = j;
+                    getVertexData(j++, pnts[k]);
+                }
 		while (j < end) {
+                    vtxIndexArr[2] = j;
 		    getVertexData(j++, pnts[2]);
-                    count++;
                     if (intersectRay(pnts, pickRay, sdist, iPnt)) {
 			if (flags == 0) {
 			    return true;
 			}
-			if (sdist[0] < minDist) {
-			    minDist = sdist[0];
-                            minFSCount = count;
-                            minICount = count;
+                        if (sdist[0] < minDist) {
+                            minDist = sdist[0];
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
-		    pnts[1].set(pnts[2]);
-		}
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
+                                        vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                    vtxIndexArr, iPnt, sdist[0]);
+                        }
+                    }
+                    pnts[1].set(pnts[2]);
+                    vtxIndexArr[1] = vtxIndexArr[2];
+                }
 	    }
 	    break;
 	case PickShape.PICKSEGMENT:
@@ -83,13 +89,13 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {  
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-                fSCount = count;
-		getVertexData(j++, pnts[0]);
-		getVertexData(j++, pnts[1]);
-                count += 2;
+                for(int k=0; k<2; k++) {
+                    vtxIndexArr[k] = j;
+                    getVertexData(j++, pnts[k]);
+                }
 		while (j < end) {
+                    vtxIndexArr[2] = j;
 		    getVertexData(j++, pnts[2]);
-                    count++;
                     if (intersectSegment(pnts, pickSegment.start, 
 					 pickSegment.end, sdist, iPnt)) {
 			if (flags == 0) {
@@ -97,14 +103,21 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minFSCount = fSCount;
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
-		    pnts[1].set(pnts[2]);
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
+                                        vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                    vtxIndexArr, iPnt, sdist[0]);
+                        }
+                    }
+                    pnts[1].set(pnts[2]);
+                    vtxIndexArr[1] = vtxIndexArr[2];
 		}
 	    }
 	    break;
@@ -115,27 +128,34 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {  
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-                fSCount = count;
-		getVertexData(j++, pnts[0]);
-		getVertexData(j++, pnts[1]);
-                count += 2;
+                for(int k=0; k<2; k++) {
+                    vtxIndexArr[k] = j;
+                    getVertexData(j++, pnts[k]);
+                }
 		while (j < end) {
+                    vtxIndexArr[2] = j;
 		    getVertexData(j++, pnts[2]);
-                    count++;
 		    if (intersectBoundingBox(pnts, bbox, sdist, iPnt)) {
 			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minFSCount = fSCount;
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
-		    pnts[1].set(pnts[2]);
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
+                                        vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                    vtxIndexArr, iPnt, sdist[0]);
+                        }
+                    }
+                    pnts[1].set(pnts[2]);
+                    vtxIndexArr[1] = vtxIndexArr[2];
 		}
 	    }
 	    break;
@@ -146,13 +166,13 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {  
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-                fSCount = count;
-                getVertexData(j++, pnts[0]);
-		getVertexData(j++, pnts[1]);
-                count += 2;
-                while (j < end) {
+                for(int k=0; k<2; k++) {
+                    vtxIndexArr[k] = j;
+                    getVertexData(j++, pnts[k]);
+                }
+		while (j < end) {
+                    vtxIndexArr[2] = j;
 		    getVertexData(j++, pnts[2]);
-                    count++;
                     if (intersectBoundingSphere(pnts, bsphere, sdist,
 						iPnt)) { 
 			if (flags == 0) {
@@ -160,14 +180,21 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minFSCount = fSCount;
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
-		    pnts[1].set(pnts[2]);
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
+                                        vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                    vtxIndexArr, iPnt, sdist[0]);
+                        }
+                    }
+                    pnts[1].set(pnts[2]);
+                    vtxIndexArr[1] = vtxIndexArr[2];
 		}
 	    }
 	    break;
@@ -178,13 +205,13 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {  
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-                fSCount = count;
-		getVertexData(j++, pnts[0]);
-		getVertexData(j++, pnts[1]);
-                count += 2;
+                for(int k=0; k<2; k++) {
+                    vtxIndexArr[k] = j;
+                    getVertexData(j++, pnts[k]);
+                }
 		while (j < end) {
+                    vtxIndexArr[2] = j;
 		    getVertexData(j++, pnts[2]);
-                    count++;
                     if (intersectBoundingPolytope(pnts, bpolytope,
 						  sdist, iPnt)) {
 			if (flags == 0) {
@@ -192,14 +219,21 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minFSCount = fSCount;
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
-		    pnts[1].set(pnts[2]);
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
+                                        vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                    vtxIndexArr, iPnt, sdist[0]);
+                        }
+                    }
+                    pnts[1].set(pnts[2]);
+                    vtxIndexArr[1] = vtxIndexArr[2];
 		}
 	    }
 	    break;
@@ -209,27 +243,34 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {  
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-		getVertexData(j++, pnts[0]);
-		getVertexData(j++, pnts[1]);
-                fSCount = count;
-                count += 2;
+                for(int k=0; k<2; k++) {
+                    vtxIndexArr[k] = j;
+                    getVertexData(j++, pnts[k]);
+                }
 		while (j < end) {
+                    vtxIndexArr[2] = j;
 		    getVertexData(j++, pnts[2]);
-                    count++;
 		    if (intersectCylinder(pnts, pickCylinder, sdist, iPnt)) {
 			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minFSCount = fSCount;
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
-		    pnts[1].set(pnts[2]);
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
+                                        vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                    vtxIndexArr, iPnt, sdist[0]);
+                        }
+                    }
+                    pnts[1].set(pnts[2]);
+                    vtxIndexArr[1] = vtxIndexArr[2];
 		}
 	    }
 	    break;
@@ -239,27 +280,34 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {  
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-                fSCount = count;
-                getVertexData(j++, pnts[0]);
-		getVertexData(j++, pnts[1]);
-                count += 2;
+                for(int k=0; k<2; k++) {
+                    vtxIndexArr[k] = j;
+                    getVertexData(j++, pnts[k]);
+                }
 		while (j < end) {
+                    vtxIndexArr[2] = j;
 		    getVertexData(j++, pnts[2]);
-                    count++;
 		    if (intersectCone(pnts, pickCone, sdist, iPnt)) {
 			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minFSCount = fSCount;
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
-		    pnts[1].set(pnts[2]);
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
+                                        vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                    vtxIndexArr, iPnt, sdist[0]);
+                        }
+                    }
+                    pnts[1].set(pnts[2]);
+                    vtxIndexArr[1] = vtxIndexArr[2];
 		}
 	    }
 	    break;
@@ -271,15 +319,6 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	} 
 
 	if (minDist < Double.MAX_VALUE) {
-            assert(minICount >= 3);
-            int[] vertexIndices = iInfo.getVertexIndices();
-            if (vertexIndices == null) {
-                vertexIndices = new int[3];
-                iInfo.setVertexIndices(vertexIndices);
-            }
-            vertexIndices[0] = minFSCount;
-            vertexIndices[1] = minICount - 2;
-            vertexIndices[2] = minICount - 1;
 	    iPnt.x = x;
 	    iPnt.y = y;
 	    iPnt.z = z;

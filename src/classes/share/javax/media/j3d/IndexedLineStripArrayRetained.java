@@ -29,15 +29,16 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
         geoType = GEO_TYPE_INDEXED_LINE_STRIP_SET;
     }
 
-    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
+    boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
+                      GeometryRetained geom, int geomIndex) {
 	Point3d pnts[] = new Point3d[2];
 	double sdist[] = new double[1];
 	double minDist = Double.MAX_VALUE;
 	double x = 0, y = 0, z = 0;
 	int scount, j, i = 0;
 	int count = 0;
-        int minICount = 0; 
-
+        int[] vtxIndexArr = new int[2];
+        
 	pnts[0] = new Point3d();
 	pnts[1] = new Point3d();
     
@@ -45,11 +46,12 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 	case PickShape.PICKRAY:
 	    PickRay pickRay= (PickRay) pickShape;
 
-	   while (i < stripIndexCounts.length) {  
+	   while (i < stripIndexCounts.length) {
+                vtxIndexArr[0] = indexCoord[count];
 		getVertexData(indexCoord[count++], pnts[0]);
 		scount = stripIndexCounts[i++];
-
-		for (j=1; j < scount; j++) {	 
+		for (j=1; j < scount; j++) {
+                    vtxIndexArr[1] = indexCoord[count];
 		    getVertexData(indexCoord[count++], pnts[1]);
 		    if (intersectLineAndRay(pnts[0], pnts[1], pickRay.origin,
 					    pickRay.direction, sdist,
@@ -59,13 +61,21 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                                  vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);                      
+       		        }
+                    }
 		    pnts[0].set(pnts[1]);
+                    vtxIndexArr[0] = vtxIndexArr[1];
 		}
 	    }
 	    break;
@@ -77,10 +87,11 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 			     pickSegment.end.z - pickSegment.start.z);
 	    
 	    while (i < stripIndexCounts.length) {  
+                vtxIndexArr[0] = indexCoord[count];
 		getVertexData(indexCoord[count++], pnts[0]);
 		scount =  stripIndexCounts[i++];
-
 		for (j=1; j < scount; j++) {	 
+                    vtxIndexArr[1] = indexCoord[count];
 		    getVertexData(indexCoord[count++], pnts[1]);
 		    if (intersectLineAndRay(pnts[0], pnts[1],
 					    pickSegment.start, 
@@ -91,13 +102,21 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
-		    pnts[0].set(pnts[1]);			
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                                  vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);                      
+       		        }
+                    }
+		    pnts[0].set(pnts[1]);
+                    vtxIndexArr[0] = vtxIndexArr[1];
 		}
 	    }
 	    break;
@@ -106,53 +125,68 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 		               ((PickBounds) pickShape).bounds;
 
 	    while (i < stripIndexCounts.length) {  
+                vtxIndexArr[0] = indexCoord[count];
 		getVertexData(indexCoord[count++], pnts[0]);
 		scount =  stripIndexCounts[i++];
-
 		for (j=1; j < scount; j++) {	 
+                    vtxIndexArr[1] = indexCoord[count];
 		    getVertexData(indexCoord[count++], pnts[1]);
-
 		    if (intersectBoundingBox(pnts, bbox, sdist, iPnt)) {
 			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
-		    pnts[0].set(pnts[1]);			   
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                                  vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);                      
+       		        }
+                    }
+		    pnts[0].set(pnts[1]);
+                    vtxIndexArr[0] = vtxIndexArr[1];
 		}
 	    }
-
 	    break;
 	case PickShape.PICKBOUNDINGSPHERE:
 	    BoundingSphere bsphere = (BoundingSphere) 
 		                     ((PickBounds) pickShape).bounds;
 
 	    while (i < stripIndexCounts.length) {  
+                vtxIndexArr[0] = indexCoord[count];
 		getVertexData(indexCoord[count++], pnts[0]);
 		scount =  stripIndexCounts[i++];
-
-		for (j=1; j < scount; j++) {	 
+		for (j=1; j < scount; j++) {
+                    vtxIndexArr[1] = indexCoord[count];
 		    getVertexData(indexCoord[count++], pnts[1]);
-
 		    if (intersectBoundingSphere(pnts, bsphere, sdist, iPnt)) {
 			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                                  vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);                      
+       		        }
+                    }
 		    pnts[0].set(pnts[1]);
+                    vtxIndexArr[0] = vtxIndexArr[1];
 		}
 	    }
 	    break;
@@ -161,25 +195,33 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 		                      ((PickBounds) pickShape).bounds;
 
 	    while (i < stripIndexCounts.length) {  
+                vtxIndexArr[0] = indexCoord[count];
 		getVertexData(indexCoord[count++], pnts[0]);
 		scount =  stripIndexCounts[i++];
-
-		for (j=1; j < scount; j++) {	 
+		for (j=1; j < scount; j++) {
+                    vtxIndexArr[1] = indexCoord[count];
 		    getVertexData(indexCoord[count++], pnts[1]);
-
 		    if (intersectBoundingPolytope(pnts, bpolytope, sdist, iPnt)) {
 			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                                  vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);                      
+       		        }
+                    }
 		    pnts[0].set(pnts[1]);
+                    vtxIndexArr[0] = vtxIndexArr[1];
 		}
 	    }
 	    break;
@@ -187,25 +229,33 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 	    PickCylinder pickCylinder= (PickCylinder) pickShape;
 
 	    while (i < stripIndexCounts.length) {  
+                vtxIndexArr[0] = indexCoord[count];
 		getVertexData(indexCoord[count++], pnts[0]);
 		scount =  stripIndexCounts[i++];
-
-		for (j=1; j < scount; j++) {	 
+		for (j=1; j < scount; j++) {
+                    vtxIndexArr[1] = indexCoord[count];
 		    getVertexData(indexCoord[count++], pnts[1]);
-
 		    if (intersectCylinder(pnts, pickCylinder, sdist, iPnt)) {
 			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                                  vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);                      
+       		        }
+                    }
 		    pnts[0].set(pnts[1]);
+                    vtxIndexArr[0] = vtxIndexArr[1];
 		}
 	    }
 	    break;
@@ -213,25 +263,33 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 	    PickCone pickCone= (PickCone) pickShape;
 
 	    while (i < stripIndexCounts.length) {  
+                vtxIndexArr[0] = indexCoord[count];
 		getVertexData(indexCoord[count++], pnts[0]);
 		scount =  stripIndexCounts[i++];
-
-		for (j=1; j < scount; j++) {	 
+		for (j=1; j < scount; j++) {
+                    vtxIndexArr[1] = indexCoord[count];
 		    getVertexData(indexCoord[count++], pnts[1]);
-
 		    if (intersectCone(pnts, pickCone, sdist, iPnt)) {
 			if (flags == 0) {
 			    return true;
 			}
 			if (sdist[0] < minDist) {
 			    minDist = sdist[0];
-                            minICount = count;
                             x = iPnt.x;
                             y = iPnt.y;
                             z = iPnt.z;
-			}
-		    }
+                            if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                                  vtxIndexArr, iPnt, sdist[0]);
+                            }
+                        }
+                        if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);                      
+       		        }
+                    }
 		    pnts[0].set(pnts[1]);
+                    vtxIndexArr[0] = vtxIndexArr[1];
 		}
 	    }
 	    break;
@@ -243,14 +301,6 @@ class IndexedLineStripArrayRetained extends IndexedGeometryStripArrayRetained {
 	} 
 
 	if (minDist < Double.MAX_VALUE) {
-            assert(minICount >=2);
-            int[] vertexIndices = iInfo.getVertexIndices();
-            if (vertexIndices == null) {
-                vertexIndices = new int[2];
-                iInfo.setVertexIndices(vertexIndices);
-            }
-            vertexIndices[0] = minICount - 2;
-            vertexIndices[1] = minICount - 1;
 	    iPnt.x = x;
 	    iPnt.y = y;
 	    iPnt.z = z;

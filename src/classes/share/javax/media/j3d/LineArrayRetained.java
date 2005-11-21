@@ -21,18 +21,19 @@ import java.lang.Math;
  */
 
 class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
-
+    
     LineArrayRetained() {
 	this.geoType = GEO_TYPE_LINE_SET;
     }
  
-    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
+    boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
+                      GeometryRetained geom, int geomIndex) {
 	Point3d pnts[] = new Point3d[2];
 	double sdist[] = new double[1];
 	double minDist = Double.MAX_VALUE;
 	double x = 0, y = 0, z = 0;
-        int count = 0;
-        int minICount = 0; 
+        int[] vtxIndexArr = new int[2];
+
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
 		 initialVertexIndex : initialCoordIndex);
 	pnts[0] = new Point3d();
@@ -43,9 +44,10 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 	    PickRay pickRay= (PickRay) pickShape;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-                count += 2;
+                for(int j=0; j<2; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectLineAndRay(pnts[0], pnts[1], pickRay.origin,
 					pickRay.direction, sdist,
 					iPnt)) {
@@ -54,10 +56,17 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
+		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
                     }
 		}
 	    }
@@ -70,9 +79,10 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 			     pickSegment.end.z - pickSegment.start.z);
 	    
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-                count += 2;
+                for(int j=0; j<2; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectLineAndRay(pnts[0], pnts[1],
 					pickSegment.start, 
 					dir, sdist, iPnt) &&
@@ -82,11 +92,18 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -94,20 +111,28 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 	    BoundingBox bbox = (BoundingBox) 
 		               ((PickBounds) pickShape).bounds;
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-                count += 2;
+                for(int j=0; j<2; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectBoundingBox(pnts, bbox, sdist, iPnt)) {
 		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 
@@ -117,20 +142,28 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 		                     ((PickBounds) pickShape).bounds;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-                count += 2;
+                for(int j=0; j<2; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectBoundingSphere(pnts, bsphere, sdist, iPnt)) {
 		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -139,20 +172,28 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 		                      ((PickBounds) pickShape).bounds;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-                count += 2;
+                for(int j=0; j<2; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectBoundingPolytope(pnts, bpolytope, sdist, iPnt)) {
 		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -160,20 +201,28 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 	    PickCylinder pickCylinder= (PickCylinder) pickShape;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-                count += 2;
+                for(int j=0; j<2; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectCylinder(pnts, pickCylinder, sdist, iPnt)) {
 		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -181,20 +230,28 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 	    PickCone pickCone= (PickCone) pickShape;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, pnts[0]);
-		getVertexData(i++, pnts[1]);
-                count += 2;
+                for(int j=0; j<2; j++) {
+                    vtxIndexArr[j] = i;
+                    getVertexData(i++, pnts[j]);
+                }
 		if (intersectCone(pnts, pickCone, sdist, iPnt)) {
 		    if (flags == 0) {
 			return true;
 		    }
 		    if (sdist[0] < minDist) {
 			minDist = sdist[0];
-                        minICount = count;
 			x = iPnt.x;
 			y = iPnt.y;
 			z = iPnt.z;
+                	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                              vtxIndexArr, iPnt, sdist[0]);
+                        }
 		    }
+                    if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+                        storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                          vtxIndexArr, iPnt, sdist[0]);                      
+                    }
 		}
 	    }
 	    break;
@@ -206,14 +263,6 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 	} 
 
 	if (minDist < Double.MAX_VALUE) {
-            assert(minICount >=2);
-            int[] vertexIndices = iInfo.getVertexIndices();
-            if (vertexIndices == null) {
-                vertexIndices = new int[2];
-                iInfo.setVertexIndices(vertexIndices);
-            }
-            vertexIndices[0] = minICount - 2;
-            vertexIndices[1] = minICount - 1;
 	    iPnt.x = x;
 	    iPnt.y = y;
 	    iPnt.z = z;

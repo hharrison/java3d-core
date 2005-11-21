@@ -838,7 +838,9 @@ class Text3DRetained extends GeometryRetained {
       super.markAsLive();
     }
 
-    boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo,  int flags, Point3d iPnt) {
+    // TODO -- Need to rethink. Might have to consider charTransform[] in returns pickInfo.
+    boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
+                      GeometryRetained geom, int geomIndex) {
 	Transform3D tempT3D = new Transform3D();
 	GeometryArrayRetained geo = null;
 	int sIndex = -1;
@@ -852,7 +854,7 @@ class Text3DRetained extends GeometryRetained {
 	    if (geo != null) {
 		tempT3D.invert(charTransforms[i]);
 		newPS = pickShape.transform(tempT3D);
-		if (geo.intersect(newPS, iInfo, flags, iPnt)) {
+		if (geo.intersect(newPS, pickInfo, flags, iPnt, geom,  geomIndex)) {
 		    if (flags == 0) {
 			return true;
 		    }

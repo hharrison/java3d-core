@@ -647,7 +647,7 @@ class Shape3DRetained extends LeafRetained {
                     if (geometry.mirrorGeometry != null) {
                         geometry = geometry.mirrorGeometry;
                     }
-                    if (geometry.intersect(newPS, null, 0, null)) {
+                    if (geometry.intersect(newPS, null, 0, null, null, 0)) {
                         return true;
                     }
                 }
@@ -657,14 +657,7 @@ class Shape3DRetained extends LeafRetained {
             double minDist = Double.POSITIVE_INFINITY;
             Point3d closestIPnt = new Point3d();
             Point3d iPnt = new Point3d();
-            Point3d iPntVW = new Point3d();            
-            PickInfo.IntersectionInfo closestInfo = null;
-            PickInfo.IntersectionInfo intersectionInfo
-                    = pickInfo.createIntersectionInfo();
-            
-            if ((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                closestInfo = pickInfo.createIntersectionInfo();
-            }
+            Point3d iPntVW = new Point3d();
             
             for (int i=0; i < geomListSize; i++) {
                 geometry =  (GeometryRetained) geometryList.get(i);
@@ -672,7 +665,8 @@ class Shape3DRetained extends LeafRetained {
                     if (geometry.mirrorGeometry != null) {
                         geometry = geometry.mirrorGeometry;
                     }
-                    if (geometry.intersect(newPS, intersectionInfo, flags, iPnt)) {
+                    //if (geometry.intersect(newPS, intersectionInfo, flags, iPnt)) {
+                    if(geometry.intersect(newPS, pickInfo, flags, iPnt, geometry, i)) {
                         
                         iPntVW.set(iPnt);
                         localToVworld.transform(iPntVW);
@@ -681,25 +675,6 @@ class Shape3DRetained extends LeafRetained {
                         if (minDist > distance) {
                             minDist = distance;
                             closestIPnt.set(iPnt);
-                            
-                            if ((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                                closestInfo.setGeometry((Geometry) geometry.source);
-                                closestInfo.setGeometryIndex(i);
-                                closestInfo.setIntersectionPoint(closestIPnt);
-                                closestInfo.setDistance(distance);
-                                closestInfo.setVertexIndices(intersectionInfo.getVertexIndices());
-                            }
-                        }
-                        
-                        if ((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                            
-                            intersectionInfo.setGeometry((Geometry) geometry.source);
-                            intersectionInfo.setGeometryIndex(i);
-                            intersectionInfo.setIntersectionPoint(iPnt);
-                            intersectionInfo.setDistance(distance);
-                           // VertexIndices has been computed in intersect method.
-                            pickInfo.insertIntersectionInfo(intersectionInfo);
-                            intersectionInfo = pickInfo.createIntersectionInfo();
                         }
                     }
                 }
@@ -711,9 +686,6 @@ class Shape3DRetained extends LeafRetained {
                 }
                 if((flags & PickInfo.CLOSEST_INTERSECTION_POINT) != 0) {
                     pickInfo.setClosestIntersectionPoint(closestIPnt);
-                }
-		if ((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                    pickInfo.insertIntersectionInfo(closestInfo);
                 }
                 return true;
             }

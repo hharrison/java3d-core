@@ -229,10 +229,48 @@ abstract class GeometryRetained extends NodeComponentRetained {
 	return 0 ;
     }
 
-    abstract boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo, int flags, Point3d iPnt);   
+    // Issue 199 -- Chien
+    abstract boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
+                               GeometryRetained geom, int geomIndex);
+    
+    // Old stuff -- Chien
+    //abstract boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo, int flags, Point3d iPnt);   
+    
     abstract boolean intersect(Bounds targetBound);
     abstract boolean intersect(Point3d[] pnts);
     abstract boolean intersect(Transform3D thisToOtherVworld, GeometryRetained geom);
+
+    void storeInterestData(PickInfo pickInfo, int flags, GeometryRetained geom, int geomIndex,
+			   int[] vtxIndexArr, Point3d iPnt, double dist) {
+
+	PickInfo.IntersectionInfo iInfo = null;
+	
+	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
+	    PickInfo.IntersectionInfo iInfoArr[] = pickInfo.getIntersectionInfos();
+	    if((iInfoArr == null) || (iInfoArr.length == 0)) {
+		iInfo = pickInfo.createIntersectionInfo();
+		pickInfo.insertIntersectionInfo(iInfo);		
+	    }
+	    else {
+		assert(iInfoArr.length == 1);
+		iInfo = iInfoArr[0];
+	    }
+	}
+	else if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
+		iInfo = pickInfo.createIntersectionInfo();
+		pickInfo.insertIntersectionInfo(iInfo);
+	}
+	else {
+            assert(false);
+	}
+	// This only set the reference to geometry.source.
+	iInfo.setGeometry((Geometry) geom.source);
+	// The rest are by copy.
+	iInfo.setGeometryIndex(geomIndex);
+	iInfo.setDistance(dist);
+	iInfo.setIntersectionPoint(iPnt);
+	iInfo.setVertexIndices(vtxIndexArr);
+    }
 
     boolean intersect(Transform3D thisLocalToVworld, 
 		      Transform3D otherLocalToVworld, GeometryRetained  geom) {
