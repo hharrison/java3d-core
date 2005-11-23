@@ -29,7 +29,7 @@
 
 #ifdef DEBUG
 /* Uncomment the following for VERBOSE debug messages */
-/* #define VERBOSE */
+#define VERBOSE
 #endif /* DEBUG */
 
 
