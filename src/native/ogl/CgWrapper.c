@@ -50,7 +50,16 @@ j3dLoadCgFunctionPointers(CgWrapperInfo *cgWrapperInfo)
     cgWrapperInfo->cgGetArrayType = &cgGetArrayType;
     cgWrapperInfo->cgGetArraySize = &cgGetArraySize;
     cgWrapperInfo->cgGetArrayParameter = &cgGetArrayParameter;
-    cgWrapperInfo->cgSetParameter1f = &cgSetParameter1f;
+    cgWrapperInfo->cgGLSetParameter1f = &cgGLSetParameter1f;
+    cgWrapperInfo->cgGLSetParameter2f = &cgGLSetParameter2f;
+    cgWrapperInfo->cgGLSetParameter3f = &cgGLSetParameter3f;
+    cgWrapperInfo->cgGLSetParameter4f = &cgGLSetParameter4f;
+    cgWrapperInfo->cgGLSetParameterArray1f = &cgGLSetParameterArray1f;
+    cgWrapperInfo->cgGLSetParameterArray2f = &cgGLSetParameterArray2f;
+    cgWrapperInfo->cgGLSetParameterArray3f = &cgGLSetParameterArray3f;
+    cgWrapperInfo->cgGLSetParameterArray4f = &cgGLSetParameterArray4f;
+    cgWrapperInfo->cgGLSetMatrixParameterfr = &cgGLSetMatrixParameterfr;
+    cgWrapperInfo->cgGLSetMatrixParameterArrayfr = &cgGLSetMatrixParameterArrayfr;
     cgWrapperInfo->cgGLSetParameterPointer = &cgGLSetParameterPointer;
     cgWrapperInfo->cgGLEnableClientState = &cgGLEnableClientState;
     cgWrapperInfo->cgGLDisableClientState = &cgGLDisableClientState;

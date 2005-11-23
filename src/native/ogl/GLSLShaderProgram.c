@@ -685,6 +685,10 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_lookupNativeShaderAttrNames(
     
     JNIEnv table = *env;
 
+#ifdef VERBOSE
+    fprintf(stderr, "GLSLShaderProgramRetained.lookupNativeShaderAttrNames\n");
+#endif
+
     locPtr = (*env)->GetLongArrayElements(env, locArr, NULL);
     typePtr = (*env)->GetIntArrayElements(env, typeArr, NULL);
     sizePtr = (*env)->GetIntArrayElements(env, sizeArr, NULL);
@@ -725,11 +729,11 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_lookupNativeShaderAttrNames(
 						&maxStrLen);
     name = malloc(maxStrLen + 1);
 
-    /*
+#ifdef VERBOSE
     fprintf(stderr,
 	    "numActiveUniforms = %d, maxStrLen = %d\n",
 	    numActiveUniforms, maxStrLen);
-    */
+#endif
 
     for (i = 0; i < numActiveUniforms; i++) {
 	glslCtxInfo->pfnglGetActiveUniformARB((GLhandleARB) shaderProgramId,
@@ -739,11 +743,11 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_lookupNativeShaderAttrNames(
 						&size,
 						&type,
 						name);
-	/*
+#ifdef VERBOSE
 	fprintf(stderr,
 		"Uniform[%d] : name = %s, type = %d, size = %d\n",
 		i, name, type, size);
-	*/
+#endif
 
 	/* Now try to find the name */
 	for (j = 0; j < numAttrNames; j++) {
@@ -766,11 +770,11 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_lookupNativeShaderAttrNames(
         loc = glslCtxInfo->pfnglGetUniformLocationARB((GLhandleARB)shaderProgramId,
                                                         attrNamesString[i]);
 
-	/*
+#ifdef VERBOSE
         fprintf(stderr,
                 "str = %s, loc = %d\n",
                 attrNamesString[i], loc);
-	*/
+#endif
 
         locPtr[i] = (jlong)loc;
     }

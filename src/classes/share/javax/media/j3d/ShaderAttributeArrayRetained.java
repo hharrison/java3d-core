@@ -333,6 +333,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Tuple2i[] arr = new Tuple2i[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 2;
+                arr[i] = new Point2i();
 		arr[i].x = this.value[j+0];
 		arr[i].y = this.value[j+1];
 	    }
@@ -371,6 +372,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Tuple2f[] arr = new Tuple2f[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 2;
+                arr[i] = new Point2f();
 		arr[i].x = this.value[j+0];
 		arr[i].y = this.value[j+1];
 	    }
@@ -410,6 +412,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Tuple2d[] arr = new Tuple2d[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 2;
+                arr[i] = new Point2d();
 		arr[i].x = this.value[j+0];
 		arr[i].y = this.value[j+1];
 	    }
@@ -451,6 +454,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Tuple3i[] arr = new Tuple3i[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 3;
+                arr[i] = new Point3i();
 		arr[i].x = this.value[j+0];
 		arr[i].y = this.value[j+1];
 		arr[i].z = this.value[j+2];
@@ -492,6 +496,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Tuple3f[] arr = new Tuple3f[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 3;
+                arr[i] = new Point3f();
 		arr[i].x = this.value[j+0];
 		arr[i].y = this.value[j+1];
 		arr[i].z = this.value[j+2];
@@ -534,6 +539,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Tuple3d[] arr = new Tuple3d[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 3;
+                arr[i] = new Point3d();
 		arr[i].x = this.value[j+0];
 		arr[i].y = this.value[j+1];
 		arr[i].z = this.value[j+2];
@@ -578,6 +584,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Tuple4i[] arr = new Tuple4i[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 4;
+                arr[i] = new Point4i();
 		arr[i].x = this.value[j+0];
 		arr[i].y = this.value[j+1];
 		arr[i].z = this.value[j+2];
@@ -622,6 +629,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Tuple4f[] arr = new Tuple4f[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 4;
+                arr[i] = new Point4f();
 		arr[i].x = this.value[j+0];
 		arr[i].y = this.value[j+1];
 		arr[i].z = this.value[j+2];
@@ -667,6 +675,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Tuple4d[] arr = new Tuple4d[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 4;
+                arr[i] = new Point4d();
 		arr[i].x = this.value[j+0];
 		arr[i].y = this.value[j+1];
 		arr[i].z = this.value[j+2];
@@ -724,6 +733,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Matrix3f[] arr = new Matrix3f[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 9;
+                arr[i] = new Matrix3f();
 		arr[i].m00 = this.value[j+0];
 		arr[i].m01 = this.value[j+1];
 		arr[i].m02 = this.value[j+2];
@@ -786,6 +796,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Matrix3d[] arr = new Matrix3d[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 9;
+                arr[i] = new Matrix3d();
 		arr[i].m00 = this.value[j+0];
 		arr[i].m01 = this.value[j+1];
 		arr[i].m02 = this.value[j+2];
@@ -862,6 +873,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Matrix4f[] arr = new Matrix4f[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 16;
+                arr[i] = new Matrix4f();
 		arr[i].m00 = this.value[j+0];
 		arr[i].m01 = this.value[j+1];
 		arr[i].m02 = this.value[j+2];
@@ -945,6 +957,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    Matrix4d[] arr = new Matrix4d[this.length];
 	    for (int i = 0; i < this.length; i++) {
 		int j = i * 16;
+                arr[i] = new Matrix4d();
 		arr[i].m00 = this.value[j+0];
 		arr[i].m01 = this.value[j+1];
 		arr[i].m02 = this.value[j+2];

@@ -250,11 +250,13 @@ class CgShaderProgramRetained extends ShaderProgramRetained {
             attrNameInfoArr[i].setLocation(locArr[i]);
             attrNameInfoArr[i].setArray(isArrayArr[i]);
             attrNameInfoArr[i].setType(typeArr[i]);
+            /*
             System.err.println(attrNames[i] +
                     " : loc = " + locArr[i] +
                     ", type = " + typeArr[i] +
                     ", isArray = " + isArrayArr[i] +
                     ", size = " + sizeArr[i]);
+            */
         }
     }
 

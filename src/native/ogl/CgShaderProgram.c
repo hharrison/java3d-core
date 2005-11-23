@@ -889,46 +889,38 @@ cgToJ3dType(CGtype type)
     case CG_FIXED2:
     case CG_HALF2:
     case CG_INT2:
-	/* TODO: return TYPE_TUPLE2I; */
-	return -1;
+	return TYPE_TUPLE2I;
 
     case CG_BOOL3:
     case CG_FIXED3:
     case CG_HALF3:
     case CG_INT3:
-	/*TODO: return TYPE_TUPLE3I; */
-	return -1;
+	return TYPE_TUPLE3I;
 
     case CG_BOOL4:
     case CG_FIXED4:
     case CG_HALF4:
     case CG_INT4:
-	/*TODO: return TYPE_TUPLE4I; */
-	return -1;
+	return TYPE_TUPLE4I;
 
     case CG_FLOAT:
     case CG_FLOAT1:
 	return TYPE_FLOAT;
 
     case CG_FLOAT2:
-	/*TODO: return TYPE_TUPLE2F; */
-	return -1;
+	return TYPE_TUPLE2F;
 
     case CG_FLOAT3:
-	/*TODO: return TYPE_TUPLE3F; */
-	return -1;
+	return TYPE_TUPLE3F;
 
     case CG_FLOAT4:
-	/*TODO: return TYPE_TUPLE4F; */
-	return -1;
+	return TYPE_TUPLE4F;
 
     case CG_FLOAT3x3:
-	/*TODO: return TYPE_MATRIX3F; */
-	return -1;
+	return TYPE_MATRIX3F;
 
     case CG_FLOAT4x4:
-	/*TODO: return TYPE_MATRIX4F; */
-	return -1;
+	return TYPE_MATRIX4F;
 
     /*
      * Java 3D does not support the following sampler types:
@@ -1226,7 +1218,18 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform1i(
 
 #ifdef COMPILE_CG_SHADERS
 
-    /* TODO: implement this */
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter1f(cgParamInfo->vParam, (float)value);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter1f(cgParamInfo->fParam, (float)value);
+    }
 
 #else /* COMPILE_CG_SHADERS */
 
@@ -1262,15 +1265,14 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform1f(
     GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
     CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
     CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
-    CgShaderProgramInfo *shaderProgramInfo = (CgShaderProgramInfo*)shaderProgramId;
     CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
 
     if (cgParamInfo->vParam != NULL) {
-	cgWrapperInfo->cgSetParameter1f(cgParamInfo->vParam, value);
+	cgWrapperInfo->cgGLSetParameter1f(cgParamInfo->vParam, value);
     }
 
     if (cgParamInfo->fParam != NULL) {
-	cgWrapperInfo->cgSetParameter1f(cgParamInfo->fParam, value);
+	cgWrapperInfo->cgGLSetParameter1f(cgParamInfo->fParam, value);
     }
 
 #else /* COMPILE_CG_SHADERS */
@@ -1304,7 +1306,30 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform2i(
 
 #ifdef COMPILE_CG_SHADERS
 
-    /* TODO: implement this */
+    jint *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetIntArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter2f(cgParamInfo->vParam,
+					  (float)values[0],
+					  (float)values[1]);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter2f(cgParamInfo->fParam,
+					  (float)values[0],
+					  (float)values[1]);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseIntArrayElements(env, varray, values, JNI_ABORT);
 
 #else /* COMPILE_CG_SHADERS */
 
@@ -1337,7 +1362,30 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform2f(
 
 #ifdef COMPILE_CG_SHADERS
 
-    /* TODO: implement this */
+    jfloat *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetFloatArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter2f(cgParamInfo->vParam,
+					  values[0],
+					  values[1]);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter2f(cgParamInfo->fParam,
+					  values[0],
+					  values[1]);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseFloatArrayElements(env, varray, values, JNI_ABORT);
 
 #else /* COMPILE_CG_SHADERS */
 
@@ -1370,7 +1418,32 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform3i(
 
 #ifdef COMPILE_CG_SHADERS
 
-    /* TODO: implement this */
+    jint *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetIntArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter3f(cgParamInfo->vParam,
+					  (float)values[0],
+					  (float)values[1],
+					  (float)values[2]);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter3f(cgParamInfo->fParam,
+					  (float)values[0],
+					  (float)values[1],
+					  (float)values[2]);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseIntArrayElements(env, varray, values, JNI_ABORT);
 
 #else /* COMPILE_CG_SHADERS */
 
@@ -1403,7 +1476,32 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform3f(
 
 #ifdef COMPILE_CG_SHADERS
 
-    /* TODO: implement this */
+    jfloat *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetFloatArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter3f(cgParamInfo->vParam,
+					  values[0],
+					  values[1],
+					  values[2]);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter3f(cgParamInfo->fParam,
+					  values[0],
+					  values[1],
+					  values[2]);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseFloatArrayElements(env, varray, values, JNI_ABORT);
 
 #else /* COMPILE_CG_SHADERS */
 
@@ -1436,7 +1534,34 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform4i(
 
 #ifdef COMPILE_CG_SHADERS
 
-    /* TODO: implement this */
+    jint *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetIntArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter4f(cgParamInfo->vParam,
+					  (float)values[0],
+					  (float)values[1],
+					  (float)values[2],
+					  (float)values[3]);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter4f(cgParamInfo->fParam,
+					  (float)values[0],
+					  (float)values[1],
+					  (float)values[2],
+					  (float)values[3]);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseIntArrayElements(env, varray, values, JNI_ABORT);
 
 #else /* COMPILE_CG_SHADERS */
 
@@ -1469,7 +1594,34 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform4f(
 
 #ifdef COMPILE_CG_SHADERS
 
-    /* TODO: implement this */
+    jfloat *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetFloatArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter4f(cgParamInfo->vParam,
+					  values[0],
+					  values[1],
+					  values[2],
+					  values[3]);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameter4f(cgParamInfo->fParam,
+					  values[0],
+					  values[1],
+					  values[2],
+					  values[3]);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseFloatArrayElements(env, varray, values, JNI_ABORT);
 
 #else /* COMPILE_CG_SHADERS */
 
@@ -1502,7 +1654,26 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix3f(
 
 #ifdef COMPILE_CG_SHADERS
 
-    /* TODO: implement this */
+    jfloat *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetFloatArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetMatrixParameterfr(cgParamInfo->vParam, values);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetMatrixParameterfr(cgParamInfo->fParam, values);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseFloatArrayElements(env, varray, values, JNI_ABORT);
 
 #else /* COMPILE_CG_SHADERS */
 
@@ -1535,7 +1706,595 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix4f(
 
 #ifdef COMPILE_CG_SHADERS
 
-    /* TODO: implement this */
+    jfloat *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetFloatArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetMatrixParameterfr(cgParamInfo->vParam, values);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetMatrixParameterfr(cgParamInfo->fParam, values);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseFloatArrayElements(env, varray, values, JNI_ABORT);
+
+#else /* COMPILE_CG_SHADERS */
+
+    shaderError = createShaderError(env,
+				    javax_media_j3d_ShaderError_UNSUPPORTED_LANGUAGE_ERROR,
+				    "CgShaderProgram support not compiled",
+				    NULL);
+
+#endif /* !COMPILE_CG_SHADERS */
+
+    return shaderError;
+}
+
+
+/*
+ * Class:     javax_media_j3d_CgShaderProgramRetained
+ * Method:    setUniform1iArray
+ * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
+ */
+JNIEXPORT jobject JNICALL
+Java_javax_media_j3d_CgShaderProgramRetained_setUniform1iArray(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo,
+    jlong shaderProgramId,
+    jlong location,
+    jint length,
+    jintArray varray)
+{
+    jobject shaderError = NULL;
+
+#ifdef COMPILE_CG_SHADERS
+
+    int i;
+    jint *ivalues;
+    float *fvalues;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    ivalues = (*env)->GetIntArrayElements(env, varray, NULL);
+    fvalues = malloc(length * sizeof(float));
+    for (i = 0; i < length; i++) {
+	fvalues[i] = (float)ivalues[i];
+    }
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray1f(cgParamInfo->vParam,
+					       0, length, fvalues);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray1f(cgParamInfo->fParam,
+					       0, length, fvalues);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseIntArrayElements(env, varray, ivalues, JNI_ABORT);
+    free(fvalues);
+
+#else /* COMPILE_CG_SHADERS */
+
+    shaderError = createShaderError(env,
+				    javax_media_j3d_ShaderError_UNSUPPORTED_LANGUAGE_ERROR,
+				    "CgShaderProgram support not compiled",
+				    NULL);
+
+#endif /* !COMPILE_CG_SHADERS */
+
+    return shaderError;
+}
+
+/*
+ * Class:     javax_media_j3d_CgShaderProgramRetained
+ * Method:    setUniform1fArray
+ * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
+ */
+JNIEXPORT jobject JNICALL
+Java_javax_media_j3d_CgShaderProgramRetained_setUniform1fArray(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo,
+    jlong shaderProgramId,
+    jlong location,
+    jint length,
+    jfloatArray varray)
+{
+    jobject shaderError = NULL;
+
+#ifdef COMPILE_CG_SHADERS
+
+    jfloat *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetFloatArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray1f(cgParamInfo->vParam,
+					       0, length, values);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray1f(cgParamInfo->fParam,
+					       0, length, values);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseFloatArrayElements(env, varray, values, JNI_ABORT);
+
+#else /* COMPILE_CG_SHADERS */
+
+    shaderError = createShaderError(env,
+				    javax_media_j3d_ShaderError_UNSUPPORTED_LANGUAGE_ERROR,
+				    "CgShaderProgram support not compiled",
+				    NULL);
+
+#endif /* !COMPILE_CG_SHADERS */
+
+    return shaderError;
+}
+
+/*
+ * Class:     javax_media_j3d_CgShaderProgramRetained
+ * Method:    setUniform2iArray
+ * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
+ */
+JNIEXPORT jobject JNICALL
+Java_javax_media_j3d_CgShaderProgramRetained_setUniform2iArray(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo,
+    jlong shaderProgramId,
+    jlong location,
+    jint length,
+    jintArray varray)
+{
+    jobject shaderError = NULL;
+
+#ifdef COMPILE_CG_SHADERS
+
+    int i;
+    jint *ivalues;
+    float *fvalues;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    ivalues = (*env)->GetIntArrayElements(env, varray, NULL);
+    fvalues = malloc(length * sizeof(float));
+    for (i = 0; i < 2 * length; i++) {
+	fvalues[i] = (float)ivalues[i];
+    }
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray2f(cgParamInfo->vParam,
+					       0, length, fvalues);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray2f(cgParamInfo->fParam,
+					       0, length, fvalues);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseIntArrayElements(env, varray, ivalues, JNI_ABORT);
+    free(fvalues);
+
+#else /* COMPILE_CG_SHADERS */
+
+    shaderError = createShaderError(env,
+				    javax_media_j3d_ShaderError_UNSUPPORTED_LANGUAGE_ERROR,
+				    "CgShaderProgram support not compiled",
+				    NULL);
+
+#endif /* !COMPILE_CG_SHADERS */
+
+    return shaderError;
+}
+
+/*
+ * Class:     javax_media_j3d_CgShaderProgramRetained
+ * Method:    setUniform2fArray
+ * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
+ */
+JNIEXPORT jobject JNICALL
+Java_javax_media_j3d_CgShaderProgramRetained_setUniform2fArray(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo,
+    jlong shaderProgramId,
+    jlong location,
+    jint length,
+    jfloatArray varray)
+{
+    jobject shaderError = NULL;
+
+#ifdef COMPILE_CG_SHADERS
+
+    jfloat *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetFloatArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray2f(cgParamInfo->vParam,
+					       0, length, values);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray2f(cgParamInfo->fParam,
+					       0, length, values);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseFloatArrayElements(env, varray, values, JNI_ABORT);
+
+#else /* COMPILE_CG_SHADERS */
+
+    shaderError = createShaderError(env,
+				    javax_media_j3d_ShaderError_UNSUPPORTED_LANGUAGE_ERROR,
+				    "CgShaderProgram support not compiled",
+				    NULL);
+
+#endif /* !COMPILE_CG_SHADERS */
+
+    return shaderError;
+}
+
+/*
+ * Class:     javax_media_j3d_CgShaderProgramRetained
+ * Method:    setUniform3iArray
+ * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
+ */
+JNIEXPORT jobject JNICALL
+Java_javax_media_j3d_CgShaderProgramRetained_setUniform3iArray(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo,
+    jlong shaderProgramId,
+    jlong location,
+    jint length,
+    jintArray varray)
+{
+    jobject shaderError = NULL;
+
+#ifdef COMPILE_CG_SHADERS
+
+    int i;
+    jint *ivalues;
+    float *fvalues;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    ivalues = (*env)->GetIntArrayElements(env, varray, NULL);
+    fvalues = malloc(length * sizeof(float));
+    for (i = 0; i < 3 * length; i++) {
+	fvalues[i] = (float)ivalues[i];
+    }
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray3f(cgParamInfo->vParam,
+					       0, length, fvalues);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray3f(cgParamInfo->fParam,
+					       0, length, fvalues);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseIntArrayElements(env, varray, ivalues, JNI_ABORT);
+    free(fvalues);
+
+#else /* COMPILE_CG_SHADERS */
+
+    shaderError = createShaderError(env,
+				    javax_media_j3d_ShaderError_UNSUPPORTED_LANGUAGE_ERROR,
+				    "CgShaderProgram support not compiled",
+				    NULL);
+
+#endif /* !COMPILE_CG_SHADERS */
+
+    return shaderError;
+}
+
+/*
+ * Class:     javax_media_j3d_CgShaderProgramRetained
+ * Method:    setUniform3fArray
+ * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
+ */
+JNIEXPORT jobject JNICALL
+Java_javax_media_j3d_CgShaderProgramRetained_setUniform3fArray(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo,
+    jlong shaderProgramId,
+    jlong location,
+    jint length,
+    jfloatArray varray)
+{
+    jobject shaderError = NULL;
+
+#ifdef COMPILE_CG_SHADERS
+
+    jfloat *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetFloatArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray3f(cgParamInfo->vParam,
+					       0, length, values);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray3f(cgParamInfo->fParam,
+					       0, length, values);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseFloatArrayElements(env, varray, values, JNI_ABORT);
+
+#else /* COMPILE_CG_SHADERS */
+
+    shaderError = createShaderError(env,
+				    javax_media_j3d_ShaderError_UNSUPPORTED_LANGUAGE_ERROR,
+				    "CgShaderProgram support not compiled",
+				    NULL);
+
+#endif /* !COMPILE_CG_SHADERS */
+
+    return shaderError;
+}
+
+/*
+ * Class:     javax_media_j3d_CgShaderProgramRetained
+ * Method:    setUniform4iArray
+ * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
+ */
+JNIEXPORT jobject JNICALL
+Java_javax_media_j3d_CgShaderProgramRetained_setUniform4iArray(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo,
+    jlong shaderProgramId,
+    jlong location,
+    jint length,
+    jintArray varray)
+{
+    jobject shaderError = NULL;
+
+#ifdef COMPILE_CG_SHADERS
+
+    int i;
+    jint *ivalues;
+    float *fvalues;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    ivalues = (*env)->GetIntArrayElements(env, varray, NULL);
+    fvalues = malloc(length * sizeof(float));
+    for (i = 0; i < 4 * length; i++) {
+	fvalues[i] = (float)ivalues[i];
+    }
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray4f(cgParamInfo->vParam,
+					       0, length, fvalues);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray4f(cgParamInfo->fParam,
+					       0, length, fvalues);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseIntArrayElements(env, varray, ivalues, JNI_ABORT);
+    free(fvalues);
+
+#else /* COMPILE_CG_SHADERS */
+
+    shaderError = createShaderError(env,
+				    javax_media_j3d_ShaderError_UNSUPPORTED_LANGUAGE_ERROR,
+				    "CgShaderProgram support not compiled",
+				    NULL);
+
+#endif /* !COMPILE_CG_SHADERS */
+
+    return shaderError;
+}
+
+/*
+ * Class:     javax_media_j3d_CgShaderProgramRetained
+ * Method:    setUniform4fArray
+ * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
+ */
+JNIEXPORT jobject JNICALL
+Java_javax_media_j3d_CgShaderProgramRetained_setUniform4fArray(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo,
+    jlong shaderProgramId,
+    jlong location,
+    jint length,
+    jfloatArray varray)
+{
+    jobject shaderError = NULL;
+
+#ifdef COMPILE_CG_SHADERS
+
+    jfloat *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetFloatArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray4f(cgParamInfo->vParam,
+					       0, length, values);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetParameterArray4f(cgParamInfo->fParam,
+					       0, length, values);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseFloatArrayElements(env, varray, values, JNI_ABORT);
+
+#else /* COMPILE_CG_SHADERS */
+
+    shaderError = createShaderError(env,
+				    javax_media_j3d_ShaderError_UNSUPPORTED_LANGUAGE_ERROR,
+				    "CgShaderProgram support not compiled",
+				    NULL);
+
+#endif /* !COMPILE_CG_SHADERS */
+
+    return shaderError;
+}
+
+/*
+ * Class:     javax_media_j3d_CgShaderProgramRetained
+ * Method:    setUniformMatrix3fArray
+ * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
+ */
+JNIEXPORT jobject JNICALL
+Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix3fArray(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo,
+    jlong shaderProgramId,
+    jlong location,
+    jint length,
+    jfloatArray varray)
+{
+    jobject shaderError = NULL;
+
+#ifdef COMPILE_CG_SHADERS
+
+    jfloat *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetFloatArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetMatrixParameterArrayfr(cgParamInfo->vParam,
+						     0, length, values);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetMatrixParameterArrayfr(cgParamInfo->fParam,
+						     0, length, values);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseFloatArrayElements(env, varray, values, JNI_ABORT);
+
+#else /* COMPILE_CG_SHADERS */
+
+    shaderError = createShaderError(env,
+				    javax_media_j3d_ShaderError_UNSUPPORTED_LANGUAGE_ERROR,
+				    "CgShaderProgram support not compiled",
+				    NULL);
+
+#endif /* !COMPILE_CG_SHADERS */
+
+    return shaderError;
+}
+
+/*
+ * Class:     javax_media_j3d_CgShaderProgramRetained
+ * Method:    setUniformMatrix4fArray
+ * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
+ */
+JNIEXPORT jobject JNICALL
+Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix4fArray(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo,
+    jlong shaderProgramId,
+    jlong location,
+    jint length,
+    jfloatArray varray)
+{
+    jobject shaderError = NULL;
+
+#ifdef COMPILE_CG_SHADERS
+
+    jfloat *values;
+
+    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    CgCtxInfo *cgCtxInfo = ctxProperties->cgCtxInfo;
+    CgWrapperInfo *cgWrapperInfo = cgCtxInfo->cgWrapperInfo;
+    CgParameterInfo *cgParamInfo = (CgParameterInfo *)location;
+
+    /* Get array values */
+    values = (*env)->GetFloatArrayElements(env, varray, NULL);
+
+    if (cgParamInfo->vParam != NULL) {
+	cgWrapperInfo->cgGLSetMatrixParameterArrayfr(cgParamInfo->vParam,
+						     0, length, values);
+    }
+
+    if (cgParamInfo->fParam != NULL) {
+	cgWrapperInfo->cgGLSetMatrixParameterArrayfr(cgParamInfo->fParam,
+						     0, length, values);
+    }
+
+    /* Release array values */
+    (*env)->ReleaseFloatArrayElements(env, varray, values, JNI_ABORT);
 
 #else /* COMPILE_CG_SHADERS */
 
@@ -1677,89 +2436,3 @@ cgVertexAttr(
     fprintf(stderr,
 	    "Java 3D ERROR : Assertion failed: invalid call to cgVertexAttr*f\n");
 }
-
-
-#if 0
-
-
-/*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform1iArray
- * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
- */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUniform1iArray
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jintArray);
-
-/*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform1fArray
- * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
- */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUniform1fArray
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jfloatArray);
-
-/*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform2iArray
- * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
- */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUniform2iArray
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jintArray);
-
-/*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform2fArray
- * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
- */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUniform2fArray
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jfloatArray);
-
-/*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform3iArray
- * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
- */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUniform3iArray
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jintArray);
-
-/*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform3fArray
- * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
- */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUniform3fArray
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jfloatArray);
-
-/*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform4iArray
- * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
- */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUniform4iArray
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jintArray);
-
-/*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform4fArray
- * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
- */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUniform4fArray
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jfloatArray);
-
-/*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniformMatrix3fArray
- * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
- */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix3fArray
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jfloatArray);
-
-/*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniformMatrix4fArray
- * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
- */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix4fArray
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jfloatArray);
-
-#endif

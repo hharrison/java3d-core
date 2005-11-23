@@ -51,7 +51,16 @@ typedef int (*PFNCGGETARRAYDIMENSION)(CGparameter);
 typedef CGtype (*PFNCGGETARRAYTYPE)(CGparameter);
 typedef int (*PFNCGGETARRAYSIZE)(CGparameter, int);
 typedef CGparameter (*PFNCGGETARRAYPARAMETER)(CGparameter, int);
-typedef void (*PFNCGSETPARAMETER1F)(CGparameter, float);
+typedef void (*PFNCGGLSETPARAMETER1F)(CGparameter, float);
+typedef void (*PFNCGGLSETPARAMETER2F)(CGparameter, float, float);
+typedef void (*PFNCGGLSETPARAMETER3F)(CGparameter, float, float, float);
+typedef void (*PFNCGGLSETPARAMETER4F)(CGparameter, float, float, float, float);
+typedef void (*PFNCGGLSETPARAMETERARRAY1F)(CGparameter, long, long, const float *);
+typedef void (*PFNCGGLSETPARAMETERARRAY2F)(CGparameter, long, long, const float *);
+typedef void (*PFNCGGLSETPARAMETERARRAY3F)(CGparameter, long, long, const float *);
+typedef void (*PFNCGGLSETPARAMETERARRAY4F)(CGparameter, long, long, const float *);
+typedef void (*PFNCGGLSETMATRIXPARAMETERFR)(CGparameter, const float *);
+typedef void (*PFNCGGLSETMATRIXPARAMETERARRAYFR)(CGparameter, long, long, const float *);
 typedef void (*PFNCGGLSETPARAMETERPOINTER)(CGparameter, GLint, GLenum,
 					   GLsizei, const GLvoid *);
 typedef void (*PFNCGGLENABLECLIENTSTATE)(CGparameter);
@@ -104,8 +113,16 @@ struct CgWrapperInfoRec {
     PFNCGGETARRAYTYPE cgGetArrayType;
     PFNCGGETARRAYSIZE cgGetArraySize;
     PFNCGGETARRAYPARAMETER cgGetArrayParameter;
-    PFNCGSETPARAMETER1F cgSetParameter1f;
-
+    PFNCGGLSETPARAMETER1F cgGLSetParameter1f;
+    PFNCGGLSETPARAMETER2F cgGLSetParameter2f;
+    PFNCGGLSETPARAMETER3F cgGLSetParameter3f;
+    PFNCGGLSETPARAMETER4F cgGLSetParameter4f;
+    PFNCGGLSETPARAMETERARRAY1F cgGLSetParameterArray1f;
+    PFNCGGLSETPARAMETERARRAY2F cgGLSetParameterArray2f;
+    PFNCGGLSETPARAMETERARRAY3F cgGLSetParameterArray3f;
+    PFNCGGLSETPARAMETERARRAY4F cgGLSetParameterArray4f;
+    PFNCGGLSETMATRIXPARAMETERFR cgGLSetMatrixParameterfr;
+    PFNCGGLSETMATRIXPARAMETERARRAYFR cgGLSetMatrixParameterArrayfr;
     PFNCGGLSETPARAMETERPOINTER cgGLSetParameterPointer;
     PFNCGGLENABLECLIENTSTATE cgGLEnableClientState;
     PFNCGGLDISABLECLIENTSTATE cgGLDisableClientState;

@@ -51,7 +51,7 @@
   <target name="compile-ogl-cg" if="build.cg">
     <!-- Compile the wrapper -->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="-w -m32 -mcpu=i386 -I${java.home}/../include -I${java.home}/../include/linux -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DLINUX ${cflags.cg} -c ${oglsrc}/CgWrapper.c"/>
+	<arg line="-m32 -mcpu=i386 -I${java.home}/../include -I${java.home}/../include/linux -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DLINUX ${cflags.cg} -c ${oglsrc}/CgWrapper.c"/>
     </exec>
 
     <!-- Create the wrapper library -->
