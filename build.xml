@@ -14,7 +14,7 @@
  */
  -->
 
-<project name="java3d-1.4.0" default="jar-opt" basedir=".">
+<project name="java3d-1.5.0" default="jar-opt" basedir=".">
 
   <!--
   *********************************************************************
@@ -51,13 +51,13 @@
   * build number that is greater than the previous build's build
   * number.
   -->
-  <property name="version_buildnum"   value="8"/>
+  <property name="version_buildnum"   value="1"/>
 
   <!--
   * The following property specifies the beta revision of the current
   * Java 3D version being built. It is ignored for non-beta builds.
   -->
-  <property name="version_betastr"    value="beta2"/>
+  <property name="version_betastr"    value="beta1"/>
 
   <!--
   * The following property specifies the patch revision of the current
@@ -72,8 +72,8 @@
   * separated by "periods ("."). The version_base_file property must
   * be the same version number as version_base with "_" replacing ".".
   -->
-  <property name="version_base"       value="1.4.0"/>
-  <property name="version_base_file"  value="1_4_0"/>
+  <property name="version_base"       value="1.5.0"/>
+  <property name="version_base_file"  value="1_5_0"/>
 
 
   <!-- ************************************* -->

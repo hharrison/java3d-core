@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Specification-Title: Java 3D API Specification
-Specification-Version: 1.4
+Specification-Version: 1.5
 Specification-Vendor: Sun Microsystems, Inc.
 Implementation-Title: Java 3D Core Runtime Environment
 Implementation-Version: @VERSION_BASE@
