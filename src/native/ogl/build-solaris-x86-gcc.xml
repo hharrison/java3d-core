@@ -30,7 +30,7 @@
     <!-- Compile the c source files-->
     <!-- Inhibit all warning for 32 bit build. Any warning will be caught in the 64 bit build -->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="-w -m32 -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+	<arg line="-w -m32 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
     </exec>
 
     <!-- Create the library file-->
@@ -58,7 +58,7 @@
 
     <!-- Compile the c source files-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs/amd64" executable="gcc">
-	<arg line="-m64 -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+	<arg line="-m64 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
     </exec>
 
     <!-- Create the library file-->

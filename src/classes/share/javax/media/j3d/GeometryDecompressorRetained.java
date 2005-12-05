@@ -307,11 +307,11 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
 	if (boundsOnly) System.out.println(" computing bounds only") ;
 	if (positionsOnly) System.out.println(" computing positions only") ;
 
-	startTime = System.currentTimeMillis() ;
+	startTime = J3dClock.currentTimeMillis() ;
     }
 
     private void endPrint() {
-	endTime = System.currentTimeMillis() ;
+	endTime = J3dClock.currentTimeMillis() ;
 
 	if (benchmark || statistics)
 	    printBench() ;

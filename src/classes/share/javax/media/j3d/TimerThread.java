@@ -56,7 +56,7 @@ class TimerThread extends Thread {
     void addInputDeviceSchedCond() {
 	inputDeviceSchedCond.triggeredTime = 
 	    InputDeviceScheduler.samplingTime +
-	    System.currentTimeMillis();
+	    J3dClock.currentTimeMillis();
 	add(inputDeviceSchedCond);
     }
 
@@ -87,7 +87,7 @@ class TimerThread extends Thread {
 
 	while (running) {
 	    runMonitor(WAIT, waitTime);
-	    time = System.currentTimeMillis();
+	    time = J3dClock.currentTimeMillis();
 
 	    while (true) {
 		cond = null;

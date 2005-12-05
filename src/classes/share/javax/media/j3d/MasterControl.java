@@ -290,9 +290,10 @@ class MasterControl {
 
     /**
      * This is the start time upon which alpha's and behaviors
-     * are synchronized to.
+     * are synchronized to. It is initialized once, the first time
+     * that a MasterControl object is created.
      */
-    static long systemStartTime = System.currentTimeMillis();
+    static long systemStartTime = 0L;
 
     // The rendering API we are using
     private int renderingAPI = RENDER_OPENGL_SOLARIS;
@@ -451,7 +452,7 @@ class MasterControl {
     };
 
     long awt;
-    native long getAWT();
+    private native long getAWT();
 
     // Method to initialize the native J3D library
     private native boolean initializeJ3D(boolean disableXinerama);
@@ -465,6 +466,14 @@ class MasterControl {
     // Methods to set/get system thread concurrency
     private native void setThreadConcurrency(int newLevel);
     private native int getThreadConcurrency();
+
+    // Native method to get the high-resolution timer value.
+    // This method is only called by the J3dClock.getHiResTimerValue.
+    // It is defined as a MasterControl method for convenience, so we don't
+    // have to have yet another class with native methods.
+    //
+    // NOTE: once we drop support for JDK 1.4.2, this method will go away.
+    static native long getNativeTimerValue();
 
     // Maximum lights supported by the native API 
     private native int getMaximumLights();
@@ -509,6 +518,12 @@ class MasterControl {
 	renderingAPI = nativeAPIInfo.getRenderingAPI();
 	isD3DAPI = (renderingAPI == RENDER_DIRECT3D);
         isWin32 = isD3DAPI || (renderingAPI == RENDER_OPENGL_WIN32);
+
+        // Initialize the start time upon which alpha's and behaviors
+        // are synchronized to (if it isn't already set).
+        if (systemStartTime == 0L) {
+            systemStartTime = J3dClock.currentTimeMillis();
+        }
 
 	if(J3dDebug.devPhase) {
 	    // Check to see whether debug mode is allowed
@@ -3363,7 +3378,7 @@ class MasterControl {
 		    if ((thread.threadOpts & J3dThreadData.START_TIMER) != 0) {
 		        view = (View)((Object[])thread.threadArgs)[2];
 		        view.frameNumber++;
-		        view.startTime = System.currentTimeMillis();
+		        view.startTime = J3dClock.currentTimeMillis();
 		    }
 
 
@@ -3536,7 +3551,7 @@ class MasterControl {
 		if (nthread.type == J3dThread.RENDER_THREAD) {
 		    View v = (View) nthread.args[3];
 		    if (v != null) { // STOP_TIMER
-			v.stopTime = System.currentTimeMillis();
+			v.stopTime = J3dClock.currentTimeMillis();
 		    }
 		    
 		    if (--renderPending == 0) {

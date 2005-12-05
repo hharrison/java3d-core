@@ -258,3 +258,86 @@ jint JNICALL Java_javax_media_j3d_MasterControl_getMaximumLights(
     return 8;
 #endif /* LINUX */
 }
+
+
+/* ======================================================================= */
+
+/*
+ * The following method implements a high-resolution timer (based on the
+ * native code in the J3DTimer class). It will no longer be needed once
+ * we drop support for JDK 1.4.2, at which time it will be replaced by
+ * a call to System.nanoTime().
+ */
+
+#define NSEC_PER_SEC ((jlong)1000000000)
+
+#ifdef __linux__
+#include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
+#endif
+
+#ifdef SOLARIS
+#include <time.h>
+#include <sys/systeminfo.h>
+#include <string.h>
+#ifndef CLOCK_HIGHRES
+#define CLOCK_HIGHRES 4			/* Solaris 7 does not define this */
+#endif					/* constant. When run on Solaris 7 */
+#endif					/* CLOCK_HIGHRES is not used. */
+
+#ifdef WIN32
+#include <Windows.h>
+#include <math.h>
+static double timerScale = -1.0;
+#endif
+
+/*
+ * Class:     javax_media_j3d_MasterControl
+ * Method:    getNativeTimerValue
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL
+Java_javax_media_j3d_MasterControl_getNativeTimerValue(JNIEnv *env, jclass clazz)
+{
+    jlong timerNsec;
+
+#ifdef SOLARIS
+    /*
+    struct timespec tp;
+    clock_gettime( CLOCK_HIGHRES, &tp );
+
+    return (jlong)tp.tv_nsec + (jlong)tp.tv_sec * NSEC_PER_SEC;
+    */
+
+    timerNsec = (jlong)gethrtime();
+#endif /* SOLARIS */
+
+#ifdef WIN32
+    LARGE_INTEGER time;
+    LARGE_INTEGER freq;
+
+    if (timerScale < 0.0) {
+	QueryPerformanceFrequency( &freq );
+	if (freq.QuadPart <= 0) {
+	    timerScale = 0.0;
+	}
+	else {
+	    timerScale = (double) NSEC_PER_SEC / (double)freq.QuadPart;
+	}
+    }
+
+    QueryPerformanceCounter(&time);
+    timerNsec = (jlong)((double)time.QuadPart * timerScale);
+
+#endif /* WIN32 */
+
+#ifdef __linux__
+    struct timeval t;
+
+    gettimeofday(&t, 0);
+    timerNsec = ((jlong)t.tv_sec) * NSEC_PER_SEC + ((jlong)t.tv_usec) * ((jlong)1000);
+#endif /* __linux__ */
+
+    return timerNsec;
+}

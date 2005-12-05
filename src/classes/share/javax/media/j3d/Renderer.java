@@ -1348,7 +1348,7 @@ class Renderer extends J3dThread {
                         if (doTiming) {
                             numframes += 1.0f;
                             if (numframes >= 20.0f) {
-                                currtime = System.currentTimeMillis();
+                                currtime = J3dClock.currentTimeMillis();
                                 System.err.println(
 				    numframes/((currtime-lasttime)/1000.0f) +
 						" frames per second");

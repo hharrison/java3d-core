@@ -111,7 +111,7 @@ class BehaviorScheduler extends J3dThread {
 	UnorderList list;
 	int i, size, interval;
 
-	lastStartTime = System.currentTimeMillis();
+	lastStartTime = J3dClock.currentTimeMillis();
 
 	if (stopCount >= 0) {
 	    VirtualUniverse.mc.sendRunMessage(univ, J3dThread.BEHAVIOR_SCHEDULER);
@@ -201,7 +201,7 @@ class BehaviorScheduler extends J3dThread {
 
 	behaviorStructure.handleAWTEvent();
 	behaviorStructure.handleBehaviorPost();
-	lastStopTime = System.currentTimeMillis();
+	lastStopTime = J3dClock.currentTimeMillis();
 	
     }
 

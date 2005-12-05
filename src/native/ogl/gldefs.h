@@ -23,6 +23,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ * Before we include gl.h we need to ensure that our versions of the
+ * wglext.h and glext.h files get loaded, not the platform's versions.
+ */
+#ifndef __glext_h_
+#define __glext_h_
+#define Java3D_undef__glext_h_
+#endif
+
+#ifndef __wglext_h_
+#define __wglext_h_
+#define Java3D_undef__wglext_h_
+#endif
+
 #if defined(SOLARIS) || defined(LINUX)
 #define GLX_GLEXT_PROTOTYPES
 #define GLX_GLXEXT_PROTOTYPES
@@ -31,8 +45,12 @@
 #include <limits.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+
 #include <GL/gl.h>
 #include <GL/glx.h>
+#ifdef Java3D_undef__glext_h_
+#undef __glext_h_
+#endif
 #include "glext.h"
 #endif
 
@@ -73,6 +91,12 @@
 
 #ifndef D3D
 #include <GL/gl.h>
+#ifdef Java3D_undef__wglext_h_
+#undef __wglext_h_
+#endif
+#ifdef Java3D_undef__glext_h_
+#undef __glext_h_
+#endif
 #include "wglext.h"
 #include "glext.h"
 #endif

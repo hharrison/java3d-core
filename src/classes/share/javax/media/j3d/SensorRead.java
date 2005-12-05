@@ -73,7 +73,7 @@ public class SensorRead {
         this.buttonValues = new int[numButtons];
 
 	// Do this last
-	this.time = System.currentTimeMillis();
+	this.time = J3dClock.currentTimeMillis();
     }
 
     final void set(SensorRead sensorRead) {

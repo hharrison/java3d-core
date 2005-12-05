@@ -368,11 +368,11 @@ class GeometryDecompressorShape3D extends GeometryDecompressor {
 	triangleCount = 0 ;
 	origVertexCount = 0 ;
 
-	startTime = System.currentTimeMillis() ;
+	startTime = J3dClock.currentTimeMillis() ;
     }
 
     private void endPrint() {
-	endTime = System.currentTimeMillis() ;
+	endTime = J3dClock.currentTimeMillis() ;
 
 	if (benchmark || statistics)
 	    printBench() ;

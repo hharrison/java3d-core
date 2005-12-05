@@ -2688,7 +2688,7 @@ public class View extends Object {
 	    sleepTime = 0;
 	} else {
 	    sleepTime = minFrameCycleTime - 
-		(System.currentTimeMillis() - startTime);
+		(J3dClock.currentTimeMillis() - startTime);
 	    isMinCycleTimeAchieve = (sleepTime <= 0);
 	}
     }

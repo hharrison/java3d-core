@@ -127,8 +127,7 @@ public class Alpha extends NodeComponent {
     // Stop time gets used only for loopCount > 0
     private float stopTime;
 
-    //long startTime = 0L; Convert it to Seconds
-    // NOTE: Start Time is in milliseconds
+    // Start time in milliseconds
     private long startTime = MasterControl.systemStartTime;
 
     /**
@@ -300,7 +299,7 @@ public class Alpha extends NodeComponent {
      * @since Java 3D 1.3
      */
     public void pause() {
-	pause(System.currentTimeMillis());
+	pause(J3dClock.currentTimeMillis());
     }
 
     /**
@@ -349,7 +348,7 @@ public class Alpha extends NodeComponent {
      * @since Java 3D 1.3
      */
     public void resume() {
-	resume(System.currentTimeMillis());
+	resume(J3dClock.currentTimeMillis());
     }
 
     /**
@@ -420,7 +419,7 @@ public class Alpha extends NodeComponent {
      * @return a value between 0.0 and 1.0 based on the current time
      */
     public float value() {
-	long currentTime = paused ? pauseTime : System.currentTimeMillis();
+	long currentTime = paused ? pauseTime : J3dClock.currentTimeMillis();
 	return this.value(currentTime);
     }
 
@@ -961,7 +960,7 @@ public class Alpha extends NodeComponent {
      * @return true if no longer looping, false otherwise
      */
     public boolean finished() {
-	long currentTime = paused ? pauseTime : System.currentTimeMillis();
+	long currentTime = paused ? pauseTime : J3dClock.currentTimeMillis();
 	return ((loopCount != -1) &&
  	        ((float)(currentTime - startTime) * .001f > stopTime));
     }

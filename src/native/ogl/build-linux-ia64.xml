@@ -35,7 +35,7 @@
 
     <!-- Compile the c source files; based on build-linux-amd64.xml-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="-I${java.home}/../include -I${java.home}/../include/linux -I${javahCoreTarget} ${bldFlag} -DLINUX -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+	<arg line="-I${oglsrc} -I${java.home}/../include -I${java.home}/../include/linux -I${javahCoreTarget} ${bldFlag} -DLINUX -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
     </exec>
 
     <!-- Create the library file; based on build-linux-amd64.xml-->

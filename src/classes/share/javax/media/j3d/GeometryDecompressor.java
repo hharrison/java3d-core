@@ -1165,11 +1165,11 @@ abstract class GeometryDecompressor {
 	vertexCount = 0 ;
 	System.out.println(" GeometryDecompressor: decompressing " +
 			   length + " bytes...") ;
-	startTime = System.currentTimeMillis() ;
+	startTime = J3dClock.currentTimeMillis() ;
     }
 
     private void benchmarkPrint(int length) {
-	float t = (System.currentTimeMillis() - startTime) / 1000.0f ;
+	float t = (J3dClock.currentTimeMillis() - startTime) / 1000.0f ;
 	System.out.println
 	    ("  done in " + t + " sec." + "\n" +
 	     "  decompressed " + vertexCount + " vertices at " + 

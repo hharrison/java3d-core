@@ -85,7 +85,7 @@ public abstract class Interpolator extends Behavior {
      */
     public void initialize() {
 	// Reset alpha
-	//alpha.setStartTime(System.currentTimeMillis());
+	//alpha.setStartTime(J3dClock.currentTimeMillis());
 
 	// Insert wakeup condition into queue
 	wakeupOn(defaultWakeupCriterion);
