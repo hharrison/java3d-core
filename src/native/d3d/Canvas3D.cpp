@@ -140,7 +140,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
 }
 
 extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_useCtx(
+jboolean JNICALL Java_javax_media_j3d_Canvas3D_useCtx(
     JNIEnv *env, 
     jclass cl, 
     jlong ctx, 
@@ -148,6 +148,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_useCtx(
     jint window)
 {
     // D3D doesn't have notation of current context
+    return JNI_TRUE;
 }
 
 
