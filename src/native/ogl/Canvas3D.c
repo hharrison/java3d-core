@@ -1322,7 +1322,7 @@ jboolean JNICALL Java_javax_media_j3d_Canvas3D_useCtx(
 #if defined(UNIX)
     
     result = glXMakeCurrent((Display *)display, (GLXDrawable)window, (GLXContext)ctx);
-    if (result != GL_TRUE) {
+    if (!result) {
 	fprintf(stderr, "Java 3D ERROR : In Canvas3D.useCtx() glXMakeCurrent fails\n");
         return JNI_FALSE;
     }
@@ -1337,7 +1337,7 @@ jboolean JNICALL Java_javax_media_j3d_Canvas3D_useCtx(
     /* fprintf(stderr, "useCtx : wglMakeCurrent : window %d, ctx %d, result = %d\n", 
             window, (int) ctx, result); */
 
-    if (result != GL_TRUE) {
+    if (!result) {
 	err = GetLastError();
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		      FORMAT_MESSAGE_FROM_SYSTEM,
@@ -3323,7 +3323,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     }
     
     result = glXMakeCurrent((Display *)display, (GLXDrawable)newWin, (GLXContext)ctx);
-    if (result == GL_FALSE)
+    if (!result)
 	fprintf(stderr, "Java 3D ERROR : glXMakeCurrent fails\n");
 
     glXGetFBConfigAttrib((Display *) display, fbConfigList[0], 
