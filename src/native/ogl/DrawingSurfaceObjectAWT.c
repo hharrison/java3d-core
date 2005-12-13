@@ -253,7 +253,7 @@ void JNICALL Java_javax_media_j3d_DrawingSurfaceObjectAWT_unlockGlobal(
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_DrawingSurfaceObjectAWT_freeResource(
     JNIEnv *env,
-    jobject obj,
+    jclass obj,
     jlong awtObj,
     jlong drawingSurface,
     jlong drawingSurfaceInfo)
