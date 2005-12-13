@@ -3000,6 +3000,31 @@ class MasterControl {
 	setWorkForRequestRenderer();
     }
 
+    // Issue for Issue 175
+    // Pass DestroyCtxAndOffScreenBuffer to the Renderer thread for execution.
+    void sendDestroyCtxAndOffScreenBuffer(Canvas3D c) {
+        // Assertion check. Look for comment in sendCreateOffScreenBuffer.
+        GraphicsDevice gd = c.graphicsConfiguration.getDevice();
+	J3dDebug.doAssert((Screen3D.deviceRendererMap.get(gd) != null),
+			  "Screen3D.deviceRendererMap.get(gd) != null");
+	synchronized (mcThreadLock) {   
+            // Assert the master control thread is created.
+            J3dDebug.doAssert((mcThread != null), "mcThread != null");
+	    Renderer rdr = createRenderer(c.graphicsConfiguration);
+	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage.threads = J3dThread.RENDER_THREAD;
+	    createMessage.type = J3dMessage.DESTROY_CTX_AND_OFFSCREENBUFFER;
+	    createMessage.universe = null;
+	    createMessage.view = null;
+	    createMessage.args[0] = c;
+	    rdr.rendererStructure.addMessage(createMessage);
+	    synchronized (requestObjList) {
+		setWorkForRequestRenderer();
+		pendingRequest = true;
+	    }            
+        }
+    }
+    
     // Fix for Issue 18
     // Pass CreateOffScreenBuffer to the Renderer thread for execution.
     void sendCreateOffScreenBuffer(Canvas3D c) {
@@ -3046,7 +3071,7 @@ class MasterControl {
      */
     void doWork() {
 	runMonitor(CHECK_FOR_WORK, null, null, null, null);
-
+        
 	synchronized (timeLock) {
 	    synchronized (requestObjList) {
 		if (pendingRequest) {
@@ -3365,7 +3390,6 @@ class MasterControl {
 		    currentV.renderBin.lockGeometry();
 		}
 	    }
-
 
 	    while (!done) {
 		// First try a RenderThread

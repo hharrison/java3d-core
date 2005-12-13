@@ -342,8 +342,7 @@ class Renderer extends J3dThread {
 			  ((Integer) obj[2]).intValue(),
 			  ((Long) obj[3]).longValue(), 
 			  false, !c.offScreen, 
-			  ((Boolean)obj[4]).booleanValue());
-		
+			  false);		
 	    } 
 	    return;
 	} else { // RENDER || REQUESTRENDER
@@ -469,6 +468,21 @@ class Renderer extends J3dThread {
 						     canvas.fbConfig,
 						     canvas.offScreenCanvasSize.width, 
 						     canvas.offScreenCanvasSize.height);
+		    canvas.offScreenBufferPending = false;
+		    m[nmesg++].decRefcount();
+		    continue;
+		} 
+                else if (renderType == J3dMessage.DESTROY_CTX_AND_OFFSCREENBUFFER) {
+		    // Fix for issue 175.
+                    // destroy ctx.
+                    // Should be able to collaspe both call into one. Will do this in 1.5, 
+                    // it is a little risky for 1.4 beta3.
+                    removeCtx(canvas, canvas.screen.display, canvas.window, canvas.ctx,
+                              false, !canvas.offScreen, false);
+                    // destroy offScreenBuffer.
+                    removeCtx(canvas, canvas.screen.display, canvas.window, 0,
+                              false, !canvas.offScreen, true);    
+                                    
 		    canvas.offScreenBufferPending = false;
 		    m[nmesg++].decRefcount();
 		    continue;
@@ -642,7 +656,6 @@ class Renderer extends J3dThread {
 		    ImageComponent2DRetained offBufRetained = null;
 		    
 		    if (renderType == J3dMessage.RENDER_OFFSCREEN) {
-			
                         if (canvas.window == 0 || !canvas.active) {
                             canvas.offScreenRendering = false;
                             continue;
@@ -1449,7 +1462,13 @@ class Renderer extends J3dThread {
     // with drawingSurface already lock
     final void makeCtxCurrent(long sharedCtx, long display, int window) {
         if (sharedCtx != currentCtx) {
-            Canvas3D.useCtx(sharedCtx, display, window);
+	    Canvas3D.useCtx(sharedCtx, display, window);
+	    /*
+            if(!Canvas3D.useCtx(sharedCtx, display, window)) {
+                Thread.dumpStack();
+                System.err.println("useCtx Fail");
+            }
+            */
             currentCtx = sharedCtx;
         }
     }
