@@ -2454,7 +2454,7 @@ public class Canvas3D extends Canvas {
     }
 
     final void makeCtxCurrent(long ctx, long dpy, int win) {
-        if (ctx != screen.renderer.currentCtx) {
+        if (ctx != screen.renderer.currentCtx || win != screen.renderer.currentWindow) {
 	    if (!drawingSurfaceObject.isLocked()) {
 		drawingSurfaceObject.renderLock();
 		useCtx(ctx, dpy, win);
@@ -2463,6 +2463,7 @@ public class Canvas3D extends Canvas {
 		useCtx(ctx, dpy, win);
 	    }
             screen.renderer.currentCtx = ctx;
+            screen.renderer.currentWindow = win;
         }
     }
 

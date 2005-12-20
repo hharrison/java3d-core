@@ -94,6 +94,11 @@ class Renderer extends J3dThread {
      */
     long currentCtx = -1;
 
+    /**
+     * This is the id of the current rendering window
+     */
+    long currentWindow = 0;
+
     // an unique bit to identify this renderer
     int rendererBit = 0;
     // an unique number to identify this renderer : ( rendererBit = 1 << rendererId)
@@ -422,6 +427,7 @@ class Renderer extends J3dThread {
 			    // currentCtx change after we create a new context
 			    GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
 			    currentCtx = -1;
+                            currentWindow = 0;
 			} 
 		    } else if (secondArg instanceof Integer) {
 			// message from TextureRetained finalize() method
@@ -672,6 +678,14 @@ class Renderer extends J3dThread {
                     } else if (!canvas.active) {
 			continue;
 		    }
+
+                    // Issue 78 - need to get the drawingSurface info every
+                    // frame; this is necessary since the HDC (window ID)
+                    // on Windows can become invalidated without our
+                    // being notified!
+                    if (!canvas.offScreen) {
+                        canvas.drawingSurfaceObject.getDrawingSurfaceObjectInfo();
+                    }
 
 		    boolean background_image_update = false;
 
@@ -1461,7 +1475,7 @@ class Renderer extends J3dThread {
     // This is only invoked from removeCtx()/removeAllCtxs()
     // with drawingSurface already lock
     final void makeCtxCurrent(long sharedCtx, long display, int window) {
-        if (sharedCtx != currentCtx) {
+        if (sharedCtx != currentCtx || window != currentWindow) {
 	    Canvas3D.useCtx(sharedCtx, display, window);
 	    /*
             if(!Canvas3D.useCtx(sharedCtx, display, window)) {
@@ -1470,6 +1484,7 @@ class Renderer extends J3dThread {
             }
             */
             currentCtx = sharedCtx;
+            currentWindow = window;
         }
     }
 
@@ -1510,6 +1525,7 @@ class Renderer extends J3dThread {
 				    freeContextResources();
 				    Canvas3D.destroyContext(display, window, sharedCtx);
 				    currentCtx = -1;
+                                    currentWindow = 0;
 				} else {
 				    freeResourcesInFreeList(cv);
 				}
@@ -1521,6 +1537,7 @@ class Renderer extends J3dThread {
 			    cv.freeContextResources(this, freeBackground, ctx);
 			    Canvas3D.destroyContext(display, window, ctx);
 			    currentCtx = -1;
+                            currentWindow = 0;
 			    cv.drawingSurfaceObject.unLock();
 			}
 		    }
@@ -1561,6 +1578,7 @@ class Renderer extends J3dThread {
 				freeContextResources();
 				Canvas3D.destroyContext(display, window, sharedCtx);
 				currentCtx = -1;
+                                currentWindow = 0;
 			    }
 			    cv.makeCtxCurrent();
 			    cv.freeResourcesInFreeList(cv.ctx);
@@ -1569,6 +1587,7 @@ class Renderer extends J3dThread {
 						    cv.window,
 						    cv.ctx);
 			    currentCtx = -1;
+                            currentWindow = 0;
 			    cv.drawingSurfaceObject.unLock();
 			}
 		    }

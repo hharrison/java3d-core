@@ -1000,5 +1000,9 @@ public class Alpha extends NodeComponent {
       a.setAlphaAtZeroDuration(getAlphaAtZeroDuration());
       return a;
     }
-	
+
+    static {
+        VirtualUniverse.loadLibraries();
+    }
+
 }

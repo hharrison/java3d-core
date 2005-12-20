@@ -1632,6 +1632,14 @@ public class GraphicsContext3D extends Object   {
         // gets yanked from us during a remove.
 
         try {
+            // Issue 78 - need to get the drawingSurface info every
+            // frame; this is necessary since the HDC (window ID)
+            // on Windows can become invalidated without our
+            // being notified!
+            if (!canvas3d.offScreen) {
+                canvas3d.drawingSurfaceObject.getDrawingSurfaceObjectInfo();
+            }
+
 	    if (canvas3d.drawingSurfaceObject.renderLock()) {
 		// XXXX : Fix texture
 		/*
@@ -1687,6 +1695,7 @@ public class GraphicsContext3D extends Object   {
 
 		    canvas3d.drawingSurfaceObject.contextValidated();
 		    canvas3d.screen.renderer.currentCtx = canvas3d.ctx;
+                    canvas3d.screen.renderer.currentWindow = canvas3d.window;
 		    initializeState();
 		    canvas3d.ctxChanged = true;
 		    canvas3d.canvasDirty = 0xffff;

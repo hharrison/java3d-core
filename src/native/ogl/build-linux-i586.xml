@@ -13,7 +13,7 @@
  */
  -->
 
-<!-- Ant file for building native  ogl renderer files for Solaris -->
+<!-- Ant file for building native ogl renderer files for Linux/x86 -->
 <project name="Java 3D" default="compile">
 
   <target name="init" depends="init-cg,init-nocg">
@@ -38,12 +38,12 @@
     <!-- Compile the c source files-->
     <!-- Inhibit all warning for 32 bit build. Any warning will be caught in the 64 bit build -->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="-w -m32 -mcpu=i386 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/linux -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DLINUX ${cflags.cg} -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+	<arg line="-w -m32 -mcpu=i386 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/linux -I${javahCoreTarget} ${bldFlag} -DLINUX ${cflags.cg} -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
     </exec>
 
     <!-- Create the library file-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="ld">
-	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/X11R6/lib -ldl -lGL -lX11 -lXext -lm -lnsl -lc  -R/usr/openwin/lib -L${java.home}/lib/i386 -ljawt -L${java.home}/lib/i386/server -ljvm  -o libj3dcore-ogl.so"/>
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/X11R6/lib -ldl -lGL -lX11 -lXext -lm -lnsl -lc -L${java.home}/lib/i386 -ljawt -L${java.home}/lib/i386/server -ljvm  -o libj3dcore-ogl.so"/>
     </exec>
 
   </target>
@@ -51,12 +51,12 @@
   <target name="compile-ogl-cg" if="build.cg">
     <!-- Compile the wrapper -->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="-m32 -mcpu=i386 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/linux -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DLINUX ${cflags.cg} -c ${oglsrc}/CgWrapper.c"/>
+	<arg line="-m32 -mcpu=i386 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/linux -I${javahCoreTarget} ${bldFlag} -DLINUX ${cflags.cg} -c ${oglsrc}/CgWrapper.c"/>
     </exec>
 
     <!-- Create the wrapper library -->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="ld">
-	<arg line="CgWrapper.o -G -z defs -L/usr/X11R6/lib -ldl -lCg -lCgGL -lpthread -lGL -lX11 -lXext -lm -lnsl -lc  -R/usr/openwin/lib -L${java.home}/lib/i386 -ljawt -L${java.home}/lib/i386/server -ljvm  -o libj3dcore-ogl-cg.so"/>
+	<arg line="CgWrapper.o -G -z defs -L/usr/X11R6/lib -ldl -lCg -lCgGL -lpthread -lGL -lX11 -lXext -lm -lnsl -lc -o libj3dcore-ogl-cg.so"/>
     </exec>
 
   </target>

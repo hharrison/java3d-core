@@ -96,7 +96,14 @@ class DrawingSurfaceObjectAWT extends DrawingSurfaceObject {
 
 
     synchronized void getDrawingSurfaceObjectInfo() {
-	// get native drawing surface - ds
+        // Free old DS and DSI
+        if (nativeDS != 0 && dsi != 0) {
+            freeResource(nativeAWT, nativeDS, dsi);
+            nativeDS = 0;
+            dsi = 0;
+        }
+
+        // get native drawing surface - ds
 	nativeDS = getDrawingSurfaceAWT(canvas, nativeAWT);
 
 	// get window id
@@ -107,8 +114,7 @@ class DrawingSurfaceObjectAWT extends DrawingSurfaceObject {
 		    (canvas, nativeDS, dsi, display, screenID,
 		     xineramaDisabled);
 	    }
-	} 
-
+	}
     }
 
 
