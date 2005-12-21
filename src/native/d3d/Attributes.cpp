@@ -345,7 +345,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setLightEnables(
 #pragma warning(disable:4244)   // loss of data from __int64 to int
 
     for (int i=nlights-1; i>=0; i--) {
-	device->LightEnable(i, enable_mask & (1<<i));
+	device->LightEnable(i, enable_mask & (long)(1L<<i));
     }
 }
 
@@ -490,6 +490,28 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 	case javax_media_j3d_RenderingAttributes_GREATER_OR_EQUAL:
 	    device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 	    break;
+    }
+
+	if (userStencilAvailable == JNI_TRUE) 
+	{
+        if (stencilEnable == JNI_TRUE) 
+		{
+			/*
+			glEnable(GL_STENCIL_TEST);
+
+	        glStencilOp( getStencilOpValue(stencilFailOp),
+			             getStencilOpValue(stencilZFailOp),
+			             getStencilOpValue(stencilZPassOp));
+
+	        glStencilFunc(getFunctionValue(stencilFunction),
+			              stencilReferenceValue, stencilCompareMask);
+	        glStencilMask(stencilWriteMask);
+			*/
+	    
+	} else 
+		{
+            // glDisable(GL_STENCIL_TEST);
+        }
     }
 
 

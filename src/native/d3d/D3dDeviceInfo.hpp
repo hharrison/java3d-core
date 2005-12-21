@@ -47,9 +47,13 @@ public:
     // max z buffer depth support
     UINT  maxZBufferDepthSize;
 
+	// max stencil buffer depth support
+    UINT  maxStencilDepthSize; // new on 1.4
+
     // Max vertex count support for each primitive
     DWORD maxVertexCount[GEO_TYPE_INDEXED_LINE_STRIP_SET+1];
 
+	BOOL supportStencil; // new on 1.4
 	BOOL supportShaders11;
     BOOL isHardware;
     BOOL isHardwareTnL;
@@ -87,7 +91,7 @@ public:
     BOOL supportAntialiasing();
     D3DMULTISAMPLE_TYPE getBestMultiSampleType();
     int getTextureFeaturesMask();
-    void findDepthStencilFormat(int minZDepth);
+    void findDepthStencilFormat(int minZDepth, int minZDepthStencil);
 
 
 };

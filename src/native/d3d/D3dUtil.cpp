@@ -202,7 +202,7 @@ typedef struct _PIXELFORMAT {
     DWORD dwRBitMask;
     DWORD dwGBitMask;
     DWORD dwBBitMask;
-    DWORD dwRGBAlphaBitMask;
+    DWORD dwRGBAlphaBitMask;	
     BOOL  noAlpha;
 } PIXELFORMAT;
 
@@ -210,6 +210,8 @@ typedef struct _PIXELFORMAT {
 typedef struct _DEPTHPIXELFORMAT {
     DWORD dwZBufferBitDepth;
     DWORD dwZBitMask;
+	DWORD dwStencilBitDepth;
+    DWORD dwStencilBitMask;
 } DEPTHPIXELFORMAT;
 
 
@@ -246,6 +248,7 @@ char* getPixelFormatName(D3DFORMAT f)
 // If there is a new D3DFORMAT, just add it here and
 // our copy procedures can handle any format specific
 // as bit mask.
+//@TODO add floating point pixelFormats
 VOID computePixelFormat(PIXELFORMAT *ddpf, D3DFORMAT format)
 {
     switch (format) {
@@ -388,20 +391,38 @@ VOID computeDepthPixelFormat(DEPTHPIXELFORMAT *ddpf,
         case D3DFMT_D16:
 	    ddpf->dwZBufferBitDepth = 16;
 	    ddpf->dwZBitMask = 0xffff;
+		ddpf->dwStencilBitDepth = 0;
+		ddpf->dwStencilBitMask = 0x0000;
 	    break;
         case D3DFMT_D15S1:
 	    ddpf->dwZBufferBitDepth = 16;
 	    ddpf->dwZBitMask = 0xfffe;
+		ddpf->dwStencilBitDepth = 1;
+		ddpf->dwStencilBitMask = 0x0001;
 	    break;
         case D3DFMT_D32:
 	    ddpf->dwZBufferBitDepth = 32;
 	    ddpf->dwZBitMask = 0xffffffff;
+		ddpf->dwStencilBitDepth = 0;
+		ddpf->dwStencilBitMask = 0x000000;
 	    break;
         case D3DFMT_D24S8:
+		ddpf->dwZBufferBitDepth = 32;
+	    ddpf->dwZBitMask = 0xffffff00;
+		ddpf->dwStencilBitDepth = 8;
+		ddpf->dwStencilBitMask = 0x00000ff;
+		break;
         case D3DFMT_D24X8:
+		ddpf->dwZBufferBitDepth = 32;
+	    ddpf->dwZBitMask = 0xffffff00;
+		ddpf->dwStencilBitDepth = 0;
+		ddpf->dwStencilBitMask = 0x0000000;
+        break;
         case D3DFMT_D24X4S4:
 	    ddpf->dwZBufferBitDepth = 32;
 	    ddpf->dwZBitMask = 0xffffff00;
+		ddpf->dwStencilBitDepth = 4;
+		ddpf->dwStencilBitMask = 0x000000f;
 	    break;
         default:
 	    printf("Unknown depth buffer format %d\n", format);

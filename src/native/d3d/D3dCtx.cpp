@@ -67,13 +67,19 @@ D3dCtx::D3dCtx(JNIEnv* env, jobject obj, HWND _hwnd, BOOL _offScreen,
 
     // this is the pixelFormat return from NativeConfigTemplate.
     minZDepth = vid & 0x3fffffff;
-    if (vid & 0x80000000) {
-	antialiasing = REQUIRED;
-    } else if (vid & 0x40000000) {
-	antialiasing = PREFERRED;
-    } else {
-	antialiasing = UNNECESSARY;
-    }
+    if (vid & 0x80000000) 
+	{
+	  antialiasing = REQUIRED;
+    } 
+	else 
+	 if (vid & 0x40000000) 
+	  {
+	   antialiasing = PREFERRED;
+      } 
+	 else 
+	 {
+	  antialiasing = UNNECESSARY;
+     }
 
     setFullScreenFromProperty(env);
 
@@ -385,7 +391,7 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 
     // It is possible that last time Emulation mode is used.
     // If this is the case we will try Hardware mode first.
-    deviceInfo = setDeviceInfo(driverInfo, &bFullScreen, minZDepth);
+    deviceInfo = setDeviceInfo(driverInfo, &bFullScreen, minZDepth, minZDepthStencil);
 
     if ((pD3D == NULL) || (driverInfo == NULL)) {
 	return false;
@@ -512,7 +518,7 @@ else
 	    warning(CREATEDEVICEFAIL, hr);
 	    deviceInfo  = driverInfo->d3dDeviceList[DEVICE_REF];
 	    dwBehavior = findBehavior();
-	    deviceInfo->findDepthStencilFormat(minZDepth);
+	    deviceInfo->findDepthStencilFormat(minZDepth,minZDepthStencil);
 	    d3dPresent.AutoDepthStencilFormat =
 		deviceInfo->depthStencilFormat;
 	    if (deviceInfo->depthStencilFormat == D3DFMT_UNKNOWN) {
@@ -833,7 +839,7 @@ INT D3dCtx::resetSurface(JNIEnv *env, jobject obj)
     HRESULT hr;
 
 
-    deviceInfo = setDeviceInfo(driverInfo, &bFullScreen, minZDepth);
+    deviceInfo = setDeviceInfo(driverInfo, &bFullScreen, minZDepth, minZDepthStencil);
 
     if (deviceInfo == NULL) {
 	return NOCHANGE;
@@ -984,53 +990,67 @@ DWORD D3dCtx::getHeight()
 }
 
 D3dDeviceInfo* D3dCtx::selectDevice(int deviceID,
-				    D3dDriverInfo *driverInfo,
-				    BOOL *bFullScreen,
-				    int minZDepth)
+				                    D3dDriverInfo *driverInfo,
+				                    BOOL *bFullScreen,
+				                    int minZDepth,
+					                int minZDepthStencil)
 {
     D3dDeviceInfo *pDevice;
 
-    for (int i=0; i < numDeviceTypes; i++) {
+    for (int i=0; i < numDeviceTypes; i++) 
+	{
 	pDevice = driverInfo->d3dDeviceList[i];
 	if ((((deviceID == DEVICE_HAL) || (deviceID == DEVICE_HAL_TnL)) &&
 	     (pDevice->deviceType == D3DDEVTYPE_HAL)) ||
-	    (deviceID == DEVICE_REF) &&
-	    (pDevice->deviceType == D3DDEVTYPE_REF)) {
+	     (deviceID == DEVICE_REF) &&
+	     (pDevice->deviceType == D3DDEVTYPE_REF)) 
+	{
 	    if ((*bFullScreen && !pDevice->fullscreenCompatible) ||
-		(!*bFullScreen && !pDevice->desktopCompatible)) {
-		if (pDevice->deviceType == D3DDEVTYPE_HAL) {
-		    d3dError(HALDEVICENOTFOUND);
-		} else {
+		    (!*bFullScreen && !pDevice->desktopCompatible)) 
+		{
+		  if (pDevice->deviceType == D3DDEVTYPE_HAL) 
+		     {
+		       d3dError(HALDEVICENOTFOUND);
+		     } 
+		  else 
+		    {
+		      // should not happen, REF device always support
+		      d3dError(DEVICENOTFOUND);
+		    }
+		  exit(1);
+	    }
+	  if (pDevice->maxZBufferDepthSize == 0) 
+	    {
+		  if (pDevice->deviceType == D3DDEVTYPE_HAL) 
+		  {
+		     d3dError(HALNOTCOMPATIBLE);
+		  } 
+		  else 
+		  {
 		    // should not happen, REF device always support
 		    d3dError(DEVICENOTFOUND);
-		}
-		exit(1);
+		  }
+		  exit(1);
 	    }
-	    if (pDevice->maxZBufferDepthSize == 0) {
-		if (pDevice->deviceType == D3DDEVTYPE_HAL) {
-		    d3dError(HALNOTCOMPATIBLE);
-		} else {
-		    // should not happen, REF device always support
-		    d3dError(DEVICENOTFOUND);
-		}
-		exit(1);
-	    }
-	    if (pDevice->deviceType == D3DDEVTYPE_HAL) {
-		if ((deviceID == DEVICE_HAL_TnL) &&
-		    !pDevice->isHardwareTnL) {
+	   if (pDevice->deviceType == D3DDEVTYPE_HAL) 
+	   {
+		 if ((deviceID == DEVICE_HAL_TnL) &&
+		    !pDevice->isHardwareTnL) 
+		  {
 		    d3dError(TNLHALDEVICENOTFOUND);
 		    exit(1);
-		}
-	    }
-	    pDevice->findDepthStencilFormat(minZDepth);
-	    if (pDevice->depthStencilFormat == D3DFMT_UNKNOWN) {
-		d3dError(DEPTHSTENCILNOTFOUND);
-		exit(1);
+		  }
+	   }
+
+	    pDevice->findDepthStencilFormat(minZDepth, minZDepthStencil);
+	    if (pDevice->depthStencilFormat == D3DFMT_UNKNOWN) 
+		{
+		  d3dError(DEPTHSTENCILNOTFOUND);
+		  exit(1);
 	    }
 	    return pDevice;
 	}
     }
-
 
     // should not happen
     d3dError(DEVICENOTFOUND);
@@ -1040,19 +1060,25 @@ D3dDeviceInfo* D3dCtx::selectDevice(int deviceID,
 
 
 D3dDeviceInfo* D3dCtx::selectBestDevice(D3dDriverInfo *driverInfo,
-					BOOL *bFullScreen, int minZDepth)
+					                    BOOL *bFullScreen, 
+										int minZDepth, 
+										int minZDepthStencil)
 {
     D3dDeviceInfo *pDevice;
     D3dDeviceInfo *bestDevice = NULL;
     int i;
 
-    for (i=0; i < numDeviceTypes; i++) {
+    for (i=0; i < numDeviceTypes; i++) 
+	{
 	pDevice = driverInfo->d3dDeviceList[i];
-	if (pDevice->maxZBufferDepthSize > 0) {
-	    pDevice->findDepthStencilFormat(minZDepth);
+	if (pDevice->maxZBufferDepthSize > 0) 
+	{
+	    pDevice->findDepthStencilFormat(minZDepth, minZDepthStencil);
 
-	    if (pDevice->depthStencilFormat == D3DFMT_UNKNOWN) {
-		if (pDevice->deviceType == D3DDEVTYPE_REF) {
+	    if (pDevice->depthStencilFormat == D3DFMT_UNKNOWN) 
+		{
+		if (pDevice->deviceType == D3DDEVTYPE_REF) 
+		{
 		    d3dError(DEPTHSTENCILNOTFOUND);
 		    return NULL;
 		} else {
@@ -1640,14 +1666,23 @@ HMONITOR D3dCtx::findMonitor()
 
 D3dDeviceInfo* D3dCtx::setDeviceInfo(D3dDriverInfo *driverInfo,
 				     BOOL *bFullScreen,
-				     int minZDepth)
+				     int minZDepth,
+					 int minZDepthStencil)
 {
-    if (requiredDeviceID >= 0) {
-	return selectDevice(requiredDeviceID, driverInfo,
-			    bFullScreen, minZDepth);
-    } else {
-	return selectBestDevice(driverInfo, bFullScreen,
-				minZDepth);
+    if (requiredDeviceID >= 0) 
+	{
+	 return selectDevice(requiredDeviceID, 
+		                 driverInfo,
+			             bFullScreen, 
+					     minZDepth,
+						 minZDepthStencil);
+    } 
+	else 
+	{
+	 return selectBestDevice(driverInfo, 
+		                     bFullScreen,
+				             minZDepth,
+							 minZDepthStencil);
     }
 }
 
@@ -2034,6 +2069,8 @@ jboolean  D3dCtx::getJavaBoolEnv(JNIEnv *env, char* envStr)
     }
 	return false;
 }
+
+
 
 
 

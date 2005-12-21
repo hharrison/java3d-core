@@ -22,6 +22,7 @@
 
 extern D3DFORMAT d3dDepthFormat[D3DDEPTHFORMATSIZE];
 extern int d3dDepthTable[D3DDEPTHFORMATSIZE];
+extern int d3dStencilDepthTable[D3DDEPTHFORMATSIZE];
 			
 class D3dDriverInfo {
 public:

@@ -32,21 +32,25 @@ OSVERSIONINFO osvi;
 // When the index is greater than 65535, the nvidia driver will
 // consider it to be N % 65535. However it works fine in
 // hardware vertex processing mode.
+//@TODO check this with Cap Bits
 UINT vertexBufferMaxVertexLimit = 65535;
 
 // True to disable setting D3DRS_MULTISAMPLEANTIALIAS 
 // Rendering state.
 BOOL implicitMultisample; 
 
-D3DFORMAT d3dDepthFormat[D3DDEPTHFORMATSIZE] = {D3DFMT_D15S1,
-						D3DFMT_D24S8,
-						D3DFMT_D24X4S4,
-						D3DFMT_D16_LOCKABLE, 
-						D3DFMT_D16, 
-						D3DFMT_D32};
+D3DFORMAT d3dDepthFormat[D3DDEPTHFORMATSIZE] = { D3DFMT_D15S1,
+						                         D3DFMT_D24S8,
+												 D3DFMT_D24X4S4,												 
+												 D3DFMT_D16_LOCKABLE, 
+												 D3DFMT_D16,
+												 D3DFMT_D32
+                                                };
 
 // This should match the depth bit in the above array
-int d3dDepthTable[D3DDEPTHFORMATSIZE] = {15, 24, 24, 16, 16, 32};
+int d3dDepthTable[D3DDEPTHFORMATSIZE]      = {15, 24, 24, 16, 16, 32};
+int d3dStencilDepthTable[D3DDEPTHFORMATSIZE]={ 1,  8,  4,  0,  0,  0};
+
 D3DLIGHT9 ambientLight; 
 
 D3dDriverInfo::D3dDriverInfo()
@@ -169,16 +173,19 @@ VOID buildDriverList(LPDIRECT3D9 pD3D)
             pDevice->deviceType = deviceTypes[j];
             pD3D->GetDeviceCaps(i, deviceTypes[j], &d3dCaps);
 	    pDevice->setCaps(&d3dCaps);
+
 	    pDevice->desktopCompatible = 
 		SUCCEEDED(pD3D->CheckDeviceType(i, deviceTypes[j],
 						pDriver->desktopMode.Format,
 						pDriver->desktopMode.Format,
 						TRUE));
+
 	    pDevice->fullscreenCompatible = 
 		SUCCEEDED(pD3D->CheckDeviceType(i,deviceTypes[j],
 						pDriver->desktopMode.Format,
 						pDriver->desktopMode.Format,
 						FALSE));
+
 	    pDevice->maxZBufferDepthSize = 0;
 
 	    if (pDevice->isHardwareTnL) {
@@ -203,10 +210,21 @@ VOID buildDriverList(LPDIRECT3D9 pD3D)
 							   pDriver->desktopMode.Format,
 							   pDriver->desktopMode.Format,
 							   d3dDepthFormat[k]));
-		if (pDevice->depthFormatSupport[k]) {
-		    if (d3dDepthTable[k] > pDevice->maxZBufferDepthSize) {
-			pDevice->maxZBufferDepthSize = d3dDepthTable[k];
-		    }
+		if (pDevice->depthFormatSupport[k]) 
+		{
+		    if (d3dDepthTable[k] > pDevice->maxZBufferDepthSize) 
+			{
+			  pDevice->maxZBufferDepthSize = d3dDepthTable[k];
+			  pDevice->maxStencilDepthSize = d3dStencilDepthTable[k];
+			  if (d3dStencilDepthTable[k]>0)
+			  {
+				pDevice->supportStencil = true;
+			  }
+			 else
+			  {
+               pDevice->supportStencil = false;
+			  }  
+		   }
 		}
 	    }
 
