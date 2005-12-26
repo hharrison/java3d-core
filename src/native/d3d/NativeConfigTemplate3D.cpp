@@ -124,8 +124,14 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 		      (blue <= pDriver->blueDepth)&&
 			  (stencilDepth)<= deviceInfo->maxStencilDepthSize) 
 		  {
-            // first 0-7bits for depth,8-15 Stencil 
-		     retValue = depth |(stencilDepth <<8);
+			 // printf("\n[Java3D] NativeConfigTemplate3D.choosePixelFormat ZBuffer depth %d", deviceInfo->maxZBufferDepthSize);
+			//  printf("\n[Java3D] NativeConfigTemplate3D.choosePixelFormat stencil depth %d", deviceInfo->maxStencilDepthSize);
+           
+			  // first 0-7bits for depth,8-15 Stencil 
+		       retValue = deviceInfo->maxZBufferDepthSize |(deviceInfo->maxStencilDepthSize <<8);
+               // set value for Canvas3D GraphicsConfigInfo
+			   jlong *pfi_ptr = (jlong *) env->GetPrimitiveArrayCritical(offScreenPFArray, NULL);
+               pfi_ptr[0] = retValue;
 		  }
 	    }
 	}
@@ -156,10 +162,10 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 JNIEXPORT jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_getStencilSize
   (JNIEnv *env, jobject obj, jlong pFormatInfo, jboolean offScreen)
 {
-    int stencilSize = (int)pFormatInfo;
-
-	stencilSize = (stencilSize >> 8) & 0xff;
-
+    jlong stencilSize = pFormatInfo;	
+    stencilSize &= 0x0000ff00 ; //clean    
+	stencilSize = (stencilSize >> 8);
+	
     /** // next version pFormatInfo will be a D3DFORMAT value or index for   
 	D3DFORMAT fmt = d3dCtx->deviceInfo->depthStencilFormat;
     if (fmt == D3DFMT_D15S1) stencilSize = 1;
@@ -168,5 +174,5 @@ JNIEXPORT jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_getStencilSiz
 		else
 			if(fmt == D3DFMT_D24S8)stencilSize = 8;
     */
-    return stencilSize;
+    return (int)stencilSize;
 }
