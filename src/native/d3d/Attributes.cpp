@@ -384,6 +384,75 @@ void JNICALL Java_javax_media_j3d_Canvas3D_disableModelClip(
     device->SetRenderState(D3DRS_CLIPPLANEENABLE, 0);
 }
 
+/**
+ * one of :
+ * STENCIL_KEEP - keeps the current value (no operation performed). This is the default setting. 
+ * STENCIL_ZERO - Sets the stencil buffer value to 0. 
+ * STENCIL_REPLACE - Sets the stencil buffer value to refValue, as specified by setStencilFunction. 
+ * STENCIL_INCR - Increments the current stencil buffer value. 
+ * STENCIL_DECR - Decrements the current stencil buffer value. 
+ * STENCIL_INVERT - Bitwise inverts the current stencil buffer value.
+*/
+DWORD getStencilOP(jint op)
+{
+	DWORD value = D3DSTENCILOP_KEEP;
+	switch(op)
+	{
+	case javax_media_j3d_RenderingAttributes_STENCIL_KEEP:  
+		value = D3DSTENCILOP_KEEP; break;
+	case javax_media_j3d_RenderingAttributes_STENCIL_ZERO:   
+		value = D3DSTENCILOP_ZERO; break;
+	case javax_media_j3d_RenderingAttributes_STENCIL_REPLACE:  
+		value = D3DSTENCILOP_REPLACE; break;
+	case javax_media_j3d_RenderingAttributes_STENCIL_INCR:   
+		value = D3DSTENCILOP_INCRSAT; break;
+	case javax_media_j3d_RenderingAttributes_STENCIL_DECR:   
+		value = D3DSTENCILOP_DECRSAT; break;
+	case javax_media_j3d_RenderingAttributes_STENCIL_INVERT: 
+		value = D3DSTENCILOP_INVERT; break;
+	default : 
+		value = D3DSTENCILOP_KEEP; break;
+	}
+
+	return value;
+}
+
+/**
+ * ALWAYS - pixels are always drawn, irrespective of the stencil value. This effectively disables stencil testing. This is the default setting.
+ * NEVER - pixels are never drawn, irrespective of the stencil value.
+ * EQUAL - pixels are drawn if the stencil reference value is equal to the stored stencil value in the frame buffer.
+ * NOT_EQUAL - pixels are drawn if the stencil reference value is not equal to the stored stencil value in the frame buffer.
+ * LESS - pixels are drawn if the stencil reference value is less than the stored stencil value in the frame buffer.
+ * LESS_OR_EQUAL - pixels are drawn if the stencil reference value is less than or equal to the stored stencil value in the frame buffer.
+ * GREATER - pixels are drawn if the stencil reference value is greater than the stored stencil value in the frame buffer.
+ * GREATER_OR_EQUAL - pixels are drawn if the stencil reference value is greater than or equal to the stored stencil value in the frame buffer.
+*/
+DWORD getStencilFunc(jint func)
+{
+	DWORD value = D3DCMP_ALWAYS;
+	switch(func)
+	{
+	case javax_media_j3d_RenderingAttributes_ALWAYS: 
+		value = D3DCMP_ALWAYS; break;
+	case javax_media_j3d_RenderingAttributes_NEVER:  
+		value = D3DCMP_NEVER; break;
+	case javax_media_j3d_RenderingAttributes_EQUAL:  
+		value = D3DCMP_EQUAL; break;
+	case javax_media_j3d_RenderingAttributes_NOT_EQUAL:  
+		value = D3DCMP_NOTEQUAL; break;
+	case javax_media_j3d_RenderingAttributes_LESS_OR_EQUAL:
+		value = D3DCMP_LESSEQUAL; break;
+	case javax_media_j3d_RenderingAttributes_GREATER:      
+		value = D3DCMP_GREATER; break;
+	case javax_media_j3d_RenderingAttributes_GREATER_OR_EQUAL:
+		value = D3DCMP_GREATEREQUAL; break;
+	default : 
+		value = D3DCMP_ALWAYS; break;
+	}
+
+	return value;
+}
+
 
 
 extern "C" JNIEXPORT
@@ -408,6 +477,21 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetRenderingAttributes(
 
     device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
     device->SetRenderState(D3DRS_ALPHAREF, 0);
+	if(d3dCtx->stencilWriteEnable)
+	{
+		device->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+		device->SetRenderState( D3DRS_STENCILREF,  0);         
+		device->SetRenderState( D3DRS_STENCILMASK,      0xFFFFFFFF);
+		device->SetRenderState( D3DRS_STENCILWRITEMASK, 0xFFFFFFFF );
+   
+         // Always increment the stencil value
+		device->SetRenderState(D3DRS_STENCILFAIL,  D3DSTENCILOP_KEEP);
+        device->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
+        device->SetRenderState(D3DRS_STENCILPASS,  D3DSTENCILOP_KEEP);
+		
+		device->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+		d3dCtx->stencilWriteEnable = false;
+	}
 
     /*    setRasterOp(d3dCtx, R2_COPYPEN); */
 
@@ -492,10 +576,34 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 	    break;
     }
 
+/*
+	 stencilFailOp,  *
+     stencilZFailOp, *
+     stencilZPassOp, *
+     stencilFunction, *
+     stencilReferenceValue, *
+     stencilCompareMask, *
+     stencilWriteMask *
+*/
 	if (userStencilAvailable == JNI_TRUE) 
 	{
         if (stencilEnable == JNI_TRUE) 
 		{
+         // Turn on stenciling
+         device->SetRenderState( D3DRS_STENCILENABLE, TRUE );
+   
+         // Set the function to always pass.
+         device->SetRenderState( D3DRS_STENCILFUNC, getStencilFunc(stencilFunction) );
+         device->SetRenderState( D3DRS_STENCILREF,  stencilReferenceValue );         
+		 device->SetRenderState( D3DRS_STENCILMASK, stencilCompareMask );
+		 device->SetRenderState( D3DRS_STENCILWRITEMASK, stencilWriteMask );
+   
+         // Always increment the stencil value
+		 device->SetRenderState(D3DRS_STENCILFAIL,  getStencilOP(stencilFailOp) );
+         device->SetRenderState(D3DRS_STENCILZFAIL, getStencilOP(stencilZFailOp));
+         device->SetRenderState(D3DRS_STENCILPASS,  getStencilOP(stencilZPassOp) );
+
+
 			/*
 			glEnable(GL_STENCIL_TEST);
 
@@ -508,15 +616,15 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 	        glStencilMask(stencilWriteMask);
 			*/
 	    
-	} else 
-		{
-            // glDisable(GL_STENCIL_TEST);
-        }
+	}
+	else 
+	 {
+		device->SetRenderState( D3DRS_STENCILENABLE, FALSE );           
+     }
     }
+}//
 
 
-
-}
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetPolygonAttributes(
@@ -615,7 +723,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetLineAttributes(
     // D3D don't support Line width
     // glLineWidth(1);
     //D3D9 doesnot support line Patterns
-	// must update this to use ID3DXLine Interface
+	// @TODO must update this to use ID3DXLine Interface
 /*
     D3DLINEPATTERN pattern;
     pattern.wRepeatFactor = 0;
