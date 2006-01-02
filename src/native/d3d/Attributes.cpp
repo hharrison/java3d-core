@@ -453,6 +453,41 @@ DWORD getStencilFunc(jint func)
 	return value;
 }
 
+/**
+ * LESS_OR_EQUAL - DEFAULT pixels are drawn if the depth value is less than or equal to the stored depth value in the frame buffer. 
+ * ALWAYS - pixels are always drawn, irrespective of the depth value. This effectively disables depth testing.
+ * NEVER - pixels are never drawn, irrespective of the depth value.
+ * EQUAL - pixels are drawn if the depth value is equal to the stored stencil value in the frame buffer.
+ * NOT_EQUAL - pixels are drawn if the depth value is not equal to the stored depth value in the frame buffer.
+ * LESS - pixels are drawn if the depth value is less than the stored stencil value in the frame buffer.
+ * GREATER - pixels are drawn if the depth value is greater than the stored stencil value in the frame buffer.
+ * GREATER_OR_EQUAL - pixels are drawn if the depth value is greater than or equal to the stored stencil value in the frame buffer.
+*/
+DWORD getDepthFunc(jint func)
+{
+	DWORD value = D3DCMP_LESSEQUAL;
+	switch(func)
+	{
+	case javax_media_j3d_RenderingAttributes_ALWAYS: 
+		value = D3DCMP_ALWAYS; break;
+	case javax_media_j3d_RenderingAttributes_NEVER:  
+		value = D3DCMP_NEVER; break;
+	case javax_media_j3d_RenderingAttributes_EQUAL:  
+		value = D3DCMP_EQUAL; break;
+	case javax_media_j3d_RenderingAttributes_NOT_EQUAL:  
+		value = D3DCMP_NOTEQUAL; break;
+	case javax_media_j3d_RenderingAttributes_LESS_OR_EQUAL:
+		value = D3DCMP_LESSEQUAL; break;
+	case javax_media_j3d_RenderingAttributes_GREATER:      
+		value = D3DCMP_GREATER; break;
+	case javax_media_j3d_RenderingAttributes_GREATER_OR_EQUAL:
+		value = D3DCMP_GREATEREQUAL; break;
+	default : 
+		value = D3DCMP_LESSEQUAL; break;
+	}
+
+	return value;
+}
 
 
 extern "C" JNIEXPORT
@@ -467,12 +502,14 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetRenderingAttributes(
 
     if (!db_write_enable_override) {
 	d3dCtx->zWriteEnable = TRUE;
-	device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	device->SetRenderState(D3DRS_ZWRITEENABLE, D3DZB_TRUE);
+	device->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
     } 
 
     if (!db_enable_override) {
 	d3dCtx->zEnable = TRUE;
 	device->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
+	device->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
     } 
 
     device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
@@ -527,29 +564,46 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 
     DWORD alpha = (DWORD) (at_value * 255 + 0.5f);
 
-    if (!db_enable_override) {
-        if (db_enable) {
-	    d3dCtx->zEnable = TRUE;
-	    device->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
-        } else {
-	    d3dCtx->zEnable = FALSE;
-	    device->SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);
+    if (!db_enable_override) 
+	{
+        if (db_enable) 
+		{
+	      d3dCtx->zEnable = TRUE;
+	      device->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
+        } 
+		else 
+		{
+	      d3dCtx->zEnable = FALSE;
+	      device->SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);
         }
     }
 
-    if (!db_write_enable_override) {
-	d3dCtx->zWriteEnable = db_write_enable;
-	device->SetRenderState(D3DRS_ZWRITEENABLE, db_write_enable);
+    if (!db_write_enable_override)
+	{
+	  d3dCtx->zWriteEnable = db_write_enable;
+	  device->SetRenderState(D3DRS_ZWRITEENABLE, db_write_enable);
+	  if (db_write_enable)
+	  {
+	    device->SetRenderState(D3DRS_ZFUNC, getDepthFunc(db_func));
+	  }
+	  else
+	  {
+		 device->SetRenderState(D3DRS_ZFUNC, D3DCMP_NEVER);
+	  }
     }
 
-    if (at_func == javax_media_j3d_RenderingAttributes_ALWAYS) {
-	device->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-    } else {
-	device->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	device->SetRenderState(D3DRS_ALPHAREF, alpha);
+    if (at_func == javax_media_j3d_RenderingAttributes_ALWAYS) 
+	{
+	  device->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+    } 
+	else 
+	{
+	  device->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	  device->SetRenderState(D3DRS_ALPHAREF, alpha);
     }
 
-    switch (at_func) {
+    switch (at_func) 
+	{
 	case javax_media_j3d_RenderingAttributes_ALWAYS:
 	    device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
 	    break;
@@ -591,7 +645,7 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 		{
          // Turn on stenciling
          device->SetRenderState( D3DRS_STENCILENABLE, TRUE );
-   
+         printf("StencilEnable TRUE\n"); 
          // Set the function to always pass.
          device->SetRenderState( D3DRS_STENCILFUNC, getStencilFunc(stencilFunction) );
          device->SetRenderState( D3DRS_STENCILREF,  stencilReferenceValue );         
@@ -602,26 +656,18 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 		 device->SetRenderState(D3DRS_STENCILFAIL,  getStencilOP(stencilFailOp) );
          device->SetRenderState(D3DRS_STENCILZFAIL, getStencilOP(stencilZFailOp));
          device->SetRenderState(D3DRS_STENCILPASS,  getStencilOP(stencilZPassOp) );
-
-
-			/*
-			glEnable(GL_STENCIL_TEST);
-
-	        glStencilOp( getStencilOpValue(stencilFailOp),
-			             getStencilOpValue(stencilZFailOp),
-			             getStencilOpValue(stencilZPassOp));
-
-	        glStencilFunc(getFunctionValue(stencilFunction),
-			              stencilReferenceValue, stencilCompareMask);
-	        glStencilMask(stencilWriteMask);
-			*/
-	    
-	}
-	else 
-	 {
-		device->SetRenderState( D3DRS_STENCILENABLE, FALSE );           
-     }
+   	   }
+	   else 
+	   {
+		 device->SetRenderState( D3DRS_STENCILENABLE, FALSE );  
+		  printf("StencilEnable False\n"); 
+       }
     }
+	else
+	{
+		 printf("UserStencilEnable False\n"); 
+	}
+
 }//
 
 
