@@ -69,30 +69,34 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
 	return 0;
     }
 
-    if (offScreen) {
-
-	jclass cls = (jclass) env->GetObjectClass(obj);
-	jfieldID fieldId = env->GetFieldID(cls,
+    if (offScreen) 
+	{
+	  jclass cls = (jclass) env->GetObjectClass(obj);
+	  jfieldID fieldId = env->GetFieldID(cls,
 					   "offScreenCanvasSize", 
 					   "Ljava/awt/Dimension;");
-	jobject dimObj = env->GetObjectField(obj, fieldId);
-	if (dimObj == NULL) {
-	    // user invoke queryProperties()
-	    ctx->offScreenWidth = 1;
-	    ctx->offScreenHeight = 1;
-	} else {
-	    cls = (jclass) env->GetObjectClass(dimObj);
-	    fieldId = env->GetFieldID(cls, "width", "I");
-	    ctx->offScreenWidth = env->GetIntField(dimObj, fieldId);
-	    fieldId = env->GetFieldID(cls, "height", "I");
-	    ctx->offScreenHeight = env->GetIntField(dimObj, fieldId);
-	}
+	  jobject dimObj = env->GetObjectField(obj, fieldId);
+	  if (dimObj == NULL) 
+	   {
+	     // user invoke queryProperties()
+	     ctx->offScreenWidth = 1;
+	     ctx->offScreenHeight = 1;
+	   } 
+	  else 
+	   {
+	     cls = (jclass) env->GetObjectClass(dimObj);
+	     fieldId = env->GetFieldID(cls, "width", "I");
+	     ctx->offScreenWidth = env->GetIntField(dimObj, fieldId);
+	     fieldId = env->GetFieldID(cls, "height", "I");
+	     ctx->offScreenHeight = env->GetIntField(dimObj, fieldId);
+	   }
     }
 
-    if (!ctx->initialize(env, obj)) {
-	delete ctx;
-	unlock();
-	return 0;
+    if (!ctx->initialize(env, obj)) 
+	{
+	 delete ctx;
+	 unlock();
+	 return 0;
     } 
     d3dCtxList.push_back(ctx);
 
@@ -345,15 +349,26 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
     } 
 
 	/* clear stencil, if in used */
+     
 	if (d3dCtx->stencilWriteEnable )
 	{// clear stencil and ZBuffer
-	  device->Clear(0, NULL, D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
+	  HRESULT hr = device->Clear(0, NULL, D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
 		             D3DCOLOR_COLORVALUE(r, g, b, 1.0f), 1.0, 0);
+      if (hr == D3DERR_INVALIDCALL)
+	  {
+         printf("[Java3D] Error cleaning Canvas3D stencil & ZBuffer\n");
+	  }
+	//  printf("canvas3D clear stencil & ZBuffer\n");
 	}
 	else
 	{	// clear ZBuffer only
-	 device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
+	  HRESULT hr =  device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
 		          D3DCOLOR_COLORVALUE(r, g, b, 1.0f), 1.0, 0);
+	  if (hr == D3DERR_INVALIDCALL)
+	  {
+         printf("[Java3D] Error cleaning Canvas3D ZBuffer\n");
+	  }
+	 // printf("canvas3D clear ZBuffer\n");
 	}
 
 

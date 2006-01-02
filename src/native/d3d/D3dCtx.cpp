@@ -1390,23 +1390,30 @@ VOID D3dCtx::setImplicitMultisamplingProperty(JNIEnv *env)
 VOID D3dCtx::setCanvasProperty(JNIEnv *env, jobject obj)
 {
     int mask = javax_media_j3d_Canvas3D_EXT_ABGR |
-	       javax_media_j3d_Canvas3D_EXT_BGR;
+	           javax_media_j3d_Canvas3D_EXT_BGR;
 
-    if ((deviceInfo->depthStencilFormat == D3DFMT_D24S8) ||
-	(deviceInfo->depthStencilFormat == D3DFMT_D24X4S4)) {
+      if ((deviceInfo->depthStencilFormat == D3DFMT_D24S8) ||
+	(deviceInfo->depthStencilFormat == D3DFMT_D24X4S4)) 
+	{
 	// The other format D3DFMT_D15S1 with 1 bit
 	// stencil buffer has no use for Decal group so it
 	// is ignored.
-	mask |= javax_media_j3d_Canvas3D_STENCIL_BUFFER;
+	mask |= javax_media_j3d_Canvas3D_STENCIL_BUFFER;   
     }
+	
 
     jclass canvasCls =  env->GetObjectClass(obj);
     jfieldID id = env->GetFieldID(canvasCls, "fullScreenMode", "Z");
     env->SetBooleanField(obj, id, bFullScreen);
+
     id = env->GetFieldID(canvasCls, "fullscreenWidth", "I");
     env->SetIntField(obj, id, driverInfo->desktopMode.Width);
+
     id = env->GetFieldID(canvasCls, "fullscreenHeight", "I");
     env->SetIntField(obj, id, driverInfo->desktopMode.Height);
+
+	//id = env->GetFieldID(canvasCls, "userStencilAvailable", "Z");
+    //env->SetBooleanField(obj, id, deviceInfo->supportStencil );
 
     id = env->GetFieldID(canvasCls, "textureExtendedFeatures", "I");
     env->SetIntField(obj, id, deviceInfo->getTextureFeaturesMask());
@@ -1860,7 +1867,7 @@ VOID D3dCtx::printInfo(D3DPRESENT_PARAMETERS *d3dPresent)
 	printf("FullScreen ");
     }
 
-    printf("%dx%d %s, handle=%x, %s, %s, %s\n",
+	printf("%dx%d %s, handle=%x, MultiSampleType %s, SwapEffect %s, AutoDepthStencilFormat: %s\n",
 	   d3dPresent->BackBufferWidth,
 	   d3dPresent->BackBufferHeight,
 	   getPixelFormatName(d3dPresent->BackBufferFormat),
