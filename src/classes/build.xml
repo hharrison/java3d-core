@@ -57,7 +57,7 @@
            destdir="${build}/${platform}/debug/classes"
 	   source="1.4"
 	   target="1.4"
-	   debug="yes"
+	   debug="true"
            deprecation="off">
 	   <classpath refid="vecmath.debug.classpath"/>
     </javac>
@@ -100,7 +100,8 @@
     <javac srcdir="${src}/classes/share:${src}/classes/${ostype}:${core_utils_src}/classes/share:${build-opt-gen}/classes"            destdir="${build}/${platform}/opt/classes"
            source="1.4"
            target="1.4"
-           debug="no"
+           debug="true"
+           debuglevel="lines,source"
            deprecation="off">
            <classpath refid="vecmath.opt.classpath"/>
     </javac>
