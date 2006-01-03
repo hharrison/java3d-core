@@ -585,10 +585,11 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 	  if (db_write_enable)
 	  {
 	    device->SetRenderState(D3DRS_ZFUNC, getDepthFunc(db_func));
+		printDepthFunc(db_func);
 	  }
 	  else
 	  {
-		 device->SetRenderState(D3DRS_ZFUNC, D3DCMP_NEVER);
+		// device->SetRenderState(D3DRS_ZFUNC, D3DCMP_NEVER);
 	  }
     }
 
@@ -645,7 +646,7 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 		{
          // Turn on stenciling
          device->SetRenderState( D3DRS_STENCILENABLE, TRUE );
-         printf("StencilEnable TRUE\n"); 
+        // printf("StencilEnable TRUE\n"); 
          // Set the function to always pass.
          device->SetRenderState( D3DRS_STENCILFUNC, getStencilFunc(stencilFunction) );
          device->SetRenderState( D3DRS_STENCILREF,  stencilReferenceValue );         
@@ -660,13 +661,15 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 	   else 
 	   {
 		 device->SetRenderState( D3DRS_STENCILENABLE, FALSE );  
-		  printf("StencilEnable False\n"); 
+		 // printf("StencilEnable False\n"); 
        }
     }
+	/*
 	else
 	{
 		 printf("UserStencilEnable False\n"); 
 	}
+	*/
 
 }//
 
@@ -757,6 +760,32 @@ void JNICALL Java_javax_media_j3d_PolygonAttributesRetained_updateNative(
 }
 
 
+void printDepthFunc(jint func)
+{
+	DWORD value = D3DCMP_LESSEQUAL;
+	printf("DepthFunc: ");
+	switch(func)
+	{
+	case javax_media_j3d_RenderingAttributes_ALWAYS: 
+		printf(" D3DCMP_ALWAYS\n"); break;
+	case javax_media_j3d_RenderingAttributes_NEVER:  
+		printf(" D3DCMP_NEVER\n"); break;
+	case javax_media_j3d_RenderingAttributes_EQUAL:  
+		printf(" D3DCMP_EQUAL\n"); break;
+	case javax_media_j3d_RenderingAttributes_NOT_EQUAL:  
+		printf(" D3DCMP_NOTEQUAL\n"); break;
+	case javax_media_j3d_RenderingAttributes_LESS_OR_EQUAL:
+		printf(" D3DCMP_LESSEQUAL\n"); break;
+	case javax_media_j3d_RenderingAttributes_GREATER:      
+		printf(" D3DCMP_GREATER\n"); break;
+	case javax_media_j3d_RenderingAttributes_GREATER_OR_EQUAL:
+		printf(" D3DCMP_GREATEREQUAL\n"); break;
+	default : 
+		printf(" D3DCMP_LESSEQUAL\n"); break;
+	}
+
+	
+}
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetLineAttributes(
