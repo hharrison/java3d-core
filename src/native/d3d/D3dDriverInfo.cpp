@@ -331,8 +331,8 @@ VOID D3dDriverInfo::initialize(JNIEnv *env)
 
 
     LPDIRECT3D9 pD3D = Direct3DCreate9( D3D_SDK_VERSION );
-	printf("[Java3D] Using DirectX D3D 9.0 or higher.\n");
 	if (debug){
+		printf("[Java3D] Using DirectX D3D 9.0 or higher.\n");
 		printf("[Java3D] DirectX D3D renderer build 1.4.2005.12.30\n");
 	}
     if (pD3D == NULL) {
