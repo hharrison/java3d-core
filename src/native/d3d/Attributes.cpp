@@ -574,7 +574,7 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 		else
 		{
 	      d3dCtx->zEnable = FALSE;
-	      device->SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);
+	      device->SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);		  
         }
     }
 
@@ -582,16 +582,9 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 	{
 	  d3dCtx->zWriteEnable = db_write_enable;
 	  device->SetRenderState(D3DRS_ZWRITEENABLE, db_write_enable);
-	  if (db_write_enable)
-	  {
-	    device->SetRenderState(D3DRS_ZFUNC, getDepthFunc(db_func));
-		//printDepthFunc(db_func);
-	  }
-	  else
-	  {
-        // disable ZFunc if ZBuffer is disabled
-		device->SetRenderState(D3DRS_ZFUNC, D3DCMP_NEVER);
-	  }
+	  // disable ZFunc if ZBuffer is disabled ? no. 
+	  //  ZFunc must work even when there is no z-buffer enable
+      device->SetRenderState(D3DRS_ZFUNC, getDepthFunc(db_func));	  
     }
 
     if (at_func == javax_media_j3d_RenderingAttributes_ALWAYS)
