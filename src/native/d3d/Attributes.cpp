@@ -585,7 +585,7 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 	  if (db_write_enable)
 	  {
 	    device->SetRenderState(D3DRS_ZFUNC, getDepthFunc(db_func));
-		printDepthFunc(db_func);
+            // printDepthFunc(db_func);
 	  }
 	  else
 	  {
