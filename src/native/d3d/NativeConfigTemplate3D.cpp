@@ -129,9 +129,10 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
            
 			  // first 0-7bits for depth,8-15 Stencil 
 		       retValue = deviceInfo->maxZBufferDepthSize |(deviceInfo->maxStencilDepthSize <<8);
-               // set value for Canvas3D GraphicsConfigInfo
-			   jlong *pfi_ptr = (jlong *) env->GetPrimitiveArrayCritical(offScreenPFArray, NULL);
-               pfi_ptr[0] = retValue;
+                       // set value for Canvas3D GraphicsConfigInfo
+                       jlong *pfi_ptr = (jlong *) env->GetLongArrayElements(offScreenPFArray, NULL);
+                       pfi_ptr[0] = retValue;
+                       env->ReleaseLongArrayElements(offScreenPFArray, pfi_ptr, 0);
 		  }
 	    }
 	}
