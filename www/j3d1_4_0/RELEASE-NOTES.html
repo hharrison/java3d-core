@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+-->
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Java 3D 1.4.0 Release Notes</title>
+</head>
+<body>
+<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.4.0-beta3
+Pre-Release Notes</h2>
+<p><span style="color: rgb(204, 0, 0);"><b><i>This is a placeholder for
+actual release notes. The real release
+notes will come later.</i></b></span><br>
+</p>
+<p>This file contains important pre-release information for users of
+the
+Java&nbsp;3D<sup><font size="-2">TM</font></sup> API, version
+1.4.0-beta3.
+</p>
+<ul>
+  <a href="#System_Requirements">System Requirements</a>
+(<a href="#Solaris_Sparc">Solaris/Sparc</a>, <a href="#Solaris_x86">Solaris/x86</a>,
+  <a href="#Linux">Linux</a>, <a href="#Windows">Windows</a>)<br>
+  <a href="#Changes_Since_1.3.2">Changes Since 1.3.2</a><br>
+  <a href="#More_Information">More Information</a><br>
+</ul>
+<p><a href="HOW-TO-INSTALL.html">Click here</a> for instructions on
+<a href="HOW-TO-INSTALL.html">how
+to install</a> this pre-release of
+Java&nbsp;3D
+version 1.4.0-beta3.</p>
+<p><span style="font-style: italic;">NOTE: We recommend that you </span><span
+ style="font-style: italic;">uninstall all </span><span
+ style="font-style: italic;">previous versions of Java&nbsp;3D before
+installing this version.</span>
+</p>
+<h3><a name="System_Requirements"></a>System Requirements</h3>
+<p>The 1.4.0-beta3 version of the Java&nbsp;3D API has been released
+for
+Solaris (both sparc and x86), Linux (both x86 and amd64), and Windows.
+</p>
+<h4><a name="Solaris_Sparc"></a>Solaris/Sparc</h4>
+<p>
+The 1.4.0-beta3 version of Java&nbsp;3D for Solaris/SPARC requires the
+following:
+</p>
+<ul>
+  <li>JDK 1.4.2 or later (1.5.0 is recommended) from Sun Microsystems: <a
+ href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+  <li>Solaris 9 or later</li>
+  <li>Frame Buffer with OpenGL support (XVR-500, XVR-1000, XVR-600,
+XVR-1200, XVR-4000, Expert3D, Elite3D, Creator3D, and PGX)</li>
+  <li>OpenGL 1.3 for Solaris or later. To find your current version,
+use: "<code>pkginfo -l SUNWglrt</code>". OpenGL for Solaris can be
+obtained at: <a href="http://www.sun.com/software/graphics/opengl/">http://www.sun.com/software/graphics/opengl/</a></li>
+</ul>
+<h4><a name="Solaris_x86"></a>Solaris/x86</h4>
+<p>
+The 1.4.0-beta3 version of Java&nbsp;3D for Solaris/x86 requires the
+following:
+</p>
+<ul>
+  <li>JDK 1.5.0 or later from Sun Microsystems: <a
+ href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+  <li>Solaris 10 or later</li>
+  <li>NVIDIA Frame Buffer</li>
+  <li>OpenGL XX for Solaris/x86 or later. OpenGL for Solaris can be
+obtained at: [WHERE?]</li>
+</ul>
+<h4><a name="Linux"></a>Linux<br>
+</h4>
+<p>The 1.4.0-beta3 version of Java&nbsp;3D for Linux (x86 or amd64)
+requires
+the
+following:<br>
+</p>
+<ul>
+  <li>JDK 1.4.2 or later (1.5.0 is recommended) from Sun Microsystems: <a
+ href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+  <li>Graphics adapter with driver that supports the GLX
+extension: GLX
+1.3 or later and OpenGL 1.2 or later<br>
+  </li>
+</ul>
+<h4><a name="Windows"></a>Windows<br>
+</h4>
+<p>The 1.4.0-beta3 version of Java&nbsp;3D for Windows 2000, and
+Windows/XP
+requires the following:<br>
+</p>
+<ul>
+  <li>JDK 1.4.2 or later (1.5.0 is recommended) from Sun Microsystems: <a
+ href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+  <li>Windows 2000 or Windows/XP</li>
+  <li>Support for either OpenGL or DirectX as shown below.<br>
+  </li>
+</ul>
+<ul>
+  <span style="font-weight: bold;">OpenGL version</span><br>
+  <ul>
+The (default) OpenGL renderer of Java&nbsp;3D requires OpenGL 1.2 or
+later,
+available from your graphics card manufacturer.
+  </ul>
+</ul>
+<ul>
+  <span style="font-weight: bold;">DirectX version</span><br>
+  <ul>
+The (optional) DirectX renderer of Java&nbsp;3D requires DirectX 9.0 or
+later, which is available from Microsoft at: <a
+ href="http://www.microsoft.com/windows/directx/">http://www.microsoft.com/windows/directx/</a>
+. The DirectX version of
+Java&nbsp;3D is selected by setting the "<code>j3d.rend</code>" system
+property
+to "<code>d3d</code>",
+for example: "<code>java -Dj3d.rend=d3d ClassName</code>"
+  </ul>
+</ul>
+<h3><a name="Changes_Since_1.3.2"></a>Changes Since 1.3.2</h3>
+<h4>New Features</h4>
+<ul>
+  <li>Pointer to new features...<br>
+  </li>
+</ul>
+<h4>Miscellaneous</h4>
+<ul>
+  <li>Improved...</li>
+</ul>
+<h4>System Properties</h4>
+<ul>
+  <li><code>j3d.xxxxx</code> &#8211; Description of xxxxx</li>
+</ul>
+<h4>Issues Fixed<br>
+</h4>
+<table style="text-align: left;" border="0" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="text-align: right;">NN</td>
+      <td>Synopsis</td>
+    </tr>
+    <tr>
+      <td style="text-align: right;">NN</td>
+      <td>Synopsis</td>
+    </tr>
+  </tbody>
+</table>
+<h3><a name="More_Information"></a>More Information<br>
+</h3>
+<p>For the latest information on Java&nbsp;3D, see the <a
+ href="https://java3d.dev.java.net/">main Java&nbsp;3D project page</a>
+on
+java.net.<br>
+</p>
+<p>Click <a
+ href="https://java3d.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=java3d&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED">here</a>
+for a list of open issues.</p>
+</body>
+</html>
