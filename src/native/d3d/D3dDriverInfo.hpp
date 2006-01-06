@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -22,6 +22,7 @@
 
 extern D3DFORMAT d3dDepthFormat[D3DDEPTHFORMATSIZE];
 extern int d3dDepthTable[D3DDEPTHFORMATSIZE];
+extern int d3dStencilDepthTable[D3DDEPTHFORMATSIZE];
 			
 class D3dDriverInfo {
 public:

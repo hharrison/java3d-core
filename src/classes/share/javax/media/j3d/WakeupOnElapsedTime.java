@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -51,7 +51,7 @@ public final class WakeupOnElapsedTime extends WakeupCriterion {
      * used to add wakeupCondition to behavior structure.
      */
     void addBehaviorCondition(BehaviorStructure bs) {
-	this.triggeredTime = wait + System.currentTimeMillis();
+	this.triggeredTime = wait + J3dClock.currentTimeMillis();
 	behav.wakeupArray[BehaviorRetained.WAKEUP_TIME_INDEX]++;
 	behav.wakeupMask |= BehaviorRetained.WAKEUP_TIME;
 	VirtualUniverse.mc.timerThread.add(this);
@@ -78,7 +78,7 @@ public final class WakeupOnElapsedTime extends WakeupCriterion {
      */
     void reInsertElapseTimeCond() {
 	super.reInsertElapseTimeCond();
-	this.triggeredTime = wait + System.currentTimeMillis();
+	this.triggeredTime = wait + J3dClock.currentTimeMillis();
 	VirtualUniverse.mc.timerThread.add(this);
     }
 
@@ -88,7 +88,7 @@ public final class WakeupOnElapsedTime extends WakeupCriterion {
      * set every time the condition met.
      */
     void resetBehaviorCondition(BehaviorStructure bs) {
-	this.triggeredTime = wait + System.currentTimeMillis();
+	this.triggeredTime = wait + J3dClock.currentTimeMillis();
 	VirtualUniverse.mc.timerThread.add(this);
     }
 }

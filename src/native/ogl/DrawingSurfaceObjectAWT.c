@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -253,7 +253,7 @@ void JNICALL Java_javax_media_j3d_DrawingSurfaceObjectAWT_unlockGlobal(
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_DrawingSurfaceObjectAWT_freeResource(
     JNIEnv *env,
-    jobject obj,
+    jclass obj,
     jlong awtObj,
     jlong drawingSurface,
     jlong drawingSurfaceInfo)

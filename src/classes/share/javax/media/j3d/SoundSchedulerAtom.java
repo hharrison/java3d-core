@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -185,7 +185,7 @@ class SoundSchedulerAtom extends Object {
 		//   sound is currently playing, then set endTime to
 		//   play remaining portion of loop portion plus the
 		//   release portion.
-                long currentTime = System.currentTimeMillis();
+                long currentTime = J3dClock.currentTimeMillis();
                 endTime = currentTime + ( (loopLength -
                     ((currentTime - startTime - attackLength) % loopLength)) +
                         releaseLength );

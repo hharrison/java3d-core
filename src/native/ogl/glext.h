@@ -52,9 +52,9 @@ extern "C" {
 /*************************************************************/
 
 /* Header file version number, required by OpenGL ABI for Linux */
-/* glext.h last updated 2005/01/07 */
+/* glext.h last updated 2005/06/20 */
 /* Current version at http://oss.sgi.com/projects/ogl-sample/registry/ */
-#define GL_GLEXT_VERSION 25
+#define GL_GLEXT_VERSION 29
 
 #ifndef GL_VERSION_1_2
 #define GL_UNSIGNED_BYTE_3_3_2            0x8032
@@ -915,7 +915,7 @@ extern "C" {
 #ifndef GL_ARB_color_buffer_float
 #define GL_RGBA_FLOAT_MODE_ARB            0x8820
 #define GL_CLAMP_VERTEX_COLOR_ARB         0x891A
-#define GL_CLAMP_FRAGMENT_COLOR_ARB       0x891A
+#define GL_CLAMP_FRAGMENT_COLOR_ARB       0x891B
 #define GL_CLAMP_READ_COLOR_ARB           0x891C
 #define GL_FIXED_ONLY_ARB                 0x891D
 #endif
@@ -2922,6 +2922,11 @@ extern "C" {
 #ifndef GL_ATI_vertex_attrib_array_object
 #endif
 
+#ifndef GL_OES_read_format
+#define GL_IMPLEMENTATION_COLOR_READ_TYPE_OES 0x8B9A
+#define GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES 0x8B9B
+#endif
+
 #ifndef GL_EXT_depth_bounds_test
 #define GL_DEPTH_BOUNDS_TEST_EXT          0x8890
 #define GL_DEPTH_BOUNDS_EXT               0x8891
@@ -2975,12 +2980,70 @@ extern "C" {
 /* reuse GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB */
 #endif
 
+#ifndef GL_EXT_framebuffer_object
+#define GL_INVALID_FRAMEBUFFER_OPERATION_EXT 0x0506
+#define GL_MAX_RENDERBUFFER_SIZE_EXT      0x84E8
+#define GL_FRAMEBUFFER_BINDING_EXT        0x8CA6
+#define GL_RENDERBUFFER_BINDING_EXT       0x8CA7
+#define GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE_EXT 0x8CD0
+#define GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME_EXT 0x8CD1
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL_EXT 0x8CD2
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE_EXT 0x8CD3
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_3D_ZOFFSET_EXT 0x8CD4
+#define GL_FRAMEBUFFER_COMPLETE_EXT       0x8CD5
+#define GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT 0x8CD6
+#define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT 0x8CD7
+#define GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT 0x8CD8
+#define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT 0x8CD9
+#define GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT 0x8CDA
+#define GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT 0x8CDB
+#define GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT 0x8CDC
+#define GL_FRAMEBUFFER_UNSUPPORTED_EXT    0x8CDD
+#define GL_MAX_COLOR_ATTACHMENTS_EXT      0x8CDF
+#define GL_COLOR_ATTACHMENT0_EXT          0x8CE0
+#define GL_COLOR_ATTACHMENT1_EXT          0x8CE1
+#define GL_COLOR_ATTACHMENT2_EXT          0x8CE2
+#define GL_COLOR_ATTACHMENT3_EXT          0x8CE3
+#define GL_COLOR_ATTACHMENT4_EXT          0x8CE4
+#define GL_COLOR_ATTACHMENT5_EXT          0x8CE5
+#define GL_COLOR_ATTACHMENT6_EXT          0x8CE6
+#define GL_COLOR_ATTACHMENT7_EXT          0x8CE7
+#define GL_COLOR_ATTACHMENT8_EXT          0x8CE8
+#define GL_COLOR_ATTACHMENT9_EXT          0x8CE9
+#define GL_COLOR_ATTACHMENT10_EXT         0x8CEA
+#define GL_COLOR_ATTACHMENT11_EXT         0x8CEB
+#define GL_COLOR_ATTACHMENT12_EXT         0x8CEC
+#define GL_COLOR_ATTACHMENT13_EXT         0x8CED
+#define GL_COLOR_ATTACHMENT14_EXT         0x8CEE
+#define GL_COLOR_ATTACHMENT15_EXT         0x8CEF
+#define GL_DEPTH_ATTACHMENT_EXT           0x8D00
+#define GL_STENCIL_ATTACHMENT_EXT         0x8D20
+#define GL_FRAMEBUFFER_EXT                0x8D40
+#define GL_RENDERBUFFER_EXT               0x8D41
+#define GL_RENDERBUFFER_WIDTH_EXT         0x8D42
+#define GL_RENDERBUFFER_HEIGHT_EXT        0x8D43
+#define GL_RENDERBUFFER_INTERNAL_FORMAT_EXT 0x8D44
+#define GL_STENCIL_INDEX1_EXT             0x8D46
+#define GL_STENCIL_INDEX4_EXT             0x8D47
+#define GL_STENCIL_INDEX8_EXT             0x8D48
+#define GL_STENCIL_INDEX16_EXT            0x8D49
+#define GL_RENDERBUFFER_RED_SIZE_EXT      0x8D50
+#define GL_RENDERBUFFER_GREEN_SIZE_EXT    0x8D51
+#define GL_RENDERBUFFER_BLUE_SIZE_EXT     0x8D52
+#define GL_RENDERBUFFER_ALPHA_SIZE_EXT    0x8D53
+#define GL_RENDERBUFFER_DEPTH_SIZE_EXT    0x8D54
+#define GL_RENDERBUFFER_STENCIL_SIZE_EXT  0x8D55
+#endif
+
+#ifndef GL_GREMEDY_string_marker
+#endif
+
 
 /*************************************************************/
 
 #include <stddef.h>
 #ifndef GL_VERSION_2_0
-/* GL types for andling program/shader text */
+/* GL type for program/shader text */
 typedef char GLchar;			/* native character */
 #endif
 
@@ -2997,13 +3060,17 @@ typedef ptrdiff_t GLsizeiptrARB;
 #endif
 
 #ifndef GL_ARB_shader_objects
-/* GL types for handling shader object handles and characters */
+/* GL types for handling shader object handles and program/shader text */
 typedef char GLcharARB;		/* native character */
 typedef unsigned int GLhandleARB;	/* shader object handle */
 #endif
 
+/* GL types for "half" precision (s10e5) float data in host memory */
+#ifndef GL_ARB_half_float_pixel
+typedef unsigned short GLhalfARB;
+#endif
+
 #ifndef GL_NV_half_float
-/* GL type for representing NVIDIA "half" floating point type in host memory */
 typedef unsigned short GLhalfNV;
 #endif
 
@@ -6320,6 +6387,10 @@ typedef void (APIENTRYP PFNGLGETVERTEXATTRIBARRAYOBJECTFVATIPROC) (GLuint index,
 typedef void (APIENTRYP PFNGLGETVERTEXATTRIBARRAYOBJECTIVATIPROC) (GLuint index, GLenum pname, GLint *params);
 #endif
 
+#ifndef GL_OES_read_format
+#define GL_OES_read_format 1
+#endif
+
 #ifndef GL_EXT_depth_bounds_test
 #define GL_EXT_depth_bounds_test 1
 #ifdef GL_GLEXT_PROTOTYPES
@@ -6366,6 +6437,54 @@ typedef void (APIENTRYP PFNGLBLENDEQUATIONSEPARATEEXTPROC) (GLenum modeRGB, GLen
 
 #ifndef GL_NV_vertex_program3
 #define GL_NV_vertex_program3 1
+#endif
+
+#ifndef GL_EXT_framebuffer_object
+#define GL_EXT_framebuffer_object 1
+#ifdef GL_GLEXT_PROTOTYPES
+GLAPI GLboolean APIENTRY glIsRenderbufferEXT (GLuint);
+GLAPI void APIENTRY glBindRenderbufferEXT (GLenum, GLuint);
+GLAPI void APIENTRY glDeleteRenderbuffersEXT (GLsizei, const GLuint *);
+GLAPI void APIENTRY glGenRenderbuffersEXT (GLsizei, GLuint *);
+GLAPI void APIENTRY glRenderbufferStorageEXT (GLenum, GLenum, GLsizei, GLsizei);
+GLAPI void APIENTRY glGetRenderbufferParameterivEXT (GLenum, GLenum, GLint *);
+GLAPI GLboolean APIENTRY glIsFramebufferEXT (GLuint);
+GLAPI void APIENTRY glBindFramebufferEXT (GLenum, GLuint);
+GLAPI void APIENTRY glDeleteFramebuffersEXT (GLsizei, const GLuint *);
+GLAPI void APIENTRY glGenFramebuffersEXT (GLsizei, GLuint *);
+GLAPI GLenum APIENTRY glCheckFramebufferStatusEXT (GLenum);
+GLAPI void APIENTRY glFramebufferTexture1DEXT (GLenum, GLenum, GLenum, GLuint, GLint);
+GLAPI void APIENTRY glFramebufferTexture2DEXT (GLenum, GLenum, GLenum, GLuint, GLint);
+GLAPI void APIENTRY glFramebufferTexture3DEXT (GLenum, GLenum, GLenum, GLuint, GLint, GLint);
+GLAPI void APIENTRY glFramebufferRenderbufferEXT (GLenum, GLenum, GLenum, GLuint);
+GLAPI void APIENTRY glGetFramebufferAttachmentParameterivEXT (GLenum, GLenum, GLenum, GLint *);
+GLAPI void APIENTRY glGenerateMipmapEXT (GLenum);
+#endif /* GL_GLEXT_PROTOTYPES */
+typedef GLboolean (APIENTRYP PFNGLISRENDERBUFFEREXTPROC) (GLuint renderbuffer);
+typedef void (APIENTRYP PFNGLBINDRENDERBUFFEREXTPROC) (GLenum target, GLuint renderbuffer);
+typedef void (APIENTRYP PFNGLDELETERENDERBUFFERSEXTPROC) (GLsizei n, const GLuint *renderbuffers);
+typedef void (APIENTRYP PFNGLGENRENDERBUFFERSEXTPROC) (GLsizei n, GLuint *renderbuffers);
+typedef void (APIENTRYP PFNGLRENDERBUFFERSTORAGEEXTPROC) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void (APIENTRYP PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC) (GLenum target, GLenum pname, GLint *params);
+typedef GLboolean (APIENTRYP PFNGLISFRAMEBUFFEREXTPROC) (GLuint framebuffer);
+typedef void (APIENTRYP PFNGLBINDFRAMEBUFFEREXTPROC) (GLenum target, GLuint framebuffer);
+typedef void (APIENTRYP PFNGLDELETEFRAMEBUFFERSEXTPROC) (GLsizei n, const GLuint *framebuffers);
+typedef void (APIENTRYP PFNGLGENFRAMEBUFFERSEXTPROC) (GLsizei n, GLuint *framebuffers);
+typedef GLenum (APIENTRYP PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC) (GLenum target);
+typedef void (APIENTRYP PFNGLFRAMEBUFFERTEXTURE1DEXTPROC) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+typedef void (APIENTRYP PFNGLFRAMEBUFFERTEXTURE2DEXTPROC) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+typedef void (APIENTRYP PFNGLFRAMEBUFFERTEXTURE3DEXTPROC) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint zoffset);
+typedef void (APIENTRYP PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+typedef void (APIENTRYP PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC) (GLenum target, GLenum attachment, GLenum pname, GLint *params);
+typedef void (APIENTRYP PFNGLGENERATEMIPMAPEXTPROC) (GLenum target);
+#endif
+
+#ifndef GL_GREMEDY_string_marker
+#define GL_GREMEDY_string_marker 1
+#ifdef GL_GLEXT_PROTOTYPES
+GLAPI void APIENTRY glStringMarkerGREMEDY (GLsizei, const GLvoid *);
+#endif /* GL_GLEXT_PROTOTYPES */
+typedef void (APIENTRYP PFNGLSTRINGMARKERGREMEDYPROC) (GLsizei len, const GLvoid *string);
 #endif
 
 

@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -84,9 +84,10 @@ class J3dMessage extends Object {
     static final int ORDERED_GROUP_TABLE_CHANGED    = 59;
     static final int BEHAVIOR_REEVALUATE            = 60;
     static final int CREATE_OFFSCREENBUFFER	    = 61;
-    static final int SHADER_ATTRIBUTE_CHANGED       = 62;
-    static final int SHADER_ATTRIBUTE_SET_CHANGED   = 63;
-    static final int SHADER_APPEARANCE_CHANGED 	    = 64;    
+    static final int DESTROY_CTX_AND_OFFSCREENBUFFER = 62;
+    static final int SHADER_ATTRIBUTE_CHANGED       = 63;
+    static final int SHADER_ATTRIBUTE_SET_CHANGED   = 64;
+    static final int SHADER_APPEARANCE_CHANGED 	    = 65;    
 
     /**
      * This is the time snapshot at which this change occured

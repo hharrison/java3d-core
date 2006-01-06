@@ -4,7 +4,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -52,7 +52,7 @@
     <!-- Inhibit all warning for native build. Remove -w to switch warning on -->
 
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="-w -D_WINGDI_ -D_JNI_IMPLEMENTATION_ -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; ${bldFlag} -c &quot;${oglsrc}/DrawingSurfaceObjectAWT.c&quot; &quot;${oglsrc}/Canvas3D.c&quot; &quot;${oglsrc}/GraphicsContext3D.c&quot; &quot;${oglsrc}/NativeWSInfo.c&quot; &quot;${oglsrc}/NativeScreenInfo.c&quot; &quot;${oglsrc}/NativeConfigTemplate3D.c&quot; &quot;${oglsrc}/MasterControl.c&quot; &quot;${oglsrc}/RasterRetained.c&quot; &quot;${oglsrc}/GeometryArrayRetained.c&quot; &quot;${oglsrc}/Attributes.c&quot; &quot;${oglsrc}/CgShaderProgram.c&quot; &quot;${oglsrc}/GLSLShaderProgram.c&quot; &quot;${oglsrc}/Lights.c&quot; &quot;${oglsrc}/NativeAPIInfo.c&quot;"/>
+	<arg line="-w -D_WINGDI_ -D_JNI_IMPLEMENTATION_ -I&quot;${oglsrc}&quot; -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; ${bldFlag} -c &quot;${oglsrc}/DrawingSurfaceObjectAWT.c&quot; &quot;${oglsrc}/Canvas3D.c&quot; &quot;${oglsrc}/GraphicsContext3D.c&quot; &quot;${oglsrc}/NativeWSInfo.c&quot; &quot;${oglsrc}/NativeScreenInfo.c&quot; &quot;${oglsrc}/NativeConfigTemplate3D.c&quot; &quot;${oglsrc}/MasterControl.c&quot; &quot;${oglsrc}/RasterRetained.c&quot; &quot;${oglsrc}/GeometryArrayRetained.c&quot; &quot;${oglsrc}/Attributes.c&quot; &quot;${oglsrc}/CgShaderProgram.c&quot; &quot;${oglsrc}/GLSLShaderProgram.c&quot; &quot;${oglsrc}/Lights.c&quot; &quot;${oglsrc}/NativeAPIInfo.c&quot;"/>
     </exec>
 
     <!-- Create the library file-->

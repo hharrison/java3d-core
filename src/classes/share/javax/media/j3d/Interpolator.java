@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -85,7 +85,7 @@ public abstract class Interpolator extends Behavior {
      */
     public void initialize() {
 	// Reset alpha
-	//alpha.setStartTime(System.currentTimeMillis());
+	//alpha.setStartTime(J3dClock.currentTimeMillis());
 
 	// Insert wakeup condition into queue
 	wakeupOn(defaultWakeupCriterion);

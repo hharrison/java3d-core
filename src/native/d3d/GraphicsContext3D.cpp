@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -46,19 +46,22 @@ void JNICALL Java_javax_media_j3d_GraphicsContext3D_readRasterNative(
 	    // it works.
 	    && ((d3dCtx->frontSurface != NULL) ||
 		(d3dCtx->frontSurface == NULL) &&
-		d3dCtx->createFrontBuffer())) {
+		d3dCtx->createFrontBuffer())) 
+	{
 
 	    
 	    HRESULT hr = device->GetFrontBufferData(0,d3dCtx->frontSurface);//iSwapChain as 0
-	    if (FAILED(hr)) {
-		printf("GetFrontBuffer fail %s\n", DXGetErrorString9(hr));
-		return;
+	    if (FAILED(hr)) 
+		{
+		  printf("GetFrontBuffer fail %s\n", DXGetErrorString9(hr));
+		  return;
 	    }
 
 	    byteData = (jbyte *)
 		env->GetPrimitiveArrayCritical(byteData_array, NULL);
 
-	    if (!d3dCtx->bFullScreen) {
+	    if (!d3dCtx->bFullScreen) 
+		{
 		// We need to invoke GetWindowRect() everytime
 		// since message resize() will not receive
 		// when Canvas3D inside browers.
@@ -70,12 +73,16 @@ void JNICALL Java_javax_media_j3d_GraphicsContext3D_readRasterNative(
 				    hRaster, 
 				    byteData, 
 				    d3dCtx->frontSurface);
-	    } else {
-		copyDataFromSurface(format, xOffset, yOffset,
+	    } 
+		else 
+		{
+		 copyDataFromSurface(format, xOffset, yOffset,
 				    wRaster, hRaster,  byteData,
 				    d3dCtx->frontSurface);
 	    }
-	} else {
+	} 
+	else 
+	{
 	    if (d3dCtx->backSurface == NULL) {
 		HRESULT hr = device->GetBackBuffer(0,0, D3DBACKBUFFER_TYPE_MONO, //isSwapChain as 0
 						   &d3dCtx->backSurface);
@@ -84,14 +91,11 @@ void JNICALL Java_javax_media_j3d_GraphicsContext3D_readRasterNative(
 		    return;
 		}
 	    }
-	    byteData = (jbyte *)
-		env->GetPrimitiveArrayCritical(byteData_array, NULL);
+	    byteData = (jbyte *)env->GetPrimitiveArrayCritical(byteData_array, NULL);
 
 	    copyDataFromSurface(format, xOffset, yOffset, wRaster,
 				hRaster, byteData, d3dCtx->backSurface);
         }
-
-
 
         env->ReleasePrimitiveArrayCritical(byteData_array, byteData, 0);
     }

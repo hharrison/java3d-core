@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -2362,7 +2362,9 @@ void renderGeometry(JNIEnv *env,
 		    vb->isIndexPrimitive = true;
 		    renderTypeSet = true;
 		    // fall through
-		} else { // line mode
+		} 
+		else 
+		{ // line mode
 		    // we don't want to see extra line appear in the
 		    // diagonal of quads if it splits into two
 		    // triangles. This is REALLY SLOW !!!
@@ -2978,40 +2980,46 @@ void renderIndexGeometry(JNIEnv *env,
 
 		    vb->primitiveType = D3DPT_FORCE_DWORD;
 
-		    for (i = 0; i < (indexCount >> 2); i++) {
-			if (d3dCtx->cullMode != D3DCULL_NONE) {
-			// Do back face culling here
-			    idx0 = *idxPtr++;
-			    idx1 = *idxPtr++;
-			    idx2 = *idxPtr++;
-			    idx3 = *idxPtr++;
-			    if (strideData->fpositionPtr) {
-				fspt = strideData->fpositionPtr + posStride*idx0;
-				worldCoord[0].x = *fspt++;
-				worldCoord[0].y = *fspt++;
-				worldCoord[0].z = *fspt++;
-				fspt = strideData->fpositionPtr + posStride*idx1;
-				worldCoord[1].x = *fspt++;
-				worldCoord[1].y = *fspt++;
-				worldCoord[1].z = *fspt++;
-				fspt = strideData->fpositionPtr + posStride*idx2;
-				worldCoord[2].x = *fspt++;
-				worldCoord[2].y = *fspt++;
-				worldCoord[2].z = *fspt++;
-			    } else {
-				dspt = strideData->dpositionPtr + posStride*idx0;
-				worldCoord[0].x = *dspt++;
-				worldCoord[0].y = *dspt++;
-				worldCoord[0].z = *dspt++;
-				dspt = strideData->dpositionPtr + posStride*idx1;
-				worldCoord[1].x = *dspt++;
-				worldCoord[1].y = *dspt++;
-				worldCoord[1].z = *dspt++;
-				dspt = strideData->dpositionPtr + posStride*idx2;
-				worldCoord[2].x = *dspt++;
-				worldCoord[2].y = *dspt++;
-				worldCoord[2].z = *dspt++;
-			    }
+		    for (i = 0; i < (indexCount >> 2); i++) 
+			{
+		     if (d3dCtx->cullMode != D3DCULL_NONE) 
+			 {
+				// Do back face culling here
+					idx0 = *idxPtr++;
+					idx1 = *idxPtr++;
+					idx2 = *idxPtr++;
+					idx3 = *idxPtr++;
+
+					if (strideData->fpositionPtr) 
+					{
+						fspt = strideData->fpositionPtr + posStride*idx0;
+						worldCoord[0].x = *fspt++;
+						worldCoord[0].y = *fspt++;
+						worldCoord[0].z = *fspt++;
+						fspt = strideData->fpositionPtr + posStride*idx1;
+						worldCoord[1].x = *fspt++;
+						worldCoord[1].y = *fspt++;
+						worldCoord[1].z = *fspt++;
+						fspt = strideData->fpositionPtr + posStride*idx2;
+						worldCoord[2].x = *fspt++;
+						worldCoord[2].y = *fspt++;
+						worldCoord[2].z = *fspt++;
+					} 
+					else 
+					{
+						dspt = strideData->dpositionPtr + posStride*idx0;
+						worldCoord[0].x = *dspt++;
+						worldCoord[0].y = *dspt++;
+						worldCoord[0].z = *dspt++;
+						dspt = strideData->dpositionPtr + posStride*idx1;
+						worldCoord[1].x = *dspt++;
+						worldCoord[1].y = *dspt++;
+						worldCoord[1].z = *dspt++;
+						dspt = strideData->dpositionPtr + posStride*idx2;
+						worldCoord[2].x = *dspt++;
+						worldCoord[2].y = *dspt++;
+						worldCoord[2].z = *dspt++;
+					}
 
 			    d3dCtx->transform(&worldCoord[0], &screenCoord[0]);
 			    d3dCtx->transform(&worldCoord[1], &screenCoord[1]);
@@ -3020,46 +3028,56 @@ void renderIndexGeometry(JNIEnv *env,
 			    screenCoord[0].sy -= screenCoord[1].sy;  
 			    screenCoord[2].sx -= screenCoord[1].sx;  
 			    screenCoord[2].sy -= screenCoord[1].sy;  
-			    if (d3dCtx->cullMode == D3DCULL_CW) {
-				if ((screenCoord[0].sx*screenCoord[2].sy -
-				     screenCoord[2].sx*screenCoord[0].sy) >= 0) {
-				    DrawIndexPolygonLine(d3dCtx,
-							 device,
-							 vertexFormat,
-							 strideData,
-							 idx0, idx1,
-							 idx2, idx3);
-				} 
-			    } else { // Clip front face
-				if ((screenCoord[0].sx*screenCoord[2].sy -
-				     screenCoord[2].sx*screenCoord[0].sy) <= 0) {
-				    DrawIndexPolygonLine(d3dCtx,
-							 device,
-							 vertexFormat,
-							 strideData,
-							 idx0, idx1,
-							 idx2, idx3);
-				} 
+
+			    if (d3dCtx->cullMode == D3DCULL_CW) 
+				{
+					if ((screenCoord[0].sx*screenCoord[2].sy -
+						screenCoord[2].sx*screenCoord[0].sy) >= 0) 
+					{
+						DrawIndexPolygonLine(d3dCtx,
+								device,
+								vertexFormat,
+								strideData,
+								idx0, idx1,
+								idx2, idx3);
+					} 
+			    } 
+				else 
+				{ // Clip front face
+					if ((screenCoord[0].sx*screenCoord[2].sy -
+						screenCoord[2].sx*screenCoord[0].sy) <= 0)
+					{
+						DrawIndexPolygonLine(d3dCtx,
+								device,
+								vertexFormat,
+								strideData,
+								idx0, idx1,
+								idx2, idx3);
+					} 
 			    }
-			} else {
-			    // cullMode == D3DCULL_NONE
-			    DrawIndexPolygonLine(d3dCtx,
-						 device,
-						 vertexFormat,
-						 strideData,
-						 idx0, idx1,
-						 idx2, idx3);
-			}
-		    }
+			} 
+			else 
+			{
+					// cullMode == D3DCULL_NONE
+				DrawIndexPolygonLine(d3dCtx,
+									device,
+									vertexFormat,
+									strideData,
+									idx0, idx1,
+									idx2, idx3);
+			 }
+		    }//for
+
 		    if (((vertexFormat & D3DFVF_DIFFUSE) == 0) && 
-			(!d3dCtx->isLightEnable)) {
-			d3dCtx->restoreDefaultLightMaterial();	
+			    (!d3dCtx->isLightEnable)) 
+			{
+			 d3dCtx->restoreDefaultLightMaterial();	
 		    }
 		    // Don't call vb->Renderer() at the end
 		    return;
 		}
 		
-		//end Quad WireFrame
+		//end index Quad WireFrame
 
 		// fall through
         case GEO_TYPE_INDEXED_TRI_SET:
@@ -4491,6 +4509,7 @@ void executeIndexedGeometryArray(JNIEnv *env,
 
     env->ReleasePrimitiveArrayCritical(indexCoord,
 				       strideData.indexPtr, NULL);
+	
 }
 
 

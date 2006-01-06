@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -1895,10 +1895,9 @@ public class Canvas3D extends Canvas {
 	    (offScreenCanvasSize.height != height)) {
 
 	    if (window != 0) {
-		removeCtx();
-		// Fix for Issue 18.
+		// Fix for Issue 18 and Issue 175
 		// Will do destroyOffScreenBuffer in the Renderer thread. 
-		sendDestroyOffScreenBuffer();
+		sendDestroyCtxAndOffScreenBuffer();
 		window = 0;
 	    }
 
@@ -1909,11 +1908,10 @@ public class Canvas3D extends Canvas {
 	    if (width > 0 && height > 0) {
 		sendCreateOffScreenBuffer();
 	    }
-
 	    ctx = 0; 
 	}
 	else if (ctx != 0) {
-	    removeCtx();
+            removeCtx();
 	}
 
         offScreenBuffer = buffer;
@@ -2456,7 +2454,7 @@ public class Canvas3D extends Canvas {
     }
 
     final void makeCtxCurrent(long ctx, long dpy, int win) {
-        if (ctx != screen.renderer.currentCtx) {
+        if (ctx != screen.renderer.currentCtx || win != screen.renderer.currentWindow) {
 	    if (!drawingSurfaceObject.isLocked()) {
 		drawingSurfaceObject.renderLock();
 		useCtx(ctx, dpy, win);
@@ -2465,12 +2463,13 @@ public class Canvas3D extends Canvas {
 		useCtx(ctx, dpy, win);
 	    }
             screen.renderer.currentCtx = ctx;
+            screen.renderer.currentWindow = win;
         }
     }
 
 
     // The native method that sets this ctx to be the current one
-    static native void useCtx(long ctx, long display, int window);
+    static native boolean useCtx(long ctx, long display, int window);
 
     native void clear(long ctx, float r, float g, float b, int winWidth, int winHeight,
 		      ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown);
@@ -4363,12 +4362,7 @@ public class Canvas3D extends Canvas {
 
     // Send a destroyOffScreenBuffer message to Renderer (via
     // MasterControl) and wait for it to be done
-    private void sendDestroyOffScreenBuffer() {
-	// Nothing to do unless screen.renderer is non-null
-	if ((screen == null) || (screen.renderer == null)) {
-	    return;
-	}
-
+    private void sendDestroyCtxAndOffScreenBuffer() {
 	// Wait for the buffer to be destroyed unless called from
 	// a Behavior or from a Rendering thread
 	Thread currentThread = Thread.currentThread();
@@ -4378,32 +4372,27 @@ public class Canvas3D extends Canvas {
 	    offScreenBufferPending = true;
 	}
 
-	// Fix for Issue 18
-	// Send message to Renderer thread to perform destroyOffScreenBuffer.
-	VirtualUniverse.mc.postRequest(MasterControl.FREE_CONTEXT, 
-				       new Object[]{this, 
-						    new Long(screen.display), 
-						    new Integer(window), 
-						    new Long(0),
-						    Boolean.TRUE});
+	// Fix for Issue 18 and Issue 175
+	// Send message to Renderer thread to perform remove Ctx and destroyOffScreenBuffer.
 
-	// Wait for off-screen buffer to be destroyed
+        VirtualUniverse.mc.sendDestroyCtxAndOffScreenBuffer(this);            
+
+	// Wait for ctx and off-screen buffer to be destroyed
 	while (offScreenBufferPending) {
 	    MasterControl.threadYield();
 	}
     }
 
     private void removeCtx() {
+        
 	if ((screen != null) && 
 	    (screen.renderer != null) &&
 	    (ctx != 0)) {
-	    VirtualUniverse.mc.postRequest(MasterControl.FREE_CONTEXT, 
-					   new Object[]{this, 
-							new Long(screen.display), 
-							new Integer(window), 
-							new Long(ctx),
-							Boolean.FALSE});
-
+            VirtualUniverse.mc.postRequest(MasterControl.FREE_CONTEXT,
+                    new Object[]{this,
+                            new Long(screen.display),
+                            new Integer(window),
+                            new Long(ctx)});           
 	    // Fix for Issue 19
 	    // Wait for the context to be freed unless called from
 	    // a Behavior or from a Rendering thread
@@ -4413,7 +4402,8 @@ public class Canvas3D extends Canvas {
 		while (ctxTimeStamp != 0) {
 		    MasterControl.threadYield();
 		}
-	    }
+	    
+            }
 	    ctx = 0;
 	}
     }

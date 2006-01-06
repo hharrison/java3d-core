@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -368,11 +368,11 @@ class GeometryDecompressorShape3D extends GeometryDecompressor {
 	triangleCount = 0 ;
 	origVertexCount = 0 ;
 
-	startTime = System.currentTimeMillis() ;
+	startTime = J3dClock.currentTimeMillis() ;
     }
 
     private void endPrint() {
-	endTime = System.currentTimeMillis() ;
+	endTime = J3dClock.currentTimeMillis() ;
 
 	if (benchmark || statistics)
 	    printBench() ;

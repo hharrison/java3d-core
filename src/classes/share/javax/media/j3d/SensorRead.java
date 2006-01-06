@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -73,7 +73,7 @@ public class SensorRead {
         this.buttonValues = new int[numButtons];
 
 	// Do this last
-	this.time = System.currentTimeMillis();
+	this.time = J3dClock.currentTimeMillis();
     }
 
     final void set(SensorRead sensorRead) {

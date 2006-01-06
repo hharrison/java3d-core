@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -25,11 +25,20 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#ifndef _MT
+#define _MT
+#endif 
+
 // Exclude rarely-used stuff from Windows headers
+#define VC_EXTRALEAN
 #define WIN32_LEAN_AND_MEAN
 
+
+//#undef _AFXDLL
+//#undef _UNICODE
+
 // Windows Header Files:
-#include <afx.h>
+#include <afx.h> 
 #include <winbase.h>
 #include <windows.h>
 #include <multimon.h>
@@ -46,6 +55,7 @@
 #include <d3d9.h>
 #include <dxerr9.h>
 #include <d3dx9.h>
+#include <d3dx9tex.h>
 #include <vector>
 #include <algorithm>
 using namespace std ;

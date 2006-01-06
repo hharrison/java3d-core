@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -1309,7 +1309,7 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_useCtx(
+jboolean JNICALL Java_javax_media_j3d_Canvas3D_useCtx(
     JNIEnv *env, 
     jclass cl, 
     jlong ctxInfo,
@@ -1318,13 +1318,36 @@ void JNICALL Java_javax_media_j3d_Canvas3D_useCtx(
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
+    int result;
 #if defined(UNIX)
-    glXMakeCurrent((Display *)display, (GLXDrawable)window, (GLXContext)ctx);
+    
+    result = glXMakeCurrent((Display *)display, (GLXDrawable)window, (GLXContext)ctx);
+    if (!result) {
+	fprintf(stderr, "Java 3D ERROR : In Canvas3D.useCtx() glXMakeCurrent fails\n");
+        return JNI_FALSE;
+    }
+
 #endif
 
 #ifdef WIN32
-    wglMakeCurrent((HDC) window, (HGLRC) ctx);
+    DWORD err;
+    LPTSTR errString;    
+
+    result = wglMakeCurrent((HDC) window, (HGLRC) ctx);
+    /* fprintf(stderr, "useCtx : wglMakeCurrent : window %d, ctx %d, result = %d\n", 
+            window, (int) ctx, result); */
+
+    if (!result) {
+	err = GetLastError();
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		      FORMAT_MESSAGE_FROM_SYSTEM,
+		      NULL, err, 0, (LPTSTR)&errString, 0, NULL);
+	fprintf(stderr, "wglMakeCurrent Failed: %s\n", errString);
+	return JNI_FALSE;
+    }
+
 #endif
+    return JNI_TRUE;
 }
 
 JNIEXPORT
@@ -2741,7 +2764,6 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
 		
 	hpbuf = pFormatInfoPtr->wglCreatePbufferARB( hdc, pFormatInfoPtr->offScreenPFormat,
 						     width, height, piAttrs);
-	    
 	if(hpbuf == NULL) {
 	    printErrorMessage("In Canvas3D : wglCreatePbufferARB FAIL.");
 	    ReleaseDC(hwnd, hdc);
@@ -3301,7 +3323,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     }
     
     result = glXMakeCurrent((Display *)display, (GLXDrawable)newWin, (GLXContext)ctx);
-    if (result == GL_FALSE)
+    if (!result)
 	fprintf(stderr, "Java 3D ERROR : glXMakeCurrent fails\n");
 
     glXGetFBConfigAttrib((Display *) display, fbConfigList[0], 

@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -106,7 +106,8 @@ class SoundStructure extends J3dStructure {
 		transformMsg = true;
 		break;
 	    case J3dMessage.SWITCH_CHANGED:
-		processSwitchChanged(m);
+                // This method isn't implemented yet.
+                // processSwitchChanged(m);
 		// may need to process dirty switched-on transform
 		if (universe.transformStructure.getLazyUpdate()) {
 		    transformMsg = true;
@@ -442,7 +443,9 @@ class SoundStructure extends J3dStructure {
         }
     }
 
+    // Implementation be needed.
     void processSwitchChanged(J3dMessage m) {
+        /*
         SoundRetained sound;
         LeafRetained leaf;
         UnorderList arrList;
@@ -468,6 +471,7 @@ class SoundStructure extends J3dStructure {
                 }
             }
         }
+         */
     }
 
 // How can active flag (based on View orientataion) be set here for all Views?!? 
@@ -718,4 +722,5 @@ class SoundStructure extends J3dStructure {
     }
 
     void cleanup() {}
+
 }

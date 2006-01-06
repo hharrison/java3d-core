@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -97,10 +97,10 @@ public:
     BOOL           inToggle;     // in toggle fullscreen/window mode
     RECT           screenRect;   // coordinate of window relative to
                                  // the whole desktop in multiple monitor
-    RECT           windowRect; // coordinate of window relative to
-                               // the current monitor desktop only
-    INT            minZDepth;  // min Z depth set in NativeConfigTemplate
-
+    RECT           windowRect;   // coordinate of window relative to
+                                 // the current monitor desktop only
+    INT            minZDepth;    // min Z depth set in NativeConfigTemplate
+    INT            minZDepthStencil; // min Stencil depth set in NativeConfigTemplate
     DEVMODE        devmode;     // current display mode
     DWORD          antialiasing; // PREFERRED, REQUIRED or UNNECESSARY
 
@@ -124,6 +124,8 @@ public:
     DWORD softwareVertexProcessing;
     DWORD zWriteEnable;
     DWORD zEnable;
+	DWORD stencilWriteEnable; // new on 1.4
+	DWORD stencilEnable; // new on 1.4
 
     // Ambient material used when coloring Attributes
     D3DMATERIAL9 ambientMaterial;
@@ -286,7 +288,8 @@ public:
     VOID setDriverInfo();
     static D3dDeviceInfo* setDeviceInfo(D3dDriverInfo *driverInfo,
 					BOOL *bFullScreen,
-					int minZDepth);
+					int minZDepth,
+					int minZDepthStencil);
     DWORD findBehavior();
     VOID setPresentParams();
     INT resetSurface(JNIEnv *env, jobject obj);
@@ -304,10 +307,12 @@ public:
     static D3dDeviceInfo* selectDevice(int deviceID,
 				       D3dDriverInfo *driverInfo,
 				       BOOL *bFullScreen,
-				       int minZDepth);
+				       int minZDepth,
+					   int minZDepthStencil);
     static D3dDeviceInfo* selectBestDevice(D3dDriverInfo *driverInfo,
 					   BOOL *bFullScreen,
-					   int minZDepth);
+					   int minZDepth,
+					   int minZDepthStencil);
     static VOID setDeviceFromProperty(JNIEnv *env);
 	static BOOL getSystemProperty(JNIEnv *env, char *strName, char *strValue);
     static VOID setDebugProperty(JNIEnv *env);

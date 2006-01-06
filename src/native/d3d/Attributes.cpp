@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -15,21 +15,21 @@
 
 const DWORD blendFunctionTable[] =
 {
-    D3DBLEND_ZERO, D3DBLEND_ONE, 
+    D3DBLEND_ZERO, D3DBLEND_ONE,
     D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA,
-    D3DBLEND_DESTCOLOR, D3DBLEND_SRCCOLOR, 
+    D3DBLEND_DESTCOLOR, D3DBLEND_SRCCOLOR,
     D3DBLEND_INVSRCCOLOR, D3DBLEND_SRCCOLOR
 };
 
-const DWORD combineFunctionTable[] = 
+const DWORD combineFunctionTable[] =
 {
- D3DTOP_SELECTARG1,  D3DTOP_SELECTARG1,  D3DTOP_SELECTARG1,  D3DTOP_SELECTARG1, 
- D3DTOP_MODULATE,    D3DTOP_MODULATE2X,  D3DTOP_MODULATE2X,  D3DTOP_MODULATE4X, 
+ D3DTOP_SELECTARG1,  D3DTOP_SELECTARG1,  D3DTOP_SELECTARG1,  D3DTOP_SELECTARG1,
+ D3DTOP_MODULATE,    D3DTOP_MODULATE2X,  D3DTOP_MODULATE2X,  D3DTOP_MODULATE4X,
  D3DTOP_ADD,         D3DTOP_ADD,         D3DTOP_ADD,         D3DTOP_ADD,
- D3DTOP_ADDSIGNED,   D3DTOP_ADDSIGNED2X, D3DTOP_ADDSIGNED2X, D3DTOP_ADDSIGNED2X, 
- D3DTOP_SUBTRACT,    D3DTOP_SUBTRACT,    D3DTOP_SUBTRACT,    D3DTOP_SUBTRACT, 
- D3DTOP_LERP,        D3DTOP_LERP,        D3DTOP_LERP,        D3DTOP_LERP, 
- D3DTOP_DOTPRODUCT3, D3DTOP_DOTPRODUCT3, D3DTOP_DOTPRODUCT3, D3DTOP_DOTPRODUCT3 
+ D3DTOP_ADDSIGNED,   D3DTOP_ADDSIGNED2X, D3DTOP_ADDSIGNED2X, D3DTOP_ADDSIGNED2X,
+ D3DTOP_SUBTRACT,    D3DTOP_SUBTRACT,    D3DTOP_SUBTRACT,    D3DTOP_SUBTRACT,
+ D3DTOP_LERP,        D3DTOP_LERP,        D3DTOP_LERP,        D3DTOP_LERP,
+ D3DTOP_DOTPRODUCT3, D3DTOP_DOTPRODUCT3, D3DTOP_DOTPRODUCT3, D3DTOP_DOTPRODUCT3
 };
 
 // Assume COMBINE_OBJECT_COLOR	              = 0
@@ -41,23 +41,23 @@ const DWORD combineFunctionTable[] =
 //        COMBINE_ONE_MINUS_SRC_COLOR	= 1
 //        COMBINE_SRC_ALPHA		= 2
 //        COMBINE_ONE_MINUS_SRC_ALPHA	= 3
-// 
-const DWORD combineSourceTable[] = 
+//
+const DWORD combineSourceTable[] =
 {
-   D3DTA_DIFFUSE, 
-   D3DTA_DIFFUSE | D3DTA_COMPLEMENT, 
+   D3DTA_DIFFUSE,
+   D3DTA_DIFFUSE | D3DTA_COMPLEMENT,
    D3DTA_DIFFUSE | D3DTA_ALPHAREPLICATE,
-   D3DTA_DIFFUSE | D3DTA_COMPLEMENT | D3DTA_ALPHAREPLICATE, 
-   D3DTA_TEXTURE, 
-   D3DTA_TEXTURE | D3DTA_COMPLEMENT, 
+   D3DTA_DIFFUSE | D3DTA_COMPLEMENT | D3DTA_ALPHAREPLICATE,
+   D3DTA_TEXTURE,
+   D3DTA_TEXTURE | D3DTA_COMPLEMENT,
    D3DTA_TEXTURE | D3DTA_ALPHAREPLICATE,
-   D3DTA_TEXTURE | D3DTA_COMPLEMENT | D3DTA_ALPHAREPLICATE, 
-   D3DTA_TFACTOR, 
-   D3DTA_TFACTOR | D3DTA_COMPLEMENT, 
+   D3DTA_TEXTURE | D3DTA_COMPLEMENT | D3DTA_ALPHAREPLICATE,
+   D3DTA_TFACTOR,
+   D3DTA_TFACTOR | D3DTA_COMPLEMENT,
    D3DTA_TFACTOR | D3DTA_ALPHAREPLICATE,
-   D3DTA_TFACTOR | D3DTA_COMPLEMENT | D3DTA_ALPHAREPLICATE, 
-   D3DTA_CURRENT, 
-   D3DTA_CURRENT | D3DTA_COMPLEMENT, 
+   D3DTA_TFACTOR | D3DTA_COMPLEMENT | D3DTA_ALPHAREPLICATE,
+   D3DTA_CURRENT,
+   D3DTA_CURRENT | D3DTA_COMPLEMENT,
    D3DTA_CURRENT | D3DTA_ALPHAREPLICATE,
    D3DTA_CURRENT | D3DTA_COMPLEMENT | D3DTA_ALPHAREPLICATE
 };
@@ -74,14 +74,14 @@ BOOL isTexBorderMessOutput = false;
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_LinearFogRetained_update(
-	JNIEnv *env, 
+	JNIEnv *env,
 	jobject obj,
 	jlong ctx,
 	jfloat red,
 	jfloat green,
 	jfloat blue,
 	jdouble fdist,
-	jdouble bdist) 
+	jdouble bdist)
 {
     GetDevice();
 
@@ -90,7 +90,7 @@ void JNICALL Java_javax_media_j3d_LinearFogRetained_update(
 
     device->SetRenderState(d3dCtx->deviceInfo->fogMode,
 			   D3DFOG_LINEAR);
-    device->SetRenderState(D3DRS_FOGCOLOR, 
+    device->SetRenderState(D3DRS_FOGCOLOR,
 			   D3DCOLOR_COLORVALUE(red, green, blue, 0));
 
     device->SetRenderState(D3DRS_FOGSTART,
@@ -105,7 +105,7 @@ void JNICALL Java_javax_media_j3d_LinearFogRetained_update(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_ExponentialFogRetained_update(
-	JNIEnv *env, 
+	JNIEnv *env,
 	jobject obj,
 	jlong  ctx,
 	jfloat red,
@@ -119,7 +119,7 @@ void JNICALL Java_javax_media_j3d_ExponentialFogRetained_update(
 
     device->SetRenderState(d3dCtx->deviceInfo->fogMode,
 			   D3DFOG_EXP);
-    device->SetRenderState(D3DRS_FOGCOLOR, 
+    device->SetRenderState(D3DRS_FOGCOLOR,
 			   D3DCOLOR_COLORVALUE(red, green, blue, 0));
     device->SetRenderState(D3DRS_FOGDENSITY,
 			   *((LPDWORD) (&d)));
@@ -130,7 +130,7 @@ void JNICALL Java_javax_media_j3d_ExponentialFogRetained_update(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_ModelClipRetained_update(
-	JNIEnv *env, 
+	JNIEnv *env,
 	jobject obj,
 	jlong ctx,
 	jint planeNum,
@@ -138,7 +138,7 @@ void JNICALL Java_javax_media_j3d_ModelClipRetained_update(
 	jdouble A,
 	jdouble B,
 	jdouble C,
-	jdouble D) 
+	jdouble D)
 {
     DWORD status;
     float clip[4];
@@ -150,7 +150,7 @@ void JNICALL Java_javax_media_j3d_ModelClipRetained_update(
     clip[2] = -C;
     clip[3] = -D;
 
-    device->GetRenderState(D3DRS_CLIPPLANEENABLE, &status);    
+    device->GetRenderState(D3DRS_CLIPPLANEENABLE, &status);
 
     if (enableFlag) {
 	device->SetClipPlane(planeNum, clip);
@@ -179,7 +179,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setModelViewMatrix(
     jdouble *matrix = reinterpret_cast<jdouble*>(
 	       env->GetPrimitiveArrayCritical(modelMatrix, NULL));
 
-    CopyTranspose(d3dMatrix, matrix); 
+    CopyTranspose(d3dMatrix, matrix);
 
     env->ReleasePrimitiveArrayCritical(modelMatrix, matrix, 0);
 
@@ -188,8 +188,8 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setModelViewMatrix(
 
     matrix = reinterpret_cast<jdouble*>(
 		        env->GetPrimitiveArrayCritical(viewMatrix, NULL));
-    CopyTranspose(d3dMatrix, matrix); 
-    
+    CopyTranspose(d3dMatrix, matrix);
+
     env->ReleasePrimitiveArrayCritical(viewMatrix, matrix, 0);
 
     // Because we negate the third row in projection matrix to
@@ -238,10 +238,10 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setProjectionMatrix(
      * (3) In Direct3D, the z-depths range is [0,1] instead of
      *     OGL [-1, 1], so we need to multiple it by
      *
-     *	        [1 0   0 0] 
-     *      R = [0 1   0 0] 
+     *	        [1 0   0 0]
+     *      R = [0 1   0 0]
      *	        [0 0 0.5 0]
-     *		[0 0 0.5 1] 
+     *		[0 0 0.5 1]
      *
      *     after the transpose and negate. i.e. N*R
      *
@@ -251,7 +251,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setProjectionMatrix(
      *     input from Java3D.  Now d3dMatrix._34 = -1
      *
      * (5) To make d3dMatrix._34 = 1, we negate the third row of it.
-     *     Because of this, we need to negate the third column in 
+     *     Because of this, we need to negate the third column in
      *     View matrix to compensate this.
      *
      * All of the above operation is combined together in this
@@ -261,11 +261,11 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setProjectionMatrix(
 
     if (s[14] != 0) {
 	// Perspective projection
-	// s[14] is always < 0 
+	// s[14] is always < 0
 	float ratio = -1/s[14];
 	m._12= m._13 = m._14 = m._21 = m._23 =
 	    m._24 = m._41 = m._42 = m._44 = 0;
-	m._11 = s[0]*ratio;    
+	m._11 = s[0]*ratio;
 	m._22 = s[5]*ratio;
 	m._31 = -s[2]*ratio;
 	m._32 = -s[6]*ratio;
@@ -301,7 +301,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setViewport(
     jint height)
 {
     GetDevice();
-    
+
     if (d3dCtx->bFullScreen) {
 	width = d3dCtx->devmode.dmPelsWidth;
 	height = d3dCtx->devmode.dmPelsHeight;
@@ -327,7 +327,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setSceneAmbient(
     Clamp(green);
     Clamp(blue);
     */
-    device->SetRenderState(D3DRS_AMBIENT, 
+    device->SetRenderState(D3DRS_AMBIENT,
 			   D3DCOLOR_COLORVALUE(red, green, blue, 0));
 }
 
@@ -345,7 +345,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setLightEnables(
 #pragma warning(disable:4244)   // loss of data from __int64 to int
 
     for (int i=nlights-1; i>=0; i--) {
-	device->LightEnable(i, enable_mask & (1<<i));
+	device->LightEnable(i, enable_mask & (long)(1L<<i));
     }
 }
 
@@ -384,11 +384,115 @@ void JNICALL Java_javax_media_j3d_Canvas3D_disableModelClip(
     device->SetRenderState(D3DRS_CLIPPLANEENABLE, 0);
 }
 
+/**
+ * one of :
+ * STENCIL_KEEP - keeps the current value (no operation performed). This is the default setting.
+ * STENCIL_ZERO - Sets the stencil buffer value to 0.
+ * STENCIL_REPLACE - Sets the stencil buffer value to refValue, as specified by setStencilFunction.
+ * STENCIL_INCR - Increments the current stencil buffer value.
+ * STENCIL_DECR - Decrements the current stencil buffer value.
+ * STENCIL_INVERT - Bitwise inverts the current stencil buffer value.
+*/
+DWORD getStencilOP(jint op)
+{
+	DWORD value = D3DSTENCILOP_KEEP;
+	switch(op)
+	{
+	case javax_media_j3d_RenderingAttributes_STENCIL_KEEP:
+		value = D3DSTENCILOP_KEEP; break;
+	case javax_media_j3d_RenderingAttributes_STENCIL_ZERO:
+		value = D3DSTENCILOP_ZERO; break;
+	case javax_media_j3d_RenderingAttributes_STENCIL_REPLACE:
+		value = D3DSTENCILOP_REPLACE; break;
+	case javax_media_j3d_RenderingAttributes_STENCIL_INCR:
+		value = D3DSTENCILOP_INCRSAT; break;
+	case javax_media_j3d_RenderingAttributes_STENCIL_DECR:
+		value = D3DSTENCILOP_DECRSAT; break;
+	case javax_media_j3d_RenderingAttributes_STENCIL_INVERT:
+		value = D3DSTENCILOP_INVERT; break;
+	default :
+		value = D3DSTENCILOP_KEEP; break;
+	}
+
+	return value;
+}
+
+/**
+ * ALWAYS - pixels are always drawn, irrespective of the stencil value. This effectively disables stencil testing. This is the default setting.
+ * NEVER - pixels are never drawn, irrespective of the stencil value.
+ * EQUAL - pixels are drawn if the stencil reference value is equal to the stored stencil value in the frame buffer.
+ * NOT_EQUAL - pixels are drawn if the stencil reference value is not equal to the stored stencil value in the frame buffer.
+ * LESS - pixels are drawn if the stencil reference value is less than the stored stencil value in the frame buffer.
+ * LESS_OR_EQUAL - pixels are drawn if the stencil reference value is less than or equal to the stored stencil value in the frame buffer.
+ * GREATER - pixels are drawn if the stencil reference value is greater than the stored stencil value in the frame buffer.
+ * GREATER_OR_EQUAL - pixels are drawn if the stencil reference value is greater than or equal to the stored stencil value in the frame buffer.
+*/
+DWORD getStencilFunc(jint func)
+{
+	DWORD value = D3DCMP_ALWAYS;
+	switch(func)
+	{
+	case javax_media_j3d_RenderingAttributes_ALWAYS:
+		value = D3DCMP_ALWAYS; break;
+	case javax_media_j3d_RenderingAttributes_NEVER:
+		value = D3DCMP_NEVER; break;
+	case javax_media_j3d_RenderingAttributes_EQUAL:
+		value = D3DCMP_EQUAL; break;
+	case javax_media_j3d_RenderingAttributes_NOT_EQUAL:
+		value = D3DCMP_NOTEQUAL; break;
+	case javax_media_j3d_RenderingAttributes_LESS_OR_EQUAL:
+		value = D3DCMP_LESSEQUAL; break;
+	case javax_media_j3d_RenderingAttributes_GREATER:
+		value = D3DCMP_GREATER; break;
+	case javax_media_j3d_RenderingAttributes_GREATER_OR_EQUAL:
+		value = D3DCMP_GREATEREQUAL; break;
+	default :
+		value = D3DCMP_ALWAYS; break;
+	}
+
+	return value;
+}
+
+/**
+ * LESS_OR_EQUAL - DEFAULT pixels are drawn if the depth value is less than or equal to the stored depth value in the frame buffer.
+ * ALWAYS - pixels are always drawn, irrespective of the depth value. This effectively disables depth testing.
+ * NEVER - pixels are never drawn, irrespective of the depth value.
+ * EQUAL - pixels are drawn if the depth value is equal to the stored stencil value in the frame buffer.
+ * NOT_EQUAL - pixels are drawn if the depth value is not equal to the stored depth value in the frame buffer.
+ * LESS - pixels are drawn if the depth value is less than the stored stencil value in the frame buffer.
+ * GREATER - pixels are drawn if the depth value is greater than the stored stencil value in the frame buffer.
+ * GREATER_OR_EQUAL - pixels are drawn if the depth value is greater than or equal to the stored stencil value in the frame buffer.
+*/
+DWORD getDepthFunc(jint func)
+{
+	DWORD value = D3DCMP_LESSEQUAL;
+	switch(func)
+	{
+	case javax_media_j3d_RenderingAttributes_ALWAYS:
+		value = D3DCMP_ALWAYS; break;
+	case javax_media_j3d_RenderingAttributes_NEVER:
+		value = D3DCMP_NEVER; break;
+	case javax_media_j3d_RenderingAttributes_EQUAL:
+		value = D3DCMP_EQUAL; break;
+	case javax_media_j3d_RenderingAttributes_NOT_EQUAL:
+		value = D3DCMP_NOTEQUAL; break;
+	case javax_media_j3d_RenderingAttributes_LESS_OR_EQUAL:
+		value = D3DCMP_LESSEQUAL; break;
+	case javax_media_j3d_RenderingAttributes_GREATER:
+		value = D3DCMP_GREATER; break;
+	case javax_media_j3d_RenderingAttributes_GREATER_OR_EQUAL:
+		value = D3DCMP_GREATEREQUAL; break;
+	default :
+		value = D3DCMP_LESSEQUAL; break;
+	}
+
+	return value;
+}
 
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetRenderingAttributes(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx,
     jboolean db_write_enable_override,
@@ -398,24 +502,41 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetRenderingAttributes(
 
     if (!db_write_enable_override) {
 	d3dCtx->zWriteEnable = TRUE;
-	device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-    } 
+	device->SetRenderState(D3DRS_ZWRITEENABLE, D3DZB_TRUE);
+	device->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+    }
 
     if (!db_enable_override) {
 	d3dCtx->zEnable = TRUE;
 	device->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
-    } 
+	device->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+    }
 
     device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
     device->SetRenderState(D3DRS_ALPHAREF, 0);
+	if(d3dCtx->stencilWriteEnable)
+	{
+		device->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+		device->SetRenderState( D3DRS_STENCILREF,  0);
+		device->SetRenderState( D3DRS_STENCILMASK,      0xFFFFFFFF);
+		device->SetRenderState( D3DRS_STENCILWRITEMASK, 0xFFFFFFFF );
+
+         // Always increment the stencil value
+		device->SetRenderState(D3DRS_STENCILFAIL,  D3DSTENCILOP_KEEP);
+        device->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
+        device->SetRenderState(D3DRS_STENCILPASS,  D3DSTENCILOP_KEEP);
+
+		device->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+		d3dCtx->stencilWriteEnable = false;
+	}
 
     /*    setRasterOp(d3dCtx, R2_COPYPEN); */
 
 }
 
-extern "C" JNIEXPORT 
+extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx,
     jboolean db_write_enable_override,
@@ -429,7 +550,7 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
     jboolean rasterOpEnable,
     jint rasterOp,
 	jboolean userStencilAvailable,
-    jboolean stencilEnable, 
+    jboolean stencilEnable,
     jint stencilFailOp,
     jint stencilZFailOp,
     jint stencilZPassOp,
@@ -443,29 +564,41 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 
     DWORD alpha = (DWORD) (at_value * 255 + 0.5f);
 
-    if (!db_enable_override) {
-        if (db_enable) {
-	    d3dCtx->zEnable = TRUE;
-	    device->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
-        } else {
-	    d3dCtx->zEnable = FALSE;
-	    device->SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);
+    if (!db_enable_override)
+	{
+        if (db_enable)
+		{
+	      d3dCtx->zEnable = TRUE;
+	      device->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
+        }
+		else
+		{
+	      d3dCtx->zEnable = FALSE;
+	      device->SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);		  
         }
     }
 
-    if (!db_write_enable_override) {
-	d3dCtx->zWriteEnable = db_write_enable;
-	device->SetRenderState(D3DRS_ZWRITEENABLE, db_write_enable);
+    if (!db_write_enable_override)
+	{
+	  d3dCtx->zWriteEnable = db_write_enable;
+	  device->SetRenderState(D3DRS_ZWRITEENABLE, db_write_enable);
+	  // disable ZFunc if ZBuffer is disabled ? no. 
+	  //  ZFunc must work even when there is no z-buffer enable
+      device->SetRenderState(D3DRS_ZFUNC, getDepthFunc(db_func));	  
     }
 
-    if (at_func == javax_media_j3d_RenderingAttributes_ALWAYS) {
-	device->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-    } else {
-	device->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	device->SetRenderState(D3DRS_ALPHAREF, alpha);
+    if (at_func == javax_media_j3d_RenderingAttributes_ALWAYS)
+	{
+	  device->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+    }
+	else
+	{
+	  device->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	  device->SetRenderState(D3DRS_ALPHAREF, alpha);
     }
 
-    switch (at_func) {
+    switch (at_func)
+	{
 	case javax_media_j3d_RenderingAttributes_ALWAYS:
 	    device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
 	    break;
@@ -492,9 +625,49 @@ void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
 	    break;
     }
 
+/*
+	 stencilFailOp,  *
+     stencilZFailOp, *
+     stencilZPassOp, *
+     stencilFunction, *
+     stencilReferenceValue, *
+     stencilCompareMask, *
+     stencilWriteMask *
+*/
+	if (userStencilAvailable == JNI_TRUE)
+	{
+        if (stencilEnable == JNI_TRUE)
+		{
+         // Turn on stenciling
+         device->SetRenderState( D3DRS_STENCILENABLE, TRUE );
+        // printf("StencilEnable TRUE\n");
+         // Set the function to always pass.
+         device->SetRenderState( D3DRS_STENCILFUNC, getStencilFunc(stencilFunction) );
+         device->SetRenderState( D3DRS_STENCILREF,  stencilReferenceValue );
+		 device->SetRenderState( D3DRS_STENCILMASK, stencilCompareMask );
+		 device->SetRenderState( D3DRS_STENCILWRITEMASK, stencilWriteMask );
+
+         // Always increment the stencil value
+		 device->SetRenderState(D3DRS_STENCILFAIL,  getStencilOP(stencilFailOp) );
+         device->SetRenderState(D3DRS_STENCILZFAIL, getStencilOP(stencilZFailOp));
+         device->SetRenderState(D3DRS_STENCILPASS,  getStencilOP(stencilZPassOp) );
+   	   }
+	   else
+	   {
+		 device->SetRenderState( D3DRS_STENCILENABLE, FALSE );
+		 // printf("StencilEnable False\n");
+       }
+    }
+	/*
+	else
+	{
+		 printf("UserStencilEnable False\n");
+	}
+	*/
+
+}//
 
 
-}
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetPolygonAttributes(
@@ -515,7 +688,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetPolygonAttributes(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_PolygonAttributesRetained_updateNative(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx,
     jint polygonMode,
@@ -534,7 +707,7 @@ void JNICALL Java_javax_media_j3d_PolygonAttributesRetained_updateNative(
      * direction is opposite to OGL. If we pass negative
      * Z-bias the polygon will not render at all.
      * So we map -ve polygon offset to positive value
-     * and +ve offset to 0. (i.e. we don't support positive 
+     * and +ve offset to 0. (i.e. we don't support positive
      * polygon offset)
      */
     if (zbias <= -1) {
@@ -580,11 +753,37 @@ void JNICALL Java_javax_media_j3d_PolygonAttributesRetained_updateNative(
     */
 }
 
+/*
+void printDepthFunc(jint func)
+{
+	DWORD value = D3DCMP_LESSEQUAL;
+	printf("DepthFunc: ");
+	switch(func)
+	{
+	case javax_media_j3d_RenderingAttributes_ALWAYS:
+		printf(" D3DCMP_ALWAYS\n"); break;
+	case javax_media_j3d_RenderingAttributes_NEVER:
+		printf(" D3DCMP_NEVER\n"); break;
+	case javax_media_j3d_RenderingAttributes_EQUAL:
+		printf(" D3DCMP_EQUAL\n"); break;
+	case javax_media_j3d_RenderingAttributes_NOT_EQUAL:
+		printf(" D3DCMP_NOTEQUAL\n"); break;
+	case javax_media_j3d_RenderingAttributes_LESS_OR_EQUAL:
+		printf(" D3DCMP_LESSEQUAL\n"); break;
+	case javax_media_j3d_RenderingAttributes_GREATER:
+		printf(" D3DCMP_GREATER\n"); break;
+	case javax_media_j3d_RenderingAttributes_GREATER_OR_EQUAL:
+		printf(" D3DCMP_GREATEREQUAL\n"); break;
+	default :
+		printf(" D3DCMP_LESSEQUAL\n"); break;
+	}
+}
 
+*/
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetLineAttributes(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx)
 {
@@ -593,23 +792,23 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetLineAttributes(
     // D3D don't support Line width
     // glLineWidth(1);
     //D3D9 doesnot support line Patterns
-	// must update this to use ID3DXLine Interface
+	// @TODO must update this to use ID3DXLine Interface
 /*
     D3DLINEPATTERN pattern;
     pattern.wRepeatFactor = 0;
     pattern.wLinePattern = 0;
-    device->SetRenderState(D3DRS_LINEPATTERN, 
+    device->SetRenderState(D3DRS_LINEPATTERN,
 			   *((LPDWORD) (&pattern)));
-    
+
 */
 }
 
 
-// Note that some graphics card don't support it. 
+// Note that some graphics card don't support it.
 // In this case use RGB Emulation.
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_LineAttributesRetained_updateNative(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx,
     jfloat lineWidth,
@@ -622,8 +821,8 @@ void JNICALL Java_javax_media_j3d_LineAttributesRetained_updateNative(
 
 	//Alessandro
     //D3DLINEPATTERN pattern;
-    
-    /*    
+
+    /*
     if (lineWidth > 1) {
 	if (debug && !isLineWidthMessOutput) {
 	    isLineWidthMessOutput = true;
@@ -649,22 +848,22 @@ void JNICALL Java_javax_media_j3d_LineAttributesRetained_updateNative(
 	}
 	*/
 	/** alessandro
-        if (linePattern == javax_media_j3d_LineAttributes_PATTERN_DASH) { // dashed lines 
+        if (linePattern == javax_media_j3d_LineAttributes_PATTERN_DASH) { // dashed lines
 	    pattern.wRepeatFactor = 1;
 	    pattern.wLinePattern = 0x00ff;
-        } else if (linePattern == javax_media_j3d_LineAttributes_PATTERN_DOT) { // dotted lines 
+        } else if (linePattern == javax_media_j3d_LineAttributes_PATTERN_DOT) { // dotted lines
 	    pattern.wRepeatFactor = 1;
 	    pattern.wLinePattern = 0x0101;
-        } else if (linePattern == javax_media_j3d_LineAttributes_PATTERN_DASH_DOT) { // dash-dotted lines 
+        } else if (linePattern == javax_media_j3d_LineAttributes_PATTERN_DASH_DOT) { // dash-dotted lines
 	    pattern.wRepeatFactor = 1;
 	    pattern.wLinePattern = 0x087f;
-	} else if (linePattern == javax_media_j3d_LineAttributes_PATTERN_USER_DEFINED) { // user-defined mask 
+	} else if (linePattern == javax_media_j3d_LineAttributes_PATTERN_USER_DEFINED) { // user-defined mask
 	    pattern.wRepeatFactor = linePatternScaleFactor;
 	    pattern.wLinePattern = (WORD) linePatternMask;
 	}
     }
 
-    device->SetRenderState(D3DRS_LINEPATTERN, 
+    device->SetRenderState(D3DRS_LINEPATTERN,
 			   *((LPDWORD) (&pattern)));
       **/
     /*
@@ -679,7 +878,7 @@ void JNICALL Java_javax_media_j3d_LineAttributesRetained_updateNative(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetPointAttributes(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx)
 {
@@ -693,7 +892,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetPointAttributes(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_PointAttributesRetained_updateNative(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx,
     jfloat pointSize,
@@ -721,7 +920,7 @@ void JNICALL Java_javax_media_j3d_PointAttributesRetained_updateNative(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetTexCoordGeneration(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx)
 {
@@ -736,20 +935,20 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetTexCoordGeneration(
     d3dCtx->texGenMode[tus] = TEX_GEN_NONE;
 
     if (d3dCtx->texTransformSet[tus]) {
-	device->SetTransform((D3DTRANSFORMSTATETYPE) 
-			     (D3DTS_TEXTURE0 + tus), 
+	device->SetTransform((D3DTRANSFORMSTATETYPE)
+			     (D3DTS_TEXTURE0 + tus),
 			     &(d3dCtx->texTransform[tus]));
     }
 
     device->SetTextureStageState(tus,
-				 D3DTSS_TEXCOORDINDEX, 
+				 D3DTSS_TEXCOORDINDEX,
 				 D3DTSS_TCI_PASSTHRU);
 }
 
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TexCoordGenerationRetained_updateNative(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx,
     jboolean enable,
@@ -779,7 +978,7 @@ void JNICALL Java_javax_media_j3d_TexCoordGenerationRetained_updateNative(
     GetDevice();
 
     int tus = d3dCtx->texUnitStage;
-    
+
 
     if (tus >= d3dCtx->bindTextureIdLen) {
 	return;
@@ -787,7 +986,7 @@ void JNICALL Java_javax_media_j3d_TexCoordGenerationRetained_updateNative(
 
     if (!enable) {
 	device->SetTextureStageState(tus,
-				     D3DTSS_TEXCOORDINDEX, 
+				     D3DTSS_TEXCOORDINDEX,
 				     D3DTSS_TCI_PASSTHRU);
 	d3dCtx->texGenMode[tus] = TEX_GEN_NONE;
 	return;
@@ -827,19 +1026,19 @@ void JNICALL Java_javax_media_j3d_TexCoordGenerationRetained_updateNative(
 		m._14 = 0;
 		m._24 = 0;
 		m._34 = 0;
-		m._44 = 0;		
+		m._44 = 0;
 	    }
 	} else {
 	    m._13 = 0;
 	    m._23 = 0;
 	    m._33 = 0;
-	    m._43 = 0;	    
+	    m._43 = 0;
 	    m._14 = 0;
 	    m._24 = 0;
 	    m._34 = 0;
-	    m._44 = 0;		
+	    m._44 = 0;
 	}
-	    
+
 	env->ReleasePrimitiveArrayCritical(eyeToVworld, mv, 0);
 
 	if (d3dCtx->texTransformSet[tus]) {
@@ -859,10 +1058,10 @@ void JNICALL Java_javax_media_j3d_TexCoordGenerationRetained_updateNative(
 	  The matrix has to scale and translate the texture coordinates
 	  Since in sphere map Tx = Nx/2 + 0.5, Ty = Ny/2 + 0.5
 	*/
-	m._11 = 0.5f; m._12 = 0.0f; m._13 = 0.0f; m._14 = 0.0f; 
-	m._21 = 0.0f; m._22 = 0.5f; m._23 = 0.0f; m._24 = 0.0f; 
-	m._31 = 0.0f; m._32 = 0.0f; m._33 = 1.0f; m._34 = 0.0f; 
-	m._41 = 0.5f; m._42 = 0.5f; m._43 = 0.0f; m._44 = 1.0f; 
+	m._11 = 0.5f; m._12 = 0.0f; m._13 = 0.0f; m._14 = 0.0f;
+	m._21 = 0.0f; m._22 = 0.5f; m._23 = 0.0f; m._24 = 0.0f;
+	m._31 = 0.0f; m._32 = 0.0f; m._33 = 1.0f; m._34 = 0.0f;
+	m._41 = 0.5f; m._42 = 0.5f; m._43 = 0.0f; m._44 = 1.0f;
 
 	if (d3dCtx->texTransformSet[tus]) {
 	    // If texture transform already set, multiple by this
@@ -912,7 +1111,7 @@ void JNICALL Java_javax_media_j3d_TexCoordGenerationRetained_updateNative(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureAttributes(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx)
 {
@@ -926,12 +1125,12 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureAttributes(
 
     if (d3dCtx->texTransformSet[tus]) {
 	d3dCtx->texTransformSet[tus] = false;
-	device->SetTransform((D3DTRANSFORMSTATETYPE) 
-			     (D3DTS_TEXTURE0 + tus), 
+	device->SetTransform((D3DTRANSFORMSTATETYPE)
+			     (D3DTS_TEXTURE0 + tus),
 			     &identityMatrix);
     }
 
-    // perspCorrectionMode always turn on in DX8.0 if device support 
+    // perspCorrectionMode always turn on in DX8.0 if device support
 
     device->SetTextureStageState(tus,
 				 D3DTSS_COLOROP, D3DTOP_SELECTARG1);
@@ -945,10 +1144,10 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureAttributes(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx,
-    jdoubleArray transform, jboolean isIdentityT, 
+    jdoubleArray transform, jboolean isIdentityT,
     jint textureMode,
     jint perspCorrectionMode,
     jfloat textureBlendColorRed,
@@ -969,16 +1168,16 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 	return;
     }
 
-    // perspCorrectionMode always turn on in DX8.0 if device support 
-    
+    // perspCorrectionMode always turn on in DX8.0 if device support
+
     if (isIdentityT) {
 	d3dCtx->texTransformSet[tus] = false;
-	device->SetTransform((D3DTRANSFORMSTATETYPE) 
-			     (D3DTS_TEXTURE0 + tus), 
+	device->SetTransform((D3DTRANSFORMSTATETYPE)
+			     (D3DTS_TEXTURE0 + tus),
 			     &identityMatrix);
     } else {
 	D3DXMATRIX *m = &(d3dCtx->texTransform[tus]);
-	jdouble *mx_ptr = reinterpret_cast<jdouble *>( 
+	jdouble *mx_ptr = reinterpret_cast<jdouble *>(
 			     env->GetPrimitiveArrayCritical(transform, NULL));
 	CopyTranspose((*m), mx_ptr);
 
@@ -992,7 +1191,7 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 	*/
 	d3dCtx->texTransformSet[tus] = true;
 	d3dCtx->texTranslateSet[tus] = false;
-	device->SetTransform((D3DTRANSFORMSTATETYPE) 
+	device->SetTransform((D3DTRANSFORMSTATETYPE)
 			     (D3DTS_TEXTURE0 + tus), m);
     }
 
@@ -1024,7 +1223,7 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 		device->SetTextureStageState(tus,
 					     D3DTSS_COLORARG1, D3DTA_TEXTURE);
 		device->SetTextureStageState(tus,
-					     D3DTSS_COLORARG2, D3DTA_CURRENT);		
+					     D3DTSS_COLORARG2, D3DTA_CURRENT);
 		device->SetTextureStageState(tus,
 					     D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 		break;
@@ -1038,10 +1237,10 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 		device->SetTextureStageState(tus,
 					     D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 		device->SetTextureStageState(tus,
-					     D3DTSS_ALPHAARG2, D3DTA_CURRENT);		
+					     D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 		break;
 	    default:
-		printf("Format %d not support\n", format); 
+		printf("Format %d not support\n", format);
 	    }
 	    break;
         case javax_media_j3d_TextureAttributes_DECAL:
@@ -1063,7 +1262,7 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 		device->SetTextureStageState(tus,
 					     D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 		device->SetTextureStageState(tus,
-					     D3DTSS_COLORARG1, D3DTA_TEXTURE);		
+					     D3DTSS_COLORARG1, D3DTA_TEXTURE);
 		device->SetTextureStageState(tus,
 					     D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 		break;
@@ -1075,15 +1274,15 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 		device->SetTextureStageState(tus,
 					     D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		device->SetTextureStageState(tus,
-					     D3DTSS_ALPHAARG1, D3DTA_TEXTURE);		
+					     D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 		break;
 	    default:
-		printf("Format %d not support\n", format); 
+		printf("Format %d not support\n", format);
 	    }
 	    break;
         case javax_media_j3d_TextureAttributes_BLEND:
 	    // Two pass is needed for this mode, the first pass
-	    // will 
+	    // will
 
 	    textureBlendColor = D3DCOLOR_COLORVALUE(textureBlendColorRed,
 						    textureBlendColorGreen,
@@ -1104,7 +1303,7 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 		device->SetTextureStageState(tus,
 					     D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 		device->SetTextureStageState(tus,
-					     D3DTSS_ALPHAARG2, D3DTA_CURRENT);		
+					     D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 		break;
 	    case INTENSITY:
 		device->SetTextureStageState(tus,
@@ -1112,13 +1311,13 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 		device->SetTextureStageState(tus,
 					     D3DTSS_COLORARG1, D3DTA_CURRENT);
 		device->SetTextureStageState(tus,
-					     D3DTSS_COLORARG2, D3DTA_TFACTOR);		
+					     D3DTSS_COLORARG2, D3DTA_TFACTOR);
 		device->SetTextureStageState(tus,
 					     D3DTSS_ALPHAOP, D3DTOP_BLENDTEXTUREALPHA);
 		device->SetTextureStageState(tus,
 					     D3DTSS_ALPHAARG1, D3DTA_CURRENT);
 		device->SetTextureStageState(tus,
-					     D3DTSS_ALPHAARG2, D3DTA_TFACTOR);		
+					     D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
 		break;
 	    case J3D_RGB:
 	    case LUMINANCE:
@@ -1128,7 +1327,7 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 		alphaDisable = TRUE;
 		// fallthrough
 	    case J3D_RGBA:
-	    case LUMINANCE_ALPHA: 
+	    case LUMINANCE_ALPHA:
 
 		if (!d3dCtx->deviceInfo->texLerpSupport) {
 		    // Use two pass, first pass will enable specular and
@@ -1136,32 +1335,32 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 		    // comptue  Cc*Ct. Note that multi-texturing is disable
 		    // in this case, so stage 0 is always use.
 		    device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-		    device->SetTextureStageState(0, D3DTSS_COLORARG1, 
+		    device->SetTextureStageState(0, D3DTSS_COLORARG1,
 						 D3DTA_TEXTURE|D3DTA_COMPLEMENT);
 		    device->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_CURRENT);
 
 		    if (!alphaDisable) {
 			device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
 			device->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-			device->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);  
+			device->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 		    }
 		} else {
 		    device->SetTextureStageState(tus, D3DTSS_COLOROP, D3DTOP_LERP);
 		    device->SetTextureStageState(tus, D3DTSS_COLORARG0, D3DTA_TEXTURE);
 		    device->SetTextureStageState(tus, D3DTSS_COLORARG1, D3DTA_TFACTOR);
 		    device->SetTextureStageState(tus, D3DTSS_COLORARG2, D3DTA_CURRENT);
-		    
+
 		    if (!alphaDisable) {
 			device->SetTextureStageState(tus, D3DTSS_ALPHAOP, D3DTOP_LERP);
 			device->SetTextureStageState(tus, D3DTSS_ALPHAARG0, D3DTA_TEXTURE);
 			device->SetTextureStageState(tus, D3DTSS_ALPHAARG1, D3DTA_TFACTOR);
-			device->SetTextureStageState(tus, D3DTSS_ALPHAARG2, D3DTA_CURRENT);		    
-		    } 
+			device->SetTextureStageState(tus, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
+		    }
 		}
 		break;
 	    default:
-		printf("Format %d not support\n", format); 
-	    } 
+		printf("Format %d not support\n", format);
+	    }
 
 
             break;
@@ -1196,10 +1395,10 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 		device->SetTextureStageState(tus,
 					     D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		device->SetTextureStageState(tus,
-					     D3DTSS_ALPHAARG1, D3DTA_TEXTURE);		
+					     D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 		break;
 	    default:
-		printf("Format %d not support\n", format); 
+		printf("Format %d not support\n", format);
 	    }
 	    break;
       default:
@@ -1212,14 +1411,14 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
 // This procedure is invoked after Blend2Pass to restore the original value
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureAttributesRetained_restoreBlend1Pass(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx)
 {
     GetDevice();
 
     device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-    device->SetTextureStageState(0, D3DTSS_COLORARG1, 
+    device->SetTextureStageState(0, D3DTSS_COLORARG1,
 				 D3DTA_TEXTURE|D3DTA_COMPLEMENT);
     device->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_CURRENT);
 
@@ -1234,7 +1433,7 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_restoreBlend1Pass(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateBlend2Pass(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx)
 {
@@ -1257,7 +1456,7 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateBlend2Pass(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateCombinerNative(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx,
     jint combineRgbMode,
@@ -1267,55 +1466,55 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateCombinerNative
     jintArray combineRgbFcn,
     jintArray combineAlphaFcn,
     jint combineRgbScale,
-    jint combineAlphaScale) 
+    jint combineAlphaScale)
 {
-   
+
     GetDevice();
 
     DWORD ts = d3dCtx->texUnitStage;
-    
+
     jint *rgbSrc = (jint *) env->GetPrimitiveArrayCritical(combineRgbSrc, NULL);
     jint *alphaSrc = (jint *) env->GetPrimitiveArrayCritical(combineAlphaSrc, NULL);
     jint *rgbFcn = (jint *) env->GetPrimitiveArrayCritical(combineRgbFcn, NULL);
     jint *alphaFcn = (jint *) env->GetPrimitiveArrayCritical(combineAlphaFcn, NULL);
 
 
-    device->SetTextureStageState(ts, D3DTSS_COLOROP, 
+    device->SetTextureStageState(ts, D3DTSS_COLOROP,
 				 combineFunctionTable[(combineRgbMode << 2) + combineRgbScale - 1]);
 
     if (combineRgbMode !=  javax_media_j3d_TextureAttributes_COMBINE_INTERPOLATE) {
-	device->SetTextureStageState(ts, D3DTSS_COLORARG1, 
-				     combineSourceTable[(rgbSrc[0] << 2) + rgbFcn[0]]);	
+	device->SetTextureStageState(ts, D3DTSS_COLORARG1,
+				     combineSourceTable[(rgbSrc[0] << 2) + rgbFcn[0]]);
 	if (combineRgbMode != javax_media_j3d_TextureAttributes_COMBINE_REPLACE) {
-	    device->SetTextureStageState(ts, D3DTSS_COLORARG2, 
-					 combineSourceTable[(rgbSrc[1] << 2) + rgbFcn[1]]);	
+	    device->SetTextureStageState(ts, D3DTSS_COLORARG2,
+					 combineSourceTable[(rgbSrc[1] << 2) + rgbFcn[1]]);
 	}
     } else {
-	device->SetTextureStageState(ts, D3DTSS_COLORARG1, 
-				     combineSourceTable[(rgbSrc[2] << 2) + rgbFcn[2]]);	
-	device->SetTextureStageState(ts, D3DTSS_COLORARG2, 
-				     combineSourceTable[(rgbSrc[0] << 2) + rgbFcn[0]]);	
-	device->SetTextureStageState(ts, D3DTSS_COLORARG0, 
-				     combineSourceTable[(rgbSrc[1] << 2) + rgbFcn[1]]);	
+	device->SetTextureStageState(ts, D3DTSS_COLORARG1,
+				     combineSourceTable[(rgbSrc[2] << 2) + rgbFcn[2]]);
+	device->SetTextureStageState(ts, D3DTSS_COLORARG2,
+				     combineSourceTable[(rgbSrc[0] << 2) + rgbFcn[0]]);
+	device->SetTextureStageState(ts, D3DTSS_COLORARG0,
+				     combineSourceTable[(rgbSrc[1] << 2) + rgbFcn[1]]);
     }
 
-    device->SetTextureStageState(ts, D3DTSS_ALPHAOP, 
+    device->SetTextureStageState(ts, D3DTSS_ALPHAOP,
 				 combineFunctionTable[(combineAlphaMode << 2) + combineAlphaScale - 1]);
 
     if (combineAlphaMode != javax_media_j3d_TextureAttributes_COMBINE_INTERPOLATE) {
-	device->SetTextureStageState(ts, D3DTSS_ALPHAARG1, 
+	device->SetTextureStageState(ts, D3DTSS_ALPHAARG1,
 				     combineSourceTable[(alphaSrc[0] << 2) + alphaFcn[0]]);
 	if (combineAlphaMode != javax_media_j3d_TextureAttributes_COMBINE_REPLACE) {
-	    device->SetTextureStageState(ts, D3DTSS_ALPHAARG2, 
-					 combineSourceTable[(alphaSrc[1] << 2) + alphaFcn[1]]);	
+	    device->SetTextureStageState(ts, D3DTSS_ALPHAARG2,
+					 combineSourceTable[(alphaSrc[1] << 2) + alphaFcn[1]]);
 	}
     } else {
 	device->SetTextureStageState(ts, D3DTSS_ALPHAARG0,
-				     combineSourceTable[(alphaSrc[2] << 2) + alphaFcn[2]]);	
-	device->SetTextureStageState(ts, D3DTSS_ALPHAARG1, 
-				     combineSourceTable[(alphaSrc[0] << 2) + alphaFcn[0]]);	
-	device->SetTextureStageState(ts, D3DTSS_ALPHAARG2, 
-				     combineSourceTable[(alphaSrc[1] << 2) + alphaFcn[1]]);	
+				     combineSourceTable[(alphaSrc[2] << 2) + alphaFcn[2]]);
+	device->SetTextureStageState(ts, D3DTSS_ALPHAARG1,
+				     combineSourceTable[(alphaSrc[0] << 2) + alphaFcn[0]]);
+	device->SetTextureStageState(ts, D3DTSS_ALPHAARG2,
+				     combineSourceTable[(alphaSrc[1] << 2) + alphaFcn[1]]);
     }
 
     env->ReleasePrimitiveArrayCritical(combineRgbSrc, rgbSrc, 0);
@@ -1326,8 +1525,8 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateCombinerNative
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateTextureColorTableNative(
-	JNIEnv *env, 
-	jobject obj, 
+	JNIEnv *env,
+	jobject obj,
 	jlong ctx,
 	jint numComponents,
 	jint colorTableSize,
@@ -1339,8 +1538,8 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateTextureColorTa
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_updateMaterial(
-	JNIEnv *env, 
-	jobject obj, 
+	JNIEnv *env,
+	jobject obj,
 	jlong ctx,
 	jfloat colorRed,
 	jfloat colorGreen,
@@ -1357,16 +1556,16 @@ void JNICALL Java_javax_media_j3d_Canvas3D_updateMaterial(
     d3dCtx->isLightEnable = false;
     device->SetRenderState(D3DRS_LIGHTING, false);
     if (d3dCtx->resetColorTarget) {
-	device->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE,  
+	device->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE,
 			       D3DMCS_COLOR1);
 	device->SetRenderState(D3DRS_SPECULARMATERIALSOURCE,
 			       D3DMCS_MATERIAL);
-	device->SetRenderState(D3DRS_AMBIENTMATERIALSOURCE,  
+	device->SetRenderState(D3DRS_AMBIENTMATERIALSOURCE,
 			       D3DMCS_MATERIAL);
-	device->SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE, 
+	device->SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE,
 			       D3DMCS_MATERIAL);
 	d3dCtx->resetColorTarget = false;
-    } 
+    }
 }
 
 extern "C" JNIEXPORT
@@ -1400,7 +1599,7 @@ void JNICALL Java_javax_media_j3d_MaterialRetained_updateNative(
 
     switch (colorTarget) {
     case javax_media_j3d_Material_DIFFUSE:
-	device->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, 
+	device->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE,
 			       D3DMCS_COLOR1);
 	break;
     case javax_media_j3d_Material_SPECULAR:
@@ -1418,12 +1617,12 @@ void JNICALL Java_javax_media_j3d_MaterialRetained_updateNative(
 			       D3DMCS_COLOR1);
 	device->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE,
 			       D3DMCS_COLOR1);
-	d3dCtx->resetColorTarget = true;	
+	d3dCtx->resetColorTarget = true;
 	break;
     case javax_media_j3d_Material_EMISSIVE:
 	device->SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE,
 			       D3DMCS_COLOR1);
-	d3dCtx->resetColorTarget = true;	
+	d3dCtx->resetColorTarget = true;
 	break;
     default:
 	printf("Material updateNative: Uknown colorTarget %d\n", colorTarget);
@@ -1451,8 +1650,8 @@ void JNICALL Java_javax_media_j3d_MaterialRetained_updateNative(
 	d3dCtx->currentColor_b = colorBlue;
 
 	CopyColor(material.Diffuse, colorRed, colorGreen,
-		  colorBlue, transparency); 
-    }  
+		  colorBlue, transparency);
+    }
 
 
     d3dCtx->isLightEnable = lightEnable;
@@ -1463,22 +1662,22 @@ void JNICALL Java_javax_media_j3d_MaterialRetained_updateNative(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetTransparency(
-    JNIEnv *env, 
-    jobject obj, 
+    JNIEnv *env,
+    jobject obj,
     jlong ctx,
     jint geometryType,
     jint polygonMode,
     jboolean lineAA,
-    jboolean pointAA) 
+    jboolean pointAA)
 {
     GetDevice();
 
     // Line/Point  Antialiasing not support
 
     /*
-    if (((((geometryType & LINE) != 0) || polygonMode == POLYGON_LINE) 
+    if (((((geometryType & LINE) != 0) || polygonMode == POLYGON_LINE)
 	 && lineAA == JNI_TRUE) ||
-        ((((geometryType & _POINT) != 0) || polygonMode == POLYGON_POINT) 
+        ((((geometryType & _POINT) != 0) || polygonMode == POLYGON_POINT)
 	 && pointAA == JNI_TRUE)) {
 	device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
@@ -1492,8 +1691,8 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetTransparency(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TransparencyAttributesRetained_updateNative(
-    JNIEnv *env, 
-    jobject tr, 
+    JNIEnv *env,
+    jobject tr,
     jlong ctx,
     jfloat transparency,
     jint geometryType,
@@ -1502,7 +1701,7 @@ void JNICALL Java_javax_media_j3d_TransparencyAttributesRetained_updateNative(
     jboolean pointAA,
     jint transparencyMode,
     jint srcBlendFunction,
-    jint dstBlendFunction) 
+    jint dstBlendFunction)
 {
 
     GetDevice();
@@ -1521,13 +1720,13 @@ void JNICALL Java_javax_media_j3d_TransparencyAttributesRetained_updateNative(
 	/*
 	((((geometryType & LINE) != 0) || polygonMode == POLYGON_LINE)
 	 && lineAA == JNI_TRUE) ||
-        ((((geometryType & _POINT) != 0) || polygonMode == POLYGON_POINT) 
+        ((((geometryType & _POINT) != 0) || polygonMode == POLYGON_POINT)
 	 && pointAA == JNI_TRUE)) {
 	*/
 	device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	device->SetRenderState(D3DRS_SRCBLEND, 
+	device->SetRenderState(D3DRS_SRCBLEND,
 			       blendFunctionTable[srcBlendFunction]);
-	device->SetRenderState(D3DRS_DESTBLEND, 
+	device->SetRenderState(D3DRS_DESTBLEND,
 			       blendFunctionTable[dstBlendFunction]);
     } else {
 	device->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
@@ -1538,14 +1737,14 @@ void JNICALL Java_javax_media_j3d_TransparencyAttributesRetained_updateNative(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetColoringAttributes(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx,
     jfloat colorRed,
     jfloat colorGreen,
     jfloat colorBlue,
     jfloat transparency,
-    jboolean lightEnable) 
+    jboolean lightEnable)
 {
 
     GetDevice();
@@ -1563,7 +1762,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetColoringAttributes(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_ColoringAttributesRetained_updateNative(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx,
     jfloat dRed,
@@ -1573,8 +1772,8 @@ void JNICALL Java_javax_media_j3d_ColoringAttributesRetained_updateNative(
     jfloat colorGreen,
     jfloat colorBlue,
     jfloat transparency,
-    jboolean lightEnable,    
-    jint shadeModel) 
+    jboolean lightEnable,
+    jint shadeModel)
 {
 
     GetDevice();
@@ -1601,7 +1800,7 @@ void JNICALL Java_javax_media_j3d_ColoringAttributesRetained_updateNative(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureNative(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
     jlong ctx,
     jint texUnitIndex)
@@ -1610,8 +1809,8 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureNative(
 
     if (texUnitIndex < 0) {
 	texUnitIndex = 0;
-    } 
-    
+    }
+
     d3dCtx->texUnitStage = texUnitIndex;
 
     if (texUnitIndex >= d3dCtx->bindTextureIdLen) {
@@ -1622,13 +1821,13 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureNative(
 
     if (d3dCtx->texTransformSet[texUnitIndex]) {
 	d3dCtx->texTransformSet[texUnitIndex] = false;
-	device->SetTransform((D3DTRANSFORMSTATETYPE) 
-			     (D3DTS_TEXTURE0 + texUnitIndex), 
+	device->SetTransform((D3DTRANSFORMSTATETYPE)
+			     (D3DTS_TEXTURE0 + texUnitIndex),
 			     &identityMatrix);
     }
     d3dCtx->texGenMode[texUnitIndex] = TEX_GEN_NONE;
     device->SetTextureStageState(texUnitIndex,
-				 D3DTSS_TEXCOORDINDEX, 
+				 D3DTSS_TEXCOORDINDEX,
 				 D3DTSS_TCI_PASSTHRU);
     device->SetTextureStageState(texUnitIndex,
 				 D3DTSS_COLOROP, D3DTOP_SELECTARG1);
@@ -1643,11 +1842,11 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureNative(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureRetained_bindTexture(
-    JNIEnv *env, 
-    jobject texture, 
+    JNIEnv *env,
+    jobject texture,
     jlong ctx,
     jint objectId,
-    jboolean enable) 
+    jboolean enable)
 {
     GetDevice();
 
@@ -1666,7 +1865,7 @@ void JNICALL Java_javax_media_j3d_TextureRetained_bindTexture(
 	if (objectId >= d3dCtx->textureTableLen) {
 	    DWORD i;
 	    DWORD len = max(objectId+1, d3dCtx->textureTableLen << 1);
-	    LPDIRECT3DTEXTURE9 *newTable = (LPDIRECT3DTEXTURE9 *) 
+	    LPDIRECT3DTEXTURE9 *newTable = (LPDIRECT3DTEXTURE9 *)
 		malloc(sizeof(LPDIRECT3DTEXTURE9) * len);
 
 	    if (newTable == NULL) {
@@ -1688,15 +1887,15 @@ void JNICALL Java_javax_media_j3d_TextureRetained_bindTexture(
 	if (d3dCtx->textureTable[objectId] != NULL) {
 	    device->SetTexture(d3dCtx->texUnitStage,
 			       d3dCtx->textureTable[objectId]);
-	} 
+	}
 	// else we will bind this in updateTextureImage
     }
 }
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilterModes(
-    JNIEnv *env, 
-    jobject texture, 
+    JNIEnv *env,
+    jobject texture,
     jlong ctx,
     jint minFilter,
     jint magFilter)
@@ -1706,7 +1905,7 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilterModes(
 
     if (d3dCtx->texUnitStage >= d3dCtx->bindTextureIdLen) {
 	return;
-    }    
+    }
 
     d3dCtx->texLinearMode = false;
 
@@ -1715,30 +1914,30 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilterModes(
         case javax_media_j3d_Texture_FASTEST:
         case javax_media_j3d_Texture_BASE_LEVEL_POINT:
 	    device->SetSamplerState(d3dCtx->texUnitStage,
-					 D3DSAMP_MINFILTER, D3DTEXF_POINT); 
+					 D3DSAMP_MINFILTER, D3DTEXF_POINT);
 	    device->SetSamplerState (d3dCtx->texUnitStage,
-					 D3DSAMP_MIPFILTER, D3DTEXF_POINT); 
+					 D3DSAMP_MIPFILTER, D3DTEXF_POINT);
 	    break;
         case javax_media_j3d_Texture_BASE_LEVEL_LINEAR:
                     d3dCtx->texLinearMode = true;
 	    device->SetSamplerState (d3dCtx->texUnitStage,
-					 D3DSAMP_MINFILTER, D3DTEXF_LINEAR); 
+					 D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	    device->SetSamplerState (d3dCtx->texUnitStage,
-					 D3DSAMP_MIPFILTER, D3DTEXF_POINT); 
+					 D3DSAMP_MIPFILTER, D3DTEXF_POINT);
 	    break;
         case javax_media_j3d_Texture_MULTI_LEVEL_POINT:
 	    device->SetSamplerState (d3dCtx->texUnitStage,
-					 D3DSAMP_MINFILTER, D3DTEXF_POINT); 
+					 D3DSAMP_MINFILTER, D3DTEXF_POINT);
 	    device->SetSamplerState (d3dCtx->texUnitStage,
-					 D3DSAMP_MIPFILTER, D3DTEXF_LINEAR); 
+					 D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 	    break;
         case javax_media_j3d_Texture_NICEST:
         case javax_media_j3d_Texture_MULTI_LEVEL_LINEAR:
             d3dCtx->texLinearMode = true;
 	    device->SetSamplerState (d3dCtx->texUnitStage,
-					 D3DSAMP_MINFILTER, D3DTEXF_LINEAR); 
+					 D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	    device->SetSamplerState (d3dCtx->texUnitStage,
-					 D3DSAMP_MIPFILTER, D3DTEXF_LINEAR); 
+					 D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 	    break;
     }
 
@@ -1747,13 +1946,13 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilterModes(
         case javax_media_j3d_Texture_FASTEST:
         case javax_media_j3d_Texture_BASE_LEVEL_POINT:
 	    device->SetSamplerState (d3dCtx->texUnitStage,
-					 D3DSAMP_MAGFILTER, D3DTEXF_POINT); 
+					 D3DSAMP_MAGFILTER, D3DTEXF_POINT);
 	    break;
         case javax_media_j3d_Texture_NICEST:
         case javax_media_j3d_Texture_BASE_LEVEL_LINEAR:
             d3dCtx->texLinearMode = true;
 	    device->SetSamplerState (d3dCtx->texUnitStage,
-					 D3DSAMP_MAGFILTER, D3DTEXF_LINEAR); 
+					 D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 	    break;
     }
 
@@ -1762,8 +1961,8 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilterModes(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureLodRange(
-    JNIEnv *env, 
-    jobject texture, 
+    JNIEnv *env,
+    jobject texture,
     jlong ctx,
     jint baseLevel,
     jint maximumLevel,
@@ -1775,25 +1974,25 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureLodRange(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureLodOffset(
-    JNIEnv *env, 
-    jobject texture, 
+    JNIEnv *env,
+    jobject texture,
     jlong ctx,
     jfloat lodOffsetS,
     jfloat lodOffsetT,
-    jfloat lodOffsetR) 
+    jfloat lodOffsetR)
 {
     /* not supported */
 }
 
-void updateTextureBoundary(JNIEnv *env, 
-			   jobject texture, 
+void updateTextureBoundary(JNIEnv *env,
+			   jobject texture,
 			   jlong ctx,
-			   jint boundaryModeS, 
-			   jint boundaryModeT, 
-			   jint boundaryModeR, 
-			   jfloat boundaryRed, 
-			   jfloat boundaryGreen, 
-			   jfloat boundaryBlue, 
+			   jint boundaryModeS,
+			   jint boundaryModeT,
+			   jint boundaryModeR,
+			   jfloat boundaryRed,
+			   jfloat boundaryGreen,
+			   jfloat boundaryBlue,
 			   jfloat boundaryAlpha)
 {
     GetDevice();
@@ -1801,7 +2000,7 @@ void updateTextureBoundary(JNIEnv *env,
 
     if (d3dCtx->texUnitStage >= d3dCtx->bindTextureIdLen) {
 	return;
-    }    
+    }
 
     /* set texture wrap parameter */
     BOOL useBorderMode = FALSE;
@@ -1812,8 +2011,8 @@ void updateTextureBoundary(JNIEnv *env,
     // mode if linear filtering mode is used.
 
     switch (boundaryModeS) {
-        case javax_media_j3d_Texture_WRAP: 
-	    device->SetSamplerState (d3dCtx->texUnitStage, 
+        case javax_media_j3d_Texture_WRAP:
+	    device->SetSamplerState (d3dCtx->texUnitStage,
 					 D3DSAMP_ADDRESSU,
 					 D3DTADDRESS_WRAP);
 	    break;
@@ -1832,7 +2031,7 @@ void updateTextureBoundary(JNIEnv *env,
     }
 
     switch (boundaryModeT) {
-        case javax_media_j3d_Texture_WRAP: 
+        case javax_media_j3d_Texture_WRAP:
 	    device->SetSamplerState (d3dCtx->texUnitStage,
 					 D3DSAMP_ADDRESSV,
 					 D3DTADDRESS_WRAP);
@@ -1840,7 +2039,7 @@ void updateTextureBoundary(JNIEnv *env,
         case javax_media_j3d_Texture_CLAMP:
 	    if (!d3dCtx->texLinearMode || !d3dCtx->deviceInfo->texBorderModeSupport) {
 		device->SetSamplerState (d3dCtx->texUnitStage,
-					     D3DSAMP_ADDRESSV,					     
+					     D3DSAMP_ADDRESSV,
 						 D3DTADDRESS_CLAMP);
 	    } else {
 		useBorderMode = TRUE;
@@ -1853,7 +2052,7 @@ void updateTextureBoundary(JNIEnv *env,
 
     if (boundaryModeR >= 0) {
 	switch (boundaryModeR) {
-        case javax_media_j3d_Texture_WRAP: 
+        case javax_media_j3d_Texture_WRAP:
 	    device->SetSamplerState (d3dCtx->texUnitStage,
 					 D3DSAMP_ADDRESSW,
 					 D3DTADDRESS_WRAP);
@@ -1885,19 +2084,19 @@ void updateTextureBoundary(JNIEnv *env,
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureBoundary(
-    JNIEnv *env, 
-    jobject texture, 
+    JNIEnv *env,
+    jobject texture,
     jlong ctx,
-    jint boundaryModeS, 
-    jint boundaryModeT, 
-    jfloat boundaryRed, 
-    jfloat boundaryGreen, 
-    jfloat boundaryBlue, 
+    jint boundaryModeS,
+    jint boundaryModeT,
+    jfloat boundaryRed,
+    jfloat boundaryGreen,
+    jfloat boundaryBlue,
     jfloat boundaryAlpha)
 {
-    updateTextureBoundary(env, texture, ctx, boundaryModeS, 
+    updateTextureBoundary(env, texture, ctx, boundaryModeS,
 			  boundaryModeT, -1,
-			  boundaryRed, boundaryGreen, 
+			  boundaryRed, boundaryGreen,
 			  boundaryBlue, boundaryAlpha);
 
 }
@@ -1905,21 +2104,21 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureBoundary(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureSharpenFunc(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
     jlong ctx,
     jint numPts,
-    jfloatArray pts) 
+    jfloatArray pts)
 {
 }
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilter4Func(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
     jlong ctx,
     jint numPts,
-    jfloatArray pts) 
+    jfloatArray pts)
 {
 }
 
@@ -1932,7 +2131,7 @@ void updateTextureAnisotropicFilter(
 
     if (degree > 1) {
 	DWORD deg = degree + 0.5f; // round float to int
-	// This will overwrite the previous setting in 
+	// This will overwrite the previous setting in
 	// updateTextureFilterModes()
 	device->SetSamplerState (d3dCtx->texUnitStage,
 				     D3DSAMP_MINFILTER,
@@ -1951,17 +2150,17 @@ void updateTextureAnisotropicFilter(
 	// updateTextureAnisotropicFilter() to set Filter mode
 	// correctly.
 	device->SetSamplerState (d3dCtx->texUnitStage,
-				     D3DSAMP_MAXANISOTROPY, 1);	
+				     D3DSAMP_MAXANISOTROPY, 1);
     }
-				 
+
 }
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureAnisotropicFilter(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
     jlong ctx,
-    jfloat degree) 
+    jfloat degree)
 {
      updateTextureAnisotropicFilter(ctx, degree);
 }
@@ -1969,9 +2168,9 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureAnisotropicFilter
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureAnisotropicFilter(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
-    jlong ctx,    
+    jlong ctx,
     jfloat degree)
 {
     GetCtx();
@@ -1984,9 +2183,9 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureAnisotropicFilt
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureAnisotropicFilter(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
-    jlong ctx,    
+    jlong ctx,
     jfloat degree)
 {
      updateTextureAnisotropicFilter(ctx, degree);
@@ -1995,26 +2194,26 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureAnisotropi
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureSubImage(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
     jlong ctx,
     jint level,
     jint xoffset,
     jint yoffset,
-    jint internalFormat, 
+    jint internalFormat,
     jint storedFormat,
     jint imgXOffset,
     jint imgYOffset,
     jint tilew,
-    jint width, 
+    jint width,
     jint height,
-    jbyteArray image) 
+    jbyteArray image)
 {
     GetDevice();
 
     if (d3dCtx->texUnitStage >= d3dCtx->bindTextureIdLen) {
 	return;
-    }    
+    }
 
     INT currBindTex = d3dCtx->bindTextureId[d3dCtx->texUnitStage];
 
@@ -2022,7 +2221,7 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureSubImage(
 	(currBindTex >= d3dCtx->textureTableLen)) {
 	if (debug) {
 	    printf("Internal Error : UpdateTextureSubImage  bind texture ID %d, textureTableLen %d, texUnitStage = %d \n", currBindTex, d3dCtx->textureTableLen, d3dCtx->texUnitStage);
-	} 
+	}
 	return;
     }
 
@@ -2036,9 +2235,9 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureSubImage(
     // update Image data
     if (storedFormat != FORMAT_USHORT_GRAY) {
 	jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(image,   NULL);
-	copyDataToSurface(storedFormat, internalFormat, xoffset, yoffset, 
-			  imgXOffset, imgYOffset, 
-			  width, height, tilew, byteData, 
+	copyDataToSurface(storedFormat, internalFormat, xoffset, yoffset,
+			  imgXOffset, imgYOffset,
+			  width, height, tilew, byteData,
 			  surf, level);
 	env->ReleasePrimitiveArrayCritical(image, byteData, 0);
 
@@ -2046,7 +2245,7 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureSubImage(
 	jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(image, NULL);
 	copyDataToSurface(storedFormat, internalFormat, xoffset, yoffset,
 			  imgXOffset, imgYOffset,
-			  width, height, tilew, shortData, 
+			  width, height, tilew, shortData,
 			  surf, level);
 	env->ReleasePrimitiveArrayCritical(image, shortData, 0);
     }
@@ -2055,15 +2254,15 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureSubImage(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureImage(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
     jlong ctx,
     jint numLevels,
     jint level,
-    jint internalFormat, 
-    jint format, 
-    jint width, 
-    jint height, 
+    jint internalFormat,
+    jint format,
+    jint width,
+    jint height,
     jint boundaryWidth,
     jbyteArray imageYup)
 {
@@ -2077,7 +2276,7 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureImage(
 		   d3dCtx->texUnitStage, d3dCtx->bindTextureIdLen);
 	}
 	return;
-    }    
+    }
 
 
     INT currBindTex = d3dCtx->bindTextureId[d3dCtx->texUnitStage];
@@ -2086,7 +2285,7 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureImage(
 	(currBindTex >= d3dCtx->textureTableLen)) {
 	if (debug) {
 	    printf("Internal Error : UpdateTextureImage  bind texture ID %d, textureTableLen %d, texUnitStage = %d \n",  currBindTex, d3dCtx->textureTableLen, d3dCtx->texUnitStage);
-	} 
+	}
 	return;
     }
 
@@ -2095,7 +2294,7 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureImage(
     if (level == 0) {
 	if (surf != NULL) {
 	    // see if no. of mipmap level change
-	    
+
 	    if (surf->GetLevelCount() != numLevels) {
 		d3dCtx->freeResource(surf);
 		d3dCtx->textureTable[currBindTex] = NULL;
@@ -2105,15 +2304,15 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureImage(
 
 	if (surf == NULL) {
 	// Need to create surface
-	    surf = createTextureSurface(d3dCtx, numLevels, internalFormat, 
+	    surf = createTextureSurface(d3dCtx, numLevels, internalFormat,
 					width, height);
 
 	    if (surf == NULL) {
-		return; 
+		return;
 	    }
 
 	    d3dCtx->textureTable[currBindTex] = surf;
-	} 
+	}
     } else {
 	if (surf == NULL) {
 	    return;
@@ -2132,14 +2331,14 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureImage(
 	if (format != FORMAT_USHORT_GRAY) {
 	    jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(imageYup,   NULL);
 	    copyDataToSurface(format, internalFormat, 0, 0, 0, 0,
-			      width, height, width, byteData, 
+			      width, height, width, byteData,
 			      surf, level);
 	    env->ReleasePrimitiveArrayCritical(imageYup, byteData, 0);
-	    
+
 	} else {
 	    jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(imageYup, NULL);
 	    copyDataToSurface(format, internalFormat, 0, 0, 0, 0,
-			      width, height, width,  shortData, 
+			      width, height, width,  shortData,
 			      surf, level);
 	    env->ReleasePrimitiveArrayCritical(imageYup, shortData, 0);
 	}
@@ -2151,11 +2350,11 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureImage(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Texture2DRetained_bindTexture(
-    JNIEnv *env, 
-    jobject texture, 
+    JNIEnv *env,
+    jobject texture,
     jlong ctx,
     jint objectId,
-    jboolean enable) 
+    jboolean enable)
 {
     Java_javax_media_j3d_TextureRetained_bindTexture(env, texture,
 			ctx, objectId, enable);
@@ -2163,20 +2362,20 @@ void JNICALL Java_javax_media_j3d_Texture2DRetained_bindTexture(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Texture2DRetained_updateTextureSubImage(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
     jlong ctx,
     jint level,
     jint xoffset,
     jint yoffset,
-    jint internalFormat, 
+    jint internalFormat,
     jint storedFormat,
     jint imgXOffset,
     jint imgYOffset,
     jint tilew,
-    jint width, 
+    jint width,
     jint height,
-    jbyteArray image) 
+    jbyteArray image)
 {
     Java_javax_media_j3d_TextureRetained_updateTextureSubImage(
 	env, texture, ctx, level, xoffset, yoffset, internalFormat,
@@ -2185,44 +2384,44 @@ void JNICALL Java_javax_media_j3d_Texture2DRetained_updateTextureSubImage(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Texture2DRetained_updateTextureImage(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
     jlong ctx,
     jint numLevels,
     jint level,
-    jint internalFormat, 
-    jint format, 
-    jint width, 
-    jint height, 
+    jint internalFormat,
+    jint format,
+    jint width,
+    jint height,
     jint boundaryWidth,
     jbyteArray imageYup)
 {
     Java_javax_media_j3d_TextureRetained_updateTextureImage(env, texture,
-		ctx, numLevels, level, internalFormat, format, 
+		ctx, numLevels, level, internalFormat, format,
 		width, height, boundaryWidth, imageYup);
 }
 
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Texture2DRetained_updateDetailTextureParameters(
-    JNIEnv *env, 
-    jobject texture, 
+    JNIEnv *env,
+    jobject texture,
     jlong ctx,
     jint detailTextureMode,
     jint detailTextureLevel,
     jint numPts,
-    jfloatArray funcPts) 
+    jfloatArray funcPts)
 {
     // Not support
 }
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Texture3DRetained_bindTexture(
-    JNIEnv *env, 
-    jobject texture, 
+    JNIEnv *env,
+    jobject texture,
     jlong ctx,
     jint objectId,
-    jboolean enable) 
+    jboolean enable)
 {
     GetDevice();
 
@@ -2241,7 +2440,7 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_bindTexture(
 	if (objectId >= d3dCtx->volumeTableLen) {
 	    DWORD i;
 	    DWORD len = max(objectId+1, d3dCtx->volumeTableLen << 1);
-	    LPDIRECT3DVOLUMETEXTURE9 *newTable = (LPDIRECT3DVOLUMETEXTURE9 *) 
+	    LPDIRECT3DVOLUMETEXTURE9 *newTable = (LPDIRECT3DVOLUMETEXTURE9 *)
 		malloc(sizeof(LPDIRECT3DVOLUMETEXTURE9) * len);
 
 	    if (newTable == NULL) {
@@ -2263,7 +2462,7 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_bindTexture(
 	if (d3dCtx->volumeTable[objectId] != NULL) {
 	    device->SetTexture(d3dCtx->texUnitStage,
 			       d3dCtx->volumeTable[objectId]);
-	} 
+	}
 	// else we will bind this in updateTextureImage
     }
 
@@ -2271,13 +2470,13 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_bindTexture(
 
 
 
-extern "C" JNIEXPORT 
+extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureFilterModes(
-    JNIEnv *env, 
-    jobject texture, 
+    JNIEnv *env,
+    jobject texture,
     jlong ctx,
     jint minFilter,
-    jint magFilter) 
+    jint magFilter)
 {
     GetCtx();
 
@@ -2314,17 +2513,17 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureLodOffset(
 }
 
 
-extern "C" JNIEXPORT 
+extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureBoundary(
-    JNIEnv *env, 
-    jobject texture, 
+    JNIEnv *env,
+    jobject texture,
     jlong ctx,
-    jint boundaryModeS, 
-    jint boundaryModeT, 
+    jint boundaryModeS,
+    jint boundaryModeT,
     jint boundaryModeR,
-    jfloat boundaryRed, 
-    jfloat boundaryGreen, 
-    jfloat boundaryBlue, 
+    jfloat boundaryRed,
+    jfloat boundaryGreen,
+    jfloat boundaryBlue,
     jfloat boundaryAlpha)
 {
 
@@ -2333,30 +2532,30 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureBoundary(
     if (d3dCtx->deviceInfo->maxTextureDepth > 0) {
 
 	updateTextureBoundary(
-			      env, texture, ctx, 
-			      boundaryModeS, 
-			      boundaryModeT, 
+			      env, texture, ctx,
+			      boundaryModeS,
+			      boundaryModeT,
 			      boundaryModeR,
-			      boundaryRed, 
-			      boundaryGreen, 
-			      boundaryBlue, 
+			      boundaryRed,
+			      boundaryGreen,
+			      boundaryBlue,
 			      boundaryAlpha);
     }
 }
 
 
-								       
+
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureImage(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
     jlong ctx,
     jint numLevels,
     jint level,
-    jint internalFormat, 
-    jint format, 
-    jint width, 
-    jint height, 
+    jint internalFormat,
+    jint format,
+    jint width,
+    jint height,
     jint depth,
     jint boundaryWidth,
     jbyteArray imageYup)
@@ -2374,7 +2573,7 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureImage(
 		   d3dCtx->texUnitStage, d3dCtx->bindTextureIdLen);
 	}
 	return;
-    }    
+    }
 
 
     INT currBindTex = d3dCtx->bindTextureId[d3dCtx->texUnitStage];
@@ -2383,7 +2582,7 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureImage(
 	(currBindTex >= d3dCtx->volumeTableLen)) {
 	if (debug) {
 	    printf("Internal Error : UpdateTexture3DImage  bind texture ID %d, volumeTableLen %d, texUnitStage = %d \n",  currBindTex, d3dCtx->volumeTableLen, d3dCtx->texUnitStage);
-	} 
+	}
 	return;
     }
 
@@ -2392,7 +2591,7 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureImage(
     if (level == 0) {
 	if (surf != NULL) {
 	    // see if no. of mipmap level change
-	    
+
 	    if (surf->GetLevelCount() != numLevels) {
 		d3dCtx->freeResource(surf);
 		d3dCtx->volumeTable[currBindTex] = NULL;
@@ -2401,14 +2600,14 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureImage(
 	}
 
 	if (surf == NULL) {
-	    surf = createVolumeTexture(d3dCtx, numLevels, internalFormat, 
+	    surf = createVolumeTexture(d3dCtx, numLevels, internalFormat,
 				       width, height, depth);
 	    if (surf == NULL) {
-		return; 
+		return;
 	    }
 
 	    d3dCtx->volumeTable[currBindTex] = surf;
-	} 
+	}
     } else {
 	if (surf == NULL) {
 	    return;
@@ -2427,14 +2626,14 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureImage(
 	if (format != FORMAT_USHORT_GRAY) {
 	    jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(imageYup,   NULL);
 	    copyDataToVolume(format, internalFormat, 0, 0, 0, 0, 0, 0,
-			     width, height, depth, width, height, byteData, 
+			     width, height, depth, width, height, byteData,
 			     surf, level);
 	    env->ReleasePrimitiveArrayCritical(imageYup, byteData, 0);
-	    
+
 	} else {
 	    jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(imageYup, NULL);
 	    copyDataToVolume(format, internalFormat, 0, 0, 0, 0, 0, 0,
-			      width, height, depth, width, height, shortData, 
+			      width, height, depth, width, height, shortData,
 			      surf, level);
 	    env->ReleasePrimitiveArrayCritical(imageYup, shortData, 0);
 	}
@@ -2469,7 +2668,7 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureSubImage(
     if ((d3dCtx->deviceInfo->maxTextureDepth <= 0) ||
 	(d3dCtx->texUnitStage >= d3dCtx->bindTextureIdLen)) {
 	return;
-    }    
+    }
 
     INT currBindTex = d3dCtx->bindTextureId[d3dCtx->texUnitStage];
 
@@ -2477,7 +2676,7 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureSubImage(
 	(currBindTex >= d3dCtx->volumeTableLen)) {
 	if (debug) {
 	    printf("Internal Error : UpdateTexture3DSubImage  bind texture ID %d, volumeableLen %d, texUnitStage = %d \n", currBindTex, d3dCtx->volumeTableLen, d3dCtx->texUnitStage);
-	} 
+	}
 	return;
     }
 
@@ -2492,9 +2691,9 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureSubImage(
     if (storedFormat != FORMAT_USHORT_GRAY) {
 	jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(image,   NULL);
 	copyDataToVolume(storedFormat, internalFormat, xoffset,
-			 yoffset, zoffset, imgXOffset, imgYOffset, 
-			 imgZOffset, width, height, depth, 
-			 tilew, tileh, byteData, 
+			 yoffset, zoffset, imgXOffset, imgYOffset,
+			 imgZOffset, width, height, depth,
+			 tilew, tileh, byteData,
 			 surf, level);
 	env->ReleasePrimitiveArrayCritical(image, byteData, 0);
 
@@ -2503,7 +2702,7 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureSubImage(
 	copyDataToVolume(storedFormat, internalFormat, xoffset,
 			 yoffset, zoffset,
 			 imgXOffset, imgYOffset, imgZOffset,
-			 width, height, depth, tilew, tileh, shortData, 
+			 width, height, depth, tilew, tileh, shortData,
 			 surf, level);
 	env->ReleasePrimitiveArrayCritical(image, shortData, 0);
     }
@@ -2536,7 +2735,7 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_bindTexture(
 	if (objectId >= d3dCtx->cubeMapTableLen) {
 	    DWORD i;
 	    DWORD len = max(objectId+1, d3dCtx->cubeMapTableLen << 1);
-	    LPDIRECT3DCUBETEXTURE9 *newTable = (LPDIRECT3DCUBETEXTURE9 *) 
+	    LPDIRECT3DCUBETEXTURE9 *newTable = (LPDIRECT3DCUBETEXTURE9 *)
 		malloc(sizeof(LPDIRECT3DCUBETEXTURE9) * len);
 
 	    if (newTable == NULL) {
@@ -2555,10 +2754,10 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_bindTexture(
 	}
 
 	d3dCtx->bindTextureId[d3dCtx->texUnitStage] = objectId;
-	if (d3dCtx->cubeMapTable[objectId] != NULL) { 
+	if (d3dCtx->cubeMapTable[objectId] != NULL) {
 	    device->SetTexture(d3dCtx->texUnitStage,
 			       d3dCtx->cubeMapTable[objectId]);
-	} 
+	}
 	// else we will bind this in updateTextureImage
     }
 }
@@ -2572,7 +2771,7 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureFilterMode
     jint minFilter,
     jint magFilter)
 {
-     Java_javax_media_j3d_TextureRetained_updateTextureFilterModes(env, 
+     Java_javax_media_j3d_TextureRetained_updateTextureFilterModes(env,
 		   texture, ctx, minFilter, magFilter);
 }
 
@@ -2617,10 +2816,10 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureBoundary(
     jfloat boundaryAlpha)
 {
     updateTextureBoundary(env, texture, ctx, boundaryModeS,
-			  boundaryModeT, -1, boundaryRed, 
+			  boundaryModeT, -1, boundaryRed,
 			  boundaryGreen, boundaryBlue,
 			  boundaryAlpha);
-			  
+
 }
 
 extern "C" JNIEXPORT
@@ -2639,13 +2838,13 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureSubImage(
     jint tilew,
     jint width,
     jint height,
-    jbyteArray image) 
+    jbyteArray image)
 {
     GetDevice();
 
     if (d3dCtx->texUnitStage >= d3dCtx->bindTextureIdLen) {
 	return;
-    }    
+    }
 
     INT currBindTex = d3dCtx->bindTextureId[d3dCtx->texUnitStage];
 
@@ -2653,7 +2852,7 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureSubImage(
 	(currBindTex >= d3dCtx->cubeMapTableLen)) {
 	if (debug) {
 	    printf("Internal Error : UpdateCubeMapSubImage  bind texture ID %d, cubeMapTableLen %d, texUnitStage = %d \n", currBindTex, d3dCtx->cubeMapTableLen, d3dCtx->texUnitStage);
-	} 
+	}
 	return;
     }
 
@@ -2667,21 +2866,21 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureSubImage(
     // update Image data
     if (storedFormat != FORMAT_USHORT_GRAY) {
 	jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(image,   NULL);
-	copyDataToCubeMap(storedFormat, internalFormat, 
-			  xoffset, yoffset, 
-			  imgXOffset, imgYOffset, 
+	copyDataToCubeMap(storedFormat, internalFormat,
+			  xoffset, yoffset,
+			  imgXOffset, imgYOffset,
 			  width, height,
-			  tilew, byteData, 
+			  tilew, byteData,
 			  surf, level, face);
 	env->ReleasePrimitiveArrayCritical(image, byteData, 0);
 
     } else {
 	jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(image, NULL);
-	copyDataToCubeMap(storedFormat, internalFormat, 
-			  xoffset, yoffset, 
-			  imgXOffset, imgYOffset, 
-			  width, height, 
-			  tilew, shortData, 
+	copyDataToCubeMap(storedFormat, internalFormat,
+			  xoffset, yoffset,
+			  imgXOffset, imgYOffset,
+			  width, height,
+			  tilew, shortData,
 			  surf, level, face);
 	env->ReleasePrimitiveArrayCritical(image, shortData, 0);
     }
@@ -2710,7 +2909,7 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureImage(
 		   d3dCtx->texUnitStage, d3dCtx->bindTextureIdLen);
 	}
 	return;
-    }    
+    }
 
 
     INT currBindTex = d3dCtx->bindTextureId[d3dCtx->texUnitStage];
@@ -2719,7 +2918,7 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureImage(
 	(currBindTex >= d3dCtx->cubeMapTableLen)) {
 	if (debug) {
 	    printf("Internal Error : UpdateCubeMapImage  bind texture ID %d, cubeMapTableLen %d, texUnitStage = %d \n",  currBindTex, d3dCtx->cubeMapTableLen, d3dCtx->texUnitStage);
-	} 
+	}
 	return;
     }
 
@@ -2728,7 +2927,7 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureImage(
     if (level == 0) {
 	if (surf != NULL) {
 	    // see if no. of mipmap level change
-	    
+
 	    if (surf->GetLevelCount() != numLevels) {
 		d3dCtx->freeResource(surf);
 		d3dCtx->cubeMapTable[currBindTex] = NULL;
@@ -2738,14 +2937,14 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureImage(
 
 	if (surf == NULL) {
 	// Need to create surface
-	    surf = createCubeMapTexture(d3dCtx, numLevels, internalFormat, 
+	    surf = createCubeMapTexture(d3dCtx, numLevels, internalFormat,
 					width, height);
 	    if (surf == NULL) {
-		return; 
+		return;
 	    }
 
 	    d3dCtx->cubeMapTable[currBindTex] = surf;
-	} 
+	}
     } else {
 	if (surf == NULL) {
 	    return;
@@ -2764,14 +2963,14 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureImage(
 	if (format != FORMAT_USHORT_GRAY) {
 	    jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(imageYup,   NULL);
 	    copyDataToCubeMap(format, internalFormat, 0, 0, 0, 0,
-			      width, height, width, byteData, 
+			      width, height, width, byteData,
 			      surf, level, face);
 	    env->ReleasePrimitiveArrayCritical(imageYup, byteData, 0);
-	    
+
 	} else {
 	    jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(imageYup, NULL);
 	    copyDataToCubeMap(format, internalFormat, 0, 0, 0, 0,
-			      width, height, width,  shortData, 
+			      width, height, width,  shortData,
 			      surf, level, face);
 	    env->ReleasePrimitiveArrayCritical(imageYup, shortData, 0);
 	}
@@ -2783,8 +2982,8 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureImage(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_DetailTextureImage_bindTexture(
-    JNIEnv *env, 
-    jobject texture, 
+    JNIEnv *env,
+    jobject texture,
     jlong ctx,
     jint objectId)
 {
@@ -2793,15 +2992,15 @@ void JNICALL Java_javax_media_j3d_DetailTextureImage_bindTexture(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_DetailTextureImage_updateTextureImage(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject texture,
     jlong ctx,
     jint numLevels,
     jint level,
-    jint internalFormat, 
-    jint format, 
-    jint width, 
-    jint height, 
+    jint internalFormat,
+    jint format,
+    jint width,
+    jint height,
     jint boundaryWidth,
     jbyteArray imageYup)
 {
@@ -2820,7 +3019,7 @@ jboolean JNICALL Java_javax_media_j3d_Canvas3D_decal1stChildSetup(
     device->Clear(0, NULL, D3DCLEAR_STENCIL, 0, 1.0, 0);
     device->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
     device->SetRenderState(D3DRS_STENCILREF, 0x1);
-    device->SetRenderState(D3DRS_STENCILMASK, 0x1);    
+    device->SetRenderState(D3DRS_STENCILMASK, 0x1);
     device->SetRenderState(D3DRS_STENCILFAIL,
 			   D3DSTENCILOP_KEEP);
     device->SetRenderState(D3DRS_STENCILZFAIL,
@@ -2836,14 +3035,14 @@ void JNICALL Java_javax_media_j3d_Canvas3D_decalNthChildSetup(
     jobject obj,
     jlong ctx)
 
-{ 
+{
     GetDevice();
 
     d3dCtx->zEnable = FALSE;
     device->SetRenderState(D3DRS_ZENABLE, FALSE);
     device->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL);
     device->SetRenderState(D3DRS_STENCILREF, 0x1);
-    device->SetRenderState(D3DRS_STENCILMASK, 0x1);    
+    device->SetRenderState(D3DRS_STENCILMASK, 0x1);
     device->SetRenderState(D3DRS_STENCILFAIL,
 			   D3DSTENCILOP_KEEP);
     device->SetRenderState(D3DRS_STENCILZFAIL,
@@ -2899,14 +3098,14 @@ void JNICALL Java_javax_media_j3d_Canvas3D_activeTextureUnit(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_TextureUnitStateRetained_updateTextureUnitState(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
     jlong ctx,
     jint index,
     jboolean enable)
 {
     GetDevice();
-    // If this index is greater than max support stage, 
+    // If this index is greater than max support stage,
     // then subsequence texture operation will ignore.
     if (index <= 0) {
 	index = 0;
@@ -2916,14 +3115,14 @@ void JNICALL Java_javax_media_j3d_TextureUnitStateRetained_updateTextureUnitStat
 
     if (!enable && (index < d3dCtx->bindTextureIdLen)) {
 	device->SetTexture(index, NULL);
-	d3dCtx->bindTextureId[index] = -1;	
-    } 
+	d3dCtx->bindTextureId[index] = -1;
+    }
 }
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_setDepthFunc(
-    JNIEnv * env, 
-    jobject obj, 
+    JNIEnv * env,
+    jobject obj,
     jlong ctx,
     jint func)
 {
@@ -2942,22 +3141,22 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setDepthFunc(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_setBlendColor(
-    JNIEnv *env, 
+    JNIEnv *env,
     jobject obj,
-    jlong ctx,    
+    jlong ctx,
     jfloat colorRed,
     jfloat colorGreen,
     jfloat colorBlue,
-    jfloat colorAlpha) 
+    jfloat colorAlpha)
 {
-    // Not support in D3D 
+    // Not support in D3D
 }
 
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_setBlendFunc(
-    JNIEnv * env, 
-    jobject obj, 
+    JNIEnv * env,
+    jobject obj,
     jlong ctx,
     jint srcBlendFunction,
     jint dstBlendFunction)
@@ -2965,16 +3164,16 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setBlendFunc(
     GetDevice();
 
     device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-    device->SetRenderState(D3DRS_SRCBLEND, 
+    device->SetRenderState(D3DRS_SRCBLEND,
 			   blendFunctionTable[srcBlendFunction]);
-    device->SetRenderState(D3DRS_DESTBLEND, 
+    device->SetRenderState(D3DRS_DESTBLEND,
 			   blendFunctionTable[dstBlendFunction]);
 }
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_setFogEnableFlag(
-    JNIEnv * env, 
-    jobject obj, 
+    JNIEnv * env,
+    jobject obj,
     jlong ctx,
     jboolean enable)
 {

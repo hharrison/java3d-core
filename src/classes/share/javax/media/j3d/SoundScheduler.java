@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -1224,12 +1224,12 @@ class SoundScheduler extends J3dStructure {
 		    nSelectedSScapes++;
 		    if (debugFlag)
 			debugPrint(": region of intersection for "+
-				   "soundscape "+k+" found at "+System.currentTimeMillis());
+				   "soundscape "+k+" found at "+J3dClock.currentTimeMillis());
 		} else {
 		    if (debugFlag)
 			debugPrint(
 				   ": region of intersection for soundscape "+
-				   k + " not found at "+ System.currentTimeMillis());
+				   k + " not found at "+ J3dClock.currentTimeMillis());
 		}
 	    }
 	}
@@ -1638,7 +1638,7 @@ class SoundScheduler extends J3dStructure {
 	    //
 	    // test current time against endTime of sound to determine
 	    // if sound is Completely finished playing
-	    long currentTime = System.currentTimeMillis();
+	    long currentTime = J3dClock.currentTimeMillis();
 	    if (soundAtom.endTime>0 && soundAtom.endTime<=currentTime) {
 		// sound's completed playing, force action
 		soundAtom.schedulingAction = SoundSchedulerAtom.COMPLETE;
@@ -1981,7 +1981,7 @@ class SoundScheduler extends J3dStructure {
      * complete).
      */
     long  shortestTimeToFinish() {
-	long currentTime = System.currentTimeMillis();
+	long currentTime = J3dClock.currentTimeMillis();
 	long shortestTime = -1L;
 	SoundSchedulerAtom soundAtom;
 	synchronized (prioritizedSounds) {

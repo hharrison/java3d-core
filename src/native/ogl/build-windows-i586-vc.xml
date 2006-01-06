@@ -4,7 +4,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -55,7 +55,7 @@
   <target name="compile-ogl">
     <!-- Compile the c source files-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="cl">
-	<arg line="-I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; -I&quot;${cg.home}\include&quot; -nologo -MT -W3 -GX -Ox -YX -FD ${bldFlag} ${cflags.cg} -c &quot;${oglsrc}/DrawingSurfaceObjectAWT.c&quot; &quot;${oglsrc}/Canvas3D.c&quot; &quot;${oglsrc}/GraphicsContext3D.c&quot; &quot;${oglsrc}/NativeWSInfo.c&quot; &quot;${oglsrc}/NativeScreenInfo.c&quot; &quot;${oglsrc}/NativeConfigTemplate3D.c&quot; &quot;${oglsrc}/MasterControl.c&quot; &quot;${oglsrc}/RasterRetained.c&quot; &quot;${oglsrc}/GeometryArrayRetained.c&quot; &quot;${oglsrc}/Attributes.c&quot; &quot;${oglsrc}/CgShaderProgram.c&quot; &quot;${oglsrc}/GLSLShaderProgram.c&quot; &quot;${oglsrc}/Lights.c&quot; &quot;${oglsrc}/NativeAPIInfo.c&quot;"/>
+	<arg line="-I&quot;${oglsrc}&quot; -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; -I&quot;${cg.home}\include&quot; -nologo -MT -W3 -GX -Ox -YX -FD ${bldFlag} ${cflags.cg} -c &quot;${oglsrc}/DrawingSurfaceObjectAWT.c&quot; &quot;${oglsrc}/Canvas3D.c&quot; &quot;${oglsrc}/GraphicsContext3D.c&quot; &quot;${oglsrc}/NativeWSInfo.c&quot; &quot;${oglsrc}/NativeScreenInfo.c&quot; &quot;${oglsrc}/NativeConfigTemplate3D.c&quot; &quot;${oglsrc}/MasterControl.c&quot; &quot;${oglsrc}/RasterRetained.c&quot; &quot;${oglsrc}/GeometryArrayRetained.c&quot; &quot;${oglsrc}/Attributes.c&quot; &quot;${oglsrc}/CgShaderProgram.c&quot; &quot;${oglsrc}/GLSLShaderProgram.c&quot; &quot;${oglsrc}/Lights.c&quot; &quot;${oglsrc}/NativeAPIInfo.c&quot;"/>
     </exec>
 
     <!-- Create the library file-->
@@ -69,12 +69,12 @@
   <target name="compile-ogl-cg" if="build.cg">
     <!-- Compile the c source files-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="cl">
-	<arg line="-I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; -I&quot;${cg.home}\include&quot; -nologo -MT -W3 -GX -Ox -YX -FD ${bldFlag} ${cflags.cg} -c &quot;${oglsrc}/CgWrapper.c&quot;"/>
+	<arg line="-I&quot;${oglsrc}&quot; -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; -I&quot;${cg.home}\include&quot; -nologo -MT -W3 -GX -Ox -YX -FD ${bldFlag} ${cflags.cg} -c &quot;${oglsrc}/CgWrapper.c&quot;"/>
     </exec>
 
     <!-- Create the library file-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="link">
-	<arg line="-nologo -dll -subsystem:windows -pdb:none -machine:I386 -out:j3dcore-ogl-cg.dll CgWrapper.obj  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib  shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opengl32.lib delayimp.lib -DELAYLOAD:jawt.dll -LIBPATH:&quot;${java.home}\..\lib&quot; jawt.lib -LIBPATH:&quot;${cg.home}\lib&quot; cg.lib cgGL.lib"/>
+	<arg line="-nologo -dll -subsystem:windows -pdb:none -machine:I386 -out:j3dcore-ogl-cg.dll CgWrapper.obj  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib  shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opengl32.lib delayimp.lib -LIBPATH:&quot;${cg.home}\lib&quot; cg.lib cgGL.lib"/>
     </exec>
 
   </target>

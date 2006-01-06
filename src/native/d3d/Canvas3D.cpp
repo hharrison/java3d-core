@@ -1,7 +1,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -29,7 +29,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_widSync(
     jobject obj,
     jint fd,
     jint numWindows)
-{
+{ 
     // This function is only used for Solaris OpenGL
 }
 
@@ -69,30 +69,34 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
 	return 0;
     }
 
-    if (offScreen) {
-
-	jclass cls = (jclass) env->GetObjectClass(obj);
-	jfieldID fieldId = env->GetFieldID(cls,
+    if (offScreen) 
+	{
+	  jclass cls = (jclass) env->GetObjectClass(obj);
+	  jfieldID fieldId = env->GetFieldID(cls,
 					   "offScreenCanvasSize", 
 					   "Ljava/awt/Dimension;");
-	jobject dimObj = env->GetObjectField(obj, fieldId);
-	if (dimObj == NULL) {
-	    // user invoke queryProperties()
-	    ctx->offScreenWidth = 1;
-	    ctx->offScreenHeight = 1;
-	} else {
-	    cls = (jclass) env->GetObjectClass(dimObj);
-	    fieldId = env->GetFieldID(cls, "width", "I");
-	    ctx->offScreenWidth = env->GetIntField(dimObj, fieldId);
-	    fieldId = env->GetFieldID(cls, "height", "I");
-	    ctx->offScreenHeight = env->GetIntField(dimObj, fieldId);
-	}
+	  jobject dimObj = env->GetObjectField(obj, fieldId);
+	  if (dimObj == NULL) 
+	   {
+	     // user invoke queryProperties()
+	     ctx->offScreenWidth = 1;
+	     ctx->offScreenHeight = 1;
+	   } 
+	  else 
+	   {
+	     cls = (jclass) env->GetObjectClass(dimObj);
+	     fieldId = env->GetFieldID(cls, "width", "I");
+	     ctx->offScreenWidth = env->GetIntField(dimObj, fieldId);
+	     fieldId = env->GetFieldID(cls, "height", "I");
+	     ctx->offScreenHeight = env->GetIntField(dimObj, fieldId);
+	   }
     }
 
-    if (!ctx->initialize(env, obj)) {
-	delete ctx;
-	unlock();
-	return 0;
+    if (!ctx->initialize(env, obj)) 
+	{
+	 delete ctx;
+	 unlock();
+	 return 0;
     } 
     d3dCtxList.push_back(ctx);
 
@@ -140,14 +144,15 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
 }
 
 extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_useCtx(
+jboolean JNICALL Java_javax_media_j3d_Canvas3D_useCtx(
     JNIEnv *env, 
     jclass cl, 
     jlong ctx, 
     jlong display, 
     jint window)
 {
-    // D3D doesn't have notation of current context
+	return JNI_TRUE;   
+	// D3D doesn't have notation of current context
 }
 
 
@@ -337,13 +342,35 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
     GetDevice();
 
  /* Java 3D always clears the Z-buffer */
+ /* @TODO check same operation for stencil */
 
     if (!d3dCtx->zWriteEnable) {
 	device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
     } 
 
-    device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
-		  D3DCOLOR_COLORVALUE(r, g, b, 1.0f), 1.0, 0);
+	/* clear stencil, if in used */
+     
+	if (d3dCtx->stencilWriteEnable )
+	{// clear stencil and ZBuffer
+	  HRESULT hr = device->Clear(0, NULL, D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
+		             D3DCOLOR_COLORVALUE(r, g, b, 1.0f), 1.0, 0);
+      if (hr == D3DERR_INVALIDCALL)
+	  {
+         printf("[Java3D] Error cleaning Canvas3D stencil & ZBuffer\n");
+	  }
+	//  printf("canvas3D clear stencil & ZBuffer\n");
+	}
+	else
+	{	// clear ZBuffer only
+	  HRESULT hr =  device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
+		          D3DCOLOR_COLORVALUE(r, g, b, 1.0f), 1.0, 0);
+	  if (hr == D3DERR_INVALIDCALL)
+	  {
+         printf("[Java3D] Error cleaning Canvas3D ZBuffer\n");
+	  }
+	 // printf("canvas3D clear ZBuffer\n");
+	}
+
 
     if (pa2d) {
 	jclass pa2d_class = env->GetObjectClass(pa2d);
@@ -400,6 +427,8 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
 	int scaleWidth, scaleHeight;
 	float sw, sh;
 
+	DWORD stencilcmpfunc;
+
 	// sz can be any number since we already disable z buffer
 	// However rhw can't be 0, otherwise texture will not shown
 	screenCoord.sz = 0.999f;
@@ -409,6 +438,15 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
 	device->GetRenderState(D3DRS_ZFUNC, &zcmpfunc);
 	device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	device->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+    
+	// must disable stencil ? I guess yes
+	if (d3dCtx->stencilEnable) 
+	{
+	  device->GetRenderState(D3DRS_STENCILFUNC, &stencilcmpfunc);
+	  device->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+	  device->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+	}
+
 
 	switch (imageScaleMode){
 	case javax_media_j3d_Background_SCALE_NONE:
@@ -476,13 +514,25 @@ void JNICALL Java_javax_media_j3d_Canvas3D_clear(
 			scaleWidth, scaleHeight, texModeRepeat);
 
 	device->SetRenderState(D3DRS_ZFUNC, zcmpfunc);
-	device->SetRenderState(D3DRS_ZWRITEENABLE, 
-			       d3dCtx->zWriteEnable);
-	unlockBackground();
-    } else {
-	if (!d3dCtx->zWriteEnable) {
-	    device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	device->SetRenderState(D3DRS_ZWRITEENABLE, d3dCtx->zWriteEnable);
+	
+	// reenable stencil ? yes
+	if (d3dCtx->stencilEnable) 
+	{
+     device->SetRenderState(D3DRS_STENCILFUNC, stencilcmpfunc);
+	 device->SetRenderState(D3DRS_STENCILENABLE, d3dCtx->stencilWriteEnable);
 	}
+	unlockBackground();
+    } 
+   else 
+     {
+	  if (!d3dCtx->zWriteEnable) {
+	      device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	    }	
+	  // disable stencil 
+      if (d3dCtx->stencilEnable && !d3dCtx->stencilWriteEnable) {
+	      device->SetRenderState(D3DRS_STENCILENABLE, FALSE);		  
+	  }
     }
 
 
@@ -1033,4 +1083,3 @@ jboolean JNICALL Java_javax_media_j3d_Canvas3D_validGraphicsMode(
     EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &devMode);
     return (devMode.dmBitsPerPel > 8);
 }
-

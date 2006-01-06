@@ -3,7 +3,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -36,7 +36,7 @@
     <!-- Compile the c source files-->
     <!-- Inhibit all warning for 32 bit build. Any warning will be caught in the 64 bit build -->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="-w -I${java.home}/../include -I${java.home}/../include/linux -I/usr/X11R6/include -I${javahCoreTarget} ${bldFlag} -DLINUX -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/CompressedGeometryRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+	<arg line="-w -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/linux -I/usr/X11R6/include -I${javahCoreTarget} ${bldFlag} -DLINUX -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/CompressedGeometryRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
     </exec>
 
     <!-- Create the library file-->
