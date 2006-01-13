@@ -3014,6 +3014,9 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
     }
 
     if (textureDefined) {
+	texobjs = (jarray *)malloc(texCoordMapLength * sizeof(jarray));
+	texCoordPointer = (jfloat **)malloc(texCoordMapLength * sizeof(jfloat *));
+
 	for (i = 0; i < texCoordMapLength; i++) {
 	    texobjs[i] = (jarray)(*(table->GetObjectArrayElement))(env, texCoords, i);
 	}
