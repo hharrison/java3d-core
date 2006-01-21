@@ -50,8 +50,7 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
     JNIEnv  *env,
     jobject  obj,
     jlong    display,
-    jint     window, 
-    jint     vid,    
+    jint     window,
     jlong    fbConfigListPtr,
     jlong    sharedCtx,
     jboolean isSharedCtx,
@@ -62,6 +61,7 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
     HWND hwnd = WindowFromDC(reinterpret_cast<HDC>(jlong(window)));
 
     lock();
+    int vid = 0; // TODO: get needed info from fbConfigListPtr
     D3dCtx* ctx = new D3dCtx(env, obj, hwnd, offScreen, vid);
     if (ctx == NULL) {
 	printf("%s", getErrorMessage(OUTOFMEMORY));
@@ -111,7 +111,6 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     jobject obj,
     jlong display,
     jint window,
-    jint vid,
     jlong fbConfigListPtr,
     jboolean offScreen,
     jint width,
@@ -128,6 +127,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     // instead of current window width/height to create
     // context.
 
+    int vid = 0; // TODO: get needed info from fbConfigListPtr
     D3dCtx* ctx = new D3dCtx(env, obj, hwnd, true, vid);
     if (ctx == NULL) {
 	printf("%s", getErrorMessage(OUTOFMEMORY));
@@ -876,7 +876,6 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
     jobject obj,
     jlong ctx,
     jlong display,
-    jint window,
     jlong fbConfigListPtr,
     jint width,
     jint height)

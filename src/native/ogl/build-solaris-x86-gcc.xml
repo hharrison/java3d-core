@@ -30,12 +30,12 @@
     <!-- Compile the c source files-->
     <!-- Inhibit all warning for 32 bit build. Any warning will be caught in the 64 bit build -->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="-w -m32 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+	<arg line="-w -m32 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
     </exec>
 
     <!-- Create the library file-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="ld">
-	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/openwin/lib -ldl -lGL -lX11 -lXext -lm -lsocket -lnsl -lc  -R/usr/openwin/lib -L${java.home}/lib/i386 -L${java.home}/lib/i386/motif21 -ljawt -L${java.home}/lib/i386/server -ljvm  -o libj3dcore-ogl.so"/>
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/openwin/lib -ldl -lGL -lX11 -lXext -lm -lsocket -lnsl -lc  -R/usr/openwin/lib -L${java.home}/lib/i386 -L${java.home}/lib/i386/motif21 -ljawt -L${java.home}/lib/i386/server -ljvm  -o libj3dcore-ogl.so"/>
     </exec>
 
     <!-- Copy the copyright library file -->
@@ -58,12 +58,12 @@
 
     <!-- Compile the c source files-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs/amd64" executable="gcc">
-	<arg line="-m64 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeWSInfo.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+	<arg line="-m64 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/solaris -I/usr/openwin/include -I${javahCoreTarget} ${bldFlag} -DSOLARIS -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
     </exec>
 
     <!-- Create the library file-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs/amd64" executable="ld">
-	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeWSInfo.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/openwin/lib/amd64 -ldl -lGL -lX11 -lXext  -lm -lsocket -lnsl -lc -R/usr/openwin/lib/amd64 -L${java.home}/lib/amd64 -L${java.home}/lib/amd64/motif21 -ljawt -L${java.home}/lib/amd64/server -ljvm  -o libj3dcore-ogl.so"/>
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/openwin/lib/amd64 -ldl -lGL -lX11 -lXext  -lm -lsocket -lnsl -lc -R/usr/openwin/lib/amd64 -L${java.home}/lib/amd64 -L${java.home}/lib/amd64/motif21 -ljawt -L${java.home}/lib/amd64/server -ljvm  -o libj3dcore-ogl.so"/>
     </exec>
 
     <!-- Copy the copyright library file -->

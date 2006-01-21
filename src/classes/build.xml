@@ -53,10 +53,10 @@
     </copy>
 
     <!-- Compile the java code from ${src} into ${build}/${platform}/debug/classes -->
-    <javac srcdir="${src}/classes/share:${src}/classes/${ostype}:${core_utils_src}/classes/share:${build-debug-gen}/classes"
+    <javac srcdir="${src}/classes/share:${src}/classes/${wstype}:${core_utils_src}/classes/share:${build-debug-gen}/classes"
            destdir="${build}/${platform}/debug/classes"
 	   source="1.4"
-	   target="1.4"
+	   target="1.5"
 	   debug="true"
            deprecation="off">
 	   <classpath refid="vecmath.debug.classpath"/>
@@ -97,9 +97,9 @@
     </copy>
 
     <!-- Compile the java code from ${src} into ${build}/${platform}/opt/classes -->
-    <javac srcdir="${src}/classes/share:${src}/classes/${ostype}:${core_utils_src}/classes/share:${build-opt-gen}/classes"            destdir="${build}/${platform}/opt/classes"
+    <javac srcdir="${src}/classes/share:${src}/classes/${wstype}:${core_utils_src}/classes/share:${build-opt-gen}/classes"            destdir="${build}/${platform}/opt/classes"
            source="1.4"
-           target="1.4"
+           target="1.5"
            debug="true"
            debuglevel="lines,source"
            deprecation="off">
@@ -211,7 +211,7 @@
              windowtitle="Java 3D ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
-		<pathelement location="${src}/classes/${ostype}"/>
+		<pathelement location="${src}/classes/${wstype}"/>
 		<pathelement location="${core_utils_src}/classes/share"/>
 		<pathelement location="${vecmath_src}"/>
              </sourcepath>
@@ -253,7 +253,7 @@
              windowtitle="Java 3D ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
-		<pathelement location="${src}/classes/${ostype}"/>
+		<pathelement location="${src}/classes/${wstype}"/>
 		<pathelement location="${build}/${platform}/opt/gen/classes"/>
 		<pathelement location="${core_utils_src}/classes/share"/>
 		<pathelement location="${vecmath_src}"/>
@@ -285,7 +285,7 @@
              windowtitle="Java 3D ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
-		<pathelement location="${src}/classes/${ostype}"/>
+		<pathelement location="${src}/classes/${wstype}"/>
 		<pathelement location="${core_utils_src}/classes/share"/>
 		<pathelement location="${vecmath_src}"/>
              </sourcepath>
@@ -333,8 +333,8 @@
         <fileset dir="${java.home}/lib/ext" includes="j3dcore.jar, j3dutils.jar, vecmath.jar"/>
     </delete>
     <delete>
-       <fileset dir="${java.home}/${install.bin}" includes="libj3dcore*.so, libj3dutils.so"/>
-       <fileset dir="${java.home}/${install.bin}" includes="j3dcore*.dll, j3dutils.dll"/>
+       <fileset dir="${java.home}/${install.bin}" includes="libj3dcore*.so"/>
+       <fileset dir="${java.home}/${install.bin}" includes="j3dcore*.dll"/>
     </delete>
   </target>
  

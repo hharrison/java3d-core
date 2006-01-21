@@ -63,7 +63,6 @@ class NativeScreenInfo {
 	return screen;
     }
 
-
     // Ensure that the native libraries are loaded
     static {
  	VirtualUniverse.loadLibraries();

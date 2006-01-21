@@ -1648,7 +1648,7 @@ public class GraphicsContext3D extends Object   {
 			synchronized (VirtualUniverse.mc.contextCreationLock) {
 			    canvas3d.screen.renderer.sharedCtx = canvas3d.createNewContext(
 					canvas3d.screen.display,
-					canvas3d.window, canvas3d.vid, 0, true,
+					canvas3d.window, 0, true,
 					canvas3d.offScreen);
 			    canvas3d.screen.renderer.sharedCtxTimeStamp = 
 				VirtualUniverse.mc.getContextTimeStamp();

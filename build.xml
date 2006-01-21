@@ -123,7 +123,7 @@
 
   <target name="echo" depends="setupPlatform">	
     <echo message="platform        = ${platform}"/>
-    <echo message="ostype          = ${ostype}"/>
+    <echo message="wstype          = ${wstype}"/>
     <echo message="os.arch         = ${os.arch}"/>
     <echo message="os.name         = ${os.name}"/>	
     <echo message="ant.home        = ${ant.home}"/>
@@ -150,44 +150,44 @@
   </target>
 
   <target name="setupSolaris" if="isSolarisOnSparc">	
-    <property name="ostype" value="solaris"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="solaris-sparc-${build.comp}"/>
     <property name="install.bin" value="lib/sparc"/>
   </target>
 
   <target name="setupSolarisX86" if="isSolarisOnX86">
-    <property name="ostype" value="solaris"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="solaris-x86-${build.comp}"/>
     <property name="install.bin" value="lib/i386"/>
   </target>
 
   <target name="setupLinux" if="isLinuxOnX86">	
-    <property name="ostype" value="linux"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="linux-i586"/>
     <property name="install.bin" value="lib/i386"/>
   </target>
 
   <target name="setupLinuxAmd64" if="isLinuxOnAmd64">	
-    <property name="ostype" value="linux"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="linux-amd64"/>
     <property name="install.bin" value="lib/amd64"/>
   </target>
 
   <target name="setupLinuxIA64" if="isLinuxOnIA64">	
-    <property name="ostype" value="linux"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="linux-ia64"/>
     <property name="install.bin" value="lib/ia64"/>
   </target>
 
   <target name="setupLinuxPPC" if="isLinuxOnPPC">	
-    <property name="ostype" value="linux"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="linux-ppc"/>
     <property name="install.bin" value="lib/ppc"/>
   </target>
 
     <!-- win32 should be rename as windows -->
   <target name="setupWindows" if="isWindowsOnX86">	
-    <property name="ostype" value="win32"/>
+    <property name="wstype" value="win32"/>
     <property name="platform" value="windows-i586-${build.comp}"/>
     <property name="install.bin" value="bin"/>
   </target>

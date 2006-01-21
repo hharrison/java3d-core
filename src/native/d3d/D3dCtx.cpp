@@ -65,6 +65,7 @@ D3dCtx::D3dCtx(JNIEnv* env, jobject obj, HWND _hwnd, BOOL _offScreen,
     zWriteEnable = TRUE;
     zEnable = TRUE;
 
+    // TODO: THIS NEEDS TO BE REDONE WITH INFO FROM THE FBCONFIG PTR
     // this is the pixelFormat return from NativeConfigTemplate.
     minZDepth = vid & 0x3fffffff;
     if (vid & 0x80000000) 

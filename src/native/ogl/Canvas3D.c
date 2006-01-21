@@ -1080,7 +1080,6 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
     jobject obj, 
     jlong display,
     jint window, 
-    jint vid,
     jlong fbConfigListPtr,
     jlong sharedCtxInfo,
     jboolean isSharedCtx,
@@ -1133,7 +1132,7 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
     else if((fbConfigList == NULL) || (fbConfigList[0] == NULL)) {
 	/*
 	 * fbConfig must be a valid pointer to an GLXFBConfig struct returned
-	 * by glXChooseFBConfig() for a physical screen.  The visual id in vid
+	 * by glXChooseFBConfig() for a physical screen.  The visual id
 	 * is not sufficient for handling OpenGL with Xinerama mode disabled:
 	 * it doesn't distinguish between the physical screens making up the
 	 * virtual screen when the X server is running in Xinerama mode.
@@ -1186,7 +1185,7 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
     
     /*
       fprintf(stderr, "Canvas3D_createNewContext: \n");
-      fprintf(stderr, "vid %d window 0x%x\n", vid, window);
+      fprintf(stderr, "window 0x%x\n", window);
     */
     if(sharedCtxInfo == 0)
 	sharedCtx = 0;
@@ -1198,11 +1197,7 @@ jlong JNICALL Java_javax_media_j3d_Canvas3D_createNewContext(
     hdc =  (HDC) window;
 
     /* Need to handle onScreen and offScreen differently */
-    /* vid is for onScreen and fbConfigListPtr is for offScreen */ 
-    /*
-     * vid must be a PixelFormat returned
-     * by wglChoosePixelFormat() or wglChoosePixelFormatARB.
-     */
+    /* fbConfigListPtr has both an on-screen and off-screen pixel format */
 
     if(!offScreen) {  /* Fix to issue 104 */
 	if ((PixelFormatInfoPtr == NULL) || (PixelFormatInfoPtr->onScreenPFormat <= 0)) {
@@ -2560,7 +2555,6 @@ jint JNICALL Java_javax_media_j3d_Canvas3D_createOffScreenBuffer(
     jobject obj,
     jlong ctxInfo,    
     jlong display,
-    jint vid,
     jlong fbConfigListPtr,
     jint width,
     jint height)
@@ -3236,7 +3230,6 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     jobject obj,
     jlong display,
     jint window,
-    jint vid,
     jlong fbConfigListPtr,
     jboolean offScreen,
     jint width,
@@ -3314,7 +3307,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     }
     else if(window == 0 && offScreen){
 	newWin = Java_javax_media_j3d_Canvas3D_createOffScreenBuffer( env, obj, 0,
-								      display, window,
+								      display,
 								      fbConfigListPtr,
 								      width, height);
     }
@@ -3350,11 +3343,6 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
       fprintf(stderr, "Canvas3D_createQueryContext:\n");
       fprintf(stderr, "window is  0x%x, offScreen %d\n", window, offScreen);
     */
-    
-    /*
-     * vid must be valid PixelFormat returned
-     * by wglChoosePixelFormat() or wglChoosePixelFormatARB.
-     */    
 
     /* Fix to issue 104 */
     if(!offScreen) {
@@ -3388,7 +3376,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_createQueryContext(
     else if(window == 0 && offScreen){
 	/* fprintf(stderr, "CreateQueryContext : window == 0 && offScreen\n"); */
 	hdc = (HDC)Java_javax_media_j3d_Canvas3D_createOffScreenBuffer( env, obj, 0, display,
-									vid, fbConfigListPtr,
+									fbConfigListPtr,
 									width, height);
     }
     else if(window != 0){

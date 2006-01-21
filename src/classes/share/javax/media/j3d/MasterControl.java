@@ -463,18 +463,6 @@ class MasterControl {
     // Method to get number of procesor
     private native int getNumberOfProcessor();
 
-    // Methods to set/get system thread concurrency
-    private native void setThreadConcurrency(int newLevel);
-    private native int getThreadConcurrency();
-
-    // Native method to get the high-resolution timer value.
-    // This method is only called by the J3dClock.getHiResTimerValue.
-    // It is defined as a MasterControl method for convenience, so we don't
-    // have to have yet another class with native methods.
-    //
-    // NOTE: once we drop support for JDK 1.4.2, this method will go away.
-    static native long getNativeTimerValue();
-
     // Maximum lights supported by the native API 
     private native int getMaximumLights();
     int maxLights;
@@ -671,22 +659,6 @@ class MasterControl {
 	if (J3dDebug.debug || cpuLimit != defaultThreadLimit) {
 	    System.err.println("Java 3D: concurrent threadLimit = " +
 			       cpuLimit);
-	}
-
-	// Ensure that there are at least enough system threads to
-	// support all of Java 3D's threads running in parallel
-	int threadConcurrency = getThreadConcurrency();
-	if (J3dDebug.debug) {
-	    System.err.println("System threadConcurrency = " +
-			       threadConcurrency);
-	}
-	if (threadConcurrency != -1 && threadConcurrency < (cpuLimit + 1)) {
-	    threadConcurrency = cpuLimit + 1;
-	    if (J3dDebug.debug) {
-		System.err.println("Setting system threadConcurrency to " +
-				   threadConcurrency);
-	    }
-	    setThreadConcurrency(threadConcurrency);
 	}
 
 	// Get the input device scheduler sampling time
