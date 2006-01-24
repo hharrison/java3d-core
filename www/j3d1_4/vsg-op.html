@@ -3,78 +3,13 @@
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>Java 3D 1.4: ViewSpecificGroup View Set Operation</title>
+  <title>Obsolete Page</title>
 </head>
 <body>
-<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.4:
-ViewSpecificGroup View Set Operation<br>
-</h2>
-<p>This page describes a possible enhancement to Java&nbsp;3D 1.4 to
-allow the application to specify the operation used to compute the set
-of views for nested
-ViewSpecificGroup (VSG) nodes. Currently, the set of views used to
-render descendants of nested VSG nodes is the intersection of the set
-of views
-inherited from its
-parent(s) and the set of views specified in the child VSG node. We
-propose to
-add an attribute to VSG such that the resulting set of views is either
-as the intersection or the union of the set of views inherited from its
-parent(s) and the set of views specified in the child VSG node, or
-simply the set of views specified in the child VSG node. More formally,
-we plan to define three modes as follows:
+<h2>Obsolete Page</h2>
+<p>This page is obsolete. Click <a
+ href="http://wiki.java.net/bin/view/Javadesktop/ViewSpecificGroupOp">here</a>
+to go the Java 3D Wiki page discussing ViewSpecificGroupOp.<br>
 </p>
-<ul>
-  <table border="0" cellspacing="2" cellpadding="2">
-    <tbody>
-      <tr>
-        <td><code>INTERSECT</code></td>
-        <td><code>:</code></td>
-        <td><code>viewSet[n]
-=
-viewSet[n-1] &#8745; VSG[n].viewSet</code></td>
-      </tr>
-      <tr>
-        <td><code>UNION</code></td>
-        <td><code>:</code></td>
-        <td><code>viewSet[n]
-=
-viewSet[n-1] &#8746; VSG[n].viewSet</code></td>
-      </tr>
-      <tr>
-        <td><code>REPLACE</code></td>
-        <td><code>:</code></td>
-        <td><code>viewSet[n]
-=
-VSG[n].viewSet</code> </td>
-      </tr>
-    </tbody>
-  </table>
-  <br>
-where <code>n</code> is the nesting level (the number of ancestor VSG
-nodes in the
-scene graph path).<br>
-The default mode is <code>INTERSECT</code>.
-</ul>
-<p>Note that the set of views used to render descendants of a top-level
-VSG node (that is, a VSG node that is not itself a descendant of
-another VSG node) is the set of views specified in the VSG node,
-regardless of the mode. More
-formally: <code>viewSet[0]&nbsp;=&nbsp;VSG[0].viewSet</code> for all
-values of <code>viewSetOp</code>.<br>
-</p>
-<p>The proposed API is:</p>
-<ul>
-  <li>New methods in existing classes:<br>
-  </li>
-  <ul>
-    <pre>ViewSpecificGroup<br>    method: setViewSetOp(int op) // one of: INTERSECT, UNION, REPLACE<br></pre>
-  </ul>
-</ul>
-<ol>
-</ol>
-<p><font color="gray">Page last updated &#8212;
-$Date$
-</font></p>
 </body>
 </html>
