@@ -167,10 +167,10 @@ public class Texture2D extends Texture {
    * BASE_LEVEL, MULTI_LEVEL_MIPMAP.
    * @param format data format of Textures saved in this object.
    * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA.
-   * @param width width of image at level 0. Must be power of 2.
-   * @param height height of image at level 0. Must be power of 2.
+   * @param width width of image at level 0. Must be greater than 0
+   * @param height height of image at level 0. Must be greater than 0
    * @exception IllegalArgumentException if width or height are NOT
-   * power of 2 OR invalid format/mipmapMode is specified.
+   * greater than 0 OR invalid format/mipmapMode is specified.
    */
     public Texture2D(
 	    int		mipMapMode,
@@ -200,13 +200,13 @@ public class Texture2D extends Texture {
      * BASE_LEVEL, MULTI_LEVEL_MIPMAP
      * @param format data format of Textures saved in this object.
      * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA
-     * @param width width of image at level 0. Must be power of 2. This
+     * @param width width of image at level 0. Must be greater than 0. This
      * does not include the width of the boundary.
-     * @param height height of image at level 0. Must be power of 2. This
+     * @param height height of image at level 0. Must be greater than 0. This
      * does not include the width of the boundary.
      * @param boundaryWidth width of the boundary.
-     * @exception IllegalArgumentException if width or height are not a
-     * power of 2, if an invalid format or mipMapMode is specified, or
+     * @exception IllegalArgumentException if width or height are not greater
+     * than 0, if an invalid format or mipMapMode is specified, or
      * if the boundaryWidth < 0
      *
      * @since Java 3D 1.3

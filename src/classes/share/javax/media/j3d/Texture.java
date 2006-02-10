@@ -549,7 +549,7 @@ public abstract class Texture extends NodeComponent {
         ALLOW_SHARPEN_TEXTURE_READ,
         ALLOW_SIZE_READ        
     };
-    
+
     /**
      * Constructs a Texture object with default parameters.
      * The default values are as follows:
@@ -622,16 +622,24 @@ public abstract class Texture extends NodeComponent {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
 
-	int widPower = getPowerOf2(width);
-	if (widPower == -1)
-	    throw new IllegalArgumentException(J3dI18N.getString("Texture2"));
+	int widthLevels;
+	int heightLevels;
 
-	int heiPower = getPowerOf2(height);
-	if (heiPower == -1)
-	    throw new IllegalArgumentException(J3dI18N.getString("Texture3"));
+        if (VirtualUniverse.mc.enforcePowerOfTwo) {
+	    widthLevels = getPowerOf2(width);
+	    if (widthLevels == -1)
+		throw new IllegalArgumentException(J3dI18N.getString("Texture2"));
 
-	((TextureRetained)this.retained).initialize(format, width, widPower,
-					height, heiPower, mipMapMode, 0);
+	    heightLevels = getPowerOf2(height);
+	    if (heightLevels == -1)
+		throw new IllegalArgumentException(J3dI18N.getString("Texture3"));
+	} else {
+	    widthLevels = getLevelsNPOT(width);
+	    heightLevels = getLevelsNPOT(height);
+	}
+
+	((TextureRetained)this.retained).initialize(format, width, widthLevels,
+					height, heightLevels, mipMapMode, 0);
     }
 
     /**
@@ -678,19 +686,27 @@ public abstract class Texture extends NodeComponent {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
 
-	int widPower = getPowerOf2(width);
-	if (widPower == -1)
-	    throw new IllegalArgumentException(J3dI18N.getString("Texture2"));
+	int widthLevels;
+	int heightLevels;
 
-	int heiPower = getPowerOf2(height);
-	if (heiPower == -1)
-	    throw new IllegalArgumentException(J3dI18N.getString("Texture3"));
+        if (VirtualUniverse.mc.enforcePowerOfTwo) {
+	    widthLevels = getPowerOf2(width);
+	    if (widthLevels == -1)
+		throw new IllegalArgumentException(J3dI18N.getString("Texture2"));
+
+	    heightLevels = getPowerOf2(height);
+	    if (heightLevels == -1)
+		throw new IllegalArgumentException(J3dI18N.getString("Texture3"));
+	} else {
+	    widthLevels = getLevelsNPOT(width);
+	    heightLevels = getLevelsNPOT(height);
+	}
 
 	if (boundaryWidth < 0)
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture30"));
 
-	((TextureRetained)this.retained).initialize(format, width, widPower,
-				height, heiPower, mipMapMode, boundaryWidth);
+	((TextureRetained)this.retained).initialize(format, width, widthLevels,
+				height, heightLevels, mipMapMode, boundaryWidth);
     }
 
     /**
@@ -1131,6 +1147,18 @@ public abstract class Texture extends NodeComponent {
 	}
 	//Can't reach here because we have already checked for 0
 	return -1;
+    }
+
+    // returns number of levels using NPOT rules for mipmap generation
+    // which say that each level should be floor(size/2) of previous level
+    static int getLevelsNPOT(int num) {
+	int tmp, levels = 0;
+	tmp = num;
+	while (tmp > 1) {
+	    tmp = tmp / 2;
+	    levels++;
+	}
+	return levels;
     }
 	    
     /**

@@ -24,6 +24,8 @@ package javax.media.j3d;
 
 public class Texture3D extends Texture {
 
+    // TODO KCR : NPOT
+
     /**
      * Constructs a Texture3D object with default parameters.
      * The default values are as follows:

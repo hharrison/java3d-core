@@ -44,6 +44,8 @@ import javax.vecmath.*;
  */
 public class TextureCubeMap extends Texture {
 
+    // TODO KCR : NPOT
+
     /**
      * Specifies the face of the cube that is pierced by the positive x axis 
      */

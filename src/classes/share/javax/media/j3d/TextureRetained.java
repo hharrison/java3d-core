@@ -163,8 +163,8 @@ abstract class TextureRetained extends NodeComponentRetained {
     Object resourceLock = new Object();
 
 
-    void initialize(int	format, int width, int widPower, 
-			int height, int heiPower, int mipmapMode,
+    void initialize(int	format, int width, int widLevels, 
+			int height, int heiLevels, int mipmapMode,
 			int boundaryWidth) {
 
 	this.mipmapMode = mipmapMode;
@@ -176,10 +176,10 @@ abstract class TextureRetained extends NodeComponentRetained {
 	// determine the maximum number of mipmap levels that can be
 	// defined from the specified dimension
 
-        if (widPower > heiPower) {
-            maxMipMapLevels = widPower + 1;
+        if (widLevels > heiLevels) {
+            maxMipMapLevels = widLevels + 1;
         } else {
-            maxMipMapLevels = heiPower + 1;
+            maxMipMapLevels = heiLevels + 1;
 	}
 
 

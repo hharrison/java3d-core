@@ -773,6 +773,7 @@ public class Canvas3D extends Canvas {
     // Use by D3D to indicate using one pass Blend mode 
     // if Texture interpolation mode is support.
     static final int TEXTURE_LERP               = 0x4000;
+    static final int TEXTURE_NON_POWER_OF_TWO	= 0x8000;
 
     int textureExtendedFeatures = 0;
 
@@ -3291,6 +3292,10 @@ public class Canvas3D extends Canvas {
      * <td>Float</td>
      * </tr>
      * <tr>
+     * <td><code>textureNonPowerOfTwoAvailable</code></td>
+     * <td>Boolean</td>
+     * </tr>
+     * <tr>
      * <td><code>vertexAttrsMax</code></td>
      * <td>Integer</td>
      * </tr>
@@ -3611,6 +3616,18 @@ public class Canvas3D extends Canvas {
      * layer, and an attempt to set anisotropic filter degree will be ignored.
      * </ul>
      * </li>
+
+     * <li>
+     * <code>textureNonPowerOfTwoAvailable</code>
+     * <ul>
+     * A Boolean indicating whether or not texture dimensions that are
+     * not powers of two are supported for
+     * for this Canvas3D. If it indicates false, then textures with
+     * non power of two sizes will be ignored. Set the property 
+     * j3d.textureEnforcePowerOfTwo to revert to the pre-1.5 behavior
+     * of throwing exceptions for non power of two textures.
+     * </ul>
+     * </li>
      *
      * <li>
      * <code>vertexAttrsMax</code>
@@ -3780,6 +3797,14 @@ public class Canvas3D extends Canvas {
         keys.add("textureLodOffsetAvailable");
         values.add(new Boolean(
 		(textureExtendedFeatures & TEXTURE_LOD_OFFSET) != 0));
+
+        keys.add("textureNonPowerOfTwoAvailable");
+        if (VirtualUniverse.mc.enforcePowerOfTwo) {
+            values.add(Boolean.FALSE);
+        } else {
+            values.add(new Boolean(
+                    (textureExtendedFeatures & TEXTURE_NON_POWER_OF_TWO) != 0));
+        }
 
         keys.add("textureCoordSetsMax");
         values.add(new Integer(maxTexCoordSets));

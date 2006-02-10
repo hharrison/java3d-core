@@ -647,6 +647,9 @@ struct GraphicsContextPropertiesInfoRec {
     /* GL_SGIX_texture_lod_bias */
     jboolean textureLodBiasAvailable;
 
+    /* GL_ARB_texture_non_power_of_two */
+    jboolean textureNonPowerOfTwoAvailable;
+
     /* extension mask */
     jint extMask;
     jint textureExtMask;
