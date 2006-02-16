@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Java 3D 1.5 Change Log</title>
+</head>
+<body>
+<h1>Java&nbsp;3D API version 1.5 Change Log</h1>
+<p>Here are the proposed changes for Java&nbsp;3D version 1.5. These
+proposed changes are a results of discussion and collaboration with the
+Java&nbsp;3D community on java.net (see
+<a href="https://java3d.dev.java.net">https://java3d.dev.java.net</a>).
+They are already part of daily and periodic stable builds available on
+java.net.</p>
+<h2>I. Proposed Changes<br>
+</h2>
+<p>Here is the list of proposed changes for the Java&nbsp;3D 1.5 API:<br>
+</p>
+<ol>
+  <li><a href="#NPOT_Textures">Non-power-of-two Textures</a></li>
+</ol>
+<p>For a complete description of these changes, please see the
+proposed API specification (javadoc) for the 1.5 version of the
+Java&nbsp;3D API.
+</p>
+<h3><a name="NPOT_Textures"></a>1. Non-power-of-two Textures</h3>
+<p>We propose to add non-power-of-two textures to Java&nbsp;3D 1.5.
+Currently, the width, height, and depth of all textures must be an
+exact power of two. Most graphics cards now support non-power-of-two
+textures, so we propose to allow this in Java 3D. Since not all
+graphics drivers support this feature, we will add a new
+<code>"textureNonPowerOfTwoAvailable"</code> property to
+Canvas3D.queryProperties that will indicate whether or not
+non-power-of-two textures are supported. If this
+property is set to <code>true</code>, then non-power-of-two textures
+are rendered normally. If this property is set to <code>false</code>,
+then the graphics driver or card does not support non-power-of-two
+textures; texture mapping will be disabled if non-power-of-two
+textures are rendered on a Canvas3D that doesn't support them.<br>
+</p>
+<p><br>
+</p>
+<h2>II. Accepted Changes</h2>
+<p><br>
+</p>
+<h2>III. Deferred Changes</h2>
+<p><br>
+</p>
+</body>
+</html>
