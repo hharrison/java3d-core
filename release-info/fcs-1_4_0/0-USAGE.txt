@@ -1,17 +1,26 @@
 README.html :
-	Modified RELEASE NOTES (with link to install instructions removed)
-	used as README file for Windows installer
+        Modified RELEASE NOTES (with link to install instructions removed)
+        used as README file for Windows installer
 
 LICENSE-Java3D-v1_4_0.rtf :
-	rtf version of license used for Windows installer
+        rtf version of license used for Windows installer
 
 LICENSE-Java3D-v1_4_0.txt :
-	text version of license used for Unix installers, the Windows
-	zip bundle, and in download directory
+        text version of license used for Unix installers, the Windows
+        zip bundle, and in download directory
 
 README-download.html :
-	README file used in download directory; includes pointer to
-	LICENSE-Java3D-v1_4_0.txt plus HOW_TO_INSTALL.html
+        README file used in download directory; includes pointer to
+        LICENSE-Java3D-v1_4_0.txt plus HOW_TO_INSTALL.html
 
 README-distribution.txt :
-	Legal README FILE that is included with the Windows zip bundle
+        Legal README file that is included with the Windows zip bundle
+
+README.txt :
+        README file that is included with the Windows zip bundle;
+        includes MANIFEST of files in bundle
+
+README-unzip.html :
+        README file that is included with the Windows zip bundle;
+        includes pointer to LICENSE-Java3D-v1_4_0.txt plus instructions
+        for manually unzipping the zip bundle
