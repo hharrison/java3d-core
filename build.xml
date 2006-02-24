@@ -494,10 +494,14 @@
     <!-- Delete the ${dist} directory tree  -->
     <delete dir="${dist}"/>
   </target>
+  
+  <target name="clean-default" unless="build.concurrent">
+    <delete dir="${build}/default"/>
+  </target>
 
-  <target name="clean" depends="setupPlatform">
+  <target name="clean" depends="setupPlatform,clean-default">
     <!-- Delete the ${build}, and ${dist} directory trees for current platform -->
-    <delete dir="${build}/${platform}"/>	
+    <delete dir="${build}/${platform}"/>
     <delete dir="${dist}/${platform}"/>
   </target>
   

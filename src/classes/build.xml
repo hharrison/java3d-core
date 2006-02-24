@@ -113,7 +113,10 @@
     </copy>
   </target>
 
-  <target name="jar-debug">
+
+  <target name="jar-debug" depends="jar-debug-impl,copy-default-debug"/>
+
+  <target name="jar-debug-impl">
     <!-- Create the j3dcore and j3dutils jars directory -->
     <mkdir dir="${build}/${platform}/debug/lib/ext"/>
 
@@ -153,7 +156,18 @@
     </jar>
   </target>
 
-  <target name="jar-opt">
+  <target name="copy-default-debug" unless="build.concurrent">
+    <!-- Copy platform-specific jar and native files to "default" directory -->
+    <delete dir="${build}/default/debug" quiet="true"/>
+    <mkdir dir="${build}/default/debug"/>
+    <copy todir="${build}/default/debug" overwrite="true">
+      <fileset dir="${build}/${platform}/debug" includes="lib/** bin/**"/>
+    </copy>
+  </target>
+
+  <target name="jar-opt" depends="jar-opt-impl,copy-default-opt"/>
+
+  <target name="jar-opt-impl">
     <!-- Create the j3dcore and j3dutils jars directory -->
     <mkdir dir="${build}/${platform}/opt/lib/ext"/>
 
@@ -188,9 +202,18 @@
     <!-- Put everything in ${build}/${platform}/opt/classes/com into the j3dutils.jar file -->
     <jar jarfile="${build}/${platform}/opt/lib/ext/j3dutils.jar"
          manifest="${build-opt-gen}/ToolsVersion" update="no"
-	 compress="false">
-	<fileset dir="${build}/${platform}/opt/classes" includes="com/**/*"/>
+         compress="false">
+        <fileset dir="${build}/${platform}/opt/classes" includes="com/**/*"/>
     </jar>
+  </target>
+
+  <target name="copy-default-opt" unless="build.concurrent">
+    <!-- Copy platform-specific jar and native files to "default" directory -->
+    <delete dir="${build}/default/opt" quiet="true"/>
+    <mkdir dir="${build}/default/opt"/>
+    <copy todir="${build}/default/opt" overwrite="true">
+      <fileset dir="${build}/${platform}/opt" includes="lib/** bin/**"/>
+    </copy>
   </target>
 
   <target name="setup-docs">
