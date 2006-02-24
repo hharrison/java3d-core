@@ -545,16 +545,9 @@ getPropertiesFromCurrentContext(
     /* *********************************************************/
     /* setup the graphics context properties */
 
-    /* NOTE : At some point we will want to require OpenGL 1.3 */
-    /* Check for OpenGL 1.2 core or better */
+    /* Check for OpenGL 1.3 core or better */
     if ((versionNumbers[0] > 1) ||
-	(versionNumbers[0] == 1 && versionNumbers[1] >= 2)) {
-
-	if (versionNumbers[0] == 1 && versionNumbers[1] == 2) {
-	    fprintf(stderr,
-		"Java 3D WARNING : OpenGL 1.3 will be required in the near future (GL_VERSION=%d.%d)\n",
-		versionNumbers[0], versionNumbers[1]);
-	}
+	(versionNumbers[0] == 1 && versionNumbers[1] >= 3)) {
 
         ctxInfo->rescale_normal_ext = JNI_TRUE;
 	ctxInfo->rescale_normal_ext_enum = GL_RESCALE_NORMAL;
@@ -611,13 +604,14 @@ getPropertiesFromCurrentContext(
 	jclass rte;
 
 	fprintf(stderr,
-		"Java 3D ERROR : OpenGL 1.2 or better is required (GL_VERSION=%d.%d)\n",
+		"Java 3D ERROR : OpenGL 1.3 or better is required (GL_VERSION=%d.%d)\n",
 		versionNumbers[0], versionNumbers[1]);
 	if ((rte = (*(table->FindClass))(env, "java/lang/IllegalStateException")) != NULL) {
 	    (*(table->ThrowNew))(env, rte, "GL_VERSION");
 	}
 	return JNI_FALSE;
     }
+
     /* look for OpenGL 2.0 features */
     if (versionNumbers[0] >= 2) {
 	ctxInfo->textureNonPowerOfTwoAvailable = JNI_TRUE;
@@ -627,7 +621,7 @@ getPropertiesFromCurrentContext(
 
     /*
      * TODO: Remove extension checks for those features that are core
-     * in OpenGL 1.2 and just use the core feature.
+     * in OpenGL 1.3 and just use the core feature.
      */
 
     /* check extensions for remaining of 1.1 and 1.2 */

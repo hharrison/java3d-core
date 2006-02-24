@@ -79,7 +79,7 @@
                 <classpath mode="compile">../vecmath/build/debug/lib/ext/vecmath.jar</classpath>
                 <built-to>build/default/debug/lib/ext/j3dcore.jar</built-to>
                 <built-to>build/default/debug/lib/ext/j3dutils.jar</built-to>
-                <source-level>1.4</source-level>
+                <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
     </configuration>
