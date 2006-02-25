@@ -3724,8 +3724,13 @@ public class Canvas3D extends Canvas {
 	values.add(new Integer(pass));
 
 	keys.add("stencilSize");
-	// Return the actual stencil size.
-        values.add(new Integer(actualStencilSize));
+	// Return the actual stencil size if the user owns it, otherwise
+        // return 0
+        if (userStencilAvailable) {
+            values.add(new Integer(actualStencilSize));
+        } else {
+            values.add(new Integer(0));
+        }
 
         keys.add("compressedGeometry.majorVersionNumber");
 	values.add(new Integer(GeometryDecompressor.majorVersionNumber));
