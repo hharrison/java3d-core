@@ -56,12 +56,12 @@ static CgWrapperInfo *globalCgWrapperInfo = NULL;
 
 
 /*
- * Class:     javax_media_j3d_MasterControl
+ * Class:     javax_media_j3d_NativePipeline
  * Method:    loadNativeCgLibrary
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL
-Java_javax_media_j3d_MasterControl_loadNativeCgLibrary(
+Java_javax_media_j3d_NativePipeline_loadNativeCgLibrary(
     JNIEnv *env,
     jclass clazz,
     jobjectArray libpath)
@@ -83,7 +83,7 @@ Java_javax_media_j3d_MasterControl_loadNativeCgLibrary(
 
     /* Assertion check that we don't get called more than once */
     if (globalCgWrapperInfo != NULL) {
-	throwAssert(env, "MasterControl.loadNativeCgLibrary called more than once");
+	throwAssert(env, "NativePipeline.loadNativeCgLibrary called more than once");
 	return JNI_FALSE;
     }
 

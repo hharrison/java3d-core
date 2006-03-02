@@ -45,12 +45,6 @@ class MasterControl {
     static final int WAITING_FOR_CPU     = 4;
     static final int WAITING_FOR_RENDERER_CLEANUP = 5;
 
-    // The Rendering API's that we currently know about
-    static final int RENDER_OPENGL_SOLARIS = 0;
-    static final int RENDER_OPENGL_WIN32   = 1;
-    static final int RENDER_DIRECT3D       = 2;
-    static final int RENDER_OPENGL_LINUX   = 3;
-
     // Constants used in renderer thread argument
     static final Integer REQUESTRENDER = new Integer(Renderer.REQUESTRENDER);
     static final Integer RENDER = new Integer(Renderer.RENDER);
@@ -295,15 +289,8 @@ class MasterControl {
      */
     static long systemStartTime = 0L;
 
-    // The rendering API we are using
-    private int renderingAPI = RENDER_OPENGL_SOLARIS;
-    static boolean isD3DAPI = false;
-   
-    // Are we on a Win32 system
-    static boolean isWin32 = false;
- 
-    // The class that describes the low level rendering code
-    private NativeAPIInfo nativeAPIInfo = null;
+    // Flag indicating that we are on a Windows OS
+    private static boolean isWindowsOs = false;
 
     // This is a counter for texture id's, valid id starts from 1
     private int textureIdCount = 0;
@@ -360,7 +347,7 @@ class MasterControl {
     static boolean cgLibraryAvailable = false;
     static boolean glslLibraryAvailable = false;
 
-    
+
     // REQUESTCLEANUP messages argument
     static Integer REMOVEALLCTXS_CLEANUP = new Integer(1);
     static Integer REMOVECTX_CLEANUP     = new Integer(2);
@@ -398,7 +385,7 @@ class MasterControl {
     // Z-buffer with both the left and right eyes when in stereo mode.
     // If this is true, we need to clear the Z-buffer between rendering
     // to the left and right eyes.
-    boolean sharedStereoZBuffer;
+    boolean sharedStereoZBuffer = true;
 
     // True to disable all underlying multisampling API so it uses
     // the setting in the driver. 
@@ -432,7 +419,7 @@ class MasterControl {
     // Root ThreadGroup for creating Java 3D threads
     private static ThreadGroup rootThreadGroup;
 
-    // Thread priority for all Java3D threads
+// Thread priority for all Java3D threads
     private static int threadPriority;
 
     static private Object mcThreadLock = new Object();
@@ -440,22 +427,12 @@ class MasterControl {
     private ArrayList timestampUpdateList = new ArrayList(3);
 
     private UnorderList freeMessageList = new UnorderList(8);
-    
-    // System properties containing the native library search PATH
-    // The order listed is the order in which they will be searched
-    private static final String[] systemPathProps = {
-        "sun.boot.library.path",
-        "java.library.path"
-    };
 
     long awt;
     private native long getAWT();
 
     // Method to initialize the native J3D library
     private native boolean initializeJ3D(boolean disableXinerama);
-
-    // Method to verify whether the native Cg library is available
-    private static native boolean loadNativeCgLibrary(String[] libpath);
 
     // Method to get number of procesor
     private native int getNumberOfProcessor();
@@ -498,12 +475,6 @@ class MasterControl {
 	// Get AWT handle
 	awt = getAWT();
 
-	// Get native API information
-	nativeAPIInfo = new NativeAPIInfo();
-	renderingAPI = nativeAPIInfo.getRenderingAPI();
-	isD3DAPI = (renderingAPI == RENDER_DIRECT3D);
-        isWin32 = isD3DAPI || (renderingAPI == RENDER_OPENGL_WIN32);
-
         // Initialize the start time upon which alpha's and behaviors
         // are synchronized to (if it isn't already set).
         if (systemStartTime == 0L) {
@@ -517,7 +488,7 @@ class MasterControl {
 	}
 
 	// Check to see whether shared contexts are allowed
-	if (getRenderingAPI() != RENDER_DIRECT3D) {
+	if (!isD3D()) {
 	    isSharedCtx =
 		getBooleanProperty("j3d.sharedctx", isSharedCtx, "shared contexts");
 	}
@@ -628,11 +599,9 @@ class MasterControl {
 	}
 
         // Check to see if stereo mode is sharing the Z-buffer for both eyes.
-	boolean defaultSharedStereoZBuffer =
-	    getRenderingAPI() != RENDER_OPENGL_SOLARIS;
 	sharedStereoZBuffer = 
 	    getBooleanProperty("j3d.sharedstereozbuffer",
-			       defaultSharedStereoZBuffer,
+			       sharedStereoZBuffer,
 			       "shared stereo Z buffer");
 
 	// Get the maximum number of concurrent threads (CPUs)
@@ -750,137 +719,78 @@ class MasterControl {
 
 
     /**
-     * Method to load the native libraries needed by Java 3D. This is
+     * Method to create and initialize the rendering Pipeline object,
+     * and to load the native libraries needed by Java 3D. This is
      * called by the static initializer in VirtualUniverse <i>before</i>
      * the MasterControl object is created.
      */
     static void loadLibraries() {
         assert !librariesLoaded;
 
-        // This works around a native load library bug
-       	try {
-            java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
-            toolkit = null;   // just making sure GC collects this
-       	} catch (java.awt.AWTError e) {
-       	}
+        // Set global flag indicating whether we are running on Windows
+        String osName = getProperty("os.name");
+        isWindowsOs = (osName != null && osName.startsWith("Windows"));
 
-	// Load the JAWT native library
-	java.security.AccessController.doPrivileged(
-	    new java.security.PrivilegedAction() {
-	    public Object run() {
-		System.loadLibrary("jawt");
-		return null;
-	    }
-	});
+        // Initialize the Pipeline object associated with the
+        // renderer specified by the "j3d.rend" system property.
+        //
+        // XXXX : We should consider adding support for a more flexible,
+        // dynamic selection scheme via an API call.
 
-	// Load the native J3D library
-        final String oglLibraryName = "j3dcore-ogl";
-        final String d3dLibraryName = "j3dcore-d3d";
-        final String libraryName = (String)
-        java.security.AccessController.doPrivileged(new
-	    java.security.PrivilegedAction() {
-		public Object run() {
-		    String libName = oglLibraryName;
+        // Default rendering pipeline is native ogl pipeline
+        int rendererType = Pipeline.NATIVE_OGL;
 
-		    // If it is a Windows OS, we want to support dynamic native library selection (ogl, d3d)
-		    String osName = System.getProperty("os.name");
-		    if (osName != null && osName.startsWith("Windows")) {
-			// XXXX : Should eventually support a more flexible dynamic 
-			// selection scheme via an API call.
-			String str = System.getProperty("j3d.rend");
-			if (str != null && str.equals("d3d")) {
-			    libName = d3dLibraryName;
-			}
-		    }
+        String rendStr = getProperty("j3d.rend");
+        if (rendStr == null || rendStr.equals("ogl")) {
+            // Use default pipeline
+        } else if (rendStr.equals("d3d") && isWindowsOs) {
+            rendererType = Pipeline.NATIVE_D3D;
+        } else if (rendStr.equals("jogl")) {
+            rendererType = Pipeline.JOGL;
+        } else {
+            System.err.println("Java 3D: Unrecognized renderer: " + rendStr);
+            // Use default pipeline
+        }
 
-                    System.loadLibrary(libName);
-		    return libName;
-		}
-	    });
+        // Construct the singleton Pipeline instance
+        Pipeline.createPipeline(rendererType);
 
-        // Get the global j3d.shadingLanguage property
-	final String slStr = getProperty("j3d.shadingLanguage");
-	if (slStr != null) {
-	    boolean found = false;
-	    if (slStr.equals("GLSL")) {
-		globalShadingLanguage = Shader.SHADING_LANGUAGE_GLSL;
-		found = true;
-	    }
-	    else if (slStr.equals("Cg")) {
-		globalShadingLanguage = Shader.SHADING_LANGUAGE_CG;
-		found = true;
-	    }
+        // Get the global j3d.shadingLanguage system property
+        final String slStr = getProperty("j3d.shadingLanguage");
+        if (slStr != null) {
+            boolean found = false;
+            if (slStr.equals("GLSL")) {
+                globalShadingLanguage = Shader.SHADING_LANGUAGE_GLSL;
+                found = true;
+            } else if (slStr.equals("Cg")) {
+                globalShadingLanguage = Shader.SHADING_LANGUAGE_CG;
+                found = true;
+            }
 
-	    if (found) {
-		System.err.println("Java 3D: Setting global shading language to " + slStr);
-	    }
-	    else {
-		System.err.println("Java 3D: Unrecognized shading language: " + slStr);
-	    }
-	}
+            if (found) {
+                System.err.println("Java 3D: Setting global shading language to " + slStr);
+            } else {
+                System.err.println("Java 3D: Unrecognized shading language: " + slStr);
+            }
+        }
+
+        // Load all required libraries
+        Pipeline.getPipeline().loadLibraries(globalShadingLanguage);
 
         // Check whether the Cg library is available
         if (globalShadingLanguage == Shader.SHADING_LANGUAGE_CG) {
-            String cgLibraryName = libraryName + "-cg";
-            String[] libpath = setupLibPath(systemPathProps, cgLibraryName);
-            if (loadNativeCgLibrary(libpath)) {
-                cgLibraryAvailable = true;
-            }
+            cgLibraryAvailable = Pipeline.getPipeline().isCgLibraryAvailable();
         }
-        
+
         // Check whether the GLSL library is available
         if (globalShadingLanguage == Shader.SHADING_LANGUAGE_GLSL) {
-            if (libraryName == oglLibraryName) {
-                // No need to verify that GLSL is available, since GLSL is part
-                // of OpenGL as an extension (or part of core in 2.0)
-                glslLibraryAvailable = true;
-            }
+            glslLibraryAvailable = Pipeline.getPipeline().isGLSLLibraryAvailable();
         }
 
         assert !(glslLibraryAvailable && cgLibraryAvailable) :
             "ERROR: cannot support both GLSL and CG at the same time";
 
         librariesLoaded = true;
-    }
-
-
-    /**
-     * Parse the specified System properties containing a PATH and return an
-     * array of Strings, where each element is an absolute filename consisting of
-     * the individual component of the path concatenated with the (relative)
-     * library file name. Only those absolute filenames that exist are included.
-     * If no absolute filename is found, we will try the relative library name.
-     */
-    private static String[] setupLibPath(String[] props, String libName) {
-        ArrayList pathList = new ArrayList();
-
-        String filename = System.mapLibraryName(libName);
-        for (int n = 0; n < props.length; n++) {
-            String pathString = getProperty(props[n]);
-            boolean done = false;
-            int posStart = 0;
-            while (!done) {
-                int posEnd = pathString.indexOf(File.pathSeparator, posStart);
-                if (posEnd == -1) {
-                    posEnd = pathString.length();
-                    done = true;
-                }
-                String pathDir = pathString.substring(posStart, posEnd);
-                File pathFile = new File(pathDir, filename);
-                if (pathFile.exists()) {
-                    pathList.add(pathFile.getAbsolutePath());
-                }
-
-                posStart = posEnd + 1;
-            }
-        }
-
-        // If no absolute path names exist, add in the relative library name
-        if (pathList.size() == 0) {
-            pathList.add(filename);
-        }
-
-        return (String[])pathList.toArray(new String[0]);
     }
 
 
@@ -1236,14 +1146,19 @@ class MasterControl {
     }
 
     /**
-     * Returns the native rendering layer we are using
+     * Returns whether we are using D3D.
+     * TODO: most code that cares about this should move into the pipeline
      */
-    final int getRenderingAPI() {
-	return renderingAPI;
-    }
-    
     final boolean isD3D() {
-	return isD3DAPI;
+	return Pipeline.getPipeline().getRendererType() == Pipeline.NATIVE_D3D;
+    }
+
+    /**
+     * Returns whether we are running on Windows
+     * TODO: most code that cares about this should move into the pipeline
+     */
+    final boolean isWindows() {
+	return isWindowsOs;
     }
 
     /**

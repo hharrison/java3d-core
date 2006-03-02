@@ -255,23 +255,20 @@ public class VirtualUniverse extends Object {
 	// Print out debugging information for debug builds
 	if(VersionInfo.isDebug) {
 	    System.err.println("Java 3D system initialized");
-	    System.err.print("    graphics library = ");
-	    switch (mc.getRenderingAPI()) {
-	    case MasterControl.RENDER_OPENGL_SOLARIS:
-		System.err.println("Solaris OpenGL");
-		break;
-	    case MasterControl.RENDER_OPENGL_LINUX:
-		System.err.println("Linux OpenGL");
-		break;
-	    case MasterControl.RENDER_OPENGL_WIN32:
-		System.err.print("Windows OpenGL");
-		break;
-	    case MasterControl.RENDER_DIRECT3D:
-		System.err.println("Windows Direct3D");
-		break;
-	    default:
-		System.err.println("UNKNOWN");
-		break;
+	    System.err.print("    rendering library = ");
+	    switch (Pipeline.getPipeline().getRendererType()) {
+            case Pipeline.NATIVE_OGL:
+                System.err.println("ogl");
+                break;
+            case Pipeline.NATIVE_D3D:
+                System.err.println("d3d");
+                break;
+            case Pipeline.JOGL:
+                System.err.println("jogl");
+                break;
+            default:
+                System.err.println("UNKNOWN");
+                assert false; // should not get here
 	    }
 	    System.err.println();
 	}

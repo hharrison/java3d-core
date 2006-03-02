@@ -38,12 +38,12 @@
     <!-- Compile the c source files-->
     <!-- Inhibit all warning for 32 bit build. Any warning will be caught in the 64 bit build -->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="-m64 -march=k8 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/linux -I${javahCoreTarget} ${bldFlag} -DLINUX ${cflags.cg} -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c ${oglsrc}/NativeAPIInfo.c"/>
+	<arg line="-m64 -march=k8 -I${oglsrc} -I${java.home}/../include -I${java.home}/../include/linux -I${javahCoreTarget} ${bldFlag} -DLINUX ${cflags.cg} -c ${oglsrc}/DrawingSurfaceObjectAWT.c ${oglsrc}/Canvas3D.c ${oglsrc}/GraphicsContext3D.c  ${oglsrc}/NativeScreenInfo.c  ${oglsrc}/NativeConfigTemplate3D.c  ${oglsrc}/MasterControl.c  ${oglsrc}/RasterRetained.c  ${oglsrc}/GeometryArrayRetained.c  ${oglsrc}/Attributes.c  ${oglsrc}/CgShaderProgram.c  ${oglsrc}/GLSLShaderProgram.c  ${oglsrc}/Lights.c"/>
     </exec>
 
     <!-- Create the library file-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="ld">
-	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o NativeAPIInfo.o -G -z defs -L/usr/X11R6/lib64 -ldl -lGL -lX11 -lXext -lm -lnsl -lc -L${java.home}/lib/amd64 -ljawt -L${java.home}/lib/amd64/server -ljvm  -o libj3dcore-ogl.so"/>
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o -G -z defs -L/usr/X11R6/lib64 -ldl -lGL -lX11 -lXext -lm -lnsl -lc -L${java.home}/lib/amd64 -ljawt -L${java.home}/lib/amd64/server -ljvm  -o libj3dcore-ogl.so"/>
     </exec>
 
   </target>

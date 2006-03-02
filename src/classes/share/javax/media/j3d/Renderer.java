@@ -1511,7 +1511,7 @@ class Renderer extends J3dThread {
 		    listOfCtxs.remove(idx);
 		    listOfCanvases.remove(idx);
 		    // display is always 0 under windows
-		    if ((MasterControl.isWin32 || (display != 0)) && 
+		    if ((VirtualUniverse.mc.isWindows() || (display != 0)) && 
 			(window != 0) && cv.added) {
 			// cv.ctx may reset to -1 here so we
 			// always use the ctx pass in.
@@ -1564,7 +1564,7 @@ class Renderer extends J3dThread {
 		cv = (Canvas3D) listOfCanvases.get(i);
 
 		if ((cv.screen != null) && (cv.ctx != 0)) {
-		    if ((MasterControl.isWin32 || (display != 0)) && 
+		    if ((VirtualUniverse.mc.isWindows() || (display != 0)) && 
 			(cv.window != 0) && cv.added) {
 			if (cv.drawingSurfaceObject.renderLock()) {
 			    // We need to free sharedCtx resource
