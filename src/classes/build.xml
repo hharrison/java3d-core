@@ -159,9 +159,12 @@
   <target name="copy-default-debug" unless="build.concurrent">
     <!-- Copy platform-specific jar and native files to "default" directory -->
     <delete dir="${build}/default/debug" quiet="true"/>
-    <mkdir dir="${build}/default/debug"/>
+    <mkdir dir="${build}/default/debug/native"/>
     <copy todir="${build}/default/debug" overwrite="true">
-      <fileset dir="${build}/${platform}/debug" includes="lib/** bin/**"/>
+      <fileset dir="${build}/${platform}/debug" includes="lib/ext/**/*.jar"/>
+    </copy>
+    <copy todir="${build}/default/debug/native" overwrite="true" includeemptydirs="false" flatten="true">
+      <fileset dir="${build}/${platform}/debug" includes="lib/** bin/**" excludes="**/*.jar"/>
     </copy>
   </target>
 
@@ -210,9 +213,12 @@
   <target name="copy-default-opt" unless="build.concurrent">
     <!-- Copy platform-specific jar and native files to "default" directory -->
     <delete dir="${build}/default/opt" quiet="true"/>
-    <mkdir dir="${build}/default/opt"/>
+    <mkdir dir="${build}/default/opt/native"/>
     <copy todir="${build}/default/opt" overwrite="true">
-      <fileset dir="${build}/${platform}/opt" includes="lib/** bin/**"/>
+      <fileset dir="${build}/${platform}/opt" includes="lib/ext/**/*.jar"/>
+    </copy>
+    <copy todir="${build}/default/opt/native" overwrite="true" includeemptydirs="false" flatten="true">
+      <fileset dir="${build}/${platform}/opt" includes="lib/** bin/**" excludes="**/*.jar"/>
     </copy>
   </target>
 
