@@ -125,7 +125,7 @@ public class TextureCubeMap extends Texture {
      * @param format data format of Textures saved in this object.
      * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA.
      * @param width width of image at level 0. Must be power of 2.
-     * @param boundaryWidth width of the boundary.
+     * @param boundaryWidth width of the boundary, which must be 0 or 1.
      *
      * @exception IllegalArgumentException if width is NOT
      * power of 2 OR invalid format/mipmapMode is specified.

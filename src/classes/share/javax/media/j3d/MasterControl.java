@@ -419,7 +419,7 @@ class MasterControl {
     // Root ThreadGroup for creating Java 3D threads
     private static ThreadGroup rootThreadGroup;
 
-// Thread priority for all Java3D threads
+    // Thread priority for all Java 3D threads
     private static int threadPriority;
 
     static private Object mcThreadLock = new Object();
@@ -648,9 +648,6 @@ class MasterControl {
 
 	// Initialize the native J3D library
 	if (!initializeJ3D(disableXinerama)) {
-	    if (isGreenThreadUsed()) {
-	        System.err.print(J3dI18N.getString("MasterControl1"));
-	    }
 	    throw new RuntimeException(J3dI18N.getString("MasterControl0"));
 	}
 
@@ -711,12 +708,6 @@ class MasterControl {
 				  (msg + " enabled"),
 				  (msg + " disabled"));
     }
-
-    // Java 3D only supports native threads
-    boolean isGreenThreadUsed() {
-	return false;
-    }
-
 
     /**
      * Method to create and initialize the rendering Pipeline object,

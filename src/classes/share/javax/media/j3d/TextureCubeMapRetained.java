@@ -41,6 +41,10 @@ class TextureCubeMapRetained extends TextureRetained {
      * Sets a specified mipmap level for a particular face of the cubemap.
      */
     void initImage(int level, int face, ImageComponent image) {
+
+        // Issue 172 : call checkImageSize even for non-live setImage calls
+        checkImageSize(level, image);
+
 	if (this.images == null) {
             throw new IllegalArgumentException(
 			J3dI18N.getString("TextureRetained0"));
@@ -81,8 +85,6 @@ class TextureCubeMapRetained extends TextureRetained {
 
     final void setImage(int level, int face, ImageComponent image) {
 
-        checkImageSize(level, image);
-	
 	initImage(level, face, image);
 
         Object arg[] = new Object[3];
@@ -126,14 +128,8 @@ class TextureCubeMapRetained extends TextureRetained {
     final void setImages(int face, ImageComponent[] images) {
 
         int i;
-        ImageComponentRetained[] imagesRet = 
-	  new ImageComponentRetained[images.length];
-        for (i = 0; i < images.length; i++) {
-	  imagesRet[i] = (ImageComponentRetained)images[i].retained;
-	}
-        checkSizes(imagesRet);
 
-	initImages(face, images);
+        initImages(face, images);
 
 	ImageComponent [] imgs = new ImageComponent[images.length];
 	for (i = 0; i < images.length; i++) {

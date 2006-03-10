@@ -85,10 +85,10 @@ public class Texture3D extends Texture {
      * @param width width of image at level 0. Must be power of 2.
      * @param height height of image at level 0. Must be power of 2.
      * @param depth depth of image at level 0. Must be power of 2.
-     * @param boundaryWidth width of the boundary.
+     * @param boundaryWidth width of the boundary, which must be 0 or 1.
      * @exception IllegalArgumentException if width or height are NOT
      * power of 2 OR invalid format/mipmapMode is specified, or
-     * if the boundaryWidth < 0
+     * if the boundaryWidth is &lt; 0 or &gt; 1
      *
      * @since Java 3D 1.3
      */

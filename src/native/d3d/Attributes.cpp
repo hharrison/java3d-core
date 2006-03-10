@@ -3227,3 +3227,19 @@ void JNICALL Java_javax_media_j3d_Canvas3D_updateTexUnitStateMap(
                                                 texUnitStateMap, 0);
     }
 }
+
+
+// Fix issue 221 : Temporary stub until Cg is implemented
+/*
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    loadNativeCgLibrary
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL
+Java_javax_media_j3d_NativePipeline_loadNativeCgLibrary(
+    JNIEnv *env,
+    jclass clazz,
+    jobjectArray libpath)
+{
+    return JNI_FALSE;
+}
