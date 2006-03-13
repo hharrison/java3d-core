@@ -409,15 +409,10 @@ abstract class TextureRetained extends NodeComponentRetained {
         if (images != null) {
             int hgt = height;
             int wdh = width;
-            System.err.println("texture.width = " + width + ", texture.height = " + height);
             for (int level = 0; level < images.length; level++) {
                 int imgWidth  = images[level].width;
                 int imgHeight = images[level].height;
                 
-                System.err.println("level: " + level +
-                        "  width = " + wdh + ", height = " + hgt +
-                        ", imgWidth = " + imgWidth + ", imgHeight = " + imgHeight);
-
                 assert (wdh == (imgWidth - 2*boundaryWidth)) &&
                        (hgt == (imgHeight - 2*boundaryWidth));
 
