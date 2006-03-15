@@ -238,7 +238,9 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	if(oldchildr != null) {
 	    oldchildr.setParent(null);
 	    checkClearLive(oldchildr, messages, 0, index, null);
-            universe.notifyStructureChangeListeners(false, this.source, (BranchGroup)oldchildr.source);
+            if (this.source.isLive()) {
+                universe.notifyStructureChangeListeners(false, this.source, (BranchGroup)oldchildr.source);
+            }
 	}
 	removeChildrenData(index);
 
@@ -250,7 +252,9 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    return;
 	}
 	
-        universe.notifyStructureChangeListeners(true, this.source, (BranchGroup)child);
+        if (this.source.isLive()) {
+            universe.notifyStructureChangeListeners(true, this.source, (BranchGroup)child);
+        }
 	NodeRetained childr = (NodeRetained) child.retained;
 	childr.setParent(this);
 	children.set(index, childr);
