@@ -18,13 +18,15 @@ java.net.</p>
 <p>Here is the list of proposed changes for the Java&nbsp;3D 1.5 API:<br>
 </p>
 <ol>
-  <li><a href="#NPOT_Textures">Non-power-of-two Textures</a></li>
+  <li><a href="#NPOT_Textures">Non-power-of-two textures</a></li>
+  <li><a href="#NIO_Image_Buffer">NIO image buffer support for textures</a><br>
+  </li>
 </ol>
 <p>For a complete description of these changes, please see the
 proposed API specification (javadoc) for the 1.5 version of the
 Java&nbsp;3D API.
 </p>
-<h3><a name="NPOT_Textures"></a>1. Non-power-of-two Textures</h3>
+<h3><a name="NPOT_Textures"></a>1. Non-power-of-two textures</h3>
 <p>We propose to add non-power-of-two textures to Java&nbsp;3D 1.5.
 Currently, the width, height, and depth of all textures must be an
 exact power of two. Most graphics cards now support non-power-of-two
@@ -39,6 +41,48 @@ then the graphics driver or card does not support non-power-of-two
 textures; texture mapping will be disabled if non-power-of-two
 textures are rendered on a Canvas3D that doesn't support them.<br>
 </p>
+<p><br>
+</p>
+<h3><a name="NIO_Image_Buffer"></a>2. NIO image buffer support for
+textures</h3>
+<p>We propose to create a new javax.media.j3d.NioImageBuffer class, a
+wrapper for an image whose DataBuffer
+is specified via an appropriate subclass of java.nio.Buffer:
+ByteBuffer, ShortBuffer, or IntBuffer,
+depending on the type of image. When using ShortBuffer or IntBuffer,
+the byte order of the buffer must match the native byte order of the
+underlying platform.
+</p>
+<p>New public classes:<br>
+</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;"></span>public
+class <span style="font-weight: bold;">NioImageBuffer</span> extends
+Object<br>
+  </code>
+</ul>
+<p>New constructors and methods:<br>
+</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;">ImageComponent2D</span><br>
+New constructors:<br>
+&nbsp;&nbsp;&nbsp; public ImageComponent2D(int format, NioImageBuffer
+image)<br>
+&nbsp;&nbsp;&nbsp; public ImageComponent2D(int format,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NioImageBuffer image,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+boolean byReference, boolean yUp)<br>
+  <br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp; public void set(NioImageBuffer image)<br>
+&nbsp;&nbsp;&nbsp; public NioImageBuffer getNioImage()<br>
+&nbsp;&nbsp;&nbsp; public void setSubImage(NioImageBuffer image, int
+width, int height,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int
+srcX, int srcY, int dstX, int dstY<br>
+  </code>
+</ul>
 <p><br>
 </p>
 <h2>II. Accepted Changes</h2>

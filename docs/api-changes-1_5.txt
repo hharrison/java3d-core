@@ -23,11 +23,29 @@ No incompatible changes to the Java 3D 1.4 API are allowed.
 
 I. New/deprecated fields, constructors, methods
 
+    ImageComponent2D
+    ----------------
+    New constructors:
+        public ImageComponent2D(int format, NioImageBuffer image)
+        public ImageComponent2D(int format,
+				NioImageBuffer image,
+				boolean byReference, boolean yUp)
+
+    New methods:
+        public void set(NioImageBuffer image)
+        public NioImageBuffer getNioImage()
+        public void setSubImage(NioImageBuffer image, int width, int height,
+				int srcX, int srcY, int dstX, int dstY
+
 
 II. Reparented classes
 
 
 III. New classes and interfaces (in javax.media.j3d)
+
+    NioImageBuffer
+    --------------
+	public class NioImageBuffer extends Object
 
 
 IV. Deprecated classes and interfaces (in javax.media.j3d)
