@@ -736,6 +736,8 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_lookupNativeShaderAttrNames(
 #endif
 
     for (i = 0; i < numActiveUniforms; i++) {
+        int len;
+
 	glslCtxInfo->pfnglGetActiveUniformARB((GLhandleARB) shaderProgramId,
 						i,
 						maxStrLen,
@@ -743,9 +745,28 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_lookupNativeShaderAttrNames(
 						&size,
 						&type,
 						name);
+
+        /*
+         * Issue 247 - we need to workaround an ATI bug where they erroneously
+         * report individual elements of arrays rather than the array itself
+         */
+        len = strlen(name);
+        if (len >= 3 && name[len-1] == ']') {
+            if (strcmp(&name[len-3], "[0]") == 0) {
+                /* fprintf(stderr, "**** changing \"%s\" ", name); */
+                name[len-3] = '\0';
+                /* fprintf(stderr, "to \"%s\"\n", name); */
+            } else {
+                /* Ignore this name */
+                /* fprintf(stderr, "Uniform[%d] : %s ignored\n", i, name); */
+                free(name);
+                continue;
+            }
+        }
+
 #ifdef VERBOSE
 	fprintf(stderr,
-		"Uniform[%d] : name = %s, type = %d, size = %d\n",
+		"Uniform[%d] : name = %s ; type = %d ; size = %d\n",
 		i, name, type, size);
 #endif
 
