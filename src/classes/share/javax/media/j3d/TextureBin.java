@@ -152,21 +152,27 @@ class TextureBin extends Object implements ObjectUpdate {
 	transparentRMList = null;
 	numEditingRenderMolecules = 0;
 
+        // Issue 249 - check for sole user only if property is set
 	// determine if this appearance is a sole user of this
 	// TextureBin
-	if ((app != null) && 
-	     (app.changedFrequent & 
-		(AppearanceRetained.TEXTURE |
-		 AppearanceRetained.TEXCOORD_GEN |
-		 AppearanceRetained.TEXTURE_ATTR |
-		 AppearanceRetained.TEXTURE_UNIT_STATE)) != 0) {
-	    tbFlag |= TextureBin.SOLE_USER;
-	    this.app = app;
+        tbFlag &= ~TextureBin.SOLE_USER;
+        if (VirtualUniverse.mc.allowSoleUser) {
+            if ((app != null) && 
+                 (app.changedFrequent & 
+                    (AppearanceRetained.TEXTURE |
+                     AppearanceRetained.TEXCOORD_GEN |
+                     AppearanceRetained.TEXTURE_ATTR |
+                     AppearanceRetained.TEXTURE_UNIT_STATE)) != 0) {
+                tbFlag |= TextureBin.SOLE_USER;
 
-	} else {
-	    tbFlag &= ~TextureBin.SOLE_USER;
-	    this.app = null;
+            }
 	}
+
+        if ((tbFlag & TextureBin.SOLE_USER) != 0) {
+	    this.app = app;
+        } else {
+	    this.app = null;
+        }
 	
 	resetTextureState(state);
 

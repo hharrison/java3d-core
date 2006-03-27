@@ -390,14 +390,16 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    geo = ga.geometryArray[k];
 	    k++;
 	}
-	
-	if (ga.source.appearance != null) {
-	    soleUser = ((ga.source.appearance.changedFrequent & RM_COMPONENTS) != 0);
+
+        // Issue 249 - check for sole user only if property is set
+        soleUser = false;
+        if (VirtualUniverse.mc.allowSoleUser) {
+            if (ga.source.appearance != null) {
+                soleUser = ((ga.source.appearance.changedFrequent & RM_COMPONENTS) != 0);
+            }
 	}
-	else {
-	    soleUser = false;
-	}
-	// Set the appearance only for soleUser case
+
+        // Set the appearance only for soleUser case
 	if (soleUser)
 	    appHandle = ga.source.appearance;
 	else

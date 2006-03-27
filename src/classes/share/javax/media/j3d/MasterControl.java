@@ -335,6 +335,9 @@ class MasterControl {
     // be in display list.
     boolean vertexAttrsInDisplayList = false;
 
+    // Issue 249 - flag that indicates whether the soleUser optimization is permitted
+    boolean allowSoleUser = false;
+
     // The global shading language being used. Using a ShaderProgram
     // with a shading language other than the one specified by
     // globalShadingLanguage will cause a ShaderError to be generated,
@@ -584,6 +587,11 @@ class MasterControl {
         enforcePowerOfTwo = getBooleanProperty("j3d.textureEnforcePowerOfTwo",
 					       enforcePowerOfTwo,
 					       "checking power-of-two textures");
+
+        // Issue 249 - check to see whether the soleUser optimization is permitted
+        allowSoleUser = getBooleanProperty("j3d.allowSoleUser",
+					   allowSoleUser,
+					   "sole-user mode");
 
 	// Check to see whether BackgroundRetained uses texturemapping
 	// or drawpixel clear the background
