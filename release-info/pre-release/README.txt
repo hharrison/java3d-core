@@ -4,7 +4,7 @@ i) for research use under terms of the Java Research License (JRL) as
 specified in the LICENSE-JRL.txt file and on the web at
 "http://java3d.dev.java.net/jrl.html"
 
-This binary release of Java 3D 1.4.0-experimental is an intermediate
+This binary release of Java 3D 1.5.0-experimental is an intermediate
 build made available for testing purposes only. The code is untested
 and presumed incompatible with the Java 3D(TM) API specification. You
 must only use this code in accordance with the terms under which the
