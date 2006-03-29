@@ -3233,12 +3233,12 @@ void JNICALL Java_javax_media_j3d_Canvas3D_updateTexUnitStateMap(
 /*
  * Class:     javax_media_j3d_NativePipeline
  * Method:    loadNativeCgLibrary
- * Signature: ()Z
+ * Signature: ([Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_javax_media_j3d_NativePipeline_loadNativeCgLibrary(
     JNIEnv *env,
-    jclass clazz,
+    jobject thiz,
     jobjectArray libpath)
 {
     return JNI_FALSE;

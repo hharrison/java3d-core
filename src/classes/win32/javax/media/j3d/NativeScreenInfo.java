@@ -22,7 +22,7 @@ class NativeScreenInfo {
     private static boolean wglARBChecked = false;
     private static boolean isWglARB;
 
-    private native static boolean queryWglARB();
+    private static native boolean queryWglARB();
 
     // This method will return true if wglGetExtensionsStringARB is supported, 
     // else return false

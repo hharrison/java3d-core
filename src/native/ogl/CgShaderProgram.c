@@ -58,12 +58,12 @@ static CgWrapperInfo *globalCgWrapperInfo = NULL;
 /*
  * Class:     javax_media_j3d_NativePipeline
  * Method:    loadNativeCgLibrary
- * Signature: ()Z
+ * Signature: ([Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_javax_media_j3d_NativePipeline_loadNativeCgLibrary(
     JNIEnv *env,
-    jclass clazz,
+    jobject thiz,
     jobjectArray libpath)
 {
     CgWrapperInfo *cgWrapperInfo;
@@ -403,12 +403,12 @@ checkCgShaderExtensions(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    createNativeShader
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    createCgShader
  * Signature: (JI[J)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_createNativeShader(
+Java_javax_media_j3d_NativePipeline_createCgShader(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -427,7 +427,7 @@ Java_javax_media_j3d_CgShaderProgramRetained_createNativeShader(
     CgShaderInfo *cgShaderInfo;
 
 #ifdef VERBOSE
-    fprintf(stderr, "CgShaderProgramRetained.createNativeShader\n");
+    fprintf(stderr, "CgShaderProgramRetained.createCgShader\n");
 #endif /* VERBOSE */
 
     cgShaderInfo = (CgShaderInfo*)malloc(sizeof(CgShaderInfo));
@@ -470,12 +470,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_createNativeShader(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    destroyNativeShader
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    destroyCgShader
  * Signature: (JJ)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_destroyNativeShader(
+Java_javax_media_j3d_NativePipeline_destroyCgShader(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -492,7 +492,7 @@ Java_javax_media_j3d_CgShaderProgramRetained_destroyNativeShader(
     CgShaderInfo *cgShaderInfo = (CgShaderInfo *)shaderId;
 
 #ifdef VERBOSE
-    fprintf(stderr, "CgShaderProgramRetained.destroyNativeShader\n");
+    fprintf(stderr, "CgShaderProgramRetained.destroyCgShader\n");
 #endif /* VERBOSE */
 
     if (cgShaderInfo != NULL) {
@@ -517,12 +517,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_destroyNativeShader(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    compileNativeShader
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    compileCgShader
  * Signature: (JJLjava/lang/String;)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_compileNativeShader(
+Java_javax_media_j3d_NativePipeline_compileCgShader(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -542,7 +542,7 @@ Java_javax_media_j3d_CgShaderProgramRetained_compileNativeShader(
     GLcharARB *shaderString = NULL;
 
 #ifdef VERBOSE
-    fprintf(stderr, "CgShaderProgramRetained.compileNativeShader\n");
+    fprintf(stderr, "CgShaderProgramRetained.compileCgShader\n");
 #endif /* VERBOSE */
 
     /* Assertion check the cgShaderInfo pointer */
@@ -610,12 +610,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_compileNativeShader(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    createNativeShaderProgram
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    createCgShaderProgram
  * Signature: (J[J)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_createNativeShaderProgram(
+Java_javax_media_j3d_NativePipeline_createCgShaderProgram(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -631,7 +631,7 @@ Java_javax_media_j3d_CgShaderProgramRetained_createNativeShaderProgram(
 	(CgShaderProgramInfo*)malloc(sizeof(CgShaderProgramInfo));
 
 #ifdef VERBOSE
-    fprintf(stderr, "CgShaderProgramRetained.createNativeShaderProgram\n");
+    fprintf(stderr, "CgShaderProgramRetained.createCgShaderProgram\n");
 #endif /* VERBOSE */
 
     shaderProgramInfo->vShader = NULL;
@@ -657,12 +657,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_createNativeShaderProgram(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    destroyNativeShaderProgram
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    destroyCgShaderProgram
  * Signature: (JJ)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_destroyNativeShaderProgram(
+Java_javax_media_j3d_NativePipeline_destroyCgShaderProgram(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -675,7 +675,7 @@ Java_javax_media_j3d_CgShaderProgramRetained_destroyNativeShaderProgram(
     CgShaderProgramInfo *shaderProgramInfo = (CgShaderProgramInfo*)shaderProgramId;
 
 #ifdef VERBOSE
-    fprintf(stderr, "CgShaderProgramRetained.destroyNativeShaderProgram\n");
+    fprintf(stderr, "CgShaderProgramRetained.destroyCgShaderProgram\n");
 #endif /* VERBOSE */
 
     if (shaderProgramInfo != NULL) {
@@ -700,12 +700,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_destroyNativeShaderProgram(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    linkNativeShaderProgram
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    linkCgShaderProgram
  * Signature: (JJ[J)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_linkNativeShaderProgram(
+Java_javax_media_j3d_NativePipeline_linkCgShaderProgram(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -729,7 +729,7 @@ Java_javax_media_j3d_CgShaderProgramRetained_linkNativeShaderProgram(
     CgShaderProgramInfo *shaderProgramInfo = (CgShaderProgramInfo*)shaderProgramId;
 
 #ifdef VERBOSE
-    fprintf(stderr, "CgShaderProgramRetained.linkNativeShaderProgram\n");
+    fprintf(stderr, "CgShaderProgramRetained.linkCgShaderProgram\n");
 #endif /* VERBOSE */
 
     /*
@@ -789,12 +789,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_linkNativeShaderProgram(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    lookupNativeVertexAttrNames
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    lookupCgVertexAttrNames
  * Signature: (JJI[Ljava/lang/String;[Z)V
  */
 JNIEXPORT void JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_lookupNativeVertexAttrNames(
+Java_javax_media_j3d_NativePipeline_lookupCgVertexAttrNames(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -831,7 +831,7 @@ Java_javax_media_j3d_CgShaderProgramRetained_lookupNativeVertexAttrNames(
     shaderProgramInfo->vtxAttrs = (CGparameter *)malloc(numAttrNames * sizeof(CGparameter));
 
 #ifdef VERBOSE
-    fprintf(stderr, "CgShaderProgramRetained.lookupNativeVertexAttrNames()\n");
+    fprintf(stderr, "CgShaderProgramRetained.lookupCgVertexAttrNames()\n");
 #endif /* VERBOSE */
 
     for (i = 0; i < numAttrNames; i++) {
@@ -974,12 +974,12 @@ lookupParams(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    lookupNativeShaderAttrNames
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    lookupCgShaderAttrNames
  * Signature: (JJI[Ljava/lang/String;[J[I[I[Z)V
  */
 JNIEXPORT void JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_lookupNativeShaderAttrNames(
+Java_javax_media_j3d_NativePipeline_lookupCgShaderAttrNames(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1050,7 +1050,7 @@ Java_javax_media_j3d_CgShaderProgramRetained_lookupNativeShaderAttrNames(
 	 * same type and dimensionality, then a struct is allocated
 	 * containing the list of parameters.
 	 *
-	 * When any of the setUniform methods are called, the attribute
+	 * When any of the setCgUniform methods are called, the attribute
 	 * will be set for each parameter in the list.
 	 */
 	cgParamInfo = (CgParameterInfo *)malloc(sizeof(CgParameterInfo));
@@ -1150,12 +1150,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_lookupNativeShaderAttrNames(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    useShaderProgram
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    useCgShaderProgram
  * Signature: (JJ)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_useShaderProgram(
+Java_javax_media_j3d_NativePipeline_useCgShaderProgram(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1201,12 +1201,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_useShaderProgram(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform1i
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform1i
  * Signature: (JJJI)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform1i(
+Java_javax_media_j3d_NativePipeline_setCgUniform1i(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1245,12 +1245,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform1i(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform1f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform1f
  * Signature: (JJJF)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform1f(
+Java_javax_media_j3d_NativePipeline_setCgUniform1f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1289,12 +1289,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform1f(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform2i
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform2i
  * Signature: (JJJ[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform2i(
+Java_javax_media_j3d_NativePipeline_setCgUniform2i(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1345,12 +1345,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform2i(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform2f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform2f
  * Signature: (JJJ[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform2f(
+Java_javax_media_j3d_NativePipeline_setCgUniform2f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1401,12 +1401,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform2f(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform3i
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform3i
  * Signature: (JJJ[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform3i(
+Java_javax_media_j3d_NativePipeline_setCgUniform3i(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1459,12 +1459,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform3i(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform3f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform3f
  * Signature: (JJJ[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform3f(
+Java_javax_media_j3d_NativePipeline_setCgUniform3f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1517,12 +1517,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform3f(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform4i
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform4i
  * Signature: (JJJ[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform4i(
+Java_javax_media_j3d_NativePipeline_setCgUniform4i(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1577,12 +1577,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform4i(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform4f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform4f
  * Signature: (JJJ[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform4f(
+Java_javax_media_j3d_NativePipeline_setCgUniform4f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1637,12 +1637,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform4f(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniformMatrix3f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniformMatrix3f
  * Signature: (JJJ[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix3f(
+Java_javax_media_j3d_NativePipeline_setCgUniformMatrix3f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1689,12 +1689,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix3f(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniformMatrix4f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniformMatrix4f
  * Signature: (JJJ[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix4f(
+Java_javax_media_j3d_NativePipeline_setCgUniformMatrix4f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1741,12 +1741,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix4f(
 
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform1iArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform1iArray
  * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform1iArray(
+Java_javax_media_j3d_NativePipeline_setCgUniform1iArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1802,12 +1802,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform1iArray(
 }
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform1fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform1fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform1fArray(
+Java_javax_media_j3d_NativePipeline_setCgUniform1fArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1856,12 +1856,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform1fArray(
 }
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform2iArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform2iArray
  * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform2iArray(
+Java_javax_media_j3d_NativePipeline_setCgUniform2iArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1917,12 +1917,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform2iArray(
 }
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform2fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform2fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform2fArray(
+Java_javax_media_j3d_NativePipeline_setCgUniform2fArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1971,12 +1971,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform2fArray(
 }
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform3iArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform3iArray
  * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform3iArray(
+Java_javax_media_j3d_NativePipeline_setCgUniform3iArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -2032,12 +2032,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform3iArray(
 }
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform3fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform3fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform3fArray(
+Java_javax_media_j3d_NativePipeline_setCgUniform3fArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -2086,12 +2086,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform3fArray(
 }
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform4iArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform4iArray
  * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform4iArray(
+Java_javax_media_j3d_NativePipeline_setCgUniform4iArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -2147,12 +2147,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform4iArray(
 }
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniform4fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniform4fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniform4fArray(
+Java_javax_media_j3d_NativePipeline_setCgUniform4fArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -2201,12 +2201,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniform4fArray(
 }
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniformMatrix3fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniformMatrix3fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix3fArray(
+Java_javax_media_j3d_NativePipeline_setCgUniformMatrix3fArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -2255,12 +2255,12 @@ Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix3fArray(
 }
 
 /*
- * Class:     javax_media_j3d_CgShaderProgramRetained
- * Method:    setUniformMatrix4fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setCgUniformMatrix4fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_CgShaderProgramRetained_setUniformMatrix4fArray(
+Java_javax_media_j3d_NativePipeline_setCgUniformMatrix4fArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,

@@ -13,7 +13,7 @@
 #include "StdAfx.h"
 
 extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_GraphicsContext3D_readRasterNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_readRasterNative(
     JNIEnv *env, jobject obj, jlong ctx,
     jint type, jint xOffset, jint yOffset, 
     jint wRaster, jint hRaster, jint hCanvas, jint format,

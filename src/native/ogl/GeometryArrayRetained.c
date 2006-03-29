@@ -568,12 +568,12 @@ executeGeometryArray(
 
 
 /*
- * Class:     javax_media_j3d_GeometryArrayRetained
+ * Class:     javax_media_j3d_NativePipeline
  * Method:    execute
  * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZZZIIII[II[II[II[I[F[FII)V
  */
 JNIEXPORT void JNICALL
-Java_javax_media_j3d_GeometryArrayRetained_execute(JNIEnv *env, 
+Java_javax_media_j3d_NativePipeline_execute(JNIEnv *env, 
     jobject obj, jlong ctxInfo, jobject geo, jint geo_type,
     jboolean isNonUniformScale, jboolean useAlpha,
     jboolean multiScreen,
@@ -606,7 +606,7 @@ Java_javax_media_j3d_GeometryArrayRetained_execute(JNIEnv *env,
 
 /* interleaved data with nio buffer as data format */
 JNIEXPORT void JNICALL
-Java_javax_media_j3d_GeometryArrayRetained_executeInterleavedBuffer(
+Java_javax_media_j3d_NativePipeline_executeInterleavedBuffer(
     JNIEnv *env, 
     jobject obj, jlong ctxInfo, jobject geo, jint geo_type, 
     jboolean isNonUniformScale, jboolean useAlpha,
@@ -639,12 +639,12 @@ Java_javax_media_j3d_GeometryArrayRetained_executeInterleavedBuffer(
 
 
 /*
- * Class:     javax_media_j3d_GeometryArrayRetained
+ * Class:     javax_media_j3d_NativePipeline
  * Method:    buildGA
  * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZFZIIII[II[II[I[D[D[F)V
  */
 JNIEXPORT
-    void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGA(JNIEnv *env, 
+    void JNICALL Java_javax_media_j3d_NativePipeline_buildGA(JNIEnv *env, 
     jobject obj, jlong ctxInfo, jobject geo, 
     jint geo_type, 
     jboolean isNonUniformScale, jboolean updateAlpha, float alpha,
@@ -1513,12 +1513,12 @@ executeGeometryArrayVA(
 
 /* execute geometry array with java array format */
 /*
- * Class:     javax_media_j3d_GeometryArrayRetained
+ * Class:     javax_media_j3d_NativePipeline
  * Method:    executeVA
  * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZZIIII[F[DI[F[BI[FI[I[I[[FII[II[I[II[Ljava/lang/Object;I)V
  */
 JNIEXPORT void JNICALL
-Java_javax_media_j3d_GeometryArrayRetained_executeVA(
+Java_javax_media_j3d_NativePipeline_executeVA(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    
@@ -1726,11 +1726,11 @@ Java_javax_media_j3d_GeometryArrayRetained_executeVA(
       
 /* execute geometry array with java array format */
 /*
- * Class:     javax_media_j3d_GeometryArrayRetained
+ * Class:     javax_media_j3d_NativePipeline
  * Method:    executeVABuffer
  * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZZIIIILjava/lang/Object;ILjava/lang/Object;[F[BILjava/lang/Object;I[I[I[Ljava/lang/Object;II[II[I[II[Ljava/lang/Object;I)V
  */
-JNIEXPORT void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffer(
+JNIEXPORT void JNICALL Java_javax_media_j3d_NativePipeline_executeVABuffer(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    
@@ -1923,10 +1923,11 @@ JNIEXPORT void JNICALL Java_javax_media_j3d_GeometryArrayRetained_executeVABuffe
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_GeometryArrayRetained_disableGlobalAlpha(
+void JNICALL Java_javax_media_j3d_NativePipeline_disableGlobalAlpha(
     JNIEnv *env, 
     jobject obj,
-    jlong ctxInfo,    
+    jlong ctxInfo,
+    jobject geo,
     jint vformat,
     jboolean useAlpha,
     jboolean ignoreVertexColors)
@@ -1945,15 +1946,16 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_disableGlobalAlpha(
 
 
 /*
- * Class:     javax_media_j3d_GeometryArrayRetained
+ * Class:     javax_media_j3d_NativePipeline
  * Method:    setVertexFormat
  * Signature: (JIZZI[I)V
  */
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_GeometryArrayRetained_setVertexFormat(
+void JNICALL Java_javax_media_j3d_NativePipeline_setVertexFormat(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,
+    jobject geo,
     jint vformat,
     jboolean useAlpha,
     jboolean ignoreVertexColors)
@@ -1998,22 +2000,6 @@ void JNICALL Java_javax_media_j3d_GeometryArrayRetained_setVertexFormat(
 	glDisableClientState(GL_VERTEX_ARRAY);
     }
 }
-
-JNIEXPORT jboolean JNICALL
-Java_javax_media_j3d_GeometryArrayRetained_globalAlphaSUN(
-    JNIEnv *env,
-    jobject obj,
-    jlong ctxInfo)
-{
-    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
-    jlong ctx = ctxProperties->context;
-
-    if (ctxProperties->global_alpha_sun == 1)
-	return JNI_TRUE ;
-    else
-	return JNI_FALSE ;
-}
-
 
 static void
 executeIndexedGeometryArray(
@@ -2401,7 +2387,7 @@ executeIndexedGeometryArray(
 }
 
 JNIEXPORT void JNICALL
-Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeometry(
+Java_javax_media_j3d_NativePipeline_executeIndexedGeometry(
     JNIEnv *env, 
     jobject obj, jlong ctxInfo, jobject geo, jint geo_type, 
     jboolean isNonUniformScale, jboolean useAlpha,
@@ -2445,7 +2431,7 @@ Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeometry(
 }
 
 JNIEXPORT void JNICALL
-Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeometryBuffer(
+Java_javax_media_j3d_NativePipeline_executeIndexedGeometryBuffer(
     JNIEnv *env,
     jobject obj, jlong ctxInfo, jobject geo, jint geo_type,
     jboolean isNonUniformScale, jboolean useAlpha,
@@ -2735,7 +2721,7 @@ executeIndexedGeometryArrayVA(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeometryVA(
+void JNICALL Java_javax_media_j3d_NativePipeline_executeIndexedGeometryVA(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    
@@ -2946,7 +2932,7 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeometryVABuffer(
+void JNICALL Java_javax_media_j3d_NativePipeline_executeIndexedGeometryVABuffer(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    
@@ -3137,7 +3123,7 @@ void JNICALL Java_javax_media_j3d_IndexedGeometryArrayRetained_executeIndexedGeo
 }
 
 JNIEXPORT void JNICALL
-Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeometry(
+Java_javax_media_j3d_NativePipeline_buildIndexedGeometry(
     JNIEnv *env, 
     jobject obj, jlong ctxInfo, jobject geo, 
     jint geo_type, 
@@ -3607,7 +3593,7 @@ Java_javax_media_j3d_IndexedGeometryArrayRetained_buildIndexedGeometry(
  * Method:    buildGAForByRef
  * Signature: (JLjavax/media/j3d/GeometryArrayRetained;IZZFZIIII[F[DI[F[BI[FI[I[I[[FI[I[II[Ljava/lang/Object;[D[D)V
  */
-JNIEXPORT void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRef(
+JNIEXPORT void JNICALL Java_javax_media_j3d_NativePipeline_buildGAForByRef(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    
@@ -4002,7 +3988,7 @@ JNIEXPORT void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForByRe
 #if 0
 /* execute geometry array with java array format */
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_GeometryArrayRetained_buildGAForBuffer(
+void JNICALL Java_javax_media_j3d_NativePipeline_buildGAForBuffer(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    

@@ -2185,16 +2185,6 @@ public class GraphicsContext3D extends Object   {
     }
 
     /**
-     * Native method for readRaster
-     */  
-    native void readRasterNative(long d3dctx,
-				 int type, int xSrcOffset, int ySrcOffset,
-				 int width, int height, int hCanvas, int format,
-				 ImageComponentRetained image, 
-				 DepthComponentRetained depth, 
-				 GraphicsContext3D ctx);
-
-    /**
      * Read an image from the frame buffer and copy it into the
      * ImageComponent and/or DepthComponent
      * objects referenced by the specified Raster object.
@@ -2327,7 +2317,7 @@ public class GraphicsContext3D extends Object   {
 	    // Make the context current and read the raster information
 	    canvas3d.makeCtxCurrent();
 	    canvas3d.syncRender(canvas3d.ctx, true);
-            readRasterNative(canvas3d.ctx,
+            Pipeline.getPipeline().readRasterNative(canvas3d.ctx,
 			     ras.type, ras.xSrcOffset, ras.ySrcOffset,
 			     ras.width, ras.height, canvasSize.height, format,
 			     ras.image, ras.depthComponent, this);

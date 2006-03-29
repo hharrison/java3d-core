@@ -35,138 +35,250 @@ class CgShaderProgramRetained extends ShaderProgramRetained {
 	initMirrorObject();
     }
 
-    // ShaderAttributeValue methods    
+    // ShaderAttributeValue methods
 
-    native ShaderError setUniform1i(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
-					    int value);
-    
-    native ShaderError setUniform1f(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
-					    float value);
-    
-    native ShaderError setUniform2i(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
-					    int[] value);
-    
-    native ShaderError setUniform2f(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
-					    float[] value);
-    
-    native ShaderError setUniform3i(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
-					    int[] value);
-    
-    native ShaderError setUniform3f(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
-					    float[] value);    
-    
-    native ShaderError setUniform4i(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
-					    int[] value);
-    
-    native ShaderError setUniform4f(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
-					    float[] value);    
-    
-    native ShaderError setUniformMatrix3f(long ctx,
-					   long shaderProgramId,
-				           long uniformLocation,
-					   float[] value);
+    ShaderError setUniform1i(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int value) {
 
-    native ShaderError setUniformMatrix4f(long ctx,
-					   long shaderProgramId,
-			         	   long uniformLocation,
-					   float[] value);
+        return Pipeline.getPipeline().setCgUniform1i(ctx,
+                shaderProgramId,
+                uniformLocation,
+                value);
+    }
+
+    ShaderError setUniform1f(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            float value) {
+
+        return Pipeline.getPipeline().setCgUniform1f(ctx,
+                shaderProgramId,
+                uniformLocation,
+                value);
+    }
+
+    ShaderError setUniform2i(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int[] value) {
+
+        return Pipeline.getPipeline().setCgUniform2i(ctx,
+                shaderProgramId,
+                uniformLocation,
+                value);
+    }
+
+    ShaderError setUniform2f(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            float[] value) {
+
+        return Pipeline.getPipeline().setCgUniform2f(ctx,
+                shaderProgramId,
+                uniformLocation,
+                value);
+    }
+
+    ShaderError setUniform3i(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int[] value) {
+
+        return Pipeline.getPipeline().setCgUniform3i(ctx,
+                shaderProgramId,
+                uniformLocation,
+                value);
+    }
+
+    ShaderError setUniform3f(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            float[] value) {
+
+        return Pipeline.getPipeline().setCgUniform3f(ctx,
+                shaderProgramId,
+                uniformLocation,
+                value);
+    }
+
+    ShaderError setUniform4i(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int[] value) {
+
+        return Pipeline.getPipeline().setCgUniform4i(ctx,
+                shaderProgramId,
+                uniformLocation,
+                value);
+    }
+
+    ShaderError setUniform4f(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            float[] value) {
+
+        return Pipeline.getPipeline().setCgUniform4f(ctx,
+                shaderProgramId,
+                uniformLocation,
+                value);
+    }
+
+    ShaderError setUniformMatrix3f(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            float[] value) {
+
+        return Pipeline.getPipeline().setCgUniformMatrix3f(ctx,
+                shaderProgramId,
+                uniformLocation,
+                value);
+    }
+
+    ShaderError setUniformMatrix4f(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            float[] value) {
+
+        return Pipeline.getPipeline().setCgUniformMatrix3f(ctx,
+                shaderProgramId,
+                uniformLocation,
+                value);
+    }
 
     // ShaderAttributeArray methods
 
-    native ShaderError setUniform1iArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
-				      int numElements,
-				      int[] value);
-    
-    native ShaderError setUniform1fArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
-				      int numElements,
-				      float[] value);
-    
-    native ShaderError setUniform2iArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
-				      int numElements,
-				      int[] value);
-    
-    native ShaderError setUniform2fArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
-				      int numElements,
-				      float[] value);
-    
-    native ShaderError setUniform3iArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
-				      int numElements,
-				      int[] value);
-    
-    native ShaderError setUniform3fArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
-				      int numElements,
-				      float[] value);    
-    
-    native ShaderError setUniform4iArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
-				      int numElements,
-				      int[] value);
-    
-    native ShaderError setUniform4fArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
-				      int numElements,
-				      float[] value);    
-    
-    native ShaderError setUniformMatrix3fArray(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
-					    int numElements,
-					    float[] value);
+    ShaderError setUniform1iArray(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int numElements,
+            int[] value) {
 
-    native ShaderError setUniformMatrix4fArray(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
-					    int numElements,
-					    float[] value);
+        return Pipeline.getPipeline().setCgUniform1iArray(ctx,
+                shaderProgramId,
+                uniformLocation,
+                numElements,
+                value);
+    }
 
+    ShaderError setUniform1fArray(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int numElements,
+            float[] value) {
 
-    
-    /* New native interfaces */
-    private native ShaderError createNativeShader(long ctx, int shaderType, long[] shaderId);
-    private native ShaderError destroyNativeShader(long ctx, long shaderId);
-    private native ShaderError compileNativeShader(long ctx, long shaderId, String program);
+        return Pipeline.getPipeline().setCgUniform1fArray(ctx,
+                shaderProgramId,
+                uniformLocation,
+                numElements,
+                value);
+    }
 
-    private native ShaderError createNativeShaderProgram(long ctx, long[] shaderProgramId);
-    private native ShaderError destroyNativeShaderProgram(long ctx, long shaderProgramId);
-    private native ShaderError linkNativeShaderProgram(long ctx, long shaderProgramId,
-						       long[] shaderId);
-    private native void lookupNativeVertexAttrNames(long ctx, long shaderProgramId,
-            int numAttrNames, String[] attrNames, boolean[] errArr);
-    private native void lookupNativeShaderAttrNames(long ctx, long shaderProgramId,
-            int numAttrNames, String[] attrNames, long[] locArr,
-            int[] typeArr, int[] sizeArr, boolean[] isArrayArr);
+    ShaderError setUniform2iArray(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int numElements,
+            int[] value) {
 
-    private native ShaderError useShaderProgram(long ctx, long shaderProgramId);
+        return Pipeline.getPipeline().setCgUniform2iArray(ctx,
+                shaderProgramId,
+                uniformLocation,
+                numElements,
+                value);
+    }
+
+    ShaderError setUniform2fArray(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int numElements,
+            float[] value) {
+
+        return Pipeline.getPipeline().setCgUniform2fArray(ctx,
+                shaderProgramId,
+                uniformLocation,
+                numElements,
+                value);
+    }
+
+    ShaderError setUniform3iArray(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int numElements,
+            int[] value) {
+
+        return Pipeline.getPipeline().setCgUniform3iArray(ctx,
+                shaderProgramId,
+                uniformLocation,
+                numElements,
+                value);
+    }
+
+    ShaderError setUniform3fArray(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int numElements,
+            float[] value) {
+
+        return Pipeline.getPipeline().setCgUniform3fArray(ctx,
+                shaderProgramId,
+                uniformLocation,
+                numElements,
+                value);
+    }
+
+    ShaderError setUniform4iArray(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int numElements,
+            int[] value) {
+
+        return Pipeline.getPipeline().setCgUniform4iArray(ctx,
+                shaderProgramId,
+                uniformLocation,
+                numElements,
+                value);
+    }
+
+    ShaderError setUniform4fArray(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int numElements,
+            float[] value) {
+
+        return Pipeline.getPipeline().setCgUniform4fArray(ctx,
+                shaderProgramId,
+                uniformLocation,
+                numElements,
+                value);
+    }
+
+    ShaderError setUniformMatrix3fArray(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int numElements,
+            float[] value) {
+
+        return Pipeline.getPipeline().setCgUniformMatrix3fArray(ctx,
+                shaderProgramId,
+                uniformLocation,
+                numElements,
+                value);
+    }
+
+    ShaderError setUniformMatrix4fArray(long ctx,
+            long shaderProgramId,
+            long uniformLocation,
+            int numElements,
+            float[] value) {
+
+        return Pipeline.getPipeline().setCgUniformMatrix4fArray(ctx,
+                shaderProgramId,
+                uniformLocation,
+                numElements,
+                value);
+    }
+
 
     /**
      * Method to return a flag indicating whether this
@@ -180,42 +292,42 @@ class CgShaderProgramRetained extends ShaderProgramRetained {
      * Method to create the native shader.
      */
     ShaderError createShader(long ctx, ShaderRetained shader, long[] shaderIdArr) {	
-	  return  createNativeShader(ctx, shader.shaderType, shaderIdArr);
+	  return Pipeline.getPipeline().createCgShader(ctx, shader.shaderType, shaderIdArr);
     }
     
     /**
      * Method to destroy the native shader.
      */
     ShaderError destroyShader(long ctx, long shaderId) {
-	return destroyNativeShader(ctx, shaderId);
+	return Pipeline.getPipeline().destroyCgShader(ctx, shaderId);
     }
     
     /**
      * Method to compile the native shader.
      */
     ShaderError compileShader(long ctx, long shaderId, String source) {
-        return compileNativeShader(ctx, shaderId, source );
+        return Pipeline.getPipeline().compileCgShader(ctx, shaderId, source );
     }
 
     /**
      * Method to create the native shader program.
      */
     ShaderError createShaderProgram(long ctx, long[] shaderProgramIdArr) {
-	    return createNativeShaderProgram(ctx, shaderProgramIdArr);  
+	    return Pipeline.getPipeline().createCgShaderProgram(ctx, shaderProgramIdArr);  
     }
 
     /**
      * Method to destroy the native shader program.
      */
     ShaderError destroyShaderProgram(long ctx, long shaderProgramId) {
-        return destroyNativeShaderProgram(ctx, shaderProgramId);
+        return Pipeline.getPipeline().destroyCgShaderProgram(ctx, shaderProgramId);
     }
 
     /**
      * Method to link the native shader program.
      */
     ShaderError linkShaderProgram(long ctx, long shaderProgramId, long[] shaderIds) {
-        return linkNativeShaderProgram(ctx, shaderProgramId, shaderIds);
+        return Pipeline.getPipeline().linkCgShaderProgram(ctx, shaderProgramId, shaderIds);
     }
  
     ShaderError bindVertexAttrName(long ctx, long shaderProgramId, String attrName, int attrIndex) {
@@ -224,7 +336,7 @@ class CgShaderProgramRetained extends ShaderProgramRetained {
     }
 
     void lookupVertexAttrNames(long ctx, long shaderProgramId, String[] attrNames, boolean[] errArr) {
-        lookupNativeVertexAttrNames(ctx, shaderProgramId, attrNames.length, attrNames, errArr);
+        Pipeline.getPipeline().lookupCgVertexAttrNames(ctx, shaderProgramId, attrNames.length, attrNames, errArr);
     }
 
     void lookupShaderAttrNames(long ctx, long shaderProgramId,
@@ -242,7 +354,7 @@ class CgShaderProgramRetained extends ShaderProgramRetained {
             locArr[i] = -1;
         }
 
-        lookupNativeShaderAttrNames(ctx, shaderProgramId,
+        Pipeline.getPipeline().lookupCgShaderAttrNames(ctx, shaderProgramId,
                 numAttrNames, attrNames, locArr, typeArr, sizeArr, isArrayArr);
 
         for (int i = 0; i < numAttrNames; i++) {
@@ -264,14 +376,14 @@ class CgShaderProgramRetained extends ShaderProgramRetained {
      * Method to enable the native shader program.
      */
     ShaderError enableShaderProgram(long ctx, long shaderProgramId) {
-	return useShaderProgram(ctx, shaderProgramId);
+	return Pipeline.getPipeline().useCgShaderProgram(ctx, shaderProgramId);
     }
 	
     /**
      * Method to disable the native shader program.
      */
     ShaderError disableShaderProgram(long ctx) {
-	return useShaderProgram(ctx, 0);
+	return Pipeline.getPipeline().useCgShaderProgram(ctx, 0);
     }
 
 

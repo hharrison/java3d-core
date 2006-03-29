@@ -888,7 +888,7 @@ public class Canvas3D extends Canvas {
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable);
 
-    native static void destroyContext(long display, int window, long context);
+    static native void destroyContext(long display, int window, long context);
 
     // This is the native for creating offscreen buffer
     native int createOffScreenBuffer(long ctx, long display, long fbConfig, int width, int height);
@@ -945,7 +945,6 @@ public class Canvas3D extends Canvas {
     native int toggleFullScreenMode(long ctx);
 
     native void setGlobalAlpha(long ctx, float alpha);
-    native void disableGlobalAlpha(long ctx);
 
     // Native method to update separate specular color control
     native void updateSeparateSpecularColorEnable(long ctx, boolean control);
@@ -2401,6 +2400,7 @@ public class Canvas3D extends Canvas {
 
 	    antialiasingSet = false;
 	    if (reEvaluateCanvasCmd == RESIZE) {
+                assert VirtualUniverse.mc.isD3D();
 		status = resizeD3DCanvas(ctx);
 	    } else {
 		status = toggleFullScreenMode(ctx);
@@ -2495,8 +2495,8 @@ public class Canvas3D extends Canvas {
     native void endDisplayList(long ctx);
     native void callDisplayList(long ctx, int id, boolean isNonUniformScale);
 
-    native static void freeDisplayList(long ctx, int id);
-    native static void freeTexture(long ctx, int id);
+    static native void freeDisplayList(long ctx, int id);
+    static native void freeTexture(long ctx, int id);
 
     native void composite(long ctx, int px, int py,
                           int xmin, int ymin, int xmax, int ymax,
@@ -3955,6 +3955,7 @@ public class Canvas3D extends Canvas {
 
 
     void d3dResize() {
+        assert VirtualUniverse.mc.isD3D();
 	int status = resizeD3DCanvas(ctx);
 
 	antialiasingSet = false;
@@ -3967,6 +3968,7 @@ public class Canvas3D extends Canvas {
     }
 
     void d3dToggle() {
+        assert VirtualUniverse.mc.isD3D();
 	int status = toggleFullScreenMode(ctx);
 
 	antialiasingSet = false;
@@ -3977,6 +3979,7 @@ public class Canvas3D extends Canvas {
 
     // use by D3D only
     void notifyD3DPeer(int cmd) {
+        assert VirtualUniverse.mc.isD3D();
 	if (active) {
 	    if (isRunning) {
 		if ((view != null) && 

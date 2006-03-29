@@ -781,9 +781,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * the specified index for the specified vertex attribute number
      * for this object.
      */
-    public void setVertexAttrIndex(int vertexAttrNum,
-                                   int index,
-                                   int vertexAttrIndex) {
+    void setVertexAttrIndex(int vertexAttrNum,
+                            int index,
+                            int vertexAttrIndex) {
 
 	int newMax;
 	int [] indices = this.indexVertexAttr[vertexAttrNum];
@@ -806,9 +806,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * starting at the specified index for the specified vertex attribute number
      * for this object.
      */
-    public void setVertexAttrIndices(int vertexAttrNum,
-                                     int index,
-                                     int[] vertexAttrIndices) {
+    void setVertexAttrIndices(int vertexAttrNum,
+                              int index,
+                              int[] vertexAttrIndices) {
   
         int i, j, num = vertexAttrIndices.length;
         int [] indices = this.indexVertexAttr[vertexAttrNum];
@@ -936,8 +936,8 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * the specified index for the specified vertex attribute number
      * for this object.
      */
-    public int getVertexAttrIndex(int vertexAttrNum,
-                                  int index) {
+    int getVertexAttrIndex(int vertexAttrNum,
+                           int index) {
 
         int [] indices = this.indexVertexAttr[vertexAttrNum];
 
@@ -949,9 +949,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * starting at the specified index for the specified vertex attribute number
      * for this object.
      */
-    public void getVertexAttrIndices(int vertexAttrNum,
-                                     int index,
-                                     int[] vertexAttrIndices) {
+    void getVertexAttrIndices(int vertexAttrNum,
+                              int index,
+                              int[] vertexAttrIndices) {
 
         int i, j, num = vertexAttrIndices.length;
         int [] indices = this.indexVertexAttr[vertexAttrNum];
@@ -960,109 +960,6 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
             vertexAttrIndices[i] = indices[j];
         }
     }
-
-    // by-copy or interleaved, by reference, Java arrays
-    private native void executeIndexedGeometry(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean useAlpha,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int initialIndexIndex,
-            int indexCount,
-            int vertexCount, int vformat,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            int texCoordSetCount, int texCoordSetMap[],
-            int texCoordSetMapLen,
-            int[] texCoordSetOffset,
-            int numActiveTexUnitState,
-            int[] texUnitStateMap,
-            float[] varray, float[] cdata,
-            int texUnitIndex, int cdirty,
-            int[] indexCoord);
-
-    // interleaved, by reference, nio buffer
-    private native void executeIndexedGeometryBuffer(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean useAlpha,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int initialIndexIndex,
-            int indexCount,
-            int vertexCount, int vformat,
-            int texCoordSetCount, int texCoordSetMap[],
-            int texCoordSetMapLen,
-            int[] texCoordSetOffset,
-            int numActiveTexUnitState,
-            int[] texUnitStateMap,
-            Object varray, float[] cdata,
-            int texUnitIndex, int cdirty,
-            int[] indexCoord);
-
-    // non interleaved, by reference, Java arrays
-    private native void executeIndexedGeometryVA(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int initialIndexIndex,
-            int validIndexCount,
-            int vertexCount,
-            int vformat,
-            int vdefined,
-            float[] vfcoords, double[] vdcoords,
-            float[] cfdata, byte[] cbdata,
-            float[] ndata,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            float[][] vertexAttrData,
-            int pass, int texcoordmaplength,
-            int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
-            int texstride, Object[] texCoords,
-            int cdirty,
-            int[] indexCoord);
-
-    // non interleaved, by reference, nio buffer
-    private native void executeIndexedGeometryVABuffer(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int initialIndexIndex,
-            int validIndexCount,
-            int vertexCount,
-            int vformat,
-            int vdefined,
-            Object vcoords,
-            Object cdataBuffer,
-            float[] cfdata, byte[] cbdata,
-            Object normal,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            Object[] vertexAttrData,
-            int pass, int texcoordmaplength,
-            int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
-            int texstride, Object[] texCoords,
-            int cdirty,
-            int[] indexCoord);
-
-    // by-copy geometry
-    private native void buildIndexedGeometry(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale, boolean updateAlpha,
-            float alpha,
-            boolean ignoreVertexColors,
-            int initialIndexIndex,
-            int validIndexCount,
-            int vertexCount,
-            int vformat,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            int texCoordSetCount, int texCoordSetMap[],
-            int texCoordSetMapLen,
-            int[] texCoordSetMapOffset,
-            double[] xform, double[] nxform,
-            float[] varray, int[] indexCoord);
 
 
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
@@ -1111,7 +1008,8 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		    dirtyFlag = 0;
                 }
 
-                executeIndexedGeometry(cv.ctx, this, geoType, isNonUniformScale,
+                Pipeline.getPipeline().executeIndexedGeometry(cv.ctx,
+                        this, geoType, isNonUniformScale,
                         useAlpha,
                         multiScreen,
                         ignoreVertexColors,
@@ -1157,7 +1055,8 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		    dirtyFlag = 0;
 		}
 
-                executeIndexedGeometry(cv.ctx, this, geoType, isNonUniformScale,
+                Pipeline.getPipeline().executeIndexedGeometry(cv.ctx,
+                        this, geoType, isNonUniformScale,
                         useAlpha,
                         multiScreen,
                         ignoreVertexColors,
@@ -1252,7 +1151,8 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
                     if((vertexType & TEXCOORD_DEFINED) != 0)
                         vdefined |= TEXCOORD_FLOAT;
 
-                    executeIndexedGeometryVA(cv.ctx, this, geoType, isNonUniformScale,
+                    Pipeline.getPipeline().executeIndexedGeometryVA(cv.ctx,
+                            this, geoType, isNonUniformScale,
                             multiScreen,
                             ignoreVertexColors,
                             initialIndexIndex,
@@ -1304,20 +1204,21 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		    dirtyFlag = 0;
 		}
 		
-		executeIndexedGeometryBuffer(cv.ctx, this, geoType, isNonUniformScale, 
-				       useAlpha,
-				       multiScreen,
-				       ignoreVertexColors,
-				       initialIndexIndex, 
-				       validIndexCount, 
-				       maxCoordIndex + 1,
-				       vertexFormat,
-				       texCoordSetCount, texCoordSetMap,
-				       (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
-				       texCoordSetMapOffset, 
-				       cv.numActiveTexUnit, cv.texUnitStateMap, 
-				       interleavedFloatBufferImpl.getBufferAsObject(), cdata,
-				       pass, cdirty, indexCoord);
+                Pipeline.getPipeline().executeIndexedGeometryBuffer(cv.ctx,
+                        this, geoType, isNonUniformScale,
+                        useAlpha,
+                        multiScreen,
+                        ignoreVertexColors,
+                        initialIndexIndex,
+                        validIndexCount,
+                        maxCoordIndex + 1,
+                        vertexFormat,
+                        texCoordSetCount, texCoordSetMap,
+                        (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
+                        texCoordSetMapOffset,
+                        cv.numActiveTexUnit, cv.texUnitStateMap,
+                        interleavedFloatBufferImpl.getBufferAsObject(), cdata,
+                        pass, cdirty, indexCoord);
 	    }  //end of interleaved
 	    else {
                 // Check if a vertexformat is set, but the array is null
@@ -1417,7 +1318,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
                        vdefined |= TEXCOORD_FLOAT;
                     }
 
-                    executeIndexedGeometryVABuffer(cv.ctx,
+                    Pipeline.getPipeline().executeIndexedGeometryVABuffer(cv.ctx,
                             this, geoType, isNonUniformScale,
                             multiScreen,
                             ignoreVertexColors,
@@ -1488,7 +1389,8 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		    dirtyFlag = 0;
 		}
 
-                buildIndexedGeometry(cv.ctx, this, geoType, isNonUniformScale,
+                Pipeline.getPipeline().buildIndexedGeometry(cv.ctx,
+                        this, geoType, isNonUniformScale,
                         updateAlpha, alpha, ignoreVertexColors,
                         initialIndexIndex,
                         validIndexCount,
