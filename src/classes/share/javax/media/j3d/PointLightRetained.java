@@ -173,18 +173,14 @@ class PointLightRetained extends LightRetained {
      * updates a point light.  This includes its color, attenuation,
      * and its transformed position.
      */
-    native void updateLight(long ctx, int lightSlot, float red, float green,
-			    float blue, float ax, float ay, float az,
-			    float px, float py, float pz);
-
     void update(long ctx, int lightSlot, double scale) {
 	validateAttenuationInEc(scale);
-	updateLight(ctx, lightSlot, color.x, color.y, color.z,
-		    attenuation.x, linearAttenuationInEc,
-		    quadraticAttenuationInEc,
-		    xformPosition.x, xformPosition.y,
-		    xformPosition.z);
-	
+        Pipeline.getPipeline().updatePointLight(ctx,
+                lightSlot, color.x, color.y, color.z,
+                attenuation.x, linearAttenuationInEc,
+                quadraticAttenuationInEc,
+                xformPosition.x, xformPosition.y,
+                xformPosition.z);
     }
 
     void setLive(SetLiveState s) {

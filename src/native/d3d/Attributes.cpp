@@ -1761,7 +1761,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetColoringAttributes(
 
 
 extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_ColoringAttributesRetained_updateNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateColoringAttributes(
     JNIEnv *env,
     jobject obj,
     jlong ctx,

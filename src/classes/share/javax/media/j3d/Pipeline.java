@@ -707,4 +707,64 @@ abstract class Pipeline {
             float x, float y, float z, byte[] image);
 
 
+    // ---------------------------------------------------------------------
+
+    //
+    // Renderer methods
+    //
+
+    abstract void cleanupRenderer();
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // ColoringAttributesRetained methods
+    //
+
+    abstract void updateColoringAttributes(long ctx,
+            float dRed, float dGreen, float dBlue,
+            float red, float green, float blue,
+            float alpha,
+            boolean lEnable,
+            int shadeModel);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // DirectionalLightRetained methods
+    //
+
+    abstract void updateDirectionalLight(long ctx,
+            int lightSlot, float red, float green,
+            float blue, float x, float y, float z);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // PointLightRetained methods
+    //
+
+    abstract void updatePointLight(long ctx,
+            int lightSlot, float red, float green,
+            float blue, float ax, float ay, float az,
+            float px, float py, float pz);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // SpotLightRetained methods
+    //
+
+    abstract void updateSpotLight(long ctx,
+            int lightSlot, float red, float green,
+            float blue, float ax, float ay, float az,
+            float px, float py, float pz, float spreadAngle,
+            float concentration, float dx, float dy,
+            float dz);
+
+
 }

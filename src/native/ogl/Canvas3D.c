@@ -3523,6 +3523,15 @@ jboolean JNICALL Java_javax_media_j3d_Canvas3D_validGraphicsMode(
 }
 
 
+JNIEXPORT
+void JNICALL Java_javax_media_j3d_NativePipeline_cleanupRenderer(
+    JNIEnv *env,
+    jobject obj)
+{
+    /* No-op for OGL pipeline */
+}
+
+
 /*
  * Function to disable most rendering attributes when doing a 2D
  * clear, image copy, or image composite operation. Note that the

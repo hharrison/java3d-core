@@ -183,22 +183,16 @@ class SpotLightRetained extends PointLightRetained {
      * transformed position, spread angle, concentration,
      * and its transformed position.
      */
-    native void updateLight(long ctx,
-			    int lightSlot, float red, float green,
-			    float blue, float ax, float ay, float az,
-			    float px, float py, float pz, float spreadAngle,
-			    float concentration, float dx, float dy,
-			    float dz);
-
     void update(long ctx, int lightSlot, double scale) {
 	validateAttenuationInEc(scale);
-	updateLight(ctx, lightSlot, color.x, color.y, color.z,
-		    attenuation.x, linearAttenuationInEc,
-		    quadraticAttenuationInEc,
-		    xformPosition.x, xformPosition.y,
-		    xformPosition.z, spreadAngle, concentration,
-		    xformDirection.x, xformDirection.y, 
-		    xformDirection.z);
+        Pipeline.getPipeline().updateSpotLight(ctx,
+                lightSlot, color.x, color.y, color.z,
+                attenuation.x, linearAttenuationInEc,
+                quadraticAttenuationInEc,
+                xformPosition.x, xformPosition.y,
+                xformPosition.z, spreadAngle, concentration,
+                xformDirection.x, xformDirection.y,
+                xformDirection.z);
     }
 
 

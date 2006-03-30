@@ -903,6 +903,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_destroyContext(
     jint window,
     jlong ctx)
 {
+    jobject obj = 0; // This becomes an argument when function is moved to NativePipeline
     GetDevice();
 
     lock();
@@ -910,7 +911,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_destroyContext(
     delete d3dCtx;
     unlock();
 
-    Java_javax_media_j3d_Renderer_D3DCleanUp(env, cl);
+    Java_javax_media_j3d_NativePipeline_cleanupRenderer(env, obj);
 }
 
 extern "C" JNIEXPORT
@@ -1018,7 +1019,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setFullSceneAntialiasing(
 }
 
 extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_Renderer_D3DCleanUp(
+void JNICALL Java_javax_media_j3d_NativePipeline_cleanupRenderer(
     JNIEnv *env,
     jobject obj)
 {

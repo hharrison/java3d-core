@@ -168,13 +168,11 @@ class DirectionalLightRetained extends LightRetained
     }
 
       
-    native void updateLight(long ctx,
-			    int lightSlot, float red, float green, 
-			    float blue, float x, float y, float z); 
     void update(long ctx, int lightSlot, double scale) { 
-	updateLight(ctx, lightSlot, color.x, color.y, color.z, 
-		    xformDirection.x, xformDirection.y, 
-		    xformDirection.z); 
+        Pipeline.getPipeline().updateDirectionalLight(ctx,
+                lightSlot, color.x, color.y, color.z,
+                xformDirection.x, xformDirection.y,
+                xformDirection.z);
     }
 
     // Clones only the retained side, internal use only

@@ -161,8 +161,6 @@ class Renderer extends J3dThread {
     // It is used when sharedCtx = true;
     ArrayList textureIDResourceTable = new ArrayList(5);
 
-    native void D3DCleanUp();
-
     private synchronized int newInstanceNum() {
 	return (++numInstances);
     }
@@ -1441,10 +1439,7 @@ class Renderer extends J3dThread {
     // resource clean up
     void shutdown() {
 	removeAllCtxs();
-
-	if (VirtualUniverse.mc.isD3D()) {
-	    D3DCleanUp();
-	}
+        Pipeline.getPipeline().cleanupRenderer();
     }
 
     void cleanup() {

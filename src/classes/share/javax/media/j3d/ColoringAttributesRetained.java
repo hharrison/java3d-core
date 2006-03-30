@@ -141,22 +141,14 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 	    ((ColoringAttributesRetained) mirror).set(this);
 	}
     }
-    /**
-     * These two native methods update the native context
-     */
-    native void updateNative(long ctx,
-			     float dRed, float dGreen, float dBlue, 
-			     float red, float green, float blue,
-			     float alpha,
- 			     boolean lEnable,
-			     int shadeModel);
 
     void updateNative(long ctx,
 		      float dRed, float dGreen, float dBlue,
 		      float alpha, boolean lEnable) {
-	updateNative(ctx, dRed, dBlue, dGreen, color.x, color.y,
-		     color.z, alpha,
-		     lEnable, shadeModel);
+        Pipeline.getPipeline().updateColoringAttributes(ctx,
+                dRed, dBlue, dGreen, color.x, color.y,
+                color.z, alpha,
+                lEnable, shadeModel);
     }
 
    /**
