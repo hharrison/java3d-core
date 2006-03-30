@@ -30,9 +30,8 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 					// this image is being
 					// referenced as a detail image
 
-    // use in D3D to map object to surface pointer
+    // used in D3D to map object to surface pointer
     int hashId;       
-    native void freeD3DSurface(int hashId);
 
     float[] lastAlpha = new float[1];
     
@@ -877,7 +876,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 
     void freeSurface() {
 	if (VirtualUniverse.mc.isD3D()) {
-	    freeD3DSurface(hashId);
+	    Pipeline.getPipeline().freeD3DSurface(this, hashId);
 	}
     }
 

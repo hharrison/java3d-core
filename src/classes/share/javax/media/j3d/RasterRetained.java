@@ -393,22 +393,6 @@ class RasterRetained extends GeometryRetained {
     }
 
 
-    /**
-     * Native method that does the rendering
-     */
-    native void execute(long ctx, GeometryRetained geo, 
-			boolean updateAlpha, float alpha,
-			int type, int width, int height,
-			int xSrcOffset, int ySrcOffset,
-			float x, float y, float z, byte[] image);
-    /*
-    native void executeTiled(long ctx, GeometryRetained geo, 
-			int format, int width, int height,
-			int xSrcOffset, int ySrcOffset,
-			int deltaw, int deltah,
-			float x, float y, float z, byte[] image);
-    */
-
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
 	    boolean updateAlpha, float alpha,
 	    boolean multiScreen, int screen,
@@ -448,92 +432,19 @@ class RasterRetained extends GeometryRetained {
 		    // If the image is by reference, force a copy, since
 		    // we need to copy the alpha values
 		    image.updateAlpha(cv, screen, alpha);
-		    execute(cv.ctx, this, updateAlpha, alpha,
+		    Pipeline.getPipeline().executeRaster(cv.ctx, this, updateAlpha, alpha,
 			    type, width, height, xOffset, yOffset,
 			    (float)adjPos.x, (float)adjPos.y , (float)adjPos.z,
 			    image.imageYdown[screen]);
 		}
 		else {
-		    execute(cv.ctx, this, updateAlpha, alpha,
+		    Pipeline.getPipeline().executeRaster(cv.ctx, this, updateAlpha, alpha,
 			    type, width, height, xOffset, yOffset,
 			    (float)adjPos.x, (float)adjPos.y , (float)adjPos.z,
 			    image.imageYdown[0]);
 		}
 	    }
 	}
-  /*
-	else {
-	    // Should never come here ...
-	    if ((type & Raster.RASTER_COLOR) != 0){
-		// Send down the tiles
-		int tilew = image.tilew;
-		int tileh = image.tileh;
-		int w = width, h = height;
-		int curw, curh;
-		int xo = xOffset, yo = yOffset;
-		float xpos = position.x, ypos = position.y;
-		// First find the tile {x.y} to start from
-		int tileX = 0, tileY = 0;
-		while (xo > tilew) {
-		    tileX++;
-		    xo -= tilew;
-		}
-		
-		while (yo > tileh) {
-		    tileY++;
-		    yo -= tileh;
-		}
-		int initTileY = image.minTileY+tileY;
-		int initTileX = image.minTileX+tileX;
-		int m,n;
-		int deltaw, deltah = 0;
-		curh = tileh - yo;
-		for (m = initTileY; m < image.minTileY+image.numYTiles; m++) {
-		    curw = tilew - xo;
-		    deltaw = 0;
-		    w = width;
-		    for (n = initTileX; n < image.minTileX+image.numXTiles; n++) {
-			java.awt.image.Raster ras;
-			ras = image.bImage[0].getTile(n,m);
-			byte[] tmpImage =  ((DataBufferByte)ras.getDataBuffer()).getData();
-			if (w <curw) {
-			    curw = w;
-			}
-			executeTiled(cv.ctx, this, image.storedYdownFormat, 
-				curw,
-				curh,
-				xo, yo,
-				deltaw, deltah,
-				(float)adjPos.x, (float)adjPos.y , (float)adjPos.z,
-				tmpImage);
-			
-			xo = 0;
-			w -= curw;
-			if (w == 0)
-			    break;
-			deltaw += curw;
-			curw = tilew;
-		    }
-		    yo = 0;
-		    h -= curh;
-		    if (h == 0)
-			break;
-		    deltah += curh;
-		    curh = tileh;
-		    if (h < curh)
-			curh = h;
-		    xo = xOffset;
-		}
-	    }
-	    if ((type & Raster.RASTER_DEPTH) != 0) {
-		execute(cv.ctx, this, updateAlpha, alpha,
-			Raster.RASTER_DEPTH, width, height,
-			xOffset, yOffset,
-			(float)adjPos.x, (float)adjPos.y , (float)adjPos.z,
-			image.imageYdown[screen]);
-	    }
-	}
-  */
     }
     
     /**

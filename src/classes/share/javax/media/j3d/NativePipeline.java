@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * Concrete implementation of Pipeline class for native OGL and D3D rendering
  * pipeline.
  */
-class NativePipeline extends Pipeline{
+class NativePipeline extends Pipeline {
 
     // System properties containing the native library search PATH
     // The order listed is the order in which they will be searched
@@ -702,5 +702,30 @@ class NativePipeline extends Pipeline{
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr);
 
     native ShaderError useGLSLShaderProgram(long ctx, long shaderProgramId);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // ImageComponent2DRetained methods
+    //
+
+    // free d3d surface referred to by id
+    native void freeD3DSurface(ImageComponent2DRetained image, int hashId);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // RasterRetained methods
+    //
+
+    // Native method that does the rendering
+    native void executeRaster(long ctx, GeometryRetained geo,
+            boolean updateAlpha, float alpha,
+            int type, int width, int height,
+            int xSrcOffset, int ySrcOffset,
+            float x, float y, float z, byte[] image);
+
 
 }

@@ -667,4 +667,44 @@ abstract class Pipeline {
 
     abstract ShaderError useGLSLShaderProgram(long ctx, long shaderProgramId);
 
+
+    // ---------------------------------------------------------------------
+
+    //
+    // ImageComponent2DRetained methods
+    //
+
+    // free d3d surface referred to by id
+    abstract void freeD3DSurface(ImageComponent2DRetained image, int hashId);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // J3DBuffer methods
+    //
+
+    // Method to verify that we can access a direct NIO buffer
+    // from native code
+    boolean checkNativeBufferAccess(java.nio.Buffer buffer) {
+        // Return true by default. Pipeline can override and implement, if
+        // we decide that it is necessary.
+        return true;
+    }
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // RasterRetained methods
+    //
+
+    // Native method that does the rendering
+    abstract void executeRaster(long ctx, GeometryRetained geo,
+            boolean updateAlpha, float alpha,
+            int type, int width, int height,
+            int xSrcOffset, int ySrcOffset,
+            float x, float y, float z, byte[] image);
+
+
 }

@@ -16,7 +16,7 @@ D3dImageComponent RasterList;
 D3dImageComponent BackgroundImageList;
 
 extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_RasterRetained_execute(JNIEnv *env, 
+void JNICALL Java_javax_media_j3d_NativePipeline_executeRaster(JNIEnv *env, 
 		jobject obj, jlong ctx, jobject geo, 
                 jboolean updateAlpha, jfloat alpha,
                 jint type, jint w_raster, jint h_raster,
@@ -240,16 +240,4 @@ void JNICALL Java_javax_media_j3d_RasterRetained_execute(JNIEnv *env,
 	    }
 	}
     }
-}
-
-
-
-extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_RasterRetained_executeTiled(JNIEnv *env, 
-		jobject obj, jlong ctx, jobject geo, 
-                jint format, jint w_raster, jint h_raster,
-                jint x_offset, jint y_offset, jint deltaw, jint deltah,
-  	        jfloat x, jfloat y, jfloat z, jbyteArray tile)
-{
-    // This is is not used by both OGL and D3D
 }

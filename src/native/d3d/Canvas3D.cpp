@@ -1034,13 +1034,13 @@ void JNICALL Java_javax_media_j3d_Renderer_D3DCleanUp(
 }
 
 extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_ImageComponent2DRetained_freeD3DSurface(
+void JNICALL Java_javax_media_j3d_NativePipeline_freeD3DSurface(
     JNIEnv *env,
+    jobject obj,
     jobject image,
     jint hashCode)
 
 {
-
     lockImage();
     D3dImageComponent::remove(&RasterList, hashCode);
     unlockImage();

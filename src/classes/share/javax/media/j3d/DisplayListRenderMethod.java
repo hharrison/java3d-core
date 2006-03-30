@@ -29,8 +29,6 @@ class DisplayListRenderMethod implements RenderMethod {
      */
     int[] buffer = new int[bufferSize];
 
-    native void callDisplayLists(int size, int[] buffer);
-
     /**
      * The actual rendering code for this RenderMethod
      */
