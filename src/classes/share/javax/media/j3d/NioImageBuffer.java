@@ -17,8 +17,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-
 
 /**
  * The NioImageBuffer class is a container for an image whose DataBuffer
@@ -35,18 +33,35 @@ public class NioImageBuffer {
         /**
          * Represents an image with 8-bit RGB color components,
          * corresponding to a Windows-style BGR color model, with the
-         * colors Blue, Green, and Red stored in 3 bytes.
+         * colors Blue, Green, and Red stored in 3 consecutive
+         * bytes for each pixel.
          * The data buffer must be a ByteBuffer when using this imageType.
          */
         TYPE_3BYTE_BGR,
 
         /**
-         * Represents an image with 8-bit RGBA color components with the
-         * colors Blue, Green, and Red stored in 3 bytes and 1 byte of
-         * alpha.
+         * Represents an image with 8-bit RGB color components with
+         * Red, Green, and Blue, stored in 3 consecutive
+         * bytes for each pixel.
+         * The data buffer must be a ByteBuffer when using this imageType.
+         */
+        TYPE_3BYTE_RGB,
+
+        /**
+         * Represents an image with 8-bit RGBA color components with
+         * Alpha, Blue, Green, and Red stored in 4 consecutive
+         * bytes for each pixel.
          * The data buffer must be a ByteBuffer when using this imageType.
          */
         TYPE_4BYTE_ABGR,
+
+        /**
+         * Represents an image with 8-bit RGBA color components with
+         * Red, Green, Blue, and Alpha stored in 4 consecutive
+         * bytes for each pixel.
+         * The data buffer must be a ByteBuffer when using this imageType.
+         */
+        TYPE_4BYTE_RGBA,
 
         /**
          * Represents a unsigned byte grayscale image, non-indexed.
@@ -79,49 +94,27 @@ public class NioImageBuffer {
 
         /**
          * Not yet supported.
-         * Represents an image with 5-5-5 RGB color components (5-bits
-         * red, 5-bits green, 5-bits blue) with no alpha.
-         * The data buffer must be a ShortBuffer when using this imageType.
-         * <p>
-         * NOTE: This type is not yet supported and will throw an
-         * <code>UnsupportedOperationException</code>.
-         */
-        TYPE_USHORT_555_RGB,
-
-        /**
-         * Not yet supported.
-         * Represents an image with 5-6-5 RGB color components (5-bits
-         * red, 6-bits green, 5-bits blue) with no alpha.
-         * The data buffer must be a ShortBuffer when using this imageType.
-         * <p>
-         * NOTE: This type is not yet supported and will throw an
-         * <code>UnsupportedOperationException</code>.
-         */
-        TYPE_USHORT_565_RGB,
-
-        /**
-         * Not yet supported.
-         * Represents an image with floating-point RGB color components
-         * with the colors Blue, Green, and Red stored in 3 consecutive
+         * Represents an image with floating-point RGB color components with
+         * Red, Green, and Blue stored in 3 consecutive
          * floats for each pixel.
          * The data buffer must be a FloatBuffer when using this imageType.
          * <p>
          * NOTE: This type is not yet supported and will throw an
          * <code>UnsupportedOperationException</code>.
          */
-        TYPE_3FLOAT_BGR,
+        TYPE_3FLOAT_RGB,
 
         /**
          * Not yet supported.
          * Represents an image with floating-point RGBA color components
-         * with the colors Blue, Green, Red, and Alpha stored in 4 consecutive
+         * with Red, Green, Blue, and Alpha stored in 4 consecutive
          * floats for each pixel.
          * The data buffer must be a FloatBuffer when using this imageType.
          * <p>
          * NOTE: This type is not yet supported and will throw an
          * <code>UnsupportedOperationException</code>.
          */
-        TYPE_4FLOAT_ABGR,
+        TYPE_4FLOAT_RGBA,
 
         /**
          * Not yet supported.
@@ -140,7 +133,6 @@ public class NioImageBuffer {
      */
     enum BufferType {
         BYTE_BUFFER,
-        SHORT_BUFFER,
         INT_BUFFER,
         FLOAT_BUFFER,
     };
@@ -155,19 +147,19 @@ public class NioImageBuffer {
     // Cached buffer
     Buffer buffer;
 
-    // Type of NIO Buffer: byte, short, int, or float
+    // Type of NIO Buffer: byte, int, or float
     BufferType bufferType;
 
     // Number of bytes allocated per pixel
     int bytesPerPixel;
 
-    // Number of byte,short,int,float elements per pixel
+    // Number of byte,int,float elements per pixel
     int elementsPerPixel;
 
     /**
      * Constructs an NIO image buffer of the specified size and type.
      * A direct NIO buffer of the correct type (ByteBuffer, IntBuffer,
-     * ShortBuffer, or FloatBuffer) and size to match the input parameters
+     * or FloatBuffer) and size to match the input parameters
      * is allocated.
      *
      * @param width width of the image
@@ -178,8 +170,7 @@ public class NioImageBuffer {
      * @exception NullPointerException if imageType is null
      * @exception UnsupportedOperationException if imageType is one of the
      * currently unsupported types:
-     * TYPE_USHORT_555_RGB, TYPE_USHORT_565_RGB,
-     * TYPE_3FLOAT_BGR, TYPE_4FLOAT_ABGR, or TYPE_FLOAT_GRAY.
+     * TYPE_3FLOAT_RGB, TYPE_4FLOAT_RGBA, or TYPE_FLOAT_GRAY.
      */
     public NioImageBuffer(int width, int height, ImageType imageType) {
 
@@ -195,10 +186,6 @@ public class NioImageBuffer {
                 buffer = tmpBuffer.order(ByteOrder.nativeOrder()).asIntBuffer();
                 break;
 
-            case SHORT_BUFFER:
-                buffer = tmpBuffer.order(ByteOrder.nativeOrder()).asShortBuffer();
-                break;
-                
             case FLOAT_BUFFER:
                 buffer = tmpBuffer.order(ByteOrder.nativeOrder()).asFloatBuffer();
                 break;
@@ -220,15 +207,15 @@ public class NioImageBuffer {
      * @param height height of the image
      * @param imageType type of the image.
      * @param dataBuffer an NIO buffer of the correct type (ByteBuffer,
-     * IntBuffer, ShortBuffer, or FloatBuffer) to match the specified imageType.
+     * IntBuffer, or FloatBuffer) to match the specified imageType.
      * This constructor will create a new view of
      * the buffer, and will call <code>rewind</code> on that view,
      * such that elements 0 through <code>dataBuffer.limit()-1</code>
      * will be available internally. The number of elements in
      * the buffer must be exactly <code>width*height*numElementsPerPixel</code>,
      * where <code>numElementsPerPixel</code> is
-     * 3 for TYPE_3BYTE_BGR and TYPE_3FLOAT_BGR,
-     * 4 for TYPE_4BYTE_ABGR and TYPE_4FLOAT_ABGR,
+     * 3 for TYPE_3BYTE_BGR, TYPE_3BYTE_RGB, and TYPE_3FLOAT_RGB,
+     * 4 for TYPE_4BYTE_ABGR, TYPE_4BYTE_RGBA, and TYPE_4FLOAT_RGBA,
      * and 1 for all other types.
      *
      * @exception IllegalArgumentException if width < 1 or height < 1
@@ -242,8 +229,7 @@ public class NioImageBuffer {
      * platform.
      * @exception UnsupportedOperationException if imageType is one of the
      * currently unsupported types:
-     * TYPE_USHORT_555_RGB, TYPE_USHORT_565_RGB,
-     * TYPE_3FLOAT_BGR, TYPE_4FLOAT_ABGR, or TYPE_FLOAT_GRAY.
+     * TYPE_3FLOAT_RGB, TYPE_4FLOAT_RGBA, or TYPE_FLOAT_GRAY.
      */
     public NioImageBuffer(int width, int height, ImageType imageType,
             Buffer dataBuffer) {
@@ -286,15 +272,15 @@ public class NioImageBuffer {
      * For best performance, the NIO buffer should be a direct buffer.
      * 
      * @param dataBuffer an NIO buffer of the correct type (ByteBuffer,
-     * IntBuffer, ShortBuffer, or FloatBuffer) to match the imageType of this
+     * IntBuffer, or FloatBuffer) to match the imageType of this
      * NioImageBuffer. This method will create a new view of
      * the buffer, and will call <code>rewind</code> on that view,
      * such that elements 0 through <code>dataBuffer.limit()-1</code>
      * will be available internally. The number of elements in
      * the buffer must be exactly <code>width*height*numElementsPerPixel</code>,
      * where <code>numElementsPerPixel</code> is
-     * 3 for TYPE_3BYTE_BGR and TYPE_3FLOAT_BGR,
-     * 4 for TYPE_4BYTE_ABGR and TYPE_4FLOAT_ABGR,
+     * 3 for TYPE_3BYTE_BGR, TYPE_3BYTE_RGB, and TYPE_3FLOAT_RGB,
+     * 4 for TYPE_4BYTE_ABGR, TYPE_4BYTE_RGBA, and TYPE_4FLOAT_RGBA,
      * and 1 for all other types.
      *
      * @exception NullPointerException if dataBuffer is null
@@ -334,17 +320,6 @@ public class NioImageBuffer {
                 buffer = ((IntBuffer)dataBuffer).duplicate().rewind();
                 break;
 
-            case SHORT_BUFFER:
-                if (!(dataBuffer instanceof ShortBuffer)) {
-                    throw new IllegalArgumentException(J3dI18N.getString("NioImageBuffer4"));
-                }
-
-                if (((ShortBuffer)dataBuffer).order() != ByteOrder.nativeOrder()) {
-                    throw new IllegalArgumentException(J3dI18N.getString("NioImageBuffer5"));
-                }
-                buffer = ((ShortBuffer)dataBuffer).duplicate().rewind();
-                break;
-
             case FLOAT_BUFFER:
                 if (!(dataBuffer instanceof FloatBuffer)) {
                     throw new IllegalArgumentException(J3dI18N.getString("NioImageBuffer4"));
@@ -381,10 +356,6 @@ public class NioImageBuffer {
                 tmpBuffer = ((IntBuffer)buffer).duplicate();
                 break;
 
-            case SHORT_BUFFER:
-                tmpBuffer = ((ShortBuffer)buffer).duplicate();
-                break;
-
             case FLOAT_BUFFER:
                 tmpBuffer = ((FloatBuffer)buffer).duplicate();
                 break;
@@ -416,7 +387,19 @@ public class NioImageBuffer {
                 elementsPerPixel = 3;
                 break;
 
+            case TYPE_3BYTE_RGB:
+                bufferType = BufferType.BYTE_BUFFER;
+                bytesPerPixel = 3;
+                elementsPerPixel = 3;
+                break;
+
             case TYPE_4BYTE_ABGR:
+                bufferType = BufferType.BYTE_BUFFER;
+                bytesPerPixel = 4;
+                elementsPerPixel = 4;
+                break;
+
+            case TYPE_4BYTE_RGBA:
                 bufferType = BufferType.BYTE_BUFFER;
                 bytesPerPixel = 4;
                 elementsPerPixel = 4;
@@ -436,22 +419,14 @@ public class NioImageBuffer {
                 elementsPerPixel = 1;
                 break;
 
-            case TYPE_USHORT_555_RGB:
-            case TYPE_USHORT_565_RGB:
-                bufferType = BufferType.SHORT_BUFFER;
-                bytesPerPixel = 2;
-                elementsPerPixel = 1;
-                throw new UnsupportedOperationException(J3dI18N.getString("NioImageBuffer2"));
-//                break;
-                
-            case TYPE_3FLOAT_BGR:
+            case TYPE_3FLOAT_RGB:
                 bufferType = BufferType.FLOAT_BUFFER;
                 bytesPerPixel = 12;
                 elementsPerPixel = 3;
                 throw new UnsupportedOperationException(J3dI18N.getString("NioImageBuffer2"));
 //                break;
 
-            case TYPE_4FLOAT_ABGR:
+            case TYPE_4FLOAT_RGBA:
                 bufferType = BufferType.FLOAT_BUFFER;
                 bytesPerPixel = 16;
                 elementsPerPixel = 4;
