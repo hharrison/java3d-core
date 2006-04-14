@@ -235,19 +235,10 @@ class PolygonAttributesRetained extends NodeComponentRetained {
     /**
      * Updates the native context
      */
-    native void updateNative(long ctx,
-			     int polygonMode, int cullFace, 
-			     boolean backFaceNormalFlip, 
-			     float polygonOffset,
-			     float polygonOffsetFactor);
-
-    /**
-     * Updates the native context
-     */
     void updateNative(long ctx) {
-	updateNative(ctx, 
-		     polygonMode, cullFace, backFaceNormalFlip, 
-		     polygonOffset, polygonOffsetFactor);
+        Pipeline.getPipeline().updatePolygonAttributes(ctx,
+                polygonMode, cullFace, backFaceNormalFlip,
+                polygonOffset, polygonOffsetFactor);
     }
 
    /**

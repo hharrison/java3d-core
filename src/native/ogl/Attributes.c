@@ -218,17 +218,16 @@ const unsigned int screen_door[17][32] = {
 };
 
 
-	
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_LinearFogRetained_update(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateLinearFog(
 	JNIEnv *env,
-	jobject fog,
+	jobject obj,
 	jlong ctxInfo,
 	jfloat red,
 	jfloat green,
 	jfloat blue,
 	jdouble fdist,
-	jdouble bdist) 
+	jdouble bdist)
 {
     
     float color[3];
@@ -248,9 +247,9 @@ void JNICALL Java_javax_media_j3d_LinearFogRetained_update(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_ExponentialFogRetained_update(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateExponentialFog(
 	JNIEnv *env, 
-	jobject fog,
+	jobject obj,
 	jlong   ctxInfo,
 	jfloat red,
 	jfloat green,
@@ -274,9 +273,9 @@ void JNICALL Java_javax_media_j3d_ExponentialFogRetained_update(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_ModelClipRetained_update(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateModelClip(
 	JNIEnv *env, 
-	jobject modelClip,
+	jobject obj,
 	jlong ctxInfo,
 	jint planeNum,
 	jboolean enableFlag,
@@ -618,9 +617,9 @@ GLenum getStencilOpValue(jint op) {
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_RenderingAttributesRetained_updateNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateRenderingAttributes(
     JNIEnv *env, 
-    jobject cv,
+    jobject obj,
     jlong ctxInfo,    
     jboolean db_write_enable_override,
     jboolean db_enable_override,
@@ -769,9 +768,9 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetPolygonAttributes(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_PolygonAttributesRetained_updateNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_updatePolygonAttributes(
     JNIEnv *env, 
-    jobject cv,
+    jobject obj,
     jlong ctxInfo,
     jint polygonMode,
     jint cullFace,
@@ -852,9 +851,9 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetLineAttributes(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_LineAttributesRetained_updateNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateLineAttributes(
     JNIEnv *env, 
-    jobject cv,
+    jobject obj,
     jlong ctxInfo,
     jfloat lineWidth,
     jint linePattern,
@@ -900,9 +899,9 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetPointAttributes(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_PointAttributesRetained_updateNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_updatePointAttributes(
     JNIEnv *env, 
-    jobject cv,
+    jobject obj,
     jlong ctxInfo,
     jfloat pointSize,
     jboolean pointAntialiasing)
@@ -930,9 +929,9 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetTexCoordGeneration(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TexCoordGenerationRetained_updateNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexCoordGeneration(
     JNIEnv *env, 
-    jobject cv,
+    jobject obj,
     jlong ctxInfo,
     jboolean enable,
     jint genMode,
@@ -1110,9 +1109,9 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureAttributes(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureAttributes(
     JNIEnv *env, 
-    jobject cv,
+    jobject obj,
     jlong ctxInfo,
     jdoubleArray transform,
     jboolean isIdentity,
@@ -1215,9 +1214,9 @@ GLenum getCombinerArg(jint arg, GLenum textureUnit, GLenum combUnit) {
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNativeRegisterCombiners(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateRegisterCombiners(
     JNIEnv *env, 
-    jobject cv,
+    jobject obj,
     jlong ctxInfo,
     jdoubleArray transform,
     jboolean isIdentity,
@@ -1564,9 +1563,9 @@ jint _gl_combineFcn[] = {
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateCombinerNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateCombiner(
     JNIEnv *env, 
-    jobject cv,
+    jobject obj,
     jlong ctxProperties,
     jint combineRgbMode,
     jint combineAlphaMode,
@@ -1642,9 +1641,9 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateCombinerNative
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateTextureColorTableNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureColorTable(
 	JNIEnv *env, 
-	jobject cv,
+	jobject obj,
 	jlong ctxInfo,
 	jint numComponents,
 	jint colorTableSize,
@@ -1692,9 +1691,9 @@ void JNICALL Java_javax_media_j3d_Canvas3D_updateMaterial(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_MaterialRetained_updateNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateMaterial(
 	JNIEnv *env, 
-	jobject cv,
+	jobject obj,
 	jlong ctxInfo,	
 	jfloat colorRed,
 	jfloat colorGreen,
@@ -1787,7 +1786,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetTransparency(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TransparencyAttributesRetained_updateNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTransparencyAttributes(
     JNIEnv *env, 
     jobject tr,
     jlong ctxInfo,    
@@ -1885,7 +1884,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateColoringAttributes(
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureNative(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jint texUnitIndex)
 {
@@ -2496,9 +2495,9 @@ printf("tmpByte: %x %x %x %x\n", *(tmpByte), *(tmpByte+1),
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureRetained_bindTexture(
+void JNICALL Java_javax_media_j3d_NativePipeline_bindTexture2D(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint objectId,
     jboolean enable) 
@@ -2522,9 +2521,9 @@ void JNICALL Java_javax_media_j3d_TextureRetained_bindTexture(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilterModes(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DFilterModes(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint minFilter,
     jint magFilter)
@@ -2536,16 +2535,15 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilterModes(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureLodRange(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DLodRange(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint baseLevel, 
     jint maximumLevel,
     jfloat minimumLOD,
     jfloat maximumLOD) 
 {
-
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
     updateTextureLodRange(ctxProperties, GL_TEXTURE_2D, 
@@ -2553,10 +2551,11 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureLodRange(
 			minimumLOD, maximumLOD);
 }
 
+
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureLodOffset(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DLodOffset(
     JNIEnv *env,
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jfloat lodOffsetS,
     jfloat lodOffsetT,
@@ -2570,9 +2569,9 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureLodOffset(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureBoundary(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DBoundary(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint boundaryModeS, 
     jint boundaryModeT, 
@@ -2590,9 +2589,9 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureBoundary(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureSharpenFunc(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DSharpenFunc(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint numPts,
     jfloatArray pts)
@@ -2603,9 +2602,9 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureSharpenFunc(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilter4Func(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DFilter4Func(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint numPts,
     jfloatArray pts)
@@ -2616,9 +2615,9 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureFilter4Func(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureAnisotropicFilter(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DAnisotropicFilter(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jfloat degree)
 {
@@ -2628,9 +2627,9 @@ void JNICALL Java_javax_media_j3d_TextureRetained_updateTextureAnisotropicFilter
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture2DRetained_updateTextureSubImage(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jint level,
     jint xoffset,
@@ -2654,9 +2653,9 @@ void JNICALL Java_javax_media_j3d_Texture2DRetained_updateTextureSubImage(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture2DRetained_updateTextureImage(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint numLevels,
     jint level,
@@ -2675,9 +2674,9 @@ void JNICALL Java_javax_media_j3d_Texture2DRetained_updateTextureImage(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture2DRetained_updateDetailTextureParameters(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateDetailTextureParameters(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint mode,
     jint level,
@@ -2716,9 +2715,9 @@ void JNICALL Java_javax_media_j3d_Texture2DRetained_updateDetailTextureParameter
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_DetailTextureImage_bindTexture(
+void JNICALL Java_javax_media_j3d_NativePipeline_bindDetailTexture(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint objectId)
 {
@@ -2730,38 +2729,9 @@ void JNICALL Java_javax_media_j3d_DetailTextureImage_bindTexture(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_DetailTextureImage_updateTextureSubImage(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateDetailTextureImage(
     JNIEnv *env, 
-    jobject texture,
-    jlong ctxInfo,
-    jint level,
-    jint xoffset,
-    jint yoffset,
-    jint internalFormat, 
-    jint format,
-    jint imgXOffset,
-    jint imgYOffset,
-    jint tilew,
-    jint width, 
-    jint height,
-    jbyteArray image) {
- 
-    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
-
-    if (ctxProperties->textureDetailAvailable) {
-        updateTexture2DSubImage(env, ctxProperties, 
-				ctxProperties->texture_detail_ext_enum,
-				level, xoffset, yoffset,
-				internalFormat, format,
-				imgXOffset, imgYOffset, tilew, width, height,
-				image);
-    }
-}
-
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_DetailTextureImage_updateTextureImage(
-    JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint numLevels,
     jint level,
@@ -2783,9 +2753,9 @@ void JNICALL Java_javax_media_j3d_DetailTextureImage_updateTextureImage(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture3DRetained_bindTexture(
+void JNICALL Java_javax_media_j3d_NativePipeline_bindTexture3D(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint objectId,
     jboolean enable) 
@@ -2812,9 +2782,9 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_bindTexture(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureFilterModes(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DFilterModes(
     JNIEnv *env,
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jint minFilter,
     jint magFilter)
@@ -2828,9 +2798,9 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureFilterModes(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureLodRange(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DLodRange(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint baseLevel, 
     jint maximumLevel,
@@ -2846,9 +2816,9 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureLodRange(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureLodOffset(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DLodOffset(
     JNIEnv *env,
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jfloat lodOffsetS,
     jfloat lodOffsetT,
@@ -2862,9 +2832,9 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureLodOffset(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureBoundary(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DBoundary(
     JNIEnv *env,
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jint boundaryModeS,
     jint boundaryModeT,
@@ -2883,9 +2853,9 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureBoundary(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureSharpenFunc(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSharpenFunc(
     JNIEnv *env,
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jint numPts,
     jfloatArray pts)
@@ -2896,9 +2866,9 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureSharpenFunc(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureFilter4Func(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DFilter4Func(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint numPts,
     jfloatArray pts)
@@ -2909,9 +2879,9 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureFilter4Func(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureAnisotropicFilter(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DAnisotropicFilter(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jfloat degree)
 {
@@ -2922,9 +2892,9 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureAnisotropicFilt
 
 								       
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureImage(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jint numLevels,
     jint level,
@@ -3053,9 +3023,9 @@ void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureImage(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Texture3DRetained_updateTextureSubImage(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jint level,
     jint xoffset,
@@ -3223,9 +3193,9 @@ jint _gl_textureCubeMapFace[] = {
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_bindTexture(
+void JNICALL Java_javax_media_j3d_NativePipeline_bindTextureCubeMap(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint objectId,
     jboolean enable) 
@@ -3247,9 +3217,9 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_bindTexture(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureFilterModes(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapFilterModes(
     JNIEnv *env,
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jint minFilter,
     jint magFilter)
@@ -3266,9 +3236,9 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureFilterMode
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureLodRange(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapLodRange(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint baseLevel, 
     jint maximumLevel,
@@ -3285,9 +3255,9 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureLodRange(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureLodOffset(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapLodOffset(
     JNIEnv *env,
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jfloat lodOffsetS,
     jfloat lodOffsetT,
@@ -3302,9 +3272,9 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureLodOffset(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureBoundary(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapBoundary(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint boundaryModeS, 
     jint boundaryModeT, 
@@ -3325,9 +3295,9 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureBoundary(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureSharpenFunc(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapSharpenFunc(
     JNIEnv *env,
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jint numPts,
     jfloatArray pts)
@@ -3343,9 +3313,9 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureSharpenFun
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureFilter4Func(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapFilter4Func(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint numPts,
     jfloatArray pts)
@@ -3360,9 +3330,9 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureFilter4Fun
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureAnisotropicFilter(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapAnisotropicFilter(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jfloat degree)
 {
@@ -3376,9 +3346,9 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureAnisotropi
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureSubImage(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapSubImage(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,
     jint face,
     jint level,
@@ -3403,9 +3373,9 @@ void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureSubImage(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureCubeMapRetained_updateTextureImage(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapImage(
     JNIEnv *env, 
-    jobject texture,
+    jobject obj,
     jlong ctxInfo,    
     jint face,
     jint numLevels,
@@ -3505,9 +3475,9 @@ void JNICALL Java_javax_media_j3d_Canvas3D_updateSeparateSpecularColorEnable(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_TextureUnitStateRetained_updateTextureUnitState(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureUnitState(
     JNIEnv *env, 
-    jobject cv,
+    jobject obj,
     jlong ctxInfo,
     jint index,
     jboolean enable)

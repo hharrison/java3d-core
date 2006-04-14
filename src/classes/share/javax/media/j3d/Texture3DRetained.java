@@ -57,41 +57,81 @@ class Texture3DRetained extends TextureRetained {
     /**
      * This method updates the native context. 
      */
-    native void bindTexture(long ctx, int objectId, boolean enable);
+    void bindTexture(long ctx, int objectId, boolean enable) {
+        Pipeline.getPipeline().bindTexture3D(ctx, objectId, enable);
+    }
 
-    native void updateTextureBoundary(long ctx,
-				   int boundaryModeS, int boundaryModeT, 
-				   int boundaryModeR, float boundaryRed, 
-				   float boundaryGreen, float boundaryBlue, 
-				   float boundaryAlpha);
-					
-    native void updateTextureFilterModes(long ctx,
-                                        int minFilter, int magFilter);
+    void updateTextureBoundary(long ctx,
+            int boundaryModeS, int boundaryModeT,
+            int boundaryModeR, float boundaryRed,
+            float boundaryGreen, float boundaryBlue,
+            float boundaryAlpha) {
 
-    native void updateTextureSharpenFunc(long ctx,
-                                   int numSharpenTextureFuncPts,
-                                   float[] sharpenTextureFuncPts);
+        Pipeline.getPipeline().updateTexture3DBoundary(ctx,
+                boundaryModeS, boundaryModeT, boundaryModeR,
+                boundaryRed, boundaryGreen,
+                boundaryBlue, boundaryAlpha);
+    }
 
-    native void updateTextureFilter4Func(long ctx,
-                                   int numFilter4FuncPts,
-                                   float[] filter4FuncPts);
+    void updateTextureFilterModes(long ctx,
+            int minFilter, int magFilter) {
 
-    native void updateTextureAnisotropicFilter(long ctx, float degree);
+        Pipeline.getPipeline().updateTexture3DFilterModes(ctx,
+                minFilter, magFilter);
+    }
+
+    void updateTextureSharpenFunc(long ctx,
+            int numSharpenTextureFuncPts,
+            float[] sharpenTextureFuncPts) {
+
+        Pipeline.getPipeline().updateTexture3DSharpenFunc(ctx,
+            numSharpenTextureFuncPts, sharpenTextureFuncPts);
+    }
+
+    void updateTextureFilter4Func(long ctx,
+            int numFilter4FuncPts,
+            float[] filter4FuncPts) {
+
+        Pipeline.getPipeline().updateTexture3DFilter4Func(ctx,
+                numFilter4FuncPts, filter4FuncPts);
+    }
+
+    void updateTextureAnisotropicFilter(long ctx, float degree) {
+        Pipeline.getPipeline().updateTexture3DAnisotropicFilter(ctx, degree);
+    }
 
 
-    native void updateTextureImage(long ctx, int numLevels, int level,
-				   int format, int internalFormat, int width, 
-				   int height, int depth, 
-				   int boundaryWidth, byte[] imageYup);
 
-    native void updateTextureSubImage(long ctx, int level,
-				   int xoffset, int yoffset, int zoffset,
-				   int internalFormat, int format, 
-				   int imgXoffset, int imgYoffset, int imgZoffset,
-				   int tilew, int tileh,
-				   int width, int height, int depth, 
-				   byte[] imageYup);
+    // Wrapper around the native call for 3D textures
+    void updateTextureImage(Canvas3D cv,
+            int face, int numLevels, int level,
+            int internalFormat, int storedFormat,
+            int width, int height, int depth,
+            int boundaryWidth, byte[] imageData) {
 
+        Pipeline.getPipeline().updateTexture3DImage(cv.ctx,
+                numLevels, level,
+                internalFormat, storedFormat,
+                width, height, depth,
+                boundaryWidth, imageData);
+    }
+
+    // Wrapper around the native call for 3D textures
+    void updateTextureSubImage(Canvas3D cv,
+            int face, int level,
+            int xoffset, int yoffset, int zoffset,
+            int internalFormat, int storedFormat,
+            int imgXOffset, int imgYOffset, int imgZOffset,
+            int tilew, int tileh, int width, int height, int depth,
+            byte[] imageData) {
+
+        Pipeline.getPipeline().updateTexture3DSubImage(cv.ctx,
+                level, xoffset, yoffset, zoffset,
+                internalFormat, storedFormat,
+                imgXOffset, imgYOffset, imgZOffset,
+                tilew, tileh, width, height, depth,
+                imageData);
+    }
 
     // get an ID for Texture3D 
 
@@ -116,18 +156,33 @@ class Texture3DRetained extends TextureRetained {
     // mipmapping when level 0 is not the base level
 
     void updateTextureDimensions(Canvas3D cv) {
-        updateTextureImage(cv.ctx, maxLevels, 0,
+        updateTextureImage(cv, maxLevels, 0, 0,
                 format, ImageComponentRetained.BYTE_RGBA,
                 width, height, depth, boundaryWidth, null);
     }
 
 
     void updateTextureBoundary(Canvas3D cv) {
-	updateTextureBoundary(cv.ctx, 
-			boundaryModeS, boundaryModeT, boundaryModeR,
-			boundaryColor.x, boundaryColor.y,
-			boundaryColor.z, boundaryColor.w);
-		
+        updateTextureBoundary(cv.ctx,
+                boundaryModeS, boundaryModeT, boundaryModeR,
+                boundaryColor.x, boundaryColor.y,
+                boundaryColor.z, boundaryColor.w);
+    }
+
+    void updateTextureLodRange(long ctx,
+            int baseLevel, int maximumLevel,
+            float minimumLod, float maximumLod) {
+
+        Pipeline.getPipeline().updateTexture3DLodRange(ctx, baseLevel, maximumLevel,
+                minimumLod, maximumLod);
+    }
+
+    void updateTextureLodOffset(long ctx,
+            float lodOffsetX, float lodOffsetY,
+            float lodOffsetZ) {
+
+        Pipeline.getPipeline().updateTexture3DLodOffset(ctx,
+                lodOffsetX, lodOffsetY, lodOffsetZ);
     }
 
     void reloadTextureImage(Canvas3D cv, int face, int level,
@@ -141,11 +196,11 @@ class Texture3DRetained extends TextureRetained {
 */
 
 
-        updateTextureImage(cv.ctx,  numLevels, level, format,
-                                image.storedYupFormat,
-                                image.width, image.height, depth,
-				boundaryWidth, image.imageYup);
-
+        updateTextureImage(cv,
+                0, numLevels, level, format,
+                image.storedYupFormat,
+                image.width, image.height, depth,
+                boundaryWidth, image.imageYup);
     }
 
     void reloadTextureSubImage(Canvas3D cv, int level, int face,
@@ -160,11 +215,12 @@ class Texture3DRetained extends TextureRetained {
         int xoffset = x - image.minX;
         int yoffset = y - image.minY;
 
-        updateTextureSubImage(cv.ctx, level, xoffset, yoffset, z,
-				format, image.storedYupFormat, 
-				xoffset, yoffset, z, 
-				image.width, image.height, 
-				width, height, 1, image.imageYup);
+        updateTextureSubImage(cv,
+                0, level, xoffset, yoffset, z,
+                format, image.storedYupFormat,
+                xoffset, yoffset, z,
+                image.width, image.height,
+                width, height, 1, image.imageYup);
     }
 
 

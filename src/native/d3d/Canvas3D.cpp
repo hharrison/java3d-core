@@ -231,10 +231,10 @@ jboolean JNICALL Java_javax_media_j3d_Canvas3D_initTexturemapping(
 						   objectId);
     }
 
-    Java_javax_media_j3d_TextureRetained_bindTexture(
+    Java_javax_media_j3d_NativePipeline_bindTexture2D(
 	 env, texture, ctx, objectId, TRUE);
 
-     Java_javax_media_j3d_TextureRetained_updateTextureImage(
+     Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
          env, texture, ctx, 1, 0, J3D_RGBA, 0, texWidth, texHeight, 0, NULL);
      
      return (d3dCtx->textureTable[objectId] != NULL);
@@ -263,11 +263,11 @@ void JNICALL Java_javax_media_j3d_Canvas3D_texturemapping(
 {
     GetDevice();
 
-    Java_javax_media_j3d_TextureRetained_bindTexture(
+    Java_javax_media_j3d_NativePipeline_bindTexture2D(
 	 env, texture, ctx, objectId, TRUE);
 
 
-    Java_javax_media_j3d_Texture2DRetained_updateTextureSubImage(
+    Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
          env, texture, ctx, 0, minX, minY, J3D_RGBA, format,
 	 minX, minY, rasWidth, maxX-minX, maxY-minY, imageYdown);
 
@@ -312,7 +312,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_texturemapping(
 		    minX, minY, maxX, maxY,
 		    maxX - minX, maxY - minY, false); 
 
-    Java_javax_media_j3d_TextureRetained_bindTexture(
+    Java_javax_media_j3d_NativePipeline_bindTexture2D(
 	 env, texture, ctx, objectId, FALSE);
 
     device->SetRenderState(D3DRS_ALPHABLENDENABLE, blendEnable);

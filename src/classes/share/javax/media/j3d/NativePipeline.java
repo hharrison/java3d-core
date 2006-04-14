@@ -788,4 +788,354 @@ class NativePipeline extends Pipeline {
             float dz);
 
 
+    // ---------------------------------------------------------------------
+
+    //
+    // ExponentialFogRetained methods
+    //
+
+    native void updateExponentialFog(long ctx,
+            float red, float green, float blue,
+            float density);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // LinearFogRetained methods
+    //
+
+    native void updateLinearFog(long ctx,
+            float red, float green, float blue,
+            double fdist, double bdist);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // LineAttributesRetained methods
+    //
+
+    native void updateLineAttributes(long ctx,
+            float lineWidth, int linePattern,
+            int linePatternMask,
+            int linePatternScaleFactor,
+            boolean lineAntialiasing);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // MaterialRetained methods
+    //
+
+    native void updateMaterial(long ctx,
+            float red, float green, float blue, float alpha,
+            float ared, float agreen, float ablue,
+            float ered, float egreen, float eblue,
+            float dred, float dgreen, float dblue,
+            float sred, float sgreen, float sblue,
+            float shininess, int colorTarget, boolean enable);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // ModelClipRetained methods
+    //
+
+    native void updateModelClip(long ctx, int planeNum, boolean enableFlag,
+            double A, double B, double C, double D);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // PointAttributesRetained methods
+    //
+
+    native void updatePointAttributes(long ctx, float pointSize, boolean pointAntialiasing);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // PolygonAttributesRetained methods
+    //
+
+    native void updatePolygonAttributes(long ctx,
+            int polygonMode, int cullFace,
+            boolean backFaceNormalFlip,
+            float polygonOffset,
+            float polygonOffsetFactor);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // RenderingAttributesRetained methods
+    //
+
+    // TODO : Need to handle stencil operation on the native side -- Chien
+    native void updateRenderingAttributes(long ctx,
+            boolean depthBufferWriteEnableOverride,
+            boolean depthBufferEnableOverride,
+            boolean depthBufferEnable,
+            boolean depthBufferWriteEnable,
+            int depthTestFunction,
+            float alphaTestValue, int alphaTestFunction,
+            boolean ignoreVertexColors,
+            boolean rasterOpEnable, int rasterOp,
+            boolean userStencilAvailable, boolean stencilEnable,
+            int stencilFailOp, int stencilZFailOp, int stencilZPassOp,
+            int stencilFunction, int stencilReferenceValue,
+            int stencilCompareMask, int stencilWriteMask );
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // TexCoordGenerationRetained methods
+    //
+
+   /**
+    * This method updates the native context:
+    * trans contains eyeTovworld transform in d3d
+    * trans contains vworldToEye transform in ogl
+    */
+    native void updateTexCoordGeneration(long ctx,
+            boolean enable, int genMode, int format,
+            float planeSx, float planeSy, float planeSz, float planeSw,
+            float planeTx, float planeTy, float planeTz, float planeTw,
+            float planeRx, float planeRy, float planeRz, float planeRw,
+            float planeQx, float planeQy, float planeQz, float planeQw,
+            double[] trans);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // TransparencyAttributesRetained methods
+    //
+
+    native void updateTransparencyAttributes(long ctx,
+            float alpha, int geometryType,
+            int polygonMode,
+            boolean lineAA, boolean pointAA,
+            int transparencyMode,
+            int srcBlendFunction,
+            int dstBlendFunction);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // TextureAttributesRetained methods
+    //
+
+    native void updateTextureAttributes(long ctx,
+            double[] transform, boolean isIdentity, int textureMode,
+            int perspCorrectionMode, float red,
+            float green, float blue, float alpha,
+            int textureFormat);
+
+    native void updateRegisterCombiners(long ctx,
+            double[] transform, boolean isIdentity, int textureMode,
+            int perspCorrectionMode, float red,
+            float green, float blue, float alpha,
+            int textureFormat,
+            int combineRgbMode, int combineAlphaMode,
+            int[] combineRgbSrc, int[] combineAlphaSrc,
+            int[] combineRgbFcn, int[] combineAlphaFcn,
+            int combineRgbScale, int combineAlphaScale);
+
+    native void updateTextureColorTable(long ctx, int numComponents,
+            int colorTableSize,
+            int[] colorTable);
+
+    native void updateCombiner(long ctx,
+            int combineRgbMode, int combineAlphaMode,
+            int[] combineRgbSrc, int[] combineAlphaSrc,
+            int[] combineRgbFcn, int[] combineAlphaFcn,
+            int combineRgbScale, int combineAlphaScale);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // TextureUnitStateRetained methods
+    //
+
+    native void updateTextureUnitState(long ctx, int unitIndex, boolean enableFlag);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // TextureRetained methods
+    // Texture2DRetained methods
+    //
+
+    native void bindTexture2D(long ctx, int objectId, boolean enable);
+
+    native void updateTexture2DImage(long ctx,
+            int numLevels, int level,
+            int internalFormat, int storedFormat,
+            int width, int height,
+            int boundaryWidth,
+            byte[] imageData);
+
+    native void updateTexture2DSubImage(long ctx,
+            int level, int xoffset, int yoffset,
+            int internalFormat, int storedFormat,
+            int imgXOffset, int imgYOffset,
+            int tilew, int width, int height,
+            byte[] imageData);
+
+    native void updateTexture2DLodRange(long ctx,
+            int baseLevel, int maximumLevel,
+            float minimumLod, float maximumLod);
+
+    native void updateTexture2DLodOffset(long ctx,
+            float lodOffsetX, float lodOffsetY,
+            float lodOffsetZ);
+
+    native void updateTexture2DBoundary(long ctx,
+            int boundaryModeS, int boundaryModeT,
+            float boundaryRed, float boundaryGreen,
+            float boundaryBlue, float boundaryAlpha);
+
+    native void updateDetailTextureParameters(long ctx,
+            int detailTextureMode,
+            int detailTextureLevel,
+            int nPts, float[] pts);
+
+    native void updateTexture2DFilterModes(long ctx,
+            int minFilter, int magFilter);
+
+    native void updateTexture2DSharpenFunc(long ctx,
+            int numSharpenTextureFuncPts,
+            float[] sharpenTextureFuncPts);
+
+    native void updateTexture2DFilter4Func(long ctx,
+            int numFilter4FuncPts,
+            float[] filter4FuncPts);
+
+    native void updateTexture2DAnisotropicFilter(long ctx, float degree);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // Texture3DRetained methods
+    //
+
+    native void bindTexture3D(long ctx, int objectId, boolean enable);
+
+    native void updateTexture3DImage(long ctx,
+            int numLevels, int level,
+            int internalFormat, int storedFormat,
+            int width, int height, int depth,
+            int boundaryWidth,
+            byte[] imageData);
+
+    native void updateTexture3DSubImage(long ctx,
+            int level,
+            int xoffset, int yoffset, int zoffset,
+            int internalFormat, int storedFormat,
+            int imgXoffset, int imgYoffset, int imgZoffset,
+            int tilew, int tileh,
+            int width, int height, int depth,
+            byte[] imageData);
+
+    native void updateTexture3DLodRange(long ctx,
+            int baseLevel, int maximumLevel,
+            float minimumLod, float maximumLod);
+
+    native void updateTexture3DLodOffset(long ctx,
+            float lodOffsetX, float lodOffsetY,
+            float lodOffsetZ);
+
+    native void updateTexture3DBoundary(long ctx,
+            int boundaryModeS, int boundaryModeT,
+            int boundaryModeR, float boundaryRed,
+            float boundaryGreen, float boundaryBlue,
+            float boundaryAlpha);
+
+    native void updateTexture3DFilterModes(long ctx,
+            int minFilter, int magFilter);
+
+    native void updateTexture3DSharpenFunc(long ctx,
+            int numSharpenTextureFuncPts,
+            float[] sharpenTextureFuncPts);
+
+    native void updateTexture3DFilter4Func(long ctx,
+            int numFilter4FuncPts,
+            float[] filter4FuncPts);
+
+    native void updateTexture3DAnisotropicFilter(long ctx, float degree);
+
+
+    // ---------------------------------------------------------------------
+
+    //
+    // TextureCubeMapRetained methods
+    //
+
+    native void bindTextureCubeMap(long ctx, int objectId, boolean enable);
+
+    native void updateTextureCubeMapImage(long ctx,
+            int face, int numLevels, int level,
+            int internalFormat, int storedFormat,
+            int width, int height,
+            int boundaryWidth,
+            byte[] imageData);
+
+    native void updateTextureCubeMapSubImage(long ctx,
+            int face, int level, int xoffset, int yoffset,
+            int internalFormat,int storedFormat,
+            int imgXOffset, int imgYOffset,
+            int tilew, int width, int height,
+            byte[] imageData);
+
+    native void updateTextureCubeMapLodRange(long ctx,
+            int baseLevel, int maximumLevel,
+            float minimumLod, float maximumLod);
+
+    native void updateTextureCubeMapLodOffset(long ctx,
+            float lodOffsetX, float lodOffsetY,
+            float lodOffsetZ);
+
+    native void updateTextureCubeMapBoundary(long ctx,
+            int boundaryModeS, int boundaryModeT,
+            float boundaryRed, float boundaryGreen,
+            float boundaryBlue, float boundaryAlpha);
+
+    native void updateTextureCubeMapFilterModes(long ctx,
+            int minFilter, int magFilter);
+
+    native void updateTextureCubeMapSharpenFunc(long ctx,
+            int numSharpenTextureFuncPts,
+            float[] sharpenTextureFuncPts);
+
+    native void updateTextureCubeMapFilter4Func(long ctx,
+            int numFilter4FuncPts,
+            float[] filter4FuncPts);
+
+    native void updateTextureCubeMapAnisotropicFilter(long ctx, float degree);
+
+
+    //
+    // DetailTextureImage methods
+    //
+
+    native void bindDetailTexture(long ctx, int objectId);
+
+    native void updateDetailTextureImage(long ctx,
+            int numLevels, int level,
+            int format, int storedFormat,
+            int width, int height,
+            int boundaryWidth, byte[] data);
+
+
 }

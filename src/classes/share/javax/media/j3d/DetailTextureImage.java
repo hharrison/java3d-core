@@ -39,14 +39,6 @@ class DetailTextureImage extends Object {
 	image = img;
     }
 
-    native void bindTexture(long ctx, int objectId);
-
-    native void updateTextureImage(long ctx,
-                                int numLevels, int level,
-                                int format, int storedFormat,
-                                int width, int height, 
-				int boundaryWidth, byte[] data);
-
 
     synchronized void incTextureBinRefCount(int format, TextureBin tb) {
 	if (refCount == null) {
@@ -162,7 +154,7 @@ class DetailTextureImage extends Object {
 	    cv.addTextureResource(objectIds[format], this);
 	}
 
- 	bindTexture(cv.ctx, objectIds[format]);
+ 	Pipeline.getPipeline().bindDetailTexture(cv.ctx, objectIds[format]);
     }
 
 
@@ -194,8 +186,9 @@ class DetailTextureImage extends Object {
 
         if (reloadTexture) {
 
-	    updateTextureImage(cv.ctx, 1, 0, format, image.storedYupFormat,
-			image.width, image.height, 0, image.imageYup);
+            Pipeline.getPipeline().updateDetailTextureImage(cv.ctx,
+                    1, 0, format, image.storedYupFormat,
+                    image.width, image.height, 0, image.imageYup);
 
 
 	    // Rendered image

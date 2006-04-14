@@ -1015,52 +1015,69 @@ abstract class TextureRetained extends NodeComponentRetained {
 	}
     }
 
-    // Simply pass along to the NodeComponents
-    /**
-     * This method updates the native context.  The implementation for 2D
-     * texture mapping happens here.  Texture3D implements its own version
-     * of this.
+    /*
+     * The following methods update the native context.
+     * The implementation for Texture2D happens here.
+     * Texture3D and TextureCubeMap implement their own versions.
      */
-    native void bindTexture(long ctx, int objectId, boolean enable);
 
-    native void updateTextureFilterModes(long ctx, 
-					int minFilter, int magFilter);
+    void bindTexture(long ctx, int objectId, boolean enable) {
+        Pipeline.getPipeline().bindTexture2D(ctx, objectId, enable);
+    }
 
-    native void updateTextureLodRange(long ctx,
-				   int baseLevel, int maximumLevel,
-				   float minimumLod, float maximumLod);
+    void updateTextureBoundary(long ctx,
+            int boundaryModeS, int boundaryModeT,
+            float boundaryRed, float boundaryGreen,
+            float boundaryBlue, float boundaryAlpha) {
 
-    native void updateTextureLodOffset(long ctx,
-				   float lodOffsetX, float lodOffsetY,
-				   float lodOffsetZ);
+        Pipeline.getPipeline().updateTexture2DBoundary(ctx,
+                boundaryModeS, boundaryModeT,
+                boundaryRed, boundaryGreen,
+                boundaryBlue, boundaryAlpha);
+    }
 
+    void updateTextureFilterModes(long ctx,
+            int minFilter, int magFilter) {
 
-    native void updateTextureBoundary(long ctx, 
-				   int boundaryModeS, int boundaryModeT, 
-				   float boundaryRed, float boundaryGreen, 
-				   float boundaryBlue, float boundaryAlpha);
+        Pipeline.getPipeline().updateTexture2DFilterModes(ctx,
+                minFilter, magFilter);
+    }
 
-    native void updateTextureSharpenFunc(long ctx,
-				   int numSharpenTextureFuncPts,
-				   float[] sharpenTextureFuncPts);
+    void updateTextureSharpenFunc(long ctx,
+            int numSharpenTextureFuncPts,
+            float[] sharpenTextureFuncPts) {
 
-    native void updateTextureFilter4Func(long ctx,
-				   int numFilter4FuncPts,
-				   float[] filter4FuncPts);
+        Pipeline.getPipeline().updateTexture2DSharpenFunc(ctx,
+            numSharpenTextureFuncPts, sharpenTextureFuncPts);
+    }
 
-    native void updateTextureAnisotropicFilter(long ctx, float degree);
+    void updateTextureFilter4Func(long ctx,
+            int numFilter4FuncPts,
+            float[] filter4FuncPts) {
 
-    native void updateTextureImage(long ctx, 
-				int numLevels, int level,
-                                int format, int storedFormat,
-                                int width, int height, 
-				int boundaryWidth, byte[] data);
+        Pipeline.getPipeline().updateTexture2DFilter4Func(ctx,
+                numFilter4FuncPts, filter4FuncPts);
+    }
 
-    native void updateTextureSubImage(long ctx, int level,
-                                int xoffset, int yoffset, int format,
-                                int storedFormat, int imgXOffset,
-                                int imgYOffset, int tileWidth,
-                                int width, int height, byte[] data);
+    void updateTextureAnisotropicFilter(long ctx, float degree) {
+        Pipeline.getPipeline().updateTexture2DAnisotropicFilter(ctx, degree);
+    }
+
+    void updateTextureLodRange(long ctx,
+            int baseLevel, int maximumLevel,
+            float minimumLod, float maximumLod) {
+
+        Pipeline.getPipeline().updateTexture2DLodRange(ctx, baseLevel, maximumLevel,
+                minimumLod, maximumLod);
+    }
+
+    void updateTextureLodOffset(long ctx,
+            float lodOffsetX, float lodOffsetY,
+            float lodOffsetZ) {
+
+        Pipeline.getPipeline().updateTexture2DLodOffset(ctx,
+                lodOffsetX, lodOffsetY, lodOffsetZ);
+    }
 
 
     // get an ID for Texture 2D 
@@ -1098,23 +1115,23 @@ abstract class TextureRetained extends NodeComponentRetained {
      * mipmapping when level 0 is not the base level
      */
     void updateTextureDimensions(Canvas3D cv) {
-	updateTextureImage(cv.ctx, maxLevels, 0, 
+	updateTextureImage(cv, 0, maxLevels, 0, 
 		format, ImageComponentRetained.BYTE_RGBA,
-		width, height, boundaryWidth, null);
+		width, height, 0, boundaryWidth, null);
     }
-
+    
 
     void updateTextureLOD(Canvas3D cv) {
 
 	if ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_LOD_RANGE) != 0 ) {
-	    updateTextureLodRange(cv.ctx, baseLevel, maximumLevel,
-				minimumLod, maximumLod);
+            updateTextureLodRange(cv.ctx, baseLevel, maximumLevel,
+                    minimumLod, maximumLod);
 	}
 
-	if ((lodOffset != null) &&
-	    ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_LOD_OFFSET) != 0)) {
-	    updateTextureLodOffset(cv.ctx, 
-					lodOffset.x, lodOffset.y, lodOffset.z);
+        if ((lodOffset != null) &&
+                ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_LOD_OFFSET) != 0)) {
+            updateTextureLodOffset(cv.ctx,
+                    lodOffset.x, lodOffset.y, lodOffset.z);
 	}
     }
 
@@ -1216,35 +1233,36 @@ abstract class TextureRetained extends NodeComponentRetained {
     }
 
 
+    // Wrapper around the native call for 2D textures; overridden for
+    // Texture3D and TextureCureMap
+    void updateTextureImage(Canvas3D cv,
+            int face, int numLevels, int level,
+            int internalFormat, int storedFormat,
+            int width, int height, int depth,
+            int boundaryWidth, byte[] imageData) {
 
-    // wrapper of the native call
-
-    void updateTextureImage(Canvas3D cv, int face, 
-				int numLevels, int level,
-                                int format, int storedFormat,
-                                int width, int height, 
-				int boundaryWidth, byte[] data) {
-
-        updateTextureImage(cv.ctx, maxLevels, level,
-                                format, storedFormat,
-                                width, height, boundaryWidth, data);
+        Pipeline.getPipeline().updateTexture2DImage(cv.ctx,
+                numLevels, level,
+                internalFormat, storedFormat,
+                width, height, boundaryWidth, imageData);
     }
 
+    // Wrapper around the native call for 2D textures; overridden for
+    // Texture3D and TextureCureMap
+    void updateTextureSubImage(Canvas3D cv,
+            int face, int level,
+            int xoffset, int yoffset, int zoffset,
+            int internalFormat, int storedFormat,
+            int imgXOffset, int imgYOffset, int imgZOffset,
+            int tilew, int tileh, int width, int height, int depth,
+            byte[] imageData) {
 
-
-    // wrapper of the native call
-
-    void updateTextureSubImage(Canvas3D cv, int face, int level,
-                                int xoffset, int yoffset, int format,
-                                int storedFormat, int imgXOffset,
-                                int imgYOffset, int tileWidth,
-                                int width, int height, byte[] data) {
-
-        updateTextureSubImage(cv.ctx, level,
-                                xoffset, yoffset, format,
-                                storedFormat, imgXOffset,
-                                imgYOffset, tileWidth,
-                                width, height, data);
+        Pipeline.getPipeline().updateTexture2DSubImage(cv.ctx,
+                level, xoffset, yoffset,
+                internalFormat, storedFormat,
+                imgXOffset, imgYOffset,
+                tilew, width, height,
+                imageData);
     }
 
 
@@ -1263,10 +1281,11 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	//System.out.println("....imageYupAllocated= " + image.imageYupAllocated);
 
-	updateTextureImage(cv,  face, numLevels, level, format, 
-				image.storedYupFormat,
-				image.width, image.height, 
-				boundaryWidth, image.imageYup);
+        updateTextureImage(cv,
+                face, numLevels, level,
+                format, image.storedYupFormat,
+                image.width, image.height, 0,
+                boundaryWidth, image.imageYup);
 
 	// Now take care of the RenderedImage case. Note, if image
 	// is a RenderedImage, then imageYup will be null
@@ -1304,13 +1323,13 @@ abstract class TextureRetained extends NodeComponentRetained {
 		    java.awt.image.Raster ras;
 		    ras = image.bImage[0].getTile(n,m);
 		    byte[] tmpImage =  ((DataBufferByte)ras.getDataBuffer()).getData();
-		    updateTextureSubImage(cv, face,
-					level, xoffset, yoffset, format,
-					image.storedYupFormat,
-					imageXOffset, imageYOffset,
-					image.tilew,
-					curw, curh,
-					tmpImage);
+                    updateTextureSubImage(cv, face,
+                            level, xoffset, yoffset, 0, format,
+                            image.storedYupFormat,
+                            imageXOffset, imageYOffset, 0,
+                            image.tilew, 0,
+                            curw, curh, 0,
+                            tmpImage);
 	  	    xoffset += curw;
 	  	    imageXOffset = 0;
 		    tmpw -= curw;
@@ -1376,11 +1395,11 @@ abstract class TextureRetained extends NodeComponentRetained {
 		}
 	    }
 
-	    updateTextureSubImage(cv, face, level, 
-				xoffset, yoffset,
-				format, image.storedYupFormat, 
-				xoffset, yoffset,
-				image.width, width, height, imageData);
+            updateTextureSubImage(cv, face, level,
+                    xoffset, yoffset, 0,
+                    format, image.storedYupFormat,
+                    xoffset, yoffset, 0,
+                    image.width, 0, width, height, 0, imageData);
 	} else {
 
 	    // System.out.println("RenderedImage subImage update");
@@ -1481,11 +1500,11 @@ abstract class TextureRetained extends NodeComponentRetained {
 		    ras = image.bImage[0].getTile(xTile, yTile);
 		    imageData = ((DataBufferByte)ras.getDataBuffer()).getData();
 
-		    updateTextureSubImage(cv, face, level, 
-			textureX, textureY,
-			format, image.storedYupFormat,
-			imgX, imgY, image.tilew, curw, curh, imageData);
-
+                    updateTextureSubImage(cv, face, level,
+                            textureX, textureY, 0,
+                            format, image.storedYupFormat,
+                            imgX, imgY, 0,
+                            image.tilew, 0, curw, curh, 0, imageData);
 
                     // move to the next tile in x direction
 

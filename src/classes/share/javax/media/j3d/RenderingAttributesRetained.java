@@ -491,28 +491,13 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      * Updates the native context.
      */
 
-    // TODO : Need to handle stencil operation on the native side -- Chien
-    native void updateNative(long ctx,
-			     boolean depthBufferWriteEnableOverride,
-                             boolean depthBufferEnableOverride,
-			     boolean depthBufferEnable, 
-			     boolean depthBufferWriteEnable,
-                             int depthTestFunction,
-			     float alphaTestValue, int alphaTestFunction,
-			     boolean ignoreVertexColors,
-			     boolean rasterOpEnable, int rasterOp,
-			     boolean userStencilAvailable, boolean stencilEnable, 
-			     int stencilFailOp, int stencilZFailOp, int stencilZPassOp,
-			     int stencilFunction, int stencilReferenceValue, 
-			     int stencilCompareMask, int stencilWriteMask );
-
     /**
      * Updates the native context.
      */
     void updateNative(Canvas3D c3d,
 		      boolean depthBufferWriteEnableOverride,
                       boolean depthBufferEnableOverride) {
-	updateNative(c3d.ctx, 
+	Pipeline.getPipeline().updateRenderingAttributes(c3d.ctx, 
 		     depthBufferWriteEnableOverride, depthBufferEnableOverride,
 		     depthBufferEnable, depthBufferWriteEnable,  depthTestFunction,
                      alphaTestValue, alphaTestFunction, ignoreVertexColors,

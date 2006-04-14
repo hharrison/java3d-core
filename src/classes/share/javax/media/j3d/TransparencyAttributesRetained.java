@@ -215,22 +215,11 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
 	}
     }
 
-    /**
-     * These two native methods update the native context.
-     */
-    native void updateNative(long ctx,
-			     float alpha, int geometryType,
-			     int polygonMode, 
-			     boolean lineAA, boolean pointAA,
-			     int transparencyMode,
-			     int srcBlendFunction,
-			     int dstBlendFunction);
-
     void updateNative(long ctx,
 		      float alpha, int geometryType, int polygonMode, 
 		      boolean lineAA, 
 		      boolean pointAA) { 
-	updateNative(ctx, alpha, geometryType, polygonMode, 
+	Pipeline.getPipeline().updateTransparencyAttributes(ctx, alpha, geometryType, polygonMode, 
 		     lineAA, pointAA, transparencyMode, 
 		     srcBlendFunction, dstBlendFunction);
     }

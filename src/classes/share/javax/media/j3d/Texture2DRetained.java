@@ -270,59 +270,6 @@ class Texture2DRetained extends TextureRetained {
 	}
     }
 
-
-
-    native void bindDetailTexture(long ctx, int objectId);
-
-    native void updateTextureImage(long ctx,
-                                   int numLevels,
-                                   int level,
-                                   int internalFormat, int format, 
-				   int width, int height, 
-				   int boundaryWidth, byte[] imageYup);
-
-    native void updateTextureSubImage(long ctx,
-                                      int level, int xoffset, int yoffset,
-                                      int internalFormat,int format,
-                                      int imgXOffset, int imgYOffset,
-                                      int tilew,
-                                      int width, int height,
-                                      byte[] image);
-
-    native void updateDetailTextureParameters(long ctx, 
-					int detailTextureMode,
-					int detailTextureLevel, 
-					int nPts, float[] pts);
-    // wrapper to the native call
-
-    void updateTextureImage(Canvas3D cv, int face, 
-				int numLevels, int level,
-                                int format, int storedFormat,
-                                int width, int height, 
-				int boundaryWidth, 
-				byte[] data) {
-
-        updateTextureImage(cv.ctx,  numLevels, level, format,
-                                storedFormat, width, height, 
-				boundaryWidth, data);
-    }
-
-
-
-    // wrapper to the native call
-
-    void updateTextureSubImage(Canvas3D cv, int face, int level,
-                                int xoffset, int yoffset, int format,
-                                int storedFormat, int imgXOffset,
-                                int imgYOffset, int tileWidth,
-                                int width, int height, byte[] data) {
-
-        updateTextureSubImage(cv.ctx, level, xoffset, yoffset, format,
-                                storedFormat, imgXOffset, imgYOffset,
-                                tileWidth, width, height, data);
-    }
-
-
     void updateNative(Canvas3D cv) {
 
 	// update mipmap texture
@@ -348,10 +295,12 @@ class Texture2DRetained extends TextureRetained {
 
 	if (detailTexture != null) {
 	    
-	    updateDetailTextureParameters(cv.ctx, detailTextureMode,
-		detailTextureLevel, numDetailTextureFuncPts, 
-		detailTextureFuncPts);
+            Pipeline.getPipeline().updateDetailTextureParameters(cv.ctx,
+                    detailTextureMode,
+                    detailTextureLevel, numDetailTextureFuncPts,
+                    detailTextureFuncPts);
 	}
     }
+
 }
 
