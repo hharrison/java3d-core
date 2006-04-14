@@ -1117,7 +1117,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     void updateTextureDimensions(Canvas3D cv) {
 	updateTextureImage(cv, 0, maxLevels, 0, 
 		format, ImageComponentRetained.BYTE_RGBA,
-		width, height, 0, boundaryWidth, null);
+		width, height, boundaryWidth, null);
     }
     
 
@@ -1238,7 +1238,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     void updateTextureImage(Canvas3D cv,
             int face, int numLevels, int level,
             int internalFormat, int storedFormat,
-            int width, int height, int depth,
+            int width, int height,
             int boundaryWidth, byte[] imageData) {
 
         Pipeline.getPipeline().updateTexture2DImage(cv.ctx,
@@ -1251,10 +1251,10 @@ abstract class TextureRetained extends NodeComponentRetained {
     // Texture3D and TextureCureMap
     void updateTextureSubImage(Canvas3D cv,
             int face, int level,
-            int xoffset, int yoffset, int zoffset,
+            int xoffset, int yoffset,
             int internalFormat, int storedFormat,
-            int imgXOffset, int imgYOffset, int imgZOffset,
-            int tilew, int tileh, int width, int height, int depth,
+            int imgXOffset, int imgYOffset,
+            int tilew, int width, int height,
             byte[] imageData) {
 
         Pipeline.getPipeline().updateTexture2DSubImage(cv.ctx,
@@ -1284,7 +1284,7 @@ abstract class TextureRetained extends NodeComponentRetained {
         updateTextureImage(cv,
                 face, numLevels, level,
                 format, image.storedYupFormat,
-                image.width, image.height, 0,
+                image.width, image.height,
                 boundaryWidth, image.imageYup);
 
 	// Now take care of the RenderedImage case. Note, if image
@@ -1324,11 +1324,11 @@ abstract class TextureRetained extends NodeComponentRetained {
 		    ras = image.bImage[0].getTile(n,m);
 		    byte[] tmpImage =  ((DataBufferByte)ras.getDataBuffer()).getData();
                     updateTextureSubImage(cv, face,
-                            level, xoffset, yoffset, 0, format,
+                            level, xoffset, yoffset, format,
                             image.storedYupFormat,
-                            imageXOffset, imageYOffset, 0,
-                            image.tilew, 0,
-                            curw, curh, 0,
+                            imageXOffset, imageYOffset,
+                            image.tilew,
+                            curw, curh,
                             tmpImage);
 	  	    xoffset += curw;
 	  	    imageXOffset = 0;
@@ -1396,10 +1396,10 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    }
 
             updateTextureSubImage(cv, face, level,
-                    xoffset, yoffset, 0,
+                    xoffset, yoffset,
                     format, image.storedYupFormat,
-                    xoffset, yoffset, 0,
-                    image.width, 0, width, height, 0, imageData);
+                    xoffset, yoffset,
+                    image.width, width, height, imageData);
 	} else {
 
 	    // System.out.println("RenderedImage subImage update");
@@ -1501,10 +1501,10 @@ abstract class TextureRetained extends NodeComponentRetained {
 		    imageData = ((DataBufferByte)ras.getDataBuffer()).getData();
 
                     updateTextureSubImage(cv, face, level,
-                            textureX, textureY, 0,
+                            textureX, textureY,
                             format, image.storedYupFormat,
-                            imgX, imgY, 0,
-                            image.tilew, 0, curw, curh, 0, imageData);
+                            imgX, imgY,
+                            image.tilew, curw, curh, imageData);
 
                     // move to the next tile in x direction
 

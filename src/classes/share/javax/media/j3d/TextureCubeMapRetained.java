@@ -285,7 +285,7 @@ class TextureCubeMapRetained extends TextureRetained {
 	for (int i = 0; i < 6; i++) {
             updateTextureImage(cv, i, maxLevels, 0,
                 format, ImageComponentRetained.BYTE_RGBA,
-                width, height, 0, boundaryWidth, null);
+                width, height, boundaryWidth, null);
 	}
     }
 
@@ -295,7 +295,7 @@ class TextureCubeMapRetained extends TextureRetained {
     void updateTextureImage(Canvas3D cv,
             int face, int numLevels, int level,
             int internalFormat, int storedFormat,
-            int width, int height, int depth,
+            int width, int height,
             int boundaryWidth,
             byte[] imageData) {
 
@@ -309,10 +309,10 @@ class TextureCubeMapRetained extends TextureRetained {
     // This is just a wrapper of the native method.
     void updateTextureSubImage(Canvas3D cv,
             int face, int level,
-            int xoffset, int yoffset, int zoffset,
+            int xoffset, int yoffset,
             int internalFormat, int storedFormat,
-            int imgXOffset, int imgYOffset, int imgZOffset,
-            int tilew, int tileh, int width, int height, int depth,
+            int imgXOffset, int imgYOffset,
+            int tilew, int width, int height,
             byte[] imageData) {
 
         Pipeline.getPipeline().updateTextureCubeMapSubImage(cv.ctx,
