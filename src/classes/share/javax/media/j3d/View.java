@@ -13,15 +13,13 @@
 package javax.media.j3d;
 
 import javax.vecmath.*;
-import java.lang.Math;
 import java.util.Vector;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Enumeration;
 import java.awt.*;
-import java.awt.event.*;
-import com.sun.j3d.utils.universe.*; // Needed for Support of DVR.
+import com.sun.j3d.utils.universe.Viewer; // Needed for Support of DVR.
 
 /**
  * The View object contains all parameters needed in rendering a
@@ -722,8 +720,8 @@ public class View extends Object {
     // Support dynamic video resize -- DVR.
     Viewer viewer = null; // Cached the associate viewer of this view.
     boolean firstTime = true;
-    float dvrFactor = 1.0f;
-    boolean dvrResizeCompensation = true;
+//    float dvrFactor = 1.0f;
+//    boolean dvrResizeCompensation = true;
 
     // User adjustable minimum frame cycle time
     long minFrameCycleTime;
@@ -3089,7 +3087,10 @@ public class View extends Object {
     final void updateViewCache() {
 
 
-	// DVR support
+        // TODO KCR : remove obsolete DVR code (but make sure we don't end
+        // up with a leak in the Viewer Map object).
+
+        // DVR support
 	// This is a back door in j3d to provide DVR support.
 	// A better place to put this code segment is in
 	// ViewCache.snapshot(). Since it consists of some 
@@ -3104,24 +3105,24 @@ public class View extends Object {
 	    firstTime = false;
 	}
 	
-	if(viewer != null)  {
-	    if(viewer.isDvrEnabled()) {
-		dvrFactor = viewer.getDvrFactor();
-		dvrResizeCompensation = 
-		    viewer.getDvrResizeCompensationEnable();
-		/*
-		System.out.println("View : dvrFactor is " + dvrFactor);
-		System.out.println("View : dvrResizeCompensation is " + 
-				   dvrResizeCompensation);		 
-		*/
-	    }
-	    else {
-		// Reset back to default.
-		dvrFactor = 1.0f;
-		dvrResizeCompensation = true;
-
-	    }
-	}
+//	if(viewer != null)  {
+//	    if(viewer.isDvrEnabled()) {
+//		dvrFactor = viewer.getDvrFactor();
+//		dvrResizeCompensation = 
+//		    viewer.getDvrResizeCompensationEnable();
+//		/*
+//		System.out.println("View : dvrFactor is " + dvrFactor);
+//		System.out.println("View : dvrResizeCompensation is " + 
+//				   dvrResizeCompensation);		 
+//		*/
+//	    }
+//	    else {
+//		// Reset back to default.
+//		dvrFactor = 1.0f;
+//		dvrResizeCompensation = true;
+//
+//	    }
+//	}
 	// End of back door -- DVR.
 	    
 	synchronized(this) {

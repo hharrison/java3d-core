@@ -2364,22 +2364,6 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setGlobalAlpha(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_disableGlobalAlpha(
-    JNIEnv *env,
-    jobject obj,
-    jlong ctxInfo)
-{
-
-    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
-    jlong ctx = ctxProperties->context;
-	
-    /* GL_GLOBAL_ALPHA_SUN */
-    if(ctxProperties->global_alpha_sun){
-	glDisable(GL_GLOBAL_ALPHA_SUN);
-    }
-}
-
-JNIEXPORT
 void JNICALL Java_javax_media_j3d_Canvas3D_callDisplayList(
     JNIEnv *env,
     jobject obj,
@@ -2504,55 +2488,6 @@ int getTextureColorTableSize(
     ctxProperties->glGetColorTableParameteriv(GL_PROXY_TEXTURE_COLOR_TABLE_SGI,
                                 GL_COLOR_TABLE_WIDTH_SGI, &size);
     return size;
-}
-
-/* For dvr support */
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_videoResize(
-    JNIEnv *env, 
-    jobject obj,
-    jlong ctxInfo,
-    jlong display, 
-    jint win,
-    jfloat dvrFactor)
-{
-#if defined(UNIX)
-
-    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
-
-    /* Not need to do ext. supported checking. This check is done in java. */
-
-    /* fprintf(stderr, "Canvas3D.c -- glXVideoResize -- %d %f\n", win, dvrFactor); */
-    ctxProperties->glXVideoResizeSUN((Display *)display, (Window)win, (float) dvrFactor);
-#endif
-
-}
-
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_videoResizeCompensation(
-    JNIEnv *env, 
-    jobject obj,
-    jlong ctxInfo,
-    jboolean enable)
-{
-    
-#if defined(UNIX)
-    GraphicsContextPropertiesInfo *ctxProperties = 
-	(GraphicsContextPropertiesInfo *)ctxInfo; 
-
-    if (ctxProperties->videoResizeAvailable) {
-	if(enable == JNI_TRUE) {
-	    /* fprintf(stderr, "videoResizeCompensation - glEnable"); */
-	    glEnable(GL_VIDEO_RESIZE_COMPENSATION_SUN);
-	}
-	else {
-	    /* fprintf(stderr, "videoResizeCompensation - glDisable"); */
-	    glDisable(GL_VIDEO_RESIZE_COMPENSATION_SUN);
-	}
-    }
-
-#endif
-
 }
 
 JNIEXPORT

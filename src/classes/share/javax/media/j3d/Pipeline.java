@@ -1118,4 +1118,14 @@ abstract class Pipeline {
             int boundaryWidth, byte[] data);
 
 
+    // ---------------------------------------------------------------------
+
+    //
+    // Canvas3D methods
+    //
+
+    // native method for setting Material when no material is present
+    abstract void updateMaterialColor(long ctx, float r, float g, float b, float a);
+
+
 }

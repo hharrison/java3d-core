@@ -1002,39 +1002,6 @@ class Renderer extends J3dThread {
 					     Canvas3D.FIELD_ALL,
 					     canvas.useDoubleBuffer);
 
-			// Support DVR
-			/*
-			System.out.println("canvas.supportVideoResize()	is " +
-					   canvas.supportVideoResize()); 
-			*/
-			if(canvas.supportVideoResize()) {
-			    if(canvas.view.dvrResizeCompensation !=
-			       canvas.cachedDvrResizeCompensation) {
-				/*
-				  System.out.println("Renderer : dvrResizeComp " + 
-				  canvas.view.dvrResizeCompensation);
-				*/
-				canvas.videoResizeCompensation(canvas.ctx, 
-							       canvas.view.dvrResizeCompensation);
-				canvas.cachedDvrResizeCompensation = 
-				    canvas.view.dvrResizeCompensation;
-				
-			    }				
-			    if(canvas.view.dvrFactor != canvas.cachedDvrFactor) {
-				/*
-				System.out.println("Renderer : dvrFactor is " + 
-						   canvas.view.dvrFactor);
-				*/
-				canvas.videoResize(canvas.ctx, 
-						   canvas.screen.display,
-						   canvas.window, 
-						   canvas.view.dvrFactor);
-				canvas.cachedDvrFactor = canvas.view.dvrFactor;
-				
-			    }
-
-			}
-
 			canvas.beginScene();
 
 			// this is if the background image resizes with the canvas

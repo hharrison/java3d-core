@@ -1537,7 +1537,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureColorTable(
 
 
 extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_updateMaterial(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateMaterialColor(
 	JNIEnv *env,
 	jobject obj,
 	jlong ctx,
