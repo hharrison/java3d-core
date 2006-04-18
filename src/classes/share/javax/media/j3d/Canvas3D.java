@@ -1113,9 +1113,9 @@ public class Canvas3D extends Canvas {
 
 	}
 
-	drawingSurfaceObject = new DrawingSurfaceObjectAWT
-	    (this, VirtualUniverse.mc.awt, screen.display, screen.screen,
-	     VirtualUniverse.mc.xineramaDisabled);
+        drawingSurfaceObject = new DrawingSurfaceObjectAWT(this,
+                VirtualUniverse.mc.awt, screen.display, screen.screen,
+                VirtualUniverse.mc.xineramaDisabled);
 
         lights = new LightRetained[VirtualUniverse.mc.maxLights];
         frameCount = new int[VirtualUniverse.mc.maxLights];

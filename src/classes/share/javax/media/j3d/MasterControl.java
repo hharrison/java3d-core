@@ -431,17 +431,10 @@ class MasterControl {
 
     private UnorderList freeMessageList = new UnorderList(8);
 
+    // Native AWT object
     long awt;
-    private native long getAWT();
 
-    // Method to initialize the native J3D library
-    private native boolean initializeJ3D(boolean disableXinerama);
-
-    // Method to get number of procesor
-    private native int getNumberOfProcessor();
-
-    // Maximum lights supported by the native API 
-    private native int getMaximumLights();
+    // Maximum number of lights
     int maxLights;
 
     // This is used for D3D only
@@ -474,9 +467,9 @@ class MasterControl {
      */
     MasterControl() {
         assert librariesLoaded;
-        
+
 	// Get AWT handle
-	awt = getAWT();
+	awt = Pipeline.getPipeline().getAWT();
 
         // Initialize the start time upon which alpha's and behaviors
         // are synchronized to (if it isn't already set).
@@ -613,7 +606,7 @@ class MasterControl {
 			       "shared stereo Z buffer");
 
 	// Get the maximum number of concurrent threads (CPUs)
-	final int defaultThreadLimit = getNumberOfProcessor()+1;
+	final int defaultThreadLimit = Pipeline.getPipeline().getNumberOfProcessor()+1;
 	Integer threadLimit =
 	    (Integer) java.security.AccessController.doPrivileged(
 	    new java.security.PrivilegedAction() {
@@ -655,7 +648,7 @@ class MasterControl {
 	}
 
 	// Initialize the native J3D library
-	if (!initializeJ3D(disableXinerama)) {
+	if (!Pipeline.getPipeline().initializeJ3D(disableXinerama)) {
 	    throw new RuntimeException(J3dI18N.getString("MasterControl0"));
 	}
 
@@ -669,7 +662,7 @@ class MasterControl {
 	}
 
 	// Get the maximum Lights
-	maxLights = getMaximumLights();
+	maxLights = Pipeline.getPipeline().getMaximumLights();
 
 	// create the freelists
 	FreeListManager.createFreeLists();

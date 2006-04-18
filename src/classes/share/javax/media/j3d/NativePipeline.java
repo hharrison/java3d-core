@@ -1141,6 +1141,25 @@ class NativePipeline extends Pipeline {
     // ---------------------------------------------------------------------
 
     //
+    // MasterControl methods
+    //
+
+    // Method to return the AWT object
+    native long getAWT();
+
+    // Method to initialize the native J3D library
+    native boolean initializeJ3D(boolean disableXinerama);
+
+    // Method to get number of procesor
+    native int getNumberOfProcessor();
+
+    // Maximum lights supported by the native API 
+    native int getMaximumLights();
+
+
+    // ---------------------------------------------------------------------
+
+    //
     // Canvas3D methods
     //
 

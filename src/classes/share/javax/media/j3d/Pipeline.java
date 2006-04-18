@@ -1121,6 +1121,25 @@ abstract class Pipeline {
     // ---------------------------------------------------------------------
 
     //
+    // MasterControl methods
+    //
+
+    // Method to return the AWT object
+    abstract long getAWT();
+
+    // Method to initialize the native J3D library
+    abstract boolean initializeJ3D(boolean disableXinerama);
+
+    // Method to get number of procesor
+    abstract int getNumberOfProcessor();
+
+    // Maximum lights supported by the native API 
+    abstract int getMaximumLights();
+
+
+    // ---------------------------------------------------------------------
+
+    //
     // Canvas3D methods
     //
 

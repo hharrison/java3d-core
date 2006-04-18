@@ -72,7 +72,7 @@ extern int isExtensionSupported(const char *allExtensions,
 				const char *extension); 
 
 JNIEXPORT jboolean JNICALL
-Java_javax_media_j3d_MasterControl_initializeJ3D(
+Java_javax_media_j3d_NativePipeline_initializeJ3D(
     JNIEnv *env, jobject obj, jboolean disableXinerama)
 {
     jboolean glIsMTSafe = JNI_TRUE;
@@ -171,7 +171,7 @@ DWORD countBits(DWORD mask)
  *
  * This function get the number of active processor in the system
  */
-JNIEXPORT jint JNICALL Java_javax_media_j3d_MasterControl_getNumberOfProcessor
+JNIEXPORT jint JNICALL Java_javax_media_j3d_NativePipeline_getNumberOfProcessor
   (JNIEnv *env, jobject obj)
 {
 #if defined(UNIX)
@@ -188,7 +188,7 @@ JNIEXPORT jint JNICALL Java_javax_media_j3d_MasterControl_getNumberOfProcessor
 
 
 JNIEXPORT
-jint JNICALL Java_javax_media_j3d_MasterControl_getMaximumLights(
+jint JNICALL Java_javax_media_j3d_NativePipeline_getMaximumLights(
     JNIEnv *env, 
     jobject obj
     ) {
