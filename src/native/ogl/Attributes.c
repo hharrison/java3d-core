@@ -307,7 +307,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateModelClip(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_setModelViewMatrix(
+void JNICALL Java_javax_media_j3d_NativePipeline_setModelViewMatrix(
     JNIEnv * env, 
     jobject obj,
     jlong ctxInfo,
@@ -363,7 +363,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setModelViewMatrix(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_setProjectionMatrix(
+void JNICALL Java_javax_media_j3d_NativePipeline_setProjectionMatrix(
     JNIEnv * env,
     jobject obj,
     jlong ctxInfo,
@@ -426,7 +426,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setProjectionMatrix(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_setViewport(
+void JNICALL Java_javax_media_j3d_NativePipeline_setViewport(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,
@@ -444,7 +444,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setViewport(
 #endif
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_setSceneAmbient(
+void JNICALL Java_javax_media_j3d_NativePipeline_setSceneAmbient(
     JNIEnv *env, 
     jobject cv,
     jlong ctxInfo,
@@ -462,7 +462,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setSceneAmbient(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_setLightEnables(
+void JNICALL Java_javax_media_j3d_NativePipeline_setLightEnables(
     JNIEnv *env, 
     jobject cv,
     jlong ctxInfo,
@@ -488,7 +488,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setLightEnables(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_setLightingEnable(
+void JNICALL Java_javax_media_j3d_NativePipeline_setLightingEnable(
     JNIEnv *env,
     jobject cv,
     jlong ctxInfo,
@@ -508,7 +508,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setLightingEnable(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_disableFog(
+void JNICALL Java_javax_media_j3d_NativePipeline_disableFog(
     JNIEnv *env, 
     jobject cv,
     jlong ctxInfo)
@@ -520,7 +520,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_disableFog(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_disableModelClip(
+void JNICALL Java_javax_media_j3d_NativePipeline_disableModelClip(
         JNIEnv *env,
         jobject cv,
 	jlong ctxInfo)
@@ -539,7 +539,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_disableModelClip(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_resetRenderingAttributes(
+void JNICALL Java_javax_media_j3d_NativePipeline_resetRenderingAttributes(
     JNIEnv *env, 
     jobject cv,
     jlong ctxInfo,    
@@ -749,7 +749,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateRenderingAttributes(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_resetPolygonAttributes(
+void JNICALL Java_javax_media_j3d_NativePipeline_resetPolygonAttributes(
     JNIEnv *env, 
     jobject cv,
     jlong ctxInfo)
@@ -833,7 +833,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updatePolygonAttributes(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_resetLineAttributes(
+void JNICALL Java_javax_media_j3d_NativePipeline_resetLineAttributes(
     JNIEnv *env, 
     jobject cv,
     jlong ctxInfo)
@@ -887,7 +887,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateLineAttributes(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_resetPointAttributes(
+void JNICALL Java_javax_media_j3d_NativePipeline_resetPointAttributes(
     JNIEnv *env, 
     jobject cv,
     jlong ctxInfo)
@@ -917,7 +917,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updatePointAttributes(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_resetTexCoordGeneration(
+void JNICALL Java_javax_media_j3d_NativePipeline_resetTexCoordGeneration(
     JNIEnv *env, 
     jobject cv,
     jlong ctxInfo)
@@ -1083,7 +1083,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexCoordGeneration(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureAttributes(
+void JNICALL Java_javax_media_j3d_NativePipeline_resetTextureAttributes(
     JNIEnv *env, 
     jobject cv,
     jlong ctxInfo)
@@ -1761,7 +1761,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateMaterial(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_resetTransparency(
+void JNICALL Java_javax_media_j3d_NativePipeline_resetTransparency(
     JNIEnv *env, 
     jobject cv,
     jlong ctxInfo,
@@ -1825,7 +1825,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTransparencyAttributes(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_resetColoringAttributes(
+void JNICALL Java_javax_media_j3d_NativePipeline_resetColoringAttributes(
     JNIEnv *env, 
     jobject cv,
     jlong ctxInfo,    
@@ -1882,7 +1882,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateColoringAttributes(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureNative(
+void JNICALL Java_javax_media_j3d_NativePipeline_resetTextureNative(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,
@@ -3395,7 +3395,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapImage(
 
 
 JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_Canvas3D_decal1stChildSetup(
+jboolean JNICALL Java_javax_media_j3d_NativePipeline_decal1stChildSetup(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo)
@@ -3412,7 +3412,7 @@ jboolean JNICALL Java_javax_media_j3d_Canvas3D_decal1stChildSetup(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_decalNthChildSetup(
+void JNICALL Java_javax_media_j3d_NativePipeline_decalNthChildSetup(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo)
@@ -3423,7 +3423,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_decalNthChildSetup(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_decalReset(
+void JNICALL Java_javax_media_j3d_NativePipeline_decalReset(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,    
@@ -3435,7 +3435,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_decalReset(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_ctxUpdateEyeLightingEnable(
+void JNICALL Java_javax_media_j3d_NativePipeline_ctxUpdateEyeLightingEnable(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,    
@@ -3449,7 +3449,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_ctxUpdateEyeLightingEnable(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_updateSeparateSpecularColorEnable(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateSeparateSpecularColorEnable(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,    
@@ -3521,7 +3521,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureUnitState(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_setBlendColor(
+void JNICALL Java_javax_media_j3d_NativePipeline_setBlendColor(
     JNIEnv *env, 
     jobject obj,
     jlong ctxInfo,    
@@ -3545,7 +3545,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setBlendColor(
 
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_setBlendFunc(
+void JNICALL Java_javax_media_j3d_NativePipeline_setBlendFunc(
     JNIEnv * env, 
     jobject obj,
     jlong ctxInfo,    
@@ -3559,7 +3559,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setBlendFunc(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_setFogEnableFlag(
+void JNICALL Java_javax_media_j3d_NativePipeline_setFogEnableFlag(
     JNIEnv * env, 
     jobject obj,
     jlong ctxInfo,
@@ -3572,7 +3572,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_setFogEnableFlag(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_activeTextureUnit(
+void JNICALL Java_javax_media_j3d_NativePipeline_activeTextureUnit(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -3588,7 +3588,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_activeTextureUnit(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_Canvas3D_updateTexUnitStateMap(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateTexUnitStateMap(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,

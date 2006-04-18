@@ -4467,208 +4467,347 @@ public class Canvas3D extends Canvas {
     // Wrappers for native methods go below here
     // *****************************************************************
 
+    // This is the native method for creating the underlying graphics context.
+    private long createNewContext(long display, int window,
+            long fbConfig, long shareCtx, boolean isSharedCtx,
+            boolean offScreen,
+            boolean glslLibraryAvailable,
+            boolean cgLibraryAvailable) {
+        return Pipeline.getPipeline().createNewContext(this, display, window,
+                fbConfig, shareCtx, isSharedCtx,
+                offScreen,
+                glslLibraryAvailable,
+                cgLibraryAvailable);
+    }
+
+    private void createQueryContext(long display, int window,
+            long fbConfig, boolean offScreen, int width, int height,
+            boolean glslLibraryAvailable,
+            boolean cgLibraryAvailable) {
+        Pipeline.getPipeline().createQueryContext(this, display, window,
+                fbConfig, offScreen, width, height,
+                glslLibraryAvailable,
+                cgLibraryAvailable);
+    }
+
+    // This is the native for creating offscreen buffer
+    int createOffScreenBuffer(long ctx, long display, long fbConfig, int width, int height) {
+        return Pipeline.getPipeline().createOffScreenBuffer(this,
+                ctx, display, fbConfig, width, height);
+    }
+
+    void destroyOffScreenBuffer(long ctx, long display, long fbConfig, int window) {
+        Pipeline.getPipeline().destroyOffScreenBuffer(this, ctx, display, fbConfig, window);
+    }
+
+    // This is the native for reading the image from the offscreen buffer
+    private void readOffScreenBuffer(long ctx, int format, int width, int height) {
+        Pipeline.getPipeline().readOffScreenBuffer(this, ctx, format, width, height);
+    }
+
+    // The native method for swapBuffers
+    int swapBuffers(long ctx, long dpy, int win) {
+        return Pipeline.getPipeline().swapBuffers(this, ctx, dpy, win);
+    }
+
+    // notify D3D that Canvas is resize
+    private int resizeD3DCanvas(long ctx) {
+        return Pipeline.getPipeline().resizeD3DCanvas(this, ctx);
+    }
+
+    // notify D3D to toggle between FullScreen and window mode
+    private int toggleFullScreenMode(long ctx) {
+        return Pipeline.getPipeline().toggleFullScreenMode(this, ctx);
+    }
+
+    // -----------------------------------------------------------------------------
+
     // native method for setting Material when no material is present
     void updateMaterial(long ctx, float r, float g, float b, float a) {
         Pipeline.getPipeline().updateMaterialColor(ctx, r, g, b, a);
     }
 
-
-    // -----------------------------------------------------------------------------
-
-
-    // This is the native method for creating the underlying graphics context.
-    native long createNewContext(long display, int window,
-            long fbConfig, long shareCtx, boolean isSharedCtx,
-            boolean offScreen,
-            boolean glslLibraryAvailable,
-            boolean cgLibraryAvailable);
-
-    native void createQueryContext(long display, int window,
-            long fbConfig, boolean offScreen, int width, int height,
-            boolean glslLibraryAvailable,
-            boolean cgLibraryAvailable);
-
-    // This is the native for creating offscreen buffer
-    native int createOffScreenBuffer(long ctx, long display, long fbConfig, int width, int height);
-
-    native void destroyOffScreenBuffer(long ctx, long display, long fbConfig, int window);
-
-    // This is the native for reading the image from the offscreen buffer
-    native void readOffScreenBuffer(long ctx, int format, int width, int height);
-
-    // The native method for swapBuffers
-    native int swapBuffers(long ctx, long dpy, int win);
-
-    // notify D3D that Canvas is resize
-    native int resizeD3DCanvas(long ctx);
-
-    // notify D3D to toggle between FullScreen and window mode
-    native int toggleFullScreenMode(long ctx);
-
-
-    // -----------------------------------------------------------------------------
-
-
-    static native void destroyContext(long display, int window, long context);
+    static void destroyContext(long display, int window, long context) {
+        Pipeline.getPipeline().destroyContext(display, window, context);
+    }
 
     // This is the native method for doing accumulation.
-    native void accum(long ctx, float value);
+    void accum(long ctx, float value) {
+        Pipeline.getPipeline().accum(ctx, value);
+    }
 
     // This is the native method for doing accumulation return.
-    native void accumReturn(long ctx);
+    void accumReturn(long ctx) {
+        Pipeline.getPipeline().accumReturn(ctx);
+    }
 
     // This is the native method for clearing the accumulation buffer.
-    native void clearAccum(long ctx);
+    void clearAccum(long ctx) {
+        Pipeline.getPipeline().clearAccum(ctx);
+    }
 
     // This is the native method for getting the number of lights the underlying
     // native library can support.
-    native int getNumCtxLights(long ctx);
+    int getNumCtxLights(long ctx) {
+        return Pipeline.getPipeline().getNumCtxLights(ctx);
+    }
 
     // Native method for decal 1st child setup
-    native boolean decal1stChildSetup(long ctx);
+    boolean decal1stChildSetup(long ctx) {
+        return Pipeline.getPipeline().decal1stChildSetup(ctx);
+    }
 
     // Native method for decal nth child setup
-    native void decalNthChildSetup(long ctx);
+    void decalNthChildSetup(long ctx) {
+        Pipeline.getPipeline().decalNthChildSetup(ctx);
+    }
 
     // Native method for decal reset
-    native void decalReset(long ctx, boolean depthBufferEnable);
+    void decalReset(long ctx, boolean depthBufferEnable) {
+        Pipeline.getPipeline().decalReset(ctx, depthBufferEnable);
+    }
 
     // Native method for decal reset
-    native void ctxUpdateEyeLightingEnable(long ctx, boolean localEyeLightingEnable);
+    void ctxUpdateEyeLightingEnable(long ctx, boolean localEyeLightingEnable) {
+        Pipeline.getPipeline().ctxUpdateEyeLightingEnable(ctx, localEyeLightingEnable);
+    }
 
     // The following three methods are used in multi-pass case
 
     // native method for setting blend color
-    native void setBlendColor(long ctx, float red, float green,
-            float blue, float alpha);
+    void setBlendColor(long ctx, float red, float green,
+            float blue, float alpha) {
+        Pipeline.getPipeline().setBlendColor(ctx, red, green,
+                blue, alpha);
+    }
 
     // native method for setting blend func
-    native void setBlendFunc(long ctx, int src, int dst);
+    void setBlendFunc(long ctx, int src, int dst) {
+        Pipeline.getPipeline().setBlendFunc(ctx, src, dst);
+    }
 
     // native method for setting fog enable flag
-    native void setFogEnableFlag(long ctx, boolean enableFlag);
+    void setFogEnableFlag(long ctx, boolean enableFlag) {
+        Pipeline.getPipeline().setFogEnableFlag(ctx, enableFlag);
+    }
 
     // Setup the full scene antialising in D3D and ogl when GL_ARB_multisamle supported
-    native void setFullSceneAntialiasing(long ctx, boolean enable);
+    void setFullSceneAntialiasing(long ctx, boolean enable) {
+        Pipeline.getPipeline().setFullSceneAntialiasing(ctx, enable);
+    }
 
-    native void setGlobalAlpha(long ctx, float alpha);
+    void setGlobalAlpha(long ctx, float alpha) {
+        Pipeline.getPipeline().setGlobalAlpha(ctx, alpha);
+    }
 
     // Native method to update separate specular color control
-    native void updateSeparateSpecularColorEnable(long ctx, boolean control);
+    void updateSeparateSpecularColorEnable(long ctx, boolean control) {
+        Pipeline.getPipeline().updateSeparateSpecularColorEnable(ctx, control);
+    }
 
     // Initialization for D3D when scene begin
-    native void beginScene(long ctx);
-    native void endScene(long ctx);
+    private void beginScene(long ctx) {
+        Pipeline.getPipeline().beginScene(ctx);
+    }
+    private void endScene(long ctx) {
+        Pipeline.getPipeline().endScene(ctx);
+    }
 
     // True under Solaris,
     // False under windows when display mode <= 8 bit
-    native boolean validGraphicsMode();
+    private boolean validGraphicsMode() {
+        return Pipeline.getPipeline().validGraphicsMode();
+    }
 
     // native method for setting light enables
-    native void setLightEnables(long ctx, long enableMask, int maxLights);
+    void setLightEnables(long ctx, long enableMask, int maxLights) {
+        Pipeline.getPipeline().setLightEnables(ctx, enableMask, maxLights);
+    }
 
     // native method for setting scene ambient
-    native void setSceneAmbient(long ctx, float red, float green, float blue);
+    void setSceneAmbient(long ctx, float red, float green, float blue) {
+        Pipeline.getPipeline().setSceneAmbient(ctx, red, green, blue);
+    }
 
     // native method for disabling fog
-    native void disableFog(long ctx);
+    void disableFog(long ctx) {
+        Pipeline.getPipeline().disableFog(ctx);
+    }
 
     // native method for disabling modelClip
-    native void disableModelClip(long ctx);
+    void disableModelClip(long ctx) {
+        Pipeline.getPipeline().disableModelClip(ctx);
+    }
 
     // native method for setting default RenderingAttributes
-    native void resetRenderingAttributes(long ctx,
+    void resetRenderingAttributes(long ctx,
             boolean depthBufferWriteEnableOverride,
-            boolean depthBufferEnableOverride);
+            boolean depthBufferEnableOverride) {
+        Pipeline.getPipeline().resetRenderingAttributes(ctx,
+                depthBufferWriteEnableOverride,
+                depthBufferEnableOverride);
+    }
 
     // native method for setting default texture
-    native void resetTextureNative(long ctx, int texUnitIndex);
+    void resetTextureNative(long ctx, int texUnitIndex) {
+        Pipeline.getPipeline().resetTextureNative(ctx, texUnitIndex);
+    }
 
     // native method for activating a particular texture unit
-    native void activeTextureUnit(long ctx, int texUnitIndex);
+    void activeTextureUnit(long ctx, int texUnitIndex) {
+        Pipeline.getPipeline().activeTextureUnit(ctx, texUnitIndex);
+    }
 
     // native method for setting default TexCoordGeneration
-    native void resetTexCoordGeneration(long ctx);
+    void resetTexCoordGeneration(long ctx) {
+        Pipeline.getPipeline().resetTexCoordGeneration(ctx);
+    }
 
     // native method for setting default TextureAttributes
-    native void resetTextureAttributes(long ctx);
+    void resetTextureAttributes(long ctx) {
+        Pipeline.getPipeline().resetTextureAttributes(ctx);
+    }
 
     // native method for setting default PolygonAttributes
-    native void resetPolygonAttributes(long ctx);
+    void resetPolygonAttributes(long ctx) {
+        Pipeline.getPipeline().resetPolygonAttributes(ctx);
+    }
 
     // native method for setting default LineAttributes
-    native void resetLineAttributes(long ctx);
+    void resetLineAttributes(long ctx) {
+        Pipeline.getPipeline().resetLineAttributes(ctx);
+    }
 
     // native method for setting default PointAttributes
-    native void resetPointAttributes(long ctx);
+    void resetPointAttributes(long ctx) {
+        Pipeline.getPipeline().resetPointAttributes(ctx);
+    }
 
     // native method for setting default TransparencyAttributes
-    native void resetTransparency(long ctx, int geometryType,
+    void resetTransparency(long ctx, int geometryType,
             int polygonMode, boolean lineAA,
-            boolean pointAA);
+            boolean pointAA) {
+        Pipeline.getPipeline().resetTransparency(ctx, geometryType,
+                polygonMode, lineAA,
+                pointAA);
+    }
 
     // native method for setting default ColoringAttributes
-    native void resetColoringAttributes(long ctx,
+    void resetColoringAttributes(long ctx,
             float r, float g,
             float b, float a,
-            boolean enableLight);
+            boolean enableLight) {
+        Pipeline.getPipeline().resetColoringAttributes(ctx,
+                r, g,
+                b, a,
+                enableLight);
+    }
 
     // native method for updating the texture unit state map
-    native void updateTexUnitStateMap(long ctx, int numActiveTexUnit,
-            int[] texUnitStateMap);
+    private void updateTexUnitStateMap(long ctx, int numActiveTexUnit,
+            int[] texUnitStateMap) {
+        Pipeline.getPipeline().updateTexUnitStateMap(ctx, numActiveTexUnit, texUnitStateMap);
+    }
 
     /**
      *  This native method makes sure that the rendering for this canvas
      *  gets done now.
      */
-    native void syncRender(long ctx, boolean wait);
+    void syncRender(long ctx, boolean wait) {
+        Pipeline.getPipeline().syncRender(ctx, wait);
+    }
 
     // The native method that sets this ctx to be the current one
-    static native boolean useCtx(long ctx, long display, int window);
+    static boolean useCtx(long ctx, long display, int window) {
+        return Pipeline.getPipeline().useCtx(ctx, display, window);
+    }
 
-    native void clear(long ctx, float r, float g, float b, int winWidth, int winHeight,
-            ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown);
-    native void textureclear(long ctx, int maxX, int maxY,
+    void clear(long ctx, float r, float g, float b, int winWidth, int winHeight,
+            ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown) {
+        Pipeline.getPipeline().clear(ctx, r, g, b, winWidth, winHeight,
+                image, imageScaleMode, imageYdown);
+    }
+    void textureclear(long ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,
             int objectId, int scalemode,
             ImageComponent2DRetained image,
-            boolean update);
+            boolean update) {
+        Pipeline.getPipeline().textureclear(ctx, maxX, maxY,
+                r, g, b,
+                winWidth, winHeight,
+                objectId, scalemode,
+                image,
+                update);
+    }
 
 
     // The native method for setting the ModelView matrix.
-    native void setModelViewMatrix(long ctx, double[] viewMatrix, double[] modelMatrix);
+    void setModelViewMatrix(long ctx, double[] viewMatrix, double[] modelMatrix) {
+        Pipeline.getPipeline().setModelViewMatrix(ctx, viewMatrix, modelMatrix);
+    }
 
     // The native method for setting the Projection matrix.
-    native void setProjectionMatrix(long ctx, double[] projMatrix);
+    void setProjectionMatrix(long ctx, double[] projMatrix) {
+        Pipeline.getPipeline().setProjectionMatrix(ctx, projMatrix);
+    }
 
     // The native method for setting the Viewport.
-    native void setViewport(long ctx, int x, int y, int width, int height);
+    void setViewport(long ctx, int x, int y, int width, int height) {
+        Pipeline.getPipeline().setViewport(ctx, x, y, width, height);
+    }
 
     // used for display Lists
-    native void newDisplayList(long ctx, int displayListId);
-    native void endDisplayList(long ctx);
-    native void callDisplayList(long ctx, int id, boolean isNonUniformScale);
+    void newDisplayList(long ctx, int displayListId) {
+        Pipeline.getPipeline().newDisplayList(ctx, displayListId);
+    }
+    void endDisplayList(long ctx) {
+        Pipeline.getPipeline().endDisplayList(ctx);
+    }
+    void callDisplayList(long ctx, int id, boolean isNonUniformScale) {
+        Pipeline.getPipeline().callDisplayList(ctx, id, isNonUniformScale);
+    }
 
-    static native void freeDisplayList(long ctx, int id);
-    static native void freeTexture(long ctx, int id);
+    static void freeDisplayList(long ctx, int id) {
+        Pipeline.getPipeline().freeDisplayList(ctx, id);
+    }
+    static void freeTexture(long ctx, int id) {
+        Pipeline.getPipeline().freeTexture(ctx, id);
+    }
 
-    native void composite(long ctx, int px, int py,
+    void composite(long ctx, int px, int py,
             int xmin, int ymin, int xmax, int ymax,
             int rasWidth,  byte[] image,
-            int winWidth, int winHeight);
+            int winWidth, int winHeight) {
+        Pipeline.getPipeline().composite(ctx, px, py,
+                xmin, ymin, xmax, ymax,
+                rasWidth,  image,
+                winWidth, winHeight);
+    }
 
-    native void texturemapping(long ctx,
+    void texturemapping(long ctx,
             int px, int py,
             int xmin, int ymin, int xmax, int ymax,
             int texWidth, int texHeight,
             int rasWidth,
             int format, int objectId,
             byte[] image,
-            int winWidth, int winHeight);
+            int winWidth, int winHeight) {
+        Pipeline.getPipeline().texturemapping(ctx,
+                px, py,
+                xmin, ymin, xmax, ymax,
+                texWidth, texHeight,
+                rasWidth,
+                format, objectId,
+                image,
+                winWidth, winHeight);
+    }
 
-    native boolean initTexturemapping(long ctx, int texWidth,
-            int texHeight, int objectId);
+    boolean initTexturemapping(long ctx, int texWidth,
+            int texHeight, int objectId) {
+        return Pipeline.getPipeline().initTexturemapping(ctx, texWidth,
+                texHeight, objectId);
+    }
 
 
     // Set internal render mode to one of FIELD_ALL, FIELD_LEFT or
@@ -4676,9 +4815,13 @@ public class Canvas3D extends Canvas {
     // stereo is available before setting the mode to FIELD_LEFT or
     // FIELD_RIGHT.  The boolean isTRUE for double buffered mode, FALSE
     // foe single buffering.
-    native void setRenderMode(long ctx, int mode, boolean doubleBuffer);
+    void setRenderMode(long ctx, int mode, boolean doubleBuffer) {
+        Pipeline.getPipeline().setRenderMode(ctx, mode, doubleBuffer);
+    }
 
     // Set glDepthMask.
-    native void setDepthBufferWriteEnable(long ctx, boolean mode);
+    void setDepthBufferWriteEnable(long ctx, boolean mode) {
+        Pipeline.getPipeline().setDepthBufferWriteEnable(ctx, mode);
+    }
 
 }

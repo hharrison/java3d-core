@@ -1124,8 +1124,209 @@ abstract class Pipeline {
     // Canvas3D methods
     //
 
+    // This is the native method for creating the underlying graphics context.
+    abstract long createNewContext(Canvas3D cv, long display, int window,
+            long fbConfig, long shareCtx, boolean isSharedCtx,
+            boolean offScreen,
+            boolean glslLibraryAvailable,
+            boolean cgLibraryAvailable);
+
+    abstract void createQueryContext(Canvas3D cv, long display, int window,
+            long fbConfig, boolean offScreen, int width, int height,
+            boolean glslLibraryAvailable,
+            boolean cgLibraryAvailable);
+
+    // This is the native for creating offscreen buffer
+    abstract int createOffScreenBuffer(Canvas3D cv, long ctx, long display, long fbConfig, int width, int height);
+
+    abstract void destroyOffScreenBuffer(Canvas3D cv, long ctx, long display, long fbConfig, int window);
+
+    // This is the native for reading the image from the offscreen buffer
+    abstract void readOffScreenBuffer(Canvas3D cv, long ctx, int format, int width, int height);
+
+    // The native method for swapBuffers
+    abstract int swapBuffers(Canvas3D cv, long ctx, long dpy, int win);
+
+    // notify D3D that Canvas is resize
+    abstract int resizeD3DCanvas(Canvas3D cv, long ctx);
+
+    // notify D3D to toggle between FullScreen and window mode
+    abstract int toggleFullScreenMode(Canvas3D cv, long ctx);
+
     // native method for setting Material when no material is present
     abstract void updateMaterialColor(long ctx, float r, float g, float b, float a);
+
+    abstract void destroyContext(long display, int window, long context);
+
+    // This is the native method for doing accumulation.
+    abstract void accum(long ctx, float value);
+
+    // This is the native method for doing accumulation return.
+    abstract void accumReturn(long ctx);
+
+    // This is the native method for clearing the accumulation buffer.
+    abstract void clearAccum(long ctx);
+
+    // This is the native method for getting the number of lights the underlying
+    // native library can support.
+    abstract int getNumCtxLights(long ctx);
+
+    // Native method for decal 1st child setup
+    abstract boolean decal1stChildSetup(long ctx);
+
+    // Native method for decal nth child setup
+    abstract void decalNthChildSetup(long ctx);
+
+    // Native method for decal reset
+    abstract void decalReset(long ctx, boolean depthBufferEnable);
+
+    // Native method for decal reset
+    abstract void ctxUpdateEyeLightingEnable(long ctx, boolean localEyeLightingEnable);
+
+    // The following three methods are used in multi-pass case
+
+    // native method for setting blend color
+    abstract void setBlendColor(long ctx, float red, float green,
+            float blue, float alpha);
+
+    // native method for setting blend func
+    abstract void setBlendFunc(long ctx, int src, int dst);
+
+    // native method for setting fog enable flag
+    abstract void setFogEnableFlag(long ctx, boolean enableFlag);
+
+    // Setup the full scene antialising in D3D and ogl when GL_ARB_multisamle supported
+    abstract void setFullSceneAntialiasing(long ctx, boolean enable);
+
+    abstract void setGlobalAlpha(long ctx, float alpha);
+
+    // Native method to update separate specular color control
+    abstract void updateSeparateSpecularColorEnable(long ctx, boolean control);
+
+    // Initialization for D3D when scene begin
+    abstract void beginScene(long ctx);
+    abstract void endScene(long ctx);
+
+    // True under Solaris,
+    // False under windows when display mode <= 8 bit
+    abstract boolean validGraphicsMode();
+
+    // native method for setting light enables
+    abstract void setLightEnables(long ctx, long enableMask, int maxLights);
+
+    // native method for setting scene ambient
+    abstract void setSceneAmbient(long ctx, float red, float green, float blue);
+
+    // native method for disabling fog
+    abstract void disableFog(long ctx);
+
+    // native method for disabling modelClip
+    abstract void disableModelClip(long ctx);
+
+    // native method for setting default RenderingAttributes
+    abstract void resetRenderingAttributes(long ctx,
+            boolean depthBufferWriteEnableOverride,
+            boolean depthBufferEnableOverride);
+
+    // native method for setting default texture
+    abstract void resetTextureNative(long ctx, int texUnitIndex);
+
+    // native method for activating a particular texture unit
+    abstract void activeTextureUnit(long ctx, int texUnitIndex);
+
+    // native method for setting default TexCoordGeneration
+    abstract void resetTexCoordGeneration(long ctx);
+
+    // native method for setting default TextureAttributes
+    abstract void resetTextureAttributes(long ctx);
+
+    // native method for setting default PolygonAttributes
+    abstract void resetPolygonAttributes(long ctx);
+
+    // native method for setting default LineAttributes
+    abstract void resetLineAttributes(long ctx);
+
+    // native method for setting default PointAttributes
+    abstract void resetPointAttributes(long ctx);
+
+    // native method for setting default TransparencyAttributes
+    abstract void resetTransparency(long ctx, int geometryType,
+            int polygonMode, boolean lineAA,
+            boolean pointAA);
+
+    // native method for setting default ColoringAttributes
+    abstract void resetColoringAttributes(long ctx,
+            float r, float g,
+            float b, float a,
+            boolean enableLight);
+
+    // native method for updating the texture unit state map
+    abstract void updateTexUnitStateMap(long ctx, int numActiveTexUnit,
+            int[] texUnitStateMap);
+
+    /**
+     *  This native method makes sure that the rendering for this canvas
+     *  gets done now.
+     */
+    abstract void syncRender(long ctx, boolean wait);
+
+    // The native method that sets this ctx to be the current one
+    abstract boolean useCtx(long ctx, long display, int window);
+
+    abstract void clear(long ctx, float r, float g, float b, int winWidth, int winHeight,
+            ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown);
+    abstract void textureclear(long ctx, int maxX, int maxY,
+            float r, float g, float b,
+            int winWidth, int winHeight,
+            int objectId, int scalemode,
+            ImageComponent2DRetained image,
+            boolean update);
+
+
+    // The native method for setting the ModelView matrix.
+    abstract void setModelViewMatrix(long ctx, double[] viewMatrix, double[] modelMatrix);
+
+    // The native method for setting the Projection matrix.
+    abstract void setProjectionMatrix(long ctx, double[] projMatrix);
+
+    // The native method for setting the Viewport.
+    abstract void setViewport(long ctx, int x, int y, int width, int height);
+
+    // used for display Lists
+    abstract void newDisplayList(long ctx, int displayListId);
+    abstract void endDisplayList(long ctx);
+    abstract void callDisplayList(long ctx, int id, boolean isNonUniformScale);
+
+    abstract void freeDisplayList(long ctx, int id);
+    abstract void freeTexture(long ctx, int id);
+
+    abstract void composite(long ctx, int px, int py,
+            int xmin, int ymin, int xmax, int ymax,
+            int rasWidth,  byte[] image,
+            int winWidth, int winHeight);
+
+    abstract void texturemapping(long ctx,
+            int px, int py,
+            int xmin, int ymin, int xmax, int ymax,
+            int texWidth, int texHeight,
+            int rasWidth,
+            int format, int objectId,
+            byte[] image,
+            int winWidth, int winHeight);
+
+    abstract boolean initTexturemapping(long ctx, int texWidth,
+            int texHeight, int objectId);
+
+
+    // Set internal render mode to one of FIELD_ALL, FIELD_LEFT or
+    // FIELD_RIGHT.  Note that it is up to the caller to ensure that
+    // stereo is available before setting the mode to FIELD_LEFT or
+    // FIELD_RIGHT.  The boolean isTRUE for double buffered mode, FALSE
+    // foe single buffering.
+    abstract void setRenderMode(long ctx, int mode, boolean doubleBuffer);
+
+    // Set glDepthMask.
+    abstract void setDepthBufferWriteEnable(long ctx, boolean mode);
 
 
 }
