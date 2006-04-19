@@ -144,6 +144,15 @@ release.</p>
       </th>
     </tr>
     <tr>
+      <td style="vertical-align: top; text-align: right;">160<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">AlternateAppearance behaves
+differently in J3D 1.3.2 comparing to J3D 1.3.1<br>
+      </td>
+    </tr>
+    <tr>
       <td style="text-align: right;"><span
  style="font-family: monospace;"></span>244<br>
       </td>
@@ -159,17 +168,28 @@ release.</p>
 MasterControlThread when adding a Light<br>
       </td>
     </tr>
-    <tr>
-      <td style="vertical-align: top; text-align: right;">160<br>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">AlternateAppearance behaves
-differently in J3D 1.3.2 comparing to J3D 1.3.1<br>
-      </td>
-    </tr>
   </tbody>
 </table>
+<p>NOTE: the fix for issue 249 (as well as 160) was to disable the
+"sole user" optimization, which was originally done to optimize the
+updating of
+frequently changing appearance attributes in cases where there was only
+one Shape3D using a particular Appearance. This optimization came at
+the expense of rendering performance in some cases, and was also the
+source of several
+bugs. Now that this optimization is disabled, rendering
+performance and stability should improve for most applications, but
+some
+applications may notice a slow-down in update performance. For this
+reason, we have added a new system property to re-enable the sole-user
+optimization.<br>
+</p>
+<ul>
+  <li><code>j3d.allowSoleUser</code> &#8211; If this flag is set to
+true, the 1.4.0-fcs behavior is restored, causing the sole-user
+optimization to be allowed when appropriate. The default value is false.<br>
+  </li>
+</ul>
 <h3><a name="Changes_Since_1_3_2"></a>Changes Since 1.3.2</h3>
 <h4>New Features</h4>
 <p>Thw following new features have been added to the 1.4 version of the
