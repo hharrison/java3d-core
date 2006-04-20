@@ -178,6 +178,13 @@ class BehaviorScheduler extends J3dThread {
 			    System.err.println("Exception occurred during Behavior execution:");
 			    e.printStackTrace();
 			}
+			catch (Error e) {
+			    // Force behavior condition to be unset
+                            // Fix for issue 264
+			    behavret.conditionSet = false;
+			    System.err.println("Error occurred during Behavior execution:");
+			    e.printStackTrace();
+			}
 			univ.inBehavior = false;
 			behavret.inCallback = false;
 		    }
