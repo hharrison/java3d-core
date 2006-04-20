@@ -275,6 +275,10 @@ class Renderer extends J3dThread {
 		     } catch (RuntimeException e) {
 		         System.err.println("Exception occurred during Canvas3D callback:");
 		         e.printStackTrace();
+		     } catch (Error e) {
+                         // Issue 264 - catch Error so Renderer doesn't die
+		         System.err.println("Error occurred during Canvas3D callback:");
+		         e.printStackTrace();
 		     }
 		     // reset flag 
 		     cv.imageReady = false;
@@ -1059,9 +1063,12 @@ class Renderer extends J3dThread {
                         try {
                             canvas.preRender();
                         } catch (RuntimeException e) {
-                            System.err.println("Exception occurred " +
-                                            "during Canvas3D callback:");
+                            System.err.println("Exception occurred during Canvas3D callback:");
                             e.printStackTrace();
+                         } catch (Error e) {
+                             // Issue 264 - catch Error so Renderer doesn't die
+                             System.err.println("Error occurred during Canvas3D callback:");
+                             e.printStackTrace();
                         }
                         canvas.view.inCanvasCallback = false;
 			
@@ -1259,9 +1266,12 @@ class Renderer extends J3dThread {
                                 try {
                                     canvas.renderField(stereo_mode);
                                 } catch (RuntimeException e) {
-                                System.err.println("Exception occurred during " +
-                                                 "Canvas3D callback:");
-                                   e.printStackTrace();
+                                    System.err.println("Exception occurred during Canvas3D callback:");
+                                    e.printStackTrace();
+                                } catch (Error e) {
+                                    // Issue 264 - catch Error so Renderer doesn't die
+                                    System.err.println("Error occurred during Canvas3D callback:");
+                                    e.printStackTrace();
                                 }
                                 canvas.view.inCanvasCallback = false;
 				if ((VirtualUniverse.mc.doDsiRenderLock) &&
@@ -1304,8 +1314,11 @@ class Renderer extends J3dThread {
                         try {
                             canvas.postRender();
                         } catch (RuntimeException e) {
-                            System.err.println("Exception occurred during " +
-                                           "Canvas3D callback:");
+                            System.err.println("Exception occurred during Canvas3D callback:");
+                            e.printStackTrace();
+                        } catch (Error e) {
+                            // Issue 264 - catch Error so Renderer doesn't die
+                            System.err.println("Error occurred during Canvas3D callback:");
                             e.printStackTrace();
                         }
                         canvas.view.inCanvasCallback = false;
@@ -1322,6 +1335,10 @@ class Renderer extends J3dThread {
                                 canvas.postSwap();
                             } catch (RuntimeException e) {
                                 System.err.println("Exception occurred during Canvas 3D callback:");
+                                e.printStackTrace();
+                            } catch (Error e) {
+                                // Issue 264 - catch Error so Renderer doesn't die
+                                System.err.println("Error occurred during Canvas3D callback:");
                                 e.printStackTrace();
                             }
 

@@ -606,14 +606,14 @@ public class Canvas3D extends Canvas {
     // For Windows : Fix for issue 76.
     long offScreenBufferInfo = 0;
 
-    // fbConfigTable is a static hashtable which allows getBestConfiguration()
+    // graphicsConfigTable is a static hashtable which allows getBestConfiguration()
     // in NativeConfigTemplate3D to map a GraphicsConfiguration to the pointer
     // to the actual GLXFBConfig that glXChooseFBConfig() returns.  The Canvas3D
     // doesn't exist at the time getBestConfiguration() is called, and
     // X11GraphicsConfig neither maintains this pointer nor provides a public
     // constructor to allow Java 3D to extend it.
-    // static Hashtable fbConfigInfoTable = new Hashtable();   -- Chien
-    static Hashtable fbConfigTable = new Hashtable();
+    static Hashtable<GraphicsConfiguration,GraphicsConfigInfo> graphicsConfigTable =
+            new Hashtable<GraphicsConfiguration,GraphicsConfigInfo>();
 
     // The native graphics version, vendor, and renderer information 
     private String nativeGraphicsVersion = "<UNKNOWN>";
@@ -918,39 +918,61 @@ public class Canvas3D extends Canvas {
     // Returns default graphics configuration if user passes null
     // into the Canvas3D constructor
     private static synchronized GraphicsConfiguration  defaultGraphicsConfiguration() {
-	if (defaultGcfg == null) {
-	    GraphicsConfigTemplate3D template = new GraphicsConfigTemplate3D();
-	    defaultGcfg = GraphicsEnvironment.getLocalGraphicsEnvironment().
-		getDefaultScreenDevice().getBestConfiguration(template);
-	}
-	return defaultGcfg;
+        if (defaultGcfg == null) {
+            GraphicsConfigTemplate3D template = new GraphicsConfigTemplate3D();
+            defaultGcfg = GraphicsEnvironment.getLocalGraphicsEnvironment().
+                getDefaultScreenDevice().getBestConfiguration(template);
+        }
+        return defaultGcfg;
     }
 
+    // Returns true if this is a valid graphics configuration, obtained
+    // via a GraphicsConfigTemplate3D.
+    private static boolean isValidConfig(GraphicsConfiguration gconfig) {
+        // If this is a valid GraphicsConfiguration object, then it will
+        // be in the graphicsConfigTable
+        return graphicsConfigTable.containsKey(gconfig);
+    }
+
+    private static GraphicsConfiguration getGraphicsConfig(GraphicsConfiguration gconfig) {
+        return Pipeline.getPipeline().getGraphicsConfig(gconfig);
+    }
+
+    // Checks the given graphics configuration, and returns a default
+    // configuration if user passes null or an invalid config
     private static synchronized GraphicsConfiguration
-    checkForValidGraphicsConfig(GraphicsConfiguration gconfig) {
+            checkForValidGraphicsConfig(GraphicsConfiguration gconfig, boolean offScreen) {
 
-	if (gconfig == null) {
-	    // Print out warning if Canvas3D is called with a
-	    // null GraphicsConfiguration
-	    System.err.println("************************************************************************");
-	    System.err.println(J3dI18N.getString("Canvas3D7"));
-	    System.err.println(J3dI18N.getString("Canvas3D18"));
-	    System.err.println("************************************************************************");
-	    return defaultGraphicsConfiguration();
-	}
+        // Issue 266 - for backwards compatibility with legacy applications,
+        // we will accept a null GraphicsConfiguration for an on-screen Canvas3D
+        // only if the "allowNullGraphicsConfig" system property is set to true.
+        if (!offScreen && VirtualUniverse.mc.allowNullGraphicsConfig) {
+            if (gconfig == null) {
+                // Print out warning if Canvas3D is called with a
+                // null GraphicsConfiguration
+                System.err.println(J3dI18N.getString("Canvas3D7"));
+                System.err.println("    " + J3dI18N.getString("Canvas3D18"));
 
-	if (!J3dGraphicsConfig.isValidConfig(gconfig)) {
-	    // Print out warning if Canvas3D is called with a
-	    // GraphicsConfiguration that wasn't created from a
-	    // GraphicsConfigTemplate3D (Solaris only).
-	    System.err.println("************************************************************************");
-	    System.err.println(J3dI18N.getString("Canvas3D21"));
-	    System.err.println(J3dI18N.getString("Canvas3D22"));
-	    System.err.println("************************************************************************");
-	    return defaultGraphicsConfiguration();
-	}
+                // Use a default graphics config
+                gconfig = defaultGraphicsConfiguration();
+            }
+        }
 
-	return gconfig;
+        // Validate input graphics config
+        if (gconfig == null) {
+            throw new NullPointerException(J3dI18N.getString("Canvas3D19"));
+        } else if (!isValidConfig(gconfig)) {
+            throw new IllegalArgumentException(J3dI18N.getString("Canvas3D17"));
+        }
+
+        // Get actual graphics config that will be used to create Canvas3D
+        GraphicsConfiguration gconf2 = getGraphicsConfig(gconfig);
+
+        // Assertion check the returned graphics config
+        assert gconf2 != null;
+        assert isValidConfig(gconf2);
+
+        return getGraphicsConfig(gconf2);
     }
 
     /**
@@ -982,11 +1004,7 @@ public class Canvas3D extends Canvas {
      * GraphicsConfiguration does not support 3D rendering
      */
     public Canvas3D(GraphicsConfiguration graphicsConfiguration) {
-	this(checkForValidGraphicsConfig(graphicsConfiguration), false);
-
-	// XXXX: ENHANCEMENT -- remove call to checkForValidGraphicsConfig.
-	// Call should then be:
-	// this(graphicsConfiguration, false);
+	this(null, checkForValidGraphicsConfig(graphicsConfiguration, false), false);
     }
 
     /**
@@ -1011,25 +1029,18 @@ public class Canvas3D extends Canvas {
      *
      * @since Java 3D 1.2
      */
-    public Canvas3D(GraphicsConfiguration graphicsConfiguration,
-		    boolean offScreen) {
+    public Canvas3D(GraphicsConfiguration graphicsConfiguration, boolean offScreen) {
+        this(null, checkForValidGraphicsConfig(graphicsConfiguration, offScreen), offScreen);
+    }
+
+    // Private constructor only called by the two public constructors after
+    // they have validated the graphics config (and possibly constructed a new
+    // default config). The graphics config must be valid if we get here.
+    private Canvas3D(Object dummyObj,
+            GraphicsConfiguration graphicsConfiguration,
+            boolean offScreen) {
 
 	super(graphicsConfiguration);
-
-	if (graphicsConfiguration == null) {
-	    throw new NullPointerException
-		(J3dI18N.getString("Canvas3D19"));
-	}
-
-	if (!J3dGraphicsConfig.isValidConfig(graphicsConfiguration)) {
-	    throw new IllegalArgumentException
-		(J3dI18N.getString("Canvas3D17"));
-	}
-
-	if (!J3dGraphicsConfig.isValidPixelFormat(graphicsConfiguration)) {
-	    throw new IllegalArgumentException
-		(J3dI18N.getString("Canvas3D17"));
-	}
 
 	this.offScreen = offScreen;
 	this.graphicsConfiguration = graphicsConfiguration;
@@ -1040,8 +1051,7 @@ public class Canvas3D extends Canvas {
 
 	// Fix for issue 20.
 	// Needed for Linux and Solaris.
-    	GraphicsConfigInfo gcInfo;
-	gcInfo = (GraphicsConfigInfo) fbConfigTable.get(graphicsConfiguration);
+    	GraphicsConfigInfo gcInfo = graphicsConfigTable.get(graphicsConfiguration);
 	if (gcInfo != null) {
             fbConfig = gcInfo.getFBConfig();
             requestedStencilSize = gcInfo.getRequestedStencilSize();

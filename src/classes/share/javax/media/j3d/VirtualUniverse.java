@@ -257,13 +257,13 @@ public class VirtualUniverse extends Object {
 	    System.err.println("Java 3D system initialized");
 	    System.err.print("    rendering library = ");
 	    switch (Pipeline.getPipeline().getRendererType()) {
-            case Pipeline.NATIVE_OGL:
+            case NATIVE_OGL:
                 System.err.println("ogl");
                 break;
-            case Pipeline.NATIVE_D3D:
+            case NATIVE_D3D:
                 System.err.println("d3d");
                 break;
-            case Pipeline.JOGL:
+            case JOGL:
                 System.err.println("jogl");
                 break;
             default:

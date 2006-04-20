@@ -12,6 +12,8 @@
 
 package javax.media.j3d;
 
+import java.awt.GraphicsConfiguration;
+
 /**
  * Abstract pipeline class for rendering pipeline methods. All rendering
  * pipeline methods will eventually go here.
@@ -21,12 +23,17 @@ abstract class Pipeline {
     private static Pipeline pipeline;
 
     // Supported Rendering APIs
-    static final int NATIVE_OGL = 1;
-    static final int NATIVE_D3D = 2;
-    static final int JOGL = 3;
+    enum Type {
+        // Native rendering pipelines using OGL or D3D library
+        NATIVE_OGL,
+        NATIVE_D3D,
+        
+        // Java rendering pipeline using Java Bindings for OpenGL
+        JOGL,
+    }
 
     // Type of renderer (as defined above)
-    private int rendererType = -1;
+    private Type rendererType = null;
 
     protected Pipeline() {
     }
@@ -36,7 +43,7 @@ abstract class Pipeline {
      * MasterControl.loadLibraries() to create the singleton
      * Pipeline object.
      */
-    static void createPipeline(int rendererType) {
+    static void createPipeline(Type rendererType) {
         String className = null;
         switch (rendererType) {
         case NATIVE_OGL:
@@ -80,21 +87,21 @@ abstract class Pipeline {
      * Pipeline subclasses may override this, but must call
      * super.initialize(renderType);
      */
-    void initialize(int rendererType) {
+    void initialize(Type rendererType) {
         setRendererType(rendererType);
     }
 
     /**
      * Sets the renderer type. Only called by initialize.
      */
-    private void setRendererType(int rendererType) {
+    private void setRendererType(Type rendererType) {
         this.rendererType = rendererType;
     }
 
     /**
      * Returns the renderer type
      */
-    int getRendererType() {
+    Type getRendererType() {
         return rendererType;
     }
 
@@ -1140,7 +1147,7 @@ abstract class Pipeline {
     // ---------------------------------------------------------------------
 
     //
-    // Canvas3D methods
+    // Canvas3D methods - native wrappers
     //
 
     // This is the native method for creating the underlying graphics context.
@@ -1347,5 +1354,19 @@ abstract class Pipeline {
     // Set glDepthMask.
     abstract void setDepthBufferWriteEnable(long ctx, boolean mode);
 
+
+    // ---------------------------------------------------------------------
+
+    //
+    // Canvas3D methods - logic dealing with native graphics configuration
+    // or drawing surface
+    //
+
+    // Return a graphics config based on the one passed in. Note that we can
+    // assert that the input config is non-null and was created from a
+    // GraphicsConfigTemplate3D.
+    // This method must return a valid GraphicsConfig, or else it must throw
+    // an exception if one cannot be returned.
+    abstract GraphicsConfiguration getGraphicsConfig(GraphicsConfiguration gconfig);
 
 }

@@ -21,20 +21,12 @@ class J3dGraphicsConfig {
 
     J3dGraphicsConfig(GraphicsDevice gd, int pixelFormat) {
 	// a dummy class that should never be invoked under X11
-        assert false;
+        throw new InternalError();
     }
     
     static boolean isValidPixelFormat(GraphicsConfiguration gc) {
 	return isValidVisualID(NativeScreenInfo.getStaticDisplay(),
 			       ((X11GraphicsConfig) gc).getVisual());
     }
-
-    static boolean isValidConfig(GraphicsConfiguration gc) {	
-	// Check to see if a valid FBConfig pointer has been cached.
-	Object fbConfigObject = Canvas3D.fbConfigTable.get(gc);
-	return ((fbConfigObject != null) && 
-		(fbConfigObject instanceof GraphicsConfigInfo));
-    }
-
 
 }

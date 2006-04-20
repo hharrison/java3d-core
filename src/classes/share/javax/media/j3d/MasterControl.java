@@ -291,6 +291,9 @@ class MasterControl {
 
     // Flag indicating that we are on a Windows OS
     private static boolean isWindowsOs = false;
+    
+    // Flag indicating we are on MacOS
+    private static boolean isMacOs = false;
 
     // This is a counter for texture id's, valid id starts from 1
     private int textureIdCount = 0;
@@ -337,6 +340,13 @@ class MasterControl {
 
     // Issue 249 - flag that indicates whether the soleUser optimization is permitted
     boolean allowSoleUser = false;
+
+    // Issue 266 - Flag indicating whether null graphics configs are allowed
+    // Set by -Dj3d.allowNullGraphicsConfig property
+    // Setting this flag causes Canvas3D to allow a null GraphicsConfiguration
+    // for on-screen canvases. This is only for backward compatibility with
+    // legacy applications.
+    boolean allowNullGraphicsConfig = false;
 
     // The global shading language being used. Using a ShaderProgram
     // with a shading language other than the one specified by
@@ -586,7 +596,12 @@ class MasterControl {
 					   allowSoleUser,
 					   "sole-user mode");
 
-	// Check to see whether BackgroundRetained uses texturemapping
+        // Issue 266 - check to see whether null graphics configs are allowed
+        allowNullGraphicsConfig = getBooleanProperty("j3d.allowNullGraphicsConfig",
+						     allowNullGraphicsConfig,
+						     "null graphics configs");
+
+        // Check to see whether BackgroundRetained uses texturemapping
 	// or drawpixel clear the background
 	if (!isD3D()) {
 	    isBackgroundTexture =
@@ -719,9 +734,15 @@ class MasterControl {
     static void loadLibraries() {
         assert !librariesLoaded;
 
-        // Set global flag indicating whether we are running on Windows
+        // Set global flags indicating whether we are running on Windows or MacOS
         String osName = getProperty("os.name");
-        isWindowsOs = (osName != null && osName.startsWith("Windows"));
+        isWindowsOs = osName != null && osName.startsWith("Windows");
+        isMacOs = osName != null && osName.startsWith("Mac");
+
+//KCR:        System.err.println("MasterControl.loadLibraries()");
+//KCR:        System.err.println("    osName = \"" + osName + "\"" +
+//KCR:                ", isWindowsOs = " + isWindowsOs +
+//KCR:                ", isMacOs = " + isMacOs);
 
         // Initialize the Pipeline object associated with the
         // renderer specified by the "j3d.rend" system property.
@@ -729,20 +750,26 @@ class MasterControl {
         // XXXX : We should consider adding support for a more flexible,
         // dynamic selection scheme via an API call.
 
-        // Default rendering pipeline is native ogl pipeline
-        int rendererType = Pipeline.NATIVE_OGL;
+        // Default rendering pipeline is the JOGL pipeline on MacOS and the
+        // native OpenGL pipeline on all other platforms.
+        Pipeline.Type rendererType =
+                isMacOs ? Pipeline.Type.JOGL : Pipeline.Type.NATIVE_OGL;
 
         String rendStr = getProperty("j3d.rend");
-        if (rendStr == null || rendStr.equals("ogl")) {
+        if (rendStr == null) {
             // Use default pipeline
+        } else if (rendStr.equals("ogl") && !isMacOs) {
+            rendererType = Pipeline.Type.NATIVE_OGL;
         } else if (rendStr.equals("d3d") && isWindowsOs) {
-            rendererType = Pipeline.NATIVE_D3D;
+            rendererType = Pipeline.Type.NATIVE_D3D;
         } else if (rendStr.equals("jogl")) {
-            rendererType = Pipeline.JOGL;
+            rendererType = Pipeline.Type.JOGL;
         } else {
             System.err.println("Java 3D: Unrecognized renderer: " + rendStr);
             // Use default pipeline
         }
+
+//KCR:        System.err.println("    using " + rendererType + " pipeline");
 
         // Construct the singleton Pipeline instance
         Pipeline.createPipeline(rendererType);
@@ -1142,7 +1169,7 @@ class MasterControl {
      * TODO: most code that cares about this should move into the pipeline
      */
     final boolean isD3D() {
-	return Pipeline.getPipeline().getRendererType() == Pipeline.NATIVE_D3D;
+	return Pipeline.getPipeline().getRendererType() == Pipeline.Type.NATIVE_D3D;
     }
 
     /**

@@ -29,10 +29,6 @@ class J3dGraphicsConfig extends Win32GraphicsConfig {
 	return (gc instanceof J3dGraphicsConfig);
     }
 
-    static boolean isValidConfig(GraphicsConfiguration gc) {
-	return isValidPixelFormat(gc);
-    }
-    
     int getPixelFormat() {
 	return pixelFormat;
     }

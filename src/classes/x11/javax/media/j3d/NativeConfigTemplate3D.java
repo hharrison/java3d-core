@@ -44,8 +44,8 @@ class NativeConfigTemplate3D {
 			       int[] attrList, long[] fbConfig);
 
     // Native method to free an GLXFBConfig struct.  This is static since it
-    // may need to be called to clean up the Canvas3D fbConfigTable after the
-    // NativeConfigTemplate3D has been disposed of.
+    // may need to be called to clean up the Canvas3D graphicsConfigTable
+    // after the NativeConfigTemplate3D has been disposed of.
     static native void freeFBConfig(long fbConfig);
 
     // Native methods to return whether a particular attribute is available
@@ -140,12 +140,12 @@ class NativeConfigTemplate3D {
 	// the pointer to the actual GLXFBConfig that glXChooseFBConfig()
 	// returns, since this is not cached with X11GraphicsConfig and there
 	// are no public constructors to allow us to extend it.	
-	synchronized (Canvas3D.fbConfigTable) {
-	    if (Canvas3D.fbConfigTable.get(gc1) == null) {
+	synchronized (Canvas3D.graphicsConfigTable) {
+	    if (Canvas3D.graphicsConfigTable.get(gc1) == null) {
                 GraphicsConfigInfo gcInfo = new GraphicsConfigInfo();
                 gcInfo.setFBConfig(fbConfig[0]);
                 gcInfo.setRequestedStencilSize(attrList[STENCIL_SIZE]);
-		Canvas3D.fbConfigTable.put(gc1, gcInfo);
+		Canvas3D.graphicsConfigTable.put(gc1, gcInfo);
             } else {
 		freeFBConfig(fbConfig[0]);
             }

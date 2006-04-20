@@ -12,6 +12,7 @@
 
 package javax.media.j3d;
 
+import java.awt.GraphicsConfiguration;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -50,7 +51,7 @@ class NativePipeline extends Pipeline {
     /**
      * Initialize the pipeline
      */
-    void initialize(int rendererType) {
+    void initialize(Type rendererType) {
         super.initialize(rendererType);
 
         // This works around a native load library bug
@@ -94,7 +95,7 @@ class NativePipeline extends Pipeline {
 
         // Check whether the GLSL library is available
         if (globalShadingLanguage == Shader.SHADING_LANGUAGE_GLSL) {
-            if (getRendererType() == NATIVE_OGL) {
+            if (getRendererType() == Type.NATIVE_OGL) {
                 // No need to verify that GLSL is available, since GLSL is part
                 // of OpenGL as an extension (or part of core in 2.0)
                 glslLibraryAvailable = true;
@@ -1367,5 +1368,27 @@ class NativePipeline extends Pipeline {
     // Set glDepthMask.
     native void setDepthBufferWriteEnable(long ctx, boolean mode);
 
+
+    // ---------------------------------------------------------------------
+
+    //
+    // Canvas3D methods - logic dealing with native graphics configuration
+    // or drawing surface
+    //
+
+    // Return a graphics config based on the one passed in. Note that we can
+    // assert that the input config is non-null and was created from a
+    // GraphicsConfigTemplate3D.
+    // This method must return a valid GraphicsConfig, or else it must throw
+    // an exception if one cannot be returned.
+    GraphicsConfiguration getGraphicsConfig(GraphicsConfiguration gconfig) {
+//KCR:        System.err.println("NativePipeline.getGraphicsConfig()");
+        if (!J3dGraphicsConfig.isValidPixelFormat(gconfig)) {
+            throw new IllegalArgumentException(J3dI18N.getString("Canvas3D17"));
+        }
+
+        // Just return the input graphics config
+        return gconfig;
+    }
 
 }

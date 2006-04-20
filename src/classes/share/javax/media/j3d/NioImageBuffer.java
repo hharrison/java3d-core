@@ -126,7 +126,8 @@ public class NioImageBuffer {
          */
         TYPE_FLOAT_GRAY,
 
-    };
+    }
+
 
     /**
      * Enum for type of buffer
@@ -135,7 +136,8 @@ public class NioImageBuffer {
         BYTE_BUFFER,
         INT_BUFFER,
         FLOAT_BUFFER,
-    };
+    }
+
 
     // Width and height of image
     int width;
