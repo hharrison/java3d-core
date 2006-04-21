@@ -1383,12 +1383,19 @@ class NativePipeline extends Pipeline {
     // an exception if one cannot be returned.
     GraphicsConfiguration getGraphicsConfig(GraphicsConfiguration gconfig) {
 //KCR:        System.err.println("NativePipeline.getGraphicsConfig()");
-        if (!J3dGraphicsConfig.isValidPixelFormat(gconfig)) {
-            throw new IllegalArgumentException(J3dI18N.getString("Canvas3D17"));
-        }
 
         // Just return the input graphics config
         return gconfig;
+    }
+
+    // Get the native FBconfig pointer
+    long getFbConfig(GraphicsConfigInfo gcInfo) {
+        long fbConfig = ((Long)gcInfo.getPrivateData()).longValue();
+        if (fbConfig == 0L) {
+            throw new IllegalArgumentException(J3dI18N.getString("Canvas3D23"));
+        }
+
+        return fbConfig;
     }
 
 }

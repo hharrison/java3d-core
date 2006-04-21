@@ -1369,4 +1369,7 @@ abstract class Pipeline {
     // an exception if one cannot be returned.
     abstract GraphicsConfiguration getGraphicsConfig(GraphicsConfiguration gconfig);
 
+    // Get the native FBconfig pointer
+    abstract long getFbConfig(GraphicsConfigInfo gcInfo);
+
 }

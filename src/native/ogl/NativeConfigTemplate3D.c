@@ -617,23 +617,6 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasing
 
     return JNI_FALSE;
 }
-
-
-JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_J3dGraphicsConfig_isValidVisualID(
-    JNIEnv *env,
-    jclass cls,
-    jlong display,
-    jint vid)
-{
-   XVisualInfo template;
-   int nitems;
-   
-   template.visualid = vid;
-   XGetVisualInfo((Display *)display, VisualIDMask, &template, &nitems);
-   return (nitems == 1);
-
-}
 #endif /* UNIX_ */
 
 

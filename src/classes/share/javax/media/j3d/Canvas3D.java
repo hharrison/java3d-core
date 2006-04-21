@@ -597,9 +597,8 @@ public class Canvas3D extends Canvas {
     // For Windows : Fix for issue 76.  This is use as a holder of the
     // PixelFormat structure ( see also gldef.h ) to allow value such
     // as offScreen's pixelformat, and ARB function pointers to be stored.
-    long fbConfig = 0;  
-    GraphicsConfigInfo gcInfo = null;
-    
+    long fbConfig = 0;
+
     // offScreenBufferInfo is a pointer to additional information about the
     // offScreenBuffer in this Canvas.
     //
@@ -1049,27 +1048,11 @@ public class Canvas3D extends Canvas {
         cvDirtyMask[0] = VIEW_INFO_DIRTY;
         cvDirtyMask[1] = VIEW_INFO_DIRTY;
 
-	// Fix for issue 20.
-	// Needed for Linux and Solaris.
     	GraphicsConfigInfo gcInfo = graphicsConfigTable.get(graphicsConfiguration);
-	if (gcInfo != null) {
-            fbConfig = gcInfo.getFBConfig();
-            requestedStencilSize = gcInfo.getRequestedStencilSize();
-            
-	    /*
-	      System.out.println("Canvas3D : requestedStencilSize is " +
-	      requestedStencilSize);
-	      System.out.println("Canvas3D creation FBConfig = " + fbConfig + 
-	       " offScreen is " + offScreen );
-	    */
-	    // This check is needed for Unix and Win-ogl only. fbConfig should 
-	    // remain as -1, default value, for D3D case. 
-	    if (fbConfig == 0) {	    
-		throw new IllegalArgumentException
-		    (J3dI18N.getString("Canvas3D23"));
-	    }
-	}        
-        
+        requestedStencilSize = gcInfo.getGraphicsConfigTemplate3D().getStencilSize();
+
+        fbConfig = Pipeline.getPipeline().getFbConfig(gcInfo);
+
 	if (offScreen) {
 	    screen = new Screen3D(graphicsConfiguration, offScreen);
 
@@ -1123,18 +1106,19 @@ public class Canvas3D extends Canvas {
 
 	}
 
-        drawingSurfaceObject = new DrawingSurfaceObjectAWT(this,
-                VirtualUniverse.mc.awt, screen.display, screen.screen,
-                VirtualUniverse.mc.xineramaDisabled);
-
         lights = new LightRetained[VirtualUniverse.mc.maxLights];
         frameCount = new int[VirtualUniverse.mc.maxLights];
 	for (int i=0; i<frameCount.length;i++) {
 	    frameCount[i] = -1;
 	}
 
+        // TODO: move this to the Pipeline
+        drawingSurfaceObject = new DrawingSurfaceObjectAWT(this,
+                VirtualUniverse.mc.awt, screen.display, screen.screen,
+                VirtualUniverse.mc.xineramaDisabled);
+
 	// Get double buffer, stereo available, scene antialiasing
-	// flags from template.
+	// flags from graphics config
 	GraphicsConfigTemplate3D.getGraphicsConfigFeatures(this);
 
         useDoubleBuffer = doubleBufferEnable && doubleBufferAvailable;

@@ -118,16 +118,14 @@ class NativeConfigTemplate3D {
 	// Fix to issue 104 -- 
 	// Pass in 0 for pixel format to the AWT. 
 	// ATI driver will lockup pixelFormat, if it is passed to AWT.
-	GraphicsConfiguration gc1 = new J3dGraphicsConfig(gd, 0);
+        GraphicsConfiguration gc1 = Win32GraphicsConfig.getConfig(gd, 0);
 
-	// We need to cache the offScreen pixelformat that glXChoosePixelFormat()
-	// returns, since this is not cached with J3dGraphicsConfig and there
-	// are no public constructors to allow us to extend it.
+	// We need to cache the GraphicsTemplate3D and the private
+        // pixel format info.
 	synchronized (Canvas3D.graphicsConfigTable) {
 	    if (Canvas3D.graphicsConfigTable.get(gc1) == null) {
-                GraphicsConfigInfo gcInfo = new GraphicsConfigInfo();
-                gcInfo.setFBConfig(pFormatInfo[0]);
-                gcInfo.setRequestedStencilSize(attrList[STENCIL_SIZE]);
+                GraphicsConfigInfo gcInfo = new GraphicsConfigInfo(template);
+                gcInfo.setPrivateData(new Long(pFormatInfo[0]));
 		Canvas3D.graphicsConfigTable.put(gc1, gcInfo);
             } else {
 		freePixelFormatInfo(pFormatInfo[0]);
