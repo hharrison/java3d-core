@@ -41,8 +41,10 @@ class DrawingSurfaceObjectDummy extends DrawingSurfaceObject {
     }
 
     synchronized void getDrawingSurfaceObjectInfo() {
-        System.err.println("DrawingSurfaceObjectDummy.getDrawingSurfaceObjectInfo()");
         if (canvas.window == 0) {
+            System.err.println(
+                    "DrawingSurfaceObjectDummy.getDrawingSurfaceObjectInfo: window = "
+                    + canvas.window);
             canvas.window = nextWindow();
         }
     }
