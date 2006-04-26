@@ -68,10 +68,8 @@ class NativeConfigTemplate3D {
 	    return null;
 	}
 
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
-
-	long display = nativeScreenInfo.getDisplay();
-	int screen = nativeScreenInfo.getScreen();
+	long display = NativeScreenInfo.getDisplay();
+	int screen = NativeScreenInfo.getScreen(gd);
 
 	if (debug) {
 	    System.out.println("  NativeConfigTemplate3D: using device " + gd);
@@ -174,10 +172,8 @@ class NativeConfigTemplate3D {
 	    return false;
 	}
 
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
-
-	long display = nativeScreenInfo.getDisplay();
-	int screen = nativeScreenInfo.getScreen();
+	long display = NativeScreenInfo.getDisplay();
+	int screen = NativeScreenInfo.getScreen(gd);
 
         int[] attrList;   // holds the list of attributes to be tramslated
                           // for glxChooseVisual call
@@ -213,10 +209,9 @@ class NativeConfigTemplate3D {
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
 
-	long display = nativeScreenInfo.getDisplay();
-	int screen = nativeScreenInfo.getScreen();
+	long display = NativeScreenInfo.getDisplay();
+	int screen = NativeScreenInfo.getScreen(gd);
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
 	return isStereoAvailable(display, screen, vid);
@@ -228,10 +223,9 @@ class NativeConfigTemplate3D {
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
 
-	long display = nativeScreenInfo.getDisplay();
-	int screen = nativeScreenInfo.getScreen();
+	long display = NativeScreenInfo.getDisplay();
+	int screen = NativeScreenInfo.getScreen(gd);
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
 	return getStencilSize(display, screen, vid);
@@ -243,10 +237,9 @@ class NativeConfigTemplate3D {
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
 
-	long display = nativeScreenInfo.getDisplay();
-	int screen = nativeScreenInfo.getScreen();
+	long display = NativeScreenInfo.getDisplay();
+	int screen = NativeScreenInfo.getScreen(gd);
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
 	return isDoubleBufferAvailable(display, screen, vid);
@@ -258,10 +251,9 @@ class NativeConfigTemplate3D {
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
 
-	long display = nativeScreenInfo.getDisplay();
-	int screen = nativeScreenInfo.getScreen();
+	long display = NativeScreenInfo.getDisplay();
+	int screen = NativeScreenInfo.getScreen(gd);
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
 	return isSceneAntialiasingAccumAvailable(display, screen, vid);
@@ -274,10 +266,9 @@ class NativeConfigTemplate3D {
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
 
-	long display = nativeScreenInfo.getDisplay();
-	int screen = nativeScreenInfo.getScreen();
+	long display = NativeScreenInfo.getDisplay();
+	int screen = NativeScreenInfo.getScreen(gd);
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
 	return isSceneAntialiasingMultisampleAvailable(display, screen, vid);

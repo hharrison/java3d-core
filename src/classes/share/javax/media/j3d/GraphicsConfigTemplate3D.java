@@ -49,14 +49,6 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
     static boolean threadWaiting = false;
 
     /**
-     * The platform dependent template.  Since there is no
-     * template-specific instance data in the NativeConfigTemplate3D
-     * class, we can create one statically.
-     */
-    static NativeConfigTemplate3D nativeTemplate =
-	new NativeConfigTemplate3D();
-
-    /**
      * Constructs a GraphicsConfigTemplate3D object with default parameters.
      * The default values are as follows:
      * <ul>

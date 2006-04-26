@@ -91,8 +91,8 @@ class NativeConfigTemplate3D {
     	attrList[STENCIL_SIZE] = template.getStencilSize();
 	// System.out.println("NativeConfigTemplate3D : getStencilSize " + 
 	// attrList[STENCIL_SIZE]);
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
-	int screen = nativeScreenInfo.getScreen();	
+
+        int screen = NativeScreenInfo.getScreen(gd);	
 
 	long[] pFormatInfo = new long[1];
 
@@ -172,8 +172,7 @@ class NativeConfigTemplate3D {
 	// System.out.println("NativeConfigTemplate3D : getStencilSize " + 
 	// attrList[STENCIL_SIZE]);
 
-	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
-	int screen = nativeScreenInfo.getScreen();	
+	int screen = NativeScreenInfo.getScreen(gd);	
 
 	long[] pFormatInfo = new long[1];
 
@@ -218,8 +217,7 @@ class NativeConfigTemplate3D {
 
         Win32GraphicsDevice gd =
 	    (Win32GraphicsDevice)((Win32GraphicsConfig)gc).getDevice();
- 	NativeScreenInfo nativeScreenInfo = new NativeScreenInfo(gd);
-	int screen = nativeScreenInfo.getScreen();
+	int screen = NativeScreenInfo.getScreen(gd);
 	/* Fix to issue 77 */ 
 	return isSceneAntialiasingMultisampleAvailable(c3d.fbConfig, c3d.offScreen, screen);
     }

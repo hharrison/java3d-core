@@ -13,6 +13,7 @@
 package javax.media.j3d;
 
 import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -43,6 +44,13 @@ class NativePipeline extends Pipeline {
     private boolean glslLibraryAvailable = false;
 
     /**
+     * The platform dependent template.  Since there is no
+     * template-specific instance data in the NativeConfigTemplate3D
+     * class, we can create one statically.
+     */
+    private static NativeConfigTemplate3D nativeTemplate = new NativeConfigTemplate3D();
+
+    /**
      * Constructor for singleton NativePipeline instance
      */
     protected NativePipeline() {
@@ -51,7 +59,7 @@ class NativePipeline extends Pipeline {
     /**
      * Initialize the pipeline
      */
-    void initialize(Type rendererType) {
+    void initialize(Pipeline.Type rendererType) {
         super.initialize(rendererType);
 
         // This works around a native load library bug
@@ -95,7 +103,7 @@ class NativePipeline extends Pipeline {
 
         // Check whether the GLSL library is available
         if (globalShadingLanguage == Shader.SHADING_LANGUAGE_GLSL) {
-            if (getRendererType() == Type.NATIVE_OGL) {
+            if (getRendererType() == Pipeline.Type.NATIVE_OGL) {
                 // No need to verify that GLSL is available, since GLSL is part
                 // of OpenGL as an extension (or part of core in 2.0)
                 glslLibraryAvailable = true;
@@ -1151,9 +1159,6 @@ class NativePipeline extends Pipeline {
     // Method to initialize the native J3D library
     native boolean initializeJ3D(boolean disableXinerama);
 
-    // Method to get number of procesor
-    native int getNumberOfProcessor();
-
     // Maximum lights supported by the native API 
     native int getMaximumLights();
 
@@ -1372,8 +1377,8 @@ class NativePipeline extends Pipeline {
     // ---------------------------------------------------------------------
 
     //
-    // Canvas3D methods - logic dealing with native graphics configuration
-    // or drawing surface
+    // Canvas3D / GraphicsConfigTemplate3D methods - logic dealing with
+    // native graphics configuration or drawing surface
     //
 
     // Return a graphics config based on the one passed in. Note that we can
@@ -1396,6 +1401,47 @@ class NativePipeline extends Pipeline {
         }
 
         return fbConfig;
+    }
+
+    // Get best graphics config from pipeline
+    GraphicsConfiguration getBestConfiguration(GraphicsConfigTemplate3D gct,
+            GraphicsConfiguration[] gc) {
+        return nativeTemplate.getBestConfiguration(gct, gc);
+    }
+
+    // Determine whether specified graphics config is supported by pipeline
+    boolean isGraphicsConfigSupported(GraphicsConfigTemplate3D gct,
+            GraphicsConfiguration gc) {
+        return nativeTemplate.isGraphicsConfigSupported(gct, gc);
+    }
+
+    // Methods to get actual capabilities from Canvas3D
+    boolean hasDoubleBuffer(Canvas3D c) {
+        return nativeTemplate.hasDoubleBuffer(c);
+    }
+
+    boolean hasStereo(Canvas3D c) {
+        return nativeTemplate.hasStereo(c);
+    }
+
+    int getStencilSize(Canvas3D c) {
+        return nativeTemplate.getStencilSize(c);
+    }
+
+    boolean hasSceneAntialiasingMultisample(Canvas3D c) {
+        return nativeTemplate.hasSceneAntialiasingMultisample(c);
+    }
+
+    boolean hasSceneAntialiasingAccum(Canvas3D c) {
+        return nativeTemplate.hasSceneAntialiasingAccum(c);
+    }
+
+    // Methods to get native WS display and screen
+    long getDisplay() {
+        return NativeScreenInfo.getDisplay();
+    }
+    int getScreen(GraphicsDevice graphicsDevice) {
+        return NativeScreenInfo.getScreen(graphicsDevice);
     }
 
 }

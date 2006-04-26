@@ -14,10 +14,6 @@ package javax.media.j3d;
 
 import java.net.URL; 
 import java.io.InputStream;
-import java.net.MalformedURLException; 
-import java.io.File;
-import java.security.*;
-import java.io.InputStream;
 
 /**
  * The MediaContainerRetained object defines all rendering state that can

@@ -13,6 +13,7 @@
 package javax.media.j3d;
 
 import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 
 /**
  * Abstract pipeline class for rendering pipeline methods. All rendering
@@ -30,6 +31,9 @@ abstract class Pipeline {
         
         // Java rendering pipeline using Java Bindings for OpenGL
         JOGL,
+
+        // No-op rendering pipeline
+        NOOP,
     }
 
     // Type of renderer (as defined above)
@@ -52,6 +56,9 @@ abstract class Pipeline {
             break;
         case JOGL:
             className = "javax.media.j3d.JoglPipeline";
+            break;
+        case NOOP:
+            className = "javax.media.j3d.NoopPipeline";
             break;
         default:
             // Should not get here
@@ -1137,9 +1144,6 @@ abstract class Pipeline {
     // Method to initialize the native J3D library
     abstract boolean initializeJ3D(boolean disableXinerama);
 
-    // Method to get number of procesor
-    abstract int getNumberOfProcessor();
-
     // Maximum lights supported by the native API 
     abstract int getMaximumLights();
 
@@ -1358,8 +1362,8 @@ abstract class Pipeline {
     // ---------------------------------------------------------------------
 
     //
-    // Canvas3D methods - logic dealing with native graphics configuration
-    // or drawing surface
+    // Canvas3D / GraphicsConfigTemplate3D methods - logic dealing with
+    // native graphics configuration or drawing surface
     //
 
     // Return a graphics config based on the one passed in. Note that we can
@@ -1371,5 +1375,25 @@ abstract class Pipeline {
 
     // Get the native FBconfig pointer
     abstract long getFbConfig(GraphicsConfigInfo gcInfo);
+
+    // Get best graphics config from pipeline
+    abstract GraphicsConfiguration getBestConfiguration(GraphicsConfigTemplate3D gct,
+            GraphicsConfiguration[] gc);
+
+    // Determine whether specified graphics config is supported by pipeline
+    abstract boolean isGraphicsConfigSupported(GraphicsConfigTemplate3D gct,
+            GraphicsConfiguration gc);
+
+    // Methods to get actual capabilities from Canvas3D
+    abstract boolean hasDoubleBuffer(Canvas3D c);
+    abstract boolean hasStereo(Canvas3D c);
+    abstract int getStencilSize(Canvas3D c);
+    abstract boolean hasSceneAntialiasingMultisample(Canvas3D c);
+    abstract boolean hasSceneAntialiasingAccum(Canvas3D c);
+    
+    // Methods to get native WS display and screen
+    abstract long getDisplay();
+    abstract int getScreen(GraphicsDevice graphicsDevice);
+
 
 }

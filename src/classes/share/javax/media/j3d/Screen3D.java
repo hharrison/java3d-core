@@ -353,18 +353,14 @@ public class Screen3D extends Object {
      * associated with an off-screen Canvas3D
      */
     Screen3D(GraphicsConfiguration graphicsConfiguration, boolean offScreen) {
-	NativeScreenInfo nativeScreenInfo;
-
 	this.offScreen = offScreen;
 	this.graphicsDevice = graphicsConfiguration.getDevice(); 
 
 	screenViewCache = new ScreenViewCache(this);
-	nativeScreenInfo = new NativeScreenInfo(graphicsDevice);
 
-	// Get the display from the native code (X11 only) and the
-	// screen ID
-	display = nativeScreenInfo.getDisplay();
-	screen = nativeScreenInfo.getScreen();
+	// Get the display handle and the screen number from the Pipeline
+	display = Pipeline.getPipeline().getDisplay();
+	screen = Pipeline.getPipeline().getScreen(graphicsDevice);
 
 	if (debug)
 	    System.out.println("Screen3D: display " + display +

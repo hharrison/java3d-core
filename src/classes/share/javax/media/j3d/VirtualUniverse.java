@@ -266,6 +266,9 @@ public class VirtualUniverse extends Object {
             case JOGL:
                 System.err.println("jogl");
                 break;
+            case NOOP:
+                System.err.println("noop");
+                break;
             default:
                 System.err.println("UNKNOWN");
                 assert false; // should not get here

@@ -385,20 +385,18 @@ class Renderer extends J3dThread {
 			Integer reqType = (Integer) m[nmesg].args[2];
 			Canvas3D c = (Canvas3D) secondArg;
 			if (reqType == MasterControl.SET_GRAPHICSCONFIG_FEATURES) {
-			    NativeConfigTemplate3D nct = 
-				GraphicsConfigTemplate3D.nativeTemplate;
 			    if (c.offScreen) {
 				// offScreen canvas neither supports
 				// double buffering nor  stereo
 				c.doubleBufferAvailable = false;
 				c.stereoAvailable = false;
 			    } else {
-				c.doubleBufferAvailable = nct.hasDoubleBuffer(c);
-				c.stereoAvailable = nct.hasStereo(c);
+				c.doubleBufferAvailable = c.hasDoubleBuffer();
+				c.stereoAvailable = c.hasStereo();
 			    }
 
 			    // Setup stencil related variables.
-                            c.actualStencilSize = nct.getStencilSize(c);
+                            c.actualStencilSize = c.getStencilSize();
                             boolean userOwnsStencil = c.requestedStencilSize > 0;
                             
                             c.userStencilAvailable = 
@@ -406,22 +404,14 @@ class Renderer extends J3dThread {
                             c.systemStencilAvailable =
                                     (!userOwnsStencil && (c.actualStencilSize > 0));
 
-                            /*
-			      System.out.println("Renderer :check for nct configuration");
-			      System.out.println("-- userStencilAvailable " + 
-			      c.userStencilAvailable);
-			      System.out.println("-- systemStencilAvailable " + 
-			      c.systemStencilAvailable);
-			    */
-
                             c.sceneAntialiasingMultiSamplesAvailable =
-				nct.hasSceneAntialiasingMultisample(c);
+				c.hasSceneAntialiasingMultisample();
 
 			    if (c.sceneAntialiasingMultiSamplesAvailable) {
 				c.sceneAntialiasingAvailable = true;
 			    } else {
 				c.sceneAntialiasingAvailable = 
-				    nct.hasSceneAntialiasingAccum(c);
+				    c.hasSceneAntialiasingAccum();
 			    }
 			    GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
 			} else if (reqType == MasterControl.SET_QUERYPROPERTIES){
@@ -444,19 +434,19 @@ class Renderer extends J3dThread {
 			    (GraphicsConfigTemplate3D) secondArg;
 			Integer reqType = (Integer) m[nmesg].args[2];
 			if (reqType == MasterControl.GETBESTCONFIG) {
-			    gct.testCfg = 
-				gct.nativeTemplate.getBestConfiguration(gct,
+			    gct.testCfg =
+				Pipeline.getPipeline().getBestConfiguration(gct,
 					(GraphicsConfiguration []) gct.testCfg);
 			} else if (reqType == MasterControl.ISCONFIGSUPPORT) {
-			    if (gct.nativeTemplate.isGraphicsConfigSupported(gct,
+			    if (Pipeline.getPipeline().isGraphicsConfigSupported(gct,
 				     (GraphicsConfiguration) gct.testCfg)) {
 				gct.testCfg = Boolean.TRUE;
 			    } else {
 				gct.testCfg = Boolean.FALSE;
 			    }
-			} 
+			}
 			gct.runMonitor(J3dThread.NOTIFY);
-		    } 
+		    }
 
 		    m[nmesg++].decRefcount();
 		    continue;

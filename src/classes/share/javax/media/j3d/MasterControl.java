@@ -20,8 +20,6 @@ package javax.media.j3d;
 
 import java.util.*;
 import java.awt.*;
-import java.io.File;
-
 
 class MasterControl {
 
@@ -621,7 +619,7 @@ class MasterControl {
 			       "shared stereo Z buffer");
 
 	// Get the maximum number of concurrent threads (CPUs)
-	final int defaultThreadLimit = Pipeline.getPipeline().getNumberOfProcessor()+1;
+	final int defaultThreadLimit = getNumberOfProcessors() + 1;
 	Integer threadLimit =
 	    (Integer) java.security.AccessController.doPrivileged(
 	    new java.security.PrivilegedAction() {
@@ -764,6 +762,8 @@ class MasterControl {
             rendererType = Pipeline.Type.NATIVE_D3D;
         } else if (rendStr.equals("jogl")) {
             rendererType = Pipeline.Type.JOGL;
+        } else if (rendStr.equals("noop")) {
+            rendererType = Pipeline.Type.NOOP;
         } else {
             System.err.println("Java 3D: Unrecognized renderer: " + rendStr);
             // Use default pipeline
@@ -3710,5 +3710,10 @@ class MasterControl {
 	    // Do nothing, since we really don't care how long (or
 	    // even whether) we sleep
 	}
+    }
+
+    // Return the number of available processors
+    private int getNumberOfProcessors() {
+        return Runtime.getRuntime().availableProcessors();
     }
 }

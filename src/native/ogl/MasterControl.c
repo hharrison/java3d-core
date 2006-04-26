@@ -164,29 +164,6 @@ DWORD countBits(DWORD mask)
 
 #endif /* WIN32 */
 
-/*
- * Class:     javax_media_j3d_MasterControl
- * Method:    getNumberOfProcessor
- * Signature: ()I
- *
- * This function get the number of active processor in the system
- */
-JNIEXPORT jint JNICALL Java_javax_media_j3d_NativePipeline_getNumberOfProcessor
-  (JNIEnv *env, jobject obj)
-{
-#if defined(UNIX)
-    return sysconf(_SC_NPROCESSORS_ONLN);
-#endif /* UNIX_ */
-
-#ifdef WIN32
-    SYSTEM_INFO sysInfo;
-
-    GetSystemInfo(&sysInfo);
-    return countBits(sysInfo.dwActiveProcessorMask);
-#endif /* WIN32 */
-}
-
-
 JNIEXPORT
 jint JNICALL Java_javax_media_j3d_NativePipeline_getMaximumLights(
     JNIEnv *env, 
