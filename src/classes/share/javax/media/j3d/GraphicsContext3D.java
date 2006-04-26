@@ -1658,18 +1658,17 @@ public class GraphicsContext3D extends Object   {
 		}
 		*/
 		
-		if (canvas3d.ctx == 0) {
+		if (canvas3d.ctx == null) {
 		    synchronized (VirtualUniverse.mc.contextCreationLock) {
-			canvas3d.ctx = canvas3d.createNewContext(0, false);
-			if (canvas3d.ctx == 0) {
+			canvas3d.ctx = canvas3d.createNewContext(null, false);
+			if (canvas3d.ctx == null) {
 			    canvas3d.drawingSurfaceObject.unLock();
 			    return;
 			}
 
 			canvas3d.ctxTimeStamp =
 			    VirtualUniverse.mc.getContextTimeStamp();
-                        canvas3d.screen.renderer.listOfCtxs.add(
-                                new Long(canvas3d.ctx));
+                        canvas3d.screen.renderer.listOfCtxs.add(canvas3d.ctx);
 			canvas3d.screen.renderer.listOfCanvases.add(canvas3d);
 
 			canvas3d.beginScene();
@@ -1892,14 +1891,14 @@ public class GraphicsContext3D extends Object   {
 	LightRetained light;
 	boolean lightingOn = true;
 
-	if (canvas3d.ctx == 0) {
+	if (canvas3d.ctx == null) {
 	    // Force an initial clear if one has not yet been done
 	    doClear();
 	}
 
 
         if (J3dDebug.devPhase && J3dDebug.debug) {
-            J3dDebug.doAssert(canvas3d.ctx != 0, "canvas3d.ctx != 0");
+            J3dDebug.doAssert(canvas3d.ctx != null, "canvas3d.ctx != null");
         }
 
         // We need to catch NullPointerException when the dsi 
@@ -2260,13 +2259,13 @@ public class GraphicsContext3D extends Object   {
 	}
 	*/
 
-	if (canvas3d.ctx == 0) {
+	if (canvas3d.ctx == null) {
 	    // Force an initial clear if one has not yet been done
 	    doClear();
 	}
 
         if (J3dDebug.devPhase && J3dDebug.debug) {
-            J3dDebug.doAssert(canvas3d.ctx != 0, "canvas3d.ctx != 0");
+            J3dDebug.doAssert(canvas3d.ctx != null, "canvas3d.ctx != null");
         }
 
 

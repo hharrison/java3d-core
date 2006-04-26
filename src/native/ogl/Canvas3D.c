@@ -2282,18 +2282,18 @@ jint JNICALL Java_javax_media_j3d_NativePipeline_swapBuffers(
     jobject cv,
     jlong ctxInfo,
     jlong display, 
-    jint win)
+    jint window)
 {
     
 #if defined(UNIX)
-   glXSwapBuffers((Display *)display, (Window)win);
+   glXSwapBuffers((Display *)display, (Window)window);
    
 #endif
 
 #ifdef WIN32
    HDC hdc;
 
-   hdc = (HDC) win;
+   hdc = (HDC) window;
 
    SwapBuffers(hdc);
 #endif

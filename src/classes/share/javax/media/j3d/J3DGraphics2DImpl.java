@@ -55,7 +55,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 	canvas3d = c;
 	
 	synchronized (VirtualUniverse.mc.contextCreationLock) {
-	    if (c.ctx == 0) {
+	    if (c.ctx == null) {
 		// create a dummy bufferImage
 		width = 1;
 		height = 1;
@@ -163,7 +163,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     // copy the data into a byte buffer that will be passed to opengl
     void doFlush() {
 	// clip to offscreen buffer size
-	if (canvas3d.ctx == 0) {
+	if (canvas3d.ctx == null) {
 	    canvas3d.getGraphicsContext3D().doClear();
 	}
 
@@ -904,7 +904,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
  	int imgHeight = img.getHeight(observer);
 	int px, py, x1, y1, x2, y2;
 
-	if (canvas3d.ctx == 0) {
+	if (canvas3d.ctx == null) {
 	    canvas3d.getGraphicsContext3D().doClear();
 	}
 

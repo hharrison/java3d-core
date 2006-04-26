@@ -713,7 +713,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		        // If the context is null, then the extension
 		        // will be evaluated during context creation in
 		        // the renderer
-		        if (canvases[j].ctx != 0) {
+		        if (canvases[j].ctx != null) {
 			    nc.evaluateExtensions(canvases[j].extensionsSupported);
 		        }
 		    }
@@ -746,7 +746,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
                         // If the context is null, then the extension
                         // will be evaluated during context creation in
                         // the renderer
-                        if (canvases[j].ctx != 0) {
+                        if (canvases[j].ctx != null) {
                             nc.evaluateExtensions(
 					canvases[j].extensionsSupported);
                         }
@@ -1089,7 +1089,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		    ra = arr[i];
 		    GeometryArrayRetained geo = (GeometryArrayRetained) ra.geometry();
 
-		    if ((cv.ctx != 0) &&
+		    if ((cv.ctx != null) &&
 			((geo.resourceCreationMask & cv.canvasBit) == 0) || 
 			(geo.getDlistTimeStamp(cv.canvasBit) != 
 			 cv.ctxTimeStamp)) {
@@ -1107,7 +1107,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 
 		    // add this geometry's dlist to be freed
 		    if (geo.isDlistUserSetEmpty(this)) {
-			if (cv.ctx != 0) {
+			if (cv.ctx != null) {
 			    canvases[j].displayListResourceFreeList.add(geo.dlistObj);
 			}
 			geo.resourceCreationMask &= ~canvases[j].canvasBit;
@@ -3223,7 +3223,8 @@ System.out.println("......tb.soleUser= " +
 				 ArrayList rmList, ArrayList dlistPerRinfoList,
 				 ArrayList raList, boolean useSharedCtx ) {
 	int size, i, bitMask;
-	long ctx, timeStamp;
+	Context ctx;
+	long timeStamp;
 
 	if (useSharedCtx) {
 	    ctx = cv.screen.renderer.sharedCtx;

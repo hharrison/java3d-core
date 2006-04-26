@@ -169,7 +169,7 @@ class DetailTextureImage extends Object {
 
 	bindTexture(cv, format);
 
-	if (cv.useSharedCtx && cv.screen.renderer.sharedCtx != 0) {
+	if (cv.useSharedCtx && cv.screen.renderer.sharedCtx != null) {
 	    if ((resourceCreationMask[format] & cv.screen.renderer.rendererBit)
 			== 0) {
 		reloadTexture = true;

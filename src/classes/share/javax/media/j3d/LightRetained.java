@@ -560,7 +560,7 @@ abstract class LightRetained extends LeafRetained {
      * This method is implemented by each light for rendering
      * context updates.  This default one does nothing.
      */
-    abstract void update(long ctx, int lightSlot, double scale);
+    abstract void update(Context ctx, int lightSlot, double scale);
 
 
     // This routine is called when rendering Env structure

@@ -17,6 +17,11 @@ package javax.media.j3d;
  */
 
 class DrawingSurfaceObjectDummy extends DrawingSurfaceObject {
+    
+    static long windowId = 0L;
+    private static synchronized long nextWindow() {
+        return ++windowId;
+    }
 
     DrawingSurfaceObjectDummy(Canvas3D cv) {
         super(cv);
@@ -37,7 +42,9 @@ class DrawingSurfaceObjectDummy extends DrawingSurfaceObject {
 
     synchronized void getDrawingSurfaceObjectInfo() {
         System.err.println("DrawingSurfaceObjectDummy.getDrawingSurfaceObjectInfo()");
-        canvas.window = 1;
+        if (canvas.window == 0) {
+            canvas.window = nextWindow();
+        }
     }
 
     synchronized void invalidate() {

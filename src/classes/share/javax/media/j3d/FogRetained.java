@@ -452,7 +452,7 @@ abstract class FogRetained extends LeafRetained{
      * This abstract method is used to update the current native
      * context fog values.
      */
-    abstract void update(long ctx, double scale);
+    abstract void update(Context ctx, double scale);
 
 
     void updateImmediateMirrorObject(Object[] objs) {

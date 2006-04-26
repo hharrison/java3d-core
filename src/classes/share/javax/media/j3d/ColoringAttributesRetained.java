@@ -142,7 +142,7 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 	}
     }
 
-    void updateNative(long ctx,
+    void updateNative(Context ctx,
 		      float dRed, float dGreen, float dBlue,
 		      float alpha, boolean lEnable) {
         Pipeline.getPipeline().updateColoringAttributes(ctx,

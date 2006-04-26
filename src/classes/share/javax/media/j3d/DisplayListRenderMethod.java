@@ -188,7 +188,7 @@ class DisplayListRenderMethod implements RenderMethod {
     }
 
     void buildIndividualDisplayList(RenderAtomListInfo ra, Canvas3D cv, 
-					long ctx) {
+					Context ctx) {
 	GeometryArrayRetained geo;
 
 	geo = (GeometryArrayRetained)ra.geometry();

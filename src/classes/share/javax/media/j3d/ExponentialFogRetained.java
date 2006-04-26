@@ -108,7 +108,7 @@ class ExponentialFogRetained extends FogRetained {
      * This method and its native counterpart update the native context
      * fog values.
      */
-    void update(long ctx, double scale) {
+    void update(Context ctx, double scale) {
         // Issue 144: recompute the density in EC, and send it to native code
 	validateDistancesInEc(scale);
 	Pipeline.getPipeline().updateExponentialFog(ctx, color.x, color.y, color.z, densityInEc);

@@ -147,14 +147,14 @@ abstract class Pipeline {
     abstract void freeD3DArray(GeometryArrayRetained geo, boolean deleteVB);
 
     // used for GeometryArrays by Copy or interleaved
-    abstract void execute(long ctx,
+    abstract void execute(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
             boolean multiScreen,
             boolean ignoreVertexColors,
             int startVIndex, int vcount, int vformat,
-            int texCoordSetCount, int texCoordSetMap[],
+            int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
@@ -163,7 +163,7 @@ abstract class Pipeline {
             float[] varray, float[] cdata, int texUnitIndex, int cdirty);
 
     // used by GeometryArray by Reference with java arrays
-    abstract void executeVA(long ctx,
+    abstract void executeVA(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean multiScreen,
@@ -183,7 +183,7 @@ abstract class Pipeline {
             int cdirty);
 
     // used by GeometryArray by Reference with NIO buffer
-    abstract void executeVABuffer(long ctx,
+    abstract void executeVABuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean multiScreen,
@@ -206,42 +206,42 @@ abstract class Pipeline {
             int cdirty);
 
     // used by GeometryArray by Reference in interleaved format with NIO buffer
-    abstract void executeInterleavedBuffer(long ctx,
+    abstract void executeInterleavedBuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
             boolean multiScreen,
             boolean ignoreVertexColors,
             int startVIndex, int vcount, int vformat,
-            int texCoordSetCount, int texCoordSetMap[],
+            int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             Object varray, float[] cdata, int texUnitIndex, int cdirty);
 
-    abstract void setVertexFormat(long ctx, GeometryArrayRetained geo,
+    abstract void setVertexFormat(Context ctx, GeometryArrayRetained geo,
             int vformat, boolean useAlpha, boolean ignoreVertexColors);
 
-    abstract void disableGlobalAlpha(long ctx, GeometryArrayRetained geo, int vformat,
+    abstract void disableGlobalAlpha(Context ctx, GeometryArrayRetained geo, int vformat,
             boolean useAlpha, boolean ignoreVertexColors);
 
     // used for GeometryArrays
-    abstract void buildGA(long ctx,
+    abstract void buildGA(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale, boolean updateAlpha,
             float alpha,
             boolean ignoreVertexColors,
             int startVIndex,
             int vcount, int vformat,
-            int texCoordSetCount, int texCoordSetMap[],
+            int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen, int[] texCoordSetMapOffset,
             int vertexAttrCount, int[] vertexAttrSizes,    
             double[] xform, double[] nxform,
             float[] varray);
 
     // used to Build Dlist GeometryArray by Reference with java arrays
-    abstract void buildGAForByRef(long ctx,
+    abstract void buildGAForByRef(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,  boolean updateAlpha,
             float alpha,
@@ -263,7 +263,7 @@ abstract class Pipeline {
     // NOTE: NIO buffers are no longer supported in display lists. We
     // have no plans to add this support.
     /*
-    abstract void buildGAForBuffer(long ctx,
+    abstract void buildGAForBuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,  boolean updateAlpha,
             float alpha,
@@ -288,7 +288,7 @@ abstract class Pipeline {
     //
 
     // by-copy or interleaved, by reference, Java arrays
-    abstract void executeIndexedGeometry(long ctx,
+    abstract void executeIndexedGeometry(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
@@ -298,7 +298,7 @@ abstract class Pipeline {
             int indexCount,
             int vertexCount, int vformat,
             int vertexAttrCount, int[] vertexAttrSizes,
-            int texCoordSetCount, int texCoordSetMap[],
+            int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
@@ -308,7 +308,7 @@ abstract class Pipeline {
             int[] indexCoord);
 
     // interleaved, by reference, nio buffer
-    abstract void executeIndexedGeometryBuffer(long ctx,
+    abstract void executeIndexedGeometryBuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
@@ -317,7 +317,7 @@ abstract class Pipeline {
             int initialIndexIndex,
             int indexCount,
             int vertexCount, int vformat,
-            int texCoordSetCount, int texCoordSetMap[],
+            int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
@@ -327,7 +327,7 @@ abstract class Pipeline {
             int[] indexCoord);
 
     // non interleaved, by reference, Java arrays
-    abstract void executeIndexedGeometryVA(long ctx,
+    abstract void executeIndexedGeometryVA(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean multiScreen,
@@ -350,7 +350,7 @@ abstract class Pipeline {
             int[] indexCoord);
 
     // non interleaved, by reference, nio buffer
-    abstract void executeIndexedGeometryVABuffer(long ctx,
+    abstract void executeIndexedGeometryVABuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean multiScreen,
@@ -374,7 +374,7 @@ abstract class Pipeline {
             int[] indexCoord);
 
     // by-copy geometry
-    abstract void buildIndexedGeometry(long ctx,
+    abstract void buildIndexedGeometry(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale, boolean updateAlpha,
             float alpha,
@@ -384,7 +384,7 @@ abstract class Pipeline {
             int vertexCount,
             int vformat,
             int vertexAttrCount, int[] vertexAttrSizes,
-            int texCoordSetCount, int texCoordSetMap[],
+            int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen,
             int[] texCoordSetMapOffset,
             double[] xform, double[] nxform,
@@ -398,7 +398,7 @@ abstract class Pipeline {
     //
 
     // Native method for readRaster
-    abstract void readRasterNative(long ctx,
+    abstract void readRasterNative(Context ctx,
             int type, int xSrcOffset, int ySrcOffset,
             int width, int height, int hCanvas, int format,
             ImageComponentRetained image,
@@ -414,134 +414,134 @@ abstract class Pipeline {
 
     // ShaderAttributeValue methods
 
-    abstract ShaderError setCgUniform1i(long ctx,
+    abstract ShaderError setCgUniform1i(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int value);
 
-    abstract ShaderError setCgUniform1f(long ctx,
+    abstract ShaderError setCgUniform1f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float value);
 
-    abstract ShaderError setCgUniform2i(long ctx,
+    abstract ShaderError setCgUniform2i(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int[] value);
 
-    abstract ShaderError setCgUniform2f(long ctx,
+    abstract ShaderError setCgUniform2f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float[] value);
 
-    abstract ShaderError setCgUniform3i(long ctx,
+    abstract ShaderError setCgUniform3i(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int[] value);
 
-    abstract ShaderError setCgUniform3f(long ctx,
+    abstract ShaderError setCgUniform3f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float[] value);
 
-    abstract ShaderError setCgUniform4i(long ctx,
+    abstract ShaderError setCgUniform4i(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int[] value);
 
-    abstract ShaderError setCgUniform4f(long ctx,
+    abstract ShaderError setCgUniform4f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float[] value);
 
-    abstract ShaderError setCgUniformMatrix3f(long ctx,
+    abstract ShaderError setCgUniformMatrix3f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float[] value);
 
-    abstract ShaderError setCgUniformMatrix4f(long ctx,
+    abstract ShaderError setCgUniformMatrix4f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float[] value);
 
     // ShaderAttributeArray methods
 
-    abstract ShaderError setCgUniform1iArray(long ctx,
+    abstract ShaderError setCgUniform1iArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             int[] value);
 
-    abstract ShaderError setCgUniform1fArray(long ctx,
+    abstract ShaderError setCgUniform1fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
-    abstract ShaderError setCgUniform2iArray(long ctx,
+    abstract ShaderError setCgUniform2iArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             int[] value);
 
-    abstract ShaderError setCgUniform2fArray(long ctx,
+    abstract ShaderError setCgUniform2fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
-    abstract ShaderError setCgUniform3iArray(long ctx,
+    abstract ShaderError setCgUniform3iArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             int[] value);
 
-    abstract ShaderError setCgUniform3fArray(long ctx,
+    abstract ShaderError setCgUniform3fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
-    abstract ShaderError setCgUniform4iArray(long ctx,
+    abstract ShaderError setCgUniform4iArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             int[] value);
 
-    abstract ShaderError setCgUniform4fArray(long ctx,
+    abstract ShaderError setCgUniform4fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
-    abstract ShaderError setCgUniformMatrix3fArray(long ctx,
+    abstract ShaderError setCgUniformMatrix3fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
-    abstract ShaderError setCgUniformMatrix4fArray(long ctx,
+    abstract ShaderError setCgUniformMatrix4fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
     // abstract interfaces for shader compilation, etc.
-    abstract ShaderError createCgShader(long ctx, int shaderType, long[] shaderId);
-    abstract ShaderError destroyCgShader(long ctx, long shaderId);
-    abstract ShaderError compileCgShader(long ctx, long shaderId, String program);
+    abstract ShaderError createCgShader(Context ctx, int shaderType, long[] shaderId);
+    abstract ShaderError destroyCgShader(Context ctx, long shaderId);
+    abstract ShaderError compileCgShader(Context ctx, long shaderId, String program);
 
-    abstract ShaderError createCgShaderProgram(long ctx, long[] shaderProgramId);
-    abstract ShaderError destroyCgShaderProgram(long ctx, long shaderProgramId);
-    abstract ShaderError linkCgShaderProgram(long ctx, long shaderProgramId,
+    abstract ShaderError createCgShaderProgram(Context ctx, long[] shaderProgramId);
+    abstract ShaderError destroyCgShaderProgram(Context ctx, long shaderProgramId);
+    abstract ShaderError linkCgShaderProgram(Context ctx, long shaderProgramId,
             long[] shaderId);
-    abstract void lookupCgVertexAttrNames(long ctx, long shaderProgramId,
+    abstract void lookupCgVertexAttrNames(Context ctx, long shaderProgramId,
             int numAttrNames, String[] attrNames, boolean[] errArr);
-    abstract void lookupCgShaderAttrNames(long ctx, long shaderProgramId,
+    abstract void lookupCgShaderAttrNames(Context ctx, long shaderProgramId,
             int numAttrNames, String[] attrNames, long[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr);
 
-    abstract ShaderError useCgShaderProgram(long ctx, long shaderProgramId);
+    abstract ShaderError useCgShaderProgram(Context ctx, long shaderProgramId);
 
 
     // ---------------------------------------------------------------------
@@ -552,134 +552,134 @@ abstract class Pipeline {
 
     // ShaderAttributeValue methods
 
-    abstract ShaderError setGLSLUniform1i(long ctx,
+    abstract ShaderError setGLSLUniform1i(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int value);
 
-    abstract ShaderError setGLSLUniform1f(long ctx,
+    abstract ShaderError setGLSLUniform1f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float value);
 
-    abstract ShaderError setGLSLUniform2i(long ctx,
+    abstract ShaderError setGLSLUniform2i(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int[] value);
 
-    abstract ShaderError setGLSLUniform2f(long ctx,
+    abstract ShaderError setGLSLUniform2f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float[] value);
 
-    abstract ShaderError setGLSLUniform3i(long ctx,
+    abstract ShaderError setGLSLUniform3i(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int[] value);
 
-    abstract ShaderError setGLSLUniform3f(long ctx,
+    abstract ShaderError setGLSLUniform3f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float[] value);
 
-    abstract ShaderError setGLSLUniform4i(long ctx,
+    abstract ShaderError setGLSLUniform4i(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int[] value);
 
-    abstract ShaderError setGLSLUniform4f(long ctx,
+    abstract ShaderError setGLSLUniform4f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float[] value);
 
-    abstract ShaderError setGLSLUniformMatrix3f(long ctx,
+    abstract ShaderError setGLSLUniformMatrix3f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float[] value);
 
-    abstract ShaderError setGLSLUniformMatrix4f(long ctx,
+    abstract ShaderError setGLSLUniformMatrix4f(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             float[] value);
 
     // ShaderAttributeArray methods
 
-    abstract ShaderError setGLSLUniform1iArray(long ctx,
+    abstract ShaderError setGLSLUniform1iArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             int[] value);
 
-    abstract ShaderError setGLSLUniform1fArray(long ctx,
+    abstract ShaderError setGLSLUniform1fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
-    abstract ShaderError setGLSLUniform2iArray(long ctx,
+    abstract ShaderError setGLSLUniform2iArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             int[] value);
 
-    abstract ShaderError setGLSLUniform2fArray(long ctx,
+    abstract ShaderError setGLSLUniform2fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
-    abstract ShaderError setGLSLUniform3iArray(long ctx,
+    abstract ShaderError setGLSLUniform3iArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             int[] value);
 
-    abstract ShaderError setGLSLUniform3fArray(long ctx,
+    abstract ShaderError setGLSLUniform3fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
-    abstract ShaderError setGLSLUniform4iArray(long ctx,
+    abstract ShaderError setGLSLUniform4iArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             int[] value);
 
-    abstract ShaderError setGLSLUniform4fArray(long ctx,
+    abstract ShaderError setGLSLUniform4fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
-    abstract ShaderError setGLSLUniformMatrix3fArray(long ctx,
+    abstract ShaderError setGLSLUniformMatrix3fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
-    abstract ShaderError setGLSLUniformMatrix4fArray(long ctx,
+    abstract ShaderError setGLSLUniformMatrix4fArray(Context ctx,
             long shaderProgramId,
             long uniformLocation,
             int numElements,
             float[] value);
 
     // abstract interfaces for shader compilation, etc.
-    abstract ShaderError createGLSLShader(long ctx, int shaderType, long[] shaderId);
-    abstract ShaderError destroyGLSLShader(long ctx, long shaderId);
-    abstract ShaderError compileGLSLShader(long ctx, long shaderId, String program);
+    abstract ShaderError createGLSLShader(Context ctx, int shaderType, long[] shaderId);
+    abstract ShaderError destroyGLSLShader(Context ctx, long shaderId);
+    abstract ShaderError compileGLSLShader(Context ctx, long shaderId, String program);
 
-    abstract ShaderError createGLSLShaderProgram(long ctx, long[] shaderProgramId);
-    abstract ShaderError destroyGLSLShaderProgram(long ctx, long shaderProgramId);
-    abstract ShaderError linkGLSLShaderProgram(long ctx, long shaderProgramId,
+    abstract ShaderError createGLSLShaderProgram(Context ctx, long[] shaderProgramId);
+    abstract ShaderError destroyGLSLShaderProgram(Context ctx, long shaderProgramId);
+    abstract ShaderError linkGLSLShaderProgram(Context ctx, long shaderProgramId,
             long[] shaderId);
-    abstract ShaderError bindGLSLVertexAttrName(long ctx, long shaderProgramId,
+    abstract ShaderError bindGLSLVertexAttrName(Context ctx, long shaderProgramId,
             String attrName, int attrIndex);
-    abstract void lookupGLSLShaderAttrNames(long ctx, long shaderProgramId,
+    abstract void lookupGLSLShaderAttrNames(Context ctx, long shaderProgramId,
             int numAttrNames, String[] attrNames, long[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr);
 
-    abstract ShaderError useGLSLShaderProgram(long ctx, long shaderProgramId);
+    abstract ShaderError useGLSLShaderProgram(Context ctx, long shaderProgramId);
 
 
     // ---------------------------------------------------------------------
@@ -714,7 +714,7 @@ abstract class Pipeline {
     //
 
     // Native method that does the rendering
-    abstract void executeRaster(long ctx, GeometryRetained geo,
+    abstract void executeRaster(Context ctx, GeometryRetained geo,
             boolean updateAlpha, float alpha,
             int type, int width, int height,
             int xSrcOffset, int ySrcOffset,
@@ -736,7 +736,7 @@ abstract class Pipeline {
     // ColoringAttributesRetained methods
     //
 
-    abstract void updateColoringAttributes(long ctx,
+    abstract void updateColoringAttributes(Context ctx,
             float dRed, float dGreen, float dBlue,
             float red, float green, float blue,
             float alpha,
@@ -750,7 +750,7 @@ abstract class Pipeline {
     // DirectionalLightRetained methods
     //
 
-    abstract void updateDirectionalLight(long ctx,
+    abstract void updateDirectionalLight(Context ctx,
             int lightSlot, float red, float green,
             float blue, float x, float y, float z);
 
@@ -761,7 +761,7 @@ abstract class Pipeline {
     // PointLightRetained methods
     //
 
-    abstract void updatePointLight(long ctx,
+    abstract void updatePointLight(Context ctx,
             int lightSlot, float red, float green,
             float blue, float ax, float ay, float az,
             float px, float py, float pz);
@@ -773,7 +773,7 @@ abstract class Pipeline {
     // SpotLightRetained methods
     //
 
-    abstract void updateSpotLight(long ctx,
+    abstract void updateSpotLight(Context ctx,
             int lightSlot, float red, float green,
             float blue, float ax, float ay, float az,
             float px, float py, float pz, float spreadAngle,
@@ -787,7 +787,7 @@ abstract class Pipeline {
     // ExponentialFogRetained methods
     //
 
-    abstract void updateExponentialFog(long ctx,
+    abstract void updateExponentialFog(Context ctx,
             float red, float green, float blue,
             float density);
 
@@ -798,7 +798,7 @@ abstract class Pipeline {
     // LinearFogRetained methods
     //
 
-    abstract void updateLinearFog(long ctx,
+    abstract void updateLinearFog(Context ctx,
             float red, float green, float blue,
             double fdist, double bdist);
 
@@ -809,7 +809,7 @@ abstract class Pipeline {
     // LineAttributesRetained methods
     //
 
-    abstract void updateLineAttributes(long ctx,
+    abstract void updateLineAttributes(Context ctx,
             float lineWidth, int linePattern,
             int linePatternMask,
             int linePatternScaleFactor,
@@ -822,7 +822,7 @@ abstract class Pipeline {
     // MaterialRetained methods
     //
 
-    abstract void updateMaterial(long ctx,
+    abstract void updateMaterial(Context ctx,
             float red, float green, float blue, float alpha,
             float ared, float agreen, float ablue,
             float ered, float egreen, float eblue,
@@ -837,7 +837,7 @@ abstract class Pipeline {
     // ModelClipRetained methods
     //
 
-    abstract void updateModelClip(long ctx, int planeNum, boolean enableFlag,
+    abstract void updateModelClip(Context ctx, int planeNum, boolean enableFlag,
             double A, double B, double C, double D);
 
 
@@ -847,7 +847,7 @@ abstract class Pipeline {
     // PointAttributesRetained methods
     //
 
-    abstract void updatePointAttributes(long ctx, float pointSize, boolean pointAntialiasing);
+    abstract void updatePointAttributes(Context ctx, float pointSize, boolean pointAntialiasing);
 
 
     // ---------------------------------------------------------------------
@@ -856,7 +856,7 @@ abstract class Pipeline {
     // PolygonAttributesRetained methods
     //
 
-    abstract void updatePolygonAttributes(long ctx,
+    abstract void updatePolygonAttributes(Context ctx,
             int polygonMode, int cullFace,
             boolean backFaceNormalFlip,
             float polygonOffset,
@@ -869,7 +869,7 @@ abstract class Pipeline {
     // RenderingAttributesRetained methods
     //
 
-    abstract void updateRenderingAttributes(long ctx,
+    abstract void updateRenderingAttributes(Context ctx,
             boolean depthBufferWriteEnableOverride,
             boolean depthBufferEnableOverride,
             boolean depthBufferEnable,
@@ -895,7 +895,7 @@ abstract class Pipeline {
     * trans contains eyeTovworld transform in d3d
     * trans contains vworldToEye transform in ogl
     */
-    abstract void updateTexCoordGeneration(long ctx,
+    abstract void updateTexCoordGeneration(Context ctx,
             boolean enable, int genMode, int format,
             float planeSx, float planeSy, float planeSz, float planeSw,
             float planeTx, float planeTy, float planeTz, float planeTw,
@@ -910,7 +910,7 @@ abstract class Pipeline {
     // TransparencyAttributesRetained methods
     //
 
-    abstract void updateTransparencyAttributes(long ctx,
+    abstract void updateTransparencyAttributes(Context ctx,
             float alpha, int geometryType,
             int polygonMode,
             boolean lineAA, boolean pointAA,
@@ -925,13 +925,13 @@ abstract class Pipeline {
     // TextureAttributesRetained methods
     //
 
-    abstract void updateTextureAttributes(long ctx,
+    abstract void updateTextureAttributes(Context ctx,
             double[] transform, boolean isIdentity, int textureMode,
             int perspCorrectionMode, float red,
             float green, float blue, float alpha,
             int textureFormat);
 
-    abstract void updateRegisterCombiners(long ctx,
+    abstract void updateRegisterCombiners(Context ctx,
             double[] transform, boolean isIdentity, int textureMode,
             int perspCorrectionMode, float red,
             float green, float blue, float alpha,
@@ -941,11 +941,11 @@ abstract class Pipeline {
             int[] combineRgbFcn, int[] combineAlphaFcn,
             int combineRgbScale, int combineAlphaScale);
 
-    abstract void updateTextureColorTable(long ctx, int numComponents,
+    abstract void updateTextureColorTable(Context ctx, int numComponents,
             int colorTableSize,
             int[] colorTable);
 
-    abstract void updateCombiner(long ctx,
+    abstract void updateCombiner(Context ctx,
             int combineRgbMode, int combineAlphaMode,
             int[] combineRgbSrc, int[] combineAlphaSrc,
             int[] combineRgbFcn, int[] combineAlphaFcn,
@@ -958,7 +958,7 @@ abstract class Pipeline {
     // TextureUnitStateRetained methods
     //
 
-    abstract void updateTextureUnitState(long ctx, int unitIndex, boolean enableFlag);
+    abstract void updateTextureUnitState(Context ctx, int unitIndex, boolean enableFlag);
 
 
     // ---------------------------------------------------------------------
@@ -968,52 +968,52 @@ abstract class Pipeline {
     // Texture2DRetained methods
     //
 
-    abstract void bindTexture2D(long ctx, int objectId, boolean enable);
+    abstract void bindTexture2D(Context ctx, int objectId, boolean enable);
 
-    abstract void updateTexture2DImage(long ctx,
+    abstract void updateTexture2DImage(Context ctx,
             int numLevels, int level,
             int internalFormat, int storedFormat,
             int width, int height,
             int boundaryWidth,
             byte[] imageData);
 
-    abstract void updateTexture2DSubImage(long ctx,
+    abstract void updateTexture2DSubImage(Context ctx,
             int level, int xoffset, int yoffset,
             int internalFormat, int storedFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
             byte[] imageData);
 
-    abstract void updateTexture2DLodRange(long ctx,
+    abstract void updateTexture2DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod);
 
-    abstract void updateTexture2DLodOffset(long ctx,
+    abstract void updateTexture2DLodOffset(Context ctx,
             float lodOffsetX, float lodOffsetY,
             float lodOffsetZ);
 
-    abstract void updateTexture2DBoundary(long ctx,
+    abstract void updateTexture2DBoundary(Context ctx,
             int boundaryModeS, int boundaryModeT,
             float boundaryRed, float boundaryGreen,
             float boundaryBlue, float boundaryAlpha);
 
-    abstract void updateDetailTextureParameters(long ctx,
+    abstract void updateDetailTextureParameters(Context ctx,
             int detailTextureMode,
             int detailTextureLevel,
             int nPts, float[] pts);
 
-    abstract void updateTexture2DFilterModes(long ctx,
+    abstract void updateTexture2DFilterModes(Context ctx,
             int minFilter, int magFilter);
 
-    abstract void updateTexture2DSharpenFunc(long ctx,
+    abstract void updateTexture2DSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts);
 
-    abstract void updateTexture2DFilter4Func(long ctx,
+    abstract void updateTexture2DFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts);
 
-    abstract void updateTexture2DAnisotropicFilter(long ctx, float degree);
+    abstract void updateTexture2DAnisotropicFilter(Context ctx, float degree);
 
 
     // ---------------------------------------------------------------------
@@ -1022,16 +1022,16 @@ abstract class Pipeline {
     // Texture3DRetained methods
     //
 
-    abstract void bindTexture3D(long ctx, int objectId, boolean enable);
+    abstract void bindTexture3D(Context ctx, int objectId, boolean enable);
 
-    abstract void updateTexture3DImage(long ctx,
+    abstract void updateTexture3DImage(Context ctx,
             int numLevels, int level,
             int internalFormat, int storedFormat,
             int width, int height, int depth,
             int boundaryWidth,
             byte[] imageData);
 
-    abstract void updateTexture3DSubImage(long ctx,
+    abstract void updateTexture3DSubImage(Context ctx,
             int level,
             int xoffset, int yoffset, int zoffset,
             int internalFormat, int storedFormat,
@@ -1040,32 +1040,32 @@ abstract class Pipeline {
             int width, int height, int depth,
             byte[] imageData);
 
-    abstract void updateTexture3DLodRange(long ctx,
+    abstract void updateTexture3DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod);
 
-    abstract void updateTexture3DLodOffset(long ctx,
+    abstract void updateTexture3DLodOffset(Context ctx,
             float lodOffsetX, float lodOffsetY,
             float lodOffsetZ);
 
-    abstract void updateTexture3DBoundary(long ctx,
+    abstract void updateTexture3DBoundary(Context ctx,
             int boundaryModeS, int boundaryModeT,
             int boundaryModeR, float boundaryRed,
             float boundaryGreen, float boundaryBlue,
             float boundaryAlpha);
 
-    abstract void updateTexture3DFilterModes(long ctx,
+    abstract void updateTexture3DFilterModes(Context ctx,
             int minFilter, int magFilter);
 
-    abstract void updateTexture3DSharpenFunc(long ctx,
+    abstract void updateTexture3DSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts);
 
-    abstract void updateTexture3DFilter4Func(long ctx,
+    abstract void updateTexture3DFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts);
 
-    abstract void updateTexture3DAnisotropicFilter(long ctx, float degree);
+    abstract void updateTexture3DAnisotropicFilter(Context ctx, float degree);
 
 
     // ---------------------------------------------------------------------
@@ -1074,47 +1074,47 @@ abstract class Pipeline {
     // TextureCubeMapRetained methods
     //
 
-    abstract void bindTextureCubeMap(long ctx, int objectId, boolean enable);
+    abstract void bindTextureCubeMap(Context ctx, int objectId, boolean enable);
 
-    abstract void updateTextureCubeMapImage(long ctx,
+    abstract void updateTextureCubeMapImage(Context ctx,
             int face, int numLevels, int level,
             int internalFormat, int storedFormat,
             int width, int height,
             int boundaryWidth,
             byte[] imageData);
 
-    abstract void updateTextureCubeMapSubImage(long ctx,
+    abstract void updateTextureCubeMapSubImage(Context ctx,
             int face, int level, int xoffset, int yoffset,
             int internalFormat,int storedFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
             byte[] imageData);
 
-    abstract void updateTextureCubeMapLodRange(long ctx,
+    abstract void updateTextureCubeMapLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod);
 
-    abstract void updateTextureCubeMapLodOffset(long ctx,
+    abstract void updateTextureCubeMapLodOffset(Context ctx,
             float lodOffsetX, float lodOffsetY,
             float lodOffsetZ);
 
-    abstract void updateTextureCubeMapBoundary(long ctx,
+    abstract void updateTextureCubeMapBoundary(Context ctx,
             int boundaryModeS, int boundaryModeT,
             float boundaryRed, float boundaryGreen,
             float boundaryBlue, float boundaryAlpha);
 
-    abstract void updateTextureCubeMapFilterModes(long ctx,
+    abstract void updateTextureCubeMapFilterModes(Context ctx,
             int minFilter, int magFilter);
 
-    abstract void updateTextureCubeMapSharpenFunc(long ctx,
+    abstract void updateTextureCubeMapSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts);
 
-    abstract void updateTextureCubeMapFilter4Func(long ctx,
+    abstract void updateTextureCubeMapFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts);
 
-    abstract void updateTextureCubeMapAnisotropicFilter(long ctx, float degree);
+    abstract void updateTextureCubeMapAnisotropicFilter(Context ctx, float degree);
 
 
     // ---------------------------------------------------------------------
@@ -1123,9 +1123,9 @@ abstract class Pipeline {
     // DetailTextureImage methods
     //
 
-    abstract void bindDetailTexture(long ctx, int objectId);
+    abstract void bindDetailTexture(Context ctx, int objectId);
 
-    abstract void updateDetailTextureImage(long ctx,
+    abstract void updateDetailTextureImage(Context ctx,
             int numLevels, int level,
             int format, int storedFormat,
             int width, int height,
@@ -1155,157 +1155,157 @@ abstract class Pipeline {
     //
 
     // This is the native method for creating the underlying graphics context.
-    abstract long createNewContext(Canvas3D cv, long display, int window,
-            long fbConfig, long shareCtx, boolean isSharedCtx,
+    abstract Context createNewContext(Canvas3D cv, long display, long window,
+            long fbConfig, Context shareCtx, boolean isSharedCtx,
             boolean offScreen,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable);
 
-    abstract void createQueryContext(Canvas3D cv, long display, int window,
+    abstract void createQueryContext(Canvas3D cv, long display, long window,
             long fbConfig, boolean offScreen, int width, int height,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable);
 
     // This is the native for creating offscreen buffer
-    abstract int createOffScreenBuffer(Canvas3D cv, long ctx, long display, long fbConfig, int width, int height);
+    abstract int createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height);
 
-    abstract void destroyOffScreenBuffer(Canvas3D cv, long ctx, long display, long fbConfig, int window);
+    abstract void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, long window);
 
     // This is the native for reading the image from the offscreen buffer
-    abstract void readOffScreenBuffer(Canvas3D cv, long ctx, int format, int width, int height);
+    abstract void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int width, int height);
 
     // The native method for swapBuffers
-    abstract int swapBuffers(Canvas3D cv, long ctx, long dpy, int win);
+    abstract int swapBuffers(Canvas3D cv, Context ctx, long dpy, long window);
 
     // notify D3D that Canvas is resize
-    abstract int resizeD3DCanvas(Canvas3D cv, long ctx);
+    abstract int resizeD3DCanvas(Canvas3D cv, Context ctx);
 
     // notify D3D to toggle between FullScreen and window mode
-    abstract int toggleFullScreenMode(Canvas3D cv, long ctx);
+    abstract int toggleFullScreenMode(Canvas3D cv, Context ctx);
 
     // native method for setting Material when no material is present
-    abstract void updateMaterialColor(long ctx, float r, float g, float b, float a);
+    abstract void updateMaterialColor(Context ctx, float r, float g, float b, float a);
 
-    abstract void destroyContext(long display, int window, long context);
+    abstract void destroyContext(long display, long window, Context ctx);
 
     // This is the native method for doing accumulation.
-    abstract void accum(long ctx, float value);
+    abstract void accum(Context ctx, float value);
 
     // This is the native method for doing accumulation return.
-    abstract void accumReturn(long ctx);
+    abstract void accumReturn(Context ctx);
 
     // This is the native method for clearing the accumulation buffer.
-    abstract void clearAccum(long ctx);
+    abstract void clearAccum(Context ctx);
 
     // This is the native method for getting the number of lights the underlying
     // native library can support.
-    abstract int getNumCtxLights(long ctx);
+    abstract int getNumCtxLights(Context ctx);
 
     // Native method for decal 1st child setup
-    abstract boolean decal1stChildSetup(long ctx);
+    abstract boolean decal1stChildSetup(Context ctx);
 
     // Native method for decal nth child setup
-    abstract void decalNthChildSetup(long ctx);
+    abstract void decalNthChildSetup(Context ctx);
 
     // Native method for decal reset
-    abstract void decalReset(long ctx, boolean depthBufferEnable);
+    abstract void decalReset(Context ctx, boolean depthBufferEnable);
 
     // Native method for decal reset
-    abstract void ctxUpdateEyeLightingEnable(long ctx, boolean localEyeLightingEnable);
+    abstract void ctxUpdateEyeLightingEnable(Context ctx, boolean localEyeLightingEnable);
 
     // The following three methods are used in multi-pass case
 
     // native method for setting blend color
-    abstract void setBlendColor(long ctx, float red, float green,
+    abstract void setBlendColor(Context ctx, float red, float green,
             float blue, float alpha);
 
     // native method for setting blend func
-    abstract void setBlendFunc(long ctx, int src, int dst);
+    abstract void setBlendFunc(Context ctx, int src, int dst);
 
     // native method for setting fog enable flag
-    abstract void setFogEnableFlag(long ctx, boolean enableFlag);
+    abstract void setFogEnableFlag(Context ctx, boolean enableFlag);
 
     // Setup the full scene antialising in D3D and ogl when GL_ARB_multisamle supported
-    abstract void setFullSceneAntialiasing(long ctx, boolean enable);
+    abstract void setFullSceneAntialiasing(Context ctx, boolean enable);
 
-    abstract void setGlobalAlpha(long ctx, float alpha);
+    abstract void setGlobalAlpha(Context ctx, float alpha);
 
     // Native method to update separate specular color control
-    abstract void updateSeparateSpecularColorEnable(long ctx, boolean control);
+    abstract void updateSeparateSpecularColorEnable(Context ctx, boolean control);
 
     // Initialization for D3D when scene begin
-    abstract void beginScene(long ctx);
-    abstract void endScene(long ctx);
+    abstract void beginScene(Context ctx);
+    abstract void endScene(Context ctx);
 
     // True under Solaris,
     // False under windows when display mode <= 8 bit
     abstract boolean validGraphicsMode();
 
     // native method for setting light enables
-    abstract void setLightEnables(long ctx, long enableMask, int maxLights);
+    abstract void setLightEnables(Context ctx, long enableMask, int maxLights);
 
     // native method for setting scene ambient
-    abstract void setSceneAmbient(long ctx, float red, float green, float blue);
+    abstract void setSceneAmbient(Context ctx, float red, float green, float blue);
 
     // native method for disabling fog
-    abstract void disableFog(long ctx);
+    abstract void disableFog(Context ctx);
 
     // native method for disabling modelClip
-    abstract void disableModelClip(long ctx);
+    abstract void disableModelClip(Context ctx);
 
     // native method for setting default RenderingAttributes
-    abstract void resetRenderingAttributes(long ctx,
+    abstract void resetRenderingAttributes(Context ctx,
             boolean depthBufferWriteEnableOverride,
             boolean depthBufferEnableOverride);
 
     // native method for setting default texture
-    abstract void resetTextureNative(long ctx, int texUnitIndex);
+    abstract void resetTextureNative(Context ctx, int texUnitIndex);
 
     // native method for activating a particular texture unit
-    abstract void activeTextureUnit(long ctx, int texUnitIndex);
+    abstract void activeTextureUnit(Context ctx, int texUnitIndex);
 
     // native method for setting default TexCoordGeneration
-    abstract void resetTexCoordGeneration(long ctx);
+    abstract void resetTexCoordGeneration(Context ctx);
 
     // native method for setting default TextureAttributes
-    abstract void resetTextureAttributes(long ctx);
+    abstract void resetTextureAttributes(Context ctx);
 
     // native method for setting default PolygonAttributes
-    abstract void resetPolygonAttributes(long ctx);
+    abstract void resetPolygonAttributes(Context ctx);
 
     // native method for setting default LineAttributes
-    abstract void resetLineAttributes(long ctx);
+    abstract void resetLineAttributes(Context ctx);
 
     // native method for setting default PointAttributes
-    abstract void resetPointAttributes(long ctx);
+    abstract void resetPointAttributes(Context ctx);
 
     // native method for setting default TransparencyAttributes
-    abstract void resetTransparency(long ctx, int geometryType,
+    abstract void resetTransparency(Context ctx, int geometryType,
             int polygonMode, boolean lineAA,
             boolean pointAA);
 
     // native method for setting default ColoringAttributes
-    abstract void resetColoringAttributes(long ctx,
+    abstract void resetColoringAttributes(Context ctx,
             float r, float g,
             float b, float a,
             boolean enableLight);
 
     // native method for updating the texture unit state map
-    abstract void updateTexUnitStateMap(long ctx, int numActiveTexUnit,
+    abstract void updateTexUnitStateMap(Context ctx, int numActiveTexUnit,
             int[] texUnitStateMap);
 
     /**
      *  This native method makes sure that the rendering for this canvas
      *  gets done now.
      */
-    abstract void syncRender(long ctx, boolean wait);
+    abstract void syncRender(Context ctx, boolean wait);
 
     // The native method that sets this ctx to be the current one
-    abstract boolean useCtx(long ctx, long display, int window);
+    abstract boolean useCtx(Context ctx, long display, long window);
 
-    abstract void clear(long ctx, float r, float g, float b, int winWidth, int winHeight,
+    abstract void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,
             ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown);
-    abstract void textureclear(long ctx, int maxX, int maxY,
+    abstract void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,
             int objectId, int scalemode,
@@ -1314,28 +1314,28 @@ abstract class Pipeline {
 
 
     // The native method for setting the ModelView matrix.
-    abstract void setModelViewMatrix(long ctx, double[] viewMatrix, double[] modelMatrix);
+    abstract void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix);
 
     // The native method for setting the Projection matrix.
-    abstract void setProjectionMatrix(long ctx, double[] projMatrix);
+    abstract void setProjectionMatrix(Context ctx, double[] projMatrix);
 
     // The native method for setting the Viewport.
-    abstract void setViewport(long ctx, int x, int y, int width, int height);
+    abstract void setViewport(Context ctx, int x, int y, int width, int height);
 
     // used for display Lists
-    abstract void newDisplayList(long ctx, int displayListId);
-    abstract void endDisplayList(long ctx);
-    abstract void callDisplayList(long ctx, int id, boolean isNonUniformScale);
+    abstract void newDisplayList(Context ctx, int displayListId);
+    abstract void endDisplayList(Context ctx);
+    abstract void callDisplayList(Context ctx, int id, boolean isNonUniformScale);
 
-    abstract void freeDisplayList(long ctx, int id);
-    abstract void freeTexture(long ctx, int id);
+    abstract void freeDisplayList(Context ctx, int id);
+    abstract void freeTexture(Context ctx, int id);
 
-    abstract void composite(long ctx, int px, int py,
+    abstract void composite(Context ctx, int px, int py,
             int xmin, int ymin, int xmax, int ymax,
             int rasWidth,  byte[] image,
             int winWidth, int winHeight);
 
-    abstract void texturemapping(long ctx,
+    abstract void texturemapping(Context ctx,
             int px, int py,
             int xmin, int ymin, int xmax, int ymax,
             int texWidth, int texHeight,
@@ -1344,7 +1344,7 @@ abstract class Pipeline {
             byte[] image,
             int winWidth, int winHeight);
 
-    abstract boolean initTexturemapping(long ctx, int texWidth,
+    abstract boolean initTexturemapping(Context ctx, int texWidth,
             int texHeight, int objectId);
 
 
@@ -1353,10 +1353,10 @@ abstract class Pipeline {
     // stereo is available before setting the mode to FIELD_LEFT or
     // FIELD_RIGHT.  The boolean isTRUE for double buffered mode, FALSE
     // foe single buffering.
-    abstract void setRenderMode(long ctx, int mode, boolean doubleBuffer);
+    abstract void setRenderMode(Context ctx, int mode, boolean doubleBuffer);
 
     // Set glDepthMask.
-    abstract void setDepthBufferWriteEnable(long ctx, boolean mode);
+    abstract void setDepthBufferWriteEnable(Context ctx, boolean mode);
 
 
     // ---------------------------------------------------------------------

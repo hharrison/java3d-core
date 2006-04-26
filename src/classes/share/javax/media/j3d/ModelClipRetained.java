@@ -584,7 +584,7 @@ class ModelClipRetained extends LeafRetained {
 	update(cv.ctx, enableMask, getLastLocalToVworld());
     }
 
-    void update(long ctx, int enableMask, Transform3D trans) {
+    void update(Context ctx, int enableMask, Transform3D trans) {
 	if (!VirtualUniverse.mc.isD3D()) {
 	    for (int i = 0; i < 6; i ++) {
 	         Pipeline.getPipeline().updateModelClip(ctx, i, ((enableMask & (1 << i)) != 0), 

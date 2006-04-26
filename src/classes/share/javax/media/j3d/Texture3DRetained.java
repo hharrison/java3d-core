@@ -57,11 +57,11 @@ class Texture3DRetained extends TextureRetained {
     /**
      * This method updates the native context. 
      */
-    void bindTexture(long ctx, int objectId, boolean enable) {
+    void bindTexture(Context ctx, int objectId, boolean enable) {
         Pipeline.getPipeline().bindTexture3D(ctx, objectId, enable);
     }
 
-    void updateTextureBoundary(long ctx,
+    void updateTextureBoundary(Context ctx,
             int boundaryModeS, int boundaryModeT,
             int boundaryModeR, float boundaryRed,
             float boundaryGreen, float boundaryBlue,
@@ -73,14 +73,14 @@ class Texture3DRetained extends TextureRetained {
                 boundaryBlue, boundaryAlpha);
     }
 
-    void updateTextureFilterModes(long ctx,
+    void updateTextureFilterModes(Context ctx,
             int minFilter, int magFilter) {
 
         Pipeline.getPipeline().updateTexture3DFilterModes(ctx,
                 minFilter, magFilter);
     }
 
-    void updateTextureSharpenFunc(long ctx,
+    void updateTextureSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts) {
 
@@ -88,7 +88,7 @@ class Texture3DRetained extends TextureRetained {
             numSharpenTextureFuncPts, sharpenTextureFuncPts);
     }
 
-    void updateTextureFilter4Func(long ctx,
+    void updateTextureFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts) {
 
@@ -96,7 +96,7 @@ class Texture3DRetained extends TextureRetained {
                 numFilter4FuncPts, filter4FuncPts);
     }
 
-    void updateTextureAnisotropicFilter(long ctx, float degree) {
+    void updateTextureAnisotropicFilter(Context ctx, float degree) {
         Pipeline.getPipeline().updateTexture3DAnisotropicFilter(ctx, degree);
     }
 
@@ -169,7 +169,7 @@ class Texture3DRetained extends TextureRetained {
                 boundaryColor.z, boundaryColor.w);
     }
 
-    void updateTextureLodRange(long ctx,
+    void updateTextureLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod) {
 
@@ -177,7 +177,7 @@ class Texture3DRetained extends TextureRetained {
                 minimumLod, maximumLod);
     }
 
-    void updateTextureLodOffset(long ctx,
+    void updateTextureLodOffset(Context ctx,
             float lodOffsetX, float lodOffsetY,
             float lodOffsetZ) {
 

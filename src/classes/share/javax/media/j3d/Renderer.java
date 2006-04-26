@@ -78,7 +78,7 @@ class Renderer extends J3dThread {
     boolean sharedStereoZBuffer;
     
     // This is the id for the underlying sharable graphics context
-    long sharedCtx = 0;
+    Context sharedCtx = null;
 
     // since the sharedCtx id can be the same as the previous one,
     // we need to keep a time stamp to differentiate the contexts with the
@@ -87,12 +87,12 @@ class Renderer extends J3dThread {
 
     // display id - to free shared context
     long display;
-    int window; 
+    long window; 
 
     /**
      * This is the id of the current rendering context
      */
-    long currentCtx = -1;
+    Context currentCtx = null;
 
     /**
      * This is the id of the current rendering window
@@ -143,11 +143,10 @@ class Renderer extends J3dThread {
     int nmesg = 0;
 
     // List of contexts created
-    ArrayList listOfCtxs = new ArrayList();
+    ArrayList<Context> listOfCtxs = new ArrayList<Context>();
 
     // Parallel list of canvases
-    ArrayList listOfCanvases = new ArrayList();
-
+    ArrayList<Canvas3D> listOfCanvases = new ArrayList<Canvas3D>();
 
     boolean needToRebuildDisplayList = false;
     boolean needToResendTextureDown = false;
@@ -231,7 +230,7 @@ class Renderer extends J3dThread {
 		     continue;
 		 }
 
- 	         if (cv.active && (cv.ctx != 0) && 
+ 	         if (cv.active && (cv.ctx != null) && 
 		     (cv.view != null) && (cv.imageReady)) {
                      if (cv.useDoubleBuffer) {
 			 synchronized (cv.drawingSurfaceObject) {
@@ -336,7 +335,7 @@ class Renderer extends J3dThread {
 	    } else if (mtype == MasterControl.RESETCANVAS_CLEANUP) {
 		// from MasterControl RESET_CANVAS postRequest
 		cv = (Canvas3D) args[1];
-		if (cv.ctx != 0) {
+		if (cv.ctx != null) {
 		    cv.makeCtxCurrent();
 		}
 		cv.freeContextResources(cv.screen.renderer, true, cv.ctx);
@@ -346,8 +345,8 @@ class Renderer extends J3dThread {
 		Canvas3D c = (Canvas3D) obj[0]; 
 		removeCtx(c,
 			  ((Long) obj[1]).longValue(),
-			  ((Integer) obj[2]).intValue(),
-			  ((Long) obj[3]).longValue(), 
+			  ((Long) obj[2]).longValue(),
+			  (Context) obj[3], 
 			  false, !c.offScreen, 
 			  false);		
 	    } 
@@ -418,7 +417,7 @@ class Renderer extends J3dThread {
 			    c.createQueryContext();
 			    // currentCtx change after we create a new context
 			    GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
-			    currentCtx = -1;
+			    currentCtx = null;
                             currentWindow = 0;
 			} 
 		    } else if (secondArg instanceof Integer) {
@@ -477,7 +476,7 @@ class Renderer extends J3dThread {
                     removeCtx(canvas, canvas.screen.display, canvas.window, canvas.ctx,
                               false, !canvas.offScreen, false);
                     // destroy offScreenBuffer.
-                    removeCtx(canvas, canvas.screen.display, canvas.window, 0,
+                    removeCtx(canvas, canvas.screen.display, canvas.window, null,
                               false, !canvas.offScreen, true);    
                                     
 		    canvas.offScreenBufferPending = false;
@@ -517,7 +516,7 @@ class Renderer extends J3dThread {
 			needToResendTextureDown = false;
 		    }
 		    
-		    if (canvas.ctx != 0) {
+		    if (canvas.ctx != null) {
 			// ctx may not construct until doClear();
 			canvas.beginScene();
 		    }
@@ -642,7 +641,7 @@ class Renderer extends J3dThread {
                         break;
                     }
 
-		    if (canvas.ctx != 0) {
+		    if (canvas.ctx != null) {
 			canvas.endScene();
 		    }
 		    m[nmesg++].decRefcount();
@@ -689,7 +688,7 @@ class Renderer extends J3dThread {
 
                     if (canvas.useSharedCtx) {
 
-                        if (sharedCtx == 0) {
+                        if (sharedCtx == null) {
                             display = canvas.screen.display;
 
 			    // Always lock for context create
@@ -702,8 +701,8 @@ class Renderer extends J3dThread {
 			    }
 
 			    synchronized (VirtualUniverse.mc.contextCreationLock) {
-				sharedCtx = canvas.createNewContext(0, true);
-				if (sharedCtx == 0) {
+				sharedCtx = canvas.createNewContext(null, true);
+				if (sharedCtx == null) {
 				    canvas.drawingSurfaceObject.unLock();
 				    if ((offBufRetained != null) &&
 					offBufRetained.isByReference()) {
@@ -721,7 +720,7 @@ class Renderer extends J3dThread {
                        }
                     }
 
-            	    if (canvas.ctx == 0) {
+            	    if (canvas.ctx == null) {
 			
 			display = canvas.screen.display;
 
@@ -737,7 +736,7 @@ class Renderer extends J3dThread {
 			synchronized (VirtualUniverse.mc.contextCreationLock) {
 			    canvas.ctx = canvas.createNewContext(sharedCtx, false);
 
-                            if (canvas.ctx == 0) {
+                            if (canvas.ctx == null) {
 				canvas.drawingSurfaceObject.unLock();			    
 				if ((offBufRetained != null) &&
 				    offBufRetained.isByReference()) {
@@ -752,7 +751,7 @@ class Renderer extends J3dThread {
 
 			    canvas.ctxTimeStamp = 
 				    VirtualUniverse.mc.getContextTimeStamp();
-			    listOfCtxs.add(new Long(canvas.ctx));
+			    listOfCtxs.add(canvas.ctx);
 			    listOfCanvases.add(canvas);
 
 			    if (renderBin.nodeComponentList.size() > 0) {
@@ -1399,7 +1398,7 @@ class Renderer extends J3dThread {
        } catch (NullPointerException ne) {
 	    ne.printStackTrace();
 	    if (canvas != null) {
-		if (canvas.ctx != 0) {
+		if (canvas.ctx != null) {
 		    canvas.endScene();
 		}
 		// drawingSurfaceObject will safely ignore
@@ -1422,7 +1421,7 @@ class Renderer extends J3dThread {
 	rendererStructure = new RendererStructure();	
 	bgVworldToVpc = new Transform3D();
 	numframes = 0.0f;
-	sharedCtx = 0;	 
+	sharedCtx = null;	 
 	sharedCtxTimeStamp = 0;
 	dirtyRenderMoleculeList.clear();
 	dirtyRenderAtomList.clear();
@@ -1442,7 +1441,7 @@ class Renderer extends J3dThread {
 
     // This is only invoked from removeCtx()/removeAllCtxs()
     // with drawingSurface already lock
-    final void makeCtxCurrent(long sharedCtx, long display, int window) {
+    final void makeCtxCurrent(Context sharedCtx, long display, long window) {
         if (sharedCtx != currentCtx || window != currentWindow) {
 	    Canvas3D.useCtx(sharedCtx, display, window);
 	    /*
@@ -1460,10 +1459,9 @@ class Renderer extends J3dThread {
     // Canvas3D postRequest() offScreen rendering since the
     // user thread will not wait for it. Also we can just
     // reuse it as Canvas3D did not destroy.
-    private void removeCtx(Canvas3D cv, long display, int window, long ctx,
+    private void removeCtx(Canvas3D cv, long display, long window, Context ctx,
 			   boolean resetCtx, boolean freeBackground, 
 			   boolean destroyOffScreenBuffer) {
-	
 
 	synchronized (VirtualUniverse.mc.contextCreationLock) {
 	    // Fix for issue 18.
@@ -1474,8 +1472,8 @@ class Renderer extends J3dThread {
 		cv.offScreenBufferPending = false;
 	    }
 
-	    if (ctx != 0) {
-		int idx = listOfCtxs.indexOf(new Long(ctx));
+	    if (ctx != null) {
+		int idx = listOfCtxs.indexOf(ctx);
 		if (idx >= 0) {
 		    listOfCtxs.remove(idx);
 		    listOfCanvases.remove(idx);
@@ -1486,13 +1484,13 @@ class Renderer extends J3dThread {
 			// always use the ctx pass in.
 			if (cv.drawingSurfaceObject.renderLock()) {
 			    // if it is the last one, free shared resources
-			    if (sharedCtx != 0) {
+			    if (sharedCtx != null) {
 				if (listOfCtxs.isEmpty()) {
 				    makeCtxCurrent(sharedCtx, display, window);
 				    freeResourcesInFreeList(null);
 				    freeContextResources();
 				    Canvas3D.destroyContext(display, window, sharedCtx);
-				    currentCtx = -1;
+				    currentCtx = null;
                                     currentWindow = 0;
 				} else {
 				    freeResourcesInFreeList(cv);
@@ -1504,7 +1502,7 @@ class Renderer extends J3dThread {
 			    }
 			    cv.freeContextResources(this, freeBackground, ctx);
 			    Canvas3D.destroyContext(display, window, ctx);
-			    currentCtx = -1;
+			    currentCtx = null;
                             currentWindow = 0;
 			    cv.drawingSurfaceObject.unLock();
 			}
@@ -1512,11 +1510,11 @@ class Renderer extends J3dThread {
 		}
 
 		if (resetCtx) {
-		    cv.ctx = 0;
+		    cv.ctx = null;
 		}
 
-		if ((sharedCtx != 0) && listOfCtxs.isEmpty()) {
-		    sharedCtx = 0;
+		if ((sharedCtx != null) && listOfCtxs.isEmpty()) {
+		    sharedCtx = null;
 		    sharedCtxTimeStamp = 0;
 		}
 		cv.ctxTimeStamp = 0;
@@ -1532,7 +1530,7 @@ class Renderer extends J3dThread {
 	    for (int i=listOfCanvases.size()-1; i >=0; i--) {
 		cv = (Canvas3D) listOfCanvases.get(i);
 
-		if ((cv.screen != null) && (cv.ctx != 0)) {
+		if ((cv.screen != null) && (cv.ctx != null)) {
 		    if ((VirtualUniverse.mc.isWindows() || (display != 0)) && 
 			(cv.window != 0) && cv.added) {
 			if (cv.drawingSurfaceObject.renderLock()) {
@@ -1540,12 +1538,12 @@ class Renderer extends J3dThread {
 			    // first before last non-sharedCtx to
 			    // workaround Nvidia driver bug under Linux
 			    // that crash on freeTexture ID:4685156
-			    if ((i == 0) && (sharedCtx != 0)) {
+			    if ((i == 0) && (sharedCtx != null)) {
 				makeCtxCurrent(sharedCtx, display, window);
 				freeResourcesInFreeList(null);
 				freeContextResources();
 				Canvas3D.destroyContext(display, window, sharedCtx);
-				currentCtx = -1;
+				currentCtx = null;
                                 currentWindow = 0;
 			    }
 			    cv.makeCtxCurrent();
@@ -1554,19 +1552,19 @@ class Renderer extends J3dThread {
 			    Canvas3D.destroyContext(cv.screen.display,
 						    cv.window,
 						    cv.ctx);
-			    currentCtx = -1;
+			    currentCtx = null;
                             currentWindow = 0;
 			    cv.drawingSurfaceObject.unLock();
 			}
 		    }
 		}
 
-		cv.ctx = 0;
+		cv.ctx = null;
 		cv.ctxTimeStamp = 0;
 	    }
 	    
-	    if (sharedCtx != 0) {
-		sharedCtx = 0;
+	    if (sharedCtx != null) {
+		sharedCtx = null;
 		sharedCtxTimeStamp = 0;
 	    }
 	    listOfCanvases.clear();
@@ -1591,7 +1589,7 @@ class Renderer extends J3dThread {
 	}
 
 	synchronized (VirtualUniverse.mc.contextCreationLock) {
-	    if (sharedCtx != 0) {
+	    if (sharedCtx != null) {
 		currentCanvas.makeCtxCurrent(sharedCtx);
 		// OGL share context is used
 		Canvas3D.freeTexture(sharedCtx, texId);

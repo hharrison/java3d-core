@@ -112,7 +112,7 @@ class PointAttributesRetained extends NodeComponentRetained {
     /**
      * Update the native context
      */
-    void updateNative(long ctx) {
+    void updateNative(Context ctx) {
 	Pipeline.getPipeline().updatePointAttributes(ctx, pointSize, pointAntialiasing);
     }
 

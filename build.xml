@@ -192,8 +192,20 @@
     <property name="install.bin" value="bin"/>
   </target>
 
+  <target name="init-jogl" if="build.jogl">
+    <property name="jogl.pipeline.srcdir" location="${src}/classes/jogl"/>
+    <echo message="Building JoglPipeline"/>
+  </target>
+
+  <target name="init-no-jogl" unless="build.jogl">
+    <property name="jogl.pipeline.srcdir" value=""/>
+  </target>
+
+  <target name="setupJogl" depends="init-jogl,init-no-jogl">
+  </target>
+
   <target name="setupPlatform"
-       depends="init, setupBuildType, setupSolaris, setupSolarisX86, setupLinux, setupLinuxAmd64, setupLinuxIA64, setupLinuxPPC, setupWindows">
+       depends="init, setupBuildType, setupSolaris, setupSolarisX86, setupLinux, setupLinuxAmd64, setupLinuxIA64, setupLinuxPPC, setupWindows, setupJogl">
     <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
     <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
     <property name="docname" value="java3d-${version_file}-doc"/>

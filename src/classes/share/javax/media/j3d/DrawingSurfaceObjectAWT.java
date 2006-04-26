@@ -39,6 +39,8 @@ class DrawingSurfaceObjectAWT extends DrawingSurfaceObject {
     private native long getDrawingSurfaceAWT(Canvas3D cv, long awt);
     private native long getDrawingSurfaceInfo(long ds);
     private static native void freeResource(long awt, long ds, long dsi);
+
+    // TODO: long window
     private native int getDrawingSurfaceWindowIdAWT(Canvas3D cv, long ds, long dsi,
             long display, int screenID,
             boolean xineramaDisabled);

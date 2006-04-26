@@ -173,7 +173,7 @@ class PointLightRetained extends LightRetained {
      * updates a point light.  This includes its color, attenuation,
      * and its transformed position.
      */
-    void update(long ctx, int lightSlot, double scale) {
+    void update(Context ctx, int lightSlot, double scale) {
 	validateAttenuationInEc(scale);
         Pipeline.getPipeline().updatePointLight(ctx,
                 lightSlot, color.x, color.y, color.z,

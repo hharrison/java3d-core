@@ -583,7 +583,7 @@ public class Canvas3D extends Canvas {
 
     // The window field when running Windows is the native HDC.  With X11 it
     // is the handle to the native X11 drawable.
-    int window = 0;
+    long window = 0;
 
     // fbConfig is a pointer to the fbConfig object that is associated with 
     // the GraphicsConfiguration object used to create this Canvas.
@@ -625,7 +625,7 @@ public class Canvas3D extends Canvas {
     boolean added = false;
 
     // This is the id for the underlying graphics context structure.
-    long ctx = 0;
+    Context ctx = null;
 
     // since the ctx id can be the same as the previous one,
     // we need to keep a time stamp to differentiate the contexts with the
@@ -1082,7 +1082,7 @@ public class Canvas3D extends Canvas {
 	    // this canvas will not receive the paint callback either,
 	    // so set the necessary flags here as well
             firstPaintCalled = true;
-            ctx = 0;
+            ctx = null;
             evaluateActive();
 
             // create the rendererStructure object
@@ -1343,7 +1343,7 @@ public class Canvas3D extends Canvas {
 	ra = null;
 	graphicsContext3D = null;
 
-	ctx = 0;
+	ctx = null;
 	// must be after removeCtx() because 
 	// it will free graphics2D textureID
 	graphics2D = null;
@@ -1732,9 +1732,9 @@ public class Canvas3D extends Canvas {
 	    if (width > 0 && height > 0) {
 		sendCreateOffScreenBuffer();
 	    }
-	    ctx = 0; 
+	    ctx = null; 
 	}
-	else if (ctx != 0) {
+	else if (ctx != null) {
             removeCtx();
 	}
 
@@ -2204,7 +2204,7 @@ public class Canvas3D extends Canvas {
 
 	if (firstPaintCalled && useDoubleBuffer) {
 	    try {
-		if (validCtx && (ctx != 0) && (view != null)) {
+		if (validCtx && (ctx != null) && (view != null)) {
 		    synchronized (drawingSurfaceObject) {
 			if (validCtx) {
 			    if (!drawingSurfaceObject.renderLock()) {
@@ -2250,8 +2250,8 @@ public class Canvas3D extends Canvas {
     /**
      * Wrapper for native createNewContext method.
      */
-    long createNewContext(long shareCtx, boolean isSharedCtx) {
-        long retVal = createNewContext(this.screen.display,
+    Context createNewContext(Context shareCtx, boolean isSharedCtx) {
+        Context retVal = createNewContext(this.screen.display,
                 this.window,
                 this.fbConfig,
                 shareCtx, isSharedCtx,
@@ -2273,21 +2273,21 @@ public class Canvas3D extends Canvas {
     /**
      * Make the specified context current.
      */
-    final void makeCtxCurrent(long ctx) {
+    final void makeCtxCurrent(Context ctx) {
 	makeCtxCurrent(ctx, screen.display, window);
     }
 
-    final void makeCtxCurrent(long ctx, long dpy, int win) {
-        if (ctx != screen.renderer.currentCtx || win != screen.renderer.currentWindow) {
+    final void makeCtxCurrent(Context ctx, long dpy, long window) {
+        if (ctx != screen.renderer.currentCtx || window != screen.renderer.currentWindow) {
 	    if (!drawingSurfaceObject.isLocked()) {
 		drawingSurfaceObject.renderLock();
-		useCtx(ctx, dpy, win);
+		useCtx(ctx, dpy, window);
 		drawingSurfaceObject.unLock();
 	    } else {
-		useCtx(ctx, dpy, win);
+		useCtx(ctx, dpy, window);
 	    }
             screen.renderer.currentCtx = ctx;
-            screen.renderer.currentWindow = win;
+            screen.renderer.currentWindow = window;
         }
     }
 
@@ -3444,7 +3444,7 @@ public class Canvas3D extends Canvas {
 	    boolean createDummyCtx = false;
 
 	    synchronized (VirtualUniverse.mc.contextCreationLock) {
-		if (ctx == 0) {
+		if (ctx == null) {
 		    createDummyCtx = true;
 		}
 	    }
@@ -3671,7 +3671,7 @@ public class Canvas3D extends Canvas {
     }
 
     
-    void resetTexture(long ctx, int texUnitIndex) {
+    void resetTexture(Context ctx, int texUnitIndex) {
 	// D3D also need to reset texture attributes 
 	this.resetTextureNative(ctx, texUnitIndex);
 
@@ -4037,7 +4037,7 @@ public class Canvas3D extends Canvas {
 	}
     }
 
-    void setModelViewMatrix(long ctx, double[] viewMatrix, Transform3D mTrans) {
+    void setModelViewMatrix(Context ctx, double[] viewMatrix, Transform3D mTrans) {
 	setModelViewMatrix(ctx, viewMatrix, mTrans.mat);
 	if (!useStereo) {
 	    this.modelMatrix = mTrans;
@@ -4172,12 +4172,12 @@ public class Canvas3D extends Canvas {
         
 	if ((screen != null) && 
 	    (screen.renderer != null) &&
-	    (ctx != 0)) {
+	    (ctx != null)) {
             VirtualUniverse.mc.postRequest(MasterControl.FREE_CONTEXT,
                     new Object[]{this,
                             new Long(screen.display),
-                            new Integer(window),
-                            new Long(ctx)});           
+                            new Long(window),
+                            ctx});
 	    // Fix for Issue 19
 	    // Wait for the context to be freed unless called from
 	    // a Behavior or from a Rendering thread
@@ -4189,7 +4189,7 @@ public class Canvas3D extends Canvas {
 		}
 	    
             }
-	    ctx = 0;
+	    ctx = null;
 	}
     }
 
@@ -4339,7 +4339,7 @@ public class Canvas3D extends Canvas {
     }
 
     // handle free resource in the FreeList
-    void freeResourcesInFreeList(long ctx) {
+    void freeResourcesInFreeList(Context ctx) {
 	Iterator it;
 	ArrayList list;
 	int i, val;
@@ -4378,7 +4378,7 @@ public class Canvas3D extends Canvas {
     }
 
     void freeContextResources(Renderer rdr, boolean freeBackground,
-			      long ctx) {
+			      Context ctx) {
 
 
 	Object obj;
@@ -4386,7 +4386,7 @@ public class Canvas3D extends Canvas {
 	DetailTextureImage detailTex;
 	
 	// Just return if we don't have a valid renderer or context
-	if (rdr == null || ctx == 0) {
+	if (rdr == null || ctx == null) {
 	    return;
 	}
 
@@ -4457,8 +4457,8 @@ public class Canvas3D extends Canvas {
     // *****************************************************************
 
     // This is the native method for creating the underlying graphics context.
-    private long createNewContext(long display, int window,
-            long fbConfig, long shareCtx, boolean isSharedCtx,
+    private Context createNewContext(long display, long window,
+            long fbConfig, Context shareCtx, boolean isSharedCtx,
             boolean offScreen,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable) {
@@ -4469,7 +4469,7 @@ public class Canvas3D extends Canvas {
                 cgLibraryAvailable);
     }
 
-    private void createQueryContext(long display, int window,
+    private void createQueryContext(long display, long window,
             long fbConfig, boolean offScreen, int width, int height,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable) {
@@ -4480,125 +4480,125 @@ public class Canvas3D extends Canvas {
     }
 
     // This is the native for creating offscreen buffer
-    int createOffScreenBuffer(long ctx, long display, long fbConfig, int width, int height) {
+    int createOffScreenBuffer(Context ctx, long display, long fbConfig, int width, int height) {
         return Pipeline.getPipeline().createOffScreenBuffer(this,
                 ctx, display, fbConfig, width, height);
     }
 
-    void destroyOffScreenBuffer(long ctx, long display, long fbConfig, int window) {
+    void destroyOffScreenBuffer(Context ctx, long display, long fbConfig, long window) {
         Pipeline.getPipeline().destroyOffScreenBuffer(this, ctx, display, fbConfig, window);
     }
 
     // This is the native for reading the image from the offscreen buffer
-    private void readOffScreenBuffer(long ctx, int format, int width, int height) {
+    private void readOffScreenBuffer(Context ctx, int format, int width, int height) {
         Pipeline.getPipeline().readOffScreenBuffer(this, ctx, format, width, height);
     }
 
     // The native method for swapBuffers
-    int swapBuffers(long ctx, long dpy, int win) {
-        return Pipeline.getPipeline().swapBuffers(this, ctx, dpy, win);
+    int swapBuffers(Context ctx, long dpy, long window) {
+        return Pipeline.getPipeline().swapBuffers(this, ctx, dpy, window);
     }
 
     // notify D3D that Canvas is resize
-    private int resizeD3DCanvas(long ctx) {
+    private int resizeD3DCanvas(Context ctx) {
         return Pipeline.getPipeline().resizeD3DCanvas(this, ctx);
     }
 
     // notify D3D to toggle between FullScreen and window mode
-    private int toggleFullScreenMode(long ctx) {
+    private int toggleFullScreenMode(Context ctx) {
         return Pipeline.getPipeline().toggleFullScreenMode(this, ctx);
     }
 
     // -----------------------------------------------------------------------------
 
     // native method for setting Material when no material is present
-    void updateMaterial(long ctx, float r, float g, float b, float a) {
+    void updateMaterial(Context ctx, float r, float g, float b, float a) {
         Pipeline.getPipeline().updateMaterialColor(ctx, r, g, b, a);
     }
 
-    static void destroyContext(long display, int window, long context) {
-        Pipeline.getPipeline().destroyContext(display, window, context);
+    static void destroyContext(long display, long window, Context ctx) {
+        Pipeline.getPipeline().destroyContext(display, window, ctx);
     }
 
     // This is the native method for doing accumulation.
-    void accum(long ctx, float value) {
+    void accum(Context ctx, float value) {
         Pipeline.getPipeline().accum(ctx, value);
     }
 
     // This is the native method for doing accumulation return.
-    void accumReturn(long ctx) {
+    void accumReturn(Context ctx) {
         Pipeline.getPipeline().accumReturn(ctx);
     }
 
     // This is the native method for clearing the accumulation buffer.
-    void clearAccum(long ctx) {
+    void clearAccum(Context ctx) {
         Pipeline.getPipeline().clearAccum(ctx);
     }
 
     // This is the native method for getting the number of lights the underlying
     // native library can support.
-    int getNumCtxLights(long ctx) {
+    int getNumCtxLights(Context ctx) {
         return Pipeline.getPipeline().getNumCtxLights(ctx);
     }
 
     // Native method for decal 1st child setup
-    boolean decal1stChildSetup(long ctx) {
+    boolean decal1stChildSetup(Context ctx) {
         return Pipeline.getPipeline().decal1stChildSetup(ctx);
     }
 
     // Native method for decal nth child setup
-    void decalNthChildSetup(long ctx) {
+    void decalNthChildSetup(Context ctx) {
         Pipeline.getPipeline().decalNthChildSetup(ctx);
     }
 
     // Native method for decal reset
-    void decalReset(long ctx, boolean depthBufferEnable) {
+    void decalReset(Context ctx, boolean depthBufferEnable) {
         Pipeline.getPipeline().decalReset(ctx, depthBufferEnable);
     }
 
     // Native method for decal reset
-    void ctxUpdateEyeLightingEnable(long ctx, boolean localEyeLightingEnable) {
+    void ctxUpdateEyeLightingEnable(Context ctx, boolean localEyeLightingEnable) {
         Pipeline.getPipeline().ctxUpdateEyeLightingEnable(ctx, localEyeLightingEnable);
     }
 
     // The following three methods are used in multi-pass case
 
     // native method for setting blend color
-    void setBlendColor(long ctx, float red, float green,
+    void setBlendColor(Context ctx, float red, float green,
             float blue, float alpha) {
         Pipeline.getPipeline().setBlendColor(ctx, red, green,
                 blue, alpha);
     }
 
     // native method for setting blend func
-    void setBlendFunc(long ctx, int src, int dst) {
+    void setBlendFunc(Context ctx, int src, int dst) {
         Pipeline.getPipeline().setBlendFunc(ctx, src, dst);
     }
 
     // native method for setting fog enable flag
-    void setFogEnableFlag(long ctx, boolean enableFlag) {
+    void setFogEnableFlag(Context ctx, boolean enableFlag) {
         Pipeline.getPipeline().setFogEnableFlag(ctx, enableFlag);
     }
 
     // Setup the full scene antialising in D3D and ogl when GL_ARB_multisamle supported
-    void setFullSceneAntialiasing(long ctx, boolean enable) {
+    void setFullSceneAntialiasing(Context ctx, boolean enable) {
         Pipeline.getPipeline().setFullSceneAntialiasing(ctx, enable);
     }
 
-    void setGlobalAlpha(long ctx, float alpha) {
+    void setGlobalAlpha(Context ctx, float alpha) {
         Pipeline.getPipeline().setGlobalAlpha(ctx, alpha);
     }
 
     // Native method to update separate specular color control
-    void updateSeparateSpecularColorEnable(long ctx, boolean control) {
+    void updateSeparateSpecularColorEnable(Context ctx, boolean control) {
         Pipeline.getPipeline().updateSeparateSpecularColorEnable(ctx, control);
     }
 
     // Initialization for D3D when scene begin
-    private void beginScene(long ctx) {
+    private void beginScene(Context ctx) {
         Pipeline.getPipeline().beginScene(ctx);
     }
-    private void endScene(long ctx) {
+    private void endScene(Context ctx) {
         Pipeline.getPipeline().endScene(ctx);
     }
 
@@ -4609,27 +4609,27 @@ public class Canvas3D extends Canvas {
     }
 
     // native method for setting light enables
-    void setLightEnables(long ctx, long enableMask, int maxLights) {
+    void setLightEnables(Context ctx, long enableMask, int maxLights) {
         Pipeline.getPipeline().setLightEnables(ctx, enableMask, maxLights);
     }
 
     // native method for setting scene ambient
-    void setSceneAmbient(long ctx, float red, float green, float blue) {
+    void setSceneAmbient(Context ctx, float red, float green, float blue) {
         Pipeline.getPipeline().setSceneAmbient(ctx, red, green, blue);
     }
 
     // native method for disabling fog
-    void disableFog(long ctx) {
+    void disableFog(Context ctx) {
         Pipeline.getPipeline().disableFog(ctx);
     }
 
     // native method for disabling modelClip
-    void disableModelClip(long ctx) {
+    void disableModelClip(Context ctx) {
         Pipeline.getPipeline().disableModelClip(ctx);
     }
 
     // native method for setting default RenderingAttributes
-    void resetRenderingAttributes(long ctx,
+    void resetRenderingAttributes(Context ctx,
             boolean depthBufferWriteEnableOverride,
             boolean depthBufferEnableOverride) {
         Pipeline.getPipeline().resetRenderingAttributes(ctx,
@@ -4638,42 +4638,42 @@ public class Canvas3D extends Canvas {
     }
 
     // native method for setting default texture
-    void resetTextureNative(long ctx, int texUnitIndex) {
+    void resetTextureNative(Context ctx, int texUnitIndex) {
         Pipeline.getPipeline().resetTextureNative(ctx, texUnitIndex);
     }
 
     // native method for activating a particular texture unit
-    void activeTextureUnit(long ctx, int texUnitIndex) {
+    void activeTextureUnit(Context ctx, int texUnitIndex) {
         Pipeline.getPipeline().activeTextureUnit(ctx, texUnitIndex);
     }
 
     // native method for setting default TexCoordGeneration
-    void resetTexCoordGeneration(long ctx) {
+    void resetTexCoordGeneration(Context ctx) {
         Pipeline.getPipeline().resetTexCoordGeneration(ctx);
     }
 
     // native method for setting default TextureAttributes
-    void resetTextureAttributes(long ctx) {
+    void resetTextureAttributes(Context ctx) {
         Pipeline.getPipeline().resetTextureAttributes(ctx);
     }
 
     // native method for setting default PolygonAttributes
-    void resetPolygonAttributes(long ctx) {
+    void resetPolygonAttributes(Context ctx) {
         Pipeline.getPipeline().resetPolygonAttributes(ctx);
     }
 
     // native method for setting default LineAttributes
-    void resetLineAttributes(long ctx) {
+    void resetLineAttributes(Context ctx) {
         Pipeline.getPipeline().resetLineAttributes(ctx);
     }
 
     // native method for setting default PointAttributes
-    void resetPointAttributes(long ctx) {
+    void resetPointAttributes(Context ctx) {
         Pipeline.getPipeline().resetPointAttributes(ctx);
     }
 
     // native method for setting default TransparencyAttributes
-    void resetTransparency(long ctx, int geometryType,
+    void resetTransparency(Context ctx, int geometryType,
             int polygonMode, boolean lineAA,
             boolean pointAA) {
         Pipeline.getPipeline().resetTransparency(ctx, geometryType,
@@ -4682,7 +4682,7 @@ public class Canvas3D extends Canvas {
     }
 
     // native method for setting default ColoringAttributes
-    void resetColoringAttributes(long ctx,
+    void resetColoringAttributes(Context ctx,
             float r, float g,
             float b, float a,
             boolean enableLight) {
@@ -4693,7 +4693,7 @@ public class Canvas3D extends Canvas {
     }
 
     // native method for updating the texture unit state map
-    private void updateTexUnitStateMap(long ctx, int numActiveTexUnit,
+    private void updateTexUnitStateMap(Context ctx, int numActiveTexUnit,
             int[] texUnitStateMap) {
         Pipeline.getPipeline().updateTexUnitStateMap(ctx, numActiveTexUnit, texUnitStateMap);
     }
@@ -4702,21 +4702,21 @@ public class Canvas3D extends Canvas {
      *  This native method makes sure that the rendering for this canvas
      *  gets done now.
      */
-    void syncRender(long ctx, boolean wait) {
+    void syncRender(Context ctx, boolean wait) {
         Pipeline.getPipeline().syncRender(ctx, wait);
     }
 
     // The native method that sets this ctx to be the current one
-    static boolean useCtx(long ctx, long display, int window) {
+    static boolean useCtx(Context ctx, long display, long window) {
         return Pipeline.getPipeline().useCtx(ctx, display, window);
     }
 
-    void clear(long ctx, float r, float g, float b, int winWidth, int winHeight,
+    void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,
             ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown) {
         Pipeline.getPipeline().clear(ctx, r, g, b, winWidth, winHeight,
                 image, imageScaleMode, imageYdown);
     }
-    void textureclear(long ctx, int maxX, int maxY,
+    void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,
             int objectId, int scalemode,
@@ -4732,39 +4732,39 @@ public class Canvas3D extends Canvas {
 
 
     // The native method for setting the ModelView matrix.
-    void setModelViewMatrix(long ctx, double[] viewMatrix, double[] modelMatrix) {
+    void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {
         Pipeline.getPipeline().setModelViewMatrix(ctx, viewMatrix, modelMatrix);
     }
 
     // The native method for setting the Projection matrix.
-    void setProjectionMatrix(long ctx, double[] projMatrix) {
+    void setProjectionMatrix(Context ctx, double[] projMatrix) {
         Pipeline.getPipeline().setProjectionMatrix(ctx, projMatrix);
     }
 
     // The native method for setting the Viewport.
-    void setViewport(long ctx, int x, int y, int width, int height) {
+    void setViewport(Context ctx, int x, int y, int width, int height) {
         Pipeline.getPipeline().setViewport(ctx, x, y, width, height);
     }
 
     // used for display Lists
-    void newDisplayList(long ctx, int displayListId) {
+    void newDisplayList(Context ctx, int displayListId) {
         Pipeline.getPipeline().newDisplayList(ctx, displayListId);
     }
-    void endDisplayList(long ctx) {
+    void endDisplayList(Context ctx) {
         Pipeline.getPipeline().endDisplayList(ctx);
     }
-    void callDisplayList(long ctx, int id, boolean isNonUniformScale) {
+    void callDisplayList(Context ctx, int id, boolean isNonUniformScale) {
         Pipeline.getPipeline().callDisplayList(ctx, id, isNonUniformScale);
     }
 
-    static void freeDisplayList(long ctx, int id) {
+    static void freeDisplayList(Context ctx, int id) {
         Pipeline.getPipeline().freeDisplayList(ctx, id);
     }
-    static void freeTexture(long ctx, int id) {
+    static void freeTexture(Context ctx, int id) {
         Pipeline.getPipeline().freeTexture(ctx, id);
     }
 
-    void composite(long ctx, int px, int py,
+    void composite(Context ctx, int px, int py,
             int xmin, int ymin, int xmax, int ymax,
             int rasWidth,  byte[] image,
             int winWidth, int winHeight) {
@@ -4774,7 +4774,7 @@ public class Canvas3D extends Canvas {
                 winWidth, winHeight);
     }
 
-    void texturemapping(long ctx,
+    void texturemapping(Context ctx,
             int px, int py,
             int xmin, int ymin, int xmax, int ymax,
             int texWidth, int texHeight,
@@ -4792,7 +4792,7 @@ public class Canvas3D extends Canvas {
                 winWidth, winHeight);
     }
 
-    boolean initTexturemapping(long ctx, int texWidth,
+    boolean initTexturemapping(Context ctx, int texWidth,
             int texHeight, int objectId) {
         return Pipeline.getPipeline().initTexturemapping(ctx, texWidth,
                 texHeight, objectId);
@@ -4804,12 +4804,12 @@ public class Canvas3D extends Canvas {
     // stereo is available before setting the mode to FIELD_LEFT or
     // FIELD_RIGHT.  The boolean isTRUE for double buffered mode, FALSE
     // foe single buffering.
-    void setRenderMode(long ctx, int mode, boolean doubleBuffer) {
+    void setRenderMode(Context ctx, int mode, boolean doubleBuffer) {
         Pipeline.getPipeline().setRenderMode(ctx, mode, doubleBuffer);
     }
 
     // Set glDepthMask.
-    void setDepthBufferWriteEnable(long ctx, boolean mode) {
+    void setDepthBufferWriteEnable(Context ctx, boolean mode) {
         Pipeline.getPipeline().setDepthBufferWriteEnable(ctx, mode);
     }
 

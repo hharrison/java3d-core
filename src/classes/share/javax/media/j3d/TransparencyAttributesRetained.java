@@ -215,7 +215,7 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
 	}
     }
 
-    void updateNative(long ctx,
+    void updateNative(Context ctx,
 		      float alpha, int geometryType, int polygonMode, 
 		      boolean lineAA, 
 		      boolean pointAA) { 

@@ -409,7 +409,7 @@ class MaterialRetained extends NodeComponentRetained {
     /**
      * Updates the native context.
      */
-    void updateNative(long ctx,
+    void updateNative(Context ctx,
 		      float red, float green, float blue, float alpha,
 		      boolean enableLighting) {
 	Pipeline.getPipeline().updateMaterial(ctx, red, green, blue, alpha, 

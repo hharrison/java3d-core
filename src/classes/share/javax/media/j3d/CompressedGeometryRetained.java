@@ -84,7 +84,7 @@ class CompressedGeometryRetained extends GeometryRetained {
      * Formerly native method that returns availability of a native by-reference
      * rendering API for compressed geometry.
      */
-    private boolean decompressByRef(long ctx) {
+    private boolean decompressByRef(Context ctx) {
 	return false;
     }
 
@@ -93,14 +93,14 @@ class CompressedGeometryRetained extends GeometryRetained {
      * rendering (and acceleration) for compressed geometry of the
      * given version.
      */
-    private boolean decompressHW(long ctx, int majorVersion, int minorVersion) {
+    private boolean decompressHW(Context ctx, int majorVersion, int minorVersion) {
 	return false;
     }
 
     /**
      * Formerly native method that does HW compressed geometry rendering
      */
-    private void execute(long  ctx, int version, int bufferType,
+    private void execute(Context ctx, int version, int bufferType,
 			 int bufferContents, int renderFlags,
 			 int offset, int size, byte[] geometry) {
 

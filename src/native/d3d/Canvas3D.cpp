@@ -640,7 +640,7 @@ jint JNICALL Java_javax_media_j3d_NativePipeline_swapBuffers(
     jobject cv,
     jlong ctx,
     jlong display,
-    jint win)
+    jint window)
 {
     GetDevice2();
 

@@ -1647,12 +1647,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     }
 
-    void setVertexFormat(boolean useAlpha, boolean ignoreVC, long ctx) {
+    void setVertexFormat(boolean useAlpha, boolean ignoreVC, Context ctx) {
 	Pipeline.getPipeline().setVertexFormat(ctx,
                 this, vertexFormat, useAlpha, ignoreVC);
     }
     
-    void disableGlobalAlpha(long ctx, boolean useAlpha, boolean ignoreVC) {
+    void disableGlobalAlpha(Context ctx, boolean useAlpha, boolean ignoreVC) {
 	// If global alpha was turned on, then disable it
 	Pipeline.getPipeline().disableGlobalAlpha(ctx,
                 this, vertexFormat, useAlpha, ignoreVC);

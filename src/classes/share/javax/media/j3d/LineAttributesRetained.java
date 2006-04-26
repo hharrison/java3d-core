@@ -217,7 +217,7 @@ class LineAttributesRetained extends NodeComponentRetained {
     /**
      * This method updates the native context.
      */
-    void updateNative(long ctx) {
+    void updateNative(Context ctx) {
         Pipeline.getPipeline().updateLineAttributes(ctx,
                 lineWidth, linePattern, linePatternMask,
                 linePatternScaleFactor, lineAntialiasing);

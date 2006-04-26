@@ -98,7 +98,7 @@ class LinearFogRetained extends FogRetained {
      * This method and its native counterpart update the native context
      * fog values.
      */
-    void update(long ctx, double scale) {
+    void update(Context ctx, double scale) {
 	validateDistancesInEc(scale);
 	Pipeline.getPipeline().updateLinearFog(ctx,
                 color.x, color.y, color.z, frontDistanceInEc, backDistanceInEc);

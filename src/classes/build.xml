@@ -53,7 +53,7 @@
     </copy>
 
     <!-- Compile the java code from ${src} into ${build}/${platform}/debug/classes -->
-    <javac srcdir="${src}/classes/share:${src}/classes/${wstype}:${core_utils_src}/classes/share:${build-debug-gen}/classes"
+    <javac srcdir="${src}/classes/share:${src}/classes/${wstype}:${jogl.pipeline.srcdir}:${core_utils_src}/classes/share:${build-debug-gen}/classes"
            destdir="${build}/${platform}/debug/classes"
 	   source="1.5"
 	   target="1.5"
@@ -97,7 +97,7 @@
     </copy>
 
     <!-- Compile the java code from ${src} into ${build}/${platform}/opt/classes -->
-    <javac srcdir="${src}/classes/share:${src}/classes/${wstype}:${core_utils_src}/classes/share:${build-opt-gen}/classes"            destdir="${build}/${platform}/opt/classes"
+    <javac srcdir="${src}/classes/share:${src}/classes/${wstype}:${jogl.pipeline.srcdir}:${core_utils_src}/classes/share:${build-opt-gen}/classes"            destdir="${build}/${platform}/opt/classes"
            source="1.5"
            target="1.5"
            debug="true"

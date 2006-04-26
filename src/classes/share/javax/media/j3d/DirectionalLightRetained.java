@@ -168,7 +168,7 @@ class DirectionalLightRetained extends LightRetained
     }
 
       
-    void update(long ctx, int lightSlot, double scale) { 
+    void update(Context ctx, int lightSlot, double scale) { 
         Pipeline.getPipeline().updateDirectionalLight(ctx,
                 lightSlot, color.x, color.y, color.z,
                 xformDirection.x, xformDirection.y,

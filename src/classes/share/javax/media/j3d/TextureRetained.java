@@ -1021,11 +1021,11 @@ abstract class TextureRetained extends NodeComponentRetained {
      * Texture3D and TextureCubeMap implement their own versions.
      */
 
-    void bindTexture(long ctx, int objectId, boolean enable) {
+    void bindTexture(Context ctx, int objectId, boolean enable) {
         Pipeline.getPipeline().bindTexture2D(ctx, objectId, enable);
     }
 
-    void updateTextureBoundary(long ctx,
+    void updateTextureBoundary(Context ctx,
             int boundaryModeS, int boundaryModeT,
             float boundaryRed, float boundaryGreen,
             float boundaryBlue, float boundaryAlpha) {
@@ -1036,14 +1036,14 @@ abstract class TextureRetained extends NodeComponentRetained {
                 boundaryBlue, boundaryAlpha);
     }
 
-    void updateTextureFilterModes(long ctx,
+    void updateTextureFilterModes(Context ctx,
             int minFilter, int magFilter) {
 
         Pipeline.getPipeline().updateTexture2DFilterModes(ctx,
                 minFilter, magFilter);
     }
 
-    void updateTextureSharpenFunc(long ctx,
+    void updateTextureSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts) {
 
@@ -1051,7 +1051,7 @@ abstract class TextureRetained extends NodeComponentRetained {
             numSharpenTextureFuncPts, sharpenTextureFuncPts);
     }
 
-    void updateTextureFilter4Func(long ctx,
+    void updateTextureFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts) {
 
@@ -1059,11 +1059,11 @@ abstract class TextureRetained extends NodeComponentRetained {
                 numFilter4FuncPts, filter4FuncPts);
     }
 
-    void updateTextureAnisotropicFilter(long ctx, float degree) {
+    void updateTextureAnisotropicFilter(Context ctx, float degree) {
         Pipeline.getPipeline().updateTexture2DAnisotropicFilter(ctx, degree);
     }
 
-    void updateTextureLodRange(long ctx,
+    void updateTextureLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod) {
 
@@ -1071,7 +1071,7 @@ abstract class TextureRetained extends NodeComponentRetained {
                 minimumLod, maximumLod);
     }
 
-    void updateTextureLodOffset(long ctx,
+    void updateTextureLodOffset(Context ctx,
             float lodOffsetX, float lodOffsetY,
             float lodOffsetZ) {
 
@@ -1707,7 +1707,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    return;
 	}
 
-        if (cv.useSharedCtx && cv.screen.renderer.sharedCtx != 0) {
+        if (cv.useSharedCtx && cv.screen.renderer.sharedCtx != null) {
 
             if ((resourceCreationMask & cv.screen.renderer.rendererBit) == 0) {
 		reloadTexture = true;

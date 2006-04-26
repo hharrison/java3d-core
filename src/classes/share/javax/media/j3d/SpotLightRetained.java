@@ -183,7 +183,7 @@ class SpotLightRetained extends PointLightRetained {
      * transformed position, spread angle, concentration,
      * and its transformed position.
      */
-    void update(long ctx, int lightSlot, double scale) {
+    void update(Context ctx, int lightSlot, double scale) {
 	validateAttenuationInEc(scale);
         Pipeline.getPipeline().updateSpotLight(ctx,
                 lightSlot, color.x, color.y, color.z,
