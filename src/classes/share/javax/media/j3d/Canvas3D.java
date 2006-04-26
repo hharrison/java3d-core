@@ -1123,11 +1123,9 @@ public class Canvas3D extends Canvas {
 	    frameCount[i] = -1;
 	}
 
-        // TODO Pipeline : move this
-//        System.err.println("TODO: call pipeline code!");
-        drawingSurfaceObject = new DrawingSurfaceObjectAWT(this,
-                VirtualUniverse.mc.awt, screen.display, screen.screen,
-                VirtualUniverse.mc.xineramaDisabled);
+        // Construct the drawing surface object for this Canvas3D
+        drawingSurfaceObject =
+                Pipeline.getPipeline().createDrawingSurfaceObject(this);
 
 	// Get double buffer, stereo available, scene antialiasing
 	// flags from graphics config
@@ -1331,22 +1329,7 @@ public class Canvas3D extends Canvas {
 
 	removeCtx();
 
-	synchronized (drawingSurfaceObject) {
-
-	    DrawingSurfaceObjectAWT dso =
-		(DrawingSurfaceObjectAWT)drawingSurfaceObject;
-	    // get nativeDS before it is set to 0 in invalidate()
-	    long ds = dso.getDS();
-	    long ds_struct[] = {ds, dso.getDSI()};
-	    if (ds != 0) {
-		VirtualUniverse.mc.postRequest(
-					       MasterControl.FREE_DRAWING_SURFACE, 
-					       ds_struct);
-	    }
-	    
-	    drawingSurfaceObject.invalidate();
-	    
-	}
+        Pipeline.getPipeline().freeDrawingSurface(this, drawingSurfaceObject);
 
 	visible = false;
 

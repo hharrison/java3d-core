@@ -1385,15 +1385,30 @@ abstract class Pipeline {
             GraphicsConfiguration gc);
 
     // Methods to get actual capabilities from Canvas3D
-    abstract boolean hasDoubleBuffer(Canvas3D c);
-    abstract boolean hasStereo(Canvas3D c);
-    abstract int getStencilSize(Canvas3D c);
-    abstract boolean hasSceneAntialiasingMultisample(Canvas3D c);
-    abstract boolean hasSceneAntialiasingAccum(Canvas3D c);
+    abstract boolean hasDoubleBuffer(Canvas3D cv);
+    abstract boolean hasStereo(Canvas3D cv);
+    abstract int getStencilSize(Canvas3D cv);
+    abstract boolean hasSceneAntialiasingMultisample(Canvas3D cv);
+    abstract boolean hasSceneAntialiasingAccum(Canvas3D cv);
     
     // Methods to get native WS display and screen
     abstract long getDisplay();
     abstract int getScreen(GraphicsDevice graphicsDevice);
 
+
+    // ---------------------------------------------------------------------
+
+    //
+    // DrawingSurfaceObject methods
+    //
+
+    // Method to construct a new DrawingSurfaceObject
+    abstract DrawingSurfaceObject createDrawingSurfaceObject(Canvas3D cv);
+
+    // Method to free the drawing surface object
+    abstract void freeDrawingSurface(Canvas3D cv, DrawingSurfaceObject drawingSurfaceObject);
+
+    // Method to free the native drawing surface object
+    abstract void freeDrawingSurfaceNative(Object o);
 
 }

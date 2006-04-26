@@ -3125,7 +3125,7 @@ class MasterControl {
 		} 
 		rendererRun = true;
             } else if (type == FREE_DRAWING_SURFACE) {
-		DrawingSurfaceObjectAWT.freeDrawingSurface(o);
+                Pipeline.getPipeline().freeDrawingSurfaceNative(o);
             } else if (type == GETBESTCONFIG) {
 		GraphicsConfiguration gc = ((GraphicsConfiguration [])
 			  ((GraphicsConfigTemplate3D) o).testCfg)[0];

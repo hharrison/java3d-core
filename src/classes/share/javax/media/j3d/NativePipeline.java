@@ -1416,24 +1416,24 @@ class NativePipeline extends Pipeline {
     }
 
     // Methods to get actual capabilities from Canvas3D
-    boolean hasDoubleBuffer(Canvas3D c) {
-        return nativeTemplate.hasDoubleBuffer(c);
+    boolean hasDoubleBuffer(Canvas3D cv) {
+        return nativeTemplate.hasDoubleBuffer(cv);
     }
 
-    boolean hasStereo(Canvas3D c) {
-        return nativeTemplate.hasStereo(c);
+    boolean hasStereo(Canvas3D cv) {
+        return nativeTemplate.hasStereo(cv);
     }
 
-    int getStencilSize(Canvas3D c) {
-        return nativeTemplate.getStencilSize(c);
+    int getStencilSize(Canvas3D cv) {
+        return nativeTemplate.getStencilSize(cv);
     }
 
-    boolean hasSceneAntialiasingMultisample(Canvas3D c) {
-        return nativeTemplate.hasSceneAntialiasingMultisample(c);
+    boolean hasSceneAntialiasingMultisample(Canvas3D cv) {
+        return nativeTemplate.hasSceneAntialiasingMultisample(cv);
     }
 
-    boolean hasSceneAntialiasingAccum(Canvas3D c) {
-        return nativeTemplate.hasSceneAntialiasingAccum(c);
+    boolean hasSceneAntialiasingAccum(Canvas3D cv) {
+        return nativeTemplate.hasSceneAntialiasingAccum(cv);
     }
 
     // Methods to get native WS display and screen
@@ -1442,6 +1442,44 @@ class NativePipeline extends Pipeline {
     }
     int getScreen(GraphicsDevice graphicsDevice) {
         return NativeScreenInfo.getScreen(graphicsDevice);
+    }
+
+    // ---------------------------------------------------------------------
+
+    //
+    // DrawingSurfaceObject methods
+    //
+
+    // Method to construct a new DrawingSurfaceObject
+    DrawingSurfaceObject createDrawingSurfaceObject(Canvas3D cv) {
+        return new DrawingSurfaceObjectAWT(cv,
+                VirtualUniverse.mc.awt, cv.screen.display, cv.screen.screen,
+                VirtualUniverse.mc.xineramaDisabled);
+    }
+
+
+    // Method to free the drawing surface object
+    // (called from Canvas3D.removeNotify)
+    void freeDrawingSurface(Canvas3D cv, DrawingSurfaceObject drawingSurfaceObject) {
+        synchronized (drawingSurfaceObject) {
+            DrawingSurfaceObjectAWT dso =
+                    (DrawingSurfaceObjectAWT)drawingSurfaceObject;
+            // get nativeDS before it is set to 0 in invalidate()
+            long ds = dso.getDS();
+            long ds_struct[] = {ds, dso.getDSI()};
+            if (ds != 0) {
+                VirtualUniverse.mc.postRequest(
+                        MasterControl.FREE_DRAWING_SURFACE,
+                        ds_struct);
+            }
+
+            drawingSurfaceObject.invalidate();
+        }
+    }
+
+    // Method to free the native drawing surface object
+    void freeDrawingSurfaceNative(Object o) {
+        DrawingSurfaceObjectAWT.freeDrawingSurface(o);
     }
 
 }
