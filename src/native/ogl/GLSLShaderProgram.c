@@ -33,6 +33,7 @@
 #endif /* DEBUG */
 
 
+extern jint getJavaIntEnv(JNIEnv *env, char* envStr);
 extern char *strJavaToC(JNIEnv *env, jstring str);
 extern void throwAssert(JNIEnv *env, char *str);
 extern jobject createShaderError(JNIEnv *env,
@@ -265,10 +266,14 @@ checkGLSLShaderExtensions(
         glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &ctxInfo->maxTextureImageUnits);
         glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, &ctxInfo->maxVertexTextureImageUnits);
         glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, &ctxInfo->maxCombinedTextureImageUnits);
+
+        /* Initialize GLSL VertexAttr info */
+        glslCtxInfo->vertexAttrOffset = getJavaIntEnv(env, "glslVertexAttrOffset");
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS_ARB, &ctxInfo->maxVertexAttrs);
-        if (ctxInfo->maxVertexAttrs > 0) {
-            /* decr count, since vertexAttr[0] is reserved for position */
-            ctxInfo->maxVertexAttrs -= 1;
+        /* decr count to allow for reserved vertex attrs */
+        ctxInfo->maxVertexAttrs -= glslCtxInfo->vertexAttrOffset;
+        if (ctxInfo->maxVertexAttrs < 0) {
+            ctxInfo->maxVertexAttrs = 0;
         }
 
 	if (glslCtxInfo->pfnglCreateShaderObjectARB != NULL) {
@@ -583,7 +588,7 @@ Java_javax_media_j3d_NativePipeline_bindGLSLVertexAttrName(
     */
 
     glslCtxInfo->pfnglBindAttribLocationARB((GLhandleARB)shaderProgramId,
-					      attrIndex + 1,
+					      attrIndex + glslCtxInfo->vertexAttrOffset,
 					      attrNameString);
 
     /* No error checking needed, so just return */
@@ -1577,8 +1582,8 @@ glslVertexAttrPointer(
 {
     GLSLCtxInfo *glslCtxInfo = ctxProperties->glslCtxInfo;
 
-    glslCtxInfo->pfnglVertexAttribPointerARB(index+1, size, type,
-					     GL_FALSE, stride, pointer);
+    glslCtxInfo->pfnglVertexAttribPointerARB(index+glslCtxInfo->vertexAttrOffset,
+            size, type, GL_FALSE, stride, pointer);
 }
 
 static void
@@ -1588,7 +1593,7 @@ glslEnableVertexAttrArray(
 {
     GLSLCtxInfo *glslCtxInfo = ctxProperties->glslCtxInfo;
 
-    glslCtxInfo->pfnglEnableVertexAttribArrayARB(index+1);
+    glslCtxInfo->pfnglEnableVertexAttribArrayARB(index+glslCtxInfo->vertexAttrOffset);
 }
 
 static void
@@ -1598,7 +1603,7 @@ glslDisableVertexAttrArray(
 {
     GLSLCtxInfo *glslCtxInfo = ctxProperties->glslCtxInfo;
 
-    glslCtxInfo->pfnglDisableVertexAttribArrayARB(index+1);
+    glslCtxInfo->pfnglDisableVertexAttribArrayARB(index+glslCtxInfo->vertexAttrOffset);
 }
 
 static void
@@ -1611,7 +1616,7 @@ glslVertexAttr1fv(
 #ifdef VERBOSE
     fprintf(stderr, "glslVertexAttr1fv()\n");
 #endif
-    glslCtxInfo->pfnglVertexAttrib1fvARB(index+1, v);
+    glslCtxInfo->pfnglVertexAttrib1fvARB(index+glslCtxInfo->vertexAttrOffset, v);
 }
 
 static void
@@ -1624,7 +1629,7 @@ glslVertexAttr2fv(
 #ifdef VERBOSE
     fprintf(stderr, "glslVertexAttr2fv()\n");
 #endif
-    glslCtxInfo->pfnglVertexAttrib2fvARB(index+1, v);
+    glslCtxInfo->pfnglVertexAttrib2fvARB(index+glslCtxInfo->vertexAttrOffset, v);
 }
 
 static void
@@ -1637,7 +1642,7 @@ glslVertexAttr3fv(
 #ifdef VERBOSE
     fprintf(stderr, "glslVertexAttr3fv()\n");
 #endif
-    glslCtxInfo->pfnglVertexAttrib3fvARB(index+1, v);
+    glslCtxInfo->pfnglVertexAttrib3fvARB(index+glslCtxInfo->vertexAttrOffset, v);
 }
 
 static void
@@ -1650,6 +1655,6 @@ glslVertexAttr4fv(
 #ifdef VERBOSE
     fprintf(stderr, "glslVertexAttr4fv()\n");
 #endif
-    glslCtxInfo->pfnglVertexAttrib4fvARB(index+1, v);
+    glslCtxInfo->pfnglVertexAttrib4fvARB(index+glslCtxInfo->vertexAttrOffset, v);
 }
 

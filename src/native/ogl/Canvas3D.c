@@ -439,6 +439,47 @@ getJavaBoolEnv(JNIEnv *env, char* envStr)
     return (*(table->GetBooleanField))(env, obj, fieldID);
 }
 
+jint
+getJavaIntEnv(JNIEnv *env, char* envStr)
+{
+    JNIEnv table = *env;
+    jclass cls;
+    jfieldID fieldID;
+    jobject obj;
+    
+    cls = (jclass) (*(table->FindClass))(env, "javax/media/j3d/VirtualUniverse");
+
+    if (cls == NULL) {
+	return JNI_FALSE;
+    }
+    
+    fieldID = (jfieldID) (*(table->GetStaticFieldID))(env, cls, "mc",
+						      "Ljavax/media/j3d/MasterControl;");
+    if (fieldID == NULL) {
+	return JNI_FALSE;	
+    }
+
+    obj = (*(table->GetStaticObjectField))(env, cls, fieldID);
+
+    if (obj == NULL) {
+	return JNI_FALSE;
+    }
+
+    cls = (jclass) (*(table->FindClass))(env, "javax/media/j3d/MasterControl");    
+
+    if (cls == NULL) {
+	return JNI_FALSE;
+    }
+
+    fieldID = (jfieldID) (*(table->GetFieldID))(env, cls, envStr, "I");
+
+    if (fieldID == NULL ) {
+	return JNI_FALSE;
+    }
+
+    return (*(table->GetIntField))(env, obj, fieldID);
+}
+
 /*
  * Dummy functions for language-independent vertex attribute functions
  */

@@ -17,6 +17,8 @@
 
 /* Structure used to hold GLSL context information; stored in ctxInfo */
 struct GLSLCtxInfoRec {
+    int vertexAttrOffset;
+
     PFNGLATTACHOBJECTARBPROC pfnglAttachObjectARB;
     PFNGLCOMPILESHADERARBPROC pfnglCompileShaderARB;
     PFNGLCREATEPROGRAMOBJECTARBPROC pfnglCreateProgramObjectARB;

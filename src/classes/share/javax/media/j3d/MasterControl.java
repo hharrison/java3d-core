@@ -407,10 +407,16 @@ class MasterControl {
 
     // False to disable rescale normal if OGL support
     boolean isForceNormalized = false;
+    
+    // Number of reserved vertex attribute locations for GLSL (must be at
+    // least 1).
+    // Issue 269 - need to reserve up to 6 vertex attribtue locations to ensure
+    // that we don't collide with a predefined gl_* attribute on nVidia cards.
+    int glslVertexAttrOffset = 6;
 
     // Simulated (multi-pass) multi-texture is no longer allowed
     static final boolean allowSimulatedMultiTexture = false;
-
+    
     // Hashtable that maps a GraphicsDevice to its associated
     // Screen3D--this is only used for on-screen Canvas3Ds
     Hashtable deviceScreenMap = new Hashtable();
@@ -629,7 +635,6 @@ class MasterControl {
 		}
 	    });
 
-
 	cpuLimit = threadLimit.intValue();
 	if (cpuLimit < 1)
 	    cpuLimit = 1;
@@ -654,7 +659,27 @@ class MasterControl {
 			       + samplingTime + " ms");
 	}
 
-	// See if Xinerama should be disabled for better performance.
+	// Get the glslVertexAttrOffset
+	final int defaultGLSLVertexAttrOffset = glslVertexAttrOffset;
+	Integer vattrOffset =
+	    (Integer) java.security.AccessController.doPrivileged(
+	    new java.security.PrivilegedAction() {
+		public Object run() {
+		    return Integer.getInteger("j3d.glslVertexAttrOffset",
+					      defaultGLSLVertexAttrOffset);
+		}
+	    });
+
+	glslVertexAttrOffset = vattrOffset.intValue();
+        if (glslVertexAttrOffset < 1) {
+            glslVertexAttrOffset = 1;
+        }
+	if (J3dDebug.debug || glslVertexAttrOffset != defaultGLSLVertexAttrOffset) {
+	    System.err.println("Java 3D: glslVertexAttrOffset = " +
+			       glslVertexAttrOffset);
+	}
+
+        // See if Xinerama should be disabled for better performance.
 	boolean disableXinerama = false;
 	if (getProperty("j3d.disableXinerama") != null) {
 	    disableXinerama = true;
