@@ -24,6 +24,7 @@ class CompressedGeometryRenderMethod implements RenderMethod {
      */
     public boolean render(RenderMolecule rm, Canvas3D cv, int pass,
 			  RenderAtomListInfo ra, int dirtyBits) {
+        assert pass < 0;
 
 	CompressedGeometryRetained cgr ;
   
@@ -99,6 +100,6 @@ class CompressedGeometryRenderMethod implements RenderMethod {
 	     rm.renderBin.multiScreen,
 	     cv.screen.screen,
 	     rm.textureBin.attributeBin.ignoreVertexColors, 
-	     -1) ;
+	     TextureBin.USE_VERTEXARRAY);
     }
 }

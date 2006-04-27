@@ -35,6 +35,7 @@ class DisplayListRenderMethod implements RenderMethod {
     public boolean render(RenderMolecule rm, Canvas3D cv, int pass,
 			  RenderAtomListInfo ra,
 			  int dirtyBits) {
+        assert pass < 0;
 	
         if (rm.doInfinite || 
 	    !VirtualUniverse.mc.viewFrustumCulling ||

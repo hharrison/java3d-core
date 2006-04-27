@@ -1793,6 +1793,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
      * Renders this RenderMolecule
      */
     boolean render(Canvas3D cv, int pass, int dirtyBits) {
+        assert pass < 0;
 	
 	boolean isVisible = isSwitchOn();
 	
@@ -2123,6 +2124,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
     }
 	
     void transparentSortRender(Canvas3D cv, int pass, TransparentRenderingInfo tinfo) {
+        assert pass < 0;
 
 	Transform3D modelMatrix =
 	    trans[localToVworldIndex[NodeRetained.LAST_LOCAL_TO_VWORLD]];

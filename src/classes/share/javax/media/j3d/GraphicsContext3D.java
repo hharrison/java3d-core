@@ -296,11 +296,9 @@ public class GraphicsContext3D extends Object   {
     private static final int BUFFER_MODE	= 0x1;
     private int dirtyMask = 0;
 
-
     // multi-texture
     private int numActiveTexUnit = 0;
     private int lastActiveTexUnitIndex = 0;
-    private boolean toSimulateMultiTex = false;
 
     // for read raster
     private volatile boolean readRasterReady = false;
@@ -2068,68 +2066,13 @@ public class GraphicsContext3D extends Object   {
 		drawGeo = (GeometryRetained)geometry.retained;
 	    }
 
-            if (!toSimulateMultiTex) {
 		drawGeo.execute(canvas3d, null, isNonUniformScale,
 				false, alpha, 
 				((canvas3d.view.getScreens()).length > 1), 
 				canvas3d.screen.screen,
 				ignoreVertexColors, 
-				-1);
-	    } else {
-		// NOTE: we really should leverage the code in textureBin
-		boolean startToSimulate = false;
+				TextureBin.USE_VERTEXARRAY);
 
-		    // simulate multiple texture units
-                    AppearanceRetained app =
-                            (AppearanceRetained)appearance.retained;
-
-                    assert VirtualUniverse.mc.allowSimulatedMultiTexture;
-                    assert numActiveTexUnit > 1;
-                    assert app.texUnitState != null;
-                    assert app.texUnitState.length > 1;
-
-                    // first turn off fog
-		    if (fog != null)
-			canvas3d.setFogEnableFlag(canvas3d.ctx, false);
-
-		    for (i = 0; i < app.texUnitState.length; i++) {
-			 if (app.texUnitState[i] != null &&
-				app.texUnitState[i].isTextureEnabled()) {
-			 
-			     // turn on fog for the last pass 
-			     if (i == lastActiveTexUnitIndex)
-				 canvas3d.setFogEnableFlag(canvas3d.ctx, true);
-
-			     app.texUnitState[i].updateNative(-1, canvas3d,
-				false, startToSimulate);
-
-			     startToSimulate = true;
-		    	     drawGeo.execute(canvas3d, null, 
-				isNonUniformScale, false, alpha, 
-				((canvas3d.view.getScreens()).length > 1), 
-				canvas3d.screen.screen,
-				ignoreVertexColors, 
-				i);
-			 }
-		    }
-
-		    // adjust the depth test back to what it was
-		    // and adjust the blend func to what it it was
-                    if (startToSimulate) {
-                        if (app.transparencyAttributes != null) {
-                            app.transparencyAttributes.updateNative(
-                                    canvas3d.ctx, alpha, geometryType,
-                                    polygonMode, lineAA, pointAA);
-                        } else {
-                            canvas3d.resetTransparency(canvas3d.ctx, geometryType,
-                                    polygonMode, lineAA, pointAA);
-                        }
-                    }
-
-		    if (fog != null) {
-			canvas3d.setFogEnableFlag(canvas3d.ctx, true);
-		    }
-	    }
 	    if (geoRetained != null)
 	        geoRetained.geomLock.unLock();
 
@@ -2503,7 +2446,6 @@ public class GraphicsContext3D extends Object   {
     boolean updateState(RenderBin rb, int geometryType) {
 
 	boolean useAlpha = false;
-	toSimulateMultiTex = false;
         numActiveTexUnit = 0;
 	lastActiveTexUnitIndex = 0;
 
@@ -2612,24 +2554,8 @@ public class GraphicsContext3D extends Object   {
                     // set the number active texture unit in Canvas3D
                     canvas3d.setNumActiveTexUnit(numActiveTexUnit);
 
-		} else if (!useShaders && VirtualUniverse.mc.allowSimulatedMultiTexture) {
-                    // Simulated (multi-pass) multi-texture rendering
-                    
-                    toSimulateMultiTex = true;
-
-                    // will fall back to the multi-pass case;
-                    // reset all the texture units first
-                    for (int i = 0; i < prevNumActiveTexUnit; i++) {
-                        canvas3d.resetTexture(canvas3d.ctx, i);
-                    }
-
-                    // set the number active texture unit in Canvas3D
-                    canvas3d.setNumActiveTexUnit(1);
-                }
-                else {
-                // Exceeded limit, and not using simulated multi-texture
-
-                    // disable all the texture units
+		} else {
+                    // Exceeded limit, disable all the texture units
                     for (int i = 0; i < prevNumActiveTexUnit; i++) {
                         canvas3d.resetTexture(canvas3d.ctx, i);
                     }

@@ -23,6 +23,8 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 
     public boolean render(RenderMolecule rm, Canvas3D cv, int pass, 
 			  RenderAtomListInfo ra, int dirtyBits) {
+        assert pass < 0;
+
         boolean useAlpha;
 	boolean isNonUniformScale;
 	Transform3D trans=null;

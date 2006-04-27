@@ -1096,6 +1096,7 @@ class TextureBin extends Object implements ObjectUpdate {
      * state update.
      */
     void updateAttributes(Canvas3D cv, int pass) {
+        assert pass < 0;
 
         boolean dirty = ((cv.canvasDirty & (Canvas3D.TEXTUREBIN_DIRTY|
 					    Canvas3D.TEXTUREATTRIBUTES_DIRTY)) != 0);
@@ -1118,11 +1119,11 @@ class TextureBin extends Object implements ObjectUpdate {
                 useShaders ? cv.maxTextureImageUnits : cv.maxTextureUnits;
 
         // If the number of active texture units is greater than the number of
-        // supported units, and we don't allow simulated multi-texture, then we
+        // supported units, then we
         // need to set a flag indicating that the texture units are invalid.
         boolean disableTexture = false;
 
-        if (pass < 0 && numActiveTexUnit > availableTextureUnits) {
+        if (numActiveTexUnit > availableTextureUnits) {
             disableTexture = true;
 //            System.err.println("*** TextureBin : number of texture units exceeded");
         }
@@ -1154,7 +1155,7 @@ class TextureBin extends Object implements ObjectUpdate {
                 }
 		cv.setLastActiveTexUnit(-1);
 	    }
-	} else if (pass < 0) {
+	} else {
 
             int j = 0;
 
@@ -1210,18 +1211,6 @@ class TextureBin extends Object implements ObjectUpdate {
             // set the active texture unit back to 0
             cv.activeTextureUnit(cv.ctx, 0);
 
-	} else {
-            // update the last active texture unit state
-	    if (dirty || cv.texUnitState[0].mirror == null ||
-			cv.texUnitState[0].mirror != 
-		    		texUnitState[lastActiveTexUnitIndex].mirror) {
-	        texUnitState[lastActiveTexUnitIndex].updateNative(
-					-1, cv, false, false);
-		cv.texUnitState[0].mirror = 
-		    texUnitState[lastActiveTexUnitIndex].mirror;
-
-		cv.setLastActiveTexUnit(0);
-	    }
 	}
 	cv.canvasDirty &= ~Canvas3D.TEXTUREBIN_DIRTY;
     }
@@ -1262,20 +1251,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	    }
         }
 
-        // If shaders are not being used, and if allowSimulatedMultiTexture
-        // property is set, then we will use simulated (multi-pass)
-        // multi-texture when the requested number of texture units exceeds
-        // the available number of texture units
-        boolean useShaders = (shaderBin.shaderProgram != null);
-        int availableTextureUnits =
-                useShaders ? cv.maxTextureImageUnits : cv.maxTextureUnits;
-
-        if (!useShaders && (numActiveTexUnit > availableTextureUnits) &&
-                VirtualUniverse.mc.allowSimulatedMultiTexture) {
-	    multiPassRender(cv, rlist);
-	} else {
-	    renderList(cv, USE_DISPLAYLIST, rlist);
-	} 
+        renderList(cv, USE_DISPLAYLIST, rlist);
     }
 
 
@@ -1283,6 +1259,7 @@ class TextureBin extends Object implements ObjectUpdate {
      * render a render list
      */
     void renderList(Canvas3D cv, int pass, Object rlist) {
+        assert pass < 0;
 
 	if (rlist instanceof RenderMolecule) {
 	    renderList(cv, pass, (RenderMolecule) rlist);
@@ -1296,6 +1273,7 @@ class TextureBin extends Object implements ObjectUpdate {
      * render list of RenderMolecule 
      */
     void renderList(Canvas3D cv, int pass, RenderMolecule rlist) {
+        assert pass < 0;
 
         // bit mask of all attr fields that are equivalent across 
 	// renderMolecules thro. ORing of invisible RMs.
@@ -1329,92 +1307,12 @@ class TextureBin extends Object implements ObjectUpdate {
      * render sorted transparent list 
      */
     void renderList(Canvas3D cv, int pass, TransparentRenderingInfo tinfo) {
+        assert pass < 0;
 
 	RenderMolecule rm = tinfo.rm;
 	if (rm.isSwitchOn()) {
 	    rm.transparentSortRender(cv, pass, tinfo);
 	}
-    }
-
-
-
-    /**
-     * multi rendering pass to simulate multiple texture units 
-     */
-    private void multiPassRender(Canvas3D cv, Object rlist) {
-        
-        assert VirtualUniverse.mc.allowSimulatedMultiTexture;
-
-        boolean startToSimulate = false;
-	boolean isFogEnabled = false;
-
-	// No lazy download of texture for multi-pass,
-        // update the texture states here now
-
-	// update the environment state
-
-	// no need to update the texture state in updateAttributes(), the state
-        // will be explicitly updated in the multi-pass
-	cv.setStateIsUpdated(Canvas3D.TEXTUREBIN_BIT);
-        cv.textureBin = this;
-        cv.canvasDirty &= ~Canvas3D.TEXTUREBIN_DIRTY;
-	cv.updateEnvState();
-
-
-	// first reset those texture units that are currently enabled
-
-	if (cv.multiTexAccelerated) {
-	    int activeTexUnit = cv.getNumActiveTexUnit();
-	    for (int i = 0; i < activeTexUnit; i++) {
-	        cv.resetTexture(cv.ctx, i);
-	    }
-	    // set the active texture unit back to 0
-	    cv.activeTextureUnit(cv.ctx, 0);
-	}
-
-	// only texture unit 0 will be used in multi-pass case
-	cv.setNumActiveTexUnit(1);
-	cv.setLastActiveTexUnit(0);
-
-        // first check if there is fog in the path
-	// if there is, then turn off fog now and turn it back on
-	// for the last pass only
-        isFogEnabled = (environmentSet.fog != null);
-
-	TextureUnitStateRetained tus;
-
-	for (int i = 0; i < texUnitState.length; i++) {
-	    tus = texUnitState[i];
-
-	    if (tus != null && tus.isTextureEnabled()) {
-
-
-		// update the canvas texture unit state cache
-		cv.texUnitState[0].mirror = tus.mirror;
-
-		tus.updateNative(-1, cv, false, startToSimulate);
-
-		if (!startToSimulate) {
-		    startToSimulate = true;
-		    if (isFogEnabled) {
-		        cv.setFogEnableFlag(cv.ctx, false);
-		    }
-		}
-		
-                // turn on fog again in the last pass
-
-                if (i == lastActiveTexUnitIndex && isFogEnabled) {
-                    cv.setFogEnableFlag(cv.ctx, true);
-                }
-                renderList(cv, i, rlist);
-	    }
-	}
-
-        // adjust the depth test back to what it was
-	// and adjust the blend func to what it was
-        if (startToSimulate) {
-	    cv.setStateToUpdate(Canvas3D.TRANSPARENCY_BIT);
-        }
     }
 
 
@@ -1686,5 +1584,3 @@ class TextureBin extends Object implements ObjectUpdate {
 	numEditingRenderMolecules++;
     }
 }
-	    
-

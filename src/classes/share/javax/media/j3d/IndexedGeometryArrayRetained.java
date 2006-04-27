@@ -966,6 +966,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		 boolean updateAlpha, float alpha,
 		 boolean multiScreen, int screen,
 		 boolean ignoreVertexColors, int pass) {
+
+        assert pass < 0;
+
 	int cdirty;
 	boolean useAlpha = false;
 	Object[] retVal;

@@ -22,6 +22,7 @@ class VertexArrayRenderMethod implements RenderMethod {
   
     public boolean render(RenderMolecule rm, Canvas3D cv, int pass, 
 			  RenderAtomListInfo ra, int dirtyBits) {
+        assert pass < 0;
 	
         GeometryArrayRetained geo = (GeometryArrayRetained)ra.geometry();
         geo.setVertexFormat((rm.useAlpha && ((geo.vertexFormat & 

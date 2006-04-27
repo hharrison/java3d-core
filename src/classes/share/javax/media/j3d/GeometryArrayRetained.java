@@ -2314,7 +2314,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
 		 boolean updateAlpha, float alpha,
 		 boolean multiScreen, int screen,
-		 boolean ignoreVertexColors, int pass) { 
+                 boolean ignoreVertexColors, int pass) {
+
+        assert pass < 0;
 
 	int cdirty;
 	boolean useAlpha = false;
