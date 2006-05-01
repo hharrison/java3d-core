@@ -145,9 +145,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_executeRaster(JNIEnv *env,
 	    }
 	    break;
         case FORMAT_BYTE_BGR:         
-	    if (ctxProperties->bgr_ext) { /* If its zero, should never come here! */
-		glformat = ctxProperties->bgr_ext_enum;
-	    }
+            glformat = GL_BGR;
 	    break;
         case FORMAT_BYTE_LA:
             glformat = GL_LUMINANCE_ALPHA;

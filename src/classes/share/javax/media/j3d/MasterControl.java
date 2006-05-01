@@ -405,18 +405,12 @@ class MasterControl {
     // False to disable compiled vertex array extensions if support
     boolean isCompiledVertexArray = true;
 
-    // False to disable rescale normal if OGL support
-    boolean isForceNormalized = false;
-    
     // Number of reserved vertex attribute locations for GLSL (must be at
     // least 1).
     // Issue 269 - need to reserve up to 6 vertex attribtue locations to ensure
     // that we don't collide with a predefined gl_* attribute on nVidia cards.
     int glslVertexAttrOffset = 6;
 
-    // Simulated (multi-pass) multi-texture is no longer allowed
-    static final boolean allowSimulatedMultiTexture = false;
-    
     // Hashtable that maps a GraphicsDevice to its associated
     // Screen3D--this is only used for on-screen Canvas3Ds
     Hashtable deviceScreenMap = new Hashtable();
@@ -551,15 +545,6 @@ class MasterControl {
 	    getBooleanProperty("j3d.compiledVertexArray",
 			       isCompiledVertexArray,
 			       "compiled vertex array");
-
-	isForceNormalized =
-	    getBooleanProperty("j3d.forceNormalized",
-			       isForceNormalized,
-			       "force normalized");
-
-	if (getProperty("j3d.simulatedMultiTexture") != null) {
-	    System.err.println("j3d.simulatedMultiTexture : property ignored");
-	}
 
         boolean j3dOptimizeSpace =
 	    getBooleanProperty("j3d.optimizeForSpace", true,
@@ -698,6 +683,17 @@ class MasterControl {
 	    // j3d.disableXinerama is true, but attempt failed.
 	    System.err.println("Java 3D: could not disable Xinerama");
 	}
+
+        // Check for obsolete properties
+        String[] obsoleteProps = {
+            "j3d.simulatedMultiTexture",
+            "j3d.forceNormalized"
+        };
+        for (int i = 0; i < obsoleteProps.length; i++) {
+            if (getProperty(obsoleteProps[i]) != null) {
+                System.err.println(obsoleteProps[i] + " : property ignored");
+            }
+        }
 
 	// Get the maximum Lights
 	maxLights = Pipeline.getPipeline().getMaximumLights();

@@ -49,13 +49,11 @@ static void disableAttribFor2D(GraphicsContextPropertiesInfo *ctxProperties);
  * Method:    getTextureColorTableSize
  * Signature: ()I
  */
-extern int getTextureColorTableSize(
+static int getTextureColorTableSize(
     JNIEnv *env,
     jobject obj,
-    jlong ctxInfo,
-    char *extensionStr,
-    int minorVersion);
-
+    GraphicsContextPropertiesInfo *ctxInfo,
+    char *extensionStr);
 
 extern void checkGLSLShaderExtensions(
     JNIEnv *env,
@@ -138,26 +136,25 @@ checkTextureExtensions(
     JNIEnv *env,
     jobject obj,
     char *tmpExtensionStr,
-    int versionNumber,
     GraphicsContextPropertiesInfo* ctxInfo)
 {
-    if (isExtensionSupported(tmpExtensionStr, "GL_ARB_multitexture")) {
-	ctxInfo->arb_multitexture = JNI_TRUE;
+    if (ctxInfo->gl13) {
 	ctxInfo->textureExtMask |= javax_media_j3d_Canvas3D_TEXTURE_MULTI_TEXTURE;
-        glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &ctxInfo->maxTextureUnits);
+        glGetIntegerv(GL_MAX_TEXTURE_UNITS, &ctxInfo->maxTextureUnits);
         ctxInfo->maxTexCoordSets = ctxInfo->maxTextureUnits;
         if (isExtensionSupported(tmpExtensionStr, "GL_ARB_vertex_shader")) {
             glGetIntegerv(GL_MAX_TEXTURE_COORDS_ARB, &ctxInfo->maxTexCoordSets);
         }
     }
-    
+
     if(isExtensionSupported(tmpExtensionStr,"GL_SGI_texture_color_table" )){
 	ctxInfo->textureColorTableAvailable = JNI_TRUE;
 	ctxInfo->textureExtMask |= javax_media_j3d_Canvas3D_TEXTURE_COLOR_TABLE;
 
 	/* get texture color table size */
 	/* need to check later */
-	ctxInfo->textureColorTableSize = getTextureColorTableSize(env, obj, (jlong)ctxInfo, tmpExtensionStr, versionNumber);
+	ctxInfo->textureColorTableSize = getTextureColorTableSize(env, obj,
+                ctxInfo, tmpExtensionStr);
 	if (ctxInfo->textureColorTableSize <= 0) {
 	    ctxInfo->textureColorTableAvailable = JNI_FALSE;
 	    ctxInfo->textureExtMask &= ~javax_media_j3d_Canvas3D_TEXTURE_COLOR_TABLE;
@@ -289,13 +286,7 @@ checkTextureExtensions(
 	ctxInfo->combine_dot3_rgba_enum = GL_DOT3_RGBA_EXT;
     }
 
-    if (isExtensionSupported(tmpExtensionStr, "GL_ARB_texture_cube_map")) {
-	ctxInfo->texture_cube_map_ext_enum = GL_TEXTURE_CUBE_MAP_ARB;
-	ctxInfo->textureCubeMapAvailable = JNI_TRUE;
-	ctxInfo->textureExtMask |= javax_media_j3d_Canvas3D_TEXTURE_CUBE_MAP;
-    } else if (isExtensionSupported(tmpExtensionStr, "GL_EXT_texture_cube_map")) {
-	ctxInfo->texture_cube_map_ext_enum = GL_TEXTURE_CUBE_MAP_EXT;
-	ctxInfo->textureCubeMapAvailable = JNI_TRUE;
+    if (ctxInfo->gl13) {
 	ctxInfo->textureExtMask |= javax_media_j3d_Canvas3D_TEXTURE_CUBE_MAP;
     }
 
@@ -374,16 +365,12 @@ checkTextureExtensions(
 			javax_media_j3d_Canvas3D_TEXTURE_ANISOTROPIC_FILTER;
     }
 
-    if (isExtensionSupported(tmpExtensionStr,
-				"GL_ARB_texture_border_clamp")) {
-	ctxInfo->texture_clamp_to_border_enum = GL_CLAMP_TO_BORDER_ARB;
-    } else if (isExtensionSupported(tmpExtensionStr,
-				"GL_SGIS_texture_border_clamp")) {
-	ctxInfo->texture_clamp_to_border_enum = GL_CLAMP_TO_BORDER_SGIS;
+    if (ctxInfo->gl13) {
+	ctxInfo->texture_clamp_to_border_enum = GL_CLAMP_TO_BORDER;
     } else {
 	ctxInfo->texture_clamp_to_border_enum = GL_CLAMP;
     }
-    
+
     if (isExtensionSupported(tmpExtensionStr,
 				"GL_SGIX_texture_lod_bias")) {
 	ctxInfo->textureLodBiasAvailable = JNI_TRUE;
@@ -583,69 +570,25 @@ getPropertiesFromCurrentContext(
     /* find out the version, major and minor version number */
     extractVersionInfo(tmpVersionStr, versionNumbers);
 
+
     /* *********************************************************/
     /* setup the graphics context properties */
 
-    /* Check for OpenGL 1.3 core or better */
-    if ((versionNumbers[0] > 1) ||
-	(versionNumbers[0] == 1 && versionNumbers[1] >= 3)) {
-
-        ctxInfo->rescale_normal_ext = JNI_TRUE;
-	ctxInfo->rescale_normal_ext_enum = GL_RESCALE_NORMAL;
-	ctxInfo->bgr_ext = JNI_TRUE;
-	ctxInfo->bgr_ext_enum = GL_BGR;
-	ctxInfo->texture3DAvailable = JNI_TRUE;
-	ctxInfo->textureExtMask |= javax_media_j3d_Canvas3D_TEXTURE_3D;
-#if defined(UNIX)
-	ctxInfo->glTexImage3DEXT = (MYPFNGLTEXIMAGE3DPROC )dlsym(RTLD_DEFAULT, "glTexImage3D");
-	ctxInfo->glTexSubImage3DEXT = (MYPFNGLTEXSUBIMAGE3DPROC )dlsym(RTLD_DEFAULT, "glTexSubImage3D");
-#endif
-#ifdef WIN32
-	ctxInfo->glTexImage3DEXT = (MYPFNGLTEXIMAGE3DPROC )wglGetProcAddress("glTexImage3D");
-	ctxInfo->glTexSubImage3DEXT = (MYPFNGLTEXSUBIMAGE3DPROC )wglGetProcAddress("glTexSubImage3D");
-	if ((ctxInfo->glTexImage3DEXT == NULL) || (ctxInfo->glTexSubImage3DEXT == NULL)) {
-	    ctxInfo->textureExtMask &= ~javax_media_j3d_Canvas3D_TEXTURE_3D;
-	    ctxInfo->texture3DAvailable = JNI_FALSE;
-	}
-#endif
-	ctxInfo->texture_3D_ext_enum = GL_TEXTURE_3D;
-	ctxInfo->texture_wrap_r_ext_enum = GL_TEXTURE_WRAP_R;
-	ctxInfo->texture_clamp_to_edge_enum = GL_CLAMP_TO_EDGE;
-
-	if(isExtensionSupported(tmpExtensionStr, "GL_ARB_imaging")){	
-	    ctxInfo->blend_color_ext = JNI_TRUE;
-	    
-	    ctxInfo->blendFunctionTable[BLEND_CONSTANT_COLOR] = GL_CONSTANT_COLOR;
-#if defined(UNIX)
-	    ctxInfo->glBlendColor = (MYPFNGLBLENDCOLORPROC )dlsym(RTLD_DEFAULT, "glBlendColor");
-#endif
-#ifdef WIN32	    
-	    ctxInfo->glBlendColor = (MYPFNGLBLENDCOLORPROC )wglGetProcAddress("glBlendColor");
-	    if (ctxInfo->glBlendColor == NULL) {
-		ctxInfo->blend_color_ext = JNI_FALSE;
-	    }
-#endif
-	}
-	
-	ctxInfo->seperate_specular_color = JNI_TRUE;
-	ctxInfo->light_model_color_control_enum =  GL_LIGHT_MODEL_COLOR_CONTROL;
-	ctxInfo->single_color_enum = GL_SINGLE_COLOR;
-	ctxInfo->seperate_specular_color_enum =  GL_SEPARATE_SPECULAR_COLOR; 
-
-	ctxInfo->textureLodAvailable = JNI_TRUE;
-	ctxInfo->textureExtMask |= javax_media_j3d_Canvas3D_TEXTURE_LOD_RANGE;
-	ctxInfo->texture_min_lod_enum = GL_TEXTURE_MIN_LOD;
-	ctxInfo->texture_max_lod_enum = GL_TEXTURE_MAX_LOD;
-	ctxInfo->texture_base_level_enum = GL_TEXTURE_BASE_LEVEL;
-	ctxInfo->texture_max_level_enum = GL_TEXTURE_MAX_LEVEL;
-
-	/* ...  */
-    }
-    else {
+    /*
+     * NOTE: Java 3D now requires OpenGL 1.3 for full functionality.
+     * For backwards compatibility with certain older graphics cards and
+     * drivers (e.g., the Linux DRI driver for older ATI cards),
+     * we will try to run on OpenGL 1.2 in an unsupported manner. However,
+     * we will not attempt to use OpenGL extensions for any features that
+     * are available in OpenGL 1.3, specifically multitexture, multisample,
+     * and cube map textures.
+     */
+    if (versionNumbers[0] < 1 ||
+            (versionNumbers[0] == 1 && versionNumbers[1] < 2)) {
 	jclass rte;
 
 	fprintf(stderr,
-		"Java 3D ERROR : OpenGL 1.3 or better is required (GL_VERSION=%d.%d)\n",
+		"Java 3D ERROR : OpenGL 1.2 or better is required (GL_VERSION=%d.%d)\n",
 		versionNumbers[0], versionNumbers[1]);
 	if ((rte = (*(table->FindClass))(env, "java/lang/IllegalStateException")) != NULL) {
 	    (*(table->ThrowNew))(env, rte, "GL_VERSION");
@@ -653,17 +596,69 @@ getPropertiesFromCurrentContext(
 	return JNI_FALSE;
     }
 
+    if (versionNumbers[0] > 1) {
+        /* OpenGL 2.x -- set flags for 1.3 and 2.0 or greater */
+        ctxInfo->gl20 = JNI_TRUE;
+        ctxInfo->gl13 = JNI_TRUE;
+    }
+    else {
+        if (versionNumbers[1] == 2) {
+            fprintf(stderr,
+                    "*********************************************************\n");
+            fprintf(stderr,
+                    "*** JAVA 3D: WARNING OpenGL 1.2 is no longer supported.\n");
+            fprintf(stderr,
+                    "*** Will attempt to run with reduced functionality.\n");
+            fprintf(stderr,
+                    "*********************************************************\n");
+        } else {
+            // OpenGL 1.x (1.3 or greater)
+            ctxInfo->gl13 = JNI_TRUE;
+        }
+    }
+
+
+    /* Setup function pointers for core OpenGL 1.3 features */
+
+    ctxInfo->textureExtMask |= javax_media_j3d_Canvas3D_TEXTURE_3D;
+#if defined(UNIX)
+    ctxInfo->glTexImage3DEXT = (MYPFNGLTEXIMAGE3DPROC )dlsym(RTLD_DEFAULT, "glTexImage3D");
+    ctxInfo->glTexSubImage3DEXT = (MYPFNGLTEXSUBIMAGE3DPROC )dlsym(RTLD_DEFAULT, "glTexSubImage3D");
+#endif
+#ifdef WIN32
+    ctxInfo->glTexImage3DEXT = (MYPFNGLTEXIMAGE3DPROC )wglGetProcAddress("glTexImage3D");
+    ctxInfo->glTexSubImage3DEXT = (MYPFNGLTEXSUBIMAGE3DPROC )wglGetProcAddress("glTexSubImage3D");
+#endif
+
+    if(isExtensionSupported(tmpExtensionStr, "GL_ARB_imaging")){	
+        ctxInfo->blend_color_ext = JNI_TRUE;
+
+        ctxInfo->blendFunctionTable[BLEND_CONSTANT_COLOR] = GL_CONSTANT_COLOR;
+#if defined(UNIX)
+        ctxInfo->glBlendColor = (MYPFNGLBLENDCOLORPROC )dlsym(RTLD_DEFAULT, "glBlendColor");
+#endif
+#ifdef WIN32	    
+        ctxInfo->glBlendColor = (MYPFNGLBLENDCOLORPROC )wglGetProcAddress("glBlendColor");
+        if (ctxInfo->glBlendColor == NULL) {
+            ctxInfo->blend_color_ext = JNI_FALSE;
+        }
+#endif
+    }
+
+    ctxInfo->textureLodAvailable = JNI_TRUE;
+    ctxInfo->textureExtMask |= javax_media_j3d_Canvas3D_TEXTURE_LOD_RANGE;
+    ctxInfo->texture_min_lod_enum = GL_TEXTURE_MIN_LOD;
+    ctxInfo->texture_max_lod_enum = GL_TEXTURE_MAX_LOD;
+    ctxInfo->texture_base_level_enum = GL_TEXTURE_BASE_LEVEL;
+    ctxInfo->texture_max_level_enum = GL_TEXTURE_MAX_LEVEL;
+
+
     /* look for OpenGL 2.0 features */
-    if (versionNumbers[0] >= 2) {
+    if (ctxInfo->gl20) {
 	ctxInfo->textureNonPowerOfTwoAvailable = JNI_TRUE;
 	ctxInfo->textureExtMask |=
 			javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
     }
-
-    /*
-     * TODO: Remove extension checks for those features that are core
-     * in OpenGL 1.3 and just use the core feature.
-     */
 
     /* check extensions for remaining of 1.1 and 1.2 */
     if(isExtensionSupported(tmpExtensionStr, "GL_EXT_multi_draw_arrays")){
@@ -679,45 +674,29 @@ getPropertiesFromCurrentContext(
 	ctxInfo->compiled_vertex_array_ext = JNI_TRUE;
     }
 
-
-    if(isExtensionSupported(tmpExtensionStr, "GLX_SUN_video_resize")){
-	ctxInfo->videoResizeAvailable = JNI_TRUE;
-	ctxInfo->extMask |= javax_media_j3d_Canvas3D_SUN_VIDEO_RESIZE;
-    }
-    
     if(isExtensionSupported(tmpExtensionStr, "GL_SUN_global_alpha")){
 	ctxInfo->global_alpha_sun = JNI_TRUE;
-    }
-
-    if(isExtensionSupported(tmpExtensionStr, "GL_SUNX_constant_data")){
-	ctxInfo->constant_data_sun = JNI_TRUE;
     }
 
     if(isExtensionSupported(tmpExtensionStr, "GL_EXT_abgr")) {
 	ctxInfo->abgr_ext = JNI_TRUE;
     }
-    
-    if(isExtensionSupported(tmpExtensionStr, "GL_ARB_transpose_matrix")) {
-	ctxInfo->arb_transpose_matrix = JNI_TRUE;
-    }
 
-#if defined(UNIX)
     /*
-     * setup ARB_multisample, under windows this is setup in
+     * Setup ctxInfo->multisample; under windows this is setup in
      * NativeConfigTemplate when pixel format is choose
      */
-    if (isExtensionSupported(tmpExtensionStr, "GL_ARB_multisample")){
-	ctxInfo->arb_multisample = JNI_TRUE;
 
-    }
+#if defined(UNIX)
+    ctxInfo->multisample = ctxInfo->gl13;
 #endif
 
 #ifdef WIN32
     if(offScreen) {
-	ctxInfo->arb_multisample = PixelFormatInfoPtr->offScreenHasMultisample;
+	ctxInfo->multisample = PixelFormatInfoPtr->offScreenHasMultisample;
     }
     else {
-	ctxInfo->arb_multisample = PixelFormatInfoPtr->onScreenHasMultisample;
+	ctxInfo->multisample = PixelFormatInfoPtr->onScreenHasMultisample;
     }
 
     /*
@@ -725,8 +704,8 @@ getPropertiesFromCurrentContext(
       PixelFormatInfoPtr->onScreenHasMultisample,
       PixelFormatInfoPtr->offScreenHasMultisample);
     
-      fprintf(stderr, "Canvas3D - ctxInfo->arb_multisample = %d, offScreen = %d\n",
-      ctxInfo->arb_multisample, offScreen);
+      fprintf(stderr, "Canvas3D - ctxInfo->multisample = %d, offScreen = %d\n",
+      ctxInfo->multisample, offScreen);
     */
     
 #endif
@@ -735,45 +714,29 @@ getPropertiesFromCurrentContext(
      * Disable multisample by default since OpenGL will enable
      * it by default if the surface is multisample capable.
      */
-    if (ctxInfo->arb_multisample && !ctxInfo->implicit_multisample) {
-	glDisable(GL_MULTISAMPLE_ARB);
+    if (ctxInfo->multisample && !ctxInfo->implicit_multisample) {
+	glDisable(GL_MULTISAMPLE);
     }
 
     /* Check texture extensions */
-    checkTextureExtensions(env, obj, tmpExtensionStr, versionNumbers[1],
-			   ctxInfo);
+    checkTextureExtensions(env, obj, tmpExtensionStr, ctxInfo);
 
     /* Check shader extensions */
-    checkGLSLShaderExtensions(env, obj, tmpExtensionStr, ctxInfo, glslLibraryAvailable);
-    checkCgShaderExtensions(env, obj, tmpExtensionStr, ctxInfo, cgLibraryAvailable);
+    if (ctxInfo->gl13) {
+        checkGLSLShaderExtensions(env, obj, tmpExtensionStr, ctxInfo, glslLibraryAvailable);
+        checkCgShaderExtensions(env, obj, tmpExtensionStr, ctxInfo, cgLibraryAvailable);
+    } else {
+        /* Force shaders to be disabled, since no multitexture support */
+        char *emptyExtStr = " ";
+        checkGLSLShaderExtensions(env, obj, emptyExtStr, ctxInfo, JNI_FALSE);
+        checkCgShaderExtensions(env, obj, emptyExtStr, ctxInfo, JNI_FALSE);
+    }
 
-    /* ... */
-    
     /* *********************************************************/
-    /* Set up rescale_normal if extension supported */
-    if (ctxInfo->rescale_normal_ext ) {
-	ctxInfo->extMask |= javax_media_j3d_Canvas3D_EXT_RESCALE_NORMAL;
-    }
-
-    /* Setup the multi_draw_array */
-    if(ctxInfo->multi_draw_arrays_ext) {
-	ctxInfo->extMask |= javax_media_j3d_Canvas3D_EXT_MULTI_DRAW_ARRAYS;
-    } else if (ctxInfo->multi_draw_arrays_sun) {
-	ctxInfo->extMask |= javax_media_j3d_Canvas3D_SUN_MULTI_DRAW_ARRAYS;
-    }
-    if(ctxInfo->compiled_vertex_array_ext) {
-	ctxInfo->extMask |= javax_media_j3d_Canvas3D_EXT_COMPILED_VERTEX_ARRAYS;
-    }
-    
 
     /* Setup GL_SUN_gloabl_alpha */
     if (ctxInfo->global_alpha_sun) {
 	ctxInfo->extMask |= javax_media_j3d_Canvas3D_SUN_GLOBAL_ALPHA;
-    }
-
-    /* Setup GL_SUNX_constant_data */
-    if (ctxInfo->constant_data_sun) {
-	ctxInfo->extMask |= javax_media_j3d_Canvas3D_SUN_CONSTANT_DATA;
     }
 
     /* Setup GL_EXT_abgr */
@@ -781,29 +744,13 @@ getPropertiesFromCurrentContext(
 	ctxInfo->extMask |= javax_media_j3d_Canvas3D_EXT_ABGR;
     }
 
-    /* Setup GL_BGR_EXT */
-    if (ctxInfo->bgr_ext) {
-	ctxInfo->extMask |= javax_media_j3d_Canvas3D_EXT_BGR;
+    /* GL_BGR is always supported */
+    ctxInfo->extMask |= javax_media_j3d_Canvas3D_EXT_BGR;
+
+    if(ctxInfo->multisample) {
+	ctxInfo->extMask |= javax_media_j3d_Canvas3D_MULTISAMPLE;
     }
 
-    /* Setup  GL_ARB_transpose_matrix */
-    if (ctxInfo->arb_transpose_matrix) {
-	ctxInfo->extMask |= javax_media_j3d_Canvas3D_ARB_TRANSPOSE_MATRIX;
-    }
-    
-    /* Setup GL_EXT_separate_specular_color */
-    if(ctxInfo->seperate_specular_color) {
-	ctxInfo->extMask |= javax_media_j3d_Canvas3D_EXT_SEPARATE_SPECULAR_COLOR;
-    }
-    
-    if (ctxInfo->constant_data_sun) {
-	/*        glPixelStorei(GL_UNPACK_CONSTANT_DATA_SUNX, GL_TRUE); */
-    }
-    
-    if(ctxInfo->arb_multisample) {
-	ctxInfo->extMask |= javax_media_j3d_Canvas3D_ARB_MULTISAMPLE;
-    }
-    
     /* setup those functions pointers */
 #ifdef WIN32
    
@@ -833,53 +780,15 @@ getPropertiesFromCurrentContext(
 	}
     }
 
-    if (ctxInfo->arb_multitexture) {
-	ctxInfo->glClientActiveTextureARB = (MYPFNGLCLIENTACTIVETEXTUREARBPROC)wglGetProcAddress("glClientActiveTextureARB");
-	ctxInfo->glMultiTexCoord2fvARB = (MYPFNGLMULTITEXCOORD2FVARBPROC)wglGetProcAddress("glMultiTexCoord2fvARB");
-	ctxInfo->glMultiTexCoord3fvARB = (MYPFNGLMULTITEXCOORD3FVARBPROC)wglGetProcAddress("glMultiTexCoord3fvARB");
-	ctxInfo->glMultiTexCoord4fvARB = (MYPFNGLMULTITEXCOORD4FVARBPROC)wglGetProcAddress("glMultiTexCoord4fvARB");
-	ctxInfo->glActiveTextureARB = (MYPFNGLACTIVETEXTUREARBPROC) wglGetProcAddress("glActiveTextureARB");
-	/*
-	if (ctxInfo->glClientActiveTextureARB == NULL) {
-	    printf("ctxInfo->glClientActiveTextureARB == NULL\n");
-	}
-	if (ctxInfo->glMultiTexCoord2fvARB == NULL) {
-	    printf("ctxInfo->glMultiTexCoord2fvARB == NULL\n");
-	}
-	if (ctxInfo->glMultiTexCoord3fvARB == NULL) {
-	    printf("ctxInfo->glMultiTexCoord3fvARB == NULL\n");
-	}
-	if (ctxInfo->glMultiTexCoord4fvARB == NULL) {
-	    printf("ctxInfo->glMultiTexCoord4fvARB == NULL\n");
-	}
-	if (ctxInfo->glActiveTextureARB == NULL) {
-	    printf("ctxInfo->glActiveTextureARB == NULL\n");
-	}
-	*/  
-	if ((ctxInfo->glClientActiveTextureARB == NULL) ||
-	    (ctxInfo->glMultiTexCoord2fvARB == NULL) ||
-	    (ctxInfo->glMultiTexCoord3fvARB == NULL) ||
-	    (ctxInfo->glMultiTexCoord4fvARB == NULL) ||
-	    (ctxInfo->glActiveTextureARB == NULL)) {
-	    ctxInfo->arb_multitexture = JNI_FALSE;
-	}
-    }
-    
-    if(ctxInfo->arb_transpose_matrix) {
-	ctxInfo->glLoadTransposeMatrixdARB = (MYPFNGLLOADTRANSPOSEMATRIXDARBPROC)wglGetProcAddress("glLoadTransposeMatrixdARB");
-	ctxInfo->glMultTransposeMatrixdARB = (MYPFNGLMULTTRANSPOSEMATRIXDARBPROC)wglGetProcAddress("glMultTransposeMatrixdARB");
-	/*
-	if (ctxInfo->glLoadTransposeMatrixdARB == NULL) {
-	    printf("ctxInfo->glLoadTransposeMatrixdARB == NULL\n");
-	}
-	if (ctxInfo->glMultTransposeMatrixdARB == NULL) {
-	    printf("ctxInfo->glMultTransposeMatrixdARB == NULL\n");
-	}
-	*/
-	if ((ctxInfo->glLoadTransposeMatrixdARB == NULL) ||
-	    (ctxInfo->glMultTransposeMatrixdARB == NULL)) {
-	    ctxInfo->arb_transpose_matrix = JNI_FALSE;
-	}
+    if (ctxInfo->gl13) {
+	ctxInfo->glClientActiveTexture = (MYPFNGLCLIENTACTIVETEXTUREPROC)wglGetProcAddress("glClientActiveTexture");
+	ctxInfo->glActiveTexture = (MYPFNGLACTIVETEXTUREPROC) wglGetProcAddress("glActiveTexture");
+	ctxInfo->glMultiTexCoord2fv = (MYPFNGLMULTITEXCOORD2FVPROC)wglGetProcAddress("glMultiTexCoord2fv");
+	ctxInfo->glMultiTexCoord3fv = (MYPFNGLMULTITEXCOORD3FVPROC)wglGetProcAddress("glMultiTexCoord3fv");
+	ctxInfo->glMultiTexCoord4fv = (MYPFNGLMULTITEXCOORD4FVPROC)wglGetProcAddress("glMultiTexCoord4fv");
+
+	ctxInfo->glLoadTransposeMatrixd = (MYPFNGLLOADTRANSPOSEMATRIXDPROC)wglGetProcAddress("glLoadTransposeMatrixd");
+	ctxInfo->glMultTransposeMatrixd = (MYPFNGLMULTTRANSPOSEMATRIXDPROC)wglGetProcAddress("glMultTransposeMatrixd");
     }
 
     if (ctxInfo->global_alpha_sun) {
@@ -925,49 +834,29 @@ getPropertiesFromCurrentContext(
 	}
     }    
 
-    if(ctxInfo->arb_multitexture){
-	ctxInfo->glClientActiveTextureARB =
-	    (MYPFNGLCLIENTACTIVETEXTUREARBPROC)dlsym(RTLD_DEFAULT, "glClientActiveTextureARB");
-	ctxInfo->glMultiTexCoord2fvARB =
-	    (MYPFNGLMULTITEXCOORD2FVARBPROC)dlsym(RTLD_DEFAULT, "glMultiTexCoord2fvARB");
-	ctxInfo->glMultiTexCoord3fvARB =
-	    (MYPFNGLMULTITEXCOORD3FVARBPROC)dlsym(RTLD_DEFAULT, "glMultiTexCoord3fvARB");
-	ctxInfo->glMultiTexCoord4fvARB =
-	    (MYPFNGLMULTITEXCOORD4FVARBPROC)dlsym(RTLD_DEFAULT, "glMultiTexCoord4fvARB");
-	ctxInfo->glActiveTextureARB =
-	    (MYPFNGLACTIVETEXTUREARBPROC)dlsym(RTLD_DEFAULT, "glActiveTextureARB");
-	if ((ctxInfo->glClientActiveTextureARB == NULL) ||
-	    (ctxInfo->glMultiTexCoord2fvARB == NULL) ||
-	    (ctxInfo->glMultiTexCoord3fvARB == NULL) ||
-	    (ctxInfo->glMultiTexCoord4fvARB == NULL) ||
-	    (ctxInfo->glActiveTextureARB == NULL)) {
-	    ctxInfo->arb_multitexture = JNI_FALSE;
-	}
+    if(ctxInfo->gl13){
+	ctxInfo->glClientActiveTexture =
+	    (MYPFNGLCLIENTACTIVETEXTUREPROC)dlsym(RTLD_DEFAULT, "glClientActiveTexture");
+	ctxInfo->glMultiTexCoord2fv =
+	    (MYPFNGLMULTITEXCOORD2FVPROC)dlsym(RTLD_DEFAULT, "glMultiTexCoord2fv");
+	ctxInfo->glMultiTexCoord3fv =
+	    (MYPFNGLMULTITEXCOORD3FVPROC)dlsym(RTLD_DEFAULT, "glMultiTexCoord3fv");
+	ctxInfo->glMultiTexCoord4fv =
+	    (MYPFNGLMULTITEXCOORD4FVPROC)dlsym(RTLD_DEFAULT, "glMultiTexCoord4fv");
+	ctxInfo->glActiveTexture =
+	    (MYPFNGLACTIVETEXTUREPROC)dlsym(RTLD_DEFAULT, "glActiveTexture");
+
+	ctxInfo->glLoadTransposeMatrixd =
+	    (MYPFNGLLOADTRANSPOSEMATRIXDPROC)dlsym(RTLD_DEFAULT, "glLoadTransposeMatrixd");
+	ctxInfo->glMultTransposeMatrixd =
+	    (MYPFNGLMULTTRANSPOSEMATRIXDPROC)dlsym(RTLD_DEFAULT, "glMultTransposeMatrixd");
     }
-    if(ctxInfo->arb_transpose_matrix) {
-	ctxInfo->glLoadTransposeMatrixdARB =
-	    (MYPFNGLLOADTRANSPOSEMATRIXDARBPROC)dlsym(RTLD_DEFAULT, "glLoadTransposeMatrixdARB");
-	ctxInfo->glMultTransposeMatrixdARB =
-	    (MYPFNGLMULTTRANSPOSEMATRIXDARBPROC)dlsym(RTLD_DEFAULT, "glMultTransposeMatrixdARB");
-	if ((ctxInfo->glLoadTransposeMatrixdARB == NULL) ||
-	    (ctxInfo->glMultTransposeMatrixdARB == NULL)) {
-	    ctxInfo->arb_transpose_matrix = JNI_FALSE;
-	}
-    }
+
     if(ctxInfo->global_alpha_sun) {
 	ctxInfo->glGlobalAlphaFactorfSUN =
 	    (MYPFNGLGLOBALALPHAFACTORFSUNPROC)dlsym(RTLD_DEFAULT, "glGlobalAlphaFactorfSUN");
 	if (ctxInfo->glGlobalAlphaFactorfSUN == NULL) {
 	    ctxInfo->global_alpha_sun = JNI_FALSE;
-	}
-    }
-    
-    if(ctxInfo->videoResizeAvailable) {
-	ctxInfo->glXVideoResizeSUN =
-	    (MYPFNGLXVIDEORESIZESUN)dlsym(RTLD_DEFAULT, "glXVideoResizeSUN");
-	if (ctxInfo->glXVideoResizeSUN == NULL) {
-	    ctxInfo->videoResizeAvailable = JNI_FALSE;
-	    ctxInfo->extMask &= ~javax_media_j3d_Canvas3D_SUN_VIDEO_RESIZE;
 	}
     }
 
@@ -997,22 +886,20 @@ void setupCanvasProperties(
     
     /* set the canvas.multiTexAccelerated flag */
     rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "multiTexAccelerated", "Z");
-    (*(table->SetBooleanField))(env, obj, rsc_field, ctxInfo->arb_multitexture);
+    (*(table->SetBooleanField))(env, obj, rsc_field, ctxInfo->gl13);
 
-    if (ctxInfo->arb_multitexture) {
-	rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxTextureUnits", "I");
-	(*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxTextureUnits);
-	rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxTexCoordSets", "I");
-	(*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxTexCoordSets);
-	rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxTextureImageUnits", "I");
-	(*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxTextureImageUnits);
-	rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxVertexTextureImageUnits", "I");
-	(*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxVertexTextureImageUnits);
-	rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxCombinedTextureImageUnits", "I");
-	(*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxCombinedTextureImageUnits);
-	rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxVertexAttrs", "I");
-	(*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxVertexAttrs);
-    }
+    rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxTextureUnits", "I");
+    (*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxTextureUnits);
+    rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxTexCoordSets", "I");
+    (*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxTexCoordSets);
+    rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxTextureImageUnits", "I");
+    (*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxTextureImageUnits);
+    rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxVertexTextureImageUnits", "I");
+    (*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxVertexTextureImageUnits);
+    rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxCombinedTextureImageUnits", "I");
+    (*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxCombinedTextureImageUnits);
+    rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "maxVertexAttrs", "I");
+    (*(table->SetIntField))(env, obj, rsc_field, ctxInfo->maxVertexAttrs);
 
     rsc_field = (jfieldID) (*(table->GetFieldID))(env, cv_class, "extensionsSupported", "I");
     (*(table->SetIntField))(env, obj, rsc_field, ctxInfo->extMask);
@@ -1138,9 +1025,6 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createNewContext(
     jlong gctx;
     jlong sharedCtx;
     int stencilSize=0;
-    
-    static GLboolean first_time = GL_TRUE;
-    static GLboolean force_normalize = GL_FALSE;
     
     GraphicsContextPropertiesInfo *ctxInfo = NULL;
     GraphicsContextPropertiesInfo *sharedCtxStructure;
@@ -1317,31 +1201,15 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createNewContext(
 	return 0;
     }
 
-
     /* setup structure */
     
     if(!isSharedCtx){
 	/* Setup field in Java side */
 	setupCanvasProperties(env, cv, ctxInfo);
     }
-    
-    /* Set up rescale_normal if extension supported */
-    if (first_time && getJavaBoolEnv(env, "isForceNormalized")) {      
-      force_normalize = GL_TRUE;
-      first_time = GL_FALSE;
-    }
 
-    if (force_normalize) {
-      /* Disable rescale normal */
-      ctxInfo->rescale_normal_ext = GL_FALSE;      
-    }
-    
-    if (ctxInfo->rescale_normal_ext ) {
-        glEnable(ctxInfo->rescale_normal_ext_enum);
-    }
-    else {
-        glEnable(GL_NORMALIZE);
-    }
+    /* Enable rescale normal */
+    glEnable(GL_RESCALE_NORMAL);
 
     glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
     glDepthFunc(GL_LEQUAL);
@@ -1759,9 +1627,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_clear(
 	    break;
 	    
         case FORMAT_BYTE_BGR:         
-	    if (ctxProperties->bgr_ext) { /* If its zero, should never come here! */
-		gltype = ctxProperties->bgr_ext_enum ;
-	    }
+            gltype = GL_BGR;
 	    break;
 	    
         case FORMAT_BYTE_LA:
@@ -2005,13 +1871,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(JNIEnv *env,
 		}  
 		break;
 
-		/* GL_BGR_EXT or GL_BGR */
-	    case FORMAT_BYTE_BGR:           
-		if (ctxProperties->bgr_ext) { /* If its zero, should never come here! */  
-		    gltype = ctxProperties->bgr_ext_enum;  
-		}  
-		break;  
-  
+            /* GL_BGR */
+            case FORMAT_BYTE_BGR:
+                gltype = GL_BGR;
+                break;
+
 	    case FORMAT_BYTE_LA:  
 		gltype = GL_LUMINANCE_ALPHA;  
 		break;  
@@ -2430,14 +2294,15 @@ void JNICALL Java_javax_media_j3d_NativePipeline_callDisplayList(
 	return;
     }
 
-    /* resale_normal_ext */
-    if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
+    /* Set normalization if non-uniform scale */
+    if (isNonUniformScale) {
 	glEnable(GL_NORMALIZE);
     } 
     
     glCallList(id);
 
-    if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
+    /* Turn normalization back off */
+    if (isNonUniformScale) {
 	glDisable(GL_NORMALIZE);
     } 
 }
@@ -2483,15 +2348,14 @@ void JNICALL Java_javax_media_j3d_NativePipeline_freeTexture(
 int getTextureColorTableSize(
     JNIEnv *env,
     jobject obj,
-    jlong ctxInfo,
-    char *extensionStr,
-    int minorVersion)
+    GraphicsContextPropertiesInfo *ctxInfo,
+    char *extensionStr)
 {
-    GraphicsContextPropertiesInfo* ctxProperties =  (GraphicsContextPropertiesInfo* )ctxInfo;
+    GraphicsContextPropertiesInfo* ctxProperties = ctxInfo;
     int size;
-    
-    if(minorVersion >= 2 && isExtensionSupported(extensionStr, "GL_ARB_imaging")){
-	
+
+    if (isExtensionSupported(extensionStr, "GL_ARB_imaging")) {
+
 #ifdef WIN32
 	ctxProperties->glColorTable = (MYPFNGLCOLORTABLEPROC)wglGetProcAddress("glColorTable");
 	ctxProperties->glGetColorTableParameteriv =
@@ -2505,6 +2369,7 @@ int getTextureColorTableSize(
 #endif
 
     } else if(isExtensionSupported(extensionStr, "GL_SGI_color_table")) {
+
 #ifdef WIN32	
 	ctxProperties->glColorTable = (MYPFNGLCOLORTABLEPROC)wglGetProcAddress("glColorTableSGI");
         ctxProperties->glGetColorTableParameteriv =
@@ -2516,16 +2381,16 @@ int getTextureColorTableSize(
 	ctxProperties->glGetColorTableParameteriv =
 	    (MYPFNGLGETCOLORTABLEPARAMETERIVPROC)dlsym(RTLD_DEFAULT, "glGetColorTableParameterivSGI");
 #endif
-	
+
     } else {
 	return 0;
     }
 
     if ((ctxProperties->glColorTable == NULL) ||
-	(ctxProperties->glGetColorTableParameteriv == NULL)) {
+            (ctxProperties->glGetColorTableParameteriv == NULL)) {
 	return 0;
     }
-    
+
     ctxProperties->glColorTable(GL_PROXY_TEXTURE_COLOR_TABLE_SGI, GL_RGBA, 256, GL_RGB,
                                 GL_INT,  NULL);
     ctxProperties->glGetColorTableParameteriv(GL_PROXY_TEXTURE_COLOR_TABLE_SGI,
@@ -2968,11 +2833,9 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
 	}
 	break;
 
-	/* GL_BGR_EXT */
+    /* GL_BGR */
     case FORMAT_BYTE_BGR:         
-	if (ctxProperties->bgr_ext) { /* If its zero, should never come here! */
-	    type = ctxProperties->bgr_ext_enum;
-	}
+        type = GL_BGR;
 	break;
 	
     case FORMAT_BYTE_LA:
@@ -3004,17 +2867,12 @@ initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo)
     ctxInfo->rendererStr = NULL;
     ctxInfo->extensionStr = NULL;
     ctxInfo->versionNumbers[0] = 1;
-    ctxInfo->versionNumbers[1] = 1; 
+    ctxInfo->versionNumbers[1] = 1;
+    ctxInfo->gl13 = JNI_FALSE;
+    ctxInfo->gl20 = JNI_FALSE;
 
-    /* both in 1.2 core part and 1.1 extensions */
-    ctxInfo->rescale_normal_ext = JNI_FALSE;
-    ctxInfo->bgr_ext = JNI_FALSE;
-    ctxInfo->texture3DAvailable = JNI_FALSE;
-    ctxInfo->seperate_specular_color = JNI_FALSE;
-    
     /* 1.2 and GL_ARB_imaging */
     ctxInfo->blend_color_ext = JNI_FALSE;
-    ctxInfo->color_table_ext = JNI_FALSE;
     ctxInfo->blendFunctionTable[BLEND_ZERO] = GL_ZERO;
     ctxInfo->blendFunctionTable[BLEND_ONE] = GL_ONE;
     ctxInfo->blendFunctionTable[BLEND_SRC_ALPHA] = GL_SRC_ALPHA;
@@ -3030,9 +2888,9 @@ initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo)
     ctxInfo->multi_draw_arrays_sun = JNI_FALSE;
     ctxInfo->compiled_vertex_array_ext = JNI_FALSE;
 
-    ctxInfo->videoResizeAvailable = JNI_FALSE;
+    ctxInfo->texture_clamp_to_border_enum = GL_CLAMP;
+
     ctxInfo->global_alpha_sun = JNI_FALSE;
-    ctxInfo->constant_data_sun = JNI_FALSE;
     
     /* EXT extensions */
     ctxInfo->abgr_ext = JNI_FALSE;
@@ -3044,11 +2902,9 @@ initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo)
     /* by MIK OF CLASSX */
     ctxInfo->alphaClearValue = (getJavaBoolEnv(env, "transparentOffScreen") ? 0.0f : 1.0f);
 
-    /* ARB extensions */
-    ctxInfo->arb_transpose_matrix = JNI_FALSE;
-    ctxInfo->arb_multitexture = JNI_FALSE;
+    ctxInfo->multisample = JNI_FALSE;
 
-    ctxInfo->arb_multisample = JNI_FALSE;
+    /* Multitexture support */
     ctxInfo->maxTexCoordSets = 1;
     ctxInfo->maxTextureUnits = 1;
     ctxInfo->maxTextureImageUnits = 0;
@@ -3058,7 +2914,6 @@ initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo)
     ctxInfo->textureEnvCombineAvailable = JNI_FALSE;
     ctxInfo->textureCombineDot3Available = JNI_FALSE;
     ctxInfo->textureCombineSubtractAvailable = JNI_FALSE;
-    ctxInfo->textureCubeMapAvailable = JNI_FALSE;
 
     /* NV extensions */
     ctxInfo->textureRegisterCombinersAvailable = JNI_FALSE;
@@ -3087,17 +2942,17 @@ initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo)
     ctxInfo->glGetColorTableParameteriv =  NULL;
     ctxInfo->glTexImage3DEXT = NULL;
     ctxInfo->glTexSubImage3DEXT = NULL;
-    ctxInfo->glClientActiveTextureARB =   NULL;
+    ctxInfo->glClientActiveTexture =   NULL;
     ctxInfo->glMultiDrawArraysEXT =  NULL;
     ctxInfo->glMultiDrawElementsEXT =  NULL;
     ctxInfo->glLockArraysEXT =  NULL;
     ctxInfo->glUnlockArraysEXT =  NULL;
-    ctxInfo->glMultiTexCoord2fvARB = NULL;
-    ctxInfo->glMultiTexCoord3fvARB = NULL;
-    ctxInfo->glMultiTexCoord4fvARB = NULL;
-    ctxInfo->glLoadTransposeMatrixdARB = NULL;
-    ctxInfo->glMultTransposeMatrixdARB = NULL;
-    ctxInfo->glActiveTextureARB = NULL;
+    ctxInfo->glMultiTexCoord2fv = NULL;
+    ctxInfo->glMultiTexCoord3fv = NULL;
+    ctxInfo->glMultiTexCoord4fv = NULL;
+    ctxInfo->glLoadTransposeMatrixd = NULL;
+    ctxInfo->glMultTransposeMatrixd = NULL;
+    ctxInfo->glActiveTexture = NULL;
     ctxInfo->glGlobalAlphaFactorfSUN = NULL;
 
     ctxInfo->glCombinerInputNV = NULL;
@@ -3130,10 +2985,6 @@ initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo)
     /* Initialize shader info pointers */
     ctxInfo->glslCtxInfo = NULL;
     ctxInfo->cgCtxInfo = NULL;
-
-#if defined(UNIX)
-    ctxInfo->glXVideoResizeSUN = NULL;
-#endif /* UNIX */
 }
 
 static void
@@ -3449,7 +3300,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_beginScene(
        jobject obj, 
        jlong ctxInfo)
 {
- /* Not used by OGL version */
+ /* Not used by OGL renderer */
 }
 
 
@@ -3472,12 +3323,12 @@ JNIEXPORT void JNICALL Java_javax_media_j3d_NativePipeline_setFullSceneAntialias
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
 
-    if (ctxProperties->arb_multisample && !ctxProperties->implicit_multisample) {
+    if (ctxProperties->multisample && !ctxProperties->implicit_multisample) {
 	if(enable == JNI_TRUE) {
-	    glEnable(GL_MULTISAMPLE_ARB);
+	    glEnable(GL_MULTISAMPLE);
 	}
 	else {
-	    glDisable(GL_MULTISAMPLE_ARB);
+	    glDisable(GL_MULTISAMPLE);
 
 	}
     }
@@ -3547,13 +3398,8 @@ disableAttribFor2D(GraphicsContextPropertiesInfo *ctxProperties)
 	glDisable(GL_CLIP_PLANE0 + i);
     }
 
-    if (ctxProperties->texture3DAvailable) {
-	glDisable(ctxProperties->texture_3D_ext_enum);
-    }
-
-    if (ctxProperties->textureCubeMapAvailable) {
-	glDisable(ctxProperties->texture_cube_map_ext_enum);
-    }
+    glDisable(GL_TEXTURE_3D);
+    glDisable(GL_TEXTURE_CUBE_MAP);
 
     if (ctxProperties->textureRegisterCombinersAvailable) {
         glDisable(GL_REGISTER_COMBINERS_NV);

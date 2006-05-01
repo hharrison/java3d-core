@@ -15,7 +15,7 @@
  -->
 
 <!-- Ant file for building java classes and jar files -->
-<project name="Java 3D" default="jar-opt">
+<project name="Java 3D" default="jar-debug">
 
   <path id="vecmath.debug.classpath">
     <pathelement location="${vecmath_home}/build/debug/lib/ext/vecmath.jar"/>

@@ -160,7 +160,7 @@ abstract class Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             int vertexAttrCount, int[] vertexAttrSizes,
-            float[] varray, float[] cdata, int texUnitIndex, int cdirty);
+            float[] varray, float[] cdata, int pass, int cdirty);
 
     // used by GeometryArray by Reference with java arrays
     abstract void executeVA(Context ctx,
@@ -218,7 +218,7 @@ abstract class Pipeline {
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
             int[] texUnitStateMap,
-            Object varray, float[] cdata, int texUnitIndex, int cdirty);
+            Object varray, float[] cdata, int pass, int cdirty);
 
     abstract void setVertexFormat(Context ctx, GeometryArrayRetained geo,
             int vformat, boolean useAlpha, boolean ignoreVertexColors);
@@ -304,7 +304,7 @@ abstract class Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             float[] varray, float[] cdata,
-            int texUnitIndex, int cdirty,
+            int pass, int cdirty,
             int[] indexCoord);
 
     // interleaved, by reference, nio buffer
@@ -323,7 +323,7 @@ abstract class Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             Object varray, float[] cdata,
-            int texUnitIndex, int cdirty,
+            int pass, int cdirty,
             int[] indexCoord);
 
     // non interleaved, by reference, Java arrays

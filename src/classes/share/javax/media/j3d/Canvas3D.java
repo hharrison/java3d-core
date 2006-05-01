@@ -770,18 +770,13 @@ public class Canvas3D extends Canvas {
     int textureExtendedFeatures = 0;
 
     // Extensions supported by the underlying canvas
-    static final int SUN_GLOBAL_ALPHA   	 = 0x1;
-    static final int EXT_ABGR           	 = 0x2;
-    static final int EXT_BGR            	 = 0x4;
-    static final int EXT_RESCALE_NORMAL      	 = 0x8;
-    static final int EXT_MULTI_DRAW_ARRAYS   	 = 0x10;
-    static final int SUN_MULTI_DRAW_ARRAYS   	 = 0x20;
-    static final int SUN_CONSTANT_DATA       	 = 0x40;
-    static final int EXT_SEPARATE_SPECULAR_COLOR = 0x80;
-    static final int ARB_TRANSPOSE_MATRIX        = 0x100;
-    static final int ARB_MULTISAMPLE             = 0x200;
-    static final int EXT_COMPILED_VERTEX_ARRAYS  = 0x400;
-    static final int SUN_VIDEO_RESIZE            = 0x800;
+    //
+    // NOTE: we should remove EXT_BGR and EXT_ABGR when the imaging code is
+    // rewritten
+    static final int SUN_GLOBAL_ALPHA            = 0x1;
+    static final int EXT_ABGR                    = 0x2;
+    static final int EXT_BGR                     = 0x4;
+    static final int MULTISAMPLE                 = 0x8;
 
     // The following 10 variables are set by the native
     // createNewContext()/createQueryContext() methods
@@ -4105,15 +4100,13 @@ public class Canvas3D extends Canvas {
 	return ((extensionsSupported & SUN_GLOBAL_ALPHA) != 0);
     }
 
-    /** enable separate specular color if the functionality
-     *  is availabe for this canvas and it is not overriden by the
-     *  property j3d.disableSeparateSpecular.
+    /**
+     * Enable separate specular color if it is not overriden by the
+     * property j3d.disableSeparateSpecular.
      */
     void enableSeparateSpecularColor() {
-        if (((extensionsSupported & EXT_SEPARATE_SPECULAR_COLOR) != 0) &&
-	    !VirtualUniverse.mc.disableSeparateSpecularColor) {
-                updateSeparateSpecularColorEnable(ctx, true);
-        }
+        boolean enable = !VirtualUniverse.mc.disableSeparateSpecularColor;
+        updateSeparateSpecularColorEnable(ctx, enable);
     }
 
     final void beginScene() {

@@ -326,11 +326,10 @@ void JNICALL Java_javax_media_j3d_NativePipeline_setModelViewMatrix(
 
 
     glMatrixMode(GL_MODELVIEW);
-    
 
-    if (ctxProperties->arb_transpose_matrix) {
-        ctxProperties->glLoadTransposeMatrixdARB(vmatrix_pointer);
-        ctxProperties->glMultTransposeMatrixdARB(mmatrix_pointer);
+    if (ctxProperties->gl13) {
+        ctxProperties->glLoadTransposeMatrixd(vmatrix_pointer);
+        ctxProperties->glMultTransposeMatrixd(mmatrix_pointer);
     } else {
         double v[16];
         double m[16];
@@ -378,7 +377,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_setProjectionMatrix(
 
     glMatrixMode(GL_PROJECTION);
 
-    if (ctxProperties->arb_transpose_matrix) {
+    if (ctxProperties->gl13) {
 	/*
 	 * Invert the Z value in clipping coordinates because OpenGL uses
 	 * left-handed clipping coordinates, while Java3D defines right-handed
@@ -388,7 +387,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_setProjectionMatrix(
 	matrix_pointer[9] *= -1.0;
 	matrix_pointer[10] *= -1.0;
 	matrix_pointer[11] *= -1.0;
-	ctxProperties->glLoadTransposeMatrixdARB(matrix_pointer);
+	ctxProperties->glLoadTransposeMatrixd(matrix_pointer);
 	matrix_pointer[8] *= -1.0;
 	matrix_pointer[9] *= -1.0;
 	matrix_pointer[10] *= -1.0;
@@ -1015,8 +1014,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexCoordGeneration(
     		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 
-                if (ctxProperties->arb_transpose_matrix) {
-                    ctxProperties->glLoadTransposeMatrixdARB(mat);
+                if (ctxProperties->gl13) {
+                    ctxProperties->glLoadTransposeMatrixd(mat);
                 } else {
                     jdouble v[16];
                     COPY_TRANSPOSE(mat, v);
@@ -1143,8 +1142,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureAttributes(
 							      NULL);
     if (isIdentity) {
 	glLoadIdentity();
-    } else if (ctxProperties->arb_transpose_matrix) {
-        ctxProperties->glLoadTransposeMatrixdARB(mx_ptr);
+    } else if (ctxProperties->gl13) {
+        ctxProperties->glLoadTransposeMatrixd(mx_ptr);
     } else {
         double mx[16];
         COPY_TRANSPOSE(mx_ptr, mx);
@@ -1261,8 +1260,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateRegisterCombiners(
 							      NULL);
     if (isIdentity) {
 	glLoadIdentity();
-    } else if (ctxProperties->arb_transpose_matrix) {
-        ctxProperties->glLoadTransposeMatrixdARB(mx_ptr);
+    } else if (ctxProperties->gl13) {
+        ctxProperties->glLoadTransposeMatrixd(mx_ptr);
     } else {
         double mx[16];
         COPY_TRANSPOSE(mx_ptr, mx);
@@ -1890,24 +1889,17 @@ void JNICALL Java_javax_media_j3d_NativePipeline_resetTextureNative(
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
-    if(ctxProperties->arb_multitexture) {
-
-      if (texUnitIndex >= 0) {
-	    ctxProperties->glActiveTextureARB(texUnitIndex + GL_TEXTURE0_ARB);
-	    ctxProperties->glClientActiveTextureARB(texUnitIndex + GL_TEXTURE0_ARB);
-      }
+    if(ctxProperties->gl13) {
+        if (texUnitIndex >= 0) {
+            ctxProperties->glActiveTexture(texUnitIndex + GL_TEXTURE0);
+            ctxProperties->glClientActiveTexture(texUnitIndex + GL_TEXTURE0);
+        }
     }
 
     glDisable(GL_TEXTURE_1D);
     glDisable(GL_TEXTURE_2D);
-    
-    if(ctxProperties->texture3DAvailable)  {
-	glDisable(ctxProperties->texture_3D_ext_enum);
-    }
-
-    if(ctxProperties->textureCubeMapAvailable) {
-	glDisable(ctxProperties->texture_cube_map_ext_enum);
-    }
+    glDisable(GL_TEXTURE_3D);
+    glDisable(GL_TEXTURE_CUBE_MAP);
 }
 
 
@@ -2047,7 +2039,7 @@ void updateTextureBoundary(
 	    break;
         case javax_media_j3d_Texture_CLAMP_TO_EDGE:
 	    glTexParameteri(target, GL_TEXTURE_WRAP_S, 
-				ctxProperties->texture_clamp_to_edge_enum);
+				GL_CLAMP_TO_EDGE);
 	    break;
         case javax_media_j3d_Texture_CLAMP_TO_BOUNDARY:
 	    glTexParameteri(target, GL_TEXTURE_WRAP_S, 
@@ -2064,7 +2056,7 @@ void updateTextureBoundary(
 	    break;
         case javax_media_j3d_Texture_CLAMP_TO_EDGE:
 	    glTexParameteri(target, GL_TEXTURE_WRAP_T, 
-				ctxProperties->texture_clamp_to_edge_enum);
+				GL_CLAMP_TO_EDGE);
 	    break;
         case javax_media_j3d_Texture_CLAMP_TO_BOUNDARY:
 	    glTexParameteri(target, GL_TEXTURE_WRAP_T, 
@@ -2077,21 +2069,21 @@ void updateTextureBoundary(
         switch (boundaryModeR) {
             case javax_media_j3d_Texture_WRAP:
             glTexParameteri(target,
-                            ctxProperties->texture_wrap_r_ext_enum, GL_REPEAT);
+                            GL_TEXTURE_WRAP_R, GL_REPEAT);
             break;
 
             case javax_media_j3d_Texture_CLAMP:
             glTexParameteri(target,
-                            ctxProperties->texture_wrap_r_ext_enum, GL_CLAMP);
+                            GL_TEXTURE_WRAP_R, GL_CLAMP);
             break;
             case javax_media_j3d_Texture_CLAMP_TO_EDGE:
 	    glTexParameteri(target, 
-                            ctxProperties->texture_wrap_r_ext_enum, 
-				ctxProperties->texture_clamp_to_edge_enum);
+                            GL_TEXTURE_WRAP_R, 
+				GL_CLAMP_TO_EDGE);
 	    break;
             case javax_media_j3d_Texture_CLAMP_TO_BOUNDARY:
 	    glTexParameteri(target, 
-                            ctxProperties->texture_wrap_r_ext_enum,
+                            GL_TEXTURE_WRAP_R,
 				ctxProperties->texture_clamp_to_border_enum);
 	    break;
         }
@@ -2253,9 +2245,7 @@ void updateTexture2DImage(
 	    break;
 	    
         case FORMAT_BYTE_BGR:         
-	    if (ctxProperties->bgr_ext) { /* If its zero, should never come here! */
-		oglFormat = ctxProperties->bgr_ext_enum;
-	    }
+            oglFormat = GL_BGR;
 	    break;
 
         case FORMAT_BYTE_LA: 
@@ -2405,10 +2395,8 @@ void updateTexture2DSubImage(
 	    }
 	    break;
         case FORMAT_BYTE_BGR:         
-	    if (ctxProperties->bgr_ext) { /* If its zero, should never come here! */
-		oglFormat = ctxProperties->bgr_ext_enum;
-		numBytes = 3;
-	    }
+            oglFormat = GL_BGR;
+            numBytes = 3;
 	    break;
 
         case FORMAT_BYTE_LA: 
@@ -2504,16 +2492,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_bindTexture2D(
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
-    if (ctxProperties->textureCubeMapAvailable) {
-	glDisable(ctxProperties->texture_cube_map_ext_enum);
-    }
-    if (ctxProperties->texture3DAvailable) {
-	glDisable(ctxProperties->texture_3D_ext_enum);	
-    }
+    glDisable(GL_TEXTURE_CUBE_MAP);
+    glDisable(GL_TEXTURE_3D);	
     
     if (enable == JNI_FALSE) {
         glDisable(GL_TEXTURE_2D);
-
     } else {
         glBindTexture(GL_TEXTURE_2D, objectId);
         glEnable(GL_TEXTURE_2D);
@@ -2762,21 +2745,14 @@ void JNICALL Java_javax_media_j3d_NativePipeline_bindTexture3D(
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
  
-    if (ctxProperties->textureCubeMapAvailable) {
-	/* textureCubeMap will take precedure over 3D Texture */
-	glDisable(ctxProperties->texture_cube_map_ext_enum);
-    }
+    /* textureCubeMap will take precedure over 3D Texture */
+    glDisable(GL_TEXTURE_CUBE_MAP);
     
     if (enable == JNI_FALSE) {
-	if(ctxProperties->texture3DAvailable)  {
-	    glDisable(ctxProperties->texture_3D_ext_enum);
-	}
-	
+        glDisable(GL_TEXTURE_3D);
     } else {
-	if(ctxProperties->texture3DAvailable){
-	    glBindTexture(ctxProperties->texture_3D_ext_enum, objectId);
-	    glEnable(ctxProperties->texture_3D_ext_enum);
-	}
+        glBindTexture(GL_TEXTURE_3D, objectId);
+        glEnable(GL_TEXTURE_3D);
     }
 }
 
@@ -2908,14 +2884,12 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
-    if(ctxProperties->texture3DAvailable) {
+    GLenum oglFormat = 0, oglInternalFormat=0;
+    JNIEnv table = *env;
+    jbyte *byteData;
+    jshort *shortData;
 
-	GLenum oglFormat = 0, oglInternalFormat=0;
-	JNIEnv table = *env;
-	jbyte *byteData;
-	jshort *shortData;
-
-	switch (internalFormat) {
+    switch (internalFormat) {
         case INTENSITY:
 	    oglInternalFormat = GL_INTENSITY;
 	    break;
@@ -2934,9 +2908,9 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
         case J3D_RGBA:
 	    oglInternalFormat = GL_RGBA;
 	    break;
-	}
+    }
 
-	switch (format) {
+    switch (format) {
         case FORMAT_BYTE_RGBA:         
 	    /* all RGB types are stored as RGBA */
 	    oglFormat = GL_RGBA;
@@ -2951,9 +2925,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
 	    }
 	    break;
         case FORMAT_BYTE_BGR:         
-	    if (ctxProperties->bgr_ext) { /* If its zero, should never come here! */
-		oglFormat = ctxProperties->bgr_ext_enum;
-	    }
+            oglFormat = GL_BGR;
 	    break;
         case FORMAT_BYTE_LA: 
 	    /* all LA types are stored as LA8 */
@@ -2967,59 +2939,57 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
 	        oglFormat = GL_LUMINANCE;
 	    }
             break;
-	}
-
-	/*
-	  fprintf(stderr,"internalFormat = %x\n",internalFormat);
-	  fprintf(stderr,"format = %x\n",format);
-	  fprintf(stderr,"oglFormat = %x\n",oglFormat);
-	  fprintf(stderr,"oglInternalFormat = %x\n",oglInternalFormat);
-	  */
-	if (imageYup != NULL) {
-	    if (format != FORMAT_USHORT_GRAY) {
-		byteData = (jbyte *)(*(table->GetPrimitiveArrayCritical))(env,
-									  imageYup, 
-									  NULL);
-	    }
-	    else { /* unsigned short */
-		shortData = (jshort *)(*(table->GetPrimitiveArrayCritical))(env,
-									    imageYup, 
-									    NULL);
-	
-	    }
-	} else {
-	    byteData = NULL;
-	    shortData = NULL;
-	}
-
-	if (format != FORMAT_USHORT_GRAY) {
-
-	    ctxProperties->glTexImage3DEXT(ctxProperties->texture_3D_ext_enum, 
-			level, oglInternalFormat, 
-			width, height, depth, boundaryWidth, 
-			oglFormat, GL_UNSIGNED_BYTE, 
-			(GLvoid *)byteData);
-	}
-	else {
-	    ctxProperties->glTexImage3DEXT(ctxProperties->texture_3D_ext_enum, 
-			level, oglInternalFormat, 
-			width, height, depth, boundaryWidth, 
-			oglFormat, GL_UNSIGNED_SHORT, 
-			(GLvoid *)shortData);
-	}
-	if (imageYup != NULL) {
-	    if (format != FORMAT_USHORT_GRAY) {
-		(*(table->ReleasePrimitiveArrayCritical))(env, imageYup, byteData, 0);
-	    } else { /* unsigned short */
-		(*(table->ReleasePrimitiveArrayCritical))(env, imageYup, shortData, 0);
-	    
-	    }
-	}
-    
-	/* No idea why we need following call. */
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     }
 
+    /*
+      fprintf(stderr,"internalFormat = %x\n",internalFormat);
+      fprintf(stderr,"format = %x\n",format);
+      fprintf(stderr,"oglFormat = %x\n",oglFormat);
+      fprintf(stderr,"oglInternalFormat = %x\n",oglInternalFormat);
+      */
+    if (imageYup != NULL) {
+        if (format != FORMAT_USHORT_GRAY) {
+            byteData = (jbyte *)(*(table->GetPrimitiveArrayCritical))(env,
+                                                                      imageYup, 
+                                                                      NULL);
+        }
+        else { /* unsigned short */
+            shortData = (jshort *)(*(table->GetPrimitiveArrayCritical))(env,
+                                                                        imageYup, 
+                                                                        NULL);
+
+        }
+    } else {
+        byteData = NULL;
+        shortData = NULL;
+    }
+
+    if (format != FORMAT_USHORT_GRAY) {
+
+        ctxProperties->glTexImage3DEXT(GL_TEXTURE_3D, 
+                    level, oglInternalFormat, 
+                    width, height, depth, boundaryWidth, 
+                    oglFormat, GL_UNSIGNED_BYTE, 
+                    (GLvoid *)byteData);
+    }
+    else {
+        ctxProperties->glTexImage3DEXT(GL_TEXTURE_3D, 
+                    level, oglInternalFormat, 
+                    width, height, depth, boundaryWidth, 
+                    oglFormat, GL_UNSIGNED_SHORT, 
+                    (GLvoid *)shortData);
+    }
+    if (imageYup != NULL) {
+        if (format != FORMAT_USHORT_GRAY) {
+            (*(table->ReleasePrimitiveArrayCritical))(env, imageYup, byteData, 0);
+        } else { /* unsigned short */
+            (*(table->ReleasePrimitiveArrayCritical))(env, imageYup, shortData, 0);
+
+        }
+    }
+
+    /* No idea why we need following call. */
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 }
 
 JNIEXPORT
@@ -3044,136 +3014,133 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
     jbyteArray image) {
  
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
- 
-    if (ctxProperties->texture3DAvailable) {
-        GLenum oglFormat = 0, oglInternalFormat=0;
-        JNIEnv table = *env;
-        jbyte *byteData, *tmpByte;
-        jshort *shortData, *tmpShort;
-        jint numBytes = 0;
-        jboolean pixelStore = JNI_FALSE;
 
-        switch (internalFormat) {
-            case INTENSITY:
-	        oglInternalFormat = GL_INTENSITY;
-	        break;
-            case LUMINANCE:
-	        oglInternalFormat = GL_LUMINANCE;
-	        break;
-            case ALPHA:
-	        oglInternalFormat = GL_ALPHA;
-	        break;
-            case LUMINANCE_ALPHA:
-	        oglInternalFormat = GL_LUMINANCE_ALPHA;
-	        break;
-            case J3D_RGB: 
-	        oglInternalFormat = GL_RGB;
-	        break;
-            case J3D_RGBA:
-	        oglInternalFormat = GL_RGBA;
-	        break;
-        }
-    
-        switch (format) {
-            case FORMAT_BYTE_RGBA:         
-	        /* all RGB types are stored as RGBA */
-	        oglFormat = GL_RGBA;
-	        numBytes = 4;
-	        break;
-            case FORMAT_BYTE_RGB:         
-	        oglFormat = GL_RGB;
-	        numBytes = 3;
-	        break;
-    
-            case FORMAT_BYTE_ABGR:         
-	        if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
-		    oglFormat = GL_ABGR_EXT;
-		    numBytes = 4;
-	        }
-	        break;
-            case FORMAT_BYTE_BGR:         
-	        if (ctxProperties->bgr_ext) { /* If its zero, should never come here! */
-		    oglFormat = ctxProperties->bgr_ext_enum;
-		    numBytes = 3;
-	        }
-	        break;
-    
-            case FORMAT_BYTE_LA: 
-	        /* all LA types are stored as LA8 */
-	        oglFormat = GL_LUMINANCE_ALPHA;
-	        numBytes = 2;
-	        break;
-            case FORMAT_BYTE_GRAY:
-                if (oglInternalFormat == GL_ALPHA) {
-	            oglFormat = GL_ALPHA;
-                } else  {
-	            oglFormat = GL_LUMINANCE;
-	        }
-	        numBytes = 1;
-            case FORMAT_USHORT_GRAY:	    
-               if (oglInternalFormat == GL_ALPHA) {
-	            oglFormat = GL_ALPHA;
-                } else  {
-	            oglFormat = GL_LUMINANCE;
-	        }
-	        numBytes = 2;
-                break;
-        }
-        /*
-        fprintf(stderr,"format = %x\n",format);
-        fprintf(stderr,"oglFormat = %x\n",oglFormat);
-        fprintf(stderr, "imgXOffset = %d\n",imgXOffset);
-        fprintf(stderr, "imgYOffset = %d\n",imgYOffset);
-        fprintf(stderr, "imgZOffset = %d\n",imgZOffset);
-        fprintf(stderr, "xoffset = %d\n",xoffset);
-        fprintf(stderr, "yoffset = %d\n",yoffset);
-        fprintf(stderr, "zoffset = %d\n",zoffset);
-        fprintf(stderr, "tilew = %d\n",tilew);
-        fprintf(stderr, "tileh = %d\n",tilew);
-        fprintf(stderr, "numBytes = %d\n",numBytes);
-        fprintf(stderr, "width = %d\n",width);
-        fprintf(stderr, "height = %d\n",height);
-        fprintf(stderr, "depth = %d\n",depth);
-        */
-        if (imgXOffset > 0 || (width < tilew)) {
-	    pixelStore = JNI_TRUE;
-	    glPixelStorei(GL_UNPACK_ROW_LENGTH, tilew);
-        }
-    	
-        if (format != FORMAT_USHORT_GRAY) {
-	    byteData = (jbyte *)(*(table->GetPrimitiveArrayCritical))(env,
-				    image, NULL);
-    
-            tmpByte = byteData +
-                           (tilew * tileh * imgZOffset +
-                            tilew * imgYOffset + imgXOffset) * numBytes;
-    
-            ctxProperties->glTexSubImage3DEXT(
-                                    ctxProperties->texture_3D_ext_enum,
-                                    level, xoffset, yoffset, zoffset,
-                                    width, height, depth,
-                                    oglFormat, GL_UNSIGNED_BYTE,
-                                    (GLvoid *)tmpByte);
-    
-	    (*(table->ReleasePrimitiveArrayCritical))(env, image, byteData, 0);	
-        } else { /* unsigned short */
-	    shortData = (jshort *)(*(table->GetPrimitiveArrayCritical))(env,
-				    image, NULL);
-	    tmpShort = (jshort*)((jbyte*)shortData+
-			         (tilew * tileh * imgZOffset +
-			          tilew * imgYOffset + imgXOffset)*numBytes);
-    
-            ctxProperties->glTexSubImage3DEXT(
-                                    ctxProperties->texture_3D_ext_enum,
-                                    level, xoffset, yoffset, zoffset,
-                                    width, height, depth,
-                                    oglFormat, GL_UNSIGNED_SHORT,
-                                    (GLvoid *)tmpShort);
-	    (*(table->ReleasePrimitiveArrayCritical))(env, image, shortData, 0);
-        }
-        if (pixelStore) {
-	    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-        }
+    GLenum oglFormat = 0, oglInternalFormat=0;
+    JNIEnv table = *env;
+    jbyte *byteData, *tmpByte;
+    jshort *shortData, *tmpShort;
+    jint numBytes = 0;
+    jboolean pixelStore = JNI_FALSE;
+
+    switch (internalFormat) {
+        case INTENSITY:
+            oglInternalFormat = GL_INTENSITY;
+            break;
+        case LUMINANCE:
+            oglInternalFormat = GL_LUMINANCE;
+            break;
+        case ALPHA:
+            oglInternalFormat = GL_ALPHA;
+            break;
+        case LUMINANCE_ALPHA:
+            oglInternalFormat = GL_LUMINANCE_ALPHA;
+            break;
+        case J3D_RGB: 
+            oglInternalFormat = GL_RGB;
+            break;
+        case J3D_RGBA:
+            oglInternalFormat = GL_RGBA;
+            break;
+    }
+
+    switch (format) {
+        case FORMAT_BYTE_RGBA:         
+            /* all RGB types are stored as RGBA */
+            oglFormat = GL_RGBA;
+            numBytes = 4;
+            break;
+        case FORMAT_BYTE_RGB:         
+            oglFormat = GL_RGB;
+            numBytes = 3;
+            break;
+
+        case FORMAT_BYTE_ABGR:         
+            if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
+                oglFormat = GL_ABGR_EXT;
+                numBytes = 4;
+            }
+            break;
+        case FORMAT_BYTE_BGR:         
+            oglFormat = GL_BGR;
+            numBytes = 3;
+            break;
+
+        case FORMAT_BYTE_LA: 
+            /* all LA types are stored as LA8 */
+            oglFormat = GL_LUMINANCE_ALPHA;
+            numBytes = 2;
+            break;
+        case FORMAT_BYTE_GRAY:
+            if (oglInternalFormat == GL_ALPHA) {
+                oglFormat = GL_ALPHA;
+            } else  {
+                oglFormat = GL_LUMINANCE;
+            }
+            numBytes = 1;
+        case FORMAT_USHORT_GRAY:	    
+           if (oglInternalFormat == GL_ALPHA) {
+                oglFormat = GL_ALPHA;
+            } else  {
+                oglFormat = GL_LUMINANCE;
+            }
+            numBytes = 2;
+            break;
+    }
+
+    /*
+    fprintf(stderr,"format = %x\n",format);
+    fprintf(stderr,"oglFormat = %x\n",oglFormat);
+    fprintf(stderr, "imgXOffset = %d\n",imgXOffset);
+    fprintf(stderr, "imgYOffset = %d\n",imgYOffset);
+    fprintf(stderr, "imgZOffset = %d\n",imgZOffset);
+    fprintf(stderr, "xoffset = %d\n",xoffset);
+    fprintf(stderr, "yoffset = %d\n",yoffset);
+    fprintf(stderr, "zoffset = %d\n",zoffset);
+    fprintf(stderr, "tilew = %d\n",tilew);
+    fprintf(stderr, "tileh = %d\n",tilew);
+    fprintf(stderr, "numBytes = %d\n",numBytes);
+    fprintf(stderr, "width = %d\n",width);
+    fprintf(stderr, "height = %d\n",height);
+    fprintf(stderr, "depth = %d\n",depth);
+    */
+    if (imgXOffset > 0 || (width < tilew)) {
+        pixelStore = JNI_TRUE;
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, tilew);
+    }
+
+    if (format != FORMAT_USHORT_GRAY) {
+        byteData = (jbyte *)(*(table->GetPrimitiveArrayCritical))(env,
+                                image, NULL);
+
+        tmpByte = byteData +
+                       (tilew * tileh * imgZOffset +
+                        tilew * imgYOffset + imgXOffset) * numBytes;
+
+        ctxProperties->glTexSubImage3DEXT(
+                                GL_TEXTURE_3D,
+                                level, xoffset, yoffset, zoffset,
+                                width, height, depth,
+                                oglFormat, GL_UNSIGNED_BYTE,
+                                (GLvoid *)tmpByte);
+
+        (*(table->ReleasePrimitiveArrayCritical))(env, image, byteData, 0);	
+    } else { /* unsigned short */
+        shortData = (jshort *)(*(table->GetPrimitiveArrayCritical))(env,
+                                image, NULL);
+        tmpShort = (jshort*)((jbyte*)shortData+
+                             (tilew * tileh * imgZOffset +
+                              tilew * imgYOffset + imgXOffset)*numBytes);
+
+        ctxProperties->glTexSubImage3DEXT(
+                                GL_TEXTURE_3D,
+                                level, xoffset, yoffset, zoffset,
+                                width, height, depth,
+                                oglFormat, GL_UNSIGNED_SHORT,
+                                (GLvoid *)tmpShort);
+        (*(table->ReleasePrimitiveArrayCritical))(env, image, shortData, 0);
+    }
+    if (pixelStore) {
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
     }
 }
     
@@ -3206,13 +3173,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_bindTextureCubeMap(
      * TextureCubeMap will take precedure over 3D Texture so
      * there is no need to disable 3D Texture here.
      */
-    if (ctxProperties->textureCubeMapAvailable) {
-        if (enable == JNI_FALSE) {
-	  glDisable(ctxProperties->texture_cube_map_ext_enum);
-        } else {
-	    glBindTexture(ctxProperties->texture_cube_map_ext_enum, objectId);
-	    glEnable(ctxProperties->texture_cube_map_ext_enum);
-	}
+    if (enable == JNI_FALSE) {
+        glDisable(GL_TEXTURE_CUBE_MAP);
+    } else {
+        glBindTexture(GL_TEXTURE_CUBE_MAP, objectId);
+        glEnable(GL_TEXTURE_CUBE_MAP);
     }
 }
 
@@ -3226,14 +3191,10 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapFilterModes
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
-    if (ctxProperties->textureCubeMapAvailable) {
-        updateTextureFilterModes(ctxProperties, 
-				ctxProperties->texture_cube_map_ext_enum,
-                                minFilter, magFilter);
-    }
+    updateTextureFilterModes(ctxProperties, 
+                            GL_TEXTURE_CUBE_MAP,
+                            minFilter, magFilter);
 }
-
-
 
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapLodRange(
@@ -3249,7 +3210,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapLodRange(
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
     updateTextureLodRange(ctxProperties, 
-			ctxProperties->texture_cube_map_ext_enum,
+			GL_TEXTURE_CUBE_MAP,
 			baseLevel, maximumLevel,
 			minimumLOD, maximumLOD);
 }
@@ -3266,7 +3227,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapLodOffset(
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
     updateTextureLodOffset(ctxProperties, 
-			ctxProperties->texture_cube_map_ext_enum,
+			GL_TEXTURE_CUBE_MAP,
 			lodOffsetS, lodOffsetT, lodOffsetR);
 }
 
@@ -3285,13 +3246,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapBoundary(
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
-    if (ctxProperties->textureCubeMapAvailable) {
-	updateTextureBoundary(ctxProperties, 
-				ctxProperties->texture_cube_map_ext_enum,
-				boundaryModeS, boundaryModeT, -1,
-				boundaryRed, boundaryGreen,
-				boundaryBlue, boundaryAlpha);
-    }
+    updateTextureBoundary(ctxProperties, 
+                            GL_TEXTURE_CUBE_MAP,
+                            boundaryModeS, boundaryModeT, -1,
+                            boundaryRed, boundaryGreen,
+                            boundaryBlue, boundaryAlpha);
 }
 
 JNIEXPORT
@@ -3304,11 +3263,9 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapSharpenFunc
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
-    if (ctxProperties->textureCubeMapAvailable) {
-        updateTextureSharpenFunc(env, ctxProperties, 
-				ctxProperties->texture_cube_map_ext_enum, 
-				numPts, pts);
-    }
+    updateTextureSharpenFunc(env, ctxProperties, 
+                            GL_TEXTURE_CUBE_MAP, 
+                            numPts, pts);
 }
 
 
@@ -3322,11 +3279,9 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapFilter4Func
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
-    if (ctxProperties->textureCubeMapAvailable) {
-        updateTextureFilter4Func(env, ctxProperties, 
-				ctxProperties->texture_cube_map_ext_enum, 
-				numPts, pts);
-    }
+    updateTextureFilter4Func(env, ctxProperties, 
+                            GL_TEXTURE_CUBE_MAP, 
+                            numPts, pts);
 }
 
 JNIEXPORT
@@ -3338,11 +3293,9 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapAnisotropic
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
-    if (ctxProperties->textureCubeMapAvailable) {
-        updateTextureAnisotropicFilter(env, ctxProperties, 
-				ctxProperties->texture_cube_map_ext_enum, 
-				degree);
-    }
+    updateTextureAnisotropicFilter(env, ctxProperties, 
+                            GL_TEXTURE_CUBE_MAP, 
+                            degree);
 }
 
 JNIEXPORT
@@ -3455,22 +3408,10 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateSeparateSpecularColorEnab
     jlong ctxInfo,    
     jboolean enable)
 {
-    /*
-     * This method will not be called if the rendering layer does not support
-     * separate specular color control. The checking of the availability
-     * of the functionality is done in Renderer at rendering time
-     */
-
-    /*  1.2 feature only */
-    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
-    
-    if(ctxProperties->seperate_specular_color) {
-	if (enable == JNI_TRUE) {
-	    glLightModeli(ctxProperties->light_model_color_control_enum, 
-			  ctxProperties->seperate_specular_color_enum);
-	} else {
-	    glLightModeli(ctxProperties->light_model_color_control_enum, ctxProperties->single_color_enum);
-	}
+    if (enable) {
+        glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
+    } else {
+        glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
     }
 }
 
@@ -3484,34 +3425,27 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureUnitState(
 {
 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
-    
-    if(ctxProperties->arb_multitexture) {
-	if (index >= 0) {
-	    ctxProperties->glActiveTextureARB(index + GL_TEXTURE0_ARB);
-	    ctxProperties->glClientActiveTextureARB(GL_TEXTURE0_ARB + index);
-	    if (ctxProperties->textureRegisterCombinersAvailable) {
-	        ctxProperties->currentTextureUnit = index + GL_TEXTURE0_ARB;
-	        ctxProperties->currentCombinerUnit = index + GL_COMBINER0_NV;
-		if (ctxProperties->glCombinerParameteriNV!=NULL)
-	            ctxProperties->glCombinerParameteriNV(
-	                         GL_NUM_GENERAL_COMBINERS_NV, index + 1);
 
-	    }
-	}
-    } /* GL_ARB_multitexture */
+    if (ctxProperties->gl13 && index >= 0) {
+        ctxProperties->glActiveTexture(index + GL_TEXTURE0);
+        ctxProperties->glClientActiveTexture(GL_TEXTURE0 + index);
+        if (ctxProperties->textureRegisterCombinersAvailable) {
+            ctxProperties->currentTextureUnit = index + GL_TEXTURE0;
+            ctxProperties->currentCombinerUnit = index + GL_COMBINER0_NV;
+            if (ctxProperties->glCombinerParameteriNV != NULL)
+                ctxProperties->glCombinerParameteriNV(
+                             GL_NUM_GENERAL_COMBINERS_NV, index + 1);
+        }
+    }
 
     if (enable == JNI_FALSE) {
         /* if not enabled, then don't enable any tex mapping */
 
         glDisable(GL_TEXTURE_1D);
         glDisable(GL_TEXTURE_2D);
-
-	if(ctxProperties->texture3DAvailable) 
-	    glDisable(ctxProperties->texture_3D_ext_enum);
-
-	if(ctxProperties->textureCubeMapAvailable) 
-	    glDisable(ctxProperties->texture_cube_map_ext_enum);
-    } 
+        glDisable(GL_TEXTURE_3D);
+        glDisable(GL_TEXTURE_CUBE_MAP);
+    }
 
     /*
      * if it is enabled, the enable flag will be taken care of
@@ -3580,10 +3514,9 @@ void JNICALL Java_javax_media_j3d_NativePipeline_activeTextureUnit(
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
-    if(ctxProperties->arb_multitexture){
-	ctxProperties->glActiveTextureARB(GL_TEXTURE0_ARB + index);
-	ctxProperties->glClientActiveTextureARB(GL_TEXTURE0_ARB + index);
-	/* GL_ARB_multitexture  */
+    if (ctxProperties->gl13) {
+	ctxProperties->glActiveTexture(GL_TEXTURE0 + index);
+	ctxProperties->glClientActiveTexture(GL_TEXTURE0 + index);
     }
 }
 

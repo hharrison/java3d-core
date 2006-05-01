@@ -842,27 +842,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_freeTexture(
 
 
 extern "C" JNIEXPORT 
-jboolean JNICALL Java_javax_media_j3d_NativePipeline_isTexture3DAvailable(
-    JNIEnv *env,
-    jobject obj,
-    jlong ctx)
-{
-    return JNI_FALSE;
-}
-
-
-extern "C" JNIEXPORT 
-jint JNICALL Java_javax_media_j3d_NativePipeline_getTextureColorTableSize(
-    JNIEnv *env,
-    jobject obj,
-    jlong ctx)
-{
-    // Not support by D3D
-    return 0;
-}
-
-
-extern "C" JNIEXPORT 
 jint JNICALL Java_javax_media_j3d_NativePipeline_getTextureUnitCount(
     JNIEnv *env,
     jobject obj,

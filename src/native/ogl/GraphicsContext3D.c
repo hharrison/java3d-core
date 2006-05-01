@@ -74,9 +74,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readRasterNative(
 	    break;
 	    
         case FORMAT_BYTE_BGR:         
-	    if (ctxProperties->bgr_ext) { /* If its zero, should never come here! */
-		gltype = ctxProperties->bgr_ext_enum;
-	    }
+            gltype = GL_BGR;
 	    break;
         case FORMAT_BYTE_LA:
             gltype = GL_LUMINANCE_ALPHA;

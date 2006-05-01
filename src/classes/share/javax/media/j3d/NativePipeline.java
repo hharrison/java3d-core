@@ -229,7 +229,7 @@ class NativePipeline extends Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             int vertexAttrCount, int[] vertexAttrSizes,
-            float[] varray, float[] cdata, int texUnitIndex, int cdirty);
+            float[] varray, float[] cdata, int pass, int cdirty);
 
     void execute(Context ctx,
             GeometryArrayRetained geo, int geo_type,
@@ -244,7 +244,7 @@ class NativePipeline extends Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             int vertexAttrCount, int[] vertexAttrSizes,
-            float[] varray, float[] cdata, int texUnitIndex, int cdirty) {
+            float[] varray, float[] cdata, int pass, int cdirty) {
         execute(unbox(ctx),
                 geo, geo_type,
                 isNonUniformScale,
@@ -258,7 +258,7 @@ class NativePipeline extends Pipeline {
                 numActiveTexUnitState,
                 texUnitStateMap,
                 vertexAttrCount, vertexAttrSizes,
-                varray, cdata, texUnitIndex, cdirty);
+                varray, cdata, pass, cdirty);
     }
 
     // used by GeometryArray by Reference with java arrays
@@ -399,7 +399,7 @@ class NativePipeline extends Pipeline {
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
             int[] texUnitStateMap,
-            Object varray, float[] cdata, int texUnitIndex, int cdirty);
+            Object varray, float[] cdata, int pass, int cdirty);
 
     void executeInterleavedBuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
@@ -413,7 +413,7 @@ class NativePipeline extends Pipeline {
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
             int[] texUnitStateMap,
-            Object varray, float[] cdata, int texUnitIndex, int cdirty) {
+            Object varray, float[] cdata, int pass, int cdirty) {
         executeInterleavedBuffer(unbox(ctx),
                 geo, geo_type,
                 isNonUniformScale,
@@ -426,7 +426,7 @@ class NativePipeline extends Pipeline {
                 texCoordSetOffset,
                 numActiveTexUnitState,
                 texUnitStateMap,
-                varray, cdata, texUnitIndex, cdirty);
+                varray, cdata, pass, cdirty);
     }
 
     native void setVertexFormat(long ctx, GeometryArrayRetained geo,
@@ -565,7 +565,7 @@ class NativePipeline extends Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             float[] varray, float[] cdata,
-            int texUnitIndex, int cdirty,
+            int pass, int cdirty,
             int[] indexCoord);
 
     void executeIndexedGeometry(Context ctx,
@@ -584,7 +584,7 @@ class NativePipeline extends Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             float[] varray, float[] cdata,
-            int texUnitIndex, int cdirty,
+            int pass, int cdirty,
             int[] indexCoord) {
         executeIndexedGeometry(unbox(ctx),
                 geo, geo_type,
@@ -602,7 +602,7 @@ class NativePipeline extends Pipeline {
                 numActiveTexUnitState,
                 texUnitStateMap,
                 varray, cdata,
-                texUnitIndex, cdirty,
+                pass, cdirty,
                 indexCoord);
     }
 
@@ -622,7 +622,7 @@ class NativePipeline extends Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             Object varray, float[] cdata,
-            int texUnitIndex, int cdirty,
+            int pass, int cdirty,
             int[] indexCoord);
 
     void executeIndexedGeometryBuffer(Context ctx,
@@ -640,7 +640,7 @@ class NativePipeline extends Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             Object varray, float[] cdata,
-            int texUnitIndex, int cdirty,
+            int pass, int cdirty,
             int[] indexCoord) {
         executeIndexedGeometryBuffer(unbox(ctx),
                 geo, geo_type,
@@ -657,7 +657,7 @@ class NativePipeline extends Pipeline {
                 numActiveTexUnitState,
                 texUnitStateMap,
                 varray, cdata,
-                texUnitIndex, cdirty,
+                pass, cdirty,
                 indexCoord);
     }
 

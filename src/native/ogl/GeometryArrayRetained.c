@@ -55,13 +55,12 @@ static void enableTexCoordPointer(GraphicsContextPropertiesInfo *, int, int,
 static void disableTexCoordPointer(GraphicsContextPropertiesInfo *, int);
 static void clientActiveTextureUnit(GraphicsContextPropertiesInfo *, int);
 
-/* 
- * texUnitIndex < 0  implies send all texture unit state info in one pass
- * texUnitIndex >= 0 implies one texture unit state info in one pass using
- *		     the underlying texture unit 0
+/*
+ * NOTE: pass is unused and must be < 0 which implies that we will
+ * send all texture unit state info in one pass
  */
 static void
-executeTexture(int texUnitIndex, int texCoordSetMapLen,
+executeTexture(int pass, int texCoordSetMapLen,
 	       int texSize, int bstride, int texCoordoff,
 	       jint texCoordSetMapOffset[], 
 	       jint numActiveTexUnit, jint texUnitStateMap[],
@@ -72,69 +71,32 @@ executeTexture(int texUnitIndex, int texCoordSetMapLen,
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
     int tus; 	/* texture unit state index */
-    
-    if (texUnitIndex < 0) {
-	if(ctxProperties->arb_multitexture) {
 
-	    for (i = 0; i < numActiveTexUnit; i++) {
-		/*
-		 * NULL texUnitStateMap means 
-		 * one to one mapping from texture unit to
-		 * texture unit state.  It is NULL in build display list,
-		 * when the mapping is according to the texCoordSetMap
-		 */
-		if (texUnitStateMap != NULL) {
-		    tus = texUnitStateMap[i];   
-		} else {
-		    tus = i;
-		}
-		/*
-		 * it's possible that texture unit state index (tus)
-		 * is greater than the texCoordSetMapOffsetLen, in this
-		 * case, just disable TexCoordPointer.
-		 */
-		if ((tus < texCoordSetMapLen) &&
-			(texCoordSetMapOffset[tus] != -1)) {
-		    enableTexCoordPointer(ctxProperties, i,
-			texSize, GL_FLOAT, bstride,
-			&(verts[texCoordoff + texCoordSetMapOffset[tus]]));
-				
-		} else {
-		    disableTexCoordPointer(ctxProperties, i);
-		}
-	    }
-	}/* GL_ARB_multitexture */
-
-	else {
-
-#ifdef VERBOSE
-	    if (numActiveTexUnit > 1) {
-		fprintf(stderr, "No multi-texture support\n");
-	    }
-#endif /* VERBOSE */
-
-	    if (texUnitStateMap != NULL) {
-		tus = texUnitStateMap[0];   
-	    } else {
-		tus = 0;
-	    }
-            if (texCoordSetMapOffset[tus] != -1) {
-                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                glTexCoordPointer(texSize, GL_FLOAT, bstride,
-                    &(verts[texCoordoff + texCoordSetMapOffset[tus]]));
-		
-            } else {
-                glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-            }
-	}
-    } else {
-        if ((texUnitIndex < texCoordSetMapLen) &&
-		(texCoordSetMapOffset[texUnitIndex] != -1)) {
-	    enableTexCoordPointer(ctxProperties, 0,
-		texSize, GL_FLOAT, bstride,
-		&(verts[texCoordoff + texCoordSetMapOffset[texUnitIndex]]));
+    for (i = 0; i < numActiveTexUnit; i++) {
+        /*
+         * NULL texUnitStateMap means 
+         * one to one mapping from texture unit to
+         * texture unit state.  It is NULL in build display list,
+         * when the mapping is according to the texCoordSetMap
+         */
+        if (texUnitStateMap != NULL) {
+            tus = texUnitStateMap[i];   
         } else {
-	    disableTexCoordPointer(ctxProperties, 0);
+            tus = i;
+        }
+        /*
+         * it's possible that texture unit state index (tus)
+         * is greater than the texCoordSetMapOffsetLen, in this
+         * case, just disable TexCoordPointer.
+         */
+        if ((tus < texCoordSetMapLen) &&
+                (texCoordSetMapOffset[tus] != -1)) {
+            enableTexCoordPointer(ctxProperties, i,
+                texSize, GL_FLOAT, bstride,
+                &(verts[texCoordoff + texCoordSetMapOffset[tus]]));
+
+        } else {
+            disableTexCoordPointer(ctxProperties, i);
         }
     }
 }
@@ -146,16 +108,12 @@ resetTexture(jlong ctxInfo)
 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
-    if(ctxProperties->arb_multitexture) {
-	/* Disable texture coordinate arrays for all texture units */
-	for (i = 0; i < ctxProperties->maxTexCoordSets; i++) {
-	    disableTexCoordPointer(ctxProperties, i);
-	}
-	/* Reset client active texture unit to 0 */
-	clientActiveTextureUnit(ctxProperties, 0);
-    } else {
-	disableTexCoordPointer(ctxProperties, 0);
+    /* Disable texture coordinate arrays for all texture units */
+    for (i = 0; i < ctxProperties->maxTexCoordSets; i++) {
+        disableTexCoordPointer(ctxProperties, i);
     }
+    /* Reset client active texture unit to 0 */
+    clientActiveTextureUnit(ctxProperties, 0);
 }
 
 
@@ -211,7 +169,7 @@ executeGeometryArray(
     jintArray texUnitStateMapArray,
     jint vertexAttrCount, jintArray vertexAttrSizes,
     jfloatArray varray, jobject varrayBuffer, jfloatArray carray,
-    jint texUnitIndex, jint cDirty)
+    jint pass, jint cDirty)
 {
     jclass geo_class;
     JNIEnv table;
@@ -363,7 +321,7 @@ executeGeometryArray(
     }
 
     /* Enable normalize for non-uniform scale (which rescale can't handle) */
-    if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
+    if (isNonUniformScale) {
 	glEnable(GL_NORMALIZE);
     }
 
@@ -416,7 +374,7 @@ executeGeometryArray(
 
 	    if (vformat & GA_TEXTURE_COORDINATE) {
 
-                executeTexture(texUnitIndex, texCoordSetMapLen,
+                executeTexture(pass, texCoordSetMapLen,
                                 texSize, bstride, texCoordoff,
                                 texCoordSetMapOffset, 
 				numActiveTexUnit, texUnitStateMap, 
@@ -509,7 +467,7 @@ executeGeometryArray(
 
 	    if (vformat & GA_TEXTURE_COORDINATE) {
 
-                executeTexture(texUnitIndex, texCoordSetMapLen,
+                executeTexture(pass, texCoordSetMapLen,
                                 texSize, bstride, texCoordoff,
                                 texCoordSetMapOffset, 
 				numActiveTexUnit, texUnitStateMap, 
@@ -536,7 +494,7 @@ executeGeometryArray(
     }
     /* clean up if we turned on normalize */
 
-    if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
+    if (isNonUniformScale) {
 	glDisable(GL_NORMALIZE);
     }
 
@@ -587,7 +545,7 @@ Java_javax_media_j3d_NativePipeline_execute(JNIEnv *env,
     jintArray texUnitStateMapArray,
     jint vertexAttrCount, jintArray vertexAttrSizes,
     jfloatArray varray, jfloatArray carray,
-    jint texUnitIndex, jint cDirty)
+    jint pass, jint cDirty)
 {
 
 #ifdef VERBOSE
@@ -600,7 +558,7 @@ Java_javax_media_j3d_NativePipeline_execute(JNIEnv *env,
 			 texCoordSetCount, texCoordSetMap, texCoordSetMapLen,
 			 texUnitOffset, numActiveTexUnit, texUnitStateMapArray,
 			 vertexAttrCount, vertexAttrSizes,
-			 varray, NULL, carray, texUnitIndex, cDirty);
+			 varray, NULL, carray, pass, cDirty);
 
 }
 
@@ -620,7 +578,7 @@ Java_javax_media_j3d_NativePipeline_executeInterleavedBuffer(
     jint numActiveTexUnit,
     jintArray texUnitStateMapArray,
     jobject varray, jfloatArray carray,
-    jint texUnitIndex, jint cDirty)
+    jint pass, jint cDirty)
 {
 
 #ifdef VERBOSE
@@ -633,7 +591,7 @@ Java_javax_media_j3d_NativePipeline_executeInterleavedBuffer(
 			 texCoordSetCount, texCoordSetMap, texCoordSetMapLen,
 			 texUnitOffset, numActiveTexUnit, texUnitStateMapArray,
 			 0, NULL,
-			 NULL, varray, carray, texUnitIndex, cDirty);
+			 NULL, varray, carray, pass, cDirty);
 
 }
 
@@ -911,12 +869,12 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 
 		    if (texCoordSetMapLen > 0) {
 
-			if (ctxProperties->arb_multitexture) {
+			if (ctxProperties->gl13) {
 			    if (vformat & GA_TEXTURE_COORDINATE_2) {
 				for (k = 0; k < texCoordSetMapLen; k++) {
 				    if (texCoordSetMapOffset[k] != -1) {
-					ctxProperties->glMultiTexCoord2fvARB(
-						GL_TEXTURE0_ARB + k, 
+					ctxProperties->glMultiTexCoord2fv(
+						GL_TEXTURE0 + k, 
 						&verts[texCoordoff + 
 						texCoordSetMapOffset[k]]);
 				    } 
@@ -924,8 +882,8 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 			    } else if (vformat & GA_TEXTURE_COORDINATE_3) {
 				for (k = 0; k < texCoordSetMapLen; k++) {
 				    if (texCoordSetMapOffset[k] != -1) {
-					ctxProperties->glMultiTexCoord3fvARB(
-						GL_TEXTURE0_ARB + k, 
+					ctxProperties->glMultiTexCoord3fv(
+						GL_TEXTURE0 + k, 
 						&verts[texCoordoff + 
 						texCoordSetMapOffset[k]]);
 				    }
@@ -933,15 +891,15 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 			    } else {
 				for (k = 0; k < texCoordSetMapLen; k++) {
 				    if (texCoordSetMapOffset[k] != -1) {
-					ctxProperties->glMultiTexCoord4fvARB(
-						GL_TEXTURE0_ARB + k, 
+					ctxProperties->glMultiTexCoord4fv(
+						GL_TEXTURE0 + k, 
 						&verts[texCoordoff + 
 						texCoordSetMapOffset[k]]);
 				    }
 				}
 			    }
 			}
-			else { /* GL_ARB_multitexture */
+			else { /* no multitexture */
 
 			    if (texCoordSetMapOffset[0] != -1) {
 			        if (vformat & GA_TEXTURE_COORDINATE_2) {
@@ -955,7 +913,7 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 						texCoordSetMapOffset[0]]);
 				}
 			    }
-			} /* GL_ARB_multitexture */
+			} /* no multitexture */
 		    }
 		    /*
 		     * texCoordSetMapLen can't be 0 if texture coordinates
@@ -1121,12 +1079,12 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 
 		if (texCoordSetMapLen > 0) {
 
-		    if(ctxProperties->arb_multitexture) {
+		    if(ctxProperties->gl13) {
 			if (vformat & GA_TEXTURE_COORDINATE_2) {
 			    for (k = 0; k < texCoordSetMapLen; k++) {
 				if (texCoordSetMapOffset[k] != -1) {
-				    ctxProperties->glMultiTexCoord2fvARB(
-						GL_TEXTURE0_ARB + k, 
+				    ctxProperties->glMultiTexCoord2fv(
+						GL_TEXTURE0 + k, 
 						&verts[texCoordoff + 
 						texCoordSetMapOffset[k]]);
 				}
@@ -1134,8 +1092,8 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 			} else if (vformat & GA_TEXTURE_COORDINATE_3) {
 			    for (k = 0; k < texCoordSetMapLen; k++) {
 				if (texCoordSetMapOffset[k] != -1) {
-				    ctxProperties->glMultiTexCoord3fvARB(
-						GL_TEXTURE0_ARB + k, 
+				    ctxProperties->glMultiTexCoord3fv(
+						GL_TEXTURE0 + k, 
 						&verts[texCoordoff + 
 						texCoordSetMapOffset[k]]);
 				}
@@ -1143,15 +1101,15 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 			} else {
 			    for (k = 0; k < texCoordSetMapLen; k++) {
 				if (texCoordSetMapOffset[k] != -1) {
-				    ctxProperties->glMultiTexCoord4fvARB(
-						GL_TEXTURE0_ARB + k, 
+				    ctxProperties->glMultiTexCoord4fv(
+						GL_TEXTURE0 + k, 
 						&verts[texCoordoff + 
 						texCoordSetMapOffset[k]]);
 				}
 			    }
 			}
 		    }
-		    else {  /* GL_ARB_multitexture */
+		    else { /* no multitexture */
 
 			if (texCoordSetMapOffset[0] != -1) {
 			    if (vformat & GA_TEXTURE_COORDINATE_2) {
@@ -1165,7 +1123,7 @@ printf("orig: < %g %g %g >  transformed: < %g %g %g >\n",
 						texCoordSetMapOffset[0]]);
 			    }
 			}
-		    } /* GL_ARB_multitexture */
+		    } /* no multitexture */
 		}
 
 		/*
@@ -1265,8 +1223,8 @@ clientActiveTextureUnit(
     GraphicsContextPropertiesInfo *ctxProperties,
     int texUnit)
 {
-    if (ctxProperties->arb_multitexture) {
-        ctxProperties->glClientActiveTextureARB(texUnit + GL_TEXTURE0_ARB);
+    if (ctxProperties->gl13) {
+        ctxProperties->glClientActiveTexture(texUnit + GL_TEXTURE0);
     }
 }
 
@@ -1341,7 +1299,7 @@ executeGeometryArrayVA(
 #endif /* VERBOSE */
 
     /* Enable normalize for non-uniform scale (which rescale can't handle) */
-    if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
+    if (isNonUniformScale) {
 	glEnable(GL_NORMALIZE);
     }
 
@@ -1405,42 +1363,22 @@ executeGeometryArrayVA(
 	initialTexIndices = (jint *) (*(table->GetPrimitiveArrayCritical))(env,texindices, NULL);
 
 	texCoordSetMap = (jint *) (*(table->GetPrimitiveArrayCritical))(env,tcoordsetmap, NULL);
-	if (pass < 0) {
-	    for (i = 0; i < numActiveTexUnit; i++) {
-		tus = texUnitStateMap[i];
-		if ((tus < texCoordMapLength) && (
-			((texSet=texCoordSetMap[tus]) != -1))) {
-		
-		    ptexCoords = texCoordPointer[texSet];
+        for (i = 0; i < numActiveTexUnit; i++) {
+            tus = texUnitStateMap[i];
+            if ((tus < texCoordMapLength) && (
+                    ((texSet=texCoordSetMap[tus]) != -1))) {
 
-		    enableTexCoordPointer(ctxProperties, i, texStride,
-			GL_FLOAT, 0, 
-			&ptexCoords[texStride * initialTexIndices[texSet]]);
-			
-		} else {
-		    disableTexCoordPointer(ctxProperties, i);
-		}
-	    }
-	}
-	else {
-	    texUnitStateMap = NULL;
-	    texSet = texCoordSetMap[pass];
-	    if (texSet != -1) {
-		ptexCoords = texCoordPointer[texSet];
-		enableTexCoordPointer(ctxProperties, 0, texStride,
-			GL_FLOAT, 0, 
-			&ptexCoords[texStride * initialTexIndices[texSet]]);
+                ptexCoords = texCoordPointer[texSet];
 
-		/*
-		 * in a non-multitexturing case, only the first texture
-		 * unit is used, it will be the core library responsibility
-		 * to disable all texture units before enabling "the"
-		 * texture unit for multi-pass purpose
-		 */
-	    } else {
-		disableTexCoordPointer(ctxProperties, 0);
-	    }
-	}
+                enableTexCoordPointer(ctxProperties, i, texStride,
+                    GL_FLOAT, 0, 
+                    &ptexCoords[texStride * initialTexIndices[texSet]]);
+
+            } else {
+                disableTexCoordPointer(ctxProperties, i);
+            }
+        }
+
         /* Reset client active texture unit to 0 */
         clientActiveTextureUnit(ctxProperties, 0);
     }
@@ -1494,7 +1432,7 @@ executeGeometryArrayVA(
        }
    }
     /* clean up if we turned on normalize */
-    if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
+    if (isNonUniformScale) {
 	glDisable(GL_NORMALIZE);
     }
 
@@ -1631,9 +1569,8 @@ Java_javax_media_j3d_NativePipeline_executeVA(
 	    else
 		texCoordPointer[i] = NULL;	
 	}
-	if (pass < 0) {
-	    texUnitStateMap = (jint *) (*(table->GetPrimitiveArrayCritical))(env,tunitstatemap, NULL);	
-	}
+
+        texUnitStateMap = (jint *) (*(table->GetPrimitiveArrayCritical))(env,tunitstatemap, NULL);	
     }
     
     /* get coordinate array */
@@ -1872,9 +1809,8 @@ JNIEXPORT void JNICALL Java_javax_media_j3d_NativePipeline_executeVABuffer(
 	    else
 		texCoordPointer[i] = NULL;	
 	}
-	if (pass < 0) {
-	    texUnitStateMap = (jint *) (*(table->GetPrimitiveArrayCritical))(env,tunitstatemap, NULL);	
-	}	
+
+        texUnitStateMap = (jint *) (*(table->GetPrimitiveArrayCritical))(env,tunitstatemap, NULL);	
     }
 
 
@@ -2019,7 +1955,7 @@ executeIndexedGeometryArray(
     jint numActiveTexUnit,
     jintArray texUnitStateMapArray,
     jfloatArray varray, jobject varrayBuffer, jfloatArray carray,
-    jint texUnitIndex, jint cDirty,
+    jint pass, jint cDirty,
     jintArray indexCoord)
 {
     jclass geo_class;
@@ -2169,7 +2105,7 @@ executeIndexedGeometryArray(
     }
 
     /* Enable normalize for non-uniform scale (which rescale can't handle) */
-    if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
+    if (isNonUniformScale) {
 	glEnable(GL_NORMALIZE);
     }
     
@@ -2219,7 +2155,7 @@ executeIndexedGeometryArray(
 	    if (vformat & GA_TEXTURE_COORDINATE) {
 
 		/* XXXX: texCoordoff == 0 ???*/
-                executeTexture(texUnitIndex, texCoordSetMapLen,
+                executeTexture(pass, texCoordSetMapLen,
                                 texSize, bstride, texCoordoff,
                                 texCoordSetMapOffset, 
 				numActiveTexUnit, texUnitStateMap, 
@@ -2322,7 +2258,7 @@ executeIndexedGeometryArray(
 	    if (vformat & GA_TEXTURE_COORDINATE) {
 
 		/* XXXX: texCoordoff == 0 ???*/
-                executeTexture(texUnitIndex, texCoordSetMapLen,
+                executeTexture(pass, texCoordSetMapLen,
 			       texSize, bstride, texCoordoff,
 			       texCoordSetMapOffset,
 			       numActiveTexUnit, texUnitStateMap,
@@ -2363,7 +2299,7 @@ executeIndexedGeometryArray(
 
     /* clean up if we turned on normalize */
 
-    if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
+    if (isNonUniformScale) {
 	glDisable(GL_NORMALIZE);
     }
     if(varray != NULL)
@@ -2404,7 +2340,7 @@ Java_javax_media_j3d_NativePipeline_executeIndexedGeometry(
     jint numActiveTexUnit,
     jintArray texUnitStateMapArray,
     jfloatArray varray, jfloatArray carray,
-    jint texUnitIndex, jint cDirty,
+    jint pass, jint cDirty,
     jintArray indexCoord)
 {
 
@@ -2426,7 +2362,7 @@ Java_javax_media_j3d_NativePipeline_executeIndexedGeometry(
 				numActiveTexUnit,
 				texUnitStateMapArray,
 				varray, NULL, carray,
-				texUnitIndex, cDirty,
+				pass, cDirty,
 				indexCoord);
 }
 
@@ -2447,7 +2383,7 @@ Java_javax_media_j3d_NativePipeline_executeIndexedGeometryBuffer(
     jint numActiveTexUnit,
     jintArray texUnitStateMapArray,
     jobject varray, jfloatArray carray,
-    jint texUnitIndex, jint cDirty,
+    jint pass, jint cDirty,
     jintArray indexCoord)
 {
 
@@ -2469,7 +2405,7 @@ Java_javax_media_j3d_NativePipeline_executeIndexedGeometryBuffer(
 			   numActiveTexUnit,
 			   texUnitStateMapArray,
 			   NULL, varray, carray,
-			   texUnitIndex, cDirty,
+			   pass, cDirty,
 			   indexCoord);	   
 }
 
@@ -2543,7 +2479,7 @@ executeIndexedGeometryArrayVA(
 #endif /* VERBOSE */
 
     /* Enable normalize for non-uniform scale (which rescale can't handle) */
-    if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
+    if (isNonUniformScale) {
 	glEnable(GL_NORMALIZE);
     }
 
@@ -2594,43 +2530,25 @@ executeIndexedGeometryArrayVA(
 	int tus = 0;
 	float *ptexCoords;
 	
-	texCoordSetMap = (jint *) (*(table->GetPrimitiveArrayCritical))(env,tcoordsetmap, NULL);
-	if (pass < 0) {
-	    texUnitStateMap = (jint *) (*(table->GetPrimitiveArrayCritical))(env,tunitstatemap, NULL);
-	    for (i = 0; i < numActiveTexUnit; i++) {
-		tus = texUnitStateMap[i];
-		if ((tus < texCoordMapLength) && (
-			((texSet=texCoordSetMap[tus]) != -1))) {
-		
-		    ptexCoords = texCoordPointer[texSet];
+        texCoordSetMap = (jint *) (*(table->GetPrimitiveArrayCritical))(env,tcoordsetmap, NULL);
+        texUnitStateMap = (jint *) (*(table->GetPrimitiveArrayCritical))(env,tunitstatemap, NULL);
+        for (i = 0; i < numActiveTexUnit; i++) {
+            tus = texUnitStateMap[i];
+            if ((tus < texCoordMapLength) && (
+                    ((texSet=texCoordSetMap[tus]) != -1))) {
 
-		    enableTexCoordPointer(ctxProperties, i, texStride,
-			GL_FLOAT, 0, 
-			ptexCoords);
-			
-		} else {
+                ptexCoords = texCoordPointer[texSet];
 
-		    disableTexCoordPointer(ctxProperties, i);
-		}
-	    }
-	}
-	else {
-	    texUnitStateMap = NULL;
-	    texSet = texCoordSetMap[pass];
-	    if (texSet != -1) {
-		ptexCoords = texCoordPointer[texSet];
-		enableTexCoordPointer(ctxProperties, 0, texStride,
-			GL_FLOAT, 0, 
-			ptexCoords);
+                enableTexCoordPointer(ctxProperties, i, texStride,
+                    GL_FLOAT, 0, 
+                    ptexCoords);
 
-		/*
-		 * in a non-multitexturing case, only the first texture
-		 * unit is used, it will be the core library responsibility
-		 * to disable all texture units before enabling "the"
-		 * texture unit for multi-pass purpose
-		 */
-	    }
-	}
+            } else {
+
+                disableTexCoordPointer(ctxProperties, i);
+            }
+        }
+
         /* Reset client active texture unit to 0 */
         clientActiveTextureUnit(ctxProperties, 0);
     }
@@ -2700,7 +2618,7 @@ executeIndexedGeometryArrayVA(
     unlockArray(ctxProperties);    
 
     /* clean up if we turned on normalize */
-    if (ctxProperties->rescale_normal_ext && isNonUniformScale) {
+    if (isNonUniformScale) {
 	glDisable(GL_NORMALIZE);
     }
 

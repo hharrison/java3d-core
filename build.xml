@@ -14,7 +14,7 @@
  */
  -->
 
-<project name="java3d-1.5.0" default="jar-opt" basedir=".">
+<project name="java3d-1.5.0" default="jar-debug" basedir=".">
 
   <!--
   *********************************************************************

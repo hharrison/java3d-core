@@ -94,7 +94,7 @@ class JoglPipeline extends Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             int vertexAttrCount, int[] vertexAttrSizes,
-            float[] varray, float[] cdata, int texUnitIndex, int cdirty) {
+            float[] varray, float[] cdata, int pass, int cdirty) {
         // TODO: implement this
     }
 
@@ -158,7 +158,7 @@ class JoglPipeline extends Pipeline {
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
             int[] texUnitStateMap,
-            Object varray, float[] cdata, int texUnitIndex, int cdirty) {
+            Object varray, float[] cdata, int pass, int cdirty) {
         // TODO: implement this
     }
 
@@ -233,7 +233,7 @@ class JoglPipeline extends Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             float[] varray, float[] cdata,
-            int texUnitIndex, int cdirty,
+            int pass, int cdirty,
             int[] indexCoord) {
         // TODO: implement this
     }
@@ -254,7 +254,7 @@ class JoglPipeline extends Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             Object varray, float[] cdata,
-            int texUnitIndex, int cdirty,
+            int pass, int cdirty,
             int[] indexCoord) {
         // TODO: implement this
     }
