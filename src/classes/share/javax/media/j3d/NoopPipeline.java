@@ -71,7 +71,6 @@ class NoopPipeline extends Pipeline {
 
     // Used by D3D to free vertex buffer
     void freeD3DArray(GeometryArrayRetained geo, boolean deleteVB) {
-        // TODO: implement this
     }
 
     // used for GeometryArrays by Copy or interleaved
@@ -89,7 +88,6 @@ class NoopPipeline extends Pipeline {
             int[] texUnitStateMap,
             int vertexAttrCount, int[] vertexAttrSizes,
             float[] varray, float[] cdata, int pass, int cdirty) {
-        // TODO: implement this
     }
 
     // used by GeometryArray by Reference with java arrays
@@ -111,7 +109,6 @@ class NoopPipeline extends Pipeline {
             int numActiveTexUnitState, int[] texunitstatemap,
             int[] texIndex, int texstride, Object[] texCoords,
             int cdirty) {
-        // TODO: implement this
     }
 
     // used by GeometryArray by Reference with NIO buffer
@@ -136,7 +133,6 @@ class NoopPipeline extends Pipeline {
             int numActiveTexUnitState, int[] texunitstatemap,
             int[] texIndex, int texstride, Object[] texCoords,
             int cdirty) {
-        // TODO: implement this
     }
 
     // used by GeometryArray by Reference in interleaved format with NIO buffer
@@ -153,17 +149,14 @@ class NoopPipeline extends Pipeline {
             int numActiveTexUnitState,
             int[] texUnitStateMap,
             Object varray, float[] cdata, int pass, int cdirty) {
-        // TODO: implement this
     }
 
     void setVertexFormat(Context ctx, GeometryArrayRetained geo,
             int vformat, boolean useAlpha, boolean ignoreVertexColors) {
-        // TODO: implement this
     }
 
     void disableGlobalAlpha(Context ctx, GeometryArrayRetained geo, int vformat,
             boolean useAlpha, boolean ignoreVertexColors) {
-        // TODO: implement this
     }
 
     // used for GeometryArrays
@@ -179,7 +172,6 @@ class NoopPipeline extends Pipeline {
             int vertexAttrCount, int[] vertexAttrSizes,
             double[] xform, double[] nxform,
             float[] varray) {
-        // TODO: implement this
     }
 
     // used to Build Dlist GeometryArray by Reference with java arrays
@@ -200,7 +192,6 @@ class NoopPipeline extends Pipeline {
             int[] texcoordoffset,
             int[] texIndex, int texstride, Object[] texCoords,
             double[] xform, double[] nxform) {
-        // TODO: implement this
     }
 
 
@@ -229,7 +220,6 @@ class NoopPipeline extends Pipeline {
             float[] varray, float[] cdata,
             int pass, int cdirty,
             int[] indexCoord) {
-        // TODO: implement this
     }
 
     // interleaved, by reference, nio buffer
@@ -250,7 +240,6 @@ class NoopPipeline extends Pipeline {
             Object varray, float[] cdata,
             int pass, int cdirty,
             int[] indexCoord) {
-        // TODO: implement this
     }
 
     // non interleaved, by reference, Java arrays
@@ -275,7 +264,6 @@ class NoopPipeline extends Pipeline {
             int texstride, Object[] texCoords,
             int cdirty,
             int[] indexCoord) {
-        // TODO: implement this
     }
 
     // non interleaved, by reference, nio buffer
@@ -301,7 +289,6 @@ class NoopPipeline extends Pipeline {
             int texstride, Object[] texCoords,
             int cdirty,
             int[] indexCoord) {
-        // TODO: implement this
     }
 
     // by-copy geometry
@@ -320,7 +307,6 @@ class NoopPipeline extends Pipeline {
             int[] texCoordSetMapOffset,
             double[] xform, double[] nxform,
             float[] varray, int[] indexCoord) {
-        // TODO: implement this
     }
 
 
@@ -337,7 +323,6 @@ class NoopPipeline extends Pipeline {
             ImageComponentRetained image,
             DepthComponentRetained depth,
             GraphicsContext3D gc) {
-        // TODO: implement this
     }
 
 
@@ -353,7 +338,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             int value) {
-        // TODO: implement this
         return null;
     }
 
@@ -361,7 +345,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float value) {
-        // TODO: implement this
         return null;
     }
 
@@ -369,7 +352,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -377,7 +359,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -385,7 +366,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -393,7 +373,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -401,7 +380,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -409,7 +387,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -417,7 +394,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -425,7 +401,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -436,7 +411,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -445,7 +419,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -454,7 +427,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -463,7 +435,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -472,7 +443,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -481,7 +451,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -490,7 +459,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -499,7 +467,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -508,7 +475,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -517,49 +483,39 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
     // interfaces for shader compilation, etc.
     ShaderError createCgShader(Context ctx, int shaderType, long[] shaderId) {
-        // TODO: implement this
         return null;
     }
     ShaderError destroyCgShader(Context ctx, long shaderId) {
-        // TODO: implement this
         return null;
     }
     ShaderError compileCgShader(Context ctx, long shaderId, String program) {
-        // TODO: implement this
         return null;
     }
 
     ShaderError createCgShaderProgram(Context ctx, long[] shaderProgramId) {
-        // TODO: implement this
         return null;
     }
     ShaderError destroyCgShaderProgram(Context ctx, long shaderProgramId) {
-        // TODO: implement this
         return null;
     }
     ShaderError linkCgShaderProgram(Context ctx, long shaderProgramId,
             long[] shaderId) {
-        // TODO: implement this
         return null;
     }
     void lookupCgVertexAttrNames(Context ctx, long shaderProgramId,
             int numAttrNames, String[] attrNames, boolean[] errArr) {
-        // TODO: implement this
     }
     void lookupCgShaderAttrNames(Context ctx, long shaderProgramId,
             int numAttrNames, String[] attrNames, long[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
-        // TODO: implement this
     }
 
     ShaderError useCgShaderProgram(Context ctx, long shaderProgramId) {
-        // TODO: implement this
         return null;
     }
 
@@ -576,7 +532,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             int value) {
-        // TODO: implement this
         return null;
     }
 
@@ -584,7 +539,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float value) {
-        // TODO: implement this
         return null;
     }
 
@@ -592,7 +546,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -600,7 +553,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -608,7 +560,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -616,7 +567,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -624,7 +574,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -632,7 +581,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -640,7 +588,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -648,7 +595,6 @@ class NoopPipeline extends Pipeline {
             long shaderProgramId,
             long uniformLocation,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -659,7 +605,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -668,7 +613,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -677,7 +621,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -686,7 +629,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -695,7 +637,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -704,7 +645,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -713,7 +653,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             int[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -722,7 +661,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -731,7 +669,6 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
@@ -740,50 +677,40 @@ class NoopPipeline extends Pipeline {
             long uniformLocation,
             int numElements,
             float[] value) {
-        // TODO: implement this
         return null;
     }
 
     // interfaces for shader compilation, etc.
     ShaderError createGLSLShader(Context ctx, int shaderType, long[] shaderId) {
-        // TODO: implement this
         return null;
     }
     ShaderError destroyGLSLShader(Context ctx, long shaderId) {
-        // TODO: implement this
         return null;
     }
     ShaderError compileGLSLShader(Context ctx, long shaderId, String program) {
-        // TODO: implement this
         return null;
     }
 
     ShaderError createGLSLShaderProgram(Context ctx, long[] shaderProgramId) {
-        // TODO: implement this
         return null;
     }
     ShaderError destroyGLSLShaderProgram(Context ctx, long shaderProgramId) {
-        // TODO: implement this
         return null;
     }
     ShaderError linkGLSLShaderProgram(Context ctx, long shaderProgramId,
             long[] shaderId) {
-        // TODO: implement this
         return null;
     }
     ShaderError bindGLSLVertexAttrName(Context ctx, long shaderProgramId,
             String attrName, int attrIndex) {
-        // TODO: implement this
         return null;
     }
     void lookupGLSLShaderAttrNames(Context ctx, long shaderProgramId,
             int numAttrNames, String[] attrNames, long[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
-        // TODO: implement this
     }
 
     ShaderError useGLSLShaderProgram(Context ctx, long shaderProgramId) {
-        // TODO: implement this
         return null;
     }
 
@@ -796,7 +723,6 @@ class NoopPipeline extends Pipeline {
 
     // free d3d surface referred to by id
     void freeD3DSurface(ImageComponent2DRetained image, int hashId) {
-        // TODO: implement this
     }
 
 
@@ -812,7 +738,6 @@ class NoopPipeline extends Pipeline {
             int type, int width, int height,
             int xSrcOffset, int ySrcOffset,
             float x, float y, float z, byte[] image) {
-        // TODO: implement this
     }
 
 
@@ -823,7 +748,6 @@ class NoopPipeline extends Pipeline {
     //
 
     void cleanupRenderer() {
-        // TODO: implement this
     }
 
 
@@ -839,7 +763,6 @@ class NoopPipeline extends Pipeline {
             float alpha,
             boolean lEnable,
             int shadeModel) {
-        // TODO: implement this
     }
 
 
@@ -852,7 +775,6 @@ class NoopPipeline extends Pipeline {
     void updateDirectionalLight(Context ctx,
             int lightSlot, float red, float green,
             float blue, float x, float y, float z) {
-        // TODO: implement this
     }
 
 
@@ -866,7 +788,6 @@ class NoopPipeline extends Pipeline {
             int lightSlot, float red, float green,
             float blue, float ax, float ay, float az,
             float px, float py, float pz) {
-        // TODO: implement this
     }
 
 
@@ -882,7 +803,6 @@ class NoopPipeline extends Pipeline {
             float px, float py, float pz, float spreadAngle,
             float concentration, float dx, float dy,
             float dz) {
-        // TODO: implement this
     }
 
 
@@ -895,7 +815,6 @@ class NoopPipeline extends Pipeline {
     void updateExponentialFog(Context ctx,
             float red, float green, float blue,
             float density) {
-        // TODO: implement this
     }
 
 
@@ -908,7 +827,6 @@ class NoopPipeline extends Pipeline {
     void updateLinearFog(Context ctx,
             float red, float green, float blue,
             double fdist, double bdist) {
-        // TODO: implement this
     }
 
 
@@ -923,7 +841,6 @@ class NoopPipeline extends Pipeline {
             int linePatternMask,
             int linePatternScaleFactor,
             boolean lineAntialiasing) {
-        // TODO: implement this
     }
 
 
@@ -940,7 +857,6 @@ class NoopPipeline extends Pipeline {
             float dred, float dgreen, float dblue,
             float sred, float sgreen, float sblue,
             float shininess, int colorTarget, boolean enable) {
-        // TODO: implement this
     }
 
 
@@ -952,7 +868,6 @@ class NoopPipeline extends Pipeline {
 
     void updateModelClip(Context ctx, int planeNum, boolean enableFlag,
             double A, double B, double C, double D) {
-        // TODO: implement this
     }
 
 
@@ -963,7 +878,6 @@ class NoopPipeline extends Pipeline {
     //
 
     void updatePointAttributes(Context ctx, float pointSize, boolean pointAntialiasing) {
-        // TODO: implement this
     }
 
 
@@ -978,7 +892,6 @@ class NoopPipeline extends Pipeline {
             boolean backFaceNormalFlip,
             float polygonOffset,
             float polygonOffsetFactor) {
-        // TODO: implement this
     }
 
 
@@ -1001,7 +914,6 @@ class NoopPipeline extends Pipeline {
             int stencilFailOp, int stencilZFailOp, int stencilZPassOp,
             int stencilFunction, int stencilReferenceValue,
             int stencilCompareMask, int stencilWriteMask ) {
-        // TODO: implement this
     }
 
 
@@ -1023,7 +935,6 @@ class NoopPipeline extends Pipeline {
             float planeRx, float planeRy, float planeRz, float planeRw,
             float planeQx, float planeQy, float planeQz, float planeQw,
             double[] trans) {
-        // TODO: implement this
     }
 
 
@@ -1040,7 +951,6 @@ class NoopPipeline extends Pipeline {
             int transparencyMode,
             int srcBlendFunction,
             int dstBlendFunction) {
-        // TODO: implement this
     }
 
 
@@ -1055,7 +965,6 @@ class NoopPipeline extends Pipeline {
             int perspCorrectionMode, float red,
             float green, float blue, float alpha,
             int textureFormat) {
-        // TODO: implement this
     }
 
     void updateRegisterCombiners(Context ctx,
@@ -1067,13 +976,11 @@ class NoopPipeline extends Pipeline {
             int[] combineRgbSrc, int[] combineAlphaSrc,
             int[] combineRgbFcn, int[] combineAlphaFcn,
             int combineRgbScale, int combineAlphaScale) {
-        // TODO: implement this
     }
 
     void updateTextureColorTable(Context ctx, int numComponents,
             int colorTableSize,
             int[] colorTable) {
-        // TODO: implement this
     }
 
     void updateCombiner(Context ctx,
@@ -1081,7 +988,6 @@ class NoopPipeline extends Pipeline {
             int[] combineRgbSrc, int[] combineAlphaSrc,
             int[] combineRgbFcn, int[] combineAlphaFcn,
             int combineRgbScale, int combineAlphaScale) {
-        // TODO: implement this
     }
 
 
@@ -1092,7 +998,6 @@ class NoopPipeline extends Pipeline {
     //
 
     void updateTextureUnitState(Context ctx, int unitIndex, boolean enableFlag) {
-        // TODO: implement this
     }
 
 
@@ -1104,7 +1009,6 @@ class NoopPipeline extends Pipeline {
     //
 
     void bindTexture2D(Context ctx, int objectId, boolean enable) {
-        // TODO: implement this
     }
 
     void updateTexture2DImage(Context ctx,
@@ -1113,7 +1017,6 @@ class NoopPipeline extends Pipeline {
             int width, int height,
             int boundaryWidth,
             byte[] imageData) {
-        // TODO: implement this
     }
 
     void updateTexture2DSubImage(Context ctx,
@@ -1122,54 +1025,45 @@ class NoopPipeline extends Pipeline {
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
             byte[] imageData) {
-        // TODO: implement this
     }
 
     void updateTexture2DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod) {
-        // TODO: implement this
     }
 
     void updateTexture2DLodOffset(Context ctx,
             float lodOffsetX, float lodOffsetY,
             float lodOffsetZ) {
-        // TODO: implement this
     }
 
     void updateTexture2DBoundary(Context ctx,
             int boundaryModeS, int boundaryModeT,
             float boundaryRed, float boundaryGreen,
             float boundaryBlue, float boundaryAlpha) {
-        // TODO: implement this
     }
 
     void updateDetailTextureParameters(Context ctx,
             int detailTextureMode,
             int detailTextureLevel,
             int nPts, float[] pts) {
-        // TODO: implement this
     }
 
     void updateTexture2DFilterModes(Context ctx,
             int minFilter, int magFilter) {
-        // TODO: implement this
     }
 
     void updateTexture2DSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts) {
-        // TODO: implement this
     }
 
     void updateTexture2DFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts) {
-        // TODO: implement this
     }
 
     void updateTexture2DAnisotropicFilter(Context ctx, float degree) {
-        // TODO: implement this
     }
 
 
@@ -1180,7 +1074,6 @@ class NoopPipeline extends Pipeline {
     //
 
     void bindTexture3D(Context ctx, int objectId, boolean enable) {
-        // TODO: implement this
     }
 
     void updateTexture3DImage(Context ctx,
@@ -1189,7 +1082,6 @@ class NoopPipeline extends Pipeline {
             int width, int height, int depth,
             int boundaryWidth,
             byte[] imageData) {
-        // TODO: implement this
     }
 
     void updateTexture3DSubImage(Context ctx,
@@ -1200,19 +1092,16 @@ class NoopPipeline extends Pipeline {
             int tilew, int tileh,
             int width, int height, int depth,
             byte[] imageData) {
-        // TODO: implement this
     }
 
     void updateTexture3DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod) {
-        // TODO: implement this
     }
 
     void updateTexture3DLodOffset(Context ctx,
             float lodOffsetX, float lodOffsetY,
             float lodOffsetZ) {
-        // TODO: implement this
     }
 
     void updateTexture3DBoundary(Context ctx,
@@ -1220,28 +1109,23 @@ class NoopPipeline extends Pipeline {
             int boundaryModeR, float boundaryRed,
             float boundaryGreen, float boundaryBlue,
             float boundaryAlpha) {
-        // TODO: implement this
     }
 
     void updateTexture3DFilterModes(Context ctx,
             int minFilter, int magFilter) {
-        // TODO: implement this
     }
 
     void updateTexture3DSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts) {
-        // TODO: implement this
     }
 
     void updateTexture3DFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts) {
-        // TODO: implement this
     }
 
     void updateTexture3DAnisotropicFilter(Context ctx, float degree) {
-        // TODO: implement this
     }
 
 
@@ -1252,7 +1136,6 @@ class NoopPipeline extends Pipeline {
     //
 
     void bindTextureCubeMap(Context ctx, int objectId, boolean enable) {
-        // TODO: implement this
     }
 
     void updateTextureCubeMapImage(Context ctx,
@@ -1261,7 +1144,6 @@ class NoopPipeline extends Pipeline {
             int width, int height,
             int boundaryWidth,
             byte[] imageData) {
-        // TODO: implement this
     }
 
     void updateTextureCubeMapSubImage(Context ctx,
@@ -1270,47 +1152,39 @@ class NoopPipeline extends Pipeline {
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
             byte[] imageData) {
-        // TODO: implement this
     }
 
     void updateTextureCubeMapLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod) {
-        // TODO: implement this
     }
 
     void updateTextureCubeMapLodOffset(Context ctx,
             float lodOffsetX, float lodOffsetY,
             float lodOffsetZ) {
-        // TODO: implement this
     }
 
     void updateTextureCubeMapBoundary(Context ctx,
             int boundaryModeS, int boundaryModeT,
             float boundaryRed, float boundaryGreen,
             float boundaryBlue, float boundaryAlpha) {
-        // TODO: implement this
     }
 
     void updateTextureCubeMapFilterModes(Context ctx,
             int minFilter, int magFilter) {
-        // TODO: implement this
     }
 
     void updateTextureCubeMapSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts) {
-        // TODO: implement this
     }
 
     void updateTextureCubeMapFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts) {
-        // TODO: implement this
     }
 
     void updateTextureCubeMapAnisotropicFilter(Context ctx, float degree) {
-        // TODO: implement this
     }
 
 
@@ -1321,7 +1195,6 @@ class NoopPipeline extends Pipeline {
     //
 
     void bindDetailTexture(Context ctx, int objectId) {
-        // TODO: implement this
     }
 
     void updateDetailTextureImage(Context ctx,
@@ -1329,7 +1202,6 @@ class NoopPipeline extends Pipeline {
             int format, int storedFormat,
             int width, int height,
             int boundaryWidth, byte[] data) {
-        // TODO: implement this
     }
 
 
@@ -1341,19 +1213,16 @@ class NoopPipeline extends Pipeline {
 
     // Method to return the AWT object
     long getAWT() {
-        // TODO: implement this
         return 0L;
     }
 
     // Method to initialize the native J3D library
     boolean initializeJ3D(boolean disableXinerama) {
-        // TODO: implement this
         return true;
     }
 
     // Maximum lights supported by the native API
     int getMaximumLights() {
-        // TODO: implement this
         return 8;
     }
 
@@ -1365,105 +1234,87 @@ class NoopPipeline extends Pipeline {
     //
 
     // This is the native method for creating the underlying graphics context.
-    Context createNewContext(Canvas3D cv, long display, long window,
+    Context createNewContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
             boolean offScreen,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable) {
-        // TODO: implement this
         return new NoopContext();
     }
 
-    void createQueryContext(Canvas3D cv, long display, long window,
+    void createQueryContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, boolean offScreen, int width, int height,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable) {
-        // TODO: implement this
     }
 
     // This is the native for creating offscreen buffer
-    int createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height) {
-        // TODO: implement this
-        return 0;
+    Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height) {
+        return null;
     }
 
-    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, long window) {
-        // TODO: implement this
+    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, Drawable drawable) {
     }
 
     // This is the native for reading the image from the offscreen buffer
     void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int width, int height) {
-        // TODO: implement this
     }
 
     // The native method for swapBuffers
-    int swapBuffers(Canvas3D cv, Context ctx, long dpy, long window) {
-        // TODO: implement this
+    int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable) {
         return 0;
     }
 
     // notify D3D that Canvas is resize
     int resizeD3DCanvas(Canvas3D cv, Context ctx) {
-        // TODO: implement this
         return 0;
     }
 
     // notify D3D to toggle between FullScreen and window mode
     int toggleFullScreenMode(Canvas3D cv, Context ctx) {
-        // TODO: implement this
         return 0;
     }
 
     // native method for setting Material when no material is present
     void updateMaterialColor(Context ctx, float r, float g, float b, float a) {
-        // TODO: implement this
     }
 
-    void destroyContext(long display, long window, Context ctx) {
-        // TODO: implement this
+    void destroyContext(long display, Drawable drawable, Context ctx) {
     }
 
     // This is the native method for doing accumulation.
     void accum(Context ctx, float value) {
-        // TODO: implement this
     }
 
     // This is the native method for doing accumulation return.
     void accumReturn(Context ctx) {
-        // TODO: implement this
     }
 
     // This is the native method for clearing the accumulation buffer.
     void clearAccum(Context ctx) {
-        // TODO: implement this
     }
 
     // This is the native method for getting the number of lights the underlying
     // native library can support.
     int getNumCtxLights(Context ctx) {
-        // TODO: implement this
         return 0;
     }
 
     // Native method for decal 1st child setup
     boolean decal1stChildSetup(Context ctx) {
-        // TODO: implement this
         return false;
     }
 
     // Native method for decal nth child setup
     void decalNthChildSetup(Context ctx) {
-        // TODO: implement this
     }
 
     // Native method for decal reset
     void decalReset(Context ctx, boolean depthBufferEnable) {
-        // TODO: implement this
     }
 
     // Native method for decal reset
     void ctxUpdateEyeLightingEnable(Context ctx, boolean localEyeLightingEnable) {
-        // TODO: implement this
     }
 
     // The following three methods are used in multi-pass case
@@ -1471,115 +1322,93 @@ class NoopPipeline extends Pipeline {
     // native method for setting blend color
     void setBlendColor(Context ctx, float red, float green,
             float blue, float alpha) {
-        // TODO: implement this
     }
 
     // native method for setting blend func
     void setBlendFunc(Context ctx, int src, int dst) {
-        // TODO: implement this
     }
 
     // native method for setting fog enable flag
     void setFogEnableFlag(Context ctx, boolean enableFlag) {
-        // TODO: implement this
     }
 
     // Setup the full scene antialising in D3D and ogl when GL_ARB_multisamle supported
     void setFullSceneAntialiasing(Context ctx, boolean enable) {
-        // TODO: implement this
     }
 
     void setGlobalAlpha(Context ctx, float alpha) {
-        // TODO: implement this
     }
 
     // Native method to update separate specular color control
     void updateSeparateSpecularColorEnable(Context ctx, boolean control) {
-        // TODO: implement this
     }
 
     // Initialization for D3D when scene begin
     void beginScene(Context ctx) {
-        // TODO: implement this
     }
     void endScene(Context ctx) {
-        // TODO: implement this
     }
 
     // True under Solaris,
     // False under windows when display mode <= 8 bit
     boolean validGraphicsMode() {
-        // TODO: implement this
         return true;
     }
 
     // native method for setting light enables
     void setLightEnables(Context ctx, long enableMask, int maxLights) {
-        // TODO: implement this
     }
 
     // native method for setting scene ambient
     void setSceneAmbient(Context ctx, float red, float green, float blue) {
-        // TODO: implement this
     }
 
     // native method for disabling fog
     void disableFog(Context ctx) {
-        // TODO: implement this
     }
 
     // native method for disabling modelClip
     void disableModelClip(Context ctx) {
-        // TODO: implement this
     }
 
     // native method for setting default RenderingAttributes
     void resetRenderingAttributes(Context ctx,
             boolean depthBufferWriteEnableOverride,
             boolean depthBufferEnableOverride) {
-        // TODO: implement this
     }
 
     // native method for setting default texture
     void resetTextureNative(Context ctx, int texUnitIndex) {
-        // TODO: implement this
     }
 
     // native method for activating a particular texture unit
     void activeTextureUnit(Context ctx, int texUnitIndex) {
-        // TODO: implement this
     }
 
     // native method for setting default TexCoordGeneration
     void resetTexCoordGeneration(Context ctx) {
-        // TODO: implement this
     }
 
     // native method for setting default TextureAttributes
     void resetTextureAttributes(Context ctx) {
-        // TODO: implement this
     }
 
     // native method for setting default PolygonAttributes
     void resetPolygonAttributes(Context ctx) {
-        // TODO: implement this
     }
 
     // native method for setting default LineAttributes
     void resetLineAttributes(Context ctx) {
-        // TODO: implement this
     }
 
     // native method for setting default PointAttributes
     void resetPointAttributes(Context ctx) {
-        // TODO: implement this
     }
 
     // native method for setting default TransparencyAttributes
     void resetTransparency(Context ctx, int geometryType,
             int polygonMode, boolean lineAA,
             boolean pointAA) {
-        // TODO: implement this
     }
 
     // native method for setting default ColoringAttributes
@@ -1587,13 +1416,11 @@ class NoopPipeline extends Pipeline {
             float r, float g,
             float b, float a,
             boolean enableLight) {
-        // TODO: implement this
     }
 
     // native method for updating the texture unit state map
     void updateTexUnitStateMap(Context ctx, int numActiveTexUnit,
             int[] texUnitStateMap) {
-        // TODO: implement this
     }
 
     /**
@@ -1601,18 +1428,15 @@ class NoopPipeline extends Pipeline {
      *  gets done now.
      */
     void syncRender(Context ctx, boolean wait) {
-        // TODO: implement this
     }
 
     // The native method that sets this ctx to be the current one
-    boolean useCtx(Context ctx, long display, long window) {
-        // TODO: implement this
+    boolean useCtx(Context ctx, long display, Drawable drawable) {
         return true;
     }
 
     void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,
             ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown) {
-        // TODO: implement this
     }
     void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
@@ -1620,48 +1444,38 @@ class NoopPipeline extends Pipeline {
             int objectId, int scalemode,
             ImageComponent2DRetained image,
             boolean update) {
-        // TODO: implement this
     }
 
 
     // The native method for setting the ModelView matrix.
     void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {
-        // TODO: implement this
     }
 
     // The native method for setting the Projection matrix.
     void setProjectionMatrix(Context ctx, double[] projMatrix) {
-        // TODO: implement this
     }
 
     // The native method for setting the Viewport.
     void setViewport(Context ctx, int x, int y, int width, int height) {
-        // TODO: implement this
     }
 
     // used for display Lists
     void newDisplayList(Context ctx, int displayListId) {
-        // TODO: implement this
     }
     void endDisplayList(Context ctx) {
-        // TODO: implement this
     }
     void callDisplayList(Context ctx, int id, boolean isNonUniformScale) {
-        // TODO: implement this
     }
 
     void freeDisplayList(Context ctx, int id) {
-        // TODO: implement this
     }
     void freeTexture(Context ctx, int id) {
-        // TODO: implement this
     }
 
     void composite(Context ctx, int px, int py,
             int xmin, int ymin, int xmax, int ymax,
             int rasWidth,  byte[] image,
             int winWidth, int winHeight) {
-        // TODO: implement this
     }
 
     void texturemapping(Context ctx,
@@ -1672,12 +1486,10 @@ class NoopPipeline extends Pipeline {
             int format, int objectId,
             byte[] image,
             int winWidth, int winHeight) {
-        // TODO: implement this
     }
 
     boolean initTexturemapping(Context ctx, int texWidth,
             int texHeight, int objectId) {
-        // TODO: implement this
         return true;
     }
 
@@ -1688,12 +1500,10 @@ class NoopPipeline extends Pipeline {
     // FIELD_RIGHT.  The boolean isTRUE for double buffered mode, FALSE
     // foe single buffering.
     void setRenderMode(Context ctx, int mode, boolean doubleBuffer) {
-        // TODO: implement this
     }
 
     // Set glDepthMask.
     void setDepthBufferWriteEnable(Context ctx, boolean mode) {
-        // TODO: implement this
     }
 
 
@@ -1724,7 +1534,6 @@ class NoopPipeline extends Pipeline {
     GraphicsConfiguration getBestConfiguration(GraphicsConfigTemplate3D gct,
             GraphicsConfiguration[] gc) {
 
-        // TODO: implement this for real
         GraphicsConfiguration gc1 = GraphicsEnvironment.getLocalGraphicsEnvironment().
                 getDefaultScreenDevice().getDefaultConfiguration();
         // We need to cache the GraphicsTemplate3D
@@ -1741,7 +1550,6 @@ class NoopPipeline extends Pipeline {
     // Determine whether specified graphics config is supported by pipeline
     boolean isGraphicsConfigSupported(GraphicsConfigTemplate3D gct,
             GraphicsConfiguration gc) {
-        // TODO: implement this
         return true;
     }
 
@@ -1784,7 +1592,7 @@ class NoopPipeline extends Pipeline {
 
     // Method to construct a new DrawingSurfaceObject
     DrawingSurfaceObject createDrawingSurfaceObject(Canvas3D cv) {
-        return new DrawingSurfaceObjectDummy(cv);
+        return new NoopDrawingSurfaceObject(cv);
     }
 
     // Method to free the drawing surface object
@@ -1800,7 +1608,7 @@ class NoopPipeline extends Pipeline {
     /**
      * Dummy context for noop pipeline
      */
-    class NoopContext implements Context {
+    static class NoopContext implements Context {
     }
 
 }

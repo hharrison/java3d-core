@@ -346,9 +346,12 @@ class BehaviorRetained extends LeafRetained  {
               ((Behavior)this.source).initialize();
           }
           catch (RuntimeException e) {
-              inCallback = inCallbackSaved;
-              inInitCallback = inInitCallbackSaved;
               System.err.println("Exception occurred during Behavior initialization:");
+              e.printStackTrace();
+          }
+          catch (Error e) {
+              // Issue 264 - catch Error
+              System.err.println("Error occurred during Behavior initialization:");
               e.printStackTrace();
           }
           inCallback = inCallbackSaved;

@@ -14,7 +14,6 @@ package javax.media.j3d;
 
 import javax.vecmath.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
@@ -581,9 +580,9 @@ public class Canvas3D extends Canvas {
     // NOTE that this is *read-only*
     Transform3D vpcToEc;
 
-    // The window field when running Windows is the native HDC.  With X11 it
-    // is the handle to the native X11 drawable.
-    long window = 0;
+    // Opaque object representing the underlying drawable (window). This
+    // is defined by the Pipeline.
+    Drawable drawable = null;
 
     // fbConfig is a pointer to the fbConfig object that is associated with 
     // the GraphicsConfiguration object used to create this Canvas.
@@ -1713,11 +1712,11 @@ public class Canvas3D extends Canvas {
 	if ((offScreenCanvasSize.width != width) ||
 	    (offScreenCanvasSize.height != height)) {
 
-	    if (window != 0) {
+	    if (drawable != null) {
 		// Fix for Issue 18 and Issue 175
 		// Will do destroyOffScreenBuffer in the Renderer thread. 
 		sendDestroyCtxAndOffScreenBuffer();
-		window = 0;
+		drawable = null;
 	    }
 
             // set the canvas dimension according to the buffer dimension
@@ -2207,7 +2206,7 @@ public class Canvas3D extends Canvas {
 				return;
 			    }
 			    this.syncRender(ctx, true);
-			    int status = swapBuffers(ctx, screen.display, window);
+			    int status = swapBuffers(ctx, screen.display, drawable);
 			    if (status != NOCHANGE) {
 				resetImmediateRendering(status);		    
 			    }
@@ -2247,7 +2246,7 @@ public class Canvas3D extends Canvas {
      */
     Context createNewContext(Context shareCtx, boolean isSharedCtx) {
         Context retVal = createNewContext(this.screen.display,
-                this.window,
+                this.drawable,
                 this.fbConfig,
                 shareCtx, isSharedCtx,
                 this.offScreen,
@@ -2262,27 +2261,45 @@ public class Canvas3D extends Canvas {
      * Make the context associated with the specified canvas current.
      */
     final void makeCtxCurrent() {
-	makeCtxCurrent(ctx, screen.display, window);
+	makeCtxCurrent(ctx, screen.display, drawable);
     }
 
     /**
      * Make the specified context current.
      */
     final void makeCtxCurrent(Context ctx) {
-	makeCtxCurrent(ctx, screen.display, window);
+	makeCtxCurrent(ctx, screen.display, drawable);
     }
 
-    final void makeCtxCurrent(Context ctx, long dpy, long window) {
-        if (ctx != screen.renderer.currentCtx || window != screen.renderer.currentWindow) {
+    final void makeCtxCurrent(Context ctx, long dpy, Drawable drawable) {
+        if (ctx != screen.renderer.currentCtx || drawable != screen.renderer.currentDrawable) {
 	    if (!drawingSurfaceObject.isLocked()) {
 		drawingSurfaceObject.renderLock();
-		useCtx(ctx, dpy, window);
+		useCtx(ctx, dpy, drawable);
 		drawingSurfaceObject.unLock();
 	    } else {
-		useCtx(ctx, dpy, window);
+		useCtx(ctx, dpy, drawable);
 	    }
             screen.renderer.currentCtx = ctx;
-            screen.renderer.currentWindow = window;
+            screen.renderer.currentDrawable = drawable;
+        }
+    }
+
+    // Give the pipeline a chance to release the context; the Pipeline may
+    // or may not ignore this call.
+    void releaseCtx() {
+        if (screen.renderer.currentCtx != null) {
+            boolean needLock = !drawingSurfaceObject.isLocked();
+            if (needLock) {
+                drawingSurfaceObject.renderLock();
+            }
+            if (releaseCtx(screen.renderer.currentCtx, screen.display)) {
+                screen.renderer.currentCtx = null;
+                screen.renderer.currentDrawable = null;
+            }
+            if (needLock) {
+                drawingSurfaceObject.unLock();
+            }
         }
     }
 
@@ -3459,7 +3476,7 @@ public class Canvas3D extends Canvas {
 	// extensions, the context will destroy immediately
 	// inside the native code after setting the various 
 	// fields in this object
-	createQueryContext(screen.display, window,
+	createQueryContext(screen.display, drawable,
 			   fbConfig, offScreen, 1, 1,
                            VirtualUniverse.mc.glslLibraryAvailable,
                            VirtualUniverse.mc.cgLibraryAvailable);
@@ -4169,7 +4186,7 @@ public class Canvas3D extends Canvas {
             VirtualUniverse.mc.postRequest(MasterControl.FREE_CONTEXT,
                     new Object[]{this,
                             new Long(screen.display),
-                            new Long(window),
+                            drawable,
                             ctx});
 	    // Fix for Issue 19
 	    // Wait for the context to be freed unless called from
@@ -4180,7 +4197,6 @@ public class Canvas3D extends Canvas {
 		while (ctxTimeStamp != 0) {
 		    MasterControl.threadYield();
 		}
-	    
             }
 	    ctx = null;
 	}
@@ -4450,36 +4466,36 @@ public class Canvas3D extends Canvas {
     // *****************************************************************
 
     // This is the native method for creating the underlying graphics context.
-    private Context createNewContext(long display, long window,
+    private Context createNewContext(long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
             boolean offScreen,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable) {
-        return Pipeline.getPipeline().createNewContext(this, display, window,
+        return Pipeline.getPipeline().createNewContext(this, display, drawable,
                 fbConfig, shareCtx, isSharedCtx,
                 offScreen,
                 glslLibraryAvailable,
                 cgLibraryAvailable);
     }
 
-    private void createQueryContext(long display, long window,
+    private void createQueryContext(long display, Drawable drawable,
             long fbConfig, boolean offScreen, int width, int height,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable) {
-        Pipeline.getPipeline().createQueryContext(this, display, window,
+        Pipeline.getPipeline().createQueryContext(this, display, drawable,
                 fbConfig, offScreen, width, height,
                 glslLibraryAvailable,
                 cgLibraryAvailable);
     }
 
     // This is the native for creating offscreen buffer
-    int createOffScreenBuffer(Context ctx, long display, long fbConfig, int width, int height) {
+    Drawable createOffScreenBuffer(Context ctx, long display, long fbConfig, int width, int height) {
         return Pipeline.getPipeline().createOffScreenBuffer(this,
                 ctx, display, fbConfig, width, height);
     }
 
-    void destroyOffScreenBuffer(Context ctx, long display, long fbConfig, long window) {
-        Pipeline.getPipeline().destroyOffScreenBuffer(this, ctx, display, fbConfig, window);
+    void destroyOffScreenBuffer(Context ctx, long display, long fbConfig, Drawable drawable) {
+        Pipeline.getPipeline().destroyOffScreenBuffer(this, ctx, display, fbConfig, drawable);
     }
 
     // This is the native for reading the image from the offscreen buffer
@@ -4488,8 +4504,8 @@ public class Canvas3D extends Canvas {
     }
 
     // The native method for swapBuffers
-    int swapBuffers(Context ctx, long dpy, long window) {
-        return Pipeline.getPipeline().swapBuffers(this, ctx, dpy, window);
+    int swapBuffers(Context ctx, long dpy, Drawable drawable) {
+        return Pipeline.getPipeline().swapBuffers(this, ctx, dpy, drawable);
     }
 
     // notify D3D that Canvas is resize
@@ -4509,8 +4525,8 @@ public class Canvas3D extends Canvas {
         Pipeline.getPipeline().updateMaterialColor(ctx, r, g, b, a);
     }
 
-    static void destroyContext(long display, long window, Context ctx) {
-        Pipeline.getPipeline().destroyContext(display, window, ctx);
+    static void destroyContext(long display, Drawable drawable, Context ctx) {
+        Pipeline.getPipeline().destroyContext(display, drawable, ctx);
     }
 
     // This is the native method for doing accumulation.
@@ -4700,8 +4716,14 @@ public class Canvas3D extends Canvas {
     }
 
     // The native method that sets this ctx to be the current one
-    static boolean useCtx(Context ctx, long display, long window) {
-        return Pipeline.getPipeline().useCtx(ctx, display, window);
+    static boolean useCtx(Context ctx, long display, Drawable drawable) {
+        return Pipeline.getPipeline().useCtx(ctx, display, drawable);
+    }
+
+    // Give the Pipeline a chance to release the context. The return
+    // value indicates whether the context was released.
+    private boolean releaseCtx(Context ctx, long dpy) {
+        return Pipeline.getPipeline().releaseCtx(ctx, dpy);
     }
 
     void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,

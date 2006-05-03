@@ -87,7 +87,7 @@ class Renderer extends J3dThread {
 
     // display id - to free shared context
     long display;
-    long window; 
+    Drawable drawable; 
 
     /**
      * This is the id of the current rendering context
@@ -95,9 +95,9 @@ class Renderer extends J3dThread {
     Context currentCtx = null;
 
     /**
-     * This is the id of the current rendering window
+     * This is the id of the current rendering drawable
      */
-    long currentWindow = 0;
+    Drawable currentDrawable = null;
 
     // an unique bit to identify this renderer
     int rendererBit = 0;
@@ -248,7 +248,7 @@ class Renderer extends J3dThread {
 				     cv.syncRender(cv.ctx, true);
 				     status = cv.swapBuffers(cv.ctx, 
 							     cv.screen.display,
-							     cv.window);
+							     cv.drawable);
 				     if (status != Canvas3D.NOCHANGE) {
 					 cv.resetRendering(status);
 				     }
@@ -259,7 +259,7 @@ class Renderer extends J3dThread {
 				     cv.syncRender(cv.ctx, true);
 				     status = cv.swapBuffers(cv.ctx, 
 							     cv.screen.display,
-							     cv.window);
+							     cv.drawable);
 				     if (status != Canvas3D.NOCHANGE) {
 					 cv.resetRendering(status);
 				     }
@@ -311,6 +311,8 @@ class Renderer extends J3dThread {
 			 cv.drawingSurfaceObject.unLock();
 		     }
 		 }
+
+                 cv.releaseCtx();
 	      }
 
 	    if (view != null) { // STOP_TIMER
@@ -330,7 +332,7 @@ class Renderer extends J3dThread {
 	    } else if (mtype == MasterControl.FREECONTEXT_CLEANUP) {
 		// from MasterControl freeContext(View v)
 		cv = (Canvas3D) args[1];
-		removeCtx(cv, cv.screen.display, cv.window, cv.ctx,
+		removeCtx(cv, cv.screen.display, cv.drawable, cv.ctx,
 			  true, true, false);
 	    } else if (mtype == MasterControl.RESETCANVAS_CLEANUP) {
 		// from MasterControl RESET_CANVAS postRequest
@@ -345,7 +347,7 @@ class Renderer extends J3dThread {
 		Canvas3D c = (Canvas3D) obj[0]; 
 		removeCtx(c,
 			  ((Long) obj[1]).longValue(),
-			  ((Long) obj[2]).longValue(),
+			  (Drawable) obj[2],
 			  (Context) obj[3], 
 			  false, !c.offScreen, 
 			  false);		
@@ -418,7 +420,7 @@ class Renderer extends J3dThread {
 			    // currentCtx change after we create a new context
 			    GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
 			    currentCtx = null;
-                            currentWindow = 0;
+                            currentDrawable = null;
 			} 
 		    } else if (secondArg instanceof Integer) {
 			// message from TextureRetained finalize() method
@@ -458,7 +460,7 @@ class Renderer extends J3dThread {
 		if (renderType == J3dMessage.CREATE_OFFSCREENBUFFER) {
 		    // Fix for issue 18.
 		    // Fix for issue 20.
-		    canvas.window = 
+		    canvas.drawable = 
 			canvas.createOffScreenBuffer(canvas.ctx, 
 						     canvas.screen.display,
 						     canvas.fbConfig,
@@ -473,10 +475,10 @@ class Renderer extends J3dThread {
                     // destroy ctx.
                     // Should be able to collaspe both call into one. Will do this in 1.5, 
                     // it is a little risky for 1.4 beta3.
-                    removeCtx(canvas, canvas.screen.display, canvas.window, canvas.ctx,
+                    removeCtx(canvas, canvas.screen.display, canvas.drawable, canvas.ctx,
                               false, !canvas.offScreen, false);
                     // destroy offScreenBuffer.
-                    removeCtx(canvas, canvas.screen.display, canvas.window, null,
+                    removeCtx(canvas, canvas.screen.display, canvas.drawable, null,
                               false, !canvas.offScreen, true);    
                                     
 		    canvas.offScreenBufferPending = false;
@@ -652,7 +654,7 @@ class Renderer extends J3dThread {
 		    ImageComponent2DRetained offBufRetained = null;
 		    
 		    if (renderType == J3dMessage.RENDER_OFFSCREEN) {
-                        if (canvas.window == 0 || !canvas.active) {
+                        if (canvas.drawable == null || !canvas.active) {
                             canvas.offScreenRendering = false;
                             continue;
 			} else {
@@ -1441,17 +1443,17 @@ class Renderer extends J3dThread {
 
     // This is only invoked from removeCtx()/removeAllCtxs()
     // with drawingSurface already lock
-    final void makeCtxCurrent(Context sharedCtx, long display, long window) {
-        if (sharedCtx != currentCtx || window != currentWindow) {
-	    Canvas3D.useCtx(sharedCtx, display, window);
+    final void makeCtxCurrent(Context sharedCtx, long display, Drawable drawable) {
+        if (sharedCtx != currentCtx || drawable != currentDrawable) {
+	    Canvas3D.useCtx(sharedCtx, display, drawable);
 	    /*
-            if(!Canvas3D.useCtx(sharedCtx, display, window)) {
+            if(!Canvas3D.useCtx(sharedCtx, display, drawable)) {
                 Thread.dumpStack();
                 System.err.println("useCtx Fail");
             }
             */
             currentCtx = sharedCtx;
-            currentWindow = window;
+            currentDrawable = drawable;
         }
     }
 
@@ -1459,7 +1461,7 @@ class Renderer extends J3dThread {
     // Canvas3D postRequest() offScreen rendering since the
     // user thread will not wait for it. Also we can just
     // reuse it as Canvas3D did not destroy.
-    private void removeCtx(Canvas3D cv, long display, long window, Context ctx,
+    private void removeCtx(Canvas3D cv, long display, Drawable drawable, Context ctx,
 			   boolean resetCtx, boolean freeBackground, 
 			   boolean destroyOffScreenBuffer) {
 
@@ -1468,7 +1470,7 @@ class Renderer extends J3dThread {
 	    // Since we are now the renderer thread, 
 	    // we can safely execute destroyOffScreenBuffer.
 	    if(destroyOffScreenBuffer) {
-		cv.destroyOffScreenBuffer(ctx, display, cv.fbConfig, window);
+		cv.destroyOffScreenBuffer(ctx, display, cv.fbConfig, drawable);
 		cv.offScreenBufferPending = false;
 	    }
 
@@ -1479,31 +1481,31 @@ class Renderer extends J3dThread {
 		    listOfCanvases.remove(idx);
 		    // display is always 0 under windows
 		    if ((VirtualUniverse.mc.isWindows() || (display != 0)) && 
-			(window != 0) && cv.added) {
+			(drawable != null) && cv.added) {
 			// cv.ctx may reset to -1 here so we
 			// always use the ctx pass in.
 			if (cv.drawingSurfaceObject.renderLock()) {
 			    // if it is the last one, free shared resources
 			    if (sharedCtx != null) {
 				if (listOfCtxs.isEmpty()) {
-				    makeCtxCurrent(sharedCtx, display, window);
+				    makeCtxCurrent(sharedCtx, display, drawable);
 				    freeResourcesInFreeList(null);
 				    freeContextResources();
-				    Canvas3D.destroyContext(display, window, sharedCtx);
+				    Canvas3D.destroyContext(display, drawable, sharedCtx);
 				    currentCtx = null;
-                                    currentWindow = 0;
+                                    currentDrawable = null;
 				} else {
 				    freeResourcesInFreeList(cv);
 				}
-				cv.makeCtxCurrent(ctx, display, window);
+				cv.makeCtxCurrent(ctx, display, drawable);
 			    } else {
-				cv.makeCtxCurrent(ctx, display, window);
+				cv.makeCtxCurrent(ctx, display, drawable);
 				cv.freeResourcesInFreeList(ctx);
 			    }
 			    cv.freeContextResources(this, freeBackground, ctx);
-			    Canvas3D.destroyContext(display, window, ctx);
+			    Canvas3D.destroyContext(display, drawable, ctx);
 			    currentCtx = null;
-                            currentWindow = 0;
+                            currentDrawable = null;
 			    cv.drawingSurfaceObject.unLock();
 			}
 		    }
@@ -1532,28 +1534,28 @@ class Renderer extends J3dThread {
 
 		if ((cv.screen != null) && (cv.ctx != null)) {
 		    if ((VirtualUniverse.mc.isWindows() || (display != 0)) && 
-			(cv.window != 0) && cv.added) {
+			(cv.drawable != null) && cv.added) {
 			if (cv.drawingSurfaceObject.renderLock()) {
 			    // We need to free sharedCtx resource
 			    // first before last non-sharedCtx to
 			    // workaround Nvidia driver bug under Linux
 			    // that crash on freeTexture ID:4685156
 			    if ((i == 0) && (sharedCtx != null)) {
-				makeCtxCurrent(sharedCtx, display, window);
+				makeCtxCurrent(sharedCtx, display, drawable);
 				freeResourcesInFreeList(null);
 				freeContextResources();
-				Canvas3D.destroyContext(display, window, sharedCtx);
+				Canvas3D.destroyContext(display, drawable, sharedCtx);
 				currentCtx = null;
-                                currentWindow = 0;
+                                currentDrawable = null;
 			    }
 			    cv.makeCtxCurrent();
 			    cv.freeResourcesInFreeList(cv.ctx);
 			    cv.freeContextResources(this, true, cv.ctx);
 			    Canvas3D.destroyContext(cv.screen.display,
-						    cv.window,
+						    cv.drawable,
 						    cv.ctx);
 			    currentCtx = null;
-                            currentWindow = 0;
+                            currentDrawable = null;
 			    cv.drawingSurfaceObject.unLock();
 			}
 		    }

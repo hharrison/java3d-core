@@ -1371,7 +1371,7 @@ class JoglPipeline extends Pipeline {
     //
 
     // This is the native method for creating the underlying graphics context.
-    Context createNewContext(Canvas3D cv, long display, long window,
+    Context createNewContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
             boolean offScreen,
             boolean glslLibraryAvailable,
@@ -1381,7 +1381,7 @@ class JoglPipeline extends Pipeline {
         return new JoglContext();
     }
 
-    void createQueryContext(Canvas3D cv, long display, long window,
+    void createQueryContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, boolean offScreen, int width, int height,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable) {
@@ -1389,12 +1389,12 @@ class JoglPipeline extends Pipeline {
     }
 
     // This is the native for creating offscreen buffer
-    int createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height) {
+    Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height) {
         // TODO: implement this
-        return 0;
+        return null;
     }
 
-    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, long window) {
+    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, Drawable drawable) {
         // TODO: implement this
     }
 
@@ -1404,7 +1404,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // The native method for swapBuffers
-    int swapBuffers(Canvas3D cv, Context ctx, long dpy, long window) {
+    int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable) {
         // TODO: implement this
         return 0;
     }
@@ -1426,7 +1426,7 @@ class JoglPipeline extends Pipeline {
         // TODO: implement this
     }
 
-    void destroyContext(long display, long window, Context ctx) {
+    void destroyContext(long display, Drawable drawable, Context ctx) {
         // TODO: implement this
     }
 
@@ -1612,9 +1612,15 @@ class JoglPipeline extends Pipeline {
     }
 
     // The native method that sets this ctx to be the current one
-    boolean useCtx(Context ctx, long display, long window) {
+    boolean useCtx(Context ctx, long display, Drawable drawable) {
         // TODO: implement this
         return true;
+    }
+
+    // Optionally release the context. Returns true if the context was released.
+    boolean releaseCtx(Context ctx, long dpy) {
+        // TODO: implement this and return true if the context was released
+        return false;
     }
 
     void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,
@@ -1804,7 +1810,7 @@ class JoglPipeline extends Pipeline {
 
     // Method to construct a new DrawingSurfaceObject
     DrawingSurfaceObject createDrawingSurfaceObject(Canvas3D cv) {
-        return new DrawingSurfaceObjectDummy(cv);
+        return new JoglDrawingSurfaceObject(cv);
     }
 
     // Method to free the drawing surface object

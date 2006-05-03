@@ -1692,7 +1692,7 @@ public class GraphicsContext3D extends Object   {
 
 		    canvas3d.drawingSurfaceObject.contextValidated();
 		    canvas3d.screen.renderer.currentCtx = canvas3d.ctx;
-                    canvas3d.screen.renderer.currentWindow = canvas3d.window;
+                    canvas3d.screen.renderer.currentDrawable = canvas3d.drawable;
 		    initializeState();
 		    canvas3d.ctxChanged = true;
 		    canvas3d.canvasDirty = 0xffff;

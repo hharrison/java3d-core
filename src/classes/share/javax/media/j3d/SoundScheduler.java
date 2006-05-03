@@ -270,6 +270,12 @@ class SoundScheduler extends J3dStructure {
 			       "during Sound rendering:");
 	    e.printStackTrace();
 	}
+        catch (Error e) {
+            // Issue 264 - catch Error
+	    System.err.println("Error occurred " +
+			       "during Sound rendering:");
+	    e.printStackTrace();
+        }
 
 	// what if the user/app makes no change to scenegraph?
 	// must still re-render after retest for sound complete
@@ -786,6 +792,12 @@ class SoundScheduler extends J3dStructure {
 	    }
 	    catch (RuntimeException e) {
 		System.err.println("Exception occurred " +
+				   "during sound deactivation:");
+		e.printStackTrace();
+	    }
+	    catch (Error e) {
+                // Issue 264 - catch Error
+		System.err.println("Error occurred " +
 				   "during sound deactivation:");
 		e.printStackTrace();
 	    }

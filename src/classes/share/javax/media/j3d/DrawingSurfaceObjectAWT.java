@@ -112,9 +112,10 @@ class DrawingSurfaceObjectAWT extends DrawingSurfaceObject {
 	if (nativeDS != 0) {
 	    dsi = getDrawingSurfaceInfo(nativeDS);
 	    if (dsi != 0) {
-		canvas.window = getDrawingSurfaceWindowIdAWT
+                long nativeDrawable = getDrawingSurfaceWindowIdAWT
 		    (canvas, nativeDS, dsi, display, screenID,
 		     xineramaDisabled);
+                canvas.drawable = new NativeDrawable(nativeDrawable);
 	    }
 	}
     }

@@ -189,7 +189,7 @@ class NativePipeline extends Pipeline {
 
     // Method to verify whether the native Cg library is available
     private native boolean loadNativeCgLibrary(String[] libpath);
-    
+
     private long unbox(Context ctx) {
         if (ctx == null) {
             return 0L;
@@ -197,12 +197,28 @@ class NativePipeline extends Pipeline {
             return ((NativeContext)ctx).getNativeCtx();
         }
     }
-    
-    private Context box(long nativeCtx) {
+
+    private Context boxContext(long nativeCtx) {
         if (nativeCtx == 0) {
             return null;
         } else {
             return new NativeContext(nativeCtx);
+        }
+    }
+
+    private long unbox(Drawable drawable) {
+        if (drawable == null) {
+            return 0L;
+        } else {
+            return ((NativeDrawable)drawable).getNativeDrawable();
+        }
+    }
+
+    private Drawable boxDrawable(long nativeDrawable) {
+        if (nativeDrawable == 0) {
+            return null;
+        } else {
+            return new NativeDrawable(nativeDrawable);
         }
     }
 
@@ -2661,42 +2677,43 @@ class NativePipeline extends Pipeline {
     //
 
     // This is the native method for creating the underlying graphics context.
-    // TODO: long window
-    native long createNewContext(Canvas3D cv, long display, int window,
+    // TODO: long drawable
+    native long createNewContext(Canvas3D cv, long display, int drawable,
             long fbConfig, long shareCtx, boolean isSharedCtx,
             boolean offScreen,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable);
 
     // This is the native method for creating the underlying graphics context.
-    Context createNewContext(Canvas3D cv, long display, long window,
+    Context createNewContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
             boolean offScreen,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable) {
 
-        // TODO: long window
-        long nativeCtx = createNewContext(cv, display, (int)window,
+        // TODO: remove "(int)" once native signature is changed to long
+        long nativeCtx = createNewContext(cv, display, (int)unbox(drawable),
             fbConfig, unbox(shareCtx), isSharedCtx,
             offScreen,
             glslLibraryAvailable,
             cgLibraryAvailable);
 
-        return box(nativeCtx);
+        return boxContext(nativeCtx);
     }
 
-    // TODO: long window
-    native void createQueryContext(Canvas3D cv, long display, int window,
+    // TODO: long drawable
+    native void createQueryContext(Canvas3D cv, long display, int drawable,
             long fbConfig, boolean offScreen, int width, int height,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable);
 
-    // TODO: long window -- remove this wrapper method
-    void createQueryContext(Canvas3D cv, long display, long window,
+    void createQueryContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, boolean offScreen, int width, int height,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable) {
-        createQueryContext(cv, display, (int)window,
+
+        // TODO: remove "(int)" once native signature is changed to long
+        createQueryContext(cv, display, (int)unbox(drawable),
             fbConfig, offScreen, width, height,
             glslLibraryAvailable,
             cgLibraryAvailable);
@@ -2705,16 +2722,17 @@ class NativePipeline extends Pipeline {
     // This is the native for creating offscreen buffer
     native int createOffScreenBuffer(Canvas3D cv, long ctx, long display, long fbConfig, int width, int height);
 
-    int createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height) {
-        return createOffScreenBuffer(cv, unbox(ctx), display, fbConfig, width, height);
+    Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height) {
+        long nativeDrawable = createOffScreenBuffer(cv, unbox(ctx), display, fbConfig, width, height);
+        return boxDrawable(nativeDrawable);
     }
 
-    // TODO: long window
-    native void destroyOffScreenBuffer(Canvas3D cv, long ctx, long display, long fbConfig, int window);
+    // TODO: long drawable
+    native void destroyOffScreenBuffer(Canvas3D cv, long ctx, long display, long fbConfig, int drawable);
 
-    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, long window) {
-        // TODO: long window
-        destroyOffScreenBuffer(cv, unbox(ctx), display, fbConfig, (int)window);
+    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, Drawable drawable) {
+        // TODO: remove "(int)" once native signature is changed to long
+        destroyOffScreenBuffer(cv, unbox(ctx), display, fbConfig, (int)unbox(drawable));
     }
 
 
@@ -2727,12 +2745,12 @@ class NativePipeline extends Pipeline {
 
 
     // The native method for swapBuffers
-    // TODO: long window
-    native int swapBuffers(Canvas3D cv, long ctx, long dpy, int window);
+    // TODO: long drawable
+    native int swapBuffers(Canvas3D cv, long ctx, long dpy, int drawable);
 
-    int swapBuffers(Canvas3D cv, Context ctx, long dpy, long window) {
-        // TODO: long window
-        return swapBuffers(cv, unbox(ctx), dpy, (int)window);
+    int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable) {
+        // TODO: remove "(int)" once native signature is changed to long
+        return swapBuffers(cv, unbox(ctx), dpy, (int)unbox(drawable));
     }
 
 
@@ -2760,12 +2778,12 @@ class NativePipeline extends Pipeline {
     }
 
 
-    // TODO: long window
-    native void destroyContext(long display, int window, long ctx);
+    // TODO: long drawable
+    native void destroyContext(long display, int drawable, long ctx);
 
-    void destroyContext(long display, long window, Context ctx) {
-        // TODO: long window
-        destroyContext(display, (int)window, unbox(ctx));
+    void destroyContext(long display, Drawable drawable, Context ctx) {
+        // TODO: remove "(int)" once native signature is changed to long
+        destroyContext(display, (int)unbox(drawable), unbox(ctx));
     }
 
 
@@ -3060,12 +3078,12 @@ class NativePipeline extends Pipeline {
 
 
     // The native method that sets this ctx to be the current one
-    // TODO: long window
-    native boolean useCtx(long ctx, long display, int window);
+    // TODO: long drawable
+    native boolean useCtx(long ctx, long display, int drawable);
 
-    boolean useCtx(Context ctx, long display, long window) {
-        // TODO: long window
-        return useCtx(unbox(ctx), display, (int)window);
+    boolean useCtx(Context ctx, long display, Drawable drawable) {
+        // TODO: remove "(int)" once native signature is changed to long
+        return useCtx(unbox(ctx), display, (int)unbox(drawable));
     }
 
 

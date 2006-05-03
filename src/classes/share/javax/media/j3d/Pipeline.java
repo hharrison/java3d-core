@@ -1155,27 +1155,27 @@ abstract class Pipeline {
     //
 
     // This is the native method for creating the underlying graphics context.
-    abstract Context createNewContext(Canvas3D cv, long display, long window,
+    abstract Context createNewContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
             boolean offScreen,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable);
 
-    abstract void createQueryContext(Canvas3D cv, long display, long window,
+    abstract void createQueryContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, boolean offScreen, int width, int height,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable);
 
     // This is the native for creating offscreen buffer
-    abstract int createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height);
+    abstract Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height);
 
-    abstract void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, long window);
+    abstract void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, Drawable drawable);
 
     // This is the native for reading the image from the offscreen buffer
     abstract void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int width, int height);
 
     // The native method for swapBuffers
-    abstract int swapBuffers(Canvas3D cv, Context ctx, long dpy, long window);
+    abstract int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable);
 
     // notify D3D that Canvas is resize
     abstract int resizeD3DCanvas(Canvas3D cv, Context ctx);
@@ -1186,7 +1186,7 @@ abstract class Pipeline {
     // native method for setting Material when no material is present
     abstract void updateMaterialColor(Context ctx, float r, float g, float b, float a);
 
-    abstract void destroyContext(long display, long window, Context ctx);
+    abstract void destroyContext(long display, Drawable drawable, Context ctx);
 
     // This is the native method for doing accumulation.
     abstract void accum(Context ctx, float value);
@@ -1301,7 +1301,13 @@ abstract class Pipeline {
     abstract void syncRender(Context ctx, boolean wait);
 
     // The native method that sets this ctx to be the current one
-    abstract boolean useCtx(Context ctx, long display, long window);
+    abstract boolean useCtx(Context ctx, long display, Drawable drawable);
+
+    // Optionally release the context. A pipeline may override this and
+    // returns true if the context was released.
+    boolean releaseCtx(Context ctx, long dpy) {
+        return false;
+    }
 
     abstract void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,
             ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown);

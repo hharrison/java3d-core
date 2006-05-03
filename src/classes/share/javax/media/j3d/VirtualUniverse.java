@@ -1072,6 +1072,11 @@ public class VirtualUniverse extends Object {
                     System.err.println("Exception occurred in GraphStructureChangeListener:");
                     e.printStackTrace();
                 }
+                catch (Error e) {
+                    // Issue 264 - catch Error
+                    System.err.println("Error occurred in GraphStructureChangeListener:");
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -1094,6 +1099,11 @@ public class VirtualUniverse extends Object {
                 }
                 catch (RuntimeException e) {
                     System.err.println("Exception occurred in GraphStructureChangeListener:");
+                    e.printStackTrace();
+                }
+                catch (Error e) {
+                    // Issue 264 - catch Error
+                    System.err.println("Error occurred in GraphStructureChangeListener:");
                     e.printStackTrace();
                 }
             }
@@ -1173,15 +1183,20 @@ public class VirtualUniverse extends Object {
                         System.err.println("Exception occurred in ShaderErrorListener:");
                         e.printStackTrace();
                     }
+                    catch (Error e) {
+                        // Issue 264 - catch Error
+                        System.err.println("Error occurred in ShaderErrorListener:");
+                        e.printStackTrace();
+                    }
                     errorReported = true;
                 }
             }
         }
 
-	// Notify the default error listener if the set is null or empty
-	if (!errorReported) {
-	    defaultShaderErrorListener.errorOccurred(error);
-	}
+        // Notify the default error listener if the set is null or empty
+        if (!errorReported) {
+            defaultShaderErrorListener.errorOccurred(error);
+        }
     }
 
 }
