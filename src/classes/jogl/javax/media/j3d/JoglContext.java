@@ -24,6 +24,8 @@ class JoglContext implements Context {
   private int maxTextureUnits;
   private int maxTexCoordSets;
   private float alphaClearValue;
+  private int currentTextureUnit;
+  private int currentCombinerUnit;
 
   JoglContext(GLContext context) {
     this.context = context;
@@ -33,10 +35,14 @@ class JoglContext implements Context {
     return context;
   }
 
-  int   getMaxTextureUnits()          { return maxTextureUnits; }
-  void  setMaxTextureUnits(int val)   { maxTextureUnits = val;  }
-  int   getMaxTexCoordSets()          { return maxTexCoordSets; }
-  void  setMaxTexCoordSets(int val)   { maxTexCoordSets = val;  }
-  float getAlphaClearValue()          { return alphaClearValue; }
-  void  setAlphaClearValue(float val) { alphaClearValue = val;  }
+  int   getMaxTextureUnits()            { return maxTextureUnits;     }
+  void  setMaxTextureUnits(int val)     { maxTextureUnits = val;      }
+  int   getMaxTexCoordSets()            { return maxTexCoordSets;     }
+  void  setMaxTexCoordSets(int val)     { maxTexCoordSets = val;      }
+  float getAlphaClearValue()            { return alphaClearValue;     }
+  void  setAlphaClearValue(float val)   { alphaClearValue = val;      }
+  int   getCurrentTextureUnit()         { return currentTextureUnit;  }
+  void  setCurrentTextureUnit(int val)  { currentTextureUnit = val;   }
+  int   getCurrentCombinerUnit()        { return currentCombinerUnit; }
+  void  setCurrentCombinerUnit(int val) { currentCombinerUnit = val;  }
 }

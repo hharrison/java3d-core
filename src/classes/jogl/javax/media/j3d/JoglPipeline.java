@@ -2135,11 +2135,65 @@ class JoglPipeline extends Pipeline {
 
     void updateTextureAttributes(Context ctx,
             double[] transform, boolean isIdentity, int textureMode,
-            int perspCorrectionMode, float red,
-            float green, float blue, float alpha,
+            int perspCorrectionMode,
+            float textureBlendColorRed,
+            float textureBlendColorGreen,
+            float textureBlendColorBlue,
+            float textureBlendColorAlpha,
             int textureFormat) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTextureAttributes()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateTextureAttributes()");
+
+      GL gl = context(ctx).getGL();
+      gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT,
+                (perspCorrectionMode == TextureAttributes.NICEST) ? GL.GL_NICEST : GL.GL_FASTEST);
+
+      // set OGL texture matrix
+      gl.glPushAttrib(GL.GL_MATRIX_MODE);
+      gl.glMatrixMode(GL.GL_TEXTURE);
+
+      if (isIdentity) {
+        gl.glLoadIdentity();
+      } else if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
+        gl.glLoadTransposeMatrixd(transform, 0);
+      } else {
+        double[] mx = new double[16];
+        copyTranspose(transform, mx);
+        gl.glLoadMatrixd(mx, 0);
+      }
+
+      gl.glPopAttrib();
+
+      // set texture color
+      float[] color = new float[4];
+      color[0] = textureBlendColorRed;
+      color[1] = textureBlendColorGreen;
+      color[2] = textureBlendColorBlue;
+      color[3] = textureBlendColorAlpha;
+      gl.glTexEnvfv(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_COLOR, color, 0);
+
+      // set texture environment mode
+
+      switch (textureMode) {
+        case TextureAttributes.MODULATE:
+          gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
+          break;
+        case TextureAttributes.DECAL:
+          gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_DECAL);
+          break;
+        case TextureAttributes.BLEND:
+          gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_BLEND);
+          break;
+        case TextureAttributes.REPLACE:
+          gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
+          break;
+        case TextureAttributes.COMBINE:
+          gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_COMBINE);
+          break;
+      }
+
+      if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
+        gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
+      }
     }
 
     void updateRegisterCombiners(Context ctx,
@@ -2178,9 +2232,32 @@ class JoglPipeline extends Pipeline {
     // TextureUnitStateRetained methods
     //
 
-    void updateTextureUnitState(Context ctx, int unitIndex, boolean enableFlag) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTextureUnitState()");
-        // TODO: implement this
+    void updateTextureUnitState(Context ctx, int index, boolean enable) {
+      if (VERBOSE) System.err.println("JoglPipeline.updateTextureUnitState()");
+
+      GL gl = context(ctx).getGL();
+      JoglContext jctx = (JoglContext) ctx;
+
+      if (index >= 0 && gl.isExtensionAvailable("GL_VERSION_1_3")) {
+        gl.glActiveTexture(index + GL.GL_TEXTURE0);
+        gl.glClientActiveTexture(GL.GL_TEXTURE0 + index);
+        if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
+          jctx.setCurrentTextureUnit(index + GL.GL_TEXTURE0);
+          jctx.setCurrentCombinerUnit(index + GL.GL_COMBINER0_NV);
+          gl.glCombinerParameteriNV(GL.GL_NUM_GENERAL_COMBINERS_NV, index + 1);
+        }
+      }
+
+      if (!enable) {
+        // if not enabled, then don't enable any tex mapping
+        gl.glDisable(GL.GL_TEXTURE_1D);
+        gl.glDisable(GL.GL_TEXTURE_2D);
+        gl.glDisable(GL.GL_TEXTURE_3D);
+        gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
+      }
+
+      // if it is enabled, the enable flag will be taken care of
+      // in the bindTexture call
     }
 
 
@@ -2192,8 +2269,18 @@ class JoglPipeline extends Pipeline {
     //
 
     void bindTexture2D(Context ctx, int objectId, boolean enable) {
-      if (DEBUG) System.err.println("JoglPipeline.bindTexture2D()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.bindTexture2D()");
+
+      GL gl = context(ctx).getGL();
+      gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
+      gl.glDisable(GL.GL_TEXTURE_3D);
+
+      if (!enable) {
+        gl.glDisable(GL.GL_TEXTURE_2D);
+      } else {
+        gl.glBindTexture(GL.GL_TEXTURE_2D, objectId);
+        gl.glEnable(GL.GL_TEXTURE_2D);
+      }
     }
 
     void updateTexture2DImage(Context ctx,
@@ -2202,8 +2289,11 @@ class JoglPipeline extends Pipeline {
             int width, int height,
             int boundaryWidth,
             byte[] imageData) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTexture2DImage()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DImage()");
+
+      updateTexture2DImage(ctx, GL.GL_TEXTURE_2D,
+                           numLevels, level, internalFormat, storedFormat,
+                           width, height, boundaryWidth, imageData);
     }
 
     void updateTexture2DSubImage(Context ctx,
@@ -2234,8 +2324,12 @@ class JoglPipeline extends Pipeline {
             int boundaryModeS, int boundaryModeT,
             float boundaryRed, float boundaryGreen,
             float boundaryBlue, float boundaryAlpha) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTexture2DBoundary()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DBoundary()");
+
+      updateTextureBoundary(ctx, GL.GL_TEXTURE_2D, 
+                            boundaryModeS, boundaryModeT, -1,
+                            boundaryRed, boundaryGreen, 
+                            boundaryBlue, boundaryAlpha);
     }
 
     void updateDetailTextureParameters(Context ctx,
@@ -2248,8 +2342,9 @@ class JoglPipeline extends Pipeline {
 
     void updateTexture2DFilterModes(Context ctx,
             int minFilter, int magFilter) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTexture2DFilterModes()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DFilterModes()");
+
+      updateTextureFilterModes(ctx, GL.GL_TEXTURE_2D, minFilter, magFilter);
     }
 
     void updateTexture2DSharpenFunc(Context ctx,
@@ -2454,6 +2549,264 @@ class JoglPipeline extends Pipeline {
     }
 
 
+  //----------------------------------------------------------------------
+  //
+  // Helper routines for above texture methods
+  //
+
+  private void updateTexture2DImage(Context ctx,
+                                    int target,
+                                    int numLevels,
+                                    int level,
+                                    int internalFormat, 
+                                    int format, 
+                                    int width, 
+                                    int height, 
+                                    int boundaryWidth,
+                                    byte[] imageYup) {
+    GL gl = context(ctx).getGL();
+    
+    int oglFormat = 0, oglInternalFormat = 0;
+    
+    switch (internalFormat) {
+      case Texture.INTENSITY:
+        oglInternalFormat = GL.GL_INTENSITY;
+        break;
+      case Texture.LUMINANCE:
+        oglInternalFormat = GL.GL_LUMINANCE;
+        break;
+      case Texture.ALPHA:
+        oglInternalFormat = GL.GL_ALPHA;
+        break;
+      case Texture.LUMINANCE_ALPHA:
+        oglInternalFormat = GL.GL_LUMINANCE_ALPHA;
+        break;
+      case Texture.RGB: 
+        oglInternalFormat = GL.GL_RGB;
+        break;
+      case Texture.RGBA:
+        oglInternalFormat = GL.GL_RGBA;
+        break;
+    }
+    switch (format) {
+      case ImageComponentRetained.BYTE_RGBA:         
+        // all RGB types are stored as RGBA
+        oglFormat = GL.GL_RGBA;
+        break;
+      case ImageComponentRetained.BYTE_RGB:         
+        oglFormat = GL.GL_RGB;
+        break;
+
+      case ImageComponentRetained.BYTE_ABGR:         
+        if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
+          oglFormat = GL.GL_ABGR_EXT;
+        }
+        break;
+
+      case ImageComponentRetained.BYTE_BGR:         
+        oglFormat = GL.GL_BGR;
+        break;
+
+      case ImageComponentRetained.BYTE_LA: 
+        // all LA types are stored as LA8
+        oglFormat = GL.GL_LUMINANCE_ALPHA;
+        break;
+      case ImageComponentRetained.BYTE_GRAY:
+      case ImageComponentRetained.USHORT_GRAY:
+        if (oglInternalFormat == GL.GL_ALPHA) {
+          oglFormat = GL.GL_ALPHA;
+        } else  {
+          oglFormat = GL.GL_LUMINANCE;
+        }
+        break;
+    }
+    // check if we are trying to draw NPOT on a system that doesn't support it
+    if ((!gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) &&
+        (!isPowerOfTwo(width) || !isPowerOfTwo(height))) {
+      // disable texture by setting width and height to 0
+      width = height = 0;
+    }
+    int type = GL.GL_UNSIGNED_BYTE;
+    if (format == ImageComponentRetained.USHORT_GRAY) {
+      type = GL.GL_UNSIGNED_SHORT;
+    }
+    Buffer buf = null;
+    if (imageYup != null) {
+      buf = ByteBuffer.wrap(imageYup);
+    }
+    gl.glTexImage2D(target, level, oglInternalFormat, 
+                    width, height, boundaryWidth,
+                    oglFormat, type, buf);
+
+    // No idea why we need following call.
+    gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+  }
+                                    
+  private static boolean isPowerOfTwo(int val) {
+    return ((val & (val - 1)) == 0);
+  }
+
+  void updateTextureFilterModes(Context ctx,
+                                int target,
+                                int minFilter,
+                                int magFilter) {
+    GL gl = context(ctx).getGL();
+
+    // FIXME: unclear whether we really need to set up the enum values
+    // in the JoglContext as is done in the native code depending on
+    // extension availability; maybe this is the defined fallback
+    // behavior of the various Java3D modes
+
+    // set texture min filter
+    switch (minFilter) {
+      case Texture.FASTEST:
+      case Texture.BASE_LEVEL_POINT:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+        break;
+      case Texture.BASE_LEVEL_LINEAR:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+        break;
+      case Texture.MULTI_LEVEL_POINT:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER, 
+                           GL.GL_NEAREST_MIPMAP_NEAREST);
+        break;
+      case Texture.NICEST:
+      case Texture.MULTI_LEVEL_LINEAR:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER, 
+                           GL.GL_LINEAR_MIPMAP_LINEAR);
+        break;
+      case Texture.FILTER4:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER, 
+                           GL.GL_FILTER4_SGIS);
+        break;
+    }
+
+    // set texture mag filter
+    switch (magFilter) {
+      case Texture.FASTEST:
+      case Texture.BASE_LEVEL_POINT:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+        break;
+      case Texture.NICEST:
+      case Texture.BASE_LEVEL_LINEAR:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+        break;
+      case Texture.LINEAR_SHARPEN:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+                           GL.GL_LINEAR_SHARPEN_SGIS);
+        break;
+      case Texture.LINEAR_SHARPEN_RGB:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+                           GL.GL_LINEAR_SHARPEN_COLOR_SGIS);
+        break;
+      case Texture.LINEAR_SHARPEN_ALPHA:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+                           GL.GL_LINEAR_SHARPEN_ALPHA_SGIS);
+        break;
+      case Texture2D.LINEAR_DETAIL:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+                           GL.GL_LINEAR_DETAIL_SGIS);
+        break;
+      case Texture2D.LINEAR_DETAIL_RGB:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+                           GL.GL_LINEAR_DETAIL_COLOR_SGIS);
+        break;
+      case Texture2D.LINEAR_DETAIL_ALPHA:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+                           GL.GL_LINEAR_DETAIL_ALPHA_SGIS);
+        break;
+      case Texture.FILTER4:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER, 
+                           GL.GL_FILTER4_SGIS);
+        break;
+    }
+  }
+
+  void updateTextureBoundary(Context ctx,
+                             int target,
+                             int boundaryModeS, 
+                             int boundaryModeT, 
+                             int boundaryModeR, 
+                             float boundaryRed, 
+                             float boundaryGreen, 
+                             float boundaryBlue, 
+                             float boundaryAlpha) {
+    GL gl = context(ctx).getGL();
+    
+    // set texture wrap parameter
+    switch (boundaryModeS) {
+      case Texture.WRAP: 
+        gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+        break;
+      case Texture.CLAMP:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
+        break;
+      case Texture.CLAMP_TO_EDGE:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_S, 
+                           GL.GL_CLAMP_TO_EDGE);
+        break;
+      case Texture.CLAMP_TO_BOUNDARY:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_S, 
+                           GL.GL_CLAMP_TO_BORDER);
+        break;
+    }
+
+    switch (boundaryModeT) {
+      case Texture.WRAP:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+        break;
+      case Texture.CLAMP:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
+        break;
+      case Texture.CLAMP_TO_EDGE:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_T, 
+                           GL.GL_CLAMP_TO_EDGE);
+        break;
+      case Texture.CLAMP_TO_BOUNDARY:
+        gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_T, 
+                           GL.GL_CLAMP_TO_BORDER);
+        break;
+    }
+
+    // applies to Texture3D only
+    if (boundaryModeR != -1) {
+      switch (boundaryModeR) {
+        case Texture.WRAP:
+          gl.glTexParameteri(target,
+                             GL.GL_TEXTURE_WRAP_R, GL.GL_REPEAT);
+          break;
+  
+        case Texture.CLAMP:
+          gl.glTexParameteri(target,
+                             GL.GL_TEXTURE_WRAP_R, GL.GL_CLAMP);
+          break;
+        case Texture.CLAMP_TO_EDGE:
+          gl.glTexParameteri(target, 
+                             GL.GL_TEXTURE_WRAP_R, 
+                             GL.GL_CLAMP_TO_EDGE);
+          break;
+        case Texture.CLAMP_TO_BOUNDARY:
+          gl.glTexParameteri(target, 
+                             GL.GL_TEXTURE_WRAP_R,
+                             GL.GL_CLAMP_TO_BORDER);
+          break;
+      }
+    }
+
+    if (boundaryModeS == Texture.CLAMP || 
+        boundaryModeT == Texture.CLAMP ||
+        boundaryModeR == Texture.CLAMP) {
+      // set texture border color
+      float[] color = new float[4];
+      color[0] = boundaryRed;
+      color[1] = boundaryGreen;
+      color[2] = boundaryBlue;
+      color[3] = boundaryAlpha;
+      gl.glTexParameterfv(target, GL.GL_TEXTURE_BORDER_COLOR, color, 0);
+    }
+  }
+
+
     // ---------------------------------------------------------------------
 
     //
@@ -2603,8 +2956,10 @@ class JoglPipeline extends Pipeline {
       if (VERBOSE) System.err.println("JoglPipeline.destroyContext()");
       GLDrawable draw     = drawable(drawable);
       GLContext  context  = context(ctx);
+      if (GLContext.getCurrent() == context) {
+        context.release();
+      }
       context.destroy();
-      Thread.dumpStack();
       // FIXME: assuming this is the right point at which to make this call
       draw.setRealized(false);
     }
@@ -2694,7 +3049,7 @@ class JoglPipeline extends Pipeline {
       if (enable)
         gl.glEnable(GL.GL_FOG);
       else
-	gl.glDisable(GL.GL_FOG);
+        gl.glDisable(GL.GL_FOG);
     }
 
     // Setup the full scene antialising in D3D and ogl when GL_ARB_multisamle supported
@@ -2952,8 +3307,11 @@ class JoglPipeline extends Pipeline {
     // native method for updating the texture unit state map
     void updateTexUnitStateMap(Context ctx, int numActiveTexUnit,
             int[] texUnitStateMap) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTexUnitStateMap()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateTexUnitStateMap()");
+
+      // texture unit state map is explicitly handled in
+      // execute; for display list, texture unit has to match
+      // texture unit state.
     }
 
     /**
@@ -3496,8 +3854,17 @@ class JoglPipeline extends Pipeline {
       gl.glDeleteLists(id, 1);
     }
     void freeTexture(Context ctx, int id) {
-      if (DEBUG) System.err.println("JoglPipeline.freeTexture()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.freeTexture()");
+
+      GL gl = context(ctx).getGL();
+      
+      if (id > 0) {
+        int[] tmp = new int[1];
+        tmp[0] = id;
+	gl.glDeleteTextures(1, tmp, 0);
+      } else {
+	throw new RuntimeException("tried to delete tex with texid <= 0");
+      }
     }
 
     void composite(Context ctx, int px, int py,
