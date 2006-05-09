@@ -185,14 +185,50 @@ class JoglPipeline extends Pipeline {
 
     void setVertexFormat(Context ctx, GeometryArrayRetained geo,
             int vformat, boolean useAlpha, boolean ignoreVertexColors) {
-      if (DEBUG) System.err.println("JoglPipeline.setVertexFormat()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.setVertexFormat()");
+
+      GL gl = context(ctx).getGL();
+
+      // Enable and disable the appropriate pointers
+      if ((vformat & GeometryArray.NORMALS) != 0) {
+        gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
+      } else {
+        gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
+      }
+      if (!ignoreVertexColors && ((vformat & GeometryArray.COLOR) != 0)) {
+        gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+      } else {
+        gl.glDisableClientState(GL.GL_COLOR_ARRAY);
+      }
+
+      if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
+        if (useAlpha) {
+          gl.glEnable(GL.GL_GLOBAL_ALPHA_SUN);
+        } else {
+          gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
+        }
+      }
+
+      if ((vformat & GeometryArray.COORDINATES) != 0) {
+        gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+      } else {
+        gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
+      }
     }
 
     void disableGlobalAlpha(Context ctx, GeometryArrayRetained geo, int vformat,
             boolean useAlpha, boolean ignoreVertexColors) {
-      if (DEBUG) System.err.println("JoglPipeline.disableGlobalAlpha()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.disableGlobalAlpha()");
+
+      GL gl = context(ctx).getGL();
+
+      if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
+        if (!ignoreVertexColors && ((vformat & GeometryArray.COLOR) != 0)) {
+          if (useAlpha) {
+            gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
+          }
+        }
+      }
     }
 
     // used for GeometryArrays
