@@ -1774,10 +1774,25 @@ class JoglPipeline extends Pipeline {
             float dRed, float dGreen, float dBlue,
             float red, float green, float blue,
             float alpha,
-            boolean lEnable,
+            boolean lightEnable,
             int shadeModel) {
-      if (DEBUG) System.err.println("JoglPipeline.updateColoringAttributes()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateColoringAttributes()");
+
+      GL gl = context(ctx).getGL();
+
+      float cr, cg, cb;
+
+      if (lightEnable) {
+        cr = dRed; cg = dGreen; cb = dBlue;
+      } else {
+        cr = red; cg = green; cb = blue;
+      }
+      gl.glColor4f(cr, cg, cb, alpha);
+      if (shadeModel == ColoringAttributes.SHADE_FLAT) {
+        gl.glShadeModel(GL.GL_FLAT);
+      } else {
+        gl.glShadeModel(GL.GL_SMOOTH);
+      }
     }
 
 
@@ -1787,11 +1802,34 @@ class JoglPipeline extends Pipeline {
     // DirectionalLightRetained methods
     //
 
+    private static final float[] black = new float[4];
     void updateDirectionalLight(Context ctx,
             int lightSlot, float red, float green,
-            float blue, float x, float y, float z) {
-      if (DEBUG) System.err.println("JoglPipeline.updateDirectionalLight()");
-        // TODO: implement this
+            float blue, float dirx, float diry, float dirz) {
+      if (VERBOSE) System.err.println("JoglPipeline.updateDirectionalLight()");
+      
+      GL gl = context(ctx).getGL();
+
+      int lightNum = GL.GL_LIGHT0 + lightSlot;
+      float[] values = new float[4];
+
+      values[0] = red;
+      values[1] = green;
+      values[2] = blue;
+      values[3] = 1.0f;
+      gl.glLightfv(lightNum, GL.GL_DIFFUSE, values, 0);
+      gl.glLightfv(lightNum, GL.GL_SPECULAR, values, 0);
+      values[0] = -dirx;
+      values[1] = -diry;
+      values[2] = -dirz;
+      values[3] = 0.0f;
+      gl.glLightfv(lightNum, GL.GL_POSITION, values, 0);
+      gl.glLightfv(lightNum, GL.GL_AMBIENT, black, 0);
+      gl.glLightf(lightNum, GL.GL_CONSTANT_ATTENUATION, 1.0f);
+      gl.glLightf(lightNum, GL.GL_LINEAR_ATTENUATION, 0.0f);
+      gl.glLightf(lightNum, GL.GL_QUADRATIC_ATTENUATION, 0.0f);
+      gl.glLightf(lightNum, GL.GL_SPOT_EXPONENT, 0.0f);
+      gl.glLightf(lightNum, GL.GL_SPOT_CUTOFF, 180.0f);
     }
 
 
@@ -1803,10 +1841,31 @@ class JoglPipeline extends Pipeline {
 
     void updatePointLight(Context ctx,
             int lightSlot, float red, float green,
-            float blue, float ax, float ay, float az,
-            float px, float py, float pz) {
-      if (DEBUG) System.err.println("JoglPipeline.updatePointLight()");
-        // TODO: implement this
+            float blue, float attenx, float atteny, float attenz,
+            float posx, float posy, float posz) {
+      if (VERBOSE) System.err.println("JoglPipeline.updatePointLight()");
+
+      GL gl = context(ctx).getGL();
+
+      int lightNum = GL.GL_LIGHT0 + lightSlot;
+      float[] values = new float[4];
+
+      values[0] = red;
+      values[1] = green;
+      values[2] = blue;
+      values[3] = 1.0f;
+      gl.glLightfv(lightNum, GL.GL_DIFFUSE, values, 0);
+      gl.glLightfv(lightNum, GL.GL_SPECULAR, values, 0);
+      gl.glLightfv(lightNum, GL.GL_AMBIENT, black, 0);
+      values[0] = posx;
+      values[1] = posy;
+      values[2] = posz;
+      gl.glLightfv(lightNum, GL.GL_POSITION, values, 0);
+      gl.glLightf(lightNum, GL.GL_CONSTANT_ATTENUATION, attenx);
+      gl.glLightf(lightNum, GL.GL_LINEAR_ATTENUATION, atteny);
+      gl.glLightf(lightNum, GL.GL_QUADRATIC_ATTENUATION, attenz);
+      gl.glLightf(lightNum, GL.GL_SPOT_EXPONENT, 0.0f);
+      gl.glLightf(lightNum, GL.GL_SPOT_CUTOFF, 180.0f);
     }
 
 
@@ -1818,12 +1877,37 @@ class JoglPipeline extends Pipeline {
 
     void updateSpotLight(Context ctx,
             int lightSlot, float red, float green,
-            float blue, float ax, float ay, float az,
-            float px, float py, float pz, float spreadAngle,
-            float concentration, float dx, float dy,
-            float dz) {
-      if (DEBUG) System.err.println("JoglPipeline.updateSpotLight()");
-        // TODO: implement this
+            float blue, float attenx, float atteny, float attenz,
+            float posx, float posy, float posz, float spreadAngle,
+            float concentration, float dirx, float diry,
+            float dirz) {
+      if (VERBOSE) System.err.println("JoglPipeline.updateSpotLight()");
+
+      GL gl = context(ctx).getGL();
+
+      int lightNum = GL.GL_LIGHT0 + lightSlot;
+      float[] values = new float[4];
+
+      values[0] = red;
+      values[1] = green;
+      values[2] = blue;
+      values[3] = 1.0f;
+      gl.glLightfv(lightNum, GL.GL_DIFFUSE, values, 0);
+      gl.glLightfv(lightNum, GL.GL_SPECULAR, values, 0);
+      gl.glLightfv(lightNum, GL.GL_AMBIENT, black, 0);
+      values[0] = posx;
+      values[1] = posy;
+      values[2] = posz;
+      gl.glLightfv(lightNum, GL.GL_POSITION, values, 0);
+      gl.glLightf(lightNum, GL.GL_CONSTANT_ATTENUATION, attenx);
+      gl.glLightf(lightNum, GL.GL_LINEAR_ATTENUATION, atteny);
+      gl.glLightf(lightNum, GL.GL_QUADRATIC_ATTENUATION, attenz);
+      values[0] = dirx;
+      values[1] = diry;
+      values[2] = dirz;
+      gl.glLightfv(lightNum, GL.GL_SPOT_DIRECTION, values, 0);
+      gl.glLightf(lightNum, GL.GL_SPOT_EXPONENT, concentration);
+      gl.glLightf(lightNum, GL.GL_SPOT_CUTOFF, (float) (spreadAngle * 180.0f / Math.PI));
     }
 
 
@@ -1879,13 +1963,61 @@ class JoglPipeline extends Pipeline {
 
     void updateMaterial(Context ctx,
             float red, float green, float blue, float alpha,
-            float ared, float agreen, float ablue,
-            float ered, float egreen, float eblue,
-            float dred, float dgreen, float dblue,
-            float sred, float sgreen, float sblue,
-            float shininess, int colorTarget, boolean enable) {
-      if (DEBUG) System.err.println("JoglPipeline.updateMaterial()");
-        // TODO: implement this
+            float aRed, float aGreen, float aBlue,
+            float eRed, float eGreen, float eBlue,
+            float dRed, float dGreen, float dBlue,
+            float sRed, float sGreen, float sBlue,
+            float shininess, int colorTarget, boolean lightEnable) {
+      if (VERBOSE) System.err.println("JoglPipeline.updateMaterial()");
+
+      float[] color = new float[4];
+
+      GL gl = context(ctx).getGL();
+
+      gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, shininess);
+      switch (colorTarget) {
+        case Material.DIFFUSE:
+          gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE);
+          break;
+        case Material.AMBIENT:
+          gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT);
+          break;
+        case Material.EMISSIVE:
+          gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION);
+          break;
+        case Material.SPECULAR:
+          gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR);
+          break;
+        case Material.AMBIENT_AND_DIFFUSE:
+          gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE);
+          break;
+      }
+
+      color[0] = eRed; color[1] = eGreen; color[2] = eBlue;
+      gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, color, 0);
+ 
+      color[0] = aRed; color[1] = aGreen; color[2] = aBlue;
+      gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, color, 0);
+
+      color[0] = sRed; color[1] = sGreen; color[2] = sBlue;
+      gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, color, 0);
+  
+      float cr, cg, cb;
+
+      if (lightEnable) {
+        color[0] = dRed; color[1] = dGreen; color[2] = dBlue;
+      } else {
+        color[0] = red; color[1] = green; color[2] = blue;
+      }
+      color[3] = alpha;
+      gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, color, 0);
+      gl.glColor4f(color[0], color[1], color[2], color[3]);
+
+      if (lightEnable) {
+        gl.glEnable(GL.GL_LIGHTING);
+      } else {
+        gl.glDisable(GL.GL_LIGHTING);
+      }
     }
 
 
@@ -2330,9 +2462,11 @@ class JoglPipeline extends Pipeline {
 
     // Method to return the AWT object
     long getAWT() {
-      if (DEBUG) System.err.println("JoglPipeline.getAWT()");
-        // TODO: implement this
-        return 0L;
+      if (VERBOSE) System.err.println("JoglPipeline.getAWT()");
+
+      // FIXME: probably completely unneeded in this implementation,
+      // but should probably remove this dependence in the shared code
+      return 0;
     }
 
     // Method to initialize the native J3D library
@@ -2343,9 +2477,11 @@ class JoglPipeline extends Pipeline {
 
     // Maximum lights supported by the native API
     int getMaximumLights() {
-      if (DEBUG) System.err.println("JoglPipeline.getMaximumLights()");
-        // TODO: implement this
-        return 8;
+      if (VERBOSE) System.err.println("JoglPipeline.getMaximumLights()");
+
+      // FIXME: this isn't quite what the NativePipeline returns but
+      // is probably close enough
+      return 8;
     }
 
 
@@ -2494,9 +2630,12 @@ class JoglPipeline extends Pipeline {
     // This is the native method for getting the number of lights the underlying
     // native library can support.
     int getNumCtxLights(Context ctx) {
-      if (DEBUG) System.err.println("JoglPipeline.getNumCtxLights()");
-        // TODO: implement this
-        return 0;
+      if (VERBOSE) System.err.println("JoglPipeline.getNumCtxLights()");
+
+      GL gl = context(ctx).getGL();
+      int[] res = new int[1];
+      gl.glGetIntegerv(GL.GL_MAX_LIGHTS, res, 0);
+      return res[0];
     }
 
     // Native method for decal 1st child setup
@@ -2518,10 +2657,17 @@ class JoglPipeline extends Pipeline {
         // TODO: implement this
     }
 
-    // Native method for decal reset
+    // Native method for eye lighting
     void ctxUpdateEyeLightingEnable(Context ctx, boolean localEyeLightingEnable) {
       if (DEBUG) System.err.println("JoglPipeline.ctxUpdateEyeLightingEnable()");
-        // TODO: implement this
+
+      GL gl = context(ctx).getGL();
+
+      if (localEyeLightingEnable) {
+        gl.glLightModeli(GL.GL_LIGHT_MODEL_LOCAL_VIEWER, GL.GL_TRUE);
+      } else {
+        gl.glLightModeli(GL.GL_LIGHT_MODEL_LOCAL_VIEWER, GL.GL_FALSE);
+      }
     }
 
     // The following three methods are used in multi-pass case
@@ -2540,9 +2686,15 @@ class JoglPipeline extends Pipeline {
     }
 
     // native method for setting fog enable flag
-    void setFogEnableFlag(Context ctx, boolean enableFlag) {
-      if (DEBUG) System.err.println("JoglPipeline.setFogEnableFlag()");
-        // TODO: implement this
+    void setFogEnableFlag(Context ctx, boolean enable) {
+      if (VERBOSE) System.err.println("JoglPipeline.setFogEnableFlag()");
+
+      GL gl = context(ctx).getGL();
+
+      if (enable)
+        gl.glEnable(GL.GL_FOG);
+      else
+	gl.glDisable(GL.GL_FOG);
     }
 
     // Setup the full scene antialising in D3D and ogl when GL_ARB_multisamle supported
@@ -2557,9 +2709,16 @@ class JoglPipeline extends Pipeline {
     }
 
     // Native method to update separate specular color control
-    void updateSeparateSpecularColorEnable(Context ctx, boolean control) {
-      if (DEBUG) System.err.println("JoglPipeline.updateSeparateSpecularColorEnable()");
-        // TODO: implement this
+    void updateSeparateSpecularColorEnable(Context ctx, boolean enable) {
+      if (VERBOSE) System.err.println("JoglPipeline.updateSeparateSpecularColorEnable()");
+
+      GL gl = context(ctx).getGL();
+
+      if (enable) {
+        gl.glLightModeli(GL.GL_LIGHT_MODEL_COLOR_CONTROL, GL.GL_SEPARATE_SPECULAR_COLOR);
+      } else {
+        gl.glLightModeli(GL.GL_LIGHT_MODEL_COLOR_CONTROL, GL.GL_SINGLE_COLOR);
+      }
     }
 
     // Initialization for D3D when scene begins and ends
@@ -2578,26 +2737,53 @@ class JoglPipeline extends Pipeline {
 
     // native method for setting light enables
     void setLightEnables(Context ctx, long enableMask, int maxLights) {
-      if (DEBUG) System.err.println("JoglPipeline.setLightEnables()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.setLightEnables()");
+
+      GL gl = context(ctx).getGL();
+
+      for (int i = 0; i < maxLights; i++) {
+        if ((enableMask & (1 << i)) != 0) {
+          gl.glEnable(GL.GL_LIGHT0 + i);
+        } else {
+          gl.glDisable(GL.GL_LIGHT0 + i);
+        }
+      }
     }
 
     // native method for setting scene ambient
     void setSceneAmbient(Context ctx, float red, float green, float blue) {
-      if (DEBUG) System.err.println("JoglPipeline.setSceneAmbient()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.setSceneAmbient()");
+
+      GL gl = context(ctx).getGL();
+
+      float[] color = new float[4];
+      color[0] = red;
+      color[1] = green;
+      color[2] = blue;
+      color[3] = 1.0f;
+      gl.glLightModelfv(GL.GL_LIGHT_MODEL_AMBIENT, color, 0);
     }
 
     // native method for disabling fog
     void disableFog(Context ctx) {
-      if (DEBUG) System.err.println("JoglPipeline.disableFog()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.disableFog()");
+
+      GL gl = context(ctx).getGL();
+      gl.glDisable(GL.GL_FOG);
     }
 
     // native method for disabling modelClip
     void disableModelClip(Context ctx) {
-      if (DEBUG) System.err.println("JoglPipeline.disableModelClip()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.disableModelClip()");
+
+      GL gl = context(ctx).getGL();
+
+      gl.glDisable(GL.GL_CLIP_PLANE0);
+      gl.glDisable(GL.GL_CLIP_PLANE1);
+      gl.glDisable(GL.GL_CLIP_PLANE2);
+      gl.glDisable(GL.GL_CLIP_PLANE3);
+      gl.glDisable(GL.GL_CLIP_PLANE4);
+      gl.glDisable(GL.GL_CLIP_PLANE5);
     }
 
     // native method for setting default RenderingAttributes
@@ -2622,14 +2808,30 @@ class JoglPipeline extends Pipeline {
 
     // native method for setting default texture
     void resetTextureNative(Context ctx, int texUnitIndex) {
-      if (DEBUG) System.err.println("JoglPipeline.resetTextureNative()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.resetTextureNative()");
+
+      GL gl = context(ctx).getGL();
+      if (texUnitIndex >= 0 &&
+          gl.isExtensionAvailable("GL_VERSION_1_3")) {
+        gl.glActiveTexture(texUnitIndex + GL.GL_TEXTURE0);
+        gl.glClientActiveTexture(texUnitIndex + GL.GL_TEXTURE0);
+      }
+
+      gl.glDisable(GL.GL_TEXTURE_1D);
+      gl.glDisable(GL.GL_TEXTURE_2D);
+      gl.glDisable(GL.GL_TEXTURE_3D);
+      gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
     }
 
     // native method for activating a particular texture unit
     void activeTextureUnit(Context ctx, int texUnitIndex) {
-      if (DEBUG) System.err.println("JoglPipeline.activeTextureUnit()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.activeTextureUnit()");
+
+      GL gl = context(ctx).getGL();
+      if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
+        gl.glActiveTexture(texUnitIndex + GL.GL_TEXTURE0);
+        gl.glClientActiveTexture(texUnitIndex + GL.GL_TEXTURE0);
+      }
     }
 
     // native method for setting default TexCoordGeneration
@@ -2645,8 +2847,27 @@ class JoglPipeline extends Pipeline {
 
     // native method for setting default TextureAttributes
     void resetTextureAttributes(Context ctx) {
-      if (DEBUG) System.err.println("JoglPipeline.resetTextureAttributes()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.resetTextureAttributes()");
+
+      GL gl = context(ctx).getGL();
+
+      float[] color = new float[4];
+
+      gl.glPushAttrib(GL.GL_MATRIX_MODE);
+      gl.glMatrixMode(GL.GL_TEXTURE);
+      gl.glLoadIdentity();
+      gl.glPopAttrib();
+      gl.glTexEnvfv(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_COLOR, color, 0);
+      gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
+      gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+
+      if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
+        gl.glDisable(GL.GL_REGISTER_COMBINERS_NV);
+      }
+
+      if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
+        gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
+      }
     }
 
     // native method for setting default PolygonAttributes
@@ -2670,14 +2891,25 @@ class JoglPipeline extends Pipeline {
 
     // native method for setting default LineAttributes
     void resetLineAttributes(Context ctx) {
-      if (DEBUG) System.err.println("JoglPipeline.resetLineAttributes()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.resetLineAttributes()");
+
+      GL gl = context(ctx).getGL();
+      gl.glLineWidth(1.0f);
+      gl.glDisable(GL.GL_LINE_STIPPLE);
+
+      // XXXX: Polygon Mode check, blend enable
+      gl.glDisable(GL.GL_LINE_SMOOTH);
     }
 
     // native method for setting default PointAttributes
     void resetPointAttributes(Context ctx) {
-      if (DEBUG) System.err.println("JoglPipeline.resetPointAttributes()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.resetPointAttributes()");
+
+      GL gl = context(ctx).getGL();
+      gl.glPointSize(1.0f);
+
+      // XXXX: Polygon Mode check, blend enable
+      gl.glDisable(GL.GL_POINT_SMOOTH);
     }
 
     // native method for setting default TransparencyAttributes
