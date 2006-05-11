@@ -158,7 +158,7 @@ class JoglPipeline extends Pipeline {
       
       // get texture arrays
       if (textureDefined) {
-        texCoordBufs = getTexCoordSetBuffer((float[][]) texCoords);
+        texCoordBufs = getTexCoordSetBuffer(texCoords);
       }
 
       // get coordinate array
@@ -1563,7 +1563,7 @@ class JoglPipeline extends Pipeline {
 
       // get texture arrays
       if (textureDefined) {
-        texCoordBufs = getTexCoordSetBuffer((float[][]) texCoords);
+        texCoordBufs = getTexCoordSetBuffer(texCoords);
       }
 
       int[] sarray = null;
@@ -5875,7 +5875,7 @@ class JoglPipeline extends Pipeline {
     return getNIOBuffer(normalArray, nioNormalTemp);
   }
 
-  private static FloatBuffer[] getTexCoordSetBuffer(float[][] texCoordSet) {
+  private static FloatBuffer[] getTexCoordSetBuffer(Object[] texCoordSet) {
     return getNIOBuffer(texCoordSet, nioTexCoordSetTemp);
   }
 
@@ -5942,7 +5942,7 @@ class JoglPipeline extends Pipeline {
     return buf;
   }
 
-  private static FloatBuffer[] getNIOBuffer(float[][] array, ThreadLocal threadLocal) {
+  private static FloatBuffer[] getNIOBuffer(Object[] array, ThreadLocal threadLocal) {
     if (array == null) {
       return null;
     }
@@ -5961,7 +5961,7 @@ class JoglPipeline extends Pipeline {
 
     // Now go down array of arrays, converting each into a direct FloatBuffer
     for (int i = 0; i < array.length; i++) {
-      float[] cur = array[i];
+      float[] cur = (float[]) array[i];
       FloatBuffer buf = bufs[i];
       if (buf == null) {
         buf = BufferUtil.newFloatBuffer(cur.length);
