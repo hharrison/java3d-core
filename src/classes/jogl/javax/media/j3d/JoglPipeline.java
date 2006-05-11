@@ -3070,8 +3070,60 @@ class JoglPipeline extends Pipeline {
             boolean backFaceNormalFlip,
             float polygonOffset,
             float polygonOffsetFactor) {
-      if (DEBUG) System.err.println("JoglPipeline.updatePolygonAttributes()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updatePolygonAttributes()");
+
+      GL gl = context(ctx).getGL();
+
+      if (cullFace == PolygonAttributes.CULL_NONE) {
+        gl.glDisable(GL.GL_CULL_FACE);
+      } else {
+        if (cullFace == PolygonAttributes.CULL_BACK) {
+          gl.glCullFace(GL.GL_BACK);
+        } else {
+          gl.glCullFace(GL.GL_FRONT);
+        }
+        gl.glEnable(GL.GL_CULL_FACE);
+      }
+
+      if (backFaceNormalFlip && (cullFace != PolygonAttributes.CULL_BACK)) {
+        gl.glLightModeli(GL.GL_LIGHT_MODEL_TWO_SIDE, GL.GL_TRUE);
+      } else {
+        gl.glLightModeli(GL.GL_LIGHT_MODEL_TWO_SIDE, GL.GL_FALSE);
+      }
+
+      if (polygonMode == PolygonAttributes.POLYGON_POINT) {
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_POINT);
+      } else if (polygonMode == PolygonAttributes.POLYGON_LINE) {
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
+      } else {
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
+      }
+    
+      gl.glPolygonOffset(polygonOffsetFactor, polygonOffset);
+    
+      if ((polygonOffsetFactor != 0.0) || (polygonOffset != 0.0)) {
+        switch (polygonMode) {
+        case PolygonAttributes.POLYGON_POINT:
+          gl.glEnable(GL.GL_POLYGON_OFFSET_POINT);
+          gl.glDisable(GL.GL_POLYGON_OFFSET_LINE);
+          gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
+          break;
+        case PolygonAttributes.POLYGON_LINE:
+          gl.glEnable(GL.GL_POLYGON_OFFSET_LINE);
+          gl.glDisable(GL.GL_POLYGON_OFFSET_POINT);
+          gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
+          break;
+        case PolygonAttributes.POLYGON_FILL:
+          gl.glEnable(GL.GL_POLYGON_OFFSET_FILL); 
+          gl.glDisable(GL.GL_POLYGON_OFFSET_POINT);
+          gl.glDisable(GL.GL_POLYGON_OFFSET_LINE);
+          break;
+        }
+      } else {
+        gl.glDisable(GL.GL_POLYGON_OFFSET_POINT);
+        gl.glDisable(GL.GL_POLYGON_OFFSET_LINE);
+        gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
+      }
     }
 
 
@@ -3094,9 +3146,170 @@ class JoglPipeline extends Pipeline {
             int stencilFailOp, int stencilZFailOp, int stencilZPassOp,
             int stencilFunction, int stencilReferenceValue,
             int stencilCompareMask, int stencilWriteMask ) {
-      if (DEBUG) System.err.println("JoglPipeline.updateRenderingAttributes()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateRenderingAttributes()");
+
+      GL gl = context(ctx).getGL();
+
+      if (!depthBufferEnableOverride) {
+        if (depthBufferEnable) {
+          gl.glEnable(GL.GL_DEPTH_TEST);
+          gl.glDepthFunc(getFunctionValue(depthTestFunction));
+        } else {
+          gl.glDisable(GL.GL_DEPTH_TEST);
+        }
+      } 
+
+      if (!depthBufferWriteEnableOverride) {
+        if (depthBufferWriteEnable) {
+          gl.glDepthMask(true);
+        } else {
+          gl.glDepthMask(false);
+        }
+      } 
+
+      if (alphaTestFunction == RenderingAttributes.ALWAYS) {
+        gl.glDisable(GL.GL_ALPHA_TEST);
+      } else {
+        gl.glEnable(GL.GL_ALPHA_TEST);
+        gl.glAlphaFunc(getFunctionValue(alphaTestFunction), alphaTestValue);
+      }
+
+      if (ignoreVertexColors) {
+        gl.glDisable(GL.GL_COLOR_MATERIAL);
+      } else {
+        gl.glEnable(GL.GL_COLOR_MATERIAL);
+      }
+    
+      if (rasterOpEnable) {
+        gl.glEnable(GL.GL_COLOR_LOGIC_OP);
+        switch (rasterOp) {
+          case RenderingAttributes.ROP_CLEAR:
+            gl.glLogicOp(GL.GL_CLEAR);
+            break;
+          case RenderingAttributes.ROP_AND:
+            gl.glLogicOp(GL.GL_AND);
+            break;
+          case RenderingAttributes.ROP_AND_REVERSE:
+            gl.glLogicOp(GL.GL_AND_REVERSE);
+            break;
+          case RenderingAttributes.ROP_COPY:
+            gl.glLogicOp(GL.GL_COPY);
+            break;
+          case RenderingAttributes.ROP_AND_INVERTED:
+            gl.glLogicOp(GL.GL_AND_INVERTED);
+            break;
+          case RenderingAttributes.ROP_NOOP:
+            gl.glLogicOp(GL.GL_NOOP);
+            break;
+          case RenderingAttributes.ROP_XOR:
+            gl.glLogicOp(GL.GL_XOR);
+            break;
+          case RenderingAttributes.ROP_OR:
+            gl.glLogicOp(GL.GL_OR);
+            break;
+          case RenderingAttributes.ROP_NOR:
+            gl.glLogicOp(GL.GL_NOR);
+            break;
+          case RenderingAttributes.ROP_EQUIV:
+            gl.glLogicOp(GL.GL_EQUIV);
+            break;
+          case RenderingAttributes.ROP_INVERT:
+            gl.glLogicOp(GL.GL_INVERT);
+            break;
+          case RenderingAttributes.ROP_OR_REVERSE:
+            gl.glLogicOp(GL.GL_OR_REVERSE);
+            break;
+          case RenderingAttributes.ROP_COPY_INVERTED:
+            gl.glLogicOp(GL.GL_COPY_INVERTED);
+            break;
+          case RenderingAttributes.ROP_OR_INVERTED:
+            gl.glLogicOp(GL.GL_OR_INVERTED);
+            break;
+          case RenderingAttributes.ROP_NAND:
+            gl.glLogicOp(GL.GL_NAND);
+            break;
+          case RenderingAttributes.ROP_SET:
+            gl.glLogicOp(GL.GL_SET);
+            break;
+        }
+      } else {
+        gl.glDisable(GL.GL_COLOR_LOGIC_OP);
+      }
+
+      if (userStencilAvailable) {
+        if (stencilEnable) {
+          gl.glEnable(GL.GL_STENCIL_TEST);
+          
+          gl.glStencilOp(getStencilOpValue(stencilFailOp),
+                         getStencilOpValue(stencilZFailOp),
+                         getStencilOpValue(stencilZPassOp));
+
+          gl.glStencilFunc(getFunctionValue(stencilFunction),
+                           stencilReferenceValue, stencilCompareMask);
+
+          gl.glStencilMask(stencilWriteMask);
+      
+        } else {
+          gl.glDisable(GL.GL_STENCIL_TEST);
+        }
+      }
     }
+
+  private int getFunctionValue(int func) {
+    switch (func) {
+      case RenderingAttributes.ALWAYS:
+        func = GL.GL_ALWAYS;
+        break;
+      case RenderingAttributes.NEVER:
+        func = GL.GL_NEVER;
+        break;
+      case RenderingAttributes.EQUAL:
+        func = GL.GL_EQUAL;
+        break;
+      case RenderingAttributes.NOT_EQUAL:
+        func = GL.GL_NOTEQUAL;
+        break;
+      case RenderingAttributes.LESS:
+        func = GL.GL_LESS;
+        break;
+      case RenderingAttributes.LESS_OR_EQUAL:
+        func = GL.GL_LEQUAL;
+        break;
+      case RenderingAttributes.GREATER:
+        func = GL.GL_GREATER;
+        break;
+      case RenderingAttributes.GREATER_OR_EQUAL:
+        func = GL.GL_GEQUAL;
+        break;
+    }
+
+    return func;
+  }
+
+  private int getStencilOpValue(int op) {
+    switch (op) {
+      case RenderingAttributes.STENCIL_KEEP:
+        op = GL.GL_KEEP;
+        break;
+      case RenderingAttributes.STENCIL_ZERO:
+        op = GL.GL_ZERO;
+        break;
+      case RenderingAttributes.STENCIL_REPLACE:
+        op = GL.GL_REPLACE;
+        break;
+      case RenderingAttributes.STENCIL_INCR:
+        op = GL.GL_INCR;
+        break;
+      case RenderingAttributes.STENCIL_DECR:
+        op = GL.GL_DECR;
+        break;
+      case RenderingAttributes.STENCIL_INVERT:
+        op = GL.GL_INVERT;
+        break;
+    }
+
+    return op;
+  }
 
 
     // ---------------------------------------------------------------------
@@ -3555,8 +3768,13 @@ class JoglPipeline extends Pipeline {
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
             byte[] imageData) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTexture2DSubImage()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DSubImage()");
+
+      updateTexture2DSubImage(ctx, GL.GL_TEXTURE_2D,
+                              level, xoffset, yoffset,
+                              internalFormat, storedFormat,
+                              imgXOffset, imgYOffset, tilew, width, height,
+                              imageData);
     }
 
     void updateTexture2DLodRange(Context ctx,
@@ -3618,7 +3836,6 @@ class JoglPipeline extends Pipeline {
       if (DEBUG) System.err.println("JoglPipeline.updateTexture2DAnisotropicFilter()");
         // TODO: implement this
     }
-
 
     // ---------------------------------------------------------------------
 
@@ -3841,6 +4058,7 @@ class JoglPipeline extends Pipeline {
         oglInternalFormat = GL.GL_RGBA;
         break;
     }
+
     switch (format) {
       case ImageComponentRetained.BYTE_RGBA:         
         // all RGB types are stored as RGBA
@@ -3895,6 +4113,124 @@ class JoglPipeline extends Pipeline {
     gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
   }
                                     
+
+  private void updateTexture2DSubImage(Context ctx,
+            int target,
+            int level, int xoffset, int yoffset,
+            int internalFormat, int storedFormat,
+            int imgXOffset, int imgYOffset,
+            int tilew, int width, int height,
+            byte[] imageData) {
+    GL gl = context(ctx).getGL();
+
+    int oglFormat = 0, oglInternalFormat=0;
+    int numBytes = 0;
+    boolean pixelStore = false;
+      
+    switch (internalFormat) {
+      case Texture.INTENSITY:
+        oglInternalFormat = GL.GL_INTENSITY;
+        break;
+      case Texture.LUMINANCE:
+        oglInternalFormat = GL.GL_LUMINANCE;
+        break;
+      case Texture.ALPHA:
+        oglInternalFormat = GL.GL_ALPHA;
+        break;
+      case Texture.LUMINANCE_ALPHA:
+        oglInternalFormat = GL.GL_LUMINANCE_ALPHA;
+        break;
+      case Texture.RGB: 
+        oglInternalFormat = GL.GL_RGB;
+        break;
+      case Texture.RGBA:
+        oglInternalFormat = GL.GL_RGBA;
+        break;
+    }
+
+    switch (storedFormat) {
+      case ImageComponentRetained.BYTE_RGBA:         
+        // all RGB types are stored as RGBA
+        oglFormat = GL.GL_RGBA;
+        numBytes = 4;
+        break;
+      case ImageComponentRetained.BYTE_RGB:         
+        oglFormat = GL.GL_RGB;
+        numBytes = 3;
+        break;
+    
+      case ImageComponentRetained.BYTE_ABGR:         
+        if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
+          oglFormat = GL.GL_ABGR_EXT;
+          numBytes = 4;
+        }
+        break;
+    
+      case ImageComponentRetained.BYTE_BGR:         
+        oglFormat = GL.GL_BGR;
+        numBytes = 3;
+        break;
+    
+      case ImageComponentRetained.BYTE_LA: 
+        // all LA types are stored as LA8
+        oglFormat = GL.GL_LUMINANCE_ALPHA;
+        numBytes = 2;
+        break;
+      case ImageComponentRetained.BYTE_GRAY:
+        if (oglInternalFormat == GL.GL_ALPHA) {
+          oglFormat = GL.GL_ALPHA;
+        } else  {
+          oglFormat = GL.GL_LUMINANCE;
+        }
+        numBytes = 1;
+      case ImageComponentRetained.USHORT_GRAY:
+        if (oglInternalFormat == GL.GL_ALPHA) {
+          oglFormat = GL.GL_ALPHA;
+        } else  {
+          oglFormat = GL.GL_LUMINANCE;
+        }
+        numBytes = 2;
+        break;
+    }
+
+    if (imgXOffset > 0 || (width < tilew)) {
+      pixelStore = true;
+      gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, tilew);
+    }
+      
+    // if NPOT textures are not supported, check if h=w=0, if so we have been 
+    // disabled due to a NPOT texture being sent to a context that doesn't
+    // support it: disable the glTexSubImage as well
+    if (gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) {
+      int[] tmp = new int[1];
+      int texWidth, texHeight;
+      gl.glGetTexLevelParameteriv(GL.GL_TEXTURE_2D, 0, GL.GL_TEXTURE_WIDTH, tmp, 0);
+      texWidth = tmp[0];
+      gl.glGetTexLevelParameteriv(GL.GL_TEXTURE_2D, 0, GL.GL_TEXTURE_HEIGHT, tmp, 0);
+      texHeight = tmp[0];
+      if ((texWidth == 0) && (texHeight == 0)) {
+        // disable the sub-image by setting it's width and height to 0
+        width = height = 0;
+      }
+    }
+
+    if (storedFormat != ImageComponentRetained.USHORT_GRAY) {
+      ByteBuffer buf = ByteBuffer.wrap(imageData);
+      // offset by the imageOffset
+      buf.position((tilew * imgYOffset + imgXOffset) * numBytes);
+      gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, 
+                         oglFormat, GL.GL_UNSIGNED_BYTE, buf);
+    } else { // unsigned short
+      ByteBuffer buf = ByteBuffer.wrap(imageData);
+      buf.position((tilew * imgYOffset + imgXOffset) * numBytes);
+      gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, 
+                         oglFormat, GL.GL_UNSIGNED_SHORT, buf);
+    }
+    if (pixelStore) {
+      gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
+    }
+  }
+
   private static boolean isPowerOfTwo(int val) {
     return ((val & (val - 1)) == 0);
   }
