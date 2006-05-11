@@ -123,19 +123,85 @@ class JoglPipeline extends Pipeline {
             int vcount,
             int vformat,
             int vdefined,
-            int coordIndex, float[] vfcoords, double[] vdcoords,
-            int colorIndex, float[] cfdata, byte[] cbdata,
-            int normalIndex, float[] ndata,
+            int initialCoordIndex, float[] vfcoords, double[] vdcoords,
+            int initialColorIndex, float[] cfdata, byte[] cbdata,
+            int initialNormalIndex, float[] ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
-            int[] vertexAttrIndex, float[][] vertexAttrData,
-            int pass, int texcoordmaplength,
+            int[] vertexAttrIndices, float[][] vertexAttrData,
+            int pass, int texCoordMapLength,
             int[] texcoordoffset,
             int numActiveTexUnitState, int[] texunitstatemap,
             int[] texIndex, int texstride, Object[] texCoords,
             int cdirty) {
-      if (DEBUG) System.err.println("JoglPipeline.executeVA()");
+      if (VERBOSE) System.err.println("JoglPipeline.executeVA()");
 
-        // TODO: implement this
+      boolean floatCoordDefined  = ((vdefined & GeometryArrayRetained.COORD_FLOAT)    != 0);
+      boolean doubleCoordDefined = ((vdefined & GeometryArrayRetained.COORD_DOUBLE)   != 0);
+      boolean floatColorsDefined = ((vdefined & GeometryArrayRetained.COLOR_FLOAT)    != 0);
+      boolean byteColorsDefined  = ((vdefined & GeometryArrayRetained.COLOR_BYTE)     != 0);
+      boolean normalsDefined     = ((vdefined & GeometryArrayRetained.NORMAL_FLOAT)   != 0);
+      boolean vattrDefined       = ((vdefined & GeometryArrayRetained.VATTR_FLOAT)    != 0);
+      boolean textureDefined     = ((vdefined & GeometryArrayRetained.TEXCOORD_FLOAT) != 0);
+
+      FloatBuffer fverts = null;
+      DoubleBuffer dverts = null;
+      FloatBuffer fclrs = null;
+      ByteBuffer bclrs = null;
+      FloatBuffer[] texCoordBufs = null;
+      FloatBuffer norms = null;
+      FloatBuffer[] vertexAttrBufs = null;
+
+      // Get vertex attribute arrays
+      if (vattrDefined) {
+        throw new RuntimeException("Vertex attributes not implemented yet");
+      }
+      
+      // get texture arrays
+      if (textureDefined) {
+        texCoordBufs = getTexCoordSetBuffer((float[][]) texCoords);
+      }
+
+      // get coordinate array
+      if (floatCoordDefined) {
+        fverts = getVertexArrayBuffer(vfcoords);
+      } else if (doubleCoordDefined) {
+        dverts = getVertexArrayBuffer(vdcoords);
+      }
+
+      if (floatColorsDefined) {
+        fclrs = getColorArrayBuffer(cfdata);
+      } else if (byteColorsDefined) {
+        bclrs = getColorArrayBuffer(cbdata);
+      }
+
+      // get normal array
+      if (normalsDefined) {
+        norms = getNormalArrayBuffer(ndata);
+      }
+      
+      int[] sarray = null;
+      int[] start_array = null;
+      int strip_len = 0;
+      if (geo_type == GeometryRetained.GEO_TYPE_TRI_STRIP_SET || 
+          geo_type == GeometryRetained.GEO_TYPE_TRI_FAN_SET   || 
+          geo_type == GeometryRetained.GEO_TYPE_LINE_STRIP_SET) {
+        sarray = ((GeometryStripArrayRetained) geo).stripVertexCounts;
+        strip_len = sarray.length;
+        start_array = ((GeometryStripArrayRetained) geo).stripStartOffsetIndices;
+      }
+
+      executeGeometryArrayVA(ctx, geo, geo_type,
+                             isNonUniformScale, multiScreen, ignoreVertexColors,
+                             vcount, vformat, vdefined, initialCoordIndex,
+                             fverts, dverts, initialColorIndex,
+                             fclrs, bclrs, initialNormalIndex,
+                             norms,
+                             vertexAttrCount, vertexAttrSizes,
+                             vertexAttrIndices, vertexAttrBufs,
+                             pass, texCoordMapLength,
+                             texcoordoffset, numActiveTexUnitState, texunitstatemap,
+                             texIndex, texstride, texCoordBufs, cdirty,
+                             sarray, strip_len, start_array);
     }
 
     // used by GeometryArray by Reference with NIO buffer
@@ -147,22 +213,102 @@ class JoglPipeline extends Pipeline {
             int vcount,
             int vformat,
             int vdefined,
-            int coordIndex,
+            int initialCoordIndex,
             Object vcoords,
-            int colorIndex,
+            int initialColorIndex,
             Object cdataBuffer,
             float[] cfdata, byte[] cbdata,
-            int normalIndex, Object ndata,
+            int initialNormalIndex, Object ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
-            int[] vertexAttrIndex, Object[] vertexAttrData,
-            int pass, int texcoordmaplength,
+            int[] vertexAttrIndices, Object[] vertexAttrData,
+            int pass, int texCoordMapLength,
             int[] texcoordoffset,
             int numActiveTexUnitState, int[] texunitstatemap,
             int[] texIndex, int texstride, Object[] texCoords,
             int cdirty) {
-      if (DEBUG) System.err.println("JoglPipeline.executeVABuffer()");
+      if (VERBOSE) System.err.println("JoglPipeline.executeVABuffer()");
 
-        // TODO: implement this
+      boolean floatCoordDefined  = ((vdefined & GeometryArrayRetained.COORD_FLOAT)    != 0);
+      boolean doubleCoordDefined = ((vdefined & GeometryArrayRetained.COORD_DOUBLE)   != 0);
+      boolean floatColorsDefined = ((vdefined & GeometryArrayRetained.COLOR_FLOAT)    != 0);
+      boolean byteColorsDefined  = ((vdefined & GeometryArrayRetained.COLOR_BYTE)     != 0);
+      boolean normalsDefined     = ((vdefined & GeometryArrayRetained.NORMAL_FLOAT)   != 0);
+      boolean vattrDefined       = ((vdefined & GeometryArrayRetained.VATTR_FLOAT)    != 0);
+      boolean textureDefined     = ((vdefined & GeometryArrayRetained.TEXCOORD_FLOAT) != 0);
+
+      FloatBuffer fverts = null;
+      DoubleBuffer dverts = null;
+      FloatBuffer fclrs = null;
+      ByteBuffer bclrs = null;
+      FloatBuffer[] texCoordBufs = null;
+      FloatBuffer norms = null;
+      FloatBuffer[] vertexAttrBufs = null;
+
+      // Get vertex attribute arrays
+      if (vattrDefined) {
+        throw new RuntimeException("Vertex attributes not implemented yet");
+      }
+
+      // get texture arrays
+      if (textureDefined) {
+        texCoordBufs = new FloatBuffer[texCoords.length];
+        for (int i = 0; i < texCoords.length; i++) {
+          texCoordBufs[i] = (FloatBuffer) texCoords[i];
+        }
+      }
+
+      // get coordinate array
+      if (floatCoordDefined) {
+        fverts = (FloatBuffer) vcoords;
+      } else if (doubleCoordDefined) {
+        dverts = (DoubleBuffer) vcoords;
+      }
+
+      if (fverts == null && dverts == null) {
+        return;
+      }
+
+      // get color array
+      if (floatColorsDefined) {
+        if (cfdata != null)
+          fclrs = getColorArrayBuffer(cfdata);
+        else
+          fclrs = (FloatBuffer) cdataBuffer;
+      } else if (byteColorsDefined) {
+        if (cbdata != null)
+          bclrs = getColorArrayBuffer(cbdata);
+        else
+          bclrs = (ByteBuffer) cdataBuffer;
+      }
+
+      // get normal array
+      if (normalsDefined) {
+        norms = (FloatBuffer) ndata;
+      }
+
+      int[] sarray = null;
+      int[] start_array = null;
+      int strip_len = 0;
+      if (geo_type == GeometryRetained.GEO_TYPE_TRI_STRIP_SET || 
+          geo_type == GeometryRetained.GEO_TYPE_TRI_FAN_SET   || 
+          geo_type == GeometryRetained.GEO_TYPE_LINE_STRIP_SET) {
+        sarray = ((GeometryStripArrayRetained) geo).stripVertexCounts;
+        strip_len = sarray.length;
+        start_array = ((GeometryStripArrayRetained) geo).stripStartOffsetIndices;
+      }
+      
+      executeGeometryArrayVA(ctx, geo, geo_type,
+                             isNonUniformScale, multiScreen, ignoreVertexColors,
+                             vcount, vformat, vdefined, initialCoordIndex,
+                             fverts, dverts, initialColorIndex,
+                             fclrs, bclrs, initialNormalIndex,
+                             norms,
+                             vertexAttrCount, vertexAttrSizes,
+                             vertexAttrIndices, vertexAttrBufs,
+                             pass, texCoordMapLength,
+                             texcoordoffset, numActiveTexUnitState, texunitstatemap,
+                             texIndex, texstride, texCoordBufs, cdirty,
+                             sarray, strip_len, start_array);
     }
 
     // used by GeometryArray by Reference in interleaved format with NIO buffer
@@ -845,15 +991,14 @@ class JoglPipeline extends Pipeline {
     int iaFormat = 0;
     int primType = 0;
     int stride = 0, coordoff = 0, normoff = 0, coloroff = 0, texCoordoff = 0;
+    int texSize = 0, texStride = 0;
     int vAttrOff = 0;
     int vAttrStride = 0;
     int bstride = 0, cbstride = 0;
-    int[] sarray = null;
-    int[] start_array = null;
     FloatBuffer verts = null;
     FloatBuffer clrs  = null;
-    int texSize = 0;
-    int texStride = 0;
+    int[] sarray = null;
+    int[] start_array = null;
 
     if ((vformat & GeometryArray.COORDINATES) != 0) {
       stride += 3;
@@ -933,7 +1078,7 @@ class JoglPipeline extends Pipeline {
     cbstride = cstride * BufferUtil.SIZEOF_FLOAT;
       
     // Enable normalize for non-uniform scale (which rescale can't handle)
-    if (gl.isExtensionAvailable("GL_EXT_rescale_normal") && isNonUniformScale) {
+    if (isNonUniformScale) {
       gl.glEnable(GL.GL_NORMALIZE);
     }
 
@@ -1094,7 +1239,7 @@ class JoglPipeline extends Pipeline {
     }
 
     /* clean up if we turned on normalize */
-    if (gl.isExtensionAvailable("GL_EXT_rescale_normal") && isNonUniformScale) {
+    if (isNonUniformScale) {
       gl.glDisable(GL.GL_NORMALIZE);
     }
         
@@ -1108,6 +1253,199 @@ class JoglPipeline extends Pipeline {
       resetTexture(gl, ctx);
     }
   }
+
+
+  // glLockArrays() is invoked only for indexed geometry, and the
+  // vertexCount is guarenteed to be >= 0.
+  private void lockArray(GL gl, int vertexCount) {
+    if (gl.isExtensionAvailable("GL_EXT_compiled_vertex_array")) {
+      gl.glLockArraysEXT(0, vertexCount);
+    }
+  }
+
+  private void unlockArray(GL gl) {
+    if (gl.isExtensionAvailable("GL_EXT_compiled_vertex_array")) {
+      gl.glUnlockArraysEXT();
+    }
+  }
+
+  private void
+    executeGeometryArrayVA(Context absCtx,
+                           GeometryArrayRetained geo,
+                           int geo_type,
+                           boolean isNonUniformScale,
+                           boolean multiScreen,
+                           boolean ignoreVertexColors,
+                           int vcount,
+                           int vformat,
+                           int vdefined,
+                           int initialCoordIndex, FloatBuffer fverts, DoubleBuffer dverts,
+                           int initialColorIndex, FloatBuffer fclrs, ByteBuffer bclrs,
+                           int initialNormalIndex, FloatBuffer norms,
+                           int vertexAttrCount, int[] vertexAttrSizes,
+                           int[] vertexAttrIndices, FloatBuffer[] vertexAttrData,
+                           int pass, int texCoordMapLength,
+                           int[] texCoordSetMap,
+                           int numActiveTexUnit, int[] texUnitStateMap,
+                           int[] texindices, int texStride, FloatBuffer[] texCoords,
+                           int cdirty,
+                           int[] sarray,
+                           int strip_len,
+                           int[] start_array) {
+    JoglContext ctx = (JoglContext) absCtx;
+    GLContext context = context(ctx);
+    GL gl = context.getGL();
+
+    boolean floatCoordDefined  = ((vdefined & GeometryArrayRetained.COORD_FLOAT)    != 0);
+    boolean doubleCoordDefined = ((vdefined & GeometryArrayRetained.COORD_DOUBLE)   != 0);
+    boolean floatColorsDefined = ((vdefined & GeometryArrayRetained.COLOR_FLOAT)    != 0);
+    boolean byteColorsDefined  = ((vdefined & GeometryArrayRetained.COLOR_BYTE)     != 0);
+    boolean normalsDefined     = ((vdefined & GeometryArrayRetained.NORMAL_FLOAT)   != 0);
+    boolean vattrDefined       = ((vdefined & GeometryArrayRetained.VATTR_FLOAT)    != 0);
+    boolean textureDefined     = ((vdefined & GeometryArrayRetained.TEXCOORD_FLOAT) != 0);
+
+    // Enable normalize for non-uniform scale (which rescale can't handle)
+    if (isNonUniformScale) {
+      gl.glEnable(GL.GL_NORMALIZE);
+    }
+
+    int coordoff = 3 * initialCoordIndex;
+    // Define the data pointers
+    if (floatCoordDefined) {
+      fverts.position(coordoff);
+      gl.glVertexPointer(3, GL.GL_FLOAT, 0, fverts);
+    } else if (doubleCoordDefined){
+      dverts.position(coordoff);
+      gl.glVertexPointer(3, GL.GL_DOUBLE, 0, dverts);
+    }
+
+    if (floatColorsDefined) {
+      int coloroff;
+      int sz;
+      if ((vformat & GeometryArray.WITH_ALPHA) != 0) {
+        coloroff = 4 * initialColorIndex;
+        sz = 4;
+      } else {
+        coloroff = 3 * initialColorIndex;
+        sz = 3;
+      }
+      fclrs.position(coloroff);
+      gl.glColorPointer(sz, GL.GL_FLOAT, 0, fclrs);
+    } else if (byteColorsDefined) {
+      int coloroff;
+      int sz;
+      if ((vformat & GeometryArray.WITH_ALPHA) != 0) {
+        coloroff = 4 * initialColorIndex;
+        sz = 4;
+      } else {
+        coloroff = 3 * initialColorIndex;
+        sz = 3;
+      }
+      bclrs.position(coloroff);
+      gl.glColorPointer(sz, GL.GL_UNSIGNED_BYTE, 0, bclrs);
+    }
+    if (normalsDefined) {
+      int normoff = 3 * initialNormalIndex;
+      norms.position(normoff);
+      gl.glNormalPointer(GL.GL_FLOAT, 0, norms);
+    }
+
+    if (vattrDefined) {
+      // FIXME
+      throw new RuntimeException("Vertex attributes not implemented yet");
+
+      /*
+	float *pVertexAttrs;
+	int sz, initIdx;
+
+	vAttrSizes = (jint *) (*(table->GetPrimitiveArrayCritical))(env, vertexAttrSizes, NULL);
+	initialVAttrIndices = (jint *) (*(table->GetPrimitiveArrayCritical))(env, vertexAttrIndices, NULL);
+
+	for (i = 0; i < vertexAttrCount; i++) {
+	    pVertexAttrs = vertexAttrPointer[i];
+	    sz = vAttrSizes[i];
+	    initIdx = initialVAttrIndices[i];
+
+	    ctxProperties->enableVertexAttrArray(ctxProperties, i);
+	    ctxProperties->vertexAttrPointer(ctxProperties, i, sz,
+					     GL_FLOAT, 0,
+					     &pVertexAttrs[initIdx * sz]);
+	}
+
+	(*(table->ReleasePrimitiveArrayCritical))(env, vertexAttrSizes, vAttrSizes, 0);
+	(*(table->ReleasePrimitiveArrayCritical))(env, vertexAttrIndices, initialVAttrIndices, 0);
+      */
+    }
+
+    if (textureDefined) {
+      int texSet = 0;
+      for (int i = 0; i < numActiveTexUnit; i++) {
+        int tus = texUnitStateMap[i];
+        if ((tus < texCoordMapLength) &&
+            ((texSet = texCoordSetMap[tus]) != -1)) {
+          FloatBuffer buf = texCoords[texSet];
+          buf.position(texStride * texindices[texSet]);
+          enableTexCoordPointer(gl, i, texStride,
+                                GL.GL_FLOAT, 0, buf);
+        } else {
+          disableTexCoordPointer(gl, i);
+        }
+      }
+
+      // Reset client active texture unit to 0
+      clientActiveTextureUnit(gl, 0);
+    }
+
+    if (geo_type == GeometryRetained.GEO_TYPE_TRI_STRIP_SET || 
+        geo_type == GeometryRetained.GEO_TYPE_TRI_FAN_SET   || 
+        geo_type == GeometryRetained.GEO_TYPE_LINE_STRIP_SET) {
+      int primType = 0;
+      switch (geo_type) {
+        case GeometryRetained.GEO_TYPE_TRI_STRIP_SET:
+          primType = GL.GL_TRIANGLE_STRIP;
+          break;
+        case GeometryRetained.GEO_TYPE_TRI_FAN_SET:
+          primType = GL.GL_TRIANGLE_FAN;
+          break;
+        case GeometryRetained.GEO_TYPE_LINE_STRIP_SET:
+          primType = GL.GL_LINE_STRIP;
+          break;
+      }
+      if (gl.isExtensionAvailable("GL_EXT_multi_draw_arrays")) {
+        gl.glMultiDrawArraysEXT(primType, start_array, 0, sarray, 0, strip_len);
+      } else if (gl.isExtensionAvailable("GL_VERSION_1_4")) {
+        gl.glMultiDrawArrays(primType, start_array, 0, sarray, 0, strip_len);
+      } else {
+        for (int i = 0; i < strip_len; i++) {
+          gl.glDrawArrays(primType, start_array[i], sarray[i]);
+        }
+      }
+    } else {
+      switch (geo_type){
+        case GeometryRetained.GEO_TYPE_QUAD_SET  : gl.glDrawArrays(GL.GL_QUADS, 0, vcount);     break;
+        case GeometryRetained.GEO_TYPE_TRI_SET   : gl.glDrawArrays(GL.GL_TRIANGLES, 0, vcount); break;
+        case GeometryRetained.GEO_TYPE_POINT_SET : gl.glDrawArrays(GL.GL_POINTS, 0, vcount);    break;
+        case GeometryRetained.GEO_TYPE_LINE_SET  : gl.glDrawArrays(GL.GL_LINES, 0, vcount);     break;
+      }
+    }
+
+    // clean up if we turned on normalize
+    if (isNonUniformScale) {
+      gl.glDisable(GL.GL_NORMALIZE);
+    }
+
+    if (vattrDefined) {
+      // FIXME
+      throw new RuntimeException("Vertex attributes not implemented yet");
+      // resetVertexAttrs(ctxInfo, vertexAttrCount);
+    }
+
+    if (textureDefined) {
+      resetTexture(gl, ctx);
+    }
+  }
+
+
 
 
 
@@ -1134,11 +1472,21 @@ class JoglPipeline extends Pipeline {
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
             int[] texUnitStateMap,
-            float[] varray, float[] cdata,
+            float[] varray, float[] carray,
             int pass, int cdirty,
             int[] indexCoord) {
-      if (DEBUG) System.err.println("JoglPipeline.executeIndexedGeometry()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.executeIndexedGeometry()");
+
+      executeIndexedGeometryArray(ctx, geo, geo_type,
+                                  isNonUniformScale, useAlpha, multiScreen, ignoreVertexColors,
+                                  initialIndexIndex, indexCount,
+                                  vertexCount, vformat,
+                                  vertexAttrCount, vertexAttrSizes,
+                                  texCoordSetCount, texCoordSetMap, texCoordSetMapLen,
+                                  texCoordSetOffset,
+                                  numActiveTexUnitState, texUnitStateMap,
+                                  varray, null, carray,
+                                  pass, cdirty, indexCoord);
     }
 
     // interleaved, by reference, nio buffer
@@ -1156,10 +1504,19 @@ class JoglPipeline extends Pipeline {
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
             int[] texUnitStateMap,
-            Object varray, float[] cdata,
-            int pass, int cdirty,
+            Object vdata, float[] carray,
+            int pass, int cDirty,
             int[] indexCoord) {
-        // TODO: implement this
+      if (DEBUG) System.err.println("JoglPipeline.executeIndexedGeometryBuffer()");
+
+      executeIndexedGeometryArray(ctx, geo, geo_type,
+                                  isNonUniformScale, useAlpha, multiScreen, ignoreVertexColors,
+                                  initialIndexIndex, indexCount, vertexCount, vformat,
+                                  0, null,
+                                  texCoordSetCount, texCoordSetMap, texCoordSetMapLen, texCoordSetOffset,
+                                  numActiveTexUnitState, texUnitStateMap,
+                                  null, (FloatBuffer) vdata, carray,
+                                  pass, cDirty, indexCoord);
     }
 
     // non interleaved, by reference, Java arrays
@@ -1184,7 +1541,7 @@ class JoglPipeline extends Pipeline {
             int texstride, Object[] texCoords,
             int cdirty,
             int[] indexCoord) {
-      if (DEBUG) System.err.println("JoglPipeline.executeIndexedGeometryBuffer()");
+      if (DEBUG) System.err.println("JoglPipeline.executeIndexedGeometryVA()");
         // TODO: implement this
     }
 
@@ -1234,6 +1591,315 @@ class JoglPipeline extends Pipeline {
       if (DEBUG) System.err.println("JoglPipeline.buildIndexedGeometry()");
         // TODO: implement this
     }
+
+
+  //----------------------------------------------------------------------
+  //
+  // Helper routines for IndexedGeometryArrayRetained
+  //
+
+  private void executeIndexedGeometryArray(Context absCtx,
+            GeometryArrayRetained geo, int geo_type,
+            boolean isNonUniformScale,
+            boolean useAlpha,
+            boolean multiScreen,
+            boolean ignoreVertexColors,
+            int initialIndexIndex,
+            int indexCount,
+            int vertexCount, int vformat,
+            int vertexAttrCount, int[] vertexAttrSizes,
+            int texCoordSetCount, int[] texCoordSetMap,
+            int texCoordSetMapLen,
+            int[] texCoordSetOffset,
+            int numActiveTexUnitState,
+            int[] texUnitStateMap,
+            float[] varray, FloatBuffer vdata, float[] carray,
+            int pass, int cDirty,
+            int[] indexCoord) {
+    JoglContext ctx = (JoglContext) absCtx;
+    GL gl = context(ctx).getGL();
+
+    boolean useInterleavedArrays;
+    int iaFormat = 0;
+    int primType = 0;
+    int stride = 0, coordoff = 0, normoff = 0, coloroff = 0, texCoordoff = 0;
+    int texSize = 0, texStride = 0;
+    int vAttrOff = 0;
+    int vAttrStride = 0;
+    int bstride = 0, cbstride = 0;
+    FloatBuffer verts = null;
+    FloatBuffer clrs  = null;
+    int[] sarray = null;
+    int strip_len = 0;
+
+    if ((vformat & GeometryArray.COORDINATES) != 0) {
+      stride += 3;
+    } 
+    if ((vformat & GeometryArray.NORMALS) != 0) {
+      stride += 3;
+      coordoff += 3;
+    } 
+
+    if ((vformat & GeometryArray.COLOR) != 0) {
+      if ((vformat & GeometryArray.WITH_ALPHA) != 0) {
+        stride += 4;
+        normoff += 4;
+        coordoff += 4;
+      } else { // Handle the case of executeInterleaved 3f
+        stride += 3;
+        normoff += 3;
+        coordoff += 3;
+      }
+    }
+
+    if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+      if ((vformat & GeometryArray.TEXTURE_COORDINATE_2) != 0) {
+        texSize = 2;
+        texStride = 2 * texCoordSetCount;
+      } else if ((vformat & GeometryArray.TEXTURE_COORDINATE_3) != 0) {
+        texSize = 3;
+        texStride = 3 * texCoordSetCount;
+      } else if ((vformat & GeometryArray.TEXTURE_COORDINATE_4) != 0) {
+        texSize = 4;
+        texStride = 4 * texCoordSetCount;
+      }
+      stride += texStride;
+      normoff += texStride;
+      coloroff += texStride;
+      coordoff += texStride;
+    }
+
+    if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+      for (int i = 0; i < vertexAttrCount; i++) {
+        vAttrStride += vertexAttrSizes[i];
+      }
+      stride += vAttrStride;
+      normoff += vAttrStride;
+      coloroff += vAttrStride;
+      coordoff += vAttrStride;
+      texCoordoff += vAttrStride;
+    }
+    
+    bstride = stride * BufferUtil.SIZEOF_FLOAT;
+
+    if (geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET || 
+        geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_FAN_SET   || 
+        geo_type == GeometryRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET) {
+      sarray = ((IndexedGeometryStripArrayRetained) geo).stripIndexCounts;
+      strip_len = sarray.length;
+    }
+
+    // We have to copy if the data isn't specified using NIO
+    if (varray != null) {
+      verts = getVertexArrayBuffer(varray);
+    } else if (vdata != null) {
+      verts = vdata;
+    } else {
+      // This should never happen
+      throw new RuntimeException("JAVA 3D ERROR : unable to get vertex pointer");
+    }
+
+    // using byRef interleaved array and has a separate pointer, then ..
+    int cstride = stride;
+    if (carray != null) {
+      clrs = getColorArrayBuffer(carray);
+      cstride = 4;
+    } else {
+      // FIXME: need to "auto-slice" this buffer later
+      clrs = verts;
+    }
+
+    cbstride = cstride * BufferUtil.SIZEOF_FLOAT;
+
+    // Enable normalize for non-uniform scale (which rescale can't handle)
+    if (isNonUniformScale) {
+      gl.glEnable(GL.GL_NORMALIZE);
+    }
+
+    /*** Handle non-indexed strip GeometryArray first *******/
+    if (geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET || 
+        geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_FAN_SET   || 
+        geo_type == GeometryRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET) {
+      if (ignoreVertexColors || (carray != null) || 
+          ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0 && ((texCoordSetMapLen > 1) ||
+                                                                 (texCoordSetCount > 1)))) {
+        useInterleavedArrays = false;
+      } else {
+        boolean[] tmp = new boolean[1];
+        int[] tmp2 = new int[1];
+        testForInterleavedArrays(vformat, tmp, tmp2);
+        useInterleavedArrays = tmp[0];
+        iaFormat = tmp2[0];
+      }
+      if (useInterleavedArrays) {
+        verts.position(0);
+        gl.glInterleavedArrays(iaFormat, bstride, verts);
+      } else {
+        if ((vformat & GeometryArray.NORMALS) != 0) {
+          verts.position(normoff);
+          gl.glNormalPointer(GL.GL_FLOAT, bstride, verts);
+        }
+        if (!ignoreVertexColors && (vformat & GeometryArray.COLOR) != 0) {
+          if (clrs == verts) {
+            clrs.position(coloroff);
+          }
+          if ((vformat & GeometryArray.WITH_ALPHA) != 0 || useAlpha) {
+            gl.glColorPointer(4, GL.GL_FLOAT, cbstride, clrs);
+          } else {
+            gl.glColorPointer(3, GL.GL_FLOAT, cbstride, clrs);
+          }
+        }
+        if ((vformat & GeometryArray.COORDINATES) != 0) {
+          verts.position(coordoff);
+          gl.glVertexPointer(3, GL.GL_FLOAT, bstride, verts);
+        }
+
+        if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+          /* XXXX: texCoordoff == 0 ???*/
+          executeTexture(pass, texCoordSetMapLen,
+                         texSize, bstride, texCoordoff,
+                         texCoordSetOffset,
+                         numActiveTexUnitState, texUnitStateMap,
+                         verts, gl);
+        }
+
+        if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+          // FIXME
+          throw new RuntimeException("Vertex attributes not implemented yet");
+
+          /*
+            jfloat *vAttrPtr = &verts[vAttrOff];
+
+            for (i = 0; i < vertexAttrCount; i++) {
+            ctxProperties->enableVertexAttrArray(ctxProperties, i);
+            ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
+            GL_FLOAT, bstride, vAttrPtr);
+            vAttrPtr += vAttrSizesPtr[i];
+            }
+          */
+        }
+      }
+
+      switch (geo_type) {
+        case GeometryRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET:
+          primType = GL.GL_TRIANGLE_STRIP;
+          break;
+        case GeometryRetained.GEO_TYPE_INDEXED_TRI_FAN_SET:
+          primType = GL.GL_TRIANGLE_FAN;
+          break;
+        case GeometryRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET:
+          primType = GL.GL_LINE_STRIP;
+          break;
+      }
+      
+      lockArray(gl, vertexCount);
+
+      // Note: using MultiDrawElements is probably more expensive than
+      // not in this case due to the need to allocate more temporary
+      // direct buffers and slice up the incoming indices array
+      int offset = initialIndexIndex;
+      IntBuffer indicesBuffer = IntBuffer.wrap(indexCoord);
+      for (int i = 0; i < strip_len; i++) {
+        indicesBuffer.position(offset);
+        int count = sarray[i];
+        gl.glDrawElements(primType, count, GL.GL_UNSIGNED_INT, indicesBuffer);
+        offset += count;
+      }
+    } else if ((geo_type == GeometryRetained.GEO_TYPE_INDEXED_QUAD_SET) ||
+               (geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_SET) ||
+               (geo_type == GeometryRetained.GEO_TYPE_INDEXED_POINT_SET) ||
+               (geo_type == GeometryRetained.GEO_TYPE_INDEXED_LINE_SET)) {
+      /******* Handle non-indexed non-striped GeometryArray now *****/
+      if (ignoreVertexColors || (carray != null) ||
+          ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0 && ((texCoordSetMapLen > 1) ||
+                                                                 (texCoordSetCount > 1)))) {
+        useInterleavedArrays = false;
+      } else {
+        boolean[] tmp = new boolean[1];
+        int[] tmp2 = new int[1];
+        testForInterleavedArrays(vformat, tmp, tmp2);
+        useInterleavedArrays = tmp[0];
+        iaFormat = tmp2[0];
+      }
+
+      if (useInterleavedArrays) {
+        verts.position(0);
+        gl.glInterleavedArrays(iaFormat, bstride, verts);
+      } else {
+        if ((vformat & GeometryArray.NORMALS) != 0) {
+          verts.position(normoff);
+          gl.glNormalPointer(GL.GL_FLOAT, bstride, verts);
+        }
+
+        if (!ignoreVertexColors && (vformat & GeometryArray.COLOR) != 0) {
+          if (clrs == verts) {
+            clrs.position(coloroff);
+          }
+          if ((vformat & GeometryArray.WITH_ALPHA) != 0 || useAlpha) {
+            gl.glColorPointer(4, GL.GL_FLOAT, cbstride, clrs);
+          } else {
+            gl.glColorPointer(3, GL.GL_FLOAT, cbstride, clrs);
+          }
+        }
+        if ((vformat & GeometryArray.COORDINATES) != 0) {
+          verts.position(coordoff);
+          gl.glVertexPointer(3, GL.GL_FLOAT, bstride, verts);
+        }
+
+        if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+          /* XXXX: texCoordoff == 0 ???*/
+          executeTexture(pass, texCoordSetMapLen,
+                         texSize, bstride, texCoordoff,
+                         texCoordSetOffset,
+                         numActiveTexUnitState, texUnitStateMap,
+                         verts, gl);
+        }
+
+        if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+          // FIXME
+          throw new RuntimeException("Vertex attributes not implemented yet");
+
+          /*
+            jfloat *vAttrPtr = &verts[vAttrOff];
+
+            for (i = 0; i < vertexAttrCount; i++) {
+            ctxProperties->enableVertexAttrArray(ctxProperties, i);
+            ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
+            GL_FLOAT, bstride, vAttrPtr);
+            vAttrPtr += vAttrSizesPtr[i];
+            }
+          */
+        }
+      }
+
+      lockArray(gl, vertexCount);
+      IntBuffer buf = IntBuffer.wrap(indexCoord);
+      buf.position(initialIndexIndex);
+      switch (geo_type){
+        case GeometryRetained.GEO_TYPE_INDEXED_QUAD_SET : gl.glDrawElements(GL.GL_QUADS,     indexCount, GL.GL_UNSIGNED_INT, buf); break;
+        case GeometryRetained.GEO_TYPE_INDEXED_TRI_SET  : gl.glDrawElements(GL.GL_TRIANGLES, indexCount, GL.GL_UNSIGNED_INT, buf); break;
+        case GeometryRetained.GEO_TYPE_INDEXED_POINT_SET: gl.glDrawElements(GL.GL_POINTS,    indexCount, GL.GL_UNSIGNED_INT, buf); break;
+        case GeometryRetained.GEO_TYPE_INDEXED_LINE_SET : gl.glDrawElements(GL.GL_LINES,     indexCount, GL.GL_UNSIGNED_INT, buf); break;
+      }
+    }
+
+    unlockArray(gl);
+
+    if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+      // FIXME
+      throw new RuntimeException("Vertex attributes not implemented yet");
+      // resetVertexAttrs(ctxInfo, vertexAttrCount);
+    }
+
+    if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+      resetTexture(gl, ctx);
+    }
+
+    /* clean up if we turned on normalize */
+    if (isNonUniformScale) {
+      gl.glDisable(GL.GL_NORMALIZE);
+    }
+  }
 
 
     // ---------------------------------------------------------------------
@@ -2151,6 +2817,224 @@ class JoglPipeline extends Pipeline {
     // TransparencyAttributesRetained methods
     //
 
+  private static final int screen_door[][] = {
+/* 0 / 16 */
+    {
+        0x00000000, 0x00000000, 0x00000000, 0x00000000,
+        0x00000000, 0x00000000, 0x00000000, 0x00000000,
+        0x00000000, 0x00000000, 0x00000000, 0x00000000,
+        0x00000000, 0x00000000, 0x00000000, 0x00000000,
+        0x00000000, 0x00000000, 0x00000000, 0x00000000,
+        0x00000000, 0x00000000, 0x00000000, 0x00000000,
+        0x00000000, 0x00000000, 0x00000000, 0x00000000,
+        0x00000000, 0x00000000, 0x00000000, 0x00000000,
+    },
+/* 1 / 16 */
+    {
+        0x00000000, 0x22222222, 0x00000000, 0x00000000,
+        0x00000000, 0x22222222, 0x00000000, 0x00000000,
+        0x00000000, 0x22222222, 0x00000000, 0x00000000,
+        0x00000000, 0x22222222, 0x00000000, 0x00000000,
+        0x00000000, 0x22222222, 0x00000000, 0x00000000,
+        0x00000000, 0x22222222, 0x00000000, 0x00000000,
+        0x00000000, 0x22222222, 0x00000000, 0x00000000,
+        0x00000000, 0x22222222, 0x00000000, 0x00000000,
+    },
+/* 2 / 16 */
+    {
+        0x00000000, 0x22222222, 0x00000000, 0x88888888,
+        0x00000000, 0x22222222, 0x00000000, 0x88888888,
+        0x00000000, 0x22222222, 0x00000000, 0x88888888,
+        0x00000000, 0x22222222, 0x00000000, 0x88888888,
+        0x00000000, 0x22222222, 0x00000000, 0x88888888,
+        0x00000000, 0x22222222, 0x00000000, 0x88888888,
+        0x00000000, 0x22222222, 0x00000000, 0x88888888,
+        0x00000000, 0x22222222, 0x00000000, 0x88888888,
+    },
+/* 3 / 16 */
+    {
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0x88888888,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0x88888888,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0x88888888,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0x88888888,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0x88888888,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0x88888888,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0x88888888,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0x88888888,
+    },
+/* 4 / 16 */
+    {
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x00000000, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+    },
+/* 5 / 16 */
+    {
+        0x11111111, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x00000000, 0xaaaaaaaa,
+    },
+/* 6 / 16 */
+    {
+        0x11111111, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x11111111, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+    },
+/* 7 / 16 */
+    {
+        0x55555555, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x44444444, 0xaaaaaaaa,
+    },
+/* 8 / 16 */
+    {
+        0x55555555, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x55555555, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+    },
+/* 9 / 16 */
+    {
+        0x77777777, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0x55555555, 0xaaaaaaaa,
+    },
+/* 10 / 16 */
+    {
+        0x77777777, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0x77777777, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+    },
+/* 11 / 16 */
+    {
+        0xffffffff, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xdddddddd, 0xaaaaaaaa,
+    },
+/* 12 / 16 */
+    {
+        0xffffffff, 0xaaaaaaaa, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xaaaaaaaa, 0xffffffff, 0xaaaaaaaa,
+    },
+/* 13 / 16 */
+    {
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xaaaaaaaa,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xaaaaaaaa,
+    },
+/* 14 / 16 */
+    {
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xbbbbbbbb, 0xffffffff, 0xeeeeeeee,
+    },
+/* 15 / 16 */
+    {
+        0xffffffff, 0xffffffff, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xeeeeeeee,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xeeeeeeee,
+    },
+/* 16 / 16 */
+    {
+        0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+        0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+    },
+  };
+  private static final ByteBuffer[] screen_door_table = new ByteBuffer[screen_door.length];
+  static {
+    int eachLen = screen_door[0].length;
+    ByteBuffer buf = BufferUtil.newByteBuffer(screen_door.length * eachLen * BufferUtil.SIZEOF_INT);
+    IntBuffer intBuf = buf.asIntBuffer();
+    for (int i = 0; i < screen_door.length; i++) {
+      intBuf.put(screen_door[i]);
+    }
+    buf.rewind();
+    for (int i = 0; i < screen_door.length; i++) {
+      buf.position(i * eachLen);
+      buf.limit((i+1) * eachLen);
+      screen_door_table[i] = buf.slice();
+    }
+  }
+
+  private static final int[] blendFunctionTable = new int[TransparencyAttributes.MAX_BLEND_FUNC_TABLE_SIZE];
+  static {
+    blendFunctionTable[TransparencyAttributes.BLEND_ZERO] = GL.GL_ZERO;
+    blendFunctionTable[TransparencyAttributes.BLEND_ONE] = GL.GL_ONE;
+    blendFunctionTable[TransparencyAttributes.BLEND_SRC_ALPHA] = GL.GL_SRC_ALPHA;
+    blendFunctionTable[TransparencyAttributes.BLEND_ONE_MINUS_SRC_ALPHA] = GL.GL_ONE_MINUS_SRC_ALPHA;
+    blendFunctionTable[TransparencyAttributes.BLEND_DST_COLOR] = GL.GL_DST_COLOR;
+    blendFunctionTable[TransparencyAttributes.BLEND_ONE_MINUS_DST_COLOR] = GL.GL_ONE_MINUS_DST_COLOR;
+    blendFunctionTable[TransparencyAttributes.BLEND_SRC_COLOR] = GL.GL_SRC_COLOR;
+    blendFunctionTable[TransparencyAttributes.BLEND_ONE_MINUS_SRC_COLOR] = GL.GL_ONE_MINUS_SRC_COLOR;
+    blendFunctionTable[TransparencyAttributes.BLEND_CONSTANT_COLOR] = GL.GL_CONSTANT_COLOR;
+  }
+
     void updateTransparencyAttributes(Context ctx,
             float alpha, int geometryType,
             int polygonMode,
@@ -2158,8 +3042,30 @@ class JoglPipeline extends Pipeline {
             int transparencyMode,
             int srcBlendFunction,
             int dstBlendFunction) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTransparencyAttributes()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateTransparencyAttributes()");
+
+      GL gl = context(ctx).getGL();
+
+      if (transparencyMode != TransparencyAttributes.SCREEN_DOOR) {
+        gl.glDisable(GL.GL_POLYGON_STIPPLE);
+      } else  {
+        gl.glEnable(GL.GL_POLYGON_STIPPLE);
+        gl.glPolygonStipple(screen_door_table[(int)(alpha * 16)]);
+      }
+
+      if ((transparencyMode < TransparencyAttributes.SCREEN_DOOR) ||
+          ((((geometryType & RenderMolecule.LINE) != 0) ||
+            (polygonMode == PolygonAttributes.POLYGON_LINE))
+           && lineAA) ||
+          ((((geometryType & RenderMolecule.POINT) != 0) ||
+            (polygonMode == PolygonAttributes.POLYGON_POINT)) 
+           && pointAA)) {
+        gl.glEnable(GL.GL_BLEND);
+        // valid range of blendFunction 0..3 is already verified in shared code.
+        gl.glBlendFunc(blendFunctionTable[srcBlendFunction], blendFunctionTable[dstBlendFunction]);
+      } else {
+        gl.glDisable(GL.GL_BLEND);
+      }
     }
 
 
@@ -3897,9 +4803,9 @@ class JoglPipeline extends Pipeline {
       if (id > 0) {
         int[] tmp = new int[1];
         tmp[0] = id;
-	gl.glDeleteTextures(1, tmp, 0);
+        gl.glDeleteTextures(1, tmp, 0);
       } else {
-	throw new RuntimeException("tried to delete tex with texid <= 0");
+        throw new RuntimeException("tried to delete tex with texid <= 0");
       }
     }
 
@@ -4296,16 +5202,40 @@ class JoglPipeline extends Pipeline {
   //
 
   private static ThreadLocal nioVertexTemp = new ThreadLocal();
+  private static ThreadLocal nioVertexDoubleTemp = new ThreadLocal();
   private static ThreadLocal nioColorTemp = new ThreadLocal();
+  private static ThreadLocal nioColorByteTemp = new ThreadLocal();
+  private static ThreadLocal nioNormalTemp = new ThreadLocal();
+  private static ThreadLocal nioTexCoordSetTemp = new ThreadLocal();
+
   private static FloatBuffer getVertexArrayBuffer(float[] vertexArray) {
     return getNIOBuffer(vertexArray, nioVertexTemp);
+  }
+
+  private static DoubleBuffer getVertexArrayBuffer(double[] vertexArray) {
+    return getNIOBuffer(vertexArray, nioVertexDoubleTemp);
   }
 
   private static FloatBuffer getColorArrayBuffer(float[] colorArray) {
     return getNIOBuffer(colorArray, nioColorTemp);
   }
 
+  private static ByteBuffer getColorArrayBuffer(byte[] colorArray) {
+    return getNIOBuffer(colorArray, nioColorByteTemp);
+  }
+
+  private static FloatBuffer getNormalArrayBuffer(float[] normalArray) {
+    return getNIOBuffer(normalArray, nioNormalTemp);
+  }
+
+  private static FloatBuffer[] getTexCoordSetBuffer(float[][] texCoordSet) {
+    return getNIOBuffer(texCoordSet, nioTexCoordSetTemp);
+  }
+
   private static FloatBuffer getNIOBuffer(float[] array, ThreadLocal threadLocal) {
+    if (array == null) {
+      return null;
+    }
     FloatBuffer buf = (FloatBuffer) threadLocal.get();
     if (buf == null) {
       buf = BufferUtil.newFloatBuffer(array.length);
@@ -4323,4 +5253,84 @@ class JoglPipeline extends Pipeline {
     return buf;
   }
 
+  private static DoubleBuffer getNIOBuffer(double[] array, ThreadLocal threadLocal) {
+    if (array == null) {
+      return null;
+    }
+    DoubleBuffer buf = (DoubleBuffer) threadLocal.get();
+    if (buf == null) {
+      buf = BufferUtil.newDoubleBuffer(array.length);
+      threadLocal.set(buf);
+    } else {
+      buf.rewind();
+      if (buf.remaining() < array.length) {
+        int newSize = Math.max(2 * buf.remaining(), array.length);
+        buf = BufferUtil.newDoubleBuffer(newSize);
+        threadLocal.set(buf);
+      }
+    }
+    buf.put(array);
+    buf.rewind();
+    return buf;
+  }
+
+  private static ByteBuffer getNIOBuffer(byte[] array, ThreadLocal threadLocal) {
+    if (array == null) {
+      return null;
+    }
+    ByteBuffer buf = (ByteBuffer) threadLocal.get();
+    if (buf == null) {
+      buf = BufferUtil.newByteBuffer(array.length);
+      threadLocal.set(buf);
+    } else {
+      buf.rewind();
+      if (buf.remaining() < array.length) {
+        int newSize = Math.max(2 * buf.remaining(), array.length);
+        buf = BufferUtil.newByteBuffer(newSize);
+        threadLocal.set(buf);
+      }
+    }
+    buf.put(array);
+    buf.rewind();
+    return buf;
+  }
+
+  private static FloatBuffer[] getNIOBuffer(float[][] array, ThreadLocal threadLocal) {
+    if (array == null) {
+      return null;
+    }
+    FloatBuffer[] bufs = (FloatBuffer[]) threadLocal.get();
+
+    // First resize array of FloatBuffers
+    if (bufs == null) {
+      bufs = new FloatBuffer[array.length];
+      threadLocal.set(bufs);
+    } else if (bufs.length < array.length) {
+      FloatBuffer[] newBufs = new FloatBuffer[array.length];
+      System.arraycopy(bufs, 0, newBufs, 0, bufs.length);
+      bufs = newBufs;
+      threadLocal.set(bufs);
+    }
+
+    // Now go down array of arrays, converting each into a direct FloatBuffer
+    for (int i = 0; i < array.length; i++) {
+      float[] cur = array[i];
+      FloatBuffer buf = bufs[i];
+      if (buf == null) {
+        buf = BufferUtil.newFloatBuffer(cur.length);
+        bufs[i] = buf;
+      } else {
+        buf.rewind();
+        if (buf.remaining() < cur.length) {
+          int newSize = Math.max(2 * buf.remaining(), cur.length);
+          buf = BufferUtil.newFloatBuffer(newSize);
+          bufs[i] = buf;
+        }
+      }
+      buf.put(cur);
+      buf.rewind();
+    }
+
+    return bufs;
+  }
 }
