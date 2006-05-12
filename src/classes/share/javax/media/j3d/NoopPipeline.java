@@ -335,71 +335,71 @@ class NoopPipeline extends Pipeline {
     // ShaderAttributeValue methods
 
     ShaderError setCgUniform1i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int value) {
         return null;
     }
 
     ShaderError setCgUniform1f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float value) {
         return null;
     }
 
     ShaderError setCgUniform2i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return null;
     }
 
     ShaderError setCgUniform2f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return null;
     }
 
     ShaderError setCgUniform3i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return null;
     }
 
     ShaderError setCgUniform3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return null;
     }
 
     ShaderError setCgUniform4i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return null;
     }
 
     ShaderError setCgUniform4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return null;
     }
 
     ShaderError setCgUniformMatrix3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return null;
     }
 
     ShaderError setCgUniformMatrix4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return null;
     }
@@ -407,115 +407,115 @@ class NoopPipeline extends Pipeline {
     // ShaderAttributeArray methods
 
     ShaderError setCgUniform1iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return null;
     }
 
     ShaderError setCgUniform1fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     ShaderError setCgUniform2iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return null;
     }
 
     ShaderError setCgUniform2fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     ShaderError setCgUniform3iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return null;
     }
 
     ShaderError setCgUniform3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     ShaderError setCgUniform4iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return null;
     }
 
     ShaderError setCgUniform4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     ShaderError setCgUniformMatrix3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     ShaderError setCgUniformMatrix4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     // interfaces for shader compilation, etc.
-    ShaderError createCgShader(Context ctx, int shaderType, long[] shaderId) {
+    ShaderError createCgShader(Context ctx, int shaderType, ShaderId[] shaderId) {
         return null;
     }
-    ShaderError destroyCgShader(Context ctx, long shaderId) {
+    ShaderError destroyCgShader(Context ctx, ShaderId shaderId) {
         return null;
     }
-    ShaderError compileCgShader(Context ctx, long shaderId, String program) {
+    ShaderError compileCgShader(Context ctx, ShaderId shaderId, String program) {
         return null;
     }
 
-    ShaderError createCgShaderProgram(Context ctx, long[] shaderProgramId) {
+    ShaderError createCgShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId) {
         return null;
     }
-    ShaderError destroyCgShaderProgram(Context ctx, long shaderProgramId) {
+    ShaderError destroyCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
         return null;
     }
-    ShaderError linkCgShaderProgram(Context ctx, long shaderProgramId,
-            long[] shaderId) {
+    ShaderError linkCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
+            ShaderId[] shaderIds) {
         return null;
     }
-    void lookupCgVertexAttrNames(Context ctx, long shaderProgramId,
+    void lookupCgVertexAttrNames(Context ctx, ShaderProgramId shaderProgramId,
             int numAttrNames, String[] attrNames, boolean[] errArr) {
     }
-    void lookupCgShaderAttrNames(Context ctx, long shaderProgramId,
-            int numAttrNames, String[] attrNames, long[] locArr,
+    void lookupCgShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
+            int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
     }
 
-    ShaderError useCgShaderProgram(Context ctx, long shaderProgramId) {
+    ShaderError useCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
         return null;
     }
 
@@ -529,71 +529,71 @@ class NoopPipeline extends Pipeline {
     // ShaderAttributeValue methods
 
     ShaderError setGLSLUniform1i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int value) {
         return null;
     }
 
     ShaderError setGLSLUniform1f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float value) {
         return null;
     }
 
     ShaderError setGLSLUniform2i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform2f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform3i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform4i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return null;
     }
 
     ShaderError setGLSLUniformMatrix3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return null;
     }
 
     ShaderError setGLSLUniformMatrix4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return null;
     }
@@ -601,116 +601,116 @@ class NoopPipeline extends Pipeline {
     // ShaderAttributeArray methods
 
     ShaderError setGLSLUniform1iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform1fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform2iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform2fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform3iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform4iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return null;
     }
 
     ShaderError setGLSLUniform4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     ShaderError setGLSLUniformMatrix3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     ShaderError setGLSLUniformMatrix4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return null;
     }
 
     // interfaces for shader compilation, etc.
-    ShaderError createGLSLShader(Context ctx, int shaderType, long[] shaderId) {
+    ShaderError createGLSLShader(Context ctx, int shaderType, ShaderId[] shaderId) {
         return null;
     }
-    ShaderError destroyGLSLShader(Context ctx, long shaderId) {
+    ShaderError destroyGLSLShader(Context ctx, ShaderId shaderId) {
         return null;
     }
-    ShaderError compileGLSLShader(Context ctx, long shaderId, String program) {
+    ShaderError compileGLSLShader(Context ctx, ShaderId shaderId, String program) {
         return null;
     }
 
-    ShaderError createGLSLShaderProgram(Context ctx, long[] shaderProgramId) {
+    ShaderError createGLSLShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId) {
         return null;
     }
-    ShaderError destroyGLSLShaderProgram(Context ctx, long shaderProgramId) {
+    ShaderError destroyGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
         return null;
     }
-    ShaderError linkGLSLShaderProgram(Context ctx, long shaderProgramId,
-            long[] shaderId) {
+    ShaderError linkGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
+            ShaderId[] shaderIds) {
         return null;
     }
-    ShaderError bindGLSLVertexAttrName(Context ctx, long shaderProgramId,
+    ShaderError bindGLSLVertexAttrName(Context ctx, ShaderProgramId shaderProgramId,
             String attrName, int attrIndex) {
         return null;
     }
-    void lookupGLSLShaderAttrNames(Context ctx, long shaderProgramId,
-            int numAttrNames, String[] attrNames, long[] locArr,
+    void lookupGLSLShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
+            int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
     }
 
-    ShaderError useGLSLShaderProgram(Context ctx, long shaderProgramId) {
+    ShaderError useGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
         return null;
     }
 

@@ -26,7 +26,7 @@ abstract class ShaderRetained extends NodeComponentRetained {
     int shaderType;
 
     // shaderId use by native code. One per Canvas.
-    long[] shaderIds;
+    ShaderId[] shaderIds;
     boolean[] compiled;
 
     // Flag indicating whether a COMPILE_ERROR has occurred for this shader

@@ -2240,8 +2240,8 @@ class JoglPipeline extends Pipeline {
     // ShaderAttributeValue methods
 
     ShaderError setCgUniform1i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform1i()");
         // TODO: implement this
@@ -2249,8 +2249,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform1f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform1f()");
         // TODO: implement this
@@ -2258,8 +2258,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform2i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform2i()");
         // TODO: implement this
@@ -2267,8 +2267,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform2f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform2f()");
         // TODO: implement this
@@ -2276,8 +2276,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform3i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform3i()");
         // TODO: implement this
@@ -2285,8 +2285,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform3f()");
         // TODO: implement this
@@ -2294,8 +2294,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform4i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform4i()");
         // TODO: implement this
@@ -2303,8 +2303,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform4f()");
         // TODO: implement this
@@ -2312,8 +2312,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniformMatrix3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniformMatrix3f()");
         // TODO: implement this
@@ -2321,8 +2321,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniformMatrix4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniformMatrix4f()");
         // TODO: implement this
@@ -2332,8 +2332,8 @@ class JoglPipeline extends Pipeline {
     // ShaderAttributeArray methods
 
     ShaderError setCgUniform1iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform1iArray()");
@@ -2342,8 +2342,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform1fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform1fArray()");
@@ -2352,8 +2352,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform2iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform2iArray()");
@@ -2362,8 +2362,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform2fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform2fArray()");
@@ -2372,8 +2372,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform3iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform3iArray()");
@@ -2382,8 +2382,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform3fArray()");
@@ -2392,8 +2392,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform4iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform4iArray()");
@@ -2402,8 +2402,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniform4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniform4fArray()");
@@ -2412,8 +2412,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniformMatrix3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniformMatrix3fArray()");
@@ -2422,8 +2422,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setCgUniformMatrix4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setCgUniformMatrix4fArray()");
@@ -2432,51 +2432,51 @@ class JoglPipeline extends Pipeline {
     }
 
     // interfaces for shader compilation, etc.
-    ShaderError createCgShader(Context ctx, int shaderType, long[] shaderId) {
+    ShaderError createCgShader(Context ctx, int shaderType, ShaderId[] shaderId) {
       if (DEBUG) System.err.println("JoglPipeline.createCgShader()");
         // TODO: implement this
         return null;
     }
-    ShaderError destroyCgShader(Context ctx, long shaderId) {
+    ShaderError destroyCgShader(Context ctx, ShaderId shaderId) {
       if (DEBUG) System.err.println("JoglPipeline.destroyCgShader()");
         // TODO: implement this
         return null;
     }
-    ShaderError compileCgShader(Context ctx, long shaderId, String program) {
+    ShaderError compileCgShader(Context ctx, ShaderId shaderId, String program) {
       if (DEBUG) System.err.println("JoglPipeline.compileCgShader()");
         // TODO: implement this
         return null;
     }
 
-    ShaderError createCgShaderProgram(Context ctx, long[] shaderProgramId) {
+    ShaderError createCgShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId) {
       if (DEBUG) System.err.println("JoglPipeline.createCgShaderProgram()");
         // TODO: implement this
         return null;
     }
-    ShaderError destroyCgShaderProgram(Context ctx, long shaderProgramId) {
+    ShaderError destroyCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
       if (DEBUG) System.err.println("JoglPipeline.destroyCgShaderProgram()");
         // TODO: implement this
         return null;
     }
-    ShaderError linkCgShaderProgram(Context ctx, long shaderProgramId,
-            long[] shaderId) {
+    ShaderError linkCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
+            ShaderId[] shaderIds) {
       if (DEBUG) System.err.println("JoglPipeline.linkCgShaderProgram()");
         // TODO: implement this
         return null;
     }
-    void lookupCgVertexAttrNames(Context ctx, long shaderProgramId,
+    void lookupCgVertexAttrNames(Context ctx, ShaderProgramId shaderProgramId,
             int numAttrNames, String[] attrNames, boolean[] errArr) {
       if (DEBUG) System.err.println("JoglPipeline.lookupCgVertexAttrNames()");
         // TODO: implement this
     }
-    void lookupCgShaderAttrNames(Context ctx, long shaderProgramId,
-            int numAttrNames, String[] attrNames, long[] locArr,
+    void lookupCgShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
+            int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
       if (DEBUG) System.err.println("JoglPipeline.lookupCgShaderAttrNames()");
         // TODO: implement this
     }
 
-    ShaderError useCgShaderProgram(Context ctx, long shaderProgramId) {
+    ShaderError useCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
       if (DEBUG) System.err.println("JoglPipeline.useCgShaderProgram()");
         // TODO: implement this
         return null;
@@ -2492,8 +2492,8 @@ class JoglPipeline extends Pipeline {
     // ShaderAttributeValue methods
 
     ShaderError setGLSLUniform1i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform1i()");
         // TODO: implement this
@@ -2501,8 +2501,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform1f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform1f()");
         // TODO: implement this
@@ -2510,8 +2510,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform2i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform2i()");
         // TODO: implement this
@@ -2519,8 +2519,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform2f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform2f()");
         // TODO: implement this
@@ -2528,8 +2528,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform3i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform3i()");
         // TODO: implement this
@@ -2537,8 +2537,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform3f()");
         // TODO: implement this
@@ -2546,8 +2546,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform4i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform4i()");
         // TODO: implement this
@@ -2555,8 +2555,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform4f()");
         // TODO: implement this
@@ -2564,8 +2564,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniformMatrix3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniformMatrix3f()");
         // TODO: implement this
@@ -2573,8 +2573,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniformMatrix4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniformMatrix4f()");
         // TODO: implement this
@@ -2584,8 +2584,8 @@ class JoglPipeline extends Pipeline {
     // ShaderAttributeArray methods
 
     ShaderError setGLSLUniform1iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform1iArray()");
@@ -2594,8 +2594,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform1fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform1fArray()");
@@ -2604,8 +2604,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform2iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform2iArray()");
@@ -2614,8 +2614,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform2fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform2fArray()");
@@ -2624,8 +2624,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform3iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform3iArray()");
@@ -2634,8 +2634,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform3fArray()");
@@ -2644,8 +2644,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform4iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform4iArray()");
@@ -2654,8 +2654,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniform4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform4fArray()");
@@ -2664,8 +2664,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniformMatrix3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniformMatrix3fArray()");
@@ -2674,8 +2674,8 @@ class JoglPipeline extends Pipeline {
     }
 
     ShaderError setGLSLUniformMatrix4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
       if (DEBUG) System.err.println("JoglPipeline.setGLSLUniformMatrix4fArray()");
@@ -2684,52 +2684,52 @@ class JoglPipeline extends Pipeline {
     }
 
     // interfaces for shader compilation, etc.
-    ShaderError createGLSLShader(Context ctx, int shaderType, long[] shaderId) {
+    ShaderError createGLSLShader(Context ctx, int shaderType, ShaderId[] shaderId) {
       if (DEBUG) System.err.println("JoglPipeline.createGLSLShader()");
         // TODO: implement this
         return null;
     }
-    ShaderError destroyGLSLShader(Context ctx, long shaderId) {
+    ShaderError destroyGLSLShader(Context ctx, ShaderId shaderId) {
       if (DEBUG) System.err.println("JoglPipeline.destroyGLSLShader()");
         // TODO: implement this
         return null;
     }
-    ShaderError compileGLSLShader(Context ctx, long shaderId, String program) {
+    ShaderError compileGLSLShader(Context ctx, ShaderId shaderId, String program) {
       if (DEBUG) System.err.println("JoglPipeline.compileGLSLShader()");
         // TODO: implement this
         return null;
     }
 
-    ShaderError createGLSLShaderProgram(Context ctx, long[] shaderProgramId) {
+    ShaderError createGLSLShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId) {
       if (DEBUG) System.err.println("JoglPipeline.createGLSLShaderProgram()");
         // TODO: implement this
         return null;
     }
-    ShaderError destroyGLSLShaderProgram(Context ctx, long shaderProgramId) {
+    ShaderError destroyGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
       if (DEBUG) System.err.println("JoglPipeline.destroyGLSLShaderProgram()");
         // TODO: implement this
         return null;
     }
-    ShaderError linkGLSLShaderProgram(Context ctx, long shaderProgramId,
-            long[] shaderId) {
+    ShaderError linkGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
+            ShaderId[] shaderIds) {
       if (DEBUG) System.err.println("JoglPipeline.linkGLSLShaderProgram()");
         // TODO: implement this
         return null;
     }
-    ShaderError bindGLSLVertexAttrName(Context ctx, long shaderProgramId,
+    ShaderError bindGLSLVertexAttrName(Context ctx, ShaderProgramId shaderProgramId,
             String attrName, int attrIndex) {
       if (DEBUG) System.err.println("JoglPipeline.bindGLSLVertexAttrName()");
         // TODO: implement this
         return null;
     }
-    void lookupGLSLShaderAttrNames(Context ctx, long shaderProgramId,
-            int numAttrNames, String[] attrNames, long[] locArr,
+    void lookupGLSLShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
+            int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
       if (DEBUG) System.err.println("JoglPipeline.lookupGLSLShaderAttrNames()");
         // TODO: implement this
     }
 
-    ShaderError useGLSLShaderProgram(Context ctx, long shaderProgramId) {
+    ShaderError useGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
       if (DEBUG) System.err.println("JoglPipeline.useGLSLShaderProgram()");
         // TODO: implement this
         return null;

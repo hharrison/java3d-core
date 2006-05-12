@@ -190,9 +190,14 @@ class NativePipeline extends Pipeline {
     // Method to verify whether the native Cg library is available
     private native boolean loadNativeCgLibrary(String[] libpath);
 
+
+    //
+    // Methods to box/unbox various native objects
+    //
+
     private long unbox(Context ctx) {
         if (ctx == null) {
-            return 0L;
+            return 0;
         } else {
             return ((NativeContext)ctx).getNativeCtx();
         }
@@ -208,7 +213,7 @@ class NativePipeline extends Pipeline {
 
     private long unbox(Drawable drawable) {
         if (drawable == null) {
-            return 0L;
+            return 0;
         } else {
             return ((NativeDrawable)drawable).getNativeDrawable();
         }
@@ -219,6 +224,54 @@ class NativePipeline extends Pipeline {
             return null;
         } else {
             return new NativeDrawable(nativeDrawable);
+        }
+    }
+
+    private long unbox(ShaderProgramId shaderProgramId) {
+        if (shaderProgramId == null) {
+            return 0;
+        } else {
+            return ((NativeShaderObject)shaderProgramId).getNativeId();
+        }
+    }
+
+    private ShaderProgramId boxShaderProgramId(long nativeId) {
+        if (nativeId == 0) {
+            return null;
+        } else {
+            return new NativeShaderObject(nativeId);
+        }
+    }
+
+    private long unbox(ShaderId shaderId) {
+        if (shaderId == null) {
+            return 0;
+        } else {
+            return ((NativeShaderObject)shaderId).getNativeId();
+        }
+    }
+
+    private ShaderId boxShaderId(long nativeId) {
+        if (nativeId == 0) {
+            return null;
+        } else {
+            return new NativeShaderObject(nativeId);
+        }
+    }
+
+    private long unbox(ShaderAttrLoc attrLoc) {
+        if (attrLoc == null) {
+            return -1;
+        } else {
+            return ((NativeShaderObject)attrLoc).getNativeId();
+        }
+    }
+
+    private ShaderAttrLoc boxShaderAttrLoc(long nativeId) {
+        if (nativeId == -1) {
+            return null;
+        } else {
+            return new NativeShaderObject(nativeId);
         }
     }
 
@@ -907,12 +960,12 @@ class NativePipeline extends Pipeline {
             int value);
 
     ShaderError setCgUniform1i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int value) {
         return setCgUniform1i(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -922,12 +975,12 @@ class NativePipeline extends Pipeline {
             float value);
 
     ShaderError setCgUniform1f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float value) {
         return setCgUniform1f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -937,12 +990,12 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setCgUniform2i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return setCgUniform2i(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -952,12 +1005,12 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setCgUniform2f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return setCgUniform2f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -967,12 +1020,12 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setCgUniform3i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return setCgUniform3i(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -982,12 +1035,12 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setCgUniform3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return setCgUniform3f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -997,12 +1050,12 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setCgUniform4i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return setCgUniform4i(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1012,12 +1065,12 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setCgUniform4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return setCgUniform4f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1027,12 +1080,12 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setCgUniformMatrix3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return setCgUniformMatrix3f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1042,12 +1095,12 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setCgUniformMatrix4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return setCgUniformMatrix4f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1060,13 +1113,13 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setCgUniform1iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return setCgUniform1iArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1078,13 +1131,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setCgUniform1fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setCgUniform1fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1096,13 +1149,13 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setCgUniform2iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return setCgUniform2iArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1114,13 +1167,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setCgUniform2fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setCgUniform2fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1132,13 +1185,13 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setCgUniform3iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return setCgUniform3iArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1150,13 +1203,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setCgUniform3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setCgUniform3fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1168,13 +1221,13 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setCgUniform4iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return setCgUniform4iArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1186,13 +1239,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setCgUniform4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setCgUniform4fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1204,13 +1257,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setCgUniformMatrix3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setCgUniformMatrix3fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1222,13 +1275,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setCgUniformMatrix4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setCgUniformMatrix4fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1236,62 +1289,90 @@ class NativePipeline extends Pipeline {
     // Native interfaces for shader compilation, etc.
     native ShaderError createCgShader(long ctx, int shaderType, long[] shaderId);
 
-    ShaderError createCgShader(Context ctx, int shaderType, long[] shaderId) {
-        return createCgShader(unbox(ctx), shaderType, shaderId);
+    ShaderError createCgShader(Context ctx, int shaderType, ShaderId[] shaderId) {
+        long[] nativeId = new long[1];
+        ShaderError err = createCgShader(unbox(ctx), shaderType, nativeId);
+        shaderId[0] = boxShaderId(nativeId[0]);
+        return err;
     }
+
     native ShaderError destroyCgShader(long ctx, long shaderId);
 
-    ShaderError destroyCgShader(Context ctx, long shaderId) {
-        return destroyCgShader(unbox(ctx), shaderId);
+    ShaderError destroyCgShader(Context ctx, ShaderId shaderId) {
+        return destroyCgShader(unbox(ctx), unbox(shaderId));
     }
+
     native ShaderError compileCgShader(long ctx, long shaderId, String program);
 
-    ShaderError compileCgShader(Context ctx, long shaderId, String program) {
-        return compileCgShader(unbox(ctx), shaderId, program);
+    ShaderError compileCgShader(Context ctx, ShaderId shaderId, String program) {
+        return compileCgShader(unbox(ctx), unbox(shaderId), program);
     }
 
     native ShaderError createCgShaderProgram(long ctx, long[] shaderProgramId);
 
-    ShaderError createCgShaderProgram(Context ctx, long[] shaderProgramId) {
-        return createCgShaderProgram(unbox(ctx), shaderProgramId);
+    ShaderError createCgShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId) {
+        long[] nativeId = new long[1];
+        ShaderError err = createCgShaderProgram(unbox(ctx), nativeId);
+        shaderProgramId[0] = boxShaderProgramId(nativeId[0]);
+        return err;
     }
+
     native ShaderError destroyCgShaderProgram(long ctx, long shaderProgramId);
 
-    ShaderError destroyCgShaderProgram(Context ctx, long shaderProgramId) {
-        return destroyCgShaderProgram(unbox(ctx), shaderProgramId);
+    ShaderError destroyCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
+        return destroyCgShaderProgram(unbox(ctx), unbox(shaderProgramId));
     }
-    native ShaderError linkCgShaderProgram(long ctx, long shaderProgramId,
-            long[] shaderId);
 
-    ShaderError linkCgShaderProgram(Context ctx, long shaderProgramId,
-            long[] shaderId) {
-        return linkCgShaderProgram(unbox(ctx), shaderProgramId,
-                shaderId);
+    native ShaderError linkCgShaderProgram(long ctx, long shaderProgramId,
+            long[] shaderIds);
+
+    ShaderError linkCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
+            ShaderId[] shaderIds) {
+
+        assert shaderIds != null;
+        long[] nativeIds = new long[shaderIds.length];
+        for (int i = 0; i < shaderIds.length; i++) {
+            nativeIds[i] = unbox(shaderIds[i]);
+        }
+        return linkCgShaderProgram(unbox(ctx), unbox(shaderProgramId),
+                nativeIds);
     }
+
     native void lookupCgVertexAttrNames(long ctx, long shaderProgramId,
             int numAttrNames, String[] attrNames, boolean[] errArr);
 
-    void lookupCgVertexAttrNames(Context ctx, long shaderProgramId,
+    void lookupCgVertexAttrNames(Context ctx, ShaderProgramId shaderProgramId,
             int numAttrNames, String[] attrNames, boolean[] errArr) {
-        lookupCgVertexAttrNames(unbox(ctx), shaderProgramId,
+        lookupCgVertexAttrNames(unbox(ctx), unbox(shaderProgramId),
                 numAttrNames, attrNames, errArr);
     }
+
     native void lookupCgShaderAttrNames(long ctx, long shaderProgramId,
             int numAttrNames, String[] attrNames, long[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr);
 
-    void lookupCgShaderAttrNames(Context ctx, long shaderProgramId,
-            int numAttrNames, String[] attrNames, long[] locArr,
+    void lookupCgShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
+            int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
-        lookupCgShaderAttrNames(unbox(ctx), shaderProgramId,
-                numAttrNames, attrNames, locArr,
+
+        assert numAttrNames == locArr.length;
+        long[] nativeLocArr = new long[numAttrNames];
+        for (int i = 0; i < numAttrNames; i++) {
+            // Initialize to invalid native location
+            nativeLocArr[i] = -1;
+        }
+        lookupCgShaderAttrNames(unbox(ctx), unbox(shaderProgramId),
+                numAttrNames, attrNames, nativeLocArr,
                 typeArr, sizeArr, isArrayArr);
+        for (int i = 0; i < numAttrNames; i++) {
+            locArr[i] = boxShaderAttrLoc(nativeLocArr[i]);
+        }
     }
 
     native ShaderError useCgShaderProgram(long ctx, long shaderProgramId);
 
-    ShaderError useCgShaderProgram(Context ctx, long shaderProgramId) {
-        return useCgShaderProgram(unbox(ctx), shaderProgramId);
+    ShaderError useCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
+        return useCgShaderProgram(unbox(ctx), unbox(shaderProgramId));
     }
 
     // ---------------------------------------------------------------------
@@ -1308,12 +1389,12 @@ class NativePipeline extends Pipeline {
             int value);
 
     ShaderError setGLSLUniform1i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int value) {
         return setGLSLUniform1i(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1323,12 +1404,12 @@ class NativePipeline extends Pipeline {
             float value);
 
     ShaderError setGLSLUniform1f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float value) {
         return setGLSLUniform1f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1338,12 +1419,12 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setGLSLUniform2i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return setGLSLUniform2i(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1353,12 +1434,12 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setGLSLUniform2f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return setGLSLUniform2f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1368,12 +1449,12 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setGLSLUniform3i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return setGLSLUniform3i(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1383,12 +1464,12 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setGLSLUniform3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return setGLSLUniform3f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1398,12 +1479,12 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setGLSLUniform4i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value) {
         return setGLSLUniform4i(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1413,12 +1494,12 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setGLSLUniform4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return setGLSLUniform4f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1428,12 +1509,12 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setGLSLUniformMatrix3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return setGLSLUniformMatrix3f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1443,12 +1524,12 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setGLSLUniformMatrix4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value) {
         return setGLSLUniformMatrix4f(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 value);
     }
 
@@ -1461,13 +1542,13 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setGLSLUniform1iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return setGLSLUniform1iArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1479,13 +1560,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setGLSLUniform1fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setGLSLUniform1fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1497,13 +1578,13 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setGLSLUniform2iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return setGLSLUniform2iArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1515,13 +1596,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setGLSLUniform2fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setGLSLUniform2fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1533,13 +1614,13 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setGLSLUniform3iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return setGLSLUniform3iArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1551,13 +1632,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setGLSLUniform3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setGLSLUniform3fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1569,13 +1650,13 @@ class NativePipeline extends Pipeline {
             int[] value);
 
     ShaderError setGLSLUniform4iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
         return setGLSLUniform4iArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1587,13 +1668,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setGLSLUniform4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setGLSLUniform4fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1605,13 +1686,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setGLSLUniformMatrix3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setGLSLUniformMatrix3fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1623,13 +1704,13 @@ class NativePipeline extends Pipeline {
             float[] value);
 
     ShaderError setGLSLUniformMatrix4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
         return setGLSLUniformMatrix4fArray(unbox(ctx),
-                shaderProgramId,
-                uniformLocation,
+                unbox(shaderProgramId),
+                unbox(uniformLocation),
                 numElements,
                 value);
     }
@@ -1637,62 +1718,83 @@ class NativePipeline extends Pipeline {
     // native interfaces for shader compilation, etc.
     native ShaderError createGLSLShader(long ctx, int shaderType, long[] shaderId);
 
-    ShaderError createGLSLShader(Context ctx, int shaderType, long[] shaderId) {
-        return createGLSLShader(unbox(ctx), shaderType, shaderId);
+    ShaderError createGLSLShader(Context ctx, int shaderType, ShaderId[] shaderId) {
+        long[] nativeId = new long[1];
+        ShaderError err = createGLSLShader(unbox(ctx), shaderType, nativeId);
+        shaderId[0] = boxShaderId(nativeId[0]);
+        return err;
     }
     native ShaderError destroyGLSLShader(long ctx, long shaderId);
 
-    ShaderError destroyGLSLShader(Context ctx, long shaderId) {
-        return destroyGLSLShader(unbox(ctx), shaderId);
+    ShaderError destroyGLSLShader(Context ctx, ShaderId shaderId) {
+        return destroyGLSLShader(unbox(ctx), unbox(shaderId));
     }
     native ShaderError compileGLSLShader(long ctx, long shaderId, String program);
 
-    ShaderError compileGLSLShader(Context ctx, long shaderId, String program) {
-        return compileGLSLShader(unbox(ctx), shaderId, program);
+    ShaderError compileGLSLShader(Context ctx, ShaderId shaderId, String program) {
+        return compileGLSLShader(unbox(ctx), unbox(shaderId), program);
     }
 
     native ShaderError createGLSLShaderProgram(long ctx, long[] shaderProgramId);
 
-    ShaderError createGLSLShaderProgram(Context ctx, long[] shaderProgramId) {
-        return createGLSLShaderProgram(unbox(ctx), shaderProgramId);
+    ShaderError createGLSLShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId) {
+        long[] nativeId = new long[1];
+        ShaderError err = createGLSLShaderProgram(unbox(ctx), nativeId);
+        shaderProgramId[0] = boxShaderProgramId(nativeId[0]);
+        return err;
     }
     native ShaderError destroyGLSLShaderProgram(long ctx, long shaderProgramId);
 
-    ShaderError destroyGLSLShaderProgram(Context ctx, long shaderProgramId) {
-        return destroyGLSLShaderProgram(unbox(ctx), shaderProgramId);
+    ShaderError destroyGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
+        return destroyGLSLShaderProgram(unbox(ctx), unbox(shaderProgramId));
     }
     native ShaderError linkGLSLShaderProgram(long ctx, long shaderProgramId,
             long[] shaderId);
 
-    ShaderError linkGLSLShaderProgram(Context ctx, long shaderProgramId,
-            long[] shaderId) {
-        return linkGLSLShaderProgram(unbox(ctx), shaderProgramId,
-                shaderId);
+    ShaderError linkGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
+            ShaderId[] shaderIds) {
+        assert shaderIds != null;
+        long[] nativeIds = new long[shaderIds.length];
+        for (int i = 0; i < shaderIds.length; i++) {
+            nativeIds[i] = unbox(shaderIds[i]);
+        }
+        return linkGLSLShaderProgram(unbox(ctx), unbox(shaderProgramId),
+                nativeIds);
     }
     native ShaderError bindGLSLVertexAttrName(long ctx, long shaderProgramId,
             String attrName, int attrIndex);
 
-    ShaderError bindGLSLVertexAttrName(Context ctx, long shaderProgramId,
+    ShaderError bindGLSLVertexAttrName(Context ctx, ShaderProgramId shaderProgramId,
             String attrName, int attrIndex) {
-        return bindGLSLVertexAttrName(unbox(ctx), shaderProgramId,
+        return bindGLSLVertexAttrName(unbox(ctx), unbox(shaderProgramId),
                 attrName, attrIndex);
     }
     native void lookupGLSLShaderAttrNames(long ctx, long shaderProgramId,
             int numAttrNames, String[] attrNames, long[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr);
 
-    void lookupGLSLShaderAttrNames(Context ctx, long shaderProgramId,
-            int numAttrNames, String[] attrNames, long[] locArr,
+    void lookupGLSLShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
+            int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
-        lookupGLSLShaderAttrNames(unbox(ctx), shaderProgramId,
-                numAttrNames, attrNames, locArr,
+
+        assert numAttrNames == locArr.length;
+        long[] nativeLocArr = new long[numAttrNames];
+        for (int i = 0; i < numAttrNames; i++) {
+            // Initialize to invalid native location
+            nativeLocArr[i] = -1;
+        }
+        lookupGLSLShaderAttrNames(unbox(ctx), unbox(shaderProgramId),
+                numAttrNames, attrNames, nativeLocArr,
                 typeArr, sizeArr, isArrayArr);
+        for (int i = 0; i < numAttrNames; i++) {
+            locArr[i] = boxShaderAttrLoc(nativeLocArr[i]);
+        }
     }
 
     native ShaderError useGLSLShaderProgram(long ctx, long shaderProgramId);
 
-    ShaderError useGLSLShaderProgram(Context ctx, long shaderProgramId) {
-        return useGLSLShaderProgram(unbox(ctx), shaderProgramId);
+    ShaderError useGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
+        return useGLSLShaderProgram(unbox(ctx), unbox(shaderProgramId));
     }
 
 

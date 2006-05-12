@@ -415,133 +415,133 @@ abstract class Pipeline {
     // ShaderAttributeValue methods
 
     abstract ShaderError setCgUniform1i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int value);
 
     abstract ShaderError setCgUniform1f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float value);
 
     abstract ShaderError setCgUniform2i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value);
 
     abstract ShaderError setCgUniform2f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value);
 
     abstract ShaderError setCgUniform3i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value);
 
     abstract ShaderError setCgUniform3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value);
 
     abstract ShaderError setCgUniform4i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value);
 
     abstract ShaderError setCgUniform4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value);
 
     abstract ShaderError setCgUniformMatrix3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value);
 
     abstract ShaderError setCgUniformMatrix4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value);
 
     // ShaderAttributeArray methods
 
     abstract ShaderError setCgUniform1iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value);
 
     abstract ShaderError setCgUniform1fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     abstract ShaderError setCgUniform2iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value);
 
     abstract ShaderError setCgUniform2fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     abstract ShaderError setCgUniform3iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value);
 
     abstract ShaderError setCgUniform3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     abstract ShaderError setCgUniform4iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value);
 
     abstract ShaderError setCgUniform4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     abstract ShaderError setCgUniformMatrix3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     abstract ShaderError setCgUniformMatrix4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     // abstract interfaces for shader compilation, etc.
-    abstract ShaderError createCgShader(Context ctx, int shaderType, long[] shaderId);
-    abstract ShaderError destroyCgShader(Context ctx, long shaderId);
-    abstract ShaderError compileCgShader(Context ctx, long shaderId, String program);
+    abstract ShaderError createCgShader(Context ctx, int shaderType, ShaderId[] shaderId);
+    abstract ShaderError destroyCgShader(Context ctx, ShaderId shaderId);
+    abstract ShaderError compileCgShader(Context ctx, ShaderId shaderId, String program);
 
-    abstract ShaderError createCgShaderProgram(Context ctx, long[] shaderProgramId);
-    abstract ShaderError destroyCgShaderProgram(Context ctx, long shaderProgramId);
-    abstract ShaderError linkCgShaderProgram(Context ctx, long shaderProgramId,
-            long[] shaderId);
-    abstract void lookupCgVertexAttrNames(Context ctx, long shaderProgramId,
+    abstract ShaderError createCgShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId);
+    abstract ShaderError destroyCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId);
+    abstract ShaderError linkCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
+            ShaderId[] shaderIds);
+    abstract void lookupCgVertexAttrNames(Context ctx, ShaderProgramId shaderProgramId,
             int numAttrNames, String[] attrNames, boolean[] errArr);
-    abstract void lookupCgShaderAttrNames(Context ctx, long shaderProgramId,
-            int numAttrNames, String[] attrNames, long[] locArr,
+    abstract void lookupCgShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
+            int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr);
 
-    abstract ShaderError useCgShaderProgram(Context ctx, long shaderProgramId);
+    abstract ShaderError useCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId);
 
 
     // ---------------------------------------------------------------------
@@ -553,133 +553,133 @@ abstract class Pipeline {
     // ShaderAttributeValue methods
 
     abstract ShaderError setGLSLUniform1i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int value);
 
     abstract ShaderError setGLSLUniform1f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float value);
 
     abstract ShaderError setGLSLUniform2i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value);
 
     abstract ShaderError setGLSLUniform2f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value);
 
     abstract ShaderError setGLSLUniform3i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value);
 
     abstract ShaderError setGLSLUniform3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value);
 
     abstract ShaderError setGLSLUniform4i(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int[] value);
 
     abstract ShaderError setGLSLUniform4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value);
 
     abstract ShaderError setGLSLUniformMatrix3f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value);
 
     abstract ShaderError setGLSLUniformMatrix4f(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             float[] value);
 
     // ShaderAttributeArray methods
 
     abstract ShaderError setGLSLUniform1iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value);
 
     abstract ShaderError setGLSLUniform1fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     abstract ShaderError setGLSLUniform2iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value);
 
     abstract ShaderError setGLSLUniform2fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     abstract ShaderError setGLSLUniform3iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value);
 
     abstract ShaderError setGLSLUniform3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     abstract ShaderError setGLSLUniform4iArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value);
 
     abstract ShaderError setGLSLUniform4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     abstract ShaderError setGLSLUniformMatrix3fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     abstract ShaderError setGLSLUniformMatrix4fArray(Context ctx,
-            long shaderProgramId,
-            long uniformLocation,
+            ShaderProgramId shaderProgramId,
+            ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value);
 
     // abstract interfaces for shader compilation, etc.
-    abstract ShaderError createGLSLShader(Context ctx, int shaderType, long[] shaderId);
-    abstract ShaderError destroyGLSLShader(Context ctx, long shaderId);
-    abstract ShaderError compileGLSLShader(Context ctx, long shaderId, String program);
+    abstract ShaderError createGLSLShader(Context ctx, int shaderType, ShaderId[] shaderId);
+    abstract ShaderError destroyGLSLShader(Context ctx, ShaderId shaderId);
+    abstract ShaderError compileGLSLShader(Context ctx, ShaderId shaderId, String program);
 
-    abstract ShaderError createGLSLShaderProgram(Context ctx, long[] shaderProgramId);
-    abstract ShaderError destroyGLSLShaderProgram(Context ctx, long shaderProgramId);
-    abstract ShaderError linkGLSLShaderProgram(Context ctx, long shaderProgramId,
-            long[] shaderId);
-    abstract ShaderError bindGLSLVertexAttrName(Context ctx, long shaderProgramId,
+    abstract ShaderError createGLSLShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId);
+    abstract ShaderError destroyGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId);
+    abstract ShaderError linkGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
+            ShaderId[] shaderIds);
+    abstract ShaderError bindGLSLVertexAttrName(Context ctx, ShaderProgramId shaderProgramId,
             String attrName, int attrIndex);
-    abstract void lookupGLSLShaderAttrNames(Context ctx, long shaderProgramId,
-            int numAttrNames, String[] attrNames, long[] locArr,
+    abstract void lookupGLSLShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
+            int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr);
 
-    abstract ShaderError useGLSLShaderProgram(Context ctx, long shaderProgramId);
+    abstract ShaderError useGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId);
 
 
     // ---------------------------------------------------------------------
