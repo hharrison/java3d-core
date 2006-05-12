@@ -3329,9 +3329,130 @@ class JoglPipeline extends Pipeline {
             float planeTx, float planeTy, float planeTz, float planeTw,
             float planeRx, float planeRy, float planeRz, float planeRw,
             float planeQx, float planeQy, float planeQz, float planeQw,
-            double[] trans) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTexCoordGeneration()");
-        // TODO: implement this
+            double[] vworldToEc) {
+      if (VERBOSE) System.err.println("JoglPipeline.updateTexCoordGeneration()");
+
+      GL gl = context(ctx).getGL();
+
+      float[] planeS = new float[4];
+      float[] planeT = new float[4];
+      float[] planeR = new float[4];
+      float[] planeQ = new float[4];
+
+      if (enable) {
+        gl.glEnable(GL.GL_TEXTURE_GEN_S);
+        gl.glEnable(GL.GL_TEXTURE_GEN_T);
+        if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
+          gl.glEnable(GL.GL_TEXTURE_GEN_R);
+          gl.glDisable(GL.GL_TEXTURE_GEN_Q);
+        } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
+          gl.glEnable(GL.GL_TEXTURE_GEN_R);
+          gl.glEnable(GL.GL_TEXTURE_GEN_Q);
+        } else {
+          gl.glDisable(GL.GL_TEXTURE_GEN_R);
+          gl.glDisable(GL.GL_TEXTURE_GEN_Q);
+        }
+
+        if (genMode != TexCoordGeneration.SPHERE_MAP) {
+          planeS[0] = planeSx; planeS[1] = planeSy; 
+          planeS[2] = planeSz; planeS[3] = planeSw;
+          planeT[0] = planeTx; planeT[1] = planeTy; 
+          planeT[2] = planeTz; planeT[3] = planeTw;
+          if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
+            planeR[0] = planeRx; planeR[1] = planeRy; 
+            planeR[2] = planeRz; planeR[3] = planeRw;
+          } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
+            planeR[0] = planeRx; planeR[1] = planeRy; 
+            planeR[2] = planeRz; planeR[3] = planeRw;
+            planeQ[0] = planeQx; planeQ[1] = planeQy; 
+            planeQ[2] = planeQz; planeQ[3] = planeQw;
+          }
+        }
+
+        switch (genMode) {
+        case TexCoordGeneration.OBJECT_LINEAR:
+          gl.glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_OBJECT_LINEAR);
+          gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_OBJECT_LINEAR);
+          gl.glTexGenfv(GL.GL_S, GL.GL_OBJECT_PLANE, planeS, 0);
+          gl.glTexGenfv(GL.GL_T, GL.GL_OBJECT_PLANE, planeT, 0);
+
+          if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
+            gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE, GL.GL_OBJECT_LINEAR);
+            gl.glTexGenfv(GL.GL_R, GL.GL_OBJECT_PLANE, planeR, 0);
+          } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
+            gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE, GL.GL_OBJECT_LINEAR);
+            gl.glTexGenfv(GL.GL_R, GL.GL_OBJECT_PLANE, planeR, 0);
+            gl.glTexGeni(GL.GL_Q, GL.GL_TEXTURE_GEN_MODE, GL.GL_OBJECT_LINEAR);
+            gl.glTexGenfv(GL.GL_Q, GL.GL_OBJECT_PLANE, planeQ, 0);
+          }
+          break;
+        case TexCoordGeneration.EYE_LINEAR:
+
+          gl.glMatrixMode(GL.GL_MODELVIEW);
+          gl.glPushMatrix();
+
+          if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
+            gl.glLoadTransposeMatrixd(vworldToEc, 0);
+          } else {
+            double[] v = new double[16];
+            copyTranspose(vworldToEc, v);
+            gl.glLoadMatrixd(v, 0);
+          }
+
+          gl.glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
+          gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
+          gl.glTexGenfv(GL.GL_S, GL.GL_EYE_PLANE, planeS, 0);
+          gl.glTexGenfv(GL.GL_T, GL.GL_EYE_PLANE, planeT, 0);
+
+          if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
+            gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
+            gl.glTexGenfv(GL.GL_R, GL.GL_EYE_PLANE, planeR, 0);
+          } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
+            gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
+            gl.glTexGenfv(GL.GL_R, GL.GL_EYE_PLANE, planeR, 0);
+            gl.glTexGeni(GL.GL_Q, GL.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
+            gl.glTexGenfv(GL.GL_Q, GL.GL_EYE_PLANE, planeQ, 0);
+          }
+          gl.glPopMatrix();
+          break;
+        case TexCoordGeneration.SPHERE_MAP:
+          gl.glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
+          gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
+          if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
+            gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
+          } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
+            gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
+            gl.glTexGeni(GL.GL_Q, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
+          }
+
+          break;
+        case TexCoordGeneration.NORMAL_MAP:
+          gl.glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_NORMAL_MAP);
+          gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_NORMAL_MAP);
+          if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
+            gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE, GL.GL_NORMAL_MAP);
+          } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
+            gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE, GL.GL_NORMAL_MAP);
+            gl.glTexGeni(GL.GL_Q, GL.GL_TEXTURE_GEN_MODE, GL.GL_NORMAL_MAP);
+          }
+          break;
+        case TexCoordGeneration.REFLECTION_MAP:
+          gl.glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_REFLECTION_MAP);
+          gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_REFLECTION_MAP);
+          if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
+            gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE, GL.GL_REFLECTION_MAP);
+          } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
+            gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE, GL.GL_REFLECTION_MAP);
+            gl.glTexGeni(GL.GL_Q, GL.GL_TEXTURE_GEN_MODE, GL.GL_REFLECTION_MAP);
+          }
+          break;
+        }
+      } else {
+        gl.glDisable(GL.GL_TEXTURE_GEN_S);
+        gl.glDisable(GL.GL_TEXTURE_GEN_T);
+        gl.glDisable(GL.GL_TEXTURE_GEN_R);
+        gl.glDisable(GL.GL_TEXTURE_GEN_Q);
+      }
     }
 
 
@@ -4624,9 +4745,13 @@ class JoglPipeline extends Pipeline {
     }
 
     // native method for setting blend func
-    void setBlendFunc(Context ctx, int src, int dst) {
-      if (DEBUG) System.err.println("JoglPipeline.setBlendFunc()");
-        // TODO: implement this
+    void setBlendFunc(Context ctx, int srcBlendFunction, int dstBlendFunction) {
+      if (VERBOSE) System.err.println("JoglPipeline.setBlendFunc()");
+
+      GL gl = context(ctx).getGL();
+      gl.glEnable(GL.GL_BLEND);
+      gl.glBlendFunc(blendFunctionTable[srcBlendFunction],
+                     blendFunctionTable[dstBlendFunction]);
     }
 
     // native method for setting fog enable flag
