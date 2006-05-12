@@ -4223,9 +4223,15 @@ class JoglPipeline extends Pipeline {
       type = GL.GL_UNSIGNED_SHORT;
     }
     Buffer buf = null;
-    if (imageYup != null) {
+
+    // FIXME: test against imageYup.length added for GenesisFX demo
+    // which seems to want to initialize the texture object and then
+    // update its sub-image; unclear whether this should be done
+    // elsewhere (test is not in NativePipeline)
+    if (imageYup != null && imageYup.length > 0) {
       buf = ByteBuffer.wrap(imageYup);
     }
+
     gl.glTexImage2D(target, level, oglInternalFormat, 
                     width, height, boundaryWidth,
                     oglFormat, type, buf);
