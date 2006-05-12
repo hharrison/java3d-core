@@ -2947,8 +2947,19 @@ class JoglPipeline extends Pipeline {
     void updateLinearFog(Context ctx,
             float red, float green, float blue,
             double fdist, double bdist) {
-      if (DEBUG) System.err.println("JoglPipeline.updateLinearFog()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateLinearFog()");
+
+      GL gl = context(ctx).getGL();
+
+      float[] color = new float[3];
+      color[0] = red;
+      color[1] = green;
+      color[2] = blue;
+      gl.glFogi(GL.GL_FOG_MODE, GL.GL_LINEAR);
+      gl.glFogfv(GL.GL_FOG_COLOR, color, 0);
+      gl.glFogf(GL.GL_FOG_START, (float) fdist);
+      gl.glFogf(GL.GL_FOG_END, (float) bdist);
+      gl.glEnable(GL.GL_FOG);
     }
 
 
