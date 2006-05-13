@@ -31,6 +31,8 @@ class JoglPipeline extends Pipeline {
     private static final boolean DEBUG = true;
     // Currently prints for entry points already implemented
     private static final boolean VERBOSE = false;
+    // Currently prints for extra debugging information
+    private static final boolean EXTRA_DEBUGGING = false;
 
     /**
      * Constructor for singleton JoglPipeline instance
@@ -945,6 +947,9 @@ class JoglPipeline extends Pipeline {
        */
       if ((tus < texCoordSetMapLen) &&
           (texCoordSetMapOffset[tus] != -1)) {
+        if (EXTRA_DEBUGGING) {
+          System.err.println("  texCoord position " + i + ": " + (texCoordoff + texCoordSetMapOffset[tus]));
+        }
         verts.position(texCoordoff + texCoordSetMapOffset[tus]);
         enableTexCoordPointer(gl, i,
                               texSize, GL.GL_FLOAT, bstride,
@@ -1001,6 +1006,16 @@ class JoglPipeline extends Pipeline {
     int[] sarray = null;
     int[] start_array = null;
 
+    if (EXTRA_DEBUGGING) {
+      System.err.println("Vertex format: " + getVertexDescription(vformat));
+      System.err.println("Geometry type: " + getGeometryDescription(geo_type));
+      if (carray != null) {
+        System.err.println("  Separate color array");
+      } else {
+        System.err.println("  Colors (if any) interleaved");
+      }
+    }
+
     if ((vformat & GeometryArray.COORDINATES) != 0) {
       stride += 3;
     }
@@ -1021,6 +1036,9 @@ class JoglPipeline extends Pipeline {
       }
     }
     if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+      if (EXTRA_DEBUGGING) {
+        System.err.println("  Number of tex coord sets: " + texCoordSetCount);
+      }
       if ((vformat & GeometryArray.TEXTURE_COORDINATE_2) != 0) {
         texSize = 2;
         texStride = 2 * texCoordSetCount;
@@ -1113,6 +1131,9 @@ class JoglPipeline extends Pipeline {
           gl.glNormalPointer(GL.GL_FLOAT, bstride, verts);
         }
         if (!ignoreVertexColors && (vformat & GeometryArray.COLOR) != 0) {
+          if (EXTRA_DEBUGGING) {
+            System.err.println("  Doing colors");
+          }
           clrs.position(startClrs);
           if ((vformat & GeometryArray.WITH_ALPHA) != 0 || useAlpha) {
             gl.glColorPointer(4, GL.GL_FLOAT, cbstride, clrs);
@@ -1190,6 +1211,15 @@ class JoglPipeline extends Pipeline {
         verts.position(startVertex);
         gl.glInterleavedArrays(iaFormat, bstride, verts);
       } else {
+        if (EXTRA_DEBUGGING) {
+          System.err.println("  startVertex: " + startVertex);
+          System.err.println("  stride: " + stride);
+          System.err.println("  bstride: " + bstride);
+          System.err.println("  normoff: " + normoff);
+          System.err.println("  coloroff: " + coloroff);
+          System.err.println("  coordoff: " + coordoff);
+          System.err.println("  texCoordoff: " + texCoordoff);
+        }
         if ((vformat & GeometryArray.NORMALS) != 0) {
           verts.position(startVertex + normoff);
           gl.glNormalPointer(GL.GL_FLOAT, bstride, verts);
@@ -1443,6 +1473,33 @@ class JoglPipeline extends Pipeline {
 
     if (textureDefined) {
       resetTexture(gl, ctx);
+    }
+  }
+
+  private String getVertexDescription(int vformat) {
+    String res = "";
+    if ((vformat & GeometryArray.COORDINATES)          != 0) res += "COORDINATES ";
+    if ((vformat & GeometryArray.NORMALS)              != 0) res += "NORMALS ";
+    if ((vformat & GeometryArray.COLOR)                != 0) res += "COLOR ";
+    if ((vformat & GeometryArray.WITH_ALPHA)           != 0) res += "(WITH_ALPHA) ";
+    if ((vformat & GeometryArray.TEXTURE_COORDINATE)   != 0) res += "TEXTURE_COORDINATE ";
+    if ((vformat & GeometryArray.TEXTURE_COORDINATE_2) != 0) res += "(2) ";
+    if ((vformat & GeometryArray.TEXTURE_COORDINATE_3) != 0) res += "(3) ";
+    if ((vformat & GeometryArray.TEXTURE_COORDINATE_4) != 0) res += "(4) ";
+    if ((vformat & GeometryArray.VERTEX_ATTRIBUTES)    != 0) res += "VERTEX_ATTRIBUTES ";
+    return res;
+  }
+
+  private String getGeometryDescription(int geo_type) {
+    switch (geo_type) {
+      case GeometryRetained.GEO_TYPE_TRI_STRIP_SET : return "GEO_TYPE_TRI_STRIP_SET";
+      case GeometryRetained.GEO_TYPE_TRI_FAN_SET   : return "GEO_TYPE_TRI_FAN_SET";
+      case GeometryRetained.GEO_TYPE_LINE_STRIP_SET: return "GEO_TYPE_LINE_STRIP_SET";
+      case GeometryRetained.GEO_TYPE_QUAD_SET      : return "GEO_TYPE_QUAD_SET";
+      case GeometryRetained.GEO_TYPE_TRI_SET       : return "GEO_TYPE_TRI_SET";
+      case GeometryRetained.GEO_TYPE_POINT_SET     : return "GEO_TYPE_POINT_SET";
+      case GeometryRetained.GEO_TYPE_LINE_SET      : return "GEO_TYPE_LINE_SET";
+      default: return "(unknown " + geo_type + ")";
     }
   }
 
@@ -3867,7 +3924,7 @@ class JoglPipeline extends Pipeline {
     //
 
     void bindTexture2D(Context ctx, int objectId, boolean enable) {
-      if (VERBOSE) System.err.println("JoglPipeline.bindTexture2D()");
+      if (VERBOSE) System.err.println("JoglPipeline.bindTexture2D(objectId=" + objectId + ",enable=" + enable + ")");
 
       GL gl = context(ctx).getGL();
       gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
@@ -3887,7 +3944,7 @@ class JoglPipeline extends Pipeline {
             int width, int height,
             int boundaryWidth,
             byte[] imageData) {
-      if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DImage()");
+      if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DImage(width=" + width + ",height=" + height + ",level=" + level + ")");
 
       updateTexture2DImage(ctx, GL.GL_TEXTURE_2D,
                            numLevels, level, internalFormat, storedFormat,
@@ -4379,6 +4436,11 @@ class JoglPipeline extends Pipeline {
                                 int magFilter) {
     GL gl = context(ctx).getGL();
 
+    if (EXTRA_DEBUGGING) {
+      System.err.println("minFilter: " + getFilterName(minFilter) +
+                         " magFilter: " + getFilterName(magFilter));
+    }
+
     // FIXME: unclear whether we really need to set up the enum values
     // in the JoglContext as is done in the native code depending on
     // extension availability; maybe this is the defined fallback
@@ -4533,6 +4595,38 @@ class JoglPipeline extends Pipeline {
     }
   }
 
+  private static final String getFilterName(int filter) {
+    switch (filter) {
+      case Texture.FASTEST:
+        return "Texture.FASTEST";
+      case Texture.NICEST:
+        return "Texture.NICEST";
+      case Texture.BASE_LEVEL_POINT:
+        return "Texture.BASE_LEVEL_POINT";
+      case Texture.BASE_LEVEL_LINEAR:
+        return "Texture.BASE_LEVEL_LINEAR";
+      case Texture.MULTI_LEVEL_POINT:
+        return "Texture.MULTI_LEVEL_POINT";
+      case Texture.MULTI_LEVEL_LINEAR:
+        return "Texture.MULTI_LEVEL_LINEAR";
+      case Texture.FILTER4:
+        return "Texture.FILTER4";
+      case Texture.LINEAR_SHARPEN:
+        return "Texture.LINEAR_SHARPEN";
+      case Texture.LINEAR_SHARPEN_RGB:
+        return "Texture.LINEAR_SHARPEN_RGB";
+      case Texture.LINEAR_SHARPEN_ALPHA:
+        return "Texture.LINEAR_SHARPEN_ALPHA";
+      case Texture2D.LINEAR_DETAIL:
+        return "Texture.LINEAR_DETAIL";
+      case Texture2D.LINEAR_DETAIL_RGB:
+        return "Texture.LINEAR_DETAIL_RGB";
+      case Texture2D.LINEAR_DETAIL_ALPHA:
+        return "Texture.LINEAR_DETAIL_ALPHA";
+      default:
+        return "(unknown)";
+    }
+  }
 
     // ---------------------------------------------------------------------
 
@@ -5708,10 +5802,18 @@ class JoglPipeline extends Pipeline {
                                      GL gl) {
     // FIXME: this is a heavily abridged version of the code in
     // Canvas3D.c; need to pull much more in
-    if (gl.isExtensionAvailable("GL_ARB_multitexture")) {
+    if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
       cv.maxTextureUnits = ctx.getMaxTextureUnits();
       cv.maxTexCoordSets = ctx.getMaxTexCoordSets();
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_MULTI_TEXTURE;
+      cv.multiTexAccelerated = true;
     }
+
+    // FIXME: need to pick this up out of the query context
+    cv.extensionsSupported |= Canvas3D.EXT_BGR;
+    cv.extensionsSupported |= Canvas3D.EXT_ABGR;
+    cv.textureWidthMax = 2048;
+    cv.textureHeightMax = 2048;
   }
 
   /*
