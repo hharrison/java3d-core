@@ -14,6 +14,8 @@ package javax.media.j3d;
 
 import java.awt.*;
 import java.nio.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import com.sun.opengl.util.*;
@@ -3876,9 +3878,151 @@ class JoglPipeline extends Pipeline {
             int[] combineRgbSrc, int[] combineAlphaSrc,
             int[] combineRgbFcn, int[] combineAlphaFcn,
             int combineRgbScale, int combineAlphaScale) {
-      if (DEBUG) System.err.println("JoglPipeline.updateCombiner()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateCombiner()");
+
+      GL gl = context(ctx).getGL();
+      int[] GLrgbMode = new int[1];
+      int[] GLalphaMode = new int[1];
+      getGLCombineMode(gl, combineRgbMode, combineAlphaMode,
+                       GLrgbMode, GLalphaMode);
+      gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_COMBINE_RGB, GLrgbMode[0]);
+      gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_COMBINE_ALPHA, GLalphaMode[0]);
+
+      int nargs;
+      if (combineRgbMode == TextureAttributes.COMBINE_REPLACE) {
+        nargs = 1;
+      } else if (combineRgbMode == TextureAttributes.COMBINE_INTERPOLATE) {
+        nargs = 3;
+      } else {
+        nargs = 2;
+      }
+      
+      for (int i = 0; i < nargs; i++) {
+        gl.glTexEnvi(GL.GL_TEXTURE_ENV, _gl_combineRgbSrcIndex[i],
+                     _gl_combineSrc[combineRgbSrc[i]]);
+        gl.glTexEnvi(GL.GL_TEXTURE_ENV, _gl_combineRgbOpIndex[i],
+                     _gl_combineFcn[combineRgbFcn[i]]);
+      }
+
+      if (combineAlphaMode == TextureAttributes.COMBINE_REPLACE) {
+        nargs = 1;
+      } else if (combineAlphaMode == TextureAttributes.COMBINE_INTERPOLATE) {
+        nargs = 3;
+      } else {
+        nargs = 2;
+      }
+
+      for (int i = 0; i < nargs; i++) {
+        gl.glTexEnvi(GL.GL_TEXTURE_ENV, _gl_combineAlphaSrcIndex[i], 
+                     _gl_combineSrc[combineAlphaSrc[i]]);
+        gl.glTexEnvi(GL.GL_TEXTURE_ENV, _gl_combineAlphaOpIndex[i], 
+                     _gl_combineFcn[combineAlphaFcn[i]]);
+      }
+
+      gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_RGB_SCALE, combineRgbScale);
+      gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_ALPHA_SCALE, combineAlphaScale);
     }
+
+
+  private void getGLCombineMode(GL gl, int combineRgbMode, int combineAlphaMode,
+                                int[] GLrgbMode, int[] GLalphaMode) {
+    switch (combineRgbMode) {
+      case TextureAttributes.COMBINE_REPLACE:
+        GLrgbMode[0] = GL.GL_REPLACE;
+        break;
+      case TextureAttributes.COMBINE_MODULATE:
+        GLrgbMode[0] = GL.GL_MODULATE;
+        break;
+      case TextureAttributes.COMBINE_ADD:
+        GLrgbMode[0] = GL.GL_ADD;
+        break;
+      case TextureAttributes.COMBINE_ADD_SIGNED:
+        GLrgbMode[0] = GL.GL_ADD_SIGNED;
+        break;
+      case TextureAttributes.COMBINE_SUBTRACT:
+        GLrgbMode[0] = GL.GL_SUBTRACT;
+        break;
+      case TextureAttributes.COMBINE_INTERPOLATE:
+        GLrgbMode[0] = GL.GL_INTERPOLATE;
+        break;
+      case TextureAttributes.COMBINE_DOT3:
+        GLrgbMode[0] = GL.GL_DOT3_RGB;
+        break;
+      default:
+        break;
+    }
+
+    switch (combineAlphaMode) {
+      case TextureAttributes.COMBINE_REPLACE:
+        GLalphaMode[0] = GL.GL_REPLACE;
+        break;
+      case TextureAttributes.COMBINE_MODULATE:
+        GLalphaMode[0] = GL.GL_MODULATE;
+        break;
+      case TextureAttributes.COMBINE_ADD:
+        GLalphaMode[0] = GL.GL_ADD;
+        break;
+      case TextureAttributes.COMBINE_ADD_SIGNED:
+        GLalphaMode[0] = GL.GL_ADD_SIGNED;
+        break;
+      case TextureAttributes.COMBINE_SUBTRACT:
+        GLalphaMode[0] = GL.GL_SUBTRACT;
+        break;
+      case TextureAttributes.COMBINE_INTERPOLATE:
+        GLalphaMode[0] = GL.GL_INTERPOLATE;
+        break;
+      case TextureAttributes.COMBINE_DOT3:
+        // dot3 will only make sense for alpha if rgb is also
+        // doing dot3. So if rgb is not doing dot3, fallback to replace
+        if (combineRgbMode == TextureAttributes.COMBINE_DOT3) {
+          GLrgbMode[0] = GL.GL_DOT3_RGBA;
+        } else {
+          GLalphaMode[0] = GL.GL_REPLACE;
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  // mapping from java enum to gl enum
+  private static final int[] _gl_combineRgbSrcIndex = {
+    GL.GL_SOURCE0_RGB,
+    GL.GL_SOURCE1_RGB,
+    GL.GL_SOURCE2_RGB,
+  };
+
+  private static final int[] _gl_combineAlphaSrcIndex = {
+    GL.GL_SOURCE0_ALPHA,
+    GL.GL_SOURCE1_ALPHA,
+    GL.GL_SOURCE2_ALPHA,
+  };
+
+  private static final int[] _gl_combineRgbOpIndex = {
+    GL.GL_OPERAND0_RGB,
+    GL.GL_OPERAND1_RGB,
+    GL.GL_OPERAND2_RGB,
+  };
+
+  private static final int[] _gl_combineAlphaOpIndex = {
+    GL.GL_OPERAND0_ALPHA,
+    GL.GL_OPERAND1_ALPHA,
+    GL.GL_OPERAND2_ALPHA,
+  };
+
+  private static final int[] _gl_combineSrc = {
+    GL.GL_PRIMARY_COLOR,      // TextureAttributes.COMBINE_OBJECT_COLOR
+    GL.GL_TEXTURE,            // TextureAttributes.COMBINE_TEXTURE
+    GL.GL_CONSTANT,           // TextureAttributes.COMBINE_CONSTANT_COLOR
+    GL.GL_PREVIOUS,           // TextureAttributes.COMBINE_PREVIOUS_TEXTURE_UNIT_STATE
+  };
+
+  private static final int[] _gl_combineFcn = {
+    GL.GL_SRC_COLOR,              // TextureAttributes.COMBINE_SRC_COLOR
+    GL.GL_ONE_MINUS_SRC_COLOR,    // TextureAttributes.COMBINE_ONE_MINUS_SRC_COLOR
+    GL.GL_SRC_ALPHA,              // TextureAttributes.COMBINE_SRC_ALPHA
+    GL.GL_ONE_MINUS_SRC_ALPHA,    // TextureAttributes.COMBINE_ONE_MINUS_SRC_ALPHA
+  };
 
 
     // ---------------------------------------------------------------------
@@ -3968,16 +4112,21 @@ class JoglPipeline extends Pipeline {
 
     void updateTexture2DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
-            float minimumLod, float maximumLod) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTexture2DLodRange()");
-        // TODO: implement this
+            float minimumLOD, float maximumLOD) {
+      if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DLodRange()");
+
+      updateTextureLodRange(ctx, GL.GL_TEXTURE_2D,
+                            baseLevel, maximumLevel,
+                            minimumLOD, maximumLOD);
     }
 
     void updateTexture2DLodOffset(Context ctx,
-            float lodOffsetX, float lodOffsetY,
-            float lodOffsetZ) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTexture2DLodOffset()");
-        // TODO: implement this
+            float lodOffsetS, float lodOffsetT,
+            float lodOffsetR) {
+      if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DLodOffset()");
+
+      updateTextureLodOffset(ctx, GL.GL_TEXTURE_2D, 
+                             lodOffsetS, lodOffsetT, lodOffsetR);
     }
 
     void updateTexture2DBoundary(Context ctx,
@@ -4022,9 +4171,44 @@ class JoglPipeline extends Pipeline {
     }
 
     void updateTexture2DAnisotropicFilter(Context ctx, float degree) {
-      if (DEBUG) System.err.println("JoglPipeline.updateTexture2DAnisotropicFilter()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DAnisotropicFilter()");
+
+      updateTextureAnisotropicFilter(ctx, GL.GL_TEXTURE_2D, degree);
     }
+
+  private void updateTextureLodRange(Context ctx,
+            int target,
+            int baseLevel, int maximumLevel,
+            float minimumLOD, float maximumLOD) {
+    GL gl = context(ctx).getGL();
+    // checking of the availability of the extension is already done
+    // in the shared code
+    gl.glTexParameteri(target, GL.GL_TEXTURE_BASE_LEVEL, baseLevel);
+    gl.glTexParameteri(target, GL.GL_TEXTURE_MAX_LEVEL, maximumLevel);
+    gl.glTexParameterf(target, GL.GL_TEXTURE_MIN_LOD, minimumLOD);
+    gl.glTexParameterf(target, GL.GL_TEXTURE_MAX_LOD, maximumLOD);
+  }
+
+  private void updateTextureLodOffset(Context ctx,
+                                      int target,
+                                      float lodOffsetS, float lodOffsetT,
+                                      float lodOffsetR) {
+    GL gl = context(ctx).getGL();
+    // checking of the availability of the extension is already done
+    // in the shared code
+    gl.glTexParameterf(target, GL.GL_TEXTURE_LOD_BIAS_S_SGIX, lodOffsetS);
+    gl.glTexParameterf(target, GL.GL_TEXTURE_LOD_BIAS_T_SGIX, lodOffsetT);
+    gl.glTexParameterf(target, GL.GL_TEXTURE_LOD_BIAS_R_SGIX, lodOffsetR);
+  }
+
+  private void updateTextureAnisotropicFilter(Context ctx, int target, float degree) {
+    GL gl = context(ctx).getGL();
+    // checking of the availability of anisotropic filter functionality
+    // is already done in the shared code
+    gl.glTexParameterf(target, 
+                       GL.GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                       degree);
+  }
 
     // ---------------------------------------------------------------------
 
@@ -4702,7 +4886,7 @@ class JoglPipeline extends Pipeline {
 
       if(!isSharedCtx){
         // Set up fields in Canvas3D
-        setupCanvasProperties(cv, ctx, gl);
+        setupCanvasProperties(cv, ctx, gl, glslLibraryAvailable, cgLibraryAvailable);
       }
       
       // Enable rescale normal
@@ -5797,23 +5981,306 @@ class JoglPipeline extends Pipeline {
     return true;
   }
 
-  private void setupCanvasProperties(Canvas3D cv,
-                                     JoglContext ctx,
-                                     GL gl) {
-    // FIXME: this is a heavily abridged version of the code in
-    // Canvas3D.c; need to pull much more in
-    if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
-      cv.maxTextureUnits = ctx.getMaxTextureUnits();
-      cv.maxTexCoordSets = ctx.getMaxTexCoordSets();
+  private int[] extractVersionInfo(String versionString) {
+    StringTokenizer tok = new StringTokenizer(versionString, ". ");
+    int major = Integer.valueOf(tok.nextToken()).intValue();
+    int minor = Integer.valueOf(tok.nextToken()).intValue();
+
+    // See if there's vendor-specific information which might
+    // imply a more recent OpenGL version
+    tok = new StringTokenizer(versionString, " ");
+    if (tok.hasMoreTokens()) {
+      tok.nextToken();
+      if (tok.hasMoreTokens()) {
+        Pattern p = Pattern.compile("\\D*(\\d+)\\.(\\d+)\\.?(\\d*).*");
+        Matcher m = p.matcher(tok.nextToken());
+        if (m.matches()) {
+          int altMajor = Integer.valueOf(m.group(1)).intValue();
+          int altMinor = Integer.valueOf(m.group(2)).intValue();
+          // Avoid possibly confusing situations by requiring
+          // major version to match
+          if (altMajor == major &&
+              altMinor >  minor) {
+            minor = altMinor;
+          }
+        }
+      }
+    }
+    return new int[] { major, minor };
+  }
+
+  private int getTextureColorTableSize(GL gl) {
+    if (!gl.isExtensionAvailable("GL_ARB_imaging")) {
+      return 0;
+    }
+    
+    gl.glColorTable(GL.GL_PROXY_TEXTURE_COLOR_TABLE_SGI, GL.GL_RGBA, 256, GL.GL_RGB,
+                    GL.GL_INT, null);
+    int[] tmp = new int[1];
+    gl.glGetColorTableParameteriv(GL.GL_PROXY_TEXTURE_COLOR_TABLE_SGI,
+                                  GL.GL_COLOR_TABLE_WIDTH, tmp, 0);
+    return tmp[0];
+  }
+
+
+  private void checkTextureExtensions(Canvas3D cv,
+                                      JoglContext ctx,
+                                      GL gl,
+                                      boolean gl13) {
+    if (gl13) {
       cv.textureExtendedFeatures |= Canvas3D.TEXTURE_MULTI_TEXTURE;
       cv.multiTexAccelerated = true;
+      int[] tmp = new int[1];
+      gl.glGetIntegerv(GL.GL_MAX_TEXTURE_UNITS, tmp, 0);
+      cv.maxTextureUnits = tmp[0];
+      cv.maxTexCoordSets = cv.maxTextureUnits;
+      if (gl.isExtensionAvailable("GL_ARB_vertex_shader")) {
+        gl.glGetIntegerv(GL.GL_MAX_TEXTURE_COORDS_ARB, tmp, 0);
+        cv.maxTexCoordSets = tmp[0];
+      }
     }
 
-    // FIXME: need to pick this up out of the query context
+    if (gl.isExtensionAvailable("GL_SGI_texture_color_table") ||
+        gl.isExtensionAvailable("GL_ARB_imaging")) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_COLOR_TABLE;
+
+      // get texture color table size
+      // need to check later
+      cv.textureColorTableSize = getTextureColorTableSize(gl);
+      if (cv.textureColorTableSize <= 0) {
+        cv.textureExtendedFeatures &= ~Canvas3D.TEXTURE_COLOR_TABLE;
+      }
+      if (cv.textureColorTableSize > 256) {
+        cv.textureColorTableSize = 256;
+      }
+    }
+
+    if (gl.isExtensionAvailable("GL_ARB_texture_env_combine")) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_COMBINE;
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_COMBINE_SUBTRACT;
+    } else if (gl.isExtensionAvailable("GL_EXT_texture_env_combine")) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_COMBINE;
+    }
+
+    if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_REGISTER_COMBINERS;
+    }
+
+    if (gl.isExtensionAvailable("GL_ARB_texture_env_dot3") ||
+        gl.isExtensionAvailable("GL_EXT_texture_env_dot3")) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_COMBINE_DOT3;
+    }
+
+    if (gl13) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_CUBE_MAP;
+    }
+
+    if (gl.isExtensionAvailable("GL_SGIS_sharpen_texture")) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_SHARPEN;
+    }
+
+    if (gl.isExtensionAvailable("GL_SGIS_detail_texture")) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_DETAIL;
+    }
+
+    if (gl.isExtensionAvailable("GL_SGIS_texture_filter4")) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_FILTER4;
+    }
+
+    if (gl.isExtensionAvailable("GL_EXT_texture_filter_anisotropic")) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_ANISOTROPIC_FILTER;
+      float[] tmp = new float[1];
+      gl.glGetFloatv(GL. GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, tmp, 0);
+      cv.anisotropicDegreeMax = tmp[0];
+    }
+
+    if (gl.isExtensionAvailable("GL_SGIX_texture_lod_bias")) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_LOD_OFFSET;
+    }
+
+    if (gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_NON_POWER_OF_TWO;
+    }
+  }
+
+
+  private void checkGLSLShaderExtensions(Canvas3D cv,
+                                         JoglContext ctx,
+                                         GL gl,
+                                         boolean glslLibraryAvailable) {
+    if (glslLibraryAvailable &&
+        gl.isExtensionAvailable("GL_ARB_shader_objects") &&
+        gl.isExtensionAvailable("GL_ARB_shading_language_100")) {
+      // FIXME: this isn't complete and would need to set up the
+      // JoglContext for dispatch of various routines such as those
+      // related to vertex attributes
+      int[] tmp = new int[1];
+      gl.glGetIntegerv(GL. GL_MAX_TEXTURE_IMAGE_UNITS_ARB, tmp, 0);
+      cv.maxTextureImageUnits = tmp[0];
+      gl.glGetIntegerv(GL. GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, tmp, 0);
+      cv.maxVertexTextureImageUnits = tmp[0];
+      gl.glGetIntegerv(GL. GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, tmp, 0);
+      cv.maxCombinedTextureImageUnits = tmp[0];
+      int vertexAttrOffset = VirtualUniverse.mc.glslVertexAttrOffset;
+      gl.glGetIntegerv(GL. GL_MAX_VERTEX_ATTRIBS_ARB, tmp, 0);
+      cv.maxVertexAttrs = tmp[0];
+      // decr count to allow for reserved vertex attrs
+      cv.maxVertexAttrs -= vertexAttrOffset;
+      if (cv.maxVertexAttrs < 0) {
+        cv.maxVertexAttrs = 0;
+      }
+      cv.shadingLanguageGLSL = true;
+    }
+  }
+
+  private void checkCgShaderExtensions(Canvas3D cv,
+                                       JoglContext ctx,
+                                       GL gl,
+                                       boolean cgLibraryAvailable) {
+    if (cgLibraryAvailable) {
+      // FIXME
+      throw new RuntimeException("checkCgShaderExtensions not yet implemented");
+    }
+  }
+
+  private void setupCanvasProperties(Canvas3D cv,
+                                     JoglContext ctx,
+                                     GL gl,
+                                     boolean glslLibraryAvailable,
+                                     boolean cgLibraryAvailable) {
+    // Note: this includes relevant portions from both the
+    // NativePipeline's getPropertiesFromCurrentContext and setupCanvasProperties
+
+    // Reset all fields
+    cv.multiTexAccelerated = false;
+    cv.maxTextureUnits = 0;
+    cv.maxTexCoordSets = 0;
+    cv.maxTextureImageUnits = 0;
+    cv.maxVertexTextureImageUnits = 0;
+    cv.maxCombinedTextureImageUnits = 0;
+    cv.maxVertexAttrs = 0;
+    cv.extensionsSupported = 0;
+    cv.textureExtendedFeatures = 0;
+    cv.textureColorTableSize = 0;
+    cv.anisotropicDegreeMax = 0;
+    cv.textureBoundaryWidthMax = 0;
+    cv.textureWidthMax = 0;
+    cv.textureHeightMax = 0;
+    cv.texture3DWidthMax = 0;
+    cv.texture3DHeightMax = 0;
+    cv.texture3DDepthMax = 0;
+    cv.shadingLanguageGLSL = false;
+    cv.shadingLanguageCg = false;
+
+    // Now make queries and set up these fields
+    String glVersion  = gl.glGetString(GL.GL_VERSION);
+    String glVendor   = gl.glGetString(GL.GL_VENDOR);
+    String glRenderer = gl.glGetString(GL.GL_RENDERER);
+    cv.nativeGraphicsVersion  = glVersion;
+    cv.nativeGraphicsVendor   = glVendor;
+    cv.nativeGraphicsRenderer = glRenderer;
+
+    // find out the version, major and minor version number
+    int[] versionNumbers = extractVersionInfo(glVersion);
+    int major = versionNumbers[0];
+    int minor = versionNumbers[1];
+
+    ///////////////////////////////////////////
+    // setup the graphics context properties //
+
+    // NOTE: Java 3D now requires OpenGL 1.3 for full functionality.
+    // For backwards compatibility with certain older graphics cards and
+    // drivers (e.g., the Linux DRI driver for older ATI cards),
+    // we will try to run on OpenGL 1.2 in an unsupported manner. However,
+    // we will not attempt to use OpenGL extensions for any features that
+    // are available in OpenGL 1.3, specifically multitexture, multisample,
+    // and cube map textures.
+
+    if (major < 1 ||
+        (major == 1 && minor < 2)) {
+      throw new IllegalStateException("Java 3D ERROR : OpenGL 1.2 or better is required (GL_VERSION=" +
+                                      major + "." + minor + ")");
+    }
+
+    boolean gl20 = false;
+    boolean gl13 = false;
+    if (major > 1) {
+      // OpenGL 2.x -- set flags for 1.3 and 2.0 or greater
+      gl20 = true;
+      gl13 = true;
+    } else {
+      if (minor == 2) {
+        System.err.println("*********************************************************");
+        System.err.println("*** JAVA 3D: WARNING OpenGL 1.2 is no longer supported.");
+        System.err.println("*** Will attempt to run with reduced functionality.");
+        System.err.println("*********************************************************");
+      } else {
+        gl13 = true;
+      }
+    }
+
+    // Set up properties for OpenGL 1.3
+    cv.textureExtendedFeatures |= Canvas3D.TEXTURE_3D;
+
+    // Note that we don't query for GL_ARB_imaging here
+
+    cv.textureExtendedFeatures |= Canvas3D.TEXTURE_LOD_RANGE;
+
+    // look for OpenGL 2.0 features
+    if (gl20) {
+      cv.textureExtendedFeatures |= Canvas3D.TEXTURE_NON_POWER_OF_TWO;
+    }
+
+    // Setup GL_EXT_abgr
+    if (gl.isExtensionAvailable("GL_EXT_abgr")) {
+      cv.extensionsSupported |= Canvas3D.EXT_ABGR;
+    }
+
+    // GL_BGR is always supported
     cv.extensionsSupported |= Canvas3D.EXT_BGR;
-    cv.extensionsSupported |= Canvas3D.EXT_ABGR;
-    cv.textureWidthMax = 2048;
-    cv.textureHeightMax = 2048;
+
+    // Setup multisample
+    // FIXME: this is not correct for the Windows platform yet
+    if (gl13) {
+      cv.extensionsSupported |= Canvas3D.MULTISAMPLE;
+    }
+
+    if ((cv.extensionsSupported & Canvas3D.MULTISAMPLE) != 0 &&
+        !VirtualUniverse.mc.implicitAntialiasing) {
+      gl.glDisable(GL.GL_MULTISAMPLE);
+    }
+
+    // Check texture extensions
+    checkTextureExtensions(cv, ctx, gl, gl13);
+
+    // Check shader extensions
+    if (gl13) {
+      checkGLSLShaderExtensions(cv, ctx, gl, glslLibraryAvailable);
+      checkCgShaderExtensions(cv, ctx, gl, cgLibraryAvailable);
+    } else {
+      // Force shaders to be disabled, since no multitexture support
+      checkGLSLShaderExtensions(cv, ctx, gl, false);
+      checkCgShaderExtensions(cv, ctx, gl, false);
+    }
+
+    // Setup GL_SUN_gloabl_alpha
+    if (gl.isExtensionAvailable("GL_SUN_gloabl_alpha")) {
+      cv.extensionsSupported |= Canvas3D.SUN_GLOBAL_ALPHA;
+    }      
+
+    cv.textureBoundaryWidthMax = 1;
+    {
+      int[] tmp = new int[1];
+      gl.glGetIntegerv(GL.GL_MAX_TEXTURE_SIZE, tmp, 0);
+      cv.textureWidthMax = tmp[0];
+      cv.textureHeightMax = tmp[0];
+
+      tmp[0] = -1;
+      gl.glGetIntegerv(GL.GL_MAX_3D_TEXTURE_SIZE, tmp, 0);
+      cv.texture3DWidthMax = tmp[0];
+      cv.texture3DHeightMax = tmp[0];
+      cv.texture3DDepthMax = tmp[0];
+    }
   }
 
   /*

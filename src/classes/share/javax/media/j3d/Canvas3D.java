@@ -614,9 +614,9 @@ public class Canvas3D extends Canvas {
             new Hashtable<GraphicsConfiguration,GraphicsConfigInfo>();
 
     // The native graphics version, vendor, and renderer information 
-    private String nativeGraphicsVersion = "<UNKNOWN>";
-    private String nativeGraphicsVendor = "<UNKNOWN>";
-    private String nativeGraphicsRenderer = "<UNKNOWN>";
+    String nativeGraphicsVersion = "<UNKNOWN>";
+    String nativeGraphicsVendor = "<UNKNOWN>";
+    String nativeGraphicsRenderer = "<UNKNOWN>";
     
     boolean firstPaintCalled = false;
 
