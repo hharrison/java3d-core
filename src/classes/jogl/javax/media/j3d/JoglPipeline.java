@@ -13,6 +13,7 @@
 package javax.media.j3d;
 
 import java.awt.*;
+import java.io.*;
 import java.nio.*;
 import java.util.*;
 import java.util.regex.*;
@@ -33,7 +34,7 @@ class JoglPipeline extends Pipeline {
     private static final boolean DEBUG = true;
     // Currently prints for entry points already implemented
     private static final boolean VERBOSE = false;
-    // Currently prints for extra debugging information
+    // Prints extra debugging information
     private static final boolean EXTRA_DEBUGGING = false;
 
     /**
@@ -2554,90 +2555,104 @@ class JoglPipeline extends Pipeline {
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             int value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform1i()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform1i()");
+
+      context(ctx).getGL().glUniform1iARB(unbox(uniformLocation), value);
+      return null;
     }
 
     ShaderError setGLSLUniform1f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform1f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform1f()");
+
+      context(ctx).getGL().glUniform1fARB(unbox(uniformLocation), value);
+      return null;
     }
 
     ShaderError setGLSLUniform2i(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform2i()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform2i()");
+
+      context(ctx).getGL().glUniform2iARB(unbox(uniformLocation), value[0], value[1]);
+      return null;
     }
 
     ShaderError setGLSLUniform2f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform2f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform2f()");
+
+      context(ctx).getGL().glUniform2fARB(unbox(uniformLocation), value[0], value[1]);
+      return null;
     }
 
     ShaderError setGLSLUniform3i(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform3i()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform3i()");
+
+      context(ctx).getGL().glUniform3iARB(unbox(uniformLocation), value[0], value[1], value[2]);
+      return null;
     }
 
     ShaderError setGLSLUniform3f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform3f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform3f()");
+
+      context(ctx).getGL().glUniform3fARB(unbox(uniformLocation), value[0], value[1], value[2]);
+      return null;
     }
 
     ShaderError setGLSLUniform4i(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform4i()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform4i()");
+
+      context(ctx).getGL().glUniform4iARB(unbox(uniformLocation), value[0], value[1], value[2], value[3]);
+      return null;
     }
 
     ShaderError setGLSLUniform4f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform4f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform4f()");
+
+      context(ctx).getGL().glUniform4fARB(unbox(uniformLocation), value[0], value[1], value[2], value[3]);
+      return null;
     }
 
     ShaderError setGLSLUniformMatrix3f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniformMatrix3f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniformMatrix3f()");
+
+      // Load attribute
+      // transpose is true : each matrix is supplied in row major order
+      context(ctx).getGL().glUniformMatrix3fvARB(unbox(uniformLocation), 1, true, value, 0);
+      return null;
     }
 
     ShaderError setGLSLUniformMatrix4f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniformMatrix4f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniformMatrix4f()");
+
+      // Load attribute
+      // transpose is true : each matrix is supplied in row major order
+      context(ctx).getGL().glUniformMatrix4fvARB(unbox(uniformLocation), 1, true, value, 0);
+      return null;
     }
 
     // ShaderAttributeArray methods
@@ -2647,9 +2662,10 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform1iArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform1iArray()");
+
+      context(ctx).getGL().glUniform1ivARB(unbox(uniformLocation), numElements, value, 0);
+      return null;
     }
 
     ShaderError setGLSLUniform1fArray(Context ctx,
@@ -2657,9 +2673,10 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform1fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform1fArray()");
+
+      context(ctx).getGL().glUniform1fvARB(unbox(uniformLocation), numElements, value, 0);
+      return null;
     }
 
     ShaderError setGLSLUniform2iArray(Context ctx,
@@ -2667,9 +2684,10 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform2iArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform2iArray()");
+
+      context(ctx).getGL().glUniform2ivARB(unbox(uniformLocation), numElements, value, 0);
+      return null;
     }
 
     ShaderError setGLSLUniform2fArray(Context ctx,
@@ -2677,9 +2695,10 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform2fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform2fArray()");
+
+      context(ctx).getGL().glUniform2fvARB(unbox(uniformLocation), numElements, value, 0);
+      return null;
     }
 
     ShaderError setGLSLUniform3iArray(Context ctx,
@@ -2687,9 +2706,10 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform3iArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform3iArray()");
+
+      context(ctx).getGL().glUniform3ivARB(unbox(uniformLocation), numElements, value, 0);
+      return null;
     }
 
     ShaderError setGLSLUniform3fArray(Context ctx,
@@ -2697,9 +2717,10 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform3fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform3fArray()");
+
+      context(ctx).getGL().glUniform3fvARB(unbox(uniformLocation), numElements, value, 0);
+      return null;
     }
 
     ShaderError setGLSLUniform4iArray(Context ctx,
@@ -2707,9 +2728,10 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform4iArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform4iArray()");
+
+      context(ctx).getGL().glUniform4ivARB(unbox(uniformLocation), numElements, value, 0);
+      return null;
     }
 
     ShaderError setGLSLUniform4fArray(Context ctx,
@@ -2717,9 +2739,10 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniform4fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform4fArray()");
+
+      context(ctx).getGL().glUniform4fvARB(unbox(uniformLocation), numElements, value, 0);
+      return null;
     }
 
     ShaderError setGLSLUniformMatrix3fArray(Context ctx,
@@ -2727,9 +2750,12 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniformMatrix3fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniformMatrix3fArray()");
+
+      // Load attribute
+      // transpose is true : each matrix is supplied in row major order
+      context(ctx).getGL().glUniformMatrix3fvARB(unbox(uniformLocation), numElements, true, value, 0);
+      return null;
     }
 
     ShaderError setGLSLUniformMatrix4fArray(Context ctx,
@@ -2737,63 +2763,294 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setGLSLUniformMatrix4fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniformMatrix4fArray()");
+
+      // Load attribute
+      // transpose is true : each matrix is supplied in row major order
+      context(ctx).getGL().glUniformMatrix4fvARB(unbox(uniformLocation), numElements, true, value, 0);
+      return null;
     }
 
     // interfaces for shader compilation, etc.
     ShaderError createGLSLShader(Context ctx, int shaderType, ShaderId[] shaderId) {
-      if (DEBUG) System.err.println("JoglPipeline.createGLSLShader()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.createGLSLShader()");
+
+      GL gl = context(ctx).getGL();
+
+      int shaderHandle = 0;
+      if (shaderType == Shader.SHADER_TYPE_VERTEX) {
+        shaderHandle = gl.glCreateShaderObjectARB(GL.GL_VERTEX_SHADER_ARB);
+      } else if (shaderType == Shader.SHADER_TYPE_FRAGMENT) {
+        shaderHandle = gl.glCreateShaderObjectARB(GL.GL_FRAGMENT_SHADER_ARB);
+      }
+
+      if (shaderHandle == 0) {
+        return new ShaderError(ShaderError.COMPILE_ERROR,
+                               "Unable to create native shader object");
+      }
+      
+      shaderId[0] = new JoglShaderObject(shaderHandle);
+      return null;
     }
     ShaderError destroyGLSLShader(Context ctx, ShaderId shaderId) {
-      if (DEBUG) System.err.println("JoglPipeline.destroyGLSLShader()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.destroyGLSLShader()");
+
+      GL gl = context(ctx).getGL();
+      gl.glDeleteObjectARB(unbox(shaderId));
+      return null;
     }
     ShaderError compileGLSLShader(Context ctx, ShaderId shaderId, String program) {
-      if (DEBUG) System.err.println("JoglPipeline.compileGLSLShader()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.compileGLSLShader()");
+
+      int id = unbox(shaderId);
+      if (id == 0) {
+        throw new AssertionError("shaderId == 0");
+      }
+
+      if (program == null) {
+        throw new AssertionError("shader program string is null");
+      }
+
+      GL gl = context(ctx).getGL();
+      gl.glShaderSourceARB(id, 1, new String[] { program }, null, 0);
+      gl.glCompileShaderARB(id);
+      int[] status = new int[1];
+      gl.glGetObjectParameterivARB(id, GL.GL_OBJECT_COMPILE_STATUS_ARB, status, 0);
+      if (status[0] == 0) {
+        String detailMsg = getInfoLog(gl, id);
+        ShaderError res = new ShaderError(ShaderError.COMPILE_ERROR,
+                                          "GLSL shader compile error");
+        res.setDetailMessage(detailMsg);
+        return res;
+      }
+      return null;
     }
 
     ShaderError createGLSLShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId) {
-      if (DEBUG) System.err.println("JoglPipeline.createGLSLShaderProgram()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.createGLSLShaderProgram()");
+
+      GL gl = context(ctx).getGL();
+
+      int shaderProgramHandle = gl.glCreateProgramObjectARB();
+      if (shaderProgramHandle == 0) {
+        return new ShaderError(ShaderError.LINK_ERROR,
+                               "Unable to create native shader program object");
+      }
+      shaderProgramId[0] = new JoglShaderObject(shaderProgramHandle);
+      return null;
     }
     ShaderError destroyGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
-      if (DEBUG) System.err.println("JoglPipeline.destroyGLSLShaderProgram()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.destroyGLSLShaderProgram()");
+      context(ctx).getGL().glDeleteObjectARB(unbox(shaderProgramId));
+      return null;
     }
     ShaderError linkGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
             ShaderId[] shaderIds) {
-      if (DEBUG) System.err.println("JoglPipeline.linkGLSLShaderProgram()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.linkGLSLShaderProgram()");
+
+      GL gl = context(ctx).getGL();
+      int id = unbox(shaderProgramId);
+      for (int i = 0; i < shaderIds.length; i++) {
+        gl.glAttachObjectARB(id, unbox(shaderIds[i]));
+      }
+      gl.glLinkProgramARB(id);
+      int[] status = new int[1];
+      gl.glGetObjectParameterivARB(id, GL.GL_OBJECT_LINK_STATUS_ARB, status, 0);
+      if (status[0] == 0) {
+        String detailMsg = getInfoLog(gl, id);
+        ShaderError res = new ShaderError(ShaderError.LINK_ERROR,
+                                          "GLSL shader program link error");
+        res.setDetailMessage(detailMsg);
+        return res;
+      }
+      return null;
     }
     ShaderError bindGLSLVertexAttrName(Context ctx, ShaderProgramId shaderProgramId,
             String attrName, int attrIndex) {
-      if (DEBUG) System.err.println("JoglPipeline.bindGLSLVertexAttrName()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.bindGLSLVertexAttrName()");
+
+      JoglContext jctx = (JoglContext) ctx;
+      context(ctx).getGL().glBindAttribLocationARB(unbox(shaderProgramId),
+                                                   attrIndex + VirtualUniverse.mc.glslVertexAttrOffset,
+                                                   attrName);
+      return null;
     }
     void lookupGLSLShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
             int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
-      if (DEBUG) System.err.println("JoglPipeline.lookupGLSLShaderAttrNames()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.lookupGLSLShaderAttrNames()");
+
+      // set the loc, type, and size arrays to out-of-bound values
+      for (int i = 0; i < attrNames.length; i++) {
+        locArr[i] = null;
+        typeArr[i] = -1;
+        sizeArr[i] = -1;
+      }
+
+      // Loop through the list of active uniform variables, one at a
+      // time, searching for a match in the attrNames array.
+      //
+      // NOTE: Since attrNames isn't sorted, and we don't have a
+      // hashtable of names to index locations, we will do a
+      // brute-force, linear search of the array. This leads to an
+      // O(n^2) algorithm (actually O(n*m) where n is attrNames.length
+      // and m is the number of uniform variables), but since we expect
+      // N to be small, we will not optimize this at this time.
+      int id = unbox(shaderProgramId);
+      int[] tmp = new int[1];
+      int[] tmp2 = new int[1];
+      int[] tmp3 = new int[1];
+      GL gl = context(ctx).getGL();
+      gl.glGetObjectParameterivARB(id,
+                                   GL.GL_OBJECT_ACTIVE_UNIFORMS_ARB,
+                                   tmp, 0);
+      int numActiveUniforms = tmp[0];
+      gl.glGetObjectParameterivARB(id,
+                                   GL.GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB,
+                                   tmp, 0);
+      int maxStrLen = tmp[0];
+      byte[] nameBuf = new byte[maxStrLen];
+
+      for (int i = 0; i < numActiveUniforms; i++) {
+        gl.glGetActiveUniformARB(id, i, maxStrLen, tmp3, 0,
+                                 tmp, 0,
+                                 tmp2, 0,
+                                 nameBuf, 0);
+        int size = tmp[0];
+        int type = tmp2[0];
+        String name = null;
+        try {
+          name = new String(nameBuf, 0, tmp3[0], "US-ASCII");
+        } catch (UnsupportedEncodingException e) {
+          throw new RuntimeException(e);
+        }
+
+        // Issue 247 - we need to workaround an ATI bug where they erroneously
+        // report individual elements of arrays rather than the array itself
+        if (name.length() >= 3 && name.endsWith("]")) {
+          if (name.endsWith("[0]")) {
+            name = name.substring(0, name.length() - 3);
+          } else {
+            // Ignore this name
+            continue;
+          }
+        }
+              
+        // Now try to find the name
+        for (int j = 0; j < numAttrNames; j++) {
+          if (name.equals(attrNames[j])) {
+            sizeArr[j] = size;
+            isArrayArr[j] = (size > 1);
+            typeArr[j] = glslToJ3dType(type);
+            break;
+          }
+        }
+      }
+
+      // Now lookup the location of each name in the attrNames array
+      for (int i = 0; i < numAttrNames; i++) {
+        // Get uniform attribute location
+        int loc = gl.glGetUniformLocationARB(id, attrNames[i]);
+        locArr[i] = new JoglShaderObject(loc);
+      }
     }
 
     ShaderError useGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
-      if (DEBUG) System.err.println("JoglPipeline.useGLSLShaderProgram()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.useGLSLShaderProgram()");
+
+      context(ctx).getGL().glUseProgramObjectARB(unbox(shaderProgramId));
+      return null;
     }
 
+  //----------------------------------------------------------------------
+  // Helper methods for above shader routines
+  //
+  private int unbox(ShaderAttrLoc loc) {
+    if (loc == null)
+      return 0;
+    return ((JoglShaderObject) loc).getValue();
+  }
+
+  private int unbox(ShaderProgramId id) {
+    if (id == null)
+      return 0;
+    return ((JoglShaderObject) id).getValue();
+  }
+
+  private int unbox(ShaderId id) {
+    if (id == null)
+      return 0;
+    return ((JoglShaderObject) id).getValue();
+  }
+
+  private String getInfoLog(GL gl, int id) {
+    int[] infoLogLength = new int[1];
+    gl.glGetObjectParameterivARB(id, GL.GL_OBJECT_INFO_LOG_LENGTH_ARB, infoLogLength, 0);
+    if (infoLogLength[0] > 0) {
+      byte[] storage = new byte[infoLogLength[0]];
+      int[] len = new int[1];
+      gl.glGetInfoLogARB(id, infoLogLength[0], len, 0, storage, 0);
+      try {
+        return new String(storage, 0, len[0], "US-ASCII");
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return null;
+  }
+
+  private int glslToJ3dType(int type) {
+    switch (type) {
+      case GL.GL_BOOL_ARB:
+      case GL.GL_INT:
+      case GL.GL_SAMPLER_2D_ARB:
+      case GL.GL_SAMPLER_3D_ARB:
+      case GL.GL_SAMPLER_CUBE_ARB:
+        return ShaderAttributeObjectRetained.TYPE_INTEGER;
+  
+      case GL.GL_FLOAT:
+        return ShaderAttributeObjectRetained.TYPE_FLOAT;
+  
+      case GL.GL_INT_VEC2_ARB:
+      case GL.GL_BOOL_VEC2_ARB:
+        return ShaderAttributeObjectRetained.TYPE_TUPLE2I;
+  
+      case GL.GL_FLOAT_VEC2_ARB:
+        return ShaderAttributeObjectRetained.TYPE_TUPLE2F;
+  
+      case GL.GL_INT_VEC3_ARB:
+      case GL.GL_BOOL_VEC3_ARB:
+        return ShaderAttributeObjectRetained.TYPE_TUPLE3I;
+  
+      case GL.GL_FLOAT_VEC3_ARB:
+        return ShaderAttributeObjectRetained.TYPE_TUPLE3F;
+  
+      case GL.GL_INT_VEC4_ARB:
+      case GL.GL_BOOL_VEC4_ARB:
+        return ShaderAttributeObjectRetained.TYPE_TUPLE4I;
+  
+      case GL.GL_FLOAT_VEC4_ARB:
+        return ShaderAttributeObjectRetained.TYPE_TUPLE4F;
+  
+        // case GL.GL_FLOAT_MAT2_ARB:
+  
+      case GL.GL_FLOAT_MAT3_ARB:
+        return ShaderAttributeObjectRetained.TYPE_MATRIX3F;
+  
+      case GL.GL_FLOAT_MAT4_ARB:
+        return ShaderAttributeObjectRetained.TYPE_MATRIX4F;
+  
+        // Java 3D does not support the following sampler types:
+        //
+        // case GL.GL_SAMPLER_1D_ARB:
+        // case GL.GL_SAMPLER_1D_SHADOW_ARB:
+        // case GL.GL_SAMPLER_2D_SHADOW_ARB:
+        // case GL.GL_SAMPLER_2D_RECT_ARB:
+        // case GL.GL_SAMPLER_2D_RECT_SHADOW_ARB:
+    }
+  
+    return -1;
+  }
 
     // ---------------------------------------------------------------------
 
