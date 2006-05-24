@@ -274,7 +274,8 @@ class AttributeBin extends Object implements ObjectUpdate {
 	}
 
 	sb.clear();
-	renderBin.shaderBinFreelist.add(sb);
+        if (VirtualUniverse.mc.useFreeLists)
+            renderBin.shaderBinFreelist.add(sb);
 
 	if (shaderBinList == null && addShaderBins.size() == 0 ) {
 	    // Note: Removal of this attributebin as a user of the rendering

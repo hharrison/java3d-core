@@ -345,6 +345,9 @@ class MasterControl {
     // for on-screen canvases. This is only for backward compatibility with
     // legacy applications.
     boolean allowNullGraphicsConfig = false;
+    
+    // Issue 288 & 123 - flag indicating if freelists should be used
+    boolean useFreeLists = false;
 
     // The global shading language being used. Using a ShaderProgram
     // with a shading language other than the one specified by
@@ -590,6 +593,10 @@ class MasterControl {
 						     allowNullGraphicsConfig,
 						     "null graphics configs");
 
+        // Issue 288 & 123 - check to see if free lists should be used
+        useFreeLists = getBooleanProperty("j3d.useFreeLists",
+						     useFreeLists,
+						     "Use Free Lists");
         // Check to see whether BackgroundRetained uses texturemapping
 	// or drawpixel clear the background
 	if (!isD3D()) {

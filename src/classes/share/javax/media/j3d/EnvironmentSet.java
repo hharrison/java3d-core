@@ -367,7 +367,8 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 	a.onUpdateList &= ~AttributeBin.ON_CHANGED_FREQUENT_UPDATE_LIST;
 
 	// Add this attributebin to the free list
-	renderBin.attrBinFreelist.add(a);
+        if (VirtualUniverse.mc.useFreeLists)
+            renderBin.attrBinFreelist.add(a);
 
 	if (attributeBinList == null && addAttributeBins.size() == 0) {
 	    // Now remove this environment set from all the lights and fogs
