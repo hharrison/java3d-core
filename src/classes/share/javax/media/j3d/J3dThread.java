@@ -76,7 +76,13 @@ abstract class J3dThread extends Thread {
     /**
      * This indicates that this thread is alive and running
      */
-    private boolean running = true;
+    private volatile boolean running = true;
+    
+    /**
+     * This flag is set by the RUN action of runMonitor to indicate that the
+     * waiting thread has work to do.
+     */
+    private volatile boolean ready = false;
 
     /**
      * The thread data for this thread
@@ -84,7 +90,7 @@ abstract class J3dThread extends Thread {
     private J3dThreadData[] data = null;
 
     /**
-     * This indicates that this thread is ready
+     * This indicates that this thread is started and able to accept work
      */
     private volatile boolean started = false;
 
@@ -121,7 +127,7 @@ abstract class J3dThread extends Thread {
     /**
      * Flag to indicate that this thread is waiting to be notify
      */
-    volatile boolean waiting = false;
+    private volatile boolean waiting = false;
 
     /**
      * Some variables used to name threads correctly
@@ -220,7 +226,7 @@ abstract class J3dThread extends Thread {
 
     /**
      * This initializes this thread.  Once this method returns, the thread is
-     * ready to do work.
+     * able to accept work.
      */
     void initialize() {
 	this.start();
@@ -233,11 +239,11 @@ abstract class J3dThread extends Thread {
      * This causes the threads run method to exit.
      */
     void finish() {
+        // NOTE: This spin loop is probably not necessary.
 	while (!waiting) {
 	    MasterControl.threadYield();
 	}
 	runMonitor(STOP, 0,null);
-
     }
 
     /**
@@ -257,36 +263,52 @@ abstract class J3dThread extends Thread {
     synchronized void runMonitor(int action, long referenceTime,
 				 Object[] args) {
         switch (action) {
-           case WAIT:
-                try {
-		  started = true;
-		  waiting = true;
-                  wait();
-                } catch (InterruptedException e) {
-                   System.err.println(e);
+            case WAIT:
+                started = true;
+                // Issue 279 - loop until ready
+                while (!ready && running) {
+                    waiting = true;
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        System.err.println(e);
+                    }
+                    waiting = false;
                 }
-		waiting = false;
+                ready = false;
                 break;
-           case NOTIFY_AND_WAIT:
+
+            case NOTIFY_AND_WAIT:
                 VirtualUniverse.mc.runMonitor(MasterControl.THREAD_DONE, null,
-					      null, null, this);
-                try {
-		    waiting = true;
-		    wait();
-                } catch (InterruptedException e) {
-		    System.err.println(e);
+                        null, null, this);
+                // Issue 279 - loop until ready
+                while (!ready && running) {
+                    waiting = true;
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        System.err.println(e);
+                    }
+                    waiting = false;
                 }
-		waiting = false;
+                ready = false;
                 break;
-           case RUN:
-		this.referenceTime = referenceTime;
-		this.args = args;
-                notify();
+
+            case RUN:
+                this.referenceTime = referenceTime;
+                this.args = args;
+                ready = true;
+                if (waiting) {
+                    notify();
+                }
                 break;
-           case STOP:
-	        running = false;
-	        notify();
-	        break;
+
+            case STOP:
+                running = false;
+                if (waiting) {
+                    notify();
+                }
+                break;
         }
     }
 
@@ -303,6 +325,7 @@ abstract class J3dThread extends Thread {
     void cleanup() {
 	active = false;
 	running = true;
+        ready = false;
 	data = null;
 	started = true;
 	lastWaitTimestamp = 0;

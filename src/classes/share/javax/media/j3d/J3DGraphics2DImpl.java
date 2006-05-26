@@ -45,7 +45,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     private Point2D.Float ptDst2 = new Point2D.Float();
     private Color xOrModeColor = null;
     private volatile boolean initCtx = false;
-    private boolean threadWaiting = false;
+    private volatile boolean threadWaiting = false;
     static final Color blackTransparent = new Color(0,0,0,0);
     private boolean useDrawPixel = VirtualUniverse.mc.isJ3dG2dDrawPixel;
     int objectId = -1;
@@ -1043,7 +1043,8 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
      */
     synchronized void runMonitor(int action) {
         if (action == J3dThread.WAIT) {
-	    if (threadWaiting) {
+            // Issue 279 - loop until ready
+	    while (threadWaiting) {
 		try {
 		    wait();
 		} catch (InterruptedException e){}

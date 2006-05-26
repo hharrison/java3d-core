@@ -30,15 +30,12 @@ class MasterControl {
     static final int SET_WORK       = 1;
     static final int RUN_THREADS    = 2;
     static final int THREAD_DONE    = 3;
-    static final int WAIT_FOR_ALL   = 4;
     static final int SET_WORK_FOR_REQUEST_RENDERER   = 5;
     static final int RUN_RENDERER_CLEANUP            = 6;    
-    static final int SLEEP                           = 7;    
 
     // The thread states for MC
     static final int SLEEPING            = 0;
     static final int RUNNING             = 1;
-    static final int WAITING_FOR_THREAD  = 2;
     static final int WAITING_FOR_THREADS = 3;
     static final int WAITING_FOR_CPU     = 4;
     static final int WAITING_FOR_RENDERER_CLEANUP = 5;
@@ -1613,183 +1610,189 @@ class MasterControl {
     }
 
     /**
-     * This snapshots the time values to be used for this iteration
+     * This snapshots the time values to be used for this iteration.
+     * Note that this method is called without the timeLock held.
+     * We must synchronize on timeLock to prevent updating
+     * thread.lastUpdateTime from user thread in sendMessage()
+     * or sendRunMessage().
      */
     private void updateTimeValues() {
-	int i=0;
-	J3dThreadData lastThread=null;
-	J3dThreadData thread=null;
-	long lastTime = currentTime;
+        synchronized (timeLock) {
+            int i=0;
+            J3dThreadData lastThread=null;
+            J3dThreadData thread=null;
+            long lastTime = currentTime;
 
-	currentTime = getTime();
+            currentTime = getTime();
 
-	J3dThreadData threads[] = (J3dThreadData []) 
-	                        stateWorkThreads.toArray(false);
-	int size = stateWorkThreads.arraySize();
+            J3dThreadData threads[] = (J3dThreadData []) 
+                                    stateWorkThreads.toArray(false);
+            int size = stateWorkThreads.arraySize();
 
-	while (i<lastTransformStructureThread) {
-	    thread = threads[i++];
+            while (i<lastTransformStructureThread) {
+                thread = threads[i++];
 
-	    if ((thread.lastUpdateTime > thread.lastRunTime) && 
-		!thread.thread.userStop) {
-		lastThread = thread;
-		thread.needsRun = true;
-		thread.threadOpts = J3dThreadData.CONT_THREAD;
-		thread.lastRunTime =  currentTime;
-	    } else {
-		thread.needsRun = false;
-	    }
-	}
-	
-	if (lastThread != null) {
-	    lastThread.threadOpts =  J3dThreadData.WAIT_ALL_THREADS;
-	    lastThread = null;
-	}
-	
-	while (i<lastStructureUpdateThread) {
-	    thread = threads[i++];
-	    if ((thread.lastUpdateTime > thread.lastRunTime) &&
-		!thread.thread.userStop) {
-		lastThread = thread;
-		thread.needsRun = true;
-		thread.threadOpts = J3dThreadData.CONT_THREAD;
-		thread.lastRunTime = currentTime;
-	    } else {
-		thread.needsRun = false;
-	    }
-	}
-	if (lastThread != null) {
-	    lastThread.threadOpts = J3dThreadData.WAIT_ALL_THREADS;
-	    lastThread = null;
-	}
-	
-	while (i<size) {
-	    thread = threads[i++];
-	    if ((thread.lastUpdateTime > thread.lastRunTime) && 
-		!thread.thread.userStop) {
-		lastThread = thread;
-		thread.needsRun = true;
-		thread.threadOpts = J3dThreadData.CONT_THREAD;
-		thread.lastRunTime = currentTime;
-	    } else {
-		thread.needsRun = false;
-	    }
-	}
-	if (lastThread != null) {
-	    lastThread.threadOpts = J3dThreadData.WAIT_ALL_THREADS;
-	    lastThread = null;
-	}
-	
+                if ((thread.lastUpdateTime > thread.lastRunTime) && 
+                    !thread.thread.userStop) {
+                    lastThread = thread;
+                    thread.needsRun = true;
+                    thread.threadOpts = J3dThreadData.CONT_THREAD;
+                    thread.lastRunTime =  currentTime;
+                } else {
+                    thread.needsRun = false;
+                }
+            }
 
-	threads = (J3dThreadData []) renderWorkThreads.toArray(false);
-	size = renderWorkThreads.arraySize();
-	View v;
-	J3dThreadData lastRunThread = null;
-	waitTimestamp++;
-	sleepTime = 0L;
+            if (lastThread != null) {
+                lastThread.threadOpts =  J3dThreadData.WAIT_ALL_THREADS;
+                lastThread = null;
+            }
 
-	boolean threadToRun = false; // Not currently used
+            while (i<lastStructureUpdateThread) {
+                thread = threads[i++];
+                if ((thread.lastUpdateTime > thread.lastRunTime) &&
+                    !thread.thread.userStop) {
+                    lastThread = thread;
+                    thread.needsRun = true;
+                    thread.threadOpts = J3dThreadData.CONT_THREAD;
+                    thread.lastRunTime = currentTime;
+                } else {
+                    thread.needsRun = false;
+                }
+            }
+            if (lastThread != null) {
+                lastThread.threadOpts = J3dThreadData.WAIT_ALL_THREADS;
+                lastThread = null;
+            }
 
-	// Fix for Issue 12: loop through the list of threads, calling
-	// computeCycleTime() exactly once per view. This ensures that
-	// all threads for a given view see consistent values for
-	// isMinCycleTimeAchieve and sleepTime.
-	v = null;
-	for (i=0; i<size; i++) {
-	    thread = threads[i];
-	    if (thread.view != v) {
-		thread.view.computeCycleTime();
-		// Set sleepTime to the value needed to satify the
-		// minimum cycle time of the slowest view
-		if (thread.view.sleepTime > sleepTime) {
-		    sleepTime = thread.view.sleepTime;
-		}
-	    }
-	    v = thread.view;
-	}
-
-	v = null;
-	for (i=0; i<size; i++) {
-	    thread = threads[i];
-	    if (thread.canvas == null) { // Only for swap thread
-		((Object []) thread.threadArgs)[3] = null;
-	    }
-	    if ((thread.lastUpdateTime > thread.lastRunTime) &&
-		!thread.thread.userStop) {
-		
-		if (thread.thread.lastWaitTimestamp == waitTimestamp) {
-		    // This renderer thread is repeated. We must wait 
-		    // until all previous renderer threads done before
-		    // allowing this thread to continue. Note that
-		    // lastRunThread can't be null in this case.
-		    waitTimestamp++;
-		    if (thread.view != v) {
-			// A new View is start
-			v = thread.view;
-			threadToRun = true;
-			lastRunThread.threadOpts =
-			    (J3dThreadData.STOP_TIMER |
-			     J3dThreadData.WAIT_ALL_THREADS);
-			((Object []) lastRunThread.threadArgs)[3] = lastRunThread.view;
-			thread.threadOpts = (J3dThreadData.START_TIMER |
-					     J3dThreadData.CONT_THREAD);
-		    } else {
-			if ((lastRunThread.threadOpts &
-			     J3dThreadData.START_TIMER) != 0) {
-			    lastRunThread.threadOpts = 
-				(J3dThreadData.START_TIMER |
-				 J3dThreadData.WAIT_ALL_THREADS);
-			    
-			} else {
-			    lastRunThread.threadOpts =
-				J3dThreadData.WAIT_ALL_THREADS;
-			}
-			thread.threadOpts = J3dThreadData.CONT_THREAD;
-			
-		    }
-		} else {
-		    if (thread.view != v) {
-			v = thread.view;
-			threadToRun = true;
-			// Although the renderer thread is not
-			// repeated. We still need to wait all
-			// previous renderer threads if new View
-			// start.
-			if (lastRunThread != null) {
-			    lastRunThread.threadOpts =
-				(J3dThreadData.STOP_TIMER |
-				 J3dThreadData.WAIT_ALL_THREADS);
-			    ((Object []) lastRunThread.threadArgs)[3]
-				= lastRunThread.view;
-			}
-			thread.threadOpts = (J3dThreadData.START_TIMER |
-					     J3dThreadData.CONT_THREAD);
-		    } else {
-			thread.threadOpts = J3dThreadData.CONT_THREAD;
-		    }
-		}
-		thread.thread.lastWaitTimestamp = waitTimestamp;
-		thread.needsRun = true;
-		thread.lastRunTime = currentTime;
-		lastRunThread = thread;
-	    } else {
-		thread.needsRun = false;
-	    }
-	}
+            while (i<size) {
+                thread = threads[i++];
+                if ((thread.lastUpdateTime > thread.lastRunTime) && 
+                    !thread.thread.userStop) {
+                    lastThread = thread;
+                    thread.needsRun = true;
+                    thread.threadOpts = J3dThreadData.CONT_THREAD;
+                    thread.lastRunTime = currentTime;
+                } else {
+                    thread.needsRun = false;
+                }
+            }
+            if (lastThread != null) {
+                lastThread.threadOpts = J3dThreadData.WAIT_ALL_THREADS;
+                lastThread = null;
+            }
 
 
-	if (lastRunThread != null) {
-	    lastRunThread.threadOpts = 
-				(J3dThreadData.STOP_TIMER |
-				 J3dThreadData.WAIT_ALL_THREADS|
-				 J3dThreadData.LAST_STOP_TIMER);
-	    lockGeometry = true; 
-	    ((Object []) lastRunThread.threadArgs)[3] = lastRunThread.view;
-	}  else {
-	    lockGeometry = false;
-	}
-	    
+            threads = (J3dThreadData []) renderWorkThreads.toArray(false);
+            size = renderWorkThreads.arraySize();
+            View v;
+            J3dThreadData lastRunThread = null;
+            waitTimestamp++;
+            sleepTime = 0L;
 
+            boolean threadToRun = false; // Not currently used
+
+            // Fix for Issue 12: loop through the list of threads, calling
+            // computeCycleTime() exactly once per view. This ensures that
+            // all threads for a given view see consistent values for
+            // isMinCycleTimeAchieve and sleepTime.
+            v = null;
+            for (i=0; i<size; i++) {
+                thread = threads[i];
+                if (thread.view != v) {
+                    thread.view.computeCycleTime();
+                    // Set sleepTime to the value needed to satify the
+                    // minimum cycle time of the slowest view
+                    if (thread.view.sleepTime > sleepTime) {
+                        sleepTime = thread.view.sleepTime;
+                    }
+                }
+                v = thread.view;
+            }
+
+            v = null;
+            for (i=0; i<size; i++) {
+                thread = threads[i];
+                if (thread.canvas == null) { // Only for swap thread
+                    ((Object []) thread.threadArgs)[3] = null;
+                }
+                if ((thread.lastUpdateTime > thread.lastRunTime) &&
+                    !thread.thread.userStop) {
+
+                    if (thread.thread.lastWaitTimestamp == waitTimestamp) {
+                        // This renderer thread is repeated. We must wait 
+                        // until all previous renderer threads done before
+                        // allowing this thread to continue. Note that
+                        // lastRunThread can't be null in this case.
+                        waitTimestamp++;
+                        if (thread.view != v) {
+                            // A new View is start
+                            v = thread.view;
+                            threadToRun = true;
+                            lastRunThread.threadOpts =
+                                (J3dThreadData.STOP_TIMER |
+                                 J3dThreadData.WAIT_ALL_THREADS);
+                            ((Object []) lastRunThread.threadArgs)[3] = lastRunThread.view;
+                            thread.threadOpts = (J3dThreadData.START_TIMER |
+                                                 J3dThreadData.CONT_THREAD);
+                        } else {
+                            if ((lastRunThread.threadOpts &
+                                 J3dThreadData.START_TIMER) != 0) {
+                                lastRunThread.threadOpts = 
+                                    (J3dThreadData.START_TIMER |
+                                     J3dThreadData.WAIT_ALL_THREADS);
+
+                            } else {
+                                lastRunThread.threadOpts =
+                                    J3dThreadData.WAIT_ALL_THREADS;
+                            }
+                            thread.threadOpts = J3dThreadData.CONT_THREAD;
+
+                        }
+                    } else {
+                        if (thread.view != v) {
+                            v = thread.view;
+                            threadToRun = true;
+                            // Although the renderer thread is not
+                            // repeated. We still need to wait all
+                            // previous renderer threads if new View
+                            // start.
+                            if (lastRunThread != null) {
+                                lastRunThread.threadOpts =
+                                    (J3dThreadData.STOP_TIMER |
+                                     J3dThreadData.WAIT_ALL_THREADS);
+                                ((Object []) lastRunThread.threadArgs)[3]
+                                    = lastRunThread.view;
+                            }
+                            thread.threadOpts = (J3dThreadData.START_TIMER |
+                                                 J3dThreadData.CONT_THREAD);
+                        } else {
+                            thread.threadOpts = J3dThreadData.CONT_THREAD;
+                        }
+                    }
+                    thread.thread.lastWaitTimestamp = waitTimestamp;
+                    thread.needsRun = true;
+                    thread.lastRunTime = currentTime;
+                    lastRunThread = thread;
+                } else {
+                    thread.needsRun = false;
+                }
+            }
+
+
+            if (lastRunThread != null) {
+                lastRunThread.threadOpts = 
+                                    (J3dThreadData.STOP_TIMER |
+                                     J3dThreadData.WAIT_ALL_THREADS|
+                                     J3dThreadData.LAST_STOP_TIMER);
+                lockGeometry = true; 
+                ((Object []) lastRunThread.threadArgs)[3] = lastRunThread.view;
+            }  else {
+                lockGeometry = false;
+            }
+        }
+
+        // Issue 275 - go to sleep without holding timeLock
 	// Sleep for the amount of time needed to satisfy the minimum
 	// cycle time for all views.
 	if (sleepTime > 0) {
@@ -1801,7 +1804,6 @@ class MasterControl {
 	    }
 	    // System.err.println("MasterControl: done sleeping");
 	}
-
     }
 
     private void createUpdateThread(J3dStructure structure) {
@@ -3497,22 +3499,27 @@ class MasterControl {
 		}
 	    }
 	    break;
+
 	case THREAD_DONE:
 	    if (state != WAITING_FOR_RENDERER_CLEANUP) {
+
 		threadPending--;
-		if (nthread.type == J3dThread.RENDER_THREAD) {
+                assert threadPending >= 0 : ("threadPending = " + threadPending);
+                if (nthread.type == J3dThread.RENDER_THREAD) {
 		    View v = (View) nthread.args[3];
 		    if (v != null) { // STOP_TIMER
 			v.stopTime = J3dClock.currentTimeMillis();
 		    }
-		    
+
 		    if (--renderPending == 0) {
 			renderWaiting = false;
 		    }
+                    assert renderPending >= 0 : ("renderPending = " + renderPending);
 		} else {
 		    if (--statePending == 0) {
 			stateWaiting = false;
 		    }
+                    assert statePending >= 0 : ("statePending = " + statePending);
 		}
 		if (state == WAITING_FOR_CPU || state == WAITING_FOR_THREADS) {
 		    notify();
@@ -3522,19 +3529,12 @@ class MasterControl {
 		state = RUNNING;
 	    }
 	    break;
-	case WAIT_FOR_ALL:
-	    while (threadPending != 0) {
-		state = WAITING_FOR_THREADS;
-		try {
-                    wait();
-                } catch (InterruptedException e) {
-                    System.err.println(e);
-                }
-	    }
-	    break;
+
 	case CHECK_FOR_WORK:
 	    if (!workToDo) {
 		state = SLEEPING;
+                // NOTE: this could wakeup spuriously (see issue 279), but it
+                // will not cause any problems.
 		try {
 		    wait();
 		} catch (InterruptedException e) {
@@ -3544,12 +3544,14 @@ class MasterControl {
 	    }
 	    workToDo = false;
 	    break;
+
 	case SET_WORK:
 	    workToDo = true;
 	    if (state == SLEEPING) {
 		notify();
 	    }
 	    break;
+
         case SET_WORK_FOR_REQUEST_RENDERER:
 	    requestRenderWorkToDo = true;
 	    workToDo = true;
@@ -3558,23 +3560,24 @@ class MasterControl {
 		notify();
 	    }
 	    break;
+
 	case RUN_RENDERER_CLEANUP:
 	    nthread.runMonitor(J3dThread.RUN, currentTime,
 			       rendererCleanupArgs);
 	    state = WAITING_FOR_RENDERER_CLEANUP;
-	    try {
-		wait();
-	    } catch (InterruptedException e) {
-		System.err.println(e);
-	    }
+            // Issue 279 - loop until state is set to running
+            while (state != RUNNING) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    System.err.println(e);
+                }
+            }
 	    break;
-	case SLEEP:
-	    state = SLEEPING;
-	    try {
-		wait(sleepTime);
-	    } catch (InterruptedException e) {
-		System.err.println(e);
-	    }
+
+        default:
+            // Should never get here
+            assert false : "missing case in switch statement";
         }
     }
 
