@@ -340,9 +340,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     IndexedGeometryArrayRetained cloneSourceArray = null;
 
-//     private MemoryFreeList pickVectorFreelist =
-//     FreeListManager.getFreeList(FreeListManager.PICKVECTOR);
-
     static final double EPS = 1.0e-13;
 
     void freeD3DArray(boolean deleteVB) {
@@ -10995,28 +10992,28 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersect(Transform3D thisLocalToVworld, 
 		      Transform3D otherLocalToVworld, GeometryRetained  geom) {
 	
-	Transform3D tg =  VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t3d =  VirtualUniverse.mc.getTransform3D(null);
 	boolean isIntersect = false;
 
 	if (geom instanceof GeometryArrayRetained ) {
 	    GeometryArrayRetained geomArray = (GeometryArrayRetained)  geom;
 
 	    if (geomArray.validVertexCount >= validVertexCount) {
-		tg.invert(otherLocalToVworld);
-		tg.mul(thisLocalToVworld);
-		isIntersect = intersect(tg, geom);
+		t3d.invert(otherLocalToVworld);
+		t3d.mul(thisLocalToVworld);
+		isIntersect = intersect(t3d, geom);
 	    } else {
-		tg.invert(thisLocalToVworld);
-		tg.mul(otherLocalToVworld);
-		isIntersect = geomArray.intersect(tg, this);	    
+		t3d.invert(thisLocalToVworld);
+		t3d.mul(otherLocalToVworld);
+		isIntersect = geomArray.intersect(t3d, this);	    
 	    }
 	} else {
-		tg.invert(thisLocalToVworld);
-		tg.mul(otherLocalToVworld);
-		isIntersect = geom.intersect(tg, this);	    
+		t3d.invert(thisLocalToVworld);
+		t3d.mul(otherLocalToVworld);
+		isIntersect = geom.intersect(t3d, this);	    
 	}
 
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, tg);
+        VirtualUniverse.mc.addToTransformFreeList(t3d);
 	return isIntersect;
     }
 
@@ -11405,22 +11402,39 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	dist[0] = Math.sqrt(dist[0]);
     }
 
+    // Fix to Issue 123
     Vector3d getVector3d() {
-	return (Vector3d)FreeListManager.getObject(FreeListManager.VECTOR3D);
+        if (VirtualUniverse.mc.useFreeLists) {
+            return (Vector3d)FreeListManager.getObject(FreeListManager.VECTOR3D);
+        }
+        else {
+            return new Vector3d();
+        }
     }
 
+    // Fix to Issue 123
     void freeVector3d(Vector3d v) {
-	FreeListManager.freeObject(FreeListManager.VECTOR3D, v);
+        if (VirtualUniverse.mc.useFreeLists) {
+            FreeListManager.freeObject(FreeListManager.VECTOR3D, v);
+        }        
     }
 
+    // Fix to Issue 123
     Point3d getPoint3d() {
-	return (Point3d)FreeListManager.getObject(FreeListManager.POINT3D);
+        if (VirtualUniverse.mc.useFreeLists) {
+            return (Point3d)FreeListManager.getObject(FreeListManager.POINT3D);
+        }
+        else {
+            return new Point3d();
+        }
     }
 
+    // Fix to Issue 123
     void freePoint3d(Point3d p) {
-	FreeListManager.freeObject(FreeListManager.POINT3D, p);
+        if (VirtualUniverse.mc.useFreeLists) {
+            FreeListManager.freeObject(FreeListManager.POINT3D, p);
+        }
     }
-
 
     void handleFrequencyChange(int bit) {
 	int mask = 0;

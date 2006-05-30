@@ -698,8 +698,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
 
 	if ((component & TRANSFORM_CHANGED) != 0) {
 	    mirrorTa.transform.set((Transform3D)value);
-	    FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-				       (Transform3D)value);
+            VirtualUniverse.mc.addToTransformFreeList((Transform3D)value);
 	}
 	else if ((component & MODE_CHANGED) != 0) {
 	    mirrorTa.textureMode = ((Integer)value).intValue();

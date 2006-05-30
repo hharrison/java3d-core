@@ -901,7 +901,7 @@ class Text3DRetained extends GeometryRetained {
 		}
 	    }
 	}
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, tempT3D);
+	VirtualUniverse.mc.addToTransformFreeList(tempT3D);
 	return isIntersect;
     }
 
@@ -954,7 +954,7 @@ class Text3DRetained extends GeometryRetained {
 				    multiScreen, screen, ignoreVertexColors, 
 				    pass);
 	}
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, trans);
+        VirtualUniverse.mc.addToTransformFreeList(trans);
     }
 
     int getClassType() {

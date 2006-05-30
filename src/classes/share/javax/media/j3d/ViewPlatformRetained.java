@@ -197,10 +197,6 @@ class ViewPlatformRetained extends LeafRetained {
 
 
     void evaluateViewPlatformTransform() {
-	if (vworldToVpc != null) {
-	    FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-				       vworldToVpc);
-	} 
 	// clear cache so that next time getVworldToVpc() can recompute
 	vworldToVpc = null;
     }

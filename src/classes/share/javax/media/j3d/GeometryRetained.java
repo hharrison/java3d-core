@@ -274,21 +274,20 @@ abstract class GeometryRetained extends NodeComponentRetained {
 
     boolean intersect(Transform3D thisLocalToVworld, 
 		      Transform3D otherLocalToVworld, GeometryRetained  geom) {
-	Transform3D tg =  VirtualUniverse.mc.getTransform3D(null);
-	tg.invert(otherLocalToVworld);
-	tg.mul(thisLocalToVworld);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, tg);
-	return intersect(tg, geom);
+	Transform3D t3d =  new Transform3D();
+	t3d.invert(otherLocalToVworld);
+	t3d.mul(thisLocalToVworld);
+	return intersect(t3d, geom);
     }
 
 
     boolean intersect(Transform3D thisLocalToVworld, Bounds targetBound) {
 	Bounds transBound = (Bounds) targetBound.clone();
 
-	Transform3D tg =  VirtualUniverse.mc.getTransform3D(null);
-	tg.invert(thisLocalToVworld);
-	transBound.transform(tg);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, tg);
+	Transform3D t3d =  VirtualUniverse.mc.getTransform3D(null);
+	t3d.invert(thisLocalToVworld);
+	transBound.transform(t3d);
+        VirtualUniverse.mc.addToTransformFreeList(t3d);
 	return intersect(transBound);
     }
 

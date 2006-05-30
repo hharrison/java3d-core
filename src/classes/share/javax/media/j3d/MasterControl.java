@@ -703,7 +703,7 @@ class MasterControl {
 	maxLights = Pipeline.getPipeline().getMaximumLights();
 
 	// create the freelists
-	FreeListManager.createFreeLists();
+	FreeListManager.createFreeLists(useFreeLists);
 
 	// create an array canvas use registers
 	// The 32 limit can be lifted once the
@@ -917,8 +917,7 @@ class MasterControl {
      * This returns the a unused displayListId
      */
     Integer getDisplayListId() {
-	return (Integer)
-	    FreeListManager.getObject(FreeListManager.DISPLAYLIST);
+        return (Integer) FreeListManager.getObject(FreeListManager.DISPLAYLIST);
     }
 
     void freeDisplayListId(Integer id) {
@@ -999,17 +998,25 @@ class MasterControl {
 	    }
 	}
     }
-    
+
+    // Fix to Issue 123
     Transform3D getTransform3D(Transform3D val) {
 	Transform3D t;
-	t = (Transform3D)
-	    FreeListManager.getObject(FreeListManager.TRANSFORM3D);
+        if (VirtualUniverse.mc.useFreeLists) {
+            t = (Transform3D) FreeListManager.getObject(FreeListManager.TRANSFORM3D);
+        }
+        else {
+            t = new Transform3D();
+        }
 	if (val != null) t.set(val);
 	return t;
     }
 
+    // Fix to Issue 123
     void addToTransformFreeList(Transform3D t) {
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t);
+        if (VirtualUniverse.mc.useFreeLists) {
+            FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t);
+        }
     }
 
 
@@ -1218,6 +1225,7 @@ class MasterControl {
     /** 
      * This adds a BHNode to one of the list of BHNodes
      */
+    // Fix to Issue 123
     void addBHNodeToFreelists(BHNode bH) {
 	bH.parent = null;
 	bH.mark = false;
@@ -1225,11 +1233,15 @@ class MasterControl {
 	if (bH.nodeType == BHNode.BH_TYPE_INTERNAL) {
 	    ((BHInternalNode)bH).lChild = null;
 	    ((BHInternalNode)bH).rChild = null;
-	    FreeListManager.freeObject(FreeListManager.BHINTERNAL, bH);
-	}
+            if (VirtualUniverse.mc.useFreeLists) {
+                FreeListManager.freeObject(FreeListManager.BHINTERNAL, bH);
+            }
+        }
 	else if (bH.nodeType == BHNode.BH_TYPE_LEAF) {
 	    ((BHLeafNode)(bH)).leafIF = null;
-	    FreeListManager.freeObject(FreeListManager.BHLEAF, bH);
+            if (VirtualUniverse.mc.useFreeLists) {
+                FreeListManager.freeObject(FreeListManager.BHLEAF, bH);
+            }
 	}
     }
     
@@ -1237,35 +1249,52 @@ class MasterControl {
      * This gets a message from the free list.  If there isn't any,
      * it creates one.
      */
+    // Fix to Issue 123
     BHNode getBHNode(int type) {
 	
 	if (type == BHNode.BH_TYPE_LEAF) {
-	    return (BHNode) FreeListManager.getObject(FreeListManager.BHLEAF);
+            if (VirtualUniverse.mc.useFreeLists) {
+                return (BHNode) FreeListManager.getObject(FreeListManager.BHLEAF);
+            }
+            else {
+                return (BHNode) new BHLeafNode();
+            }
 	} 
 
 	if (type == BHNode.BH_TYPE_INTERNAL) {
-	    return (BHNode)
-		FreeListManager.getObject(FreeListManager.BHINTERNAL);
+            if (VirtualUniverse.mc.useFreeLists) {
+                return (BHNode) FreeListManager.getObject(FreeListManager.BHINTERNAL);
+            }
+            else {
+                return (BHNode) new BHInternalNode();
+            }
 	}
 	return null;
     }
     
-    
     /** 
      * This adds a message to the list of messages
      */
+    // Fix to Issue 123
     final void addMessageToFreelists(J3dMessage m) {
-	FreeListManager.freeObject(FreeListManager.MESSAGE, m);
+        if (VirtualUniverse.mc.useFreeLists) {
+            FreeListManager.freeObject(FreeListManager.MESSAGE, m);
+        }
     }
 
     /**
      * This gets a message from the free list.  If there isn't any,
      * it creates one.
      */
+    // Fix to Issue 123
     final J3dMessage getMessage() {
-	return (J3dMessage) FreeListManager.getObject(FreeListManager.MESSAGE);
+        if (VirtualUniverse.mc.useFreeLists) {        
+            return (J3dMessage) FreeListManager.getObject(FreeListManager.MESSAGE);
+        }
+        else {
+            return new J3dMessage();
+        }
     }
-
   
     /** 
      * This takes a given message and parses it out to the structures and
@@ -2220,9 +2249,12 @@ class MasterControl {
 	    synchronized (VirtualUniverse.mc.deviceScreenMap) {
 		deviceScreenMap.clear();
 	    }
-	    FreeListManager.clearList(FreeListManager.MESSAGE);
-	    FreeListManager.clearList(FreeListManager.BHLEAF);
-	    FreeListManager.clearList(FreeListManager.BHINTERNAL);
+            if (VirtualUniverse.mc.useFreeLists) {
+                FreeListManager.clearList(FreeListManager.MESSAGE);
+                FreeListManager.clearList(FreeListManager.BHLEAF);
+                FreeListManager.clearList(FreeListManager.BHINTERNAL);
+                FreeListManager.clearList(FreeListManager.TRANSFORM3D);
+            }
 	    mirrorObjects.clear();
 	    // Note: We should not clear the DISPLAYLIST/TEXTURE
 	    // list here because other structure may release them
@@ -2236,7 +2268,6 @@ class MasterControl {
 	    renderOnceList.clear();
 	    timestampUpdateList.clear();
 
-	    FreeListManager.clearList(FreeListManager.TRANSFORM3D);
 	    defaultRenderMethod = null;
 	    text3DRenderMethod = null;
 	    vertexArrayRenderMethod = null;

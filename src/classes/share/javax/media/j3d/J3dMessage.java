@@ -160,8 +160,8 @@ class J3dMessage extends Object {
     final synchronized void decRefcount() {
 	if (--refcount == 0) {
 	    clear();
-	    FreeListManager.freeObject(FreeListManager.MESSAGE, this);
-  	}
+	    VirtualUniverse.mc.addMessageToFreelists(this);
+        }
     }
 
     final synchronized int getRefcount() {

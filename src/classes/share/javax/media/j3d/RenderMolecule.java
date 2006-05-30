@@ -676,8 +676,8 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    if (localeLocalToVworld == null) {
 		localeLocalToVworld = new Transform3D[2];
 	    }
-	    localeLocalToVworld[0] = VirtualUniverse.mc.getTransform3D(null);
-	    localeLocalToVworld[1] = VirtualUniverse.mc.getTransform3D(null);
+	    localeLocalToVworld[0] = new Transform3D();
+	    localeLocalToVworld[1] = new Transform3D();
 	    localeTranslation = new Vector3d();
 	    ga.locale.hiRes.difference(renderBin.locale.hiRes, localeTranslation);
 	    translate();
@@ -1074,16 +1074,9 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 			    rinfo.next.prev = rinfo.prev;
 			}
 		    }
-		    // If this renderAtom has localTransform,
-		    // return transform to freelist
-		    if (primaryMoleculeType == RenderMolecule.TEXT3D_MOLECULE) {
-			if (!rinfo.renderAtom.inRenderBin()) {
-			    FreeListManager.freeObject(FreeListManager.TRANSFORM3D, rinfo.localToVworld);
-			    
-			}
-		    }
+
 		    // If the molecule type is Raster, then add it to the lock list
-		    else if (primaryMoleculeType == RASTER) {
+		    if (primaryMoleculeType == RASTER) {
 			RasterRetained geo = (RasterRetained)rinfo.geometry();
 			renderBin.removeGeometryFromLockList(geo);
 			if (geo.image != null) 
@@ -1163,10 +1156,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		    displayListId = 0;
 		    displayListIdObj = null;
 		}	    
-		// If the locale is different, return xform to freelist
 		if (locale != renderBin.locale) {
-		    FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-					       localeLocalToVworld[0]);
 		    localeLocalToVworld = null;
 		}
 		textureBin.removeRenderMolecule(this);
@@ -2989,13 +2979,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
     void handleLocaleChange() {
 	if (locale == renderBin.locale) {
 	    if (localToVworld != localeLocalToVworld) {
-		if (localeTranslation != null) {
-		    //  return to the  freelist;
-		    FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-					       localeLocalToVworld[0]);
-		    FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-					       localeLocalToVworld[1]);
-		}
 		localeLocalToVworld = localToVworld;
 		localeTranslation = null;
 	    }
@@ -3004,11 +2987,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    // Using the localToVworl then, go back to making a new copy
 	    if (localeTranslation == null) {
 		localeLocalToVworld = new Transform3D[2];
-		/*
-		  localeLocalToVworld[0] = VirtualUniverse.mc.getTransform3D(null);
-		  localeLocalToVworld[1] = VirtualUniverse.mc.getTransform3D(null);
-		*/
-
 		localeLocalToVworld[0] = new Transform3D();
 		localeLocalToVworld[1] = new Transform3D();
 

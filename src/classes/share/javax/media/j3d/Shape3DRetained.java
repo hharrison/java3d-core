@@ -2714,12 +2714,21 @@ class Shape3DRetained extends LeafRetained {
 
     }
 
+    // Fix to Issue 123
     static Point3d getPoint3d() {
+        if (VirtualUniverse.mc.useFreeLists) {        
 	return (Point3d)FreeListManager.getObject(FreeListManager.POINT3D);
+        }
+        else {
+            return new Point3d();
+        }
     }
-
-    static void freePoint3d(Point3d p) {
-	FreeListManager.freeObject(FreeListManager.POINT3D, p);
+    
+    // Fix to Issue 123
+    static void freePoint3d(Point3d p) {        
+        if (VirtualUniverse.mc.useFreeLists) {
+            FreeListManager.freeObject(FreeListManager.POINT3D, p);
+        }
     }
 
     void handleFrequencyChange(int bit) {

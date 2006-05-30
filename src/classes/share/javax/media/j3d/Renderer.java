@@ -576,16 +576,14 @@ class Renderer extends J3dThread {
 			t3d = (Transform3D)m[nmesg].args[2]; 
 			canvas.graphicsContext3D.doSetModelTransform(t3d);
 			// return t3d to freelist. t3d was gotten from GraphicsContext3D
-			FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-						   t3d);
+			VirtualUniverse.mc.addToTransformFreeList(t3d);
 			break;
 		    case GraphicsContext3D.MULTIPLY_MODEL_TRANSFORM:
-			t3d = (Transform3D)m[nmesg].args[2];
-			canvas.graphicsContext3D.doMultiplyModelTransform(t3d);
-			// return t3d to freelist. t3d was gotten from GraphicsContext3D
-			FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-						   t3d);
-			break;
+                        t3d = (Transform3D)m[nmesg].args[2];
+                        canvas.graphicsContext3D.doMultiplyModelTransform(t3d);
+                        // return t3d to freelist. t3d was gotten from GraphicsContext3D
+                        VirtualUniverse.mc.addToTransformFreeList(t3d);
+                        break;
 		    case GraphicsContext3D.SET_SOUND:
 			canvas.graphicsContext3D.doSetSound(
 				(Sound)m[nmesg].args[2],

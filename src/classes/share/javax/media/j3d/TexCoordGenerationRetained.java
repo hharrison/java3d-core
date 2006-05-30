@@ -281,8 +281,7 @@ class TexCoordGenerationRetained extends NodeComponentRetained {
 		     m.mat);
 
 	if (trans != null) {
-	    FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-				       trans);
+	    VirtualUniverse.mc.addToTransformFreeList(trans);
 	}
     }
 

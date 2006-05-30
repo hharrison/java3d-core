@@ -190,7 +190,7 @@ class BHInternalNode extends BHNode {
 	lChild = null;
 
 	//  add to free list ...
-	FreeListManager.freeObject(FreeListManager.BHINTERNAL, this);
+        VirtualUniverse.mc.addBHNodeToFreelists(this);
     }
 }
 
