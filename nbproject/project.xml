@@ -68,9 +68,7 @@
                     <ide-action name="rebuild"/>
                 </context-menu>
             </view>
-            <subprojects>
-                <project>../vecmath</project>
-            </subprojects>
+            <subprojects/>
         </general-data>
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
             <compilation-unit>

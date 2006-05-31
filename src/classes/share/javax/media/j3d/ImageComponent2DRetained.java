@@ -880,6 +880,8 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	}
     }
 
+    // Issue 121 : Stop using finalize() to clean up state
+    // Use similar approach as in handling ogl Texture resource cleanup.
     protected void finalize() {
 	// For Pure immediate mode, there is no clearLive so
 	// surface will free when JVM do GC 

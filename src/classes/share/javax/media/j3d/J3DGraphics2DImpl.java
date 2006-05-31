@@ -867,11 +867,14 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 	offScreenGraphics2D.fillRect(x, y, width, height);
     }
 
+    // Issue 121 : Stop using finalize() to clean up state
+    // Explore release native resources during clearlive without using finalize.
     public void finalize() {
 	if (objectId >= 0) {
 	    VirtualUniverse.mc.freeTexture2DId(objectId);
 	}
-	offScreenGraphics2D.finalize();
+        // This should have call disposal() instead of finalize().
+        offScreenGraphics2D.finalize();
     }
 
     public void drawAndFlushImage(BufferedImage img, int x, int y,

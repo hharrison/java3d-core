@@ -10590,6 +10590,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
     }
 
+    // Issue 121 : Stop using finalize() to clean up state
+    // Explore release native resources during clearlive without using finalize.
+    // Will be handled similarly with VBO.
     protected void finalize() {
 	// For Pure immediate mode, there is no clearLive so
 	// surface will free when JVM do GC 

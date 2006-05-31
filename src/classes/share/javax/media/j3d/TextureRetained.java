@@ -2571,6 +2571,8 @@ abstract class TextureRetained extends NodeComponentRetained {
 
     }
 
+    // Issue 121 : Stop using finalize() to clean up state
+    // Explore release native resources during clearlive without using finalize.
     protected void finalize() {
 
 	if (objectId > 0) {
