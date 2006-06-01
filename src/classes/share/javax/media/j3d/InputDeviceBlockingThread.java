@@ -86,6 +86,7 @@ class InputDeviceBlockingThread extends Thread {
                 } catch (InterruptedException e) {}
                 waiting = false;
             }
+            ready = false;
 	    break;
 	case NOTIFY:
             ready = true;

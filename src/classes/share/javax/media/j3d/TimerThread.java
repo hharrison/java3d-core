@@ -120,8 +120,10 @@ class TimerThread extends Thread {
     synchronized void runMonitor(int action, long waitTime) {
 	switch (action) {
 	case WAIT:
-            // Issue 279 & 308 - loop until ready flag set
-            while (running && !ready) {
+            // Issue 308 - wait unless ready flag already set
+            // Note that we can't loop since we need to be able to timeout
+            // after "waitTime" msec
+            if (running && !ready) {
                 waiting = true;
                 try {
                     if (waitTime < 0) {
@@ -132,6 +134,7 @@ class TimerThread extends Thread {
                 } catch (InterruptedException e) {}
                 waiting = false;
             }
+            ready = false;
             break;
 	case NOTIFY:
             ready = true;
