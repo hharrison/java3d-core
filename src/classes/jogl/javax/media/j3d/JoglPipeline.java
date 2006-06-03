@@ -158,6 +158,7 @@ class JoglPipeline extends Pipeline {
 
       // Get vertex attribute arrays
       if (vattrDefined) {
+        // FIXME
         throw new RuntimeException("Vertex attributes not implemented yet");
       }
       
@@ -198,10 +199,10 @@ class JoglPipeline extends Pipeline {
 
       executeGeometryArrayVA(ctx, geo, geo_type,
                              isNonUniformScale, multiScreen, ignoreVertexColors,
-                             vcount, vformat, vdefined, initialCoordIndex,
-                             fverts, dverts, initialColorIndex,
-                             fclrs, bclrs, initialNormalIndex,
-                             norms,
+                             vcount, vformat, vdefined,
+                             initialCoordIndex, fverts, dverts,
+                             initialColorIndex, fclrs, bclrs,
+                             initialNormalIndex, norms,
                              vertexAttrCount, vertexAttrSizes,
                              vertexAttrIndices, vertexAttrBufs,
                              pass, texCoordMapLength,
@@ -252,6 +253,7 @@ class JoglPipeline extends Pipeline {
 
       // Get vertex attribute arrays
       if (vattrDefined) {
+        // FIXME
         throw new RuntimeException("Vertex attributes not implemented yet");
       }
 
@@ -305,10 +307,10 @@ class JoglPipeline extends Pipeline {
       
       executeGeometryArrayVA(ctx, geo, geo_type,
                              isNonUniformScale, multiScreen, ignoreVertexColors,
-                             vcount, vformat, vdefined, initialCoordIndex,
-                             fverts, dverts, initialColorIndex,
-                             fclrs, bclrs, initialNormalIndex,
-                             norms,
+                             vcount, vformat, vdefined,
+                             initialCoordIndex, fverts, dverts,
+                             initialColorIndex, fclrs, bclrs,
+                             initialNormalIndex, norms,
                              vertexAttrCount, vertexAttrSizes,
                              vertexAttrIndices, vertexAttrBufs,
                              pass, texCoordMapLength,
@@ -327,12 +329,19 @@ class JoglPipeline extends Pipeline {
             int startVIndex, int vcount, int vformat,
             int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen,
-            int[] texCoordSetOffset,
-            int numActiveTexUnitState,
-            int[] texUnitStateMap,
+            int[] texUnitOffset,
+            int numActiveTexUnit,
+            int[] texUnitStateMapArray,
             Object varray, float[] cdata, int pass, int cdirty) {
-      if (DEBUG) System.err.println("JoglPipeline.executeInterleavedBuffer()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.executeInterleavedBuffer()");
+
+      executeGeometryArray(ctx, geo, geo_type,
+                           isNonUniformScale, useAlpha, multiScreen, ignoreVertexColors,
+                           startVIndex, vcount, vformat,
+                           texCoordSetCount, texCoordSetMap, texCoordSetMapLen,
+                           texUnitOffset, numActiveTexUnit, texUnitStateMapArray,
+                           0, null,
+                           null, (Buffer) varray, cdata, pass, cdirty);
     }
 
     void setVertexFormat(Context ctx, GeometryArrayRetained geo,
@@ -840,17 +849,198 @@ class JoglPipeline extends Pipeline {
             int vcount,
             int vformat,
             int vdefined,
-            int coordIndex, float[] vfcoords, double[] vdcoords,
-            int colorIndex, float[] cfdata, byte[] cbdata,
-            int normalIndex, float[] ndata,
+            int initialCoordIndex, float[] vfcoords, double[] vdcoords,
+            int initialColorIndex, float[] cfdata, byte[] cbdata,
+            int initialNormalIndex, float[] ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
-            int[] vertexAttrIndex, float[][] vertexAttrData,
-            int texcoordmaplength,
-            int[] texcoordoffset,
-            int[] texIndex, int texstride, Object[] texCoords,
+            int[] vertexAttrIndices, float[][] vertexAttrData,
+            int texCoordMapLength,
+            int[] tcoordsetmap,
+            int[] texIndices, int texStride, Object[] texCoords,
             double[] xform, double[] nxform) {
-      if (DEBUG) System.err.println("JoglPipeline.buildGAForByRef()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.buildGAForByRef()");
+
+      GL gl = context(ctx).getGL();
+
+      boolean floatCoordDefined  = ((vdefined & GeometryArrayRetained.COORD_FLOAT)    != 0);
+      boolean doubleCoordDefined = ((vdefined & GeometryArrayRetained.COORD_DOUBLE)   != 0);
+      boolean floatColorsDefined = ((vdefined & GeometryArrayRetained.COLOR_FLOAT)    != 0);
+      boolean byteColorsDefined  = ((vdefined & GeometryArrayRetained.COLOR_BYTE)     != 0);
+      boolean normalsDefined     = ((vdefined & GeometryArrayRetained.NORMAL_FLOAT)   != 0);
+      boolean vattrDefined       = ((vdefined & GeometryArrayRetained.VATTR_FLOAT)    != 0);
+      boolean textureDefined     = ((vdefined & GeometryArrayRetained.TEXCOORD_FLOAT) != 0);
+
+      FloatBuffer fverts = null;
+      DoubleBuffer dverts = null;
+      FloatBuffer fclrs = null;
+      ByteBuffer bclrs = null;
+      FloatBuffer[] texCoordBufs = null;
+      int[] tunitstatemap = null;
+      FloatBuffer norms = null;
+      FloatBuffer[] vertexAttrBufs = null;
+
+      // Get vertex attribute arrays
+      if (vattrDefined) {
+        // FIXME
+        throw new RuntimeException("Vertex attributes not implemented yet");
+      }
+
+      // get texture arrays
+      if (textureDefined) {
+        texCoordBufs = getTexCoordSetBuffer(texCoords);
+        tunitstatemap = new int[texCoordMapLength];
+        for (int i = 0; i < texCoordMapLength; i++) {
+          tunitstatemap[i] = i;
+        }
+      }
+
+      // process alpha for geometryArray without alpha
+      boolean useAlpha = false;
+      if (updateAlpha && !ignoreVertexColors) {
+        useAlpha = true;
+      }
+
+      int[] sarray = null;
+      int[] start_array = null;
+      int strip_len = 0;
+      if (geo_type == GeometryRetained.GEO_TYPE_TRI_STRIP_SET || 
+          geo_type == GeometryRetained.GEO_TYPE_TRI_FAN_SET   || 
+          geo_type == GeometryRetained.GEO_TYPE_LINE_STRIP_SET) {
+        sarray = ((GeometryStripArrayRetained) geo).stripVertexCounts;
+        strip_len = sarray.length;
+        start_array = ((GeometryStripArrayRetained) geo).stripStartOffsetIndices;
+      }
+      
+      if (ignoreVertexColors) {
+	vformat &= ~GeometryArray.COLOR;
+	floatColorsDefined = false;
+	byteColorsDefined = false;
+      }    
+
+      // get coordinate array
+      if (floatCoordDefined) {
+	gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+        fverts = getVertexArrayBuffer(vfcoords, (xform == null));
+        if (xform != null) {
+          // Must copy in and transform data
+          for (int i = initialCoordIndex; i < vcount * 3; i += 3) {
+            fverts.put(i  , (float) (xform[0]  * vfcoords[i] +
+                                     xform[1]  * vfcoords[i+1] +
+                                     xform[2]  * vfcoords[i+2]));
+            fverts.put(i+1, (float) (xform[4]  * vfcoords[i] +
+                                     xform[5]  * vfcoords[i+1] +
+                                     xform[6]  * vfcoords[i+2]));
+            fverts.put(i+2, (float) (xform[8]  * vfcoords[i] +
+                                     xform[9]  * vfcoords[i+1] +
+                                     xform[10] * vfcoords[i+2]));
+          }
+        }
+      } else if (doubleCoordDefined) {
+	gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+        dverts = getVertexArrayBuffer(vdcoords, (xform == null));
+        if (xform != null) {
+          // Must copy in and transform data
+          for (int i = initialCoordIndex; i < vcount * 3; i += 3) {
+            dverts.put(i  , (xform[0]  * vdcoords[i] +
+                             xform[1]  * vdcoords[i+1] +
+                             xform[2]  * vdcoords[i+2]));
+            dverts.put(i+1, (xform[4]  * vdcoords[i] +
+                             xform[5]  * vdcoords[i+1] +
+                             xform[6]  * vdcoords[i+2]));
+            dverts.put(i+2, (xform[8]  * vdcoords[i] +
+                             xform[9]  * vdcoords[i+1] +
+                             xform[10] * vdcoords[i+2]));
+          }
+        }
+      } else {
+	gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
+      }
+
+      // get color array
+      if (floatColorsDefined) {
+	gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+        fclrs = getColorArrayBuffer(cfdata, !useAlpha);
+        if (useAlpha) {
+          // Must copy in and modify color data
+          if ((vformat & GeometryArray.WITH_ALPHA) != 0) {
+            for (int i = initialColorIndex; i < vcount * 4; i += 4) {
+              fclrs.put(i  , cfdata[i]);
+              fclrs.put(i+1, cfdata[i+1]);
+              fclrs.put(i+2, cfdata[i+2]);
+              fclrs.put(i+3, alpha * cfdata[i+3]);
+            }
+          } else {
+            int k = 0;
+            for (int i = initialColorIndex; i < vcount * 4; i += 4) {
+              fclrs.put(i  , cfdata[k++]);
+              fclrs.put(i+1, cfdata[k++]);
+              fclrs.put(i+2, cfdata[k++]);
+              fclrs.put(i+3, alpha);
+            } 
+          }
+          vformat |= GeometryArray.WITH_ALPHA;
+        }
+      } else if (byteColorsDefined) {
+	gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+        bclrs = getColorArrayBuffer(cbdata, !useAlpha);
+        if (useAlpha) {
+          // Must copy in and modify color data
+          if ((vformat & GeometryArray.WITH_ALPHA) != 0) {
+            for (int i = initialColorIndex; i < vcount * 4; i += 4) {
+              bclrs.put(i  , cbdata[i]);
+              bclrs.put(i+1, cbdata[i+1]);
+              bclrs.put(i+2, cbdata[i+2]);
+              bclrs.put(i+3, (byte) (alpha * (int) (cbdata[i+3] & 0xFF)));
+            }
+          } else {
+            int k = 0;
+            for (int i = initialColorIndex; i < vcount * 4; i += 4) {
+              bclrs.put(i  , cbdata[k++]);
+              bclrs.put(i+1, cbdata[k++]);
+              bclrs.put(i+2, cbdata[k++]);
+              bclrs.put(i+3, (byte) (alpha * 255.0f));
+            } 
+          }
+          vformat |= GeometryArray.WITH_ALPHA;
+        }
+      } else {
+	gl.glDisableClientState(GL.GL_COLOR_ARRAY);
+      }
+
+      // get normal array
+      if (normalsDefined) {
+	gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
+        norms = getNormalArrayBuffer(ndata, (nxform == null));
+        if (nxform != null) {
+          // Must copy in and transform data
+          for (int i = initialNormalIndex; i < vcount * 3; i += 3) {
+            norms.put(i  , (float) (nxform[0]  * ndata[i] +
+                                    nxform[1]  * ndata[i+1] +
+                                    nxform[2]  * ndata[i+2]));
+            norms.put(i+1, (float) (nxform[4]  * ndata[i] +
+                                    nxform[5]  * ndata[i+1] +
+                                    nxform[6]  * ndata[i+2]));
+            norms.put(i+2, (float) (nxform[8]  * ndata[i] +
+                                    nxform[9]  * ndata[i+1] +
+                                    nxform[10] * ndata[i+2]));
+          }
+        }
+      } else {
+	gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
+      }
+
+      executeGeometryArrayVA(ctx, geo, geo_type,
+                             isNonUniformScale, false, ignoreVertexColors,
+                             vcount, vformat, vdefined,
+                             initialCoordIndex, fverts, dverts,
+                             initialColorIndex, fclrs, bclrs,
+                             initialNormalIndex, norms,
+                             vertexAttrCount, vertexAttrSizes,
+                             vertexAttrIndices, vertexAttrBufs,
+                             -1, texCoordMapLength,
+                             tcoordsetmap, texCoordMapLength, tunitstatemap,
+                             texIndices, texStride, texCoordBufs, 0,
+                             sarray, strip_len, start_array);
     }
 
   //----------------------------------------------------------------------
@@ -1618,6 +1808,7 @@ class JoglPipeline extends Pipeline {
 
       // Get vertex attribute arrays
       if (vattrDefined) {
+        // FIXME
         throw new RuntimeException("Vertex attributes not implemented yet");
       }
 
@@ -1712,6 +1903,7 @@ class JoglPipeline extends Pipeline {
 
       // Get vertex attribute arrays
       if (vattrDefined) {
+        // FIXME
         throw new RuntimeException("Vertex attributes not implemented yet");
       }
 
@@ -1777,7 +1969,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // by-copy geometry
-    void buildIndexedGeometry(Context ctx,
+    void buildIndexedGeometry(Context absCtx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale, boolean updateAlpha,
             float alpha,
@@ -1792,8 +1984,312 @@ class JoglPipeline extends Pipeline {
             int[] texCoordSetMapOffset,
             double[] xform, double[] nxform,
             float[] varray, int[] indexCoord) {
-      if (DEBUG) System.err.println("JoglPipeline.buildIndexedGeometry()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.buildIndexedGeometry()");
+
+      JoglContext ctx = (JoglContext) absCtx;
+      GL gl = context(ctx).getGL();
+
+      boolean useInterleavedArrays;
+      int iaFormat = 0;
+      int primType = 0;
+      int stride = 0, coordoff = 0, normoff = 0, coloroff = 0, texCoordoff = 0;
+      int texSize = 0, texStride = 0;
+      int vAttrOff = 0;
+      int vAttrStride = 0;
+      int bstride = 0, cbstride = 0;
+      FloatBuffer verts = null;
+      FloatBuffer clrs  = null;
+      int[] sarray = null;
+      int strip_len = 0;
+      boolean useAlpha = false;
+
+      if ((vformat & GeometryArray.COORDINATES) != 0) {
+	gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+        stride += 3;
+      } else {
+	gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
+      }
+
+      if ((vformat & GeometryArray.NORMALS) != 0) {
+	gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
+        stride += 3;
+        coordoff += 3;
+      } else {
+	gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
+      }
+
+      if ((vformat & GeometryArray.COLOR) != 0) {
+	gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+        stride += 4;
+        normoff += 4;
+        coordoff += 4;
+      } else {
+	gl.glDisableClientState(GL.GL_COLOR_ARRAY);
+      }
+
+      if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+        if ((vformat & GeometryArray.TEXTURE_COORDINATE_2) != 0) {
+          texSize = 2;
+          texStride = 2 * texCoordSetCount;
+        } else if ((vformat & GeometryArray.TEXTURE_COORDINATE_3) != 0) {
+          texSize = 3;
+          texStride = 3 * texCoordSetCount;
+        } else if ((vformat & GeometryArray.TEXTURE_COORDINATE_4) != 0) {
+          texSize = 4;
+          texStride = 4 * texCoordSetCount;
+        }
+        stride += texStride;
+        normoff += texStride;
+        coloroff += texStride;
+        coordoff += texStride;
+      }
+
+      if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+        for (int i = 0; i < vertexAttrCount; i++) {
+          vAttrStride += vertexAttrSizes[i];
+        }
+        stride += vAttrStride;
+        normoff += vAttrStride;
+        coloroff += vAttrStride;
+        coordoff += vAttrStride;
+        texCoordoff += vAttrStride;
+      }
+
+      bstride = stride * BufferUtil.SIZEOF_FLOAT;
+
+      // process alpha for geometryArray without alpha
+      if (updateAlpha && !ignoreVertexColors) {
+	useAlpha = true;
+      }
+
+      if (geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET || 
+          geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_FAN_SET   || 
+          geo_type == GeometryRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET) {
+        sarray = ((IndexedGeometryStripArrayRetained) geo).stripIndexCounts;
+        strip_len = sarray.length;
+      }
+
+      // Copy data into NIO array
+      verts = getVertexArrayBuffer(varray);
+      
+      // Apply normal transform if necessary
+      if ((vformat & GeometryArray.NORMALS) != 0 && nxform != null) {
+        int off = normoff;
+        for (int i = 0; i < vertexCount * 3; i+=3) {
+          verts.put(off  , (float) (nxform[0] * varray[off] +
+                                    nxform[1] * varray[off+1] +
+                                    nxform[2] * varray[off+2]));
+          verts.put(off+1, (float) (nxform[4] * varray[off] +
+                                    nxform[5] * varray[off+1] +
+                                    nxform[6] * varray[off+2]));
+          verts.put(off+2, (float) (nxform[8] * varray[off] +
+                                    nxform[9] * varray[off+1] +
+                                    nxform[10] * varray[off+2]));
+          off += stride;
+        }
+      }
+
+      // Apply coordinate transform if necessary
+      if ((vformat & GeometryArray.COORDINATES) != 0 && xform != null) {
+        int off = coordoff;
+        for (int i = 0; i < vertexCount * 3; i+=3) {
+          verts.put(off  , (float) (xform[0] * varray[off] +
+                                    xform[1] * varray[off+1] +
+                                    xform[2] * varray[off+2]));
+          verts.put(off+1, (float) (xform[4] * varray[off] +
+                                    xform[5] * varray[off+1] +
+                                    xform[6] * varray[off+2]));
+          verts.put(off+2, (float) (xform[8] * varray[off] +
+                                    xform[9] * varray[off+1] +
+                                    xform[10] * varray[off+2]));
+          off += stride;
+        }
+      }
+
+      if (geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET || 
+          geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_FAN_SET   || 
+          geo_type == GeometryRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET) {
+        // Note we can use interleaved arrays even if we have a
+        // non-null xform since we use the same data layout unlike the
+        // C code
+        if (ignoreVertexColors ||
+            (((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) && ((texCoordSetMapLen > 1) ||
+                                                                     (texCoordSetCount > 1)))) {
+          useInterleavedArrays = false;
+        } else {
+          boolean[] tmp = new boolean[1];
+          int[] tmp2 = new int[1];
+          testForInterleavedArrays(vformat, tmp, tmp2);
+          useInterleavedArrays = tmp[0];
+          iaFormat = tmp2[0];
+        }
+
+        if (useInterleavedArrays) {
+          verts.position(0);
+          gl.glInterleavedArrays(iaFormat, bstride, verts);
+        } else {
+          if ((vformat & GeometryArray.NORMALS) != 0) {
+            verts.position(normoff);
+            gl.glNormalPointer(GL.GL_FLOAT, bstride, verts);
+          }
+          if (!ignoreVertexColors && ((vformat & GeometryArray.COLOR) != 0)) {
+            verts.position(coloroff);
+            if (((vformat & GeometryArray.WITH_ALPHA) != 0) || useAlpha) {
+              gl.glColorPointer(4, GL.GL_FLOAT, bstride, verts);
+            } else {
+              gl.glColorPointer(3, GL.GL_FLOAT, bstride, verts);
+            }
+          }
+          if ((vformat & GeometryArray.COORDINATES) != 0) {
+            verts.position(coordoff);
+            gl.glVertexPointer(3, GL.GL_FLOAT, bstride, verts);
+          }
+          if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+            executeTexture(-1, texCoordSetMapLen,
+                           texSize, bstride, texCoordoff,
+                           texCoordSetMapOffset,
+                           texCoordSetMapLen, null,
+                           verts, gl);
+          }
+          if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+            // FIXME
+            throw new RuntimeException("Vertex attributes not implemented yet");
+
+          /*
+            jfloat *vAttrPtr = &verts[vAttrOff];
+
+            for (i = 0; i < vertexAttrCount; i++) {
+            ctxProperties->enableVertexAttrArray(ctxProperties, i);
+            ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
+            GL_FLOAT, bstride, vAttrPtr);
+            vAttrPtr += vAttrSizesPtr[i];
+            }
+          */
+          }
+        }
+
+        switch (geo_type) {
+          case GeometryRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET:
+            primType = GL.GL_TRIANGLE_STRIP;
+            break;
+          case GeometryRetained.GEO_TYPE_INDEXED_TRI_FAN_SET:
+            primType = GL.GL_TRIANGLE_FAN;
+            break;
+          case GeometryRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET:
+            primType = GL.GL_LINE_STRIP;
+            break;
+        }
+        
+        lockArray(gl, vertexCount);
+        
+        // Note: using MultiDrawElements is probably more expensive than
+        // not in this case due to the need to allocate more temporary
+        // direct buffers and slice up the incoming indices array
+        int offset = initialIndexIndex;
+        IntBuffer indicesBuffer = IntBuffer.wrap(indexCoord);
+        for (int i = 0; i < strip_len; i++) {
+          indicesBuffer.position(offset);
+          int count = sarray[i];
+          gl.glDrawElements(primType, count, GL.GL_UNSIGNED_INT, indicesBuffer);
+          offset += count;
+        }
+      } else if ((geo_type == GeometryRetained.GEO_TYPE_INDEXED_QUAD_SET) ||
+                 (geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_SET) ||
+                 (geo_type == GeometryRetained.GEO_TYPE_INDEXED_POINT_SET) ||
+                 (geo_type == GeometryRetained.GEO_TYPE_INDEXED_LINE_SET)) {
+        // Note we can use interleaved arrays even if we have a
+        // non-null xform since we use the same data layout unlike the
+        // C code
+        if (ignoreVertexColors ||
+            (((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) && ((texCoordSetMapLen > 1) ||
+                                                                     (texCoordSetCount > 1)))) {
+          useInterleavedArrays = false;
+        } else {
+          boolean[] tmp = new boolean[1];
+          int[] tmp2 = new int[1];
+          testForInterleavedArrays(vformat, tmp, tmp2);
+          useInterleavedArrays = tmp[0];
+          iaFormat = tmp2[0];
+        }
+
+        if (useInterleavedArrays) {
+          verts.position(0);
+          gl.glInterleavedArrays(iaFormat, bstride, verts);
+        } else {
+          if ((vformat & GeometryArray.NORMALS) != 0) {
+            verts.position(normoff);
+            gl.glNormalPointer(GL.GL_FLOAT, bstride, verts);
+          }
+
+          if (!ignoreVertexColors && ((vformat & GeometryArray.COLOR) != 0)) {
+            verts.position(coloroff);
+            if (((vformat & GeometryArray.WITH_ALPHA) != 0) || useAlpha) {
+              gl.glColorPointer(4, GL.GL_FLOAT, bstride, verts);
+            } else {
+              gl.glColorPointer(3, GL.GL_FLOAT, bstride, verts);
+            }
+          }
+          if ((vformat & GeometryArray.COORDINATES) != 0) {
+            verts.position(coordoff);
+            gl.glVertexPointer(3, GL.GL_FLOAT, bstride, verts);
+          }
+          if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+            executeTexture(-1, texCoordSetMapLen,
+                           texSize, bstride, texCoordoff,
+                           texCoordSetMapOffset,
+                           texCoordSetMapLen, null,
+                           verts, gl);
+          }
+          if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+            // FIXME
+            throw new RuntimeException("Vertex attributes not implemented yet");
+
+          /*
+            jfloat *vAttrPtr = &verts[vAttrOff];
+
+            for (i = 0; i < vertexAttrCount; i++) {
+            ctxProperties->enableVertexAttrArray(ctxProperties, i);
+            ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
+            GL_FLOAT, bstride, vAttrPtr);
+            vAttrPtr += vAttrSizesPtr[i];
+            }
+          */
+          }
+
+          switch (geo_type) {
+            case GeometryRetained.GEO_TYPE_INDEXED_QUAD_SET :
+              primType = GL.GL_QUADS;
+              break;
+            case GeometryRetained.GEO_TYPE_INDEXED_TRI_SET :
+              primType = GL.GL_TRIANGLES;
+              break;
+            case GeometryRetained.GEO_TYPE_INDEXED_POINT_SET :
+              primType = GL.GL_POINTS;
+              break;
+            case GeometryRetained.GEO_TYPE_INDEXED_LINE_SET :
+              primType = GL.GL_LINES;
+              break;
+          }
+
+          lockArray(gl, vertexCount);
+
+          IntBuffer indicesBuffer = IntBuffer.wrap(indexCoord);
+          indicesBuffer.position(initialIndexIndex);
+          gl.glDrawElements(primType, validIndexCount, GL.GL_UNSIGNED_INT, indicesBuffer);
+        }
+      }
+
+      unlockArray(gl);
+
+      if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+        // FIXME
+        throw new RuntimeException("Vertex attributes not implemented yet");
+        // resetVertexAttrs(ctxInfo, vertexAttrCount);
+      }
+
+      if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+        resetTexture(gl, ctx);
+      }
     }
 
 
@@ -6824,30 +7320,50 @@ class JoglPipeline extends Pipeline {
   private static ThreadLocal nioTexCoordSetTemp = new ThreadLocal();
 
   private static FloatBuffer getVertexArrayBuffer(float[] vertexArray) {
-    return getNIOBuffer(vertexArray, nioVertexTemp);
+    return getVertexArrayBuffer(vertexArray, true);
+  }
+
+  private static FloatBuffer getVertexArrayBuffer(float[] vertexArray, boolean copyData) {
+    return getNIOBuffer(vertexArray, nioVertexTemp, copyData);
   }
 
   private static DoubleBuffer getVertexArrayBuffer(double[] vertexArray) {
-    return getNIOBuffer(vertexArray, nioVertexDoubleTemp);
+    return getVertexArrayBuffer(vertexArray, true);
+  }
+
+  private static DoubleBuffer getVertexArrayBuffer(double[] vertexArray, boolean copyData) {
+    return getNIOBuffer(vertexArray, nioVertexDoubleTemp, true);
   }
 
   private static FloatBuffer getColorArrayBuffer(float[] colorArray) {
-    return getNIOBuffer(colorArray, nioColorTemp);
+    return getColorArrayBuffer(colorArray, true);
+  }
+
+  private static FloatBuffer getColorArrayBuffer(float[] colorArray, boolean copyData) {
+    return getNIOBuffer(colorArray, nioColorTemp, true);
   }
 
   private static ByteBuffer getColorArrayBuffer(byte[] colorArray) {
-    return getNIOBuffer(colorArray, nioColorByteTemp);
+    return getColorArrayBuffer(colorArray, true);
+  }
+
+  private static ByteBuffer getColorArrayBuffer(byte[] colorArray, boolean copyData) {
+    return getNIOBuffer(colorArray, nioColorByteTemp, true);
   }
 
   private static FloatBuffer getNormalArrayBuffer(float[] normalArray) {
-    return getNIOBuffer(normalArray, nioNormalTemp);
+    return getNormalArrayBuffer(normalArray, true);
+  }
+
+  private static FloatBuffer getNormalArrayBuffer(float[] normalArray, boolean copyData) {
+    return getNIOBuffer(normalArray, nioNormalTemp, true);
   }
 
   private static FloatBuffer[] getTexCoordSetBuffer(Object[] texCoordSet) {
     return getNIOBuffer(texCoordSet, nioTexCoordSetTemp);
   }
 
-  private static FloatBuffer getNIOBuffer(float[] array, ThreadLocal threadLocal) {
+  private static FloatBuffer getNIOBuffer(float[] array, ThreadLocal threadLocal, boolean copyData) {
     if (array == null) {
       return null;
     }
@@ -6863,12 +7379,14 @@ class JoglPipeline extends Pipeline {
         threadLocal.set(buf);
       }
     }
-    buf.put(array);
-    buf.rewind();
+    if (copyData) {
+      buf.put(array);
+      buf.rewind();
+    }
     return buf;
   }
 
-  private static DoubleBuffer getNIOBuffer(double[] array, ThreadLocal threadLocal) {
+  private static DoubleBuffer getNIOBuffer(double[] array, ThreadLocal threadLocal, boolean copyData) {
     if (array == null) {
       return null;
     }
@@ -6884,12 +7402,14 @@ class JoglPipeline extends Pipeline {
         threadLocal.set(buf);
       }
     }
-    buf.put(array);
-    buf.rewind();
+    if (copyData) {
+      buf.put(array);
+      buf.rewind();
+    }
     return buf;
   }
 
-  private static ByteBuffer getNIOBuffer(byte[] array, ThreadLocal threadLocal) {
+  private static ByteBuffer getNIOBuffer(byte[] array, ThreadLocal threadLocal, boolean copyData) {
     if (array == null) {
       return null;
     }
@@ -6905,8 +7425,10 @@ class JoglPipeline extends Pipeline {
         threadLocal.set(buf);
       }
     }
-    buf.put(array);
-    buf.rewind();
+    if (copyData) {
+      buf.put(array);
+      buf.rewind();
+    }
     return buf;
   }
 
