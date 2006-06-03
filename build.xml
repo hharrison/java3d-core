@@ -51,7 +51,7 @@
   * build number that is greater than the previous build's build
   * number.
   -->
-  <property name="version_buildnum"   value="3"/>
+  <property name="version_buildnum"   value="4"/>
 
   <!--
   * The following property specifies the beta revision of the current
