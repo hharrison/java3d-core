@@ -26,6 +26,7 @@ class JoglContext implements Context {
   private float alphaClearValue;
   private int currentTextureUnit;
   private int currentCombinerUnit;
+  private boolean hasMultisample;
 
   JoglContext(GLContext context) {
     this.context = context;
@@ -45,4 +46,6 @@ class JoglContext implements Context {
   void  setCurrentTextureUnit(int val)  { currentTextureUnit = val;   }
   int   getCurrentCombinerUnit()        { return currentCombinerUnit; }
   void  setCurrentCombinerUnit(int val) { currentCombinerUnit = val;  }
+  boolean getHasMultisample()           { return hasMultisample;      }
+  void    setHasMultisample(boolean val){ hasMultisample = val;       }
 }
