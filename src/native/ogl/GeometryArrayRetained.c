@@ -3896,7 +3896,7 @@ JNIEXPORT void JNICALL Java_javax_media_j3d_NativePipeline_buildGAForByRef(
     else if (doubleCoordDefined) {
 	(*env)->ReleasePrimitiveArrayCritical(env, vdcoords, dverts, 0); 
 	if (tmpDoubleCoordArray != NULL) {
-	    free(tmpFloatCoordArray);
+	    free(tmpDoubleCoordArray);
 	}
     }
 }
