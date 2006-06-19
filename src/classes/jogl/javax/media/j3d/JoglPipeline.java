@@ -37,6 +37,8 @@ class JoglPipeline extends Pipeline {
     private static final boolean DEBUG = true;
     // Currently prints for entry points already implemented
     private static final boolean VERBOSE = false;
+    // Debugging output for graphics configuration selection
+    private static final boolean DEBUG_CONFIG = false;
     // Prints extra debugging information
     private static final boolean EXTRA_DEBUGGING = false;
     // Number of milliseconds to wait for windows to pop up on screen
@@ -6910,7 +6912,14 @@ class JoglPipeline extends Pipeline {
       // this code on the Windows platform? What about Mac OS X?)
       DisplayMode currentMode =
         GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
-      return (currentMode.getBitDepth() > 8);
+      // Note: on X11 platforms, a bit depth < 0 simply indicates that
+      // multiple visuals are supported on the current display mode
+
+      if (VERBOSE) System.err.println("  Returning " + (currentMode.getBitDepth() < 0 ||
+                                                        currentMode.getBitDepth() > 8));
+
+      return (currentMode.getBitDepth() < 0 ||
+              currentMode.getBitDepth() > 8);
     }
 
     // native method for setting light enables
@@ -8458,6 +8467,9 @@ class JoglPipeline extends Pipeline {
       f.add(canvas, BorderLayout.CENTER);
       f.setSize(1, 1);
       f.setVisible(true);
+      if (DEBUG_CONFIG) {
+        System.err.println("Waiting for CapabilitiesCapturer");
+      }
       // Try to wait for result without blocking EDT
       if (!EventQueue.isDispatchThread()) {
         synchronized(capturer) {
@@ -8473,11 +8485,17 @@ class JoglPipeline extends Pipeline {
       int chosenIndex = capturer.getChosenIndex();
       GLCapabilities chosenCaps = null;
       if (chosenIndex < 0) {
+        if (DEBUG_CONFIG) {
+          System.err.println("CapabilitiesCapturer returned invalid index");
+        }
         // It's possible some platforms or implementations might not
         // support the GLCapabilitiesChooser mechanism; feed in the
         // same GLCapabilities later which we gave to the selector
         chosenCaps = caps;
       } else {
+        if (DEBUG_CONFIG) {
+          System.err.println("CapabilitiesCapturer returned index=" + chosenIndex);
+        }
         chosenCaps = capturer.getCapabilities();
       }
 
@@ -8549,27 +8567,35 @@ class JoglPipeline extends Pipeline {
     // Methods to get actual capabilities from Canvas3D
     boolean hasDoubleBuffer(Canvas3D cv) {
       if (VERBOSE) System.err.println("JoglPipeline.hasDoubleBuffer()");
+      if (VERBOSE) System.err.println("  Returning " + caps(cv).getDoubleBuffered());
       return caps(cv).getDoubleBuffered();
     }
 
     boolean hasStereo(Canvas3D cv) {
       if (VERBOSE) System.err.println("JoglPipeline.hasStereo()");
+      if (VERBOSE) System.err.println("  Returning " + caps(cv).getStereo());
       return caps(cv).getStereo();
     }
 
     int getStencilSize(Canvas3D cv) {
       if (VERBOSE) System.err.println("JoglPipeline.getStencilSize()");
+      if (VERBOSE) System.err.println("  Returning " + caps(cv).getStencilBits());
       return caps(cv).getStencilBits();
     }
 
     boolean hasSceneAntialiasingMultisample(Canvas3D cv) {
       if (VERBOSE) System.err.println("JoglPipeline.hasSceneAntialiasingMultisample()");
+      if (VERBOSE) System.err.println("  Returning " + caps(cv).getSampleBuffers());
+
       return caps(cv).getSampleBuffers();
     }
 
     boolean hasSceneAntialiasingAccum(Canvas3D cv) {
       if (VERBOSE) System.err.println("JoglPipeline.hasSceneAntialiasingAccum()");
       GLCapabilities caps = caps(cv);
+      if (VERBOSE) System.err.println("  Returning " + (caps.getAccumRedBits() > 0 &&
+                                                        caps.getAccumGreenBits() > 0 &&
+                                                        caps.getAccumBlueBits() > 0));
       return (caps.getAccumRedBits() > 0 &&
               caps.getAccumGreenBits() > 0 &&
               caps.getAccumBlueBits() > 0);
@@ -8774,6 +8800,9 @@ class JoglPipeline extends Pipeline {
     public int chooseCapabilities(GLCapabilities desired,
                                   GLCapabilities[] available,
                                   int windowSystemRecommendedChoice) {
+      if (DEBUG_CONFIG) {
+        System.err.println("IndexCapabilitiesChooser returning index=" + indexToChoose);
+      }
       return indexToChoose;
     }
   }
