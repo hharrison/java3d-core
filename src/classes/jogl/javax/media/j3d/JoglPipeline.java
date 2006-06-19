@@ -14,11 +14,14 @@ package javax.media.j3d;
 
 import java.awt.*;
 import java.io.*;
+import java.lang.reflect.*;
 import java.nio.*;
+import java.security.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
+import com.sun.opengl.cg.*;
 import com.sun.opengl.util.*;
 
 /**
@@ -36,6 +39,8 @@ class JoglPipeline extends Pipeline {
     private static final boolean VERBOSE = false;
     // Prints extra debugging information
     private static final boolean EXTRA_DEBUGGING = false;
+    // Number of milliseconds to wait for windows to pop up on screen
+    private static final int WAIT_TIME = 1000;
 
     /**
      * Constructor for singleton JoglPipeline instance
@@ -61,9 +66,17 @@ class JoglPipeline extends Pipeline {
      * Load all of the required libraries
      */
     void loadLibraries(int globalShadingLanguage) {
-        // TODO: for globalShadingLanguage == CG,  set the
-        // cgLibraryAvailable flag to true if the JOGL CG code
-        // is compiled, and if the native CG library is available
+      if (globalShadingLanguage == Shader.SHADING_LANGUAGE_CG) {
+        // Try to load the jogl_cg library and set the
+        // cgLibraryAvailable flag to true if loads successfully; note
+        // that successfully performing initialization of this class
+        // will cause the Cg native library to be loaded on our behalf
+        try {
+          Class.forName("com.sun.opengl.cg.CgGL");
+          cgLibraryAvailable = true;
+        } catch (Exception e) {
+        }
+      }
     }
 
     /**
@@ -2857,90 +2870,180 @@ class JoglPipeline extends Pipeline {
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             int value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform1i()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform1i()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgSetParameter1i(param.vParam(), value);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgSetParameter1i(param.fParam(), value);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform1f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform1f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform1f()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgSetParameter1f(param.vParam(), value);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgSetParameter1f(param.fParam(), value);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform2i(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform2i()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform2i()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgSetParameter2i(param.vParam(), value[0], value[1]);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgSetParameter2i(param.fParam(), value[0], value[1]);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform2f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform2f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform2f()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgSetParameter2f(param.vParam(), value[0], value[1]);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgSetParameter2f(param.fParam(), value[0], value[1]);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform3i(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform3i()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform3i()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgSetParameter3i(param.vParam(), value[0], value[1], value[2]);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgSetParameter3i(param.fParam(), value[0], value[1], value[2]);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform3f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform3f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform3f()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgSetParameter3f(param.vParam(), value[0], value[1], value[2]);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgSetParameter3f(param.fParam(), value[0], value[1], value[2]);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform4i(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform4i()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform4i()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgSetParameter4i(param.vParam(), value[0], value[1], value[2], value[3]);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgSetParameter4i(param.fParam(), value[0], value[1], value[2], value[3]);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform4f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform4f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform4f()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgSetParameter4f(param.vParam(), value[0], value[1], value[2], value[3]);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgSetParameter4f(param.fParam(), value[0], value[1], value[2], value[3]);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniformMatrix3f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniformMatrix3f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniformMatrix3f()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetMatrixParameterfr(param.vParam(), value, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetMatrixParameterfr(param.fParam(), value, 0);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniformMatrix4f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniformMatrix4f()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniformMatrix4f()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetMatrixParameterfr(param.vParam(), value, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetMatrixParameterfr(param.fParam(), value, 0);
+      }
+
+      return null;
     }
 
     // ShaderAttributeArray methods
@@ -2950,9 +3053,23 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform1iArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform1iArray()");
+
+      float[] fval = new float[value.length];
+      for (int i = 0; i < value.length; i++) {
+        fval[i] = value[i];
+      }
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetParameterArray1f(param.vParam(), 0, numElements, fval, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetParameterArray1f(param.fParam(), 0, numElements, fval, 0);
+      }
+      
+      return null;
     }
 
     ShaderError setCgUniform1fArray(Context ctx,
@@ -2960,9 +3077,18 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform1fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform1fArray()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetParameterArray1f(param.vParam(), 0, numElements, value, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetParameterArray1f(param.fParam(), 0, numElements, value, 0);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform2iArray(Context ctx,
@@ -2970,9 +3096,23 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform2iArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform2iArray()");
+
+      float[] fval = new float[value.length];
+      for (int i = 0; i < value.length; i++) {
+        fval[i] = value[i];
+      }
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetParameterArray2f(param.vParam(), 0, numElements, fval, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetParameterArray2f(param.fParam(), 0, numElements, fval, 0);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform2fArray(Context ctx,
@@ -2980,9 +3120,18 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform2fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform2fArray()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetParameterArray2f(param.vParam(), 0, numElements, value, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetParameterArray2f(param.fParam(), 0, numElements, value, 0);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform3iArray(Context ctx,
@@ -2990,9 +3139,23 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform3iArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform3iArray()");
+
+      float[] fval = new float[value.length];
+      for (int i = 0; i < value.length; i++) {
+        fval[i] = value[i];
+      }
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetParameterArray3f(param.vParam(), 0, numElements, fval, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetParameterArray3f(param.fParam(), 0, numElements, fval, 0);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform3fArray(Context ctx,
@@ -3000,9 +3163,18 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform3fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform3fArray()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetParameterArray2f(param.vParam(), 0, numElements, value, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetParameterArray2f(param.fParam(), 0, numElements, value, 0);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform4iArray(Context ctx,
@@ -3010,9 +3182,23 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             int[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform4iArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform4iArray()");
+
+      float[] fval = new float[value.length];
+      for (int i = 0; i < value.length; i++) {
+        fval[i] = value[i];
+      }
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetParameterArray4f(param.vParam(), 0, numElements, fval, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetParameterArray4f(param.fParam(), 0, numElements, fval, 0);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniform4fArray(Context ctx,
@@ -3020,9 +3206,18 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniform4fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniform4fArray()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetParameterArray2f(param.vParam(), 0, numElements, value, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetParameterArray2f(param.fParam(), 0, numElements, value, 0);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniformMatrix3fArray(Context ctx,
@@ -3030,9 +3225,18 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniformMatrix3fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniformMatrix3fArray()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetMatrixParameterArrayfr(param.vParam(), 0, numElements, value, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetMatrixParameterArrayfr(param.fParam(), 0, numElements, value, 0);
+      }
+
+      return null;
     }
 
     ShaderError setCgUniformMatrix4fArray(Context ctx,
@@ -3040,9 +3244,18 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int numElements,
             float[] value) {
-      if (DEBUG) System.err.println("JoglPipeline.setCgUniformMatrix4fArray()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.setCgUniformMatrix4fArray()");
+
+      JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
+      if (param.vParam() != null) {
+        CgGL.cgGLSetMatrixParameterArrayfr(param.vParam(), 0, numElements, value, 0);
+      }
+
+      if (param.fParam() != null) {
+        CgGL.cgGLSetMatrixParameterArrayfr(param.fParam(), 0, numElements, value, 0);
+      }
+
+      return null;
     }
 
     // interfaces for shader compilation, etc.
@@ -6345,7 +6558,7 @@ class JoglPipeline extends Pipeline {
 
     // Method to initialize the native J3D library
     boolean initializeJ3D(boolean disableXinerama) {
-        // TODO: implement this
+        // Dummy method in JOGL pipeline
         return true;
     }
 
@@ -6373,11 +6586,16 @@ class JoglPipeline extends Pipeline {
             boolean cgLibraryAvailable) {
       if (VERBOSE) System.err.println("JoglPipeline.createNewContext()");
       GLDrawable draw = null;
+      GLCapabilitiesChooser indexChooser = null;
+      JoglGraphicsConfiguration config = (JoglGraphicsConfiguration) cv.graphicsConfiguration;
+      if (config.getChosenIndex() >= 0) {
+        indexChooser = new IndexCapabilitiesChooser(config.getChosenIndex());
+      }
       if (cv.drawable == null) {
         draw =
           GLDrawableFactory.getFactory().getGLDrawable(cv,
-                                                       ((JoglGraphicsConfiguration) cv.graphicsConfiguration).getGLCapabilities(),
-                                                       null);
+                                                       config.getGLCapabilities(),
+                                                       indexChooser);
         cv.drawable = new JoglDrawable(draw);
       } else {
         draw = drawable(cv.drawable);
@@ -6420,10 +6638,42 @@ class JoglPipeline extends Pipeline {
             long fbConfig, boolean offScreen, int width, int height,
             boolean glslLibraryAvailable,
             boolean cgLibraryAvailable) {
-      if (DEBUG) System.err.println("JoglPipeline.createQueryContext()");
-      // FIXME: for now just set some defaults in the Canvas3D
+      if (VERBOSE) System.err.println("JoglPipeline.createQueryContext()");
 
-        // TODO: implement this
+      // FIXME: for now, ignoring the "offscreen" flag -- unclear how
+      // to create an offscreen buffer at this point -- very likely
+      // need Canvas3D.offScreenBufferInfo promoted to an Object --
+      // this logic will need to be revisited to make sure we capture
+      // all of the functionality of the NativePipeline
+
+      Frame f = new Frame();
+      f.setUndecorated(true);
+      f.setLayout(new BorderLayout());
+      GLCapabilities caps = new GLCapabilities();
+      ContextQuerier querier = new ContextQuerier(cv,
+                                                  glslLibraryAvailable,
+                                                  cgLibraryAvailable);
+      // FIXME: should know what GraphicsDevice on which to create
+      // this Canvas / Frame, and this should probably be known from
+      // the incoming "display" parameter
+      QueryCanvas canvas = new QueryCanvas(caps, querier, null);
+      f.add(canvas, BorderLayout.CENTER);
+      f.setSize(1, 1);
+      f.setVisible(true);
+      
+      // Attempt to wait for the frame to become visible, but don't block the EDT
+      if (!EventQueue.isDispatchThread()) {
+        synchronized(querier) {
+          if (!querier.done()) {
+            try {
+              querier.wait(WAIT_TIME);
+            } catch (InterruptedException e) {
+            }
+          }
+        }
+      }
+
+      disposeOnEDT(f);
     }
 
     // This is the native for creating offscreen buffer
@@ -6454,14 +6704,14 @@ class JoglPipeline extends Pipeline {
 
     // notify D3D that Canvas is resize
     int resizeD3DCanvas(Canvas3D cv, Context ctx) {
-        // TODO: implement this
-        return 0;
+      // Dummy method in JOGL pipeline
+      return 0;
     }
 
     // notify D3D to toggle between FullScreen and window mode
     int toggleFullScreenMode(Canvas3D cv, Context ctx) {
-        // TODO: implement this
-        return 0;
+      // Dummy method in JOGL pipeline
+      return 0;
     }
 
     // native method for setting Material when no material is present
@@ -6653,9 +6903,14 @@ class JoglPipeline extends Pipeline {
     // True under Solaris,
     // False under windows when display mode <= 8 bit
     boolean validGraphicsMode() {
-      if (DEBUG) System.err.println("JoglPipeline.validGraphicsMode()");
-        // TODO: implement this
-        return true;
+      if (VERBOSE) System.err.println("JoglPipeline.validGraphicsMode()");
+
+      // FIXME: believe this should do exactly what the native code
+      // used to, but not 100% sure (also in theory should only run
+      // this code on the Windows platform? What about Mac OS X?)
+      DisplayMode currentMode =
+        GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
+      return (currentMode.getBitDepth() > 8);
     }
 
     // native method for setting light enables
@@ -7690,7 +7945,6 @@ class JoglPipeline extends Pipeline {
     // probably need to pull much more in
     int[] tmp = new int[1];
     gl.glGetIntegerv(GL.GL_MAX_TEXTURE_UNITS, tmp, 0);
-    ctx.setMaxTextureUnits(tmp[0]);
     ctx.setMaxTexCoordSets(tmp[0]);
     if (VirtualUniverse.mc.transparentOffScreen) {
       ctx.setAlphaClearValue(0.0f);
@@ -7834,6 +8088,9 @@ class JoglPipeline extends Pipeline {
     if (glslLibraryAvailable &&
         gl.isExtensionAvailable("GL_ARB_shader_objects") &&
         gl.isExtensionAvailable("GL_ARB_shading_language_100")) {
+      // Initialize shader vertex attribute function pointers
+      ctx.initGLSLVertexAttributeImpl();
+
       // FIXME: this isn't complete and would need to set up the
       // JoglContext for dispatch of various routines such as those
       // related to vertex attributes
@@ -7844,6 +8101,7 @@ class JoglPipeline extends Pipeline {
       cv.maxVertexTextureImageUnits = tmp[0];
       gl.glGetIntegerv(GL. GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, tmp, 0);
       cv.maxCombinedTextureImageUnits = tmp[0];
+      // FIXME: must record vertexAttrOffset for later
       int vertexAttrOffset = VirtualUniverse.mc.glslVertexAttrOffset;
       gl.glGetIntegerv(GL. GL_MAX_VERTEX_ATTRIBS_ARB, tmp, 0);
       cv.maxVertexAttrs = tmp[0];
@@ -7856,13 +8114,56 @@ class JoglPipeline extends Pipeline {
     }
   }
 
+  private void createCgContext(JoglContext ctx) {
+    CGcontext cgContext = CgGL.cgCreateContext();
+
+    int err = CgGL.cgGetError();
+    if (err != 0) {
+      String detail = CgGL.cgGetErrorString(err);
+      throw new RuntimeException("Fatal error in creating Cg context: \"" +
+                                 detail + "\"");
+    }
+
+    if (cgContext == null) {
+      throw new RuntimeException("Invalid null Cg context");
+    }
+
+    ctx.setCgContext(cgContext);
+
+    // Use GL_ARB_vertex_program extension if supported by video card
+    if (CgGL.cgGLIsProfileSupported(CgGL.CG_PROFILE_ARBVP1)) {
+      ctx.setCgVertexProfile(CgGL.CG_PROFILE_ARBVP1);
+    } else if (CgGL.cgGLIsProfileSupported(CgGL.CG_PROFILE_VP20)) {
+      ctx.setCgVertexProfile(CgGL.CG_PROFILE_VP20);
+    } else {
+      throw new RuntimeException("JAVA 3D ERROR : No CG vertex program profile is supported");
+    }
+
+    // Use GL_ARB_fragment_program extension if supported by video card
+    if (CgGL.cgGLIsProfileSupported(CgGL.CG_PROFILE_ARBFP1)) {
+      ctx.setCgFragmentProfile(CgGL.CG_PROFILE_ARBFP1);
+    } else if (CgGL.cgGLIsProfileSupported(CgGL.CG_PROFILE_FP20)) {
+      ctx.setCgFragmentProfile(CgGL.CG_PROFILE_FP20);
+    } else {
+      throw new RuntimeException("JAVA 3D ERROR : No CG fragment program profile is supported");
+    }
+  }
+
   private void checkCgShaderExtensions(Canvas3D cv,
                                        JoglContext ctx,
                                        GL gl,
                                        boolean cgLibraryAvailable) {
     if (cgLibraryAvailable) {
-      // FIXME
-      throw new RuntimeException("checkCgShaderExtensions not yet implemented");
+      createCgContext(ctx);
+      cv.shadingLanguageCg = true;
+      // TODO: Query Cg texture sampler limits
+      cv.maxTextureImageUnits = cv.maxTextureUnits;
+      cv.maxVertexTextureImageUnits = 0;
+      cv.maxCombinedTextureImageUnits = cv.maxTextureUnits;
+      // TODO: Query max vertex attrs
+      cv.maxVertexAttrs = 7;
+      // Initialize shader vertex attribute function pointers
+      ctx.initCgVertexAttributeImpl();
     }
   }
 
@@ -8086,9 +8387,14 @@ class JoglPipeline extends Pipeline {
     GraphicsConfiguration getGraphicsConfig(GraphicsConfiguration gconfig) {
       if (VERBOSE) System.err.println("JoglPipeline.getGraphicsConfig()");
       JoglGraphicsConfiguration config = (JoglGraphicsConfiguration) gconfig;
+      GLCapabilitiesChooser indexChooser = null;
+      if (config.getChosenIndex() >= 0) {
+        indexChooser = new IndexCapabilitiesChooser(config.getChosenIndex());
+      }
+
       AbstractGraphicsConfiguration absConfig =
         GLDrawableFactory.getFactory().chooseGraphicsConfiguration(config.getGLCapabilities(),
-                                                                   null,
+                                                                   indexChooser,
                                                                    new AWTGraphicsDevice(config.getDevice()));
       if (absConfig == null) {
         return null;
@@ -8107,8 +8413,8 @@ class JoglPipeline extends Pipeline {
 
     // Get the native FBconfig pointer
     long getFbConfig(GraphicsConfigInfo gcInfo) {
-      if (DEBUG) System.err.println("JoglPipeline.getFbConfig()");
-        return 0L; // Dummy method in JOGL
+      if (VERBOSE) System.err.println("JoglPipeline.getFbConfig()");
+      return 0L; // Dummy method in JOGL
     }
 
 
@@ -8143,7 +8449,39 @@ class JoglPipeline extends Pipeline {
       // Pick the GraphicsDevice from a random configuration
       GraphicsDevice dev = gc[0].getDevice();
       
-      JoglGraphicsConfiguration config = new JoglGraphicsConfiguration(caps, dev);
+      // Create a Frame and dummy GLCanvas to perform eager pixel format selection
+      Frame f = new Frame(dev.getDefaultConfiguration());
+      f.setUndecorated(true);
+      f.setLayout(new BorderLayout());
+      CapabilitiesCapturer capturer = new CapabilitiesCapturer();
+      QueryCanvas canvas = new QueryCanvas(caps, capturer, dev);
+      f.add(canvas, BorderLayout.CENTER);
+      f.setSize(1, 1);
+      f.setVisible(true);
+      // Try to wait for result without blocking EDT
+      if (!EventQueue.isDispatchThread()) {
+        synchronized(capturer) {
+          if (!capturer.done()) {
+            try {
+              capturer.wait(WAIT_TIME);
+            } catch (InterruptedException e) {
+            }
+          }
+        }
+      }
+      disposeOnEDT(f);
+      int chosenIndex = capturer.getChosenIndex();
+      GLCapabilities chosenCaps = null;
+      if (chosenIndex < 0) {
+        // It's possible some platforms or implementations might not
+        // support the GLCapabilitiesChooser mechanism; feed in the
+        // same GLCapabilities later which we gave to the selector
+        chosenCaps = caps;
+      } else {
+        chosenCaps = capturer.getCapabilities();
+      }
+
+      JoglGraphicsConfiguration config = new JoglGraphicsConfiguration(caps, chosenIndex, dev);
 
       // FIXME: because of the fact that JoglGraphicsConfiguration
       // doesn't override hashCode() or equals(), we will basically be
@@ -8187,53 +8525,272 @@ class JoglPipeline extends Pipeline {
     // Determine whether specified graphics config is supported by pipeline
     boolean isGraphicsConfigSupported(GraphicsConfigTemplate3D gct,
             GraphicsConfiguration gc) {
-      if (DEBUG) System.err.println("JoglPipeline.isGraphicsConfigSupported()");
-        // TODO: implement this
-        return true;
+      if (VERBOSE) System.err.println("JoglPipeline.isGraphicsConfigSupported()");
+
+      // FIXME: it looks like this method is implemented incorrectly
+      // in the existing NativePipeline in both the Windows and X11
+      // ports. According to the semantics of the javadoc, it looks
+      // like this method is supposed to figure out the OpenGL
+      // capabilities which would be requested by the passed
+      // GraphicsConfiguration object were it to be used, and see
+      // whether it is possible to create a context with them.
+      // Instead, on both platforms, the implementations basically set
+      // up a query based on the contents of the
+      // GraphicsConfigTemplate3D object, using the
+      // GraphicsConfiguration object only to figure out on which
+      // GraphicsDevice and screen we're making the request, and see
+      // whether it's possible to choose an OpenGL pixel format based
+      // on that information. This makes this method less useful and
+      // we can probably just safely return true here uniformly
+      // without breaking anything.
+      return true;
     }
 
     // Methods to get actual capabilities from Canvas3D
     boolean hasDoubleBuffer(Canvas3D cv) {
-      if (DEBUG) System.err.println("JoglPipeline.hasDoubleBuffer()");
-        // TODO: implement this
-        return true;
+      if (VERBOSE) System.err.println("JoglPipeline.hasDoubleBuffer()");
+      return caps(cv).getDoubleBuffered();
     }
 
     boolean hasStereo(Canvas3D cv) {
-      if (DEBUG) System.err.println("JoglPipeline.hasStereo()");
-        // TODO: implement this
-        return false;
+      if (VERBOSE) System.err.println("JoglPipeline.hasStereo()");
+      return caps(cv).getStereo();
     }
 
     int getStencilSize(Canvas3D cv) {
-      if (DEBUG) System.err.println("JoglPipeline.getStencilSize()");
-        // TODO: implement this
-        return 0;
+      if (VERBOSE) System.err.println("JoglPipeline.getStencilSize()");
+      return caps(cv).getStencilBits();
     }
 
     boolean hasSceneAntialiasingMultisample(Canvas3D cv) {
-      if (DEBUG) System.err.println("JoglPipeline.hasSceneAntialiasingMultisample()");
-        // TODO: implement this
-        return false;
+      if (VERBOSE) System.err.println("JoglPipeline.hasSceneAntialiasingMultisample()");
+      return caps(cv).getSampleBuffers();
     }
 
     boolean hasSceneAntialiasingAccum(Canvas3D cv) {
-      if (DEBUG) System.err.println("JoglPipeline.hasSceneAntialiasingAccum()");
-        // TODO: implement this
-        return false;
+      if (VERBOSE) System.err.println("JoglPipeline.hasSceneAntialiasingAccum()");
+      GLCapabilities caps = caps(cv);
+      return (caps.getAccumRedBits() > 0 &&
+              caps.getAccumGreenBits() > 0 &&
+              caps.getAccumBlueBits() > 0);
     }
 
     // Methods to get native WS display and screen
     long getDisplay() {
-      if (DEBUG) System.err.println("JoglPipeline.getDisplay()");
-        return 0L; // Dummy method in JOGL
+      if (VERBOSE) System.err.println("JoglPipeline.getDisplay()");
+      return 0L; // Dummy method in JOGL
     }
 
-    int getScreen(GraphicsDevice graphicsDevice) {
-      if (DEBUG) System.err.println("JoglPipeline.getScreen()");
-        // TODO: implement this
-        return 0;
+    private boolean checkedForGetScreenMethod = false;
+    private Method getScreenMethod = null;
+    int getScreen(final GraphicsDevice graphicsDevice) {
+      if (VERBOSE) System.err.println("JoglPipeline.getScreen()");
+
+      if (!checkedForGetScreenMethod) {
+        // All of the Sun GraphicsDevice implementations have a method
+        //   int getScreen();
+        // which we want to call reflectively if it's available.
+        AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+              try {
+                getScreenMethod = graphicsDevice.getClass().getDeclaredMethod("getScreen", new Class[] {});
+                getScreenMethod.setAccessible(true);
+              } catch (Exception e) {
+              }
+              checkedForGetScreenMethod = true;
+              return null;
+            }
+          });
+      }
+
+      if (getScreenMethod != null) {
+        try {
+          return ((Integer) getScreenMethod.invoke(graphicsDevice, (Object[]) null)).intValue();
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+
+      return 0;
     }
+
+  //----------------------------------------------------------------------
+  // Helper classes and methods to support query context functionality
+  // and pixel format selection
+
+  interface ExtendedCapabilitiesChooser extends GLCapabilitiesChooser {
+    public void init(GLContext context);
+  }
+
+  // Canvas subclass to help with various query operations such as the
+  // "query context" mechanism and pixel format selection.
+  // Must defeat and simplify the single-threading behavior of JOGL's
+  // GLCanvas in order to be able to set up a temporary pixel format
+  // and OpenGL context. Apparently simply turning off the
+  // single-threaded mode isn't enough to do this.
+  class QueryCanvas extends Canvas {
+    private GLDrawable drawable;
+    private ExtendedCapabilitiesChooser chooser;
+
+    public QueryCanvas(GLCapabilities capabilities,
+                       ExtendedCapabilitiesChooser chooser,
+                       GraphicsDevice device) {
+      // The platform-specific GLDrawableFactory will only provide a
+      // non-null GraphicsConfiguration on platforms where this is
+      // necessary (currently only X11, as Windows allows the pixel
+      // format of the window to be set later and Mac OS X seems to
+      // handle this very differently than all other platforms). On
+      // other platforms this method returns null; it is the case (at
+      // least in the Sun AWT implementation) that this will result in
+      // equivalent behavior to calling the no-arg super() constructor
+      // for Canvas.
+      super(unwrap((AWTGraphicsConfiguration)
+                   GLDrawableFactory.getFactory().chooseGraphicsConfiguration(capabilities,
+                                                                              chooser,
+                                                                              new AWTGraphicsDevice(device))));
+      drawable = GLDrawableFactory.getFactory().getGLDrawable(this, capabilities, chooser);
+      this.chooser = chooser;
+    }
+
+    public void addNotify() {
+      super.addNotify();
+      drawable.setRealized(true);
+      GLContext context = drawable.createContext(null);
+      int res = context.makeCurrent();
+      if (res != GLContext.CONTEXT_NOT_CURRENT) {
+        chooser.init(context);
+        context.release();
+      }
+      context.destroy();
+    }
+  }
+
+  private static GraphicsConfiguration unwrap(AWTGraphicsConfiguration config) {
+    if (config == null) {
+      return null;
+    }
+    return config.getGraphicsConfiguration();
+  }
+
+  // Used in conjunction with IndexCapabilitiesChooser in pixel format
+  // selection -- see getBestConfiguration
+  class CapabilitiesCapturer extends DefaultGLCapabilitiesChooser implements ExtendedCapabilitiesChooser {
+    private boolean done;
+    private GLCapabilities capabilities;
+    private int chosenIndex = -1;
+
+    public boolean done() {
+      return done;
+    }
+
+    public GLCapabilities getCapabilities() {
+      return capabilities;
+    }
+
+    public int getChosenIndex() {
+      return chosenIndex;
+    }
+
+    public int chooseCapabilities(GLCapabilities desired,
+                                  GLCapabilities[] available,
+                                  int windowSystemRecommendedChoice) {
+      int res = super.chooseCapabilities(desired, available, windowSystemRecommendedChoice);
+      capabilities = available[res];
+      chosenIndex = res;
+      markDone();
+      return res;
+    }
+
+    public void init(GLContext context) {
+      // Avoid hanging things up for several seconds
+      kick();
+    }
+
+    private void markDone() {
+      synchronized (this) {
+        done = true;
+        notifyAll();
+      }
+    }
+
+    private void kick() {
+      synchronized (this) {
+        notifyAll();
+      }
+    }
+  }
+
+  // Used to support the query context mechanism -- needs to be more
+  // than just a GLCapabilitiesChooser
+  class ContextQuerier extends DefaultGLCapabilitiesChooser implements ExtendedCapabilitiesChooser {
+    private Canvas3D canvas;
+    private boolean glslLibraryAvailable;
+    private boolean cgLibraryAvailable;
+    private boolean done;
+
+    public ContextQuerier(Canvas3D canvas,
+                          boolean glslLibraryAvailable,
+                          boolean cgLibraryAvailable) {
+      this.canvas = canvas;
+      this.glslLibraryAvailable = glslLibraryAvailable;
+      this.cgLibraryAvailable = cgLibraryAvailable;
+    }
+
+    public boolean done() {
+      return done;
+    }
+
+    public void init(GLContext context) {
+      // This is basically a temporary
+      JoglContext jctx = new JoglContext(context);
+      // Set up various properties
+      if (getPropertiesFromCurrentContext(jctx)) {
+        setupCanvasProperties(canvas, jctx, context.getGL(),
+                              glslLibraryAvailable,
+                              cgLibraryAvailable);
+      }
+      markDone();
+    }
+
+    private void markDone() {
+      synchronized (this) {
+        done = true;
+        notifyAll();
+      }
+    }
+  }
+
+  // Used in two phases of pixel format selection: transforming the
+  // JoglGraphicsConfiguration to a real AWT GraphicsConfiguration and
+  // during context creation to select exactly the same graphics
+  // configuration as was done during getBestConfiguration.
+  class IndexCapabilitiesChooser implements GLCapabilitiesChooser {
+    private int indexToChoose;
+
+    IndexCapabilitiesChooser(int indexToChoose) {
+      this.indexToChoose = indexToChoose;
+    }
+
+    public int chooseCapabilities(GLCapabilities desired,
+                                  GLCapabilities[] available,
+                                  int windowSystemRecommendedChoice) {
+      return indexToChoose;
+    }
+  }
+
+  private void disposeOnEDT(final Frame f) {
+    Runnable r = new Runnable() {
+        public void run() {
+          f.setVisible(false);
+          f.dispose();
+        }
+      };
+    if (!EventQueue.isDispatchThread()) {
+      EventQueue.invokeLater(r);
+    } else {
+      r.run();
+    }
+  }
 
 
     // ---------------------------------------------------------------------
@@ -8276,6 +8833,10 @@ class JoglPipeline extends Pipeline {
     if (drawable == null)
       return null;
     return ((JoglDrawable) drawable).getGLDrawable();
+  }
+
+  GLCapabilities caps(Canvas3D ctx) {
+    return ((JoglGraphicsConfiguration) ctx.graphicsConfiguration).getGLCapabilities();
   }
 
   //----------------------------------------------------------------------

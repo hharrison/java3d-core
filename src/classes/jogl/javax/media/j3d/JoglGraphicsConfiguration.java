@@ -26,14 +26,16 @@ import javax.media.opengl.*;
 
 class JoglGraphicsConfiguration extends GraphicsConfiguration {
   private GLCapabilities caps;
+  private int chosenIndex;
   private GraphicsDevice device;
   // Needed for Screen3D
   private int width;
   private int height;
 
-  JoglGraphicsConfiguration(GLCapabilities caps, GraphicsDevice device) {
+  JoglGraphicsConfiguration(GLCapabilities caps, int chosenIndex, GraphicsDevice device) {
     super();
     this.caps = caps;
+    this.chosenIndex = chosenIndex;
     this.device = device;
     DisplayMode m = device.getDisplayMode();
     width = m.getWidth();
@@ -42,6 +44,10 @@ class JoglGraphicsConfiguration extends GraphicsConfiguration {
 
   GLCapabilities getGLCapabilities() {
     return caps;
+  }
+
+  int getChosenIndex() {
+    return chosenIndex;
   }
 
   public BufferedImage createCompatibleImage(int width, int height) {
