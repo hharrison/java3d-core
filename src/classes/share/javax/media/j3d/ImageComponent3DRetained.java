@@ -44,8 +44,11 @@ class ImageComponent3DRetained extends ImageComponentRetained {
      * ImageComponent3D object.
      */
     final void set(int index, BufferedImage image) {
-        if (imageYup == null) 
+        if (imageYup == null) {
             imageYup = new byte[height * width * depth * bytesPerPixelIfStored];
+	    imageYupAllocated = true;
+	}
+
         imageDirty[index] = true;
 	storedYupFormat = internalFormat;
 	bytesPerYupPixelStored = bytesPerPixelIfStored;
