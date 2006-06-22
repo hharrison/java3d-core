@@ -217,16 +217,13 @@ class NodeComponentRetained extends SceneGraphObjectRetained {
     }
 
 
-
-
     void setFrequencyChangeMask(int bit, int mask) {
-	// Record only the inf->frequent change
 	if (source.getCapabilityIsFrequent(bit))
 	    changedFrequent |= mask;
 	else if (!source.isLive()) {
+            // Record the freq->infreq change only for non-live node components
 	    changedFrequent &= ~mask;
 	}
-
     }
 
      protected Object clone() {

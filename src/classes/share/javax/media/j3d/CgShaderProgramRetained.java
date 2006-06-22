@@ -141,7 +141,7 @@ class CgShaderProgramRetained extends ShaderProgramRetained {
             ShaderAttrLoc uniformLocation,
             float[] value) {
 
-        return Pipeline.getPipeline().setCgUniformMatrix3f(ctx,
+        return Pipeline.getPipeline().setCgUniformMatrix4f(ctx,
                 shaderProgramId,
                 uniformLocation,
                 value);

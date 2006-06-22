@@ -142,7 +142,7 @@ class GLSLShaderProgramRetained extends ShaderProgramRetained {
             ShaderAttrLoc uniformLocation,
             float[] value) {
 
-        return Pipeline.getPipeline().setGLSLUniformMatrix3f(ctx,
+        return Pipeline.getPipeline().setGLSLUniformMatrix4f(ctx,
                 shaderProgramId,
                 uniformLocation,
                 value);
