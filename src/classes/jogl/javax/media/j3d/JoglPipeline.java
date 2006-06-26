@@ -8427,6 +8427,10 @@ class JoglPipeline extends Pipeline {
     }
 
 
+    private static final int DISABLE_STEREO = 1;
+    private static final int DISABLE_AA = 2;
+    private static final int DISABLE_DOUBLE_BUFFER = 3;
+
     // Get best graphics config from pipeline
     GraphicsConfiguration getBestConfiguration(GraphicsConfigTemplate3D gct,
             GraphicsConfiguration[] gc) {
@@ -8455,33 +8459,80 @@ class JoglPipeline extends Pipeline {
       // (Java3D's native code has a loop trying 8, 6, 4, 3, and 2 samples)
       caps.setNumSamples(4);
 
+      java.util.List<Integer> capsToDisable = new ArrayList<Integer>();
+      // Add PREFERRED capabilities in order we will try disabling them
+      if (gct.getStereo() == GraphicsConfigTemplate.PREFERRED) {
+        capsToDisable.add(new Integer(DISABLE_STEREO));
+      }
+      if (gct.getSceneAntialiasing() == GraphicsConfigTemplate.PREFERRED) {
+        capsToDisable.add(new Integer(DISABLE_AA));
+      }
+      if (gct.getDoubleBuffer() == GraphicsConfigTemplate.PREFERRED) {
+        capsToDisable.add(new Integer(DISABLE_DOUBLE_BUFFER));
+      }
+
       // Pick the GraphicsDevice from a random configuration
       GraphicsDevice dev = gc[0].getDevice();
       
       // Create a Frame and dummy GLCanvas to perform eager pixel format selection
-      Frame f = new Frame(dev.getDefaultConfiguration());
-      f.setUndecorated(true);
-      f.setLayout(new BorderLayout());
-      CapabilitiesCapturer capturer = new CapabilitiesCapturer();
-      QueryCanvas canvas = new QueryCanvas(caps, capturer, dev);
-      f.add(canvas, BorderLayout.CENTER);
-      f.setSize(1, 1);
-      f.setVisible(true);
-      if (DEBUG_CONFIG) {
-        System.err.println("Waiting for CapabilitiesCapturer");
-      }
-      // Try to wait for result without blocking EDT
-      if (!EventQueue.isDispatchThread()) {
-        synchronized(capturer) {
-          if (!capturer.done()) {
-            try {
-              capturer.wait(WAIT_TIME);
-            } catch (InterruptedException e) {
+
+      // Note that we loop in similar fashion to the NativePipeline's
+      // native code in the situation where we need to disable certain
+      // capabilities which aren't required
+      boolean tryAgain = true;
+      CapabilitiesCapturer capturer = null;
+      while (tryAgain) {
+        Frame f = new Frame(dev.getDefaultConfiguration());
+        f.setUndecorated(true);
+        f.setLayout(new BorderLayout());
+        capturer = new CapabilitiesCapturer();
+        try {
+          QueryCanvas canvas = new QueryCanvas(caps, capturer, dev);
+          f.add(canvas, BorderLayout.CENTER);
+          f.setSize(1, 1);
+          f.setVisible(true);
+          if (DEBUG_CONFIG) {
+            System.err.println("Waiting for CapabilitiesCapturer");
+          }
+          // Try to wait for result without blocking EDT
+          if (!EventQueue.isDispatchThread()) {
+            synchronized(capturer) {
+              if (!capturer.done()) {
+                try {
+                  capturer.wait(WAIT_TIME);
+                } catch (InterruptedException e) {
+                }
+              }
+            }
+          }
+          disposeOnEDT(f);
+          tryAgain = false;
+        } catch (GLException e) {
+          // Failure to select a pixel format; try switching off one
+          // of the only-preferred capabilities
+          if (capsToDisable.size() == 0) {
+            tryAgain = false;
+          } else {
+            int whichToDisable = capsToDisable.remove(0).intValue();
+            switch (whichToDisable) {
+              case DISABLE_STEREO:
+                caps.setStereo(false);
+                break;
+
+              case DISABLE_AA:
+                caps.setSampleBuffers(false);
+                break;
+
+              case DISABLE_DOUBLE_BUFFER:
+                caps.setDoubleBuffered(false);
+                break;
+
+              default:
+                throw new InternalError();
             }
           }
         }
       }
-      disposeOnEDT(f);
       int chosenIndex = capturer.getChosenIndex();
       GLCapabilities chosenCaps = null;
       if (chosenIndex < 0) {
