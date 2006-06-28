@@ -19,7 +19,7 @@
   <title>Java 3D 1.5.0 Pre-Release Notes</title>
 </head>
 <body>
-<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.5.0-build3
+<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.5.0-build4
 Pre-Release Notes</h2>
 <p><span style="color: rgb(204, 0, 0);"><b><i>NOTE: These release notes
 are incomplete.</i></b></span><br>
@@ -27,7 +27,7 @@ are incomplete.</i></b></span><br>
 <p>This file contains important pre-release information for users of
 the
 Java&nbsp;3D<sup><font size="-2">TM</font></sup> API, version
-1.5.0-build3.
+1.5.0-build4.
 </p>
 <ul>
   <a href="#System_Requirements">System Requirements</a>
@@ -38,13 +38,13 @@ Java&nbsp;3D<sup><font size="-2">TM</font></sup> API, version
   <a href="#More_Information">More Information</a><br>
 </ul>
 <h3><a name="System_Requirements"></a>System Requirements</h3>
-<p>The 1.5.0-build3 version of the Java&nbsp;3D API has been released
+<p>The 1.5.0-build4 version of the Java&nbsp;3D API has been released
 for
 Solaris (both sparc and x86), Linux (both x86 and amd64), and Windows.
 </p>
 <h4><a name="Solaris_Sparc"></a>Solaris/Sparc</h4>
 <p>
-The 1.5.0-build3 version of Java&nbsp;3D for Solaris/SPARC requires the
+The 1.5.0-build4 version of Java&nbsp;3D for Solaris/SPARC requires the
 following:
 </p>
 <ul>
@@ -59,7 +59,7 @@ obtained at: <a href="http://www.sun.com/software/graphics/opengl/">http://www.s
 </ul>
 <h4><a name="Solaris_x86"></a>Solaris/x86</h4>
 <p>
-The 1.5.0-build3 version of Java&nbsp;3D for Solaris/x86 requires the
+The 1.5.0-build4 version of Java&nbsp;3D for Solaris/x86 requires the
 following:
 </p>
 <ul>
@@ -70,7 +70,7 @@ following:
 </ul>
 <h4><a name="Linux"></a>Linux<br>
 </h4>
-<p>The 1.5.0-build3 version of Java&nbsp;3D for Linux (x86 or amd64)
+<p>The 1.5.0-build4 version of Java&nbsp;3D for Linux (x86 or amd64)
 requires
 the
 following:<br>
@@ -85,7 +85,7 @@ extension: GLX
 </ul>
 <h4><a name="Windows"></a>Windows<br>
 </h4>
-<p>The 1.5.0-build3 version of Java&nbsp;3D for Windows 2000, and
+<p>The 1.5.0-build4 version of Java&nbsp;3D for Windows 2000, and
 Windows/XP
 requires the following:<br>
 </p>
@@ -124,9 +124,21 @@ for example:
 <p>A preliminary version of the JOGL rendering pipeline, as described
 in <a href="https://java3d.dev.java.net/issues/show_bug.cgi?id=229">issue
 229</a>, is now
-available on all supported platforms. It should also run on Apple Mac
-OSX (x86 or PPC)! However,
-there isn't a specific Mac build yet. To run Java 3D on the Mac, just
+available on all supported platforms. It will also run on Apple Mac
+OSX (x86 or PPC)! The easiest way to run Java&nbsp;3D applications
+using the JOGL
+pipeline is via Java Webstart from your browser (with no setup required).
+<a href="https://j3d-webstart.dev.java.net/test">Click here</a> and go
+to the "Early access
+test program" section at bottom of the
+page to run a Java&nbsp;3D example program from your browser via the
+JOGL pipeline. These
+examples will use JOGL on Mac OSX and the native OpenGL pipeline on all
+other platforms.<br>
+</p>
+<p>For those who download and install Java&nbsp;3D locally,
+there isn't a specific Mac build yet. To run Java&nbsp;3D on the Mac,
+just
 grab the binary for any other platform (e.g., Windows) and run it. It
 won't try to use the DLLs. The JOGL renderer is the default on Mac OSX.
 You can select the JOGL renderer on other platforms by setting the "<code>j3d.rend</code>"
@@ -139,22 +151,17 @@ for example:
   <code>java -Dj3d.rend=jogl ClassName</code>
 </ul>
 <p>You will need to <a href="https://jogl.dev.java.net/">download JOGL</a>
-and install it into the JRE along with the Java 3D jar files (or
+and install it into the JRE along with the Java&nbsp;3D jar files (or
 include it in your PATH/CLASSPATH).<br>
 </p>
-<p>Most Java 3D features are implemented in the JOGL pipeline, but the
+<p>Most Java&nbsp;3D features are implemented in the JOGL pipeline, but
+the
 following are known to be missing:<br>
 </p>
 <ul>
-  <li>Texture3D</li>
-  <li>TextureCubeMap</li>
   <li>Cg shading language<br>
   </li>
-  <li>Point Attributes</li>
-  <li>Line Attributes<br>
-  </li>
-  <li>GraphicsConfigTemplate3D options (a double-buffered, non-stereo,
-non-antialiased config is hard-coded)<br>
+  <li>Programmable shader vertex attributes<br>
   </li>
 </ul>
 <p>There may be others missing, as well. Any missing function will
@@ -162,16 +169,73 @@ print
 out a message of the form:<br>
 </p>
 <ul>
-  <code>JoglPipeline.bindTexture3D()</code>
+  <code>JoglPipeline.useCgShaderProgram()</code>
 </ul>
 <p>We would appreciate feedback on bugs or problems you run into.<br>
 </p>
-<h3><a name="Improvements_In_1_5_0"></a>Improvements in 1.5.0-build3</h3>
+<h3><a name="Improvements_In_1_5_0"></a>Improvements in 1.5.0-build4</h3>
 <h4>New Features / Enhancements</h4>
 <ul>
-  <li><a href="#JoglPipeline">JOGL Rendering Pipeline</a> (see above)<br>
+  <li><a href="RELEASE-NOTES-pre.html#JoglPipeline">JOGL Rendering
+Pipeline</a> mostly complete (see above) </li>
+</ul>
+<h4>Issues Fixed</h4>
+<br>
+<table style="text-align: left;" border="1" cellpadding="2"
+ cellspacing="0">
+  <tbody>
+    <tr>
+      <th style="text-align: right; vertical-align: top;">Issue<br>
+      </th>
+      <th style="vertical-align: top;">&nbsp;<br>
+      </th>
+      <th style="vertical-align: top;">Description<br>
+      </th>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">241<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Texture3D by Reference Fails<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">311<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Broken build for linux on ppc.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">320<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Shader Appearance update is
+asynchronous to transform update<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">321<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">bug in
+vecmath.Matrix3d.set(AxisAngle a1)<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<h3>Improvements in 1.5.0-build3</h3>
+<h4>New Features / Enhancements</h4>
+<ul>
+  <li>JOGL Rendering Pipeline<br>
   </li>
-  <li>Memory free lists for Java 3D messages, etc., are now disabled by
+  <li>Memory free lists for Java&nbsp;3D messages, etc., are now
+disabled by
 default (issue 123). We temporarily added a new system property,
 "j3d.useFreeLists", that can be set to true to re-enable memory free
 lists. We eventually plan to completely remove the memory free lists.<br>
