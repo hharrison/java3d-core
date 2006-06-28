@@ -41,6 +41,10 @@ import java.awt.image.RenderedImage;
  * ic.set(0, ri);<br>
  * </code>
  * </ul>
+ *
+ * <p>
+ * As of Java 3D 1.5, an ImageComponent3D accepts an array of NioImageBuffer
+ * objects as an alternative to an array of RenderedImage objects.
  */
 public class ImageComponent3D extends ImageComponent {
 
@@ -117,6 +121,26 @@ public class ImageComponent3D extends ImageComponent {
         for (int i=0; i<images.length; i++) {
             ((ImageComponent3DRetained)this.retained).set(i, images[i]);
         }
+    }
+
+    /**
+     * Constructs a 3D image component object using the specified format,
+     * and the NioImageBuffer array.
+     * Default values are used for all other parameters.
+     * @param format the image component format, one of: FORMAT_RGB,
+     * FORMAT_RGBA etc.
+     * @param images an array of NioImageBuffer objects.  The
+     * first image in the array determines the width and height of this
+     * ImageComponent3D.
+     * @exception IllegalArgumentException if format is invalid, or if
+     * the width or height of the first image are not positive.
+     *
+     * @since Java 3D 1.5
+     */
+    public ImageComponent3D(int format, NioImageBuffer[] images) {
+
+        // TODO: implement this
+        throw new RuntimeException("not implemented");
     }
 
     /**
@@ -227,6 +251,35 @@ public class ImageComponent3D extends ImageComponent {
     }
 
     /**
+     * Constructs a 3D image component object using the specified format,
+     * NioImageBuffer array, byReference flag, and yUp flag.
+     * Default values are used for all other parameters.
+     * @param format the image component format, one of: FORMAT_RGB,
+     * FORMAT_RGBA etc.
+     * @param images an array of NioImageBuffer objects.  The
+     * first image in the array determines the width and height of this
+     * ImageComponent3D.
+     * @param byReference a flag that indicates whether the data is copied
+     * into this image component object or is accessed by reference.
+     * @param yUp a flag that indicates the y-orientation of this image
+     * component.  If yUp is set to true, the origin of the image is
+     * the lower left; otherwise, the origin of the image is the upper
+     * left.
+     * @exception IllegalArgumentException if format is invalid, or if
+     * the width or height of the first image are not positive.
+     *
+     * @since Java 3D 1.5
+     */
+    public ImageComponent3D(int format,
+			    NioImageBuffer[] images,
+			    boolean byReference,
+			    boolean yUp) {
+
+        // TODO: implement this
+        throw new RuntimeException("not implemented");
+    }
+
+    /**
      * Retrieves the depth of this 3D image component object.
      * @return the format of this 3D image component object
      * @exception CapabilityNotSetException if appropriate capability is
@@ -298,6 +351,30 @@ public class ImageComponent3D extends ImageComponent {
     }
 
     /**
+     * Sets the array of images in this image component to the
+     * specified array of NioImageBuffer objects.  If the data access
+     * mode is not by-reference, then the NioImageBuffer data is copied
+     * into this object.  If the data access mode is by-reference,
+     * then a shallow copy of the array of references to the
+     * NioImageBuffer objects is made, but the NioImageBuffer
+     * data is not necessarily copied.
+     *
+     * @param images array of NioImageBuffer objects containing the image.
+     * The format and size must be the same as the current format in the
+     * image component.
+     *
+     * @exception CapabilityNotSetException if appropriate capability is
+     * not set and this object is part of live or compiled scene graph
+     *
+     * @since Java 3D 1.5
+     */
+    public void set(NioImageBuffer[] images) {
+
+        // TODO: implement this
+        throw new RuntimeException("not implemented");
+    }
+
+    /**
      * Sets this image component at the specified index to the
      * specified BufferedImage object.  If the data access mode is not
      * by-reference, then the BufferedImage data is copied into this
@@ -358,6 +435,31 @@ public class ImageComponent3D extends ImageComponent {
     }
 
     /**
+     * Sets this image component at the specified index to the
+     * specified NioImageBuffer object.  If the data access mode is not
+     * by-reference, then the NioImageBuffer data is copied into this
+     * object.  If the data access mode is by-reference, then a
+     * reference to the NioImageBuffer is saved, but the data is not
+     * necessarily copied.
+     *
+     * @param index the image index
+     * @param image NioImageBuffer object containing the image.
+     * The format and size must be the same as the current format in this
+     * ImageComponent3D object.  The index must not exceed the depth of this
+     * ImageComponent3D object.
+     *
+     * @exception CapabilityNotSetException if appropriate capability is
+     * not set and this object is part of live or compiled scene graph
+     *
+     * @since Java 3D 1.5
+     */
+    public void set(int index, NioImageBuffer image) {
+
+        // TODO: implement this
+        throw new RuntimeException("not implemented");
+    }
+
+    /**
      * Retrieves the images from this ImageComponent3D object.  If the
      * data access mode is not by-reference, then a copy of the images
      * is made.  If the data access mode is by-reference, then the
@@ -404,6 +506,28 @@ public class ImageComponent3D extends ImageComponent {
             if(!this.getCapability(ImageComponent.ALLOW_IMAGE_READ))
               throw new CapabilityNotSetException(J3dI18N.getString("ImageComponent3D3"));
 	return ((ImageComponent3DRetained)this.retained).getRenderedImage();
+    }
+
+    /**
+     * Retrieves the images from this ImageComponent3D object.  If the
+     * data access mode is not by-reference, then a copy of the images
+     * is made.  If the data access mode is by-reference, then the
+     * references are returned.
+     *
+     * @return either a new array of new RenderedImage objects created from
+     * the data
+     * in this image component, or a new array of
+     * references to the RenderedImages that this image component refers to.
+     *
+     * @exception CapabilityNotSetException if appropriate capability is
+     * not set and this object is part of live or compiled scene graph
+     *
+     * @since Java 3D 1.5
+     */
+    public NioImageBuffer[] getNioImage() {
+
+        // TODO: implement this
+        throw new RuntimeException("not implemented");
     }
 
     /**
@@ -456,6 +580,27 @@ public class ImageComponent3D extends ImageComponent {
             if(!this.getCapability(ImageComponent.ALLOW_IMAGE_READ))
              throw new CapabilityNotSetException(J3dI18N.getString("ImageComponent3D3"));
 	return ((ImageComponent3DRetained)this.retained).getImage(index);
+    }
+
+    /**
+     * Retrieves one of the images from this ImageComponent3D object.  If the
+     * data access mode is not by-reference, then a copy of the image
+     * is made.  If the data access mode is by-reference, then the
+     * reference is returned.
+     *
+     * @param index the index of the image to retrieve
+     * @return either a new NioImageBuffer object created from the data
+     * in this image component, or the NioImageBuffer object referenced
+     * by this image component.
+     * @exception CapabilityNotSetException if appropriate capability is
+     * not set and this object is part of live or compiled scene graph
+     *
+     * @since Java 3D 1.5
+     */
+    public NioImageBuffer getNioImage(int index) {
+
+        // TODO: implement this
+        throw new RuntimeException("not implemented");
     }
 
     /**
@@ -530,6 +675,59 @@ public class ImageComponent3D extends ImageComponent {
 
         ((ImageComponent3DRetained)this.retained).setSubImage(
                         index, image, width, height, srcX, srcY, dstX, dstY);
+    }
+
+    /**
+     * Modifies a contiguous subregion of a particular slice of
+     * image of this ImageComponent3D object.
+     * Block of data of dimension (width * height)
+     * starting at the offset (srcX, srcY) of the specified
+     * NioImageBuffer object will be copied into the particular slice of
+     * image component
+     * starting at the offset (dstX, dstY) of this ImageComponent3D object.
+     * The specified NioImageBuffer object must be of the same format as
+     * the current format of this object.
+     * This method can only be used if the data access mode is
+     * by-copy. If it is by-reference, see updateData().
+     *
+     * @param index index of the image to be modified. The index must not
+     * exceed the depth of the object.
+     * @param image NioImageBuffer object containing the subimage.
+     * @param width width of the subregion.
+     * @param height height of the subregion.
+     * @param srcX starting X offset of the subregion in the specified image.
+     * @param srcY starting Y offset of the subregion in the specified image.
+     * @param dstX startin X offset of the subregion in the image
+     * component of this object.
+     * @param dstY starting Y offset of the subregion in the image
+     * component of this object.
+     *
+     * @exception CapabilityNotSetException if appropriate capability is
+     * not set and this object is part of live or compiled scene graph
+     * @exception IllegalStateException if the data access mode is
+     * <code>BY_REFERENCE</code>.
+     * @exception IllegalArgumentException if <code>width</code> or
+     * <code>height</code> of
+     * the subregion exceeds the dimension of the image in this object.
+     * @exception IllegalArgumentException if <code>dstX</code> < 0, or
+     * (<code>dstX</code> + <code>width</code>) > width of this object, or
+     * <code>dstY</code> < 0, or
+     * (<code>dstY</code> + <code>height</code>) > height of this object.
+     * @exception IllegalArgumentException if <code>srcX</code> < 0, or
+     * (<code>srcX</code> + <code>width</code>) > width of the NioImageBuffer
+     * object containing the subimage, or
+     * <code>srcY</code> < 0, or
+     * (<code>srcY</code> + <code>height</code>) > height of the
+     * NioImageBuffer object containing the subimage.
+     *
+     * @since Java 3D 1.5
+     */
+    public void setSubImage(int index, NioImageBuffer image,
+				int width, int height,
+                                int srcX, int srcY, int dstX, int dstY) {
+
+        // TODO: implement this
+        throw new RuntimeException("not implemented");
     }
 
     /**

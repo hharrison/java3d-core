@@ -3367,6 +3367,7 @@ public class Canvas3D extends Canvas {
      * LINEAR_DETAIL_RGB as the texture magnification filter mode will
      * be ignored. The texture magnification filter mode in effect will
      * be BASE_LEVEL_LINEAR.
+     * As of Java 3D 1.5, this property is always false.
      * </ul>
      * </li>
      *

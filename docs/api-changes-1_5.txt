@@ -27,8 +27,7 @@ I. New/deprecated fields, constructors, methods
     ----------------
     New constructors:
         public ImageComponent2D(int format, NioImageBuffer image)
-        public ImageComponent2D(int format,
-				NioImageBuffer image,
+        public ImageComponent2D(int format, NioImageBuffer image,
 				boolean byReference, boolean yUp)
 
     New methods:
@@ -36,6 +35,47 @@ I. New/deprecated fields, constructors, methods
         public NioImageBuffer getNioImage()
         public void setSubImage(NioImageBuffer image, int width, int height,
 				int srcX, int srcY, int dstX, int dstY
+
+
+    ImageComponent3D
+    ----------------
+    New constructors:
+        public ImageComponent3D(int format, NioImageBuffer[] images)
+        public ImageComponent3D(int format, NioImageBuffer[] images,
+                                boolean byReference, boolean yUp)
+
+    New methods:
+        public void set(NioImageBuffer[] images)
+        public void set(int index, NioImageBuffer image)
+        public NioImageBuffer[] getNioImage()
+        public NioImageBuffer getNioImage(int index)
+        public void setSubImage(int index, NioImageBuffer image,
+				int width, int height,
+                                int srcX, int srcY, int dstX, int dstY)
+
+
+    Texture2D
+    ---------
+    Deprecated fields:
+        public static final int ALLOW_DETAIL_TEXTURE_READ
+        public static final int LINEAR_DETAIL
+        public static final int LINEAR_DETAIL_RGB
+        public static final int LINEAR_DETAIL_ALPHA
+        public static final int DETAIL_ADD
+        public static final int DETAIL_MODULATE
+
+    Deprecated methods:
+        public void setDetailImage(ImageComponent2D detailTexture)
+        public ImageComponent2D getDetailImage()
+        public void setDetailTextureMode(int mode)
+        public int getDetailTextureMode()
+        public void setDetailTextureLevel(int level)
+        public int getDetailTextureLevel()
+        public void setDetailTextureFunc(float[] lod, float[] pts)
+        public void setDetailTextureFunc(Point2f[] pts)
+        public int getDetailTextureFuncPointsCount()
+        public void getDetailTextureFunc(float[] lod, float[] pts)
+        public void getDetailTextureFunc(Point2f[] pts)
 
 
 II. Reparented classes

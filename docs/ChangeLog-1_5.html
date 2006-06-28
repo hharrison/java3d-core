@@ -19,8 +19,8 @@ java.net.</p>
 </p>
 <ol>
   <li><a href="#NPOT_Textures">Non-power-of-two textures</a></li>
-  <li><a href="#NIO_Image_Buffer">NIO image buffer support for textures</a><br>
-  </li>
+  <li><a href="#NIO_Image_Buffer">NIO image buffer support for textures</a></li>
+  <li><a href="#Deprecated_API">Deprecated API</a></li>
 </ol>
 <p>For a complete description of these changes, please see the
 proposed API specification (javadoc) for the 1.5 version of the
@@ -48,8 +48,8 @@ textures</h3>
 <p>We propose to create a new javax.media.j3d.NioImageBuffer class, a
 wrapper for an image whose DataBuffer
 is specified via an appropriate subclass of java.nio.Buffer:
-ByteBuffer, ShortBuffer, or IntBuffer,
-depending on the type of image. When using ShortBuffer or IntBuffer,
+ByteBuffer or IntBuffer,
+depending on the type of image. When using IntBuffer,
 the byte order of the buffer must match the native byte order of the
 underlying platform.
 </p>
@@ -81,9 +81,66 @@ New methods:<br>
 width, int height,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int
 srcX, int srcY, int dstX, int dstY<br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">ImageComponent3D</span><br>
+New constructors:<br>
+&nbsp;&nbsp;&nbsp; public ImageComponent3D(int format, NioImageBuffer[]
+images)<br>
+&nbsp;&nbsp;&nbsp; public ImageComponent3D(int format, NioImageBuffer[]
+images,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+boolean byReference, boolean yUp)<br>
+  <br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp; public void set(NioImageBuffer[] images)<br>
+&nbsp;&nbsp;&nbsp; public void set(int index, NioImageBuffer image)<br>
+&nbsp;&nbsp;&nbsp; public NioImageBuffer[] getNioImage()<br>
+&nbsp;&nbsp;&nbsp; public NioImageBuffer getNioImage(int index)<br>
+&nbsp;&nbsp;&nbsp; public void setSubImage(int index, NioImageBuffer
+image,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+int width, int height,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+int srcX, int srcY, int dstX, int dstY)<br>
   </code>
 </ul>
 <p><br>
+</p>
+<h3><a name="Deprecated_API"></a>3. Deprecated API<br>
+</h3>
+<p>We propose to deprecate the following fields and methods relating to
+the obsolete detail texture functionality.
+</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;">Texture2D</span><br>
+Deprecated fields:<br>
+&nbsp;&nbsp;&nbsp; public static final int ALLOW_DETAIL_TEXTURE_READ<br>
+&nbsp;&nbsp;&nbsp; public static final int LINEAR_DETAIL<br>
+&nbsp;&nbsp;&nbsp; public static final int LINEAR_DETAIL_RGB<br>
+&nbsp;&nbsp;&nbsp; public static final int LINEAR_DETAIL_ALPHA<br>
+&nbsp;&nbsp;&nbsp; public static final int DETAIL_ADD<br>
+&nbsp;&nbsp;&nbsp; public static final int DETAIL_MODULATE<br>
+  <br>
+Deprecated methods:<br>
+&nbsp;&nbsp;&nbsp; public void setDetailImage(ImageComponent2D
+detailTexture)<br>
+&nbsp;&nbsp;&nbsp; public ImageComponent2D getDetailImage()<br>
+&nbsp;&nbsp;&nbsp; public void setDetailTextureMode(int mode)<br>
+&nbsp;&nbsp;&nbsp; public int getDetailTextureMode()<br>
+&nbsp;&nbsp;&nbsp; public void setDetailTextureLevel(int level)<br>
+&nbsp;&nbsp;&nbsp; public int getDetailTextureLevel()<br>
+&nbsp;&nbsp;&nbsp; public void setDetailTextureFunc(float[] lod,
+float[] pts)<br>
+&nbsp;&nbsp;&nbsp; public void setDetailTextureFunc(Point2f[] pts)<br>
+&nbsp;&nbsp;&nbsp; public int getDetailTextureFuncPointsCount()<br>
+&nbsp;&nbsp;&nbsp; public void getDetailTextureFunc(float[] lod,
+float[] pts)<br>
+&nbsp;&nbsp;&nbsp; public void getDetailTextureFunc(Point2f[] pts)<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<p>
 </p>
 <h2>II. Accepted Changes</h2>
 <p><br>
