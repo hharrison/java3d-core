@@ -20,6 +20,9 @@ java.net.</p>
 <ol>
   <li><a href="#NPOT_Textures">Non-power-of-two textures</a></li>
   <li><a href="#NIO_Image_Buffer">NIO image buffer support for textures</a></li>
+  <li><a href="#By_Ref_Indices">By-reference support for geometry
+indices</a><br>
+  </li>
   <li><a href="#Deprecated_API">Deprecated API</a></li>
 </ol>
 <p>For a complete description of these changes, please see the
@@ -106,7 +109,40 @@ int srcX, int srcY, int dstX, int dstY)<br>
 </ul>
 <p><br>
 </p>
-<h3><a name="Deprecated_API"></a>3. Deprecated API<br>
+<h3><a name="By_Ref_Indices"></a>3. By-reference support for geometry
+indices<br>
+</h3>
+<p>We propose to add support for setting the coordinate indices
+of IndexedGeometryArray objects "by-reference". Currently, the
+coordinate indices array is
+set "by-copy" even for by-reference geometry, resulting in excessive
+memory usage. Though the
+excess memory usage is temporary, since it happens only at the time
+of creating an internal copy of the user-specified indices array,
+nevertheless it can turn out to be of significant concern especially
+for very large geometries or for dynamically changing geometry. The
+fact that the
+graphics drivers have long supported this feature makes the
+incorporation of this feature attractive, as
+it entails no special hardware support.<br>
+</p>
+<p>New fields and methods:<br>
+</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;">GeometryArray</span><br>
+New fields:<br>
+&nbsp;&nbsp;&nbsp; public static final int BY_REFERENCE_INDICES<br>
+  <br>
+  <span style="text-decoration: underline; font-weight: bold;">IndexedGeometryArray</span><br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp; public void setCoordIndicesRef(int
+coordIndices[])<br>
+&nbsp;&nbsp;&nbsp; public int[] getCoordIndicesRef()<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3><a name="Deprecated_API"></a>4. Deprecated API<br>
 </h3>
 <p>We propose to deprecate the following fields and methods relating to
 the obsolete detail texture functionality.

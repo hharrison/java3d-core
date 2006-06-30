@@ -6175,6 +6175,17 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 	    }
 	}
+
+    //NVaidya
+    // User may or may not have changed indices in updater callback. 
+    // We need to presume that the user may indeed have and, thus, will 
+    // need to recompute maxCoordIndex unconditionally while
+    // geomLock is still locked. 
+    if ((this instanceof IndexedGeometryArrayRetained) &&
+        (vertexFormat & GeometryArray.BY_REFERENCE_INDICES) != 0) {
+        ((IndexedGeometryArrayRetained)this).doPostUpdaterUpdate();
+    }
+
 	dirtyFlag |= VERTEX_CHANGED; 
 	colorChanged = 0xffff;
 	geomLock.unLock();

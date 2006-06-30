@@ -78,6 +78,19 @@ I. New/deprecated fields, constructors, methods
         public void getDetailTextureFunc(Point2f[] pts)
 
 
+    GeometryArray
+    -------------
+    New fields:
+        public static final int BY_REFERENCE_INDICES
+
+
+    IndexedGeometryArray
+    --------------------
+    New methods:
+        public void setCoordIndicesRef(int coordIndices[])
+        public int[] getCoordIndicesRef()
+
+
 II. Reparented classes
 
 
