@@ -29,96 +29,121 @@ class JoglContext implements Context {
   private int currentCombinerUnit;
   private boolean hasMultisample;
 
+  // Needed for vertex attribute implementation
+  private JoglShaderObject shaderProgram;
+
   // Implementation of vertex attribute methods
   static interface VertexAttributeImpl {
-    // FIXME: more strongly type the "object" arguments to these methods
-    // Need a JOGL-specific ShaderProgram implementation to map
-    // e.g. int indices to CGparameters
-    public void vertexAttrPointer(GL gl, Object program,
+    public void vertexAttrPointer(GL gl,
                                   int index, int size, int type, int stride, Buffer pointer);
-    public void enableVertexAttrArray(GL gl, Object program, int index);
-    public void disableVertexAttrArray(GL gl, Object program, int index);
-    public void vertexAttr1fv(GL gl, Object program, int index, FloatBuffer buf);
-    public void vertexAttr2fv(GL gl, Object program, int index, FloatBuffer buf);
-    public void vertexAttr3fv(GL gl, Object program, int index, FloatBuffer buf);
-    public void vertexAttr4fv(GL gl, Object program, int index, FloatBuffer buf);
+    public void enableVertexAttrArray(GL gl, int index);
+    public void disableVertexAttrArray(GL gl, int index);
+    public void vertexAttr1fv(GL gl, int index, FloatBuffer buf);
+    public void vertexAttr2fv(GL gl, int index, FloatBuffer buf);
+    public void vertexAttr3fv(GL gl, int index, FloatBuffer buf);
+    public void vertexAttr4fv(GL gl, int index, FloatBuffer buf);
   }
   private VertexAttributeImpl vertexAttrImpl;
 
-  static class CgVertexAttributeImpl implements VertexAttributeImpl {
-    public void vertexAttrPointer(GL gl, Object program,
+  class CgVertexAttributeImpl implements VertexAttributeImpl {
+    public void vertexAttrPointer(GL gl,
                                   int index, int size, int type, int stride, Buffer pointer) {
-      // FIXME
-      throw new RuntimeException("Not yet implemented");
+      JoglCgShaderProgramInfo shaderProgramInfo = (JoglCgShaderProgramInfo) shaderProgram;
+      if (shaderProgramInfo != null && index < shaderProgramInfo.getNumVertexAttributes()) {
+        CgGL.cgGLSetParameterPointer(shaderProgramInfo.getVertexAttributes()[index],
+                                     size, type, stride, pointer);
+      } else {
+        if (shaderProgramInfo == null) {
+          System.err.println("    shaderProgramInfo is null");
+        } else {
+          System.err.println("    index (" + index + ") out of range: numVtxAttrs = " +
+                             shaderProgramInfo.getNumVertexAttributes());
+        }
+      }
     }
 
-    public void enableVertexAttrArray(GL gl, Object program, int index) {
-      // FIXME
-      throw new RuntimeException("Not yet implemented");
+    public void enableVertexAttrArray(GL gl, int index) {
+      JoglCgShaderProgramInfo shaderProgramInfo = (JoglCgShaderProgramInfo) shaderProgram;
+      if (shaderProgramInfo != null && index < shaderProgramInfo.getNumVertexAttributes()) {
+        CgGL.cgGLEnableClientState(shaderProgramInfo.getVertexAttributes()[index]);
+      } else {
+        if (shaderProgramInfo == null) {
+          System.err.println("    shaderProgramInfo is null");
+        } else {
+          System.err.println("    index (" + index + ") out of range: numVtxAttrs = " +
+                             shaderProgramInfo.getNumVertexAttributes());
+        }
+      }
     }
 
-    public void disableVertexAttrArray(GL gl, Object program, int index) {
-      // FIXME
-      throw new RuntimeException("Not yet implemented");
+    public void disableVertexAttrArray(GL gl, int index) {
+      JoglCgShaderProgramInfo shaderProgramInfo = (JoglCgShaderProgramInfo) shaderProgram;
+      if (shaderProgramInfo != null && index < shaderProgramInfo.getNumVertexAttributes()) {
+        CgGL.cgGLDisableClientState(shaderProgramInfo.getVertexAttributes()[index]);
+      } else {
+        if (shaderProgramInfo == null) {
+          System.err.println("    shaderProgramInfo is null");
+        } else {
+          System.err.println("    index (" + index + ") out of range: numVtxAttrs = " +
+                             shaderProgramInfo.getNumVertexAttributes());
+        }
+      }
     }
 
     // NOTE: we should never get here. These functions are only called
     // when building display lists for geometry arrays with vertex
     // attributes, and such display lists are disabled in Cg mode.
-    public void vertexAttr1fv(GL gl, Object program, int index, FloatBuffer buf) {
+    public void vertexAttr1fv(GL gl, int index, FloatBuffer buf) {
       throw new RuntimeException("Java 3D ERROR : Assertion failed: invalid call to cgVertexAttr1fv");
     }
 
-    public void vertexAttr2fv(GL gl, Object program, int index, FloatBuffer buf) {
+    public void vertexAttr2fv(GL gl, int index, FloatBuffer buf) {
       throw new RuntimeException("Java 3D ERROR : Assertion failed: invalid call to cgVertexAttr2fv");
     }
 
-    public void vertexAttr3fv(GL gl, Object program, int index, FloatBuffer buf) {
+    public void vertexAttr3fv(GL gl, int index, FloatBuffer buf) {
       throw new RuntimeException("Java 3D ERROR : Assertion failed: invalid call to cgVertexAttr3fv");
     }
 
-    public void vertexAttr4fv(GL gl, Object program, int index, FloatBuffer buf) {
+    public void vertexAttr4fv(GL gl, int index, FloatBuffer buf) {
       throw new RuntimeException("Java 3D ERROR : Assertion failed: invalid call to cgVertexAttr4fv");
     }
   }
 
-  static class GLSLVertexAttributeImpl implements VertexAttributeImpl {
-    public void vertexAttrPointer(GL gl, Object program,
+  class GLSLVertexAttributeImpl implements VertexAttributeImpl {
+    public void vertexAttrPointer(GL gl,
                                   int index, int size, int type, int stride, Buffer pointer) {
-      // FIXME
-      throw new RuntimeException("Not yet implemented");
+      gl.glVertexAttribPointerARB(index + glslVertexAttrOffset,
+                                  size, type, false, stride, pointer);
     }
 
-    public void enableVertexAttrArray(GL gl, Object program, int index) {
-      // FIXME
-      throw new RuntimeException("Not yet implemented");
+    public void enableVertexAttrArray(GL gl, int index) {
+      gl.glEnableVertexAttribArrayARB(index + glslVertexAttrOffset);
     }
 
-    public void disableVertexAttrArray(GL gl, Object program, int index) {
-      // FIXME
-      throw new RuntimeException("Not yet implemented");
+    public void disableVertexAttrArray(GL gl, int index) {
+      gl.glDisableVertexAttribArrayARB(index + glslVertexAttrOffset);
     }
 
-    public void vertexAttr1fv(GL gl, Object program, int index, FloatBuffer buf) {
-      // FIXME
-      throw new RuntimeException("Not yet implemented");
+    public void vertexAttr1fv(GL gl, int index, FloatBuffer buf) {
+      gl.glVertexAttrib1fvARB(index + glslVertexAttrOffset, buf);
     }
 
-    public void vertexAttr2fv(GL gl, Object program, int index, FloatBuffer buf) {
-      // FIXME
-      throw new RuntimeException("Not yet implemented");
+    public void vertexAttr2fv(GL gl, int index, FloatBuffer buf) {
+      gl.glVertexAttrib2fvARB(index + glslVertexAttrOffset, buf);
     }
 
-    public void vertexAttr3fv(GL gl, Object program, int index, FloatBuffer buf) {
-      // FIXME
-      throw new RuntimeException("Not yet implemented");
+    public void vertexAttr3fv(GL gl, int index, FloatBuffer buf) {
+      gl.glVertexAttrib3fvARB(index + glslVertexAttrOffset, buf);
     }
 
-    public void vertexAttr4fv(GL gl, Object program, int index, FloatBuffer buf) {
-      // FIXME
-      throw new RuntimeException("Not yet implemented");
+    public void vertexAttr4fv(GL gl, int index, FloatBuffer buf) {
+      gl.glVertexAttrib4fvARB(index + glslVertexAttrOffset, buf);
     }
   }
+
+  // Only used when GLSL shader library is active
+  private int        glslVertexAttrOffset;
 
   // Only used when Cg shader library is active
   private CGcontext  cgContext; 
@@ -159,34 +184,42 @@ class JoglContext implements Context {
     vertexAttrImpl = new GLSLVertexAttributeImpl();
   }
 
-  void vertexAttrPointer(GL gl, Object program,
+  void vertexAttrPointer(GL gl,
                          int index, int size, int type, int stride, Buffer pointer) {
-    vertexAttrImpl.vertexAttrPointer(gl, program, index, size, type, stride, pointer);    
+    vertexAttrImpl.vertexAttrPointer(gl, index, size, type, stride, pointer);
   }
 
-  void enableVertexAttrArray(GL gl, Object program, int index) {
-    vertexAttrImpl.enableVertexAttrArray(gl, program, index);
+  void enableVertexAttrArray(GL gl, int index) {
+    vertexAttrImpl.enableVertexAttrArray(gl, index);
   }
 
-  void disableVertexAttrArray(GL gl, Object program, int index) {
-    vertexAttrImpl.disableVertexAttrArray(gl, program, index);
+  void disableVertexAttrArray(GL gl, int index) {
+    vertexAttrImpl.disableVertexAttrArray(gl, index);
   }
 
-  void vertexAttr1fv(GL gl, Object program, int index, FloatBuffer buf) {
-    vertexAttrImpl.vertexAttr1fv(gl, program, index, buf);
+  void vertexAttr1fv(GL gl, int index, FloatBuffer buf) {
+    vertexAttrImpl.vertexAttr1fv(gl, index, buf);
   }
 
-  void vertexAttr2fv(GL gl, Object program, int index, FloatBuffer buf) {
-    vertexAttrImpl.vertexAttr2fv(gl, program, index, buf);
+  void vertexAttr2fv(GL gl, int index, FloatBuffer buf) {
+    vertexAttrImpl.vertexAttr2fv(gl, index, buf);
   }
 
-  void vertexAttr3fv(GL gl, Object program, int index, FloatBuffer buf) {
-    vertexAttrImpl.vertexAttr3fv(gl, program, index, buf);
+  void vertexAttr3fv(GL gl, int index, FloatBuffer buf) {
+    vertexAttrImpl.vertexAttr3fv(gl, index, buf);
   }
 
-  void vertexAttr4fv(GL gl, Object program, int index, FloatBuffer buf) {
-    vertexAttrImpl.vertexAttr4fv(gl, program, index, buf);
+  void vertexAttr4fv(GL gl, int index, FloatBuffer buf) {
+    vertexAttrImpl.vertexAttr4fv(gl, index, buf);
   }
+
+  // Used in vertex attribute implementation
+  JoglShaderObject getShaderProgram()                        { return shaderProgram;   }
+  void             setShaderProgram(JoglShaderObject object) { shaderProgram = object; }
+
+  // Only used when GLSL shaders are in use
+  int  getGLSLVertexAttrOffset()           { return glslVertexAttrOffset;   }
+  void setGLSLVertexAttrOffset(int offset) { glslVertexAttrOffset = offset; }
 
   // Only used when Cg shaders are in use
   CGcontext getCgContext()              { return cgContext;           }

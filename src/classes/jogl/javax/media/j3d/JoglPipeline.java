@@ -173,8 +173,7 @@ class JoglPipeline extends Pipeline {
 
       // Get vertex attribute arrays
       if (vattrDefined) {
-        // FIXME
-        throw new RuntimeException("Vertex attributes not implemented yet");
+        vertexAttrBufs = getVertexAttrSetBuffer(vertexAttrData);
       }
       
       // get texture arrays
@@ -268,8 +267,7 @@ class JoglPipeline extends Pipeline {
 
       // Get vertex attribute arrays
       if (vattrDefined) {
-        // FIXME
-        throw new RuntimeException("Vertex attributes not implemented yet");
+        vertexAttrBufs = getVertexAttrSetBuffer(vertexAttrData);
       }
 
       // get texture arrays
@@ -421,7 +419,9 @@ class JoglPipeline extends Pipeline {
             double[] xform, double[] nxform,
             float[] varray) {
       if (VERBOSE) System.err.println("JoglPipeline.buildGA()");
+      JoglContext jctx = (JoglContext) ctx;
       GL gl = context(ctx).getGL();
+      FloatBuffer verts = null;
       int stride = 0, coordoff = 0, normoff = 0, coloroff = 0, texCoordoff = 0;
       int texStride = 0;
       int vAttrOff = 0;
@@ -554,33 +554,32 @@ class JoglPipeline extends Pipeline {
             }
 
             if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-              // FIXME
-              throw new RuntimeException("Vertex attributes not implemented yet");
+              int vaOff = vAttrOff;
+              if (verts == null) {
+                verts = FloatBuffer.wrap(varray);
+              }
+              for (int vaIdx = 0; vaIdx < vertexAttrCount; vaIdx++) {
+                switch (vertexAttrSizes[vaIdx]) {
+                  case 1:
+                    verts.position(vaOff);
+                    jctx.vertexAttr1fv(gl, vaIdx, verts);
+                    break;
+                  case 2:
+                    verts.position(vaOff);
+                    jctx.vertexAttr2fv(gl, vaIdx, verts);
+                    break;
+                  case 3:
+                    verts.position(vaOff);
+                    jctx.vertexAttr3fv(gl, vaIdx, verts);
+                    break;
+                  case 4:
+                    verts.position(vaOff);
+                    jctx.vertexAttr4fv(gl, vaIdx, verts);
+                    break;
+                }
 
-              /*
-		    int vaIdx, vaOff;
-
-		    vaOff = vAttrOff;
-		    for (vaIdx = 0; vaIdx < vertexAttrCount; vaIdx++) {
-			switch (vAttrSizesPtr[vaIdx]) {
-			case 1:
-			    ctxProperties->vertexAttr1fv(ctxProperties, vaIdx, &verts[vaOff]);
-			    break;
-			case 2:
-			    ctxProperties->vertexAttr2fv(ctxProperties, vaIdx, &verts[vaOff]);
-			    break;
-			case 3:
-			    ctxProperties->vertexAttr3fv(ctxProperties, vaIdx, &verts[vaOff]);
-			    break;
-			case 4:
-			    ctxProperties->vertexAttr4fv(ctxProperties, vaIdx, &verts[vaOff]);
-			    break;
-			}
-
-			vaOff += vAttrSizesPtr[vaIdx];
-		    }
-		}
-              */
+                vaOff += vertexAttrSizes[vaIdx];
+              }
             }
             
             if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
@@ -739,34 +738,32 @@ class JoglPipeline extends Pipeline {
           }
 
           if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-            // FIXME
-            throw new RuntimeException("Vertex attributes not implemented yet");
-
-            /*
-
-            int vaIdx, vaOff;
-
-            vaOff = vAttrOff;
-            for (vaIdx = 0; vaIdx < vertexAttrCount; vaIdx++) {
-              switch (vAttrSizesPtr[vaIdx]) {
-              case 1:
-                ctxProperties->vertexAttr1fv(ctxProperties, vaIdx, &verts[vaOff]);
-                break;
-              case 2:
-                ctxProperties->vertexAttr2fv(ctxProperties, vaIdx, &verts[vaOff]);
-                break;
-              case 3:
-                ctxProperties->vertexAttr3fv(ctxProperties, vaIdx, &verts[vaOff]);
-                break;
-              case 4:
-                ctxProperties->vertexAttr4fv(ctxProperties, vaIdx, &verts[vaOff]);
-                break;
+            int vaOff = vAttrOff;
+            if (verts == null) {
+              verts = FloatBuffer.wrap(varray);
+            }
+            for (int vaIdx = 0; vaIdx < vertexAttrCount; vaIdx++) {
+              switch (vertexAttrSizes[vaIdx]) {
+                case 1:
+                  verts.position(vaOff);
+                  jctx.vertexAttr1fv(gl, vaIdx, verts);
+                  break;
+                case 2:
+                  verts.position(vaOff);
+                  jctx.vertexAttr2fv(gl, vaIdx, verts);
+                  break;
+                case 3:
+                  verts.position(vaOff);
+                  jctx.vertexAttr3fv(gl, vaIdx, verts);
+                  break;
+                case 4:
+                  verts.position(vaOff);
+                  jctx.vertexAttr4fv(gl, vaIdx, verts);
+                  break;
               }
 
-              vaOff += vAttrSizesPtr[vaIdx];
-              }
-
-            */
+              vaOff += vertexAttrSizes[vaIdx];
+            }
           }
 
           if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
@@ -896,8 +893,7 @@ class JoglPipeline extends Pipeline {
 
       // Get vertex attribute arrays
       if (vattrDefined) {
-        // FIXME
-        throw new RuntimeException("Vertex attributes not implemented yet");
+        vertexAttrBufs = getVertexAttrSetBuffer(vertexAttrData);
       }
 
       // get texture arrays
@@ -1363,19 +1359,14 @@ class JoglPipeline extends Pipeline {
         }
 
         if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-          // FIXME
-          throw new RuntimeException("Vertex attributes not implemented yet");
-
-          /*
-            jfloat *vAttrPtr = &verts[vAttrOff];
-
-            for (i = 0; i < vertexAttrCount; i++) {
-            ctxProperties->enableVertexAttrArray(ctxProperties, i);
-            ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
-            GL_FLOAT, bstride, vAttrPtr);
-            vAttrPtr += vAttrSizesPtr[i];
-            }
-          */
+          int vAttrOffset = startVertex + vAttrOff;
+          for (int i = 0; i < vertexAttrCount; i++) {
+            ctx.enableVertexAttrArray(gl, i);
+            verts.position(vAttrOffset);
+            ctx.vertexAttrPointer(gl, i, vertexAttrSizes[i],
+                                  GL.GL_FLOAT, bstride, verts);
+            vAttrOffset += vertexAttrSizes[i];
+          }
         }
       }
 
@@ -1454,19 +1445,14 @@ class JoglPipeline extends Pipeline {
         }
 
         if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-          // FIXME
-          throw new RuntimeException("Vertex attributes not implemented yet");
-
-          /*
-            jfloat *vAttrPtr = &verts[vAttrOff];
-
-            for (i = 0; i < vertexAttrCount; i++) {
-            ctxProperties->enableVertexAttrArray(ctxProperties, i);
-            ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
-            GL_FLOAT, bstride, vAttrPtr);
-            vAttrPtr += vAttrSizesPtr[i];
-            }
-          */
+          int vAttrOffset = startVertex + vAttrOff;
+          for (int i = 0; i < vertexAttrCount; i++) {
+            ctx.enableVertexAttrArray(gl, i);
+            verts.position(vAttrOffset);
+            ctx.vertexAttrPointer(gl, i, vertexAttrSizes[i],
+                                  GL.GL_FLOAT, bstride, verts);
+            vAttrOffset += vertexAttrSizes[i];
+          }
         }
       }
       switch (geo_type){
@@ -1483,9 +1469,7 @@ class JoglPipeline extends Pipeline {
     }
         
     if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-      // FIXME
-      throw new RuntimeException("Vertex attributes not implemented yet");
-      // resetVertexAttrs(ctxInfo, vertexAttrCount);
+      resetVertexAttrs(gl, ctx, vertexAttrCount);
     }
 
     if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
@@ -1590,30 +1574,14 @@ class JoglPipeline extends Pipeline {
     }
 
     if (vattrDefined) {
-      // FIXME
-      throw new RuntimeException("Vertex attributes not implemented yet");
-
-      /*
-	float *pVertexAttrs;
-	int sz, initIdx;
-
-	vAttrSizes = (jint *) (*(table->GetPrimitiveArrayCritical))(env, vertexAttrSizes, NULL);
-	initialVAttrIndices = (jint *) (*(table->GetPrimitiveArrayCritical))(env, vertexAttrIndices, NULL);
-
-	for (i = 0; i < vertexAttrCount; i++) {
-	    pVertexAttrs = vertexAttrPointer[i];
-	    sz = vAttrSizes[i];
-	    initIdx = initialVAttrIndices[i];
-
-	    ctxProperties->enableVertexAttrArray(ctxProperties, i);
-	    ctxProperties->vertexAttrPointer(ctxProperties, i, sz,
-					     GL_FLOAT, 0,
-					     &pVertexAttrs[initIdx * sz]);
-	}
-
-	(*(table->ReleasePrimitiveArrayCritical))(env, vertexAttrSizes, vAttrSizes, 0);
-	(*(table->ReleasePrimitiveArrayCritical))(env, vertexAttrIndices, initialVAttrIndices, 0);
-      */
+      for (int i = 0; i < vertexAttrCount; i++) {
+        FloatBuffer vertexAttrs = vertexAttrData[i];
+        int sz = vertexAttrSizes[i];
+        int initIdx = vertexAttrIndices[i];
+        ctx.enableVertexAttrArray(gl, i);
+        vertexAttrs.position(initIdx * sz);
+        ctx.vertexAttrPointer(gl, i, sz, GL.GL_FLOAT, 0, vertexAttrs);
+      }
     }
 
     if (textureDefined) {
@@ -1674,9 +1642,7 @@ class JoglPipeline extends Pipeline {
     }
 
     if (vattrDefined) {
-      // FIXME
-      throw new RuntimeException("Vertex attributes not implemented yet");
-      // resetVertexAttrs(ctxInfo, vertexAttrCount);
+      resetVertexAttrs(gl, ctx, vertexAttrCount);
     }
 
     if (textureDefined) {
@@ -1708,6 +1674,13 @@ class JoglPipeline extends Pipeline {
       case GeometryRetained.GEO_TYPE_POINT_SET     : return "GEO_TYPE_POINT_SET";
       case GeometryRetained.GEO_TYPE_LINE_SET      : return "GEO_TYPE_LINE_SET";
       default: return "(unknown " + geo_type + ")";
+    }
+  }
+
+  private void resetVertexAttrs(GL gl, JoglContext ctx, int vertexAttrCount) {
+    // Disable specified vertex attr arrays
+    for (int i = 0; i < vertexAttrCount; i++) {
+      ctx.disableVertexAttrArray(gl, i);
     }
   }
 
@@ -1823,8 +1796,7 @@ class JoglPipeline extends Pipeline {
 
       // Get vertex attribute arrays
       if (vattrDefined) {
-        // FIXME
-        throw new RuntimeException("Vertex attributes not implemented yet");
+        vertexAttrBufs = getVertexAttrSetBuffer(vertexAttrData);
       }
 
       // get texture arrays
@@ -1918,8 +1890,7 @@ class JoglPipeline extends Pipeline {
 
       // Get vertex attribute arrays
       if (vattrDefined) {
-        // FIXME
-        throw new RuntimeException("Vertex attributes not implemented yet");
+        vertexAttrBufs = getVertexAttrSetBuffer(vertexAttrData);
       }
 
       // get texture arrays
@@ -2167,19 +2138,14 @@ class JoglPipeline extends Pipeline {
                            verts, gl);
           }
           if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-            // FIXME
-            throw new RuntimeException("Vertex attributes not implemented yet");
-
-          /*
-            jfloat *vAttrPtr = &verts[vAttrOff];
-
-            for (i = 0; i < vertexAttrCount; i++) {
-            ctxProperties->enableVertexAttrArray(ctxProperties, i);
-            ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
-            GL_FLOAT, bstride, vAttrPtr);
-            vAttrPtr += vAttrSizesPtr[i];
+            int vAttrOffset = vAttrOff;
+            for (int i = 0; i < vertexAttrCount; i++) {
+              ctx.enableVertexAttrArray(gl, i);
+              verts.position(vAttrOffset);
+              ctx.vertexAttrPointer(gl, i, vertexAttrSizes[i],
+                                    GL.GL_FLOAT, bstride, verts);
+              vAttrOffset += vertexAttrSizes[i];
             }
-          */
           }
         }
 
@@ -2256,19 +2222,14 @@ class JoglPipeline extends Pipeline {
                            verts, gl);
           }
           if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-            // FIXME
-            throw new RuntimeException("Vertex attributes not implemented yet");
-
-          /*
-            jfloat *vAttrPtr = &verts[vAttrOff];
-
-            for (i = 0; i < vertexAttrCount; i++) {
-            ctxProperties->enableVertexAttrArray(ctxProperties, i);
-            ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
-            GL_FLOAT, bstride, vAttrPtr);
-            vAttrPtr += vAttrSizesPtr[i];
+            int vAttrOffset = vAttrOff;
+            for (int i = 0; i < vertexAttrCount; i++) {
+              ctx.enableVertexAttrArray(gl, i);
+              verts.position(vAttrOffset);
+              ctx.vertexAttrPointer(gl, i, vertexAttrSizes[i],
+                                    GL.GL_FLOAT, bstride, verts);
+              vAttrOffset += vertexAttrSizes[i];
             }
-          */
           }
 
           switch (geo_type) {
@@ -2297,9 +2258,7 @@ class JoglPipeline extends Pipeline {
       unlockArray(gl);
 
       if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-        // FIXME
-        throw new RuntimeException("Vertex attributes not implemented yet");
-        // resetVertexAttrs(ctxInfo, vertexAttrCount);
+        resetVertexAttrs(gl, ctx, vertexAttrCount);
       }
 
       if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
@@ -2479,19 +2438,14 @@ class JoglPipeline extends Pipeline {
         }
 
         if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-          // FIXME
-          throw new RuntimeException("Vertex attributes not implemented yet");
-
-          /*
-            jfloat *vAttrPtr = &verts[vAttrOff];
-
-            for (i = 0; i < vertexAttrCount; i++) {
-            ctxProperties->enableVertexAttrArray(ctxProperties, i);
-            ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
-            GL_FLOAT, bstride, vAttrPtr);
-            vAttrPtr += vAttrSizesPtr[i];
-            }
-          */
+          int vAttrOffset = vAttrOff;
+          for (int i = 0; i < vertexAttrCount; i++) {
+            ctx.enableVertexAttrArray(gl, i);
+            verts.position(vAttrOffset);
+            ctx.vertexAttrPointer(gl, i, vertexAttrSizes[i],
+                                  GL.GL_FLOAT, bstride, verts);
+            vAttrOffset += vertexAttrSizes[i];
+          }
         }
       }
 
@@ -2571,19 +2525,14 @@ class JoglPipeline extends Pipeline {
         }
 
         if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-          // FIXME
-          throw new RuntimeException("Vertex attributes not implemented yet");
-
-          /*
-            jfloat *vAttrPtr = &verts[vAttrOff];
-
-            for (i = 0; i < vertexAttrCount; i++) {
-            ctxProperties->enableVertexAttrArray(ctxProperties, i);
-            ctxProperties->vertexAttrPointer(ctxProperties, i, vAttrSizesPtr[i],
-            GL_FLOAT, bstride, vAttrPtr);
-            vAttrPtr += vAttrSizesPtr[i];
-            }
-          */
+          int vAttrOffset = vAttrOff;
+          for (int i = 0; i < vertexAttrCount; i++) {
+            ctx.enableVertexAttrArray(gl, i);
+            verts.position(vAttrOffset);
+            ctx.vertexAttrPointer(gl, i, vertexAttrSizes[i],
+                                  GL.GL_FLOAT, bstride, verts);
+            vAttrOffset += vertexAttrSizes[i];
+          }
         }
       }
 
@@ -2601,9 +2550,7 @@ class JoglPipeline extends Pipeline {
     unlockArray(gl);
 
     if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-      // FIXME
-      throw new RuntimeException("Vertex attributes not implemented yet");
-      // resetVertexAttrs(ctxInfo, vertexAttrCount);
+      resetVertexAttrs(gl, ctx, vertexAttrCount);
     }
 
     if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
@@ -2680,30 +2627,13 @@ class JoglPipeline extends Pipeline {
     }
 
     if (vattrDefined) {
-      // FIXME
-      throw new RuntimeException("Vertex attributes not implemented yet");
-
-      /*
-	float *pVertexAttrs;
-	int sz, initIdx;
-
-	vAttrSizes = (jint *) (*(table->GetPrimitiveArrayCritical))(env, vertexAttrSizes, NULL);
-	initialVAttrIndices = (jint *) (*(table->GetPrimitiveArrayCritical))(env, vertexAttrIndices, NULL);
-
-	for (i = 0; i < vertexAttrCount; i++) {
-	    pVertexAttrs = vertexAttrPointer[i];
-	    sz = vAttrSizes[i];
-	    initIdx = initialVAttrIndices[i];
-
-	    ctxProperties->enableVertexAttrArray(ctxProperties, i);
-	    ctxProperties->vertexAttrPointer(ctxProperties, i, sz,
-					     GL_FLOAT, 0,
-					     &pVertexAttrs[initIdx * sz]);
-	}
-
-	(*(table->ReleasePrimitiveArrayCritical))(env, vertexAttrSizes, vAttrSizes, 0);
-	(*(table->ReleasePrimitiveArrayCritical))(env, vertexAttrIndices, initialVAttrIndices, 0);
-      */
+      for (int i = 0; i < vertexAttrCount; i++) {
+        FloatBuffer vertexAttrs = vertexAttrBufs[i];
+        int sz = vertexAttrSizes[i];
+        ctx.enableVertexAttrArray(gl, i);
+        vertexAttrs.position(0);
+        ctx.vertexAttrPointer(gl, i, sz, GL.GL_FLOAT, 0, vertexAttrs);
+      }
     }
 
     if (textureDefined) {
@@ -2773,9 +2703,7 @@ class JoglPipeline extends Pipeline {
     }
 
     if (vattrDefined) {
-      // FIXME
-      throw new RuntimeException("Vertex attributes not implemented yet");
-      // resetVertexAttrs(ctxInfo, vertexAttrCount);
+      resetVertexAttrs(gl, ctx, vertexAttrCount);
     }
 
     if (textureDefined) {
@@ -3262,55 +3190,357 @@ class JoglPipeline extends Pipeline {
 
     // interfaces for shader compilation, etc.
     ShaderError createCgShader(Context ctx, int shaderType, ShaderId[] shaderId) {
-      if (DEBUG) System.err.println("JoglPipeline.createCgShader()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.createCgShader()");
+
+      JoglContext jctx = (JoglContext) ctx;
+      JoglCgShaderInfo info = new JoglCgShaderInfo();
+      info.setJ3DShaderType(shaderType);
+      if (shaderType == Shader.SHADER_TYPE_VERTEX) {
+        info.setShaderProfile(jctx.getCgVertexProfile());
+      } else if (shaderType == Shader.SHADER_TYPE_FRAGMENT) {
+        info.setShaderProfile(jctx.getCgFragmentProfile());
+      } else {
+        throw new AssertionError("unrecognized shaderType " + shaderType);
+      }
+      shaderId[0] = info;
+      return null;
     }
     ShaderError destroyCgShader(Context ctx, ShaderId shaderId) {
-      if (DEBUG) System.err.println("JoglPipeline.destroyCgShader()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.destroyCgShader()");
+
+      JoglCgShaderInfo info = (JoglCgShaderInfo) shaderId;
+      CGprogram program = info.getCgShader();
+      if (program != null) {
+        CgGL.cgDestroyProgram(program);
+      }
+      return null;
     }
-    ShaderError compileCgShader(Context ctx, ShaderId shaderId, String program) {
-      if (DEBUG) System.err.println("JoglPipeline.compileCgShader()");
-        // TODO: implement this
-        return null;
+    ShaderError compileCgShader(Context ctx, ShaderId shaderId, String programString) {
+      if (VERBOSE) System.err.println("JoglPipeline.compileCgShader()");
+
+      if (programString == null)
+        throw new AssertionError("shader program string is null");
+      JoglCgShaderInfo info = (JoglCgShaderInfo) shaderId;
+      JoglContext jctx = (JoglContext) ctx;
+      CGprogram program = CgGL.cgCreateProgram(jctx.getCgContext(),
+                                               CgGL.CG_SOURCE,
+                                               programString,
+                                               info.getShaderProfile(),
+                                               null,
+                                               null);
+      int lastError = 0;
+      if ((lastError = CgGL.cgGetError()) != 0) {
+        ShaderError err = new ShaderError(ShaderError.COMPILE_ERROR,
+                                          "Cg shader compile error");
+        err.setDetailMessage(getCgErrorLog(jctx, lastError));
+        return err;
+      }
+      info.setCgShader(program);
+      return null;
     }
 
     ShaderError createCgShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId) {
-      if (DEBUG) System.err.println("JoglPipeline.createCgShaderProgram()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.createCgShaderProgram()");
+
+      JoglCgShaderProgramInfo info = new JoglCgShaderProgramInfo();
+      shaderProgramId[0] = info;
+      return null;
     }
     ShaderError destroyCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
-      if (DEBUG) System.err.println("JoglPipeline.destroyCgShaderProgram()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.destroyCgShaderProgram()");
+      // Nothing to do in pure Java port
+      return null;
     }
     ShaderError linkCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
             ShaderId[] shaderIds) {
-      if (DEBUG) System.err.println("JoglPipeline.linkCgShaderProgram()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.linkCgShaderProgram()");
+
+      JoglCgShaderProgramInfo shaderProgramInfo = (JoglCgShaderProgramInfo) shaderProgramId;
+      // NOTE: we assume that the caller has already verified that there
+      // is at most one vertex program and one fragment program
+      shaderProgramInfo.setVertexShader(null);
+      shaderProgramInfo.setFragmentShader(null);
+      for (int i = 0; i < shaderIds.length; i++) {
+        JoglCgShaderInfo shader = (JoglCgShaderInfo) shaderIds[i];
+        if (shader.getJ3DShaderType() == Shader.SHADER_TYPE_VERTEX) {
+          shaderProgramInfo.setVertexShader(shader);
+        } else {
+          shaderProgramInfo.setFragmentShader(shader);
+        }
+
+        CgGL.cgGLLoadProgram(shader.getCgShader());
+        int lastError = 0;
+        if ((lastError = CgGL.cgGetError()) != 0) {
+          ShaderError err = new ShaderError(ShaderError.LINK_ERROR,
+                                            "Cg shader link/load error");
+          err.setDetailMessage(getCgErrorLog((JoglContext) ctx,
+                                             lastError));
+          return err;
+        }
+
+        CgGL.cgGLBindProgram(shader.getCgShader());
+        if ((lastError = CgGL.cgGetError()) != 0) {
+          ShaderError err = new ShaderError(ShaderError.LINK_ERROR,
+                                            "Cg shader link/bind error");
+          err.setDetailMessage(getCgErrorLog((JoglContext) ctx,
+                                             lastError));
+          return err;
+        }
+      }
+
+      return null;
     }
     void lookupCgVertexAttrNames(Context ctx, ShaderProgramId shaderProgramId,
             int numAttrNames, String[] attrNames, boolean[] errArr) {
-      if (DEBUG) System.err.println("JoglPipeline.lookupCgVertexAttrNames()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.lookupCgVertexAttrNames()");
+
+      JoglCgShaderProgramInfo shaderProgramInfo = (JoglCgShaderProgramInfo) shaderProgramId;
+      if (shaderProgramInfo.getVertexShader() == null) {
+	// If there if no vertex shader, no attributes can be looked up, so all fail
+        for (int i = 0; i < errArr.length; i++) {
+          errArr[i] = false;
+        }
+        return;
+      }
+
+      shaderProgramInfo.setVertexAttributes(new CGparameter[numAttrNames]);
+      for (int i = 0; i < numAttrNames; i++) {
+        String attrName = attrNames[i];
+        shaderProgramInfo.getVertexAttributes()[i] =
+          CgGL.cgGetNamedParameter(shaderProgramInfo.getVertexShader().getCgShader(),
+                                   attrName);
+        if (shaderProgramInfo.getVertexAttributes()[i] == null) {
+          errArr[i] = true;
+        }
+      }
     }
     void lookupCgShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
             int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
-      if (DEBUG) System.err.println("JoglPipeline.lookupCgShaderAttrNames()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.lookupCgShaderAttrNames()");
+
+      JoglCgShaderProgramInfo shaderProgramInfo =
+        (JoglCgShaderProgramInfo) shaderProgramId;
+
+      // Set the loc, type, and size arrays to out-of-bounds values
+      for (int i = 0; i < numAttrNames; i++) {
+	locArr[i] = null;
+	typeArr[i] = -1;
+	sizeArr[i] = -1;
+      }
+
+      int[] vType = new int[1];
+      int[] vSize = new int[1];
+      boolean[] vIsArray = new boolean[1];
+      int[] fType = new int[1];
+      int[] fSize = new int[1];
+      boolean[] fIsArray = new boolean[1];
+
+      boolean err = false;
+
+      // Now lookup the location of each name in the attrNames array
+      for (int i = 0; i < numAttrNames; i++) {
+        String attrName = attrNames[i];
+        // Get uniform attribute location -- note that we need to
+        // lookup the name in both the vertex and fragment shader
+        // (although we will generalize it to look at the list of "N"
+        // shaders). If all parameter locations are NULL, then no
+        // struct will be allocated and -1 will be stored for this
+        // attribute. If there is more than one non-NULL parameter,
+        // then all must be of the same type and dimensionality,
+        // otherwise an error will be generated and -1 will be stored
+        // for this attribute.  If all non-NULL parameters are of the
+        // same type and dimensionality, then a struct is allocated
+        // containing the list of parameters.
+        //
+        // When any of the setCgUniform methods are called, the
+        // attribute will be set for each parameter in the list.
+        CGparameter vLoc = null;
+        if (shaderProgramInfo.getVertexShader() != null) {
+          vLoc = lookupCgParams(shaderProgramInfo.getVertexShader(),
+                                attrName,
+                                vType, vSize, vIsArray);
+          if (vLoc != null) {
+            sizeArr[i] = vSize[0];
+            isArrayArr[i] = vIsArray[0];
+            typeArr[i] = cgToJ3dType(vType[0]);
+          }
+        }
+
+        CGparameter fLoc = null;
+        if (shaderProgramInfo.getVertexShader() != null) {
+          fLoc = lookupCgParams(shaderProgramInfo.getFragmentShader(),
+                                attrName,
+                                fType, fSize, fIsArray);
+          if (fLoc != null) {
+            sizeArr[i] = fSize[0];
+            isArrayArr[i] = fIsArray[0];
+            typeArr[i] = cgToJ3dType(fType[0]);
+          }
+        }
+
+        // If the name lookup found an entry in both vertex and
+        // fragment program, verify that the type and size are the
+        // same.
+	if (vLoc != null && fLoc != null) {
+          if (vType != fType || vSize != fSize || vIsArray != fIsArray) {
+            // TODO: the following needs to be propagated to ShaderError
+            System.err.println("JAVA 3D : error shader attribute type mismatch: " + attrName);
+            System.err.println("    1 : type = " + vType[0] + ", size = " + vSize[0] + ", isArray = " + vIsArray[0]);
+            System.err.println("    0 : type = " + fType[0] + ", size = " + fSize[0] + ", isArray = " + fIsArray[0]);
+            err = true;
+          }
+	}
+
+        // Report an error if we got a mismatch or if the attribute
+        // was not found in either the vertex or the fragment program
+        if (err || (vLoc == null && fLoc == null)) {
+          // TODO: distinguish between (err) and (vParam and fParam both NULL)
+          // so we can report a more helpful error message
+          // locPtr[i] = (jlong)-1;
+        } else {
+          // TODO: need to store the cgParamInfo pointers in the
+          // shader program so we can free them later.
+          //
+          // NOTE: WE CURRENTLY HAVE A MEMORY LEAK.
+          locArr[i] = new JoglCgShaderParameter(vLoc, fLoc);
+	}
+      }
     }
 
     ShaderError useCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
-      if (DEBUG) System.err.println("JoglPipeline.useCgShaderProgram()");
-        // TODO: implement this
-        return null;
+      if (VERBOSE) System.err.println("JoglPipeline.useCgShaderProgram()");
+
+      JoglCgShaderProgramInfo shaderProgramInfo =
+        (JoglCgShaderProgramInfo) shaderProgramId;
+      JoglContext jctx = (JoglContext) ctx;
+
+      // Disable shader profiles
+      CgGL.cgGLDisableProfile(jctx.getCgVertexProfile());
+      CgGL.cgGLDisableProfile(jctx.getCgFragmentProfile());
+      if (shaderProgramInfo != null) {
+        if (shaderProgramInfo.getVertexShader() != null) {
+          CgGL.cgGLBindProgram(shaderProgramInfo.getVertexShader().getCgShader());
+          CgGL.cgGLEnableProfile(shaderProgramInfo.getVertexShader().getShaderProfile());
+        } else {
+          CgGL.cgGLUnbindProgram(jctx.getCgVertexProfile());
+        }
+
+        if (shaderProgramInfo.getFragmentShader() != null) {
+          CgGL.cgGLBindProgram(shaderProgramInfo.getFragmentShader().getCgShader());
+          CgGL.cgGLEnableProfile(shaderProgramInfo.getFragmentShader().getShaderProfile());
+        } else {
+          CgGL.cgGLUnbindProgram(jctx.getCgFragmentProfile());
+        }
+      } else {
+        CgGL.cgGLUnbindProgram(jctx.getCgVertexProfile());
+        CgGL.cgGLUnbindProgram(jctx.getCgFragmentProfile());
+      }
+
+      jctx.setShaderProgram(shaderProgramInfo);
+      return null;
     }
 
+    //
+    // Helper methods for above
+    //
+    private String getCgErrorLog(JoglContext ctx, int lastError) {
+      if (lastError == 0)
+        throw new AssertionError("lastError == 0");
+      String errString = CgGL.cgGetErrorString(lastError);
+      String listing = CgGL.cgGetLastListing(ctx.getCgContext());
+      return (errString + System.getProperty("line.separator") + listing);
+    }
+
+    private int cgToJ3dType(int type) {
+      switch (type) {
+        case CgGL.CG_BOOL:
+        case CgGL.CG_BOOL1:
+        case CgGL.CG_FIXED:
+        case CgGL.CG_FIXED1:
+        case CgGL.CG_HALF:
+        case CgGL.CG_HALF1:
+        case CgGL.CG_INT:
+        case CgGL.CG_INT1:
+          return ShaderAttributeObjectRetained.TYPE_INTEGER;
+  
+          // XXXX: add ShaderAttribute support for setting samplers. In the
+          // mean time, the binding between sampler and texture unit will
+          // need to be specified in the shader itself (which it already is
+          // in most example shaders).
+          //
+          // case CgGL.CG_SAMPLER2D:
+          // case CgGL.CG_SAMPLER3D:
+          // case CgGL.CG_SAMPLERCUBE:
+  
+        case CgGL.CG_BOOL2:
+        case CgGL.CG_FIXED2:
+        case CgGL.CG_HALF2:
+        case CgGL.CG_INT2:
+          return ShaderAttributeObjectRetained.TYPE_TUPLE2I;
+  
+        case CgGL.CG_BOOL3:
+        case CgGL.CG_FIXED3:
+        case CgGL.CG_HALF3:
+        case CgGL.CG_INT3:
+          return ShaderAttributeObjectRetained.TYPE_TUPLE3I;
+  
+        case CgGL.CG_BOOL4:
+        case CgGL.CG_FIXED4:
+        case CgGL.CG_HALF4:
+        case CgGL.CG_INT4:
+          return ShaderAttributeObjectRetained.TYPE_TUPLE4I;
+  
+        case CgGL.CG_FLOAT:
+        case CgGL.CG_FLOAT1:
+          return ShaderAttributeObjectRetained.TYPE_FLOAT;
+  
+        case CgGL.CG_FLOAT2:
+          return ShaderAttributeObjectRetained.TYPE_TUPLE2F;
+  
+        case CgGL.CG_FLOAT3:
+          return ShaderAttributeObjectRetained.TYPE_TUPLE3F;
+  
+        case CgGL.CG_FLOAT4:
+          return ShaderAttributeObjectRetained.TYPE_TUPLE4F;
+  
+        case CgGL.CG_FLOAT3x3:
+          return ShaderAttributeObjectRetained.TYPE_MATRIX3F;
+  
+        case CgGL.CG_FLOAT4x4:
+          return ShaderAttributeObjectRetained.TYPE_MATRIX4F;
+  
+          // Java 3D does not support the following sampler types:
+          //
+          // case CgGL.CG_SAMPLER1D:
+          // case CgGL.CG_SAMPLERRECT:
+      }
+
+      return -1;
+    }
+
+    private CGparameter lookupCgParams(JoglCgShaderInfo shader,
+                                       String attrNameString,
+                                       int[] type,
+                                       int[] size,
+                                       boolean[] isArray) {
+      CGparameter loc = CgGL.cgGetNamedParameter(shader.getCgShader(), attrNameString);
+      if (loc != null) {
+        type[0] = CgGL.cgGetParameterType(loc);
+        if (type[0] == CgGL.CG_ARRAY) {
+          isArray[0] = true;
+          size[0] = CgGL.cgGetArraySize(loc, 0);
+          CGparameter firstElem = CgGL.cgGetArrayParameter(loc, 0);
+          type[0] = CgGL.cgGetParameterType(firstElem);
+        } else {
+          isArray[0] = false;
+          size[0] = 1;
+        }
+      }
+      return loc;
+    }
+
+                                     
 
     // ---------------------------------------------------------------------
 
@@ -3728,6 +3958,7 @@ class JoglPipeline extends Pipeline {
       if (VERBOSE) System.err.println("JoglPipeline.useGLSLShaderProgram()");
 
       context(ctx).getGL().glUseProgramObjectARB(unbox(shaderProgramId));
+      ((JoglContext) ctx).setShaderProgram((JoglShaderObject) shaderProgramId);
       return null;
     }
 
@@ -8110,8 +8341,8 @@ class JoglPipeline extends Pipeline {
       cv.maxVertexTextureImageUnits = tmp[0];
       gl.glGetIntegerv(GL. GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, tmp, 0);
       cv.maxCombinedTextureImageUnits = tmp[0];
-      // FIXME: must record vertexAttrOffset for later
       int vertexAttrOffset = VirtualUniverse.mc.glslVertexAttrOffset;
+      ctx.setGLSLVertexAttrOffset(vertexAttrOffset);
       gl.glGetIntegerv(GL. GL_MAX_VERTEX_ATTRIBS_ARB, tmp, 0);
       cv.maxVertexAttrs = tmp[0];
       // decr count to allow for reserved vertex attrs
@@ -8929,6 +9160,7 @@ class JoglPipeline extends Pipeline {
   private static ThreadLocal nioColorByteTemp = new ThreadLocal();
   private static ThreadLocal nioNormalTemp = new ThreadLocal();
   private static ThreadLocal nioTexCoordSetTemp = new ThreadLocal();
+  private static ThreadLocal nioVertexAttrSetTemp = new ThreadLocal();
 
   private static FloatBuffer getVertexArrayBuffer(float[] vertexArray) {
     return getVertexArrayBuffer(vertexArray, true);
@@ -8972,6 +9204,10 @@ class JoglPipeline extends Pipeline {
 
   private static FloatBuffer[] getTexCoordSetBuffer(Object[] texCoordSet) {
     return getNIOBuffer(texCoordSet, nioTexCoordSetTemp);
+  }
+
+  private static FloatBuffer[] getVertexAttrSetBuffer(Object[] vertexAttrSet) {
+    return getNIOBuffer(vertexAttrSet, nioVertexAttrSetTemp);
   }
 
   private static FloatBuffer getNIOBuffer(float[] array, ThreadLocal threadLocal, boolean copyData) {
