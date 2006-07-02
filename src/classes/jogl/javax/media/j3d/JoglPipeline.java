@@ -923,14 +923,14 @@ class JoglPipeline extends Pipeline {
       }
       
       if (ignoreVertexColors) {
-	vformat &= ~GeometryArray.COLOR;
-	floatColorsDefined = false;
-	byteColorsDefined = false;
+        vformat &= ~GeometryArray.COLOR;
+        floatColorsDefined = false;
+        byteColorsDefined = false;
       }    
 
       // get coordinate array
       if (floatCoordDefined) {
-	gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+        gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
         fverts = getVertexArrayBuffer(vfcoords, (xform == null));
         if (xform != null) {
           // Must copy in and transform data
@@ -947,7 +947,7 @@ class JoglPipeline extends Pipeline {
           }
         }
       } else if (doubleCoordDefined) {
-	gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+        gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
         dverts = getVertexArrayBuffer(vdcoords, (xform == null));
         if (xform != null) {
           // Must copy in and transform data
@@ -964,12 +964,12 @@ class JoglPipeline extends Pipeline {
           }
         }
       } else {
-	gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
+        gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
       }
 
       // get color array
       if (floatColorsDefined) {
-	gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+        gl.glEnableClientState(GL.GL_COLOR_ARRAY);
         fclrs = getColorArrayBuffer(cfdata, !useAlpha);
         if (useAlpha) {
           // Must copy in and modify color data
@@ -992,7 +992,7 @@ class JoglPipeline extends Pipeline {
           vformat |= GeometryArray.WITH_ALPHA;
         }
       } else if (byteColorsDefined) {
-	gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+        gl.glEnableClientState(GL.GL_COLOR_ARRAY);
         bclrs = getColorArrayBuffer(cbdata, !useAlpha);
         if (useAlpha) {
           // Must copy in and modify color data
@@ -1015,12 +1015,12 @@ class JoglPipeline extends Pipeline {
           vformat |= GeometryArray.WITH_ALPHA;
         }
       } else {
-	gl.glDisableClientState(GL.GL_COLOR_ARRAY);
+        gl.glDisableClientState(GL.GL_COLOR_ARRAY);
       }
 
       // get normal array
       if (normalsDefined) {
-	gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
+        gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
         norms = getNormalArrayBuffer(ndata, (nxform == null));
         if (nxform != null) {
           // Must copy in and transform data
@@ -1037,7 +1037,7 @@ class JoglPipeline extends Pipeline {
           }
         }
       } else {
-	gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
+        gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
       }
 
       executeGeometryArrayVA(ctx, geo, geo_type,
@@ -1742,7 +1742,7 @@ class JoglPipeline extends Pipeline {
             Object vdata, float[] carray,
             int pass, int cDirty,
             int[] indexCoord) {
-      if (DEBUG) System.err.println("JoglPipeline.executeIndexedGeometryBuffer()");
+      if (VERBOSE) System.err.println("JoglPipeline.executeIndexedGeometryBuffer()");
 
       executeIndexedGeometryArray(ctx, geo, geo_type,
                                   isNonUniformScale, useAlpha, multiScreen, ignoreVertexColors,
@@ -1990,27 +1990,27 @@ class JoglPipeline extends Pipeline {
       boolean useAlpha = false;
 
       if ((vformat & GeometryArray.COORDINATES) != 0) {
-	gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+        gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
         stride += 3;
       } else {
-	gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
+        gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
       }
 
       if ((vformat & GeometryArray.NORMALS) != 0) {
-	gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
+        gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
         stride += 3;
         coordoff += 3;
       } else {
-	gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
+        gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
       }
 
       if ((vformat & GeometryArray.COLOR) != 0) {
-	gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+        gl.glEnableClientState(GL.GL_COLOR_ARRAY);
         stride += 4;
         normoff += 4;
         coordoff += 4;
       } else {
-	gl.glDisableClientState(GL.GL_COLOR_ARRAY);
+        gl.glDisableClientState(GL.GL_COLOR_ARRAY);
       }
 
       if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
@@ -2045,7 +2045,7 @@ class JoglPipeline extends Pipeline {
 
       // process alpha for geometryArray without alpha
       if (updateAlpha && !ignoreVertexColors) {
-	useAlpha = true;
+        useAlpha = true;
       }
 
       if (geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET || 
@@ -3296,7 +3296,7 @@ class JoglPipeline extends Pipeline {
 
       JoglCgShaderProgramInfo shaderProgramInfo = (JoglCgShaderProgramInfo) shaderProgramId;
       if (shaderProgramInfo.getVertexShader() == null) {
-	// If there if no vertex shader, no attributes can be looked up, so all fail
+        // If there if no vertex shader, no attributes can be looked up, so all fail
         for (int i = 0; i < errArr.length; i++) {
           errArr[i] = false;
         }
@@ -3324,9 +3324,9 @@ class JoglPipeline extends Pipeline {
 
       // Set the loc, type, and size arrays to out-of-bounds values
       for (int i = 0; i < numAttrNames; i++) {
-	locArr[i] = null;
-	typeArr[i] = -1;
-	sizeArr[i] = -1;
+        locArr[i] = null;
+        typeArr[i] = -1;
+        sizeArr[i] = -1;
       }
 
       int[] vType = new int[1];
@@ -3382,7 +3382,7 @@ class JoglPipeline extends Pipeline {
         // If the name lookup found an entry in both vertex and
         // fragment program, verify that the type and size are the
         // same.
-	if (vLoc != null && fLoc != null) {
+        if (vLoc != null && fLoc != null) {
           if (vType != fType || vSize != fSize || vIsArray != fIsArray) {
             // TODO: the following needs to be propagated to ShaderError
             System.err.println("JAVA 3D : error shader attribute type mismatch: " + attrName);
@@ -3390,7 +3390,7 @@ class JoglPipeline extends Pipeline {
             System.err.println("    0 : type = " + fType[0] + ", size = " + fSize[0] + ", isArray = " + fIsArray[0]);
             err = true;
           }
-	}
+        }
 
         // Report an error if we got a mismatch or if the attribute
         // was not found in either the vertex or the fragment program
@@ -3404,7 +3404,7 @@ class JoglPipeline extends Pipeline {
           //
           // NOTE: WE CURRENTLY HAVE A MEMORY LEAK.
           locArr[i] = new JoglCgShaderParameter(vLoc, fLoc);
-	}
+        }
       }
     }
 
@@ -4162,11 +4162,11 @@ class JoglPipeline extends Pipeline {
 
         gl.glGetIntegerv(GL.GL_DRAW_BUFFER, drawBuf, 0);
         // disable draw buffer
-	gl.glDrawBuffer(GL.GL_NONE);
+        gl.glDrawBuffer(GL.GL_NONE);
 
         // raster position is upper left corner, default for Java3D 
         // ImageComponent currently has the data reversed in Y
-	gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, width);
+        gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, width);
         if (xSrcOffset >= 0) {
           gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, xSrcOffset);
           if (xSrcOffset + wRaster > width) {
@@ -5423,14 +5423,14 @@ class JoglPipeline extends Pipeline {
           gl.glCombinerInputNV(combinerUnit, GL.GL_RGB, 
                                GL.GL_VARIABLE_D_NV, textureUnit,
                                GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-	    
+
           gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA, 
                                GL.GL_VARIABLE_A_NV, fragment,
                                GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
           gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA, 
                                GL.GL_VARIABLE_B_NV, textureUnit,
                                GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
-	    
+
           gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB, 
                                 GL.GL_DISCARD_NV, GL.GL_DISCARD_NV, GL.GL_SPARE0_NV, 
                                 GL.GL_NONE, GL.GL_NONE, false, false, false);
@@ -5477,15 +5477,15 @@ class JoglPipeline extends Pipeline {
             gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA, 
                                  GL.GL_VARIABLE_B_NV, GL.GL_ZERO,
                                  GL.GL_UNSIGNED_INVERT_NV, GL.GL_ALPHA);
-	    
+
             gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB, 
-				  GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV, 
+                                  GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV, 
                                   GL.GL_NONE/*SCALE_BY_FOUR_NV*/, GL.GL_NONE, true,
-				  false, false);
+                                  false, false);
             gl.glCombinerOutputNV(combinerUnit, GL.GL_ALPHA, 
-			          GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV, 
-			          GL.GL_NONE, GL.GL_NONE, false, 
-				  false, false);
+                                  GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV, 
+                                  GL.GL_NONE, GL.GL_NONE, false, 
+                                  false, false);
           }
           break;
       }
@@ -5506,7 +5506,7 @@ class JoglPipeline extends Pipeline {
                                 GL.GL_SPARE0_NV, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
 
       if (gl.isExtensionAvailable("GL_SGI_texture_color_table"))
-	gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
+        gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
       // GL_SGI_texture_color_table
     }
 
@@ -5522,9 +5522,9 @@ class JoglPipeline extends Pipeline {
                           colorTableSize, GL.GL_RGB, GL.GL_INT, IntBuffer.wrap(textureColorTable));
         } else {
           gl.glColorTable(GL.GL_TEXTURE_COLOR_TABLE_SGI, GL.GL_RGBA,
-			    colorTableSize, GL.GL_RGBA, GL.GL_INT, IntBuffer.wrap(textureColorTable));
+          colorTableSize, GL.GL_RGBA, GL.GL_INT, IntBuffer.wrap(textureColorTable));
         }
-	gl.glEnable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
+        gl.glEnable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
       }
     }
 
@@ -5687,19 +5687,19 @@ class JoglPipeline extends Pipeline {
       case TextureAttributes.COMBINE_OBJECT_COLOR:
         if (combUnit == GL.GL_COMBINER0_NV) {
           comb = GL.GL_PRIMARY_COLOR_NV;
-	} else {
+        } else {
           comb = GL.GL_SPARE0_NV;
-	}
-	break;
+        }
+        break;
       case TextureAttributes.COMBINE_TEXTURE_COLOR:
         comb = textureUnit;
-	break;
+        break;
       case TextureAttributes.COMBINE_CONSTANT_COLOR:
         comb = GL.GL_CONSTANT_COLOR0_NV;
-	break;
+        break;
       case TextureAttributes.COMBINE_PREVIOUS_TEXTURE_UNIT_STATE:
         comb = textureUnit -1;
-	break;
+        break;
     }
 
     return comb;
@@ -5990,7 +5990,7 @@ class JoglPipeline extends Pipeline {
           oglFormat = GL.GL_LUMINANCE_ALPHA;
           break;
         case ImageComponentRetained.BYTE_GRAY:
-        case ImageComponentRetained.USHORT_GRAY:	    
+        case ImageComponentRetained.USHORT_GRAY:
           if (oglInternalFormat == GL.GL_ALPHA) {
             oglFormat = GL.GL_ALPHA;
           } else  {
@@ -6076,7 +6076,7 @@ class JoglPipeline extends Pipeline {
           numBytes = 2;
           break;
         case ImageComponentRetained.BYTE_GRAY:
-        case ImageComponentRetained.USHORT_GRAY:	    
+        case ImageComponentRetained.USHORT_GRAY:
           if (oglInternalFormat == GL.GL_ALPHA) {
             oglFormat = GL.GL_ALPHA;
           } else  {
@@ -7075,9 +7075,9 @@ class JoglPipeline extends Pipeline {
       gl.glStencilFunc(GL.GL_ALWAYS, 0x1, 0x1);
       gl.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_REPLACE);
       if (gl.glIsEnabled(GL.GL_DEPTH_TEST))
-	return true;
+        return true;
       else
-	return false;
+        return false;
     }
 
     // Native method for decal nth child setup
@@ -7155,11 +7155,11 @@ class JoglPipeline extends Pipeline {
       JoglContext ctx = (JoglContext) absCtx;
       GL gl = context(ctx).getGL();
       if (ctx.getHasMultisample() && !VirtualUniverse.mc.implicitAntialiasing) {
-	if (enable) {
+        if (enable) {
           gl.glEnable(GL.GL_MULTISAMPLE);
-	} else {
+        } else {
           gl.glDisable(GL.GL_MULTISAMPLE);
-	}
+        }
       }
     }
 
@@ -7168,7 +7168,7 @@ class JoglPipeline extends Pipeline {
 
       GL gl = context(ctx).getGL();
       if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-	gl.glEnable(GL.GL_GLOBAL_ALPHA_SUN);
+        gl.glEnable(GL.GL_GLOBAL_ALPHA_SUN);
         gl.glGlobalAlphaFactorfSUN(alpha);
       }
     }
@@ -8104,7 +8104,7 @@ class JoglPipeline extends Pipeline {
       gl.glLoadIdentity();
 
       if (gl.isExtensionAvailable("GL_EXT_abgr")) {
-	glType = GL.GL_ABGR_EXT;
+        glType = GL.GL_ABGR_EXT;
       } else { 
         switch (format) {
           case ImageComponentRetained.BYTE_RGBA:
@@ -8113,7 +8113,7 @@ class JoglPipeline extends Pipeline {
           case ImageComponentRetained.BYTE_RGB:
             glType = GL.GL_RGB;
             break;
-	}
+        }
       }
       gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, rasWidth);
       gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, minX);
