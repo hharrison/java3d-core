@@ -6909,22 +6909,81 @@ class JoglPipeline extends Pipeline {
       disposeOnEDT(f);
     }
 
-    // This is the native for creating offscreen buffer
+    // This is the native for creating an offscreen buffer
     Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height) {
-      if (DEBUG) System.err.println("JoglPipeline.createOffScreenBuffer()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.createOffScreenBuffer()");
+
+      // Note 1: when this is called, the incoming Context argument is
+      // null because (obviously) no drawable or context has been
+      // created for the Canvas3D yet.
+
+      // Note 2: we ignore the global j3d.usePbuffer flag; JOGL
+      // doesn't expose pixmap/bitmap surfaces in its public API.
+
+      // First pick up the JoglGraphicsConfiguration and from there
+      // the GLCapabilities from the Canvas3D
+      JoglGraphicsConfiguration jcfg = (JoglGraphicsConfiguration) cv.graphicsConfiguration;
+      // Note that we ignore any chosen index from a prior call to getBestConfiguration();
+      // those only enumerate the on-screen visuals, and we need to find one which is
+      // pbuffer capable
+      GLCapabilities caps = jcfg.getGLCapabilities();
+      if (!GLDrawableFactory.getFactory().canCreateGLPbuffer()) {
+        // FIXME: do anything else here? Throw exception?
         return null;
+      }
+
+      GLPbuffer pbuffer = GLDrawableFactory.getFactory().createGLPbuffer(caps, null,
+                                                                         width, height, null);
+      return new JoglDrawable(pbuffer);
     }
 
     void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, Drawable drawable) {
-      if (DEBUG) System.err.println("JoglPipeline.destroyOffScreenBuffer()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.destroyOffScreenBuffer()");
+
+      JoglDrawable jdraw = (JoglDrawable) drawable;
+      GLPbuffer pbuffer = (GLPbuffer) jdraw.getGLDrawable();
+      pbuffer.destroy();
     }
 
     // This is the native for reading the image from the offscreen buffer
     void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int width, int height) {
-      if (DEBUG) System.err.println("JoglPipeline.readOffScreenBuffer()");
-        // TODO: implement this
+      if (VERBOSE) System.err.println("JoglPipeline.readOffScreenBuffer()");
+
+      GL gl = context(ctx).getGL();
+      gl.glPixelStorei(GL.GL_PACK_ROW_LENGTH, width);
+      gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 1);
+      byte[] byteData = cv.byteBuffer;
+      int type = 0;
+      switch (format) {
+        case ImageComponentRetained.BYTE_RGBA:
+          type = GL.GL_RGBA;
+          break;
+        case ImageComponentRetained.BYTE_RGB:
+          type = GL.GL_RGB;
+          break;
+    
+        // GL_ABGR_EXT
+        case ImageComponentRetained.BYTE_ABGR:         
+          if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If false, should never come here!
+            type = GL.GL_ABGR_EXT;
+          }
+          break;
+  
+        // GL_BGR
+        case ImageComponentRetained.BYTE_BGR:         
+          type = GL.GL_BGR;
+          break;
+    
+        case ImageComponentRetained.BYTE_LA:
+          type = GL.GL_LUMINANCE_ALPHA;
+          break;
+  
+        case ImageComponentRetained.BYTE_GRAY:
+        case ImageComponentRetained.USHORT_GRAY:      
+        default:
+          throw new AssertionError("illegal format " + format);
+      }
+      gl.glReadPixels(0, 0, width, height, type, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap(byteData));
     }
 
     // The native method for swapBuffers
@@ -8781,7 +8840,7 @@ class JoglPipeline extends Pipeline {
         chosenCaps = capturer.getCapabilities();
       }
 
-      JoglGraphicsConfiguration config = new JoglGraphicsConfiguration(caps, chosenIndex, dev);
+      JoglGraphicsConfiguration config = new JoglGraphicsConfiguration(chosenCaps, chosenIndex, dev);
 
       // FIXME: because of the fact that JoglGraphicsConfiguration
       // doesn't override hashCode() or equals(), we will basically be
