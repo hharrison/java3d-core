@@ -127,7 +127,8 @@ in <a href="https://java3d.dev.java.net/issues/show_bug.cgi?id=229">issue
 available on all supported platforms. It will also run on Apple Mac
 OSX (x86 or PPC)! The easiest way to run Java&nbsp;3D applications
 using the JOGL
-pipeline is via Java Webstart from your browser (with no setup required).
+pipeline is via Java Webstart from your browser (with no setup
+required).
 <a href="https://j3d-webstart.dev.java.net/test">Click here</a> and go
 to the "Early access
 test program" section at bottom of the
@@ -154,16 +155,38 @@ for example:
 and install it into the JRE along with the Java&nbsp;3D jar files (or
 include it in your PATH/CLASSPATH).<br>
 </p>
-
-<p>In the forthcoming build 5 and later builds, the JOGL rendering
-pipeline should be feature complete, but not all code paths have been
-tested. If you encounter problems, or, more specifically, see any
-differences in rendering results between the native OpenGL pipeline
-and the JOGL pipeline, please either post on the <a
-href="http://forums.java.net/jive/forum.jspa?forumID=70">Java&nbsp;3D
-forum</a> or <a
-href="https://java3d.dev.java.net/servlets/ProjectIssues">file a
-bug</a>. <br>
+<p>Most Java&nbsp;3D features are implemented in the JOGL pipeline, but
+the
+following are known to be missing:<br>
+</p>
+<ul>
+  <li>Off-screen rendering</li>
+  <li>Cg shading language<br>
+  </li>
+  <li>Programmable shader vertex attributes<br>
+  </li>
+</ul>
+<p>There may be others missing, as well. Any missing function will
+print
+out a message of the form:<br>
+</p>
+<ul>
+  <code>JoglPipeline.createOffScreenBuffer()</code>
+</ul>
+<h4>UPDATE : 2-Jul-2006</h4>
+<p>The JOGL rendering pipeline should now be feature complete, but not
+all code paths have been tested. If you encounter problems, or, more
+specifically, see any differences in rendering results between the
+native OpenGL pipeline and the JOGL pipeline, please either post on the
+<a href="http://forums.java.net/jive/forum.jspa?forumID=70">Java&nbsp;3D
+forum</a> or
+<a href="https://java3d.dev.java.net/servlets/ProjectIssues">file
+a bug</a>.<br>
+</p>
+<p>Run a <a
+ href="https://java3d.dev.java.net/binary-builds-pre.html#Daily_builds_1.5.0">daily
+build</a> as of 2006-07-02 or later to use the feature complete version
+of the JOGL Pipeline. This will be available in 1.5.0-build5.<br>
 </p>
 <h3><a name="Improvements_In_1_5_0"></a>Improvements in 1.5.0-build4</h3>
 <h4>New Features / Enhancements</h4>
