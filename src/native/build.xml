@@ -54,7 +54,13 @@
   </target>
 
 
-  <target name="nativeSetup-debug" depends="nativeSetup-debug-solaris, nativeSetup-debug-solaris-x86, nativeSetup-debug-linux, nativeSetup-debug-linux-amd64, nativeSetup-debug-linux-ia64, nativeSetup-debug-linux-ppc, nativeSetup-debug-win32">
+  <target name="nativeSetup-debug-winamd64" if="isWindowsOnAmd64">
+	<property name="bldFlag" 
+	         value="-DDEBUG -DWIN32 -D_WINDOWS"/>
+	<property name="coreLibDependency" value="bin/j3dcore-${build.rend}.dll"/>
+  </target>
+
+  <target name="nativeSetup-debug" depends="nativeSetup-debug-solaris, nativeSetup-debug-solaris-x86, nativeSetup-debug-linux, nativeSetup-debug-linux-amd64, nativeSetup-debug-linux-ia64, nativeSetup-debug-linux-ppc, nativeSetup-debug-win32, nativeSetup-debug-winamd64">
 	<property name="bldType" value="debug"/>
 	<property name="javahCoreSrc"     
 	 location="${src}/classes/share/javax/media/j3d"/>
@@ -98,7 +104,13 @@
 	<property name="coreLibDependency" value="bin/j3dcore-${build.rend}.dll"/>
   </target>
 
-  <target name="nativeSetup-opt" depends="nativeSetup-opt-solaris, nativeSetup-opt-solaris-x86, nativeSetup-opt-linux, nativeSetup-opt-linux-amd64, nativeSetup-opt-linux-ia64, nativeSetup-opt-linux-ppc, nativeSetup-opt-win32">
+  <target name="nativeSetup-opt-winamd64" if="isWindowsOnAmd64">
+	<property name="bldFlag" 
+	         value="-DWIN32 -D_WINDOWS"/>
+	<property name="coreLibDependency" value="bin/j3dcore-${build.rend}.dll"/>
+  </target>
+
+  <target name="nativeSetup-opt" depends="nativeSetup-opt-solaris, nativeSetup-opt-solaris-x86, nativeSetup-opt-linux, nativeSetup-opt-linux-amd64, nativeSetup-opt-linux-ia64, nativeSetup-opt-linux-ppc, nativeSetup-opt-win32, nativeSetup-opt-winamd64">
 	<property name="bldType" value="opt"/>
 	<property name="javahCoreSrc"     
 	 location="${src}/classes/share/javax/media/j3d"/>

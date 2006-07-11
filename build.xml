@@ -192,6 +192,12 @@
     <property name="install.bin" value="bin"/>
   </target>
 
+  <target name="setupWindowsAmd64" if="isWindowsOnAmd64">	
+    <property name="wstype" value="win32"/>
+    <property name="platform" value="windows-amd64-${build.comp}"/>
+    <property name="install.bin" value="bin"/>
+  </target>
+
   <target name="init-jogl" if="build.jogl">
     <property name="jogl.pipeline.srcdir" location="${src}/classes/jogl"/>
     <echo message="Building JoglPipeline"/>
@@ -205,7 +211,7 @@
   </target>
 
   <target name="setupPlatform"
-       depends="init, setupBuildType, setupSolaris, setupSolarisX86, setupLinux, setupLinuxAmd64, setupLinuxIA64, setupLinuxPPC, setupWindows, setupJogl">
+       depends="init, setupBuildType, setupSolaris, setupSolarisX86, setupLinux, setupLinuxAmd64, setupLinuxIA64, setupLinuxPPC, setupWindows, setupWindowsAmd64, setupJogl">
     <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
     <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
     <property name="docname" value="java3d-${version_file}-doc"/>
@@ -329,6 +335,11 @@
     <!-- ========== determine platform ========== -->
     <condition property="isWindowsOnX86">
 	<os family="windows" arch="x86"/>
+    </condition> 
+
+
+    <condition property="isWindowsOnAmd64">
+	<os family="windows" arch="amd64"/>
     </condition> 
 
     <condition property="isLinuxOnX86">
