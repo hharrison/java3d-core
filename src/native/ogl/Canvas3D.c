@@ -963,7 +963,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_destroyContext(
     JNIEnv *env,
     jobject obj,
     jlong display,
-    jint window,
+    jlong window,
     jlong ctxInfo)
 {
     GraphicsContextPropertiesInfo* s =  (GraphicsContextPropertiesInfo* )ctxInfo;
@@ -1014,7 +1014,7 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createNewContext(
     jobject obj, 
     jobject cv, 
     jlong display,
-    jint window, 
+    jlong window, 
     jlong fbConfigListPtr,
     jlong sharedCtxInfo,
     jboolean isSharedCtx,
@@ -1225,7 +1225,7 @@ jboolean JNICALL Java_javax_media_j3d_NativePipeline_useCtx(
     jobject obj, 
     jlong ctxInfo,
     jlong display, 
-    jint window)
+    jlong window)
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     jlong ctx = ctxProperties->context;
@@ -2187,7 +2187,7 @@ jint JNICALL Java_javax_media_j3d_NativePipeline_swapBuffers(
     jobject cv,
     jlong ctxInfo,
     jlong display, 
-    jint window)
+    jlong window)
 {
     
 #if defined(UNIX)
@@ -2399,7 +2399,7 @@ int getTextureColorTableSize(
 }
 
 JNIEXPORT
-jint JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
+jlong JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
     JNIEnv *env,
     jobject obj,
     jobject cv,
@@ -2460,7 +2460,7 @@ jint JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
 	   fprintf(stderr, "Java 3D ERROR : glXCreateGLXPbuffer() returns None\n");	   
        }
 
-       return pbuff;
+       return (jlong)pbuff;
    }
    else if((val & GLX_PIXMAP_BIT) != 0) {
        Pixmap pixmap;
@@ -2510,11 +2510,11 @@ jint JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
        }
 
        /* fprintf(stderr, "glxpixmap %d\n",(int) glxpixmap); */
-       return glxpixmap;
+       return (jlong)glxpixmap;
    }
    else {
        fprintf(stderr, "Java 3D ERROR : FBConfig doesn't support pbuffer or pixmap returns None\n");
-       return None;
+       return (jlong)None;
    }
 
    
@@ -2647,7 +2647,7 @@ jint JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
 
 	(*(table->SetLongField))(env, cv, offScreenBuffer_field, (jlong)offScreenBufferInfo);
 
-	return (jint) hpbufdc;
+	return (jlong) hpbufdc;
     }
 
     /* fprintf(stderr, "***** Use Bitmap for offscreen  ******\n"); */
@@ -2702,10 +2702,11 @@ jint JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
     
     (*(table->SetLongField))(env, cv, offScreenBuffer_field, (jlong)offScreenBufferInfo);
 
-    return ((jint)bitmapHdc);
-    
+    return ((jlong)bitmapHdc);
+
 #endif /* WIN32 */
 }
+
 
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_destroyOffScreenBuffer(
@@ -2715,7 +2716,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_destroyOffScreenBuffer(
     jlong ctxInfo,    
     jlong display,
     jlong fbConfigListPtr,
-    jint window)
+    jlong window)
 {
     jclass cv_class;
     jfieldID offScreenBuffer_field;
@@ -3069,7 +3070,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_createQueryContext(
     jobject obj,
     jobject cv,
     jlong display,
-    jint window,
+    jlong window,
     jlong fbConfigListPtr,
     jboolean offScreen,
     jint width,
@@ -3080,7 +3081,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_createQueryContext(
     JNIEnv table = *env;
     jlong gctx;
     int stencilSize=0;
-    jint newWin;
+    jlong newWin;
     int PixelFormatID=0;
     GraphicsContextPropertiesInfo* ctxInfo = (GraphicsContextPropertiesInfo *)malloc(sizeof(GraphicsContextPropertiesInfo)); 
 	
@@ -3142,7 +3143,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_createQueryContext(
 	    glWin = XCreateWindow((Display *)display, root, 0, 0, width, height, 0,
 				  vinfo->depth, InputOutput, vinfo->visual,
 				  win_mask, &win_attrs);
-	    newWin = (jint)glWin; 
+	    newWin = (jlong)glWin; 
 	}
     }
     else if(window == 0 && offScreen){
@@ -3225,7 +3226,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_createQueryContext(
 	hdc =  (HDC) window;
     }
 
-    newWin = (jint)hdc;
+    newWin = (jlong)hdc;
    
     SetPixelFormat(hdc, PixelFormatID, NULL);
 

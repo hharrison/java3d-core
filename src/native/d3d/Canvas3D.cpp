@@ -51,7 +51,7 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createNewContext(
     jobject  obj,
     jobject  cv,
     jlong    display,
-    jint     window,
+    jlong    window,
     jlong    fbConfigListPtr,
     jlong    sharedCtx,
     jboolean isSharedCtx,
@@ -59,7 +59,7 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createNewContext(
 	jboolean glslLibraryAvailable,
     jboolean cgLibraryAvailable)
 {
-    HWND hwnd = WindowFromDC(reinterpret_cast<HDC>(jlong(window)));
+    HWND hwnd = WindowFromDC(reinterpret_cast<HDC>(window));
 
     lock();
     int vid = 0; // TODO: get needed info from fbConfigListPtr
@@ -112,7 +112,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_createQueryContext(
     jobject obj,
     jobject cv,
     jlong display,
-    jint window,
+    jlong window,
     jlong fbConfigListPtr,
     jboolean offScreen,
     jint width,
@@ -120,7 +120,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_createQueryContext(
 	jboolean glslLibraryAvailable,
     jboolean cgLibraryAvailable)
 {
-    HWND hwnd = WindowFromDC(reinterpret_cast<HDC>(jlong(window)));
+    HWND hwnd = WindowFromDC(reinterpret_cast<HDC>(window));
 
     lock();
     // always use offscreen for property since it
@@ -151,7 +151,7 @@ jboolean JNICALL Java_javax_media_j3d_NativePipeline_useCtx(
     jobject obj, 
     jlong ctx, 
     jlong display, 
-    jint window)
+    jlong window)
 {
 	return JNI_TRUE;   
 	// D3D doesn't have notation of current context
@@ -640,7 +640,7 @@ jint JNICALL Java_javax_media_j3d_NativePipeline_swapBuffers(
     jobject cv,
     jlong ctx,
     jlong display,
-    jint window)
+    jlong window)
 {
     GetDevice2();
 
@@ -853,7 +853,7 @@ jint JNICALL Java_javax_media_j3d_NativePipeline_getTextureUnitCount(
 
 
 extern "C" JNIEXPORT
-jint JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
+jlong JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
     JNIEnv *env,
     jobject obj,
     jobject cv,
@@ -883,7 +883,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_destroyContext(
     JNIEnv *env,
     jobject obj,
     jlong display,
-    jint window,
+    jlong window,
     jlong ctx)
 {
     GetDevice();
@@ -904,7 +904,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_destroyOffScreenBuffer(
     jlong ctx,
     jlong display,
     jlong fbConfigListPtr,
-    jint window)
+    jlong window)
 {
     // do nothing, since the old buffer will destory 
     // in createOffScreenBuffer
