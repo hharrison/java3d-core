@@ -2657,9 +2657,9 @@ class JoglPipeline extends Pipeline {
 
     lockArray(gl, vertexCount);
 
-    if (geo_type == GeometryRetained.GEO_TYPE_TRI_STRIP_SET || 
-        geo_type == GeometryRetained.GEO_TYPE_TRI_FAN_SET   || 
-        geo_type == GeometryRetained.GEO_TYPE_LINE_STRIP_SET) {
+    if (geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET || 
+        geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_FAN_SET   || 
+        geo_type == GeometryRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET) {
       int primType = 0;
       switch (geo_type) {
         case GeometryRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET:
