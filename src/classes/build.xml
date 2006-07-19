@@ -58,7 +58,8 @@
 	   source="1.5"
 	   target="1.5"
 	   debug="true"
-           deprecation="off">
+           deprecation="off"
+           excludes="${javac.excludes}">
 	   <classpath refid="vecmath.debug.classpath"/>
     </javac>
 
@@ -97,12 +98,13 @@
     </copy>
 
     <!-- Compile the java code from ${src} into ${build}/${platform}/opt/classes -->
-    <javac srcdir="${src}/classes/share:${src}/classes/${wstype}:${jogl.pipeline.srcdir}:${core_utils_src}/classes/share:${build-opt-gen}/classes"            destdir="${build}/${platform}/opt/classes"
+   <javac srcdir="${src}/classes/share:${src}/classes/${wstype}:${jogl.pipeline.srcdir}:${core_utils_src}/classes/share:${build-opt-gen}/classes"            destdir="${build}/${platform}/opt/classes"
            source="1.5"
            target="1.5"
            debug="true"
            debuglevel="lines,source"
-           deprecation="off">
+           deprecation="off"
+           excludes="${javac.excludes}">
            <classpath refid="vecmath.opt.classpath"/>
     </javac>
                                                                                                      
