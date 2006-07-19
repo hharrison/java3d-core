@@ -43,6 +43,8 @@ class JoglPipeline extends Pipeline {
     private static final boolean EXTRA_DEBUGGING = false;
     // Number of milliseconds to wait for windows to pop up on screen
     private static final int WAIT_TIME = 1000;
+    // Configurable constant just in case we want to change this later
+    private static final int MIN_FRAME_SIZE = 1;
 
     /**
      * Constructor for singleton JoglPipeline instance
@@ -6891,9 +6893,9 @@ class JoglPipeline extends Pipeline {
       // the incoming "display" parameter
       QueryCanvas canvas = new QueryCanvas(caps, querier, null);
       f.add(canvas, BorderLayout.CENTER);
-      f.setSize(1, 1);
+      f.setSize(MIN_FRAME_SIZE, MIN_FRAME_SIZE);
       f.setVisible(true);
-      
+      canvas.doQuery();
       // Attempt to wait for the frame to become visible, but don't block the EDT
       if (!EventQueue.isDispatchThread()) {
         synchronized(querier) {
@@ -8779,8 +8781,9 @@ class JoglPipeline extends Pipeline {
         try {
           QueryCanvas canvas = new QueryCanvas(caps, capturer, dev);
           f.add(canvas, BorderLayout.CENTER);
-          f.setSize(1, 1);
+          f.setSize(MIN_FRAME_SIZE, MIN_FRAME_SIZE);
           f.setVisible(true);
+          canvas.doQuery();
           if (DEBUG_CONFIG) {
             System.err.println("Waiting for CapabilitiesCapturer");
           }
@@ -8998,6 +9001,7 @@ class JoglPipeline extends Pipeline {
   class QueryCanvas extends Canvas {
     private GLDrawable drawable;
     private ExtendedCapabilitiesChooser chooser;
+    private boolean alreadyRan;
 
     public QueryCanvas(GLCapabilities capabilities,
                        ExtendedCapabilitiesChooser chooser,
@@ -9022,6 +9026,14 @@ class JoglPipeline extends Pipeline {
     public void addNotify() {
       super.addNotify();
       drawable.setRealized(true);
+    }
+
+    // It seems that at least on Mac OS X we need to do the OpenGL
+    // context-related work outside of the addNotify call because the
+    // Canvas hasn't been resized to a non-zero size by that point
+    public void doQuery() {
+      if (alreadyRan)
+        return;
       GLContext context = drawable.createContext(null);
       int res = context.makeCurrent();
       if (res != GLContext.CONTEXT_NOT_CURRENT) {
@@ -9029,6 +9041,7 @@ class JoglPipeline extends Pipeline {
         context.release();
       }
       context.destroy();
+      alreadyRan = true;
     }
   }
 
