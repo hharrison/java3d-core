@@ -815,7 +815,7 @@ public class ImageComponent3D extends ImageComponent {
     public NodeComponent cloneNodeComponent() {
 	ImageComponent3DRetained rt = (ImageComponent3DRetained) retained;
 
-	ImageComponent3D img = new ImageComponent3D(rt.format,
+	ImageComponent3D img = new ImageComponent3D(rt.getFormat(),
 						    rt.width,
 						    rt.height,
 						    rt.depth);

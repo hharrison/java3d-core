@@ -1696,7 +1696,7 @@ public class Canvas3D extends Canvas {
 		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D15"));
 	    }
 
-	    if (bufferRetained.format == ImageComponent.FORMAT_CHANNEL8) {
+	    if (bufferRetained.getFormat() == ImageComponent.FORMAT_CHANNEL8) {
 		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D16"));
 	    }
 
@@ -3705,7 +3705,6 @@ public class Canvas3D extends Canvas {
     void resetTextureBin() {
 	Object obj;
 	TextureRetained tex;
-	DetailTextureImage detailTex;
 
 	// We don't use rdr.objectId for background texture in D3D
 	// so there is no need to handle rdr.objectId
@@ -3722,12 +3721,7 @@ public class Canvas3D extends Canvas {
 		if (obj instanceof TextureRetained) {
 		    tex = (TextureRetained) obj;
 		    tex.resourceCreationMask &= ~canvasBit;
-		} else {
-		    detailTex = (DetailTextureImage) obj;
-		    for (int i=0; i < detailTex.resourceCreationMask.length; i++) {
-			detailTex.resourceCreationMask[i] &= ~canvasBit;
-		    }
-		}
+		} 
 	    }
 	}
     }
@@ -4393,7 +4387,6 @@ public class Canvas3D extends Canvas {
 
 	Object obj;
 	TextureRetained tex;
-	DetailTextureImage detailTex;
 	
 	// Just return if we don't have a valid renderer or context
 	if (rdr == null || ctx == null) {
@@ -4436,10 +4429,7 @@ public class Canvas3D extends Canvas {
 			tex.freeTextureId(id);
 		    }
 		}
-	    } else if (obj instanceof DetailTextureImage) {
-		detailTex = ((DetailTextureImage) obj);
-		detailTex.freeDetailTextureId(id, canvasBit);
-	    }
+	    } 
 	}
 	textureIDResourceTable.clear();	
 
@@ -4726,12 +4716,7 @@ public class Canvas3D extends Canvas {
     private boolean releaseCtx(Context ctx, long dpy) {
         return Pipeline.getPipeline().releaseCtx(ctx, dpy);
     }
-
-    void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,
-            ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown) {
-        Pipeline.getPipeline().clear(ctx, r, g, b, winWidth, winHeight,
-                image, imageScaleMode, imageYdown);
-    }
+    
     void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,
@@ -4778,16 +4763,6 @@ public class Canvas3D extends Canvas {
     }
     static void freeTexture(Context ctx, int id) {
         Pipeline.getPipeline().freeTexture(ctx, id);
-    }
-
-    void composite(Context ctx, int px, int py,
-            int xmin, int ymin, int xmax, int ymax,
-            int rasWidth,  byte[] image,
-            int winWidth, int winHeight) {
-        Pipeline.getPipeline().composite(ctx, px, py,
-                xmin, ymin, xmax, ymax,
-                rasWidth,  image,
-                winWidth, winHeight);
     }
 
     void texturemapping(Context ctx,

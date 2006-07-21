@@ -142,9 +142,6 @@
      	     srcfile="${javahCoreSrc}/DepthComponentRetained.java"
     	     targetfile="${javahCoreTarget}/javax_media_j3d_DepthComponentRetained.h"/>
 	    <uptodate
-     	     srcfile="${javahCoreSrc}/DetailTextureImage.java"
-    	     targetfile="${javahCoreTarget}/javax_media_j3d_DetailTextureImage.h"/>
-	    <uptodate
      	     srcfile="${javahCoreSrc}/DirectionalLightRetained.java"
     	     targetfile="${javahCoreTarget}/javax_media_j3d_DirectionalLightRetained.h"/>
 	    <uptodate
@@ -334,7 +331,6 @@
 	<class name="javax.media.j3d.ColoringAttributesRetained"/>
 	<class name="javax.media.j3d.CompressedGeometryRetained"/>
 	<class name="javax.media.j3d.DepthComponentRetained"/>
-	<class name="javax.media.j3d.DetailTextureImage"/>
 	<class name="javax.media.j3d.DirectionalLightRetained"/>
 	<class name="javax.media.j3d.DisplayListRenderMethod"/>
 	<class name="javax.media.j3d.DrawingSurfaceObjectAWT"/>

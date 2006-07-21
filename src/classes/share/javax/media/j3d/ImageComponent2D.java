@@ -84,7 +84,7 @@ public class ImageComponent2D extends ImageComponent {
      */
     public ImageComponent2D(int format, BufferedImage image) {
 
-        ((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(null), image.getHeight(null), 1);
+        ((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
 	((ImageComponent2DRetained)this.retained).set(image);
     }
 
@@ -185,7 +185,7 @@ public class ImageComponent2D extends ImageComponent {
 
  	((ImageComponentRetained)this.retained).setByReference(byReference);
  	((ImageComponentRetained)this.retained).setYUp(yUp);
- 	((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(null), image.getHeight(null), 1);
+ 	((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
  	((ImageComponent2DRetained)this.retained).set(image);
     }
 
@@ -349,6 +349,7 @@ public class ImageComponent2D extends ImageComponent {
      * by-reference and the image referenced by this ImageComponent2D
      * object is not an instance of BufferedImage.
      */
+    // TODO : Need to add @exception if image not set with BufferedImage.
     public BufferedImage getImage() {
         if (isLiveOrCompiled()) {
             if(!this.getCapability(ImageComponent.ALLOW_IMAGE_READ))
@@ -379,6 +380,7 @@ public class ImageComponent2D extends ImageComponent {
      *
      * @since Java 3D 1.2
      */
+    // TODO : Need to add @exception if image not set with RenderedImage.
     public RenderedImage getRenderedImage() {
 
         if (isLiveOrCompiled())
@@ -402,6 +404,7 @@ public class ImageComponent2D extends ImageComponent {
      *
      * @since Java 3D 1.5
      */
+    // TODO : Need to add @exception if image not set with NioImageBuffer.
     public NioImageBuffer getNioImage() {
 
         if (isLiveOrCompiled()) {
@@ -421,8 +424,8 @@ public class ImageComponent2D extends ImageComponent {
      * starting at the offset (srcX, srcY) of the specified 
      * RenderedImage object will be copied into the image component
      * starting at the offset (dstX, dstY) of the ImageComponent2D object.
-     * The RenderedImage object must be of the same format as the current 
-     * format of this object.
+     * The specified RenderedImage object must be of the same format as
+     * the current RenderedImage object in this image component.
      * This method can only be used if the data access mode is
      * by-copy. If it is by-reference, see updateData().
      *
@@ -455,9 +458,12 @@ public class ImageComponent2D extends ImageComponent {
      * <code>srcY</code> < 0, or
      * (<code>srcY</code> + <code>height</code>) > height of the 
      * RenderedImage object containing the subimage.
+     * @exception IllegalArgumentException if the specified RenderedImage
+     * is not compatible with the existing RenderedImage. 
      *
      * @since Java 3D 1.3
      */
+    // TODO : Need to add @exception if image not set with RenderedImage.
     public void setSubImage(RenderedImage image, int width, int height,
 				int srcX, int srcY, int dstX, int dstY) {
         if (isLiveOrCompiled() &&
@@ -529,6 +535,7 @@ public class ImageComponent2D extends ImageComponent {
      *
      * @since Java 3D 1.5
      */
+    // TODO : Need to add @exception if image not set with NioImageBuffer.
     public void setSubImage(NioImageBuffer image, int width, int height,
                             int srcX, int srcY, int dstX, int dstY) {
         if (isLiveOrCompiled() && !this.getCapability(ALLOW_IMAGE_WRITE)) {
@@ -637,7 +644,7 @@ public class ImageComponent2D extends ImageComponent {
     public NodeComponent cloneNodeComponent() {
 	ImageComponent2DRetained rt = (ImageComponent2DRetained) retained;
 
-	ImageComponent2D img = new ImageComponent2D(rt.format,
+	ImageComponent2D img = new ImageComponent2D(rt.getFormat(),
 						    rt.width,
 						    rt.height,
 						    rt.byReference,

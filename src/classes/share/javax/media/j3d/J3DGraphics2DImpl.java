@@ -47,7 +47,6 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     private volatile boolean initCtx = false;
     private volatile boolean threadWaiting = false;
     static final Color blackTransparent = new Color(0,0,0,0);
-    private boolean useDrawPixel = VirtualUniverse.mc.isJ3dG2dDrawPixel;
     int objectId = -1;
 
     // Package scope contructor
@@ -964,50 +963,41 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 	try {
 	    if (!canvas3d.drawingSurfaceObject.renderLock()) {
 		return;
-	    }
-	    
-	    if (useDrawPixel) {
-		canvas3d.composite(canvas3d.ctx, px, py, 
-				   x1, y1, x2, y2, w, data, width, height);
-	    } else {
-		if (!initTexMap) {
-		    if (objectId == -1) {
-			objectId = VirtualUniverse.mc.getTexture2DId();
-		    }
-		    texWidth = getGreaterPowerOf2(w);
-		    texHeight = getGreaterPowerOf2(h);
+	    }	    
 
-		    // Canvas got resize, need to init texture map again
-		    // in Renderer thread 
-		    if (!canvas3d.initTexturemapping(canvas3d.ctx, 
-						     texWidth, texHeight,
-						     objectId)) {
-			// Fail to get the texture surface, most likely
-			// there is not enough texture memory
-			initTexMap = false;
-			VirtualUniverse.mc.freeTexture2DId(objectId);
-			objectId = -1;
-			// Use DrawPixel next time
-			useDrawPixel = true;
-		    } else {
-			initTexMap = true;
-		    }
-		}
-		if (initTexMap) {
-		    canvas3d.texturemapping(canvas3d.ctx, px, py,
-					    x1, y1, x2, y2,
-					    texWidth, texHeight, w,
-					    (abgr ? ImageComponentRetained.BYTE_ABGR:
-					     ImageComponentRetained.BYTE_RGBA),
-					    objectId,  data, width, height);
-		} else {
-		    // Fall back to composite for this round
-		    canvas3d.composite(canvas3d.ctx, px, py,
-				       x1, y1, x2, y2, w, data,
-				       width, height);
-		    
-		}
-	    }
+            if (!initTexMap) {
+                if (objectId == -1) {
+                    objectId = VirtualUniverse.mc.getTexture2DId();
+                }
+                texWidth = getGreaterPowerOf2(w);
+                texHeight = getGreaterPowerOf2(h);
+                
+                // Canvas got resize, need to init texture map again
+                // in Renderer thread
+                if (!canvas3d.initTexturemapping(canvas3d.ctx,
+                        texWidth, texHeight,
+                        objectId)) {
+                    // Fail to get the texture surface, most likely
+                    // there is not enough texture memory
+                    initTexMap = false;
+                    VirtualUniverse.mc.freeTexture2DId(objectId);
+                    objectId = -1;
+                    // TODO : Need to find a better way to report no resource problem --- Chien.
+                    System.err.println("J3DGraphics2DImpl.copyDataToCanvas() : Fail to get texture resources ..."); 
+                    
+                } else {
+                    initTexMap = true;
+                }
+            }
+            if (initTexMap) {
+                canvas3d.texturemapping(canvas3d.ctx, px, py,
+                        x1, y1, x2, y2,
+                        texWidth, texHeight, w,
+                        (abgr ? ImageComponentRetained.BYTE_ABGR:
+                            ImageComponentRetained.BYTE_RGBA),
+                        objectId,  data, width, height);
+            }
+	    
 	    canvas3d.drawingSurfaceObject.unLock();
 	} catch (NullPointerException ne) {
 	    canvas3d.drawingSurfaceObject.unLock();

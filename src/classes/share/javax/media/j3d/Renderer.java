@@ -1006,36 +1006,25 @@ class Renderer extends J3dThread {
                         // and not in stereo mode
                         if (!doAccum && !sharedStereoZBuffer) {
 			    BackgroundRetained bg = renderBin.background;
-			    if (!VirtualUniverse.mc.isBackgroundTexture) {
-				canvas.clear(canvas.ctx,
-					     bg.color.x,
-					     bg.color.y,
-					     bg.color.z,
-					     winWidth,
-					     winHeight,
-					     bg.image,
-					     bg.imageScaleMode,
-					     (bg.image != null?
-					      bg.image.imageYdown[0]:null));
-			    } else {
-				if ((bg.texImage != null) && 
-				    (objectId == -1)) {
-				    objectId = VirtualUniverse.mc.
-					getTexture2DId();
-				}
-				canvas.textureclear(canvas.ctx,
-						    bg.xmax,
-						    bg.ymax,
-						    bg.color.x,
-						    bg.color.y,
-						    bg.color.z,
-						    winWidth,
-						    winHeight,
-						    objectId,
-						    bg.imageScaleMode,
-						    bg.texImage,
-						    background_image_update);
-			    }
+
+                            if ((bg.texImage != null) && 
+                                (objectId == -1)) {
+                                objectId = VirtualUniverse.mc.
+                                    getTexture2DId();
+                            }
+                            canvas.textureclear(canvas.ctx,
+                                                bg.xmax,
+                                                bg.ymax,
+                                                bg.color.x,
+                                                bg.color.y,
+                                                bg.color.z,
+                                                winWidth,
+                                                winHeight,
+                                                objectId,
+                                                bg.imageScaleMode,
+                                                bg.texImage,
+                                                background_image_update);
+			    
 //                             canvas.clear(canvas.ctx,
 // 					 bg.color.x,
 //                                          bg.color.y,
@@ -1135,37 +1124,25 @@ class Renderer extends J3dThread {
                                 //  accumulation buffer cases
                                 if (doAccum || sharedStereoZBuffer) {
 				    BackgroundRetained bg = renderBin.background;
-				    if (!VirtualUniverse.mc.isBackgroundTexture) {
-					canvas.clear(canvas.ctx,
-						     bg.color.x,
-						     bg.color.y,
-						     bg.color.z,
-						     winWidth,
-						     winHeight,
-						     bg.image,
-						     bg.imageScaleMode,
-						       (bg.image != null?bg.image.imageYdown[0]:null));
-				    }
-				    else {
-					if ((bg.texImage != null) && 
-					    (objectId == -1)) {
-					    objectId = VirtualUniverse.mc.
-						getTexture2DId();
-					}
 
-					canvas.textureclear(canvas.ctx,
-							    bg.xmax,
-							    bg.ymax,
-							    bg.color.x,
-							    bg.color.y,
-							    bg.color.z,
-							    winWidth,
-							    winHeight,
-							    objectId,
-							    bg.imageScaleMode,
-							    bg.texImage,
-							    background_image_update);
-				    }
+                                    if ((bg.texImage != null) && 
+                                        (objectId == -1)) {
+                                        objectId = VirtualUniverse.mc.
+                                            getTexture2DId();
+                                    }
+
+                                    canvas.textureclear(canvas.ctx,
+                                                        bg.xmax,
+                                                        bg.ymax,
+                                                        bg.color.x,
+                                                        bg.color.y,
+                                                        bg.color.z,
+                                                        winWidth,
+                                                        winHeight,
+                                                        objectId,
+                                                        bg.imageScaleMode,
+                                                        bg.texImage,
+                                                        background_image_update);
                                 }
 
 			        // render background geometry
@@ -1677,7 +1654,6 @@ class Renderer extends J3dThread {
     void freeContextResources() {
 	Object obj;
 	TextureRetained tex;
-	DetailTextureImage detailTex;
 
 	for (int id = textureIDResourceTable.size()-1; id > 0; id--) {
 	    obj = textureIDResourceTable.get(id);
@@ -1693,11 +1669,7 @@ class Renderer extends J3dThread {
 			tex.freeTextureId(id);
 		    }
 		}
-	    } else if (obj instanceof DetailTextureImage) {
-		detailTex = (DetailTextureImage) obj;
-		detailTex.freeDetailTextureId(id, rendererBit);
 	    }
-
 	}
 	textureIDResourceTable.clear();	
 	

@@ -22,13 +22,6 @@ import java.awt.color.ColorSpace;
  */
 
 class ImageComponent2DRetained extends ImageComponentRetained {
-    private int rasterRefCnt = 0; 	// number of raster using this object
-    private int textureRefCnt = 0;	// number of texture using this object
-
-    private DetailTextureImage detailTexture = null; // will reference a 
-					// DetailTexture object if 
-					// this image is being
-					// referenced as a detail image
 
     // used in D3D to map object to surface pointer
     int hashId;       
@@ -47,15 +40,223 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	hashId = hashCode();
     }
 
-    /**
-     * Copies the specified BufferedImage to this 2D image component object.
-     * @param image BufferedImage object containing the image.
+    /*
+     *
+     * NEW CODE : BEGIN --- Chien.
+     *
+     */
+    
+     /**
+     * This method handles both BufferedImage and RenderedImage
+     * Copies the specified RenderedImage to this 2D image component object.
+     * @param image RenderedImage object containing the image.
      * The format and size must be the same as the current format in this
      * ImageComponent2D object.
      */
-    final void set(BufferedImage image) {
-        int width = image.getWidth(null);
-        int height = image.getHeight(null);
+    void new15_set(RenderedImage image) {
+        
+        int width = image.getWidth();
+        int height = image.getHeight();
+        
+        if (width != this.width)
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained0"));
+        
+        if (height != this.height)
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained1"));
+        
+        geomLock.getLock();        
+        
+        if(byReference) {            
+            setRefImage(image,0);    
+        }
+        
+        imageTypeIsSupported = new15_isImageTypeSupported(image);
+        
+        setStoredImageFormatType(getImageFormatType());
+        
+        if (imageTypeIsSupported) {
+
+            if(byReference && yUp) {
+                /* Use reference when ( format is OK, Yup is true, and byRef is true). */
+                System.err.println("ImageComponent2DRetained.set() : (imageTypeSupported && byReference && yUp) --- (1)");
+                // Set imageData to null as we are in byRef case.
+                //  -- Rethink how byRef is handled --- Chien.
+
+                imageData = null; 
+               // setRefImage(image, 0); 
+
+            } else { 
+                // Either not byRef or not yUp or not both
+                System.err.println("ImageComponent2DRetained.set() : (imageTypeSupported && ((!byReference && yUp) || (imageTypeSupported && !yUp)) --- (2)");
+
+                // Create image data object to image. */
+                imageData = createImageDataObject();
+
+                copySupportedImageToImageData(image, 0);
+            }
+
+        } else {
+            // image type is unsupported, need to create a supported local copy.
+            // TODO : borrow code from JAI to convert to right format.
+            System.err.println("ImageComponent2DRetained.set() : (imageTypeSupported == false) --- (4)");
+            /* Will use the code segment in copy() method */
+
+            // Create image data object to image. */
+            imageData = createImageDataObject();
+
+            copyUnsupportedImageToImageData(image, 0);
+
+        }    
+        
+        geomLock.unLock();
+        
+        if (source.isLive()) {
+            freeSurface();
+            
+            // send a IMAGE_CHANGED message in order to
+            // notify all the users of the change
+            sendMessage(IMAGE_CHANGED, null);
+        }
+    }
+
+    void new15_setSubImage(RenderedImage image, int width, int height, 
+			   int srcX, int srcY, int dstX, int dstY) {
+
+        // This check should move into ImageCompont2D.java
+        if(!isSubImageTypeEqual(image)) {
+            throw new IllegalStateException(
+                                J3dI18N.getString("ImageComponent2D_XXXX"));           
+        }
+
+        // Can't be byReference
+        assert (!byReference);
+        assert (imageData != null);
+
+        geomLock.getLock();
+
+        if (imageTypeIsSupported) {            
+            // Either not byRef or not yUp or not both
+            System.err.println("ImageComponent2DRetained.setSubImage() : (imageTypeSupported ) --- (1)");
+
+            copySupportedImageToImageData(image, srcX, srcY, dstX, dstY, 0, width, height);
+            
+       } else {
+            // image type is unsupported, need to create a supported local copy.
+            // TODO : borrow code from JAI to convert to right format.
+            System.err.println("ImageComponent2DRetained.setSubImage() : (imageTypeSupported == false) --- (2)");
+            /* Will use the code segment in copy() method */
+
+            copyUnsupportedImageToImageData(image, srcX, srcY, dstX, dstY, 0, width, height);
+            
+        }    
+        geomLock.unLock();
+
+        if (source.isLive()) {
+
+            // XXXX: check whether this is needed
+            freeSurface();
+
+            // send a SUBIMAGE_CHANGED message in order to
+            // notify all the users of the change
+
+            ImageComponentUpdateInfo info;
+
+            // TODO : Should we still use freelist ? -- Chien.
+            info = VirtualUniverse.mc.getFreeImageUpdateInfo();
+            info.x = dstX;
+            info.y = dstY;
+	    info.z = 0;
+            info.width = width;
+            info.height = height;
+
+            sendMessage(SUBIMAGE_CHANGED, info);
+        }
+    }    
+    
+    
+    /*
+     *
+     * NEW CODE : END  ---- Chien.
+     *
+     */
+                    
+    
+    
+    boolean willBeCopied(RenderedImage image) {
+	return shouldImageBeCopied(getImageType(image),
+				   (Canvas3D.EXT_ABGR|Canvas3D.EXT_BGR), image);
+    }
+
+    // NOTE, IMPORTANT: any additions to the biType tested , should be added to
+    // the willBeCopied() function
+    final boolean shouldImageBeCopied(int biType, int ext, RenderedImage ri) {
+
+	if (!byReference)
+	    return true;
+
+	if ((((ext & Canvas3D.EXT_ABGR) != 0) && 
+	     ((biType == BufferedImage.TYPE_4BYTE_ABGR) &&
+	      (getFormat() == ImageComponent.FORMAT_RGBA8))) ||
+	    (((ext & Canvas3D.EXT_BGR) != 0) &&
+	     ((biType == BufferedImage.TYPE_3BYTE_BGR) &&
+	      (getFormat() == ImageComponent.FORMAT_RGB))) ||	     
+	    ((biType == BufferedImage.TYPE_BYTE_GRAY) &&
+	     (getFormat() == ImageComponent.FORMAT_CHANNEL8)) ||
+	    (is4ByteRGBAOr3ByteRGB(ri))) {
+	    /* ||XXXX: Don't do short for now!
+	       ((biType ==  BufferedImage.TYPE_USHORT_GRAY) &&
+	       (format == ImageComponent.FORMAT_CHANNEL8)
+	    */
+	    
+	    return false;
+	}
+	return true;
+    }
+
+    final int  getStoredFormat(int biType, RenderedImage ri) {
+	int f = 0;
+	switch(biType) {
+	case BufferedImage.TYPE_4BYTE_ABGR:
+	    f=  BYTE_ABGR;
+	    break;
+	case BufferedImage.TYPE_BYTE_GRAY:
+	    f=  BYTE_GRAY;
+	    break;
+	case BufferedImage.TYPE_USHORT_GRAY:
+	    f =  USHORT_GRAY;
+	    break;
+	case BufferedImage.TYPE_3BYTE_BGR:
+	    f =  BYTE_BGR;
+	    break;
+	case BufferedImage.TYPE_CUSTOM:
+	    if (is4ByteRGBAOr3ByteRGB(ri)) {
+		SampleModel sm = ri.getSampleModel();
+		if (sm.getNumBands() == 3) {
+		    f = BYTE_RGB;
+		}
+		else {
+		    f = BYTE_RGBA;
+		}
+	    }
+	    break;
+	default:
+	    // Should never come here
+	}
+	return f;
+    }
+
+    
+    /**
+     * This method handles both BufferedImage and RenderedImage
+     * Copies the specified RenderedImage to this 2D image component object.
+     * @param image RenderedImage object containing the image.
+     * The format and size must be the same as the current format in this
+     * ImageComponent2D object.
+     */
+    final void set(RenderedImage image) {
+
+        int width = image.getWidth();
+        int height = image.getHeight();
 
 	if (width != this.width)
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained0"));
@@ -63,7 +264,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	if (height != this.height)
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained1"));
 
-	int imageBytes;
+	int imageSizeInBytes;
 	// Note, currently only EXT_ABGR and EXT_BGR are not copied, if
 	// its going to be copied, do it at set time (at this time, the
 	// renderer is running in parallel), if we delay it until
@@ -71,12 +272,12 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	// we are stalling the renderer
 	geomLock.getLock();
 	if (!byReference || (byReference && willBeCopied(image))) {
-	    imageBytes = height * width * bytesPerPixelIfStored;
+	    imageSizeInBytes = height * width * bytesPerPixelIfStored;
 	    if (usedByTexture || ! usedByRaster) {
 		// ==> (usedByTexture) || (! usedByTexture && ! usedByRaster)
  
-		if (imageYup == null || imageYup.length < imageBytes) {
-		    imageYup = new byte[imageBytes];
+		if (imageYup == null || imageYup.length < imageSizeInBytes) {
+		    imageYup = new byte[imageSizeInBytes];
 		    imageYupAllocated = true;  
 		}
  
@@ -93,8 +294,8 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 		storedYdownFormat = internalFormat;
 		bytesPerYdownPixelStored = getBytesStored(storedYdownFormat);
 
-		if (imageYdown[0] == null || imageYdown[0].length < imageBytes) {
-		    imageYdown[0] = new byte[imageBytes];
+		if (imageYdown[0] == null || imageYdown[0].length < imageSizeInBytes) {
+		    imageYdown[0] = new byte[imageSizeInBytes];
 		    imageYdownAllocated = true;
 		}
  
@@ -146,173 +347,6 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	}
     }
 
-
-    boolean willBeCopied(RenderedImage image) {
-	return shouldImageBeCopied(getImageType(image),
-				   (Canvas3D.EXT_ABGR|Canvas3D.EXT_BGR), image);
-    }
-
-
-
-    // NOTE, IMPORTANT: any additions to the biType tested , should be added to
-    // the willBeCopied() function
-    final boolean shouldImageBeCopied(int biType, int ext, RenderedImage ri) {
-
-	if (!byReference)
-	    return true;
-
-	if ((((ext & Canvas3D.EXT_ABGR) != 0) && 
-	     ((biType == BufferedImage.TYPE_4BYTE_ABGR) &&
-	      (format == ImageComponent.FORMAT_RGBA8))) ||
-	    (((ext & Canvas3D.EXT_BGR) != 0) &&
-	     ((biType == BufferedImage.TYPE_3BYTE_BGR) &&
-	      (format == ImageComponent.FORMAT_RGB))) ||	     
-	    ((biType == BufferedImage.TYPE_BYTE_GRAY) &&
-	     (format == ImageComponent.FORMAT_CHANNEL8)) ||
-	    (is4ByteRGBAOr3ByteRGB(ri))) {
-	    /* ||XXXX: Don't do short for now!
-	       ((biType ==  BufferedImage.TYPE_USHORT_GRAY) &&
-	       (format == ImageComponent.FORMAT_CHANNEL8)
-	    */
-	    
-	    return false;
-	}
-	return true;
-    }
-
-    final int  getStoredFormat(int biType, RenderedImage ri) {
-	int f = 0;
-	switch(biType) {
-	case BufferedImage.TYPE_4BYTE_ABGR:
-	    f=  BYTE_ABGR;
-	    break;
-	case BufferedImage.TYPE_BYTE_GRAY:
-	    f=  BYTE_GRAY;
-	    break;
-	case BufferedImage.TYPE_USHORT_GRAY:
-	    f =  USHORT_GRAY;
-	    break;
-	case BufferedImage.TYPE_3BYTE_BGR:
-	    f =  BYTE_BGR;
-	    break;
-	case BufferedImage.TYPE_CUSTOM:
-	    if (is4ByteRGBAOr3ByteRGB(ri)) {
-		SampleModel sm = ri.getSampleModel();
-		if (sm.getNumBands() == 3) {
-		    f = BYTE_RGB;
-		}
-		else {
-		    f = BYTE_RGBA;
-		}
-	    }
-	    break;
-	default:
-	    // Should never come here
-	}
-	return f;
-    }
-    
-    final void set(RenderedImage image) {
-
-	if (image instanceof BufferedImage) {
-	    set(((BufferedImage)image));
-	}
-	else {
-	    /*
-	    // Create a buffered image from renderImage
-	    ColorModel cm = image.getColorModel();
-	    WritableRaster wRaster = image.copyData(null);
-	    BufferedImage bi = new BufferedImage(cm,
-						 wRaster,
-						 cm.isAlphaPremultiplied()
-						 ,null);
-	    set(bi);
-	    }
-	    */
-	    int width = image.getWidth();
-	    int height = image.getHeight();
-
-	    if (width != this.width)
-		throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained0"));
-	    
-	    if (height != this.height)
-		throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained1"));
-	    
-	    int imageBytes;
-	    // Note, currently only EXT_ABGR and EXT_BGR are not copied, if
-	    // its going to be copied, do it at set time (at this time, the
-	    // renderer is running in parallel), if we delay it until
-	    // renderBin:updateObject time (when it calls evaluateExtension),
-	    // we are stalling the renderer
-	    geomLock.getLock();
-	    if (!byReference ||(byReference && willBeCopied(image))) {
-		imageBytes = height * width * bytesPerPixelIfStored;
-		if (usedByTexture || ! usedByRaster) {
-		    if (imageYup == null || imageYup.length < imageBytes) {
-			imageYup = new byte[imageBytes];
-		        imageYupAllocated = true;  
-		    }
- 
-		    // buffered image -> imageYup
-		    storedYupFormat = internalFormat;
-		    bytesPerYupPixelStored = getBytesStored(storedYupFormat);
-		    copyImage(image, imageYup, true, 0, storedYupFormat,
-				bytesPerYupPixelStored);
-		    imageYupClass = BUFFERED_IMAGE;
-		}
- 
-		if (usedByRaster) {
-
-		    imageYdownClass = BUFFERED_IMAGE;
-		    storedYdownFormat = internalFormat;
-		    bytesPerYdownPixelStored = getBytesStored(storedYdownFormat);
-
-		    if (imageYdown[0] == null || imageYdown[0].length < imageBytes) {
-			imageYdown[0] = new byte[imageBytes];
-		        imageYdownAllocated = true;
-		    }
- 
-		    if (imageYup != null)
-			//imageYup -> imageYdown
-			setImageYdown(imageYup, imageYdown[0]);
-		    else
-			// buffered image -> imageYdown
-			copyImage(image, imageYdown[0], false, 0,
-				storedYdownFormat, bytesPerYdownPixelStored);
-		}
-		if (byReference) {
-		    bImage[0] = image;
-		    if (usedByTexture || !usedByRaster)
-			imageYupCacheDirty = false;
-		    else
-			imageYupCacheDirty = true;
-		    
-		    if (usedByRaster)
-			imageYdownCacheDirty = false;
-		    else
-			imageYdownCacheDirty = true;
-		}
-		else {
-		    imageDirty[0] = true;
-		}
-	    }
-	    // If its by reference, then make a copy only if necessary
-	    else {
-		imageYupCacheDirty = true;
-		imageYdownCacheDirty = true;
-		bImage[0] = image;
-	    }
-
-	}
-	imageChanged = 0xffff;
-	lastAlpha[0] = 1.0f;
-	geomLock.unLock();
-	if (source.isLive()) {
-	    freeSurface();
-            sendMessage(IMAGE_CHANGED, null);
-	}
-    }
-
     /**
      * Retrieves a copy of the image in this ImageComponent2D object.
      * @return a new BufferedImage object created from the image in this
@@ -335,7 +369,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	
 	usedByRaster = true;
 
-	if (format == ImageComponent.FORMAT_CHANNEL8)
+	if (getFormat() == ImageComponent.FORMAT_CHANNEL8)
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained2"));
 
 	if (!byReference) {
@@ -625,6 +659,9 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         }
     }
 
+    
+    
+    /*  Not Needed  ----   Chien */ 
     // Lock out user thread from modifying usedByRaster and
     // usedByTexture variables by using synchronized routines
     final void evaluateExtensions(int ext) {
@@ -632,10 +669,10 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	int imageBytes;
 	RenderedImage image = bImage[0];
 
-	//	System.out.println("!!!!!!!!!!!!!imageYupCacheDirty = "+imageYupCacheDirty);
-	//	System.out.println("!!!!!!!!!!!!!imageYdownCacheDirty = "+imageYdownCacheDirty);
-	//	System.out.println("!!!!!!!!!!!!!usedByTexture = "+usedByTexture);
-	//	System.out.println("!!!!!!!!!!!!!usedByRaster = "+usedByRaster);
+	//	System.err.println("!!!!!!!!!!!!!imageYupCacheDirty = "+imageYupCacheDirty);
+	//	System.err.println("!!!!!!!!!!!!!imageYdownCacheDirty = "+imageYdownCacheDirty);
+	//	System.err.println("!!!!!!!!!!!!!usedByTexture = "+usedByTexture);
+	//	System.err.println("!!!!!!!!!!!!!usedByRaster = "+usedByRaster);
 
 
 	if (!imageYupCacheDirty && !imageYdownCacheDirty) {
@@ -651,7 +688,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	    // Since this is a new image, the app may have changed the image
 	    // when it was not live, so re-compute, until the image is allocated
 	    // for this pass!
-	    //	    System.out.println("!!!!!!!!!!!!!imageYupCacheDirty = "+imageYupCacheDirty);
+	    //	    System.err.println("!!!!!!!!!!!!!imageYupCacheDirty = "+imageYupCacheDirty);
 	    if (!imageYupCacheDirty) {
 		evaluateRaster(riType, ext);
 		return;
@@ -680,20 +717,28 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 		storedYupFormat = getStoredFormat(riType, image);
 		bytesPerYupPixelStored = getBytesStored(storedYupFormat);
 		
-		// It does not have to be copied, but we
+
+
+                /*
+                 * This logic need to move into set() method --- Chien.
+                 */
+
+                
+                
+                // It does not have to be copied, but we
 		// have to copy because the incoming image is
 		// ydown
 		if (!yUp) {
 		    storeTextureImageWithFlip(image);
 		}
-		else {
+		else {                    
 		    if (image instanceof BufferedImage) {
 			byte[] tmpImage =  ((DataBufferByte)((BufferedImage)image).getRaster().getDataBuffer()).getData();
 			imageYup = tmpImage;
 			imageYupAllocated = false;
 			imageYupClass = BUFFERED_IMAGE;
 		    }
-		    else {
+		    else {                        
 			numXTiles = image.getNumXTiles();
 			numYTiles = image.getNumYTiles();
 			tilew = image.getTileWidth();
@@ -719,6 +764,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	evaluateRaster(riType, ext);
     }
 
+    /*  Not Needed  ----   Chien */     
     void evaluateRaster(int riType, int ext) {
 	int i;
 	int imageBytes;
@@ -731,7 +777,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 		return;
 	    }
 	    if (shouldImageBeCopied(riType, ext, image)) {
-		//		System.out.println("Raster Image is copied");
+		//		System.err.println("Raster Image is copied");
 		imageBytes = height * width * bytesPerPixelIfStored;
 		if (imageYdown[0] == null || !imageYdownAllocated || imageYdown[0].length < imageBytes){
 		    imageYdown[0] = new byte[imageBytes];
@@ -768,7 +814,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 			imageYdown[0] = tmpImage;
 			imageYdownAllocated = false;
 			imageYdownClass = BUFFERED_IMAGE;
-			//			System.out.println("Raster Image is stored by ref");
+			//			System.err.println("Raster Image is stored by ref");
 		    }
 		    else {
 			// Right now, always copy since opengl rasterpos is
@@ -780,7 +826,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 			}
 			imageYdownClass = BUFFERED_IMAGE;
 			copyRImage(image,imageYdown[0], false, bytesPerYdownPixelStored);
-			//			System.out.println("Copying by ref RImage");
+			//			System.err.println("Copying by ref RImage");
 			
 			/*
 			numXTiles = image.getNumXTiles();
@@ -805,7 +851,9 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	    }
 	}
     }
-
+    
+    
+    /*  Not Needed  ----   Chien */     
     void storeRasterImageWithFlip(RenderedImage image) {
 	int imageBytes;
 	
@@ -835,6 +883,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	}
     }
 
+    // Keep this method --- Chien.
     void storeTextureImageWithFlip(RenderedImage image) {
 	int imageBytes;
 
@@ -887,6 +936,8 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	// surface will free when JVM do GC 
 	freeSurface();
     }
+    
+    /*  Not Needed  ----   Chien */ 
     void updateAlpha(Canvas3D cv, int screen, float alpha) {
 	// if alpha is smaller than EPSILON, set it to EPSILON, so that
 	// even if alpha is equal to 0, we will not completely lose
@@ -898,7 +949,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	if (alpha <= EPSILON) {
 	    alpha = (float)EPSILON;
 	}
-	//	System.out.println("========> updateAlpha, this = "+this);
+	//	System.err.println("========> updateAlpha, this = "+this);
 	// Lock out the other renderers ..
 	synchronized (this) {
 	    // If by reference, the image has been copied, but aset has occured
@@ -1151,11 +1202,11 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	int srcLineBytes = width * bpp;
 	
 	/*
-	System.out.println("bytesPerYdownPixelStored = "+bytesPerYdownPixelStored+" bpp = "+bpp);
-	System.out.println("storedYdownFormat = "+storedYdownFormat+" format = "+format);
-	System.out.println("bytesPerPixelIfStored = "+bytesPerPixelIfStored+" internalformat = "+internalFormat);
-	System.out.println("imageYup = "+imageYup+" imageYdown = "+imageYdown[0]);
-	System.out.println("===> usedByRaster = "+usedByRaster);
+	System.err.println("bytesPerYdownPixelStored = "+bytesPerYdownPixelStored+" bpp = "+bpp);
+	System.err.println("storedYdownFormat = "+storedYdownFormat+" format = "+format);
+	System.err.println("bytesPerPixelIfStored = "+bytesPerPixelIfStored+" internalformat = "+internalFormat);
+	System.err.println("imageYup = "+imageYup+" imageYdown = "+imageYdown[0]);
+	System.err.println("===> usedByRaster = "+usedByRaster);
 	*/
 
 	// array copy by scanline
@@ -1354,32 +1405,5 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 
             sendMessage(SUBIMAGE_CHANGED, info);
         }
-    }
-
-    synchronized void updateMirrorObject(int component, Object value) {
-
-	super.updateMirrorObject(component, value);
-
-	if (detailTexture != null) {
-            if (((component & IMAGE_CHANGED) != 0) ||
-                ((component & SUBIMAGE_CHANGED) != 0)) {
-		
-		// notify detailTexture of image change
-
-		detailTexture.notifyImageComponentImageChanged(this, value);
-	    }
-	}
-    }
-
-
-    synchronized void setDetailTexture(DetailTextureImage tex) {
-	detailTexture = tex;
-    }
-
-    synchronized DetailTextureImage getDetailTexture() {
-	if (detailTexture == null) {
-	    detailTexture = new DetailTextureImage(this);
-	}
-	return detailTexture;
     }
 }

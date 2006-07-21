@@ -207,47 +207,34 @@ class BackgroundRetained extends LeafRetained {
     final void initImage(ImageComponent2D img) {
 	if (img != null) {
 	    // scale to power of 2 for texture mapping
-	    ImageComponent2DRetained rimage = (ImageComponent2DRetained) img.retained;
-	    
-  	    if (!VirtualUniverse.mc.isBackgroundTexture) {
-  		rimage.setRasterRef();
-  	    }
-  	    else {
-//  		rimage.setTextureRef();
-
-		xmax = rimage.width;
-		ymax = rimage.height;
-		int width = getClosestPowerOf2(xmax);
-		int height = getClosestPowerOf2(ymax);
-		float xScale = (float)width/(float)xmax;
-		float yScale = (float)height/(float)ymax;
-
-		// scale if scales aren't 1.0
-  		if (!(xScale == 1.0f && yScale == 1.0f)) {
-		    BufferedImage origImg = (BufferedImage) rimage.getImage();
-		    AffineTransform at = AffineTransform.getScaleInstance(xScale,
-									  yScale);
-		    AffineTransformOp atop = new AffineTransformOp(at,
-								   AffineTransformOp.TYPE_BILINEAR);
-		    BufferedImage scaledImg = atop.filter(origImg, null);
-		    int format = rimage.getFormat();
-		    boolean yUp = rimage.isYUp();
-		    boolean byRef = rimage.isByReference();
-		    ImageComponent2D ic = new ImageComponent2D(format,
-							       scaledImg,
-							       byRef, yUp);
-		    texImage = (ImageComponent2DRetained)ic.retained;
-		    texImage.setTextureRef();
-		    //rimage.setTextureRef();
-		    //texImage.setRasterRef();
- 		}
-		else {
-		    texImage = rimage;
-		    texImage.setTextureRef();
-		    //rimage.setTextureRef();
-		    //texImage.setRasterRef();
-		}
-  	    }
+            ImageComponent2DRetained rimage = (ImageComponent2DRetained) img.retained;
+            xmax = rimage.width;
+            ymax = rimage.height;
+            int width = getClosestPowerOf2(xmax);
+            int height = getClosestPowerOf2(ymax);
+            float xScale = (float)width/(float)xmax;
+            float yScale = (float)height/(float)ymax;
+            
+            // scale if scales aren't 1.0
+            if (!(xScale == 1.0f && yScale == 1.0f)) {
+                BufferedImage origImg = (BufferedImage) rimage.getImage();
+                AffineTransform at = AffineTransform.getScaleInstance(xScale,
+                        yScale);
+                AffineTransformOp atop = new AffineTransformOp(at,
+                        AffineTransformOp.TYPE_BILINEAR);
+                BufferedImage scaledImg = atop.filter(origImg, null);
+                int format = rimage.getFormat();
+                boolean yUp = rimage.isYUp();
+                boolean byRef = rimage.isByReference();
+                ImageComponent2D ic = new ImageComponent2D(format,
+                        scaledImg,
+                        byRef, yUp);
+                texImage = (ImageComponent2DRetained)ic.retained;
+                texImage.setTextureRef();
+            } else {
+                texImage = rimage;
+                texImage.setTextureRef();
+            }
 	    
 	    this.image = rimage;
 	} else {

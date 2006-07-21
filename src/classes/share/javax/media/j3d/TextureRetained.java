@@ -2401,7 +2401,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	if (oImage instanceof ImageComponent2DRetained) {
 
             nImage = new ImageComponent2DRetained();
-            nImage.processParams(oImage.format, nWidth, nHeight, 1);
+            nImage.processParams(oImage.getFormat(), nWidth, nHeight, 1);
             nImage.imageYup = new byte[nWidth * nHeight * bytesPerPixel];
 	    nImage.storedYupFormat = nImage.internalFormat;
 	    nImage.bytesPerYupPixelStored = bytesPerPixel;
@@ -2412,7 +2412,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	    int depth =  ((ImageComponent3DRetained)oImage).depth;
             nImage = new ImageComponent3DRetained();
-            nImage.processParams(oImage.format, nWidth, nHeight, depth);
+            nImage.processParams(oImage.getFormat(), nWidth, nHeight, depth);
             nImage.imageYup = new byte[nWidth * nHeight * bytesPerPixel];
 	    nImage.storedYupFormat = nImage.internalFormat;
 	    nImage.bytesPerYupPixelStored = bytesPerPixel;

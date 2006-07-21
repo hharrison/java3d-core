@@ -997,6 +997,7 @@ abstract class Pipeline {
             float boundaryRed, float boundaryGreen,
             float boundaryBlue, float boundaryAlpha);
 
+    // TODO : No longer needed. Will do a native cleanup in next round of texture optimization putback. -- Chien
     abstract void updateDetailTextureParameters(Context ctx,
             int detailTextureMode,
             int detailTextureLevel,
@@ -1309,8 +1310,10 @@ abstract class Pipeline {
         return false;
     }
 
+    // TODO : No longer needed. Will do a native cleanup in next round of texture optimization putback. -- Chien
     abstract void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,
             ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown);
+    
     abstract void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,
@@ -1336,6 +1339,7 @@ abstract class Pipeline {
     abstract void freeDisplayList(Context ctx, int id);
     abstract void freeTexture(Context ctx, int id);
 
+    // TODO : No longer needed. Will do a native cleanup in next round of texture optimization putback. -- Chien
     abstract void composite(Context ctx, int px, int py,
             int xmin, int ymin, int xmax, int ymax,
             int rasWidth,  byte[] image,

@@ -1729,44 +1729,26 @@ public class GraphicsContext3D extends Object   {
 		int winHeight = size.height;
 		
 		if (back.image != null && back.image.isByReference()) {
-		back.image.geomLock.getLock();
-		back.image.evaluateExtensions(canvas3d.extensionsSupported);
-		if (!VirtualUniverse.mc.isBackgroundTexture) {
-		    canvas3d.clear(canvas3d.ctx,
-				   back.color.x, back.color.y, 
-				   back.color.z,  winWidth, winHeight, back.image,
-				   back.imageScaleMode,
-				   back.image != null?back.image.imageYdown[0]:null);
-		}
-		else {
-
-		    // this is if the background image resizes with the canvas
+                    back.image.geomLock.getLock();
+                    back.image.evaluateExtensions(canvas3d.extensionsSupported);
+                    // this is if the background image resizes with the canvas
 // 		    Dimension size = null;
 // 		    canvas3d.getSize(size);
 // 		    int xmax = size.width;
 // 		    int ymax = size.height;
-		    if (objectId == -1) {
-			objectId = VirtualUniverse.mc.getTexture2DId();
-		    }
+                        if (objectId == -1) {
+                            objectId = VirtualUniverse.mc.getTexture2DId();
+                        }
+                        
+                        canvas3d.textureclear(canvas3d.ctx,
+                                back.xmax, back.ymax,
+                                back.color.x, back.color.y,
+                                back.color.z, winWidth, winHeight,
+                                objectId, back.imageScaleMode, back.texImage, true);
 
-		    canvas3d.textureclear(canvas3d.ctx,
-					  back.xmax, back.ymax,
-					  back.color.x, back.color.y,
-					  back.color.z, winWidth, winHeight,
-					  objectId, back.imageScaleMode, back.texImage, true);
-		}
-		back.image.geomLock.unLock();
+                    back.image.geomLock.unLock();
 	    }
 	    else {
-		if (!VirtualUniverse.mc.isBackgroundTexture) {
-		    canvas3d.clear(canvas3d.ctx,
-				   back.color.x, back.color.y, 
-				   back.color.z, winWidth, winHeight, back.image,
-				   back.imageScaleMode,
-				   back.image != null?back.image.imageYdown[0]:null);
-		}
-		else {
-
 		    // this is if the background image resizes with the canvas
 // 		    Dimension size = null;
 // 		    canvas3d.getSize(size);
@@ -1782,7 +1764,7 @@ public class GraphicsContext3D extends Object   {
 					  back.color.z,
 					  winWidth, winHeight,
 					  objectId, back.imageScaleMode, back.texImage, true);
-		}
+
 	    }
 
 	    // Set the viewport and view matrices

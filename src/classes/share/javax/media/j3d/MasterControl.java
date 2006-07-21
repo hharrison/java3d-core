@@ -378,14 +378,6 @@ class MasterControl {
     
     // Flag that indicates whether to lock the DSI while rendering
     boolean doDsiRenderLock = false;
-
-    // Flag that indicates whether J3DGraphics2D uses texturemapping
-    // instead of drawpixel for composite the buffers
-    boolean isJ3dG2dDrawPixel = false;
-
-    // flag that indicates whether BackgroundRetained uses texturemapping
-    // or drawpixel clear the background
-    boolean isBackgroundTexture = true;
     
     // Flag that indicates the pre-1.5 behavior of enforcing power-of-two
     // textures. If set, then any non-power-of-two textures will throw an
@@ -568,12 +560,6 @@ class MasterControl {
 	doDsiRenderLock = getBooleanProperty("j3d.renderLock",
 					     doDsiRenderLock,
 					     "render lock");
-
-	// Check to see whether J3DGraphics2D uses texturemapping
-	// or drawpixel to composite the buffers
-	isJ3dG2dDrawPixel = getBooleanProperty("j3d.g2ddrawpixel",
-					       isJ3dG2dDrawPixel,
-					       "Graphics2D DrawPixel");
         
         // Check to see whether we enforce power-of-two textures
         enforcePowerOfTwo = getBooleanProperty("j3d.textureEnforcePowerOfTwo",
@@ -594,18 +580,6 @@ class MasterControl {
         useFreeLists = getBooleanProperty("j3d.useFreeLists",
 						     useFreeLists,
 						     "Use Free Lists");
-        // Check to see whether BackgroundRetained uses texturemapping
-	// or drawpixel clear the background
-	if (!isD3D()) {
-	    isBackgroundTexture =
-		getBooleanProperty("j3d.backgroundtexture",
-				   isBackgroundTexture,
-				   "background texture");
-	} else {
-	    // D3D always uses background texture and uses
-	    // canvas.clear() instead of canvas.textureclear() in Renderer
-	    isBackgroundTexture = false;
-	}
 
         // Check to see if stereo mode is sharing the Z-buffer for both eyes.
 	sharedStereoZBuffer = 
@@ -691,7 +665,9 @@ class MasterControl {
         // Check for obsolete properties
         String[] obsoleteProps = {
             "j3d.simulatedMultiTexture",
-            "j3d.forceNormalized"
+            "j3d.forceNormalized",
+            "j3d.backgroundtexture",
+            "j3d.g2ddrawpixel",
         };
         for (int i = 0; i < obsoleteProps.length; i++) {
             if (getProperty(obsoleteProps[i]) != null) {

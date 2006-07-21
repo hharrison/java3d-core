@@ -109,7 +109,6 @@
 #include "javax_media_j3d_ColoringAttributes.h"
 #include "javax_media_j3d_ColoringAttributesRetained.h"
 #include "javax_media_j3d_DepthComponentRetained.h"
-#include "javax_media_j3d_DetailTextureImage.h"
 #include "javax_media_j3d_DirectionalLightRetained.h"
 #include "javax_media_j3d_DisplayListRenderMethod.h"
 #include "javax_media_j3d_DrawingSurfaceObjectAWT.h"

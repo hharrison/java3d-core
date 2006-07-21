@@ -411,7 +411,6 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	TextureRetained tex;
 	Integer texIdObj;
 	int size;
-	DetailTextureImage dtex;
 	
 	//	System.out.println("dirtyRenderMoleculeList.size = "+dirtyRenderMoleculeList.size());
 	//	System.out.println("reEvaluateBg = "+reEvaluateBg);
@@ -1174,7 +1173,6 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	RenderMolecule rm;
 	TextureRetained tex;
 	Integer texIdObj;
-	DetailTextureImage dtex;
 
 	if (rdr == null) 
 	    return;
@@ -1235,25 +1233,6 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		    rdr.textureIdResourceFreeList.add(texIdObj);
 		    tex.resourceCreationMask &= ~rdr.rendererBit;
 		}
-		if (tex instanceof Texture2DRetained) {
-		    dtex = ((Texture2DRetained) tex).detailTexture;
-		    if ((dtex != null) &&
-			((dtex.resourceCreationMask[tex.format] & rdr.rendererBit) != 0)) {
-			id = dtex.objectIds[tex.format];
-			if ((id >= rdr.textureIDResourceTable.size()) || 
-			    (rdr.textureIDResourceTable.get(id) != dtex)) {
-			    id = rdr.textureIDResourceTable.indexOf(dtex);
-			    if (id <= 0) {
-				continue;
-			    }
-			}
-			texIdObj = new Integer(id);
-			if (!rdr.textureIdResourceFreeList.contains(texIdObj)) {
-			    rdr.textureIdResourceFreeList.add(texIdObj);
-			    dtex.resourceCreationMask[tex.format] &= ~rdr.rendererBit;
-			}
-		    }
-		}
 	    }
 	}
 
@@ -1282,7 +1261,6 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	RenderMolecule rm;
 	TextureRetained tex;
 	Integer texIdObj;
-	DetailTextureImage dtex;
 
 	// update dirtyRenderMoleculeList for each canvas
 	for (i = 0; i < canvases.length; i++) {
@@ -1330,34 +1308,10 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		    }
 		}
 
-
 		if ((tex.resourceCreationMask & cv.canvasBit) != 0) {
 		    texIdObj = new Integer(id);
 		    cv.textureIdResourceFreeList.add(texIdObj);
 		    tex.resourceCreationMask &= ~cv.canvasBit;
-		}
-		if (tex instanceof Texture2DRetained) {
-		    dtex = ((Texture2DRetained) tex).detailTexture;
-		    if ((dtex != null) &&
-			((dtex.resourceCreationMask[tex.format] & cv.canvasBit) != 0)) {
-			id = dtex.objectIds[tex.format];
-			if ((id >= cv.textureIDResourceTable.size()) || 
-			    (cv.textureIDResourceTable.get(id) != dtex)) {
-			    id = cv.textureIDResourceTable.indexOf(dtex);
-			    if (id <= 0) {
-				continue;
-			    }
-			}			
-			texIdObj = new Integer(id);
-                        // XXXX: The following code seems wrong -- why add it to
-                        // the list if it is already there? Maybe one is for the
-                        // texture and the other (idential value) is for the
-                        // detail texture?
-			if (cv.textureIdResourceFreeList.contains(texIdObj)) {
-			    cv.textureIdResourceFreeList.add(texIdObj);
-			    dtex.resourceCreationMask[tex.format] &= ~cv.canvasBit;
-			}
-		    }		
 		}
 	    }
 	    // Take care of display list that should be freed

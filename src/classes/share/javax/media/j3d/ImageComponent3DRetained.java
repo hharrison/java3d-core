@@ -20,7 +20,7 @@ import java.awt.image.*;
  */
 
 class ImageComponent3DRetained extends ImageComponentRetained {
-    int		depth;		// Depth of 3D image
+//    int		depth;		// Depth of 3D image   ---- Moved to imageComponet
 
     void setDepth(int depth) {
         this.depth = depth;
