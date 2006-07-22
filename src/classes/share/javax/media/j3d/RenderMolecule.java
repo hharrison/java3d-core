@@ -1289,18 +1289,16 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 			    ((geo.vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0)) {
 			    renderBin.addGeometryToLockList(geo);
 			    // Add the geometry to the dirty list only if the geometry is by
-			    // refernce and there is color and we need to use alpha and its
-			    // not multiScreen
+			    // refernce and there is color and we need to use alpha
+                            // Issue 113 - ignore multiScreen
 			    if ((( geo.vertexFormat & GeometryArray.BY_REFERENCE)!=0) &&
 				(geo.c4fAllocated == 0) && 
 				((geo.vertexFormat & GeometryArray.COLOR) != 0) &&
-				useAlpha &&
-				!renderBin.multiScreen) {
+				useAlpha) {
 				renderBin.addDirtyReferenceGeometry(geo);
 			    }
 			}
 		    }
-		    
 		}
 		addRAs = addRAs.nextAdd;
 		renderAtom.nextAdd = null;
@@ -1741,13 +1739,12 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		    ((geo.vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0)) {
 		    renderBin.addGeometryToLockList(geo);
 		    // Add the geometry to the dirty list only if the geometry is by
-		    // refernce and there is color and we need to use alpha and its
-		    // not multiScreen
+		    // reference and there is color and we need to use alpha
+		    // Issue 113 - ignore multiScreen
 		    if ((( geo.vertexFormat & GeometryArray.BY_REFERENCE)!=0) &&
 			(geo.c4fAllocated == 0) && 
 			((geo.vertexFormat & GeometryArray.COLOR) != 0) &&
-			useAlpha &&
-			!renderBin.multiScreen) {
+			useAlpha) {
 			renderBin.addDirtyReferenceGeometry(geo);
 		    }
 		}

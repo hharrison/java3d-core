@@ -62,7 +62,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     // vertex data in packed format for each screen in multi-screen situation
     // if alpha values of each vertex are to be updated
-    float mvertexData[][];
+    private float mvertexData[][];
 
     //
     // The following offset/stride values are internally computed
@@ -94,14 +94,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     int vertexAttrStride;
 
     // alpha value for transparency and texture blending
-    float[] lastAlpha = new float[1];
+    private float[] lastAlpha = new float[1];
     float lastScreenAlpha = -1;
 
     int colorChanged = 0;
 
-    // true if alpha value from transparencyAttrubute has changed
-    boolean alphaChanged = false;
-    
     // byte to float scale factor
     static final float ByteToFloatScale = 1.0f/255.0f;
 
@@ -1667,12 +1664,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    return mirrorFloatRefColors[0];
 	}
 
-	// Issue 113
-	// TODO: Fix this for screen > 0, for now just ignore transparency
-	if (screen > 0) {
-	    return mirrorFloatRefColors[0];
-	}
-
 	// update alpha only if vertex format includes alpha
 	if (((vertexFormat | c4fAllocated) & GeometryArray.WITH_ALPHA) == 0)
 	    return mirrorFloatRefColors[0];
@@ -1684,17 +1675,18 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    alpha = (float)EPSILON;
 	}
 
-        // allocate an entry for the last alpha of the screen if needed
-	if (lastAlpha == null) {
-	    lastAlpha = new float[screen + 1];
-	    lastAlpha[screen] = 1.0f;
-	} else if (lastAlpha.length <= screen) {
+        assert lastAlpha != null;
+        assert mirrorFloatRefColors != null;
+        assert mirrorFloatRefColors.length == lastAlpha.length;
+
+	// Issue 113 - reallocate lastAlpha array if needed, but no need to
+        // update the values here
+	if (lastAlpha.length <= screen) {
 	    float[] la = new float[screen + 1];
 	    for (int i = 0; i < lastAlpha.length; i++) {
 		la[i] = lastAlpha[i];
 	    }
 	    lastAlpha = la;
-	    lastAlpha[screen] = 1.0f;
 	}
 
 	//System.out.println("updateAlphaInFloatRefColors screen is " + screen 
@@ -1702,48 +1694,30 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	//		     mirrorFloatRefColors.length);
 
 	// allocate a copy of the color data for the screen if needed.
-	// this piece of code is mainly for multi-screens case
+	// this piece of code is only for multi-screens case
 	if (mirrorFloatRefColors.length <= screen) {
 	    float[][] cfData = new float[screen + 1][];
-	    float[] cdata;
-	    int refScreen = -1;
 
 	    for (int i = 0; i < mirrorFloatRefColors.length; i++) {
 		cfData[i] = mirrorFloatRefColors[i];
-		if (Math.abs(lastAlpha[i] - alpha) < EPSILON) {
-		    refScreen = i;
-		}
 	    }
-	    cdata = cfData[screen] = new float[4 * vertexCount];
 
-	    // copy the data from a reference screen which has the closest
-	    // alpha values
-	    if (refScreen >= 0) {
-		System.arraycopy(cfData[refScreen], 0, cdata, 0, 
-				 4 * vertexCount);
-		lastAlpha[screen] = lastAlpha[refScreen];
-	    } else {
-		float m = alpha / lastAlpha[0];
-		float[] sdata = cfData[0];
+            // Issue 113 - allocate entries for [oldSize..screen];
+            // copy cfData[0] to cfData[oldsize..screen-1] and
+            // lastAlpha[0] to lastAlpha[oldsize..screen-1].
+            for (int i = mirrorFloatRefColors.length; i < screen+1; i++) {
+                cfData[i] = new float[4 * vertexCount];
+                System.arraycopy(cfData[0], 0, cfData[i], 0, 4 * vertexCount);
+                lastAlpha[i] = lastAlpha[0];
+            }
 
-		int j = initialColorIndex * 4;
-		for (int i = initialColorIndex; i < validVertexCount; i++) {
-		    cdata[j] = sdata[j++];
-		    cdata[j] = sdata[j++];
-		    cdata[j] = sdata[j++];
-		    cdata[j] = sdata[j++] * m;
-		}
-		lastAlpha[screen] = alpha;
-	    }
-	    mirrorFloatRefColors = cfData;
+            mirrorFloatRefColors = cfData;
 
-	    // reset the colorChanged bit
-	    colorChanged &= ~(1 << screen);
-	    dirtyFlag |= COLOR_CHANGED;
-	    
-	    return cdata;	
+            // Issue 113 - since we copied the data from screen 0, we don't need
+            // to do any further special processing.
 	}
 
+        assert lastAlpha[screen] >= 0.0;
 	/*
 	  System.out.println("updateAlphaInFloatRefColors ** : lastAlpha[screen] " +
 			     lastAlpha[screen]);
@@ -1754,7 +1728,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	if ((colorChanged & (1<<screen)) == 0) {
 	    // color data is not modified
-	    if (Math.abs(lastAlpha[screen] - alpha) < EPSILON) {
+	    if (Math.abs(lastAlpha[screen] - alpha) <= EPSILON) {
 		// and if alpha is the same as the last one,
 		// just return the data
 		//System.out.println("updateAlphaInFloatRefColors 0 : alpha is the same as the last one " + alpha);
@@ -1841,12 +1815,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    return mirrorUnsignedByteRefColors[0];
 	}
 
-	// Issue 113
-	// TODO: Fix this for screen > 0, for now just ignore transparency
-	if (screen > 0) {
-	    return mirrorUnsignedByteRefColors[0];
-	}
-
 	// update alpha only if vertex format includes alpha
 	if (((vertexFormat | c4fAllocated) & GeometryArray.WITH_ALPHA) == 0)
 	    return mirrorUnsignedByteRefColors[0];
@@ -1858,59 +1826,45 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    alpha = (float)EPSILON;
 	}
 
-	// allocate an entry for the last alpha of the screen if needed
-	if (lastAlpha == null) {
-	    lastAlpha = new float[screen + 1];
-	    lastAlpha[screen] = -1.0f;
-	} else if (lastAlpha.length <= screen) {
+        assert lastAlpha != null;
+        assert mirrorUnsignedByteRefColors != null;
+        assert mirrorUnsignedByteRefColors.length == lastAlpha.length;
+
+	// Issue 113 - reallocate lastAlpha array if needed, but no need to
+        // update the values here
+	if (lastAlpha.length <= screen) {
 	    float[] la = new float[screen + 1];
 	    for (int i = 0; i < lastAlpha.length; i++) {
 		la[i] = lastAlpha[i];
 	    }
 	    lastAlpha = la;
-	    lastAlpha[screen] = -1.0f;
 	}
 
 	// allocate a copy of the color data for the screen if needed.
-	// this piece of code is mainly for multi-screens case
+	// this piece of code is only for multi-screens case
 	if (mirrorUnsignedByteRefColors.length <= screen) {
-	    byte[][] cfData = new byte[screen + 1][];
-	    byte[] cdata;
-	    int refScreen = -1;
+	    byte[][] cbData = new byte[screen + 1][];
 	    for (int i = 0; i < mirrorUnsignedByteRefColors.length; i++) {
-		cfData[i] = mirrorUnsignedByteRefColors[i];
-		if (Math.abs(lastAlpha[i] - alpha) < EPSILON) {
-		    refScreen = i;
-		}
+		cbData[i] = mirrorUnsignedByteRefColors[i];
 	    }
-	    cdata = cfData[screen] = new byte[4 * vertexCount];
 
-	    // copy the data from a reference screen which has the closest
-	    // alpha values
-	    if (refScreen >= 0) {
-		System.arraycopy(cfData[refScreen], 0, cdata, 0, 
-					4 * vertexCount);
-		lastAlpha[screen] = lastAlpha[refScreen];
-	    } else {
-		float m = alpha / lastAlpha[0];
-		byte[] sdata = cfData[0];
+            // Issue 113 - allocate entries for [oldSize..screen];
+            // copy cbData[0] to cbData[oldsize..screen-1] and
+            // lastAlpha[0] to lastAlpha[oldsize..screen-1].
+            for (int i = mirrorUnsignedByteRefColors.length; i < screen+1; i++) {
+                cbData[i] = new byte[4 * vertexCount];
+                System.arraycopy(cbData[0], 0, cbData[i], 0, 4 * vertexCount);
+                lastAlpha[i] = lastAlpha[0];
+            }
 
-		int j = initialColorIndex * 4;
-		for (int i = initialColorIndex; i < validVertexCount; i++) {
-		    cdata[j] = sdata[j++];
-		    cdata[j] = sdata[j++];
-		    cdata[j] = sdata[j++];
-		    cdata[j] = (byte)(((int)sdata[j++]& 0xff) * m);
-		}
-		lastAlpha[screen] = alpha;
-	    }
-	    mirrorUnsignedByteRefColors = cfData;
-	    colorChanged &= ~(1 << screen);
-	    dirtyFlag |= COLOR_CHANGED;
-	    return cdata;	
+            mirrorUnsignedByteRefColors = cbData;
+
+            // Issue 113 - since we copied the data from screen 0, we don't need
+            // to do any further special processing.
 	}
 
-	/*
+        assert lastAlpha[screen] >= 0.0;
+        /*
 	System.out.println("updateAlphaInByteRefColors ## : lastAlpha[screen] " +
 			   lastAlpha[screen]);
 	
@@ -1920,7 +1874,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
         if ((colorChanged & (1<<screen)) == 0) {	    
             // color data is not modified
-            if (Math.abs(lastAlpha[screen] - alpha) < EPSILON) {
+            if (Math.abs(lastAlpha[screen] - alpha) <= EPSILON) {
                 // and if alpha is the same as the last one,
                 // just return the data
 		//System.out.println("updateAlphaInByteRefColors 0 : alpha is the same as the last one " + alpha);
@@ -2002,13 +1956,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    return retVal;
 	}
 
-	// Issue 113
-	// TODO: Fix this for screen > 0, for now just ignore transparency
-	if (screen > 0) {
-	    retVal[1] = vertexData;
-	    return retVal;
-	}
-
 	// update alpha only if vertex format includes alpha
 	if ((vertexFormat & GeometryArray.COLOR) == 0) {
 	    retVal[1] = vertexData;
@@ -2023,81 +1970,61 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 	retVal[0] = Boolean.TRUE;
 
-	// allocate an entry for the last alpha of the screen if needed
-	if (lastAlpha == null) {
-	    lastAlpha = new float[screen + 1];
-	    lastAlpha[screen] = 1.0f;
-	} else if (lastAlpha.length <= screen) {
+        assert lastAlpha != null;
+        assert mvertexData == null || mvertexData.length == lastAlpha.length;
+
+	// Issue 113 - reallocate lastAlpha array if needed, but no need to
+        // update the values here
+	if (lastAlpha.length <= screen) {
 	    float[] la = new float[screen + 1];
 	    for (int i = 0; i < lastAlpha.length; i++) {
 		la[i] = lastAlpha[i];
 	    }
 	    lastAlpha = la;
-	    lastAlpha[screen] = 1.0f;
 	}
 
 	// allocate a copy of the vertex data for the screen if needed.
-	// this piece of code is mainly for multi-screens case
-	// NOTE: this might not too much data for just to update alpha
+	// Note that a copy operation only happens in the multi-screens case.
+        // We always use the existing vertexData for screen 0.
 	if (mvertexData == null || mvertexData.length <= screen) {
 
 	    float[][] cfData = new float[screen + 1][];
-	    float[] cdata;
-	    int refScreen = -1;
+            int oldSize = 1;
 
 	    if (mvertexData != null) {
+                oldSize = mvertexData.length;
 	        for (int i = 0; i < mvertexData.length; i++) {
 		    cfData[i] = mvertexData[i];
-		    if (Math.abs(lastAlpha[i] - alpha) < EPSILON) {
-		        refScreen = i;
-		    }
 		}
 	    }
 
 	    if (cfData[0] == null)  {
-		cfData[screen] = vertexData;
+		cfData[0] = vertexData;
 	    }
 
-	    if (screen > 0) 
-	        cfData[screen] = new float[stride * vertexCount];
-	    
-	    cdata = cfData[screen];
+            // Issue 113 - allocate entries for [oldSize..screen];
+            // copy cfData[0] to cfData[oldsize..screen-1] and
+            // lastAlpha[0] to lastAlpha[oldsize..screen-1].
+            if (screen > 0) {
+                for (int i = oldSize; i < screen+1; i++) {
+                    cfData[i] = new float[stride * vertexCount];
+                    System.arraycopy(cfData[0], 0, cfData[i], 0,
+                            stride * vertexCount);
+                    lastAlpha[i] = lastAlpha[0];
+                }
+            }
 
-	    // copy the data from a reference screen which has the closest
-	    // alpha values
-	    if (refScreen >= 0) {
-		System.arraycopy(cfData[refScreen], 0, cdata, 0, 
-					stride * vertexCount);
-		lastAlpha[screen] = lastAlpha[refScreen];
-	    } else {
-		float m = alpha / lastAlpha[0];
-		float[] sdata = cfData[0];
+            mvertexData = cfData;
 
-		/*
-		// screen 0 data is always up-to-date
-		if (screen > 0) {
-		    System.arraycopy(cfData[0], 0, cdata, 0, 
-					stride * vertexCount);
-		}
-		*/
-
-		for (int i = 0, j = colorOffset; i < vertexCount; 
-					i++, j+=stride) {
-		    cdata[j+3] = sdata[j+3] * m;
-		}
-		lastAlpha[screen] = alpha;
-	    }
-	    mvertexData = cfData;
-	    dirtyFlag |= COLOR_CHANGED;
-	    // reset the colorChanged bit
-	    colorChanged &= ~(1 << screen);
-	    retVal[1] = cdata;
-	    return retVal;	
+            // Issue 113 - since we copied the data from screen 0, we don't need
+            // to do any further special processing.
 	}
+        
+        assert lastAlpha[screen] >= 0.0;
 
 	if ((colorChanged & (1<<screen)) == 0) {
 	    // color data is not modified
-	    if (Math.abs(lastAlpha[screen] - alpha) < EPSILON) {
+	    if (Math.abs(lastAlpha[screen] - alpha) <= EPSILON) {
 		// and if alpha is the same as the last one,
 		// just return the data
 		retVal[1] = mvertexData[screen];
@@ -2159,15 +2086,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    return retVal;
 	}
 
-	// Issue 113
-	// TODO: Fix this for screen > 0, for now just ignore transparency
-	if (screen > 0) {
-	    retVal[1] = null;
-	    return retVal;
-	}
-
 	// update alpha only if vertex format includes alpha
-	if (((vertexFormat | c4fAllocated) & GeometryArray.COLOR) == 0) {
+	if (((vertexFormat | c4fAllocated) & GeometryArray.WITH_ALPHA) == 0) {
 	    retVal[1] = mirrorInterleavedColorPointer[0];
 	    return retVal;
 	}
@@ -2181,66 +2101,50 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 	retVal[0] = Boolean.TRUE;
 
-	// allocate an entry for the last alpha of the screen if needed
-	if (lastAlpha == null) {
-	    lastAlpha = new float[screen + 1];
-	    lastAlpha[screen] = 1.0f;
-	} else if (lastAlpha.length <= screen) {
+        assert lastAlpha != null;
+        assert mirrorInterleavedColorPointer != null;
+        assert mirrorInterleavedColorPointer.length == lastAlpha.length;
+
+	// Issue 113 - reallocate lastAlpha array if needed, but no need to
+        // update the values here
+	if (lastAlpha.length <= screen) {
 	    float[] la = new float[screen + 1];
 	    for (int i = 0; i < lastAlpha.length; i++) {
 		la[i] = lastAlpha[i];
 	    }
 	    lastAlpha = la;
-	    lastAlpha[screen] = 1.0f;
 	}
 
 	// allocate a copy of the vertex data for the screen if needed.
-	// this piece of code is mainly for multi-screens case
-	// NOTE: this might not too much data for just to update alpha
+	// this piece of code is only for multi-screens case
 	if (mirrorInterleavedColorPointer.length <= screen) {
 
 	    float[][] cfData = new float[screen + 1][];
-	    float[] cdata;
-	    int refScreen = -1;
 
 	    for (int i = 0; i < mirrorInterleavedColorPointer.length; i++) {
 		cfData[i] = mirrorInterleavedColorPointer[i];
-		if (Math.abs(lastAlpha[i] - alpha) < EPSILON) {
-		    refScreen = i;
-		}
 	    }
 
-	    //cdata = cfData[screen] = new float[stride * vertexCount];
-	    cdata = cfData[screen] = new float[4 * vertexCount];
-	    
-	    // copy the data from a reference screen which has the closest
-	    // alpha values
-	    if (refScreen >= 0) {
-		System.arraycopy(cfData[refScreen], 0, cdata, 0, 
-					4 * vertexCount);
-		lastAlpha[screen] = lastAlpha[refScreen];
-	    } else {
-		float m = alpha / lastAlpha[0];
-		float[] sdata = cfData[0];
+            // Issue 113 - allocate entries for [oldSize..screen];
+            // copy cfData[0] to cfData[oldsize..screen-1] and
+            // lastAlpha[0] to lastAlpha[oldsize..screen-1].
+            for (int i = mirrorInterleavedColorPointer.length; i < screen+1; i++) {
+                cfData[i] = new float[4 * vertexCount];
+                System.arraycopy(cfData[0], 0, cfData[i], 0, 4 * vertexCount);
+                lastAlpha[i] = lastAlpha[0];
+            }
 
-		for (int i = coffset; i < coffset + (vertexCount << 2); i+=4) {
-		    cdata[i+3] = sdata[i+3] * m;
-		}
-
-		lastAlpha[screen] = alpha;
-	    }
 	    mirrorInterleavedColorPointer = cfData;
 
-	    // reset the colorChanged bit
-	    colorChanged &= ~(1 << screen);
-	    dirtyFlag |= COLOR_CHANGED;
-	    retVal[1] = cdata;
-	    return retVal;	
+            // Issue 113 - since we copied the data from screen 0, we don't need
+            // to do any further special processing.
 	}
 
-	if ((colorChanged & (1<<screen)) == 0) {
+        assert lastAlpha[screen] >= 0.0;
+
+        if ((colorChanged & (1<<screen)) == 0) {
 	    // color data is not modified
-	    if (Math.abs(lastAlpha[screen] - alpha) < EPSILON) {
+	    if (Math.abs(lastAlpha[screen] - alpha) <= EPSILON) {
 		// and if alpha is the same as the last one,
 		// just return the data
 		retVal[1] = mirrorInterleavedColorPointer[screen];

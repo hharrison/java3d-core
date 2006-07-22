@@ -306,12 +306,10 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
     ArrayList dirtyReferenceGeomList = new ArrayList(5);
 
 
-    /**
-     * used by geometry execute routines to determine if the
-     * alpha values can be zapped
-     */
-    boolean multiScreen = false;
-    
+    // Issue 113 - this variable is no longer needed.
+    // TODO: it should be removed from the Pipeline interface
+    static final boolean multiScreen = false;
+
     // list of all Oriented RenderAtoms
     ArrayList orientedRAs = new ArrayList(5);
 
@@ -767,8 +765,9 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	    }
 	    view.vDirtyMask |= View.CLIP_DIRTY;
 	}
-	
-	multiScreen = ((view.getScreens()).length > 1);
+
+        // Issue 113 - multiScreen no longer used
+//	multiScreen = ((view.getScreens()).length > 1);
 	
 	// renderBin is ready now, so send the offScreen message
 	size = offScreenMessage.size(); 
