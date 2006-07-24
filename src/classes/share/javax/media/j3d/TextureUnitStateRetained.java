@@ -497,9 +497,8 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 		((texGen == null) || (texGen.isStatic())));
     }
 
-    /*
+    // Issue 209 - enable this method (was previously commented out)
     // Simply pass along to the NodeComponent
-
     void compile (CompileState compState) {
 	setCompiled();
 
@@ -510,7 +509,6 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 	if (texGen != null)
 	    texGen.compile(compState);
     }
-    */
 
     boolean equals(TextureUnitStateRetained ts) {
         return ((ts == this) ||

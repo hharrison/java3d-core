@@ -328,8 +328,20 @@ class ShaderAppearanceRetained extends AppearanceRetained {
  	return flag;
     }
 
+    // Issue 209 - implement the compile method
+    // Simply pass along to the NodeComponents
+    void compile(CompileState compState) {
+	super.compile(compState);
 
-    
+	if (shaderProgram != null) {
+	   shaderProgram.compile(compState);
+	}
+
+	if (shaderAttributeSet != null) {
+	   shaderAttributeSet.compile(compState);
+	}
+    }
+
     boolean isOpaque(int geoType) {
 	
 	if (!super.isOpaque(geoType)) {

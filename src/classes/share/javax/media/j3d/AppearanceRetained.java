@@ -1038,7 +1038,8 @@ class AppearanceRetained extends NodeComponentRetained {
 
 	return flag;
     }
-    /*
+
+    // Issue 209 - enable this method (was previously commented out)
     // Simply pass along to the NodeComponents
     void compile(CompileState compState) {
 	setCompiled();
@@ -1090,7 +1091,6 @@ class AppearanceRetained extends NodeComponentRetained {
 	   material.compile(compState);
 	}
     }
-    */
 
     /**
      * Returns the hashcode for this object.
