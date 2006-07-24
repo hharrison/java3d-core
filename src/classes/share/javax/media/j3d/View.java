@@ -164,12 +164,13 @@ import com.sun.j3d.utils.universe.Viewer; // Needed for Support of DVR.
  * <LI>VIRTUAL_EYE - specifies that the associated distance is from
  * the eye and in units of virtual distance.</LI><P>
  * <LI>PHYSICAL_EYE - specifies that the associated distance is from
- * the eye and in units of physical distance (in meters).</LI><P>
+ * the eye and in units of physical distance (in meters).
+ * This is the default policy for both front and back clipping.</LI><P>
  * <LI>VIRTUAL_SCREEN  - specifies that the associated distance is
  * from the screen and in units of virtual distance. </LI><P>
  * <LI>PHYSICAL_SCREEN - specifies that the associated distance is
  * from the screen and in units of physical distance (in meters).
- * This is the default policy for both front and back clipping.</LI><P>
+ * </LI><P>
  * </UL>
  * <LI>Visibility policy - specifies how visible and invisible objects
  * are drawn. There are three visibility policies:</LI><P>
@@ -489,6 +490,7 @@ public class View extends Object {
      * from the eye in meters.
      * Policy for interpreting clip plane distances.
      * Used in specifying the policy in frontClipPolicy and backClipPolicy.
+     * This is the default policy for both front and back clipping.
      * @see #setFrontClipPolicy
      * @see #setBackClipPolicy
      */
