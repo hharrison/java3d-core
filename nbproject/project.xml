@@ -21,16 +21,6 @@
                     <type>java</type>
                     <location>../j3d-core-utils/src/classes/share</location>
                 </source-folder>
-                <source-folder>
-                    <label>src/classes/x11</label>
-                    <type>java</type>
-                    <location>src/classes/x11</location>
-                </source-folder>
-                <source-folder>
-                    <label>src/classes/jogl</label>
-                    <type>java</type>
-                    <location>src/classes/jogl</location>
-                </source-folder>
             </folders>
             <ide-actions>
                 <action name="build">
@@ -67,14 +57,6 @@
                         <label>../j3d-core-utils/src/classes/share</label>
                         <location>../j3d-core-utils/src/classes/share</location>
                     </source-folder>
-                    <source-folder style="packages">
-                        <label>src/classes/x11</label>
-                        <location>src/classes/x11</location>
-                    </source-folder>
-                    <source-folder style="packages">
-                        <label>src/classes/jogl</label>
-                        <location>src/classes/jogl</location>
-                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -94,9 +76,7 @@
             <compilation-unit>
                 <package-root>src/classes/share</package-root>
                 <package-root>../j3d-core-utils/src/classes/share</package-root>
-                <package-root>src/classes/x11</package-root>
-                <package-root>src/classes/jogl</package-root>
-                <classpath mode="compile">../vecmath/build/debug/lib/ext/vecmath.jar:../../../jogl/linux-x86/jogl/build/jogl.jar</classpath>
+                <classpath mode="compile">../vecmath/build/debug/lib/ext/vecmath.jar</classpath>
                 <built-to>build/default/debug/lib/ext/j3dcore.jar</built-to>
                 <built-to>build/default/debug/lib/ext/j3dutils.jar</built-to>
                 <source-level>1.5</source-level>
