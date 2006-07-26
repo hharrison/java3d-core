@@ -13,13 +13,8 @@
 package javax.media.j3d;
 
 import javax.vecmath.*;
-import java.util.Vector;
 import java.util.ArrayList;
-import com.sun.j3d.internal.ByteBufferWrapper;
-import com.sun.j3d.internal.BufferWrapper;
 import com.sun.j3d.internal.FloatBufferWrapper;
-import com.sun.j3d.internal.DoubleBufferWrapper;
-
 
 /**
  * The IndexedGeometryArray object contains arrays of positional coordinates,
@@ -635,56 +630,58 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * @param coordinateIndices an array of coordinate indices
      */
     final void setCoordIndicesRef(int coordinateIndices[]) {
-        if (coordinateIndices.length < initialIndexIndex + validIndexCount) {
-            throw new IllegalArgumentException(J3dI18N.getString("IndexedGeometryArray33"));
+        int newMax = 0;
+
+        if (coordinateIndices != null) {
+            if (coordinateIndices.length < initialIndexIndex + validIndexCount) {
+                throw new IllegalArgumentException(J3dI18N.getString("IndexedGeometryArray33"));
+            }
+
+            //
+            // option 1: could fake the args to "re-use" doIndicesCheck()
+            //NVaidya
+            // newMax = doIndicesCheck(0, maxCoordIndex, coordinateIndices, coordinateIndices);
+            // if (newMax > maxCoordIndex) {
+            //     doErrorCheck(newMax);
+            // }
+            //
+            // option 2: same logic as in setInitialIndexIndex: Better, I Think ?
+            // computeMaxIndex() doesn't check for index < 0 while doIndicesCheck() does.
+            // So, a new method computeMaxIndexWithCheck
+            //NVaidya
+            newMax = computeMaxIndexWithCheck(initialIndexIndex, validIndexCount, coordinateIndices);
+            if (newMax > maxCoordIndex) {
+                doErrorCheck(newMax);
+            }
         }
 
-	int newMax;
-	int i, j;
-    // 
-    // option 1: could fake the args to "re-use" doIndicesCheck()
-    //NVaidya
-	// newMax = doIndicesCheck(0, maxCoordIndex, coordinateIndices, coordinateIndices);
-    // if (newMax > maxCoordIndex) {
-    //     doErrorCheck(newMax);
-    // }
-    //
-    // option 2: same logic as in setInitialIndexIndex: Better, I Think ?
-    // computeMaxIndex() doesn't check for index < 0 while doIndicesCheck() does.
-    // So, a new method computeMaxIndexWithCheck
-    //NVaidya
-	newMax = computeMaxIndexWithCheck(initialIndexIndex, validIndexCount, coordinateIndices);
-	if (newMax > maxCoordIndex) { 
-	    doErrorCheck(newMax);
-	}
+        if ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) {
+            if ((vertexFormat & GeometryArray.COLOR) != 0) {
+                maxColorIndex = newMax;
+            }
+            if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+                for (int i = 0; i < texCoordSetCount; i++) {
+                    maxTexCoordIndices[i] = newMax;
+                }
+            }
+            if ((vertexFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+                for (int i = 0; i < vertexAttrCount; i++) {
+                    maxVertexAttrIndices[i] = newMax;
+                }
+            }
+            if ((vertexFormat & GeometryArray.NORMALS) != 0) {
+                maxNormalIndex = newMax;
+            }
+        }
 
-	if ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) {
-	    if ((vertexFormat & GeometryArray.COLOR) != 0) {
-		maxColorIndex = newMax;
-	    }
-	    if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
-		for (i = 0; i < texCoordSetCount; i++) {
-		    maxTexCoordIndices[i] = newMax;
-		}
-	    }
-	    if ((vertexFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-		for (i = 0; i < vertexAttrCount; i++) {
-		    maxVertexAttrIndices[i] = newMax;
-		}
-	    }
-	    if ((vertexFormat & GeometryArray.NORMALS) != 0) {
-		maxNormalIndex = newMax;
-	    }	    
-	}
-	
-	geomLock.getLock();
-	dirtyFlag |= INDEX_CHANGED;
-	maxCoordIndex = newMax;
-    this.indexCoord = coordinateIndices;
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
-	    sendDataChangedMessage(true);
-	}
+        geomLock.getLock();
+        dirtyFlag |= INDEX_CHANGED;
+        maxCoordIndex = newMax;
+        this.indexCoord = coordinateIndices;
+        geomLock.unLock();
+        if (!inUpdater && source != null && source.isLive()) {
+            sendDataChangedMessage(true);
+        }
     }
 
     //NVaidya
@@ -709,24 +706,26 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
     // Option 2:
     // use only necessary code from setCoordIndicesRef
     // System.out.println("IndexedGeometryArrayretained#doUpdaterUpdate");
-	int newMax;
-	int i, j;
-	newMax = computeMaxIndexWithCheck(initialIndexIndex, validIndexCount, indexCoord);
-	if (newMax > maxCoordIndex) { 
-	    doErrorCheck(newMax);
-	}
+	int newMax = 0;
+
+        if (indexCoord != null) {
+            newMax = computeMaxIndexWithCheck(initialIndexIndex, validIndexCount, indexCoord);
+            if (newMax > maxCoordIndex) { 
+                doErrorCheck(newMax);
+            }
+        }
 
 	if ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) {
 	    if ((vertexFormat & GeometryArray.COLOR) != 0) {
 		maxColorIndex = newMax;
 	    }
 	    if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
-		for (i = 0; i < texCoordSetCount; i++) {
+		for (int i = 0; i < texCoordSetCount; i++) {
 		    maxTexCoordIndices[i] = newMax;
 		}
 	    }
 	    if ((vertexFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
-		for (i = 0; i < vertexAttrCount; i++) {
+		for (int i = 0; i < vertexAttrCount; i++) {
 		    maxVertexAttrIndices[i] = newMax;
 		}
 	    }
@@ -1100,7 +1099,13 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 				   ignoreVertexColors, pass);
 	    return;
 	}
-	//By reference with java array
+
+        // Check if index array is null; if yes, don't draw anything
+        if (indexCoord == null) {
+            return;
+        }
+
+        //By reference with java array
 	if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) == 0) {
 	    if ((vertexFormat & GeometryArray.BY_REFERENCE) == 0) {
 		float[] vdata;
@@ -1156,7 +1161,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    else if ((vertexFormat & GeometryArray.INTERLEAVED) != 0) {
 		if(interLeavedVertexData == null)
 		    return;
-		
+
 		float[] cdata = null;
 
 		synchronized (this) {

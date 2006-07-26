@@ -159,7 +159,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     static  final int P3D   = 0x8;
     static final int VERTEX_DEFINED = PF | PD | P3F | P3D;
 
-
     static final int CF  = 0x10;
     static final int CUB = 0x20;
     static final int C3F = 0x40;
@@ -167,19 +166,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     static final int C3UB  = 0x100;
     static final int C4UB = 0x200;
     static final int COLOR_DEFINED = CF | CUB | C3F | C4F| C3UB | C4UB;
-    
+
     static final int NF = 0x400;
     static final int N3F = 0x800;
     static final int NORMAL_DEFINED = NF | N3F;
-    
+
     static final int TF = 0x1000;
     static final int T2F = 0x2000;
     static final int T3F = 0x4000;
     static final int TEXCOORD_DEFINED = TF | T2F | T3F;
-    
+
     static final int AF = 0x8000;
     static final int VATTR_DEFINED = AF;
-    
+
     // Flag word indicating the type of by-ref texCoord. We will copy this to
     // the vertexType field only when the references for all texture coordinate
     // sets are set to non-null values.
@@ -6078,19 +6077,23 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    }
 		}
 	    }
+            
+            //NVaidya
+            // User may or may not have changed indices in updater callback. 
+            // We need to presume that the user may indeed have and, thus, will 
+            // need to recompute maxCoordIndex unconditionally while
+            // geomLock is still locked. 
+            if ((vertexFormat & GeometryArray.BY_REFERENCE_INDICES) != 0) {
+                assert (this instanceof IndexedGeometryArrayRetained);
+
+                if (((IndexedGeometryArrayRetained)this).getCoordIndicesRef() == null) {
+                    nullGeo = true;
+                }
+                ((IndexedGeometryArrayRetained)this).doPostUpdaterUpdate();
+            }
 	}
 
-    //NVaidya
-    // User may or may not have changed indices in updater callback. 
-    // We need to presume that the user may indeed have and, thus, will 
-    // need to recompute maxCoordIndex unconditionally while
-    // geomLock is still locked. 
-    if ((this instanceof IndexedGeometryArrayRetained) &&
-        (vertexFormat & GeometryArray.BY_REFERENCE_INDICES) != 0) {
-        ((IndexedGeometryArrayRetained)this).doPostUpdaterUpdate();
-    }
-
-	dirtyFlag |= VERTEX_CHANGED; 
+        dirtyFlag |= VERTEX_CHANGED;
 	colorChanged = 0xffff;
 	geomLock.unLock();
 

@@ -790,11 +790,11 @@ public abstract class GeometryArray extends Geometry {
         //NVaidya
         if ((vertexFormat & BY_REFERENCE_INDICES) != 0) {
             if (!(this instanceof IndexedGeometryArray))
-            throw new IllegalArgumentException(J3dI18N.getString("GeometryArray136"));
+                throw new IllegalArgumentException(J3dI18N.getString("GeometryArray136"));
             if ((vertexFormat & BY_REFERENCE) == 0)
-            throw new IllegalArgumentException(J3dI18N.getString("GeometryArray137"));
+                throw new IllegalArgumentException(J3dI18N.getString("GeometryArray137"));
             if ((vertexFormat & USE_COORD_INDEX_ONLY) == 0)
-            throw new IllegalArgumentException(J3dI18N.getString("GeometryArray138"));
+                throw new IllegalArgumentException(J3dI18N.getString("GeometryArray138"));
         }
 
         if ((vertexFormat & USE_NIO_BUFFER) != 0 &&

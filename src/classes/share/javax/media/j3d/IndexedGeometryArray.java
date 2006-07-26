@@ -553,8 +553,11 @@ public abstract class IndexedGeometryArray extends GeometryArray {
 
     //NVaidya
     /**
-     * Sets the coordinate indices array reference to the specified array
-     * 
+     * Sets the coordinate indices array reference to the specified array.
+     * If the coordinate indices array reference is null, the entire
+     * geometry array object is treated as if it were null--any
+     * Shape3D or Morph node that uses this geometry array will not be drawn.
+     *
      * @param coordIndices an array of indices to which a reference
      * will be set.
      *
@@ -580,13 +583,6 @@ public abstract class IndexedGeometryArray extends GeometryArray {
         if (isLiveOrCompiled())
             if (!this.getCapability(ALLOW_REF_DATA_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray86"));
-
-        // TODO: need to resolve how we will handle null reference; since the
-        // reference defaults to null, it seems inconsistent to disallow a null reference
-        // in the set method. As it stands right now, the following will fail:
-        //     ia = new IndexGeometryArray(...);
-        //     int[] coordInd = ia.setCoordIndicesRef();
-        //     is.setCoordIndicesRef(coordInd);
 
         //NVaidya
         int format = ((IndexedGeometryArrayRetained)this.retained).vertexFormat;
