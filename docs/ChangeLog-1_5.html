@@ -21,8 +21,8 @@ java.net.</p>
   <li><a href="#NPOT_Textures">Non-power-of-two textures</a></li>
   <li><a href="#NIO_Image_Buffer">NIO image buffer support for textures</a></li>
   <li><a href="#By_Ref_Indices">By-reference support for geometry
-indices</a><br>
-  </li>
+indices</a></li>
+  <li><a href="#vecmath_accessors_mutators">Vecmath accessors/mutators</a></li>
   <li><a href="#Deprecated_API">Deprecated API</a></li>
 </ol>
 <p>For a complete description of these changes, please see the
@@ -142,8 +142,36 @@ coordIndices[])<br>
 </ul>
 <p><br>
 </p>
-<h3><a name="Deprecated_API"></a>4. Deprecated API<br>
-</h3>
+<h3><a name="vecmath_accessors_mutators"></a>4. Vecmath
+accessors/mutators</h3>
+<p>We propose to add accessors and mutators to all vecmath classes with
+publicly accessible fields. This follows the bean pattern, and allows
+these classes to be read and written by bean-aware tools, for example,
+the XMLEncoder. The following
+classes need public accessors and mutators (e.g., setX(), getX(),
+setY(), and so forth):<br>
+</p>
+<ul>
+  <code>Matrix3d<br>
+Matrix3f<br>
+Matrix4d<br>
+Matrix4f<br>
+Tuple2d<br>
+Tuple2f<br>
+Tuple2i<br>
+Tuple3b<br>
+Tuple3d<br>
+Tuple3f<br>
+Tuple3i<br>
+Tuple4b<br>
+Tuple4d<br>
+Tuple4f<br>
+Tuple4i<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3><a name="Deprecated_API"></a>5. Deprecated API</h3>
 <p>We propose to deprecate the following fields and methods relating to
 the obsolete detail texture functionality.
 </p>
