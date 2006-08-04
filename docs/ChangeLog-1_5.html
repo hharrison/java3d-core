@@ -67,7 +67,17 @@ Object<br>
 <p>New constructors and methods:<br>
 </p>
 <ul>
-  <code><span style="font-weight: bold; text-decoration: underline;">ImageComponent2D</span><br>
+  <code><span style="font-weight: bold; text-decoration: underline;">ImageComponent</span><br>
+New enums:<br>
+&nbsp;&nbsp;&nbsp; public enum ImageClass {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BUFFERED_IMAGE,
+RENDERED_IMAGE, NIO_IMAGE_BUFFER<br>
+&nbsp;&nbsp;&nbsp; }<br>
+  <br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp; public ImageClass getImageClass()<br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">ImageComponent2D</span><br>
 New constructors:<br>
 &nbsp;&nbsp;&nbsp; public ImageComponent2D(int format,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
