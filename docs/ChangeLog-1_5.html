@@ -69,8 +69,6 @@ Object<br>
 <ul>
   <code><span style="font-weight: bold; text-decoration: underline;">ImageComponent2D</span><br>
 New constructors:<br>
-&nbsp;&nbsp;&nbsp; public ImageComponent2D(int format, NioImageBuffer
-image)<br>
 &nbsp;&nbsp;&nbsp; public ImageComponent2D(int format,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 NioImageBuffer image,<br>
@@ -80,15 +78,9 @@ boolean byReference, boolean yUp)<br>
 New methods:<br>
 &nbsp;&nbsp;&nbsp; public void set(NioImageBuffer image)<br>
 &nbsp;&nbsp;&nbsp; public NioImageBuffer getNioImage()<br>
-&nbsp;&nbsp;&nbsp; public void setSubImage(NioImageBuffer image, int
-width, int height,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int
-srcX, int srcY, int dstX, int dstY<br>
   <br>
   <span style="font-weight: bold; text-decoration: underline;">ImageComponent3D</span><br>
 New constructors:<br>
-&nbsp;&nbsp;&nbsp; public ImageComponent3D(int format, NioImageBuffer[]
-images)<br>
 &nbsp;&nbsp;&nbsp; public ImageComponent3D(int format, NioImageBuffer[]
 images,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -99,12 +91,6 @@ New methods:<br>
 &nbsp;&nbsp;&nbsp; public void set(int index, NioImageBuffer image)<br>
 &nbsp;&nbsp;&nbsp; public NioImageBuffer[] getNioImage()<br>
 &nbsp;&nbsp;&nbsp; public NioImageBuffer getNioImage(int index)<br>
-&nbsp;&nbsp;&nbsp; public void setSubImage(int index, NioImageBuffer
-image,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-int width, int height,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-int srcX, int srcY, int dstX, int dstY)<br>
   </code>
 </ul>
 <p><br>
@@ -173,7 +159,7 @@ Tuple4i<br>
 </p>
 <h3><a name="Deprecated_API"></a>5. Deprecated API</h3>
 <p>We propose to deprecate the following fields and methods relating to
-the obsolete detail texture functionality.
+the obsolete texture functionality.
 </p>
 <ul>
   <code><span style="font-weight: bold; text-decoration: underline;">Texture2D</span><br>
@@ -200,6 +186,10 @@ float[] pts)<br>
 &nbsp;&nbsp;&nbsp; public void getDetailTextureFunc(float[] lod,
 float[] pts)<br>
 &nbsp;&nbsp;&nbsp; public void getDetailTextureFunc(Point2f[] pts)<br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">ImageComponent</span><br>
+Deprecated methods:<br>
+&nbsp;&nbsp;&nbsp; public void setYUp(boolean yUp)<br>
   </code>
 </ul>
 <p><br>

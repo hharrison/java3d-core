@@ -23,24 +23,36 @@ No incompatible changes to the Java 3D 1.4 API are allowed.
 
 I. New/deprecated fields, constructors, methods
 
+    ImageComponent
+    --------------
+    New enums:
+        public enum ImageClass {
+            BUFFERED_IMAGE, RENDERED_IMAGE, NIO_IMAGE_BUFFER
+        }
+
+
+    New methods:
+        public ImageClass getImageClass()
+
+
+    Deprecated methods:
+        public void setYUp(boolean yUp)
+
+
     ImageComponent2D
     ----------------
     New constructors:
-        public ImageComponent2D(int format, NioImageBuffer image)
         public ImageComponent2D(int format, NioImageBuffer image,
 				boolean byReference, boolean yUp)
 
     New methods:
         public void set(NioImageBuffer image)
         public NioImageBuffer getNioImage()
-        public void setSubImage(NioImageBuffer image, int width, int height,
-				int srcX, int srcY, int dstX, int dstY
 
 
     ImageComponent3D
     ----------------
     New constructors:
-        public ImageComponent3D(int format, NioImageBuffer[] images)
         public ImageComponent3D(int format, NioImageBuffer[] images,
                                 boolean byReference, boolean yUp)
 
@@ -49,9 +61,6 @@ I. New/deprecated fields, constructors, methods
         public void set(int index, NioImageBuffer image)
         public NioImageBuffer[] getNioImage()
         public NioImageBuffer getNioImage(int index)
-        public void setSubImage(int index, NioImageBuffer image,
-				int width, int height,
-                                int srcX, int srcY, int dstX, int dstY)
 
 
     Texture2D
