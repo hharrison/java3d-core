@@ -339,7 +339,12 @@ public class GraphicsContext3D extends Object   {
      * If the Appearance object is null, default values will be used 
      * for all appearance attributes - it is as if an
      * Appearance node were created using the default constructor.
+     *
      * @param appearance the new Appearance object
+     *
+     * @exception IllegalSharingException if the specified appearance refers
+     * to an ImageComponent2D that is being used by a Canvas3D as
+     * an off-screen buffer.
      */
     public void setAppearance(Appearance appearance) {
 	
@@ -349,7 +354,11 @@ public class GraphicsContext3D extends Object   {
 	    }
 	    appearance = defaultAppearance;
 	}
-	     
+
+        // TODO Chien : check whether any ImageComponent2D referred to by
+        // the new appearance is being used as an off-screen buffer and throw
+        // IllegalSharingException if it is.
+
         uAppearance = appearance;
         if ((canvas3d.view == null) || 
 	    (canvas3d.view.universe == null) ||
@@ -589,11 +598,19 @@ public class GraphicsContext3D extends Object   {
      * the canvas prior to rendering a new frame. The Background 
      * node's application region is ignored for immediate-mode 
      * rendering.
+     *
      * @param background the new Background object
+     *
      * @exception IllegalSharingException if the Background node
      * is part of or is subsequently made part of a live scene graph.
+     *
+     * @exception IllegalSharingException if the specified background node
+     * refers to an ImageComponent2D that is being used by a Canvas3D as
+     * an off-screen buffer.
      */
     public void setBackground(Background background) {
+        // TODO Chien : off-screen illegal sharing check
+
         if (background.isLive()) {
            throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D11"));
         }
@@ -2094,10 +2111,16 @@ public class GraphicsContext3D extends Object   {
      * setAppearance(Appearance) and draw(Geometry) methods
      * passing the appearance and geometry component objects of
      * the specified shape node as arguments.
+     *
      * @param shape the Shape3D node containing the Appearance component
      * object to set and Geometry component object to draw
+     *
      * @exception IllegalSharingException if the Shape3D node
      * is part of or is subsequently made part of a live scene graph.
+     *
+     * @exception IllegalSharingException if the Shape3D node's Appearance
+     * refers to an ImageComponent2D that is being used by a
+     * Canvas3D as an off-screen buffer.
      */
     public void draw(Shape3D shape) {
 	if (shape.isLive()) {
@@ -2122,18 +2145,37 @@ public class GraphicsContext3D extends Object   {
      * @param raster the Raster object used to read the
      * contents of the frame buffer
      *
-     * @exception IllegalArgumentException if the Raster's
-     * ImageComponent2D is in by-reference mode and its RenderedImage
-     * is not an instance of a BufferedImage.
+     * @exception IllegalArgumentException if the image class of the specified
+     * Raster's ImageComponent2D is <i>not</i> ImageClass.BUFFERED_IMAGE.
      *
-     * @exception IllegalSharingException if the Raster object
-     * is part of a live scene graph.
+     * @exception IllegalArgumentException if the specified Raster's
+     * ImageComponent2D is in by-reference mode and its
+     * RenderedImage is null.
+     *
+     * @exception IllegalArgumentException if the the Raster's
+     * ImageComponent2D format
+     * is <i>not</i> a 3-component format (e.g., FORMAT_RGB)
+     * or a 4-component format (e.g., FORMAT_RGBA).
+     *
+     * @exception IllegalSharingException if the Raster object is
+     * part of a live scene graph, or if the Raster's ImageComponent2D is
+     * part of a live scene graph.
+     *
+     * @exception IllegalSharingException if the Raster's ImageComponent2D is
+     * being used by an immediate mode context, or by a Canvas3D as
+     * an off-screen buffer.
      *
      * @see #flush
      * @see ImageComponent
      * @see DepthComponent
      */
     public void readRaster(Raster raster) {
+        // TODO Chien : illegal sharing checks; throw IllegalSharingException if:
+        //
+        // 1) the Raster or its ImageComponent2D is live
+        // 2) the Raster's ImageComponent2D is being used by an immediate mode context
+        // 3) the Raster's ImageComponent2D is being used as an off-screen buffer
+
         if ((canvas3d.view == null) || (canvas3d.view.universe == null) ||
 		(!canvas3d.view.active)) {
             return;

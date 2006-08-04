@@ -379,14 +379,25 @@ public class Background extends Leaf {
      * than the window,
      * then that portion of the window not covered by the image is
      * filled with the background color.
+     *
      * @param image new pixel array object used as the background image
+     *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
+     *
+     * @exception IllegalSharingException if this Background is live and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalSharingException if this Background is
+     * being used by an immediate mode context and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
      */
     public void setImage(ImageComponent2D image) {
         if (isLiveOrCompiled())
          if(!this.getCapability(ALLOW_IMAGE_WRITE))
            throw new CapabilityNotSetException(J3dI18N.getString("Background3"));
+
+        // TODO : illegal sharing check
 
 	if (isLive())
 	    ((BackgroundRetained)this.retained).setImage(image);

@@ -159,6 +159,12 @@ public class TextureCubeMap extends Texture {
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
+     * @exception IllegalSharingException if this TextureCubeMap is live and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalSharingException if this TextureCubeMap is
+     * being used by an immediate mode context and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
      */
     public void setImage(int level, int face, ImageComponent2D image) {
         if (isLiveOrCompiled()) {
@@ -192,6 +198,14 @@ public class TextureCubeMap extends Texture {
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
+     * @exception IllegalSharingException if this TextureCubeMap is live and
+     * any of the specified images are being used by a Canvas3D as an
+     * off-screen buffer.
+     *
+     * @exception IllegalSharingException if this TextureCubeMap is
+     * being used by an immediate mode context and
+     * any of the specified images are being used by a Canvas3D as an
+     * off-screen buffer.
      */
     public void setImages(int face, ImageComponent2D[] images) {
         if (isLiveOrCompiled()) {

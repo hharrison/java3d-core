@@ -914,6 +914,7 @@ public abstract class Texture extends NodeComponent {
      * @param level mipmap level to set: 0 is the base level
      * @param image ImageComponent object containing the texture image
      * for the specified mipmap level
+     *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
@@ -921,6 +922,13 @@ public abstract class Texture extends NodeComponent {
      * used in a Texture2D object; if an ImageComponent2D is used in a
      * Texture3D object; or if the image being set at this level is not the
      * correct size for this level.
+     *
+     * @exception IllegalSharingException if this Texture is live and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalSharingException if this Texture is
+     * being used by an immediate mode context and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
      */
     public void setImage(int level, ImageComponent image) {
         if (isLiveOrCompiled()) {
@@ -971,6 +979,15 @@ public abstract class Texture extends NodeComponent {
      * the total number of mipmap levels; or if the size of each dimension
      * of the image at a given level in the
      * <code>images</code> array is not the correct size.
+     *
+     * @exception IllegalSharingException if this Texture is live and
+     * any of the specified images are being used by a Canvas3D as an
+     * off-screen buffer.
+     *
+     * @exception IllegalSharingException if this Texture is
+     * being used by an immediate mode context and
+     * any of the specified images are being used by a Canvas3D as an
+     * off-screen buffer.
      *
      * @since Java 3D 1.2
      */

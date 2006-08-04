@@ -19,7 +19,13 @@ import java.nio.IntBuffer;
 
 /**
  * The NioImageBuffer class is a container for an image whose DataBuffer
- * is specified via a java.nio.Buffer.
+ * is specified via a java.nio.Buffer. An an NioImageBuffer can be wrapped by
+ * an ImageComponent and used for texture mapping, or for rendering Raster
+ * objects or background images. An NioImageBuffer must not be used as the
+ * buffer of an off-screen Canvas3D, or for reading back a raster image.
+ *
+ * @see ImageComponent2D
+ * @see ImageComponent3D
  * 
  * @since Java 3D 1.5
  */

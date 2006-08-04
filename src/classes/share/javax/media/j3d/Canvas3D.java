@@ -1653,18 +1653,36 @@ public class Canvas3D extends Canvas {
      * <p>
      *
      * @param buffer the image component that will be rendered into by
-     * subsequent calls to renderOffScreenBuffer.
+     * subsequent calls to renderOffScreenBuffer. The image component must not
+     * be part of a live scene graph, nor may it subsequently be made part of a
+     * live scene graph while being used as an off-screen buffer; an
+     * IllegalSharingException is thrown in such cases. The buffer may be null,
+     * indicating that the previous off-screen buffer is released without a new
+     * buffer being set.
      *
      * @exception IllegalStateException if this Canvas3D is not in
      * off-screen mode.
+     *
      * @exception RestrictedAccessException if an off-screen rendering
      * is in process for this Canvas3D.
-     * @exception IllegalSharingException if the specified
-     * ImageComponent2D is used by more than one Canvas3D.
+     *
+     * @exception IllegalSharingException if the specified ImageComponent2D
+     * is part of a live scene graph
+     *
+     * @exception IllegalSharingException if the specified ImageComponent2D is
+     * being used by an immediate mode context, or by another Canvas3D as
+     * an off-screen buffer.
+     *
+     * @exception IllegalArgumentException if the image class of the specified
+     * ImageComponent2D is <i>not</i> ImageClass.BUFFERED_IMAGE.
+     *
      * @exception IllegalArgumentException if the specified
      * ImageComponent2D is in by-reference mode and its
-     * RenderedImage is not an instance of a BufferedImage or
-     * if the ImageComponent2D format is FORMAT_CHANNEL8.
+     * RenderedImage is null.
+     *
+     * @exception IllegalArgumentException if the ImageComponent2D format
+     * is <i>not</i> a 3-component format (e.g., FORMAT_RGB)
+     * or a 4-component format (e.g., FORMAT_RGBA).
      *
      * @see #renderOffScreenBuffer
      * @see Screen3D#setSize(int, int)
@@ -1685,6 +1703,11 @@ public class Canvas3D extends Canvas {
 
 	// Check that offScreenBufferPending is not already set
 	J3dDebug.doAssert(!offScreenBufferPending, "!offScreenBufferPending");
+        
+        // TODO Chien :
+        // if (offScreenBuffer != null && offScreenBuffer != buffer) {
+        //     offScreenBuffer.setUsedByOffScreen(false);
+        // }
 
 	if (buffer != null) {
 	    ImageComponent2DRetained bufferRetained =
@@ -1700,6 +1723,14 @@ public class Canvas3D extends Canvas {
 		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D16"));
 	    }
 
+            // TODO Chien : if (buffer.isLive()) throw IllegalSharingException
+
+            // TODO Chien : if (buffer.isInImmCtx()) throw IllegalSharingException
+
+            // TODO Chien : if (buffer != offScreenBuffer && buffer.isUsedByOffScreen()) throw IllegalSharingException
+
+            // TODO Chien : buffer.setUsedByOffScreen(true);
+
 	    width = bufferRetained.width;
 	    height = bufferRetained.height;
 	}
@@ -1707,8 +1738,6 @@ public class Canvas3D extends Canvas {
 	    width = height = 0;
 	}
 
-	// XXXX: illegalSharing
-	
 	if ((offScreenCanvasSize.width != width) ||
 	    (offScreenCanvasSize.height != height)) {
 
