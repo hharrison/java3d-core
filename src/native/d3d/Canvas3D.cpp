@@ -325,6 +325,225 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
 			   d3dCtx->zWriteEnable);
 }
 
+extern "C" JNIEXPORT
+void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(
+							JNIEnv *env,
+							jobject obj,
+							jlong ctx,
+							jint maxX, 
+							jint maxY,
+							jfloat r, 
+							jfloat g, 
+							jfloat b,
+							jint winWidth,
+							jint winHeight,
+							jint objectId,
+							jint imageScaleMode,
+							jobject pa2d,
+							jboolean update)
+{
+ 
+
+    GetDevice();
+
+ /* Java 3D always clears the Z-buffer */
+ /* @TODO check same operation for stencil */
+
+    if (!d3dCtx->zWriteEnable) {
+	device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+    } 
+
+	/* clear stencil, if in used */
+     
+	if (d3dCtx->stencilWriteEnable )
+	{// clear stencil and ZBuffer
+	  HRESULT hr = device->Clear(0, NULL, D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
+		             D3DCOLOR_COLORVALUE(r, g, b, 1.0f), 1.0, 0);
+      if (hr == D3DERR_INVALIDCALL)
+	  {
+         printf("[Java3D] Error cleaning Canvas3D stencil & ZBuffer\n");
+	  }
+	//  printf("canvas3D clear stencil & ZBuffer\n");
+	}
+	else
+	{	// clear ZBuffer only
+	  HRESULT hr =  device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
+		          D3DCOLOR_COLORVALUE(r, g, b, 1.0f), 1.0, 0);
+	  if (hr == D3DERR_INVALIDCALL)
+	  {
+         printf("[Java3D] Error cleaning Canvas3D ZBuffer\n");
+	  }
+	 // printf("canvas3D clear ZBuffer\n");
+	}
+
+
+    if (pa2d) {
+	jclass pa2d_class = env->GetObjectClass(pa2d);
+	/*
+	jfieldID id = env->GetFieldID(pa2d_class, "surfaceDirty", "I");
+	if (env->GetIntField(pa2d, id) == NOTLIVE) {
+	    return;
+	}
+	*/
+	// It is possible that (1) Another user thread will free this
+	// image. (2) Another Renderer thread in case of multiple screen
+	// will invoke clear() at the same time.
+	lockBackground();
+
+
+	jfieldID id = env->GetFieldID(pa2d_class, "hashId", "I");
+	int hashCode = env->GetIntField(pa2d, id);	
+
+	D3dImageComponent *d3dImage =
+	    D3dImageComponent::find(&BackgroundImageList, d3dCtx, hashCode);
+
+	id = env->GetFieldID(pa2d_class, "imageYup", "[B");
+	jbyteArray pixels_obj =  (jbyteArray) env->GetObjectField(pa2d, id);
+
+	id = env->GetFieldID(pa2d_class, "width", "I");
+	int width = env->GetIntField(pa2d, id);
+	id = env->GetFieldID(pa2d_class, "height", "I");
+	int height = env->GetIntField(pa2d, id);
+	
+	LPDIRECT3DTEXTURE9 surf;
+
+	if ((d3dImage == NULL) || (d3dImage->surf == NULL)) {
+	    surf = createSurfaceFromImage(env, pa2d, ctx,
+					   width, height, pixels_obj);
+	     if (surf == NULL) {
+		 if (d3dImage != NULL) {
+		     D3dImageComponent::remove(&BackgroundImageList, d3dImage);
+		 }
+		 unlockBackground();
+		 return;
+	     }
+
+	     if (d3dImage == NULL) {
+		 d3dImage = 
+		     D3dImageComponent::add(&BackgroundImageList, d3dCtx, hashCode, surf);
+	     } else {
+		 // need to add this one because the new imageDirtyFlag may
+		 // cause d3dImage->surf set to NULL
+		 d3dImage->surf = surf;
+	     } 
+        }
+
+
+	D3DTLVERTEX screenCoord;	
+	DWORD zcmpfunc;
+	boolean texModeRepeat;
+	int scaleWidth, scaleHeight;
+	float sw, sh;
+
+	DWORD stencilcmpfunc;
+
+	// sz can be any number since we already disable z buffer
+	// However rhw can't be 0, otherwise texture will not shown
+	screenCoord.sz = 0.999f;
+	screenCoord.rhw = 1;
+
+	// disable z buffer
+	device->GetRenderState(D3DRS_ZFUNC, &zcmpfunc);
+	device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	device->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+    
+	// must disable stencil ? I guess yes
+	if (d3dCtx->stencilEnable) 
+	{
+	  device->GetRenderState(D3DRS_STENCILFUNC, &stencilcmpfunc);
+	  device->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+	  device->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+	}
+
+
+	switch (imageScaleMode){
+	case javax_media_j3d_Background_SCALE_NONE:
+	    screenCoord.sx = -0.5f;
+	    screenCoord.sy = -0.5f;
+	    scaleWidth = width;
+	    scaleHeight = height;
+	    texModeRepeat = FALSE;
+	    break;
+	case javax_media_j3d_Background_SCALE_FIT_MIN:
+	    screenCoord.sx = -0.5f;
+	    screenCoord.sy = -0.5f;
+	    sw = winWidth/(float) width;
+	    sh = winHeight/(float) height;
+	    if (sw >= sh) {
+		scaleWidth = int(width*sh);
+		scaleHeight = winHeight;
+	    } else {
+		scaleWidth = winWidth;
+		scaleHeight = int(height*sw);		
+	    }
+	    texModeRepeat = FALSE;	    
+	    break;
+	case javax_media_j3d_Background_SCALE_FIT_MAX:
+	    screenCoord.sx = -0.5f;
+	    screenCoord.sy = -0.5f;
+	    sw = winWidth/(float) width;
+	    sh = winHeight/(float) height;
+	    if (sw >= sh) {
+		scaleWidth = winWidth;
+		scaleHeight = int(height*sw);		
+	    } else {
+		scaleWidth = int(width*sh);
+		scaleHeight = winHeight;		
+	    }
+	    texModeRepeat = FALSE;	    
+	    break;	
+	case javax_media_j3d_Background_SCALE_FIT_ALL:
+	    screenCoord.sx = -0.5f;
+	    screenCoord.sy = -0.5f;
+	    scaleWidth = winWidth;
+	    scaleHeight = winHeight;
+	    texModeRepeat = FALSE;	    
+	    break;
+	case javax_media_j3d_Background_SCALE_REPEAT:	  
+	    screenCoord.sx = -0.5f;
+	    screenCoord.sy = -0.5f;
+	    scaleWidth = winWidth;
+	    scaleHeight = winHeight;
+	    texModeRepeat = TRUE;
+	    break;	    
+	case javax_media_j3d_Background_SCALE_NONE_CENTER:
+	    screenCoord.sx = (winWidth - width)/2.0f - 0.5f;
+	    screenCoord.sy = (winHeight - height)/2.0f -0.5f;
+	    scaleWidth = width;
+	    scaleHeight = height;
+	    texModeRepeat = FALSE;
+	    break;
+ 	default:
+	    printf("Unknown Background scale mode %d\n", imageScaleMode);
+	}
+
+	drawTextureRect(d3dCtx, device, d3dImage->surf,
+			screenCoord, 0, 0, width, height, 
+			scaleWidth, scaleHeight, texModeRepeat);
+
+	device->SetRenderState(D3DRS_ZFUNC, zcmpfunc);
+	device->SetRenderState(D3DRS_ZWRITEENABLE, d3dCtx->zWriteEnable);
+	
+	// reenable stencil ? yes
+	if (d3dCtx->stencilEnable) 
+	{
+     device->SetRenderState(D3DRS_STENCILFUNC, stencilcmpfunc);
+	 device->SetRenderState(D3DRS_STENCILENABLE, d3dCtx->stencilWriteEnable);
+	}
+	unlockBackground();
+    } 
+   else 
+     {
+	  if (!d3dCtx->zWriteEnable) {
+	      device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	    }	
+	  // disable stencil 
+      if (d3dCtx->stencilEnable && !d3dCtx->stencilWriteEnable) {
+	      device->SetRenderState(D3DRS_STENCILENABLE, FALSE);		  
+	  }
+    }
+
+}
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_clear(
