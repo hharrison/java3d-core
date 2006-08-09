@@ -1093,7 +1093,7 @@ void JNICALL Java_javax_media_j3d_Canvas3D_resetTextureAttributes(
 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
-    glPushAttrib(GL_MATRIX_MODE);
+    glPushAttrib(GL_TRANSFORM_BIT);
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
     glPopAttrib();
@@ -1137,7 +1137,7 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNative(
     }
 
     /* set OGL texture matrix */
-    glPushAttrib(GL_MATRIX_MODE);
+    glPushAttrib(GL_TRANSFORM_BIT);
     glMatrixMode(GL_TEXTURE);
 
     mx_ptr = (jdouble *)(*(table->GetPrimitiveArrayCritical))(env, transform, 
@@ -1255,7 +1255,7 @@ void JNICALL Java_javax_media_j3d_TextureAttributesRetained_updateNativeRegister
     }
 
     /* set OGL texture matrix */
-    glPushAttrib(GL_MATRIX_MODE);
+    glPushAttrib(GL_TRANSFORM_BIT);
     glMatrixMode(GL_TEXTURE);
 
     mx_ptr = (jdouble *)(*(table->GetPrimitiveArrayCritical))(env, transform, 
