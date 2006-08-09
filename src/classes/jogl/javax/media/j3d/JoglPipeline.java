@@ -5252,7 +5252,7 @@ class JoglPipeline extends Pipeline {
                 (perspCorrectionMode == TextureAttributes.NICEST) ? GL.GL_NICEST : GL.GL_FASTEST);
 
       // set OGL texture matrix
-      gl.glPushAttrib(GL.GL_MATRIX_MODE);
+      gl.glPushAttrib(GL.GL_TRANSFORM_BIT);
       gl.glMatrixMode(GL.GL_TEXTURE);
 
       if (isIdentity) {
@@ -5324,7 +5324,7 @@ class JoglPipeline extends Pipeline {
       }
 
       // set OGL texture matrix
-      gl.glPushAttrib(GL.GL_MATRIX_MODE);
+      gl.glPushAttrib(GL.GL_TRANSFORM_BIT);
       gl.glMatrixMode(GL.GL_TEXTURE);
 
       if (isIdentity) {
@@ -7332,7 +7332,7 @@ class JoglPipeline extends Pipeline {
 
       float[] color = new float[4];
 
-      gl.glPushAttrib(GL.GL_MATRIX_MODE);
+      gl.glPushAttrib(GL.GL_TRANSFORM_BIT);
       gl.glMatrixMode(GL.GL_TEXTURE);
       gl.glLoadIdentity();
       gl.glPopAttrib();
