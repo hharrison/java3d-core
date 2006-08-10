@@ -42,8 +42,9 @@
     <!-- Must use gcc to link, not ld, hence also need -shared; refer to http://www.gelato.unsw.edu.au/linux-ia64/0006/0212.html -->
     <!-- Removed -R/usr/openwin/lib - an ld specific option (should be a filename, not a dir?!?) -->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="gcc">
-	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o -G -z defs -shared -L/usr/X11R6/lib -ldl -lGL -lX11 -lXext -lm -lnsl -lc -L${java.home}/lib/ia64 -ljawt -L${java.home}/lib/ia64/server -ljvm  -o libj3dcore-ogl.so"/>
+	<arg line="DrawingSurfaceObjectAWT.o  Canvas3D.o  GraphicsContext3D.o  NativeScreenInfo.o  NativeConfigTemplate3D.o  MasterControl.o  RasterRetained.o  GeometryArrayRetained.o  Attributes.o  CgShaderProgram.o  GLSLShaderProgram.o  Lights.o -G -z defs -shared -L/usr/X11R6/lib -ldl -lGL -lX11 -lXext -lm -lnsl -lc -L${java.home}/lib/ia64 -ljawt -L${java.home}/lib/ia64/jrockit -ljvm  -o libj3dcore-ogl.so"/>
     </exec>
+<!-- -L${java.home}/lib/ia64/server -ljvm  -o libj3dcore-ogl.so"/> -->
 
     <!-- Copy the copyright library file -->
     <copy file="${build}/${platform}/${bldType}/native/ogl/objs/libj3dcore-ogl.so" 
