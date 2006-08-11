@@ -764,7 +764,6 @@ Java_javax_media_j3d_NativePipeline_lookupGLSLShaderAttrNames(
             } else {
                 /* Ignore this name */
                 /* fprintf(stderr, "Uniform[%d] : %s ignored\n", i, name); */
-                free(name);
                 continue;
             }
         }
