@@ -4515,6 +4515,7 @@ public class Canvas3D extends Canvas {
     }
 
     void destroyOffScreenBuffer(Context ctx, long display, long fbConfig, Drawable drawable) {
+        assert drawable != null;
         Pipeline.getPipeline().destroyOffScreenBuffer(this, ctx, display, fbConfig, drawable);
     }
 

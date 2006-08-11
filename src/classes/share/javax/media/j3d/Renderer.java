@@ -471,16 +471,16 @@ class Renderer extends J3dThread {
 		    continue;
 		} 
                 else if (renderType == J3dMessage.DESTROY_CTX_AND_OFFSCREENBUFFER) {
-		    // Fix for issue 175.
-                    // destroy ctx.
-                    // Should be able to collaspe both call into one. Will do this in 1.5, 
-                    // it is a little risky for 1.4 beta3.
-                    removeCtx(canvas, canvas.screen.display, canvas.drawable, canvas.ctx,
-                              false, !canvas.offScreen, false);
-                    // destroy offScreenBuffer.
-                    removeCtx(canvas, canvas.screen.display, canvas.drawable, null,
-                              false, !canvas.offScreen, true);    
-                                    
+                    Object[] obj = m[nmesg].args;
+
+		    // Fix for issue 175: destroy ctx & off-screen buffer
+                    // Fix for issue 340: get display, drawable & ctx from msg
+                    removeCtx(canvas,
+                            ((Long) obj[1]).longValue(),
+                            (Drawable) obj[2],
+                            (Context) obj[3],
+                            false, !canvas.offScreen, true);
+
 		    canvas.offScreenBufferPending = false;
 		    m[nmesg++].decRefcount();
 		    continue;
@@ -1441,14 +1441,6 @@ class Renderer extends J3dThread {
 			   boolean destroyOffScreenBuffer) {
 
 	synchronized (VirtualUniverse.mc.contextCreationLock) {
-	    // Fix for issue 18.
-	    // Since we are now the renderer thread, 
-	    // we can safely execute destroyOffScreenBuffer.
-	    if(destroyOffScreenBuffer) {
-		cv.destroyOffScreenBuffer(ctx, display, cv.fbConfig, drawable);
-		cv.offScreenBufferPending = false;
-	    }
-
 	    if (ctx != null) {
 		int idx = listOfCtxs.indexOf(ctx);
 		if (idx >= 0) {
@@ -1495,6 +1487,14 @@ class Renderer extends J3dThread {
 		    sharedCtxTimeStamp = 0;
 		}
 		cv.ctxTimeStamp = 0;
+	    }
+
+	    // Fix for issue 18.
+	    // Since we are now the renderer thread, 
+	    // we can safely execute destroyOffScreenBuffer.
+	    if(destroyOffScreenBuffer) {
+		cv.destroyOffScreenBuffer(ctx, display, cv.fbConfig, drawable);
+		cv.offScreenBufferPending = false;
 	    }
 	}
     }

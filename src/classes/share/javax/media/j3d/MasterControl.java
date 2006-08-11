@@ -2954,6 +2954,10 @@ class MasterControl {
 	    createMessage.universe = null;
 	    createMessage.view = null;
 	    createMessage.args[0] = c;
+            // Fix for issue 340: send display, drawable & ctx in msg
+            createMessage.args[1] = new Long(c.screen.display);
+            createMessage.args[2] = c.drawable;
+            createMessage.args[3] = c.ctx;
 	    rdr.rendererStructure.addMessage(createMessage);
 	    synchronized (requestObjList) {
 		setWorkForRequestRenderer();
