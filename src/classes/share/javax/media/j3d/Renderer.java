@@ -85,9 +85,9 @@ class Renderer extends J3dThread {
     // same id
     long sharedCtxTimeStamp = 0;
 
-    // display id - to free shared context
-    long display;
-    Drawable drawable; 
+    // display and drawable, used to free shared context
+    private long sharedCtxDisplay = 0;
+    private Drawable sharedCtxDrawable = null; 
 
     /**
      * This is the id of the current rendering context
@@ -689,7 +689,8 @@ class Renderer extends J3dThread {
                     if (canvas.useSharedCtx) {
 
                         if (sharedCtx == null) {
-                            display = canvas.screen.display;
+                            sharedCtxDisplay = canvas.screen.display;
+                            sharedCtxDrawable = canvas.drawable;
 
 			    // Always lock for context create
 			    if (!canvas.drawingSurfaceObject.renderLock()) {
@@ -721,8 +722,6 @@ class Renderer extends J3dThread {
                     }
 
             	    if (canvas.ctx == null) {
-			
-			display = canvas.screen.display;
 
 			// Always lock for context create			
 			if (!canvas.drawingSurfaceObject.renderLock()) {
@@ -1314,8 +1313,9 @@ class Renderer extends J3dThread {
 
 			    canvas.offScreenRendering = false;
                             canvas.view.inCanvasCallback = false;
-                        }
 
+                            canvas.releaseCtx();
+                        }
 
 			canvas.endScene();
 
@@ -1400,6 +1400,8 @@ class Renderer extends J3dThread {
 	numframes = 0.0f;
 	sharedCtx = null;	 
 	sharedCtxTimeStamp = 0;
+	sharedCtxDisplay = 0;
+        sharedCtxDrawable = null;
 	dirtyRenderMoleculeList.clear();
 	dirtyRenderAtomList.clear();
 	dirtyDlistPerRinfoList.clear();
@@ -1411,9 +1413,7 @@ class Renderer extends J3dThread {
 	nmesg = 0;
 	lasttime = 0;
 	currtime = 0;
-	display = 0;
     }
-
 
 
     // This is only invoked from removeCtx()/removeAllCtxs()
@@ -1446,19 +1446,18 @@ class Renderer extends J3dThread {
 		if (idx >= 0) {
 		    listOfCtxs.remove(idx);
 		    listOfCanvases.remove(idx);
-		    // display is always 0 under windows
-		    if ((VirtualUniverse.mc.isWindows() || (display != 0)) && 
-			(drawable != null) && cv.added) {
+		    // Issue 326 : don't check display variable here
+		    if ((drawable != null) && cv.added) {
 			// cv.ctx may reset to -1 here so we
 			// always use the ctx pass in.
 			if (cv.drawingSurfaceObject.renderLock()) {
 			    // if it is the last one, free shared resources
 			    if (sharedCtx != null) {
 				if (listOfCtxs.isEmpty()) {
-				    makeCtxCurrent(sharedCtx, display, drawable);
+				    makeCtxCurrent(sharedCtx, sharedCtxDisplay, sharedCtxDrawable);
 				    freeResourcesInFreeList(null);
 				    freeContextResources();
-				    Canvas3D.destroyContext(display, drawable, sharedCtx);
+				    Canvas3D.destroyContext(sharedCtxDisplay, sharedCtxDrawable, sharedCtx);
 				    currentCtx = null;
                                     currentDrawable = null;
 				} else {
@@ -1508,18 +1507,18 @@ class Renderer extends J3dThread {
 		cv = (Canvas3D) listOfCanvases.get(i);
 
 		if ((cv.screen != null) && (cv.ctx != null)) {
-		    if ((VirtualUniverse.mc.isWindows() || (display != 0)) && 
-			(cv.drawable != null) && cv.added) {
+                    // Issue 326 : don't check display variable here
+		    if ((cv.drawable != null) && cv.added) {
 			if (cv.drawingSurfaceObject.renderLock()) {
 			    // We need to free sharedCtx resource
 			    // first before last non-sharedCtx to
 			    // workaround Nvidia driver bug under Linux
 			    // that crash on freeTexture ID:4685156
 			    if ((i == 0) && (sharedCtx != null)) {
-				makeCtxCurrent(sharedCtx, display, drawable);
+				makeCtxCurrent(sharedCtx, sharedCtxDisplay, sharedCtxDrawable);
 				freeResourcesInFreeList(null);
 				freeContextResources();
-				Canvas3D.destroyContext(display, drawable, sharedCtx);
+				Canvas3D.destroyContext(sharedCtxDisplay, sharedCtxDrawable, sharedCtx);
 				currentCtx = null;
                                 currentDrawable = null;
 			    }

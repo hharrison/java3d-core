@@ -2875,6 +2875,9 @@ class NativePipeline extends Pipeline {
     native void destroyContext(long display, long drawable, long ctx);
 
     void destroyContext(long display, Drawable drawable, Context ctx) {
+        assert display != 0 || VirtualUniverse.mc.isWindows();
+        assert ctx != null;
+        assert drawable != null;
         destroyContext(display, unbox(drawable), unbox(ctx));
     }
 
@@ -3173,6 +3176,7 @@ class NativePipeline extends Pipeline {
     native boolean useCtx(long ctx, long display, long drawable);
 
     boolean useCtx(Context ctx, long display, Drawable drawable) {
+        assert display != 0 || VirtualUniverse.mc.isWindows();
         return useCtx(unbox(ctx), display, unbox(drawable));
     }
 

@@ -97,8 +97,10 @@ public class Screen3D extends Object {
     // an off-screen Canvas3D or with one or more on-screen Canvas3Ds
     boolean offScreen;
 
-    // The display connection (X11 only) and the screen ID
+    // The display connection (native OGL pipeline on X11 only)
     long display;
+
+    // Screen number
     int screen;
 
     // The width and height of the screen in meters.
