@@ -213,8 +213,8 @@ class Renderer extends J3dThread {
 
         try {
 	  if (opArg == SWAP) {
-	      
-	      Object [] swapArray = (Object[])args[2];
+
+              Object [] swapArray = (Object[])args[2];
 
 	      view = (View)args[3];
 
@@ -362,7 +362,13 @@ class Renderer extends J3dThread {
             if (opArg == RENDER) {
                 m = renderMessage;
 		m[0] = VirtualUniverse.mc.getMessage();
-		m[0].type = J3dMessage.RENDER_RETAINED;
+                // Issue 131: Set appropriate message type
+                if (((Canvas3D)args[1]).offScreen) {
+                    m[0].type = J3dMessage.RENDER_OFFSCREEN;
+                }
+                else {
+                    m[0].type = J3dMessage.RENDER_RETAINED;
+                }
 		m[0].incRefcount();
                 m[0].args[0] = args[1];
 		totalMessages = 1;
@@ -652,6 +658,10 @@ class Renderer extends J3dThread {
 		    ImageComponent2DRetained offBufRetained = null;
 		    
 		    if (renderType == J3dMessage.RENDER_OFFSCREEN) {
+                        // Issue 131: set offScreenRendering flag here, since it
+                        // otherwise won't be set for auto-off-screen rendering
+                        // (which doesn't use renderOffScreenBuffer)
+                        canvas.offScreenRendering = true;
                         if (canvas.drawable == null || !canvas.active) {
                             canvas.offScreenRendering = false;
                             continue;
@@ -664,6 +674,15 @@ class Renderer extends J3dThread {
                                 offBufRetained.evaluateExtensions(
 				     canvas.extensionsSupported);
 			    }
+                            
+                            // Issue 131: determine the boundary of the off-screen
+                            // buffer. Note that this was moved from
+                            // renderOffScreenBuffer, so it can be done for auto
+                            // off-screen canvases
+                            //
+                            // TODO KCR Issue 131: Remove this, if no longer
+                            // needed after issue 85 changes
+                            canvas.determineOffScreenBoundary(); //issue #131.
 			}
                     } else if (!canvas.active) {
 			continue;
@@ -1293,6 +1312,7 @@ class Renderer extends J3dThread {
 
 			    canvas.syncRender(canvas.ctx, true);
                             canvas.endOffScreenRendering();
+                            canvas.offScreenRendering = false;
 
                             // do the postSwap for offscreen here
                             canvas.view.inCanvasCallback = true;
@@ -1311,7 +1331,6 @@ class Renderer extends J3dThread {
                     	        offBufRetained.geomLock.unLock();
 			    }
 
-			    canvas.offScreenRendering = false;
                             canvas.view.inCanvasCallback = false;
 
                             canvas.releaseCtx();

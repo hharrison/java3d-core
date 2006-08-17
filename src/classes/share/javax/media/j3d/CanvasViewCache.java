@@ -434,7 +434,8 @@ class CanvasViewCache extends Object {
 	// XXXX: Peeking at the dirty flag is a hack. Need to revisit this.
 	boolean vprNotDirty = (viewCache.vpRetained.vprDirtyMask == 0);
 
-	if(!canvas.offScreen &&
+        // Issue 131: If not manual, it has to be considered as an onscreen canvas.
+	if(!canvas.manualRendering &&
 	   (vprNotDirty) &&
 	   (cvcDirtyMask == 0) &&
 	   (scrvcDirtyMask == 0) &&

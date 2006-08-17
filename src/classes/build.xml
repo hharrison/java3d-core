@@ -305,10 +305,12 @@
     <!-- Compile the javadoc from ${src} into ${build}/javadocs -->
     <javadoc packagenames="javax.media.j3d.*,
 			   com.sun.j3d.audioengines.*,
+                           com.sun.j3d.exp.*,
 			   com.sun.j3d.loaders.*,
 			   com.sun.j3d.utils.*,
                            javax.vecmath.*"
              excludepackagenames="com.sun.j3d.utils.scenegraph.io.retained,
+			   com.sun.j3d.exp.swing.impl,
 			   com.sun.j3d.utils.scenegraph.io.state.*"
              maxmemory="128m"
              destdir="${build}/${platform}/javadocs/docs-public"

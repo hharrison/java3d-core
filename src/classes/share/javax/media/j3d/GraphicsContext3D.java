@@ -2342,8 +2342,9 @@ public class GraphicsContext3D extends Object   {
                 sendRenderMessage(true, GraphicsContext3D.FLUSH, waitArg, 
 					null);
 	    }
+            // Issue 131: AutomaticOffscreen canvases must be treated as onscreen ones.
 	    if (wait && canvas3d.active && canvas3d.isRunningStatus &&
-		!canvas3d.offScreen) { 
+		!canvas3d.manualRendering ) {
 		// No need to wait if renderer thread is not schedule
 		runMonitor(J3dThread.WAIT);
 	    } 

@@ -321,6 +321,17 @@ public class Canvas3D extends Canvas {
     //
     boolean offScreen = false;
 
+    //
+    // Issue 131: Flag that indicates whether this Canvas3D is a manually
+    // rendered Canvas3D (versus an automatically rendered Canvas3D).
+    //
+    // NOTE: manualRendering only applies to off-screen Canvas3Ds at this time.
+    // We have no plans to ever change this, but if we do, it might be necessary
+    // to determine which, if any, of the uses of "manualRendering" should be
+    // changed to "manualRendering&&offScreen"
+    //
+    boolean manualRendering = false;
+
     // user specified offScreen Canvas location
     Point offScreenCanvasLoc;
 
@@ -1049,6 +1060,20 @@ public class Canvas3D extends Canvas {
 	this.offScreen = offScreen;
 	this.graphicsConfiguration = graphicsConfiguration;
 
+        // Issue 131: Set the autoOffScreen variable based on whether this
+        // canvas3d implements the AutoOffScreenCanvas3D tagging interface.
+        // Eventually, we may replace this with an actual API.
+        boolean autoOffScreenCanvas3D = false;
+        if (this instanceof com.sun.j3d.exp.swing.impl.AutoOffScreenCanvas3D) {
+            autoOffScreenCanvas3D = true;
+        }
+
+        // Throw an illegal argument exception if an on-screen canvas is tagged
+        // as an  auto-off-screen canvas
+        if (autoOffScreenCanvas3D && !offScreen) {
+            throw new IllegalArgumentException(J3dI18N.getString("Canvas3D25"));
+        }
+
         // Issue 163 : Set dirty bits for both Renderer and RenderBin
         cvDirtyMask[0] = VIEW_INFO_DIRTY;
         cvDirtyMask[1] = VIEW_INFO_DIRTY;
@@ -1059,11 +1084,15 @@ public class Canvas3D extends Canvas {
         fbConfig = Pipeline.getPipeline().getFbConfig(gcInfo);
 
 	if (offScreen) {
-	    screen = new Screen3D(graphicsConfiguration, offScreen);
 
-	    // TODO: keep a list of off-screen Screen3D objects?
-	    // Does this list need to be grouped by GraphicsDevice?
+            // Issue 131: set manual rendering flag based on whether this is
+            // an auto-off-screen Canvas3D.
+            manualRendering = !autoOffScreenCanvas3D;
 
+            screen = new Screen3D(graphicsConfiguration, offScreen);
+
+            // TODO: keep a list of off-screen Screen3D objects?
+            // Does this list need to be grouped by GraphicsDevice?
 
             // since this canvas will not receive the addNotify
             // callback from AWT, set the added flag here
@@ -1091,7 +1120,13 @@ public class Canvas3D extends Canvas {
 	    newSize = offScreenCanvasSize;
 	    newPosition = offScreenCanvasLoc;
 
+            // Issue 131: add CanvasViewEventCatcher for auto-offScreen
+            // TODO KCR Issue 131: why is this needed?
+            if (!manualRendering) {
+                canvasViewEventCatcher = new CanvasViewEventCatcher(this);
+            }
         } else {
+
 	    GraphicsDevice graphicsDevice;
 	    graphicsDevice = graphicsConfiguration.getDevice();
 
@@ -1129,6 +1164,12 @@ public class Canvas3D extends Canvas {
         useStereo = stereoEnable && stereoAvailable;
         useSharedCtx = VirtualUniverse.mc.isSharedCtx;
 
+        // Issue 131: assert that only an off-screen canvas can be demand-driven
+        assert (!offScreen && manualRendering) == false;
+
+        // Assert that offScreen is *not* double-buffered or stereo
+        assert (offScreen && useDoubleBuffer) == false;
+        assert (offScreen && useStereo) == false;
     }
 
     /**
@@ -1197,6 +1238,11 @@ public class Canvas3D extends Canvas {
      * to function properly.
      */
     public void addNotify() {
+
+        // Issue 131: This method is now being called by JCanvas3D for its
+        // off-screen Canvas3D, so we need to handle off-screen properly here.
+        // TODO KCR Issue 131: We should find a different way to do this
+
 	Renderer rdr = null;
 
 	if (isRunning && (screen != null)) {
@@ -1211,9 +1257,11 @@ public class Canvas3D extends Canvas {
 		}
 	    }
 	}
-				
 
-	super.addNotify();
+        // Issue 131: Don't call super for off-screen Canvas3D
+        if ( !offScreen ){
+            super.addNotify();
+        }
 	screen.addUser(this);
 
 	parent = this.getParent();
@@ -1227,7 +1275,8 @@ public class Canvas3D extends Canvas {
 	    ((Window)parent).addComponentListener(eventCatcher);
 	}
 
-	if (!offScreen) {
+        // Issue 131: If not manual, it has to be considered as an onscreen canvas.
+	if (!manualRendering) {
 	    if(canvasViewEventCatcher.parentList.size() > 0) {
 		Component comp;
 		//Release and clear.
@@ -1303,7 +1352,8 @@ public class Canvas3D extends Canvas {
 	    }
 	}
 
-	if (!offScreen) {
+        // Issue 131: If not manual, it has to be considered as an onscreen canvas.
+	if (!manualRendering) {
 	    firstPaintCalled = false;	    
 	}
 
@@ -1384,7 +1434,8 @@ public class Canvas3D extends Canvas {
 	    parent.requestFocus();
 	}
 
-	if (!offScreen) {
+        // Issue 131: If not manual, it has to be considered as an onscreen canvas.
+	if (!manualRendering) {
 	    added = false;
 	}
 
@@ -1405,7 +1456,7 @@ public class Canvas3D extends Canvas {
 	// Also we can't use this as lock, otherwise there is a
 	// deadlock where updateViewCache get a lock of this and
         // get a lock of this component. But Container 
-	// remove will get a lock of this componet follows by evaluateActive.
+	// remove will get a lock of this component follows by evaluateActive.
 
 	synchronized (evaluateLock) {
 	    if ((visible || offScreen) && firstPaintCalled) {
@@ -1589,7 +1640,9 @@ public class Canvas3D extends Canvas {
      * off-screen mode.
      */
     public final void stopRenderer() {
-	if (offScreen)
+        // Issue 131: renderer can't be stopped only if it is an offscreen,
+        // manual canvas. Otherwise, it has to be seen as an onscreen canvas.
+	if (manualRendering)
 	    throw new IllegalStateException(J3dI18N.getString("Canvas3D14"));
 
 	if (isRunning) {
@@ -1769,6 +1822,56 @@ public class Canvas3D extends Canvas {
         }
     }
 
+    // Issue 131: move computation of offScreenCanvasClippedLoc
+    // and offScreenCanvasClippedSize to this method, so we can all it from
+    // the renderer for automatic-offscreen canvases as well as from
+    // renderOffScreenBuffer for manual.
+    //
+    // TODO KCR Issue 131: THIS METHOD WILL PROBABLY GO AWAY ONCE THE CHANGES
+    // FOR ISSUE 85 ARE CHECKED IN
+    // TODO Chien : determine whether this is needed
+    void determineOffScreenBoundary() {
+        // determine the offScreen boundary
+        // do the boundary determination here because setCanvasLocation can
+        // be done at any time.
+        Dimension screenSize = screen.getSize();
+        if ((offScreenCanvasLoc.x >= screenSize.width) ||
+                (offScreenCanvasLoc.y >= screenSize.height))
+            return;
+
+        if (offScreenCanvasLoc.x < 0) {
+            offScreenCanvasClippedLoc.x = 0 - offScreenCanvasLoc.x;
+            offScreenCanvasClippedSize.width =
+                    offScreenCanvasSize.width - offScreenCanvasClippedLoc.x;
+            if (offScreenCanvasClippedSize.width > screenSize.width)
+                offScreenCanvasClippedSize.width = screenSize.width;
+        } else {
+            offScreenCanvasClippedLoc.x = 0;
+            offScreenCanvasClippedSize.width = offScreenCanvasSize.width;
+            if ((offScreenCanvasLoc.x + offScreenCanvasClippedSize.width)
+                    > screenSize.width)
+                offScreenCanvasClippedSize.width =
+                        screenSize.width - offScreenCanvasLoc.x;
+        }
+
+
+        int lly = offScreenCanvasLoc.y + offScreenCanvasSize.height;
+        if (lly < 0) {
+            return;
+        } else if (lly <= screenSize.height) {
+            offScreenCanvasClippedLoc.y = 0;
+            if (offScreenCanvasLoc.y < 0)
+                offScreenCanvasClippedSize.height = lly;
+            else
+                offScreenCanvasClippedSize.height = offScreenCanvasSize.height;
+        } else if (lly > screenSize.height) {
+            offScreenCanvasClippedSize.height =
+                    screenSize.height - offScreenCanvasLoc.y;
+            offScreenCanvasClippedLoc.y = lly - screenSize.height;
+        }
+
+    }
+
 
     /**
      * Retrieves the off-screen buffer for this Canvas3D.
@@ -1821,9 +1924,12 @@ public class Canvas3D extends Canvas {
      */
     public void renderOffScreenBuffer() {
 
-
         if (!offScreen)
             throw new IllegalStateException(J3dI18N.getString("Canvas3D1"));
+
+        // Issue 131: Cannot manually render to an automatic canvas.
+        if (!manualRendering)
+            throw new IllegalStateException(J3dI18N.getString("Canvas3D24"));
 
         if (offScreenBuffer == null)
             throw new NullPointerException(J3dI18N.getString("Canvas3D10"));
@@ -1855,44 +1961,8 @@ public class Canvas3D extends Canvas {
 	    return;
 	}
 
-	// determine the offScreen boundary
-	// do the boundary determination here because setCanvasLocation can
-	// be done at any time.
-
-	if ((offScreenCanvasLoc.x >= screenSize.width) ||
-	    (offScreenCanvasLoc.y >= screenSize.height))
-	    return;
-
-	if (offScreenCanvasLoc.x < 0) {
-	    offScreenCanvasClippedLoc.x = 0 - offScreenCanvasLoc.x;
-	    offScreenCanvasClippedSize.width = 
-			offScreenCanvasSize.width - offScreenCanvasClippedLoc.x;
-	    if (offScreenCanvasClippedSize.width > screenSize.width)
-		offScreenCanvasClippedSize.width = screenSize.width;
-	} else {
-	    offScreenCanvasClippedLoc.x = 0;
-	    offScreenCanvasClippedSize.width = offScreenCanvasSize.width;
-	    if ((offScreenCanvasLoc.x + offScreenCanvasClippedSize.width) 
-			> screenSize.width)
-		offScreenCanvasClippedSize.width = 
-			screenSize.width - offScreenCanvasLoc.x;
-	}
-
-
-	int lly = offScreenCanvasLoc.y + offScreenCanvasSize.height;
-        if (lly < 0) {
-	    return;
-	} else if (lly <= screenSize.height) {
-	    offScreenCanvasClippedLoc.y = 0;
-	    if (offScreenCanvasLoc.y < 0) 
-		offScreenCanvasClippedSize.height = lly;
-	    else
-	        offScreenCanvasClippedSize.height = offScreenCanvasSize.height;
-	} else if (lly > screenSize.height) {
-	    offScreenCanvasClippedSize.height = 
-		screenSize.height - offScreenCanvasLoc.y;
-	    offScreenCanvasClippedLoc.y = lly - screenSize.height;
-        }
+        // Issue 131: moved code that determines off-screen boundary to separate
+        // method that is called from the renderer
 
         offScreenRendering = true;
 
@@ -2021,6 +2091,10 @@ public class Canvas3D extends Canvas {
      * @since Java 3D 1.2
      */
     public void waitForOffScreenRendering() {
+        // TODO KCR : throw exception if !offScreen
+
+        // TODO KCR Issue 131: throw exception if !manualRendering
+
         while (offScreenRendering) {
 	    MasterControl.threadYield();
 	}

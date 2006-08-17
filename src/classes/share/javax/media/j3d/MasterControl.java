@@ -2097,7 +2097,6 @@ class MasterControl {
 		}
 		rdr.onScreen = null;
 		rdr.offScreen = null;
-		    
 	    }
 
 	    // cleanup ThreadData corresponds to the view in renderer
@@ -2332,7 +2331,15 @@ class MasterControl {
 		    	    // offScreen canvases will be handled by the
 			    // request renderer, so don't add offScreen canvas
 			    // the render list
-		            if (!cv.offScreen) {
+                            //
+                            // Issue 131: Automatic offscreen canvases need to
+                            // be added to onscreen list. Special case.
+                            //
+                            // TODO KCR Issue 131: this should probably be
+                            // changed to a list of screens since multiple
+                            // off-screen canvases (either auto or manual) can
+                            // be used by the same renderer
+		            if (!cv.manualRendering) {
 				screen.renderer.onScreen = screen;
 			    } else {
 				screen.renderer.offScreen = screen;
@@ -2803,7 +2810,8 @@ class MasterControl {
 	            for (int k=0; k < canvasList.length; k++) {
 	                if (j < canvasList[k].length) {
 	                    Canvas3D cv = canvasList[k][j];
-			    if (cv.active && cv.isRunningStatus && !cv.offScreen) { 
+                            // Issue 131: setup renderer unless manualRendering
+			    if (cv.active && cv.isRunningStatus && !cv.manualRendering ) {
 				if (cv.screen.renderer == null) {
 				    continue;
 				}
@@ -2824,7 +2832,8 @@ class MasterControl {
 			Canvas3D cv = canvasList[j][k];
 			// create swap thread only if there is at
 			// least one active canvas
-			if (cv.active && cv.isRunningStatus && !cv.offScreen) {
+                        // Issue 131: only if not manualRendering
+			if (cv.active && cv.isRunningStatus && !cv.manualRendering) {
 			    if (cv.screen.renderer == null) {
 				// Should not happen
 				continue;

@@ -982,7 +982,6 @@ public class View extends Object {
 
     private Canvas3D[][] cachedCanvasList;
     private Canvas3D[] cachedCanvases;
-    private Canvas3D[] cachedOffScreenCanvases;
     private Screen3D[] cachedScreens;
     private int longestScreenList = 0;
     private boolean canvasesDirty = true;
@@ -2416,21 +2415,13 @@ public class View extends Object {
         synchronized (canvasList) {
 	    ArrayList cv;
 	    int len = canvases.size();
-	    int numOffScreenCanvases = 0;
 
 	    Canvas3D newCachedCanvases[] = new Canvas3D[len];
 	    for (int i=0; i < len; i++) {
 		newCachedCanvases[i] = (Canvas3D) canvases.get(i);
-		if (newCachedCanvases[i].offScreen)
-		    numOffScreenCanvases++;
 	    }
 	    // Do this in one instruction so there is no need to
 	    // synchronized getCanvases()
-
-	    if (numOffScreenCanvases > 0) {
-		cachedOffScreenCanvases = new Canvas3D[numOffScreenCanvases];
-		numOffScreenCanvases = 0;
-	    }
 
 	    cachedCanvases = newCachedCanvases;
 	    len = 0;
@@ -2442,13 +2433,6 @@ public class View extends Object {
 		cachedCanvasList[i] = new Canvas3D[len];
 		for (int j=0; j < len; j++) {
 		    cachedCanvasList[i][j] = (Canvas3D) cv.get(j);
-		}
-
-		if (cachedCanvasList[i][0].offScreen) {
-		    for (int j = 0; j < len; j++) {
-			cachedOffScreenCanvases[numOffScreenCanvases++]=
-				cachedCanvasList[i][j];
-		    }
 		}
 
 		if (len > longestScreenList) {
@@ -2489,10 +2473,6 @@ public class View extends Object {
     // assume getCanvasList is called before
     Canvas3D[] getCanvases() {
 	return cachedCanvases;
-    }
-
-    Canvas3D[] getOffScreenCanvases() {
-	return cachedOffScreenCanvases;
     }
 
     // assume getCanvasList is called before
