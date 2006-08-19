@@ -993,9 +993,9 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
                 canvas3d.texturemapping(canvas3d.ctx, px, py,
                         x1, y1, x2, y2,
                         texWidth, texHeight, w,
-                        (abgr ? ImageComponentRetained.BYTE_ABGR:
-                            ImageComponentRetained.BYTE_RGBA),
-                        objectId,  data, width, height);
+                        (abgr ? ImageComponentRetained.TYPE_BYTE_ABGR:
+                            ImageComponentRetained.TYPE_BYTE_RGBA),
+                        objectId, data, width, height);
             }
 	    
 	    canvas3d.drawingSurfaceObject.unLock();

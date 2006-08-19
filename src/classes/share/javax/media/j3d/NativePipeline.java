@@ -2318,46 +2318,46 @@ class NativePipeline extends Pipeline {
 
     native void updateTexture2DImage(long ctx,
             int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            byte[] imageData);
+            int imageDataType, Object data);
 
     void updateTexture2DImage(Context ctx,
             int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            byte[] imageData) {
+            int imageDataType, Object data) {
         updateTexture2DImage(unbox(ctx),
                 numLevels, level,
-                internalFormat, storedFormat,
+                textureFormat, imageFormat,
                 width, height,
                 boundaryWidth,
-                imageData);
+                imageDataType, data);
     }
 
     native void updateTexture2DSubImage(long ctx,
             int level, int xoffset, int yoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData);
+            int imageDataType, Object data);
 
     void updateTexture2DSubImage(Context ctx,
             int level, int xoffset, int yoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData) {
+            int imageDataType, Object data) {
         updateTexture2DSubImage(unbox(ctx),
                 level, xoffset, yoffset,
-                internalFormat, storedFormat,
+                textureFormat, imageFormat,
                 imgXOffset, imgYOffset,
                 tilew, width, height,
-                imageData);
+                imageDataType, data);
     }
-
+    
     native void updateTexture2DLodRange(long ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod);
@@ -2466,50 +2466,50 @@ class NativePipeline extends Pipeline {
 
     native void updateTexture3DImage(long ctx,
             int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height, int depth,
             int boundaryWidth,
-            byte[] imageData);
+            int imageDataType, Object imageData);
 
     void updateTexture3DImage(Context ctx,
             int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height, int depth,
             int boundaryWidth,
-            byte[] imageData) {
+            int imageDataType, Object imageData) {
         updateTexture3DImage(unbox(ctx),
                 numLevels, level,
-                internalFormat, storedFormat,
+                textureFormat, imageFormat,
                 width, height, depth,
                 boundaryWidth,
-                imageData);
+                imageDataType, imageData);
     }
 
     native void updateTexture3DSubImage(long ctx,
             int level,
             int xoffset, int yoffset, int zoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXoffset, int imgYoffset, int imgZoffset,
             int tilew, int tileh,
             int width, int height, int depth,
-            byte[] imageData);
+            int imageDataType, Object imageData);
 
     void updateTexture3DSubImage(Context ctx,
             int level,
             int xoffset, int yoffset, int zoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXoffset, int imgYoffset, int imgZoffset,
             int tilew, int tileh,
             int width, int height, int depth,
-            byte[] imageData) {
-        updateTexture3DSubImage(unbox(ctx),
+            int imageDataType, Object imageData) {
+       updateTexture3DSubImage(unbox(ctx),
                 level,
                 xoffset, yoffset, zoffset,
-                internalFormat, storedFormat,
+                textureFormat, imageFormat,
                 imgXoffset, imgYoffset, imgZoffset,
                 tilew, tileh,
                 width, height, depth,
-                imageData);
+                imageDataType, imageData);
     }
 
     native void updateTexture3DLodRange(long ctx,
@@ -2609,44 +2609,44 @@ class NativePipeline extends Pipeline {
 
     native void updateTextureCubeMapImage(long ctx,
             int face, int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            byte[] imageData);
+            int imageDataType, Object imageData);
 
     void updateTextureCubeMapImage(Context ctx,
             int face, int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            byte[] imageData) {
+            int imageDataType, Object imageData) {
         updateTextureCubeMapImage(unbox(ctx),
                 face, numLevels, level,
-                internalFormat, storedFormat,
+                textureFormat, imageFormat,
                 width, height,
                 boundaryWidth,
-                imageData);
+                imageDataType, imageData);
     }
 
     native void updateTextureCubeMapSubImage(long ctx,
             int face, int level, int xoffset, int yoffset,
-            int internalFormat,int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData);
+            int imageDataType, Object imageData);
 
     void updateTextureCubeMapSubImage(Context ctx,
             int face, int level, int xoffset, int yoffset,
-            int internalFormat,int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData) {
+            int imageDataType, Object imageData) {
         updateTextureCubeMapSubImage(unbox(ctx),
                 face, level, xoffset, yoffset,
-                internalFormat,storedFormat,
+                textureFormat, imageFormat,
                 imgXOffset, imgYOffset,
                 tilew, width, height,
-                imageData);
+                imageDataType, imageData);
     }
 
     native void updateTextureCubeMapLodRange(long ctx,
@@ -2830,16 +2830,14 @@ class NativePipeline extends Pipeline {
     void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, Drawable drawable) {
         destroyOffScreenBuffer(cv, unbox(ctx), display, fbConfig, unbox(drawable));
     }
-
-
+    
     // This is the native for reading the image from the offscreen buffer
-    native void readOffScreenBuffer(Canvas3D cv, long ctx, int format, int width, int height);
-
-    void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int width, int height) {
-        readOffScreenBuffer(cv, unbox(ctx), format, width, height);
+    native void readOffScreenBuffer(Canvas3D cv, long ctx, int format, int type, Object data, int width, int height);
+    
+    void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int type, Object data, int width, int height) {
+        readOffScreenBuffer(cv, unbox(ctx), format, type, data, width, height);
     }
-
-
+    
     // The native method for swapBuffers
     native int swapBuffers(Canvas3D cv, long ctx, long dpy, long drawable);
 
@@ -3178,16 +3176,6 @@ class NativePipeline extends Pipeline {
     boolean useCtx(Context ctx, long display, Drawable drawable) {
         assert display != 0 || VirtualUniverse.mc.isWindows();
         return useCtx(unbox(ctx), display, unbox(drawable));
-    }
-
-
-    native void clear(long ctx, float r, float g, float b, int winWidth, int winHeight,
-            ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown);
-
-    void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,
-            ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown) {
-        clear(unbox(ctx), r, g, b, winWidth, winHeight,
-                image, imageScaleMode, imageYdown);
     }
 
     native void textureclear(long ctx, int maxX, int maxY,

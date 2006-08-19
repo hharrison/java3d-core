@@ -31,70 +31,21 @@ import java.nio.IntBuffer;
 
 abstract class ImageComponentRetained extends NodeComponentRetained {
     
+    // change flag
+    static final int IMAGE_CHANGED       = 0x01;
+    static final int SUBIMAGE_CHANGED    = 0x02;
+      
+    static final int TYPE_BYTE_BGR     =  0x1;
+    static final int TYPE_BYTE_RGB     =  0x2;
+    static final int TYPE_BYTE_ABGR    =  0x4;
+    static final int TYPE_BYTE_RGBA    =  0x8;
+    static final int TYPE_BYTE_LA      =  0x10; 
+    static final int TYPE_BYTE_GRAY    =  0x20;
+    static final int TYPE_USHORT_GRAY  =  0x40; 
+    static final int TYPE_INT_BGR      =  0x80;
+    static final int TYPE_INT_RGB      =  0x100;
+    static final int TYPE_INT_ARGB     =  0x200;   
     
-    private int	apiFormat; // The format set by user.
-    
-    boolean noAlpha = false;  // Needed for Raster only.
-    
-    int		width;		// Width of PixelArray
-    int		height;		// Height of PixelArray
-    int         depth;          // Depth of PixelArray
-    boolean     byReference = false;   // Is the imageComponent by reference
-    boolean     yUp = false;
-
-    
-    
-    // array of Buffered image
-    // This will store the refImage array, if the imagecomponent is by reference
-    RenderedImage[] bImage;
-    boolean[] imageDirty;       // array of image dirty flag
-            
-    // Change this to a object ImageData ---- Chien.
-    byte[]	imageYup;	// 2D or 3D array of pixel values in
-    // one of various formats - Y upwards
-    // Move this into ImageData.
-    
-    // Format of the Yup and Ydown image
-    // in the case of "by Copy" it is RGBA
-    // In the case of "by ref" it may be one of the original
-    // formats supported by OpenGL
-
-    
-    // ****** Need to resolve format, internalFormat and storedYupFormat. *********
-    
-    // This should merge with storedYupFormat and move into ImageData. ( use storedFormat )
-    int internalFormat; // Used when a copy is made, RGBA, RGB, LA, and L.
-    int storedYupFormat;
-    
-    // These 2 should go away in favor of bytesPerPixel.
-    int bytesPerPixelIfStored; // Number of bytes if a copy is made    
-    int bytesPerYupPixelStored;
-    
-    
-    // This should be gone.
-    boolean imageYupAllocated = false; 
-    // If cache is dirty (clearLive, setLive has occureed), then
-    // extension based cache needs to be re-evaluated
-    boolean imageYupCacheDirty = false;    
-        
-    // This should be gone.
-    byte[][]	imageYdown = new byte[1][];	// 2D array of pixel values in
-    // one of various formats - Y downwards
-    
-    // This should be gone.
-    int storedYdownFormat;
-    int bytesPerYdownPixelStored;
-    boolean imageYdownAllocated = false;
-    boolean imageYdownCacheDirty = false;
-    boolean 	usedByRaster = false;   // used by a raster object?
-    boolean 	usedByTexture = false;  // used by a texture object?
-
-    
-    /*
-     * NEW CODE :  BEGIN --- Chien
-     */
-
-
     enum ImageFormatType {
         TYPE_UNKNOWN, 
         TYPE_BYTE_BGR,
@@ -109,6 +60,11 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         TYPE_INT_ARGB        
     }  
     
+    static final int IMAGE_DATA_TYPE_BYTE_ARRAY     =  0x1000;   
+    static final int IMAGE_DATA_TYPE_INT_ARRAY      =  0x2000;   
+    static final int IMAGE_DATA_TYPE_BYTE_BUFFER    =  0x4000;   
+    static final int IMAGE_DATA_TYPE_INT_BUFFER     =  0x8000;   
+    
     enum ImageDataType {
         TYPE_NULL,
         TYPE_BYTE_ARRAY,
@@ -117,9 +73,15 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         TYPE_INT_BUFFER
     } 
     
+    private int	apiFormat; // The format set by user.
+    int		width;		// Width of PixelArray
+    int		height;		// Height of PixelArray
+    int         depth;          // Depth of PixelArray
+    boolean     byReference = false;   // Is the imageComponent by reference
+    boolean     yUp = false;
     boolean imageTypeIsSupported;
-    private ImageFormatType storedImageFormatType;
-    private int bytesPerPixel;
+    boolean abgrSupported = true; 
+    private int unitsPerPixel;
     private int numberOfComponents;
     private int imageType;  // The image type of the input image. Using the constant in BufferedImage
     ImageFormatType imageFormatType = ImageFormatType.TYPE_UNKNOWN; 
@@ -128,16 +90,134 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     // This will store the referenced Images for reference case.
     private RenderedImage refImage[] = null;
     
+    // Lock used in the "by ref case"
+    GeometryLock geomLock = new GeometryLock();
+    
+    int tilew = 0;
+    int tileh = 0;
+    int numXTiles = 0;
+    int numYTiles = 0;
+    
+    // lists of Node Components that are referencing this ImageComponent
+    // object. This list is used to notify the referencing node components
+    // of any changes of this ImageComponent.
+    ArrayList userList = new ArrayList();
+    
+     abstract ImageComponentRetained createNextLevelMipMapImage();
+    
+    /**
+     * Retrieves the width of this image component object.
+     * @return the width of this image component object
+     */  
+    int getWidth() {
+        return width;
+    }
+
+    /**
+     * Retrieves the height of this image component object.
+     * @return the height of this image component object
+     */  
+    int getHeight() {
+        return height;
+    }
+
+    /**
+     * Retrieves the apiFormat of this image component object.
+     * 
+     * @return the apiFormat of this image component object
+     */  
+    int getFormat() {
+        return apiFormat;
+    }
+    
+    void setFormat(int format) {
+        this.apiFormat = format;
+    }    
+
+
+     void setByReference(boolean byReference) {
+ 	this.byReference = byReference;
+     }
+     
+     boolean isByReference() {
+ 	return byReference;
+     }
+ 
+     void setYUp( boolean yUp) {
+ 	this.yUp = yUp;
+     }
+ 
+     boolean isYUp() {
+ 	return yUp;
+     }
+     
+    int getImageDataTypeIntValue() {
+        int idtValue = -1;        
+        switch(imageData.imageDataType) {
+            case TYPE_BYTE_ARRAY:
+                idtValue = IMAGE_DATA_TYPE_BYTE_ARRAY;
+                break;
+            case TYPE_INT_ARRAY:
+                idtValue = IMAGE_DATA_TYPE_INT_ARRAY;
+                break;
+            case TYPE_BYTE_BUFFER:
+                idtValue = IMAGE_DATA_TYPE_BYTE_BUFFER;
+                break;
+            case TYPE_INT_BUFFER:
+                idtValue = IMAGE_DATA_TYPE_INT_BUFFER;
+                break;
+            default :
+                assert false;
+        }
+        return idtValue;
+               
+    }
+        
+    int getImageFormatTypeIntValue() {
+        int iftValue = -1;        
+        switch(imageFormatType) {
+            case TYPE_BYTE_BGR:
+                iftValue = TYPE_BYTE_BGR;
+                break;
+            case TYPE_BYTE_RGB:
+                iftValue = TYPE_BYTE_RGB;
+                break;
+            case TYPE_BYTE_ABGR:
+                iftValue = TYPE_BYTE_ABGR;
+                break;
+            case TYPE_BYTE_RGBA:
+                iftValue = TYPE_BYTE_RGBA;
+                break;
+            case TYPE_BYTE_LA:
+                iftValue = TYPE_BYTE_LA;
+                break;
+            case TYPE_BYTE_GRAY:
+                iftValue = TYPE_BYTE_GRAY;
+                break;
+            case TYPE_USHORT_GRAY:
+                iftValue = TYPE_USHORT_GRAY;
+                break;
+            case TYPE_INT_BGR:
+                iftValue = TYPE_INT_BGR;
+                 break;
+           case TYPE_INT_RGB:
+                iftValue = TYPE_INT_RGB;
+                break;
+            case TYPE_INT_ARGB:
+                iftValue = TYPE_INT_ARGB;
+                break;
+            default:
+                assert false;
+        }
+        return iftValue;
+    }
+    
+    int getImageType() {
+        return imageType;
+    }
+    
     ImageFormatType getImageFormatType() {
         return this.imageFormatType;
-    }
-    
-    void setStoredImageFormatType(ImageFormatType formatType) {
-        this.storedImageFormatType = formatType;
-    }
-    
-    ImageFormatType getStoredImageFormatType() {
-        return this.storedImageFormatType;
     }
     
     void setRefImage(RenderedImage image, int index) {
@@ -147,11 +227,19 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     RenderedImage getRefImage(int index) {
         return this.refImage[index];
     }
+
+    ImageData getImageData() {
+        return imageData;
+    }
+    
+    boolean isImageTypeSupported() {
+        return imageTypeIsSupported;
+    }
     
     /**
      * Check if ImageComponent parameters have valid values.
      */
-    void new15_processParams(int format, int width, int height, int depth) {        
+    void processParams(int format, int width, int height, int depth) {        
         if (width < 1)
           throw new IllegalArgumentException(J3dI18N.getString("ImageComponentRetained0"));
 
@@ -193,19 +281,20 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 	refImage = new RenderedImage[depth];
 
     }
-  
     
     // Need to review this method -- Chien.
     int evaluateImageType(RenderedImage ri) {
         int imageType = BufferedImage.TYPE_CUSTOM;
-        int i;
 
         if (ri instanceof BufferedImage) {
-            // TODO : If return type is CUSTOM we are not done yet, we need to fall thro. below to evaluate further.  --- Chien.
-            return ((BufferedImage)ri).getType();
+            imageType = ((BufferedImage)ri).getType();
+            
+            if(imageType != BufferedImage.TYPE_CUSTOM) {
+                return imageType;
+            }
         }
         
-        System.err.println("This is a RenderedImage. It imageType classification may not be correct.");
+        // System.err.println("This is a RenderedImage or BufferedImage with TYPE_CUSTOM. It imageType classification may not be correct.");
         
         ColorModel cm = ri.getColorModel();
         ColorSpace cs = cm.getColorSpace();
@@ -213,65 +302,99 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 
         int csType = cs.getType();
         boolean isAlphaPre = cm.isAlphaPremultiplied();
-        if ( csType != ColorSpace.TYPE_RGB) {
-            if (csType == ColorSpace.TYPE_GRAY &&
-                cm instanceof ComponentColorModel) {
-                if (sm.getDataType() == DataBuffer.TYPE_BYTE) {
-                    imageType = BufferedImage.TYPE_BYTE_GRAY;
-                } else if (sm.getDataType() == DataBuffer.TYPE_USHORT) {
-                    imageType = BufferedImage.TYPE_USHORT_GRAY;
-                }
+        
+        
+        if (csType == ColorSpace.TYPE_GRAY && cm instanceof ComponentColorModel) {
+            if (sm.getDataType() == DataBuffer.TYPE_BYTE) {
+                imageType = BufferedImage.TYPE_BYTE_GRAY;
+            } else if (sm.getDataType() == DataBuffer.TYPE_USHORT) {
+                imageType = BufferedImage.TYPE_USHORT_GRAY;
             }
-        }
-
-       /*
-        * TODO: Might need to support INT type --- Chien.
-        */
+        }       
+ 
         // RGB , only interested in BYTE ABGR and BGR for now
         // all others will be copied to a buffered image
-        else {
-            int numBands = sm.getNumBands();
-            if (sm.getDataType() == DataBuffer.TYPE_BYTE) {
+        else if(csType == ColorSpace.TYPE_RGB) {
+            int comparedBit = 0;
+            int smDataType = sm.getDataType();
+            if(smDataType == DataBuffer.TYPE_BYTE) {
+                comparedBit = 8;
+            }
+            else if(smDataType == DataBuffer.TYPE_INT) {
+                comparedBit = 32;
+            }
+            
+            if(comparedBit != 0) {       
+                int numBands = sm.getNumBands();
                 if (cm instanceof ComponentColorModel &&
-                    sm instanceof PixelInterleavedSampleModel) {
-                    PixelInterleavedSampleModel csm = 
-				(PixelInterleavedSampleModel) sm;
+                        sm instanceof PixelInterleavedSampleModel) {
+                    PixelInterleavedSampleModel csm =
+                            (PixelInterleavedSampleModel) sm;
                     int[] offs = csm.getBandOffsets();
                     ComponentColorModel ccm = (ComponentColorModel)cm;
                     int[] nBits = ccm.getComponentSize();
-                    boolean is8Bit = true;
-                    for (i=0; i < numBands; i++) {
-                        if (nBits[i] != 8) {
-                            is8Bit = false;
+                    boolean isNBit = true;
+                    for (int i=0; i < numBands; i++) {
+                        if (nBits[i] != comparedBit) {
+                            isNBit = false;
                             break;
                         }
                     }
-                    if (is8Bit &&
-                        offs[0] == numBands-1 &&
-                        offs[1] == numBands-2 &&
-                        offs[2] == numBands-3) {
-                        if (numBands == 3) {
-                            imageType = BufferedImage.TYPE_3BYTE_BGR;
-                        }
-                        else if (offs[3] == 0) {
-                            imageType = (isAlphaPre
-                                         ? BufferedImage.TYPE_4BYTE_ABGR_PRE
-                                         : BufferedImage.TYPE_4BYTE_ABGR);
+                    
+                    // Handle TYPE_BYTE
+                    if( comparedBit == 8) {
+                        if (isNBit &&
+                                offs[0] == numBands-1 &&
+                                offs[1] == numBands-2 &&
+                                offs[2] == numBands-3) {
+                            if (numBands == 3) {
+                                imageType = BufferedImage.TYPE_3BYTE_BGR;
+                            } else if (offs[3] == 0) {
+                                imageType = (isAlphaPre
+                                        ? BufferedImage.TYPE_4BYTE_ABGR_PRE
+                                        : BufferedImage.TYPE_4BYTE_ABGR);
+                            }
                         }
                     }
-                }
-            }
+                    //Handle TYPE_INT
+                    else {
+                      /*
+                       * TODO: Need to check INT support type --- Not tested yet. -- Chien
+                       */
+                        if (isNBit) {                          
+                                if (numBands == 3) {
+                                     if(offs[0] == numBands-1 &&
+                                        offs[1] == numBands-2 &&
+                                        offs[2] == numBands-3) {
+                                        imageType = BufferedImage.TYPE_INT_BGR;
+                                      }
+                                     else if(offs[0] == 0 &&
+                                        offs[1] == 1 &&
+                                        offs[2] == 2) {
+                                        imageType = BufferedImage.TYPE_INT_RGB;
+                                     }
+                                }
+                                else if(offs[0] == 3 &&
+                                        offs[1] == 0 &&
+                                        offs[2] == 1 &&
+                                        offs[3] == 2) {
+                                    imageType = (isAlphaPre
+                                            ? BufferedImage.TYPE_INT_ARGB_PRE
+                                            : BufferedImage.TYPE_INT_ARGB);
+                                }
+                        }                        
+                    }                      
+                } 
+            } 
         }
         
         return imageType;
-    }
+    }    
 
+    // Assume ri's imageType is BufferedImage.TYPE_CUSTOM
     boolean is3ByteRGB(RenderedImage ri) {
         boolean value = false;
         int i;
-        int biType = evaluateImageType(ri);
-        if (biType != BufferedImage.TYPE_CUSTOM)
-            return false;
         ColorModel cm = ri.getColorModel();
         ColorSpace cs = cm.getColorSpace();
         SampleModel sm = ri.getSampleModel();
@@ -281,9 +404,9 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             int numBands = sm.getNumBands();
             if ((numBands == 3) && (sm.getDataType() == DataBuffer.TYPE_BYTE)) {
                 if (cm instanceof ComponentColorModel &&
-                    sm instanceof PixelInterleavedSampleModel) {
-                    PixelInterleavedSampleModel csm = 
-				(PixelInterleavedSampleModel) sm;
+                        sm instanceof PixelInterleavedSampleModel) {
+                    PixelInterleavedSampleModel csm =
+                            (PixelInterleavedSampleModel) sm;
                     int[] offs = csm.getBandOffsets();
                     ComponentColorModel ccm = (ComponentColorModel)cm;
                     int[] nBits = ccm.getComponentSize();
@@ -295,23 +418,21 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                         }
                     }
                     if (is8Bit &&
-                        offs[0] == 0 &&
-                        offs[1] == 1 &&
-                        offs[2] == 2) {
-                            value = true;
+                            offs[0] == 0 &&
+                            offs[1] == 1 &&
+                            offs[2] == 2) {
+                        value = true;
                     }
                 }
             }
         }
         return value;
-    }    
+    }
     
+    // Assume ri's imageType is BufferedImage.TYPE_CUSTOM
     boolean is4ByteRGBA(RenderedImage ri) {
         boolean value = false;
         int i;
-        int biType = evaluateImageType(ri);
-        if (biType != BufferedImage.TYPE_CUSTOM)
-            return false;
         ColorModel cm = ri.getColorModel();
         ColorSpace cs = cm.getColorSpace();
         SampleModel sm = ri.getSampleModel();
@@ -350,102 +471,132 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     /* Check if sub-image type matches image type */
     boolean isSubImageTypeEqual(RenderedImage ri) {
          int subImageType = evaluateImageType(ri);       
-         
-         if(imageType != BufferedImage.TYPE_CUSTOM) {
-             if(imageType == subImageType) {
-                 return true;
-             } else {
-                 return false;
-             }
-         } else {
-             if((is4ByteRGBA(ri)) && (imageFormatType == ImageFormatType.TYPE_BYTE_RGBA)) {
-                 return true;
-             } else if((is3ByteRGB(ri)) && (imageFormatType == ImageFormatType.TYPE_BYTE_RGB)) {
-                 return true;
-             } else if(subImageType == BufferedImage.TYPE_CUSTOM) { // ???
-                 return true;
-             }
+   
+         // This test is likely too loose, but the specification isn't clear either.
+         // Assuming TYPE_CUSTOM of sub-image == the TYPE_CUSTOM of existing image.
+         if(imageType == subImageType) {
+             return true;
+         } else { 
+             return false;
          }
          
-         return false;
      }
-  
+    
+    // This method only support caller of offScreenBuffer and readRaster.
+    void createBlankImageData() {
+        
+        assert (imageData == null);
+        
+        switch(numberOfComponents) { 
+            case 4:
+                imageType = BufferedImage.TYPE_INT_ARGB;
+                imageFormatType = ImageFormatType.TYPE_INT_ARGB;
+                unitsPerPixel = 1;
+                break;
+                
+            case 3:
+                imageType = BufferedImage.TYPE_INT_RGB;
+                imageFormatType = ImageFormatType.TYPE_INT_RGB;
+                unitsPerPixel = 1;
+               break;
+            default:
+                // Only valid for 3 and 4 channel case. ( Read back from framebuffer )
+               assert false;     
+        }
+        
+        imageTypeIsSupported = true;
+        imageData = createImageDataObject(null);
+                
+    }
+    
     // This method will set imageType, imageFormatType, and bytesPerPixel
-    // as it evaluates RenderedImage is supported. 
-    boolean new15_isImageTypeSupported(RenderedImage ri) {
+    // as it evaluates RenderedImage is supported. It will also reset 
+    // abgrSupported.
+    boolean isImageTypeSupported(RenderedImage ri) {
         
         boolean isSupported = true;
         imageType = evaluateImageType(ri);
         
-        switch(numberOfComponents) { 
+        switch(numberOfComponents) {
             case 4:
-                if(imageType == BufferedImage.TYPE_4BYTE_ABGR) {    
-                    imageFormatType = ImageFormatType.TYPE_BYTE_ABGR;
-		    bytesPerPixel = 4;
+                if(imageType == BufferedImage.TYPE_4BYTE_ABGR) {
+                    
+                    // TODO : This approach will lead to a very slow path 
+                    // for unsupported case. -- Chien.
+                    if(abgrSupported) {
+                        imageFormatType = ImageFormatType.TYPE_BYTE_ABGR;
+                    } else {
+                        // Unsupported format on HW, switch to slow copy.
+                        imageFormatType = ImageFormatType.TYPE_BYTE_RGBA;
+                        isSupported = false;
+                    }
+                    unitsPerPixel = 4;                    
                 }
                 else if(imageType == BufferedImage.TYPE_INT_ARGB) {
                     imageFormatType = ImageFormatType.TYPE_INT_ARGB;
-		    bytesPerPixel = 4;
+		    unitsPerPixel = 1;
                 }
                 else if(is4ByteRGBA(ri)) {
                     imageFormatType = ImageFormatType.TYPE_BYTE_RGBA;
-		    bytesPerPixel = 4;
+		    unitsPerPixel = 4;
                 }
                 else {
-                    System.err.println("Image format is unsupported --- Case 4");
+                    // System.err.println("Image format is unsupported --- Case 4");
                     // Convert unsupported 4-component format to TYPE_BYTE_RGBA. 
                     imageFormatType = ImageFormatType.TYPE_BYTE_RGBA;
                     isSupported = false;
-		    bytesPerPixel = 4;
+		    unitsPerPixel = 4;
                 }                
                 break;
                 
             case 3:
                 if(imageType == BufferedImage.TYPE_3BYTE_BGR) {    
                     imageFormatType = ImageFormatType.TYPE_BYTE_BGR;
-		    bytesPerPixel = 3;
+		    unitsPerPixel = 3;
                 }
                 else if(imageType == BufferedImage.TYPE_INT_BGR) {
                     imageFormatType = ImageFormatType.TYPE_INT_BGR;
-		    bytesPerPixel = 4;
+		    unitsPerPixel = 1;
                 }                
                 else if(imageType == BufferedImage.TYPE_INT_RGB) {
                     imageFormatType = ImageFormatType.TYPE_INT_RGB;
-		    bytesPerPixel = 4;
+		    unitsPerPixel = 1;
                 }
                 else if(is3ByteRGB(ri)) {
                     imageFormatType = ImageFormatType.TYPE_BYTE_RGB;
-		    bytesPerPixel = 3;
+		    unitsPerPixel = 3;
                 }                
                 else {
-                    System.err.println("Image format is unsupported --- Case 3");
+                    // System.err.println("Image format is unsupported --- Case 3");
                     // Convert unsupported 3-component format to TYPE_BYTE_RGB. 
                     imageFormatType = ImageFormatType.TYPE_BYTE_RGB;
                     isSupported = false;
-		    bytesPerPixel = 3;
+		    unitsPerPixel = 3;
                 }                
                break;
                
             case 2:
-                    System.err.println("Image format is unsupported --- Case 2");
+                    // System.err.println("Image format is unsupported --- Case 2");
                     // Convert unsupported 2-component format to TYPE_BYTE_LA. 
                     imageFormatType = ImageFormatType.TYPE_BYTE_LA;
                     isSupported = false;
-		    bytesPerPixel = 2;
+		    unitsPerPixel = 2;
                 break;
+                
             case 1:
                 if(imageType == BufferedImage.TYPE_BYTE_GRAY) {
                     imageFormatType = ImageFormatType.TYPE_BYTE_GRAY;
-		    bytesPerPixel = 1;
+		    unitsPerPixel = 1;
                 }
                 else {
-                    System.err.println("Image format is unsupported --- Case 1");
+                    // System.err.println("Image format is unsupported --- Case 1");
                     // Convert unsupported 1-component format to TYPE_BYTE_GRAY. 
                     imageFormatType = ImageFormatType.TYPE_BYTE_GRAY;
                     isSupported = false;
-		    bytesPerPixel = 1;
+		    unitsPerPixel = 1;
                 }
                 break;
+                
             default:
                 assert false;                           
         }       
@@ -457,21 +608,29 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
      * This method assume that the following members have been initialized :
      *  width, height, depth, imageType, imageFormatType, and bytesPerPixel.
      */
-    ImageData createImageDataObject() {
+    ImageData createImageDataObject(RenderedImage byRefImage) {
         
-        switch(storedImageFormatType) {
+        switch(imageFormatType) {
             case TYPE_BYTE_GRAY:
             case TYPE_BYTE_RGB:
             case TYPE_BYTE_BGR:
             case TYPE_BYTE_RGBA:
             case TYPE_BYTE_ABGR:
-                return new ImageData(ImageDataType.TYPE_BYTE_ARRAY, width*height*depth*bytesPerPixel);
-                
+                if(byRefImage != null) {
+                    return new ImageData(ImageDataType.TYPE_BYTE_ARRAY, width*height*depth*unitsPerPixel, byRefImage);
+                }
+                else {
+                    return new ImageData(ImageDataType.TYPE_BYTE_ARRAY, width*height*depth*unitsPerPixel);                    
+                }
             case TYPE_INT_RGB:
             case TYPE_INT_BGR:
             case TYPE_INT_ARGB:
-                return new ImageData(ImageDataType.TYPE_INT_ARRAY, width*height*depth);
-                
+                if(byRefImage != null) {
+                    return new ImageData(ImageDataType.TYPE_INT_ARRAY, width*height*depth*unitsPerPixel, byRefImage);
+                }
+                else {
+                    return new ImageData(ImageDataType.TYPE_INT_ARRAY, width*height*depth*unitsPerPixel);
+                }
             default:
                 throw new AssertionError();
         }
@@ -481,7 +640,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     /**
      * Copy specified region of image data from RenderedImage to 
      * ImageComponent's imageData object
-     */     
+     */ 
     void copySupportedImageToImageData(RenderedImage ri, int srcX, int srcY,
             int dstX, int dstY, int depthIndex, int copywidth, int copyheight) {
 
@@ -566,33 +725,31 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 	int sign;		// -1 for going down
 	int dstLineUnits;	// sign * lineUnits
 	int tileStart;		// destination buffer offset
-				// at the next left most tile						 
-        int unit = 0;
+				// at the next left most tile
+        
         byte[] dstByteBuffer = null;
         int[] dstIntBuffer = null;
         
         switch(imageData.getType()) {
             case TYPE_BYTE_ARRAY:
-                unit = bytesPerPixel;
                 dstByteBuffer = imageData.getAsByteArray();
                 break;
             case TYPE_INT_ARRAY:
-                unit = 1;
                 dstIntBuffer = imageData.getAsIntArray();
                 break;
             default:
                 assert false;
         }
         
-        lineUnits = width * unit; 
+        lineUnits = width * unitsPerPixel; 
         if (yUp) {
 	    // destination buffer offset
-	    tileStart = (depthIndex * width * height + dstY * width + dstX) * unit;
+	    tileStart = (depthIndex * width * height + dstY * width + dstX) * unitsPerPixel;
 	    sign = 1;
 	    dstLineUnits = lineUnits;
 	} else {
 	    // destination buffer offset
-	    tileStart = (depthIndex * width * height + (height - dstY - 1) * width + dstX) * unit;
+	    tileStart = (depthIndex * width * height + (height - dstY - 1) * width + dstX) * unitsPerPixel;
 	    sign = -1;
 	    dstLineUnits = -lineUnits;      
         }
@@ -607,7 +764,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 	pixel = getDataElementBuffer(ras);
 
         int srcOffset, dstOffset;
-        int tileLineUnits = tilew * unit;
+        int tileLineUnits = tilew * unitsPerPixel;
         int copyUnits;
         
         for (n = minTileY; n < minTileY+numYTiles; n++) {
@@ -624,10 +781,10 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 // retrieve the raster for the next tile
                 ras = ri.getTile(m,n);
                 
-                srcOffset = (y * tilew + x) * unit;
+                srcOffset = (y * tilew + x) * unitsPerPixel;
                 dstOffset = dstBegin;
                 
-                copyUnits = curw * unit;
+                copyUnits = curw * unitsPerPixel;
                 
                 //System.err.println("curh = "+curh+" curw = "+curw);
                 //System.err.println("x = "+x+" y = "+y);
@@ -656,7 +813,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 }
                 
                 // advance the destination buffer offset
-                dstBegin += curw * unit;
+                dstBegin += curw * unitsPerPixel;
                 
                 // move to the next tile in x direction
                 x = 0;
@@ -673,7 +830,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             
             // we are done copying an array of tiles in the x direction
             // advance the tileStart offset
-            tileStart += width * unit * curh * sign;
+            tileStart += width * unitsPerPixel * curh * sign;
             
             // move to the next set of tiles in y direction
             y = 0;
@@ -700,33 +857,20 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         int rowBegin,		// src begin row index
             srcBegin,		// src begin offset
             dstBegin;		// dst begin offset
-
-        int unit = 0;
-       
-        switch(imageData.getType()) {
-            case TYPE_BYTE_ARRAY:
-                unit = bytesPerPixel;
-                break;
-            case TYPE_INT_ARRAY:
-                unit = 1;
-                break;
-            default:
-                assert false;
-        }
         
-        int dstBytesPerRow = width * unit; // bytes per row in dst image
+        int dstUnitsPerRow = width * unitsPerPixel; // bytes per row in dst image
         rowBegin = srcY;
         
         if (yUp) {
-            dstBegin = (depthIndex * width * height + dstY * width + dstX) * unit;          
+            dstBegin = (depthIndex * width * height + dstY * width + dstX) * unitsPerPixel;          
         } else {
-            dstBegin = (depthIndex * width * height + (height - dstY - 1) * width + dstX) * unit;
-            dstBytesPerRow = - 1 * dstBytesPerRow;
+            dstBegin = (depthIndex * width * height + (height - dstY - 1) * width + dstX) * unitsPerPixel;
+            dstUnitsPerRow = - 1 * dstUnitsPerRow;
         }
                 
-        int copyUnits = copywidth * unit;
-        int scanline = width * unit;       
-        srcBegin = (rowBegin * width + srcX) * unit;
+        int copyUnits = copywidth * unitsPerPixel;
+        int scanline = width * unitsPerPixel;       
+        srcBegin = (rowBegin * width + srcX) * unitsPerPixel;
 
         switch(imageData.getType()) {
             case TYPE_BYTE_ARRAY:   
@@ -734,7 +878,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 byte[] dstByteBuffer = imageData.getAsByteArray();        
                 for (h = 0; h < copyheight; h++) {
                     System.arraycopy(srcByteBuffer, srcBegin, dstByteBuffer, dstBegin, copyUnits);
-                    dstBegin += dstBytesPerRow;
+                    dstBegin += dstUnitsPerRow;
                     srcBegin += scanline;
                 }
                 break;
@@ -744,7 +888,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 int[] dstIntBuffer = imageData.getAsIntArray();        
                 for (h = 0; h < copyheight; h++) {
                     System.arraycopy(srcIntBuffer, srcBegin, dstIntBuffer, dstBegin, copyUnits);
-                    dstBegin += dstBytesPerRow;
+                    dstBegin += dstUnitsPerRow;
                     srcBegin += scanline;
                 }
                 break;
@@ -759,19 +903,18 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         assert ((imageData != null) && yUp); 
         
         int dstBegin;	// dst begin offset
-       
+        dstBegin = depthIndex * width * height * unitsPerPixel;
+        
         switch(imageData.getType()) {
             case TYPE_BYTE_ARRAY:
-                dstBegin = depthIndex * width * height * bytesPerPixel;
                 byte[] srcByteBuffer = ((DataBufferByte)bi.getRaster().getDataBuffer()).getData();
                 byte[] dstByteBuffer = imageData.getAsByteArray();        
-                System.arraycopy(srcByteBuffer, 0, dstByteBuffer, dstBegin, (height * width * bytesPerPixel));                             
+                System.arraycopy(srcByteBuffer, 0, dstByteBuffer, dstBegin, (height * width * unitsPerPixel));                             
                 break;
             case TYPE_INT_ARRAY:
-                dstBegin = depthIndex * width * height;
                 int[] srcIntBuffer = ((DataBufferInt)bi.getRaster().getDataBuffer()).getData();
                 int[] dstIntBuffer = imageData.getAsIntArray();
-                System.arraycopy(srcIntBuffer, 0, dstIntBuffer, dstBegin, (height * width));
+                System.arraycopy(srcIntBuffer, 0, dstIntBuffer, dstBegin, (height * width * unitsPerPixel));
                 break;
             default:
                 assert false;
@@ -787,15 +930,15 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         if (ri instanceof BufferedImage) {
             if(yUp) {
                 /*  Use quick block copy when  ( format is OK, Yup is true, and byRef is false). */
-                System.err.println("ImageComponentRetained.copySupportedImageToImageData() : (imageTypeSupported && !byReference && yUp) --- (2 BI)");
+                // System.err.println("ImageComponentRetained.copySupportedImageToImageData() : (imageTypeSupported && !byReference && yUp) --- (2 BI)");
                 copyImageByBlock((BufferedImage)ri, depthIndex);
             } else {
                 /*  Use quick inverse line by line copy when (format is OK and Yup is false). */
-                System.err.println("ImageComponentRetained.copySupportedImageToImageData() : (imageTypeSupported && !yUp) --- (3 BI)");
+                // System.err.println("ImageComponentRetained.copySupportedImageToImageData() : (imageTypeSupported && !yUp) --- (3 BI)");
                 copyImageLineByLine((BufferedImage)ri, 0, 0, 0, 0, depthIndex, width, height);
             }
         } else {
-            System.err.println("ImageComponentRetained.copySupportedImageToImageData() : (imageTypeSupported && !byReference ) --- (2 RI)");              
+            // System.err.println("ImageComponentRetained.copySupportedImageToImageData() : (imageTypeSupported && !byReference ) --- (2 RI)");              
             copySupportedImageToImageData(ri, ri.getMinX(), ri.getMinY(), 0, 0, depthIndex, width, height);
             
              /*
@@ -847,14 +990,14 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 
 	rowBegin = srcY;
         rowInc = 1;
-        int dstBytesPerRow = width * bytesPerPixel; // bytes per row in dst image
+        int dstBytesPerRow = width * unitsPerPixel; // bytes per row in dst image
  
         if (yUp) {
             // This looks like a bug. Why depthIndex is include in the computation ?
             // dstBegin = (dstY * width + dstX) * bytesPerPixel;
-            dstBegin = (depthIndex * width * height + dstY * width + dstX) * bytesPerPixel;            
+            dstBegin = (depthIndex * width * height + dstY * width + dstX) * unitsPerPixel;            
         } else {
-            dstBegin = (depthIndex * width * height + (height - dstY - 1) * width + dstX) * bytesPerPixel;
+            dstBegin = (depthIndex * width * height + (height - dstY - 1) * width + dstX) * unitsPerPixel;
             dstBytesPerRow = - 1 * dstBytesPerRow;
         }
         
@@ -934,7 +1077,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         int dstBegin;
         Object pixel = null;
 	java.awt.image.Raster ras;
-	int lineBytes = width * bytesPerPixel;  // nbytes per line in
+	int lineBytes = width * unitsPerPixel;  // nbytes per line in
 					        // dst image buffer
 	int sign;				// -1 for going down
 	int dstLineBytes;			// sign * lineBytes
@@ -1021,12 +1164,12 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 
         if (yUp) {
 	    // destination buffer offset
-	    tileStart = (depthIndex * width * height + dstY * width + dstX) * bytesPerPixel;
+	    tileStart = (depthIndex * width * height + dstY * width + dstX) * unitsPerPixel;
 	    sign = 1;
 	    dstLineBytes = lineBytes;
 	} else {
 	    // destination buffer offset
-	    tileStart = (depthIndex * width * height + (height - dstY - 1) * width + dstX) * bytesPerPixel;
+	    tileStart = (depthIndex * width * height + (height - dstY - 1) * width + dstX) * unitsPerPixel;
 	    sign = -1;
 	    dstLineBytes = -lineBytes;      
         }
@@ -1078,7 +1221,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 		    }
 
 		    // advance the destination buffer offset
-		    dstBegin += curw * bytesPerPixel;
+		    dstBegin += curw * unitsPerPixel;
 
 		    // move to the next tile in x direction
 		    x = 0;
@@ -1097,7 +1240,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 		// we are done copying an array of tiles in the x direction
 		// advance the tileStart offset 
 
-		tileStart += width * bytesPerPixel * curh * sign;
+		tileStart += width * unitsPerPixel * curh * sign;
 
 
 		// move to the next set of tiles in y direction
@@ -1148,7 +1291,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 		    }
 
 		    // advance the destination buffer offset
-		    dstBegin += curw * bytesPerPixel;
+		    dstBegin += curw * unitsPerPixel;
 
 		    // move to the next tile in x direction
 		    x = 0;
@@ -1167,7 +1310,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 		// we are done copying an array of tiles in the x direction
 		// advance the tileStart offset 
 
-		tileStart += width * bytesPerPixel * curh * sign;
+		tileStart += width * unitsPerPixel * curh * sign;
 
 
 		// move to the next set of tiles in y direction
@@ -1217,7 +1360,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 		    }
 
 		    // advance the destination buffer offset
-		    dstBegin += curw * bytesPerPixel;
+		    dstBegin += curw * unitsPerPixel;
 
 		    // move to the next tile in x direction
 		    x = 0;
@@ -1236,7 +1379,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 		// we are done copying an array of tiles in the x direction
 		// advance the tileStart offset 
 
-		tileStart += width * bytesPerPixel * curh * sign;
+		tileStart += width * unitsPerPixel * curh * sign;
 
 
 		// move to the next set of tiles in y direction
@@ -1285,7 +1428,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 		    }
 
 		    // advance the destination buffer offset
-		    dstBegin += curw * bytesPerPixel;
+		    dstBegin += curw * unitsPerPixel;
 
 		    // move to the next tile in x direction
 		    x = 0;
@@ -1300,12 +1443,9 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 		    }
 		}
 
-
 		// we are done copying an array of tiles in the x direction
 		// advance the tileStart offset 
-
-		tileStart += width * bytesPerPixel * curh * sign;
-
+		tileStart += width * unitsPerPixel * curh * sign;
 
 		// move to the next set of tiles in y direction
 		y = 0;
@@ -1326,1176 +1466,121 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             assert false;
 	}        
     }
-    
-    /*
-     *
-     * NEW CODE : END  ---- Chien.
-     *
-     */
-    
-    // This list is not complete. Still missing INT_BGR, INT_RGB, and INT_ARGB. --- Chien
-    static final int BYTE_RGBA    =  0x1;
-    static final int BYTE_ABGR    =  0x2;
-    static final int BYTE_GRAY    =  0x4;
-    static final int USHORT_GRAY  =  0x8;  // This will be remove; currently not use.
-    static final int BYTE_LA      =  0x10; // This may not be implemented yet.
-    static final int BYTE_BGR     =  0x20;
-    static final int BYTE_RGB     =  0x40;
-    
-    int imageYupClass = 0;
-    int imageYdownClass = 0;
-    static final int BUFFERED_IMAGE   = 0x1;
-    static final int RENDERED_IMAGE   = 0x2;
-    
-    // change flag
-    static final int IMAGE_CHANGED       = 0x01;
-    static final int SUBIMAGE_CHANGED    = 0x02;
-    
-    // Lock used in the "by ref case"
-    GeometryLock geomLock = new GeometryLock();
-    
-    int minTileX = 0;
-    int minTileY = 0;
-    int minTileZ = 0;
-    
-    int tilew = 0;
-    int tileh = 0;
-    int tiled = 0;
-    
-    int numXTiles = 0;
-    int numYTiles = 0;
-    int numZTiles = 0;
-    
-    int tileGridXOffset = 0;
-    int tileGridYOffset = 0;
-    
-    int minX = 0;
-    int minY = 0;
-    
-    // lists of Node Components that are referencing this ImageComponent
-    // object. This list is used to notify the referencing node components
-    // of any changes of this ImageComponent.
-    ArrayList userList = new ArrayList();
 
-    /**
-     * Retrieves the width of this image component object.
-     * @return the width of this image component object
-     */  
-    final int getWidth() {
-        return width;
-    }
-
-    /**
-     * Retrieves the height of this image component object.
-     * @return the height of this image component object
-     */  
-    final int getHeight() {
-        return height;
-    }
-
-    /**
-     * Retrieves the apiFormat of this image component object.
-     * 
-     * @return the apiFormat of this image component object
-     */  
-    final int getFormat() {
-        return apiFormat;
-    }
-    
-    final void setFormat(int format) {
-        this.apiFormat = format;
-    }
-    
-    /**
-     * Check if ImageComponent parameters have valid values..
-     */
-    void processParams(int format, int width, int height, int depth) {        
-        if (width < 1)
-          throw new IllegalArgumentException(J3dI18N.getString("ImageComponentRetained0"));
-
-        if (height < 1)
-          throw new IllegalArgumentException(J3dI18N.getString("ImageComponentRetained1"));
-
-        if (depth < 1)
-          throw new IllegalArgumentException(J3dI18N.getString("ImageComponentRetained2"));
-
-        if (format < 1 || format > ImageComponent.FORMAT_TOTAL)
-          throw new IllegalArgumentException(J3dI18N.getString("ImageComponentRetained3"));
-        this.setFormat(format);
-        this.width = width;
-        this.height = height;
-	imageDirty = new boolean[depth];
-	for (int i=0; i< depth; i++)
-	    imageDirty[i] = false;
-	bImage = new RenderedImage[depth];
-
-	noAlpha = (format == ImageComponent.FORMAT_RGB ||
-		   format == ImageComponent.FORMAT_RGB4 ||
-		   format == ImageComponent.FORMAT_R3_G3_B2 ||
-		   format == ImageComponent.FORMAT_RGB5);
-
-	// If the format is 8bit per component, we may send it down
-	// to OpenGL directly if its by ref case
-        switch (format) {
-        case ImageComponent.FORMAT_RGB:// same as ImageComponent.FORMAT_RGB8
-        case ImageComponent.FORMAT_RGB4:
-        case ImageComponent.FORMAT_RGB5:
-        case ImageComponent.FORMAT_R3_G3_B2:
-            bytesPerPixelIfStored = 4;  // Should be 3 after rewrite
-	    internalFormat = BYTE_RGBA; // Should be BYTE_RGB after rewrite
-            numberOfComponents = 3;
-            break;
-        case ImageComponent.FORMAT_RGBA:// same as ImageComponent.FORMAT_RGBA8
-        case ImageComponent.FORMAT_RGB5_A1:
-        case ImageComponent.FORMAT_RGBA4:
-            bytesPerPixelIfStored = 4;
-	    internalFormat = BYTE_RGBA;
-            numberOfComponents = 4;
-            break;
-        case ImageComponent.FORMAT_LUM4_ALPHA4:
-//            bytesPerPixel = 1;
-            bytesPerPixelIfStored = 2;
-	    internalFormat = BYTE_LA;
-            numberOfComponents = 2;
-            break;
-        case ImageComponent.FORMAT_LUM8_ALPHA8:
-//            bytesPerPixel = 2;
-            bytesPerPixelIfStored = 2;
-	    internalFormat = BYTE_LA;
-            numberOfComponents = 2;
-            break;
-        case ImageComponent.FORMAT_CHANNEL8:
-//            bytesPerPixel = 1;
-            bytesPerPixelIfStored = 1;
-	    internalFormat = BYTE_GRAY;
-            numberOfComponents = 1;
-            break;
-        default:
-            // ERROR
+    // Lock out user thread from modifying usedByRaster and
+    // usedByTexture variables by using synchronized routines
+    void evaluateExtensions(int ext) {
+        
+        // If abgrSupported is false, a copy has been created so
+        // we don't have to check again.
+        if(!abgrSupported) {
+            return;
         }
-    }
-
-
-    void setTextureRef() {
-	usedByTexture = true;
-    }
-
-    void setRasterRef() {
-	usedByRaster = true;
-    }
-
-
-    private boolean formatMatches(int format, RenderedImage ri) {
-
-	// there is no RenderedImage format that matches BYTE_LA
-	if (format == BYTE_LA) {
-	    return false;
-	}
-
-        int riFormat = getImageType(ri);
-
         
-// Supported missing type : BufferedImage.TYPE_4BYTE_ABGR_PRE
+        if(getImageFormatType() != ImageFormatType.TYPE_BYTE_ABGR) {
+            return;
+        }
+        
+        if((ext & Canvas3D.EXT_ABGR) != 0) {            
+            return;
+        }       
+       
+        // ABGR is unsupported, set flag to false.
+        abgrSupported = false;
+        convertImageDataFromABGRToRGBA();      
 
-//                          BufferedImage.TYPE_BYTE_GRAY
+    }   
+    
+    
+    void convertImageDataFromABGRToRGBA() {
         
-//                          BufferedImage.TYPE_INT_ARGB
-//                          BufferedImage.TYPE_INT_ARGB_PRE
-//                          BufferedImage.TYPE_INT_BGR
-//                          BufferedImage.TYPE_INT_RGB
+        // Unsupported format on HW, switch to slow copy.
+        imageFormatType = ImageFormatType.TYPE_BYTE_RGBA;
+        imageTypeIsSupported = false;
         
-// Unsupported missing type : BufferedImage.TYPE_BINARY
-//                            BufferedImage.TYPE_INDEXED
-//                            BufferedImage.TYPE_UNSHORT_555_RGB
-//                            BufferedImage.TYPE_UNSHORT_565_RGB        
+        imageData.convertFromABGRToRGBA();        
         
-        
-	if ((format == BYTE_ABGR && riFormat == BufferedImage.TYPE_4BYTE_ABGR)
-	    || (format == BYTE_BGR && riFormat == BufferedImage.TYPE_3BYTE_BGR)
-	    || (format == BYTE_GRAY && riFormat == BufferedImage.TYPE_BYTE_GRAY)
-	    || (format == USHORT_GRAY && riFormat == 
-			BufferedImage.TYPE_USHORT_GRAY)) {
-	    return true;
-	}
-
-	if (riFormat == BufferedImage.TYPE_CUSTOM) {
-	    if (is4ByteRGBAOr3ByteRGB(ri)) {
-	        int numBands = ri.getSampleModel().getNumBands();
-		if (numBands == 3 && format == BYTE_RGB) {
-		    return true;
-		} else if (numBands == 4 && format == BYTE_RGBA) {
-		    return true;
-		}
-	    }
-	}
-
-	return false;
     }
 
     /**
-     * copy complete region of a RenderedImage
+     * Copy supported ImageType from ImageData to the user defined bufferedImage
      */
-    final void copyImage(RenderedImage ri, byte[] image,
-			 boolean usedByTexture, int depth, 
-			 int imageFormat, int imageBytesPerPixel) {
-
-	if (ri instanceof BufferedImage) {
-	    copyImage((BufferedImage)ri, 0, 0, image, 0, 0, 
-			usedByTexture, depth, width, height, 
-			imageFormat, imageBytesPerPixel);
-	} else { 
-	    copyImage(ri, ri.getMinX(), ri.getMinY(), 
-			image, 0, 0, usedByTexture, depth, width, height,
-			imageFormat, imageBytesPerPixel);
-	}
-    }
-
-
-    /**
-     * copy subregion of a RenderedImage
-     */
-    final void copyImage(RenderedImage ri, int srcX, int srcY, 
-			byte[] image, int dstX, int dstY,
-			boolean usedByTexture, int depth,
-			int copywidth, int copyheight, 
-			int imageFormat, int imageBytesPerPixel) {
-
-	if (ri instanceof BufferedImage) {
-	    copyImage((BufferedImage)ri, srcX, srcY, image, dstX, dstY,
-			usedByTexture, depth, copywidth, copyheight, 
-			imageFormat, imageBytesPerPixel);
-	    return;
-  	}
-
-
-	int w, h, i, j, m, n;
-        int dstBegin;
-        Object pixel = null;
-	java.awt.image.Raster ras;
-	int lineBytes = width * imageBytesPerPixel; // nbytes per line in
-						    // dst image buffer
-	int sign;				// -1 for going down
-	int dstLineBytes;			// sign * lineBytes
-	int tileStart;				// destination buffer offset
-						// at the next left most tile
-						 
-	int offset;
-
-	ColorModel cm = ri.getColorModel();
-
-	int xoff = ri.getTileGridXOffset();	// tile origin x offset
-	int yoff = ri.getTileGridYOffset();	// tile origin y offset
-	int minTileX = ri.getMinTileX();	// min tile x index 
-	int minTileY = ri.getMinTileY();	// min tile y index
-	tilew = ri.getTileWidth();		// tile width in pixels
-	tileh = ri.getTileHeight();		// tile height in pixels
-
-
-	// determine the first tile of the image
-
-	float mt;
-
-	mt = (float)(srcX - xoff) / (float)tilew;
-	if (mt < 0) {
-	    minTileX = (int)(mt - 1);
-	} else {
-	    minTileX = (int)mt;
-	}
-
-	mt = (float)(srcY - yoff) / (float)tileh;
-	if (mt < 0) {
-	    minTileY = (int)(mt - 1);
-	} else {
-	    minTileY = (int)mt;
-	}
-	
-
-	// determine the pixel offset of the upper-left corner of the
-	// first tile
-
-	int startXTile = minTileX * tilew + xoff;
-	int startYTile = minTileY * tileh + yoff;
-
-
-	// image dimension in the first tile
-
-	int curw = (startXTile + tilew - srcX);
-	int curh = (startYTile + tileh - srcY);
-
-
-	// check if the to-be-copied region is less than the tile image
-	// if so, update the to-be-copied dimension of this tile
-
-	if (curw > copywidth) {
-	    curw = copywidth;
-	}
-	
-	if (curh > copyheight) {
-	    curh = copyheight;
-	}
-
-
-	// save the to-be-copied width of the left most tile
-
-	int startw = curw;
-	
-
-	// temporary variable for dimension of the to-be-copied region
-
-	int tmpw = copywidth;
-	int tmph = copyheight;
-
-	
-	// offset of the first pixel of the tile to be copied; offset is
-        // relative to the upper left corner of the title
-
-	int x = srcX - startXTile;
-	int y = srcY - startYTile;
-
-
-	// determine the number of tiles in each direction that the
- 	// image spans
-
-	numXTiles = (copywidth + x) / tilew;
-	numYTiles = (copyheight + y) / tileh;
-
-	if (((float)(copywidth + x ) % (float)tilew) > 0) {
-	    numXTiles += 1;
-	}
-	
-	if (((float)(copyheight + y ) % (float)tileh) > 0) {
-	    numYTiles += 1;
-	}
-
-/*
-	System.err.println("-----------------------------------------------");
-	System.err.println("minTileX= " + minTileX + " minTileY= " + minTileY);
-	System.err.println("numXTiles= " + numXTiles + " numYTiles= " + numYTiles);
-	System.err.println("tilew= " + tilew + " tileh= " + tileh);
-	System.err.println("xoff= " + xoff + " yoff= " + yoff);
-	System.err.println("startXTile= " + startXTile + " startYTile= " + startYTile);
-	System.err.println("srcX= " + srcX + " srcY= " + srcY);
-	System.err.println("copywidth= " + copywidth + " copyheight= " + copyheight);
-
-	System.err.println("rminTileX= " + ri.getMinTileX() + " rminTileY= " + ri.getMinTileY());
-	System.err.println("rnumXTiles= " + ri.getNumXTiles() + " rnumYTiles= " + ri.getNumYTiles());
-*/
-
-	if ((!yUp && usedByTexture) ||
-	    (yUp && !usedByTexture)) {
-
-	    // destination buffer offset
-
-	    tileStart = ((height - dstY - 1) * width + dstX) 
-				* imageBytesPerPixel;
-
-	    sign = -1;
-	    dstLineBytes = -lineBytes;
-	} else {
-
-	    // destination buffer offset
-
-	    tileStart = (dstY * width + dstX) * imageBytesPerPixel;
-	    sign = 1;
-	    dstLineBytes = lineBytes;
-	}
-
-/*
-	System.err.println("tileStart= " + tileStart + " dstLineBytes= " + dstLineBytes);
-	System.err.println("startw= " + startw);
-*/
-
-	// allocate memory for a pixel 
-
-	ras = ri.getTile(minTileX,minTileY);
-	pixel = getDataElementBuffer(ras);
-
-	if (formatMatches(imageFormat, ri)) {
-	    byte[] src;
-	    int srcOffset, dstOffset;
-	    int tileLineBytes= tilew * imageBytesPerPixel;
-            int copyBytes;
-
-	    for (n = minTileY; n < minTileY+numYTiles; n++) {
-
-		dstBegin = tileStart;	// destination buffer offset
-		tmpw = copywidth;	// reset the width to be copied
-		curw = startw;		// reset the width to be copied of
-					// the left most tile
-		x = srcX - startXTile;	// reset the starting x offset of
-					// the left most tile
-
-		for (m = minTileX; m < minTileX+numXTiles; m++) {
-
-		    // retrieve the raster for the next tile
-		    ras = ri.getTile(m,n);
-		    src = ((DataBufferByte)ras.getDataBuffer()).getData();
-
-		    srcOffset = (y * tilew + x) * imageBytesPerPixel;
-		    dstOffset = dstBegin;
-
-		    copyBytes = curw * imageBytesPerPixel;
-
-		    //System.err.println("curh = "+curh+" curw = "+curw);
-		    //System.err.println("x = "+x+" y = "+y);
-
-		    for (h = 0; h < curh; h++) {
-			System.arraycopy(src, srcOffset, image, dstOffset,
-				copyBytes);
-			srcOffset += tileLineBytes;
-			dstOffset += dstLineBytes;
-		    }
-
-		    // advance the destination buffer offset
-		    dstBegin += curw * imageBytesPerPixel;
-
-		    // move to the next tile in x direction
-		    x = 0;
-
-		    // determine the width of copy region of the next tile
-
-		    tmpw -= curw;
-		    if (tmpw < tilew) {
-			curw = tmpw;
-		    } else {
-			curw = tilew;
-		    }
-		}
-
-
-		// we are done copying an array of tiles in the x direction
-		// advance the tileStart offset 
-
-		tileStart += width * imageBytesPerPixel * curh * sign;
-
-
-		// move to the next set of tiles in y direction
-		y = 0;
-
-		// determine the height of copy region for the next set
-		// of tiles
-		tmph -= curh;
-		if (tmph < tileh) {
-		    curh = tmph;
-		} else {
-		    curh = tileh;
-		}
-	    }
-	    return;
-	}
-
-	switch(getFormat()) {
-	case ImageComponent.FORMAT_RGBA8: 
-	case ImageComponent.FORMAT_RGB5_A1: 
-	case ImageComponent.FORMAT_RGBA4: {
-	    //	    System.err.println("Case 1: byReference = "+byReference);
-	    for (n = minTileY; n < minTileY+numYTiles; n++) {
-
-		dstBegin = tileStart;	// destination buffer offset
-		tmpw = copywidth;	// reset the width to be copied
-		curw = startw;		// reset the width to be copied of
-					// the left most tile
-		x = srcX - startXTile;	// reset the starting x offset of
-					// the left most tile
-
-		for (m = minTileX; m < minTileX+numXTiles; m++) {
-
-		    // retrieve the raster for the next tile
-		    ras = ri.getTile(m,n);
-
-		    j = dstBegin;
-		    offset = 0;
-
-		    //System.err.println("curh = "+curh+" curw = "+curw);
-		    //System.err.println("x = "+x+" y = "+y);
-
-		    for (h = y; h < (y + curh); h++) {
-			//			System.err.println("j = "+j);
-			for (w = x; w < (x + curw); w++) {
-			    ras.getDataElements(w, h, pixel);
-			    image[j++]   = (byte)cm.getRed(pixel);
-			    image[j++] = (byte)cm.getGreen(pixel);
-			    image[j++] = (byte)cm.getBlue(pixel);
-			    image[j++] = (byte)cm.getAlpha(pixel);
-			}
-			offset += dstLineBytes;
-			j = dstBegin + offset;
-		    }
-
-		    // advance the destination buffer offset
-		    dstBegin += curw * imageBytesPerPixel;
-
-		    // move to the next tile in x direction
-		    x = 0;
-
-		    // determine the width of copy region of the next tile
-
-		    tmpw -= curw;
-		    if (tmpw < tilew) {
-			curw = tmpw;
-		    } else {
-			curw = tilew;
-		    }
-		}
-
-
-		// we are done copying an array of tiles in the x direction
-		// advance the tileStart offset 
-
-		tileStart += width * imageBytesPerPixel * curh * sign;
-
-
-		// move to the next set of tiles in y direction
-		y = 0;
-
-		// determine the height of copy region for the next set
-		// of tiles
-		tmph -= curh;
-		if (tmph < tileh) {
-		    curh = tmph;
-		} else {
-		    curh = tileh;
-		}
-	    }
-	}
-	break;
-	case ImageComponent.FORMAT_RGB8: 
-	case ImageComponent.FORMAT_RGB5:
-	case ImageComponent.FORMAT_RGB4: 
-	case ImageComponent.FORMAT_R3_G3_B2: {
-	    for (n = minTileY; n < minTileY+numYTiles; n++) {
-
-		dstBegin = tileStart;	// destination buffer offset
-		tmpw = copywidth;	// reset the width to be copied
-		curw = startw;		// reset the width to be copied of
-					// the left most tile
-		x = srcX - startXTile;	// reset the starting x offset of
-					// the left most tile
-
-		for (m = minTileX; m < minTileX+numXTiles; m++) {
-
-		    // retrieve the raster for the next tile
-		    ras = ri.getTile(m,n);
-
-		    j = dstBegin;
-		    offset = 0;
-
-		    //System.err.println("curh = "+curh+" curw = "+curw);
-		    //System.err.println("x = "+x+" y = "+y);
-
-		    for (h = y; h < (y + curh); h++) {
-			//			System.err.println("j = "+j);
-			for (w = x; w < (x + curw); w++) {
-			    ras.getDataElements(w, h, pixel);
-			    image[j++]   = (byte)cm.getRed(pixel);
-			    image[j++] = (byte)cm.getGreen(pixel);
-			    image[j++] = (byte)cm.getBlue(pixel);
-			    image[j++] = (byte)255;
-			}
-			offset += dstLineBytes;
-			j = dstBegin + offset;
-		    }
-
-		    // advance the destination buffer offset
-		    dstBegin += curw * imageBytesPerPixel;
-
-		    // move to the next tile in x direction
-		    x = 0;
-
-		    // determine the width of copy region of the next tile
-
-		    tmpw -= curw;
-		    if (tmpw < tilew) {
-			curw = tmpw;
-		    } else {
-			curw = tilew;
-		    }
-		}
-
-
-		// we are done copying an array of tiles in the x direction
-		// advance the tileStart offset 
-
-		tileStart += width * imageBytesPerPixel * curh * sign;
-
-
-		// move to the next set of tiles in y direction
-		y = 0;
-
-		// determine the height of copy region for the next set
-		// of tiles
-		tmph -= curh;
-		if (tmph < tileh) {
-		    curh = tmph;
-		} else {
-		    curh = tileh;
-		}
-	    }
-	}
-	break;	    
-	case ImageComponent.FORMAT_LUM8_ALPHA8: 
-	case ImageComponent.FORMAT_LUM4_ALPHA4: {
-	    for (n = minTileY; n < minTileY+numYTiles; n++) {
-
-		dstBegin = tileStart;	// destination buffer offset
-		tmpw = copywidth;	// reset the width to be copied
-		curw = startw;		// reset the width to be copied of
-					// the left most tile
-		x = srcX - startXTile;	// reset the starting x offset of
-					// the left most tile
-
-		for (m = minTileX; m < minTileX+numXTiles; m++) {
-
-		    // retrieve the raster for the next tile
-		    ras = ri.getTile(m,n);
-
-		    j = dstBegin;
-		    offset = 0;
-
-		    //System.err.println("curh = "+curh+" curw = "+curw);
-		    //System.err.println("x = "+x+" y = "+y);
-
-		    for (h = y; h < (y + curh); h++) {
-			//			System.err.println("j = "+j);
-			for (w = x; w < (x + curw); w++) {
-			    ras.getDataElements(w, h, pixel);
-			    image[j++]   = (byte)cm.getRed(pixel);
-			    image[j++] = (byte)cm.getAlpha(pixel);
-			}
-			offset += dstLineBytes;
-			j = dstBegin + offset;
-		    }
-
-		    // advance the destination buffer offset
-		    dstBegin += curw * imageBytesPerPixel;
-
-		    // move to the next tile in x direction
-		    x = 0;
-
-		    // determine the width of copy region of the next tile
-
-		    tmpw -= curw;
-		    if (tmpw < tilew) {
-			curw = tmpw;
-		    } else {
-			curw = tilew;
-		    }
-		}
-
-
-		// we are done copying an array of tiles in the x direction
-		// advance the tileStart offset 
-
-		tileStart += width * imageBytesPerPixel * curh * sign;
-
-
-		// move to the next set of tiles in y direction
-		y = 0;
-
-		// determine the height of copy region for the next set
-		// of tiles
-		tmph -= curh;
-		if (tmph < tileh) {
-		    curh = tmph;
-		} else {
-		    curh = tileh;
-		}
-	    }
-	}
-	break;
-	case ImageComponent.FORMAT_CHANNEL8: {
-	    for (n = minTileY; n < minTileY+numYTiles; n++) {
-
-		dstBegin = tileStart;	// destination buffer offset
-		tmpw = copywidth;	// reset the width to be copied
-		curw = startw;		// reset the width to be copied of
-					// the left most tile
-		x = srcX - startXTile;	// reset the starting x offset of
-					// the left most tile
-
-		for (m = minTileX; m < minTileX+numXTiles; m++) {
-
-		    // retrieve the raster for the next tile
-		    ras = ri.getTile(m,n);
-
-		    j = dstBegin;
-		    offset = 0;
-
-		    //System.err.println("curh = "+curh+" curw = "+curw);
-		    //System.err.println("x = "+x+" y = "+y);
-
-		    for (h = y; h < (y + curh); h++) {
-			//			System.err.println("j = "+j);
-			for (w = x; w < (x + curw); w++) {
-			    ras.getDataElements(w, h, pixel);
-			    image[j++]   = (byte)cm.getRed(pixel);
-			}
-			offset += dstLineBytes;
-			j = dstBegin + offset;
-		    }
-
-		    // advance the destination buffer offset
-		    dstBegin += curw * imageBytesPerPixel;
-
-		    // move to the next tile in x direction
-		    x = 0;
-
-		    // determine the width of copy region of the next tile
-
-		    tmpw -= curw;
-		    if (tmpw < tilew) {
-			curw = tmpw;
-		    } else {
-			curw = tilew;
-		    }
-		}
-
-
-		// we are done copying an array of tiles in the x direction
-		// advance the tileStart offset 
-
-		tileStart += width * imageBytesPerPixel * curh * sign;
-
-
-		// move to the next set of tiles in y direction
-		y = 0;
-
-		// determine the height of copy region for the next set
-		// of tiles
-		tmph -= curh;
-		if (tmph < tileh) {
-		    curh = tmph;
-		} else {
-		    curh = tileh;
-		}
-	    }
-	}
-	break;
-	default:
-	break;
-	}
-    }
-
-
-    /**
-     * Copy entire image data from Buffered Image to 
-     * ImageComponent's internal representation
-     */ 
-    final void copyImage(BufferedImage bi, byte[] image, 
-				boolean usedByTexture, int depth, 
-				int imageFormat, int imageBytesPerPixel) {
-	    copyImage(bi, 0, 0, image, 0, 0, usedByTexture, depth, 
-		width, height, imageFormat, imageBytesPerPixel);
-    }
-
-    /**
-     * Copy specified region of image data from Buffered Image to 
-     * ImageComponent's internal representation
-     */ 
-    final void copyImage(BufferedImage bi, int srcX, int srcY,
-	byte[] image, int dstX, int dstY, boolean usedByTexture, 
-	int depth, int copywidth, int copyheight, 
-	int imageFormat, int imageBytesPerPixel) {
-
-	int w, h, i, j;
-	int rowBegin,		// src begin row index
+    void copyToRefImage(int depth) {
+        int h;
+        int rowBegin,		// src begin row index
             srcBegin,		// src begin offset
-            dstBegin,		// dst begin offset
-            rowInc,		// row increment
-				// -1 --- ydown
-				//  1 --- yup
-	    row;
-        Object pixel = null;
+            dstBegin;		// dst begin offset
 
-	rowBegin = srcY;
-        rowInc = 1;
-
-        int dstBytesPerRow = width * imageBytesPerPixel; // bytes per row in dst image
-
-	if ((!yUp && usedByTexture) || (yUp && !usedByTexture)) {
-	    dstBegin = (depth * width * height + 
-				(height - dstY - 1) * width + dstX) *
-					imageBytesPerPixel;
-
-	    dstBytesPerRow = - 1 * dstBytesPerRow;
-
-	} else {
-	    dstBegin = (dstY * width + dstX) * imageBytesPerPixel;
-	}
-
-	// if the image format matches the format of the incoming 
-	// buffered image, then do a straight copy, else do the
-	// format conversion while copying the data
-
-	if (formatMatches(imageFormat, bi)) {
-            byte[] byteData =
-                ((DataBufferByte)bi.getRaster().getDataBuffer()).getData();
-	    int copyBytes = copywidth * imageBytesPerPixel;
-	    int scanline = width * imageBytesPerPixel;
-	    
-	    srcBegin = (rowBegin * width + srcX) * imageBytesPerPixel;
-	    for (h = 0; h < copyheight; h++) {
-		System.arraycopy(byteData, srcBegin, image, dstBegin, copyBytes);
-		dstBegin += dstBytesPerRow;
-		srcBegin += scanline;
-	    }
+        // refImage has to be a BufferedImage for off screen and read raster
+        assert refImage[depth] != null;
+        assert (refImage[depth] instanceof BufferedImage);
+        
+	BufferedImage bi = (BufferedImage)refImage[depth];        
+        int dstUnitsPerRow = width * unitsPerPixel; // bytes per row in dst image
+        rowBegin = 0;
+        
+        if (yUp) {
+            dstBegin = (depth * width * height) * unitsPerPixel;          
         } else {
-
-	    int biType = bi.getType();
-	    if ((biType == BufferedImage.TYPE_INT_ARGB ||
-	         biType == BufferedImage.TYPE_INT_RGB) && 
-	        (getFormat() == ImageComponent.FORMAT_RGBA8 || 
-	         getFormat() == ImageComponent.FORMAT_RGB8)) {
-
-	        // optimized cases
-
-                int[] intData =
-                    ((DataBufferInt)bi.getRaster().getDataBuffer()).getData();
-	        int rowOffset = rowInc * width;
-	        int intPixel;
-	    
-	        srcBegin = rowBegin * width + srcX;
-	
-	        if (biType == BufferedImage.TYPE_INT_ARGB &&
-                    getFormat() == ImageComponent.FORMAT_RGBA8) {
-                    for (h = 0; h < copyheight; h++) {   
-	              i = srcBegin;
-                      j = dstBegin;
-                      for (w = 0; w < copywidth; w++, i++) {   
-                        intPixel = intData[i];
-                        image[j++]   = (byte)((intPixel >> 16) & 0xff);
-                        image[j++] = (byte)((intPixel >>  8) & 0xff);
-                        image[j++] = (byte)(intPixel & 0xff);
-                        image[j++] = (byte)((intPixel >> 24) & 0xff);
-                      }
-	              srcBegin += rowOffset;
-	              dstBegin += dstBytesPerRow;
-                    }
-                } else { // format == ImageComponent.FORMAT_RGB8
-                    for (h = 0; h < copyheight; h++) {   
-	              i = srcBegin;
-		      j = dstBegin;
-                      for (w = 0; w < copywidth; w++, i++) {   
-                        intPixel = intData[i];
-                        image[j++]   = (byte)((intPixel >> 16) & 0xff);
-                        image[j++] = (byte)((intPixel >>  8) & 0xff);
-                        image[j++] = (byte)(intPixel & 0xff);
-                        image[j++] = (byte)255;
-                      }
-	              srcBegin += rowOffset;
-	              dstBegin += dstBytesPerRow;
-                    }
-                }
-
-	    } else if ((biType == BufferedImage.TYPE_BYTE_GRAY) &&
-	          (getFormat() == ImageComponent.FORMAT_CHANNEL8)) {
-
-                byte[] byteData =
-                    ((DataBufferByte)bi.getRaster().getDataBuffer()).getData();
-	        int rowOffset = rowInc * width;
-	    
-	        j = dstBegin;
-	        srcBegin = rowBegin * width + srcX;
-
-	        for (h = 0; h < copyheight; 
-			h++, j += width, srcBegin += rowOffset) {   
-	          System.arraycopy(byteData, srcBegin, image, j, copywidth);
-	        }
-	    } else {
-	    // non-optimized cases
-
-                WritableRaster ras = bi.getRaster(); 
-                ColorModel cm = bi.getColorModel();
-		pixel = getDataElementBuffer(ras);
-
-	        switch(getFormat()) {
-                case ImageComponent.FORMAT_RGBA8: 
-                case ImageComponent.FORMAT_RGB5_A1: 
-	        case ImageComponent.FORMAT_RGBA4: {
-                    for (row = rowBegin, h = 0;
-                            h < copyheight; h++, row += rowInc) {
-		      j = dstBegin;
-                      for (w = srcX; w < (copywidth + srcX); w++) {
-		          ras.getDataElements(w, row, pixel);
-		          image[j++]   = (byte)cm.getRed(pixel);
-		          image[j++] = (byte)cm.getGreen(pixel);
-		          image[j++] = (byte)cm.getBlue(pixel);
-		          image[j++] = (byte)cm.getAlpha(pixel);
-                      }    
-	              dstBegin += dstBytesPerRow;
-                    }
+            dstBegin = (depth * width * height + (height - 1) * width ) * unitsPerPixel;
+            dstUnitsPerRow = - 1 * dstUnitsPerRow;
+        }
+        
+        int scanline = width * unitsPerPixel;       
+        srcBegin = (rowBegin * width ) * unitsPerPixel;
+        
+        switch(imageData.getType()) {
+            case TYPE_BYTE_ARRAY:
+                byte[] dstByteBuffer = ((DataBufferByte)bi.getRaster().getDataBuffer()).getData();
+                byte[] srcByteBuffer = imageData.getAsByteArray();        
+                for (h = 0; h < height; h++) {
+                    System.arraycopy(srcByteBuffer, srcBegin, dstByteBuffer, dstBegin, scanline);
+                    dstBegin += dstUnitsPerRow;
+                    srcBegin += scanline;
                 }
                 break;
-
-                case ImageComponent.FORMAT_RGB8: 
-	        case ImageComponent.FORMAT_RGB5:
-	        case ImageComponent.FORMAT_RGB4: 
-                case ImageComponent.FORMAT_R3_G3_B2: {
-                    for (row = rowBegin, h = 0;
-                            h < copyheight; h++, row += rowInc) {
-		      j = dstBegin;
-                      for (w = srcX; w < (copywidth + srcX); w++) {
-		          ras.getDataElements(w, row, pixel);
-		          image[j++]   = (byte)cm.getRed(pixel);
-		          image[j++] = (byte)cm.getGreen(pixel);
-		          image[j++] = (byte)cm.getBlue(pixel);
-		          image[j++] = (byte)255;
-                      }
-		      dstBegin += dstBytesPerRow;
-                  }
+                
+            case TYPE_INT_ARRAY:
+                int[] dstIntBuffer = ((DataBufferInt)bi.getRaster().getDataBuffer()).getData();
+                int[] srcIntBuffer = imageData.getAsIntArray();        
+                for (h = 0; h < height; h++) {
+                    System.arraycopy(srcIntBuffer, srcBegin, dstIntBuffer, dstBegin, scanline);
+                    dstBegin += dstUnitsPerRow;
+                    srcBegin += scanline;
                 }
                 break;
+            default:
+                assert false;
+        }              
 
-	        case ImageComponent.FORMAT_LUM8_ALPHA8: 
-	        case ImageComponent.FORMAT_LUM4_ALPHA4: {
-                    for (row = rowBegin, h = 0;
-                            h < copyheight; h++, row += rowInc) {
-		      j = dstBegin;
-                      for (w = srcX; w < (copywidth + srcX); w++) {
-		          ras.getDataElements(w, row, pixel);
-		          image[j++]   = (byte)cm.getRed(pixel);
-		          image[j++] = (byte)cm.getAlpha(pixel);
-                      }
-		      dstBegin += dstBytesPerRow;
-                    }    
-	        }
-	        break;
-
-	        case ImageComponent.FORMAT_CHANNEL8: {
-                    for (row = rowBegin, h = 0;
-                            h < copyheight; h++, row += rowInc) {
-		      j = dstBegin;
-                      for (w = srcX; w < (copywidth + srcX); w++) {
-		          ras.getDataElements(w, row, pixel);
-		          image[j++]   = (byte)cm.getRed(pixel);
-                      }
-		      dstBegin += dstBytesPerRow;
-                  }    
-                }
-	        break;
-                }
-            }
-	}
-   }
-
+    }
     
-
-
-   final int getBytesStored(int f) {
-       int val = 0;
-       switch(f) {
-       case BYTE_RGBA:
-	  val =  4;
-	  break;
-       case BYTE_ABGR:
-	  val =  4;
-	  break;
-       case BYTE_GRAY:
-	   val = 1;
-	   break;
-       case USHORT_GRAY:
-	   val = 2;
-	   break;
-       case BYTE_LA:
-	  val = 2;
-	  break;
-       case BYTE_BGR:;
-	  val = 3;
-	  break;
-      case BYTE_RGB:;
-	  val = 3;
-	  break;
-       }
-       return val;
-    }
-
-
-    boolean is4ByteRGBAOr3ByteRGB(RenderedImage ri) {
-        boolean value = false;
-        int i;
-        int biType = getImageType(ri);
-        if (biType != BufferedImage.TYPE_CUSTOM)
-            return false;
-        ColorModel cm = ri.getColorModel();
-        ColorSpace cs = cm.getColorSpace();
-        SampleModel sm = ri.getSampleModel();
-        boolean isAlphaPre = cm.isAlphaPremultiplied();
-        int csType = cs.getType();
-        if ( csType == ColorSpace.TYPE_RGB) {
-            int numBands = sm.getNumBands();
-            if (sm.getDataType() == DataBuffer.TYPE_BYTE) {
-                if (cm instanceof ComponentColorModel &&
-                    sm instanceof PixelInterleavedSampleModel) {
-                    PixelInterleavedSampleModel csm = 
-				(PixelInterleavedSampleModel) sm;
-                    int[] offs = csm.getBandOffsets();
-                    ComponentColorModel ccm = (ComponentColorModel)cm;
-                    int[] nBits = ccm.getComponentSize();
-                    boolean is8Bit = true;
-                    for (i=0; i < numBands; i++) {
-                        if (nBits[i] != 8) {
-                            is8Bit = false;
-                            break;
-                        }
-                    }
-                    if (is8Bit &&
-                        offs[0] == 0 &&
-                        offs[1] == 1 &&
-                        offs[2] == 2) {
-                        if (numBands == 3) {
-                            if (getFormat() == ImageComponent.FORMAT_RGB)
-                                value = true;
-                        }
-                        else if (offs[3] == 3 && !isAlphaPre) {
-                            if (getFormat() == ImageComponent.FORMAT_RGBA)
-                                value = true;
-                        }
-                    }
-                }
-            }
-        }
-        return value;
-    }
- 
-    /*
-     * Might need to support INT type --- Chien.
-     */
-    final int getImageType(RenderedImage ri) {
-        int imageType = BufferedImage.TYPE_CUSTOM;
-        int i;
-
-        if (ri instanceof BufferedImage) {
-            return ((BufferedImage)ri).getType();
-        }
-        ColorModel cm = ri.getColorModel();
-        ColorSpace cs = cm.getColorSpace();
-        SampleModel sm = ri.getSampleModel();
-        int csType = cs.getType();
-        boolean isAlphaPre = cm.isAlphaPremultiplied();
-        if ( csType != ColorSpace.TYPE_RGB) {
-            if (csType == ColorSpace.TYPE_GRAY &&
-                cm instanceof ComponentColorModel) {
-                if (sm.getDataType() == DataBuffer.TYPE_BYTE) {
-                    imageType = BufferedImage.TYPE_BYTE_GRAY;
-                } else if (sm.getDataType() == DataBuffer.TYPE_USHORT) {
-                    imageType = BufferedImage.TYPE_USHORT_GRAY;
-                }
-            }
-        }
-        // RGB , only interested in BYTE ABGR and BGR for now
-        // all others will be copied to a buffered image
-        else {
-            int numBands = sm.getNumBands();
-            if (sm.getDataType() == DataBuffer.TYPE_BYTE) {
-                if (cm instanceof ComponentColorModel &&
-                    sm instanceof PixelInterleavedSampleModel) {
-                    PixelInterleavedSampleModel csm = 
-				(PixelInterleavedSampleModel) sm;
-                    int[] offs = csm.getBandOffsets();
-                    ComponentColorModel ccm = (ComponentColorModel)cm;
-                    int[] nBits = ccm.getComponentSize();
-                    boolean is8Bit = true;
-                    for (i=0; i < numBands; i++) {
-                        if (nBits[i] != 8) {
-                            is8Bit = false;
-                            break;
-                        }
-                    }
-                    if (is8Bit &&
-                        offs[0] == numBands-1 &&
-                        offs[1] == numBands-2 &&
-                        offs[2] == numBands-3) {
-                        if (numBands == 3) {
-                            imageType = BufferedImage.TYPE_3BYTE_BGR;
-                        }
-                        else if (offs[3] == 0) {
-                            imageType = (isAlphaPre
-                                         ? BufferedImage.TYPE_4BYTE_ABGR_PRE
-                                         : BufferedImage.TYPE_4BYTE_ABGR);
-                        }
-                    }
-                }
-            }
-        }
-        return imageType;
-    }
-
-
-    
-
-    /**
-     * Retrieves the bufferedImage at the specified depth level
-     */  
-    final void retrieveBufferedImage(int depth) {
-
-        // create BufferedImage if one doesn't exist
-        if (bImage[depth] == null) {
-            if (getFormat() == ImageComponent.FORMAT_RGBA ||
-                getFormat() == ImageComponent.FORMAT_RGBA4 ||
-                getFormat() == ImageComponent.FORMAT_RGB5_A1 ||
-                getFormat() == ImageComponent.FORMAT_LUM4_ALPHA4 ||
-                getFormat() == ImageComponent.FORMAT_LUM8_ALPHA8) {
-                bImage[depth] = new BufferedImage(width, height,
-                        BufferedImage.TYPE_INT_ARGB);
-	    }
-            else
-                bImage[depth] = new BufferedImage(width, height,
-                        BufferedImage.TYPE_INT_RGB);
-        }
-
-	if (usedByTexture || !usedByRaster) {
-            copyToBufferedImage(imageYup, depth, true);
-	} else {
-            copyToBufferedImage(imageYdown[0], depth, false);
-	}
-        imageDirty[depth] = false;
-
-    }
-
     /**
      * Copy Image from RGBA to the user defined bufferedImage
      */
-    final void copyBufferedImageWithFormatConversion(boolean usedByTexture, int depth) {
+    void copyToRefImageWithFormatConversion(int depth) {
         int w, h, i, j;
         int dstBegin, dstInc, dstIndex, dstIndexInc;
-	// Note that if a copy has been made, then its always a bufferedImage
-	// and not a renderedImage
-	BufferedImage bi = (BufferedImage)bImage[depth];
+	// refImage has to be a BufferedImage for off screen and read raster
+        assert refImage[depth] != null;
+        assert (refImage[depth] instanceof BufferedImage);
+        
+	BufferedImage bi = (BufferedImage)refImage[depth];
 	int biType = bi.getType();
-	byte[] buf;
-	
+	byte[] buf = imageData.getAsByteArray();
+       
        // convert from Ydown to Yup for texture
-	if (!yUp) {
-	    if (usedByTexture == true) {
-		dstInc = -1 * width;
-		dstBegin = (height - 1) * width;
-		dstIndex = height -1;
-		dstIndexInc = -1;
-		buf = imageYup;
-	    } else {
-		dstInc = width;
-		dstBegin = 0;
-		dstIndex = 0;
-		dstIndexInc = 1;
-		buf = imageYdown[0];
-	    }
-	}
-	else {
-	    if (usedByTexture == true) {
-		dstInc = width;
-		dstBegin = 0;
-		dstIndex = 0;
-		dstIndexInc = 1;
-		buf = imageYup;
-	    }
-	    else {
-		dstInc = -1 * width;
-		dstBegin = (height - 1) * width;
-		dstIndex = height -1;
-		dstIndexInc = -1;
-		buf = imageYdown[0];
-	    }
-	}
+        if (!yUp) {
+            dstInc = -1 * width;
+            dstBegin = (height - 1) * width;
+            dstIndex = height -1;
+            dstIndexInc = -1;
+        } else {            
+            dstInc = width;
+            dstBegin = 0;
+            dstIndex = 0;
+            dstIndexInc = 1;
+        }
 	
 	switch (biType) {
 	case BufferedImage.TYPE_INT_ARGB:
@@ -2608,132 +1693,144 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 	}
 	
     }
+
+    void scaleImage(int xScale, int yScale, int depthIndex, ImageComponentRetained origImage) {
+        
+        byte[] dstByteBuffer = null;
+        byte[] srcByteBuffer = null;
+        int[] dstIntBuffer = null;
+        int[] srcIntBuffer = null;
+        int dStart, sStart;
+        
+        switch(imageData.getType()) {
+            case TYPE_BYTE_ARRAY:
+                dstByteBuffer = imageData.getAsByteArray();
+                srcByteBuffer = origImage.imageData.getAsByteArray();
+                dStart = depthIndex * width * height * unitsPerPixel;
+                sStart = depthIndex * origImage.width * origImage.height * unitsPerPixel;
+                scaleImage(xScale, yScale, dStart, sStart, origImage, dstByteBuffer, srcByteBuffer);
+                break;
+            case TYPE_INT_ARRAY:
+                dstIntBuffer = imageData.getAsIntArray();
+                srcIntBuffer = origImage.imageData.getAsIntArray();
+                dStart = depthIndex * width * height * unitsPerPixel;
+                sStart = depthIndex * origImage.width * origImage.height * unitsPerPixel;
+                scaleImage(xScale, yScale, dStart, sStart, origImage, dstIntBuffer, srcIntBuffer);                
+                break;
+            default:
+                assert false;
+        }
+        
+    }
     
-    /**
-     * Copy image data from ImageComponent's internal representation
-     * to Buffered Image 
-     */  
-    final void copyToBufferedImage(byte[] buf, int depth, 
-		boolean usedByTexture) {
- 
-        int w, h, i, j;
-        int dstBegin, dstInc, srcBegin;
-
-
-        // convert from Ydown to Yup for texture
-	if (!yUp) {
-	    if (usedByTexture == true) {
-		srcBegin = depth * width * height * bytesPerYupPixelStored;
-		dstInc = -1 * width;
-		dstBegin = (height - 1) * width;
-	    } else {
-		srcBegin = 0;
-		dstInc = width;
-		dstBegin = 0;
-	    }
-	}
-	else {
-	    if (usedByTexture == true) {
-		srcBegin = 0;
-		dstInc = width;
-		dstBegin = 0;
-	    }
-	    else {
-		srcBegin = depth * width * height * bytesPerYdownPixelStored;
-		dstInc = -1 * width;
-		dstBegin = (height - 1) * width;
-	    }
-	}
-
-	// Note that if a copy has been made, then its always a bufferedImage
-	// and not a renderedImage
-        int[] intData = ((DataBufferInt)
-		((BufferedImage)bImage[depth]).getRaster().getDataBuffer()).getData();
-
-        switch(getFormat()) {
-        case ImageComponent.FORMAT_RGBA8:
-        case ImageComponent.FORMAT_RGB5_A1:
-        case ImageComponent.FORMAT_RGBA4: 
-
-            for (j = srcBegin, h = 0; h < height; h++, dstBegin += dstInc) {
-		i = dstBegin;
-                for (w = 0; w < width; w++, j+=4, i++) {
-                    intData[i]  = ((buf[j+3] & 0xff) << 24) |
-                                  ((buf[j]   & 0xff) << 16) |
-                                  ((buf[j+1] & 0xff) <<  8) |
-                                  (buf[j+2]  & 0xff);
+    void scaleImage(int xScale, int yScale, int dStart, int sStart, ImageComponentRetained origImage,
+            byte[] dData, byte[] sData) {
+        
+        int dOffset = 0;
+        int sOffset = 0;
+        int sLineIncr = unitsPerPixel * origImage.width;
+        int sPixelIncr = unitsPerPixel << 1;
+        
+        if (yScale == 1) {
+            for (int x = 0; x < width; x++) {
+                for (int k = 0; k < unitsPerPixel; k++) {
+                    dData[dStart + dOffset + k] = (byte)
+                    (((int)(sData[sStart + sOffset + k] & 0xff) +
+                            (int)(sData[sStart + sOffset + k
+                            + unitsPerPixel] & 0xff) + 1) >> 1);
                 }
+                dOffset += unitsPerPixel;
+                sOffset += sPixelIncr;
             }
-	    break;
-
-
-        case ImageComponent.FORMAT_RGB8:
-        case ImageComponent.FORMAT_RGB5:
-        case ImageComponent.FORMAT_RGB4:
-        case ImageComponent.FORMAT_R3_G3_B2: 
-            for (j = srcBegin, h = 0; h < height; h++, dstBegin += dstInc) {
-                i = dstBegin;
-                for (w = 0; w < width; w++, j+=4, i++) {
-                    intData[i]  = ((buf[j]   & 0xff) << 16) |
-                                  ((buf[j+1] & 0xff) <<  8) |
-                                  (buf[j+2] & 0xff);
+        } else if (xScale == 1) {
+            for (int y = 0; y < height; y++) {
+                for (int k = 0; k < unitsPerPixel; k++) {
+                    dData[dStart + dOffset + k] = (byte)
+                    (((int)(sData[sStart + sOffset + k] & 0xff) +
+                            (int)(sData[sStart + sOffset + k
+                            + sLineIncr] & 0xff) + 1) >> 1);
                 }
-            }   
-	    break;
-
-        case ImageComponent.FORMAT_LUM8_ALPHA8:
-        case ImageComponent.FORMAT_LUM4_ALPHA4:
-            for (j = srcBegin, h = 0; h < height; h++, dstBegin += dstInc) {
-                i = dstBegin; 
-                for (w = 0; w < width; w++, j+=2, i++) { 
-                    intData[i]  = ((buf[j+1]   & 0xff) << 24) |
-                                  ((buf[j]     & 0xff) << 16);
+                dOffset += unitsPerPixel;
+                sOffset += sLineIncr;
+            }
+        } else {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    for (int k = 0; k < unitsPerPixel; k++) {
+                        dData[dStart + dOffset + k] = (byte)
+                        (((int)(sData[sStart + sOffset + k] & 0xff) +
+                                (int)(sData[sStart + sOffset + k
+                                + unitsPerPixel] & 0xff) +
+                                (int)(sData[sStart + sOffset + k
+                                + sLineIncr] & 0xff) +
+                                (int)(sData[sStart + sOffset + k + sLineIncr +
+                                + unitsPerPixel] & 0xff) + 2) >> 2);
+                    }
+                    dOffset += unitsPerPixel;
+                    sOffset += sPixelIncr;
                 }
-            }   
-            break;
-
-        case ImageComponent.FORMAT_CHANNEL8:
-            for (j = srcBegin, h = 0; h < height; h++, dstBegin += dstInc) {
-                i = dstBegin; 
-                for (w = 0; w < width; w++, j++, i++) { 
-                    intData[i]  = ((buf[j] & 0xff) << 16);
-                }
-            }   
-            break;
-	}
+                sOffset += sLineIncr;
+            }
+        }
     }
 
-    Object getData(DataBuffer buffer) {
-	Object data = null;
-	switch (buffer.getDataType()) {
-	case DataBuffer.TYPE_BYTE:
-	    data = ((DataBufferByte)buffer).getData();
-	    break;
-	case DataBuffer.TYPE_INT:
-	    data = ((DataBufferInt)buffer).getData();
-	    break;
-	case DataBuffer.TYPE_SHORT:
-	    data = ((DataBufferShort)buffer).getData();
-	    break;
-	}
-	return data;
+    void scaleImage(int xScale, int yScale, int dStart, int sStart, ImageComponentRetained origImage,
+            int[] dData, int[] sData) {
+        
+        int dOffset = 0;
+        int sOffset = 0;
+        int sLineIncr = unitsPerPixel * origImage.width;
+        int sPixelIncr = unitsPerPixel << 1;
+        
+        if (yScale == 1) {
+            for (int x = 0; x < width; x++) {
+                /*  TODO : --- Chien.
+                for (int k = 0; k < unitsPerPixel; k++) {
+                    dData[dStart + dOffset + k] = (byte)
+                    (((int)(sData[sStart + sOffset + k] & 0xff) +
+                            (int)(sData[sStart + sOffset + k
+                            + unitsPerPixel] & 0xff) + 1) >> 1);
+                }
+                 */
+                dOffset += unitsPerPixel;
+                sOffset += sPixelIncr;
+            }
+        } else if (xScale == 1) {
+            for (int y = 0; y < height; y++) {
+                /*  TODO : --- Chien.
+                for (int k = 0; k < unitsPerPixel; k++) {
+                    dData[dStart + dOffset + k] = (byte)
+                    (((int)(sData[sStart + sOffset + k] & 0xff) +
+                            (int)(sData[sStart + sOffset + k
+                            + sLineIncr] & 0xff) + 1) >> 1);
+                }
+                 */
+                dOffset += unitsPerPixel;
+                sOffset += sLineIncr;
+            }
+        } else {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    /*  TODO : --- Chien.
+                    for (int k = 0; k < unitsPerPixel; k++) {
+                        dData[dStart + dOffset + k] = (byte)
+                        (((int)(sData[sStart + sOffset + k] & 0xff) +
+                                (int)(sData[sStart + sOffset + k
+                                + unitsPerPixel] & 0xff) +
+                                (int)(sData[sStart + sOffset + k
+                                + sLineIncr] & 0xff) +
+                                (int)(sData[sStart + sOffset + k + sLineIncr +
+                                + unitsPerPixel] & 0xff) + 2) >> 2);
+                    }
+                     */
+                    dOffset += unitsPerPixel;
+                    sOffset += sPixelIncr;
+                }
+                sOffset += sLineIncr;
+            }
+        }
     }
-
-     final void setByReference(boolean byReference) {
- 	this.byReference = byReference;
-     }
-     
-     final boolean isByReference() {
- 	return byReference;
-     }
- 
-     final void setYUp( boolean yUp) {
- 	this.yUp = yUp;
-     }
- 
-     final boolean isYUp() {
- 	return yUp;
-     }
+        
 
      // Add a user to the userList
      synchronized void addUser(NodeComponentRetained node) {
@@ -2823,10 +1920,6 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 	// Should not happen
 	return null;
     }
-
-
-// New Code --- Chien.
-    
     
     /**
      * Wrapper class for image data.
@@ -2840,7 +1933,8 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         private Object data = null;
         private ImageDataType imageDataType = ImageDataType.TYPE_NULL;
         private int length = 0;
-               
+        private boolean dataIsByRef = false;
+        
         /**
          * Constructs a new ImageData buffer of the specified type with the
          * specified length.
@@ -2848,6 +1942,8 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         ImageData(ImageDataType imageDataType, int length) {
             this.imageDataType = imageDataType;
             this.length = length;
+            this.dataIsByRef = false;
+            
             switch (imageDataType) {
                 case TYPE_BYTE_ARRAY:
                     data = new byte[length];
@@ -2863,13 +1959,43 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     assert false;
             }
         }
+ 
+        /**
+         * Constructs a new ImageData buffer of the specified type with the
+         * specified length and the specified byRefImage as data.
+         */
+        ImageData(ImageDataType imageDataType, int length, Object byRefImage) {
+            BufferedImage bi;
+            
+            this.imageDataType = imageDataType;
+            this.length = length;
+            this.dataIsByRef = true;
+            
+            switch (imageDataType) {
+                case TYPE_BYTE_ARRAY:
+                    bi = (BufferedImage) byRefImage;
+                    data = ((DataBufferByte)bi.getRaster().getDataBuffer()).getData();
+                    break;
+                case TYPE_INT_ARRAY:
+                    bi = (BufferedImage) byRefImage;
+                    data = ((DataBufferInt)bi.getRaster().getDataBuffer()).getData();
+                    break;
+                case TYPE_BYTE_BUFFER:
+                    throw new RuntimeException("ByteBuffer not yet supported");
+                case TYPE_INT_BUFFER:
+                    throw new RuntimeException("IntBuffer not yet supported");
+                default:
+                    assert false;
+            }
+        }
         
         /**
          * Constructs a new ImageData buffer from the specified
          * object. This object stores a reference to the input image data.
          */
-        ImageData(Object imageData) {
-            data = imageData;
+        ImageData(Object data, boolean isByRef) {
+            this.data = data;
+            dataIsByRef = isByRef;
             if (data == null) {
                 imageDataType = ImageDataType.TYPE_NULL;
                 length = 0;
@@ -2912,6 +2038,14 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         }
         
         /**
+         * Returns is this data is byRef.
+         */
+        boolean isDataByRef() {
+            return dataIsByRef;
+        }
+        
+        
+        /**
          * Returns this DataBuffer as a byte array.
          */
         byte[] getAsByteArray() {
@@ -2938,6 +2072,237 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         IntBuffer getAsIntBuffer() {
             return (IntBuffer) data;
         }
+
+        // Handle TYPE_BYTE_LA only
+        void copyByLineAndExpand(BufferedImage bi, int depthIndex) {
+            int h;
+            int srcBegin,		// src begin offset
+                dstBegin;		// dst begin offset
+            
+            assert (imageData.getType() == ImageDataType.TYPE_BYTE_ARRAY);
+            assert (imageFormatType == ImageFormatType.TYPE_BYTE_LA);
+                        
+            int unitsPerRow = width * unitsPerPixel; // bytes per row
+            int scanline = unitsPerRow;
+            if (yUp) {
+                srcBegin = (depthIndex * width * height) * unitsPerPixel;
+            } else {
+                srcBegin = (depthIndex * width * height + (height - 1) * width) * unitsPerPixel;
+                unitsPerRow = - 1 * unitsPerRow;
+            }
+            
+            dstBegin = 0;
+            // ABGR is 4 bytes per pixel
+            int dstUnitsPerRow = width * 4; 
+            
+            byte[] dstByteBuffer = ((DataBufferByte)bi.getRaster().getDataBuffer()).getData();
+            byte[] srcByteBuffer = imageData.getAsByteArray();
+            for (h = 0; h < height; h++) {
+                for( int v = 0, w = 0; w < scanline; w += unitsPerPixel, v += 4) {
+                    dstByteBuffer[dstBegin+v] = srcByteBuffer[srcBegin+w+1]; // Alpha
+                    dstByteBuffer[dstBegin+v+1] = 0;
+                    dstByteBuffer[dstBegin+v+2] = 0;
+                    dstByteBuffer[dstBegin+v+3] = srcByteBuffer[srcBegin+w]; // Red
+                }
+                
+                dstBegin += dstUnitsPerRow;
+                srcBegin += unitsPerRow;
+            }
+
+        }
         
-    }
+        
+        // This has bug on unitsPerRow .... Chien 
+        // Quick line by line copy
+        void copyByLine(BufferedImage bi, int depthIndex, boolean swapNeeded) {      
+            
+            int h;
+            int srcBegin,		// src begin offset
+                dstBegin;		// dst begin offset
+            
+            int unitsPerRow = width * unitsPerPixel; // bytes per row
+            int copyUnits = unitsPerRow;            
+            if (yUp) {
+                srcBegin = (depthIndex * width * height) * unitsPerPixel;
+            } else {
+                srcBegin = (depthIndex * width * height + (height - 1) * width) * unitsPerPixel;
+                unitsPerRow = - 1 * unitsPerRow;
+            }
+            
+            dstBegin = 0;
+            
+            switch(imageData.getType()) {
+                case TYPE_BYTE_ARRAY:
+                    byte[] dstByteBuffer = ((DataBufferByte)bi.getRaster().getDataBuffer()).getData();
+                    byte[] srcByteBuffer = imageData.getAsByteArray();
+                    for (h = 0; h < height; h++) {
+                        if(!swapNeeded) {
+                            System.arraycopy(srcByteBuffer, srcBegin, 
+                                    dstByteBuffer, dstBegin, copyUnits);
+                        }
+                        else {
+                            if(imageFormatType == ImageFormatType.TYPE_BYTE_RGB) {
+                                assert (unitsPerPixel == 3);
+                                for(int w = 0; w < copyUnits; w += unitsPerPixel) {
+                                    dstByteBuffer[dstBegin+w] = srcByteBuffer[srcBegin+w+2];        
+                                    dstByteBuffer[dstBegin+w+1] = srcByteBuffer[srcBegin+w+1];        
+                                    dstByteBuffer[dstBegin+w+2] = srcByteBuffer[srcBegin+w];        
+                               }
+                            }
+                            else if(imageFormatType == ImageFormatType.TYPE_BYTE_RGBA) {
+                                assert (unitsPerPixel == 4);
+                                for(int w = 0; w < copyUnits; w += unitsPerPixel) {
+                                    dstByteBuffer[dstBegin+w] = srcByteBuffer[srcBegin+w+3];        
+                                    dstByteBuffer[dstBegin+w+1] = srcByteBuffer[srcBegin+w+2];        
+                                    dstByteBuffer[dstBegin+w+2] = srcByteBuffer[srcBegin+w+1];        
+                                    dstByteBuffer[dstBegin+w+3] = srcByteBuffer[srcBegin+w];        
+                               }                               
+                            }
+                            else {
+                                assert false;
+                            }
+                        }
+                        dstBegin += copyUnits;
+                        srcBegin += unitsPerRow;
+                    }
+                    break;
+                
+                // INT case doesn't required to handle swapNeeded     
+                case TYPE_INT_ARRAY:
+                    assert (!swapNeeded);
+                    int[] dstIntBuffer = ((DataBufferInt)bi.getRaster().getDataBuffer()).getData();
+                    int[] srcIntBuffer = imageData.getAsIntArray();
+                    for (h = 0; h < height; h++) {
+                        System.arraycopy(srcIntBuffer, srcBegin, dstIntBuffer, dstBegin, copyUnits);
+                        dstBegin += copyUnits;
+                        srcBegin += unitsPerRow;
+                    }
+                    break;
+                default:
+                    assert false;
+            }
+        }       
+        
+        void copyByBlock(BufferedImage bi, int depthIndex) {
+            // src begin offset
+            int srcBegin = depthIndex * width * height * unitsPerPixel;
+            
+            switch(imageData.getType()) {
+                case TYPE_BYTE_ARRAY:
+                    byte[] dstByteBuffer = ((DataBufferByte)bi.getRaster().getDataBuffer()).getData();
+                    byte[] srcByteBuffer = imageData.getAsByteArray();
+                    System.arraycopy(srcByteBuffer, srcBegin, dstByteBuffer, 0, (height * width * unitsPerPixel));
+                    break;
+                case TYPE_INT_ARRAY:
+                    int[] dstIntBuffer = ((DataBufferInt)bi.getRaster().getDataBuffer()).getData();
+                    int[] srcIntBuffer = imageData.getAsIntArray();
+                    System.arraycopy(srcIntBuffer, srcBegin, dstIntBuffer, 0, (height * width * unitsPerPixel));
+                    break;
+                default:
+                    assert false;
+            }
+        }
+        
+        // Need to check for imageData is null. if it is null return null.
+        BufferedImage createBufferedImage(int depthIndex) {
+            if(data != null) {
+                int bufferType = BufferedImage.TYPE_CUSTOM;
+                boolean swapNeeded = false;
+                
+                switch(imageFormatType) {
+                    case TYPE_BYTE_BGR:
+                        bufferType = BufferedImage.TYPE_3BYTE_BGR;
+                        break;
+                    case TYPE_BYTE_RGB:
+                        bufferType = BufferedImage.TYPE_3BYTE_BGR;
+                        swapNeeded = true;
+                        break;
+                    case TYPE_BYTE_ABGR:
+                        bufferType = BufferedImage.TYPE_4BYTE_ABGR;
+                        break;
+                    case TYPE_BYTE_RGBA:
+                        bufferType = BufferedImage.TYPE_4BYTE_ABGR;
+                        swapNeeded = true;
+                        break;
+                    // This is a special case. Need to handle separately.    
+                    case TYPE_BYTE_LA:
+                        bufferType = BufferedImage.TYPE_4BYTE_ABGR;
+                        break;
+                    case TYPE_BYTE_GRAY:
+                        bufferType = BufferedImage.TYPE_BYTE_GRAY;
+                        break;
+                    case TYPE_INT_BGR:
+                        bufferType = BufferedImage.TYPE_INT_BGR;
+                        break;
+                    case TYPE_INT_RGB:
+                        bufferType = BufferedImage.TYPE_INT_RGB;
+                        break;
+                    case TYPE_INT_ARGB:
+                        bufferType = BufferedImage.TYPE_INT_ARGB;
+                        break;
+                    // Unsupported case, so shouldn't be here.    
+                    case TYPE_USHORT_GRAY:
+                        bufferType = BufferedImage.TYPE_USHORT_GRAY;
+                    default:
+                        assert false;
+                        
+                }
+                
+                BufferedImage bi = new BufferedImage(width, height, bufferType);
+                if((!swapNeeded) || (imageFormatType != ImageFormatType.TYPE_BYTE_LA)) {
+                    if(yUp) {
+                        copyByBlock(bi, depthIndex);
+                    } else {
+                        copyByLine(bi, depthIndex, false);
+                    }
+                } else if(swapNeeded) {
+                    copyByLine(bi, depthIndex, swapNeeded);
+                } else if(imageFormatType == ImageFormatType.TYPE_BYTE_LA) {
+                   copyByLineAndExpand(bi, depthIndex); 
+                } else {
+                    assert false;
+                }
+                
+                return bi;
+                
+            }
+            return null;
+        }
+        
+        // Note : Highly inefficient for depth > 0 case.
+        // This method doesn't take into account of depth, it is assuming that 
+        // depth == 0, which is true for ImageComponent2D.
+        void convertFromABGRToRGBA() {
+            int i;
+            byte[] srcBuffer, dstBuffer;
+            srcBuffer = getAsByteArray();
+            
+            if(dataIsByRef) {
+                dstBuffer = new byte[length];
+                // Do copy and swap.
+                for(i = 0; i < length; i +=4) {
+                    dstBuffer[i] = srcBuffer[i+3]; 
+                    dstBuffer[i+1] = srcBuffer[i+2]; 
+                    dstBuffer[i+2] = srcBuffer[i+1];
+                    dstBuffer[i+3] = srcBuffer[i];
+                }
+                data = dstBuffer;
+                dataIsByRef = false;
+                
+            } else {
+                byte a, b;
+                // Do swap in place.
+                for(i = 0; i < length; i +=4) {
+                    a = srcBuffer[i];
+                    b = srcBuffer[i+1];
+                    srcBuffer[i] = srcBuffer[i+3]; 
+                    srcBuffer[i+1]  = srcBuffer[i+2];
+                    srcBuffer[i+2] = b;
+                    srcBuffer[i+3] = a;
+                }
+            }
+            
+        }
+        
+     }
 }

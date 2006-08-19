@@ -2199,14 +2199,15 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
     jint level,
     jint xoffset,
     jint yoffset,
-    jint internalFormat,
-    jint format,
+    jint textureFormat,
+    jint imageFormat,
     jint imgXOffset,
     jint imgYOffset,
     jint tilew,
     jint width,
     jint height,
-    jbyteArray image)
+    jint dataType,
+    jobject data)
 {
     GetDevice();
 
@@ -2231,22 +2232,39 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
 	return;
     }
 
+    // TODO --- Need to re-write.  Chien
+    void *imageObjPtr;
+    
+    /* Need to support INT, and NIO buffers -- Chien */
+    
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+       (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	imageObjPtr = (void *) env->GetPrimitiveArrayCritical((jarray)data, NULL);        
+    }
+    else {
+	imageObjPtr = (void *)env->GetDirectBufferAddress(data);
+    }
+
     // update Image data
-    if (format != FORMAT_USHORT_GRAY) {
-	jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(image,   NULL);
-	copyDataToSurface(format, internalFormat, xoffset, yoffset,
+    if (imageFormat != IMAGE_FORMAT_USHORT_GRAY) {
+	jbyte *byteData = (jbyte *) imageObjPtr;
+	copyDataToSurface(imageFormat, textureFormat, xoffset, yoffset,
 			  imgXOffset, imgYOffset,
 			  width, height, tilew, byteData,
 			  surf, level);
-	env->ReleasePrimitiveArrayCritical(image, byteData, 0);
-
     } else {
+	/*
 	jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(image, NULL);
-	copyDataToSurface(format, internalFormat, xoffset, yoffset,
+	copyDataToSurface(imageFormat, textureFormat, xoffset, yoffset,
 			  imgXOffset, imgYOffset,
 			  width, height, tilew, shortData,
 			  surf, level);
 	env->ReleasePrimitiveArrayCritical(image, shortData, 0);
+	*/
+    }
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+       (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	env->ReleasePrimitiveArrayCritical((jarray)data, imageObjPtr, 0);
     }
 
 }
@@ -2258,16 +2276,15 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
     jlong ctx,
     jint numLevels,
     jint level,
-    jint internalFormat,
-    jint format,
+    jint textureFormat,
+    jint imageFormat,
     jint width,
     jint height,
     jint boundaryWidth,
-    jbyteArray imageYup)
+    jint dataType,
+    jobject data)
 {
     GetDevice();
-
-
 
     if (d3dCtx->texUnitStage >= d3dCtx->bindTextureIdLen) {
 	if (debug) {
@@ -2303,7 +2320,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
 
 	if (surf == NULL) {
 	// Need to create surface
-	    surf = createTextureSurface(d3dCtx, numLevels, internalFormat,
+	    surf = createTextureSurface(d3dCtx, numLevels, textureFormat,
 					width, height);
 
 	    if (surf == NULL) {
@@ -2325,25 +2342,41 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
 	return;
     }
 
+    // TODO --- Need to re-write.  Chien
     // update Image data
-    if (imageYup != NULL) {
-	if (format != FORMAT_USHORT_GRAY) {
-	    jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(imageYup,   NULL);
-	    copyDataToSurface(format, internalFormat, 0, 0, 0, 0,
+    if (data != NULL) {
+	void *imageObjPtr;
+
+	/* Need to support INT, and NIO buffers -- Chien */
+	
+	if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+	   (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	    imageObjPtr = (void *) env->GetPrimitiveArrayCritical((jarray)data, NULL);        
+	}
+	else {
+	    imageObjPtr = (void *)env->GetDirectBufferAddress(data);
+	}
+
+	if (imageFormat != IMAGE_FORMAT_USHORT_GRAY) {
+	    jbyte *byteData = (jbyte *) imageObjPtr;
+	    copyDataToSurface(imageFormat, textureFormat, 0, 0, 0, 0,
 			      width, height, width, byteData,
 			      surf, level);
-	    env->ReleasePrimitiveArrayCritical(imageYup, byteData, 0);
-
 	} else {
+	    /*
 	    jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(imageYup, NULL);
-	    copyDataToSurface(format, internalFormat, 0, 0, 0, 0,
+	    copyDataToSurface(imageFormat, textureFormat, 0, 0, 0, 0,
 			      width, height, width,  shortData,
 			      surf, level);
 	    env->ReleasePrimitiveArrayCritical(imageYup, shortData, 0);
+	    */
+	}
+
+	if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+	   (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	    env->ReleasePrimitiveArrayCritical((jarray)data, imageObjPtr, 0);
 	}
     }
-
-
     device->SetTexture(d3dCtx->texUnitStage, surf);
 }
 
@@ -2359,6 +2392,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateDetailTextureParameters(
 {
     // Not support
 }
+
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_bindTexture3D(
@@ -2497,13 +2531,14 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
     jlong ctx,
     jint numLevels,
     jint level,
-    jint internalFormat,
-    jint format,
+    jint textureFormat,
+    jint imageFormat,
     jint width,
     jint height,
     jint depth,
     jint boundaryWidth,
-    jbyteArray imageYup)
+    jint dataType,
+    jobject data)
 {
 
     GetDevice();
@@ -2545,7 +2580,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
 	}
 
 	if (surf == NULL) {
-	    surf = createVolumeTexture(d3dCtx, numLevels, internalFormat,
+	    surf = createVolumeTexture(d3dCtx, numLevels, textureFormat,
 				       width, height, depth);
 	    if (surf == NULL) {
 		return;
@@ -2566,21 +2601,40 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
 	return;
     }
 
+    // TODO --- Need to re-write.  Chien
     // update Image data
-    if (imageYup != NULL) {
-	if (format != FORMAT_USHORT_GRAY) {
-	    jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(imageYup,   NULL);
-	    copyDataToVolume(format, internalFormat, 0, 0, 0, 0, 0, 0,
+    if (data != NULL) {
+	void *imageObjPtr;
+
+	/* Need to support INT, and NIO buffers -- Chien */
+	
+	if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+	   (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	    imageObjPtr = (void *) env->GetPrimitiveArrayCritical((jarray)data, NULL);        
+	}
+	else {
+	    imageObjPtr = (void *)env->GetDirectBufferAddress(data);
+	}
+
+	if (imageFormat != IMAGE_FORMAT_USHORT_GRAY) {
+	    jbyte *byteData = (jbyte *) imageObjPtr;
+	    copyDataToVolume(imageFormat, textureFormat, 0, 0, 0, 0, 0, 0,
 			     width, height, depth, width, height, byteData,
 			     surf, level);
-	    env->ReleasePrimitiveArrayCritical(imageYup, byteData, 0);
 
 	} else {
+	    /*
 	    jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(imageYup, NULL);
-	    copyDataToVolume(format, internalFormat, 0, 0, 0, 0, 0, 0,
+	    copyDataToVolume(imageFormat, textureFormat, 0, 0, 0, 0, 0, 0,
 			      width, height, depth, width, height, shortData,
 			      surf, level);
 	    env->ReleasePrimitiveArrayCritical(imageYup, shortData, 0);
+	    */
+	}
+
+	if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+	   (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	    env->ReleasePrimitiveArrayCritical((jarray)data, imageObjPtr, 0);
 	}
     }
     device->SetTexture(d3dCtx->texUnitStage, surf);
@@ -2596,8 +2650,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
     jint xoffset,
     jint yoffset,
     jint zoffset,
-    jint internalFormat,
-    jint format,
+    jint textureFormat,
+    jint imageFormat,
     jint imgXOffset,
     jint imgYOffset,
     jint imgZOffset,
@@ -2606,7 +2660,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
     jint width,
     jint height,
     jint depth,
-    jbyteArray image)
+    jint dataType,
+    jobject data)
 {
     GetDevice();
 
@@ -2632,24 +2687,41 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
 	return;
     }
 
+    // TODO --- Need to re-write.  Chien
+    void *imageObjPtr;
+    
+    /* Need to support INT, and NIO buffers -- Chien */
+    
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+       (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	imageObjPtr = (void *) env->GetPrimitiveArrayCritical((jarray)data, NULL);        
+    }
+    else {
+	imageObjPtr = (void *)env->GetDirectBufferAddress(data);
+    }
+
     // update Image data
-    if (format != FORMAT_USHORT_GRAY) {
-	jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(image,   NULL);
-	copyDataToVolume(format, internalFormat, xoffset,
+    if (imageFormat != IMAGE_FORMAT_USHORT_GRAY) {
+	jbyte *byteData = (jbyte *) imageObjPtr;
+	copyDataToVolume(imageFormat, textureFormat, xoffset,
 			 yoffset, zoffset, imgXOffset, imgYOffset,
 			 imgZOffset, width, height, depth,
 			 tilew, tileh, byteData,
 			 surf, level);
-	env->ReleasePrimitiveArrayCritical(image, byteData, 0);
-
     } else {
+	/*
 	jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(image, NULL);
-	copyDataToVolume(format, internalFormat, xoffset,
+	copyDataToVolume(imageFormat, textureFormat, xoffset,
 			 yoffset, zoffset,
 			 imgXOffset, imgYOffset, imgZOffset,
 			 width, height, depth, tilew, tileh, shortData,
 			 surf, level);
 	env->ReleasePrimitiveArrayCritical(image, shortData, 0);
+	*/
+    }
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+       (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	env->ReleasePrimitiveArrayCritical((jarray)data, imageObjPtr, 0);
     }
 
 }
@@ -2776,14 +2848,15 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapSubImage(
     jint level,
     jint xoffset,
     jint yoffset,
-    jint internalFormat,
-    jint format,
+    jint textureFormat,
+    jint imageFormat,
     jint imgXOffset,
     jint imgYOffset,
     jint tilew,
     jint width,
     jint height,
-    jbyteArray image)
+    jint dataType,
+    jobject data)
 {
     GetDevice();
 
@@ -2808,27 +2881,46 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapSubImage(
 	return;
     }
 
+    // TODO --- Need to re-write.  Chien
+    void *imageObjPtr;
+    
+    /* Need to support INT, and NIO buffers -- Chien */
+    
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+       (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	imageObjPtr = (void *) env->GetPrimitiveArrayCritical((jarray)data, NULL);        
+    }
+    else {
+	imageObjPtr = (void *)env->GetDirectBufferAddress(data);
+    }
+
     // update Image data
-    if (format != FORMAT_USHORT_GRAY) {
-	jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(image,   NULL);
-	copyDataToCubeMap(format, internalFormat,
+    if (imageFormat != IMAGE_FORMAT_USHORT_GRAY) {
+	jbyte *byteData = (jbyte *) imageObjPtr;
+	copyDataToCubeMap(imageFormat, textureFormat,
 			  xoffset, yoffset,
 			  imgXOffset, imgYOffset,
 			  width, height,
 			  tilew, byteData,
 			  surf, level, face);
-	env->ReleasePrimitiveArrayCritical(image, byteData, 0);
 
     } else {
+	/*
 	jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(image, NULL);
-	copyDataToCubeMap(format, internalFormat,
+	copyDataToCubeMap(imageFormat, textureFormat,
 			  xoffset, yoffset,
 			  imgXOffset, imgYOffset,
 			  width, height,
 			  tilew, shortData,
 			  surf, level, face);
 	env->ReleasePrimitiveArrayCritical(image, shortData, 0);
+	*/
     }
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+       (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	env->ReleasePrimitiveArrayCritical((jarray)data, imageObjPtr, 0);
+    }
+
 }
 
 extern "C" JNIEXPORT
@@ -2839,12 +2931,13 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapImage(
     jint face,
     jint numLevels,
     jint level,
-    jint internalFormat,
-    jint format,
+    jint textureFormat,
+    jint imageFormat,
     jint width,
     jint height,
     jint boundaryWidth,
-    jbyteArray imageYup)
+    jint dataType,
+    jobject data)
 {
     GetDevice();
 
@@ -2882,7 +2975,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapImage(
 
 	if (surf == NULL) {
 	// Need to create surface
-	    surf = createCubeMapTexture(d3dCtx, numLevels, internalFormat,
+	    surf = createCubeMapTexture(d3dCtx, numLevels, textureFormat,
 					width, height);
 	    if (surf == NULL) {
 		return;
@@ -2903,22 +2996,41 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapImage(
 	return;
     }
 
+    // TODO --- Need to re-write.  Chien
     // update Image data
-    if (imageYup != NULL) {
-	if (format != FORMAT_USHORT_GRAY) {
-	    jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(imageYup,   NULL);
-	    copyDataToCubeMap(format, internalFormat, 0, 0, 0, 0,
+    if (data != NULL) {
+	void *imageObjPtr;
+
+	/* Need to support INT, and NIO buffers -- Chien */
+	
+	if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+	   (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	    imageObjPtr = (void *) env->GetPrimitiveArrayCritical((jarray)data, NULL);        
+	}
+	else {
+	    imageObjPtr = (void *)env->GetDirectBufferAddress(data);
+	}
+
+	if (imageFormat != IMAGE_FORMAT_USHORT_GRAY) {
+	    jbyte *byteData = (jbyte *) imageObjPtr;
+	    copyDataToCubeMap(imageFormat, textureFormat, 0, 0, 0, 0,
 			      width, height, width, byteData,
 			      surf, level, face);
-	    env->ReleasePrimitiveArrayCritical(imageYup, byteData, 0);
 
 	} else {
+	    /*
 	    jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(imageYup, NULL);
-	    copyDataToCubeMap(format, internalFormat, 0, 0, 0, 0,
+	    copyDataToCubeMap(imageFormat, textureFormat, 0, 0, 0, 0,
 			      width, height, width,  shortData,
 			      surf, level, face);
 	    env->ReleasePrimitiveArrayCritical(imageYup, shortData, 0);
+	    */
 	}
+	if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
+	   (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	    env->ReleasePrimitiveArrayCritical((jarray)data, imageObjPtr, 0);
+	}
+
     }
 
     device->SetTexture(d3dCtx->texUnitStage, surf);

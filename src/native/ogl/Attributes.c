@@ -217,6 +217,14 @@ const unsigned int screen_door[17][32] = {
     },
 };
 
+void
+throwAssert(JNIEnv *env, char *str)
+{
+    jclass rte;
+    if ((rte = (*env)->FindClass(env, "java/lang/AssertionError")) != NULL) {
+	(*env)->ThrowNew(env, rte, str);
+    }
+}
 
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_updateLinearFog(
@@ -2197,134 +2205,164 @@ void updateTexture2DImage(
     jint target,
     jint numLevels,
     jint level,
-    jint internalFormat, 
-    jint format, 
+    jint textureFormat, 
+    jint imageFormat, 
     jint width, 
     jint height, 
     jint boundaryWidth,
-    jbyteArray imageYup)
+    jint dataType,
+    jobject data)
 {
-    GLenum oglFormat = 0, oglInternalFormat=0;
+    void *imageObjPtr;
+    GLenum format = 0, internalFormat = 0, type = 0;
     JNIEnv table = *env;
-    jbyte *byteData;
-    jshort *shortData;
+    GLboolean forceAlphaToOne = GL_FALSE;
+
+    /* Need to support INT, and NIO buffers -- Chien */
     
-    switch (internalFormat) {
-        case INTENSITY:
-	    oglInternalFormat = GL_INTENSITY;
-	    break;
-        case LUMINANCE:
-	    oglInternalFormat = GL_LUMINANCE;
-	    break;
-        case ALPHA:
-	    oglInternalFormat = GL_ALPHA;
-	    break;
-        case LUMINANCE_ALPHA:
-	    oglInternalFormat = GL_LUMINANCE_ALPHA;
-	    break;
-        case J3D_RGB: 
-	    oglInternalFormat = GL_RGB;
-	    break;
-        case J3D_RGBA:
-	    oglInternalFormat = GL_RGBA;
-	    break;
-    }
-    switch (format) {
-        case FORMAT_BYTE_RGBA:         
-	    /* all RGB types are stored as RGBA */
-	    oglFormat = GL_RGBA;
-	    break;
-        case FORMAT_BYTE_RGB:         
-	    oglFormat = GL_RGB;
-	    break;
-
-        case FORMAT_BYTE_ABGR:         
-	    if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
-		oglFormat = GL_ABGR_EXT;
-	    }
-	    break;
-	    
-        case FORMAT_BYTE_BGR:         
-            oglFormat = GL_BGR;
-	    break;
-
-        case FORMAT_BYTE_LA: 
-	    /* all LA types are stored as LA8 */
-	    oglFormat = GL_LUMINANCE_ALPHA;
-	    break;
-        case FORMAT_BYTE_GRAY:
-        case FORMAT_USHORT_GRAY:	    
-            if (oglInternalFormat == GL_ALPHA) {
-	        oglFormat = GL_ALPHA;
-            } else  {
-	        oglFormat = GL_LUMINANCE;
-	    }
-            break;
-    }
-    /*
-    fprintf(stderr,"native updateTextureImage\n");
-    fprintf(stderr,"internalFormat = %x\n",internalFormat);
-    fprintf(stderr,"format = %x\n",format);
-    fprintf(stderr,"oglFormat = %x\n",oglFormat);
-    fprintf(stderr,"oglInternalFormat = %x\n",oglInternalFormat);
-    fprintf(stderr,"boundaryWidth= %d\n", boundaryWidth);
-    */
-    if (imageYup != NULL) {
-	if (format != FORMAT_USHORT_GRAY) {
-	    byteData = (jbyte *)(*(table->GetPrimitiveArrayCritical))(env,
-								      imageYup, 
-								      NULL);
-    /*
-    {
-        jbyte *c = byteData;
-	int i, j;
-	for (i = 0; i < 1; i++) {
-	    for (j = 0; j < 8; j++, c++) {
-		fprintf(stderr, "%x ",*c);
-	    }
-	    fprintf(stderr, "\n");
-	}
-    }
-    */
-	}
-	else { /* unsigned short */
-	    shortData = (jshort *)(*(table->GetPrimitiveArrayCritical))(env,
-									imageYup, 
-									NULL);
-	}
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+        imageObjPtr = (void *)(*(table->GetPrimitiveArrayCritical))(env, (jarray)data, NULL);        
     }
     else {
-	byteData = NULL;
-	shortData = NULL;
+	imageObjPtr = (void *)(*(table->GetDirectBufferAddress))(env, data);
     }
+
+
     /* check if we are trying to draw NPOT on a system that doesn't support it */
     if ((!ctxProperties->textureNonPowerOfTwoAvailable) &&
-        (!isPowerOfTwo(width) || !isPowerOfTwo(height))) {
-        /* disable texture by setting width and height to 0 */
+	(!isPowerOfTwo(width) || !isPowerOfTwo(height))) {
+	/* disable texture by setting width and height to 0 */
 	width = height = 0;
     }
-    if (format != FORMAT_USHORT_GRAY) {
-	glTexImage2D(target, level, oglInternalFormat, 
+
+    
+    switch (textureFormat) {
+        case INTENSITY:
+	    internalFormat = GL_INTENSITY;
+	    break;
+        case LUMINANCE:
+	    internalFormat = GL_LUMINANCE;
+	    break;
+        case ALPHA:
+	    internalFormat = GL_ALPHA;
+	    break;
+        case LUMINANCE_ALPHA:
+	    internalFormat = GL_LUMINANCE_ALPHA;
+	    break;
+        case J3D_RGB: 
+	    internalFormat = GL_RGB;
+	    break;
+        case J3D_RGBA:
+	    internalFormat = GL_RGBA;
+	    break;
+        default:
+            throwAssert(env, "updateTexture2DImage : textureFormat illegal format");
+	    return;
+    }
+
+    
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_BYTE_BUFFER))  {
+	switch (imageFormat) {
+            /* GL_BGR */
+        case IMAGE_FORMAT_BYTE_BGR:         
+            format = GL_BGR;
+            break;
+        case IMAGE_FORMAT_BYTE_RGB:
+            format = GL_RGB;
+            break;
+            /* GL_ABGR_EXT */
+        case IMAGE_FORMAT_BYTE_ABGR:         
+            if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
+                format = GL_ABGR_EXT;
+            }
+            else {
+                throwAssert(env, "updateTexture2DImage : GL_ABGR_EXT format is unsupported");
+		return;
+            }
+            break;	
+        case IMAGE_FORMAT_BYTE_RGBA:
+            format = GL_RGBA;
+            break;
+        case IMAGE_FORMAT_BYTE_LA:
+	    /* all LA types are stored as LA8 */
+	    format = GL_LUMINANCE_ALPHA;
+	    break;
+        case IMAGE_FORMAT_BYTE_GRAY: 
+            if (internalFormat == GL_ALPHA) {
+	        format = GL_ALPHA;
+            } else  {
+	        format = GL_LUMINANCE;
+	    }
+            break;
+
+        case IMAGE_FORMAT_USHORT_GRAY:	    
+        case IMAGE_FORMAT_INT_BGR:         
+        case IMAGE_FORMAT_INT_RGB:
+        case IMAGE_FORMAT_INT_ARGB:         
+        default:
+            throwAssert(env, "updateTexture2DImage : imageFormat illegal format");
+            return;
+        }
+	
+	glTexImage2D(target, level, internalFormat, 
 		     width, height, boundaryWidth, 
-		     oglFormat, GL_UNSIGNED_BYTE, (GLvoid *)byteData);
+		     format, GL_UNSIGNED_BYTE, imageObjPtr);
+
+    }
+    else if((dataType == IMAGE_DATA_TYPE_INT_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_BUFFER)) {
+        switch (imageFormat) {
+            /* GL_BGR */
+        case IMAGE_FORMAT_INT_BGR: /* Assume XBGR format */
+            format = GL_RGBA;
+	    type = GL_UNSIGNED_INT_8_8_8_8_REV;
+	    forceAlphaToOne = GL_TRUE;
+            break;
+        case IMAGE_FORMAT_INT_RGB: /* Assume XRGB format */
+	    forceAlphaToOne = GL_TRUE;
+	    /* Fall through to next case */
+        case IMAGE_FORMAT_INT_ARGB:        
+            format = GL_BGRA;
+	    type = GL_UNSIGNED_INT_8_8_8_8_REV;
+            break;	
+        /* This method only supports 3 and 4 components formats and INT types. */
+        case IMAGE_FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_GRAY: 
+        case IMAGE_FORMAT_USHORT_GRAY:
+        case IMAGE_FORMAT_BYTE_BGR:
+        case IMAGE_FORMAT_BYTE_RGB:
+        case IMAGE_FORMAT_BYTE_RGBA:
+        case IMAGE_FORMAT_BYTE_ABGR:
+        default:
+            throwAssert(env, "updateTexture2DImage : imageFormat illegal format");
+            return;
+        }  
+
+	/* Force Alpha to 1.0 if needed */
+	if(forceAlphaToOne) {
+	    glPixelTransferf(GL_ALPHA_SCALE, 0.0f);
+	    glPixelTransferf(GL_ALPHA_BIAS, 1.0f);
+	}
+
+	glTexImage2D(target, level, internalFormat, 
+		     width, height, boundaryWidth, 
+		     format, type, imageObjPtr);
+	
+	/* Restore Alpha scale and bias */
+	if(forceAlphaToOne) {
+	    glPixelTransferf(GL_ALPHA_SCALE, 1.0f);
+	    glPixelTransferf(GL_ALPHA_BIAS, 0.0f);
+	}
     }
     else {
-	glTexImage2D(target, level, oglInternalFormat, 
-		     width, height, boundaryWidth, 
-		     oglFormat, GL_UNSIGNED_SHORT, (GLvoid *)shortData);
+        throwAssert(env, "updateTexture2DImage : illegal image data type");
+	return;
     }
 
-    if (imageYup != NULL) {
-	if (format != FORMAT_USHORT_GRAY) {
-	    (*(table->ReleasePrimitiveArrayCritical))(env, imageYup, byteData, 0);
-	}
-	else {
-	    (*(table->ReleasePrimitiveArrayCritical))(env, imageYup, shortData, 0);
-	}
-    }
 
-    /* No idea why we need following call. */
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+        (*(table->ReleasePrimitiveArrayCritical))(env, data, imageObjPtr, 0);
+    }
+    
 }
 
 
@@ -2339,99 +2377,35 @@ void updateTexture2DSubImage(
     jint level,
     jint xoffset,
     jint yoffset,
-    jint internalFormat, 
-    jint format,
+    jint textureFormat, 
+    jint imageFormat,
     jint imgXOffset,
     jint imgYOffset,
     jint tilew,
     jint width, 
     jint height,
-    jbyteArray image) {
+    jint dataType,
+    jobject data) {
  
-    GLenum oglFormat = 0, oglInternalFormat=0;
+    void *imageObjPtr;
+    GLenum format = 0, internalFormat = 0, type = 0;
     JNIEnv table = *env;
-    jbyte *byteData, *tmpByte;
-    jshort *shortData, *tmpShort;
+    GLboolean forceAlphaToOne = GL_FALSE;
+    jbyte *tmpByte;
+    jint  *tmpInt;
     jint numBytes = 0;
     jboolean pixelStore = JNI_FALSE;
 
+    /* Need to support INT, and NIO buffers -- Chien */
 
-    switch (internalFormat) {
-        case INTENSITY:
-	    oglInternalFormat = GL_INTENSITY;
-	    break;
-        case LUMINANCE:
-	    oglInternalFormat = GL_LUMINANCE;
-	    break;
-        case ALPHA:
-	    oglInternalFormat = GL_ALPHA;
-	    break;
-        case LUMINANCE_ALPHA:
-	    oglInternalFormat = GL_LUMINANCE_ALPHA;
-	    break;
-        case J3D_RGB: 
-	    oglInternalFormat = GL_RGB;
-	    break;
-        case J3D_RGBA:
-	    oglInternalFormat = GL_RGBA;
-	    break;
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+        imageObjPtr = (void *)(*(table->GetPrimitiveArrayCritical))(env, (jarray)data, NULL);        
+    }
+    else {
+	imageObjPtr = (void *)(*(table->GetDirectBufferAddress))(env, data);
     }
 
-    switch (format) {
-        case FORMAT_BYTE_RGBA:         
-	    /* all RGB types are stored as RGBA */
-	    oglFormat = GL_RGBA;
-	    numBytes = 4;
-	    break;
-        case FORMAT_BYTE_RGB:         
-	    oglFormat = GL_RGB;
-	    numBytes = 3;
-	    break;
 
-        case FORMAT_BYTE_ABGR:         
-	    if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
-		oglFormat = GL_ABGR_EXT;
-		numBytes = 4;
-	    }
-	    break;
-        case FORMAT_BYTE_BGR:         
-            oglFormat = GL_BGR;
-            numBytes = 3;
-	    break;
-
-        case FORMAT_BYTE_LA: 
-	    /* all LA types are stored as LA8 */
-	    oglFormat = GL_LUMINANCE_ALPHA;
-	    numBytes = 2;
-	    break;
-        case FORMAT_BYTE_GRAY:
-            if (oglInternalFormat == GL_ALPHA) {
-	        oglFormat = GL_ALPHA;
-            } else  {
-	        oglFormat = GL_LUMINANCE;
-	    }
-	    numBytes = 1;
-        case FORMAT_USHORT_GRAY:	    
-           if (oglInternalFormat == GL_ALPHA) {
-	        oglFormat = GL_ALPHA;
-            } else  {
-	        oglFormat = GL_LUMINANCE;
-	    }
-	    numBytes = 2;
-            break;
-    }
-    /*
-    fprintf(stderr,"format = %x\n",format);
-    fprintf(stderr,"oglFormat = %x\n",oglFormat);
-    fprintf(stderr, "imgXOffset = %d\n",imgXOffset);
-    fprintf(stderr, "imgYOffset = %d\n",imgYOffset);
-    fprintf(stderr, "xoffset = %d\n",xoffset);
-    fprintf(stderr, "yoffset = %d\n",yoffset);
-    fprintf(stderr, "tilew = %d\n",tilew);
-    fprintf(stderr, "numBytes = %d\n",numBytes);
-    fprintf(stderr, "width = %d\n",width);
-    fprintf(stderr, "height = %d\n",height);
-    */
     if (imgXOffset > 0 || (width < tilew)) {
 	pixelStore = JNI_TRUE;
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, tilew);
@@ -2449,36 +2423,148 @@ void updateTexture2DSubImage(
 	    width = height = 0;
 	}
     }
-	
-    if (format != FORMAT_USHORT_GRAY) {
-	int off = 0;
-	byteData = (jbyte *)(*(table->GetPrimitiveArrayCritical))(env,
-								  image, 
-								  NULL);
-	/* offset by the imageOffset */
-	off = (tilew * imgYOffset + imgXOffset) * numBytes;
-	tmpByte = byteData+(off);
-
-/*
-printf("tmpByte: %x %x %x %x\n", *(tmpByte), *(tmpByte+1),
-					*(tmpByte+2), *(tmpByte+3));
-*/
-
-	glTexSubImage2D(target, level, xoffset, yoffset, width, height, 
-		     oglFormat, GL_UNSIGNED_BYTE, (GLvoid *)tmpByte);
-	(*(table->ReleasePrimitiveArrayCritical))(env, image, byteData, 0);	
-    } else { /* unsigned short */
-	shortData = (jshort *)(*(table->GetPrimitiveArrayCritical))(env,
-								    image, 
-								    NULL);
-	tmpShort = (jshort*)((jbyte*)shortData+
-			     (tilew * imgYOffset + imgXOffset)*numBytes);
-	glTexSubImage2D(target, level, xoffset, yoffset, width, height, 
-		     oglFormat, GL_UNSIGNED_SHORT, (GLvoid *)tmpShort);
-	(*(table->ReleasePrimitiveArrayCritical))(env, image, shortData, 0);
+    switch (textureFormat) {
+        case INTENSITY:
+	    internalFormat = GL_INTENSITY;
+	    break;
+        case LUMINANCE:
+	    internalFormat = GL_LUMINANCE;
+	    break;
+        case ALPHA:
+	    internalFormat = GL_ALPHA;
+	    break;
+        case LUMINANCE_ALPHA:
+	    internalFormat = GL_LUMINANCE_ALPHA;
+	    break;
+        case J3D_RGB: 
+	    internalFormat = GL_RGB;
+	    break;
+        case J3D_RGBA:
+	    internalFormat = GL_RGBA;
+	    break;
+        default:
+            throwAssert(env, "updateTexture2DSubImage : textureFormat illegal format");
+            return;
     }
+    
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_BYTE_BUFFER))  {
+	switch (imageFormat) {
+            /* GL_BGR */
+        case IMAGE_FORMAT_BYTE_BGR:         
+            format = GL_BGR;
+            numBytes = 3;
+            break;
+        case IMAGE_FORMAT_BYTE_RGB:
+            format = GL_RGB;
+            numBytes = 3;
+            break;
+            /* GL_ABGR_EXT */
+        case IMAGE_FORMAT_BYTE_ABGR:         
+            if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
+                format = GL_ABGR_EXT;
+		numBytes = 4;
+            }
+            else {
+                throwAssert(env, "updateTexture2DSubImage : GL_ABGR_EXT format is unsupported");
+		return;
+            }
+            break;	
+        case IMAGE_FORMAT_BYTE_RGBA:
+            format = GL_RGBA;
+            numBytes = 4;
+            break;	
+        case IMAGE_FORMAT_BYTE_LA:
+	    /* all LA types are stored as LA8 */
+            numBytes = 2;
+	    format = GL_LUMINANCE_ALPHA;
+	    break;
+        case IMAGE_FORMAT_BYTE_GRAY: 
+            if (internalFormat == GL_ALPHA) {
+	        format = GL_ALPHA;
+                numBytes = 1;
+           } else  {
+	        format = GL_LUMINANCE;
+                numBytes = 1;
+	    }
+            break;
+
+        case IMAGE_FORMAT_USHORT_GRAY:	    
+        case IMAGE_FORMAT_INT_BGR:         
+        case IMAGE_FORMAT_INT_RGB:
+        case IMAGE_FORMAT_INT_ARGB:         
+        default:
+            throwAssert(env, "updateTexture2DSubImage : imageFormat illegal format");
+            return;
+        }
+
+        tmpByte = (jbyte*)imageObjPtr +
+	    (tilew * imgYOffset + imgXOffset) * numBytes;
+	
+	
+	glTexSubImage2D(target, level, xoffset, yoffset, width, height, 
+		     format, GL_UNSIGNED_BYTE, (GLvoid *)tmpByte);
+	
+    }
+    else if((dataType == IMAGE_DATA_TYPE_INT_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_BUFFER)) {
+	switch (imageFormat) {
+            /* GL_BGR */
+        case IMAGE_FORMAT_INT_BGR: /* Assume XBGR format */
+            format = GL_RGBA;
+	    type = GL_UNSIGNED_INT_8_8_8_8_REV;
+	    forceAlphaToOne = GL_TRUE;
+            break;
+        case IMAGE_FORMAT_INT_RGB: /* Assume XRGB format */
+	    forceAlphaToOne = GL_TRUE;
+	    /* Fall through to next case */
+        case IMAGE_FORMAT_INT_ARGB:        
+            format = GL_BGRA;
+	    type = GL_UNSIGNED_INT_8_8_8_8_REV;
+            break;	
+        /* This method only supports 3 and 4 components formats and INT types. */
+        case IMAGE_FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_GRAY: 
+        case IMAGE_FORMAT_USHORT_GRAY:
+        case IMAGE_FORMAT_BYTE_BGR:
+        case IMAGE_FORMAT_BYTE_RGB:
+        case IMAGE_FORMAT_BYTE_RGBA:
+        case IMAGE_FORMAT_BYTE_ABGR:
+        default:
+           throwAssert(env, "updateTexture3DSubImage : imageFormat illegal format");
+	   return;
+        }  
+
+	numBytes = 4;
+	
+        tmpInt = (jint*)((jbyte*)imageObjPtr +
+			 (tilew * imgYOffset + imgXOffset)*numBytes);
+	
+	/* Force Alpha to 1.0 if needed */
+	if(forceAlphaToOne) {
+	    glPixelTransferf(GL_ALPHA_SCALE, 0.0f);
+	    glPixelTransferf(GL_ALPHA_BIAS, 1.0f);
+	}
+
+	glTexSubImage2D(target, level, xoffset, yoffset, width, height, 
+		     format, type, (GLvoid *)tmpInt);
+	
+	/* Restore Alpha scale and bias */
+	if(forceAlphaToOne) {
+	    glPixelTransferf(GL_ALPHA_SCALE, 1.0f);
+	    glPixelTransferf(GL_ALPHA_BIAS, 0.0f);
+	}
+    }
+    else {
+        throwAssert(env, "updateTexture3DImage : illegal image data type");
+	return;
+    }
+
+
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+        (*(table->ReleasePrimitiveArrayCritical))(env, data, imageObjPtr, 0);
+    }
+    
     if (pixelStore) {
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
     }
 }
 
@@ -2617,21 +2703,23 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
     jint level,
     jint xoffset,
     jint yoffset,
-    jint internalFormat, 
-    jint format,
+    jint textureFormat, 
+    jint imageFormat, 
     jint imgXOffset,
     jint imgYOffset,
     jint tilew,
     jint width, 
     jint height,
-    jbyteArray image) {
+    jint dataType,
+    jobject data)
+{
  
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     updateTexture2DSubImage(env, ctxProperties, GL_TEXTURE_2D,
-				level, xoffset, yoffset,
-				internalFormat, format,
-				imgXOffset, imgYOffset, tilew, width, height,
-				image);
+			    level, xoffset, yoffset,
+			    textureFormat, imageFormat,
+			    imgXOffset, imgYOffset, tilew, width, height,
+			    dataType, data);
 }
 
 
@@ -2642,18 +2730,19 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
     jlong ctxInfo,    
     jint numLevels,
     jint level,
-    jint internalFormat, 
-    jint format, 
+    jint textureFormat, 
+    jint imageFormat, 
     jint width, 
     jint height, 
     jint boundaryWidth,
-    jbyteArray imageYup)
+    jint dataType,
+    jobject data)
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
     updateTexture2DImage(env, ctxProperties, GL_TEXTURE_2D,
-			numLevels, level, internalFormat, format,
-			width, height, boundaryWidth, imageYup);
+			numLevels, level, textureFormat, imageFormat,
+			 width, height, boundaryWidth, dataType, data);
 }
 
 JNIEXPORT
@@ -2711,6 +2800,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_bindDetailTexture(
     }
 }
 
+/*
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_updateDetailTextureImage(
     JNIEnv *env, 
@@ -2734,7 +2824,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateDetailTextureImage(
 			width, height, boundaryWidth, imageYup);
     }
 }
-
+*/
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_bindTexture3D(
     JNIEnv *env, 
@@ -2874,122 +2964,160 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
     jlong ctxInfo,
     jint numLevels,
     jint level,
-    jint internalFormat, 
-    jint format, 
+    jint textureFormat, 
+    jint imageFormat, 
     jint width, 
     jint height, 
     jint depth,
     jint boundaryWidth,
-    jbyteArray imageYup)
+    jint dataType,
+    jobject data)
 {
-    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
-
-    GLenum oglFormat = 0, oglInternalFormat=0;
+    void *imageObjPtr;
+    GLenum format = 0, internalFormat = 0, type = 0;
     JNIEnv table = *env;
-    jbyte *byteData;
-    jshort *shortData;
+    GLboolean forceAlphaToOne = GL_FALSE;
 
-    switch (internalFormat) {
-        case INTENSITY:
-	    oglInternalFormat = GL_INTENSITY;
-	    break;
-        case LUMINANCE:
-	    oglInternalFormat = GL_LUMINANCE;
-	    break;
-        case ALPHA:
-	    oglInternalFormat = GL_ALPHA;
-	    break;
-        case LUMINANCE_ALPHA:
-	    oglInternalFormat = GL_LUMINANCE_ALPHA;
-	    break;
-        case J3D_RGB: 
-	    oglInternalFormat = GL_RGB;
-	    break;
-        case J3D_RGBA:
-	    oglInternalFormat = GL_RGBA;
-	    break;
-    }
-
-    switch (format) {
-        case FORMAT_BYTE_RGBA:         
-	    /* all RGB types are stored as RGBA */
-	    oglFormat = GL_RGBA;
-	    break;
-        case FORMAT_BYTE_RGB:         
-	    oglFormat = GL_RGB;
-	    break;
-
-        case FORMAT_BYTE_ABGR:         
-	    if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
-		oglFormat = GL_ABGR_EXT;
-	    }
-	    break;
-        case FORMAT_BYTE_BGR:         
-            oglFormat = GL_BGR;
-	    break;
-        case FORMAT_BYTE_LA: 
-	    /* all LA types are stored as LA8 */
-	    oglFormat = GL_LUMINANCE_ALPHA;
-	    break;
-        case FORMAT_BYTE_GRAY:
-        case FORMAT_USHORT_GRAY:	    
-            if (oglInternalFormat == GL_ALPHA) {
-	        oglFormat = GL_ALPHA;
-            } else  {
-	        oglFormat = GL_LUMINANCE;
-	    }
-            break;
-    }
-
-    /*
-      fprintf(stderr,"internalFormat = %x\n",internalFormat);
-      fprintf(stderr,"format = %x\n",format);
-      fprintf(stderr,"oglFormat = %x\n",oglFormat);
-      fprintf(stderr,"oglInternalFormat = %x\n",oglInternalFormat);
-      */
-    if (imageYup != NULL) {
-        if (format != FORMAT_USHORT_GRAY) {
-            byteData = (jbyte *)(*(table->GetPrimitiveArrayCritical))(env,
-                                                                      imageYup, 
-                                                                      NULL);
-        }
-        else { /* unsigned short */
-            shortData = (jshort *)(*(table->GetPrimitiveArrayCritical))(env,
-                                                                        imageYup, 
-                                                                        NULL);
-
-        }
-    } else {
-        byteData = NULL;
-        shortData = NULL;
-    }
-
-    if (format != FORMAT_USHORT_GRAY) {
-
-        ctxProperties->glTexImage3DEXT(GL_TEXTURE_3D, 
-                    level, oglInternalFormat, 
-                    width, height, depth, boundaryWidth, 
-                    oglFormat, GL_UNSIGNED_BYTE, 
-                    (GLvoid *)byteData);
+    /* Need to support INT, and NIO buffers -- Chien */
+    
+    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
+    
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+        imageObjPtr = (void *)(*(table->GetPrimitiveArrayCritical))(env, (jarray)data, NULL);        
     }
     else {
-        ctxProperties->glTexImage3DEXT(GL_TEXTURE_3D, 
-                    level, oglInternalFormat, 
-                    width, height, depth, boundaryWidth, 
-                    oglFormat, GL_UNSIGNED_SHORT, 
-                    (GLvoid *)shortData);
+	imageObjPtr = (void *)(*(table->GetDirectBufferAddress))(env, data);
     }
-    if (imageYup != NULL) {
-        if (format != FORMAT_USHORT_GRAY) {
-            (*(table->ReleasePrimitiveArrayCritical))(env, imageYup, byteData, 0);
-        } else { /* unsigned short */
-            (*(table->ReleasePrimitiveArrayCritical))(env, imageYup, shortData, 0);
+    
+    switch (textureFormat) {
+        case INTENSITY:
+	    internalFormat = GL_INTENSITY;
+	    break;
+        case LUMINANCE:
+	    internalFormat = GL_LUMINANCE;
+	    break;
+        case ALPHA:
+	    internalFormat = GL_ALPHA;
+	    break;
+        case LUMINANCE_ALPHA:
+	    internalFormat = GL_LUMINANCE_ALPHA;
+	    break;
+        case J3D_RGB: 
+	    internalFormat = GL_RGB;
+	    break;
+        case J3D_RGBA:
+	    internalFormat = GL_RGBA;
+	    break;
+        default:
+            throwAssert(env, "updateTexture3DImage : textureFormat illegal format");
+	    return;
+    }
 
+    
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_BYTE_BUFFER))  {
+	switch (imageFormat) {
+            /* GL_BGR */
+        case IMAGE_FORMAT_BYTE_BGR:         
+            format = GL_BGR;
+            break;
+        case IMAGE_FORMAT_BYTE_RGB:
+            format = GL_RGB;
+            break;
+            /* GL_ABGR_EXT */
+        case IMAGE_FORMAT_BYTE_ABGR:         
+            if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
+                format = GL_ABGR_EXT;
+            }
+            else {
+                throwAssert(env, "updateTexture3DImage : GL_ABGR_EXT format is unsupported");
+                return;
+           }
+            break;	
+        case IMAGE_FORMAT_BYTE_RGBA:
+            format = GL_RGBA;
+            break;
+        case IMAGE_FORMAT_BYTE_LA:
+	    /* all LA types are stored as LA8 */
+	    format = GL_LUMINANCE_ALPHA;
+	    break;
+        case IMAGE_FORMAT_BYTE_GRAY: 
+            if (internalFormat == GL_ALPHA) {
+	        format = GL_ALPHA;
+            } else  {
+	        format = GL_LUMINANCE;
+	    }
+            break;
+
+        case IMAGE_FORMAT_USHORT_GRAY:	    
+        case IMAGE_FORMAT_INT_BGR:         
+        case IMAGE_FORMAT_INT_RGB:
+        case IMAGE_FORMAT_INT_ARGB:         
+        default:
+            throwAssert(env, "updateTexture3DImage : imageFormat illegal format");
+            return;
         }
+	
+        ctxProperties->glTexImage3DEXT(GL_TEXTURE_3D, 
+				       level, internalFormat, 
+				       width, height, depth, boundaryWidth, 
+				       format, GL_UNSIGNED_BYTE, 
+				       imageObjPtr);
+	
+    }
+    else if((dataType == IMAGE_DATA_TYPE_INT_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_BUFFER)) {
+        switch (imageFormat) {
+            /* GL_BGR */
+        case IMAGE_FORMAT_INT_BGR: /* Assume XBGR format */
+            format = GL_RGBA;
+	    type = GL_UNSIGNED_INT_8_8_8_8_REV;
+	    forceAlphaToOne = GL_TRUE;
+            break;
+        case IMAGE_FORMAT_INT_RGB: /* Assume XRGB format */
+	    forceAlphaToOne = GL_TRUE;
+	    /* Fall through to next case */
+        case IMAGE_FORMAT_INT_ARGB:        
+            format = GL_BGRA;
+	    type = GL_UNSIGNED_INT_8_8_8_8_REV;
+            break;	
+        /* This method only supports 3 and 4 components formats and INT types. */
+        case IMAGE_FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_GRAY: 
+        case IMAGE_FORMAT_USHORT_GRAY:
+        case IMAGE_FORMAT_BYTE_BGR:
+        case IMAGE_FORMAT_BYTE_RGB:
+        case IMAGE_FORMAT_BYTE_RGBA:
+        case IMAGE_FORMAT_BYTE_ABGR:
+        default:
+            throwAssert(env, "updateTexture3DImage : imageFormat illegal format");
+            return;
+        }  
+
+	/* Force Alpha to 1.0 if needed */
+	if(forceAlphaToOne) {
+	    glPixelTransferf(GL_ALPHA_SCALE, 0.0f);
+	    glPixelTransferf(GL_ALPHA_BIAS, 1.0f);
+	}
+	
+	ctxProperties->glTexImage3DEXT(GL_TEXTURE_3D, 
+				       level, internalFormat, 
+				       width, height, depth, boundaryWidth, 
+				       format, type, imageObjPtr);
+
+	/* Restore Alpha scale and bias */
+	if(forceAlphaToOne) {
+	    glPixelTransferf(GL_ALPHA_SCALE, 1.0f);
+	    glPixelTransferf(GL_ALPHA_BIAS, 0.0f);
+	}
+    }
+    else {
+        throwAssert(env, "updateTexture3DImage : illegal image data type");
     }
 
-    /* No idea why we need following call. */
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+        (*(table->ReleasePrimitiveArrayCritical))(env, data, imageObjPtr, 0);
+    }
+
 }
 
 JNIEXPORT
@@ -3001,8 +3129,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
     jint xoffset,
     jint yoffset,
     jint zoffset,
-    jint internalFormat, 
-    jint format,
+    jint textureFormat, 
+    jint imageFormat,
     jint imgXOffset,
     jint imgYOffset,
     jint imgZOffset,
@@ -3011,134 +3139,180 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
     jint width, 
     jint height,
     jint depth,
-    jbyteArray image) {
+    jint dataType,
+    jobject data) {
  
-    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
-
-    GLenum oglFormat = 0, oglInternalFormat=0;
+    void *imageObjPtr;
+    GLenum format = 0, internalFormat = 0, type = 0;
     JNIEnv table = *env;
-    jbyte *byteData, *tmpByte;
-    jshort *shortData, *tmpShort;
+    GLboolean forceAlphaToOne = GL_FALSE;
+    jbyte *tmpByte;
+    jint  *tmpInt;
     jint numBytes = 0;
     jboolean pixelStore = JNI_FALSE;
 
-    switch (internalFormat) {
-        case INTENSITY:
-            oglInternalFormat = GL_INTENSITY;
-            break;
-        case LUMINANCE:
-            oglInternalFormat = GL_LUMINANCE;
-            break;
-        case ALPHA:
-            oglInternalFormat = GL_ALPHA;
-            break;
-        case LUMINANCE_ALPHA:
-            oglInternalFormat = GL_LUMINANCE_ALPHA;
-            break;
-        case J3D_RGB: 
-            oglInternalFormat = GL_RGB;
-            break;
-        case J3D_RGBA:
-            oglInternalFormat = GL_RGBA;
-            break;
+    /* Need to support INT, and NIO buffers -- Chien */
+
+    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+        imageObjPtr = (void *)(*(table->GetPrimitiveArrayCritical))(env, (jarray)data, NULL);        
+    }
+    else {
+	imageObjPtr = (void *)(*(table->GetDirectBufferAddress))(env, data);
     }
 
-    switch (format) {
-        case FORMAT_BYTE_RGBA:         
-            /* all RGB types are stored as RGBA */
-            oglFormat = GL_RGBA;
-            numBytes = 4;
-            break;
-        case FORMAT_BYTE_RGB:         
-            oglFormat = GL_RGB;
-            numBytes = 3;
-            break;
-
-        case FORMAT_BYTE_ABGR:         
-            if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
-                oglFormat = GL_ABGR_EXT;
-                numBytes = 4;
-            }
-            break;
-        case FORMAT_BYTE_BGR:         
-            oglFormat = GL_BGR;
-            numBytes = 3;
-            break;
-
-        case FORMAT_BYTE_LA: 
-            /* all LA types are stored as LA8 */
-            oglFormat = GL_LUMINANCE_ALPHA;
-            numBytes = 2;
-            break;
-        case FORMAT_BYTE_GRAY:
-            if (oglInternalFormat == GL_ALPHA) {
-                oglFormat = GL_ALPHA;
-            } else  {
-                oglFormat = GL_LUMINANCE;
-            }
-            numBytes = 1;
-        case FORMAT_USHORT_GRAY:	    
-           if (oglInternalFormat == GL_ALPHA) {
-                oglFormat = GL_ALPHA;
-            } else  {
-                oglFormat = GL_LUMINANCE;
-            }
-            numBytes = 2;
-            break;
-    }
-
-    /*
-    fprintf(stderr,"format = %x\n",format);
-    fprintf(stderr,"oglFormat = %x\n",oglFormat);
-    fprintf(stderr, "imgXOffset = %d\n",imgXOffset);
-    fprintf(stderr, "imgYOffset = %d\n",imgYOffset);
-    fprintf(stderr, "imgZOffset = %d\n",imgZOffset);
-    fprintf(stderr, "xoffset = %d\n",xoffset);
-    fprintf(stderr, "yoffset = %d\n",yoffset);
-    fprintf(stderr, "zoffset = %d\n",zoffset);
-    fprintf(stderr, "tilew = %d\n",tilew);
-    fprintf(stderr, "tileh = %d\n",tilew);
-    fprintf(stderr, "numBytes = %d\n",numBytes);
-    fprintf(stderr, "width = %d\n",width);
-    fprintf(stderr, "height = %d\n",height);
-    fprintf(stderr, "depth = %d\n",depth);
-    */
     if (imgXOffset > 0 || (width < tilew)) {
         pixelStore = JNI_TRUE;
         glPixelStorei(GL_UNPACK_ROW_LENGTH, tilew);
     }
 
-    if (format != FORMAT_USHORT_GRAY) {
-        byteData = (jbyte *)(*(table->GetPrimitiveArrayCritical))(env,
-                                image, NULL);
-
-        tmpByte = byteData +
-                       (tilew * tileh * imgZOffset +
-                        tilew * imgYOffset + imgXOffset) * numBytes;
-
-        ctxProperties->glTexSubImage3DEXT(
-                                GL_TEXTURE_3D,
-                                level, xoffset, yoffset, zoffset,
-                                width, height, depth,
-                                oglFormat, GL_UNSIGNED_BYTE,
-                                (GLvoid *)tmpByte);
-
-        (*(table->ReleasePrimitiveArrayCritical))(env, image, byteData, 0);	
-    } else { /* unsigned short */
-        shortData = (jshort *)(*(table->GetPrimitiveArrayCritical))(env,
-                                image, NULL);
-        tmpShort = (jshort*)((jbyte*)shortData+
-                             (tilew * tileh * imgZOffset +
-                              tilew * imgYOffset + imgXOffset)*numBytes);
-
-        ctxProperties->glTexSubImage3DEXT(
-                                GL_TEXTURE_3D,
-                                level, xoffset, yoffset, zoffset,
-                                width, height, depth,
-                                oglFormat, GL_UNSIGNED_SHORT,
-                                (GLvoid *)tmpShort);
-        (*(table->ReleasePrimitiveArrayCritical))(env, image, shortData, 0);
+    switch (textureFormat) {
+        case INTENSITY:
+	    internalFormat = GL_INTENSITY;
+	    break;
+        case LUMINANCE:
+	    internalFormat = GL_LUMINANCE;
+	    break;
+        case ALPHA:
+	    internalFormat = GL_ALPHA;
+	    break;
+        case LUMINANCE_ALPHA:
+	    internalFormat = GL_LUMINANCE_ALPHA;
+	    break;
+        case J3D_RGB: 
+	    internalFormat = GL_RGB;
+	    break;
+        case J3D_RGBA:
+	    internalFormat = GL_RGBA;
+	    break;
+        default:
+            throwAssert(env, "updateTexture3DSubImage : textureFormat illegal format");
+            break;
     }
+    
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_BYTE_BUFFER))  {
+	switch (imageFormat) {
+            /* GL_BGR */
+        case IMAGE_FORMAT_BYTE_BGR:         
+            format = GL_BGR;
+            numBytes = 3;
+            break;
+        case IMAGE_FORMAT_BYTE_RGB:
+            format = GL_RGB;
+            numBytes = 3;
+            break;
+            /* GL_ABGR_EXT */
+        case IMAGE_FORMAT_BYTE_ABGR:         
+            if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
+                format = GL_ABGR_EXT;
+		numBytes = 4;
+            }
+            else {
+                throwAssert(env, "updateTexture3DSubImage : GL_ABGR_EXT format is unsupported");
+            }
+            break;	
+        case IMAGE_FORMAT_BYTE_RGBA:
+            format = GL_RGBA;
+            numBytes = 4;
+            break;	
+        case IMAGE_FORMAT_BYTE_LA:
+	    /* all LA types are stored as LA8 */
+	    format = GL_LUMINANCE_ALPHA;
+            numBytes = 2;
+	    break;
+        case IMAGE_FORMAT_BYTE_GRAY: 
+            if (internalFormat == GL_ALPHA) {
+	        format = GL_ALPHA;
+                numBytes = 1;
+            } else  {
+	        format = GL_LUMINANCE;
+                numBytes = 1;
+	    }
+            break;
+
+        case IMAGE_FORMAT_USHORT_GRAY:	    
+        case IMAGE_FORMAT_INT_BGR:         
+        case IMAGE_FORMAT_INT_RGB:
+        case IMAGE_FORMAT_INT_ARGB:         
+        default:
+            throwAssert(env, "updateTexture3DSubImage : imageFormat illegal format");
+            break;
+        }
+
+        tmpByte = (jbyte*)imageObjPtr +
+	    (tilew * tileh * imgZOffset + tilew * imgYOffset + imgXOffset) *
+	    numBytes;
+	
+        ctxProperties->glTexSubImage3DEXT(GL_TEXTURE_3D,
+					  level, xoffset, yoffset, zoffset,
+					  width, height, depth,
+					  format, GL_UNSIGNED_BYTE,
+					  (GLvoid *)tmpByte);
+
+	
+    }
+    else if((dataType == IMAGE_DATA_TYPE_INT_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_BUFFER)) {
+	switch (imageFormat) {
+            /* GL_BGR */
+        case IMAGE_FORMAT_INT_BGR: /* Assume XBGR format */
+            format = GL_RGBA;
+	    type = GL_UNSIGNED_INT_8_8_8_8_REV;
+	    forceAlphaToOne = GL_TRUE;
+            break;
+        case IMAGE_FORMAT_INT_RGB: /* Assume XRGB format */
+	    forceAlphaToOne = GL_TRUE;
+	    /* Fall through to next case */
+        case IMAGE_FORMAT_INT_ARGB:        
+            format = GL_BGRA;
+	    type = GL_UNSIGNED_INT_8_8_8_8_REV;
+            break;	
+        /* This method only supports 3 and 4 components formats and INT types. */
+        case IMAGE_FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_GRAY: 
+        case IMAGE_FORMAT_USHORT_GRAY:
+        case IMAGE_FORMAT_BYTE_BGR:
+        case IMAGE_FORMAT_BYTE_RGB:
+        case IMAGE_FORMAT_BYTE_RGBA:
+        case IMAGE_FORMAT_BYTE_ABGR:
+        default:
+           throwAssert(env, "updateTexture3DSubImage : imageFormat illegal format");
+            break;
+        }  
+
+	numBytes = 4;
+	
+        tmpInt = (jint*)((jbyte*)imageObjPtr +
+			 (tilew * tileh * imgZOffset +
+			  tilew * imgYOffset + imgXOffset)*numBytes);
+
+	/* Force Alpha to 1.0 if needed */
+	if(forceAlphaToOne) {
+	    glPixelTransferf(GL_ALPHA_SCALE, 0.0f);
+	    glPixelTransferf(GL_ALPHA_BIAS, 1.0f);
+	}
+
+	ctxProperties->glTexSubImage3DEXT(GL_TEXTURE_3D,
+					  level, xoffset, yoffset, zoffset,
+					  width, height, depth,
+					  format, type, 
+					  (GLvoid *)tmpInt);
+
+	/* Restore Alpha scale and bias */
+	if(forceAlphaToOne) {
+	    glPixelTransferf(GL_ALPHA_SCALE, 1.0f);
+	    glPixelTransferf(GL_ALPHA_BIAS, 0.0f);
+	}
+    }
+    else {
+        throwAssert(env, "updateTexture3DImage : illegal image data type");
+        return;
+   }
+
+
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+        (*(table->ReleasePrimitiveArrayCritical))(env, data, imageObjPtr, 0);
+    }
+    
     if (pixelStore) {
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
     }
@@ -3297,7 +3471,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapAnisotropic
                             GL_TEXTURE_CUBE_MAP, 
                             degree);
 }
-
+  
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapSubImage(
     JNIEnv *env, 
@@ -3307,20 +3481,21 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapSubImage(
     jint level,
     jint xoffset,
     jint yoffset,
-    jint internalFormat, 
-    jint format,
+    jint textureFormat, 
+    jint imageFormat,
     jint imgXOffset,
     jint imgYOffset,
     jint tilew,
     jint width, 
     jint height,
-    jbyteArray image) {
- 
+    jint dataType,
+    jobject data)
+{ 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     updateTexture2DSubImage(env, ctxProperties, _gl_textureCubeMapFace[face],
-				level, xoffset, yoffset, internalFormat,
-				format, imgXOffset, imgYOffset, tilew,
-				width, height, image);
+			    level, xoffset, yoffset, textureFormat,
+			    imageFormat, imgXOffset, imgYOffset, tilew,
+			    width, height, dataType, data);
 }
 
 
@@ -3333,19 +3508,19 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapImage(
     jint face,
     jint numLevels,
     jint level,
-    jint internalFormat, 
-    jint format, 
+    jint textureFormat, 
+    jint imageFormat, 
     jint width, 
     jint height, 
     jint boundaryWidth,
-    jbyteArray imageYup)
+    jint dataType,
+    jobject data)
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     updateTexture2DImage(env, ctxProperties, _gl_textureCubeMapFace[face],
-				numLevels, level, internalFormat, format,
-				width, height, boundaryWidth, imageYup);
+			 numLevels, level, textureFormat, imageFormat,
+			 width, height, boundaryWidth, dataType, data);
 }
-
 
 JNIEXPORT
 jboolean JNICALL Java_javax_media_j3d_NativePipeline_decal1stChildSetup(
@@ -3635,14 +3810,4 @@ createShaderError(
 			  detailMsgString);
 
     return shaderError;
-}
-
-
-void
-throwAssert(JNIEnv *env, char *str)
-{
-    jclass rte;
-    if ((rte = (*env)->FindClass(env, "java/lang/AssertionError")) != NULL) {
-	(*env)->ThrowNew(env, rte, str);
-    }
 }

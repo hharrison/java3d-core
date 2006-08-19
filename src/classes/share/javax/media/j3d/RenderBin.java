@@ -701,23 +701,31 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 //System.out.println("newNodeComponentlist.size= " + size);
 	    Canvas3D canvases[] = view.getCanvases();
 	    for (i = 0; i < size; i++) {
-		// Evaluate the nodeComponentList for all the canvases
-		ImageComponentRetained nc = (ImageComponentRetained)newNodeComponentList.get(i);
-		// Only evalaute extension for by-ref Images
-		if (nc.isByReference()) {
-		    nc.geomLock.getLock();
-		    for (j = 0; j <canvases.length; j++) {
-		        // If the context is null, then the extension
-		        // will be evaluated during context creation in
-		        // the renderer
-		        if (canvases[j].ctx != null) {
-			    nc.evaluateExtensions(canvases[j].extensionsSupported);
-		        }
-		    }
-		    nc.geomLock.unLock();
-		}
-		nodeComponentList.add(nc);
-	    }
+                // Evaluate the nodeComponentList for all the canvases
+                ImageComponent2DRetained nc = (ImageComponent2DRetained)newNodeComponentList.get(i);
+                if (nc.isByReference()) {
+                    nc.geomLock.getLock();
+                    for (j = 0; j <canvases.length; j++) {
+                        // If the context is null, then the extension
+                        // will be evaluated during context creation in
+                        // the renderer
+                        if (canvases[j].ctx != null) {
+                            nc.evaluateExtensions(canvases[j].extensionsSupported);
+                        }
+                    }
+                    nc.geomLock.unLock();
+                } else {
+                    for (j = 0; j <canvases.length; j++) {
+                        // If the context is null, then the extension
+                        // will be evaluated during context creation in
+                        // the renderer
+                        if (canvases[j].ctx != null) {
+                            nc.evaluateExtensions(canvases[j].extensionsSupported);
+                        }
+                    }
+                }
+                nodeComponentList.add(nc);
+            }
 	}
 	
 	size = removeNodeComponentList.size(); 
@@ -734,9 +742,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
             Canvas3D canvases[] = view.getCanvases();
             for (i = 0; i < size; i++) {
                 // Evaluate the nodeComponentList for all the canvases
-                ImageComponentRetained nc = 
-			(ImageComponentRetained)dirtyNodeComponentList.get(i);
-                // Only evalaute extension for by-ref Images
+                ImageComponent2DRetained nc = 
+			(ImageComponent2DRetained)dirtyNodeComponentList.get(i);
                 if (nc.isByReference()) {
                     nc.geomLock.getLock();
                     for (j = 0; j <canvases.length; j++) {
@@ -749,6 +756,16 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
                         }
                     }
                     nc.geomLock.unLock();
+                }
+                else {
+		    for (j = 0; j <canvases.length; j++) {
+		        // If the context is null, then the extension
+		        // will be evaluated during context creation in
+		        // the renderer
+		        if (canvases[j].ctx != null) {
+			    nc.evaluateExtensions(canvases[j].extensionsSupported);
+		        }
+		    }                    
                 }
             }
 	}

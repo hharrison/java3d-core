@@ -74,8 +74,10 @@ class TextureCubeMapRetained extends TextureRetained {
 	    }
 	}
 
-	((ImageComponent2DRetained)image.retained).setTextureRef();
-
+        /*  Don't think this is needed.   --- Chien.
+         ((ImageComponent2DRetained)image.retained).setTextureRef();
+        */
+        
 	if (image != null) {
 	    this.images[face][level] = (ImageComponentRetained)image.retained;
 	} else {
@@ -100,12 +102,12 @@ class TextureCubeMapRetained extends TextureRetained {
 	    if (image != null && level < maxLevels) {
 		ImageComponentRetained img= (ImageComponentRetained)image.retained;
 		if (img.isByReference()) {
-		    if (img.bImage[0] == null) {
+		    if (img.getRefImage(0) == null) {
 			enable = false;
 		    }
 		}
 		else {
-		    if (img.imageYup == null) {
+		    if (img.getImageData().get() == null) {
 			enable = false;
 		    }
 		}
@@ -150,12 +152,12 @@ class TextureCubeMapRetained extends TextureRetained {
 		if (images[i] != null) {
 		    ImageComponentRetained img= (ImageComponentRetained)images[i].retained;
 		    if (img.isByReference()) {
-			if (img.bImage[0] == null) {
+			if (img.getRefImage(0) == null) {
 			    enable = false;
 			}
 		    }
 		    else {
-			if (img.imageYup == null) {
+			if (img.getImageData().get() == null) {
 			    enable = false;
 			}
 		    }
@@ -282,11 +284,18 @@ class TextureCubeMapRetained extends TextureRetained {
      * mipmapping when level 0 is not the base level
      */
     void updateTextureDimensions(Canvas3D cv) {
-	for (int i = 0; i < 6; i++) {
-            updateTextureImage(cv, i, maxLevels, 0,
-                format, ImageComponentRetained.BYTE_RGBA,
-                width, height, boundaryWidth, null);
-	}
+        if(images[0][0] != null) {
+            // All faces should have the same image format and type.
+            int imageFormat = images[0][0].getImageFormatTypeIntValue();
+            int imageType = images[0][0].getImageDataTypeIntValue();
+            
+            for (int i = 0; i < 6; i++) {
+                updateTextureImage(cv, i, maxLevels, 0,
+                        format, imageFormat,
+                        width, height, boundaryWidth,
+                        imageType, null);               
+            }
+        }
     }
 
 
@@ -294,31 +303,33 @@ class TextureCubeMapRetained extends TextureRetained {
     // This is just a wrapper of the native method.
     void updateTextureImage(Canvas3D cv,
             int face, int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
-            int boundaryWidth,
-            byte[] imageData) {
+            int boundaryWidth, int imageDataType,
+            Object imageData) {
 
         Pipeline.getPipeline().updateTextureCubeMapImage(cv.ctx,
                 face, numLevels, level,
-                internalFormat, storedFormat,
+                textureFormat, imageFormat,
                 width, height,
-                boundaryWidth, imageData);
+                boundaryWidth, imageDataType, imageData);
     }
 
     // This is just a wrapper of the native method.
     void updateTextureSubImage(Canvas3D cv,
             int face, int level,
             int xoffset, int yoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData) {
+            int imageDataType, Object imageData) {
 
         Pipeline.getPipeline().updateTextureCubeMapSubImage(cv.ctx,
                 face, level, xoffset, yoffset,
-                internalFormat, storedFormat,
+                textureFormat, imageFormat,
                 imgXOffset, imgYOffset,
-                tilew, width, height, imageData);
+                tilew, width, height,
+                imageDataType, imageData);
+
     }
 }

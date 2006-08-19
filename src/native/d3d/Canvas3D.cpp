@@ -236,9 +236,14 @@ jboolean JNICALL Java_javax_media_j3d_NativePipeline_initTexturemapping(
     Java_javax_media_j3d_NativePipeline_bindTexture2D(
 	 env, texture, ctx, objectId, TRUE);
 
-     Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
-         env, texture, ctx, 1, 0, J3D_RGBA, 0, texWidth, texHeight, 0, NULL);
-     
+    /* TODO : This need to rewrite -- Chien.  */
+    /*
+      Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
+      env, texture, ctx, 1, 0, J3D_RGBA, 0, texWidth, texHeight, 0, NULL);
+    */     
+    Java_javax_media_j3d_NativePipeline_updateTexture2DImage(env, texture, ctx, 1, 0, 
+							     J3D_RGBA, 0, texWidth, 
+							     texHeight, 0, 0, NULL);
      return (d3dCtx->textureTable[objectId] != NULL);
 }
 
@@ -268,10 +273,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
     Java_javax_media_j3d_NativePipeline_bindTexture2D(
 	 env, texture, ctx, objectId, TRUE);
 
-
+    // TODO --- Need to re-write.  Chien
     Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
          env, texture, ctx, 0, minX, minY, J3D_RGBA, format,
-	 minX, minY, rasWidth, maxX-minX, maxY-minY, imageYdown);
+	 minX, minY, rasWidth, maxX-minX, maxY-minY, IMAGE_DATA_TYPE_BYTE_ARRAY,
+	 imageYdown);
 
     LPDIRECT3DTEXTURE9 surf = d3dCtx->textureTable[objectId];
 
@@ -1140,13 +1146,17 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
     jobject cv,
     jlong ctx,
     jint format,
+    jint dataType,
+    jobject data,
     jint width,
     jint height)
 {
+    void *imageObjPtr;
+
     GetDevice();
 
-    if (format == FORMAT_USHORT_GRAY) {
-	printf("[Java 3D] readOffScreenBuffer not support FORMAT_USHORT_GRAY\n");
+    if (format == IMAGE_FORMAT_USHORT_GRAY) {
+	printf("[Java 3D] readOffScreenBuffer not support IMAGE_FORMAT_USHORT_GRAY\n");
 	return;
     }
 
@@ -1160,18 +1170,28 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
 	}
     }
 
-    jclass cv_class =  env->GetObjectClass(cv);
+    /* TODO : Need to re-write --- Chien. */
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+	imageObjPtr = (void *)env->GetPrimitiveArrayCritical((jarray)data, NULL); 
 
-    jfieldID byteData_field = env->GetFieldID(cv_class, "byteBuffer", "[B");
-    jbyteArray byteData_array = (jbyteArray) env->GetObjectField(cv, byteData_field);
-    jbyte *byteData = (jbyte *) env->GetPrimitiveArrayCritical(
-					       byteData_array, NULL);
+	/* TODO : Can't assume it is a byte array */
+	copyDataFromSurface(format, 0, 0, width, height, (jbyte *)imageObjPtr, 
+			    d3dCtx->backSurface);
 
-    copyDataFromSurface(format, 0, 0, width, height, byteData, 
-			d3dCtx->backSurface);
+       
+    }
+    else {
+       imageObjPtr = (void *)env->GetDirectBufferAddress(data);
 
-    env->ReleasePrimitiveArrayCritical(byteData_array, byteData, 0);
-    return;
+       /* TODO --- Do something .... */
+    }
+
+
+
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+        env->ReleasePrimitiveArrayCritical((jarray)data, imageObjPtr, 0);
+    }
+   return;
 }
 
 

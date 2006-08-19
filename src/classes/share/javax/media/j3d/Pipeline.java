@@ -972,18 +972,18 @@ abstract class Pipeline {
 
     abstract void updateTexture2DImage(Context ctx,
             int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            byte[] imageData);
+            int imageDataType, Object data);
 
     abstract void updateTexture2DSubImage(Context ctx,
             int level, int xoffset, int yoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData);
-
+            int imageDataType, Object data);
+    
     abstract void updateTexture2DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod);
@@ -1027,19 +1027,19 @@ abstract class Pipeline {
 
     abstract void updateTexture3DImage(Context ctx,
             int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height, int depth,
             int boundaryWidth,
-            byte[] imageData);
+            int imageDataType, Object imageData);
 
     abstract void updateTexture3DSubImage(Context ctx,
             int level,
             int xoffset, int yoffset, int zoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXoffset, int imgYoffset, int imgZoffset,
             int tilew, int tileh,
             int width, int height, int depth,
-            byte[] imageData);
+            int imageDataType, Object imageData);
 
     abstract void updateTexture3DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
@@ -1079,18 +1079,18 @@ abstract class Pipeline {
 
     abstract void updateTextureCubeMapImage(Context ctx,
             int face, int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            byte[] imageData);
-
+            int imageDataType, Object imageData);
+    
     abstract void updateTextureCubeMapSubImage(Context ctx,
             int face, int level, int xoffset, int yoffset,
-            int internalFormat,int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData);
-
+            int imageDataType, Object imageData);
+    
     abstract void updateTextureCubeMapLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod);
@@ -1173,7 +1173,7 @@ abstract class Pipeline {
     abstract void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, Drawable drawable);
 
     // This is the native for reading the image from the offscreen buffer
-    abstract void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int width, int height);
+    abstract void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int type, Object data, int width, int height);
 
     // The native method for swapBuffers
     abstract int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable);
@@ -1310,10 +1310,6 @@ abstract class Pipeline {
         return false;
     }
 
-    // TODO : No longer needed. Will do a native cleanup in next round of texture optimization putback. -- Chien
-    abstract void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,
-            ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown);
-    
     abstract void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,

@@ -1215,6 +1215,10 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createNewContext(
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_COLOR_MATERIAL);
     glReadBuffer(GL_FRONT);
+
+    /* Java 3D images are aligned to 1 byte */
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
     return ((jlong)ctxInfo);
 }
 
@@ -1456,7 +1460,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
 
     /* glGetIntegerv(GL_TEXTURE_BINDING_2D,&binding); */
     glDepthMask(GL_FALSE);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glBindTexture(GL_TEXTURE_2D, objectId);
     /* set up texture parameter */
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -1492,10 +1495,10 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
 	gltype = GL_ABGR_EXT;
     } else { 
 	switch (format) {
-	case FORMAT_BYTE_RGBA:
+	case IMAGE_FORMAT_BYTE_RGBA:
 	    gltype = GL_RGBA;
 	    break;
-	case FORMAT_BYTE_RGB:
+	case IMAGE_FORMAT_BYTE_RGB:
 	    gltype = GL_RGB;
 	    break;
 	}
@@ -1548,210 +1551,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_NativePipeline_clear(
-    JNIEnv *env, 
-    jobject obj,
-    jlong ctxInfo,
-    jfloat r, 
-    jfloat g, 
-    jfloat b,
-    jint winWidth,
-    jint winHeight, 
-    jobject pa2d,
-    jint imageScaleMode, 
-    jbyteArray pixels_obj)
-
-{
-    jclass pa2d_class;
-    jfieldID format_field, width_field, height_field;
-    int format, width, height;
-    GLubyte * pixels;
-    JNIEnv table;
-    GLenum gltype;
-    float xzoom, yzoom, zoom;
-    float rasterX, rasterY;
-    int repeatX, repeatY, i, j;
-    int row_length, skip_pixels, skip_rows, subwidth, subheight; 
-    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
-    jlong ctx = ctxProperties->context;
-    table = *env;
-   
-#ifdef VERBOSE
-    fprintf(stderr, "Canvas3D.clear()\n");
-#endif
-    
-    if(!pa2d) {
-	glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
-	glClear(GL_COLOR_BUFFER_BIT); 
-    }
-    else {
-	/* Do a cool image blit */
-	pa2d_class = (jclass) (*(table->GetObjectClass))(env, pa2d);
-	format_field = (jfieldID) (*(table->GetFieldID))(env, pa2d_class, 
-							 "storedYdownFormat", "I");
-	width_field = (jfieldID) (*(table->GetFieldID))(env, pa2d_class, 
-							"width", "I");
-	height_field = (jfieldID) (*(table->GetFieldID))(env, pa2d_class, 
-							 "height", "I");
-
-	format = (int) (*(table->GetIntField))(env, pa2d, format_field);
-	width = (int) (*(table->GetIntField))(env, pa2d, width_field);
-	height = (int) (*(table->GetIntField))(env, pa2d, height_field);
-
-	pixels = (GLubyte *) (*(table->GetPrimitiveArrayCritical))(env, 
-								   pixels_obj, NULL);
-
-	/* Temporarily disable fragment and most 3D operations */
-	/* XXXX: the GL_TEXTURE_BIT may not be necessary */
-	glPushAttrib(GL_ENABLE_BIT|GL_TEXTURE_BIT); 
-	disableAttribFor2D(ctxProperties);
-
-	/* loaded identity modelview and projection matrix */
-	glMatrixMode(GL_PROJECTION); 
-	glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW); 
-	glLoadIdentity();
-	
-	switch (format) {
-        case FORMAT_BYTE_RGBA:
-            gltype = GL_RGBA;
-            break;
-        case FORMAT_BYTE_RGB:
-            gltype = GL_RGB;
-            break;
-	    
-        case FORMAT_BYTE_ABGR:         
-	    if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
-		gltype = GL_ABGR_EXT;
-	    }
-	    break;
-	    
-        case FORMAT_BYTE_BGR:         
-            gltype = GL_BGR;
-	    break;
-	    
-        case FORMAT_BYTE_LA:
-            gltype = GL_LUMINANCE_ALPHA;
-            break;
-        case FORMAT_BYTE_GRAY:
-        case FORMAT_USHORT_GRAY:	    
-	default:
-	    throwAssert(env, "illegal format");
-            break;
-        }
-	
-	/* start from upper left corner */
-	glRasterPos3f(-1.0, 1.0, 0.0);
-	
-	/* setup the pixel zoom */
-	xzoom = (float)winWidth/width;
-	yzoom = (float)winHeight/height;
-	switch(imageScaleMode){
-	case javax_media_j3d_Background_SCALE_NONE:
-	     if(xzoom > 1.0f || yzoom > 1.0f)
-		{
-		/* else don't need to clear the background with background color */
-		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
-		glClear(GL_COLOR_BUFFER_BIT); 
-	    }
-	    glPixelZoom(1.0, -1.0);
-	    glDrawPixels(width, height, gltype, GL_UNSIGNED_BYTE,
-			 pixels);
-
-	    break;
-	case javax_media_j3d_Background_SCALE_FIT_MIN:
-	    if(xzoom != yzoom ) {
-		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
-		glClear(GL_COLOR_BUFFER_BIT); 
-	    }
-	    zoom = xzoom < yzoom? xzoom:yzoom;
-	    glPixelZoom(zoom, -zoom);
-	    glDrawPixels(width, height, gltype, GL_UNSIGNED_BYTE,
-			 pixels);
-
-	    break;
-	case javax_media_j3d_Background_SCALE_FIT_MAX:
-	    zoom = xzoom > yzoom? xzoom:yzoom;
-	    glPixelZoom(zoom, -zoom);
-	    glDrawPixels(width, height, gltype, GL_UNSIGNED_BYTE,
-			 pixels);
-
-	    break;
-	case javax_media_j3d_Background_SCALE_FIT_ALL:
-	    glPixelZoom(xzoom, -yzoom);
-	    glDrawPixels(width, height, gltype, GL_UNSIGNED_BYTE,
-			 pixels);
-	    break;
-	case javax_media_j3d_Background_SCALE_REPEAT:	    
-	    glPixelZoom(1.0, -1.0);
-	    /* get those raster positions */
-	    repeatX = winWidth/width;
-	    if(repeatX * width < winWidth)
-		repeatX++;
-	    repeatY = winHeight/height;
-	    if(repeatY * height < winHeight)
-		repeatY++;
-	    for(i = 0; i < repeatX; i++)
-		for(j = 0; j < repeatY; j++) {
-		    rasterX =  -1.0f + (float)width/winWidth * i * 2;
-		    rasterY =  1.0f - (float)height/winHeight * j * 2;
-		    glRasterPos3f(rasterX, rasterY, 0.0);
-		    glDrawPixels(width, height, gltype, GL_UNSIGNED_BYTE,
-			 pixels);
-		}
-	    break;
-	        
-	case javax_media_j3d_Background_SCALE_NONE_CENTER:
-	    if(xzoom > 1.0f || yzoom > 1.0f){
-		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
-		glClear(GL_COLOR_BUFFER_BIT); 
-	    }
-	    if(xzoom >= 1.0f){
-		rasterX = -(float)width/winWidth;
-		subwidth = width; 
-	    }
-	    else {
-		rasterX = -1.0;
-		row_length = width;
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, row_length);
-		skip_pixels = (width-winWidth)/2;
-		glPixelStorei(GL_UNPACK_SKIP_PIXELS, skip_pixels); 
-		subwidth = winWidth;
-	    }
-	    if(yzoom >= 1.0f){
-		rasterY = (float)height/winHeight;
-		subheight = height; 
-	    }
-	    else {
-		rasterY = 1.0f;
-		skip_rows = (height-winHeight)/2;
-		glPixelStorei(GL_UNPACK_SKIP_ROWS, skip_rows);
-		subheight = winHeight; 
-	    } 
-	    glRasterPos3f(rasterX, rasterY, 0.0);
-	    glPixelZoom(1.0, -1.0);
-	    glDrawPixels(subwidth, subheight, gltype, GL_UNSIGNED_BYTE,
-			 pixels);
-	    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-	    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-	    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-	    break;
-	}
-
-	/* Restore attributes */
-	glPopAttrib();
-		
-	(*(table->ReleasePrimitiveArrayCritical))(env, pixels_obj, 
-						  (jbyte *)pixels, 0);
-    }
-    /* Java 3D always clears the Z-buffer */
-    glPushAttrib(GL_DEPTH_BUFFER_BIT);
-    glDepthMask(GL_TRUE);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    glPopAttrib();
-}
-
-JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(JNIEnv *env,
 							jobject obj,
 							jlong ctxInfo,
@@ -1783,21 +1582,23 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(JNIEnv *env,
     jlong ctx = ctxProperties->context;
     
     table = *env; 
-
+    
     /* update = 1; */ 
     
 #ifdef VERBOSE 
     fprintf(stderr, "Canvas3D.textureclear()\n");  
 #endif 
-    if(!pa2d){
+    /*    if(!pa2d){ */
+    if(GL_TRUE) {  /* TODO ---- Chien */
 	glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue); 
 	glClear(GL_COLOR_BUFFER_BIT); 
-    }
+		      }
     /* glPushAttrib(GL_DEPTH_BUFFER_BIT); */
-    if (pa2d) { 
+    /* if (pa2d) {  */
+    if(GL_FALSE) { /* TODO ---- Chien */
 	/* Do a cool image blit */ 
 	pa2d_class = (jclass) (*(table->GetObjectClass))(env, pa2d);
-
+	
 	pixels_field = (jfieldID) (*(table->GetFieldID))(env, pa2d_class, 
 							 "imageYup", "[B"); 
 	format_field = (jfieldID) (*(table->GetFieldID))(env, pa2d_class,  
@@ -1832,7 +1633,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(JNIEnv *env,
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	glDepthMask(GL_FALSE);  
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); 
 	glBindTexture(GL_TEXTURE_2D, objectId);
 
 	/* set up texture parameter */
@@ -1851,13 +1651,13 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(JNIEnv *env,
 	
 	 if(update){
 	    switch (format) { 
-	    case FORMAT_BYTE_RGBA: 
+	    case IMAGE_FORMAT_BYTE_RGBA: 
 		gltype = GL_RGBA;
 #ifdef VERBOSE
 		fprintf(stderr, "FORMAT_BYTE_RGBA\n");
 #endif
 		break; 
-	    case FORMAT_BYTE_RGB: 
+	    case IMAGE_FORMAT_BYTE_RGB: 
 		gltype = GL_RGB;
 #ifdef VERBOSE
 		fprintf(stderr, "FORMAT_BYTE_RGB\n");
@@ -1865,23 +1665,23 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(JNIEnv *env,
 		break; 
 
 		/* GL_ABGR_EXT */
-	    case FORMAT_BYTE_ABGR:           
+	    case IMAGE_FORMAT_BYTE_ABGR:           
 		if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */  
 		    gltype = GL_ABGR_EXT;  
 		}  
 		break;
 
             /* GL_BGR */
-            case FORMAT_BYTE_BGR:
+            case IMAGE_FORMAT_BYTE_BGR:
                 gltype = GL_BGR;
                 break;
 
-	    case FORMAT_BYTE_LA:  
+	    case IMAGE_FORMAT_BYTE_LA:  
 		gltype = GL_LUMINANCE_ALPHA;  
 		break;  
 
-	    case FORMAT_BYTE_GRAY:  
-	    case FORMAT_USHORT_GRAY:	       
+	    case IMAGE_FORMAT_BYTE_GRAY:  
+	    case IMAGE_FORMAT_USHORT_GRAY:	       
 	    default:
 		throwAssert(env, "illegal format");
 		break;  
@@ -2786,7 +2586,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_destroyOffScreenBuffer(
 #endif /* WIN32 */
 }
 
-
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
     JNIEnv *env,
@@ -2794,67 +2593,110 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
     jobject cv,
     jlong ctxInfo,    
     jint format,
+    jint dataType,
+    jobject data,
     jint width,
     jint height)
 {
     JNIEnv table = *env;
-    jclass cv_class;
-    jfieldID byteData_field;
-    jbyteArray byteData_array;
-    jbyte *byteData;
     int type;
-    
+
+    void *imageObjPtr;
+
+    /* Need to support INT, and NIO buffers -- Chien */
+
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
     jlong ctx = ctxProperties->context;
 
     glPixelStorei(GL_PACK_ROW_LENGTH, width);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
-    cv_class =  (jclass) (*(table->GetObjectClass))(env, cv);
-    byteData_field = (jfieldID) (*(table->GetFieldID))(env, cv_class,
-                                        "byteBuffer", "[B");
-    byteData_array = (jbyteArray)(*(table->GetObjectField))(env, cv,
-                                        byteData_field);
-    byteData = (jbyte *)(*(table->GetPrimitiveArrayCritical))(env,
-                                        byteData_array, NULL);
-
-       
-    switch (format) {
-    case FORMAT_BYTE_RGBA:
-	type = GL_RGBA;
-	break;
-    case FORMAT_BYTE_RGB:
-	type = GL_RGB;
-	break;
-	
-	/* GL_ABGR_EXT */
-    case FORMAT_BYTE_ABGR:         
-	if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
-	    type = GL_ABGR_EXT;
-	}
-	break;
-
-    /* GL_BGR */
-    case FORMAT_BYTE_BGR:         
-        type = GL_BGR;
-	break;
-	
-    case FORMAT_BYTE_LA:
-	type = GL_LUMINANCE_ALPHA;
-	break;
-
-    case FORMAT_BYTE_GRAY:
-    case FORMAT_USHORT_GRAY:	    
-    default:
-	throwAssert(env, "illegal format");
-	break;
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+        imageObjPtr = (void *)(*(table->GetPrimitiveArrayCritical))(env, (jarray)data, NULL);        
     }
-  
+    else {
+       imageObjPtr = (void *)(*(table->GetDirectBufferAddress))(env, data);
+    }
 
-    glReadPixels(0, 0, width, height, type, GL_UNSIGNED_BYTE, byteData);
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_BYTE_BUFFER))  {
+        switch (format) {
+            /* GL_BGR */
+        case IMAGE_FORMAT_BYTE_BGR:         
+            type = GL_BGR;
+            break;
+        case IMAGE_FORMAT_BYTE_RGB:
+            type = GL_RGB;
+            break;
+            /* GL_ABGR_EXT */
+        case IMAGE_FORMAT_BYTE_ABGR:         
+            if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
+                type = GL_ABGR_EXT;
+            }
+            else {
+                throwAssert(env, "GL_ABGR_EXT format is unsupported");
+                return;
+            }
+            break;	
+        case IMAGE_FORMAT_BYTE_RGBA:
+            type = GL_RGBA;
+            break;	
 
-    (*(table->ReleasePrimitiveArrayCritical))(env, byteData_array,
-                byteData, 0);
+        /* This method only supports 3 and 4 components formats and BYTE types. */
+        case IMAGE_FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_GRAY: 
+        case IMAGE_FORMAT_USHORT_GRAY:	    
+        case IMAGE_FORMAT_INT_BGR:         
+        case IMAGE_FORMAT_INT_RGB:
+        case IMAGE_FORMAT_INT_ARGB:         
+        default:
+            throwAssert(env, "illegal format");
+            return;
+        }
+
+        glReadPixels(0, 0, width, height, type, GL_UNSIGNED_BYTE, imageObjPtr);
+
+    }
+    else if((dataType == IMAGE_DATA_TYPE_INT_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_BUFFER)) {
+        switch (format) {
+            /* GL_BGR */
+        case IMAGE_FORMAT_INT_BGR:         
+            type = GL_BGR;
+            break;
+        case IMAGE_FORMAT_INT_RGB:
+            type = GL_RGB;
+            break;
+        case IMAGE_FORMAT_INT_ARGB:        
+            type = GL_BGRA;
+            break;	
+        /* This method only supports 3 and 4 components formats and INT types. */
+        case IMAGE_FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_GRAY: 
+        case IMAGE_FORMAT_USHORT_GRAY:
+        case IMAGE_FORMAT_BYTE_BGR:
+        case IMAGE_FORMAT_BYTE_RGB:
+        case IMAGE_FORMAT_BYTE_RGBA:
+        case IMAGE_FORMAT_BYTE_ABGR:
+        default:
+            throwAssert(env, "illegal format");
+            return;
+        }  
+      
+        if(format == IMAGE_FORMAT_INT_ARGB) {
+            glReadPixels(0, 0, width, height, type, GL_UNSIGNED_INT_8_8_8_8_REV, imageObjPtr);
+        }
+        else {
+            glReadPixels(0, 0, width, height, type, GL_UNSIGNED_INT_8_8_8_8, imageObjPtr);
+        }
+
+    }
+    else {
+        throwAssert(env, "illegal image data type");
+    }
+
+    if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
+        (*(table->ReleasePrimitiveArrayCritical))(env, data, imageObjPtr, 0);
+    }
+
 }
 
 static void

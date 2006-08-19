@@ -246,13 +246,21 @@
 
 
 /* now the imagecomponent formats are reduced the ones below */
-#define FORMAT_BYTE_RGBA    javax_media_j3d_ImageComponentRetained_BYTE_RGBA
-#define FORMAT_BYTE_ABGR    javax_media_j3d_ImageComponentRetained_BYTE_ABGR
-#define FORMAT_BYTE_GRAY    javax_media_j3d_ImageComponentRetained_BYTE_GRAY
-#define FORMAT_USHORT_GRAY  javax_media_j3d_ImageComponentRetained_USHORT_GRAY
-#define FORMAT_BYTE_LA      javax_media_j3d_ImageComponentRetained_BYTE_LA
-#define FORMAT_BYTE_BGR     javax_media_j3d_ImageComponentRetained_BYTE_BGR
-#define FORMAT_BYTE_RGB     javax_media_j3d_ImageComponentRetained_BYTE_RGB
+#define IMAGE_FORMAT_BYTE_BGR     javax_media_j3d_ImageComponentRetained_TYPE_BYTE_BGR
+#define IMAGE_FORMAT_BYTE_RGB     javax_media_j3d_ImageComponentRetained_TYPE_BYTE_RGB
+#define IMAGE_FORMAT_BYTE_ABGR    javax_media_j3d_ImageComponentRetained_TYPE_BYTE_ABGR
+#define IMAGE_FORMAT_BYTE_RGBA    javax_media_j3d_ImageComponentRetained_TYPE_BYTE_RGBA
+#define IMAGE_FORMAT_BYTE_LA      javax_media_j3d_ImageComponentRetained_TYPE_BYTE_LA
+#define IMAGE_FORMAT_BYTE_GRAY    javax_media_j3d_ImageComponentRetained_TYPE_BYTE_GRAY
+#define IMAGE_FORMAT_USHORT_GRAY  javax_media_j3d_ImageComponentRetained_TYPE_USHORT_GRAY
+#define IMAGE_FORMAT_INT_BGR      javax_media_j3d_ImageComponentRetained_TYPE_INT_BGR
+#define IMAGE_FORMAT_INT_RGB      javax_media_j3d_ImageComponentRetained_TYPE_INT_RGB
+#define IMAGE_FORMAT_INT_ARGB     javax_media_j3d_ImageComponentRetained_TYPE_INT_ARGB
+
+#define IMAGE_DATA_TYPE_BYTE_ARRAY      javax_media_j3d_ImageComponentRetained_IMAGE_DATA_TYPE_BYTE_ARRAY
+#define IMAGE_DATA_TYPE_INT_ARRAY       javax_media_j3d_ImageComponentRetained_IMAGE_DATA_TYPE_INT_ARRAY
+#define IMAGE_DATA_TYPE_BYTE_BUFFER     javax_media_j3d_ImageComponentRetained_IMAGE_DATA_TYPE_BYTE_BUFFER
+#define IMAGE_DATA_TYPE_INT_BUFFER      javax_media_j3d_ImageComponentRetained_IMAGE_DATA_TYPE_INT_BUFFER
 
 
 /* These match the definitions in GeometryArray.java */

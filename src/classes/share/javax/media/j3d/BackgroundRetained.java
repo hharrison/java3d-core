@@ -230,10 +230,14 @@ class BackgroundRetained extends LeafRetained {
                         scaledImg,
                         byRef, yUp);
                 texImage = (ImageComponent2DRetained)ic.retained;
+                /*  Don't think this is needed.   --- Chien.
                 texImage.setTextureRef();
+                 */
             } else {
                 texImage = rimage;
+                /* Don't think this is needed.   --- Chien.
                 texImage.setTextureRef();
+                 */
             }
 	    
 	    this.image = rimage;

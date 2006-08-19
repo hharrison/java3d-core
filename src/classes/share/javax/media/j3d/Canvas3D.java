@@ -338,10 +338,6 @@ public class Canvas3D extends Canvas {
     // user specified offScreen Canvas dimension
     Dimension offScreenCanvasSize;
 
-    // clipped offscreen canvas
-    Point offScreenCanvasClippedLoc;
-    Dimension offScreenCanvasClippedSize;
-
     //
     // Flag that indicates whether off-screen rendering is in progress or not
     //
@@ -1112,8 +1108,6 @@ public class Canvas3D extends Canvas {
             //rendererStructure = new RendererStructure();
 	    offScreenCanvasLoc = new Point(0, 0);
 	    offScreenCanvasSize = new Dimension(0, 0);
-	    offScreenCanvasClippedLoc = new Point(0, 0);
-	    offScreenCanvasClippedSize = new Dimension(0, 0);
 
             this.setLocation(offScreenCanvasLoc);
             this.setSize(offScreenCanvasSize);
@@ -1767,7 +1761,7 @@ public class Canvas3D extends Canvas {
 		(ImageComponent2DRetained)buffer.retained;
 
 	    if (bufferRetained.byReference &&
-		!(bufferRetained.bImage[0] instanceof BufferedImage)) {
+		!(bufferRetained.getRefImage(0) instanceof BufferedImage)) {
 
 		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D15"));
 	    }
@@ -1821,57 +1815,6 @@ public class Canvas3D extends Canvas {
             cvDirtyMask[1] |= MOVED_OR_RESIZED_DIRTY;
         }
     }
-
-    // Issue 131: move computation of offScreenCanvasClippedLoc
-    // and offScreenCanvasClippedSize to this method, so we can all it from
-    // the renderer for automatic-offscreen canvases as well as from
-    // renderOffScreenBuffer for manual.
-    //
-    // TODO KCR Issue 131: THIS METHOD WILL PROBABLY GO AWAY ONCE THE CHANGES
-    // FOR ISSUE 85 ARE CHECKED IN
-    // TODO Chien : determine whether this is needed
-    void determineOffScreenBoundary() {
-        // determine the offScreen boundary
-        // do the boundary determination here because setCanvasLocation can
-        // be done at any time.
-        Dimension screenSize = screen.getSize();
-        if ((offScreenCanvasLoc.x >= screenSize.width) ||
-                (offScreenCanvasLoc.y >= screenSize.height))
-            return;
-
-        if (offScreenCanvasLoc.x < 0) {
-            offScreenCanvasClippedLoc.x = 0 - offScreenCanvasLoc.x;
-            offScreenCanvasClippedSize.width =
-                    offScreenCanvasSize.width - offScreenCanvasClippedLoc.x;
-            if (offScreenCanvasClippedSize.width > screenSize.width)
-                offScreenCanvasClippedSize.width = screenSize.width;
-        } else {
-            offScreenCanvasClippedLoc.x = 0;
-            offScreenCanvasClippedSize.width = offScreenCanvasSize.width;
-            if ((offScreenCanvasLoc.x + offScreenCanvasClippedSize.width)
-                    > screenSize.width)
-                offScreenCanvasClippedSize.width =
-                        screenSize.width - offScreenCanvasLoc.x;
-        }
-
-
-        int lly = offScreenCanvasLoc.y + offScreenCanvasSize.height;
-        if (lly < 0) {
-            return;
-        } else if (lly <= screenSize.height) {
-            offScreenCanvasClippedLoc.y = 0;
-            if (offScreenCanvasLoc.y < 0)
-                offScreenCanvasClippedSize.height = lly;
-            else
-                offScreenCanvasClippedSize.height = offScreenCanvasSize.height;
-        } else if (lly > screenSize.height) {
-            offScreenCanvasClippedSize.height =
-                    screenSize.height - offScreenCanvasLoc.y;
-            offScreenCanvasClippedLoc.y = lly - screenSize.height;
-        }
-
-    }
-
 
     /**
      * Retrieves the off-screen buffer for this Canvas3D.
@@ -2218,45 +2161,52 @@ public class Canvas3D extends Canvas {
     }
 
     void endOffScreenRendering() {
+               
+        ImageComponent2DRetained icRetained = (ImageComponent2DRetained)offScreenBuffer.retained;
+        boolean isByRef = icRetained.isByReference();
+        boolean isYUp = icRetained.isYUp();
+        ImageComponentRetained.ImageData imageData = icRetained.getImageData();
 
-
-
-
-	// Evaluate what the stored format is before reading to offscreen buffer
-	if (((ImageComponent2DRetained)offScreenBuffer.retained).isByReference()) {
-	    ((ImageComponent2DRetained)offScreenBuffer.retained).geomLock.getLock();
-	    ((ImageComponent2DRetained)offScreenBuffer.retained).evaluateExtensions(extensionsSupported);
-	    ((ImageComponent2DRetained)offScreenBuffer.retained).geomLock.unLock();
-	}
-
-	
-
-	int bytesPerPixel =  ((ImageComponent2DRetained)offScreenBuffer.retained).getEffectiveBytesPerPixel();
-	int format =  ((ImageComponent2DRetained)offScreenBuffer.retained).getEffectiveFormat();
-
-
-	// allocate read buffer space
-
-        int size =
-          offScreenCanvasSize.width * offScreenCanvasSize.height * bytesPerPixel;
-        if (byteBuffer.length < size)
-            byteBuffer = new byte[size];
-
-
-	// read the image from the offscreen buffer
-
-        readOffScreenBuffer(ctx,
-          format,
-          offScreenCanvasSize.width, offScreenCanvasSize.height);
-
-
-        // copy it into the ImageComponent
-
-        ((ImageComponent2DRetained)offScreenBuffer.retained).retrieveImage(
-          byteBuffer, offScreenCanvasClippedLoc.x, offScreenCanvasClippedLoc.y,
-          offScreenCanvasClippedSize.width, offScreenCanvasClippedSize.height);
+        if(!isByRef) {
+            // If icRetained has a null image ( BufferedImage)
+            if (imageData == null)  {
+                assert (!isByRef);
+                icRetained.createBlankImageData();
+            }
+            // Check for possible format conversion in imageData
+            else {
+                // Format convert imageData if format is unsupported.
+                icRetained.evaluateExtensions(extensionsSupported);
+            }
+            // read the image from the offscreen buffer
+            readOffScreenBuffer(ctx, icRetained.getImageFormatTypeIntValue(),
+                    icRetained.getImageDataTypeIntValue(), imageData.get(),
+                    offScreenCanvasSize.width, offScreenCanvasSize.height);
+            
+        } else {
+            icRetained.geomLock.getLock();
+            // Create a copy of format converted image in imageData if format is unsupported.
+            icRetained.evaluateExtensions(extensionsSupported);
+            
+            // read the image from the offscreen buffer
+            readOffScreenBuffer(ctx, icRetained.getImageFormatTypeIntValue(),
+                    icRetained.getImageDataTypeIntValue(), imageData.get(),
+                    offScreenCanvasSize.width, offScreenCanvasSize.height);
+            
+            // For byRef, we might have to copy buffer back into
+            // the user's referenced ImageComponent2D
+            if(!imageData.isDataByRef()) {
+                if(icRetained.isImageTypeSupported()) {
+                    icRetained.copyToRefImage(0);
+                } else {
+                    // This method only handle RGBA conversion.
+                    icRetained.copyToRefImageWithFormatConversion(0);
+                }
+            }
+            
+            icRetained.geomLock.unLock();
+        }
     }
-
 
     /**
      * Synchronize and swap buffers on a double buffered canvas for
@@ -4592,12 +4542,12 @@ public class Canvas3D extends Canvas {
         assert drawable != null;
         Pipeline.getPipeline().destroyOffScreenBuffer(this, ctx, display, fbConfig, drawable);
     }
-
+    
     // This is the native for reading the image from the offscreen buffer
-    private void readOffScreenBuffer(Context ctx, int format, int width, int height) {
-        Pipeline.getPipeline().readOffScreenBuffer(this, ctx, format, width, height);
+    private void readOffScreenBuffer(Context ctx, int format, int type, Object data, int width, int height) {
+        Pipeline.getPipeline().readOffScreenBuffer(this, ctx, format, type, data, width, height);
     }
-
+    
     // The native method for swapBuffers
     int swapBuffers(Context ctx, long dpy, Drawable drawable) {
         return Pipeline.getPipeline().swapBuffers(this, ctx, dpy, drawable);

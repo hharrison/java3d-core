@@ -2739,30 +2739,30 @@ class JoglPipeline extends Pipeline {
         int oglFormat = 0;
 
         switch (format) {
-          case ImageComponentRetained.BYTE_RGBA:         
+          case ImageComponentRetained.TYPE_BYTE_RGBA:         
             // all RGB types are stored as RGBA
             oglFormat = GL.GL_RGBA;
             break;
-          case ImageComponentRetained.BYTE_RGB:         
+          case ImageComponentRetained.TYPE_BYTE_RGB:         
             oglFormat = GL.GL_RGB;
             break;
 
-          case ImageComponentRetained.BYTE_ABGR:         
+          case ImageComponentRetained.TYPE_BYTE_ABGR:         
             if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
               oglFormat = GL.GL_ABGR_EXT;
             }
             break;
 
-          case ImageComponentRetained.BYTE_BGR:         
+          case ImageComponentRetained.TYPE_BYTE_BGR:         
             oglFormat = GL.GL_BGR;
             break;
 
-          case ImageComponentRetained.BYTE_LA: 
+          case ImageComponentRetained.TYPE_BYTE_LA: 
             // all LA types are stored as LA8
             oglFormat = GL.GL_LUMINANCE_ALPHA;
             break;
-          case ImageComponentRetained.BYTE_GRAY:
-          case ImageComponentRetained.USHORT_GRAY:
+          case ImageComponentRetained.TYPE_BYTE_GRAY:
+          case ImageComponentRetained.TYPE_USHORT_GRAY:
             throw new AssertionError("illegal format");
         }
 
@@ -4088,7 +4088,7 @@ class JoglPipeline extends Pipeline {
         ImageComponent2DRetained image = raster.image;
         if (image == null)
           return;
-        int format = image.storedYdownFormat;
+        int format = image.getImageFormatTypeIntValue();
         int width = image.width;
         int height = image.height;
         // raster position is upper left corner, default for Java3D 
@@ -4121,30 +4121,30 @@ class JoglPipeline extends Pipeline {
 
         int oglFormat = 0;
         switch (format) {
-          case ImageComponentRetained.BYTE_RGBA:
+          case ImageComponentRetained.TYPE_BYTE_RGBA:
             // all RGB types are stored as RGBA
             oglFormat = GL.GL_RGBA;
             break;
-          case ImageComponentRetained.BYTE_RGB:
+          case ImageComponentRetained.TYPE_BYTE_RGB:
             oglFormat = GL.GL_RGB;
             break;
 
-          case ImageComponentRetained.BYTE_ABGR:
+          case ImageComponentRetained.TYPE_BYTE_ABGR:
             if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
               oglFormat = GL.GL_ABGR_EXT;
             }
             break;
 
-          case ImageComponentRetained.BYTE_BGR:
+          case ImageComponentRetained.TYPE_BYTE_BGR:
             oglFormat = GL.GL_BGR;
             break;
 
-          case ImageComponentRetained.BYTE_LA:
+          case ImageComponentRetained.TYPE_BYTE_LA:
             // all LA types are stored as LA8
             oglFormat = GL.GL_LUMINANCE_ALPHA;
             break;
-          case ImageComponentRetained.BYTE_GRAY:
-          case ImageComponentRetained.USHORT_GRAY:
+          case ImageComponentRetained.TYPE_BYTE_GRAY:
+          case ImageComponentRetained.TYPE_USHORT_GRAY:
             throw new AssertionError("illegal format");
         }
 
@@ -5767,30 +5767,30 @@ class JoglPipeline extends Pipeline {
 
     void updateTexture2DImage(Context ctx,
             int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            byte[] imageData) {
+            int dataType, Object data) {
       if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DImage(width=" + width + ",height=" + height + ",level=" + level + ")");
 
       updateTexture2DImage(ctx, GL.GL_TEXTURE_2D,
-                           numLevels, level, internalFormat, storedFormat,
-                           width, height, boundaryWidth, imageData);
+                           numLevels, level, textureFormat, imageFormat,
+                           width, height, boundaryWidth, dataType, data);
     }
 
     void updateTexture2DSubImage(Context ctx,
             int level, int xoffset, int yoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData) {
+            int dataType, Object data) {
       if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DSubImage()");
 
       updateTexture2DSubImage(ctx, GL.GL_TEXTURE_2D,
                               level, xoffset, yoffset,
-                              internalFormat, storedFormat,
+                              textureFormat, imageFormat,
                               imgXOffset, imgYOffset, tilew, width, height,
-                              imageData);
+                              dataType, data);
     }
 
     void updateTexture2DLodRange(Context ctx,
@@ -5938,176 +5938,313 @@ class JoglPipeline extends Pipeline {
 
     void updateTexture3DImage(Context ctx,
             int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height, int depth,
             int boundaryWidth,
-            byte[] imageYup) {
-      if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DImage()");
+            int dataType, Object data) {
 
-      GL gl = context(ctx).getGL();
-
-      int oglFormat = 0;
-      int oglInternalFormat = 0;
-
-      switch (internalFormat) {
-        case Texture.INTENSITY:
-          oglInternalFormat = GL.GL_INTENSITY;
-          break;
-        case Texture.LUMINANCE:
-          oglInternalFormat = GL.GL_LUMINANCE;
-          break;
-        case Texture.ALPHA:
-          oglInternalFormat = GL.GL_ALPHA;
-          break;
-        case Texture.LUMINANCE_ALPHA:
-          oglInternalFormat = GL.GL_LUMINANCE_ALPHA;
-          break;
-        case Texture.RGB:
-          oglInternalFormat = GL.GL_RGB;
-          break;
-        case Texture.RGBA:
-          oglInternalFormat = GL.GL_RGBA;
-          break;
-      }
-      
-      switch (storedFormat) {
-        case ImageComponentRetained.BYTE_RGBA:
-          // all RGB types are stored as RGBA
-          oglFormat = GL.GL_RGBA;
-          break;
-        case ImageComponentRetained.BYTE_RGB:         
-          oglFormat = GL.GL_RGB;
-          break;
-  
-        case ImageComponentRetained.BYTE_ABGR:         
-          if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
-            oglFormat = GL.GL_ABGR_EXT;
-          }
-          break;
-        case ImageComponentRetained.BYTE_BGR:         
-          oglFormat = GL.GL_BGR;
-          break;
-        case ImageComponentRetained.BYTE_LA: 
-          // all LA types are stored as LA8
-          oglFormat = GL.GL_LUMINANCE_ALPHA;
-          break;
-        case ImageComponentRetained.BYTE_GRAY:
-        case ImageComponentRetained.USHORT_GRAY:
-          if (oglInternalFormat == GL.GL_ALPHA) {
-            oglFormat = GL.GL_ALPHA;
-          } else  {
-            oglFormat = GL.GL_LUMINANCE;
-          }
-          break;
-      }
-
-      int type =
-        (storedFormat == ImageComponentRetained.USHORT_GRAY) ? GL.GL_UNSIGNED_SHORT : GL.GL_UNSIGNED_BYTE;
-
-      gl.glTexImage3D(GL.GL_TEXTURE_3D,
-                      level, oglInternalFormat,
-                      width, height, depth, boundaryWidth,
-                      oglFormat, type, ByteBuffer.wrap(imageYup));
-                        
-      // No idea why we need the following call.
-      gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+        /* TODO Chien : Need to support INT, and NIO buffers */              
+        if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DImage()");
+        
+        GL gl = context(ctx).getGL();
+        
+        int format = 0;
+        int internalFormat = 0;
+        int type = 0;
+        boolean forceAlphaToOne = false;
+        
+        switch (textureFormat) {
+            case Texture.INTENSITY:
+                internalFormat = GL.GL_INTENSITY;
+                break;
+            case Texture.LUMINANCE:
+                internalFormat = GL.GL_LUMINANCE;
+                break;
+            case Texture.ALPHA:
+                internalFormat = GL.GL_ALPHA;
+                break;
+            case Texture.LUMINANCE_ALPHA:
+                internalFormat = GL.GL_LUMINANCE_ALPHA;
+                break;
+            case Texture.RGB:
+                internalFormat = GL.GL_RGB;
+                break;
+            case Texture.RGBA:
+                internalFormat = GL.GL_RGBA;
+                break;
+            default:
+                assert false;
+                return;
+        }
+        
+        if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) ||
+                (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_BUFFER)) {
+            
+            switch (imageFormat) {
+                case ImageComponentRetained.TYPE_BYTE_BGR:
+                    format = GL.GL_BGR;
+                    break;
+                case ImageComponentRetained.TYPE_BYTE_RGB:
+                    format = GL.GL_RGB;
+                    break;
+                case ImageComponentRetained.TYPE_BYTE_ABGR:
+                    if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
+                        format = GL.GL_ABGR_EXT;
+                    } else {
+                        assert false;
+                        return;
+                    }
+                    break;
+                case ImageComponentRetained.TYPE_BYTE_RGBA:
+                    // all RGB types are stored as RGBA
+                    format = GL.GL_RGBA;
+                    break;
+                case ImageComponentRetained.TYPE_BYTE_LA:
+                    // all LA types are stored as LA8
+                    format = GL.GL_LUMINANCE_ALPHA;
+                    break;
+                case ImageComponentRetained.TYPE_BYTE_GRAY:
+                    if (internalFormat == GL.GL_ALPHA) {
+                        format = GL.GL_ALPHA;
+                    } else  {
+                        format = GL.GL_LUMINANCE;
+                    }
+                    break;
+                case ImageComponentRetained.TYPE_USHORT_GRAY:
+                case ImageComponentRetained.TYPE_INT_BGR:
+                case ImageComponentRetained.TYPE_INT_RGB:
+                case ImageComponentRetained.TYPE_INT_ARGB:
+                default:
+                    assert false;
+                    return;
+            }
+            
+            gl.glTexImage3D(GL.GL_TEXTURE_3D,
+                    level, internalFormat,
+                    width, height, depth, boundaryWidth,
+                    format, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[]) data));
+            
+        } else if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) ||
+                (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_BUFFER)) {
+            
+            switch (imageFormat) {
+                /* GL_BGR */
+                case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
+                    format = GL.GL_RGBA;
+                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    forceAlphaToOne = true;
+                    break;
+                case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
+                    forceAlphaToOne = true;
+                    /* Fall through to next case */
+                case ImageComponentRetained.TYPE_INT_ARGB:
+                    format = GL.GL_BGRA;
+                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    break;
+                    /* This method only supports 3 and 4 components formats and INT types. */
+                case ImageComponentRetained.TYPE_BYTE_LA:
+                case ImageComponentRetained.TYPE_BYTE_GRAY:
+                case ImageComponentRetained.TYPE_USHORT_GRAY:
+                case ImageComponentRetained.TYPE_BYTE_BGR:
+                case ImageComponentRetained.TYPE_BYTE_RGB:
+                case ImageComponentRetained.TYPE_BYTE_RGBA:
+                case ImageComponentRetained.TYPE_BYTE_ABGR:
+                default:
+                    assert false;
+                    return;
+            }
+            
+            /* Force Alpha to 1.0 if needed */
+            if(forceAlphaToOne) {
+                gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 0.0f);
+                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+            }
+            
+            gl.glTexImage3D(GL.GL_TEXTURE_3D,
+                    level, internalFormat,
+                    width, height, depth, boundaryWidth,
+                    format, type, IntBuffer.wrap((int[]) data));
+            
+            /* Restore Alpha scale and bias */
+            if(forceAlphaToOne) {
+                gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 1.0f);
+                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+            }
+        } else {
+            assert false;
+        }
     }
 
     void updateTexture3DSubImage(Context ctx,
             int level,
             int xoffset, int yoffset, int zoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset, int imgZOffset,
             int tilew, int tileh,
             int width, int height, int depth,
-            byte[] image) {
-      if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DSubImage()");
-
-      GL gl = context(ctx).getGL();
-
-      int oglFormat = 0;
-      int oglInternalFormat = 0;
-      int numBytes = 0;
-      boolean pixelStore = false;
-
-      switch (internalFormat) {
-        case Texture.INTENSITY:
-          oglInternalFormat = GL.GL_INTENSITY;
-          break;
-        case Texture.LUMINANCE:
-          oglInternalFormat = GL.GL_LUMINANCE;
-          break;
-        case Texture.ALPHA:
-          oglInternalFormat = GL.GL_ALPHA;
-          break;
-        case Texture.LUMINANCE_ALPHA:
-          oglInternalFormat = GL.GL_LUMINANCE_ALPHA;
-          break;
-        case Texture.RGB:
-          oglInternalFormat = GL.GL_RGB;
-          break;
-        case Texture.RGBA:
-          oglInternalFormat = GL.GL_RGBA;
-          break;
-      }
-
-      switch (storedFormat) {
-        case ImageComponentRetained.BYTE_RGBA:
-          // all RGB types are stored as RGBA
-          oglFormat = GL.GL_RGBA;
-          numBytes = 4;
-          break;
-        case ImageComponentRetained.BYTE_RGB:         
-          oglFormat = GL.GL_RGB;
-          numBytes = 3;
-          break;
-  
-        case ImageComponentRetained.BYTE_ABGR:         
-          if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
-            oglFormat = GL.GL_ABGR_EXT;
-            numBytes = 4;
-          }
-          break;
-        case ImageComponentRetained.BYTE_BGR:         
-          oglFormat = GL.GL_BGR;
-          numBytes = 3;
-          break;
-        case ImageComponentRetained.BYTE_LA: 
-          // all LA types are stored as LA8
-          oglFormat = GL.GL_LUMINANCE_ALPHA;
-          numBytes = 2;
-          break;
-        case ImageComponentRetained.BYTE_GRAY:
-        case ImageComponentRetained.USHORT_GRAY:
-          if (oglInternalFormat == GL.GL_ALPHA) {
-            oglFormat = GL.GL_ALPHA;
-          } else  {
-            oglFormat = GL.GL_LUMINANCE;
-          }
-          numBytes = ((storedFormat == ImageComponentRetained.BYTE_GRAY) ? 1 : 2);
-          break;
-      }
-
-      if (imgXOffset > 0 || (width < tilew)) {
-        pixelStore = true;
-        gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, tilew);
-      }
-
-      ByteBuffer buf = ByteBuffer.wrap(image);
-      int offset = (tilew * tileh * imgZOffset +
+            int dataType, Object data) {
+        if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DSubImage()");
+        
+        /* TODO Chien : Need to support INT, and NIO buffers */
+        GL gl = context(ctx).getGL();
+        
+        int format = 0;
+        int internalFormat = 0;
+        int type = 0;
+        int numBytes = 0;
+        boolean forceAlphaToOne = false;
+        boolean pixelStore = false;
+        
+        if (imgXOffset > 0 || (width < tilew)) {
+            pixelStore = true;
+            gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, tilew);
+        }
+        
+        switch (textureFormat) {
+            case Texture.INTENSITY:
+                internalFormat = GL.GL_INTENSITY;
+                break;
+            case Texture.LUMINANCE:
+                internalFormat = GL.GL_LUMINANCE;
+                break;
+            case Texture.ALPHA:
+                internalFormat = GL.GL_ALPHA;
+                break;
+            case Texture.LUMINANCE_ALPHA:
+                internalFormat = GL.GL_LUMINANCE_ALPHA;
+                break;
+            case Texture.RGB:
+                internalFormat = GL.GL_RGB;
+                break;
+            case Texture.RGBA:
+                internalFormat = GL.GL_RGBA;
+                break;
+            default:
+                assert false;
+        }
+      
+        if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) ||
+                (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_BUFFER)) {
+            
+            switch (imageFormat) {
+                case ImageComponentRetained.TYPE_BYTE_BGR:
+                    format = GL.GL_BGR;
+                    numBytes = 3;
+                    break;
+                case ImageComponentRetained.TYPE_BYTE_RGB:
+                    format = GL.GL_RGB;
+                    numBytes = 3;
+                    break;
+                case ImageComponentRetained.TYPE_BYTE_ABGR:
+                    if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
+                        format = GL.GL_ABGR_EXT;
+                        numBytes = 4;
+                    } else {
+                        assert false;
+                        return;
+                    }
+                    break;
+                case ImageComponentRetained.TYPE_BYTE_RGBA:
+                    // all RGB types are stored as RGBA
+                    format = GL.GL_RGBA;
+                    numBytes = 4;
+                    break;
+                case ImageComponentRetained.TYPE_BYTE_LA:
+                    // all LA types are stored as LA8
+                    format = GL.GL_LUMINANCE_ALPHA;
+                    numBytes = 2;
+                    break;
+                case ImageComponentRetained.TYPE_BYTE_GRAY:
+                    if (internalFormat == GL.GL_ALPHA) {
+                        format = GL.GL_ALPHA;
+                        numBytes = 1;
+                    } else  {
+                        format = GL.GL_LUMINANCE;
+                        numBytes = 1;
+                    }
+                    break;
+                case ImageComponentRetained.TYPE_USHORT_GRAY:
+                case ImageComponentRetained.TYPE_INT_BGR:
+                case ImageComponentRetained.TYPE_INT_RGB:
+                case ImageComponentRetained.TYPE_INT_ARGB:
+                default:
+                    assert false;
+                    return;
+            }         
+            
+            ByteBuffer buf = ByteBuffer.wrap((byte[]) data);
+            int offset = (tilew * tileh * imgZOffset +
                     tilew * imgYOffset + imgXOffset) * numBytes;
-      buf.position(offset);
-      int type =
-        (storedFormat == ImageComponentRetained.USHORT_GRAY) ? GL.GL_UNSIGNED_SHORT : GL.GL_UNSIGNED_BYTE;
-      gl.glTexSubImage3D(GL.GL_TEXTURE_3D,
-                         level, xoffset, yoffset, zoffset,
-                         width, height, depth,
-                         oglFormat, type,
-                         buf);
-      if (pixelStore) {
-        gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
-      }
-    }
+            buf.position(offset);
+            gl.glTexSubImage3D(GL.GL_TEXTURE_3D,
+                    level, xoffset, yoffset, zoffset,
+                    width, height, depth,
+                    format, GL.GL_UNSIGNED_BYTE,
+                    buf);
+                        
+        } else if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) ||
+                (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_BUFFER)) {
+            
+            switch (imageFormat) {
+                /* GL_BGR */
+                case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
+                    format = GL.GL_RGBA;
+                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    forceAlphaToOne = true;
+                    break;
+                case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
+                    forceAlphaToOne = true;
+                    /* Fall through to next case */
+                case ImageComponentRetained.TYPE_INT_ARGB:
+                    format = GL.GL_BGRA;
+                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    break;
+                    /* This method only supports 3 and 4 components formats and INT types. */
+                case ImageComponentRetained.TYPE_BYTE_LA:
+                case ImageComponentRetained.TYPE_BYTE_GRAY:
+                case ImageComponentRetained.TYPE_USHORT_GRAY:
+                case ImageComponentRetained.TYPE_BYTE_BGR:
+                case ImageComponentRetained.TYPE_BYTE_RGB:
+                case ImageComponentRetained.TYPE_BYTE_RGBA:
+                case ImageComponentRetained.TYPE_BYTE_ABGR:
+                default:
+                    assert false;
+                    return;
+            }
+            numBytes = 4;
+            
+            /* Force Alpha to 1.0 if needed */
+            if(forceAlphaToOne) {
+                gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 0.0f);
+                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+            }
+
+            ByteBuffer buf = ByteBuffer.wrap((byte []) data);
+            int offset = (tilew * tileh * imgZOffset +
+                    tilew * imgYOffset + imgXOffset) * numBytes;
+            buf.position(offset);
+            gl.glTexSubImage3D(GL.GL_TEXTURE_3D,
+                    level, xoffset, yoffset, zoffset,
+                    width, height, depth,
+                    format, type,
+                    buf);
+            
+            /* Restore Alpha scale and bias */
+            if(forceAlphaToOne) {
+                gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 1.0f);
+                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+            }
+        } else {
+            assert false;
+            return;
+        }
+        
+        if (pixelStore) {
+            gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
+        }
+
+    }      
+     
 
     void updateTexture3DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
@@ -6196,29 +6333,29 @@ class JoglPipeline extends Pipeline {
 
     void updateTextureCubeMapImage(Context ctx,
             int face, int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            byte[] imageYup) {
+            int dataType, Object data) {
       if (VERBOSE) System.err.println("JoglPipeline.updateTextureCubeMapImage()");
 
       updateTexture2DImage(ctx, _gl_textureCubeMapFace[face],
-                           numLevels, level, internalFormat, storedFormat,
-                           width, height, boundaryWidth, imageYup);
+                           numLevels, level, textureFormat, imageFormat,
+                           width, height, boundaryWidth, dataType, data);
     }
 
     void updateTextureCubeMapSubImage(Context ctx,
             int face, int level, int xoffset, int yoffset,
-            int internalFormat,int storedFormat,
+            int textureFormat,int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageYup) {
+            int dataType, Object data) {
       if (VERBOSE) System.err.println("JoglPipeline.updateTextureCubeMapSubImage()");
 
       updateTexture2DSubImage(ctx, _gl_textureCubeMapFace[face],
-                              level, xoffset, yoffset, internalFormat,
-                              storedFormat, imgXOffset, imgYOffset, tilew,
-                              width, height, imageYup);
+                              level, xoffset, yoffset, textureFormat,
+                              imageFormat, imgXOffset, imgYOffset, tilew,
+                              width, height, dataType, data);
     }
 
     void updateTextureCubeMapLodRange(Context ctx,
@@ -6317,10 +6454,10 @@ class JoglPipeline extends Pipeline {
 
       GL gl = context(ctx).getGL();
       if (gl.isExtensionAvailable("GL_SGIS_detail_texture")) {
-        updateTexture2DImage(ctx,
+        /* updateTexture2DImage(ctx,
                              GL.GL_DETAIL_TEXTURE_2D_SGIS,
                              numLevels, level, internalFormat, storedFormat,
-                             width, height, boundaryWidth, imageYup);
+                             width, height, boundaryWidth, imageYup); */
       }
     }
 
@@ -6334,182 +6471,165 @@ class JoglPipeline extends Pipeline {
                                     int target,
                                     int numLevels,
                                     int level,
-                                    int internalFormat, 
-                                    int format, 
+                                    int textureFormat, 
+                                    int imageFormat, 
                                     int width, 
                                     int height, 
                                     int boundaryWidth,
-                                    byte[] imageYup) {
+                                    int dataType, 
+                                    Object data) {
     GL gl = context(ctx).getGL();
     
-    int oglFormat = 0, oglInternalFormat = 0;
+    int format = 0, internalFormat = 0;
+    int type = 0;
+    boolean forceAlphaToOne = false;
     
-    switch (internalFormat) {
-      case Texture.INTENSITY:
-        oglInternalFormat = GL.GL_INTENSITY;
-        break;
-      case Texture.LUMINANCE:
-        oglInternalFormat = GL.GL_LUMINANCE;
-        break;
-      case Texture.ALPHA:
-        oglInternalFormat = GL.GL_ALPHA;
-        break;
-      case Texture.LUMINANCE_ALPHA:
-        oglInternalFormat = GL.GL_LUMINANCE_ALPHA;
-        break;
-      case Texture.RGB: 
-        oglInternalFormat = GL.GL_RGB;
-        break;
-      case Texture.RGBA:
-        oglInternalFormat = GL.GL_RGBA;
-        break;
-    }
-
-    switch (format) {
-      case ImageComponentRetained.BYTE_RGBA:         
-        // all RGB types are stored as RGBA
-        oglFormat = GL.GL_RGBA;
-        break;
-      case ImageComponentRetained.BYTE_RGB:         
-        oglFormat = GL.GL_RGB;
-        break;
-
-      case ImageComponentRetained.BYTE_ABGR:         
-        if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
-          oglFormat = GL.GL_ABGR_EXT;
-        }
-        break;
-
-      case ImageComponentRetained.BYTE_BGR:         
-        oglFormat = GL.GL_BGR;
-        break;
-
-      case ImageComponentRetained.BYTE_LA: 
-        // all LA types are stored as LA8
-        oglFormat = GL.GL_LUMINANCE_ALPHA;
-        break;
-      case ImageComponentRetained.BYTE_GRAY:
-      case ImageComponentRetained.USHORT_GRAY:
-        if (oglInternalFormat == GL.GL_ALPHA) {
-          oglFormat = GL.GL_ALPHA;
-        } else  {
-          oglFormat = GL.GL_LUMINANCE;
-        }
-        break;
-    }
     // check if we are trying to draw NPOT on a system that doesn't support it
     if ((!gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) &&
         (!isPowerOfTwo(width) || !isPowerOfTwo(height))) {
       // disable texture by setting width and height to 0
       width = height = 0;
     }
-    int type = GL.GL_UNSIGNED_BYTE;
-    if (format == ImageComponentRetained.USHORT_GRAY) {
-      type = GL.GL_UNSIGNED_SHORT;
+       
+    switch (textureFormat) {
+        case Texture.INTENSITY:
+            internalFormat = GL.GL_INTENSITY;
+            break;
+        case Texture.LUMINANCE:
+            internalFormat = GL.GL_LUMINANCE;
+            break;
+        case Texture.ALPHA:
+            internalFormat = GL.GL_ALPHA;
+            break;
+        case Texture.LUMINANCE_ALPHA:
+            internalFormat = GL.GL_LUMINANCE_ALPHA;
+            break;
+        case Texture.RGB:
+            internalFormat = GL.GL_RGB;
+            break;
+        case Texture.RGBA:
+            internalFormat = GL.GL_RGBA;
+            break;
+        default:
+            assert false;
     }
-    Buffer buf = null;
 
-    // FIXME: test against imageYup.length added for GenesisFX demo
-    // which seems to want to initialize the texture object and then
-    // update its sub-image; unclear whether this should be done
-    // elsewhere (test is not in NativePipeline)
-    if (imageYup != null && imageYup.length > 0) {
-      buf = ByteBuffer.wrap(imageYup);
+    if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) ||
+            (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_BUFFER)) {
+        
+        switch (imageFormat) {
+            case ImageComponentRetained.TYPE_BYTE_BGR:
+                format = GL.GL_BGR;
+                break;
+            case ImageComponentRetained.TYPE_BYTE_RGB:
+                format = GL.GL_RGB;
+                break;
+            case ImageComponentRetained.TYPE_BYTE_ABGR:
+                if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
+                    format = GL.GL_ABGR_EXT;
+                } else {
+                    assert false;
+                    return;
+                }
+                break;
+            case ImageComponentRetained.TYPE_BYTE_RGBA:
+                // all RGB types are stored as RGBA
+                format = GL.GL_RGBA;
+                break;
+            case ImageComponentRetained.TYPE_BYTE_LA:
+                // all LA types are stored as LA8
+                format = GL.GL_LUMINANCE_ALPHA;
+                break;
+            case ImageComponentRetained.TYPE_BYTE_GRAY:
+                if (internalFormat == GL.GL_ALPHA) {
+                    format = GL.GL_ALPHA;
+                } else  {
+                    format = GL.GL_LUMINANCE;
+                }
+                break;
+            case ImageComponentRetained.TYPE_USHORT_GRAY:
+            case ImageComponentRetained.TYPE_INT_BGR:
+            case ImageComponentRetained.TYPE_INT_RGB:
+            case ImageComponentRetained.TYPE_INT_ARGB:
+            default:
+                assert false;
+                return;
+        }
+        
+        gl.glTexImage2D(target, level, internalFormat,
+                width, height, boundaryWidth,
+                format, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[]) data));      
+        
+    } else if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) ||
+            (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_BUFFER)) {
+        
+        switch (imageFormat) {
+            /* GL_BGR */
+            case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
+                format = GL.GL_RGBA;
+                type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                forceAlphaToOne = true;
+                break;
+            case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
+                forceAlphaToOne = true;
+                /* Fall through to next case */
+            case ImageComponentRetained.TYPE_INT_ARGB:
+                format = GL.GL_BGRA;
+                type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                break;
+                /* This method only supports 3 and 4 components formats and INT types. */
+            case ImageComponentRetained.TYPE_BYTE_LA:
+            case ImageComponentRetained.TYPE_BYTE_GRAY:
+            case ImageComponentRetained.TYPE_USHORT_GRAY:
+            case ImageComponentRetained.TYPE_BYTE_BGR:
+            case ImageComponentRetained.TYPE_BYTE_RGB:
+            case ImageComponentRetained.TYPE_BYTE_RGBA:
+            case ImageComponentRetained.TYPE_BYTE_ABGR:
+            default:
+                assert false;
+                return;
+        }
+        
+        /* Force Alpha to 1.0 if needed */
+        if(forceAlphaToOne) {
+            gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 0.0f);
+            gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+        }
+        
+        gl.glTexImage2D(target, level, internalFormat,
+                width, height, boundaryWidth,
+                format, type, IntBuffer.wrap((int[]) data));
+        
+        /* Restore Alpha scale and bias */
+        if(forceAlphaToOne) {
+            gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 1.0f);
+            gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+        }
+    } else {
+        assert false;
     }
-
-    gl.glTexImage2D(target, level, oglInternalFormat, 
-                    width, height, boundaryWidth,
-                    oglFormat, type, buf);
-
-    // No idea why we need following call.
-    gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-  }
-                                    
+  }               
 
   private void updateTexture2DSubImage(Context ctx,
             int target,
             int level, int xoffset, int yoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData) {
+            int dataType, Object data) {
     GL gl = context(ctx).getGL();
 
-    int oglFormat = 0, oglInternalFormat=0;
+    int format = 0, internalFormat=0;
     int numBytes = 0;
+    int type = 0;
+    boolean forceAlphaToOne = false;
     boolean pixelStore = false;
-      
-    switch (internalFormat) {
-      case Texture.INTENSITY:
-        oglInternalFormat = GL.GL_INTENSITY;
-        break;
-      case Texture.LUMINANCE:
-        oglInternalFormat = GL.GL_LUMINANCE;
-        break;
-      case Texture.ALPHA:
-        oglInternalFormat = GL.GL_ALPHA;
-        break;
-      case Texture.LUMINANCE_ALPHA:
-        oglInternalFormat = GL.GL_LUMINANCE_ALPHA;
-        break;
-      case Texture.RGB: 
-        oglInternalFormat = GL.GL_RGB;
-        break;
-      case Texture.RGBA:
-        oglInternalFormat = GL.GL_RGBA;
-        break;
-    }
-
-    switch (storedFormat) {
-      case ImageComponentRetained.BYTE_RGBA:         
-        // all RGB types are stored as RGBA
-        oglFormat = GL.GL_RGBA;
-        numBytes = 4;
-        break;
-      case ImageComponentRetained.BYTE_RGB:         
-        oglFormat = GL.GL_RGB;
-        numBytes = 3;
-        break;
-    
-      case ImageComponentRetained.BYTE_ABGR:         
-        if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
-          oglFormat = GL.GL_ABGR_EXT;
-          numBytes = 4;
-        }
-        break;
-    
-      case ImageComponentRetained.BYTE_BGR:         
-        oglFormat = GL.GL_BGR;
-        numBytes = 3;
-        break;
-    
-      case ImageComponentRetained.BYTE_LA: 
-        // all LA types are stored as LA8
-        oglFormat = GL.GL_LUMINANCE_ALPHA;
-        numBytes = 2;
-        break;
-      case ImageComponentRetained.BYTE_GRAY:
-        if (oglInternalFormat == GL.GL_ALPHA) {
-          oglFormat = GL.GL_ALPHA;
-        } else  {
-          oglFormat = GL.GL_LUMINANCE;
-        }
-        numBytes = 1;
-      case ImageComponentRetained.USHORT_GRAY:
-        if (oglInternalFormat == GL.GL_ALPHA) {
-          oglFormat = GL.GL_ALPHA;
-        } else  {
-          oglFormat = GL.GL_LUMINANCE;
-        }
-        numBytes = 2;
-        break;
-    }
-
+     
     if (imgXOffset > 0 || (width < tilew)) {
-      pixelStore = true;
-      gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, tilew);
+        pixelStore = true;
+        gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, tilew);
     }
-      
+    
     // if NPOT textures are not supported, check if h=w=0, if so we have been 
     // disabled due to a NPOT texture being sent to a context that doesn't
     // support it: disable the glTexSubImage as well
@@ -6525,23 +6645,147 @@ class JoglPipeline extends Pipeline {
         width = height = 0;
       }
     }
+       
+    switch (textureFormat) {
+        case Texture.INTENSITY:
+            internalFormat = GL.GL_INTENSITY;
+            break;
+        case Texture.LUMINANCE:
+            internalFormat = GL.GL_LUMINANCE;
+            break;
+        case Texture.ALPHA:
+            internalFormat = GL.GL_ALPHA;
+            break;
+        case Texture.LUMINANCE_ALPHA:
+            internalFormat = GL.GL_LUMINANCE_ALPHA;
+            break;
+        case Texture.RGB:
+            internalFormat = GL.GL_RGB;
+            break;
+        case Texture.RGBA:
+            internalFormat = GL.GL_RGBA;
+            break;
+        default:
+            assert false;
+    }
+      
+    if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) ||
+            (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_BUFFER)) {
+        
+        switch (imageFormat) {
+            case ImageComponentRetained.TYPE_BYTE_BGR:
+                format = GL.GL_BGR;
+                numBytes = 3;
+                break;
+            case ImageComponentRetained.TYPE_BYTE_RGB:
+                format = GL.GL_RGB;
+                numBytes = 3;
+                break;
+            case ImageComponentRetained.TYPE_BYTE_ABGR:
+                if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
+                    format = GL.GL_ABGR_EXT;
+                    numBytes = 4;
+                } else {
+                    assert false;
+                    return;
+                }
+                break;
+            case ImageComponentRetained.TYPE_BYTE_RGBA:
+                // all RGB types are stored as RGBA
+                format = GL.GL_RGBA;
+                numBytes = 4;
+                break;
+            case ImageComponentRetained.TYPE_BYTE_LA:
+                // all LA types are stored as LA8
+                format = GL.GL_LUMINANCE_ALPHA;
+                numBytes = 2;
+                break;
+            case ImageComponentRetained.TYPE_BYTE_GRAY:
+                if (internalFormat == GL.GL_ALPHA) {
+                    format = GL.GL_ALPHA;
+                    numBytes = 1;
+                } else  {
+                    format = GL.GL_LUMINANCE;
+                    numBytes = 1;
+                }
+                break;
+            case ImageComponentRetained.TYPE_USHORT_GRAY:
+            case ImageComponentRetained.TYPE_INT_BGR:
+            case ImageComponentRetained.TYPE_INT_RGB:
+            case ImageComponentRetained.TYPE_INT_ARGB:
+            default:
+                assert false;
+                return;
+        }
+        
+        ByteBuffer buf = ByteBuffer.wrap((byte[]) data);
+        
+        // offset by the imageOffset
+        buf.position((tilew * imgYOffset + imgXOffset) * numBytes);
+        gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height,
+                format, GL.GL_UNSIGNED_BYTE, buf);
+      
+    } else if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) ||
+            (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_BUFFER)) {
+        
+        switch (imageFormat) {
+            /* GL_BGR */
+            case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
+                format = GL.GL_RGBA;
+                type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                forceAlphaToOne = true;
+                break;
+            case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
+                forceAlphaToOne = true;
+                /* Fall through to next case */
+            case ImageComponentRetained.TYPE_INT_ARGB:
+                format = GL.GL_BGRA;
+                type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                break;
+                /* This method only supports 3 and 4 components formats and INT types. */
+            case ImageComponentRetained.TYPE_BYTE_LA:
+            case ImageComponentRetained.TYPE_BYTE_GRAY:
+            case ImageComponentRetained.TYPE_USHORT_GRAY:
+            case ImageComponentRetained.TYPE_BYTE_BGR:
+            case ImageComponentRetained.TYPE_BYTE_RGB:
+            case ImageComponentRetained.TYPE_BYTE_RGBA:
+            case ImageComponentRetained.TYPE_BYTE_ABGR:
+            default:
+                assert false;
+                return;
+        }
+        numBytes = 4;
+        
+        /* Force Alpha to 1.0 if needed */
+        if(forceAlphaToOne) {
+            gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 0.0f);
+            gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+        }
+        
+        ByteBuffer buf = ByteBuffer.wrap((byte []) data);
 
-    if (storedFormat != ImageComponentRetained.USHORT_GRAY) {
-      ByteBuffer buf = ByteBuffer.wrap(imageData);
-      // offset by the imageOffset
-      buf.position((tilew * imgYOffset + imgXOffset) * numBytes);
-      gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, 
-                         oglFormat, GL.GL_UNSIGNED_BYTE, buf);
-    } else { // unsigned short
-      ByteBuffer buf = ByteBuffer.wrap(imageData);
-      buf.position((tilew * imgYOffset + imgXOffset) * numBytes);
-      gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, 
-                         oglFormat, GL.GL_UNSIGNED_SHORT, buf);
+        // offset by the imageOffset
+        buf.position((tilew * imgYOffset + imgXOffset) * numBytes);
+        gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height,
+                format, type, buf);        
+        
+        
+        /* Restore Alpha scale and bias */
+        if(forceAlphaToOne) {
+            gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 1.0f);
+            gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+        }
+    } else {
+        assert false;
+        return;
     }
+    
     if (pixelStore) {
-      gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
+        gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
     }
+    
   }
+
 
   private static boolean isPowerOfTwo(int val) {
     return ((val & (val - 1)) == 0);
@@ -6948,7 +7192,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // This is the native for reading the image from the offscreen buffer
-    void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int width, int height) {
+    void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int dataType, Object data, int width, int height) {
       if (VERBOSE) System.err.println("JoglPipeline.readOffScreenBuffer()");
 
       GL gl = context(ctx).getGL();
@@ -6956,38 +7200,80 @@ class JoglPipeline extends Pipeline {
       gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 1);
       byte[] byteData = cv.byteBuffer;
       int type = 0;
-      switch (format) {
-        case ImageComponentRetained.BYTE_RGBA:
-          type = GL.GL_RGBA;
-          break;
-        case ImageComponentRetained.BYTE_RGB:
-          type = GL.GL_RGB;
-          break;
-    
-        // GL_ABGR_EXT
-        case ImageComponentRetained.BYTE_ABGR:         
-          if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If false, should never come here!
-            type = GL.GL_ABGR_EXT;
+      if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) ||
+              (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_BUFFER)) {
+          
+          switch (format) {
+              // GL_BGR
+              case ImageComponentRetained.TYPE_BYTE_BGR:
+                  type = GL.GL_BGR;
+                  break;
+              case ImageComponentRetained.TYPE_BYTE_RGB:
+                  type = GL.GL_RGB;
+                  break;
+                  // GL_ABGR_EXT
+              case ImageComponentRetained.TYPE_BYTE_ABGR:
+                  if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If false, should never come here!
+                      type = GL.GL_ABGR_EXT;
+                  }
+                  else {
+                      assert false;
+                      return;
+                  }
+                  break;
+              case ImageComponentRetained.TYPE_BYTE_RGBA:
+                  type = GL.GL_RGBA;
+                  break;
+                  
+              /* This method only supports 3 and 4 components formats and BYTE types. */
+              case ImageComponentRetained.TYPE_BYTE_LA:
+              case ImageComponentRetained.TYPE_BYTE_GRAY:
+              case ImageComponentRetained.TYPE_USHORT_GRAY:
+              case ImageComponentRetained.TYPE_INT_BGR:
+              case ImageComponentRetained.TYPE_INT_RGB:
+              case ImageComponentRetained.TYPE_INT_ARGB:
+              default:
+                  throw new AssertionError("illegal format " + format);
           }
-          break;
-  
-        // GL_BGR
-        case ImageComponentRetained.BYTE_BGR:         
-          type = GL.GL_BGR;
-          break;
-    
-        case ImageComponentRetained.BYTE_LA:
-          type = GL.GL_LUMINANCE_ALPHA;
-          break;
-  
-        case ImageComponentRetained.BYTE_GRAY:
-        case ImageComponentRetained.USHORT_GRAY:      
-        default:
-          throw new AssertionError("illegal format " + format);
+          gl.glReadPixels(0, 0, width, height, type, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[]) data));
       }
-      gl.glReadPixels(0, 0, width, height, type, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap(byteData));
-    }
+      else if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) ||
+            (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_BUFFER)) {
 
+          switch (format) {
+              case ImageComponentRetained.TYPE_INT_BGR:
+                  type = GL.GL_BGR;
+                  break;
+              case ImageComponentRetained.TYPE_INT_RGB:
+                  type = GL.GL_RGB;
+                  break;
+              case ImageComponentRetained.TYPE_INT_ARGB:
+                  type = GL.GL_BGRA;
+                  break;
+              /* This method only supports 3 and 4 components formats and BYTE types. */
+              case ImageComponentRetained.TYPE_BYTE_LA:
+              case ImageComponentRetained.TYPE_BYTE_GRAY:
+              case ImageComponentRetained.TYPE_USHORT_GRAY:
+              case ImageComponentRetained.TYPE_BYTE_BGR:
+              case ImageComponentRetained.TYPE_BYTE_RGB:  
+              case ImageComponentRetained.TYPE_BYTE_RGBA:              
+              case ImageComponentRetained.TYPE_BYTE_ABGR:  
+              default:
+                  throw new AssertionError("illegal format " + format);
+          }
+          if(format == ImageComponentRetained.TYPE_INT_ARGB) {
+              gl.glReadPixels(0, 0, width, height, type, GL.GL_UNSIGNED_INT_8_8_8_8_REV, IntBuffer.wrap((int[]) data));             
+          }
+          else {
+              gl.glReadPixels(0, 0, width, height, type, GL.GL_UNSIGNED_INT_8_8_8_8, IntBuffer.wrap((int[]) data));                           
+          }
+      }
+      else {
+                 throw new AssertionError("illegal image data type " + dataType);
+      
+      }
+    }
+                  
     // The native method for swapBuffers
     int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable) {
       if (VERBOSE) System.err.println("JoglPipeline.swapBuffers()");
@@ -7469,168 +7755,6 @@ class JoglPipeline extends Pipeline {
       return true;
     }
 
-    void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,
-            ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown) {
-      if (VERBOSE) System.err.println("JoglPipeline.clear()");
-      JoglContext jctx = (JoglContext) ctx;
-      GLContext context = context(ctx);
-      GL gl = context.getGL();
-      if (image == null) {
-        gl.glClearColor(r, g, b, jctx.getAlphaClearValue());
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT); 
-      } else {
-        // Do a cool image blit
-        
-        int width = image.width;
-        int height = image.height;
-
-        // Temporarily disable fragment and most 3D operations
-        // XXXX: the GL_TEXTURE_BIT may not be necessary
-        gl.glPushAttrib(GL.GL_ENABLE_BIT | GL.GL_TEXTURE_BIT); 
-        disableAttribFor2D(gl);
-
-        ByteBuffer pixels = ByteBuffer.wrap(imageYdown);
-
-        // loaded identity modelview and projection matrix
-        gl.glMatrixMode(GL.GL_PROJECTION); 
-        gl.glLoadIdentity();
-        gl.glMatrixMode(GL.GL_MODELVIEW); 
-        gl.glLoadIdentity();
-        
-        int gltype = 0;
-        float rasterX = 0, rasterY = 0;
-        switch (image.storedYdownFormat) {
-          case ImageComponentRetained.BYTE_RGBA:
-            gltype = GL.GL_RGBA;
-            break;
-          case ImageComponentRetained.BYTE_RGB:
-            gltype = GL.GL_RGB;
-            break;
-
-          case ImageComponentRetained.BYTE_ABGR:
-            if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If false, should never come here!
-              gltype = GL.GL_ABGR_EXT;
-            }
-            break;
-
-          case ImageComponentRetained.BYTE_BGR:
-            gltype = GL.GL_BGR;
-            break;
-
-          case ImageComponentRetained.BYTE_LA:
-            gltype = GL.GL_LUMINANCE_ALPHA;
-            break;
-          case ImageComponentRetained.BYTE_GRAY:
-          case ImageComponentRetained.USHORT_GRAY:      
-          default:
-            throw new AssertionError("illegal format");
-        }
-
-        // start from upper left corner
-        gl.glRasterPos3f(-1.0f, 1.0f, 0.0f);
-
-        // setup the pixel zoom
-        float xzoom = (float)winWidth  / width;
-        float yzoom = (float)winHeight / height;
-        switch (imageScaleMode) {
-          case Background.SCALE_NONE:
-            if (xzoom > 1.0f || yzoom > 1.0f) {
-              // else don't need to clear the background with background color
-              gl.glClearColor((float)r, (float)g, (float)b, jctx.getAlphaClearValue());
-              gl.glClear(GL.GL_COLOR_BUFFER_BIT); 
-            }
-            gl.glPixelZoom(1.0f, -1.0f);
-            gl.glDrawPixels(width, height, gltype, GL.GL_UNSIGNED_BYTE,
-                            pixels);
-            break;
-          case Background.SCALE_FIT_MIN:
-            if (xzoom != yzoom) {
-              gl.glClearColor((float)r, (float)g, (float)b, jctx.getAlphaClearValue());
-              gl.glClear(GL.GL_COLOR_BUFFER_BIT); 
-            }
-            float zoom = Math.min(xzoom, yzoom);
-            gl.glPixelZoom(zoom, -zoom);
-            gl.glDrawPixels(width, height, gltype, GL.GL_UNSIGNED_BYTE,
-                            pixels);
-            break;
-          case Background.SCALE_FIT_MAX:
-            zoom = xzoom > yzoom? xzoom:yzoom;
-            gl.glPixelZoom(zoom, -zoom);
-            gl.glDrawPixels(width, height, gltype, GL.GL_UNSIGNED_BYTE,
-                            pixels);
-            break;
-          case Background.SCALE_FIT_ALL:
-            gl.glPixelZoom(xzoom, -yzoom);
-            gl.glDrawPixels(width, height, gltype, GL.GL_UNSIGNED_BYTE,
-                            pixels);
-            break;
-          case Background.SCALE_REPEAT:
-            gl.glPixelZoom(1.0f, -1.0f);
-            // get those raster positions
-            int repeatX = winWidth / width;
-            if (repeatX * width < winWidth)
-              repeatX++;
-            int repeatY = winHeight / height;
-            if (repeatY * height < winHeight)
-              repeatY++;
-            for (int i = 0; i < repeatX; i++)
-              for (int j = 0; j < repeatY; j++) {
-                rasterX = -1.0f + (float)width/winWidth * i * 2;
-                rasterY =  1.0f - (float)height/winHeight * j * 2;
-                gl.glRasterPos3f(rasterX, rasterY, 0.0f);
-                gl.glDrawPixels(width, height, gltype, GL.GL_UNSIGNED_BYTE,
-                                pixels);
-              }
-            break;
-
-          case Background.SCALE_NONE_CENTER:
-            if (xzoom > 1.0f || yzoom > 1.0f){
-              gl.glClearColor((float)r, (float)g, (float)b, jctx.getAlphaClearValue());
-              gl.glClear(GL.GL_COLOR_BUFFER_BIT); 
-            }
-            int row_length = 0, skip_pixels = 0, skip_rows = 0;
-            int subwidth = 0, subheight = 0;
-            if (xzoom >= 1.0f) {
-              rasterX = -(float)width/winWidth;
-              subwidth = width; 
-            } else {
-              rasterX = -1.0f;
-              row_length = width;
-              gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, row_length);
-              skip_pixels = (width-winWidth)/2;
-              gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, skip_pixels); 
-              subwidth = winWidth;
-            }
-            if (yzoom >= 1.0f){
-              rasterY = (float)height/winHeight;
-              subheight = height; 
-            } else {
-              rasterY = 1.0f;
-              skip_rows = (height-winHeight)/2;
-              gl.glPixelStorei(GL.GL_UNPACK_SKIP_ROWS, skip_rows);
-              subheight = winHeight; 
-            } 
-            gl.glRasterPos3f(rasterX, rasterY, 0.0f);
-            gl.glPixelZoom(1.0f, -1.0f);
-            gl.glDrawPixels(subwidth, subheight, gltype, GL.GL_UNSIGNED_BYTE,
-                            pixels);
-            gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
-            gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, 0);
-            gl.glPixelStorei(GL.GL_UNPACK_SKIP_ROWS, 0);
-            break;
-        }
-
-        // Restore attributes
-        gl.glPopAttrib();
-      }
-
-      // Java 3D always clears the Z-buffer
-      gl.glPushAttrib(GL.GL_DEPTH_BUFFER_BIT);
-      gl.glDepthMask(true);
-      gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
-      gl.glPopAttrib();
-    }
-
     void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,
@@ -7645,7 +7769,9 @@ class JoglPipeline extends Pipeline {
       if (image == null) {
         gl.glClearColor(r, g, b, jctx.getAlphaClearValue());
         gl.glClear(GL.GL_COLOR_BUFFER_BIT); 
-      } else {
+      } 
+      
+      else {
         // Do a cool image blit
 
         int width = image.width;
@@ -7665,7 +7791,7 @@ class JoglPipeline extends Pipeline {
         gl.glDepthMask(false);
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
         gl.glBindTexture(GL.GL_TEXTURE_2D, objectId);
-
+        /* 
         // set up texture parameter
         if (update) {
           gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
@@ -7677,8 +7803,9 @@ class JoglPipeline extends Pipeline {
         gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
 
         int gltype = 0;
-        if (update) {
-          switch (image.storedYupFormat) {
+        
+       if (update) {
+            switch (image.storedYupFormat) {
             case ImageComponentRetained.BYTE_RGBA:
               gltype = GL.GL_RGBA;
               break; 
@@ -7708,7 +7835,7 @@ class JoglPipeline extends Pipeline {
                           height, 0, gltype, GL.GL_UNSIGNED_BYTE,
                           ByteBuffer.wrap(image.imageYup));
         }
-
+        */
         // load identity modelview and projection matrix
         gl.glMatrixMode(GL.GL_PROJECTION);  
         gl.glLoadIdentity();
@@ -7851,7 +7978,7 @@ class JoglPipeline extends Pipeline {
         // Restore attributes
         gl.glPopAttrib();
       }
-
+    
       // Java 3D always clears the Z-buffer
       gl.glPushAttrib(GL.GL_DEPTH_BUFFER_BIT);
       gl.glDepthMask(true);
@@ -8109,10 +8236,10 @@ class JoglPipeline extends Pipeline {
         glType = GL.GL_ABGR_EXT;
       } else { 
         switch (format) {
-          case ImageComponentRetained.BYTE_RGBA:
+          case ImageComponentRetained.TYPE_BYTE_RGBA:
             glType = GL.GL_RGBA;
             break;
-          case ImageComponentRetained.BYTE_RGB:
+          case ImageComponentRetained.TYPE_BYTE_RGB:
             glType = GL.GL_RGB;
             break;
         }

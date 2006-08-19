@@ -132,27 +132,27 @@ void JNICALL Java_javax_media_j3d_NativePipeline_executeRaster(JNIEnv *env,
 	}
 	*/
         switch (format) {
-        case FORMAT_BYTE_RGBA:
+        case IMAGE_FORMAT_BYTE_RGBA:
             glformat = GL_RGBA;
             break;
-        case FORMAT_BYTE_RGB:
+        case IMAGE_FORMAT_BYTE_RGB:
             glformat = GL_RGB;
             break;
 
-        case FORMAT_BYTE_ABGR:         
+        case IMAGE_FORMAT_BYTE_ABGR:         
 	    if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */
 		glformat = GL_ABGR_EXT;
 	    }
 	    break;
-        case FORMAT_BYTE_BGR:         
+        case IMAGE_FORMAT_BYTE_BGR:         
             glformat = GL_BGR;
 	    break;
-        case FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_LA:
             glformat = GL_LUMINANCE_ALPHA;
             break;
 
-        case FORMAT_BYTE_GRAY:
-        case FORMAT_USHORT_GRAY:
+        case IMAGE_FORMAT_BYTE_GRAY:
+        case IMAGE_FORMAT_USHORT_GRAY:
 	default:
 	    throwAssert(env, "illegal format");
             break;

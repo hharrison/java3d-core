@@ -240,7 +240,10 @@ class RasterRetained extends GeometryRetained {
 	if (image != null) {
 	    ImageComponent2DRetained rimage = 
 		(ImageComponent2DRetained)image.retained;
+            
+            /*  Don't think this is needed.   --- Chien.            
             rimage.setRasterRef();
+             */
 	    this.image = rimage;
 	} else {
 	    this.image = null;
@@ -397,8 +400,11 @@ class RasterRetained extends GeometryRetained {
 	    boolean updateAlpha, float alpha,
 	    boolean multiScreen, int screen,
 	    boolean ignoreVertexColors, int pass) {
+        
+        throw new RuntimeException("Sorry!!! RASTER is temporarily unsupported.");
 
-	// Compute the offset position of the raster 
+/*
+        // Compute the offset position of the raster 
 	// This has to be done at render time because we need access 
 	// to the Canvas3D info
 
@@ -445,6 +451,7 @@ class RasterRetained extends GeometryRetained {
 		}
 	    }
 	}
+ */
     }
     
     /**

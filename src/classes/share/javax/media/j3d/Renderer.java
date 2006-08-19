@@ -674,16 +674,8 @@ class Renderer extends J3dThread {
                                 offBufRetained.evaluateExtensions(
 				     canvas.extensionsSupported);
 			    }
-                            
-                            // Issue 131: determine the boundary of the off-screen
-                            // buffer. Note that this was moved from
-                            // renderOffScreenBuffer, so it can be done for auto
-                            // off-screen canvases
-                            //
-                            // TODO KCR Issue 131: Remove this, if no longer
-                            // needed after issue 85 changes
-                            canvas.determineOffScreenBoundary(); //issue #131.
 			}
+                        
                     } else if (!canvas.active) {
 			continue;
 		    }
@@ -775,7 +767,9 @@ class Renderer extends J3dThread {
 			    if (renderBin.nodeComponentList.size() > 0) {
 				for (i = 0; i < renderBin.nodeComponentList.size(); i++) {
 				    NodeComponentRetained nc = (NodeComponentRetained)renderBin.nodeComponentList.get(i);
-				    nc.evaluateExtensions(canvas.extensionsSupported);
+                                    if(nc instanceof ImageComponent2DRetained) {    
+                                        ((ImageComponent2DRetained)nc).evaluateExtensions(canvas.extensionsSupported);
+                                    }
 				}
                             }
 

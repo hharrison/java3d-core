@@ -105,34 +105,36 @@ class Texture3DRetained extends TextureRetained {
     // Wrapper around the native call for 3D textures
     void updateTextureImage(Canvas3D cv,
             int face, int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height, int depth,
-            int boundaryWidth, byte[] imageData) {
+            int boundaryWidth, int imageDataType,
+            Object imageData) {
 
         Pipeline.getPipeline().updateTexture3DImage(cv.ctx,
                 numLevels, level,
-                internalFormat, storedFormat,
+                textureFormat, imageFormat,
                 width, height, depth,
-                boundaryWidth, imageData);
+                boundaryWidth, imageDataType, imageData);
     }
 
     // Wrapper around the native call for 3D textures
     void updateTextureSubImage(Canvas3D cv,
             int face, int level,
             int xoffset, int yoffset, int zoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset, int imgZOffset,
             int tilew, int tileh, int width, int height, int depth,
-            byte[] imageData) {
+            int imageDataType, Object imageData) {
 
         Pipeline.getPipeline().updateTexture3DSubImage(cv.ctx,
                 level, xoffset, yoffset, zoffset,
-                internalFormat, storedFormat,
+                textureFormat, imageFormat,
                 imgXOffset, imgYOffset, imgZOffset,
                 tilew, tileh, width, height, depth,
-                imageData);
+                imageDataType, imageData);
     }
 
+    
     // get an ID for Texture3D 
 
     int getTextureId() {
@@ -156,9 +158,12 @@ class Texture3DRetained extends TextureRetained {
     // mipmapping when level 0 is not the base level
 
     void updateTextureDimensions(Canvas3D cv) {
-        updateTextureImage(cv, maxLevels, 0, 0,
-                format, ImageComponentRetained.BYTE_RGBA,
-                width, height, depth, boundaryWidth, null);
+        if(images[0][0] != null) {
+            updateTextureImage(cv, maxLevels, 0, 0,
+                    format, images[0][0].getImageFormatTypeIntValue(),
+                    width, height, depth, boundaryWidth,
+                    images[0][0].getImageDataTypeIntValue(), null);
+        }
     }
 
 
@@ -195,12 +200,14 @@ class Texture3DRetained extends TextureRetained {
 		" numLevels= " + numLevels);
 */
 
+        ImageComponentRetained.ImageData imageData = image.getImageData();
 
         updateTextureImage(cv,
                 0, numLevels, level, format,
-                image.storedYupFormat,
+                image.getImageFormatTypeIntValue(),
                 image.width, image.height, depth,
-                boundaryWidth, image.imageYup);
+                boundaryWidth, image.getImageDataTypeIntValue(),
+                imageData.get());
     }
 
     void reloadTextureSubImage(Canvas3D cv, int level, int face,
@@ -212,15 +219,17 @@ class Texture3DRetained extends TextureRetained {
 	    width = info.width,
 	    height = info.height;
 
-        int xoffset = x - image.minX;
-        int yoffset = y - image.minY;
-
+        int xoffset = x;
+        int yoffset = y;
+        ImageComponentRetained.ImageData imageData = image.getImageData();
+        
         updateTextureSubImage(cv,
                 0, level, xoffset, yoffset, z,
-                format, image.storedYupFormat,
+                format, image.getImageFormatTypeIntValue(),
                 xoffset, yoffset, z,
                 image.width, image.height,
-                width, height, 1, image.imageYup);
+                width, height, 1, image.getImageDataTypeIntValue(),
+                imageData.get());
     }
 
 

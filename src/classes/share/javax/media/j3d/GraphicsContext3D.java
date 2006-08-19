@@ -12,6 +12,7 @@
 
 package javax.media.j3d;
 
+import java.awt.image.BufferedImage;
 import javax.vecmath.*;
 import java.util.Vector;
 import java.util.Enumeration;
@@ -1619,33 +1620,33 @@ public class GraphicsContext3D extends Object   {
     }
 
     void doClear() {
-
+        
         if (!canvas3d.firstPaintCalled)
-	    return;
-
-	RenderBin rb = canvas3d.view.renderBin;
-	BackgroundRetained back = null;
-
-
-	if (this.background != null)
-	    back = (BackgroundRetained)this.background.retained;
-	else
-	    back = this.black;
-
-	// XXXX: This should ideally be done by the renderer (or by the
-	// canvas itself) when the canvas is first added to a view.
-	/*
-	if ((canvas3d.screen.renderer != null) &&
-  	    (canvas3d.screen.renderer.renderBin == null))
-	    canvas3d.screen.renderer.renderBin = rb;
-	*/
-	// If we are in pure immediate mode, update the view cache
-	if (!canvas3d.isRunning)
-	    updateViewCache(rb);
-
+            return;
+        
+        RenderBin rb = canvas3d.view.renderBin;
+        BackgroundRetained back = null;
+        
+        
+        if (this.background != null)
+            back = (BackgroundRetained)this.background.retained;
+        else
+            back = this.black;
+        
+        // XXXX: This should ideally be done by the renderer (or by the
+        // canvas itself) when the canvas is first added to a view.
+        /*
+        if ((canvas3d.screen.renderer != null) &&
+            (canvas3d.screen.renderer.renderBin == null))
+            canvas3d.screen.renderer.renderBin = rb;
+         */
+        // If we are in pure immediate mode, update the view cache
+        if (!canvas3d.isRunning)
+            updateViewCache(rb);
+        
         // We need to catch NullPointerException when the dsi
         // gets yanked from us during a remove.
-
+        
         try {
             // Issue 78 - need to get the drawingSurface info every
             // frame; this is necessary since the HDC (window ID)
@@ -1654,98 +1655,99 @@ public class GraphicsContext3D extends Object   {
             if (!canvas3d.offScreen) {
                 canvas3d.drawingSurfaceObject.getDrawingSurfaceObjectInfo();
             }
-
-	    if (canvas3d.drawingSurfaceObject.renderLock()) {
-		// XXXX : Fix texture
-		/*
-		if (canvas3d.useSharedCtx) {
-		    if (canvas3d.screen.renderer.sharedCtx == 0) {
-			synchronized (VirtualUniverse.mc.contextCreationLock) {
-			    canvas3d.screen.renderer.sharedCtx = canvas3d.createNewContext(
-					canvas3d.screen.display,
-					canvas3d.window, 0, true,
-					canvas3d.offScreen);
-			    canvas3d.screen.renderer.sharedCtxTimeStamp = 
-				VirtualUniverse.mc.getContextTimeStamp();
-			    canvas3d.screen.renderer.needToRebuildDisplayList = true;
-			}
-		    }
-		}
-		*/
-		
-		if (canvas3d.ctx == null) {
-		    synchronized (VirtualUniverse.mc.contextCreationLock) {
-			canvas3d.ctx = canvas3d.createNewContext(null, false);
-			if (canvas3d.ctx == null) {
-			    canvas3d.drawingSurfaceObject.unLock();
-			    return;
-			}
-
-			canvas3d.ctxTimeStamp =
-			    VirtualUniverse.mc.getContextTimeStamp();
+            
+            if (canvas3d.drawingSurfaceObject.renderLock()) {
+                // XXXX : Fix texture
+                /*
+                if (canvas3d.useSharedCtx) {
+                    if (canvas3d.screen.renderer.sharedCtx == 0) {
+                        synchronized (VirtualUniverse.mc.contextCreationLock) {
+                            canvas3d.screen.renderer.sharedCtx = canvas3d.createNewContext(
+                                        canvas3d.screen.display,
+                                        canvas3d.window, 0, true,
+                                        canvas3d.offScreen);
+                            canvas3d.screen.renderer.sharedCtxTimeStamp =
+                                VirtualUniverse.mc.getContextTimeStamp();
+                            canvas3d.screen.renderer.needToRebuildDisplayList = true;
+                        }
+                    }
+                }
+                 */
+                
+                if (canvas3d.ctx == null) {
+                    synchronized (VirtualUniverse.mc.contextCreationLock) {
+                        canvas3d.ctx = canvas3d.createNewContext(null, false);
+                        if (canvas3d.ctx == null) {
+                            canvas3d.drawingSurfaceObject.unLock();
+                            return;
+                        }
+                        
+                        canvas3d.ctxTimeStamp =
+                                VirtualUniverse.mc.getContextTimeStamp();
                         canvas3d.screen.renderer.listOfCtxs.add(canvas3d.ctx);
-			canvas3d.screen.renderer.listOfCanvases.add(canvas3d);
-
-			canvas3d.beginScene();
-
-			if (canvas3d.graphics2D != null) {
-			    canvas3d.graphics2D.init();
-			}
-
+                        canvas3d.screen.renderer.listOfCanvases.add(canvas3d);
+                        
+                        canvas3d.beginScene();
+                        
+                        if (canvas3d.graphics2D != null) {
+                            canvas3d.graphics2D.init();
+                        }
+                        
                         // enable separate specular color
-			canvas3d.enableSeparateSpecularColor();
-		    }
-
+                        canvas3d.enableSeparateSpecularColor();
+                    }
+                    
                     // create the cache texture state in canvas
                     // for state download checking purpose
                     if (canvas3d.texUnitState == null) {
                         canvas3d.createTexUnitState();
                     }
-
+                    
                     // Create the texture unit state map
                     if (canvas3d.texUnitStateMap == null) {
                         canvas3d.createTexUnitStateMap();
                     }
-
-		    canvas3d.drawingSurfaceObject.contextValidated();
-		    canvas3d.screen.renderer.currentCtx = canvas3d.ctx;
+                    
+                    canvas3d.drawingSurfaceObject.contextValidated();
+                    canvas3d.screen.renderer.currentCtx = canvas3d.ctx;
                     canvas3d.screen.renderer.currentDrawable = canvas3d.drawable;
-		    initializeState();
-		    canvas3d.ctxChanged = true;
-		    canvas3d.canvasDirty = 0xffff;
-		    // Update Appearance
-		    updateState(rb, RenderMolecule.SURFACE);
-		    
-		    canvas3d.currentLights = new 
-			LightRetained[canvas3d.getNumCtxLights(canvas3d.ctx)];
-		    
-		    for (int j=0; j<canvas3d.currentLights.length; j++) {
-			canvas3d.currentLights[j] = null;
-		    }
-		}
-
-	  
-		canvas3d.makeCtxCurrent();
-		
-		if ((dirtyMask & BUFFER_MODE) != 0) {
-		    if (bufferOverride) {
-			canvas3d.setRenderMode(canvas3d.ctx, stereoMode,
-					       canvas3d.useDoubleBuffer && !frontBufferRendering);
-		    } else {
-			if (!canvas3d.isRunning) {
-			    canvas3d.setRenderMode(canvas3d.ctx, 
-						   Canvas3D.FIELD_ALL,
-						   canvas3d.useDoubleBuffer);
-			}
-		    }
-		    dirtyMask &= ~BUFFER_MODE;
-		}
-	    
-		Dimension size = canvas3d.getSize();
-		int winWidth  = size.width;
-		int winHeight = size.height;
-		
-		if (back.image != null && back.image.isByReference()) {
+                    initializeState();
+                    canvas3d.ctxChanged = true;
+                    canvas3d.canvasDirty = 0xffff;
+                    // Update Appearance
+                    updateState(rb, RenderMolecule.SURFACE);
+                    
+                    canvas3d.currentLights = new
+                            LightRetained[canvas3d.getNumCtxLights(canvas3d.ctx)];
+                    
+                    for (int j=0; j<canvas3d.currentLights.length; j++) {
+                        canvas3d.currentLights[j] = null;
+                    }
+                }
+                
+                
+                canvas3d.makeCtxCurrent();
+                
+                if ((dirtyMask & BUFFER_MODE) != 0) {
+                    if (bufferOverride) {
+                        canvas3d.setRenderMode(canvas3d.ctx, stereoMode,
+                                canvas3d.useDoubleBuffer && !frontBufferRendering);
+                    } else {
+                        if (!canvas3d.isRunning) {
+                            canvas3d.setRenderMode(canvas3d.ctx,
+                                    Canvas3D.FIELD_ALL,
+                                    canvas3d.useDoubleBuffer);
+                        }
+                    }
+                    dirtyMask &= ~BUFFER_MODE;
+                }
+                
+                Dimension size = canvas3d.getSize();
+                int winWidth  = size.width;
+                int winHeight = size.height;
+                
+                if (back.image != null && back.image.isByReference()) {
+                    
                     back.image.geomLock.getLock();
                     back.image.evaluateExtensions(canvas3d.extensionsSupported);
                     // this is if the background image resizes with the canvas
@@ -1753,97 +1755,99 @@ public class GraphicsContext3D extends Object   {
 // 		    canvas3d.getSize(size);
 // 		    int xmax = size.width;
 // 		    int ymax = size.height;
-                        if (objectId == -1) {
-                            objectId = VirtualUniverse.mc.getTexture2DId();
-                        }
-                        
-                        canvas3d.textureclear(canvas3d.ctx,
-                                back.xmax, back.ymax,
-                                back.color.x, back.color.y,
-                                back.color.z, winWidth, winHeight,
-                                objectId, back.imageScaleMode, back.texImage, true);
-
+                    if (objectId == -1) {
+                        objectId = VirtualUniverse.mc.getTexture2DId();
+                    }
+                    
+                    canvas3d.textureclear(canvas3d.ctx,
+                            back.xmax, back.ymax,
+                            back.color.x, back.color.y,
+                            back.color.z, winWidth, winHeight,
+                            objectId, back.imageScaleMode, back.texImage, true);
+                    
                     back.image.geomLock.unLock();
-	    }
-	    else {
-		    // this is if the background image resizes with the canvas
+                } else {
+                    
+                    if(back.image !=null) {
+                        back.image.evaluateExtensions(canvas3d.extensionsSupported);
+                    }
+                    // this is if the background image resizes with the canvas
 // 		    Dimension size = null;
 // 		    canvas3d.getSize(size);
 // 		    int xmax = size.width;
 // 		    int ymax = size.height;
-		    if (objectId == -1) {
-			objectId = VirtualUniverse.mc.getTexture2DId();
-		    }
-		    
-		    canvas3d.textureclear(canvas3d.ctx,
-					  back.xmax, back.ymax,
-					  back.color.x, back.color.y,
-					  back.color.z,
-					  winWidth, winHeight,
-					  objectId, back.imageScaleMode, back.texImage, true);
-
-	    }
-
-	    // Set the viewport and view matrices
-		if (!canvas3d.isRunning) {
-		    CanvasViewCache cvCache = canvas3d.canvasViewCache;
-		    canvas3d.setViewport(canvas3d.ctx,
-					 0, 0,
-					 cvCache.getCanvasWidth(),
-					 cvCache.getCanvasHeight());
-		    if (bufferOverride && (stereoMode == STEREO_RIGHT)) {
-			canvas3d.setProjectionMatrix(canvas3d.ctx,
-						     cvCache.getRightProjection().mat);
-			canvas3d.setModelViewMatrix(canvas3d.ctx,
-						    cvCache.getRightVpcToEc().mat,
-						    rb.vworldToVpc);
-		    }
-		    else {
-			canvas3d.setProjectionMatrix(canvas3d.ctx,
-						     cvCache.getLeftProjection().mat);
-			canvas3d.setModelViewMatrix(canvas3d.ctx,
-						    cvCache.getLeftVpcToEc().mat,
-						    rb.vworldToVpc);
-		    }
-		}
-
-	    canvas3d.drawingSurfaceObject.unLock();
-	  }
-	} catch (NullPointerException ne) {
-	    canvas3d.drawingSurfaceObject.unLock();
-	    throw ne;
-	}
+                    if (objectId == -1) {
+                        objectId = VirtualUniverse.mc.getTexture2DId();
+                    }
+                    
+                    canvas3d.textureclear(canvas3d.ctx,
+                            back.xmax, back.ymax,
+                            back.color.x, back.color.y,
+                            back.color.z,
+                            winWidth, winHeight,
+                            objectId, back.imageScaleMode, back.texImage, true);
+                    
+                }
+                
+                // Set the viewport and view matrices
+                if (!canvas3d.isRunning) {
+                    CanvasViewCache cvCache = canvas3d.canvasViewCache;
+                    canvas3d.setViewport(canvas3d.ctx,
+                            0, 0,
+                            cvCache.getCanvasWidth(),
+                            cvCache.getCanvasHeight());
+                    if (bufferOverride && (stereoMode == STEREO_RIGHT)) {
+                        canvas3d.setProjectionMatrix(canvas3d.ctx,
+                                cvCache.getRightProjection().mat);
+                        canvas3d.setModelViewMatrix(canvas3d.ctx,
+                                cvCache.getRightVpcToEc().mat,
+                                rb.vworldToVpc);
+                    } else {
+                        canvas3d.setProjectionMatrix(canvas3d.ctx,
+                                cvCache.getLeftProjection().mat);
+                        canvas3d.setModelViewMatrix(canvas3d.ctx,
+                                cvCache.getLeftVpcToEc().mat,
+                                rb.vworldToVpc);
+                    }
+                }
+                
+                canvas3d.drawingSurfaceObject.unLock();
+            }
+        } catch (NullPointerException ne) {
+            canvas3d.drawingSurfaceObject.unLock();
+            throw ne;
+        }
     }
-  
+    
     // Method to update compTransform.
     private void computeCompositeTransform() {
-	ViewPlatform vp;
- 	
-	if ((canvas3d == null) || 
-	    (canvas3d.view == null) ||
-	    (((vp = canvas3d.view.getViewPlatform()) == null)) ||
-	    (((ViewPlatformRetained)(vp.retained)) == null)) {
-	    compTransform.set(modelTransform);
-	    return;
-	}
-	    
+        ViewPlatform vp;
+        
+        if ((canvas3d == null) ||
+                (canvas3d.view == null) ||
+                (((vp = canvas3d.view.getViewPlatform()) == null)) ||
+                (((ViewPlatformRetained)(vp.retained)) == null)) {
+            compTransform.set(modelTransform);
+            return;
+        }
+        
         ViewPlatformRetained vpR = (ViewPlatformRetained)vp.retained;
-	if ((vpR == null) || (vpR.locale == null)) {
-	    compTransform.set(modelTransform);
-	    return;
-	}
-
-	HiResCoord localeHiRes = vpR.locale.hiRes;
-
-	if (localeHiRes.equals(hiRes)) {
-	    compTransform.set(modelTransform);
-	} else {
-	    Transform3D trans = new Transform3D();
-	    Vector3d localeTrans = new Vector3d();
-	    localeHiRes.difference( hiRes, localeTrans );
-	    trans.setTranslation( localeTrans );
-	    compTransform.mul(trans, modelTransform);
-	}
+        if ((vpR == null) || (vpR.locale == null)) {
+            compTransform.set(modelTransform);
+            return;
+        }
+        
+        HiResCoord localeHiRes = vpR.locale.hiRes;
+        
+        if (localeHiRes.equals(hiRes)) {
+            compTransform.set(modelTransform);
+        } else {
+            Transform3D trans = new Transform3D();
+            Vector3d localeTrans = new Vector3d();
+            localeHiRes.difference( hiRes, localeTrans );
+            trans.setTranslation( localeTrans );
+            compTransform.mul(trans, modelTransform);
+        }
     }
   
     // Method to update the view cache in pure immediate mode
@@ -2053,15 +2057,19 @@ public class GraphicsContext3D extends Object   {
 	        ((Text3DRetained)geometry.retained).setModelViewMatrix(
 			vpcToEc, this.drawTransform);
 		drawGeo = (GeometryRetained)geometry.retained;
-	    } else if (geometry.retained instanceof RasterRetained) {
-		ImageComponent2DRetained img = ((RasterRetained)geometry.retained).image;
-		if (img != null && img.isByReference()) {
-		    img.geomLock.getLock();
-		    img.evaluateExtensions(canvas3d.extensionsSupported);
-		    img.geomLock.unLock();
-		}
-		drawGeo = (GeometryRetained)geometry.retained;
-	    } else {
+            } else if (geometry.retained instanceof RasterRetained) {
+                ImageComponent2DRetained img = ((RasterRetained)geometry.retained).image;
+                if (img != null) {
+                    if(img.isByReference()) {
+                        img.geomLock.getLock();
+                        img.evaluateExtensions(canvas3d.extensionsSupported);
+                        img.geomLock.unLock();
+                    } else {
+                        img.evaluateExtensions(canvas3d.extensionsSupported);
+                    }
+                }
+                drawGeo = (GeometryRetained)geometry.retained;
+            } else {
 		drawGeo = (GeometryRetained)geometry.retained;
 	    }
 
@@ -2199,10 +2207,12 @@ public class GraphicsContext3D extends Object   {
     }
 
 
-
+// Need to rewrite this method --- Chien
     void doReadRaster(Raster raster) {
 
-
+        throw new RuntimeException("Sorry!!! RASTER is temporarily unsupported.");
+    
+/*    
 	if (!canvas3d.firstPaintCalled) {
 	    readRasterReady = true;
 	    return;
@@ -2211,20 +2221,6 @@ public class GraphicsContext3D extends Object   {
 	RasterRetained ras = (RasterRetained)raster.retained;
         Dimension canvasSize = canvas3d.getSize();
 	int format = 0; // Not use in case of DepthComponent read
-
-	if (raster.isLive()) {
-	    readRasterReady = true;
-           throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D21"));
-        }
-
-	// XXXX: implement illegal argument exception
-	/*
-	if (ras.image.byReference &&
-	    !(ras.image.imageReference instanceof BufferedImage)) {
-
-	    throw new IllegalArgumentException(...);
-	}
-	*/
 
 	if (canvas3d.ctx == null) {
 	    // Force an initial clear if one has not yet been done
@@ -2238,10 +2234,14 @@ public class GraphicsContext3D extends Object   {
 
 	// allocate read buffer space
         if ( (ras.type & Raster.RASTER_COLOR) != 0) {
-	    int bpp = ras.image.getEffectiveBytesPerPixel();
+	    //int bpp = ras.image.getEffectiveBytesPerPixel();
+            System.out.println("Sorry!!! RASTER is temporarily unsupported.");
+            int bpp = 0;
             int size = ras.image.height * ras.image.width 
 			* bpp;
-	    format = ras.image.getEffectiveFormat();
+	    //format = ras.image.getEffectiveFormat();
+            System.out.println("Sorry!!! RASTER is temporarily unsupported.");
+
 	    if ((ras.width > ras.image.width) ||
 		(ras.height > ras.image.height)) {
 		throw new RuntimeException(J3dI18N.getString("GraphicsContext3D27"));
@@ -2274,6 +2274,9 @@ public class GraphicsContext3D extends Object   {
 		ras.image.evaluateExtensions(canvas3d.extensionsSupported);
 		ras.image.geomLock.unLock();
 	    }
+            else {
+ 		ras.image.evaluateExtensions(canvas3d.extensionsSupported);               
+            }
 	}
 
         // We need to catch NullPointerException when the dsi
@@ -2296,7 +2299,9 @@ public class GraphicsContext3D extends Object   {
 
 	// flip color image: yUp -> yDown and convert to BufferedImage
         if ( (ras.type & Raster.RASTER_COLOR) != 0) {
-            ras.image.retrieveImage(byteBuffer, ras.width, ras.height);
+            // ras.image.retrieveImage(byteBuffer, ras.width, ras.height);
+            // Look into using new15_copyBufferedImageWithFormatConversion() as help method.
+            System.out.println("Sorry!!! RASTER is temporarily unsupported.");
         }
 
         if ( (ras.type & Raster.RASTER_DEPTH) != 0) {
@@ -2314,6 +2319,7 @@ public class GraphicsContext3D extends Object   {
 				intBuffer, ras.width, ras.height);
         }
 	readRasterReady = true;
+ */
     }
 
     /**
@@ -2614,15 +2620,6 @@ public class GraphicsContext3D extends Object   {
 		    // If the image is by reference, check if the image
 		    // should be processed
 		    if (app.texture != null) {
-			for (int f = 0; f < app.texture.numFaces; f++) {
-			    for (int k = 0; k < app.texture.maxLevels; k++) {
-			        if (app.texture.images[f][k].isByReference()) {
-				    app.texture.images[f][k].geomLock.getLock();
-				    app.texture.images[f][k].evaluateExtensions(canvas3d.extensionsSupported);
-				    app.texture.images[f][k].geomLock.unLock();
-				}
-			    }
-			}
 		        app.texture.updateNative(canvas3d);
 		        canvas3d.canvasDirty |= Canvas3D.TEXTUREBIN_DIRTY|Canvas3D.TEXTUREATTRIBUTES_DIRTY;
 			numActiveTexUnit = 1;

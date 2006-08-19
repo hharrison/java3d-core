@@ -363,11 +363,15 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    }
 	}
 
+        
+        /*  Don't think this is needed.   --- Chien.
         if (this instanceof Texture2DRetained) {
 	    ((ImageComponent2DRetained)image.retained).setTextureRef();
         } else {
 	    ((ImageComponent3DRetained)image.retained).setTextureRef();
         }
+         */
+        
 
 	if (image != null) {
 	    this.images[0][level] = (ImageComponentRetained)image.retained;
@@ -441,12 +445,12 @@ abstract class TextureRetained extends NodeComponentRetained {
             if (image != null && level >= baseLevel && level <= maximumLevel) {
 		ImageComponentRetained img= (ImageComponentRetained)image.retained;
 		if (img.isByReference()) {
-		    if (img.bImage[0] == null) {
+		    if (img.getRefImage(0) == null) {
 			enable = false;
 		    }
 		}
 		else {
-		    if (img.imageYup == null) {
+		    if (img.getImageData().get() == null) {
 			enable = false;
 		    }
 		}
@@ -493,12 +497,12 @@ abstract class TextureRetained extends NodeComponentRetained {
 		    ImageComponentRetained img= 
 			(ImageComponentRetained)images[i].retained;
 		    if (img.isByReference()) {
-			if (img.bImage[0] == null) {
+			if (img.getRefImage(0) == null) {
 			    enable = false;
 			}
 		    }
 		    else {
-			if (img.imageYup == null) {
+			if (img.getImageData().get() == null) {
 			    enable = false;
 			}
 		    }
@@ -626,11 +630,11 @@ abstract class TextureRetained extends NodeComponentRetained {
 	for (int j = 0; j < numFaces && enable; j++) {
 	     for (int i = baseLevel; i <= maximumLevel && enable; i++) {
 	    	  if (images[j][i].isByReference()) {
-		      if (images[j][i].bImage[0] == null) {
+		      if (images[j][i].getRefImage(0) == null) {
 		          enable = false;
 		      }
                   } else {
-		      if (images[j][i].imageYup == null) {
+		      if (images[j][i].getImageData().get() == null) {
 		          enable = false;
 		      }
 	          }
@@ -982,11 +986,11 @@ abstract class TextureRetained extends NodeComponentRetained {
 	        for (int j = 0; j < numFaces && enable; j++) {
 	  	    for (int i = baseLevel; i <= maximumLevel && enable; i++){
 		        if (images[j][i].isByReference()) {
-		            if (images[j][i].bImage[0] == null) {
+		            if (images[j][i].getRefImage(0) == null) {
 			        enable = false;
  			    }
 		        } else {
-		            if (images[j][i].imageYup == null) {
+		            if (images[j][i].getImageData().get() == null) {
 			        enable = false;
 		            }
 		        }
@@ -1115,9 +1119,12 @@ abstract class TextureRetained extends NodeComponentRetained {
      * mipmapping when level 0 is not the base level
      */
     void updateTextureDimensions(Canvas3D cv) {
-	updateTextureImage(cv, 0, maxLevels, 0, 
-		format, ImageComponentRetained.BYTE_RGBA,
-		width, height, boundaryWidth, null);
+        if(images[0][0] != null) {
+            updateTextureImage(cv, 0, maxLevels, 0,
+                    format, images[0][0].getImageFormatTypeIntValue(),
+                    width, height, boundaryWidth,
+                    images[0][0].getImageDataTypeIntValue(), null);
+        }
     }
     
 
@@ -1237,14 +1244,16 @@ abstract class TextureRetained extends NodeComponentRetained {
     // Texture3D and TextureCureMap
     void updateTextureImage(Canvas3D cv,
             int face, int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
-            int boundaryWidth, byte[] imageData) {
+            int boundaryWidth,
+            int imageDataType, Object data) {
 
         Pipeline.getPipeline().updateTexture2DImage(cv.ctx,
                 numLevels, level,
-                internalFormat, storedFormat,
-                width, height, boundaryWidth, imageData);
+                textureFormat, imageFormat,
+                width, height, boundaryWidth,
+                imageDataType, data);
     }
 
     // Wrapper around the native call for 2D textures; overridden for
@@ -1252,20 +1261,19 @@ abstract class TextureRetained extends NodeComponentRetained {
     void updateTextureSubImage(Canvas3D cv,
             int face, int level,
             int xoffset, int yoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData) {
+            int imageDataType, Object data) {
 
         Pipeline.getPipeline().updateTexture2DSubImage(cv.ctx,
                 level, xoffset, yoffset,
-                internalFormat, storedFormat,
+                textureFormat, imageFormat,
                 imgXOffset, imgYOffset,
                 tilew, width, height,
-                imageData);
+                imageDataType, data);
     }
-
-
+    
 
     /**
      * reloadTextureImage is used to load a particular level of image
@@ -1275,32 +1283,28 @@ abstract class TextureRetained extends NodeComponentRetained {
     void reloadTextureImage(Canvas3D cv, int face, int level,
 				ImageComponentRetained image, int numLevels) {
 
-        //System.out.println("Texture.reloadTextureImage: face= " + face + " level= " + level);
-
-	//System.out.println("...image = "+image+" image.storedFormat = "+image.storedYupFormat+" image.imageYup = "+image.imageYup+" texture - "+this);
-
-	//System.out.println("....imageYupAllocated= " + image.imageYupAllocated);
-
+        ImageComponentRetained.ImageData imageData = image.getImageData();
+        
         updateTextureImage(cv,
                 face, numLevels, level,
-                format, image.storedYupFormat,
+                format, image.getImageFormatTypeIntValue(),
                 image.width, image.height,
-                boundaryWidth, image.imageYup);
+                boundaryWidth, image.getImageDataTypeIntValue(),
+                imageData.get());
+                
+	// Now take care of the RenderedImage (byRef and yUp) case. Note, if image
+	// is a RenderedImage ( byRef and yUp), then imageData will be null
 
-	// Now take care of the RenderedImage case. Note, if image
-	// is a RenderedImage, then imageYup will be null
-
-	if (image.imageYupClass == ImageComponentRetained.RENDERED_IMAGE) {
-
+	if (imageData == null) {
 	    //		    System.out.println("==========. subImage");
 	    // Download all the tiles for this texture
 	    int xoffset = 0, yoffset = 0;
 	    int tmpw = image.width;
 	    int tmph = image.height;
-	    int endXTile = image.minTileX * image.tilew + image.tileGridXOffset+image.tilew;
-	    int endYTile = image.minTileY * image.tileh + image.tileGridYOffset+image.tileh;
-	    int curw = (endXTile - image.minX);
-	    int curh = (endYTile - image.minY);
+	    int endXTile = image.tilew;
+	    int endYTile = image.tileh;
+	    int curw = endXTile;
+	    int curh = endYTile;
 
 	    if (tmpw < curw) {
 	        curw = tmpw;
@@ -1313,23 +1317,23 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    int startw = curw;
 	    int imageXOffset = image.tilew - curw;
 	    int imageYOffset = image.tileh - curh;
-	    for (int m = image.minTileY; m < image.minTileY+image.numYTiles; m++) {
+	    for (int m = 0; m < image.numYTiles; m++) {
 	        xoffset = 0;
 	        tmpw = width;
 	        curw = startw;
 	        imageXOffset = image.tilew - curw;
-	        for (int n = image.minTileX; 
-			n < image.minTileX+image.numXTiles; n++) {
+	        for (int n = 0; n < image.numXTiles; n++) {
 		    java.awt.image.Raster ras;
-		    ras = image.bImage[0].getTile(n,m);
-		    byte[] tmpImage =  ((DataBufferByte)ras.getDataBuffer()).getData();
+		    ras = image.getRefImage(0).getTile(n,m);
+		    byte[] data =  ((DataBufferByte)ras.getDataBuffer()).getData();
                     updateTextureSubImage(cv, face,
                             level, xoffset, yoffset, format,
-                            image.storedYupFormat,
+                            image.getImageFormatTypeIntValue(),
                             imageXOffset, imageYOffset,
                             image.tilew,
                             curw, curh,
-                            tmpImage);
+                            ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY,
+                            (Object) data);
 	  	    xoffset += curw;
 	  	    imageXOffset = 0;
 		    tmpw -= curw;
@@ -1371,57 +1375,39 @@ abstract class TextureRetained extends NodeComponentRetained {
 	//			" width= " + width + " height= " + height +
 	//			" format= " + format);
 
-
-	if (image.imageYupClass == ImageComponentRetained.BUFFERED_IMAGE) {
-
-	    int xoffset = x - image.minX;
-	    int yoffset = y - image.minY;
-
-	    byte[] imageData;
-	    if (image.imageYupAllocated) {
-		imageData = image.imageYup;
-		yoffset = image.height - yoffset - height;
-
-	    } else {
-                // Fix issue 132
-		imageData = ((DataBufferByte)
-			((BufferedImage)image.bImage[0]).getRaster().getDataBuffer()).getData();
-
-	        // based on the yUp flag in the associated ImageComponent,
-	        // adjust the yoffset
-
-	        if (!image.yUp) {
-		    yoffset = image.height - yoffset - height;
-		}
-	    }
-
-            updateTextureSubImage(cv, face, level,
-                    xoffset, yoffset,
-                    format, image.storedYupFormat,
-                    xoffset, yoffset,
-                    image.width, width, height, imageData);
+        ImageComponentRetained.ImageData imageData = image.getImageData();
+        if(imageData != null) {
+	    int xoffset = x;
+	    int yoffset = y;
+          
+        yoffset = image.height - yoffset - height;
+        updateTextureSubImage(cv, face, level,
+                xoffset, yoffset,
+                format, image.getImageFormatTypeIntValue(),
+                xoffset, yoffset,
+                image.width, width, height, 
+                image.getImageDataTypeIntValue(),
+                imageData.get());
+        
 	} else {
 
 	    // System.out.println("RenderedImage subImage update");
-
 	    // determine the first tile of the image
 
             float mt;
-	    int xoff = image.tileGridXOffset;
-	    int yoff = image.tileGridYOffset;
 	    int minTileX, minTileY;
 
-	    int rx = x + image.minX;	// x offset in RenderedImage
-	    int ry = y + image.minY;	// y offset in RenderedImage
+	    int rx = x;
+	    int ry = y;
 	
-            mt = (float)(rx - xoff) / (float)image.tilew;
+            mt = (float)(rx) / (float)image.tilew;
             if (mt < 0) {
                 minTileX = (int)(mt - 1);
             } else {
                 minTileX = (int)mt;
             }
 
-            mt = (float)(ry - yoff) / (float)image.tileh;
+            mt = (float)(ry) / (float)image.tileh;
             if (mt < 0) {
                 minTileY = (int)(mt - 1);
             } else {
@@ -1430,8 +1416,8 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	    // determine the pixel offset of the upper-left corner of the
 	    // first tile
-	    int startXTile = minTileX * image.tilew + xoff;
-	    int startYTile = minTileY * image.tilew + yoff;
+	    int startXTile = minTileX * image.tilew;
+	    int startYTile = minTileY * image.tilew;
 
 
             // image dimension in the first tile
@@ -1483,7 +1469,6 @@ abstract class TextureRetained extends NodeComponentRetained {
             }
 
 	    java.awt.image.Raster ras;
-	    byte[] imageData;
 
 	    int textureX = x; 	// x offset in the texture 
 	    int textureY = y; 	// y offset in the texture 
@@ -1497,14 +1482,16 @@ abstract class TextureRetained extends NodeComponentRetained {
 		
 		for (int xTile = minTileX; xTile < minTileX + numXTiles;
 			xTile++) {
-		    ras = image.bImage[0].getTile(xTile, yTile);
-		    imageData = ((DataBufferByte)ras.getDataBuffer()).getData();
+		    ras = image.getRefImage(0).getTile(xTile, yTile);
+		    byte[] data = ((DataBufferByte)ras.getDataBuffer()).getData();
 
                     updateTextureSubImage(cv, face, level,
                             textureX, textureY,
-                            format, image.storedYupFormat,
+                            format, image.getImageFormatTypeIntValue(),
                             imgX, imgY,
-                            image.tilew, curw, curh, imageData);
+                            image.tilew, curw, curh, 
+                            ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY,
+                            (Object)data);
 
                     // move to the next tile in x direction
 
@@ -1967,9 +1954,9 @@ abstract class TextureRetained extends NodeComponentRetained {
 	            images[j][0].addUser(mirrorTexture);
 		}
 
-	        for (int i = 1; i < mirrorTexture.maxLevels; i++) {
-		    mirrorTexture.images[j][i] = createNextLevelImage(
-			       (mirrorTexture.images[j][i-1]));
+	        for (int i = 1; i < mirrorTexture.maxLevels; i++) {                 
+		    mirrorTexture.images[j][i] = 
+                            mirrorTexture.images[j][i-1].createNextLevelMipMapImage();
 		}
 	    }
 	}
@@ -2373,110 +2360,6 @@ abstract class TextureRetained extends NodeComponentRetained {
 
     void updateResourceCreationMask() {
         resourceCreationMask = 0x0; 
-    }
-
-    final ImageComponentRetained createNextLevelImage(
-		ImageComponentRetained oImage) {
- 
-	int xScale, yScale, nWidth, nHeight;
-	ImageComponentRetained nImage = null;
-
-        if (oImage.width > 1) {
-            nWidth = oImage.width >> 1;
-            xScale = 2;
-        } else {
-            nWidth = 1;
-            xScale = 1;
-        }
-        if (oImage.height > 1) {
-            nHeight = oImage.height >> 1; 
-            yScale = 2; 
-        } else { 
-            nHeight = 1;
-            yScale = 1; 
-        }   
-
-        int bytesPerPixel = oImage.bytesPerYupPixelStored;   
-
-	if (oImage instanceof ImageComponent2DRetained) {
-
-            nImage = new ImageComponent2DRetained();
-            nImage.processParams(oImage.getFormat(), nWidth, nHeight, 1);
-            nImage.imageYup = new byte[nWidth * nHeight * bytesPerPixel];
-	    nImage.storedYupFormat = nImage.internalFormat;
-	    nImage.bytesPerYupPixelStored = bytesPerPixel;
-	    scaleImage(nWidth, nHeight, xScale, yScale, oImage.width, 0, 0,
-			bytesPerPixel, nImage.imageYup, oImage.imageYup);
-
-	} else {	//oImage instanceof ImageComponent3DRetained 
-
-	    int depth =  ((ImageComponent3DRetained)oImage).depth;
-            nImage = new ImageComponent3DRetained();
-            nImage.processParams(oImage.getFormat(), nWidth, nHeight, depth);
-            nImage.imageYup = new byte[nWidth * nHeight * bytesPerPixel];
-	    nImage.storedYupFormat = nImage.internalFormat;
-	    nImage.bytesPerYupPixelStored = bytesPerPixel;
-
-            for (int i = 0; i < depth; i++) {
-	        scaleImage(nWidth, nHeight, xScale, yScale, oImage.width, 
-			i * nWidth * nHeight * bytesPerPixel,
-			i * oImage.width * oImage.height * bytesPerPixel,
-			bytesPerPixel, nImage.imageYup, oImage.imageYup);
-	    }
-	} 
-        return nImage;
-    }
-
-    final void scaleImage(int nWidth, int nHeight, int xScale, int yScale,
-			int oWidth, int nStart, int oStart, int bytesPerPixel,
-			byte[] nData, byte[] oData) {
-
-	int nOffset = 0; 
-	int oOffset = 0; 
-	int oLineIncr = bytesPerPixel * oWidth;
-	int oPixelIncr = bytesPerPixel << 1;
-
-	if (yScale == 1) {
-                for (int x = 0; x < nWidth; x++) {
-                    for (int k = 0; k < bytesPerPixel; k++) {
-			nData[nStart + nOffset + k] = (byte)
-			    (((int)(oData[oStart + oOffset + k] & 0xff) +
-			      (int)(oData[oStart + oOffset + k 
-					+ bytesPerPixel] & 0xff) + 1) >> 1); 
-                    }      
-                    nOffset += bytesPerPixel;
-                    oOffset += oPixelIncr;
-                }      
-	} else if (xScale == 1) {
-                for (int y = 0; y < nHeight; y++) {
-                    for (int k = 0; k < bytesPerPixel; k++) {
-			nData[nStart + nOffset + k] = (byte)
-			    (((int)(oData[oStart + oOffset + k] & 0xff) +
-			      (int)(oData[oStart + oOffset + k 
-					+ oLineIncr] & 0xff) + 1) >> 1); 
-                    }      
-                    nOffset += bytesPerPixel;
-                    oOffset += oLineIncr;
-                }      
-	} else {
-            for (int y = 0; y < nHeight; y++) {
-                for (int x = 0; x < nWidth; x++) {
-                    for (int k = 0; k < bytesPerPixel; k++) {
-			nData[nStart + nOffset + k] = (byte)
-			    (((int)(oData[oStart + oOffset + k] & 0xff) +
-			      (int)(oData[oStart + oOffset + k  
-					+ bytesPerPixel] & 0xff) +
-			      (int)(oData[oStart + oOffset + k 
-					+ oLineIncr] & 0xff) + 
-			      (int)(oData[oStart + oOffset + k + oLineIncr +
-					+ bytesPerPixel] & 0xff) + 2) >> 2); 
-                    }      
-                    nOffset += bytesPerPixel;
-                    oOffset += oPixelIncr;
-                }      
-                oOffset += oLineIncr;
-            }  
-	}
     }
 
     void incTextureBinRefCount(TextureBin tb) {

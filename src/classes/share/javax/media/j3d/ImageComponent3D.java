@@ -76,7 +76,6 @@ public class ImageComponent3D extends ImageComponent {
 			    int		depth) {
 
         ((ImageComponent3DRetained)this.retained).processParams(format, width, height, depth);
-        ((ImageComponent3DRetained)this.retained).setDepth(depth);
     }
 
     /**
@@ -97,7 +96,6 @@ public class ImageComponent3D extends ImageComponent {
     public ImageComponent3D(int format, BufferedImage[] images) {
         ((ImageComponent3DRetained)this.retained).processParams(format, 
 		images[0].getWidth(null), images[0].getHeight(null), images.length);
-	((ImageComponent3DRetained)this.retained).setDepth(images.length);
         for (int i=0; i<images.length; i++) {
             ((ImageComponent3DRetained)this.retained).set(i, images[i]);
         }
@@ -124,7 +122,6 @@ public class ImageComponent3D extends ImageComponent {
 
         ((ImageComponent3DRetained)this.retained).processParams(format, 
 	images[0].getWidth(), images[0].getHeight(), images.length);
-	((ImageComponent3DRetained)this.retained).setDepth(images.length);
         for (int i=0; i<images.length; i++) {
             ((ImageComponent3DRetained)this.retained).set(i, images[i]);
         }
@@ -164,7 +161,6 @@ public class ImageComponent3D extends ImageComponent {
  	((ImageComponentRetained)this.retained).setByReference(byReference);
  	((ImageComponentRetained)this.retained).setYUp(yUp);
  	((ImageComponent3DRetained)this.retained).processParams(format, width, height, depth);
- 	((ImageComponent3DRetained)this.retained).setDepth(depth);
     }
 
     /**
@@ -197,8 +193,8 @@ public class ImageComponent3D extends ImageComponent {
 
  	((ImageComponentRetained)this.retained).setByReference(byReference);
  	((ImageComponentRetained)this.retained).setYUp(yUp);
- 	((ImageComponent3DRetained)this.retained).processParams(format, images[0].getWidth(null), images[0].getHeight(null), images.length);
- 	((ImageComponent3DRetained)this.retained).setDepth(images.length);
+ 	((ImageComponent3DRetained)this.retained).processParams(format, 
+                images[0].getWidth(null), images[0].getHeight(null), images.length);
  	for (int i=0; i<images.length; i++) {
  	    ((ImageComponent3DRetained)this.retained).set(i, images[i]);
  	}
@@ -236,8 +232,8 @@ public class ImageComponent3D extends ImageComponent {
 
  	((ImageComponentRetained)this.retained).setByReference(byReference);
  	((ImageComponentRetained)this.retained).setYUp(yUp);
- 	((ImageComponent3DRetained)this.retained).processParams(format, images[0].getWidth(), images[0].getHeight(), images.length);
- 	((ImageComponent3DRetained)this.retained).setDepth(images.length);
+ 	((ImageComponent3DRetained)this.retained).processParams(format, 
+                images[0].getWidth(), images[0].getHeight(), images.length);
  	for (int i=0; i<images.length; i++) {
  	    ((ImageComponent3DRetained)this.retained).set(i, images[i]);
  	}

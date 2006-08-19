@@ -1013,20 +1013,20 @@ class NoopPipeline extends Pipeline {
 
     void updateTexture2DImage(Context ctx,
             int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            byte[] imageData) {
+            int imageDataType, Object data) {
     }
 
     void updateTexture2DSubImage(Context ctx,
             int level, int xoffset, int yoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData) {
+            int imageDataType, Object data) {
     }
-
+    
     void updateTexture2DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod) {
@@ -1078,20 +1078,20 @@ class NoopPipeline extends Pipeline {
 
     void updateTexture3DImage(Context ctx,
             int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height, int depth,
             int boundaryWidth,
-            byte[] imageData) {
+            int imageDataType, Object imageData) {
     }
 
     void updateTexture3DSubImage(Context ctx,
             int level,
             int xoffset, int yoffset, int zoffset,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXoffset, int imgYoffset, int imgZoffset,
             int tilew, int tileh,
             int width, int height, int depth,
-            byte[] imageData) {
+            int imageTypeData, Object imageData) {
     }
 
     void updateTexture3DLodRange(Context ctx,
@@ -1140,18 +1140,18 @@ class NoopPipeline extends Pipeline {
 
     void updateTextureCubeMapImage(Context ctx,
             int face, int numLevels, int level,
-            int internalFormat, int storedFormat,
+            int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            byte[] imageData) {
+            int imageDataType, Object imageData) {
     }
 
     void updateTextureCubeMapSubImage(Context ctx,
             int face, int level, int xoffset, int yoffset,
-            int internalFormat,int storedFormat,
+            int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            byte[] imageData) {
+            int imageDataType, Object imageData) {
     }
 
     void updateTextureCubeMapLodRange(Context ctx,
@@ -1257,9 +1257,9 @@ class NoopPipeline extends Pipeline {
     }
 
     // This is the native for reading the image from the offscreen buffer
-    void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int width, int height) {
+    void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int type, Object data, int width, int height) {
     }
-
+    
     // The native method for swapBuffers
     int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable) {
         return 0;
@@ -1435,9 +1435,6 @@ class NoopPipeline extends Pipeline {
         return true;
     }
 
-    void clear(Context ctx, float r, float g, float b, int winWidth, int winHeight,
-            ImageComponent2DRetained image, int imageScaleMode, byte[] imageYdown) {
-    }
     void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,

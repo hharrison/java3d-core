@@ -212,11 +212,6 @@ class NodeComponentRetained extends SceneGraphObjectRetained {
 	mirror = null;
     }
 
-    // Evaluate state based on the following extensions
-    void evaluateExtensions(int extensions) {
-    }
-
-
     void setFrequencyChangeMask(int bit, int mask) {
 	if (source.getCapabilityIsFrequent(bit))
 	    changedFrequent |= mask;
