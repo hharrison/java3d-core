@@ -4486,12 +4486,12 @@ public class Canvas3D extends Canvas {
 	}
 	textureIDResourceTable.clear();	
 
-	freeAllDisplayListResources();
+	freeAllDisplayListResources(ctx);
     }
 
-    void freeAllDisplayListResources() {
+    void freeAllDisplayListResources(Context ctx) {
 	if ((view != null) && (view.renderBin != null)) {
-	    view.renderBin.freeAllDisplayListResources(this);
+	    view.renderBin.freeAllDisplayListResources(this, ctx);
 	    if (useSharedCtx) {
 		// We need to rebuild all other Canvas3D resource
 		// shared by this Canvas3D. Since we didn't

@@ -2255,7 +2255,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 
     }
 
-    void releaseAllPrimaryDisplayListResources(Canvas3D cv) {
+    void releaseAllPrimaryDisplayListResources(Canvas3D cv, Context ctx) {
 	if (primaryRenderAtomList != null) {
 	    if (primaryMoleculeType == SEPARATE_DLIST_PER_RINFO_MOLECULE) {
 		RenderAtomListInfo ra = primaryRenderAtomList;
@@ -2263,14 +2263,14 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		while (ra != null) {
 		    id = ra.renderAtom.dlistIds[ra.index];
 		    if (id > 0) {
-			cv.freeDisplayList(cv.ctx, id);
+			cv.freeDisplayList(ctx, id);
 		    }
 		    ra = ra.next;
 		}
 	    }
 	    else if (primaryMoleculeType == DLIST_MOLECULE) {
 		if (displayListId > 0) {
-		    cv.freeDisplayList(cv.ctx, displayListId);
+		    cv.freeDisplayList(ctx, displayListId);
 		}
 	    }
 	} 

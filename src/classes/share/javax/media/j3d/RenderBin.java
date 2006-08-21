@@ -6956,7 +6956,9 @@ System.out.println("......tb.soleUser= " +
     }
 
 
-    void freeAllDisplayListResources(Canvas3D cv) {
+    void freeAllDisplayListResources(Canvas3D cv, Context ctx) {
+
+        assert ctx != null;
 
 	int i;
 	int size = renderMoleculeList.size();
@@ -6967,7 +6969,7 @@ System.out.println("......tb.soleUser= " +
 		renderMoleculeList.toArray(false);
 
 	    for (i = 0 ; i < size; i++) {
-		rmArr[i].releaseAllPrimaryDisplayListResources(cv);
+		rmArr[i].releaseAllPrimaryDisplayListResources(cv, ctx);
 	    }
 	}
 
@@ -6990,7 +6992,7 @@ System.out.println("......tb.soleUser= " +
 		    // Canvas in the renderer.  However, since the
 		    // display lists will be recreated, it doesn't
 		    // really matter.
-		    cv.freeDisplayList(cv.ctx, geo.dlistId);
+		    cv.freeDisplayList(ctx, geo.dlistId);
 		    geo.resourceCreationMask &= ~mask;
 		}
 	    }
