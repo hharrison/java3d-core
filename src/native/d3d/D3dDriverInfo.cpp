@@ -362,8 +362,10 @@ VOID D3dDriverInfo::initialize(JNIEnv *env)
 
     D3dCtx::setImplicitMultisamplingProperty(env);
 
+    /*
     RasterList.init();
     BackgroundImageList.init();
+    */
 
     // Setup Global constant Ambient light 
     ambientLight.Type = D3DLIGHT_DIRECTIONAL;

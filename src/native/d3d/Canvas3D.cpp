@@ -347,15 +347,10 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(
 	 // printf("canvas3D clear ZBuffer\n");
 	}
 
-
+	
     if (pa2d) {
-	jclass pa2d_class = env->GetObjectClass(pa2d);
 	/*
-	jfieldID id = env->GetFieldID(pa2d_class, "surfaceDirty", "I");
-	if (env->GetIntField(pa2d, id) == NOTLIVE) {
-	    return;
-	}
-	*/
+	jclass pa2d_class = env->GetObjectClass(pa2d);
 	// It is possible that (1) Another user thread will free this
 	// image. (2) Another Renderer thread in case of multiple screen
 	// will invoke clear() at the same time.
@@ -502,17 +497,18 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(
 	 device->SetRenderState(D3DRS_STENCILENABLE, d3dCtx->stencilWriteEnable);
 	}
 	unlockBackground();
+	*/
     } 
    else 
      {
-	  if (!d3dCtx->zWriteEnable) {
-	      device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-	    }	
-	  // disable stencil 
-      if (d3dCtx->stencilEnable && !d3dCtx->stencilWriteEnable) {
-	      device->SetRenderState(D3DRS_STENCILENABLE, FALSE);		  
-	  }
-    }
+	 if (!d3dCtx->zWriteEnable) {
+	     device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	 }	
+	 // disable stencil 
+	 if (d3dCtx->stencilEnable && !d3dCtx->stencilWriteEnable) {
+	     device->SetRenderState(D3DRS_STENCILENABLE, FALSE);		  
+	 }
+     } 
 
 }
 
@@ -1020,12 +1016,14 @@ void JNICALL Java_javax_media_j3d_NativePipeline_freeD3DSurface(
     jint hashCode)
 
 {
+    /*
     lockImage();
     D3dImageComponent::remove(&RasterList, hashCode);
     unlockImage();
     lockBackground();
     D3dImageComponent::remove(&BackgroundImageList, hashCode);
     unlockBackground();
+    */
 }
 
 
