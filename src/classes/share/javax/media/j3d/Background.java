@@ -397,12 +397,21 @@ public class Background extends Leaf {
          if(!this.getCapability(ALLOW_IMAGE_WRITE))
            throw new CapabilityNotSetException(J3dI18N.getString("Background3"));
 
-        // TODO : illegal sharing check
-
+        // Do illegal sharing check
+        ImageComponent2DRetained imageRetained = (ImageComponent2DRetained) image.retained;
+        BackgroundRetained bgRetained = (BackgroundRetained)this.retained;
+        if(imageRetained.getUsedByOffScreen()) {
+            if(isLive()) {
+                throw new IllegalSharingException(J3dI18N.getString("Background12"));
+            }
+            if(bgRetained.getInImmCtx()) {
+                throw new IllegalSharingException(J3dI18N.getString("Background13"));
+            }
+        }
 	if (isLive())
-	    ((BackgroundRetained)this.retained).setImage(image);
+	    bgRetained.setImage(image);
 	else
-	    ((BackgroundRetained)this.retained).initImage(image);
+	    bgRetained.initImage(image);
     }
 
     /**

@@ -935,7 +935,10 @@ public abstract class Texture extends NodeComponent {
 	  if(!this.getCapability(ALLOW_IMAGE_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Texture15"));
 	}
-
+        
+        // Do illegal sharing check
+        validateImageIllegalSharing(image);
+            
 	if (isLive())
 	    ((TextureRetained)this.retained).setImage(level, image);
 	else
@@ -997,6 +1000,11 @@ public abstract class Texture extends NodeComponent {
 	    throw new CapabilityNotSetException(J3dI18N.getString("Texture15"));
 	}
 
+        // Do illegal sharing check     
+        for(int i=0; i<images.length; i++) {
+            validateImageIllegalSharing(images[i]);
+        }
+        
 	if (images == null)
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture20"));
 
@@ -1844,4 +1852,5 @@ public abstract class Texture extends NodeComponent {
       }
       return false;
    }
+
 }

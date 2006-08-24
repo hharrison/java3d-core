@@ -617,15 +617,30 @@ public class Raster extends Geometry {
     /**
      * Sets the pixel array used to copy pixels to/from a Canvas3D.
      * This is used when the type is RASTER_COLOR or RASTER_COLOR_DEPTH.
+     *
      * @param image the ImageComponent2D object containing the
      * color data
+     *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
+     *
+     * @exception IllegalSharingException if this Raster is live and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
      */  
     public void setImage(ImageComponent2D image) {
+        
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_IMAGE_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("Raster3"));
+
+        // Do illegal sharing check
+        ImageComponent2DRetained imageRetained = (ImageComponent2DRetained) image.retained;
+        if(imageRetained.getUsedByOffScreen()) {
+            if(isLive()) {
+                throw new IllegalSharingException(J3dI18N.getString("Raster12"));
+            }
+        }        
+        
         ((RasterRetained)this.retained).setImage(image);
     }
 

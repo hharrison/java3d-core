@@ -172,7 +172,9 @@ public class TextureCubeMap extends Texture {
             throw new CapabilityNotSetException(
 			J3dI18N.getString("TextureCubeMap1"));
         }
-
+        
+        validateImageIllegalSharing(image);
+        
         if (isLive())
             ((TextureCubeMapRetained)this.retained).setImage(level, face, image);
         else
@@ -214,6 +216,11 @@ public class TextureCubeMap extends Texture {
                         J3dI18N.getString("TextureCubeMap1"));
         }
 
+         // Do illegal sharing check     
+        for(int i=0; i<images.length; i++) {
+            validateImageIllegalSharing(images[i]);
+        }
+        
         if (isLive())
             ((TextureCubeMapRetained)this.retained).setImages(face, images);
         else

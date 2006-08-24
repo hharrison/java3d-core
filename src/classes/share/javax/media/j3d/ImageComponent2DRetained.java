@@ -281,11 +281,6 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         
         return newImage;
     }   
-    
-
-    void setLive(boolean inBackgroundGroup, int refCount) {
-	super.setLive(inBackgroundGroup, refCount);
-    }
 
     void clearLive(int refCount) {
 	super.clearLive(refCount);

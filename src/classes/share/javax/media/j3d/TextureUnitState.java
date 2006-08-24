@@ -144,8 +144,17 @@ public class TextureUnitState extends NodeComponent {
 	    if (!this.getCapability(ALLOW_STATE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("TextureUnitState0"));
 
-        // TODO: illegal sharing check
-
+        // Do illegal sharing check
+        if(texture != null) {
+            TextureRetained texRetained = (TextureRetained)texture.retained;            
+            ImageComponent[] images = texRetained.getImages();
+            if(images != null) {
+                for(int i=0; i<images.length; i++) {
+                    validateImageIllegalSharing(images[i]);
+                }
+            }
+        }
+        
 	((TextureUnitStateRetained)this.retained).setTextureUnitState(
 				texture, textureAttributes, texCoordGeneration);
     }
@@ -175,7 +184,16 @@ public class TextureUnitState extends NodeComponent {
 	    if (!this.getCapability(ALLOW_STATE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("TextureUnitState0"));
 
-        // TODO: illegal sharing check
+        // Do illegal sharing check
+        if(texture != null) {
+            TextureRetained texRetained = (TextureRetained)texture.retained;            
+            ImageComponent[] images = texRetained.getImages();
+            if(images != null) {
+                for(int i=0; i<images.length; i++) {
+                    validateImageIllegalSharing(images[i]);
+                }
+            }
+        }
 
 	((TextureUnitStateRetained)this.retained).setTexture(texture);
     }

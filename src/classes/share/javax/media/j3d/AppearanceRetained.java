@@ -131,15 +131,13 @@ class AppearanceRetained extends NodeComponentRetained {
     Material getMaterial() {
         return (material == null ? null : (Material)material.source);
     }
-
+    
     /**
      * Sets the texture object to the specified object.
      * @param texture object that specifies the desired texture
      * map and texture parameters
      */
     void setTexture(Texture texture) {
-
-
 	synchronized(liveStateLock) {
 	    if (source.isLive()) {
 
@@ -528,7 +526,7 @@ class AppearanceRetained extends NodeComponentRetained {
     void setTextureUnitState(TextureUnitState[] stateArray) {
 
 	int i;
-
+        
 	synchronized(liveStateLock) {
 	    if (source.isLive()) {
 
@@ -604,8 +602,8 @@ class AppearanceRetained extends NodeComponentRetained {
     }
 
     void setTextureUnitState(int index, TextureUnitState state) {
-
-	synchronized(liveStateLock) {
+                
+        synchronized(liveStateLock) {
 	    if (source.isLive()) {
 
 		// remove the existing texture unit states from this appearance

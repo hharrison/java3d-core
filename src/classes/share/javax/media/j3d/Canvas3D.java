@@ -1087,7 +1087,7 @@ public class Canvas3D extends Canvas {
 
             screen = new Screen3D(graphicsConfiguration, offScreen);
 
-            // TODO: keep a list of off-screen Screen3D objects?
+            // QUESTION: keep a list of off-screen Screen3D objects?
             // Does this list need to be grouped by GraphicsDevice?
 
             // since this canvas will not receive the addNotify
@@ -1750,11 +1750,12 @@ public class Canvas3D extends Canvas {
 
 	// Check that offScreenBufferPending is not already set
 	J3dDebug.doAssert(!offScreenBufferPending, "!offScreenBufferPending");
-        
-        // TODO Chien :
-        // if (offScreenBuffer != null && offScreenBuffer != buffer) {
-        //     offScreenBuffer.setUsedByOffScreen(false);
-        // }
+       
+        if (offScreenBuffer != null && offScreenBuffer != buffer) {
+            ImageComponent2DRetained i2dRetained = 
+                    (ImageComponent2DRetained)offScreenBuffer.retained;            
+            i2dRetained.setUsedByOffScreen(false);
+        }
 
 	if (buffer != null) {
 	    ImageComponent2DRetained bufferRetained =
@@ -1770,13 +1771,19 @@ public class Canvas3D extends Canvas {
 		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D16"));
 	    }
 
-            // TODO Chien : if (buffer.isLive()) throw IllegalSharingException
+            if (buffer.isLive()) {
+                throw new IllegalSharingException(J3dI18N.getString("Canvas3D26"));
+            }
 
-            // TODO Chien : if (buffer.isInImmCtx()) throw IllegalSharingException
+            if (bufferRetained.getInImmCtx()) {
+                throw new IllegalSharingException(J3dI18N.getString("Canvas3D27"));
+            }
 
-            // TODO Chien : if (buffer != offScreenBuffer && buffer.isUsedByOffScreen()) throw IllegalSharingException
+            if (buffer != offScreenBuffer && bufferRetained.getUsedByOffScreen()) {
+                throw new IllegalSharingException(J3dI18N.getString("Canvas3D28"));
+            }
 
-            // TODO Chien : buffer.setUsedByOffScreen(true);
+            bufferRetained.setUsedByOffScreen(true);
 
 	    width = bufferRetained.width;
 	    height = bufferRetained.height;

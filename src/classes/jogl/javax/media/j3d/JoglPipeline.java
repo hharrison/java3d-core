@@ -6211,7 +6211,6 @@ class JoglPipeline extends Pipeline {
                     assert false;
                     return;
             }
-            numBytes = 4;
             
             /* Force Alpha to 1.0 if needed */
             if(forceAlphaToOne) {
@@ -6219,9 +6218,9 @@ class JoglPipeline extends Pipeline {
                 gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
             }
 
-            ByteBuffer buf = ByteBuffer.wrap((byte []) data);
-            int offset = (tilew * tileh * imgZOffset +
-                    tilew * imgYOffset + imgXOffset) * numBytes;
+            IntBuffer buf = IntBuffer.wrap((int[]) data);
+            int offset = tilew * tileh * imgZOffset +
+                    tilew * imgYOffset + imgXOffset;
             buf.position(offset);
             gl.glTexSubImage3D(GL.GL_TEXTURE_3D,
                     level, xoffset, yoffset, zoffset,
@@ -6753,22 +6752,19 @@ class JoglPipeline extends Pipeline {
             default:
                 assert false;
                 return;
-        }
-        numBytes = 4;
-        
+        }        
         /* Force Alpha to 1.0 if needed */
         if(forceAlphaToOne) {
             gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 0.0f);
             gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
         }
-        
-        ByteBuffer buf = ByteBuffer.wrap((byte []) data);
+
+        IntBuffer buf = IntBuffer.wrap((int[]) data);
 
         // offset by the imageOffset
-        buf.position((tilew * imgYOffset + imgXOffset) * numBytes);
+        buf.position(tilew * imgYOffset + imgXOffset);
         gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height,
-                format, type, buf);        
-        
+                format, type, buf); 
         
         /* Restore Alpha scale and bias */
         if(forceAlphaToOne) {

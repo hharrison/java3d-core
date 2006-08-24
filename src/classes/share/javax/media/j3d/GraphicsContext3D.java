@@ -348,17 +348,49 @@ public class GraphicsContext3D extends Object   {
      * an off-screen buffer.
      */
     public void setAppearance(Appearance appearance) {
-	
-	if(appearance == null) {
-	    if(defaultAppearance == null) {
-		defaultAppearance = new Appearance();
-	    }
-	    appearance = defaultAppearance;
-	}
-
-        // TODO Chien : check whether any ImageComponent2D referred to by
-        // the new appearance is being used as an off-screen buffer and throw
-        // IllegalSharingException if it is.
+        
+        if(appearance == null) {
+            if(defaultAppearance == null) {
+                defaultAppearance = new Appearance();
+            }
+            appearance = defaultAppearance;
+        } else {
+            // Check whether any ImageComponent2D referred to by
+            // the new appearance is being used as an off-screen buffer and throw
+            // IllegalSharingException if it is.
+            TextureRetained texRetained;
+            ImageComponent[] images;
+            AppearanceRetained appRetained = (AppearanceRetained)appearance.retained;
+            if(appRetained.texture != null) {
+                assert (appRetained.texUnitState == null);
+                texRetained = appRetained.texture;
+                images = texRetained.getImages();
+                if(images != null) {
+                    for(int i=0; i<images.length; i++) {
+                        ImageComponentRetained imageRetained = (ImageComponentRetained) images[i].retained;
+                        // Do illegal sharing check
+                        if(imageRetained.getUsedByOffScreen()) {
+                            throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D30"));
+                        }
+                    }
+                }
+            }
+            else if(appRetained.texUnitState != null) {
+                for(int j=0; j<appRetained.texUnitState.length; j++) {
+                    texRetained = appRetained.texUnitState[j].texture;
+                    images = texRetained.getImages();
+                    if(images != null) {
+                        for(int i=0; i<images.length; i++) {
+                            ImageComponentRetained imageRetained = (ImageComponentRetained) images[i].retained;
+                            // Do illegal sharing check
+                            if(imageRetained.getUsedByOffScreen()) {
+                                throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D30"));
+                            }
+                        }
+                    }        
+                }           
+            }
+        }
 
         uAppearance = appearance;
         if ((canvas3d.view == null) || 
@@ -610,13 +642,21 @@ public class GraphicsContext3D extends Object   {
      * an off-screen buffer.
      */
     public void setBackground(Background background) {
-        // TODO Chien : off-screen illegal sharing check
-
+        
         if (background.isLive()) {
            throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D11"));
         }
-        if (((BackgroundRetained)background.retained).geometryBranch != null)
+        BackgroundRetained bgRetained = (BackgroundRetained)background.retained;
+        ImageComponent2D image = bgRetained.getImage();
+        ImageComponent2DRetained imageRetained = (ImageComponent2DRetained) image.retained;
+        if(imageRetained.getUsedByOffScreen()) {
+           throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D31"));          
+        }
+
+        if (((BackgroundRetained)background.retained).geometryBranch != null) {
            throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D22"));
+        }
+        
         uBackground = background;
         if ((canvas3d.view == null) || 
 	    (canvas3d.view.universe == null) ||
@@ -2094,8 +2134,25 @@ public class GraphicsContext3D extends Object   {
     /**
      * Draw the specified Geometry component object.
      * @param geometry the Geometry object to draw.
+     *
+     * @exception IllegalSharingException if the specified geometry is a 
+     * Raster that refers to an ImageComponent2D that is being used by a 
+     * Canvas3D as an off-screen buffer.
      */
     public void draw(Geometry geometry) {
+        // do illegalSharing check
+        if((geometry != null) && (geometry instanceof Raster)) {
+            RasterRetained rasRetained = (RasterRetained) geometry.retained;
+            ImageComponent2D image = rasRetained.getImage();
+            if(image != null) {
+                ImageComponentRetained imageRetained = (ImageComponentRetained) image.retained;
+                // Do illegal sharing check
+                if(imageRetained.getUsedByOffScreen()) {
+                    throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D32"));
+                }
+            }
+        }
+        
         if ((canvas3d.view == null) || (canvas3d.view.universe == null) ||
 		(!canvas3d.view.active)) {
 	    return;

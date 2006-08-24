@@ -85,7 +85,8 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     private int numberOfComponents;
     private int imageType;  // The image type of the input image. Using the constant in BufferedImage
     ImageFormatType imageFormatType = ImageFormatType.TYPE_UNKNOWN; 
-    ImageData imageData;
+    ImageData imageData;    
+    private boolean usedByOffScreenCanvas = false;
     
     // This will store the referenced Images for reference case.
     private RenderedImage refImage[] = null;
@@ -116,43 +117,50 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     /**
      * Retrieves the height of this image component object.
      * @return the height of this image component object
-     */  
+     */
     int getHeight() {
         return height;
     }
-
+    
     /**
      * Retrieves the apiFormat of this image component object.
-     * 
+     *
      * @return the apiFormat of this image component object
-     */  
+     */
     int getFormat() {
         return apiFormat;
     }
     
     void setFormat(int format) {
         this.apiFormat = format;
-    }    
-
-
-     void setByReference(boolean byReference) {
- 	this.byReference = byReference;
-     }
-     
-     boolean isByReference() {
- 	return byReference;
-     }
+    }
+    
+    void setByReference(boolean byReference) {
+        this.byReference = byReference;
+    }
+    
+    boolean isByReference() {
+        return byReference;
+    }
+    
+    void setYUp( boolean yUp) {
+        this.yUp = yUp;
+    }
  
-     void setYUp( boolean yUp) {
- 	this.yUp = yUp;
-     }
- 
-     boolean isYUp() {
- 	return yUp;
-     }
-     
+    boolean isYUp() {
+        return yUp;
+    }
+
+    void setUsedByOffScreen(boolean used) {
+       usedByOffScreenCanvas = used;
+    }
+
+    boolean getUsedByOffScreen() {
+       return usedByOffScreenCanvas;
+    }
+    
     int getImageDataTypeIntValue() {
-        int idtValue = -1;        
+        int idtValue = -1;
         switch(imageData.imageDataType) {
             case TYPE_BYTE_ARRAY:
                 idtValue = IMAGE_DATA_TYPE_BYTE_ARRAY;
@@ -358,9 +366,6 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     }
                     //Handle TYPE_INT
                     else {
-                      /*
-                       * TODO: Need to check INT support type --- Not tested yet. -- Chien
-                       */
                         if (isNBit) {                          
                                 if (numBands == 3) {
                                      if(offs[0] == numBands-1 &&
@@ -1781,6 +1786,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         int sOffset = 0;
         int sLineIncr = unitsPerPixel * origImage.width;
         int sPixelIncr = unitsPerPixel << 1;
+        System.out.println("ImageComponentRetained.scaleImage() : Not implemented!!!");
         
         if (yScale == 1) {
             for (int x = 0; x < width; x++) {
@@ -1845,6 +1851,19 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
 	}
      }
 
+    /*
+     *
+     * @exception IllegalSharingException if this image is
+     * being used by a Canvas3D as an off-screen buffer.
+     */    
+    void setLive(boolean inBackgroundGroup, int refCount) {
+        // Do illegalSharing check.
+        if(getUsedByOffScreen()) {            
+            throw new IllegalSharingException(J3dI18N.getString("ImageComponent3"));
+        }
+        super.setLive(inBackgroundGroup, refCount);
+    }
+    
      /**
       * ImageComponent object doesn't really have mirror object.
       * But it's using the updateMirrorObject interface to propagate
