@@ -726,20 +726,6 @@ class NoopPipeline extends Pipeline {
     }
 
 
-    // ---------------------------------------------------------------------
-
-    //
-    // RasterRetained methods
-    //
-
-    // Native method that does the rendering
-    void executeRaster(Context ctx, GeometryRetained geo,
-            boolean updateAlpha, float alpha,
-            int type, int width, int height,
-            int xSrcOffset, int ySrcOffset,
-            float x, float y, float z, byte[] image) {
-    }
-
 
     // ---------------------------------------------------------------------
 
@@ -1043,12 +1029,6 @@ class NoopPipeline extends Pipeline {
             float boundaryBlue, float boundaryAlpha) {
     }
 
-    void updateDetailTextureParameters(Context ctx,
-            int detailTextureMode,
-            int detailTextureLevel,
-            int nPts, float[] pts) {
-    }
-
     void updateTexture2DFilterModes(Context ctx,
             int minFilter, int magFilter) {
     }
@@ -1186,24 +1166,6 @@ class NoopPipeline extends Pipeline {
 
     void updateTextureCubeMapAnisotropicFilter(Context ctx, float degree) {
     }
-
-
-    // ---------------------------------------------------------------------
-
-    //
-    // DetailTextureImage methods
-    //
-
-    void bindDetailTexture(Context ctx, int objectId) {
-    }
-
-    void updateDetailTextureImage(Context ctx,
-            int numLevels, int level,
-            int format, int storedFormat,
-            int width, int height,
-            int boundaryWidth, byte[] data) {
-    }
-
 
     // ---------------------------------------------------------------------
 
@@ -1467,12 +1429,6 @@ class NoopPipeline extends Pipeline {
     void freeDisplayList(Context ctx, int id) {
     }
     void freeTexture(Context ctx, int id) {
-    }
-
-    void composite(Context ctx, int px, int py,
-            int xmin, int ymin, int xmax, int ymax,
-            int rasWidth,  byte[] image,
-            int winWidth, int winHeight) {
     }
 
     void texturemapping(Context ctx,

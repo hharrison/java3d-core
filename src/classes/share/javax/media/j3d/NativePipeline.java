@@ -1811,32 +1811,6 @@ class NativePipeline extends Pipeline {
     // ---------------------------------------------------------------------
 
     //
-    // RasterRetained methods
-    //
-
-    // Native method that does the rendering
-    native void executeRaster(long ctx, GeometryRetained geo,
-            boolean updateAlpha, float alpha,
-            int type, int width, int height,
-            int xSrcOffset, int ySrcOffset,
-            float x, float y, float z, byte[] image);
-
-    void executeRaster(Context ctx, GeometryRetained geo,
-            boolean updateAlpha, float alpha,
-            int type, int width, int height,
-            int xSrcOffset, int ySrcOffset,
-            float x, float y, float z, byte[] image) {
-        executeRaster(unbox(ctx), geo,
-                updateAlpha, alpha,
-                type, width, height,
-                xSrcOffset, ySrcOffset,
-                x, y, z, image);
-    }
-
-
-    // ---------------------------------------------------------------------
-
-    //
     // Renderer methods
     //
 
@@ -2397,21 +2371,6 @@ class NativePipeline extends Pipeline {
                 boundaryBlue, boundaryAlpha);
     }
 
-    native void updateDetailTextureParameters(long ctx,
-            int detailTextureMode,
-            int detailTextureLevel,
-            int nPts, float[] pts);
-
-    void updateDetailTextureParameters(Context ctx,
-            int detailTextureMode,
-            int detailTextureLevel,
-            int nPts, float[] pts) {
-        updateDetailTextureParameters(unbox(ctx),
-                detailTextureMode,
-                detailTextureLevel,
-                nPts, pts);
-    }
-
     native void updateTexture2DFilterModes(long ctx,
             int minFilter, int magFilter);
 
@@ -2725,35 +2684,6 @@ class NativePipeline extends Pipeline {
 
     void updateTextureCubeMapAnisotropicFilter(Context ctx, float degree) {
         updateTextureCubeMapAnisotropicFilter(unbox(ctx), degree);
-    }
-
-
-    //
-    // DetailTextureImage methods
-    //
-
-    native void bindDetailTexture(long ctx, int objectId);
-
-    void bindDetailTexture(Context ctx, int objectId) {
-        bindDetailTexture(unbox(ctx), objectId);
-    }
-
-    native void updateDetailTextureImage(long ctx,
-            int numLevels, int level,
-            int format, int storedFormat,
-            int width, int height,
-            int boundaryWidth, byte[] data);
-
-    void updateDetailTextureImage(Context ctx,
-            int numLevels, int level,
-            int format, int storedFormat,
-            int width, int height,
-            int boundaryWidth, byte[] data) {
-        updateDetailTextureImage(unbox(ctx),
-                numLevels, level,
-                format, storedFormat,
-                width, height,
-                boundaryWidth, data);
     }
 
     // ---------------------------------------------------------------------
@@ -3256,23 +3186,6 @@ class NativePipeline extends Pipeline {
     void freeTexture(Context ctx, int id) {
         freeTexture(unbox(ctx), id);
     }
-
-
-    native void composite(long ctx, int px, int py,
-            int xmin, int ymin, int xmax, int ymax,
-            int rasWidth,  byte[] image,
-            int winWidth, int winHeight);
-
-    void composite(Context ctx, int px, int py,
-            int xmin, int ymin, int xmax, int ymax,
-            int rasWidth,  byte[] image,
-            int winWidth, int winHeight) {
-        composite(unbox(ctx), px, py,
-                xmin, ymin, xmax, ymax,
-                rasWidth,  image,
-                winWidth, winHeight);
-    }
-
 
     native void texturemapping(long ctx,
             int px, int py,

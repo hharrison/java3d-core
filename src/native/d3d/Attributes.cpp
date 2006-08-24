@@ -2381,20 +2381,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
 }
 
 extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_NativePipeline_updateDetailTextureParameters(
-    JNIEnv *env,
-    jobject obj,
-    jlong ctx,
-    jint detailTextureMode,
-    jint detailTextureLevel,
-    jint numPts,
-    jfloatArray funcPts)
-{
-    // Not support
-}
-
-
-extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_bindTexture3D(
     JNIEnv *env,
     jobject obj,
@@ -3036,33 +3022,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapImage(
     device->SetTexture(d3dCtx->texUnitStage, surf);
 }
 
-
-extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_NativePipeline_bindDetailTexture(
-    JNIEnv *env,
-    jobject obj,
-    jlong ctx,
-    jint objectId)
-{
-    // NOT SUPPORTED
-}
-
-extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_NativePipeline_updateDetailTextureImage(
-    JNIEnv *env,
-    jobject obj,
-    jlong ctx,
-    jint numLevels,
-    jint level,
-    jint internalFormat,
-    jint format,
-    jint width,
-    jint height,
-    jint boundaryWidth,
-    jbyteArray imageYup)
-{
-    // NOT SUPPORTED
-}
 
 extern "C" JNIEXPORT
 jboolean JNICALL Java_javax_media_j3d_NativePipeline_decal1stChildSetup(

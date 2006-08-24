@@ -706,21 +706,6 @@ abstract class Pipeline {
         return true;
     }
 
-
-    // ---------------------------------------------------------------------
-
-    //
-    // RasterRetained methods
-    //
-
-    // Native method that does the rendering
-    abstract void executeRaster(Context ctx, GeometryRetained geo,
-            boolean updateAlpha, float alpha,
-            int type, int width, int height,
-            int xSrcOffset, int ySrcOffset,
-            float x, float y, float z, byte[] image);
-
-
     // ---------------------------------------------------------------------
 
     //
@@ -997,12 +982,6 @@ abstract class Pipeline {
             float boundaryRed, float boundaryGreen,
             float boundaryBlue, float boundaryAlpha);
 
-    // TODO : No longer needed. Will do a native cleanup in next round of texture optimization putback. -- Chien
-    abstract void updateDetailTextureParameters(Context ctx,
-            int detailTextureMode,
-            int detailTextureLevel,
-            int nPts, float[] pts);
-
     abstract void updateTexture2DFilterModes(Context ctx,
             int minFilter, int magFilter);
 
@@ -1116,22 +1095,6 @@ abstract class Pipeline {
             float[] filter4FuncPts);
 
     abstract void updateTextureCubeMapAnisotropicFilter(Context ctx, float degree);
-
-
-    // ---------------------------------------------------------------------
-
-    //
-    // DetailTextureImage methods
-    //
-
-    abstract void bindDetailTexture(Context ctx, int objectId);
-
-    abstract void updateDetailTextureImage(Context ctx,
-            int numLevels, int level,
-            int format, int storedFormat,
-            int width, int height,
-            int boundaryWidth, byte[] data);
-
 
     // ---------------------------------------------------------------------
 
@@ -1334,12 +1297,6 @@ abstract class Pipeline {
 
     abstract void freeDisplayList(Context ctx, int id);
     abstract void freeTexture(Context ctx, int id);
-
-    // TODO : No longer needed. Will do a native cleanup in next round of texture optimization putback. -- Chien
-    abstract void composite(Context ctx, int px, int py,
-            int xmin, int ymin, int xmax, int ymax,
-            int rasWidth,  byte[] image,
-            int winWidth, int winHeight);
 
     abstract void texturemapping(Context ctx,
             int px, int py,
