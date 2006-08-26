@@ -46,10 +46,8 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 		ra.geometry().execute(cv, ra.renderAtom, isNonUniformScale,
 			(useAlpha && ra.geometry().noAlpha),
 			rm.alpha,
-			rm.renderBin.multiScreen,
 			cv.screen.screen,
-			rm.textureBin.attributeBin.ignoreVertexColors,
-			pass);
+			rm.textureBin.attributeBin.ignoreVertexColors);
 		ra = ra.next;
 	    }
 	    return true;
@@ -67,11 +65,9 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 		    ra.geometry().execute(cv, ra.renderAtom, isNonUniformScale,
 					  (useAlpha && ra.geometry().noAlpha),
 					  rm.alpha,
-					  rm.renderBin.multiScreen,
 					  cv.screen.screen,
 					  rm.textureBin.attributeBin.
-					  ignoreVertexColors,
-					  pass);
+					  ignoreVertexColors);
 		    isVisible = true;
 		}
 	    }
@@ -87,11 +83,9 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 		    ra.geometry().execute(cv, ra.renderAtom, isNonUniformScale,
 					  (useAlpha && ra.geometry().noAlpha),
 					  rm.alpha,
-					  rm.renderBin.multiScreen,
 					  cv.screen.screen,
 					  rm.textureBin.attributeBin.
-					  ignoreVertexColors,
-					  pass);
+					  ignoreVertexColors);
 		    isVisible = true;
 		}
 		else {

@@ -2213,10 +2213,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
 		 boolean updateAlpha, float alpha,
-		 boolean multiScreen, int screen,
-                 boolean ignoreVertexColors, int pass) {
-
-        assert pass < 0;
+		 int screen,
+                 boolean ignoreVertexColors) {
 
 	int cdirty;
 	boolean useAlpha = false;
@@ -2257,7 +2255,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    Pipeline.getPipeline().execute(cv.ctx,
                     this, geoType, isNonUniformScale,
 		    useAlpha,
-		    multiScreen,
 		    ignoreVertexColors,
 		    initialVertexIndex, 
 		     validVertexCount, 
@@ -2265,10 +2262,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                     texCoordSetCount, texCoordSetMap,
                     (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
                     texCoordSetMapOffset, 
-		    cv.numActiveTexUnit, cv.texUnitStateMap, 
+		    cv.numActiveTexUnit,
                     vertexAttrCount, vertexAttrSizes,
                     vdata, null,
-                    pass, cdirty);
+                    cdirty);
 	}
 
 	//By reference with java array
@@ -2304,7 +2301,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		Pipeline.getPipeline().execute(cv.ctx,
                         this, geoType, isNonUniformScale,
 			useAlpha,
-			multiScreen,
 			ignoreVertexColors,
 			initialVertexIndex, 
 			validVertexCount, 
@@ -2312,10 +2308,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			texCoordSetCount, texCoordSetMap,
 			(texCoordSetMap == null) ? 0 : texCoordSetMap.length,
 			texCoordSetMapOffset, 
-			cv.numActiveTexUnit, cv.texUnitStateMap,
+			cv.numActiveTexUnit,
                         vertexAttrCount, vertexAttrSizes,
                         interLeavedVertexData, cdata,
-			pass, cdirty);
+			cdirty);
 
 	    } // end of interleaved case
 	    
@@ -2403,7 +2399,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
                     Pipeline.getPipeline().executeVA(cv.ctx,
                             this, geoType, isNonUniformScale,
-                            multiScreen,
                             ignoreVertexColors,
                             validVertexCount,
                             (vertexFormat | c4fAllocated),
@@ -2414,11 +2409,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                             initialNormalIndex, mirrorFloatRefNormals,
                             vertexAttrCount, vertexAttrSizes,
                             initialVertexAttrIndex, mirrorFloatRefVertexAttrs,
-                            pass,
                             ((texCoordSetMap == null) ? 0:texCoordSetMap.length),
                             texCoordSetMap,
                             cv.numActiveTexUnit,
-                            cv.texUnitStateMap,
                             initialTexCoordIndex,texCoordStride,
                             mirrorRefTexCoords, cdirty);
 		}// end of all vertex data being set
@@ -2462,7 +2455,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                 Pipeline.getPipeline().executeInterleavedBuffer(cv.ctx,
                         this, geoType, isNonUniformScale,
                         useAlpha,
-                        multiScreen,
                         ignoreVertexColors,
                         initialVertexIndex,
                         validVertexCount,
@@ -2470,9 +2462,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                         texCoordSetCount, texCoordSetMap,
                         (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
                         texCoordSetMapOffset,
-                        cv.numActiveTexUnit, cv.texUnitStateMap,
+                        cv.numActiveTexUnit,
                         interleavedFloatBufferImpl.getBufferAsObject(), cdata,
-                        pass, cdirty);
+                        cdirty);
 
 	    } // end of interleaved case
 
@@ -2580,7 +2572,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
                     Pipeline.getPipeline().executeVABuffer(cv.ctx,
                             this, geoType, isNonUniformScale,
-                            multiScreen,
                             ignoreVertexColors,
                             validVertexCount,
                             (vertexFormat | c4fAllocated),
@@ -2595,11 +2586,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                             vertexAttrCount, vertexAttrSizes,
                             initialVertexAttrIndex,
                             nioFloatBufferRefVertexAttrs,
-                            pass,
                             ((texCoordSetMap == null) ? 0:texCoordSetMap.length),
                             texCoordSetMap,
                             cv.numActiveTexUnit,
-                            cv.texUnitStateMap,
                             initialTexCoordIndex,texCoordStride,
                             refTexCoords, cdirty);
 		}// end of all vertex data being set

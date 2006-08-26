@@ -436,13 +436,6 @@ public class Canvas3D extends Canvas {
     //
     int textureColorTableSize;
 
-    // a mapping between underlying graphics library texture unit and
-    // texture unit state in j3d
-    //
-    // TODO: This mapping is now required to be 1-to-1, and it should be
-    // removed entirely in Java 3D 1.5
-    int[] texUnitStateMap = null;
-
     // number of active/enabled texture unit 
     int numActiveTexUnit = 0;
 
@@ -4150,24 +4143,6 @@ public class Canvas3D extends Canvas {
         }
     }
 
-    // Create the texture unit state map
-    void createTexUnitStateMap() {
-        // Create the texture unit state map array, which is a mapping from
-        // texture unit state to the actual underlying texture unit
-        // NOTE: since this is now required to be a 1-to-1 mapping, we will
-        // initialize it as such
-
-        texUnitStateMap = new int[maxAvailableTextureUnits];
-        for (int t = 0; t < maxAvailableTextureUnits; t++) {
-            texUnitStateMap[t] = t;
-        }
-    }
-
-    // update the underlying layer of the current texture unit state map
-    void updateTexUnitStateMap() {
-	updateTexUnitStateMap(ctx, numActiveTexUnit, texUnitStateMap);
-    }
-
     boolean supportGlobalAlpha() {
 	return ((extensionsSupported & SUN_GLOBAL_ALPHA) != 0);
     }
@@ -4751,12 +4726,6 @@ public class Canvas3D extends Canvas {
                 r, g,
                 b, a,
                 enableLight);
-    }
-
-    // native method for updating the texture unit state map
-    private void updateTexUnitStateMap(Context ctx, int numActiveTexUnit,
-            int[] texUnitStateMap) {
-        Pipeline.getPipeline().updateTexUnitStateMap(ctx, numActiveTexUnit, texUnitStateMap);
     }
 
     /**

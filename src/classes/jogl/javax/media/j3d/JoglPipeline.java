@@ -116,31 +116,28 @@ class JoglPipeline extends Pipeline {
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int startVIndex, int vcount, int vformat,
             int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen,
             int[] texUnitOffset,
             int numActiveTexUnitState,
-            int[] texUnitStateMapArray,
             int vertexAttrCount, int[] vertexAttrSizes,
-            float[] varray, float[] carray, int pass, int cDirty) {
+            float[] varray, float[] carray, int cDirty) {
       if (VERBOSE) System.err.println("JoglPipeline.execute()");
 
       executeGeometryArray(ctx, geo, geo_type, isNonUniformScale, useAlpha,
-                           multiScreen, ignoreVertexColors, startVIndex, vcount, vformat,
+                           ignoreVertexColors, startVIndex, vcount, vformat,
                            texCoordSetCount, texCoordSetMap, texCoordSetMapLen,
-                           texUnitOffset, numActiveTexUnitState, texUnitStateMapArray,
+                           texUnitOffset, numActiveTexUnitState,
                            vertexAttrCount, vertexAttrSizes,
-                           varray, null, carray, pass, cDirty);
+                           varray, null, carray, cDirty);
     }
 
     // used by GeometryArray by Reference with java arrays
     void executeVA(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int vcount,
             int vformat,
@@ -150,9 +147,9 @@ class JoglPipeline extends Pipeline {
             int initialNormalIndex, float[] ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
             int[] vertexAttrIndices, float[][] vertexAttrData,
-            int pass, int texCoordMapLength,
+            int texCoordMapLength,
             int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
+            int numActiveTexUnitState,
             int[] texIndex, int texstride, Object[] texCoords,
             int cdirty) {
       if (VERBOSE) System.err.println("JoglPipeline.executeVA()");
@@ -214,15 +211,15 @@ class JoglPipeline extends Pipeline {
       }
 
       executeGeometryArrayVA(ctx, geo, geo_type,
-                             isNonUniformScale, multiScreen, ignoreVertexColors,
+                             isNonUniformScale, ignoreVertexColors,
                              vcount, vformat, vdefined,
                              initialCoordIndex, fverts, dverts,
                              initialColorIndex, fclrs, bclrs,
                              initialNormalIndex, norms,
                              vertexAttrCount, vertexAttrSizes,
                              vertexAttrIndices, vertexAttrBufs,
-                             pass, texCoordMapLength,
-                             texcoordoffset, numActiveTexUnitState, texunitstatemap,
+                             texCoordMapLength,
+                             texcoordoffset, numActiveTexUnitState,
                              texIndex, texstride, texCoordBufs, cdirty,
                              sarray, strip_len, start_array);
     }
@@ -231,7 +228,6 @@ class JoglPipeline extends Pipeline {
     void executeVABuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int vcount,
             int vformat,
@@ -244,9 +240,9 @@ class JoglPipeline extends Pipeline {
             int initialNormalIndex, Object ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
             int[] vertexAttrIndices, Object[] vertexAttrData,
-            int pass, int texCoordMapLength,
+            int texCoordMapLength,
             int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
+            int numActiveTexUnitState,
             int[] texIndex, int texstride, Object[] texCoords,
             int cdirty) {
       if (VERBOSE) System.err.println("JoglPipeline.executeVABuffer()");
@@ -321,15 +317,15 @@ class JoglPipeline extends Pipeline {
       }
       
       executeGeometryArrayVA(ctx, geo, geo_type,
-                             isNonUniformScale, multiScreen, ignoreVertexColors,
+                             isNonUniformScale, ignoreVertexColors,
                              vcount, vformat, vdefined,
                              initialCoordIndex, fverts, dverts,
                              initialColorIndex, fclrs, bclrs,
                              initialNormalIndex, norms,
                              vertexAttrCount, vertexAttrSizes,
                              vertexAttrIndices, vertexAttrBufs,
-                             pass, texCoordMapLength,
-                             texcoordoffset, numActiveTexUnitState, texunitstatemap,
+                             texCoordMapLength,
+                             texcoordoffset, numActiveTexUnitState,
                              texIndex, texstride, texCoordBufs, cdirty,
                              sarray, strip_len, start_array);
     }
@@ -339,24 +335,21 @@ class JoglPipeline extends Pipeline {
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int startVIndex, int vcount, int vformat,
             int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen,
             int[] texUnitOffset,
             int numActiveTexUnit,
-            int[] texUnitStateMapArray,
-            Object varray, float[] cdata, int pass, int cdirty) {
+            Object varray, float[] cdata, int cdirty) {
       if (VERBOSE) System.err.println("JoglPipeline.executeInterleavedBuffer()");
 
       executeGeometryArray(ctx, geo, geo_type,
-                           isNonUniformScale, useAlpha, multiScreen, ignoreVertexColors,
+                           isNonUniformScale, useAlpha, ignoreVertexColors,
                            startVIndex, vcount, vformat,
                            texCoordSetCount, texCoordSetMap, texCoordSetMapLen,
-                           texUnitOffset, numActiveTexUnit, texUnitStateMapArray,
-                           0, null,
-                           null, (Buffer) varray, cdata, pass, cdirty);
+                           texUnitOffset, numActiveTexUnit, 0, null,
+                           null, (Buffer) varray, cdata, cdirty);
     }
 
     void setVertexFormat(Context ctx, GeometryArrayRetained geo,
@@ -889,7 +882,6 @@ class JoglPipeline extends Pipeline {
       FloatBuffer fclrs = null;
       ByteBuffer bclrs = null;
       FloatBuffer[] texCoordBufs = null;
-      int[] tunitstatemap = null;
       FloatBuffer norms = null;
       FloatBuffer[] vertexAttrBufs = null;
 
@@ -901,10 +893,6 @@ class JoglPipeline extends Pipeline {
       // get texture arrays
       if (textureDefined) {
         texCoordBufs = getTexCoordSetBuffer(texCoords);
-        tunitstatemap = new int[texCoordMapLength];
-        for (int i = 0; i < texCoordMapLength; i++) {
-          tunitstatemap[i] = i;
-        }
       }
 
       // process alpha for geometryArray without alpha
@@ -1043,15 +1031,15 @@ class JoglPipeline extends Pipeline {
       }
 
       executeGeometryArrayVA(ctx, geo, geo_type,
-                             isNonUniformScale, false, ignoreVertexColors,
+                             isNonUniformScale, ignoreVertexColors,
                              vcount, vformat, vdefined,
                              initialCoordIndex, fverts, dverts,
                              initialColorIndex, fclrs, bclrs,
                              initialNormalIndex, norms,
                              vertexAttrCount, vertexAttrSizes,
                              vertexAttrIndices, vertexAttrBufs,
-                             -1, texCoordMapLength,
-                             tcoordsetmap, texCoordMapLength, tunitstatemap,
+                             texCoordMapLength,
+                             tcoordsetmap, texCoordMapLength,
                              texIndices, texStride, texCoordBufs, 0,
                              sarray, strip_len, start_array);
     }
@@ -1120,49 +1108,37 @@ class JoglPipeline extends Pipeline {
   }
 
 
-  /* 
-   * NOTE: pass is unused and must be < 0 which implies that we will
-   * send all texture unit state info in one pass
-   */
   private void
-    executeTexture(int pass, int texCoordSetMapLen,
+    executeTexture(int texCoordSetMapLen,
                    int texSize, int bstride, int texCoordoff,
                    int[] texCoordSetMapOffset,
-                   int numActiveTexUnit, int[] texUnitStateMap,
+                   int numActiveTexUnit,
                    FloatBuffer verts, GL gl)
   {
     if (VERBOSE) System.err.println("JoglPipeline.executeTexture()");
     int tus = 0;  /* texture unit state index */
     
     for (int i = 0; i < numActiveTexUnit; i++) {
-      /*
-       * Null texUnitStateMap means 
-       * one to one mapping from texture unit to
-       * texture unit state.  It is null in build display list,
-       * when the mapping is according to the texCoordSetMap
-       */
-      if (texUnitStateMap != null) {
-        tus = texUnitStateMap[i];   
-      } else {
+        
         tus = i;
-      }
+        
       /*
-       * it's possible that texture unit state index (tus)
+       * it's possible thattexture unit state index (tus)
        * is greater than the texCoordSetMapOffsetLen, in this
        * case, just disable TexCoordPointer.
        */
-      if ((tus < texCoordSetMapLen) &&
-          (texCoordSetMapOffset[tus] != -1)) {
-        if (EXTRA_DEBUGGING) {
-          System.err.println("  texCoord position " + i + ": " + (texCoordoff + texCoordSetMapOffset[tus]));
+        if ((tus < texCoordSetMapLen) &&
+                (texCoordSetMapOffset[tus] != -1)) {
+            if (EXTRA_DEBUGGING) {
+                System.err.println("  texCoord position " + i + ": " + (texCoordoff + texCoordSetMapOffset[tus]));
+            }
+            verts.position(texCoordoff + texCoordSetMapOffset[tus]);
+            enableTexCoordPointer(gl, i,
+                    texSize, GL.GL_FLOAT, bstride,
+                    verts);
+        } else {
+            disableTexCoordPointer(gl, i);
         }
-        verts.position(texCoordoff + texCoordSetMapOffset[tus]);
-        enableTexCoordPointer(gl, i,
-                              texSize, GL.GL_FLOAT, bstride,
-                              verts);
-      } else {
-        disableTexCoordPointer(gl, i);
-      }
     }
   }
 
@@ -1183,17 +1159,15 @@ class JoglPipeline extends Pipeline {
                            GeometryArrayRetained geo, int geo_type,
                            boolean isNonUniformScale,
                            boolean useAlpha,
-                           boolean multiScreen,
                            boolean ignoreVertexColors,
                            int startVIndex, int vcount, int vformat,
                            int texCoordSetCount, int[] texCoordSetMap,
                            int texCoordSetMapLen,
                            int[] texCoordSetMapOffset,
                            int numActiveTexUnitState,
-                           int[] texUnitStateMapArray,
                            int vertexAttrCount, int[] vertexAttrSizes,
                            float[] varray, Buffer varrayBuffer,
-                           float[] carray, int pass, int cDirty) {
+                           float[] carray, int cDirty) {
     if (VERBOSE) System.err.println("JoglPipeline.executeGeometryArray()");
     JoglContext ctx = (JoglContext) absCtx;
     GLContext context = context(ctx);
@@ -1353,10 +1327,10 @@ class JoglPipeline extends Pipeline {
         }
 
         if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
-          executeTexture(pass, texCoordSetMapLen,
+          executeTexture(texCoordSetMapLen,
                          texSize, bstride, texCoordoff,
                          texCoordSetMapOffset,
-                         numActiveTexUnitState, texUnitStateMapArray,
+                         numActiveTexUnitState,
                          verts, gl);
         }
 
@@ -1439,10 +1413,10 @@ class JoglPipeline extends Pipeline {
         }
 
         if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
-          executeTexture(pass, texCoordSetMapLen,
+          executeTexture(texCoordSetMapLen,
                          texSize, bstride, texCoordoff,
                          texCoordSetMapOffset,
-                         numActiveTexUnitState, texUnitStateMapArray,
+                         numActiveTexUnitState,
                          verts, gl);
         }
 
@@ -1499,7 +1473,6 @@ class JoglPipeline extends Pipeline {
                            GeometryArrayRetained geo,
                            int geo_type,
                            boolean isNonUniformScale,
-                           boolean multiScreen,
                            boolean ignoreVertexColors,
                            int vcount,
                            int vformat,
@@ -1509,9 +1482,9 @@ class JoglPipeline extends Pipeline {
                            int initialNormalIndex, FloatBuffer norms,
                            int vertexAttrCount, int[] vertexAttrSizes,
                            int[] vertexAttrIndices, FloatBuffer[] vertexAttrData,
-                           int pass, int texCoordMapLength,
+                           int texCoordMapLength,
                            int[] texCoordSetMap,
-                           int numActiveTexUnit, int[] texUnitStateMap,
+                           int numActiveTexUnit,
                            int[] texindices, int texStride, FloatBuffer[] texCoords,
                            int cdirty,
                            int[] sarray,
@@ -1589,9 +1562,8 @@ class JoglPipeline extends Pipeline {
     if (textureDefined) {
       int texSet = 0;
       for (int i = 0; i < numActiveTexUnit; i++) {
-        int tus = texUnitStateMap[i];
-        if ((tus < texCoordMapLength) &&
-            ((texSet = texCoordSetMap[tus]) != -1)) {
+        if (( i < texCoordMapLength) &&
+            ((texSet = texCoordSetMap[i]) != -1)) {
           FloatBuffer buf = texCoords[texSet];
           buf.position(texStride * texindices[texSet]);
           enableTexCoordPointer(gl, i, texStride,
@@ -1698,7 +1670,6 @@ class JoglPipeline extends Pipeline {
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int initialIndexIndex,
             int indexCount,
@@ -1708,22 +1679,21 @@ class JoglPipeline extends Pipeline {
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            int[] texUnitStateMap,
             float[] varray, float[] carray,
-            int pass, int cdirty,
+            int cdirty,
             int[] indexCoord) {
       if (VERBOSE) System.err.println("JoglPipeline.executeIndexedGeometry()");
 
       executeIndexedGeometryArray(ctx, geo, geo_type,
-                                  isNonUniformScale, useAlpha, multiScreen, ignoreVertexColors,
+                                  isNonUniformScale, useAlpha, ignoreVertexColors,
                                   initialIndexIndex, indexCount,
                                   vertexCount, vformat,
                                   vertexAttrCount, vertexAttrSizes,
                                   texCoordSetCount, texCoordSetMap, texCoordSetMapLen,
                                   texCoordSetOffset,
-                                  numActiveTexUnitState, texUnitStateMap,
+                                  numActiveTexUnitState,
                                   varray, null, carray,
-                                  pass, cdirty, indexCoord);
+                                  cdirty, indexCoord);
     }
 
     // interleaved, by reference, nio buffer
@@ -1731,7 +1701,6 @@ class JoglPipeline extends Pipeline {
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int initialIndexIndex,
             int indexCount,
@@ -1740,27 +1709,25 @@ class JoglPipeline extends Pipeline {
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            int[] texUnitStateMap,
             Object vdata, float[] carray,
-            int pass, int cDirty,
+            int cDirty,
             int[] indexCoord) {
       if (VERBOSE) System.err.println("JoglPipeline.executeIndexedGeometryBuffer()");
 
       executeIndexedGeometryArray(ctx, geo, geo_type,
-                                  isNonUniformScale, useAlpha, multiScreen, ignoreVertexColors,
+                                  isNonUniformScale, useAlpha, ignoreVertexColors,
                                   initialIndexIndex, indexCount, vertexCount, vformat,
                                   0, null,
                                   texCoordSetCount, texCoordSetMap, texCoordSetMapLen, texCoordSetOffset,
-                                  numActiveTexUnitState, texUnitStateMap,
+                                  numActiveTexUnitState,
                                   null, (FloatBuffer) vdata, carray,
-                                  pass, cDirty, indexCoord);
+                                  cDirty, indexCoord);
     }
 
     // non interleaved, by reference, Java arrays
     void executeIndexedGeometryVA(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int initialIndexIndex,
             int validIndexCount,
@@ -1772,9 +1739,9 @@ class JoglPipeline extends Pipeline {
             float[] ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
             float[][] vertexAttrData,
-            int pass, int texCoordMapLength,
+            int texCoordMapLength,
             int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
+            int numActiveTexUnitState,
             int texStride, Object[] texCoords,
             int cdirty,
             int[] indexCoord) {
@@ -1835,15 +1802,15 @@ class JoglPipeline extends Pipeline {
       }
 
       executeIndexedGeometryArrayVA(ctx, geo, geo_type, 
-                                    isNonUniformScale, multiScreen, ignoreVertexColors,
+                                    isNonUniformScale, ignoreVertexColors,
                                     initialIndexIndex, validIndexCount, vertexCount,
                                     vformat, vdefined,
                                     fverts, dverts,
                                     fclrs, bclrs,
                                     norms,
                                     vertexAttrCount, vertexAttrSizes, vertexAttrBufs,
-                                    pass, texCoordMapLength, texcoordoffset,
-                                    numActiveTexUnitState, texunitstatemap, 
+                                    texCoordMapLength, texcoordoffset,
+                                    numActiveTexUnitState,
                                     texStride, texCoordBufs,
                                     cdirty, indexCoord,
                                     sarray, strip_len);
@@ -1853,7 +1820,6 @@ class JoglPipeline extends Pipeline {
     void executeIndexedGeometryVABuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int initialIndexIndex,
             int validIndexCount,
@@ -1866,9 +1832,9 @@ class JoglPipeline extends Pipeline {
             Object ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
             Object[] vertexAttrData,
-            int pass, int texCoordMapLength,
+            int texCoordMapLength,
             int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
+            int numActiveTexUnitState,
             int texStride, Object[] texCoords,
             int cdirty,
             int[] indexCoord) {
@@ -1942,15 +1908,15 @@ class JoglPipeline extends Pipeline {
       }
 
       executeIndexedGeometryArrayVA(ctx, geo, geo_type, 
-                                    isNonUniformScale, multiScreen, ignoreVertexColors,
+                                    isNonUniformScale, ignoreVertexColors,
                                     initialIndexIndex, validIndexCount, vertexCount,
                                     vformat, vdefined,
                                     fverts, dverts,
                                     fclrs, bclrs,
                                     norms,
                                     vertexAttrCount, vertexAttrSizes, vertexAttrBufs,
-                                    pass, texCoordMapLength, texcoordoffset,
-                                    numActiveTexUnitState, texunitstatemap, 
+                                    texCoordMapLength, texcoordoffset,
+                                    numActiveTexUnitState,
                                     texStride, texCoordBufs,
                                     cdirty, indexCoord,
                                     sarray, strip_len);
@@ -2133,10 +2099,10 @@ class JoglPipeline extends Pipeline {
             gl.glVertexPointer(3, GL.GL_FLOAT, bstride, verts);
           }
           if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
-            executeTexture(-1, texCoordSetMapLen,
+            executeTexture(texCoordSetMapLen,
                            texSize, bstride, texCoordoff,
                            texCoordSetMapOffset,
-                           texCoordSetMapLen, null,
+                           texCoordSetMapLen,
                            verts, gl);
           }
           if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
@@ -2217,10 +2183,10 @@ class JoglPipeline extends Pipeline {
             gl.glVertexPointer(3, GL.GL_FLOAT, bstride, verts);
           }
           if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
-            executeTexture(-1, texCoordSetMapLen,
+            executeTexture(texCoordSetMapLen,
                            texSize, bstride, texCoordoff,
                            texCoordSetMapOffset,
-                           texCoordSetMapLen, null,
+                           texCoordSetMapLen,
                            verts, gl);
           }
           if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
@@ -2278,7 +2244,6 @@ class JoglPipeline extends Pipeline {
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int initialIndexIndex,
             int indexCount,
@@ -2288,9 +2253,8 @@ class JoglPipeline extends Pipeline {
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            int[] texUnitStateMap,
             float[] varray, FloatBuffer vdata, float[] carray,
-            int pass, int cDirty,
+            int cDirty,
             int[] indexCoord) {
     JoglContext ctx = (JoglContext) absCtx;
     GL gl = context(ctx).getGL();
@@ -2432,10 +2396,10 @@ class JoglPipeline extends Pipeline {
 
         if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
           /* XXXX: texCoordoff == 0 ???*/
-          executeTexture(pass, texCoordSetMapLen,
+          executeTexture(texCoordSetMapLen,
                          texSize, bstride, texCoordoff,
                          texCoordSetOffset,
-                         numActiveTexUnitState, texUnitStateMap,
+                         numActiveTexUnitState,
                          verts, gl);
         }
 
@@ -2519,10 +2483,10 @@ class JoglPipeline extends Pipeline {
 
         if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
           /* XXXX: texCoordoff == 0 ???*/
-          executeTexture(pass, texCoordSetMapLen,
+          executeTexture(texCoordSetMapLen,
                          texSize, bstride, texCoordoff,
                          texCoordSetOffset,
-                         numActiveTexUnitState, texUnitStateMap,
+                         numActiveTexUnitState,
                          verts, gl);
         }
 
@@ -2569,7 +2533,6 @@ class JoglPipeline extends Pipeline {
   private void executeIndexedGeometryArrayVA(Context absCtx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int initialIndexIndex,
             int validIndexCount,
@@ -2578,9 +2541,8 @@ class JoglPipeline extends Pipeline {
             FloatBuffer fclrs, ByteBuffer bclrs,
             FloatBuffer norms,
             int vertexAttrCount, int[] vertexAttrSizes, FloatBuffer[] vertexAttrBufs,
-            int pass, int texCoordSetCount, int[] texCoordSetMap,
+            int texCoordSetCount, int[] texCoordSetMap,
             int numActiveTexUnitState,
-            int[] texUnitStateMap,
             int texStride,
             FloatBuffer[] texCoords,
             int cDirty, int[] indexCoord, int[] sarray, int strip_len) {
@@ -2641,9 +2603,8 @@ class JoglPipeline extends Pipeline {
     if (textureDefined) {
       int texSet = 0;
       for (int i = 0; i < numActiveTexUnitState; i++) {
-        int tus = texUnitStateMap[i];
-        if ((tus < texCoordSetCount) &&
-            ((texSet = texCoordSetMap[tus]) != -1)) {
+        if ((i < texCoordSetCount) &&
+            ((texSet = texCoordSetMap[i]) != -1)) {
           FloatBuffer buf = texCoords[texSet];
           buf.position(0);
           enableTexCoordPointer(gl, i, texStride,
@@ -7501,16 +7462,6 @@ class JoglPipeline extends Pipeline {
         gl.glColor4f(r, g, b, a);
       }
       gl.glShadeModel(GL.GL_SMOOTH);
-    }
-
-    // native method for updating the texture unit state map
-    void updateTexUnitStateMap(Context ctx, int numActiveTexUnit,
-            int[] texUnitStateMap) {
-      if (VERBOSE) System.err.println("JoglPipeline.updateTexUnitStateMap()");
-
-      // texture unit state map is explicitly handled in
-      // execute; for display list, texture unit has to match
-      // texture unit state.
     }
 
     /**

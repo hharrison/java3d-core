@@ -398,8 +398,7 @@ class RasterRetained extends GeometryRetained {
 
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
 	    boolean updateAlpha, float alpha,
-	    boolean multiScreen, int screen,
-	    boolean ignoreVertexColors, int pass) {
+	    int screen, boolean ignoreVertexColors) {
         
         throw new RuntimeException("Sorry!!! RASTER is temporarily unsupported.");
 

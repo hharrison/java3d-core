@@ -783,11 +783,6 @@ class Renderer extends J3dThread {
                             canvas.createTexUnitState();
                         }
 
-                        // Create the texture unit state map
-                        if (canvas.texUnitStateMap == null) {
-                            canvas.createTexUnitStateMap();
-                        }
-
                         canvas.resetImmediateRendering(Canvas3D.NOCHANGE);
                         canvas.drawingSurfaceObject.contextValidated();
 

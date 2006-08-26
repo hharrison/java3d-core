@@ -940,9 +940,9 @@ class Text3DRetained extends GeometryRetained {
 
 
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
-		 boolean updateAlpha, float alpha, boolean multiScreen, 
+		 boolean updateAlpha, float alpha,
 		 int screen, 
-		 boolean ignoreVertexColors, int pass) { 
+		 boolean ignoreVertexColors) { 
 
 	Transform3D trans = VirtualUniverse.mc.getTransform3D(null);
 
@@ -951,8 +951,7 @@ class Text3DRetained extends GeometryRetained {
 	    trans.mul(charTransforms[i]);
 	    cv.setModelViewMatrix(cv.ctx, vpcToEc.mat, trans);
 	    geometryList[i].execute(cv, ra, isNonUniformScale, updateAlpha, alpha,
-				    multiScreen, screen, ignoreVertexColors, 
-				    pass);
+				    screen, ignoreVertexColors);
 	}
         VirtualUniverse.mc.addToTransformFreeList(trans);
     }

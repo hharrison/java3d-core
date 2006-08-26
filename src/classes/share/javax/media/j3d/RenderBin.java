@@ -305,11 +305,6 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
      */
     ArrayList dirtyReferenceGeomList = new ArrayList(5);
 
-
-    // Issue 113 - this variable is no longer needed.
-    // TODO: it should be removed from the Pipeline interface
-    static final boolean multiScreen = false;
-
     // list of all Oriented RenderAtoms
     ArrayList orientedRAs = new ArrayList(5);
 

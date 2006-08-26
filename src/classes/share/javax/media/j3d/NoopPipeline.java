@@ -78,23 +78,20 @@ class NoopPipeline extends Pipeline {
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int startVIndex, int vcount, int vformat,
             int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            int[] texUnitStateMap,
             int vertexAttrCount, int[] vertexAttrSizes,
-            float[] varray, float[] cdata, int pass, int cdirty) {
+            float[] varray, float[] cdata, int cdirty) {
     }
 
     // used by GeometryArray by Reference with java arrays
     void executeVA(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int vcount,
             int vformat,
@@ -104,9 +101,9 @@ class NoopPipeline extends Pipeline {
             int normalIndex, float[] ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
             int[] vertexAttrIndex, float[][] vertexAttrData,
-            int pass, int texcoordmaplength,
+            int texcoordmaplength,
             int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
+            int numActiveTexUnitState,
             int[] texIndex, int texstride, Object[] texCoords,
             int cdirty) {
     }
@@ -115,7 +112,6 @@ class NoopPipeline extends Pipeline {
     void executeVABuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int vcount,
             int vformat,
@@ -128,9 +124,9 @@ class NoopPipeline extends Pipeline {
             int normalIndex, Object ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
             int[] vertexAttrIndex, Object[] vertexAttrData,
-            int pass, int texcoordmaplength,
+            int texcoordmaplength,
             int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
+            int numActiveTexUnitState,
             int[] texIndex, int texstride, Object[] texCoords,
             int cdirty) {
     }
@@ -140,15 +136,13 @@ class NoopPipeline extends Pipeline {
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int startVIndex, int vcount, int vformat,
             int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            int[] texUnitStateMap,
-            Object varray, float[] cdata, int pass, int cdirty) {
+            Object varray, float[] cdata, int cdirty) {
     }
 
     void setVertexFormat(Context ctx, GeometryArrayRetained geo,
@@ -206,7 +200,6 @@ class NoopPipeline extends Pipeline {
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int initialIndexIndex,
             int indexCount,
@@ -216,9 +209,8 @@ class NoopPipeline extends Pipeline {
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            int[] texUnitStateMap,
             float[] varray, float[] cdata,
-            int pass, int cdirty,
+            int cdirty,
             int[] indexCoord) {
     }
 
@@ -227,7 +219,6 @@ class NoopPipeline extends Pipeline {
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
             boolean useAlpha,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int initialIndexIndex,
             int indexCount,
@@ -236,9 +227,8 @@ class NoopPipeline extends Pipeline {
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            int[] texUnitStateMap,
             Object varray, float[] cdata,
-            int pass, int cdirty,
+            int cdirty,
             int[] indexCoord) {
     }
 
@@ -246,7 +236,6 @@ class NoopPipeline extends Pipeline {
     void executeIndexedGeometryVA(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int initialIndexIndex,
             int validIndexCount,
@@ -258,9 +247,9 @@ class NoopPipeline extends Pipeline {
             float[] ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
             float[][] vertexAttrData,
-            int pass, int texcoordmaplength,
+            int texcoordmaplength,
             int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
+            int numActiveTexUnitState,
             int texstride, Object[] texCoords,
             int cdirty,
             int[] indexCoord) {
@@ -270,7 +259,6 @@ class NoopPipeline extends Pipeline {
     void executeIndexedGeometryVABuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
-            boolean multiScreen,
             boolean ignoreVertexColors,
             int initialIndexIndex,
             int validIndexCount,
@@ -283,9 +271,9 @@ class NoopPipeline extends Pipeline {
             Object normal,
             int vertexAttrCount, int[] vertexAttrSizes,
             Object[] vertexAttrData,
-            int pass, int texcoordmaplength,
+            int texcoordmaplength,
             int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
+            int numActiveTexUnitState,
             int texstride, Object[] texCoords,
             int cdirty,
             int[] indexCoord) {
@@ -1378,11 +1366,6 @@ class NoopPipeline extends Pipeline {
             float r, float g,
             float b, float a,
             boolean enableLight) {
-    }
-
-    // native method for updating the texture unit state map
-    void updateTexUnitStateMap(Context ctx, int numActiveTexUnit,
-            int[] texUnitStateMap) {
     }
 
     /**

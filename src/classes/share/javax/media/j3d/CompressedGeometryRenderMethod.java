@@ -94,12 +94,9 @@ class CompressedGeometryRenderMethod implements RenderMethod {
 		return ;
 	}
 	      
-	cgr.mirrorGeometry.execute
-	    (cv, ra.renderAtom, rm.isNonUniformScale,
+	cgr.mirrorGeometry.execute(cv, ra.renderAtom, rm.isNonUniformScale,
 	     (useAlpha && ra.geometry().noAlpha), rm.alpha,
-	     rm.renderBin.multiScreen,
 	     cv.screen.screen,
-	     rm.textureBin.attributeBin.ignoreVertexColors, 
-	     TextureBin.USE_VERTEXARRAY);
+	     rm.textureBin.attributeBin.ignoreVertexColors);
     }
 }

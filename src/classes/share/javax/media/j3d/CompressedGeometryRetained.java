@@ -112,8 +112,7 @@ class CompressedGeometryRetained extends GeometryRetained {
      */
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale,
 		 boolean updateAlpha, float alpha,
-		 boolean multiScreen, int screen,
-		 boolean ignoreVertexColors, int pass) {
+                 int screen, boolean ignoreVertexColors) {
 
 	// XXXX: alpha udpate
 	execute(cv.ctx, packedVersion, bufferType, bufferContents,

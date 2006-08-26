@@ -82,9 +82,7 @@ class VertexArrayRenderMethod implements RenderMethod {
 	geo.execute(cv, ra.renderAtom, rm.isNonUniformScale,
 		    (useAlpha && ((geo.vertexFormat & GeometryArray.COLOR) != 0)) ,
 		    rm.alpha,
-		    rm.renderBin.multiScreen,
 		    cv.screen.screen,
-		    rm.textureBin.attributeBin.ignoreVertexColors,
-		    pass);
+		    rm.textureBin.attributeBin.ignoreVertexColors);
     }
 }

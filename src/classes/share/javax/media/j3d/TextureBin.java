@@ -1202,12 +1202,6 @@ class TextureBin extends Object implements ObjectUpdate {
             }
 
 	    cv.setLastActiveTexUnit(lastActiveTexUnitIdx);
-	    // tell the underlying library the texture unit mapping
-
-	    if ((pass == USE_DISPLAYLIST) && 
-		(cv.numActiveTexUnit > 0)) {
-		cv.updateTexUnitStateMap();
-	    }
 
             // set the active texture unit back to 0
             cv.activeTextureUnit(cv.ctx, 0);

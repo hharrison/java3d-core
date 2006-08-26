@@ -1742,12 +1742,7 @@ public class GraphicsContext3D extends Object   {
                     if (canvas3d.texUnitState == null) {
                         canvas3d.createTexUnitState();
                     }
-                    
-                    // Create the texture unit state map
-                    if (canvas3d.texUnitStateMap == null) {
-                        canvas3d.createTexUnitStateMap();
-                    }
-                    
+                                        
                     canvas3d.drawingSurfaceObject.contextValidated();
                     canvas3d.screen.renderer.currentCtx = canvas3d.ctx;
                     canvas3d.screen.renderer.currentDrawable = canvas3d.drawable;
@@ -2115,10 +2110,8 @@ public class GraphicsContext3D extends Object   {
 
 		drawGeo.execute(canvas3d, null, isNonUniformScale,
 				false, alpha, 
-				((canvas3d.view.getScreens()).length > 1), 
 				canvas3d.screen.screen,
-				ignoreVertexColors, 
-				TextureBin.USE_VERTEXARRAY);
+				ignoreVertexColors);
 
 	    if (geoRetained != null)
 	        geoRetained.geomLock.unLock();

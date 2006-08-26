@@ -3615,21 +3615,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_activeTextureUnit(
     }
 }
 
-JNIEXPORT
-void JNICALL Java_javax_media_j3d_NativePipeline_updateTexUnitStateMap(
-    JNIEnv *env,
-    jobject obj,
-    jlong ctxInfo,
-    jint numActiveTexUnit,
-    jintArray texUnitStateMapArray)
-{
-    /*
-     * texture unit state map is explicitly handled in
-     * execute; for display list, texture unit has to match
-     * texture unit state.
-     */ 
-}
-
 
 /*
  * strJavaToC

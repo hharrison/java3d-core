@@ -3207,43 +3207,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateSeparateSpecularColorEnab
 {
 }
 
-extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_NativePipeline_updateTexUnitStateMap(
-    JNIEnv *env,
-    jobject obj,
-    jlong ctx,
-    jint numActiveTexUnit,
-    jintArray texUnitStateMapArray)
-{
-    if ((texUnitStateMapArray != NULL) && (numActiveTexUnit > 0)) {
-	GetDevice();
-
-        jint* texUnitStateMap = (jint *) env->GetPrimitiveArrayCritical(
-                                                texUnitStateMapArray, NULL);
-	int genMode;
-	int ts;
-	for (int i = 0; i < numActiveTexUnit; i++) {
-	    genMode = setTextureStage(d3dCtx, device, i, texUnitStateMap[i]);
-	    if (genMode != TEX_GEN_AUTO) {
-		ts = d3dCtx->texStride[i];
-		if (ts == 0) {
-		    /*
-		      In multiTexture case when no tex defined in non object
-		      linear mode.
-		    */
-		    ts = d3dCtx->texCoordFormat[i];
-		}
-	    } else {
-		ts = d3dCtx->texCoordFormat[i];
-	    }
-	    setTexTransformStageFlag(d3dCtx, device, i, ts, genMode);
-	}
-
-        env->ReleasePrimitiveArrayCritical(texUnitStateMapArray,
-                                                texUnitStateMap, 0);
-    }
-}
-
 
 // Fix issue 221 : Temporary stub until Cg is implemented
 /*

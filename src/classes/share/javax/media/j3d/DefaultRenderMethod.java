@@ -37,11 +37,9 @@ class DefaultRenderMethod implements RenderMethod {
 		    ra.geometry().execute(cv, ra.renderAtom, 
 					  rm.isNonUniformScale,
 					  rm.useAlpha, rm.alpha,
-					  rm.renderBin.multiScreen,
 					  cv.screen.screen,
 					  rm.textureBin.attributeBin.
-					  ignoreVertexColors, 
-					  pass);
+					  ignoreVertexColors);
 		    isVisible = true;
 		}
 	    }
@@ -52,11 +50,9 @@ class DefaultRenderMethod implements RenderMethod {
 		    cv.updateState(pass, dirtyBits);
 		    ra.geometry().execute(cv, ra.renderAtom, rm.isNonUniformScale,
 					  rm.useAlpha, rm.alpha,
-					  rm.renderBin.multiScreen,
 					  cv.screen.screen,
 					  rm.textureBin.attributeBin.
-					  ignoreVertexColors, 
-					  pass);
+					  ignoreVertexColors);
 		    isVisible = true;
 		}
 		else {

@@ -614,9 +614,10 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
      *  width, height, depth, imageType, imageFormatType, and bytesPerPixel.
      */
     ImageData createImageDataObject(RenderedImage byRefImage) {
-        
+          
         switch(imageFormatType) {
             case TYPE_BYTE_GRAY:
+            case TYPE_BYTE_LA:
             case TYPE_BYTE_RGB:
             case TYPE_BYTE_BGR:
             case TYPE_BYTE_RGBA:
