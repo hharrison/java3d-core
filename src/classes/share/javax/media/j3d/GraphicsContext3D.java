@@ -367,10 +367,12 @@ public class GraphicsContext3D extends Object   {
                 images = texRetained.getImages();
                 if(images != null) {
                     for(int i=0; i<images.length; i++) {
-                        ImageComponentRetained imageRetained = (ImageComponentRetained) images[i].retained;
-                        // Do illegal sharing check
-                        if(imageRetained.getUsedByOffScreen()) {
-                            throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D30"));
+                        if(images[i] != null) {
+                            ImageComponentRetained imageRetained = (ImageComponentRetained) images[i].retained;
+                            // Do illegal sharing check
+                            if(imageRetained.getUsedByOffScreen()) {
+                                throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D30"));
+                            }
                         }
                     }
                 }
@@ -381,10 +383,12 @@ public class GraphicsContext3D extends Object   {
                     images = texRetained.getImages();
                     if(images != null) {
                         for(int i=0; i<images.length; i++) {
-                            ImageComponentRetained imageRetained = (ImageComponentRetained) images[i].retained;
-                            // Do illegal sharing check
-                            if(imageRetained.getUsedByOffScreen()) {
-                                throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D30"));
+                            if(images[i] != null) {
+                                ImageComponentRetained imageRetained = (ImageComponentRetained) images[i].retained;
+                                // Do illegal sharing check
+                                if(imageRetained.getUsedByOffScreen()) {
+                                    throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D30"));
+                                }
                             }
                         }
                     }        
@@ -648,9 +652,11 @@ public class GraphicsContext3D extends Object   {
         }
         BackgroundRetained bgRetained = (BackgroundRetained)background.retained;
         ImageComponent2D image = bgRetained.getImage();
-        ImageComponent2DRetained imageRetained = (ImageComponent2DRetained) image.retained;
-        if(imageRetained.getUsedByOffScreen()) {
-           throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D31"));          
+        if(image != null) {
+            ImageComponent2DRetained imageRetained = (ImageComponent2DRetained) image.retained;
+            if(imageRetained.getUsedByOffScreen()) {
+                throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D31"));
+            }
         }
 
         if (((BackgroundRetained)background.retained).geometryBranch != null) {

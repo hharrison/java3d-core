@@ -275,7 +275,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         
         ImageComponent2DRetained newImage = new ImageComponent2DRetained();
         newImage.processParams(getFormat(), newWidth, newHeight, 1);        
-        newImage.imageData = createImageDataObject(null);
+        newImage.imageData = newImage.createImageDataObject(null);
 
         newImage.scaleImage(xScale, yScale, 0, this);
         

@@ -634,12 +634,14 @@ public class Raster extends Geometry {
                 throw new CapabilityNotSetException(J3dI18N.getString("Raster3"));
 
         // Do illegal sharing check
-        ImageComponent2DRetained imageRetained = (ImageComponent2DRetained) image.retained;
-        if(imageRetained.getUsedByOffScreen()) {
-            if(isLive()) {
-                throw new IllegalSharingException(J3dI18N.getString("Raster12"));
+        if(image != null) {
+            ImageComponent2DRetained imageRetained = (ImageComponent2DRetained) image.retained;
+            if(imageRetained.getUsedByOffScreen()) {
+                if(isLive()) {
+                    throw new IllegalSharingException(J3dI18N.getString("Raster12"));
+                }
             }
-        }        
+        }
         
         ((RasterRetained)this.retained).setImage(image);
     }

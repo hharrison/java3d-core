@@ -300,7 +300,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
 
         ImageComponent3DRetained newImage = new ImageComponent3DRetained();
         newImage.processParams(getFormat(), newWidth, newHeight, depth);
-        newImage.imageData = createImageDataObject(null);
+        newImage.imageData = newImage.createImageDataObject(null);
         
         for (int i = 0; i < depth; i++) {
             newImage.scaleImage(xScale, yScale, depth, this);

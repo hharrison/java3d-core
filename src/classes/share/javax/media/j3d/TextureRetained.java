@@ -363,16 +363,6 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    }
 	}
 
-        
-        /*  Don't think this is needed.   --- Chien.
-        if (this instanceof Texture2DRetained) {
-	    ((ImageComponent2DRetained)image.retained).setTextureRef();
-        } else {
-	    ((ImageComponent3DRetained)image.retained).setTextureRef();
-        }
-         */
-        
-
 	if (image != null) {
 	    this.images[0][level] = (ImageComponentRetained)image.retained;
 
