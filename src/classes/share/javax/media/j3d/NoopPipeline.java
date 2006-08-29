@@ -34,10 +34,10 @@ class NoopPipeline extends Pipeline {
     /**
      * Initialize the pipeline
      */
-    void initialize(Pipeline.Type rendererType) {
-        super.initialize(rendererType);
+    void initialize(Pipeline.Type pipelineType) {
+        super.initialize(pipelineType);
 
-        assert rendererType == Pipeline.Type.NOOP;
+        assert pipelineType == Pipeline.Type.NOOP;
     }
 
     /**

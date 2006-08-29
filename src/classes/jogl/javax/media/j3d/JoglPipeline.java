@@ -55,10 +55,10 @@ class JoglPipeline extends Pipeline {
     /**
      * Initialize the pipeline
      */
-    void initialize(Pipeline.Type rendererType) {
-        super.initialize(rendererType);
+    void initialize(Pipeline.Type pipelineType) {
+        super.initialize(pipelineType);
 
-        assert rendererType == Pipeline.Type.JOGL;
+        assert pipelineType == Pipeline.Type.JOGL;
         
         // Java3D maintains strict control over which threads perform OpenGL work
         Threading.disableSingleThreading();

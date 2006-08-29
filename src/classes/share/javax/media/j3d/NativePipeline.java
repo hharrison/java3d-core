@@ -59,8 +59,8 @@ class NativePipeline extends Pipeline {
     /**
      * Initialize the pipeline
      */
-    void initialize(Pipeline.Type rendererType) {
-        super.initialize(rendererType);
+    void initialize(Pipeline.Type pipelineType) {
+        super.initialize(pipelineType);
 
         // This works around a native load library bug
         try {
@@ -69,7 +69,7 @@ class NativePipeline extends Pipeline {
         } catch (java.awt.AWTError e) {
         }
 
-        switch (rendererType) {
+        switch (pipelineType) {
         case NATIVE_OGL:
             isD3D = false;
             rendererName = "ogl";
@@ -103,7 +103,7 @@ class NativePipeline extends Pipeline {
 
         // Check whether the GLSL library is available
         if (globalShadingLanguage == Shader.SHADING_LANGUAGE_GLSL) {
-            if (getRendererType() == Pipeline.Type.NATIVE_OGL) {
+            if (getPipelineType() == Pipeline.Type.NATIVE_OGL) {
                 // No need to verify that GLSL is available, since GLSL is part
                 // of OpenGL as an extension (or part of core in 2.0)
                 glslLibraryAvailable = true;

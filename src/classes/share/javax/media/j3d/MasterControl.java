@@ -751,29 +751,29 @@ class MasterControl {
 
         // Default rendering pipeline is the JOGL pipeline on MacOS and the
         // native OpenGL pipeline on all other platforms.
-        Pipeline.Type rendererType =
+        Pipeline.Type pipelineType =
                 isMacOs ? Pipeline.Type.JOGL : Pipeline.Type.NATIVE_OGL;
 
         String rendStr = getProperty("j3d.rend");
         if (rendStr == null) {
             // Use default pipeline
         } else if (rendStr.equals("ogl") && !isMacOs) {
-            rendererType = Pipeline.Type.NATIVE_OGL;
+            pipelineType = Pipeline.Type.NATIVE_OGL;
         } else if (rendStr.equals("d3d") && isWindowsOs) {
-            rendererType = Pipeline.Type.NATIVE_D3D;
+            pipelineType = Pipeline.Type.NATIVE_D3D;
         } else if (rendStr.equals("jogl")) {
-            rendererType = Pipeline.Type.JOGL;
+            pipelineType = Pipeline.Type.JOGL;
         } else if (rendStr.equals("noop")) {
-            rendererType = Pipeline.Type.NOOP;
+            pipelineType = Pipeline.Type.NOOP;
         } else {
             System.err.println("Java 3D: Unrecognized renderer: " + rendStr);
             // Use default pipeline
         }
 
-//KCR:        System.err.println("    using " + rendererType + " pipeline");
+//KCR:        System.err.println("    using " + pipelineType + " pipeline");
 
         // Construct the singleton Pipeline instance
-        Pipeline.createPipeline(rendererType);
+        Pipeline.createPipeline(pipelineType);
 
         // Get the global j3d.shadingLanguage system property
         final String slStr = getProperty("j3d.shadingLanguage");
@@ -1177,7 +1177,7 @@ class MasterControl {
      * TODO: most code that cares about this should move into the pipeline
      */
     final boolean isD3D() {
-	return Pipeline.getPipeline().getRendererType() == Pipeline.Type.NATIVE_D3D;
+	return Pipeline.getPipeline().getPipelineType() == Pipeline.Type.NATIVE_D3D;
     }
 
     /**

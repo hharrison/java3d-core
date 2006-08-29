@@ -255,24 +255,8 @@ public class VirtualUniverse extends Object {
 	// Print out debugging information for debug builds
 	if(VersionInfo.isDebug) {
 	    System.err.println("Java 3D system initialized");
-	    System.err.print("    rendering library = ");
-	    switch (Pipeline.getPipeline().getRendererType()) {
-            case NATIVE_OGL:
-                System.err.println("ogl");
-                break;
-            case NATIVE_D3D:
-                System.err.println("d3d");
-                break;
-            case JOGL:
-                System.err.println("jogl");
-                break;
-            case NOOP:
-                System.err.println("noop");
-                break;
-            default:
-                System.err.println("UNKNOWN");
-                assert false; // should not get here
-	    }
+	    System.err.println("    rendering pipeline = " +
+                    Pipeline.getPipeline().getPipelineName());
 	    System.err.println();
 	}
     }
@@ -439,6 +423,10 @@ public class VirtualUniverse extends Object {
      * <td>String</td>
      * </tr>
      * <tr>
+     * <td><code>j3d.pipeline</code></td>
+     * <td>String</td>
+     * </tr>
+     * <tr>
      * <td><code>j3d.renderer</code></td>
      * <td>String</td>
      * </tr>
@@ -514,10 +502,20 @@ public class VirtualUniverse extends Object {
      * <p>
      *
      * <li>
+     * <code>j3d.pipeline</code>
+     * <ul>
+     * String that specifies the Java 3D rendering pipeline. This could
+     * be one of: "NATIVE_OGL", "NATIVE_D3D", or "JOGL". Others could be
+     * added in the future.
+     * </ul>
+     * </li>
+     * <p>
+     *
+     * <li>
      * <code>j3d.renderer</code>
      * <ul>
-     * String that specifies the Java 3D rendering library.  This could
-     * be one of: "OpenGL" or "DirectX".
+     * String that specifies the underlying rendering library.  This could
+     * be one of: "OpenGL" or "DirectX". Others could be added in the future.
      * </ul>
      * </li>
      * <p>
@@ -549,7 +547,10 @@ public class VirtualUniverse extends Object {
 	    values.add(VersionInfo.getSpecificationVendor());
 
 	    keys.add("j3d.renderer");
-	    values.add(mc.isD3D() ? "DirectX" : "OpenGL");
+            values.add(Pipeline.getPipeline().getRendererName());
+
+            keys.add("j3d.pipeline");
+            values.add(Pipeline.getPipeline().getPipelineName());
 
 	    // Now Create read-only properties object
 	    properties =

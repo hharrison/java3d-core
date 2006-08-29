@@ -17,13 +17,13 @@ import java.awt.GraphicsDevice;
 
 /**
  * Abstract pipeline class for rendering pipeline methods. All rendering
- * pipeline methods will eventually go here.
+ * pipeline methods are defined here.
  */
 abstract class Pipeline {
     // Singleton pipeline instance
     private static Pipeline pipeline;
 
-    // Supported Rendering APIs
+    // Supported rendering pipelines
     enum Type {
         // Native rendering pipelines using OGL or D3D library
         NATIVE_OGL,
@@ -36,8 +36,8 @@ abstract class Pipeline {
         NOOP,
     }
 
-    // Type of renderer (as defined above)
-    private Type rendererType = null;
+    // Type of rendering pipeline (as defined above)
+    private Type pipelineType = null;
 
     protected Pipeline() {
     }
@@ -47,9 +47,9 @@ abstract class Pipeline {
      * MasterControl.loadLibraries() to create the singleton
      * Pipeline object.
      */
-    static void createPipeline(Type rendererType) {
+    static void createPipeline(Type pipelineType) {
         String className = null;
-        switch (rendererType) {
+        switch (pipelineType) {
         case NATIVE_OGL:
         case NATIVE_D3D:
             className = "javax.media.j3d.NativePipeline";
@@ -79,7 +79,7 @@ abstract class Pipeline {
                     }
                 });
 
-        pipeline.initialize(rendererType);
+        pipeline.initialize(pipelineType);
     }
 
     /**
@@ -92,31 +92,68 @@ abstract class Pipeline {
     /**
      * Initializes the pipeline object. Only called by initPipeline.
      * Pipeline subclasses may override this, but must call
-     * super.initialize(renderType);
+     * super.initialize(pipelineType);
      */
-    void initialize(Type rendererType) {
-        setRendererType(rendererType);
+    void initialize(Type pipelineType) {
+        setPipelineType(pipelineType);
     }
 
     /**
-     * Sets the renderer type. Only called by initialize.
+     * Sets the pipeline type. Only called by initialize.
      */
-    private void setRendererType(Type rendererType) {
-        this.rendererType = rendererType;
+    private void setPipelineType(Type pipelineType) {
+        this.pipelineType = pipelineType;
     }
 
     /**
-     * Returns the renderer type
+     * Returns the pipeline type
      */
-    Type getRendererType() {
-        return rendererType;
+    Type getPipelineType() {
+        return pipelineType;
+    }
+
+    /**
+     * Returns the pipeline name
+     */
+    String getPipelineName() {
+        switch (pipelineType) {
+        case NATIVE_OGL:
+            return "NATIVE_OGL";
+        case NATIVE_D3D:
+            return "NATIVE_D3D";
+        case JOGL:
+            return "JOGL";
+        case NOOP:
+            return "NOOP";
+        default:
+            // Should not get here
+            throw new AssertionError("missing case statement");
+        }
+    }
+
+    /**
+     * Returns the renderer name
+     */
+    String getRendererName() {
+        switch (pipelineType) {
+        case NATIVE_OGL:
+        case JOGL:
+            return "OpenGL";
+        case NATIVE_D3D:
+            return "DirectX";
+        case NOOP:
+            return "None";
+        default:
+            // Should not get here
+            throw new AssertionError("missing case statement");
+        }
     }
 
 
     // ---------------------------------------------------------------------
 
     //
-    // Methods to initialize load required libraries (from MasterControl)
+    // Methods to initialize and load required libraries (from MasterControl)
     //
 
     /**
