@@ -22,6 +22,8 @@ java.net.</p>
   <li><a href="#NIO_Image_Buffer">NIO image buffer support for textures</a></li>
   <li><a href="#By_Ref_Indices">By-reference support for geometry
 indices</a></li>
+  <li><a href="#RenderingErrorListener">Rendering error listeners</a><br>
+  </li>
   <li><a href="#vecmath_accessors_mutators">Vecmath accessors/mutators</a></li>
   <li><a href="#Deprecated_API">Deprecated API</a></li>
 </ol>
@@ -138,7 +140,33 @@ coordIndices[])<br>
 </ul>
 <p><br>
 </p>
-<h3><a name="vecmath_accessors_mutators"></a>4. Vecmath
+<h3><a name="RenderingErrorListener"></a>4. Rendering error listener</h3>
+<p>We propose to add a rendering error class and error listener
+interface that applications can use to detect rendering errors that are
+caught by the Java 3D rendering system. The default error listener, if
+no user-specified error listeners are added, prints out the error
+message and exits.<br>
+</p>
+<p>The following new classes and interfaces are proposed:</p>
+<ul>
+  <code>public class RenderingError extends <span
+ style="font-weight: bold;">Object</span><br>
+public interface <span style="font-weight: bold;">RenderingErrorListener</span><br>
+  </code>
+</ul>
+<p>The following new methods are proposed:</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;">VirtualUniverse</span><br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp; public static void
+addRenderingErrorListener(RenderingErrorListener listener)<br>
+&nbsp;&nbsp;&nbsp; public static void
+removeRenderingErrorListener(RenderingErrorListener listener)<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3><a name="vecmath_accessors_mutators"></a>5. Vecmath
 accessors/mutators</h3>
 <p>We propose to add accessors and mutators to all vecmath classes with
 publicly accessible fields. This follows the bean pattern, and allows
@@ -167,7 +195,7 @@ Tuple4i<br>
 </ul>
 <p><br>
 </p>
-<h3><a name="Deprecated_API"></a>5. Deprecated API</h3>
+<h3><a name="Deprecated_API"></a>6. Deprecated API</h3>
 <p>We propose to deprecate the following fields and methods relating to
 the obsolete texture functionality.
 </p>

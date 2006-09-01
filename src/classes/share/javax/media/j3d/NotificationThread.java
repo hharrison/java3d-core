@@ -67,6 +67,9 @@ class NotificationThread extends Thread {
             case J3dNotification.SHADER_ERROR:
                 n.universe.notifyShaderErrorListeners((ShaderError)n.args[0]);
                 break;
+            case J3dNotification.RENDERING_ERROR:
+                VirtualUniverse.notifyRenderingErrorListeners((RenderingError)n.args[0]);
+                break;
             default:
                 System.err.println("J3dNotification.processNotifications: unrecognized type = " + n.type);
             }

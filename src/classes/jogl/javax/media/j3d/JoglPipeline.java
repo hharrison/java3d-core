@@ -70,17 +70,20 @@ class JoglPipeline extends Pipeline {
      * Load all of the required libraries
      */
     void loadLibraries(int globalShadingLanguage) {
-      if (globalShadingLanguage == Shader.SHADING_LANGUAGE_CG) {
-        // Try to load the jogl_cg library and set the
-        // cgLibraryAvailable flag to true if loads successfully; note
-        // that successfully performing initialization of this class
-        // will cause the Cg native library to be loaded on our behalf
-        try {
-          Class.forName("com.sun.opengl.cg.CgGL");
-          cgLibraryAvailable = true;
-        } catch (Exception e) {
+        if (globalShadingLanguage == Shader.SHADING_LANGUAGE_CG) {
+            // Try to load the jogl_cg library and set the
+            // cgLibraryAvailable flag to true if loads successfully; note
+            // that successfully performing initialization of this class
+            // will cause the Cg native library to be loaded on our behalf
+            try {
+                Class.forName("com.sun.opengl.cg.CgGL");
+                cgLibraryAvailable = true;
+            } catch (Exception ex) {
+                System.err.println(ex);
+            } catch (Error ex) {
+                System.err.println(ex);
+            }
         }
-      }
     }
 
     /**
@@ -1261,7 +1264,7 @@ class JoglPipeline extends Pipeline {
       verts = (FloatBuffer) varrayBuffer;
     } else {
       // This should never happen
-      throw new RuntimeException("JAVA 3D ERROR : unable to get vertex pointer");
+      throw new AssertionError("Unable to get vertex pointer");
     }
 
     // using byRef interleaved array and has a separate pointer, then ..
@@ -2336,7 +2339,7 @@ class JoglPipeline extends Pipeline {
       verts = vdata;
     } else {
       // This should never happen
-      throw new RuntimeException("JAVA 3D ERROR : unable to get vertex pointer");
+      throw new AssertionError("Unable to get vertex pointer");
     }
 
     // using byRef interleaved array and has a separate pointer, then ..
@@ -3882,6 +3885,7 @@ class JoglPipeline extends Pipeline {
         int type = tmp2[0];
         String name = null;
         try {
+          // TODO KCR : Shouldn't this use the default locale?
           name = new String(nameBuf, 0, tmp3[0], "US-ASCII");
         } catch (UnsupportedEncodingException e) {
           throw new RuntimeException(e);
@@ -3954,6 +3958,7 @@ class JoglPipeline extends Pipeline {
       int[] len = new int[1];
       gl.glGetInfoLogARB(id, infoLogLength[0], len, 0, storage, 0);
       try {
+        // TODO KCR : Shouldn't this use the default locale?
         return new String(storage, 0, len[0], "US-ASCII");
       } catch (UnsupportedEncodingException e) {
         throw new RuntimeException(e);
@@ -6238,7 +6243,11 @@ class JoglPipeline extends Pipeline {
     boolean forceAlphaToOne = false;
     
     // check if we are trying to draw NPOT on a system that doesn't support it
-    if ((!gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) &&
+    boolean textureNonPowerOfTwoAvailable =
+            gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two") ||
+            gl.isExtensionAvailable("GL_VERSION_2_0");
+
+    if (!textureNonPowerOfTwoAvailable &&
         (!isPowerOfTwo(width) || !isPowerOfTwo(height))) {
       // disable texture by setting width and height to 0
       width = height = 0;
@@ -6386,7 +6395,11 @@ class JoglPipeline extends Pipeline {
     // if NPOT textures are not supported, check if h=w=0, if so we have been 
     // disabled due to a NPOT texture being sent to a context that doesn't
     // support it: disable the glTexSubImage as well
-    if (gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) {
+    boolean textureNonPowerOfTwoAvailable =
+            gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two") ||
+            gl.isExtensionAvailable("GL_VERSION_2_0");
+
+    if (!textureNonPowerOfTwoAvailable) {
       int[] tmp = new int[1];
       int texWidth, texHeight;
       gl.glGetTexLevelParameteriv(GL.GL_TEXTURE_2D, 0, GL.GL_TEXTURE_WIDTH, tmp, 0);
@@ -6398,7 +6411,7 @@ class JoglPipeline extends Pipeline {
         width = height = 0;
       }
     }
-       
+
     switch (textureFormat) {
         case Texture.INTENSITY:
             internalFormat = GL.GL_INTENSITY;
@@ -6829,36 +6842,40 @@ class JoglPipeline extends Pipeline {
       } else {
         draw = drawable(cv.drawable);
       }
-        
+
       // FIXME: assuming that this only gets called after addNotify has been called
       draw.setRealized(true);
       GLContext context = draw.createContext(context(shareCtx));
-      
+
       // Apparently we are supposed to make the context current at
       // this point and set up a bunch of properties
       if (context.makeCurrent() == GLContext.CONTEXT_NOT_CURRENT) {
-        throw new RuntimeException("Unable to make new context current");
+        throw new IllegalRenderingStateException("Unable to make new context current");
       }
 
       GL gl = context.getGL();
       JoglContext ctx = new JoglContext(context);
 
-      if (!getPropertiesFromCurrentContext(ctx)) {
-        throw new RuntimeException("Unable to fetch properties from current OpenGL context");
-      }
+      try {
+          if (!getPropertiesFromCurrentContext(ctx)) {
+              throw new IllegalRenderingStateException("Unable to fetch properties from current OpenGL context");
+          }
 
-      if(!isSharedCtx){
-        // Set up fields in Canvas3D
-        setupCanvasProperties(cv, ctx, gl, glslLibraryAvailable, cgLibraryAvailable);
-      }
-      
-      // Enable rescale normal
-      gl.glEnable(GL.GL_RESCALE_NORMAL);
+          if(!isSharedCtx){
+              // Set up fields in Canvas3D
+              setupCanvasProperties(cv, ctx, gl, glslLibraryAvailable, cgLibraryAvailable);
+          }
 
-      gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE);
-      gl.glDepthFunc(GL.GL_LEQUAL);
-      gl.glEnable(GL.GL_COLOR_MATERIAL);
-      gl.glReadBuffer(GL.GL_FRONT);
+          // Enable rescale normal
+          gl.glEnable(GL.GL_RESCALE_NORMAL);
+
+          gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE);
+          gl.glDepthFunc(GL.GL_LEQUAL);
+          gl.glEnable(GL.GL_COLOR_MATERIAL);
+          gl.glReadBuffer(GL.GL_FRONT);
+      } finally {
+          context.release();
+      }
 
       return ctx;
     }
@@ -7794,7 +7811,7 @@ class JoglPipeline extends Pipeline {
     void newDisplayList(Context ctx, int displayListId) {
       if (VERBOSE) System.err.println("JoglPipeline.newDisplayList()");
       if (displayListId <= 0) {
-        throw new RuntimeException("JAVA 3D ERROR : glNewList(" + displayListId + ") -- IGNORED");
+        System.err.println("JAVA 3D ERROR : glNewList(" + displayListId + ") -- IGNORED");
       }
 
       GL gl = context(ctx).getGL();
@@ -7813,10 +7830,10 @@ class JoglPipeline extends Pipeline {
       if (id <= 0) {
         if (numInvalidLists < 3) {
           ++numInvalidLists;
-          throw new RuntimeException("JAVA 3D ERROR : glCallList(" + id + ") -- IGNORED");
+          System.err.println("JAVA 3D ERROR : glCallList(" + id + ") -- IGNORED");
         } else if (numInvalidLists == 3) {
           ++numInvalidLists;
-          throw new RuntimeException("JAVA 3D : further glCallList error messages discarded");
+          System.err.println("JAVA 3D : further glCallList error messages discarded");
         }
         return;
       }
@@ -7838,7 +7855,7 @@ class JoglPipeline extends Pipeline {
     void freeDisplayList(Context ctx, int id) {
       if (VERBOSE) System.err.println("JoglPipeline.freeDisplayList()");
       if (id <= 0) {
-        throw new RuntimeException("JAVA 3D ERROR : glDeleteLists(" + id + ",1) -- IGNORED");
+        System.err.println("JAVA 3D ERROR : glDeleteLists(" + id + ",1) -- IGNORED");
       }
 
       GL gl = context(ctx).getGL();
@@ -7854,7 +7871,7 @@ class JoglPipeline extends Pipeline {
         tmp[0] = id;
         gl.glDeleteTextures(1, tmp, 0);
       } else {
-        throw new RuntimeException("tried to delete tex with texid <= 0");
+        System.err.println("tried to delete tex with texid <= 0");
       }
     }
 
@@ -8214,18 +8231,20 @@ class JoglPipeline extends Pipeline {
     }
   }
 
-  private void createCgContext(JoglContext ctx) {
+  private boolean createCgContext(JoglContext ctx) {
     CGcontext cgContext = CgGL.cgCreateContext();
 
     int err = CgGL.cgGetError();
     if (err != 0) {
       String detail = CgGL.cgGetErrorString(err);
-      throw new RuntimeException("Fatal error in creating Cg context: \"" +
+      System.err.println("JAVA 3D ERROR : Fatal error in creating Cg context: \"" +
                                  detail + "\"");
+      return false;
     }
 
     if (cgContext == null) {
-      throw new RuntimeException("Invalid null Cg context");
+      System.err.println("JAVA 3D ERROR : Invalid null Cg context");
+      return false;
     }
 
     ctx.setCgContext(cgContext);
@@ -8236,7 +8255,9 @@ class JoglPipeline extends Pipeline {
     } else if (CgGL.cgGLIsProfileSupported(CgGL.CG_PROFILE_VP20)) {
       ctx.setCgVertexProfile(CgGL.CG_PROFILE_VP20);
     } else {
-      throw new RuntimeException("JAVA 3D ERROR : No CG vertex program profile is supported");
+      System.err.println("JAVA 3D ERROR : No CG vertex program profile is supported");
+      ctx.setCgContext(null);
+      return false;
     }
 
     // Use GL_ARB_fragment_program extension if supported by video card
@@ -8245,8 +8266,12 @@ class JoglPipeline extends Pipeline {
     } else if (CgGL.cgGLIsProfileSupported(CgGL.CG_PROFILE_FP20)) {
       ctx.setCgFragmentProfile(CgGL.CG_PROFILE_FP20);
     } else {
-      throw new RuntimeException("JAVA 3D ERROR : No CG fragment program profile is supported");
+      System.err.println("JAVA 3D ERROR : No CG fragment program profile is supported");
+      ctx.setCgContext(null);
+      return false;
     }
+    
+    return true;
   }
 
   private void checkCgShaderExtensions(Canvas3D cv,
@@ -8254,7 +8279,9 @@ class JoglPipeline extends Pipeline {
                                        GL gl,
                                        boolean cgLibraryAvailable) {
     if (cgLibraryAvailable) {
-      createCgContext(ctx);
+      if (!createCgContext(ctx)) {
+          return;
+      }
       cv.shadingLanguageCg = true;
       // TODO: Query Cg texture sampler limits
       cv.maxTextureImageUnits = cv.maxTextureUnits;
@@ -8320,10 +8347,10 @@ class JoglPipeline extends Pipeline {
     // are available in OpenGL 1.3, specifically multitexture, multisample,
     // and cube map textures.
 
-    if (major < 1 ||
-        (major == 1 && minor < 2)) {
-      throw new IllegalStateException("Java 3D ERROR : OpenGL 1.2 or better is required (GL_VERSION=" +
-                                      major + "." + minor + ")");
+    if (major < 1 || (major == 1 && minor < 2)) {
+        throw new IllegalRenderingStateException(
+                "Java 3D ERROR : OpenGL 1.2 or better is required (GL_VERSION=" +
+                major + "." + minor + ")");
     }
 
     boolean gl20 = false;
@@ -8341,6 +8368,14 @@ class JoglPipeline extends Pipeline {
       } else {
         gl13 = true;
       }
+    }
+
+    if (gl20) {
+        assert gl13;
+        assert gl.isExtensionAvailable("GL_VERSION_2_0");
+    }
+    if (gl13) {
+        assert gl.isExtensionAvailable("GL_VERSION_1_3");
     }
 
     // Set up properties for OpenGL 1.3
@@ -8620,7 +8655,7 @@ class JoglPipeline extends Pipeline {
                 break;
 
               default:
-                throw new InternalError();
+                throw new AssertionError("missing case statement");
             }
           }
         }
@@ -8836,8 +8871,11 @@ class JoglPipeline extends Pipeline {
       GLContext context = drawable.createContext(null);
       int res = context.makeCurrent();
       if (res != GLContext.CONTEXT_NOT_CURRENT) {
-        chooser.init(context);
-        context.release();
+        try {
+          chooser.init(context);
+        } finally {
+          context.release();
+        }
       }
       context.destroy();
       alreadyRan = true;

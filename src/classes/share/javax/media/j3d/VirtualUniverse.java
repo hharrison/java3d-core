@@ -163,12 +163,19 @@ public class VirtualUniverse extends Object {
     boolean isSceneGraphLock = false;
 
     private Object waitLock = new Object();
-    
-    private HashSet structureChangeListenerSet = null;
 
-    private HashSet shaderErrorListenerSet = null;
+    // Set of scene graph structure change listeners
+    private HashSet<GraphStructureChangeListener> structureChangeListenerSet = null;
+
+    // Set of shader error listeners
+    private HashSet<ShaderErrorListener> shaderErrorListenerSet = null;
     private ShaderErrorListener defaultShaderErrorListener =
 	ShaderProgram.getDefaultErrorListener();
+
+    // Set of rendering error listeners
+    private static HashSet<RenderingErrorListener> renderingErrorListenerSet = null;
+    private static RenderingErrorListener defaultRenderingErrorListener =
+	Renderer.getDefaultErrorListener();
 
     /**
      * Constructs a new VirtualUniverse.
@@ -1059,9 +1066,9 @@ public class VirtualUniverse extends Object {
 	}
         
         synchronized(structureChangeListenerSet) {
-            Iterator it = structureChangeListenerSet.iterator();
+            Iterator<GraphStructureChangeListener> it = structureChangeListenerSet.iterator();
             while(it.hasNext()) {
-                GraphStructureChangeListener listener = (GraphStructureChangeListener)it.next();
+                GraphStructureChangeListener listener = it.next();
                 try {
                     if (add) {
                         listener.branchGroupAdded(parent, child);
@@ -1092,9 +1099,9 @@ public class VirtualUniverse extends Object {
 	}
 
         synchronized(structureChangeListenerSet) {
-            Iterator it = structureChangeListenerSet.iterator();
+            Iterator<GraphStructureChangeListener> it = structureChangeListenerSet.iterator();
             while(it.hasNext()) {
-                GraphStructureChangeListener listener = (GraphStructureChangeListener)it.next();
+                GraphStructureChangeListener listener = it.next();
                 try {
                     listener.branchGroupMoved(oldParent, newParent, child);
                 }
@@ -1174,9 +1181,9 @@ public class VirtualUniverse extends Object {
 	// Notify all error listeners in the set
         if (shaderErrorListenerSet != null) {
             synchronized(shaderErrorListenerSet) {
-                Iterator it = shaderErrorListenerSet.iterator();
+                Iterator<ShaderErrorListener> it = shaderErrorListenerSet.iterator();
                 while(it.hasNext()) {
-                    ShaderErrorListener listener = (ShaderErrorListener)it.next();
+                    ShaderErrorListener listener = it.next();
                     try {
                         listener.errorOccurred(error);
                     }
@@ -1197,6 +1204,94 @@ public class VirtualUniverse extends Object {
         // Notify the default error listener if the set is null or empty
         if (!errorReported) {
             defaultShaderErrorListener.errorOccurred(error);
+        }
+    }
+
+
+    // Issue 260 : rendering error listeners.
+
+    /**
+     * Adds the specified RenderingErrorListener to the set of listeners
+     * that will be notified when a rendering error is detected.
+     * If the specifed listener is null no action is taken and no exception
+     * is thrown.
+     * If a rendering error occurs, the listeners will be called
+     * asynchronously from a separate notification thread.  If the set
+     * of listeners is empty, a default listener is notified. The
+     * default listener prints the error information to System.err and
+     * then calls System.exit().
+     * 
+     * @param listener the listener to add to the set.
+     *
+     * @since Java 3D 1.5
+     */
+    public static void addRenderingErrorListener(RenderingErrorListener listener) {
+        if (listener == null) {
+            return;
+        }
+
+        if (renderingErrorListenerSet == null) {
+            renderingErrorListenerSet = new HashSet();
+        }
+
+        synchronized(renderingErrorListenerSet) {
+            renderingErrorListenerSet.add(listener);
+        }
+    }
+
+    /**
+     * Removes the specified RenderingErrorListener from the set of
+     * listeners. This method performs no function, nor does it throw
+     * an exception if the specified listener is not currently in the
+     * set or is null.
+     * 
+     * @param listener the listener to remove from the set.
+     *
+     * @since Java 3D 1.5
+     */
+    public static void removeRenderingErrorListener(RenderingErrorListener listener) {
+        if (renderingErrorListenerSet == null) {
+	    return;
+	}
+
+        synchronized(renderingErrorListenerSet) {
+            renderingErrorListenerSet.remove(listener);
+        }
+    }
+
+    /**
+     * Notifies all listeners of a rendering error. If no listeners exist,
+     * a default listener is notified.
+     */
+    static void notifyRenderingErrorListeners(RenderingError error) {
+	boolean errorReported = false;
+
+	// Notify all error listeners in the set
+        if (renderingErrorListenerSet != null) {
+            synchronized(renderingErrorListenerSet) {
+                Iterator<RenderingErrorListener> it = renderingErrorListenerSet.iterator();
+                while(it.hasNext()) {
+                    RenderingErrorListener listener = it.next();
+                    try {
+                        listener.errorOccurred(error);
+                    }
+                    catch (RuntimeException e) {
+                        System.err.println("Exception occurred in RenderingErrorListener:");
+                        e.printStackTrace();
+                    }
+                    catch (Error e) {
+                        // Issue 264 - catch Error
+                        System.err.println("Error occurred in RenderingErrorListener:");
+                        e.printStackTrace();
+                    }
+                    errorReported = true;
+                }
+            }
+        }
+
+        // Notify the default error listener if the set is null or empty
+        if (!errorReported) {
+            defaultRenderingErrorListener.errorOccurred(error);
         }
     }
 

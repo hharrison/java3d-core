@@ -212,118 +212,133 @@ class Renderer extends J3dThread {
         opArg = ((Integer)args[0]).intValue();
 
         try {
-	  if (opArg == SWAP) {
+            if (opArg == SWAP) {
 
-              Object [] swapArray = (Object[])args[2];
+                Object [] swapArray = (Object[])args[2];
 
-	      view = (View)args[3];
+                view = (View)args[3];
 
-	      for (i=0; i<swapArray.length; i++) {
-		  cv = (Canvas3D) swapArray[i];
-		  if (!cv.isRunning) {
-		      continue;
-		  }
+                for (i=0; i<swapArray.length; i++) {
+                    cv = (Canvas3D) swapArray[i];
+                    if (!cv.isRunning) {
+                        continue;
+                    }
 
-		 doneSwap: try {
+                    doneSwap: try {
 
-		 if (!cv.validCanvas) {
-		     continue;
-		 }
+                        if (!cv.validCanvas) {
+                            continue;
+                        }
 
- 	         if (cv.active && (cv.ctx != null) && 
-		     (cv.view != null) && (cv.imageReady)) {
-                     if (cv.useDoubleBuffer) {
-			 synchronized (cv.drawingSurfaceObject) {
-			     if (cv.validCtx) {
-				 if (VirtualUniverse.mc.doDsiRenderLock) {
-				     // Set doDsiLock flag for rendering based on system
-				     // property,  If we force DSI lock for swap
-				     // buffer,  we lose most of the parallelism that having
-				     // multiple renderers gives us.
+                        if (cv.active && (cv.ctx != null) &&
+                                (cv.view != null) && (cv.imageReady)) {
+                            if (cv.useDoubleBuffer) {
+                                synchronized (cv.drawingSurfaceObject) {
+                                    if (cv.validCtx) {
+                                        if (VirtualUniverse.mc.doDsiRenderLock) {
+                                            // Set doDsiLock flag for rendering based on system
+                                            // property,  If we force DSI lock for swap
+                                            // buffer,  we lose most of the parallelism that having
+                                            // multiple renderers gives us.
 
-				     if (!cv.drawingSurfaceObject.renderLock()) {
-					 break doneSwap;
-				     }
-				     cv.makeCtxCurrent();
-				     cv.syncRender(cv.ctx, true);
-				     status = cv.swapBuffers(cv.ctx, 
-							     cv.screen.display,
-							     cv.drawable);
-				     if (status != Canvas3D.NOCHANGE) {
-					 cv.resetRendering(status);
-				     }
-				     cv.drawingSurfaceObject.unLock();
-				 } else {
-				     cv.makeCtxCurrent();
+                                            if (!cv.drawingSurfaceObject.renderLock()) {
+                                                break doneSwap;
+                                            }
+                                            cv.makeCtxCurrent();
+                                            cv.syncRender(cv.ctx, true);
+                                            status = cv.swapBuffers(cv.ctx,
+                                                    cv.screen.display,
+                                                    cv.drawable);
+                                            if (status != Canvas3D.NOCHANGE) {
+                                                cv.resetRendering(status);
+                                            }
+                                            cv.drawingSurfaceObject.unLock();
+                                        } else {
+                                            cv.makeCtxCurrent();
 
-				     cv.syncRender(cv.ctx, true);
-				     status = cv.swapBuffers(cv.ctx, 
-							     cv.screen.display,
-							     cv.drawable);
-				     if (status != Canvas3D.NOCHANGE) {
-					 cv.resetRendering(status);
-				     }
+                                            cv.syncRender(cv.ctx, true);
+                                            status = cv.swapBuffers(cv.ctx,
+                                                    cv.screen.display,
+                                                    cv.drawable);
+                                            if (status != Canvas3D.NOCHANGE) {
+                                                cv.resetRendering(status);
+                                            }
 
-				 }
-			     }
-			 }
-		     }
-		     cv.view.inCanvasCallback = true; 
-		     try {
-		         cv.postSwap();
-		     } catch (RuntimeException e) {
-		         System.err.println("Exception occurred during Canvas3D callback:");
-		         e.printStackTrace();
-		     } catch (Error e) {
-                         // Issue 264 - catch Error so Renderer doesn't die
-		         System.err.println("Error occurred during Canvas3D callback:");
-		         e.printStackTrace();
-		     }
-		     // reset flag 
-		     cv.imageReady = false;
-		     cv.view.inCanvasCallback = false;
-		     // Clear canvasDirty bit ONLY when postSwap() success
+                                        }
+                                    }
+                                }
+                            }
+                            cv.view.inCanvasCallback = true;
+                            try {
+                                cv.postSwap();
+                            } catch (RuntimeException e) {
+                                System.err.println("Exception occurred during Canvas3D callback:");
+                                e.printStackTrace();
+                            } catch (Error e) {
+                                // Issue 264 - catch Error so Renderer doesn't die
+                                System.err.println("Error occurred during Canvas3D callback:");
+                                e.printStackTrace();
+                            }
+                            // reset flag
+                            cv.imageReady = false;
+                            cv.view.inCanvasCallback = false;
+                            // Clear canvasDirty bit ONLY when postSwap() success
 
-		     // Set all dirty bits except environment set and lightbin
-		     // they are only set dirty if the last used light bin or
-		     // environment set values for this canvas change between 
-		     // one frame and other
+                            // Set all dirty bits except environment set and lightbin
+                            // they are only set dirty if the last used light bin or
+                            // environment set values for this canvas change between
+                            // one frame and other
 
-		     if (!cv.ctxChanged) {
-			 cv.canvasDirty = (0xffff & ~(Canvas3D.LIGHTBIN_DIRTY |
-						 Canvas3D.LIGHTENABLES_DIRTY |
-						 Canvas3D.AMBIENTLIGHT_DIRTY |
-						 Canvas3D.MODELCLIP_DIRTY |
-						 Canvas3D.VIEW_MATRIX_DIRTY |
-						 Canvas3D.FOG_DIRTY));
-			 // Force reload of transform next frame
-			 cv.modelMatrix = null;
+                            if (!cv.ctxChanged) {
+                                cv.canvasDirty = (0xffff & ~(Canvas3D.LIGHTBIN_DIRTY |
+                                        Canvas3D.LIGHTENABLES_DIRTY |
+                                        Canvas3D.AMBIENTLIGHT_DIRTY |
+                                        Canvas3D.MODELCLIP_DIRTY |
+                                        Canvas3D.VIEW_MATRIX_DIRTY |
+                                        Canvas3D.FOG_DIRTY));
+                                // Force reload of transform next frame
+                                cv.modelMatrix = null;
 
-			 // Force the cached renderAtom to null
-			 cv.ra = null;
-		     } else {
-			 cv.ctxChanged = false;
-		     }
-	         }
-		 } catch (NullPointerException ne) {
-		     //ne.printStackTrace();
-		     if (VirtualUniverse.mc.doDsiRenderLock) {
-			 cv.drawingSurfaceObject.unLock();
-		     }
-		 }
+                                // Force the cached renderAtom to null
+                                cv.ra = null;
+                            } else {
+                                cv.ctxChanged = false;
+                            }
+                        }
+                    } catch (NullPointerException ne) {
+                        // Ignore NPE
+                        if (VirtualUniverse.mc.doDsiRenderLock) {
+                            cv.drawingSurfaceObject.unLock();
+                        }
+                    } catch (RuntimeException ex) {
+                        ex.printStackTrace();
 
-                 cv.releaseCtx();
-	      }
+                        if (VirtualUniverse.mc.doDsiRenderLock) {
+                            cv.drawingSurfaceObject.unLock();
+                        }
 
-	    if (view != null) { // STOP_TIMER
-		// incElapsedFrames() is delay until MC:updateMirroObject
-		if (view.viewCache.getDoHeadTracking()) {
-		    VirtualUniverse.mc.sendRunMessage(view,
-					      J3dThread.RENDER_THREAD);
-		}
-	    }
-		
-        } else if (opArg == REQUESTCLEANUP) {
+                        // Issue 260 : indicate fatal error and notify error listeners
+                        cv.setFatalError();
+                        RenderingError err =
+                                new RenderingError(RenderingError.UNEXPECTED_RENDERING_ERROR,
+                                    J3dI18N.getString("Renderer0"));
+                        err.setCanvas3D(cv);
+                        err.setGraphicsDevice(cv.graphicsConfiguration.getDevice());
+                        notifyErrorListeners(err);
+                    }
+
+                    cv.releaseCtx();
+                }
+
+                if (view != null) { // STOP_TIMER
+                    // incElapsedFrames() is delay until MC:updateMirroObject
+                    if (view.viewCache.getDoHeadTracking()) {
+                        VirtualUniverse.mc.sendRunMessage(view,
+                                J3dThread.RENDER_THREAD);
+                    }
+                }
+                
+            } else if (opArg == REQUESTCLEANUP) {
 	    Integer mtype = (Integer) args[2];
 
 	    if (mtype == MasterControl.REMOVEALLCTXS_CLEANUP) {
@@ -355,7 +370,6 @@ class Renderer extends J3dThread {
 	    return;
 	} else { // RENDER || REQUESTRENDER
 
-
             int renderType;
 	    nmesg = 0;
 	    int totalMessages = 0;
@@ -379,7 +393,7 @@ class Renderer extends J3dThread {
 		    return;
 		}
 	    }
-	    
+
 
 	    doneRender: while (nmesg < totalMessages) {
 
@@ -392,6 +406,7 @@ class Renderer extends J3dThread {
 			Integer reqType = (Integer) m[nmesg].args[2];
 			Canvas3D c = (Canvas3D) secondArg;
 			if (reqType == MasterControl.SET_GRAPHICSCONFIG_FEATURES) {
+                          try {
 			    if (c.offScreen) {
 				// offScreen canvas neither supports
 				// double buffering nor  stereo
@@ -420,9 +435,34 @@ class Renderer extends J3dThread {
 				c.sceneAntialiasingAvailable = 
 				    c.hasSceneAntialiasingAccum();
 			    }
+                          } catch (RuntimeException ex) {
+                              ex.printStackTrace();
+
+                              // Issue 260 : indicate fatal error and notify error listeners
+                              c.setFatalError();
+                              RenderingError err =
+                                      new RenderingError(RenderingError.GRAPHICS_CONFIG_ERROR,
+                                          J3dI18N.getString("Renderer1"));
+                              err.setCanvas3D(c);
+                              err.setGraphicsDevice(c.graphicsConfiguration.getDevice());
+                              notifyErrorListeners(err);
+                          }
 			    GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
 			} else if (reqType == MasterControl.SET_QUERYPROPERTIES){
-			    c.createQueryContext();
+                            try {
+                                c.createQueryContext();
+                            } catch (RuntimeException ex) {
+                                ex.printStackTrace();
+
+                                // Issue 260 : indicate fatal error and notify error listeners
+                                c.setFatalError();
+                                RenderingError err =
+                                        new RenderingError(RenderingError.CONTEXT_CREATION_ERROR,
+                                            J3dI18N.getString("Renderer2"));
+                                err.setCanvas3D(c);
+                                err.setGraphicsDevice(c.graphicsConfiguration.getDevice());
+                                notifyErrorListeners(err);
+                            }
 			    // currentCtx change after we create a new context
 			    GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
 			    currentCtx = null;
@@ -440,17 +480,46 @@ class Renderer extends J3dThread {
 			GraphicsConfigTemplate3D gct =
 			    (GraphicsConfigTemplate3D) secondArg;
 			Integer reqType = (Integer) m[nmesg].args[2];
-			if (reqType == MasterControl.GETBESTCONFIG) {
-			    gct.testCfg =
-				Pipeline.getPipeline().getBestConfiguration(gct,
-					(GraphicsConfiguration []) gct.testCfg);
+                        if (reqType == MasterControl.GETBESTCONFIG) {
+                            GraphicsConfiguration gcfg = null;
+                            GraphicsConfiguration [] gcList = (GraphicsConfiguration []) gct.testCfg;
+                            try {
+                                gcfg = Pipeline.getPipeline().getBestConfiguration(gct, gcList);
+                            } catch (NullPointerException npe) {
+                                npe.printStackTrace();
+                            } catch (RuntimeException ex) {
+                                ex.printStackTrace();
+
+                                // Issue 260 : notify error listeners
+                                RenderingError err =
+                                        new RenderingError(RenderingError.GRAPHICS_CONFIG_ERROR,
+                                            J3dI18N.getString("Renderer3"));
+                                err.setGraphicsDevice(gcList[0].getDevice());
+                                notifyErrorListeners(err);
+                            }
+
+                            gct.testCfg = gcfg;
 			} else if (reqType == MasterControl.ISCONFIGSUPPORT) {
-			    if (Pipeline.getPipeline().isGraphicsConfigSupported(gct,
-				     (GraphicsConfiguration) gct.testCfg)) {
-				gct.testCfg = Boolean.TRUE;
-			    } else {
-				gct.testCfg = Boolean.FALSE;
-			    }
+                            boolean rval = false;
+                            GraphicsConfiguration gc = (GraphicsConfiguration) gct.testCfg;
+                            try {
+                                if (Pipeline.getPipeline().isGraphicsConfigSupported(gct, gc)) {
+                                    rval = true;
+                                }
+                            } catch (NullPointerException npe) {
+                                npe.printStackTrace();
+                            } catch (RuntimeException ex) {
+                                ex.printStackTrace();
+
+                                // Issue 260 : notify error listeners
+                                RenderingError err =
+                                        new RenderingError(RenderingError.GRAPHICS_CONFIG_ERROR,
+                                            J3dI18N.getString("Renderer4"));
+                                err.setGraphicsDevice(gc.getDevice());
+                                notifyErrorListeners(err);
+                            }
+
+                            gct.testCfg = Boolean.valueOf(rval);
 			}
 			gct.runMonitor(J3dThread.NOTIFY);
 		    }
@@ -466,12 +535,30 @@ class Renderer extends J3dThread {
 		if (renderType == J3dMessage.CREATE_OFFSCREENBUFFER) {
 		    // Fix for issue 18.
 		    // Fix for issue 20.
-		    canvas.drawable = 
-			canvas.createOffScreenBuffer(canvas.ctx, 
-						     canvas.screen.display,
-						     canvas.fbConfig,
-						     canvas.offScreenCanvasSize.width, 
-						     canvas.offScreenCanvasSize.height);
+
+                    canvas.drawable = null;
+                    try {
+                        canvas.drawable =
+                                canvas.createOffScreenBuffer(canvas.ctx,
+                                    canvas.screen.display,
+                                    canvas.fbConfig,
+                                    canvas.offScreenCanvasSize.width,
+                                    canvas.offScreenCanvasSize.height);
+                    } catch (RuntimeException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    if (canvas.drawable == null) {
+                        // Issue 260 : indicate fatal error and notify error listeners
+                        canvas.setFatalError();
+                        RenderingError err =
+                                new RenderingError(RenderingError.OFF_SCREEN_BUFFER_ERROR,
+                                    J3dI18N.getString("Renderer5"));
+                        err.setCanvas3D(canvas);
+                        err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
+                        notifyErrorListeners(err);
+                    }
+
 		    canvas.offScreenBufferPending = false;
 		    m[nmesg++].decRefcount();
 		    continue;
@@ -523,7 +610,12 @@ class Renderer extends J3dThread {
 			VirtualUniverse.mc.resendTexTimestamp++;
 			needToResendTextureDown = false;
 		    }
-		    
+
+                    if (canvas.isFatalError()) {
+                        continue;
+                    }
+
+                  try {
 		    if (canvas.ctx != null) {
 			// ctx may not construct until doClear();
 			canvas.beginScene();
@@ -650,10 +742,27 @@ class Renderer extends J3dThread {
 		    if (canvas.ctx != null) {
 			canvas.endScene();
 		    }
+                  } catch (RuntimeException ex) {
+                    ex.printStackTrace();
+
+                    // Issue 260 : indicate fatal error and notify error listeners
+                    canvas.setFatalError();
+                    RenderingError err =
+                            new RenderingError(RenderingError.CONTEXT_CREATION_ERROR,
+                                J3dI18N.getString("Renderer6"));
+                    err.setCanvas3D(canvas);
+                    err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
+                    notifyErrorListeners(err);
+                  }
+
 		    m[nmesg++].decRefcount();
 		} else { // retained mode rendering
 
 		    m[nmesg++].decRefcount();
+                    
+                    if (canvas.isFatalError()) {
+                        continue;
+                    }
 
 		    ImageComponent2DRetained offBufRetained = null;
 		    
@@ -709,17 +818,35 @@ class Renderer extends J3dThread {
 				    offBufRetained.isByReference()) {
 				    offBufRetained.geomLock.unLock();
 				}
+                                canvas.offScreenRendering = false;
 				break doneRender;
 			    }
 
 			    synchronized (VirtualUniverse.mc.contextCreationLock) {
-				sharedCtx = canvas.createNewContext(null, true);
+                                sharedCtx = null;
+				try { 
+                                    sharedCtx = canvas.createNewContext(null, true);
+                                } catch (RuntimeException ex) {
+                                    ex.printStackTrace();
+                                }
+
 				if (sharedCtx == null) {
 				    canvas.drawingSurfaceObject.unLock();
 				    if ((offBufRetained != null) &&
 					offBufRetained.isByReference()) {
 					offBufRetained.geomLock.unLock();
 				    }
+                                    canvas.offScreenRendering = false;
+
+                                    // Issue 260 : indicate fatal error and notify error listeners
+                                    canvas.setFatalError();
+                                    RenderingError err =
+                                            new RenderingError(RenderingError.CONTEXT_CREATION_ERROR,
+                                                J3dI18N.getString("Renderer7"));
+                                    err.setCanvas3D(canvas);
+                                    err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
+                                    notifyErrorListeners(err);
+
 				    break doneRender;
 				}
 				sharedCtxTimeStamp = 
@@ -740,11 +867,17 @@ class Renderer extends J3dThread {
 				offBufRetained.isByReference()) {
 				offBufRetained.geomLock.unLock();
 			    }
+                            canvas.offScreenRendering = false;
 			    break doneRender;
 			}
 
 			synchronized (VirtualUniverse.mc.contextCreationLock) {
-			    canvas.ctx = canvas.createNewContext(sharedCtx, false);
+                            canvas.ctx = null;
+			    try {
+                                canvas.ctx = canvas.createNewContext(sharedCtx, false);
+                            } catch (RuntimeException ex) {
+                                ex.printStackTrace();
+                            }
 
                             if (canvas.ctx == null) {
 				canvas.drawingSurfaceObject.unLock();			    
@@ -752,7 +885,18 @@ class Renderer extends J3dThread {
 				    offBufRetained.isByReference()) {
 				    offBufRetained.geomLock.unLock();
 				}
-				break doneRender;
+                                canvas.offScreenRendering = false;
+
+                                // Issue 260 : indicate fatal error and notify error listeners
+                                canvas.setFatalError();
+                                RenderingError err =
+                                        new RenderingError(RenderingError.CONTEXT_CREATION_ERROR,
+                                            J3dI18N.getString("Renderer7"));
+                                err.setCanvas3D(canvas);
+                                err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
+                                notifyErrorListeners(err);
+
+                                break doneRender;
 			    }
 
 			    if (canvas.graphics2D != null) {
@@ -805,6 +949,7 @@ class Renderer extends J3dThread {
 				offBufRetained.isByReference()) {
 				offBufRetained.geomLock.unLock();
 			    }
+                            canvas.offScreenRendering = false;
 			    break doneRender;
 			}
 
@@ -845,6 +990,7 @@ class Renderer extends J3dThread {
 				offBufRetained.isByReference()) {
 				offBufRetained.geomLock.unLock();
 			    }
+                            canvas.offScreenRendering = false;
 			    break doneRender;
 			}
 								
@@ -1056,13 +1202,14 @@ class Renderer extends J3dThread {
                              e.printStackTrace();
                         }
                         canvas.view.inCanvasCallback = false;
-			
+
 			if ((VirtualUniverse.mc.doDsiRenderLock) &&
 			    (!canvas.drawingSurfaceObject.renderLock())) {
 			    if ((offBufRetained != null) &&
 				offBufRetained.isByReference()) {
 				offBufRetained.geomLock.unLock();
 			    }
+                            canvas.offScreenRendering = false;
                             break doneRender;
                         }
 
@@ -1253,6 +1400,7 @@ class Renderer extends J3dThread {
 					offBufRetained.isByReference()) {
 					offBufRetained.geomLock.unLock();
 				    }
+                                    canvas.offScreenRendering = false;
                                     break doneRender;
                                 }
 
@@ -1380,7 +1528,8 @@ class Renderer extends J3dThread {
 		Arrays.fill(m, 0, totalMessages, null);
 	    }
 	}
-       } catch (NullPointerException ne) {
+      } catch (NullPointerException ne) {
+           // Print NPE, but otherwise ignore it
 	    ne.printStackTrace();
 	    if (canvas != null) {
 		if (canvas.ctx != null) {
@@ -1391,7 +1540,29 @@ class Renderer extends J3dThread {
 		canvas.drawingSurfaceObject.unLock();
 
 	    }
-	}
+      } catch (RuntimeException ex) {
+            ex.printStackTrace();
+
+	    if (canvas != null) {
+		if (canvas.ctx != null) {
+		    canvas.endScene();
+		}
+		// drawingSurfaceObject will safely ignore
+		// this request if this is not lock before
+		canvas.drawingSurfaceObject.unLock();
+	    }
+
+            // Issue 260 : indicate fatal error and notify error listeners
+            canvas.setFatalError();
+            RenderingError err =
+                    new RenderingError(RenderingError.UNEXPECTED_RENDERING_ERROR,
+                        J3dI18N.getString("Renderer8"));
+            err.setCanvas3D(canvas);
+            if (canvas != null) {
+                err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
+            }
+            notifyErrorListeners(err);
+      }
     }
 
     // resource clean up
@@ -1682,7 +1853,38 @@ class Renderer extends J3dThread {
 	
 	// displayList is free in Canvas.freeContextResources()
     }
+    
+    /**
+     * Send a message to the notification thread, which will call the
+     * shader error listeners.
+     */
+    static void notifyErrorListeners(RenderingError err) {
+        J3dNotification notification = new J3dNotification();
+        notification.type = J3dNotification.RENDERING_ERROR;
+        notification.universe = null;//cv.view.universe;
+        notification.args[0] = err;
+        VirtualUniverse.mc.sendNotification(notification);
+    }
+
+
+    // Default rendering error listener class
+    private static RenderingErrorListener defaultErrorListener = null;
+
+    synchronized static RenderingErrorListener getDefaultErrorListener() {
+        if (defaultErrorListener == null) {
+            defaultErrorListener = new DefaultErrorListener();
+        }
+
+        return defaultErrorListener;
+    }
+
+    static class DefaultErrorListener implements RenderingErrorListener {
+        public void errorOccurred(RenderingError error) {
+            System.err.println();
+            System.err.println("DefaultRenderingErrorListener.errorOccurred:");
+            error.printVerbose();
+            System.exit(1);
+        }
+    }
 
 }
-
-

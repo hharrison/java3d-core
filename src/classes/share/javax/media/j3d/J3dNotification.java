@@ -22,6 +22,7 @@ class J3dNotification extends Object {
      */
     static final int INVALID_TYPE       = -1;
     static final int SHADER_ERROR       =  0;
+    static final int RENDERING_ERROR    =  1;
 
     /**
      * This holds the type of this message
@@ -39,4 +40,5 @@ class J3dNotification extends Object {
     static final int MAX_ARGS = 6;
 
     Object[] args = new Object[MAX_ARGS];
+
 }

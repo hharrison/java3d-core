@@ -3145,7 +3145,10 @@ class MasterControl {
 		    threadListsChanged = true;
 		}
 	    } else if (type == START_RENDERER) {
-		((Canvas3D) o).isRunningStatus = true;
+                Canvas3D c3d = (Canvas3D) o;
+                if (!c3d.isFatalError()) {
+                    c3d.isRunningStatus = true;
+                }
 		threadListsChanged = true;
 	    } else if (type == STOP_RENDERER) {
 		if (o instanceof Canvas3D) {

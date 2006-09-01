@@ -590,7 +590,7 @@ getPropertiesFromCurrentContext(
 	fprintf(stderr,
 		"Java 3D ERROR : OpenGL 1.2 or better is required (GL_VERSION=%d.%d)\n",
 		versionNumbers[0], versionNumbers[1]);
-	if ((rte = (*(table->FindClass))(env, "java/lang/IllegalStateException")) != NULL) {
+	if ((rte = (*(table->FindClass))(env, "javax/media/j3d/IllegalRenderingStateException")) != NULL) {
 	    (*(table->ThrowNew))(env, rte, "GL_VERSION");
 	}
 	return JNI_FALSE;
@@ -2126,7 +2126,7 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
        
    */
 
-   
+
    /* Query DRAWABLE_TYPE. Will use Pbuffer if fbConfig support it,
       else will try for Pixmap. If neither one exists, flag error message
       and return None */

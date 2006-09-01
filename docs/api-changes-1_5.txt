@@ -43,7 +43,7 @@ I. New/deprecated fields, constructors, methods
     ----------------
     New constructors:
         public ImageComponent2D(int format, NioImageBuffer image,
-				boolean byReference, boolean yUp)
+                                boolean byReference, boolean yUp)
 
     New methods:
         public void set(NioImageBuffer image)
@@ -100,6 +100,15 @@ I. New/deprecated fields, constructors, methods
         public int[] getCoordIndicesRef()
 
 
+    VirtualUniverse
+    ---------------
+    New methods:
+        public static void addRenderingErrorListener(
+                RenderingErrorListener listener)
+        public static void removeRenderingErrorListener(
+                RenderingErrorListener listener)
+
+
 II. Reparented classes
 
 
@@ -107,7 +116,17 @@ III. New classes and interfaces (in javax.media.j3d)
 
     NioImageBuffer
     --------------
-	public class NioImageBuffer extends Object
+        public class NioImageBuffer extends Object
+
+
+    RenderingError
+    --------------
+	public class RenderingError extends Object
+
+
+    RenderingErrorListener
+    ----------------------
+	public interface RenderingErrorListener
 
 
 IV. Deprecated classes and interfaces (in javax.media.j3d)

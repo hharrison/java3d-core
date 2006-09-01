@@ -449,6 +449,9 @@ public class Canvas3D extends Canvas {
     // Query properties
     J3dQueryProps queryProps;
 
+    // Flag indicating a fatal rendering error of some sort
+    private boolean fatalError = false;
+
     //
     // The positions of the manual left and right eyes in image-plate
     // coordinates.
@@ -1297,7 +1300,7 @@ public class Canvas3D extends Canvas {
 
 	// In case the same canvas is removed and add back,
 	// we have to change isRunningStatus back to true;
-	if (isRunning) {
+	if (isRunning && !fatalError) {
 	    isRunningStatus = true;
 	}
 
@@ -1649,6 +1652,11 @@ public class Canvas3D extends Canvas {
      * render the scene graph to the canvas.
      */
     public final void startRenderer() {
+        // Issue 260 : ignore attempt to start renderer if fatal error
+        if (fatalError) {
+            return;
+        }
+
 	if (!isRunning) {
 	    VirtualUniverse.mc.postRequest(MasterControl.START_RENDERER, this);
 	    isRunning = true;
@@ -1664,6 +1672,24 @@ public class Canvas3D extends Canvas {
      */
     public final boolean isRendererRunning() {
 	return isRunning;
+    }
+
+    // Returns the state of the fatal error flag
+    boolean isFatalError() {
+        return fatalError;
+    }
+
+    // Sets the fatal error flag to true; stop the renderer for this canvas
+    void setFatalError() {
+        fatalError = true;
+
+	if (isRunning) {
+            isRunning = false;
+
+            if (!manualRendering) {
+                VirtualUniverse.mc.postRequest(MasterControl.STOP_RENDERER, this);
+            }
+	}
     }
 
 
@@ -1873,6 +1899,11 @@ public class Canvas3D extends Canvas {
         // Issue 131: Cannot manually render to an automatic canvas.
         if (!manualRendering)
             throw new IllegalStateException(J3dI18N.getString("Canvas3D24"));
+
+        // Issue 260 : Cannot render if we already have a fatal error
+        if (fatalError) {
+            throw new IllegalRenderingStateException(J3dI18N.getString("Canvas3D30"));
+        }
 
         if (offScreenBuffer == null)
             throw new NullPointerException(J3dI18N.getString("Canvas3D10"));
@@ -3514,14 +3545,19 @@ public class Canvas3D extends Canvas {
 		    createDummyCtx = true;
 		}
 	    }
-	    
+
 	    if (createDummyCtx) {
 		GraphicsConfigTemplate3D.setQueryProps(this);
-		
 	    }
+            
 	    //create query Properties
 	    createQueryProps();
 	}
+
+        if (fatalError) {
+            throw new IllegalStateException(J3dI18N.getString("Canvas3D29"));
+        }
+
   	return queryProps;
     }
 
