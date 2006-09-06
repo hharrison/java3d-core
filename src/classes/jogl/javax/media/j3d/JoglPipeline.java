@@ -7548,10 +7548,7 @@ class JoglPipeline extends Pipeline {
         gl.glDepthMask(false);
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
 
-        gl.glEnable(GL.GL_TEXTURE_2D);        
-        
-        gl.glColor3f(1.0f, 0.0f, 1.0f); // -- For debugging
-
+        gl.glEnable(GL.GL_TEXTURE_2D);
         
         // load identity modelview and projection matrix
         gl.glMatrixMode(GL.GL_PROJECTION);

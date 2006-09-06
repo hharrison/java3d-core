@@ -1517,8 +1517,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFill(JNIEnv *env,
      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
      glEnable(GL_TEXTURE_2D);     
-     
-     glColor3f(1.0f, 0.5f, 0.0f); // -- For debbugging
 
     /* loaded identity modelview and projection matrix */ 
     
