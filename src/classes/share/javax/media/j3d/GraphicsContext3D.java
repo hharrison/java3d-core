@@ -101,8 +101,6 @@ public class GraphicsContext3D extends Object   {
      */
     Canvas3D		canvas3d = null;
 
-    int objectId = -1;
-
 //
 // Graphics state
 //
@@ -1786,49 +1784,22 @@ public class GraphicsContext3D extends Object   {
                 Dimension size = canvas3d.getSize();
                 int winWidth  = size.width;
                 int winHeight = size.height;
+                boolean isByRefBackgroundImage = false;
+                if (back.image != null) {                    
+                    if (back.image.isByReference()) {
+                        back.image.geomLock.getLock();
+                        isByRefBackgroundImage = true;
+                    }
                 
-                if (back.image != null && back.image.isByReference()) {
-                    
-                    back.image.geomLock.getLock();
-                    back.image.evaluateExtensions(canvas3d.extensionsSupported);
-                    // this is if the background image resizes with the canvas
-// 		    Dimension size = null;
-// 		    canvas3d.getSize(size);
-// 		    int xmax = size.width;
-// 		    int ymax = size.height;
-                    if (objectId == -1) {
-                        objectId = VirtualUniverse.mc.getTexture2DId();
-                    }
-                    
-                    canvas3d.textureclear(canvas3d.ctx,
-                            back.xmax, back.ymax,
-                            back.color.x, back.color.y,
-                            back.color.z, winWidth, winHeight,
-                            objectId, back.imageScaleMode, back.texImage, true);
-                    
-                    back.image.geomLock.unLock();
-                } else {
-                    
-                    if(back.image !=null) {
-                        back.image.evaluateExtensions(canvas3d.extensionsSupported);
-                    }
-                    // this is if the background image resizes with the canvas
-// 		    Dimension size = null;
-// 		    canvas3d.getSize(size);
-// 		    int xmax = size.width;
-// 		    int ymax = size.height;
-                    if (objectId == -1) {
-                        objectId = VirtualUniverse.mc.getTexture2DId();
-                    }
-                    
-                    canvas3d.textureclear(canvas3d.ctx,
-                            back.xmax, back.ymax,
-                            back.color.x, back.color.y,
-                            back.color.z,
-                            winWidth, winHeight,
-                            objectId, back.imageScaleMode, back.texImage, true);
-                    
+                    back.image.evaluateExtensions(canvas3d);
                 }
+                
+                canvas3d.clear(back, winWidth, winHeight);
+
+                if (isByRefBackgroundImage) {
+                    back.image.geomLock.unLock();
+                }
+                
                 
                 // Set the viewport and view matrices
                 if (!canvas3d.isRunning) {
@@ -2103,10 +2074,10 @@ public class GraphicsContext3D extends Object   {
                 if (img != null) {
                     if(img.isByReference()) {
                         img.geomLock.getLock();
-                        img.evaluateExtensions(canvas3d.extensionsSupported);
+                        img.evaluateExtensions(canvas3d);
                         img.geomLock.unLock();
                     } else {
-                        img.evaluateExtensions(canvas3d.extensionsSupported);
+                        img.evaluateExtensions(canvas3d);
                     }
                 }
                 drawGeo = (GeometryRetained)geometry.retained;

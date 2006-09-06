@@ -22,15 +22,13 @@ class CompressedGeometryRenderMethod implements RenderMethod {
     /**
      * The actual rendering code for this RenderMethod.
      */
-    public boolean render(RenderMolecule rm, Canvas3D cv, int pass,
+    public boolean render(RenderMolecule rm, Canvas3D cv,
 			  RenderAtomListInfo ra, int dirtyBits) {
-        assert pass < 0;
 
 	CompressedGeometryRetained cgr ;
-  
 
 	if (rm.doInfinite) {
-	    cv.updateState(pass, dirtyBits);
+	    cv.updateState(dirtyBits);
 	    while (ra != null) {
 		renderCompressedGeo(ra, rm, cv);
 		ra = ra.next;
@@ -43,7 +41,7 @@ class CompressedGeometryRenderMethod implements RenderMethod {
 	while (ra != null) {
 	    if (cv.ra == ra.renderAtom) {
 		if (cv.raIsVisible) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    renderCompressedGeo(ra, rm, cv);
 		    isVisible = true;
 		}
@@ -51,7 +49,7 @@ class CompressedGeometryRenderMethod implements RenderMethod {
 	    else {
 		if (!VirtualUniverse.mc.viewFrustumCulling ||
 		    ra.renderAtom.localeVwcBounds.intersect(cv.viewFrustum)) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    cv.raIsVisible = true;
 		    renderCompressedGeo(ra, rm, cv);
 		    isVisible = true;

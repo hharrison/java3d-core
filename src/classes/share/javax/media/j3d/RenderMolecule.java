@@ -1837,24 +1837,16 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		    modeSupportDL) {
 		    if (primaryMoleculeType != SEPARATE_DLIST_PER_RINFO_MOLECULE) {
 
-
-			if ((primaryRenderMethod != VirtualUniverse.mc.getDisplayListRenderMethod()) &&
-			    (pass == TextureBin.USE_DISPLAYLIST)) {
-			    pass = TextureBin.USE_VERTEXARRAY;
-			}
-			if (primaryRenderMethod.render(this, cv, pass, primaryRenderAtomList,dirtyBits))
+			if (primaryRenderMethod.render(this, cv, primaryRenderAtomList,dirtyBits))
 			    isVisible = true;
 		    }
 		    else {
-			if (renderBin.dlistRenderMethod.renderSeparateDlistPerRinfo(this, cv, pass,primaryRenderAtomList,dirtyBits))
+			if (renderBin.dlistRenderMethod.renderSeparateDlistPerRinfo(this, cv, primaryRenderAtomList,dirtyBits))
 			    isVisible = true;
 			
 		    }
 		} else { 
-		    if (pass == TextureBin.USE_DISPLAYLIST) {
-			pass = TextureBin.USE_VERTEXARRAY;
-		    }
-		    if(cachedVertexArrayRenderMethod.render(this, cv, pass, 
+		    if(cachedVertexArrayRenderMethod.render(this, cv,
 							    primaryRenderAtomList, 
 							    dirtyBits)) {
 			isVisible = true;
@@ -1865,10 +1857,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	else {	// TEXT3D or ORIENTEDSHAPE3D    
 
 	    if (primaryRenderAtomList != null) {
-		if (pass == TextureBin.USE_DISPLAYLIST) {
-		    pass = TextureBin.USE_VERTEXARRAY;
-		}
-		if(primaryRenderMethod.render(this, cv, pass, primaryRenderAtomList,
+		if(primaryRenderMethod.render(this, cv, primaryRenderAtomList,
 					      dirtyBits)) {
 		    isVisible = true;
 		}
@@ -1876,19 +1865,15 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	}
 	
 	if (separateDlistRenderAtomList != null) {
-	    if (modeSupportDL) {
-		if(renderBin.dlistRenderMethod.
-		   renderSeparateDlists(this, cv, pass,
-					separateDlistRenderAtomList,
-					dirtyBits)) {
-		    isVisible = true;
-		}
+            if (modeSupportDL) {
+                if(renderBin.dlistRenderMethod.renderSeparateDlists(this, cv,
+                        separateDlistRenderAtomList,
+                        dirtyBits)) {
+                    isVisible = true;
+                }
 		
 	    } else {
-		if (pass == TextureBin.USE_DISPLAYLIST) {
-		    pass = TextureBin.USE_VERTEXARRAY;
-		}
-		if(cachedVertexArrayRenderMethod.render(this, cv, pass, 
+		if(cachedVertexArrayRenderMethod.render(this, cv, 
 							separateDlistRenderAtomList,
 							dirtyBits)) {
 		    isVisible = true;
@@ -1900,10 +1885,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	// XXXX: In the case of independent primitives such as quads,
 	// it would still be better to call multi draw arrays
 	if (vertexArrayRenderAtomList != null) {
-	    if (pass == TextureBin.USE_DISPLAYLIST) {
-		pass = TextureBin.USE_VERTEXARRAY;
-	    }
-	    if(cachedVertexArrayRenderMethod.render(this, cv, pass, 
+	    if(cachedVertexArrayRenderMethod.render(this, cv, 
 						    vertexArrayRenderAtomList,
 						    dirtyBits)) {
 		isVisible = true;
@@ -2160,12 +2142,12 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    //	    System.out.println("cachedVertexArrayRenderMethod = "+cachedVertexArrayRenderMethod);
 	    //	    System.out.println("tinfo.rInfo = "+tinfo.rInfo);
 	    if (modeSupportDL) {
-		renderBin.dlistRenderMethod.renderSeparateDlistPerRinfo(this, cv, pass,
+		renderBin.dlistRenderMethod.renderSeparateDlistPerRinfo(this, cv,
 									tinfo.rInfo,
 									ALL_DIRTY_BITS);
 	    }
 	    else {
-		cachedVertexArrayRenderMethod.render(this, cv, pass, tinfo.rInfo,ALL_DIRTY_BITS);
+		cachedVertexArrayRenderMethod.render(this, cv, tinfo.rInfo,ALL_DIRTY_BITS);
 	    }
 	    tinfo.rInfo.next = save;
 	}
@@ -2175,7 +2157,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    tinfo.rInfo.next = null;
 	    //	    System.out.println("cachedVertexArrayRenderMethod = "+cachedVertexArrayRenderMethod);
 	    //	    System.out.println("tinfo.rInfo = "+tinfo.rInfo);
-	    cachedVertexArrayRenderMethod.render(this, cv, pass, tinfo.rInfo,
+	    cachedVertexArrayRenderMethod.render(this, cv, tinfo.rInfo,
 						 ALL_DIRTY_BITS);
 	    tinfo.rInfo.next = save;
 	}
@@ -2185,19 +2167,19 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    RenderAtomListInfo save= tinfo.rInfo.next;
 	    tinfo.rInfo.next = null;
 	    if (modeSupportDL) {
-		renderBin.dlistRenderMethod.renderSeparateDlists(this, cv, pass,
+		renderBin.dlistRenderMethod.renderSeparateDlists(this, cv,
 								 tinfo.rInfo,
 								 ALL_DIRTY_BITS);
 	    }
 	    else {
-		cachedVertexArrayRenderMethod.render(this, cv, pass, tinfo.rInfo,
+		cachedVertexArrayRenderMethod.render(this, cv, tinfo.rInfo,
 						     ALL_DIRTY_BITS);
 	    }
 	    tinfo.rInfo.next = save;
 	}
 	else {
 	    RenderAtomListInfo save= tinfo.rInfo.next;
-	    primaryRenderMethod.render(this, cv, pass, primaryRenderAtomList,
+	    primaryRenderMethod.render(this, cv, primaryRenderAtomList,
 				       ALL_DIRTY_BITS);
 	    tinfo.rInfo.next = save;
 	}

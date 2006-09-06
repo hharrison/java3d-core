@@ -200,7 +200,7 @@ class Texture3DRetained extends TextureRetained {
 		" numLevels= " + numLevels);
 */
 
-        ImageComponentRetained.ImageData imageData = image.getImageData();
+        ImageComponentRetained.ImageData imageData = image.getImageData(isUseAsRaster());
 
         updateTextureImage(cv,
                 0, numLevels, level, format,
@@ -221,7 +221,7 @@ class Texture3DRetained extends TextureRetained {
 
         int xoffset = x;
         int yoffset = y;
-        ImageComponentRetained.ImageData imageData = image.getImageData();
+        ImageComponentRetained.ImageData imageData = image.getImageData(isUseAsRaster());
         
         updateTextureSubImage(cv,
                 0, level, xoffset, yoffset, z,

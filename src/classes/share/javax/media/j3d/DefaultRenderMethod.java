@@ -24,16 +24,15 @@ class DefaultRenderMethod implements RenderMethod {
     /**
      * The actual rendering code for this RenderMethod
      */
-    public boolean render(RenderMolecule rm, Canvas3D cv, int pass, 
+    public boolean render(RenderMolecule rm, Canvas3D cv,
 			  RenderAtomListInfo ra, int dirtyBits) {
-        assert pass < 0;
-
+        
 	boolean isVisible = false; // True if any of the RAs is visible.
 	
 	while (ra != null) {
 	    if (cv.ra == ra.renderAtom) {
 		if (cv.raIsVisible) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    ra.geometry().execute(cv, ra.renderAtom, 
 					  rm.isNonUniformScale,
 					  rm.useAlpha, rm.alpha,
@@ -47,7 +46,7 @@ class DefaultRenderMethod implements RenderMethod {
 		if (!VirtualUniverse.mc.viewFrustumCulling ||
 		    ra.renderAtom.localeVwcBounds.intersect(cv.viewFrustum)) {
 		    cv.raIsVisible = true;
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    ra.geometry().execute(cv, ra.renderAtom, rm.isNonUniformScale,
 					  rm.useAlpha, rm.alpha,
 					  cv.screen.screen,

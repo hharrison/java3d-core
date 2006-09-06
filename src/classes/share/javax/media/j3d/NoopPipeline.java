@@ -1380,6 +1380,7 @@ class NoopPipeline extends Pipeline {
         return true;
     }
 
+    // Remove this --- Chien
     void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,
@@ -1388,7 +1389,15 @@ class NoopPipeline extends Pipeline {
             boolean update) {
     }
 
+    void clear(Context ctx, float r, float g, float b) {
+        
+    }
 
+    void textureFill(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY) {
+        
+    }    
+    
     // The native method for setting the ModelView matrix.
     void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {
     }

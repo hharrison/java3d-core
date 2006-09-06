@@ -1089,15 +1089,14 @@ class TextureBin extends Object implements ObjectUpdate {
 	    texUnitState = null;
         }
     }
-
+    
     /**
      * This method is called to update the state for this
      * TextureBin. This is only applicable in the single-pass case.
      * Multi-pass render will have to take care of its own
      * state update.
      */
-    void updateAttributes(Canvas3D cv, int pass) {
-        assert pass < 0;
+    void updateAttributes(Canvas3D cv) {
 
         boolean dirty = ((cv.canvasDirty & (Canvas3D.TEXTUREBIN_DIRTY|
 					    Canvas3D.TEXTUREATTRIBUTES_DIRTY)) != 0);

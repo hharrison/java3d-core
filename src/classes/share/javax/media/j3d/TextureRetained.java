@@ -85,6 +85,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     float	maximumLod = 1000.0f;
     Point3f	lodOffset = null;
 
+    private boolean useAsRaster = false; // true if used by Raster or Background.
 
     // Texture mapping enable switch
     // This enable is derived from the user specified enable
@@ -440,7 +441,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 		    }
 		}
 		else {
-		    if (img.getImageData().get() == null) {
+		    if (img.getImageData(isUseAsRaster()).get() == null) {
 			enable = false;
 		    }
 		}
@@ -492,7 +493,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 			}
 		    }
 		    else {
-			if (img.getImageData().get() == null) {
+			if (img.getImageData(isUseAsRaster()).get() == null) {
 			    enable = false;
 			}
 		    }
@@ -624,7 +625,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 		          enable = false;
 		      }
                   } else {
-		      if (images[j][i].getImageData().get() == null) {
+		      if (images[j][i].getImageData(isUseAsRaster()).get() == null) {
 		          enable = false;
 		      }
 	          }
@@ -980,7 +981,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 			        enable = false;
  			    }
 		        } else {
-		            if (images[j][i].getImageData().get() == null) {
+		            if (images[j][i].getImageData(isUseAsRaster()).get() == null) {
 			        enable = false;
 		            }
 		        }
@@ -1273,7 +1274,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     void reloadTextureImage(Canvas3D cv, int face, int level,
 				ImageComponentRetained image, int numLevels) {
 
-        ImageComponentRetained.ImageData imageData = image.getImageData();
+        ImageComponentRetained.ImageData imageData = image.getImageData(isUseAsRaster());
         
         updateTextureImage(cv,
                 face, numLevels, level,
@@ -1365,7 +1366,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	//			" width= " + width + " height= " + height +
 	//			" format= " + format);
 
-        ImageComponentRetained.ImageData imageData = image.getImageData();
+        ImageComponentRetained.ImageData imageData = image.getImageData(isUseAsRaster());
         if(imageData != null) {
 	    int xoffset = x;
 	    int yoffset = y;
@@ -2486,5 +2487,13 @@ abstract class TextureRetained extends NodeComponentRetained {
             break;
         }
     }
+    
+    void setUseAsRaster(boolean useAsRaster) {
+        this.useAsRaster = useAsRaster;
+    }
+    
+    boolean isUseAsRaster() {
+        return this.useAsRaster;
+    }        
 }
 

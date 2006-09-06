@@ -21,10 +21,8 @@ package javax.media.j3d;
 
 class OrientedShape3DRenderMethod implements RenderMethod {
 
-    public boolean render(RenderMolecule rm, Canvas3D cv, int pass, 
+    public boolean render(RenderMolecule rm, Canvas3D cv, 
 			  RenderAtomListInfo ra, int dirtyBits) {
-        assert pass < 0;
-
         boolean useAlpha;
 	boolean isNonUniformScale;
 	Transform3D trans=null;
@@ -37,7 +35,7 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 			    rm.textureBin.attributeBin.ignoreVertexColors, cv.ctx);
 	
 	if (rm.doInfinite) {
-	    cv.updateState(pass, dirtyBits);
+	    cv.updateState(dirtyBits);
 	    while (ra != null) {
 		trans = ra.infLocalToVworld;
 		isNonUniformScale = !trans.isCongruent();
@@ -57,7 +55,7 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 	while (ra != null) {
 	    if (cv.ra == ra.renderAtom) {
 		if (cv.raIsVisible) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    trans = ra.localToVworld;
 		    isNonUniformScale = !trans.isCongruent();
 
@@ -74,7 +72,7 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 	    else {
 		if (!VirtualUniverse.mc.viewFrustumCulling ||
 		    ra.renderAtom.localeVwcBounds.intersect(cv.viewFrustum)) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    cv.raIsVisible = true;
 		    trans = ra.localToVworld;
 		    isNonUniformScale = !trans.isCongruent();

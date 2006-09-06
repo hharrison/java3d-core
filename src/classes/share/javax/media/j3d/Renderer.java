@@ -25,7 +25,7 @@ import java.util.*;
 
 
 class Renderer extends J3dThread {
-    int objectId = -1;
+    
     // This action causes this thread to wait
     static final int WAIT = 0;
  
@@ -780,8 +780,7 @@ class Renderer extends J3dThread {
 			    
 			    if (offBufRetained.isByReference()) {
                     	        offBufRetained.geomLock.getLock();
-                                offBufRetained.evaluateExtensions(
-				     canvas.extensionsSupported);
+                                offBufRetained.evaluateExtensions(canvas);
 			    }
 			}
                         
@@ -796,8 +795,6 @@ class Renderer extends J3dThread {
                     if (!canvas.offScreen) {
                         canvas.drawingSurfaceObject.getDrawingSurfaceObjectInfo();
                     }
-
-		    boolean background_image_update = false;
 
 		    renderBin = canvas.view.renderBin;
 
@@ -912,7 +909,7 @@ class Renderer extends J3dThread {
 				for (i = 0; i < renderBin.nodeComponentList.size(); i++) {
 				    NodeComponentRetained nc = (NodeComponentRetained)renderBin.nodeComponentList.get(i);
                                     if(nc instanceof ImageComponent2DRetained) {    
-                                        ((ImageComponent2DRetained)nc).evaluateExtensions(canvas.extensionsSupported);
+                                        ((ImageComponent2DRetained)nc).evaluateExtensions(canvas);
                                     }
 				}
                             }
@@ -963,13 +960,6 @@ class Renderer extends J3dThread {
 			} else {
 			    canvas.freeResourcesInFreeList(canvas.ctx);
 			}
-
-			// save the BACKGROUND_IMAGE_DIRTY before canvas.updateViewCache
-			// clean it
-                        synchronized (canvas.dirtyMaskLock) {
-                            background_image_update = 
-                                ((canvas.cvDirtyMask[Canvas3D.RENDERER_DIRTY_IDX] & Canvas3D.BACKGROUND_IMAGE_DIRTY) != 0);
-                        }
 
 			if (VirtualUniverse.mc.doDsiRenderLock) {
 			    canvas.drawingSurfaceObject.unLock();
@@ -1159,30 +1149,9 @@ class Renderer extends J3dThread {
                         // and not in stereo mode
                         if (!doAccum && !sharedStereoZBuffer) {
 			    BackgroundRetained bg = renderBin.background;
-
-                            if ((bg.texImage != null) && 
-                                (objectId == -1)) {
-                                objectId = VirtualUniverse.mc.
-                                    getTexture2DId();
-                            }
-                            canvas.textureclear(canvas.ctx,
-                                                bg.xmax,
-                                                bg.ymax,
-                                                bg.color.x,
-                                                bg.color.y,
-                                                bg.color.z,
-                                                winWidth,
-                                                winHeight,
-                                                objectId,
-                                                bg.imageScaleMode,
-                                                bg.texImage,
-                                                background_image_update);
-			    
-//                             canvas.clear(canvas.ctx,
-// 					 bg.color.x,
-//                                          bg.color.y,
-//                                          bg.color.z,
-//                                          bg.image);
+                            
+                            canvas.clear(bg, winWidth, winHeight);
+                            
                         }
 
 		        // handle preRender callback
@@ -1279,24 +1248,8 @@ class Renderer extends J3dThread {
                                 if (doAccum || sharedStereoZBuffer) {
 				    BackgroundRetained bg = renderBin.background;
 
-                                    if ((bg.texImage != null) && 
-                                        (objectId == -1)) {
-                                        objectId = VirtualUniverse.mc.
-                                            getTexture2DId();
-                                    }
+                                    canvas.clear(bg, winWidth, winHeight);
 
-                                    canvas.textureclear(canvas.ctx,
-                                                        bg.xmax,
-                                                        bg.ymax,
-                                                        bg.color.x,
-                                                        bg.color.y,
-                                                        bg.color.z,
-                                                        winWidth,
-                                                        winHeight,
-                                                        objectId,
-                                                        bg.imageScaleMode,
-                                                        bg.texImage,
-                                                        background_image_update);
                                 }
 
 			        // render background geometry

@@ -705,7 +705,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
                         // will be evaluated during context creation in
                         // the renderer
                         if (canvases[j].ctx != null) {
-                            nc.evaluateExtensions(canvases[j].extensionsSupported);
+                            nc.evaluateExtensions(canvases[j]);
                         }
                     }
                     nc.geomLock.unLock();
@@ -715,7 +715,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
                         // will be evaluated during context creation in
                         // the renderer
                         if (canvases[j].ctx != null) {
-                            nc.evaluateExtensions(canvases[j].extensionsSupported);
+                            nc.evaluateExtensions(canvases[j]);
                         }
                     }
                 }
@@ -746,8 +746,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
                         // will be evaluated during context creation in
                         // the renderer
                         if (canvases[j].ctx != null) {
-                            nc.evaluateExtensions(
-					canvases[j].extensionsSupported);
+                            nc.evaluateExtensions( canvases[j]);
                         }
                     }
                     nc.geomLock.unLock();
@@ -758,7 +757,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		        // will be evaluated during context creation in
 		        // the renderer
 		        if (canvases[j].ctx != null) {
-			    nc.evaluateExtensions(canvases[j].extensionsSupported);
+			    nc.evaluateExtensions(canvases[j]);
 		        }
 		    }                    
                 }

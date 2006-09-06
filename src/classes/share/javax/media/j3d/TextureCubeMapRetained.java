@@ -107,7 +107,7 @@ class TextureCubeMapRetained extends TextureRetained {
 		    }
 		}
 		else {
-		    if (img.getImageData().get() == null) {
+		    if (img.getImageData(isUseAsRaster()).get() == null) {
 			enable = false;
 		    }
 		}
@@ -157,7 +157,7 @@ class TextureCubeMapRetained extends TextureRetained {
 			}
 		    }
 		    else {
-			if (img.getImageData().get() == null) {
+			if (img.getImageData(isUseAsRaster()).get() == null) {
 			    enable = false;
 			}
 		    }

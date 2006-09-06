@@ -7512,12 +7512,82 @@ class JoglPipeline extends Pipeline {
       return true;
     }
 
+    void clear(Context ctx, float r, float g, float b) {
+        if (VERBOSE) System.err.println("JoglPipeline.clear()");
+        
+        JoglContext jctx = (JoglContext) ctx;
+        GLContext context = context(ctx);
+        GL gl = context.getGL();
+        gl.glClearColor(r, g, b, jctx.getAlphaClearValue());
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        
+        // Java 3D always clears the Z-buffer
+        gl.glPushAttrib(GL.GL_DEPTH_BUFFER_BIT);
+        gl.glDepthMask(true);
+        gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
+        gl.glPopAttrib();
+        
+    }
+  
+
+    void textureFill(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY)  {
+        if (VERBOSE) System.err.println("JoglPipeline.textureFill()");
+        
+        JoglContext jctx = (JoglContext) ctx;
+        GLContext context = context(ctx);
+        GL gl = context.getGL();
+            
+        // Temporarily disable fragment and most 3D operations
+        gl.glPushAttrib(GL.GL_ENABLE_BIT | GL.GL_TEXTURE_BIT | GL.GL_POLYGON_BIT);
+        disableAttribFor2D(gl);
+        
+        // reset the polygon mode
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
+        
+        gl.glDepthMask(false);
+        gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+
+        gl.glEnable(GL.GL_TEXTURE_2D);        
+        
+        gl.glColor3f(1.0f, 0.0f, 1.0f); // -- For debugging
+
+        
+        // load identity modelview and projection matrix
+        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glLoadIdentity();
+        gl.glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glLoadIdentity();
+        gl.glMatrixMode(GL.GL_TEXTURE);
+        gl.glPushMatrix();
+        gl.glLoadIdentity();
+              
+        gl.glBegin(GL.GL_QUADS);
+        gl.glTexCoord2f(texMinU, texMinV); gl.glVertex2f(mapMinX,mapMinY);
+        gl.glTexCoord2f(texMaxU, texMinV); gl.glVertex2f(mapMaxX,mapMinY);
+        gl.glTexCoord2f(texMaxU, texMaxV); gl.glVertex2f(mapMaxX,mapMaxY);
+        gl.glTexCoord2f(texMinU, texMaxV); gl.glVertex2f(mapMinX,mapMaxY);
+        gl.glEnd();
+        
+        // Restore texture Matrix transform
+        gl.glPopMatrix();
+        
+        gl.glMatrixMode(GL.GL_MODELVIEW);
+        // Restore attributes
+        gl.glPopAttrib();
+       
+    }
+        
+   
+    // TODO : Remove this --- Chien
     void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,
             int objectId, int scalemode,
             ImageComponent2DRetained image,
             boolean update) {
+        /*
       if (VERBOSE) System.err.println("JoglPipeline.textureclear()");
 
       JoglContext jctx = (JoglContext) ctx;
@@ -7548,7 +7618,7 @@ class JoglPipeline extends Pipeline {
         gl.glDepthMask(false);
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
         gl.glBindTexture(GL.GL_TEXTURE_2D, objectId);
-        /* 
+         
         // set up texture parameter
         if (update) {
           gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
@@ -7592,7 +7662,7 @@ class JoglPipeline extends Pipeline {
                           height, 0, gltype, GL.GL_UNSIGNED_BYTE,
                           ByteBuffer.wrap(image.imageYup));
         }
-        */
+        
         // load identity modelview and projection matrix
         gl.glMatrixMode(GL.GL_PROJECTION);  
         gl.glLoadIdentity();
@@ -7741,8 +7811,8 @@ class JoglPipeline extends Pipeline {
       gl.glDepthMask(true);
       gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
       gl.glPopAttrib();
-    }
-
+*/
+ }
 
     // The native method for setting the ModelView matrix.
     void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {
@@ -8448,44 +8518,44 @@ class JoglPipeline extends Pipeline {
    * caller must save/restore the attributes with
    * pushAttrib(GL_ENABLE_BIT|...) and popAttrib()
    */
-  private void
-    disableAttribFor2D(GL gl)
-  {
-    gl.glDisable(GL.GL_ALPHA_TEST);
-    gl.glDisable(GL.GL_BLEND);
-    gl.glDisable(GL.GL_COLOR_LOGIC_OP);
-    gl.glDisable(GL.GL_COLOR_MATERIAL);
-    gl.glDisable(GL.GL_CULL_FACE);
-    gl.glDisable(GL.GL_DEPTH_TEST);
-    gl.glDisable(GL.GL_FOG);
-    gl.glDisable(GL.GL_LIGHTING);
-    gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
-    gl.glDisable(GL.GL_POLYGON_STIPPLE);
-    gl.glDisable(GL.GL_STENCIL_TEST);
-    gl.glDisable(GL.GL_TEXTURE_2D);
-    gl.glDisable(GL.GL_TEXTURE_GEN_Q);
-    gl.glDisable(GL.GL_TEXTURE_GEN_R);
-    gl.glDisable(GL.GL_TEXTURE_GEN_S);
-    gl.glDisable(GL.GL_TEXTURE_GEN_T);
-
-    for (int i = 0; i < 6; i++) {
-      gl.glDisable(GL.GL_CLIP_PLANE0 + i);
-    }
-
-    gl.glDisable(GL.GL_TEXTURE_3D);
-    gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
-
-    if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
-      gl.glDisable(GL.GL_REGISTER_COMBINERS_NV);
-    }
-
-    if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
-      gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
-    }
-
-    if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-      gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
-    }
+  private void disableAttribFor2D(GL gl) {
+      gl.glDisable(GL.GL_ALPHA_TEST);
+      gl.glDisable(GL.GL_BLEND);
+      gl.glDisable(GL.GL_COLOR_LOGIC_OP);
+      gl.glDisable(GL.GL_COLOR_MATERIAL);
+      gl.glDisable(GL.GL_CULL_FACE);
+      gl.glDisable(GL.GL_DEPTH_TEST);
+      gl.glDisable(GL.GL_FOG);
+      gl.glDisable(GL.GL_LIGHTING);
+      gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
+      gl.glDisable(GL.GL_POLYGON_STIPPLE);
+      gl.glDisable(GL.GL_STENCIL_TEST);
+      gl.glDisable(GL.GL_TEXTURE_2D);
+      gl.glDisable(GL.GL_TEXTURE_GEN_Q);
+      gl.glDisable(GL.GL_TEXTURE_GEN_R);
+      gl.glDisable(GL.GL_TEXTURE_GEN_S);
+      gl.glDisable(GL.GL_TEXTURE_GEN_T);
+      
+      
+      for (int i = 0; i < 6; i++) {
+          gl.glDisable(GL.GL_CLIP_PLANE0 + i);
+      }
+      
+      gl.glDisable(GL.GL_TEXTURE_3D);
+      gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
+      
+      if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
+          gl.glDisable(GL.GL_REGISTER_COMBINERS_NV);
+      }
+      
+      if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
+          gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
+      }
+      
+      if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
+          gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
+      }
+      
   }
 
   private void copyTranspose(double[] src, double[] dst) {

@@ -3067,6 +3067,7 @@ class NativePipeline extends Pipeline {
             ImageComponent2DRetained image,
             boolean update);
 
+    // TODO : Remove this --- Chien.
     void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,
@@ -3081,7 +3082,21 @@ class NativePipeline extends Pipeline {
                 update);
     }
 
-
+    native void clear(long ctx, float r, float g, float b);    
+    
+    void clear(Context ctx, float r, float g, float b) {
+        clear(unbox(ctx), r, g, b);
+        
+    }
+    
+    native void textureFill(long ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY);
+    
+    void textureFill(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY)  {
+        textureFill(unbox(ctx), texMinU, texMaxU, texMinV, texMaxV,
+                mapMinX, mapMaxX, mapMinY, mapMaxY);
+    }   
 
     // The native method for setting the ModelView matrix.
     native void setModelViewMatrix(long ctx, double[] viewMatrix, double[] modelMatrix);

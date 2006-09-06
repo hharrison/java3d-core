@@ -1447,6 +1447,121 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
 }
 
 JNIEXPORT
+void JNICALL Java_javax_media_j3d_NativePipeline_clear(JNIEnv *env,
+						       jobject obj,
+						       jlong ctxInfo,
+						       jfloat r, 
+						       jfloat g, 
+						       jfloat b) 
+{ 
+    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
+    jlong ctx = ctxProperties->context;    
+    
+
+#ifdef VERBOSE 
+    fprintf(stderr, "Canvas3D.clear()\n");  
+#endif
+    
+    glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue); 
+    glClear(GL_COLOR_BUFFER_BIT); 
+
+    /* Java 3D always clears the Z-buffer */
+    glPushAttrib(GL_DEPTH_BUFFER_BIT);
+    glDepthMask(GL_TRUE);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glPopAttrib();
+    
+#if 0
+    
+    /* Java 3D always clears the Z-buffer */
+    glPushAttrib(GL_DEPTH_BUFFER_BIT);
+    glDepthMask(GL_TRUE); 
+    glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glPopAttrib();
+#endif
+
+    
+}
+
+JNIEXPORT
+void JNICALL Java_javax_media_j3d_NativePipeline_textureFill(JNIEnv *env,
+							jobject obj,
+							jlong ctxInfo,
+							jfloat texMinU, 
+							jfloat texMaxU, 
+							jfloat texMinV, 
+							jfloat texMaxV, 
+							jfloat mapMinX, 
+							jfloat mapMaxX, 
+							jfloat mapMinY,
+							jfloat mapMaxY)
+{ 
+    JNIEnv table; 
+    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
+    jlong ctx = ctxProperties->context;
+    
+    table = *env;
+    
+#ifdef VERBOSE 
+    fprintf(stderr, "Canvas3D.textureFill()\n");  
+#endif
+     /* Temporarily disable fragment and most 3D operations */
+     glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_POLYGON_BIT); 
+     disableAttribFor2D(ctxProperties);
+
+     /* reset the polygon mode */
+     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+     glDepthMask(GL_FALSE);  
+     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+     glEnable(GL_TEXTURE_2D);     
+     
+     glColor3f(1.0f, 0.5f, 0.0f); // -- For debbugging
+
+    /* loaded identity modelview and projection matrix */ 
+    
+    glMatrixMode(GL_PROJECTION);  
+    glLoadIdentity();
+    glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);  
+    glLoadIdentity(); 
+    glMatrixMode(GL_TEXTURE);
+    glPushMatrix();
+    glLoadIdentity();
+    
+#ifdef VERBOSE 
+    printf("(texMinU,texMinV,texMaxU,texMaxV) = (%3.2f,%3.2f,%3.2f,%3.2f)\n", 
+	   texMinU,texMinV,texMaxU,texMaxV); 
+    printf("(mapMinX,mapMinY,mapMaxX,mapMaxY) = (%3.2f,%3.2f,%3.2f,%3.2f)\n", 
+	   mapMinX,mapMinY,mapMaxX,mapMaxY);
+#endif
+    
+    glBegin(GL_QUADS); 
+
+    glTexCoord2f((float) texMinU, (float) texMinV);
+    glVertex2f((float) mapMinX, (float) mapMinY); 
+    glTexCoord2f((float) texMaxU, (float) texMinV);
+    glVertex2f((float) mapMaxX, (float) mapMinY); 
+    glTexCoord2f((float) texMaxU, (float) texMaxV);
+    glVertex2f((float) mapMaxX, (float) mapMaxY); 
+    glTexCoord2f((float) texMinU, (float) texMaxV);
+    glVertex2f((float) mapMinX, (float) mapMaxY);
+   
+    glEnd(); 
+    
+    /* Restore texture Matrix transform */	
+    glPopMatrix();
+    
+    glMatrixMode(GL_MODELVIEW);      	
+    /* Restore attributes */
+    glPopAttrib();  
+}
+
+
+
+JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(JNIEnv *env,
 							jobject obj,
 							jlong ctxInfo,

@@ -296,6 +296,79 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
 			   d3dCtx->zWriteEnable);
 }
 
+
+extern "C" JNIEXPORT
+void JNICALL Java_javax_media_j3d_NativePipeline_clear(
+							JNIEnv *env,
+							jobject obj,
+							jlong ctx,
+							jfloat r, 
+							jfloat g, 
+							jfloat b) 
+{
+
+    GetDevice();
+    
+    /* Java 3D always clears the Z-buffer */
+    /* @TODO check same operation for stencil */
+    
+    if (!d3dCtx->zWriteEnable) {
+	device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+    } 
+    
+    /* clear stencil, if in used */    
+    if (d3dCtx->stencilWriteEnable ) {
+	// clear stencil and ZBuffer
+	HRESULT hr = device->Clear(0, NULL, 
+				   D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
+				   D3DCOLOR_COLORVALUE(r, g, b, 1.0f), 1.0, 0);
+	if (hr == D3DERR_INVALIDCALL) {
+	    printf("[Java3D] Error cleaning Canvas3D stencil & ZBuffer\n");
+	}
+	//  printf("canvas3D clear stencil & ZBuffer\n");
+    }
+    else {	
+	// clear ZBuffer only
+	HRESULT hr =  device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
+				    D3DCOLOR_COLORVALUE(r, g, b, 1.0f), 1.0, 0);
+	if (hr == D3DERR_INVALIDCALL) {
+	    printf("[Java3D] Error cleaning Canvas3D ZBuffer\n");
+	}
+	// printf("canvas3D clear ZBuffer\n");
+    }
+    
+    if (!d3dCtx->zWriteEnable) {
+	device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+    }	
+    // disable stencil 
+    if (d3dCtx->stencilEnable && !d3dCtx->stencilWriteEnable) {
+	device->SetRenderState(D3DRS_STENCILENABLE, FALSE);		  
+    }
+    
+}
+
+extern "C" JNIEXPORT
+void JNICALL Java_javax_media_j3d_NativePipeline_textureFill(
+							JNIEnv *env,
+							jobject obj,
+							jlong ctx,
+							jfloat texMinU, 
+							jfloat texMaxU, 
+							jfloat texMinV, 
+							jfloat texMaxV, 
+							jfloat mapMinX, 
+							jfloat mapMaxX, 
+							jfloat mapMinY,
+							jfloat mapMaxY)
+{
+    GetDevice();
+    /* printf("Canvas3D.textureFill()\n"); */
+    /* TODO : Implement textureFill() */
+
+
+}
+
+/* TODO : This method will be replaced by clear() and  textureFill() */
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(
 							JNIEnv *env,

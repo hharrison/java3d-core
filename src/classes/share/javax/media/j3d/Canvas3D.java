@@ -1786,7 +1786,7 @@ public class Canvas3D extends Canvas {
 		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D15"));
 	    }
 
-	    if (bufferRetained.getFormat() == ImageComponent.FORMAT_CHANNEL8) {
+	    if (bufferRetained.getNumberOfComponents() < 3 ) {
 		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D16"));
 	    }
 
@@ -2196,7 +2196,7 @@ public class Canvas3D extends Canvas {
         ImageComponent2DRetained icRetained = (ImageComponent2DRetained)offScreenBuffer.retained;
         boolean isByRef = icRetained.isByReference();
         boolean isYUp = icRetained.isYUp();
-        ImageComponentRetained.ImageData imageData = icRetained.getImageData();
+        ImageComponentRetained.ImageData imageData = icRetained.getImageData(false);
 
         if(!isByRef) {
             // If icRetained has a null image ( BufferedImage)
@@ -2207,7 +2207,7 @@ public class Canvas3D extends Canvas {
             // Check for possible format conversion in imageData
             else {
                 // Format convert imageData if format is unsupported.
-                icRetained.evaluateExtensions(extensionsSupported);
+                icRetained.evaluateExtensions(this);
             }
             // read the image from the offscreen buffer
             readOffScreenBuffer(ctx, icRetained.getImageFormatTypeIntValue(),
@@ -2217,7 +2217,7 @@ public class Canvas3D extends Canvas {
         } else {
             icRetained.geomLock.getLock();
             // Create a copy of format converted image in imageData if format is unsupported.
-            icRetained.evaluateExtensions(extensionsSupported);
+            icRetained.evaluateExtensions(this);
             
             // read the image from the offscreen buffer
             readOffScreenBuffer(ctx, icRetained.getImageFormatTypeIntValue(),
@@ -4351,7 +4351,7 @@ public class Canvas3D extends Canvas {
     /**
      * update state if neccessary according to the stateUpdatedMask
      */
-    void updateState(int pass, int dirtyBits) {
+    void updateState( int dirtyBits) {
 
 
 	if (stateUpdateMask == 0)
@@ -4361,7 +4361,7 @@ public class Canvas3D extends Canvas {
 
 	if ((stateUpdateMask & (1 << TEXTUREBIN_BIT)) != 0) {
 	    ((TextureBin)
-		curStateToUpdate[TEXTUREBIN_BIT]).updateAttributes(this, pass);
+		curStateToUpdate[TEXTUREBIN_BIT]).updateAttributes(this);
 	}
 
 	if ((stateUpdateMask & (1 << RENDERMOLECULE_BIT)) != 0) {
@@ -4380,6 +4380,176 @@ public class Canvas3D extends Canvas {
 	stateUpdateMask = 0;
     }
 
+  
+    // This method updates this Texture2D for raster. 
+    // Note : No multi-texture is not used.
+    void updateTextureForRaster(Texture2DRetained texture) {
+        
+        // Setup texture and texture attributes for texture unit 0.
+        Pipeline.getPipeline().updateTextureUnitState(ctx, 0, true);
+        texture.updateNative(this);
+        resetTextureAttributes(ctx);
+        
+        for(int i=1; i < maxTextureUnits; i++) {
+            resetTexture(ctx, i);
+        }
+        
+        // set the active texture unit back to 0
+        activeTextureUnit(ctx, 0);
+        
+        // Force the next textureBin to reload.
+        canvasDirty |= Canvas3D.TEXTUREBIN_DIRTY | Canvas3D.TEXTUREATTRIBUTES_DIRTY;
+        
+    }
+    
+    void restoreTextureBin() {
+
+        if(textureBin != null) {
+            textureBin.updateAttributes(this);
+        }
+    } 
+
+    
+    void textureFill(BackgroundRetained bg, int winWidth, int winHeight) {
+
+        ImageComponentRetained.ImageData imageData = 
+                bg.image.getImageData(bg.texture.isUseAsRaster());
+        
+        int maxX = imageData.getWidth();
+        int maxY = imageData.getHeight(); 
+        int width = bg.image.width;
+        int height = bg.image.height;
+        
+        float xzoom = (float)winWidth  / maxX;
+        float yzoom = (float)winHeight / maxY;
+        float zoom = 0;
+        float texMinU = 0, texMinV = 0, texMaxU = 0, texMaxV = 0, adjustV = 0;
+        float mapMinX = 0, mapMinY = 0, mapMaxX = 0, mapMaxY = 0;
+        float halfWidth = 0, halfHeight = 0;
+        int i = 0, j = 0;
+        switch (bg.imageScaleMode) {
+            case Background.SCALE_NONE:
+                texMinU = 0.0f;
+                texMinV = 0.0f;
+                texMaxU = 1.0f;
+                texMaxV = 1.0f;
+                halfWidth = (float)winWidth/2.0f;
+                halfHeight = (float)winHeight/2.0f;
+                mapMinX = (float) ((0 - halfWidth)/halfWidth);
+                mapMinY = (float) ((0 - halfHeight)/halfHeight);
+                mapMaxX = (float) ((maxX - halfWidth)/halfWidth);
+                mapMaxY = (float) ((maxY - halfHeight)/halfHeight);
+                adjustV = ((float)winHeight - (float)maxY)/halfHeight;
+                mapMinY += adjustV;
+                mapMaxY += adjustV;
+                break;
+            case Background.SCALE_FIT_MIN:
+                zoom = Math.min(xzoom, yzoom);
+                texMinU = 0.0f;
+                texMinV = 0.0f;
+                texMaxU = 1.0f;
+                texMaxV = 1.0f;
+                mapMinX = -1.0f;
+                mapMaxY = 1.0f;
+                if (xzoom < yzoom) {
+                    mapMaxX = 1.0f;
+                    mapMinY = -1.0f + 2.0f * ( 1.0f - zoom * (float)maxY/(float) winHeight );
+                } else {
+                    mapMaxX = -1.0f + zoom * (float)maxX/winWidth * 2;
+                    mapMinY = -1.0f;
+                }
+                break;
+            case Background.SCALE_FIT_MAX:
+                zoom = Math.max(xzoom, yzoom);
+                mapMinX = -1.0f;
+                mapMinY = -1.0f;
+                mapMaxX = 1.0f;
+                mapMaxY = 1.0f;
+                if (xzoom < yzoom) {
+                    texMinU = 0.0f;
+                    texMinV = 0.0f;
+                    texMaxU = (float)winWidth/maxX/zoom;
+                    texMaxV = 1.0f;
+                } else {
+                    texMinU = 0.0f;
+                    texMinV = 1.0f - (float)winHeight/maxY/zoom;
+                    texMaxU = 1.0f;
+                    texMaxV = 1.0f;
+                }
+                break;
+            case Background.SCALE_FIT_ALL:
+                texMinU = 0.0f;
+                texMinV = 0.0f;
+                texMaxU = 1.0f;
+                texMaxV = 1.0f;
+                mapMinX = -1.0f;
+                mapMinY = -1.0f;
+                mapMaxX = 1.0f;
+                mapMaxY = 1.0f;
+                break;
+            case Background.SCALE_REPEAT:
+                i = winWidth/width;
+                j = winHeight/height;
+                texMinU = 0.0f;
+                texMinV = (float)(j + 1) - yzoom;
+                texMaxU = xzoom;
+                texMaxV = (float)(j + 1);
+                mapMinX = -1.0f;
+                mapMinY = -1.0f;
+                mapMaxX = 1.0f;
+                mapMaxY = 1.0f;
+                break;
+            case Background.SCALE_NONE_CENTER:
+                if(xzoom >= 1.0f){
+                    texMinU = 0.0f;
+                    texMaxU = 1.0f;
+                    mapMinX = -(float)maxX/winWidth;
+                    mapMaxX = (float)maxX/winWidth;
+                } else {
+                    texMinU = 0.5f - (float)winWidth/maxX/2;
+                    texMaxU = 0.5f + (float)winWidth/maxX/2;
+                    mapMinX = -1.0f;
+                    mapMaxX = 1.0f;
+                }
+                if (yzoom >= 1.0f) {
+                    texMinV = 0.0f;
+                    texMaxV = 1.0f;
+                    mapMinY = -(float)maxY/winHeight;
+                    mapMaxY = (float)maxY/winHeight;
+                } else {
+                    texMinV = 0.5f - (float)winHeight/maxY/2;
+                    texMaxV = 0.5f + (float)winHeight/maxY/2;
+                    mapMinY = -1.0f;
+                    mapMaxY = 1.0f;
+                }
+                break;
+        }       
+    
+        textureFill(ctx, texMinU, texMaxU, texMinV, texMaxU,
+                mapMinX, mapMaxX, mapMinY, mapMaxY);
+        
+    }
+    
+    // int delayCounter = 0;
+    
+    void clear(BackgroundRetained bg, int winWidth, int winHeight) {
+             
+        clear( ctx, bg.color.x, bg.color.y, bg.color.z);
+       
+        
+        // TODO : This is a bug on not mirror bg. Will fix this as a bug after 1.5 beta.
+        // For now, as a workaround, we will check bg.image and bg.image.imageData not null. 
+        if((bg.image != null) && (bg.image.imageData != null)) {
+            // setup Texture pipe.
+            updateTextureForRaster(bg.texture);            
+            
+            textureFill(bg, winWidth, winHeight);
+            
+            // Restore texture pipe.
+            restoreTextureBin();
+       }
+    }
+    
     /**
      * obj is either TextureRetained or DetailTextureImage 
      * if obj is DetailTextureImage then we just clear
@@ -4465,16 +4635,6 @@ public class Canvas3D extends Canvas {
 	}
 
 	if (freeBackground) {
-	    // Free Background Texture
-	    // Note that we use non-shared ctx to create
-	    // it so there is no need to do so in 
-	    // Renderer.freeContextResources()
-	    if (rdr.objectId > 0) {
-		freeTexture(ctx, rdr.objectId);
-		VirtualUniverse.mc.freeTexture2DId(rdr.objectId);	
-		rdr.objectId = -1;
-
-	    }
 	    // Free Graphics2D Texture
 	    if ((graphics2D != null) &&
 		(graphics2D.objectId != -1)) {
@@ -4782,7 +4942,8 @@ public class Canvas3D extends Canvas {
     private boolean releaseCtx(Context ctx, long dpy) {
         return Pipeline.getPipeline().releaseCtx(ctx, dpy);
     }
-    
+
+    // TODO : Remove this --- Chien
     void textureclear(Context ctx, int maxX, int maxY,
             float r, float g, float b,
             int winWidth, int winHeight,
@@ -4797,7 +4958,16 @@ public class Canvas3D extends Canvas {
                 update);
     }
 
+    void clear(Context ctx, float r, float g, float b) {
+        Pipeline.getPipeline().clear(ctx, r, g, b);
+    }
 
+    void textureFill(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY) {
+        Pipeline.getPipeline().textureFill(ctx, texMinU, texMaxU, texMinV, texMaxV,
+                mapMinX, mapMaxX, mapMinY, mapMaxY);
+    }    
+    
     // The native method for setting the ModelView matrix.
     void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {
         Pipeline.getPipeline().setModelViewMatrix(ctx, viewMatrix, modelMatrix);

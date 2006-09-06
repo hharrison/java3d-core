@@ -184,5 +184,6 @@ class Texture2DRetained extends TextureRetained {
         return detailTextureFuncPts;
     }
 
+
 }
 

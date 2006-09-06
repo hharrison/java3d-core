@@ -64,11 +64,11 @@ class ImageComponent3DRetained extends ImageComponentRetained {
         }
         
         if (imageTypeIsSupported) {
-            copySupportedImageToImageData(image, index);
+            copySupportedImageToImageData(image, index, imageData);
         } else {
             // image type is unsupported, need to create a supported local copy.
             // TODO : borrow code from JAI to convert to right format.
-            copyUnsupportedImageToImageData(image, index);
+            copyUnsupportedImageToImageData(image, index, imageData);
 
         }    
         
@@ -188,17 +188,17 @@ class ImageComponent3DRetained extends ImageComponentRetained {
         
         if (imageTypeIsSupported) {
             if (refImage instanceof BufferedImage) {
-                copyImageLineByLine((BufferedImage)refImage, srcX, srcY, x, y, index, width, height);
+                copyImageLineByLine((BufferedImage)refImage, srcX, srcY, x, y, index, width, height, imageData);
             } else {
-                copySupportedImageToImageData(refImage, srcX, srcY, x, y, index, width, height);
+                copySupportedImageToImageData(refImage, srcX, srcY, x, y, index, width, height, imageData);
             }
         } else {
             // image type is unsupported, need to create a supported local copy.
             // TODO : Should look into borrow code from JAI to convert to right format.
             if (refImage instanceof BufferedImage) {
-                copyUnsupportedImageToImageData((BufferedImage)refImage, srcX, srcY, x, y, index, width, height);
+                copyUnsupportedImageToImageData((BufferedImage)refImage, srcX, srcY, x, y, index, width, height, imageData);
             } else {
-                copyUnsupportedImageToImageData(refImage, srcX, srcY, x, y, index, width, height);
+                copyUnsupportedImageToImageData(refImage, srcX, srcY, x, y, index, width, height, imageData);
             }
         }
         
@@ -241,20 +241,20 @@ class ImageComponent3DRetained extends ImageComponentRetained {
             // Either not byRef or not yUp or not both
             // System.err.println("ImageComponen3DRetained.setSubImage() : (imageTypeSupported ) --- (1)");
             if (image instanceof BufferedImage) {
-                copyImageLineByLine((BufferedImage)image, srcX, srcY, dstX, dstY, index, width, height);
+                copyImageLineByLine((BufferedImage)image, srcX, srcY, dstX, dstY, index, width, height, imageData);
             }
             else {
-                copySupportedImageToImageData(image, srcX, srcY, dstX, dstY, index, width, height);
+                copySupportedImageToImageData(image, srcX, srcY, dstX, dstY, index, width, height, imageData);
             }
        } else {
             // image type is unsupported, need to create a supported local copy.
             // TODO : Should look into borrow code from JAI to convert to right format.
             // System.err.println("ImageComponent3DRetained.setSubImage() : (imageTypeSupported == false) --- (2)");
              if (image instanceof BufferedImage) {
-                copyUnsupportedImageToImageData((BufferedImage)image, srcX, srcY, dstX, dstY, index, width, height);             
+                copyUnsupportedImageToImageData((BufferedImage)image, srcX, srcY, dstX, dstY, index, width, height, imageData);             
             }
             else {
-                copyUnsupportedImageToImageData(image, srcX, srcY, dstX, dstY, index, width, height);
+                copyUnsupportedImageToImageData(image, srcX, srcY, dstX, dstY, index, width, height, imageData);
             }
         }    
 
