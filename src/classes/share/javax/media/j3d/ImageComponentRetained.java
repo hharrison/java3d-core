@@ -12,14 +12,15 @@
 
 package javax.media.j3d;
 
+import java.nio.Buffer;
 import java.util.*;
 import java.awt.image.*;
 import java.awt.color.ColorSpace;
-import java.awt.Transparency;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.RenderedImage;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 
@@ -85,23 +86,27 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     boolean npotSupported = true;
     private int unitsPerPixel;
     private int numberOfComponents;
-    private int imageType;  // The image type of the input image. Using the constant in BufferedImage
-    ImageFormatType imageFormatType = ImageFormatType.TYPE_UNKNOWN;
+    
+    // Note : This is unuse for NioImageBuffer.
+    // The image type of the input image. Using the constant in BufferedImage
+    private int imageType;
+    
+    private ImageFormatType imageFormatType = ImageFormatType.TYPE_UNKNOWN;
     ImageData imageData;
+    private ImageComponent.ImageClass imageClass = ImageComponent.ImageClass.BUFFERED_IMAGE;
     
     // To support Non power of 2 (NPOT) image
     // if enforceNonPowerOfTwoSupport is true (for examples Raster and Background)
     // and imageData is a non power of 2 image
     // and graphics driver doesn't support NPOT extension.
-    ImageData imageDataPowerOfTwo;
-    AffineTransformOp powerOfTwoATOp;
+    private ImageData imageDataPowerOfTwo;
+    private AffineTransformOp powerOfTwoATOp;
     private boolean enforceNonPowerOfTwoSupport = false;
     private boolean usedByOffScreenCanvas = false;
     
     // This will store the referenced Images for reference case.
-    private RenderedImage refImage[] = null;
-    
-    
+    // private RenderedImage refImage[] = null;
+    private Object refImage[] = null;
     
     // Lock used in the "by ref case"
     GeometryLock geomLock = new GeometryLock();
@@ -163,6 +168,22 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         return yUp;
     }
     
+    ImageComponent.ImageClass getImageClass() {
+        return imageClass;
+    }
+    
+    void setImageClass(RenderedImage image) {
+        if(image instanceof BufferedImage) {
+            imageClass = ImageComponent.ImageClass.BUFFERED_IMAGE;
+        } else  {
+            imageClass = ImageComponent.ImageClass.RENDERED_IMAGE;
+        }
+    }
+    
+    void setImageClass(NioImageBuffer image) {
+        imageClass = ImageComponent.ImageClass.NIO_IMAGE_BUFFER;
+    }
+    
     void setEnforceNonPowerOfTwoSupport(boolean npot) {
         this.enforceNonPowerOfTwoSupport = npot;
     }
@@ -197,7 +218,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         
     }
     
-    int getImageFormatTypeIntValue() {
+    int getImageFormatTypeIntValue(boolean powerOfTwoData) {
         int iftValue = -1;
         switch(imageFormatType) {
             case TYPE_BYTE_BGR:
@@ -210,7 +231,12 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 iftValue = TYPE_BYTE_ABGR;
                 break;
             case TYPE_BYTE_RGBA:
-                iftValue = TYPE_BYTE_RGBA;
+                if((imageDataPowerOfTwo != null) && (powerOfTwoData)) {
+                    iftValue = TYPE_BYTE_ABGR;
+                }
+                else {
+                    iftValue = TYPE_BYTE_RGBA;
+                }
                 break;
             case TYPE_BYTE_LA:
                 iftValue = TYPE_BYTE_LA;
@@ -236,22 +262,27 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         return iftValue;
     }
     
+    // Note: This method for RenderedImage, can't be used by NioImageBuffer.
     int getImageType() {
         return imageType;
+    }
+    
+    void setImageFormatType(ImageFormatType ift) {
+        this.imageFormatType = ift;
     }
     
     ImageFormatType getImageFormatType() {
         return this.imageFormatType;
     }
     
-    void setRefImage(RenderedImage image, int index) {
+    void setRefImage(Object image, int index) {
         this.refImage[index] = image;
     }
     
-    RenderedImage getRefImage(int index) {
+    Object getRefImage(int index) {
         return this.refImage[index];
     }
-   
+    
     ImageData getImageData(boolean npotSupportNeeded) {
         if(npotSupportNeeded) {
             assert enforceNonPowerOfTwoSupport;
@@ -261,7 +292,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         }
         return imageData;
     }
-  
+    
     boolean isImageTypeSupported() {
         return imageTypeIsSupported;
     }
@@ -308,8 +339,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         this.width = width;
         this.height = height;
         this.depth = depth;
-        refImage = new RenderedImage[depth];
-        
+        refImage = new RenderedImage[depth];        
     }
     
     // Need to review this method -- Chien.
@@ -492,6 +522,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         return value;
     }
     
+    // Note: This method for RenderedImage, can't be used by NioImageBuffer.
     /* Check if sub-image type matches image type */
     boolean isSubImageTypeEqual(RenderedImage ri) {
         int subImageType = evaluateImageType(ri);
@@ -529,11 +560,84 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         }
         
         imageTypeIsSupported = true;
-        imageData = createImageDataObject(null);
+        imageData = createRenderedImageDataObject(null);
         
     }
     
-    // This method will set imageType, imageFormatType, and bytesPerPixel
+    // This method will set imageType, imageFormatType, and unitsPerPixel
+    // as it evaluates NioImageBuffer is supported. It will also reset
+    // abgrSupported.
+    boolean isImageTypeSupported(NioImageBuffer nioImgBuf) {
+        
+        boolean isSupported = true;
+        NioImageBuffer.ImageType nioImageType = nioImgBuf.getImageType();
+        
+        switch(numberOfComponents) {
+            case 4:
+                if(nioImageType == NioImageBuffer.ImageType.TYPE_4BYTE_ABGR) {
+                    // TODO : This approach will lead to a very slow path
+                    // for unsupported case. -- Chien.
+                    if(abgrSupported) {
+                        imageFormatType = ImageFormatType.TYPE_BYTE_ABGR;
+                    } else {
+                        // Unsupported format on HW, switch to slow copy.
+                        imageFormatType = ImageFormatType.TYPE_BYTE_RGBA;
+                        isSupported = false;
+                    }
+                    unitsPerPixel = 4;
+                } else if(nioImageType == NioImageBuffer.ImageType.TYPE_4BYTE_RGBA) {
+                    imageFormatType = ImageFormatType.TYPE_BYTE_RGBA;
+                    unitsPerPixel = 4;
+                } else if(nioImageType == NioImageBuffer.ImageType.TYPE_INT_ARGB) {
+                    imageFormatType = ImageFormatType.TYPE_INT_ARGB;
+                    unitsPerPixel = 1;
+                } else {
+                    // System.err.println("Image format is unsupported -- illogical case");
+                    throw new AssertionError();
+                }
+                break;
+                
+            case 3:
+                if(nioImageType == NioImageBuffer.ImageType.TYPE_3BYTE_BGR) {
+                    imageFormatType = ImageFormatType.TYPE_BYTE_BGR;
+                    unitsPerPixel = 3;
+                } else if(nioImageType == NioImageBuffer.ImageType.TYPE_3BYTE_RGB) {
+                    imageFormatType = ImageFormatType.TYPE_BYTE_RGB;
+                    unitsPerPixel = 3;
+                } else if(nioImageType == NioImageBuffer.ImageType.TYPE_INT_BGR) {
+                    imageFormatType = ImageFormatType.TYPE_INT_BGR;
+                    unitsPerPixel = 1;
+                } else if(nioImageType == NioImageBuffer.ImageType.TYPE_INT_RGB) {
+                    imageFormatType = ImageFormatType.TYPE_INT_RGB;
+                    unitsPerPixel = 1;
+                } else {
+                    // System.err.println("Image format is unsupported -- illogical case");
+                    throw new AssertionError();
+                }
+                break;
+                
+            case 2:
+                // System.err.println("Image format is unsupported -- illogical case");
+                // Convert unsupported 2-component format to TYPE_BYTE_LA.
+                throw new AssertionError();
+            case 1:
+                if(nioImageType == NioImageBuffer.ImageType.TYPE_BYTE_GRAY) {
+                    imageFormatType = ImageFormatType.TYPE_BYTE_GRAY;
+                    unitsPerPixel = 1;
+                } else {
+                    // System.err.println("Image format is unsupported -- illogical case");
+                    throw new AssertionError();
+                }
+                break;
+                
+            default:
+                throw new AssertionError();
+        }
+        
+        return isSupported;
+    }
+    
+    // This method will set imageType, imageFormatType, and unitsPerPixel
     // as it evaluates RenderedImage is supported. It will also reset
     // abgrSupported.
     boolean isImageTypeSupported(RenderedImage ri) {
@@ -614,7 +718,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 break;
                 
             default:
-                assert false;
+                throw new AssertionError();
         }
         
         return isSupported;
@@ -622,9 +726,40 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     
     /*
      * This method assume that the following members have been initialized :
-     * depth, imageType, imageFormatType, and bytesPerPixel.
+     * width, height, depth, imageFormatType, and unitsPerPixel.
+     * It also nioImageBuffer isn't null.
      */
-    ImageData createImageDataObject(RenderedImage byRefImage, int dataWidth, int dataHeight) {
+    ImageData createNioImageBufferDataObject(NioImageBuffer nioImageBuffer) {
+ 
+        // TODO : nioImageBuffer can be null if abgr is unsupported. --- Chien.
+        assert nioImageBuffer != null;
+ 
+        switch(imageFormatType) {
+            case TYPE_BYTE_GRAY:
+            case TYPE_BYTE_LA:
+            case TYPE_BYTE_RGB:
+            case TYPE_BYTE_BGR:
+            case TYPE_BYTE_RGBA:
+            case TYPE_BYTE_ABGR:
+                return new ImageData(ImageDataType.TYPE_BYTE_BUFFER,
+                        width * height * depth * unitsPerPixel,
+                        width, height, nioImageBuffer);
+            case TYPE_INT_RGB:
+            case TYPE_INT_BGR:
+            case TYPE_INT_ARGB:
+                return new ImageData(ImageDataType.TYPE_INT_BUFFER,
+                        width * height * depth * unitsPerPixel,
+                        width, height, nioImageBuffer);
+            default:
+                throw new AssertionError();
+        }
+    }
+    
+    /*
+     * This method assume that the following members have been initialized :
+     * depth, imageType, imageFormatType, and unitsPerPixel.
+     */
+    ImageData createRenderedImageDataObject(RenderedImage byRefImage, int dataWidth, int dataHeight) {
         switch(imageFormatType) {
             case TYPE_BYTE_GRAY:
             case TYPE_BYTE_LA:
@@ -634,7 +769,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             case TYPE_BYTE_ABGR:
                 if(byRefImage != null) {
                     return new ImageData(ImageDataType.TYPE_BYTE_ARRAY,
-                            dataWidth * dataHeight * depth * unitsPerPixel, 
+                            dataWidth * dataHeight * depth * unitsPerPixel,
                             dataWidth, dataHeight, byRefImage);
                 } else {
                     return new ImageData(ImageDataType.TYPE_BYTE_ARRAY,
@@ -646,7 +781,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             case TYPE_INT_ARGB:
                 if(byRefImage != null) {
                     return new ImageData(ImageDataType.TYPE_INT_ARRAY,
-                            dataWidth * dataHeight * depth * unitsPerPixel, 
+                            dataWidth * dataHeight * depth * unitsPerPixel,
                             dataWidth, dataHeight, byRefImage);
                 } else {
                     return new ImageData(ImageDataType.TYPE_INT_ARRAY,
@@ -656,23 +791,22 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             default:
                 throw new AssertionError();
         }
-        
     }
-
+    
     private void updateImageDataPowerOfTwo(int depthIndex) {
-            assert enforceNonPowerOfTwoSupport;
-            BufferedImage bufImage = imageData.createBufferedImage(depthIndex);
-            BufferedImage scaledImg = powerOfTwoATOp.filter(bufImage, null);
-            copySupportedImageToImageData(scaledImg, 0, imageDataPowerOfTwo);        
+        assert enforceNonPowerOfTwoSupport;
+        BufferedImage bufImage = imageData.createBufferedImage(depthIndex);
+        BufferedImage scaledImg = powerOfTwoATOp.filter(bufImage, null);
+        copySupportedImageToImageData(scaledImg, 0, imageDataPowerOfTwo);
     }
     
     /*
      * This method assume that the following members have been initialized :
      *  width, height, depth, imageType, imageFormatType, and bytesPerPixel.
      */
-    ImageData createImageDataObject(RenderedImage byRefImage) {
+    ImageData createRenderedImageDataObject(RenderedImage byRefImage) {
         
-        return createImageDataObject(byRefImage, width, height);
+        return createRenderedImageDataObject(byRefImage, width, height);
         
     }
     
@@ -780,7 +914,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             default:
                 assert false;
         }
-
+        
         int dataWidth = data.dataWidth;
         int dataHeight = data.dataHeight;
         
@@ -890,7 +1024,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         
         if((imageData == data) && (imageDataPowerOfTwo != null)) {
             updateImageDataPowerOfTwo(depthIndex);
-        }        
+        }
     }
     
     // Quick line by line copy
@@ -917,8 +1051,9 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         }
         
         int copyUnits = copyWidth * unitsPerPixel;
-        int scanline = dataWidth * unitsPerPixel;
-        srcBegin = (rowBegin * dataWidth + srcX) * unitsPerPixel;
+        int srcWidth = bi.getWidth();
+        int srcUnitsPerRow = srcWidth * unitsPerPixel;
+        srcBegin = (rowBegin * srcWidth + srcX) * unitsPerPixel;
         
         switch(data.getType()) {
             case TYPE_BYTE_ARRAY:
@@ -927,7 +1062,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 for (h = 0; h < copyHeight; h++) {
                     System.arraycopy(srcByteBuffer, srcBegin, dstByteBuffer, dstBegin, copyUnits);
                     dstBegin += dstUnitsPerRow;
-                    srcBegin += scanline;
+                    srcBegin += srcUnitsPerRow;
                 }
                 break;
                 
@@ -937,7 +1072,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 for (h = 0; h < copyHeight; h++) {
                     System.arraycopy(srcIntBuffer, srcBegin, dstIntBuffer, dstBegin, copyUnits);
                     dstBegin += dstUnitsPerRow;
-                    srcBegin += scanline;
+                    srcBegin += srcUnitsPerRow;
                 }
                 break;
             default:
@@ -953,7 +1088,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     void copyImageByBlock(BufferedImage bi, int depthIndex, ImageData data) {
         
         assert ((data != null) && yUp);
- 
+        
         int dataWidth = data.dataWidth;
         int dataHeight = data.dataHeight;
         
@@ -977,7 +1112,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         
         if((imageData == data) && (imageDataPowerOfTwo != null)) {
             updateImageDataPowerOfTwo(depthIndex);
-        }    
+        }
         
     }
     
@@ -1034,7 +1169,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     0, 0, depthIndex, data.dataWidth, data.dataHeight, data);
         }
     }
-
+    
     void copyUnsupportedImageToImageData(BufferedImage bi, int srcX, int srcY,
             int dstX, int dstY, int depthIndex, int copyWidth, int copyHeight, ImageData data) {
         
@@ -1049,7 +1184,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         
         rowBegin = srcY;
         rowInc = 1;
-
+        
         assert (data != null);
         
         int dataWidth = data.dataWidth;
@@ -1133,7 +1268,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         
         if((imageData == data) && (imageDataPowerOfTwo != null)) {
             updateImageDataPowerOfTwo(depthIndex);
-        }            
+        }
     }
     
     void copyUnsupportedImageToImageData(RenderedImage ri, int srcX, int srcY,
@@ -1150,7 +1285,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         // at the next left most tile
         
         int offset;
-
+        
         ColorModel cm = ri.getColorModel();
         
         int xoff = ri.getTileGridXOffset();	// tile origin x offset
@@ -1226,7 +1361,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         if (((float)(copyHeight + y ) % (float)tileh) > 0) {
             numYTiles += 1;
         }
-
+        
         assert (data != null);
         int dataWidth = data.dataWidth;
         int dataHeight = data.dataHeight;
@@ -1534,7 +1669,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         
         if((imageData == data) && (imageDataPowerOfTwo != null)) {
             updateImageDataPowerOfTwo(depthIndex);
-        }            
+        }
     }
     
     // Lock out user thread from modifying variables by using synchronized routines
@@ -1610,8 +1745,8 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
        ymax = height; */
         int npotWidth = getClosestPowerOf2(width);
         int npotHeight = getClosestPowerOf2(height);
-        float xScale = (float)width/(float)npotWidth;
-        float yScale = (float)height/(float)npotHeight;
+        float xScale = (float)npotWidth/(float)width;
+        float yScale = (float)npotHeight/(float)height;
         
         // scale if scales aren't 1.0
         if (!(xScale == 1.0f && yScale == 1.0f)) {
@@ -1620,7 +1755,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             if (imageData == null) {
                 // This is a byRef, support format and is a RenderedImage case.
                 // See ImageComponent2DRetained.set(RenderedImage image)
-                ri = getRefImage(0);
+                ri = (RenderedImage) getRefImage(0);
                 if(!(ri instanceof BufferedImage)) {
                     // Create a buffered image from renderImage
                     ColorModel cm = ri.getColorModel();
@@ -1631,7 +1766,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                             ,null);
                     
                     // Create image data object with buffer for image. */
-                    imageData = createImageDataObject(null);
+                    imageData = createRenderedImageDataObject(null);
                     copySupportedImageToImageData(ri, 0, imageData);
                 }
             }
@@ -1645,13 +1780,13 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
             BufferedImage scaledImg = powerOfTwoATOp.filter((BufferedImage)ri, null);
             
-            imageDataPowerOfTwo = createImageDataObject(null, npotWidth, npotHeight);
+            imageDataPowerOfTwo = createRenderedImageDataObject(null, npotWidth, npotHeight);
             // Since ri is created from imageData, it's imageType is supported.
             copySupportedImageToImageData(scaledImg, 0, imageDataPowerOfTwo);
-                
+            
         } else {
             imageDataPowerOfTwo = null;
-        }     
+        }
     }
     
     void convertImageDataFromABGRToRGBA() {
@@ -2082,12 +2217,6 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     }
                 }
             }
-            
-            // return the subimage update info to the free list
-            if (value != null) {
-                VirtualUniverse.mc.addFreeImageUpdateInfo(
-                        (ImageComponentUpdateInfo)value);
-            }
         }
     }
     
@@ -2163,11 +2292,12 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     data = new int[length];
                     break;
                 case TYPE_BYTE_BUFFER:
-                    throw new RuntimeException("ByteBuffer not yet supported");
+                    ByteOrder order =  ByteOrder.nativeOrder();
+                    data = ByteBuffer.allocateDirect(length).order(order);
+                    break;
                 case TYPE_INT_BUFFER:
-                    throw new RuntimeException("IntBuffer not yet supported");
                 default:
-                    assert false;
+                    throw new AssertionError();
             }
         }
         
@@ -2178,11 +2308,12 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         ImageData(ImageDataType imageDataType, int length, int dataWidth, int dataHeight,
                 Object byRefImage) {
             BufferedImage bi;
+            NioImageBuffer nio;
             
             this.imageDataType = imageDataType;
             this.length = length;
             this.dataWidth = dataWidth;
-            this.dataHeight = dataHeight;            
+            this.dataHeight = dataHeight;
             this.dataIsByRef = true;
             
             switch (imageDataType) {
@@ -2195,9 +2326,9 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     data = ((DataBufferInt)bi.getRaster().getDataBuffer()).getData();
                     break;
                 case TYPE_BYTE_BUFFER:
-                    throw new RuntimeException("ByteBuffer not yet supported");
-                case TYPE_INT_BUFFER:
-                    throw new RuntimeException("IntBuffer not yet supported");
+                case TYPE_INT_BUFFER:                    
+                    nio = (NioImageBuffer) byRefImage;
+                    data = (Buffer) nio.getDataBuffer();
                 default:
                     assert false;
             }
@@ -2211,14 +2342,14 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             this.data = data;
             dataIsByRef = isByRef;
             dataWidth = ((ImageData) data).dataWidth;
-            dataHeight = ((ImageData) data).dataHeight;            
-
+            dataHeight = ((ImageData) data).dataHeight;
+            
             if (data == null) {
                 imageDataType = ImageDataType.TYPE_NULL;
-                length = 0;              
+                length = 0;
             } else if (data instanceof byte[]) {
                 imageDataType = ImageDataType.TYPE_BYTE_ARRAY;
-                length = ((byte[]) data).length;                
+                length = ((byte[]) data).length;
             } else if (data instanceof int[]) {
                 imageDataType = ImageDataType.TYPE_INT_ARRAY;
                 length = ((int[]) data).length;
@@ -2252,14 +2383,14 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
          */
         int getWidth() {
             return dataWidth;
-        }        
+        }
         
         /**
          * Returns the height of this DataBuffer.
          */
         int getHeight() {
             return dataHeight;
-        }        
+        }
         
         /**
          * Returns this DataBuffer as an Object.
@@ -2269,7 +2400,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         }
         
         /**
-         * Returns is this data is byRef.
+         * Returns is this data is byRef. No internal data is made.
          */
         boolean isDataByRef() {
             return dataIsByRef;
@@ -2475,7 +2606,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 }
                 
                 BufferedImage bi = new BufferedImage(width, height, bufferType);
-                if((!swapNeeded) || (imageFormatType != ImageFormatType.TYPE_BYTE_LA)) {
+                if((!swapNeeded) && (imageFormatType != ImageFormatType.TYPE_BYTE_LA)) {
                     if(yUp) {
                         copyByBlock(bi, depthIndex);
                     } else {
@@ -2531,11 +2662,11 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         }
         
     }
-
+    
     int getNumberOfComponents() {
         return numberOfComponents;
     }
-
+    
     void setNumberOfComponents(int numberOfComponents) {
         this.numberOfComponents = numberOfComponents;
     }

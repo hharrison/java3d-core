@@ -1293,21 +1293,16 @@ abstract class Pipeline {
     boolean releaseCtx(Context ctx, long dpy) {
         return false;
     }
-
-    // TODO : Remove this -- Chien
-    abstract void textureclear(Context ctx, int maxX, int maxY,
-            float r, float g, float b,
-            int winWidth, int winHeight,
-            int objectId, int scalemode,
-            ImageComponent2DRetained image,
-            boolean update);
-
+    
     abstract void clear(Context ctx, float r, float g, float b);
     
-    abstract void textureFill(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
+    abstract void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY);
     
-    // The native method for setting the ModelView matrix.
+    abstract void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha);
+
+        // The native method for setting the ModelView matrix.
     abstract void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix);
 
     // The native method for setting the Projection matrix.

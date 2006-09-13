@@ -543,6 +543,27 @@ public class Transform3D {
 	return this.autoNormalize;
     }
 
+    /**
+     * Transforms the point parameter with this transform and
+     * places the result into pointOut.  The fourth element of the
+     * point input paramter is assumed to be one.
+     * @param point  the input point to be transformed
+     * @param pointOut  the transformed point
+     */
+    void transform(Point3d point, Point4d pointOut) {
+        
+        pointOut.x = mat[0]*point.x + mat[1]*point.y +
+                mat[2]*point.z + mat[3];
+        pointOut.y = mat[4]*point.x + mat[5]*point.y +
+                mat[6]*point.z + mat[7];
+        pointOut.z = mat[8]*point.x + mat[9]*point.y +
+                mat[10]*point.z + mat[11];
+        pointOut.w = mat[12]*point.x + mat[13]*point.y +
+                mat[14]*point.z + mat[15];
+    }
+   
+    
+    
     private static final boolean almostZero(double a) {
 	return ((a < EPSILON_ABSOLUTE) && (a > -EPSILON_ABSOLUTE));
     }

@@ -42,9 +42,6 @@ import java.awt.image.RenderedImage;
  * </code>
  * </ul>
  *
- * <p>
- * As of Java 3D 1.5, an ImageComponent3D accepts an array of NioImageBuffer
- * objects as an alternative to an array of RenderedImage objects.
  */
 public class ImageComponent3D extends ImageComponent {
 
@@ -229,7 +226,6 @@ public class ImageComponent3D extends ImageComponent {
 			    boolean byReference,
 			    boolean yUp) {
 
-
  	((ImageComponentRetained)this.retained).setByReference(byReference);
  	((ImageComponentRetained)this.retained).setYUp(yUp);
  	((ImageComponent3DRetained)this.retained).processParams(format, 
@@ -263,6 +259,9 @@ public class ImageComponent3D extends ImageComponent {
      *
      * @exception IllegalArgumentException if the yUp flag is false.
      *
+     * @exception UnsupportedOperationException this method is not supported
+     * for Java 3D 1.5.
+     *
      * @since Java 3D 1.5
      */
     public ImageComponent3D(int format,
@@ -270,8 +269,17 @@ public class ImageComponent3D extends ImageComponent {
 			    boolean byReference,
 			    boolean yUp) {
 
-        // TODO: implement this
-        throw new RuntimeException("not implemented");
+        
+ 	throw new UnsupportedOperationException();
+        /*
+  	((ImageComponentRetained)this.retained).setByReference(byReference);
+ 	((ImageComponentRetained)this.retained).setYUp(yUp);
+ 	((ImageComponent3DRetained)this.retained).processParams(format, 
+                images[0].getWidth(), images[0].getHeight(), images.length);
+ 	for (int i=0; i<images.length; i++) {
+ 	    ((ImageComponent3DRetained)this.retained).set(i, images[i]);
+ 	}
+         */
     }
 
     /**
@@ -398,12 +406,24 @@ public class ImageComponent3D extends ImageComponent {
      * image in the images array is not equal to the width and height of this
      * ImageComponent object.
      *
+     * @exception UnsupportedOperationException this method is not supported
+     * for Java 3D 1.5.
+     *
      * @since Java 3D 1.5
      */
     public void set(NioImageBuffer[] images) {
+        
+ 	throw new UnsupportedOperationException();
+        /*
+        checkForLiveOrCompiled();
+	int depth = ((ImageComponent3DRetained)this.retained).getDepth();
 
-        // TODO: implement this
-        throw new RuntimeException("not implemented");
+        if (depth != images.length)
+	    throw new IllegalArgumentException(J3dI18N.getString("ImageComponent3D1"));
+        for (int i=0; i<depth; i++) {
+            ((ImageComponent3DRetained)this.retained).set(i, images[i]);
+        }
+         */
     }
 
     /**
@@ -470,12 +490,7 @@ public class ImageComponent3D extends ImageComponent {
     public void set(int index, RenderedImage image) {
 
         checkForLiveOrCompiled();
-        if (image.getWidth() != this.getWidth())
-            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent3D2"));
-
-	if (image.getHeight() != this.getHeight())
-            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent3D4"));
-
+        // For RenderedImage the width and height checking is done in the retained.
 	((ImageComponent3DRetained)this.retained).set(index, image);
     }
 
@@ -503,12 +518,19 @@ public class ImageComponent3D extends ImageComponent {
      * @exception IllegalArgumentException if the width and height the image
      * is not equal to the width and height of this ImageComponent object.
      *
+     * @exception UnsupportedOperationException this method is not supported
+     * for Java 3D 1.5.
+     *
      * @since Java 3D 1.5
      */
     public void set(int index, NioImageBuffer image) {
-
-        // TODO: implement this
-        throw new RuntimeException("not implemented");
+        
+ 	throw new UnsupportedOperationException();
+        /*
+         checkForLiveOrCompiled();
+        // For NioImageBuffer the width and height checking is done in the retained.        
+        ((ImageComponent3DRetained)this.retained).set(index, image);
+         */
     }
 
     /**
@@ -555,7 +577,6 @@ public class ImageComponent3D extends ImageComponent {
      * @since Java 3D 1.2
      */
     public RenderedImage[] getRenderedImage() {
-
         if (isLiveOrCompiled())
             if(!this.getCapability(ImageComponent.ALLOW_IMAGE_READ))
               throw new CapabilityNotSetException(J3dI18N.getString("ImageComponent3D3"));
@@ -579,12 +600,14 @@ public class ImageComponent3D extends ImageComponent {
      * @exception IllegalStateException if the image class is not
      * ImageClass.NIO_IMAGE_BUFFER.
      *
+     * @exception UnsupportedOperationException this method is not supported
+     * for Java 3D 1.5.
+     *
      * @since Java 3D 1.5
      */
     public NioImageBuffer[] getNioImage() {
 
-        // TODO: implement this
-        throw new RuntimeException("not implemented");
+ 	throw new UnsupportedOperationException();
     }
 
     /**
@@ -666,12 +689,14 @@ public class ImageComponent3D extends ImageComponent {
      * @exception IllegalStateException if the image class is not
      * ImageClass.NIO_IMAGE_BUFFER.
      *
+     * @exception UnsupportedOperationException this method is not supported
+     * for Java 3D 1.5.
+     *
      * @since Java 3D 1.5
      */
     public NioImageBuffer getNioImage(int index) {
 
-        // TODO: implement this
-        throw new RuntimeException("not implemented");
+ 	throw new UnsupportedOperationException();
     }
 
     /**
@@ -882,7 +907,7 @@ public class ImageComponent3D extends ImageComponent {
     void duplicateAttributes(NodeComponent originalNodeComponent, 
 			     boolean forceDuplicate) { 
       super.duplicateAttributes(originalNodeComponent, forceDuplicate);
-
+      // TODO : Handle NioImageBuffer if its supported.
       RenderedImage imgs[] = ((ImageComponent3DRetained)
 			      originalNodeComponent.retained).getImage();
 

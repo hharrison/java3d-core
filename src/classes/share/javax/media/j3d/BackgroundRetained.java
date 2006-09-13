@@ -197,45 +197,45 @@ class BackgroundRetained extends LeafRetained {
     
     /**
      * Initializes the background image to the specified image.  
-     * @param image new ImageCompoent3D object used as the background image
+     * @param image new ImageCompoent2D object used as the background image
      */
     final void initImage(ImageComponent2D img) {
-        
         int texFormat;
-        
-        if(img == null) {
+
+        if (img == null) {
             image = null;
             texture = null;
             return;
         }
-        
-        image = (ImageComponent2DRetained) img.retained;
-        image.setEnforceNonPowerOfTwoSupport(true);
-        switch(image.getNumberOfComponents()) {
-            case 1:
-                texFormat = Texture.INTENSITY;
-                break;
-            case 2:
-                texFormat = Texture.LUMINANCE_ALPHA;
-                break;
-            case 3:
-                texFormat = Texture.RGB;
-                break;
-            case 4:
-                texFormat = Texture.RGBA;
-                break;
-            default:
-                assert false;
-                return;
+
+        if (img.retained != image ) {
+            image = (ImageComponent2DRetained) img.retained;
+            image.setEnforceNonPowerOfTwoSupport(true);
+            switch(image.getNumberOfComponents()) {
+                case 1:
+                    texFormat = Texture.INTENSITY;
+                    break;
+                case 2:
+                    texFormat = Texture.LUMINANCE_ALPHA;
+                    break;
+                case 3:
+                    texFormat = Texture.RGB;
+                    break;
+                case 4:
+                    texFormat = Texture.RGBA;
+                    break;
+                default:
+                    assert false;
+                    return;
+            }
+
+            Texture2D tex2D = new Texture2D(Texture.BASE_LEVEL, texFormat,
+                    img.getWidth(), img.getHeight());
+            texture = (Texture2DRetained) tex2D.retained;
+            // Background is special case of Raster.
+            texture.setUseAsRaster(true);
+            texture.initImage(0,img);
         }
-        
-        Texture2D tex2D = new Texture2D(Texture.BASE_LEVEL, texFormat, 
-                img.getWidth(), img.getHeight());
-        texture = (Texture2DRetained) tex2D.retained;
-        // Background is special case of Raster.
-        texture.setUseAsRaster(true);
-        texture.initImage(0,img);
-      
     }
 
     /**
@@ -244,16 +244,16 @@ class BackgroundRetained extends LeafRetained {
      */
     final void setImage(ImageComponent2D img) {
 	if (source.isLive()) {
-	    if (this.texture != null) {
-		this.texture.clearLive(refCount);
-                this.texture.removeUser(this);
+	    if (texture != null) {
+		texture.clearLive(refCount);
+                texture.removeUser(this);
 	    }
 	}	
 	initImage(img);
         if (source.isLive()) {
             if (texture != null) {
                 texture.setLive(inBackgroundGroup, refCount);
-                this.texture.addUser(this);
+                texture.addUser(this);
             }
             
             sendMessage(IMAGE_CHANGED,

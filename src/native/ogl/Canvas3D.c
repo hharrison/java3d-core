@@ -43,6 +43,7 @@ extern void throwAssert(JNIEnv *env, char *str);
 static void initializeCtxInfo(JNIEnv *env, GraphicsContextPropertiesInfo* ctxInfo);
 static void cleanupCtxInfo(GraphicsContextPropertiesInfo* ctxInfo);
 static void disableAttribFor2D(GraphicsContextPropertiesInfo *ctxProperties);
+static void disableAttribForRaster(GraphicsContextPropertiesInfo *ctxProperties);
 
 /*
  * Class:     javax_media_j3d_Canvas3D
@@ -1485,7 +1486,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_clear(JNIEnv *env,
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_NativePipeline_textureFill(JNIEnv *env,
+void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(JNIEnv *env,
 							jobject obj,
 							jlong ctxInfo,
 							jfloat texMinU, 
@@ -1504,22 +1505,21 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFill(JNIEnv *env,
     table = *env;
     
 #ifdef VERBOSE 
-    fprintf(stderr, "Canvas3D.textureFill()\n");  
+    fprintf(stderr, "Canvas3D.textureFillBackground()\n");  
 #endif
      /* Temporarily disable fragment and most 3D operations */
      glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_POLYGON_BIT); 
+
      disableAttribFor2D(ctxProperties);
+     glDepthMask(GL_FALSE);  
+     glEnable(GL_TEXTURE_2D);     
 
      /* reset the polygon mode */
      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-     glDepthMask(GL_FALSE);  
      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-     glEnable(GL_TEXTURE_2D);     
-
-    /* loaded identity modelview and projection matrix */ 
-    
+    /* loaded identity modelview and projection matrix */     
     glMatrixMode(GL_PROJECTION);  
     glLoadIdentity();
     glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
@@ -1537,7 +1537,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFill(JNIEnv *env,
 #endif
     
     glBegin(GL_QUADS); 
-
     glTexCoord2f((float) texMinU, (float) texMinV);
     glVertex2f((float) mapMinX, (float) mapMinY); 
     glTexCoord2f((float) texMaxU, (float) texMinV);
@@ -1546,7 +1545,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFill(JNIEnv *env,
     glVertex2f((float) mapMaxX, (float) mapMaxY); 
     glTexCoord2f((float) texMinU, (float) texMaxV);
     glVertex2f((float) mapMinX, (float) mapMaxY);
-   
     glEnd(); 
     
     /* Restore texture Matrix transform */	
@@ -1557,315 +1555,80 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFill(JNIEnv *env,
     glPopAttrib();  
 }
 
-
-
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_NativePipeline_textureclear(JNIEnv *env,
+void JNICALL Java_javax_media_j3d_NativePipeline_textureFillRaster(JNIEnv *env,
 							jobject obj,
 							jlong ctxInfo,
-							jint maxX, 
-							jint maxY,
-							jfloat r, 
-							jfloat g, 
-							jfloat b,
-							jint winWidth,
-							jint winHeight,
-							jint objectId,
-							jint imageScaleMode,
-							jobject pa2d,
-							jboolean update)
+							jfloat texMinU, 
+							jfloat texMaxU, 
+							jfloat texMinV, 
+							jfloat texMaxV, 
+							jfloat mapMinX, 
+							jfloat mapMaxX, 
+							jfloat mapMinY,
+							jfloat mapMaxY,
+                                                        jfloat mapZ,
+                                                        jfloat alpha)
 { 
-    jclass pa2d_class; 
-    jfieldID pixels_field, format_field, width_field, height_field; 
-    jbyteArray pixels_obj; 
-    int format, width, height;
-    GLubyte * pixels;  
     JNIEnv table; 
-    GLenum gltype; 
-    GLfloat texMinU, texMinV, texMaxU, texMaxV, adjustV; 
-    GLfloat mapMinX, mapMinY, mapMaxX, mapMaxY; 
-    GLfloat halfWidth, halfHeight; 
-    float xzoom, yzoom, zoom;
-    int i, j;
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
     jlong ctx = ctxProperties->context;
     
-    table = *env; 
-    
-    /* update = 1; */ 
+    table = *env;
     
 #ifdef VERBOSE 
-    fprintf(stderr, "Canvas3D.textureclear()\n");  
-#endif 
-    /*    if(!pa2d){ */
-    if(GL_TRUE) {  /* TODO ---- Chien */
-	glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue); 
-	glClear(GL_COLOR_BUFFER_BIT); 
-		      }
-    /* glPushAttrib(GL_DEPTH_BUFFER_BIT); */
-    /* if (pa2d) {  */
-    if(GL_FALSE) { /* TODO ---- Chien */
-	/* Do a cool image blit */ 
-	pa2d_class = (jclass) (*(table->GetObjectClass))(env, pa2d);
-	
-	pixels_field = (jfieldID) (*(table->GetFieldID))(env, pa2d_class, 
-							 "imageYup", "[B"); 
-	format_field = (jfieldID) (*(table->GetFieldID))(env, pa2d_class,  
-							 "storedYupFormat", "I"); 
-	pixels_obj = (jbyteArray)(*(table->GetObjectField))(env, pa2d,  
-							pixels_field);
-	
-	width_field = (jfieldID) (*(table->GetFieldID))(env, pa2d_class,  
-							"width", "I"); 
-	height_field = (jfieldID) (*(table->GetFieldID))(env, pa2d_class,  
-							 "height", "I");
-
-	format = (int) (*(table->GetIntField))(env, pa2d, format_field); 
-	width = (int) (*(table->GetIntField))(env, pa2d, width_field); 
-	height = (int) (*(table->GetIntField))(env, pa2d, height_field);	
- 	pixels = (GLubyte *) (*(table->GetPrimitiveArrayCritical))(env,   
- 								   pixels_obj, NULL);
-
-#ifdef VERBOSE
-	fprintf(stderr, "width = %d height = %d \n", width, height);
+    fprintf(stderr, "Canvas3D.textureFillRaster()\n");  
 #endif
-	
-	/* Temporarily disable fragment and most 3D operations */
-	glPushAttrib(GL_ENABLE_BIT|GL_TEXTURE_BIT|GL_POLYGON_BIT); 
-	disableAttribFor2D(ctxProperties);
+    /* Temporarily disable fragment and most 3D operations */
+    glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_POLYGON_BIT | 
+		 GL_CURRENT_BIT);
+ 
+    disableAttribForRaster(ctxProperties);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glColor4f(1.0f, 1.0f, 1.0f, (float) alpha);
 
-	Java_javax_media_j3d_NativePipeline_resetTexCoordGeneration(env, obj, ctxInfo); 
+    /* reset the polygon mode */
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	glEnable(GL_TEXTURE_2D);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	/* reset the polygon mode */
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	glDepthMask(GL_FALSE);  
-	glBindTexture(GL_TEXTURE_2D, objectId);
-
-	/* set up texture parameter */
-	if(update){
-	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
-	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
-	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
-	}
-#ifdef VERBOSE 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
-#endif 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	
- 	
-	
-	 if(update){
-	    switch (format) { 
-	    case IMAGE_FORMAT_BYTE_RGBA: 
-		gltype = GL_RGBA;
-#ifdef VERBOSE
-		fprintf(stderr, "FORMAT_BYTE_RGBA\n");
-#endif
-		break; 
-	    case IMAGE_FORMAT_BYTE_RGB: 
-		gltype = GL_RGB;
-#ifdef VERBOSE
-		fprintf(stderr, "FORMAT_BYTE_RGB\n");
-#endif
-		break; 
-
-		/* GL_ABGR_EXT */
-	    case IMAGE_FORMAT_BYTE_ABGR:           
-		if (ctxProperties->abgr_ext) { /* If its zero, should never come here! */  
-		    gltype = GL_ABGR_EXT;  
-		}  
-		break;
-
-            /* GL_BGR */
-            case IMAGE_FORMAT_BYTE_BGR:
-                gltype = GL_BGR;
-                break;
-
-	    case IMAGE_FORMAT_BYTE_LA:  
-		gltype = GL_LUMINANCE_ALPHA;  
-		break;  
-
-	    case IMAGE_FORMAT_BYTE_GRAY:  
-	    case IMAGE_FORMAT_USHORT_GRAY:	       
-	    default:
-		throwAssert(env, "illegal format");
-		break;  
-	    } 
-	
-	    /* texture map here! */ 
-	    glTexImage2D(GL_TEXTURE_2D, 0, gltype, width,  
-			 height, 0, gltype, GL_UNSIGNED_BYTE,  
-			 pixels);
-	}
-	/* loaded identity modelview and projection matrix */ 
-	glMatrixMode(GL_PROJECTION);  
-	glLoadIdentity();
-	glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
-	glMatrixMode(GL_MODELVIEW);  
-	glLoadIdentity(); 
-	glMatrixMode(GL_TEXTURE);
-	glPushMatrix();
-	glLoadIdentity();
-
-	xzoom = (float)winWidth/maxX;
-	yzoom = (float)winHeight/maxY;
-	switch(imageScaleMode) {
-	case javax_media_j3d_Background_SCALE_NONE:
-	    if(xzoom > 1.0f || yzoom > 1.0f){
-		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
-		glClear(GL_COLOR_BUFFER_BIT); 
-	    }
-	    texMinU = 0.0f; 
-	    texMinV = 0.0f; 
-	    texMaxU = 1.0f; 
-	    texMaxV = 1.0f;
-	    halfWidth = (GLfloat)winWidth/2.0f;  
-	    halfHeight = (GLfloat)winHeight/2.0f;  
-	    mapMinX = (float) ((0 - halfWidth)/halfWidth);   
-	    mapMinY = (float) ((0 - halfHeight)/halfHeight);
-	    mapMaxX = (float) ((maxX - halfWidth)/halfWidth);    
-	    mapMaxY = (float) ((maxY - halfHeight)/halfHeight);
-	    adjustV = ((float)winHeight - (float)maxY)/halfHeight; 
-	    mapMinY += adjustV;
-	    mapMaxY += adjustV;
-	    break;
-	case javax_media_j3d_Background_SCALE_FIT_MIN:
-	    if(xzoom != yzoom){
-		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
-		glClear(GL_COLOR_BUFFER_BIT); 
-	    }
-
-	    zoom = xzoom < yzoom? xzoom: yzoom;
-	    texMinU = 0.0f; 
-	    texMinV = 0.0f; 
-	    texMaxU = 1.0f; 
-	    texMaxV = 1.0f;
-	    mapMinX = -1.0f;
-	    mapMaxY = 1.0f;
-	    if(xzoom < yzoom){
-		mapMaxX = 1.0f;
-		mapMinY = -1.0f + 2.0f * ( 1.0f - zoom * (float)maxY/(float) winHeight );
-	    } else {
-		mapMaxX = -1.0f + zoom * (float)maxX/winWidth * 2;
-		mapMinY = -1.0f;
-	    }
-	    break;
-	case javax_media_j3d_Background_SCALE_FIT_MAX: 
-	    zoom = xzoom > yzoom? xzoom: yzoom;
-	    /*fprintf(stderr, "zoom: %f, xzoom: %f, yzoom: %f\n", zoom, xzoom, yzoom);*/
-	    mapMinX = -1.0f;
-	    mapMinY = -1.0f;
-	    mapMaxX = 1.0f; 
-	    mapMaxY = 1.0f;
-	    if(xzoom < yzoom) {
-		texMinU = 0.0f;
-		texMinV = 0.0f;
-		texMaxU = (float)winWidth/maxX/zoom; 
-		texMaxV = 1.0f;
-	    } else {
-		texMinU = 0.0f;
-		texMinV = 1.0f - (float)winHeight/maxY/zoom; 
-		texMaxU = 1.0f;
-		texMaxV = 1.0f;
-	    }
-	    break;
-	case javax_media_j3d_Background_SCALE_FIT_ALL:
-	    texMinU = 0.0f; 
-	    texMinV = 0.0f; 
-	    texMaxU = 1.0f; 
-	    texMaxV = 1.0f;
-	    mapMinX = -1.0f;
-	    mapMinY = -1.0f;
-	    mapMaxX = 1.0f; 
-	    mapMaxY = 1.0f;   
-	    break;
-	case javax_media_j3d_Background_SCALE_REPEAT:
-	    /* glScalef(1.0f, -1.0f, 1.0f); */
-	    i = winWidth/width;
-	    j = winHeight/height; 
-	    texMinU = 0.0f;
-	    texMinV = (float)(j + 1) - yzoom;
-	    texMaxU = xzoom;
-	    texMaxV = (float)(j + 1);
-	    mapMinX = -1.0f;
-	    mapMinY = -1.0f;
-	    mapMaxX = 1.0f; 
-	    mapMaxY = 1.0f;	    
-	    break;
-	case javax_media_j3d_Background_SCALE_NONE_CENTER:
-	    if(xzoom > 1.0f || yzoom > 1.0f){
-		glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
-		glClear(GL_COLOR_BUFFER_BIT); 
-	    }
-	    if(xzoom >= 1.0f){
-		texMinU = 0.0f;
-		texMaxU = 1.0f;
-		mapMinX = -(float)maxX/winWidth;
-		mapMaxX = (float)maxX/winWidth;
-	    } else {
-		texMinU = 0.5f - (float)winWidth/maxX/2;
-		texMaxU = 0.5f + (float)winWidth/maxX/2;
-		mapMinX = -1.0f;
-		mapMaxX = 1.0f;
-	    }
-	    if(yzoom >= 1.0f) {
-		texMinV = 0.0f;
-		texMaxV = 1.0f;
-		mapMinY = -(float)maxY/winHeight;
-		mapMaxY = (float)maxY/winHeight;
-	    }else {
-		texMinV = 0.5f - (float)winHeight/maxY/2; 
-		texMaxV = 0.5f + (float)winHeight/maxY/2;
-		mapMinY = -1.0f;
-		mapMaxY = 1.0f;	
-	    }
-	    break;
-	}
-#ifdef VERBOSE 
-        printf("adjustV = %3.2f\n",adjustV);  
-        printf("(texMinU,texMinV,texMaxU,texMaxV) = (%3.2f,%3.2f,%3.2f,%3.2f)\n", 
-	       texMinU,texMinV,texMaxU,texMaxV); 
-        printf("(mapMinX,mapMinY,mapMaxX,mapMaxY) = (%3.2f,%3.2f,%3.2f,%3.2f)\n", 
-    	       mapMinX,mapMinY,mapMaxX,mapMaxY);
-#endif
-
-
-	glBegin(GL_QUADS); 
-#ifdef VERBOSE	
-	/* 	glTexCoord2f(0.2, 0.2); glVertex2f(0.0,0.0);  */
-	/* 	glTexCoord2f(0.4, 0.2); glVertex2f(0.2,0.0);  */
-	/* 	glTexCoord2f(0.4, 0.4); glVertex2f(0.2,0.2);  */
-	/* 	glTexCoord2f(0.2, 0.4); glVertex2f(0.0,0.2); */
-	glColor3f(1.0, 0.0, 0.0);
-#endif
-	glTexCoord2f(texMinU, texMinV); glVertex2f(mapMinX,mapMinY); 
-	glTexCoord2f(texMaxU, texMinV); glVertex2f(mapMaxX,mapMinY); 
-	glTexCoord2f(texMaxU, texMaxV); glVertex2f(mapMaxX,mapMaxY); 
-	glTexCoord2f(texMinU, texMaxV); glVertex2f(mapMinX,mapMaxY);	
-	glEnd(); 
-
-	/* Restore texture Matrix transform */	
-	glPopMatrix();
-	
-	glMatrixMode(GL_MODELVIEW);      	
-	/* Restore attributes */
-	glPopAttrib();	
-	
-	(*(table->ReleasePrimitiveArrayCritical))(env, pixels_obj,  
-						  (jbyte *)pixels, 0); 
-    }
-
-    /* Java 3D always clears the Z-buffer */
-    glPushAttrib(GL_DEPTH_BUFFER_BIT);
-    glDepthMask(GL_TRUE);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    glPopAttrib();
+    /* loaded identity modelview and projection matrix */    
+    glMatrixMode(GL_MODELVIEW);  
+    glPushMatrix();
+    glLoadIdentity();
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
     
+#ifdef VERBOSE 
+    printf("(texMinU,texMinV,texMaxU,texMaxV) = (%3.2f,%3.2f,%3.2f,%3.2f)\n", 
+	   texMinU,texMinV,texMaxU,texMaxV); 
+    printf("(mapMinX,mapMinY,mapMaxX,mapMaxY) = (%3.2f,%3.2f,%3.2f,%3.2f)\n", 
+	   mapMinX,mapMinY,mapMaxX,mapMaxY);
+#endif
+    
+    glBegin(GL_QUADS); 
+
+    glTexCoord2f((float) texMinU, (float) texMinV);
+    glVertex3f((float) mapMinX, (float) mapMinY, (float) mapZ); 
+    glTexCoord2f((float) texMaxU, (float) texMinV);
+    glVertex3f((float) mapMaxX, (float) mapMinY, (float) mapZ); 
+    glTexCoord2f((float) texMaxU, (float) texMaxV);
+    glVertex3f((float) mapMaxX, (float) mapMaxY, (float) mapZ); 
+    glTexCoord2f((float) texMinU, (float) texMaxV);
+    glVertex3f((float) mapMinX, (float) mapMaxY, (float) mapZ);
+   
+    glEnd(); 
+    
+    /* Restore matrices */	
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();      	
+    /* Restore attributes */
+    glPopAttrib();  
 }
+
 
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_setRenderMode(
@@ -3220,7 +2983,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_cleanupRenderer(
 
 /*
  * Function to disable most rendering attributes when doing a 2D
- * clear, image copy, or image composite operation. Note that the
+ * clear, or image copy operation. Note that the
  * caller must save/restore the attributes with
  * pushAttrib(GL_ENABLE_BIT|...) and popAttrib()
  */
@@ -3263,5 +3026,30 @@ disableAttribFor2D(GraphicsContextPropertiesInfo *ctxProperties)
 
     if (ctxProperties->global_alpha_sun) {
 	glDisable(GL_GLOBAL_ALPHA_SUN);
+    }
+}
+
+/*
+ * Function to disable most rendering attributes when doing a Raster
+ * clear, or image copy operation. Note that the
+ * caller must save/restore the attributes with
+ * pushAttrib(GL_ENABLE_BIT|...) and popAttrib()
+ */
+static void
+disableAttribForRaster(GraphicsContextPropertiesInfo *ctxProperties)
+{
+    glDisable(GL_COLOR_MATERIAL);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+    glDisable(GL_POLYGON_STIPPLE);
+
+    // TODO: Disable if Raster.CLIP_POSITION is true
+//      for (int i = 0; i < 6; i++) {
+// 	glDisable(GL_CLIP_PLANE0 + i);
+//      }
+
+    if (ctxProperties->global_alpha_sun) {
+        glDisable(GL_GLOBAL_ALPHA_SUN);
     }
 }

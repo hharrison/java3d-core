@@ -24,20 +24,74 @@ import java.awt.color.ColorSpace;
 class ImageComponent2DRetained extends ImageComponentRetained {
 
     // used in D3D to map object to surface pointer
-    int hashId;       
-
-    float[] lastAlpha = new float[1];
-    
-    static final double EPSILON = 1.0e-6;
-
-    // dirty mask to track if the image has been changed since the last
-    // alpha update. The nth bit in the mask represents the dirty bit
-    // of the image for screen nth. If nth bit is set, then the image
-    // needs to be updated with the current alpha values.
-    int imageChanged = 0;
+    int hashId;   
 
     ImageComponent2DRetained() {
 	hashId = hashCode();
+    }
+       
+    /**
+     * This method handles NioImageBuffer
+     * Refers or copies the specified NioImageBuffer to this 2D image component object.
+     * @param image NioImageBuffer object containing the image.
+     * The format and size must be the same as the current format in this
+     * ImageComponent2D object.
+     */
+    void set(NioImageBuffer image) {
+
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        if (!byReference) {
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2D7"));    
+        }
+        if (!yUp) {
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2D8"));           
+        }
+        
+        if (width != this.width) {
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained0"));
+        }
+        if (height != this.height) {
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained1"));
+        }
+        
+        geomLock.getLock();
+
+        setImageClass(image);
+
+        // This is a byRef image.
+        setRefImage(image,0);
+
+        // Reset this flag to true, incase it was set to false due to
+        // the previous image type.
+        abgrSupported = true;
+
+        imageTypeIsSupported = isImageTypeSupported(image);
+
+        if (imageTypeIsSupported) {
+            
+            /* Use reference when ( format is OK, Yup is true, and byRef is true). */
+            // Create image data object with the byRef image. */
+            imageData = createNioImageBufferDataObject(image);
+            
+        } else {
+            // All format in NioImageBuffer are supported.
+            // TODO : Need to support ABGR unsupport  case  --- Chien.
+            throw new RuntimeException("This is not implemented yet.");
+            // imageData = createRenderedImageDataObject(null);
+            // copySupportedImageToImageData(image, 0, imageData);
+        }
+        
+        geomLock.unLock();
+        
+        if (source.isLive()) {
+            freeSurface();
+            
+            // send a IMAGE_CHANGED message in order to
+            // notify all the users of the change
+            sendMessage(IMAGE_CHANGED, null);
+        }
     }
     
      /**
@@ -52,15 +106,18 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         int width = image.getWidth();
         int height = image.getHeight();
         
-        if (width != this.width)
+        if (width != this.width) {
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained0"));
-        
-        if (height != this.height)
+        }
+        if (height != this.height) {
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained1"));
+        }
+        
+        setImageClass(image);
         
         geomLock.getLock();        
         
-        if(byReference) {            
+        if (byReference) {            
             setRefImage(image,0);    
         }
         
@@ -72,12 +129,12 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         
         if (imageTypeIsSupported) {
 
-            if(byReference && yUp) {
+            if (byReference && yUp) {
                 /* Use reference when ( format is OK, Yup is true, and byRef is true). */
                 // System.err.println("ImageComponent2DRetained.set() : (imageTypeSupported && byReference && yUp) --- (1)");
-                if(image instanceof BufferedImage) {
+                if (image instanceof BufferedImage) {
                     // Create image data object with the byRef image. */                    
-                    imageData = createImageDataObject(image); 
+                    imageData = createRenderedImageDataObject(image); 
                 }
                 else {
                     // System.err.println("byRef and not BufferedImage !!!");
@@ -89,7 +146,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
                 // System.err.println("ImageComponent2DRetained.set() : (imageTypeSupported && ((!byReference && yUp) || (imageTypeSupported && !yUp)) --- (2)");
 
                 // Create image data object with buffer for image. */
-                imageData = createImageDataObject(null);
+                imageData = createRenderedImageDataObject(null);
                 copySupportedImageToImageData(image, 0, imageData);
             }
 
@@ -100,7 +157,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
             /* Will use the code segment in copy() method */
 
             // Create image data object with buffer for image. */
-            imageData = createImageDataObject(null);
+            imageData = createRenderedImageDataObject(null);
             copyUnsupportedImageToImageData(image, 0, imageData);
 
         }    
@@ -119,7 +176,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
     void setSubImage(RenderedImage image, int width, int height, 
 			   int srcX, int srcY, int dstX, int dstY) {
 
-        if(!isSubImageTypeEqual(image)) {
+        if (!isSubImageTypeEqual(image)) {
             throw new IllegalStateException(
                                 J3dI18N.getString("ImageComponent2D6"));           
         }
@@ -162,8 +219,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 
             ImageComponentUpdateInfo info;
 
-            // TODO : Should we still use freelist ? -- Chien.
-            info = VirtualUniverse.mc.getFreeImageUpdateInfo();
+            info =  new ImageComponentUpdateInfo();
             info.x = dstX;
             info.y = dstY;
 	    info.z = 0;
@@ -182,7 +238,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
     RenderedImage getImage() {
         
         if (isByReference()) {
-            return getRefImage(0);
+            return (RenderedImage) getRefImage(0);
         }
         
         if(imageData != null) {
@@ -190,6 +246,20 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         }
         
         return null;
+    }
+
+    /**
+     * Retrieves the reference of the nio image in this ImageComponent2D object.
+     */
+    NioImageBuffer getNioImage() {
+
+        if (getImageClass() != ImageComponent.ImageClass.NIO_IMAGE_BUFFER) {
+             throw new IllegalStateException(J3dI18N.getString("ImageComponent2D9"));          
+        }
+        
+        assert (byReference == true);
+        
+        return (NioImageBuffer) getRefImage(0);
     }
 
     /**
@@ -204,10 +274,11 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	// call the user supplied updateData method to update the data
 	updater.updateData((ImageComponent2D)source, x, y, width, height);
 
-        RenderedImage refImage = getRefImage(0);
+        RenderedImage refImage = (RenderedImage) getRefImage(0);
         assert (refImage != null);
         assert (imageData != null);
         
+        // Check is data copied internally.
         if(!imageData.isDataByRef()) {
             // update the internal copy of the image data if a copy has been
             // made
@@ -215,12 +286,16 @@ class ImageComponent2DRetained extends ImageComponentRetained {
             int srcY = y + refImage.getMinY();
             
             if (imageTypeIsSupported) {
+                // TODO : assert that Nio case will not get here --- Chien. 
                 if (refImage instanceof BufferedImage) {
                     copyImageLineByLine((BufferedImage)refImage, srcX, srcY, x, y, 0, width, height, imageData);
                 } else {
                     copySupportedImageToImageData(refImage, srcX, srcY, x, y, 0, width, height, imageData);
                 }
             } else {
+                
+                // TODO : Handle the Nio case for ABGR unsupported ... - Chien.
+                
                 // image type is unsupported, need to create a supported local copy.
                 // TODO : Should look into borrow code from JAI to convert to right format.
                 if (refImage instanceof BufferedImage) {
@@ -243,7 +318,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 
 	    ImageComponentUpdateInfo info;
 
-	    info = VirtualUniverse.mc.getFreeImageUpdateInfo();
+	    info =  new ImageComponentUpdateInfo();
 	    info.x = x;
 	    info.y = y;
 	    info.z = 0;
@@ -274,8 +349,9 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         }   
         
         ImageComponent2DRetained newImage = new ImageComponent2DRetained();
-        newImage.processParams(getFormat(), newWidth, newHeight, 1);        
-        newImage.imageData = newImage.createImageDataObject(null);
+        newImage.processParams(getFormat(), newWidth, newHeight, 1);
+        newImage.setImageFormatType(getImageFormatType());
+        newImage.imageData = newImage.createRenderedImageDataObject(null);
 
         newImage.scaleImage(xScale, yScale, 0, this);
         

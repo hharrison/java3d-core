@@ -3060,28 +3060,6 @@ class NativePipeline extends Pipeline {
         return useCtx(unbox(ctx), display, unbox(drawable));
     }
 
-    native void textureclear(long ctx, int maxX, int maxY,
-            float r, float g, float b,
-            int winWidth, int winHeight,
-            int objectId, int scalemode,
-            ImageComponent2DRetained image,
-            boolean update);
-
-    // TODO : Remove this --- Chien.
-    void textureclear(Context ctx, int maxX, int maxY,
-            float r, float g, float b,
-            int winWidth, int winHeight,
-            int objectId, int scalemode,
-            ImageComponent2DRetained image,
-            boolean update) {
-        textureclear(unbox(ctx), maxX, maxY,
-                r, g, b,
-                winWidth, winHeight,
-                objectId, scalemode,
-                image,
-                update);
-    }
-
     native void clear(long ctx, float r, float g, float b);    
     
     void clear(Context ctx, float r, float g, float b) {
@@ -3089,15 +3067,24 @@ class NativePipeline extends Pipeline {
         
     }
     
-    native void textureFill(long ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
+    native void textureFillBackground(long ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY);
-    
-    void textureFill(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY)  {
-        textureFill(unbox(ctx), texMinU, texMaxU, texMinV, texMaxV,
-                mapMinX, mapMaxX, mapMinY, mapMaxY);
-    }   
 
+    void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY)  {
+        textureFillBackground(unbox(ctx), texMinU, texMaxU, texMinV, texMaxV,
+                mapMinX, mapMaxX, mapMinY, mapMaxY);
+    }
+
+    native void textureFillRaster(long ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha);
+
+    void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha) {
+        textureFillRaster(unbox(ctx), texMinU, texMaxU, texMinV, texMaxV,
+                mapMinX, mapMaxX, mapMinY, mapMaxY, mapZ, alpha);    
+    }
+    
     // The native method for setting the ModelView matrix.
     native void setModelViewMatrix(long ctx, double[] viewMatrix, double[] modelMatrix);
 

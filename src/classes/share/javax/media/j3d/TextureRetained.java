@@ -12,10 +12,10 @@
 
 package javax.media.j3d;
 
-import java.awt.image.BufferedImage;
 import java.util.*;
 import javax.vecmath.*;
 import java.awt.image.DataBufferByte;
+import java.awt.image.RenderedImage;
 
 /**
  * The Texture object is a component object of an Appearance object
@@ -1112,7 +1112,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     void updateTextureDimensions(Canvas3D cv) {
         if(images[0][0] != null) {
             updateTextureImage(cv, 0, maxLevels, 0,
-                    format, images[0][0].getImageFormatTypeIntValue(),
+                    format, images[0][0].getImageFormatTypeIntValue(false),
                     width, height, boundaryWidth,
                     images[0][0].getImageDataTypeIntValue(), null);
         }
@@ -1272,22 +1272,23 @@ abstract class TextureRetained extends NodeComponentRetained {
      * BufferedImage
      */
     void reloadTextureImage(Canvas3D cv, int face, int level,
-				ImageComponentRetained image, int numLevels) {
-
-        ImageComponentRetained.ImageData imageData = image.getImageData(isUseAsRaster());
+            ImageComponentRetained image, int numLevels) {
+        
+        boolean useAsRaster = isUseAsRaster();
+        ImageComponentRetained.ImageData imageData = image.getImageData(useAsRaster);
         
         updateTextureImage(cv,
                 face, numLevels, level,
-                format, image.getImageFormatTypeIntValue(),
-                image.width, image.height,
+                format, image.getImageFormatTypeIntValue(useAsRaster),
+                imageData.getWidth(), imageData.getHeight(),
                 boundaryWidth, image.getImageDataTypeIntValue(),
                 imageData.get());
-                
-	// Now take care of the RenderedImage (byRef and yUp) case. Note, if image
-	// is a RenderedImage ( byRef and yUp), then imageData will be null
-
-	if (imageData == null) {
-	    //		    System.out.println("==========. subImage");
+        
+        // Now take care of the RenderedImage (byRef and yUp) case. Note, if image
+        // is a RenderedImage ( byRef and yUp), then imageData will be null
+        
+        if (imageData == null) {
+            //		    System.out.println("==========. subImage");
 	    // Download all the tiles for this texture
 	    int xoffset = 0, yoffset = 0;
 	    int tmpw = image.width;
@@ -1315,11 +1316,11 @@ abstract class TextureRetained extends NodeComponentRetained {
 	        imageXOffset = image.tilew - curw;
 	        for (int n = 0; n < image.numXTiles; n++) {
 		    java.awt.image.Raster ras;
-		    ras = image.getRefImage(0).getTile(n,m);
+		    ras = ((RenderedImage)image.getRefImage(0)).getTile(n,m);
 		    byte[] data =  ((DataBufferByte)ras.getDataBuffer()).getData();
                     updateTextureSubImage(cv, face,
                             level, xoffset, yoffset, format,
-                            image.getImageFormatTypeIntValue(),
+                            image.getImageFormatTypeIntValue(false),
                             imageXOffset, imageYOffset,
                             image.tilew,
                             curw, curh,
@@ -1368,19 +1369,23 @@ abstract class TextureRetained extends NodeComponentRetained {
 
         ImageComponentRetained.ImageData imageData = image.getImageData(isUseAsRaster());
         if(imageData != null) {
-	    int xoffset = x;
-	    int yoffset = y;
-          
-        yoffset = image.height - yoffset - height;
-        updateTextureSubImage(cv, face, level,
-                xoffset, yoffset,
-                format, image.getImageFormatTypeIntValue(),
-                xoffset, yoffset,
-                image.width, width, height, 
-                image.getImageDataTypeIntValue(),
-                imageData.get());
-        
-	} else {
+            int xoffset = x;
+            int yoffset = y;
+            
+            // TODO Check this logic : If !yUp adjust yoffset --- Chien
+            if (!image.yUp) {
+                yoffset = image.height - yoffset - height;
+            }
+            
+            updateTextureSubImage(cv, face, level,
+                    xoffset, yoffset,
+                    format, image.getImageFormatTypeIntValue(false),
+                    xoffset, yoffset,
+                    image.width, width, height,
+                    image.getImageDataTypeIntValue(),
+                    imageData.get());
+            
+        } else {
 
 	    // System.out.println("RenderedImage subImage update");
 	    // determine the first tile of the image
@@ -1473,12 +1478,12 @@ abstract class TextureRetained extends NodeComponentRetained {
 		
 		for (int xTile = minTileX; xTile < minTileX + numXTiles;
 			xTile++) {
-		    ras = image.getRefImage(0).getTile(xTile, yTile);
+		    ras = ((RenderedImage)image.getRefImage(0)).getTile(xTile, yTile);
 		    byte[] data = ((DataBufferByte)ras.getDataBuffer()).getData();
 
                     updateTextureSubImage(cv, face, level,
                             textureX, textureY,
-                            format, image.getImageFormatTypeIntValue(),
+                            format, image.getImageFormatTypeIntValue(false),
                             imgX, imgY,
                             image.tilew, curw, curh, 
                             ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY,
@@ -1990,7 +1995,6 @@ abstract class TextureRetained extends NodeComponentRetained {
 			    if (info.updateMask == 0) {
 			        // this update info is done, remove it
 			        // from the update list
-			        VirtualUniverse.mc.addFreeImageUpdateInfo(info);
 			        imageUpdateInfo[k][i].remove(j);
 			    }
 		        }
@@ -2020,8 +2024,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    imageUpdateInfo[face][level] = new ArrayList();
 	}
 
-	//info = mirrorTa.getFreeImageUpdateInfo();
-	info = VirtualUniverse.mc.getFreeImageUpdateInfo();
+	info = new ImageComponentUpdateInfo();
 
 
 	if (arg == null) {
@@ -2040,8 +2043,6 @@ abstract class TextureRetained extends NodeComponentRetained {
 	if (info.entireImage) {
 	    // the entire image update supercedes all the subimage update;
             // hence, remove all the existing updates from the list
-	    VirtualUniverse.mc.addFreeImageUpdateInfo(
-			imageUpdateInfo[face][level]);
 	    imageUpdateInfo[face][level].clear();
 
 	    // reset the update prune mask for this level
@@ -2303,8 +2304,6 @@ abstract class TextureRetained extends NodeComponentRetained {
 	        for (int face = 0; face < numFaces; face++) {
 		    for (int level = 0; level < maxLevels; level++) {
 			if (imageUpdateInfo[face][level] != null) {
-			    VirtualUniverse.mc.addFreeImageUpdateInfo(
-                        	     imageUpdateInfo[face][level]);
 			    imageUpdateInfo[face][level].clear();
 			}
 		    }

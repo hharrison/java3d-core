@@ -116,12 +116,6 @@ class MasterControl {
      */
     private int numActiveViews = 0;
     
-    // A freelist for ImageComponentUpdateInfo
-    private ImageComponentUpdateInfo[] imageUpdateInfoList = 
-				new ImageComponentUpdateInfo[2];
-    private int numFreeImageUpdateInfo = 0;
-
-
     /**
      * The list of active universes get from View
      */
@@ -993,60 +987,6 @@ class MasterControl {
         if (VirtualUniverse.mc.useFreeLists) {
             FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t);
         }
-    }
-
-
-    ImageComponentUpdateInfo getFreeImageUpdateInfo() {
-	ImageComponentUpdateInfo info;
-
-	synchronized (imageUpdateInfoList) {
-	    if (numFreeImageUpdateInfo > 0) {
-		numFreeImageUpdateInfo--;
-		info = (ImageComponentUpdateInfo)
-			imageUpdateInfoList[numFreeImageUpdateInfo];
-	    } else {
-		info = new ImageComponentUpdateInfo();
-	    }
-	}
-	return (info);
-    }
-
-    void addFreeImageUpdateInfo(ImageComponentUpdateInfo info) {
-	synchronized (imageUpdateInfoList) {
-	    if (imageUpdateInfoList.length == numFreeImageUpdateInfo) {
-		ImageComponentUpdateInfo[] newFreeList =
-		    new ImageComponentUpdateInfo[numFreeImageUpdateInfo * 2];
-		System.arraycopy(imageUpdateInfoList, 0, newFreeList, 0,
-					numFreeImageUpdateInfo);
-		newFreeList[numFreeImageUpdateInfo++] = info;
-		imageUpdateInfoList = newFreeList;
-	    } else {
-		imageUpdateInfoList[numFreeImageUpdateInfo++] = info;
-	    }
-	}
-    }
-
-    void addFreeImageUpdateInfo(ArrayList freeList) {
-	ImageComponentUpdateInfo info;
-
-	synchronized (imageUpdateInfoList) {
-	    int len = numFreeImageUpdateInfo + freeList.size();
-
-	    if (imageUpdateInfoList.length <= len) {
-		ImageComponentUpdateInfo[] newFreeList =
-		    new ImageComponentUpdateInfo[len * 2];
-		System.arraycopy(imageUpdateInfoList, 0, newFreeList, 0,
-					numFreeImageUpdateInfo);
-		imageUpdateInfoList = newFreeList;
-	    }
-
-	    for (int i = 0; i < freeList.size(); i++) {
-		info = (ImageComponentUpdateInfo) freeList.get(i);
-		if (info != null) {
-		    imageUpdateInfoList[numFreeImageUpdateInfo++] = info;
-		}
-	    }
-	}
     }
 
 

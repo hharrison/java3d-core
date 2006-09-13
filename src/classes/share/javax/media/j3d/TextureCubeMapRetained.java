@@ -286,7 +286,7 @@ class TextureCubeMapRetained extends TextureRetained {
     void updateTextureDimensions(Canvas3D cv) {
         if(images[0][0] != null) {
             // All faces should have the same image format and type.
-            int imageFormat = images[0][0].getImageFormatTypeIntValue();
+            int imageFormat = images[0][0].getImageFormatTypeIntValue(false);
             int imageType = images[0][0].getImageDataTypeIntValue();
             
             for (int i = 0; i < 6; i++) {

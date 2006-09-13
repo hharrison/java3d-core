@@ -289,11 +289,15 @@ public class Background extends Leaf {
      * filled with the background color.
      *
      * @param image pixel array object used as the background image
+     * 
+     * @exception IllegalArgumentException if the image class of the specified
+     * ImageComponent2D is ImageClass.NIO_IMAGE_BUFFER.
      */
     public Background(ImageComponent2D image) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
 
+        // TODO check IllegalArgumentException on NIO_IMAGE_BUFFER case.   -- Chien        
         ((BackgroundRetained)this.retained).setImage(image);
     }
 
@@ -391,6 +395,9 @@ public class Background extends Leaf {
      * @exception IllegalSharingException if this Background is
      * being used by an immediate mode context and
      * the specified image is being used by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalArgumentException if the image class of the specified
+     * ImageComponent2D is ImageClass.NIO_IMAGE_BUFFER.
      */
     public void setImage(ImageComponent2D image) {
         if (isLiveOrCompiled())
@@ -398,7 +405,9 @@ public class Background extends Leaf {
            throw new CapabilityNotSetException(J3dI18N.getString("Background3"));
 
         BackgroundRetained bgRetained = (BackgroundRetained)this.retained;
-        
+
+        // TODO check IllegalArgumentException on NIO_IMAGE_BUFFER case.   -- Chien
+
         // Do illegal sharing check
         if(image != null) {
             ImageComponent2DRetained imageRetained = (ImageComponent2DRetained) image.retained;

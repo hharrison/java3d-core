@@ -244,9 +244,7 @@ public class ImageComponent2D extends ImageComponent {
         ((ImageComponentRetained)this.retained).setByReference(byReference);
         ((ImageComponentRetained)this.retained).setYUp(yUp);
         ((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
-        // TODO: ((ImageComponent2DRetained)this.retained).set(image);
-
-        throw new RuntimeException("not implemented");
+        ((ImageComponent2DRetained)this.retained).set(image);
     }
 
     /**
@@ -351,9 +349,7 @@ public class ImageComponent2D extends ImageComponent {
             }
         }
 
-        // TODO: ((ImageComponent2DRetained)this.retained).set(image);
-
-        throw new RuntimeException("not implemented");
+        ((ImageComponent2DRetained)this.retained).set(image);
     }
 
     /**
@@ -438,9 +434,8 @@ public class ImageComponent2D extends ImageComponent {
                 throw new CapabilityNotSetException(J3dI18N.getString("ImageComponent2D0"));
             }
         }
-        // TODO: return ((ImageComponent2DRetained)this.retained).getNioImage();
+        return ((ImageComponent2DRetained)this.retained).getNioImage();
 
-        throw new RuntimeException("not implemented");
     }
 
 
@@ -632,16 +627,26 @@ public class ImageComponent2D extends ImageComponent {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
     void duplicateAttributes(NodeComponent originalNodeComponent,
-			     boolean forceDuplicate) { 
-	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
+            boolean forceDuplicate) {
+        super.duplicateAttributes(originalNodeComponent, forceDuplicate);
 
-	RenderedImage img = ((ImageComponent2DRetained)
-			     originalNodeComponent.retained).getImage();
-        // TODO: handle NioImageBuffer
+        ImageComponent.ImageClass imageClass =
+                ((ImageComponentRetained)originalNodeComponent.retained).getImageClass();
+        if(imageClass == ImageComponent.ImageClass.NIO_IMAGE_BUFFER) {
+            NioImageBuffer nioImg = ((ImageComponent2DRetained)
+            originalNodeComponent.retained).getNioImage();
 
-	if (img != null) {
-	    ((ImageComponent2DRetained) retained).set(img);
-	}
+            if(nioImg != null) {
+                ((ImageComponent2DRetained) retained).set(nioImg);
+            }
+        } else {
+            RenderedImage img = ((ImageComponent2DRetained)
+            originalNodeComponent.retained).getImage();
+
+            if (img != null) {
+                ((ImageComponent2DRetained) retained).set(img);
+            }
+        }
     }
 
     /**

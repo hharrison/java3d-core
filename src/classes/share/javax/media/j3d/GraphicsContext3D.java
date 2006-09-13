@@ -1810,13 +1810,13 @@ public class GraphicsContext3D extends Object   {
                             cvCache.getCanvasHeight());
                     if (bufferOverride && (stereoMode == STEREO_RIGHT)) {
                         canvas3d.setProjectionMatrix(canvas3d.ctx,
-                                cvCache.getRightProjection().mat);
+                                cvCache.getRightProjection());
                         canvas3d.setModelViewMatrix(canvas3d.ctx,
                                 cvCache.getRightVpcToEc().mat,
                                 rb.vworldToVpc);
                     } else {
                         canvas3d.setProjectionMatrix(canvas3d.ctx,
-                                cvCache.getLeftProjection().mat);
+                                cvCache.getLeftProjection());
                         canvas3d.setModelViewMatrix(canvas3d.ctx,
                                 cvCache.getLeftVpcToEc().mat,
                                 rb.vworldToVpc);
@@ -1945,8 +1945,7 @@ public class GraphicsContext3D extends Object   {
 		    // (dirtyMask & BUFFER_MODE) above after testing
 		    // PureImmediate mode
 		    canvas3d.setProjectionMatrix(canvas3d.ctx,
-						 cvCache.getRightProjection().
-						 mat);
+						 cvCache.getRightProjection());
 		    break;
 		case STEREO_LEFT:
 		case STEREO_BOTH:
@@ -1956,8 +1955,7 @@ public class GraphicsContext3D extends Object   {
 		    // (dirtyMask & BUFFER_MODE) above after testing
 		    // PureImmediate mode
 		    canvas3d.setProjectionMatrix(canvas3d.ctx,
-						 cvCache.getLeftProjection().
-						 mat);
+						 cvCache.getLeftProjection());
 		}
 	    }
 	    else if (!canvas3d.isRunning || 
@@ -2237,7 +2235,7 @@ public class GraphicsContext3D extends Object   {
 // Need to rewrite this method --- Chien
     void doReadRaster(Raster raster) {
 
-        throw new RuntimeException("Sorry!!! RASTER is temporarily unsupported.");
+        throw new RuntimeException("Sorry!!! ReadRasTer is temporarily unsupported.");
     
 /*    
 	if (!canvas3d.firstPaintCalled) {

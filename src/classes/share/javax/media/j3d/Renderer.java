@@ -132,11 +132,11 @@ class Renderer extends J3dThread {
     Screen3D onScreen;
     Screen3D offScreen;
 
-    // full screen anti-aliasing projection matrices
-    double accumLeftProjMat[] = new double[16];
-    double accumRightProjMat[] = new double[16];
-    double accumInfLeftProjMat[] = new double[16];
-    double accumInfRightProjMat[] = new double[16];
+    // full screen anti-aliasing projection matrices   
+    Transform3D accumLeftProj = new Transform3D();
+    Transform3D accumRightProj = new Transform3D();
+    Transform3D accumInfLeftProj = new Transform3D();
+    Transform3D accumInfRightProj = new Transform3D(); 
     
     // rendering messages
     J3dMessage m[];
@@ -1073,7 +1073,7 @@ class Renderer extends J3dThread {
 
 				System.arraycopy(
 						 cvCache.getLeftProjection().mat,
-                                0, accumLeftProjMat, 0, 16);
+                                0, accumLeftProj.mat, 0, 16);
 
 
                                 accumDxFactor = (
@@ -1085,29 +1085,29 @@ class Renderer extends J3dThread {
                                     canvas.canvasViewCache.getCanvasHeight())*canvas.view.fieldOfView;
 				
 
-			        accumLeftX = accumLeftProjMat[3];
-			        accumLeftY = accumLeftProjMat[7];
+			        accumLeftX = accumLeftProj.mat[3];
+			        accumLeftY = accumLeftProj.mat[7];
 
 				if (useStereo) {
 				    System.arraycopy(
 					cvCache.getRightProjection().mat,
-					0, accumRightProjMat, 0, 16);
-				    accumRightX = accumRightProjMat[3];
-				    accumRightY = accumRightProjMat[7];
+					0, accumRightProj.mat, 0, 16);
+				    accumRightX = accumRightProj.mat[3];
+				    accumRightY = accumRightProj.mat[7];
 				}
 
 				if (renderBin.geometryBackground != null) {
 				    System.arraycopy(
 					cvCache.getInfLeftProjection().mat,
-					0, accumInfLeftProjMat, 0, 16);
-				    accumInfLeftX = accumInfLeftProjMat[3];
-				    accumInfLeftY = accumInfLeftProjMat[7];
+					0, accumInfLeftProj.mat, 0, 16);
+				    accumInfLeftX = accumInfLeftProj.mat[3];
+				    accumInfLeftY = accumInfLeftProj.mat[7];
 				    if (useStereo) {
 					System.arraycopy(
 					    cvCache.getInfRightProjection().mat,
-					    0, accumInfRightProjMat, 0, 16);
-				        accumInfRightX = accumInfRightProjMat[3];
-				        accumInfRightY = accumInfRightProjMat[7];
+					    0, accumInfRightProj.mat, 0, 16);
+				        accumInfRightX = accumInfRightProj.mat[3];
+				        accumInfRightY = accumInfRightProj.mat[7];
 				    }
 				}				
 			    } else {
@@ -1202,45 +1202,45 @@ class Renderer extends J3dThread {
                                     accumDy = ACCUM_SAMPLES_Y[apass] *
 						accumDyFactor;
 
-				    accumLeftProjMat[3] = accumLeftX +
-					accumLeftProjMat[0] * accumDx +
-					accumLeftProjMat[1] * accumDy;
+				    accumLeftProj.mat[3] = accumLeftX +
+					accumLeftProj.mat[0] * accumDx +
+					accumLeftProj.mat[1] * accumDy;
 
-				    accumLeftProjMat[7] = accumLeftY +
-					accumLeftProjMat[4] * accumDx +
-					accumLeftProjMat[5] * accumDy;
+				    accumLeftProj.mat[7] = accumLeftY +
+					accumLeftProj.mat[4] * accumDx +
+					accumLeftProj.mat[5] * accumDy;
 
 				    if (useStereo) {
-                                        accumRightProjMat[3] = accumRightX +
-					    accumRightProjMat[0] * accumDx +
-					    accumRightProjMat[1] * accumDy;
+                                        accumRightProj.mat[3] = accumRightX +
+					    accumRightProj.mat[0] * accumDx +
+					    accumRightProj.mat[1] * accumDy;
 
-                                        accumRightProjMat[7] = accumRightY +
-					    accumRightProjMat[4] * accumDx +
-					    accumRightProjMat[5] * accumDy;
+                                        accumRightProj.mat[7] = accumRightY +
+					    accumRightProj.mat[4] * accumDx +
+					    accumRightProj.mat[5] * accumDy;
 				    }
 
 				    if (renderBin.geometryBackground != null) {
-                                        accumInfLeftProjMat[3] = accumInfLeftX +
-					    accumInfLeftProjMat[0] * accumDx +
-					    accumInfLeftProjMat[1] * accumDy;
+                                        accumInfLeftProj.mat[3] = accumInfLeftX +
+					    accumInfLeftProj.mat[0] * accumDx +
+					    accumInfLeftProj.mat[1] * accumDy;
 
-                                        accumInfLeftProjMat[7] = accumInfLeftY +
-					    accumInfLeftProjMat[4] * accumDx +
-					    accumInfLeftProjMat[5] * accumDy;
+                                        accumInfLeftProj.mat[7] = accumInfLeftY +
+					    accumInfLeftProj.mat[4] * accumDx +
+					    accumInfLeftProj.mat[5] * accumDy;
 
 				        if (useStereo) {
-                                            accumInfRightProjMat[3] = 
+                                            accumInfRightProj.mat[3] = 
 					      accumInfRightX +
-					      accumInfRightProjMat[0] * accumDx +
-					      accumInfRightProjMat[1] * accumDy;
+					      accumInfRightProj.mat[0] * accumDx +
+					      accumInfRightProj.mat[1] * accumDy;
 
-                                            accumInfRightProjMat[7] = 
+                                            accumInfRightProj.mat[7] = 
 					      accumInfRightY +
-					      accumInfRightProjMat[4] * accumDx +
-					      accumInfRightProjMat[5] * accumDy;
+					      accumInfRightProj.mat[4] * accumDx +
+					      accumInfRightProj.mat[5] * accumDy;
 				        }
-				    }
+                                    }
 			        }
 
                                 // clear background for stereo and
@@ -1261,24 +1261,22 @@ class Renderer extends J3dThread {
 					    cvCache.getInfLeftVpcToEc();
 	    	                        if (doAccum) {
                                             canvas.setProjectionMatrix(
-						canvas.ctx,
-						accumInfLeftProjMat);
+						canvas.ctx, accumInfLeftProj);
 				        } else {
                                             canvas.setProjectionMatrix(
 						canvas.ctx,
-					       	cvCache.getInfLeftProjection().mat);
+					       	cvCache.getInfLeftProjection());
 				        }
 				    } else {
                                         canvas.vpcToEc = 
 					    cvCache.getInfRightVpcToEc();
 	    	                        if (doAccum) {
                                             canvas.setProjectionMatrix(
-						canvas.ctx,
-						accumInfRightProjMat);
+						canvas.ctx, accumInfRightProj);
 				        } else {
                                             canvas.setProjectionMatrix(
 						canvas.ctx,
-					       cvCache.getInfRightProjection().mat);
+					       cvCache.getInfRightProjection());
 				        }
                                     }
                                     canvas.vworldToEc.mul(canvas.vpcToEc,
@@ -1292,20 +1290,19 @@ class Renderer extends J3dThread {
                                 if (pass == 0) {
                             	    canvas.vpcToEc = cvCache.getLeftVpcToEc();
 			            if (doAccum) {
-                                        canvas.setProjectionMatrix(
-						canvas.ctx, accumLeftProjMat);
+                                        canvas.setProjectionMatrix(canvas.ctx, accumLeftProj);
                                     } else {
                                         canvas.setProjectionMatrix(canvas.ctx,
-					cvCache.getLeftProjection().mat);
+					cvCache.getLeftProjection());
 				    }
 			        } else {
                             	    canvas.vpcToEc = cvCache.getRightVpcToEc();
 			            if (doAccum) {
                                         canvas.setProjectionMatrix(
-						canvas.ctx, accumRightProjMat);
+						canvas.ctx, accumRightProj);
                                     } else {
                                         canvas.setProjectionMatrix(canvas.ctx,
-						cvCache.getRightProjection().mat);
+						cvCache.getRightProjection());
 				    }
 			        } 
                                 canvas.vworldToEc.mul(canvas.vpcToEc,

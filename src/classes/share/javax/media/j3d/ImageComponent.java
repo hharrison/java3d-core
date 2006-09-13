@@ -381,10 +381,10 @@ public abstract class ImageComponent extends NodeComponent {
     public void setYUp(boolean yUp) {
 	checkForLiveOrCompiled();
         
-        // TODO: check for illegal image class
-//        if (((ImageComponentRetained)this.retained).getImageClass() == ImageClass.NIO_IMAGE_BUFFER) {
-//            throw new IllegalStateException(...);
-//        }
+        // check for illegal image class
+        if (((ImageComponentRetained)this.retained).getImageClass() == ImageClass.NIO_IMAGE_BUFFER) {
+            throw new IllegalStateException("ImageComponent4");
+        }
 
         ((ImageComponentRetained)this.retained).setYUp(yUp);
     }
@@ -405,7 +405,7 @@ public abstract class ImageComponent extends NodeComponent {
 
 
     /**
-     * Retrieves the image class of this ImageComponent obejct.
+     * Retrieves the image class of this ImageComponent object.
      *
      * @return the image class of this ImageComponent,
      * one of: ImageClass.BUFFERED_IMAGE,
@@ -414,8 +414,7 @@ public abstract class ImageComponent extends NodeComponent {
      * @since Java 3D 1.5
      */
     public ImageClass getImageClass() {
-        // TODO: return ((ImageComponentRetained)this.retained).getImageClass();
-        throw new RuntimeException("not implemented");
+        return ((ImageComponentRetained)this.retained).getImageClass();
     }
 
 }

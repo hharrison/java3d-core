@@ -3133,15 +3133,17 @@ System.out.println("......tb.soleUser= " +
 	    // Raster send this message only for setImage()
 	    if (g instanceof RasterRetained) {
 		Object[] objs = (Object[]) args[2];
-		ImageComponentRetained oldImage = (ImageComponentRetained) objs[0];
-		ImageComponentRetained newImage = (ImageComponentRetained) objs[1];
+                Texture2DRetained oldTex = (Texture2DRetained) objs[0];
+                Texture2DRetained newTex = (Texture2DRetained) objs[1];
+		ImageComponentRetained oldImage = oldTex.images[0][0];
+		ImageComponentRetained newImage = newTex.images[0][0];
 
 		RasterRetained geo = (RasterRetained)ra.geometry();
 		if (oldImage != null && oldImage.isByReference()) {
-		    removeNodeComponent(oldImage);
+		    removeNodeComponent(oldTex);
 		}		
 		if (newImage != null && newImage.isByReference()) {
-		    addNodeComponent(newImage);
+		    addNodeComponent(newTex);
 		}
 	    }
 		
@@ -5325,41 +5327,41 @@ System.out.println("......tb.soleUser= " +
      * Sets the new background color.
      */
     void setBackground(BackgroundRetained back) {
-
-	boolean cvDirty = false;
-	BackgroundRetained oldGeomBack = geometryBackground;
-	geometryBackground = null;
-
-	if (back != null) {
-	    background.initColor(back.color);
-	    background.initImageScaleMode(back.imageScaleMode);
-	    background.geometryBranch = back.geometryBranch;
+        
+        boolean cvDirty = false;
+        BackgroundRetained oldGeomBack = geometryBackground;
+        geometryBackground = null;
+        
+        if (back != null) {
+            background.initColor(back.color);
+            background.initImageScaleMode(back.imageScaleMode);
+            background.geometryBranch = back.geometryBranch;
             if (background.geometryBranch != null) {
                 geometryBackground = back;
             }
-	    if (background.image != null) {
-		if (background.image.isByReference())
-		    removeNodeComponent(background.image);
-	    }
-	    if (back.image != null) {
-		// May need to optimize later
-		background.initImage((ImageComponent2D)back.image.source);
-		if (back.image.isByReference()) {
-		    addNodeComponent(back.image);
-		}
-	    } else {
-		background.initImage(null);
-	    }
-	    if (oldGeomBack == null) {
-		cvDirty = true;
-	    }
-	} else {
-	    background.initColor(black);
-	    background.geometryBranch = null;
-	    background.initImage(null);
-	    if (oldGeomBack != null) {
-		cvDirty = true;
-	    }
+            if (background.image != null) {
+                if (background.image.isByReference())
+                    removeNodeComponent(background.image);
+            }
+            if (back.image != null) {
+                // May need to optimize later
+                background.initImage((ImageComponent2D)back.image.source);
+                if (back.image.isByReference()) {
+                    addNodeComponent(back.image);
+                }
+            } else {
+                background.initImage(null);
+            }
+            if (oldGeomBack == null) {
+                cvDirty = true;
+            }
+        } else {
+            background.initColor(black);
+            background.geometryBranch = null;
+            background.initImage(null);
+            if (oldGeomBack != null) {
+                cvDirty = true;
+            }
 	}
 
 	// Need to reEvaluate View cache since doInfinite

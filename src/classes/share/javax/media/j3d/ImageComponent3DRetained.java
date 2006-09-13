@@ -43,6 +43,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
      * ImageComponent3D object.
      */
     void set(int index, BufferedImage image) {
+        
         geomLock.getLock();        
         
         if(byReference) {            
@@ -55,7 +56,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
             // the previous image type.
             abgrSupported = true;
             imageTypeIsSupported = isImageTypeSupported(image);
-            imageData = createImageDataObject(null);
+            imageData = createRenderedImageDataObject(null);
         }
         else {
              if(getImageType() != evaluateImageType(image)) {
@@ -82,8 +83,94 @@ class ImageComponent3DRetained extends ImageComponentRetained {
             sendMessage(IMAGE_CHANGED, null);
         }        
     }
+    
+    /**
+     * Copies the specified BufferedImage to this 3D image component
+     * object at the specified index.
+     * @param index the image index
+     * @param images BufferedImage object containing the image.
+     * The format and size must be the same as the current format in this
+     * ImageComponent3D object.  The index must not exceed the depth of this
+     * ImageComponent3D object.
+     *
+    void set(int index, NioImageBuffer nioImage) {
+        
+        int width = nioImage.getWidth();
+        int height = nioImage.getHeight();
+        
+        if (!byReference) {
+            throw new IllegalArgumentException(J3dI18N.getString("Need_New_Message_XXXXXImageComponent2D7"));    
+        }
+        if (!yUp) {
+            throw new IllegalArgumentException(J3dI18N.getString("Need_New_Message_XXXXXImageComponent2D8"));           
+        }
+        
+        if (width != this.width) {
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent3D2"));
+        }
+        if (height != this.height) {
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent3D4"));
+        }
+       
+        geomLock.getLock();
+        
+        setImageClass(nioImage);
+        
+        // This is a byRef image.                
+         setRefImage(nioImage,0);           
 
+        if(imageData == null) {
+            // Only do this once, on the first image            
+            // Reset this flag to true, incase it was set to false due to
+            // the previous image type.
+            abgrSupported = true;
+            
+            imageTypeIsSupported = isImageTypeSupported(nioImage);
+
+       
+            // TODO : Need to handle null .... - Chien
+            imageData = createNioImageBufferDataObject(null);
+        }
+        else {
+             
+             //if(getImageType() != evaluateImageType(image)) {
+                 // TODO need to throw illegal state exception
+             //}
+              
+        }
+        
+        if (imageTypeIsSupported) {
+             // TODO : Need to handle this ..... case .... --- Chien
+            // copySupportedImageToImageData(image, index, imageData);
+        } else {
+             // System.err.println("Image format is unsupported -- illogical case");
+            throw new AssertionError();
+        }    
+        
+        geomLock.unLock();
+        
+        if (source.isLive()) {
+           // freeSurface();
+            
+            // send a IMAGE_CHANGED message in order to
+            // notify all the users of the change
+            sendMessage(IMAGE_CHANGED, null);
+        }        
+    }
+    */
+            
     void set(int index, RenderedImage image) {
+        
+        int width = image.getWidth();
+        int height = image.getHeight();
+        
+        if (width != this.width) {
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent3D2"));
+        }
+        if (height != this.height) {
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent3D4"));
+        }
+       
 	if (image instanceof BufferedImage) {
 	    set(index, ((BufferedImage)image));
 	}
@@ -160,7 +247,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
             return imageData.createBufferedImage(index);
 	}
         
-        return getRefImage(index);
+        return (RenderedImage) getRefImage(index);
     }
 
     /**
@@ -176,7 +263,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
         // call the user supplied updateData method to update the data
         updater.updateData((ImageComponent3D)source, index, x, y, width, height);
 
-        RenderedImage refImage = getRefImage(index);
+        RenderedImage refImage = (RenderedImage) getRefImage(index);
         assert (refImage != null);
         assert (imageData != null);
 
@@ -212,7 +299,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
 
             ImageComponentUpdateInfo info;
 
-            info = VirtualUniverse.mc.getFreeImageUpdateInfo();
+            info = new ImageComponentUpdateInfo();
             info.x = x;
             info.y = y;
 	    info.z = index;
@@ -268,7 +355,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
 
             ImageComponentUpdateInfo info;
 
-            info = VirtualUniverse.mc.getFreeImageUpdateInfo();
+            info = new ImageComponentUpdateInfo();
             info.x = dstX;
             info.y = dstY;
 	    info.z = index;
@@ -300,7 +387,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
 
         ImageComponent3DRetained newImage = new ImageComponent3DRetained();
         newImage.processParams(getFormat(), newWidth, newHeight, depth);
-        newImage.imageData = newImage.createImageDataObject(null);
+        newImage.imageData = newImage.createRenderedImageDataObject(null);
         
         for (int i = 0; i < depth; i++) {
             newImage.scaleImage(xScale, yScale, depth, this);

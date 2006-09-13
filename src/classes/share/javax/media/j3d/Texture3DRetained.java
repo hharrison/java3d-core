@@ -160,7 +160,7 @@ class Texture3DRetained extends TextureRetained {
     void updateTextureDimensions(Canvas3D cv) {
         if(images[0][0] != null) {
             updateTextureImage(cv, maxLevels, 0, 0,
-                    format, images[0][0].getImageFormatTypeIntValue(),
+                    format, images[0][0].getImageFormatTypeIntValue(false),
                     width, height, depth, boundaryWidth,
                     images[0][0].getImageDataTypeIntValue(), null);
         }
@@ -199,12 +199,13 @@ class Texture3DRetained extends TextureRetained {
 		" h= " + image.height + " d= " + depth + 
 		" numLevels= " + numLevels);
 */
-
-        ImageComponentRetained.ImageData imageData = image.getImageData(isUseAsRaster());
+        
+        // Texture3D does not need to support Raster
+        ImageComponentRetained.ImageData imageData = image.getImageData(false);
 
         updateTextureImage(cv,
                 0, numLevels, level, format,
-                image.getImageFormatTypeIntValue(),
+                image.getImageFormatTypeIntValue(false),
                 image.width, image.height, depth,
                 boundaryWidth, image.getImageDataTypeIntValue(),
                 imageData.get());
@@ -221,11 +222,12 @@ class Texture3DRetained extends TextureRetained {
 
         int xoffset = x;
         int yoffset = y;
-        ImageComponentRetained.ImageData imageData = image.getImageData(isUseAsRaster());
+        // Texture3D does not need to support Raster        
+        ImageComponentRetained.ImageData imageData = image.getImageData(false);
         
         updateTextureSubImage(cv,
                 0, level, xoffset, yoffset, z,
-                format, image.getImageFormatTypeIntValue(),
+                format, image.getImageFormatTypeIntValue(false),
                 xoffset, yoffset, z,
                 image.width, image.height,
                 width, height, 1, image.getImageDataTypeIntValue(),
