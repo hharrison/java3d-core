@@ -248,5 +248,10 @@ class SetLiveState extends Object {
 	//transformTargetThreads = 0;
 
         hashkeyIndex = null;
+        
+        // Partial fix for issue 75
+        parentBranchGroupPaths = null;
+        branchGroupPaths = null;
+        orderedPaths = null;
     }
 }
