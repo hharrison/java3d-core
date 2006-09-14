@@ -18,7 +18,6 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 
 
-
 /**
  * The Canvas3D class provides a drawing canvas for 3D rendering.  It
  * is used either for on-screen rendering or off-screen rendering.
@@ -1111,9 +1110,9 @@ public class Canvas3D extends Canvas {
 	    newSize = offScreenCanvasSize;
 	    newPosition = offScreenCanvasLoc;
 
-            // Issue 131: add CanvasViewEventCatcher for auto-offScreen
-            // TODO KCR Issue 131: why is this needed?
+            // Issue 131: create event catchers for auto-offScreen
             if (!manualRendering) {
+                eventCatcher = new EventCatcher(this);
                 canvasViewEventCatcher = new CanvasViewEventCatcher(this);
             }
         } else {
@@ -1232,7 +1231,10 @@ public class Canvas3D extends Canvas {
 
         // Issue 131: This method is now being called by JCanvas3D for its
         // off-screen Canvas3D, so we need to handle off-screen properly here.
-        // TODO KCR Issue 131: We should find a different way to do this
+        // Do nothing for manually-rendered off-screen canvases
+        if (manualRendering) {
+            return;
+        }
 
 	Renderer rdr = null;
 
@@ -1250,7 +1252,7 @@ public class Canvas3D extends Canvas {
 	}
 
         // Issue 131: Don't call super for off-screen Canvas3D
-        if ( !offScreen ){
+        if (!offScreen) {
             super.addNotify();
         }
 	screen.addUser(this);
@@ -1266,27 +1268,24 @@ public class Canvas3D extends Canvas {
 	    ((Window)parent).addComponentListener(eventCatcher);
 	}
 
-        // Issue 131: If not manual, it has to be considered as an onscreen canvas.
-	if (!manualRendering) {
-	    if(canvasViewEventCatcher.parentList.size() > 0) {
-		Component comp;
-		//Release and clear.
-		for(int i=0; i<canvasViewEventCatcher.parentList.size(); i++) {
-		    comp = (Component)canvasViewEventCatcher.parentList.get(i);
-		    comp.removeComponentListener(canvasViewEventCatcher);
-		}
-		canvasViewEventCatcher.parentList.clear();
-	    }
-	    
-	    Component parent = (Component) this.getParent();
-	    while(parent != null) {
-		parent.addComponentListener(canvasViewEventCatcher);
-		canvasViewEventCatcher.parentList.add(parent);
-		parent = parent.getParent();   
-	    }
-	    // Need to traverse up the parent and add listener.
-	    this.addComponentListener(canvasViewEventCatcher);
-	}
+        if(canvasViewEventCatcher.parentList.size() > 0) {
+            Component comp;
+            //Release and clear.
+            for(int i=0; i<canvasViewEventCatcher.parentList.size(); i++) {
+                comp = (Component)canvasViewEventCatcher.parentList.get(i);
+                comp.removeComponentListener(canvasViewEventCatcher);
+            }
+            canvasViewEventCatcher.parentList.clear();
+        }
+
+        Component parent = (Component) this.getParent();
+        while(parent != null) {
+            parent.addComponentListener(canvasViewEventCatcher);
+            canvasViewEventCatcher.parentList.add(parent);
+            parent = parent.getParent();   
+        }
+        // Need to traverse up the parent and add listener.
+        this.addComponentListener(canvasViewEventCatcher);
 
 	synchronized(dirtyMaskLock) {
 	    cvDirtyMask[0] |= MOVED_OR_RESIZED_DIRTY;
@@ -1298,6 +1297,13 @@ public class Canvas3D extends Canvas {
  
 	validCanvas = true;
 	added = true;
+
+        // Since we won't get a paint call for off-screen canvases, we need
+        // to set the first paint and visible flags here
+        if (offScreen) {
+            firstPaintCalled = true;
+            visible = true;
+        }
 
 	// In case the same canvas is removed and add back,
 	// we have to change isRunningStatus back to true;
@@ -1313,7 +1319,7 @@ public class Canvas3D extends Canvas {
 	if ((view != null) && (view.universe != null)) {
 	    view.universe.checkForEnableEvents();
 	}
-	
+
     }
 
     // When this canvas is removed a frame, this notification gets called.  We
@@ -1325,8 +1331,12 @@ public class Canvas3D extends Canvas {
      * method need to call super.removeNotify() in their removeNotify()
      * method for Java 3D to function properly.
      */
-
     public void removeNotify() {
+
+        // Do nothing for manually-rendered off-screen canvases
+        if (manualRendering) {
+            return;
+        }
 
 	Renderer rdr = null;
 
@@ -1342,12 +1352,6 @@ public class Canvas3D extends Canvas {
 		}
 	    }
 	}
-
-        // Issue 131: If not manual, it has to be considered as an onscreen canvas.
-	if (!manualRendering) {
-	    firstPaintCalled = false;	    
-	}
-
 
 	// Note that although renderer userStop is true,
 	// MasterControl can still schedule renderer to run through
@@ -1366,6 +1370,8 @@ public class Canvas3D extends Canvas {
 
         Pipeline.getPipeline().freeDrawingSurface(this, drawingSurfaceObject);
 
+        // Clear first paint and visible flags
+        firstPaintCalled = false;
 	visible = false;
 
 	screen.removeUser(this);
@@ -1425,10 +1431,7 @@ public class Canvas3D extends Canvas {
 	    parent.requestFocus();
 	}
 
-        // Issue 131: If not manual, it has to be considered as an onscreen canvas.
-	if (!manualRendering) {
-	    added = false;
-	}
+        added = false;
 
 	if (rdr != null) {
 	    rdr.userStop = false;
@@ -1450,7 +1453,7 @@ public class Canvas3D extends Canvas {
 	// remove will get a lock of this component follows by evaluateActive.
 
 	synchronized (evaluateLock) {
-	    if ((visible || offScreen) && firstPaintCalled) {
+	    if ((visible || manualRendering) && firstPaintCalled) {
 
 		if (!active) {
 		    active = true;

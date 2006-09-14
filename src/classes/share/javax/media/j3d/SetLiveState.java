@@ -249,7 +249,7 @@ class SetLiveState extends Object {
 
         hashkeyIndex = null;
         
-        // Partial fix for issue 75
+        // Fix for issue 75
         parentBranchGroupPaths = null;
         branchGroupPaths = null;
         orderedPaths = null;
