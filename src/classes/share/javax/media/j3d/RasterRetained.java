@@ -250,7 +250,10 @@ class RasterRetained extends GeometryRetained {
      */
     final void setImage(ImageComponent2D img) {
         
-        // TODO check IllegalArgumentException on NIO_IMAGE_BUFFER case.   -- Chien
+        if((img != null) && 
+                (img.getImageClass() == ImageComponent.ImageClass.NIO_IMAGE_BUFFER)) {     
+            throw new IllegalArgumentException(J3dI18N.getString("Background14"));
+        }
                 
         TextureRetained oldTex = this.texture;
         geomLock.getLock();

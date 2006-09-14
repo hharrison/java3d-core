@@ -76,11 +76,10 @@ class ImageComponent2DRetained extends ImageComponentRetained {
             imageData = createNioImageBufferDataObject(image);
             
         } else {
-            // All format in NioImageBuffer are supported.
-            // TODO : Need to support ABGR unsupport  case  --- Chien.
-            throw new RuntimeException("This is not implemented yet.");
-            // imageData = createRenderedImageDataObject(null);
-            // copySupportedImageToImageData(image, 0, imageData);
+            // Handle abgrSupported is false case.
+            imageData = createNioImageBufferDataObject(null);
+            copyUnsupportedNioImageToImageData(image, 0, 0, 0, 0, width, height, imageData);
+
         }
         
         geomLock.unLock();
@@ -274,34 +273,35 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	// call the user supplied updateData method to update the data
 	updater.updateData((ImageComponent2D)source, x, y, width, height);
 
-        RenderedImage refImage = (RenderedImage) getRefImage(0);
+        Object refImage = getRefImage(0);
         assert (refImage != null);
         assert (imageData != null);
         
         // Check is data copied internally.
         if(!imageData.isDataByRef()) {
             // update the internal copy of the image data if a copy has been
-            // made
-            int srcX = x + refImage.getMinX();
-            int srcY = y + refImage.getMinY();
-            
+            // made            
             if (imageTypeIsSupported) {
-                // TODO : assert that Nio case will not get here --- Chien. 
+                assert !(refImage instanceof NioImageBuffer);
+
                 if (refImage instanceof BufferedImage) {
-                    copyImageLineByLine((BufferedImage)refImage, srcX, srcY, x, y, 0, width, height, imageData);
+                    copyImageLineByLine((BufferedImage)refImage, x, y, x, y, 0, width, height, imageData);
                 } else {
-                    copySupportedImageToImageData(refImage, srcX, srcY, x, y, 0, width, height, imageData);
+                    RenderedImage ri = (RenderedImage)refImage;
+                    copySupportedImageToImageData(ri, (x + ri.getMinX()), (y + ri.getMinY()), x, y, 0, width, height, imageData);
                 }
-            } else {
-                
-                // TODO : Handle the Nio case for ABGR unsupported ... - Chien.
-                
+            } else {                
                 // image type is unsupported, need to create a supported local copy.
                 // TODO : Should look into borrow code from JAI to convert to right format.
                 if (refImage instanceof BufferedImage) {
-                    copyUnsupportedImageToImageData((BufferedImage)refImage, srcX, srcY, x, y, 0, width, height, imageData);
+                    copyUnsupportedImageToImageData((BufferedImage)refImage, x, y, x, y, 0, width, height, imageData);
+                } else if (refImage instanceof RenderedImage) {
+                    RenderedImage ri = (RenderedImage)refImage;
+                    copyUnsupportedImageToImageData(ri, (x + ri.getMinX()), (y + ri.getMinY()), x, y, 0, width, height, imageData);
+                } else if (refImage instanceof NioImageBuffer) {
+                    copyUnsupportedNioImageToImageData((NioImageBuffer)refImage, x, y, x, y, width, height, imageData);
                 } else {
-                    copyUnsupportedImageToImageData(refImage, srcX, srcY, x, y, 0, width, height, imageData);
+                    assert false;
                 }
             }
         }

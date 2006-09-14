@@ -2217,8 +2217,6 @@ void updateTexture2DImage(
     GLenum format = 0, internalFormat = 0, type = 0;
     JNIEnv table = *env;
     GLboolean forceAlphaToOne = GL_FALSE;
-
-    /* Need to support INT, and NIO buffers -- Chien */
     
     if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
         imageObjPtr = (void *)(*(table->GetPrimitiveArrayCritical))(env, (jarray)data, NULL);        
@@ -2227,15 +2225,13 @@ void updateTexture2DImage(
 	imageObjPtr = (void *)(*(table->GetDirectBufferAddress))(env, data);
     }
 
-
     /* check if we are trying to draw NPOT on a system that doesn't support it */
     if ((!ctxProperties->textureNonPowerOfTwoAvailable) &&
 	(!isPowerOfTwo(width) || !isPowerOfTwo(height))) {
 	/* disable texture by setting width and height to 0 */
-	width = height = 0;
+         width = height = 0;
     }
 
-    
     switch (textureFormat) {
         case INTENSITY:
 	    internalFormat = GL_INTENSITY;
@@ -2259,7 +2255,6 @@ void updateTexture2DImage(
             throwAssert(env, "updateTexture2DImage : textureFormat illegal format");
 	    return;
     }
-
     
     if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_BYTE_BUFFER))  {
 	switch (imageFormat) {
@@ -2396,15 +2391,12 @@ void updateTexture2DSubImage(
     jint numBytes = 0;
     jboolean pixelStore = JNI_FALSE;
 
-    /* Need to support INT, and NIO buffers -- Chien */
-
     if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
         imageObjPtr = (void *)(*(table->GetPrimitiveArrayCritical))(env, (jarray)data, NULL);        
     }
     else {
 	imageObjPtr = (void *)(*(table->GetDirectBufferAddress))(env, data);
     }
-
 
     if (imgXOffset > 0 || (width < tilew)) {
 	pixelStore = JNI_TRUE;
@@ -2423,6 +2415,7 @@ void updateTexture2DSubImage(
 	    width = height = 0;
 	}
     }
+
     switch (textureFormat) {
         case INTENSITY:
 	    internalFormat = GL_INTENSITY;
@@ -2529,7 +2522,7 @@ void updateTexture2DSubImage(
         case IMAGE_FORMAT_BYTE_RGBA:
         case IMAGE_FORMAT_BYTE_ABGR:
         default:
-           throwAssert(env, "updateTexture3DSubImage : imageFormat illegal format");
+           throwAssert(env, "updateTexture2DSubImage : imageFormat illegal format");
 	   return;
         }  
 
@@ -2554,7 +2547,7 @@ void updateTexture2DSubImage(
 	}
     }
     else {
-        throwAssert(env, "updateTexture3DImage : illegal image data type");
+        throwAssert(env, "updateTexture2DImage : illegal image data type");
 	return;
     }
 
@@ -2898,8 +2891,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
     JNIEnv table = *env;
     GLboolean forceAlphaToOne = GL_FALSE;
 
-    /* Need to support INT, and NIO buffers -- Chien */
-    
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     
     if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
@@ -3070,8 +3061,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
     jint  *tmpInt;
     jint numBytes = 0;
     jboolean pixelStore = JNI_FALSE;
-
-    /* Need to support INT, and NIO buffers -- Chien */
 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {

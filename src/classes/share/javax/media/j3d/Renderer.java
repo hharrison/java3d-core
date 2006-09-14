@@ -778,10 +778,12 @@ class Renderer extends J3dThread {
 			    offBufRetained = (ImageComponent2DRetained)
 				canvas.offScreenBuffer.retained;
 			    
-			    if (offBufRetained.isByReference()) {
-                    	        offBufRetained.geomLock.getLock();
-                                offBufRetained.evaluateExtensions(canvas);
-			    }
+                            if (offBufRetained.isByReference()) {
+                                offBufRetained.geomLock.getLock();
+                            }
+                            
+                            offBufRetained.evaluateExtensions(canvas);
+			    
 			}
                         
                     } else if (!canvas.active) {

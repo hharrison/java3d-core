@@ -195,6 +195,14 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     boolean getUsedByOffScreen() {
         return usedByOffScreenCanvas;
     }
+ 
+    int getNumberOfComponents() {
+        return numberOfComponents;
+    }
+    
+    void setNumberOfComponents(int numberOfComponents) {
+        this.numberOfComponents = numberOfComponents;
+    }
     
     int getImageDataTypeIntValue() {
         int idtValue = -1;
@@ -339,7 +347,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         this.width = width;
         this.height = height;
         this.depth = depth;
-        refImage = new RenderedImage[depth];        
+        refImage = new Object[depth];        
     }
     
     // Need to review this method -- Chien.
@@ -592,8 +600,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     imageFormatType = ImageFormatType.TYPE_INT_ARGB;
                     unitsPerPixel = 1;
                 } else {
-                    // System.err.println("Image format is unsupported -- illogical case");
-                    throw new AssertionError();
+                    throw new RuntimeException("Not yet implemented");
                 }
                 break;
                 
@@ -611,22 +618,18 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     imageFormatType = ImageFormatType.TYPE_INT_RGB;
                     unitsPerPixel = 1;
                 } else {
-                    // System.err.println("Image format is unsupported -- illogical case");
-                    throw new AssertionError();
+                    throw new RuntimeException("Not yet implemented");
                 }
                 break;
                 
             case 2:
-                // System.err.println("Image format is unsupported -- illogical case");
-                // Convert unsupported 2-component format to TYPE_BYTE_LA.
-                throw new AssertionError();
+                throw new RuntimeException("Not yet implemented");
             case 1:
                 if(nioImageType == NioImageBuffer.ImageType.TYPE_BYTE_GRAY) {
                     imageFormatType = ImageFormatType.TYPE_BYTE_GRAY;
                     unitsPerPixel = 1;
                 } else {
-                    // System.err.println("Image format is unsupported -- illogical case");
-                    throw new AssertionError();
+                    throw new RuntimeException("Not yet implemented");
                 }
                 break;
                 
@@ -667,7 +670,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     unitsPerPixel = 4;
                 } else {
                     // System.err.println("Image format is unsupported --- Case 4");
-                    // Convert unsupported 4-component format to TYPE_BYTE_RGBA.
+                    // Convert unsupported format to TYPE_BYTE_RGBA.
                     imageFormatType = ImageFormatType.TYPE_BYTE_RGBA;
                     isSupported = false;
                     unitsPerPixel = 4;
@@ -689,7 +692,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     unitsPerPixel = 3;
                 } else {
                     // System.err.println("Image format is unsupported --- Case 3");
-                    // Convert unsupported 3-component format to TYPE_BYTE_RGB.
+                    // Convert unsupported format to TYPE_BYTE_RGB.
                     imageFormatType = ImageFormatType.TYPE_BYTE_RGB;
                     isSupported = false;
                     unitsPerPixel = 3;
@@ -698,7 +701,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 
             case 2:
                 // System.err.println("Image format is unsupported --- Case 2");
-                // Convert unsupported 2-component format to TYPE_BYTE_LA.
+                // Convert unsupported format to TYPE_BYTE_LA.
                 imageFormatType = ImageFormatType.TYPE_BYTE_LA;
                 isSupported = false;
                 unitsPerPixel = 2;
@@ -710,7 +713,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                     unitsPerPixel = 1;
                 } else {
                     // System.err.println("Image format is unsupported --- Case 1");
-                    // Convert unsupported 1-component format to TYPE_BYTE_GRAY.
+                    // Convert unsupported format to TYPE_BYTE_GRAY.
                     imageFormatType = ImageFormatType.TYPE_BYTE_GRAY;
                     isSupported = false;
                     unitsPerPixel = 1;
@@ -727,12 +730,8 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     /*
      * This method assume that the following members have been initialized :
      * width, height, depth, imageFormatType, and unitsPerPixel.
-     * It also nioImageBuffer isn't null.
      */
     ImageData createNioImageBufferDataObject(NioImageBuffer nioImageBuffer) {
- 
-        // TODO : nioImageBuffer can be null if abgr is unsupported. --- Chien.
-        assert nioImageBuffer != null;
  
         switch(imageFormatType) {
             case TYPE_BYTE_GRAY:
@@ -741,9 +740,16 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             case TYPE_BYTE_BGR:
             case TYPE_BYTE_RGBA:
             case TYPE_BYTE_ABGR:
-                return new ImageData(ImageDataType.TYPE_BYTE_BUFFER,
-                        width * height * depth * unitsPerPixel,
-                        width, height, nioImageBuffer);
+                if(nioImageBuffer != null) {
+                    return new ImageData(ImageDataType.TYPE_BYTE_BUFFER,
+                            width * height * depth * unitsPerPixel,
+                            width, height, nioImageBuffer);
+                } else {
+                    // This is needed only if abgr is unsupported.
+                    return new ImageData(ImageDataType.TYPE_BYTE_BUFFER,
+                            width * height * depth * unitsPerPixel,
+                            width, height);
+                }
             case TYPE_INT_RGB:
             case TYPE_INT_BGR:
             case TYPE_INT_ARGB:
@@ -1151,6 +1157,30 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
               *
               *
               */
+        }
+    }
+    
+     /*
+     * copy the complete unsupported NioImageBuffer into a supported BYTE_BUFFER format
+     */
+    void copyUnsupportedNioImageToImageData(NioImageBuffer nioImage, int srcX, int srcY,
+            int dstX, int dstY, int copyWidth, int copyHeight, ImageData iData) {
+
+        assert (iData.getType() == ImageDataType.TYPE_BYTE_BUFFER);
+        assert (getImageFormatType() == ImageFormatType.TYPE_BYTE_RGBA);  
+        
+        int length = copyWidth * copyHeight;
+        ByteBuffer srcBuffer = (ByteBuffer) nioImage.getDataBuffer();
+        srcBuffer.rewind();
+        ByteBuffer dstBuffer = iData.getAsByteBuffer();
+        dstBuffer.rewind();
+        
+        // Do copy and swap.
+        for(int i = 0; i < length; i +=4) {
+            dstBuffer.put(i, srcBuffer.get(i+3));
+            dstBuffer.put(i+1, srcBuffer.get(i+2));
+            dstBuffer.put(i+2, srcBuffer.get(i+1));
+            dstBuffer.put(i+3, srcBuffer.get(i));
         }
     }
     
@@ -1674,7 +1704,8 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     
     // Lock out user thread from modifying variables by using synchronized routines
     void evaluateExtensions(Canvas3D canvas) {
-        
+        // For performance reason the ordering of the following 2 statements is intentional.
+        // So that we only need to do format conversion for imageData only
         evaluateExtABGR(canvas.extensionsSupported);
         evaluateExtNonPowerOfTwo(canvas.textureExtendedFeatures);
         
@@ -1795,6 +1826,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         imageFormatType = ImageFormatType.TYPE_BYTE_RGBA;
         imageTypeIsSupported = false;
         
+        // Only need to convert imageData
         imageData.convertFromABGRToRGBA();
         
     }
@@ -2328,9 +2360,9 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 case TYPE_BYTE_BUFFER:
                 case TYPE_INT_BUFFER:                    
                     nio = (NioImageBuffer) byRefImage;
-                    data = (Buffer) nio.getDataBuffer();
+                    data = nio.getDataBuffer();
                 default:
-                    assert false;
+                    throw new AssertionError();
             }
         }
         
@@ -2626,48 +2658,64 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             return null;
         }
         
-        // Note : Highly inefficient for depth > 0 case.
-        // This method doesn't take into account of depth, it is assuming that
-        // depth == 0, which is true for ImageComponent2D.
         void convertFromABGRToRGBA() {
             int i;
-            byte[] srcBuffer, dstBuffer;
-            srcBuffer = getAsByteArray();
             
-            if(dataIsByRef) {
-                dstBuffer = new byte[length];
+            if(imageDataType == ImageComponentRetained.ImageDataType.TYPE_BYTE_ARRAY) {
+                // Note : Highly inefficient for depth > 0 case.
+                // This method doesn't take into account of depth, it is assuming that
+                // depth == 0, which is true for ImageComponent2D.
+                byte[] srcBuffer, dstBuffer;
+                srcBuffer = getAsByteArray();
+                
+                if(dataIsByRef) {
+                    dstBuffer = new byte[length];
+                    // Do copy and swap.
+                    for(i = 0; i < length; i +=4) {
+                        dstBuffer[i] = srcBuffer[i+3];
+                        dstBuffer[i+1] = srcBuffer[i+2];
+                        dstBuffer[i+2] = srcBuffer[i+1];
+                        dstBuffer[i+3] = srcBuffer[i];
+                    }
+                    data = dstBuffer;
+                    dataIsByRef = false;
+                    
+                } else {
+                    byte a, b;
+                    // Do swap in place.
+                    for(i = 0; i < length; i +=4) {
+                        a = srcBuffer[i];
+                        b = srcBuffer[i+1];
+                        srcBuffer[i] = srcBuffer[i+3];
+                        srcBuffer[i+1]  = srcBuffer[i+2];
+                        srcBuffer[i+2] = b;
+                        srcBuffer[i+3] = a;
+                    }
+                } 
+            }
+            else if(imageDataType == ImageComponentRetained.ImageDataType.TYPE_BYTE_BUFFER) {
+          
+                assert dataIsByRef;
+                ByteBuffer srcBuffer, dstBuffer;
+                
+                srcBuffer = getAsByteBuffer();
+                srcBuffer.rewind();
+                
+                ByteOrder order =  ByteOrder.nativeOrder();
+                dstBuffer = ByteBuffer.allocateDirect(length).order(order);
+                dstBuffer.rewind();
+                
                 // Do copy and swap.
                 for(i = 0; i < length; i +=4) {
-                    dstBuffer[i] = srcBuffer[i+3];
-                    dstBuffer[i+1] = srcBuffer[i+2];
-                    dstBuffer[i+2] = srcBuffer[i+1];
-                    dstBuffer[i+3] = srcBuffer[i];
+                    dstBuffer.put(i, srcBuffer.get(i+3));
+                    dstBuffer.put(i+1, srcBuffer.get(i+2));
+                    dstBuffer.put(i+2, srcBuffer.get(i+1));
+                    dstBuffer.put(i+3, srcBuffer.get(i));
                 }
-                data = dstBuffer;
-                dataIsByRef = false;
                 
-            } else {
-                byte a, b;
-                // Do swap in place.
-                for(i = 0; i < length; i +=4) {
-                    a = srcBuffer[i];
-                    b = srcBuffer[i+1];
-                    srcBuffer[i] = srcBuffer[i+3];
-                    srcBuffer[i+1]  = srcBuffer[i+2];
-                    srcBuffer[i+2] = b;
-                    srcBuffer[i+3] = a;
-                }
+                dataIsByRef = false;
+
             }
-            
         }
-        
-    }
-    
-    int getNumberOfComponents() {
-        return numberOfComponents;
-    }
-    
-    void setNumberOfComponents(int numberOfComponents) {
-        this.numberOfComponents = numberOfComponents;
     }
 }

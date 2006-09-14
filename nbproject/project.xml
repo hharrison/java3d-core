@@ -12,6 +12,10 @@
                     <location>../j3d-core-utils/src/classes/share</location>
                 </source-folder>
                 <source-folder>
+                    <label>../../../jogl/1.0/jogl/src</label>
+                    <location>../../../jogl/1.0/jogl/src</location>
+                </source-folder>
+                <source-folder>
                     <label>src/classes/share</label>
                     <type>java</type>
                     <location>src/classes/share</location>
@@ -20,6 +24,26 @@
                     <label>../j3d-core-utils/src/classes/share</label>
                     <type>java</type>
                     <location>../j3d-core-utils/src/classes/share</location>
+                </source-folder>
+                <source-folder>
+                    <label>src/classes/x11</label>
+                    <type>java</type>
+                    <location>src/classes/x11</location>
+                </source-folder>
+                <source-folder>
+                    <label>build-tools</label>
+                    <type>java</type>
+                    <location>build-tools</location>
+                </source-folder>
+                <source-folder>
+                    <label>src/classes/jogl</label>
+                    <type>java</type>
+                    <location>src/classes/jogl</location>
+                </source-folder>
+                <source-folder>
+                    <label>../../../jogl/1.0/jogl/src</label>
+                    <type>java</type>
+                    <location>../../../jogl/1.0/jogl/src</location>
                 </source-folder>
             </folders>
             <ide-actions>
@@ -57,6 +81,22 @@
                         <label>../j3d-core-utils/src/classes/share</label>
                         <location>../j3d-core-utils/src/classes/share</location>
                     </source-folder>
+                    <source-folder style="packages">
+                        <label>src/classes/x11</label>
+                        <location>src/classes/x11</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>build-tools</label>
+                        <location>build-tools</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>src/classes/jogl</label>
+                        <location>src/classes/jogl</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>../../../jogl/1.0/jogl/src</label>
+                        <location>../../../jogl/1.0/jogl/src</location>
+                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -76,7 +116,11 @@
             <compilation-unit>
                 <package-root>src/classes/share</package-root>
                 <package-root>../j3d-core-utils/src/classes/share</package-root>
-                <classpath mode="compile">../vecmath/build/debug/lib/ext/vecmath.jar</classpath>
+                <package-root>src/classes/x11</package-root>
+                <package-root>build-tools</package-root>
+                <package-root>src/classes/jogl</package-root>
+                <package-root>../../../jogl/1.0/jogl/src</package-root>
+                <classpath mode="compile">../vecmath/build/debug/lib/ext/vecmath.jar:../../../jogl/1.0/jogl/build/jogl.jar</classpath>
                 <built-to>build/default/debug/lib/ext/j3dcore.jar</built-to>
                 <built-to>build/default/debug/lib/ext/j3dutils.jar</built-to>
                 <source-level>1.5</source-level>

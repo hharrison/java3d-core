@@ -296,8 +296,12 @@ public class Background extends Leaf {
     public Background(ImageComponent2D image) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
+       
+        if((image != null) && 
+                (image.getImageClass() == ImageComponent.ImageClass.NIO_IMAGE_BUFFER)) {     
+            throw new IllegalArgumentException(J3dI18N.getString("Background14"));
+        }
 
-        // TODO check IllegalArgumentException on NIO_IMAGE_BUFFER case.   -- Chien        
         ((BackgroundRetained)this.retained).setImage(image);
     }
 
@@ -406,7 +410,10 @@ public class Background extends Leaf {
 
         BackgroundRetained bgRetained = (BackgroundRetained)this.retained;
 
-        // TODO check IllegalArgumentException on NIO_IMAGE_BUFFER case.   -- Chien
+        if((image != null) && 
+                (image.getImageClass() == ImageComponent.ImageClass.NIO_IMAGE_BUFFER)) {     
+            throw new IllegalArgumentException(J3dI18N.getString("Background14"));
+        }
 
         // Do illegal sharing check
         if(image != null) {

@@ -3139,11 +3139,11 @@ System.out.println("......tb.soleUser= " +
 		ImageComponentRetained newImage = newTex.images[0][0];
 
 		RasterRetained geo = (RasterRetained)ra.geometry();
-		if (oldImage != null && oldImage.isByReference()) {
-		    removeNodeComponent(oldTex);
+		if (oldImage != null) {
+                    removeNodeComponent(oldImage);
 		}		
-		if (newImage != null && newImage.isByReference()) {
-		    addNodeComponent(newTex);
+		if (newImage != null) {
+                    addNodeComponent(newImage);
 		}
 	    }
 		
@@ -5340,15 +5340,12 @@ System.out.println("......tb.soleUser= " +
                 geometryBackground = back;
             }
             if (background.image != null) {
-                if (background.image.isByReference())
-                    removeNodeComponent(background.image);
+                removeNodeComponent(background.image);
             }
             if (back.image != null) {
                 // May need to optimize later
                 background.initImage((ImageComponent2D)back.image.source);
-                if (back.image.isByReference()) {
-                    addNodeComponent(back.image);
-                }
+                addNodeComponent(back.image);
             } else {
                 background.initImage(null);
             }
