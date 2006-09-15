@@ -4419,7 +4419,10 @@ public class Canvas3D extends Canvas {
     
     void restoreTextureBin() {
 
-        if(textureBin != null) {
+        // Need to check TextureBin's texUnitState and shaderBin for null
+        // TextureBin can get clear() if there isn't any RM under it.
+        if((textureBin != null) && (textureBin.texUnitState != null)
+        && (textureBin.shaderBin != null)) {
             textureBin.updateAttributes(this);
         }
     } 
