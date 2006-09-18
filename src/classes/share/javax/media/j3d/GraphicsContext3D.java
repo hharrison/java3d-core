@@ -2248,111 +2248,118 @@ public class GraphicsContext3D extends Object   {
     }
 
     void doReadRaster(Raster raster) {
-	if (!canvas3d.firstPaintCalled) {
-	    readRasterReady = true;
-	    return;
-	}
-        
-	RasterRetained ras = (RasterRetained)raster.retained;
+        if (!canvas3d.firstPaintCalled) {
+            readRasterReady = true;
+            return;
+        }
+
+        RasterRetained ras = (RasterRetained)raster.retained;
         Dimension canvasSize = canvas3d.getSize();
         Dimension rasterSize = new Dimension();
-        ImageComponent2DRetained image = ras.image;  
-        
-	int format = 0; // Not use in case of DepthComponent read
+        ImageComponent2DRetained image = ras.image;
 
-	if (canvas3d.ctx == null) {
-	    // Force an initial clear if one has not yet been done
-	    doClear();
-	}
+        int format = 0; // Not use in case of DepthComponent read
+
+        if (canvas3d.ctx == null) {
+            // Force an initial clear if one has not yet been done
+            doClear();
+        }
 
         if (J3dDebug.devPhase && J3dDebug.debug) {
             J3dDebug.doAssert(canvas3d.ctx != null, "canvas3d.ctx != null");
         }
 
-        ras.getSize(rasterSize);        
-	// allocate read buffer space
+        ras.getSize(rasterSize);
+        // allocate read buffer space
         if ( (ras.type & Raster.RASTER_COLOR) != 0) {
-	    if ((rasterSize.width > ras.image.width) ||
-		(rasterSize.height > ras.image.height)) {
-		throw new RuntimeException(J3dI18N.getString("GraphicsContext3D27"));
-	    }
+            if ((rasterSize.width > ras.image.width) ||
+                    (rasterSize.height > ras.image.height)) {
+                throw new RuntimeException(J3dI18N.getString("GraphicsContext3D27"));
+            }
         }
 
         if ( (ras.type & Raster.RASTER_DEPTH) != 0) {
             int size = ras.depthComponent.height * ras.depthComponent.width;
-            if (ras.depthComponent.type 
-		== DepthComponentRetained.DEPTH_COMPONENT_TYPE_FLOAT) {
+            if (ras.depthComponent.type
+                    == DepthComponentRetained.DEPTH_COMPONENT_TYPE_FLOAT) {
                 if (floatBuffer.length < size)
                     floatBuffer = new float[size];
             } else { // type INT or NATIVE
                 if (intBuffer.length < size)
                     intBuffer = new int[size];
             }
-	    if ((rasterSize.width > ras.depthComponent.width) ||
-		(rasterSize.height > ras.depthComponent.height)) {
-		throw new RuntimeException(J3dI18N.getString("GraphicsContext3D28"));		
-	    }
-        }
-	
-        if ( (ras.type & Raster.RASTER_COLOR) != 0) {
-            
-	    // If by reference, check if a copy needs to be made
-	    // and also evaluate the storedFormat ..
-	    if (image.isByReference()) {
-		image.geomLock.getLock();
-		image.evaluateExtensions(canvas3d);
-		image.geomLock.unLock();
-	    }
-            else {
- 		image.evaluateExtensions(canvas3d);               
+            if ((rasterSize.width > ras.depthComponent.width) ||
+                    (rasterSize.height > ras.depthComponent.height)) {
+                throw new RuntimeException(J3dI18N.getString("GraphicsContext3D28"));
             }
-	}
+        }
+
+        if ( (ras.type & Raster.RASTER_COLOR) != 0) {
+
+            // If by reference, check if a copy needs to be made
+            // and also evaluate the storedFormat ..
+            if (image.isByReference()) {
+                image.geomLock.getLock();
+                image.evaluateExtensions(canvas3d);
+                image.geomLock.unLock();
+            } else {
+                // If image has a null buffer ( BufferedImage)
+                if (image.imageData == null)  {
+                    image.createBlankImageData();
+                }
+                // Check for possible format conversion in imageData
+                else {
+                    // Format convert imageData if format is unsupported.
+                    image.evaluateExtensions(canvas3d);
+                }
+            }
+        }
 
         // We need to catch NullPointerException when the dsi
         // gets yanked from us during a remove.
         try {
-	  if (canvas3d.drawingSurfaceObject.renderLock()) {
-              // Make the context current and read the raster information
-              canvas3d.makeCtxCurrent();
-              canvas3d.syncRender(canvas3d.ctx, true);
-              Point rasterSrcOffset = new Point();
-              ras.getDstOffset(rasterSrcOffset);
+            if (canvas3d.drawingSurfaceObject.renderLock()) {
+                // Make the context current and read the raster information
+                canvas3d.makeCtxCurrent();
+                canvas3d.syncRender(canvas3d.ctx, true);
+                Point rasterSrcOffset = new Point();
+                ras.getDstOffset(rasterSrcOffset);
 
-              DepthComponentRetained depthComp = ras.depthComponent;
-              int depthType = 0;
-              if(depthComp != null) {
-                  depthType = depthComp.type;
-              }
-              Pipeline.getPipeline().readRaster(canvas3d.ctx,
-                      ras.type, rasterSrcOffset.x, rasterSrcOffset.y,
-                      rasterSize.width, rasterSize.height, canvasSize.height,
-                      image.getImageDataTypeIntValue(),
-                      image.getImageFormatTypeIntValue(false),
-                      image.imageData.get(), 
-                      depthType, depthComp);
-              
-              canvas3d.drawingSurfaceObject.unLock();
-          }
-	} catch (NullPointerException ne) {
-	    canvas3d.drawingSurfaceObject.unLock();
-	    throw ne;
-	}
+                DepthComponentRetained depthComp = ras.depthComponent;
+                int depthType = 0;
+                if(depthComp != null) {
+                    depthType = depthComp.type;
+                }
+                Pipeline.getPipeline().readRaster(canvas3d.ctx,
+                        ras.type, rasterSrcOffset.x, rasterSrcOffset.y,
+                        rasterSize.width, rasterSize.height, canvasSize.height,
+                        image.getImageDataTypeIntValue(),
+                        image.getImageFormatTypeIntValue(false),
+                        image.imageData.get(),
+                        depthType, depthComp);
+
+                canvas3d.drawingSurfaceObject.unLock();
+            }
+        } catch (NullPointerException ne) {
+            canvas3d.drawingSurfaceObject.unLock();
+            throw ne;
+        }
 
         if ( (ras.type & Raster.RASTER_DEPTH) != 0) {
-	    if (ras.depthComponent.type == 
-			DepthComponentRetained.DEPTH_COMPONENT_TYPE_FLOAT)
+            if (ras.depthComponent.type ==
+                    DepthComponentRetained.DEPTH_COMPONENT_TYPE_FLOAT)
                 ((DepthComponentFloatRetained)ras.depthComponent).retrieveDepth(
-				floatBuffer, rasterSize.width, rasterSize.height);
-	    else if (ras.depthComponent.type == 
-			DepthComponentRetained.DEPTH_COMPONENT_TYPE_INT)
+                        floatBuffer, rasterSize.width, rasterSize.height);
+            else if (ras.depthComponent.type ==
+                    DepthComponentRetained.DEPTH_COMPONENT_TYPE_INT)
                 ((DepthComponentIntRetained)ras.depthComponent).retrieveDepth(
-				intBuffer, rasterSize.width, rasterSize.height);
-	    else if (ras.depthComponent.type == 
-			DepthComponentRetained.DEPTH_COMPONENT_TYPE_NATIVE)
-               ((DepthComponentNativeRetained)ras.depthComponent).retrieveDepth(
-				intBuffer, rasterSize.width, rasterSize.height);
+                        intBuffer, rasterSize.width, rasterSize.height);
+            else if (ras.depthComponent.type ==
+                    DepthComponentRetained.DEPTH_COMPONENT_TYPE_NATIVE)
+                ((DepthComponentNativeRetained)ras.depthComponent).retrieveDepth(
+                        intBuffer, rasterSize.width, rasterSize.height);
         }
-	readRasterReady = true;
+        readRasterReady = true;
     }
 
     /**
