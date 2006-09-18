@@ -265,7 +265,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 iftValue = TYPE_INT_ARGB;
                 break;
             default:
-                assert false;
+                throw new AssertionError();
         }
         return iftValue;
     }
@@ -350,7 +350,6 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         refImage = new Object[depth];        
     }
     
-    // Need to review this method -- Chien.
     int evaluateImageType(RenderedImage ri) {
         int imageType = BufferedImage.TYPE_CUSTOM;
         
@@ -584,7 +583,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             case 4:
                 if(nioImageType == NioImageBuffer.ImageType.TYPE_4BYTE_ABGR) {
                     // TODO : This approach will lead to a very slow path
-                    // for unsupported case. -- Chien.
+                    // for unsupported case.
                     if(abgrSupported) {
                         imageFormatType = ImageFormatType.TYPE_BYTE_ABGR;
                     } else {
@@ -653,7 +652,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 if(imageType == BufferedImage.TYPE_4BYTE_ABGR) {
                     
                     // TODO : This approach will lead to a very slow path
-                    // for unsupported case. -- Chien.
+                    // for unsupported case.
                     if(abgrSupported) {
                         imageFormatType = ImageFormatType.TYPE_BYTE_ABGR;
                     } else {

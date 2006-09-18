@@ -304,15 +304,15 @@ class NoopPipeline extends Pipeline {
     // GraphicsContext3D methods
     //
 
-    // Native method for readRaster
-    void readRasterNative(Context ctx,
+    void readRaster(Context ctx,
             int type, int xSrcOffset, int ySrcOffset,
-            int width, int height, int hCanvas, int format,
-            ImageComponentRetained image,
-            DepthComponentRetained depth,
-            GraphicsContext3D gc) {
+            int width, int height, int hCanvas,
+            int imageDataType,             int imageFormat,
+            Object imageBuffer,
+            int depthFormat,
+            Object depthBuffer) {
+        
     }
-
 
     // ---------------------------------------------------------------------
 
@@ -1393,6 +1393,13 @@ class NoopPipeline extends Pipeline {
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha)  {
 
     }
+    
+    void executeRasterDepth(Context ctx, float posX, float posY, float posZ,
+            int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight, 
+            int depthWidth, int depthHeight, int depthType, Object depthData) {
+        
+    }
+    
     // The native method for setting the ModelView matrix.
     void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {
     }

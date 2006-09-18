@@ -2214,7 +2214,7 @@ void updateTexture2DImage(
     jobject data)
 {
     void *imageObjPtr;
-    GLenum format = 0, internalFormat = 0, type = 0;
+    GLenum format = 0, internalFormat = 0, type = GL_UNSIGNED_INT_8_8_8_8;
     JNIEnv table = *env;
     GLboolean forceAlphaToOne = GL_FALSE;
     
@@ -2383,7 +2383,7 @@ void updateTexture2DSubImage(
     jobject data) {
  
     void *imageObjPtr;
-    GLenum format = 0, internalFormat = 0, type = 0;
+    GLenum format = 0, internalFormat = 0, type = GL_UNSIGNED_INT_8_8_8_8;
     JNIEnv table = *env;
     GLboolean forceAlphaToOne = GL_FALSE;
     jbyte *tmpByte;
@@ -2887,7 +2887,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
     jobject data)
 {
     void *imageObjPtr;
-    GLenum format = 0, internalFormat = 0, type = 0;
+    GLenum format = 0, internalFormat = 0, type = GL_UNSIGNED_INT_8_8_8_8;
     JNIEnv table = *env;
     GLboolean forceAlphaToOne = GL_FALSE;
 
@@ -3054,7 +3054,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
     jobject data) {
  
     void *imageObjPtr;
-    GLenum format = 0, internalFormat = 0, type = 0;
+    GLenum format = 0, internalFormat = 0, type = GL_UNSIGNED_INT_8_8_8_8;
     JNIEnv table = *env;
     GLboolean forceAlphaToOne = GL_FALSE;
     jbyte *tmpByte;

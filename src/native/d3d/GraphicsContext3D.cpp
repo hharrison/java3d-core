@@ -13,6 +13,20 @@
 #include "StdAfx.h"
 
 extern "C" JNIEXPORT
+void JNICALL Java_javax_media_j3d_NativePipeline_readRaster(
+    JNIEnv *env, jobject obj, jlong ctx,
+    jint type, jint xOffset, jint yOffset, 
+    jint wRaster, jint hRaster, jint hCanvas,
+    jint imageDataType,
+    jint imageFormat, jobject imageBuffer,
+    jint depthFormat, jobject depthBuffer)
+{
+    printf("[Java3D] D3D : readRaster is not implemented yet.\n");
+
+}
+
+#if 0
+extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_readRasterNative(
     JNIEnv *env, jobject obj, jlong ctx,
     jint type, jint xOffset, jint yOffset, 
@@ -152,3 +166,5 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readRasterNative(
         }
     }
 }
+
+#endif

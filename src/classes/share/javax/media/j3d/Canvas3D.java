@@ -5041,6 +5041,13 @@ public class Canvas3D extends Canvas {
         Pipeline.getPipeline().textureFillRaster(ctx, texMinU, texMaxU, texMinV, texMaxV,
                 mapMinX, mapMaxX, mapMinY, mapMaxY, mapZ, alpha);
     }
+
+    void executeRasterDepth(Context ctx, float posX, float posY, float posZ,
+            int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight, 
+            int depthWidth, int depthHeight, int depthType, Object depthData) {
+        Pipeline.getPipeline().executeRasterDepth(ctx, posX, posY, posZ,
+                srcOffsetX, srcOffsetY, rasterWidth, rasterHeight, depthWidth, depthHeight, depthType, depthData);
+    }
     
     // The native method for setting the ModelView matrix.
     void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {

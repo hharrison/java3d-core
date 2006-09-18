@@ -128,7 +128,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
             imageTypeIsSupported = isImageTypeSupported(nioImage);
 
        
-            // TODO : Need to handle null .... - Chien
+            // TODO : Need to handle null ....
             imageData = createNioImageBufferDataObject(null);
         }
         else {
@@ -140,7 +140,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
         }
         
         if (imageTypeIsSupported) {
-             // TODO : Need to handle this ..... case .... --- Chien
+             // TODO : Need to handle this ..... case .... 
             // copySupportedImageToImageData(image, index, imageData);
         } else {
              // System.err.println("Image format is unsupported -- illogical case");

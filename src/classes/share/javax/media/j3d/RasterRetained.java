@@ -166,8 +166,7 @@ class RasterRetained extends GeometryRetained {
 	this.width = width;
 	this.height = height;
 	geomLock.unLock();
-    }  
- 
+    }   
  
     /**
      * Gets the size of the array of pixels to be copied.
@@ -176,7 +175,6 @@ class RasterRetained extends GeometryRetained {
     final void getSize(Dimension size) {
 	size.setSize(width, height);
     }  
-
 
     /**
      * Sets the destination pixel offset of the upper-left
@@ -475,27 +473,20 @@ class RasterRetained extends GeometryRetained {
             
             computeObjCoord(cv, winCoord, adjPos, localToImagePlate); 
 
-            // TODO : Need to handle int, float and native type.
-            /*
             cv.executeRasterDepth(cv.ctx,
-                    adjPos.x,
-                    adjPos.y,
-                    adjPos.z,
+                    (float) adjPos.x,
+                    (float) adjPos.y,
+                    (float) adjPos.z,
                     srcOffset.x,
                     srcOffset.y,
+                    width,
+                    height,
                     depthComponent.width,
                     depthComponent.height,
                     depthComponent.type,
                     ((DepthComponentIntRetained) depthComponent).depthData);
                     
-            */
-            
-            
-            System.out.println("RASTER_DEPTH and RASTER_COLOR_DEPTH : Not implemented yet !!!");
-
         }
-
-
     }
     
     

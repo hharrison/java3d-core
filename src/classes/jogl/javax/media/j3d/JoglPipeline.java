@@ -2677,76 +2677,123 @@ class JoglPipeline extends Pipeline {
     //
     // GraphicsContext3D methods
     //
-    
+
     // Native method for readRaster
-    void readRasterNative(Context ctx,
+    void readRaster(Context ctx,
             int type, int xSrcOffset, int ySrcOffset,
-            int width, int height, int hCanvas, int format,
-            ImageComponentRetained image,
-            DepthComponentRetained depth,
-            GraphicsContext3D gc) {
-        if (VERBOSE) System.err.println("JoglPipeline.readRasterNative()");
-        
+            int width, int height, int hCanvas,
+            int imageDataType,
+            int imageFormat,
+            Object imageBuffer,
+            int depthFormat,
+            Object depthBuffer) {
+
         GL gl = context(ctx).getGL();
         gl.glPixelStorei(GL.GL_PACK_ROW_LENGTH, width);
         gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 1);
         int yAdjusted = hCanvas - height - ySrcOffset;
-        
+
         if ((type & Raster.RASTER_COLOR) != 0) {
-            byte[] byteData = gc.byteBuffer;
             int oglFormat = 0;
-            
-            switch (format) {
-                case ImageComponentRetained.TYPE_BYTE_RGBA:
-                    // all RGB types are stored as RGBA
-                    oglFormat = GL.GL_RGBA;
-                    break;
-                case ImageComponentRetained.TYPE_BYTE_RGB:
-                    oglFormat = GL.GL_RGB;
-                    break;
-                    
-                case ImageComponentRetained.TYPE_BYTE_ABGR:
-                    if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
-                        oglFormat = GL.GL_ABGR_EXT;
-                    }
-                    break;
-                    
-                case ImageComponentRetained.TYPE_BYTE_BGR:
-                    oglFormat = GL.GL_BGR;
-                    break;
-                    
-                case ImageComponentRetained.TYPE_BYTE_LA:
-                    // all LA types are stored as LA8
-                    oglFormat = GL.GL_LUMINANCE_ALPHA;
-                    break;
-                case ImageComponentRetained.TYPE_BYTE_GRAY:
-                case ImageComponentRetained.TYPE_USHORT_GRAY:
-                    throw new AssertionError("illegal format");
+            if(imageDataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) {
+
+                switch (imageFormat) {
+                    case ImageComponentRetained.TYPE_BYTE_BGR:
+                        oglFormat = GL.GL_BGR;
+                        break;
+                    case ImageComponentRetained.TYPE_BYTE_RGB:
+                        oglFormat = GL.GL_RGB;
+                        break;
+                    case ImageComponentRetained.TYPE_BYTE_ABGR:
+                        if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
+                            oglFormat = GL.GL_ABGR_EXT;
+                        } else {
+                            assert false;
+                            return;
+                        }
+                        break;
+                    case ImageComponentRetained.TYPE_BYTE_RGBA:
+                        // all RGB types are stored as RGBA
+                        oglFormat = GL.GL_RGBA;
+                        break;
+                    case ImageComponentRetained.TYPE_BYTE_LA:
+                        // all LA types are stored as LA8
+                        oglFormat = GL.GL_LUMINANCE_ALPHA;
+                        break;
+                    case ImageComponentRetained.TYPE_BYTE_GRAY:
+                    case ImageComponentRetained.TYPE_USHORT_GRAY:
+                    case ImageComponentRetained.TYPE_INT_BGR:
+                    case ImageComponentRetained.TYPE_INT_RGB:
+                    case ImageComponentRetained.TYPE_INT_ARGB:
+                    default:
+                        assert false;
+                        return;
+                }
+
+                gl.glReadPixels(xSrcOffset, yAdjusted, width, height,
+                        oglFormat, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[]) imageBuffer));
+
+
+            } else if(imageDataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) {
+                int intType = GL.GL_UNSIGNED_INT_8_8_8_8;
+                boolean forceAlphaToOne = false;
+
+                switch (imageFormat) {
+                    /* GL_BGR */
+                    case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
+                        oglFormat = GL.GL_RGBA;
+                        intType = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                        forceAlphaToOne = true;
+                        break;
+                    case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
+                        forceAlphaToOne = true;
+                        /* Fall through to next case */
+                    case ImageComponentRetained.TYPE_INT_ARGB:
+                        oglFormat = GL.GL_BGRA;
+                        intType = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                        break;
+                        /* This method only supports 3 and 4 components formats and INT types. */
+                    case ImageComponentRetained.TYPE_BYTE_LA:
+                    case ImageComponentRetained.TYPE_BYTE_GRAY:
+                    case ImageComponentRetained.TYPE_USHORT_GRAY:
+                    case ImageComponentRetained.TYPE_BYTE_BGR:
+                    case ImageComponentRetained.TYPE_BYTE_RGB:
+                    case ImageComponentRetained.TYPE_BYTE_RGBA:
+                    case ImageComponentRetained.TYPE_BYTE_ABGR:
+                    default:
+                        assert false;
+                        return;
+                }
+
+                /* Force Alpha to 1.0 if needed */
+                if(forceAlphaToOne) {
+                    gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 0.0f);
+                    gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+                }
+
+                gl.glReadPixels(xSrcOffset, yAdjusted, width, height,
+                        oglFormat, intType, IntBuffer.wrap((int[]) imageBuffer));
+
+            } else {
+                assert false;
             }
-            
-            gl.glReadPixels(xSrcOffset, yAdjusted, width, height,
-                    oglFormat, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap(byteData));
         }
         
         if ((type & Raster.RASTER_DEPTH) != 0) {
-            int wDepth = depth.width;
-            int depthType = depth.type;
-            
-            if (depthType == DepthComponentRetained.DEPTH_COMPONENT_TYPE_INT) {
-                int[] intData = gc.intBuffer;
+          
+            if (depthFormat == DepthComponentRetained.DEPTH_COMPONENT_TYPE_INT) {
                 // yOffset is adjusted for OpenGL - Y upward
                 gl.glReadPixels(xSrcOffset, yAdjusted, width, height,
-                        GL.GL_DEPTH_COMPONENT, GL.GL_UNSIGNED_INT, IntBuffer.wrap(intData));
+                        GL.GL_DEPTH_COMPONENT, GL.GL_UNSIGNED_INT, IntBuffer.wrap((int[]) depthBuffer));
             } else {
                 // DEPTH_COMPONENT_TYPE_FLOAT
-                float[] floatData = gc.floatBuffer;
                 // yOffset is adjusted for OpenGL - Y upward
                 gl.glReadPixels(xSrcOffset, yAdjusted, width, height,
-                        GL.GL_DEPTH_COMPONENT, GL.GL_FLOAT, FloatBuffer.wrap(floatData));
+                        GL.GL_DEPTH_COMPONENT, GL.GL_FLOAT, FloatBuffer.wrap((float[]) depthBuffer));
             }
-        }
-    }
-    
+        }        
+        
+    }   
     
     // ---------------------------------------------------------------------
     
@@ -5736,7 +5783,7 @@ class JoglPipeline extends Pipeline {
         
         int format = 0;
         int internalFormat = 0;
-        int type = 0;
+        int type = GL.GL_UNSIGNED_INT_8_8_8_8;
         boolean forceAlphaToOne = false;
         
         switch (textureFormat) {
@@ -5876,7 +5923,7 @@ class JoglPipeline extends Pipeline {
         
         int format = 0;
         int internalFormat = 0;
-        int type = 0;
+        int type = GL.GL_UNSIGNED_INT_8_8_8_8;
         int numBytes = 0;
         boolean forceAlphaToOne = false;
         boolean pixelStore = false;
@@ -6233,7 +6280,7 @@ class JoglPipeline extends Pipeline {
         GL gl = context(ctx).getGL();
         
         int format = 0, internalFormat = 0;
-        int type = 0;
+        int type = GL.GL_UNSIGNED_INT_8_8_8_8;
         boolean forceAlphaToOne = false;
         
         // check if we are trying to draw NPOT on a system that doesn't support it
@@ -6377,7 +6424,7 @@ class JoglPipeline extends Pipeline {
         
         int format = 0, internalFormat=0;
         int numBytes = 0;
-        int type = 0;
+        int type = GL.GL_UNSIGNED_INT_8_8_8_8;
         boolean forceAlphaToOne = false;
         boolean pixelStore = false;
         
@@ -7523,7 +7570,6 @@ class JoglPipeline extends Pipeline {
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY)  {
         if (VERBOSE) System.err.println("JoglPipeline.textureFillBackground()");
         
-        JoglContext jctx = (JoglContext) ctx;
         GLContext context = context(ctx);
         GL gl = context.getGL();
         
@@ -7569,7 +7615,6 @@ class JoglPipeline extends Pipeline {
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha)  {
         if (VERBOSE) System.err.println("JoglPipeline.textureFillRaster()");
         
-        JoglContext jctx = (JoglContext) ctx;
         GLContext context = context(ctx);
         GL gl = context.getGL();
         
@@ -7610,7 +7655,69 @@ class JoglPipeline extends Pipeline {
         gl.glPopAttrib();
         
     }
-    
+
+    void executeRasterDepth(Context ctx, float posX, float posY, float posZ,
+            int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight,
+            int depthWidth, int depthHeight, int depthFormat, Object depthData) {
+        if (VERBOSE) System.err.println("JoglPipeline.executeRasterDepth()");
+        GLContext context = context(ctx);
+        GL gl = context.getGL();
+
+
+        gl.glRasterPos3f(posX, posY, posZ);
+
+        int[] drawBuf = new int[1];
+        gl.glGetIntegerv(GL.GL_DRAW_BUFFER, drawBuf, 0);
+        /* disable draw buffer */
+        gl.glDrawBuffer(GL.GL_NONE);
+
+        /*
+         * raster position is upper left corner, default for Java3D
+         * ImageComponent currently has the data reverse in Y
+         */
+        gl.glPixelZoom(1.0f, -1.0f);
+        gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, depthWidth);
+        if (srcOffsetX >= 0) {
+            gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, srcOffsetX);
+            if (srcOffsetX + rasterWidth > depthWidth) {
+                rasterWidth = depthWidth - srcOffsetX;
+            }
+        } else {
+            rasterWidth += srcOffsetX;
+            if (rasterWidth > depthWidth) {
+                rasterWidth  = depthWidth;
+            }
+        }
+        if (srcOffsetY >= 0) {
+            gl.glPixelStorei(GL.GL_UNPACK_SKIP_ROWS, srcOffsetY);
+            if (srcOffsetY + rasterHeight > rasterHeight) {
+                rasterHeight = rasterHeight - srcOffsetY;
+            }
+        } else {
+            rasterHeight += srcOffsetY;
+            if (rasterHeight > rasterHeight) {
+                rasterHeight = rasterHeight;
+            }
+        }
+
+
+        if (depthFormat == DepthComponentRetained.DEPTH_COMPONENT_TYPE_INT) {
+            gl.glDrawPixels(rasterWidth, rasterHeight, GL.GL_DEPTH_COMPONENT,
+                    GL.GL_UNSIGNED_INT, IntBuffer.wrap((int[]) depthData));
+        } else { /* DepthComponentRetained.DEPTH_COMPONENT_TYPE_FLOAT */
+            gl.glDrawPixels(rasterWidth, rasterHeight, GL.GL_DEPTH_COMPONENT,
+                    GL.GL_FLOAT, FloatBuffer.wrap((float[]) depthData));
+        }
+
+        /* re-enable draw buffer */
+        gl.glDrawBuffer(drawBuf[0]);
+
+        gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
+        gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, 0);
+        gl.glPixelStorei(GL.GL_UNPACK_SKIP_ROWS, 0);
+
+    }
+     
     // The native method for setting the ModelView matrix.
     void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {
         if (VERBOSE) System.err.println("JoglPipeline.setModelViewMatrix()");

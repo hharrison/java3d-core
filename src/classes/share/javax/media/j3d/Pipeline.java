@@ -423,14 +423,15 @@ abstract class Pipeline {
     //
 
     // Native method for readRaster
-    abstract void readRasterNative(Context ctx,
+    abstract void readRaster(Context ctx,
             int type, int xSrcOffset, int ySrcOffset,
-            int width, int height, int hCanvas, int format,
-            ImageComponentRetained image,
-            DepthComponentRetained depth,
-            GraphicsContext3D gc);
-
-
+            int width, int height, int hCanvas,
+            int imageDataType,
+            int imageFormat,
+            Object imageBuffer,
+            int depthFormat,
+            Object depthBuffer);
+    
     // ---------------------------------------------------------------------
 
     //
@@ -1302,6 +1303,10 @@ abstract class Pipeline {
     abstract void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha);
 
+    abstract void executeRasterDepth(Context ctx, float posX, float posY, float posZ, 
+            int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight, int depthWidth, int depthHeight, 
+            int depthType, Object depthData); 
+    
         // The native method for setting the ModelView matrix.
     abstract void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix);
 

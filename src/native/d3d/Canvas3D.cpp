@@ -364,7 +364,54 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFill(
     GetDevice();
     /* printf("Canvas3D.textureFill()\n"); */
     /* TODO : Implement textureFill() */
+    printf("[Java3D] D3D : textureFill is not implemented yet.\n");
 
+
+}
+
+extern "C" JNIEXPORT
+void JNICALL Java_javax_media_j3d_NativePipeline_textureFillRaster(JNIEnv *env,
+							jobject obj,
+							jlong ctx,
+							jfloat texMinU, 
+							jfloat texMaxU, 
+							jfloat texMinV, 
+							jfloat texMaxV, 
+							jfloat mapMinX, 
+							jfloat mapMaxX, 
+							jfloat mapMinY,
+							jfloat mapMaxY,
+                                                        jfloat mapZ,
+                                                        jfloat alpha)
+{ 
+    GetDevice();
+    /* printf("Canvas3D.textureFillRaster()\n"); */
+    /* TODO : Implement textureFillRaster() */
+    printf("[Java3D] D3D : textureFillRaster is not implemented yet.\n");
+
+}
+
+
+JNIEXPORT
+void JNICALL Java_javax_media_j3d_NativePipeline_executeRasterDepth(JNIEnv *env,
+							jobject obj,
+							jlong ctx,
+							jfloat posX, 
+							jfloat posY, 
+							jfloat posZ, 
+							jint srcOffsetX, 
+							jint srcOffsetY, 
+							jint rasterWidth, 
+							jint rasterHeight,
+							jint depthWidth,
+                                                        jint depthHeight,
+                                                        jint depthFormat,
+                                                        jobject depthData)
+{ 
+    GetDevice();
+    /* printf("Canvas3D.executeRasterDepth()\n"); */
+    /* TODO : Implement executeRasterDepth() */
+    printf("[Java3D] D3D : executeRasterDepth is not implemented yet.\n");
 
 }
 

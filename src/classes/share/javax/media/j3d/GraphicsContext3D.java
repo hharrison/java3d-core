@@ -12,6 +12,7 @@
 
 package javax.media.j3d;
 
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import javax.vecmath.*;
 import java.util.Vector;
@@ -2203,12 +2204,27 @@ public class GraphicsContext3D extends Object   {
      * @see DepthComponent
      */
     public void readRaster(Raster raster) {
-        // TODO Chien : illegal sharing checks; throw IllegalSharingException if:
-        //
-        // 1) the Raster or its ImageComponent2D is live
-        // 2) the Raster's ImageComponent2D is being used by an immediate mode context
-        // 3) the Raster's ImageComponent2D is being used as an off-screen buffer
-
+        if ((raster != null) && raster.isLive()) {
+            ImageComponent2D image = raster.getImage();
+            if (image != null){
+                ImageComponent2DRetained imageRetained = (ImageComponent2DRetained)image.retained;
+                if (image.getImageClass() != ImageComponent.ImageClass.BUFFERED_IMAGE) {
+                    throw new IllegalArgumentException(J3dI18N.getString("GraphicsContext3D33"));
+                }
+                if (image.isByReference() && (image.getImage() == null)) {
+                    throw new IllegalArgumentException(J3dI18N.getString("GraphicsContext3D34"));
+                }
+                if (imageRetained.getNumberOfComponents() < 3) {
+                    throw new IllegalArgumentException(J3dI18N.getString("GraphicsContext3D35"));                  
+                }
+                if (image.isLive()) {
+                    throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D36"));
+                }
+                if (imageRetained.getInImmCtx() || imageRetained.getUsedByOffScreen()) {
+                    throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D37"));
+                }         
+            }        
+        }
         if ((canvas3d.view == null) || (canvas3d.view.universe == null) ||
 		(!canvas3d.view.active)) {
             return;
@@ -2231,20 +2247,17 @@ public class GraphicsContext3D extends Object   {
         }
     }
 
-
-// Need to rewrite this method --- Chien
     void doReadRaster(Raster raster) {
-
-        throw new RuntimeException("Sorry!!! ReadRasTer is temporarily unsupported.");
-    
-/*    
 	if (!canvas3d.firstPaintCalled) {
 	    readRasterReady = true;
 	    return;
 	}
-
+        
 	RasterRetained ras = (RasterRetained)raster.retained;
         Dimension canvasSize = canvas3d.getSize();
+        Dimension rasterSize = new Dimension();
+        ImageComponent2DRetained image = ras.image;  
+        
 	int format = 0; // Not use in case of DepthComponent read
 
 	if (canvas3d.ctx == null) {
@@ -2256,23 +2269,13 @@ public class GraphicsContext3D extends Object   {
             J3dDebug.doAssert(canvas3d.ctx != null, "canvas3d.ctx != null");
         }
 
-
+        ras.getSize(rasterSize);        
 	// allocate read buffer space
         if ( (ras.type & Raster.RASTER_COLOR) != 0) {
-	    //int bpp = ras.image.getEffectiveBytesPerPixel();
-            System.out.println("Sorry!!! RASTER is temporarily unsupported.");
-            int bpp = 0;
-            int size = ras.image.height * ras.image.width 
-			* bpp;
-	    //format = ras.image.getEffectiveFormat();
-            System.out.println("Sorry!!! RASTER is temporarily unsupported.");
-
-	    if ((ras.width > ras.image.width) ||
-		(ras.height > ras.image.height)) {
+	    if ((rasterSize.width > ras.image.width) ||
+		(rasterSize.height > ras.image.height)) {
 		throw new RuntimeException(J3dI18N.getString("GraphicsContext3D27"));
 	    }
-            if (byteBuffer.length < size)
-                byteBuffer = new byte[size];
         }
 
         if ( (ras.type & Raster.RASTER_DEPTH) != 0) {
@@ -2285,22 +2288,23 @@ public class GraphicsContext3D extends Object   {
                 if (intBuffer.length < size)
                     intBuffer = new int[size];
             }
-	    if ((ras.width > ras.depthComponent.width) ||
-		(ras.height > ras.depthComponent.height)) {
+	    if ((rasterSize.width > ras.depthComponent.width) ||
+		(rasterSize.height > ras.depthComponent.height)) {
 		throw new RuntimeException(J3dI18N.getString("GraphicsContext3D28"));		
 	    }
         }
 	
         if ( (ras.type & Raster.RASTER_COLOR) != 0) {
+            
 	    // If by reference, check if a copy needs to be made
 	    // and also evaluate the storedFormat ..
-	    if (ras.image.isByReference()) {
-		ras.image.geomLock.getLock();
-		ras.image.evaluateExtensions(canvas3d.extensionsSupported);
-		ras.image.geomLock.unLock();
+	    if (image.isByReference()) {
+		image.geomLock.getLock();
+		image.evaluateExtensions(canvas3d);
+		image.geomLock.unLock();
 	    }
             else {
- 		ras.image.evaluateExtensions(canvas3d.extensionsSupported);               
+ 		image.evaluateExtensions(canvas3d);               
             }
 	}
 
@@ -2308,43 +2312,47 @@ public class GraphicsContext3D extends Object   {
         // gets yanked from us during a remove.
         try {
 	  if (canvas3d.drawingSurfaceObject.renderLock()) {
-	    // Make the context current and read the raster information
-	    canvas3d.makeCtxCurrent();
-	    canvas3d.syncRender(canvas3d.ctx, true);
-            Pipeline.getPipeline().readRasterNative(canvas3d.ctx,
-			     ras.type, ras.xSrcOffset, ras.ySrcOffset,
-			     ras.width, ras.height, canvasSize.height, format,
-			     ras.image, ras.depthComponent, this);
-	    canvas3d.drawingSurfaceObject.unLock();
-	  }
+              // Make the context current and read the raster information
+              canvas3d.makeCtxCurrent();
+              canvas3d.syncRender(canvas3d.ctx, true);
+              Point rasterSrcOffset = new Point();
+              ras.getDstOffset(rasterSrcOffset);
+
+              DepthComponentRetained depthComp = ras.depthComponent;
+              int depthType = 0;
+              if(depthComp != null) {
+                  depthType = depthComp.type;
+              }
+              Pipeline.getPipeline().readRaster(canvas3d.ctx,
+                      ras.type, rasterSrcOffset.x, rasterSrcOffset.y,
+                      rasterSize.width, rasterSize.height, canvasSize.height,
+                      image.getImageDataTypeIntValue(),
+                      image.getImageFormatTypeIntValue(false),
+                      image.imageData.get(), 
+                      depthType, depthComp);
+              
+              canvas3d.drawingSurfaceObject.unLock();
+          }
 	} catch (NullPointerException ne) {
 	    canvas3d.drawingSurfaceObject.unLock();
 	    throw ne;
 	}
 
-	// flip color image: yUp -> yDown and convert to BufferedImage
-        if ( (ras.type & Raster.RASTER_COLOR) != 0) {
-            // ras.image.retrieveImage(byteBuffer, ras.width, ras.height);
-            // Look into using new15_copyBufferedImageWithFormatConversion() as help method.
-            System.out.println("Sorry!!! RASTER is temporarily unsupported.");
-        }
-
         if ( (ras.type & Raster.RASTER_DEPTH) != 0) {
 	    if (ras.depthComponent.type == 
 			DepthComponentRetained.DEPTH_COMPONENT_TYPE_FLOAT)
                 ((DepthComponentFloatRetained)ras.depthComponent).retrieveDepth(
-				floatBuffer, ras.width, ras.height);
+				floatBuffer, rasterSize.width, rasterSize.height);
 	    else if (ras.depthComponent.type == 
 			DepthComponentRetained.DEPTH_COMPONENT_TYPE_INT)
                 ((DepthComponentIntRetained)ras.depthComponent).retrieveDepth(
-				intBuffer, ras.width, ras.height);
+				intBuffer, rasterSize.width, rasterSize.height);
 	    else if (ras.depthComponent.type == 
 			DepthComponentRetained.DEPTH_COMPONENT_TYPE_NATIVE)
                ((DepthComponentNativeRetained)ras.depthComponent).retrieveDepth(
-				intBuffer, ras.width, ras.height);
+				intBuffer, rasterSize.width, rasterSize.height);
         }
 	readRasterReady = true;
- */
     }
 
     /**

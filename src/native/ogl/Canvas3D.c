@@ -1631,6 +1631,92 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillRaster(JNIEnv *env,
     glPopAttrib();  
 }
 
+JNIEXPORT
+void JNICALL Java_javax_media_j3d_NativePipeline_executeRasterDepth(JNIEnv *env,
+							jobject obj,
+							jlong ctxInfo,
+							jfloat posX, 
+							jfloat posY, 
+							jfloat posZ, 
+							jint srcOffsetX, 
+							jint srcOffsetY, 
+							jint rasterWidth, 
+							jint rasterHeight,
+							jint depthWidth,
+                                                        jint depthHeight,
+                                                        jint depthFormat,
+                                                        jobject depthData)
+{ 
+    JNIEnv table; 
+    GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
+    jlong ctx = ctxProperties->context;
+    
+    table = *env;
+    GLint drawBuf;
+    void *depthObjPtr;
+
+#ifdef VERBOSE 
+    fprintf(stderr, "Canvas3D.executeRasterDepth()\n");  
+#endif
+	glRasterPos3f(posX, posY, posZ);
+
+	glGetIntegerv(GL_DRAW_BUFFER, &drawBuf);
+	/* disable draw buffer */
+	glDrawBuffer(GL_NONE);
+
+	/* 
+	 * raster position is upper left corner, default for Java3D 
+	 * ImageComponent currently has the data reverse in Y
+	 */
+	glPixelZoom(1.0, -1.0);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, depthWidth);
+	if (srcOffsetX >= 0) {
+	    glPixelStorei(GL_UNPACK_SKIP_PIXELS, srcOffsetX);
+	    if (srcOffsetX + rasterWidth > depthWidth) {
+		rasterWidth = depthWidth - srcOffsetX;
+	    }
+	} else {
+	    rasterWidth += srcOffsetX;
+	    if (rasterWidth > depthWidth) {
+		rasterWidth  = depthWidth;
+	    }
+	}
+	if (srcOffsetY >= 0) {
+	    glPixelStorei(GL_UNPACK_SKIP_ROWS, srcOffsetY);
+	    if (srcOffsetY + rasterHeight > depthHeight) {
+		rasterHeight = depthHeight - srcOffsetY;
+	    }
+	} else {
+	    rasterHeight += srcOffsetY;
+	    if (rasterHeight > depthHeight) {
+		rasterHeight = depthHeight;
+	    }
+	}
+	
+        depthObjPtr =
+	    (void *)(*(table->GetPrimitiveArrayCritical))(env, (jarray)depthData, NULL);
+	
+	if (depthFormat ==  javax_media_j3d_DepthComponentRetained_DEPTH_COMPONENT_TYPE_INT) { 
+	    glDrawPixels(rasterWidth, rasterHeight, GL_DEPTH_COMPONENT,
+			GL_UNSIGNED_INT, depthObjPtr);
+	} else { /* javax_media_j3d_DepthComponentRetained_DEPTH_COMPONENT_TYPE_FLOAT */
+
+	    glDrawPixels(rasterWidth, rasterHeight, GL_DEPTH_COMPONENT,
+			 GL_FLOAT, depthObjPtr);
+	}
+
+        (*(table->ReleasePrimitiveArrayCritical))(env, depthData, depthObjPtr, 0);
+
+
+	/* re-enable draw buffer */
+	glDrawBuffer(drawBuf);
+	
+	
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+	glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+	
+}
 
 JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_setRenderMode(
