@@ -64,10 +64,20 @@ public class Texture3D extends Texture {
 		     int	depth) {
 
 	super(mipmapMode, format, width, height);
-	int  depthPower = getPowerOf2(depth);
-	if (depthPower == -1)
-	    throw new IllegalArgumentException(J3dI18N.getString("Texture3D1"));
 
+        int  depthLevels = -1;
+        if (VirtualUniverse.mc.enforcePowerOfTwo) {
+            depthLevels = getPowerOf2(depth);
+            if (depthLevels == -1)
+                throw new IllegalArgumentException(J3dI18N.getString("Texture3D1"));
+            
+        } else {
+            depthLevels = getLevelsNPOT(depth);
+        }
+
+        // TODO : Need to verify whether this is a bug. Why depthLevels isn't 
+        // use to determine maxMipMapLevels ? See also Texture.java
+        
 	((Texture3DRetained)this.retained).setDepth(depth);
     }
 
@@ -100,10 +110,22 @@ public class Texture3D extends Texture {
 		     int	boundaryWidth) {
 
 	super(mipmapMode, format, width, height, boundaryWidth);
-	int  depthPower = getPowerOf2(depth);
-	if (depthPower == -1)
-	    throw new IllegalArgumentException(J3dI18N.getString("Texture3D1"));
-
+        int  depthLevels = -1;
+        
+        if (VirtualUniverse.mc.enforcePowerOfTwo) {
+            depthLevels = getPowerOf2(depth);
+            
+            if (depthLevels == -1)
+                throw new IllegalArgumentException(J3dI18N.getString("Texture3D1"));
+        }
+        else {
+            depthLevels = getLevelsNPOT(depth);
+        
+        }
+        
+        // TODO : Need to verify whether this is a bug. Why depthLevels isn't 
+        // use to determine maxMipMapLevels ? See also Texture.java
+        
 	((Texture3DRetained)this.retained).setDepth(depth);
     }
 
