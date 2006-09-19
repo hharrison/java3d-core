@@ -2360,6 +2360,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 case TYPE_INT_BUFFER:                    
                     nio = (NioImageBuffer) byRefImage;
                     data = nio.getDataBuffer();
+                    break;
                 default:
                     throw new AssertionError();
             }
