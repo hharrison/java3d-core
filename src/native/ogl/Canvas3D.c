@@ -1647,13 +1647,14 @@ void JNICALL Java_javax_media_j3d_NativePipeline_executeRasterDepth(JNIEnv *env,
                                                         jint depthFormat,
                                                         jobject depthData)
 { 
+    GLint drawBuf;
+    void *depthObjPtr;
+
     JNIEnv table; 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
     jlong ctx = ctxProperties->context;
     
     table = *env;
-    GLint drawBuf;
-    void *depthObjPtr;
 
 #ifdef VERBOSE 
     fprintf(stderr, "Canvas3D.executeRasterDepth()\n");  
