@@ -4418,14 +4418,13 @@ public class Canvas3D extends Canvas {
     }
     
     void restoreTextureBin() {
-
-        // Need to check TextureBin's texUnitState and shaderBin for null
+        
+        // Need to check TextureBin's shaderBin for null
         // TextureBin can get clear() if there isn't any RM under it.
-        if((textureBin != null) && (textureBin.texUnitState != null)
-        && (textureBin.shaderBin != null)) {
+        if((textureBin != null) && (textureBin.shaderBin != null)) {
             textureBin.updateAttributes(this);
         }
-    } 
+    }
     
     void textureFill(RasterRetained raster, Point2d winCoord, 
            float mapZ, float alpha) { 
