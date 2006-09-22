@@ -6905,6 +6905,15 @@ System.out.println("......tb.soleUser= " +
 		    renderAtoms.remove(renderAtoms.indexOf(ra));
 		    removeARenderAtom(ra);
 		}
+                
+                // This code segment is to handle the texture resource cleanup
+                // for Raster object.
+                GeometryAtom geomAtom = (GeometryAtom) nodes[n];
+                GeometryRetained geomRetained = geomAtom.geometryArray[0];
+                if ((geomRetained != null) && 
+                        (geomRetained instanceof RasterRetained )) {
+                    addTextureResourceFreeList(((RasterRetained)geomRetained).texture);
+                }                
 	    }
 	    else if (nodes[n] instanceof AlternateAppearanceRetained) {
 		altAppearanceDirty = true;
