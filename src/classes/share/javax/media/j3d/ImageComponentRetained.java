@@ -168,6 +168,14 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         return yUp;
     }
     
+    int getUnitsPerPixel() {
+        return unitsPerPixel;
+    }
+    
+    void setUnitsPerPixel(int ipp) {
+        unitsPerPixel = ipp;
+    }
+    
     ImageComponent.ImageClass getImageClass() {
         return imageClass;
     }
