@@ -1769,7 +1769,11 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         if(!npotSupported) {
             return;
         }
-        
+
+        if (imageData == null && !isByReference()) {
+            return;
+        }
+
         if((ext & Canvas3D.TEXTURE_NON_POWER_OF_TWO) != 0) {
             return;
         }

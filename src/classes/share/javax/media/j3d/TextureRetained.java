@@ -2464,10 +2464,4 @@ abstract class TextureRetained extends NodeComponentRetained {
         return this.useAsRaster;
     }
 
-    // TODO KCR ISSUE 121 : DEBUGGING CODE
-//    protected void finalize() {
-//        System.err.println("finalize: " + this);
-//    }
-
 }
-

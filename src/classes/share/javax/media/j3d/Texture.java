@@ -919,9 +919,11 @@ public abstract class Texture extends NodeComponent {
      * not set and this object is part of live or compiled scene graph
      *
      * @exception IllegalArgumentException if an ImageComponent3D is
-     * used in a Texture2D object; if an ImageComponent2D is used in a
-     * Texture3D object; or if the image being set at this level is not the
-     * correct size for this level.
+     * used in a Texture2D object or if an ImageComponent2D is used in a
+     * Texture3D object.
+     *
+     * @exception IllegalArgumentException if the image being set at this
+     * level is not the correct size for this level.
      *
      * @exception IllegalSharingException if this Texture is live and
      * the specified image is being used by a Canvas3D as an off-screen buffer.
@@ -977,9 +979,13 @@ public abstract class Texture extends NodeComponent {
      * not set and this object is part of live or compiled scene graph
      *
      * @exception IllegalArgumentException if an ImageComponent3D is
-     * used in a Texture2D object; if an ImageComponent2D is used in a
-     * Texture3D object; if <code>images.length</code> is not equal to
-     * the total number of mipmap levels; or if the size of each dimension
+     * used in a Texture2D object or if an ImageComponent2D is used in a
+     * Texture3D object.
+     *
+     * @exception IllegalArgumentException if <code>images.length</code> is
+     * not equal to the total number of mipmap levels.
+     *
+     * @exception IllegalArgumentException if the size of each dimension
      * of the image at a given level in the
      * <code>images</code> array is not the correct size.
      *

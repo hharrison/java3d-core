@@ -1794,8 +1794,6 @@ public class Canvas3D extends Canvas {
 		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D16"));
 	    }
 
-// TODO KCR ISSUE 121 : comment the following three lines so we can
-// run the existing issue175 program for debugging
             if (buffer.isLive()) {
                 throw new IllegalSharingException(J3dI18N.getString("Canvas3D26"));
             }
@@ -1808,16 +1806,31 @@ public class Canvas3D extends Canvas {
                 throw new IllegalSharingException(J3dI18N.getString("Canvas3D28"));
             }
 
-// TODO KCR ISSUE 121 : comment the following line so we can
-// run the existing issue175 program for debugging
             bufferRetained.setUsedByOffScreen(true);
 
 	    width = bufferRetained.width;
 	    height = bufferRetained.height;
-	}
+
+            // Issues 347, 348 - assign a canvasId for off-screen Canvas3D
+            if (manualRendering) {
+                if (canvasBit == 0) {
+                    canvasId = VirtualUniverse.mc.getCanvasId();
+                    canvasBit = 1 << canvasId;
+                }
+            }
+        }
 	else {
 	    width = height = 0;
-	}
+
+            // Issues 347, 348 - release canvasId for off-screen Canvas3D
+            if (manualRendering) {
+                if (canvasBit != 0) {
+                    VirtualUniverse.mc.freeCanvasId(canvasId);
+                    canvasBit = 0;
+                    canvasId = 0;
+                }
+            }
+        }
 
 	if ((offScreenCanvasSize.width != width) ||
 	    (offScreenCanvasSize.height != height)) {
@@ -2211,6 +2224,7 @@ public class Canvas3D extends Canvas {
             if (imageData == null)  {
                 assert (!isByRef);
                 icRetained.createBlankImageData();
+                imageData = icRetained.getImageData(false);
             }
             // Check for possible format conversion in imageData
             else {
@@ -5090,8 +5104,6 @@ public class Canvas3D extends Canvas {
         Pipeline.getPipeline().freeDisplayList(ctx, id);
     }
     static void freeTexture(Context ctx, int id) {
-        // TODO KCR ISSUE 121 : DEBUG PRINT STATEMENT
-//        System.err.println("Canvas3D.freeTexture(" + id + ")");
         Pipeline.getPipeline().freeTexture(ctx, id);
     }
 

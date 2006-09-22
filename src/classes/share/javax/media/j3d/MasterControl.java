@@ -904,8 +904,6 @@ class MasterControl {
 	    } else {
 		id = (++textureIdCount);
 	    }
-            // TODO KCR ISSUE 121 : DEBUG PRINT STATEMENT
-//            System.err.println("MC.getTexture2DId() = " + id);
             return id;
 	}
     }
@@ -925,8 +923,6 @@ class MasterControl {
     }
 
     void freeTexture2DId(int id) {
-        // TODO KCR ISSUE 121 : DEBUG PRINT STATEMENT
-//        System.err.println("MC.freeTexture2DId(" + id + ")");
 	FreeListManager.freeObject(FreeListManager.TEXTURE2D, new Integer(id));
     }
 
