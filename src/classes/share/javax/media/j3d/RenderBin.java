@@ -94,18 +94,6 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
      */    
     ArrayList positionDirtyList = new ArrayList(5);
        
-
-    /**
-     * A set of freelists for RenderBin type objects
-     */
-    ArrayList lightBinFreelist = new ArrayList(5);
-    ArrayList envSetFreelist = new ArrayList(5);
-    ArrayList attrBinFreelist = new ArrayList(5);
-    ArrayList shaderBinFreelist = new ArrayList(5);
-    ArrayList textureBinFreelist = new ArrayList(5);
-    ArrayList renderMoleculeFreelist = new ArrayList(5);
-    ArrayList transparentInfoFreeList = new ArrayList(5);
-    
     /**
      * Used when ColoringAttributes is null
      */
@@ -3260,8 +3248,6 @@ System.out.println("......tb.soleUser= " +
     }
 
     void removeRenderMolecule(RenderMolecule rm) {
-        if (VirtualUniverse.mc.useFreeLists)
-            renderMoleculeFreelist.add(rm);
 
         if ((rm.primaryMoleculeType &(RenderMolecule.DLIST_MOLECULE|RenderMolecule.SEPARATE_DLIST_PER_RINFO_MOLECULE)) != 0)
             renderMoleculeList.remove(rm);
@@ -4678,18 +4664,12 @@ System.out.println("......tb.soleUser= " +
      * This gets a new EnviornmentSet.  It creates one if there are none
      * on the freelist.
      */
-    private EnvironmentSet getEnvironmentSet(RenderAtom ra, LightRetained[] lights, 
-				     FogRetained fog, ModelClipRetained modelClip) {
-	EnvironmentSet envSet;
-
-	if (envSetFreelist.size() > 0) {
-	    envSet = (EnvironmentSet)envSetFreelist.remove(
-							   envSetFreelist.size()-1);
-	    envSet.reset(ra, lights, fog, modelClip);
-	} else {
-	    envSet = new EnvironmentSet(ra, lights, fog, modelClip, this);
-	}
-	return (envSet);
+    private EnvironmentSet getEnvironmentSet(RenderAtom ra, LightRetained[] lights,
+            FogRetained fog, ModelClipRetained modelClip) {
+        EnvironmentSet envSet;
+             
+        envSet = new EnvironmentSet(ra, lights, fog, modelClip, this);        
+        return (envSet);
     }
 
     /**
@@ -4901,14 +4881,7 @@ System.out.println("......tb.soleUser= " +
      * on the freelist.
      */
     private ShaderBin getShaderBin(ShaderAppearanceRetained sApp) {
-	ShaderBin shaderBin;
-	if (shaderBinFreelist.size() > 0) {
-	    shaderBin = (ShaderBin)shaderBinFreelist.remove(shaderBinFreelist.size()-1);
-	    shaderBin.reset(sApp, this);
-	} else {
-	    shaderBin = new ShaderBin( sApp, this);
-	}
-	return (shaderBin);
+        return new ShaderBin( sApp, this);
     }
 
     /**
@@ -4916,17 +4889,7 @@ System.out.println("......tb.soleUser= " +
      * on the freelist.
      */
     private AttributeBin getAttributeBin(AppearanceRetained app, RenderingAttributesRetained ra) {
-	AttributeBin attrBin;
-	if (attrBinFreelist.size() > 0) {
-	    attrBin = (AttributeBin)attrBinFreelist.remove(
-							   attrBinFreelist.size()-1);
-	    attrBin.reset(app, ra, this);
-	} else {
-
-
-	    attrBin = new AttributeBin(app, ra, this);
-	}
-	return (attrBin);
+        return new AttributeBin(app, ra, this);
     }
 
     /**
@@ -4934,17 +4897,12 @@ System.out.println("......tb.soleUser= " +
      * on the freelist.
      */
     private LightBin getLightBin(int maxLights, BackgroundRetained bg, boolean inOpaque) {
-	LightBin lightBin;
-
-	if (lightBinFreelist.size() > 0) {
-	    lightBin = (LightBin)lightBinFreelist.remove(
-							 lightBinFreelist.size()-1);
-	    lightBin.reset(inOpaque);
-	} else {
-	    lightBin = new LightBin(maxLights, this, inOpaque);
-	}
-	lightBin.geometryBackground = bg;
-	return (lightBin);
+        LightBin lightBin;      
+        
+        lightBin = new LightBin(maxLights, this, inOpaque);
+        
+        lightBin.geometryBackground = bg;
+        return (lightBin);
     }
 
     /**
@@ -4952,49 +4910,30 @@ System.out.println("......tb.soleUser= " +
      * on the freelist.
      */
     private TextureBin getTextureBin(TextureUnitStateRetained texUnitState[],
-				AppearanceRetained app) {
-	TextureBin textureBin;
-
-	if (textureBinFreelist.size() > 0) {
-	    textureBin = (TextureBin)textureBinFreelist.remove(
-							       textureBinFreelist.size()-1);
-	    textureBin.reset(texUnitState, app);
-	} else {
-	    textureBin = new TextureBin(texUnitState, app, this);
-	}
-
-	return (textureBin);
+            AppearanceRetained app) {
+        return new TextureBin(texUnitState, app, this);        
     }
 
     /**
      * This gets a new RenderMolecule.  It creates one if there are none
      * on the freelist.
      */
-   private  RenderMolecule getRenderMolecule(GeometryAtom ga,
-				     PolygonAttributesRetained polya,
-				     LineAttributesRetained linea,
-				     PointAttributesRetained pointa,
-				     MaterialRetained material, 
-				     ColoringAttributesRetained cola,
-				     TransparencyAttributesRetained transa,
-				     RenderingAttributesRetained ra,
-				     TextureUnitStateRetained[] texUnits,
-				     Transform3D[] transform,
-				     int[] transformIndex) {
-	RenderMolecule renderMolecule;
-
-	if (renderMoleculeFreelist.size() > 0) {
-	    renderMolecule = (RenderMolecule)renderMoleculeFreelist.remove(
-									   renderMoleculeFreelist.size()-1);
-	    renderMolecule.reset(ga, polya, linea, pointa, material,
-				 cola, transa, ra, texUnits, transform, transformIndex);
-	} else {
-	    renderMolecule = new RenderMolecule(ga, polya, linea, pointa, 
-						material, cola, transa, ra,
-						texUnits,
-						transform, transformIndex, this);
-	}
-	return (renderMolecule);
+    private  RenderMolecule getRenderMolecule(GeometryAtom ga,
+            PolygonAttributesRetained polya,
+            LineAttributesRetained linea,
+            PointAttributesRetained pointa,
+            MaterialRetained material,
+            ColoringAttributesRetained cola,
+            TransparencyAttributesRetained transa,
+            RenderingAttributesRetained ra,
+            TextureUnitStateRetained[] texUnits,
+            Transform3D[] transform,
+            int[] transformIndex) {
+        
+        return new RenderMolecule(ga, polya, linea, pointa,
+                material, cola, transa, ra,
+                texUnits,
+                transform, transformIndex, this);      
     }
 
 
@@ -5173,8 +5112,6 @@ System.out.println("......tb.soleUser= " +
 	    // gotten from the freelist from one frame to another
 	    canvases[i].lightBin = null;
 	}
-        if (VirtualUniverse.mc.useFreeLists)
-            lightBinFreelist.add(lbin);
 	lbin.prev = null;
 	lbin.next = null;
     }
@@ -5991,12 +5928,6 @@ System.out.println("......tb.soleUser= " +
 	nodeComponentList.clear();
 	orientedRAs.clear();
 	bhTreesArrList.clear();
-	lightBinFreelist.clear();
-	envSetFreelist.clear();
-	attrBinFreelist.clear();
-	shaderBinFreelist.clear();
-	textureBinFreelist.clear();
-	renderMoleculeFreelist.clear();
 	
 	// clean up any messages that are queued up, since they are
 	// irrelevant
@@ -6128,8 +6059,6 @@ System.out.println("......tb.soleUser= " +
 		}
 		t.prev = null;
 		t.next = null;
-                if (VirtualUniverse.mc.useFreeLists)
-                    transparentInfoFreeList.add(t);
 		tb.parentTInfo = null;
 	    }
 	    else {
@@ -6155,8 +6084,6 @@ System.out.println("......tb.soleUser= " +
 		}
 		t.prev = null;
 		t.next = null;
-                if (VirtualUniverse.mc.useFreeLists)
-                    transparentInfoFreeList.add(t);
 		tb.parentTInfo = null;
 	    }
 
@@ -6190,8 +6117,6 @@ System.out.println("......tb.soleUser= " +
 		}
 		t.prev = null;
 		t.next = null;
-                if (VirtualUniverse.mc.useFreeLists)
-                    transparentInfoFreeList.add(t);
 		nElements--;
 		r.parentTInfo[i] = null;
 	    }
@@ -6250,15 +6175,7 @@ System.out.println("......tb.soleUser= " +
     }
 
     TransparentRenderingInfo getTransparentInfo() {
-	TransparentRenderingInfo tinfo;
-
-	if (transparentInfoFreeList.size() > 0) {
-	    tinfo = (TransparentRenderingInfo)transparentInfoFreeList.remove(transparentInfoFreeList.size()-1);
-	} else {
-	    tinfo =  new TransparentRenderingInfo();
-	}
-	return (tinfo);
-
+	   return new TransparentRenderingInfo();
     }
 
     TransparentRenderingInfo computeDirtyAcrossTransparentBins(TextureBin tb, TransparentRenderingInfo startinfo) {
@@ -6359,8 +6276,6 @@ System.out.println("......tb.soleUser= " +
 
 	    for (i = 0; i < size; i++) {
 		TextureBin tb = (TextureBin)allTransparentObjects.get(i);
-                if (VirtualUniverse.mc.useFreeLists)
-                    transparentInfoFreeList.add(tb.parentTInfo);
 		tb.parentTInfo = null;
 		RenderMolecule r = tb.transparentRMList;
 		// For each renderMolecule
@@ -6419,8 +6334,6 @@ System.out.println("......tb.soleUser= " +
 		    if (r.parentTInfo[j] == null)
 			continue;
 
-                    if (VirtualUniverse.mc.useFreeLists)
-                        transparentInfoFreeList.add(r.parentTInfo[j]);
 		    r.parentTInfo[j] = null;		    
 		}
 		if (r.renderMolecule.textureBin.parentTInfo == null) {

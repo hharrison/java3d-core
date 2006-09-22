@@ -1021,8 +1021,6 @@ class TextureBin extends Object implements ObjectUpdate {
 		    
 		r.prev = null;
 		r.next = null;
-                if (VirtualUniverse.mc.useFreeLists)
-                    renderBin.renderMoleculeFreelist.add(r);
 		found = true;
 	    }
 	}

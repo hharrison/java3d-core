@@ -336,9 +336,6 @@ class MasterControl {
     // for on-screen canvases. This is only for backward compatibility with
     // legacy applications.
     boolean allowNullGraphicsConfig = false;
-    
-    // Issue 288 & 123 - flag indicating if freelists should be used
-    boolean useFreeLists = false;
 
     // The global shading language being used. Using a ShaderProgram
     // with a shading language other than the one specified by
@@ -570,11 +567,6 @@ class MasterControl {
 						     allowNullGraphicsConfig,
 						     "null graphics configs");
 
-        // Issue 288 & 123 - check to see if free lists should be used
-        useFreeLists = getBooleanProperty("j3d.useFreeLists",
-						     useFreeLists,
-						     "Use Free Lists");
-
         // Check to see if stereo mode is sharing the Z-buffer for both eyes.
 	sharedStereoZBuffer = 
 	    getBooleanProperty("j3d.sharedstereozbuffer",
@@ -658,10 +650,11 @@ class MasterControl {
 
         // Check for obsolete properties
         String[] obsoleteProps = {
-            "j3d.simulatedMultiTexture",
+            "j3d.backgroundtexture",            
             "j3d.forceNormalized",
-            "j3d.backgroundtexture",
             "j3d.g2ddrawpixel",
+            "j3d.simulatedMultiTexture",            
+            "j3d.useFreeLists",            
         };
         for (int i = 0; i < obsoleteProps.length; i++) {
             if (getProperty(obsoleteProps[i]) != null) {
@@ -672,8 +665,8 @@ class MasterControl {
 	// Get the maximum Lights
 	maxLights = Pipeline.getPipeline().getMaximumLights();
 
-	// create the freelists
-	FreeListManager.createFreeLists(useFreeLists);
+	// create the freelists 
+	FreeListManager.createFreeLists();
 
 	// create an array canvas use registers
 	// The 32 limit can be lifted once the

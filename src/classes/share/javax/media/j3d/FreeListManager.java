@@ -29,21 +29,13 @@ class FreeListManager {
 
     static MemoryFreeList[] freelist = null;
     
-    static void createFreeLists(boolean useFreeLists) {
-        if (useFreeLists) {
-            freelist = new MemoryFreeList[maxFreeListNum+1];
-            freelist[DISPLAYLIST] = new IntegerFreeList();
-            freelist[TEXTURE2D] = new IntegerFreeList();
-            freelist[TEXTURE3D] = new IntegerFreeList();
-                      
-        }
-        else { 
-            maxFreeListNum = 2;
-            freelist = new MemoryFreeList[maxFreeListNum+1];
-            freelist[DISPLAYLIST] = new IntegerFreeList();
-            freelist[TEXTURE2D] = new IntegerFreeList();
-            freelist[TEXTURE3D] = new IntegerFreeList();            
-        }
+    static void createFreeLists() {
+        maxFreeListNum = 2;
+        freelist = new MemoryFreeList[maxFreeListNum+1];
+        freelist[DISPLAYLIST] = new IntegerFreeList();
+        freelist[TEXTURE2D] = new IntegerFreeList();
+        freelist[TEXTURE3D] = new IntegerFreeList();
+        
     }
 
     // see if the current list can be shrunk

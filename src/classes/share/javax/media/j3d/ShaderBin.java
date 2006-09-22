@@ -270,9 +270,6 @@ class ShaderBin implements ObjectUpdate {
 
 	t.clear();
 
-        if (VirtualUniverse.mc.useFreeLists)
-            renderBin.textureBinFreelist.add(t);
-
 	if (textureBinList == null && addTextureBins.size() == 0 ) {
 	    // Note: Removal of this shaderBin as a user of the rendering
 	    // atttrs is done during removeRenderAtom() in RenderMolecule.java
