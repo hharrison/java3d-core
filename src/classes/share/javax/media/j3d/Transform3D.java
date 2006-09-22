@@ -3800,11 +3800,10 @@ public class Transform3D {
      * @param t1  the matrix whose inverse is computed.
      */
     public final void mulInverse(Transform3D t1) {
-	Transform3D t2 = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t2 = new Transform3D();
 	t2.autoNormalize = false;
 	t2.invert(t1);
 	this.mul(t2);
-        VirtualUniverse.mc.addToTransformFreeList(t2);
     }
 
 
@@ -3815,11 +3814,10 @@ public class Transform3D {
      * @param t2  the transform whose inverse is computed.
      */
     public final void mulInverse(Transform3D t1, Transform3D t2) {
-        Transform3D t3 = VirtualUniverse.mc.getTransform3D(null);
+        Transform3D t3 = new Transform3D();
 	t3.autoNormalize = false;
         t3.invert(t2);
         this.mul(t1,t3);
-        VirtualUniverse.mc.addToTransformFreeList(t3);
     }
 
     /**
@@ -3829,11 +3827,10 @@ public class Transform3D {
      * @param t2  the transform whose transpose is computed
      */
     public final void mulTransposeRight(Transform3D t1, Transform3D t2) {
-	Transform3D t3 = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t3 = new Transform3D();
 	t3.autoNormalize = false;
 	t3.transpose(t2);
 	mul(t1, t3);
-        VirtualUniverse.mc.addToTransformFreeList(t3);
     }
 
 
@@ -3844,11 +3841,10 @@ public class Transform3D {
      * @param t2  the transform on the right hand side of the multiplication
      */
     public final void mulTransposeLeft(Transform3D t1, Transform3D t2){
-	Transform3D t3 = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t3 = new Transform3D();
 	t3.autoNormalize = false;
 	t3.transpose(t1);
 	mul(t3, t2);
-        VirtualUniverse.mc.addToTransformFreeList(t3);
     }
 
 
@@ -3860,15 +3856,13 @@ public class Transform3D {
      * @param t2  the transform on the right hand side of the multiplication
      */
     public final void mulTransposeBoth(Transform3D t1, Transform3D t2) {
-	Transform3D t3 = VirtualUniverse.mc.getTransform3D(null);
-	Transform3D t4 = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t3 = new Transform3D();
+	Transform3D t4 = new Transform3D();
 	t3.autoNormalize = false;
 	t4.autoNormalize = false;
 	t3.transpose(t1);
 	t4.transpose(t2);
 	mul(t3, t4);
-        VirtualUniverse.mc.addToTransformFreeList(t3);
-        VirtualUniverse.mc.addToTransformFreeList(t4);
     }
 
 

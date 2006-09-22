@@ -281,7 +281,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	createMessage.type = J3dMessage.SHADER_APPEARANCE_CHANGED;
         createMessage.universe = null;
@@ -294,7 +294,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	    
 	//System.out.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
-	    createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.SHADER_APPEARANCE_CHANGED;
 		

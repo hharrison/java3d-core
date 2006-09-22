@@ -974,26 +974,6 @@ class MasterControl {
 	}
     }
 
-    // Fix to Issue 123
-    Transform3D getTransform3D(Transform3D val) {
-	Transform3D t;
-        if (VirtualUniverse.mc.useFreeLists) {
-            t = (Transform3D) FreeListManager.getObject(FreeListManager.TRANSFORM3D);
-        }
-        else {
-            t = new Transform3D();
-        }
-	if (val != null) t.set(val);
-	return t;
-    }
-
-    // Fix to Issue 123
-    void addToTransformFreeList(Transform3D t) {
-        if (VirtualUniverse.mc.useFreeLists) {
-            FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t);
-        }
-    }
-
 
     /**
      * Create a Renderer if it is not already done so.
@@ -1140,82 +1120,7 @@ class MasterControl {
     final long getTime() {
 	return (time++);
     }
-
     
-
-    /** 
-     * This adds a BHNode to one of the list of BHNodes
-     */
-    // Fix to Issue 123
-    void addBHNodeToFreelists(BHNode bH) {
-	bH.parent = null;
-	bH.mark = false;
-	
-	if (bH.nodeType == BHNode.BH_TYPE_INTERNAL) {
-	    ((BHInternalNode)bH).lChild = null;
-	    ((BHInternalNode)bH).rChild = null;
-            if (VirtualUniverse.mc.useFreeLists) {
-                FreeListManager.freeObject(FreeListManager.BHINTERNAL, bH);
-            }
-        }
-	else if (bH.nodeType == BHNode.BH_TYPE_LEAF) {
-	    ((BHLeafNode)(bH)).leafIF = null;
-            if (VirtualUniverse.mc.useFreeLists) {
-                FreeListManager.freeObject(FreeListManager.BHLEAF, bH);
-            }
-	}
-    }
-    
-    /**
-     * This gets a message from the free list.  If there isn't any,
-     * it creates one.
-     */
-    // Fix to Issue 123
-    BHNode getBHNode(int type) {
-	
-	if (type == BHNode.BH_TYPE_LEAF) {
-            if (VirtualUniverse.mc.useFreeLists) {
-                return (BHNode) FreeListManager.getObject(FreeListManager.BHLEAF);
-            }
-            else {
-                return (BHNode) new BHLeafNode();
-            }
-	} 
-
-	if (type == BHNode.BH_TYPE_INTERNAL) {
-            if (VirtualUniverse.mc.useFreeLists) {
-                return (BHNode) FreeListManager.getObject(FreeListManager.BHINTERNAL);
-            }
-            else {
-                return (BHNode) new BHInternalNode();
-            }
-	}
-	return null;
-    }
-    
-    /** 
-     * This adds a message to the list of messages
-     */
-    // Fix to Issue 123
-    final void addMessageToFreelists(J3dMessage m) {
-        if (VirtualUniverse.mc.useFreeLists) {
-            FreeListManager.freeObject(FreeListManager.MESSAGE, m);
-        }
-    }
-
-    /**
-     * This gets a message from the free list.  If there isn't any,
-     * it creates one.
-     */
-    // Fix to Issue 123
-    final J3dMessage getMessage() {
-        if (VirtualUniverse.mc.useFreeLists) {        
-            return (J3dMessage) FreeListManager.getObject(FreeListManager.MESSAGE);
-        }
-        else {
-            return new J3dMessage();
-        }
-    }
   
     /** 
      * This takes a given message and parses it out to the structures and
@@ -1368,7 +1273,6 @@ class MasterControl {
 
 	    if (message.getRefcount() == 0) {
 		message.clear();
-		addMessageToFreelists(message);
 	    }
 	  }
     }
@@ -2169,12 +2073,7 @@ class MasterControl {
 	    synchronized (VirtualUniverse.mc.deviceScreenMap) {
 		deviceScreenMap.clear();
 	    }
-            if (VirtualUniverse.mc.useFreeLists) {
-                FreeListManager.clearList(FreeListManager.MESSAGE);
-                FreeListManager.clearList(FreeListManager.BHLEAF);
-                FreeListManager.clearList(FreeListManager.BHINTERNAL);
-                FreeListManager.clearList(FreeListManager.TRANSFORM3D);
-            }
+
 	    mirrorObjects.clear();
 	    // Note: We should not clear the DISPLAYLIST/TEXTURE
 	    // list here because other structure may release them
@@ -2879,7 +2778,7 @@ class MasterControl {
     void sendRenderMessage(GraphicsConfiguration gc,
 			   Object arg, Integer mtype) {
 	Renderer rdr = createRenderer(gc);
-	J3dMessage renderMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage renderMessage = new J3dMessage();
 	renderMessage.threads = J3dThread.RENDER_THREAD;
 	renderMessage.type = J3dMessage.RENDER_IMMEDIATE;
 	renderMessage.universe = null;
@@ -2902,7 +2801,7 @@ class MasterControl {
             // Assert the master control thread is created.
             J3dDebug.doAssert((mcThread != null), "mcThread != null");
 	    Renderer rdr = createRenderer(c.graphicsConfiguration);
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.RENDER_THREAD;
 	    createMessage.type = J3dMessage.DESTROY_CTX_AND_OFFSCREENBUFFER;
 	    createMessage.universe = null;
@@ -2946,7 +2845,7 @@ class MasterControl {
 	    // Fix for Issue 72 : call createRenderer rather than getting
 	    // the renderer from the canvas.screen object
 	    Renderer rdr = createRenderer(c.graphicsConfiguration);
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.RENDER_THREAD;
 	    createMessage.type = J3dMessage.CREATE_OFFSCREENBUFFER;
 	    createMessage.universe = null;

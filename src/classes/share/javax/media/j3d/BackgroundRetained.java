@@ -296,7 +296,7 @@ class BackgroundRetained extends LeafRetained {
                 numMessages+=2; // INSERT_NODES, ORDERED_GROUP_INSERTED
             m = new J3dMessage[numMessages];
             for (i=0; i<numMessages; i++) {
-                m[i] = VirtualUniverse.mc.getMessage();
+                m[i] = new J3dMessage();
             }
             i = 0;
             if (geometryBranch != null) {
@@ -371,7 +371,7 @@ class BackgroundRetained extends LeafRetained {
 	initApplicationBounds(region);
 	// Don't send the message if there is a valid boundingleaf
 	if (boundingLeaf == null) {
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = targetThreads | 
 		J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	    createMessage.type = J3dMessage.BACKGROUND_CHANGED;
@@ -419,7 +419,7 @@ class BackgroundRetained extends LeafRetained {
 	} else {
 	    boundingLeaf = null;
 	}
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads | 
 	    J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	createMessage.type = J3dMessage.BACKGROUND_CHANGED;
@@ -720,7 +720,7 @@ class BackgroundRetained extends LeafRetained {
 
 
     final void sendMessage(int attrMask, Object attr) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.universe = universe;
 	createMessage.type = J3dMessage.BACKGROUND_CHANGED;

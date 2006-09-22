@@ -282,10 +282,9 @@ abstract class GeometryRetained extends NodeComponentRetained {
     boolean intersect(Transform3D thisLocalToVworld, Bounds targetBound) {
 	Bounds transBound = (Bounds) targetBound.clone();
 
-	Transform3D t3d =  VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t3d =  new Transform3D();
 	t3d.invert(thisLocalToVworld);
 	transBound.transform(t3d);
-        VirtualUniverse.mc.addToTransformFreeList(t3d);
 	return intersect(transBound);
     }
 

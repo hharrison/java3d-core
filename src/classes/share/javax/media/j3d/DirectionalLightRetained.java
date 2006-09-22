@@ -55,7 +55,7 @@ class DirectionalLightRetained extends LightRetained
      */
      void setDirection(Vector3f direction) {
 	 initDirection(direction);
-	 J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	 J3dMessage createMessage = new J3dMessage();
 	 createMessage.threads = targetThreads;
 	 createMessage.type = J3dMessage.LIGHT_CHANGED;
 	 createMessage.universe = universe;

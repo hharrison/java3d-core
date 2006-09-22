@@ -228,7 +228,7 @@ class OrientedShape3DRetained extends Shape3DRetained {
     }
 
     void sendChangedMessage(int component, Object attr) {
-        J3dMessage changeMessage = VirtualUniverse.mc.getMessage();
+        J3dMessage changeMessage = new J3dMessage();
         changeMessage.type = J3dMessage.ORIENTEDSHAPE3D_CHANGED;
         changeMessage.threads = targetThreads ;
         changeMessage.universe = universe;

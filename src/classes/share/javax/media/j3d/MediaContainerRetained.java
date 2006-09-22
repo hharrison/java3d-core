@@ -179,7 +179,7 @@ class MediaContainerRetained extends NodeComponentRetained {
      */  
     void dispatchMessage() {
         // Send message including a integer argumentD
-        J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+        J3dMessage createMessage = new J3dMessage();
         createMessage.threads = J3dThread.SOUND_SCHEDULER;
         createMessage.type = J3dMessage.MEDIA_CONTAINER_CHANGED;
         createMessage.universe = null;

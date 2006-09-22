@@ -361,7 +361,7 @@ class ClipRetained extends LeafRetained {
     }
 
    final void sendMessage(int attrMask, Object attr, Object attr2) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.type = J3dMessage.CLIP_CHANGED;
         createMessage.universe = universe;

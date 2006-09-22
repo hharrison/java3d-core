@@ -363,10 +363,9 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	}
 	
 	if((nodeR instanceof TransformGroupRetained) && (nodeR != caller)) {
-	    Transform3D t1 = VirtualUniverse.mc.getTransform3D(null);
+	    Transform3D t1 = new Transform3D();
 	    ((TransformGroupRetained)(nodeR)).transform.getWithLock(t1);
 	    l2Vw.mul(t1);
-            VirtualUniverse.mc.addToTransformFreeList(t1);
 	} else if ((nodeR == caller) && (staticTransform != null)) {
 	    l2Vw.mul(staticTransform.transform);
 	}

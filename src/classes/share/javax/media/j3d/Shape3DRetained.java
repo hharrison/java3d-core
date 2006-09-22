@@ -191,7 +191,7 @@ class Shape3DRetained extends LeafRetained {
 	
 	if (source.isLive()) {
 	    // Notify Geometry Structure to check for collision
-	    J3dMessage message = VirtualUniverse.mc.getMessage();
+	    J3dMessage message = new J3dMessage();
 	    message.type = J3dMessage.COLLISION_BOUND_CHANGED;
 	    message.threads = J3dThread.UPDATE_TRANSFORM;
 	    message.universe = universe;
@@ -221,7 +221,7 @@ class Shape3DRetained extends LeafRetained {
 	super.setBounds(bounds);	
 	
 	if (source.isLive() && !boundsAutoCompute) { 
-	    J3dMessage message = VirtualUniverse.mc.getMessage();
+	    J3dMessage message = new J3dMessage();
 	    message.type = J3dMessage.REGION_BOUND_CHANGED;
             message.threads = J3dThread.UPDATE_TRANSFORM |
                               J3dThread.UPDATE_GEOMETRY |
@@ -531,7 +531,7 @@ class Shape3DRetained extends LeafRetained {
 		size = 1;
 	    J3dMessage[] createMessage = new J3dMessage[size];
 	    // Send a message
-	    createMessage[0] = VirtualUniverse.mc.getMessage();
+	    createMessage[0] = new J3dMessage();
 	    createMessage[0].threads = targetThreads;
 	    createMessage[0].type = J3dMessage.SHAPE3D_CHANGED;
 	    createMessage[0].universe = universe;
@@ -551,7 +551,7 @@ class Shape3DRetained extends LeafRetained {
 	    createMessage[0].args[3] = obj;
 	    createMessage[0].args[4] = getGeomAtomsArray(mirrorShape3D);
 	    if(visibleIsDirty) {
-		createMessage[1] = VirtualUniverse.mc.getMessage();
+		createMessage[1] = new J3dMessage();
 		createMessage[1].threads = J3dThread.UPDATE_GEOMETRY;	    
 		createMessage[1].type = J3dMessage.SHAPE3D_CHANGED;
 		createMessage[1].universe = universe;
@@ -584,7 +584,7 @@ class Shape3DRetained extends LeafRetained {
 	if (((Shape3D)this.source).isLive()) {
 	    
 	    // Send a message
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = targetThreads;
 	    createMessage.type = J3dMessage.SHAPE3D_CHANGED;
 	    createMessage.universe = universe;
@@ -1922,7 +1922,7 @@ class Shape3DRetained extends LeafRetained {
 	}
 
 	
-	J3dMessage changeMessage  = VirtualUniverse.mc.getMessage();
+	J3dMessage changeMessage  = new J3dMessage();
 	changeMessage.type = J3dMessage.SHAPE3D_CHANGED;
 	// Who to send this message to ?	
 	changeMessage.threads = J3dThread.UPDATE_RENDER |
@@ -2002,7 +2002,7 @@ class Shape3DRetained extends LeafRetained {
             }
             super.setBoundsAutoCompute(autoCompute);
             if (source.isLive()) {
-                J3dMessage message = VirtualUniverse.mc.getMessage();
+                J3dMessage message = new J3dMessage();
                 message.type = J3dMessage.BOUNDS_AUTO_COMPUTE_CHANGED;
                 message.threads = J3dThread.UPDATE_TRANSFORM |
 		    J3dThread.UPDATE_GEOMETRY |
@@ -2023,7 +2023,7 @@ class Shape3DRetained extends LeafRetained {
 	getCombineBounds((BoundingBox)localBounds);
 	synchronized(mirrorShape3D) {
 	    if (source.isLive()) {
-		J3dMessage message = VirtualUniverse.mc.getMessage();
+		J3dMessage message = new J3dMessage();
 		message.type = J3dMessage.BOUNDS_AUTO_COMPUTE_CHANGED;
 		message.threads = J3dThread.UPDATE_TRANSFORM |
 		    J3dThread.UPDATE_GEOMETRY |
@@ -2252,7 +2252,7 @@ class Shape3DRetained extends LeafRetained {
 
 	// send a Shape GEOMETRY_CHANGED message for all geometry atoms
 
-	J3dMessage changeMessage  = VirtualUniverse.mc.getMessage();
+	J3dMessage changeMessage  = new J3dMessage();
 	changeMessage.type = J3dMessage.SHAPE3D_CHANGED;
 	changeMessage.threads = J3dThread.UPDATE_RENDER |
 	    J3dThread.UPDATE_TRANSFORM |
@@ -2712,23 +2712,6 @@ class Shape3DRetained extends LeafRetained {
 	    return false;
 	}
 
-    }
-
-    // Fix to Issue 123
-    static Point3d getPoint3d() {
-        if (VirtualUniverse.mc.useFreeLists) {        
-	return (Point3d)FreeListManager.getObject(FreeListManager.POINT3D);
-        }
-        else {
-            return new Point3d();
-        }
-    }
-    
-    // Fix to Issue 123
-    static void freePoint3d(Point3d p) {        
-        if (VirtualUniverse.mc.useFreeLists) {
-            FreeListManager.freeObject(FreeListManager.POINT3D, p);
-        }
     }
 
     void handleFrequencyChange(int bit) {

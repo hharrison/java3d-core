@@ -3398,7 +3398,7 @@ System.out.println("......tb.soleUser= " +
 		    
 		    for(int k = 0; k < ra.rListInfo.length; k++) {
 			if (ra.rListInfo[k].localToVworld == null) {
-			    ra.rListInfo[k].localToVworld = VirtualUniverse.mc.getTransform3D(null);
+			    ra.rListInfo[k].localToVworld = new Transform3D();
 			}
 		    }
 		    
@@ -4450,7 +4450,7 @@ System.out.println("......tb.soleUser= " +
 	    ra.dirtyMask |= RenderAtom.IS_ORIENTED;
 	    for(int k = 0; k < ra.rListInfo.length; k++) {
 		if (ra.rListInfo[k].localToVworld == null) {
-		    ra.rListInfo[k].localToVworld = VirtualUniverse.mc.getTransform3D(null);
+		    ra.rListInfo[k].localToVworld = new Transform3D();
 		}
 	    }
         }
@@ -5370,6 +5370,11 @@ System.out.println("......tb.soleUser= " +
         } else {
             background.initColor(black);
             background.geometryBranch = null;
+            if (background.image != null) {
+                assert background.texture != null;
+                addTextureResourceFreeList(background.texture);
+                removeNodeComponent(background.image);
+            }
             background.initImage(null);
             if (oldGeomBack != null) {
                 cvDirty = true;

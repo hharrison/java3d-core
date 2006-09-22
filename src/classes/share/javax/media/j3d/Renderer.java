@@ -375,7 +375,7 @@ class Renderer extends J3dThread {
 	    int totalMessages = 0;
             if (opArg == RENDER) {
                 m = renderMessage;
-		m[0] = VirtualUniverse.mc.getMessage();
+		m[0] = new J3dMessage();
                 // Issue 131: Set appropriate message type
                 if (((Canvas3D)args[1]).offScreen) {
                     m[0].type = J3dMessage.RENDER_OFFSCREEN;
@@ -674,14 +674,10 @@ class Renderer extends J3dThread {
 		    case GraphicsContext3D.SET_MODEL_TRANSFORM:
 			t3d = (Transform3D)m[nmesg].args[2]; 
 			canvas.graphicsContext3D.doSetModelTransform(t3d);
-			// return t3d to freelist. t3d was gotten from GraphicsContext3D
-			VirtualUniverse.mc.addToTransformFreeList(t3d);
 			break;
 		    case GraphicsContext3D.MULTIPLY_MODEL_TRANSFORM:
                         t3d = (Transform3D)m[nmesg].args[2];
                         canvas.graphicsContext3D.doMultiplyModelTransform(t3d);
-                        // return t3d to freelist. t3d was gotten from GraphicsContext3D
-                        VirtualUniverse.mc.addToTransformFreeList(t3d);
                         break;
 		    case GraphicsContext3D.SET_SOUND:
 			canvas.graphicsContext3D.doSetSound(

@@ -20,15 +20,9 @@ class FreeListManager {
     // constants that represent the freelists managed by the Manager
     static final int DISPLAYLIST = 0;
     static final int TEXTURE2D = 1;
-    static final int TEXTURE3D = 2;    
-    static final int MESSAGE = 3;
-    static final int BHLEAF = 4;
-    static final int TRANSFORM3D = 5;
-    static final int BHINTERNAL = 6;
-    static final int VECTOR3D = 7;
-    static final int POINT3D = 8;
-
-    private static int maxFreeListNum = 8;
+    static final int TEXTURE3D = 2;       
+    
+    private static int maxFreeListNum = 2;
     
     // what list we are going to shrink next
     private static int currlist = 0;
@@ -41,15 +35,9 @@ class FreeListManager {
             freelist[DISPLAYLIST] = new IntegerFreeList();
             freelist[TEXTURE2D] = new IntegerFreeList();
             freelist[TEXTURE3D] = new IntegerFreeList();
-            freelist[MESSAGE] = new MemoryFreeList("javax.media.j3d.J3dMessage");
-            freelist[BHLEAF] = new MemoryFreeList("javax.media.j3d.BHLeafNode");
-            freelist[TRANSFORM3D] = new MemoryFreeList("javax.media.j3d.Transform3D");
-            freelist[BHINTERNAL] = new MemoryFreeList("javax.media.j3d.BHInternalNode");
-            freelist[POINT3D] = new MemoryFreeList("javax.vecmath.Point3d");
-            freelist[VECTOR3D] = new MemoryFreeList("javax.vecmath.Vector3d");
+                      
         }
-        else {
-            // Fix to Issue 123       
+        else { 
             maxFreeListNum = 2;
             freelist = new MemoryFreeList[maxFreeListNum+1];
             freelist[DISPLAYLIST] = new IntegerFreeList();

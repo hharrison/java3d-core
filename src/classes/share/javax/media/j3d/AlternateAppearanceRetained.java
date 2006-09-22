@@ -587,7 +587,7 @@ class AlternateAppearanceRetained extends LeafRetained {
 
 	// Initialize the mirror object, this needs to be done, when
 	// renderBin is not accessing any of the fields
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	createMessage.universe = universe;
 	createMessage.type = J3dMessage.ALTERNATEAPPEARANCE_CHANGED;
@@ -721,7 +721,7 @@ class AlternateAppearanceRetained extends LeafRetained {
 
 	
 	if (scopes.size() > 0) {
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	    createMessage.universe = universe;
 	    createMessage.type = J3dMessage.ALTERNATEAPPEARANCE_CHANGED;
@@ -759,7 +759,7 @@ class AlternateAppearanceRetained extends LeafRetained {
     }
     
     final void sendMessage(int attrMask, Object attr) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.universe = universe;
 	createMessage.type = J3dMessage.ALTERNATEAPPEARANCE_CHANGED;

@@ -74,7 +74,7 @@ class OrderedGroupRetained extends GroupRetained {
 	    System.arraycopy(cIOArr, 0, newArr,
 			     0, newArr.length);
 	    J3dMessage m;
-	    m = VirtualUniverse.mc.getMessage();
+	    m = new J3dMessage();
 	    m.threads = J3dThread.UPDATE_RENDER;
 	    m.type = J3dMessage.ORDERED_GROUP_TABLE_CHANGED;
 	    m.universe = universe;

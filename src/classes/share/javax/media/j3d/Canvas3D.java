@@ -1984,7 +1984,7 @@ public class Canvas3D extends Canvas {
 	    // to do the offscreen rendering now
 	    if (Thread.currentThread() == screen.renderer) {
 
-		J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+		J3dMessage createMessage = new J3dMessage();
 		createMessage.threads = J3dThread.RENDER_THREAD;
 		createMessage.type = J3dMessage.RENDER_OFFSCREEN;
 		createMessage.universe = this.view.universe;
@@ -2011,7 +2011,7 @@ public class Canvas3D extends Canvas {
 		// XXXX: 
 		// Now we are in trouble, this will cause deadlock if
 		// waitForOffScreenRendering() is invoked
-		  J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+		  J3dMessage createMessage = new J3dMessage();
 		  createMessage.threads = J3dThread.RENDER_THREAD;
 		  createMessage.type = J3dMessage.RENDER_OFFSCREEN;
 		  createMessage.universe = this.view.universe;
@@ -2029,7 +2029,7 @@ public class Canvas3D extends Canvas {
 	    // currentThread() == view.universe.behaviorScheduler
 	    // since the caller may be another universe Behavior
 	    // scheduler.
-            J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+            J3dMessage createMessage = new J3dMessage();
             createMessage.threads = J3dThread.RENDER_THREAD;
             createMessage.type = J3dMessage.RENDER_OFFSCREEN;
             createMessage.universe = this.view.universe;
@@ -2042,7 +2042,7 @@ public class Canvas3D extends Canvas {
             // send a message to renderBin
 	    // Fix for issue 66 : Since view might not been set yet, 
 	    // we have to use pendingView instead.
-            J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+            J3dMessage createMessage = new J3dMessage();
             createMessage.threads = J3dThread.UPDATE_RENDER;
             createMessage.type = J3dMessage.RENDER_OFFSCREEN;
             createMessage.universe = this.pendingView.universe;
@@ -3863,7 +3863,7 @@ public class Canvas3D extends Canvas {
 		    while (isRunningStatus) {
 			MasterControl.threadYield();
 		    }
-		    J3dMessage renderMessage = VirtualUniverse.mc.getMessage();
+		    J3dMessage renderMessage = new J3dMessage();
 		    renderMessage.threads = J3dThread.RENDER_THREAD;
 		    if (cmd == RESIZE) {
 			renderMessage.type = J3dMessage.RESIZE_CANVAS;

@@ -2253,7 +2253,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     
     final void sendMessage(int attrMask, Object attr) {
         
-        J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+        J3dMessage createMessage = new J3dMessage();
         createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES |
                 J3dThread.UPDATE_RENDER;
         createMessage.type = J3dMessage.IMAGE_COMPONENT_CHANGED;

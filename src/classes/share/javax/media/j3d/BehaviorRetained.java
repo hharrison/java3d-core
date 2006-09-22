@@ -485,7 +485,7 @@ class BehaviorRetained extends LeafRetained  {
     void addWakeupCondition() {}
 
     final void sendMessage(int mtype, Object arg) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_BEHAVIOR;
 	createMessage.type = mtype;
         createMessage.universe = universe;

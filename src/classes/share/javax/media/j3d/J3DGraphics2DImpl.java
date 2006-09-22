@@ -295,7 +295,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     void sendRenderMessage(boolean renderRun, int command,
 			   Object arg1, Object arg2, Object arg3) {
         // send a message to the request renderer
-        J3dMessage renderMessage = VirtualUniverse.mc.getMessage();
+        J3dMessage renderMessage = new J3dMessage();
         renderMessage.threads = J3dThread.RENDER_THREAD;
         renderMessage.type = J3dMessage.RENDER_IMMEDIATE;
         renderMessage.universe = null;

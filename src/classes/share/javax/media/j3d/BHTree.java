@@ -632,7 +632,7 @@ class BHTree  {
 	  }
 	  */
 	
-	root = VirtualUniverse.mc.getBHNode(BHNode.BH_TYPE_INTERNAL);
+	root = new BHInternalNode();
 	constructTree((BHInternalNode) root, bhArr, centerValues,
 		      centerValuesIndex);  
 
@@ -1045,7 +1045,7 @@ class BHTree  {
 	}
 	
 	if (rightSet.length != 1) {
-	    parent.rChild = VirtualUniverse.mc.getBHNode(BHNode.BH_TYPE_INTERNAL);
+	    parent.rChild = new BHInternalNode();
 	    parent.rChild.setParent(parent);
 	    constructTree((BHInternalNode)(parent.rChild),  rightSet, centerValues,
 			  centerValuesIndexR); 
@@ -1055,7 +1055,7 @@ class BHTree  {
 	}
 	
 	if (leftSet.length != 1) {
-	    parent.lChild = VirtualUniverse.mc.getBHNode(BHNode.BH_TYPE_INTERNAL);
+	    parent.lChild = new BHInternalNode();
 	    parent.lChild.setParent(parent);
 	    constructTree((BHInternalNode)(parent.lChild), leftSet, centerValues, 
 			  centerValuesIndexL); 

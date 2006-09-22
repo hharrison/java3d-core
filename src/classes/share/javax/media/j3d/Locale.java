@@ -210,7 +210,7 @@ public class Locale extends Object {
 
 	bgr.setLive(s);
 
-	createMessage = VirtualUniverse.mc.getMessage();
+	createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDER| J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	createMessage.type = J3dMessage.ORDERED_GROUP_INSERTED;
 	createMessage.universe = universe;
@@ -222,7 +222,7 @@ public class Locale extends Object {
 	
 	VirtualUniverse.mc.processMessage(createMessage);
 
-	createMessage = VirtualUniverse.mc.getMessage();
+	createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	createMessage.type = J3dMessage.VIEWSPECIFICGROUP_INIT;
 	createMessage.universe = universe;
@@ -232,7 +232,7 @@ public class Locale extends Object {
 	VirtualUniverse.mc.processMessage(createMessage);
 	
 	
-	createMessage = VirtualUniverse.mc.getMessage();
+	createMessage = new J3dMessage();
 	createMessage.threads = s.notifyThreads;
         createMessage.type = J3dMessage.INSERT_NODES;
         createMessage.universe = universe;
@@ -252,7 +252,7 @@ public class Locale extends Object {
 	    b.executeInitialize();
 	}
 
-	createMessage = VirtualUniverse.mc.getMessage();
+	createMessage = new J3dMessage();
         createMessage.threads = J3dThread.UPDATE_BEHAVIOR;
         createMessage.type = J3dMessage.BEHAVIOR_ACTIVATE;
         createMessage.universe = universe;
@@ -334,7 +334,7 @@ public class Locale extends Object {
 	bgr.setLocale(null);
 
 	if (messages == null) {
-	    destroyMessage = VirtualUniverse.mc.getMessage();
+	    destroyMessage = new J3dMessage();
 	} else {
 	    destroyMessage = messages[startIndex++];
 	}
@@ -348,7 +348,7 @@ public class Locale extends Object {
 
 	if (messages == null) {
             VirtualUniverse.mc.processMessage(destroyMessage);
-            destroyMessage = VirtualUniverse.mc.getMessage();
+            destroyMessage = new J3dMessage();
         } else {
             destroyMessage = messages[startIndex++];
         }
@@ -360,7 +360,7 @@ public class Locale extends Object {
 
 	if (messages == null) {
             VirtualUniverse.mc.processMessage(destroyMessage);
-            destroyMessage = VirtualUniverse.mc.getMessage();
+            destroyMessage = new J3dMessage();
         } else {
             destroyMessage = messages[startIndex++];
         }
@@ -439,7 +439,7 @@ public class Locale extends Object {
 	universe.setLiveState.reset(this);
 	obgr.clearLive(universe.setLiveState);
 
-	destroyMessage = VirtualUniverse.mc.getMessage();
+	destroyMessage = new J3dMessage();
 
 	destroyMessage.threads = J3dThread.UPDATE_RENDER| J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	destroyMessage.type = J3dMessage.ORDERED_GROUP_REMOVED;
@@ -450,7 +450,7 @@ public class Locale extends Object {
 	destroyMessage.args[4] = universe.setLiveState.ogCIOTableList.toArray();
 	VirtualUniverse.mc.processMessage(destroyMessage);
 
-	destroyMessage = VirtualUniverse.mc.getMessage();
+	destroyMessage = new J3dMessage();
 	destroyMessage.threads =  J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	destroyMessage.type = J3dMessage.VIEWSPECIFICGROUP_CLEAR;
 	destroyMessage.universe = universe;
@@ -459,7 +459,7 @@ public class Locale extends Object {
 	VirtualUniverse.mc.processMessage(destroyMessage);
 
 
-	destroyMessage = VirtualUniverse.mc.getMessage();
+	destroyMessage = new J3dMessage();
         destroyMessage.threads = universe.setLiveState.notifyThreads;
         destroyMessage.type = J3dMessage.REMOVE_NODES;
         destroyMessage.universe = universe;
@@ -493,7 +493,7 @@ public class Locale extends Object {
 	nbgr.setLive(universe.setLiveState);
 	
 
-	createMessage = VirtualUniverse.mc.getMessage();
+	createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDER| J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	createMessage.type = J3dMessage.ORDERED_GROUP_INSERTED;
 	createMessage.universe = universe;
@@ -505,7 +505,7 @@ public class Locale extends Object {
 	VirtualUniverse.mc.processMessage(createMessage);
 
 	// XXXX: make these two into one message
-	createMessage = VirtualUniverse.mc.getMessage();
+	createMessage = new J3dMessage();
         createMessage.threads = universe.setLiveState.notifyThreads;
         createMessage.type = J3dMessage.INSERT_NODES;
         createMessage.universe = universe;
@@ -529,7 +529,7 @@ public class Locale extends Object {
             ((BehaviorRetained) behaviorNodes[i]).executeInitialize();
         }
 
-	createMessage = VirtualUniverse.mc.getMessage();
+	createMessage = new J3dMessage();
         createMessage.threads = J3dThread.UPDATE_BEHAVIOR;
         createMessage.type = J3dMessage.BEHAVIOR_ACTIVATE;
         createMessage.universe = universe;

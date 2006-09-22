@@ -220,8 +220,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
      */
     final void setTextureTransform(Transform3D transform) {
 	this.transform.set(transform);
-	sendMessage(TRANSFORM_CHANGED, 
-		VirtualUniverse.mc.getTransform3D(transform), null);
+	sendMessage(TRANSFORM_CHANGED, new Transform3D(transform), null);
     }
 
 
@@ -698,7 +697,6 @@ class TextureAttributesRetained extends NodeComponentRetained {
 
 	if ((component & TRANSFORM_CHANGED) != 0) {
 	    mirrorTa.transform.set((Transform3D)value);
-            VirtualUniverse.mc.addToTransformFreeList((Transform3D)value);
 	}
 	else if ((component & MODE_CHANGED) != 0) {
 	    mirrorTa.textureMode = ((Integer)value).intValue();
@@ -939,7 +937,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	createMessage.type = J3dMessage.TEXTUREATTRIBUTES_CHANGED;
 	createMessage.universe = null;
@@ -953,7 +951,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
 
 	// System.out.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
-	    createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.TEXTUREATTRIBUTES_CHANGED;
 		

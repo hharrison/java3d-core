@@ -216,7 +216,6 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
             for (i=0; i<tSize; i++) {
 	        tg = tgs[i];
                 tg.currentTransform.set(t3ds[i]);
-                VirtualUniverse.mc.addToTransformFreeList(t3ds[i]);
 
                 synchronized(tg) { // synchronized with tg.set/clearLive
                 if(tg.perPathData != null) {

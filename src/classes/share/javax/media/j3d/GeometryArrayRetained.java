@@ -359,7 +359,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if (this.refCount > 1) {
 	    // Send to rendering attribute structure,
 	    /*
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	    createMessage.type = J3dMessage.GEOMETRYARRAY_CHANGED;
 	    createMessage.universe = null;
@@ -374,7 +374,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    // otherwise, set mirrorGeometry to null (from previous clearLive)
 	    if (this instanceof IndexedGeometryArrayRetained) { 
 		// Send to rendering attribute structure,
-		J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+		J3dMessage createMessage = new J3dMessage();
 		createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 		createMessage.type = J3dMessage.GEOMETRY_CHANGED;
 		createMessage.universe = null;
@@ -392,7 +392,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	if (this.refCount <= 0) {
 	    if (pVertexBuffers != 0) {
-		J3dMessage renderMessage = VirtualUniverse.mc.getMessage();
+		J3dMessage renderMessage = new J3dMessage();
 		renderMessage.threads = J3dThread.RENDER_THREAD;
 		renderMessage.type = J3dMessage.RENDER_IMMEDIATE;
 		renderMessage.universe = null;
@@ -3513,7 +3513,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    gaList.add(Shape3DRetained.getGeomAtom(s));
 			}
 
-			m[k] = VirtualUniverse.mc.getMessage();
+			m[k] = new J3dMessage();
 		
 			m[k].type = J3dMessage.GEOMETRY_CHANGED;
 			// Who to send this message to ?	
@@ -6134,7 +6134,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// Setup bounding planes.
 	Point3d pCoor[] = new Point3d[4];
 	for(i=0; i<4; i++)
-	    pCoor[i] = getPoint3d();
+	    pCoor[i] = new Point3d();
       
 	// left plane.
 	pCoor[0].set(box.lower.x, box.lower.y, box.lower.z);
@@ -6149,8 +6149,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    // free points
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
 	
@@ -6165,7 +6163,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
 
@@ -6180,7 +6177,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
 	// top plane.
@@ -6194,7 +6190,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
 
@@ -6209,7 +6204,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
       
@@ -6224,11 +6218,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
-
-	for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	return false;
     }
 
@@ -6239,7 +6230,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				    Point3d iPnt) 
     {
 	int i, j;
-	Vector3d tempV3D = getVector3d();
+	Vector3d tempV3D = new Vector3d();
 	boolean esFlag;
 
 	//Do trivial vertex test.
@@ -6257,7 +6248,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				       null, dist, iPnt);
 		}
 
-		freeVector3d(tempV3D);
 		return true;
 	    }
 	}
@@ -6277,25 +6267,22 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				       dist, iPnt);
 		}
 
-		freeVector3d(tempV3D);
 		return true;
 	    }
 	}
       
 
 	if (coordinates.length < 3) {
-
-	    freeVector3d(tempV3D);
 	    return false; // We're done with line.
 	}
 
 	    // Find rho.
 	    // Compute plane normal.
-	    Vector3d vec0 = getVector3d(); // Edge vector from point 0 to point 1;
-	    Vector3d vec1 = getVector3d(); // Edge vector from point 0 to point 2 or 3;
-	    Vector3d pNrm = getVector3d();
-	    Vector3d pa = getVector3d();
-	    Point3d q = getPoint3d();
+	    Vector3d vec0 = new Vector3d(); // Edge vector from point 0 to point 1;
+	    Vector3d vec1 = new Vector3d(); // Edge vector from point 0 to point 2 or 3;
+	    Vector3d pNrm = new Vector3d();
+	    Vector3d pa = new Vector3d();
+	    Point3d q = new Point3d();
 	    double nLenSq, pqLen, pNrmDotPa, tq;
 
 	    // compute plane normal for coordinates.
@@ -6317,12 +6304,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
       
 	    if(j == (coordinates.length-1)) {
 		// System.out.println("(1) Degenerate polygon.");
-		freeVector3d(tempV3D);
-		freeVector3d(vec0);
-		freeVector3d(vec1);
-		freeVector3d(pNrm);
-		freeVector3d(pa);
-		freePoint3d(q);
 		return false;  // Degenerate polygon.
 	    }
 
@@ -6338,12 +6319,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    nLenSq = pNrm.lengthSquared(); 
 	    if( nLenSq == 0.0) {
 		// System.out.println("(2) Degenerate polygon.");
-		freeVector3d(tempV3D);
-		freeVector3d(vec0);
-		freeVector3d(vec1);
-		freeVector3d(pNrm);
-		freeVector3d(pa);
-		freePoint3d(q);
 		return false;  // Degenerate polygon.
 	    }
 
@@ -6356,12 +6331,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    pqLen = Math.sqrt(pNrmDotPa * pNrmDotPa/ nLenSq);
       
 	    if(pqLen > sphere.radius) {
-		freeVector3d(tempV3D);
-		freeVector3d(vec0);
-		freeVector3d(vec1);
-		freeVector3d(pNrm);
-		freeVector3d(pa);
-		freePoint3d(q);
 		return false;
 	    }
 
@@ -6379,20 +6348,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				       pNrm,
 				       dist, iPnt);
 		}		
-		freeVector3d(tempV3D);
-		freeVector3d(vec0);
-		freeVector3d(vec1);
-		freeVector3d(pNrm);
-		freeVector3d(pa);
-		freePoint3d(q);
 		return true;
 	    }
-	    freeVector3d(tempV3D);
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
-	    freeVector3d(pa);
-	    freePoint3d(q);
 	    return false;
 
     }
@@ -6729,8 +6686,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				Point3d end)
 	{ 
 	    double abLenSq, acLenSq, apLenSq, abDotAp, radiusSq;
-	    Vector3d ab = getVector3d();
-	    Vector3d ap = getVector3d();
+	    Vector3d ab = new Vector3d();
+	    Vector3d ap = new Vector3d();
 	    
 	    ab.x = end.x - start.x;
 	    ab.y = end.y - start.y;
@@ -6743,8 +6700,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    abDotAp = ab.dot(ap);
       
 	    if(abDotAp < 0.0) {
-		freeVector3d(ab);
-		freeVector3d(ap);
 		return false; // line segment points away from sphere.
 	    }
 
@@ -6752,8 +6707,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    acLenSq = abDotAp * abDotAp / abLenSq;
 
 	    if(acLenSq < abLenSq) {
-		freeVector3d(ab);
-		freeVector3d(ap);
 		return false; // C doesn't lies between end points of edge.
 	    }
 
@@ -6761,13 +6714,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    apLenSq = ap.lengthSquared();
      
 	    if((apLenSq - acLenSq) <= radiusSq) {
-		freeVector3d(ab);
-		freeVector3d(ap);
 		return true;
 	    }
 
-	    freeVector3d(ab);
-	    freeVector3d(ap);
 	    return false;
 
 	}
@@ -6879,8 +6828,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			       Point3d end, Point3d iPnt)
 	{
       
-	    Vector3d tempV3d = getVector3d();
-	    Vector3d direction = getVector3d();
+	    Vector3d tempV3d = new Vector3d();
+	    Vector3d direction = new Vector3d();
 	    double pD, pNrmDotrDir, tr;
       
 	    // Compute plane D.
@@ -6896,8 +6845,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    // edge is parallel to plane. 
 	    if(pNrmDotrDir== 0.0) {
 		// System.out.println("Edge is parallel to plane.");
-		freeVector3d(tempV3d);
-		freeVector3d(direction);
 		return false;        
 	    }
 
@@ -6909,8 +6856,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    // or exceed the edge's length.
 	    if((tr < 0.0 ) || (tr > 1.0 )) {
 		// System.out.println("Edge intersects the plane behind the start or exceed end.");
-		freeVector3d(tempV3d);
-		freeVector3d(direction);
 		return false;
 	    }
 
@@ -6918,8 +6863,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    iPnt.y = start.y + tr * direction.y;
 	    iPnt.z = start.z + tr * direction.z;
 
-	    freeVector3d(tempV3d);
-	    freeVector3d(direction);
 	    return true;
 
 	}
@@ -7254,10 +7197,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     boolean intersectTriPnt(Point3d v0, Point3d v1, Point3d v2, Point3d u) {
 	
-	Vector3d e1 = getVector3d();
-	Vector3d e2 = getVector3d();
-	Vector3d n1 = getVector3d();
-	Vector3d tempV3d = getVector3d();
+	Vector3d e1 = new Vector3d();
+	Vector3d e2 = new Vector3d();
+	Vector3d n1 = new Vector3d();
+	Vector3d tempV3d = new Vector3d();
 	
 	double d1, du;
 	
@@ -7274,10 +7217,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	
 	if(n1.length() == 0.0) {
 	    // System.out.println("(1) Degenerate triangle.");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(tempV3d);
 	    return false;  // Degenerate triangle.
 	}
 	
@@ -7293,10 +7232,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	
 	// no intersection occurs
 	if(du != 0.0) {
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(tempV3d);
 	    return false;
 	}
 
@@ -7333,17 +7268,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	
 	// finally, test if u is totally contained in tri.	
 	if(pointInTri(u, v0, v1, v2, i0, i1)) {
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(tempV3d);
 	    return true;
 	}
 	
-	freeVector3d(e1);
-	freeVector3d(e2);
-	freeVector3d(n1);
-	freeVector3d(tempV3d);
 	return false;
     }
 
@@ -7369,11 +7296,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    Point3d u0, Point3d u1, Point3d u2) {
 
 	// System.out.println("In intersectTriTri ...");
-	Vector3d e1 = getVector3d();
-	Vector3d e2 = getVector3d();
-	Vector3d n1 = getVector3d();
-	Vector3d n2 = getVector3d();
-	Vector3d tempV3d = getVector3d();
+	Vector3d e1 = new Vector3d();
+	Vector3d e2 = new Vector3d();
+	Vector3d n1 = new Vector3d();
+	Vector3d n2 = new Vector3d();
+	Vector3d tempV3d = new Vector3d();
 	
 	double d1, d2;
 	double du0, du1, du2, dv0, dv1, dv2;
@@ -7396,11 +7323,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	
 	if(n1.length() == 0.0) {
 	    // System.out.println("(1) Degenerate triangle.");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return false;  // Degenerate triangle.
 	}
 	
@@ -7428,11 +7350,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// no intersection occurs
 	if(du0du1>0.0 && du0du2>0.0) {
 	    // System.out.println("In intersectTriTri : du0du1>0.0 && du0du2>0.0");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return false;
 	}
 	
@@ -7449,11 +7366,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	
 	if(n2.length() == 0.0) {
 	    // System.out.println("(2) Degenerate triangle.");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return false;  // Degenerate triangle.
 	}
 	
@@ -7481,11 +7393,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// no intersection occurs
 	if(dv0dv1>0.0 && dv0dv2>0.0) {
 	    // System.out.println("In intersectTriTri : dv0dv1>0.0 && dv0dv2>0.0");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return false;
 	}
 	// compute direction of intersection line.
@@ -7566,11 +7473,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    // triangles are coplanar
 	    boolean toreturn = coplanarTriTri(n1, v0, v1, v2, u0, u1, u2);
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return toreturn;
 	}
 
@@ -7605,11 +7507,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    // triangles are coplanar
 	    //	    System.out.println("In intersectTriTri : coplanarTriTri test 2");
 	    boolean toreturn =  coplanarTriTri(n2, v0, v1, v2, u0, u1, u2);
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return toreturn;
 	}
 
@@ -7643,20 +7540,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if(isect1E<isect2S || isect2E<isect1S) {
 	    // System.out.println("In intersectTriTri :isect1E<isect2S || isect2E<isect1S");
 	    // System.out.println("In intersectTriTri : return false");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return false;
 	}
 
 	//	 System.out.println("In intersectTriTri : return true");
-	freeVector3d(e1);
-	freeVector3d(e2);
-	freeVector3d(n1);
-	freeVector3d(n2);
-	freeVector3d(tempV3d);
 	return true;
 	
     }
@@ -7665,9 +7552,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     boolean intersectPolygon(Point3d coord1[], Point3d coord2[]) {
 	int i, j;
-	Vector3d vec0 = getVector3d(); // Edge vector from point 0 to point 1;
-	Vector3d vec1 = getVector3d(); // Edge vector from point 0 to point 2 or 3;
-	Vector3d pNrm = getVector3d();
+	Vector3d vec0 = new Vector3d(); // Edge vector from point 0 to point 1;
+	Vector3d vec1 = new Vector3d(); // Edge vector from point 0 to point 2 or 3;
+	Vector3d pNrm = new Vector3d();
 	boolean epFlag;
 
 
@@ -7690,9 +7577,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
       
 	if(j == (coord1.length-1)) {
 	    // System.out.println("(1) Degenerate polygon.");
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
 	    return false;  // Degenerate polygon.
 	}
 
@@ -7707,16 +7591,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
       
 	if(pNrm.length() == 0.0) {
 	    // System.out.println("(2) Degenerate polygon.");
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
 	    return false;  // Degenerate polygon.
 	}
 
 	j = 0;      
 	Point3d seg[] = new Point3d[2];
-	seg[0] = getPoint3d();
-	seg[1] = getPoint3d();
+	seg[0] = new Point3d();
+	seg[1] = new Point3d();
 
 	for(i=0; i<coord2.length; i++) {
 	    if(i < (coord2.length-1))
@@ -7733,29 +7614,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 
 	if (j==0) {
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
-	    freePoint3d(seg[0]);
-	    freePoint3d(seg[1]);
 	    return false;
 	}
 
 	if (coord2.length < 3) {
 	    boolean toreturn = pointIntersectPolygon2D(pNrm, coord1, seg[0]);
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
-	    freePoint3d(seg[0]);
-	    freePoint3d(seg[1]);
 	    return toreturn;
 	} else {
 	    boolean toreturn = edgeIntersectPolygon2D(pNrm, coord1, seg);
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
-	    freePoint3d(seg[0]);
-	    freePoint3d(seg[1]);
 	    return toreturn;
 	}
     }
@@ -7781,12 +7647,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersectSegment( Point3d coordinates[], Point3d start, Point3d end,
 			      double dist[], Point3d iPnt ) {
 	boolean result;
-	Vector3d direction = getVector3d();
+	Vector3d direction = new Vector3d();
 	direction.x = end.x - start.x;
 	direction.y = end.y - start.y;
 	direction.z = end.z - start.z;
 	result = intersectRayOrSegment(coordinates, direction, start, dist, iPnt, true);
-	freeVector3d(direction);
 	return result;
     }
     
@@ -7800,9 +7665,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				  Vector3d direction, Point3d origin,
 				  double dist[], Point3d iPnt, boolean isSegment) {
 	Vector3d vec0, vec1, pNrm, tempV3d;
-	vec0 = getVector3d();
-	vec1 = getVector3d();
-	pNrm = getVector3d();
+	vec0 = new Vector3d();
+	vec1 = new Vector3d();
+	pNrm = new Vector3d();
 
 	double  absNrmX, absNrmY, absNrmZ, pD = 0.0;
 	double pNrmDotrDir = 0.0; 
@@ -7854,9 +7719,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 					      iPnt);
 
 	    // put the Vectors on the freelist
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
 	    return isIntersect;
 	}
 
@@ -7885,14 +7747,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    break;
 		}
 	    }
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
 	    return isIntersect;
 	}
 
 	// Plane equation: (p - p0)*pNrm = 0 or p*pNrm = pD;
-	tempV3d = getVector3d();
+	tempV3d = new Vector3d();
 	tempV3d.set((Tuple3d) coordinates[0]);
 	pD = pNrm.dot(tempV3d);
 	tempV3d.set((Tuple3d) origin);
@@ -7908,10 +7767,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    (isSegment && (dist[0] > 1.0+EPS))) {
 	    // Ray intersects the plane behind the ray's origin
 	    // or intersect point not fall in Segment 
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
-	    freeVector3d(tempV3d);
 	    return false;
 	}
 
@@ -8072,10 +7927,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if (isIntersect) {
 	    dist[0] *= direction.length();
 	}
-	freeVector3d(vec0);
-	freeVector3d(vec1);
-	freeVector3d(pNrm);
-	freeVector3d(tempV3d);
 	return isIntersect;
     }
 
@@ -8212,7 +8063,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	//     System.out.println("start " + start + " end " + end );
 	//     System.out.println("ori " + ori + " dir " + dir);
     
-	lDir = getVector3d();
+	lDir = new Vector3d();
 	lDir.x = (end.x - start.x);
 	lDir.y = (end.y - start.y);
 	lDir.z = (end.z - start.z);
@@ -8233,7 +8084,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    iPnt.set(start);
 		}
 	    }
-	    freeVector3d(lDir);
 	    return isIntersect;
 	}
 	// Find the inverse.
@@ -8252,12 +8102,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     
 	if(s<0.0) { // Before the origin of ray.
 	    // System.out.println("Before the origin of ray " + s);
-	    freeVector3d(lDir);
 	    return false;
 	}
 	if((t<0)||(t>1.0)) {// Before or after the end points of line.
 	    // System.out.println("Before or after the end points of line. " + t);
-	    freeVector3d(lDir);
 	    return false;
 	}
 
@@ -8266,7 +8114,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
   
 	if((tmp1 < (tmp2 - EPS)) || (tmp1 > (tmp2 + EPS))) {
 	    // System.out.println("No intersection : tmp1 " + tmp1 + " tmp2 " + tmp2);
-	    freeVector3d(lDir);
 	    return false;
 	}
 
@@ -8280,7 +8127,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 	
 	// System.out.println("Intersected : tmp1 " + tmp1 + " tmp2 " + tmp2);
-	freeVector3d(lDir);
 	return true;
     }
 
@@ -8291,11 +8137,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersectCylinder(Point3d coordinates[], PickCylinder cyl,
 			      double dist[], Point3d iPnt) {
 	
-	Point3d origin = getPoint3d();
-	Point3d end = getPoint3d();
-	Vector3d direction = getVector3d();
-	Point3d iPnt1 = getPoint3d();
-	Vector3d originToIpnt = getVector3d();
+	Point3d origin = new Point3d();
+	Point3d end = new Point3d();
+	Vector3d direction = new Vector3d();
+	Point3d iPnt1 = new Point3d();
+	Vector3d originToIpnt = new Vector3d();
 
 	if (iPnt == null) {
 	    iPnt = new Point3d();
@@ -8316,24 +8162,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if (cyl instanceof PickCylinderRay) {
 		if (intersectRay(coordinates, 
 				 new PickRay(origin, direction),
-				 dist, iPnt)) {
-
-		    freePoint3d(origin);
-		    freePoint3d(end);
-		    freeVector3d(direction);
-		    freeVector3d(originToIpnt);
-		    freePoint3d(iPnt1);
-		    
+				 dist, iPnt)) {	    
 		    return true;
 		}
 	    }
 	    else {
 		if (intersectSegment(coordinates, origin, end, dist, iPnt)) {
-		    freePoint3d(origin);
-		    freePoint3d(end);
-		    freeVector3d(direction);
-		    freeVector3d(originToIpnt);
-		    freePoint3d(iPnt1);
 		    return true;
 		}
 	    }
@@ -8359,19 +8193,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if (sqDistToEdge <= radius*radius) {
 		originToIpnt.sub (iPnt1, origin);
 		dist[0] = originToIpnt.length();
-		freePoint3d(origin);
-		freePoint3d(end);
-		freeVector3d(direction);
-		freeVector3d(originToIpnt);
-		freePoint3d(iPnt1);
 		return true;
 	    }
 	}
-	freePoint3d(origin);
-	freePoint3d(end);
-	freeVector3d(direction);
-	freeVector3d(originToIpnt);
-	freePoint3d(iPnt1);
 	return false;
     }
     
@@ -8382,14 +8206,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersectCone(Point3d coordinates[], PickCone cone,
 			  double[] dist, Point3d iPnt) {
 	
-	Point3d origin = getPoint3d();
-	Point3d end = getPoint3d();
-	Vector3d direction = getVector3d();
-	Vector3d originToIpnt = getVector3d();
+	Point3d origin = new Point3d();
+	Point3d end = new Point3d();
+	Vector3d direction = new Vector3d();
+	Vector3d originToIpnt = new Vector3d();
 	double distance;
     
-	Point3d iPnt1 = getPoint3d();
-	Vector3d vector = getVector3d();
+	Point3d iPnt1 = new Point3d();
+	Vector3d vector = new Vector3d();
 
 	if (iPnt == null) {
 	    iPnt = new Point3d();
@@ -8410,23 +8234,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if (intersectRay(coordinates, 
 				 new PickRay (origin, direction), 
 				 dist, iPnt)) {
-		    freePoint3d(origin);
-		    freePoint3d(end);
-		    freePoint3d(iPnt1);
-		    freeVector3d(direction);
-		    freeVector3d(originToIpnt);
-		    freeVector3d(vector);
 		    return true;
 		}
 	    }
 	    else {
 		if (intersectSegment(coordinates, origin, end, dist, iPnt)) {
-		    freePoint3d(origin);
-		    freePoint3d(end);
-		    freePoint3d(iPnt1);
-		    freeVector3d(direction);
-		    freeVector3d(originToIpnt);
-		    freeVector3d(vector);
 		    return true;
 		}
 	    }
@@ -8455,21 +8267,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if (sqDistToEdge <= radius*radius) {
 		//	System.out.println ("intersectCone: edge "+i+" intersected");
 		dist[0] = distance;
-		freePoint3d(origin);
-		freePoint3d(end);
-		freePoint3d(iPnt1);
-		freeVector3d(direction);
-		freeVector3d(originToIpnt);
-		freeVector3d(vector);
 		return true;
 	    }
 	}
-	freePoint3d(origin);
-	freePoint3d(end);
-	freePoint3d(iPnt1);
-	freeVector3d(direction);
-	freeVector3d(originToIpnt);
-	freeVector3d(vector);
 	return false;
     }
 
@@ -8481,11 +8281,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersectCylinder(Point3d pt, PickCylinder cyl,
 			      double[] dist) {
 	
-	Point3d origin = getPoint3d();
-	Point3d end = getPoint3d();
-	Vector3d direction = getVector3d();
-	Point3d iPnt = getPoint3d();
-	Vector3d originToIpnt = getVector3d();
+	Point3d origin = new Point3d();
+	Point3d end = new Point3d();
+	Vector3d direction = new Vector3d();
+	Point3d iPnt = new Point3d();
+	Vector3d originToIpnt = new Vector3d();
 
 	// Get cylinder information
 	cyl.getOrigin (origin);
@@ -8503,18 +8303,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if (sqDist <= radius*radius) {
 	    originToIpnt.sub (iPnt, origin);
 	    dist[0] = originToIpnt.length();
-	    freePoint3d(origin);
-	    freePoint3d(end);
-	    freePoint3d(iPnt);
-	    freeVector3d(originToIpnt);
-	    freeVector3d(direction);
 	    return true;
 	}
-	freePoint3d(origin);
-	freePoint3d(end);
-	freePoint3d(iPnt);
-	freeVector3d(originToIpnt);
-	freeVector3d(direction);
 	return false;
     }
     
@@ -8524,11 +8314,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
       */
     boolean intersectCone(Point3d pt, PickCone cone, double[] dist) 
     {
-	Point3d origin = getPoint3d();
-	Point3d end = getPoint3d();
-	Vector3d direction = getVector3d();
-        Point3d iPnt = getPoint3d();
-	Vector3d originToIpnt = getVector3d();
+	Point3d origin = new Point3d();
+	Point3d end = new Point3d();
+	Vector3d direction = new Vector3d();
+        Point3d iPnt = new Point3d();
+	Vector3d originToIpnt = new Vector3d();
 
 	// Get cone information
 	cone.getOrigin (origin);
@@ -8553,11 +8343,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	radius = Math.tan (cone.getSpreadAngle()) * distance;
 	if (sqDist <= radius*radius) {
 	    dist[0] = distance;
-	    freePoint3d(origin);
-	    freePoint3d(end);
-	    freePoint3d(iPnt);
-	    freeVector3d(direction);
-	    freeVector3d(originToIpnt);
 	    return true;
 	}
 	return false;
@@ -10887,7 +10672,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersect(Transform3D thisLocalToVworld, 
 		      Transform3D otherLocalToVworld, GeometryRetained  geom) {
 	
-	Transform3D t3d =  VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t3d =  new Transform3D();
 	boolean isIntersect = false;
 
 	if (geom instanceof GeometryArrayRetained ) {
@@ -10907,8 +10692,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		t3d.mul(otherLocalToVworld);
 		isIntersect = geom.intersect(t3d, this);	    
 	}
-
-        VirtualUniverse.mc.addToTransformFreeList(t3d);
 	return isIntersect;
     }
 
@@ -11295,40 +11078,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}	    
 
 	dist[0] = Math.sqrt(dist[0]);
-    }
-
-    // Fix to Issue 123
-    Vector3d getVector3d() {
-        if (VirtualUniverse.mc.useFreeLists) {
-            return (Vector3d)FreeListManager.getObject(FreeListManager.VECTOR3D);
-        }
-        else {
-            return new Vector3d();
-        }
-    }
-
-    // Fix to Issue 123
-    void freeVector3d(Vector3d v) {
-        if (VirtualUniverse.mc.useFreeLists) {
-            FreeListManager.freeObject(FreeListManager.VECTOR3D, v);
-        }        
-    }
-
-    // Fix to Issue 123
-    Point3d getPoint3d() {
-        if (VirtualUniverse.mc.useFreeLists) {
-            return (Point3d)FreeListManager.getObject(FreeListManager.POINT3D);
-        }
-        else {
-            return new Point3d();
-        }
-    }
-
-    // Fix to Issue 123
-    void freePoint3d(Point3d p) {
-        if (VirtualUniverse.mc.useFreeLists) {
-            FreeListManager.freeObject(FreeListManager.POINT3D, p);
-        }
     }
 
     void handleFrequencyChange(int bit) {

@@ -177,7 +177,7 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
 			ra.rListInfo[j] = new RenderAtomListInfo();
 			ra.rListInfo[j].renderAtom = ra;
 			ra.rListInfo[j].index = j;
-			ra.rListInfo[j].localToVworld = VirtualUniverse.mc.getTransform3D(null);
+			ra.rListInfo[j].localToVworld = new Transform3D();
 		    }
 		}
 
@@ -213,7 +213,7 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
 			    ra.rListInfo[j] = new RenderAtomListInfo();
 			    ra.rListInfo[j].renderAtom = ra;
 			    ra.rListInfo[j].index = j;
-			    ra.rListInfo[j].localToVworld = VirtualUniverse.mc.getTransform3D(null);
+			    ra.rListInfo[j].localToVworld = new Transform3D();
 			}
 		    }
 		}

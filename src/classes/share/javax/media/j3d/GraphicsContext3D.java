@@ -1130,7 +1130,7 @@ public class GraphicsContext3D extends Object   {
             doSetModelTransform(t);
         }
 	else {
-	    Transform3D uModelTransform = VirtualUniverse.mc.getTransform3D(t);
+	    Transform3D uModelTransform = new Transform3D(t);
 	    //Transform3D uModelTransform = t;
 	    if (Thread.currentThread() ==
 		canvas3d.view.universe.behaviorScheduler) {
@@ -1164,7 +1164,7 @@ public class GraphicsContext3D extends Object   {
             (Thread.currentThread() == canvas3d.screen.renderer)) {
             doMultiplyModelTransform(t);
         } else {
-	    Transform3D tt = VirtualUniverse.mc.getTransform3D(t);
+	    Transform3D tt = new Transform3D(t);
 	    if (Thread.currentThread() == canvas3d.view.universe.behaviorScheduler) {
 		sendRenderMessage(false, GraphicsContext3D.MULTIPLY_MODEL_TRANSFORM,
 				  tt, null);
@@ -2993,7 +2993,7 @@ public class GraphicsContext3D extends Object   {
 
         // send a message to the request renderer
 
-        J3dMessage renderMessage = VirtualUniverse.mc.getMessage();
+        J3dMessage renderMessage = new J3dMessage();
         renderMessage.threads = J3dThread.RENDER_THREAD;
         renderMessage.type = J3dMessage.RENDER_IMMEDIATE;
         renderMessage.universe = null;
@@ -3026,7 +3026,7 @@ public class GraphicsContext3D extends Object   {
             return;
         }
         // send a message to the request sound scheduling
-        J3dMessage soundMessage = VirtualUniverse.mc.getMessage();
+        J3dMessage soundMessage = new J3dMessage();
         soundMessage.threads = J3dThread.SOUND_SCHEDULER;
         soundMessage.type = J3dMessage.RENDER_IMMEDIATE;
         soundMessage.universe = canvas3d.view.universe;

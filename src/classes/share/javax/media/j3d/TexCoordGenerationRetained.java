@@ -268,7 +268,7 @@ class TexCoordGenerationRetained extends NodeComponentRetained {
 
 	if (VirtualUniverse.mc.isD3D() &&
 	    (gMode == TexCoordGeneration.EYE_LINEAR)) {
-	    trans = VirtualUniverse.mc.getTransform3D(cv.vworldToEc);
+	    trans = new Transform3D(cv.vworldToEc);
 	    trans.invert();
 	    m = trans;
 	} 
@@ -279,10 +279,6 @@ class TexCoordGenerationRetained extends NodeComponentRetained {
 		     planeR.x, planeR.y, planeR.z, planeR.w, 
 		     planeQ.x, planeQ.y, planeQ.z, planeQ.w, 
 		     m.mat);
-
-	if (trans != null) {
-	    VirtualUniverse.mc.addToTransformFreeList(trans);
-	}
     }
 
    /**
@@ -364,7 +360,7 @@ class TexCoordGenerationRetained extends NodeComponentRetained {
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	createMessage.type = J3dMessage.TEXCOORDGENERATION_CHANGED;
 	createMessage.universe = null;
@@ -377,7 +373,7 @@ class TexCoordGenerationRetained extends NodeComponentRetained {
 
 	// System.out.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
-	    createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.TEXCOORDGENERATION_CHANGED;
 		

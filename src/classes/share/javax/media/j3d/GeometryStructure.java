@@ -306,8 +306,7 @@ class GeometryStructure extends J3dStructure {
 			    addBgGeometryAtomList(geomAtom);
                         continue;
                     }
-		    BHLeafNode bhLeafNode = (BHLeafNode)
-			VirtualUniverse.mc.getBHNode(BHNode.BH_TYPE_LEAF);
+		    BHLeafNode bhLeafNode = new BHLeafNode();
 		    bhLeafNode.leafIF = geomAtom;
 		    geomAtom.bhLeafNode = bhLeafNode;
 		    bhLeafNode.computeBoundingHull();
@@ -317,8 +316,7 @@ class GeometryStructure extends J3dStructure {
 	    } else if (node instanceof GroupRetained) {
 		synchronized (node) {
 		    GroupRetained group = (GroupRetained) node;
-		    BHLeafNode bhLeafNode = (BHLeafNode)
-			VirtualUniverse.mc.getBHNode(BHNode.BH_TYPE_LEAF);
+		    BHLeafNode bhLeafNode = new BHLeafNode();
 		    bhLeafNode.leafIF = group;
 		    group.bhLeafNode = bhLeafNode;
 		    bhLeafNode.computeBoundingHull();		    

@@ -117,13 +117,13 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	  // this writeable transformGroup has a static transform
 	  // merged into this node
 
-      	  trans = VirtualUniverse.mc.getTransform3D(staticTransform.transform);
+      	  trans = new Transform3D(staticTransform.transform);
 	  trans.mul(t1);
 
       	  transform.setWithLock(trans);
 
       } else {
-      	  trans = VirtualUniverse.mc.getTransform3D(t1);
+      	  trans = new Transform3D(t1);
       	  transform.setWithLock(t1);
       }
 
@@ -137,7 +137,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	      throw new BadTransformException(J3dI18N.getString("ViewPlatformRetained0"));
 	  }
 
-	  tchangeMessage = VirtualUniverse.mc.getMessage();
+	  tchangeMessage = new J3dMessage();
 	  tchangeMessage.type = J3dMessage.TRANSFORM_CHANGED;
 	  tchangeMessage.threads = targetThreads;
 	  tchangeMessage.args[1] = this;
@@ -534,7 +534,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
       // This is needed b/c super.setlive is called after inSharedGroup check.
       inSharedGroup = s.inSharedGroup;
       
-      trans = VirtualUniverse.mc.getTransform3D(null);
+      trans = new Transform3D();
       transform.getWithLock(trans);
       currentTransform.set(trans);
 

@@ -392,7 +392,7 @@ class RasterRetained extends GeometryRetained {
 		    int numMessages = universeList.size();
 		    J3dMessage[] m = new J3dMessage[numMessages];
 		    for (int i=0; i<numMessages; i++) {
-			m[i] = VirtualUniverse.mc.getMessage();
+			m[i] = new J3dMessage();
 			m[i].type = J3dMessage.GEOMETRY_CHANGED;
 			m[i].threads = threads;
 			m[i].args[0] = Shape3DRetained.

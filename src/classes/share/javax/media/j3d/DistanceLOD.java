@@ -177,7 +177,7 @@ public class DistanceLOD extends LOD {
 	double viewDistance = 0.0;
 	int nSwitches,i,index=0;
 	
-	Transform3D localToWorldTrans = VirtualUniverse.mc.getTransform3D(null);	
+	Transform3D localToWorldTrans = new Transform3D();	
 	
         localToWorldTrans.set(((NodeRetained)this.retained).getCurrentLocalToVworld());
 	
@@ -220,9 +220,6 @@ public class DistanceLOD extends LOD {
 		sw.setWhichChild(index);
 	    }
 	}
-
-	VirtualUniverse.mc.addToTransformFreeList(localToWorldTrans);
-
 	// Insert wakeup condition into queue
 	wakeupOn(wakeupFrame);  
    

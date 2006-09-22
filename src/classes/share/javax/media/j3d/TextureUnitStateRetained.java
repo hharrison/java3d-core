@@ -553,7 +553,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	createMessage.type = J3dMessage.TEXTURE_UNIT_STATE_CHANGED;
 	createMessage.universe = null;
@@ -565,7 +565,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 
 	// System.out.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
-	    createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.TEXTURE_UNIT_STATE_CHANGED;
 		

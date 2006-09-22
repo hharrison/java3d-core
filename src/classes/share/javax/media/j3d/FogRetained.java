@@ -715,7 +715,7 @@ abstract class FogRetained extends LeafRetained{
 
 
 	if (scopes.size() > 0) {
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	    createMessage.universe = universe;
 	    createMessage.type = J3dMessage.FOG_CHANGED;
@@ -771,7 +771,7 @@ abstract class FogRetained extends LeafRetained{
     }
     
     final void sendMessage(int attrMask, Object attr) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.universe = universe;
 	createMessage.type = J3dMessage.FOG_CHANGED;

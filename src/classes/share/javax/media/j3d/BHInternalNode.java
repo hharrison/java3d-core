@@ -188,9 +188,6 @@ class BHInternalNode extends BHNode {
 	
 	rChild = null;
 	lChild = null;
-
-	//  add to free list ...
-        VirtualUniverse.mc.addBHNodeToFreelists(this);
     }
 }
 

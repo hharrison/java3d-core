@@ -46,7 +46,7 @@ class ExponentialFogRetained extends FogRetained {
      */
     void setDensity(float density){
 	this.density = density;
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.type = J3dMessage.FOG_CHANGED;
 	createMessage.universe = universe;
@@ -70,7 +70,7 @@ class ExponentialFogRetained extends FogRetained {
 	
 	// Initialize the mirror object, this needs to be done, when
 	// renderBin is not accessing any of the fields
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	createMessage.universe = universe;
 	createMessage.type = J3dMessage.FOG_CHANGED;

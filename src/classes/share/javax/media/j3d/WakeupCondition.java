@@ -91,7 +91,7 @@ public abstract class WakeupCondition extends Object {
 
 	if (!conditionMet) {
 	    conditionMet = true;
-	    J3dMessage message = VirtualUniverse.mc.getMessage();
+	    J3dMessage message = new J3dMessage();
 	    message.type = J3dMessage.COND_MET;
 	    message.threads = J3dThread.UPDATE_BEHAVIOR;
 	    message.universe = behav.universe;

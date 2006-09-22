@@ -278,7 +278,7 @@ class SpotLightRetained extends PointLightRetained {
     }
 
     final void sendMessage(int attrMask, Object attr) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.universe = universe;
 	createMessage.type = J3dMessage.LIGHT_CHANGED;

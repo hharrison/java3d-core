@@ -153,9 +153,6 @@ abstract class BHNode {
 		}
 	    }
 	}
-	
-	//  add to free list ...
-	VirtualUniverse.mc.addBHNodeToFreelists(this);
     }
     
     // delete all leaf nodes marked with DELETE_UPDATE and update the

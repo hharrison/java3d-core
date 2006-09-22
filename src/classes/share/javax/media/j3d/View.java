@@ -1911,7 +1911,7 @@ public class View extends Object {
 
 	if (activeStatus && isRunning) {
 	    
-	    J3dMessage vpMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage vpMessage = new J3dMessage();
 	    vpMessage.universe = universe;
 	    vpMessage.view = this;
 	    vpMessage.type = J3dMessage.UPDATE_VIEW;
@@ -1972,7 +1972,7 @@ public class View extends Object {
 	transparencySortingPolicy = policy;
 	if (activeStatus && isRunning) {
 	    
-	    J3dMessage vpMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage vpMessage = new J3dMessage();
 	    vpMessage.universe = universe;
 	    vpMessage.view = this;
 	    vpMessage.type = J3dMessage.UPDATE_VIEW;
@@ -3269,7 +3269,7 @@ public class View extends Object {
             soundScheduler.reset();
         }	
 
-	J3dMessage vpMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage vpMessage = new J3dMessage();
 	vpMessage.universe = universe;
 	vpMessage.view = this;
 	vpMessage.type = J3dMessage.UPDATE_VIEW;
@@ -3308,7 +3308,7 @@ public class View extends Object {
 	}
 
 
-	J3dMessage vpMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage vpMessage = new J3dMessage();
 	vpMessage.universe = universe;
 	vpMessage.view = this;
 	vpMessage.type = J3dMessage.UPDATE_VIEW;
