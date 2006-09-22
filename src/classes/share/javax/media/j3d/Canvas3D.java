@@ -1794,6 +1794,8 @@ public class Canvas3D extends Canvas {
 		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D16"));
 	    }
 
+// TODO KCR ISSUE 121 : comment the following three lines so we can
+// run the existing issue175 program for debugging
             if (buffer.isLive()) {
                 throw new IllegalSharingException(J3dI18N.getString("Canvas3D26"));
             }
@@ -1806,6 +1808,8 @@ public class Canvas3D extends Canvas {
                 throw new IllegalSharingException(J3dI18N.getString("Canvas3D28"));
             }
 
+// TODO KCR ISSUE 121 : comment the following line so we can
+// run the existing issue175 program for debugging
             bufferRetained.setUsedByOffScreen(true);
 
 	    width = bufferRetained.width;
@@ -4685,23 +4689,34 @@ public class Canvas3D extends Canvas {
 	    displayListResourceFreeList.clear();
 	}
 
-	if (textureIdResourceFreeList.size() > 0) {
-	    for (it = textureIdResourceFreeList.iterator(); it.hasNext();) {
-		val = ((Integer) it.next()).intValue();
-		if (val <= 0) {
-		    continue;
-		}
-		if (val >= textureIDResourceTable.size()) {
-		    System.out.println("Error in freeResourcesInFreeList : ResourceIDTableSize = " + 
-				       textureIDResourceTable.size() + 
-				       " val = " + val);
-		} else {
-		    textureIDResourceTable.set(val, null);
-		}
-		freeTexture(ctx, val);
-	    }		    
-	    textureIdResourceFreeList.clear();
-	}
+        if (textureIdResourceFreeList.size() > 0) {
+            for (it = textureIdResourceFreeList.iterator(); it.hasNext();) {
+                val = ((Integer) it.next()).intValue();
+                if (val <= 0) {
+                    continue;
+                }
+                if (val >= textureIDResourceTable.size()) {
+                    System.out.println("Error in freeResourcesInFreeList : ResourceIDTableSize = " +
+                            textureIDResourceTable.size() +
+                            " val = " + val);
+                } else {
+                    Object obj = textureIDResourceTable.get(val);
+                    if (obj instanceof TextureRetained) {
+                        TextureRetained tex = (TextureRetained) obj;
+                        synchronized (tex.resourceLock) {
+                            tex.resourceCreationMask &= ~canvasBit;
+                            if (tex.resourceCreationMask == 0) {
+                                tex.freeTextureId(val);
+                            }
+                        }
+                    }
+
+                    textureIDResourceTable.set(val, null);
+                }
+                freeTexture(ctx, val);
+            }
+            textureIdResourceFreeList.clear();
+        }
     }
 
     void freeContextResources(Renderer rdr, boolean freeBackground,
@@ -4717,21 +4732,18 @@ public class Canvas3D extends Canvas {
 	}
 
 	if (freeBackground) {
-	    // Free Graphics2D Texture
-	    if ((graphics2D != null) &&
-		(graphics2D.objectId != -1)) {
-		freeTexture(ctx, graphics2D.objectId);
-		VirtualUniverse.mc.freeTexture2DId(graphics2D.objectId);
-		graphics2D.objectId = -1;
-	    }
+	    // Dispose of Graphics2D Texture
+            if (graphics2D != null) {
+                graphics2D.dispose();
+            }
 	}
-	
 
 	for (int id = textureIDResourceTable.size()-1; id > 0; id--) {
 	    obj = textureIDResourceTable.get(id);
 	    if (obj == null) {
 		continue;
 	    }
+            assert id == ((TextureRetained)obj).objectId;
 	    freeTexture(ctx, id);
 	    if (obj instanceof TextureRetained) {
 		tex = (TextureRetained) obj;
@@ -4742,7 +4754,7 @@ public class Canvas3D extends Canvas {
 			tex.freeTextureId(id);
 		    }
 		}
-	    } 
+	    }
 	}
 	textureIDResourceTable.clear();	
 
@@ -5078,6 +5090,8 @@ public class Canvas3D extends Canvas {
         Pipeline.getPipeline().freeDisplayList(ctx, id);
     }
     static void freeTexture(Context ctx, int id) {
+        // TODO KCR ISSUE 121 : DEBUG PRINT STATEMENT
+//        System.err.println("Canvas3D.freeTexture(" + id + ")");
         Pipeline.getPipeline().freeTexture(ctx, id);
     }
 

@@ -281,7 +281,8 @@ public class GraphicsContext3D extends Object   {
     static final int FLUSH2D		= 23;
     static final int DRAWANDFLUSH2D	= 24;
     static final int SET_MODELCLIP	= 25;
-    static final int NCOMMANDS		= 26; // needs to be incremented
+    static final int DISPOSE2D		= 26;
+    static final int NCOMMANDS		= 27; // needs to be incremented
 					      // when a new command is to be
 					      // added to the list
 
@@ -2089,10 +2090,17 @@ public class GraphicsContext3D extends Object   {
 				canvas3d.screen.screen,
 				ignoreVertexColors);
 
-	    if (geoRetained != null)
-	        geoRetained.geomLock.unLock();
+                if (geoRetained != null) {
+                    if (geoRetained.pVertexBuffers != 0) {
+                        // Issue 121: always free D3D vertex buffer memory
+                        // after immediate mode rendering
+                        geoRetained.freeD3DArray(true);
+                    }
 
-	    canvas3d.drawingSurfaceObject.unLock(); 
+                    geoRetained.geomLock.unLock();
+                }
+
+                canvas3d.drawingSurfaceObject.unLock();
 	  }
 	} catch (NullPointerException ne) { 
 	    canvas3d.drawingSurfaceObject.unLock();

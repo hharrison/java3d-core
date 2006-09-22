@@ -28,6 +28,7 @@ import java.awt.font.*;
  */
 
 final class J3DGraphics2DImpl extends J3DGraphics2D {
+    private boolean hasBeenDisposed = false;
     private Graphics2D offScreenGraphics2D;
     private BufferedImage g3dImage = null;
     private byte[] data = null;
@@ -116,6 +117,10 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
      * rendering to be complete before returning from this call.
      */
     public void flush(boolean waiting) {
+        
+        if (hasBeenDisposed) {
+            throw new IllegalStateException(J3dI18N.getString("J3DGraphics2D0"));
+        }
 
 	if (!isFlushed) {
 	    // Composite g3dImage into Canvas3D	
@@ -161,6 +166,8 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     
     // copy the data into a byte buffer that will be passed to opengl
     void doFlush() {
+        assert !hasBeenDisposed;
+
 	// clip to offscreen buffer size
 	if (canvas3d.ctx == null) {
 	    canvas3d.getGraphicsContext3D().doClear();
@@ -207,7 +214,10 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     final void copyImage(BufferedImage bi, byte[] image,
 			 int width, int height,
 			 int x1, int y1, int x2, int y2) {
-	int biType = bi.getType();
+
+        assert !hasBeenDisposed;
+
+        int biType = bi.getType();
 	int w, h, i, j;
 	int row, rowBegin, rowInc, dstBegin;
 	
@@ -574,10 +584,6 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 	offScreenGraphics2D.copyArea(x, y, width, height, dx, dy);
     }
 
-    public final void dispose() {
-	offScreenGraphics2D.dispose();
-    }
-
     public final void draw(Shape s) {
 	Rectangle rect = s.getBounds();
 	validate(rect.x, rect.y, 
@@ -866,20 +872,52 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 	offScreenGraphics2D.fillRect(x, y, width, height);
     }
 
-    // Issue 121 : Stop using finalize() to clean up state
-    // Explore release native resources during clearlive without using finalize.
-    public void finalize() {
-	if (objectId >= 0) {
-	    VirtualUniverse.mc.freeTexture2DId(objectId);
-	}
-        // This should have call disposal() instead of finalize().
-        offScreenGraphics2D.finalize();
+    // Issue 121 - release all resources, mark as disposed
+    public void dispose() {
+
+        if (Thread.currentThread() == canvas3d.screen.renderer) {
+            doDispose();
+        } else {
+            // Behavior Scheduler or other threads
+            // XXXX: may not be legal for behaviorScheduler
+            // May cause deadlock if it is in behaviorScheduler
+            // and we wait for Renderer to finish
+            boolean renderRun = (Thread.currentThread() !=
+                    canvas3d.view.universe.behaviorScheduler);
+            sendRenderMessage(renderRun, GraphicsContext3D.DISPOSE2D,
+                    null, null, null);
+        }
+
+
+    }
+
+    public void doDispose() {
+
+        if (hasBeenDisposed) {
+            return;
+        }
+
+        if (objectId != -1) {
+            canvas3d.freeTexture(canvas3d.ctx, objectId);
+            VirtualUniverse.mc.freeTexture2DId(objectId);
+            objectId = -1;
+        }
+
+        // Dispose of the underlying Graphics2D
+        offScreenGraphics2D.dispose();
+
+        // Mark as disposed
+        hasBeenDisposed = true;
     }
 
     public void drawAndFlushImage(BufferedImage img, int x, int y,
 				  ImageObserver observer) {
 
-	if (!(initCtx && abgr &&
+        if (hasBeenDisposed) {
+            throw new IllegalStateException(J3dI18N.getString("J3DGraphics2D0"));
+        }
+
+        if (!(initCtx && abgr &&
 	      (img.getType() == BufferedImage.TYPE_4BYTE_ABGR))) {
 	    drawImage(img, x, y, observer);
 	    flush(false);
@@ -902,7 +940,10 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 
     void doDrawAndFlushImage(BufferedImage img, int x, int y,
 			     ImageObserver observer) {
-	int imgWidth = img.getWidth(observer);
+
+        assert !hasBeenDisposed;
+
+        int imgWidth = img.getWidth(observer);
  	int imgHeight = img.getHeight(observer);
 	int px, py, x1, y1, x2, y2;
 

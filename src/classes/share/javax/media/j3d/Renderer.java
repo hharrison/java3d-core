@@ -469,9 +469,10 @@ class Renderer extends J3dThread {
                             currentDrawable = null;
 			} 
 		    } else if (secondArg instanceof Integer) {
-			// message from TextureRetained finalize() method
-			// to free texture id
-			freeTextureID(((Integer) secondArg).intValue(), (String)m[nmesg].args[2]);
+                        // Issue 121 - This was formerly used as a message from
+                        // the now-nonexistant TextureRetained finalize() method
+			// to free the texture id
+                        throw new AssertionError();
 		    } else if (secondArg instanceof GeometryArrayRetained) {
 			// message from GeometryArrayRetained
 			// clearLive() to free D3D array
@@ -730,6 +731,9 @@ class Renderer extends J3dThread {
 					      ((Point) ar[3]).x,
 					      ((Point) ar[3]).y,
 					      (ImageObserver) ar[4]);
+			break;
+		    case GraphicsContext3D.DISPOSE2D:
+			canvas.graphics2D.doDispose();
 			break;
 		    case GraphicsContext3D.SET_MODELCLIP:
 			canvas.graphicsContext3D.doSetModelClip(
@@ -1679,49 +1683,6 @@ class Renderer extends J3dThread {
 	}
     }
 
-    void freeTextureID(int texId, String texture) {
-	Canvas3D currentCanvas = null;
-	
-	// get the current canvas
-	for (int i=listOfCtxs.size()-1; i >= 0; i--) {
-	    Canvas3D c = (Canvas3D) listOfCanvases.get(i);
-	    if (c.ctx == currentCtx) {
-		currentCanvas = c;
-		break;
-	    }
-	}
-
-	if (currentCanvas == null) {
-	    return;
-	}
-
-	synchronized (VirtualUniverse.mc.contextCreationLock) {
-	    if (sharedCtx != null) {
-		currentCanvas.makeCtxCurrent(sharedCtx);
-		// OGL share context is used
-		Canvas3D.freeTexture(sharedCtx, texId);
-	    } else {
-		for (int i=listOfCtxs.size()-1; i >= 0; i--) {
-		    Canvas3D c = (Canvas3D) listOfCanvases.get(i);
-		    c.makeCtxCurrent();
-		    Canvas3D.freeTexture(c.ctx, texId);
-		}
-	    }
-	    // restore current context
-	    currentCanvas.makeCtxCurrent();
-	}
-        // Issue 162: TEMPORARY FIX -- don't free the texture ID, since it will
-        // be freed once per canvas / screen and will subsequently cause the ID
-        // to be used for multiple textures.
-//	if (texture.equals("2D")){
-//	    VirtualUniverse.mc.freeTexture2DId(texId);
-//	}
-//	else if(texture.equals("3D")){
-//	    VirtualUniverse.mc.freeTexture3DId(texId);
-//	}
-    }
-
-
     // handle free resource in the FreeList
     void freeResourcesInFreeList(Canvas3D cv) {
 	Iterator it;
@@ -1757,7 +1718,18 @@ class Renderer extends J3dThread {
 					   textureIDResourceTable.size() + 
 					   " val = " + val);
 		    } else {
-			textureIDResourceTable.set(val, null);
+                        Object obj = textureIDResourceTable.get(val);
+                        if (obj instanceof TextureRetained) {
+                            TextureRetained tex = (TextureRetained) obj;
+                            synchronized (tex.resourceLock) {
+                                tex.resourceCreationMask &= ~rendererBit;
+                                if (tex.resourceCreationMask == 0) {
+                                    tex.freeTextureId(val);
+                                }
+                            }
+                        }
+
+                        textureIDResourceTable.set(val, null);
 		    }
 		    Canvas3D.freeTexture(sharedCtx, val);
 		}		    

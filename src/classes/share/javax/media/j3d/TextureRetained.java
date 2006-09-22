@@ -1845,7 +1845,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 						 width,
 						 height,
 						 boundaryWidth);
-		mirror = (Texture2DRetained)tex.retained;;
+		mirror = (Texture2DRetained)tex.retained;
 	   }
 
 	   ((TextureRetained)mirror).objectId = -1;
@@ -2444,37 +2444,6 @@ abstract class TextureRetained extends NodeComponentRetained {
 
     }
 
-    // Issue 121 : Stop using finalize() to clean up state
-    // Explore release native resources during clearlive without using finalize.
-    protected void finalize() {
-
-	if (objectId > 0) {
-	    // memory not yet free
-	    // send a message to the request renderer
-	    synchronized (VirtualUniverse.mc.contextCreationLock) {
-		boolean found = false;
-
-		for (Enumeration e = Screen3D.deviceRendererMap.elements();
-		     e.hasMoreElements(); ) {
-		    Renderer rdr = (Renderer) e.nextElement();	  
-		    J3dMessage renderMessage = VirtualUniverse.mc.getMessage();
-		    renderMessage.threads = J3dThread.RENDER_THREAD;
-		    renderMessage.type = J3dMessage.RENDER_IMMEDIATE;
-		    renderMessage.universe = null;
-		    renderMessage.view = null;
-		    renderMessage.args[0] = null;
-		    renderMessage.args[1] = new Integer(objectId);
-		    renderMessage.args[2] = "2D";
-		   rdr.rendererStructure.addMessage(renderMessage);
-		}
-		objectId = -1;
-	    }
-
-	    VirtualUniverse.mc.setWorkForRequestRenderer();
-	}
-
-    }
-
     void handleFrequencyChange(int bit) {
         switch (bit) {
         case Texture.ALLOW_ENABLE_WRITE:
@@ -2493,6 +2462,12 @@ abstract class TextureRetained extends NodeComponentRetained {
     
     boolean isUseAsRaster() {
         return this.useAsRaster;
-    }        
+    }
+
+    // TODO KCR ISSUE 121 : DEBUGGING CODE
+//    protected void finalize() {
+//        System.err.println("finalize: " + this);
+//    }
+
 }
 

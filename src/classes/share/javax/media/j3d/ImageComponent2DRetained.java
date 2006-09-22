@@ -371,13 +371,14 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	}
     }
 
+    // TODO KCR ISSUE 121 : REPLACE THIS WITH A WEAK REFERENCE OR OTHER SCHEME
     // Issue 121 : Stop using finalize() to clean up state
     // Use similar approach as in handling ogl Texture resource cleanup.
-    protected void finalize() {
-	// For Pure immediate mode, there is no clearLive so
-	// surface will free when JVM do GC 
-	freeSurface();
-    }
-    
+//    protected void finalize() {
+//        System.err.println("finalize: " + this);
+////        // For Pure immediate mode, there is no clearLive so
+////        // surface will free when JVM do GC 
+////        freeSurface();
+//    }
 
 }

@@ -10497,21 +10497,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
     }
 
-    // Issue 121 : Stop using finalize() to clean up state
-    // Explore release native resources during clearlive without using finalize.
-    // Will be handled similarly with VBO.
-    protected void finalize() {
-	// For Pure immediate mode, there is no clearLive so
-	// surface will free when JVM do GC 
-	if (pVertexBuffers != 0) {
-	    // memory not yet free for immediate mode rendering
-	    // It is thread safe since D3D only free surface in
-	    // the next swapBuffer() call which must be in the
-	    // same renderer threads
-	    freeD3DArray(true);
-	}
-    }
-
     void freeDlistId() {
 	if (dlistId != -1) {
 	    VirtualUniverse.mc.freeDisplayListId(dlistObj);

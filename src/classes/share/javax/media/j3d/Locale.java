@@ -1068,17 +1068,4 @@ public class Locale extends Object {
         
     }
 
-    /**
-     * Cleans up resources associated with this Locale
-     */
-    // Issue 121 : Stop using finalize() to clean up state
-    // This is probably okay, but need to document it.
-    // No clearlive code path for locale.
-    protected void finalize() {
-	// free nodeId
-	if (universe != null && nodeId != null) {
-	    universe.nodeIdFreeList.addElement(nodeId);
-	    nodeId = null;
-	}
-    }
 }

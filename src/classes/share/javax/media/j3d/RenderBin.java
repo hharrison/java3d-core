@@ -176,9 +176,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
     
     private Comparator transparencySortComparator = null;
     
-    ArrayList toBeAddedTextureResourceFreeList = new ArrayList(5);
-    ArrayList displayListResourceFreeList = new ArrayList(5);
-    boolean resourceToFree = false;
+    private ArrayList toBeAddedTextureResourceFreeList = new ArrayList(5);
+    private ArrayList displayListResourceFreeList = new ArrayList(5);
 
     // a list of top level OrderedGroups
     ArrayList orderedBins = new ArrayList(5);
@@ -197,7 +196,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
     int envDirty = 0;
 
   
-    boolean reEvaluateBg = true;
+    private boolean reEvaluateBg = true;
+    private boolean reloadBgTexture = true;
 
     boolean reEvaluateClip = true;
 
@@ -1162,6 +1162,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	dirtyRenderMoleculeList.clear();
 	dirtyReferenceGeomList.clear();
 	reEvaluateBg = false;
+        reloadBgTexture = false;
 	textureBinList.clear();
 	newNodeComponentList.clear();
 	removeNodeComponentList.clear();
@@ -1391,8 +1392,10 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		    break;
 		case J3dMessage.BACKGROUND_CHANGED:
 		    BackgroundRetained bg = (BackgroundRetained)m.args[0];
-		    if (universe.renderingEnvironmentStructure.isBgScopedToThisView(bg, view))
+		    if (universe.renderingEnvironmentStructure.isBgScopedToThisView(bg, view)) {
 			reEvaluateBg = true;
+                        reloadBgTexture = true;
+                    }
 		    m.decRefcount();
 		    break;
 		case J3dMessage.CLIP_CHANGED:
@@ -3131,21 +3134,26 @@ System.out.println("......tb.soleUser= " +
 		    addGeometryDlist(ra);
 
 	    // Raster send this message only for setImage()
-	    if (g instanceof RasterRetained) {
-		Object[] objs = (Object[]) args[2];
+            if (g instanceof RasterRetained) {
+                Object[] objs = (Object[]) args[2];
                 Texture2DRetained oldTex = (Texture2DRetained) objs[0];
                 Texture2DRetained newTex = (Texture2DRetained) objs[1];
-		ImageComponentRetained oldImage = oldTex.images[0][0];
-		ImageComponentRetained newImage = newTex.images[0][0];
 
-		RasterRetained geo = (RasterRetained)ra.geometry();
-		if (oldImage != null) {
-                    removeNodeComponent(oldImage);
-		}		
-		if (newImage != null) {
-                    addNodeComponent(newImage);
-		}
-	    }
+                RasterRetained geo = (RasterRetained)ra.geometry();
+                if (oldTex != null) {
+                    addTextureResourceFreeList(oldTex);
+                    ImageComponentRetained oldImage = oldTex.images[0][0];
+                    if (oldImage != null) {
+                        removeNodeComponent(oldImage);
+                    }
+                }
+                if (newTex != null) {
+                    ImageComponentRetained newImage = newTex.images[0][0];
+                    if (newImage != null) {
+                        addNodeComponent(newImage);
+                    }
+                }
+            }
 		
 	}
 	
@@ -5339,15 +5347,22 @@ System.out.println("......tb.soleUser= " +
             if (background.geometryBranch != null) {
                 geometryBackground = back;
             }
-            if (background.image != null) {
-                removeNodeComponent(background.image);
-            }
-            if (back.image != null) {
-                // May need to optimize later
-                background.initImage((ImageComponent2D)back.image.source);
-                addNodeComponent(back.image);
-            } else {
-                background.initImage(null);
+            // Release resources associated with old BG and initialize new BG
+            // if the old and new BG images are different or if the
+            // reloadBgTexture flag is set.
+            if (background.image != back.image || reloadBgTexture) {
+                if (background.image != null) {
+                    assert background.texture != null;
+                    addTextureResourceFreeList(background.texture);
+                    removeNodeComponent(background.image);
+                }
+                if (back.image != null) {
+                    // May need to optimize later
+                    background.initImage((ImageComponent2D)back.image.source);
+                    addNodeComponent(back.image);
+                } else {
+                    background.initImage(null);
+                }
             }
             if (oldGeomBack == null) {
                 cvDirty = true;

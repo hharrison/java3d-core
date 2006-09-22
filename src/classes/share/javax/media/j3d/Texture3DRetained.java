@@ -234,34 +234,4 @@ class Texture3DRetained extends TextureRetained {
                 imageData.get());
     }
 
-
-    // Issue 121 : Stop using finalize() to clean up state
-    // Explore release native resources during clearlive without using finalize.
-    protected void finalize() {
-
-	if (objectId > 0) {
-	    // memory not yet free
-	    // send a message to the request renderer
-	    synchronized (VirtualUniverse.mc.contextCreationLock) {
-		boolean found = false;
-
-		for (Enumeration e = Screen3D.deviceRendererMap.elements();
-		     e.hasMoreElements(); ) {
-		    Renderer rdr = (Renderer) e.nextElement();	  
-		    J3dMessage renderMessage = VirtualUniverse.mc.getMessage();
-		    renderMessage.threads = J3dThread.RENDER_THREAD;
-		    renderMessage.type = J3dMessage.RENDER_IMMEDIATE;
-		    renderMessage.universe = null;
-		    renderMessage.view = null;
-		    renderMessage.args[0] = null;
-		    renderMessage.args[1] = new Integer(objectId);
-		    renderMessage.args[2] = "3D";
-		    rdr.rendererStructure.addMessage(renderMessage);
-		}
-		objectId = -1;
-	    }
-	    VirtualUniverse.mc.setWorkForRequestRenderer();
-	}
-    }
-
 }
