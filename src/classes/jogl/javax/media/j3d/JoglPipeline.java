@@ -7039,7 +7039,7 @@ class JoglPipeline extends Pipeline {
         GL gl = context(ctx).getGL();
         gl.glPixelStorei(GL.GL_PACK_ROW_LENGTH, width);
         gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 1);
-        byte[] byteData = cv.byteBuffer;
+
         int type = 0;
         if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) ||
                 (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_BUFFER)) {
@@ -7081,15 +7081,13 @@ class JoglPipeline extends Pipeline {
             
             switch (format) {
                 case ImageComponentRetained.TYPE_INT_BGR:
-                    type = GL.GL_BGR;
+                    type = GL.GL_RGBA;
                     break;
                 case ImageComponentRetained.TYPE_INT_RGB:
-                    type = GL.GL_RGB;
-                    break;
                 case ImageComponentRetained.TYPE_INT_ARGB:
                     type = GL.GL_BGRA;
                     break;
-                    /* This method only supports 3 and 4 components formats and BYTE types. */
+                /* This method only supports 3 and 4 components formats and BYTE types. */
                 case ImageComponentRetained.TYPE_BYTE_LA:
                 case ImageComponentRetained.TYPE_BYTE_GRAY:
                 case ImageComponentRetained.TYPE_USHORT_GRAY:
@@ -7100,11 +7098,9 @@ class JoglPipeline extends Pipeline {
                 default:
                     throw new AssertionError("illegal format " + format);
             }
-            if(format == ImageComponentRetained.TYPE_INT_ARGB) {
-                gl.glReadPixels(0, 0, width, height, type, GL.GL_UNSIGNED_INT_8_8_8_8_REV, IntBuffer.wrap((int[]) data));
-            } else {
-                gl.glReadPixels(0, 0, width, height, type, GL.GL_UNSIGNED_INT_8_8_8_8, IntBuffer.wrap((int[]) data));
-            }
+            
+            gl.glReadPixels(0, 0, width, height, type, GL.GL_UNSIGNED_INT_8_8_8_8_REV, IntBuffer.wrap((int[]) data));
+
         } else {
             throw new AssertionError("illegal image data type " + dataType);
             

@@ -2461,10 +2461,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
 {
     JNIEnv table = *env;
     int type;
-
     void *imageObjPtr;
-
-    /* Need to support INT, and NIO buffers -- Chien */
 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
     jlong ctx = ctxProperties->context;
@@ -2521,11 +2518,9 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
         switch (format) {
             /* GL_BGR */
         case IMAGE_FORMAT_INT_BGR:         
-            type = GL_BGR;
+            type = GL_RGBA;
             break;
         case IMAGE_FORMAT_INT_RGB:
-            type = GL_RGB;
-            break;
         case IMAGE_FORMAT_INT_ARGB:        
             type = GL_BGRA;
             break;	
@@ -2542,12 +2537,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
             return;
         }  
       
-        if(format == IMAGE_FORMAT_INT_ARGB) {
-            glReadPixels(0, 0, width, height, type, GL_UNSIGNED_INT_8_8_8_8_REV, imageObjPtr);
-        }
-        else {
-            glReadPixels(0, 0, width, height, type, GL_UNSIGNED_INT_8_8_8_8, imageObjPtr);
-        }
+        glReadPixels(0, 0, width, height, type, GL_UNSIGNED_INT_8_8_8_8_REV, imageObjPtr);
 
     }
     else {

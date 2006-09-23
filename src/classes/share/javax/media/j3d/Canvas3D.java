@@ -353,9 +353,6 @@ public class Canvas3D extends Canvas {
     //
     ImageComponent2D offScreenBuffer = null;
 
-    // read buffer for reading off screen buffer
-    byte[] byteBuffer = new byte[1];
-
     // flag that indicates whether this canvas will use shared context
     boolean useSharedCtx = true;
 
@@ -3925,8 +3922,6 @@ public class Canvas3D extends Canvas {
   
     void reset() {
 	int i;
-
-	byteBuffer = new byte[1];
 	currentAppear = new AppearanceRetained();
 	currentMaterial = new MaterialRetained();
 	viewFrustum = new CachedFrustum();
