@@ -2770,10 +2770,16 @@ class JoglPipeline extends Pipeline {
                     gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 0.0f);
                     gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
                 }
-
+                
                 gl.glReadPixels(xSrcOffset, yAdjusted, width, height,
                         oglFormat, intType, IntBuffer.wrap((int[]) imageBuffer));
-
+                
+                /* Restore Alpha scale and bias */
+                if(forceAlphaToOne) {
+                    gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 1.0f);
+                    gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+                }
+                
             } else {
                 assert false;
             }
@@ -7075,19 +7081,30 @@ class JoglPipeline extends Pipeline {
                 default:
                     throw new AssertionError("illegal format " + format);
             }
+            
             gl.glReadPixels(0, 0, width, height, type, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[]) data));
+
         } else if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) ||
                 (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_BUFFER)) {
-            
+
+            int intType = GL.GL_UNSIGNED_INT_8_8_8_8;
+            boolean forceAlphaToOne = false;
+
             switch (format) {
-                case ImageComponentRetained.TYPE_INT_BGR:
+                /* GL_BGR */
+                case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
                     type = GL.GL_RGBA;
+                    intType = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    forceAlphaToOne = true;
                     break;
-                case ImageComponentRetained.TYPE_INT_RGB:
+                case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
+                    forceAlphaToOne = true;
+                    /* Fall through to next case */
                 case ImageComponentRetained.TYPE_INT_ARGB:
                     type = GL.GL_BGRA;
+                    intType = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
                     break;
-                /* This method only supports 3 and 4 components formats and BYTE types. */
+                    /* This method only supports 3 and 4 components formats and BYTE types. */
                 case ImageComponentRetained.TYPE_BYTE_LA:
                 case ImageComponentRetained.TYPE_BYTE_GRAY:
                 case ImageComponentRetained.TYPE_USHORT_GRAY:
@@ -7099,8 +7116,20 @@ class JoglPipeline extends Pipeline {
                     throw new AssertionError("illegal format " + format);
             }
             
-            gl.glReadPixels(0, 0, width, height, type, GL.GL_UNSIGNED_INT_8_8_8_8_REV, IntBuffer.wrap((int[]) data));
+            /* Force Alpha to 1.0 if needed */
+            if(forceAlphaToOne) {
+                gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 0.0f);
+                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+            }
+            
+            gl.glReadPixels(0, 0, width, height, type, intType, IntBuffer.wrap((int[]) data));
 
+	    /* Restore Alpha scale and bias */
+	    if(forceAlphaToOne) {
+		gl.glPixelTransferf(GL.GL_ALPHA_SCALE, 1.0f);
+		gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+	    }
+            
         } else {
             throw new AssertionError("illegal image data type " + dataType);
             

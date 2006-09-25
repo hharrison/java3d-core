@@ -2515,16 +2515,24 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
 
     }
     else if((dataType == IMAGE_DATA_TYPE_INT_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_BUFFER)) {
+	GLenum intType = GL_UNSIGNED_INT_8_8_8_8;
+	GLboolean forceAlphaToOne = GL_FALSE;
+
         switch (format) {
-            /* GL_BGR */
-        case IMAGE_FORMAT_INT_BGR:         
-            type = GL_RGBA;
-            break;
-        case IMAGE_FORMAT_INT_RGB:
-        case IMAGE_FORMAT_INT_ARGB:        
-            type = GL_BGRA;
-            break;	
-        /* This method only supports 3 and 4 components formats and INT types. */
+	    /* GL_BGR */
+	case IMAGE_FORMAT_INT_BGR: /* Assume XBGR format */
+	    type = GL_RGBA;
+	    intType = GL_UNSIGNED_INT_8_8_8_8_REV;
+	    forceAlphaToOne = GL_TRUE;
+	    break;
+	case IMAGE_FORMAT_INT_RGB: /* Assume XRGB format */
+	    forceAlphaToOne = GL_TRUE;
+	    /* Fall through to next case */
+	case IMAGE_FORMAT_INT_ARGB:
+	    type = GL_BGRA;
+	    intType = GL_UNSIGNED_INT_8_8_8_8_REV;
+	    break;	    
+	    /* This method only supports 3 and 4 components formats and INT types. */
         case IMAGE_FORMAT_BYTE_LA:
         case IMAGE_FORMAT_BYTE_GRAY: 
         case IMAGE_FORMAT_USHORT_GRAY:
@@ -2536,9 +2544,20 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
             throwAssert(env, "illegal format");
             return;
         }  
-      
-        glReadPixels(0, 0, width, height, type, GL_UNSIGNED_INT_8_8_8_8_REV, imageObjPtr);
 
+	/* Force Alpha to 1.0 if needed */
+	if(forceAlphaToOne) {
+	    glPixelTransferf(GL_ALPHA_SCALE, 0.0f);
+	    glPixelTransferf(GL_ALPHA_BIAS, 1.0f);
+	}
+	
+        glReadPixels(0, 0, width, height, type, intType, imageObjPtr);
+
+	/* Restore Alpha scale and bias */
+	if(forceAlphaToOne) {
+	    glPixelTransferf(GL_ALPHA_SCALE, 1.0f);
+	    glPixelTransferf(GL_ALPHA_BIAS, 0.0f);
+	}
     }
     else {
         throwAssert(env, "illegal image data type");
