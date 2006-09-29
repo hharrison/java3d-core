@@ -195,176 +195,176 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
 	    }
 	    return shads;
 	}
-    }    
-    
+    }
+
     /**
      * Method to create the native shader.
      */
-    abstract ShaderError createShader(long ctx, ShaderRetained shader, long[] shaderIdArr); 
+    abstract ShaderError createShader(Context ctx, ShaderRetained shader, ShaderId[] shaderIdArr); 
 
     /**
      * Method to destroy the native shader.
      */
-    abstract ShaderError destroyShader(long ctx, long shaderId);
+    abstract ShaderError destroyShader(Context ctx, ShaderId shaderId);
 
     /**
      * Method to compile the native shader.
      */
-    abstract ShaderError compileShader(long ctx, long shaderId, String source);
+    abstract ShaderError compileShader(Context ctx, ShaderId shaderId, String source);
 
     /**
      * Method to create the native shader program.
      */
-    abstract ShaderError createShaderProgram(long ctx, long[] shaderProgramIdArr);
+    abstract ShaderError createShaderProgram(Context ctx, ShaderProgramId[] shaderProgramIdArr);
 
     /**
      * Method to destroy the native shader program.
      */
-    abstract ShaderError destroyShaderProgram(long ctx, long shaderProgramId);
+    abstract ShaderError destroyShaderProgram(Context ctx, ShaderProgramId shaderProgramId);
 
     /**
      * Method to link the native shader program.
      */
-    abstract ShaderError linkShaderProgram(long ctx, long shaderProgramId, long[] shaderIds);
+    abstract ShaderError linkShaderProgram(Context ctx, ShaderProgramId shaderProgramId, ShaderId[] shaderIds);
 
     /**
      * Method to bind a vertex attribute name to the specified index.
      */
-    abstract ShaderError bindVertexAttrName(long ctx, long shaderProgramId, String attrName, int attrIndex);
+    abstract ShaderError bindVertexAttrName(Context ctx, ShaderProgramId shaderProgramId, String attrName, int attrIndex);
 
     /**
      * Method to lookup a list of (uniform) shader attribute names and return
      * information about the attributes.
      */
-    abstract void lookupShaderAttrNames(long ctx, long shaderProgramId, String[] attrNames, AttrNameInfo[] attrNameInfoArr);
+    abstract void lookupShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId, String[] attrNames, AttrNameInfo[] attrNameInfoArr);
     
     /*
      * Method to lookup a list of vertex attribute names.
      */
-    abstract void lookupVertexAttrNames(long ctx, long shaderProgramId, String[] attrNames, boolean[] errArr);
+    abstract void lookupVertexAttrNames(Context ctx, ShaderProgramId shaderProgramId, String[] attrNames, boolean[] errArr);
 
     /**
      * Method to use the native shader program.
      */
-    abstract ShaderError enableShaderProgram(long ctx, long shaderProgramId);
+    abstract ShaderError enableShaderProgram(Context ctx, ShaderProgramId shaderProgramId);
     
     /**
      * Method to disable the native shader program.
      */
-    abstract ShaderError disableShaderProgram(long ctx);
+    abstract ShaderError disableShaderProgram(Context ctx);
     
     // ShaderAttributeValue methods
 
-    abstract ShaderError setUniform1i(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
+    abstract ShaderError setUniform1i(Context ctx,
+					    ShaderProgramId shaderProgramId,
+					    ShaderAttrLoc uniformLocation,
 					    int value);
     
-    abstract ShaderError setUniform1f(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
+    abstract ShaderError setUniform1f(Context ctx,
+					    ShaderProgramId shaderProgramId,
+					    ShaderAttrLoc uniformLocation,
 					    float value);
     
-    abstract ShaderError setUniform2i(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
+    abstract ShaderError setUniform2i(Context ctx,
+					    ShaderProgramId shaderProgramId,
+					    ShaderAttrLoc uniformLocation,
 					    int[] value);
     
-    abstract ShaderError setUniform2f(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
+    abstract ShaderError setUniform2f(Context ctx,
+					    ShaderProgramId shaderProgramId,
+					    ShaderAttrLoc uniformLocation,
 					    float[] value);
     
-    abstract ShaderError setUniform3i(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
+    abstract ShaderError setUniform3i(Context ctx,
+					    ShaderProgramId shaderProgramId,
+					    ShaderAttrLoc uniformLocation,
 					    int[] value);
     
-    abstract ShaderError setUniform3f(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
+    abstract ShaderError setUniform3f(Context ctx,
+					    ShaderProgramId shaderProgramId,
+					    ShaderAttrLoc uniformLocation,
 					    float[] value);    
     
-    abstract ShaderError setUniform4i(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
+    abstract ShaderError setUniform4i(Context ctx,
+					    ShaderProgramId shaderProgramId,
+					    ShaderAttrLoc uniformLocation,
 					    int[] value);
     
-    abstract ShaderError setUniform4f(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
+    abstract ShaderError setUniform4f(Context ctx,
+					    ShaderProgramId shaderProgramId,
+					    ShaderAttrLoc uniformLocation,
 					    float[] value);    
     
-    abstract ShaderError setUniformMatrix3f(long ctx,
-					   long shaderProgramId,
-				           long uniformLocation,
+    abstract ShaderError setUniformMatrix3f(Context ctx,
+					   ShaderProgramId shaderProgramId,
+				           ShaderAttrLoc uniformLocation,
 					   float[] value);
 
-    abstract ShaderError setUniformMatrix4f(long ctx,
-					   long shaderProgramId,
-			         	   long uniformLocation,
+    abstract ShaderError setUniformMatrix4f(Context ctx,
+					   ShaderProgramId shaderProgramId,
+			         	   ShaderAttrLoc uniformLocation,
 					   float[] value);
 
 
     // ShaderAttributeArray methods
     
-    abstract ShaderError setUniform1iArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
+    abstract ShaderError setUniform1iArray(Context ctx,
+				      ShaderProgramId shaderProgramId,
+				      ShaderAttrLoc uniformLocation,
 				      int numElements,
 				      int[] value);
     
-    abstract ShaderError setUniform1fArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
+    abstract ShaderError setUniform1fArray(Context ctx,
+				      ShaderProgramId shaderProgramId,
+				      ShaderAttrLoc uniformLocation,
 				      int numElements,
 				      float[] value);
     
-    abstract ShaderError setUniform2iArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
+    abstract ShaderError setUniform2iArray(Context ctx,
+				      ShaderProgramId shaderProgramId,
+				      ShaderAttrLoc uniformLocation,
 				      int numElements,
 				      int[] value);
     
-    abstract ShaderError setUniform2fArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
+    abstract ShaderError setUniform2fArray(Context ctx,
+				      ShaderProgramId shaderProgramId,
+				      ShaderAttrLoc uniformLocation,
 				      int numElements,
 				      float[] value);
     
-    abstract ShaderError setUniform3iArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
+    abstract ShaderError setUniform3iArray(Context ctx,
+				      ShaderProgramId shaderProgramId,
+				      ShaderAttrLoc uniformLocation,
 				      int numElements,
 				      int[] value);
     
-    abstract ShaderError setUniform3fArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
+    abstract ShaderError setUniform3fArray(Context ctx,
+				      ShaderProgramId shaderProgramId,
+				      ShaderAttrLoc uniformLocation,
 				      int numElements,
 				      float[] value);    
     
-    abstract ShaderError setUniform4iArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
+    abstract ShaderError setUniform4iArray(Context ctx,
+				      ShaderProgramId shaderProgramId,
+				      ShaderAttrLoc uniformLocation,
 				      int numElements,
 				      int[] value);
     
-    abstract ShaderError setUniform4fArray(long ctx,
-				      long shaderProgramId,
-				      long uniformLocation,
+    abstract ShaderError setUniform4fArray(Context ctx,
+				      ShaderProgramId shaderProgramId,
+				      ShaderAttrLoc uniformLocation,
 				      int numElements,
 				      float[] value);    
     
-    abstract ShaderError setUniformMatrix3fArray(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
+    abstract ShaderError setUniformMatrix3fArray(Context ctx,
+					    ShaderProgramId shaderProgramId,
+					    ShaderAttrLoc uniformLocation,
 					    int numElements,
 					    float[] value);
 
-    abstract ShaderError setUniformMatrix4fArray(long ctx,
-					    long shaderProgramId,
-					    long uniformLocation,
+    abstract ShaderError setUniformMatrix4fArray(Context ctx,
+					    ShaderProgramId shaderProgramId,
+					    ShaderAttrLoc uniformLocation,
 					    int numElements,
 					    float[] value);
 
@@ -505,9 +505,9 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
     private ShaderError createShaderProgram(Canvas3D cv, int cvRdrIndex) {
         // Create shaderProgram resources if it has not been done.
         synchronized(resourceLock) {
-            assert(shaderProgramData[cvRdrIndex].getShaderProgramId() == 0);
+            assert shaderProgramData[cvRdrIndex].getShaderProgramId() == null;
 
-            long[] spIdArr = new long[1];
+            ShaderProgramId[] spIdArr = new ShaderProgramId[1];
             ShaderError err = createShaderProgram(cv.ctx, spIdArr);
             if(err != null) {
                 return err;
@@ -524,7 +524,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
     private ShaderError linkShaderProgram(Canvas3D cv, int cvRdrIndex, 
 					  ShaderRetained[] shaders) {
 	synchronized(resourceLock) {
-            long[] shaderIds = new long[shaders.length];
+            ShaderId[] shaderIds = new ShaderId[shaders.length];
 	    for(int i=0; i<shaders.length; i++) {
                 synchronized(shaders[i]) {
                     shaderIds[i] = shaders[i].shaderIds[cvRdrIndex];
@@ -547,7 +547,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
     private ShaderError bindVertexAttrName(Canvas3D cv, int cvRdrIndex, String attrName, int attrIndex) {
         assert(attrName != null);
         synchronized(resourceLock) {
-            long shaderProgramId = shaderProgramData[cvRdrIndex].getShaderProgramId();
+            ShaderProgramId shaderProgramId = shaderProgramData[cvRdrIndex].getShaderProgramId();
 //            System.err.println("attrName = " + attrName);
             ShaderError err = bindVertexAttrName(cv.ctx, shaderProgramId, attrName, attrIndex);
             if (err != null) {
@@ -559,7 +559,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
     
     private void lookupVertexAttrNames(Canvas3D cv, int cvRdrIndex, String[] attrNames) {
         synchronized(resourceLock) {
-            long shaderProgramId = shaderProgramData[cvRdrIndex].getShaderProgramId();
+            ShaderProgramId shaderProgramId = shaderProgramData[cvRdrIndex].getShaderProgramId();
 
             boolean[] errArr = new boolean[attrNames.length];
             lookupVertexAttrNames(cv.ctx, shaderProgramId, attrNames, errArr);
@@ -580,7 +580,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
 
     private void lookupShaderAttrNames(Canvas3D cv, int cvRdrIndex, String[] attrNames) {
         synchronized(resourceLock) {
-            long shaderProgramId = shaderProgramData[cvRdrIndex].getShaderProgramId();
+            ShaderProgramId shaderProgramId = shaderProgramData[cvRdrIndex].getShaderProgramId();
 
             AttrNameInfo[] attrNameInfoArr = new AttrNameInfo[attrNames.length];
             lookupShaderAttrNames(cv.ctx, shaderProgramId, attrNames, attrNameInfoArr);
@@ -588,8 +588,8 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
             for (int i = 0; i < attrNames.length; i++) {
                 shaderProgramData[cvRdrIndex].setAttrNameInfo(attrNames[i], attrNameInfoArr[i]);
                 
-                // Report non-fatal error if location is invalid (-1)
-                if (attrNameInfoArr[i].getLocation() == -1) {
+                // Report non-fatal error if location is invalid
+                if (attrNameInfoArr[i].getLocation() == null) {
                     String errMsg = "Attribute name lookup failed: " + attrNames[i];
                     ShaderError err = new ShaderError(ShaderError.SHADER_ATTRIBUTE_LOOKUP_ERROR, errMsg);
                     err.setShaderProgram((ShaderProgram)this.source);
@@ -619,11 +619,11 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
         synchronized(shader.resourceLock) {
             if(shader.shaderIds == null){
                 // We rely on Java to initial the array elements to 0 or false;
-                shader.shaderIds = new long[cvRdrIndex+1];
+                shader.shaderIds = new ShaderId[cvRdrIndex+1];
                 shader.compiled = new boolean[cvRdrIndex+1];
             } else if( shader.shaderIds.length <= cvRdrIndex) {
                 // We rely on Java to initial the array elements to 0 or false;
-                long[] tempSIds = new long[cvRdrIndex+1];
+                ShaderId[] tempSIds = new ShaderId[cvRdrIndex+1];
                 boolean[] tempCompiled = new boolean[cvRdrIndex+1];
                 
                 System.arraycopy(shader.shaderIds, 0,
@@ -637,12 +637,12 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
                 shader.compiled = tempCompiled;
             }
             
-            if(shader.shaderIds[cvRdrIndex] != 0) {
+            if(shader.shaderIds[cvRdrIndex] != null) {
                 // We have already created the shaderId for this Canvas.
                 return null;
             }
             
-            long[] shaderIdArr = new long[1];
+            ShaderId[] shaderIdArr = new ShaderId[1];
             ShaderError err = createShader(cv.ctx, shader, shaderIdArr);
             if(err != null) {
                 return err;
@@ -722,15 +722,15 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
                 return;
             }
             
-            // Nothing to do if the shaderId is 0
-            if (shader.shaderIds[cvRdrIndex] == 0) {
+            // Nothing to do if the shaderId is null
+            if (shader.shaderIds[cvRdrIndex] == null) {
                 return;
             }
 
-            // Destroy the native resource and set the ID to 0 for this canvas/renderer
+            // Destroy the native resource and set the ID to null for this canvas/renderer
             // Ignore any possible shader error, because there is no meaningful way to report it
             destroyShader(cv.ctx, shader.shaderIds[cvRdrIndex]);
-            shader.shaderIds[cvRdrIndex] = 0;
+            shader.shaderIds[cvRdrIndex] = null;
         }
     }
 
@@ -756,13 +756,13 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
 //                return;
 //            }
             
-	    long shaderProgramId = shaderProgramData[cvRdrIndex].getShaderProgramId(); 
-            // Nothing to do if the shaderProgramId is 0
-            if (shaderProgramId == 0) {
+	    ShaderProgramId shaderProgramId = shaderProgramData[cvRdrIndex].getShaderProgramId(); 
+            // Nothing to do if the shaderProgramId is null
+            if (shaderProgramId == null) {
                 return;
             }
 
-            // Destroy the native resource, set the ID to 0 for this canvas/renderer,
+            // Destroy the native resource, set the ID to null for this canvas/renderer,
             // and clear the bit in the resourceCreationMask
             // Ignore any possible shader error, because there is no meaningful way to report it
             destroyShaderProgram(cv.ctx, shaderProgramId);
@@ -779,7 +779,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
     void updateNative(Canvas3D cv, boolean enable) {
 	// System.out.println("ShaderProgramRetained.updateNative : ");
 
-        final boolean useSharedCtx = cv.useSharedCtx && cv.screen.renderer.sharedCtx != 0;
+        final boolean useSharedCtx = cv.useSharedCtx && cv.screen.renderer.sharedCtx != null;
         final int cvRdrIndex = useSharedCtx ? cv.screen.renderer.rendererId : cv.canvasId;
 
         // Create ShaderProgramData object for this canvas/renderer if it doesn't already exist
@@ -806,7 +806,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
         }
 
 	boolean loadShaderProgram = false; // flag indicating whether to reload all shaderProgram states
-        if (getShaderProgramData(cvRdrIndex).getShaderProgramId() == 0) {
+        if (getShaderProgramData(cvRdrIndex).getShaderProgramId() == null) {
             loadShaderProgram = true;
         }
         
@@ -927,8 +927,8 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
     /**
      * Update native value for ShaderAttributeValue class
      */
-    ShaderError setUniformAttrValue(long ctx, long shaderProgramId, long loc,
-				    ShaderAttributeValueRetained sav) {
+    ShaderError setUniformAttrValue(Context ctx, ShaderProgramId shaderProgramId,
+            ShaderAttrLoc loc, ShaderAttributeValueRetained sav) {
 
 	switch (sav.getClassType()) {
 	case ShaderAttributeObjectRetained.TYPE_INTEGER:
@@ -981,8 +981,8 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
      /**
      * Update native value for ShaderAttributeArray class
      */
-    ShaderError setUniformAttrArray(long ctx, long shaderProgramId, long loc,
-				    ShaderAttributeArrayRetained saa) {   
+    ShaderError setUniformAttrArray(Context ctx, ShaderProgramId shaderProgramId,
+            ShaderAttrLoc loc, ShaderAttributeArrayRetained saa) {   
 
         switch (saa.getClassType()) {
             case ShaderAttributeObjectRetained.TYPE_INTEGER:
@@ -1035,7 +1035,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
     
     
     void setShaderAttributes(Canvas3D cv, ShaderAttributeSetRetained attributeSet) {
-        final boolean useSharedCtx = cv.useSharedCtx && cv.screen.renderer.sharedCtx != 0;
+        final boolean useSharedCtx = cv.useSharedCtx && cv.screen.renderer.sharedCtx != null;
         final int cvRdrIndex = useSharedCtx ? cv.screen.renderer.rendererId : cv.canvasId;        
         ShaderProgramData spData = getShaderProgramData(cvRdrIndex);
         
@@ -1044,7 +1044,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
             return;
         }
         
-        long shaderProgramId = spData.getShaderProgramId();
+        ShaderProgramId shaderProgramId = spData.getShaderProgramId();
         
         Iterator attrs = attributeSet.getAttrs().values().iterator();
         while (attrs.hasNext()) {
@@ -1060,8 +1060,8 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
                 String errMsg = "Attribute name not set in ShaderProgram: " + saRetained.getAttributeName(); // TODO: I18N
                 err = new ShaderError(ShaderError.SHADER_ATTRIBUTE_NAME_NOT_SET_ERROR, errMsg);
             } else {
-                long loc = attrNameInfo.getLocation();
-                if (loc != -1) {
+                ShaderAttrLoc loc = attrNameInfo.getLocation();
+                if (loc != null) {
                     if (saRetained instanceof ShaderAttributeValueRetained) {
                         ShaderAttributeValueRetained savRetained = (ShaderAttributeValueRetained)saRetained;
                         if (attrNameInfo.isArray() ||
@@ -1111,7 +1111,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
     class ShaderProgramData extends Object {
 	
 	// shaderProgramId use by native code. 
-	private long shaderProgramId = 0;
+	private ShaderProgramId shaderProgramId = null;
 	
 	// linked flag for native.
 	private boolean linked = false;
@@ -1124,16 +1124,16 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
 	}
         
         void reset() {
-            shaderProgramId = 0;
+            shaderProgramId = null;
             linked = false;
             attrNameInfoMap.clear();
         }
 
-	void setShaderProgramId(long shaderProgramId) {
+	void setShaderProgramId(ShaderProgramId shaderProgramId) {
 	    this.shaderProgramId = shaderProgramId;
 	}
 
-	long getShaderProgramId() {
+	ShaderProgramId getShaderProgramId() {
 	    return this.shaderProgramId;
 	}
 
@@ -1159,11 +1159,11 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
     
     // Data associated with an attribute name
     class AttrNameInfo {
-        void setLocation(long loc) {
+        void setLocation(ShaderAttrLoc loc) {
             this.loc = loc;
         }
 
-        long getLocation() {
+        ShaderAttrLoc getLocation() {
             return loc;
         }
 
@@ -1184,7 +1184,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
         }
 
         // Location of attribute name in linked shader program
-        private long loc;
+        private ShaderAttrLoc loc;
 
         // boolean indicating whether the attribute is an array
         private boolean isArray;

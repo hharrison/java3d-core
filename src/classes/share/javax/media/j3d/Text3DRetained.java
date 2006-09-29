@@ -458,7 +458,7 @@ class Text3DRetained extends GeometryRetained {
 		    numMessages = universeList.size();
 		    m = new J3dMessage[numMessages];
 		    for (i=0; i<numMessages; i++) {
-			m[i] = VirtualUniverse.mc.getMessage();
+			m[i] = new J3dMessage();
 			m[i].type = J3dMessage.TEXT3D_DATA_CHANGED;
 			m[i].threads = targetThreads;
 			shapeList = (ArrayList)userLists.get(i);
@@ -637,7 +637,7 @@ class Text3DRetained extends GeometryRetained {
 		    numMessages = universeList.size();
 		    m = new J3dMessage[numMessages];
 		    for (i=0; i<numMessages; i++) {
-			m[i] = VirtualUniverse.mc.getMessage();
+			m[i] = new J3dMessage();
 			m[i].type = J3dMessage.TEXT3D_TRANSFORM_CHANGED;
 			m[i].threads = targetThreads;
 			shapeList = (ArrayList)userLists.get(i);
@@ -709,7 +709,7 @@ class Text3DRetained extends GeometryRetained {
 
 	charTransforms = new Transform3D[numChars];
 	for (i=0; i<numChars; i++) {
-	    charTransforms[i] = VirtualUniverse.mc.getTransform3D(null);
+	    charTransforms[i] = new Transform3D();
 	}
 
 	if (numChars != 0) {
@@ -880,7 +880,7 @@ class Text3DRetained extends GeometryRetained {
     }
 
     boolean intersect(Point3d[] pnts) {
-	Transform3D tempT3D = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D tempT3D = new Transform3D();
 	GeometryArrayRetained ga;
 	boolean isIntersect = false;
 	Point3d transPnts[] = new Point3d[pnts.length];
@@ -901,7 +901,6 @@ class Text3DRetained extends GeometryRetained {
 		}
 	    }
 	}
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, tempT3D);
 	return isIntersect;
     }
 
@@ -940,21 +939,19 @@ class Text3DRetained extends GeometryRetained {
 
 
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
-		 boolean updateAlpha, float alpha, boolean multiScreen, 
+		 boolean updateAlpha, float alpha,
 		 int screen, 
-		 boolean ignoreVertexColors, int pass) { 
+		 boolean ignoreVertexColors) { 
 
-	Transform3D trans = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D trans = new Transform3D();
 
 	for (int i = 0; i < geometryList.length; i++) {
 	    trans.set(drawTransform);
 	    trans.mul(charTransforms[i]);
 	    cv.setModelViewMatrix(cv.ctx, vpcToEc.mat, trans);
 	    geometryList[i].execute(cv, ra, isNonUniformScale, updateAlpha, alpha,
-				    multiScreen, screen, ignoreVertexColors, 
-				    pass);
+				    screen, ignoreVertexColors);
 	}
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, trans);
     }
 
     int getClassType() {

@@ -438,13 +438,13 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
 		 initialVertexIndex : initialCoordIndex);
 
-	Point3d pnt0 = getPoint3d();
-	Point3d pnt1 = getPoint3d();
-	Point3d pnt2 = getPoint3d();
-	Point3d pnt3 = getPoint3d();
-	Vector3d vec = getVector3d();
-	Vector3d normal = getVector3d();
-	Vector3d tmpvec = getVector3d();
+	Point3d pnt0 = new Point3d();
+	Point3d pnt1 = new Point3d();
+	Point3d pnt2 = new Point3d();
+	Point3d pnt3 = new Point3d();
+	Vector3d vec = new Vector3d();
+	Vector3d normal = new Vector3d();
+	Vector3d tmpvec = new Vector3d();
 
 	double area;
 	double totalarea = 0;
@@ -497,13 +497,6 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    centroid.y *= area;
 	    centroid.z *= area;
 	}
-	freeVector3d(tmpvec);
-	freeVector3d(vec);
-	freeVector3d(normal);
-	freePoint3d(pnt0);
-	freePoint3d(pnt1);
-	freePoint3d(pnt2);
-	freePoint3d(pnt3);
     }
 
     int getClassType() {

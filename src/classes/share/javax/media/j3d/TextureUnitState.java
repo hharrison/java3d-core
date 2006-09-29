@@ -126,6 +126,15 @@ public class TextureUnitState extends NodeComponent {
      * texture attributes
      * @param texCoordGeneration object that specifies the texture coordinate
      * generation parameters
+     *
+     * @exception IllegalSharingException if this TextureUnitState is live and
+     * the specified texture refers to an ImageComponent2D that is being used
+     * by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalSharingException if this TextureUnitState is
+     * being used by an immediate mode context and
+     * the specified texture refers to an ImageComponent2D that is being used
+     * by a Canvas3D as an off-screen buffer.
      */
     public void set(Texture texture,
 		    TextureAttributes textureAttributes,
@@ -135,6 +144,17 @@ public class TextureUnitState extends NodeComponent {
 	    if (!this.getCapability(ALLOW_STATE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("TextureUnitState0"));
 
+        // Do illegal sharing check
+        if(texture != null) {
+            TextureRetained texRetained = (TextureRetained)texture.retained;            
+            ImageComponent[] images = texRetained.getImages();
+            if(images != null) {
+                for(int i=0; i<images.length; i++) {
+                    validateImageIllegalSharing(images[i]);
+                }
+            }
+        }
+        
 	((TextureUnitStateRetained)this.retained).setTextureUnitState(
 				texture, textureAttributes, texCoordGeneration);
     }
@@ -143,15 +163,37 @@ public class TextureUnitState extends NodeComponent {
      * Sets the texture object to the specified object.
      * Setting it to null disables texture mapping for the
      * texture unit corresponding to this TextureUnitState object.
+     *
      * @param texture object that specifies the desired texture
      * map and texture parameters
+     *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
+     *
+     * @exception IllegalSharingException if this TextureUnitState is live and
+     * the specified texture refers to an ImageComponent2D that is being used
+     * by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalSharingException if this TextureUnitState is
+     * being used by an immediate mode context and
+     * the specified texture refers to an ImageComponent2D that is being used
+     * by a Canvas3D as an off-screen buffer.
      */
     public void setTexture(Texture texture) {
 	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_STATE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("TextureUnitState0"));
+
+        // Do illegal sharing check
+        if(texture != null) {
+            TextureRetained texRetained = (TextureRetained)texture.retained;            
+            ImageComponent[] images = texRetained.getImages();
+            if(images != null) {
+                for(int i=0; i<images.length; i++) {
+                    validateImageIllegalSharing(images[i]);
+                }
+            }
+        }
 
 	((TextureUnitStateRetained)this.retained).setTexture(texture);
     }

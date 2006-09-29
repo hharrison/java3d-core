@@ -22,6 +22,6 @@ interface RenderMethod {
     /**
      * The actual rendering code for this RenderMethod
      */
-    abstract boolean render(RenderMolecule rm, Canvas3D cv, int pass, 
+    abstract boolean render(RenderMolecule rm, Canvas3D cv,
 			 RenderAtomListInfo ra, int dirtyBits);
 }

@@ -78,7 +78,7 @@ class BoundingLeafRetained extends LeafRetained {
      */
     void setRegion(Bounds region) {
 	initRegion(region);
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = mirrorBoundingLeaf.targetThreads;
 	createMessage.type = J3dMessage.BOUNDINGLEAF_CHANGED;
 	createMessage.universe = universe;

@@ -55,7 +55,7 @@ class DirectionalLightRetained extends LightRetained
      */
      void setDirection(Vector3f direction) {
 	 initDirection(direction);
-	 J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	 J3dMessage createMessage = new J3dMessage();
 	 createMessage.threads = targetThreads;
 	 createMessage.type = J3dMessage.LIGHT_CHANGED;
 	 createMessage.universe = universe;
@@ -168,13 +168,11 @@ class DirectionalLightRetained extends LightRetained
     }
 
       
-    native void updateLight(long ctx,
-			    int lightSlot, float red, float green, 
-			    float blue, float x, float y, float z); 
-    void update(long ctx, int lightSlot, double scale) { 
-	updateLight(ctx, lightSlot, color.x, color.y, color.z, 
-		    xformDirection.x, xformDirection.y, 
-		    xformDirection.z); 
+    void update(Context ctx, int lightSlot, double scale) { 
+        Pipeline.getPipeline().updateDirectionalLight(ctx,
+                lightSlot, color.x, color.y, color.z,
+                xformDirection.x, xformDirection.y,
+                xformDirection.z);
     }
 
     // Clones only the retained side, internal use only

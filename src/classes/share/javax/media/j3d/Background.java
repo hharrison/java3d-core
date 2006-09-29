@@ -289,10 +289,18 @@ public class Background extends Leaf {
      * filled with the background color.
      *
      * @param image pixel array object used as the background image
+     * 
+     * @exception IllegalArgumentException if the image class of the specified
+     * ImageComponent2D is ImageClass.NIO_IMAGE_BUFFER.
      */
     public Background(ImageComponent2D image) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
+       
+        if((image != null) && 
+                (image.getImageClass() == ImageComponent.ImageClass.NIO_IMAGE_BUFFER)) {     
+            throw new IllegalArgumentException(J3dI18N.getString("Background14"));
+        }
 
         ((BackgroundRetained)this.retained).setImage(image);
     }
@@ -379,19 +387,51 @@ public class Background extends Leaf {
      * than the window,
      * then that portion of the window not covered by the image is
      * filled with the background color.
+     *
      * @param image new pixel array object used as the background image
+     *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
+     *
+     * @exception IllegalSharingException if this Background is live and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalSharingException if this Background is
+     * being used by an immediate mode context and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalArgumentException if the image class of the specified
+     * ImageComponent2D is ImageClass.NIO_IMAGE_BUFFER.
      */
     public void setImage(ImageComponent2D image) {
         if (isLiveOrCompiled())
          if(!this.getCapability(ALLOW_IMAGE_WRITE))
            throw new CapabilityNotSetException(J3dI18N.getString("Background3"));
 
+        BackgroundRetained bgRetained = (BackgroundRetained)this.retained;
+
+        if((image != null) && 
+                (image.getImageClass() == ImageComponent.ImageClass.NIO_IMAGE_BUFFER)) {     
+            throw new IllegalArgumentException(J3dI18N.getString("Background14"));
+        }
+
+        // Do illegal sharing check
+        if(image != null) {
+            ImageComponent2DRetained imageRetained = (ImageComponent2DRetained) image.retained;
+            if(imageRetained.getUsedByOffScreen()) {
+                if(isLive()) {
+                    throw new IllegalSharingException(J3dI18N.getString("Background12"));
+                }
+                if(bgRetained.getInImmCtx()) {
+                    throw new IllegalSharingException(J3dI18N.getString("Background13"));
+                }
+            }
+        }
+        
 	if (isLive())
-	    ((BackgroundRetained)this.retained).setImage(image);
+	    bgRetained.setImage(image);
 	else
-	    ((BackgroundRetained)this.retained).initImage(image);
+	    bgRetained.initImage(image);
     }
 
     /**

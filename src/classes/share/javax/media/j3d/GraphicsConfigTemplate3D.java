@@ -46,15 +46,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
 
     static Object globalLock = new Object();
     static Object monitorLock = new Object();
-    static boolean threadWaiting = false;
-
-    /**
-     * The platform dependent template.  Since there is no
-     * template-specific instance data in the NativeConfigTemplate3D
-     * class, we can create one statically.
-     */
-    static NativeConfigTemplate3D nativeTemplate =
-	new NativeConfigTemplate3D();
+    static volatile boolean threadWaiting = false;
 
     /**
      * Constructs a GraphicsConfigTemplate3D object with default parameters.
@@ -387,7 +379,8 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
 	synchronized (monitorLock) {
 	    switch (action) {
 	    case J3dThread.WAIT:
-		if (threadWaiting) {
+                // Issue 279 - loop until ready
+		while (threadWaiting) {
 		    try {
 			monitorLock.wait();
 		    } catch (InterruptedException e) {

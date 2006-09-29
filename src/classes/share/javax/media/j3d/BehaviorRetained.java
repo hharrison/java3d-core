@@ -346,9 +346,12 @@ class BehaviorRetained extends LeafRetained  {
               ((Behavior)this.source).initialize();
           }
           catch (RuntimeException e) {
-              inCallback = inCallbackSaved;
-              inInitCallback = inInitCallbackSaved;
               System.err.println("Exception occurred during Behavior initialization:");
+              e.printStackTrace();
+          }
+          catch (Error e) {
+              // Issue 264 - catch Error
+              System.err.println("Error occurred during Behavior initialization:");
               e.printStackTrace();
           }
           inCallback = inCallbackSaved;
@@ -482,7 +485,7 @@ class BehaviorRetained extends LeafRetained  {
     void addWakeupCondition() {}
 
     final void sendMessage(int mtype, Object arg) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_BEHAVIOR;
 	createMessage.type = mtype;
         createMessage.universe = universe;

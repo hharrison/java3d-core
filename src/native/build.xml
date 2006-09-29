@@ -20,112 +20,102 @@
   <target name="nativeSetup-debug-solaris" if="isSolarisOnSparc">
 	<property name="bldFlag" value="-g -DDEBUG"/>
 	<property name="coreLibDependency" value="lib/sparc/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/sparc/libj3dutils.so"/>
   </target>
 
   <target name="nativeSetup-debug-solaris-x86" if="isSolarisOnX86">
 	<property name="bldFlag" value="-g -DDEBUG"/>
 	<property name="coreLibDependency" value="lib/i386/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/i386/libj3dutils.so"/>
   </target>
 
   <target name="nativeSetup-debug-linux" if="isLinuxOnX86">
 	<property name="bldFlag" value="-g -DDEBUG"/>
 	<property name="coreLibDependency" value="lib/i386/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/i386/libj3dutils.so"/>
   </target>
 
   <target name="nativeSetup-debug-linux-amd64" if="isLinuxOnAmd64">
 	<property name="bldFlag" value="-g -DDEBUG -fPIC -march=k8 -msse2 -mfpmath=sse"/>
 	<property name="coreLibDependency" value="lib/amd64/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/amd64/libj3dutils.so"/>
   </target>
 
   <target name="nativeSetup-debug-linux-ia64" if="isLinuxOnIA64">
 	<property name="bldFlag" value="-g -DDEBUG"/>
 	<property name="coreLibDependency" value="lib/ia64/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/ia64/libj3dutils.so"/>
   </target>
   
   <target name="nativeSetup-debug-linux-ppc" if="isLinuxOnPPC">
 	<property name="bldFlag" value="-g -DDEBUG"/>
 	<property name="coreLibDependency" value="lib/ppc/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/ppc/libj3dutils.so"/>
   </target>
 
   <target name="nativeSetup-debug-win32" if="isWindowsOnX86">
 	<property name="bldFlag" 
 	         value="-DDEBUG -DWIN32 -D_WINDOWS"/>
 	<property name="coreLibDependency" value="bin/j3dcore-${build.rend}.dll"/>
-	<property name="coreUtilsLibDependency" value="bin/j3dutils.dll"/>
   </target>
 
 
-  <target name="nativeSetup-debug" depends="nativeSetup-debug-solaris, nativeSetup-debug-solaris-x86, nativeSetup-debug-linux, nativeSetup-debug-linux-amd64, nativeSetup-debug-linux-ia64, nativeSetup-debug-linux-ppc, nativeSetup-debug-win32">
+  <target name="nativeSetup-debug-winamd64" if="isWindowsOnAmd64">
+	<property name="bldFlag" 
+	         value="-DDEBUG -DWIN32 -D_WINDOWS"/>
+	<property name="coreLibDependency" value="bin/j3dcore-${build.rend}.dll"/>
+  </target>
+
+  <target name="nativeSetup-debug" depends="nativeSetup-debug-solaris, nativeSetup-debug-solaris-x86, nativeSetup-debug-linux, nativeSetup-debug-linux-amd64, nativeSetup-debug-linux-ia64, nativeSetup-debug-linux-ppc, nativeSetup-debug-win32, nativeSetup-debug-winamd64">
 	<property name="bldType" value="debug"/>
 	<property name="javahCoreSrc"     
 	 location="${src}/classes/share/javax/media/j3d"/>
   	<property name="javahCoreTarget"  
 	 location="${build}/${platform}/${bldType}/native/javah/j3dcore"/>
-  	<property name="javahUtilsSrc"
-	 location="${core_utils_src}/classes/share/com/sun/j3d/utils/timer"/>
-  	<property name="javahUtilsTarget"
-	 location="${build}/${platform}/${bldType}/native/javah/j3dutils"/>
   </target>
 
   <target name="nativeSetup-opt-solaris" if="isSolarisOnSparc">
 	<property name="bldFlag" value="-O"/>
 	<property name="coreLibDependency" value="lib/sparc/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/sparc/libj3dutils.so"/>
   </target>
 
   <target name="nativeSetup-opt-solaris-x86" if="isSolarisOnX86">
 	<property name="bldFlag" value="-O"/>
 	<property name="coreLibDependency" value="lib/i386/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/i386/libj3dutils.so"/>
   </target>
 
   <target name="nativeSetup-opt-linux" if="isLinuxOnX86">
 	<property name="bldFlag" value="-O"/>
 	<property name="coreLibDependency" value="lib/i386/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/i386/libj3dutils.so"/>
   </target>
 
   <target name="nativeSetup-opt-linux-amd64" if="isLinuxOnAmd64">
 	<property name="bldFlag" value="-O -fPIC -march=k8 -msse2 -mfpmath=sse"/>
 	<property name="coreLibDependency" value="lib/amd64/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/amd64/libj3dutils.so"/>
   </target>
 
   <target name="nativeSetup-opt-linux-ia64" if="isLinuxOnIA64">
 	<property name="bldFlag" value="-O"/>
 	<property name="coreLibDependency" value="lib/ia64/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/ia64/libj3dutils.so"/>
   </target>
 
   <target name="nativeSetup-opt-linux-ppc" if="isLinuxOnPPC">
 	<property name="bldFlag" value="-O"/>
 	<property name="coreLibDependency" value="lib/ppc/libj3dcore-ogl.so"/>
-	<property name="coreUtilsLibDependency" value="lib/ppc/libj3dutils.so"/>
   </target>
   
   <target name="nativeSetup-opt-win32" if="isWindowsOnX86">
 	<property name="bldFlag" 
 	         value="-DWIN32 -D_WINDOWS"/>
 	<property name="coreLibDependency" value="bin/j3dcore-${build.rend}.dll"/>
-	<property name="coreUtilsLibDependency" value="bin/j3dutils.dll"/>
   </target>
 
-  <target name="nativeSetup-opt" depends="nativeSetup-opt-solaris, nativeSetup-opt-solaris-x86, nativeSetup-opt-linux, nativeSetup-opt-linux-amd64, nativeSetup-opt-linux-ia64, nativeSetup-opt-linux-ppc, nativeSetup-opt-win32">
+  <target name="nativeSetup-opt-winamd64" if="isWindowsOnAmd64">
+	<property name="bldFlag" 
+	         value="-DWIN32 -D_WINDOWS"/>
+	<property name="coreLibDependency" value="bin/j3dcore-${build.rend}.dll"/>
+  </target>
+
+  <target name="nativeSetup-opt" depends="nativeSetup-opt-solaris, nativeSetup-opt-solaris-x86, nativeSetup-opt-linux, nativeSetup-opt-linux-amd64, nativeSetup-opt-linux-ia64, nativeSetup-opt-linux-ppc, nativeSetup-opt-win32, nativeSetup-opt-winamd64">
 	<property name="bldType" value="opt"/>
 	<property name="javahCoreSrc"     
 	 location="${src}/classes/share/javax/media/j3d"/>
   	<property name="javahCoreTarget"
   	 location="${build}/${platform}/${bldType}/native/javah/j3dcore"/>
-  	<property name="javahUtilsSrc"
-	 location="${core_utils_src}/classes/share/com/sun/j3d/utils/timer"/>
-	<property name="javahUtilsTarget"
-	 location="${build}/${platform}/${bldType}/native/javah/j3dutils"/>
   </target>
 
   <target name="dependencyCheck">
@@ -151,9 +141,6 @@
 	    <uptodate
      	     srcfile="${javahCoreSrc}/DepthComponentRetained.java"
     	     targetfile="${javahCoreTarget}/javax_media_j3d_DepthComponentRetained.h"/>
-	    <uptodate
-     	     srcfile="${javahCoreSrc}/DetailTextureImage.java"
-    	     targetfile="${javahCoreTarget}/javax_media_j3d_DetailTextureImage.h"/>
 	    <uptodate
      	     srcfile="${javahCoreSrc}/DirectionalLightRetained.java"
     	     targetfile="${javahCoreTarget}/javax_media_j3d_DirectionalLightRetained.h"/>
@@ -212,10 +199,10 @@
      	     srcfile="${javahCoreSrc}/ModelClipRetained.java"
     	     targetfile="${javahCoreTarget}/javax_media_j3d_ModelClipRetained.h"/>
 	    <uptodate
-             srcfile="${javahCoreSrc}/NativeAPIInfo.java"
-             targetfile="${javahCoreTarget}/javax_media_j3d_NativeAPIInfo.h"/>
+             srcfile="${javahCoreSrc}/NativePipeline.java"
+             targetfile="${javahCoreTarget}/javax_media_j3d_NativePipeline.h"/>
             <uptodate
-     	     srcfile="${src}/classes/${ostype}/javax/media/j3d/NativeConfigTemplate3D.java"
+     	     srcfile="${src}/classes/${wstype}/javax/media/j3d/NativeConfigTemplate3D.java"
     	     targetfile="${javahCoreTarget}/javax_media_j3d_NativeConfigTemplate3D.h"/>
 	    <uptodate
      	     srcfile="${javahCoreSrc}/NodeRetained.java"
@@ -307,9 +294,6 @@
 	    <uptodate
      	     srcfile="${javahCoreSrc}/ShaderError.java"
     	     targetfile="${javahCoreTarget}/javax_media_j3d_ShaderError.h"/>
-	    <uptodate
-     	     srcfile="${javahUtilsSrc}/J3DTimer.java"
-    	     targetfile="${javahUtilsTarget}/com_sun_j3d_utils_timer_J3DTimer.h"/>
 	  </and>
        </condition>
        <echo message="javahBuild.notRequired = ${javahBuild.notRequired}"/>
@@ -324,11 +308,6 @@
     	      <mapper type="merge" from="*.c,*.h,*.cpp,*.hpp" 
 		      to="${build}/${platform}/${bldType}/${coreLibDependency}"/>
             </uptodate>
-	    <uptodate>
-    	      <srcfiles dir= "${core_utils_src}/native/share" includes="*.c,*.h,*.cpp,*.hpp"/>
-    	      <mapper type="merge" from="*.c,*.h,*.cpp,*.hpp" 
-		      to="${build}/${platform}/${bldType}/${coreUtilsLibDependency}"/>
-            </uptodate>
 	  </and>
        </condition>
        <echo message="nativeOGLBuild.notRequired = ${nativeOGLBuild.notRequired}"/>
@@ -338,7 +317,6 @@
 
     <!-- Create the build directory structure used for JNI header -->
     <mkdir dir="${javahCoreTarget}"/>
-    <mkdir dir="${javahUtilsTarget}"/>
 
     <!-- Generate JNI headers from ${build}/${platform}/${bldType}/classes -->
     <!-- into ${javahCoreTarget} -->
@@ -353,7 +331,6 @@
 	<class name="javax.media.j3d.ColoringAttributesRetained"/>
 	<class name="javax.media.j3d.CompressedGeometryRetained"/>
 	<class name="javax.media.j3d.DepthComponentRetained"/>
-	<class name="javax.media.j3d.DetailTextureImage"/>
 	<class name="javax.media.j3d.DirectionalLightRetained"/>
 	<class name="javax.media.j3d.DisplayListRenderMethod"/>
 	<class name="javax.media.j3d.DrawingSurfaceObjectAWT"/>
@@ -373,7 +350,7 @@
 	<class name="javax.media.j3d.Material"/>
 	<class name="javax.media.j3d.MaterialRetained"/>
 	<class name="javax.media.j3d.ModelClipRetained"/>
-        <class name="javax.media.j3d.NativeAPIInfo"/>
+        <class name="javax.media.j3d.NativePipeline"/>
 	<class name="javax.media.j3d.NativeConfigTemplate3D"/>
 	<class name="javax.media.j3d.NodeRetained"/>
 	<class name="javax.media.j3d.PointAttributesRetained"/>
@@ -408,31 +385,19 @@
 
     </javah>
 
-    <!-- Generate JNI headers from ${build}/${platform}/${bldType}/classes -->
-    <!-- into ${javahUtilsTarget} -->
-    <javah destdir="${javahUtilsTarget}" force="yes">
-	<classpath>
-	    <pathelement path="${build}/${platform}/${bldType}/classes"/>
-	</classpath>
-	<class name="com.sun.j3d.utils.timer.J3DTimer"/>
-    </javah>
-
   </target>
 
   <target name="compile-debug" depends="nativeSetup-debug, dependencyCheck, genJavah" unless="nativeOGLBuild.notRequired">
 	<ant antfile="build-${platform}.xml" dir="${build.rend}" target="compile"/>
-	<ant antfile="build-${platform}.xml" dir="share" target="compile"/>
   </target>
 
   <target name="compile-opt" depends="nativeSetup-opt, dependencyCheck, genJavah" 
 	  unless="nativeOGLBuild.notRequired">
 	   <ant antfile="build-${platform}.xml" dir="${build.rend}" target="compile"/>
-	   <ant antfile="build-${platform}.xml" dir="share" target="compile"/>
   </target>
 
   <target name="dist">
 	   <ant antfile="build-${platform}.xml" dir="${build.rend}" target="dist"/>
-	   <ant antfile="build-${platform}.xml" dir="share" target="dist"/>
   </target>
 
 </project>

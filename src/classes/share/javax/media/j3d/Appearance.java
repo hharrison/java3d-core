@@ -535,12 +535,32 @@ public class Appearance extends NodeComponent {
      * @exception IllegalStateException if the specified texture
      * object is non-null and the texture unit state array in this
      * appearance object is already non-null.
+     *
+     * @exception IllegalSharingException if this Appearance is live and
+     * the specified texture refers to an ImageComponent2D that is being used
+     * by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalSharingException if this Appearance is
+     * being used by an immediate mode context and
+     * the specified texture refers to an ImageComponent2D that is being used
+     * by a Canvas3D as an off-screen buffer.
      */
     public void setTexture(Texture texture) {
 	if (isLiveOrCompiled())
 	  if (!this.getCapability(ALLOW_TEXTURE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Appearance2"));
-	((AppearanceRetained)this.retained).setTexture(texture);
+   
+        // Do illegal sharing check
+        if(texture != null) {
+            ImageComponent[] images = ((TextureRetained)(texture.retained)).getImages();
+            if(images != null) {
+                for(int i=0; i<images.length; i++) {
+                    validateImageIllegalSharing(images[i]);
+                }
+            }
+        }
+        
+        ((AppearanceRetained)this.retained).setTexture(texture);
     }
 
     /**
@@ -665,13 +685,35 @@ public class Appearance extends NodeComponent {
      * object, or texCoordGeneration object in this appearance object
      * is already non-null.
      *
+     * @exception IllegalSharingException if this Appearance is live and
+     * any of the specified textures refers to an ImageComponent2D that is
+     * being used by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalSharingException if this Appearance is
+     * being used by an immediate mode context and
+     * any of the specified textures refers to an ImageComponent2D that is
+     * being used by a Canvas3D as an off-screen buffer.
+     *
      * @since Java 3D 1.2
      */
     public void setTextureUnitState(TextureUnitState[] stateArray) {
-	if (isLiveOrCompiled())
-	  if (!this.getCapability(ALLOW_TEXTURE_UNIT_STATE_WRITE))
-		throw new CapabilityNotSetException(J3dI18N.getString("Appearance20"));
-
+        if (isLiveOrCompiled())
+            if (!this.getCapability(ALLOW_TEXTURE_UNIT_STATE_WRITE))
+                throw new CapabilityNotSetException(J3dI18N.getString("Appearance20"));
+        
+        // Do illegal sharing check
+        for(int j=0; j<stateArray.length; j++) {
+            TextureRetained texRetained = ((TextureUnitStateRetained)stateArray[j].retained).texture;
+            if(texRetained != null) {
+                ImageComponent[] images = texRetained.getImages();
+                if(images != null) {
+                    for(int i=0; i<images.length; i++) {
+                        validateImageIllegalSharing(images[i]);
+                    }
+                }
+            }
+        }
+        
 	((AppearanceRetained)this.retained).setTextureUnitState(stateArray);
     }
 
@@ -693,6 +735,15 @@ public class Appearance extends NodeComponent {
      * @exception ArrayIndexOutOfBoundsException if <code>index >=
      * stateArray.length</code>.
      *
+     * @exception IllegalSharingException if this Appearance is live and
+     * the specified texture refers to an ImageComponent2D that is being used
+     * by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalSharingException if this Appearance is
+     * being used by an immediate mode context and
+     * the specified texture refers to an ImageComponent2D that is being used
+     * by a Canvas3D as an off-screen buffer.
+     *
      * @since Java 3D 1.2
      */
     public void setTextureUnitState(int index, TextureUnitState state) {
@@ -700,6 +751,17 @@ public class Appearance extends NodeComponent {
 	  if (!this.getCapability(ALLOW_TEXTURE_UNIT_STATE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Appearance20"));
 
+        // Do illegal sharing check        
+        TextureRetained texRetained = ((TextureUnitStateRetained)state.retained).texture;
+        if(texRetained != null) {
+            ImageComponent[] images = texRetained.getImages();
+            if(images != null) {
+                for(int i=0; i<images.length; i++) {
+                    validateImageIllegalSharing(images[i]);
+                }
+            }
+        }
+        
 	((AppearanceRetained)this.retained).setTextureUnitState(index, state);
     }
 

@@ -11,68 +11,20 @@
  */
 
 package javax.media.j3d;
-import javax.vecmath.*;
 
+import javax.vecmath.*;
 
 
 /**
  * Texture2D is a subclass of Texture class. It extends Texture
  * class by adding a constructor and a mutator method for
  * setting a 2D texture image.
- * <P>
- * Each Texture2D object has the following properties:<P>
- * <UL>
- * <LI>Magnification filter - the magnification filter function.
- * Used when the pixel being rendered maps to an area less than or
- * equal to one texel. In addition to the magnification filter functions
- * defined in the base Texture class, the following values are
- * supported:</LI><P>
- * <UL>
- * <LI>LINEAR_DETAIL - performs linear sampling in both the base level 
- * texture image and the detail texture image, and combines the two
- * texture values according to the detail texture mode.</LI><P>
- * <LI>LINEAR_DETAIL_RGB - performs linear detail for the rgb
- * components only. The alpha component is computed using BASE_LEVEL_LINEAR
- * filter.</LI><P>
- * <LI>LINEAR_DETAIL_ALPHA - performs linear detail for the alpha
- * component only. The rgb components are computed using BASE_LEVEL_LINEAR
- * filter.</LI><P>
- * </UL>
- * <LI>Detail Texture Image - Detail texture image to be used when the texture
- * magnification filter mode specifies LINEAR_DETAIL, LINEAR_DETAIL_ALPHA, or
- * LINEAR_DETAIL_RGB; if the detail texture images is null, then
- * the texture magnification filter mode will fall back to BASE_LEVEL_LINEAR.
- * </LI><P>
- * <LI>Detail Texture Mode - specifies how the texture image is combined
- * with the detail image. The detail texture modes are as follows: </LI><P>
- * <UL>
- * <LI>DETAIL_ADD</LI><P>
- * <UL>
- * T' = T<sub>texture</sub> + DetailFunc(LOD) * (2 * T<sub>detail</sub> - 1)<P>
- * </UL>
- * <LI>DETAIL_MODULATE</LI><P>
- * <UL>
- * T' = T<sub>texture</sub> * (1 + DetailFunc(LOD) * (2 * T<sub>detail</sub> - 1))<P>
- * </UL>
- * </UL>
- * where T<sub>texture</sub> is the texture value computed from the base level
- * texture image, and T<sub>detail</sub> is the texture value computed from the
- * detail texture image.<P>
- * <LI>Detail Texture Function - specifies the function of level-of-detail
- * used in combining the detail texture with the base level texture of this object.</LI><P>
- * <LI>Detail Texture Level - specifies the number of levels that
- * separate the base level image of this texture object and the detail
- * texture image. This value is used in the linear filter
- * calculation of the detail texture image. Note, detail texture will only
- * be applied to the level 0 of the texture image. Hence, for detail texture
- * to work, base level has to be set to 0.</LI><P>
- * </UL>
- *
- * @see Canvas3D#queryProperties
  */
 public class Texture2D extends Texture {
 
     /**
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
      * Specifies that this Texture object allows reading its detail
      * texture information (e.g., detail texture image, detail texture mode,
      * detail texture function, detail texture function points count,
@@ -84,6 +36,8 @@ public class Texture2D extends Texture {
     ALLOW_DETAIL_TEXTURE_READ = CapabilityBits.TEXTURE2D_ALLOW_DETAIL_TEXTURE_READ;
 
     /** 
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
      * Performs linear sampling in both the base level
      * texture image and the detail texture image, and combines the two
      * texture values according to the detail texture mode.
@@ -94,6 +48,8 @@ public class Texture2D extends Texture {
     public static final int LINEAR_DETAIL         = 6;
 
     /**
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
      * Performs linear detail for the rgb
      * components only. The alpha component is computed using 
      * BASE_LEVEL_LINEAR filter.
@@ -104,6 +60,8 @@ public class Texture2D extends Texture {
     public static final int LINEAR_DETAIL_RGB     = 7;
 
     /**
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
      * Performs linear detail for the alpha
      * component only. The rgb components are computed using 
      * BASE_LEVEL_LINEAR filter.
@@ -114,6 +72,8 @@ public class Texture2D extends Texture {
     public static final int LINEAR_DETAIL_ALPHA   = 8;
 
     /**
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
      * Adds the detail texture image to the level 0 image of this texture
      * object
      *
@@ -123,6 +83,8 @@ public class Texture2D extends Texture {
     public static final int DETAIL_ADD = 0;
 
     /**
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
      * Modulates the detail texture image with the level 0 image of this
      * texture object
      *
@@ -167,10 +129,10 @@ public class Texture2D extends Texture {
    * BASE_LEVEL, MULTI_LEVEL_MIPMAP.
    * @param format data format of Textures saved in this object.
    * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA.
-   * @param width width of image at level 0. Must be power of 2.
-   * @param height height of image at level 0. Must be power of 2.
+   * @param width width of image at level 0. Must be greater than 0
+   * @param height height of image at level 0. Must be greater than 0
    * @exception IllegalArgumentException if width or height are NOT
-   * power of 2 OR invalid format/mipmapMode is specified.
+   * greater than 0 OR invalid format/mipmapMode is specified.
    */
     public Texture2D(
 	    int		mipMapMode,
@@ -200,14 +162,14 @@ public class Texture2D extends Texture {
      * BASE_LEVEL, MULTI_LEVEL_MIPMAP
      * @param format data format of Textures saved in this object.
      * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA
-     * @param width width of image at level 0. Must be power of 2. This
+     * @param width width of image at level 0. Must be greater than 0. This
      * does not include the width of the boundary.
-     * @param height height of image at level 0. Must be power of 2. This
+     * @param height height of image at level 0. Must be greater than 0. This
      * does not include the width of the boundary.
-     * @param boundaryWidth width of the boundary.
-     * @exception IllegalArgumentException if width or height are not a
-     * power of 2, if an invalid format or mipMapMode is specified, or
-     * if the boundaryWidth < 0
+     * @param boundaryWidth width of the boundary, which must be 0 or 1.
+     * @exception IllegalArgumentException if width or height are not greater
+     * than 0, if an invalid format or mipMapMode is specified, or
+     * if the boundaryWidth is &lt; 0 or &gt; 1
      *
      * @since Java 3D 1.3
      */
@@ -271,7 +233,9 @@ public class Texture2D extends Texture {
     }
 
     /**
-     * Sets the detail texture image for this texture object.
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
+     *
      * @param detailTexture ImageComponent2D object containing the
      * detail texture image.
      * @exception RestrictedAccessException if the method is called
@@ -286,7 +250,9 @@ public class Texture2D extends Texture {
     }
 
     /**
-     * Retrieves the detail texture image for this texture object.
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
+     *
      * @return ImageComponent2D object containing the detail texture image.
      *
      * @exception CapabilityNotSetException if appropriate capability is
@@ -305,7 +271,9 @@ public class Texture2D extends Texture {
     }
 
     /**
-     * Sets the detail texture mode for this texture object.
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
+     *
      * @param mode detail texture mode. One of: DETAIL_ADD or DETAIL_MODULATE
      *
      * @exception IllegalArgumentException if
@@ -327,7 +295,9 @@ public class Texture2D extends Texture {
     }
 
     /**
-     * Retrieves the detail texture mode for this texture object.
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
+     *
      * @return the detail texture mode.
      *
      * @exception CapabilityNotSetException if appropriate capability is
@@ -346,7 +316,9 @@ public class Texture2D extends Texture {
     }
 
     /**
-     * Sets the detail texture level for this texture object.
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
+     *
      * @param level the detail texture level.
      *
      * @exception IllegalArgumentException if <code>level</code> < 0
@@ -366,7 +338,9 @@ public class Texture2D extends Texture {
     }
 
     /**
-     * Retrieves the detail texture level for this texture object.
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
+     *
      * @return the detail texture level.
      *
      * @exception CapabilityNotSetException if appropriate capability is
@@ -385,7 +359,9 @@ public class Texture2D extends Texture {
     }
 
     /**
-     * sets the detail texture LOD function for this texture object.
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
+     *
      * @param lod array containing the level-of-detail values.
      * @param pts array containing the function values for the corresponding
      * level-of-detail values.
@@ -409,9 +385,8 @@ public class Texture2D extends Texture {
     }
 
     /**
-     * sets the detail texture LOD function for this texture object.
-     * The Point2f x,y values are defined as follows: x is the lod value,
-     * y is the corresponding function value.
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
      *
      * @param pts array of Point2f containing the lod as well as the
      * corresponding function value.
@@ -428,8 +403,8 @@ public class Texture2D extends Texture {
     }
 
     /**
-     * Gets the number of points in the detail texture LOD function for this
-     * texture object.
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
      *
      * @return the number of points in the detail texture LOD function.
      *
@@ -449,9 +424,8 @@ public class Texture2D extends Texture {
     }
 
     /**
-     * Copies the array of detail texture LOD function points into the
-     * specified arrays. The arrays must be large enough to hold all the
-     * points.
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
      *
      * @param lod the array to receive the level-of-detail values.
      * @param pts the array to receive the function values for the
@@ -473,10 +447,8 @@ public class Texture2D extends Texture {
     }
 
     /**
-     * Copies the array of detail texture LOD function points including
-     * the lod values and the corresponding function values into the
-     * specified array. The array must be large enough to hold all the points.
-     * The individual array elements must be allocated by the caller as well.
+     * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
+     * longer supported.
      *
      * @param pts the array to receive the detail texture LOD function points
      *

@@ -207,13 +207,8 @@ public class J3DBuffer {
 	return bufferImpl;
     }
 
-    // Native method to verify that we can access a direct NIO buffer
-    // from native code
-    private native static long getNativeAddress(java.nio.Buffer buffer);
-
     private static boolean checkNativeBufferAccess(java.nio.Buffer buffer) {
-	// TODO: uncomment out the call to getNativeAddress and implement it
-	if (buffer == null /*|| getNativeAddress(buffer) == 0L*/) {
+	if (buffer == null /*|| !Pipeline.getPipeline().checkNativeBufferAccess(buffer)*/) {
 	    return false;
 	}
 	else {

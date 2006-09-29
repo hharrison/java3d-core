@@ -286,6 +286,10 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      * than or equal to the number of vertices actually defined for
      * the particular component's array.
      *
+     * @exception ArrayIndexOutOfBoundsException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE_INDICES</code> and
+     * <code>coordIndices.length &lt; (initialIndexIndex + validIndexCount)</code>.
+     *
      * @since Java 3D 1.3
      */
     public void setValidIndexCount(int validIndexCount) {
@@ -340,6 +344,10 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      * An element is out of range if it is less than 0 or is greater
      * than or equal to the number of vertices actually defined for
      * the particular component's array.
+     *
+     * @exception ArrayIndexOutOfBoundsException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE_INDICES</code> and
+     * <code>coordIndices.length &lt; (initialIndexIndex + validIndexCount)</code>.
      *
      * @since Java 3D 1.3
      */
@@ -470,6 +478,7 @@ public abstract class IndexedGeometryArray extends GeometryArray {
     }
 
 
+    //NVaidya
     /**
      * Sets the coordinate index associated with the vertex at
      * the specified index for this object.
@@ -488,15 +497,25 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      * coordinateIndex is out of range if it is less than 0 or is
      * greater than or equal to the number of vertices actually
      * defined for the coordinate array.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE_INDICES</code>.
      */
   public void setCoordinateIndex(int index, int coordinateIndex) {
     if (isLiveOrCompiled())
     if(!this.getCapability(ALLOW_COORDINATE_INDEX_WRITE))
       throw new CapabilityNotSetException(J3dI18N.getString("IndexedGeometryArray1"));
+
+    //NVaidya
+    int format = ((IndexedGeometryArrayRetained)this.retained).vertexFormat;
+    if ((format & BY_REFERENCE_INDICES) != 0)
+      throw new IllegalStateException(J3dI18N.getString("IndexedGeometryArray31"));
   
     ((IndexedGeometryArrayRetained)this.retained).setCoordinateIndex(index, coordinateIndex);
   }
 
+
+    //NVaidya
     /**
      * Sets the coordinate indices associated with the vertices starting at
      * the specified index for this object.
@@ -515,14 +534,63 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      * is out of range.  An element is out of range if it is less than 0
      * or is greater than or equal to the number of vertices actually
      * defined for the coordinate array.
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE_INDICES</code>.
      */
   public void setCoordinateIndices(int index, int coordinateIndices[]) {
     if (isLiveOrCompiled())
 	if(!this.getCapability(ALLOW_COORDINATE_INDEX_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("IndexedGeometryArray1"));
+
+    //NVaidya
+    int format = ((IndexedGeometryArrayRetained)this.retained).vertexFormat;
+    if ((format & BY_REFERENCE_INDICES) != 0)
+      throw new IllegalStateException(J3dI18N.getString("IndexedGeometryArray31"));
   
     ((IndexedGeometryArrayRetained)this.retained).setCoordinateIndices(index, coordinateIndices);
   }
+
+    //NVaidya
+    /**
+     * Sets the coordinate indices array reference to the specified array.
+     * If the coordinate indices array reference is null, the entire
+     * geometry array object is treated as if it were null--any
+     * Shape3D or Morph node that uses this geometry array will not be drawn.
+     *
+     * @param coordIndices an array of indices to which a reference
+     * will be set.
+     *
+     * @exception CapabilityNotSetException if appropriate capability is
+     * not set and this object is part of live or compiled scene graph
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is not <code>BY_REFERENCE_INDICES</code>.
+     *
+     * @exception ArrayIndexOutOfBoundsException if any element of the
+     * coordIndices array whose destination position is in the range
+     * <code>[initialIndexIndex, initialIndexIndex+validIndexCount-1]</code>
+     * is out of range.  An element is out of range if it is less than 0
+     * or is greater than or equal to the number of vertices actually
+     * defined for the coordinate array.
+     *
+     * @exception ArrayIndexOutOfBoundsException if
+     * <code>coordIndices.length &lt; (initialIndexIndex + validIndexCount)</code>.
+     *
+     * @since Java 3D 1.5
+     */
+    public void setCoordIndicesRef(int coordIndices[]) {
+        if (isLiveOrCompiled())
+            if (!this.getCapability(ALLOW_REF_DATA_WRITE))
+                throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray86"));
+
+        //NVaidya
+        int format = ((IndexedGeometryArrayRetained)this.retained).vertexFormat;
+        if ((format & BY_REFERENCE_INDICES) == 0)
+            throw new IllegalStateException(J3dI18N.getString("IndexedGeometryArray32"));
+
+        ((IndexedGeometryArrayRetained)this.retained).setCoordIndicesRef(coordIndices);
+    }
 
     /**
      * Sets the color index associated with the vertex at
@@ -816,36 +884,79 @@ public abstract class IndexedGeometryArray extends GeometryArray {
 	((IndexedGeometryArrayRetained)this.retained).setVertexAttrIndices(vertexAttrNum, index, vertexAttrIndices);
     }
 
+  //NVaidya
   /**
-   * Retrieves the coordinate index associated with the vertex at
-   * the specified index for this object.
-   * @param index the vertex index
-   * @return the coordinate index
+     * Retrieves the coordinate index associated with the vertex at
+     * the specified index for this object.
+     * @param index the vertex index
+     * @return the coordinate index
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-   */
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE_INDICES</code>.
+     */
   public int getCoordinateIndex(int index) {
     if (isLiveOrCompiled())
         if(!this.getCapability(ALLOW_COORDINATE_INDEX_READ))
       	   throw new CapabilityNotSetException(J3dI18N.getString("IndexedGeometryArray9"));
+
+    //NVaidya
+    int format = ((IndexedGeometryArrayRetained)this.retained).vertexFormat;
+    if ((format & BY_REFERENCE_INDICES) != 0)
+      throw new IllegalStateException(J3dI18N.getString("IndexedGeometryArray31"));
   
     return ((IndexedGeometryArrayRetained)this.retained).getCoordinateIndex(index);
   }
 
-  /**
-   * Retrieves the coordinate indices associated with the vertices starting at
-   * the specified index for this object.
-   * @param index the vertex index
-   * @param coordinateIndices array that will receive the coordinate indices
+    //NVaidya
+    /**
+     * Retrieves the coordinate indices associated with the vertices starting at
+     * the specified index for this object.
+     * @param index the vertex index
+     * @param coordinateIndices array that will receive the coordinate indices
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-   */
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is <code>BY_REFERENCE_INDICES</code>.
+     */
   public void getCoordinateIndices(int index, int coordinateIndices[]) {
     if (isLiveOrCompiled())
     if(!this.getCapability(ALLOW_COORDINATE_INDEX_READ))
       throw new CapabilityNotSetException(J3dI18N.getString("IndexedGeometryArray9"));
+
+    //NVaidya
+    int format = ((IndexedGeometryArrayRetained)this.retained).vertexFormat;
+    if ((format & BY_REFERENCE_INDICES) != 0)
+      throw new IllegalStateException(J3dI18N.getString("IndexedGeometryArray31"));
   
     ((IndexedGeometryArrayRetained)this.retained).getCoordinateIndices(index, coordinateIndices);
+  }
+
+  //NVaidya
+  /**
+     * Returns a reference to the coordinate indices associated with
+     * the vertices
+     * @return the coordinate indices array
+     * @exception CapabilityNotSetException if appropriate capability is
+     * not set and this object is part of live or compiled scene graph
+     *
+     * @exception IllegalStateException if the data mode for this geometry
+     * array object is not <code>BY_REFERENCE_INDICES</code>.
+     *
+     * @since Java 3D 1.5
+     */
+  public int[] getCoordIndicesRef() {
+	if (isLiveOrCompiled())
+	    if (!this.getCapability(ALLOW_REF_DATA_READ)) 
+		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray87"));
+
+	int format = ((IndexedGeometryArrayRetained)this.retained).vertexFormat;
+	if ((format & BY_REFERENCE_INDICES) == 0)
+	    throw new IllegalStateException(J3dI18N.getString("IndexedGeometryArray32"));
+  
+    return ((IndexedGeometryArrayRetained)this.retained).getCoordIndicesRef();
   }
 
   /**

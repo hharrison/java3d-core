@@ -62,7 +62,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     // vertex data in packed format for each screen in multi-screen situation
     // if alpha values of each vertex are to be updated
-    float mvertexData[][];
+    private float mvertexData[][];
 
     //
     // The following offset/stride values are internally computed
@@ -94,14 +94,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     int vertexAttrStride;
 
     // alpha value for transparency and texture blending
-    float[] lastAlpha = new float[1];
+    private float[] lastAlpha = new float[1];
     float lastScreenAlpha = -1;
 
     int colorChanged = 0;
 
-    // true if alpha value from transparencyAttrubute has changed
-    boolean alphaChanged = false;
-    
     // byte to float scale factor
     static final float ByteToFloatScale = 1.0f/255.0f;
 
@@ -162,7 +159,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     static  final int P3D   = 0x8;
     static final int VERTEX_DEFINED = PF | PD | P3F | P3D;
 
-
     static final int CF  = 0x10;
     static final int CUB = 0x20;
     static final int C3F = 0x40;
@@ -170,19 +166,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     static final int C3UB  = 0x100;
     static final int C4UB = 0x200;
     static final int COLOR_DEFINED = CF | CUB | C3F | C4F| C3UB | C4UB;
-    
+
     static final int NF = 0x400;
     static final int N3F = 0x800;
     static final int NORMAL_DEFINED = NF | N3F;
-    
+
     static final int TF = 0x1000;
     static final int T2F = 0x2000;
     static final int T3F = 0x4000;
     static final int TEXCOORD_DEFINED = TF | T2F | T3F;
-    
+
     static final int AF = 0x8000;
     static final int VATTR_DEFINED = AF;
-    
+
     // Flag word indicating the type of by-ref texCoord. We will copy this to
     // the vertexType field only when the references for all texture coordinate
     // sets are set to non-null values.
@@ -340,12 +336,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     IndexedGeometryArrayRetained cloneSourceArray = null;
 
-//     private MemoryFreeList pickVectorFreelist =
-//     FreeListManager.getFreeList(FreeListManager.PICKVECTOR);
-
     static final double EPS = 1.0e-13;
 
-    native void freeD3DArray(boolean deleteVB);
+    void freeD3DArray(boolean deleteVB) {
+        assert VirtualUniverse.mc.isD3D();
+        Pipeline.getPipeline().freeD3DArray(this, deleteVB);
+    }
 
     GeometryArrayRetained() {
 	dirtyFlag = INDEX_CHANGED|VERTEX_CHANGED; 
@@ -363,7 +359,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if (this.refCount > 1) {
 	    // Send to rendering attribute structure,
 	    /*
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	    createMessage.type = J3dMessage.GEOMETRYARRAY_CHANGED;
 	    createMessage.universe = null;
@@ -378,7 +374,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    // otherwise, set mirrorGeometry to null (from previous clearLive)
 	    if (this instanceof IndexedGeometryArrayRetained) { 
 		// Send to rendering attribute structure,
-		J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+		J3dMessage createMessage = new J3dMessage();
 		createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 		createMessage.type = J3dMessage.GEOMETRY_CHANGED;
 		createMessage.universe = null;
@@ -396,7 +392,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	if (this.refCount <= 0) {
 	    if (pVertexBuffers != 0) {
-		J3dMessage renderMessage = VirtualUniverse.mc.getMessage();
+		J3dMessage renderMessage = new J3dMessage();
 		renderMessage.threads = J3dThread.RENDER_THREAD;
 		renderMessage.type = J3dMessage.RENDER_IMMEDIATE;
 		renderMessage.universe = null;
@@ -1644,93 +1640,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     }
 
-    // used for GeometryArrays by Copy or interleaved
-    private native void execute(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean useAlpha,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int startVIndex, int vcount, int vformat,
-            int texCoordSetCount, int texCoordSetMap[],
-            int texCoordSetMapLen,
-            int[] texCoordSetOffset,
-            int numActiveTexUnitState,
-            int[] texUnitStateMap,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            float[] varray, float[] cdata, int texUnitIndex, int cdirty);
-
-    // used by GeometryArray by Reference with java arrays
-    private native void executeVA(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int vcount,
-            int vformat,
-            int vdefined,
-            int coordIndex, float[] vfcoords, double[] vdcoords,
-            int colorIndex, float[] cfdata, byte[] cbdata,
-            int normalIndex, float[] ndata,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            int[] vertexAttrIndex, float[][] vertexAttrData,
-            int pass, int texcoordmaplength,
-            int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
-            int[] texIndex, int texstride, Object[] texCoords,
-            int cdirty);
-
-    // used by GeometryArray by Reference with NIO buffer
-    private native void executeVABuffer(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int vcount,
-            int vformat,
-            int vdefined,
-            int coordIndex,
-            Object vcoords,
-            int colorIndex,
-            Object cdataBuffer,
-            float[] cfdata, byte[] cbdata,
-            int normalIndex, Object ndata,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            int[] vertexAttrIndex, Object[] vertexAttrData,
-            int pass, int texcoordmaplength,
-            int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
-            int[] texIndex, int texstride, Object[] texCoords,
-            int cdirty);
-
-    // used by GeometryArray by Reference in interleaved format with NIO buffer
-    private native void executeInterleavedBuffer(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean useAlpha,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int startVIndex, int vcount, int vformat,
-            int texCoordSetCount, int texCoordSetMap[],
-            int texCoordSetMapLen,
-            int[] texCoordSetOffset,
-            int numActiveTexUnitState,
-            int[] texUnitStateMap,
-            Object varray, float[] cdata, int texUnitIndex, int cdirty);
-
-    private native void setVertexFormat(long ctx,
-            int vformat, boolean useAlpha, boolean ignoreVertexColors);
-
-    private native void disableGlobalAlpha(long ctx, int vformat,
-            boolean useAlpha, boolean ignoreVertexColors);
-
-    void setVertexFormat(boolean useAlpha, boolean ignoreVC, long ctx) {
-	setVertexFormat(ctx, vertexFormat, useAlpha, ignoreVC);
+    void setVertexFormat(boolean useAlpha, boolean ignoreVC, Context ctx) {
+	Pipeline.getPipeline().setVertexFormat(ctx,
+                this, vertexFormat, useAlpha, ignoreVC);
     }
     
-    void disableGlobalAlpha(long ctx, boolean useAlpha, boolean ignoreVC) {
+    void disableGlobalAlpha(Context ctx, boolean useAlpha, boolean ignoreVC) {
 	// If global alpha was turned on, then disable it
-	disableGlobalAlpha(ctx, vertexFormat, useAlpha, ignoreVC);
+	Pipeline.getPipeline().disableGlobalAlpha(ctx,
+                this, vertexFormat, useAlpha, ignoreVC);
     }
 
 
@@ -1745,12 +1663,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    return mirrorFloatRefColors[0];
 	}
 
-	// Issue 113
-	// TODO: Fix this for screen > 0, for now just ignore transparency
-	if (screen > 0) {
-	    return mirrorFloatRefColors[0];
-	}
-
 	// update alpha only if vertex format includes alpha
 	if (((vertexFormat | c4fAllocated) & GeometryArray.WITH_ALPHA) == 0)
 	    return mirrorFloatRefColors[0];
@@ -1762,17 +1674,18 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    alpha = (float)EPSILON;
 	}
 
-        // allocate an entry for the last alpha of the screen if needed
-	if (lastAlpha == null) {
-	    lastAlpha = new float[screen + 1];
-	    lastAlpha[screen] = 1.0f;
-	} else if (lastAlpha.length <= screen) {
+        assert lastAlpha != null;
+        assert mirrorFloatRefColors != null;
+        assert mirrorFloatRefColors.length == lastAlpha.length;
+
+	// Issue 113 - reallocate lastAlpha array if needed, but no need to
+        // update the values here
+	if (lastAlpha.length <= screen) {
 	    float[] la = new float[screen + 1];
 	    for (int i = 0; i < lastAlpha.length; i++) {
 		la[i] = lastAlpha[i];
 	    }
 	    lastAlpha = la;
-	    lastAlpha[screen] = 1.0f;
 	}
 
 	//System.out.println("updateAlphaInFloatRefColors screen is " + screen 
@@ -1780,48 +1693,30 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	//		     mirrorFloatRefColors.length);
 
 	// allocate a copy of the color data for the screen if needed.
-	// this piece of code is mainly for multi-screens case
+	// this piece of code is only for multi-screens case
 	if (mirrorFloatRefColors.length <= screen) {
 	    float[][] cfData = new float[screen + 1][];
-	    float[] cdata;
-	    int refScreen = -1;
 
 	    for (int i = 0; i < mirrorFloatRefColors.length; i++) {
 		cfData[i] = mirrorFloatRefColors[i];
-		if (Math.abs(lastAlpha[i] - alpha) < EPSILON) {
-		    refScreen = i;
-		}
 	    }
-	    cdata = cfData[screen] = new float[4 * vertexCount];
 
-	    // copy the data from a reference screen which has the closest
-	    // alpha values
-	    if (refScreen >= 0) {
-		System.arraycopy(cfData[refScreen], 0, cdata, 0, 
-				 4 * vertexCount);
-		lastAlpha[screen] = lastAlpha[refScreen];
-	    } else {
-		float m = alpha / lastAlpha[0];
-		float[] sdata = cfData[0];
+            // Issue 113 - allocate entries for [oldSize..screen];
+            // copy cfData[0] to cfData[oldsize..screen-1] and
+            // lastAlpha[0] to lastAlpha[oldsize..screen-1].
+            for (int i = mirrorFloatRefColors.length; i < screen+1; i++) {
+                cfData[i] = new float[4 * vertexCount];
+                System.arraycopy(cfData[0], 0, cfData[i], 0, 4 * vertexCount);
+                lastAlpha[i] = lastAlpha[0];
+            }
 
-		int j = initialColorIndex * 4;
-		for (int i = initialColorIndex; i < validVertexCount; i++) {
-		    cdata[j] = sdata[j++];
-		    cdata[j] = sdata[j++];
-		    cdata[j] = sdata[j++];
-		    cdata[j] = sdata[j++] * m;
-		}
-		lastAlpha[screen] = alpha;
-	    }
-	    mirrorFloatRefColors = cfData;
+            mirrorFloatRefColors = cfData;
 
-	    // reset the colorChanged bit
-	    colorChanged &= ~(1 << screen);
-	    dirtyFlag |= COLOR_CHANGED;
-	    
-	    return cdata;	
+            // Issue 113 - since we copied the data from screen 0, we don't need
+            // to do any further special processing.
 	}
 
+        assert lastAlpha[screen] >= 0.0;
 	/*
 	  System.out.println("updateAlphaInFloatRefColors ** : lastAlpha[screen] " +
 			     lastAlpha[screen]);
@@ -1832,7 +1727,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	if ((colorChanged & (1<<screen)) == 0) {
 	    // color data is not modified
-	    if (Math.abs(lastAlpha[screen] - alpha) < EPSILON) {
+	    if (Math.abs(lastAlpha[screen] - alpha) <= EPSILON) {
 		// and if alpha is the same as the last one,
 		// just return the data
 		//System.out.println("updateAlphaInFloatRefColors 0 : alpha is the same as the last one " + alpha);
@@ -1919,12 +1814,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    return mirrorUnsignedByteRefColors[0];
 	}
 
-	// Issue 113
-	// TODO: Fix this for screen > 0, for now just ignore transparency
-	if (screen > 0) {
-	    return mirrorUnsignedByteRefColors[0];
-	}
-
 	// update alpha only if vertex format includes alpha
 	if (((vertexFormat | c4fAllocated) & GeometryArray.WITH_ALPHA) == 0)
 	    return mirrorUnsignedByteRefColors[0];
@@ -1936,59 +1825,45 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    alpha = (float)EPSILON;
 	}
 
-	// allocate an entry for the last alpha of the screen if needed
-	if (lastAlpha == null) {
-	    lastAlpha = new float[screen + 1];
-	    lastAlpha[screen] = -1.0f;
-	} else if (lastAlpha.length <= screen) {
+        assert lastAlpha != null;
+        assert mirrorUnsignedByteRefColors != null;
+        assert mirrorUnsignedByteRefColors.length == lastAlpha.length;
+
+	// Issue 113 - reallocate lastAlpha array if needed, but no need to
+        // update the values here
+	if (lastAlpha.length <= screen) {
 	    float[] la = new float[screen + 1];
 	    for (int i = 0; i < lastAlpha.length; i++) {
 		la[i] = lastAlpha[i];
 	    }
 	    lastAlpha = la;
-	    lastAlpha[screen] = -1.0f;
 	}
 
 	// allocate a copy of the color data for the screen if needed.
-	// this piece of code is mainly for multi-screens case
+	// this piece of code is only for multi-screens case
 	if (mirrorUnsignedByteRefColors.length <= screen) {
-	    byte[][] cfData = new byte[screen + 1][];
-	    byte[] cdata;
-	    int refScreen = -1;
+	    byte[][] cbData = new byte[screen + 1][];
 	    for (int i = 0; i < mirrorUnsignedByteRefColors.length; i++) {
-		cfData[i] = mirrorUnsignedByteRefColors[i];
-		if (Math.abs(lastAlpha[i] - alpha) < EPSILON) {
-		    refScreen = i;
-		}
+		cbData[i] = mirrorUnsignedByteRefColors[i];
 	    }
-	    cdata = cfData[screen] = new byte[4 * vertexCount];
 
-	    // copy the data from a reference screen which has the closest
-	    // alpha values
-	    if (refScreen >= 0) {
-		System.arraycopy(cfData[refScreen], 0, cdata, 0, 
-					4 * vertexCount);
-		lastAlpha[screen] = lastAlpha[refScreen];
-	    } else {
-		float m = alpha / lastAlpha[0];
-		byte[] sdata = cfData[0];
+            // Issue 113 - allocate entries for [oldSize..screen];
+            // copy cbData[0] to cbData[oldsize..screen-1] and
+            // lastAlpha[0] to lastAlpha[oldsize..screen-1].
+            for (int i = mirrorUnsignedByteRefColors.length; i < screen+1; i++) {
+                cbData[i] = new byte[4 * vertexCount];
+                System.arraycopy(cbData[0], 0, cbData[i], 0, 4 * vertexCount);
+                lastAlpha[i] = lastAlpha[0];
+            }
 
-		int j = initialColorIndex * 4;
-		for (int i = initialColorIndex; i < validVertexCount; i++) {
-		    cdata[j] = sdata[j++];
-		    cdata[j] = sdata[j++];
-		    cdata[j] = sdata[j++];
-		    cdata[j] = (byte)(((int)sdata[j++]& 0xff) * m);
-		}
-		lastAlpha[screen] = alpha;
-	    }
-	    mirrorUnsignedByteRefColors = cfData;
-	    colorChanged &= ~(1 << screen);
-	    dirtyFlag |= COLOR_CHANGED;
-	    return cdata;	
+            mirrorUnsignedByteRefColors = cbData;
+
+            // Issue 113 - since we copied the data from screen 0, we don't need
+            // to do any further special processing.
 	}
 
-	/*
+        assert lastAlpha[screen] >= 0.0;
+        /*
 	System.out.println("updateAlphaInByteRefColors ## : lastAlpha[screen] " +
 			   lastAlpha[screen]);
 	
@@ -1998,7 +1873,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
         if ((colorChanged & (1<<screen)) == 0) {	    
             // color data is not modified
-            if (Math.abs(lastAlpha[screen] - alpha) < EPSILON) {
+            if (Math.abs(lastAlpha[screen] - alpha) <= EPSILON) {
                 // and if alpha is the same as the last one,
                 // just return the data
 		//System.out.println("updateAlphaInByteRefColors 0 : alpha is the same as the last one " + alpha);
@@ -2080,13 +1955,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    return retVal;
 	}
 
-	// Issue 113
-	// TODO: Fix this for screen > 0, for now just ignore transparency
-	if (screen > 0) {
-	    retVal[1] = vertexData;
-	    return retVal;
-	}
-
 	// update alpha only if vertex format includes alpha
 	if ((vertexFormat & GeometryArray.COLOR) == 0) {
 	    retVal[1] = vertexData;
@@ -2101,81 +1969,61 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 	retVal[0] = Boolean.TRUE;
 
-	// allocate an entry for the last alpha of the screen if needed
-	if (lastAlpha == null) {
-	    lastAlpha = new float[screen + 1];
-	    lastAlpha[screen] = 1.0f;
-	} else if (lastAlpha.length <= screen) {
+        assert lastAlpha != null;
+        assert mvertexData == null || mvertexData.length == lastAlpha.length;
+
+	// Issue 113 - reallocate lastAlpha array if needed, but no need to
+        // update the values here
+	if (lastAlpha.length <= screen) {
 	    float[] la = new float[screen + 1];
 	    for (int i = 0; i < lastAlpha.length; i++) {
 		la[i] = lastAlpha[i];
 	    }
 	    lastAlpha = la;
-	    lastAlpha[screen] = 1.0f;
 	}
 
 	// allocate a copy of the vertex data for the screen if needed.
-	// this piece of code is mainly for multi-screens case
-	// NOTE: this might not too much data for just to update alpha
+	// Note that a copy operation only happens in the multi-screens case.
+        // We always use the existing vertexData for screen 0.
 	if (mvertexData == null || mvertexData.length <= screen) {
 
 	    float[][] cfData = new float[screen + 1][];
-	    float[] cdata;
-	    int refScreen = -1;
+            int oldSize = 1;
 
 	    if (mvertexData != null) {
+                oldSize = mvertexData.length;
 	        for (int i = 0; i < mvertexData.length; i++) {
 		    cfData[i] = mvertexData[i];
-		    if (Math.abs(lastAlpha[i] - alpha) < EPSILON) {
-		        refScreen = i;
-		    }
 		}
 	    }
 
 	    if (cfData[0] == null)  {
-		cfData[screen] = vertexData;
+		cfData[0] = vertexData;
 	    }
 
-	    if (screen > 0) 
-	        cfData[screen] = new float[stride * vertexCount];
-	    
-	    cdata = cfData[screen];
+            // Issue 113 - allocate entries for [oldSize..screen];
+            // copy cfData[0] to cfData[oldsize..screen-1] and
+            // lastAlpha[0] to lastAlpha[oldsize..screen-1].
+            if (screen > 0) {
+                for (int i = oldSize; i < screen+1; i++) {
+                    cfData[i] = new float[stride * vertexCount];
+                    System.arraycopy(cfData[0], 0, cfData[i], 0,
+                            stride * vertexCount);
+                    lastAlpha[i] = lastAlpha[0];
+                }
+            }
 
-	    // copy the data from a reference screen which has the closest
-	    // alpha values
-	    if (refScreen >= 0) {
-		System.arraycopy(cfData[refScreen], 0, cdata, 0, 
-					stride * vertexCount);
-		lastAlpha[screen] = lastAlpha[refScreen];
-	    } else {
-		float m = alpha / lastAlpha[0];
-		float[] sdata = cfData[0];
+            mvertexData = cfData;
 
-		/*
-		// screen 0 data is always up-to-date
-		if (screen > 0) {
-		    System.arraycopy(cfData[0], 0, cdata, 0, 
-					stride * vertexCount);
-		}
-		*/
-
-		for (int i = 0, j = colorOffset; i < vertexCount; 
-					i++, j+=stride) {
-		    cdata[j+3] = sdata[j+3] * m;
-		}
-		lastAlpha[screen] = alpha;
-	    }
-	    mvertexData = cfData;
-	    dirtyFlag |= COLOR_CHANGED;
-	    // reset the colorChanged bit
-	    colorChanged &= ~(1 << screen);
-	    retVal[1] = cdata;
-	    return retVal;	
+            // Issue 113 - since we copied the data from screen 0, we don't need
+            // to do any further special processing.
 	}
+        
+        assert lastAlpha[screen] >= 0.0;
 
 	if ((colorChanged & (1<<screen)) == 0) {
 	    // color data is not modified
-	    if (Math.abs(lastAlpha[screen] - alpha) < EPSILON) {
+	    if (Math.abs(lastAlpha[screen] - alpha) <= EPSILON) {
 		// and if alpha is the same as the last one,
 		// just return the data
 		retVal[1] = mvertexData[screen];
@@ -2237,15 +2085,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    return retVal;
 	}
 
-	// Issue 113
-	// TODO: Fix this for screen > 0, for now just ignore transparency
-	if (screen > 0) {
-	    retVal[1] = null;
-	    return retVal;
-	}
-
 	// update alpha only if vertex format includes alpha
-	if (((vertexFormat | c4fAllocated) & GeometryArray.COLOR) == 0) {
+	if (((vertexFormat | c4fAllocated) & GeometryArray.WITH_ALPHA) == 0) {
 	    retVal[1] = mirrorInterleavedColorPointer[0];
 	    return retVal;
 	}
@@ -2259,66 +2100,50 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 	retVal[0] = Boolean.TRUE;
 
-	// allocate an entry for the last alpha of the screen if needed
-	if (lastAlpha == null) {
-	    lastAlpha = new float[screen + 1];
-	    lastAlpha[screen] = 1.0f;
-	} else if (lastAlpha.length <= screen) {
+        assert lastAlpha != null;
+        assert mirrorInterleavedColorPointer != null;
+        assert mirrorInterleavedColorPointer.length == lastAlpha.length;
+
+	// Issue 113 - reallocate lastAlpha array if needed, but no need to
+        // update the values here
+	if (lastAlpha.length <= screen) {
 	    float[] la = new float[screen + 1];
 	    for (int i = 0; i < lastAlpha.length; i++) {
 		la[i] = lastAlpha[i];
 	    }
 	    lastAlpha = la;
-	    lastAlpha[screen] = 1.0f;
 	}
 
 	// allocate a copy of the vertex data for the screen if needed.
-	// this piece of code is mainly for multi-screens case
-	// NOTE: this might not too much data for just to update alpha
+	// this piece of code is only for multi-screens case
 	if (mirrorInterleavedColorPointer.length <= screen) {
 
 	    float[][] cfData = new float[screen + 1][];
-	    float[] cdata;
-	    int refScreen = -1;
 
 	    for (int i = 0; i < mirrorInterleavedColorPointer.length; i++) {
 		cfData[i] = mirrorInterleavedColorPointer[i];
-		if (Math.abs(lastAlpha[i] - alpha) < EPSILON) {
-		    refScreen = i;
-		}
 	    }
 
-	    //cdata = cfData[screen] = new float[stride * vertexCount];
-	    cdata = cfData[screen] = new float[4 * vertexCount];
-	    
-	    // copy the data from a reference screen which has the closest
-	    // alpha values
-	    if (refScreen >= 0) {
-		System.arraycopy(cfData[refScreen], 0, cdata, 0, 
-					4 * vertexCount);
-		lastAlpha[screen] = lastAlpha[refScreen];
-	    } else {
-		float m = alpha / lastAlpha[0];
-		float[] sdata = cfData[0];
+            // Issue 113 - allocate entries for [oldSize..screen];
+            // copy cfData[0] to cfData[oldsize..screen-1] and
+            // lastAlpha[0] to lastAlpha[oldsize..screen-1].
+            for (int i = mirrorInterleavedColorPointer.length; i < screen+1; i++) {
+                cfData[i] = new float[4 * vertexCount];
+                System.arraycopy(cfData[0], 0, cfData[i], 0, 4 * vertexCount);
+                lastAlpha[i] = lastAlpha[0];
+            }
 
-		for (int i = coffset; i < coffset + (vertexCount << 2); i+=4) {
-		    cdata[i+3] = sdata[i+3] * m;
-		}
-
-		lastAlpha[screen] = alpha;
-	    }
 	    mirrorInterleavedColorPointer = cfData;
 
-	    // reset the colorChanged bit
-	    colorChanged &= ~(1 << screen);
-	    dirtyFlag |= COLOR_CHANGED;
-	    retVal[1] = cdata;
-	    return retVal;	
+            // Issue 113 - since we copied the data from screen 0, we don't need
+            // to do any further special processing.
 	}
 
-	if ((colorChanged & (1<<screen)) == 0) {
+        assert lastAlpha[screen] >= 0.0;
+
+        if ((colorChanged & (1<<screen)) == 0) {
 	    // color data is not modified
-	    if (Math.abs(lastAlpha[screen] - alpha) < EPSILON) {
+	    if (Math.abs(lastAlpha[screen] - alpha) <= EPSILON) {
 		// and if alpha is the same as the last one,
 		// just return the data
 		retVal[1] = mirrorInterleavedColorPointer[screen];
@@ -2388,8 +2213,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
 		 boolean updateAlpha, float alpha,
-		 boolean multiScreen, int screen,
-		 boolean ignoreVertexColors, int pass) { 
+		 int screen,
+                 boolean ignoreVertexColors) {
 
 	int cdirty;
 	boolean useAlpha = false;
@@ -2427,9 +2252,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		dirtyFlag = 0;
 	    }
 
-	    execute(cv.ctx, this, geoType, isNonUniformScale, 
+	    Pipeline.getPipeline().execute(cv.ctx,
+                    this, geoType, isNonUniformScale,
 		    useAlpha,
-		    multiScreen,
 		    ignoreVertexColors,
 		    initialVertexIndex, 
 		     validVertexCount, 
@@ -2437,10 +2262,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                     texCoordSetCount, texCoordSetMap,
                     (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
                     texCoordSetMapOffset, 
-		    cv.numActiveTexUnit, cv.texUnitStateMap, 
+		    cv.numActiveTexUnit,
                     vertexAttrCount, vertexAttrSizes,
                     vdata, null,
-                    pass, cdirty);
+                    cdirty);
 	}
 
 	//By reference with java array
@@ -2473,9 +2298,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    dirtyFlag = 0;
 		}
 
-		execute(cv.ctx, this, geoType, isNonUniformScale, 
+		Pipeline.getPipeline().execute(cv.ctx,
+                        this, geoType, isNonUniformScale,
 			useAlpha,
-			multiScreen,
 			ignoreVertexColors,
 			initialVertexIndex, 
 			validVertexCount, 
@@ -2483,10 +2308,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			texCoordSetCount, texCoordSetMap,
 			(texCoordSetMap == null) ? 0 : texCoordSetMap.length,
 			texCoordSetMapOffset, 
-			cv.numActiveTexUnit, cv.texUnitStateMap,
+			cv.numActiveTexUnit,
                         vertexAttrCount, vertexAttrSizes,
                         interLeavedVertexData, cdata,
-			pass, cdirty);
+			cdirty);
 
 	    } // end of interleaved case
 	    
@@ -2572,25 +2397,23 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    if((vertexType & TEXCOORD_DEFINED) != 0)
 			vdefined |= TEXCOORD_FLOAT;
 
-		    executeVA(cv.ctx, this, geoType, isNonUniformScale, 
-			      multiScreen, 
-			      ignoreVertexColors,
-			      validVertexCount,
-			      (vertexFormat | c4fAllocated),
-			      vdefined,
-			      initialCoordIndex,
-			      mirrorFloatRefCoords, mirrorDoubleRefCoords,
-			      initialColorIndex, cfdata, cbdata,
-			      initialNormalIndex, mirrorFloatRefNormals,
-			      vertexAttrCount, vertexAttrSizes,
-                              initialVertexAttrIndex, mirrorFloatRefVertexAttrs,
-			      pass,
-			      ((texCoordSetMap == null) ? 0:texCoordSetMap.length),
-			      texCoordSetMap,
-			      cv.numActiveTexUnit,
-			      cv.texUnitStateMap,
-			      initialTexCoordIndex,texCoordStride,
-			      mirrorRefTexCoords, cdirty);
+                    Pipeline.getPipeline().executeVA(cv.ctx,
+                            this, geoType, isNonUniformScale,
+                            ignoreVertexColors,
+                            validVertexCount,
+                            (vertexFormat | c4fAllocated),
+                            vdefined,
+                            initialCoordIndex,
+                            mirrorFloatRefCoords, mirrorDoubleRefCoords,
+                            initialColorIndex, cfdata, cbdata,
+                            initialNormalIndex, mirrorFloatRefNormals,
+                            vertexAttrCount, vertexAttrSizes,
+                            initialVertexAttrIndex, mirrorFloatRefVertexAttrs,
+                            ((texCoordSetMap == null) ? 0:texCoordSetMap.length),
+                            texCoordSetMap,
+                            cv.numActiveTexUnit,
+                            initialTexCoordIndex,texCoordStride,
+                            mirrorRefTexCoords, cdirty);
 		}// end of all vertex data being set
 	    }// end of non interleaved case
 	}// end of by reference with java array
@@ -2629,19 +2452,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    dirtyFlag = 0;
 		}
 
-		executeInterleavedBuffer(cv.ctx, this, geoType, isNonUniformScale, 
-					 useAlpha,
-					 multiScreen,
-					 ignoreVertexColors,
-					 initialVertexIndex, 
-					 validVertexCount, 
-					 vertexFormat, 
-					 texCoordSetCount, texCoordSetMap,
-					 (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
-					 texCoordSetMapOffset, 
-					 cv.numActiveTexUnit, cv.texUnitStateMap, 
-					 interleavedFloatBufferImpl.getBufferAsObject(), cdata,
-					 pass, cdirty);
+                Pipeline.getPipeline().executeInterleavedBuffer(cv.ctx,
+                        this, geoType, isNonUniformScale,
+                        useAlpha,
+                        ignoreVertexColors,
+                        initialVertexIndex,
+                        validVertexCount,
+                        vertexFormat,
+                        texCoordSetCount, texCoordSetMap,
+                        (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
+                        texCoordSetMapOffset,
+                        cv.numActiveTexUnit,
+                        interleavedFloatBufferImpl.getBufferAsObject(), cdata,
+                        cdirty);
 
 	    } // end of interleaved case
 
@@ -2747,88 +2570,31 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                     if((vertexType & TEXCOORD_DEFINED) != 0)
 		       vdefined |= TEXCOORD_FLOAT;
 
-		    executeVABuffer(cv.ctx, this, geoType, isNonUniformScale, 
-				    multiScreen, 
-				    ignoreVertexColors,
-				    validVertexCount,
-				    (vertexFormat | c4fAllocated),
-				    vdefined,
-				    initialCoordIndex,
-				    vcoord,
-				    initialColorIndex,
-				    cdataBuffer,
-				    cfdata, cbdata,
-				    initialNormalIndex,
-				    normal,
-				    vertexAttrCount, vertexAttrSizes,
-				    initialVertexAttrIndex,
-				    nioFloatBufferRefVertexAttrs,
-				    pass,
-				    ((texCoordSetMap == null) ? 0:texCoordSetMap.length),
-				    texCoordSetMap,
-				    cv.numActiveTexUnit,
-				    cv.texUnitStateMap,
-				    initialTexCoordIndex,texCoordStride,
-				    refTexCoords, cdirty);
+                    Pipeline.getPipeline().executeVABuffer(cv.ctx,
+                            this, geoType, isNonUniformScale,
+                            ignoreVertexColors,
+                            validVertexCount,
+                            (vertexFormat | c4fAllocated),
+                            vdefined,
+                            initialCoordIndex,
+                            vcoord,
+                            initialColorIndex,
+                            cdataBuffer,
+                            cfdata, cbdata,
+                            initialNormalIndex,
+                            normal,
+                            vertexAttrCount, vertexAttrSizes,
+                            initialVertexAttrIndex,
+                            nioFloatBufferRefVertexAttrs,
+                            ((texCoordSetMap == null) ? 0:texCoordSetMap.length),
+                            texCoordSetMap,
+                            cv.numActiveTexUnit,
+                            initialTexCoordIndex,texCoordStride,
+                            refTexCoords, cdirty);
 		}// end of all vertex data being set
 	    }// end of non interleaved case
 	}// end of by reference with nio-buffer case
     }
-
-    // used for GeometryArrays
-    private native void buildGA(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale, boolean updateAlpha,
-            float alpha,
-            boolean ignoreVertexColors,
-            int startVIndex,
-            int vcount, int vformat,
-            int texCoordSetCount, int texCoordSetMap[],
-            int texCoordSetMapLen, int[] texCoordSetMapOffset,
-            int vertexAttrCount, int[] vertexAttrSizes,    
-            double[] xform, double[] nxform,
-            float[] varray);
-
-    // used to Build Dlist GeometryArray by Reference with java arrays
-    private native void buildGAForByRef(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,  boolean updateAlpha,
-            float alpha,
-            boolean ignoreVertexColors,
-            int vcount,
-            int vformat,
-            int vdefined,
-            int coordIndex, float[] vfcoords, double[] vdcoords,
-            int colorIndex, float[] cfdata, byte[] cbdata,
-            int normalIndex, float[] ndata,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            int[] vertexAttrIndex, float[][] vertexAttrData,
-            int texcoordmaplength,
-            int[] texcoordoffset,
-            int[] texIndex, int texstride, Object[] texCoords,
-            double[] xform, double[] nxform);
-
-
-    // used to Build Dlist GeometryArray by Reference with NIO buffer
-    // NOTE: NIO buffers are no longer supported in display lists.
-    /*
-    private native void buildGAForBuffer(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,  boolean updateAlpha,
-            float alpha,
-            boolean ignoreVertexColors,
-            int vcount,
-            int vformat,
-            int vdefined,
-            int coordIndex, Object vcoords,
-            int colorIndex, Object cdata,
-            int normalIndex, Object ndata,
-            int texcoordmaplength,
-            int[] texcoordoffset,
-            int[] texIndex, int texstride, Object[] texCoords,
-            double[] xform, double[] nxform);
-    */
-
 
     void buildGA(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
 		 boolean updateAlpha, float alpha, boolean ignoreVertexColors,
@@ -2851,7 +2617,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	     System.out.println("calling native buildGA()");
 	     System.out.println("geoType = "+geoType+" initialVertexIndex = "+initialVertexIndex+" validVertexCount = "+validVertexCount+" vertexFormat = "+vertexFormat+"  vertexData = "+vertexData);
 	     */
-	    buildGA(cv.ctx, this, geoType, isNonUniformScale, 
+	    Pipeline.getPipeline().buildGA(cv.ctx,
+                    this, geoType, isNonUniformScale, 
 		    updateAlpha, alpha, ignoreVertexColors,
 		    initialVertexIndex,
 		    validVertexCount, vertexFormat, 
@@ -2900,7 +2667,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    if((vertexType & TEXCOORD_DEFINED) != 0)
 			vdefined |= TEXCOORD_FLOAT;
 
-		    buildGAForByRef(cv.ctx, this, geoType, isNonUniformScale,
+		    Pipeline.getPipeline().buildGAForByRef(cv.ctx,
+                            this, geoType, isNonUniformScale,
 			    updateAlpha, alpha,
 			    ignoreVertexColors,
 			    validVertexCount,
@@ -2955,7 +2723,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                 if((vertexType & TEXCOORD_DEFINED) != 0)
                     vdefined |= TEXCOORD_FLOAT;
                 // NOTE : need to add vertex attrs
-                buildGAForBuffer(cv.ctx, this, geoType, isNonUniformScale,
+                Pipeline.getPipeline().buildGAForBuffer(cv.ctx,
+                        this, geoType, isNonUniformScale,
                         updateAlpha, alpha,
                         ignoreVertexColors,
                         validVertexCount,
@@ -3744,7 +3513,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    gaList.add(Shape3DRetained.getGeomAtom(s));
 			}
 
-			m[k] = VirtualUniverse.mc.getMessage();
+			m[k] = new J3dMessage();
 		
 			m[k].type = J3dMessage.GEOMETRY_CHANGED;
 			// Who to send this message to ?	
@@ -6297,8 +6066,23 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    }
 		}
 	    }
+            
+            //NVaidya
+            // User may or may not have changed indices in updater callback. 
+            // We need to presume that the user may indeed have and, thus, will 
+            // need to recompute maxCoordIndex unconditionally while
+            // geomLock is still locked. 
+            if ((vertexFormat & GeometryArray.BY_REFERENCE_INDICES) != 0) {
+                assert (this instanceof IndexedGeometryArrayRetained);
+
+                if (((IndexedGeometryArrayRetained)this).getCoordIndicesRef() == null) {
+                    nullGeo = true;
+                }
+                ((IndexedGeometryArrayRetained)this).doPostUpdaterUpdate();
+            }
 	}
-	dirtyFlag |= VERTEX_CHANGED; 
+
+        dirtyFlag |= VERTEX_CHANGED;
 	colorChanged = 0xffff;
 	geomLock.unLock();
 
@@ -6350,7 +6134,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// Setup bounding planes.
 	Point3d pCoor[] = new Point3d[4];
 	for(i=0; i<4; i++)
-	    pCoor[i] = getPoint3d();
+	    pCoor[i] = new Point3d();
       
 	// left plane.
 	pCoor[0].set(box.lower.x, box.lower.y, box.lower.z);
@@ -6365,8 +6149,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    // free points
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
 	
@@ -6381,7 +6163,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
 
@@ -6396,7 +6177,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
 	// top plane.
@@ -6410,7 +6190,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
 
@@ -6425,7 +6204,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
       
@@ -6440,11 +6218,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				   null,
 				   dist, iPnt);
 	    }
-	    for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	    return true;
 	}
-
-	for (i=0; i<4; i++) freePoint3d(pCoor[i]);
 	return false;
     }
 
@@ -6455,7 +6230,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				    Point3d iPnt) 
     {
 	int i, j;
-	Vector3d tempV3D = getVector3d();
+	Vector3d tempV3D = new Vector3d();
 	boolean esFlag;
 
 	//Do trivial vertex test.
@@ -6473,7 +6248,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				       null, dist, iPnt);
 		}
 
-		freeVector3d(tempV3D);
 		return true;
 	    }
 	}
@@ -6493,25 +6267,22 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				       dist, iPnt);
 		}
 
-		freeVector3d(tempV3D);
 		return true;
 	    }
 	}
       
 
 	if (coordinates.length < 3) {
-
-	    freeVector3d(tempV3D);
 	    return false; // We're done with line.
 	}
 
 	    // Find rho.
 	    // Compute plane normal.
-	    Vector3d vec0 = getVector3d(); // Edge vector from point 0 to point 1;
-	    Vector3d vec1 = getVector3d(); // Edge vector from point 0 to point 2 or 3;
-	    Vector3d pNrm = getVector3d();
-	    Vector3d pa = getVector3d();
-	    Point3d q = getPoint3d();
+	    Vector3d vec0 = new Vector3d(); // Edge vector from point 0 to point 1;
+	    Vector3d vec1 = new Vector3d(); // Edge vector from point 0 to point 2 or 3;
+	    Vector3d pNrm = new Vector3d();
+	    Vector3d pa = new Vector3d();
+	    Point3d q = new Point3d();
 	    double nLenSq, pqLen, pNrmDotPa, tq;
 
 	    // compute plane normal for coordinates.
@@ -6533,12 +6304,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
       
 	    if(j == (coordinates.length-1)) {
 		// System.out.println("(1) Degenerate polygon.");
-		freeVector3d(tempV3D);
-		freeVector3d(vec0);
-		freeVector3d(vec1);
-		freeVector3d(pNrm);
-		freeVector3d(pa);
-		freePoint3d(q);
 		return false;  // Degenerate polygon.
 	    }
 
@@ -6554,12 +6319,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    nLenSq = pNrm.lengthSquared(); 
 	    if( nLenSq == 0.0) {
 		// System.out.println("(2) Degenerate polygon.");
-		freeVector3d(tempV3D);
-		freeVector3d(vec0);
-		freeVector3d(vec1);
-		freeVector3d(pNrm);
-		freeVector3d(pa);
-		freePoint3d(q);
 		return false;  // Degenerate polygon.
 	    }
 
@@ -6572,12 +6331,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    pqLen = Math.sqrt(pNrmDotPa * pNrmDotPa/ nLenSq);
       
 	    if(pqLen > sphere.radius) {
-		freeVector3d(tempV3D);
-		freeVector3d(vec0);
-		freeVector3d(vec1);
-		freeVector3d(pNrm);
-		freeVector3d(pa);
-		freePoint3d(q);
 		return false;
 	    }
 
@@ -6595,20 +6348,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				       pNrm,
 				       dist, iPnt);
 		}		
-		freeVector3d(tempV3D);
-		freeVector3d(vec0);
-		freeVector3d(vec1);
-		freeVector3d(pNrm);
-		freeVector3d(pa);
-		freePoint3d(q);
 		return true;
 	    }
-	    freeVector3d(tempV3D);
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
-	    freeVector3d(pa);
-	    freePoint3d(q);
 	    return false;
 
     }
@@ -6945,8 +6686,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				Point3d end)
 	{ 
 	    double abLenSq, acLenSq, apLenSq, abDotAp, radiusSq;
-	    Vector3d ab = getVector3d();
-	    Vector3d ap = getVector3d();
+	    Vector3d ab = new Vector3d();
+	    Vector3d ap = new Vector3d();
 	    
 	    ab.x = end.x - start.x;
 	    ab.y = end.y - start.y;
@@ -6959,8 +6700,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    abDotAp = ab.dot(ap);
       
 	    if(abDotAp < 0.0) {
-		freeVector3d(ab);
-		freeVector3d(ap);
 		return false; // line segment points away from sphere.
 	    }
 
@@ -6968,8 +6707,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    acLenSq = abDotAp * abDotAp / abLenSq;
 
 	    if(acLenSq < abLenSq) {
-		freeVector3d(ab);
-		freeVector3d(ap);
 		return false; // C doesn't lies between end points of edge.
 	    }
 
@@ -6977,13 +6714,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    apLenSq = ap.lengthSquared();
      
 	    if((apLenSq - acLenSq) <= radiusSq) {
-		freeVector3d(ab);
-		freeVector3d(ap);
 		return true;
 	    }
 
-	    freeVector3d(ab);
-	    freeVector3d(ap);
 	    return false;
 
 	}
@@ -7095,8 +6828,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			       Point3d end, Point3d iPnt)
 	{
       
-	    Vector3d tempV3d = getVector3d();
-	    Vector3d direction = getVector3d();
+	    Vector3d tempV3d = new Vector3d();
+	    Vector3d direction = new Vector3d();
 	    double pD, pNrmDotrDir, tr;
       
 	    // Compute plane D.
@@ -7112,8 +6845,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    // edge is parallel to plane. 
 	    if(pNrmDotrDir== 0.0) {
 		// System.out.println("Edge is parallel to plane.");
-		freeVector3d(tempV3d);
-		freeVector3d(direction);
 		return false;        
 	    }
 
@@ -7125,8 +6856,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    // or exceed the edge's length.
 	    if((tr < 0.0 ) || (tr > 1.0 )) {
 		// System.out.println("Edge intersects the plane behind the start or exceed end.");
-		freeVector3d(tempV3d);
-		freeVector3d(direction);
 		return false;
 	    }
 
@@ -7134,8 +6863,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    iPnt.y = start.y + tr * direction.y;
 	    iPnt.z = start.z + tr * direction.z;
 
-	    freeVector3d(tempV3d);
-	    freeVector3d(direction);
 	    return true;
 
 	}
@@ -7470,10 +7197,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     boolean intersectTriPnt(Point3d v0, Point3d v1, Point3d v2, Point3d u) {
 	
-	Vector3d e1 = getVector3d();
-	Vector3d e2 = getVector3d();
-	Vector3d n1 = getVector3d();
-	Vector3d tempV3d = getVector3d();
+	Vector3d e1 = new Vector3d();
+	Vector3d e2 = new Vector3d();
+	Vector3d n1 = new Vector3d();
+	Vector3d tempV3d = new Vector3d();
 	
 	double d1, du;
 	
@@ -7490,10 +7217,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	
 	if(n1.length() == 0.0) {
 	    // System.out.println("(1) Degenerate triangle.");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(tempV3d);
 	    return false;  // Degenerate triangle.
 	}
 	
@@ -7509,10 +7232,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	
 	// no intersection occurs
 	if(du != 0.0) {
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(tempV3d);
 	    return false;
 	}
 
@@ -7549,17 +7268,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	
 	// finally, test if u is totally contained in tri.	
 	if(pointInTri(u, v0, v1, v2, i0, i1)) {
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(tempV3d);
 	    return true;
 	}
 	
-	freeVector3d(e1);
-	freeVector3d(e2);
-	freeVector3d(n1);
-	freeVector3d(tempV3d);
 	return false;
     }
 
@@ -7585,11 +7296,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    Point3d u0, Point3d u1, Point3d u2) {
 
 	// System.out.println("In intersectTriTri ...");
-	Vector3d e1 = getVector3d();
-	Vector3d e2 = getVector3d();
-	Vector3d n1 = getVector3d();
-	Vector3d n2 = getVector3d();
-	Vector3d tempV3d = getVector3d();
+	Vector3d e1 = new Vector3d();
+	Vector3d e2 = new Vector3d();
+	Vector3d n1 = new Vector3d();
+	Vector3d n2 = new Vector3d();
+	Vector3d tempV3d = new Vector3d();
 	
 	double d1, d2;
 	double du0, du1, du2, dv0, dv1, dv2;
@@ -7612,11 +7323,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	
 	if(n1.length() == 0.0) {
 	    // System.out.println("(1) Degenerate triangle.");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return false;  // Degenerate triangle.
 	}
 	
@@ -7644,11 +7350,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// no intersection occurs
 	if(du0du1>0.0 && du0du2>0.0) {
 	    // System.out.println("In intersectTriTri : du0du1>0.0 && du0du2>0.0");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return false;
 	}
 	
@@ -7665,11 +7366,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	
 	if(n2.length() == 0.0) {
 	    // System.out.println("(2) Degenerate triangle.");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return false;  // Degenerate triangle.
 	}
 	
@@ -7697,11 +7393,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// no intersection occurs
 	if(dv0dv1>0.0 && dv0dv2>0.0) {
 	    // System.out.println("In intersectTriTri : dv0dv1>0.0 && dv0dv2>0.0");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return false;
 	}
 	// compute direction of intersection line.
@@ -7782,11 +7473,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    // triangles are coplanar
 	    boolean toreturn = coplanarTriTri(n1, v0, v1, v2, u0, u1, u2);
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return toreturn;
 	}
 
@@ -7821,11 +7507,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    // triangles are coplanar
 	    //	    System.out.println("In intersectTriTri : coplanarTriTri test 2");
 	    boolean toreturn =  coplanarTriTri(n2, v0, v1, v2, u0, u1, u2);
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return toreturn;
 	}
 
@@ -7859,20 +7540,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if(isect1E<isect2S || isect2E<isect1S) {
 	    // System.out.println("In intersectTriTri :isect1E<isect2S || isect2E<isect1S");
 	    // System.out.println("In intersectTriTri : return false");
-	    freeVector3d(e1);
-	    freeVector3d(e2);
-	    freeVector3d(n1);
-	    freeVector3d(n2);
-	    freeVector3d(tempV3d);
 	    return false;
 	}
 
 	//	 System.out.println("In intersectTriTri : return true");
-	freeVector3d(e1);
-	freeVector3d(e2);
-	freeVector3d(n1);
-	freeVector3d(n2);
-	freeVector3d(tempV3d);
 	return true;
 	
     }
@@ -7881,9 +7552,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     boolean intersectPolygon(Point3d coord1[], Point3d coord2[]) {
 	int i, j;
-	Vector3d vec0 = getVector3d(); // Edge vector from point 0 to point 1;
-	Vector3d vec1 = getVector3d(); // Edge vector from point 0 to point 2 or 3;
-	Vector3d pNrm = getVector3d();
+	Vector3d vec0 = new Vector3d(); // Edge vector from point 0 to point 1;
+	Vector3d vec1 = new Vector3d(); // Edge vector from point 0 to point 2 or 3;
+	Vector3d pNrm = new Vector3d();
 	boolean epFlag;
 
 
@@ -7906,9 +7577,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
       
 	if(j == (coord1.length-1)) {
 	    // System.out.println("(1) Degenerate polygon.");
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
 	    return false;  // Degenerate polygon.
 	}
 
@@ -7923,16 +7591,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
       
 	if(pNrm.length() == 0.0) {
 	    // System.out.println("(2) Degenerate polygon.");
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
 	    return false;  // Degenerate polygon.
 	}
 
 	j = 0;      
 	Point3d seg[] = new Point3d[2];
-	seg[0] = getPoint3d();
-	seg[1] = getPoint3d();
+	seg[0] = new Point3d();
+	seg[1] = new Point3d();
 
 	for(i=0; i<coord2.length; i++) {
 	    if(i < (coord2.length-1))
@@ -7949,29 +7614,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 
 	if (j==0) {
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
-	    freePoint3d(seg[0]);
-	    freePoint3d(seg[1]);
 	    return false;
 	}
 
 	if (coord2.length < 3) {
 	    boolean toreturn = pointIntersectPolygon2D(pNrm, coord1, seg[0]);
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
-	    freePoint3d(seg[0]);
-	    freePoint3d(seg[1]);
 	    return toreturn;
 	} else {
 	    boolean toreturn = edgeIntersectPolygon2D(pNrm, coord1, seg);
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
-	    freePoint3d(seg[0]);
-	    freePoint3d(seg[1]);
 	    return toreturn;
 	}
     }
@@ -7997,12 +7647,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersectSegment( Point3d coordinates[], Point3d start, Point3d end,
 			      double dist[], Point3d iPnt ) {
 	boolean result;
-	Vector3d direction = getVector3d();
+	Vector3d direction = new Vector3d();
 	direction.x = end.x - start.x;
 	direction.y = end.y - start.y;
 	direction.z = end.z - start.z;
 	result = intersectRayOrSegment(coordinates, direction, start, dist, iPnt, true);
-	freeVector3d(direction);
 	return result;
     }
     
@@ -8016,9 +7665,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				  Vector3d direction, Point3d origin,
 				  double dist[], Point3d iPnt, boolean isSegment) {
 	Vector3d vec0, vec1, pNrm, tempV3d;
-	vec0 = getVector3d();
-	vec1 = getVector3d();
-	pNrm = getVector3d();
+	vec0 = new Vector3d();
+	vec1 = new Vector3d();
+	pNrm = new Vector3d();
 
 	double  absNrmX, absNrmY, absNrmZ, pD = 0.0;
 	double pNrmDotrDir = 0.0; 
@@ -8070,9 +7719,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 					      iPnt);
 
 	    // put the Vectors on the freelist
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
 	    return isIntersect;
 	}
 
@@ -8101,14 +7747,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    break;
 		}
 	    }
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
 	    return isIntersect;
 	}
 
 	// Plane equation: (p - p0)*pNrm = 0 or p*pNrm = pD;
-	tempV3d = getVector3d();
+	tempV3d = new Vector3d();
 	tempV3d.set((Tuple3d) coordinates[0]);
 	pD = pNrm.dot(tempV3d);
 	tempV3d.set((Tuple3d) origin);
@@ -8124,10 +7767,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    (isSegment && (dist[0] > 1.0+EPS))) {
 	    // Ray intersects the plane behind the ray's origin
 	    // or intersect point not fall in Segment 
-	    freeVector3d(vec0);
-	    freeVector3d(vec1);
-	    freeVector3d(pNrm);
-	    freeVector3d(tempV3d);
 	    return false;
 	}
 
@@ -8288,10 +7927,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if (isIntersect) {
 	    dist[0] *= direction.length();
 	}
-	freeVector3d(vec0);
-	freeVector3d(vec1);
-	freeVector3d(pNrm);
-	freeVector3d(tempV3d);
 	return isIntersect;
     }
 
@@ -8428,7 +8063,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	//     System.out.println("start " + start + " end " + end );
 	//     System.out.println("ori " + ori + " dir " + dir);
     
-	lDir = getVector3d();
+	lDir = new Vector3d();
 	lDir.x = (end.x - start.x);
 	lDir.y = (end.y - start.y);
 	lDir.z = (end.z - start.z);
@@ -8449,7 +8084,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    iPnt.set(start);
 		}
 	    }
-	    freeVector3d(lDir);
 	    return isIntersect;
 	}
 	// Find the inverse.
@@ -8468,12 +8102,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     
 	if(s<0.0) { // Before the origin of ray.
 	    // System.out.println("Before the origin of ray " + s);
-	    freeVector3d(lDir);
 	    return false;
 	}
 	if((t<0)||(t>1.0)) {// Before or after the end points of line.
 	    // System.out.println("Before or after the end points of line. " + t);
-	    freeVector3d(lDir);
 	    return false;
 	}
 
@@ -8482,7 +8114,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
   
 	if((tmp1 < (tmp2 - EPS)) || (tmp1 > (tmp2 + EPS))) {
 	    // System.out.println("No intersection : tmp1 " + tmp1 + " tmp2 " + tmp2);
-	    freeVector3d(lDir);
 	    return false;
 	}
 
@@ -8496,7 +8127,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 	
 	// System.out.println("Intersected : tmp1 " + tmp1 + " tmp2 " + tmp2);
-	freeVector3d(lDir);
 	return true;
     }
 
@@ -8507,11 +8137,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersectCylinder(Point3d coordinates[], PickCylinder cyl,
 			      double dist[], Point3d iPnt) {
 	
-	Point3d origin = getPoint3d();
-	Point3d end = getPoint3d();
-	Vector3d direction = getVector3d();
-	Point3d iPnt1 = getPoint3d();
-	Vector3d originToIpnt = getVector3d();
+	Point3d origin = new Point3d();
+	Point3d end = new Point3d();
+	Vector3d direction = new Vector3d();
+	Point3d iPnt1 = new Point3d();
+	Vector3d originToIpnt = new Vector3d();
 
 	if (iPnt == null) {
 	    iPnt = new Point3d();
@@ -8532,24 +8162,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if (cyl instanceof PickCylinderRay) {
 		if (intersectRay(coordinates, 
 				 new PickRay(origin, direction),
-				 dist, iPnt)) {
-
-		    freePoint3d(origin);
-		    freePoint3d(end);
-		    freeVector3d(direction);
-		    freeVector3d(originToIpnt);
-		    freePoint3d(iPnt1);
-		    
+				 dist, iPnt)) {	    
 		    return true;
 		}
 	    }
 	    else {
 		if (intersectSegment(coordinates, origin, end, dist, iPnt)) {
-		    freePoint3d(origin);
-		    freePoint3d(end);
-		    freeVector3d(direction);
-		    freeVector3d(originToIpnt);
-		    freePoint3d(iPnt1);
 		    return true;
 		}
 	    }
@@ -8575,19 +8193,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if (sqDistToEdge <= radius*radius) {
 		originToIpnt.sub (iPnt1, origin);
 		dist[0] = originToIpnt.length();
-		freePoint3d(origin);
-		freePoint3d(end);
-		freeVector3d(direction);
-		freeVector3d(originToIpnt);
-		freePoint3d(iPnt1);
 		return true;
 	    }
 	}
-	freePoint3d(origin);
-	freePoint3d(end);
-	freeVector3d(direction);
-	freeVector3d(originToIpnt);
-	freePoint3d(iPnt1);
 	return false;
     }
     
@@ -8598,14 +8206,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersectCone(Point3d coordinates[], PickCone cone,
 			  double[] dist, Point3d iPnt) {
 	
-	Point3d origin = getPoint3d();
-	Point3d end = getPoint3d();
-	Vector3d direction = getVector3d();
-	Vector3d originToIpnt = getVector3d();
+	Point3d origin = new Point3d();
+	Point3d end = new Point3d();
+	Vector3d direction = new Vector3d();
+	Vector3d originToIpnt = new Vector3d();
 	double distance;
     
-	Point3d iPnt1 = getPoint3d();
-	Vector3d vector = getVector3d();
+	Point3d iPnt1 = new Point3d();
+	Vector3d vector = new Vector3d();
 
 	if (iPnt == null) {
 	    iPnt = new Point3d();
@@ -8626,23 +8234,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if (intersectRay(coordinates, 
 				 new PickRay (origin, direction), 
 				 dist, iPnt)) {
-		    freePoint3d(origin);
-		    freePoint3d(end);
-		    freePoint3d(iPnt1);
-		    freeVector3d(direction);
-		    freeVector3d(originToIpnt);
-		    freeVector3d(vector);
 		    return true;
 		}
 	    }
 	    else {
 		if (intersectSegment(coordinates, origin, end, dist, iPnt)) {
-		    freePoint3d(origin);
-		    freePoint3d(end);
-		    freePoint3d(iPnt1);
-		    freeVector3d(direction);
-		    freeVector3d(originToIpnt);
-		    freeVector3d(vector);
 		    return true;
 		}
 	    }
@@ -8671,21 +8267,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if (sqDistToEdge <= radius*radius) {
 		//	System.out.println ("intersectCone: edge "+i+" intersected");
 		dist[0] = distance;
-		freePoint3d(origin);
-		freePoint3d(end);
-		freePoint3d(iPnt1);
-		freeVector3d(direction);
-		freeVector3d(originToIpnt);
-		freeVector3d(vector);
 		return true;
 	    }
 	}
-	freePoint3d(origin);
-	freePoint3d(end);
-	freePoint3d(iPnt1);
-	freeVector3d(direction);
-	freeVector3d(originToIpnt);
-	freeVector3d(vector);
 	return false;
     }
 
@@ -8697,11 +8281,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersectCylinder(Point3d pt, PickCylinder cyl,
 			      double[] dist) {
 	
-	Point3d origin = getPoint3d();
-	Point3d end = getPoint3d();
-	Vector3d direction = getVector3d();
-	Point3d iPnt = getPoint3d();
-	Vector3d originToIpnt = getVector3d();
+	Point3d origin = new Point3d();
+	Point3d end = new Point3d();
+	Vector3d direction = new Vector3d();
+	Point3d iPnt = new Point3d();
+	Vector3d originToIpnt = new Vector3d();
 
 	// Get cylinder information
 	cyl.getOrigin (origin);
@@ -8719,18 +8303,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if (sqDist <= radius*radius) {
 	    originToIpnt.sub (iPnt, origin);
 	    dist[0] = originToIpnt.length();
-	    freePoint3d(origin);
-	    freePoint3d(end);
-	    freePoint3d(iPnt);
-	    freeVector3d(originToIpnt);
-	    freeVector3d(direction);
 	    return true;
 	}
-	freePoint3d(origin);
-	freePoint3d(end);
-	freePoint3d(iPnt);
-	freeVector3d(originToIpnt);
-	freeVector3d(direction);
 	return false;
     }
     
@@ -8740,11 +8314,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
       */
     boolean intersectCone(Point3d pt, PickCone cone, double[] dist) 
     {
-	Point3d origin = getPoint3d();
-	Point3d end = getPoint3d();
-	Vector3d direction = getVector3d();
-        Point3d iPnt = getPoint3d();
-	Vector3d originToIpnt = getVector3d();
+	Point3d origin = new Point3d();
+	Point3d end = new Point3d();
+	Vector3d direction = new Vector3d();
+        Point3d iPnt = new Point3d();
+	Vector3d originToIpnt = new Vector3d();
 
 	// Get cone information
 	cone.getOrigin (origin);
@@ -8769,11 +8343,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	radius = Math.tan (cone.getSpreadAngle()) * distance;
 	if (sqDist <= radius*radius) {
 	    dist[0] = distance;
-	    freePoint3d(origin);
-	    freePoint3d(end);
-	    freePoint3d(iPnt);
-	    freeVector3d(direction);
-	    freeVector3d(originToIpnt);
 	    return true;
 	}
 	return false;
@@ -10713,18 +10282,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
     }
 
-    protected void finalize() {
-	// For Pure immediate mode, there is no clearLive so
-	// surface will free when JVM do GC 
-	if (pVertexBuffers != 0) {
-	    // memory not yet free for immediate mode rendering
-	    // It is thread safe since D3D only free surface in
-	    // the next swapBuffer() call which must be in the
-	    // same renderer threads
-	    freeD3DArray(true);
-	}
-    }
-
     void freeDlistId() {
 	if (dlistId != -1) {
 	    VirtualUniverse.mc.freeDisplayListId(dlistObj);
@@ -11115,28 +10672,26 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersect(Transform3D thisLocalToVworld, 
 		      Transform3D otherLocalToVworld, GeometryRetained  geom) {
 	
-	Transform3D tg =  VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t3d =  new Transform3D();
 	boolean isIntersect = false;
 
 	if (geom instanceof GeometryArrayRetained ) {
 	    GeometryArrayRetained geomArray = (GeometryArrayRetained)  geom;
 
 	    if (geomArray.validVertexCount >= validVertexCount) {
-		tg.invert(otherLocalToVworld);
-		tg.mul(thisLocalToVworld);
-		isIntersect = intersect(tg, geom);
+		t3d.invert(otherLocalToVworld);
+		t3d.mul(thisLocalToVworld);
+		isIntersect = intersect(t3d, geom);
 	    } else {
-		tg.invert(thisLocalToVworld);
-		tg.mul(otherLocalToVworld);
-		isIntersect = geomArray.intersect(tg, this);	    
+		t3d.invert(thisLocalToVworld);
+		t3d.mul(otherLocalToVworld);
+		isIntersect = geomArray.intersect(t3d, this);	    
 	    }
 	} else {
-		tg.invert(thisLocalToVworld);
-		tg.mul(otherLocalToVworld);
-		isIntersect = geom.intersect(tg, this);	    
+		t3d.invert(thisLocalToVworld);
+		t3d.mul(otherLocalToVworld);
+		isIntersect = geom.intersect(t3d, this);	    
 	}
-
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, tg);
 	return isIntersect;
     }
 
@@ -11524,23 +11079,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	dist[0] = Math.sqrt(dist[0]);
     }
-
-    Vector3d getVector3d() {
-	return (Vector3d)FreeListManager.getObject(FreeListManager.VECTOR3D);
-    }
-
-    void freeVector3d(Vector3d v) {
-	FreeListManager.freeObject(FreeListManager.VECTOR3D, v);
-    }
-
-    Point3d getPoint3d() {
-	return (Point3d)FreeListManager.getObject(FreeListManager.POINT3D);
-    }
-
-    void freePoint3d(Point3d p) {
-	FreeListManager.freeObject(FreeListManager.POINT3D, p);
-    }
-
 
     void handleFrequencyChange(int bit) {
 	int mask = 0;

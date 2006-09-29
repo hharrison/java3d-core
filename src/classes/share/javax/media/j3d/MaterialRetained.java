@@ -409,21 +409,10 @@ class MaterialRetained extends NodeComponentRetained {
     /**
      * Updates the native context.
      */
-    native void updateNative(long ctx,
-			     float red, float green, float blue, float alpha,
-			     float ared, float agreen, float ablue,
-			     float ered, float egreen, float eblue,
-			     float dred, float dgreen, float dblue,
-			     float sred, float sgreen, float sblue,
-			     float shininess, int colorTarget, boolean enable);
-
-    /**
-     * Updates the native context.
-     */
-    void updateNative(long ctx,
+    void updateNative(Context ctx,
 		      float red, float green, float blue, float alpha,
 		      boolean enableLighting) {
-	updateNative(ctx, red, green, blue, alpha, 
+	Pipeline.getPipeline().updateMaterial(ctx, red, green, blue, alpha, 
 		     ambientColor.x, ambientColor.y, ambientColor.z,
 		     emissiveColor.x, emissiveColor.y, emissiveColor.z, 
 		     diffuseColor.x, diffuseColor.y, diffuseColor.z, 
@@ -516,7 +505,7 @@ class MaterialRetained extends NodeComponentRetained {
 	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	createMessage.type = J3dMessage.MATERIAL_CHANGED;
 	createMessage.universe = null;
@@ -528,7 +517,7 @@ class MaterialRetained extends NodeComponentRetained {
 
 	int size = univList.size();
 	for(int i=0; i<size; i++) {
-	    createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.MATERIAL_CHANGED;
 		

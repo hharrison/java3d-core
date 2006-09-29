@@ -13,15 +13,13 @@
 package javax.media.j3d;
 
 import javax.vecmath.*;
-import java.lang.Math;
 import java.util.Vector;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Enumeration;
 import java.awt.*;
-import java.awt.event.*;
-import com.sun.j3d.utils.universe.*; // Needed for Support of DVR.
+import com.sun.j3d.utils.universe.Viewer; // Needed for Support of DVR.
 
 /**
  * The View object contains all parameters needed in rendering a
@@ -166,12 +164,13 @@ import com.sun.j3d.utils.universe.*; // Needed for Support of DVR.
  * <LI>VIRTUAL_EYE - specifies that the associated distance is from
  * the eye and in units of virtual distance.</LI><P>
  * <LI>PHYSICAL_EYE - specifies that the associated distance is from
- * the eye and in units of physical distance (in meters).</LI><P>
+ * the eye and in units of physical distance (in meters).
+ * This is the default policy for both front and back clipping.</LI><P>
  * <LI>VIRTUAL_SCREEN  - specifies that the associated distance is
  * from the screen and in units of virtual distance. </LI><P>
  * <LI>PHYSICAL_SCREEN - specifies that the associated distance is
  * from the screen and in units of physical distance (in meters).
- * This is the default policy for both front and back clipping.</LI><P>
+ * </LI><P>
  * </UL>
  * <LI>Visibility policy - specifies how visible and invisible objects
  * are drawn. There are three visibility policies:</LI><P>
@@ -491,6 +490,7 @@ public class View extends Object {
      * from the eye in meters.
      * Policy for interpreting clip plane distances.
      * Used in specifying the policy in frontClipPolicy and backClipPolicy.
+     * This is the default policy for both front and back clipping.
      * @see #setFrontClipPolicy
      * @see #setBackClipPolicy
      */
@@ -722,8 +722,8 @@ public class View extends Object {
     // Support dynamic video resize -- DVR.
     Viewer viewer = null; // Cached the associate viewer of this view.
     boolean firstTime = true;
-    float dvrFactor = 1.0f;
-    boolean dvrResizeCompensation = true;
+//    float dvrFactor = 1.0f;
+//    boolean dvrResizeCompensation = true;
 
     // User adjustable minimum frame cycle time
     long minFrameCycleTime;
@@ -982,7 +982,6 @@ public class View extends Object {
 
     private Canvas3D[][] cachedCanvasList;
     private Canvas3D[] cachedCanvases;
-    private Canvas3D[] cachedOffScreenCanvases;
     private Screen3D[] cachedScreens;
     private int longestScreenList = 0;
     private boolean canvasesDirty = true;
@@ -1912,7 +1911,7 @@ public class View extends Object {
 
 	if (activeStatus && isRunning) {
 	    
-	    J3dMessage vpMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage vpMessage = new J3dMessage();
 	    vpMessage.universe = universe;
 	    vpMessage.view = this;
 	    vpMessage.type = J3dMessage.UPDATE_VIEW;
@@ -1973,7 +1972,7 @@ public class View extends Object {
 	transparencySortingPolicy = policy;
 	if (activeStatus && isRunning) {
 	    
-	    J3dMessage vpMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage vpMessage = new J3dMessage();
 	    vpMessage.universe = universe;
 	    vpMessage.view = this;
 	    vpMessage.type = J3dMessage.UPDATE_VIEW;
@@ -2416,21 +2415,13 @@ public class View extends Object {
         synchronized (canvasList) {
 	    ArrayList cv;
 	    int len = canvases.size();
-	    int numOffScreenCanvases = 0;
 
 	    Canvas3D newCachedCanvases[] = new Canvas3D[len];
 	    for (int i=0; i < len; i++) {
 		newCachedCanvases[i] = (Canvas3D) canvases.get(i);
-		if (newCachedCanvases[i].offScreen)
-		    numOffScreenCanvases++;
 	    }
 	    // Do this in one instruction so there is no need to
 	    // synchronized getCanvases()
-
-	    if (numOffScreenCanvases > 0) {
-		cachedOffScreenCanvases = new Canvas3D[numOffScreenCanvases];
-		numOffScreenCanvases = 0;
-	    }
 
 	    cachedCanvases = newCachedCanvases;
 	    len = 0;
@@ -2442,13 +2433,6 @@ public class View extends Object {
 		cachedCanvasList[i] = new Canvas3D[len];
 		for (int j=0; j < len; j++) {
 		    cachedCanvasList[i][j] = (Canvas3D) cv.get(j);
-		}
-
-		if (cachedCanvasList[i][0].offScreen) {
-		    for (int j = 0; j < len; j++) {
-			cachedOffScreenCanvases[numOffScreenCanvases++]=
-				cachedCanvasList[i][j];
-		    }
 		}
 
 		if (len > longestScreenList) {
@@ -2489,10 +2473,6 @@ public class View extends Object {
     // assume getCanvasList is called before
     Canvas3D[] getCanvases() {
 	return cachedCanvases;
-    }
-
-    Canvas3D[] getOffScreenCanvases() {
-	return cachedOffScreenCanvases;
     }
 
     // assume getCanvasList is called before
@@ -3089,7 +3069,10 @@ public class View extends Object {
     final void updateViewCache() {
 
 
-	// DVR support
+        // TODO KCR : remove obsolete DVR code (but make sure we don't end
+        // up with a leak in the Viewer Map object).
+
+        // DVR support
 	// This is a back door in j3d to provide DVR support.
 	// A better place to put this code segment is in
 	// ViewCache.snapshot(). Since it consists of some 
@@ -3104,24 +3087,24 @@ public class View extends Object {
 	    firstTime = false;
 	}
 	
-	if(viewer != null)  {
-	    if(viewer.isDvrEnabled()) {
-		dvrFactor = viewer.getDvrFactor();
-		dvrResizeCompensation = 
-		    viewer.getDvrResizeCompensationEnable();
-		/*
-		System.out.println("View : dvrFactor is " + dvrFactor);
-		System.out.println("View : dvrResizeCompensation is " + 
-				   dvrResizeCompensation);		 
-		*/
-	    }
-	    else {
-		// Reset back to default.
-		dvrFactor = 1.0f;
-		dvrResizeCompensation = true;
-
-	    }
-	}
+//	if(viewer != null)  {
+//	    if(viewer.isDvrEnabled()) {
+//		dvrFactor = viewer.getDvrFactor();
+//		dvrResizeCompensation = 
+//		    viewer.getDvrResizeCompensationEnable();
+//		/*
+//		System.out.println("View : dvrFactor is " + dvrFactor);
+//		System.out.println("View : dvrResizeCompensation is " + 
+//				   dvrResizeCompensation);		 
+//		*/
+//	    }
+//	    else {
+//		// Reset back to default.
+//		dvrFactor = 1.0f;
+//		dvrResizeCompensation = true;
+//
+//	    }
+//	}
 	// End of back door -- DVR.
 	    
 	synchronized(this) {
@@ -3286,7 +3269,7 @@ public class View extends Object {
             soundScheduler.reset();
         }	
 
-	J3dMessage vpMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage vpMessage = new J3dMessage();
 	vpMessage.universe = universe;
 	vpMessage.view = this;
 	vpMessage.type = J3dMessage.UPDATE_VIEW;
@@ -3325,7 +3308,7 @@ public class View extends Object {
 	}
 
 
-	J3dMessage vpMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage vpMessage = new J3dMessage();
 	vpMessage.universe = universe;
 	vpMessage.view = this;
 	vpMessage.type = J3dMessage.UPDATE_VIEW;

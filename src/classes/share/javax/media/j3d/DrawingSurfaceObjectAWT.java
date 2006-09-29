@@ -21,27 +21,29 @@ import java.awt.Point;
 class DrawingSurfaceObjectAWT extends DrawingSurfaceObject {
 
     // drawing surface 
-    long nativeDS = 0;
-    long dsi = 0;
+    private long nativeDS = 0;
+    private long dsi = 0;
 
-    boolean doLastUnlock = false;
-    boolean xineramaDisabled = false;
+    private boolean doLastUnlock = false;
+    private boolean xineramaDisabled = false;
 
-    long display = 0;
-    int screenID = 0;
+    private long display = 0;
+    private int screenID = 0;
 
-    static long nativeAWT = 0;
+    private static long nativeAWT = 0;
 
-    native boolean lockAWT(long ds);
-    native void unlockAWT(long ds);
-    static native void lockGlobal(long awt);
-    static native void unlockGlobal(long awt);
-    native long getDrawingSurfaceAWT(Canvas3D cv, long awt);
-    native long getDrawingSurfaceInfo(long ds);
-    static native void freeResource(long awt, long ds, long dsi);
-    native int getDrawingSurfaceWindowIdAWT(Canvas3D cv, long ds, long dsi,
- 					    long display, int screenID,
-					    boolean xineramaDisabled);
+    private native boolean lockAWT(long ds);
+    private native void unlockAWT(long ds);
+    private static native void lockGlobal(long awt);
+    private static native void unlockGlobal(long awt);
+    private native long getDrawingSurfaceAWT(Canvas3D cv, long awt);
+    private native long getDrawingSurfaceInfo(long ds);
+    private static native void freeResource(long awt, long ds, long dsi);
+
+    // TODO: long window
+    private native int getDrawingSurfaceWindowIdAWT(Canvas3D cv, long ds, long dsi,
+            long display, int screenID,
+            boolean xineramaDisabled);
 
     DrawingSurfaceObjectAWT(Canvas3D cv, long awt,
 			    long display, int screenID,
@@ -110,9 +112,10 @@ class DrawingSurfaceObjectAWT extends DrawingSurfaceObject {
 	if (nativeDS != 0) {
 	    dsi = getDrawingSurfaceInfo(nativeDS);
 	    if (dsi != 0) {
-		canvas.window = getDrawingSurfaceWindowIdAWT
+                long nativeDrawable = getDrawingSurfaceWindowIdAWT
 		    (canvas, nativeDS, dsi, display, screenID,
 		     xineramaDisabled);
+                canvas.drawable = new NativeDrawable(nativeDrawable);
 	    }
 	}
     }

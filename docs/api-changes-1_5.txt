@@ -1,0 +1,133 @@
+------------------------------------------------------------------------
+$RCSfile$
+$Revision$
+$Date$
+------------------------------------------------------------------------
+This document conatains proposed API changes to the Java 3D 1.5 API
+that deviate from the 1.4 API.
+
+This file must be updated to record the addition or deprecation of any
+public or protected class, interface, field, constructor, or method to
+the Java 3D API.
+
+The one exception to this rule is that you don't need to update this
+file when adding a non-final (i.e., virtual) method to a class if that
+method--with exactly the same signature--already exists in a
+superclass.  For example, adding a "toString" method to a j3d object
+doesn't require an entry in this file.  Likewise, adding duplicateNode
+or cloneNode methods to Node subclasses doesn't require an entry in
+this file.
+
+No incompatible changes to the Java 3D 1.4 API are allowed.
+
+
+I. New/deprecated fields, constructors, methods
+
+    ImageComponent
+    --------------
+    New enums:
+        public enum ImageClass {
+            BUFFERED_IMAGE, RENDERED_IMAGE, NIO_IMAGE_BUFFER
+        }
+
+
+    New methods:
+        public ImageClass getImageClass()
+
+
+    Deprecated methods:
+        public void setYUp(boolean yUp)
+
+
+    ImageComponent2D
+    ----------------
+    New constructors:
+        public ImageComponent2D(int format, NioImageBuffer image,
+                                boolean byReference, boolean yUp)
+
+    New methods:
+        public void set(NioImageBuffer image)
+        public NioImageBuffer getNioImage()
+
+
+    ImageComponent3D
+    ----------------
+    New constructors:
+        public ImageComponent3D(int format, NioImageBuffer[] images,
+                                boolean byReference, boolean yUp)
+
+    New methods:
+        public void set(NioImageBuffer[] images)
+        public void set(int index, NioImageBuffer image)
+        public NioImageBuffer[] getNioImage()
+        public NioImageBuffer getNioImage(int index)
+
+
+    Texture2D
+    ---------
+    Deprecated fields:
+        public static final int ALLOW_DETAIL_TEXTURE_READ
+        public static final int LINEAR_DETAIL
+        public static final int LINEAR_DETAIL_RGB
+        public static final int LINEAR_DETAIL_ALPHA
+        public static final int DETAIL_ADD
+        public static final int DETAIL_MODULATE
+
+    Deprecated methods:
+        public void setDetailImage(ImageComponent2D detailTexture)
+        public ImageComponent2D getDetailImage()
+        public void setDetailTextureMode(int mode)
+        public int getDetailTextureMode()
+        public void setDetailTextureLevel(int level)
+        public int getDetailTextureLevel()
+        public void setDetailTextureFunc(float[] lod, float[] pts)
+        public void setDetailTextureFunc(Point2f[] pts)
+        public int getDetailTextureFuncPointsCount()
+        public void getDetailTextureFunc(float[] lod, float[] pts)
+        public void getDetailTextureFunc(Point2f[] pts)
+
+
+    GeometryArray
+    -------------
+    New fields:
+        public static final int BY_REFERENCE_INDICES
+
+
+    IndexedGeometryArray
+    --------------------
+    New methods:
+        public void setCoordIndicesRef(int coordIndices[])
+        public int[] getCoordIndicesRef()
+
+
+    VirtualUniverse
+    ---------------
+    New methods:
+        public static void addRenderingErrorListener(
+                RenderingErrorListener listener)
+        public static void removeRenderingErrorListener(
+                RenderingErrorListener listener)
+
+
+II. Reparented classes
+
+
+III. New classes and interfaces (in javax.media.j3d)
+
+    NioImageBuffer
+    --------------
+        public class NioImageBuffer extends Object
+
+
+    RenderingError
+    --------------
+	public class RenderingError extends Object
+
+
+    RenderingErrorListener
+    ----------------------
+	public interface RenderingErrorListener
+
+
+IV. Deprecated classes and interfaces (in javax.media.j3d)
+

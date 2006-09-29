@@ -16,18 +16,20 @@ import java.awt.GraphicsDevice;
 import sun.awt.Win32GraphicsDevice;
 
 class NativeScreenInfo {
-    private int display = 0;
-    private int screen = 0;
-
+    private static final long display = 0; // unused for Win32
 
     private static boolean wglARBChecked = false;
     private static boolean isWglARB;
 
-    private native static boolean queryWglARB();
+    private static native boolean queryWglARB();
+    
+    private NativeScreenInfo() {
+        throw new AssertionError("constructor should never be called");
+    }
 
     // This method will return true if wglGetExtensionsStringARB is supported, 
     // else return false
-    synchronized static boolean isWglARB() {
+    static synchronized boolean isWglARB() {
 
 	if (!wglARBChecked) {
 	    // Query for wglGetExtensionsStringARB support.
@@ -37,20 +39,13 @@ class NativeScreenInfo {
 	return isWglARB;
     }
 
-    NativeScreenInfo(GraphicsDevice graphicsDevice) {
-	// Get the screen number
-	screen = ((sun.awt.Win32GraphicsDevice)graphicsDevice).getScreen();
-	display = screen;
-    }
-
-    int getDisplay() {
+    static long getDisplay() {
 	return display;
     }
 
-    int getScreen() {
-	return screen;
+    static int getScreen(GraphicsDevice graphicsDevice) {
+	return ((Win32GraphicsDevice)graphicsDevice).getScreen();
     }
-
 
     // Ensure that the native libraries are loaded
     static {

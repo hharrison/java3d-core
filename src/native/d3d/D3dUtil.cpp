@@ -966,8 +966,8 @@ void copyDataFromSurface(jint internalFormat,
 	(yoffset*lockedRect.Pitch);
 
 
-    if ((internalFormat == FORMAT_BYTE_RGBA) ||
-    	(internalFormat == FORMAT_BYTE_RGB)) {
+    if ((internalFormat == IMAGE_FORMAT_BYTE_RGBA) ||
+    	(internalFormat == IMAGE_FORMAT_BYTE_RGB)) {
 	dstPitch = subWidth << 2;
 	destRow += (subHeight-1)*dstPitch;
 
@@ -1208,7 +1208,7 @@ void copyDataFromSurface(jint internalFormat,
 		}
 	    }
 	}
-    } else if (internalFormat == FORMAT_BYTE_LA) {
+    } else if (internalFormat == IMAGE_FORMAT_BYTE_LA) {
 	int gshift = firstBit(ddpf.dwGBitMask) +
 	    ucountBits(ddpf.dwGBitMask) - 8;
 	int ashift = firstBit(ddpf.dwRGBAlphaBitMask) +
@@ -1370,7 +1370,7 @@ void copyDataFromSurface(jint internalFormat,
 	    }
 	}
 
-    } else if (internalFormat == FORMAT_BYTE_GRAY) {
+    } else if (internalFormat == IMAGE_FORMAT_BYTE_GRAY) {
 	int gshift = firstBit(ddpf.dwGBitMask) +
 	           ucountBits(ddpf.dwGBitMask) - 8;
 	dstPitch = subWidth;
@@ -1482,7 +1482,7 @@ void copyDataFromSurface(jint internalFormat,
 	}
 
     } else {
-	// FORMAT_USHORT_GRAY
+	// IMAGE_FORMAT_USHORT_GRAY
 	printf("[Java 3D] copyDataFromSurface: Format not support %d\n", internalFormat);
     }
 
@@ -8997,7 +8997,7 @@ void copyDataToSurface(jint storedFormat,
     }
     int offset = tilew*imgYOffset + imgXOffset;
     switch (storedFormat) {
-        case  FORMAT_BYTE_RGBA :
+        case  IMAGE_FORMAT_BYTE_RGBA :
 	    // This is the one we use when byReference = false
 	    copyDataToSurfaceRGBA(internalFormat, &ddpf,
 				  (unsigned char *) lockedRect.pBits,
@@ -9006,7 +9006,7 @@ void copyDataToSurface(jint storedFormat,
 				  xoffset, yoffset,
 				  xlimit, ylimit, tilew);
 	    break;
-        case FORMAT_BYTE_RGB:
+        case IMAGE_FORMAT_BYTE_RGB:
 	    copyDataToSurfaceRGB(internalFormat, &ddpf,
 				 (unsigned char *) lockedRect.pBits,
 				 lockedRect.Pitch,
@@ -9014,7 +9014,7 @@ void copyDataToSurface(jint storedFormat,
 				 xoffset, yoffset,
 				 xlimit, ylimit, tilew);
 	    break;
-        case FORMAT_BYTE_ABGR:
+        case IMAGE_FORMAT_BYTE_ABGR:
 	    copyDataToSurfaceABGR(internalFormat, &ddpf,
 				  (unsigned char *) lockedRect.pBits,
 				  lockedRect.Pitch,
@@ -9022,7 +9022,7 @@ void copyDataToSurface(jint storedFormat,
 				  xoffset, yoffset,
 				  xlimit, ylimit, tilew);
 	    break;
-        case FORMAT_BYTE_BGR:
+        case IMAGE_FORMAT_BYTE_BGR:
 	    copyDataToSurfaceBGR(internalFormat, &ddpf,
 				 (unsigned char *) lockedRect.pBits,
 				 lockedRect.Pitch,
@@ -9030,7 +9030,7 @@ void copyDataToSurface(jint storedFormat,
 				 xoffset, yoffset,
 				 xlimit, ylimit, tilew);
 	    break;
-        case FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_LA:
 	    copyDataToSurfaceLA(internalFormat, &ddpf,
 				(unsigned char *) lockedRect.pBits,
 				lockedRect.Pitch,
@@ -9038,7 +9038,7 @@ void copyDataToSurface(jint storedFormat,
 				xoffset, yoffset,
 				xlimit, ylimit, tilew);
 	    break;
-        case FORMAT_BYTE_GRAY:
+        case IMAGE_FORMAT_BYTE_GRAY:
 	    copyDataToSurfaceGray(internalFormat, &ddpf,
 				  (unsigned char *) lockedRect.pBits,
 				  lockedRect.Pitch,
@@ -10839,7 +10839,7 @@ void copyDataToVolume(jint storedFormat,
 
 
     switch (storedFormat) {
-        case  FORMAT_BYTE_RGBA :
+        case  IMAGE_FORMAT_BYTE_RGBA :
 	    // This is the one we use when byReference = false
 	    data += (imgOffset << 2);
 	    srcSlicePitch <<= 2;
@@ -10857,7 +10857,7 @@ void copyDataToVolume(jint storedFormat,
 	    }
 
 	    break;
-        case FORMAT_BYTE_RGB:
+        case IMAGE_FORMAT_BYTE_RGB:
 	    data += (imgOffset*3);
 	    srcSlicePitch *= 3;
 
@@ -10873,7 +10873,7 @@ void copyDataToVolume(jint storedFormat,
 		data += srcSlicePitch;
 	    }
 	    break;
-        case FORMAT_BYTE_ABGR:
+        case IMAGE_FORMAT_BYTE_ABGR:
 	    data += (imgOffset << 2);
 	    srcSlicePitch <<= 2;
 
@@ -10889,7 +10889,7 @@ void copyDataToVolume(jint storedFormat,
 		data += srcSlicePitch;
 	    }
 	    break;
-        case FORMAT_BYTE_BGR:
+        case IMAGE_FORMAT_BYTE_BGR:
 	    data += (imgOffset*3);
 	    srcSlicePitch *= 3;
 
@@ -10905,7 +10905,7 @@ void copyDataToVolume(jint storedFormat,
 		data += srcSlicePitch;
 	    }
 	    break;
-        case FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_LA:
 	    data += (imgOffset << 1);
 	    srcSlicePitch <<= 1;
 
@@ -10921,7 +10921,7 @@ void copyDataToVolume(jint storedFormat,
 		data += srcSlicePitch;
 	    }
 	    break;
-        case FORMAT_BYTE_GRAY:
+        case IMAGE_FORMAT_BYTE_GRAY:
 	    data += imgOffset;
 
 	    for (i = zoffset; i < zlimit; i++) {
@@ -11044,17 +11044,17 @@ LPDIRECT3DTEXTURE9 createSurfaceFromImage(JNIEnv *env,
 
 
     switch (internalFormat) {
-        case FORMAT_BYTE_RGBA:
+        case IMAGE_FORMAT_BYTE_RGBA:
 	    internalFormat = J3D_RGBA;
 	    break;
-        case FORMAT_BYTE_RGB:
+        case IMAGE_FORMAT_BYTE_RGB:
 	    internalFormat = J3D_RGB;
 	    break;
-        case FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_LA:
 	    internalFormat = LUMINANCE_ALPHA;
 	    break;
-        case FORMAT_BYTE_GRAY:
-        case FORMAT_USHORT_GRAY:
+        case IMAGE_FORMAT_BYTE_GRAY:
+        case IMAGE_FORMAT_USHORT_GRAY:
 	    internalFormat = LUMINANCE;
 	    break;
         default:
@@ -11073,7 +11073,7 @@ LPDIRECT3DTEXTURE9 createSurfaceFromImage(JNIEnv *env,
     }
 
     if (imageYdown != NULL) {
-	if (storedFormat != FORMAT_USHORT_GRAY) {
+	if (storedFormat != IMAGE_FORMAT_USHORT_GRAY) {
 	    jbyte *byteData = (jbyte *) (env->GetPrimitiveArrayCritical(
 							imageYdown,   NULL));
 	    copyDataToSurface(storedFormat, internalFormat, 0, 0, 0, 0,
@@ -11367,7 +11367,7 @@ void copyDataToCubeMap(jint storedFormat,
     int offset = tilew*imgYOffset + imgXOffset;
 
     switch (storedFormat) {
-        case  FORMAT_BYTE_RGBA :
+        case  IMAGE_FORMAT_BYTE_RGBA :
 	    // This is the one we use when byReference = false
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
@@ -11391,7 +11391,7 @@ void copyDataToCubeMap(jint storedFormat,
 					 xlimit, ylimit, tilew);
 	    }
 	    break;
-        case FORMAT_BYTE_RGB:
+        case IMAGE_FORMAT_BYTE_RGB:
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
 		copyDataToSurfaceRGB(internalFormat, &ddpf,
@@ -11410,7 +11410,7 @@ void copyDataToCubeMap(jint storedFormat,
 					xlimit, ylimit, tilew);
 	    }
 	    break;
-        case FORMAT_BYTE_ABGR:
+        case IMAGE_FORMAT_BYTE_ABGR:
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
 		copyDataToSurfaceABGR(internalFormat, &ddpf,
@@ -11429,7 +11429,7 @@ void copyDataToCubeMap(jint storedFormat,
 					 xlimit, ylimit, tilew);
 	    }
 	    break;
-        case FORMAT_BYTE_BGR:
+        case IMAGE_FORMAT_BYTE_BGR:
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
 		copyDataToSurfaceBGR(internalFormat, &ddpf,
@@ -11448,7 +11448,7 @@ void copyDataToCubeMap(jint storedFormat,
 					xlimit, ylimit, tilew);
 	    }
 	    break;
-        case FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_LA:
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
 		copyDataToSurfaceLA(internalFormat, &ddpf,
@@ -11467,7 +11467,7 @@ void copyDataToCubeMap(jint storedFormat,
 				       xlimit, ylimit, tilew);
 	    }
 	    break;
-        case FORMAT_BYTE_GRAY:
+        case IMAGE_FORMAT_BYTE_GRAY:
 	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
 		copyDataToSurfaceGray(internalFormat, &ddpf,

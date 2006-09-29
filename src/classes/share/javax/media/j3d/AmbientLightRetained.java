@@ -34,6 +34,6 @@ class AmbientLightRetained extends LightRetained {
 	VirtualUniverse.mc.processMessage(createMessage);
     }
 
-    void update(long ctx, int lightSlot, double scale) {
+    void update(Context ctx, int lightSlot, double scale) {
     }
 }

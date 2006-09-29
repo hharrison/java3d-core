@@ -27,9 +27,9 @@
 const float black[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_DirectionalLightRetained_updateLight(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateDirectionalLight(
     JNIEnv *env, 
-    jobject light,
+    jobject obj,
     jlong ctxInfo,
     jint lightSlot,
     jfloat red,
@@ -70,9 +70,9 @@ void JNICALL Java_javax_media_j3d_DirectionalLightRetained_updateLight(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_PointLightRetained_updateLight(
+void JNICALL Java_javax_media_j3d_NativePipeline_updatePointLight(
     JNIEnv *env, 
-    jobject light,
+    jobject obj,
     jlong ctxInfo,    
     jint lightSlot,
     jfloat red,
@@ -114,9 +114,9 @@ void JNICALL Java_javax_media_j3d_PointLightRetained_updateLight(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_SpotLightRetained_updateLight(
+void JNICALL Java_javax_media_j3d_NativePipeline_updateSpotLight(
     JNIEnv *env, 
-    jobject light,
+    jobject obj,
     jlong ctxInfo,    
     jint lightSlot,
     jfloat red,

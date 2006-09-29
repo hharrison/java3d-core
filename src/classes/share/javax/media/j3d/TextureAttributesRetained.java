@@ -220,8 +220,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
      */
     final void setTextureTransform(Transform3D transform) {
 	this.transform.set(transform);
-	sendMessage(TRANSFORM_CHANGED, 
-		VirtualUniverse.mc.getTransform3D(transform), null);
+	sendMessage(TRANSFORM_CHANGED, new Transform3D(transform), null);
     }
 
 
@@ -498,39 +497,6 @@ class TextureAttributesRetained extends NodeComponentRetained {
 	return combineAlphaScale;
     }
 
-    // These methods update the native context.
-    native void updateNative(long ctx,
-			     double[] transform, boolean isIdentity, int textureMode,
-			     int perspCorrectionMode, float red, 
-			     float green, float blue, float alpha, 
-			     int textureFormat);
-
-    native void updateNativeRegisterCombiners(long ctx,
-			    double[] transform, boolean isIdentity, int textureMode,
-			    int perspCorrectionMode, float red, 
-			    float green, float blue, float alpha, 
-			    int textureFormat,
-			    int combineRgbMode, int combineAlphaMode,
-			    int[] combineRgbSrc, int[] combineAlphaSrc,
-			    int[] combineRgbFcn, int[] combineAlphaFcn,
-			    int combineRgbScale, int combineAlphaScale);
-
-    native void updateTextureColorTableNative(long ctx, int numComponents,
-					      int colorTableSize,
-					      int[] colorTable);
-
-    native void updateCombinerNative(long ctx,
-				int combineRgbMode, int combineAlphaMode,
-				int[] combineRgbSrc, int[] combineAlphaSrc,
-				int[] combineRgbFcn, int[] combineAlphaFcn,
-				int combineRgbScale, int combineAlphaScale);
-
-    // NOTE: the following native methods are not used any more, since
-    // we no longer do simulated multi-pass by default
-    // (and with shaders, this won't work anyway)
-//    native void restoreBlend1Pass(long ctx);
-//    native void updateBlend2Pass(long ctx);
-
     void updateNative(Canvas3D cv, boolean simulate, int textureFormat) {
 
         //System.out.println("TextureAttributes/updateNative:  simulate= " + simulate + " " + this);
@@ -548,14 +514,14 @@ class TextureAttributesRetained extends NodeComponentRetained {
 	    if (VirtualUniverse.mc.useCombiners &&
 		(cv.textureExtendedFeatures & 
 		 Canvas3D.TEXTURE_REGISTER_COMBINERS) != 0) {
-	        updateNativeRegisterCombiners(cv.ctx, 
-			transform.mat, isIdentity, textureMode, perspCorrectionMode,
-			textureBlendColor.x, textureBlendColor.y,
-			textureBlendColor.z, textureBlendColor.w, 
-			textureFormat, combineRgbMode, combineAlphaMode,
-			combineRgbSrc, combineAlphaSrc,
-			combineRgbFcn, combineAlphaFcn,
-			combineRgbScale, combineAlphaScale);
+                Pipeline.getPipeline().updateRegisterCombiners(cv.ctx,
+                        transform.mat, isIdentity, textureMode, perspCorrectionMode,
+                        textureBlendColor.x, textureBlendColor.y,
+                        textureBlendColor.z, textureBlendColor.w,
+                        textureFormat, combineRgbMode, combineAlphaMode,
+                        combineRgbSrc, combineAlphaSrc,
+                        combineRgbFcn, combineAlphaFcn,
+                        combineRgbScale, combineAlphaScale);
 	    } else {
 	        if (textureMode == TextureAttributes.COMBINE) {
 
@@ -567,11 +533,12 @@ class TextureAttributesRetained extends NodeComponentRetained {
 		    int _combineRgbMode = combineRgbMode;
 		    int _combineAlphaMode = combineAlphaMode;
 
-		    updateNative(cv.ctx, transform.mat, isIdentity, textureMode, 
-				perspCorrectionMode,
-				textureBlendColor.x, textureBlendColor.y,
-				textureBlendColor.z, textureBlendColor.w, 
-				textureFormat);
+                    Pipeline.getPipeline().updateTextureAttributes(cv.ctx,
+                            transform.mat, isIdentity, textureMode,
+                            perspCorrectionMode,
+                            textureBlendColor.x, textureBlendColor.y,
+                            textureBlendColor.z, textureBlendColor.w,
+                            textureFormat);
 
 
 		    if (((combineRgbMode == TextureAttributes.COMBINE_DOT3) &&
@@ -600,30 +567,32 @@ class TextureAttributesRetained extends NodeComponentRetained {
 			_combineAlphaMode = TextureAttributes.COMBINE_REPLACE;
 		    }
 
-		    updateCombinerNative(cv.ctx, 
-				_combineRgbMode, _combineAlphaMode,
-				combineRgbSrc, combineAlphaSrc,
-				combineRgbFcn, combineAlphaFcn,
-				combineRgbScale, combineAlphaScale);
+                    Pipeline.getPipeline().updateCombiner(cv.ctx,
+                            _combineRgbMode, _combineAlphaMode,
+                            combineRgbSrc, combineAlphaSrc,
+                            combineRgbFcn, combineAlphaFcn,
+                            combineRgbScale, combineAlphaScale);
 
 		} else {
 
 		    // Texture COMBINE is not supported by the underlying
 		    // layer, fallback to REPLACE
 
-		    updateNative(cv.ctx, transform.mat, isIdentity,
-				TextureAttributes.REPLACE,
-				perspCorrectionMode,
-				textureBlendColor.x, textureBlendColor.y,
-				textureBlendColor.z, textureBlendColor.w, 
-				textureFormat);
+                    Pipeline.getPipeline().updateTextureAttributes(cv.ctx,
+                            transform.mat, isIdentity,
+                            TextureAttributes.REPLACE,
+                            perspCorrectionMode,
+                            textureBlendColor.x, textureBlendColor.y,
+                            textureBlendColor.z, textureBlendColor.w,
+                            textureFormat);
 		}
 	    } else {
-		updateNative(cv.ctx, transform.mat, isIdentity, textureMode, 
-				perspCorrectionMode,
-				textureBlendColor.x, textureBlendColor.y,
-				textureBlendColor.z, textureBlendColor.w, 
-				textureFormat);
+                    Pipeline.getPipeline().updateTextureAttributes(cv.ctx,
+                            transform.mat, isIdentity, textureMode,
+                            perspCorrectionMode,
+                            textureBlendColor.x, textureBlendColor.y,
+                            textureBlendColor.z, textureBlendColor.w,
+                            textureFormat);
 	    }
 	    }
 
@@ -631,7 +600,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
 	    if (((cv.textureExtendedFeatures & Canvas3D.TEXTURE_COLOR_TABLE) 
 			!= 0) && textureColorTable != null) {
 
-		updateTextureColorTableNative(cv.ctx, 
+		Pipeline.getPipeline().updateTextureColorTable(cv.ctx, 
 			numTextureColorTableComponents,
 			textureColorTableSize, textureColorTable);
 	    }
@@ -639,15 +608,16 @@ class TextureAttributesRetained extends NodeComponentRetained {
 	    // we are in the multi-pass mode,
 	    // in this case, set the texture Mode to replace and use
 	    // blending to simulate the original textureMode
-	    updateNative(cv.ctx, transform.mat, isIdentity, TextureAttributes.REPLACE, 
-			 perspCorrectionMode,
-			 textureBlendColor.x, textureBlendColor.y,
-			 textureBlendColor.z, textureBlendColor.w, textureFormat);
+            Pipeline.getPipeline().updateTextureAttributes(cv.ctx,
+                    transform.mat, isIdentity, TextureAttributes.REPLACE,
+                    perspCorrectionMode,
+                    textureBlendColor.x, textureBlendColor.y,
+                    textureBlendColor.z, textureBlendColor.w, textureFormat);
 
 	    if (((cv.textureExtendedFeatures & Canvas3D.TEXTURE_COLOR_TABLE) 
 			!= 0) && textureColorTable != null) {
 
-		updateTextureColorTableNative(cv.ctx, numTextureColorTableComponents,
+		Pipeline.getPipeline().updateTextureColorTable(cv.ctx, numTextureColorTableComponents,
 			textureColorTableSize, textureColorTable);
 	    }
 
@@ -727,8 +697,6 @@ class TextureAttributesRetained extends NodeComponentRetained {
 
 	if ((component & TRANSFORM_CHANGED) != 0) {
 	    mirrorTa.transform.set((Transform3D)value);
-	    FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-				       (Transform3D)value);
 	}
 	else if ((component & MODE_CHANGED) != 0) {
 	    mirrorTa.textureMode = ((Integer)value).intValue();
@@ -969,7 +937,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	createMessage.type = J3dMessage.TEXTUREATTRIBUTES_CHANGED;
 	createMessage.universe = null;
@@ -983,7 +951,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
 
 	// System.out.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
-	    createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.TEXTUREATTRIBUTES_CHANGED;
 		

@@ -141,7 +141,7 @@ class ViewPlatformRetained extends LeafRetained {
 	}
 	// Notify behavior scheduler & RenderBin
 	if (source.isLive()) {
-	    J3dMessage message = VirtualUniverse.mc.getMessage();
+	    J3dMessage message = new J3dMessage();
 	    message.type = J3dMessage.UPDATE_VIEWPLATFORM;
 	    message.threads = J3dThread.UPDATE_RENDER|J3dThread.UPDATE_BEHAVIOR;
 	    message.universe = universe;
@@ -184,7 +184,7 @@ class ViewPlatformRetained extends LeafRetained {
   
     Transform3D getVworldToVpc() {
 	if (vworldToVpc == null) 
-	    vworldToVpc = VirtualUniverse.mc.getTransform3D(null);
+	    vworldToVpc = new Transform3D();
 	vworldToVpc.set(getCurrentLocalToVworld(null));
        	vworldToVpc.invert();
 	return vworldToVpc;
@@ -197,10 +197,6 @@ class ViewPlatformRetained extends LeafRetained {
 
 
     void evaluateViewPlatformTransform() {
-	if (vworldToVpc != null) {
-	    FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-				       vworldToVpc);
-	} 
 	// clear cache so that next time getVworldToVpc() can recompute
 	vworldToVpc = null;
     }

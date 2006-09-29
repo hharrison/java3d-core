@@ -182,9 +182,8 @@ public class TransformGroup extends Group {
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) { 
         super.duplicateAttributes(originalNode, forceDuplicate);
       
-	Transform3D t = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t = new Transform3D();
 	((TransformGroupRetained) originalNode.retained).getTransform(t);
 	((TransformGroupRetained) retained).setTransform(t);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t);
     }
 }

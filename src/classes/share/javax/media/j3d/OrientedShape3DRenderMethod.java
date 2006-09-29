@@ -21,7 +21,7 @@ package javax.media.j3d;
 
 class OrientedShape3DRenderMethod implements RenderMethod {
 
-    public boolean render(RenderMolecule rm, Canvas3D cv, int pass, 
+    public boolean render(RenderMolecule rm, Canvas3D cv, 
 			  RenderAtomListInfo ra, int dirtyBits) {
         boolean useAlpha;
 	boolean isNonUniformScale;
@@ -35,7 +35,7 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 			    rm.textureBin.attributeBin.ignoreVertexColors, cv.ctx);
 	
 	if (rm.doInfinite) {
-	    cv.updateState(pass, dirtyBits);
+	    cv.updateState(dirtyBits);
 	    while (ra != null) {
 		trans = ra.infLocalToVworld;
 		isNonUniformScale = !trans.isCongruent();
@@ -44,10 +44,8 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 		ra.geometry().execute(cv, ra.renderAtom, isNonUniformScale,
 			(useAlpha && ra.geometry().noAlpha),
 			rm.alpha,
-			rm.renderBin.multiScreen,
 			cv.screen.screen,
-			rm.textureBin.attributeBin.ignoreVertexColors,
-			pass);
+			rm.textureBin.attributeBin.ignoreVertexColors);
 		ra = ra.next;
 	    }
 	    return true;
@@ -57,7 +55,7 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 	while (ra != null) {
 	    if (cv.ra == ra.renderAtom) {
 		if (cv.raIsVisible) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    trans = ra.localToVworld;
 		    isNonUniformScale = !trans.isCongruent();
 
@@ -65,18 +63,16 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 		    ra.geometry().execute(cv, ra.renderAtom, isNonUniformScale,
 					  (useAlpha && ra.geometry().noAlpha),
 					  rm.alpha,
-					  rm.renderBin.multiScreen,
 					  cv.screen.screen,
 					  rm.textureBin.attributeBin.
-					  ignoreVertexColors,
-					  pass);
+					  ignoreVertexColors);
 		    isVisible = true;
 		}
 	    }
 	    else {
 		if (!VirtualUniverse.mc.viewFrustumCulling ||
 		    ra.renderAtom.localeVwcBounds.intersect(cv.viewFrustum)) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    cv.raIsVisible = true;
 		    trans = ra.localToVworld;
 		    isNonUniformScale = !trans.isCongruent();
@@ -85,11 +81,9 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 		    ra.geometry().execute(cv, ra.renderAtom, isNonUniformScale,
 					  (useAlpha && ra.geometry().noAlpha),
 					  rm.alpha,
-					  rm.renderBin.multiScreen,
 					  cv.screen.screen,
 					  rm.textureBin.attributeBin.
-					  ignoreVertexColors,
-					  pass);
+					  ignoreVertexColors);
 		    isVisible = true;
 		}
 		else {

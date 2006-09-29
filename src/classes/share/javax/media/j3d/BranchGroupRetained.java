@@ -65,11 +65,13 @@ class BranchGroupRetained extends GroupRetained {
                 GroupRetained oldParent = (GroupRetained)parent;
 	        do_detach();
 		universe.setLiveState.clear();
-                if (isLive)
-                    if (oldParent==null)
+                if (isLive) {
+                    if (oldParent==null) {
                         universe.notifyStructureChangeListeners(false,locale,(BranchGroup)this.source);
-                    else
+                    } else {
                         universe.notifyStructureChangeListeners(false,oldParent.source, (BranchGroup)this.source);
+                    }
+                }
 	    }
 	    universe.waitForMC();
 	} else { // Not live yet, just do it.

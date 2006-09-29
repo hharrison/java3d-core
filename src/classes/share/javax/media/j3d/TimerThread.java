@@ -38,8 +38,9 @@ class TimerThread extends Thread {
     private WakeupOnElapsedTime soundSchedCond = 
         new WakeupOnElapsedTime(120000);  // every 2 minutes
 
-    private boolean running = true;
-    private volatile boolean waiting = false;
+    private volatile boolean running = true;
+    private boolean waiting = false;
+    private boolean ready = false;
 
     TimerThread(ThreadGroup t) {
 	super(t, "J3D-TimerThread");
@@ -119,20 +120,27 @@ class TimerThread extends Thread {
     synchronized void runMonitor(int action, long waitTime) {
 	switch (action) {
 	case WAIT:
-	    try {
-		if (running) {
-		    waiting = true;
-		    if (waitTime < 0) {
-			wait();
-		    } else {
-			wait(waitTime);
-		    }
-		}
-	    } catch (InterruptedException e) {}
-	    waiting = false;
-	    break;
+            // Issue 308 - wait unless ready flag already set
+            // Note that we can't loop since we need to be able to timeout
+            // after "waitTime" msec
+            if (running && !ready) {
+                waiting = true;
+                try {
+                    if (waitTime < 0) {
+                        wait();
+                    } else {
+                        wait(waitTime);
+                    }
+                } catch (InterruptedException e) {}
+                waiting = false;
+            }
+            ready = false;
+            break;
 	case NOTIFY:
-	    notify();
+            ready = true;
+            if (waiting) {
+                notify();
+            }
 	    break;
 	case STOP:
 	    running = false;

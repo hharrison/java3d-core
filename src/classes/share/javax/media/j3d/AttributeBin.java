@@ -88,15 +88,17 @@ class AttributeBin extends Object implements ObjectUpdate {
 	numEditingShaderBins = 0;
         renderingAttrs = renderingAttributes;
 
-	renderBin = rBin;	
+	renderBin = rBin;
 
-	if (app != null) {
-	    soleUser = ((app.changedFrequent & AppearanceRetained.RENDERING) != 0);
-	}
-	else {
-	    soleUser = false;
-	}
-	//System.out.println("soleUser = "+soleUser+" renderingAttributes ="+renderingAttributes);
+        // Issue 249 - check for sole user only if property is set
+        soleUser = false;
+        if (VirtualUniverse.mc.allowSoleUser) {
+            if (app != null) {
+                soleUser = ((app.changedFrequent & AppearanceRetained.RENDERING) != 0);
+            }
+        }
+
+        //System.out.println("soleUser = "+soleUser+" renderingAttributes ="+renderingAttributes);
 	// Set the appearance only for soleUser case
 	if (soleUser)
 	    this.app = app;
@@ -272,7 +274,6 @@ class AttributeBin extends Object implements ObjectUpdate {
 	}
 
 	sb.clear();
-	renderBin.shaderBinFreelist.add(sb);
 
 	if (shaderBinList == null && addShaderBins.size() == 0 ) {
 	    // Note: Removal of this attributebin as a user of the rendering

@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<!--
+/*
+ * $RCSfile$
+ *
+ * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * $Revision$
+ * $Date$
+ * $State$
+ */
+ -->
+
+<!-- Win64 ant file for d3d renderer -->
+<project name="Java 3D" default="compile">
+
+  <target name="compile">
+
+    <echo message="Executing 64 bit native renderer build [${bldType}]"/>
+
+    <!-- Create the build directories for amd64 -->
+    <mkdir dir="${build}/${platform}/${bldType}/native/d3d/objs"/>
+    <mkdir dir="${build}/${platform}/${bldType}/bin"/>
+    
+    <property name="javaInclude"
+     location="${java.home}/../include"/>
+
+    <property name="javaWin32Include"
+     location="${java.home}/../include/win32"/>
+
+    <property name="oglsrc"     location="${src}/native/ogl"/>
+    <property name="d3dsrc"     location="${src}/native/d3d"/>
+
+    <!-- Compile the c source files-->
+    <exec dir="${build}/${platform}/${bldType}/native/d3d/objs" executable="cl">
+	<arg line="-Ox -O2 -Ob2 -Os -Oi -GT -GL  /nologo  -wd4996 -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${src}/native/ogl&quot; -I&quot;${javahCoreTarget}&quot; /D &quot;NDEBUG&quot; /D &quot;_WINDOWS&quot; /D &quot;_MBCS&quot; /D &quot;_USRDLL&quot; /D &quot;J3DDX90PORT_EXPORTS&quot; /D &quot;WIN32&quot; /D &quot;D3D&quot; /D &quot;J3D_BUILDVERTICES&quot; /D &quot;NVIDIA_DEBUG&quot; /FD /EHsc /MT /Fp&quot;J3dDX90Port.pch&quot;  /W2 /c /TP   &quot;${oglsrc}/DrawingSurfaceObjectAWT.c&quot; &quot;${oglsrc}/MasterControl.c&quot; &quot;${d3dsrc}/D3dVertexBuffer.cpp&quot; &quot;${d3dsrc}/D3dDisplayList.cpp&quot; &quot;${d3dsrc}/D3dDriverInfo.cpp&quot; &quot;${d3dsrc}/D3dDeviceInfo.cpp&quot; &quot;${d3dsrc}/D3dCtx.cpp&quot; &quot;${d3dsrc}/D3dUtil.cpp&quot; &quot;${d3dsrc}/D3dImageComponent.cpp&quot; &quot;${d3dsrc}/GeometryArrayRetained.cpp&quot; &quot;${d3dsrc}/Canvas3D.cpp&quot; &quot;${d3dsrc}/GraphicsContext3D.cpp&quot; &quot;${d3dsrc}/Attributes.cpp&quot; &quot;${d3dsrc}/Lights.cpp&quot; &quot;${d3dsrc}/NativeConfigTemplate3D.cpp&quot; "/>
+    </exec>
+
+
+    <!-- Create the library file-->
+    <exec dir="${build}/${platform}/${bldType}/native/d3d/objs" executable="link">
+	<arg line="/OUT:&quot;j3dcore-d3d.dll&quot; /nologo -DLL -DELAYLOAD:jawt.dll -IMPLIB:&quot;j3dcore-d3d.lib&quot; -LTCG /ignore:4089  ddraw.lib d3d9.lib d3dx9.lib dxerr9.lib dxguid.lib dinput.lib dinput8.lib delayimp.lib WinStrm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib DelayImp.lib   Attributes.obj  Canvas3D.obj    D3dCtx.obj    D3dDeviceInfo.obj    D3dDisplayList.obj    D3dDriverInfo.obj    D3dImageComponent.obj    D3dUtil.obj    D3dVertexBuffer.obj    DrawingSurfaceObjectAWT.obj    GeometryArrayRetained.obj    GraphicsContext3D.obj        Lights.obj    MasterControl.obj    NativeConfigTemplate3D.obj     ddraw.lib d3d9.lib d3dx9.lib dxerr9.lib dxguid.lib dinput.lib dinput8.lib delayimp.lib WinStrm.lib -LIBPATH:&quot;${java.home}\..\lib&quot; jawt.lib"/>
+    </exec>
+
+    <!-- Copy the copyright library file -->
+    <copy file="${build}/${platform}/${bldType}/native/d3d/objs/j3dcore-d3d.dll" 
+	 todir="${build}/${platform}/${bldType}/bin"/>
+
+  </target>
+
+  <target name="dist">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/${platform}/bin"/>
+
+    <!-- Copy the library files -->
+    <copy file="${build}/${platform}/opt/bin/j3dcore-d3d.dll"
+	 todir="${dist}/${platform}/bin"/>
+
+  </target>
+
+</project>

@@ -78,7 +78,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		      objAry[3] = super.processViewSpecificInfo(ADD_VIEW,
 						      (HashKey)key, view,
 						      addVsgList, addKeyList, addLeafList);
-			J3dMessage message = VirtualUniverse.mc.getMessage();
+			J3dMessage message = new J3dMessage();
 			message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
 			message.threads = (J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 					   J3dThread.UPDATE_RENDER |
@@ -120,7 +120,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		      }
 		      */		      
 
-		    J3dMessage message = VirtualUniverse.mc.getMessage();
+		    J3dMessage message = new J3dMessage();
 		    message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
 		    message.threads = (J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 				       J3dThread.UPDATE_RENDER |
@@ -184,7 +184,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 			objAry[3] = super.processViewSpecificInfo(ADD_VIEW, (HashKey)key, 
 						      view, addVsgList, addKeyList, addLeafList);
 		    }
-		    J3dMessage message = VirtualUniverse.mc.getMessage();
+		    J3dMessage message = new J3dMessage();
 		    message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
 		    message.threads = (J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 				       J3dThread.UPDATE_RENDER |
@@ -230,7 +230,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		    objAry[3] =  super.processViewSpecificInfo(ADD_VIEW, (HashKey)tempKey, 
 					      view, addVsgList, addKeyList, addLeafList);
 		}
-		J3dMessage message = VirtualUniverse.mc.getMessage();
+		J3dMessage message = new J3dMessage();
 		message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
 		message.threads = (J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 				   J3dThread.UPDATE_RENDER |
@@ -337,7 +337,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		      objAry[3] = super.processViewSpecificInfo(ADD_VIEW,
 						      (HashKey)key, view,
 						      addVsgList, addKeyList, addLeafList);
-			J3dMessage message = VirtualUniverse.mc.getMessage();
+			J3dMessage message = new J3dMessage();
 			message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
 			message.threads = (J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 					   J3dThread.UPDATE_RENDER |
@@ -379,7 +379,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		      }
 		      */		      
 
-		    J3dMessage message = VirtualUniverse.mc.getMessage();
+		    J3dMessage message = new J3dMessage();
 		    message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
 		    message.threads = (J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 				       J3dThread.UPDATE_RENDER |
@@ -427,7 +427,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 						      removeVsgList, removeKeyList, removeLeafList);
 
 
-			J3dMessage message = VirtualUniverse.mc.getMessage();
+			J3dMessage message = new J3dMessage();
 			message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
 			message.threads = (J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 					   J3dThread.UPDATE_RENDER |
@@ -468,7 +468,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		      System.out.println("n = "+n+" keyValue = "+removeKeyList.get(n));
 		      }
 		      */
-		    J3dMessage message = VirtualUniverse.mc.getMessage();
+		    J3dMessage message = new J3dMessage();
 		    message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
 		    message.threads = (J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 				       J3dThread.UPDATE_RENDER |

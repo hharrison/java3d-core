@@ -816,7 +816,7 @@ public class BoundingPolytope extends Bounds {
 	
 	int i;
 	double invMag;
-	Transform3D invTrans = VirtualUniverse.mc.getTransform3D(matrix);
+	Transform3D invTrans = new Transform3D(matrix);
 	
 	invTrans.invert(); 
 	invTrans.transpose();
@@ -828,8 +828,6 @@ public class BoundingPolytope extends Bounds {
 	    planes[i].w = planes[i].w * mag[i];
 	    invTrans.transform( planes[i] ); 
 	}
-       
-	VirtualUniverse.mc.addToTransformFreeList(invTrans);
 	
 	for(i=0;i<planes.length;i++) {
 

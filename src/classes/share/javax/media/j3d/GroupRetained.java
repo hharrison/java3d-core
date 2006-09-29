@@ -155,7 +155,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	}
 
 	if (source.isLive()) {
-	    J3dMessage message = VirtualUniverse.mc.getMessage();
+	    J3dMessage message = new J3dMessage();
 	    message.type = J3dMessage.COLLISION_BOUND_CHANGED;
             message.threads = J3dThread.UPDATE_TRANSFORM |
 		J3dThread.UPDATE_GEOMETRY;
@@ -231,14 +231,16 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
 	    messages = new J3dMessage[numMessages];
 	    for (int i = 0; i < numMessages; i++) {
-	         messages[i] = VirtualUniverse.mc.getMessage();
+	         messages[i] = new J3dMessage();
 	    }
 	}
 
 	if(oldchildr != null) {
 	    oldchildr.setParent(null);
 	    checkClearLive(oldchildr, messages, 0, index, null);
-            universe.notifyStructureChangeListeners(false, this.source, (BranchGroup)oldchildr.source);
+            if (this.source.isLive()) {
+                universe.notifyStructureChangeListeners(false, this.source, (BranchGroup)oldchildr.source);
+            }
 	}
 	removeChildrenData(index);
 
@@ -250,7 +252,9 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    return;
 	}
 	
-        universe.notifyStructureChangeListeners(true, this.source, (BranchGroup)child);
+        if (this.source.isLive()) {
+            universe.notifyStructureChangeListeners(true, this.source, (BranchGroup)child);
+        }
 	NodeRetained childr = (NodeRetained) child.retained;
 	childr.setParent(this);
 	children.set(index, childr);
@@ -558,7 +562,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    }		
 	    messages = new J3dMessage[numMessages];
 	    for (int i=0; i<numMessages; i++) {
-		messages[i] = VirtualUniverse.mc.getMessage();
+		messages[i] = new J3dMessage();
 		messages[i].type = J3dMessage.INVALID_TYPE;
 	    }
 
@@ -600,9 +604,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		for (int i=0; i < numMessages; i++) {
 		    if (messages[i].type != J3dMessage.INVALID_TYPE) {
 			ms[k++] = messages[i];
-		    } else {
-			VirtualUniverse.mc.addMessageToFreelists(messages[i]);
-		    }
+		    }  
 		}		
 		if (ms != null) {
 		    VirtualUniverse.mc.processMessage(ms);
@@ -1363,7 +1365,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    // Since we want to update collisionVwcBounds when
 	    // transform change in TransformStructure.
 	    TransformGroupRetained tg;
-	    J3dMessage message = VirtualUniverse.mc.getMessage();
+	    J3dMessage message = new J3dMessage();
 	    message.threads = J3dThread.UPDATE_GEOMETRY;
 	    message.universe = universe;
 	    // send message to GeometryStructure to add/remove this
@@ -1567,7 +1569,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		messages = new J3dMessage[numMessages];
 		messageIndex = 0;
 		for(int mIndex=0; mIndex < numMessages; mIndex++) {
-		    messages[mIndex] = VirtualUniverse.mc.getMessage();
+		    messages[mIndex] = new J3dMessage();
 		}
 		sendMessages = true;
 	    }
@@ -1745,7 +1747,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		messages = new J3dMessage[numMessages];
 		messageIndex = 0;
 		for(int mIndex=0; mIndex < numMessages; mIndex++) {
-		    messages[mIndex] = VirtualUniverse.mc.getMessage();
+		    messages[mIndex] = new J3dMessage();
 		}
 		sendMessages = true;
 	    }
@@ -2962,7 +2964,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
             if (source.isLive() && collisionBound == null && autoCompute 
                 && mirrorGroup != null) {
 
-                J3dMessage message = VirtualUniverse.mc.getMessage();
+                J3dMessage message = new J3dMessage();
                 message.type = J3dMessage.COLLISION_BOUND_CHANGED;
                 message.threads = J3dThread.UPDATE_TRANSFORM |
 		    J3dThread.UPDATE_GEOMETRY;
@@ -2978,7 +2980,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
         if (source.isLive() && !boundsAutoCompute &&
 	    collisionBound == null && mirrorGroup != null) {
 
-            J3dMessage message = VirtualUniverse.mc.getMessage();
+            J3dMessage message = new J3dMessage();
             message.type = J3dMessage.COLLISION_BOUND_CHANGED;
             message.threads = J3dThread.UPDATE_TRANSFORM |
 		J3dThread.UPDATE_GEOMETRY;

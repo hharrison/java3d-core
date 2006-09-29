@@ -49,7 +49,7 @@ class LinearFogRetained extends FogRetained {
      */
     void setFrontDistance(double frontDistance){
 	this.frontDistance = frontDistance;
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.type = J3dMessage.FOG_CHANGED;
 	createMessage.universe = universe;
@@ -78,7 +78,7 @@ class LinearFogRetained extends FogRetained {
      */
     void setBackDistance(double backDistance){
 	this.backDistance = backDistance;
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.type = J3dMessage.FOG_CHANGED;
 	createMessage.universe = universe;
@@ -98,12 +98,10 @@ class LinearFogRetained extends FogRetained {
      * This method and its native counterpart update the native context
      * fog values.
      */
-    native void update(long ctx, float red, float green, float blue,
-		       double fdist, double bdist);
-
-    void update(long ctx, double scale) {
+    void update(Context ctx, double scale) {
 	validateDistancesInEc(scale);
-	update(ctx, color.x, color.y, color.z, frontDistanceInEc, backDistanceInEc);
+	Pipeline.getPipeline().updateLinearFog(ctx,
+                color.x, color.y, color.z, frontDistanceInEc, backDistanceInEc);
     }
 
     
@@ -115,7 +113,7 @@ class LinearFogRetained extends FogRetained {
 
 	// Initialize the mirror object, this needs to be done, when
 	// renderBin is not accessing any of the fields
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	createMessage.universe = universe;
 	createMessage.type = J3dMessage.FOG_CHANGED;

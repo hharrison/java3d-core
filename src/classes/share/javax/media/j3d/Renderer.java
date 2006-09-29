@@ -25,7 +25,7 @@ import java.util.*;
 
 
 class Renderer extends J3dThread {
-    int objectId = -1;
+    
     // This action causes this thread to wait
     static final int WAIT = 0;
  
@@ -78,26 +78,26 @@ class Renderer extends J3dThread {
     boolean sharedStereoZBuffer;
     
     // This is the id for the underlying sharable graphics context
-    long sharedCtx = 0;
+    Context sharedCtx = null;
 
     // since the sharedCtx id can be the same as the previous one,
     // we need to keep a time stamp to differentiate the contexts with the
     // same id
     long sharedCtxTimeStamp = 0;
 
-    // display id - to free shared context
-    long display;
-    int window; 
+    // display and drawable, used to free shared context
+    private long sharedCtxDisplay = 0;
+    private Drawable sharedCtxDrawable = null; 
 
     /**
      * This is the id of the current rendering context
      */
-    long currentCtx = -1;
+    Context currentCtx = null;
 
     /**
-     * This is the id of the current rendering window
+     * This is the id of the current rendering drawable
      */
-    long currentWindow = 0;
+    Drawable currentDrawable = null;
 
     // an unique bit to identify this renderer
     int rendererBit = 0;
@@ -132,22 +132,21 @@ class Renderer extends J3dThread {
     Screen3D onScreen;
     Screen3D offScreen;
 
-    // full screen anti-aliasing projection matrices
-    double accumLeftProjMat[] = new double[16];
-    double accumRightProjMat[] = new double[16];
-    double accumInfLeftProjMat[] = new double[16];
-    double accumInfRightProjMat[] = new double[16];
+    // full screen anti-aliasing projection matrices   
+    Transform3D accumLeftProj = new Transform3D();
+    Transform3D accumRightProj = new Transform3D();
+    Transform3D accumInfLeftProj = new Transform3D();
+    Transform3D accumInfRightProj = new Transform3D(); 
     
     // rendering messages
     J3dMessage m[];
     int nmesg = 0;
 
     // List of contexts created
-    ArrayList listOfCtxs = new ArrayList();
+    ArrayList<Context> listOfCtxs = new ArrayList<Context>();
 
     // Parallel list of canvases
-    ArrayList listOfCanvases = new ArrayList();
-
+    ArrayList<Canvas3D> listOfCanvases = new ArrayList<Canvas3D>();
 
     boolean needToRebuildDisplayList = false;
     boolean needToResendTextureDown = false;
@@ -160,8 +159,6 @@ class Renderer extends J3dThread {
     // before context is destroy.
     // It is used when sharedCtx = true;
     ArrayList textureIDResourceTable = new ArrayList(5);
-
-    native void D3DCleanUp();
 
     private synchronized int newInstanceNum() {
 	return (++numInstances);
@@ -215,112 +212,133 @@ class Renderer extends J3dThread {
         opArg = ((Integer)args[0]).intValue();
 
         try {
-	  if (opArg == SWAP) {
-	      
-	      Object [] swapArray = (Object[])args[2];
+            if (opArg == SWAP) {
 
-	      view = (View)args[3];
+                Object [] swapArray = (Object[])args[2];
 
-	      for (i=0; i<swapArray.length; i++) {
-		  cv = (Canvas3D) swapArray[i];
-		  if (!cv.isRunning) {
-		      continue;
-		  }
+                view = (View)args[3];
 
-		 doneSwap: try {
+                for (i=0; i<swapArray.length; i++) {
+                    cv = (Canvas3D) swapArray[i];
+                    if (!cv.isRunning) {
+                        continue;
+                    }
 
-		 if (!cv.validCanvas) {
-		     continue;
-		 }
+                    doneSwap: try {
 
- 	         if (cv.active && (cv.ctx != 0) && 
-		     (cv.view != null) && (cv.imageReady)) {
-                     if (cv.useDoubleBuffer) {
-			 synchronized (cv.drawingSurfaceObject) {
-			     if (cv.validCtx) {
-				 if (VirtualUniverse.mc.doDsiRenderLock) {
-				     // Set doDsiLock flag for rendering based on system
-				     // property,  If we force DSI lock for swap
-				     // buffer,  we lose most of the parallelism that having
-				     // multiple renderers gives us.
+                        if (!cv.validCanvas) {
+                            continue;
+                        }
 
-				     if (!cv.drawingSurfaceObject.renderLock()) {
-					 break doneSwap;
-				     }
-				     cv.makeCtxCurrent();
-				     cv.syncRender(cv.ctx, true);
-				     status = cv.swapBuffers(cv.ctx, 
-							     cv.screen.display,
-							     cv.window);
-				     if (status != Canvas3D.NOCHANGE) {
-					 cv.resetRendering(status);
-				     }
-				     cv.drawingSurfaceObject.unLock();
-				 } else {
-				     cv.makeCtxCurrent();
+                        if (cv.active && (cv.ctx != null) &&
+                                (cv.view != null) && (cv.imageReady)) {
+                            if (cv.useDoubleBuffer) {
+                                synchronized (cv.drawingSurfaceObject) {
+                                    if (cv.validCtx) {
+                                        if (VirtualUniverse.mc.doDsiRenderLock) {
+                                            // Set doDsiLock flag for rendering based on system
+                                            // property,  If we force DSI lock for swap
+                                            // buffer,  we lose most of the parallelism that having
+                                            // multiple renderers gives us.
 
-				     cv.syncRender(cv.ctx, true);
-				     status = cv.swapBuffers(cv.ctx, 
-							     cv.screen.display,
-							     cv.window);
-				     if (status != Canvas3D.NOCHANGE) {
-					 cv.resetRendering(status);
-				     }
+                                            if (!cv.drawingSurfaceObject.renderLock()) {
+                                                break doneSwap;
+                                            }
+                                            cv.makeCtxCurrent();
+                                            cv.syncRender(cv.ctx, true);
+                                            status = cv.swapBuffers(cv.ctx,
+                                                    cv.screen.display,
+                                                    cv.drawable);
+                                            if (status != Canvas3D.NOCHANGE) {
+                                                cv.resetRendering(status);
+                                            }
+                                            cv.drawingSurfaceObject.unLock();
+                                        } else {
+                                            cv.makeCtxCurrent();
 
-				 }
-			     }
-			 }
-		     }
-		     cv.view.inCanvasCallback = true; 
-		     try {
-		         cv.postSwap();
-		     } catch (RuntimeException e) {
-		         System.err.println("Exception occurred during Canvas3D callback:");
-		         e.printStackTrace();
-		     }
-		     // reset flag 
-		     cv.imageReady = false;
-		     cv.view.inCanvasCallback = false;
-		     // Clear canvasDirty bit ONLY when postSwap() success
+                                            cv.syncRender(cv.ctx, true);
+                                            status = cv.swapBuffers(cv.ctx,
+                                                    cv.screen.display,
+                                                    cv.drawable);
+                                            if (status != Canvas3D.NOCHANGE) {
+                                                cv.resetRendering(status);
+                                            }
 
-		     // Set all dirty bits except environment set and lightbin
-		     // they are only set dirty if the last used light bin or
-		     // environment set values for this canvas change between 
-		     // one frame and other
+                                        }
+                                    }
+                                }
+                            }
+                            cv.view.inCanvasCallback = true;
+                            try {
+                                cv.postSwap();
+                            } catch (RuntimeException e) {
+                                System.err.println("Exception occurred during Canvas3D callback:");
+                                e.printStackTrace();
+                            } catch (Error e) {
+                                // Issue 264 - catch Error so Renderer doesn't die
+                                System.err.println("Error occurred during Canvas3D callback:");
+                                e.printStackTrace();
+                            }
+                            // reset flag
+                            cv.imageReady = false;
+                            cv.view.inCanvasCallback = false;
+                            // Clear canvasDirty bit ONLY when postSwap() success
 
-		     if (!cv.ctxChanged) {
-			 cv.canvasDirty = (0xffff & ~(Canvas3D.LIGHTBIN_DIRTY |
-						 Canvas3D.LIGHTENABLES_DIRTY |
-						 Canvas3D.AMBIENTLIGHT_DIRTY |
-						 Canvas3D.MODELCLIP_DIRTY |
-						 Canvas3D.VIEW_MATRIX_DIRTY |
-						 Canvas3D.FOG_DIRTY));
-			 // Force reload of transform next frame
-			 cv.modelMatrix = null;
+                            // Set all dirty bits except environment set and lightbin
+                            // they are only set dirty if the last used light bin or
+                            // environment set values for this canvas change between
+                            // one frame and other
 
-			 // Force the cached renderAtom to null
-			 cv.ra = null;
-		     } else {
-			 cv.ctxChanged = false;
-		     }
-	         }
-		 } catch (NullPointerException ne) {
-		     //ne.printStackTrace();
-		     if (VirtualUniverse.mc.doDsiRenderLock) {
-			 cv.drawingSurfaceObject.unLock();
-		     }
-		 }
-	      }
+                            if (!cv.ctxChanged) {
+                                cv.canvasDirty = (0xffff & ~(Canvas3D.LIGHTBIN_DIRTY |
+                                        Canvas3D.LIGHTENABLES_DIRTY |
+                                        Canvas3D.AMBIENTLIGHT_DIRTY |
+                                        Canvas3D.MODELCLIP_DIRTY |
+                                        Canvas3D.VIEW_MATRIX_DIRTY |
+                                        Canvas3D.FOG_DIRTY));
+                                // Force reload of transform next frame
+                                cv.modelMatrix = null;
 
-	    if (view != null) { // STOP_TIMER
-		// incElapsedFrames() is delay until MC:updateMirroObject
-		if (view.viewCache.getDoHeadTracking()) {
-		    VirtualUniverse.mc.sendRunMessage(view,
-					      J3dThread.RENDER_THREAD);
-		}
-	    }
-		
-        } else if (opArg == REQUESTCLEANUP) {
+                                // Force the cached renderAtom to null
+                                cv.ra = null;
+                            } else {
+                                cv.ctxChanged = false;
+                            }
+                        }
+                    } catch (NullPointerException ne) {
+                        // Ignore NPE
+                        if (VirtualUniverse.mc.doDsiRenderLock) {
+                            cv.drawingSurfaceObject.unLock();
+                        }
+                    } catch (RuntimeException ex) {
+                        ex.printStackTrace();
+
+                        if (VirtualUniverse.mc.doDsiRenderLock) {
+                            cv.drawingSurfaceObject.unLock();
+                        }
+
+                        // Issue 260 : indicate fatal error and notify error listeners
+                        cv.setFatalError();
+                        RenderingError err =
+                                new RenderingError(RenderingError.UNEXPECTED_RENDERING_ERROR,
+                                    J3dI18N.getString("Renderer0"));
+                        err.setCanvas3D(cv);
+                        err.setGraphicsDevice(cv.graphicsConfiguration.getDevice());
+                        notifyErrorListeners(err);
+                    }
+
+                    cv.releaseCtx();
+                }
+
+                if (view != null) { // STOP_TIMER
+                    // incElapsedFrames() is delay until MC:updateMirroObject
+                    if (view.viewCache.getDoHeadTracking()) {
+                        VirtualUniverse.mc.sendRunMessage(view,
+                                J3dThread.RENDER_THREAD);
+                    }
+                }
+                
+            } else if (opArg == REQUESTCLEANUP) {
 	    Integer mtype = (Integer) args[2];
 
 	    if (mtype == MasterControl.REMOVEALLCTXS_CLEANUP) {
@@ -329,12 +347,12 @@ class Renderer extends J3dThread {
 	    } else if (mtype == MasterControl.FREECONTEXT_CLEANUP) {
 		// from MasterControl freeContext(View v)
 		cv = (Canvas3D) args[1];
-		removeCtx(cv, cv.screen.display, cv.window, cv.ctx,
+		removeCtx(cv, cv.screen.display, cv.drawable, cv.ctx,
 			  true, true, false);
 	    } else if (mtype == MasterControl.RESETCANVAS_CLEANUP) {
 		// from MasterControl RESET_CANVAS postRequest
 		cv = (Canvas3D) args[1];
-		if (cv.ctx != 0) {
+		if (cv.ctx != null) {
 		    cv.makeCtxCurrent();
 		}
 		cv.freeContextResources(cv.screen.renderer, true, cv.ctx);
@@ -344,22 +362,27 @@ class Renderer extends J3dThread {
 		Canvas3D c = (Canvas3D) obj[0]; 
 		removeCtx(c,
 			  ((Long) obj[1]).longValue(),
-			  ((Integer) obj[2]).intValue(),
-			  ((Long) obj[3]).longValue(), 
+			  (Drawable) obj[2],
+			  (Context) obj[3], 
 			  false, !c.offScreen, 
 			  false);		
 	    } 
 	    return;
 	} else { // RENDER || REQUESTRENDER
 
-
             int renderType;
 	    nmesg = 0;
 	    int totalMessages = 0;
             if (opArg == RENDER) {
                 m = renderMessage;
-		m[0] = VirtualUniverse.mc.getMessage();
-		m[0].type = J3dMessage.RENDER_RETAINED;
+		m[0] = new J3dMessage();
+                // Issue 131: Set appropriate message type
+                if (((Canvas3D)args[1]).offScreen) {
+                    m[0].type = J3dMessage.RENDER_OFFSCREEN;
+                }
+                else {
+                    m[0].type = J3dMessage.RENDER_RETAINED;
+                }
 		m[0].incRefcount();
                 m[0].args[0] = args[1];
 		totalMessages = 1;
@@ -370,7 +393,7 @@ class Renderer extends J3dThread {
 		    return;
 		}
 	    }
-	    
+
 
 	    doneRender: while (nmesg < totalMessages) {
 
@@ -383,20 +406,19 @@ class Renderer extends J3dThread {
 			Integer reqType = (Integer) m[nmesg].args[2];
 			Canvas3D c = (Canvas3D) secondArg;
 			if (reqType == MasterControl.SET_GRAPHICSCONFIG_FEATURES) {
-			    NativeConfigTemplate3D nct = 
-				GraphicsConfigTemplate3D.nativeTemplate;
+                          try {
 			    if (c.offScreen) {
 				// offScreen canvas neither supports
 				// double buffering nor  stereo
 				c.doubleBufferAvailable = false;
 				c.stereoAvailable = false;
 			    } else {
-				c.doubleBufferAvailable = nct.hasDoubleBuffer(c);
-				c.stereoAvailable = nct.hasStereo(c);
+				c.doubleBufferAvailable = c.hasDoubleBuffer();
+				c.stereoAvailable = c.hasStereo();
 			    }
 
 			    // Setup stencil related variables.
-                            c.actualStencilSize = nct.getStencilSize(c);
+                            c.actualStencilSize = c.getStencilSize();
                             boolean userOwnsStencil = c.requestedStencilSize > 0;
                             
                             c.userStencilAvailable = 
@@ -404,35 +426,53 @@ class Renderer extends J3dThread {
                             c.systemStencilAvailable =
                                     (!userOwnsStencil && (c.actualStencilSize > 0));
 
-                            /*
-			      System.out.println("Renderer :check for nct configuration");
-			      System.out.println("-- userStencilAvailable " + 
-			      c.userStencilAvailable);
-			      System.out.println("-- systemStencilAvailable " + 
-			      c.systemStencilAvailable);
-			    */
-
                             c.sceneAntialiasingMultiSamplesAvailable =
-				nct.hasSceneAntialiasingMultisample(c);
+				c.hasSceneAntialiasingMultisample();
 
 			    if (c.sceneAntialiasingMultiSamplesAvailable) {
 				c.sceneAntialiasingAvailable = true;
 			    } else {
 				c.sceneAntialiasingAvailable = 
-				    nct.hasSceneAntialiasingAccum(c);
+				    c.hasSceneAntialiasingAccum();
 			    }
+                          } catch (RuntimeException ex) {
+                              ex.printStackTrace();
+
+                              // Issue 260 : indicate fatal error and notify error listeners
+                              c.setFatalError();
+                              RenderingError err =
+                                      new RenderingError(RenderingError.GRAPHICS_CONFIG_ERROR,
+                                          J3dI18N.getString("Renderer1"));
+                              err.setCanvas3D(c);
+                              err.setGraphicsDevice(c.graphicsConfiguration.getDevice());
+                              notifyErrorListeners(err);
+                          }
 			    GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
 			} else if (reqType == MasterControl.SET_QUERYPROPERTIES){
-			    c.createQueryContext();
+                            try {
+                                c.createQueryContext();
+                            } catch (RuntimeException ex) {
+                                ex.printStackTrace();
+
+                                // Issue 260 : indicate fatal error and notify error listeners
+                                c.setFatalError();
+                                RenderingError err =
+                                        new RenderingError(RenderingError.CONTEXT_CREATION_ERROR,
+                                            J3dI18N.getString("Renderer2"));
+                                err.setCanvas3D(c);
+                                err.setGraphicsDevice(c.graphicsConfiguration.getDevice());
+                                notifyErrorListeners(err);
+                            }
 			    // currentCtx change after we create a new context
 			    GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
-			    currentCtx = -1;
-                            currentWindow = 0;
+			    currentCtx = null;
+                            currentDrawable = null;
 			} 
 		    } else if (secondArg instanceof Integer) {
-			// message from TextureRetained finalize() method
-			// to free texture id
-			freeTextureID(((Integer) secondArg).intValue(), (String)m[nmesg].args[2]);
+                        // Issue 121 - This was formerly used as a message from
+                        // the now-nonexistant TextureRetained finalize() method
+			// to free the texture id
+                        throw new AssertionError();
 		    } else if (secondArg instanceof GeometryArrayRetained) {
 			// message from GeometryArrayRetained
 			// clearLive() to free D3D array
@@ -441,20 +481,49 @@ class Renderer extends J3dThread {
 			GraphicsConfigTemplate3D gct =
 			    (GraphicsConfigTemplate3D) secondArg;
 			Integer reqType = (Integer) m[nmesg].args[2];
-			if (reqType == MasterControl.GETBESTCONFIG) {
-			    gct.testCfg = 
-				gct.nativeTemplate.getBestConfiguration(gct,
-					(GraphicsConfiguration []) gct.testCfg);
+                        if (reqType == MasterControl.GETBESTCONFIG) {
+                            GraphicsConfiguration gcfg = null;
+                            GraphicsConfiguration [] gcList = (GraphicsConfiguration []) gct.testCfg;
+                            try {
+                                gcfg = Pipeline.getPipeline().getBestConfiguration(gct, gcList);
+                            } catch (NullPointerException npe) {
+                                npe.printStackTrace();
+                            } catch (RuntimeException ex) {
+                                ex.printStackTrace();
+
+                                // Issue 260 : notify error listeners
+                                RenderingError err =
+                                        new RenderingError(RenderingError.GRAPHICS_CONFIG_ERROR,
+                                            J3dI18N.getString("Renderer3"));
+                                err.setGraphicsDevice(gcList[0].getDevice());
+                                notifyErrorListeners(err);
+                            }
+
+                            gct.testCfg = gcfg;
 			} else if (reqType == MasterControl.ISCONFIGSUPPORT) {
-			    if (gct.nativeTemplate.isGraphicsConfigSupported(gct,
-				     (GraphicsConfiguration) gct.testCfg)) {
-				gct.testCfg = Boolean.TRUE;
-			    } else {
-				gct.testCfg = Boolean.FALSE;
-			    }
-			} 
+                            boolean rval = false;
+                            GraphicsConfiguration gc = (GraphicsConfiguration) gct.testCfg;
+                            try {
+                                if (Pipeline.getPipeline().isGraphicsConfigSupported(gct, gc)) {
+                                    rval = true;
+                                }
+                            } catch (NullPointerException npe) {
+                                npe.printStackTrace();
+                            } catch (RuntimeException ex) {
+                                ex.printStackTrace();
+
+                                // Issue 260 : notify error listeners
+                                RenderingError err =
+                                        new RenderingError(RenderingError.GRAPHICS_CONFIG_ERROR,
+                                            J3dI18N.getString("Renderer4"));
+                                err.setGraphicsDevice(gc.getDevice());
+                                notifyErrorListeners(err);
+                            }
+
+                            gct.testCfg = Boolean.valueOf(rval);
+			}
 			gct.runMonitor(J3dThread.NOTIFY);
-		    } 
+		    }
 
 		    m[nmesg++].decRefcount();
 		    continue;
@@ -467,28 +536,45 @@ class Renderer extends J3dThread {
 		if (renderType == J3dMessage.CREATE_OFFSCREENBUFFER) {
 		    // Fix for issue 18.
 		    // Fix for issue 20.
-		    canvas.window = 
-			canvas.createOffScreenBuffer(canvas.ctx, 
-						     canvas.screen.display,
-						     canvas.vid,
-						     canvas.fbConfig,
-						     canvas.offScreenCanvasSize.width, 
-						     canvas.offScreenCanvasSize.height);
+
+                    canvas.drawable = null;
+                    try {
+                        canvas.drawable =
+                                canvas.createOffScreenBuffer(canvas.ctx,
+                                    canvas.screen.display,
+                                    canvas.fbConfig,
+                                    canvas.offScreenCanvasSize.width,
+                                    canvas.offScreenCanvasSize.height);
+                    } catch (RuntimeException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    if (canvas.drawable == null) {
+                        // Issue 260 : indicate fatal error and notify error listeners
+                        canvas.setFatalError();
+                        RenderingError err =
+                                new RenderingError(RenderingError.OFF_SCREEN_BUFFER_ERROR,
+                                    J3dI18N.getString("Renderer5"));
+                        err.setCanvas3D(canvas);
+                        err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
+                        notifyErrorListeners(err);
+                    }
+
 		    canvas.offScreenBufferPending = false;
 		    m[nmesg++].decRefcount();
 		    continue;
 		} 
                 else if (renderType == J3dMessage.DESTROY_CTX_AND_OFFSCREENBUFFER) {
-		    // Fix for issue 175.
-                    // destroy ctx.
-                    // Should be able to collaspe both call into one. Will do this in 1.5, 
-                    // it is a little risky for 1.4 beta3.
-                    removeCtx(canvas, canvas.screen.display, canvas.window, canvas.ctx,
-                              false, !canvas.offScreen, false);
-                    // destroy offScreenBuffer.
-                    removeCtx(canvas, canvas.screen.display, canvas.window, 0,
-                              false, !canvas.offScreen, true);    
-                                    
+                    Object[] obj = m[nmesg].args;
+
+		    // Fix for issue 175: destroy ctx & off-screen buffer
+                    // Fix for issue 340: get display, drawable & ctx from msg
+                    removeCtx(canvas,
+                            ((Long) obj[1]).longValue(),
+                            (Drawable) obj[2],
+                            (Context) obj[3],
+                            false, !canvas.offScreen, true);
+
 		    canvas.offScreenBufferPending = false;
 		    m[nmesg++].decRefcount();
 		    continue;
@@ -525,8 +611,13 @@ class Renderer extends J3dThread {
 			VirtualUniverse.mc.resendTexTimestamp++;
 			needToResendTextureDown = false;
 		    }
-		    
-		    if (canvas.ctx != 0) {
+
+                    if (canvas.isFatalError()) {
+                        continue;
+                    }
+
+                  try {
+		    if (canvas.ctx != null) {
 			// ctx may not construct until doClear();
 			canvas.beginScene();
 		    }
@@ -583,17 +674,11 @@ class Renderer extends J3dThread {
 		    case GraphicsContext3D.SET_MODEL_TRANSFORM:
 			t3d = (Transform3D)m[nmesg].args[2]; 
 			canvas.graphicsContext3D.doSetModelTransform(t3d);
-			// return t3d to freelist. t3d was gotten from GraphicsContext3D
-			FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-						   t3d);
 			break;
 		    case GraphicsContext3D.MULTIPLY_MODEL_TRANSFORM:
-			t3d = (Transform3D)m[nmesg].args[2];
-			canvas.graphicsContext3D.doMultiplyModelTransform(t3d);
-			// return t3d to freelist. t3d was gotten from GraphicsContext3D
-			FreeListManager.freeObject(FreeListManager.TRANSFORM3D,
-						   t3d);
-			break;
+                        t3d = (Transform3D)m[nmesg].args[2];
+                        canvas.graphicsContext3D.doMultiplyModelTransform(t3d);
+                        break;
 		    case GraphicsContext3D.SET_SOUND:
 			canvas.graphicsContext3D.doSetSound(
 				(Sound)m[nmesg].args[2],
@@ -643,6 +728,9 @@ class Renderer extends J3dThread {
 					      ((Point) ar[3]).y,
 					      (ImageObserver) ar[4]);
 			break;
+		    case GraphicsContext3D.DISPOSE2D:
+			canvas.graphics2D.doDispose();
+			break;
 		    case GraphicsContext3D.SET_MODELCLIP:
 			canvas.graphicsContext3D.doSetModelClip(
 				(ModelClip)m[nmesg].args[2]);
@@ -651,30 +739,53 @@ class Renderer extends J3dThread {
                         break;
                     }
 
-		    if (canvas.ctx != 0) {
+		    if (canvas.ctx != null) {
 			canvas.endScene();
 		    }
+                  } catch (RuntimeException ex) {
+                    ex.printStackTrace();
+
+                    // Issue 260 : indicate fatal error and notify error listeners
+                    canvas.setFatalError();
+                    RenderingError err =
+                            new RenderingError(RenderingError.CONTEXT_CREATION_ERROR,
+                                J3dI18N.getString("Renderer6"));
+                    err.setCanvas3D(canvas);
+                    err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
+                    notifyErrorListeners(err);
+                  }
+
 		    m[nmesg++].decRefcount();
 		} else { // retained mode rendering
 
 		    m[nmesg++].decRefcount();
+                    
+                    if (canvas.isFatalError()) {
+                        continue;
+                    }
 
 		    ImageComponent2DRetained offBufRetained = null;
 		    
 		    if (renderType == J3dMessage.RENDER_OFFSCREEN) {
-                        if (canvas.window == 0 || !canvas.active) {
+                        // Issue 131: set offScreenRendering flag here, since it
+                        // otherwise won't be set for auto-off-screen rendering
+                        // (which doesn't use renderOffScreenBuffer)
+                        canvas.offScreenRendering = true;
+                        if (canvas.drawable == null || !canvas.active) {
                             canvas.offScreenRendering = false;
                             continue;
 			} else {
 			    offBufRetained = (ImageComponent2DRetained)
 				canvas.offScreenBuffer.retained;
 			    
-			    if (offBufRetained.isByReference()) {
-                    	        offBufRetained.geomLock.getLock();
-                                offBufRetained.evaluateExtensions(
-				     canvas.extensionsSupported);
-			    }
+                            if (offBufRetained.isByReference()) {
+                                offBufRetained.geomLock.getLock();
+                            }
+                            
+                            offBufRetained.evaluateExtensions(canvas);
+			    
 			}
+                        
                     } else if (!canvas.active) {
 			continue;
 		    }
@@ -687,8 +798,6 @@ class Renderer extends J3dThread {
                         canvas.drawingSurfaceObject.getDrawingSurfaceObjectInfo();
                     }
 
-		    boolean background_image_update = false;
-
 		    renderBin = canvas.view.renderBin;
 
 	            // setup rendering context 
@@ -698,8 +807,9 @@ class Renderer extends J3dThread {
 
                     if (canvas.useSharedCtx) {
 
-                        if (sharedCtx == 0) {
-                            display = canvas.screen.display;
+                        if (sharedCtx == null) {
+                            sharedCtxDisplay = canvas.screen.display;
+                            sharedCtxDrawable = canvas.drawable;
 
 			    // Always lock for context create
 			    if (!canvas.drawingSurfaceObject.renderLock()) {
@@ -707,17 +817,35 @@ class Renderer extends J3dThread {
 				    offBufRetained.isByReference()) {
 				    offBufRetained.geomLock.unLock();
 				}
+                                canvas.offScreenRendering = false;
 				break doneRender;
 			    }
 
 			    synchronized (VirtualUniverse.mc.contextCreationLock) {
-				sharedCtx = canvas.createNewContext(0, true);
-				if (sharedCtx == 0) {
+                                sharedCtx = null;
+				try { 
+                                    sharedCtx = canvas.createNewContext(null, true);
+                                } catch (RuntimeException ex) {
+                                    ex.printStackTrace();
+                                }
+
+				if (sharedCtx == null) {
 				    canvas.drawingSurfaceObject.unLock();
 				    if ((offBufRetained != null) &&
 					offBufRetained.isByReference()) {
 					offBufRetained.geomLock.unLock();
 				    }
+                                    canvas.offScreenRendering = false;
+
+                                    // Issue 260 : indicate fatal error and notify error listeners
+                                    canvas.setFatalError();
+                                    RenderingError err =
+                                            new RenderingError(RenderingError.CONTEXT_CREATION_ERROR,
+                                                J3dI18N.getString("Renderer7"));
+                                    err.setCanvas3D(canvas);
+                                    err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
+                                    notifyErrorListeners(err);
+
 				    break doneRender;
 				}
 				sharedCtxTimeStamp = 
@@ -730,9 +858,7 @@ class Renderer extends J3dThread {
                        }
                     }
 
-            	    if (canvas.ctx == 0) {
-			
-			display = canvas.screen.display;
+            	    if (canvas.ctx == null) {
 
 			// Always lock for context create			
 			if (!canvas.drawingSurfaceObject.renderLock()) {
@@ -740,19 +866,36 @@ class Renderer extends J3dThread {
 				offBufRetained.isByReference()) {
 				offBufRetained.geomLock.unLock();
 			    }
+                            canvas.offScreenRendering = false;
 			    break doneRender;
 			}
 
 			synchronized (VirtualUniverse.mc.contextCreationLock) {
-			    canvas.ctx = canvas.createNewContext(sharedCtx, false);
+                            canvas.ctx = null;
+			    try {
+                                canvas.ctx = canvas.createNewContext(sharedCtx, false);
+                            } catch (RuntimeException ex) {
+                                ex.printStackTrace();
+                            }
 
-                            if (canvas.ctx == 0) {
+                            if (canvas.ctx == null) {
 				canvas.drawingSurfaceObject.unLock();			    
 				if ((offBufRetained != null) &&
 				    offBufRetained.isByReference()) {
 				    offBufRetained.geomLock.unLock();
 				}
-				break doneRender;
+                                canvas.offScreenRendering = false;
+
+                                // Issue 260 : indicate fatal error and notify error listeners
+                                canvas.setFatalError();
+                                RenderingError err =
+                                        new RenderingError(RenderingError.CONTEXT_CREATION_ERROR,
+                                            J3dI18N.getString("Renderer7"));
+                                err.setCanvas3D(canvas);
+                                err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
+                                notifyErrorListeners(err);
+
+                                break doneRender;
 			    }
 
 			    if (canvas.graphics2D != null) {
@@ -761,13 +904,15 @@ class Renderer extends J3dThread {
 
 			    canvas.ctxTimeStamp = 
 				    VirtualUniverse.mc.getContextTimeStamp();
-			    listOfCtxs.add(new Long(canvas.ctx));
+			    listOfCtxs.add(canvas.ctx);
 			    listOfCanvases.add(canvas);
 
 			    if (renderBin.nodeComponentList.size() > 0) {
 				for (i = 0; i < renderBin.nodeComponentList.size(); i++) {
 				    NodeComponentRetained nc = (NodeComponentRetained)renderBin.nodeComponentList.get(i);
-				    nc.evaluateExtensions(canvas.extensionsSupported);
+                                    if(nc instanceof ImageComponent2DRetained) {    
+                                        ((ImageComponent2DRetained)nc).evaluateExtensions(canvas);
+                                    }
 				}
                             }
 
@@ -779,11 +924,6 @@ class Renderer extends J3dThread {
                         // for state download checking purpose
                         if (canvas.texUnitState == null) {
                             canvas.createTexUnitState();
-                        }
-
-                        // Create the texture unit state map
-                        if (canvas.texUnitStateMap == null) {
-                            canvas.createTexUnitStateMap();
                         }
 
                         canvas.resetImmediateRendering(Canvas3D.NOCHANGE);
@@ -808,6 +948,7 @@ class Renderer extends J3dThread {
 				offBufRetained.isByReference()) {
 				offBufRetained.geomLock.unLock();
 			    }
+                            canvas.offScreenRendering = false;
 			    break doneRender;
 			}
 
@@ -821,13 +962,6 @@ class Renderer extends J3dThread {
 			} else {
 			    canvas.freeResourcesInFreeList(canvas.ctx);
 			}
-
-			// save the BACKGROUND_IMAGE_DIRTY before canvas.updateViewCache
-			// clean it
-                        synchronized (canvas.dirtyMaskLock) {
-                            background_image_update = 
-                                ((canvas.cvDirtyMask[Canvas3D.RENDERER_DIRTY_IDX] & Canvas3D.BACKGROUND_IMAGE_DIRTY) != 0);
-                        }
 
 			if (VirtualUniverse.mc.doDsiRenderLock) {
 			    canvas.drawingSurfaceObject.unLock();
@@ -848,6 +982,7 @@ class Renderer extends J3dThread {
 				offBufRetained.isByReference()) {
 				offBufRetained.geomLock.unLock();
 			    }
+                            canvas.offScreenRendering = false;
 			    break doneRender;
 			}
 								
@@ -933,14 +1068,14 @@ class Renderer extends J3dThread {
 			    canvas.sceneAntialiasingAvailable) {
 			    
 			    if (!VirtualUniverse.mc.isD3D() && 
-				((canvas.extensionsSupported & Canvas3D.ARB_MULTISAMPLE) == 0) || 
+				((canvas.extensionsSupported & Canvas3D.MULTISAMPLE) == 0) || 
 				!canvas.sceneAntialiasingMultiSamplesAvailable) {
 				doAccum = true;
 				num_accum_passes = NUM_ACCUMULATION_SAMPLES;
 
 				System.arraycopy(
 						 cvCache.getLeftProjection().mat,
-                                0, accumLeftProjMat, 0, 16);
+                                0, accumLeftProj.mat, 0, 16);
 
 
                                 accumDxFactor = (
@@ -952,29 +1087,29 @@ class Renderer extends J3dThread {
                                     canvas.canvasViewCache.getCanvasHeight())*canvas.view.fieldOfView;
 				
 
-			        accumLeftX = accumLeftProjMat[3];
-			        accumLeftY = accumLeftProjMat[7];
+			        accumLeftX = accumLeftProj.mat[3];
+			        accumLeftY = accumLeftProj.mat[7];
 
 				if (useStereo) {
 				    System.arraycopy(
 					cvCache.getRightProjection().mat,
-					0, accumRightProjMat, 0, 16);
-				    accumRightX = accumRightProjMat[3];
-				    accumRightY = accumRightProjMat[7];
+					0, accumRightProj.mat, 0, 16);
+				    accumRightX = accumRightProj.mat[3];
+				    accumRightY = accumRightProj.mat[7];
 				}
 
 				if (renderBin.geometryBackground != null) {
 				    System.arraycopy(
 					cvCache.getInfLeftProjection().mat,
-					0, accumInfLeftProjMat, 0, 16);
-				    accumInfLeftX = accumInfLeftProjMat[3];
-				    accumInfLeftY = accumInfLeftProjMat[7];
+					0, accumInfLeftProj.mat, 0, 16);
+				    accumInfLeftX = accumInfLeftProj.mat[3];
+				    accumInfLeftY = accumInfLeftProj.mat[7];
 				    if (useStereo) {
 					System.arraycopy(
 					    cvCache.getInfRightProjection().mat,
-					    0, accumInfRightProjMat, 0, 16);
-				        accumInfRightX = accumInfRightProjMat[3];
-				        accumInfRightY = accumInfRightProjMat[7];
+					    0, accumInfRightProj.mat, 0, 16);
+				        accumInfRightX = accumInfRightProj.mat[3];
+				        accumInfRightY = accumInfRightProj.mat[7];
 				    }
 				}				
 			    } else {
@@ -1005,39 +1140,6 @@ class Renderer extends J3dThread {
 					     Canvas3D.FIELD_ALL,
 					     canvas.useDoubleBuffer);
 
-			// Support DVR
-			/*
-			System.out.println("canvas.supportVideoResize()	is " +
-					   canvas.supportVideoResize()); 
-			*/
-			if(canvas.supportVideoResize()) {
-			    if(canvas.view.dvrResizeCompensation !=
-			       canvas.cachedDvrResizeCompensation) {
-				/*
-				  System.out.println("Renderer : dvrResizeComp " + 
-				  canvas.view.dvrResizeCompensation);
-				*/
-				canvas.videoResizeCompensation(canvas.ctx, 
-							       canvas.view.dvrResizeCompensation);
-				canvas.cachedDvrResizeCompensation = 
-				    canvas.view.dvrResizeCompensation;
-				
-			    }				
-			    if(canvas.view.dvrFactor != canvas.cachedDvrFactor) {
-				/*
-				System.out.println("Renderer : dvrFactor is " + 
-						   canvas.view.dvrFactor);
-				*/
-				canvas.videoResize(canvas.ctx, 
-						   canvas.screen.display,
-						   canvas.window, 
-						   canvas.view.dvrFactor);
-				canvas.cachedDvrFactor = canvas.view.dvrFactor;
-				
-			    }
-
-			}
-
 			canvas.beginScene();
 
 			// this is if the background image resizes with the canvas
@@ -1049,41 +1151,9 @@ class Renderer extends J3dThread {
                         // and not in stereo mode
                         if (!doAccum && !sharedStereoZBuffer) {
 			    BackgroundRetained bg = renderBin.background;
-			    if (!VirtualUniverse.mc.isBackgroundTexture) {
-				canvas.clear(canvas.ctx,
-					     bg.color.x,
-					     bg.color.y,
-					     bg.color.z,
-					     winWidth,
-					     winHeight,
-					     bg.image,
-					     bg.imageScaleMode,
-					     (bg.image != null?
-					      bg.image.imageYdown[0]:null));
-			    } else {
-				if ((bg.texImage != null) && 
-				    (objectId == -1)) {
-				    objectId = VirtualUniverse.mc.
-					getTexture2DId();
-				}
-				canvas.textureclear(canvas.ctx,
-						    bg.xmax,
-						    bg.ymax,
-						    bg.color.x,
-						    bg.color.y,
-						    bg.color.z,
-						    winWidth,
-						    winHeight,
-						    objectId,
-						    bg.imageScaleMode,
-						    bg.texImage,
-						    background_image_update);
-			    }
-//                             canvas.clear(canvas.ctx,
-// 					 bg.color.x,
-//                                          bg.color.y,
-//                                          bg.color.z,
-//                                          bg.image);
+                            
+                            canvas.clear(bg, winWidth, winHeight);
+                            
                         }
 
 		        // handle preRender callback
@@ -1095,18 +1165,22 @@ class Renderer extends J3dThread {
                         try {
                             canvas.preRender();
                         } catch (RuntimeException e) {
-                            System.err.println("Exception occurred " +
-                                            "during Canvas3D callback:");
+                            System.err.println("Exception occurred during Canvas3D callback:");
                             e.printStackTrace();
+                         } catch (Error e) {
+                             // Issue 264 - catch Error so Renderer doesn't die
+                             System.err.println("Error occurred during Canvas3D callback:");
+                             e.printStackTrace();
                         }
                         canvas.view.inCanvasCallback = false;
-			
+
 			if ((VirtualUniverse.mc.doDsiRenderLock) &&
 			    (!canvas.drawingSurfaceObject.renderLock())) {
 			    if ((offBufRetained != null) &&
 				offBufRetained.isByReference()) {
 				offBufRetained.geomLock.unLock();
 			    }
+                            canvas.offScreenRendering = false;
                             break doneRender;
                         }
 
@@ -1130,82 +1204,54 @@ class Renderer extends J3dThread {
                                     accumDy = ACCUM_SAMPLES_Y[apass] *
 						accumDyFactor;
 
-				    accumLeftProjMat[3] = accumLeftX +
-					accumLeftProjMat[0] * accumDx +
-					accumLeftProjMat[1] * accumDy;
+				    accumLeftProj.mat[3] = accumLeftX +
+					accumLeftProj.mat[0] * accumDx +
+					accumLeftProj.mat[1] * accumDy;
 
-				    accumLeftProjMat[7] = accumLeftY +
-					accumLeftProjMat[4] * accumDx +
-					accumLeftProjMat[5] * accumDy;
+				    accumLeftProj.mat[7] = accumLeftY +
+					accumLeftProj.mat[4] * accumDx +
+					accumLeftProj.mat[5] * accumDy;
 
 				    if (useStereo) {
-                                        accumRightProjMat[3] = accumRightX +
-					    accumRightProjMat[0] * accumDx +
-					    accumRightProjMat[1] * accumDy;
+                                        accumRightProj.mat[3] = accumRightX +
+					    accumRightProj.mat[0] * accumDx +
+					    accumRightProj.mat[1] * accumDy;
 
-                                        accumRightProjMat[7] = accumRightY +
-					    accumRightProjMat[4] * accumDx +
-					    accumRightProjMat[5] * accumDy;
+                                        accumRightProj.mat[7] = accumRightY +
+					    accumRightProj.mat[4] * accumDx +
+					    accumRightProj.mat[5] * accumDy;
 				    }
 
 				    if (renderBin.geometryBackground != null) {
-                                        accumInfLeftProjMat[3] = accumInfLeftX +
-					    accumInfLeftProjMat[0] * accumDx +
-					    accumInfLeftProjMat[1] * accumDy;
+                                        accumInfLeftProj.mat[3] = accumInfLeftX +
+					    accumInfLeftProj.mat[0] * accumDx +
+					    accumInfLeftProj.mat[1] * accumDy;
 
-                                        accumInfLeftProjMat[7] = accumInfLeftY +
-					    accumInfLeftProjMat[4] * accumDx +
-					    accumInfLeftProjMat[5] * accumDy;
+                                        accumInfLeftProj.mat[7] = accumInfLeftY +
+					    accumInfLeftProj.mat[4] * accumDx +
+					    accumInfLeftProj.mat[5] * accumDy;
 
 				        if (useStereo) {
-                                            accumInfRightProjMat[3] = 
+                                            accumInfRightProj.mat[3] = 
 					      accumInfRightX +
-					      accumInfRightProjMat[0] * accumDx +
-					      accumInfRightProjMat[1] * accumDy;
+					      accumInfRightProj.mat[0] * accumDx +
+					      accumInfRightProj.mat[1] * accumDy;
 
-                                            accumInfRightProjMat[7] = 
+                                            accumInfRightProj.mat[7] = 
 					      accumInfRightY +
-					      accumInfRightProjMat[4] * accumDx +
-					      accumInfRightProjMat[5] * accumDy;
+					      accumInfRightProj.mat[4] * accumDx +
+					      accumInfRightProj.mat[5] * accumDy;
 				        }
-				    }
+                                    }
 			        }
 
                                 // clear background for stereo and
                                 //  accumulation buffer cases
                                 if (doAccum || sharedStereoZBuffer) {
 				    BackgroundRetained bg = renderBin.background;
-				    if (!VirtualUniverse.mc.isBackgroundTexture) {
-					canvas.clear(canvas.ctx,
-						     bg.color.x,
-						     bg.color.y,
-						     bg.color.z,
-						     winWidth,
-						     winHeight,
-						     bg.image,
-						     bg.imageScaleMode,
-						       (bg.image != null?bg.image.imageYdown[0]:null));
-				    }
-				    else {
-					if ((bg.texImage != null) && 
-					    (objectId == -1)) {
-					    objectId = VirtualUniverse.mc.
-						getTexture2DId();
-					}
 
-					canvas.textureclear(canvas.ctx,
-							    bg.xmax,
-							    bg.ymax,
-							    bg.color.x,
-							    bg.color.y,
-							    bg.color.z,
-							    winWidth,
-							    winHeight,
-							    objectId,
-							    bg.imageScaleMode,
-							    bg.texImage,
-							    background_image_update);
-				    }
+                                    canvas.clear(bg, winWidth, winHeight);
+
                                 }
 
 			        // render background geometry
@@ -1217,24 +1263,22 @@ class Renderer extends J3dThread {
 					    cvCache.getInfLeftVpcToEc();
 	    	                        if (doAccum) {
                                             canvas.setProjectionMatrix(
-						canvas.ctx,
-						accumInfLeftProjMat);
+						canvas.ctx, accumInfLeftProj);
 				        } else {
                                             canvas.setProjectionMatrix(
 						canvas.ctx,
-					       	cvCache.getInfLeftProjection().mat);
+					       	cvCache.getInfLeftProjection());
 				        }
 				    } else {
                                         canvas.vpcToEc = 
 					    cvCache.getInfRightVpcToEc();
 	    	                        if (doAccum) {
                                             canvas.setProjectionMatrix(
-						canvas.ctx,
-						accumInfRightProjMat);
+						canvas.ctx, accumInfRightProj);
 				        } else {
                                             canvas.setProjectionMatrix(
 						canvas.ctx,
-					       cvCache.getInfRightProjection().mat);
+					       cvCache.getInfRightProjection());
 				        }
                                     }
                                     canvas.vworldToEc.mul(canvas.vpcToEc,
@@ -1248,20 +1292,19 @@ class Renderer extends J3dThread {
                                 if (pass == 0) {
                             	    canvas.vpcToEc = cvCache.getLeftVpcToEc();
 			            if (doAccum) {
-                                        canvas.setProjectionMatrix(
-						canvas.ctx, accumLeftProjMat);
+                                        canvas.setProjectionMatrix(canvas.ctx, accumLeftProj);
                                     } else {
                                         canvas.setProjectionMatrix(canvas.ctx,
-					cvCache.getLeftProjection().mat);
+					cvCache.getLeftProjection());
 				    }
 			        } else {
                             	    canvas.vpcToEc = cvCache.getRightVpcToEc();
 			            if (doAccum) {
                                         canvas.setProjectionMatrix(
-						canvas.ctx, accumRightProjMat);
+						canvas.ctx, accumRightProj);
                                     } else {
                                         canvas.setProjectionMatrix(canvas.ctx,
-						cvCache.getRightProjection().mat);
+						cvCache.getRightProjection());
 				    }
 			        } 
                                 canvas.vworldToEc.mul(canvas.vpcToEc,
@@ -1295,9 +1338,12 @@ class Renderer extends J3dThread {
                                 try {
                                     canvas.renderField(stereo_mode);
                                 } catch (RuntimeException e) {
-                                System.err.println("Exception occurred during " +
-                                                 "Canvas3D callback:");
-                                   e.printStackTrace();
+                                    System.err.println("Exception occurred during Canvas3D callback:");
+                                    e.printStackTrace();
+                                } catch (Error e) {
+                                    // Issue 264 - catch Error so Renderer doesn't die
+                                    System.err.println("Error occurred during Canvas3D callback:");
+                                    e.printStackTrace();
                                 }
                                 canvas.view.inCanvasCallback = false;
 				if ((VirtualUniverse.mc.doDsiRenderLock) &&
@@ -1306,6 +1352,7 @@ class Renderer extends J3dThread {
 					offBufRetained.isByReference()) {
 					offBufRetained.geomLock.unLock();
 				    }
+                                    canvas.offScreenRendering = false;
                                     break doneRender;
                                 }
 
@@ -1340,8 +1387,11 @@ class Renderer extends J3dThread {
                         try {
                             canvas.postRender();
                         } catch (RuntimeException e) {
-                            System.err.println("Exception occurred during " +
-                                           "Canvas3D callback:");
+                            System.err.println("Exception occurred during Canvas3D callback:");
+                            e.printStackTrace();
+                        } catch (Error e) {
+                            // Issue 264 - catch Error so Renderer doesn't die
+                            System.err.println("Error occurred during Canvas3D callback:");
                             e.printStackTrace();
                         }
                         canvas.view.inCanvasCallback = false;
@@ -1351,6 +1401,7 @@ class Renderer extends J3dThread {
 
 			    canvas.syncRender(canvas.ctx, true);
                             canvas.endOffScreenRendering();
+                            canvas.offScreenRendering = false;
 
                             // do the postSwap for offscreen here
                             canvas.view.inCanvasCallback = true;
@@ -1359,16 +1410,20 @@ class Renderer extends J3dThread {
                             } catch (RuntimeException e) {
                                 System.err.println("Exception occurred during Canvas 3D callback:");
                                 e.printStackTrace();
+                            } catch (Error e) {
+                                // Issue 264 - catch Error so Renderer doesn't die
+                                System.err.println("Error occurred during Canvas3D callback:");
+                                e.printStackTrace();
                             }
 
 			    if (offBufRetained.isByReference()) {
                     	        offBufRetained.geomLock.unLock();
 			    }
 
-			    canvas.offScreenRendering = false;
                             canvas.view.inCanvasCallback = false;
-                        }
 
+                            canvas.releaseCtx();
+                        }
 
 			canvas.endScene();
 
@@ -1425,10 +1480,11 @@ class Renderer extends J3dThread {
 		Arrays.fill(m, 0, totalMessages, null);
 	    }
 	}
-       } catch (NullPointerException ne) {
+      } catch (NullPointerException ne) {
+           // Print NPE, but otherwise ignore it
 	    ne.printStackTrace();
 	    if (canvas != null) {
-		if (canvas.ctx != 0) {
+		if (canvas.ctx != null) {
 		    canvas.endScene();
 		}
 		// drawingSurfaceObject will safely ignore
@@ -1436,16 +1492,35 @@ class Renderer extends J3dThread {
 		canvas.drawingSurfaceObject.unLock();
 
 	    }
-	}
+      } catch (RuntimeException ex) {
+            ex.printStackTrace();
+
+	    if (canvas != null) {
+		if (canvas.ctx != null) {
+		    canvas.endScene();
+		}
+		// drawingSurfaceObject will safely ignore
+		// this request if this is not lock before
+		canvas.drawingSurfaceObject.unLock();
+	    }
+
+            // Issue 260 : indicate fatal error and notify error listeners
+            canvas.setFatalError();
+            RenderingError err =
+                    new RenderingError(RenderingError.UNEXPECTED_RENDERING_ERROR,
+                        J3dI18N.getString("Renderer8"));
+            err.setCanvas3D(canvas);
+            if (canvas != null) {
+                err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
+            }
+            notifyErrorListeners(err);
+      }
     }
 
     // resource clean up
     void shutdown() {
 	removeAllCtxs();
-
-	if (VirtualUniverse.mc.isD3D()) {
-	    D3DCleanUp();
-	}
+        Pipeline.getPipeline().cleanupRenderer();
     }
 
     void cleanup() {
@@ -1454,8 +1529,10 @@ class Renderer extends J3dThread {
 	rendererStructure = new RendererStructure();	
 	bgVworldToVpc = new Transform3D();
 	numframes = 0.0f;
-	sharedCtx = 0;	 
+	sharedCtx = null;	 
 	sharedCtxTimeStamp = 0;
+	sharedCtxDisplay = 0;
+        sharedCtxDrawable = null;
 	dirtyRenderMoleculeList.clear();
 	dirtyRenderAtomList.clear();
 	dirtyDlistPerRinfoList.clear();
@@ -1467,24 +1544,22 @@ class Renderer extends J3dThread {
 	nmesg = 0;
 	lasttime = 0;
 	currtime = 0;
-	display = 0;
     }
-
 
 
     // This is only invoked from removeCtx()/removeAllCtxs()
     // with drawingSurface already lock
-    final void makeCtxCurrent(long sharedCtx, long display, int window) {
-        if (sharedCtx != currentCtx || window != currentWindow) {
-	    Canvas3D.useCtx(sharedCtx, display, window);
+    final void makeCtxCurrent(Context sharedCtx, long display, Drawable drawable) {
+        if (sharedCtx != currentCtx || drawable != currentDrawable) {
+	    Canvas3D.useCtx(sharedCtx, display, drawable);
 	    /*
-            if(!Canvas3D.useCtx(sharedCtx, display, window)) {
+            if(!Canvas3D.useCtx(sharedCtx, display, drawable)) {
                 Thread.dumpStack();
                 System.err.println("useCtx Fail");
             }
             */
             currentCtx = sharedCtx;
-            currentWindow = window;
+            currentDrawable = drawable;
         }
     }
 
@@ -1492,66 +1567,64 @@ class Renderer extends J3dThread {
     // Canvas3D postRequest() offScreen rendering since the
     // user thread will not wait for it. Also we can just
     // reuse it as Canvas3D did not destroy.
-    private void removeCtx(Canvas3D cv, long display, int window, long ctx,
+    private void removeCtx(Canvas3D cv, long display, Drawable drawable, Context ctx,
 			   boolean resetCtx, boolean freeBackground, 
 			   boolean destroyOffScreenBuffer) {
-	
 
 	synchronized (VirtualUniverse.mc.contextCreationLock) {
-	    // Fix for issue 18.
-	    // Since we are now the renderer thread, 
-	    // we can safely execute destroyOffScreenBuffer.
-	    if(destroyOffScreenBuffer) {
-		cv.destroyOffScreenBuffer(ctx, display, cv.fbConfig, window);
-		cv.offScreenBufferPending = false;
-	    }
-
-	    if (ctx != 0) {
-		int idx = listOfCtxs.indexOf(new Long(ctx));
+	    if (ctx != null) {
+		int idx = listOfCtxs.indexOf(ctx);
 		if (idx >= 0) {
 		    listOfCtxs.remove(idx);
 		    listOfCanvases.remove(idx);
-		    // display is always 0 under windows
-		    if ((MasterControl.isWin32 || (display != 0)) && 
-			(window != 0) && cv.added) {
+		    // Issue 326 : don't check display variable here
+		    if ((drawable != null) && cv.added) {
 			// cv.ctx may reset to -1 here so we
 			// always use the ctx pass in.
 			if (cv.drawingSurfaceObject.renderLock()) {
 			    // if it is the last one, free shared resources
-			    if (sharedCtx != 0) {
+			    if (sharedCtx != null) {
 				if (listOfCtxs.isEmpty()) {
-				    makeCtxCurrent(sharedCtx, display, window);
+				    makeCtxCurrent(sharedCtx, sharedCtxDisplay, sharedCtxDrawable);
 				    freeResourcesInFreeList(null);
 				    freeContextResources();
-				    Canvas3D.destroyContext(display, window, sharedCtx);
-				    currentCtx = -1;
-                                    currentWindow = 0;
+				    Canvas3D.destroyContext(sharedCtxDisplay, sharedCtxDrawable, sharedCtx);
+				    currentCtx = null;
+                                    currentDrawable = null;
 				} else {
 				    freeResourcesInFreeList(cv);
 				}
-				cv.makeCtxCurrent(ctx, display, window);
+				cv.makeCtxCurrent(ctx, display, drawable);
 			    } else {
-				cv.makeCtxCurrent(ctx, display, window);
+				cv.makeCtxCurrent(ctx, display, drawable);
 				cv.freeResourcesInFreeList(ctx);
 			    }
 			    cv.freeContextResources(this, freeBackground, ctx);
-			    Canvas3D.destroyContext(display, window, ctx);
-			    currentCtx = -1;
-                            currentWindow = 0;
+			    Canvas3D.destroyContext(display, drawable, ctx);
+			    currentCtx = null;
+                            currentDrawable = null;
 			    cv.drawingSurfaceObject.unLock();
 			}
 		    }
 		}
 
 		if (resetCtx) {
-		    cv.ctx = 0;
+		    cv.ctx = null;
 		}
 
-		if ((sharedCtx != 0) && listOfCtxs.isEmpty()) {
-		    sharedCtx = 0;
+		if ((sharedCtx != null) && listOfCtxs.isEmpty()) {
+		    sharedCtx = null;
 		    sharedCtxTimeStamp = 0;
 		}
 		cv.ctxTimeStamp = 0;
+	    }
+
+	    // Fix for issue 18.
+	    // Since we are now the renderer thread, 
+	    // we can safely execute destroyOffScreenBuffer.
+	    if(destroyOffScreenBuffer) {
+		cv.destroyOffScreenBuffer(ctx, display, cv.fbConfig, drawable);
+		cv.offScreenBufferPending = false;
 	    }
 	}
     }
@@ -1564,90 +1637,47 @@ class Renderer extends J3dThread {
 	    for (int i=listOfCanvases.size()-1; i >=0; i--) {
 		cv = (Canvas3D) listOfCanvases.get(i);
 
-		if ((cv.screen != null) && (cv.ctx != 0)) {
-		    if ((MasterControl.isWin32 || (display != 0)) && 
-			(cv.window != 0) && cv.added) {
+		if ((cv.screen != null) && (cv.ctx != null)) {
+                    // Issue 326 : don't check display variable here
+		    if ((cv.drawable != null) && cv.added) {
 			if (cv.drawingSurfaceObject.renderLock()) {
 			    // We need to free sharedCtx resource
 			    // first before last non-sharedCtx to
 			    // workaround Nvidia driver bug under Linux
 			    // that crash on freeTexture ID:4685156
-			    if ((i == 0) && (sharedCtx != 0)) {
-				makeCtxCurrent(sharedCtx, display, window);
+			    if ((i == 0) && (sharedCtx != null)) {
+				makeCtxCurrent(sharedCtx, sharedCtxDisplay, sharedCtxDrawable);
 				freeResourcesInFreeList(null);
 				freeContextResources();
-				Canvas3D.destroyContext(display, window, sharedCtx);
-				currentCtx = -1;
-                                currentWindow = 0;
+				Canvas3D.destroyContext(sharedCtxDisplay, sharedCtxDrawable, sharedCtx);
+				currentCtx = null;
+                                currentDrawable = null;
 			    }
 			    cv.makeCtxCurrent();
 			    cv.freeResourcesInFreeList(cv.ctx);
 			    cv.freeContextResources(this, true, cv.ctx);
 			    Canvas3D.destroyContext(cv.screen.display,
-						    cv.window,
+						    cv.drawable,
 						    cv.ctx);
-			    currentCtx = -1;
-                            currentWindow = 0;
+			    currentCtx = null;
+                            currentDrawable = null;
 			    cv.drawingSurfaceObject.unLock();
 			}
 		    }
 		}
 
-		cv.ctx = 0;
+		cv.ctx = null;
 		cv.ctxTimeStamp = 0;
 	    }
 	    
-	    if (sharedCtx != 0) {
-		sharedCtx = 0;
+	    if (sharedCtx != null) {
+		sharedCtx = null;
 		sharedCtxTimeStamp = 0;
 	    }
 	    listOfCanvases.clear();
 	    listOfCtxs.clear();
 	}
     }
-
-    void freeTextureID(int texId, String texture) {
-	Canvas3D currentCanvas = null;
-	
-	// get the current canvas
-	for (int i=listOfCtxs.size()-1; i >= 0; i--) {
-	    Canvas3D c = (Canvas3D) listOfCanvases.get(i);
-	    if (c.ctx == currentCtx) {
-		currentCanvas = c;
-		break;
-	    }
-	}
-
-	if (currentCanvas == null) {
-	    return;
-	}
-
-	synchronized (VirtualUniverse.mc.contextCreationLock) {
-	    if (sharedCtx != 0) {
-		currentCanvas.makeCtxCurrent(sharedCtx);
-		// OGL share context is used
-		Canvas3D.freeTexture(sharedCtx, texId);
-	    } else {
-		for (int i=listOfCtxs.size()-1; i >= 0; i--) {
-		    Canvas3D c = (Canvas3D) listOfCanvases.get(i);
-		    c.makeCtxCurrent();
-		    Canvas3D.freeTexture(c.ctx, texId);
-		}
-	    }
-	    // restore current context
-	    currentCanvas.makeCtxCurrent();
-	}
-        // Issue 162: TEMPORARY FIX -- don't free the texture ID, since it will
-        // be freed once per canvas / screen and will subsequently cause the ID
-        // to be used for multiple textures.
-//	if (texture.equals("2D")){
-//	    VirtualUniverse.mc.freeTexture2DId(texId);
-//	}
-//	else if(texture.equals("3D")){
-//	    VirtualUniverse.mc.freeTexture3DId(texId);
-//	}
-    }
-
 
     // handle free resource in the FreeList
     void freeResourcesInFreeList(Canvas3D cv) {
@@ -1684,7 +1714,18 @@ class Renderer extends J3dThread {
 					   textureIDResourceTable.size() + 
 					   " val = " + val);
 		    } else {
-			textureIDResourceTable.set(val, null);
+                        Object obj = textureIDResourceTable.get(val);
+                        if (obj instanceof TextureRetained) {
+                            TextureRetained tex = (TextureRetained) obj;
+                            synchronized (tex.resourceLock) {
+                                tex.resourceCreationMask &= ~rendererBit;
+                                if (tex.resourceCreationMask == 0) {
+                                    tex.freeTextureId(val);
+                                }
+                            }
+                        }
+
+                        textureIDResourceTable.set(val, null);
 		    }
 		    Canvas3D.freeTexture(sharedCtx, val);
 		}		    
@@ -1711,7 +1752,6 @@ class Renderer extends J3dThread {
     void freeContextResources() {
 	Object obj;
 	TextureRetained tex;
-	DetailTextureImage detailTex;
 
 	for (int id = textureIDResourceTable.size()-1; id > 0; id--) {
 	    obj = textureIDResourceTable.get(id);
@@ -1727,17 +1767,44 @@ class Renderer extends J3dThread {
 			tex.freeTextureId(id);
 		    }
 		}
-	    } else if (obj instanceof DetailTextureImage) {
-		detailTex = (DetailTextureImage) obj;
-		detailTex.freeDetailTextureId(id, rendererBit);
 	    }
-
 	}
 	textureIDResourceTable.clear();	
 	
 	// displayList is free in Canvas.freeContextResources()
     }
+    
+    /**
+     * Send a message to the notification thread, which will call the
+     * shader error listeners.
+     */
+    static void notifyErrorListeners(RenderingError err) {
+        J3dNotification notification = new J3dNotification();
+        notification.type = J3dNotification.RENDERING_ERROR;
+        notification.universe = null;//cv.view.universe;
+        notification.args[0] = err;
+        VirtualUniverse.mc.sendNotification(notification);
+    }
+
+
+    // Default rendering error listener class
+    private static RenderingErrorListener defaultErrorListener = null;
+
+    synchronized static RenderingErrorListener getDefaultErrorListener() {
+        if (defaultErrorListener == null) {
+            defaultErrorListener = new DefaultErrorListener();
+        }
+
+        return defaultErrorListener;
+    }
+
+    static class DefaultErrorListener implements RenderingErrorListener {
+        public void errorOccurred(RenderingError error) {
+            System.err.println();
+            System.err.println("DefaultRenderingErrorListener.errorOccurred:");
+            error.printVerbose();
+            System.exit(1);
+        }
+    }
 
 }
-
-

@@ -29,19 +29,17 @@ class DisplayListRenderMethod implements RenderMethod {
      */
     int[] buffer = new int[bufferSize];
 
-    native void callDisplayLists(int size, int[] buffer);
-
     /**
      * The actual rendering code for this RenderMethod
      */
-    public boolean render(RenderMolecule rm, Canvas3D cv, int pass,
+    public boolean render(RenderMolecule rm, Canvas3D cv,
 			  RenderAtomListInfo ra,
 			  int dirtyBits) {
 	
         if (rm.doInfinite || 
 	    !VirtualUniverse.mc.viewFrustumCulling ||
 	    rm.vwcBounds.intersect(cv.viewFrustum)) {
-	    cv.updateState(pass, dirtyBits);
+	    cv.updateState(dirtyBits);
 	    cv.callDisplayList(cv.ctx, rm.displayListId,
 			       rm.isNonUniformScale);
 	    return true;
@@ -51,11 +49,10 @@ class DisplayListRenderMethod implements RenderMethod {
 
     public boolean renderSeparateDlists(RenderMolecule rm, 
 					Canvas3D cv,
-					int pass,
 					RenderAtomListInfo r, int dirtyBits) {
 	
 	if (rm.doInfinite) {
-	    cv.updateState(pass, dirtyBits);
+	    cv.updateState(dirtyBits);
 	    while (r != null) {
 		cv.callDisplayList(cv.ctx, 
 				   ((GeometryArrayRetained)r.geometry()).dlistId,
@@ -70,7 +67,7 @@ class DisplayListRenderMethod implements RenderMethod {
 	while (r != null) {
 	    if (cv.ra == r.renderAtom) {
 		if (cv.raIsVisible) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    cv.callDisplayList(cv.ctx,
 				       ((GeometryArrayRetained)r.geometry()).dlistId,
 				       rm.isNonUniformScale);
@@ -79,7 +76,7 @@ class DisplayListRenderMethod implements RenderMethod {
 	    }
 	    else {
 		if (r.renderAtom.localeVwcBounds.intersect(cv.viewFrustum)) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    cv.raIsVisible = true;
 		    cv.callDisplayList(cv.ctx, 
 				       ((GeometryArrayRetained)r.geometry()).dlistId,
@@ -101,12 +98,11 @@ class DisplayListRenderMethod implements RenderMethod {
 
     public boolean renderSeparateDlistPerRinfo(RenderMolecule rm, 
 					       Canvas3D cv,
-					       int pass,
 					       RenderAtomListInfo r,
 					       int dirtyBits) {
 
 	if (rm.doInfinite) {
-	    cv.updateState(pass, dirtyBits);
+	    cv.updateState(dirtyBits);
 	    while (r != null) {
 		cv.callDisplayList(cv.ctx,r.renderAtom.dlistIds[r.index],
 				   rm.isNonUniformScale);
@@ -118,7 +114,7 @@ class DisplayListRenderMethod implements RenderMethod {
 	while (r != null) {
 	    if (cv.ra == r.renderAtom) {
 		if (cv.raIsVisible) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    cv.callDisplayList(cv.ctx, r.renderAtom.dlistIds[r.index],
 				       rm.isNonUniformScale);
 		    isVisible = true;
@@ -126,7 +122,7 @@ class DisplayListRenderMethod implements RenderMethod {
 	    }
 	    else {
 		if (r.renderAtom.localeVwcBounds.intersect(cv.viewFrustum)) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    cv.raIsVisible = true;
 		    cv.callDisplayList(cv.ctx, r.renderAtom.dlistIds[r.index],
 				       rm.isNonUniformScale);
@@ -190,7 +186,7 @@ class DisplayListRenderMethod implements RenderMethod {
     }
 
     void buildIndividualDisplayList(RenderAtomListInfo ra, Canvas3D cv, 
-					long ctx) {
+					Context ctx) {
 	GeometryArrayRetained geo;
 
 	geo = (GeometryArrayRetained)ra.geometry();

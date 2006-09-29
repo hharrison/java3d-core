@@ -21,9 +21,10 @@ class InputDeviceBlockingThread extends Thread {
 
     // blocking device that this thread manages
     private InputDevice device;
-    private boolean running = true;
-    private boolean waiting = false;
+    private volatile boolean running = true;
     private volatile boolean stop = false;
+    private boolean waiting = false;
+    private boolean ready = false;
     private static int numInstances = 0;
     private int instanceNum = -1;
 
@@ -69,30 +70,35 @@ class InputDeviceBlockingThread extends Thread {
     }
 
     void finish() {
-	stop = true;
-	while (!waiting) {
-	    MasterControl.threadYield();
-	}
-
-	runMonitor(STOP);
+        stop = true;
+        runMonitor(STOP);
     }
 
     synchronized void runMonitor(int action) {
 
 	switch (action) {
 	case WAIT:
-	    try {
-		waiting = true;
-		wait();
-	    } catch (InterruptedException e) {}
-	    waiting = false;
+            // Issue 279 - loop until ready
+            while (running && !ready) {
+                waiting = true;
+                try {
+                    wait();
+                } catch (InterruptedException e) {}
+                waiting = false;
+            }
+            ready = false;
 	    break;
 	case NOTIFY:
-	    notify();
+            ready = true;
+            if (waiting) {
+                notify();
+            }
 	    break;
 	case STOP:
 	    running = false;
-	    notify();
+            if (waiting) {
+                notify();
+            }
 	    break;
 	}
     }

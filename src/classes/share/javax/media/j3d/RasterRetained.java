@@ -31,37 +31,20 @@ class RasterRetained extends GeometryRetained {
      */  
     int type = Raster.RASTER_COLOR;
 
-    int clipMode = Raster.CLIP_POSITION;
-    Point3f position = new Point3f();
-    int xSrcOffset = 0;
-    int ySrcOffset = 0;
-
-    // Used internally in CLIP_IMAGE mode
-    private int xOffset = 0;
-    private int yOffset = 0;
-
-    int width = 0;
-    int height = 0;
-    int xDstOffset = 0;
-    int yDstOffset = 0;
+    private int clipMode = Raster.CLIP_POSITION;
+    private Point3f position = new Point3f();
+    private int xSrcOffset = 0;
+    private int ySrcOffset = 0;
+    private int width = 0;
+    private int height = 0;
+    private int xDstOffset = 0;
+    private int yDstOffset = 0;
     ImageComponent2DRetained image = null;
+    Texture2DRetained texture = null;    
     DepthComponentRetained depthComponent = null;
-    float lastAlpha = 1.0f;
-
-    private Point3d adjPos;		// Position of the Raster after adjusting for dstOffset
-    private Point2d winCoord;	// Position of Raster in window coordinates
-    private Transform3D vwip;	// Vworld to Image plate transform
-    // false when computeWinCoord() get null RenderMolecule.
-    // In this case rendering is skip.
-    private boolean validVwip; 
-
     
     RasterRetained() {
     	this.geoType = GEO_TYPE_RASTER;
-	
-	vwip = new Transform3D();
-	adjPos = new Point3d();
-	winCoord = new Point2d();
     }
 
     /**
@@ -183,17 +166,15 @@ class RasterRetained extends GeometryRetained {
 	this.width = width;
 	this.height = height;
 	geomLock.unLock();
-    }  
- 
+    }   
  
     /**
-     * Sets the size of the array of pixels to be copied.
+     * Gets the size of the array of pixels to be copied.
      * @param size the new size
      */
     final void getSize(Dimension size) {
 	size.setSize(width, height);
     }  
-
 
     /**
      * Sets the destination pixel offset of the upper-left
@@ -218,42 +199,79 @@ class RasterRetained extends GeometryRetained {
 
 
     /**
+     * Initializes the raster image to the specified image.  
+     * @param image new ImageCompoent2D object used as the raster image
+     */
+    final void initImage(ImageComponent2D img) {
+        
+        int texFormat;
+        
+        if(img == null) {
+            image = null;
+            texture = null;
+            return;
+        }
+        
+        image = (ImageComponent2DRetained) img.retained;
+        image.setEnforceNonPowerOfTwoSupport(true);
+        switch(image.getNumberOfComponents()) {
+            case 1:
+                texFormat = Texture.INTENSITY;
+                break;
+            case 2:
+                texFormat = Texture.LUMINANCE_ALPHA;
+                break;
+            case 3:
+                texFormat = Texture.RGB;
+                break;
+            case 4:
+                texFormat = Texture.RGBA;
+                break;
+            default:
+                assert false;
+                return;
+        }
+        
+        Texture2D tex2D = new Texture2D(Texture.BASE_LEVEL, texFormat, 
+                img.getWidth(), img.getHeight());
+        texture = (Texture2DRetained) tex2D.retained;
+        texture.setUseAsRaster(true);
+        texture.initImage(0,img);
+      
+    }
+    
+    /**
      * Sets the pixel array used to copy pixels to/from a Canvas3D.
      * This is used when the type is RASTER_COLOR or RASTER_COLOR_DEPTH.
      * @param image the ImageComponent2D object containing the
      * color data
      */
-    final void setImage(ImageComponent2D image) {
-	ImageComponent2DRetained oldImage = this.image;
-
-	if (this.source.isLive()) {
-
-	    if (this.image != null) {
-		this.image.clearLive(refCount);
-	    }
-	    if (image != null) {
-		((ImageComponent2DRetained)image.retained).setLive(inBackgroundGroup, refCount);
-	    }
-	}
-
-	geomLock.getLock();
-	if (image != null) {
-	    ImageComponent2DRetained rimage = 
-		(ImageComponent2DRetained)image.retained;
-            rimage.setRasterRef();
-	    this.image = rimage;
-	} else {
-	    this.image = null;
-	}
-
-
-
-	// Set the lastAlpha to 1.0f
-	lastAlpha = 1.0f;
-	geomLock.unLock();
-	sendChangedMessage((J3dThread.UPDATE_RENDER|J3dThread.UPDATE_RENDERING_ATTRIBUTES),
-			   oldImage, this.image);
-    }  
+    final void setImage(ImageComponent2D img) {
+        
+        if((img != null) && 
+                (img.getImageClass() == ImageComponent.ImageClass.NIO_IMAGE_BUFFER)) {     
+            throw new IllegalArgumentException(J3dI18N.getString("Background14"));
+        }
+                
+        TextureRetained oldTex = this.texture;
+        geomLock.getLock();
+        if (source.isLive()) {
+            if (this.texture != null) {
+                this.texture.clearLive(refCount);
+            }
+        }
+        
+        initImage(img);
+        if (source.isLive()) {
+            if (texture != null) {
+                texture.setLive(inBackgroundGroup, refCount);
+            }
+            
+            sendChangedMessage((J3dThread.UPDATE_RENDER|J3dThread.UPDATE_RENDERING_ATTRIBUTES),
+                    oldTex, this.texture);
+        }
+        geomLock.unLock();
+    }
 
     /**
      * Retrieves the current pixel array object.
@@ -271,7 +289,8 @@ class RasterRetained extends GeometryRetained {
      * depth (z-buffer) data
      */
     final void setDepthComponent(DepthComponent depthComponent) {
-	if (this.source.isLive()) {
+	geomLock.getLock();
+        if (this.source.isLive()) {
 	    if (this.depthComponent != null) {
 		this.depthComponent.clearLive(refCount);
 	    }
@@ -279,7 +298,7 @@ class RasterRetained extends GeometryRetained {
 		((DepthComponentRetained)depthComponent.retained).setLive(inBackgroundGroup, refCount);
 	    }
 	}
-	geomLock.getLock();
+
 	if (depthComponent == null) {
             this.depthComponent = null;
 	} else {
@@ -301,8 +320,8 @@ class RasterRetained extends GeometryRetained {
 
     void setLive(boolean inBackgroundGroup, int refCount) {
         super.doSetLive(inBackgroundGroup, refCount);
-	if (image != null) {
-	    image.setLive(inBackgroundGroup, refCount);
+	if (texture != null) {
+	    texture.setLive(inBackgroundGroup, refCount);
 	}
 	if (depthComponent != null) {
 	    depthComponent.setLive(inBackgroundGroup, refCount);
@@ -321,8 +340,8 @@ class RasterRetained extends GeometryRetained {
 
     void clearLive(int refCount) {
 	super.clearLive(refCount);
-	if (image != null)
-	    image.clearLive(refCount);
+	if (texture != null)
+	    texture.clearLive(refCount);
 	if (depthComponent != null)
 	    depthComponent.clearLive(refCount);
     }
@@ -373,7 +392,7 @@ class RasterRetained extends GeometryRetained {
 		    int numMessages = universeList.size();
 		    J3dMessage[] m = new J3dMessage[numMessages];
 		    for (int i=0; i<numMessages; i++) {
-			m[i] = VirtualUniverse.mc.getMessage();
+			m[i] = new J3dMessage();
 			m[i].type = J3dMessage.GEOMETRY_CHANGED;
 			m[i].threads = threads;
 			m[i].args[0] = Shape3DRetained.
@@ -393,168 +412,83 @@ class RasterRetained extends GeometryRetained {
     }
 
 
-    /**
-     * Native method that does the rendering
-     */
-    native void execute(long ctx, GeometryRetained geo, 
-			boolean updateAlpha, float alpha,
-			int type, int width, int height,
-			int xSrcOffset, int ySrcOffset,
-			float x, float y, float z, byte[] image);
-    /*
-    native void executeTiled(long ctx, GeometryRetained geo, 
-			int format, int width, int height,
-			int xSrcOffset, int ySrcOffset,
-			int deltaw, int deltah,
-			float x, float y, float z, byte[] image);
-    */
+    void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale,
+            boolean updateAlpha, float alpha,
+            int screen, boolean ignoreVertexColors) {
 
-    void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
-	    boolean updateAlpha, float alpha,
-	    boolean multiScreen, int screen,
-	    boolean ignoreVertexColors, int pass) {
+        // Compute the offset position of the raster
+        // This has to be done at render time because we need access
+        // to the Canvas3D info
 
-	// Compute the offset position of the raster 
-	// This has to be done at render time because we need access 
-	// to the Canvas3D info
+        // Check if adjusted position needs to be computed
+        Point3d adjPos = new Point3d();    // Position of the Raster after adjusting for dstOffset
+        adjPos.set(position);
+        
+        Point2d winCoord = new Point2d();  // Position of Raster in window coordinates
+        Transform3D localToImagePlate = new Transform3D();  // Local to Image plate transform      
 
-	// Check if adjusted position needs to be computed
+        Point3d clipCoord = computeWinCoord(cv, ra, winCoord, adjPos, localToImagePlate);
 
-	validVwip = true;
-	adjPos.set((double)position.x, (double)position.y, (double)position.z);
+        // Test raster for out of bounds in Z.
+        if (clipCoord == null) {
+            return;
+        }
+        
+        if(clipMode == Raster.CLIP_POSITION) {
+            // Do trivial reject test on Raster position.
+            if(!isRasterClipPositionInside(clipCoord)) {
+                return;
+            }
+        }
 
-	if(xDstOffset != 0 || yDstOffset != 0) {			       
-	    getOffsetPos(cv, ra, adjPos);
-	}
+        // Add the destination offset to the Raster position in window coordinates
+        winCoord.x += xDstOffset;
+        winCoord.y += yDstOffset;
 
-	xOffset = xSrcOffset;
-	yOffset = ySrcOffset;
-	// Check if the image needs to be clipped
+        // System.err.println("Step 2 : adjPos " + adjPos + " winCoord " + winCoord);
+        
+        
+        if((type == Raster.RASTER_COLOR) || (type == Raster.RASTER_COLOR_DEPTH)) {
+            float devCoordZ = (float) (clipCoord.z * 0.5 - 0.5); 
+            // Do textfill stuffs
+            if (texture != null) {
+                // setup Texture pipe.                
+                cv.updateTextureForRaster(texture);                
+                
+                cv.textureFill(this, winCoord, (float) devCoordZ, alpha);
 
-	if (clipMode == Raster.CLIP_IMAGE) 
-	    clipImage(cv, ra, adjPos);
+                // Restore texture pipe.
+                cv.restoreTextureBin();
+            }
 
-	if (!validVwip) {
-	    return;
-	}
-	if ((image != null) && !image.imageYdownCacheDirty) {
-	    // If its a null image do nothing ..
-	    if (image != null && image.imageYdown[0] != null) {
-		// Handle alpha, if necessary
-		// Note, raster always makes a copy, so we can update alpha
-		// in the image
-		if (updateAlpha) {
-		    // Update Alpha value per screen
-		    // If the image is by reference, force a copy, since
-		    // we need to copy the alpha values
-		    image.updateAlpha(cv, screen, alpha);
-		    execute(cv.ctx, this, updateAlpha, alpha,
-			    type, width, height, xOffset, yOffset,
-			    (float)adjPos.x, (float)adjPos.y , (float)adjPos.z,
-			    image.imageYdown[screen]);
-		}
-		else {
-		    execute(cv.ctx, this, updateAlpha, alpha,
-			    type, width, height, xOffset, yOffset,
-			    (float)adjPos.x, (float)adjPos.y , (float)adjPos.z,
-			    image.imageYdown[0]);
-		}
-	    }
-	}
-  /*
-	else {
-	    // Should never come here ...
-	    if ((type & Raster.RASTER_COLOR) != 0){
-		// Send down the tiles
-		int tilew = image.tilew;
-		int tileh = image.tileh;
-		int w = width, h = height;
-		int curw, curh;
-		int xo = xOffset, yo = yOffset;
-		float xpos = position.x, ypos = position.y;
-		// First find the tile {x.y} to start from
-		int tileX = 0, tileY = 0;
-		while (xo > tilew) {
-		    tileX++;
-		    xo -= tilew;
-		}
-		
-		while (yo > tileh) {
-		    tileY++;
-		    yo -= tileh;
-		}
-		int initTileY = image.minTileY+tileY;
-		int initTileX = image.minTileX+tileX;
-		int m,n;
-		int deltaw, deltah = 0;
-		curh = tileh - yo;
-		for (m = initTileY; m < image.minTileY+image.numYTiles; m++) {
-		    curw = tilew - xo;
-		    deltaw = 0;
-		    w = width;
-		    for (n = initTileX; n < image.minTileX+image.numXTiles; n++) {
-			java.awt.image.Raster ras;
-			ras = image.bImage[0].getTile(n,m);
-			byte[] tmpImage =  ((DataBufferByte)ras.getDataBuffer()).getData();
-			if (w <curw) {
-			    curw = w;
-			}
-			executeTiled(cv.ctx, this, image.storedYdownFormat, 
-				curw,
-				curh,
-				xo, yo,
-				deltaw, deltah,
-				(float)adjPos.x, (float)adjPos.y , (float)adjPos.z,
-				tmpImage);
-			
-			xo = 0;
-			w -= curw;
-			if (w == 0)
-			    break;
-			deltaw += curw;
-			curw = tilew;
-		    }
-		    yo = 0;
-		    h -= curh;
-		    if (h == 0)
-			break;
-		    deltah += curh;
-		    curh = tileh;
-		    if (h < curh)
-			curh = h;
-		    xo = xOffset;
-		}
-	    }
-	    if ((type & Raster.RASTER_DEPTH) != 0) {
-		execute(cv.ctx, this, updateAlpha, alpha,
-			Raster.RASTER_DEPTH, width, height,
-			xOffset, yOffset,
-			(float)adjPos.x, (float)adjPos.y , (float)adjPos.z,
-			image.imageYdown[screen]);
-	    }
-	}
-  */
+        }
+
+        if((type == Raster.RASTER_DEPTH) || (type == Raster.RASTER_COLOR_DEPTH)) {
+
+            Point2i srcOffset = new Point2i(xSrcOffset, ySrcOffset);
+            
+            if (clipMode == Raster.CLIP_IMAGE) {
+                clipImage(cv, ra, winCoord, srcOffset);
+            }
+            
+            computeObjCoord(cv, winCoord, adjPos, localToImagePlate); 
+
+            cv.executeRasterDepth(cv.ctx,
+                    (float) adjPos.x,
+                    (float) adjPos.y,
+                    (float) adjPos.z,
+                    srcOffset.x,
+                    srcOffset.y,
+                    width,
+                    height,
+                    depthComponent.width,
+                    depthComponent.height,
+                    depthComponent.type,
+                    ((DepthComponentIntRetained) depthComponent).depthData);
+                    
+        }
     }
     
-    /**
-     * Computes the position of the origin of this Raster in object coordinates
-     * The origin is the top-left corner offset by the destination offset
-     * The offset position is returned in objCoord
-     *
-     * @param objCoord - Position of the Raster in object coordinates
-     * @return nothing. The offset position is returned in objCoord
-     */
-    private void getOffsetPos(Canvas3D canvas, RenderAtom ra, Point3d objCoord) {
-	computeWinCoord(canvas, ra, winCoord, objCoord);
-	
-	// Add the destination offset to the Raster position in window coordinates
-	winCoord.x -= xDstOffset;
-	winCoord.y -= yDstOffset;
-	
-	// Now back transform this offset pt. from window to object coordinates
-	computeObjCoord(canvas, winCoord, objCoord);
-	// pt. is now in object space again
-    }
     
     /**
      * Clips the image against the window.  This method simulates
@@ -564,29 +498,12 @@ class RasterRetained extends GeometryRetained {
      * clipping against the right and bottom edges will be handled by
      * the underlying graphics library automatically.
      */
-    private void clipImage(Canvas3D canvas, RenderAtom ra, Point3d objCoord) {
-	// check if window coordinates have already been calculated by
-	// getOffsetPos(). 
-
-	if(xDstOffset == 0 && yDstOffset == 0) {
-	    double x = objCoord.x;
-	    double y = objCoord.y;
-	    double z = objCoord.z;
-	    computeWinCoord(canvas, ra, winCoord, objCoord);
-
-	    if ((winCoord.x > 0) && (winCoord.y > 0)) {
-		objCoord.x = x;
-		objCoord.y = y;
-		objCoord.z = z;
-		return; // no need to clip
-	    }
-	} else {
-	    if ((winCoord.x > 0) && (winCoord.y > 0)) {
-		return;
-	    }	    
-	}
-
-
+    private void clipImage(Canvas3D canvas, RenderAtom ra, Point2d winCoord, Point2i srcOffset) {
+	
+        if ((winCoord.x > 0) && (winCoord.y > 0)) {
+            return;
+        }
+	
 	// Check if the Raster point will be culled
 	// Note that w use 1 instead of 0, because when hardware
 	// tranform the coordinate back to winCoord it may get
@@ -595,37 +512,32 @@ class RasterRetained extends GeometryRetained {
 	// (see bug 4732965)
 	if(winCoord.x < 1) {
 	    // Negate the window position and use this as the offset
-	    xOffset = (int)-winCoord.x+1;
+	    srcOffset.x = (int)-winCoord.x+1;
 	    winCoord.x = 1;
 	}
 	
 	if(winCoord.y < 1) {
 	    // Negate the window position and use this as the offset
-	    yOffset = (int)-winCoord.y+1;
+	    srcOffset.y = (int)-winCoord.y+1;
 	    winCoord.y = 1;
 	}
 	
 	//check if user-specified subimage is smaller than the clipped image
-	if (xOffset < xSrcOffset)
-	    xOffset = xSrcOffset;
-	if(yOffset < ySrcOffset)
-	    yOffset = ySrcOffset;
-	// back transform to object coords
-	if(xDstOffset == 0 && yDstOffset == 0) 
-	    // Image plate to local Xform needs to be computed
-	    computeObjCoord(canvas, winCoord, objCoord);
-	else {
-	    // vwip should contain the Imageplate to Local transform 
-	    // (it was computed by computeObjCoord). 
-	    // We can simply use the previously computed value here
-	    canvas.getPixelLocationInImagePlate(winCoord.x, winCoord.y, 
-						objCoord.z, objCoord);
-	    vwip.transform(objCoord);
-	}
+	if (srcOffset.x < xSrcOffset)
+	    srcOffset.x = xSrcOffset;
+	if(srcOffset.y < ySrcOffset)
+	    srcOffset.y = ySrcOffset;
+        
+    }  
 
+    
+    private boolean isRasterClipPositionInside(Point3d clipCoord) {
+        return (clipCoord.x >= -1.0) && (clipCoord.x <= 1.0) &&
+                (clipCoord.y >= -1.0) && (clipCoord.y <= 1.0);
     }
     
-    private void computeObjCoord(Canvas3D canvas, Point2d winCoord, Point3d objCoord) {
+    private void computeObjCoord(Canvas3D canvas, Point2d winCoord, Point3d objCoord,
+                                Transform3D localToImagePlate) {
 	// Back transform this pt. from window to object coordinates
 	// Assumes this method is ALWAYS called after computeWinCoord has been 
 	// called. computeWinCoord calculates the Vworld to Image Plate Xform. 
@@ -635,29 +547,52 @@ class RasterRetained extends GeometryRetained {
 					    objCoord);
 	// Get image plate to object coord transform
 	// inv(P x M)
-	vwip.invert();
-	vwip.transform(objCoord);
+	localToImagePlate.invert();
+	localToImagePlate.transform(objCoord);
     }
     
-    private void computeWinCoord(Canvas3D canvas, RenderAtom ra, 
-				Point2d winCoord, Point3d objCoord) {
+    private Point3d computeWinCoord(Canvas3D canvas, RenderAtom ra, 
+				Point2d winCoord, Point3d objCoord,
+                                Transform3D localToImagePlate) {
 	// Get local to Vworld transform
 	RenderMolecule rm = ra.renderMolecule;
 
 	if (rm == null) {
 	    // removeRenderAtom() may set ra.renderMolecule to null
 	    // in RenderBin before this renderer thread run. 
-	    validVwip = false;
-	    return;
-	}
-	// MT safe issue: We can't reference ra.renderMolecule below since
+	    return null;
+        }
+        
+        // MT safe issue: We can't reference ra.renderMolecule below since
         // RenderBin thread may set it to null anytime. Use rm instead.
 
 	Transform3D lvw = rm.localToVworld[rm.localToVworldIndex[
 				 NodeRetained.LAST_LOCAL_TO_VWORLD]];
-	
+
+        
+        Point3d clipCoord3 = new Point3d();
+        clipCoord3.set(objCoord);
+        Point4d clipCoord4 = new Point4d();
+        
+        // Transform point from local coord. to clipping coord.
+        lvw.transform(clipCoord3);
+        canvas.vworldToEc.transform(clipCoord3);
+        canvas.projTrans.transform(clipCoord3, clipCoord4);
+        
+        // clip check in Z
+        if((clipCoord4.w <= 0.0) || 
+                (clipCoord4.z > clipCoord4.w) || (-clipCoord4.z > clipCoord4.w)) {
+
+            return null;
+        }
+        double invW = 1.0 / clipCoord4.w;
+        
+        clipCoord3.x = clipCoord4.x * invW;
+        clipCoord3.y = clipCoord4.y * invW;
+        clipCoord3.z = clipCoord4.z * invW;
+      
 	// Get Vworld to image plate Xform
-	canvas.getLastVworldToImagePlate(vwip);
+	canvas.getLastVworldToImagePlate(localToImagePlate);
 	
 	// v' = vwip x lvw x v 		
 	// 		where v' = transformed vertex, 
@@ -666,13 +601,16 @@ class RasterRetained extends GeometryRetained {
 	//			  v = vertex
 	
 	// Compute composite local to image plate Xform
-	vwip.mul(lvw);
+	localToImagePlate.mul(lvw);
 	
 	// Transform the Raster's position from object to world coordinates
-	vwip.transform(objCoord);
+	localToImagePlate.transform(objCoord);
 	
+        
 	// Get the window coordinates of this point
 	canvas.getPixelLocationFromImagePlate(objCoord, winCoord);
+        
+        return clipCoord3;
     }
     
     int getClassType() {

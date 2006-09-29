@@ -28,10 +28,11 @@ import java.util.Hashtable;
  * boundary color is used when the boundaryModeS and boundaryModeT
  * parameters are set to CLAMP or CLAMP_TO_BOUNDARY and if the texture
  * boundary is not specified. </LI><P>
- * <LI>Boundary Width - the texture boundary width. If the texture boundary
- * width is > 0, then all images for all mipmap levels will include boundary
- * texels. The actual texture image for level 0, for example, will be of 
- * dimension (width + 2*boundaryWidth) * (height + 2*boundaryWidth). 
+ * <LI>Boundary Width - the texture boundary width, which must be 0 or 1.
+ * If the texture boundary
+ * width is 1, then all images for all mipmap levels will include a border.
+ * The actual texture image for level 0, for example, will be of
+ * dimension (width + 2*boundaryWidth) * (height + 2*boundaryWidth).
  * The boundary texels will be used when linear filtering is to be applied.
  * </LI><p>
  * <LI>Boundary ModeS and Boundary ModeT - the boundary mode for the
@@ -549,7 +550,7 @@ public abstract class Texture extends NodeComponent {
         ALLOW_SHARPEN_TEXTURE_READ,
         ALLOW_SIZE_READ        
     };
-    
+
     /**
      * Constructs a Texture object with default parameters.
      * The default values are as follows:
@@ -610,6 +611,9 @@ public abstract class Texture extends NodeComponent {
 		   int		width,
 		   int		height) {
 
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
+
         if ((mipMapMode != BASE_LEVEL) && (mipMapMode != MULTI_LEVEL_MIPMAP))
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture0"));
 
@@ -619,19 +623,32 @@ public abstract class Texture extends NodeComponent {
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture1"));
 	}
         
-        // set default read capabilities
-        setDefaultReadCapabilities(readCapabilities);
+        if (width < 1) {
+            throw new IllegalArgumentException(J3dI18N.getString("Texture46"));
+        }
 
-	int widPower = getPowerOf2(width);
-	if (widPower == -1)
-	    throw new IllegalArgumentException(J3dI18N.getString("Texture2"));
+        if (height < 1) {
+            throw new IllegalArgumentException(J3dI18N.getString("Texture47"));
+        }
 
-	int heiPower = getPowerOf2(height);
-	if (heiPower == -1)
-	    throw new IllegalArgumentException(J3dI18N.getString("Texture3"));
+	int widthLevels;
+	int heightLevels;
 
-	((TextureRetained)this.retained).initialize(format, width, widPower,
-					height, heiPower, mipMapMode, 0);
+        if (VirtualUniverse.mc.enforcePowerOfTwo) {
+	    widthLevels = getPowerOf2(width);
+	    if (widthLevels == -1)
+		throw new IllegalArgumentException(J3dI18N.getString("Texture2"));
+
+	    heightLevels = getPowerOf2(height);
+	    if (heightLevels == -1)
+		throw new IllegalArgumentException(J3dI18N.getString("Texture3"));
+	} else {
+	    widthLevels = getLevelsNPOT(width);
+	    heightLevels = getLevelsNPOT(height);
+	}
+
+	((TextureRetained)this.retained).initialize(format, width, widthLevels,
+					height, heightLevels, mipMapMode, 0);
     }
 
     /**
@@ -653,10 +670,10 @@ public abstract class Texture extends NodeComponent {
      * does not include the width of the boundary.
      * @param height height of image at level 0. Must be power of 2. This
      * does not include the width of the boundary.
-     * @param boundaryWidth width of the boundary.
+     * @param boundaryWidth width of the boundary, which must be 0 or 1.
      * @exception IllegalArgumentException if width or height are not a
      * power of 2, if an invalid format or mipMapMode is specified, or
-     * if the boundaryWidth < 0
+     * if the boundaryWidth is &lt; 0 or &gt; 1
      *
      * @since Java 3D 1.3
      */
@@ -665,6 +682,9 @@ public abstract class Texture extends NodeComponent {
 		   int		width,
 		   int		height,
 		   int		boundaryWidth) {
+
+        // set default read capabilities
+        setDefaultReadCapabilities(readCapabilities);
 
         if ((mipMapMode != BASE_LEVEL) && (mipMapMode != MULTI_LEVEL_MIPMAP))
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture0"));
@@ -675,22 +695,35 @@ public abstract class Texture extends NodeComponent {
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture1"));
 	}
 
-        // set default read capabilities
-        setDefaultReadCapabilities(readCapabilities);
+        if (width < 1) {
+            throw new IllegalArgumentException(J3dI18N.getString("Texture46"));
+        }
 
-	int widPower = getPowerOf2(width);
-	if (widPower == -1)
-	    throw new IllegalArgumentException(J3dI18N.getString("Texture2"));
+        if (height < 1) {
+            throw new IllegalArgumentException(J3dI18N.getString("Texture47"));
+        }
 
-	int heiPower = getPowerOf2(height);
-	if (heiPower == -1)
-	    throw new IllegalArgumentException(J3dI18N.getString("Texture3"));
+	int widthLevels;
+	int heightLevels;
 
-	if (boundaryWidth < 0)
+        if (VirtualUniverse.mc.enforcePowerOfTwo) {
+	    widthLevels = getPowerOf2(width);
+	    if (widthLevels == -1)
+		throw new IllegalArgumentException(J3dI18N.getString("Texture2"));
+
+	    heightLevels = getPowerOf2(height);
+	    if (heightLevels == -1)
+		throw new IllegalArgumentException(J3dI18N.getString("Texture3"));
+	} else {
+	    widthLevels = getLevelsNPOT(width);
+	    heightLevels = getLevelsNPOT(height);
+	}
+
+	if (boundaryWidth < 0 || boundaryWidth > 1)
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture30"));
 
-	((TextureRetained)this.retained).initialize(format, width, widPower,
-				height, heiPower, mipMapMode, boundaryWidth);
+	((TextureRetained)this.retained).initialize(format, width, widthLevels,
+				height, heightLevels, mipMapMode, boundaryWidth);
     }
 
     /**
@@ -869,26 +902,45 @@ public abstract class Texture extends NodeComponent {
     }
 
     /**
-     * Sets the image for a specified mipmap level. 
+     * Sets the image for a specified mipmap level. Note that the image size
+     * must be the correct size for the specified mipmap level. The image size
+     * of  the base level image, that is level 0, must be the same size
+     * in each dimension (width, height, depth) as this
+     * texture, excluding the border, if any.
+     * Each successive mipmap level must be 1/2 the size of the previous level,
+     * such that <code>size[n]&nbsp;=&nbsp;floor(size[n-1]/2)</code>, exluding
+     * the border.
+     *
      * @param level mipmap level to set: 0 is the base level
      * @param image ImageComponent object containing the texture image
      * for the specified mipmap level
+     *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @exception IllegalArgumentException if an ImageComponent3D is
-     * used in a Texture2D object; if an ImageComponent2D is used in a
-     * Texture3D object; or if this object is part of a live
-     * scene graph and the image being set at this level is not the
-     * same size (width, height, depth) as the old image at this
-     * level.
+     * used in a Texture2D object or if an ImageComponent2D is used in a
+     * Texture3D object.
+     *
+     * @exception IllegalArgumentException if the image being set at this
+     * level is not the correct size for this level.
+     *
+     * @exception IllegalSharingException if this Texture is live and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalSharingException if this Texture is
+     * being used by an immediate mode context and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
      */
     public void setImage(int level, ImageComponent image) {
         if (isLiveOrCompiled()) {
 	  if(!this.getCapability(ALLOW_IMAGE_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Texture15"));
 	}
-
+        
+        // Do illegal sharing check
+        validateImageIllegalSharing(image);
+            
 	if (isLive())
 	    ((TextureRetained)this.retained).setImage(level, image);
 	else
@@ -913,20 +965,38 @@ public abstract class Texture extends NodeComponent {
     }
 
     /**
-     * Sets the array of images for all mipmap levels.
+     * Sets the array of images for all mipmap levels. Note that the image size
+     * of  the base level image, <code>images[0]</code>, must be the same size
+     * in each dimension (width, height, depth) as this
+     * texture, excluding the border, if any.
+     * Each successive mipmap level must be 1/2 the size of the previous level,
+     * such that <code>size[n]&nbsp;=&nbsp;floor(size[n-1]/2)</code>, exluding
+     * the border.
+     *
      * @param images array of ImageComponent objects
      * containing the texture images for all mipmap levels
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @exception IllegalArgumentException if an ImageComponent3D is
-     * used in a Texture2D object; if an ImageComponent2D is used in a
-     * Texture3D object; if <code>images.length</code> is not equal to
-     * the total number of mipmap levels; or if this object is part of
-     * a live scene graph and the size of each dimension (width,
-     * height, depth) of the image at a given level in the
-     * <code>images</code> array is not half the dimension of the
-     * previous level.
+     * used in a Texture2D object or if an ImageComponent2D is used in a
+     * Texture3D object.
+     *
+     * @exception IllegalArgumentException if <code>images.length</code> is
+     * not equal to the total number of mipmap levels.
+     *
+     * @exception IllegalArgumentException if the size of each dimension
+     * of the image at a given level in the
+     * <code>images</code> array is not the correct size.
+     *
+     * @exception IllegalSharingException if this Texture is live and
+     * any of the specified images are being used by a Canvas3D as an
+     * off-screen buffer.
+     *
+     * @exception IllegalSharingException if this Texture is
+     * being used by an immediate mode context and
+     * any of the specified images are being used by a Canvas3D as an
+     * off-screen buffer.
      *
      * @since Java 3D 1.2
      */
@@ -936,6 +1006,11 @@ public abstract class Texture extends NodeComponent {
 	    throw new CapabilityNotSetException(J3dI18N.getString("Texture15"));
 	}
 
+        // Do illegal sharing check     
+        for(int i=0; i<images.length; i++) {
+            validateImageIllegalSharing(images[i]);
+        }
+        
 	if (images == null)
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture20"));
 
@@ -1131,6 +1206,18 @@ public abstract class Texture extends NodeComponent {
 	}
 	//Can't reach here because we have already checked for 0
 	return -1;
+    }
+
+    // returns number of levels using NPOT rules for mipmap generation
+    // which say that each level should be floor(size/2) of previous level
+    static int getLevelsNPOT(int num) {
+	int tmp, levels = 0;
+	tmp = num;
+	while (tmp > 1) {
+	    tmp = tmp / 2;
+	    levels++;
+	}
+	return levels;
     }
 	    
     /**
@@ -1771,4 +1858,5 @@ public abstract class Texture extends NodeComponent {
       }
       return false;
    }
+
 }

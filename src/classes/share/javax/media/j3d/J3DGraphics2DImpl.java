@@ -28,6 +28,7 @@ import java.awt.font.*;
  */
 
 final class J3DGraphics2DImpl extends J3DGraphics2D {
+    private boolean hasBeenDisposed = false;
     private Graphics2D offScreenGraphics2D;
     private BufferedImage g3dImage = null;
     private byte[] data = null;
@@ -45,9 +46,8 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     private Point2D.Float ptDst2 = new Point2D.Float();
     private Color xOrModeColor = null;
     private volatile boolean initCtx = false;
-    private boolean threadWaiting = false;
+    private volatile boolean threadWaiting = false;
     static final Color blackTransparent = new Color(0,0,0,0);
-    private boolean useDrawPixel = VirtualUniverse.mc.isJ3dG2dDrawPixel;
     int objectId = -1;
 
     // Package scope contructor
@@ -55,7 +55,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 	canvas3d = c;
 	
 	synchronized (VirtualUniverse.mc.contextCreationLock) {
-	    if (c.ctx == 0) {
+	    if (c.ctx == null) {
 		// create a dummy bufferImage
 		width = 1;
 		height = 1;
@@ -117,6 +117,10 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
      * rendering to be complete before returning from this call.
      */
     public void flush(boolean waiting) {
+        
+        if (hasBeenDisposed) {
+            throw new IllegalStateException(J3dI18N.getString("J3DGraphics2D0"));
+        }
 
 	if (!isFlushed) {
 	    // Composite g3dImage into Canvas3D	
@@ -162,8 +166,10 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     
     // copy the data into a byte buffer that will be passed to opengl
     void doFlush() {
+        assert !hasBeenDisposed;
+
 	// clip to offscreen buffer size
-	if (canvas3d.ctx == 0) {
+	if (canvas3d.ctx == null) {
 	    canvas3d.getGraphicsContext3D().doClear();
 	}
 
@@ -208,7 +214,10 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     final void copyImage(BufferedImage bi, byte[] image,
 			 int width, int height,
 			 int x1, int y1, int x2, int y2) {
-	int biType = bi.getType();
+
+        assert !hasBeenDisposed;
+
+        int biType = bi.getType();
 	int w, h, i, j;
 	int row, rowBegin, rowInc, dstBegin;
 	
@@ -286,7 +295,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     void sendRenderMessage(boolean renderRun, int command,
 			   Object arg1, Object arg2, Object arg3) {
         // send a message to the request renderer
-        J3dMessage renderMessage = VirtualUniverse.mc.getMessage();
+        J3dMessage renderMessage = new J3dMessage();
         renderMessage.threads = J3dThread.RENDER_THREAD;
         renderMessage.type = J3dMessage.RENDER_IMMEDIATE;
         renderMessage.universe = null;
@@ -573,10 +582,6 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 			       int dx, int dy) {
 	validate(x+dx, y+dy, x+dx+width, y+dy+height);
 	offScreenGraphics2D.copyArea(x, y, width, height, dx, dy);
-    }
-
-    public final void dispose() {
-	offScreenGraphics2D.dispose();
     }
 
     public final void draw(Shape s) {
@@ -867,17 +872,52 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 	offScreenGraphics2D.fillRect(x, y, width, height);
     }
 
-    public void finalize() {
-	if (objectId >= 0) {
-	    VirtualUniverse.mc.freeTexture2DId(objectId);
-	}
-	offScreenGraphics2D.finalize();
+    // Issue 121 - release all resources, mark as disposed
+    public void dispose() {
+
+        if (Thread.currentThread() == canvas3d.screen.renderer) {
+            doDispose();
+        } else {
+            // Behavior Scheduler or other threads
+            // XXXX: may not be legal for behaviorScheduler
+            // May cause deadlock if it is in behaviorScheduler
+            // and we wait for Renderer to finish
+            boolean renderRun = (Thread.currentThread() !=
+                    canvas3d.view.universe.behaviorScheduler);
+            sendRenderMessage(renderRun, GraphicsContext3D.DISPOSE2D,
+                    null, null, null);
+        }
+
+
+    }
+
+    public void doDispose() {
+
+        if (hasBeenDisposed) {
+            return;
+        }
+
+        if (objectId != -1) {
+            canvas3d.freeTexture(canvas3d.ctx, objectId);
+            VirtualUniverse.mc.freeTexture2DId(objectId);
+            objectId = -1;
+        }
+
+        // Dispose of the underlying Graphics2D
+        offScreenGraphics2D.dispose();
+
+        // Mark as disposed
+        hasBeenDisposed = true;
     }
 
     public void drawAndFlushImage(BufferedImage img, int x, int y,
 				  ImageObserver observer) {
 
-	if (!(initCtx && abgr &&
+        if (hasBeenDisposed) {
+            throw new IllegalStateException(J3dI18N.getString("J3DGraphics2D0"));
+        }
+
+        if (!(initCtx && abgr &&
 	      (img.getType() == BufferedImage.TYPE_4BYTE_ABGR))) {
 	    drawImage(img, x, y, observer);
 	    flush(false);
@@ -900,11 +940,14 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 
     void doDrawAndFlushImage(BufferedImage img, int x, int y,
 			     ImageObserver observer) {
-	int imgWidth = img.getWidth(observer);
+
+        assert !hasBeenDisposed;
+
+        int imgWidth = img.getWidth(observer);
  	int imgHeight = img.getHeight(observer);
 	int px, py, x1, y1, x2, y2;
 
-	if (canvas3d.ctx == 0) {
+	if (canvas3d.ctx == null) {
 	    canvas3d.getGraphicsContext3D().doClear();
 	}
 
@@ -961,50 +1004,41 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 	try {
 	    if (!canvas3d.drawingSurfaceObject.renderLock()) {
 		return;
-	    }
-	    
-	    if (useDrawPixel) {
-		canvas3d.composite(canvas3d.ctx, px, py, 
-				   x1, y1, x2, y2, w, data, width, height);
-	    } else {
-		if (!initTexMap) {
-		    if (objectId == -1) {
-			objectId = VirtualUniverse.mc.getTexture2DId();
-		    }
-		    texWidth = getGreaterPowerOf2(w);
-		    texHeight = getGreaterPowerOf2(h);
+	    }	    
 
-		    // Canvas got resize, need to init texture map again
-		    // in Renderer thread 
-		    if (!canvas3d.initTexturemapping(canvas3d.ctx, 
-						     texWidth, texHeight,
-						     objectId)) {
-			// Fail to get the texture surface, most likely
-			// there is not enough texture memory
-			initTexMap = false;
-			VirtualUniverse.mc.freeTexture2DId(objectId);
-			objectId = -1;
-			// Use DrawPixel next time
-			useDrawPixel = true;
-		    } else {
-			initTexMap = true;
-		    }
-		}
-		if (initTexMap) {
-		    canvas3d.texturemapping(canvas3d.ctx, px, py,
-					    x1, y1, x2, y2,
-					    texWidth, texHeight, w,
-					    (abgr ? ImageComponentRetained.BYTE_ABGR:
-					     ImageComponentRetained.BYTE_RGBA),
-					    objectId,  data, width, height);
-		} else {
-		    // Fall back to composite for this round
-		    canvas3d.composite(canvas3d.ctx, px, py,
-				       x1, y1, x2, y2, w, data,
-				       width, height);
-		    
-		}
-	    }
+            if (!initTexMap) {
+                if (objectId == -1) {
+                    objectId = VirtualUniverse.mc.getTexture2DId();
+                }
+                texWidth = getGreaterPowerOf2(w);
+                texHeight = getGreaterPowerOf2(h);
+                
+                // Canvas got resize, need to init texture map again
+                // in Renderer thread
+                if (!canvas3d.initTexturemapping(canvas3d.ctx,
+                        texWidth, texHeight,
+                        objectId)) {
+                    // Fail to get the texture surface, most likely
+                    // there is not enough texture memory
+                    initTexMap = false;
+                    VirtualUniverse.mc.freeTexture2DId(objectId);
+                    objectId = -1;
+                    // TODO : Need to find a better way to report no resource problem --- Chien.
+                    System.err.println("J3DGraphics2DImpl.copyDataToCanvas() : Fail to get texture resources ..."); 
+                    
+                } else {
+                    initTexMap = true;
+                }
+            }
+            if (initTexMap) {
+                canvas3d.texturemapping(canvas3d.ctx, px, py,
+                        x1, y1, x2, y2,
+                        texWidth, texHeight, w,
+                        (abgr ? ImageComponentRetained.TYPE_BYTE_ABGR:
+                            ImageComponentRetained.TYPE_BYTE_RGBA),
+                        objectId, data, width, height);
+            }
+	    
 	    canvas3d.drawingSurfaceObject.unLock();
 	} catch (NullPointerException ne) {
 	    canvas3d.drawingSurfaceObject.unLock();
@@ -1043,7 +1077,8 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
      */
     synchronized void runMonitor(int action) {
         if (action == J3dThread.WAIT) {
-	    if (threadWaiting) {
+            // Issue 279 - loop until ready
+	    while (threadWaiting) {
 		try {
 		    wait();
 		} catch (InterruptedException e){}

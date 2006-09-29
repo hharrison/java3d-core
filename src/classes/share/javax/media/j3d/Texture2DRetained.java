@@ -22,17 +22,18 @@ import javax.vecmath.*;
  */
 class Texture2DRetained extends TextureRetained {
 
+    // Note : There is hardly any HW vendor supports detail Image. 
+    //        Detail Image operation is simply no-op in 1.5.
+    
     // currently detail image is only applicable to 2D texture
-
     // detail texture info
-
-    int detailTextureId = -1;
-    ImageComponent2DRetained detailImage = null;
-    DetailTextureImage detailTexture = null;
-    int detailTextureMode = Texture2D.DETAIL_MODULATE;
-    int detailTextureLevel = 2;
-    int numDetailTextureFuncPts = 0;
-    float detailTextureFuncPts[] = null;  // array of pairs of floats
+    
+   // These members are unused except for public set and get methods.
+    private ImageComponent2DRetained detailImage = null;
+    private int detailTextureMode = Texture2D.DETAIL_MODULATE;
+    private int detailTextureLevel = 2;
+    private int numDetailTextureFuncPts = 0;
+    private float detailTextureFuncPts[] = null;  // array of pairs of floats
                                            // first value for LOD
                                            // second value for the fcn value
 
@@ -44,7 +45,6 @@ class Texture2DRetained extends TextureRetained {
 	    detailImage = null;
 	} else {
 	    detailImage = (ImageComponent2DRetained)image.retained;
-	    detailImage.setTextureRef();
 	}
     }
 
@@ -184,174 +184,6 @@ class Texture2DRetained extends TextureRetained {
         return detailTextureFuncPts;
     }
 
-    synchronized void initMirrorObject() {
 
-	super.initMirrorObject();
-
-	Texture2DRetained mirrorTexture = (Texture2DRetained)mirror;
-
-	// detail texture info
-	mirrorTexture.detailImage = detailImage;
-	mirrorTexture.detailTextureMode = detailTextureMode;
-        mirrorTexture.detailTextureLevel = detailTextureLevel;
-        mirrorTexture.detailTexture = null;
-	mirrorTexture.numDetailTextureFuncPts = numDetailTextureFuncPts;
-
-	if (detailTextureFuncPts == null) {
-	    mirrorTexture.detailTextureFuncPts = null;
-	} else {
-	    if ((mirrorTexture.detailTextureFuncPts == null) ||
-		    (mirrorTexture.detailTextureFuncPts.length !=
-			detailTextureFuncPts.length)) {
-		mirrorTexture.detailTextureFuncPts =
-			new float[detailTextureFuncPts.length];
-	    }
-	    for (int i = 0; i < detailTextureFuncPts.length; i++) {
-		mirrorTexture.detailTextureFuncPts[i] =
-			detailTextureFuncPts[i];
-	    }
-
-	    // add detail texture to the user list of the image
-	    // only if detail texture is to be used
-	    if ((mirrorTexture.detailImage != null) &&
-	            (mirrorTexture.magFilter >= Texture2D.LINEAR_DETAIL) &&
-		    (mirrorTexture.magFilter <= Texture2D.LINEAR_DETAIL_ALPHA)) {
-                mirrorTexture.detailImage.addUser(mirrorTexture);
-	    }
-	}
-    }
-
-    void clearLive(int refCount) {
-	super.clearLive(refCount);
-
-	// remove detail texture from the user list of the image
-	if ((detailImage != null) &&
-	        (magFilter >= Texture2D.LINEAR_DETAIL) &&
-	    	(magFilter <= Texture2D.LINEAR_DETAIL_ALPHA)) {
-	    detailImage.removeUser(mirror);
-	}
-    }
-
-    // overload the incTextureBinRefCount method to take care
-    // of detail texture ref as well
-    // This method is called from RenderBin when a new TextureBin
-    // is created. And all the referenced textures in that TextureBin
-    // will be notified to increment the TextureBin reference count.
-
-    void incTextureBinRefCount(TextureBin tb) {
-	super.incTextureBinRefCount(tb);
-
-	// increment detail texture ref count
-
-	if ((detailImage != null) &&
-		(magFilter >= Texture2D.LINEAR_DETAIL) &&
-		(magFilter <= Texture2D.LINEAR_DETAIL_ALPHA)) {
-	    if (detailTexture == null) {
-		detailTexture = detailImage.getDetailTexture();
-	    }
-
-	    detailTexture.incTextureBinRefCount(format, tb);
-	}
-    }
-
-    // This method is called from AttributeBin when a TextureBin
-    // is to be removed. And all the referenced textures in that TextureBin
-    // will be notified to decrement the TextureBin reference count.
-    // And if detail texture exists, we need to decrement the
-    // TextureBin reference count of the detail texture as well.
-
-    void decTextureBinRefCount(TextureBin tb) {
-	super.decTextureBinRefCount(tb);
-
-	// decrement detail texture ref count
-
-	if (detailTexture != null) {
-	    detailTexture.decTextureBinRefCount(format, tb);
-	}
-    }
-
-
-
-    native void bindDetailTexture(long ctx, int objectId);
-
-    native void updateTextureImage(long ctx,
-                                   int numLevels,
-                                   int level,
-                                   int internalFormat, int format, 
-				   int width, int height, 
-				   int boundaryWidth, byte[] imageYup);
-
-    native void updateTextureSubImage(long ctx,
-                                      int level, int xoffset, int yoffset,
-                                      int internalFormat,int format,
-                                      int imgXOffset, int imgYOffset,
-                                      int tilew,
-                                      int width, int height,
-                                      byte[] image);
-
-    native void updateDetailTextureParameters(long ctx, 
-					int detailTextureMode,
-					int detailTextureLevel, 
-					int nPts, float[] pts);
-    // wrapper to the native call
-
-    void updateTextureImage(Canvas3D cv, int face, 
-				int numLevels, int level,
-                                int format, int storedFormat,
-                                int width, int height, 
-				int boundaryWidth, 
-				byte[] data) {
-
-        updateTextureImage(cv.ctx,  numLevels, level, format,
-                                storedFormat, width, height, 
-				boundaryWidth, data);
-    }
-
-
-
-    // wrapper to the native call
-
-    void updateTextureSubImage(Canvas3D cv, int face, int level,
-                                int xoffset, int yoffset, int format,
-                                int storedFormat, int imgXOffset,
-                                int imgYOffset, int tileWidth,
-                                int width, int height, byte[] data) {
-
-        updateTextureSubImage(cv.ctx, level, xoffset, yoffset, format,
-                                storedFormat, imgXOffset, imgYOffset,
-                                tileWidth, width, height, data);
-    }
-
-
-    void updateNative(Canvas3D cv) {
-
-	// update mipmap texture
-
-	super.updateNative(cv);
-
-
-	// update detail texture if exists
-
-	if (detailTexture != null) {
-	    detailTexture.updateNative(cv, format);
-	}
-    }
-
-
-    // update texture parameters
-
-    void updateTextureFields(Canvas3D cv) {
-	
-	super.updateTextureFields(cv);
-
-	// update detail texture parameters if applicable
-
-	if (detailTexture != null) {
-	    
-	    updateDetailTextureParameters(cv.ctx, detailTextureMode,
-		detailTextureLevel, numDetailTextureFuncPts, 
-		detailTextureFuncPts);
-	}
-    }
 }
 

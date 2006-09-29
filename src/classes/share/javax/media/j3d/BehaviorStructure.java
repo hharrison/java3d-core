@@ -1530,7 +1530,7 @@ class BehaviorStructure extends J3dStructure {
 	    scheduleList.remove(behav);
 	    behav.active = false;
 	    if (behav.universe != universe) {
-		J3dMessage m = VirtualUniverse.mc.getMessage();
+		J3dMessage m = new J3dMessage();
 		m.threads = J3dThread.UPDATE_BEHAVIOR;
 		m.type = J3dMessage.BEHAVIOR_REEVALUATE;
 		m.universe = behav.universe;

@@ -452,7 +452,7 @@ abstract class FogRetained extends LeafRetained{
      * This abstract method is used to update the current native
      * context fog values.
      */
-    abstract void update(long ctx, double scale);
+    abstract void update(Context ctx, double scale);
 
 
     void updateImmediateMirrorObject(Object[] objs) {
@@ -715,7 +715,7 @@ abstract class FogRetained extends LeafRetained{
 
 
 	if (scopes.size() > 0) {
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	    createMessage.universe = universe;
 	    createMessage.type = J3dMessage.FOG_CHANGED;
@@ -771,7 +771,7 @@ abstract class FogRetained extends LeafRetained{
     }
     
     final void sendMessage(int attrMask, Object attr) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.universe = universe;
 	createMessage.type = J3dMessage.FOG_CHANGED;

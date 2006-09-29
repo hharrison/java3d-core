@@ -42,6 +42,9 @@ import java.awt.image.RenderedImage;
  * </code>
  * </ul>
  *
+ * <p>
+ * As of Java 3D 1.5, an ImageComponent2D accepts an NioImageBuffer object
+ * as an alternative to a RenderedImage.
  */
 
 public class ImageComponent2D extends ImageComponent {
@@ -51,7 +54,12 @@ public class ImageComponent2D extends ImageComponent {
     
     /**
      * Constructs a 2D image component object using the specified
-     * format, width, and height, and a null image.
+     * format, width, and height. Default values are used for
+     * all other parameters.  The default values are as follows:
+     * <ul>
+     * image : null<br>
+     * imageClass : ImageClass.BUFFERED_IMAGE<br>
+     * </ul>
      *
      * @param format the image component format, one of: FORMAT_RGB,
      * FORMAT_RGBA, etc.
@@ -72,6 +80,8 @@ public class ImageComponent2D extends ImageComponent {
     /**
      * Constructs a 2D image component object using the specified format
      * and BufferedImage.  A copy of the BufferedImage is made.
+     * The image class is set to ImageClass.BUFFERED_IMAGE.
+     * Default values are used for all other parameters.
      *
      * @param format the image component format, one of: FORMAT_RGB,
      * FORMAT_RGBA, etc.
@@ -81,13 +91,15 @@ public class ImageComponent2D extends ImageComponent {
      */
     public ImageComponent2D(int format, BufferedImage image) {
 
-        ((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(null), image.getHeight(null), 1);
+        ((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
 	((ImageComponent2DRetained)this.retained).set(image);
     }
 
     /**
      * Constructs a 2D image component object using the specified format
      * and RenderedImage.  A copy of the RenderedImage is made.
+     * The image class is set to ImageClass.BUFFERED_IMAGE.
+     * Default values are used for all other parameters.
      *
      * @param format the image component format, one of: FORMAT_RGB,
      * FORMAT_RGBA, etc.
@@ -106,8 +118,8 @@ public class ImageComponent2D extends ImageComponent {
 
     /**
      * Constructs a 2D image component object using the specified
-     * format, width, height, byReference flag, and yUp flag, and
-     * a null image.
+     * format, width, height, byReference flag, and yUp flag.
+     * Default values are used for all other parameters.
      *
      * @param format the image component format, one of: FORMAT_RGB,
      * FORMAT_RGBA, etc.
@@ -132,7 +144,6 @@ public class ImageComponent2D extends ImageComponent {
 			    boolean	byReference,
 			    boolean	yUp) {
 
-
  	((ImageComponentRetained)this.retained).setByReference(byReference);
  	((ImageComponentRetained)this.retained).setYUp(yUp);
  	((ImageComponent2DRetained)this.retained).processParams(format, width, height, 1);
@@ -141,6 +152,7 @@ public class ImageComponent2D extends ImageComponent {
     /**
      * Constructs a 2D image component object using the specified format,
      * BufferedImage, byReference flag, and yUp flag.
+     * The image class is set to ImageClass.BUFFERED_IMAGE.
      *
      * @param format the image component format, one of: FORMAT_RGB,
      * FORMAT_RGBA, etc.
@@ -161,16 +173,19 @@ public class ImageComponent2D extends ImageComponent {
 			    boolean byReference,
 			    boolean yUp) {
 
-
  	((ImageComponentRetained)this.retained).setByReference(byReference);
  	((ImageComponentRetained)this.retained).setYUp(yUp);
- 	((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(null), image.getHeight(null), 1);
+ 	((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
  	((ImageComponent2DRetained)this.retained).set(image);
     }
 
     /**
      * Constructs a 2D image component object using the specified format,
      * RenderedImage, byReference flag, and yUp flag.
+     * The image class is set to ImageClass.RENDERED_IMAGE if the byReferece
+     * flag is true and the specified RenderedImage is <i>not</i> an instance
+     * of BufferedImage. In all other cases, the image class is set to
+     * ImageClass.BUFFERED_IMAGE.
      *
      * @param format the image component format, one of: FORMAT_RGB,
      * FORMAT_RGBA, etc.
@@ -187,32 +202,72 @@ public class ImageComponent2D extends ImageComponent {
      * @since Java 3D 1.2
      */
     public ImageComponent2D(int format,
-			    RenderedImage image,
-			    boolean byReference,
-			    boolean yUp) {
+                            RenderedImage image,
+                            boolean byReference,
+                            boolean yUp) {
 
+        ((ImageComponentRetained)this.retained).setByReference(byReference);
+        ((ImageComponentRetained)this.retained).setYUp(yUp);
+        ((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
+        ((ImageComponent2DRetained)this.retained).set(image);
+    }
 
- 	((ImageComponentRetained)this.retained).setByReference(byReference);
- 	((ImageComponentRetained)this.retained).setYUp(yUp);
- 	((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
- 	((ImageComponent2DRetained)this.retained).set(image);
+    /**
+     * Constructs a 2D image component object using the specified format,
+     * NioImageBuffer, byReference flag, and yUp flag.
+     * The image class is set to ImageClass.NIO_IMAGE_BUFFER.
+     *
+     * @param format the image component format, one of: FORMAT_RGB,
+     * FORMAT_RGBA, etc.
+     * @param image the NioImageBuffer used to create this 2D image component
+     * @param byReference a flag that indicates whether the data is copied
+     * into this image component object or is accessed by reference.
+     * @param yUp a flag that indicates the y-orientation of this image
+     * component.  If yUp is set to true, the origin of the image is
+     * the lower left; otherwise, the origin of the image is the upper
+     * left.
+     *
+     * @exception IllegalArgumentException if format is invalid, or if
+     * the width or height of the image are not positive.
+     *
+     * @exception IllegalArgumentException if the byReference flag is false.
+     *
+     * @exception IllegalArgumentException if the yUp flag is false.
+     *
+     * @since Java 3D 1.5
+     */
+    public ImageComponent2D(int format,
+                            NioImageBuffer image,
+                            boolean byReference,
+                            boolean yUp) {
+
+        ((ImageComponentRetained)this.retained).setByReference(byReference);
+        ((ImageComponentRetained)this.retained).setYUp(yUp);
+        ((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
+        ((ImageComponent2DRetained)this.retained).set(image);
     }
 
     /**
      * Sets this image component to the specified BufferedImage
-     * object.  If the data access mode is not by-reference, then the
+     * object.
+     * If the data access mode is not by-reference, then the
      * BufferedImage data is copied into this object.  If
      * the data access mode is by-reference, then a reference to the
      * BufferedImage is saved, but the data is not necessarily
      * copied.
+     * <p>
+     * The image class is set to ImageClass.BUFFERED_IMAGE.
      *
      * @param image BufferedImage object containing the image.
-     * The format and size must be the same as the current format in this
+     * Its size must be the same as the current size of this
      * ImageComponent2D object.
      *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
+     * @exception IllegalArgumentException if the width and height of the
+     * specified image is not equal to the width and height of this
+     * ImageComponent object.
      */
     public void set(BufferedImage image) {
         if (isLiveOrCompiled()) {
@@ -231,13 +286,22 @@ public class ImageComponent2D extends ImageComponent {
      * the data access mode is by-reference, a reference to the
      * RenderedImage is saved, but the data is not necessarily
      * copied.
+     * <p>
+     * The image class is set to ImageClass.RENDERED_IMAGE if the the
+     * data access mode is by-reference and the specified
+     * RenderedImage is <i>not</i> an instance of BufferedImage. In all
+     * other cases, the image class is set to ImageClass.BUFFERED_IMAGE.
      *
      * @param image RenderedImage object containing the image.
-     * The format and size must be the same as the current format in this
+     * Its size must be the same as the current size of this
      * ImageComponent2D object.
      *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
+     *
+     * @exception IllegalArgumentException if the width and height of the
+     * specified image is not equal to the width and height of this
+     * ImageComponent object.
      *
      * @since Java 3D 1.2
      */
@@ -249,6 +313,43 @@ public class ImageComponent2D extends ImageComponent {
         }
 
 	((ImageComponent2DRetained)this.retained).set(image);
+    }
+
+    /**
+     * Sets this image component to the specified NioImageBuffer
+     * object.  If the data access mode is not by-reference, the
+     * NioImageBuffer data is copied into this object.  If
+     * the data access mode is by-reference, a reference to the
+     * NioImageBuffer is saved, but the data is not necessarily
+     * copied.
+     * <p>
+     * The image class is set to ImageClass.NIO_IMAGE_BUFFER.
+     *
+     * @param image NioImageBuffer object containing the image.
+     * Its size must be the same as the current size of this
+     * ImageComponent2D object.
+     *
+     * @exception CapabilityNotSetException if appropriate capability is
+     * not set and this object is part of live or compiled scene graph
+     *
+     * @exception IllegalStateException if this ImageComponent object
+     * is <i>not</i> yUp.
+     *
+     * @exception IllegalArgumentException if the width and height of the
+     * specified image is not equal to the width and height of this
+     * ImageComponent object.
+     *
+     * @since Java 3D 1.5
+     */
+    public void set(NioImageBuffer image) {
+        if (isLiveOrCompiled()) {
+            if(!this.getCapability(ALLOW_IMAGE_WRITE)) {
+                throw new CapabilityNotSetException(
+                        J3dI18N.getString("ImageComponent2D1"));
+            }
+        }
+
+        ((ImageComponent2DRetained)this.retained).set(image);
     }
 
     /**
@@ -264,9 +365,8 @@ public class ImageComponent2D extends ImageComponent {
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
-     * @exception IllegalStateException if the data access mode is
-     * by-reference and the image referenced by this ImageComponent2D
-     * object is not an instance of BufferedImage.
+     * @exception IllegalStateException if the image class is not
+     * ImageClass.BUFFERED_IMAGE.
      */
     public BufferedImage getImage() {
         if (isLiveOrCompiled()) {
@@ -296,6 +396,9 @@ public class ImageComponent2D extends ImageComponent {
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
+     * @exception IllegalStateException if the image class is not one of:
+     * ImageClass.BUFFERED_IMAGE or ImageClass.RENDERED_IMAGE.
+     *
      * @since Java 3D 1.2
      */
     public RenderedImage getRenderedImage() {
@@ -306,6 +409,35 @@ public class ImageComponent2D extends ImageComponent {
 	return ((ImageComponent2DRetained)this.retained).getImage();
     }
 
+    /**
+     * Retrieves the image from this ImageComponent2D object.  If the
+     * data access mode is not by-reference, a copy of the image
+     * is made.  If the data access mode is by-reference, the
+     * reference is returned.
+     *
+     * @return either a new NioImageBuffer object created from the data
+     * in this image component, or the NioImageBuffer object referenced
+     * by this image component.
+     *
+     * @exception CapabilityNotSetException if appropriate capability is
+     * not set and this object is part of live or compiled scene graph
+     *
+     * @exception IllegalStateException if the image class is not
+     * ImageClass.NIO_IMAGE_BUFFER.
+     *
+     * @since Java 3D 1.5
+     */
+    public NioImageBuffer getNioImage() {
+
+        if (isLiveOrCompiled()) {
+            if (!this.getCapability(ImageComponent.ALLOW_IMAGE_READ)) {
+                throw new CapabilityNotSetException(J3dI18N.getString("ImageComponent2D0"));
+            }
+        }
+        return ((ImageComponent2DRetained)this.retained).getNioImage();
+
+    }
+
 
     /**
      * Modifies a contiguous subregion of the image component.
@@ -313,8 +445,8 @@ public class ImageComponent2D extends ImageComponent {
      * starting at the offset (srcX, srcY) of the specified 
      * RenderedImage object will be copied into the image component
      * starting at the offset (dstX, dstY) of the ImageComponent2D object.
-     * The RenderedImage object must be of the same format as the current 
-     * format of this object.
+     * The specified RenderedImage object must be of the same format as
+     * the current RenderedImage object in this image component.
      * This method can only be used if the data access mode is
      * by-copy. If it is by-reference, see updateData().
      *
@@ -332,21 +464,31 @@ public class ImageComponent2D extends ImageComponent {
      *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
+     *
      * @exception IllegalStateException if the data access mode is
      * <code>BY_REFERENCE</code>.
+     *
      * @exception IllegalArgumentException if <code>width</code> or 
      * <code>height</code> of
      * the subregion exceeds the dimension of the image of this object.
+     *
      * @exception IllegalArgumentException if <code>dstX</code> < 0, or
      * (<code>dstX</code> + <code>width</code>) > width of this object, or 
      * <code>dstY</code> < 0, or
      * (<code>dstY</code> + <code>height</code>) > height of this object.
+     *
      * @exception IllegalArgumentException if <code>srcX</code> < 0, or
      * (<code>srcX</code> + <code>width</code>) > width of the RenderedImage
      * object containing the subimage, or 
      * <code>srcY</code> < 0, or
      * (<code>srcY</code> + <code>height</code>) > height of the 
      * RenderedImage object containing the subimage.
+     *
+     * @exception IllegalArgumentException if the specified RenderedImage
+     * is not compatible with the existing RenderedImage. 
+     *
+     * @exception IllegalStateException if the image class is not one of:
+     * ImageClass.BUFFERED_IMAGE or ImageClass.RENDERED_IMAGE.
      *
      * @since Java 3D 1.3
      */
@@ -457,7 +599,7 @@ public class ImageComponent2D extends ImageComponent {
     public NodeComponent cloneNodeComponent() {
 	ImageComponent2DRetained rt = (ImageComponent2DRetained) retained;
 
-	ImageComponent2D img = new ImageComponent2D(rt.format,
+	ImageComponent2D img = new ImageComponent2D(rt.getFormat(),
 						    rt.width,
 						    rt.height,
 						    rt.byReference,
@@ -485,15 +627,26 @@ public class ImageComponent2D extends ImageComponent {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
     void duplicateAttributes(NodeComponent originalNodeComponent,
-			     boolean forceDuplicate) { 
-	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
+            boolean forceDuplicate) {
+        super.duplicateAttributes(originalNodeComponent, forceDuplicate);
 
-	RenderedImage img = ((ImageComponent2DRetained)
-			     originalNodeComponent.retained).getImage();
+        ImageComponent.ImageClass imageClass =
+                ((ImageComponentRetained)originalNodeComponent.retained).getImageClass();
+        if(imageClass == ImageComponent.ImageClass.NIO_IMAGE_BUFFER) {
+            NioImageBuffer nioImg = ((ImageComponent2DRetained)
+            originalNodeComponent.retained).getNioImage();
 
-	if (img != null) {
-	    ((ImageComponent2DRetained) retained).set(img);
-	}
+            if(nioImg != null) {
+                ((ImageComponent2DRetained) retained).set(nioImg);
+            }
+        } else {
+            RenderedImage img = ((ImageComponent2DRetained)
+            originalNodeComponent.retained).getImage();
+
+            if (img != null) {
+                ((ImageComponent2DRetained) retained).set(img);
+            }
+        }
     }
 
     /**

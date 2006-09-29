@@ -161,9 +161,44 @@ public abstract class ImageComponent extends NodeComponent {
    */
     public static final int FORMAT_CHANNEL8 = 10;
 
-  // Internal variable for checking validity of formats
-  // Change this if any more formats are added or removed
+    // Internal variable for checking validity of formats
+    // Change this if any more formats are added or removed
     static final int FORMAT_TOTAL = 10;
+
+
+    /**
+     * Used to specify the class of the image being wrapped.
+     *
+     * @since Java 3D 1.5
+     */
+    public enum ImageClass {
+        /**
+         * Indicates that this ImageComponent object wraps a BufferedImage
+         * object. This is the default state. Note that the image class will
+         * be BUFFERED_IMAGE following a call to set(RenderedImage image)
+         * if we are in by-copy mode, or if the image is an instance of
+         * BufferedImage.
+         */
+        BUFFERED_IMAGE,
+
+        /**
+         * Indicates that this ImageComponent object wraps a RenderedImage
+         * object that is <i>not</i> a BufferedImage. Note that the image class
+         * of an ImageComponent following a call to set(RenderedImage image)
+         * will be RENDERED_IMAGE, if and only if the image is not an instance
+         * of BufferedImage and the ImageComponent is in by-reference mode.
+         */
+        RENDERED_IMAGE,
+
+        /**
+         * Indicates that this ImageComponent object wraps an NioImageBuffer
+         * object. Note that an ImageComponent in this state must not be used
+         * as the off-screen buffer of a Canvas3D nor as the target of a
+         * readRaster operation.
+         */
+        NIO_IMAGE_BUFFER,
+    }
+
 
     /**
      * Specifies that this ImageComponent object allows reading its
@@ -335,10 +370,21 @@ public abstract class ImageComponent extends NodeComponent {
      * @exception RestrictedAccessException if the method is called
      * when this object is part of live or compiled scene graph.
      *
+     * @exception IllegalStateException if the image class of this object
+     * is ImageClass.NIO_IMAGE_BUFFER.
+     *
+     * @deprecated as of Java 3D 1.5, the yUp flag should only be set at object
+     * construction time.
+     *
      * @since Java 3D 1.2
      */
     public void setYUp(boolean yUp) {
 	checkForLiveOrCompiled();
+        
+        // check for illegal image class
+        if (((ImageComponentRetained)this.retained).getImageClass() == ImageClass.NIO_IMAGE_BUFFER) {
+            throw new IllegalStateException("ImageComponent4");
+        }
 
         ((ImageComponentRetained)this.retained).setYUp(yUp);
     }
@@ -355,6 +401,20 @@ public abstract class ImageComponent extends NodeComponent {
      */
     public boolean isYUp() {
         return ((ImageComponentRetained)this.retained).isYUp();
+    }
+
+
+    /**
+     * Retrieves the image class of this ImageComponent object.
+     *
+     * @return the image class of this ImageComponent,
+     * one of: ImageClass.BUFFERED_IMAGE,
+     * ImageClass.RENDERED_IMAGE, or ImageClass.NIO_IMAGE_BUFFER.
+     *
+     * @since Java 3D 1.5
+     */
+    public ImageClass getImageClass() {
+        return ((ImageComponentRetained)this.retained).getImageClass();
     }
 
 }

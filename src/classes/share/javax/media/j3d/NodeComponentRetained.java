@@ -43,7 +43,7 @@ class NodeComponentRetained extends SceneGraphObjectRetained {
     // In the case of Appearance, its a bitmask of all components
     int changedFrequent = 0;
     int compChanged = 0;
-
+    
     // Increment the refcount.  If this is the first, mark it as live.
     void doSetLive(boolean inBackgroundGroup, int refCount) {
 	int oldRefCount = this.refCount;
@@ -212,21 +212,13 @@ class NodeComponentRetained extends SceneGraphObjectRetained {
 	mirror = null;
     }
 
-    // Evaluate state based on the following extensions
-    void evaluateExtensions(int extensions) {
-    }
-
-
-
-
     void setFrequencyChangeMask(int bit, int mask) {
-	// Record only the inf->frequent change
 	if (source.getCapabilityIsFrequent(bit))
 	    changedFrequent |= mask;
 	else if (!source.isLive()) {
+            // Record the freq->infreq change only for non-live node components
 	    changedFrequent &= ~mask;
 	}
-
     }
 
      protected Object clone() {

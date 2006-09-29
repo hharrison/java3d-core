@@ -13,13 +13,8 @@
 package javax.media.j3d;
 
 import javax.vecmath.*;
-import java.util.Vector;
 import java.util.ArrayList;
-import com.sun.j3d.internal.ByteBufferWrapper;
-import com.sun.j3d.internal.BufferWrapper;
 import com.sun.j3d.internal.FloatBufferWrapper;
-import com.sun.j3d.internal.DoubleBufferWrapper;
-
 
 /**
  * The IndexedGeometryArray object contains arrays of positional coordinates,
@@ -60,7 +55,10 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
         // index arrays if USE_COORD_INDEX_ONLY is not set
         boolean notUCIO = (this.vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0;
 
-        if((this.vertexFormat & GeometryArray.COORDINATES) != 0)
+        //NVaidya
+        // Only allocate indexCoord if BY_REFERENCE_INDICES not set
+        if(((this.vertexFormat & GeometryArray.COORDINATES) != 0) &&
+           ((this.vertexFormat & GeometryArray.BY_REFERENCE_INDICES) == 0))
             this.indexCoord    = new int[indexCount];
 
         if(((this.vertexFormat & GeometryArray.NORMALS) != 0) && notUCIO)
@@ -626,6 +624,120 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	}
     }
 
+    //NVaidya
+    /**
+     * Sets the coordinate indices by reference to the specified array
+     * @param coordinateIndices an array of coordinate indices
+     */
+    final void setCoordIndicesRef(int coordinateIndices[]) {
+        int newMax = 0;
+
+        if (coordinateIndices != null) {
+            if (coordinateIndices.length < initialIndexIndex + validIndexCount) {
+                throw new IllegalArgumentException(J3dI18N.getString("IndexedGeometryArray33"));
+            }
+
+            //
+            // option 1: could fake the args to "re-use" doIndicesCheck()
+            //NVaidya
+            // newMax = doIndicesCheck(0, maxCoordIndex, coordinateIndices, coordinateIndices);
+            // if (newMax > maxCoordIndex) {
+            //     doErrorCheck(newMax);
+            // }
+            //
+            // option 2: same logic as in setInitialIndexIndex: Better, I Think ?
+            // computeMaxIndex() doesn't check for index < 0 while doIndicesCheck() does.
+            // So, a new method computeMaxIndexWithCheck
+            //NVaidya
+            newMax = computeMaxIndexWithCheck(initialIndexIndex, validIndexCount, coordinateIndices);
+            if (newMax > maxCoordIndex) {
+                doErrorCheck(newMax);
+            }
+        }
+
+        if ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) {
+            if ((vertexFormat & GeometryArray.COLOR) != 0) {
+                maxColorIndex = newMax;
+            }
+            if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+                for (int i = 0; i < texCoordSetCount; i++) {
+                    maxTexCoordIndices[i] = newMax;
+                }
+            }
+            if ((vertexFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+                for (int i = 0; i < vertexAttrCount; i++) {
+                    maxVertexAttrIndices[i] = newMax;
+                }
+            }
+            if ((vertexFormat & GeometryArray.NORMALS) != 0) {
+                maxNormalIndex = newMax;
+            }
+        }
+
+        geomLock.getLock();
+        dirtyFlag |= INDEX_CHANGED;
+        maxCoordIndex = newMax;
+        this.indexCoord = coordinateIndices;
+        geomLock.unLock();
+        if (!inUpdater && source != null && source.isLive()) {
+            sendDataChangedMessage(true);
+        }
+    }
+
+    //NVaidya
+    /**
+     * trigger from GeometryArrayRetained#updateData()
+     * to recompute maxCoordIndex and perform index integrity checks
+     */
+    final void doPostUpdaterUpdate() {
+        // user may have called setCoordIndicesRef and/or
+        // changed contents of indexCoord array. Thus, need to
+        // recompute maxCoordIndex unconditionally (and redundantly 
+        // if user had only invoked setCoordIndicesRef but not also 
+        // changed contents). geomLock is currently locked.
+
+        // Option 1:
+        // simply call setCoordIndicesRef(indexCoord); but this seems to cause
+        // deadlock or freeze - probably because the !inUpdater branch sends
+        // out too many sendDataChangedMessage(true) - occurs if updateData
+        // method is called rapidly.
+        // setCoordIndicesRef(indexCoord);
+  
+    // Option 2:
+    // use only necessary code from setCoordIndicesRef
+    // System.out.println("IndexedGeometryArrayretained#doUpdaterUpdate");
+	int newMax = 0;
+
+        if (indexCoord != null) {
+            newMax = computeMaxIndexWithCheck(initialIndexIndex, validIndexCount, indexCoord);
+            if (newMax > maxCoordIndex) { 
+                doErrorCheck(newMax);
+            }
+        }
+
+	if ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) != 0) {
+	    if ((vertexFormat & GeometryArray.COLOR) != 0) {
+		maxColorIndex = newMax;
+	    }
+	    if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
+		for (int i = 0; i < texCoordSetCount; i++) {
+		    maxTexCoordIndices[i] = newMax;
+		}
+	    }
+	    if ((vertexFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
+		for (int i = 0; i < vertexAttrCount; i++) {
+		    maxVertexAttrIndices[i] = newMax;
+		}
+	    }
+	    if ((vertexFormat & GeometryArray.NORMALS) != 0) {
+		maxNormalIndex = newMax;
+	    }	    
+	}
+	
+	dirtyFlag |= INDEX_CHANGED;
+	maxCoordIndex = newMax;
+    }
+
     /**
      * Sets the color index associated with the vertex at
      * the specified index for this object.
@@ -781,9 +893,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * the specified index for the specified vertex attribute number
      * for this object.
      */
-    public void setVertexAttrIndex(int vertexAttrNum,
-                                   int index,
-                                   int vertexAttrIndex) {
+    void setVertexAttrIndex(int vertexAttrNum,
+                            int index,
+                            int vertexAttrIndex) {
 
 	int newMax;
 	int [] indices = this.indexVertexAttr[vertexAttrNum];
@@ -806,9 +918,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * starting at the specified index for the specified vertex attribute number
      * for this object.
      */
-    public void setVertexAttrIndices(int vertexAttrNum,
-                                     int index,
-                                     int[] vertexAttrIndices) {
+    void setVertexAttrIndices(int vertexAttrNum,
+                              int index,
+                              int[] vertexAttrIndices) {
   
         int i, j, num = vertexAttrIndices.length;
         int [] indices = this.indexVertexAttr[vertexAttrNum];
@@ -852,6 +964,15 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
         for (i=0, j = index;i < num;i++, j++) {
             coordinateIndices[i] = this.indexCoord[j];
         }
+    }
+
+    //NVaidya
+    /**
+     * Returns a reference to the coordinate indices associated 
+     * with the vertices
+     */
+    final int[] getCoordIndicesRef() {
+        return this.indexCoord;
     }
 
     /**
@@ -936,8 +1057,8 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * the specified index for the specified vertex attribute number
      * for this object.
      */
-    public int getVertexAttrIndex(int vertexAttrNum,
-                                  int index) {
+    int getVertexAttrIndex(int vertexAttrNum,
+                           int index) {
 
         int [] indices = this.indexVertexAttr[vertexAttrNum];
 
@@ -949,9 +1070,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
      * starting at the specified index for the specified vertex attribute number
      * for this object.
      */
-    public void getVertexAttrIndices(int vertexAttrNum,
-                                     int index,
-                                     int[] vertexAttrIndices) {
+    void getVertexAttrIndices(int vertexAttrNum,
+                              int index,
+                              int[] vertexAttrIndices) {
 
         int i, j, num = vertexAttrIndices.length;
         int [] indices = this.indexVertexAttr[vertexAttrNum];
@@ -961,124 +1082,26 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
         }
     }
 
-    // by-copy or interleaved, by reference, Java arrays
-    private native void executeIndexedGeometry(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean useAlpha,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int initialIndexIndex,
-            int indexCount,
-            int vertexCount, int vformat,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            int texCoordSetCount, int texCoordSetMap[],
-            int texCoordSetMapLen,
-            int[] texCoordSetOffset,
-            int numActiveTexUnitState,
-            int[] texUnitStateMap,
-            float[] varray, float[] cdata,
-            int texUnitIndex, int cdirty,
-            int[] indexCoord);
-
-    // interleaved, by reference, nio buffer
-    private native void executeIndexedGeometryBuffer(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean useAlpha,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int initialIndexIndex,
-            int indexCount,
-            int vertexCount, int vformat,
-            int texCoordSetCount, int texCoordSetMap[],
-            int texCoordSetMapLen,
-            int[] texCoordSetOffset,
-            int numActiveTexUnitState,
-            int[] texUnitStateMap,
-            Object varray, float[] cdata,
-            int texUnitIndex, int cdirty,
-            int[] indexCoord);
-
-    // non interleaved, by reference, Java arrays
-    private native void executeIndexedGeometryVA(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int initialIndexIndex,
-            int validIndexCount,
-            int vertexCount,
-            int vformat,
-            int vdefined,
-            float[] vfcoords, double[] vdcoords,
-            float[] cfdata, byte[] cbdata,
-            float[] ndata,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            float[][] vertexAttrData,
-            int pass, int texcoordmaplength,
-            int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
-            int texstride, Object[] texCoords,
-            int cdirty,
-            int[] indexCoord);
-
-    // non interleaved, by reference, nio buffer
-    private native void executeIndexedGeometryVABuffer(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale,
-            boolean multiScreen,
-            boolean ignoreVertexColors,
-            int initialIndexIndex,
-            int validIndexCount,
-            int vertexCount,
-            int vformat,
-            int vdefined,
-            Object vcoords,
-            Object cdataBuffer,
-            float[] cfdata, byte[] cbdata,
-            Object normal,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            Object[] vertexAttrData,
-            int pass, int texcoordmaplength,
-            int[] texcoordoffset,
-            int numActiveTexUnitState, int[] texunitstatemap,
-            int texstride, Object[] texCoords,
-            int cdirty,
-            int[] indexCoord);
-
-    // by-copy geometry
-    private native void buildIndexedGeometry(long ctx,
-            GeometryArrayRetained geo, int geo_type,
-            boolean isNonUniformScale, boolean updateAlpha,
-            float alpha,
-            boolean ignoreVertexColors,
-            int initialIndexIndex,
-            int validIndexCount,
-            int vertexCount,
-            int vformat,
-            int vertexAttrCount, int[] vertexAttrSizes,
-            int texCoordSetCount, int texCoordSetMap[],
-            int texCoordSetMapLen,
-            int[] texCoordSetMapOffset,
-            double[] xform, double[] nxform,
-            float[] varray, int[] indexCoord);
-
 
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
 		 boolean updateAlpha, float alpha,
-		 boolean multiScreen, int screen,
-		 boolean ignoreVertexColors, int pass) {
+		 int screen, boolean ignoreVertexColors) {
+
 	int cdirty;
 	boolean useAlpha = false;
 	Object[] retVal;
 	if (mirrorGeometry != null) {
 	    mirrorGeometry.execute(cv, ra, isNonUniformScale, updateAlpha, alpha,
-				   multiScreen, screen,
-				   ignoreVertexColors, pass);
+				   screen, ignoreVertexColors);
 	    return;
 	}
-	//By reference with java array
+
+        // Check if index array is null; if yes, don't draw anything
+        if (indexCoord == null) {
+            return;
+        }
+
+        //By reference with java array
 	if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) == 0) {
 	    if ((vertexFormat & GeometryArray.BY_REFERENCE) == 0) {
 		float[] vdata;
@@ -1111,9 +1134,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		    dirtyFlag = 0;
                 }
 
-                executeIndexedGeometry(cv.ctx, this, geoType, isNonUniformScale,
+                Pipeline.getPipeline().executeIndexedGeometry(cv.ctx,
+                        this, geoType, isNonUniformScale,
                         useAlpha,
-                        multiScreen,
                         ignoreVertexColors,
                         initialIndexIndex,
                         validIndexCount,
@@ -1124,16 +1147,16 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
                         texCoordSetCount, texCoordSetMap,
                         (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
                         texCoordSetMapOffset,
-                        cv.numActiveTexUnit, cv.texUnitStateMap,
+                        cv.numActiveTexUnit,
                         vdata, null,
-                        pass, cdirty, indexCoord);
+                        cdirty, indexCoord);
 
 
 	    } // end of non by reference
 	    else if ((vertexFormat & GeometryArray.INTERLEAVED) != 0) {
 		if(interLeavedVertexData == null)
 		    return;
-		
+
 		float[] cdata = null;
 
 		synchronized (this) {
@@ -1157,9 +1180,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		    dirtyFlag = 0;
 		}
 
-                executeIndexedGeometry(cv.ctx, this, geoType, isNonUniformScale,
+                Pipeline.getPipeline().executeIndexedGeometry(cv.ctx,
+                        this, geoType, isNonUniformScale,
                         useAlpha,
-                        multiScreen,
                         ignoreVertexColors,
                         initialIndexIndex,
                         validIndexCount,
@@ -1169,9 +1192,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
                         texCoordSetCount, texCoordSetMap,
                         (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
                         texCoordSetMapOffset,
-                        cv.numActiveTexUnit, cv.texUnitStateMap,
+                        cv.numActiveTexUnit,
                         interLeavedVertexData, cdata,
-                        pass, cdirty, indexCoord);
+                        cdirty, indexCoord);
 	    }  //end of interleaved
 	    else {
                 // Check if a vertexformat is set, but the array is null
@@ -1252,8 +1275,8 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
                     if((vertexType & TEXCOORD_DEFINED) != 0)
                         vdefined |= TEXCOORD_FLOAT;
 
-                    executeIndexedGeometryVA(cv.ctx, this, geoType, isNonUniformScale,
-                            multiScreen,
+                    Pipeline.getPipeline().executeIndexedGeometryVA(cv.ctx,
+                            this, geoType, isNonUniformScale,
                             ignoreVertexColors,
                             initialIndexIndex,
                             validIndexCount,
@@ -1265,11 +1288,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
                             mirrorFloatRefNormals,
                             vertexAttrCount, vertexAttrSizes,
                             mirrorFloatRefVertexAttrs,
-                            pass,
                             ((texCoordSetMap == null) ? 0:texCoordSetMap.length),
                             texCoordSetMap,
                             cv.numActiveTexUnit,
-                            cv.texUnitStateMap,
                             texCoordStride,
                             mirrorRefTexCoords, cdirty, indexCoord);
                 }
@@ -1304,20 +1325,20 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		    dirtyFlag = 0;
 		}
 		
-		executeIndexedGeometryBuffer(cv.ctx, this, geoType, isNonUniformScale, 
-				       useAlpha,
-				       multiScreen,
-				       ignoreVertexColors,
-				       initialIndexIndex, 
-				       validIndexCount, 
-				       maxCoordIndex + 1,
-				       vertexFormat,
-				       texCoordSetCount, texCoordSetMap,
-				       (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
-				       texCoordSetMapOffset, 
-				       cv.numActiveTexUnit, cv.texUnitStateMap, 
-				       interleavedFloatBufferImpl.getBufferAsObject(), cdata,
-				       pass, cdirty, indexCoord);
+                Pipeline.getPipeline().executeIndexedGeometryBuffer(cv.ctx,
+                        this, geoType, isNonUniformScale,
+                        useAlpha,
+                        ignoreVertexColors,
+                        initialIndexIndex,
+                        validIndexCount,
+                        maxCoordIndex + 1,
+                        vertexFormat,
+                        texCoordSetCount, texCoordSetMap,
+                        (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
+                        texCoordSetMapOffset,
+                        cv.numActiveTexUnit,
+                        interleavedFloatBufferImpl.getBufferAsObject(), cdata,
+                        cdirty, indexCoord);
 	    }  //end of interleaved
 	    else {
                 // Check if a vertexformat is set, but the array is null
@@ -1417,9 +1438,8 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
                        vdefined |= TEXCOORD_FLOAT;
                     }
 
-                    executeIndexedGeometryVABuffer(cv.ctx,
+                    Pipeline.getPipeline().executeIndexedGeometryVABuffer(cv.ctx,
                             this, geoType, isNonUniformScale,
-                            multiScreen,
                             ignoreVertexColors,
                             initialIndexIndex,
                             validIndexCount,
@@ -1432,11 +1452,9 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
                             normal,
                             vertexAttrCount, vertexAttrSizes,
                             nioFloatBufferRefVertexAttrs,
-                            pass,
                             ((texCoordSetMap == null) ? 0:texCoordSetMap.length),
                             texCoordSetMap,
                             cv.numActiveTexUnit,
-                            cv.texUnitStateMap,
                             texCoordStride,
                             refTexCoords, cdirty, indexCoord);
 
@@ -1488,7 +1506,8 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		    dirtyFlag = 0;
 		}
 
-                buildIndexedGeometry(cv.ctx, this, geoType, isNonUniformScale,
+                Pipeline.getPipeline().buildIndexedGeometry(cv.ctx,
+                        this, geoType, isNonUniformScale,
                         updateAlpha, alpha, ignoreVertexColors,
                         initialIndexIndex,
                         validIndexCount,
@@ -1601,6 +1620,22 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	
     }
 
+    //NVaidya
+    // same as computeMaxIndex method but checks for index < 0
+    int computeMaxIndexWithCheck(int initial, int count, int[] indices) {
+	int maxIndex = 0;
+	for (int i = initial; i < (initial+count); i++) {
+		// Throw an exception, since index is negative
+        if (indices[i] < 0)
+		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray27"));
+	    if (indices[i] > maxIndex) {
+		maxIndex = indices[i];
+	    }
+	}
+	return maxIndex;
+	
+    }
+
     void setValidIndexCount(int validIndexCount) {
 	if (validIndexCount < 0) {
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedGeometryArray21"));
@@ -1608,6 +1643,11 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	if ((initialIndexIndex + validIndexCount) > indexCount) {
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedGeometryArray22"));
 	}
+        if ((vertexFormat & GeometryArray.BY_REFERENCE_INDICES) != 0) {
+            if (indexCoord != null && indexCoord.length < initialIndexIndex + validIndexCount) {
+                throw new IllegalArgumentException(J3dI18N.getString("IndexedGeometryArray33"));
+            }
+        }
 	int newCoordMax =0;
 	int newColorIndex=0;
 	int newNormalIndex=0;
@@ -1688,12 +1728,18 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	if ((initialIndexIndex + validIndexCount) > indexCount) {
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedGeometryArray22"));
 	}
+        if ((vertexFormat & GeometryArray.BY_REFERENCE_INDICES) != 0) {
+            if (indexCoord != null && indexCoord.length < initialIndexIndex + validIndexCount) {
+                throw new IllegalArgumentException(J3dI18N.getString("IndexedGeometryArray33"));
+            }
+        }
+
 	int newCoordMax =0;
 	int newColorIndex=0;
 	int newNormalIndex=0;
 	int[] newTexCoordIndex = null;
         int[] newVertexAttrIndex = null;
-
+        
 	newCoordMax = computeMaxIndex(initialIndexIndex, validIndexCount, indexCoord);
 	doErrorCheck(newCoordMax);
 	if ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0) {

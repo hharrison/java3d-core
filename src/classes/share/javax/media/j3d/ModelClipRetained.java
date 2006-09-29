@@ -577,9 +577,6 @@ class ModelClipRetained extends LeafRetained {
      * This method and its native counterpart update the native context
      * model clip planes.
      */
-    native void update(long ctx, int planeNum, boolean enableFlag, 
-			double A, double B, double C, double D);
-
     void update(Canvas3D cv, int enableMask) {
 	cv.setModelViewMatrix(cv.ctx, 
 			      cv.vworldToEc.mat,
@@ -587,10 +584,10 @@ class ModelClipRetained extends LeafRetained {
 	update(cv.ctx, enableMask, getLastLocalToVworld());
     }
 
-    void update(long ctx, int enableMask, Transform3D trans) {
+    void update(Context ctx, int enableMask, Transform3D trans) {
 	if (!VirtualUniverse.mc.isD3D()) {
 	    for (int i = 0; i < 6; i ++) {
-	         update(ctx, i, ((enableMask & (1 << i)) != 0), 
+	         Pipeline.getPipeline().updateModelClip(ctx, i, ((enableMask & (1 << i)) != 0), 
 			xformPlanes[i].x, xformPlanes[i].y, 
 			xformPlanes[i].z, xformPlanes[i].w);
 	    }
@@ -613,10 +610,10 @@ class ModelClipRetained extends LeafRetained {
 					    xformPlanes[i].z, xformPlanes[i].w);
 		vec.normalize();
 		invtrans.transform(vec);
-		update(ctx, i, true, vec.x, vec.y, vec.z, vec.w);
+		Pipeline.getPipeline().updateModelClip(ctx, i, true, vec.x, vec.y, vec.z, vec.w);
 
  	    } else {
-		update(ctx, i, false, 0, 0, 0, 0);
+		Pipeline.getPipeline().updateModelClip(ctx, i, false, 0, 0, 0, 0);
 	    }
 	}
     }
@@ -853,7 +850,7 @@ class ModelClipRetained extends LeafRetained {
 
 	// Initialize the mirror object, this needs to be done, when
 	// renderBin is not accessing any of the fields
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	createMessage.universe = universe;
 	createMessage.type = J3dMessage.MODELCLIP_CHANGED;
@@ -914,7 +911,7 @@ class ModelClipRetained extends LeafRetained {
 
 
 	if (scopes.size() > 0) {
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	    createMessage.universe = universe;
 	    createMessage.type = J3dMessage.MODELCLIP_CHANGED;
@@ -1026,7 +1023,7 @@ class ModelClipRetained extends LeafRetained {
     }
 
    final void sendMessage(int attrMask, Object attr1, Object attr2) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.type = J3dMessage.MODELCLIP_CHANGED;
         createMessage.universe = universe;

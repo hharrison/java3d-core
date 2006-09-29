@@ -142,7 +142,6 @@ extern VOID unlockSurfaceList();
 extern VOID freeSurface(LPDIRECT3DBASETEXTURE9 surf);
 extern VOID freePointer(void* surf);
 extern VOID freePointerList();
-extern VOID setWindowCallback(HWND topHwnd, HWND hwnd);
 extern char* getErrorMessage(int idx);
 extern HWND getTopWindow(HWND hwnd);
 

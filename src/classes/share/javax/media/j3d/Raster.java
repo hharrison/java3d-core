@@ -226,6 +226,9 @@ public class Raster extends Geometry {
      * color data
      * @param depthComponent the DepthComponent object containing the depth
      * (z-buffer) data
+     *
+     * @exception IllegalArgumentException if the image class of the specified
+     * ImageComponent2D is ImageClass.NIO_IMAGE_BUFFER.
      */
     public Raster(Point3f pos,
                   int type,
@@ -259,7 +262,10 @@ public class Raster extends Geometry {
      * @param image the ImageComponent2D object containing the
      * color data
      * @param depthComponent the DepthComponent object containing the depth
-     * (z-buffer) data
+     * (z-buffer) data 
+     *
+     * @exception IllegalArgumentException if the image class of the specified
+     * ImageComponent2D is ImageClass.NIO_IMAGE_BUFFER.
      */
     public Raster(Point3f pos, 
                   int type, 
@@ -297,6 +303,9 @@ public class Raster extends Geometry {
      * @param depthComponent the DepthComponent object containing the depth
      * (z-buffer) data
      *
+     * @exception IllegalArgumentException if the image class of the specified
+     * ImageComponent2D is ImageClass.NIO_IMAGE_BUFFER.
+     *
      * @since Java 3D 1.3
      */
     public Raster(Point3f pos,
@@ -308,6 +317,7 @@ public class Raster extends Geometry {
 		  ImageComponent2D image,
 		  DepthComponent depthComponent) {
 
+        
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
 
@@ -617,15 +627,36 @@ public class Raster extends Geometry {
     /**
      * Sets the pixel array used to copy pixels to/from a Canvas3D.
      * This is used when the type is RASTER_COLOR or RASTER_COLOR_DEPTH.
+     *
      * @param image the ImageComponent2D object containing the
      * color data
+     *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
+     *
+     * @exception IllegalSharingException if this Raster is live and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalArgumentException if the image class of the specified
+     * ImageComponent2D is ImageClass.NIO_IMAGE_BUFFER.
+     *
      */  
     public void setImage(ImageComponent2D image) {
+        
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_IMAGE_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("Raster3"));
+        
+        // Do illegal sharing check
+        if(image != null) {
+            ImageComponent2DRetained imageRetained = (ImageComponent2DRetained) image.retained;
+            if(imageRetained.getUsedByOffScreen()) {
+                if(isLive()) {
+                    throw new IllegalSharingException(J3dI18N.getString("Raster12"));
+                }
+            }
+        }
+        
         ((RasterRetained)this.retained).setImage(image);
     }
 

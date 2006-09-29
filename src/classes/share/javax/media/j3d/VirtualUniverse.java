@@ -163,12 +163,19 @@ public class VirtualUniverse extends Object {
     boolean isSceneGraphLock = false;
 
     private Object waitLock = new Object();
-    
-    private HashSet structureChangeListenerSet = null;
 
-    private HashSet shaderErrorListenerSet = null;
+    // Set of scene graph structure change listeners
+    private HashSet<GraphStructureChangeListener> structureChangeListenerSet = null;
+
+    // Set of shader error listeners
+    private HashSet<ShaderErrorListener> shaderErrorListenerSet = null;
     private ShaderErrorListener defaultShaderErrorListener =
 	ShaderProgram.getDefaultErrorListener();
+
+    // Set of rendering error listeners
+    private static HashSet<RenderingErrorListener> renderingErrorListenerSet = null;
+    private static RenderingErrorListener defaultRenderingErrorListener =
+	Renderer.getDefaultErrorListener();
 
     /**
      * Constructs a new VirtualUniverse.
@@ -255,24 +262,8 @@ public class VirtualUniverse extends Object {
 	// Print out debugging information for debug builds
 	if(VersionInfo.isDebug) {
 	    System.err.println("Java 3D system initialized");
-	    System.err.print("    graphics library = ");
-	    switch (mc.getRenderingAPI()) {
-	    case MasterControl.RENDER_OPENGL_SOLARIS:
-		System.err.println("Solaris OpenGL");
-		break;
-	    case MasterControl.RENDER_OPENGL_LINUX:
-		System.err.println("Linux OpenGL");
-		break;
-	    case MasterControl.RENDER_OPENGL_WIN32:
-		System.err.print("Windows OpenGL");
-		break;
-	    case MasterControl.RENDER_DIRECT3D:
-		System.err.println("Windows Direct3D");
-		break;
-	    default:
-		System.err.println("UNKNOWN");
-		break;
-	    }
+	    System.err.println("    rendering pipeline = " +
+                    Pipeline.getPipeline().getPipelineName());
 	    System.err.println();
 	}
     }
@@ -439,6 +430,10 @@ public class VirtualUniverse extends Object {
      * <td>String</td>
      * </tr>
      * <tr>
+     * <td><code>j3d.pipeline</code></td>
+     * <td>String</td>
+     * </tr>
+     * <tr>
      * <td><code>j3d.renderer</code></td>
      * <td>String</td>
      * </tr>
@@ -514,10 +509,20 @@ public class VirtualUniverse extends Object {
      * <p>
      *
      * <li>
+     * <code>j3d.pipeline</code>
+     * <ul>
+     * String that specifies the Java 3D rendering pipeline. This could
+     * be one of: "NATIVE_OGL", "NATIVE_D3D", or "JOGL". Others could be
+     * added in the future.
+     * </ul>
+     * </li>
+     * <p>
+     *
+     * <li>
      * <code>j3d.renderer</code>
      * <ul>
-     * String that specifies the Java 3D rendering library.  This could
-     * be one of: "OpenGL" or "DirectX".
+     * String that specifies the underlying rendering library.  This could
+     * be one of: "OpenGL" or "DirectX". Others could be added in the future.
      * </ul>
      * </li>
      * <p>
@@ -549,7 +554,10 @@ public class VirtualUniverse extends Object {
 	    values.add(VersionInfo.getSpecificationVendor());
 
 	    keys.add("j3d.renderer");
-	    values.add(mc.isD3D() ? "DirectX" : "OpenGL");
+            values.add(Pipeline.getPipeline().getRendererName());
+
+            keys.add("j3d.pipeline");
+            values.add(Pipeline.getPipeline().getPipelineName());
 
 	    // Now Create read-only properties object
 	    properties =
@@ -1058,9 +1066,9 @@ public class VirtualUniverse extends Object {
 	}
         
         synchronized(structureChangeListenerSet) {
-            Iterator it = structureChangeListenerSet.iterator();
+            Iterator<GraphStructureChangeListener> it = structureChangeListenerSet.iterator();
             while(it.hasNext()) {
-                GraphStructureChangeListener listener = (GraphStructureChangeListener)it.next();
+                GraphStructureChangeListener listener = it.next();
                 try {
                     if (add) {
                         listener.branchGroupAdded(parent, child);
@@ -1070,6 +1078,11 @@ public class VirtualUniverse extends Object {
                 }
                 catch (RuntimeException e) {
                     System.err.println("Exception occurred in GraphStructureChangeListener:");
+                    e.printStackTrace();
+                }
+                catch (Error e) {
+                    // Issue 264 - catch Error
+                    System.err.println("Error occurred in GraphStructureChangeListener:");
                     e.printStackTrace();
                 }
             }
@@ -1086,14 +1099,19 @@ public class VirtualUniverse extends Object {
 	}
 
         synchronized(structureChangeListenerSet) {
-            Iterator it = structureChangeListenerSet.iterator();
+            Iterator<GraphStructureChangeListener> it = structureChangeListenerSet.iterator();
             while(it.hasNext()) {
-                GraphStructureChangeListener listener = (GraphStructureChangeListener)it.next();
+                GraphStructureChangeListener listener = it.next();
                 try {
                     listener.branchGroupMoved(oldParent, newParent, child);
                 }
                 catch (RuntimeException e) {
                     System.err.println("Exception occurred in GraphStructureChangeListener:");
+                    e.printStackTrace();
+                }
+                catch (Error e) {
+                    // Issue 264 - catch Error
+                    System.err.println("Error occurred in GraphStructureChangeListener:");
                     e.printStackTrace();
                 }
             }
@@ -1163,9 +1181,9 @@ public class VirtualUniverse extends Object {
 	// Notify all error listeners in the set
         if (shaderErrorListenerSet != null) {
             synchronized(shaderErrorListenerSet) {
-                Iterator it = shaderErrorListenerSet.iterator();
+                Iterator<ShaderErrorListener> it = shaderErrorListenerSet.iterator();
                 while(it.hasNext()) {
-                    ShaderErrorListener listener = (ShaderErrorListener)it.next();
+                    ShaderErrorListener listener = it.next();
                     try {
                         listener.errorOccurred(error);
                     }
@@ -1173,15 +1191,108 @@ public class VirtualUniverse extends Object {
                         System.err.println("Exception occurred in ShaderErrorListener:");
                         e.printStackTrace();
                     }
+                    catch (Error e) {
+                        // Issue 264 - catch Error
+                        System.err.println("Error occurred in ShaderErrorListener:");
+                        e.printStackTrace();
+                    }
                     errorReported = true;
                 }
             }
         }
 
-	// Notify the default error listener if the set is null or empty
-	if (!errorReported) {
-	    defaultShaderErrorListener.errorOccurred(error);
+        // Notify the default error listener if the set is null or empty
+        if (!errorReported) {
+            defaultShaderErrorListener.errorOccurred(error);
+        }
+    }
+
+
+    // Issue 260 : rendering error listeners.
+
+    /**
+     * Adds the specified RenderingErrorListener to the set of listeners
+     * that will be notified when a rendering error is detected.
+     * If the specifed listener is null no action is taken and no exception
+     * is thrown.
+     * If a rendering error occurs, the listeners will be called
+     * asynchronously from a separate notification thread.  If the set
+     * of listeners is empty, a default listener is notified. The
+     * default listener prints the error information to System.err and
+     * then calls System.exit().
+     * 
+     * @param listener the listener to add to the set.
+     *
+     * @since Java 3D 1.5
+     */
+    public static void addRenderingErrorListener(RenderingErrorListener listener) {
+        if (listener == null) {
+            return;
+        }
+
+        if (renderingErrorListenerSet == null) {
+            renderingErrorListenerSet = new HashSet();
+        }
+
+        synchronized(renderingErrorListenerSet) {
+            renderingErrorListenerSet.add(listener);
+        }
+    }
+
+    /**
+     * Removes the specified RenderingErrorListener from the set of
+     * listeners. This method performs no function, nor does it throw
+     * an exception if the specified listener is not currently in the
+     * set or is null.
+     * 
+     * @param listener the listener to remove from the set.
+     *
+     * @since Java 3D 1.5
+     */
+    public static void removeRenderingErrorListener(RenderingErrorListener listener) {
+        if (renderingErrorListenerSet == null) {
+	    return;
 	}
+
+        synchronized(renderingErrorListenerSet) {
+            renderingErrorListenerSet.remove(listener);
+        }
+    }
+
+    /**
+     * Notifies all listeners of a rendering error. If no listeners exist,
+     * a default listener is notified.
+     */
+    static void notifyRenderingErrorListeners(RenderingError error) {
+	boolean errorReported = false;
+
+	// Notify all error listeners in the set
+        if (renderingErrorListenerSet != null) {
+            synchronized(renderingErrorListenerSet) {
+                Iterator<RenderingErrorListener> it = renderingErrorListenerSet.iterator();
+                while(it.hasNext()) {
+                    RenderingErrorListener listener = it.next();
+                    try {
+                        listener.errorOccurred(error);
+                    }
+                    catch (RuntimeException e) {
+                        System.err.println("Exception occurred in RenderingErrorListener:");
+                        e.printStackTrace();
+                    }
+                    catch (Error e) {
+                        // Issue 264 - catch Error
+                        System.err.println("Error occurred in RenderingErrorListener:");
+                        e.printStackTrace();
+                    }
+                    errorReported = true;
+                }
+            }
+        }
+
+        // Notify the default error listener if the set is null or empty
+        if (!errorReported) {
+            defaultRenderingErrorListener.errorOccurred(error);
+        }
     }
 
 }

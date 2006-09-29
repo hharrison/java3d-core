@@ -12,24 +12,33 @@
 
 package javax.media.j3d;
 
+/**
+ * Container for the GraphicsTemplate3D and other private data about a selected
+ * GraphicsConfiguration. An instance of this class is created along with an
+ * instance of GrahpicsConfiguration, whenever getBestConfiguration is called.
+ */
 class GraphicsConfigInfo {
-    private int reqStencilSize = 0;
-    private long fbConfig = 0L;
+    private GraphicsConfigTemplate3D graphicsConfigTemplate3D = null;
+    private Object privateData = null;
 
-    int getRequestedStencilSize() {
-	return reqStencilSize;
+    GraphicsConfigInfo(GraphicsConfigTemplate3D graphicsConfigTemplate3D) {
+        setGraphicsConfigTemplate3D(graphicsConfigTemplate3D);
     }
 
-    void setRequestedStencilSize(int reqSS) {
-	reqStencilSize = reqSS;
+    GraphicsConfigTemplate3D getGraphicsConfigTemplate3D() {
+        return graphicsConfigTemplate3D;
     }
-    
-    long getFBConfig() {
-	return fbConfig;
+
+    void setGraphicsConfigTemplate3D(GraphicsConfigTemplate3D graphicsConfigTemplate3D) {
+        this.graphicsConfigTemplate3D = graphicsConfigTemplate3D;
     }
-    
-    void setFBConfig(long fbC) {
-	fbConfig = fbC;
+
+    Object getPrivateData() {
+        return privateData;
+    }
+
+    void setPrivateData(Object privateData) {
+        this.privateData = privateData;
     }
 
 }

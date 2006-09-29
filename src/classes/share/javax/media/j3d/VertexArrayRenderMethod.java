@@ -20,18 +20,18 @@ package javax.media.j3d;
 class VertexArrayRenderMethod implements RenderMethod {
 
   
-    public boolean render(RenderMolecule rm, Canvas3D cv, int pass, 
+    public boolean render(RenderMolecule rm, Canvas3D cv, 
 			  RenderAtomListInfo ra, int dirtyBits) {
-	
+
         GeometryArrayRetained geo = (GeometryArrayRetained)ra.geometry();
         geo.setVertexFormat((rm.useAlpha && ((geo.vertexFormat & 
 					      GeometryArray.COLOR) != 0)), 
 			    rm.textureBin.attributeBin.ignoreVertexColors, cv.ctx);
 	
 	if (rm.doInfinite) {
-	    cv.updateState(pass, dirtyBits);
+	    cv.updateState(dirtyBits);
 	    while (ra != null) {
-		renderGeo(ra, rm, pass, cv);
+		renderGeo(ra, rm, cv);
 		ra = ra.next;
 	    }
 	    return true;
@@ -41,17 +41,17 @@ class VertexArrayRenderMethod implements RenderMethod {
 	while (ra != null) {
 	    if (cv.ra == ra.renderAtom) {
 		if (cv.raIsVisible) {
-		    cv.updateState(pass, dirtyBits);
-		    renderGeo(ra, rm, pass, cv);
+		    cv.updateState(dirtyBits);
+		    renderGeo(ra, rm, cv);
 		    isVisible = true;
 		}
 	    }
 	    else {
 		if (!VirtualUniverse.mc.viewFrustumCulling ||
 		    ra.renderAtom.localeVwcBounds.intersect(cv.viewFrustum)) {
-		    cv.updateState(pass, dirtyBits);
+		    cv.updateState(dirtyBits);
 		    cv.raIsVisible = true;
-		    renderGeo(ra, rm, pass, cv);
+		    renderGeo(ra, rm, cv);
 		    isVisible = true;
 		}
 		else {
@@ -69,7 +69,7 @@ class VertexArrayRenderMethod implements RenderMethod {
 	return isVisible;
     }
 
-    void renderGeo(RenderAtomListInfo ra, RenderMolecule rm, int pass, Canvas3D cv) {
+    void renderGeo(RenderAtomListInfo ra, RenderMolecule rm, Canvas3D cv) {
 	GeometryArrayRetained geo;
         boolean useAlpha;
 	
@@ -81,9 +81,7 @@ class VertexArrayRenderMethod implements RenderMethod {
 	geo.execute(cv, ra.renderAtom, rm.isNonUniformScale,
 		    (useAlpha && ((geo.vertexFormat & GeometryArray.COLOR) != 0)) ,
 		    rm.alpha,
-		    rm.renderBin.multiScreen,
 		    cv.screen.screen,
-		    rm.textureBin.attributeBin.ignoreVertexColors,
-		    pass);
+		    rm.textureBin.attributeBin.ignoreVertexColors);
     }
 }

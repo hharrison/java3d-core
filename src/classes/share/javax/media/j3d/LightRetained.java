@@ -209,7 +209,7 @@ abstract class LightRetained extends LeafRetained {
 
 	
 	initScope(scope, index);
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	scopeInfo[0] = addScopeList;
 	scopeInfo[1] = removeScopeList;
 	scopeInfo[2] = (scopes.size() > 0 ? Boolean.TRUE: Boolean.FALSE);
@@ -560,7 +560,7 @@ abstract class LightRetained extends LeafRetained {
      * This method is implemented by each light for rendering
      * context updates.  This default one does nothing.
      */
-    abstract void update(long ctx, int lightSlot, double scale);
+    abstract void update(Context ctx, int lightSlot, double scale);
 
 
     // This routine is called when rendering Env structure
@@ -847,7 +847,7 @@ abstract class LightRetained extends LeafRetained {
     }
 
     J3dMessage initMessage(int  num) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	createMessage.universe = universe;
 	createMessage.type = J3dMessage.LIGHT_CHANGED;
@@ -952,7 +952,7 @@ abstract class LightRetained extends LeafRetained {
 
 	
 	if (scopes.size() > 0) { 
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    LightRetained[] mlts = new LightRetained[newlyAddedMirrorLights.size()];
 	    for (int i = 0; i < mlts.length; i++) {
 		mlts[i] = (LightRetained)newlyAddedMirrorLights.get(i);
@@ -1036,7 +1036,7 @@ abstract class LightRetained extends LeafRetained {
     }
 
     void sendMessage(int attrMask, Object attr) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.type = J3dMessage.LIGHT_CHANGED;
 	createMessage.universe = universe;

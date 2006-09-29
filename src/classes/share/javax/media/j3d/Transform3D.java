@@ -117,6 +117,8 @@ public class Transform3D {
     private static final int ROTSCALESVD_DIRTY = SCALE_BIT |
                                                   ROTATION_BIT |
                                                   SVD_BIT;
+    private static final int ALL_DIRTY = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+
     private int dirtyBits;
 
     boolean autoNormalize = false;	// Don't auto normalize by default
@@ -541,6 +543,27 @@ public class Transform3D {
 	return this.autoNormalize;
     }
 
+    /**
+     * Transforms the point parameter with this transform and
+     * places the result into pointOut.  The fourth element of the
+     * point input paramter is assumed to be one.
+     * @param point  the input point to be transformed
+     * @param pointOut  the transformed point
+     */
+    void transform(Point3d point, Point4d pointOut) {
+        
+        pointOut.x = mat[0]*point.x + mat[1]*point.y +
+                mat[2]*point.z + mat[3];
+        pointOut.y = mat[4]*point.x + mat[5]*point.y +
+                mat[6]*point.z + mat[7];
+        pointOut.z = mat[8]*point.x + mat[9]*point.y +
+                mat[10]*point.z + mat[11];
+        pointOut.w = mat[12]*point.x + mat[13]*point.y +
+                mat[14]*point.z + mat[15];
+    }
+   
+    
+    
     private static final boolean almostZero(double a) {
 	return ((a < EPSILON_ABSOLUTE) && (a > -EPSILON_ABSOLUTE));
     }
@@ -576,17 +599,6 @@ public class Transform3D {
 	}
     }
 
-    // Fix for Issue 167 -- don't classify matrices with Infinity or NaN values
-    // as affine
-    private final boolean isInfOrNaN() {
-        for (int i = 0; i < 16; i++) {
-            if (Double.isNaN(mat[i]) || Double.isInfinite(mat[i])) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     private final void classifyAffine() {
         if (!isInfOrNaN() &&
                 almostZero(mat[12]) &&
@@ -774,7 +786,7 @@ public class Transform3D {
 	    mat[i] += t1.mat[i];
 	}
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize) {
 	    normalize();
@@ -792,7 +804,7 @@ public class Transform3D {
 	    mat[i] = t1.mat[i] + t2.mat[i];
 	}
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize) {
 	    normalize();
@@ -810,7 +822,7 @@ public class Transform3D {
 	    mat[i] -= t1.mat[i];
 	}
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize) {
 	    normalize();
@@ -829,7 +841,7 @@ public class Transform3D {
 	    mat[i] = t1.mat[i] - t2.mat[i];
 	}
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize) {
 	    normalize();
@@ -868,7 +880,7 @@ public class Transform3D {
         mat[14] = mat[11];
         mat[11] = temp;
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize) {
 	    normalize();
@@ -900,7 +912,7 @@ public class Transform3D {
            mat[14] = t1.mat[11];
            mat[15] = t1.mat[15];
 
-	   dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	   dirtyBits = ALL_DIRTY;
 
 	   if (autoNormalize) {
 	       normalize();
@@ -940,6 +952,11 @@ public class Transform3D {
         mat[14] = 0.0;
         mat[15] = 1.0;
 
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(q1)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
 
 	dirtyBits = CLASSIFY_BIT | SCALE_BIT | ROTATION_BIT;
 	type = RIGID | CONGRUENT | AFFINE | ORTHO;
@@ -974,6 +991,12 @@ public class Transform3D {
         mat[14] = 0.0;
         mat[15] = 1.0;
 
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(q1)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
+
 	dirtyBits = CLASSIFY_BIT | SCALE_BIT | ROTATION_BIT;
 	type = RIGID | CONGRUENT | AFFINE | ORTHO;
     }
@@ -1002,11 +1025,8 @@ public class Transform3D {
 	mat[9] = m1.m21*scales[1];
 	mat[10]= m1.m22*scales[2];
 
-	// only affine bit is preserved
-	// SCALE_BIT is clear in the above computeScales() so
-	// there is no need to set it dirty again.
-	dirtyBits |= (RIGID_BIT | CONGRUENT_BIT| ORTHO_BIT|
-		      CLASSIFY_BIT | ROTSCALESVD_DIRTY);
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize) {
 	    // the matrix pass in may not normalize
@@ -1038,8 +1058,8 @@ public class Transform3D {
 	 mat[9] = m1.m21*scales[1];
 	 mat[10]= m1.m22*scales[2];
 
-	dirtyBits |= (RIGID_BIT | CONGRUENT_BIT| ORTHO_BIT|
-		      CLASSIFY_BIT | ROTSCALESVD_DIRTY);
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize) {
 	    normalize();
@@ -1072,7 +1092,13 @@ public class Transform3D {
         mat[6] = (2.0*(q1.y*q1.z - q1.w*q1.x))*scales[2];
         mat[10] = (1.0 - 2.0*q1.x*q1.x - 2.0*q1.y*q1.y)*scales[2];
 
-	dirtyBits |= CLASSIFY_BIT | ROTATION_BIT;
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(q1)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
+
+        dirtyBits |= CLASSIFY_BIT | ROTATION_BIT;
 	dirtyBits &= ~ORTHO_BIT;
 	type |= ORTHO;
 	type &= ~(ORTHOGONAL|IDENTITY|SCALE|TRANSLATION|SCALE|ZERO);
@@ -1104,10 +1130,16 @@ public class Transform3D {
 	 mat[6] = (2.0*(q1.y*q1.z - q1.w*q1.x))*scales[2];
 	 mat[10] = (1.0 - 2.0*q1.x*q1.x - 2.0*q1.y*q1.y)*scales[2];
 
-	 dirtyBits |= CLASSIFY_BIT | ROTATION_BIT;
-	 dirtyBits &= ~ORTHO_BIT;
-	 type |= ORTHO;
-	 type &= ~(ORTHOGONAL|IDENTITY|SCALE|TRANSLATION|SCALE|ZERO);
+         // Issue 253: set all dirty bits if input is infinity or NaN
+         if (isInfOrNaN(q1)) {
+             dirtyBits = ALL_DIRTY;
+             return;
+         }
+
+         dirtyBits |= CLASSIFY_BIT | ROTATION_BIT;
+         dirtyBits &= ~ORTHO_BIT;
+         type |= ORTHO;
+         type &= ~(ORTHOGONAL|IDENTITY|SCALE|TRANSLATION|SCALE|ZERO);
       }
 
 
@@ -1157,7 +1189,13 @@ public class Transform3D {
 	    mat[14] = 0.0;
 	    mat[15] = 1.0;
 
-	    type = CONGRUENT | AFFINE | RIGID | ORTHO;
+            // Issue 253: set all dirty bits if input is infinity or NaN
+            if (isInfOrNaN(a1)) {
+                dirtyBits = ALL_DIRTY;
+                return;
+            }
+
+            type = CONGRUENT | AFFINE | RIGID | ORTHO;
 	    dirtyBits = CLASSIFY_BIT | ROTATION_BIT | SCALE_BIT;
 	}
     }
@@ -1208,6 +1246,12 @@ public class Transform3D {
 	    mat[13] = 0.0;
 	    mat[14] = 0.0;
 	    mat[15] = 1.0;
+
+            // Issue 253: set all dirty bits if input is infinity or NaN
+            if (isInfOrNaN(a1)) {
+                dirtyBits = ALL_DIRTY;
+                return;
+            }
 
 	    type = CONGRUENT | AFFINE | RIGID | ORTHO;
 	    dirtyBits = CLASSIFY_BIT | ROTATION_BIT | SCALE_BIT;
@@ -1267,6 +1311,11 @@ public class Transform3D {
 	    mat[10] = (t * az * az + cosTheta)*scales[2];
 	}
 
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(a1)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
 
 	// Rigid remain rigid, congruent remain congruent after
 	// set rotation
@@ -1329,6 +1378,11 @@ public class Transform3D {
 	    mat[10] = (t * az * az + cosTheta)*scales[2];
 	}
 
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(a1)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
 
 	// Rigid remain rigid, congruent remain congruent after
 	// set rotation
@@ -1369,6 +1423,12 @@ public class Transform3D {
         mat[14] = 0.0;
         mat[15] = 1.0;
 
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(angle)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
+
 	type = CONGRUENT | AFFINE | RIGID | ORTHO;
 	dirtyBits = CLASSIFY_BIT | ROTATION_BIT | SCALE_BIT;
     }
@@ -1402,6 +1462,12 @@ public class Transform3D {
         mat[13] = 0.0;
         mat[14] = 0.0;
         mat[15] = 1.0;
+
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(angle)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
 
 	type = CONGRUENT | AFFINE | RIGID | ORTHO;
 	dirtyBits = CLASSIFY_BIT | ROTATION_BIT | SCALE_BIT;
@@ -1438,6 +1504,12 @@ public class Transform3D {
         mat[14] = 0.0;
         mat[15] = 1.0;
 
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(angle)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
+
 	type = CONGRUENT | AFFINE | RIGID | ORTHO;
 	dirtyBits = CLASSIFY_BIT | ROTATION_BIT | SCALE_BIT;
     }
@@ -1455,6 +1527,12 @@ public class Transform3D {
        mat[8] = 0.0; mat[9] = 0.0; mat[10] = 1.0; mat[11] = trans.z;
        mat[12] = 0.0; mat[13] = 0.0; mat[14] = 0.0; mat[15] = 1.0;
 
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(trans)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
+
        type = CONGRUENT | AFFINE | RIGID | ORTHO;
        dirtyBits = CLASSIFY_BIT | ROTATION_BIT | SCALE_BIT;
     }
@@ -1471,6 +1549,11 @@ public class Transform3D {
        mat[8] = 0.0; mat[9] = 0.0; mat[10] = 1.0; mat[11] = trans.z;
        mat[12] = 0.0; mat[13] = 0.0; mat[14] = 0.0; mat[15] = 1.0;
 
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(trans)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
 
        type = CONGRUENT | AFFINE | RIGID | ORTHO;
        dirtyBits = CLASSIFY_BIT | ROTATION_BIT | SCALE_BIT;
@@ -1497,6 +1580,12 @@ public class Transform3D {
 	mat[8] = rot[6]*scale;
 	mat[9] = rot[7]*scale;
 	mat[10] = rot[8]*scale;
+
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(scale)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
 
 	dirtyBits |= (CLASSIFY_BIT | RIGID_BIT | CONGRUENT_BIT | SVD_BIT);
 	dirtyBits &= ~SCALE_BIT;
@@ -1528,6 +1617,13 @@ public class Transform3D {
 	mat[8] = rot[6]*scale.x;
 	mat[9] = rot[7]*scale.y;
 	mat[10] = rot[8]*scale.z;
+
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(scale)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
+
 	dirtyBits |= (CLASSIFY_BIT | RIGID_BIT | CONGRUENT_BIT | SVD_BIT);
 	dirtyBits &= ~SCALE_BIT;
     }
@@ -1568,9 +1664,8 @@ public class Transform3D {
 	mat[14] = 0.0;
 	mat[15] = 1.0;
 
-	type = AFFINE | ORTHO;
-	dirtyBits = CLASSIFY_BIT | CONGRUENT_BIT | RIGID_BIT |
-	            ROTATION_BIT;
+        // Issue 253: set all dirty bits
+        dirtyBits = ALL_DIRTY;
     }
 
     /**
@@ -1583,6 +1678,13 @@ public class Transform3D {
        mat[3] = trans.x;
        mat[7] = trans.y;
        mat[11] = trans.z;
+
+       // Issue 253: set all dirty bits if input is infinity or NaN
+       if (isInfOrNaN(trans)) {
+           dirtyBits = ALL_DIRTY;
+           return;
+       }
+
        // Only preserve CONGRUENT, RIGID, ORTHO
        type &= ~(ORTHOGONAL|IDENTITY|SCALE|TRANSLATION|SCALE|ZERO);
        dirtyBits |= CLASSIFY_BIT;
@@ -1599,6 +1701,13 @@ public class Transform3D {
        mat[3] = trans.x;
        mat[7] = trans.y;
        mat[11] = trans.z;
+
+       // Issue 253: set all dirty bits if input is infinity or NaN
+       if (isInfOrNaN(trans)) {
+           dirtyBits = ALL_DIRTY;
+           return;
+       }
+
        type &= ~(ORTHOGONAL|IDENTITY|SCALE|TRANSLATION|SCALE|ZERO);
        dirtyBits |= CLASSIFY_BIT;
     }
@@ -1636,8 +1745,9 @@ public class Transform3D {
         mat[13] = 0.0;
         mat[14] = 0.0;
         mat[15] = 1.0;
-	type = CONGRUENT | AFFINE | ORTHO;
-	dirtyBits = CLASSIFY_BIT | ROTATION_BIT | RIGID_BIT;
+
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
     }
 
     /**
@@ -1673,8 +1783,8 @@ public class Transform3D {
         mat[14] = 0.0;
         mat[15] = 1.0;
 
-	type = CONGRUENT | AFFINE | ORTHO;
-	dirtyBits =  CLASSIFY_BIT | ROTATION_BIT| RIGID_BIT;
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
     }
 
     /**
@@ -1710,8 +1820,8 @@ public class Transform3D {
         mat[14] = 0.0;
         mat[15] = 1.0;
 
-	type = CONGRUENT | AFFINE | ORTHO;
-	dirtyBits = CLASSIFY_BIT | ROTATION_BIT | RIGID_BIT;
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
     }
 
     /**
@@ -1742,9 +1852,8 @@ public class Transform3D {
 	mat[14]=0.0;
 	mat[15]=1.0;
 
-	type = AFFINE;
-	dirtyBits = ORTHO_BIT | CONGRUENT_BIT | RIGID_BIT |
-	            CLASSIFY_BIT | ROTSCALESVD_DIRTY;
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize) {
 	    // input matrix may not normalize
@@ -1780,9 +1889,8 @@ public class Transform3D {
 	mat[14]=0.0;
 	mat[15]=1.0;
 
-	type = AFFINE;
-	dirtyBits = ORTHO_BIT | CONGRUENT_BIT | RIGID_BIT |
-	            CLASSIFY_BIT | ROTSCALESVD_DIRTY;
+        // Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize)  {
 	    normalize();
@@ -1817,9 +1925,8 @@ public class Transform3D {
 	mat[14]=0.0;
 	mat[15]=1.0;
 
-	type = AFFINE;
-	dirtyBits = ORTHO_BIT | CONGRUENT_BIT | RIGID_BIT |
-	            CLASSIFY_BIT | ROTSCALESVD_DIRTY;
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize)  {
 	    normalize();
@@ -1849,7 +1956,7 @@ public class Transform3D {
 	    }
 	}
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize)  {
 	    normalize();
@@ -1920,7 +2027,7 @@ public class Transform3D {
 	mat[14] = matrix[14];
 	mat[15] = matrix[15];
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize)  {
 	    normalize();
@@ -1952,7 +2059,7 @@ public class Transform3D {
 	mat[14] = matrix[14];
 	mat[15] = matrix[15];
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize)  {
 	    normalize();
@@ -1984,7 +2091,7 @@ public class Transform3D {
 	mat[14] = m1.m32;
 	mat[15] = m1.m33;
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize)  {
 	    normalize();
@@ -2016,7 +2123,7 @@ public class Transform3D {
 	mat[14] = m1.m32;
 	mat[15] = m1.m33;
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize)  {
 	    normalize();
@@ -2049,9 +2156,8 @@ public class Transform3D {
 	mat[14] = 0.0;
 	mat[15] = 1.0;
 
-	type = AFFINE;
-	dirtyBits = ORTHO_BIT | CONGRUENT_BIT | RIGID_BIT |
-	            CLASSIFY_BIT | ROTSCALESVD_DIRTY;
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize)  {
 	    normalize();
@@ -2084,9 +2190,8 @@ public class Transform3D {
 	mat[14] = 0.0;
 	mat[15] = 1.0;
 
-	type = AFFINE;
-	dirtyBits = ORTHO_BIT | CONGRUENT_BIT | RIGID_BIT |
-	            CLASSIFY_BIT | ROTSCALESVD_DIRTY;
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize)  {
 	    normalize();
@@ -2138,6 +2243,12 @@ public class Transform3D {
 	mat[13] = 0.0;
 	mat[14] = 0.0;
 	mat[15] = 1.0;
+
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(euler)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
 
 	type = AFFINE | CONGRUENT | RIGID | ORTHO;
 	dirtyBits = CLASSIFY_BIT | SCALE_BIT | ROTATION_BIT;
@@ -2968,7 +3079,7 @@ public class Transform3D {
 	luBacksubstitution(tmp, row_perm, this.mat);
 
 	type = 0;
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
     }
 
 
@@ -3314,6 +3425,12 @@ public class Transform3D {
 	    scales = new double[3];
 
 	scales[0] = scales[1] = scales[2] = scale;
+        
+        // Issue 253: set all dirty bits if input is infinity or NaN
+        if (isInfOrNaN(x) || isInfOrNaN(y) || isInfOrNaN(z) || isInfOrNaN(scale)) {
+            dirtyBits = ALL_DIRTY;
+            return;
+        }
 
 	type = AFFINE | CONGRUENT | ORTHO;
 	dirtyBits = CLASSIFY_BIT | ROTATION_BIT | RIGID_BIT;
@@ -3329,7 +3446,7 @@ public class Transform3D {
 	for (int i=0 ; i<16 ; i++) {
 	    mat[i] *= scalar;
 	}
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
     }
 
    /**
@@ -3342,7 +3459,7 @@ public class Transform3D {
 	for (int i=0 ; i<16 ; i++) {
 	    mat[i] = t1.mat[i] * scalar;
 	}
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize) {
 	    normalize();
@@ -3465,7 +3582,7 @@ public class Transform3D {
 		dirtyBits = ORTHO_BIT | CONGRUENT_BIT | RIGID_BIT |
                             CLASSIFY_BIT | ROTSCALESVD_DIRTY;
 	    } else {
-		dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+		dirtyBits = ALL_DIRTY;
 	    }
 	}
 
@@ -3668,7 +3785,7 @@ public class Transform3D {
 		dirtyBits = ORTHO_BIT | CONGRUENT_BIT | RIGID_BIT |
                             CLASSIFY_BIT | ROTSCALESVD_DIRTY;
 	    } else {
-		dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+		dirtyBits = ALL_DIRTY;
 	    }
 	}
 
@@ -3683,11 +3800,10 @@ public class Transform3D {
      * @param t1  the matrix whose inverse is computed.
      */
     public final void mulInverse(Transform3D t1) {
-	Transform3D t2 = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t2 = new Transform3D();
 	t2.autoNormalize = false;
 	t2.invert(t1);
 	this.mul(t2);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t2);
     }
 
 
@@ -3698,11 +3814,10 @@ public class Transform3D {
      * @param t2  the transform whose inverse is computed.
      */
     public final void mulInverse(Transform3D t1, Transform3D t2) {
-        Transform3D t3 = VirtualUniverse.mc.getTransform3D(null);
+        Transform3D t3 = new Transform3D();
 	t3.autoNormalize = false;
         t3.invert(t2);
         this.mul(t1,t3);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t3);
     }
 
     /**
@@ -3712,11 +3827,10 @@ public class Transform3D {
      * @param t2  the transform whose transpose is computed
      */
     public final void mulTransposeRight(Transform3D t1, Transform3D t2) {
-	Transform3D t3 = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t3 = new Transform3D();
 	t3.autoNormalize = false;
 	t3.transpose(t2);
 	mul(t1, t3);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t3);
     }
 
 
@@ -3727,11 +3841,10 @@ public class Transform3D {
      * @param t2  the transform on the right hand side of the multiplication
      */
     public final void mulTransposeLeft(Transform3D t1, Transform3D t2){
-	Transform3D t3 = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t3 = new Transform3D();
 	t3.autoNormalize = false;
 	t3.transpose(t1);
 	mul(t3, t2);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t3);
     }
 
 
@@ -3743,15 +3856,13 @@ public class Transform3D {
      * @param t2  the transform on the right hand side of the multiplication
      */
     public final void mulTransposeBoth(Transform3D t1, Transform3D t2) {
-	Transform3D t3 = VirtualUniverse.mc.getTransform3D(null);
-	Transform3D t4 = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D t3 = new Transform3D();
+	Transform3D t4 = new Transform3D();
 	t3.autoNormalize = false;
 	t4.autoNormalize = false;
 	t3.transpose(t1);
 	t4.transpose(t2);
 	mul(t3, t4);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t3);
-	FreeListManager.freeObject(FreeListManager.TRANSFORM3D, t4);
     }
 
 
@@ -3765,6 +3876,10 @@ public class Transform3D {
      * Note that the scale of the matrix is not altered by this method.
      */
     public final void normalize() {
+        // Issue 253: Unable to normalize matrices with infinity or NaN
+        if (!isAffine() && isInfOrNaN()) {
+            return;
+        }
 
 	if ((dirtyBits & (ROTATION_BIT|SVD_BIT)) != 0) {
 	    computeScaleRotation(true);
@@ -3813,6 +3928,11 @@ public class Transform3D {
      * Note that the scale of the matrix is not altered by this method.
      */
     public final void normalizeCP()  {
+        // Issue 253: Unable to normalize matrices with infinity or NaN
+        if (!isAffine() && isInfOrNaN()) {
+            return;
+        }
+
 	if ((dirtyBits & SCALE_BIT) != 0) {
 	    computeScales(false);
 	}
@@ -4189,9 +4309,9 @@ public class Transform3D {
 	mat[4] = m1.m10; mat[5] = m1.m11; mat[6] = m1.m12;
 	mat[8] = m1.m20; mat[9] = m1.m21; mat[10] = m1.m22;
 
-	// keep affine bit
-	dirtyBits |= (RIGID_BIT | CONGRUENT_BIT | ORTHO_BIT |
-		      CLASSIFY_BIT | ROTSCALESVD_DIRTY);
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
+
 	if (autoNormalize) {
 	    normalize();
 	}
@@ -4208,9 +4328,10 @@ public class Transform3D {
 	mat[4] = m1.m10; mat[5] = m1.m11; mat[6] = m1.m12;
 	mat[8] = m1.m20; mat[9] = m1.m21; mat[10] = m1.m22;
 
-	dirtyBits |= (RIGID_BIT | CONGRUENT_BIT | ORTHO_BIT |
-		      CLASSIFY_BIT | ROTSCALESVD_DIRTY);
-	if (autoNormalize) {
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
+
+        if (autoNormalize) {
 	    normalize();
 	}
     }
@@ -4227,7 +4348,7 @@ public class Transform3D {
 	   mat[i] = s*t1.mat[i] + t2.mat[i];
 	}
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize) {
 	    normalize();
@@ -4246,7 +4367,7 @@ public class Transform3D {
 	    mat[i] = s*mat[i] + t1.mat[i];
 	}
 
-	dirtyBits = CLASSIFY_ALL_DIRTY | ROTSCALESVD_DIRTY;
+	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize) {
 	    normalize();
@@ -4354,8 +4475,8 @@ public class Transform3D {
 	mat[12] = mat[13] = mat[14] = 0;
 	mat[15] = 1;
 
-	type = AFFINE | CONGRUENT | RIGID | ORTHO;
-	dirtyBits = CLASSIFY_BIT | ROTSCALESVD_DIRTY;
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
     }
 
 
@@ -4407,7 +4528,8 @@ public class Transform3D {
 
 	// Matrix is a projection transform
 	type = 0;
-	dirtyBits = CLASSIFY_BIT | ROTSCALESVD_DIRTY;
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
     }
 
 
@@ -4454,7 +4576,8 @@ public class Transform3D {
 
 	// Matrix is a projection transform
 	type = 0;
-	dirtyBits = CLASSIFY_BIT | ROTSCALESVD_DIRTY;
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
     }
 
 
@@ -4497,10 +4620,9 @@ public class Transform3D {
 	mat[1] = mat[2] =  mat[4] = mat[6] = mat[8] =
 	    mat[9] = mat[12] = mat[13] = mat[14] = 0;
 	    mat[15] = 1;
-	// Matrix is a projection transform
-	type = AFFINE;
-	dirtyBits = CLASSIFY_BIT | ROTSCALESVD_DIRTY | CONGRUENT_BIT |
-	    RIGID_BIT | ORTHO_BIT;
+
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
     }
 
     /**
@@ -5641,18 +5763,72 @@ public class Transform3D {
 	t.mat[9] = rot[7];
 	t.mat[10] = rot[8];
 
-	t.type = ORTHOGONAL | RIGID | CONGRUENT| AFFINE | ORTHO;
-	if ((dirtyBits & SVD_BIT) != 0) {
-	    t.dirtyBits = CLASSIFY_BIT | ROTSCALESVD_DIRTY;
-	} else {
-	    t.dirtyBits = CLASSIFY_BIT | ROTATION_BIT | SCALE_BIT;
-	}
+	// Issue 253: set all dirty bits
+	t.dirtyBits = ALL_DIRTY;
     }
 
     // somehow CanvasViewCache will directly modify mat[]
     // instead of calling ortho(). So we need to reset dirty bit
     final void setOrthoDirtyBit() {
-	dirtyBits = CLASSIFY_BIT | ROTSCALESVD_DIRTY;
+	// Issue 253: set all dirty bits
+	dirtyBits = ALL_DIRTY;
 	type = 0;
+    }
+
+    // Fix for Issue 167 -- don't classify matrices with Infinity or NaN values
+    // as affine
+    private final boolean isInfOrNaN() {
+        for (int i = 0; i < 16; i++) {
+            if (Double.isNaN(mat[i]) || Double.isInfinite(mat[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Fix for Issue 253
+    // Methods to check input parameters for Infinity or NaN values
+    private final boolean isInfOrNaN(Quat4f q) {
+        return (Float.isNaN(q.x) || Float.isInfinite(q.x) ||
+                Float.isNaN(q.y) || Float.isInfinite(q.y) ||
+                Float.isNaN(q.z) || Float.isInfinite(q.z) ||
+                Float.isNaN(q.w) || Float.isInfinite(q.w));
+    }
+
+    private boolean isInfOrNaN(Quat4d q) {
+        return (Double.isNaN(q.x) || Double.isInfinite(q.x) ||
+                Double.isNaN(q.y) || Double.isInfinite(q.y) ||
+                Double.isNaN(q.z) || Double.isInfinite(q.z) ||
+                Double.isNaN(q.w) || Double.isInfinite(q.w));
+    }
+
+    private boolean isInfOrNaN(AxisAngle4f a) {
+        return (Float.isNaN(a.x) || Float.isInfinite(a.x) ||
+                Float.isNaN(a.y) || Float.isInfinite(a.y) ||
+                Float.isNaN(a.z) || Float.isInfinite(a.z) ||
+                Float.isNaN(a.angle) || Float.isInfinite(a.angle));
+    }
+
+    private boolean isInfOrNaN(AxisAngle4d a) {
+        return (Double.isNaN(a.x) || Double.isInfinite(a.x) ||
+                Double.isNaN(a.y) || Double.isInfinite(a.y) ||
+                Double.isNaN(a.z) || Double.isInfinite(a.z) ||
+                Double.isNaN(a.angle) || Double.isInfinite(a.angle));
+    }
+
+    private boolean isInfOrNaN(double val) {
+        return Double.isNaN(val) || Double.isInfinite(val);
+    }
+
+    private boolean isInfOrNaN(Vector3f v) {
+        return (Float.isNaN(v.x) || Float.isInfinite(v.x) ||
+                Float.isNaN(v.y) || Float.isInfinite(v.y) ||
+                Float.isNaN(v.z) || Float.isInfinite(v.z));
+    }
+
+    private boolean isInfOrNaN(Vector3d v) {
+        return (Double.isNaN(v.x) || Double.isInfinite(v.x) ||
+                Double.isNaN(v.y) || Double.isInfinite(v.y) ||
+                Double.isNaN(v.z) || Double.isInfinite(v.z));
     }
 }

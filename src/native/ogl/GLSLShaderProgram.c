@@ -33,6 +33,7 @@
 #endif /* DEBUG */
 
 
+extern jint getJavaIntEnv(JNIEnv *env, char* envStr);
 extern char *strJavaToC(JNIEnv *env, jstring str);
 extern void throwAssert(JNIEnv *env, char *str);
 extern jobject createShaderError(JNIEnv *env,
@@ -265,10 +266,14 @@ checkGLSLShaderExtensions(
         glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &ctxInfo->maxTextureImageUnits);
         glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, &ctxInfo->maxVertexTextureImageUnits);
         glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, &ctxInfo->maxCombinedTextureImageUnits);
+
+        /* Initialize GLSL VertexAttr info */
+        glslCtxInfo->vertexAttrOffset = getJavaIntEnv(env, "glslVertexAttrOffset");
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS_ARB, &ctxInfo->maxVertexAttrs);
-        if (ctxInfo->maxVertexAttrs > 0) {
-            /* decr count, since vertexAttr[0] is reserved for position */
-            ctxInfo->maxVertexAttrs -= 1;
+        /* decr count to allow for reserved vertex attrs */
+        ctxInfo->maxVertexAttrs -= glslCtxInfo->vertexAttrOffset;
+        if (ctxInfo->maxVertexAttrs < 0) {
+            ctxInfo->maxVertexAttrs = 0;
         }
 
 	if (glslCtxInfo->pfnglCreateShaderObjectARB != NULL) {
@@ -319,12 +324,12 @@ getInfoLog(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    createNativeShader
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    createGLSLShader
  * Signature: (JI[J)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_GLSLShaderProgramRetained_createNativeShader(
+Java_javax_media_j3d_NativePipeline_createGLSLShader(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -369,12 +374,12 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_createNativeShader(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    destroyNativeShader
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    destroyGLSLShader
  * Signature: (JJ)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_GLSLShaderProgramRetained_destroyNativeShader(
+Java_javax_media_j3d_NativePipeline_destroyGLSLShader(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -389,12 +394,12 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_destroyNativeShader(
 }
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    compileNativeShader
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    compileGLSLShader
  * Signature: (JJLjava/lang/String;)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_GLSLShaderProgramRetained_compileNativeShader(
+Java_javax_media_j3d_NativePipeline_compileGLSLShader(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -451,12 +456,12 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_compileNativeShader(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    createNativeShaderProgram
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    createGLSLShaderProgram
  * Signature: (J[J)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_GLSLShaderProgramRetained_createNativeShaderProgram(
+Java_javax_media_j3d_NativePipeline_createGLSLShaderProgram(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -487,12 +492,12 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_createNativeShaderProgram(
 }
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    destroyNativeShaderProgram
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    destroyGLSLShaderProgram
  * Signature: (JJ)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_GLSLShaderProgramRetained_destroyNativeShaderProgram(
+Java_javax_media_j3d_NativePipeline_destroyGLSLShaderProgram(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -507,12 +512,12 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_destroyNativeShaderProgram(
 }
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    linkNativeShaderProgram
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    linkGLSLShaderProgram
  * Signature: (JJ[J)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_GLSLShaderProgramRetained_linkNativeShaderProgram(
+Java_javax_media_j3d_NativePipeline_linkGLSLShaderProgram(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -558,12 +563,12 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_linkNativeShaderProgram(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    bindNativeVertexAttrName
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    bindGLSLVertexAttrName
  * Signature: (JJLjava/lang/String;I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject JNICALL
-Java_javax_media_j3d_GLSLShaderProgramRetained_bindNativeVertexAttrName(
+Java_javax_media_j3d_NativePipeline_bindGLSLVertexAttrName(
     JNIEnv * env,
     jobject obj,
     jlong ctxInfo,
@@ -578,12 +583,12 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_bindNativeVertexAttrName(
 
     /*
     fprintf(stderr,
-	    "GLSLShaderProgramRetained.bindNativeVertexAttrName: %s\n",
+	    "GLSLShaderProgramRetained.bindGLSLVertexAttrName: %s\n",
 	    attrNameString);
     */
 
     glslCtxInfo->pfnglBindAttribLocationARB((GLhandleARB)shaderProgramId,
-					      attrIndex + 1,
+					      attrIndex + glslCtxInfo->vertexAttrOffset,
 					      attrNameString);
 
     /* No error checking needed, so just return */
@@ -651,12 +656,12 @@ glslToJ3dType(GLint type)
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    lookupNativeShaderAttrNames
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    lookupGLSLShaderAttrNames
  * Signature: (JJI[Ljava/lang/String;[J[I[I[Z)V
  */
 JNIEXPORT void JNICALL
-Java_javax_media_j3d_GLSLShaderProgramRetained_lookupNativeShaderAttrNames(
+Java_javax_media_j3d_NativePipeline_lookupGLSLShaderAttrNames(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -686,7 +691,7 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_lookupNativeShaderAttrNames(
     JNIEnv table = *env;
 
 #ifdef VERBOSE
-    fprintf(stderr, "GLSLShaderProgramRetained.lookupNativeShaderAttrNames\n");
+    fprintf(stderr, "GLSLShaderProgramRetained.lookupGLSLShaderAttrNames\n");
 #endif
 
     locPtr = (*env)->GetLongArrayElements(env, locArr, NULL);
@@ -736,6 +741,8 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_lookupNativeShaderAttrNames(
 #endif
 
     for (i = 0; i < numActiveUniforms; i++) {
+        int len;
+
 	glslCtxInfo->pfnglGetActiveUniformARB((GLhandleARB) shaderProgramId,
 						i,
 						maxStrLen,
@@ -743,9 +750,27 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_lookupNativeShaderAttrNames(
 						&size,
 						&type,
 						name);
+
+        /*
+         * Issue 247 - we need to workaround an ATI bug where they erroneously
+         * report individual elements of arrays rather than the array itself
+         */
+        len = strlen(name);
+        if (len >= 3 && name[len-1] == ']') {
+            if (strcmp(&name[len-3], "[0]") == 0) {
+                /* fprintf(stderr, "**** changing \"%s\" ", name); */
+                name[len-3] = '\0';
+                /* fprintf(stderr, "to \"%s\"\n", name); */
+            } else {
+                /* Ignore this name */
+                /* fprintf(stderr, "Uniform[%d] : %s ignored\n", i, name); */
+                continue;
+            }
+        }
+
 #ifdef VERBOSE
 	fprintf(stderr,
-		"Uniform[%d] : name = %s, type = %d, size = %d\n",
+		"Uniform[%d] : name = %s ; type = %d ; size = %d\n",
 		i, name, type, size);
 #endif
 
@@ -794,12 +819,12 @@ Java_javax_media_j3d_GLSLShaderProgramRetained_lookupNativeShaderAttrNames(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    useShaderProgram
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    useGLSLShaderProgram
  * Signature: (JI)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_useShaderProgram(
+JNICALL Java_javax_media_j3d_NativePipeline_useGLSLShaderProgram(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -816,12 +841,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_useShaderProgram(
 }
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform1i
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform1i
  * Signature: (JJJI)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform1i(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform1i(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -842,12 +867,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform1i(
 }
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform1f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform1f
  * Signature: (JJJF)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform1f(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform1f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -868,12 +893,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform1f(
 }
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform2i
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform2i
  * Signature: (JJJ[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform2i(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform2i(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -904,12 +929,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform2i(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform2f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform2f
  * Signature: (JJJ[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform2f(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform2f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -942,12 +967,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform2f(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform3i
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform3i
  * Signature: (JJJ[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform3i(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform3i(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -978,12 +1003,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform3i(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform3f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform3f
  * Signature: (JJJ[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform3f(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform3f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1014,12 +1039,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform3f(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform4i
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform4i
  * Signature: (JJJ[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform4i(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform4i(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1048,12 +1073,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform4i(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform4f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform4f
  * Signature: (JJJ[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform4f(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform4f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1083,11 +1108,11 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform4f(
 }
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniformMatrix3f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniformMatrix3f
  * Signature: (JJJ[F)Ljavax/media/j3d/ShaderError;
  */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniformMatrix3f(
+JNIEXPORT jobject JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniformMatrix3f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1117,11 +1142,11 @@ JNIEXPORT jobject JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUnif
 }
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniformMatrix4f
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniformMatrix4f
  * Signature: (JJJ[F)Ljavax/media/j3d/ShaderError;
  */
-JNIEXPORT jobject JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniformMatrix4f(
+JNIEXPORT jobject JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniformMatrix4f(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1151,12 +1176,12 @@ JNIEXPORT jobject JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUnif
 }
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform1iArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform1iArray
  * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform1iArray(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform1iArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1190,12 +1215,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform1iArray(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform1fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform1fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform1fArray(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform1fArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1228,12 +1253,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform1fArray(
 }
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform2iArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform2iArray
  * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform2iArray(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform2iArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1268,12 +1293,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform2iArray(
  
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform2fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform2fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform2fArray(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform2fArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1307,12 +1332,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform2fArray(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform3iArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform3iArray
  * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform3iArray(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform3iArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1346,12 +1371,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform3iArray(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform3fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform3fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform3fArray(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform3fArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1385,12 +1410,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform3fArray(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform4iArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform4iArray
  * Signature: (JJJI[I)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform4iArray(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform4iArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1424,12 +1449,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform4iArray(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniform4fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniform4fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform4fArray(
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniform4fArray(
     JNIEnv *env,
     jobject obj,
     jlong ctxInfo,
@@ -1463,12 +1488,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniform4fArray(
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniformMatrix3fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniformMatrix3fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniformMatrix3fArray
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniformMatrix3fArray
 (
     JNIEnv *env,
     jobject obj,
@@ -1504,12 +1529,12 @@ JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniformMatrix3fArray
 
 
 /*
- * Class:     javax_media_j3d_GLSLShaderProgramRetained
- * Method:    setUniformMatrix4fArray
+ * Class:     javax_media_j3d_NativePipeline
+ * Method:    setGLSLUniformMatrix4fArray
  * Signature: (JJJI[F)Ljavax/media/j3d/ShaderError;
  */
 JNIEXPORT jobject
-JNICALL Java_javax_media_j3d_GLSLShaderProgramRetained_setUniformMatrix4fArray
+JNICALL Java_javax_media_j3d_NativePipeline_setGLSLUniformMatrix4fArray
 (
     JNIEnv *env,
     jobject obj,
@@ -1556,8 +1581,8 @@ glslVertexAttrPointer(
 {
     GLSLCtxInfo *glslCtxInfo = ctxProperties->glslCtxInfo;
 
-    glslCtxInfo->pfnglVertexAttribPointerARB(index+1, size, type,
-					     GL_FALSE, stride, pointer);
+    glslCtxInfo->pfnglVertexAttribPointerARB(index+glslCtxInfo->vertexAttrOffset,
+            size, type, GL_FALSE, stride, pointer);
 }
 
 static void
@@ -1567,7 +1592,7 @@ glslEnableVertexAttrArray(
 {
     GLSLCtxInfo *glslCtxInfo = ctxProperties->glslCtxInfo;
 
-    glslCtxInfo->pfnglEnableVertexAttribArrayARB(index+1);
+    glslCtxInfo->pfnglEnableVertexAttribArrayARB(index+glslCtxInfo->vertexAttrOffset);
 }
 
 static void
@@ -1577,7 +1602,7 @@ glslDisableVertexAttrArray(
 {
     GLSLCtxInfo *glslCtxInfo = ctxProperties->glslCtxInfo;
 
-    glslCtxInfo->pfnglDisableVertexAttribArrayARB(index+1);
+    glslCtxInfo->pfnglDisableVertexAttribArrayARB(index+glslCtxInfo->vertexAttrOffset);
 }
 
 static void
@@ -1590,7 +1615,7 @@ glslVertexAttr1fv(
 #ifdef VERBOSE
     fprintf(stderr, "glslVertexAttr1fv()\n");
 #endif
-    glslCtxInfo->pfnglVertexAttrib1fvARB(index+1, v);
+    glslCtxInfo->pfnglVertexAttrib1fvARB(index+glslCtxInfo->vertexAttrOffset, v);
 }
 
 static void
@@ -1603,7 +1628,7 @@ glslVertexAttr2fv(
 #ifdef VERBOSE
     fprintf(stderr, "glslVertexAttr2fv()\n");
 #endif
-    glslCtxInfo->pfnglVertexAttrib2fvARB(index+1, v);
+    glslCtxInfo->pfnglVertexAttrib2fvARB(index+glslCtxInfo->vertexAttrOffset, v);
 }
 
 static void
@@ -1616,7 +1641,7 @@ glslVertexAttr3fv(
 #ifdef VERBOSE
     fprintf(stderr, "glslVertexAttr3fv()\n");
 #endif
-    glslCtxInfo->pfnglVertexAttrib3fvARB(index+1, v);
+    glslCtxInfo->pfnglVertexAttrib3fvARB(index+glslCtxInfo->vertexAttrOffset, v);
 }
 
 static void
@@ -1629,6 +1654,6 @@ glslVertexAttr4fv(
 #ifdef VERBOSE
     fprintf(stderr, "glslVertexAttr4fv()\n");
 #endif
-    glslCtxInfo->pfnglVertexAttrib4fvARB(index+1, v);
+    glslCtxInfo->pfnglVertexAttrib4fvARB(index+glslCtxInfo->vertexAttrOffset, v);
 }
 

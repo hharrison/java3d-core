@@ -23,7 +23,7 @@
 #include <math.h>
 #include <jawt_md.h>
 
-#include "javax_media_j3d_MasterControl.h"
+#include "javax_media_j3d_NativePipeline.h"
 #include "javax_media_j3d_DrawingSurfaceObjectAWT.h"
 
 #ifdef DEBUG
@@ -47,7 +47,7 @@
 
 
 JNIEXPORT jlong JNICALL
-Java_javax_media_j3d_MasterControl_getAWT(
+Java_javax_media_j3d_NativePipeline_getAWT(
     JNIEnv *env, jobject obj)
 {
     JAWT *awt;

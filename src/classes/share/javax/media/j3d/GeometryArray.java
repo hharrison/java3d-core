@@ -327,10 +327,20 @@ public abstract class GeometryArray extends Geometry {
      */
     public static final int VERTEX_ATTRIBUTES = 0x1000;
 
+    //NVaidya
+    /**
+     * Specifies that the indices in this GeometryArray 
+     * are accessed by reference. This flag is only valid for 
+     * indexed geometry arrays (subclasses of IndexedGeometryArray) and only
+     * when used in conjunction with the <code>BY_REFERENCE</code> and  
+     * <code>USE_COORD_INDEX_ONLY</code> flags.
+     *
+     * @since Java 3D 1.5
+     */
+    public static final int BY_REFERENCE_INDICES = 0x2000;
 
     // Used to keep track of the last bit (for adding new bits only)
-    private static final int LAST_FORMAT_BIT = 0x1000;
-
+    private static final int LAST_FORMAT_BIT = 0x2000;
 
     // Scratch arrays for converting Point[234]f to TexCoord[234]f
     private TexCoord2f [] texCoord2fArray = null;
@@ -360,7 +370,7 @@ public abstract class GeometryArray extends Geometry {
         setDefaultReadCapabilities(readCapabilities);
     }
 
-
+    //NVaidya
     /**
      * Constructs an empty GeometryArray object with the specified
      * number of vertices and vertex format.  Defaults are used
@@ -404,7 +414,10 @@ public abstract class GeometryArray extends Geometry {
      * is accessed via a J3DBuffer object that wraps an NIO buffer;
      * <code>USE_COORD_INDEX_ONLY</code>,
      * to indicate that only the coordinate indices are used for indexed
-     * geometry arrays.
+     * geometry arrays;
+     * <code>BY_REFERENCE_INDICES</code>, to indicate
+     * that the indices are accessed by reference in indexed
+     * geometry arrays.<p>
      *
      * @exception IllegalArgumentException if vertexCount &lt; 0
      *
@@ -412,7 +425,8 @@ public abstract class GeometryArray extends Geometry {
      * include <code>COORDINATES</code>
      *
      * @exception IllegalArgumentException if the <code>USE_COORD_INDEX_ONLY</code>
-     * bit is set for non-indexed geometry arrays (that is, GeometryArray objects
+     * bit or the <code>BY_REFERENCE_INDICES</code> bit is set for 
+     * non-indexed geometry arrays (that is, GeometryArray objects
      * that are not a subclass of IndexedGeometryArray)
      *
      * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
@@ -423,6 +437,11 @@ public abstract class GeometryArray extends Geometry {
      *
      * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
      * bit and the <code>VERTEX_ATTRIBUTES</code> bit are both set
+     *
+     * @exception IllegalArgumentException if the 
+     * <code>BY_REFERENCE_INDICES</code>
+     * bit is set without the <code>BY_REFERENCE</code> and 
+     * <code>USE_COORD_INDEX_ONLY</code> bits being set
      */
     public GeometryArray(int vertexCount, int vertexFormat) {
         this(vertexCount, vertexFormat,
@@ -431,6 +450,7 @@ public abstract class GeometryArray extends Geometry {
     }
 
 
+    //NVaidya
     /**
      * Constructs an empty GeometryArray object with the specified
      * number of vertices, vertex format, number of texture coordinate
@@ -462,6 +482,9 @@ public abstract class GeometryArray extends Geometry {
      * is accessed via a J3DBuffer object that wraps an NIO buffer;
      * <code>USE_COORD_INDEX_ONLY</code>,
      * to indicate that only the coordinate indices are used for indexed
+     * geometry arrays;
+     * <code>BY_REFERENCE_INDICES</code>, to indicate
+     * that the indices are accessed by reference in indexed
      * geometry arrays.<p>
      *
      * @param texCoordSetCount the number of texture coordinate sets
@@ -536,7 +559,8 @@ public abstract class GeometryArray extends Geometry {
      * include <code>COORDINATES</code>
      *
      * @exception IllegalArgumentException if the <code>USE_COORD_INDEX_ONLY</code>
-     * bit is set for non-indexed geometry arrays (that is, GeometryArray objects
+     * bit or the <code>BY_REFERENCE_INDICES</code> bit is set for 
+     * non-indexed geometry arrays (that is, GeometryArray objects
      * that are not a subclass of IndexedGeometryArray)
      *
      * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
@@ -547,6 +571,11 @@ public abstract class GeometryArray extends Geometry {
      *
      * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
      * bit and the <code>VERTEX_ATTRIBUTES</code> bit are both set
+     *
+     * @exception IllegalArgumentException if the 
+     * <code>BY_REFERENCE_INDICES</code>
+     * bit is set without the <code>BY_REFERENCE</code> and 
+     * <code>USE_COORD_INDEX_ONLY</code> bits being set
      *
      * @exception IllegalArgumentException if
      * <code>texCoordSetCount&nbsp;&lt;&nbsp;0</code>
@@ -564,6 +593,7 @@ public abstract class GeometryArray extends Geometry {
     }
 
 
+    //NVaidya
     /**
      * Constructs an empty GeometryArray object with the specified
      * number of vertices, vertex format, number of texture coordinate
@@ -597,6 +627,9 @@ public abstract class GeometryArray extends Geometry {
      * is accessed via a J3DBuffer object that wraps an NIO buffer;
      * <code>USE_COORD_INDEX_ONLY</code>,
      * to indicate that only the coordinate indices are used for indexed
+     * geometry arrays;
+     * <code>BY_REFERENCE_INDICES</code>, to indicate
+     * that the indices are accessed by reference in indexed
      * geometry arrays.<p>
      *
      * @param texCoordSetCount the number of texture coordinate sets
@@ -681,7 +714,8 @@ public abstract class GeometryArray extends Geometry {
      * include <code>COORDINATES</code>
      *
      * @exception IllegalArgumentException if the <code>USE_COORD_INDEX_ONLY</code>
-     * bit is set for non-indexed geometry arrays (that is, GeometryArray objects
+     * bit or the <code>BY_REFERENCE_INDICES</code> bit is set for 
+     * non-indexed geometry arrays (that is, GeometryArray objects
      * that are not a subclass of IndexedGeometryArray)
      *
      * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
@@ -692,6 +726,11 @@ public abstract class GeometryArray extends Geometry {
      *
      * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
      * bit and the <code>VERTEX_ATTRIBUTES</code> bit are both set
+     *
+     * @exception IllegalArgumentException if the 
+     * <code>BY_REFERENCE_INDICES</code>
+     * bit is set without the <code>BY_REFERENCE</code> and 
+     * <code>USE_COORD_INDEX_ONLY</code> bits being set
      *
      * @exception IllegalArgumentException if
      * <code>texCoordSetCount&nbsp;&lt;&nbsp;0</code>
@@ -746,6 +785,16 @@ public abstract class GeometryArray extends Geometry {
         if ((vertexFormat & USE_COORD_INDEX_ONLY) != 0 &&
                 !(this instanceof IndexedGeometryArray)) {
             throw new IllegalArgumentException(J3dI18N.getString("GeometryArray135"));
+        }
+
+        //NVaidya
+        if ((vertexFormat & BY_REFERENCE_INDICES) != 0) {
+            if (!(this instanceof IndexedGeometryArray))
+                throw new IllegalArgumentException(J3dI18N.getString("GeometryArray136"));
+            if ((vertexFormat & BY_REFERENCE) == 0)
+                throw new IllegalArgumentException(J3dI18N.getString("GeometryArray137"));
+            if ((vertexFormat & USE_COORD_INDEX_ONLY) == 0)
+                throw new IllegalArgumentException(J3dI18N.getString("GeometryArray138"));
         }
 
         if ((vertexFormat & USE_NIO_BUFFER) != 0 &&

@@ -215,21 +215,12 @@ class LineAttributesRetained extends NodeComponentRetained {
 
 
     /**
-     * This (native) method updates the native context.
-     */
-    native void updateNative(long ctx,
-			     float lineWidth, int linePattern, 
-			     int linePatternMask, 
-			     int linePatternScaleFactor,
-			     boolean lineAntialiasing);
-
-    /**
      * This method updates the native context.
      */
-    void updateNative(long ctx) {
-	updateNative(ctx,
-		     lineWidth, linePattern, linePatternMask,
-		     linePatternScaleFactor, lineAntialiasing);
+    void updateNative(Context ctx) {
+        Pipeline.getPipeline().updateLineAttributes(ctx,
+                lineWidth, linePattern, linePatternMask,
+                linePatternScaleFactor, lineAntialiasing);
     }
 
 
@@ -292,7 +283,7 @@ class LineAttributesRetained extends NodeComponentRetained {
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	createMessage.type = J3dMessage.LINEATTRIBUTES_CHANGED;
 	createMessage.universe = null;
@@ -305,7 +296,7 @@ class LineAttributesRetained extends NodeComponentRetained {
 
 	// System.out.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
-	    createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.LINEATTRIBUTES_CHANGED;
 		

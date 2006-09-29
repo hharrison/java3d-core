@@ -491,28 +491,13 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      * Updates the native context.
      */
 
-    // TODO : Need to handle stencil operation on the native side -- Chien
-    native void updateNative(long ctx,
-			     boolean depthBufferWriteEnableOverride,
-                             boolean depthBufferEnableOverride,
-			     boolean depthBufferEnable, 
-			     boolean depthBufferWriteEnable,
-                             int depthTestFunction,
-			     float alphaTestValue, int alphaTestFunction,
-			     boolean ignoreVertexColors,
-			     boolean rasterOpEnable, int rasterOp,
-			     boolean userStencilAvailable, boolean stencilEnable, 
-			     int stencilFailOp, int stencilZFailOp, int stencilZPassOp,
-			     int stencilFunction, int stencilReferenceValue, 
-			     int stencilCompareMask, int stencilWriteMask );
-
     /**
      * Updates the native context.
      */
     void updateNative(Canvas3D c3d,
 		      boolean depthBufferWriteEnableOverride,
                       boolean depthBufferEnableOverride) {
-	updateNative(c3d.ctx, 
+	Pipeline.getPipeline().updateRenderingAttributes(c3d.ctx, 
 		     depthBufferWriteEnableOverride, depthBufferEnableOverride,
 		     depthBufferEnable, depthBufferWriteEnable,  depthTestFunction,
                      alphaTestValue, alphaTestFunction, ignoreVertexColors,
@@ -658,7 +643,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	createMessage.type = J3dMessage.RENDERINGATTRIBUTES_CHANGED;
 	createMessage.universe = null;
@@ -671,7 +656,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 
 	// System.out.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
-	    createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    if (attrMask == VISIBLE)
 	        createMessage.threads |= J3dThread.UPDATE_GEOMETRY;

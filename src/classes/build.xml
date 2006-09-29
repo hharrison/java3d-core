@@ -15,7 +15,7 @@
  -->
 
 <!-- Ant file for building java classes and jar files -->
-<project name="Java 3D" default="jar-opt">
+<project name="Java 3D" default="jar-debug">
 
   <path id="vecmath.debug.classpath">
     <pathelement location="${vecmath_home}/build/debug/lib/ext/vecmath.jar"/>
@@ -53,12 +53,13 @@
     </copy>
 
     <!-- Compile the java code from ${src} into ${build}/${platform}/debug/classes -->
-    <javac srcdir="${src}/classes/share:${src}/classes/${ostype}:${core_utils_src}/classes/share:${build-debug-gen}/classes"
+    <javac srcdir="${src}/classes/share:${src}/classes/${wstype}:${jogl.pipeline.srcdir}:${core_utils_src}/classes/share:${build-debug-gen}/classes"
            destdir="${build}/${platform}/debug/classes"
-	   source="1.4"
-	   target="1.4"
+	   source="1.5"
+	   target="1.5"
 	   debug="true"
-           deprecation="off">
+           deprecation="off"
+           excludes="${javac.excludes}">
 	   <classpath refid="vecmath.debug.classpath"/>
     </javac>
 
@@ -97,12 +98,13 @@
     </copy>
 
     <!-- Compile the java code from ${src} into ${build}/${platform}/opt/classes -->
-    <javac srcdir="${src}/classes/share:${src}/classes/${ostype}:${core_utils_src}/classes/share:${build-opt-gen}/classes"            destdir="${build}/${platform}/opt/classes"
-           source="1.4"
-           target="1.4"
+   <javac srcdir="${src}/classes/share:${src}/classes/${wstype}:${jogl.pipeline.srcdir}:${core_utils_src}/classes/share:${build-opt-gen}/classes"            destdir="${build}/${platform}/opt/classes"
+           source="1.5"
+           target="1.5"
            debug="true"
            debuglevel="lines,source"
-           deprecation="off">
+           deprecation="off"
+           excludes="${javac.excludes}">
            <classpath refid="vecmath.opt.classpath"/>
     </javac>
                                                                                                      
@@ -113,7 +115,10 @@
     </copy>
   </target>
 
-  <target name="jar-debug">
+
+  <target name="jar-debug" depends="jar-debug-impl,copy-default-debug"/>
+
+  <target name="jar-debug-impl">
     <!-- Create the j3dcore and j3dutils jars directory -->
     <mkdir dir="${build}/${platform}/debug/lib/ext"/>
 
@@ -153,7 +158,21 @@
     </jar>
   </target>
 
-  <target name="jar-opt">
+  <target name="copy-default-debug" unless="build.concurrent">
+    <!-- Copy platform-specific jar and native files to "default" directory -->
+    <delete dir="${build}/default/debug" quiet="true"/>
+    <mkdir dir="${build}/default/debug/native"/>
+    <copy todir="${build}/default/debug" overwrite="true">
+      <fileset dir="${build}/${platform}/debug" includes="lib/ext/**/*.jar"/>
+    </copy>
+    <copy todir="${build}/default/debug/native" overwrite="true" includeemptydirs="false" flatten="true">
+      <fileset dir="${build}/${platform}/debug" includes="lib/** bin/**" excludes="**/*.jar"/>
+    </copy>
+  </target>
+
+  <target name="jar-opt" depends="jar-opt-impl,copy-default-opt"/>
+
+  <target name="jar-opt-impl">
     <!-- Create the j3dcore and j3dutils jars directory -->
     <mkdir dir="${build}/${platform}/opt/lib/ext"/>
 
@@ -188,9 +207,21 @@
     <!-- Put everything in ${build}/${platform}/opt/classes/com into the j3dutils.jar file -->
     <jar jarfile="${build}/${platform}/opt/lib/ext/j3dutils.jar"
          manifest="${build-opt-gen}/ToolsVersion" update="no"
-	 compress="false">
-	<fileset dir="${build}/${platform}/opt/classes" includes="com/**/*"/>
+         compress="false">
+        <fileset dir="${build}/${platform}/opt/classes" includes="com/**/*"/>
     </jar>
+  </target>
+
+  <target name="copy-default-opt" unless="build.concurrent">
+    <!-- Copy platform-specific jar and native files to "default" directory -->
+    <delete dir="${build}/default/opt" quiet="true"/>
+    <mkdir dir="${build}/default/opt/native"/>
+    <copy todir="${build}/default/opt" overwrite="true">
+      <fileset dir="${build}/${platform}/opt" includes="lib/ext/**/*.jar"/>
+    </copy>
+    <copy todir="${build}/default/opt/native" overwrite="true" includeemptydirs="false" flatten="true">
+      <fileset dir="${build}/${platform}/opt" includes="lib/** bin/**" excludes="**/*.jar"/>
+    </copy>
   </target>
 
   <target name="setup-docs">
@@ -211,7 +242,7 @@
              windowtitle="Java 3D ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
-		<pathelement location="${src}/classes/${ostype}"/>
+		<pathelement location="${src}/classes/${wstype}"/>
 		<pathelement location="${core_utils_src}/classes/share"/>
 		<pathelement location="${vecmath_src}"/>
              </sourcepath>
@@ -253,7 +284,7 @@
              windowtitle="Java 3D ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
-		<pathelement location="${src}/classes/${ostype}"/>
+		<pathelement location="${src}/classes/${wstype}"/>
 		<pathelement location="${build}/${platform}/opt/gen/classes"/>
 		<pathelement location="${core_utils_src}/classes/share"/>
 		<pathelement location="${vecmath_src}"/>
@@ -274,10 +305,12 @@
     <!-- Compile the javadoc from ${src} into ${build}/javadocs -->
     <javadoc packagenames="javax.media.j3d.*,
 			   com.sun.j3d.audioengines.*,
+                           com.sun.j3d.exp.*,
 			   com.sun.j3d.loaders.*,
 			   com.sun.j3d.utils.*,
                            javax.vecmath.*"
              excludepackagenames="com.sun.j3d.utils.scenegraph.io.retained,
+			   com.sun.j3d.exp.swing.impl,
 			   com.sun.j3d.utils.scenegraph.io.state.*"
              maxmemory="128m"
              destdir="${build}/${platform}/javadocs/docs-public"
@@ -285,7 +318,7 @@
              windowtitle="Java 3D ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
-		<pathelement location="${src}/classes/${ostype}"/>
+		<pathelement location="${src}/classes/${wstype}"/>
 		<pathelement location="${core_utils_src}/classes/share"/>
 		<pathelement location="${vecmath_src}"/>
              </sourcepath>
@@ -333,8 +366,8 @@
         <fileset dir="${java.home}/lib/ext" includes="j3dcore.jar, j3dutils.jar, vecmath.jar"/>
     </delete>
     <delete>
-       <fileset dir="${java.home}/${install.bin}" includes="libj3dcore*.so, libj3dutils.so"/>
-       <fileset dir="${java.home}/${install.bin}" includes="j3dcore*.dll, j3dutils.dll"/>
+       <fileset dir="${java.home}/${install.bin}" includes="libj3dcore*.so"/>
+       <fileset dir="${java.home}/${install.bin}" includes="j3dcore*.dll"/>
     </delete>
   </target>
  

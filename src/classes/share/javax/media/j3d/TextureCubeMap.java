@@ -44,6 +44,8 @@ import javax.vecmath.*;
  */
 public class TextureCubeMap extends Texture {
 
+    // TODO KCR : NPOT
+
     /**
      * Specifies the face of the cube that is pierced by the positive x axis 
      */
@@ -123,7 +125,7 @@ public class TextureCubeMap extends Texture {
      * @param format data format of Textures saved in this object.
      * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA.
      * @param width width of image at level 0. Must be power of 2.
-     * @param boundaryWidth width of the boundary.
+     * @param boundaryWidth width of the boundary, which must be 0 or 1.
      *
      * @exception IllegalArgumentException if width is NOT
      * power of 2 OR invalid format/mipmapMode is specified.
@@ -157,6 +159,12 @@ public class TextureCubeMap extends Texture {
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
+     * @exception IllegalSharingException if this TextureCubeMap is live and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
+     *
+     * @exception IllegalSharingException if this TextureCubeMap is
+     * being used by an immediate mode context and
+     * the specified image is being used by a Canvas3D as an off-screen buffer.
      */
     public void setImage(int level, int face, ImageComponent2D image) {
         if (isLiveOrCompiled()) {
@@ -164,7 +172,9 @@ public class TextureCubeMap extends Texture {
             throw new CapabilityNotSetException(
 			J3dI18N.getString("TextureCubeMap1"));
         }
-
+        
+        validateImageIllegalSharing(image);
+        
         if (isLive())
             ((TextureCubeMapRetained)this.retained).setImage(level, face, image);
         else
@@ -190,6 +200,14 @@ public class TextureCubeMap extends Texture {
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
+     * @exception IllegalSharingException if this TextureCubeMap is live and
+     * any of the specified images are being used by a Canvas3D as an
+     * off-screen buffer.
+     *
+     * @exception IllegalSharingException if this TextureCubeMap is
+     * being used by an immediate mode context and
+     * any of the specified images are being used by a Canvas3D as an
+     * off-screen buffer.
      */
     public void setImages(int face, ImageComponent2D[] images) {
         if (isLiveOrCompiled()) {
@@ -198,6 +216,11 @@ public class TextureCubeMap extends Texture {
                         J3dI18N.getString("TextureCubeMap1"));
         }
 
+         // Do illegal sharing check     
+        for(int i=0; i<images.length; i++) {
+            validateImageIllegalSharing(images[i]);
+        }
+        
         if (isLive())
             ((TextureCubeMapRetained)this.retained).setImages(face, images);
         else

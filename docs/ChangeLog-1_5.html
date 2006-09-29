@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Java 3D 1.5 Change Log</title>
+</head>
+<body>
+<h1>Java&nbsp;3D API version 1.5 Change Log</h1>
+<p>Here are the proposed changes for Java&nbsp;3D version 1.5. These
+proposed changes are a results of discussion and collaboration with the
+Java&nbsp;3D community on java.net (see
+<a href="https://java3d.dev.java.net">https://java3d.dev.java.net</a>).
+They are already part of daily and periodic stable builds available on
+java.net.</p>
+<h2>I. Proposed Changes<br>
+</h2>
+<p>Here is the list of proposed changes for the Java&nbsp;3D 1.5 API:<br>
+</p>
+<ol>
+  <li><a href="#NPOT_Textures">Non-power-of-two textures</a></li>
+  <li><a href="#NIO_Image_Buffer">NIO image buffer support for textures</a></li>
+  <li><a href="#By_Ref_Indices">By-reference support for geometry
+indices</a></li>
+  <li><a href="#RenderingErrorListener">Rendering error listeners</a><br>
+  </li>
+  <li><a href="#vecmath_accessors_mutators">Vecmath accessors/mutators</a></li>
+  <li><a href="#Deprecated_API">Deprecated API</a></li>
+</ol>
+<p>For a complete description of these changes, please see the
+proposed API specification (javadoc) for the 1.5 version of the
+Java&nbsp;3D API.
+</p>
+<h3><a name="NPOT_Textures"></a>1. Non-power-of-two textures</h3>
+<p>We propose to add non-power-of-two textures to Java&nbsp;3D 1.5.
+Currently, the width, height, and depth of all textures must be an
+exact power of two. Most graphics cards now support non-power-of-two
+textures, so we propose to allow this in Java 3D. Since not all
+graphics drivers support this feature, we will add a new
+<code>"textureNonPowerOfTwoAvailable"</code> property to
+Canvas3D.queryProperties that will indicate whether or not
+non-power-of-two textures are supported. If this
+property is set to <code>true</code>, then non-power-of-two textures
+are rendered normally. If this property is set to <code>false</code>,
+then the graphics driver or card does not support non-power-of-two
+textures; texture mapping will be disabled if non-power-of-two
+textures are rendered on a Canvas3D that doesn't support them.<br>
+</p>
+<p><br>
+</p>
+<h3><a name="NIO_Image_Buffer"></a>2. NIO image buffer support for
+textures</h3>
+<p>We propose to create a new javax.media.j3d.NioImageBuffer class, a
+wrapper for an image whose DataBuffer
+is specified via an appropriate subclass of java.nio.Buffer:
+ByteBuffer or IntBuffer,
+depending on the type of image. When using IntBuffer,
+the byte order of the buffer must match the native byte order of the
+underlying platform.
+</p>
+<p>New public classes:<br>
+</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;"></span>public
+class <span style="font-weight: bold;">NioImageBuffer</span> extends
+Object<br>
+  </code>
+</ul>
+<p>New constructors and methods:<br>
+</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;">ImageComponent</span><br>
+New enums:<br>
+&nbsp;&nbsp;&nbsp; public enum ImageClass {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BUFFERED_IMAGE,
+RENDERED_IMAGE, NIO_IMAGE_BUFFER<br>
+&nbsp;&nbsp;&nbsp; }<br>
+  <br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp; public ImageClass getImageClass()<br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">ImageComponent2D</span><br>
+New constructors:<br>
+&nbsp;&nbsp;&nbsp; public ImageComponent2D(int format,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NioImageBuffer image,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+boolean byReference, boolean yUp)<br>
+  <br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp; public void set(NioImageBuffer image)<br>
+&nbsp;&nbsp;&nbsp; public NioImageBuffer getNioImage()<br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">ImageComponent3D</span><br>
+New constructors:<br>
+&nbsp;&nbsp;&nbsp; public ImageComponent3D(int format, NioImageBuffer[]
+images,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+boolean byReference, boolean yUp)<br>
+  <br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp; public void set(NioImageBuffer[] images)<br>
+&nbsp;&nbsp;&nbsp; public void set(int index, NioImageBuffer image)<br>
+&nbsp;&nbsp;&nbsp; public NioImageBuffer[] getNioImage()<br>
+&nbsp;&nbsp;&nbsp; public NioImageBuffer getNioImage(int index)<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3><a name="By_Ref_Indices"></a>3. By-reference support for geometry
+indices<br>
+</h3>
+<p>We propose to add support for setting the coordinate indices
+of IndexedGeometryArray objects "by-reference". Currently, the
+coordinate indices array is
+set "by-copy" even for by-reference geometry, resulting in excessive
+memory usage. Though the
+excess memory usage is temporary, since it happens only at the time
+of creating an internal copy of the user-specified indices array,
+nevertheless it can turn out to be of significant concern especially
+for very large geometries or for dynamically changing geometry. The
+fact that the
+graphics drivers have long supported this feature makes the
+incorporation of this feature attractive, as
+it entails no special hardware support.<br>
+</p>
+<p>New fields and methods:<br>
+</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;">GeometryArray</span><br>
+New fields:<br>
+&nbsp;&nbsp;&nbsp; public static final int BY_REFERENCE_INDICES<br>
+  <br>
+  <span style="text-decoration: underline; font-weight: bold;">IndexedGeometryArray</span><br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp; public void setCoordIndicesRef(int
+coordIndices[])<br>
+&nbsp;&nbsp;&nbsp; public int[] getCoordIndicesRef()<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3><a name="RenderingErrorListener"></a>4. Rendering error listener</h3>
+<p>We propose to add a rendering error class and error listener
+interface that applications can use to detect rendering errors that are
+caught by the Java 3D rendering system. The default error listener, if
+no user-specified error listeners are added, prints out the error
+message and exits.<br>
+</p>
+<p>The following new classes and interfaces are proposed:</p>
+<ul>
+  <code>public class RenderingError extends <span
+ style="font-weight: bold;">Object</span><br>
+public interface <span style="font-weight: bold;">RenderingErrorListener</span><br>
+  </code>
+</ul>
+<p>The following new methods are proposed:</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;">VirtualUniverse</span><br>
+New methods:<br>
+&nbsp;&nbsp;&nbsp; public static void
+addRenderingErrorListener(RenderingErrorListener listener)<br>
+&nbsp;&nbsp;&nbsp; public static void
+removeRenderingErrorListener(RenderingErrorListener listener)<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3><a name="vecmath_accessors_mutators"></a>5. Vecmath
+accessors/mutators</h3>
+<p>We propose to add accessors and mutators to all vecmath classes with
+publicly accessible fields. This follows the bean pattern, and allows
+these classes to be read and written by bean-aware tools, for example,
+the XMLEncoder. The following
+classes need public accessors and mutators (e.g., setX(), getX(),
+setY(), and so forth):<br>
+</p>
+<ul>
+  <code>Matrix3d<br>
+Matrix3f<br>
+Matrix4d<br>
+Matrix4f<br>
+Tuple2d<br>
+Tuple2f<br>
+Tuple2i<br>
+Tuple3b<br>
+Tuple3d<br>
+Tuple3f<br>
+Tuple3i<br>
+Tuple4b<br>
+Tuple4d<br>
+Tuple4f<br>
+Tuple4i<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<h3><a name="Deprecated_API"></a>6. Deprecated API</h3>
+<p>We propose to deprecate the following fields and methods relating to
+the obsolete texture functionality.
+</p>
+<ul>
+  <code><span style="font-weight: bold; text-decoration: underline;">Texture2D</span><br>
+Deprecated fields:<br>
+&nbsp;&nbsp;&nbsp; public static final int ALLOW_DETAIL_TEXTURE_READ<br>
+&nbsp;&nbsp;&nbsp; public static final int LINEAR_DETAIL<br>
+&nbsp;&nbsp;&nbsp; public static final int LINEAR_DETAIL_RGB<br>
+&nbsp;&nbsp;&nbsp; public static final int LINEAR_DETAIL_ALPHA<br>
+&nbsp;&nbsp;&nbsp; public static final int DETAIL_ADD<br>
+&nbsp;&nbsp;&nbsp; public static final int DETAIL_MODULATE<br>
+  <br>
+Deprecated methods:<br>
+&nbsp;&nbsp;&nbsp; public void setDetailImage(ImageComponent2D
+detailTexture)<br>
+&nbsp;&nbsp;&nbsp; public ImageComponent2D getDetailImage()<br>
+&nbsp;&nbsp;&nbsp; public void setDetailTextureMode(int mode)<br>
+&nbsp;&nbsp;&nbsp; public int getDetailTextureMode()<br>
+&nbsp;&nbsp;&nbsp; public void setDetailTextureLevel(int level)<br>
+&nbsp;&nbsp;&nbsp; public int getDetailTextureLevel()<br>
+&nbsp;&nbsp;&nbsp; public void setDetailTextureFunc(float[] lod,
+float[] pts)<br>
+&nbsp;&nbsp;&nbsp; public void setDetailTextureFunc(Point2f[] pts)<br>
+&nbsp;&nbsp;&nbsp; public int getDetailTextureFuncPointsCount()<br>
+&nbsp;&nbsp;&nbsp; public void getDetailTextureFunc(float[] lod,
+float[] pts)<br>
+&nbsp;&nbsp;&nbsp; public void getDetailTextureFunc(Point2f[] pts)<br>
+  <br>
+  <span style="font-weight: bold; text-decoration: underline;">ImageComponent</span><br>
+Deprecated methods:<br>
+&nbsp;&nbsp;&nbsp; public void setYUp(boolean yUp)<br>
+  </code>
+</ul>
+<p><br>
+</p>
+<p>
+</p>
+<h2>II. Accepted Changes</h2>
+<p><br>
+</p>
+<h2>III. Deferred Changes</h2>
+<p><br>
+</p>
+</body>
+</html>

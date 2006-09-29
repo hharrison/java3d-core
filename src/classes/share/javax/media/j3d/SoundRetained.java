@@ -215,7 +215,7 @@ abstract class SoundRetained extends LeafRetained
      */
     void dispatchAttribChange(int dirtyBit, Object argument) {
         // Send message including a integer argument
-        J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+        J3dMessage createMessage = new J3dMessage();
         createMessage.threads = J3dThread.UPDATE_SOUND |
                                 J3dThread.SOUND_SCHEDULER;
         createMessage.type = J3dMessage.SOUND_ATTRIB_CHANGED;
@@ -238,7 +238,7 @@ abstract class SoundRetained extends LeafRetained
      */
     void dispatchStateChange(int dirtyBit, Object argument) {
         // Send message including a integer argument
-        J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+        J3dMessage createMessage = new J3dMessage();
         createMessage.threads = J3dThread.UPDATE_SOUND |
                                 J3dThread.SOUND_SCHEDULER;
         createMessage.type = J3dMessage.SOUND_STATE_CHANGED;

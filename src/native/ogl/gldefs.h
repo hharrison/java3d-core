@@ -109,7 +109,6 @@
 #include "javax_media_j3d_ColoringAttributes.h"
 #include "javax_media_j3d_ColoringAttributesRetained.h"
 #include "javax_media_j3d_DepthComponentRetained.h"
-#include "javax_media_j3d_DetailTextureImage.h"
 #include "javax_media_j3d_DirectionalLightRetained.h"
 #include "javax_media_j3d_DisplayListRenderMethod.h"
 #include "javax_media_j3d_DrawingSurfaceObjectAWT.h"
@@ -129,8 +128,8 @@
 #include "javax_media_j3d_Material.h"
 #include "javax_media_j3d_MaterialRetained.h"
 #include "javax_media_j3d_ModelClipRetained.h"
-#include "javax_media_j3d_NativeAPIInfo.h"
 #include "javax_media_j3d_NativeConfigTemplate3D.h"
+#include "javax_media_j3d_NativePipeline.h"
 #include "javax_media_j3d_NodeRetained.h"
 #include "javax_media_j3d_PointAttributesRetained.h"
 #include "javax_media_j3d_PointLightRetained.h"
@@ -162,24 +161,6 @@
 #include "javax_media_j3d_ShaderAttributeObjectRetained.h"
 #include "javax_media_j3d_ShaderError.h"
 
-/*
- * Define these constants here as a workaround for conflicting
- * glext.h files between Mesa and Solaris
- */
-
-#ifndef GL_CLAMP_TO_BORDER_SGIS
-#define GL_CLAMP_TO_BORDER_SGIS           0x812D
-#endif
-
-#ifndef GL_VIDEO_RESIZE_COMPENSATION_SUN
-#define GL_VIDEO_RESIZE_COMPENSATION_SUN        0x85CD
-#endif
-
-/*
- * End constant workaround
- */
-                                                                                
-                                                                                
 /* Used to compare floating point values close to 0.0 */
 #define  J3D_SMALL_FLOAT 0.00001f
 
@@ -265,13 +246,21 @@
 
 
 /* now the imagecomponent formats are reduced the ones below */
-#define FORMAT_BYTE_RGBA    javax_media_j3d_ImageComponentRetained_BYTE_RGBA
-#define FORMAT_BYTE_ABGR    javax_media_j3d_ImageComponentRetained_BYTE_ABGR
-#define FORMAT_BYTE_GRAY    javax_media_j3d_ImageComponentRetained_BYTE_GRAY
-#define FORMAT_USHORT_GRAY  javax_media_j3d_ImageComponentRetained_USHORT_GRAY
-#define FORMAT_BYTE_LA      javax_media_j3d_ImageComponentRetained_BYTE_LA
-#define FORMAT_BYTE_BGR     javax_media_j3d_ImageComponentRetained_BYTE_BGR
-#define FORMAT_BYTE_RGB     javax_media_j3d_ImageComponentRetained_BYTE_RGB
+#define IMAGE_FORMAT_BYTE_BGR     javax_media_j3d_ImageComponentRetained_TYPE_BYTE_BGR
+#define IMAGE_FORMAT_BYTE_RGB     javax_media_j3d_ImageComponentRetained_TYPE_BYTE_RGB
+#define IMAGE_FORMAT_BYTE_ABGR    javax_media_j3d_ImageComponentRetained_TYPE_BYTE_ABGR
+#define IMAGE_FORMAT_BYTE_RGBA    javax_media_j3d_ImageComponentRetained_TYPE_BYTE_RGBA
+#define IMAGE_FORMAT_BYTE_LA      javax_media_j3d_ImageComponentRetained_TYPE_BYTE_LA
+#define IMAGE_FORMAT_BYTE_GRAY    javax_media_j3d_ImageComponentRetained_TYPE_BYTE_GRAY
+#define IMAGE_FORMAT_USHORT_GRAY  javax_media_j3d_ImageComponentRetained_TYPE_USHORT_GRAY
+#define IMAGE_FORMAT_INT_BGR      javax_media_j3d_ImageComponentRetained_TYPE_INT_BGR
+#define IMAGE_FORMAT_INT_RGB      javax_media_j3d_ImageComponentRetained_TYPE_INT_RGB
+#define IMAGE_FORMAT_INT_ARGB     javax_media_j3d_ImageComponentRetained_TYPE_INT_ARGB
+
+#define IMAGE_DATA_TYPE_BYTE_ARRAY      javax_media_j3d_ImageComponentRetained_IMAGE_DATA_TYPE_BYTE_ARRAY
+#define IMAGE_DATA_TYPE_INT_ARRAY       javax_media_j3d_ImageComponentRetained_IMAGE_DATA_TYPE_INT_ARRAY
+#define IMAGE_DATA_TYPE_BYTE_BUFFER     javax_media_j3d_ImageComponentRetained_IMAGE_DATA_TYPE_BYTE_BUFFER
+#define IMAGE_DATA_TYPE_INT_BUFFER      javax_media_j3d_ImageComponentRetained_IMAGE_DATA_TYPE_INT_BUFFER
 
 
 /* These match the definitions in GeometryArray.java */
@@ -360,53 +349,7 @@
 
 
 
-
 #ifndef D3D
-#if defined(UNIX)
-extern void APIENTRY glBlendColor (GLclampf, GLclampf, GLclampf, GLclampf);
-extern void APIENTRY glBlendColorEXT (GLclampf, GLclampf, GLclampf, GLclampf);
-extern void APIENTRY glColorTable (GLenum, GLenum, GLsizei, GLenum, GLenum, const GLvoid *);
-extern void APIENTRY glColorTableSGI (GLenum, GLenum, GLsizei, GLenum, GLenum, const GLvoid *);
-extern void APIENTRY glGetColorTableParameterivSGI (GLenum, GLenum, GLint *);
-extern void APIENTRY glGetColorTableParameterfv (GLenum, GLenum, GLfloat *);
-extern void APIENTRY glMultiDrawArraysEXT (GLenum, GLint *, GLsizei *, GLsizei);
-extern void APIENTRY glMultiDrawArraysSUN (GLenum, GLint *, GLsizei *, GLsizei);
-extern void APIENTRY glMultiDrawElementsEXT (GLenum, GLsizei *, GLenum, const GLvoid**, GLsizei);
-extern void APIENTRY glMultiDrawElementsSUN (GLenum, GLsizei *, GLenum, const GLvoid**, GLsizei);
-extern void APIENTRY glLockArraysEXT (GLint first, GLsizei count);
-extern void APIENTRY glUnlockArraysEXT (void);
-
-
-extern void APIENTRY glClientActiveTextureARB (GLenum);
-extern void APIENTRY glMultiTexCoord2fvARB (GLenum, const GLfloat *);
-extern void APIENTRY glMultiTexCoord3fvARB (GLenum, const GLfloat *);
-extern void APIENTRY glMultiTexCoord4fvARB (GLenum, const GLfloat *);
-extern void APIENTRY glGlobalAlphaFactorfSUN (GLfloat);
-extern void APIENTRY glLoadTransposeMatrixdARB (const GLdouble *);
-extern void APIENTRY glMultTransposeMatrixdARB (const GLdouble *);
-extern void APIENTRY glActiveTextureARB (GLenum);
-extern void APIENTRY glSharpenTexFuncSGIS(GLenum, GLsizei, const GLfloat *);
-extern void APIENTRY glDetailTexFuncSGIS(GLenum, GLsizei, const GLfloat *);
-extern void APIENTRY glTexFilterFuncSGIS(GLenum, GLenum, GLsizei, const GLfloat *);
-extern void APIENTRY glCombinerInputNV (GLenum, GLenum, GLenum, GLenum, GLenum, GLenum);
-extern void APIENTRY glCombinerOutputNV (GLenum, GLenum, GLenum, GLenum, GLenum, GLenum, GLenum, GLboolean, GLboolean, GLboolean);
-extern void APIENTRY glFinalCombinerInputNV (GLenum, GLenum, GLenum, GLenum);
-extern void APIENTRY glCombinerParameterfvNV (GLenum, const GLfloat *);
-extern void APIENTRY glCombinerParameterivNV (GLenum, const GLint *);
-extern void APIENTRY glCombinerParameterfNV (GLenum, GLfloat);
-extern void APIENTRY glCombinerParameteriNV (GLenum, GLint);
-
-extern void APIENTRY glTexImage3DEXT (GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *);
-extern void APIENTRY glTexSubImage3DEXT (GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *);
-
-
-
-#ifndef GLX_SUN_video_resize
-#define GLX_SUN_video_resize 1
-extern int glXVideoResizeSUN( Display *, GLXDrawable, float);
-#endif
-
-#endif /* UNIX_ */
 
 #ifndef APIENTRY
 #define APIENTRY
@@ -420,18 +363,18 @@ typedef void (APIENTRY * MYPFNGLBLENDCOLOREXTPROC) (GLclampf red, GLclampf green
 typedef void (APIENTRY * MYPFNGLCOLORTABLEPROC) (GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, const GLvoid *table);
 typedef void (APIENTRY * MYPFNGLGETCOLORTABLEPARAMETERIVPROC) (GLenum target, GLenum pname, GLint *params);
 typedef void (APIENTRY * MYPFNGLGETCOLORTABLEPROC) (GLenum target, GLenum format, GLenum type, GLvoid *table);
-typedef void (APIENTRY * MYPFNGLCLIENTACTIVETEXTUREARBPROC) (GLenum texture);
+typedef void (APIENTRY * MYPFNGLCLIENTACTIVETEXTUREPROC) (GLenum texture);
 typedef void (APIENTRY * MYPFNGLMULTIDRAWARRAYSEXTPROC) (GLenum mode, GLint *first, GLsizei *count, GLsizei primcount);
 typedef void (APIENTRY * MYPFNGLMULTIDRAWELEMENTSEXTPROC) (GLenum, GLsizei *, GLenum, const GLvoid**, GLsizei);
 typedef void (APIENTRY * MYPFNGLLOCKARRAYSEXTPROC) (GLint first, GLsizei count);
 typedef void (APIENTRY * MYPFNGLUNLOCKARRAYSEXTPROC) (void);
 
-typedef void (APIENTRY * MYPFNGLMULTITEXCOORD2FVARBPROC) (GLenum target, const GLfloat *v);
-typedef void (APIENTRY * MYPFNGLMULTITEXCOORD3FVARBPROC) (GLenum target, const GLfloat *v);
-typedef void (APIENTRY * MYPFNGLMULTITEXCOORD4FVARBPROC) (GLenum target, const GLfloat *v);
-typedef void (APIENTRY * MYPFNGLLOADTRANSPOSEMATRIXDARBPROC) (const GLdouble *m);
-typedef void (APIENTRY * MYPFNGLMULTTRANSPOSEMATRIXDARBPROC) (const GLdouble *m);
-typedef void (APIENTRY * MYPFNGLACTIVETEXTUREARBPROC) (GLenum texture);
+typedef void (APIENTRY * MYPFNGLMULTITEXCOORD2FVPROC) (GLenum target, const GLfloat *v);
+typedef void (APIENTRY * MYPFNGLMULTITEXCOORD3FVPROC) (GLenum target, const GLfloat *v);
+typedef void (APIENTRY * MYPFNGLMULTITEXCOORD4FVPROC) (GLenum target, const GLfloat *v);
+typedef void (APIENTRY * MYPFNGLLOADTRANSPOSEMATRIXDPROC) (const GLdouble *m);
+typedef void (APIENTRY * MYPFNGLMULTTRANSPOSEMATRIXDPROC) (const GLdouble *m);
+typedef void (APIENTRY * MYPFNGLACTIVETEXTUREPROC) (GLenum texture);
 typedef void (APIENTRY * MYPFNGLTEXIMAGE3DPROC) (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
 typedef void (APIENTRY * MYPFNGLTEXSUBIMAGE3DPROC) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid *pixels);
 
@@ -450,7 +393,6 @@ typedef void (APIENTRY * MYPFNGLTEXFILTERFUNCSGI) (GLenum target, GLenum filter,
 
 #if defined(UNIX)
 typedef GLXFBConfig * (APIENTRY * MYPFNGLXCHOOSEFBCONFIG) (Display *dpy, int screen, const int *attrib_list, int *nelements);
-typedef int (APIENTRY * MYPFNGLXVIDEORESIZESUN) (Display * dpy, GLXDrawable draw, float factor);
 #endif /* UNIX_ */
 
 
@@ -491,41 +433,15 @@ struct GraphicsContextPropertiesInfoRec {
     char *rendererStr;
     char *extensionStr;
     int versionNumbers[2];
-	 
-    /* both in 1.2 core part and 1.1 extensions */
-    /* GL_EXT_rescale_normal or GL_RESCALE_NORMAL */ 
-    jboolean rescale_normal_ext;
-    GLenum rescale_normal_ext_enum;
-
-    /* GL_BGR_EXT or GL_BGR */
-    jboolean bgr_ext;
-    GLenum bgr_ext_enum;
-	 
-    /* GL_EXT_texture3D or GL_TEXTURE3D */
-    jboolean texture3DAvailable;
-    GLenum texture_3D_ext_enum;
-    GLenum texture_wrap_r_ext_enum;
+    jboolean gl13;          /* OpenGL 1.3 or greater */
+    jboolean gl20;          /* OpenGL 2.0 or greater */
 
     /* GL_ARB_imaging subset */
     /* GL_EXT_blend_color or GL_BLEND_COLOR */
     jboolean blend_color_ext;
     GLenum blendFunctionTable[MAX_BLEND_FUNC_TABLE_SIZE];
-    
-    /* GL_SGI_color_table or GL_COLOR_TABLE */
-    jboolean color_table_ext;
 
-    /* GL_EXT_separate_specular_color */
-    jboolean seperate_specular_color;
-    GLenum light_model_color_control_enum;
-    GLenum single_color_enum;
-    GLenum seperate_specular_color_enum;
-
-    /* GL_CLAMP_TO_EDGE or GL_EXT_texture_edge_clamp or 
-				GL_SGIS_texture_edge_clamp */
-    GLenum texture_clamp_to_edge_enum;
-
-
-    /* GL_SGIS_texture_lod */
+    /* texture_lod */
     jboolean textureLodAvailable;
     GLenum texture_min_lod_enum;
     GLenum texture_max_lod_enum;
@@ -533,22 +449,17 @@ struct GraphicsContextPropertiesInfoRec {
     GLenum texture_max_level_enum;
 
 
-    /* ***********1.1 extension or 1.2 extensions ********************/
+    /* ***** GL extensions ***** */
 
-    /* GL_ARB_texture_border_clamp or GL_SGIS_texture_border_clamp */
+    /* GL_CLAMP_TO_BORDER or GL_CLAMP */
     GLenum texture_clamp_to_border_enum;
 
     /* GL_SUN_multi_draw_arrays */
     jboolean multi_draw_arrays_sun;
 
-    /* GLX_SUN_video_resize */
-    jboolean videoResizeAvailable;
-    
     /* GL_SUN_global_alpha */
     jboolean global_alpha_sun;
-    /* GL_SUNX_constant_data */
-    jboolean constant_data_sun;
-	 
+
     /* GL_EXT_abgr */
     jboolean abgr_ext;
     /* GL_EXT_multi_draw_arrays */
@@ -557,11 +468,7 @@ struct GraphicsContextPropertiesInfoRec {
     /* GL_EXT_compiled_vertex_array */
     jboolean compiled_vertex_array_ext;
 
-    /* GL_ARB_transpose_matrix */
-    jboolean arb_transpose_matrix;
-
-    /* GL_ARB_multitexture */
-    jboolean arb_multitexture;
+    /* Multitexture parameters */
     int maxTexCoordSets; /* maximum number of texture coordinate sets */
     int maxTextureUnits; /* number of fixed-function texture units */
     int maxTextureImageUnits; /* number of fragment shader texture units */
@@ -593,13 +500,8 @@ struct GraphicsContextPropertiesInfoRec {
     GLenum combine_dot3_rgb_enum;
     GLenum combine_dot3_rgba_enum;
 
-    /* GL_ARB_texture_cube_map */
-    /* GL_EXT_texture_cube_map */
-    jboolean textureCubeMapAvailable;
-    GLenum texture_cube_map_ext_enum;
-
-    /* GL_ARB_mulitsample */
-    jboolean arb_multisample; 
+    /* GL mulitsample functionality */
+    jboolean multisample; 
 
     /*
       By default, full scene antialiasing is disable if
@@ -647,6 +549,9 @@ struct GraphicsContextPropertiesInfoRec {
     /* GL_SGIX_texture_lod_bias */
     jboolean textureLodBiasAvailable;
 
+    /* GL_ARB_texture_non_power_of_two */
+    jboolean textureNonPowerOfTwoAvailable;
+
     /* extension mask */
     jint extMask;
     jint textureExtMask;
@@ -658,17 +563,17 @@ struct GraphicsContextPropertiesInfoRec {
     MYPFNGLGETCOLORTABLEPARAMETERIVPROC glGetColorTableParameteriv;
     MYPFNGLTEXIMAGE3DPROC               glTexImage3DEXT;
     MYPFNGLTEXSUBIMAGE3DPROC               glTexSubImage3DEXT;
-    MYPFNGLCLIENTACTIVETEXTUREARBPROC glClientActiveTextureARB;
-    MYPFNGLACTIVETEXTUREARBPROC glActiveTextureARB; 
+    MYPFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture;
+    MYPFNGLACTIVETEXTUREPROC glActiveTexture; 
     MYPFNGLMULTIDRAWARRAYSEXTPROC  glMultiDrawArraysEXT;
     MYPFNGLMULTIDRAWELEMENTSEXTPROC  glMultiDrawElementsEXT;
     MYPFNGLLOCKARRAYSEXTPROC  glLockArraysEXT;
     MYPFNGLUNLOCKARRAYSEXTPROC  glUnlockArraysEXT;
-    MYPFNGLMULTITEXCOORD2FVARBPROC glMultiTexCoord2fvARB;
-    MYPFNGLMULTITEXCOORD3FVARBPROC glMultiTexCoord3fvARB;
-    MYPFNGLMULTITEXCOORD4FVARBPROC glMultiTexCoord4fvARB;
-    MYPFNGLLOADTRANSPOSEMATRIXDARBPROC glLoadTransposeMatrixdARB;
-    MYPFNGLMULTTRANSPOSEMATRIXDARBPROC glMultTransposeMatrixdARB;
+    MYPFNGLMULTITEXCOORD2FVPROC glMultiTexCoord2fv;
+    MYPFNGLMULTITEXCOORD3FVPROC glMultiTexCoord3fv;
+    MYPFNGLMULTITEXCOORD4FVPROC glMultiTexCoord4fv;
+    MYPFNGLLOADTRANSPOSEMATRIXDPROC glLoadTransposeMatrixd;
+    MYPFNGLMULTTRANSPOSEMATRIXDPROC glMultTransposeMatrixd;
     MYPFNGLGLOBALALPHAFACTORFSUNPROC glGlobalAlphaFactorfSUN;
 
     MYPFNGLCOMBINERINPUTNV glCombinerInputNV;
@@ -682,10 +587,6 @@ struct GraphicsContextPropertiesInfoRec {
     MYPFNGLSHARPENTEXFUNCSGI glSharpenTexFuncSGIS;
     MYPFNGLDETAILTEXFUNCSGI glDetailTexFuncSGIS;
     MYPFNGLTEXFILTERFUNCSGI glTexFilterFuncSGIS;
-
-#if defined(UNIX)
-    MYPFNGLXVIDEORESIZESUN glXVideoResizeSUN;
-#endif /* UNIX_ */
 
     /* Shading language support */
     jboolean shadingLanguageGLSL;

@@ -46,7 +46,8 @@ public:
     static VOID removeAll(D3dImageComponent *list);
 };
 
-extern D3dImageComponent RasterList;
-extern D3dImageComponent BackgroundImageList;
-
+/*
+ extern D3dImageComponent RasterList;
+ extern D3dImageComponent BackgroundImageList;
+*/
 #endif

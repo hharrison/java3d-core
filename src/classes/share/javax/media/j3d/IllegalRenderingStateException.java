@@ -13,8 +13,8 @@
 package javax.media.j3d;
 
 /**
- * Indicates an illegal state for rendering.  This exception is currently
- * unused.
+ * Indicates an illegal state for rendering. This is typically some sort of
+ * resource or graphics device error encountered during rendering.
  */
 public class IllegalRenderingStateException extends IllegalStateException {
 

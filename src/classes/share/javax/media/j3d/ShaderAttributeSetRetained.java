@@ -319,7 +319,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	createMessage.type = J3dMessage.SHADER_ATTRIBUTE_SET_CHANGED;
 	createMessage.universe = null;
@@ -332,7 +332,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 
 	// System.out.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
-	    createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.SHADER_ATTRIBUTE_SET_CHANGED;
 		
@@ -349,6 +349,26 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
 
+    }
+
+
+    // Issue 320 : Override base class method so we can force changedFrequent
+    // to be set whenever the capability is writable, regardless of whether
+    // it is frequently writable. We must do this because the ShaderBin doesn't
+    // support updating shader attributes when changedFrequent is 0.
+    void setFrequencyChangeMask(int bit, int mask) {
+        if (source.getCapability(bit)) {
+            changedFrequent |= mask;
+        } else if (!source.isLive()) {
+            // Record the freq->infreq change only for non-live node components
+            changedFrequent &= ~mask;
+        }
+    }
+
+    void handleFrequencyChange(int bit) {
+        if (bit == ShaderAttributeSet.ALLOW_ATTRIBUTES_WRITE) {
+            setFrequencyChangeMask(bit, 0x1);
+        }
     }
 
 }

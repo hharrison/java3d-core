@@ -194,7 +194,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 
         if (threads > 0) {
 
-            m = VirtualUniverse.mc.getMessage();
+            m = new J3dMessage();
             m.type = J3dMessage.SWITCH_CHANGED;
             m.universe = universe;
             m.threads = threads;

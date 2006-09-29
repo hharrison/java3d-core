@@ -138,7 +138,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	if (source.isLive()) {
 	    // Notify Geometry Structure to set mirror shape collision
 	    // bound and check for collision
-	    J3dMessage message = VirtualUniverse.mc.getMessage();
+	    J3dMessage message = new J3dMessage();
 	    message.type = J3dMessage.COLLISION_BOUND_CHANGED;
             message.threads = J3dThread.UPDATE_TRANSFORM;
 	    message.universe = universe;
@@ -154,7 +154,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     void setBounds(Bounds bounds) {
 	super.setBounds(bounds);
 	if (source.isLive() && !boundsAutoCompute) { 
-	    J3dMessage message = VirtualUniverse.mc.getMessage();
+	    J3dMessage message = new J3dMessage();
 	    message.type = J3dMessage.REGION_BOUND_CHANGED;
 	    message.threads = J3dThread.UPDATE_TRANSFORM |
 		              targetThreads;
@@ -297,7 +297,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    shape.setMorphGeometry(morphedGeometryArray, mirrorShape3D);
 
 	    J3dMessage mChangeMessage = null;
-	    mChangeMessage = VirtualUniverse.mc.getMessage();
+	    mChangeMessage = new J3dMessage();
 	    mChangeMessage.type = J3dMessage.MORPH_CHANGED;
 	    mChangeMessage.threads = (J3dThread.UPDATE_GEOMETRY |
 				      J3dThread.UPDATE_TRANSFORM);
@@ -377,7 +377,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    else
 		size = 1;
 	    J3dMessage[] createMessage = new J3dMessage[size];	    
-	    createMessage[0] = VirtualUniverse.mc.getMessage();
+	    createMessage[0] = new J3dMessage();
 	    createMessage[0].threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT |
 		J3dThread.UPDATE_RENDER;
 	    createMessage[0].type = J3dMessage.MORPH_CHANGED;
@@ -398,7 +398,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    createMessage[0].args[3] = obj;
 	    createMessage[0].args[4] = Shape3DRetained.getGeomAtomsArray(mirrorShape3D);
 	    if(visibleIsDirty) {
-		createMessage[1] = VirtualUniverse.mc.getMessage();
+		createMessage[1] = new J3dMessage();
 		createMessage[1].threads = J3dThread.UPDATE_GEOMETRY;	    
 		createMessage[1].type = J3dMessage.SHAPE3D_CHANGED;
 		createMessage[1].universe = universe;
@@ -431,7 +431,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
         if (((Morph)this.source).isLive()) {
 	    
 	    // Send a message
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT |
 		J3dThread.UPDATE_RENDER;;
 	    createMessage.type = J3dMessage.MORPH_CHANGED;
@@ -568,7 +568,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	if (source.isLive()) {
 	    ((GeometryArrayRetained)morphedGeometryArray.retained).updateData(this);
 	    J3dMessage mChangeMessage = null;
-	    mChangeMessage = VirtualUniverse.mc.getMessage();
+	    mChangeMessage = new J3dMessage();
 	    mChangeMessage.type = J3dMessage.MORPH_CHANGED;
 	    mChangeMessage.threads = (J3dThread.UPDATE_GEOMETRY |
 				      J3dThread.UPDATE_TRANSFORM);
@@ -1447,7 +1447,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 
 	// Need to clone the geometry , if its indexed ...
 	if (refCount == 1 && this.geometryArrays[0] instanceof IndexedGeometryArrayRetained) {
-	    J3dMessage mChangeMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage mChangeMessage = new J3dMessage();
 	    mChangeMessage.type = J3dMessage.MORPH_CHANGED;
 	    mChangeMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	    mChangeMessage.args[0] = this;
@@ -1650,7 +1650,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    localBounds = getBounds();
             super.setBoundsAutoCompute(autoCompute);
             if (source.isLive()) {
-                J3dMessage message = VirtualUniverse.mc.getMessage();
+                J3dMessage message = new J3dMessage();
                 message.type = J3dMessage.BOUNDS_AUTO_COMPUTE_CHANGED;
                 message.threads = J3dThread.UPDATE_TRANSFORM |
 		                  J3dThread.UPDATE_GEOMETRY |
@@ -1666,7 +1666,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     void updateBounds() {
 	localBounds = getEffectiveBounds();
 	if (source.isLive()) {
-	    J3dMessage message = VirtualUniverse.mc.getMessage();
+	    J3dMessage message = new J3dMessage();
 	    message.type = J3dMessage.BOUNDS_AUTO_COMPUTE_CHANGED;
 	    message.threads = J3dThread.UPDATE_TRANSFORM |
 		J3dThread.UPDATE_GEOMETRY |

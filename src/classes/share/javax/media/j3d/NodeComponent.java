@@ -265,4 +265,29 @@ public abstract class NodeComponent extends SceneGraphObject {
     boolean duplicateChild() {
         return getDuplicateOnCloneTree();
     }
+    
+   /*
+    * @exception IllegalSharingException if this NodeComponent is live and
+    * the specified image is being used by a Canvas3D as an off-screen buffer.
+    *
+    * @exception IllegalSharingException if this NodeComponent is
+    * being used by an immediate mode context and
+    * the specified image is being used by a Canvas3D as an off-screen buffer.
+    */
+   void validateImageIllegalSharing(ImageComponent image) {
+       // Do illegal sharing check
+        if(image != null) {
+            ImageComponentRetained imageRetained = (ImageComponentRetained) image.retained;
+            NodeComponentRetained ncRetained = (NodeComponentRetained)this.retained;
+            if(imageRetained.getUsedByOffScreen()) {
+                if(isLive()) {
+                    throw new IllegalSharingException(J3dI18N.getString("NodeComponent2"));
+                }
+                if(ncRetained.getInImmCtx()) {
+                    throw new IllegalSharingException(J3dI18N.getString("NodeComponent3"));
+                }
+            }
+        }
+   } 
+   
 }

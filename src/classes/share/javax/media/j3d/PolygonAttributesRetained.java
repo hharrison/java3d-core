@@ -235,19 +235,10 @@ class PolygonAttributesRetained extends NodeComponentRetained {
     /**
      * Updates the native context
      */
-    native void updateNative(long ctx,
-			     int polygonMode, int cullFace, 
-			     boolean backFaceNormalFlip, 
-			     float polygonOffset,
-			     float polygonOffsetFactor);
-
-    /**
-     * Updates the native context
-     */
-    void updateNative(long ctx) {
-	updateNative(ctx, 
-		     polygonMode, cullFace, backFaceNormalFlip, 
-		     polygonOffset, polygonOffsetFactor);
+    void updateNative(Context ctx) {
+        Pipeline.getPipeline().updatePolygonAttributes(ctx,
+                polygonMode, cullFace, backFaceNormalFlip,
+                polygonOffset, polygonOffsetFactor);
     }
 
    /**
@@ -308,7 +299,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	createMessage.type = J3dMessage.POLYGONATTRIBUTES_CHANGED;
 	createMessage.universe = null;
@@ -320,7 +311,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
 
 	// System.out.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
-	    createMessage = VirtualUniverse.mc.getMessage();
+	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.POLYGONATTRIBUTES_CHANGED;
 		

@@ -37,10 +37,11 @@ class BackgroundRetained extends LeafRetained {
     // color.
     Color3f		color = new Color3f(0.0f, 0.0f, 0.0f);
     ImageComponent2DRetained	image = null;
-
+    Texture2DRetained           texture = null;
+    
     // the image scale mode if image is used.
     int imageScaleMode = Background.SCALE_NONE; 
-
+    
     /**
      * The Boundary object defining the lights's application region.
      */  
@@ -101,19 +102,13 @@ class BackgroundRetained extends LeafRetained {
 
     // Is true, if the background is viewScoped
     boolean isViewScoped = false;
-
-    // for texture mapping the background
-    ImageComponent2DRetained texImage = null;
-    int xmax = 0;
-    int ymax = 0;
-
+    
     BackgroundRetained () {
         this.nodeType = NodeRetained.BACKGROUND;
 	localBounds = new BoundingBox();
 	((BoundingBox)localBounds).setLower( 1.0, 1.0, 1.0);
 	((BoundingBox)localBounds).setUpper(-1.0,-1.0,-1.0);
     }
-
 
     /**
      * Initializes the background color to the specified color.  
@@ -202,81 +197,46 @@ class BackgroundRetained extends LeafRetained {
     
     /**
      * Initializes the background image to the specified image.  
-     * @param image new ImageCompoent3D object used as the background image
+     * @param image new ImageCompoent2D object used as the background image
      */
     final void initImage(ImageComponent2D img) {
-	if (img != null) {
-	    // scale to power of 2 for texture mapping
-	    ImageComponent2DRetained rimage = (ImageComponent2DRetained) img.retained;
-	    
-  	    if (!VirtualUniverse.mc.isBackgroundTexture) {
-  		rimage.setRasterRef();
-  	    }
-  	    else {
-//  		rimage.setTextureRef();
+        int texFormat;
 
-		xmax = rimage.width;
-		ymax = rimage.height;
-		int width = getClosestPowerOf2(xmax);
-		int height = getClosestPowerOf2(ymax);
-		float xScale = (float)width/(float)xmax;
-		float yScale = (float)height/(float)ymax;
+        if (img == null) {
+            image = null;
+            texture = null;
+            return;
+        }
 
-		// scale if scales aren't 1.0
-  		if (!(xScale == 1.0f && yScale == 1.0f)) {
-		    BufferedImage origImg = (BufferedImage) rimage.getImage();
-		    AffineTransform at = AffineTransform.getScaleInstance(xScale,
-									  yScale);
-		    AffineTransformOp atop = new AffineTransformOp(at,
-								   AffineTransformOp.TYPE_BILINEAR);
-		    BufferedImage scaledImg = atop.filter(origImg, null);
-		    int format = rimage.getFormat();
-		    boolean yUp = rimage.isYUp();
-		    boolean byRef = rimage.isByReference();
-		    ImageComponent2D ic = new ImageComponent2D(format,
-							       scaledImg,
-							       byRef, yUp);
-		    texImage = (ImageComponent2DRetained)ic.retained;
-		    texImage.setTextureRef();
-		    //rimage.setTextureRef();
-		    //texImage.setRasterRef();
- 		}
-		else {
-		    texImage = rimage;
-		    texImage.setTextureRef();
-		    //rimage.setTextureRef();
-		    //texImage.setRasterRef();
-		}
-  	    }
-	    
-	    this.image = rimage;
-	} else {
-	    this.image = null;
-	    this.texImage = null;
-	}
+        if (img.retained != image ) {
+            image = (ImageComponent2DRetained) img.retained;
+            image.setEnforceNonPowerOfTwoSupport(true);
+            switch(image.getNumberOfComponents()) {
+                case 1:
+                    texFormat = Texture.INTENSITY;
+                    break;
+                case 2:
+                    texFormat = Texture.LUMINANCE_ALPHA;
+                    break;
+                case 3:
+                    texFormat = Texture.RGB;
+                    break;
+                case 4:
+                    texFormat = Texture.RGBA;
+                    break;
+                default:
+                    assert false;
+                    return;
+            }
+
+            Texture2D tex2D = new Texture2D(Texture.BASE_LEVEL, texFormat,
+                    img.getWidth(), img.getHeight());
+            texture = (Texture2DRetained) tex2D.retained;
+            // Background is special case of Raster.
+            texture.setUseAsRaster(true);
+            texture.initImage(0,img);
+        }
     }
-
-        private int getClosestPowerOf2(int value) {
-
-	if (value < 1)
-	    return value;
-	
-	int powerValue = 1;
-	for (;;) {
-	    powerValue *= 2;
-	    if (value < powerValue) {
-		// Found max bound of power, determine which is closest
-		int minBound = powerValue/2;
-		if ((powerValue - value) >
-		    (value - minBound))
-		    return minBound;
-		else
-		    return powerValue;
-	    }
-	}
-    }
-
-
 
     /**
      * Sets the background image to the specified image.  
@@ -284,19 +244,22 @@ class BackgroundRetained extends LeafRetained {
      */
     final void setImage(ImageComponent2D img) {
 	if (source.isLive()) {
-	    if (this.image != null) {
-		this.image.clearLive(refCount);
+	    if (texture != null) {
+		texture.clearLive(refCount);
+                texture.removeUser(this);
 	    }
 	}	
 	initImage(img);
-	if (source.isLive()) {
-	    if (img != null) {
-		((ImageComponent2DRetained)
-		 img.retained).setLive(inBackgroundGroup, refCount);
-	    }
-	    sendMessage(IMAGE_CHANGED, 
-			(image != null ? image.clone() : null));
-	}
+        if (source.isLive()) {
+            if (texture != null) {
+                texture.setLive(inBackgroundGroup, refCount);
+                texture.addUser(this);
+            }
+            
+            sendMessage(IMAGE_CHANGED,
+                    (texture != null ? texture.mirror : null));
+            
+        }
     }
 
     /**
@@ -333,7 +296,7 @@ class BackgroundRetained extends LeafRetained {
                 numMessages+=2; // INSERT_NODES, ORDERED_GROUP_INSERTED
             m = new J3dMessage[numMessages];
             for (i=0; i<numMessages; i++) {
-                m[i] = VirtualUniverse.mc.getMessage();
+                m[i] = new J3dMessage();
             }
             i = 0;
             if (geometryBranch != null) {
@@ -408,7 +371,7 @@ class BackgroundRetained extends LeafRetained {
 	initApplicationBounds(region);
 	// Don't send the message if there is a valid boundingleaf
 	if (boundingLeaf == null) {
-	    J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = targetThreads | 
 		J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	    createMessage.type = J3dMessage.BACKGROUND_CHANGED;
@@ -456,7 +419,7 @@ class BackgroundRetained extends LeafRetained {
 	} else {
 	    boundingLeaf = null;
 	}
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads | 
 	    J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	createMessage.type = J3dMessage.BACKGROUND_CHANGED;
@@ -538,7 +501,6 @@ class BackgroundRetained extends LeafRetained {
         branch.setLocale(null);
 
     }
-
 
     /**
      * This setLive routine first calls the superclass's method, then
@@ -637,8 +599,8 @@ class BackgroundRetained extends LeafRetained {
 	s.notifyThreads |= J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 	    J3dThread.UPDATE_RENDER;
 
-	if (image != null) {
-	    image.setLive(inBackgroundGroup, refCount);
+	if (texture != null) {
+	    texture.setLive(inBackgroundGroup, refCount);
 	}
 	super.markAsLive();
 
@@ -680,16 +642,13 @@ class BackgroundRetained extends LeafRetained {
             fogs.clear();
         }
 
-	if (image != null) {
-	    image.clearLive(refCount);
+	if (texture != null) {
+	    texture.clearLive(refCount);
 	}
 
 	s.notifyThreads |= J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 	    J3dThread.UPDATE_RENDER;
     }
-
-
-
 
     // The update Object function.
     synchronized void updateImmediateMirrorObject(Object[] objs) {
@@ -761,7 +720,7 @@ class BackgroundRetained extends LeafRetained {
 
 
     final void sendMessage(int attrMask, Object attr) {
-	J3dMessage createMessage = VirtualUniverse.mc.getMessage();
+	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
 	createMessage.universe = universe;
 	createMessage.type = J3dMessage.BACKGROUND_CHANGED;

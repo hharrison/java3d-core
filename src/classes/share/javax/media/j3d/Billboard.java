@@ -312,9 +312,9 @@ public class Billboard extends Behavior {
         Canvas3D canvas = (Canvas3D)v.getCanvas3D(0);
 	boolean status;
 
-	Transform3D xform = VirtualUniverse.mc.getTransform3D(null);
-	Transform3D bbXform = VirtualUniverse.mc.getTransform3D(null);
-	Transform3D prevTransform = VirtualUniverse.mc.getTransform3D(null);
+	Transform3D xform = new Transform3D();
+	Transform3D bbXform = new Transform3D();
+	Transform3D prevTransform = new Transform3D();
 
 	((TransformGroupRetained) tg.retained).getTransform(prevTransform);
 
@@ -400,7 +400,7 @@ public class Billboard extends Behavior {
 	    // Need to rotate Z axis to point to eye, and Y axis to be 
 	    // parallel to view platform Y axis, rotating around rotation pt 
 
-	    Transform3D zRotate = VirtualUniverse.mc.getTransform3D(null);
+	    Transform3D zRotate = new Transform3D();
 
 	    // get the eye point 
 	    canvas.getCenterEyeInImagePlate(viewPosition);
@@ -534,15 +534,10 @@ public class Billboard extends Behavior {
 		    tg.setTransform(bbXform);
 		}
 	    }
-	    VirtualUniverse.mc.addToTransformFreeList(zRotate);
 	}
 
 	// Insert wakeup condition into queue
 	wakeupOn(wakeupFrame);
-	
-	VirtualUniverse.mc.addToTransformFreeList(xform);
-	VirtualUniverse.mc.addToTransformFreeList(bbXform);
-	VirtualUniverse.mc.addToTransformFreeList(prevTransform);
 }
 
 private boolean projectToPlane(Vector3d projVec, Vector3d planeVec)  {

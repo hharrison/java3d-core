@@ -14,7 +14,7 @@
  */
  -->
 
-<project name="java3d-1.4.0" default="jar-opt" basedir=".">
+<project name="java3d-1.5.0" default="jar-debug" basedir=".">
 
   <!--
   *********************************************************************
@@ -51,13 +51,13 @@
   * build number that is greater than the previous build's build
   * number.
   -->
-  <property name="version_buildnum"   value="99"/>
+  <property name="version_buildnum"   value="7"/>
 
   <!--
   * The following property specifies the beta revision of the current
   * Java 3D version being built. It is ignored for non-beta builds.
   -->
-  <property name="version_betastr"    value="beta5"/>
+  <property name="version_betastr"    value="beta1"/>
 
   <!--
   * The following property specifies the patch revision of the current
@@ -72,8 +72,8 @@
   * separated by "periods ("."). The version_base_file property must
   * be the same version number as version_base with "_" replacing ".".
   -->
-  <property name="version_base"       value="1.4.0"/>
-  <property name="version_base_file"  value="1_4_0"/>
+  <property name="version_base"       value="1.5.0"/>
+  <property name="version_base_file"  value="1_5_0"/>
 
 
   <!-- ************************************* -->
@@ -123,7 +123,7 @@
 
   <target name="echo" depends="setupPlatform">	
     <echo message="platform        = ${platform}"/>
-    <echo message="ostype          = ${ostype}"/>
+    <echo message="wstype          = ${wstype}"/>
     <echo message="os.arch         = ${os.arch}"/>
     <echo message="os.name         = ${os.name}"/>	
     <echo message="ant.home        = ${ant.home}"/>
@@ -150,50 +150,75 @@
   </target>
 
   <target name="setupSolaris" if="isSolarisOnSparc">	
-    <property name="ostype" value="solaris"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="solaris-sparc-${build.comp}"/>
     <property name="install.bin" value="lib/sparc"/>
   </target>
 
   <target name="setupSolarisX86" if="isSolarisOnX86">
-    <property name="ostype" value="solaris"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="solaris-x86-${build.comp}"/>
     <property name="install.bin" value="lib/i386"/>
   </target>
 
   <target name="setupLinux" if="isLinuxOnX86">	
-    <property name="ostype" value="linux"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="linux-i586"/>
     <property name="install.bin" value="lib/i386"/>
   </target>
 
   <target name="setupLinuxAmd64" if="isLinuxOnAmd64">	
-    <property name="ostype" value="linux"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="linux-amd64"/>
     <property name="install.bin" value="lib/amd64"/>
   </target>
 
   <target name="setupLinuxIA64" if="isLinuxOnIA64">	
-    <property name="ostype" value="linux"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="linux-ia64"/>
     <property name="install.bin" value="lib/ia64"/>
   </target>
 
   <target name="setupLinuxPPC" if="isLinuxOnPPC">	
-    <property name="ostype" value="linux"/>
+    <property name="wstype" value="x11"/>
     <property name="platform" value="linux-ppc"/>
     <property name="install.bin" value="lib/ppc"/>
   </target>
 
     <!-- win32 should be rename as windows -->
   <target name="setupWindows" if="isWindowsOnX86">	
-    <property name="ostype" value="win32"/>
+    <property name="wstype" value="win32"/>
     <property name="platform" value="windows-i586-${build.comp}"/>
     <property name="install.bin" value="bin"/>
   </target>
 
+  <target name="setupWindowsAmd64" if="isWindowsOnAmd64">	
+    <property name="wstype" value="win32"/>
+    <property name="platform" value="windows-amd64-${build.comp}"/>
+    <property name="install.bin" value="bin"/>
+  </target>
+
+  <target name="setupMacOSX" if="isMacOSX">	
+    <property name="wstype" value="jogl"/>
+    <property name="platform" value="macosx"/>
+    <!-- Exclude native pipeline from compilation as we don't have a NativeConfigTemplate3D, etc. for this platform -->
+    <property name="javac.excludes" value="javax/media/j3d/NativeContext.java,javax/media/j3d/NativeDrawable.java,javax/media/j3d/NativePipeline.java,javax/media/j3d/NativeShaderObject.java"/>
+  </target>
+
+  <target name="init-jogl" if="build.jogl">
+    <property name="jogl.pipeline.srcdir" location="${src}/classes/jogl"/>
+    <echo message="Building JoglPipeline"/>
+  </target>
+
+  <target name="init-no-jogl" unless="build.jogl">
+    <property name="jogl.pipeline.srcdir" value=""/>
+  </target>
+
+  <target name="setupJogl" depends="init-jogl,init-no-jogl">
+  </target>
+
   <target name="setupPlatform"
-       depends="init, setupBuildType, setupSolaris, setupSolarisX86, setupLinux, setupLinuxAmd64, setupLinuxIA64, setupLinuxPPC, setupWindows">
+       depends="init, setupBuildType, setupSolaris, setupSolarisX86, setupLinux, setupLinuxAmd64, setupLinuxIA64, setupLinuxPPC, setupWindows, setupWindowsAmd64, setupMacOSX, setupJogl">
     <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
     <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
     <property name="docname" value="java3d-${version_file}-doc"/>
@@ -319,6 +344,11 @@
 	<os family="windows" arch="x86"/>
     </condition> 
 
+
+    <condition property="isWindowsOnAmd64">
+	<os family="windows" arch="amd64"/>
+    </condition> 
+
     <condition property="isLinuxOnX86">
         <os name="linux" arch="i386"/>
     </condition>
@@ -346,6 +376,13 @@
     <condition property="isa_amd64">
       <contains string="${sun.cpu.isalist}" substring="amd64"/>
     </condition>
+
+    <condition property="isMacOSX">
+      <and>
+        <os family="mac"/>
+        <os family="unix"/>
+      </and>
+    </condition> 
 
     <available file="${java.home}/lib/amd64/libjawt.so" property="jre_amd64_present"/>
 
@@ -494,10 +531,14 @@
     <!-- Delete the ${dist} directory tree  -->
     <delete dir="${dist}"/>
   </target>
+  
+  <target name="clean-default" unless="build.concurrent">
+    <delete dir="${build}/default"/>
+  </target>
 
-  <target name="clean" depends="setupPlatform">
+  <target name="clean" depends="setupPlatform,clean-default">
     <!-- Delete the ${build}, and ${dist} directory trees for current platform -->
-    <delete dir="${build}/${platform}"/>	
+    <delete dir="${build}/${platform}"/>
     <delete dir="${dist}/${platform}"/>
   </target>
   

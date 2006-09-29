@@ -338,8 +338,7 @@ class LightBin extends Object implements ObjectUpdate {
 	}
 	e.prev = null;
 	e.next = null;
-	renderBin.envSetFreelist.add(e);
-
+        
 	if (environmentSetList == null && insertEnvSet.size() == 0) {
 	    renderBin.removeLightBin(this);
 	    geometryBackground = null;
