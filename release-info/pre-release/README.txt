@@ -35,6 +35,6 @@ After downloading and unzipping the java3d-1_5_0-XXX.zip file into a temporary d
     LICENSE-JRL.txt            Software License Agreement
     README-unzip.html          Instructions for manually installing the release
     README.txt                 README file (you are reading it now)
-    j3d-150-XXX.zip            Zip file containing the files to be installed
+    j3d-jre.zip                Zip file containing the files to be installed
 
 To manually install Java 3D, open README-unzip.html in your browser and follow the instructions.

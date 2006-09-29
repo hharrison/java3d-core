@@ -151,36 +151,42 @@
 
   <target name="setupSolaris" if="isSolarisOnSparc">	
     <property name="wstype" value="x11"/>
+    <property name="platformname" value="solaris-sparc"/>
     <property name="platform" value="solaris-sparc-${build.comp}"/>
     <property name="install.bin" value="lib/sparc"/>
   </target>
 
   <target name="setupSolarisX86" if="isSolarisOnX86">
     <property name="wstype" value="x11"/>
+    <property name="platformname" value="solaris-x86"/>
     <property name="platform" value="solaris-x86-${build.comp}"/>
     <property name="install.bin" value="lib/i386"/>
   </target>
 
   <target name="setupLinux" if="isLinuxOnX86">	
     <property name="wstype" value="x11"/>
+    <property name="platformname" value="linux-i586"/>
     <property name="platform" value="linux-i586"/>
     <property name="install.bin" value="lib/i386"/>
   </target>
 
   <target name="setupLinuxAmd64" if="isLinuxOnAmd64">	
     <property name="wstype" value="x11"/>
+    <property name="platformname" value="linux-amd64"/>
     <property name="platform" value="linux-amd64"/>
     <property name="install.bin" value="lib/amd64"/>
   </target>
 
   <target name="setupLinuxIA64" if="isLinuxOnIA64">	
     <property name="wstype" value="x11"/>
+    <property name="platformname" value="linux-ia64"/>
     <property name="platform" value="linux-ia64"/>
     <property name="install.bin" value="lib/ia64"/>
   </target>
 
   <target name="setupLinuxPPC" if="isLinuxOnPPC">	
     <property name="wstype" value="x11"/>
+    <property name="platformname" value="linux-ppc"/>
     <property name="platform" value="linux-ppc"/>
     <property name="install.bin" value="lib/ppc"/>
   </target>
@@ -188,18 +194,21 @@
     <!-- win32 should be rename as windows -->
   <target name="setupWindows" if="isWindowsOnX86">	
     <property name="wstype" value="win32"/>
+    <property name="platformname" value="windows-i586"/>
     <property name="platform" value="windows-i586-${build.comp}"/>
     <property name="install.bin" value="bin"/>
   </target>
 
   <target name="setupWindowsAmd64" if="isWindowsOnAmd64">	
     <property name="wstype" value="win32"/>
+    <property name="platformname" value="windows-amd64"/>
     <property name="platform" value="windows-amd64-${build.comp}"/>
     <property name="install.bin" value="bin"/>
   </target>
 
   <target name="setupMacOSX" if="isMacOSX">	
     <property name="wstype" value="jogl"/>
+    <property name="platformname" value="macosx"/>
     <property name="platform" value="macosx"/>
     <!-- Exclude native pipeline from compilation as we don't have a NativeConfigTemplate3D, etc. for this platform -->
     <property name="javac.excludes" value="javax/media/j3d/NativeContext.java,javax/media/j3d/NativeDrawable.java,javax/media/j3d/NativePipeline.java,javax/media/j3d/NativeShaderObject.java"/>
@@ -240,6 +249,7 @@
   <target name="setupBuildPatch" if="buildType_patch">
     <property name="buildTypeSet" value="true"/>
 
+    <property name="releaseType_final" value="true"/>
     <property name="is_dev_phase" value="false"/>
     <property name="is_production" value="true"/>
     <property name="use_verbose_buildtime" value="false"/>
@@ -257,6 +267,7 @@
   <target name="setupBuildFcs" if="buildType_fcs">
     <property name="buildTypeSet" value="true"/>
 
+    <property name="releaseType_final" value="true"/>
     <property name="is_dev_phase" value="false"/>
     <property name="is_production" value="true"/>
     <property name="use_verbose_buildtime" value="false"/>
@@ -274,6 +285,7 @@
   <target name="setupBuildBeta" if="buildType_beta">
     <property name="buildTypeSet" value="true"/>
 
+    <property name="releaseType_milestone" value="true"/>
     <property name="is_dev_phase" value="false"/>
     <property name="is_production" value="true"/>
     <property name="use_verbose_buildtime" value="true"/>
@@ -291,6 +303,7 @@
   <target name="setupBuildStable" if="buildType_stable">
     <property name="buildTypeSet" value="true"/>
 
+    <property name="releaseType_milestone" value="true"/>
     <property name="is_dev_phase" value="true"/>
     <property name="is_production" value="false"/>
     <property name="use_verbose_buildtime" value="true"/>
@@ -308,6 +321,7 @@
   <target name="setupBuildDaily" if="buildType_daily">
     <property name="buildTypeSet" value="true"/>
 
+    <property name="releaseType_daily" value="true"/>
     <property name="is_dev_phase" value="true"/>
     <property name="is_production" value="false"/>
     <property name="use_verbose_buildtime" value="true"/>
@@ -462,50 +476,19 @@
 
   <target name="all" depends="jar-debug,dist,docs-jcp,docs-private"/>
 
-  <target name="rpm" description="Build rpm package" depends="dist">
-      <mkdir dir="${build}/${platform}/rpm"/>
-      <mkdir dir="${build}/${platform}/rpm/SPECS"/>
-      <mkdir dir="${build}/${platform}/rpm/SOURCES"/>
-      <mkdir dir="${build}/${platform}/rpm/BUILD"/>
-      <mkdir dir="${build}/${platform}/rpm/RPMS"/>
-
-      <copy file="build-tools/java3d-rpm.spec" 
-            todir="${build}/${platform}/rpm/SPECS"
-            overwrite="true">
-          <filterset>
-              <filter token="VERSION" value="${version}"/>
-              <filter token="VERSION_FILE" value="${version_file}"/>
-              <filter token="VERSION_RPM" value="${version_rpm}"/>
-          </filterset>
-      </copy>
-
-      <tar destfile="${build}/${platform}/rpm/SOURCES/java3d-${version_file}.tar.gz"
-           compression="gzip">
-          <tarfileset dir="${dist}/${platform}"
-                      includes="lib/**"
-          />
-          <tarfileset dir="release-info"
-                      includes="BINARY-CODE-LICENSE.txt"
-          />
-          <tarfileset dir="."
-                      includes="COPYRIGHT.txt README-FIRST.txt"
-          />
-      </tar>
-
-      <rpm specFile="java3d-rpm.spec"
-           topDir="${build}/${platform}/rpm"/>
-
-      <copy
-        file="${build}/${platform}/rpm/RPMS/i586/java3d-${version_rpm}-1.i586.rpm"
-        tofile="dist/${platform}/java3d-${version_file}-1-i586.rpm"/>
+  <target name="release" description="Package distribution for release"
+	depends="dist,init-release,release-daily,release-milestone,release-final">
   </target>
-  
-  <target name="release" description="Package distribution for release" depends="dist">
-      <property name="staging" location="${dist}/${platform}/staging"/>
-      <property name="release_name" value="java3d-${version_file}-${platform}"/>
+
+  <target name="init-release">
+      <property name="platformTmp" location="${dist}/${platform}/tmp"/>
+      <property name="release_name" value="java3d-${version_file}-${platformname}"/>
+  </target>
+
+  <target name="release-daily" if="releaseType_daily">
       <mkdir dir="${dist}/release"/>
-      <mkdir dir="${staging}/${release_name}"/>
-      <zip destfile="${staging}/${release_name}/j3d-jre-${version_file}-${platform}.zip">
+      <mkdir dir="${platformTmp}/${release_name}"/>
+      <zip destfile="${platformTmp}/${release_name}/j3d-jre.zip">
           <fileset dir="${dist}/${platform}"
               includes="lib/**"
           />
@@ -513,18 +496,25 @@
               includes="bin/**"
           />
       </zip>
-      <copy todir="${staging}/${release_name}">
+      <copy todir="${platformTmp}/${release_name}">
           <fileset dir="." includes="COPYRIGHT.txt"/>
-          <fileset dir="." includes="LICENSE*.txt"/>
           <fileset dir="release-info/pre-release"
-              includes="HOW-TO-INSTALL.txt  README.txt"
+              includes="LICENSE*.txt README.txt README-unzip.html"
           />
       </copy>
       <zip destfile="${dist}/release/java3d-${version_file}-${platform}.zip">
-          <fileset dir="${dist}/${platform}/staging"
+          <fileset dir="${platformTmp}"
               includes="${release_name}/**"
           />
       </zip>
+  </target>
+
+  <target name="release-milestone" if="releaseType_milestone">
+      <fail message="release-milestone not yet implenented"/>
+  </target>
+
+  <target name="release-final" if="releaseType_final">
+      <fail message="release-final not yet implenented"/>
   </target>
 
   <target name="clean-dist">
