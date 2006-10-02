@@ -502,7 +502,7 @@
               includes="LICENSE*.txt README.txt README-unzip.html"
           />
       </copy>
-      <zip destfile="${dist}/release/java3d-${version_file}-${platform}.zip">
+      <zip destfile="${dist}/release/${release_name}.zip">
           <fileset dir="${platformTmp}"
               includes="${release_name}/**"
           />
