@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# usage: genzip <archive-name> <license-file> <file> [ <file> ... ]
+
+tmpscr1=script1.$$
+tmpscr2=script2.$$
+
+archive=$1
+shift
+license=$1
+shift
+
+echo "zip'ing..."
+
+zip -r $archive.zip $*
+
+cat ../unzipsfx $archive.zip > $archive
+
+echo "Checksumming..."
+
+sum=`/usr/bin/sum $archive`
+index=1
+for s in $sum
+do
+    case $index in
+    1)  sum1=$s;
+	index=2;
+	;;
+    2)  sum2=$s;
+	index=3;
+	;;
+    esac
+done
+echo sum = $sum1 $sum2
+
+cat ../script1.txt $license ../script2.txt > $tmpscr1
+
+linecount=`/usr/bin/wc -l < $tmpscr1`
+linecount=$(($linecount + 1))
+echo linecount = $linecount
+
+echo "Generating .bin script..."
+
+sed -e s/@LINECOUNT@/$linecount/ -e s/@SUM1@/$sum1/ -e s/@SUM2@/$sum2/ < $tmpscr1 > $tmpscr2
+cat $tmpscr2 $archive > ../$archive.bin
+chmod +x ../$archive.bin
+
+echo "Cleaning up..."
+rm -f $tmpscr1
+rm -f $tmpscr2
+rm -f $archive.zip
+rm -f $archive
+
+echo "Done"

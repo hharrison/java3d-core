@@ -398,6 +398,7 @@
 
   <target name="dist">
 	   <ant antfile="build-${platform}.xml" dir="${build.rend}" target="dist"/>
+           <chmod dir="${dist}/${platform}" perm="755" includes="**/*.dll, **/*.so"/>
   </target>
 
 </project>

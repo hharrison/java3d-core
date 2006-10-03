@@ -1,0 +1,4 @@
+#!/bin/sh
+PATH=/usr/bin:/bin
+more <<"EOF"
+

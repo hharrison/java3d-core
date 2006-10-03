@@ -57,7 +57,7 @@
   * The following property specifies the beta revision of the current
   * Java 3D version being built. It is ignored for non-beta builds.
   -->
-  <property name="version_betastr"    value="beta1"/>
+  <property name="version_betastr"    value="beta2"/>
 
   <!--
   * The following property specifies the patch revision of the current
@@ -149,7 +149,9 @@
     <echo message="version_rpm     = ${version_rpm}"/>
   </target>
 
-  <target name="setupSolaris" if="isSolarisOnSparc">	
+  <target name="setupSolaris" if="isSolarisOnSparc">
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/usr/bin/ksh"/>
     <property name="wstype" value="x11"/>
     <property name="platformname" value="solaris-sparc"/>
     <property name="platform" value="solaris-sparc-${build.comp}"/>
@@ -157,6 +159,8 @@
   </target>
 
   <target name="setupSolarisX86" if="isSolarisOnX86">
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/usr/bin/ksh"/>
     <property name="wstype" value="x11"/>
     <property name="platformname" value="solaris-x86"/>
     <property name="platform" value="solaris-x86-${build.comp}"/>
@@ -164,27 +168,35 @@
   </target>
 
   <target name="setupLinux" if="isLinuxOnX86">	
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/bin/sh"/>
     <property name="wstype" value="x11"/>
     <property name="platformname" value="linux-i586"/>
     <property name="platform" value="linux-i586"/>
     <property name="install.bin" value="lib/i386"/>
   </target>
 
-  <target name="setupLinuxAmd64" if="isLinuxOnAmd64">	
+  <target name="setupLinuxAmd64" if="isLinuxOnAmd64">
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/bin/sh"/>
     <property name="wstype" value="x11"/>
     <property name="platformname" value="linux-amd64"/>
     <property name="platform" value="linux-amd64"/>
     <property name="install.bin" value="lib/amd64"/>
   </target>
 
-  <target name="setupLinuxIA64" if="isLinuxOnIA64">	
+  <target name="setupLinuxIA64" if="isLinuxOnIA64">
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/bin/sh"/>
     <property name="wstype" value="x11"/>
     <property name="platformname" value="linux-ia64"/>
     <property name="platform" value="linux-ia64"/>
     <property name="install.bin" value="lib/ia64"/>
   </target>
 
-  <target name="setupLinuxPPC" if="isLinuxOnPPC">	
+  <target name="setupLinuxPPC" if="isLinuxOnPPC">
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/bin/sh"/>
     <property name="wstype" value="x11"/>
     <property name="platformname" value="linux-ppc"/>
     <property name="platform" value="linux-ppc"/>
@@ -192,21 +204,23 @@
   </target>
 
     <!-- win32 should be rename as windows -->
-  <target name="setupWindows" if="isWindowsOnX86">	
+  <target name="setupWindows" if="isWindowsOnX86">
+    <property name="isWindows" value="true"/>
     <property name="wstype" value="win32"/>
     <property name="platformname" value="windows-i586"/>
     <property name="platform" value="windows-i586-${build.comp}"/>
     <property name="install.bin" value="bin"/>
   </target>
 
-  <target name="setupWindowsAmd64" if="isWindowsOnAmd64">	
+  <target name="setupWindowsAmd64" if="isWindowsOnAmd64">
+    <property name="isWindows" value="true"/>
     <property name="wstype" value="win32"/>
     <property name="platformname" value="windows-amd64"/>
     <property name="platform" value="windows-amd64-${build.comp}"/>
     <property name="install.bin" value="bin"/>
   </target>
 
-  <target name="setupMacOSX" if="isMacOSX">	
+  <target name="setupMacOSX" if="isMacOSX">
     <property name="wstype" value="jogl"/>
     <property name="platformname" value="macosx"/>
     <property name="platform" value="macosx"/>
@@ -286,6 +300,7 @@
     <property name="buildTypeSet" value="true"/>
 
     <property name="releaseType_milestone" value="true"/>
+    <property name="releaseType_dailyOrMilestone" value="true"/>
     <property name="is_dev_phase" value="false"/>
     <property name="is_production" value="true"/>
     <property name="use_verbose_buildtime" value="true"/>
@@ -304,6 +319,7 @@
     <property name="buildTypeSet" value="true"/>
 
     <property name="releaseType_milestone" value="true"/>
+    <property name="releaseType_dailyOrMilestone" value="true"/>
     <property name="is_dev_phase" value="true"/>
     <property name="is_production" value="false"/>
     <property name="use_verbose_buildtime" value="true"/>
@@ -322,6 +338,7 @@
     <property name="buildTypeSet" value="true"/>
 
     <property name="releaseType_daily" value="true"/>
+    <property name="releaseType_dailyOrMilestone" value="true"/>
     <property name="is_dev_phase" value="true"/>
     <property name="is_production" value="false"/>
     <property name="use_verbose_buildtime" value="true"/>
@@ -481,14 +498,19 @@
   </target>
 
   <target name="init-release">
-      <property name="platformTmp" location="${dist}/${platform}/tmp"/>
+      <property name="platformTmpBund" location="${dist}/${platform}/tmp/bund"/>
+      <property name="platformTmpInst" location="${dist}/${platform}/tmp/inst"/>
       <property name="release_name" value="java3d-${version_file}-${platformname}"/>
+      <mkdir dir="${dist}/release"/>
   </target>
 
-  <target name="release-daily" if="releaseType_daily">
-      <mkdir dir="${dist}/release"/>
-      <mkdir dir="${platformTmp}/${release_name}"/>
-      <zip destfile="${platformTmp}/${release_name}/j3d-jre.zip">
+  <target name="release-daily" depends="init-release,release-zip-bund-pre" if="releaseType_daily">
+  </target>
+  
+  <target name="release-zip-bund-pre" if="releaseType_dailyOrMilestone">
+      <mkdir dir="${platformTmpBund}/${release_name}"/>
+
+      <zip destfile="${platformTmpBund}/${release_name}/j3d-jre.zip">
           <fileset dir="${dist}/${platform}"
               includes="lib/**"
           />
@@ -496,24 +518,64 @@
               includes="bin/**"
           />
       </zip>
-      <copy todir="${platformTmp}/${release_name}">
+      <copy todir="${platformTmpBund}/${release_name}">
           <fileset dir="." includes="COPYRIGHT.txt"/>
           <fileset dir="release-info/pre-release"
               includes="LICENSE*.txt README.txt README-unzip.html"
           />
       </copy>
       <zip destfile="${dist}/release/${release_name}.zip">
-          <fileset dir="${platformTmp}"
+          <fileset dir="${platformTmpBund}"
               includes="${release_name}/**"
           />
       </zip>
   </target>
 
-  <target name="release-milestone" if="releaseType_milestone">
-      <fail message="release-milestone not yet implenented"/>
+  <target name="release-milestone" depends="init-release,release-zip-bund-pre,release-zip-inst-pre" if="releaseType_milestone">
   </target>
 
-  <target name="release-final" if="releaseType_final">
+  <target name="release-zip-inst-pre" if="releaseType_milestone">
+      <antcall target="release-zip-inst-pre-unix"/>
+      <antcall target="release-zip-inst-pre-windows"/>
+  </target>
+
+  <target name="release-zip-inst-pre-unix" if="isUnix">
+    <mkdir dir="${platformTmpInst}/${release_name}"/>
+
+    <copy todir="${platformTmpInst}/${release_name}">
+      <fileset dir="${dist}/${platform}"
+          includes="lib/**"/>
+      <fileset dir="${dist}/${platform}"
+          includes="bin/**"/>
+    </copy>
+
+    <copy tofile="${platformTmpInst}/${release_name}/LICENSE.txt">
+      <fileset dir="release-info/pre-release"
+        includes="LICENSE*.txt"/>
+    </copy>
+
+    <chmod dir="${platformTmpInst}/${release_name}" perm="755"
+       includes="**/*.so"/>
+
+    <copy todir="${platformTmpInst}">
+        <fileset dir="${build-tools}/${platformname}"
+            includes="script*.txt, unzipsfx"/>
+    </copy>
+
+    <exec dir="${platformTmpInst}/${release_name}" executable="${shell}">
+      <arg line="${build-tools}/genzip ${release_name} LICENSE.txt lib"/>
+    </exec>
+
+    <copy file="${platformTmpInst}/${release_name}.bin" todir="${dist}/release"/>
+
+    <chmod file="${dist}/release/${release_name}.bin" perm="755"/>
+  </target>
+
+  <target name="release-zip-inst-pre-windows" if="isWindows">
+      <echo message="EXECUTE: release-zip-inst-pre-windows"/>
+  </target>
+
+  <target name="release-final" depends="init-release" if="releaseType_final">
       <fail message="release-final not yet implenented"/>
   </target>
 
