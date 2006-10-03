@@ -387,10 +387,12 @@ class ImageComponent3DRetained extends ImageComponentRetained {
 
         ImageComponent3DRetained newImage = new ImageComponent3DRetained();
         newImage.processParams(getFormat(), newWidth, newHeight, depth);
+        newImage.setImageFormatType(getImageFormatType());
+        newImage.setUnitsPerPixel(getUnitsPerPixel());        
         newImage.imageData = newImage.createRenderedImageDataObject(null);
         
         for (int i = 0; i < depth; i++) {
-            newImage.scaleImage(xScale, yScale, depth, this);
+            newImage.scaleImage(xScale, yScale, i, this);
         }
 	
         return newImage;
