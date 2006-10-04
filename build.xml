@@ -498,9 +498,11 @@
   </target>
 
   <target name="init-release">
-      <property name="platformTmpBund" location="${dist}/${platform}/tmp/bund"/>
-      <property name="platformTmpInst" location="${dist}/${platform}/tmp/inst"/>
+      <property name="platformTmp" location="${dist}/${platform}/tmp"/>
+      <property name="platformTmpBund" location="${platformTmp}/bund"/>
+      <property name="platformTmpInst" location="${platformTmp}/inst"/>
       <property name="release_name" value="java3d-${version_file}-${platformname}"/>
+      <property name="inst_name" value="j3d-instfiles-${version_file}-${platformname}"/>
       <mkdir dir="${dist}/release"/>
   </target>
 
@@ -572,7 +574,28 @@
   </target>
 
   <target name="release-zip-inst-pre-windows" if="isWindows">
-      <echo message="EXECUTE: release-zip-inst-pre-windows"/>
+    <property name="tmpInstDir" location="${platformTmpInst}/${inst_name}"/>
+    <mkdir dir="${tmpInstDir}/j3d-binaries"/>
+
+    <copy todir="${tmpInstDir}">
+      <fileset dir="release-info/pre-release"
+        includes="LICENSE*.rtf README.html"/>
+    </copy>
+
+    <copy todir="${tmpInstDir}/j3d-binaries">
+      <fileset dir="${dist}/${platform}"
+          includes="lib/**"/>
+      <fileset dir="${dist}/${platform}"
+          includes="bin/**"/>
+    </copy>
+
+    <chmod dir="${tmpInstDir}/j3d-binaries" perm="755"
+       includes="**/*.dll"/>
+
+    <zip destfile="${dist}/release/${inst_name}.zip">
+      <fileset dir="${platformTmpInst}"
+          includes="${inst_name}/**"/>
+    </zip>
   </target>
 
   <target name="release-final" depends="init-release" if="releaseType_final">
