@@ -607,13 +607,7 @@ getPropertiesFromCurrentContext(
     else {
         if (versionNumbers[1] == 2) {
             fprintf(stderr,
-                    "*********************************************************\n");
-            fprintf(stderr,
-                    "*** JAVA 3D: WARNING OpenGL 1.2 is no longer supported.\n");
-            fprintf(stderr,
-                    "*** Will attempt to run with reduced functionality.\n");
-            fprintf(stderr,
-                    "*********************************************************\n");
+                    "JAVA 3D: OpenGL 1.2 detected; will run with reduced functionality\n");
         } else {
             // OpenGL 1.x (1.3 or greater)
             ctxInfo->gl13 = JNI_TRUE;

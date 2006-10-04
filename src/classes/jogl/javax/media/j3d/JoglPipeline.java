@@ -8336,8 +8336,8 @@ class JoglPipeline extends Pipeline {
         
         // Reset all fields
         cv.multiTexAccelerated = false;
-        cv.maxTextureUnits = 0;
-        cv.maxTexCoordSets = 0;
+        cv.maxTextureUnits = 1;
+        cv.maxTexCoordSets = 1;
         cv.maxTextureImageUnits = 0;
         cv.maxVertexTextureImageUnits = 0;
         cv.maxCombinedTextureImageUnits = 0;
@@ -8393,10 +8393,7 @@ class JoglPipeline extends Pipeline {
             gl13 = true;
         } else {
             if (minor == 2) {
-                System.err.println("*********************************************************");
-                System.err.println("*** JAVA 3D: WARNING OpenGL 1.2 is no longer supported.");
-                System.err.println("*** Will attempt to run with reduced functionality.");
-                System.err.println("*********************************************************");
+                System.err.println("JAVA 3D: OpenGL 1.2 detected; will run with reduced functionality");
             } else {
                 gl13 = true;
             }
