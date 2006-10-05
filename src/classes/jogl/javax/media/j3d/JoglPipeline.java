@@ -6929,9 +6929,28 @@ class JoglPipeline extends Pipeline {
         
         // Apparently we are supposed to make the context current at
         // this point and set up a bunch of properties
-        if (context.makeCurrent() == GLContext.CONTEXT_NOT_CURRENT) {
-            throw new IllegalRenderingStateException("Unable to make new context current");
-        }
+        
+        // Work around for some low end graphics driver bug, such as Intel Chipset.
+        // Issue 324 : Lockup Java3D program and throw exception using JOGL renderer
+        boolean failed = false;
+        int failCount = 0;
+        int MAX_FAIL_COUNT = 5;
+        do {
+            failed = false;
+            int res = context.makeCurrent();
+            if (res == GLContext.CONTEXT_NOT_CURRENT) {
+                // System.err.println("makeCurrent fail : " + failCount);
+                failed = true;
+                ++failCount;
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+            }
+        } while (failed && (failCount < MAX_FAIL_COUNT));
+        if (failCount == MAX_FAIL_COUNT) {
+            throw new IllegalRenderingStateException("Unable to make new context current after " + failCount + "tries");
+        }        
         
         GL gl = context.getGL();
         JoglContext ctx = new JoglContext(context);
