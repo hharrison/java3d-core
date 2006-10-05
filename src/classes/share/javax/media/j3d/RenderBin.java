@@ -6808,81 +6808,82 @@ System.out.println("......tb.soleUser= " +
 
 
     void removeNodes(J3dMessage m) {
-	Object[] nodes;
-	ArrayList viewScopedNodes = (ArrayList)m.args[3];
-	ArrayList scopedNodesViewList = (ArrayList)m.args[4];
-	int i, j;
-	nodes = (Object[])m.args[0];
-	for (int n = 0; n < nodes.length; n++) {
-    	    if (nodes[n] instanceof GeometryAtom) {
-		visGAIsDirty = true;
-		visQuery = true;
-		RenderAtom ra =
-		    ((GeometryAtom)nodes[n]).getRenderAtom(view);
-		if (ra != null && ra.inRenderBin()) {
-		    renderAtoms.remove(renderAtoms.indexOf(ra));
-		    removeARenderAtom(ra);
-		}
-                
+        Object[] nodes;
+        ArrayList viewScopedNodes = (ArrayList)m.args[3];
+        ArrayList scopedNodesViewList = (ArrayList)m.args[4];
+        int i, j;
+        nodes = (Object[])m.args[0];
+        for (int n = 0; n < nodes.length; n++) {
+            if (nodes[n] instanceof GeometryAtom) {
+                visGAIsDirty = true;
+                visQuery = true;
+                RenderAtom ra =
+                        ((GeometryAtom)nodes[n]).getRenderAtom(view);
+                if (ra != null && ra.inRenderBin()) {
+                    renderAtoms.remove(renderAtoms.indexOf(ra));
+                    removeARenderAtom(ra);
+                }
+
                 // This code segment is to handle the texture resource cleanup
                 // for Raster object.
                 GeometryAtom geomAtom = (GeometryAtom) nodes[n];
-                GeometryRetained geomRetained = geomAtom.geometryArray[0];
-                if ((geomRetained != null) && 
-                        (geomRetained instanceof RasterRetained )) {
-                    addTextureResourceFreeList(((RasterRetained)geomRetained).texture);
-                }                
-	    }
-	    else if (nodes[n] instanceof AlternateAppearanceRetained) {
-		altAppearanceDirty = true;
-	    }
-	    else  if (nodes[n] instanceof BackgroundRetained) {
-		reEvaluateBg = true;
-	    }
-	    else  if (nodes[n] instanceof ClipRetained) {
-		reEvaluateClip = true;
-	    } else if (nodes[n] instanceof ModelClipRetained) {
-		envDirty |=  REEVALUATE_MCLIP;
-	    } else if (nodes[n] instanceof FogRetained) {
-		envDirty |=  REEVALUATE_FOG;
-	    }
-	    if (nodes[n] instanceof LightRetained) {
-		envDirty |=  REEVALUATE_LIGHTS;
-	    }
-	}
-	// Handle ViewScoped Nodes
-	if (viewScopedNodes != null) {
-	    int size = viewScopedNodes.size();
-	    int vlsize;
-	    Object node;
-	    for (i = 0; i < size; i++) {
-		node = (NodeRetained)viewScopedNodes.get(i);
-		ArrayList vl = (ArrayList) scopedNodesViewList.get(i);
-		// If the node object is scoped to this view, then ..
-		if (vl.contains(view)) {
-		    if (node instanceof LightRetained) {
-			envDirty |=  REEVALUATE_LIGHTS;
-		    } else if (node instanceof FogRetained) {
-			envDirty |=  REEVALUATE_FOG;
-		    } else if (node instanceof BackgroundRetained) {
-			// If a new background is inserted, then
-			// re_evaluate to determine if this backgrouns
-			// should be used
-			reEvaluateBg = true;
-		    } else if (node instanceof ClipRetained) {
-			reEvaluateClip = true;
-		    } else if (node instanceof ModelClipRetained) {
-			envDirty |=  REEVALUATE_MCLIP;
+                if(geomAtom.geometryArray != null) {
+                    for(int ii=0; ii<geomAtom.geometryArray.length; ii++) {
+                        GeometryRetained geomRetained = geomAtom.geometryArray[ii];
+                        if ((geomRetained != null) &&
+                                (geomRetained instanceof RasterRetained )) {
+                            addTextureResourceFreeList(((RasterRetained)geomRetained).texture);
+                        }
+                    }
+                }
+            } else if (nodes[n] instanceof AlternateAppearanceRetained) {
+                altAppearanceDirty = true;
+            } else  if (nodes[n] instanceof BackgroundRetained) {
+                reEvaluateBg = true;
+            } else  if (nodes[n] instanceof ClipRetained) {
+                reEvaluateClip = true;
+            } else if (nodes[n] instanceof ModelClipRetained) {
+                envDirty |=  REEVALUATE_MCLIP;
+            } else if (nodes[n] instanceof FogRetained) {
+                envDirty |=  REEVALUATE_FOG;
+            }
+            if (nodes[n] instanceof LightRetained) {
+                envDirty |=  REEVALUATE_LIGHTS;
+            }
+        }
+        // Handle ViewScoped Nodes
+        if (viewScopedNodes != null) {
+            int size = viewScopedNodes.size();
+            int vlsize;
+            Object node;
+            for (i = 0; i < size; i++) {
+                node = (NodeRetained)viewScopedNodes.get(i);
+                ArrayList vl = (ArrayList) scopedNodesViewList.get(i);
+                // If the node object is scoped to this view, then ..
+                if (vl.contains(view)) {
+                    if (node instanceof LightRetained) {
+                        envDirty |=  REEVALUATE_LIGHTS;
+                    } else if (node instanceof FogRetained) {
+                        envDirty |=  REEVALUATE_FOG;
+                    } else if (node instanceof BackgroundRetained) {
+                        // If a new background is inserted, then
+                        // re_evaluate to determine if this backgrouns
+                        // should be used
+                        reEvaluateBg = true;
+                    } else if (node instanceof ClipRetained) {
+                        reEvaluateClip = true;
+                    } else if (node instanceof ModelClipRetained) {
+                        envDirty |=  REEVALUATE_MCLIP;
 
-		    } else if (node instanceof AlternateAppearanceRetained) {
-			altAppearanceDirty = true;
-		    }
-		    // Note: geometryAtom is not part of viewScopedNodes
-		    // Its a part of orginal nodes even if scoped
-		}
-		    
-	    }
-	}
+                    } else if (node instanceof AlternateAppearanceRetained) {
+                        altAppearanceDirty = true;
+                    }
+                    // Note: geometryAtom is not part of viewScopedNodes
+                    // Its a part of orginal nodes even if scoped
+                }
+
+            }
+        }
     }
 
     void cleanup() {
