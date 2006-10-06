@@ -187,7 +187,12 @@ Java_javax_media_j3d_NativeScreenInfo_queryWglARB(
 	return JNI_FALSE;
     }
 
-    SetPixelFormat(hdc, pixelFormat, NULL);
+    if (SetPixelFormat(hdc, pixelFormat, NULL)) {
+ 	printErrorMessage("Failed in SetPixelFormat");
+	DestroyWindow(hwnd);
+	UnregisterClass(szAppName, (HINSTANCE)NULL);
+	return -1;    
+    }
     
     hrc = wglCreateContext(hdc);
     if (!hrc) {

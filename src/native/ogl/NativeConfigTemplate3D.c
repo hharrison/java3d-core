@@ -1436,6 +1436,8 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
     jlong * offScreenPFListPtr;
     PIXELFORMATDESCRIPTOR dummy_pfd = getDummyPFD();
 
+    int i;
+
     /*
      * Select any pixel format and bound current context to
      * it so that we can get the wglChoosePixelFormatARB entry point.
@@ -1458,7 +1460,12 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 	return -1;
     }
 
-    SetPixelFormat(hdc, pixelFormat, NULL);
+    if (SetPixelFormat(hdc, pixelFormat, NULL)) {
+ 	printErrorMessage("In NativeConfigTemplate : Failed in SetPixelFormat");
+	DestroyWindow(hwnd);
+	UnregisterClass(szAppName, (HINSTANCE)NULL);
+	return -1;    
+    }
     
     hrc = wglCreateContext(hdc);
     if (!hrc) {

@@ -1108,7 +1108,7 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createNewContext(
     LPTSTR errString;    
     jboolean result;
     PixelFormatInfo *PixelFormatInfoPtr = (PixelFormatInfo *)fbConfigListPtr;
-    
+    int i;
     /* Fix for issue 76 */
 
     
@@ -1147,7 +1147,10 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createNewContext(
 	}
     }
     
-    SetPixelFormat(hdc, PixelFormatID, NULL);
+    if (SetPixelFormat(hdc, pixelFormat, NULL)) {
+ 	printErrorMessage("Canvas3D_createNewContext: Failed in SetPixelFormat");
+	return 0;    
+    }        
 
     /* fprintf(stderr, "Before wglCreateContext\n"); */
 
