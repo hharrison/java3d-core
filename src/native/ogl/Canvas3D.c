@@ -1147,7 +1147,7 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createNewContext(
 	}
     }
     
-    if (SetPixelFormat(hdc, pixelFormat, NULL)) {
+    if (SetPixelFormat(hdc, PixelFormatID, NULL)) {
  	printErrorMessage("Canvas3D_createNewContext: Failed in SetPixelFormat");
 	return 0;    
     }        
