@@ -485,7 +485,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_setLightEnables(
 #endif
 
     for (i=0; i<nlights; i++) {
-	if (enable_mask & (1L<<i)) {
+      if (enable_mask & ((long)(1<<i))) {
 	    glEnable(GL_LIGHT0 + i);
 	}
 	else {

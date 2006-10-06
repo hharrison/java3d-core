@@ -755,7 +755,7 @@ Java_javax_media_j3d_NativePipeline_lookupGLSLShaderAttrNames(
          * Issue 247 - we need to workaround an ATI bug where they erroneously
          * report individual elements of arrays rather than the array itself
          */
-        len = strlen(name);
+        len = (int) strlen(name);
         if (len >= 3 && name[len-1] == ']') {
             if (strcmp(&name[len-3], "[0]") == 0) {
                 /* fprintf(stderr, "**** changing \"%s\" ", name); */
