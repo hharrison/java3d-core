@@ -66,15 +66,9 @@ Java_javax_media_j3d_NativePipeline_loadNativeCgLibrary(
     jobject thiz,
     jobjectArray libpath)
 {
-    CgWrapperInfo *cgWrapperInfo;
-    int i, pathLen;
+    CgWrapperInfo *cgWrapperInfo;    
     char *errName = NULL;
 
-#ifdef WIN32
-    DWORD err;
-    LPTSTR errString;
-    UINT origErrorMode;
-#endif /* WIN32 */
 
     /*
      * This method is called exactly once to load and initialize the

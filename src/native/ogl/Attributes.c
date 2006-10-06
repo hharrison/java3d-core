@@ -480,12 +480,12 @@ void JNICALL Java_javax_media_j3d_NativePipeline_setLightEnables(
 
 #ifdef VERBOSE
     fprintf(stderr, "Canvas3D.updateLightEnables: mask = 0x%x, 0x%x\n",
-	    (int) ((enable_mask >> 32) & 0xffffffff),
+	    (int) ((enable_mask >> 32L) & 0xffffffff),
 	    (int) (enable_mask & 0xffffffff));
 #endif
 
     for (i=0; i<nlights; i++) {
-	if (enable_mask & (1<<i)) {
+	if (enable_mask & (1L<<i)) {
 	    glEnable(GL_LIGHT0 + i);
 	}
 	else {

@@ -1000,7 +1000,7 @@ LONG WINAPI WndProc( HWND hWnd, UINT msg,
             
     /* This function handles any messages that we didn't. */
     /* (Which is most messages) It belongs to the OS. */
-    return DefWindowProc( hWnd, msg, wParam, lParam );
+    return (LONG) DefWindowProc( hWnd, msg, wParam, lParam );
 }
 #endif /*end of WIN32 */
 
@@ -1108,10 +1108,7 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createNewContext(
     LPTSTR errString;    
     jboolean result;
     PixelFormatInfo *PixelFormatInfoPtr = (PixelFormatInfo *)fbConfigListPtr;
-    int i;
     /* Fix for issue 76 */
-
-    
     /*
       fprintf(stderr, "Canvas3D_createNewContext: \n");
       fprintf(stderr, "window 0x%x\n", window);
@@ -1147,7 +1144,7 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createNewContext(
 	}
     }
     
-    if (SetPixelFormat(hdc, PixelFormatID, NULL)) {
+    if (!SetPixelFormat(hdc, PixelFormatID, NULL)) {
  	printErrorMessage("Canvas3D_createNewContext: Failed in SetPixelFormat");
 	return 0;    
     }        

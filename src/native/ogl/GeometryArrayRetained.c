@@ -163,7 +163,7 @@ executeGeometryArray(
 
     jfloat *verts, *startVertex, *clrs, *startClrs;
     jint  i;
-	size_t bstride, cbstride;
+    jint bstride, cbstride;
     jsize strip_len;
     GLsizei *strips;
     GLenum iaFormat;
@@ -598,7 +598,7 @@ JNIEXPORT
 
     jfloat *verts;
     jint i, j;
-	size_t bstride;
+    jint bstride;
     jint texStride, *texCoordSetMapOffset;
     int vAttrStride = 0;
     int vAttrOff;
@@ -1912,7 +1912,7 @@ executeIndexedGeometryArray(
     jfloat *verts,*clrs;
     jint *indices;
     jint  i;
-	size_t bstride, cbstride;
+    jint bstride, cbstride;
     jsize strip_len;
     GLsizei *countArray;
     int offset;
@@ -2982,7 +2982,7 @@ Java_javax_media_j3d_NativePipeline_buildIndexedGeometry(
     jfloat *verts;
     jint *indices;
     jint i;
-    size_t bstride;
+    jint bstride;
     jint texStride, *texCoordSetMapOffset, texSize;
     GLsizei *countArray;
     GLenum iaFormat;
