@@ -1767,16 +1767,6 @@ class NativePipeline extends Pipeline {
     // ---------------------------------------------------------------------
     
     //
-    // ImageComponent2DRetained methods
-    //
-    
-    // free d3d surface referred to by id
-    native void freeD3DSurface(ImageComponent2DRetained image, int hashId);
-    
-    
-    // ---------------------------------------------------------------------
-    
-    //
     // Renderer methods
     //
     

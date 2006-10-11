@@ -711,16 +711,6 @@ abstract class Pipeline {
     // ---------------------------------------------------------------------
 
     //
-    // ImageComponent2DRetained methods
-    //
-
-    // free d3d surface referred to by id
-    abstract void freeD3DSurface(ImageComponent2DRetained image, int hashId);
-
-
-    // ---------------------------------------------------------------------
-
-    //
     // J3DBuffer methods
     //
 

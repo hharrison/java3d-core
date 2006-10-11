@@ -4070,17 +4070,6 @@ class JoglPipeline extends Pipeline {
     // ---------------------------------------------------------------------
     
     //
-    // ImageComponent2DRetained methods
-    //
-    
-    // free d3d surface referred to by id
-    void freeD3DSurface(ImageComponent2DRetained image, int hashId) {
-        // Nothing to do
-    }
-    
-    // ---------------------------------------------------------------------
-    
-    //
     // Renderer methods
     //
     

@@ -683,15 +683,9 @@ public class GraphicsContext3D extends Object   {
 	if (this.background != null) {
 	    bg = (BackgroundRetained)this.background.retained;
 	    bg.setInImmCtx(false);
-	    if (bg.image != null) {
-		bg.image.freeSurface();
-	    }
 	}
 	bg = (BackgroundRetained)background.retained;
 	bg.setInImmCtx(true);
-	if (bg.image != null) {	
-	    bg.image.freeSurface();
-	}
 
 	this.background = background;
     }

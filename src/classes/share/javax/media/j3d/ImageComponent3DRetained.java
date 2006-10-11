@@ -76,8 +76,6 @@ class ImageComponent3DRetained extends ImageComponentRetained {
         geomLock.unLock();
         
         if (source.isLive()) {
-           // freeSurface();
-            
             // send a IMAGE_CHANGED message in order to
             // notify all the users of the change
             sendMessage(IMAGE_CHANGED, null);
@@ -150,8 +148,6 @@ class ImageComponent3DRetained extends ImageComponentRetained {
         geomLock.unLock();
         
         if (source.isLive()) {
-           // freeSurface();
-            
             // send a IMAGE_CHANGED message in order to
             // notify all the users of the change
             sendMessage(IMAGE_CHANGED, null);

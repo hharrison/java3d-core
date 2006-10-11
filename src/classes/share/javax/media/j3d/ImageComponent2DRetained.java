@@ -23,11 +23,7 @@ import java.awt.color.ColorSpace;
 
 class ImageComponent2DRetained extends ImageComponentRetained {
 
-    // used in D3D to map object to surface pointer
-    int hashId;   
-
     ImageComponent2DRetained() {
-	hashId = hashCode();
     }
        
     /**
@@ -85,8 +81,6 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         geomLock.unLock();
         
         if (source.isLive()) {
-            freeSurface();
-            
             // send a IMAGE_CHANGED message in order to
             // notify all the users of the change
             sendMessage(IMAGE_CHANGED, null);
@@ -164,8 +158,6 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         geomLock.unLock();
         
         if (source.isLive()) {
-            freeSurface();
-            
             // send a IMAGE_CHANGED message in order to
             // notify all the users of the change
             sendMessage(IMAGE_CHANGED, null);
@@ -209,9 +201,6 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         geomLock.unLock();
 
         if (source.isLive()) {
-
-            // XXXX: check whether this is needed
-            freeSurface();
 
             // send a SUBIMAGE_CHANGED message in order to
             // notify all the users of the change
@@ -310,10 +299,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	
 	if (source.isLive()) {
 
-	    //XXXX: check whether this is needed
-	    freeSurface();
-
-	    // send a SUBIMAGE_CHANGED message in order to 
+            // send a SUBIMAGE_CHANGED message in order to 
 	    // notify all the users of the change
 
 	    ImageComponentUpdateInfo info;
@@ -361,25 +347,6 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 
     void clearLive(int refCount) {
 	super.clearLive(refCount);
-	if (this.refCount <= 0) {
-	    freeSurface();
-	}
     }
-
-    void freeSurface() {
-	if (VirtualUniverse.mc.isD3D()) {
-	    Pipeline.getPipeline().freeD3DSurface(this, hashId);
-	}
-    }
-
-    // TODO KCR ISSUE 121 : REPLACE THIS WITH A WEAK REFERENCE OR OTHER SCHEME
-    // Issue 121 : Stop using finalize() to clean up state
-    // Use similar approach as in handling ogl Texture resource cleanup.
-//    protected void finalize() {
-//        System.err.println("finalize: " + this);
-////        // For Pure immediate mode, there is no clearLive so
-////        // surface will free when JVM do GC 
-////        freeSurface();
-//    }
 
 }
