@@ -13,10 +13,7 @@
 #include "StdAfx.h"
 
 HANDLE hSema = CreateSemaphore(NULL, 1, 1, "Java3d_Ctx");
-HANDLE imageSema = CreateSemaphore(NULL, 1, 1,
-				   "Java3d_ImageComponent2DLock");
-HANDLE backgroundSema = CreateSemaphore(NULL, 1, 1,
-					"Java3d_ImageBackgroundLock");
+
 HANDLE geometrySema = CreateSemaphore(NULL, 1, 1,
 				      "Java3d_GeometryArrayLock");
 HANDLE surfaceListSema = CreateSemaphore(NULL, 1, 1, "Java3d_SurfaceListLock");
@@ -624,6 +621,8 @@ void getTexWidthHeight(D3dDeviceInfo *deviceInfo,
     *height = texHeight;
 }
 
+
+/* TODO : Need to modify to handle more format ---- Chien */
 D3DFORMAT getTexFormat(jint internalFormat) {
 
     switch (internalFormat) {
@@ -687,36 +686,6 @@ inline VOID unlockSurfaceList()
 	ReleaseSemaphore(surfaceListSema, 1, NULL);
     }
 }
-
-inline VOID lockBackground()
-{
-    if (backgroundSema != NULL) {
-	WaitForSingleObject(backgroundSema, INFINITE);
-    }
-}
-
-inline VOID unlockBackground()
-{
-    if (backgroundSema != NULL) {
-	ReleaseSemaphore(backgroundSema, 1, NULL);
-    }
-}
-
-inline VOID lockImage()
-{
-    if (imageSema != NULL) {
-	WaitForSingleObject(imageSema, INFINITE);
-    }
-}
-
-inline VOID unlockImage()
-{
-    if (imageSema != NULL) {
-	ReleaseSemaphore(imageSema, 1, NULL);
-    }
-}
-
-
 
 inline VOID lockGeometry()
 {

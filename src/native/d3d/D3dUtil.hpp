@@ -131,10 +131,6 @@ extern OSVERSIONINFO osvi; // OS info
 extern D3dCtx* findCtx(HWND hwnd);
 extern VOID lock();
 extern VOID unlock();
-extern VOID lockImage();
-extern VOID unlockImage();
-extern VOID lockBackground();
-extern VOID unlockBackground();
 extern VOID lockGeometry();
 extern VOID unlockGeometry();
 extern VOID lockSurfaceList();

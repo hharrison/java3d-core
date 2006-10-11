@@ -348,7 +348,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_clear(
 }
 
 extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_NativePipeline_textureFill(
+void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(
 							JNIEnv *env,
 							jobject obj,
 							jlong ctx,
@@ -362,9 +362,9 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFill(
 							jfloat mapMaxY)
 {
     GetDevice();
-    /* printf("Canvas3D.textureFill()\n"); */
-    /* TODO : Implement textureFill() */
-    printf("[Java3D] D3D : textureFill is not implemented yet.\n");
+    /* printf("Canvas3D.textureFillBackground()\n"); */
+    /* TODO : Implement textureFillBackground() */
+    printf("[Java3D] D3D : textureFillBackground is not implemented yet.\n");
 
 
 }
@@ -1126,24 +1126,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_cleanupRenderer(
     // Need to call it two times to free both list0 and list1
     freePointerList();
     freePointerList();
-}
-
-extern "C" JNIEXPORT
-void JNICALL Java_javax_media_j3d_NativePipeline_freeD3DSurface(
-    JNIEnv *env,
-    jobject obj,
-    jobject image,
-    jint hashCode)
-
-{
-    /*
-    lockImage();
-    D3dImageComponent::remove(&RasterList, hashCode);
-    unlockImage();
-    lockBackground();
-    D3dImageComponent::remove(&BackgroundImageList, hashCode);
-    unlockBackground();
-    */
 }
 
 

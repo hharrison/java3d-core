@@ -349,10 +349,7 @@ VOID D3dCtx::releaseVB()
 
 VOID D3dCtx::release()
 {
-    /*
-    D3dImageComponent::removeAll(&BackgroundImageList);
-    D3dImageComponent::removeAll(&RasterList);
-    */
+
     releaseTexture();
     SafeFree(bindTextureId);
     bindTextureIdLen = 0;

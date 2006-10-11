@@ -68,6 +68,5 @@ using namespace std ;
 #include "D3dUtil.hpp"
 #include "D3dVertexBuffer.hpp"
 #include "D3dDisplayList.hpp"
-#include "D3dImageComponent.hpp"
 #endif
 
