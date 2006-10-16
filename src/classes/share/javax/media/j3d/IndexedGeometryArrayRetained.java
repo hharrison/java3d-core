@@ -1611,11 +1611,13 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 
     int computeMaxIndex(int initial, int count, int[] indices) {
 	int maxIndex = 0;
-	for (int i = initial; i < (initial+count); i++) {
-	    if (indices[i] > maxIndex) {
-		maxIndex = indices[i];
-	    }
-	}
+        if (indices != null) {
+            for (int i = initial; i < (initial+count); i++) {
+                if (indices[i] > maxIndex) {
+                    maxIndex = indices[i];
+                }
+            }
+        }
 	return maxIndex;
 	
     }

@@ -24,13 +24,13 @@ class NoopDrawingSurfaceObject extends DrawingSurfaceObject {
     }
 
     synchronized boolean renderLock() {
-        System.err.println("NoopDrawingSurfaceObject.renderLock()");
+//        System.err.println("NoopDrawingSurfaceObject.renderLock()");
         gotDsiLock = true;
         return true;
     }
 
     synchronized void unLock() {
-        System.err.println("NoopDrawingSurfaceObject.unLock()");
+//        System.err.println("NoopDrawingSurfaceObject.unLock()");
         gotDsiLock = false;
     }
 
