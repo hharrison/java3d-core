@@ -270,16 +270,6 @@ VOID D3dCtx::releaseTexture()
     cubeMapTableLen = 0;
     unlockSurfaceList();
 
-    /*
-    lockImage();
-    D3dImageComponent::remove(&RasterList, this);
-    unlockImage();
-
-    lockBackground();
-    D3dImageComponent::remove(&BackgroundImageList, this);
-    unlockBackground();
-    */
-
     // free list0
     freeList();
     // free list1

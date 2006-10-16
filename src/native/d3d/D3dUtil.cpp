@@ -211,6 +211,13 @@ typedef struct _DEPTHPIXELFORMAT {
     DWORD dwStencilBitMask;
 } DEPTHPIXELFORMAT;
 
+void throwAssert(JNIEnv *env, char *str)
+{
+    jclass rte;
+    if ((rte = (jclass)env->FindClass("java/lang/AssertionError")) != NULL) {
+	(void *)env->ThrowNew(rte, str);
+    }
+}
 
 char *getSwapEffectName(D3DSWAPEFFECT swapEffect)
 {
@@ -621,15 +628,15 @@ void getTexWidthHeight(D3dDeviceInfo *deviceInfo,
     *height = texHeight;
 }
 
+D3DFORMAT getTexFormat(jint textureFormat) {
 
-/* TODO : Need to modify to handle more format ---- Chien */
-D3DFORMAT getTexFormat(jint internalFormat) {
-
-    switch (internalFormat) {
+    switch (textureFormat) {
         case J3D_RGBA:
         case INTENSITY:
+	    // printf("[getTexFormat]  textureFormat %d J3D_RGBA\n", textureFormat);
 	    return D3DFMT_A8R8G8B8;
         case J3D_RGB:
+	    // printf("[getTexFormat]  textureFormat %d J3D_RGB\n", textureFormat);
 	    return D3DFMT_R8G8B8;
         case LUMINANCE_ALPHA:
 	    return D3DFMT_A8L8;
@@ -638,7 +645,7 @@ D3DFORMAT getTexFormat(jint internalFormat) {
         case LUMINANCE:
 	    return D3DFMT_L8;
         default:
-	    printf("CreateTextureSurface: Unknown internal Format %d \n", internalFormat);
+	    printf("CreateTextureSurface: Unknown Java 3D Texture Format %d\n", textureFormat);
 	    return D3DFMT_UNKNOWN;
     }
 
@@ -656,7 +663,6 @@ D3dCtx* findCtx(HWND hwnd)
     }
     return ctx;
 }
-
 
 inline VOID lock()
 {
@@ -752,7 +758,7 @@ DWORD firstBit(DWORD mask)
 // create a DirectDraw Texture surface of specific width and height
 LPDIRECT3DTEXTURE9 createTextureSurface(D3dCtx *d3dCtx,
 					jint numLevels,
-					jint internalFormat,
+					jint textureFormat,
 					jint width, jint height)
 {
     LPDIRECT3DTEXTURE9 pTexture;
@@ -767,7 +773,7 @@ LPDIRECT3DTEXTURE9 createTextureSurface(D3dCtx *d3dCtx,
     }
 
     getTexWidthHeight(deviceInfo, &width, &height);
-    format = getTexFormat(internalFormat);
+    format = getTexFormat(textureFormat);
 
     // If format not support, the utility function will adjust the
     // calling parameters automatically
@@ -789,7 +795,7 @@ LPDIRECT3DTEXTURE9 createTextureSurface(D3dCtx *d3dCtx,
 // create a DirectDraw Texture surface of specific width and height
 LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
 					     jint numLevels,
-					     jint internalFormat,
+					     jint textureFormat,
 					     jint width,
 					     jint height,
 					     jint depth)
@@ -806,11 +812,9 @@ LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
     texHeight = height;
     texDepth = depth;
 
-
     if (!deviceInfo->supportMipmap) {
 	numLevels = 1;
     }
-
 
     // Found a texture bigger than width/height
     if (deviceInfo->texturePow2Only) {
@@ -818,7 +822,6 @@ LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
 	for (texHeight=1; height > texHeight; texHeight <<= 1);
 	for (texDepth=1; depth > texDepth; texDepth <<= 1);
     }
-
 
     if (deviceInfo->textureSquareOnly) {
 	if (texWidth >= texHeight) {
@@ -864,8 +867,7 @@ LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
 	texDepth = deviceInfo->maxTextureDepth;
     }
 
-
-    format = getTexFormat(internalFormat);
+    format = getTexFormat(textureFormat);
 
     // If format not support, the utility function will adjust the
     // calling parameters automatically
@@ -885,6 +887,9 @@ LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
     return pTexture;
 }
 
+
+// TODO : No need to reverse the Y axis.
+// Handle more format ------ Chien.
 
 // copy data from DirectDraw surface to memory
 // and reverse the Y axis
@@ -1525,7 +1530,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
 	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
 	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
-	    int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+ 	    int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
 	    int rshift = firstBit(ddpf->dwRBitMask);
 	    int gshift = firstBit(ddpf->dwGBitMask);
 	    int bshift = firstBit(ddpf->dwBBitMask);
@@ -1539,7 +1544,7 @@ void copyDataToSurfaceABGR(jint internalFormat,
 		    src = srcRow;
 		    dst = destRow;
 		    for (int j=xoffset; j < xlimit; j++) {
-			if (aDiscard >= 0) {
+ 			if (aDiscard >= 0) {
 			    a = (*src++) >> aDiscard;
 			} else {
 			    a = (*src++) >> -aDiscard;
@@ -1947,7 +1952,6 @@ void copyDataToSurfaceABGR(jint internalFormat,
 	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	DWORD mask;
 
-
 	if ((ddpf->dwRGBBitCount <= 32) &&
 	    (ddpf->dwRGBBitCount > 24)) {
 	    destRow += (xoffset << 2);
@@ -2300,7 +2304,7 @@ void copyDataToSurfaceBGR(jint internalFormat,
 		       ddpf->dwRGBBitCount);
 	    }
 	}
-    } else if (internalFormat == LUMINANCE_ALPHA) {
+     } else if (internalFormat == LUMINANCE_ALPHA) {
 	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
 	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
 	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
@@ -8910,6 +8914,1771 @@ void copyDataToSurfaceGray(jint internalFormat,
 }
 
 
+/**************** NEW (1.5.0 stuff) ****************/
+/* Note this method only works on little endian architecture */
+void copyInt_ARGB_DataToSurface(jint textureFormat,
+				PIXELFORMAT *ddpf,
+				unsigned char* pRect,
+				DWORD rectPitch,
+				jbyte *data,
+				jint xoffset, jint yoffset,
+				DWORD xlimit, DWORD ylimit,
+				jint subWidth)
+{
+    unsigned char *src;
+    unsigned char *dst;
+    DWORD r, g, b, a, l;
+    const DWORD srcPitch = subWidth*4;
+    unsigned char *srcRow = (unsigned char *) data;
+    unsigned char *destRow = pRect + rectPitch*yoffset;
+
+    if ((textureFormat == J3D_RGBA) ||
+	(textureFormat == J3D_RGB)) {
+	/* printf("copyInt_ARGB_DataToSurface :  RGBBitCount = %d \n",
+	   ddpf->dwRGBBitCount); */
+	if ((ddpf->dwRGBBitCount == 32) &&
+	    (ddpf->dwRBitMask == 0xff0000) &&
+	    (ddpf->dwGBitMask == 0xff00) &&
+	    (ddpf->dwBBitMask == 0xff)) {
+	    // Optimize for most common case
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {		    
+		    *dst++ = *src++; /* b */
+		    *dst++ = *src++; /* g */
+  		    *dst++ = *src++; /* r */
+		    *dst++ = *src++; /* a */
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount == 16) &&
+		   (ddpf->dwRBitMask == 0xf00) &&
+		   (ddpf->dwGBitMask == 0xf0) &&
+		   (ddpf->dwBBitMask == 0xf)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    b = (*src++) >> 4; // discard the lower 4 bit
+		    g = (*src++) >> 4;
+		    r = (*src++) >> 4;
+		    a = (*src++) >> 4;
+		    *dst++ = (g << 4) | b;
+		    *dst++ = (a << 4) | r;
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+
+	} else { // handle less common (even weird) format
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+ 	    int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	    int rshift = firstBit(ddpf->dwRBitMask);
+	    int gshift = firstBit(ddpf->dwGBitMask);
+	    int bshift = firstBit(ddpf->dwBBitMask);
+	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
+	    DWORD mask;
+	    
+	    if ((ddpf->dwRGBBitCount <= 32) &&
+		(ddpf->dwRGBBitCount > 24)) {
+		destRow += (xoffset << 2);
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+ 			if (aDiscard >= 0) {
+			    a = (*src++) >> aDiscard;
+			} else {
+			    a = (*src++) >> -aDiscard;
+			}
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | (a << ashift);
+			*dst++ = (byte) (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+			*dst++ = (byte) ((mask >> 16) & 0xff);
+			*dst++ = (byte) ((mask >> 24) & 0xff);
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else if ((ddpf->dwRGBBitCount <= 24) &&
+		       (ddpf->dwRGBBitCount > 16)) {
+		destRow += (xoffset*3);
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+ 			if (aDiscard >= 0) {
+			    a = (*src++) >> aDiscard;
+			} else {
+			    a = (*src++) >> -aDiscard;
+			}
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | (a << ashift);
+			*dst++ = (byte)  (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+			*dst++ = (byte) ((mask >> 16) & 0xff);
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else if ((ddpf->dwRGBBitCount <= 16) &&
+		       (ddpf->dwRGBBitCount > 8)) {
+		destRow += (xoffset << 1);
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+ 			if (aDiscard >= 0) {
+			    a = (*src++) >> aDiscard;
+			} else {
+			    a = (*src++) >> -aDiscard;
+			}
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | (a << ashift);
+			*dst++ = (byte) (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else if (ddpf->dwRGBBitCount <= 8) {
+		destRow += xoffset;
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+ 			if (aDiscard >= 0) {
+			    a = (*src++) >> aDiscard;
+			} else {
+			    a = (*src++) >> -aDiscard;
+			}
+			*dst++ = (byte) ((r << rshift) | (g << gshift) |
+					 (b << bshift)  |(a << ashift));
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
+		// RGB mask can't address it.
+		printf("Texture memory with RGBBitCount = %d not support. \n",
+		       ddpf->dwRGBBitCount);
+	    }
+	}
+    } else if (textureFormat == LUMINANCE_ALPHA) {
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int rshift = firstBit(ddpf->dwRBitMask);
+	int gshift = firstBit(ddpf->dwGBitMask);
+	int bshift = firstBit(ddpf->dwBBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
+	DWORD mask;
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
+	    (ddpf->dwRGBBitCount > 24)) {
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src++;
+		    src++;
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    if (aDiscard >= 0) {
+			a = (*src++) >> aDiscard;
+		    } else {
+			a = (*src++) << -aDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+			(b << bshift)  | (a << ashift);
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		    *dst++ = (byte) ((mask >> 24) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 24) &&
+		   (ddpf->dwRGBBitCount > 16)) {
+	    destRow += (xoffset*3);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src++;
+		    src++;
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    if (aDiscard >= 0) {
+			a = (*src++) >> aDiscard;
+		    } else {
+			a = (*src++) << -aDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+			(b << bshift)  | (a << ashift);
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 16) &&
+		   (ddpf->dwRGBBitCount > 8)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src++;
+		    src++;
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    if (aDiscard >= 0) {
+			a = (*src++) >> aDiscard;
+		    } else {
+			a = (*src++) << -aDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+			(b << bshift)  | (a << ashift);
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if (ddpf->dwRGBBitCount <= 8) {
+	    destRow += xoffset;
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src++;
+		    src++;
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    if (aDiscard >= 0) {
+			a = (*src++) >> aDiscard;
+		    } else {
+			a = (*src++) << -aDiscard;
+		    }
+		    *dst++ = (byte) ((r << rshift) | (g << gshift) |
+			             (b << bshift)  |(a << ashift));
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else {
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
+		   ddpf->dwRGBBitCount);
+	}
+    } else if (textureFormat == ALPHA) {
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
+	DWORD mask;
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
+	    (ddpf->dwRGBBitCount > 24)) {
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    if (aDiscard >= 0) {
+			a = (*src++) >> aDiscard;
+		    } else {
+			a = (*src++) << -aDiscard;
+		    }
+		    src += 3;
+		    mask = a << ashift;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		    *dst++ = (byte) ((mask >> 24) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 24) &&
+		   (ddpf->dwRGBBitCount > 16)) {
+	    destRow += (xoffset*3);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    if (aDiscard >= 0) {
+			a = (*src++) >> aDiscard;
+		    } else {
+			a = (*src++) << -aDiscard;
+		    }
+		    src += 3;
+		    mask = a << ashift;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 16) &&
+		   (ddpf->dwRGBBitCount > 8)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    if (aDiscard >= 0) {
+			a = (*src++) >> aDiscard;
+		    } else {
+			a = (*src++) << -aDiscard;
+		    }
+		    src += 3;
+		    mask = (a << ashift);
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if (ddpf->dwRGBBitCount <= 8) {
+	    destRow += xoffset;
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    if (aDiscard >= 0) {
+			a = (*src++) >> aDiscard;
+		    } else {
+			a = (*src++) << -aDiscard;
+		    }
+		    src += 3;
+		    *dst++ = (byte) (a << ashift);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else {
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
+		   ddpf->dwRGBBitCount);
+	}
+    } else if ((textureFormat == LUMINANCE) ||
+	       (textureFormat == INTENSITY)) {
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
+	int rshift = firstBit(ddpf->dwRBitMask);
+	int gshift = firstBit(ddpf->dwGBitMask);
+	int bshift = firstBit(ddpf->dwBBitMask);
+	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
+	DWORD mask;
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
+	    (ddpf->dwRGBBitCount > 24)) {
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    if (aDiscard >= 0) {
+			a = l >> aDiscard;
+		    } else {
+			a = l << -aDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | (a << ashift);
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		    *dst++ = (byte) ((mask >> 24) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 24) &&
+		   (ddpf->dwRGBBitCount > 16)) {
+	    destRow += (xoffset*3);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    if (aDiscard >= 0) {
+			a = l >> aDiscard;
+		    } else {
+			a = l << -aDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | (a << ashift);
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 16) &&
+		   (ddpf->dwRGBBitCount > 8)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    if (aDiscard >= 0) {
+			a = l >> aDiscard;
+		    } else {
+			a = l << -aDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | (a << ashift);
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if (ddpf->dwRGBBitCount <= 8) {
+	    destRow += xoffset;
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    if (aDiscard >= 0) {
+			a = l >> aDiscard;
+		    } else {
+			a = l << -aDiscard;
+		    }
+		    *dst++ = (byte) ((r << rshift) |
+				     (g << gshift) |
+				     (b << bshift) |
+				     (a << ashift));
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else {
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
+		   ddpf->dwRGBBitCount);
+	}
+    } else {
+	printf("Texture format %d not support.\n",  textureFormat);
+    }
+}
+
+/* Note this method only works on little endian architecture */
+void copyInt_XRGB_DataToSurface(jint textureFormat,
+				PIXELFORMAT *ddpf,
+				unsigned char* pRect,
+				DWORD rectPitch,
+				jbyte *data,
+				jint xoffset, jint yoffset,
+				DWORD xlimit, DWORD ylimit,
+				jint subWidth)
+{
+    unsigned char *src;
+    unsigned char *dst;
+    DWORD r, g, b, a, l;
+    const DWORD srcPitch = subWidth*4;
+    unsigned char *srcRow = (unsigned char *) data;
+    unsigned char *destRow = pRect + rectPitch*yoffset;
+
+    if ((textureFormat == J3D_RGBA) ||
+	(textureFormat == J3D_RGB)) {
+	/* printf("copyInt_XRGB_DataToSurface :  RGBBitCount = %d \n",
+	   ddpf->dwRGBBitCount); */
+ 	if ((ddpf->dwRGBBitCount == 32) &&
+	    (ddpf->dwRBitMask == 0xff0000) &&
+	    (ddpf->dwGBitMask == 0xff00) &&
+	    (ddpf->dwBBitMask == 0xff)) {
+	    // Optimize for most common case
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {		    
+		    *dst++ = *src++; /* b */
+		    *dst++ = *src++; /* g */
+  		    *dst++ = *src++; /* r */
+		    *dst++ = 0xff; *src++; /* a */
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount == 16) &&
+		   (ddpf->dwRBitMask == 0xf00) &&
+		   (ddpf->dwGBitMask == 0xf0) &&
+		   (ddpf->dwBBitMask == 0xf)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    b = (*src++) >> 4; // discard the lower 4 bit
+		    g = (*src++) >> 4;
+		    r = (*src++) >> 4;
+		    *src++; /* a */
+		    *dst++ = (g << 4) | b;
+		    *dst++ = 0xf0 | r;
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else { // handle less common (even weird) format
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	    int rshift = firstBit(ddpf->dwRBitMask);
+	    int gshift = firstBit(ddpf->dwGBitMask);
+	    int bshift = firstBit(ddpf->dwBBitMask);
+	    DWORD mask;
+	    
+	    if ((ddpf->dwRGBBitCount <= 32) &&
+		(ddpf->dwRGBBitCount > 24)) {
+		destRow += (xoffset << 2);
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+			*src++; /* a */
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
+			*dst++ = (byte) (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+			*dst++ = (byte) ((mask >> 16) & 0xff);
+			*dst++ = (byte) ((mask >> 24) & 0xff);
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else if ((ddpf->dwRGBBitCount <= 24) &&
+		       (ddpf->dwRGBBitCount > 16)) {
+		destRow += (xoffset*3);
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+			*src++; /* a */
+			mask = (r << rshift) | (g << gshift) |
+			       (b << bshift)  | ddpf->dwRGBAlphaBitMask;
+			*dst++ = (byte)  (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+			*dst++ = (byte) ((mask >> 16) & 0xff);
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else if ((ddpf->dwRGBBitCount <= 16) &&
+		       (ddpf->dwRGBBitCount > 8)) {
+		destRow += (xoffset << 1);
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+			*src++; /* a */
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
+			*dst++ = (byte) (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else if (ddpf->dwRGBBitCount <= 8) {
+		destRow += xoffset;
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+			*src++; /* a */
+			*dst++ = (byte) ((r << rshift) | (g << gshift) |
+					 (b << bshift) | ddpf->dwRGBAlphaBitMask);
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
+		// RGB mask can't address it.
+		printf("Texture memory with RGBBitCount = %d not support. \n",
+		       ddpf->dwRGBBitCount);
+	    }
+	}
+    } else if (textureFormat == LUMINANCE_ALPHA) {
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int rshift = firstBit(ddpf->dwRBitMask);
+	int gshift = firstBit(ddpf->dwGBitMask);
+	int bshift = firstBit(ddpf->dwBBitMask);
+	DWORD mask;
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
+	    (ddpf->dwRGBBitCount > 24)) {
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src++;
+		    src++;
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    *src++; /* a */
+		    mask = (r << rshift) | (g << gshift) |
+			(b << bshift)  | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		    *dst++ = (byte) ((mask >> 24) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 24) &&
+		   (ddpf->dwRGBBitCount > 16)) {
+	    destRow += (xoffset*3);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src++;
+		    src++;
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    *src++; /* a */
+		    mask = (r << rshift) | (g << gshift) |
+		  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 16) &&
+		   (ddpf->dwRGBBitCount > 8)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src++;
+		    src++;
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    *src++; /* a */
+		    mask = (r << rshift) | (g << gshift) |
+	   	  	   (b << bshift)  | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if (ddpf->dwRGBBitCount <= 8) {
+	    destRow += xoffset;
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src++;
+		    src++;
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    *src++; /* a */
+		    *dst++ = (byte) ((r << rshift) | (g << gshift) |
+			             (b << bshift)  |ddpf->dwRGBAlphaBitMask);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else {
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
+		   ddpf->dwRGBBitCount);
+	}
+    } else if (textureFormat == ALPHA) {
+	byte m1 = (byte) (ddpf->dwRGBAlphaBitMask & 0xff);
+	byte m2 = (byte) ((ddpf->dwRGBAlphaBitMask >> 8) & 0xff);
+	byte m3 = (byte) ((ddpf->dwRGBAlphaBitMask >> 16) & 0xff);
+	byte m4 = (byte) ((ddpf->dwRGBAlphaBitMask >> 24) & 0xff);
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
+	    (ddpf->dwRGBBitCount > 24)) {
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src += 4;
+		    *dst++ = m1;
+		    *dst++ = m2;
+		    *dst++ = m3;
+		    *dst++ = m4;
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 24) &&
+		   (ddpf->dwRGBBitCount > 16)) {
+	    destRow += (xoffset*3);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src += 4;
+		    *dst++ = m1;
+		    *dst++ = m2;
+		    *dst++ = m3;
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 16) &&
+		   (ddpf->dwRGBBitCount > 8)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src += 4;
+		    *dst++ = m1;
+		    *dst++ = m2;
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if (ddpf->dwRGBBitCount <= 8) {
+	    destRow += xoffset;
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src += 4;
+		    *dst++ = m1;
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else {
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
+		   ddpf->dwRGBBitCount);
+	}
+    } else if ((textureFormat == LUMINANCE) ||
+	       (textureFormat == INTENSITY)) {
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int rshift = firstBit(ddpf->dwRBitMask);
+	int gshift = firstBit(ddpf->dwGBitMask);
+	int bshift = firstBit(ddpf->dwBBitMask);
+	DWORD mask;
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
+	    (ddpf->dwRGBBitCount > 24)) {
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		    *dst++ = (byte) ((mask >> 24) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 24) &&
+		   (ddpf->dwRGBBitCount > 16)) {
+	    destRow += (xoffset*3);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 16) &&
+		   (ddpf->dwRGBBitCount > 8)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if (ddpf->dwRGBBitCount <= 8) {
+	    destRow += xoffset;
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    *dst++ = (byte) ((r << rshift) |
+				     (g << gshift) |
+				     (b << bshift) |
+				     ddpf->dwRGBAlphaBitMask);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else {
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
+		   ddpf->dwRGBBitCount);
+	}
+    } else {
+	printf("Texture format %d not support.\n",  textureFormat);
+    }
+}
+
+/* Note this method only works on little endian architecture */
+void copyInt_XBGR_DataToSurface(jint textureFormat,
+				PIXELFORMAT *ddpf,
+				unsigned char* pRect,
+				DWORD rectPitch,
+				jbyte *data,
+				jint xoffset, jint yoffset,
+				DWORD xlimit, DWORD ylimit,
+				jint subWidth)
+{
+    unsigned char *src;
+    unsigned char *dst;
+    DWORD r, g, b, a, l;
+    const DWORD srcPitch = subWidth*4;
+    unsigned char *srcRow = (unsigned char *) data;
+    unsigned char *destRow = pRect + rectPitch*yoffset;
+
+    if ((textureFormat == J3D_RGBA) ||
+	(textureFormat == J3D_RGB)) {
+	/* printf("copyInt_XRGB_DataToSurface :  RGBBitCount = %d \n",
+	   ddpf->dwRGBBitCount); */
+ 	if ((ddpf->dwRGBBitCount == 32) &&
+	    (ddpf->dwRBitMask == 0xff0000) &&
+	    (ddpf->dwGBitMask == 0xff00) &&
+	    (ddpf->dwBBitMask == 0xff)) {
+	    // Optimize for most common case
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {		    
+		    r = *src++; 
+		    g = *src++;
+		    b = *src++;
+		    *dst++ = b; /* b */
+		    *dst++ = g; /* g */
+  		    *dst++ = r; /* r */
+		    *dst++ = 0xff; *src++; /* a */
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount == 16) &&
+		   (ddpf->dwRBitMask == 0xf00) &&
+		   (ddpf->dwGBitMask == 0xf0) &&
+		   (ddpf->dwBBitMask == 0xf)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    r = (*src++) >> 4; // discard the lower 4 bit
+		    g = (*src++) >> 4;
+		    b = (*src++) >> 4;
+		    *src++; /* a */
+		    *dst++ = (g << 4) | b;
+		    *dst++ = 0xf0 | r;
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else { // handle less common (even weird) format
+	    int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	    int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	    int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	    int rshift = firstBit(ddpf->dwRBitMask);
+	    int gshift = firstBit(ddpf->dwGBitMask);
+	    int bshift = firstBit(ddpf->dwBBitMask);
+	    DWORD mask;
+	    
+	    if ((ddpf->dwRGBBitCount <= 32) &&
+		(ddpf->dwRGBBitCount > 24)) {
+		destRow += (xoffset << 2);
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			*src++; /* a */
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
+			*dst++ = (byte) (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+			*dst++ = (byte) ((mask >> 16) & 0xff);
+			*dst++ = (byte) ((mask >> 24) & 0xff);
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else if ((ddpf->dwRGBBitCount <= 24) &&
+		       (ddpf->dwRGBBitCount > 16)) {
+		destRow += (xoffset*3);
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			*src++; /* a */
+			mask = (r << rshift) | (g << gshift) |
+			       (b << bshift)  | ddpf->dwRGBAlphaBitMask;
+			*dst++ = (byte)  (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+			*dst++ = (byte) ((mask >> 16) & 0xff);
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else if ((ddpf->dwRGBBitCount <= 16) &&
+		       (ddpf->dwRGBBitCount > 8)) {
+		destRow += (xoffset << 1);
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			*src++; /* a */
+			mask = (r << rshift) | (g << gshift) |
+			    (b << bshift)  | ddpf->dwRGBAlphaBitMask;
+			*dst++ = (byte) (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else if (ddpf->dwRGBBitCount <= 8) {
+		destRow += xoffset;
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			if (rDiscard >= 0) {
+			    r = (*src++) >> rDiscard;
+			} else {
+			    r = (*src++) << -rDiscard;
+			}
+			if (gDiscard >= 0) {
+			    g = (*src++) >> gDiscard;
+			} else {
+			    g = (*src++) >> -gDiscard;
+			}
+			if (bDiscard >= 0) {
+			    b = (*src++) >> bDiscard;
+			} else {
+			    b = (*src++) >> -bDiscard;
+			}
+			*src++; /* a */
+			*dst++ = (byte) ((r << rshift) | (g << gshift) |
+					 (b << bshift) | ddpf->dwRGBAlphaBitMask);
+		    }
+		    srcRow += srcPitch;
+		    destRow += rectPitch;
+		}
+	    } else {
+		// should not happen, RGBBitCount > 32. Even DirectX
+		// RGB mask can't address it.
+		printf("Texture memory with RGBBitCount = %d not support. \n",
+		       ddpf->dwRGBBitCount);
+	    }
+	}
+    } else if (textureFormat == LUMINANCE_ALPHA) {
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int rshift = firstBit(ddpf->dwRBitMask);
+	int gshift = firstBit(ddpf->dwGBitMask);
+	int bshift = firstBit(ddpf->dwBBitMask);
+	DWORD mask;
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
+	    (ddpf->dwRGBBitCount > 24)) {
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+ 		    src += 3;
+		    mask = (r << rshift) | (g << gshift) |
+			(b << bshift)  | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		    *dst++ = (byte) ((mask >> 24) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 24) &&
+		   (ddpf->dwRGBBitCount > 16)) {
+	    destRow += (xoffset*3);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+ 		    src += 3;
+		    mask = (r << rshift) | (g << gshift) |
+			(b << bshift)  | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 16) &&
+		   (ddpf->dwRGBBitCount > 8)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+ 		    src += 3;
+		    mask = (r << rshift) | (g << gshift) |
+			(b << bshift)  | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if (ddpf->dwRGBBitCount <= 8) {
+	    destRow += xoffset;
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src++;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+ 		    src += 3;
+		    *dst++ = (byte) ((r << rshift) | (g << gshift) |
+			             (b << bshift)  |ddpf->dwRGBAlphaBitMask);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else {
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
+		   ddpf->dwRGBBitCount);
+	}
+    } else if (textureFormat == ALPHA) {
+	byte m1 = (byte) (ddpf->dwRGBAlphaBitMask & 0xff);
+	byte m2 = (byte) ((ddpf->dwRGBAlphaBitMask >> 8) & 0xff);
+	byte m3 = (byte) ((ddpf->dwRGBAlphaBitMask >> 16) & 0xff);
+	byte m4 = (byte) ((ddpf->dwRGBAlphaBitMask >> 24) & 0xff);
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
+	    (ddpf->dwRGBBitCount > 24)) {
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src += 4;
+		    *dst++ = m1;
+		    *dst++ = m2;
+		    *dst++ = m3;
+		    *dst++ = m4;
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 24) &&
+		   (ddpf->dwRGBBitCount > 16)) {
+	    destRow += (xoffset*3);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src += 4;
+		    *dst++ = m1;
+		    *dst++ = m2;
+		    *dst++ = m3;
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 16) &&
+		   (ddpf->dwRGBBitCount > 8)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src += 4;
+		    *dst++ = m1;
+		    *dst++ = m2;
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if (ddpf->dwRGBBitCount <= 8) {
+	    destRow += xoffset;
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    src += 4;
+		    *dst++ = m1;
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else {
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
+		   ddpf->dwRGBBitCount);
+	}
+    } else if ((textureFormat == LUMINANCE) ||
+	       (textureFormat == INTENSITY)) {
+	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
+	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
+	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
+	int rshift = firstBit(ddpf->dwRBitMask);
+	int gshift = firstBit(ddpf->dwGBitMask);
+	int bshift = firstBit(ddpf->dwBBitMask);
+	DWORD mask;
+
+	if ((ddpf->dwRGBBitCount <= 32) &&
+	    (ddpf->dwRGBBitCount > 24)) {
+	    destRow += (xoffset << 2);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		    *dst++ = (byte) ((mask >> 24) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 24) &&
+		   (ddpf->dwRGBBitCount > 16)) {
+	    destRow += (xoffset*3);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		    *dst++ = (byte) ((mask >> 16) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if ((ddpf->dwRGBBitCount <= 16) &&
+		   (ddpf->dwRGBBitCount > 8)) {
+	    destRow += (xoffset << 1);
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    mask = (r << rshift) | (g << gshift) |
+	 		   (b << bshift) | ddpf->dwRGBAlphaBitMask;
+		    *dst++ = (byte) (mask & 0xff);
+		    *dst++ = (byte) ((mask >> 8) & 0xff);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else if (ddpf->dwRGBBitCount <= 8) {
+	    destRow += xoffset;
+	    for (int i=yoffset; i < ylimit; i++) {
+		src = srcRow;
+		dst = destRow;
+		for (int j=xoffset; j < xlimit; j++) {
+		    l = *src;
+		    src += 4;
+		    if (rDiscard >= 0) {
+			r = l >> rDiscard;
+		    } else {
+			r = l << -rDiscard;
+		    }
+		    if (gDiscard >= 0) {
+			g = l >> gDiscard;
+		    } else {
+			g = l << -gDiscard;
+		    }
+		    if (bDiscard >= 0) {
+			b = l >> bDiscard;
+		    } else {
+			b = l << -bDiscard;
+		    }
+		    *dst++ = (byte) ((r << rshift) |
+				     (g << gshift) |
+				     (b << bshift) |
+				     ddpf->dwRGBAlphaBitMask);
+		}
+		srcRow += srcPitch;
+		destRow += rectPitch;
+	    }
+	} else {
+	    printf("Texture memory with RGBBitCount = %d not support. \n",
+		   ddpf->dwRGBBitCount);
+	}
+    } else {
+	printf("Texture format %d not support.\n",  textureFormat);
+    }
+}
 
 /*
  * Copy data from memory to DirectDraw surface
@@ -8923,8 +10692,8 @@ void copyDataToSurfaceGray(jint internalFormat,
  * offset = (xoffset, yoffset)
  *
  */
-void copyDataToSurface(jint storedFormat,
-		       jint internalFormat,
+void copyDataToSurface(jint imageFormat,
+		       jint textureFormat,
 		       jint xoffset, jint yoffset,
 		       jint imgXOffset, jint imgYOffset,
 		       jint subWidth, jint subHeight,
@@ -8965,61 +10734,103 @@ void copyDataToSurface(jint storedFormat,
 	return;
     }
     int offset = tilew*imgYOffset + imgXOffset;
-    switch (storedFormat) {
-        case  IMAGE_FORMAT_BYTE_RGBA :
-	    // This is the one we use when byReference = false
-	    copyDataToSurfaceRGBA(internalFormat, &ddpf,
-				  (unsigned char *) lockedRect.pBits,
-				  lockedRect.Pitch,
-				  data + (offset << 2),
-				  xoffset, yoffset,
-				  xlimit, ylimit, tilew);
+    switch (imageFormat) {
+    case  IMAGE_FORMAT_BYTE_RGBA :
+	/* printf("[IMAGE_FORMAT_BYTE_RGBA] imageFormat %d, textureFormat %d\n",
+	   imageFormat, textureFormat); */
+	
+	// This is the one we use when byReference = false
+	copyDataToSurfaceRGBA(textureFormat, &ddpf,
+			      (unsigned char *) lockedRect.pBits,
+			      lockedRect.Pitch,
+			      data + (offset << 2),
+			      xoffset, yoffset,
+			      xlimit, ylimit, tilew);
+	break;
+    case IMAGE_FORMAT_BYTE_RGB:
+	/* printf("[IMAGE_FORMAT_BYTE_RGB] imageFormat %d, textureFormat %d\n",
+	   imageFormat, textureFormat); */
+	copyDataToSurfaceRGB(textureFormat, &ddpf,
+			     (unsigned char *) lockedRect.pBits,
+			     lockedRect.Pitch,
+			     data + 3*offset,
+			     xoffset, yoffset,
+			     xlimit, ylimit, tilew);
+	break;
+    case IMAGE_FORMAT_BYTE_ABGR:
+	/* printf("[IMAGE_FORMAT_BYTE_ABGR] imageFormat %d, textureFormat %d\n",
+	   imageFormat, textureFormat); */
+	
+	copyDataToSurfaceABGR(textureFormat, &ddpf,
+			      (unsigned char *) lockedRect.pBits,
+			      lockedRect.Pitch,
+			      data + (offset << 2),
+			      xoffset, yoffset,
+			      xlimit, ylimit, tilew);
+	break;
+    case IMAGE_FORMAT_BYTE_BGR:
+	/* printf("[IMAGE_FORMAT_BYTE_BGR] imageFormat %d, textureFormat %d\n",
+	   imageFormat, textureFormat); */
+	
+	copyDataToSurfaceBGR(textureFormat, &ddpf,
+			     (unsigned char *) lockedRect.pBits,
+			     lockedRect.Pitch,
+			     data + 3*offset,
+			     xoffset, yoffset,
+			     xlimit, ylimit, tilew);
+	break;
+    case IMAGE_FORMAT_BYTE_LA:
+	copyDataToSurfaceLA(textureFormat, &ddpf,
+			    (unsigned char *) lockedRect.pBits,
+			    lockedRect.Pitch,
+			    data + (offset << 1),
+			    xoffset, yoffset,
+			    xlimit, ylimit, tilew);
+	break;
+    case IMAGE_FORMAT_BYTE_GRAY:
+	copyDataToSurfaceGray(textureFormat, &ddpf,
+			      (unsigned char *) lockedRect.pBits,
+			      lockedRect.Pitch,
+			      data + offset,
+			      xoffset, yoffset,
+			      xlimit, ylimit, tilew);
+	break;
+    case IMAGE_FORMAT_INT_BGR:
+	/* printf("[IMAGE_FORMAT_INT_BGR] imageFormat %d, textureFormat %d not support !\n",
+	   imageFormat, textureFormat); */
+	copyInt_XBGR_DataToSurface(textureFormat, &ddpf,
+				   (unsigned char *) lockedRect.pBits,
+				   lockedRect.Pitch,
+				   data + (offset << 2),
+				   xoffset, yoffset,
+				   xlimit, ylimit, tilew);
+	
+	break;
+        case IMAGE_FORMAT_INT_RGB:
+	    /* printf("[IMAGE_FORMAT_INT_RGB] imageFormat %d, textureFormat %d\n",
+	       imageFormat, textureFormat); */
+	    copyInt_XRGB_DataToSurface(textureFormat, &ddpf,
+				       (unsigned char *) lockedRect.pBits,
+				       lockedRect.Pitch,
+				       data + (offset << 2),
+				       xoffset, yoffset,
+				       xlimit, ylimit, tilew);
 	    break;
-        case IMAGE_FORMAT_BYTE_RGB:
-	    copyDataToSurfaceRGB(internalFormat, &ddpf,
-				 (unsigned char *) lockedRect.pBits,
-				 lockedRect.Pitch,
-				 data + 3*offset,
-				 xoffset, yoffset,
-				 xlimit, ylimit, tilew);
-	    break;
-        case IMAGE_FORMAT_BYTE_ABGR:
-	    copyDataToSurfaceABGR(internalFormat, &ddpf,
-				  (unsigned char *) lockedRect.pBits,
-				  lockedRect.Pitch,
-				  data + (offset << 2),
-				  xoffset, yoffset,
-				  xlimit, ylimit, tilew);
-	    break;
-        case IMAGE_FORMAT_BYTE_BGR:
-	    copyDataToSurfaceBGR(internalFormat, &ddpf,
-				 (unsigned char *) lockedRect.pBits,
-				 lockedRect.Pitch,
-				 data + 3*offset,
-				 xoffset, yoffset,
-				 xlimit, ylimit, tilew);
-	    break;
-        case IMAGE_FORMAT_BYTE_LA:
-	    copyDataToSurfaceLA(internalFormat, &ddpf,
-				(unsigned char *) lockedRect.pBits,
-				lockedRect.Pitch,
-				data + (offset << 1),
-				xoffset, yoffset,
-				xlimit, ylimit, tilew);
-	    break;
-        case IMAGE_FORMAT_BYTE_GRAY:
-	    copyDataToSurfaceGray(internalFormat, &ddpf,
-				  (unsigned char *) lockedRect.pBits,
-				  lockedRect.Pitch,
-				  data + offset,
-				  xoffset, yoffset,
-				  xlimit, ylimit, tilew);
-	    break;
-        default: // should not happen
-	    printf("[Java 3D] StoredFormat %d, internalFormat %d not support !\n",
-		   storedFormat, internalFormat);
+    case IMAGE_FORMAT_INT_ARGB:
+	/* printf("[IMAGE_FORMAT_INT_ABGR] imageFormat %d, textureFormat %d\n",
+	   imageFormat, textureFormat); */
+	copyInt_ARGB_DataToSurface(textureFormat, &ddpf,
+				   (unsigned char *) lockedRect.pBits,
+				   lockedRect.Pitch,
+				   data + (offset << 2),
+				   xoffset, yoffset,
+				   xlimit, ylimit, tilew);
+	break;
+    default: // should not happen
+	printf("[Java 3D] imageFormat %d, textureFormat %d not support !\n",
+	       imageFormat, textureFormat);
     }
-
+    
     hr = surf->UnlockRect(level);
     if (FAILED(hr)) {
 	printf("Fail to unlock surface: %s\n", DXGetErrorString9(hr));
@@ -9306,61 +11117,6 @@ void copyDataToSurfaceGray(jint internalFormat,
 	printf("Texture format %d not support.\n", internalFormat);
     }
 }
-
-
-// copy the texture data to DirectDraw surface
-void copyDataToSurface(jint storedFormat,
-		       jint internalFormat,
-		       jint xoffset, jint yoffset,
-		       jint imgXOffset, jint imgYOffset,
-		       jint subWidth, jint subHeight,
-		       jint tilew, jshort *data,
-		       LPDIRECT3DTEXTURE9 surf,
-		       jint level)
-{
-    D3DSURFACE_DESC ddsd;
-    D3DLOCKED_RECT lockedRect;
-    PIXELFORMAT ddpf;
-    HRESULT hr;
-
-    if (surf == NULL) {
-	return;
-    }
-
-    surf->GetLevelDesc(level, &ddsd);
-    DWORD width = ddsd.Width;
-    DWORD height = ddsd.Height;
-    computePixelFormat(&ddpf, ddsd.Format);
-
-    if ((xoffset >= width) || (yoffset >= height)) {
-	return;
-    }
-    DWORD xlimit = min(xoffset + subWidth, width);
-    DWORD ylimit = min(yoffset + subHeight, height);
-
-    hr = surf->LockRect(level, &lockedRect, NULL, 0);
-
-    if (FAILED(hr)) {
-	printf("Fail to lock surface: %s\n", DXGetErrorString9(hr));
-	return;
-    }
-
-    int offset = tilew*imgYOffset + imgXOffset;
-
-    copyDataToSurfaceGray(internalFormat, &ddpf,
-			  (unsigned char *) lockedRect.pBits,
-			  lockedRect.Pitch,
-			  data + (offset << 1),
-			  xoffset, yoffset,
-			  xlimit, ylimit, tilew);
-
-    hr = surf->UnlockRect(level);
-    if (FAILED(hr)) {
-	printf("Fail to unlock surface: %s\n", DXGetErrorString9(hr));
-	return;
-    }
-}
-
 
 // copy data from DirectDraw depth surface to memory
 // and reverse the Y axis
@@ -10291,464 +12047,6 @@ void copyDepthToSurface(D3dCtx *d3dCtx,
     }
 }
 
-// composite data from memory to DirectDraw surface
-void compositeDataToSurface(jint px, jint py,
-			    jint xoffset, jint yoffset,
-			    jint subWidth, jint subHeight,
-			    jint dataWidth,
-			    jbyte *data,
-			    LPDIRECT3DSURFACE9 surf)
-{
-    D3DSURFACE_DESC ddsd;
-    D3DLOCKED_RECT lockedRect;
-    PIXELFORMAT ddpf;
-
-    HRESULT hr;
-
-    if (surf == NULL) {
-	return;
-    }
-
-    surf->GetDesc(&ddsd);
-    DWORD width = ddsd.Width;
-    DWORD height = ddsd.Height;
-    computePixelFormat(&ddpf, ddsd.Format);
-
-    if ((xoffset >= width) || (yoffset >= height)) {
-	return;
-    }
-
-    DWORD xlimit = min(xoffset + subWidth, width);
-    DWORD ylimit = min(yoffset + subHeight, height);
-
-    hr = surf->LockRect(&lockedRect, NULL, 0);
-
-    if (FAILED(hr)) {
-	printf("Fail to lock rendering surface: %s\n",  DXGetErrorString9(hr));
-	return;
-    }
-
-    unsigned char *src;
-    unsigned char *dst;
-    DWORD r, g, b, a;
-    DWORD srcPitch;
-    int offset = (xoffset + yoffset*dataWidth) << 2;
-    unsigned char *srcRow = (unsigned char *) data + offset;
-    unsigned char *destRow = ((unsigned char *) lockedRect.pBits) +
-	((px + xoffset) << 2) + (py + yoffset)*lockedRect.Pitch;
-    unsigned char a2;
-    float inv = 1.0f/255.0f;
-    ddpf.noAlpha = true;
-
-    if (ddpf.dwRGBAlphaBitMask != 0) {
-	ddpf.noAlpha = false;
-    }
-
-    srcPitch = dataWidth << 2;
-
-    if ((ddpf.dwRGBBitCount == 32) &&
-	(ddpf.dwRBitMask == 0xff0000) &&
-	(ddpf.dwGBitMask == 0xff00) &&
-	(ddpf.dwBBitMask == 0xff)) {
-	// Most common case
-	for (int i=yoffset; i < ylimit; i++) {
-	    src = srcRow;
-	    dst = destRow;
-	    for (int j=xoffset; j < xlimit; j++) {
-		a = *src++;
-		b = *src++;
-		g = *src++;
-		r = *src++;
-
-		if (a != 0) {
-		    if (a == 0xff) {
-			*dst++ = b;
-			*dst++ = g;
-			*dst++ = r;
-			*dst++ = 0xff;
-		    } else {
-			a2 = 255-a;
-			*dst++ = (unsigned char)((*dst * a2 + b * a)*inv);
-			*dst++ = (unsigned char)((*dst * a2 + g * a)*inv);
-			*dst++ = (unsigned char)((*dst * a2 + r * a)*inv);
-			if (ddpf.noAlpha) {
-			    *dst++ = a;
-			} else {
-			    *dst++ = (unsigned char)((*dst * a2 + a * a)*inv);
-			}
-		    }
-		 } else {
-		     dst += 4;
-		 }
-	    }
-	    srcRow += srcPitch;
-	    destRow += lockedRect.Pitch;
-	}
-    } else { // handle less common (even weird) format
-	int rshift = firstBit(ddpf.dwRBitMask) +
-	    ucountBits(ddpf.dwRBitMask) - 8;
-	int gshift = firstBit(ddpf.dwGBitMask) +
-	    ucountBits(ddpf.dwGBitMask) - 8;
-	int bshift = firstBit(ddpf.dwBBitMask) +
-	    ucountBits(ddpf.dwBBitMask) - 8;
-	int ashift = firstBit(ddpf.dwRGBAlphaBitMask) +
-	    ucountBits(ddpf.dwRGBAlphaBitMask) - 8;
-
-	DWORD mask, dmask;
-	DWORD dr, dg, db, da;
-
-	if ((ddpf.dwRGBBitCount <= 32) &&
-	    (ddpf.dwRGBBitCount > 24)) {
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    a = *src++;
-		    b = *src++;
-		    g = *src++;
-		    r = *src++;
-
-		    if (a != 0) {
-			if (a != 0xff) {
-			    dmask = (*(dst+3) << 24) |
-				(*(dst+2) << 16) |
-				(*(dst+1) << 8) |
-				*dst;
-			    if (rshift >= 0) {
-				dr = (byte) ((dmask & ddpf.dwRBitMask) >>
-					     rshift);
-			    } else {
-				dr = (byte) ((dmask & ddpf.dwRBitMask) <<
-					     -rshift);
-			    }
-			    if (gshift >= 0) {
-				dg = (byte) ((dmask & ddpf.dwGBitMask) >>
-					     gshift);
-			    } else {
-				dg = (byte) ((dmask & ddpf.dwGBitMask) <<
-					     -gshift);
-			    }
-			    if (bshift >= 0) {
-				db = (byte) ((dmask & ddpf.dwBBitMask) >>
-					     bshift);
-			    } else {
-				db = (byte) ((dmask & ddpf.dwBBitMask) <<
-					     -bshift);
-			    }
-			    a2 = 255 - a;
-			    if (!ddpf.noAlpha) {
-				if (ashift >= 0) {
-				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) >>
-						 ashift);
-				} else {
-				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) <<
-						 -ashift);
-				}
-				a = DWORD((da * a2 + a * a)*inv);
-			    }
-
-			    g = DWORD((dg * a2 + g * a)*inv);
-			    b = DWORD((db * a2 + b * a)*inv);
-			    r = DWORD((dr * a2 + r * a)*inv);
-			}
-			if (rshift >= 0) {
-			    mask = (r << rshift) & ddpf.dwRBitMask;
-			} else {
-			    mask = (r >> -rshift) & ddpf.dwRBitMask;
-			}
-			if (gshift >= 0) {
-			    mask |= (g << gshift) & ddpf.dwGBitMask;
-			} else {
-			    mask |= (g >> -gshift) & ddpf.dwGBitMask;
-			}
-			if (bshift >= 0) {
-			    mask |= (b << bshift) & ddpf.dwBBitMask;
-			} else {
-			    mask |= (b >> -bshift) & ddpf.dwBBitMask;
-			}
-			if (!ddpf.noAlpha) {
-			    if (ashift >= 0) {
-				mask |= (a << ashift) & ddpf.dwRGBAlphaBitMask;
-			    } else {
-				mask |= (a >> -ashift) & ddpf.dwRGBAlphaBitMask;
-			    }
-			}
-			*dst++ = (byte) (mask & 0xff);
-			*dst++ = (byte) ((mask >> 8) & 0xff);
-			*dst++ = (byte) ((mask >> 16) & 0xff);
-			*dst++ = (byte) ((mask >> 24) & 0xff);
-		    } else {
-			dst += 4;
-		    }
-		}
-		srcRow += srcPitch;
-		destRow += lockedRect.Pitch;
-	    }
-	} else if ((ddpf.dwRGBBitCount <= 24) &&
-		   (ddpf.dwRGBBitCount > 16)) {
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    a = *src++;
-		    b = *src++;
-		    g = *src++;
-		    r = *src++;
-		    if (a != 0) {
-			if (a != 0xff) {
-			    dmask = (*(dst+2) << 16) |
-				(*(dst+1) << 8) |
-				*dst;
-			    if (rshift >= 0) {
-				dr = (byte) ((dmask & ddpf.dwRBitMask) >>
-					     rshift);
-			    } else {
-				dr = (byte) ((dmask & ddpf.dwRBitMask) <<
-					     -rshift);
-			    }
-			    if (gshift >= 0) {
-				dg = (byte) ((dmask & ddpf.dwGBitMask) >>
-					     gshift);
-			    } else {
-				dg = (byte) ((dmask & ddpf.dwGBitMask) <<
-					     -gshift);
-			    }
-			    if (bshift >= 0) {
-				db = (byte) ((dmask & ddpf.dwBBitMask) >>
-					     bshift);
-			    } else {
-				db = (byte) ((dmask & ddpf.dwBBitMask) <<
-					     -bshift);
-			    }
-			    a2 = 255 - a;
-			    if (!ddpf.noAlpha) {
-				if (ashift >= 0) {
-				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) >>
-						 ashift);
-				} else {
-				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) <<
-						 -ashift);
-				}
-				a = DWORD((da * a2 + a * a)*inv);
-			    }
-			    g = DWORD((dg * a2 + g * a)*inv);
-			    b = DWORD((db * a2 + b * a)*inv);
-			    r = DWORD((dr * a2 + r * a)*inv);
-			}
-			if (rshift >= 0) {
-			    mask = (r << rshift) & ddpf.dwRBitMask;
-			} else {
-			    mask = (r >> -rshift) & ddpf.dwRBitMask;
-			}
-			if (gshift >= 0) {
-			    mask |= (g << gshift) & ddpf.dwGBitMask;
-			} else {
-			    mask |= (g >> -gshift) & ddpf.dwGBitMask;
-			}
-			if (bshift >= 0) {
-			    mask |= (b << bshift) & ddpf.dwBBitMask;
-			} else {
-			    mask |= (b >> -bshift) & ddpf.dwBBitMask;
-			}
-			if (!ddpf.noAlpha) {
-			    if (ashift >= 0) {
-				mask |= (a << ashift) & ddpf.dwRGBAlphaBitMask;
-			    } else {
-				mask |= (a >> -ashift) & ddpf.dwRGBAlphaBitMask;
-			    }
-			}
-			*dst++ = (byte) (mask & 0xff);
-			*dst++ = (byte) ((mask >> 8) & 0xff);
-			*dst++ = (byte) ((mask >> 16) & 0xff);
-		    } else {
-			dst += 3;
-		    }
-		}
-		srcRow += srcPitch;
-		destRow += lockedRect.Pitch;
-	    }
-	} else if ((ddpf.dwRGBBitCount <= 16) &&
-		   (ddpf.dwRGBBitCount > 8)) {
-
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    a = *src++;
-		    b = *src++;
-		    g = *src++;
-		    r = *src++;
-
-		    if (a != 0) {
-			if (a != 0xff) {
-			    dmask = (*(dst+1) << 8) | *dst;
-
-			    if (rshift >= 0) {
-				dr = (byte) ((dmask & ddpf.dwRBitMask) >>
-					     rshift);
-			    } else {
-				dr = (byte) ((dmask & ddpf.dwRBitMask) <<
-					     -rshift);
-			    }
-			    if (gshift >= 0) {
-				dg = (byte) ((dmask & ddpf.dwGBitMask) >>
-					     gshift);
-			    } else {
-				dg = (byte) ((dmask & ddpf.dwGBitMask) <<
-					     -gshift);
-			    }
-			    if (bshift >= 0) {
-				db = (byte) ((dmask & ddpf.dwBBitMask) >>
-					     bshift);
-			    } else {
-				db = (byte) ((dmask & ddpf.dwBBitMask) <<
-					     -bshift);
-			    }
-			    a2 = 255 - a;
-
-			    if (!ddpf.noAlpha) {
-				if (ashift >= 0) {
-				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) >>
-						 ashift);
-				} else {
-				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) <<
-						 -ashift);
-				}
-				a = DWORD( (da * a2 + a * a)*inv);
-			    }
-
-			    g = DWORD((dg * a2 + g * a)*inv);
-			    b = DWORD((db * a2 + b * a)*inv);
-			    r = DWORD((dr * a2 + r * a)*inv);
-			}
-
-			if (rshift >= 0) {
-			    mask = (r << rshift) & ddpf.dwRBitMask;
-			} else {
-			    mask = (r >> -rshift) & ddpf.dwRBitMask;
-			}
-			if (gshift >= 0) {
-			    mask |= ((g << gshift) & ddpf.dwGBitMask);
-			} else {
-			    mask |= ((g >> -gshift) & ddpf.dwGBitMask);
-			}
-			if (bshift >= 0) {
-			    mask |= ((b << bshift) & ddpf.dwBBitMask);
-			} else {
-			    mask |= ((b >> -bshift) & ddpf.dwBBitMask);
-			}
-			if (!ddpf.noAlpha) {
-			    if (ashift >= 0) {
-				mask |= ((a << ashift) & ddpf.dwRGBAlphaBitMask);
-			    } else {
-				mask |= ((a >> -ashift) & ddpf.dwRGBAlphaBitMask);
-			    }
-			}
-
-			*dst++ = (byte) (mask & 0xff);
-			*dst++ = (byte) ((mask >> 8) & 0xff);
-		    } else {
-			dst += 2;
-		    }
-		}
-		srcRow += srcPitch;
-		destRow += lockedRect.Pitch;
-	    }
-	} else if (ddpf.dwRGBBitCount <= 8) {
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    a = *src++;
-		    b = *src++;
-		    g = *src++;
-		    r = *src++;
-		    if (a != 0) {
-			if (a != 0xff) {
-			    dmask = *dst;
-			    if (rshift >= 0) {
-				dr = (byte) ((dmask & ddpf.dwRBitMask) >>
-					     rshift);
-			    } else {
-				dr = (byte) ((dmask & ddpf.dwRBitMask) <<
-					     -rshift);
-			    }
-			    if (gshift >= 0) {
-				dg = (byte) ((dmask & ddpf.dwGBitMask) >>
-					     gshift);
-			    } else {
-				dg = (byte) ((dmask & ddpf.dwGBitMask) <<
-					     -gshift);
-			    }
-			    if (bshift >= 0) {
-				db = (byte) ((dmask & ddpf.dwBBitMask) >>
-					     bshift);
-			    } else {
-				db = (byte) ((dmask & ddpf.dwBBitMask) <<
-					     -bshift);
-			    }
-			    a2 = 255 - a;
-			    if (!ddpf.noAlpha) {
-				if (ashift >= 0) {
-				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) >>
-						 ashift);
-				} else {
-				    da = (byte) ((dmask & ddpf.dwRGBAlphaBitMask) <<
-						 -ashift);
-				}
-				a = DWORD((da * a2 + a * a)*inv);
-			    }
-
-			    g = DWORD((dg * a2 + g * a)*inv);
-			    b = DWORD((db * a2 + b * a)*inv);
-			    r = DWORD((dr * a2 + r * a)*inv);
-			}
-			if (rshift >= 0) {
-			    mask = (r << rshift) & ddpf.dwRBitMask;
-			} else {
-			    mask = (r >> -rshift) & ddpf.dwRBitMask;
-			}
-			if (gshift >= 0) {
-			    mask |= (g << gshift) & ddpf.dwGBitMask;
-			} else {
-			    mask |= (g >> -gshift) & ddpf.dwGBitMask;
-			}
-			if (bshift >= 0) {
-			    mask |= (b << bshift) & ddpf.dwBBitMask;
-			} else {
-			    mask |= (b >> -bshift) & ddpf.dwBBitMask;
-			}
-			if (!ddpf.noAlpha) {
-			    if (ashift >= 0) {
-				mask |= (a << ashift) & ddpf.dwRGBAlphaBitMask;
-			    } else {
-				mask |= (a >> -ashift) & ddpf.dwRGBAlphaBitMask;
-			    }
-			}
-			*dst++ = (byte) (mask & 0xff);
-		    } else {
-			dst++;
-		    }
-		}
-		srcRow += srcPitch;
-		destRow += lockedRect.Pitch;
-	    }
-	} else {
-	    // should not happen, RGBBitCount > 32. Even DirectX
-	    // RGB mask can't address it.
-	    printf("Texture memory with RGBBitCount = %d not support. \n",
-		   ddpf.dwRGBBitCount);
-	}
-    }
-
-    hr = surf->UnlockRect();
-    if (FAILED(hr)) {
-	printf("Fail to unlock rendering surface: %s\n", DXGetErrorString9(hr));
-	return;
-    }
-}
-
-
 void copyDataToVolume(jint storedFormat,
 		      jint internalFormat,
 		      jint xoffset, jint yoffset,
@@ -10990,74 +12288,6 @@ void copyDataToVolume(jint storedFormat,
 	printf("Fail to unlock volume: %s\n", DXGetErrorString9(hr));
 	return;
     }
-}
-
-
-LPDIRECT3DTEXTURE9 createSurfaceFromImage(JNIEnv *env,
-					  jobject pa2d,
-					  jlong ctx,
-					  int width,
-					  int height,
-					  jbyteArray imageYdown)
-{
-    GetDevice2();
-
-    int internalFormat;
-    jclass pa2d_class = env->GetObjectClass(pa2d);
-
-    jfieldID id = env->GetFieldID(pa2d_class, "storedYdownFormat", "I");
-    int storedFormat = env->GetIntField(pa2d, id);
-
-    id = env->GetFieldID(pa2d_class, "internalFormat", "I");
-    internalFormat = env->GetIntField(pa2d, id);
-
-
-    switch (internalFormat) {
-        case IMAGE_FORMAT_BYTE_RGBA:
-	    internalFormat = J3D_RGBA;
-	    break;
-        case IMAGE_FORMAT_BYTE_RGB:
-	    internalFormat = J3D_RGB;
-	    break;
-        case IMAGE_FORMAT_BYTE_LA:
-	    internalFormat = LUMINANCE_ALPHA;
-	    break;
-        case IMAGE_FORMAT_BYTE_GRAY:
-        case IMAGE_FORMAT_USHORT_GRAY:
-	    internalFormat = LUMINANCE;
-	    break;
-        default:
-	    printf("Format %d not support for Image Component\n",  internalFormat);
-	    return NULL;
-    }
-
-
-    LPDIRECT3DTEXTURE9 surf;
-
-    surf = createTextureSurface(d3dCtx, 1, internalFormat,
-				width, height);
-
-    if (surf == NULL) {
-	return NULL;
-    }
-
-    if (imageYdown != NULL) {
-	if (storedFormat != IMAGE_FORMAT_USHORT_GRAY) {
-	    jbyte *byteData = (jbyte *) (env->GetPrimitiveArrayCritical(
-							imageYdown,   NULL));
-	    copyDataToSurface(storedFormat, internalFormat, 0, 0, 0, 0,
-			      width, height, width, byteData, surf, 0);
-	    env->ReleasePrimitiveArrayCritical(imageYdown, byteData, 0);
-
-	} else {
-	    jshort *shortData = (jshort *)(env->GetPrimitiveArrayCritical(
-								  imageYdown, NULL));
-	    copyDataToSurface(storedFormat, internalFormat, 0, 0, 0, 0,
-			      width, height, width, shortData, surf, 0);
-	    env->ReleasePrimitiveArrayCritical(imageYdown, shortData, 0);
-	}
-    }
-    return surf;
 }
 
 VOID createLineModeIndexBuffer(D3dCtx *d3dCtx)

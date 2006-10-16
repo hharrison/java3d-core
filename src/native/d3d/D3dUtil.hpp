@@ -272,16 +272,10 @@ void compositeDataToSurface(jint px, jint py,
 extern void CopyTextureStage(LPDIRECT3DDEVICE9 device, 
 			     int fromLevel, int toLevel);
 
-
-extern LPDIRECT3DTEXTURE9 createSurfaceFromImage(JNIEnv *env,
-						 jobject pa2d,
-						 jlong ctx,
-						 int width,
-						 int height,
-						 jbyteArray pixels);
 extern "C"
 DWORD countBits(DWORD mask); // Define in MasterControl.c
 
+extern void throwAssert(JNIEnv *env, char *str);
 extern BOOL createQuadIndices(D3dCtx *d3dCtx, int vcount);
 extern VOID createLineModeIndexBuffer(D3dCtx *d3dCtx);
 extern char *getPixelFormatName(D3DFORMAT format);

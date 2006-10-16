@@ -787,20 +787,19 @@ void JNICALL Java_javax_media_j3d_NativePipeline_resetLineAttributes(
     jobject obj,
     jlong ctx)
 {
-    GetDevice();
+    // GetDevice();
 
     // D3D don't support Line width
     // glLineWidth(1);
-    //D3D9 doesnot support line Patterns
-	// @TODO must update this to use ID3DXLine Interface
-/*
-    D3DLINEPATTERN pattern;
-    pattern.wRepeatFactor = 0;
-    pattern.wLinePattern = 0;
-    device->SetRenderState(D3DRS_LINEPATTERN,
-			   *((LPDWORD) (&pattern)));
-
-*/
+    // D3D9 doesnot support line Patterns
+    // @TODO must update this to use ID3DXLine Interface
+    /*
+      D3DLINEPATTERN pattern;
+      pattern.wRepeatFactor = 0;
+      pattern.wLinePattern = 0;
+      device->SetRenderState(D3DRS_LINEPATTERN,
+      *((LPDWORD) (&pattern)));
+    */
 }
 
 
@@ -817,9 +816,9 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateLineAttributes(
     jint linePatternScaleFactor,
     jboolean lineAntialiasing)
 {
-    GetDevice();
-
-	//Alessandro
+    // GetDevice();
+    
+    //Alessandro
     //D3DLINEPATTERN pattern;
 
     /*
@@ -2232,10 +2231,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
 	return;
     }
 
-    // TODO --- Need to re-write.  Chien
     void *imageObjPtr;
-    
-    /* Need to support INT, and NIO buffers -- Chien */
+    jbyte *dataBuffer;
     
     if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
        (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
@@ -2245,23 +2242,28 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
 	imageObjPtr = (void *)env->GetDirectBufferAddress(data);
     }
 
-    // update Image data
-    if (imageFormat != IMAGE_FORMAT_USHORT_GRAY) {
-	jbyte *byteData = (jbyte *) imageObjPtr;
+    switch (imageFormat) {
+    case IMAGE_FORMAT_BYTE_BGR:         
+    case IMAGE_FORMAT_BYTE_RGB:
+    case IMAGE_FORMAT_BYTE_ABGR:         
+    case IMAGE_FORMAT_BYTE_RGBA:
+    case IMAGE_FORMAT_BYTE_LA:
+    case IMAGE_FORMAT_BYTE_GRAY: 
+    case IMAGE_FORMAT_INT_BGR:         
+    case IMAGE_FORMAT_INT_RGB:
+    case IMAGE_FORMAT_INT_ARGB:         
+	dataBuffer = (jbyte *) imageObjPtr;
 	copyDataToSurface(imageFormat, textureFormat, xoffset, yoffset,
 			  imgXOffset, imgYOffset,
-			  width, height, tilew, byteData,
+			  width, height, tilew, dataBuffer,
 			  surf, level);
-    } else {
-	/*
-	jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(image, NULL);
-	copyDataToSurface(imageFormat, textureFormat, xoffset, yoffset,
-			  imgXOffset, imgYOffset,
-			  width, height, tilew, shortData,
-			  surf, level);
-	env->ReleasePrimitiveArrayCritical(image, shortData, 0);
-	*/
+	break;
+    case IMAGE_FORMAT_USHORT_GRAY:	    
+    default:
+	throwAssert(env, "updateTexture2DSubImage : imageFormat illegal format");
+	return;
     }
+    
     if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
        (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
 	env->ReleasePrimitiveArrayCritical((jarray)data, imageObjPtr, 0);
@@ -2293,7 +2295,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
 	}
 	return;
     }
-
 
     INT currBindTex = d3dCtx->bindTextureId[d3dCtx->texUnitStage];
 
@@ -2342,13 +2343,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
 	return;
     }
 
-    // TODO --- Need to re-write.  Chien
     // update Image data
     if (data != NULL) {
 	void *imageObjPtr;
+	jbyte *dataBuffer;
 
-	/* Need to support INT, and NIO buffers -- Chien */
-	
 	if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
 	   (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
 	    imageObjPtr = (void *) env->GetPrimitiveArrayCritical((jarray)data, NULL);        
@@ -2357,20 +2356,26 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
 	    imageObjPtr = (void *)env->GetDirectBufferAddress(data);
 	}
 
-	if (imageFormat != IMAGE_FORMAT_USHORT_GRAY) {
-	    jbyte *byteData = (jbyte *) imageObjPtr;
+	switch (imageFormat) {
+        case IMAGE_FORMAT_BYTE_BGR:         
+        case IMAGE_FORMAT_BYTE_RGB:
+        case IMAGE_FORMAT_BYTE_ABGR:         
+        case IMAGE_FORMAT_BYTE_RGBA:
+        case IMAGE_FORMAT_BYTE_LA:
+        case IMAGE_FORMAT_BYTE_GRAY: 
+        case IMAGE_FORMAT_INT_BGR:         
+        case IMAGE_FORMAT_INT_RGB:
+        case IMAGE_FORMAT_INT_ARGB:         
+	    dataBuffer = (jbyte *) imageObjPtr;
 	    copyDataToSurface(imageFormat, textureFormat, 0, 0, 0, 0,
-			      width, height, width, byteData,
+			      width, height, width, dataBuffer,
 			      surf, level);
-	} else {
-	    /*
-	    jshort *shortData = (jshort *) env->GetPrimitiveArrayCritical(imageYup, NULL);
-	    copyDataToSurface(imageFormat, textureFormat, 0, 0, 0, 0,
-			      width, height, width,  shortData,
-			      surf, level);
-	    env->ReleasePrimitiveArrayCritical(imageYup, shortData, 0);
-	    */
-	}
+	    break;
+        case IMAGE_FORMAT_USHORT_GRAY:	    
+        default:
+            throwAssert(env, "updateTexture2DImage : imageFormat illegal format");
+            return;
+        }
 
 	if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || 
 	   (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
