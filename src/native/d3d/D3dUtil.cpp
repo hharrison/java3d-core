@@ -6248,286 +6248,6 @@ void copyDataToSurfaceGrayRev(jint internalFormat,
     }
 }
 
-
-void copyDataToSurfaceGrayRev(jint internalFormat,
-			      PIXELFORMAT *ddpf,
-			      unsigned char* pRect,
-			      DWORD rectPitch,
-			      jshort *data,
-			      jint xoffset, jint yoffset,
-			      DWORD xlimit, DWORD ylimit,
-			      jint subWidth)
-{
-    unsigned char *src;
-    unsigned char *dst;
-    DWORD  a, r, g, b, l;
-    DWORD srcPitch = subWidth << 1;
-    unsigned char *srcRow = (unsigned char *) data;
-    unsigned char *destRow = pRect + rectPitch*yoffset;
-
-
-    if (internalFormat == ALPHA) {
-	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
-	DWORD mask;
-
-	if ((ddpf->dwRGBBitCount <= 32) &&
-	    (ddpf->dwRGBBitCount > 24)) {
-	    destRow += ((xlimit << 2) - 1);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    if (aDiscard >= 0) {
-			a = (*src++) >> aDiscard;
-		    } else {
-			a = (*src++) << -aDiscard;
-		    }
-		    mask = a << ashift;
-		    *dst-- = (byte) ((mask >> 24) & 0xff);
-		    *dst-- = (byte) ((mask >> 16) & 0xff);
-		    *dst-- = (byte) ((mask >> 8) & 0xff);
-		    *dst-- = (byte) (mask & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if ((ddpf->dwRGBBitCount <= 24) &&
-		   (ddpf->dwRGBBitCount > 16)) {
-	    destRow += (xlimit*3 - 1);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    if (aDiscard >= 0) {
-			a = (*src++) >> aDiscard;
-		    } else {
-			a = (*src++) << -aDiscard;
-		    }
-		    mask = a << ashift;
-		    *dst-- = (byte) ((mask >> 16) & 0xff);
-		    *dst-- = (byte) ((mask >> 8) & 0xff);
-		    *dst-- = (byte) (mask & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if ((ddpf->dwRGBBitCount <= 16) &&
-		   (ddpf->dwRGBBitCount > 8)) {
-	    destRow += ((xlimit << 1) - 1);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    if (aDiscard >= 0) {
-			a = (*src++) >> aDiscard;
-		    } else {
-			a = (*src++) << -aDiscard;
-		    }
-		    mask = (a << ashift);
-		    *dst-- = (byte) ((mask >> 8) & 0xff);
-		    *dst-- = (byte) (mask & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if (ddpf->dwRGBBitCount <= 8) {
-	    destRow += (xlimit - 1);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    if (aDiscard >= 0) {
-			a = (*src++) >> aDiscard;
-		    } else {
-			a = (*src++) << -aDiscard;
-		    }
-		    *dst-- = (byte) (a << ashift);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n",
-		   ddpf->dwRGBBitCount);
-	}
-    } else if ((internalFormat == LUMINANCE) ||
-	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
-	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
-	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
-	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
-	int rshift = firstBit(ddpf->dwRBitMask);
-	int gshift = firstBit(ddpf->dwGBitMask);
-	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
-	DWORD mask;
-
-	if ((ddpf->dwRGBBitCount <= 32) &&
-	    (ddpf->dwRGBBitCount > 24)) {
-	    destRow += ((xlimit << 2) - 1);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    l = *src++;
-		    if (rDiscard >= 0) {
-			r = l >> rDiscard;
-		    } else {
-			r = l << -rDiscard;
-		    }
-		    if (gDiscard >= 0) {
-			g = l >> gDiscard;
-		    } else {
-			g = l << -gDiscard;
-		    }
-		    if (bDiscard >= 0) {
-			b = l >> bDiscard;
-		    } else {
-			b = l << -bDiscard;
-		    }
-		    if (aDiscard >= 0) {
-			a = l >> aDiscard;
-		    } else {
-			a = l << -aDiscard;
-		    }
-		    mask = (r << rshift) | (g << gshift) |
-			(b << bshift) | (a << ashift);
-		    *dst-- = (byte) ((mask >> 24) & 0xff);
-		    *dst-- = (byte) ((mask >> 16) & 0xff);
-		    *dst-- = (byte) ((mask >> 8) & 0xff);
-		    *dst-- = (byte) (mask & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if ((ddpf->dwRGBBitCount <= 24) &&
-		   (ddpf->dwRGBBitCount > 16)) {
-	    destRow += (xlimit*3 - 1);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    l = *src++;
-		    if (rDiscard >= 0) {
-			r = l >> rDiscard;
-		    } else {
-			r = l << -rDiscard;
-		    }
-		    if (gDiscard >= 0) {
-			g = l >> gDiscard;
-		    } else {
-			g = l << -gDiscard;
-		    }
-		    if (bDiscard >= 0) {
-			b = l >> bDiscard;
-		    } else {
-			b = l << -bDiscard;
-		    }
-		    if (aDiscard >= 0) {
-			a = l >> aDiscard;
-		    } else {
-			a = l << -aDiscard;
-		    }
-		    mask = (r << rshift) | (g << gshift) |
-			(b << bshift) | (a << ashift);
-		    *dst-- = (byte) ((mask >> 16) & 0xff);
-		    *dst-- = (byte) ((mask >> 8) & 0xff);
-		    *dst-- = (byte) (mask & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if ((ddpf->dwRGBBitCount <= 16) &&
-		   (ddpf->dwRGBBitCount > 8)) {
-	    destRow += ((xlimit << 1) - 1);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    l = *src++;
-		    if (rDiscard >= 0) {
-			r = l >> rDiscard;
-		    } else {
-			r = l << -rDiscard;
-		    }
-		    if (gDiscard >= 0) {
-			g = l >> gDiscard;
-		    } else {
-			g = l << -gDiscard;
-		    }
-		    if (bDiscard >= 0) {
-			b = l >> bDiscard;
-		    } else {
-			b = l << -bDiscard;
-		    }
-		    if (aDiscard >= 0) {
-			a = l >> aDiscard;
-		    } else {
-			a = l << -aDiscard;
-		    }
-		    mask = (r << rshift) | (g << gshift) |
-			(b << bshift) | (a << ashift);
-		    *dst-- = (byte) ((mask >> 8) & 0xff);
-		    *dst-- = (byte) (mask & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if (ddpf->dwRGBBitCount <= 8) {
-	    destRow += (xlimit - 1);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    l = *src++;
-		    if (rDiscard >= 0) {
-			r = l >> rDiscard;
-		    } else {
-			r = l << -rDiscard;
-		    }
-		    if (gDiscard >= 0) {
-			g = l >> gDiscard;
-		    } else {
-			g = l << -gDiscard;
-		    }
-		    if (bDiscard >= 0) {
-			b = l >> bDiscard;
-		    } else {
-			b = l << -bDiscard;
-		    }
-		    if (aDiscard >= 0) {
-			a = l >> aDiscard;
-		    } else {
-			a = l << -aDiscard;
-		    }
-		    *dst-- =  (byte) ((r << rshift) |
-				      (g << gshift) |
-				      (b << bshift) |
-				      (a << ashift));
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n",
-		   ddpf->dwRGBBitCount);
-	}
-    } else {
-	printf("Texture format %d not support.\n", internalFormat);
-    }
-}
-
-
-
 /*
  *  Copy data to Texture memory surface *pRect
  *  with  pitch = rectPitch
@@ -10838,286 +10558,6 @@ void copyDataToSurface(jint imageFormat,
     }
 }
 
-
-
-void copyDataToSurfaceGray(jint internalFormat,
-			   PIXELFORMAT *ddpf,
-			   unsigned char* pRect,
-			   DWORD rectPitch,
-			   jshort *data,
-			   jint xoffset, jint yoffset,
-			   DWORD xlimit, DWORD ylimit,
-			   jint subWidth)
-{
-    unsigned char *src;
-    unsigned char *dst;
-    DWORD  a, r, g, b, l;
-    DWORD srcPitch = subWidth << 1;
-    unsigned char *srcRow = (unsigned char *) data;
-    unsigned char *destRow = pRect + rectPitch*yoffset;
-
-
-    if (internalFormat == ALPHA) {
-	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
-	DWORD mask;
-
-	if ((ddpf->dwRGBBitCount <= 32) &&
-	    (ddpf->dwRGBBitCount > 24)) {
-	    destRow += (xoffset << 2);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    if (aDiscard >= 0) {
-			a = (*src++) >> aDiscard;
-		    } else {
-			a = (*src++) << -aDiscard;
-		    }
-		    mask = a << ashift;
-		    *dst++ = (byte) (mask & 0xff);
-		    *dst++ = (byte) ((mask >> 8) & 0xff);
-		    *dst++ = (byte) ((mask >> 16) & 0xff);
-		    *dst++ = (byte) ((mask >> 24) & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if ((ddpf->dwRGBBitCount <= 24) &&
-		   (ddpf->dwRGBBitCount > 16)) {
-	    destRow += (xoffset*3);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    if (aDiscard >= 0) {
-			a = (*src++) >> aDiscard;
-		    } else {
-			a = (*src++) << -aDiscard;
-		    }
-		    mask = a << ashift;
-		    *dst++ = (byte) (mask & 0xff);
-		    *dst++ = (byte) ((mask >> 8) & 0xff);
-		    *dst++ = (byte) ((mask >> 16) & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if ((ddpf->dwRGBBitCount <= 16) &&
-		   (ddpf->dwRGBBitCount > 8)) {
-	    destRow += (xoffset << 1);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    if (aDiscard >= 0) {
-			a = (*src++) >> aDiscard;
-		    } else {
-			a = (*src++) << -aDiscard;
-		    }
-		    mask = (a << ashift);
-		    *dst++ = (byte) (mask & 0xff);
-		    *dst++ = (byte) ((mask >> 8) & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if (ddpf->dwRGBBitCount <= 8) {
-	    destRow += xoffset;
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    if (aDiscard >= 0) {
-			a = (*src++) >> aDiscard;
-		    } else {
-			a = (*src++) << -aDiscard;
-		    }
-		    *dst++ = (byte) (a << ashift);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n",
-		   ddpf->dwRGBBitCount);
-	}
-    } else if ((internalFormat == LUMINANCE) ||
-	       (internalFormat == INTENSITY)) {
-	int rDiscard = 8-ucountBits(ddpf->dwRBitMask);
-	int gDiscard = 8-ucountBits(ddpf->dwGBitMask);
-	int bDiscard = 8-ucountBits(ddpf->dwBBitMask);
-	int aDiscard = 8-ucountBits(ddpf->dwRGBAlphaBitMask);
-	int rshift = firstBit(ddpf->dwRBitMask);
-	int gshift = firstBit(ddpf->dwGBitMask);
-	int bshift = firstBit(ddpf->dwBBitMask);
-	int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
-	DWORD mask;
-
-
-	if ((ddpf->dwRGBBitCount <= 32) &&
-	    (ddpf->dwRGBBitCount > 24)) {
-	    destRow += (xoffset << 2);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    l = *src++;
-		    if (rDiscard >= 0) {
-			r = l >> rDiscard;
-		    } else {
-			r = l << -rDiscard;
-		    }
-		    if (gDiscard >= 0) {
-			g = l >> gDiscard;
-		    } else {
-			g = l << -gDiscard;
-		    }
-		    if (bDiscard >= 0) {
-			b = l >> bDiscard;
-		    } else {
-			b = l << -bDiscard;
-		    }
-		    if (aDiscard >= 0) {
-			a = l >> aDiscard;
-		    } else {
-			a = l << -aDiscard;
-		    }
-		    mask = (r << rshift) | (g << gshift) |
-			(b << bshift) | (a << ashift);
-		    *dst++ = (byte) (mask & 0xff);
-		    *dst++ = (byte) ((mask >> 8) & 0xff);
-		    *dst++ = (byte) ((mask >> 16) & 0xff);
-		    *dst++ = (byte) ((mask >> 24) & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if ((ddpf->dwRGBBitCount <= 24) &&
-		   (ddpf->dwRGBBitCount > 16)) {
-	    destRow += (xoffset*3);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    l = *src++;
-		    if (rDiscard >= 0) {
-			r = l >> rDiscard;
-		    } else {
-			r = l << -rDiscard;
-		    }
-		    if (gDiscard >= 0) {
-			g = l >> gDiscard;
-		    } else {
-			g = l << -gDiscard;
-		    }
-		    if (bDiscard >= 0) {
-			b = l >> bDiscard;
-		    } else {
-			b = l << -bDiscard;
-		    }
-		    if (aDiscard >= 0) {
-			a = l >> aDiscard;
-		    } else {
-			a = l << -aDiscard;
-		    }
-		    mask = (r << rshift) | (g << gshift) |
-			(b << bshift) | (a << ashift);
-		    *dst++ = (byte) (mask & 0xff);
-		    *dst++ = (byte) ((mask >> 8) & 0xff);
-		    *dst++ = (byte) ((mask >> 16) & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if ((ddpf->dwRGBBitCount <= 16) &&
-		   (ddpf->dwRGBBitCount > 8)) {
-	    destRow += (xoffset << 1);
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    l = *src++;
-		    if (rDiscard >= 0) {
-			r = l >> rDiscard;
-		    } else {
-			r = l << -rDiscard;
-		    }
-		    if (gDiscard >= 0) {
-			g = l >> gDiscard;
-		    } else {
-			g = l << -gDiscard;
-		    }
-		    if (bDiscard >= 0) {
-			b = l >> bDiscard;
-		    } else {
-			b = l << -bDiscard;
-		    }
-		    if (aDiscard >= 0) {
-			a = l >> aDiscard;
-		    } else {
-			a = l << -aDiscard;
-		    }
-		    mask = (r << rshift) | (g << gshift) |
-			(b << bshift) | (a << ashift);
-		    *dst++ = (byte) (mask & 0xff);
-		    *dst++ = (byte) ((mask >> 8) & 0xff);
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else if (ddpf->dwRGBBitCount <= 8) {
-	    destRow += xoffset;
-	    for (int i=yoffset; i < ylimit; i++) {
-		src = srcRow;
-		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {
-		    *src++;   // discard lower order byte
-		    l = *src++;
-		    if (rDiscard >= 0) {
-			r = l >> rDiscard;
-		    } else {
-			r = l << -rDiscard;
-		    }
-		    if (gDiscard >= 0) {
-			g = l >> gDiscard;
-		    } else {
-			g = l << -gDiscard;
-		    }
-		    if (bDiscard >= 0) {
-			b = l >> bDiscard;
-		    } else {
-			b = l << -bDiscard;
-		    }
-		    if (aDiscard >= 0) {
-			a = l >> aDiscard;
-		    } else {
-			a = l << -aDiscard;
-		    }
-		    *dst++ =  (byte) ((r << rshift) |
-				      (g << gshift) |
-				      (b << bshift) |
-				      (a << ashift));
-		}
-		srcRow += srcPitch;
-		destRow += rectPitch;
-	    }
-	} else {
-	    printf("Texture memory with RGBBitCount = %d not support. \n",
-		   ddpf->dwRGBBitCount);
-	}
-    } else {
-	printf("Texture format %d not support.\n", internalFormat);
-    }
-}
-
 // copy data from DirectDraw depth surface to memory
 // and reverse the Y axis
 void copyDepthFromSurface(jint xoffset, jint yoffset,
@@ -12047,8 +11487,8 @@ void copyDepthToSurface(D3dCtx *d3dCtx,
     }
 }
 
-void copyDataToVolume(jint storedFormat,
-		      jint internalFormat,
+void copyDataToVolume(jint imageFormat,
+		      jint textureFormat,
 		      jint xoffset, jint yoffset,
 		      jint zoffset,
 		      jint imgXOffset, jint imgYOffset,
@@ -12101,188 +11541,161 @@ void copyDataToVolume(jint storedFormat,
     int imgOffset = tilew*(tileh*imgZOffset + imgYOffset) + imgXOffset;
     int srcSlicePitch = tilew*tileh;
     unsigned char* p = (unsigned char *) lockedBox.pBits +
-	                       zoffset*lockedBox.SlicePitch;
+	zoffset*lockedBox.SlicePitch;
 
 
 
-    switch (storedFormat) {
-        case  IMAGE_FORMAT_BYTE_RGBA :
-	    // This is the one we use when byReference = false
-	    data += (imgOffset << 2);
-	    srcSlicePitch <<= 2;
+    switch (imageFormat) {
+    case  IMAGE_FORMAT_BYTE_RGBA :
+	// This is the one we use when byReference = false
+	data += (imgOffset << 2);
+	srcSlicePitch <<= 2;
 
-	    for (i = zoffset; i < zlimit; i++) {
-		copyDataToSurfaceRGBA(internalFormat, &ddpf,
-				      p,
-				      lockedBox.RowPitch,
-				      data,
-				      xoffset, yoffset,
-				      xlimit, ylimit,
-				      tilew);
-		p += lockedBox.SlicePitch;
-		data += srcSlicePitch;
-	    }
+	for (i = zoffset; i < zlimit; i++) {
+	    copyDataToSurfaceRGBA(textureFormat, &ddpf,
+				  p,
+				  lockedBox.RowPitch,
+				  data,
+				  xoffset, yoffset,
+				  xlimit, ylimit,
+				  tilew);
+	    p += lockedBox.SlicePitch;
+	    data += srcSlicePitch;
+	}
 
-	    break;
-        case IMAGE_FORMAT_BYTE_RGB:
-	    data += (imgOffset*3);
-	    srcSlicePitch *= 3;
+	break;
+    case IMAGE_FORMAT_BYTE_RGB:
+	data += (imgOffset*3);
+	srcSlicePitch *= 3;
 
-	    for (i = zoffset; i < zlimit; i++) {
-		copyDataToSurfaceRGB(internalFormat, &ddpf,
-				     p,
-				     lockedBox.RowPitch,
-				     data,
-				     xoffset, yoffset,
-				     xlimit, ylimit,
-				     tilew);
-		p += lockedBox.SlicePitch;
-		data += srcSlicePitch;
-	    }
-	    break;
-        case IMAGE_FORMAT_BYTE_ABGR:
-	    data += (imgOffset << 2);
-	    srcSlicePitch <<= 2;
+	for (i = zoffset; i < zlimit; i++) {
+	    copyDataToSurfaceRGB(textureFormat, &ddpf,
+				 p,
+				 lockedBox.RowPitch,
+				 data,
+				 xoffset, yoffset,
+				 xlimit, ylimit,
+				 tilew);
+	    p += lockedBox.SlicePitch;
+	    data += srcSlicePitch;
+	}
+	break;
+    case IMAGE_FORMAT_BYTE_ABGR:
+	data += (imgOffset << 2);
+	srcSlicePitch <<= 2;
 
-	    for (i = zoffset; i < zlimit; i++) {
-		copyDataToSurfaceABGR(internalFormat, &ddpf,
-				      p,
-				      lockedBox.RowPitch,
-				      data,
-				      xoffset, yoffset,
-				      xlimit, ylimit,
-				      tilew);
-		p += lockedBox.SlicePitch;
-		data += srcSlicePitch;
-	    }
-	    break;
-        case IMAGE_FORMAT_BYTE_BGR:
-	    data += (imgOffset*3);
-	    srcSlicePitch *= 3;
+	for (i = zoffset; i < zlimit; i++) {
+	    copyDataToSurfaceABGR(textureFormat, &ddpf,
+				  p,
+				  lockedBox.RowPitch,
+				  data,
+				  xoffset, yoffset,
+				  xlimit, ylimit,
+				  tilew);
+	    p += lockedBox.SlicePitch;
+	    data += srcSlicePitch;
+	}
+	break;
+    case IMAGE_FORMAT_BYTE_BGR:
+	data += (imgOffset*3);
+	srcSlicePitch *= 3;
 
-	    for (i = zoffset; i < zlimit; i++) {
-		copyDataToSurfaceBGR(internalFormat, &ddpf,
-				     p,
-				     lockedBox.RowPitch,
-				     data,
-				     xoffset, yoffset,
-				     xlimit, ylimit,
-				     tilew);
-		p += lockedBox.SlicePitch;
-		data += srcSlicePitch;
-	    }
-	    break;
-        case IMAGE_FORMAT_BYTE_LA:
-	    data += (imgOffset << 1);
-	    srcSlicePitch <<= 1;
+	for (i = zoffset; i < zlimit; i++) {
+	    copyDataToSurfaceBGR(textureFormat, &ddpf,
+				 p,
+				 lockedBox.RowPitch,
+				 data,
+				 xoffset, yoffset,
+				 xlimit, ylimit,
+				 tilew);
+	    p += lockedBox.SlicePitch;
+	    data += srcSlicePitch;
+	}
+	break;
+    case IMAGE_FORMAT_BYTE_LA:
+	data += (imgOffset << 1);
+	srcSlicePitch <<= 1;
 
-	    for (i = zoffset; i < zlimit; i++) {
-		copyDataToSurfaceLA(internalFormat, &ddpf,
-				    p,
-				    lockedBox.RowPitch,
-				    data,
-				    xoffset, yoffset,
-				    xlimit, ylimit,
-				    tilew);
-		p += lockedBox.SlicePitch;
-		data += srcSlicePitch;
-	    }
-	    break;
-        case IMAGE_FORMAT_BYTE_GRAY:
-	    data += imgOffset;
-
-	    for (i = zoffset; i < zlimit; i++) {
-		copyDataToSurfaceGray(internalFormat, &ddpf,
-				      p,
-				      lockedBox.RowPitch,
-				      data,
-				      xoffset, yoffset,
-				      xlimit, ylimit,
-				      tilew);
-		p += lockedBox.SlicePitch;
-		data += srcSlicePitch;
-	    }
-	    break;
-        default: // should not happen
-	    printf("[Java 3D] StoredFormat %d, internalFormat %d not support !\n",
-		   storedFormat, internalFormat);
+	for (i = zoffset; i < zlimit; i++) {
+	    copyDataToSurfaceLA(textureFormat, &ddpf,
+				p,
+				lockedBox.RowPitch,
+				data,
+				xoffset, yoffset,
+				xlimit, ylimit,
+				tilew);
+	    p += lockedBox.SlicePitch;
+	    data += srcSlicePitch;
+	}
+	break;
+    case IMAGE_FORMAT_BYTE_GRAY:
+	data += imgOffset;
+	
+	for (i = zoffset; i < zlimit; i++) {
+	    copyDataToSurfaceGray(textureFormat, &ddpf,
+				  p,
+				  lockedBox.RowPitch,
+				  data,
+				  xoffset, yoffset,
+				  xlimit, ylimit,
+				  tilew);
+	    p += lockedBox.SlicePitch;
+	    data += srcSlicePitch;
+	}
+	break;
+    case IMAGE_FORMAT_INT_BGR:
+	data += (imgOffset << 2);
+	srcSlicePitch <<= 2;
+	
+	for (i = zoffset; i < zlimit; i++) {
+	    copyInt_XBGR_DataToSurface(textureFormat, &ddpf,
+				       p,
+				       lockedBox.RowPitch,
+				       data,
+				       xoffset, yoffset,
+				       xlimit, ylimit,
+				       tilew);
+	    p += lockedBox.SlicePitch;
+	    data += srcSlicePitch;
+	}
+	break;
+    case IMAGE_FORMAT_INT_RGB:
+	data += (imgOffset << 2);
+	srcSlicePitch <<= 2;
+	
+	for (i = zoffset; i < zlimit; i++) {
+	    copyInt_XRGB_DataToSurface(textureFormat, &ddpf,
+				       p,
+				       lockedBox.RowPitch,
+				       data,
+				       xoffset, yoffset,
+				       xlimit, ylimit,
+				       tilew);
+	    p += lockedBox.SlicePitch;
+	    data += srcSlicePitch;
+	}
+	break;
+    case IMAGE_FORMAT_INT_ARGB:
+	data += (imgOffset << 2);
+	srcSlicePitch <<= 2;
+	
+	for (i = zoffset; i < zlimit; i++) {
+	    copyInt_ARGB_DataToSurface(textureFormat, &ddpf,
+				       p,
+				       lockedBox.RowPitch,
+				       data,
+				       xoffset, yoffset,
+				       xlimit, ylimit,
+				       tilew);
+	    p += lockedBox.SlicePitch;
+	    data += srcSlicePitch;
+	}
+	break;
+    default: // should not happen
+	printf("[Java 3D] StoredFormat %d, textureFormat %d not support !\n",
+	       imageFormat, textureFormat);
     }
-
-    hr = surf->UnlockBox(level);
-    if (FAILED(hr)) {
-	printf("Fail to unlock volume: %s\n", DXGetErrorString9(hr));
-	return;
-    }
-}
-
-
-void copyDataToVolume(jint storedFormat,
-		      jint internalFormat,
-		      jint xoffset, jint yoffset,
-		      jint zoffset,
-		      jint imgXOffset, jint imgYOffset,
-		      jint imgZOffset,
-		      jint subWidth, jint subHeight, jint subDepth,
-		      jint tilew, jint tileh,
-		      jshort* data,
-		      LPDIRECT3DVOLUMETEXTURE9 surf,
-		      jint level)
-{
-    D3DVOLUME_DESC ddsd;
-    D3DLOCKED_BOX lockedBox;
-    PIXELFORMAT ddpf;
-    HRESULT hr;
-    UINT i;
-
-    if (surf == NULL) {
-	return;
-    }
-
-    surf->GetLevelDesc(level, &ddsd);
-    DWORD width = ddsd.Width;
-    DWORD height = ddsd.Height;
-    DWORD depth = ddsd.Depth;
-
-    computePixelFormat(&ddpf, ddsd.Format);
-
-
-    if ((xoffset >= width) ||
-	(yoffset >= height) ||
-	(zoffset >= depth)) {
-	return;
-    }
-
-
-    DWORD xlimit = min(xoffset + subWidth, width);
-    DWORD ylimit = min(yoffset + subHeight, height);
-    DWORD zlimit = min(zoffset + subDepth, depth);
-
-    hr = surf->LockBox(level, &lockedBox, NULL, 0);
-
-    if (FAILED(hr)) {
-	printf("Fail to lock volume: %s\n", DXGetErrorString9(hr));
-	return;
-    }
-
-    int imgOffset = tilew*(tileh*imgZOffset + imgYOffset) + imgXOffset;
-    int srcSlicePitch = (tilew*tileh) << 1;
-    unsigned char* p = (unsigned char *) lockedBox.pBits +
-	                       zoffset*lockedBox.SlicePitch;
-
-    data += (imgOffset << 1);
-
-    for (i = zoffset; i < zlimit; i++) {
-	copyDataToSurfaceGray(internalFormat, &ddpf,
-			      p,
-			      lockedBox.RowPitch,
-			      data,
-			      xoffset, yoffset,
-			      xlimit, ylimit,
-			      tilew);
-	p += lockedBox.SlicePitch;
-	data += srcSlicePitch;
-    }
-
+    
     hr = surf->UnlockBox(level);
     if (FAILED(hr)) {
 	printf("Fail to unlock volume: %s\n", DXGetErrorString9(hr));
@@ -12417,7 +11830,7 @@ int getPrimitiveNum(int primitive, int vcount)
  */
 LPDIRECT3DCUBETEXTURE9 createCubeMapTexture(D3dCtx *d3dCtx,
 					    jint numLevels,
-					    jint internalFormat,
+					    jint textureFormat,
 					    jint width,
 					    jint height)
 {
@@ -12433,7 +11846,7 @@ LPDIRECT3DCUBETEXTURE9 createCubeMapTexture(D3dCtx *d3dCtx,
     }
 
     getTexWidthHeight(deviceInfo, &width, &height);
-    format = getTexFormat(internalFormat);
+    format = getTexFormat(textureFormat);
 
     // If format not support, the utility function will adjust the
     // calling parameters automatically
@@ -12452,75 +11865,8 @@ LPDIRECT3DCUBETEXTURE9 createCubeMapTexture(D3dCtx *d3dCtx,
     return pTexture;
 }
 
-
-void copyDataToCubeMap(jint storedFormat,
-		       jint internalFormat,
-		       jint xoffset, jint yoffset,
-		       jint imgXOffset, jint imgYOffset,
-		       jint subWidth, jint subHeight,
-		       jint tilew,
-		       jshort *data, LPDIRECT3DCUBETEXTURE9 surf,
-		       jint level,
-		       jint face)
-{
-    D3DSURFACE_DESC ddsd;
-    D3DLOCKED_RECT lockedRect;
-    PIXELFORMAT ddpf;
-    HRESULT hr;
-
-    if (surf == NULL) {
-	return;
-    }
-
-    surf->GetLevelDesc(level, &ddsd);
-    DWORD width = ddsd.Width;
-    DWORD height = ddsd.Height;
-    computePixelFormat(&ddpf, ddsd.Format);
-
-    if ((xoffset >= width) || (yoffset >= height)) {
-	return;
-    }
-    DWORD xlimit = min(xoffset + subWidth, width);
-    DWORD ylimit = min(yoffset + subHeight, height);
-
-    hr = surf->LockRect(textureCubeMapFace[face], level,
-			&lockedRect, NULL, 0);
-
-    if (FAILED(hr)) {
-	printf("Fail to lock surface: %s\n", DXGetErrorString9(hr));
-	return;
-    }
-
-    int offset = tilew*imgYOffset + imgXOffset;
-
-    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
-	(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-	copyDataToSurfaceGray(internalFormat, &ddpf,
-			      (unsigned char *) lockedRect.pBits,
-			      lockedRect.Pitch,
-			      data +
-			      ((offset+tilew*(ylimit-yoffset)) << 1),
-			      xoffset, yoffset,
-			      xlimit, ylimit, -tilew);
-    } else {
-	copyDataToSurfaceGrayRev(internalFormat, &ddpf,
-			      (unsigned char *) lockedRect.pBits,
-				 lockedRect.Pitch,
-				 data + (offset << 1),
-				 xoffset, yoffset,
-				 xlimit, ylimit, tilew);
-    }
-
-    hr = surf->UnlockRect(textureCubeMapFace[face], level);
-    if (FAILED(hr)) {
-	printf("Fail to unlock surface: %s\n", DXGetErrorString9(hr));
-	return;
-    }
-}
-
-
-void copyDataToCubeMap(jint storedFormat,
-		       jint internalFormat,
+void copyDataToCubeMap(jint imageFormat,
+		       jint textureFormat,
 		       jint xoffset, jint yoffset,
 		       jint imgXOffset, jint imgYOffset,
 		       jint subWidth, jint subHeight,
@@ -12565,129 +11911,213 @@ void copyDataToCubeMap(jint storedFormat,
     }
     int offset = tilew*imgYOffset + imgXOffset;
 
-    switch (storedFormat) {
-        case  IMAGE_FORMAT_BYTE_RGBA :
-	    // This is the one we use when byReference = false
-	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
-		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-		// Copy the pixel from bottom to up and
-		// left to right in this case to match OGL definition
-		copyDataToSurfaceRGBA(internalFormat, &ddpf,
+    switch (imageFormat) {
+    case  IMAGE_FORMAT_BYTE_RGBA :
+	// This is the one we use when byReference = false
+	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
+	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
+	    // Copy the pixel from bottom to up and
+	    // left to right in this case to match OGL definition
+	    copyDataToSurfaceRGBA(textureFormat, &ddpf,
+				  (unsigned char *) lockedRect.pBits,
+				  lockedRect.Pitch,
+				  data +
+				  ((offset + tilew*(ylimit-yoffset-1)) << 2),
+				  xoffset, yoffset,
+				  xlimit, ylimit, -tilew);
+	} else {
+	    // Copy the pixel from up to bottom and
+	    // right to left in this case to match OGL definition
+	    copyDataToSurfaceRGBARev(textureFormat, &ddpf,
+				     (unsigned char *) lockedRect.pBits,
+				     lockedRect.Pitch,
+				     data + (offset << 2),
+				     xoffset, yoffset,
+				     xlimit, ylimit, tilew);
+	}
+	break;
+    case IMAGE_FORMAT_BYTE_RGB:
+	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
+	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
+	    copyDataToSurfaceRGB(textureFormat, &ddpf,
+				 (unsigned char *) lockedRect.pBits,
+				 lockedRect.Pitch,
+				 data +
+				 3*(offset + tilew*(ylimit-yoffset-1)),
+				 xoffset, yoffset,
+				 xlimit, ylimit, -tilew);
+	} else {
+	    copyDataToSurfaceRGBRev(textureFormat, &ddpf,
+				    (unsigned char *) lockedRect.pBits,
+				    lockedRect.Pitch,
+				    data + 3*offset,
+				    xoffset, yoffset,
+				    xlimit, ylimit, tilew);
+	}
+	break;
+    case IMAGE_FORMAT_BYTE_ABGR:
+	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
+	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
+	    copyDataToSurfaceABGR(textureFormat, &ddpf,
+				  (unsigned char *) lockedRect.pBits,
+				  lockedRect.Pitch,
+				  data +
+				  ((offset+tilew*(ylimit-yoffset-1)) << 2),
+				  xoffset, yoffset,
+				  xlimit, ylimit, -tilew);
+	} else {
+	    copyDataToSurfaceABGRRev(textureFormat, &ddpf,
+				     (unsigned char *) lockedRect.pBits,
+				     lockedRect.Pitch,
+				     data + (offset << 2),
+				     xoffset, yoffset,
+				     xlimit, ylimit, tilew);
+	}
+	break;
+    case IMAGE_FORMAT_BYTE_BGR:
+	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
+	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
+	    copyDataToSurfaceBGR(textureFormat, &ddpf,
+				 (unsigned char *) lockedRect.pBits,
+				 lockedRect.Pitch,
+				 data +
+				 3*(offset + tilew*(ylimit-yoffset-1)),
+				 xoffset, yoffset,
+				 xlimit, ylimit, -tilew);
+	} else {
+	    copyDataToSurfaceBGRRev(textureFormat, &ddpf,
+				    (unsigned char *) lockedRect.pBits,
+				    lockedRect.Pitch,
+				    data + 3*offset,
+				    xoffset, yoffset,
+				    xlimit, ylimit, tilew);
+	}
+	break;
+    case IMAGE_FORMAT_BYTE_LA:
+	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
+	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
+	    copyDataToSurfaceLA(textureFormat, &ddpf,
+				(unsigned char *) lockedRect.pBits,
+				lockedRect.Pitch,
+				data +
+				((offset+tilew*(ylimit-yoffset-1)) << 1),
+				xoffset, yoffset,
+				xlimit, ylimit, -tilew);
+	} else {
+	    copyDataToSurfaceLARev(textureFormat, &ddpf,
+				   (unsigned char *) lockedRect.pBits,
+				   lockedRect.Pitch,
+				   data + (offset << 1),
+				   xoffset, yoffset,
+				   xlimit, ylimit, tilew);
+	}
+	break;
+    case IMAGE_FORMAT_BYTE_GRAY:
+	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
+	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
+	    copyDataToSurfaceGray(textureFormat, &ddpf,
+				  (unsigned char *) lockedRect.pBits,
+				  lockedRect.Pitch,
+				  data +
+				  offset + tilew*(ylimit-yoffset-1),
+				  xoffset, yoffset,
+				  xlimit, ylimit, -tilew);
+	} else {
+	    copyDataToSurfaceGrayRev(textureFormat, &ddpf,
+				     (unsigned char *) lockedRect.pBits,
+				     lockedRect.Pitch,
+				     data + offset,
+				     xoffset, yoffset,
+				     xlimit, ylimit, tilew);
+	}
+	break;
+    case  IMAGE_FORMAT_INT_BGR :
+	// This is the one we use when byReference = false
+	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
+	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
+	    // Copy the pixel from bottom to up and
+	    // left to right in this case to match OGL definition
+	    copyInt_XBGR_DataToSurface(textureFormat, &ddpf,
 				      (unsigned char *) lockedRect.pBits,
 				      lockedRect.Pitch,
 				      data +
 				      ((offset + tilew*(ylimit-yoffset-1)) << 2),
 				      xoffset, yoffset,
 				      xlimit, ylimit, -tilew);
-	    } else {
-		// Copy the pixel from up to bottom and
-		// right to left in this case to match OGL definition
-		copyDataToSurfaceRGBARev(internalFormat, &ddpf,
-					 (unsigned char *) lockedRect.pBits,
-					 lockedRect.Pitch,
-					 data + (offset << 2),
-					 xoffset, yoffset,
-					 xlimit, ylimit, tilew);
-	    }
-	    break;
-        case IMAGE_FORMAT_BYTE_RGB:
-	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
-		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-		copyDataToSurfaceRGB(internalFormat, &ddpf,
-				     (unsigned char *) lockedRect.pBits,
-				     lockedRect.Pitch,
-				     data +
-				     3*(offset + tilew*(ylimit-yoffset-1)),
-				     xoffset, yoffset,
-				     xlimit, ylimit, -tilew);
-	    } else {
-		copyDataToSurfaceRGBRev(internalFormat, &ddpf,
-					(unsigned char *) lockedRect.pBits,
-					lockedRect.Pitch,
-					data + 3*offset,
-					xoffset, yoffset,
-					xlimit, ylimit, tilew);
-	    }
-	    break;
-        case IMAGE_FORMAT_BYTE_ABGR:
-	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
-		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-		copyDataToSurfaceABGR(internalFormat, &ddpf,
-				      (unsigned char *) lockedRect.pBits,
-				      lockedRect.Pitch,
-				      data +
-				      ((offset+tilew*(ylimit-yoffset-1)) << 2),
-				      xoffset, yoffset,
-				      xlimit, ylimit, -tilew);
-	    } else {
-		copyDataToSurfaceABGRRev(internalFormat, &ddpf,
-					 (unsigned char *) lockedRect.pBits,
-					 lockedRect.Pitch,
-					 data + (offset << 2),
-					 xoffset, yoffset,
-					 xlimit, ylimit, tilew);
-	    }
-	    break;
-        case IMAGE_FORMAT_BYTE_BGR:
-	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
-		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-		copyDataToSurfaceBGR(internalFormat, &ddpf,
-				     (unsigned char *) lockedRect.pBits,
-				     lockedRect.Pitch,
-				     data +
-				     3*(offset + tilew*(ylimit-yoffset-1)),
-				     xoffset, yoffset,
-				     xlimit, ylimit, -tilew);
-	    } else {
-		copyDataToSurfaceBGRRev(internalFormat, &ddpf,
-					(unsigned char *) lockedRect.pBits,
-					lockedRect.Pitch,
-					data + 3*offset,
-					xoffset, yoffset,
-					xlimit, ylimit, tilew);
-	    }
-	    break;
-        case IMAGE_FORMAT_BYTE_LA:
-	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
-		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-		copyDataToSurfaceLA(internalFormat, &ddpf,
-				    (unsigned char *) lockedRect.pBits,
-				    lockedRect.Pitch,
-				    data +
-				    ((offset+tilew*(ylimit-yoffset-1)) << 1),
-				    xoffset, yoffset,
-				    xlimit, ylimit, -tilew);
-	    } else {
-		copyDataToSurfaceLARev(internalFormat, &ddpf,
+	} else {
+	    // Copy the pixel from up to bottom and
+	    // right to left in this case to match OGL definition
+	    printf("[copyDataToCubeMap] copyInt_BGR_DataToSurfaceRev is unsupported!\n");
+
+	    /*
+	    copyInt_XBGR_DataToSurfaceRev(textureFormat, &ddpf,
+					  (unsigned char *) lockedRect.pBits,
+					  lockedRect.Pitch,
+					  data + (offset << 2),
+					  xoffset, yoffset,
+					  xlimit, ylimit, tilew);
+	    */
+	}
+	break;	
+    case  IMAGE_FORMAT_INT_RGB :
+	// This is the one we use when byReference = false
+	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
+	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
+	    // Copy the pixel from bottom to up and
+	    // left to right in this case to match OGL definition
+	    copyInt_XRGB_DataToSurface(textureFormat, &ddpf,
 				       (unsigned char *) lockedRect.pBits,
 				       lockedRect.Pitch,
-				       data + (offset << 1),
+				       data +
+				       ((offset + tilew*(ylimit-yoffset-1)) << 2),
 				       xoffset, yoffset,
-				       xlimit, ylimit, tilew);
-	    }
-	    break;
-        case IMAGE_FORMAT_BYTE_GRAY:
-	    if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
-		(face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
-		copyDataToSurfaceGray(internalFormat, &ddpf,
-				      (unsigned char *) lockedRect.pBits,
-				      lockedRect.Pitch,
-				      data +
-				      offset + tilew*(ylimit-yoffset-1),
-				      xoffset, yoffset,
-				      xlimit, ylimit, -tilew);
-	    } else {
-		copyDataToSurfaceGrayRev(internalFormat, &ddpf,
-					 (unsigned char *) lockedRect.pBits,
-					 lockedRect.Pitch,
-					 data + offset,
-					 xoffset, yoffset,
-					 xlimit, ylimit, tilew);
-	    }
-	    break;
-        default: // should not happen
-	    printf("[Java 3D] StoredFormat %d, internalFormat %d not support !\n",
-		   storedFormat, internalFormat);
+				       xlimit, ylimit, -tilew);
+	} else {
+	    // Copy the pixel from up to bottom and
+	    // right to left in this case to match OGL definition
+	    printf("[copyDataToCubeMap] copyInt_XRGB_DataToSurfaceRev is unsupported!\n");
+
+	    /*
+	    copyInt_XRGB_DataToSurfaceRev(textureFormat, &ddpf,
+	                                  (unsigned char *) lockedRect.pBits,
+					  lockedRect.Pitch,
+					  data + (offset << 2),
+					  xoffset, yoffset,
+					  xlimit, ylimit, tilew);
+	    */
+	}
+	break;
+    case  IMAGE_FORMAT_INT_ARGB :
+	// This is the one we use when byReference = false
+	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
+	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
+	    // Copy the pixel from bottom to up and
+	    // left to right in this case to match OGL definition
+	    copyInt_ARGB_DataToSurface(textureFormat, &ddpf,
+				       (unsigned char *) lockedRect.pBits,
+				       lockedRect.Pitch,
+				       data +
+				       ((offset + tilew*(ylimit-yoffset-1)) << 2),
+				       xoffset, yoffset,
+				       xlimit, ylimit, -tilew);
+	} else {
+	    // Copy the pixel from up to bottom and
+	    // right to left in this case to match OGL definition
+	    printf("[copyDataToCubeMap] copyInt_ARGB_DataToSurfaceRev is unsupported!\n");
+
+	    /*
+	    copyInt_ARGB_DataToSurfaceRev(textureFormat, &ddpf,
+					  (unsigned char *) lockedRect.pBits,
+					  lockedRect.Pitch,
+					  data + (offset << 2),
+					  xoffset, yoffset,
+					  xlimit, ylimit, tilew);
+	    */
+	}
+	break;
+    default: // should not happen
+	printf("[Java 3D] StoredFormat %d, textureFormat %d not support !\n",
+	       imageFormat, textureFormat);
     }
 
     hr = surf->UnlockRect(textureCubeMapFace[face], level);

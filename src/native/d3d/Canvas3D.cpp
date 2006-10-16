@@ -223,7 +223,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
     jint rasWidth,
     jint format,
     jint objectId,
-    jbyteArray imageYdown,
+    jbyteArray byteData,
     jint winWidth,
     jint winHeight)
 {
@@ -237,7 +237,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
     Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
          env, texture, ctx, 0, minX, minY, J3D_RGBA, format,
 	 minX, minY, rasWidth, maxX-minX, maxY-minY, IMAGE_DATA_TYPE_BYTE_ARRAY,
-	 imageYdown);
+	 byteData);
 
     LPDIRECT3DTEXTURE9 surf = d3dCtx->textureTable[objectId];
 
@@ -819,18 +819,16 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
     else {
        imageObjPtr = (void *)env->GetDirectBufferAddress(data);
     }
-
-
+    
     /* TODO : Need to re-write --- Chien. */
-    printf("[TODO NEEDED] Canvas3D : *** ireadOffScreenBuffer() ***\n");
+    printf("[TODO NEEDED] Canvas3D : *** readOffScreenBuffer() ***\n");
     copyDataFromSurface(format, 0, 0, width, height, (jbyte *)imageObjPtr, 
 			d3dCtx->backSurface);
-
 
     if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_INT_ARRAY)) {
         env->ReleasePrimitiveArrayCritical((jarray)data, imageObjPtr, 0);
     }
-   return;
+    return;
 }
 
 
