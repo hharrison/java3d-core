@@ -888,12 +888,8 @@ LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
 }
 
 
-// TODO : No need to reverse the Y axis.
-// Handle more format ------ Chien.
-
 // copy data from DirectDraw surface to memory
-// and reverse the Y axis
-void copyDataFromSurface(jint internalFormat,
+void copyDataFromSurface(jint imageFormat,
 			 jint xoffset, jint yoffset,
 			 jint subWidth, jint subHeight,
 			 jbyte *data,
@@ -903,6 +899,8 @@ void copyDataFromSurface(jint internalFormat,
     D3DLOCKED_RECT lockedRect;
     PIXELFORMAT ddpf;
     HRESULT hr;
+
+    printf("[Java 3D] copyDataFromSurface:  not tested yet %d\n", imageFormat);
 
     if (surf == NULL) {
 	return;
@@ -924,7 +922,7 @@ void copyDataFromSurface(jint internalFormat,
 			D3DLOCK_READONLY);
 
     if (FAILED(hr)) {
-	printf("Fail to lock surface: %s\n", DXGetErrorString9(hr));
+ 	printf("Fail to lock surface: %s\n", DXGetErrorString9(hr));
 	return;
     }
 
@@ -939,12 +937,118 @@ void copyDataFromSurface(jint internalFormat,
 	xoffset*((int) ceil((float) ddpf.dwRGBBitCount/8.0)) +
 	(yoffset*lockedRect.Pitch);
 
-
-    if ((internalFormat == IMAGE_FORMAT_BYTE_RGBA) ||
-    	(internalFormat == IMAGE_FORMAT_BYTE_RGB)) {
+    if ((imageFormat == IMAGE_FORMAT_INT_RGB) ||
+	(imageFormat == IMAGE_FORMAT_INT_ARGB)) {
 	dstPitch = subWidth << 2;
-	destRow += (subHeight-1)*dstPitch;
+	
+	if ((ddpf.dwRGBBitCount == 32) &&
+	    (ddpf.dwRBitMask == 0xff0000) &&
+	    (ddpf.dwGBitMask == 0xff00) &&
+	    (ddpf.dwBBitMask == 0xff)) {
+	    // Optimize for the most common case
+	    if (ddpf.noAlpha) {
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+ 		    for (int j=xoffset; j < xlimit; j++) {
+			*dst++ = *src++;
+			*dst++ = *src++;
+			*dst++ = *src++;
+			*src++;
+			*dst++ = (byte) 0xff;
+		    }
+		    srcRow += lockedRect.Pitch;
+		    destRow += dstPitch;
+		}
+	    } else {
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			*dst++ = *src++;
+			*dst++ = *src++;
+			*dst++ = *src++;
+			*dst++ = *src++;
+		    }
+		    srcRow += lockedRect.Pitch;
+		    destRow += dstPitch;
+		}
+	    }
+	} else { // handle less common format
+	    int rshift = firstBit(ddpf.dwRBitMask) +
+		ucountBits(ddpf.dwRBitMask) - 8;
+	    int gshift = firstBit(ddpf.dwGBitMask) +
+		ucountBits(ddpf.dwGBitMask) - 8;
+	    int bshift = firstBit(ddpf.dwBBitMask) +
+		ucountBits(ddpf.dwBBitMask) - 8;
+	    int ashift = firstBit(ddpf.dwRGBAlphaBitMask) +
+		ucountBits(ddpf.dwRGBAlphaBitMask) - 8;
+	    
+	    if ((ddpf.dwRGBBitCount <= 32) &&
+		(ddpf.dwRGBBitCount > 24)) {
+		
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			b1 = *src++;
+			b2 = *src++;
+			b3 = *src++;
+			b4 = *src++;
+			mask = ((b4 << 24) | (b3 << 16)| (b2 << 8) | b1);
+			*dst++ = (byte) (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+			*dst++ = (byte) ((mask >> 16) & 0xff);
+			if (ddpf.noAlpha) {
+			    *dst++ = (byte) 0xff;
+			} else {
+			    *dst++ = (byte) ((mask >> 24) & 0xff);
+			}
+		    }
+		    srcRow += lockedRect.Pitch;
+		    destRow += dstPitch;
+		}
+	    } else if ((ddpf.dwRGBBitCount <= 24) &&
+		       (ddpf.dwRGBBitCount > 16)) {
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			b1 = *src++;
+			b2 = *src++;
+			b3 = *src++;
+			mask = ((b3 << 16) | (b2 << 8) | b1);
+			*dst++ = (byte) (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+			*dst++ = (byte) ((mask >> 16) & 0xff);
+		    }
+		    srcRow += lockedRect.Pitch;
+		    destRow += dstPitch;
+		}
+	    } else if ((ddpf.dwRGBBitCount <= 16) &&
+		       (ddpf.dwRGBBitCount > 8)) {
 
+		for (int i=yoffset; i < ylimit; i++) {
+		    src = srcRow;
+		    dst = destRow;
+		    for (int j=xoffset; j < xlimit; j++) {
+			b1 = *src++;
+			b2 = *src++;
+			*dst++ = (byte) (mask & 0xff);
+			*dst++ = (byte) ((mask >> 8) & 0xff);
+		    }
+		    srcRow += lockedRect.Pitch;
+		    destRow += dstPitch;   
+		}
+	    } else if (ddpf.dwRGBBitCount <= 8) {
+		printf("[Java 3D] copyDataFromSurface: Format on (8 bits or less surface) not support %d\n", imageFormat);
+	    }
+	}
+    } else if ((imageFormat == IMAGE_FORMAT_BYTE_RGBA) ||
+    	(imageFormat == IMAGE_FORMAT_BYTE_RGB) ||
+	(imageFormat == IMAGE_FORMAT_INT_BGR)) {
+	dstPitch = subWidth << 2;
+	
 	if ((ddpf.dwRGBBitCount == 32) &&
 	    (ddpf.dwRBitMask == 0xff0000) &&
 	    (ddpf.dwGBitMask == 0xff00) &&
@@ -965,7 +1069,7 @@ void copyDataFromSurface(jint internalFormat,
 			*dst++ = (byte) 0xff;
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    } else {
 		for (int i=yoffset; i < ylimit; i++) {
@@ -981,22 +1085,22 @@ void copyDataFromSurface(jint internalFormat,
 			*dst++ = *src++;
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    }
 	} else { // handle less common format
 	    int rshift = firstBit(ddpf.dwRBitMask) +
-		           ucountBits(ddpf.dwRBitMask) - 8;
+		ucountBits(ddpf.dwRBitMask) - 8;
 	    int gshift = firstBit(ddpf.dwGBitMask) +
-		           ucountBits(ddpf.dwGBitMask) - 8;
+		ucountBits(ddpf.dwGBitMask) - 8;
 	    int bshift = firstBit(ddpf.dwBBitMask) +
-		           ucountBits(ddpf.dwBBitMask) - 8;
+		ucountBits(ddpf.dwBBitMask) - 8;
 	    int ashift = firstBit(ddpf.dwRGBAlphaBitMask) +
-		           ucountBits(ddpf.dwRGBAlphaBitMask) - 8;
-
+		ucountBits(ddpf.dwRGBAlphaBitMask) - 8;
+	    
 	    if ((ddpf.dwRGBBitCount <= 32) &&
 		(ddpf.dwRGBBitCount > 24)) {
-
+		
 		for (int i=yoffset; i < ylimit; i++) {
 		    src = srcRow;
 		    dst = destRow;
@@ -1041,7 +1145,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 24) &&
 		       (ddpf.dwRGBBitCount > 16)) {
@@ -1087,7 +1191,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 16) &&
 		       (ddpf.dwRGBBitCount > 8)) {
@@ -1135,7 +1239,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    } else if (ddpf.dwRGBBitCount <= 8) {
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1178,17 +1282,16 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    }
 	}
-    } else if (internalFormat == IMAGE_FORMAT_BYTE_LA) {
+    } else if (imageFormat == IMAGE_FORMAT_BYTE_LA) {
 	int gshift = firstBit(ddpf.dwGBitMask) +
 	    ucountBits(ddpf.dwGBitMask) - 8;
 	int ashift = firstBit(ddpf.dwRGBAlphaBitMask) +
 	    ucountBits(ddpf.dwRGBAlphaBitMask) - 8;
 	dstPitch = subWidth << 1;
-	destRow += (subHeight-1)*dstPitch;
 
 	if ((ddpf.dwRGBBitCount == 32) &&
 	    (ddpf.dwRBitMask == 0xff0000) &&
@@ -1211,7 +1314,7 @@ void copyDataFromSurface(jint internalFormat,
 		    }
 		}
 		srcRow += lockedRect.Pitch;
-		destRow -= dstPitch;
+		destRow += dstPitch;
 	    }
 	} else { // handle less common format
 	    int gshift = firstBit(ddpf.dwGBitMask) +
@@ -1248,7 +1351,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 24) &&
 		       (ddpf.dwRGBBitCount > 16)) {
@@ -1280,7 +1383,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 16) &&
 		       (ddpf.dwRGBBitCount > 8)) {
@@ -1311,7 +1414,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    } else if (ddpf.dwRGBBitCount <= 8) {
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1339,16 +1442,15 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    }
 	}
 
-    } else if (internalFormat == IMAGE_FORMAT_BYTE_GRAY) {
+    } else if (imageFormat == IMAGE_FORMAT_BYTE_GRAY) {
 	int gshift = firstBit(ddpf.dwGBitMask) +
 	           ucountBits(ddpf.dwGBitMask) - 8;
 	dstPitch = subWidth;
-	destRow += (subHeight-1)*dstPitch;
 
 	if ((ddpf.dwRGBBitCount == 32) &&
 	    (ddpf.dwRBitMask == 0xff0000) &&
@@ -1366,7 +1468,7 @@ void copyDataFromSurface(jint internalFormat,
 		    *src++;
 		}
 		srcRow += lockedRect.Pitch;
-		destRow -= dstPitch;
+		destRow += dstPitch;
 	    }
 	} else { // handle less common format
 	    int gshift = firstBit(ddpf.dwGBitMask) +
@@ -1392,7 +1494,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 24) &&
 		       (ddpf.dwRGBBitCount > 16)) {
@@ -1413,7 +1515,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 16) &&
 		       (ddpf.dwRGBBitCount > 8)) {
@@ -1433,7 +1535,7 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    } else if (ddpf.dwRGBBitCount <= 8) {
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1450,14 +1552,14 @@ void copyDataFromSurface(jint internalFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow -= dstPitch;
+		    destRow += dstPitch;
 		}
 	    }
 	}
 
     } else {
 	// IMAGE_FORMAT_USHORT_GRAY
-	printf("[Java 3D] copyDataFromSurface: Format not support %d\n", internalFormat);
+	printf("[Java 3D] copyDataFromSurface: Format not support %d\n", imageFormat);
     }
 
 
@@ -3318,8 +3420,6 @@ void copyDataToSurfaceRGBARev(jint internalFormat,
 	printf("Texture format %d not support.\n",  internalFormat);
     }
 }
-
-
 
 void copyDataToSurfaceABGRRev(jint internalFormat,
 			      PIXELFORMAT *ddpf,
@@ -11825,7 +11925,7 @@ int getPrimitiveNum(int primitive, int vcount)
 
 
 /*
- * Note that tThe condition width == height always holds
+ * Note that the condition width == height always holds
  * when this function is invoked.
  */
 LPDIRECT3DCUBETEXTURE9 createCubeMapTexture(D3dCtx *d3dCtx,

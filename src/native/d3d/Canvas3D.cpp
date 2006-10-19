@@ -232,8 +232,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
     Java_javax_media_j3d_NativePipeline_bindTexture2D(
 	 env, texture, ctx, objectId, TRUE);
 
-    // TODO --- Need to re-write.  Chien
-    printf("[TODO NEEDED] Canvas3dD : *** texturemapping() ***\n");
     Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
          env, texture, ctx, 0, minX, minY, J3D_RGBA, format,
 	 minX, minY, rasWidth, maxX-minX, maxY-minY, IMAGE_DATA_TYPE_BYTE_ARRAY,
@@ -357,9 +355,87 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(
 							jfloat mapMaxY)
 {
     GetDevice();
-    /* printf("Canvas3D.textureFillBackground()\n"); */
+    printf("[TODO NEEDED] Canvas3dD : *** textureFillBackground() ***\n");
+    /*    printf("Canvas3D.textureFillBackground()\n"); */
+
+#if 0
+    // Need D3D translation for the following ogl code :
+     /* Temporarily disable fragment and most 3D operations */
+     glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_POLYGON_BIT); 
+
+     disableAttribFor2D(ctxProperties);
+     glDepthMask(GL_FALSE);  
+     glEnable(GL_TEXTURE_2D);     
+
+     /* reset the polygon mode */
+     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    /* loaded identity modelview and projection matrix */     
+    glMatrixMode(GL_PROJECTION);  
+    glLoadIdentity();
+    glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);  
+    glLoadIdentity(); 
+    glMatrixMode(GL_TEXTURE);
+    glPushMatrix();
+    glLoadIdentity();
+#endif
+
+
+
+    d3dCtx->rasterRect[0].tu = texMinU; /* tumin; */
+    d3dCtx->rasterRect[0].tv = texMaxV; /* tvmax; */
+    d3dCtx->rasterRect[1].tu = texMinU; /* tumin; */
+    d3dCtx->rasterRect[1].tv = texMinV; /* tvmin; */
+    d3dCtx->rasterRect[2].tu = texMaxU; /* tumax; */
+    d3dCtx->rasterRect[2].tv = texMaxV; /* tvmax; */
+    d3dCtx->rasterRect[3].tu = texMaxU; /* tumax; */
+    d3dCtx->rasterRect[3].tv = texMinV; /* tvmin; */
+
+    d3dCtx->rasterRect[0].sx = mapMinX;
+    d3dCtx->rasterRect[0].sy = mapMaxY;    
+    d3dCtx->rasterRect[0].sz = 0.999f;
+    d3dCtx->rasterRect[0].rhw = 1;
+
+    d3dCtx->rasterRect[1].sx = mapMinX;
+    d3dCtx->rasterRect[1].sy = mapMinY;
+    d3dCtx->rasterRect[1].sz = 0.999f;
+    d3dCtx->rasterRect[1].rhw = 1;
+
+    d3dCtx->rasterRect[2].sx = mapMaxX;
+    d3dCtx->rasterRect[2].sy = mapMaxY;
+    d3dCtx->rasterRect[2].sz = 0.999f;
+    d3dCtx->rasterRect[2].rhw = 1;
+
+    d3dCtx->rasterRect[3].sx = mapMaxX;
+    d3dCtx->rasterRect[3].sy = mapMinY;
+    d3dCtx->rasterRect[3].sz = 0.999f;
+    d3dCtx->rasterRect[3].rhw = 1;
+
+    /*
+    printf("(texMinU,texMinV,texMaxU,texMaxV) = (%3.2f,%3.2f,%3.2f,%3.2f)\n", 
+	   texMinU,texMinV,texMaxU,texMaxV); 
+    printf("(mapMinX,mapMinY,mapMaxX,mapMaxY) = (%3.2f,%3.2f,%3.2f,%3.2f)\n", 
+	   mapMinX,mapMinY,mapMaxX,mapMaxY);
+    */
+
+
     /* TODO : Implement textureFillBackground() */
-    printf("[TODO NEEDED] Canvas3D : *** textureFillBackground is not implemented yet.\n");
+    /* drawTextureRect(d3dCtx, device, d3dImage->surf,
+			screenCoord, 0, 0, width, height, 
+			scaleWidth, scaleHeight, texModeRepeat);
+    */
+
+#if 0
+    /* Restore texture Matrix transform */	
+    glPopMatrix();
+
+    glMatrixMode(GL_MODELVIEW);      	
+    /* Restore attributes */
+    glPopAttrib();  
+#endif
 
 
 }
@@ -403,11 +479,86 @@ void JNICALL Java_javax_media_j3d_NativePipeline_executeRasterDepth(JNIEnv *env,
                                                         jint depthFormat,
                                                         jobject depthData)
 { 
-    GetDevice();
-    /* printf("Canvas3D.executeRasterDepth()\n"); */
-    /* TODO : Implement executeRasterDepth() */
-    printf("[TODO NEEDED] Canvas3D : *** : executeRasterDepth is not implemented yet.\n");
+    void *depthObjPtr;
+    D3DVERTEX worldCoord;
+    D3DTLVERTEX screenCoord;
+    int endx = srcOffsetX + rasterWidth;
+    int endy = srcOffsetY + rasterHeight;
 
+    GetDevice();
+    /* printf("*** Canvas3D.executeRasterDepth() ***\n"); */
+
+    // clipping
+    if (srcOffsetX > depthWidth) {
+	srcOffsetX = depthWidth;
+    } else if (srcOffsetX < 0) {
+	srcOffsetX = 0;
+    }
+    if (srcOffsetY > depthHeight) {
+	srcOffsetY = depthHeight;
+    } else if (srcOffsetY < 0) {
+	srcOffsetY = 0;
+    }
+
+    if (endx > depthWidth) {
+	endx = depthWidth;
+    } else if (endx < 0) {
+	endx = 0;
+    }
+    if (endy > depthHeight) {
+	endy = depthHeight;
+    } else if (endy < 0) {
+	endy = 0;
+    }
+    
+    int h = endy - srcOffsetY;
+    int w = endx - srcOffsetX;
+
+    // raster position is upper left corner, default for Java3D 
+    // ImageComponent currently has the data reverse in Y
+    if ((h > 0) && (w > 0)) {
+	worldCoord.x = posX;
+	worldCoord.y = posY;
+	worldCoord.z = posZ;
+	
+	d3dCtx->transform(&worldCoord, &screenCoord);
+	
+	if (d3dCtx->depthStencilSurface == NULL) {
+	    HRESULT hr =
+		device->GetDepthStencilSurface(&d3dCtx->depthStencilSurface);
+	    if (FAILED(hr)) {
+		if (debug) {
+		    printf("[Java3D] Fail to get depth stencil surface %s\n",
+			   DXGetErrorString9(hr));
+		}
+		return;
+	    }
+	}
+	
+	depthObjPtr  = (void *) env->GetPrimitiveArrayCritical((jarray)depthData,  NULL);
+
+	if (depthFormat == javax_media_j3d_DepthComponentRetained_DEPTH_COMPONENT_TYPE_INT) { 
+	    copyDepthToSurface(d3dCtx,
+			       device, 
+			       (int)(screenCoord.sx), 
+			       (int)(screenCoord.sy), 
+			       srcOffsetX, srcOffsetY,
+			       w, h, depthWidth, depthHeight,
+			       (jint *)depthObjPtr, d3dCtx->depthStencilSurface);
+	    
+	} else { // javax_media_j3d_DepthComponentRetained_DEPTH_COMPONENT_TYPE_FLOAT
+	    
+	    copyDepthToSurface(d3dCtx,
+			       device, 
+			       (int)(screenCoord.sx), 
+			       (int)(screenCoord.sy), 
+			       srcOffsetX, srcOffsetY,
+			       w, h, depthWidth, depthHeight,
+			       (jfloat *)depthObjPtr, d3dCtx->depthStencilSurface);
+	}
+	env->ReleasePrimitiveArrayCritical((jarray)depthData, depthObjPtr, 0);
+
+    }
 }
 
 extern "C" JNIEXPORT
@@ -820,8 +971,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readOffScreenBuffer(
        imageObjPtr = (void *)env->GetDirectBufferAddress(data);
     }
     
-    /* TODO : Need to re-write --- Chien. */
-    printf("[TODO NEEDED] Canvas3D : *** readOffScreenBuffer() ***\n");
     copyDataFromSurface(format, 0, 0, width, height, (jbyte *)imageObjPtr, 
 			d3dCtx->backSurface);
 
