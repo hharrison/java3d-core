@@ -2786,7 +2786,15 @@ class MasterControl {
         GraphicsDevice gd = c.graphicsConfiguration.getDevice();
 	J3dDebug.doAssert((Screen3D.deviceRendererMap.get(gd) != null),
 			  "Screen3D.deviceRendererMap.get(gd) != null");
-	synchronized (mcThreadLock) {   
+
+	synchronized (mcThreadLock) {
+            // TODO KCR Issue 364: uncomment the following partial fix
+//	    // Create the master control thread if it isn't already created
+//	    if (mcThread == null) {
+//		//System.err.println("Calling createMasterControlThread()");
+//		createMasterControlThread();
+//	    }
+
             // Assert the master control thread is created.
             J3dDebug.doAssert((mcThread != null), "mcThread != null");
 	    Renderer rdr = createRenderer(c.graphicsConfiguration);
