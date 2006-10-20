@@ -31,9 +31,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
      * A couple ArrayLists used during light Processing
      */
     ArrayList lightMessageList = new ArrayList(5);
-    
-    ArrayList bhTreesArrList = new ArrayList(5);
-    
+
     // Messges retrieved when a message is sent to RenderingEnv Structure
     J3dMessage[] m;
 
@@ -1783,13 +1781,13 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	    ViewPlatform vp = view.getViewPlatform();
 	    if (vp != null) {		
 		allEnComp = universe.geometryStructure.
-		    getVisibleBHTrees(this, bhTreesArrList, viewFrustumBBox,
+		    getVisibleBHTrees(this, viewFrustumBBox,
 				      locale, referenceTime,
 				      visGAIsDirty || reactivateView || localeChanged ||
 				      ((view.viewCache.vcDirtyMask &
 					View.VISIBILITY_POLICY_DIRTY) != 0),
 				      view.viewCache.visibilityPolicy);
-	    
+
 		reactivateView = false;
 		// process background geometry atoms
 		if (currentActiveBackground != null &&
@@ -5927,7 +5925,6 @@ System.out.println("......tb.soleUser= " +
 	bgOrderedBins.clear();
 	nodeComponentList.clear();
 	orientedRAs.clear();
-	bhTreesArrList.clear();
 	
 	// clean up any messages that are queued up, since they are
 	// irrelevant

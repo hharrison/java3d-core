@@ -252,7 +252,14 @@ class GeometryStructure extends J3dStructure {
     }
 
     private void clearBhNodeArr() {
-	bhNodeCount = 0;
+        // Issue 353: set all elements to null so we don't leak
+        // NOTE: we really should change this to be an ArrayList, but that
+        // would be a less localized change. Consider for 1.6.0.
+        for (int i = 0; i < bhNodeCount; i++) {
+            bhNodeArr[i] = null;
+        }
+
+        bhNodeCount = 0;
     }
 
     private void addToBhNodeArr(BHNode bhNode) {
@@ -291,7 +298,7 @@ class GeometryStructure extends J3dStructure {
 	Object node;
 	GeometryAtom geomAtom;
 	BHTree  currTree = null;
-	
+        
 	clearBhNodeArr();
 
 	// System.out.println("GS : nodes.length is " + nodes.length);
@@ -340,7 +347,10 @@ class GeometryStructure extends J3dStructure {
 	}
 	
 	currTree.insert(bhNodeArr, bhNodeCount);	
-	
+
+        // Issue 353: must clear array after we are done with it
+        clearBhNodeArr();
+
 	// currTree.gatherTreeStatistics();
     }
 
@@ -351,6 +361,7 @@ class GeometryStructure extends J3dStructure {
 	int index;
 	
 	clearBhNodeArr();
+
 	for (int i=0; i<nodes.length; i++) {
 	    node = nodes[i];
 	    if (node instanceof GeometryAtom) {
@@ -421,15 +432,21 @@ class GeometryStructure extends J3dStructure {
 	
 	if (currTree == null) {
 	    index = getBHTreeIndex(((BHLeafNode)bhNodeArr[0]).getLocale());
-	    if (index<0)
+	    if (index<0) {
+                // Issue 353: must clear array after we are done with it
+                clearBhNodeArr();
+
 		return;
+            }
 	    currTree = bhTreeArr[index];
 	}
 	currTree.delete(bhNodeArr, bhNodeCount);
-	
-	// It is safe to do it here since only GeometryStructure
-	// thread invoke wakeupOnCollisionEntry/Exit .toArray()
 
+        // Issue 353: must clear array after we are done with it
+        clearBhNodeArr();
+
+        // It is safe to do it here since only GeometryStructure
+	// thread invoke wakeupOnCollisionEntry/Exit .toArray()
 
 	wakeupOnCollisionEntry.clearMirror();
 	wakeupOnCollisionMovement.clearMirror();
@@ -447,7 +464,8 @@ class GeometryStructure extends J3dStructure {
 	int index;
 	Object node;
 	
-	clearBhNodeArr();	
+	clearBhNodeArr();
+
 	for (int i = 0; i < nodes.length; i++) {
 	    node = nodes[i];
 	    if (node instanceof GeometryAtom) {
@@ -478,10 +496,13 @@ class GeometryStructure extends J3dStructure {
 	index = getBHTreeIndex(((BHLeafNode)bhNodeArr[0]).getLocale());
 
 	if (index >= 0) {
-	    bhTreeArr[index].boundsChanged(bhNodeArr, bhNodeCount);	    
-	    
+	    bhTreeArr[index].boundsChanged(bhNodeArr, bhNodeCount);
 	}
-    }    
+
+        // Issue 353: must clear array after we are done with it
+        clearBhNodeArr();
+
+    }
 
     private void processTransformChanged(UpdateTargets targets) {
 	
@@ -490,8 +511,8 @@ class GeometryStructure extends J3dStructure {
 	UnorderList arrList;
 	int size;		
 
-        clearBhNodeArr();
-	
+	clearBhNodeArr();
+
 	arrList = targets.targetList[Targets.GEO_TARGETS];
 
 	if (arrList != null) {
@@ -541,6 +562,10 @@ class GeometryStructure extends J3dStructure {
 	    bhTreeArr[index].boundsChanged(bhNodeArr, bhNodeCount);	    
 	    
 	}
+
+        // Issue 353: must clear array after we are done with it
+        clearBhNodeArr();
+
     }    
 
     // This method is called by RenderBin to get a array of possibly visible
@@ -548,7 +573,7 @@ class GeometryStructure extends J3dStructure {
     // bhTrees mustn't be null.
     // Return true if bhTree's root in encompass by frustumBBox.
     
-    boolean getVisibleBHTrees(RenderBin rBin, ArrayList bhTrees,
+    boolean getVisibleBHTrees(RenderBin rBin,
 			      BoundingBox frustumBBox,
 			      Locale locale, long referenceTime,
 			      boolean stateChanged,
@@ -560,7 +585,10 @@ class GeometryStructure extends J3dStructure {
 	// System.out.println("GeometryStructure : view's locale is " + locale);
 	lock.readLock();
 
-	bhTrees.clear();
+        // Issue 353: create a new array list each time rather than passing it
+        // in. This will not generate too much garbage, since we only call
+        // this once per frame and it is very short-lived.
+	ArrayList bhTrees = new ArrayList();
 	if (bhTreeCount == 1) {
 	    // For debugging only.
 	    if (J3dDebug.devPhase) {

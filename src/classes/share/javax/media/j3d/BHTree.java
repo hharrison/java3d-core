@@ -19,10 +19,10 @@ import javax.vecmath.Point4d;
 class BHTree  {
     
     Locale locale;
-    BHNode root;
-    BHInsertStructure insertStructure = null;
 
-    
+    private BHNode root;
+    private BHInsertStructure insertStructure = null;
+
     // Temporary point, so we dont generate garbage
     Point4d tPoint4d = new Point4d();    
     
@@ -700,6 +700,9 @@ class BHTree  {
 	
 	insertStructure.updateBoundingTree(this);
 	// System.out.println("BHTree - Inserting ...");
+        
+        // Issue 353: clear temporary insertStructure so we don't leak.
+        insertStructure.clear();
 	
 	// Guard against size<1 is done at the start of this method.
 	estMaxDepth += (int) (Math.log(size)/LOG_OF_2) + 1;
