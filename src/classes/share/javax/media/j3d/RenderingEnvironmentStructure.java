@@ -1061,8 +1061,9 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	
 	for (i=0 ; i<size; i++) {
 	    clip = (ClipRetained)globalClips.get(i);
-	    if (clip.transformedRegion.intersect(bounds) == true 
-		&& clip.switchState.currentSwitchOn) {
+	    if (clip.transformedRegion != null &&
+                    clip.transformedRegion.intersect(bounds) == true &&
+                    clip.switchState.currentSwitchOn) {
 		intersectedBounds[nclips] = clip.transformedRegion;
 		intersectedClips[nclips++] = clip;
 	    }
