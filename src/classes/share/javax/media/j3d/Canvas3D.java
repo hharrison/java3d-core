@@ -4441,7 +4441,7 @@ public class Canvas3D extends Canvas {
     
     void textureFill(RasterRetained raster, Point2d winCoord, 
            float mapZ, float alpha) { 
-        
+                
         int winWidth = canvasViewCache.getCanvasWidth();
         int winHeight = canvasViewCache.getCanvasHeight();
         
@@ -4456,8 +4456,9 @@ public class Canvas3D extends Canvas {
 
         Dimension rasterSize = new Dimension();
         raster.getSize(rasterSize);
-
-        // System.err.println("rasterSrcOffset " + rasterSrcOffset + " rasterSize " + rasterSize);
+        
+//        System.err.println("rasterImageWidth " + rasterImageWidth + " rasterImageHeight " + rasterImageHeight);
+//        System.err.println("rasterSrcOffset " + rasterSrcOffset + " rasterSize " + rasterSize);
         
         int rasterMinX = rasterSrcOffset.x;
         int rasterMaxX = rasterSrcOffset.x + rasterSize.width;        
@@ -4508,13 +4509,10 @@ public class Canvas3D extends Canvas {
     
     void textureFill(BackgroundRetained bg, int winWidth, int winHeight) {
         
-        ImageComponentRetained.ImageData imageData = 
-                bg.image.getImageData(bg.texture.isUseAsRaster());
-        
-        int maxX = imageData.getWidth();
-        int maxY = imageData.getHeight(); 
-        int width = bg.image.width;
-        int height = bg.image.height;
+        final int maxX = bg.image.width;
+        final int maxY = bg.image.height;
+
+//        System.err.println("maxX " + maxX + " maxY " + maxY);
         
         float xzoom = (float)winWidth  / maxX;
         float yzoom = (float)winHeight / maxY;
@@ -4522,7 +4520,7 @@ public class Canvas3D extends Canvas {
         float texMinU = 0, texMinV = 0, texMaxU = 0, texMaxV = 0, adjustV = 0;
         float mapMinX = 0, mapMinY = 0, mapMaxX = 0, mapMaxY = 0;
         float halfWidth = 0, halfHeight = 0;
-        int i = 0, j = 0;
+        
         switch (bg.imageScaleMode) {
             case Background.SCALE_NONE:
                 texMinU = 0.0f;
@@ -4584,12 +4582,11 @@ public class Canvas3D extends Canvas {
                 mapMaxY = 1.0f;
                 break;
             case Background.SCALE_REPEAT:
-                i = winWidth/width;
-                j = winHeight/height;
+
                 texMinU = 0.0f;
-                texMinV = (float)(j + 1) - yzoom;
+                texMinV = - yzoom;
                 texMaxU = xzoom;
-                texMaxV = (float)(j + 1);
+                texMaxV = 0.0f;
                 mapMinX = -1.0f;
                 mapMinY = -1.0f;
                 mapMaxX = 1.0f;
@@ -4622,6 +4619,8 @@ public class Canvas3D extends Canvas {
                 break;
         }       
     
+//        System.err.println("Java 3D : mapMinX " + mapMinX + " mapMinY " + mapMinY + 
+//                           " mapMaxX " + mapMaxX + " mapMaxY " + mapMaxY);
         textureFillBackground(ctx, texMinU, texMaxU, texMinV, texMaxV,
                 mapMinX, mapMaxX, mapMinY, mapMaxY);
         
