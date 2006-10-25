@@ -1034,6 +1034,7 @@ void copyDataFromSurface(jint imageFormat,
 		    for (int j=xoffset; j < xlimit; j++) {
 			b1 = *src++;
 			b2 = *src++;
+			mask = ((b2 << 8) | b1);
 			*dst++ = (byte) (mask & 0xff);
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 		    }

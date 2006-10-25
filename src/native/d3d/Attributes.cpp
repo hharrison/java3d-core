@@ -505,31 +505,30 @@ void JNICALL Java_javax_media_j3d_NativePipeline_resetRenderingAttributes(
 	device->SetRenderState(D3DRS_ZWRITEENABLE, D3DZB_TRUE);
 	device->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
     }
-
+    
     if (!db_enable_override) {
 	d3dCtx->zEnable = TRUE;
 	device->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
 	device->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
     }
-
+    
     device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
     device->SetRenderState(D3DRS_ALPHAREF, 0);
-	if(d3dCtx->stencilWriteEnable)
-	{
-		device->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
-		device->SetRenderState( D3DRS_STENCILREF,  0);
-		device->SetRenderState( D3DRS_STENCILMASK,      0xFFFFFFFF);
-		device->SetRenderState( D3DRS_STENCILWRITEMASK, 0xFFFFFFFF );
-
-         // Always increment the stencil value
-		device->SetRenderState(D3DRS_STENCILFAIL,  D3DSTENCILOP_KEEP);
+    if(d3dCtx->stencilWriteEnable) {
+	device->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+	device->SetRenderState( D3DRS_STENCILREF,  0);
+	device->SetRenderState( D3DRS_STENCILMASK,      0xFFFFFFFF);
+	device->SetRenderState( D3DRS_STENCILWRITEMASK, 0xFFFFFFFF );
+	
+	// Always increment the stencil value
+	device->SetRenderState(D3DRS_STENCILFAIL,  D3DSTENCILOP_KEEP);
         device->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
         device->SetRenderState(D3DRS_STENCILPASS,  D3DSTENCILOP_KEEP);
-
-		device->SetRenderState(D3DRS_STENCILENABLE, FALSE);
-		d3dCtx->stencilWriteEnable = false;
-	}
-
+	
+	device->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+	d3dCtx->stencilWriteEnable = false;
+    }
+    
     /*    setRasterOp(d3dCtx, R2_COPYPEN); */
 
 }
@@ -543,13 +542,13 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateRenderingAttributes(
     jboolean db_enable_override,
     jboolean db_enable,
     jboolean db_write_enable,
-	jint db_func,
+    jint db_func,
     jfloat at_value,
     jint at_func,
     jboolean ignoreVertexColors,
     jboolean rasterOpEnable,
     jint rasterOp,
-	jboolean userStencilAvailable,
+    jboolean userStencilAvailable,
     jboolean stencilEnable,
     jint stencilFailOp,
     jint stencilZFailOp,

@@ -354,65 +354,127 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(
 							jfloat mapMinY,
 							jfloat mapMaxY)
 {
+    
+    DWORD alphaTest, alphaBlend, cull, zBuffer,
+	fog, lighting, stencil, specular;
+    
+    D3DXMATRIX Ortho2D;	
+    D3DXMATRIX ptm, wtm, vtm;    
+    D3DTLVERTEX verts[4];
+    D3DXMATRIX texMatrix;
+    int tus;
+
     GetDevice();
-    printf("[TODO NEEDED] Canvas3dD : *** textureFillBackground() ***\n");
-    /*    printf("Canvas3D.textureFillBackground()\n"); */
+    
+    device->GetRenderState(D3DRS_ALPHATESTENABLE, &alphaTest);
+    device->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
-#if 0
-    // Need D3D translation for the following ogl code :
-     /* Temporarily disable fragment and most 3D operations */
-     glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_POLYGON_BIT); 
+    device->GetRenderState(D3DRS_ALPHABLENDENABLE, &alphaBlend);
+    device->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
-     disableAttribFor2D(ctxProperties);
-     glDepthMask(GL_FALSE);  
-     glEnable(GL_TEXTURE_2D);     
+    device->GetRenderState(D3DRS_CULLMODE, &cull);
+    device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-     /* reset the polygon mode */
-     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    device->GetRenderState(D3DRS_ZENABLE, &zBuffer);
+    device->SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);
 
-     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    device->GetRenderState(D3DRS_FOGENABLE, &fog);
+    device->SetRenderState(D3DRS_FOGENABLE, FALSE);
 
-    /* loaded identity modelview and projection matrix */     
-    glMatrixMode(GL_PROJECTION);  
-    glLoadIdentity();
-    glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);  
-    glLoadIdentity(); 
-    glMatrixMode(GL_TEXTURE);
-    glPushMatrix();
-    glLoadIdentity();
-#endif
+    device->GetRenderState(D3DRS_LIGHTING, &lighting);
+    device->SetRenderState(D3DRS_LIGHTING, FALSE);
 
+    device->GetRenderState(D3DRS_STENCILENABLE, &stencil);
+    device->SetRenderState(D3DRS_STENCILENABLE, FALSE);
 
+    device->GetRenderState(D3DRS_SPECULARENABLE, &specular);
+    device->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
+ 
+    tus = d3dCtx->texUnitStage;
 
-    d3dCtx->rasterRect[0].tu = texMinU; /* tumin; */
-    d3dCtx->rasterRect[0].tv = texMaxV; /* tvmax; */
-    d3dCtx->rasterRect[1].tu = texMinU; /* tumin; */
-    d3dCtx->rasterRect[1].tv = texMinV; /* tvmin; */
-    d3dCtx->rasterRect[2].tu = texMaxU; /* tumax; */
-    d3dCtx->rasterRect[2].tv = texMaxV; /* tvmax; */
-    d3dCtx->rasterRect[3].tu = texMaxU; /* tumax; */
-    d3dCtx->rasterRect[3].tv = texMinV; /* tvmin; */
+    if (tus >= d3dCtx->bindTextureIdLen) {
+	if (debug) {
+	    printf("Internal Error: texUnitState %d, bindTextureIDLen %d\n",
+		   d3dCtx->texUnitStage, d3dCtx->bindTextureIdLen);
+	}
+	return;
+    }
+    
+    device->SetTextureStageState(tus,
+				 D3DTSS_TEXCOORDINDEX,
+				 D3DTSS_TCI_PASSTHRU);
+    
 
-    d3dCtx->rasterRect[0].sx = mapMinX;
-    d3dCtx->rasterRect[0].sy = mapMaxY;    
-    d3dCtx->rasterRect[0].sz = 0.999f;
-    d3dCtx->rasterRect[0].rhw = 1;
+    if (d3dCtx->texTransformSet[tus]) {
+	device->GetTransform((D3DTRANSFORMSTATETYPE)
+			     (D3DTS_TEXTURE0 + tus),
+			     &texMatrix);
+	
+	device->SetTransform((D3DTRANSFORMSTATETYPE)
+			     (D3DTS_TEXTURE0 + tus),
+			     &identityMatrix);
+    }
 
-    d3dCtx->rasterRect[1].sx = mapMinX;
-    d3dCtx->rasterRect[1].sy = mapMinY;
-    d3dCtx->rasterRect[1].sz = 0.999f;
-    d3dCtx->rasterRect[1].rhw = 1;
+    device->GetTransform(D3DTS_PROJECTION, &ptm);
+    device->GetTransform(D3DTS_WORLD, &wtm);
+    device->GetTransform(D3DTS_VIEW, &vtm);
 
-    d3dCtx->rasterRect[2].sx = mapMaxX;
-    d3dCtx->rasterRect[2].sy = mapMaxY;
-    d3dCtx->rasterRect[2].sz = 0.999f;
-    d3dCtx->rasterRect[2].rhw = 1;
+    Ortho2D._11 = 1.0;
+    Ortho2D._12 = 0.0;
+    Ortho2D._13 = 0.0;
+    Ortho2D._14 = 0.0;
 
-    d3dCtx->rasterRect[3].sx = mapMaxX;
-    d3dCtx->rasterRect[3].sy = mapMinY;
-    d3dCtx->rasterRect[3].sz = 0.999f;
-    d3dCtx->rasterRect[3].rhw = 1;
+    Ortho2D._21 = 0.0;
+    Ortho2D._22 = 1.0;
+    Ortho2D._23 = 0.0;
+    Ortho2D._24 = 0.0;
+
+    Ortho2D._31 = 0.0;
+    Ortho2D._32 = 0.0;
+    Ortho2D._33 = 0.5;
+    Ortho2D._34 = 0.0;
+
+    Ortho2D._41 = 0.0;
+    Ortho2D._42 = 0.0;
+    Ortho2D._43 = 0.5;
+    Ortho2D._44 = 1.0;
+
+    /*
+    printf("Ortho2D matix : \n");
+    printf("%f, %f, %f, %f\n", Ortho2D._11, Ortho2D._12, Ortho2D._13, Ortho2D._14);
+    printf("%f, %f, %f, %f\n", Ortho2D._21, Ortho2D._22, Ortho2D._23, Ortho2D._24);
+    printf("%f, %f, %f, %f\n", Ortho2D._31, Ortho2D._32, Ortho2D._33, Ortho2D._34);
+    printf("%f, %f, %f, %f\n", Ortho2D._41, Ortho2D._42, Ortho2D._43, Ortho2D._44);
+    */
+    
+    device->SetTransform(D3DTS_PROJECTION, &Ortho2D);
+    device->SetTransform(D3DTS_WORLD, &identityMatrix);
+    device->SetTransform(D3DTS_VIEW, &identityMatrix);
+
+    verts[0].tu = texMinU; /* tumin; */
+    verts[0].tv = texMaxV; /* tvmax; */
+    verts[1].tu = texMinU; /* tumin; */
+    verts[1].tv = texMinV; /* tvmin; */
+    verts[2].tu = texMaxU; /* tumax; */
+    verts[2].tv = texMaxV; /* tvmax; */
+    verts[3].tu = texMaxU; /* tumax; */
+    verts[3].tv = texMinV; /* tvmin; */
+
+    verts[0].sx = mapMinX;
+    verts[0].sy = mapMaxY;    
+    verts[0].sz = 0.999f;
+
+    verts[1].sx = mapMinX;
+    verts[1].sy = mapMinY;
+    verts[1].sz = 0.999f;
+
+    verts[2].sx = mapMaxX;
+    verts[2].sy = mapMaxY;
+    verts[2].sz = 0.999f;
+
+    verts[3].sx = mapMaxX;
+    verts[3].sy = mapMinY;
+    verts[3].sz = 0.999f;
 
     /*
     printf("(texMinU,texMinV,texMaxU,texMaxV) = (%3.2f,%3.2f,%3.2f,%3.2f)\n", 
@@ -421,22 +483,34 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(
 	   mapMinX,mapMinY,mapMaxX,mapMaxY);
     */
 
+    device->SetVertexShader(NULL);
 
-    /* TODO : Implement textureFillBackground() */
-    /* drawTextureRect(d3dCtx, device, d3dImage->surf,
-			screenCoord, 0, 0, width, height, 
-			scaleWidth, scaleHeight, texModeRepeat);
-    */
+    device->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1 | 
+		   D3DFVF_DIFFUSE | D3DFVF_TEXCOORDSIZE2(0));
 
-#if 0
+    device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,
+			    2, verts, sizeof(D3DTLVERTEX));
+
+
+    /* Restore renderstates */
+    device->SetRenderState(D3DRS_ALPHATESTENABLE, alphaTest);
+    device->SetRenderState(D3DRS_CULLMODE, cull);
+    device->SetRenderState(D3DRS_ZENABLE, zBuffer);
+    device->SetRenderState(D3DRS_FOGENABLE, fog);
+    device->SetRenderState(D3DRS_LIGHTING, lighting);
+    device->SetRenderState(D3DRS_STENCILENABLE, stencil);
+    device->SetRenderState(D3DRS_SPECULARENABLE, specular);
+
     /* Restore texture Matrix transform */	
-    glPopMatrix();
+    if (d3dCtx->texTransformSet[tus]) {
+	device->SetTransform((D3DTRANSFORMSTATETYPE)
+			     (D3DTS_TEXTURE0 + tus),
+			     &texMatrix);
+    }
 
-    glMatrixMode(GL_MODELVIEW);      	
-    /* Restore attributes */
-    glPopAttrib();  
-#endif
-
+    device->SetTransform(D3DTS_PROJECTION, &ptm);
+    device->SetTransform(D3DTS_WORLD, &wtm);
+    device->SetTransform(D3DTS_VIEW, &vtm);
 
 }
 
