@@ -346,6 +346,25 @@ public class Locale extends Object {
 	destroyMessage.args[3] = universe.setLiveState.ogCIOList.toArray();
 	destroyMessage.args[4] = universe.setLiveState.ogCIOTableList.toArray();
 
+        // Issue 312: We need to send the REMOVE_NODES message to the
+        // RenderingEnvironmentStructure before we send VIEWSPECIFICGROUP_CLEAR,
+        // since the latter clears the list of views that is referred to by
+        // scopedNodesViewList and used by removeNodes.
+	if (messages == null) {
+            VirtualUniverse.mc.processMessage(destroyMessage);
+            destroyMessage = new J3dMessage();
+        } else {
+            destroyMessage = messages[startIndex++];
+        }
+        destroyMessage.threads = universe.setLiveState.notifyThreads;
+        destroyMessage.type = J3dMessage.REMOVE_NODES;
+        destroyMessage.universe = universe;
+        destroyMessage.args[0] = universe.setLiveState.nodeList.toArray();
+	if (universe.setLiveState.viewScopedNodeList != null) {
+	    destroyMessage.args[3] = universe.setLiveState.viewScopedNodeList;
+	    destroyMessage.args[4] = universe.setLiveState.scopedNodesViewList;
+	}
+
 	if (messages == null) {
             VirtualUniverse.mc.processMessage(destroyMessage);
             destroyMessage = new J3dMessage();
@@ -358,21 +377,6 @@ public class Locale extends Object {
 	destroyMessage.args[0] = universe.setLiveState.changedViewGroup;
 	destroyMessage.args[1] = universe.setLiveState.keyList;
 
-	if (messages == null) {
-            VirtualUniverse.mc.processMessage(destroyMessage);
-            destroyMessage = new J3dMessage();
-        } else {
-            destroyMessage = messages[startIndex++];
-        }
-
-        destroyMessage.threads = universe.setLiveState.notifyThreads;
-        destroyMessage.type = J3dMessage.REMOVE_NODES;
-        destroyMessage.universe = universe;
-        destroyMessage.args[0] = universe.setLiveState.nodeList.toArray();
-	if (universe.setLiveState.viewScopedNodeList != null) {
-	    destroyMessage.args[3] = universe.setLiveState.viewScopedNodeList;
-	    destroyMessage.args[4] = universe.setLiveState.scopedNodesViewList;
-	}
 	if (messages == null) {
             VirtualUniverse.mc.processMessage(destroyMessage);
         } else {

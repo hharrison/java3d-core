@@ -1691,6 +1691,15 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    s.altAppearances = altAppearances;
 	    s.modelClips = modelClips;
 
+            // Issue 312: Allocate data structures if we are in a ViewSpecificGroup
+	    if (s.inViewSpecificGroup && 
+		(s.changedViewGroup == null)) {
+		s.changedViewGroup = new ArrayList();
+		s.changedViewList = new ArrayList();
+		s.keyList = new int[10];
+		s.viewScopedNodeList = new ArrayList();
+		s.scopedNodesViewList = new ArrayList();
+	    }
 
 	    if (this instanceof OrderedGroupRetained && linkNode == null) {
                 // set this regardless of refCount
@@ -1764,15 +1773,10 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		destroyMessage.args[4] = s.ogCIOTableList.toArray();
 	    }
 
-	    if(sendVSGMessage) {
-		destroyMessage = messages[messageIndex++];            
-		destroyMessage.threads =  J3dThread.UPDATE_RENDERING_ENVIRONMENT;
-		destroyMessage.type = J3dMessage.VIEWSPECIFICGROUP_CLEAR;
-		destroyMessage.universe = universe;
-		destroyMessage.args[0] = s.changedViewGroup;
-		destroyMessage.args[1] = s.keyList;
-	    }
-
+            // Issue 312: We need to send the REMOVE_NODES message to the
+            // RenderingEnvironmentStructure before we send VIEWSPECIFICGROUP_CLEAR,
+            // since the latter clears the list of views that is referred to by
+            // scopedNodesViewList and used by removeNodes.
 	    destroyMessage = messages[messageIndex++];            
             destroyMessage.threads = s.notifyThreads;
             destroyMessage.type = J3dMessage.REMOVE_NODES;
@@ -1790,6 +1794,16 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		destroyMessage.args[3] = s.viewScopedNodeList;
 		destroyMessage.args[4] = s.scopedNodesViewList;
 	    }
+
+	    if(sendVSGMessage) {
+		destroyMessage = messages[messageIndex++];            
+		destroyMessage.threads =  J3dThread.UPDATE_RENDERING_ENVIRONMENT;
+		destroyMessage.type = J3dMessage.VIEWSPECIFICGROUP_CLEAR;
+		destroyMessage.universe = universe;
+		destroyMessage.args[0] = s.changedViewGroup;
+		destroyMessage.args[1] = s.keyList;
+	    }
+
             if (sendMessages == true) {
 		VirtualUniverse.mc.processMessage(messages);
 	    }
