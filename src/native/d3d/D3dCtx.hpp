@@ -45,10 +45,23 @@ typedef struct _D3DVERTEX {
     float x, y, z;
 } D3DVERTEX;
 
+
 typedef struct _D3DTLVERTEX {
     float sx, sy, sz, rhw;
     float tu, tv;
 } D3DTLVERTEX;
+
+typedef struct _COORDTEXVERTEX {
+    float sx, sy, sz;
+    float tu, tv;
+} COORDTEXVERTEX;
+
+typedef struct _COORDCLRTEXVERTEX {
+    float sx, sy, sz;
+    D3DCOLOR color;
+    float tu, tv;
+} COORDCLRTEXVERTEX;
+
 
 typedef vector<LPDIRECT3DRESOURCE9> LPDIRECT3DRESOURCE9Vector;
 typedef vector<LPDIRECT3DVERTEXBUFFER9> LPDIRECT3DVERTEXBUFFER9Vector;

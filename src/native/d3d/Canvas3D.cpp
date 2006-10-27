@@ -360,7 +360,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(
     
     D3DXMATRIX Ortho2D;	
     D3DXMATRIX ptm, wtm, vtm;    
-    D3DTLVERTEX verts[4];
+    COORDTEXVERTEX verts[4];
     D3DXMATRIX texMatrix;
     int tus;
 
@@ -485,11 +485,10 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(
 
     device->SetVertexShader(NULL);
 
-    device->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1 | 
-		   D3DFVF_DIFFUSE | D3DFVF_TEXCOORDSIZE2(0));
+    device->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXCOORDSIZE2(0));
 
     device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,
-			    2, verts, sizeof(D3DTLVERTEX));
+			    2, verts, sizeof(COORDTEXVERTEX));
 
 
     /* Restore renderstates */
@@ -529,11 +528,129 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillRaster(JNIEnv *env,
                                                         jfloat mapZ,
                                                         jfloat alpha)
 { 
-    GetDevice();
-    /* printf("Canvas3D.textureFillRaster()\n"); */
-    /* TODO : Implement textureFillRaster() */
-    printf("[TODO NEEDED] Canvas3D : *** textureFillRaster is not implemented yet.\n");
 
+    DWORD  cull, lighting;
+    D3DXMATRIX Ortho2D;	
+    D3DXMATRIX ptm, wtm, vtm;    
+    COORDCLRTEXVERTEX verts[4];
+    D3DXMATRIX texMatrix;
+    int tus;
+
+    GetDevice();
+
+    device->GetRenderState(D3DRS_CULLMODE, &cull);
+    device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+
+    device->GetRenderState(D3DRS_LIGHTING, &lighting);
+    device->SetRenderState(D3DRS_LIGHTING, FALSE);
+    
+    tus = d3dCtx->texUnitStage;
+
+    if (tus >= d3dCtx->bindTextureIdLen) {
+	if (debug) {
+	    printf("Internal Error: texUnitState %d, bindTextureIDLen %d\n",
+		   d3dCtx->texUnitStage, d3dCtx->bindTextureIdLen);
+	}
+	return;
+    }
+
+    // TextureStage will be restore by caller.
+    device->SetTextureStageState(tus, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+    device->SetTextureStageState(tus, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+    device->SetTextureStageState(tus, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
+    
+    device->GetTransform(D3DTS_PROJECTION, &ptm);
+    device->GetTransform(D3DTS_WORLD, &wtm);
+    device->GetTransform(D3DTS_VIEW, &vtm);
+
+    Ortho2D._11 = 2.0;
+    Ortho2D._12 = 0.0;
+    Ortho2D._13 = 0.0;
+    Ortho2D._14 = 0.0;
+
+    Ortho2D._21 = 0.0;
+    Ortho2D._22 = 2.0;
+    Ortho2D._23 = 0.0;
+    Ortho2D._24 = 0.0;
+
+    Ortho2D._31 = 0.0;
+    Ortho2D._32 = 0.0;
+    Ortho2D._33 = -1.0;
+    Ortho2D._34 = 0.0;
+
+    Ortho2D._41 = -1.0;
+    Ortho2D._42 = -1.0;
+    Ortho2D._43 = 0.0;
+    Ortho2D._44 = 1.0;
+
+    /*    
+    printf("Ortho2D matix : \n");
+    printf("%f, %f, %f, %f\n", Ortho2D._11, Ortho2D._12, Ortho2D._13, Ortho2D._14);
+    printf("%f, %f, %f, %f\n", Ortho2D._21, Ortho2D._22, Ortho2D._23, Ortho2D._24);
+    printf("%f, %f, %f, %f\n", Ortho2D._31, Ortho2D._32, Ortho2D._33, Ortho2D._34);
+    printf("%f, %f, %f, %f\n", Ortho2D._41, Ortho2D._42, Ortho2D._43, Ortho2D._44);
+    */
+    
+    device->SetTransform(D3DTS_WORLD, &identityMatrix);
+    device->SetTransform(D3DTS_VIEW, &identityMatrix);
+    device->SetTransform(D3DTS_PROJECTION, &Ortho2D);
+
+    verts[0].tu = texMinU; /* tumin; */
+    verts[0].tv = texMaxV; /* tvmax; */
+    verts[1].tu = texMinU; /* tumin; */
+    verts[1].tv = texMinV; /* tvmin; */
+    verts[2].tu = texMaxU; /* tumax; */
+    verts[2].tv = texMaxV; /* tvmax; */
+    verts[3].tu = texMaxU; /* tumax; */
+    verts[3].tv = texMinV; /* tvmin; */
+
+    D3DCOLOR alphaColor = 0xffffff | ((int)(alpha * 255.0f) << 24);
+
+    verts[0].color = alphaColor;
+    verts[0].sx = mapMinX;
+    verts[0].sy = mapMaxY;    
+    verts[0].sz = mapZ;
+
+    verts[1].color = alphaColor;
+    verts[1].sx = mapMinX;
+    verts[1].sy = mapMinY;
+    verts[1].sz = mapZ;
+
+    verts[2].color = alphaColor;
+    verts[2].sx = mapMaxX;
+    verts[2].sy = mapMaxY;
+    verts[2].sz = mapZ;
+
+    verts[3].color = alphaColor;
+    verts[3].sx = mapMaxX;
+    verts[3].sy = mapMinY;
+    verts[3].sz = mapZ;
+
+    /*
+    printf("(texMinU,texMinV,texMaxU,texMaxV) = (%3.2f,%3.2f,%3.2f,%3.2f)\n", 
+	   texMinU,texMinV,texMaxU,texMaxV); 
+    printf("(mapMinX,mapMinY,mapMaxX,mapMaxY) = (%3.2f,%3.2f,%3.2f,%3.2f)\n", 
+	   mapMinX,mapMinY,mapMaxX,mapMaxY);
+    
+    printf("(mapZ) = (%3.2f)\n",mapZ);
+    */
+    device->SetVertexShader(NULL);
+
+    device->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1 | 
+		   D3DFVF_DIFFUSE | D3DFVF_TEXCOORDSIZE2(0));
+
+    device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,
+			    2, verts, sizeof(COORDCLRTEXVERTEX));
+
+
+    /* Restore renderstates */
+    device->SetRenderState(D3DRS_CULLMODE, cull);
+    device->SetRenderState(D3DRS_LIGHTING, lighting);
+
+    /* Restore texture Matrix transform */
+    device->SetTransform(D3DTS_PROJECTION, &ptm);
+    device->SetTransform(D3DTS_WORLD, &wtm);
+    device->SetTransform(D3DTS_VIEW, &vtm);
 }
 
 

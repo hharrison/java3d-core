@@ -889,6 +889,7 @@ LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
 
 
 // copy data from DirectDraw surface to memory
+// and reverse the Y axis
 void copyDataFromSurface(jint imageFormat,
 			 jint xoffset, jint yoffset,
 			 jint subWidth, jint subHeight,
@@ -899,8 +900,6 @@ void copyDataFromSurface(jint imageFormat,
     D3DLOCKED_RECT lockedRect;
     PIXELFORMAT ddpf;
     HRESULT hr;
-
-    printf("[Java 3D] copyDataFromSurface:  not tested yet %d\n", imageFormat);
 
     if (surf == NULL) {
 	return;
@@ -940,6 +939,9 @@ void copyDataFromSurface(jint imageFormat,
     if ((imageFormat == IMAGE_FORMAT_INT_RGB) ||
 	(imageFormat == IMAGE_FORMAT_INT_ARGB)) {
 	dstPitch = subWidth << 2;
+	destRow += (subHeight-1)*dstPitch;
+
+	printf("[Java 3D] copyDataFromSurface:  (1) %d\n", ddpf.dwRGBBitCount);
 	
 	if ((ddpf.dwRGBBitCount == 32) &&
 	    (ddpf.dwRBitMask == 0xff0000) &&
@@ -958,7 +960,7 @@ void copyDataFromSurface(jint imageFormat,
 			*dst++ = (byte) 0xff;
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else {
 		for (int i=yoffset; i < ylimit; i++) {
@@ -971,7 +973,7 @@ void copyDataFromSurface(jint imageFormat,
 			*dst++ = *src++;
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    }
 	} else { // handle less common format
@@ -1006,7 +1008,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 24) &&
 		       (ddpf.dwRGBBitCount > 16)) {
@@ -1023,7 +1025,7 @@ void copyDataFromSurface(jint imageFormat,
 			*dst++ = (byte) ((mask >> 16) & 0xff);
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 16) &&
 		       (ddpf.dwRGBBitCount > 8)) {
@@ -1039,7 +1041,7 @@ void copyDataFromSurface(jint imageFormat,
 			*dst++ = (byte) ((mask >> 8) & 0xff);
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;   
+		    destRow -= dstPitch;
 		}
 	    } else if (ddpf.dwRGBBitCount <= 8) {
 		printf("[Java 3D] copyDataFromSurface: Format on (8 bits or less surface) not support %d\n", imageFormat);
@@ -1048,7 +1050,11 @@ void copyDataFromSurface(jint imageFormat,
     } else if ((imageFormat == IMAGE_FORMAT_BYTE_RGBA) ||
     	(imageFormat == IMAGE_FORMAT_BYTE_RGB) ||
 	(imageFormat == IMAGE_FORMAT_INT_BGR)) {
+
+	printf("[Java 3D] copyDataFromSurface:  (2) %d\n", ddpf.dwRGBBitCount);
+
 	dstPitch = subWidth << 2;
+	destRow += (subHeight-1)*dstPitch;
 	
 	if ((ddpf.dwRGBBitCount == 32) &&
 	    (ddpf.dwRBitMask == 0xff0000) &&
@@ -1070,7 +1076,7 @@ void copyDataFromSurface(jint imageFormat,
 			*dst++ = (byte) 0xff;
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else {
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1086,7 +1092,7 @@ void copyDataFromSurface(jint imageFormat,
 			*dst++ = *src++;
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    }
 	} else { // handle less common format
@@ -1146,7 +1152,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 24) &&
 		       (ddpf.dwRGBBitCount > 16)) {
@@ -1192,7 +1198,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 16) &&
 		       (ddpf.dwRGBBitCount > 8)) {
@@ -1240,7 +1246,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else if (ddpf.dwRGBBitCount <= 8) {
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1283,7 +1289,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    }
 	}
@@ -1293,6 +1299,7 @@ void copyDataFromSurface(jint imageFormat,
 	int ashift = firstBit(ddpf.dwRGBAlphaBitMask) +
 	    ucountBits(ddpf.dwRGBAlphaBitMask) - 8;
 	dstPitch = subWidth << 1;
+	destRow += (subHeight-1)*dstPitch;
 
 	if ((ddpf.dwRGBBitCount == 32) &&
 	    (ddpf.dwRBitMask == 0xff0000) &&
@@ -1315,7 +1322,8 @@ void copyDataFromSurface(jint imageFormat,
 		    }
 		}
 		srcRow += lockedRect.Pitch;
-		destRow += dstPitch;
+		destRow -= dstPitch;
+
 	    }
 	} else { // handle less common format
 	    int gshift = firstBit(ddpf.dwGBitMask) +
@@ -1352,7 +1360,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 24) &&
 		       (ddpf.dwRGBBitCount > 16)) {
@@ -1384,7 +1392,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 16) &&
 		       (ddpf.dwRGBBitCount > 8)) {
@@ -1415,7 +1423,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else if (ddpf.dwRGBBitCount <= 8) {
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1443,7 +1451,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    }
 	}
@@ -1452,6 +1460,7 @@ void copyDataFromSurface(jint imageFormat,
 	int gshift = firstBit(ddpf.dwGBitMask) +
 	           ucountBits(ddpf.dwGBitMask) - 8;
 	dstPitch = subWidth;
+	destRow += (subHeight-1)*dstPitch;
 
 	if ((ddpf.dwRGBBitCount == 32) &&
 	    (ddpf.dwRBitMask == 0xff0000) &&
@@ -1469,7 +1478,7 @@ void copyDataFromSurface(jint imageFormat,
 		    *src++;
 		}
 		srcRow += lockedRect.Pitch;
-		destRow += dstPitch;
+		destRow -= dstPitch;
 	    }
 	} else { // handle less common format
 	    int gshift = firstBit(ddpf.dwGBitMask) +
@@ -1495,7 +1504,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 24) &&
 		       (ddpf.dwRGBBitCount > 16)) {
@@ -1516,7 +1525,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else if ((ddpf.dwRGBBitCount <= 16) &&
 		       (ddpf.dwRGBBitCount > 8)) {
@@ -1536,7 +1545,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    } else if (ddpf.dwRGBBitCount <= 8) {
 		for (int i=yoffset; i < ylimit; i++) {
@@ -1553,7 +1562,7 @@ void copyDataFromSurface(jint imageFormat,
 			}
 		    }
 		    srcRow += lockedRect.Pitch;
-		    destRow += dstPitch;
+		    destRow -= dstPitch;
 		}
 	    }
 	}
