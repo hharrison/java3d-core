@@ -1762,18 +1762,35 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         }
     }
     
+    private int getCeilPowerOf2(int value) {
+        
+        if (value < 1)
+            return value;
+        
+        int powerValue = 1;
+        for (;;) {
+            powerValue *= 2;
+            if (value <= powerValue) {
+                // Found max bound of power
+                return powerValue;
+            }
+        }
+    }    
+    
     void evaluateExtNonPowerOfTwo(int ext) {
         
+        int npotWidth;
+        int npotHeight;
         // If npotSupported is false, a copy power of two image has been created
         // so we don't have to check again.
         if(!npotSupported) {
             return;
         }
-
+        
         if (imageData == null && !isByReference()) {
             return;
         }
-
+        
         if((ext & Canvas3D.TEXTURE_NON_POWER_OF_TWO) != 0) {
             return;
         }
@@ -1781,12 +1798,17 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         // NPOT is unsupported, set flag to false.
         npotSupported = false;
         
-        // scale to power of 2 for texture mapping
-        //xmax and ymax are in BackgroundRetained.
-       /* xmax = width;
-       ymax = height; */
-        int npotWidth = getClosestPowerOf2(width);
-        int npotHeight = getClosestPowerOf2(height);
+        // Always scale up if image size is smaller 512*512.
+        if((width * height) < 262144) {
+            npotWidth = getCeilPowerOf2(width);
+            npotHeight = getCeilPowerOf2(height);
+        } else {
+            npotWidth = getClosestPowerOf2(width);
+            npotHeight = getClosestPowerOf2(height);
+        }
+        
+//        System.err.println("width " + width + " height " + height + " npotWidth " + npotWidth + " npotHeight " + npotHeight);
+
         float xScale = (float)npotWidth/(float)width;
         float yScale = (float)npotHeight/(float)height;
         
