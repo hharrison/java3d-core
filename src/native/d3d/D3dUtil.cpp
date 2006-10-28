@@ -941,7 +941,7 @@ void copyDataFromSurface(jint imageFormat,
 	dstPitch = subWidth << 2;
 	destRow += (subHeight-1)*dstPitch;
 
-	printf("[Java 3D] copyDataFromSurface:  (1) %d\n", ddpf.dwRGBBitCount);
+	/* printf("[Java 3D] copyDataFromSurface:  (1) %d\n", ddpf.dwRGBBitCount); */
 	
 	if ((ddpf.dwRGBBitCount == 32) &&
 	    (ddpf.dwRBitMask == 0xff0000) &&
@@ -1044,14 +1044,14 @@ void copyDataFromSurface(jint imageFormat,
 		    destRow -= dstPitch;
 		}
 	    } else if (ddpf.dwRGBBitCount <= 8) {
-		printf("[Java 3D] copyDataFromSurface: Format on (8 bits or less surface) not support %d\n", imageFormat);
+		/* printf("[Java 3D] copyDataFromSurface: Format on (8 bits or less surface) not support %d\n", imageFormat); */
 	    }
 	}
     } else if ((imageFormat == IMAGE_FORMAT_BYTE_RGBA) ||
     	(imageFormat == IMAGE_FORMAT_BYTE_RGB) ||
 	(imageFormat == IMAGE_FORMAT_INT_BGR)) {
 
-	printf("[Java 3D] copyDataFromSurface:  (2) %d\n", ddpf.dwRGBBitCount);
+	/* printf("[Java 3D] copyDataFromSurface:  (2) %d\n", ddpf.dwRGBBitCount); */
 
 	dstPitch = subWidth << 2;
 	destRow += (subHeight-1)*dstPitch;

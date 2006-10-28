@@ -7633,7 +7633,7 @@ class JoglPipeline extends Pipeline {
     }
     
     void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY)  {
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, boolean useBilinearFilter)  {
         if (VERBOSE) System.err.println("JoglPipeline.textureFillBackground()");
         
         GLContext context = context(ctx);
@@ -7645,6 +7645,13 @@ class JoglPipeline extends Pipeline {
         disableAttribFor2D(gl);
         gl.glDepthMask(false);
         gl.glEnable(GL.GL_TEXTURE_2D);
+
+        /* Setup filter mode if needed */
+        if(useBilinearFilter) {
+            // System.err.println("JoglPipeline - Background  : use bilinear filter\n");
+            gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+            gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+        } 
         
         // reset the polygon mode
         gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
@@ -7678,7 +7685,9 @@ class JoglPipeline extends Pipeline {
     }
     
     void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha)  {
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha, 
+            boolean useBilinearFilter)  {
+        
         if (VERBOSE) System.err.println("JoglPipeline.textureFillRaster()");
         
         GLContext context = context(ctx);
@@ -7689,6 +7698,14 @@ class JoglPipeline extends Pipeline {
                 GL.GL_CURRENT_BIT );
         
         disableAttribForRaster(gl);
+
+        /* Setup filter mode if needed */
+        if(useBilinearFilter) {
+            // System.err.println("JoglPipeline - Raster  : use bilinear filter\n");
+            gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+            gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+        } 
+        
         gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
         gl.glColor4f(1.0f, 1.0f, 1.0f, alpha);
                 

@@ -48,6 +48,8 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     static final int TYPE_INT_RGB      =  0x100;
     static final int TYPE_INT_ARGB     =  0x200;
     
+    static final int  IMAGE_SIZE_512X512 = 262144;
+    
     enum ImageFormatType {
         TYPE_UNKNOWN,
         TYPE_BYTE_BGR,
@@ -307,6 +309,14 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             }
         }
         return imageData;
+    }
+
+    boolean useBilinearFilter() {
+        if(imageDataPowerOfTwo != null) {
+            return true;
+        }
+        
+        return false;
     }
     
     boolean isImageTypeSupported() {
@@ -1778,9 +1788,11 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     }    
     
     void evaluateExtNonPowerOfTwo(int ext) {
-        
-        int npotWidth;
-        int npotHeight;
+        // Only need to enforce for Raster or Background.
+        if(!enforceNonPowerOfTwoSupport) {
+            return;
+        }        
+
         // If npotSupported is false, a copy power of two image has been created
         // so we don't have to check again.
         if(!npotSupported) {
@@ -1798,8 +1810,10 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         // NPOT is unsupported, set flag to false.
         npotSupported = false;
         
+        int npotWidth;
+        int npotHeight;        
         // Always scale up if image size is smaller 512*512.
-        if((width * height) < 262144) {
+        if((width * height) < IMAGE_SIZE_512X512) {
             npotWidth = getCeilPowerOf2(width);
             npotHeight = getCeilPowerOf2(height);
         } else {
@@ -1807,7 +1821,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             npotHeight = getClosestPowerOf2(height);
         }
         
-//        System.err.println("width " + width + " height " + height + " npotWidth " + npotWidth + " npotHeight " + npotHeight);
+        // System.err.println("width " + width + " height " + height + " npotWidth " + npotWidth + " npotHeight " + npotHeight);
 
         float xScale = (float)npotWidth/(float)width;
         float yScale = (float)npotHeight/(float)height;
@@ -1840,10 +1854,12 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             
             AffineTransform at = AffineTransform.getScaleInstance(xScale,
                     yScale);
-            powerOfTwoATOp = new AffineTransformOp(at,
-                    AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-            BufferedImage scaledImg = powerOfTwoATOp.filter((BufferedImage)ri, null);
             
+            powerOfTwoATOp = new AffineTransformOp(at,
+                    AffineTransformOp.TYPE_BILINEAR);
+            
+            BufferedImage scaledImg = powerOfTwoATOp.filter((BufferedImage)ri, null);
+
             imageDataPowerOfTwo = createRenderedImageDataObject(null, npotWidth, npotHeight);
             // Since ri is created from imageData, it's imageType is supported.
             copySupportedImageToImageData(scaledImg, 0, imageDataPowerOfTwo);

@@ -3060,21 +3060,23 @@ class NativePipeline extends Pipeline {
     }
     
     native void textureFillBackground(long ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY);
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, boolean useBiliearFilter);
     
     void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY)  {
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, boolean useBiliearFilter)  {
         textureFillBackground(unbox(ctx), texMinU, texMaxU, texMinV, texMaxV,
-                mapMinX, mapMaxX, mapMinY, mapMaxY);
+                mapMinX, mapMaxX, mapMinY, mapMaxY, useBiliearFilter);
     }
     
     native void textureFillRaster(long ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha);
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha, 
+            boolean useBiliearFilter);
     
     void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha) {
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha, 
+            boolean useBiliearFilter) {
         textureFillRaster(unbox(ctx), texMinU, texMaxU, texMinV, texMaxV,
-                mapMinX, mapMaxX, mapMinY, mapMaxY, mapZ, alpha);
+                mapMinX, mapMaxX, mapMinY, mapMaxY, mapZ, alpha, useBiliearFilter);
     }
 
     native void executeRasterDepth(long ctx, float posX, float posY, float posZ,

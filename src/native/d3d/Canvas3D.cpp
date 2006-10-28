@@ -352,7 +352,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(
 							jfloat mapMinX, 
 							jfloat mapMaxX, 
 							jfloat mapMinY,
-							jfloat mapMaxY)
+							jfloat mapMaxY,
+							jboolean useBilinearFilter)
 {
     
     DWORD alphaTest, alphaBlend, cull, zBuffer,
@@ -398,12 +399,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(
 		   d3dCtx->texUnitStage, d3dCtx->bindTextureIdLen);
 	}
 	return;
-    }
-    
-    device->SetTextureStageState(tus,
-				 D3DTSS_TEXCOORDINDEX,
-				 D3DTSS_TCI_PASSTHRU);
-    
+    }    
 
     if (d3dCtx->texTransformSet[tus]) {
 	device->GetTransform((D3DTRANSFORMSTATETYPE)
@@ -414,6 +410,24 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(
 			     (D3DTS_TEXTURE0 + tus),
 			     &identityMatrix);
     }
+
+    // TextureStage will be restore by caller.
+    device->SetTextureStageState(tus,
+				 D3DTSS_TEXCOORDINDEX,
+				 D3DTSS_TCI_PASSTHRU);
+    
+    /* Setup filter mode if needed */
+    if(useBilinearFilter) {
+	/* fprintf(stderr, "Background  : use bilinear filter\n"); */
+	device->SetSamplerState (tus, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	device->SetSamplerState (tus, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
+	device->SetSamplerState (tus, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+    }
+    /* For debugging only
+    else {
+	fprintf(stderr, "Background  : Not use bilinear filter\n");         
+    }
+    */
 
     device->GetTransform(D3DTS_PROJECTION, &ptm);
     device->GetTransform(D3DTS_WORLD, &wtm);
@@ -526,7 +540,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillRaster(JNIEnv *env,
 							jfloat mapMinY,
 							jfloat mapMaxY,
                                                         jfloat mapZ,
-                                                        jfloat alpha)
+							jfloat alpha,
+							jboolean useBilinearFilter)
 { 
 
     DWORD  cull, lighting;
@@ -558,6 +573,19 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillRaster(JNIEnv *env,
     device->SetTextureStageState(tus, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
     device->SetTextureStageState(tus, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
     device->SetTextureStageState(tus, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
+
+    /* Setup filter mode if needed */
+    if(useBilinearFilter) {
+	/* fprintf(stderr, "Raster  : use bilinear filter\n"); */
+	device->SetSamplerState (tus, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	device->SetSamplerState (tus, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
+	device->SetSamplerState (tus, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+    }
+    /* For debugging only
+    else {
+	fprintf(stderr, "Raster  : Not use bilinear filter\n");         
+    }
+    */
     
     device->GetTransform(D3DTS_PROJECTION, &ptm);
     device->GetTransform(D3DTS_WORLD, &wtm);

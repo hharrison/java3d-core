@@ -26,7 +26,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_readRaster(
 
     GetDevice();
 
-    printf("[GraphicsContext3D] readRaster ...\n");
+    /* printf("[GraphicsContext3D] readRaster ...\n"); */
     
     if ((type & javax_media_j3d_Raster_RASTER_COLOR) != 0) {
 

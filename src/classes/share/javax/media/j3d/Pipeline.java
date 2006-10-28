@@ -1288,10 +1288,10 @@ abstract class Pipeline {
     abstract void clear(Context ctx, float r, float g, float b);
     
     abstract void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY);
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, boolean useBiliearFilter);
     
     abstract void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha);
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha, boolean useBiliearFilter);
 
     abstract void executeRasterDepth(Context ctx, float posX, float posY, float posZ, 
             int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight, int depthWidth, int depthHeight, 

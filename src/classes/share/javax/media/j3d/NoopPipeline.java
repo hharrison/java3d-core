@@ -1373,12 +1373,13 @@ class NoopPipeline extends Pipeline {
     }
 
     void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY) {
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, boolean useBiliearFilter) {
 
     }
     
     void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha)  {
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha, 
+            boolean useBiliearFilter)  {
 
     }
     

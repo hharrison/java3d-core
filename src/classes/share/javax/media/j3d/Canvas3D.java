@@ -4503,7 +4503,7 @@ public class Canvas3D extends Canvas {
         mapMaxY = 1.0f - ((float) winCoord.y / (float) winHeight);       
         
         textureFillRaster(ctx, texMinU, texMaxU, texMinV, texMaxV,
-                mapMinX, mapMaxX, mapMinY, mapMaxY, mapZ, alpha);
+                mapMinX, mapMaxX, mapMinY, mapMaxY, mapZ, alpha, raster.image.useBilinearFilter());
         
     }
     
@@ -4622,7 +4622,7 @@ public class Canvas3D extends Canvas {
 //        System.err.println("Java 3D : mapMinX " + mapMinX + " mapMinY " + mapMinY + 
 //                           " mapMaxX " + mapMaxX + " mapMaxY " + mapMaxY);
         textureFillBackground(ctx, texMinU, texMaxU, texMinV, texMaxV,
-                mapMinX, mapMaxX, mapMinY, mapMaxY);
+                mapMinX, mapMaxX, mapMinY, mapMaxY, bg.image.useBilinearFilter());
         
     }
     
@@ -5050,15 +5050,15 @@ public class Canvas3D extends Canvas {
     }
 
     void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY) {
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, boolean useBiliearFilter) {
         Pipeline.getPipeline().textureFillBackground(ctx, texMinU, texMaxU, texMinV, texMaxV,
-                mapMinX, mapMaxX, mapMinY, mapMaxY);
+                mapMinX, mapMaxX, mapMinY, mapMaxY, useBiliearFilter);
     }    
 
     void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha)  {
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha, boolean useBiliearFilter)  {
         Pipeline.getPipeline().textureFillRaster(ctx, texMinU, texMaxU, texMinV, texMaxV,
-                mapMinX, mapMaxX, mapMinY, mapMaxY, mapZ, alpha);
+                mapMinX, mapMaxX, mapMinY, mapMaxY, mapZ, alpha, useBiliearFilter);
     }
 
     void executeRasterDepth(Context ctx, float posX, float posY, float posZ,

@@ -378,7 +378,7 @@ checkTextureExtensions(
 	ctxInfo->textureExtMask |=
 			javax_media_j3d_Canvas3D_TEXTURE_LOD_OFFSET;
     }
- 
+    
     if (isExtensionSupported(tmpExtensionStr,
 				"GL_ARB_texture_non_power_of_two")) {
 	ctxInfo->textureNonPowerOfTwoAvailable = JNI_TRUE;
@@ -386,6 +386,7 @@ checkTextureExtensions(
 			javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
     }
 
+    
 }
 
 jboolean
@@ -650,7 +651,7 @@ getPropertiesFromCurrentContext(
     ctxInfo->texture_max_level_enum = GL_TEXTURE_MAX_LEVEL;
 
 
-    /* look for OpenGL 2.0 features */      
+    /* look for OpenGL 2.0 features */
     if (ctxInfo->gl20) {
 	ctxInfo->textureNonPowerOfTwoAvailable = JNI_TRUE;
 	ctxInfo->textureExtMask |=
@@ -1355,10 +1356,10 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
     glDepthMask(GL_FALSE);
     glBindTexture(GL_TEXTURE_2D, objectId);
     /* set up texture parameter */
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 #ifdef VERBOSE
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
@@ -1492,7 +1493,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(JNIEnv *e
 							jfloat mapMinX, 
 							jfloat mapMaxX, 
 							jfloat mapMinY,
-							jfloat mapMaxY)
+							jfloat mapMaxY,
+							jboolean useBilinearFilter )
 { 
     JNIEnv table; 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
@@ -1510,6 +1512,18 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillBackground(JNIEnv *e
      glDepthMask(GL_FALSE);  
      glEnable(GL_TEXTURE_2D);     
 
+     /* Setup filter mode if needed */
+     if(useBilinearFilter) {
+         /* fprintf(stderr, "Background  : use bilinear filter\n"); */
+	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+     }
+     /* For debugging only
+     else {
+	fprintf(stderr, "Background  : Not use bilinear filter\n");         
+     }
+     */
+     
      /* reset the polygon mode */
      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -1564,7 +1578,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillRaster(JNIEnv *env,
 							jfloat mapMinY,
 							jfloat mapMaxY,
                                                         jfloat mapZ,
-                                                        jfloat alpha)
+							jfloat alpha,
+							jboolean useBilinearFilter )
 { 
     JNIEnv table; 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
@@ -1578,11 +1593,24 @@ void JNICALL Java_javax_media_j3d_NativePipeline_textureFillRaster(JNIEnv *env,
     /* Temporarily disable fragment and most 3D operations */
     glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_POLYGON_BIT | 
 		 GL_CURRENT_BIT);
- 
+    
     disableAttribForRaster(ctxProperties);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glColor4f(1.0f, 1.0f, 1.0f, (float) alpha);
 
+    /* Setup filter mode if needed */
+    if(useBilinearFilter) {
+	/* fprintf(stderr, "Raster  : use bilinear filter\n"); */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+    /* For debugging only
+    else {
+	fprintf(stderr, "Raster  : Not use bilinear filter\n");
+    }
+    */
+
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glColor4f(1.0f, 1.0f, 1.0f, (float) alpha);    
+    
     /* reset the polygon mode */
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
