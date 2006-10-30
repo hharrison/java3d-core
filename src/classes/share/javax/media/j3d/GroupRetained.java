@@ -1717,9 +1717,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		
 	    }
 
-	    if (!(this instanceof ViewSpecificGroupRetained)) {
-		s.viewLists = viewLists;
-	    }
+            // Issue 312: always initialize s.viewLists
+            s.viewLists = viewLists;
 
             TargetsInterface transformInterface, switchInterface;
             transformInterface = initTransformStates(s, false);
