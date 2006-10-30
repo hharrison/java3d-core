@@ -110,6 +110,9 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     // private RenderedImage refImage[] = null;
     private Object refImage[] = null;
     
+    // Issue 366: Lock for evaluateExtensions
+    Object evaluateExtLock = new Object();
+    
     // Lock used in the "by ref case"
     GeometryLock geomLock = new GeometryLock();
     
@@ -1719,12 +1722,16 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         }
     }
     
-    // Lock out user thread from modifying variables by using synchronized routines
+    
     void evaluateExtensions(Canvas3D canvas) {
-        // For performance reason the ordering of the following 2 statements is intentional.
-        // So that we only need to do format conversion for imageData only
-        evaluateExtABGR(canvas.extensionsSupported);
-        evaluateExtNonPowerOfTwo(canvas.textureExtendedFeatures);
+        // Issue 366: need to synchronize since it could be called concurrently
+        // from multiple renderers (and maybe the renderer(s) and renderbin)
+        synchronized (evaluateExtLock) {
+            // For performance reason the ordering of the following 2 statements is intentional.
+            // So that we only need to do format conversion for imageData only
+            evaluateExtABGR(canvas.extensionsSupported);
+            evaluateExtNonPowerOfTwo(canvas.textureExtendedFeatures);
+        }
         
     }
     
@@ -1798,7 +1805,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         if(!npotSupported) {
             return;
         }
-        
+
         if (imageData == null && !isByReference()) {
             return;
         }
@@ -1806,10 +1813,10 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         if((ext & Canvas3D.TEXTURE_NON_POWER_OF_TWO) != 0) {
             return;
         }
-        
+
         // NPOT is unsupported, set flag to false.
         npotSupported = false;
-        
+
         int npotWidth;
         int npotHeight;        
         // Always scale up if image size is smaller 512*512.

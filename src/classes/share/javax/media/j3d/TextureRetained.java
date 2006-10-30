@@ -1554,8 +1554,12 @@ abstract class TextureRetained extends NodeComponentRetained {
                 // of mipmap levels is defined but the canvas does not
  		// support lod_range extension
 
-		if (images[j][i] != null) {
-		    reloadTextureImage(cv, j, i, images[j][i], maxLevels);
+                ImageComponentRetained image = images[j][i];
+		if (image != null) {
+                    // Issue 366: call evaluateExtensions, since it may not
+                    // have been called yet in all cases
+                    image.evaluateExtensions(cv);
+		    reloadTextureImage(cv, j, i, image, maxLevels);
 		}
 	    }
         }
