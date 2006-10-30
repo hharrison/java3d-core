@@ -254,14 +254,18 @@ class RasterRetained extends GeometryRetained {
         }
                 
         TextureRetained oldTex = this.texture;
-        geomLock.getLock();
         if (source.isLive()) {
             if (this.texture != null) {
                 this.texture.clearLive(refCount);
             }
         }
-        
+
+        // Issue 370: only hold the geomLock while calling initImage
+        // (cannot hold it while sending a message).
+        geomLock.getLock();
         initImage(img);
+        geomLock.unLock();
+
         if (source.isLive()) {
             if (texture != null) {
                 texture.setLive(inBackgroundGroup, refCount);
@@ -270,7 +274,6 @@ class RasterRetained extends GeometryRetained {
             sendChangedMessage((J3dThread.UPDATE_RENDER|J3dThread.UPDATE_RENDERING_ATTRIBUTES),
                     oldTex, this.texture);
         }
-        geomLock.unLock();
     }
 
     /**
