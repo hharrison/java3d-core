@@ -236,6 +236,8 @@ class RasterRetained extends GeometryRetained {
                 img.getWidth(), img.getHeight());
         texture = (Texture2DRetained) tex2D.retained;
         texture.setUseAsRaster(true);
+        // Fix to issue 372 : ImageComponent.set(BufferedImage) ignored when used by Raster
+        image.addUser(texture);
         texture.initImage(0,img);
       
     }

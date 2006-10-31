@@ -234,6 +234,8 @@ class BackgroundRetained extends LeafRetained {
             texture = (Texture2DRetained) tex2D.retained;
             // Background is special case of Raster.
             texture.setUseAsRaster(true);
+            // Fix to issue 373 : ImageComponent.set(BufferedImage) ignored when used by Background
+            image.addUser(texture);
             texture.initImage(0,img);
         }
     }
