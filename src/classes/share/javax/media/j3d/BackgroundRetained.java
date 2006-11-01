@@ -248,14 +248,12 @@ class BackgroundRetained extends LeafRetained {
 	if (source.isLive()) {
 	    if (texture != null) {
 		texture.clearLive(refCount);
-                texture.removeUser(this);
 	    }
 	}	
 	initImage(img);
         if (source.isLive()) {
             if (texture != null) {
                 texture.setLive(inBackgroundGroup, refCount);
-                texture.addUser(this);
             }
             
             sendMessage(IMAGE_CHANGED,
