@@ -53,6 +53,7 @@ public:
     // Max vertex count support for each primitive
     DWORD maxVertexCount[GEO_TYPE_INDEXED_LINE_STRIP_SET+1];
 
+	BOOL supportNPOT; // new on 1.5 NonPower of Two texture size
 	BOOL supportStencil; // new on 1.4
 	BOOL supportShaders11;
     BOOL isHardware;
