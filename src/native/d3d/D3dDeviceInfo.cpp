@@ -24,8 +24,7 @@ D3dDeviceInfo::~D3dDeviceInfo()
 
 VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps)
 {
-    if (deviceType == D3DDEVTYPE_HAL )
-    {
+    if (deviceType == D3DDEVTYPE_HAL ){
     	isHardware = true;		
     	isHardwareTnL = (d3dCaps->DevCaps &  D3DDEVCAPS_HWTRANSFORMANDLIGHT);
     }
@@ -34,6 +33,51 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps)
     	 isHardware = false;
     	 isHardwareTnL = false;
     }
+
+    
+	// D3DTEXTURECAPS_NONPOW2CONDITIONAL caps-bit indicates "conditional" 
+	// Non Power of Two (NPOT) 
+	// textures that only support CLAMP addressing and don't 
+	// support mipmaps or compressed textures.
+	// But some new vcards supports NP2 unconditional (GF6 and above). 
+	// Correct test for any kind of NP2 support:
+    // If both unconditional and conditional support is 
+    // unavailable then NP2 is not possible anyway.
+	//  -------------------------------------------
+	//  POW2 |  NP2_CONDITIONAL | result
+	//  -------------------------------------------
+	//  true |      true        | CONDITIONAL NPOT(*)
+	//  true |      false       | POW2 Only
+	//  false|      any         | UNConditional NPOT (**)	//  
+	// ---------------------------------------------
+	// (**)OpenGL like,  Java3D preferred.
+	// (*) below test:
+    /*
+	 * if (((d3dCaps->TextureCaps & D3DPTEXTURECAPS_POW2) != 0) &&  // POW2 is true
+     *     ((d3dCaps->TextureCaps & D3DPTEXTURECAPS_NONPOW2CONDITIONAL) == 0)){ //NPOT_Cond is false
+     *      //Pow2 Only
+	 *      supportNPOT = false;
+     *   }
+     * else{
+	 *      // both conditional and unconditional
+     *      supportNPOT = true;
+     * }
+   */
+	if(d3dCaps->TextureCaps & D3DPTEXTURECAPS_POW2){
+        supportNPOT = false;
+        if(d3dCaps->TextureCaps & D3DPTEXTURECAPS_NONPOW2CONDITIONAL){
+           // NPOT conditionl But, in certain cases textures can ignore the power of 2 limitation
+           // As OpenGL is UNCONDITIONAL, it is not used by Java3D
+		   //supportNPOT = true;
+        }
+   }else{
+      //UNconditional: Textures do not need to be a power of 2 in size
+	    supportNPOT = true;
+   }
+     
+
+
+
 
 	// check if it supports at least vertex shader 1.1
     if(d3dCaps->VertexShaderVersion < D3DVS_VERSION(1,1))
@@ -167,6 +211,10 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps)
 
     texMask = 0;
 
+	if(supportNPOT){
+		texMask |= javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
+	}
+
     if ((d3dCaps->TextureCaps & D3DPTEXTURECAPS_VOLUMEMAP) &&
 	    (maxTextureDepth > 0))
 	{
@@ -216,8 +264,7 @@ void D3dDeviceInfo::findDepthStencilFormat(int minZDepth, int minZDepthStencil)
     for (int i=0; i < D3DDEPTHFORMATSIZE; i++) 
 	{
 		//printf("\ndepthFormatSupport %s, %b",getPixelFormatName(d3dDepthFormat[i]), depthFormatSupport[i]);
-	  if (depthFormatSupport[i]) 
-	  {
+	  if (depthFormatSupport[i]){
 	    // prefer one with stencil buffer, follow by D3DFMT_D16_LOCKABLE,
 		 // printf("\n ZDepth %d, Stencil %d ",d3dDepthTable[i],d3dStencilDepthTable[i]);
 	    if (d3dDepthTable[i] >= minZDepth && d3dStencilDepthTable[i] >= minZDepthStencil ) 
