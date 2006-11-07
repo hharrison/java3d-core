@@ -1835,29 +1835,36 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         
         // scale if scales aren't 1.0
         if (!(xScale == 1.0f && yScale == 1.0f)) {
-            RenderedImage ri = null;
             
             if (imageData == null) {
                 // This is a byRef, support format and is a RenderedImage case.
                 // See ImageComponent2DRetained.set(RenderedImage image)
-                ri = (RenderedImage) getRefImage(0);
-                if(!(ri instanceof BufferedImage)) {
-                    // Create a buffered image from renderImage
-                    ColorModel cm = ri.getColorModel();
-                    WritableRaster wRaster = ri.copyData(null);
-                    ri = new BufferedImage(cm,
-                            wRaster,
-                            cm.isAlphaPremultiplied()
-                            ,null);
-                    
-                    // Create image data object with buffer for image. */
-                    imageData = createRenderedImageDataObject(null);
-                    copySupportedImageToImageData(ri, 0, imageData);
-                }
+                RenderedImage ri = (RenderedImage) getRefImage(0);     
+                
+                assert !(ri instanceof BufferedImage);
+                
+                 // Create a buffered image from renderImage
+                ColorModel cm = ri.getColorModel();
+                WritableRaster wRaster = ri.copyData(null);
+                ri = new BufferedImage(cm,
+                        wRaster,
+                        cm.isAlphaPremultiplied()
+                        ,null);
+                
+                
+                // Create image data object with buffer for image. */
+                imageData = createRenderedImageDataObject(null);
+                copySupportedImageToImageData(ri, 0, imageData);
+                
             }
             
             assert imageData != null;
-            ri = imageData.createBufferedImage(0);
+            
+            // Create a supported BufferedImage type.
+            BufferedImage bi = imageData.createBufferedImage(0);
+            
+            int imageType = bi.getType();
+            BufferedImage scaledImg = new BufferedImage(npotWidth, npotHeight, imageType);            
             
             AffineTransform at = AffineTransform.getScaleInstance(xScale,
                     yScale);
@@ -1865,10 +1872,13 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
             powerOfTwoATOp = new AffineTransformOp(at,
                     AffineTransformOp.TYPE_BILINEAR);
             
-            BufferedImage scaledImg = powerOfTwoATOp.filter((BufferedImage)ri, null);
-
+            powerOfTwoATOp.filter(bi, scaledImg);
+            
+            // System.err.println("bi " + bi.getColorModel());
+            // System.err.println("scaledImg " + scaledImg.getColorModel());
+            
             imageDataPowerOfTwo = createRenderedImageDataObject(null, npotWidth, npotHeight);
-            // Since ri is created from imageData, it's imageType is supported.
+            // Since bi is created from imageData, it's imageType is supported.
             copySupportedImageToImageData(scaledImg, 0, imageDataPowerOfTwo);
             
         } else {
