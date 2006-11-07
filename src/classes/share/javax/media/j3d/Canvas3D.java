@@ -1317,6 +1317,13 @@ public class Canvas3D extends Canvas {
 	    view.universe.checkForEnableEvents();
 	}
 
+        // Issue 131: Call redraw() if this is an auto-off-screen Canvas3D,
+        // so it will start up correctly. It isn't necessary to do this for
+        // on-screen Canvas3Ds because redraw() will be called when we
+        // get the first paint().
+        if (offScreen) {
+            redraw();
+        }
     }
 
     // When this canvas is removed a frame, this notification gets called.  We
