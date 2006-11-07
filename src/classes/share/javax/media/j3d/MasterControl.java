@@ -2986,9 +2986,13 @@ class MasterControl {
 		    threadListsChanged = true;
 		}
 	    } else if (type == START_RENDERER) {
-                Canvas3D c3d = (Canvas3D) o;
-                if (!c3d.isFatalError()) {
-                    c3d.isRunningStatus = true;
+                if (o instanceof Canvas3D) {
+                    Canvas3D c3d = (Canvas3D) o;
+                    if (!c3d.isFatalError()) {
+                        c3d.isRunningStatus = true;
+                    }
+                } else {
+                    ((Renderer) o).userStop = false;
                 }
 		threadListsChanged = true;
 	    } else if (type == STOP_RENDERER) {

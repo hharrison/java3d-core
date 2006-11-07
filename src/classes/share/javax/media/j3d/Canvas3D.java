@@ -1309,21 +1309,21 @@ public class Canvas3D extends Canvas {
 	}
 
 
-	if (rdr != null) {
-	    rdr.userStop = false;
-	}
 	ctxTimeStamp = 0;
 	if ((view != null) && (view.universe != null)) {
 	    view.universe.checkForEnableEvents();
 	}
 
-        // Issue 131: Call redraw() if this is an auto-off-screen Canvas3D,
-        // so it will start up correctly. It isn't necessary to do this for
-        // on-screen Canvas3Ds because redraw() will be called when we
-        // get the first paint().
-        if (offScreen) {
-            redraw();
-        }
+	if (rdr != null) {
+            // Issue 84: Send a message to MC to restart renderer
+            // Note that this also obviates the need for the earlier fix to
+            // issue 131 which called redraw() for auto-off-screen Canvas3Ds
+            // (and this is a more robust fix)
+            VirtualUniverse.mc.postRequest(MasterControl.START_RENDERER, rdr);
+            while (rdr.userStop) {
+                MasterControl.threadYield();
+            }
+	}
     }
 
     // When this canvas is removed a frame, this notification gets called.  We
@@ -1379,7 +1379,7 @@ public class Canvas3D extends Canvas {
 	visible = false;
 
 	screen.removeUser(this);
-	evaluateActive();	
+	evaluateActive();
 
         VirtualUniverse.mc.freeCanvasId(canvasId);
 	canvasBit = 0;
@@ -1393,7 +1393,7 @@ public class Canvas3D extends Canvas {
 	// it will free graphics2D textureID
 	graphics2D = null;
 
-	super.removeNotify();	
+	super.removeNotify();
 
 	// This may happen if user explicity call this before 
 	// addNotify()
@@ -1438,9 +1438,13 @@ public class Canvas3D extends Canvas {
         added = false;
 
 	if (rdr != null) {
-	    rdr.userStop = false;
+            // Issue 84: Send a message to MC to restart renderer
+            VirtualUniverse.mc.postRequest(MasterControl.START_RENDERER, rdr);
+            while (rdr.userStop) {
+                MasterControl.threadYield();
+            }
 	}
-        
+
         // Fix for issue 102 removing strong reference and avoiding memory leak
         // due retention of parent container
         
