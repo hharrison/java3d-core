@@ -12020,7 +12020,7 @@ void copyDataToCubeMap(jint imageFormat,
 	return;
     }
     int offset = tilew*imgYOffset + imgXOffset;
-
+    
     switch (imageFormat) {
     case  IMAGE_FORMAT_BYTE_RGBA :
 	// This is the one we use when byReference = false
@@ -12142,6 +12142,9 @@ void copyDataToCubeMap(jint imageFormat,
 	}
 	break;
     case  IMAGE_FORMAT_INT_BGR :
+    printf("[Java 3D] Cubemap doesn't support FORMAT_INT_BGR, \n");
+    printf("please see issue 377 : https://java3d.dev.java.net/issues/show_bug.cgi?id=377\n");
+    printf("For more information on reporting Java 3D related issue : https://java3d.dev.java.net/#Reporting_Issue \n");    
 	// This is the one we use when byReference = false
 	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
@@ -12158,7 +12161,6 @@ void copyDataToCubeMap(jint imageFormat,
 	    // Copy the pixel from up to bottom and
 	    // right to left in this case to match OGL definition
 	    printf("[copyDataToCubeMap] copyInt_BGR_DataToSurfaceRev is unsupported!\n");
-
 	    /*
 	    copyInt_XBGR_DataToSurfaceRev(textureFormat, &ddpf,
 					  (unsigned char *) lockedRect.pBits,
@@ -12170,6 +12172,10 @@ void copyDataToCubeMap(jint imageFormat,
 	}
 	break;	
     case  IMAGE_FORMAT_INT_RGB :
+        printf("[Java 3D] Cubemap doesn't support FORMAT_INT_RGB!\n");
+        printf("please see issue 377 : https://java3d.dev.java.net/issues/show_bug.cgi?id=377\n");
+        printf("For more information on reporting Java 3D related issue : https://java3d.dev.java.net/#Reporting_Issue \n");    
+       
 	// This is the one we use when byReference = false
 	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
@@ -12198,6 +12204,10 @@ void copyDataToCubeMap(jint imageFormat,
 	}
 	break;
     case  IMAGE_FORMAT_INT_ARGB :
+        printf("[Java 3D] Cubemap doesn't support FORMAT_INT_ARGB!\n");
+        printf("please see issue 377 : https://java3d.dev.java.net/issues/show_bug.cgi?id=377\n");
+        printf("For more information on reporting Java 3D related issue : https://java3d.dev.java.net/#Reporting_Issue \n");    
+        
 	// This is the one we use when byReference = false
 	if ((face == D3DCUBEMAP_FACE_NEGATIVE_Y) ||
 	    (face == D3DCUBEMAP_FACE_POSITIVE_Y)) {
@@ -12226,7 +12236,7 @@ void copyDataToCubeMap(jint imageFormat,
 	}
 	break;
     default: // should not happen
-	printf("[Java 3D] StoredFormat %d, textureFormat %d not support !\n",
+	printf("[Java 3D] imageFormat %d, textureFormat %d not support !\n",
 	       imageFormat, textureFormat);
     }
 
