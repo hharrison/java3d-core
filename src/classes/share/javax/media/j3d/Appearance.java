@@ -702,18 +702,21 @@ public class Appearance extends NodeComponent {
                 throw new CapabilityNotSetException(J3dI18N.getString("Appearance20"));
         
         // Do illegal sharing check
-        for(int j=0; j<stateArray.length; j++) {
-            TextureRetained texRetained = ((TextureUnitStateRetained)stateArray[j].retained).texture;
-            if(texRetained != null) {
-                ImageComponent[] images = texRetained.getImages();
-                if(images != null) {
-                    for(int i=0; i<images.length; i++) {
-                        validateImageIllegalSharing(images[i]);
+        if (stateArray != null) {
+            for(int j=0; j<stateArray.length; j++) {
+                TextureRetained texRetained =
+                        ((TextureUnitStateRetained)stateArray[j].retained).texture;
+                if(texRetained != null) {
+                    ImageComponent[] images = texRetained.getImages();
+                    if(images != null) {
+                        for(int i=0; i<images.length; i++) {
+                            validateImageIllegalSharing(images[i]);
+                        }
                     }
                 }
             }
         }
-        
+
 	((AppearanceRetained)this.retained).setTextureUnitState(stateArray);
     }
 
@@ -751,17 +754,20 @@ public class Appearance extends NodeComponent {
 	  if (!this.getCapability(ALLOW_TEXTURE_UNIT_STATE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Appearance20"));
 
-        // Do illegal sharing check        
-        TextureRetained texRetained = ((TextureUnitStateRetained)state.retained).texture;
-        if(texRetained != null) {
-            ImageComponent[] images = texRetained.getImages();
-            if(images != null) {
-                for(int i=0; i<images.length; i++) {
-                    validateImageIllegalSharing(images[i]);
+        // Do illegal sharing check
+        if (state != null) {
+            TextureRetained texRetained =
+                    ((TextureUnitStateRetained)state.retained).texture;
+            if(texRetained != null) {
+                ImageComponent[] images = texRetained.getImages();
+                if(images != null) {
+                    for(int i=0; i<images.length; i++) {
+                        validateImageIllegalSharing(images[i]);
+                    }
                 }
             }
         }
-        
+
 	((AppearanceRetained)this.retained).setTextureUnitState(index, state);
     }
 

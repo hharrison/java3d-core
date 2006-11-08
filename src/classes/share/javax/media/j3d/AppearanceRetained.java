@@ -542,7 +542,7 @@ class AppearanceRetained extends NodeComponentRetained {
 
 		// add the specified texture unit states to this appearance
 		// also make a copy of the array of references to the units
-		if (stateArray != null) {
+		if (stateArray != null && stateArray.length > 0) {
 
 		    Object [] args = new Object[2];
 
