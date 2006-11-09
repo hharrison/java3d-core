@@ -19,6 +19,14 @@ import javax.vecmath.*;
  * Texture2D is a subclass of Texture class. It extends Texture
  * class by adding a constructor and a mutator method for
  * setting a 2D texture image.
+ * <p>
+ * Note that as of Java 3D 1.5, the texture width and height are no longer
+ * required to be an exact power of two. However, not all graphics devices
+ * supports non-power-of-two textures. If non-power-of-two texture mapping is
+ * unsupported on a particular Canvas3D, textures with a width or height that
+ * are not an exact power of two are ignored for that canvas.
+ *
+ * @see Canvas3D#queryProperties
  */
 public class Texture2D extends Texture {
 
@@ -119,26 +127,30 @@ public class Texture2D extends Texture {
 
     }
 
-  /**
-   * Constructs an empty Texture2D object with specified mipmapMode
-   * format, width and height. Image at base level must be set by 
-   * the application using 'setImage' method. If mipmapMode is
-   * set to MULTI_LEVEL_MIPMAP, images for base level through maximum level
-   * must be set.
-   * @param mipMapMode type of mipmap for this Texture: One of
-   * BASE_LEVEL, MULTI_LEVEL_MIPMAP.
-   * @param format data format of Textures saved in this object.
-   * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA.
-   * @param width width of image at level 0. Must be greater than 0
-   * @param height height of image at level 0. Must be greater than 0
-   * @exception IllegalArgumentException if width or height are NOT
-   * greater than 0 OR invalid format/mipmapMode is specified.
-   */
+    /**
+     * Constructs an empty Texture2D object with specified mipmapMode
+     * format, width and height. Image at base level must be set by
+     * the application using 'setImage' method. If mipmapMode is
+     * set to MULTI_LEVEL_MIPMAP, images for base level through maximum level
+     * must be set.
+     * Note that a texture with a non-power-of-two width or height will
+     * only be rendered on a graphics device that supports non-power-of-two
+     * textures.
+     *
+     * @param mipMapMode type of mipmap for this Texture: One of
+     * BASE_LEVEL, MULTI_LEVEL_MIPMAP.
+     * @param format data format of Textures saved in this object.
+     * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA.
+     * @param width width of image at level 0.
+     * @param height height of image at level 0.
+     * @exception IllegalArgumentException if width or height are NOT
+     * greater than 0 OR invalid format/mipmapMode is specified.
+     */
     public Texture2D(
-	    int		mipMapMode,
-	    int		format,
-	    int		width,
-	    int		height){
+            int		mipMapMode,
+            int		format,
+            int		width,
+            int		height) {
 
 	super(mipMapMode, format, width, height);
 
@@ -157,14 +169,17 @@ public class Texture2D extends Texture {
      * <code>setImages</code> method). If <code>mipMapMode</code> is
      * set to <code>MULTI_LEVEL_MIPMAP</code>, then images for levels
      * Base Level through Maximum Level must be set.
+     * Note that a texture with a non-power-of-two width or height will
+     * only be rendered on a graphics device that supports non-power-of-two
+     * textures.
      *
      * @param mipMapMode type of mipmap for this Texture: one of
      * BASE_LEVEL, MULTI_LEVEL_MIPMAP
      * @param format data format of Textures saved in this object.
      * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA
-     * @param width width of image at level 0. Must be greater than 0. This
+     * @param width width of image at level 0. This
      * does not include the width of the boundary.
-     * @param height height of image at level 0. Must be greater than 0. This
+     * @param height height of image at level 0. This
      * does not include the width of the boundary.
      * @param boundaryWidth width of the boundary, which must be 0 or 1.
      * @exception IllegalArgumentException if width or height are not greater

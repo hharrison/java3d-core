@@ -39,8 +39,16 @@ import javax.vecmath.*;
  * <LI>NEGATIVE_Z</LI>
  * </UL> 
  *
- * @since Java 3D 1.3
+ * <p>
+ * Note that as of Java 3D 1.5, the texture width and height are no longer
+ * required to be an exact power of two. However, not all graphics devices
+ * supports non-power-of-two textures. If non-power-of-two texture mapping is
+ * unsupported on a particular Canvas3D, textures with a width or height that
+ * are not an exact power of two are ignored for that canvas.
+ *
  * @see Canvas3D#queryProperties
+ *
+ * @since Java 3D 1.3
  */
 public class TextureCubeMap extends Texture {
 
@@ -95,13 +103,17 @@ public class TextureCubeMap extends Texture {
      * must be set.
      * Note that cube map is square in dimensions, hence specifying width 
      * is sufficient.
+     * Note also that a texture with a non-power-of-two width will
+     * only be rendered on a graphics device that supports non-power-of-two
+     * textures.
+     *
      * @param mipmapMode type of mipmap for this Texture: One of
      * BASE_LEVEL, MULTI_LEVEL_MIPMAP.
      * @param format data format of Textures saved in this object.
      * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA.
-     * @param width width of image at level 0. Must be power of 2.
-     * @exception IllegalArgumentException if width is NOT
-     * power of 2 OR invalid format/mipmapMode is specified.
+     * @param width width (and height) of image at level 0.
+     * @exception IllegalArgumentException if width is not greater
+     * than 0 OR invalid format/mipmapMode is specified.
      */
     public TextureCubeMap(
         int     mipmapMode,
@@ -120,15 +132,20 @@ public class TextureCubeMap extends Texture {
      * must be set.
      * Note that cube map is square in dimensions, hence specifying width 
      * is sufficient.
+     * Note also that a texture with a non-power-of-two width will
+     * only be rendered on a graphics device that supports non-power-of-two
+     * textures.
+     *
      * @param mipmapMode type of mipmap for this Texture: One of
      * BASE_LEVEL, MULTI_LEVEL_MIPMAP.
      * @param format data format of Textures saved in this object.
      * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA.
-     * @param width width of image at level 0. Must be power of 2.
+     * @param width width (and height) of image at level 0. This
+     * does not include the width of the boundary.
      * @param boundaryWidth width of the boundary, which must be 0 or 1.
      *
-     * @exception IllegalArgumentException if width is NOT
-     * power of 2 OR invalid format/mipmapMode is specified.
+     * @exception IllegalArgumentException if width is not
+     * greater than 0 OR invalid format/mipmapMode is specified.
      */
     public TextureCubeMap(
         int     mipmapMode,

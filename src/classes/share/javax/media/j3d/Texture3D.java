@@ -19,6 +19,14 @@ package javax.media.j3d;
  * If 3D texture mapping is not supported on a particular Canvas3D,
  * 3D texture mapping is ignored for that canvas.
  *
+ * <p>
+ * Note that as of Java 3D 1.5, the texture width, height, and depth
+ * are no longer
+ * required to be an exact power of two. However, not all graphics devices
+ * supports non-power-of-two textures. If non-power-of-two texture mapping is
+ * unsupported on a particular Canvas3D, textures with a width, height,
+ * or depth that are not an exact power of two are ignored for that canvas.
+ *
  * @see Canvas3D#queryProperties
  */
 
@@ -47,15 +55,19 @@ public class Texture3D extends Texture {
      * the application using 'setImage' method. If mipmapMode is
      * set to MULTI_LEVEL_MIPMAP, images for base level through
      * maximum level must be set.
+     * Note that a texture with a non-power-of-two width, height, or depth will
+     * only be rendered on a graphics device that supports non-power-of-two
+     * textures.
+     *
      * @param mipmapMode type of mipmap for this Texture: One of
      * BASE_LEVEL, MULTI_LEVEL_MIPMAP.
      * @param format data format of Textures saved in this object.
      * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA.
-     * @param width width of image at level 0. Must be power of 2.
-     * @param height height of image at level 0. Must be power of 2.
-     * @param depth depth of image at level 0. Must be power of 2.
-     * @exception IllegalArgumentException if width or height are NOT
-     * power of 2 OR invalid format/mipmapMode is specified.
+     * @param width width of image at level 0.
+     * @param height height of image at level 0.
+     * @param depth depth of image at level 0.
+     * @exception IllegalArgumentException if width, height, or depth are not
+     * greater than 0 OR invalid format/mipmapMode is specified.
      */
     public Texture3D(int	mipmapMode,
 		     int	format,
@@ -88,16 +100,23 @@ public class Texture3D extends Texture {
      * the application using 'setImage' method. If mipmapMode is
      * set to MULTI_LEVEL_MIPMAP, images for base level through
      * maximum level must be set.
+     * Note that a texture with a non-power-of-two width, height, or depth will
+     * only be rendered on a graphics device that supports non-power-of-two
+     * textures.
+     *
      * @param mipmapMode type of mipmap for this Texture: One of
      * BASE_LEVEL, MULTI_LEVEL_MIPMAP.
      * @param format data format of Textures saved in this object.
      * One of INTENSITY, LUMINANCE, ALPHA, LUMINANCE_ALPHA, RGB, RGBA.
-     * @param width width of image at level 0. Must be power of 2.
-     * @param height height of image at level 0. Must be power of 2.
-     * @param depth depth of image at level 0. Must be power of 2.
+     * @param width width of image at level 0. This
+     * does not include the width of the boundary.
+     * @param height height of image at level 0. This
+     * does not include the width of the boundary.
+     * @param depth depth of image at level 0. This
+     * does not include the width of the boundary.
      * @param boundaryWidth width of the boundary, which must be 0 or 1.
-     * @exception IllegalArgumentException if width or height are NOT
-     * power of 2 OR invalid format/mipmapMode is specified, or
+     * @exception IllegalArgumentException if width, height, or depth are not
+     * greater than 0 OR invalid format/mipmapMode is specified, or
      * if the boundaryWidth is &lt; 0 or &gt; 1
      *
      * @since Java 3D 1.3
