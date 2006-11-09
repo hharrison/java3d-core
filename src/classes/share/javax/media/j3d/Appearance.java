@@ -704,13 +704,15 @@ public class Appearance extends NodeComponent {
         // Do illegal sharing check
         if (stateArray != null) {
             for(int j=0; j<stateArray.length; j++) {
-                TextureRetained texRetained =
-                        ((TextureUnitStateRetained)stateArray[j].retained).texture;
-                if(texRetained != null) {
-                    ImageComponent[] images = texRetained.getImages();
-                    if(images != null) {
-                        for(int i=0; i<images.length; i++) {
-                            validateImageIllegalSharing(images[i]);
+                if(stateArray[j] != null) {
+                    TextureRetained texRetained =
+                            ((TextureUnitStateRetained)stateArray[j].retained).texture;
+                    if(texRetained != null) {
+                        ImageComponent[] images = texRetained.getImages();
+                        if(images != null) {
+                            for(int i=0; i<images.length; i++) {
+                                validateImageIllegalSharing(images[i]);
+                            }
                         }
                     }
                 }
