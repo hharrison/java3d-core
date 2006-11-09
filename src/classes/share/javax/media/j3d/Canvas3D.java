@@ -724,6 +724,8 @@ public class Canvas3D extends Canvas {
     int canvasBit = 0;
     // an unique number to identify this canvas : ( canvasBit = 1 << canvasId)
     int canvasId = 0;
+    // Indicates whether the canvasId has been allocated
+    private boolean canvasIdAlloc = false;
     
     // Avoid using this as lock, it cause deadlock 
     Object cvLock = new Object();
@@ -1290,6 +1292,7 @@ public class Canvas3D extends Canvas {
 	}
 	
         canvasId = VirtualUniverse.mc.getCanvasId();
+        canvasIdAlloc = true;
         canvasBit = 1 << canvasId;
  
 	validCanvas = true;
@@ -1382,6 +1385,7 @@ public class Canvas3D extends Canvas {
 	evaluateActive();
 
         VirtualUniverse.mc.freeCanvasId(canvasId);
+        canvasIdAlloc = false;
 	canvasBit = 0;
 	canvasId = 0;
 
@@ -1821,9 +1825,14 @@ public class Canvas3D extends Canvas {
 
             // Issues 347, 348 - assign a canvasId for off-screen Canvas3D
             if (manualRendering) {
-                if (canvasBit == 0) {
+                if (!canvasIdAlloc) {
                     canvasId = VirtualUniverse.mc.getCanvasId();
-                    canvasBit = 1 << canvasId;
+                    canvasIdAlloc = true;
+
+                    // NOTE: We are backing out the following part of the following fix for issues
+                    // 347 and 348 due to a regression in texture mapping, and due
+                    // to the fact that it is an incomplete fix.
+//                    canvasBit = 1 << canvasId;
                 }
             }
         }
@@ -1832,8 +1841,9 @@ public class Canvas3D extends Canvas {
 
             // Issues 347, 348 - release canvasId for off-screen Canvas3D
             if (manualRendering) {
-                if (canvasBit != 0) {
+                if (canvasIdAlloc) {
                     VirtualUniverse.mc.freeCanvasId(canvasId);
+                    canvasIdAlloc = false;
                     canvasBit = 0;
                     canvasId = 0;
                 }
