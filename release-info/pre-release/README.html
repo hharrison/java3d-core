@@ -19,12 +19,12 @@
   <title>Java 3D 1.5.0 Pre-Release Notes</title>
 </head>
 <body>
-<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.5.0-beta1
+<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.5.0-beta2
 Pre-Release Notes</h2>
 <p>This file contains important pre-release information for users of
 the
 Java&nbsp;3D<sup><font size="-2">TM</font></sup> API, version
-1.5.0-beta1.
+1.5.0-beta2.
 </p>
 <ul>
   <a href="#System_Requirements">System Requirements</a>
@@ -36,7 +36,7 @@ x86</a>, <a href="#Linux">Linux</a>, <a href="#Windows">Windows</a>, <a
   <a href="#More_Information">More Information</a><br>
 </ul>
 <h3><a name="System_Requirements"></a>System Requirements</h3>
-<p>The 1.5.0-beta1 version of the Java&nbsp;3D API has been released
+<p>The 1.5.0-beta2 version of the Java&nbsp;3D API has been released
 for
 Solaris (both sparc and x86/amd64), Linux (both x86 and amd64), Windows
 (both x86 and amd64), and
@@ -44,22 +44,23 @@ Mac OS X (both PPC and x86).
 </p>
 <h4><a name="Solaris_Sparc"></a>Solaris Sparc</h4>
 <p>
-The 1.5.0-beta1 version of Java&nbsp;3D for Solaris SPARC requires the
+The 1.5.0-beta2 version of Java&nbsp;3D for Solaris SPARC requires the
 following:
 </p>
 <ul>
   <li>JDK 1.5.0 or later from Sun Microsystems: <a
  href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
   <li>Solaris 9 or later</li>
-  <li>Frame Buffer with OpenGL 1.3 support (XVR-600,
-XVR-1200, Expert3D, etc.)</li>
+  <li>Frame Buffer with OpenGL 1.3 support or better (XVR-600,
+XVR-1200, Expert3D, etc.). A frame buffer with OpenGL 1.2 support will
+work, but with reduced texture mapping functionality.</li>
   <li>OpenGL 1.3 for Solaris or later. To find your current version,
 use: "<code>pkginfo -l SUNWglrt</code>". OpenGL for Solaris can be
 obtained at: <a href="http://www.sun.com/software/graphics/opengl/">http://www.sun.com/software/graphics/opengl/</a></li>
 </ul>
 <h4><a name="Solaris_x86"></a>Solaris x86</h4>
 <p>
-The 1.5.0-beta1 version of Java&nbsp;3D for Solaris x86/amd64 requires
+The 1.5.0-beta2 version of Java&nbsp;3D for Solaris x86/amd64 requires
 the
 following:
 </p>
@@ -71,7 +72,7 @@ following:
 </ul>
 <h4><a name="Linux"></a>Linux<br>
 </h4>
-<p>The 1.5.0-beta1 version of Java&nbsp;3D for Linux (x86 or amd64)
+<p>The 1.5.0-beta2 version of Java&nbsp;3D for Linux (x86 or amd64)
 requires
 the
 following:<br>
@@ -81,12 +82,12 @@ following:<br>
  href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
   <li>Graphics adapter with driver that supports the GLX
 extension: GLX
-1.3 or later and OpenGL 1.3 or later<br>
-  </li>
+1.3 or later and OpenGL 1.3 or later. A graphics adapter with OpenGL
+1.2 support will work, but with reduced texture mapping functionality. </li>
 </ul>
 <h4><a name="Windows"></a>Windows<br>
 </h4>
-<p>The 1.5.0-beta1 version of Java&nbsp;3D for Windows 2000, and
+<p>The 1.5.0-beta2 version of Java&nbsp;3D for Windows 2000, and
 Windows/XP (x86 or amd64)
 requires the following:<br>
 </p>
@@ -108,7 +109,7 @@ available from your graphics card manufacturer.
 <ul>
   <span style="font-weight: bold;">DirectX version</span><br>
   <ul>
-    <strike>The (optional) DirectX renderer of Java&nbsp;3D requires
+The (optional) DirectX renderer of Java&nbsp;3D requires
 DirectX 9.0 or
 later, which is available from Microsoft at: <a
  href="http://www.microsoft.com/windows/directx/">http://www.microsoft.com/windows/directx/</a>
@@ -120,14 +121,10 @@ for example:
     <ul>
       <code>java -Dj3d.rend=d3d ClassName</code>
     </ul>
-    </strike> <br>
-    <i><font size="-1">The DirectX rendering pipeline is not
-available in 1.5.0-beta1. We plan to deliver a beta version in
-1.5.0-beta2.</font></i>
   </ul>
 </ul>
 <h4><a name="MacOSX"></a>Mac OS X</h4>
-<p>The 1.5.0-beta1 version of Java&nbsp;3D for Mac OSX (PPC or x86)
+<p>The 1.5.0-beta2 version of Java&nbsp;3D for Mac OS X (PPC or x86)
 requires the following:<br>
 </p>
 <ul>
@@ -145,18 +142,242 @@ Intel-based Apple systems)<br>
   <li>Support for OpenGL 1.3 or later<br>
   </li>
 </ul>
-<h3><a name="Improvements_In_1_5_0"></a>Improvements in 1.5.0-beta1</h3>
+<h3><a name="Improvements_In_1_5_0"></a>Improvements in 1.5.0</h3>
 <h4>New Features / Enhancements</h4>
 <ul>
-  <li><a href="#JoglPipeline">JOGL Rendering Pipeline</a><br>
+  <li><a href="RELEASE-NOTES-beta2.html#JoglPipeline">JOGL Rendering
+Pipeline</a></li>
+  <li>Non-power-of-two
+textures: <a target="_blank"
+ href="http://jcp.org/aboutJava/communityprocess/maintenance/jsr926/ChangeLog-1_5.html#NPOT_Textures">change
+log</a><br>
   </li>
-  <li>Non-power-of-two textures</li>
-  <li>NIO image buffer support for textures</li>
-  <li>By-reference support for geometry indices</li>
-  <li>Rendering error listeners</li>
-  <li>Vecmath accessors/mutators</li>
+  <li>NIO
+image buffer support for textures: <a target="_blank"
+ href="http://jcp.org/aboutJava/communityprocess/maintenance/jsr926/ChangeLog-1_5.html#NIO_Image_Buffer">change
+log</a>, <a target="_blank"
+ href="http://download.java.net/media/java3d/javadoc/1.5.0-latest/javax/media/j3d/NioImageBuffer.html">javadoc</a></li>
+  <li>By-reference
+support for geometry indices: <a target="_blank"
+ href="http://jcp.org/aboutJava/communityprocess/maintenance/jsr926/ChangeLog-1_5.html#By_Ref_Indices">change
+log</a>, <a target="_blank"
+ href="http://download.java.net/media/java3d/javadoc/1.5.0-latest/javax/media/j3d/IndexedGeometryArray.html#setCoordIndicesRef%28int%5B%5D%29">javadoc</a></li>
+  <li>Rendering
+error listeners: <a target="_blank"
+ href="http://jcp.org/aboutJava/communityprocess/maintenance/jsr926/ChangeLog-1_5.html#RenderingErrorListener">change
+log</a>, <a target="_blank"
+ href="http://download.java.net/media/java3d/javadoc/1.5.0-latest/javax/media/j3d/RenderingErrorListener.html">javadoc</a></li>
+  <li>Vecmath
+accessors/mutators: <a target="_blank"
+ href="http://jcp.org/aboutJava/communityprocess/maintenance/jsr926/ChangeLog-1_5.html#vecmath_accessors_mutators">change
+log</a>, <a target="_blank"
+ href="http://download.java.net/media/java3d/javadoc/1.5.0-latest/javax/vecmath/Tuple3f.html#setX%28float%29">javadoc</a><br>
+  </li>
 </ul>
-<h4>Issues Fixed</h4>
+<h4>Issues Fixed in 1.5.0-beta2<br>
+</h4>
+<br>
+<table style="text-align: left;" border="1" cellpadding="2"
+ cellspacing="0">
+  <tbody>
+    <tr>
+      <th style="vertical-align: top; text-align: right;">Issue</th>
+      <th style="vertical-align: top;">&nbsp; </th>
+      <th style="vertical-align: top;">Description</th>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">84</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Rendering pauses after Canvas3D
+disposal until AWT event<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">238</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Exception in thread
+"J3D-MasterControl-1" when setting TextureUnitState to 0-length array<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">252</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Offscreen Canvas3D/Screen3D
+error reporting (pbuffer allocation)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">295</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Texture3D throws
+ArrayIndexOutOfBoundsException when scaleImage<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">312</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Exception while detaching
+ModelClip from ViewSpecificGroup<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">324</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Lockup Java3D program and throw
+exception using JOGL renderer<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">336</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Unable to redraw when resizing
+using JOGL pipeline<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">341</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Initializing audio device using
+Webstart throws ClassNotFoundException<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">344</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Too much time to load image as
+Texture<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">349</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">OffScreen Canvas3D needlessly
+forces power-of-two for its buffer<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">351</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Need a new mechanism to free D3D
+surface<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">352</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">VC compiler generates warning on
+Windows AMD64 build<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">353</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">GeometryArray Memory Leak<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">355</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">IndexedXXXStripArray throws NPE
+with ByRef Indices<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">356</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Exception in RenderBin when
+removing a Shape3D with no geometry<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">358</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Document that OGL 1.2 is
+supported, but at reduced functionality<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">360</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">SceneGraphStreamWriter.writeBranchGraph
+throws exception<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">366</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Raster appears without image on
+systems without NPOT support<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">367</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Clip throws NPE in case of
+region = null in a live scene<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">368</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Background texture doesn't work
+on system with no NPOT support<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">370</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Deadlock when calling
+Raster.setimage from user thread<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">371</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Poor raster quality for systems
+that don't support NPOT textures<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">372</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">ImageComponent.set(BufferedImage)
+ignored when used by Raster<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">373</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">ImageComponent.set(BufferedImage)
+ignored when used by Background<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">374</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Exception when calling
+Background.setImage on live scene graph<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">379</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Needs NPOT support documented in
+Texture, Texture3D and TextureCubeMap<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">380</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">NPE when uncheck Show Color
+Texture in Dot3 demo<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<h4>Issues Fixed in 1.5.0-beta1<br>
+</h4>
 <br>
 <table style="text-align: left;" border="1" cellpadding="2"
  cellspacing="0">
@@ -513,18 +734,6 @@ setOffScreenBuffer, NPE in JOGL pipeline</td>
       <td style="vertical-align: top;">Raster.setDstOffset() set the
 destination pixel offset in opposite direction</td>
     </tr>
-    <tr>
-      <td style="vertical-align: top; text-align: right;">347</td>
-      <td style="vertical-align: top;">&nbsp; </td>
-      <td style="vertical-align: top;">OffScreen Canvas3D always
-reloads textures, display lists</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top; text-align: right;">348</td>
-      <td style="vertical-align: top;">&nbsp; </td>
-      <td style="vertical-align: top;">Programmable shaders do not work
-for OffScreen Canvas3D</td>
-    </tr>
   </tbody>
 </table>
 <br>
@@ -533,7 +742,7 @@ for OffScreen Canvas3D</td>
 in <a href="https://java3d.dev.java.net/issues/show_bug.cgi?id=229">issue
 229</a>, is now
 available on all supported platforms, including Apple Mac
-OSX (x86 or PPC). The easiest way to run Java&nbsp;3D applications
+OS X (x86 or PPC). The easiest way to run Java&nbsp;3D applications
 using the JOGL
 pipeline is via Java Webstart from your browser (with no setup
 required).
@@ -542,10 +751,11 @@ to the "Early access
 test program" section at bottom of the
 page to run a Java&nbsp;3D example program from your browser via the
 JOGL pipeline. These
-examples will use JOGL on Mac OSX and the native OpenGL pipeline on all
+examples will use JOGL on Mac OS X and the native OpenGL pipeline on
+all
 other platforms.<br>
 </p>
-<p>The JOGL renderer is the default on Mac OSX.
+<p>The JOGL renderer is the default on Mac OS X.
 You can select the JOGL renderer on other platforms by setting the "<code>j3d.rend</code>"
 system
 property

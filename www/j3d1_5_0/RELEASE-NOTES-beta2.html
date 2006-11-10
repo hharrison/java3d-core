@@ -65,8 +65,9 @@ following:
   <li>JDK 1.5.0 or later from Sun Microsystems: <a
  href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
   <li>Solaris 9 or later</li>
-  <li>Frame Buffer with OpenGL 1.3 support (XVR-600,
-XVR-1200, Expert3D, etc.)</li>
+  <li>Frame Buffer with OpenGL 1.3 support or better (XVR-600,
+XVR-1200, Expert3D, etc.). A frame buffer with OpenGL 1.2 support will
+work, but with reduced texture mapping functionality.</li>
   <li>OpenGL 1.3 for Solaris or later. To find your current version,
 use: "<code>pkginfo -l SUNWglrt</code>". OpenGL for Solaris can be
 obtained at: <a href="http://www.sun.com/software/graphics/opengl/">http://www.sun.com/software/graphics/opengl/</a></li>
@@ -95,8 +96,8 @@ following:<br>
  href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
   <li>Graphics adapter with driver that supports the GLX
 extension: GLX
-1.3 or later and OpenGL 1.3 or later<br>
-  </li>
+1.3 or later and OpenGL 1.3 or later. A graphics adapter with OpenGL
+1.2 support will work, but with reduced texture mapping functionality. </li>
 </ul>
 <h4><a name="Windows"></a>Windows<br>
 </h4>
@@ -189,7 +190,7 @@ log</a>, <a target="_blank"
 </ul>
 <h4>Issues Fixed in 1.5.0-beta2<br>
 </h4>
-FINISH THIS LIST<br>
+<br>
 <table style="text-align: left;" border="1" cellpadding="2"
  cellspacing="0">
   <tbody>
@@ -199,15 +200,192 @@ FINISH THIS LIST<br>
       <th style="vertical-align: top;">Description</th>
     </tr>
     <tr>
-      <td style="vertical-align: top; text-align: right;">nnn</td>
+      <td style="vertical-align: top; text-align: right;">84</td>
       <td style="vertical-align: top;">&nbsp; </td>
-      <td style="vertical-align: top;">Description of the bug or issue<br>
+      <td style="vertical-align: top;">Rendering pauses after Canvas3D
+disposal until AWT event<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; text-align: right;">nnn</td>
+      <td style="vertical-align: top; text-align: right;">238</td>
       <td style="vertical-align: top;">&nbsp; </td>
-      <td style="vertical-align: top;">Description of the bug or issue</td>
+      <td style="vertical-align: top;">Exception in thread
+"J3D-MasterControl-1" when setting TextureUnitState to 0-length array<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">252</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Offscreen Canvas3D/Screen3D
+error reporting (pbuffer allocation)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">295</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Texture3D throws
+ArrayIndexOutOfBoundsException when scaleImage<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">312</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Exception while detaching
+ModelClip from ViewSpecificGroup<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">324</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Lockup Java3D program and throw
+exception using JOGL renderer<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">336</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Unable to redraw when resizing
+using JOGL pipeline<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">341</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Initializing audio device using
+Webstart throws ClassNotFoundException<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">344</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Too much time to load image as
+Texture<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">349</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">OffScreen Canvas3D needlessly
+forces power-of-two for its buffer<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">351</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Need a new mechanism to free D3D
+surface<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">352</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">VC compiler generates warning on
+Windows AMD64 build<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">353</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">GeometryArray Memory Leak<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">355</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">IndexedXXXStripArray throws NPE
+with ByRef Indices<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">356</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Exception in RenderBin when
+removing a Shape3D with no geometry<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">358</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Document that OGL 1.2 is
+supported, but at reduced functionality<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">360</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">SceneGraphStreamWriter.writeBranchGraph
+throws exception<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">366</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Raster appears without image on
+systems without NPOT support<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">367</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Clip throws NPE in case of
+region = null in a live scene<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">368</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Background texture doesn't work
+on system with no NPOT support<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">370</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Deadlock when calling
+Raster.setimage from user thread<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">371</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Poor raster quality for systems
+that don't support NPOT textures<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">372</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">ImageComponent.set(BufferedImage)
+ignored when used by Raster<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">373</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">ImageComponent.set(BufferedImage)
+ignored when used by Background<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">374</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Exception when calling
+Background.setImage on live scene graph<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">379</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Needs NPOT support documented in
+Texture, Texture3D and TextureCubeMap<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">380</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">NPE when uncheck Show Color
+Texture in Dot3 demo<br>
+      </td>
     </tr>
   </tbody>
 </table>
