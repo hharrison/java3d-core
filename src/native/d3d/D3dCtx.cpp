@@ -623,6 +623,9 @@ else
 
     setViewport();
     setDefaultAttributes();
+    
+    // Issue 400: initialize local viewer (for lighting) to false
+    pDevice->SetRenderState(D3DRS_LOCALVIEWER, FALSE);
 
     createVertexBuffer();
 

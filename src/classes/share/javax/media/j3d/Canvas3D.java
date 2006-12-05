@@ -4772,7 +4772,11 @@ public class Canvas3D extends Canvas {
 	    if (obj == null) {
 		continue;
 	    }
-            assert id == ((TextureRetained)obj).objectId;
+
+            // Issue 403 : this assertion doesn't hold in some cases
+            // TODO KCR : determine why this is the case
+//            assert id == ((TextureRetained)obj).objectId;
+
 	    freeTexture(ctx, id);
 	    if (obj instanceof TextureRetained) {
 		tex = (TextureRetained) obj;

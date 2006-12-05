@@ -6961,6 +6961,9 @@ class JoglPipeline extends Pipeline {
             gl.glDepthFunc(GL.GL_LEQUAL);
             gl.glEnable(GL.GL_COLOR_MATERIAL);
             gl.glReadBuffer(GL.GL_FRONT);
+            
+            // Workaround for issue 400: Enable separate specular by default
+            gl.glLightModeli(GL.GL_LIGHT_MODEL_COLOR_CONTROL, GL.GL_SEPARATE_SPECULAR_COLOR);
         } finally {
             context.release();
         }
@@ -8656,6 +8659,11 @@ class JoglPipeline extends Pipeline {
         // FIXME: should be smarter about choosing the number of samples
         // (Java3D's native code has a loop trying 8, 6, 4, 3, and 2 samples)
         caps.setNumSamples(4);
+        
+        // Issue 399: Request alpha buffer if transparentOffScreen is set
+        if (VirtualUniverse.mc.transparentOffScreen) {
+            caps.setAlphaBits(1);
+        }
         
         java.util.List<Integer> capsToDisable = new ArrayList<Integer>();
         // Add PREFERRED capabilities in order we will try disabling them
