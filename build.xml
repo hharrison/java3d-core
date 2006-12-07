@@ -523,7 +523,7 @@
       <copy todir="${platformTmpBund}/${release_name}">
           <fileset dir="." includes="COPYRIGHT.txt"/>
           <fileset dir="release-info/pre-release"
-              includes="LICENSE*.txt README.txt README-unzip.html"
+              includes="LICENSE*.txt README*.txt README-unzip.html"
           />
       </copy>
       <zip destfile="${dist}/release/${release_name}.zip">
@@ -598,8 +598,93 @@
     </zip>
   </target>
 
-  <target name="release-final" depends="init-release" if="releaseType_final">
-      <fail message="release-final not yet implenented"/>
+  <target name="release-final" depends="init-release,release-zip-bund-final,release-zip-inst-final" if="releaseType_final">
+  </target>
+
+  <target name="release-zip-bund-final" if="releaseType_final">
+      <mkdir dir="${platformTmpBund}/${release_name}"/>
+
+      <zip destfile="${platformTmpBund}/${release_name}/j3d-jre.zip">
+          <fileset dir="${dist}/${platform}"
+              includes="lib/**"
+          />
+          <fileset dir="${dist}/${platform}"
+              includes="bin/**"
+          />
+      </zip>
+      <copy todir="${platformTmpBund}/${release_name}">
+          <fileset dir="." includes="COPYRIGHT.txt"/>
+          <fileset dir="release-info/fcs-${version_base_file}"
+              includes="LICENSE*.txt README*.txt README-unzip.html"
+          />
+      </copy>
+      <zip destfile="${dist}/release/${release_name}.zip">
+          <fileset dir="${platformTmpBund}"
+              includes="${release_name}/**"
+          />
+      </zip>
+  </target>
+
+  <target name="release-zip-inst-final" if="releaseType_final">
+      <antcall target="release-zip-inst-final-unix"/>
+      <antcall target="release-zip-inst-final-windows"/>
+  </target>
+
+  <target name="release-zip-inst-final-unix" if="isUnix">
+    <mkdir dir="${platformTmpInst}/${release_name}"/>
+
+    <copy todir="${platformTmpInst}/${release_name}">
+      <fileset dir="${dist}/${platform}"
+          includes="lib/**"/>
+      <fileset dir="${dist}/${platform}"
+          includes="bin/**"/>
+    </copy>
+
+    <copy tofile="${platformTmpInst}/${release_name}/LICENSE.txt">
+      <fileset dir="release-info/fcs-${version_base_file}"
+        includes="LICENSE*.txt"/>
+    </copy>
+
+    <chmod dir="${platformTmpInst}/${release_name}" perm="755"
+       includes="**/*.so"/>
+
+    <copy todir="${platformTmpInst}">
+        <fileset dir="${build-tools}/${platformname}"
+            includes="script*.txt, unzipsfx"/>
+    </copy>
+
+    <exec dir="${platformTmpInst}/${release_name}" executable="${shell}">
+      <arg line="${build-tools}/genzip ${release_name} LICENSE.txt lib"/>
+    </exec>
+
+    <copy file="${platformTmpInst}/${release_name}.bin" todir="${dist}/release"/>
+
+    <chmod file="${dist}/release/${release_name}.bin" perm="755"/>
+  </target>
+
+  <target name="release-zip-inst-final-windows" if="isWindows">
+    <property name="tmpInstDir" location="${platformTmpInst}/${inst_name}"/>
+    <mkdir dir="${tmpInstDir}/j3d-binaries"/>
+
+    <copy todir="${tmpInstDir}">
+      <fileset dir="release-info/fcs-${version_base_file}"
+        includes="LICENSE*.rtf README.html"/>
+    </copy>
+
+    <copy todir="${tmpInstDir}/j3d-binaries">
+      <fileset dir="${dist}/${platform}"
+          includes="lib/**"/>
+      <fileset dir="${dist}/${platform}"
+          includes="bin/**"/>
+    </copy>
+
+    <chmod dir="${tmpInstDir}/j3d-binaries" perm="755"
+       includes="**/*.dll"/>
+
+    <zip destfile="${dist}/release/${inst_name}.zip">
+      <fileset dir="${platformTmpInst}"
+          includes="${inst_name}/**"/>
+    </zip>
   </target>
 
   <target name="clean-dist">
