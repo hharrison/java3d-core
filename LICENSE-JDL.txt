@@ -8,7 +8,7 @@ is between Sun Microsystems, Inc. ("Sun") and You where "You" means
 the individual or legal entity exercising rights under this JDL.
 "Technology" means the following as provided under this JDL: (i) the
 source code and binary code from the Reference Implementation ("RI")
-of the Java 3D(TM) version 1.4 Specification (the "Specification") and
+of the Java 3D(TM) version 1.5 Specification (the "Specification") and
 related documentation, all as revised or upgraded and made available
 hereunder; and (ii) the associated technology compatibility kit ("TCK").
 The TCK contains the TCK documentation, user's guide ("TCK User's Guide"),
