@@ -14,7 +14,7 @@
  */
  -->
 
-<project name="java3d-1.5.0" default="jar-debug" basedir=".">
+<project name="java3d-1.5.1" default="jar-debug" basedir=".">
 
   <!--
   *********************************************************************
@@ -51,13 +51,13 @@
   * build number that is greater than the previous build's build
   * number.
   -->
-  <property name="version_buildnum"   value="8"/>
+  <property name="version_buildnum"   value="1"/>
 
   <!--
   * The following property specifies the beta revision of the current
   * Java 3D version being built. It is ignored for non-beta builds.
   -->
-  <property name="version_betastr"    value="beta3"/>
+  <property name="version_betastr"    value="beta1"/>
 
   <!--
   * The following property specifies the patch revision of the current
@@ -72,8 +72,8 @@
   * separated by "periods ("."). The version_base_file property must
   * be the same version number as version_base with "_" replacing ".".
   -->
-  <property name="version_base"       value="1.5.0"/>
-  <property name="version_base_file"  value="1_5_0"/>
+  <property name="version_base"       value="1.5.1"/>
+  <property name="version_base_file"  value="1_5_1"/>
 
 
   <!-- ************************************* -->
@@ -146,7 +146,6 @@
 
     <echo message="version         = ${version}"/>
     <echo message="version_file    = ${version_file}"/>
-    <echo message="version_rpm     = ${version_rpm}"/>
   </target>
 
   <target name="setupSolaris" if="isSolarisOnSparc">
@@ -273,7 +272,6 @@
 
     <property name="version" value="${version_base}_${version_suffix}"/>
     <property name="version_file" value="${version_base_file}_${version_suffix}"/>
-    <property name="version_rpm" value="${version_base}_${version_suffix}"/>
   </target>
 
 
@@ -291,7 +289,6 @@
 
     <property name="version" value="${version_base}"/>
     <property name="version_file" value="${version_base_file}"/>
-    <property name="version_rpm" value="${version_base}"/>
   </target>
 
 
@@ -310,7 +307,6 @@
 
     <property name="version" value="${version_base}-${version_suffix}"/>
     <property name="version_file" value="${version_base_file}-${version_suffix}"/>
-    <property name="version_rpm" value="${version_base}_${version_suffix}"/>
   </target>
 
 
@@ -329,7 +325,6 @@
 
     <property name="version" value="${version_base}-${version_suffix}"/>
     <property name="version_file" value="${version_base_file}-${version_suffix}"/>
-    <property name="version_rpm" value="${version_base}_${version_suffix}"/>
   </target>
 
 
@@ -348,7 +343,6 @@
 
     <property name="version" value="${version_base}-${version_suffix}-${buildtime}"/>
     <property name="version_file" value="${version_base_file}-${version_suffix}-${buildtime}"/>
-    <property name="version_rpm" value="${version_base}_${version_suffix}_${buildtime}"/>
   </target>
 
 
@@ -785,9 +779,6 @@ The following ant targets are available ("jar-opt" is the default):
                      - compiles only the java portion of Java3D and builds
                       jars in same location as jar-opt
 
-      rpm            - creates a i586 rpm for installation in /usr/java/jdk1.5.0
-                      the rpm is placed in dist/rpm
-                      
       install-debug  - installs the debug build into the JDK pointed to by JAVA_HOME
       
       uninstall      - uninstalls Java 3D from the JDK pointed to by JAVA_HOME
