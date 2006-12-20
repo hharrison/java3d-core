@@ -4264,6 +4264,8 @@ public class Canvas3D extends Canvas {
 
 	// Wait for off-screen buffer to be created
 	while (offScreenBufferPending) {
+            // Issue 364: create master control thread if needed
+            VirtualUniverse.mc.createMasterControlThread();
 	    MasterControl.threadYield();
 	}
     }
@@ -4286,9 +4288,11 @@ public class Canvas3D extends Canvas {
         VirtualUniverse.mc.sendDestroyCtxAndOffScreenBuffer(this);            
 
 	// Wait for ctx and off-screen buffer to be destroyed
-	while (offScreenBufferPending) {
-	    MasterControl.threadYield();
-	}
+        while (offScreenBufferPending) {
+            // Issue 364: create master control thread if needed
+            VirtualUniverse.mc.createMasterControlThread();
+            MasterControl.threadYield();
+        }
     }
 
     private void removeCtx() {

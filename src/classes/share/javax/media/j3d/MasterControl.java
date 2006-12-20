@@ -1154,6 +1154,11 @@ class MasterControl {
      * Create and start the MasterControl Thread.
      */
     void createMasterControlThread() {
+        // Issue 364: don't create master control thread if already created
+        if (mcThread != null) {
+            return;
+        }
+
 	running = true;
 	workToDo = true;
 	state = RUNNING;
@@ -2784,19 +2789,13 @@ class MasterControl {
     void sendDestroyCtxAndOffScreenBuffer(Canvas3D c) {
         // Assertion check. Look for comment in sendCreateOffScreenBuffer.
         GraphicsDevice gd = c.graphicsConfiguration.getDevice();
-	J3dDebug.doAssert((Screen3D.deviceRendererMap.get(gd) != null),
-			  "Screen3D.deviceRendererMap.get(gd) != null");
+	assert Screen3D.deviceRendererMap.get(gd) != null;
 
 	synchronized (mcThreadLock) {
-            // TODO KCR Issue 364: uncomment the following partial fix
-//	    // Create the master control thread if it isn't already created
-//	    if (mcThread == null) {
-//		//System.err.println("Calling createMasterControlThread()");
-//		createMasterControlThread();
-//	    }
+            // Issue 364: create master control thread if needed
+	    createMasterControlThread();
+            assert mcThread != null;
 
-            // Assert the master control thread is created.
-            J3dDebug.doAssert((mcThread != null), "mcThread != null");
 	    Renderer rdr = createRenderer(c.graphicsConfiguration);
 	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.RENDER_THREAD;
@@ -2812,7 +2811,7 @@ class MasterControl {
 	    synchronized (requestObjList) {
 		setWorkForRequestRenderer();
 		pendingRequest = true;
-	    }            
+	    }
         }
     }
     
@@ -2833,11 +2832,9 @@ class MasterControl {
 			  "Screen3D.deviceRendererMap.get(gd) != null");
 
 	synchronized (mcThreadLock) {
-	    // Create the master control thread if it isn't already created
-	    if (mcThread == null) {
-		//System.err.println("Calling createMasterControlThread()");
-		createMasterControlThread();
-	    }
+            // Create master control thread if needed
+	    createMasterControlThread();
+            assert mcThread != null;
 
 	    // Fix for Issue 72 : call createRenderer rather than getting
 	    // the renderer from the canvas.screen object
