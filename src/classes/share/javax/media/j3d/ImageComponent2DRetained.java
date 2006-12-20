@@ -332,14 +332,40 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         } else { 
             newHeight = 1;
             yScale = 1; 
-        }   
+        }          
+        
+        // XXXXX Fix to Issue 425 : NullPointerException in automatic mipmap generation
+        if (imageData == null) {
+            // This is a byRef, support format and is a RenderedImage case.
+            // See ImageComponent2DRetained.set(RenderedImage image)
+            RenderedImage ri = (RenderedImage) getRefImage(0);
+            
+            assert !(ri instanceof BufferedImage);
+            
+            // Create a buffered image from renderImage
+            ColorModel cm = ri.getColorModel();
+            WritableRaster wRaster = ri.copyData(null);
+            ri = new BufferedImage(cm,
+                    wRaster,
+                    cm.isAlphaPremultiplied()
+                    ,null);
+            
+            
+            // Create image data object with buffer for image. */
+            imageData = createRenderedImageDataObject(null);
+            copySupportedImageToImageData(ri, 0, imageData);
+            
+        }
+        
+        assert imageData != null;
+        // XXXXX
         
         ImageComponent2DRetained newImage = new ImageComponent2DRetained();
         newImage.processParams(getFormat(), newWidth, newHeight, 1);
         newImage.setImageFormatType(getImageFormatType());
         newImage.setUnitsPerPixel(getUnitsPerPixel());
         newImage.imageData = newImage.createRenderedImageDataObject(null);
-
+        
         newImage.scaleImage(xScale, yScale, 0, this);
         
         return newImage;
