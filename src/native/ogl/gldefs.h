@@ -13,6 +13,11 @@
 #ifndef _Java3D_gldefs_h_
 #define _Java3D_gldefs_h_
 
+#if defined(WIN32)
+#define _CRT_SECURE_NO_DEPRECATE // shut up the vs2005 compiler
+#define _CRT_NONSTDC_NO_DEPRECATE
+#endif
+
 /*
  * Portions of this code were derived from work done by the Blackdown
  * group (www.blackdown.org), who did the initial Linux implementation

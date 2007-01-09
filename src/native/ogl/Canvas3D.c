@@ -20,13 +20,14 @@
 #define _GNU_SOURCE 1
 #endif
 
+/* gldefs.h needs to be included before any other include files to suppres VC warning */
+#include "gldefs.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <jni.h>
-
-#include "gldefs.h"
 
 #if defined(UNIX)
 #include <dlfcn.h>
@@ -36,7 +37,6 @@
 /* Uncomment the following for VERBOSE debug messages */
 /* #define VERBOSE */
 #endif /* DEBUG */
-
 
 extern void throwAssert(JNIEnv *env, char *str);
 

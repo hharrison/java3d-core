@@ -10,19 +10,19 @@
  * $State$
  */
 
+/* gldefs.h needs to be included before any other include files to suppres VC warning */
+#include "gldefs.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <jni.h>
 
-#include "gldefs.h"
-
 #ifdef DEBUG
 /* Uncomment the following for VERBOSE debug messages */
 /* #define VERBOSE */
 #endif /* DEBUG */
-
 
 /*
  * Screen door transparency table.

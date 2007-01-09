@@ -20,11 +20,12 @@
 #define _GNU_SOURCE 1
 #endif
 
+/* gldefs.h needs to be included before any other include files to suppres VC warning */
+#include "gldefs.h"
+
 #include <jni.h>
 #include <math.h>
 #include <stdlib.h>
-
-#include "gldefs.h"
 
 #if defined(UNIX)
 #include <X11/X.h>
