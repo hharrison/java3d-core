@@ -10,14 +10,16 @@
  * $State$
  */
 
-/* gldefs.h needs to be included before any other include files to suppres VC warning */
-#include "gldefs.h"
+/* j3dsys.h needs to be included before any other include files to suppres VC warning */
+#include "j3dsys.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <jni.h>
+
+#include "gldefs.h"
 
 #ifdef DEBUG
 /* Uncomment the following for VERBOSE debug messages */

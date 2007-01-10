@@ -10,6 +10,8 @@
  * $State$
  */
 
+/* j3dsys.h needs to be included before any other include files to suppres VC warning */
+#include "j3dsys.h"
 #include "Stdafx.h"
 
 

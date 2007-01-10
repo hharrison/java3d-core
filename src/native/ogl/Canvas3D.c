@@ -16,18 +16,16 @@
  * of the Java 3D API.
  */
 
-#if defined(LINUX)
-#define _GNU_SOURCE 1
-#endif
-
-/* gldefs.h needs to be included before any other include files to suppres VC warning */
-#include "gldefs.h"
+/* j3dsys.h needs to be included before any other include files to suppres VC warning */
+#include "j3dsys.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <jni.h>
+
+#include "gldefs.h"
 
 #if defined(UNIX)
 #include <dlfcn.h>

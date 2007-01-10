@@ -55,7 +55,7 @@
   <target name="compile-ogl">
     <!-- Compile the c source files-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="cl">
-	<arg line="-I&quot;${oglsrc}&quot; -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; -I&quot;${cg.home}\include&quot; -nologo -MT -W3 -EHsc -Ox -FD ${bldFlag} ${cflags.cg} -c &quot;${oglsrc}/DrawingSurfaceObjectAWT.c&quot; &quot;${oglsrc}/Canvas3D.c&quot; &quot;${oglsrc}/GraphicsContext3D.c&quot; &quot;${oglsrc}/NativeScreenInfo.c&quot; &quot;${oglsrc}/NativeConfigTemplate3D.c&quot; &quot;${oglsrc}/MasterControl.c&quot; &quot;${oglsrc}/GeometryArrayRetained.c&quot; &quot;${oglsrc}/Attributes.c&quot; &quot;${oglsrc}/CgShaderProgram.c&quot; &quot;${oglsrc}/GLSLShaderProgram.c&quot; &quot;${oglsrc}/Lights.c&quot;"/>
+	<arg line="-I&quot;${oglsrc}&quot; -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; -I&quot;${cg.home}\include&quot; -nologo -MT -W3 -EHsc -O2 -FD ${bldFlag} ${cflags.cg} -c &quot;${oglsrc}/DrawingSurfaceObjectAWT.c&quot; &quot;${oglsrc}/Canvas3D.c&quot; &quot;${oglsrc}/GraphicsContext3D.c&quot; &quot;${oglsrc}/NativeScreenInfo.c&quot; &quot;${oglsrc}/NativeConfigTemplate3D.c&quot; &quot;${oglsrc}/MasterControl.c&quot; &quot;${oglsrc}/GeometryArrayRetained.c&quot; &quot;${oglsrc}/Attributes.c&quot; &quot;${oglsrc}/CgShaderProgram.c&quot; &quot;${oglsrc}/GLSLShaderProgram.c&quot; &quot;${oglsrc}/Lights.c&quot;"/>
     </exec>
 
     <!-- Create the library file-->
@@ -69,7 +69,7 @@
   <target name="compile-ogl-cg" if="build.cg">
     <!-- Compile the c source files-->
     <exec dir="${build}/${platform}/${bldType}/native/ogl/objs" executable="cl">
-	<arg line="-I&quot;${oglsrc}&quot; -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; -I&quot;${cg.home}\include&quot; -nologo -MT -W3 -EHsc -Ox -FD ${bldFlag} ${cflags.cg} -c &quot;${oglsrc}/CgWrapper.c&quot;"/>
+	<arg line="-I&quot;${oglsrc}&quot; -I&quot;${javaInclude}&quot; -I&quot;${javaWin32Include}&quot; -I&quot;${javahCoreTarget}&quot; -I&quot;${cg.home}\include&quot; -nologo -MT -W3 -EHsc -O2 -FD ${bldFlag} ${cflags.cg} -c &quot;${oglsrc}/CgWrapper.c&quot;"/>
     </exec>
 
     <!-- Create the library file-->

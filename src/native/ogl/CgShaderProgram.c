@@ -10,9 +10,8 @@
  * $State$
  */
 
-#if defined(LINUX)
-#define _GNU_SOURCE 1
-#endif
+/* j3dsys.h needs to be included before any other include files to suppres VC warning */
+#include "j3dsys.h"
 
 #include <stdio.h>
 #include <stdlib.h>
