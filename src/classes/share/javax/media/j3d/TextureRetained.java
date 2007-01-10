@@ -152,9 +152,12 @@ abstract class TextureRetained extends NodeComponentRetained {
 
     int imageUpdatePruneMask[];
 
-
+    // Issue 357 - we need a separate reference counter per RenderBin, since
+    // each RenderBin keeps an independent list of Texture objects to be freed.
+    // Since this is accessed infrequently, we will use a HashMap for the
     // textureBin reference counter
-    int textureBinRefCount = 0;
+    private HashMap<RenderBin,Integer> textureBinRefCount =
+            new HashMap<RenderBin,Integer>();
 
     // This is used for D3D only to check whether texture need to
     // resend down
@@ -2360,7 +2363,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	ImageComponentRetained image;
 
-        textureBinRefCount++;
+        setTextureBinRefCount(tb, getTextureBinRefCount(tb) + 1);
 
 	// check to see if there is any modifiable images,
 	// if yes, add those images to nodeComponentList in RenderBin
@@ -2391,7 +2394,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	ImageComponentRetained image;
 
-        textureBinRefCount--;
+        setTextureBinRefCount(tb, getTextureBinRefCount(tb) - 1);
 
 	// remove any modifiable images from RenderBin nodeComponentList
 
@@ -2466,6 +2469,24 @@ abstract class TextureRetained extends NodeComponentRetained {
     
     boolean isUseAsRaster() {
         return this.useAsRaster;
+    }
+
+    // Issue 357 - {get/set}TextureBinRefCount now uses a separate reference
+    // counter per RenderBin. The absence of the RenderBin key in the hash map
+    // is used to indicate a value of 0. This makes initialization easier, and
+    // prevents a small amount of garbage accumulating for inactive RenderBins.
+
+    int getTextureBinRefCount(TextureBin tb) {
+        Integer i = textureBinRefCount.get(tb.renderBin);
+        return i == null ? 0 : i.intValue();
+    }
+
+    private void setTextureBinRefCount(TextureBin tb, int refCount) {
+        if (refCount == 0) {
+            textureBinRefCount.remove(tb.renderBin);
+        } else {
+            textureBinRefCount.put(tb.renderBin, new Integer(refCount));
+        }
     }
 
 }

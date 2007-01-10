@@ -3845,7 +3845,7 @@ public class Canvas3D extends Canvas {
 	    graphics2D.objectId = -1;
 	}
 	
-	for (int id = textureIDResourceTable.size()-1; id > 0; id--) {
+	for (int id = textureIDResourceTable.size()-1; id >= 0; id--) {
 	    obj = textureIDResourceTable.get(id);
 	    if (obj != null) {
 		if (obj instanceof TextureRetained) {
@@ -4771,7 +4771,7 @@ public class Canvas3D extends Canvas {
             }
 	}
 
-	for (int id = textureIDResourceTable.size()-1; id > 0; id--) {
+	for (int id = textureIDResourceTable.size()-1; id >= 0; id--) {
 	    obj = textureIDResourceTable.get(id);
 	    if (obj == null) {
 		continue;

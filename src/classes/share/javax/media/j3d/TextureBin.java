@@ -193,7 +193,6 @@ class TextureBin extends Object implements ObjectUpdate {
 	TextureRetained prevFirstTexture = null;
 	TextureRetained tex;
 
-
 	tbFlag |= TextureBin.CONTIGUOUS_ACTIVE_UNITS;
 
 	if (state != null) {
@@ -241,7 +240,7 @@ class TextureBin extends Object implements ObjectUpdate {
 		    if (tex != null) {
 			tex.decTextureBinRefCount(this);
 			if (soleUser &&
-			    (tex.textureBinRefCount == 0) &&
+			    (tex.getTextureBinRefCount(this) == 0) &&
 			    (tex != state[i].texture)) {
 			    // In this case texture change but 
 			    // TextureBin will not invoke clear() to reset.
@@ -404,7 +403,7 @@ class TextureBin extends Object implements ObjectUpdate {
                         tex = texUnitState[i].texture;
                         tex.decTextureBinRefCount(this);
 
-                        if (tex.textureBinRefCount == 0) {
+                        if (tex.getTextureBinRefCount(this) == 0) {
                             renderBin.addTextureResourceFreeList(tex);
                         }
 
