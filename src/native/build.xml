@@ -396,7 +396,7 @@
 	   <ant antfile="build-${platform}.xml" dir="${build.rend}" target="compile"/>
   </target>
 
-  <target name="dist">
+  <target name="dist" unless="build.javaonly">
 	   <ant antfile="build-${platform}.xml" dir="${build.rend}" target="dist"/>
            <chmod dir="${dist}/${platform}" perm="755" includes="**/*.dll, **/*.so"/>
   </target>
