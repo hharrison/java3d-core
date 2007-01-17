@@ -814,6 +814,8 @@ class AppearanceRetained extends NodeComponentRetained {
 	  mirrorApp.material = (MaterialRetained)value;
       }
       else if ((component & TEXTURE) != 0) {
+          // Issue 435: set mirror texture
+          mirrorApp.texture = (TextureRetained)value;
 	  if (mirrorApp.texUnitState == null) {
 	      mirrorApp.texUnitState = new TextureUnitStateRetained[1];
 	      mirrorApp.texUnitState[0] = new TextureUnitStateRetained();
