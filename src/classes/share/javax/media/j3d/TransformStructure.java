@@ -189,6 +189,9 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
 	    }
 	    processVwcBounds();
 	}
+        
+        // Issue 434: clear references to objects that have been processed
+        objectList.clear();
 
 	Arrays.fill(messages, 0, nMsg, null);
     }
