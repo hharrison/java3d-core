@@ -46,7 +46,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	    PickRay pickRay= (PickRay) pickShape;
 
 	    while (i < validVertexCount) {
-                for(int j=0; j<4; j++) {
+                for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
                 }
@@ -74,7 +74,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	case PickShape.PICKSEGMENT:
 	    PickSegment pickSegment = (PickSegment) pickShape;
 	    while (i < validVertexCount) {
-                for(int j=0; j<4; j++) {
+                for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
                 }
@@ -105,7 +105,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 		((PickBounds) pickShape).bounds;
 	    
 	    while (i < validVertexCount) {
-                for(int j=0; j<4; j++) {
+                for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
                 }
@@ -135,7 +135,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 		((PickBounds) pickShape).bounds;
 	    
 	    while (i < validVertexCount) {
-                for(int j=0; j<4; j++) {
+                for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
                 }
@@ -165,7 +165,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 		((PickBounds) pickShape).bounds;
 	    
 	    while (i < validVertexCount) {
-                for(int j=0; j<4; j++) {
+                for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
                 }
@@ -194,7 +194,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	case PickShape.PICKCYLINDER:
 	    PickCylinder pickCylinder= (PickCylinder) pickShape;
 	    while (i < validVertexCount) {
-                for(int j=0; j<4; j++) {
+                for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
                 }
@@ -224,7 +224,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	    PickCone pickCone= (PickCone) pickShape;
 	    
 	    while (i < validVertexCount) {
-                for(int j=0; j<4; j++) {
+                for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
                 }
