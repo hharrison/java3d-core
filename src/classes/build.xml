@@ -4,7 +4,7 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -226,7 +226,7 @@
 
   <target name="setup-docs">
     <property name="javadoc.bottom"
-       value="&lt;font size=&quot;-1&quot;&gt;Copyright (c) 2006 Sun Microsystems, Inc. All rights reserved. Use is subject to &lt;a href=&quot;{@docRoot}/LICENSE-SPEC.html&quot;&gt;license terms&lt;/a&gt;."/>
+       value="&lt;font size=&quot;-1&quot;&gt;Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved. Use is subject to &lt;a href=&quot;{@docRoot}/LICENSE-SPEC.html&quot;&gt;license terms&lt;/a&gt;."/>
   </target>
 
   <target name="docs-jcp" depends="setup-docs">
