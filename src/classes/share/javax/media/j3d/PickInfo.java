@@ -597,10 +597,17 @@ public class PickInfo extends Object {
             Shape3DRetained shape = geomAtoms[i].source;
             srcNode = shape.sourceNode;
 
+            // Fix to Issue 274 : NPE With Simultaneous View and Content Side PickingBehaviors
+            // This node isn't under the selected BG for pick operation.
+            if (!inside(shape.branchGroupPath,bgRetained)) {
+                continue;
+            }
+            
             if (srcNode == null) {
                 // The node is just detach from branch so sourceNode = null
                 continue;
             }
+
             
             // Special case, for Text3DRetained, it is possible
             // for different geomAtoms pointing to the same
@@ -657,8 +664,7 @@ public class PickInfo extends Object {
                     pickInfo = null;
                     
                     // PickInfo.SCENEGRAPHPATH - request for computed SceneGraphPath.
-                    if (((flags & SCENEGRAPHPATH) != 0) && 
-                         (inside(shape.branchGroupPath,bgRetained))){
+                    if ((flags & SCENEGRAPHPATH) != 0){
                         
                         if(first) {
                             mpath = createPath(srcNode, bgRetained, geomAtoms[i], initpath);
@@ -714,19 +720,18 @@ public class PickInfo extends Object {
                 Node[] mpath = null;
 
                 // PickInfo.SCENEGRAPHPATH - request for computed SceneGraphPath.
-                if (((flags & SCENEGRAPHPATH) != 0)  && 
-                    (inside(shape.branchGroupPath,bgRetained))) {
-
+                if ((flags & SCENEGRAPHPATH) != 0) {
+                    
                     mpath = createPath(srcNode, bgRetained, geomAtoms[i], initpath);
                     
                     if(mpath != null) {
                         SceneGraphPath sgpath = new SceneGraphPath(locale, mpath,
                                 (Node) srcNode.source);
                         sgpath.setTransform(shape.getCurrentLocalToVworld(0));
-			if(pickInfo == null) 
-			    pickInfo = new PickInfo();
+                        if(pickInfo == null)
+                            pickInfo = new PickInfo();
                         pickInfo.setSceneGraphPath(sgpath);
-                    }
+                    }                          
                 }
                 
                 // PickInfo.NODE - request for computed intersected Node.
