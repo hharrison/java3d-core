@@ -2122,7 +2122,7 @@ public class Transform3D {
 	mat[13] = m1.m31;
 	mat[14] = m1.m32;
 	mat[15] = m1.m33;
-
+        
 	dirtyBits = ALL_DIRTY;
 
 	if (autoNormalize)  {
@@ -5778,12 +5778,15 @@ public class Transform3D {
     // Fix for Issue 167 -- don't classify matrices with Infinity or NaN values
     // as affine
     private final boolean isInfOrNaN() {
+        // The following is a faster version of the check.
+        // Instead of 3 tests per array element (Double.isInfinite is 2 tests),
+        // for a total of 48 tests, we will do 16 multiplies and 1 test.
+        double d = 0.0;
         for (int i = 0; i < 16; i++) {
-            if (Double.isNaN(mat[i]) || Double.isInfinite(mat[i])) {
-                return true;
-            }
+            d *= mat[i];
         }
-        return false;
+
+        return d != 0.0;
     }
 
     // Fix for Issue 253

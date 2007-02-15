@@ -3361,6 +3361,9 @@ class MasterControl {
 		    timestampUpdateList.clear();
 		    updateMirrorObjects();
 		    done = true;
+
+//                    // Instrumentation of Java 3D renderer
+//                    printTimes();
 		}
 	    }
 	    break;
@@ -3612,4 +3615,59 @@ class MasterControl {
     private int getNumberOfProcessors() {
         return Runtime.getRuntime().availableProcessors();
     }
+
+    //
+    // The following framework supports code instrumentation. To enable this:
+    //     1) Uncomment all of the following code
+    //     2) Uncomment the call to printTimes (in doWork)
+    //     3) Uncomment the calls to nanoTime and recordTimes in the Renderer
+    //
+    // Then add code of the following form to areas that you want to enable for
+    // timing:
+    //
+    //     long startTime = System.nanoTime();
+    //     sortTransformGroups(tSize, tgs);
+    //     long deltaTime = System.nanoTime() - startTime;
+    //     VirtualUniverse.mc.recordTime(MasterControl.TimeType.XXXXX, deltaTime);
+    //
+    // where "XXXXX" is the enum representing the code segment being timed.
+    //
+
+//    static enum TimeType {
+//        TOTAL_FRAME,
+//        RENDER,
+//        // BEHAVIOR,
+//        // TRANSFORM_UPDATE,
+//        // ...
+//    }
+//    
+//    private long[] times = new long[TimeType.values().length];
+//    private int[] counts = new int[TimeType.values().length];
+//    private int frameTick = 0;
+//
+//    synchronized void recordTime(TimeType type, long deltaTime) {
+//        int idx = type.ordinal();
+//        times[idx] += deltaTime;
+//        counts[idx]++;
+//    }
+//    
+//    private synchronized void printTimes() {
+//        if (++frameTick >= 10) {
+//            System.err.println("\n-------------------------------------------------------------------");
+//            for (int i = 0; i < times.length; i++) {
+//                if (counts[i] > 0) {
+//                    System.err.println(TimeType.values()[i] + " [" + counts[i] + "] = " +
+//                            ((double)times[i] / 1000000.0 / (double)counts[i]) + " msec per call" );
+//                    times[i] = 0L;
+//                    counts[i] = 0;
+//                } else {
+//                    assert times[i] == 0L;
+//                    System.err.println(TimeType.values()[i] +
+//                            " [" + 0 + "] = 0.0 msec" );
+//                }
+//            }
+//            frameTick = 0;
+//        }
+//    }
+
 }

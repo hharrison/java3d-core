@@ -160,6 +160,9 @@ class Renderer extends J3dThread {
     // It is used when sharedCtx = true;
     ArrayList textureIDResourceTable = new ArrayList(5);
 
+//    // Instrumentation of Java 3D renderer
+//    private long lastSwapTime = System.nanoTime();
+
     private synchronized int newInstanceNum() {
 	return (++numInstances);
     }
@@ -283,6 +286,12 @@ class Renderer extends J3dThread {
                             cv.imageReady = false;
                             cv.view.inCanvasCallback = false;
                             // Clear canvasDirty bit ONLY when postSwap() success
+
+//                            // Instrumentation of Java 3D renderer
+//                            long currSwapTime = System.nanoTime();
+//                            long deltaTime = currSwapTime - lastSwapTime;
+//                            lastSwapTime = currSwapTime;
+//                            VirtualUniverse.mc.recordTime(MasterControl.TimeType.TOTAL_FRAME, deltaTime);
 
                             // Set all dirty bits except environment set and lightbin
                             // they are only set dirty if the last used light bin or
@@ -757,6 +766,8 @@ class Renderer extends J3dThread {
 
 		    m[nmesg++].decRefcount();
 		} else { // retained mode rendering
+//                    // Instrumentation of Java 3D renderer
+//                    long startRenderTime = System.nanoTime();
 
 		    m[nmesg++].decRefcount();
                     
@@ -1470,6 +1481,10 @@ class Renderer extends J3dThread {
 			    offBufRetained.geomLock.unLock();
 			}	
 		    }
+
+//                    // Instrumentation of Java 3D renderer
+//                    long deltaTime = System.nanoTime() - startRenderTime;
+//                    VirtualUniverse.mc.recordTime(MasterControl.TimeType.RENDER, deltaTime);
 		}
 	    }
 

@@ -19,65 +19,49 @@ import java.util.*;
  */
 
 class TransformStructure extends J3dStructure implements ObjectUpdate {
-    /**
-     * An ArrayList of TransformGroups to traverse
-     */
-    UnorderList traverseList = new UnorderList(TransformGroupRetained.class);
-    
-    /**
-     * A Parallel ArrayList of Transforms for the traverse list
-     */
-    UnorderList transformList = new UnorderList(Transform3D.class);
 
-    ArrayList objectList = new ArrayList();
+    /**
+     * A set of TransformGroups and associated Transform3Ds to traverse
+     */
+    private HashSet<TransformData> transformSet = new HashSet<TransformData>();
+
+    private ArrayList objectList = new ArrayList();
 
     /**
      * arraylist of the bounding leaf users affected by the transform
      */
-    ArrayList blUsers = new ArrayList();
+    private ArrayList blUsers = new ArrayList();
 
     // to gather transform targets
-    UpdateTargets targets = new UpdateTargets();
+    private UpdateTargets targets = new UpdateTargets();
 
     /**
      * An arrayList of nodes that need collisionBounds updates 
      */
-    ArrayList collisionObjectList = new ArrayList();
-
-    // The object that contains the dynamic HashKey - a string type object
-    HashKey key = new HashKey(250);
+    private ArrayList collisionObjectList = new ArrayList();
 
     // List of dirty TransformGroups
-    ArrayList dirtyTransformGroups = new ArrayList();
+    private ArrayList dirtyTransformGroups = new ArrayList();
 
     // Associated Keys with the dirtyNodeGroup
-    ArrayList keySet = new ArrayList();
-
-    // current locale under traversal
-    Locale locale = null;    
-
-    // The transform used in intermediate calc
-    Transform3D currentTrans = new Transform3D();
-
-    TransformGroupRetained tgs[];
-    Transform3D t3ds[];
+    private ArrayList keySet = new ArrayList();
 
     // the active list contains changed TransformGroup minus those that
     // have been switched-off, plus those that have been changed but
     // just switched-on
-    UnorderList activeTraverseList =
-		new UnorderList(TransformGroupRetained.class);
-
+    private ArrayList<TransformGroupRetained> activeTraverseList =
+            new ArrayList<TransformGroupRetained>();
+    
     // contains TG that have been previously changed but just switched-on
-    ArrayList switchDirtyTgList = new ArrayList(1);
+    private ArrayList switchDirtyTgList = new ArrayList(1);
 
-    boolean lazyUpdate = false;
+    private boolean lazyUpdate = false;
 
     // ArrayList of switches that have changed, use for lastSwitchOn updates
-    ArrayList switchChangedList = new ArrayList();
+    private ArrayList switchChangedList = new ArrayList();
 
     // true if already in MasterControl's update object list
-    boolean inUpdateObjectList = false;
+    private boolean inUpdateObjectList = false;
 
     /**
      * This constructor does nothing
@@ -85,12 +69,12 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
     TransformStructure(VirtualUniverse u) {
 	super(u, J3dThread.UPDATE_TRANSFORM);
     }
-  
+
     void processMessages(long referenceTime) {
 	J3dMessage[] messages = getMessages(referenceTime);
 	int nMsg = getNumMessage();
 	J3dMessage m;
-	int i, index;
+	int i;
 
 	if (nMsg <= 0) {
 	    return;
@@ -107,16 +91,12 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
 	    for (i = (nMsg-1); i >= 0; i--) {
 		m = messages[i];
 		if (m.type == J3dMessage.TRANSFORM_CHANGED) {
-		    index = traverseList.indexOf(m.args[1]);
-		    // if this transform group isn't in our list, add
-		    // the information
-		    if (index == -1) {
-			traverseList.add(m.args[1]);
-			transformList.add(m.args[2]);
-		    }
+		    // Add the TG and associated transform. Since this is a
+                    // set, duplicates will be culled.
+                    transformSet.add(new TransformData((TransformGroupRetained)m.args[1], (Transform3D)m.args[2]));
 		}
 	    }
-	    
+
 	    for (i=0; i<nMsg; i++) {
 		m = messages[i];
 		
@@ -205,7 +185,7 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
 
 	lazyUpdate = false;
 
-	tSize = transformList.size();
+        tSize = transformSet.size();
         sSize = switchDirtyTgList.size();
         if (tSize <= 0 && sSize <= 0) {
             return;
@@ -214,11 +194,11 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
         // process TG with setTransform changes
 	// update Transform3D, switchDirty and lToVwDrity flags
 	if (tSize > 0) {
-            tgs = (TransformGroupRetained[])traverseList.toArray(false);
-            t3ds = (Transform3D[])transformList.toArray(false);
-            for (i=0; i<tSize; i++) {
-	        tg = tgs[i];
-                tg.currentTransform.set(t3ds[i]);
+            Iterator<TransformData> it = transformSet.iterator();
+            while(it.hasNext()) {
+                TransformData lData = it.next();
+                tg = lData.getTransformGroupRetained();
+                tg.currentTransform.set(lData.getTransform3D());
 
                 synchronized(tg) { // synchronized with tg.set/clearLive
                 if(tg.perPathData != null) {
@@ -281,23 +261,20 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
 
         // merge switchDirty into activeTraverseList
         if (sSize > 0) {
-            int size = switchDirtyTgList.size();
-            for (i=0; i<size; i++) {
-                // Note: UnorderList does not implement addAll
-                activeTraverseList.add(switchDirtyTgList.get(i));
-            }
+            activeTraverseList.addAll(switchDirtyTgList);
             switchDirtyTgList.clear();
 	    lazyUpdate = true;
         }
 
         // activeTraverseList contains switched-on tg as well
-        tgs = (TransformGroupRetained[])activeTraverseList.toArray(false);
         tSize = activeTraverseList.size();
+        TransformGroupRetained[] tgs =
+                (TransformGroupRetained[])activeTraverseList.toArray(new TransformGroupRetained[tSize]);
 
         // process active TGs
         if (tSize > 0) {
 
-            sortTransformGroups(tSize);
+            sortTransformGroups(tSize, tgs);
 
             // update lToVw and gather targets
             for (i=0; i<tSize; i++) {
@@ -310,22 +287,21 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
 	    }
         }
 
-	transformList.clear();
-	traverseList.clear();
+        transformSet.clear();
         activeTraverseList.clear();
     }
 
 
-    private void sortTransformGroups(int size) {
+    private void sortTransformGroups(int size, TransformGroupRetained[] tgs) {
         if (size < 7) {
-            insertSort(size);
+            insertSort(size, tgs);
         } else {
-            quicksort(0, size-1);
+            quicksort(0, size-1, tgs);
         }
     }
 
     // Insertion sort on smallest arrays
-    private void insertSort(int size) {
+    private void insertSort(int size, TransformGroupRetained[] tgs) {
         for (int i=0; i<size; i++) {
             for (int j=i; j>0 && 
 		 (tgs[j-1].maxTransformLevel > tgs[j].maxTransformLevel); j--) {
@@ -336,7 +312,7 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
         }
     }
 
-    private void quicksort( int l, int r ) {
+    private void quicksort( int l, int r, TransformGroupRetained[] tgs ) {
         int i = l;
         int j = r;
         double k = tgs[(l+r) / 2].maxTransformLevel;
@@ -353,8 +329,8 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
              }
          } while (i<=j);
 
-         if (l<j) quicksort(l,j);
-         if (l<r) quicksort(i,r);
+         if (l<j) quicksort(l,j, tgs);
+         if (l<r) quicksort(i,r, tgs);
     }
 
     
@@ -722,4 +698,43 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
     }
 
     void cleanup() {}
+
+    // Wrapper for a (TransformGroupRetained, Transform3D) pair
+    // TransformGroupRetained is effectively used as the key in the
+    // HashSet
+    private class TransformData {
+        private TransformGroupRetained transformGroupRetained;
+        private Transform3D transform3D;
+
+        TransformData( TransformGroupRetained tgr, Transform3D t3d )  {
+            transformGroupRetained = tgr;
+            transform3D = t3d;
+        }
+
+        // Hashcode and equals test only evaluate TransformGroupRetained
+        @Override
+        public int hashCode() {
+            return transformGroupRetained.hashCode();
+        }
+
+        // Hashcode and equals test only evaluate TransformGroupRetained
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof TransformData)) {
+                return false;
+            }
+
+            return transformGroupRetained.equals(((TransformData)o).getTransformGroupRetained());
+        }
+
+        TransformGroupRetained getTransformGroupRetained() {
+            return transformGroupRetained;
+        }
+
+        Transform3D getTransform3D() {
+            return transform3D;
+        }
+
+    }
+
 }
