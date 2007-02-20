@@ -12,6 +12,7 @@
 
 package javax.media.j3d;
 
+import com.sun.j3d.internal.ByteBufferWrapper;
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.*;
@@ -5771,7 +5772,6 @@ class JoglPipeline extends Pipeline {
             int boundaryWidth,
             int dataType, Object data) {
         
-        /* TODO Chien : Need to support INT, and NIO buffers */
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DImage()");
         
         GL gl = context(ctx).getGL();
@@ -5858,11 +5858,20 @@ class JoglPipeline extends Pipeline {
                     return;
             }
             
+	    if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) {
+		
             gl.glTexImage3D(GL.GL_TEXTURE_3D,
                     level, internalFormat,
                     width, height, depth, boundaryWidth,
                     format, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[]) data));
-            
+            }
+	    else {
+                gl.glTexImage3D(GL.GL_TEXTURE_3D,
+                    level, internalFormat,
+                    width, height, depth, boundaryWidth,
+                    format, GL.GL_UNSIGNED_BYTE, (ByteBuffer) data);
+	    }
+                                   
         } else if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) ||
                 (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_BUFFER)) {
             
@@ -5899,10 +5908,17 @@ class JoglPipeline extends Pipeline {
                 gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
             }
             
-            gl.glTexImage3D(GL.GL_TEXTURE_3D,
-                    level, internalFormat,
-                    width, height, depth, boundaryWidth,
-                    format, type, IntBuffer.wrap((int[]) data));
+            if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) {
+                gl.glTexImage3D(GL.GL_TEXTURE_3D,
+                        level, internalFormat,
+                        width, height, depth, boundaryWidth,
+                        format, type, IntBuffer.wrap((int[]) data));
+            } else {
+                gl.glTexImage3D(GL.GL_TEXTURE_3D,
+                        level, internalFormat,
+                        width, height, depth, boundaryWidth,
+                        format, type, (Buffer) data);
+            }
             
             /* Restore Alpha scale and bias */
             if(forceAlphaToOne) {
@@ -6031,9 +6047,16 @@ class JoglPipeline extends Pipeline {
                 default:
                     assert false;
                     return;
-            }
+            }            
             
-            ByteBuffer buf = ByteBuffer.wrap((byte[]) data);
+            ByteBuffer buf = null;
+            if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) {
+                buf = ByteBuffer.wrap((byte[]) data);
+            }
+            else {
+                buf = (ByteBuffer) data;
+            }
+
             int offset = (tilew * tileh * imgZOffset +
                     tilew * imgYOffset + imgXOffset) * numBytes;
             buf.position(offset);
@@ -6079,7 +6102,14 @@ class JoglPipeline extends Pipeline {
                 gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
             }
             
-            IntBuffer buf = IntBuffer.wrap((int[]) data);
+            IntBuffer buf = null;
+            if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) {
+                buf = IntBuffer.wrap((int[]) data);
+            }
+            else {
+                buf = (IntBuffer) data;
+            }            
+            
             int offset = tilew * tileh * imgZOffset +
                     tilew * imgYOffset + imgXOffset;
             buf.position(offset);
@@ -6387,9 +6417,17 @@ class JoglPipeline extends Pipeline {
                     return;
             }
             
-            gl.glTexImage2D(target, level, internalFormat,
-                    width, height, boundaryWidth,
-                    format, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[]) data));
+	    if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) {
+		
+		gl.glTexImage2D(target, level, internalFormat,
+				width, height, boundaryWidth,
+				format, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])data));
+	    }
+	    else {
+		gl.glTexImage2D(target, level, internalFormat,
+				width, height, boundaryWidth,
+				format, GL.GL_UNSIGNED_BYTE, (Buffer) data);
+	    }
             
         } else if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) ||
                 (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_BUFFER)) {
@@ -6427,9 +6465,16 @@ class JoglPipeline extends Pipeline {
                 gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
             }
             
-            gl.glTexImage2D(target, level, internalFormat,
-                    width, height, boundaryWidth,
-                    format, type, IntBuffer.wrap((int[]) data));
+	    if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) {
+		gl.glTexImage2D(target, level, internalFormat,
+				width, height, boundaryWidth,
+				format, type, IntBuffer.wrap((int[])data));
+	    }
+	    else {
+		gl.glTexImage2D(target, level, internalFormat,
+				width, height, boundaryWidth,
+				format, type, (Buffer) data);
+	    }
             
             /* Restore Alpha scale and bias */
             if(forceAlphaToOne) {
@@ -6553,7 +6598,13 @@ class JoglPipeline extends Pipeline {
                     return;
             }
             
-            ByteBuffer buf = ByteBuffer.wrap((byte[]) data);
+            ByteBuffer buf = null;
+            if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) {
+                buf = ByteBuffer.wrap((byte[]) data);
+            }
+            else {
+                buf = (ByteBuffer) data;
+            }
             
             // offset by the imageOffset
             buf.position((tilew * imgYOffset + imgXOffset) * numBytes);
@@ -6595,7 +6646,13 @@ class JoglPipeline extends Pipeline {
                 gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
             }
             
-            IntBuffer buf = IntBuffer.wrap((int[]) data);
+            IntBuffer buf = null;
+            if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) {
+                buf = IntBuffer.wrap((int[]) data);
+            }
+            else {
+                buf = (IntBuffer) data;
+            }            
             
             // offset by the imageOffset
             buf.position(tilew * imgYOffset + imgXOffset);
