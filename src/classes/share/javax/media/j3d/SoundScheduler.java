@@ -556,6 +556,8 @@ class SoundScheduler extends J3dStructure {
 			    // ignore soundRetained.release
 			    // flag which is not implement
 			    turnOff(soundAtom);
+                            // Fix to Issue 431.
+                            soundAtom.enable(soundRetained.enable); 
 			}
 		    }
 		}
