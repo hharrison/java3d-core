@@ -3723,12 +3723,8 @@ public class Canvas3D extends Canvas {
 		(textureExtendedFeatures & TEXTURE_LOD_OFFSET) != 0));
 
         keys.add("textureNonPowerOfTwoAvailable");
-        if (VirtualUniverse.mc.enforcePowerOfTwo) {
-            values.add(Boolean.FALSE);
-        } else {
-            values.add(new Boolean(
-                    (textureExtendedFeatures & TEXTURE_NON_POWER_OF_TWO) != 0));
-        }
+        values.add(new Boolean(
+                (textureExtendedFeatures & TEXTURE_NON_POWER_OF_TWO) != 0));
 
         keys.add("textureCoordSetsMax");
         values.add(new Integer(maxTexCoordSets));

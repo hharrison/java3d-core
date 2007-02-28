@@ -376,9 +376,9 @@ checkTextureExtensions(
 	ctxInfo->textureExtMask |=
 			javax_media_j3d_Canvas3D_TEXTURE_LOD_OFFSET;
     }
-    
-    if (isExtensionSupported(tmpExtensionStr,
-				"GL_ARB_texture_non_power_of_two")) {
+
+    if (isExtensionSupported(tmpExtensionStr, "GL_ARB_texture_non_power_of_two") &&
+	!getJavaBoolEnv(env, "enforcePowerOfTwo")) {
 	ctxInfo->textureNonPowerOfTwoAvailable = JNI_TRUE;
 	ctxInfo->textureExtMask |=
 			javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
@@ -650,10 +650,12 @@ getPropertiesFromCurrentContext(
 
 
     /* look for OpenGL 2.0 features */
-    if (ctxInfo->gl20) {
-	ctxInfo->textureNonPowerOfTwoAvailable = JNI_TRUE;
-	ctxInfo->textureExtMask |=
-			javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
+    if (ctxInfo->gl20) {        
+        if (!getJavaBoolEnv(env, "enforcePowerOfTwo")) {
+            ctxInfo->textureNonPowerOfTwoAvailable = JNI_TRUE;
+            ctxInfo->textureExtMask |=
+            javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
+        }
     }
 
     /* check extensions for remaining of 1.1 and 1.2 */

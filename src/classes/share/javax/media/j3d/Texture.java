@@ -642,20 +642,10 @@ public abstract class Texture extends NodeComponent {
         }
 
 	int widthLevels;
-	int heightLevels;
-
-        if (VirtualUniverse.mc.enforcePowerOfTwo) {
-	    widthLevels = getPowerOf2(width);
-	    if (widthLevels == -1)
-		throw new IllegalArgumentException(J3dI18N.getString("Texture2"));
-
-	    heightLevels = getPowerOf2(height);
-	    if (heightLevels == -1)
-		throw new IllegalArgumentException(J3dI18N.getString("Texture3"));
-	} else {
-	    widthLevels = getLevelsNPOT(width);
-	    heightLevels = getLevelsNPOT(height);
-	}
+        int heightLevels;
+        
+        widthLevels = getLevelsNPOT(width);
+        heightLevels = getLevelsNPOT(height);
 
 	((TextureRetained)this.retained).initialize(format, width, widthLevels,
 					height, heightLevels, mipMapMode, 0);
@@ -716,21 +706,11 @@ public abstract class Texture extends NodeComponent {
             throw new IllegalArgumentException(J3dI18N.getString("Texture47"));
         }
 
-	int widthLevels;
-	int heightLevels;
-
-        if (VirtualUniverse.mc.enforcePowerOfTwo) {
-	    widthLevels = getPowerOf2(width);
-	    if (widthLevels == -1)
-		throw new IllegalArgumentException(J3dI18N.getString("Texture2"));
-
-	    heightLevels = getPowerOf2(height);
-	    if (heightLevels == -1)
-		throw new IllegalArgumentException(J3dI18N.getString("Texture3"));
-	} else {
-	    widthLevels = getLevelsNPOT(width);
-	    heightLevels = getLevelsNPOT(height);
-	}
+        int widthLevels;
+        int heightLevels;
+        
+        widthLevels = getLevelsNPOT(width);
+        heightLevels = getLevelsNPOT(height);
 
 	if (boundaryWidth < 0 || boundaryWidth > 1)
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture30"));

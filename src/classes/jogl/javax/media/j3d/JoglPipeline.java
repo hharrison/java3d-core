@@ -5781,12 +5781,8 @@ class JoglPipeline extends Pipeline {
         int type = GL.GL_UNSIGNED_INT_8_8_8_8;
         boolean forceAlphaToOne = false;
 
-        // check if we are trying to draw NPOT on a system that doesn't support it
-        boolean textureNonPowerOfTwoAvailable =
-                gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two") ||
-                gl.isExtensionAvailable("GL_VERSION_2_0");
-        
-        if (!textureNonPowerOfTwoAvailable &&
+        // check if we are trying to draw NPOT on a system that doesn't support it                
+        if (!(((JoglContext) ctx).getHasTextureNonPowerOfTwo()) &&
                 (!isPowerOfTwo(width) || !isPowerOfTwo(height) || !isPowerOfTwo(depth))) {
             // disable texture by setting width, height and depth to 0
             width = height = depth = 0;
@@ -5958,11 +5954,7 @@ class JoglPipeline extends Pipeline {
         // if NPOT textures are not supported, check if h=w=0, if so we have been
         // disabled due to a NPOT texture being sent to a context that doesn't
         // support it: disable the glTexSubImage as well
-        boolean textureNonPowerOfTwoAvailable =
-                gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two") ||
-                gl.isExtensionAvailable("GL_VERSION_2_0");
-        
-        if (!textureNonPowerOfTwoAvailable) {
+        if (!(((JoglContext) ctx).getHasTextureNonPowerOfTwo())) {
             int[] tmp = new int[1];
             int texWidth, texHeight, texDepth;
             gl.glGetTexLevelParameteriv(GL.GL_TEXTURE_2D, 0, GL.GL_TEXTURE_WIDTH, tmp, 0);
@@ -6342,11 +6334,7 @@ class JoglPipeline extends Pipeline {
         boolean forceAlphaToOne = false;
         
         // check if we are trying to draw NPOT on a system that doesn't support it
-        boolean textureNonPowerOfTwoAvailable =
-                gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two") ||
-                gl.isExtensionAvailable("GL_VERSION_2_0");
-        
-        if (!textureNonPowerOfTwoAvailable &&
+        if (!(((JoglContext) ctx).getHasTextureNonPowerOfTwo()) &&
                 (!isPowerOfTwo(width) || !isPowerOfTwo(height))) {
             // disable texture by setting width and height to 0
             width = height = 0;
@@ -6509,11 +6497,7 @@ class JoglPipeline extends Pipeline {
         // if NPOT textures are not supported, check if h=w=0, if so we have been
         // disabled due to a NPOT texture being sent to a context that doesn't
         // support it: disable the glTexSubImage as well
-        boolean textureNonPowerOfTwoAvailable =
-                gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two") ||
-                gl.isExtensionAvailable("GL_VERSION_2_0");
-        
-        if (!textureNonPowerOfTwoAvailable) {
+        if (!(((JoglContext) ctx).getHasTextureNonPowerOfTwo())) {
             int[] tmp = new int[1];
             int texWidth, texHeight;
             gl.glGetTexLevelParameteriv(GL.GL_TEXTURE_2D, 0, GL.GL_TEXTURE_WIDTH, tmp, 0);
@@ -8309,8 +8293,10 @@ class JoglPipeline extends Pipeline {
             cv.textureExtendedFeatures |= Canvas3D.TEXTURE_LOD_OFFSET;
         }
         
-        if (gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) {
+        if (!VirtualUniverse.mc.enforcePowerOfTwo &&
+                gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) {
             cv.textureExtendedFeatures |= Canvas3D.TEXTURE_NON_POWER_OF_TWO;
+            ctx.setHasTextureNonPowerOfTwo(true);
         }
     }
     
@@ -8501,7 +8487,10 @@ class JoglPipeline extends Pipeline {
         
         // look for OpenGL 2.0 features
         if (gl20) {
-            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_NON_POWER_OF_TWO;
+            if(!VirtualUniverse.mc.enforcePowerOfTwo) {
+                cv.textureExtendedFeatures |= Canvas3D.TEXTURE_NON_POWER_OF_TWO;
+                ctx.setHasTextureNonPowerOfTwo(true);
+            }
         }
         
         // Setup GL_EXT_abgr
@@ -8516,6 +8505,7 @@ class JoglPipeline extends Pipeline {
         // FIXME: this is not correct for the Windows platform yet
         if (gl13) {
             cv.extensionsSupported |= Canvas3D.MULTISAMPLE;
+            ctx.setHasMultisample(true);
         }
         
         if ((cv.extensionsSupported & Canvas3D.MULTISAMPLE) != 0 &&
