@@ -37,7 +37,7 @@
 #endif /* DEBUG */
 
 extern void throwAssert(JNIEnv *env, char *str);
-
+jboolean getJavaBoolEnv(JNIEnv *env, char* envStr);
 static void initializeCtxInfo(JNIEnv *env, GraphicsContextPropertiesInfo* ctxInfo);
 static void cleanupCtxInfo(GraphicsContextPropertiesInfo* ctxInfo);
 static void disableAttribFor2D(GraphicsContextPropertiesInfo *ctxProperties);
