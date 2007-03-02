@@ -1413,8 +1413,19 @@ VOID D3dCtx::setCanvasProperty(JNIEnv *env, jobject obj)
 	//id = env->GetFieldID(canvasCls, "userStencilAvailable", "Z");
     //env->SetBooleanField(obj, id, deviceInfo->supportStencil );
 
+
     id = env->GetFieldID(canvasCls, "textureExtendedFeatures", "I");
-    env->SetIntField(obj, id, deviceInfo->getTextureFeaturesMask());
+    int texMask = deviceInfo->getTextureFeaturesMask();
+    jboolean enforcePowerOfTwo = getJavaBoolEnv(env, "enforcePowerOfTwo"); 
+    if(enforcePowerOfTwo) {
+	// printf("DEBUG enforcePowerOfTwo is true");
+	// Reset NPOT support as requested by user. 
+	deviceInfo->supportNPOT = false;  
+	texMask &= ~javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
+    }
+    env->SetIntField(obj, id, texMask);
+
+
 
     id = env->GetFieldID(canvasCls, "extensionsSupported", "I");
     env->SetIntField(obj, id, mask);
@@ -2037,47 +2048,44 @@ BOOL D3dCtx::createFrontBuffer()
 
 jboolean  D3dCtx::getJavaBoolEnv(JNIEnv *env, char* envStr)
 {
-   jclass systemClass = env->FindClass( "javax/media/j3d/MasterControl" );
 
-   if ( systemClass != NULL )
-    {
-        jmethodID method = env->GetStaticMethodID(
-            systemClass, "getProperty",
-            "(Ljava/lang/String;)Ljava/lang/String;" );
-        if ( method != NULL )
-        {
-            jstring name = env->NewStringUTF( envStr );
-            jstring property = reinterpret_cast<jstring>(
-                env->CallStaticObjectMethod(
-                    systemClass, method, name ));
-            if ( property != NULL )
-            {
-                jboolean isCopy;
-                const char * chars = env->GetStringUTFChars(
-                    property, &isCopy );
-                if ( chars != 0 )
-                {
-                    if ( stricmp( chars, "true" ) == 0 )
-					{
-                        env->ReleaseStringUTFChars( property, chars );
-						return true;
-                    }
-					else
-					{
-					  env->ReleaseStringUTFChars( property, chars );
-			          return false;
-		            }
-                    env->ReleaseStringUTFChars( property, chars );
-                }
-            }
-	    }
+    jclass cls;
+    jfieldID fieldID;
+    jobject obj;
+
+    cls = env->FindClass( "javax/media/j3d/VirtualUniverse" );
+
+    if (cls == NULL) {
+	return JNI_FALSE;
     }
-	return false;
+
+    fieldID = (jfieldID) env->GetStaticFieldID( cls, "mc",
+						"Ljavax/media/j3d/MasterControl;");
+    if (fieldID == NULL) {
+	return JNI_FALSE;	
+    }
+
+    obj = env->GetStaticObjectField( cls, fieldID);
+
+    if (obj == NULL) {
+	return JNI_FALSE;
+    }
+
+    cls = (jclass) env->FindClass("javax/media/j3d/MasterControl");    
+
+    if (cls == NULL) {
+	return JNI_FALSE;
+    }
+
+    fieldID = (jfieldID) env->GetFieldID( cls, envStr, "Z");
+
+    if (fieldID == NULL ) {
+	return JNI_FALSE;
+    }
+
+    return env->GetBooleanField( obj, fieldID);
+    
 }
-
-
-
-
 
 /**
 // this routine is not safe using current D3D routines
