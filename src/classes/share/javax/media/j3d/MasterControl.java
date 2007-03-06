@@ -720,15 +720,23 @@ class MasterControl {
     static void loadLibraries() {
         assert !librariesLoaded;
 
-        // Set global flags indicating whether we are running on Windows or MacOS
-        String osName = getProperty("os.name");
-        isWindowsOs = osName != null && osName.startsWith("Windows");
-        isMacOs = osName != null && osName.startsWith("Mac");
+        // Get platform system properties
+        String osName = getProperty("os.name").toLowerCase();
+        String sunArchDataModel = getProperty("sun.arch.data.model");
 
-//KCR:        System.err.println("MasterControl.loadLibraries()");
-//KCR:        System.err.println("    osName = \"" + osName + "\"" +
-//KCR:                ", isWindowsOs = " + isWindowsOs +
-//KCR:                ", isMacOs = " + isMacOs);
+        // Set global flags based on platform architecture
+        isMacOs = osName != null && osName.startsWith("mac");
+        isWindowsOs = osName != null && osName.startsWith("windows");
+        boolean isWindowsVista = isWindowsOs && osName.indexOf("vista") != -1;
+        boolean is64Bit = (sunArchDataModel != null) && sunArchDataModel.equals("64");
+
+//        System.err.println("MasterControl.loadLibraries()");
+//        System.err.println("    osName [lower-case] = \"" + osName + "\"" +
+//                ", sunArchDataModel = " + sunArchDataModel);
+//        System.err.println("    is64Bit = " + is64Bit +
+//                ", isWindowsOs = " + isWindowsOs +
+//                ", isMacOs = " + isMacOs +
+//                ", isWindowsVista = " + isWindowsVista);
 
         // Initialize the Pipeline object associated with the
         // renderer specified by the "j3d.rend" system property.
@@ -741,11 +749,13 @@ class MasterControl {
         Pipeline.Type pipelineType =
                 isMacOs ? Pipeline.Type.JOGL : Pipeline.Type.NATIVE_OGL;
 
-        String rendStr = getProperty("j3d.rend");
+        final String rendStr = getProperty("j3d.rend");
+        boolean nativeOglRequested = false;
         if (rendStr == null) {
             // Use default pipeline
         } else if (rendStr.equals("ogl") && !isMacOs) {
             pipelineType = Pipeline.Type.NATIVE_OGL;
+            nativeOglRequested = true;
         } else if (rendStr.equals("d3d") && isWindowsOs) {
             pipelineType = Pipeline.Type.NATIVE_D3D;
         } else if (rendStr.equals("jogl")) {
@@ -757,7 +767,14 @@ class MasterControl {
             // Use default pipeline
         }
 
-//KCR:        System.err.println("    using " + pipelineType + " pipeline");
+        // Issue 452 : if we are on 32-bit Windows, then check whether we
+        // can and should use OpenGL. Note that we can't do this on 64-bit
+        // Windows until we have a 64-bit D3D pipeline.
+        if (isWindowsOs && !is64Bit && pipelineType == Pipeline.Type.NATIVE_OGL) {
+            if (!Pipeline.useNativeOgl(isWindowsVista, nativeOglRequested)) {
+                pipelineType = Pipeline.Type.NATIVE_D3D;
+            }
+        }
 
         // Construct the singleton Pipeline instance
         Pipeline.createPipeline(pipelineType);

@@ -49,7 +49,32 @@ class NativePipeline extends Pipeline {
      * class, we can create one statically.
      */
     private static NativeConfigTemplate3D nativeTemplate = new NativeConfigTemplate3D();
-    
+
+    // Flag indicating that the ogl-chk library has been loaded
+    private static boolean oglChkLibraryLoaded = false;
+
+    // Method to return the vendor string for the native OpenGL pipeline.
+    // If the native library cannot be loaded, or if GL_VERSION < 1.2
+    // then null is returned.
+    static String getSupportedOglVendor() {
+        if (!oglChkLibraryLoaded) {
+            try {
+                loadLibrary("j3dcore-ogl-chk");
+            } catch (RuntimeException ex) {
+                System.err.println(ex);
+                return null;
+            } catch (Error ex) {
+                System.err.println(ex);
+                return null;
+            }
+            oglChkLibraryLoaded = true;
+        }
+        return getSupportedOglVendorNative();
+    }
+
+    // Native method to return the vendor string
+    private static native String getSupportedOglVendorNative();
+
     /**
      * Constructor for singleton NativePipeline instance
      */
@@ -110,7 +135,7 @@ class NativePipeline extends Pipeline {
             }
         }
     }
-    
+
     /**
      * Returns true if the Cg library is loaded and available. Note that this
      * does not necessarily mean that Cg is supported by the graphics card.
@@ -118,7 +143,7 @@ class NativePipeline extends Pipeline {
     boolean isCgLibraryAvailable() {
         return cgLibraryAvailable;
     }
-    
+
     /**
      * Returns true if the GLSL library is loaded and available. Note that this
      * does not necessarily mean that GLSL is supported by the graphics card.
@@ -126,11 +151,11 @@ class NativePipeline extends Pipeline {
     boolean isGLSLLibraryAvailable() {
         return glslLibraryAvailable;
     }
-    
+
     /**
      * Load the specified native library.
      */
-    private void loadLibrary(String libName) {
+    private static void loadLibrary(String libName) {
         final String libraryName = libName;
         java.security.AccessController.doPrivileged(
                 new java.security.PrivilegedAction() {
@@ -140,7 +165,7 @@ class NativePipeline extends Pipeline {
             }
         });
     }
-    
+
     /**
      * Parse the specified System properties containing a PATH and return an
      * array of Strings, where each element is an absolute filename consisting of
@@ -3313,5 +3338,5 @@ class NativePipeline extends Pipeline {
     void freeDrawingSurfaceNative(Object o) {
         DrawingSurfaceObjectAWT.freeDrawingSurface(o);
     }
-    
+
 }
