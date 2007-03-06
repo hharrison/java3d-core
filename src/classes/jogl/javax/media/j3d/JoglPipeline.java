@@ -6949,7 +6949,11 @@ class JoglPipeline extends Pipeline {
             gl.glDepthFunc(GL.GL_LEQUAL);
             gl.glEnable(GL.GL_COLOR_MATERIAL);
             gl.glReadBuffer(GL.GL_FRONT);
-            
+
+            // Issue 417: JOGL: Mip-mapped NPOT textures rendered incorrectly
+            // Java 3D images are aligned to 1 byte
+            gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+
             // Workaround for issue 400: Enable separate specular by default
             gl.glLightModeli(GL.GL_LIGHT_MODEL_COLOR_CONTROL, GL.GL_SEPARATE_SPECULAR_COLOR);
         } finally {
