@@ -28,7 +28,6 @@ class JoglContext implements Context {
   private int currentTextureUnit;
   private int currentCombinerUnit;
   private boolean hasMultisample;
-  private boolean hasTextureNonPowerOfTwo;
 
   // Needed for vertex attribute implementation
   private JoglShaderObject shaderProgram;
@@ -169,8 +168,6 @@ class JoglContext implements Context {
   void  setCurrentCombinerUnit(int val) { currentCombinerUnit = val;  }
   boolean getHasMultisample()           { return hasMultisample;      }
   void    setHasMultisample(boolean val){ hasMultisample = val;       }
-  boolean getHasTextureNonPowerOfTwo()  { return hasTextureNonPowerOfTwo;      }
-  void    setHasTextureNonPowerOfTwo(boolean val){ hasTextureNonPowerOfTwo = val;       }
 
   // Helpers for vertex attribute methods
   void  initCgVertexAttributeImpl() {

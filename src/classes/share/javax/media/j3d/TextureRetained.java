@@ -68,7 +68,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     int		format = Texture.RGB;		// Texture format
     int		width = 1;			// Width in pixels (2**n)
     int		height = 1;			// Height in pixels (2**m)
-
+    private boolean widthOrHeightIsNPOT = false; // true if width or height is non power of two    
     ImageComponentRetained images[][];	// Array of images (one for each mipmap level)
     boolean	imagesLoaded = false;	// TRUE if all mipmap levels are loaded
     int         mipmapLevels;        // Number of MIPMAP levels needed
@@ -166,17 +166,24 @@ abstract class TextureRetained extends NodeComponentRetained {
     // need to synchronize access from multiple rendering threads 
     Object resourceLock = new Object();
 
-
+    private static boolean isPowerOfTwo(int val) {
+        return ((val & (val - 1)) == 0);
+    }
+    
     void initialize(int	format, int width, int widLevels, 
 			int height, int heiLevels, int mipmapMode,
 			int boundaryWidth) {
-
+        
 	this.mipmapMode = mipmapMode;
 	this.format = format;
 	this.width = width;
 	this.height = height;
 	this.boundaryWidth = boundaryWidth;
 
+        if(!isPowerOfTwo(width) || !isPowerOfTwo(height)) {
+            this.widthOrHeightIsNPOT = true;
+        }
+        
 	// determine the maximum number of mipmap levels that can be
 	// defined from the specified dimension
 
@@ -1094,17 +1101,26 @@ abstract class TextureRetained extends NodeComponentRetained {
 	}
     }
 
-
+    private boolean isEnabled(Canvas3D cv) {
+        if(widthOrHeightIsNPOT &&
+                (((cv.textureExtendedFeatures & Canvas3D.TEXTURE_NON_POWER_OF_TWO ) == 0) ||
+                VirtualUniverse.mc.enforcePowerOfTwo)) {
+            return false;
+        }
+        return enable;
+    }
+    
+    
     // bind a named texture to a texturing target
-
     void bindTexture(Canvas3D cv) {
+        
         synchronized(resourceLock) {
 	    if (objectId == -1) {
 		objectId = getTextureId();
 	    }
 	    cv.addTextureResource(objectId, this);
  	}	
-	bindTexture(cv.ctx, objectId, enable);
+	bindTexture(cv.ctx, objectId, isEnabled(cv));
     }
 
 
@@ -1362,7 +1378,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    y = info.y,
 	    width = info.width,
 	    height = info.height;
-
+        
         //The x and y here specifies the subregion of the imageData of
         //the associated RenderedImage.
 
@@ -1375,7 +1391,7 @@ abstract class TextureRetained extends NodeComponentRetained {
             int xoffset = x;
             int yoffset = y;
             
-            // TODO Check this logic : If !yUp adjust yoffset --- Chien
+            // TODO Check this logic : If !yUp adjust yoffset
             if (!image.yUp) {
                 yoffset = image.height - yoffset - height;
             }
@@ -1646,12 +1662,12 @@ abstract class TextureRetained extends NodeComponentRetained {
 	// if texture is not enabled, don't bother downloading the
 	// the texture state
 
-	if (enable == false) {
+	if (!isEnabled(cv)) {
 	    return;
 	}
 
 	bindTexture(cv);
-
+        
 	// reload all levels of texture image
 
 	// update texture parameters such as boundary modes, filtering
@@ -1689,11 +1705,11 @@ abstract class TextureRetained extends NodeComponentRetained {
         //System.out.println("Texture/updateNative: " + this + "object= " + objectId + " enable= " + enable);
 
 	bindTexture(cv);
-
+        
 	// if texture is not enabled, don't bother downloading the
 	// the texture state
 
-	if (enable == false) {
+	if (!isEnabled(cv)) {
 	    return;
 	}
 

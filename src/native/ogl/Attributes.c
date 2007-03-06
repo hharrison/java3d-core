@@ -2182,22 +2182,6 @@ void updateTextureAnisotropicFilter(
 			degree);
 }
 
-static int
-isPowerOfTwo(int size) 
-{
-    int i;
-    if (size == 0) {
-	return 1;
-    } else {
-	for (i = 0; i < 32; i++) {
-	    if (size == (1 << i)) {
-		return 1;
-	    }
-	}
-	return 0;
-    }
-}
-
 /*
  * common function to define 2D texture image for different target
  */
@@ -2225,13 +2209,6 @@ void updateTexture2DImage(
     }
     else {
 	imageObjPtr = (void *)(*(table->GetDirectBufferAddress))(env, data);
-    }
-
-    /* check if we are trying to draw NPOT on a system that doesn't support it */
-    if ((!ctxProperties->textureNonPowerOfTwoAvailable) &&
-	(!isPowerOfTwo(width) || !isPowerOfTwo(height))) {
-	/* disable texture by setting width and height to 0 */
-         width = height = 0;
     }
 
     switch (textureFormat) {
@@ -2403,19 +2380,6 @@ void updateTexture2DSubImage(
     if (imgXOffset > 0 || (width < tilew)) {
 	pixelStore = JNI_TRUE;
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, tilew);
-    }
-    /* if NPOT textures are not supported, check if h=w=0, if so we have been 
-     * disabled due to a NPOT texture being sent to a context that doesn't
-     * support it: disable the glTexSubImage as well
-     */
-    if (!ctxProperties->textureNonPowerOfTwoAvailable) {
-	int texWidth, texHeight;
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &texWidth);
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &texHeight);
-	if ((texWidth == 0) && (texHeight == 0)) {
-	    /* disable the sub-image by setting it's width and height to 0 */
-	    width = height = 0;
-	}
     }
 
     switch (textureFormat) {
@@ -2901,13 +2865,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
     else {
 	imageObjPtr = (void *)(*(table->GetDirectBufferAddress))(env, data);
     }
-
-    /* check if we are trying to draw NPOT on a system that doesn't support it */
-    if ((!ctxProperties->textureNonPowerOfTwoAvailable) &&
-	(!isPowerOfTwo(width) || !isPowerOfTwo(height) || !isPowerOfTwo(depth))) {
-	/* disable texture by setting width, height and depth to 0 */
-         width = height = depth = 0;
-    }
     
     switch (textureFormat) {
         case INTENSITY:
@@ -3082,21 +3039,6 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
     if (imgXOffset > 0 || (width < tilew)) {
         pixelStore = JNI_TRUE;
         glPixelStorei(GL_UNPACK_ROW_LENGTH, tilew);
-    }
-
-    /* if NPOT textures are not supported, check if h=w=0, if so we have been 
-     * disabled due to a NPOT texture being sent to a context that doesn't
-     * support it: disable the glTexSubImage as well
-     */
-    if (!ctxProperties->textureNonPowerOfTwoAvailable) {
-	int texWidth, texHeight, texDepth;
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &texWidth);
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &texHeight);
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_DEPTH, &texDepth);
-	if ((texWidth == 0) && (texHeight == 0) && (texDepth == 0)) {
-	    /* disable the sub-image by setting it's width, height and depth to 0 */
-	    width = height = depth = 0;
-	}
     }
 
     switch (textureFormat) {

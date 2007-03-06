@@ -379,7 +379,6 @@ checkTextureExtensions(
 
     if (isExtensionSupported(tmpExtensionStr, "GL_ARB_texture_non_power_of_two") &&
 	!getJavaBoolEnv(env, "enforcePowerOfTwo")) {
-	ctxInfo->textureNonPowerOfTwoAvailable = JNI_TRUE;
 	ctxInfo->textureExtMask |=
 			javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
     }
@@ -652,7 +651,6 @@ getPropertiesFromCurrentContext(
     /* look for OpenGL 2.0 features */
     if (ctxInfo->gl20) {        
         if (!getJavaBoolEnv(env, "enforcePowerOfTwo")) {
-            ctxInfo->textureNonPowerOfTwoAvailable = JNI_TRUE;
             ctxInfo->textureExtMask |=
             javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
         }
@@ -2662,7 +2660,6 @@ initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo)
     ctxInfo->textureColorTableSize = 0;
     ctxInfo->textureLodAvailable = JNI_FALSE;
     ctxInfo->textureLodBiasAvailable = JNI_FALSE;
-    ctxInfo->textureNonPowerOfTwoAvailable = JNI_FALSE;
     
     /* extension mask */
     ctxInfo->extMask = 0;

@@ -5781,13 +5781,6 @@ class JoglPipeline extends Pipeline {
         int type = GL.GL_UNSIGNED_INT_8_8_8_8;
         boolean forceAlphaToOne = false;
 
-        // check if we are trying to draw NPOT on a system that doesn't support it                
-        if (!(((JoglContext) ctx).getHasTextureNonPowerOfTwo()) &&
-                (!isPowerOfTwo(width) || !isPowerOfTwo(height) || !isPowerOfTwo(depth))) {
-            // disable texture by setting width, height and depth to 0
-            width = height = depth = 0;
-        }
-        
         switch (textureFormat) {
             case Texture.INTENSITY:
                 internalFormat = GL.GL_INTENSITY;
@@ -5949,24 +5942,6 @@ class JoglPipeline extends Pipeline {
         if (imgXOffset > 0 || (width < tilew)) {
             pixelStore = true;
             gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, tilew);
-        }
-
-        // if NPOT textures are not supported, check if h=w=0, if so we have been
-        // disabled due to a NPOT texture being sent to a context that doesn't
-        // support it: disable the glTexSubImage as well
-        if (!(((JoglContext) ctx).getHasTextureNonPowerOfTwo())) {
-            int[] tmp = new int[1];
-            int texWidth, texHeight, texDepth;
-            gl.glGetTexLevelParameteriv(GL.GL_TEXTURE_2D, 0, GL.GL_TEXTURE_WIDTH, tmp, 0);
-            texWidth = tmp[0];
-            gl.glGetTexLevelParameteriv(GL.GL_TEXTURE_2D, 0, GL.GL_TEXTURE_HEIGHT, tmp, 0);
-            texHeight = tmp[0];
-            gl.glGetTexLevelParameteriv(GL.GL_TEXTURE_2D, 0, GL.GL_TEXTURE_DEPTH, tmp, 0);
-            texDepth = tmp[0];
-            if ((texWidth == 0) && (texHeight == 0) && (texDepth == 0)) {
-                // disable the sub-image by setting it's width, height and depth to 0
-                width = height = depth = 0;
-            }
         }
         
         switch (textureFormat) {
@@ -6333,13 +6308,6 @@ class JoglPipeline extends Pipeline {
         int type = GL.GL_UNSIGNED_INT_8_8_8_8;
         boolean forceAlphaToOne = false;
         
-        // check if we are trying to draw NPOT on a system that doesn't support it
-        if (!(((JoglContext) ctx).getHasTextureNonPowerOfTwo()) &&
-                (!isPowerOfTwo(width) || !isPowerOfTwo(height))) {
-            // disable texture by setting width and height to 0
-            width = height = 0;
-        }
-        
         switch (textureFormat) {
             case Texture.INTENSITY:
                 internalFormat = GL.GL_INTENSITY;
@@ -6494,22 +6462,6 @@ class JoglPipeline extends Pipeline {
             gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, tilew);
         }
         
-        // if NPOT textures are not supported, check if h=w=0, if so we have been
-        // disabled due to a NPOT texture being sent to a context that doesn't
-        // support it: disable the glTexSubImage as well
-        if (!(((JoglContext) ctx).getHasTextureNonPowerOfTwo())) {
-            int[] tmp = new int[1];
-            int texWidth, texHeight;
-            gl.glGetTexLevelParameteriv(GL.GL_TEXTURE_2D, 0, GL.GL_TEXTURE_WIDTH, tmp, 0);
-            texWidth = tmp[0];
-            gl.glGetTexLevelParameteriv(GL.GL_TEXTURE_2D, 0, GL.GL_TEXTURE_HEIGHT, tmp, 0);
-            texHeight = tmp[0];
-            if ((texWidth == 0) && (texHeight == 0)) {
-                // disable the sub-image by setting it's width and height to 0
-                width = height = 0;
-            }
-        }
-        
         switch (textureFormat) {
             case Texture.INTENSITY:
                 internalFormat = GL.GL_INTENSITY;
@@ -6657,11 +6609,6 @@ class JoglPipeline extends Pipeline {
             gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
         }
         
-    }
-    
-    
-    private static boolean isPowerOfTwo(int val) {
-        return ((val & (val - 1)) == 0);
     }
     
     void updateTextureFilterModes(Context ctx,
@@ -8296,7 +8243,6 @@ class JoglPipeline extends Pipeline {
         if (!VirtualUniverse.mc.enforcePowerOfTwo &&
                 gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) {
             cv.textureExtendedFeatures |= Canvas3D.TEXTURE_NON_POWER_OF_TWO;
-            ctx.setHasTextureNonPowerOfTwo(true);
         }
     }
     
@@ -8489,7 +8435,6 @@ class JoglPipeline extends Pipeline {
         if (gl20) {
             if(!VirtualUniverse.mc.enforcePowerOfTwo) {
                 cv.textureExtendedFeatures |= Canvas3D.TEXTURE_NON_POWER_OF_TWO;
-                ctx.setHasTextureNonPowerOfTwo(true);
             }
         }
         
