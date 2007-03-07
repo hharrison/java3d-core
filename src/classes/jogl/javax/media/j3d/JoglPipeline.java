@@ -8436,11 +8436,18 @@ class JoglPipeline extends Pipeline {
         cv.textureExtendedFeatures |= Canvas3D.TEXTURE_LOD_RANGE;
         
         // look for OpenGL 2.0 features
-        if (gl20) {
-            if(!VirtualUniverse.mc.enforcePowerOfTwo) {
-                cv.textureExtendedFeatures |= Canvas3D.TEXTURE_NON_POWER_OF_TWO;
-            }
-        }
+        // Fix to Issue 455 : Need to disable NPOT textures for older cards that claim to support it.
+        // Some older cards (e.g., Nvidia fx500 and ATI 9800) claim to support OpenGL 2.0.
+        // This means that these cards have to support non-power-of-two (NPOT) texture,
+        // but their lack the necessary HW force the vendors the emulate this feature in software.
+        // The result is a ~100x slower down compare to power-of-two textures.
+        // Do not check for gl20 but instead check of GL_ARB_texture_non_power_of_two extension string
+        // if (gl20) {
+        //    if(!VirtualUniverse.mc.enforcePowerOfTwo) {
+        //        cv.textureExtendedFeatures |= Canvas3D.TEXTURE_NON_POWER_OF_TWO;
+        //    }
+        // }
+         
         
         // Setup GL_EXT_abgr
         if (gl.isExtensionAvailable("GL_EXT_abgr")) {

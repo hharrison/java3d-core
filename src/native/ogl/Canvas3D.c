@@ -649,12 +649,20 @@ getPropertiesFromCurrentContext(
 
 
     /* look for OpenGL 2.0 features */
-    if (ctxInfo->gl20) {        
+    /*
+     // Fix to Issue 455 : Need to disable NPOT textures for older cards that claim to support it.
+     // Some older cards (e.g., Nvidia fx500 and ATI 9800) claim to support OpenGL 2.0.
+     // This means that these cards have to support non-power-of-two (NPOT) texture,
+     // but their lack the necessary HW force the vendors the emulate this feature in software.
+     // The result is a ~100x slower down compare to power-of-two textures.
+     // Do not check for gl20 but instead check of GL_ARB_texture_non_power_of_two extension string
+    if (ctxInfo->gl20) {
         if (!getJavaBoolEnv(env, "enforcePowerOfTwo")) {
             ctxInfo->textureExtMask |=
             javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
         }
     }
+    */
 
     /* check extensions for remaining of 1.1 and 1.2 */
     if(isExtensionSupported(tmpExtensionStr, "GL_EXT_multi_draw_arrays")){

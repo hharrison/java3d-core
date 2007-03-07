@@ -1419,8 +1419,6 @@ VOID D3dCtx::setCanvasProperty(JNIEnv *env, jobject obj)
     jboolean enforcePowerOfTwo = getJavaBoolEnv(env, "enforcePowerOfTwo"); 
     if(enforcePowerOfTwo) {
 	// printf("DEBUG enforcePowerOfTwo is true");
-	// Reset NPOT support as requested by user. 
-	deviceInfo->supportNPOT = false;  
 	texMask &= ~javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
     }
     env->SetIntField(obj, id, texMask);

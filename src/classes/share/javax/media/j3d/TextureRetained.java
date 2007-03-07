@@ -1103,8 +1103,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
     private boolean isEnabled(Canvas3D cv) {
         if(widthOrHeightIsNPOT &&
-                (((cv.textureExtendedFeatures & Canvas3D.TEXTURE_NON_POWER_OF_TWO ) == 0) ||
-                VirtualUniverse.mc.enforcePowerOfTwo)) {
+                ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_NON_POWER_OF_TWO ) == 0)) {
             return false;
         }
         return enable;
