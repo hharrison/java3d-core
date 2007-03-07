@@ -103,6 +103,9 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     // and graphics driver doesn't support NPOT extension.
     private ImageData imageDataPowerOfTwo;
     private AffineTransformOp powerOfTwoATOp;
+    // The following flag means that if the image is non-power-of-two and the 
+    // card doesn't support NPOT texture, we will scale the image to a power 
+    // of two.
     private boolean enforceNonPowerOfTwoSupport = false;
     private boolean usedByOffScreenCanvas = false;
     

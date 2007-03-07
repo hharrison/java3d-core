@@ -1102,7 +1102,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     }
 
     private boolean isEnabled(Canvas3D cv) {
-        if(widthOrHeightIsNPOT &&
+        if(widthOrHeightIsNPOT && !isUseAsRaster() &&
                 ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_NON_POWER_OF_TWO ) == 0)) {
             return false;
         }
