@@ -921,8 +921,8 @@ class Renderer extends J3dThread {
 			    if (renderBin.nodeComponentList.size() > 0) {
 				for (i = 0; i < renderBin.nodeComponentList.size(); i++) {
 				    NodeComponentRetained nc = (NodeComponentRetained)renderBin.nodeComponentList.get(i);
-                                    if(nc instanceof ImageComponent2DRetained) {    
-                                        ((ImageComponent2DRetained)nc).evaluateExtensions(canvas);
+                                    if(nc instanceof ImageComponentRetained) {    
+                                        ((ImageComponentRetained)nc).evaluateExtensions(canvas);
                                     }
 				}
                             }

@@ -683,7 +683,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	    Canvas3D canvases[] = view.getCanvases();
 	    for (i = 0; i < size; i++) {
                 // Evaluate the nodeComponentList for all the canvases
-                ImageComponent2DRetained nc = (ImageComponent2DRetained)newNodeComponentList.get(i);
+                ImageComponentRetained nc = (ImageComponentRetained)newNodeComponentList.get(i);
                 if (nc.isByReference()) {
                     nc.geomLock.getLock();
                     for (j = 0; j <canvases.length; j++) {
@@ -723,8 +723,8 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
             Canvas3D canvases[] = view.getCanvases();
             for (i = 0; i < size; i++) {
                 // Evaluate the nodeComponentList for all the canvases
-                ImageComponent2DRetained nc = 
-			(ImageComponent2DRetained)dirtyNodeComponentList.get(i);
+                ImageComponentRetained nc = 
+			(ImageComponentRetained)dirtyNodeComponentList.get(i);
                 if (nc.isByReference()) {
                     nc.geomLock.getLock();
                     for (j = 0; j <canvases.length; j++) {
