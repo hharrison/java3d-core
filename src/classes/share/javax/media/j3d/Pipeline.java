@@ -14,15 +14,13 @@ package javax.media.j3d;
 
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
+import java.lang.reflect.Method;
 
 /**
  * Abstract pipeline class for rendering pipeline methods. All rendering
  * pipeline methods are defined here.
  */
 abstract class Pipeline {
-    // Singleton pipeline instance
-    private static Pipeline pipeline;
-
     // Supported rendering pipelines
     enum Type {
         // Native rendering pipelines using OGL or D3D library
@@ -36,9 +34,20 @@ abstract class Pipeline {
         NOOP,
     }
 
+    private static final String CLASSNAME_NATIVE = "javax.media.j3d.NativePipeline";
+    private static final String CLASSNAME_JOGL = "javax.media.j3d.JoglPipeline";
+    private static final String CLASSNAME_NOOP = "javax.media.j3d.NoopPipeline";
+
+    // Singleton pipeline instance
+    private static Pipeline pipeline;
+
     // Type of rendering pipeline (as defined above)
     private Type pipelineType = null;
 
+    /**
+     * An instance of a specific Pipeline subclass should only be constructed
+     * // from the createPipeline method.
+     */
     protected Pipeline() {
     }
 
@@ -48,7 +57,7 @@ abstract class Pipeline {
      */
     static boolean useNativeOgl(boolean isWindowsVista, boolean nativeOglRequested) {
         // Get the OpenGL vendor string.
-        String vendorString = NativePipeline.getSupportedOglVendor();
+        String vendorString = getSupportedOglVendor();
 
         // A null vendor string means OpenGL 1.2+ support unavailable.
         if (vendorString == null) {
@@ -62,6 +71,37 @@ abstract class Pipeline {
 
         // Check OS type and vendor string to see whether OGL is preferred
         return preferOgl(isWindowsVista, vendorString);
+    }
+    
+    /**
+     * Wrapper method that calls the corresponding NativePipeline method via
+     * reflection. We use reflection to avoid initializing the NativePipeline
+     * class uless we are actually going to call it.
+     */
+    private static String getSupportedOglVendor() {
+        try {
+            Method nativeMethod = (Method)
+                java.security.AccessController.doPrivileged(new
+                    java.security.PrivilegedAction() {
+                        public Object run() {
+                            try {
+                                Class pipelineClass = Class.forName(CLASSNAME_NATIVE);
+                                return pipelineClass.getDeclaredMethod("getSupportedOglVendor");
+                            } catch (Exception ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }
+                    });
+
+            String vendorString = (String) nativeMethod.invoke(null);
+            return vendorString;
+        } catch (Exception ex) {
+            System.err.println(ex);
+        } catch (Error ex) {
+            System.err.println(ex);
+        }
+
+        return null;
     }
 
     // Returns a flag inticating whether the specified vendor prefers OpenGL.
@@ -103,13 +143,13 @@ abstract class Pipeline {
         switch (pipelineType) {
         case NATIVE_OGL:
         case NATIVE_D3D:
-            className = "javax.media.j3d.NativePipeline";
+            className = CLASSNAME_NATIVE;
             break;
         case JOGL:
-            className = "javax.media.j3d.JoglPipeline";
+            className = CLASSNAME_JOGL;
             break;
         case NOOP:
-            className = "javax.media.j3d.NoopPipeline";
+            className = CLASSNAME_NOOP;
             break;
         default:
             // Should not get here
