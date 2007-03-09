@@ -383,6 +383,12 @@ checkTextureExtensions(
 			javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
     }
 
+    if (isExtensionSupported(tmpExtensionStr,
+				"GL_SGIS_generate_mipmap")) {
+	ctxInfo->textureExtMask |=
+			javax_media_j3d_Canvas3D_TEXTURE_AUTO_MIPMAP_GENERATION;
+    }
+    
     
 }
 
@@ -598,8 +604,9 @@ getPropertiesFromCurrentContext(
     }
 
     if (versionNumbers[0] > 1) {
-        /* OpenGL 2.x -- set flags for 1.3 and 2.0 or greater */
+        /* OpenGL 2.x -- set flags for 1.3, 1.4 and 2.0 or greater */
         ctxInfo->gl20 = JNI_TRUE;
+        ctxInfo->gl14 = JNI_TRUE;
         ctxInfo->gl13 = JNI_TRUE;
     }
     else {
@@ -647,7 +654,10 @@ getPropertiesFromCurrentContext(
     ctxInfo->texture_base_level_enum = GL_TEXTURE_BASE_LEVEL;
     ctxInfo->texture_max_level_enum = GL_TEXTURE_MAX_LEVEL;
 
-
+    if (ctxInfo->gl14) {
+        ctxInfo->textureExtMask |= javax_media_j3d_Canvas3D_TEXTURE_AUTO_MIPMAP_GENERATION;
+    }
+    
     /* look for OpenGL 2.0 features */
     /*
      // Fix to Issue 455 : Need to disable NPOT textures for older cards that claim to support it.
@@ -2610,6 +2620,7 @@ initializeCtxInfo(JNIEnv *env , GraphicsContextPropertiesInfo* ctxInfo)
     ctxInfo->versionNumbers[0] = 1;
     ctxInfo->versionNumbers[1] = 1;
     ctxInfo->gl13 = JNI_FALSE;
+    ctxInfo->gl14 = JNI_FALSE;    
     ctxInfo->gl20 = JNI_FALSE;
 
     /* 1.2 and GL_ARB_imaging */

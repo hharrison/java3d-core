@@ -767,7 +767,8 @@ public class Canvas3D extends Canvas {
     // if Texture interpolation mode is support.
     static final int TEXTURE_LERP               = 0x4000;
     static final int TEXTURE_NON_POWER_OF_TWO	= 0x8000;
-
+    static final int TEXTURE_AUTO_MIPMAP_GENERATION = 0x10000;
+    
     int textureExtendedFeatures = 0;
 
     // Extensions supported by the underlying canvas
@@ -3726,6 +3727,10 @@ public class Canvas3D extends Canvas {
         values.add(new Boolean(
                 (textureExtendedFeatures & TEXTURE_NON_POWER_OF_TWO) != 0));
 
+        keys.add("textureAutoMipMapGenerationAvailable");
+        values.add(new Boolean(
+                (textureExtendedFeatures & TEXTURE_AUTO_MIPMAP_GENERATION) != 0));        
+        
         keys.add("textureCoordSetsMax");
         values.add(new Integer(maxTexCoordSets));
 

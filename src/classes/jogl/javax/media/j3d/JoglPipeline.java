@@ -8248,6 +8248,11 @@ class JoglPipeline extends Pipeline {
                 gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) {
             cv.textureExtendedFeatures |= Canvas3D.TEXTURE_NON_POWER_OF_TWO;
         }
+        
+        if (gl.isExtensionAvailable("GL_SGIS_generate_mipmap")) {
+            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION;
+        }        
+        
     }
     
     
@@ -8407,10 +8412,12 @@ class JoglPipeline extends Pipeline {
         }
         
         boolean gl20 = false;
+        boolean gl14 = false;
         boolean gl13 = false;
         if (major > 1) {
             // OpenGL 2.x -- set flags for 1.3 and 2.0 or greater
             gl20 = true;
+            gl14 = true;
             gl13 = true;
         } else {
             if (minor == 2) {
@@ -8422,8 +8429,15 @@ class JoglPipeline extends Pipeline {
         
         if (gl20) {
             assert gl13;
+            assert gl14;
             assert gl.isExtensionAvailable("GL_VERSION_2_0");
         }
+        
+        if (gl14) {
+            assert gl13;
+            assert gl.isExtensionAvailable("GL_VERSION_1_4");
+        }
+        
         if (gl13) {
             assert gl.isExtensionAvailable("GL_VERSION_1_3");
         }
@@ -8434,6 +8448,10 @@ class JoglPipeline extends Pipeline {
         // Note that we don't query for GL_ARB_imaging here
         
         cv.textureExtendedFeatures |= Canvas3D.TEXTURE_LOD_RANGE;
+
+        if (gl14) {
+            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION;
+        }
         
         // look for OpenGL 2.0 features
         // Fix to Issue 455 : Need to disable NPOT textures for older cards that claim to support it.

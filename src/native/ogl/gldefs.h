@@ -434,6 +434,7 @@ struct GraphicsContextPropertiesInfoRec {
     char *extensionStr;
     int versionNumbers[2];
     jboolean gl13;          /* OpenGL 1.3 or greater */
+    jboolean gl14;          /* OpenGL 1.4 or greater */ 
     jboolean gl20;          /* OpenGL 2.0 or greater */
 
     /* GL_ARB_imaging subset */
