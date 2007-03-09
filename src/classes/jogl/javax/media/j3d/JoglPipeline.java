@@ -8414,23 +8414,24 @@ class JoglPipeline extends Pipeline {
         boolean gl20 = false;
         boolean gl14 = false;
         boolean gl13 = false;
-        if (major > 1) {
-            // OpenGL 2.x -- set flags for 1.3 and 2.0 or greater
-            gl20 = true;
-            gl14 = true;
-            gl13 = true;
-        } else {
+        
+        if (major == 1) {
             if (minor == 2) {
                 System.err.println("JAVA 3D: OpenGL 1.2 detected; will run with reduced functionality");
-            } else if ( minor == 4 ) {
-                gl14 = true;
-                gl13 = true;                
+            } else {
+                if (minor >= 3) {
+                    gl13 = true;
+                }
+                if (minor >= 4) {
+                    gl14 = true;
+                }
             }
-            else {
-                gl13 = true;
-            }
+        } else /* major >= 2 */ {
+            gl13 = true;
+            gl14 = true;
+            gl20 = true;
         }
-        
+
         if (gl20) {
             assert gl13;
             assert gl14;
