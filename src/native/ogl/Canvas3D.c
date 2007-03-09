@@ -603,17 +603,16 @@ getPropertiesFromCurrentContext(
 	return JNI_FALSE;
     }
 
-    if (versionNumbers[0] > 1) {
+    if (versionNumbers[0] == 1) {
         if (versionNumbers[1] == 2) {
             fprintf(stderr,
             "JAVA 3D: OpenGL 1.2 detected; will run with reduced functionality\n");
-        } else {
-            if (versionNumbers[1] >= 3) {
-                ctxInfo->gl13 = JNI_TRUE;
-            }
-            if (versionNumbers[1] >= 4) {
-                ctxInfo->gl14 = JNI_TRUE;
-            }
+        }
+        if (versionNumbers[1] >= 3) {
+            ctxInfo->gl13 = JNI_TRUE;
+        }
+        if (versionNumbers[1] >= 4) {
+            ctxInfo->gl14 = JNI_TRUE;
         }
     } else /* major >= 2 */ {
         ctxInfo->gl20 = JNI_TRUE;

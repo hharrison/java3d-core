@@ -8418,13 +8418,12 @@ class JoglPipeline extends Pipeline {
         if (major == 1) {
             if (minor == 2) {
                 System.err.println("JAVA 3D: OpenGL 1.2 detected; will run with reduced functionality");
-            } else {
-                if (minor >= 3) {
-                    gl13 = true;
-                }
-                if (minor >= 4) {
-                    gl14 = true;
-                }
+            } 
+            if (minor >= 3) {
+                gl13 = true;
+            }
+            if (minor >= 4) {
+                gl14 = true;
             }
         } else /* major >= 2 */ {
             gl13 = true;
