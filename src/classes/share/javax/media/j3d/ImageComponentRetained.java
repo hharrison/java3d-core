@@ -2022,6 +2022,10 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                         ((DataBufferByte)bi.getRaster().getDataBuffer()).getData();
                 // Multiply by 4 to get the byte incr and start point
                 j = 0;
+                
+                //Issue 381: dstBegin contains pixel count, but we are looping over byte count. In case of YDown, it contains a count that is decremented and if we do not multiply, we have an AIOOB thrown at 25% of the copy.
+                dstBegin <<= 2;
+                
                 for(h = 0; h < height; h++, dstBegin += (dstInc << 2)) {
                     i = dstBegin;
                     for (w = 0; w < width; w++, j+=4) {
