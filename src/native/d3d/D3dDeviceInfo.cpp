@@ -25,7 +25,7 @@ D3dDeviceInfo::~D3dDeviceInfo()
 VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
     
     BOOL supportNPOT;
-    
+
     if (deviceType == D3DDEVTYPE_HAL ){
         isHardware = true;
         isHardwareTnL = (d3dCaps->DevCaps &  D3DDEVCAPS_HWTRANSFORMANDLIGHT);
@@ -72,7 +72,7 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
             // As OpenGL is UNCONDITIONAL, it is not used by Java3D
             //supportNPOT = true;
         }
-    }else{
+    } else {
         //UNconditional: Textures do not need to be a power of 2 in size
         supportNPOT = true;
     } 
@@ -95,8 +95,7 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
         printf("Java3D: Supported Shaders = %d.%d in mode %s ",
         HIBYTE(LOWORD(vsVersion)),
         LOBYTE(LOWORD(vsVersion)),
-        dt);
-        
+        dt);        
     }
     
     //supportStreamOffset =
@@ -119,7 +118,7 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
     texBorderModeSupport = ((d3dCaps->TextureAddressCaps & D3DPTADDRESSCAPS_BORDER) != 0);
     
     texLerpSupport = ((d3dCaps->TextureOpCaps &    D3DTEXOPCAPS_LERP) != 0);
-    
+
     canRenderWindowed = true;//((d3dCaps->Caps2 &  D3DCAPS2_CANRENDERWINDOWED) != 0);
     
     maxPrimitiveCount = d3dCaps->MaxPrimitiveCount;
@@ -166,42 +165,41 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
         supportRasterPresImmediate = false;
     
     if (((d3dCaps->RasterCaps & D3DPRASTERCAPS_FOGTABLE) != 0) &&
-    ((d3dCaps->RasterCaps & D3DPRASTERCAPS_WFOG) != 0)) {
+	((d3dCaps->RasterCaps & D3DPRASTERCAPS_WFOG) != 0)) {
         // use pixel w-fog
         fogMode = D3DRS_FOGTABLEMODE;
         rangeFogEnable = false;
     }
-    else
-        if (((d3dCaps->RasterCaps & D3DPRASTERCAPS_FOGVERTEX) != 0) &&
-        ((d3dCaps->RasterCaps & D3DPRASTERCAPS_FOGRANGE) != 0))
-            
-        {
-            // use vertex range based fog
-            fogMode = D3DRS_FOGVERTEXMODE;
-            rangeFogEnable = true;
-        }
-        else
-            if ((d3dCaps->RasterCaps & D3DPRASTERCAPS_FOGTABLE) != 0) {
-                // use pixel z-fog
-                fogMode = D3DRS_FOGTABLEMODE;
-                rangeFogEnable = false;
-            }
-            else
-                if (D3DPRASTERCAPS_FOGVERTEX) {
-                    // use vertex z-fog
-                    fogMode = D3DRS_FOGVERTEXMODE;
-                    rangeFogEnable = false;
-                }
-                else {
-                    if (debug) {
-                        printf("[Java 3D] Fog not support in this device !\n");
-                    }
-                } 
+    else if (((d3dCaps->RasterCaps & D3DPRASTERCAPS_FOGVERTEX) != 0) &&
+	     ((d3dCaps->RasterCaps & D3DPRASTERCAPS_FOGRANGE) != 0)) {
+	// use vertex range based fog
+	fogMode = D3DRS_FOGVERTEXMODE;
+	rangeFogEnable = true;
+    }
+    else if ((d3dCaps->RasterCaps & D3DPRASTERCAPS_FOGTABLE) != 0) {
+	// use pixel z-fog
+	fogMode = D3DRS_FOGTABLEMODE;
+	rangeFogEnable = false;
+    }
+    else if (D3DPRASTERCAPS_FOGVERTEX) {
+	// use vertex z-fog
+	fogMode = D3DRS_FOGVERTEXMODE;
+	rangeFogEnable = false;
+    }
+    else {
+	if (debug) {
+	    printf("[Java 3D] Fog not support in this device !\n");
+	}
+    } 
     
     texMask = 0;
-    
+
     if(supportNPOT){
         texMask |= javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
+    }
+
+    if((d3dCaps->Caps2 & D3DCAPS2_CANAUTOGENMIPMAP) != 0) {
+	texMask |= javax_media_j3d_Canvas3D_TEXTURE_AUTO_MIPMAP_GENERATION;
     }
     
     if ((d3dCaps->TextureCaps & D3DPTEXTURECAPS_VOLUMEMAP) &&

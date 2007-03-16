@@ -361,37 +361,4 @@ class ImageComponent3DRetained extends ImageComponentRetained {
             sendMessage(SUBIMAGE_CHANGED, info);
         }
     }
-    
-    ImageComponentRetained createNextLevelMipMapImage() {
- 
-	int xScale, yScale, newWidth, newHeight;
-
-        if (width > 1) {
-            newWidth = width >> 1;
-            xScale = 2;
-        } else {
-            newWidth = 1;
-            xScale = 1;
-        }
-        if (height > 1) {
-            newHeight = height >> 1; 
-            yScale = 2; 
-        } else { 
-            newHeight = 1;
-            yScale = 1; 
-        }   
-
-        ImageComponent3DRetained newImage = new ImageComponent3DRetained();
-        newImage.processParams(getFormat(), newWidth, newHeight, depth);
-        newImage.setImageFormatType(getImageFormatType());
-        newImage.setUnitsPerPixel(getUnitsPerPixel());        
-        newImage.imageData = newImage.createRenderedImageDataObject(null);
-        
-        for (int i = 0; i < depth; i++) {
-            newImage.scaleImage(xScale, yScale, i, this);
-        }
-	
-        return newImage;
-
-    }       
 }

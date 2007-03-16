@@ -68,17 +68,19 @@ abstract class TextureRetained extends NodeComponentRetained {
     int		format = Texture.RGB;		// Texture format
     int		width = 1;			// Width in pixels (2**n)
     int		height = 1;			// Height in pixels (2**m)
-    private boolean widthOrHeightIsNPOT = false; // true if width or height is non power of two    
-    ImageComponentRetained images[][];	// Array of images (one for each mipmap level)
-    boolean	imagesLoaded = false;	// TRUE if all mipmap levels are loaded
-    int         mipmapLevels;        // Number of MIPMAP levels needed
-    int		maxLevels = 0;       // maximum number of levels needed for
-				     // the mipmapMode of this texture
-    int		maxMipMapLevels = 0; // maximum number of mipmap levels that 
-				     // can be defined for this texture
 
+    // true if width or height is non power of two    
+    private boolean widthOrHeightIsNPOT = false; 
+    // Array of images (one for each mipmap level)    
+    ImageComponentRetained images[][];
+    // maximum number of levels needed for the mipmapMode of this texture
+    int		maxLevels = 0;    
+    // maximum number of mipmap levels that can be defined for this texture
+    private int	     maxMipMapLevels = 0;     
+    // true if hardware auto mipmap generation is requested.
+    private boolean  useAutoMipMapGeneration = false; 
+    
     int 	numFaces = 1;		// For CubeMap, it is 6
-
     int		baseLevel = 0;
     int		maximumLevel = 0;
     float	minimumLod = -1000.0f;
@@ -206,7 +208,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    maximumLevel = 0;
 	    maxLevels = 1;
 	}
-
+        
         images = new ImageComponentRetained[numFaces][maxLevels];
 
 	for (int j = 0; j < numFaces; j++) {
@@ -214,8 +216,6 @@ abstract class TextureRetained extends NodeComponentRetained {
 	       images[j][i] = null;
 	    }
 	}
-	imagesLoaded = false;
-
     }
 
     final int getFormat() {
@@ -1897,7 +1897,6 @@ abstract class TextureRetained extends NodeComponentRetained {
 	mirrorTexture.boundaryColor.set(boundaryColor);
 	mirrorTexture.enable = enable;
 	mirrorTexture.userSpecifiedEnable = enable;
-	mirrorTexture.imagesLoaded = imagesLoaded;
 	mirrorTexture.enable = enable;
 	mirrorTexture.numFaces = numFaces;
 	mirrorTexture.resourceCreationMask = 0x0;
@@ -1952,30 +1951,28 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	// implicit mipmap generation
 	if (mipmapMode == Texture.BASE_LEVEL &&
-	    (minFilter == Texture.NICEST ||
-	     minFilter == Texture.MULTI_LEVEL_POINT ||
-	     minFilter == Texture.MULTI_LEVEL_LINEAR)) {
-	    mirrorTexture.maxLevels = maxMipMapLevels;
-
-	    if ((mirrorTexture.images == null) ||
-		  (mirrorTexture.images.length < numFaces) ||
-		  (mirrorTexture.images[0].length < mirrorTexture.maxLevels)) {
-		mirrorTexture.images = 
-		 new ImageComponentRetained[numFaces][mirrorTexture.maxLevels];
-	    }
-
-	    for (int j = 0; j < numFaces; j++) {
-	        mirrorTexture.images[j][0] = images[j][0];
-
-	        // add texture to the userList of the images
-	        if (images[j][0] != null) {
-	            images[j][0].addUser(mirrorTexture);
-		}
-
-	        for (int i = 1; i < mirrorTexture.maxLevels; i++) {                 
-		    mirrorTexture.images[j][i] = 
-                            mirrorTexture.images[j][i-1].createNextLevelMipMapImage();
-		}
+                (minFilter == Texture.NICEST ||
+                minFilter == Texture.MULTI_LEVEL_POINT ||
+                minFilter == Texture.MULTI_LEVEL_LINEAR)) {
+            // TODO : Should this be 1 ?  --- Chien.
+            // mirrorTexture.maxLevels = maxMipMapLevels;
+            mirrorTexture.maxLevels = 1;
+            mirrorTexture.useAutoMipMapGeneration = true;
+            
+            if ((mirrorTexture.images == null) ||
+                    (mirrorTexture.images.length < numFaces) ||
+                    !(mirrorTexture.images[0].length == mirrorTexture.maxLevels)) {
+                mirrorTexture.images =
+                        new ImageComponentRetained[numFaces][mirrorTexture.maxLevels];
+            }
+            
+            for (int j = 0; j < numFaces; j++) {
+                mirrorTexture.images[j][0] = images[j][0];
+                
+                // add texture to the userList of the images
+                if (images[j][0] != null) {
+                    images[j][0].addUser(mirrorTexture);
+                }
 	    }
 	}
 	else {
