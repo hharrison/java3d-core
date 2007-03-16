@@ -124,7 +124,7 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 	reset(ra, lightList, fog, modelClip);
     }
 
-    void reset(RenderAtom ra, LightRetained[] lightList, FogRetained fog, 
+    private void reset(RenderAtom ra, LightRetained[] lightList, FogRetained fog, 
 		ModelClipRetained modelClip) {
 	int i;
 	LightRetained light;
@@ -150,8 +150,6 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 		else {
 		    lights.add(light);
 		}
-
-		light.environmentSets.add(this);
 	    }
 	    if (sceneAmbient.x > 1.0f) {
 		sceneAmbient.x = 1.0f;
@@ -163,16 +161,12 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 		sceneAmbient.z = 1.0f;
 	    }
 	}
+
 	this.fog = fog;
-	if (fog != null) {
-	    fog.environmentSets.add(this);
-	}
 
         this.modelClip = modelClip;
 	enableMCMaskCache = 0;
 	if (modelClip != null) {
-	    modelClip.environmentSets.add(this);
-
 	    for (i = 0; i < 6; i++) {
 		 if (modelClip.enables[i]) 
 		     enableMCMaskCache |= 1 << i;
@@ -183,6 +177,22 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 	// Allocate the ltPos array
 	ltPos = new int[lights.size()];
 	enableMask = 0;
+
+        // Issue 466 : add the env set to the light, fog, and model clip
+        // lists only after the newly constructed env set is initialized
+        if (lightList != null) {
+            for (i=0; i<lightList.length; i++) {
+                lightList[i].environmentSets.add(this);
+            }
+        }
+        
+        if (fog != null) {
+            fog.environmentSets.add(this);
+        }
+        
+        if (modelClip != null) {
+            modelClip.environmentSets.add(this);
+        }
     }
 
     /**
