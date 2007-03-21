@@ -978,7 +978,7 @@ class NoopPipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            int imageDataType, Object data) {
+            int imageDataType, Object data, boolean useAutoMipMap) {
     }
 
     void updateTexture2DSubImage(Context ctx,
@@ -986,7 +986,7 @@ class NoopPipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            int imageDataType, Object data) {
+            int imageDataType, Object data, boolean useAutoMipMap) {
     }
     
     void updateTexture2DLodRange(Context ctx,
@@ -1037,7 +1037,7 @@ class NoopPipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int width, int height, int depth,
             int boundaryWidth,
-            int imageDataType, Object imageData) {
+            int imageDataType, Object imageData, boolean useAutoMipMap) {
     }
 
     void updateTexture3DSubImage(Context ctx,
@@ -1047,7 +1047,7 @@ class NoopPipeline extends Pipeline {
             int imgXoffset, int imgYoffset, int imgZoffset,
             int tilew, int tileh,
             int width, int height, int depth,
-            int imageTypeData, Object imageData) {
+            int imageTypeData, Object imageData, boolean useAutoMipMap) {
     }
 
     void updateTexture3DLodRange(Context ctx,
@@ -1099,7 +1099,7 @@ class NoopPipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            int imageDataType, Object imageData) {
+            int imageDataType, Object imageData, boolean useAutoMipMap) {
     }
 
     void updateTextureCubeMapSubImage(Context ctx,
@@ -1107,7 +1107,7 @@ class NoopPipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            int imageDataType, Object imageData) {
+            int imageDataType, Object imageData, boolean useAutoMipMap) {
     }
 
     void updateTextureCubeMapLodRange(Context ctx,

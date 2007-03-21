@@ -2205,8 +2205,10 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
     jint width,
     jint height,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 {
+    /* Note: useAutoMipMap is not use for SubImage in the d3d pipe */
     GetDevice();
 
     if (d3dCtx->texUnitStage >= d3dCtx->bindTextureIdLen) {
@@ -2284,7 +2286,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
     jint height,
     jint boundaryWidth,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 {
     GetDevice();
 
@@ -2322,7 +2325,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
 	if (surf == NULL) {
 	// Need to create surface
 	    surf = createTextureSurface(d3dCtx, numLevels, textureFormat,
-					width, height);
+					width, height, useAutoMipMap);
 
 	    if (surf == NULL) {
 		return;
@@ -2529,9 +2532,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
     jint depth,
     jint boundaryWidth,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 {
-
+    /* Note: useAutoMipMap is not use instead numLevel will be use for d3d pipe */
+    
     GetDevice();
 
     if (d3dCtx->deviceInfo->maxTextureDepth <= 0) {
@@ -2655,8 +2660,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
     jint height,
     jint depth,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 {
+    /* Note: useAutoMipMap is not use for SubImage in the d3d pipe */
+    
     GetDevice();
 
     if ((d3dCtx->deviceInfo->maxTextureDepth <= 0) ||
@@ -2853,8 +2861,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapSubImage(
     jint width,
     jint height,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 {
+    /* Note: useAutoMipMap is not use for SubImage in the d3d pipe */
+    
     GetDevice();
 
     if (d3dCtx->texUnitStage >= d3dCtx->bindTextureIdLen) {
@@ -2934,8 +2945,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapImage(
     jint height,
     jint boundaryWidth,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 {
+    /* Note: useAutoMipMap is not use instead numLevel will be use for d3d pipe */
+    
     GetDevice();
 
     if (d3dCtx->texUnitStage >= d3dCtx->bindTextureIdLen) {

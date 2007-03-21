@@ -2276,20 +2276,20 @@ class NativePipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            int imageDataType, Object data);
+            int imageDataType, Object data, boolean useAutoMipMap);
     
     void updateTexture2DImage(Context ctx,
             int numLevels, int level,
             int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            int imageDataType, Object data) {
+            int imageDataType, Object data, boolean useAutoMipMap) {
         updateTexture2DImage(unbox(ctx),
                 numLevels, level,
                 textureFormat, imageFormat,
                 width, height,
                 boundaryWidth,
-                imageDataType, data);
+                imageDataType, data, useAutoMipMap);
     }
     
     native void updateTexture2DSubImage(long ctx,
@@ -2297,20 +2297,20 @@ class NativePipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            int imageDataType, Object data);
+            int imageDataType, Object data, boolean useAutoMipMap);
     
     void updateTexture2DSubImage(Context ctx,
             int level, int xoffset, int yoffset,
             int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            int imageDataType, Object data) {
+            int imageDataType, Object data, boolean useAutoMipMap) {
         updateTexture2DSubImage(unbox(ctx),
                 level, xoffset, yoffset,
                 textureFormat, imageFormat,
                 imgXOffset, imgYOffset,
                 tilew, width, height,
-                imageDataType, data);
+                imageDataType, data, useAutoMipMap);
     }
     
     native void updateTexture2DLodRange(long ctx,
@@ -2409,20 +2409,20 @@ class NativePipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int width, int height, int depth,
             int boundaryWidth,
-            int imageDataType, Object imageData);
+            int imageDataType, Object imageData, boolean useAutoMipMap);
     
     void updateTexture3DImage(Context ctx,
             int numLevels, int level,
             int textureFormat, int imageFormat,
             int width, int height, int depth,
             int boundaryWidth,
-            int imageDataType, Object imageData) {
+            int imageDataType, Object imageData, boolean useAutoMipMap) {
         updateTexture3DImage(unbox(ctx),
                 numLevels, level,
                 textureFormat, imageFormat,
                 width, height, depth,
                 boundaryWidth,
-                imageDataType, imageData);
+                imageDataType, imageData, useAutoMipMap);
     }
     
     native void updateTexture3DSubImage(long ctx,
@@ -2432,7 +2432,7 @@ class NativePipeline extends Pipeline {
             int imgXoffset, int imgYoffset, int imgZoffset,
             int tilew, int tileh,
             int width, int height, int depth,
-            int imageDataType, Object imageData);
+            int imageDataType, Object imageData, boolean useAutoMipMap);
     
     void updateTexture3DSubImage(Context ctx,
             int level,
@@ -2441,7 +2441,7 @@ class NativePipeline extends Pipeline {
             int imgXoffset, int imgYoffset, int imgZoffset,
             int tilew, int tileh,
             int width, int height, int depth,
-            int imageDataType, Object imageData) {
+            int imageDataType, Object imageData, boolean useAutoMipMap) {
         updateTexture3DSubImage(unbox(ctx),
                 level,
                 xoffset, yoffset, zoffset,
@@ -2449,7 +2449,7 @@ class NativePipeline extends Pipeline {
                 imgXoffset, imgYoffset, imgZoffset,
                 tilew, tileh,
                 width, height, depth,
-                imageDataType, imageData);
+                imageDataType, imageData, useAutoMipMap);
     }
     
     native void updateTexture3DLodRange(long ctx,
@@ -2552,20 +2552,20 @@ class NativePipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            int imageDataType, Object imageData);
+            int imageDataType, Object imageData, boolean useAutoMipMap);
     
     void updateTextureCubeMapImage(Context ctx,
             int face, int numLevels, int level,
             int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            int imageDataType, Object imageData) {
+            int imageDataType, Object imageData, boolean useAutoMipMap) {
         updateTextureCubeMapImage(unbox(ctx),
                 face, numLevels, level,
                 textureFormat, imageFormat,
                 width, height,
                 boundaryWidth,
-                imageDataType, imageData);
+                imageDataType, imageData, useAutoMipMap);
     }
     
     native void updateTextureCubeMapSubImage(long ctx,
@@ -2573,20 +2573,20 @@ class NativePipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            int imageDataType, Object imageData);
+            int imageDataType, Object imageData, boolean useAutoMipMap);
     
     void updateTextureCubeMapSubImage(Context ctx,
             int face, int level, int xoffset, int yoffset,
             int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            int imageDataType, Object imageData) {
+            int imageDataType, Object imageData, boolean useAutoMipMap) {
         updateTextureCubeMapSubImage(unbox(ctx),
                 face, level, xoffset, yoffset,
                 textureFormat, imageFormat,
                 imgXOffset, imgYOffset,
                 tilew, width, height,
-                imageDataType, imageData);
+                imageDataType, imageData, useAutoMipMap);
     }
     
     native void updateTextureCubeMapLodRange(long ctx,

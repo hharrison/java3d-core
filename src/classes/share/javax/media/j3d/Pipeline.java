@@ -1067,14 +1067,14 @@ abstract class Pipeline {
             int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            int imageDataType, Object data);
+            int imageDataType, Object data, boolean useAutoMipMap);
 
     abstract void updateTexture2DSubImage(Context ctx,
             int level, int xoffset, int yoffset,
             int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            int imageDataType, Object data);
+            int imageDataType, Object data, boolean useAutoMipMap);
     
     abstract void updateTexture2DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
@@ -1116,7 +1116,7 @@ abstract class Pipeline {
             int textureFormat, int imageFormat,
             int width, int height, int depth,
             int boundaryWidth,
-            int imageDataType, Object imageData);
+            int imageDataType, Object imageData, boolean useAutoMipMap);
 
     abstract void updateTexture3DSubImage(Context ctx,
             int level,
@@ -1125,7 +1125,7 @@ abstract class Pipeline {
             int imgXoffset, int imgYoffset, int imgZoffset,
             int tilew, int tileh,
             int width, int height, int depth,
-            int imageDataType, Object imageData);
+            int imageDataType, Object imageData, boolean useAutoMipMap);
 
     abstract void updateTexture3DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
@@ -1168,14 +1168,14 @@ abstract class Pipeline {
             int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            int imageDataType, Object imageData);
+            int imageDataType, Object imageData, boolean useAutoMipMap);
     
     abstract void updateTextureCubeMapSubImage(Context ctx,
             int face, int level, int xoffset, int yoffset,
             int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            int imageDataType, Object imageData);
+            int imageDataType, Object imageData, boolean useAutoMipMap);
     
     abstract void updateTextureCubeMapLodRange(Context ctx,
             int baseLevel, int maximumLevel,

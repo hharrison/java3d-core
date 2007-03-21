@@ -74,11 +74,11 @@ abstract class TextureRetained extends NodeComponentRetained {
     // Array of images (one for each mipmap level)    
     ImageComponentRetained images[][];
     // maximum number of levels needed for the mipmapMode of this texture
-    int		maxLevels = 0;    
+    int	     maxLevels = 0;    
     // maximum number of mipmap levels that can be defined for this texture
     private int	     maxMipMapLevels = 0;     
     // true if hardware auto mipmap generation is requested.
-    private boolean  useAutoMipMapGeneration = false; 
+    boolean  useAutoMipMapGeneration = false; 
     
     int 	numFaces = 1;		// For CubeMap, it is 6
     int		baseLevel = 0;
@@ -678,11 +678,16 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 
     final void initMaximumLevel(int level) {
-	if ((level < baseLevel) || (level >=  maxMipMapLevels)) {
-	    throw new IllegalArgumentException(
-			J3dI18N.getString("Texture37"));
-	}
-	maximumLevel = level; 
+        if ((level < baseLevel) || (level >=  maxMipMapLevels)) {
+            throw new IllegalArgumentException(
+                    J3dI18N.getString("Texture37"));
+        }
+        if((mipmapMode == Texture.BASE_LEVEL) && (level != 0)) {
+            throw new IllegalArgumentException( 
+                    J3dI18N.getString("Texture48"));
+        }
+        
+        maximumLevel = level;
     }
 
     final void setMaximumLevel(int level) {
@@ -1140,7 +1145,16 @@ abstract class TextureRetained extends NodeComponentRetained {
     void updateTextureLOD(Canvas3D cv) {
 
 	if ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_LOD_RANGE) != 0 ) {
-            updateTextureLodRange(cv.ctx, baseLevel, maximumLevel,
+            
+            int max = 0;
+            if( mipmapMode == Texture.BASE_LEVEL ) {
+                max = maxMipMapLevels;
+            }
+            else {
+                max = maximumLevel;
+            }
+            
+            updateTextureLodRange(cv.ctx, baseLevel, max,
                     minimumLod, maximumLod);
 	}
 
@@ -1163,7 +1177,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	int magnificationFilter = magFilter;
 	int minificationFilter = minFilter;
-
+        
 	// update sharpen texture function if applicable
 
 	if ((magFilter >= Texture.LINEAR_SHARPEN) &&
@@ -1228,8 +1242,19 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    }
 	}
 
+        // Fallback to BASE mode if hardware mipmap generation is not supported.
+        if (useAutoMipMapGeneration && ((cv.textureExtendedFeatures &
+                Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) == 0)) {
+            
+            if (minFilter == Texture.NICEST ||
+                    minFilter == Texture.MULTI_LEVEL_LINEAR) {
+                minificationFilter = Texture.BASE_LEVEL_LINEAR;
+            } else if (minFilter == Texture.MULTI_LEVEL_POINT) {
+                minificationFilter = Texture.BASE_LEVEL_POINT;
+            }
+        }
+        
 	// update texture filtering modes
-
 	updateTextureFilterModes(cv.ctx, minificationFilter, 
 						magnificationFilter);
 
@@ -1250,23 +1275,26 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 
     // Wrapper around the native call for 2D textures; overridden for
-    // Texture3D and TextureCureMap
+    // TextureCureMap
     void updateTextureImage(Canvas3D cv,
             int face, int numLevels, int level,
             int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
             int imageDataType, Object data) {
-
+        
+        boolean useAutoMipMap = useAutoMipMapGeneration && ((cv.textureExtendedFeatures & 
+                Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) != 0); 
+        
         Pipeline.getPipeline().updateTexture2DImage(cv.ctx,
                 numLevels, level,
                 textureFormat, imageFormat,
                 width, height, boundaryWidth,
-                imageDataType, data);
+                imageDataType, data, useAutoMipMap);
     }
 
     // Wrapper around the native call for 2D textures; overridden for
-    // Texture3D and TextureCureMap
+    // TextureCureMap
     void updateTextureSubImage(Canvas3D cv,
             int face, int level,
             int xoffset, int yoffset,
@@ -1275,12 +1303,15 @@ abstract class TextureRetained extends NodeComponentRetained {
             int tilew, int width, int height,
             int imageDataType, Object data) {
 
+        boolean useAutoMipMap = useAutoMipMapGeneration && ((cv.textureExtendedFeatures & 
+                Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) != 0); 
+        
         Pipeline.getPipeline().updateTexture2DSubImage(cv.ctx,
                 level, xoffset, yoffset,
                 textureFormat, imageFormat,
                 imgXOffset, imgYOffset,
                 tilew, width, height,
-                imageDataType, data);
+                imageDataType, data, useAutoMipMap);
     }
     
 
@@ -1954,43 +1985,23 @@ abstract class TextureRetained extends NodeComponentRetained {
                 (minFilter == Texture.NICEST ||
                 minFilter == Texture.MULTI_LEVEL_POINT ||
                 minFilter == Texture.MULTI_LEVEL_LINEAR)) {
-            // TODO : Should this be 1 ?  --- Chien.
-            // mirrorTexture.maxLevels = maxMipMapLevels;
-            mirrorTexture.maxLevels = 1;
             mirrorTexture.useAutoMipMapGeneration = true;
-            
-            if ((mirrorTexture.images == null) ||
-                    (mirrorTexture.images.length < numFaces) ||
-                    !(mirrorTexture.images[0].length == mirrorTexture.maxLevels)) {
-                mirrorTexture.images =
-                        new ImageComponentRetained[numFaces][mirrorTexture.maxLevels];
-            }
+        }  
+
+        mirrorTexture.maxLevels = maxLevels;
+        if (images != null) {
             
             for (int j = 0; j < numFaces; j++) {
-                mirrorTexture.images[j][0] = images[j][0];
-                
-                // add texture to the userList of the images
-                if (images[j][0] != null) {
-                    images[j][0].addUser(mirrorTexture);
+                for (int i = 0; i < maxLevels; i++) {
+                    mirrorTexture.images[j][i] = images[j][i];
+                    
+                    // add texture to the userList of the images
+                    if (images[j][i] != null) {
+                        images[j][i].addUser(mirrorTexture);
+                    }
                 }
-	    }
-	}
-	else {
-	    mirrorTexture.maxLevels = maxLevels;
-	    if (images != null) {
-
-		for (int j = 0; j < numFaces; j++) {
-	            for (int i = 0; i < maxLevels; i++) {
-			mirrorTexture.images[j][i] = images[j][i];
-
-	                // add texture to the userList of the images
-	                if (images[j][i] != null) {
-	                    images[j][i].addUser(mirrorTexture);
-			}
-		    }
-		}
-	    }
-	}
+            }
+        }
     }
 
 

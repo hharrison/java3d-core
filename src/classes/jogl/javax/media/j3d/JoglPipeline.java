@@ -5625,12 +5625,12 @@ class JoglPipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            int dataType, Object data) {
+            int dataType, Object data, boolean useAutoMipMap) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DImage(width=" + width + ",height=" + height + ",level=" + level + ")");
         
         updateTexture2DImage(ctx, GL.GL_TEXTURE_2D,
                 numLevels, level, textureFormat, imageFormat,
-                width, height, boundaryWidth, dataType, data);
+                width, height, boundaryWidth, dataType, data, useAutoMipMap);
     }
     
     void updateTexture2DSubImage(Context ctx,
@@ -5638,7 +5638,10 @@ class JoglPipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            int dataType, Object data) {
+            int dataType, Object data, boolean useAutoMipMap) {
+        
+        /* Note: useAutoMipMap is not use for SubImage in the jogl pipe */
+        
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DSubImage()");
         
         updateTexture2DSubImage(ctx, GL.GL_TEXTURE_2D,
@@ -5770,7 +5773,7 @@ class JoglPipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int width, int height, int depth,
             int boundaryWidth,
-            int dataType, Object data) {
+            int dataType, Object data, boolean useAutoMipMap) {
         
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DImage()");
         
@@ -5803,6 +5806,13 @@ class JoglPipeline extends Pipeline {
             default:
                 assert false;
                 return;
+        }
+
+        if (useAutoMipMap) {
+            gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_GENERATE_MIPMAP, GL.GL_TRUE);
+        }
+        else {
+            gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_GENERATE_MIPMAP, GL.GL_FALSE);            
         }
         
         if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) ||
@@ -5926,10 +5936,12 @@ class JoglPipeline extends Pipeline {
             int imgXOffset, int imgYOffset, int imgZOffset,
             int tilew, int tileh,
             int width, int height, int depth,
-            int dataType, Object data) {
+            int dataType, Object data, boolean useAutoMipMap) {
+        
+        /* Note: useAutoMipMap is not use for SubImage in the jogl pipe */
+        
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DSubImage()");
         
-        /* TODO Chien : Need to support INT, and NIO buffers */
         GL gl = context(ctx).getGL();
         
         int format = 0;
@@ -6193,12 +6205,12 @@ class JoglPipeline extends Pipeline {
             int textureFormat, int imageFormat,
             int width, int height,
             int boundaryWidth,
-            int dataType, Object data) {
+            int dataType, Object data, boolean useAutoMipMap) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTextureCubeMapImage()");
         
         updateTexture2DImage(ctx, _gl_textureCubeMapFace[face],
                 numLevels, level, textureFormat, imageFormat,
-                width, height, boundaryWidth, dataType, data);
+                width, height, boundaryWidth, dataType, data, useAutoMipMap);
     }
     
     void updateTextureCubeMapSubImage(Context ctx,
@@ -6206,7 +6218,10 @@ class JoglPipeline extends Pipeline {
             int textureFormat,int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
-            int dataType, Object data) {
+            int dataType, Object data, boolean useAutoMipMap) {
+        
+        /* Note: useAutoMipMap is not use for SubImage in the jogl pipe */
+        
         if (VERBOSE) System.err.println("JoglPipeline.updateTextureCubeMapSubImage()");
         
         updateTexture2DSubImage(ctx, _gl_textureCubeMapFace[face],
@@ -6301,7 +6316,8 @@ class JoglPipeline extends Pipeline {
             int height,
             int boundaryWidth,
             int dataType,
-            Object data) {
+            Object data,
+            boolean useAutoMipMap) {
         GL gl = context(ctx).getGL();
         
         int format = 0, internalFormat = 0;
@@ -6329,6 +6345,13 @@ class JoglPipeline extends Pipeline {
                 break;
             default:
                 assert false;
+        }
+        
+        if (useAutoMipMap) {
+            gl.glTexParameteri(target, GL.GL_GENERATE_MIPMAP, GL.GL_TRUE);
+        }
+        else {
+            gl.glTexParameteri(target, GL.GL_GENERATE_MIPMAP, GL.GL_FALSE);            
         }
         
         if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) ||
@@ -6373,17 +6396,16 @@ class JoglPipeline extends Pipeline {
                     return;
             }
             
-	    if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) {
-		
-		gl.glTexImage2D(target, level, internalFormat,
-				width, height, boundaryWidth,
-				format, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])data));
-	    }
-	    else {
-		gl.glTexImage2D(target, level, internalFormat,
-				width, height, boundaryWidth,
-				format, GL.GL_UNSIGNED_BYTE, (Buffer) data);
-	    }
+            if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) {
+                
+                gl.glTexImage2D(target, level, internalFormat,
+                        width, height, boundaryWidth,
+                        format, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])data));
+            } else {
+                gl.glTexImage2D(target, level, internalFormat,
+                        width, height, boundaryWidth,
+                        format, GL.GL_UNSIGNED_BYTE, (Buffer) data);
+            }
             
         } else if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) ||
                 (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_BUFFER)) {
@@ -6421,16 +6443,15 @@ class JoglPipeline extends Pipeline {
                 gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
             }
             
-	    if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) {
-		gl.glTexImage2D(target, level, internalFormat,
-				width, height, boundaryWidth,
-				format, type, IntBuffer.wrap((int[])data));
-	    }
-	    else {
-		gl.glTexImage2D(target, level, internalFormat,
-				width, height, boundaryWidth,
-				format, type, (Buffer) data);
-	    }
+            if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) {
+                gl.glTexImage2D(target, level, internalFormat,
+                        width, height, boundaryWidth,
+                        format, type, IntBuffer.wrap((int[])data));
+            } else {
+                gl.glTexImage2D(target, level, internalFormat,
+                        width, height, boundaryWidth,
+                        format, type, (Buffer) data);
+            }
             
             /* Restore Alpha scale and bias */
             if(forceAlphaToOne) {
@@ -7953,10 +7974,10 @@ class JoglPipeline extends Pipeline {
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
         gl.glBindTexture(GL.GL_TEXTURE_2D, objectId);
         // set up texture parameter
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
         
         gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
         gl.glEnable(GL.GL_BLEND);

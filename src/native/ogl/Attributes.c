@@ -2197,7 +2197,8 @@ void updateTexture2DImage(
     jint height, 
     jint boundaryWidth,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 {
     void *imageObjPtr;
     GLenum format = 0, internalFormat = 0, type = GL_UNSIGNED_INT_8_8_8_8;
@@ -2234,7 +2235,14 @@ void updateTexture2DImage(
             throwAssert(env, "updateTexture2DImage : textureFormat illegal format");
 	    return;
     }
-    
+
+    if (useAutoMipMap) {
+        glTexParameteri(target, GL_GENERATE_MIPMAP, GL_TRUE);
+    }
+    else {
+        glTexParameteri(target, GL_GENERATE_MIPMAP, GL_FALSE);   
+    }
+        
     if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_BYTE_BUFFER))  {
 	switch (imageFormat) {
             /* GL_BGR */
@@ -2360,7 +2368,7 @@ void updateTexture2DSubImage(
     jint height,
     jint dataType,
     jobject data) {
- 
+        
     void *imageObjPtr;
     GLenum format = 0, internalFormat = 0, type = GL_UNSIGNED_INT_8_8_8_8;
     JNIEnv table = *env;
@@ -2670,9 +2678,10 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
     jint width, 
     jint height,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 {
- 
+    /* Note : useAutoMipMap is not use for subImage in ogl pipe */      
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     updateTexture2DSubImage(env, ctxProperties, GL_TEXTURE_2D,
 			    level, xoffset, yoffset,
@@ -2695,13 +2704,14 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture2DImage(
     jint height, 
     jint boundaryWidth,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
 
     updateTexture2DImage(env, ctxProperties, GL_TEXTURE_2D,
 			numLevels, level, textureFormat, imageFormat,
-			 width, height, boundaryWidth, dataType, data);
+			 width, height, boundaryWidth, dataType, data, useAutoMipMap);
 }
 
 JNIEXPORT
@@ -2850,7 +2860,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
     jint depth,
     jint boundaryWidth,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 {
     void *imageObjPtr;
     GLenum format = 0, internalFormat = 0, type = GL_UNSIGNED_INT_8_8_8_8;
@@ -2890,6 +2901,12 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DImage(
 	    return;
     }
 
+    if (useAutoMipMap) {
+        glTexParameteri(GL_TEXTURE_3D, GL_GENERATE_MIPMAP, GL_TRUE);
+    }
+    else {
+        glTexParameteri(GL_TEXTURE_3D, GL_GENERATE_MIPMAP, GL_FALSE);        
+    }
     
     if((dataType == IMAGE_DATA_TYPE_BYTE_ARRAY) || (dataType == IMAGE_DATA_TYPE_BYTE_BUFFER))  {
 	switch (imageFormat) {
@@ -3017,8 +3034,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTexture3DSubImage(
     jint height,
     jint depth,
     jint dataType,
-    jobject data) {
+    jobject data,
+    jboolean useAutoMipMap) {
  
+    /* Note : useAutoMipMap is not use for SubImage in ogl pipe */
+        
     void *imageObjPtr;
     GLenum format = 0, internalFormat = 0, type = GL_UNSIGNED_INT_8_8_8_8;
     JNIEnv table = *env;
@@ -3364,8 +3384,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapSubImage(
     jint width, 
     jint height,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 { 
+    /* Note : useAutoMipMap is not use for SubImage in ogl pipe */ 
+    
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     updateTexture2DSubImage(env, ctxProperties, _gl_textureCubeMapFace[face],
 			    level, xoffset, yoffset, textureFormat,
@@ -3389,12 +3412,13 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateTextureCubeMapImage(
     jint height, 
     jint boundaryWidth,
     jint dataType,
-    jobject data)
+    jobject data,
+    jboolean useAutoMipMap)
 {
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo;
     updateTexture2DImage(env, ctxProperties, _gl_textureCubeMapFace[face],
 			 numLevels, level, textureFormat, imageFormat,
-			 width, height, boundaryWidth, dataType, data);
+			 width, height, boundaryWidth, dataType, data, useAutoMipMap);
 }
 
 JNIEXPORT

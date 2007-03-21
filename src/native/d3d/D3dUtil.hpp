@@ -145,7 +145,8 @@ extern LPDIRECT3DTEXTURE9 createTextureSurface(D3dCtx *d3dCtx,
 					       jint numLevels,
 					       jint internalFormat,
 					       jint width, 
-					       jint height);
+					       jint height,
+					       jboolean useAutoMipMap);
 
 
 extern LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,

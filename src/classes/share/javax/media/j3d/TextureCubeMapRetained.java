@@ -298,8 +298,6 @@ class TextureCubeMapRetained extends TextureRetained {
         }
     }
 
-
-
     // This is just a wrapper of the native method.
     void updateTextureImage(Canvas3D cv,
             int face, int numLevels, int level,
@@ -308,11 +306,14 @@ class TextureCubeMapRetained extends TextureRetained {
             int boundaryWidth, int imageDataType,
             Object imageData) {
 
+        boolean useAutoMipMap = useAutoMipMapGeneration && ((cv.textureExtendedFeatures & 
+                Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) != 0); 
+        
         Pipeline.getPipeline().updateTextureCubeMapImage(cv.ctx,
                 face, numLevels, level,
                 textureFormat, imageFormat,
                 width, height,
-                boundaryWidth, imageDataType, imageData);
+                boundaryWidth, imageDataType, imageData, useAutoMipMap);
     }
 
     // This is just a wrapper of the native method.
@@ -324,12 +325,15 @@ class TextureCubeMapRetained extends TextureRetained {
             int tilew, int width, int height,
             int imageDataType, Object imageData) {
 
+        boolean useAutoMipMap = useAutoMipMapGeneration && ((cv.textureExtendedFeatures & 
+                Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) != 0); 
+        
         Pipeline.getPipeline().updateTextureCubeMapSubImage(cv.ctx,
                 face, level, xoffset, yoffset,
                 textureFormat, imageFormat,
                 imgXOffset, imgYOffset,
                 tilew, width, height,
-                imageDataType, imageData);
+                imageDataType, imageData, useAutoMipMap);
 
     }
 }

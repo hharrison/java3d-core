@@ -202,7 +202,7 @@ jboolean JNICALL Java_javax_media_j3d_NativePipeline_initTexturemapping(
     
     Java_javax_media_j3d_NativePipeline_updateTexture2DImage(env, texture, ctx, 1, 0, 
 							     J3D_RGBA, 0, texWidth, 
-							     texHeight, 0, 0, NULL);
+							     texHeight, 0, 0, NULL, JNI_FALSE);
     return (d3dCtx->textureTable[objectId] != NULL);
 }
 
@@ -235,7 +235,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
     Java_javax_media_j3d_NativePipeline_updateTexture2DSubImage(
          env, texture, ctx, 0, minX, minY, J3D_RGBA, format,
 	 minX, minY, rasWidth, maxX-minX, maxY-minY, IMAGE_DATA_TYPE_BYTE_ARRAY,
-	 byteData);
+	 byteData, JNI_FALSE);
 
     LPDIRECT3DTEXTURE9 surf = d3dCtx->textureTable[objectId];
 

@@ -759,11 +759,13 @@ DWORD firstBit(DWORD mask)
 LPDIRECT3DTEXTURE9 createTextureSurface(D3dCtx *d3dCtx,
 					jint numLevels,
 					jint textureFormat,
-					jint width, jint height)
+					jint width, jint height, 
+					jboolean useAutoMipMap)
 {
     LPDIRECT3DTEXTURE9 pTexture;
     D3DFORMAT format;
     HRESULT hr;
+    DWORD usage = 0;
 
     LPDIRECT3DDEVICE9 pDevice = d3dCtx->pDevice;
     D3dDeviceInfo *deviceInfo = d3dCtx->deviceInfo;
@@ -775,10 +777,14 @@ LPDIRECT3DTEXTURE9 createTextureSurface(D3dCtx *d3dCtx,
     getTexWidthHeight(deviceInfo, &width, &height);
     format = getTexFormat(textureFormat);
 
+    if (useAutoMipMap) {
+	usage |= D3DUSAGE_AUTOGENMIPMAP;
+    }
+
     // If format not support, the utility function will adjust the
     // calling parameters automatically
     hr = D3DXCreateTexture(d3dCtx->pDevice, width, height,
-			   numLevels, 0, format, D3DPOOL_MANAGED,
+			   numLevels, usage, format, D3DPOOL_MANAGED,
 			   &pTexture);
 
     if (FAILED(hr)) {

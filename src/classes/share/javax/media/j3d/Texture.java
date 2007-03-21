@@ -849,7 +849,7 @@ public abstract class Texture extends NodeComponent {
      * @param magFilter the magnification filter, one of:
      * FASTEST, NICEST, BASE_LEVEL_POINT, BASE_LEVEL_LINEAR, 
      * LINEAR_SHARPEN, LINEAR_SHARPEN_RGB, LINEAR_SHARPEN_ALPHA, or FILTER4.
-     *
+     *     
      * @exception RestrictedAccessException if the method is called
      * when this object is part of live or compiled scene graph.
      * @exception IllegalArgumentException if <code>magFilter</code>
@@ -1311,6 +1311,8 @@ public abstract class Texture extends NodeComponent {
      * @exception IllegalArgumentException if specified 
      * maximumLevel < baseLevel, or
      * if maximumLevel > <code>log<sub><font size=-2>2</font></sub>(max(width,height))</code>
+     * @exception IllegalArgumentException if mipMipMapMode is equal to BASE_LEVEL 
+     * and maximumLevel is not equal to zero.
      *
      * @since Java 3D 1.3
      * @see Canvas3D#queryProperties

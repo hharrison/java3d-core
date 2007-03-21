@@ -110,11 +110,14 @@ class Texture3DRetained extends TextureRetained {
             int boundaryWidth, int imageDataType,
             Object imageData) {
 
+        boolean useAutoMipMap = useAutoMipMapGeneration && ((cv.textureExtendedFeatures & 
+                Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) != 0); 
+        
         Pipeline.getPipeline().updateTexture3DImage(cv.ctx,
                 numLevels, level,
                 textureFormat, imageFormat,
                 width, height, depth,
-                boundaryWidth, imageDataType, imageData);
+                boundaryWidth, imageDataType, imageData, useAutoMipMap);
     }
 
     // Wrapper around the native call for 3D textures
@@ -125,13 +128,16 @@ class Texture3DRetained extends TextureRetained {
             int imgXOffset, int imgYOffset, int imgZOffset,
             int tilew, int tileh, int width, int height, int depth,
             int imageDataType, Object imageData) {
+        
+        boolean useAutoMipMap = useAutoMipMapGeneration && ((cv.textureExtendedFeatures & 
+                Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) != 0);         
 
         Pipeline.getPipeline().updateTexture3DSubImage(cv.ctx,
                 level, xoffset, yoffset, zoffset,
                 textureFormat, imageFormat,
                 imgXOffset, imgYOffset, imgZOffset,
                 tilew, tileh, width, height, depth,
-                imageDataType, imageData);
+                imageDataType, imageData, useAutoMipMap);
     }
 
     
