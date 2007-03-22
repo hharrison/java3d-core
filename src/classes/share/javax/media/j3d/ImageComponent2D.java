@@ -234,6 +234,9 @@ public class ImageComponent2D extends ImageComponent {
      *
      * @exception IllegalArgumentException if the yUp flag is false.
      *
+     * @exception IllegalArgumentException if the number of components in format 
+     * does not match the number of components in image.
+     *
      * @since Java 3D 1.5
      */
     public ImageComponent2D(int format,
@@ -338,6 +341,9 @@ public class ImageComponent2D extends ImageComponent {
      * @exception IllegalArgumentException if the width and height of the
      * specified image is not equal to the width and height of this
      * ImageComponent object.
+     *
+     * @exception IllegalArgumentException if the number of components in format 
+     * does not match the number of components in image.
      *
      * @since Java 3D 1.5
      */

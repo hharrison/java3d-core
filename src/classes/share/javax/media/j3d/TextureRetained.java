@@ -76,9 +76,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     // maximum number of levels needed for the mipmapMode of this texture
     int	     maxLevels = 0;    
     // maximum number of mipmap levels that can be defined for this texture
-    private int	     maxMipMapLevels = 0;     
-    // true if hardware auto mipmap generation is requested.
-    boolean  useAutoMipMapGeneration = false; 
+    private int	     maxMipMapLevels = 0;
     
     int 	numFaces = 1;		// For CubeMap, it is 6
     int		baseLevel = 0;
@@ -1180,8 +1178,8 @@ abstract class TextureRetained extends NodeComponentRetained {
         
 	// update sharpen texture function if applicable
 
-	if ((magFilter >= Texture.LINEAR_SHARPEN) &&
-		(magFilter <= Texture.LINEAR_SHARPEN_ALPHA)) {
+	if ((magnificationFilter >= Texture.LINEAR_SHARPEN) &&
+		(magnificationFilter <= Texture.LINEAR_SHARPEN_ALPHA)) {
 
 	    if ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_SHARPEN) != 0 ) {
 
@@ -1197,8 +1195,8 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 		magnificationFilter = Texture.BASE_LEVEL_LINEAR;
 	    }
-	} else if ((magFilter >= Texture2D.LINEAR_DETAIL) &&
-		(magFilter <= Texture2D.LINEAR_DETAIL_ALPHA)) {
+	} else if ((magnificationFilter >= Texture2D.LINEAR_DETAIL) &&
+		(magnificationFilter <= Texture2D.LINEAR_DETAIL_ALPHA)) {
 	    if ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_DETAIL) == 0) {
 
 		// detail texture is not supported by the underlying
@@ -1208,7 +1206,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    }
 	} 
 
-	if (minFilter == Texture.FILTER4 || magFilter == Texture.FILTER4) {
+	if (minificationFilter == Texture.FILTER4 || magnificationFilter == Texture.FILTER4) {
 
 	    boolean noFilter4 = false;
 
@@ -1233,23 +1231,23 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    } 
 
 	    if (noFilter4) {
-		if (minFilter == Texture.FILTER4) {
+		if (minificationFilter == Texture.FILTER4) {
 		    minificationFilter = Texture.BASE_LEVEL_LINEAR;
 		}
-		if (magFilter == Texture.FILTER4) {
+		if (magnificationFilter == Texture.FILTER4) {
 		    magnificationFilter = Texture.BASE_LEVEL_LINEAR;
 		}
 	    }
 	}
 
         // Fallback to BASE mode if hardware mipmap generation is not supported.
-        if (useAutoMipMapGeneration && ((cv.textureExtendedFeatures &
+        if ((mipmapMode == Texture.BASE_LEVEL) && ((cv.textureExtendedFeatures &
                 Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) == 0)) {
             
-            if (minFilter == Texture.NICEST ||
-                    minFilter == Texture.MULTI_LEVEL_LINEAR) {
+            if (minificationFilter == Texture.NICEST ||
+                    minificationFilter == Texture.MULTI_LEVEL_LINEAR) {
                 minificationFilter = Texture.BASE_LEVEL_LINEAR;
-            } else if (minFilter == Texture.MULTI_LEVEL_POINT) {
+            } else if (minificationFilter == Texture.MULTI_LEVEL_POINT) {
                 minificationFilter = Texture.BASE_LEVEL_POINT;
             }
         }
@@ -1283,14 +1281,11 @@ abstract class TextureRetained extends NodeComponentRetained {
             int boundaryWidth,
             int imageDataType, Object data) {
         
-        boolean useAutoMipMap = useAutoMipMapGeneration && ((cv.textureExtendedFeatures & 
-                Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) != 0); 
-        
         Pipeline.getPipeline().updateTexture2DImage(cv.ctx,
                 numLevels, level,
                 textureFormat, imageFormat,
                 width, height, boundaryWidth,
-                imageDataType, data, useAutoMipMap);
+                imageDataType, data, useAutoMipMapGeneration(cv));
     }
 
     // Wrapper around the native call for 2D textures; overridden for
@@ -1302,16 +1297,13 @@ abstract class TextureRetained extends NodeComponentRetained {
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
             int imageDataType, Object data) {
-
-        boolean useAutoMipMap = useAutoMipMapGeneration && ((cv.textureExtendedFeatures & 
-                Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) != 0); 
         
         Pipeline.getPipeline().updateTexture2DSubImage(cv.ctx,
                 level, xoffset, yoffset,
                 textureFormat, imageFormat,
                 imgXOffset, imgYOffset,
                 tilew, width, height,
-                imageDataType, data, useAutoMipMap);
+                imageDataType, data, useAutoMipMapGeneration(cv));
     }
     
 
@@ -1980,14 +1972,6 @@ abstract class TextureRetained extends NodeComponentRetained {
 	mirrorTexture.anisotropicFilterMode = anisotropicFilterMode;
 	mirrorTexture.anisotropicFilterDegree = anisotropicFilterDegree;
 
-	// implicit mipmap generation
-	if (mipmapMode == Texture.BASE_LEVEL &&
-                (minFilter == Texture.NICEST ||
-                minFilter == Texture.MULTI_LEVEL_POINT ||
-                minFilter == Texture.MULTI_LEVEL_LINEAR)) {
-            mirrorTexture.useAutoMipMapGeneration = true;
-        }  
-
         mirrorTexture.maxLevels = maxLevels;
         if (images != null) {
             
@@ -2004,7 +1988,19 @@ abstract class TextureRetained extends NodeComponentRetained {
         }
     }
 
-
+    boolean useAutoMipMapGeneration(Canvas3D cv) {
+	if (mipmapMode == Texture.BASE_LEVEL && 
+                (minFilter == Texture.NICEST ||
+                minFilter == Texture.MULTI_LEVEL_POINT ||
+                minFilter == Texture.MULTI_LEVEL_LINEAR) &&
+                ((cv.textureExtendedFeatures &
+                Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) != 0)) {
+            return true;
+        }  
+        
+        return false;        
+    }
+    
     /**
      * Go through the image update info list
      * and remove those that are already done

@@ -603,54 +603,63 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         
         switch(numberOfComponents) {
             case 4:
-                if(nioImageType == NioImageBuffer.ImageType.TYPE_4BYTE_ABGR) {
-                    // TODO : This approach will lead to a very slow path
-                    // for unsupported case.
-                    if(abgrSupported) {
-                        imageFormatType = ImageFormatType.TYPE_BYTE_ABGR;
-                    } else {
-                        // Unsupported format on HW, switch to slow copy.
+                switch(nioImageType) {
+                    case TYPE_4BYTE_ABGR:
+                        // TODO : This approach will lead to a very slow path
+                        // for unsupported case.
+                        if(abgrSupported) {
+                            imageFormatType = ImageFormatType.TYPE_BYTE_ABGR;
+                        } else {
+                            // Unsupported format on HW, switch to slow copy.
+                            imageFormatType = ImageFormatType.TYPE_BYTE_RGBA;
+                            isSupported = false;
+                        }
+                        unitsPerPixel = 4;
+                        break;
+                    case TYPE_4BYTE_RGBA:
                         imageFormatType = ImageFormatType.TYPE_BYTE_RGBA;
-                        isSupported = false;
-                    }
-                    unitsPerPixel = 4;
-                } else if(nioImageType == NioImageBuffer.ImageType.TYPE_4BYTE_RGBA) {
-                    imageFormatType = ImageFormatType.TYPE_BYTE_RGBA;
-                    unitsPerPixel = 4;
-                } else if(nioImageType == NioImageBuffer.ImageType.TYPE_INT_ARGB) {
-                    imageFormatType = ImageFormatType.TYPE_INT_ARGB;
-                    unitsPerPixel = 1;
-                } else {
-                    throw new RuntimeException("Not yet implemented");
+                        unitsPerPixel = 4;
+                        break;
+                    case TYPE_INT_ARGB:
+                        imageFormatType = ImageFormatType.TYPE_INT_ARGB;
+                        unitsPerPixel = 1;
+                        break;
+                    default:
+                        throw new IllegalArgumentException(J3dI18N.getString("ImageComponent5"));
+                        
                 }
                 break;
-                
             case 3:
-                if(nioImageType == NioImageBuffer.ImageType.TYPE_3BYTE_BGR) {
-                    imageFormatType = ImageFormatType.TYPE_BYTE_BGR;
-                    unitsPerPixel = 3;
-                } else if(nioImageType == NioImageBuffer.ImageType.TYPE_3BYTE_RGB) {
-                    imageFormatType = ImageFormatType.TYPE_BYTE_RGB;
-                    unitsPerPixel = 3;
-                } else if(nioImageType == NioImageBuffer.ImageType.TYPE_INT_BGR) {
-                    imageFormatType = ImageFormatType.TYPE_INT_BGR;
-                    unitsPerPixel = 1;
-                } else if(nioImageType == NioImageBuffer.ImageType.TYPE_INT_RGB) {
-                    imageFormatType = ImageFormatType.TYPE_INT_RGB;
-                    unitsPerPixel = 1;
-                } else {
-                    throw new RuntimeException("Not yet implemented");
+                switch(nioImageType) {
+                    case TYPE_3BYTE_BGR:
+                        imageFormatType = ImageFormatType.TYPE_BYTE_BGR;
+                        unitsPerPixel = 3;
+                        break;
+                    case TYPE_3BYTE_RGB:
+                        imageFormatType = ImageFormatType.TYPE_BYTE_RGB;
+                        unitsPerPixel = 3;
+                        break;
+                    case TYPE_INT_BGR:
+                        imageFormatType = ImageFormatType.TYPE_INT_BGR;
+                        unitsPerPixel = 1;
+                        break;
+                    case TYPE_INT_RGB:
+                        imageFormatType = ImageFormatType.TYPE_INT_RGB;
+                        unitsPerPixel = 1;
+                        break;
+                    default:
+                        throw new IllegalArgumentException(J3dI18N.getString("ImageComponent5"));
                 }
                 break;
                 
             case 2:
-                throw new RuntimeException("Not yet implemented");
+                throw new IllegalArgumentException(J3dI18N.getString("ImageComponent5"));
             case 1:
                 if(nioImageType == NioImageBuffer.ImageType.TYPE_BYTE_GRAY) {
                     imageFormatType = ImageFormatType.TYPE_BYTE_GRAY;
                     unitsPerPixel = 1;
                 } else {
-                    throw new RuntimeException("Not yet implemented");
+                    throw new IllegalArgumentException(J3dI18N.getString("ImageComponent5"));
                 }
                 break;
                 
