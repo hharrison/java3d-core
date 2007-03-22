@@ -804,12 +804,15 @@ LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
 					     jint textureFormat,
 					     jint width,
 					     jint height,
-					     jint depth)
+					     jint depth,
+					     jboolean useAutoMipMap)
+
 {
     LPDIRECT3DVOLUMETEXTURE9 pTexture;
     int texWidth, texHeight, texDepth;
     D3DFORMAT format;
     HRESULT hr;
+    DWORD usage = 0;
 
     LPDIRECT3DDEVICE9 pDevice = d3dCtx->pDevice;
     D3dDeviceInfo *deviceInfo = d3dCtx->deviceInfo;
@@ -820,6 +823,10 @@ LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
 
     if (!deviceInfo->supportMipmap) {
 	numLevels = 1;
+    }
+
+    if (useAutoMipMap) {
+	usage |= D3DUSAGE_AUTOGENMIPMAP;
     }
 
     // Found a texture bigger than width/height
@@ -878,7 +885,7 @@ LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
     // If format not support, the utility function will adjust the
     // calling parameters automatically
     hr = D3DXCreateVolumeTexture(d3dCtx->pDevice, texWidth, texHeight,
-				 texDepth, numLevels, 0, format, D3DPOOL_MANAGED,
+				 texDepth, numLevels, usage, format, D3DPOOL_MANAGED,
 				 &pTexture);
 
     if (FAILED(hr)) {
@@ -11948,11 +11955,13 @@ LPDIRECT3DCUBETEXTURE9 createCubeMapTexture(D3dCtx *d3dCtx,
 					    jint numLevels,
 					    jint textureFormat,
 					    jint width,
-					    jint height)
+					    jint height,
+					    jboolean useAutoMipMap)
 {
     LPDIRECT3DCUBETEXTURE9 pTexture;
     D3DFORMAT format;
     HRESULT hr;
+    DWORD usage = 0;
 
     LPDIRECT3DDEVICE9 pDevice = d3dCtx->pDevice;
     D3dDeviceInfo *deviceInfo = d3dCtx->deviceInfo;
@@ -11964,10 +11973,14 @@ LPDIRECT3DCUBETEXTURE9 createCubeMapTexture(D3dCtx *d3dCtx,
     getTexWidthHeight(deviceInfo, &width, &height);
     format = getTexFormat(textureFormat);
 
+    if (useAutoMipMap) {
+	usage |= D3DUSAGE_AUTOGENMIPMAP;
+    }
+
     // If format not support, the utility function will adjust the
     // calling parameters automatically
     hr = D3DXCreateCubeTexture(d3dCtx->pDevice, width,
-			       numLevels, 0, format, D3DPOOL_MANAGED,
+			       numLevels, usage, format, D3DPOOL_MANAGED,
 			       &pTexture);
 
     if (FAILED(hr)) {

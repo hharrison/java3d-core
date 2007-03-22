@@ -154,14 +154,16 @@ extern LPDIRECT3DVOLUMETEXTURE9 createVolumeTexture(D3dCtx *d3dCtx,
 						    jint internalFormat,
 						    jint width, 
 						    jint height,
-						    jint depth);
+						    jint depth,
+						    jboolean useAutoMipMap);
 
 
 extern LPDIRECT3DCUBETEXTURE9 createCubeMapTexture(D3dCtx *d3dCtx,
 						   jint numLevels,
 						   jint internalFormat,
 						   jint width, 
-						   jint height);
+						   jint height,
+						   jboolean useAutoMipMap);
 
 
 extern void copyDataToSurface(jint format, 
