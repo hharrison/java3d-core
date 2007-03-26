@@ -1376,7 +1376,7 @@ abstract class Pipeline {
         return false;
     }
     
-    abstract void clear(Context ctx, float r, float g, float b);
+    abstract void clear(Context ctx, float r, float g, float b, boolean clearStencil);
     
     abstract void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, boolean useBiliearFilter);

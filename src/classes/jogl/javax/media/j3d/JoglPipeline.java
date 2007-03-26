@@ -7631,7 +7631,7 @@ class JoglPipeline extends Pipeline {
         return true;
     }
     
-    void clear(Context ctx, float r, float g, float b) {
+    void clear(Context ctx, float r, float g, float b, boolean clearStencil) {
         if (VERBOSE) System.err.println("JoglPipeline.clear()");
         
         JoglContext jctx = (JoglContext) ctx;
@@ -7645,7 +7645,15 @@ class JoglPipeline extends Pipeline {
         gl.glDepthMask(true);
         gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
         gl.glPopAttrib();
-        
+
+        // Issue 239 - clear stencil if specified
+        // TODO KCR : Issue 239 - should we also set stencil mask? If so, we
+        // may need to save/restore like we do for depth mask
+        if (clearStencil) {
+            gl.glClearStencil(0);
+            gl.glClear(GL.GL_STENCIL_BUFFER_BIT);
+        }
+
     }
     
     void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,

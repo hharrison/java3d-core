@@ -337,6 +337,12 @@ class MasterControl {
     // legacy applications.
     boolean allowNullGraphicsConfig = false;
 
+    // Issue 239 - Flag indicating whether the stencil buffer is cleared by
+    // default each frame when the color and depth buffers are cleared.
+    // Note that this is a partial solution, since we eventually want an API
+    // to control this.
+    boolean stencilClear = false;
+
     // The global shading language being used. Using a ShaderProgram
     // with a shading language other than the one specified by
     // globalShadingLanguage will cause a ShaderError to be generated,
@@ -566,6 +572,11 @@ class MasterControl {
         allowNullGraphicsConfig = getBooleanProperty("j3d.allowNullGraphicsConfig",
 						     allowNullGraphicsConfig,
 						     "null graphics configs");
+
+        // Issue 239 - check to see whether per-frame stencil clear is enabled
+        stencilClear = getBooleanProperty("j3d.stencilClear",
+                                          stencilClear,
+                                          "per-frame stencil clear");
 
         // Check to see if stereo mode is sharing the Z-buffer for both eyes.
 	sharedStereoZBuffer = 

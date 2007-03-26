@@ -3077,10 +3077,10 @@ class NativePipeline extends Pipeline {
         return useCtx(unbox(ctx), display, unbox(drawable));
     }
     
-    native void clear(long ctx, float r, float g, float b);
+    native void clear(long ctx, float r, float g, float b, boolean clearStencil);
     
-    void clear(Context ctx, float r, float g, float b) {
-        clear(unbox(ctx), r, g, b);
+    void clear(Context ctx, float r, float g, float b, boolean clearStencil) {
+        clear(unbox(ctx), r, g, b, clearStencil);
         
     }
     

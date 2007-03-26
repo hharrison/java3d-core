@@ -292,12 +292,13 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
 
 extern "C" JNIEXPORT
 void JNICALL Java_javax_media_j3d_NativePipeline_clear(
-							JNIEnv *env,
-							jobject obj,
-							jlong ctx,
-							jfloat r, 
-							jfloat g, 
-							jfloat b) 
+    JNIEnv *env,
+    jobject obj,
+    jlong ctx,
+    jfloat r, 
+    jfloat g, 
+    jfloat b,
+    jboolean clearStencil)
 {
 
     GetDevice();
@@ -308,8 +309,10 @@ void JNICALL Java_javax_media_j3d_NativePipeline_clear(
     if (!d3dCtx->zWriteEnable) {
 	device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
     } 
-    
-    /* clear stencil, if in used */    
+
+    // TODO KCR : Issue 239 - use clearStencil to decide whether to clear stencil
+
+    /* clear stencil, if in used */
     if (d3dCtx->stencilWriteEnable ) {
 	// clear stencil and ZBuffer
 	HRESULT hr = device->Clear(0, NULL, 

@@ -682,7 +682,6 @@ getPropertiesFromCurrentContext(
 	ctxInfo->multi_draw_arrays_sun = JNI_TRUE;
     }
 
-
     if (isExtensionSupported(tmpExtensionStr, "GL_EXT_compiled_vertex_array") &&
 	getJavaBoolEnv(env, "isCompiledVertexArray")) {
 	ctxInfo->compiled_vertex_array_ext = JNI_TRUE;
@@ -1461,19 +1460,21 @@ void JNICALL Java_javax_media_j3d_NativePipeline_texturemapping(
 }
 
 JNIEXPORT
-void JNICALL Java_javax_media_j3d_NativePipeline_clear(JNIEnv *env,
-						       jobject obj,
-						       jlong ctxInfo,
-						       jfloat r, 
-						       jfloat g, 
-						       jfloat b) 
+void JNICALL Java_javax_media_j3d_NativePipeline_clear(
+    JNIEnv *env,
+    jobject obj,
+    jlong ctxInfo,
+    jfloat r, 
+    jfloat g, 
+    jfloat b,
+    jboolean clearStencil) 
 { 
     GraphicsContextPropertiesInfo *ctxProperties = (GraphicsContextPropertiesInfo *)ctxInfo; 
     jlong ctx = ctxProperties->context;    
-    
 
 #ifdef VERBOSE 
-    fprintf(stderr, "Canvas3D.clear()\n");  
+    fprintf(stderr, "Canvas3D.clear(%g, %g, %g, %s)\n",
+        r, g, b, (stencilClear ? "true" : "false"));
 #endif
     
     glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue); 
@@ -1484,18 +1485,33 @@ void JNICALL Java_javax_media_j3d_NativePipeline_clear(JNIEnv *env,
     glDepthMask(GL_TRUE);
     glClear(GL_DEPTH_BUFFER_BIT);
     glPopAttrib();
-    
+
+    /* Issue 239 - clear stencil if specified */
+    /*
+     * TODO KCR : Issue 239 - should we also set stencil mask? If so, we
+     * may need to save/restore like we do for depth mask
+     */
+    if (clearStencil) {
+        glClearStencil(0);
+        glClear(GL_STENCIL_BUFFER_BIT);
+    }
+
+/* TODO: we should be able to do the following, which should perform better... */
 #if 0
-    
-    /* Java 3D always clears the Z-buffer */
+    int clearMask = GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT;
+
+    if (clearStencil) {
+        glClearStencil(0);
+        clearMask |= GL_STENCIL_BUFFER_BIT;
+    }
+
     glPushAttrib(GL_DEPTH_BUFFER_BIT);
     glDepthMask(GL_TRUE); 
     glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glClear(clearMask);
     glPopAttrib();
 #endif
 
-    
 }
 
 JNIEXPORT

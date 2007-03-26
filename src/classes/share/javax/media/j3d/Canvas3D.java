@@ -4654,9 +4654,15 @@ public class Canvas3D extends Canvas {
     
     
     void clear(BackgroundRetained bg, int winWidth, int winHeight) {
-        
-        clear( ctx, bg.color.x, bg.color.y, bg.color.z);        
-        
+
+        // Issue 239 - clear stencil if requested and available
+        // Note that this is a partial solution, since we eventually want an API
+        // to control this.
+        boolean clearStencil = VirtualUniverse.mc.stencilClear &&
+                userStencilAvailable;
+
+        clear(ctx, bg.color.x, bg.color.y, bg.color.z, clearStencil);        
+
         // TODO : This is a bug on not mirror bg. Will fix this as a bug after 1.5 beta.
         // For now, as a workaround, we will check bg.image and bg.image.imageData not null.
         if((bg.image != null) && (bg.image.imageData != null)) {
@@ -5075,8 +5081,8 @@ public class Canvas3D extends Canvas {
         return Pipeline.getPipeline().releaseCtx(ctx, dpy);
     }
 
-    void clear(Context ctx, float r, float g, float b) {
-        Pipeline.getPipeline().clear(ctx, r, g, b);
+    void clear(Context ctx, float r, float g, float b, boolean clearStencil) {
+        Pipeline.getPipeline().clear(ctx, r, g, b, clearStencil);
     }
 
     void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,

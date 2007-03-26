@@ -1368,7 +1368,7 @@ class NoopPipeline extends Pipeline {
         return true;
     }
 
-    void clear(Context ctx, float r, float g, float b) {
+    void clear(Context ctx, float r, float g, float b, boolean clearStencil) {
         
     }
 
