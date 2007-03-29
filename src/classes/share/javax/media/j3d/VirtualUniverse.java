@@ -653,6 +653,8 @@ public class VirtualUniverse extends Object {
     }
 
     void enableComponentEvents() {
+        // Issue 458 - This method is now a noop
+        /*
 	Enumeration cvs;
 	Canvas3D cv;
         ViewPlatformRetained vp;
@@ -668,12 +670,14 @@ public class VirtualUniverse extends Object {
 	            while(cvs.hasMoreElements()) {
 		        cv = (Canvas3D) cvs.nextElement();
                         // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null)
+                        if (cv.eventCatcher != null) {
 		            cv.eventCatcher.enableComponentEvents();
+                        }
 	            }
 		}
 	    }
 	}
+        */
     }
 
     void disableFocusEvents() {

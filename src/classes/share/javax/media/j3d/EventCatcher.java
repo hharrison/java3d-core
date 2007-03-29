@@ -26,13 +26,12 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 
     // The canvas associated with this event catcher
     private Canvas3D canvas;
-    static final boolean DEBUG = false;
+    private static final boolean DEBUG = false;
     private boolean stopped = false;
 
     /**
      * flags for event listeners
      */
-    private boolean componentEvents = false;
     private boolean focusEvents = false;
     private boolean keyEvents = false;
     private boolean mouseEvents = false;
@@ -44,28 +43,9 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	canvas = c;
 
 	if (VirtualUniverse.mc.isD3D()) {
-	    enableComponentEvents();
 	    enableKeyEvents();
 	}
     }
-
-
-    void enableComponentEvents() {
-
-	if (!componentEvents) {
-	    canvas.addComponentListener(this);
-	    componentEvents = true;
-	}
-    }
-
-    /*
-    void disableComponentEvents() {
-	if (componentEvents) {
-	    canvas.removeComponentListener(this);
-	    componentEvents = false;
-	}
-    }
-    */
 
     void enableFocusEvents() {
 	if (!focusEvents) {
@@ -165,46 +145,51 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 
     public void componentResized(ComponentEvent e) {
 	if (e.getSource() == canvas) {
-	    canvas.sendEventToBehaviorScheduler(e);
-	    canvas.visible = true;
-	    if (VirtualUniverse.mc.isD3D()) {
-		canvas.notifyD3DPeer(Canvas3D.RESIZE);
-	    }
-	    canvas.evaluateActive();
-	    repaint();
 	    if (DEBUG) {
 		System.out.println(e);
 	    }
-	}
-    }
-
-    public void componentHidden(ComponentEvent e) {
-	canvas.sendEventToBehaviorScheduler(e);
-	canvas.visible = false;
-	if (DEBUG) {
-	    System.out.println(e);
+	    canvas.sendEventToBehaviorScheduler(e);
+	    if (VirtualUniverse.mc.isD3D()) {
+		canvas.notifyD3DPeer(Canvas3D.RESIZE);
+	    }
+	    canvas.evaluateVisiblilty();
+            canvas.redraw();
 	}
     }
 
     public void componentMoved(ComponentEvent e) {
-	canvas.sendEventToBehaviorScheduler(e);
-	if (VirtualUniverse.mc.isD3D()) {
-	    canvas.notifyD3DPeer(Canvas3D.RESIZE);
-	}
-	repaint();
+	if (e.getSource() == canvas) {
+            if (DEBUG) {
+                System.out.println(e);
+            }
+            canvas.sendEventToBehaviorScheduler(e);
+
+            // Issue 458 - the following is not needed for a move
+//            if (VirtualUniverse.mc.isD3D()) {
+//                canvas.notifyD3DPeer(Canvas3D.RESIZE);
+//            }
+//            canvas.evaluateVisiblilty(true);
+        }
+    }
+
+    public void componentHidden(ComponentEvent e) {
 	if (DEBUG) {
 	    System.out.println(e);
 	}
+	if (e.getSource() == canvas) {
+            canvas.sendEventToBehaviorScheduler(e);
+        }
+	canvas.evaluateVisiblilty();
     }
 
     public void componentShown(ComponentEvent e) {
-	canvas.sendEventToBehaviorScheduler(e);
-	canvas.visible = true;
-	canvas.evaluateActive();
-	repaint();
 	if (DEBUG) {
 	    System.out.println(e);
 	}
+	if (e.getSource() == canvas) {
+            canvas.sendEventToBehaviorScheduler(e);
+        }
+	canvas.evaluateVisiblilty();
     }
 
     public void focusGained(FocusEvent e) {
@@ -335,19 +320,16 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	    System.out.println(e);
 	}
     }
-    
 
-    public void windowActivated(WindowEvent e) {
-	windowOpened(e);
-    }
-
+    /*
+     * WindowListener methods
+     */
     public void windowClosed(WindowEvent e) {
 	if (DEBUG) {
 	    System.out.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
-	canvas.visible = false;
-	canvas.evaluateActive();
+       // Issue 458 - Don't set canvas visible to false
     }
 
     public void windowClosing(WindowEvent e) {
@@ -355,8 +337,14 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	    System.out.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
-	canvas.visible = false;
-	canvas.evaluateActive();
+        // Issue 458 - Don't set canvas.visible to false
+    }
+
+    public void windowActivated(WindowEvent e) {
+	if (DEBUG) {
+	    System.out.println(e);
+	}
+	canvas.sendEventToBehaviorScheduler(e);
     }
 
     public void windowDeactivated(WindowEvent e) {
@@ -371,11 +359,10 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	    System.out.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
-	canvas.visible = true;
-        if (canvas.view != null)
+        if (canvas.view != null) {
             canvas.view.sendEventToSoundScheduler(e);
-	canvas.evaluateActive();
-	repaint();
+        }
+        canvas.evaluateVisiblilty();
     }
 
     public void windowIconified(WindowEvent e) {
@@ -383,10 +370,10 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	    System.out.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
-	canvas.visible = false;
-        if (canvas.view != null)
+        if (canvas.view != null) {
             canvas.view.sendEventToSoundScheduler(e);
-	canvas.evaluateActive();
+        }
+	canvas.evaluateVisiblilty();
     }
 
     public void windowOpened(WindowEvent e) {
@@ -394,21 +381,12 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	    System.out.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
-	canvas.visible = true;
-	canvas.evaluateActive();
-	repaint();
+	canvas.evaluateVisiblilty();
     }
-
-    void repaint() {
-	if (canvas.view != null) {
-	    canvas.view.repaint();
-	}
-    }
-
+    
     void reset() {
 	focusEvents = false;
 	keyEvents = false;
-	componentEvents = false;
 	mouseEvents = false;
 	mouseMotionEvents = false;
 	mouseWheelEvents = false;

@@ -619,8 +619,12 @@ public class Canvas3D extends Canvas {
     
     boolean firstPaintCalled = false;
 
-    // This reflects whether or not this canvas has seen an addNotify.
+    // This reflects whether or not this canvas has seen an addNotify. It is
+    // forced to true for off-screen canvases
     boolean added = false;
+    
+    // Flag indicating whether addNotify has been called (so we don't process it twice).
+    private boolean addNotifyCalled = false;
 
     // This is the id for the underlying graphics context structure.
     Context ctx = null;
@@ -885,10 +889,14 @@ public class Canvas3D extends Canvas {
     EventCatcher eventCatcher;
 
     // The view event catcher for this canvas.
-    CanvasViewEventCatcher canvasViewEventCatcher;
-    
-    // The parent window for this canvas.
-    private Container parent;
+    private CanvasViewEventCatcher canvasViewEventCatcher;
+
+    // The top-level parent window for this canvas.
+    private Window windowParent;
+
+    // Issue 458 - list of all parent containers for this canvas
+    // (includes top-level parent window)
+    private LinkedList<Container> containerParentList = new LinkedList<Container>();
 
     // flag that indicates if light has changed
     boolean lightChanged = false;
@@ -1180,6 +1188,45 @@ public class Canvas3D extends Canvas {
     }
 
     /**
+     * Method to return whether or not the Canvas3D is recursively visible;
+     * that is, whether the Canas3D is currently visible on the screen. Note
+     * that we don't directly use isShowing() because that won't work for an
+     * auto-offScreen Canvas3D.
+     */
+    private boolean isRecursivelyVisible() {
+        Container parent = getParent();
+        return isVisible() && parent != null && parent.isShowing();
+    }
+
+    /**
+     * Method to return whether the top-level Window parent is iconified
+     */
+    private boolean isIconified() {
+        if (windowParent instanceof Frame) {
+            return (((Frame)windowParent).getExtendedState() & Frame.ICONIFIED) != 0;
+        }
+
+        return false;
+    }
+
+    // Issue 458 - evaluate this Canvas3D's visibility whenever we get a
+    // Window or Component Event that could change it.
+    void evaluateVisiblilty() {
+        boolean nowVisible = isRecursivelyVisible() && !isIconified();
+
+        // Only need to reevaluate and repaint if visibility has changed
+        if (this.visible != nowVisible) {
+            this.visible = nowVisible;
+            evaluateActive();
+            if (nowVisible) {
+                if (view != null) {
+                    view.repaint();
+                }
+            }
+        }
+    }
+
+    /**
      * This version looks for the view and notifies it.
      */
     void redraw() {
@@ -1228,6 +1275,11 @@ public class Canvas3D extends Canvas {
      * to function properly.
      */
     public void addNotify() {
+        // Return immediately if addNotify called twice with no removeNotify
+        if (addNotifyCalled) {
+            return;
+        }
+        addNotifyCalled = true;
 
         // Issue 131: This method is now being called by JCanvas3D for its
         // off-screen Canvas3D, so we need to handle off-screen properly here.
@@ -1257,35 +1309,28 @@ public class Canvas3D extends Canvas {
         }
 	screen.addUser(this);
 
-	parent = this.getParent();
-	while (!(parent instanceof Window)) {
-	    parent = parent.getParent();
-        }
-	
-        ((Window)parent).addWindowListener(eventCatcher);
+        // Issue 458 - Add the eventCatcher as a component listener for each
+        // parent container in the window hierarchy
+        assert containerParentList.isEmpty();
 
-	if (VirtualUniverse.mc.isD3D()) {
-	    ((Window)parent).addComponentListener(eventCatcher);
-	}
-
-        if(canvasViewEventCatcher.parentList.size() > 0) {
-            Component comp;
-            //Release and clear.
-            for(int i=0; i<canvasViewEventCatcher.parentList.size(); i++) {
-                comp = (Component)canvasViewEventCatcher.parentList.get(i);
-                comp.removeComponentListener(canvasViewEventCatcher);
+        windowParent = null;
+        Container container = this.getParent();
+        while (container != null) {
+            if (container instanceof Window) {
+                windowParent = (Window)container;
             }
-            canvasViewEventCatcher.parentList.clear();
+            container.addComponentListener(eventCatcher);
+            container.addComponentListener(canvasViewEventCatcher);
+            containerParentList.add(container);
+            container = container.getParent();
         }
 
-        Component parent = (Component) this.getParent();
-        while(parent != null) {
-            parent.addComponentListener(canvasViewEventCatcher);
-            canvasViewEventCatcher.parentList.add(parent);
-            parent = parent.getParent();   
-        }
-        // Need to traverse up the parent and add listener.
+        this.addComponentListener(eventCatcher);
         this.addComponentListener(canvasViewEventCatcher);
+
+        if (windowParent != null) {
+            windowParent.addWindowListener(eventCatcher);
+        }
 
 	synchronized(dirtyMaskLock) {
 	    cvDirtyMask[0] |= MOVED_OR_RESIZED_DIRTY;
@@ -1340,6 +1385,11 @@ public class Canvas3D extends Canvas {
      * method for Java 3D to function properly.
      */
     public void removeNotify() {
+        // Return immediately if addNotify not called first
+        if (!addNotifyCalled) {
+            return;
+        }
+        addNotifyCalled = false;
 
         // Do nothing for manually-rendered off-screen canvases
         if (manualRendering) {
@@ -1400,11 +1450,16 @@ public class Canvas3D extends Canvas {
 
 	super.removeNotify();
 
-	// This may happen if user explicity call this before 
-	// addNotify()
+        // Release and clear.
+        for (Container container : containerParentList) {
+            container.removeComponentListener(eventCatcher);
+            container.removeComponentListener(canvasViewEventCatcher);
+        }
+        containerParentList.clear();
+        this.removeComponentListener(eventCatcher);
+        this.removeComponentListener(canvasViewEventCatcher);
 
 	if (eventCatcher != null) {
-	    this.removeComponentListener(eventCatcher);
 	    this.removeFocusListener(eventCatcher);
 	    this.removeKeyListener(eventCatcher);
 	    this.removeMouseListener(eventCatcher);
@@ -1413,31 +1468,9 @@ public class Canvas3D extends Canvas {
 	    eventCatcher.reset();
 	}
 
-
-	if (canvasViewEventCatcher != null) {
-	    if (canvasViewEventCatcher.parentList.size() > 0) {
-		//Release and clear.
-		for(int i=canvasViewEventCatcher.parentList.size()-1; i>=0; i--) {
-		    Component comp = 
-			(Component)canvasViewEventCatcher.parentList.get(i);
-		    comp.removeComponentListener(canvasViewEventCatcher);
-		}
-		canvasViewEventCatcher.parentList.clear();
-	    }
-	    
-	    // Need to traverse up the parent and remove listener.
-	    this.removeComponentListener(canvasViewEventCatcher);
-	}
-
-	if (parent != null) {
-	    ((Window)parent).removeWindowListener(eventCatcher);
-	    if (VirtualUniverse.mc.isD3D()) {
-		((Window)parent).removeComponentListener(eventCatcher);
-	    }
-	}
-
-	if (parent != null) {
-	    parent.requestFocus();
+	if (windowParent != null) {
+	    windowParent.removeWindowListener(eventCatcher);
+	    windowParent.requestFocus();
 	}
 
         added = false;
@@ -1452,8 +1485,7 @@ public class Canvas3D extends Canvas {
 
         // Fix for issue 102 removing strong reference and avoiding memory leak
         // due retention of parent container
-        
-        this.parent = null;
+        this.windowParent = null;
     }
 
     // This decides if the canvas is active

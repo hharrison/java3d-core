@@ -22,12 +22,11 @@ import java.awt.event.*;
  * 
  */
 class CanvasViewEventCatcher extends ComponentAdapter {
-    
+
     // The canvas associated with this event catcher
-    Canvas3D canvas;
-    ArrayList parentList = new ArrayList();
-    static final boolean DEBUG = false;
-    
+    private Canvas3D canvas;
+    private static final boolean DEBUG = false;
+
     CanvasViewEventCatcher(Canvas3D c) {
 	canvas = c;
     }
