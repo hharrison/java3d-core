@@ -1476,7 +1476,8 @@ void JNICALL Java_javax_media_j3d_NativePipeline_clear(
     fprintf(stderr, "Canvas3D.clear(%g, %g, %g, %s)\n",
         r, g, b, (stencilClear ? "true" : "false"));
 #endif
-    
+
+#ifdef OBSOLETE_CLEAR_CODE
     glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue); 
     glClear(GL_COLOR_BUFFER_BIT); 
 
@@ -1487,31 +1488,34 @@ void JNICALL Java_javax_media_j3d_NativePipeline_clear(
     glPopAttrib();
 
     /* Issue 239 - clear stencil if specified */
-    /*
-     * TODO KCR : Issue 239 - should we also set stencil mask? If so, we
-     * may need to save/restore like we do for depth mask
-     */
     if (clearStencil) {
+        glPushAttrib(GL_STENCIL_BUFFER_BIT);
         glClearStencil(0);
+        glStencilMask(~0);
         glClear(GL_STENCIL_BUFFER_BIT);
+        glPopAttrib();
     }
 
-/* TODO: we should be able to do the following, which should perform better... */
-#if 0
+#endif /* OBSOLETE_CLEAR_CODE */
+
+    /* Mask of which buffers to clear, this always includes color & depth */
     int clearMask = GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT;
 
+    /* Issue 239 - clear stencil if specified */
     if (clearStencil) {
+        glPushAttrib(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
         glClearStencil(0);
+        glStencilMask(~0);
         clearMask |= GL_STENCIL_BUFFER_BIT;
+    } else {
+        glPushAttrib(GL_DEPTH_BUFFER_BIT);
     }
 
-    glPushAttrib(GL_DEPTH_BUFFER_BIT);
     glDepthMask(GL_TRUE); 
     glClearColor((float)r, (float)g, (float)b, ctxProperties->alphaClearValue);
     glClear(clearMask);
     glPopAttrib();
-#endif
-
 }
 
 JNIEXPORT

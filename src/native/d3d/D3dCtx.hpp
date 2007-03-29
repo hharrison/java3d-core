@@ -137,6 +137,10 @@ public:
     DWORD softwareVertexProcessing;
     DWORD zWriteEnable;
     DWORD zEnable;
+
+// TODO ACES: The following two stencil enable flags are not used
+// consistently throughout the pipeline. They are never set to a value,
+// and they are not looked at by most of the code.
 	DWORD stencilWriteEnable; // new on 1.4
 	DWORD stencilEnable; // new on 1.4
 

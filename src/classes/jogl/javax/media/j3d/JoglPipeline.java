@@ -7633,10 +7633,13 @@ class JoglPipeline extends Pipeline {
     
     void clear(Context ctx, float r, float g, float b, boolean clearStencil) {
         if (VERBOSE) System.err.println("JoglPipeline.clear()");
-        
+
         JoglContext jctx = (JoglContext) ctx;
         GLContext context = context(ctx);
         GL gl = context.getGL();
+
+        // OBSOLETE CLEAR CODE
+        /*
         gl.glClearColor(r, g, b, jctx.getAlphaClearValue());
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
         
@@ -7647,12 +7650,33 @@ class JoglPipeline extends Pipeline {
         gl.glPopAttrib();
 
         // Issue 239 - clear stencil if specified
-        // TODO KCR : Issue 239 - should we also set stencil mask? If so, we
-        // may need to save/restore like we do for depth mask
         if (clearStencil) {
+            gl.glPushAttrib(GL.GL_STENCIL_BUFFER_BIT);
             gl.glClearStencil(0);
+            gl.glStencilMask(~0);
             gl.glClear(GL.GL_STENCIL_BUFFER_BIT);
+            gl.glPopAttrib();
         }
+        */
+
+        // Mask of which buffers to clear, this always includes color & depth
+        int clearMask = GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT;
+
+        // Issue 239 - clear stencil if specified
+        if (clearStencil) {
+            gl.glPushAttrib(GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
+
+            gl.glClearStencil(0);
+            gl.glStencilMask(~0);
+            clearMask |= GL.GL_STENCIL_BUFFER_BIT;
+        } else {
+            gl.glPushAttrib(GL.GL_DEPTH_BUFFER_BIT);
+        }
+
+        gl.glDepthMask(true); 
+        gl.glClearColor(r, g, b, jctx.getAlphaClearValue());
+        gl.glClear(clearMask);
+        gl.glPopAttrib();
 
     }
     

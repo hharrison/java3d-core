@@ -302,18 +302,22 @@ void JNICALL Java_javax_media_j3d_NativePipeline_clear(
 {
 
     GetDevice();
-    
+
+// TODO ACES: The d3dCtx->stencilEnable and d3dCtx->stencilWriteEnable flags
+// are not used in the rest of the code. They are never set to a value, and
+// they are not looked at by most of the code.
+
     /* Java 3D always clears the Z-buffer */
-    /* @TODO check same operation for stencil */
-    
+
     if (!d3dCtx->zWriteEnable) {
 	device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-    } 
+    }
 
-    // TODO KCR : Issue 239 - use clearStencil to decide whether to clear stencil
+    // Issue 239 - clear stencil, if requested
+    if (clearStencil) {
+        device->SetRenderState(D3DRS_STENCILENABLE, TRUE);
+        device->SetRenderState(D3DRS_STENCILWRITEMASK, ~0);
 
-    /* clear stencil, if in used */
-    if (d3dCtx->stencilWriteEnable ) {
 	// clear stencil and ZBuffer
 	HRESULT hr = device->Clear(0, NULL, 
 				   D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 
@@ -321,7 +325,16 @@ void JNICALL Java_javax_media_j3d_NativePipeline_clear(
 	if (hr == D3DERR_INVALIDCALL) {
 	    printf("[Java3D] Error cleaning Canvas3D stencil & ZBuffer\n");
 	}
-	//  printf("canvas3D clear stencil & ZBuffer\n");
+	// printf("canvas3D clear stencil & ZBuffer\n");
+
+        // TODO: DO WE NEED TO RESTORE THE STENCIL ENABLE AND WRITE MASK???
+//        if (!d3dCtx->stencilEnable) {
+//            device->SetRenderState(D3DRS_STENCILENABLE, FALSE);		  
+//        }
+//        if (!d3dCtx->stencilWriteEnable) {
+//            device->SetRenderState(D3DRS_STENCILWRITEMASK, 0);		  
+//        }
+
     }
     else {	
 	// clear ZBuffer only
@@ -332,15 +345,11 @@ void JNICALL Java_javax_media_j3d_NativePipeline_clear(
 	}
 	// printf("canvas3D clear ZBuffer\n");
     }
-    
+
     if (!d3dCtx->zWriteEnable) {
 	device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-    }	
-    // disable stencil 
-    if (d3dCtx->stencilEnable && !d3dCtx->stencilWriteEnable) {
-	device->SetRenderState(D3DRS_STENCILENABLE, FALSE);		  
     }
-    
+
 }
 
 extern "C" JNIEXPORT
