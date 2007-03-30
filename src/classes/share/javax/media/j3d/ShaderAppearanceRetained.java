@@ -32,9 +32,6 @@ class ShaderAppearanceRetained extends AppearanceRetained {
     protected ShaderAttributeSetRetained shaderAttributeSet = null;
     protected boolean isMirror = false; // For Debugging.
 
-    static final int SHADER_PROGRAM        = 0x0800;
-    static final int SHADER_ATTRIBUTE_SET  = 0x1000;    
-
     /**
      * Set the shader program object to the specified object.
      * @param shaderProgram object that specifies the desired shader program
@@ -56,7 +53,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 		    ((ShaderProgramRetained)sp.retained).copyMirrorUsers(this);
 	    	}
 		
-		sendMessage(SHADER_PROGRAM,  
+		sendMessage(ShaderConstants.SHADER_PROGRAM,  
 			    (sp != null ? ((ShaderProgramRetained)sp.retained).mirror : null));
 		
 	    }
@@ -102,7 +99,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	    	}
 		
 		// System.out.println(" --   testing  needed!");
-		sendMessage(SHADER_ATTRIBUTE_SET,  
+		sendMessage(ShaderConstants.SHADER_ATTRIBUTE_SET,  
 			    (sas != null ? 
 			     ((ShaderAttributeSetRetained)sas.retained).mirror : null));
 		
@@ -209,10 +206,10 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	// System.out.println("ShaderAppearanceRetained : updateMirrorObject() this " + this);
 	super.updateMirrorObject(component, value);
  	ShaderAppearanceRetained mirrorApp = (ShaderAppearanceRetained)mirror;
-	if ((component & SHADER_PROGRAM) != 0) {
+	if ((component & ShaderConstants.SHADER_PROGRAM) != 0) {
 	    mirrorApp.shaderProgram = (ShaderProgramRetained)value;
 	}
-	else if ((component & SHADER_ATTRIBUTE_SET) != 0) {
+	else if ((component & ShaderConstants.SHADER_ATTRIBUTE_SET) != 0) {
 	    mirrorApp.shaderAttributeSet = (ShaderAttributeSetRetained)value;
 	}
 	
@@ -359,9 +356,9 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 
 	int mask = 0;
 	if (bit == ShaderAppearance.ALLOW_SHADER_PROGRAM_WRITE)
-	    mask = SHADER_PROGRAM;
+	    mask = ShaderConstants.SHADER_PROGRAM;
 	else if (bit == ShaderAppearance.ALLOW_SHADER_ATTRIBUTE_SET_WRITE)
-	    mask = SHADER_ATTRIBUTE_SET;
+	    mask = ShaderConstants.SHADER_ATTRIBUTE_SET;
 	
 
 	if (mask != 0)

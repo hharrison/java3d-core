@@ -2407,17 +2407,16 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	}
 	if (start >= 0) {
 
-	    
-
+            // Issue 471 - Don't check ATTRIBUTE_VALUE_UPDATE, there is no need
+            // to do anything to the shader bins when a value changes.
 	    boolean spUpdate = 
-		((component & ShaderAppearanceRetained.SHADER_PROGRAM) != 0);
+		((component & ShaderConstants.SHADER_PROGRAM) != 0);
 	    boolean sasUpdate = 
-		(((component & ShaderAppearanceRetained.SHADER_ATTRIBUTE_SET) != 0) ||
-		 ((component & ShaderAttributeSetRetained.ATTRIBUTE_SET_PUT) != 0) ||
-		 ((component & ShaderAttributeSetRetained.ATTRIBUTE_SET_REMOVE) != 0) ||
-		 ((component & ShaderAttributeSetRetained.ATTRIBUTE_SET_CLEAR) != 0) ||
-		 ((component & ShaderAttributeRetained.SHADER_ATTRIBUTE_VALUE_UPDATE) != 0));
-	    
+		(((component & ShaderConstants.SHADER_ATTRIBUTE_SET) != 0) ||
+		 ((component & ShaderConstants.ATTRIBUTE_SET_PUT) != 0) ||
+		 ((component & ShaderConstants.ATTRIBUTE_SET_REMOVE) != 0) ||
+		 ((component & ShaderConstants.ATTRIBUTE_SET_CLEAR) != 0));
+
 	    if (spUpdate) {
 		/* TODO : JADA - Sole user logic is incomplete. Will disable for JavaOne */
 		//if (false && (sApp.mirror.changedFrequent & component) != 0) {
@@ -2499,9 +2498,9 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		}
 	    }
 	}
-	    
+
     }
-    
+
 
     void processFogChanged(Object[] args) {
 	FogRetained fog = (FogRetained)args[0];

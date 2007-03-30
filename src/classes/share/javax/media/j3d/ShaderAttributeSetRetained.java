@@ -24,13 +24,6 @@ import javax.vecmath.*;
  */
 
 class ShaderAttributeSetRetained extends NodeComponentRetained {
-    // A list of pre-defined bits to indicate which attribute
-    // operation in this ShaderAttributeSet object is needed.
-    static final int ATTRIBUTE_SET_PUT              = 0x01;
-
-    static final int ATTRIBUTE_SET_REMOVE           = 0x02;
-
-    static final int ATTRIBUTE_SET_CLEAR            = 0x04;
 
     private Map attrs = new HashMap();
 
@@ -70,7 +63,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 		sAttr.setLive(inBackgroundGroup, refCount);
 		sAttr.copyMirrorUsers(this);
                 
-		sendMessage(ATTRIBUTE_SET_PUT, sAttr.mirror);
+		sendMessage(ShaderConstants.ATTRIBUTE_SET_PUT, sAttr.mirror);
 	    }	    
 	}
     }
@@ -104,7 +97,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 		sAttr.clearLive(refCount);
 		sAttr.removeMirrorUsers(this);
 		
-		sendMessage(ATTRIBUTE_SET_REMOVE, attrName);
+		sendMessage(ShaderConstants.ATTRIBUTE_SET_REMOVE, attrName);
 	    }
 	}
     }
@@ -129,7 +122,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 		    ((ShaderAttributeRetained)attr.retained).clearLive(refCount);
 		    ((ShaderAttributeRetained)attr.retained).removeMirrorUsers(this);
 		    
-		    sendMessage(ATTRIBUTE_SET_REMOVE, attrName);
+		    sendMessage(ShaderConstants.ATTRIBUTE_SET_REMOVE, attrName);
 		}
 	    }
 	}
@@ -150,7 +143,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 		    sAttrs[i].clearLive(refCount);
 		    sAttrs[i].removeMirrorUsers(this);
 		}
-		sendMessage(ATTRIBUTE_SET_CLEAR, null);
+		sendMessage(ShaderConstants.ATTRIBUTE_SET_CLEAR, null);
 	    }
 	}
     }
@@ -293,17 +286,17 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
         
 	ShaderAttributeSetRetained mirrorSAS = (ShaderAttributeSetRetained)mirror;
 	
-	if ((component & ATTRIBUTE_SET_PUT) != 0) {
+	if ((component & ShaderConstants.ATTRIBUTE_SET_PUT) != 0) {
 	    // System.out.println("     -- ATTRIBUTE_SET_PUT");
 	    ShaderAttributeRetained mirrorSA = (ShaderAttributeRetained)value;
  	    assert(mirrorSA != null);
 	    ((ShaderAttributeSetRetained)mirror).attrs.put(mirrorSA.attrName, mirrorSA);
 	}
-	else if((component & ATTRIBUTE_SET_REMOVE) != 0) {
+	else if((component & ShaderConstants.ATTRIBUTE_SET_REMOVE) != 0) {
 	    // System.out.println("     -- ATTRIBUTE_SET_REMOVE");
 	    ((ShaderAttributeSetRetained)mirror).attrs.remove((String)value);
 	}
-	else if((component & ATTRIBUTE_SET_CLEAR) != 0) {
+	else if((component & ShaderConstants.ATTRIBUTE_SET_CLEAR) != 0) {
 	    // System.out.println("     -- ATTRIBUTE_SET_CLEAR");
 	    ((ShaderAttributeSetRetained)mirror).attrs.clear();
 	}

@@ -80,7 +80,7 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
     void setValue(Object value) {
         initValue(value);
 	AttrWrapper valueWrapper = createAttrWrapper(value, this.classType);	
-	sendMessage(SHADER_ATTRIBUTE_VALUE_UPDATE, valueWrapper);
+	sendMessage(ShaderConstants.ATTRIBUTE_VALUE_UPDATE, valueWrapper);
     }
 
     /**
@@ -112,7 +112,7 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
 
 	//System.out.println("ShaderAttributeObjectRetained : updateMirrorObject");
 	ShaderAttributeObjectRetained mirrorSAV = (ShaderAttributeObjectRetained)mirror;
-        if ((component & SHADER_ATTRIBUTE_VALUE_UPDATE) != 0) {
+        if ((component & ShaderConstants.ATTRIBUTE_VALUE_UPDATE) != 0) {
 	    //System.out.println("     -- SHADER_ATTRIBUTE_VALUE_UPDATE");
 	    mirrorSAV.attrWrapper = (AttrWrapper) value;
 	}
