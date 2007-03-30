@@ -125,7 +125,6 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 
 
     public boolean equals(Object obj) {
-	System.out.println("ShaderAppearanceRetained :  equals() not tested yet!");
 	return ((obj instanceof ShaderAppearanceRetained) &&
 	 	equals((ShaderAppearanceRetained) obj));
     }
