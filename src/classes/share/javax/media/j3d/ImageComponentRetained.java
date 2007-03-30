@@ -1961,7 +1961,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     }
     
     /**
-     * Copy Image from RGBA to the user defined bufferedImage
+     * Copy image to the user defined bufferedImage ( 3 or 4 components only )
      */
     void copyToRefImageWithFormatConversion(int depth) {
         int w, h, i, j;
@@ -1993,16 +1993,31 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                         ((DataBufferInt)bi.getRaster().getDataBuffer()).getData();
                 // Multiply by 4 to get the byte incr and start point
                 j = 0;
-                for(h = 0; h < height; h++, dstBegin += dstInc) {
-                    i = dstBegin;
-                    for (w = 0; w < width; w++, j+=4, i++) {
-                        intData[i] = (((buf[j+3] &0xff) << 24) | // a
-                                ((buf[j] &0xff) << 16) | // r
-                                ((buf[j+1] &0xff) << 8) | // g
-                                (buf[j+2] & 0xff)); // b
-                        
-                        
-                    }
+                switch (imageFormatType) {
+                    case TYPE_BYTE_RGBA:
+                        for(h = 0; h < height; h++, dstBegin += dstInc) {
+                            i = dstBegin;
+                            for (w = 0; w < width; w++, j+=4, i++) {
+                                intData[i] = (((buf[j+3] &0xff) << 24) | // a
+                                        ((buf[j] &0xff) << 16) | // r
+                                        ((buf[j+1] &0xff) << 8) | // g
+                                        (buf[j+2] & 0xff)); // b
+                            }
+                        }
+                        break;
+                    case TYPE_BYTE_RGB:
+                        for(h = 0; h < height; h++, dstBegin += dstInc) {
+                            i = dstBegin;
+                            for (w = 0; w < width; w++, j+=3, i++) {
+                                intData[i] = (0xff000000 | // a
+                                        ((buf[j] &0xff) << 16) | // r
+                                        ((buf[j+1] &0xff) << 8) | // g
+                                        (buf[j+2] & 0xff)); // b
+                            }
+                        }
+                        break;
+                    default:
+                        assert false;
                 }
                 break;
                 
@@ -2018,8 +2033,6 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                                 ((buf[j] &0xff) << 16) | // r
                                 ((buf[j+1] &0xff) << 8) | // g
                                 (buf[j+2] & 0xff)); // b
-                        
-                        
                     }
                 }
                 break;
@@ -2033,17 +2046,34 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                 //Issue 381: dstBegin contains pixel count, but we are looping over byte count. In case of YDown, it contains a count that is decremented and if we do not multiply, we have an AIOOB thrown at 25% of the copy.
                 dstBegin <<= 2;
                 
-                for(h = 0; h < height; h++, dstBegin += (dstInc << 2)) {
-                    i = dstBegin;
-                    for (w = 0; w < width; w++, j+=4) {
-                        
-                        byteData[i++] = buf[j+3]; // a
-                        byteData[i++] = buf[j+2]; // b
-                        byteData[i++] = buf[j+1];// g
-                        byteData[i++] = buf[j]; // r
-                    }
+                switch (imageFormatType) {
+                    case TYPE_BYTE_RGBA:
+                        for(h = 0; h < height; h++, dstBegin += (dstInc << 2)) {
+                            i = dstBegin;
+                            for (w = 0; w < width; w++, j+=4) {
+                                byteData[i++] = buf[j+3]; // a
+                                byteData[i++] = buf[j+2]; // b
+                                byteData[i++] = buf[j+1];// g
+                                byteData[i++] = buf[j]; // r
+                            }
+                        }
+                        break;
+                    case TYPE_BYTE_RGB:
+                        for(h = 0; h < height; h++, dstBegin += (dstInc << 2)) {
+                            i = dstBegin;
+                            for (w = 0; w < width; w++, j+=3) {
+                                byteData[i++] = (byte) 0xff; // a
+                                byteData[i++] = buf[j+2]; // b
+                                byteData[i++] = buf[j+1];// g
+                                byteData[i++] = buf[j]; // r
+                            }
+                        }
+                        break;
+                    default:
+                        assert false;
                 }
                 break;
+                
             case BufferedImage.TYPE_INT_BGR:
                 intData =
                         ((DataBufferInt)bi.getRaster().getDataBuffer()).getData();
@@ -2057,48 +2087,11 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
                                 ((buf[j] &0xff) ) | // r
                                 ((buf[j+1] &0xff) << 8) | // g
                                 (buf[j+2] & 0xff)<< 16); // b
-                        
-                        
                     }
                 }
                 break;
-            case BufferedImage.TYPE_BYTE_GRAY:
-                byteData =
-                        ((DataBufferByte)bi.getRaster().getDataBuffer()).getData();
-                j = 0;
-                for( h = 0; h < height; h++, dstBegin += dstInc) {
-                    System.arraycopy(byteData, dstBegin, buf, j, width);
-                    j += width;
-                }
-                break;
-            case BufferedImage.TYPE_USHORT_GRAY:
-                int pixel;
-                j = 0;
-                short[] shortData  =
-                        ((DataBufferShort)bi.getRaster().getDataBuffer()).getData();
-                // Multiply by 4 to get the byte incr and start point
-                for(h = 0; h < height; h++, dstBegin+= dstInc) {
-                    i = dstBegin;
-                    for (w = 0; w < width; w++, i++, j++) {
-                        shortData[i] = (short)buf[j];
-                    }
-                }
-                break;
-                
             default:
-                j = 0;
-                for( h = 0; h < height; h++, dstIndex += dstIndexInc) {
-                    i = dstIndex;
-                    for (w = 0; w < width; w++, j+=4) {
-                        pixel =  (((buf[j+3] &0xff) << 24) | // a
-                                ((buf[j] &0xff) << 16) | // r
-                                ((buf[j+1] &0xff) << 8) | // g
-                                (buf[j+2] & 0xff)); // b
-                        bi.setRGB(w, i, pixel);
-                        
-                    }
-                }
-                break;
+                assert false;
         }
         
     }
