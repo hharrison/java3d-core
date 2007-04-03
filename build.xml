@@ -683,8 +683,8 @@
 
   <target name="initSrc" depends="setupPlatform">
       <property name="platformSrc" location="${dist}/${platform}/src"/>
-      <property name="j3dZip" value="j3d-${version_base_file}-src.zip"/>
-      <property name="vecmathZip" value="vecmath-${version_base_file}-src.zip"/>
+      <property name="j3dZip" value="j3d-${version_file}-src.zip"/>
+      <property name="vecmathZip" value="vecmath-${version_file}-src.zip"/>
 
       <property name="j3dZipFile" location="${platformSrc}/${j3dZip}"/>
       <property name="vecmathZipFile" location="${platformSrc}/${vecmathZip}"/>
@@ -702,7 +702,7 @@
   <target name="src" depends="initSrc, echoSrc, j3dSrc, vecmathSrc">
   </target>
 
-  <target name="j3dSrc" depends="j3dSrcClean">
+  <target name="j3dSrc">
     <zip destfile="${j3dZipFile}">
 
       <fileset dir="${cvsRootDir}/j3d-core/release-info/src-release/j3d"
@@ -738,7 +738,7 @@
     </zip>
   </target>
 
-  <target name="vecmathSrc" depends="vecmathSrcClean">
+  <target name="vecmathSrc">
     <zip destfile="${vecmathZipFile}">
 
       <fileset dir="${cvsRootDir}/j3d-core/release-info/src-release/vecmath"
@@ -751,14 +751,6 @@
           includes="*/**"
           excludes="*/doc-files/** **/package.html VECMATH.MF"/>
     </zip>
-  </target>
-
-  <target name="j3dSrcClean" depends="initSrc">
-    <delete file="${j3dZipFile}"/>
-  </target>
-
-  <target name="vecmathSrcClean" depends="initSrc">
-    <delete file="${vecmathZipFile}"/>
   </target>
 
   <target name="clean-dist">

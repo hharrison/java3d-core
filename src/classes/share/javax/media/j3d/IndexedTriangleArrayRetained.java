@@ -29,14 +29,18 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
-	Point3d pnts[] = new Point3d[3];
-	double sdist[] = new double[1];
-	double minDist = Double.MAX_VALUE;
-	double x = 0, y = 0, z = 0;
+        Point3d pnts[] = new Point3d[3];
+        double sdist[] = new double[1];
+        double minDist = Double.MAX_VALUE;
+        double x = 0, y = 0, z = 0;
         int[] vtxIndexArr = new int[3];
         
-	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
-		 initialVertexIndex : initialCoordIndex);
+        //NVaidya
+        // Bug 447: While loops below now traverse over all
+        // elements in the valid index range from initialIndexIndex
+        // to initialIndexInex + validIndexCount - 1
+        int i = initialIndexIndex;
+        int loopStopIndex = initialIndexIndex + validIndexCount;
 	pnts[0] = new Point3d();
 	pnts[1] = new Point3d();
 	pnts[2] = new Point3d();
@@ -45,7 +49,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	case PickShape.PICKRAY:
 	    PickRay pickRay= (PickRay) pickShape;
 
-	    while (i < validVertexCount) {
+	    while (i < loopStopIndex) {
                 for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
@@ -73,7 +77,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	    break;
 	case PickShape.PICKSEGMENT:
 	    PickSegment pickSegment = (PickSegment) pickShape;
-	    while (i < validVertexCount) {
+	    while (i < loopStopIndex) {
                 for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
@@ -104,7 +108,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	    BoundingBox bbox = (BoundingBox) 
 		((PickBounds) pickShape).bounds;
 	    
-	    while (i < validVertexCount) {
+	    while (i < loopStopIndex) {
                 for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
@@ -134,7 +138,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	    BoundingSphere bsphere = (BoundingSphere) 
 		((PickBounds) pickShape).bounds;
 	    
-	    while (i < validVertexCount) {
+	    while (i < loopStopIndex) {
                 for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
@@ -164,7 +168,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	    BoundingPolytope bpolytope = (BoundingPolytope) 
 		((PickBounds) pickShape).bounds;
 	    
-	    while (i < validVertexCount) {
+	    while (i < loopStopIndex) {
                 for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
@@ -193,7 +197,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	    break;
 	case PickShape.PICKCYLINDER:
 	    PickCylinder pickCylinder= (PickCylinder) pickShape;
-	    while (i < validVertexCount) {
+	    while (i < loopStopIndex) {
                 for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
@@ -223,7 +227,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	case PickShape.PICKCONE:
 	    PickCone pickCone= (PickCone) pickShape;
 	    
-	    while (i < validVertexCount) {
+	    while (i < loopStopIndex) {
                 for(int j=0; j<3; j++) {
                     vtxIndexArr[j] = indexCoord[i];
                     getVertexData(indexCoord[i++], pnts[j]);
@@ -268,9 +272,11 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
     // intersect pnts[] with every triangle in this object
     boolean intersect(Point3d[] pnts) {
 	Point3d[] points = new Point3d[3];
-	double dist[] = new double[1];
-	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
-		 initialVertexIndex : initialCoordIndex);
+        double dist[] = new double[1];
+        //NVaidya
+        // Bug 447: correction for loop indices
+        int i = initialIndexIndex;
+        int loopStopIndex = initialIndexIndex + validIndexCount;
 	
 	points[0] = new Point3d();
 	points[1] = new Point3d();	
@@ -278,7 +284,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 
 	switch (pnts.length) {
 	case 3: // Triangle
-	    while (i<validVertexCount) {
+	    while (i<loopStopIndex) {
 		getVertexData(indexCoord[i++], points[0]);
 		getVertexData(indexCoord[i++], points[1]);
 		getVertexData(indexCoord[i++], points[2]);
@@ -289,7 +295,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	    }
 	    break;
 	case 4: // Quad
-	    while (i<validVertexCount) {
+	    while (i<loopStopIndex) {
 		getVertexData(indexCoord[i++], points[0]);
 		getVertexData(indexCoord[i++], points[1]);
 		getVertexData(indexCoord[i++], points[2]);
@@ -302,7 +308,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	    }
 	    break;
 	case 2: // Line
-	    while (i<validVertexCount) {
+	    while (i<loopStopIndex) {
 		getVertexData(indexCoord[i++], points[0]);
 		getVertexData(indexCoord[i++], points[1]);
 		getVertexData(indexCoord[i++], points[2]);
@@ -313,7 +319,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	    }
 	    break;
 	case 1: // Point
-	    while (i<validVertexCount) {
+	    while (i<loopStopIndex) {
 		getVertexData(indexCoord[i++], points[0]);
 		getVertexData(indexCoord[i++], points[1]);
 		getVertexData(indexCoord[i++], points[2]);
@@ -329,14 +335,16 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 
     
     boolean intersect(Transform3D thisToOtherVworld, GeometryRetained geom) {
-	Point3d[] pnts = new Point3d[3];
-	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
-		 initialVertexIndex : initialCoordIndex);
+        Point3d[] pnts = new Point3d[3];
+        //NVaidya
+        // Bug 447: correction for loop indices
+        int i = initialIndexIndex;
+        int loopStopIndex = initialIndexIndex + validIndexCount;
 	pnts[0] = new Point3d();
 	pnts[1] = new Point3d();
 	pnts[2] = new Point3d();
 
-	while (i < validVertexCount) {
+	while (i < loopStopIndex) {
 	    getVertexData(indexCoord[i++], pnts[0]);
 	    getVertexData(indexCoord[i++], pnts[1]);
 	    getVertexData(indexCoord[i++], pnts[2]);
@@ -352,10 +360,12 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 
     // the bounds argument is already transformed
     boolean intersect(Bounds targetBound) {
-	Point3d[] pnts = new Point3d[3];
-	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
-		 initialVertexIndex : initialCoordIndex);
-	pnts[0] = new Point3d();
+        Point3d[] pnts = new Point3d[3];
+        //NVaidya
+        // Bug 447: correction for loop indices
+        int i = initialIndexIndex;
+        int loopStopIndex = initialIndexIndex + validIndexCount;
+        pnts[0] = new Point3d();
 	pnts[1] = new Point3d();
 	pnts[2] = new Point3d();
 
@@ -363,7 +373,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	case PickShape.PICKBOUNDINGBOX:
 	    BoundingBox box = (BoundingBox) targetBound;
 	    
-	    while (i < validVertexCount) {
+	    while (i < loopStopIndex) {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
 		getVertexData(indexCoord[i++], pnts[2]);
@@ -375,7 +385,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	case PickShape.PICKBOUNDINGSPHERE:
 	    BoundingSphere bsphere = (BoundingSphere) targetBound;
 	    
-	    while (i < validVertexCount) {
+	    while (i < loopStopIndex) {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
 		getVertexData(indexCoord[i++], pnts[1]);
@@ -388,7 +398,7 @@ class IndexedTriangleArrayRetained extends IndexedGeometryArrayRetained {
 	case PickShape.PICKBOUNDINGPOLYTOPE:
 	    BoundingPolytope bpolytope = (BoundingPolytope) targetBound;
 	    
-	    while (i < validVertexCount) {
+	    while (i < loopStopIndex) {
 		getVertexData(indexCoord[i++], pnts[0]);
 		getVertexData(indexCoord[i++], pnts[1]);
 		getVertexData(indexCoord[i++], pnts[2]);
