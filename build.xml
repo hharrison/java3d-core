@@ -480,7 +480,7 @@
 	<ant dir="src/classes" target="docs"/>
   </target>
 
-  <target name="dist" depends="jar-opt,docs-public">
+  <target name="dist" depends="jar-opt,docs-public,src">
 	<ant dir="src/classes" target="dist"/>
 	<ant dir="src/native" target="dist"/>
   </target>
@@ -681,6 +681,86 @@
     </zip>
   </target>
 
+  <target name="initSrc" depends="setupPlatform">
+      <property name="platformSrc" location="${dist}/${platform}/src"/>
+      <property name="j3dZip" value="j3d-${version_base_file}-src.zip"/>
+      <property name="vecmathZip" value="vecmath-${version_base_file}-src.zip"/>
+
+      <property name="j3dZipFile" location="${platformSrc}/${j3dZip}"/>
+      <property name="vecmathZipFile" location="${platformSrc}/${vecmathZip}"/>
+      <property name="cvsRootDir" location=".."/>
+
+      <mkdir dir="${platformSrc}"/>
+  </target>
+
+  <target name="echoSrc"> 
+    <echo message="j3dZipFile = ${j3dZipFile}"/>
+    <echo message="vecmathZipFile = ${vecmathZipFile}"/>
+    <echo message="cvsRootDir = ${cvsRootDir}"/>
+  </target>
+
+  <target name="src" depends="initSrc, echoSrc, j3dSrc, vecmathSrc">
+  </target>
+
+  <target name="j3dSrc" depends="j3dSrcClean">
+    <zip destfile="${j3dZipFile}">
+
+      <fileset dir="${cvsRootDir}/j3d-core/release-info/src-release/j3d"
+          includes="README.txt"/>
+     
+      <zipfileset dir="${cvsRootDir}/j3d-core" prefix="javax"
+          includes="COPYRIGHT.txt *LICENSE*.*"/>
+
+      <fileset dir="${cvsRootDir}/j3d-core/src/classes/share"
+          includes="*/**"
+          excludes="**/doc-files/** **/package.html"/>
+
+      <fileset dir="${cvsRootDir}/j3d-core/src/classes/jogl"
+          includes="*/**"
+          excludes="**/doc-files/** **/package.html"/>
+
+<!-- We will not include platform specific source files in this release
+
+      <fileset dir="${cvsRootDir}/j3d-core/src/classes/win32"
+          includes="*/**"
+          excludes="**/doc-files/** **/package.html"/>
+      <fileset dir="${cvsRootDir}/j3d-core/src/classes/x11"
+          includes="*/**"
+          excludes="**/doc-files/** **/package.html"/>
+-->
+
+      <zipfileset dir="${cvsRootDir}/j3d-core-utils" prefix="com"
+          includes="COPYRIGHT.txt *LICENSE*.*"/>
+
+      <fileset dir="${cvsRootDir}/j3d-core-utils/src/classes/share"
+          includes="*/**"
+          excludes="**/doc-files/** **/package.html"/>
+    </zip>
+  </target>
+
+  <target name="vecmathSrc" depends="vecmathSrcClean">
+    <zip destfile="${vecmathZipFile}">
+
+      <fileset dir="${cvsRootDir}/j3d-core/release-info/src-release/vecmath"
+          includes="README.txt"/>
+     
+      <zipfileset dir="${cvsRootDir}/vecmath" prefix="javax"
+          includes="COPYRIGHT.txt *LICENSE*.*"/>
+
+      <fileset dir="${cvsRootDir}/vecmath/src"
+          includes="*/**"
+          excludes="*/doc-files/** **/package.html VECMATH.MF"/>
+    </zip>
+  </target>
+
+  <target name="j3dSrcClean" depends="initSrc">
+    <delete file="${j3dZipFile}"/>
+  </target>
+
+  <target name="vecmathSrcClean" depends="initSrc">
+    <delete file="${vecmathZipFile}"/>
+  </target>
+
   <target name="clean-dist">
     <!-- Delete the ${dist} directory tree  -->
     <delete dir="${dist}"/>
@@ -781,6 +861,8 @@ The following ant targets are available ("jar-opt" is the default):
 
       install-debug  - installs the debug build into the JDK pointed to by JAVA_HOME
       
+      src            - generate a zip file Java 3D project source code.
+
       uninstall      - uninstalls Java 3D from the JDK pointed to by JAVA_HOME
   </description>
 </project>
