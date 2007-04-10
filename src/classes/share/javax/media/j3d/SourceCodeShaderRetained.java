@@ -75,7 +75,7 @@ class SourceCodeShaderRetained extends ShaderRetained {
 	mirror.source = source;
 
 	((SourceCodeShaderRetained) mirror).set(shadingLanguage, shaderType, shaderSource);
-	((SourceCodeShaderRetained) mirror).shaderIds = null;	
+	((SourceCodeShaderRetained) mirror).shaderData = null;	
     }
 
     synchronized void updateMirrorObject(int component, Object value) {

@@ -1532,7 +1532,7 @@ public class Canvas3D extends Canvas {
     void setFrustumPlanes(Vector4d[] planes) {
 	
 	if(VirtualUniverse.mc.viewFrustumCulling) {
-	    /* System.out.println("Canvas3D.setFrustumPlanes()"); */
+	    /* System.err.println("Canvas3D.setFrustumPlanes()"); */
 	    viewFrustum.set(planes);
 	}
     }
@@ -1862,9 +1862,11 @@ public class Canvas3D extends Canvas {
                     canvasId = VirtualUniverse.mc.getCanvasId();
                     canvasIdAlloc = true;
 
-                    // NOTE: We are backing out the following part of the following fix for issues
-                    // 347 and 348 due to a regression in texture mapping, and due
-                    // to the fact that it is an incomplete fix.
+                    // NOTE: We are backing out the following part of the
+                    // following fix for issue 347 due to a regression in
+                    // off-screen texture mapping, caused by a race condition.
+                    // This does not affect issue 348 since the shader code
+                    // uses the canvasId and not the canvasBit.
 //                    canvasBit = 1 << canvasId;
                 }
             }
@@ -4768,7 +4770,7 @@ public class Canvas3D extends Canvas {
                     continue;
                 }
                 if (val >= textureIDResourceTable.size()) {
-                    System.out.println("Error in freeResourcesInFreeList : ResourceIDTableSize = " +
+                    System.err.println("Error in freeResourcesInFreeList : ResourceIDTableSize = " +
                             textureIDResourceTable.size() +
                             " val = " + val);
                 } else {

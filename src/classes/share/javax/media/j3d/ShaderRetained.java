@@ -25,9 +25,10 @@ abstract class ShaderRetained extends NodeComponentRetained {
     int shadingLanguage;
     int shaderType;
 
+    // Each element in the array corresponds to a unique renderer if shared
+    // context or a unique canvas otherwise.
     // shaderId use by native code. One per Canvas.
-    ShaderId[] shaderIds;
-    boolean[] compiled;
+    ShaderData[] shaderData;
 
     // Flag indicating whether a COMPILE_ERROR has occurred for this shader
     // object.  It is set in updateNative to indicate that the compileShader
@@ -52,12 +53,12 @@ abstract class ShaderRetained extends NodeComponentRetained {
     }
  
     void setLive(boolean inBackgroundGroup, int refCount) {
-	// System.out.println("SourceCodeShaderRetained.setLive()");
+	// System.err.println("SourceCodeShaderRetained.setLive()");
 	super.setLive(inBackgroundGroup, refCount);
     }
 
     void clearLive(int refCount) {
-	// System.out.println("SourceCodeShaderRetained.clearLive()");
+	// System.err.println("SourceCodeShaderRetained.clearLive()");
 	super.clearLive(refCount);
     }
 
@@ -67,11 +68,85 @@ abstract class ShaderRetained extends NodeComponentRetained {
       * the changes to the users
       */
      synchronized void updateMirrorObject(int component, Object value) {
-	System.out.println("Shader.updateMirrorObject not implemented yet!");
+	System.err.println("Shader.updateMirrorObject not implemented yet!");
      }
 
     void handleFrequencyChange(int bit) {
-	System.out.println("Shader.handleFrequencyChange not implemented yet!");
+	System.err.println("Shader.handleFrequencyChange not implemented yet!");
+    }
+
+    void createShaderData(int cvRdrIndex, long ctxTimeStamp) {
+        // Create shaderProgram resources if it has not been done.
+        synchronized(resourceLock) {
+            if (shaderData == null) {
+                shaderData = new ShaderData[cvRdrIndex+1];
+            } else if (shaderData.length <= cvRdrIndex) {
+                ShaderData[] tempSData = new ShaderData[cvRdrIndex+1];
+                
+                System.arraycopy(shaderData, 0,
+                        tempSData, 0,
+                        shaderData.length);
+                shaderData = tempSData;
+            }
+
+            if (shaderData[cvRdrIndex] == null) {
+                shaderData[cvRdrIndex] = new ShaderData();
+            } else if (shaderData[cvRdrIndex].getCtxTimeStamp() != ctxTimeStamp) {
+                // Issue 378 - reset the shader data for this canvas / renderer
+                // if the context has been recreated
+                shaderData[cvRdrIndex].reset();
+            }
+            shaderData[cvRdrIndex].setCtxTimeStamp(ctxTimeStamp);
+        }
+    }
+
+
+    // Per-context (canvas) data for this shader
+    class ShaderData extends Object {
+
+        // Issue 378 - time stamp of context creation for this canvas
+        private long ctxTimeStamp;
+
+        // shaderId use by native code
+        private ShaderId shaderId = null;
+
+        // indicated that the shader has been compiled for this canvas
+        private boolean compiled = false;
+
+        /** ShaderProgramData Constructor */
+        ShaderData() {
+        }
+
+        void reset() {
+            ctxTimeStamp = 0L;
+            shaderId = null;
+            compiled = false;
+        }
+
+        long getCtxTimeStamp() {
+            return ctxTimeStamp;
+        }
+
+        void setCtxTimeStamp(long ctxTimeStamp) {
+            this.ctxTimeStamp = ctxTimeStamp;
+        }
+
+        ShaderId getShaderId() {
+            return shaderId;
+        }
+
+        void setShaderId(ShaderId shaderId) {
+            this.shaderId = shaderId;
+        }
+
+        boolean isCompiled() {
+            return compiled;
+        }
+
+        void setCompiled(boolean compiled) {
+            this.compiled = compiled;
+        }
+
     }
 
 }

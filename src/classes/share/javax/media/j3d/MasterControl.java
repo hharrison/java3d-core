@@ -968,8 +968,8 @@ class MasterControl {
 		    break;
 	    }
 
-	    if ( canvasFreeIndex >= canvasIds.length) {
-		throw new RuntimeException("Cannot render to more than 32 Canvas3Ds");
+	    if (i >= canvasIds.length) {
+                throw new RuntimeException("Cannot render to more than 32 Canvas3Ds");
 	    }
 
 	    canvasIds[i] = true;
