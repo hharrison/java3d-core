@@ -587,7 +587,11 @@ class Renderer extends J3dThread {
 		    canvas.offScreenBufferPending = false;
 		    m[nmesg++].decRefcount();
 		    continue;
-		} 
+		} else if (renderType == J3dMessage.ALLOCATE_CANVASID) {
+                    canvas.allocateCanvasId();
+                } else if (renderType == J3dMessage.FREE_CANVASID) {
+                    canvas.freeCanvasId();
+                }
 
                 if ((canvas.view == null) || !canvas.firstPaintCalled) {
                     // This happen when the canvas just remove from the View
@@ -769,7 +773,7 @@ class Renderer extends J3dThread {
 //                    // Instrumentation of Java 3D renderer
 //                    long startRenderTime = System.nanoTime();
 
-		    m[nmesg++].decRefcount();
+                    m[nmesg++].decRefcount();
                     
                     if (canvas.isFatalError()) {
                         continue;

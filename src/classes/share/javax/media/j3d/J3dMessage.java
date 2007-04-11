@@ -87,7 +87,9 @@ class J3dMessage extends Object {
     static final int DESTROY_CTX_AND_OFFSCREENBUFFER = 62;
     static final int SHADER_ATTRIBUTE_CHANGED       = 63;
     static final int SHADER_ATTRIBUTE_SET_CHANGED   = 64;
-    static final int SHADER_APPEARANCE_CHANGED 	    = 65;    
+    static final int SHADER_APPEARANCE_CHANGED 	    = 65;
+    static final int ALLOCATE_CANVASID              = 66;
+    static final int FREE_CANVASID                  = 67;
 
     /**
      * This is the time snapshot at which this change occured

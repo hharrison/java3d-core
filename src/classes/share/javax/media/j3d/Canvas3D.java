@@ -1094,18 +1094,22 @@ public class Canvas3D extends Canvas {
             // QUESTION: keep a list of off-screen Screen3D objects?
             // Does this list need to be grouped by GraphicsDevice?
 
-            // since this canvas will not receive the addNotify
-            // callback from AWT, set the added flag here
-            added = true;
 	    synchronized(dirtyMaskLock) {
 	        cvDirtyMask[0] |= MOVED_OR_RESIZED_DIRTY;
 	        cvDirtyMask[1] |= MOVED_OR_RESIZED_DIRTY;
 	    }
 
-	    // this canvas will not receive the paint callback either,
-	    // so set the necessary flags here as well
+	    // this canvas will not receive the paint callback,
+	    // so we need to set the necessary flags here
             firstPaintCalled = true;
-            ctx = null;
+
+            if (manualRendering) {
+                // since this canvas will not receive the addNotify
+                // callback from AWT, set the added flag here for
+                // evaluateActive to work correctly
+                added = true;
+            }
+
             evaluateActive();
 
             // create the rendererStructure object
@@ -1336,29 +1340,28 @@ public class Canvas3D extends Canvas {
 	    cvDirtyMask[0] |= MOVED_OR_RESIZED_DIRTY;
 	    cvDirtyMask[1] |= MOVED_OR_RESIZED_DIRTY;
 	}
-	
-        canvasId = VirtualUniverse.mc.getCanvasId();
-        canvasIdAlloc = true;
-        canvasBit = 1 << canvasId;
- 
+
+        allocateCanvasId();
+
 	validCanvas = true;
 	added = true;
 
         // Since we won't get a paint call for off-screen canvases, we need
-        // to set the first paint and visible flags here
+        // to set the first paint and visible flags here. We also need to
+        // call evaluateActive for the same reason.
         if (offScreen) {
             firstPaintCalled = true;
             visible = true;
+            evaluateActive();
         }
 
 	// In case the same canvas is removed and add back,
 	// we have to change isRunningStatus back to true;
 	if (isRunning && !fatalError) {
-	    isRunningStatus = true;
-	}
+            isRunningStatus = true;
+        }
 
-
-	ctxTimeStamp = 0;
+        ctxTimeStamp = 0;
 	if ((view != null) && (view.universe != null)) {
 	    view.universe.checkForEnableEvents();
 	}
@@ -1435,10 +1438,7 @@ public class Canvas3D extends Canvas {
 	screen.removeUser(this);
 	evaluateActive();
 
-        VirtualUniverse.mc.freeCanvasId(canvasId);
-        canvasIdAlloc = false;
-	canvasBit = 0;
-	canvasId = 0;
+        freeCanvasId();
 
 	ra = null;
 	graphicsContext3D = null;
@@ -1488,6 +1488,23 @@ public class Canvas3D extends Canvas {
         this.windowParent = null;
     }
 
+    void allocateCanvasId() {
+        if (!canvasIdAlloc) {
+            canvasId = VirtualUniverse.mc.getCanvasId();
+            canvasBit = 1 << canvasId;
+            canvasIdAlloc = true;
+        }
+    }
+ 
+    void freeCanvasId() {
+        if (canvasIdAlloc) {
+            VirtualUniverse.mc.freeCanvasId(canvasId);
+            canvasBit = 0;
+            canvasId = 0;
+            canvasIdAlloc = false;
+        }
+    }
+ 
     // This decides if the canvas is active
     void evaluateActive() {
 	// Note that no need to check for isRunning, we want
@@ -1809,6 +1826,7 @@ public class Canvas3D extends Canvas {
      */
     public void setOffScreenBuffer(ImageComponent2D buffer) {
 	int width, height;
+        boolean freeCanvasId = false;
 
         if (!offScreen)
             throw new IllegalStateException(J3dI18N.getString("Canvas3D1"));
@@ -1858,17 +1876,7 @@ public class Canvas3D extends Canvas {
 
             // Issues 347, 348 - assign a canvasId for off-screen Canvas3D
             if (manualRendering) {
-                if (!canvasIdAlloc) {
-                    canvasId = VirtualUniverse.mc.getCanvasId();
-                    canvasIdAlloc = true;
-
-                    // NOTE: We are backing out the following part of the
-                    // following fix for issue 347 due to a regression in
-                    // off-screen texture mapping, caused by a race condition.
-                    // This does not affect issue 348 since the shader code
-                    // uses the canvasId and not the canvasBit.
-//                    canvasBit = 1 << canvasId;
-                }
+                sendAllocateCanvasId();
             }
         }
 	else {
@@ -1876,12 +1884,7 @@ public class Canvas3D extends Canvas {
 
             // Issues 347, 348 - release canvasId for off-screen Canvas3D
             if (manualRendering) {
-                if (canvasIdAlloc) {
-                    VirtualUniverse.mc.freeCanvasId(canvasId);
-                    canvasIdAlloc = false;
-                    canvasBit = 0;
-                    canvasId = 0;
-                }
+                freeCanvasId = true;
             }
         }
 
@@ -1907,6 +1910,10 @@ public class Canvas3D extends Canvas {
 	else if (ctx != null) {
             removeCtx();
 	}
+
+        if (freeCanvasId) {
+            sendFreeCanvasId();
+        }
 
         offScreenBuffer = buffer;
 
@@ -2139,13 +2146,18 @@ public class Canvas3D extends Canvas {
      * @since Java 3D 1.2
      */
     public void waitForOffScreenRendering() {
-        // TODO KCR : throw exception if !offScreen
 
-        // TODO KCR Issue 131: throw exception if !manualRendering
+        if (!offScreen) {
+            throw new IllegalStateException(J3dI18N.getString("Canvas3D1"));
+        }
+
+        if (Thread.currentThread() instanceof Renderer) {
+            throw new IllegalStateException(J3dI18N.getString("Canvas3D31"));
+        }
 
         while (offScreenRendering) {
-	    MasterControl.threadYield();
-	}
+            MasterControl.threadYield();
+        }
     }
 
 
@@ -4328,6 +4340,20 @@ public class Canvas3D extends Canvas {
             VirtualUniverse.mc.createMasterControlThread();
             MasterControl.threadYield();
         }
+    }
+
+    // Send a allocateCanvasId message to Renderer (via MasterControl) without
+    // waiting for it to be done
+    private void sendAllocateCanvasId() {
+        // Send message to Renderer thread to allocate a canvasId
+        VirtualUniverse.mc.sendAllocateCanvasId(this);
+    }
+
+    // Send a freeCanvasId message to Renderer (via MasterControl) without
+    // waiting for it to be done
+    private void sendFreeCanvasId() {
+        // Send message to Renderer thread to free the canvasId
+        VirtualUniverse.mc.sendFreeCanvasId(this);
     }
 
     private void removeCtx() {

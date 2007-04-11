@@ -69,12 +69,13 @@ class MasterControl {
     static final Integer SET_GRAPHICSCONFIG_FEATURES = new Integer(19);
     static final Integer SET_QUERYPROPERTIES = new Integer(20);    
     static final Integer SET_VIEW = new Integer(21);
-   
-    private static Logger devLogger=null;
+
+    // Developer logger to report informational messages; see getDevLogger()
+    private static Logger devLogger = null;
     
-    // Should we log developer issues ?
+    // Flag indicating whether devLogger is enabled
     static boolean logDevIssues = false;
-        
+
     private static boolean librariesLoaded = false;
 
     /**
@@ -676,7 +677,7 @@ class MasterControl {
         };
         for (int i = 0; i < obsoleteProps.length; i++) {
             if (getProperty(obsoleteProps[i]) != null) {
-                System.err.println(obsoleteProps[i] + " : property ignored");
+                System.err.println("Java 3D: " + obsoleteProps[i] + " property ignored");
             }
         }
 
@@ -694,29 +695,31 @@ class MasterControl {
 	for(int i=0; i<canvasIds.length; i++) {
 	    canvasIds[i] = false;
 	}
-	canvasFreeIndex = 0;
-        
+        canvasFreeIndex = 0;
+
         if (devLogger==null) {
             devLogger = Logger.getLogger("j3d.developer");
             final Logger fLogger = devLogger;
             java.security.AccessController.doPrivileged(
-                    new java.security.PrivilegedAction() {
-                public Object run() {
-                    String levelStr = System.getProperty("j3d.developer.level");
-                    if (levelStr!=null) {
-                        try {
-                            fLogger.setLevel( Level.parse(levelStr) );
-                            System.err.println("Java 3D: Developer Logger level = "+fLogger.getLevel().getName());
-                        } catch (IllegalArgumentException ex) {
-                            System.err.println("Java 3D: Developer Logger level unrecognized : "+levelStr);                        
-                        } catch (Exception ex) {
-                            System.err.println(ex);
+                new java.security.PrivilegedAction() {
+                    public Object run() {
+                        String levelStr = System.getProperty("j3d.developer.level");
+                        if (levelStr != null) {
+                            try {
+                                fLogger.setLevel( Level.parse(levelStr) );
+                                System.err.println("Java 3D: Developer logger level = " +
+                                        fLogger.getLevel().getName());
+                            } catch (IllegalArgumentException ex) {
+                                System.err.println("Java 3D: Unrecognized developer logger level : " + levelStr);
+                            } catch (Exception ex) {
+                                System.err.println(ex);
+                                System.err.println("Java 3D: Error setting developer logger level : "+ levelStr);
+                            }
                         }
-                    } 
-                    return null;
-                }
-            });
-            logDevIssues = ((devLogger.getLevel()!=null) && devLogger.getLevel()!=Level.OFF);
+                        return null;
+                    }
+                });
+            logDevIssues = ((devLogger.getLevel()!=null) && (devLogger.getLevel()!=Level.OFF));
         }
     }
 
@@ -2909,6 +2912,50 @@ class MasterControl {
 		pendingRequest = true;
 	    }
 	}
+    }
+
+    // Issue 347 - Pass AllocateCanvasId to the Renderer thread for execution
+    void sendAllocateCanvasId(Canvas3D c) {
+        synchronized (mcThreadLock) {
+            // Issue 364: create master control thread if needed
+            createMasterControlThread();
+            assert mcThread != null;
+
+            Renderer rdr = createRenderer(c.graphicsConfiguration);
+            J3dMessage createMessage = new J3dMessage();
+            createMessage.threads = J3dThread.RENDER_THREAD;
+            createMessage.type = J3dMessage.ALLOCATE_CANVASID;
+            createMessage.universe = null;
+            createMessage.view = null;
+            createMessage.args[0] = c;
+            rdr.rendererStructure.addMessage(createMessage);
+            synchronized (requestObjList) {
+                setWorkForRequestRenderer();
+                pendingRequest = true;
+            }
+        }
+    }
+
+    // Issue 347 - Pass AllocateCanvasId to the Renderer thread for execution
+    void sendFreeCanvasId(Canvas3D c) {
+        synchronized (mcThreadLock) {
+            // Issue 364: create master control thread if needed
+            createMasterControlThread();
+            assert mcThread != null;
+
+            Renderer rdr = createRenderer(c.graphicsConfiguration);
+            J3dMessage createMessage = new J3dMessage();
+            createMessage.threads = J3dThread.RENDER_THREAD;
+            createMessage.type = J3dMessage.FREE_CANVASID;
+            createMessage.universe = null;
+            createMessage.view = null;
+            createMessage.args[0] = c;
+            rdr.rendererStructure.addMessage(createMessage);
+            synchronized (requestObjList) {
+                setWorkForRequestRenderer();
+                pendingRequest = true;
+            }
+        }
     }
 
 
