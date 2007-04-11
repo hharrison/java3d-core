@@ -74,6 +74,9 @@ public class ImageComponent2D extends ImageComponent {
 			    int		width,
 			    int		height) {
 
+        if (MasterControl.logDevIssues) {
+            MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");            
+        }
         ((ImageComponent2DRetained)this.retained).processParams(format, width, height, 1);
     }
 
@@ -91,6 +94,9 @@ public class ImageComponent2D extends ImageComponent {
      */
     public ImageComponent2D(int format, BufferedImage image) {
 
+        if (MasterControl.logDevIssues) {
+            MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");            
+        }
         ((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
 	((ImageComponent2DRetained)this.retained).set(image);
     }
@@ -112,6 +118,9 @@ public class ImageComponent2D extends ImageComponent {
     public ImageComponent2D(int format, RenderedImage image) {
 
 
+        if (MasterControl.logDevIssues) {
+            MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");            
+        }
 	((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
 	((ImageComponent2DRetained)this.retained).set(image);
     }
@@ -144,6 +153,14 @@ public class ImageComponent2D extends ImageComponent {
 			    boolean	byReference,
 			    boolean	yUp) {
 
+        if (MasterControl.logDevIssues) {
+            if (byReference && !yUp) {
+                MasterControl.getDevLogger().info("ImageComponent - yUp should " +
+                        "be set when using byReference, " +
+                        "otherwise an extra copy of the image will be created");
+            }
+        }
+        
  	((ImageComponentRetained)this.retained).setByReference(byReference);
  	((ImageComponentRetained)this.retained).setYUp(yUp);
  	((ImageComponent2DRetained)this.retained).processParams(format, width, height, 1);
@@ -173,6 +190,14 @@ public class ImageComponent2D extends ImageComponent {
 			    boolean byReference,
 			    boolean yUp) {
 
+        if (MasterControl.logDevIssues) {
+            if (byReference && !yUp) {
+                MasterControl.getDevLogger().info("ImageComponent - yUp should " +
+                        "be set when using byReference, " +
+                        "otherwise an extra copy of the image will be created");
+            }
+        }
+        
  	((ImageComponentRetained)this.retained).setByReference(byReference);
  	((ImageComponentRetained)this.retained).setYUp(yUp);
  	((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
@@ -206,6 +231,12 @@ public class ImageComponent2D extends ImageComponent {
                             boolean byReference,
                             boolean yUp) {
 
+        if (MasterControl.logDevIssues) {
+            if (byReference && !yUp)
+                MasterControl.getDevLogger().info("ImageComponent - yUp should " +
+                        "be set when using byReference, " +
+                        "otherwise an extra copy of the image will be created");
+        }
         ((ImageComponentRetained)this.retained).setByReference(byReference);
         ((ImageComponentRetained)this.retained).setYUp(yUp);
         ((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);

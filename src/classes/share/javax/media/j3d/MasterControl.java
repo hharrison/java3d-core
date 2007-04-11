@@ -20,6 +20,8 @@ package javax.media.j3d;
 
 import java.util.*;
 import java.awt.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class MasterControl {
 
@@ -67,7 +69,12 @@ class MasterControl {
     static final Integer SET_GRAPHICSCONFIG_FEATURES = new Integer(19);
     static final Integer SET_QUERYPROPERTIES = new Integer(20);    
     static final Integer SET_VIEW = new Integer(21);
-
+   
+    private static Logger devLogger=null;
+    
+    // Should we log developer issues ?
+    static boolean logDevIssues = false;
+        
     private static boolean librariesLoaded = false;
 
     /**
@@ -688,6 +695,29 @@ class MasterControl {
 	    canvasIds[i] = false;
 	}
 	canvasFreeIndex = 0;
+        
+        if (devLogger==null) {
+            devLogger = Logger.getLogger("j3d.developer");
+            final Logger fLogger = devLogger;
+            java.security.AccessController.doPrivileged(
+                    new java.security.PrivilegedAction() {
+                public Object run() {
+                    String levelStr = System.getProperty("j3d.developer.level");
+                    if (levelStr!=null) {
+                        try {
+                            fLogger.setLevel( Level.parse(levelStr) );
+                            System.err.println("Java 3D: Developer Logger level = "+fLogger.getLevel().getName());
+                        } catch (IllegalArgumentException ex) {
+                            System.err.println("Java 3D: Developer Logger level unrecognized : "+levelStr);                        
+                        } catch (Exception ex) {
+                            System.err.println(ex);
+                        }
+                    } 
+                    return null;
+                }
+            });
+            logDevIssues = ((devLogger.getLevel()!=null) && devLogger.getLevel()!=Level.OFF);
+        }
     }
 
     private static String getProperty(final String prop) {
@@ -3644,6 +3674,18 @@ class MasterControl {
         return Runtime.getRuntime().availableProcessors();
     }
 
+    /**
+     * Get the developer logger
+     *
+     * WARNING - for probable incorrect or inconsistent api usage
+     * INFO - for informational messages such as performance hints (less verbose than FINE)
+     * FINE - for informational messages from inner loops
+     * FINER - using default values which may not be optimal
+     */
+    static Logger getDevLogger() {
+        return devLogger;
+    }
+    
     //
     // The following framework supports code instrumentation. To enable this:
     //     1) Uncomment all of the following code

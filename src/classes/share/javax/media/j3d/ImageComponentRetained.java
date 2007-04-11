@@ -853,7 +853,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
      */
     void copySupportedImageToImageData(RenderedImage ri, int srcX, int srcY,
             int dstX, int dstY, int depthIndex, int copyWidth, int copyHeight, ImageData data) {
-        
+                
         assert (data != null);
         
         ColorModel cm = ri.getColorModel();
@@ -1196,6 +1196,10 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     void copyUnsupportedNioImageToImageData(NioImageBuffer nioImage, int srcX, int srcY,
             int dstX, int dstY, int copyWidth, int copyHeight, ImageData iData) {
 
+        if (MasterControl.logDevIssues) {
+            MasterControl.getDevLogger().info("ImageComponent - Copying Unsupported NioImage, use a different image type");
+        }
+        
         assert (iData.getType() == ImageDataType.TYPE_BYTE_BUFFER);
         assert (getImageFormatType() == ImageFormatType.TYPE_BYTE_RGBA);  
         
@@ -1220,6 +1224,10 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     void copyUnsupportedImageToImageData(RenderedImage ri, int depthIndex, ImageData data) {
         
         assert (data.getType() == ImageDataType.TYPE_BYTE_ARRAY);
+        
+        if (MasterControl.logDevIssues) {
+            MasterControl.getDevLogger().info("ImageComponent - Copying Unsupported Image, use a different image type");
+        }
         
         if (ri instanceof BufferedImage) {
             copyUnsupportedImageToImageData((BufferedImage)ri, 0, 0, 0, 0,
