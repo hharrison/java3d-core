@@ -18,6 +18,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A VirtualUniverse object is the top-level container for all scene
@@ -222,29 +224,48 @@ public class VirtualUniverse extends Object {
     }
 
     static {
-	// Print out version information unless this is a
-	// non-debuggable, release (fcs) build
-	if(J3dDebug.devPhase || VersionInfo.isDebug) {
-	    String versionStr = VersionInfo.getVersion();
+        boolean isLoggableConfig = MasterControl.isCoreLoggable(Level.CONFIG);
+        Logger logger = MasterControl.getCoreLogger();
+
+        // Print out version information unless this is a
+        // non-debuggable, release (fcs) build
+        if (isLoggableConfig || J3dDebug.devPhase || VersionInfo.isDebug) {
+            StringBuffer strBuf = new StringBuffer("Java 3D ");
 	    if (J3dDebug.devPhase) {
-		System.err.println("Java 3D [dev] " + versionStr);
+		strBuf.append("[dev] ");
 	    }
-	    else {
-		System.err.println("Java 3D " + versionStr);
-	    }
-	    System.err.println();
+            strBuf.append(VersionInfo.getVersion());
+            String str = strBuf.toString();
+            if (isLoggableConfig) {
+                logger.config(str);
+            } else {
+                System.err.println(str);
+                System.err.println();
+            }
 	}
 
 	// Print out debugging information for debug builds
-	if(VersionInfo.isDebug) {
-	    System.err.println("Initializing Java 3D runtime system:");
-	    System.err.println("    version = " + VersionInfo.getVersion());
-	    System.err.println("    vendor = " + VersionInfo.getVendor());
-	    System.err.println("    specification.version = " +
-			       VersionInfo.getSpecificationVersion());
-	    System.err.println("    specification.vendor = " +
-			       VersionInfo.getSpecificationVendor());
-	    System.err.println();
+	if (isLoggableConfig || VersionInfo.isDebug) {
+            StringBuffer strBuf = new StringBuffer();
+            strBuf.append("Initializing Java 3D runtime system:\n").
+                    append("    version = ").
+                    append(VersionInfo.getVersion()).
+                    append("\n").
+                    append("    vendor = ").
+                    append(VersionInfo.getVendor()).
+                    append("\n").
+                    append("    specification.version = ").
+                    append(VersionInfo.getSpecificationVersion()).
+                    append("\n").
+                    append("    specification.vendor = ").
+                    append(VersionInfo.getSpecificationVendor());
+            String str = strBuf.toString();
+            if (isLoggableConfig) {
+                logger.config(str);
+            } else {
+                System.err.println(str);
+                System.err.println();
+            }
 	}
 
 	// Java 3D cannot run in headless mode, so we will throw a
@@ -259,13 +280,20 @@ public class VirtualUniverse extends Object {
 	MasterControl.loadLibraries();
 	mc = new MasterControl();
 
-	// Print out debugging information for debug builds
-	if(VersionInfo.isDebug) {
-	    System.err.println("Java 3D system initialized");
-	    System.err.println("    rendering pipeline = " +
-                    Pipeline.getPipeline().getPipelineName());
-	    System.err.println();
-	}
+        // Print out debugging information for debug builds
+        if (isLoggableConfig || VersionInfo.isDebug) {
+            StringBuffer strBuf = new StringBuffer();
+            strBuf.append("Java 3D system initialized\n").
+                    append("    rendering pipeline = ").
+                    append(Pipeline.getPipeline().getPipelineName());
+            String str = strBuf.toString();
+            if (isLoggableConfig) {
+                logger.config(str);
+            } else {
+                System.err.println(str);
+                System.err.println();
+            }
+        }
     }
 
     /**

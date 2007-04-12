@@ -292,8 +292,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 						localToVworldKeys.length);
 	    
 	        if(hkIndex < 0) {		
-		    System.out.println("Can't Find matching hashKey in setNodeData.");
-		    System.out.println("We're in TROUBLE!!!");
+		    MasterControl.getCoreLogger().severe("Can't Find matching hashKey in setNodeData.");
 		    break;
 	        } else if(hkIndex >= i) { // Append to last.
 		    childLocalToVworld[i] = childTrans[j];
@@ -688,8 +687,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 		    }
 		    else {
 			found = false;
-			System.out.println("TG.removeNodeData-Can't find matching hashKey.");
-			System.out.println("We're in TROUBLE!!!");
+			MasterControl.getCoreLogger().severe("TG.removeNodeData-Can't find matching hashKey.");
 		    }
 		}
 	

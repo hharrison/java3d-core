@@ -14,6 +14,7 @@ package javax.media.j3d;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.util.logging.Level;
 
 /**
  * This class defines a 2D image component.  This is used for texture
@@ -74,7 +75,7 @@ public class ImageComponent2D extends ImageComponent {
 			    int		width,
 			    int		height) {
 
-        if (MasterControl.logDevIssues) {
+        if (MasterControl.isDevLoggable(Level.FINER)) {
             MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");            
         }
         ((ImageComponent2DRetained)this.retained).processParams(format, width, height, 1);
@@ -94,7 +95,7 @@ public class ImageComponent2D extends ImageComponent {
      */
     public ImageComponent2D(int format, BufferedImage image) {
 
-        if (MasterControl.logDevIssues) {
+        if (MasterControl.isDevLoggable(Level.FINER)) {
             MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");            
         }
         ((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
@@ -118,7 +119,7 @@ public class ImageComponent2D extends ImageComponent {
     public ImageComponent2D(int format, RenderedImage image) {
 
 
-        if (MasterControl.logDevIssues) {
+        if (MasterControl.isDevLoggable(Level.FINER)) {
             MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");            
         }
 	((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
@@ -153,7 +154,7 @@ public class ImageComponent2D extends ImageComponent {
 			    boolean	byReference,
 			    boolean	yUp) {
 
-        if (MasterControl.logDevIssues) {
+        if (MasterControl.isDevLoggable(Level.INFO)) {
             if (byReference && !yUp) {
                 MasterControl.getDevLogger().info("ImageComponent - yUp should " +
                         "be set when using byReference, " +
@@ -190,7 +191,7 @@ public class ImageComponent2D extends ImageComponent {
 			    boolean byReference,
 			    boolean yUp) {
 
-        if (MasterControl.logDevIssues) {
+        if (MasterControl.isDevLoggable(Level.INFO)) {
             if (byReference && !yUp) {
                 MasterControl.getDevLogger().info("ImageComponent - yUp should " +
                         "be set when using byReference, " +
@@ -231,7 +232,7 @@ public class ImageComponent2D extends ImageComponent {
                             boolean byReference,
                             boolean yUp) {
 
-        if (MasterControl.logDevIssues) {
+        if (MasterControl.isDevLoggable(Level.INFO)) {
             if (byReference && !yUp)
                 MasterControl.getDevLogger().info("ImageComponent - yUp should " +
                         "be set when using byReference, " +

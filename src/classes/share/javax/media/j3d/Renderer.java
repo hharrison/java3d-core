@@ -18,6 +18,7 @@
 
 package javax.media.j3d;
 
+import java.util.logging.Level;
 import javax.vecmath.*;
 import java.awt.*;
 import java.awt.image.*;
@@ -65,11 +66,6 @@ class Renderer extends J3dThread {
 
     // vworldtoVpc matrix for background geometry
     Transform3D bgVworldToVpc = new Transform3D();
-
-    long lasttime;
-    long currtime;
-    float numframes = 0.0f;
-    static final boolean doTiming = false;
 
     private static int numInstances = 0;
     private int instanceNum = -1;
@@ -160,8 +156,8 @@ class Renderer extends J3dThread {
     // It is used when sharedCtx = true;
     ArrayList textureIDResourceTable = new ArrayList(5);
 
-//    // Instrumentation of Java 3D renderer
-//    private long lastSwapTime = System.nanoTime();
+    // Instrumentation of Java 3D renderer
+    private long lastSwapTime = System.nanoTime();
 
     private synchronized int newInstanceNum() {
 	return (++numInstances);
@@ -287,11 +283,13 @@ class Renderer extends J3dThread {
                             cv.view.inCanvasCallback = false;
                             // Clear canvasDirty bit ONLY when postSwap() success
 
-//                            // Instrumentation of Java 3D renderer
-//                            long currSwapTime = System.nanoTime();
-//                            long deltaTime = currSwapTime - lastSwapTime;
-//                            lastSwapTime = currSwapTime;
-//                            VirtualUniverse.mc.recordTime(MasterControl.TimeType.TOTAL_FRAME, deltaTime);
+                            if (MasterControl.isStatsLoggable(Level.INFO)) {
+                                // Instrumentation of Java 3D renderer
+                                long currSwapTime = System.nanoTime();
+                                long deltaTime = currSwapTime - lastSwapTime;
+                                lastSwapTime = currSwapTime;
+                                VirtualUniverse.mc.recordTime(MasterControl.TimeType.TOTAL_FRAME, deltaTime);
+                            }
 
                             // Set all dirty bits except environment set and lightbin
                             // they are only set dirty if the last used light bin or
@@ -619,7 +617,7 @@ class Renderer extends J3dThread {
 		    m[nmesg++].decRefcount();
 		} else if (renderType == J3dMessage.RENDER_IMMEDIATE) {
                     int command = ((Integer)m[nmesg].args[1]).intValue();
-		    //System.out.println("command= " + command);
+		    //System.err.println("command= " + command);
 		    if (needToResendTextureDown) {
 			VirtualUniverse.mc.resendTexTimestamp++;
 			needToResendTextureDown = false;
@@ -770,8 +768,11 @@ class Renderer extends J3dThread {
 
 		    m[nmesg++].decRefcount();
 		} else { // retained mode rendering
-//                    // Instrumentation of Java 3D renderer
-//                    long startRenderTime = System.nanoTime();
+                    long startRenderTime = 0L;
+                    if (MasterControl.isStatsLoggable(Level.INFO)) {
+                        // Instrumentation of Java 3D renderer
+                        startRenderTime = System.nanoTime();
+                    }
 
                     m[nmesg++].decRefcount();
                     
@@ -1130,7 +1131,7 @@ class Renderer extends J3dThread {
 			    } else {
 
 				if (!canvas.antialiasingSet) {
-				    // System.out.println("Renderer : Enable FullSceneAntialiasing");
+				    // System.err.println("Renderer : Enable FullSceneAntialiasing");
 
 				    canvas.setFullSceneAntialiasing(canvas.ctx, true);
 				    canvas.antialiasingSet = true;
@@ -1139,7 +1140,7 @@ class Renderer extends J3dThread {
 		        } else {
 
 			    if (canvas.antialiasingSet) {
-				// System.out.println("Renderer : Disable SceneAntialiasing");
+				// System.err.println("Renderer : Disable SceneAntialiasing");
 				canvas.setFullSceneAntialiasing(canvas.ctx, false);
 				canvas.antialiasingSet = false;
 			    }
@@ -1442,53 +1443,18 @@ class Renderer extends J3dThread {
 
 			canvas.endScene();
 
-                        if (doTiming) {
-                            numframes += 1.0f;
-                            if (numframes >= 20.0f) {
-                                currtime = J3dClock.currentTimeMillis();
-                                System.err.println(
-				    numframes/((currtime-lasttime)/1000.0f) +
-						" frames per second");
-                                numframes = 0.0f;
-                                lasttime = currtime;
+                        if (MasterControl.isStatsLoggable(Level.INFO)) {
+                            // Instrumentation of Java 3D renderer
+                            long deltaTime = System.nanoTime() - startRenderTime;
+                            VirtualUniverse.mc.recordTime(MasterControl.TimeType.RENDER, deltaTime);
+                        }
 
-				// For taking memory footprint of the entire scene.
-				/*
-				long totalMem, freeMem, usedMem;
-				for(int ii=0; ii<5;ii++) {
-				    totalMem = Runtime.getRuntime().totalMemory();
-				    freeMem = Runtime.getRuntime().freeMemory();
-				    usedMem = totalMem - freeMem;
-				    System.out.print("mem used - before: " + usedMem + "bytes ");
-				    //System.out.print("mem used - before: " + usedMem + " ");
-				    System.runFinalization();
-				    System.gc();
-				    System.runFinalization();
-				    totalMem = Runtime.getRuntime().totalMemory();
-				    freeMem = Runtime.getRuntime().freeMemory();
-				    usedMem = totalMem - freeMem;
-				    System.out.println("after: " + usedMem + "bytes ");
-				    //System.out.println("after: " + usedMem + " ");
-				    try {
-					Thread.sleep(100);
-				    }
-				    catch (InterruptedException e) { }
-			      
-				    }
-				*/
-				
-			    }
-			}
 		    } else { // if (renderBin != null)
 			if ((offBufRetained != null) &&
 			    offBufRetained.isByReference()) {
 			    offBufRetained.geomLock.unLock();
 			}	
 		    }
-
-//                    // Instrumentation of Java 3D renderer
-//                    long deltaTime = System.nanoTime() - startRenderTime;
-//                    VirtualUniverse.mc.recordTime(MasterControl.TimeType.RENDER, deltaTime);
 		}
 	    }
 
@@ -1547,7 +1513,6 @@ class Renderer extends J3dThread {
         renderMessage = new J3dMessage[1];
 	rendererStructure = new RendererStructure();	
 	bgVworldToVpc = new Transform3D();
-	numframes = 0.0f;
 	sharedCtx = null;	 
 	sharedCtxTimeStamp = 0;
 	sharedCtxDisplay = 0;
@@ -1561,8 +1526,6 @@ class Renderer extends J3dThread {
 	offScreen = null;
 	m = null;
 	nmesg = 0;
-	lasttime = 0;
-	currtime = 0;
     }
 
 
@@ -1729,9 +1692,10 @@ class Renderer extends J3dThread {
 			continue;
 		    }
 		    if (val >= textureIDResourceTable.size()) {
-			System.out.println("Error in freeResourcesInFreeList : ResourceIDTableSize = " + 
-					   textureIDResourceTable.size() + 
-					   " val = " + val);
+			MasterControl.getCoreLogger().severe(
+                                "Error in freeResourcesInFreeList : ResourceIDTableSize = " +
+                                textureIDResourceTable.size() +
+                                " val = " + val);
 		    } else {
                         Object obj = textureIDResourceTable.get(val);
                         if (obj instanceof TextureRetained) {

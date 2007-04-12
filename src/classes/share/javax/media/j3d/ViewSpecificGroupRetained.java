@@ -672,8 +672,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
                     setAuxData(s, j, hkIndex);
 
                 } else {
-                    System.out.println("Can't Find matching hashKey in setNodeData.");
-                    System.out.println("We're in TROUBLE!!!");
+                    MasterControl.getCoreLogger().severe("Can't Find matching hashKey in setNodeData.");
                 }
             }
         }

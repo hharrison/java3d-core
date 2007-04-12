@@ -116,8 +116,7 @@ class BranchGroupRetained extends GroupRetained {
 
                 } else {
 		    // XXXX: change this to an assertion exception
-                    System.out.println("Can't Find matching hashKey in setNodeData.");
-                    System.out.println("We're in TROUBLE!!!");
+                    MasterControl.getCoreLogger().severe("Can't Find matching hashKey in setNodeData.");
                 }
             }
         }

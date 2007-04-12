@@ -70,12 +70,20 @@ class MasterControl {
     static final Integer SET_QUERYPROPERTIES = new Integer(20);    
     static final Integer SET_VIEW = new Integer(21);
 
-    // Developer logger to report informational messages; see getDevLogger()
-    private static Logger devLogger = null;
-    
-    // Flag indicating whether devLogger is enabled
-    static boolean logDevIssues = false;
+    // Developer logger for reporting informational messages; see getDevLogger()
+    private static boolean devLoggerEnabled = false;
+    private static Logger devLogger;
 
+    // Stats logger for reporting runtime statistics; see getStatsLogger()
+    private static boolean statsLoggerEnabled = false;
+    private static Logger statsLogger;
+
+    // Core logger for reporting internal errors, warning, and
+    // informational messages; see getCoreLogger()
+    private static boolean coreLoggerEnabled = false;
+    private static Logger coreLogger;
+
+    // Flag indicating that the rendering pipeline libraries are loaded
     private static boolean librariesLoaded = false;
 
     /**
@@ -696,31 +704,80 @@ class MasterControl {
 	    canvasIds[i] = false;
 	}
         canvasFreeIndex = 0;
+    }
 
-        if (devLogger==null) {
-            devLogger = Logger.getLogger("j3d.developer");
-            final Logger fLogger = devLogger;
-            java.security.AccessController.doPrivileged(
-                new java.security.PrivilegedAction() {
-                    public Object run() {
-                        String levelStr = System.getProperty("j3d.developer.level");
-                        if (levelStr != null) {
-                            try {
-                                fLogger.setLevel( Level.parse(levelStr) );
-                                System.err.println("Java 3D: Developer logger level = " +
-                                        fLogger.getLevel().getName());
-                            } catch (IllegalArgumentException ex) {
-                                System.err.println("Java 3D: Unrecognized developer logger level : " + levelStr);
-                            } catch (Exception ex) {
-                                System.err.println(ex);
-                                System.err.println("Java 3D: Error setting developer logger level : "+ levelStr);
-                            }
-                        }
-                        return null;
-                    }
-                });
-            logDevIssues = ((devLogger.getLevel()!=null) && (devLogger.getLevel()!=Level.OFF));
+    private static Logger createLogger(String loggerName, Level defaultLevel) {
+        Logger logger = Logger.getLogger(loggerName);
+
+        if (defaultLevel != null && logger.getLevel() == null &&
+                logger.getLogger("j3d").getLevel() == null) {
+
+            // Set default logger level rather than inheriting from system global
+            logger.setLevel(defaultLevel);
         }
+
+        return logger;
+    }
+
+    // Called by the static initializer to initialize the loggers
+    private static void initLoggers() {
+        devLogger = createLogger("j3d.developer", Level.OFF);
+        devLoggerEnabled = devLogger.isLoggable(Level.SEVERE);
+        statsLogger = createLogger("j3d.stats", Level.OFF);
+        statsLoggerEnabled = statsLogger.isLoggable(Level.SEVERE);
+        coreLogger = createLogger("j3d.core", null);
+        coreLoggerEnabled = coreLogger.isLoggable(Level.SEVERE);
+    }
+
+    /**
+     * Get the developer logger -- OFF by default
+     *
+     * WARNING - for probable incorrect or inconsistent api usage
+     * INFO - for informational messages such as performance hints (less verbose than FINE)
+     * FINE - for informational messages from inner loops
+     * FINER - using default values which may not be optimal
+     */
+    static Logger getDevLogger() {
+        return devLogger;
+    }
+
+    static boolean isDevLoggable(Level level) {
+        return devLoggerEnabled && devLogger.isLoggable(level);
+    }
+
+    /**
+     * Get the stats logger -- OFF by default
+     *
+     * WARNING - statistical anomalies
+     * INFO - basic performance stats - not too verbose and minimally intrusive
+     * FINE - somewhat verbose and intrusive
+     * FINER - more verbose and intrusive
+     * FINEST - most verbose and intrusive
+     */
+    static Logger getStatsLogger() {
+        return statsLogger;
+    }
+
+    static boolean isStatsLoggable(Level level) {
+        return statsLoggerEnabled && statsLogger.isLoggable(level);
+    }
+
+    /**
+     * Get the core logger -- level is INFO by default
+     *
+     * SEVERE - Serious internal errors
+     * WARNING - Possible internal errors or anomalies
+     * INFO - General informational messages
+     * FINE - Internal debugging information - somewhat verbose
+     * FINER - Internal debugging information - more verbose
+     * FINEST - Internal debugging information - most verbose
+     */
+    static Logger getCoreLogger() {
+        return coreLogger;
+    }
+
+    static boolean isCoreLoggable(Level level) {
+        return coreLoggerEnabled && coreLogger.isLoggable(level);
     }
 
     private static String getProperty(final String prop) {
@@ -774,13 +831,25 @@ class MasterControl {
         boolean isWindowsVista = isWindowsOs && osName.indexOf("vista") != -1;
         boolean is64Bit = (sunArchDataModel != null) && sunArchDataModel.equals("64");
 
-//        System.err.println("MasterControl.loadLibraries()");
-//        System.err.println("    osName [lower-case] = \"" + osName + "\"" +
-//                ", sunArchDataModel = " + sunArchDataModel);
-//        System.err.println("    is64Bit = " + is64Bit +
-//                ", isWindowsOs = " + isWindowsOs +
-//                ", isMacOs = " + isMacOs +
-//                ", isWindowsVista = " + isWindowsVista);
+        if (isCoreLoggable(Level.CONFIG)) {
+            StringBuffer strBuf = new StringBuffer();
+            strBuf.append("MasterControl.loadLibraries()\n").
+                    append("    osName [lower-case] = \"").
+                    append(osName).
+                    append("\"").
+                    append(", sunArchDataModel = ").
+                    append(sunArchDataModel).
+                    append("\n").
+                    append("    is64Bit = ").
+                    append(is64Bit).
+                    append(", isWindowsOs = ").
+                    append(isWindowsOs).
+                    append(", isMacOs = ").
+                    append(isMacOs).
+                    append(", isWindowsVista = ").
+                    append(isWindowsVista);
+            getCoreLogger().config(strBuf.toString());
+        }
 
         // Initialize the Pipeline object associated with the
         // renderer specified by the "j3d.rend" system property.
@@ -1247,9 +1316,10 @@ class MasterControl {
 	    VirtualUniverse u = message.universe;
 	    int targetThreads = message.threads;
 
+            if (isCoreLoggable(Level.FINEST)) {
+                dumpMessage("sendMessage", message);
+            }
 
-	    //	    System.out.println("============> sendMessage");
-	    //		dumpmsg(message);
 	    if ((targetThreads & J3dThread.UPDATE_RENDERING_ATTRIBUTES) != 0) {
 		renderingAttributesStructure.addMessage(message);
 	    }
@@ -3467,8 +3537,10 @@ class MasterControl {
 		    updateMirrorObjects();
 		    done = true;
 
-//                    // Instrumentation of Java 3D renderer
-//                    printTimes();
+                    if (isStatsLoggable(Level.INFO)) {
+                        // Instrumentation of Java 3D renderer
+                        logTimes();
+                    }
 		}
 	    }
 	    break;
@@ -3556,126 +3628,153 @@ class MasterControl {
 
     // Static initializer
     static {
-	// create ThreadGroup
-	java.security.AccessController.doPrivileged(
-  	    new java.security.PrivilegedAction() {
+        // create ThreadGroup
+        java.security.AccessController.doPrivileged(
+            new java.security.PrivilegedAction() {
                 public Object run() {
-		    ThreadGroup parent;
-		    Thread thread = Thread.currentThread();
-		    threadPriority = thread.getPriority();
-		    rootThreadGroup = thread.getThreadGroup();
-		    while ((parent = rootThreadGroup.getParent()) != null) {
-			rootThreadGroup = parent;
-		    }
-		    rootThreadGroup = new ThreadGroup(rootThreadGroup,
-						      "Java3D");
-		    // use the default maximum group priority
-		    return null;
-		}
-	});
+                    ThreadGroup parent;
+                    Thread thread = Thread.currentThread();
+                    threadPriority = thread.getPriority();
+                    rootThreadGroup = thread.getThreadGroup();
+                    while ((parent = rootThreadGroup.getParent()) != null) {
+                        rootThreadGroup = parent;
+                    }
+                    rootThreadGroup = new ThreadGroup(rootThreadGroup,
+                            "Java3D");
+                    // use the default maximum group priority
+                    return null;
+                }
+        });
+
+        // Initialize loggers
+        initLoggers();
     }
 
 
     static String mtype[] = {
-	"-INSERT_NODES                   ",
-	"-REMOVE_NODES                   ",
-	"-RUN                            ",
-	"-TRANSFORM_CHANGED              ",
-	"-UPDATE_VIEW                    ",
-	"-STOP_THREAD                    ",
-	"-COLORINGATTRIBUTES_CHANGED     ",
-	"-LINEATTRIBUTES_CHANGED         ",
-	"-POINTATTRIBUTES_CHANGED        ",
-	"-POLYGONATTRIBUTES_CHANGED      ",
+        "INSERT_NODES",
+        "REMOVE_NODES",
+        "RUN",
+        "TRANSFORM_CHANGED",
+        "UPDATE_VIEW",
+        "STOP_THREAD",
+        "COLORINGATTRIBUTES_CHANGED",
+        "LINEATTRIBUTES_CHANGED",
+        "POINTATTRIBUTES_CHANGED",
+        "POLYGONATTRIBUTES_CHANGED",
+        "RENDERINGATTRIBUTES_CHANGED",
+        "TEXTUREATTRIBUTES_CHANGED",
+        "TRANSPARENCYATTRIBUTES_CHANGED",
+        "MATERIAL_CHANGED",
+        "TEXCOORDGENERATION_CHANGED",
+        "TEXTURE_CHANGED",
+        "MORPH_CHANGED",
+        "GEOMETRY_CHANGED",
+        "APPEARANCE_CHANGED",
+        "LIGHT_CHANGED",
+        "BACKGROUND_CHANGED",
+        "CLIP_CHANGED",
+        "FOG_CHANGED",
+        "BOUNDINGLEAF_CHANGED",
+        "SHAPE3D_CHANGED",
+        "TEXT3D_TRANSFORM_CHANGED",
+        "TEXT3D_DATA_CHANGED",
+        "SWITCH_CHANGED",
+        "COND_MET",
+        "BEHAVIOR_ENABLE",
+        "BEHAVIOR_DISABLE",
+        "INSERT_RENDERATOMS",
+        "ORDERED_GROUP_INSERTED",
+        "ORDERED_GROUP_REMOVED",
+        "COLLISION_BOUND_CHANGED",
+        "REGION_BOUND_CHANGED",
+        "MODELCLIP_CHANGED",
+        "BOUNDS_AUTO_COMPUTE_CHANGED",
+        "SOUND_ATTRIB_CHANGED",
+        "AURALATTRIBUTES_CHANGED",
+        "SOUNDSCAPE_CHANGED",
+        "ALTERNATEAPPEARANCE_CHANGED",
+        "RENDER_OFFSCREEN",
+        "RENDER_RETAINED",
+        "RENDER_IMMEDIATE",
+        "SOUND_STATE_CHANGED",
+        "ORIENTEDSHAPE3D_CHANGED",
+        "TEXTURE_UNIT_STATE_CHANGED",
+        "UPDATE_VIEWPLATFORM",
+        "BEHAVIOR_ACTIVATE",
+        "GEOMETRYARRAY_CHANGED",
+        "MEDIA_CONTAINER_CHANGED",
+        "RESIZE_CANVAS",
+        "TOGGLE_CANVAS",
+        "IMAGE_COMPONENT_CHANGED",
+        "SCHEDULING_INTERVAL_CHANGED",
+        "VIEWSPECIFICGROUP_CHANGED",
+        "VIEWSPECIFICGROUP_INIT",
+        "VIEWSPECIFICGROUP_CLEAR",
+        "ORDERED_GROUP_TABLE_CHANGED",
+        "BEHAVIOR_REEVALUATE",
+        "CREATE_OFFSCREENBUFFER",
+        "DESTROY_CTX_AND_OFFSCREENBUFFER",
+        "SHADER_ATTRIBUTE_CHANGED",
+        "SHADER_ATTRIBUTE_SET_CHANGED",
+        "SHADER_APPEARANCE_CHANGED",
+        "ALLOCATE_CANVASID",
+        "FREE_CANVASID",
+    };
 
-	"-RENDERINGATTRIBUTES_CHANGED    ",
-	"-TEXTUREATTRIBUTES_CHANGED      ",
-	"-TRANSPARENCYATTRIBUTES_CHANGED ",
-	"-MATERIAL_CHANGED               ",
-	"-TEXCOORDGENERATION_CHANGED     ",
-	"-TEXTURE_CHANGED                ",
-	"-MORPH_CHANGED                  ",
-	"-GEOMETRY_CHANGED               ",
-	"-APPEARANCE_CHANGED             ",
-	"-LIGHT_CHANGED                  ",
-
-	"-BACKGROUND_CHANGED             ",
-	"-CLIP_CHANGED                   ",
-	"-FOG_CHANGED                    ",
-	"-BOUNDINGLEAF_CHANGED           ",
-	"-SHAPE3D_CHANGED                ",
-	"-TEXT3D_TRANSFORM_CHANGED       ",
-	"-TEXT3D_DATA_CHANGED            ",
-	"-SWITCH_CHANGED                 ",
-	"-COND_MET                       ",
-	"-BEHAVIOR_ENABLE                ",
-
-	"-BEHAVIOR_DISABLE               ",
-	"-INSERT_RENDERATOMS             ",
-	"-ORDERED_GROUP_INSERTED         ",
-	"-ORDERED_GROUP_REMOVED          ",
-	"-COLLISION_BOUND_CHANGED        ",
-	"-REGION_BOUND_CHANGED           ",
-	"-MODELCLIP_CHANGED              ",
-	"-BOUNDS_AUTO_COMPUTE_CHANGED    ",
-
-	"-SOUND_ATTRIB_CHANGED           ",
-	"-AURALATTRIBUTES_CHANGED        ",
-	"-SOUNDSCAPE_CHANGED             ",
-	"-ALTERNATEAPPEARANCE_CHANGED    ",
-	"-RENDER_OFFSCREEN               ",
-	"-RENDER_RETAINED                ",
-	"-RENDER_IMMEDIATE               ",
-	"-SOUND_STATE_CHANGED            ",
-	"-ORIENTEDSHAPE3D_CHANGED        ",
-	"-TEXTURE_UNIT_STATE_CHANGED     ",
-	"-UPDATE_VIEWPLATFORM            ",
-	"-BEHAVIOR_ACTIVATE              ",
-	"-GEOMETRYARRAY_CHANGED          ",
-	"-MEDIA_CONTAINER_CHANGED        ",
-    	"-RESIZE_CANVAS                  ",
-    	"-TOGGLE_CANVAS                  ",
-    	"-IMAGE_COMPONENT_CHANGED        ",
-    	"-SCHEDULING_INTERVAL_CHANGED    ",
-    	"-VIEWSPECIFICGROUP_CHANGED      ",
-    	"-VIEWSPECIFICGROUP_INIT         ",
-    	"-VIEWSPECIFICGROUP_CLEAR        ",
-	"-ORDERED_GROUP_TABLE_CHANGED"};
-
-
-    static void dumpThreads(int threads) {
+    private String dumpThreads(int threads) {
+        StringBuffer strBuf = new StringBuffer();
+        strBuf.append("threads:");
 	//dump Threads type
-        if ((threads & J3dThread.BEHAVIOR_SCHEDULER) != 0)
-            System.out.println("  BEHAVIOR_SCHEDULER");
-        if ((threads & J3dThread.SOUND_SCHEDULER) != 0)
-            System.out.println("  SOUND_SCHEDULER");
-        if ((threads & J3dThread.INPUT_DEVICE_SCHEDULER) != 0)
-            System.out.println("  INPUT_DEVICE_SCHEDULER");
-
-        if ((threads & J3dThread.RENDER_THREAD) != 0)
-            System.out.println("  RENDER_THREAD");
-
-        if ((threads & J3dThread.UPDATE_GEOMETRY) != 0)
-            System.out.println("  UPDATE_GEOMETRY");
-        if ((threads & J3dThread.UPDATE_RENDER) != 0)
-            System.out.println("  UPDATE_RENDER");
-        if ((threads & J3dThread.UPDATE_BEHAVIOR) != 0)
-            System.out.println("  UPDATE_BEHAVIOR");
-        if ((threads & J3dThread.UPDATE_SOUND) != 0)
-            System.out.println("  UPDATE_SOUND");
-        if ((threads & J3dThread.UPDATE_RENDERING_ATTRIBUTES) != 0)
-            System.out.println("  UPDATE_RENDERING_ATTRIBUTES");
-        if ((threads & J3dThread.UPDATE_RENDERING_ENVIRONMENT) != 0)
-            System.out.println("  UPDATE_RENDERING_ENVIRONMENT");
-        if ((threads & J3dThread.UPDATE_TRANSFORM) != 0)
-            System.out.println("  UPDATE_TRANSFORM");
+        if ((threads & J3dThread.BEHAVIOR_SCHEDULER) != 0) {
+            strBuf.append(" BEHAVIOR_SCHEDULER");
+        }
+        if ((threads & J3dThread.SOUND_SCHEDULER) != 0) {
+            strBuf.append(" SOUND_SCHEDULER");
+        }
+        if ((threads & J3dThread.INPUT_DEVICE_SCHEDULER) != 0) {
+            strBuf.append(" INPUT_DEVICE_SCHEDULER");
+        }
+        if ((threads & J3dThread.RENDER_THREAD) != 0) {
+            strBuf.append(" RENDER_THREAD");
+        }
+        if ((threads & J3dThread.UPDATE_GEOMETRY) != 0) {
+            strBuf.append(" UPDATE_GEOMETRY");
+        }
+        if ((threads & J3dThread.UPDATE_RENDER) != 0) {
+            strBuf.append(" UPDATE_RENDER");
+        }
+        if ((threads & J3dThread.UPDATE_BEHAVIOR) != 0) {
+            strBuf.append(" UPDATE_BEHAVIOR");
+        }
+        if ((threads & J3dThread.UPDATE_SOUND) != 0) {
+            strBuf.append(" UPDATE_SOUND");
+        }
+        if ((threads & J3dThread.UPDATE_RENDERING_ATTRIBUTES) != 0) {
+            strBuf.append(" UPDATE_RENDERING_ATTRIBUTES");
+        }
+        if ((threads & J3dThread.UPDATE_RENDERING_ENVIRONMENT) != 0) {
+            strBuf.append(" UPDATE_RENDERING_ENVIRONMENT");
+        }
+        if ((threads & J3dThread.UPDATE_TRANSFORM) != 0) {
+            strBuf.append(" UPDATE_TRANSFORM");
+        }
+        
+        return strBuf.toString();
     }
 
-    static void dumpmsg(J3dMessage m) {
-	//dump message type
-        System.out.println(mtype[m.type]);
-
-	dumpThreads(m.threads);
+    // Method to log the specified message. Note that the caller
+    // should check for isCoreLoggable(FINEST) before calling
+    private void dumpMessage(String str, J3dMessage m) {
+        StringBuffer strBuf = new StringBuffer();
+        strBuf.append(str).append(" ");
+        if (m.type >= 0 && m.type < mtype.length) {
+            strBuf.append(mtype[m.type]);
+        } else {
+            strBuf.append("<UNKNOWN>");
+        }
+        strBuf.append("  ").append(dumpThreads(m.threads));
+        getCoreLogger().finest(strBuf.toString());
     }
 
 
@@ -3721,25 +3820,9 @@ class MasterControl {
         return Runtime.getRuntime().availableProcessors();
     }
 
-    /**
-     * Get the developer logger
-     *
-     * WARNING - for probable incorrect or inconsistent api usage
-     * INFO - for informational messages such as performance hints (less verbose than FINE)
-     * FINE - for informational messages from inner loops
-     * FINER - using default values which may not be optimal
-     */
-    static Logger getDevLogger() {
-        return devLogger;
-    }
-    
     //
-    // The following framework supports code instrumentation. To enable this:
-    //     1) Uncomment all of the following code
-    //     2) Uncomment the call to printTimes (in doWork)
-    //     3) Uncomment the calls to nanoTime and recordTimes in the Renderer
-    //
-    // Then add code of the following form to areas that you want to enable for
+    // The following framework supports code instrumentation. To use it,
+    // add code of the following form to areas that you want to enable for
     // timing:
     //
     //     long startTime = System.nanoTime();
@@ -3748,43 +3831,64 @@ class MasterControl {
     //     VirtualUniverse.mc.recordTime(MasterControl.TimeType.XXXXX, deltaTime);
     //
     // where "XXXXX" is the enum representing the code segment being timed.
+    // Additional enums can be defined for new subsystems.
     //
 
-//    static enum TimeType {
-//        TOTAL_FRAME,
-//        RENDER,
-//        // BEHAVIOR,
-//        // TRANSFORM_UPDATE,
-//        // ...
-//    }
-//    
-//    private long[] times = new long[TimeType.values().length];
-//    private int[] counts = new int[TimeType.values().length];
-//    private int frameTick = 0;
-//
-//    synchronized void recordTime(TimeType type, long deltaTime) {
-//        int idx = type.ordinal();
-//        times[idx] += deltaTime;
-//        counts[idx]++;
-//    }
-//    
-//    private synchronized void printTimes() {
-//        if (++frameTick >= 10) {
-//            System.err.println("\n-------------------------------------------------------------------");
-//            for (int i = 0; i < times.length; i++) {
-//                if (counts[i] > 0) {
-//                    System.err.println(TimeType.values()[i] + " [" + counts[i] + "] = " +
-//                            ((double)times[i] / 1000000.0 / (double)counts[i]) + " msec per call" );
-//                    times[i] = 0L;
-//                    counts[i] = 0;
-//                } else {
-//                    assert times[i] == 0L;
-//                    System.err.println(TimeType.values()[i] +
-//                            " [" + 0 + "] = 0.0 msec" );
-//                }
-//            }
-//            frameTick = 0;
-//        }
-//    }
+    static enum TimeType {
+        TOTAL_FRAME,
+        RENDER,
+        BEHAVIOR,
+        // TRANSFORM_UPDATE,
+        // ...
+    }
+
+    private long[] statTimes = new long[TimeType.values().length];
+    private int[] statCounts = new int[TimeType.values().length];
+    private boolean[] statSeen = new boolean[TimeType.values().length];
+    private int frameCycleTick = 0;
+    private long frameCycleNumber = 0L;
+
+    // Method to record times -- should not be called unless the stats logger
+    // level is set to INFO or lower
+    synchronized void recordTime(TimeType type, long deltaTime) {
+        int idx = type.ordinal();
+        statTimes[idx] += deltaTime;
+        statCounts[idx]++;
+        statSeen[idx] = true;
+    }
+
+    // Method to record times -- this is not called unless the stats logger
+    // level is set to INFO or lower
+    private synchronized void logTimes() {
+        ++frameCycleNumber;
+        if (++frameCycleTick >= 10) {
+            StringBuffer strBuf = new StringBuffer();
+            strBuf.append("----------------------------------------------\n").
+                    append("    Frame Number = ").
+                    append(frameCycleNumber).
+                    append("\n");
+            for (int i = 0; i < statTimes.length; i++) {
+                if (statSeen[i]) {
+                    strBuf.append("    ");
+                    if (statCounts[i] > 0) {
+                        strBuf.append(TimeType.values()[i]).
+                                append(" [").
+                                append(statCounts[i]).
+                                append("] = ").
+                                append((double)statTimes[i] / 1000000.0 / (double)statCounts[i]).
+                                append(" msec per call\n");
+                        statTimes[i] = 0L;
+                        statCounts[i] = 0;
+                    } else {
+                        assert statTimes[i] == 0L;
+                        strBuf.append(TimeType.values()[i]).
+                                append(" [0] = 0.0 msec\n");
+                    }
+                }
+            }
+            getStatsLogger().info(strBuf.toString());
+            frameCycleTick = 0;
+        }
+    }
 
 }

@@ -218,8 +218,7 @@ class NnuIdManager {
 		}
 		else {
 		    found = false;
-		    System.out.println("Can't Find matching nnuId.");
-		    System.out.println("We're in TROUBLE!!!");
+		    MasterControl.getCoreLogger().severe("Can't Find matching nnuId.");
 		}
 	    }
 	    
@@ -300,8 +299,7 @@ class NnuIdManager {
 	    nnuIdArr[lenLess1] = null;
 	}
 	else {
-	    System.out.println("Can't Find matching nnuId.");
-	    System.out.println("We're in TROUBLE!!!");
+	    MasterControl.getCoreLogger().severe("Can't Find matching nnuId.");
 	}
 
 	// insert new to nnuIdArr.

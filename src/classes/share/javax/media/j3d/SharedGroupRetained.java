@@ -190,8 +190,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 	for(i=len, j=0; i<localToVworld.length; i++, j++) {
 
 	    if(s.keys[j].equals(localToVworldKeys, hkIndex, 0, i)) {
-		System.out.println("Found matching hashKey in setNodeData.");
-		System.out.println("We're in TROUBLE!!!");
+		MasterControl.getCoreLogger().severe("Found matching hashKey in setNodeData.");
 	    }
             s.hashkeyIndex[j] = hkIndex[0];
 
@@ -405,8 +404,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 		}
 		else {
 		    found = false;
-		    System.out.println("Can't Find matching hashKey in SG.removeNodeData.");
-		    System.out.println("We're in TROUBLE!!!");
+		    MasterControl.getCoreLogger().severe("Can't Find matching hashKey in SG.removeNodeData.");
 		}
 	    }
 	

@@ -316,8 +316,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
                 if(hkIndex >= 0) {
                     setAuxData(s, j, hkIndex);
                 } else {
-                    System.out.println("Can't Find matching hashKey in setNodeData.");
-                    System.out.println("We're in TROUBLE!!!");
+                    MasterControl.getCoreLogger().severe("Can't Find matching hashKey in setNodeData.");
                 }
                 s.hashkeyIndex[j] = hkIndex;
             }

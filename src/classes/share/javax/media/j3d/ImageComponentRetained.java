@@ -22,6 +22,7 @@ import java.awt.image.RenderedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.logging.Level;
 
 
 /**
@@ -1196,10 +1197,10 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     void copyUnsupportedNioImageToImageData(NioImageBuffer nioImage, int srcX, int srcY,
             int dstX, int dstY, int copyWidth, int copyHeight, ImageData iData) {
 
-        if (MasterControl.logDevIssues) {
+        if (MasterControl.isDevLoggable(Level.INFO)) {
             MasterControl.getDevLogger().info("ImageComponent - Copying Unsupported NioImage, use a different image type");
         }
-        
+
         assert (iData.getType() == ImageDataType.TYPE_BYTE_BUFFER);
         assert (getImageFormatType() == ImageFormatType.TYPE_BYTE_RGBA);  
         
@@ -1225,7 +1226,7 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         
         assert (data.getType() == ImageDataType.TYPE_BYTE_ARRAY);
         
-        if (MasterControl.logDevIssues) {
+        if (MasterControl.isDevLoggable(Level.INFO)) {
             MasterControl.getDevLogger().info("ImageComponent - Copying Unsupported Image, use a different image type");
         }
         
