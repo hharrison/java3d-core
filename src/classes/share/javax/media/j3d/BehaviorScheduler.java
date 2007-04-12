@@ -13,6 +13,7 @@
 package javax.media.j3d;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 class BehaviorScheduler extends J3dThread {
 
@@ -210,6 +211,9 @@ class BehaviorScheduler extends J3dThread {
 	behaviorStructure.handleBehaviorPost();
 	lastStopTime = J3dClock.currentTimeMillis();
 	
+        if (MasterControl.isStatsLoggable(Level.FINE)) {
+            VirtualUniverse.mc.recordTime(MasterControl.TimeType.BEHAVIOR, (lastStopTime-lastStartTime)*1000000);
+        }
     }
 
     void free() {
