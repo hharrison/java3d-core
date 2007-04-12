@@ -41,17 +41,19 @@ UINT vertexBufferMaxVertexLimit = 65535;
 // Rendering state.
 BOOL implicitMultisample; 
 
-D3DFORMAT d3dDepthFormat[D3DDEPTHFORMATSIZE] = { D3DFMT_D15S1,
-						                         D3DFMT_D24S8,
-												 D3DFMT_D24X4S4,												 
-												 D3DFMT_D16_LOCKABLE, 
-												 D3DFMT_D16,
-												 D3DFMT_D32
-                                                };
+// Fix to Issue 226 : D3D - fail on stress test for the creation and destruction of Canvases
+D3DFORMAT d3dDepthFormat[D3DDEPTHFORMATSIZE] = { D3DFMT_D24S8, // this is the best choice
+                                                 D3DFMT_D24X4S4,
+                                                 D3DFMT_D15S1,
+                                                 D3DFMT_D24X8,
+                                                 D3DFMT_D16_LOCKABLE,
+                                                 D3DFMT_D16,
+                                                 D3DFMT_D32
+};
 
 // This should match the depth bit in the above array
-int d3dDepthTable[D3DDEPTHFORMATSIZE]      = {15, 24, 24, 16, 16, 32};
-int d3dStencilDepthTable[D3DDEPTHFORMATSIZE]={ 1,  8,  4,  0,  0,  0};
+int d3dDepthTable[D3DDEPTHFORMATSIZE]        = {24, 24, 15, 24, 16, 16, 32};
+int d3dStencilDepthTable[D3DDEPTHFORMATSIZE] = { 8,  4,  1,  0,  0,  0,  0};
 
 D3DLIGHT9 ambientLight; 
 
@@ -140,112 +142,119 @@ VOID setInfo(D3dDeviceInfo* pDevice,D3DADAPTER_IDENTIFIER9 *identifier)
 VOID buildDriverList(LPDIRECT3D9 pD3D)
 {
     numDriver =  pD3D->GetAdapterCount();
-
+    
     if (numDriver <= 0) {
-	// keep d3dDriverList = NULL for checking later
-	D3dCtx::d3dError(DRIVERNOTFOUND);
-	return;
+        // keep d3dDriverList = NULL for checking later
+        D3dCtx::d3dError(DRIVERNOTFOUND);
+        return;
     }
-
+    
     d3dDriverList = new LPD3dDriverInfo[numDriver];
-
+    
     if (d3dDriverList == NULL) {
-	D3dCtx::d3dError(OUTOFMEMORY);
-	return; 
+        D3dCtx::d3dError(OUTOFMEMORY);
+        return;
     }
     
     D3dDriverInfo *pDriver;
-
-    for (int i = 0; i < numDriver; i++ )
-    {
-	pDriver = new D3dDriverInfo();
-	d3dDriverList[i] = pDriver;
-        pD3D->GetAdapterIdentifier(i, 0,
-				     &pDriver->adapterIdentifier);
-        pD3D->GetAdapterDisplayMode(i, &pDriver->desktopMode);
-	computeRGBDepth(pDriver);
-	pDriver->hMonitor = pD3D->GetAdapterMonitor(i);
-	pDriver->iAdapter = i;
-
     
-	for (int j = 0; j < numDeviceTypes; j++ )
-        {
-	    D3DCAPS9 d3dCaps;
+    for (int i = 0; i < numDriver; i++ ) {
+        pDriver = new D3dDriverInfo();
+        d3dDriverList[i] = pDriver;
+        pD3D->GetAdapterIdentifier(i, 0,
+        &pDriver->adapterIdentifier);
+        pD3D->GetAdapterDisplayMode(i, &pDriver->desktopMode);
+        computeRGBDepth(pDriver);
+        pDriver->hMonitor = pD3D->GetAdapterMonitor(i);
+        pDriver->iAdapter = i;
+        
+        
+        for (int j = 0; j < numDeviceTypes; j++ ) {
+            D3DCAPS9 d3dCaps;
             D3dDeviceInfo* pDevice = pDriver->d3dDeviceList[j];
             pDevice->deviceType = deviceTypes[j];
             pD3D->GetDeviceCaps(i, deviceTypes[j], &d3dCaps);
-	    pDevice->setCaps(&d3dCaps);
-
-	    pDevice->desktopCompatible = 
-		SUCCEEDED(pD3D->CheckDeviceType(i, deviceTypes[j],
-						pDriver->desktopMode.Format,
-						pDriver->desktopMode.Format,
-						TRUE));
-
-	    pDevice->fullscreenCompatible = 
-		SUCCEEDED(pD3D->CheckDeviceType(i,deviceTypes[j],
-						pDriver->desktopMode.Format,
-						pDriver->desktopMode.Format,
-						FALSE));
-
-	    pDevice->maxZBufferDepthSize = 0;
-
-	    if (pDevice->isHardwareTnL) {
-		strcpy(pDevice->deviceName, "Transform & Light Hardware Rasterizer");
-	    } else if (pDevice->isHardware) {
-		strcpy(pDevice->deviceName, "Hardware Rasterizer");
-	    } else {
-		strcpy(pDevice->deviceName, "Reference Rasterizer");
-		}
-       	//issue 135 put here info about vendor and device model
-		setInfo(pDevice, &pDriver->adapterIdentifier);
-
-	    for (int k=0; k < D3DDEPTHFORMATSIZE; k++) {
-		pDevice->depthFormatSupport[k] =
-		    SUCCEEDED(pD3D->CheckDeviceFormat(i, deviceTypes[j],
-						      pDriver->desktopMode.Format,
-						      D3DUSAGE_DEPTHSTENCIL, 
-						      D3DRTYPE_SURFACE,
-						      d3dDepthFormat[k]))
-		    &&
-		    SUCCEEDED(pD3D->CheckDepthStencilMatch(i, deviceTypes[j],
-							   pDriver->desktopMode.Format,
-							   pDriver->desktopMode.Format,
-							   d3dDepthFormat[k]));
-		if (pDevice->depthFormatSupport[k]) 
-		{
-		    if (d3dDepthTable[k] > pDevice->maxZBufferDepthSize) 
-			{
-			  pDevice->maxZBufferDepthSize = d3dDepthTable[k];
-			  pDevice->maxStencilDepthSize = d3dStencilDepthTable[k];
-			  if (d3dStencilDepthTable[k]>0)
-			  {
-				pDevice->supportStencil = true;
-			  }
-			 else
-			  {
-               pDevice->supportStencil = false;
-			  }  
-		   }
-		}
-	    }
-
-	    DWORD bitmask = 1 << 2;
-	    pDevice->multiSampleSupport = 0;
-	    for (int mtype = D3DMULTISAMPLE_2_SAMPLES; 
-		      mtype <= D3DMULTISAMPLE_16_SAMPLES; mtype++) {
-		// consider desktop mode only for multisampling
-		if (SUCCEEDED(pD3D->CheckDeviceMultiSampleType(i, deviceTypes[j],
-							       pDriver->desktopMode.Format,
-							       TRUE,
-							       (D3DMULTISAMPLE_TYPE) mtype,NULL)
-								   )) {
-		    pDevice->multiSampleSupport |= bitmask;
-		}
-		bitmask <<= 1;
-	    }
-	}
-    }
+            pDevice->setCaps(&d3dCaps);
+            
+            pDevice->desktopCompatible =
+            SUCCEEDED(pD3D->CheckDeviceType(i, deviceTypes[j],
+            pDriver->desktopMode.Format,
+            pDriver->desktopMode.Format,
+            TRUE));
+            
+            pDevice->fullscreenCompatible =
+            SUCCEEDED(pD3D->CheckDeviceType(i, deviceTypes[j],
+            pDriver->desktopMode.Format,
+            pDriver->desktopMode.Format,
+            FALSE));
+            
+            pDevice->maxZBufferDepthSize = 0;
+            
+            if (pDevice->isHardwareTnL) {
+                strcpy(pDevice->deviceName, "Transform & Light Hardware Rasterizer");
+            } else if (pDevice->isHardware) {
+                strcpy(pDevice->deviceName, "Hardware Rasterizer");
+            } else {
+                strcpy(pDevice->deviceName, "Reference Rasterizer");
+            }
+            //issue 135 put here info about vendor and device model
+            setInfo(pDevice, &pDriver->adapterIdentifier);
+            
+            for (int k=0; k < D3DDEPTHFORMATSIZE; k++) {
+                pDevice->depthFormatSupport[k] =
+                SUCCEEDED(pD3D->CheckDeviceFormat(i, deviceTypes[j],
+                pDriver->desktopMode.Format,
+                D3DUSAGE_DEPTHSTENCIL,
+                D3DRTYPE_SURFACE,
+                d3dDepthFormat[k]))
+                &&
+                SUCCEEDED(pD3D->CheckDepthStencilMatch(i, deviceTypes[j],
+                pDriver->desktopMode.Format,
+                pDriver->desktopMode.Format,
+                d3dDepthFormat[k]));
+                if (pDevice->depthFormatSupport[k]) {
+                    if (d3dDepthTable[k] > pDevice->maxZBufferDepthSize) {
+                        pDevice->maxZBufferDepthSize = d3dDepthTable[k];
+                        pDevice->maxStencilDepthSize = d3dStencilDepthTable[k];
+                        if (d3dStencilDepthTable[k]>0) {
+                            pDevice->supportStencil = true;
+                        }
+                        else {
+                            pDevice->supportStencil = false;
+                        }
+                    }
+                }
+            }
+            
+	    // Fix to Issue 226 : D3D - fail on stress test for the creation and destruction of Canvases
+            DWORD bitmask = 0;
+            pDevice->multiSampleSupport = 0;
+            for (int mtype = D3DMULTISAMPLE_2_SAMPLES;
+            mtype <= D3DMULTISAMPLE_16_SAMPLES; mtype++) {
+                // consider desktop mode only for multisampling
+                HRESULT hrMSBack;
+                // HRESULT hrMSDepth; // should also check DephStencil ??? TODO - aces
+                
+                bitmask = 1 << mtype;
+                hrMSBack = pD3D->CheckDeviceMultiSampleType(i, deviceTypes[j],
+                pDriver->desktopMode.Format,
+                TRUE,
+                (D3DMULTISAMPLE_TYPE) mtype, NULL);
+                if(SUCCEEDED(hrMSBack)) {
+                    pDevice->multiSampleSupport |= bitmask;
+                    if(debug){
+                        /*
+                         printf("Multisample: Back  %s uses  %s at bitmask %d, mtype %d, multiSampleSupport %d  \n",
+                         getPixelFormatName(pDriver->desktopMode.Format),
+                         getMultiSampleName((D3DMULTISAMPLE_TYPE) mtype),
+                         bitmask, mtype, pDevice->multiSampleSupport  );
+                         */
+                    }
+                }//if hrMSBack
+                
+            }// for mtype
+        }//for j - device Types
+    }// for i - numDriver
 }
 
 
@@ -262,7 +271,7 @@ VOID D3dDriverInfo::release()
 
 VOID printInfo() 
 {
-    printf("Java 3D 1.4, Windows version is %d.%d ", 
+    printf("Java 3D 1.5.1, Windows version is %d.%d ", 
 	   osvi.dwMajorVersion, osvi.dwMinorVersion);
     
     printf("Build: %d, ", LOWORD(osvi.dwBuildNumber)); 
@@ -335,7 +344,7 @@ VOID D3dDriverInfo::initialize(JNIEnv *env)
     LPDIRECT3D9 pD3D = Direct3DCreate9( D3D_SDK_VERSION );
 	if (debug){
 		printf("[Java3D] Using DirectX D3D 9.0 or higher.\n");
-		printf("[Java3D] DirectX D3D renderer build 1.4.2005.12.30\n");
+		printf("[Java3D] DirectX D3D renderer build 1.5.1\n");
 	}
     if (pD3D == NULL) {
 	D3dCtx::d3dError(D3DNOTFOUND);

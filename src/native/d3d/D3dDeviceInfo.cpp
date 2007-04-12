@@ -245,23 +245,26 @@ BOOL D3dDeviceInfo::supportAntialiasing() {
 
 
 void D3dDeviceInfo::findDepthStencilFormat(int minZDepth, int minZDepthStencil)
-{
+{ 	
+    // Fix to Issue 226 : D3D - fail on stress test for the creation and destruction of Canvases
+    //sanity check  of stencil and depth
+    minZDepthStencil = min(minZDepthStencil, 8);
+    minZDepth = min(minZDepth, 32);
+    
     depthStencilFormat = D3DFMT_UNKNOWN;
-    for (int i=0; i < D3DDEPTHFORMATSIZE; i++) 
-	{
-		//printf("\ndepthFormatSupport %s, %b",getPixelFormatName(d3dDepthFormat[i]), depthFormatSupport[i]);
-	  if (depthFormatSupport[i]){
-	    // prefer one with stencil buffer, follow by D3DFMT_D16_LOCKABLE,
-		 // printf("\n ZDepth %d, Stencil %d ",d3dDepthTable[i],d3dStencilDepthTable[i]);
-	    if (d3dDepthTable[i] >= minZDepth && d3dStencilDepthTable[i] >= minZDepthStencil ) 
-		{
-		  depthStencilFormat = (D3DFORMAT) d3dDepthFormat[i];
-		  break;
-	    }
-	  }//if
-    }// for
-	// if none suitable found
    
+    for (int i=0; i < D3DDEPTHFORMATSIZE; i++) {
+        //printf("\ndepthFormatSupport %s, %b",getPixelFormatName(d3dDepthFormat[i]), depthFormatSupport[i]);
+        if (depthFormatSupport[i]){
+            // prefer one with stencil buffer, follow by D3DFMT_D16_LOCKABLE,
+            // printf("\n ZDepth %d, Stencil %d ",d3dDepthTable[i],d3dStencilDepthTable[i]);
+            if (d3dDepthTable[i] >= minZDepth && d3dStencilDepthTable[i] >= minZDepthStencil ) {
+                depthStencilFormat = (D3DFORMAT) d3dDepthFormat[i];
+                break;
+            }
+        }//if
+    }// for
+    // if none suitable found    
 }
 
 
@@ -270,14 +273,16 @@ D3DMULTISAMPLE_TYPE D3dDeviceInfo::getBestMultiSampleType()
     DWORD bitmask = 0;
     UINT i;
 
-    // start with 4, if none found, try 3 and 2
-    for (i=4; i < 16; i++) {
+    // Fix to Issue 226 : D3D - fail on stress test for the creation and destruction of Canvases
+     // start with 4 and up, if none found, try 3 and 2
+    for (i=4; i <= 16; i++) {
 	bitmask = (1 << i);
 	if (multiSampleSupport & bitmask) {
 	    return (D3DMULTISAMPLE_TYPE) i;
 	}
     }
 
+    // try 3 and 2  
     for (i=3; i >= 2; i--) {
 	bitmask = (1 << i);
 	if (multiSampleSupport & bitmask) {

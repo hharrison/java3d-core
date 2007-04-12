@@ -17,7 +17,8 @@
 
 extern UINT vertexBufferMaxVertexLimit;
 
-#define D3DDEPTHFORMATSIZE 6
+// Fix to Issue 226 : D3D - fail on stress test for the creation and destruction of Canvases
+#define D3DDEPTHFORMATSIZE 7
 
 class D3dDeviceInfo {
     public:

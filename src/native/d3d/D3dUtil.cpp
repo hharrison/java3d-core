@@ -68,95 +68,95 @@ D3DTRANSFORMSTATETYPE transformState[] = {
 
 #define D3DFORMATTABLESIZE 40
 
-D3DFORMAT d3dFormatTable[] = {
-    D3DFMT_UNKNOWN,
-    D3DFMT_R8G8B8,
-    D3DFMT_A8R8G8B8,
-    D3DFMT_X8R8G8B8,
-    D3DFMT_R5G6B5,
-    D3DFMT_X1R5G5B5,
-    D3DFMT_A1R5G5B5,
-    D3DFMT_A4R4G4B4,
-    D3DFMT_R3G3B2,
-    D3DFMT_A8,
-    D3DFMT_A8R3G3B2,
-    D3DFMT_X4R4G4B4,
-    D3DFMT_A8P8,
-    D3DFMT_P8,
-    D3DFMT_L8,
-    D3DFMT_A8L8,
-    D3DFMT_A4L4,
-    D3DFMT_V8U8,
-    D3DFMT_L6V5U5,
-    D3DFMT_X8L8V8U8,
-    D3DFMT_Q8W8V8U8,
-    D3DFMT_V16U16,
-//  D3DFMT_W11V11U10,
-    D3DFMT_UYVY,
-    D3DFMT_YUY2,
-    D3DFMT_DXT1,
-    D3DFMT_DXT2,
-    D3DFMT_DXT3,
-    D3DFMT_DXT4,
-    D3DFMT_DXT5,
-    D3DFMT_D16_LOCKABLE,
-    D3DFMT_D32,
-    D3DFMT_D15S1,
-    D3DFMT_D24S8,
-    D3DFMT_D16,
-    D3DFMT_D24X8,
-    D3DFMT_D24X4S4,
-    D3DFMT_VERTEXDATA,
-    D3DFMT_INDEX16,
-    D3DFMT_INDEX32
+D3DFORMAT d3dFormatTable[] = {    
+    D3DFMT_UNKNOWN,      //01
+     D3DFMT_R8G8B8,      //02
+     D3DFMT_A8R8G8B8,    //03
+     D3DFMT_X8R8G8B8,    //04
+     D3DFMT_R5G6B5,      //05
+     D3DFMT_X1R5G5B5,    //06
+     D3DFMT_A1R5G5B5,    //07
+     D3DFMT_A4R4G4B4,    //08
+     D3DFMT_R3G3B2,      //09
+     D3DFMT_A8,          //10
+     D3DFMT_A8R3G3B2,    //11
+     D3DFMT_X4R4G4B4,    //12
+     D3DFMT_A8P8,        //13
+     D3DFMT_P8,          //14
+     D3DFMT_L8,          //15
+     D3DFMT_A8L8,        //16
+     D3DFMT_A4L4,        //17
+     D3DFMT_V8U8,        //18
+     D3DFMT_L6V5U5,      //19
+     D3DFMT_X8L8V8U8,    //20
+     D3DFMT_Q8W8V8U8,    //21
+     D3DFMT_V16U16,      //22
+     //  D3DFMT_W11V11U10, //XX
+     D3DFMT_UYVY,        //23
+     D3DFMT_YUY2,        //24
+     D3DFMT_DXT1,        //25
+     D3DFMT_DXT2,        //26
+     D3DFMT_DXT3,        //27
+     D3DFMT_DXT4,        //28
+     D3DFMT_DXT5,        //29
+     D3DFMT_D16_LOCKABLE, //30
+     D3DFMT_D32,          //31
+     D3DFMT_D15S1,        //32
+     D3DFMT_D24S8,        //33
+     D3DFMT_D16,          //34
+     D3DFMT_D24X8,        //35
+     D3DFMT_D24X4S4,      //36
+     D3DFMT_VERTEXDATA,   //37
+     D3DFMT_INDEX16,      //38
+     D3DFMT_INDEX32       //39    
 };
 
 char *d3dFormatTableChar[] = {
-    "D3DFMT_UNKNOWN",
-    "D3DFMT_R8G8B8",
-    "D3DFMT_A8R8G8B8",
-    "D3DFMT_X8R8G8B8",
-    "D3DFMT_R5G6B5",
-    "D3DFMT_X1R5G5B5",
-    "D3DFMT_A1R5G5B5",
-    "D3DFMT_A4R4G4B4",
-    "D3DFMT_R3G3B2",
-    "D3DFMT_A8",
-    "D3DFMT_A8R3G3B2",
-    "D3DFMT_X4R4G4B4",
-    "D3DFMT_A8P8",
-    "D3DFMT_P8",
-    "D3DFMT_L8",
-    "D3DFMT_A8L8",
-    "D3DFMT_A4L4",
-    "D3DFMT_V8U8",
-    "D3DFMT_L6V5U5",
-    "D3DFMT_X8L8V8U8",
-    "D3DFMT_Q8W8V8U8",
-    "D3DFMT_V16U16",
- // "D3DFMT_W11V11U10",
-    "D3DFMT_UYVY",
-    "D3DFMT_YUY2",
-    "D3DFMT_DXT1",
-    "D3DFMT_DXT2",
-    "D3DFMT_DXT3",
-    "D3DFMT_DXT4",
-    "D3DFMT_DXT5",
-    "D3DFMT_D16_LOCKABLE",
-    "D3DFMT_D32",
-    "D3DFMT_D15S1",
-    "D3DFMT_D24S8",
-    "D3DFMT_D16",
-    "D3DFMT_D24X8",
-    "D3DFMT_D24X4S4",
-    "D3DFMT_VERTEXDATA",
-    "D3DFMT_INDEX16",
-    "D3DFMT_INDEX32"
+    "D3DFMT_UNKNOWN",    //01
+    "D3DFMT_R8G8B8",     //02
+    "D3DFMT_A8R8G8B8",   //03
+    "D3DFMT_X8R8G8B8",   //04
+    "D3DFMT_R5G6B5",     //05
+    "D3DFMT_X1R5G5B5",   //06
+    "D3DFMT_A1R5G5B5",   //07
+    "D3DFMT_A4R4G4B4",   //08
+    "D3DFMT_R3G3B2",     //09
+    "D3DFMT_A8",         //10
+    "D3DFMT_A8R3G3B2",   //11
+    "D3DFMT_X4R4G4B4",   //12
+    "D3DFMT_A8P8",       //13
+    "D3DFMT_P8",         //14
+    "D3DFMT_L8",         //15
+    "D3DFMT_A8L8",       //16
+    "D3DFMT_A4L4",       //17
+    "D3DFMT_V8U8",       //18
+    "D3DFMT_L6V5U5",     //19
+    "D3DFMT_X8L8V8U8",   //20
+    "D3DFMT_Q8W8V8U8",   //21
+    "D3DFMT_V16U16",     //22
+ // "D3DFMT_W11V11U10",  //XX
+    "D3DFMT_UYVY",       //23
+    "D3DFMT_YUY2",       //24
+    "D3DFMT_DXT1",       //25
+    "D3DFMT_DXT2",       //26
+    "D3DFMT_DXT3",       //27
+    "D3DFMT_DXT4",       //28
+    "D3DFMT_DXT5",       //29
+    "D3DFMT_D16_LOCKABLE",//30
+    "D3DFMT_D32",         //31
+    "D3DFMT_D15S1",       //32
+    "D3DFMT_D24S8",       //33  
+    "D3DFMT_D16",         //34
+    "D3DFMT_D24X8",       //35
+    "D3DFMT_D24X4S4",     //36
+    "D3DFMT_VERTEXDATA",  //37
+    "D3DFMT_INDEX16",     //38
+    "D3DFMT_INDEX32"      //39
 };
 
 char* multipleSampleTypeTable[] = {
     "D3DMULTISAMPLE_NONE",
-    "D3DMULTISAMPLE_UNKNOWN"
+    "D3DMULTISAMPLE_UNKNOWN",
     "D3DMULTISAMPLE_2_SAMPLES",
     "D3DMULTISAMPLE_3_SAMPLES",
     "D3DMULTISAMPLE_4_SAMPLES",
@@ -171,7 +171,7 @@ char* multipleSampleTypeTable[] = {
     "D3DMULTISAMPLE_13_SAMPLES",
     "D3DMULTISAMPLE_14_SAMPLES",
     "D3DMULTISAMPLE_15_SAMPLES",
-    "D3DMULTISAMPLE_16_SAMPLES",
+    "D3DMULTISAMPLE_16_SAMPLES"
 };
 
 char* swapEffectTable[] = {

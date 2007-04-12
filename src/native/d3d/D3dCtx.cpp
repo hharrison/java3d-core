@@ -770,11 +770,15 @@ VOID D3dCtx::setPresentParams(JNIEnv *env, jobject obj)
     d3dPresent.AutoDepthStencilFormat = deviceInfo->depthStencilFormat;
     d3dPresent.EnableAutoDepthStencil = true;
 
-    if ((antialiasing != UNNECESSARY) &&
-	deviceInfo->supportAntialiasing()) {
-	d3dPresent.MultiSampleType = deviceInfo->getBestMultiSampleType();
+    // Fix to Issue 226 : D3D - fail on stress test for the creation and destruction of Canvases
+    bool useMultisample = (antialiasing != UNNECESSARY) && deviceInfo->supportAntialiasing();
+
+     if (useMultisample) {
+ 	   d3dPresent.MultiSampleType = deviceInfo->getBestMultiSampleType();
+ 	   d3dPresent.MultiSampleQuality = 0;
     } else {
-	d3dPresent.MultiSampleType = D3DMULTISAMPLE_NONE;
+ 	   d3dPresent.MultiSampleType = D3DMULTISAMPLE_NONE;
+           d3dPresent.MultiSampleQuality = 0;        
     }
     d3dPresent.BackBufferCount = 1;
     d3dPresent.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
@@ -784,7 +788,7 @@ VOID D3dCtx::setPresentParams(JNIEnv *env, jobject obj)
     // we always call readRaster() just before swap.
     // However in this way we can't use multisample effect
 
-
+   // FULLSCREEN
     if (bFullScreen) {
 	GetWindowRect(topHwnd, &savedTopRect);
 	GetWindowRect(hwnd, &savedClientRect);
@@ -792,8 +796,7 @@ VOID D3dCtx::setPresentParams(JNIEnv *env, jobject obj)
 	d3dPresent.Windowed = false;
 	d3dPresent.hDeviceWindow = topHwnd;
 
-	if ((antialiasing != UNNECESSARY) &&
-	    deviceInfo->supportAntialiasing()) {
+        if (useMultisample) {
 	    d3dPresent.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	} else {
 	    d3dPresent.SwapEffect = D3DSWAPEFFECT_FLIP;
@@ -808,11 +811,11 @@ VOID D3dCtx::setPresentParams(JNIEnv *env, jobject obj)
 		d3dPresent.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 
     } else {
+        // WINDOWED mode
 	d3dPresent.Windowed = true;
 	d3dPresent.hDeviceWindow = hwnd;
 
-	if ((antialiasing != UNNECESSARY) &&
-	    deviceInfo->supportAntialiasing()) {
+        if (useMultisample) {
 	    d3dPresent.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	} else {
 	    d3dPresent.SwapEffect = D3DSWAPEFFECT_COPY;
@@ -1814,12 +1817,12 @@ DWORD D3dCtx::findBehavior()
 	bUseNvPerfHUD = getSystemProperty(jniEnv,"j3d.useNvPerfHUD","true");
 
 	if (bUseNvPerfHUD) // must have bForceHwdVertexProcess as true
-	{
-		printf("\n[Java3D]: using j3d.useNvPerfHUD=true\n");
-     bForceHwdVertexProcess = true;
-	 bForceMixVertexProcess =  false;
-	 bForceSWVertexProcess = false;
-	}
+        {
+            printf("\n[Java3D]: using j3d.useNvPerfHUD=true and HARDWARE_VERTEXPROCESSING \n");
+            bForceHwdVertexProcess = true;
+            bForceMixVertexProcess =  false;
+            bForceSWVertexProcess = false;
+        }
 
     if (bForceHwdVertexProcess)
 	{
