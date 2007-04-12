@@ -24,21 +24,21 @@ class SoundRenderer extends Object {
         AuralAttributesRetained aa = ss.attributes.mirrorAa;
 
 	if (sound instanceof BackgroundSoundRetained) {
-	        System.out.println("Activating BackgroundSoundRetained");
+	        System.err.println("Activating BackgroundSoundRetained");
 	} else if (sound instanceof ConeSoundRetained) {
-	        System.out.println("Activating ConeSoundRetained");
+	        System.err.println("Activating ConeSoundRetained");
 	} else if (sound instanceof PointSoundRetained) {
-	        System.out.println("Activating PointSoundRetained");
+	        System.err.println("Activating PointSoundRetained");
 	}
         if (ss != null)
-	    System.out.println("Soundscape is " + ss);
+	    System.err.println("Soundscape is " + ss);
         else
-	    System.out.println("Soundscape is null");
+	    System.err.println("Soundscape is null");
 
         if (aa != null)
-	    System.out.println("AuralAttributes is " + aa);
+	    System.err.println("AuralAttributes is " + aa);
         else
-	    System.out.println("AuralAttributes is null");
+	    System.err.println("AuralAttributes is null");
     }
  
     void update(SoundRetained sound, SoundscapeRetained ss) {
@@ -46,24 +46,24 @@ class SoundRenderer extends Object {
 
 	if (false) {
 	    if (sound instanceof BackgroundSoundRetained) {
-	        System.out.println("Updating BackgroundSoundRetained");
+	        System.err.println("Updating BackgroundSoundRetained");
 	    } else if (sound instanceof ConeSoundRetained) {
-	        System.out.println("Updating ConeSoundRetained");
+	        System.err.println("Updating ConeSoundRetained");
 	    } else if (sound instanceof PointSoundRetained) {
-	        System.out.println("Updating PointSoundRetained");
+	        System.err.println("Updating PointSoundRetained");
 	    }
-	    System.out.println("Soundscape is " + ss);
+	    System.err.println("Soundscape is " + ss);
 	}
     }
  
     void deactivate(SoundRetained sound) {
 	if (false) {
 	    if (sound instanceof BackgroundSoundRetained) {
-	        System.out.println("Deactivating BackgroundSoundRetained");
+	        System.err.println("Deactivating BackgroundSoundRetained");
 	    } else if (sound instanceof ConeSoundRetained) {
-	        System.out.println("Deactivating ConeSoundRetained");
+	        System.err.println("Deactivating ConeSoundRetained");
 	    } else if (sound instanceof PointSoundRetained) {
-	        System.out.println("Deactivating PointSoundRetained");
+	        System.err.println("Deactivating PointSoundRetained");
 	    }
 	}
     }

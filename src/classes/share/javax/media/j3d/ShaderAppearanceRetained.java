@@ -40,7 +40,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
     void setShaderProgram(ShaderProgram sp) {
 	synchronized(liveStateLock) {
 	    if (source.isLive()) {
-		// System.out.println("**** ShaderAppearceRetained.setShaderProgram()");
+		// System.err.println("**** ShaderAppearceRetained.setShaderProgram()");
 
 		if (this.shaderProgram != null) {
 		    this.shaderProgram.clearLive(refCount);
@@ -85,7 +85,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
     void setShaderAttributeSet(ShaderAttributeSet sas) {
 	synchronized(liveStateLock) {
 	    if (source.isLive()) {
-		// System.out.println("**** ShaderAppearceRetained.setShaderAttributeSet()");
+		// System.err.println("**** ShaderAppearceRetained.setShaderAttributeSet()");
 
 		if (this.shaderAttributeSet != null) {
 		    this.shaderAttributeSet.clearLive(refCount);
@@ -98,7 +98,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 		    ((ShaderAttributeSetRetained)sas.retained).copyMirrorUsers(this);
 	    	}
 		
-		// System.out.println(" --   testing  needed!");
+		// System.err.println(" --   testing  needed!");
 		sendMessage(ShaderConstants.SHADER_ATTRIBUTE_SET,  
 			    (sas != null ? 
 			     ((ShaderAttributeSetRetained)sas.retained).mirror : null));
@@ -153,7 +153,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
     
 
     synchronized void createMirrorObject() {
-	// System.out.println("ShaderAppearanceRetained : createMirrorObject()");
+	// System.err.println("ShaderAppearanceRetained : createMirrorObject()");
 
 	if (mirror == null) {
 	    // we can't check isStatic() since it sub-NodeComponent
@@ -172,7 +172,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
      * is not null.
      */
     synchronized void initMirrorObject() {
-	// System.out.println("ShaderAppearanceRetained : initMirrorObject()");
+	// System.err.println("ShaderAppearanceRetained : initMirrorObject()");
 
 	super.initMirrorObject();
 
@@ -190,7 +190,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 		(ShaderAttributeSetRetained)shaderAttributeSet.mirror;
 	}
 	else {
-	    // System.out.println("shaderAttributeSet is null");
+	    // System.err.println("shaderAttributeSet is null");
 	    mirrorApp.shaderAttributeSet = null;
 	}
 
@@ -202,7 +202,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
    */
     synchronized void updateMirrorObject(int component, Object value) {
 
-	// System.out.println("ShaderAppearanceRetained : updateMirrorObject() this " + this);
+	// System.err.println("ShaderAppearanceRetained : updateMirrorObject() this " + this);
 	super.updateMirrorObject(component, value);
  	ShaderAppearanceRetained mirrorApp = (ShaderAppearanceRetained)mirror;
 	if ((component & ShaderConstants.SHADER_PROGRAM) != 0) {
@@ -219,7 +219,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
      * objects.
      */
     void doSetLive(boolean backgroundGroup, int refCount) {
-	// System.out.println("ShaderAppearceRetained.doSetLive()");
+	// System.err.println("ShaderAppearceRetained.doSetLive()");
 
 
 	if (shaderProgram != null) {
@@ -288,7 +288,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 
 	VirtualUniverse.mc.processMessage(createMessage);
 	    
-	//System.out.println("univList.size is " + univList.size());
+	//System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
@@ -350,7 +350,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
     }
 
     void handleFrequencyChange(int bit) {
-	// System.out.println("ShaderAppearanceRetained : handleFrequencyChange()");
+	// System.err.println("ShaderAppearanceRetained : handleFrequencyChange()");
 	super.handleFrequencyChange(bit);
 
 	int mask = 0;

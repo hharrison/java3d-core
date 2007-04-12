@@ -289,10 +289,10 @@ class ViewPlatformRetained extends LeafRetained {
 	}	    
 	/*
 	if (false) {
-	    System.out.println("setLive: vworldToVpc = ");
-	    System.out.println(this.vworldToVpc);
-	    System.out.println("setLive: vpcToVworld = ");
-	    System.out.println(this.vpcToVworld);
+	    System.err.println("setLive: vworldToVpc = ");
+	    System.err.println(this.vworldToVpc);
+	    System.err.println("setLive: vpcToVworld = ");
+	    System.err.println(this.vpcToVworld);
 	}
 	*/
 	this.locale = s.locale;

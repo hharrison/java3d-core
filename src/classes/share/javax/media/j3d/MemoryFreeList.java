@@ -52,7 +52,7 @@ class MemoryFreeList {
 	    c = Class.forName(className);
 	}
 	catch (Exception e) {
- 	    System.out.println(e);
+ 	    System.err.println(e);
 	}
 	
 	initcap = initialCapacity;
@@ -72,7 +72,7 @@ class MemoryFreeList {
 	    c = Class.forName(className); 
 	}  
 	catch (Exception e) { 
-// 	    System.out.println(e);
+// 	    System.err.println(e);
 	} 
 
 	size = collection.size(); 
@@ -111,7 +111,7 @@ class MemoryFreeList {
 
 	// check to see if the whole block is used and if so, reset the
 	// current block
-// 	System.out.println("spaceUsed = " + spaceUsed + " currBlockSize = " +
+// 	System.err.println("spaceUsed = " + spaceUsed + " currBlockSize = " +
 // 			   currBlockSize + " currBlockIndex = " +
 // 			   currBlockIndex + " currBlock = " + currBlock);
 	if ((currBlockIndex == -1) || (spaceUsed >= currBlockSize)) {
@@ -129,9 +129,9 @@ class MemoryFreeList {
     }
 
     protected synchronized Object removeLastElement() {
-//   	System.out.println("removeLastElement: size = " + size);
+//   	System.err.println("removeLastElement: size = " + size);
 	int index = --spaceUsed;
-// 	System.out.println("index = " + index);
+// 	System.err.println("index = " + index);
 	Object elm = currBlock[index];
 	currBlock[index] = null;
 	size--;
@@ -156,16 +156,16 @@ class MemoryFreeList {
 
 
     synchronized void shrink() {
-//  	System.out.println("shrink size = " + size + " minSize = " +
+//  	System.err.println("shrink size = " + size + " minSize = " +
 //  			   minSize);
 	if ((minSize > minBlockSize) && (numBlocks > 1)) {
 	    justShrunk = true;
 	    
-//  	    System.out.println("removing a block");
+//  	    System.err.println("removing a block");
 // 	    Runtime r = Runtime.getRuntime();
 // 	    r.gc();
-// 	    System.out.println("numBlocks = " + numBlocks + " size = " + size);
-// 	    System.out.println("free memory before shrink: " + r.freeMemory());
+// 	    System.err.println("numBlocks = " + numBlocks + " size = " + size);
+// 	    System.err.println("free memory before shrink: " + r.freeMemory());
 	    
 	    // remove the last block
 	    Object[] block = (Object[])elementData.remove(numBlocks-1);
@@ -186,8 +186,8 @@ class MemoryFreeList {
 	    }
 	    
 // 	    r.gc();
-// 	    System.out.println("free memory after  shrink: " + r.freeMemory());
-// 	    System.out.println("numBlocks = " + numBlocks + " size = " + size);
+// 	    System.err.println("free memory after  shrink: " + r.freeMemory());
+// 	    System.err.println("numBlocks = " + numBlocks + " size = " + size);
 	}
 	else {
 	    justShrunk = false;
@@ -196,13 +196,13 @@ class MemoryFreeList {
     }
 
     synchronized void ensureCapacity(int minCapacity) {
-// 	System.out.println("ensureCapacity: size = " + size + " capacity: " +
+// 	System.err.println("ensureCapacity: size = " + size + " capacity: " +
 // 			   elementData.length);
-// 	System.out.println("minCapacity = " + minCapacity + " capacity = "
+// 	System.err.println("minCapacity = " + minCapacity + " capacity = "
 // 			   + capacity);
 	
 	if (minCapacity > capacity) {
-// 	    System.out.println("adding a block: numBlocks = " + numBlocks);
+// 	    System.err.println("adding a block: numBlocks = " + numBlocks);
 	    int lastBlockSize =
 		((Object[])elementData.get(numBlocks-1)).length;
 	    int prevBlockSize = 0;
@@ -229,7 +229,7 @@ class MemoryFreeList {
     }
 
     public synchronized void clear() {
-// 	System.out.println("clear");
+// 	System.err.println("clear");
 	elementData.clear();
 
 	// put an empty block in
@@ -254,7 +254,7 @@ class MemoryFreeList {
 		return c.newInstance();
 	    }
 	    catch (Exception e) {
-		System.out.println(e);
+		System.err.println(e);
 		return null;
 	    }
 	}

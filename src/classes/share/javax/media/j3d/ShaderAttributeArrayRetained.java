@@ -79,7 +79,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
     // Helper methods ...
 
     synchronized void createMirrorObject() {
-	// System.out.println("ShaderAttributeArrayRetained : createMirrorObject");
+	// System.err.println("ShaderAttributeArrayRetained : createMirrorObject");
         // This method should only call by setLive().
 	if (mirror == null) {
             ShaderAttributeArrayRetained mirrorSAA = new ShaderAttributeArrayRetained();

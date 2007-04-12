@@ -391,14 +391,14 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	Integer texIdObj;
 	int size;
 	
-	//	System.out.println("dirtyRenderMoleculeList.size = "+dirtyRenderMoleculeList.size());
-	//	System.out.println("reEvaluateBg = "+reEvaluateBg);
-	//	System.out.println("reEvaluateClip = "+reEvaluateClip);	
-	//	System.out.println("<========+End All Cached Values===========>");
+	//	System.err.println("dirtyRenderMoleculeList.size = "+dirtyRenderMoleculeList.size());
+	//	System.err.println("reEvaluateBg = "+reEvaluateBg);
+	//	System.err.println("reEvaluateClip = "+reEvaluateClip);	
+	//	System.err.println("<========+End All Cached Values===========>");
 	// Add the new lightBins that have been created
-	//	System.out.println("objUpdateList.size = "+objUpdateList.size());
-	//	System.out.println("addOpaqueBin = "+addOpaqueBin);
-	//	System.out.println("opaqueBin = "+opaqueBin);
+	//	System.err.println("objUpdateList.size = "+objUpdateList.size());
+	//	System.err.println("addOpaqueBin = "+addOpaqueBin);
+	//	System.err.println("opaqueBin = "+opaqueBin);
 	
 	// List of renderMolecule from which renderAtoms have been removed
         size = removeRenderAtomInRMList.size();
@@ -614,7 +614,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	}
 
 	size = textureBinList.size();
-//System.out.println("textureBinList.size= " + size);
+//System.err.println("textureBinList.size= " + size);
 	if (size > 0) {
 	    Canvas3D canvasList[][] = view.getCanvasList(false);
 	    Canvas3D cv;
@@ -679,7 +679,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	
 	size = newNodeComponentList.size(); 
 	if ( size > 0) {
-//System.out.println("newNodeComponentlist.size= " + size);
+//System.err.println("newNodeComponentlist.size= " + size);
 	    Canvas3D canvases[] = view.getCanvases();
 	    for (i = 0; i < size; i++) {
                 // Evaluate the nodeComponentList for all the canvases
@@ -814,7 +814,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		xform.transform(eyeInVworld);
 	    }
 	    if (transpSortMode == View.TRANSPARENCY_SORT_GEOMETRY && transparentInfo != null) {
-		//		System.out.println("sortAll 1");
+		//		System.err.println("sortAll 1");
 		sortAll = true;
 	    }
 	}
@@ -842,7 +842,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	    
 	    
 	    if (size  > 0 &&  1.5f * numDirtyTinfo >  nElements) {
-		// System.out.println("sortAll 3, size = "+size);
+		// System.err.println("sortAll 3, size = "+size);
 		sortAll = true;
 	    }
 	    
@@ -860,7 +860,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		}
 
 		if (dirtyList != null) {
-		    // System.out.println("====> sort Some");
+		    // System.err.println("====> sort Some");
 		    dirtyList = depthSortAll(dirtyList);
 		    // Now merge the newly sorted list with the old one
 		    transparentInfo = mergeDepthSort(transparentInfo, dirtyList);
@@ -957,9 +957,9 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	clearAllUpdateObjectState();
 	/*
 	if (opaqueBin != null) {
-	    System.out.println(this + "***** Begin Dumping OpaqueBin *****");
+	    System.err.println(this + "***** Begin Dumping OpaqueBin *****");
 	    dumpBin(opaqueBin);
-	    System.out.println("***** End Dumping OpaqueBin *****");
+	    System.err.println("***** End Dumping OpaqueBin *****");
 	}
 	*/
 	
@@ -1014,7 +1014,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 
 		GeometryArrayRetained geo = (GeometryArrayRetained)ra.geometry();
 		geo.removeDlistUser(this, ra);
-		//		System.out.println("========> geo.refcount = "+geo.refCount);
+		//		System.err.println("========> geo.refcount = "+geo.refCount);
 		// add this geometry's dlist to be freed
 		if (geo.isDlistUserSetEmpty(this)) {
 		    rdr.displayListResourceFreeList.add(geo.dlistObj);
@@ -1776,7 +1776,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	    
 	    // computeViewFrustumBox in VisibilityStructure.
 	    computeViewFrustumBBox(viewFrustumBBox);
-	    //	     System.out.println("viewFrustumBBox = " + this);
+	    //	     System.err.println("viewFrustumBBox = " + this);
 
 	    ViewPlatform vp = view.getViewPlatform();
 	    if (vp != null) {		
@@ -1997,7 +1997,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 	    // If the bin is in soleUser case and one of the components
 	    // has been changed to frequent then remove the clone
 	    // and point to the mirror
-	    //	    System.out.println("restructure = "+restructure+" ra.renderMolecule.soleUser ="+ra.renderMolecule.soleUser);
+	    //	    System.err.println("restructure = "+restructure+" ra.renderMolecule.soleUser ="+ra.renderMolecule.soleUser);
 	    if (restructure && !ra.renderMolecule.soleUser) {
 		TextureBin tb = ra.renderMolecule.textureBin;
 		ra.renderMolecule.removeRenderAtom(ra);
@@ -2382,7 +2382,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
      */
     void processShaderComponentChanged(Object[] args) {
 
-	// System.out.println("RenderBin : processShaderComponentChanged");
+	// System.err.println("RenderBin : processShaderComponentChanged");
 
 	int component = ((Integer)args[1]).intValue();
 	int i;
@@ -2422,7 +2422,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		//if (false && (sApp.mirror.changedFrequent & component) != 0) {
                 if(false) {
 		    /*
-		      System.out.println("RenderBin : Shader sole user (SHADER_PROGRAM)" +
+		      System.err.println("RenderBin : Shader sole user (SHADER_PROGRAM)" +
 		      ra.renderMolecule.textureBin.shaderBin);
 		    */
 
@@ -2442,7 +2442,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
                     }
 		} else {
 		    /*
-		      System.out.println("RenderBin : not soleUser (SHADER_PROGRAM)" +
+		      System.err.println("RenderBin : not soleUser (SHADER_PROGRAM)" +
 		      ra.renderMolecule.textureBin.shaderBin);
 		    */
 
@@ -2461,7 +2461,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		//if (false && (sApp.mirror.changedFrequent & component) != 0) {
                   if(false) {
                     /*
-		      System.out.println("RenderBin : sole user (SHADER_ATTRIBUTE_SET)" +
+		      System.err.println("RenderBin : sole user (SHADER_ATTRIBUTE_SET)" +
 		      ra.renderMolecule.textureBin.shaderBin);
 		    */
 
@@ -2482,7 +2482,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 		    }
 		} else {
 		    /*
-		       System.out.println("RenderBin :not soleUser (SHADER_ATTRIBUTE_SET) " +
+		       System.err.println("RenderBin :not soleUser (SHADER_ATTRIBUTE_SET) " +
 		       ra.renderMolecule.textureBin.shaderBin);
 		    */
 
@@ -2570,7 +2570,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 				TextureBin.SOLE_USER) != 0))  {
 
 /*
-System.out.println("renderbin. texture state changed  tb sole user " +
+System.err.println("renderbin. texture state changed  tb sole user " +
 			ra.renderMolecule.textureBin + " tb.tbFlag= " +
 			ra.renderMolecule.textureBin.tbFlag);
 */
@@ -2596,11 +2596,11 @@ System.out.println("renderbin. texture state changed  tb sole user " +
 		    }
 	        } else {
 /*
-System.out.println("renderbin. texture state changed  tb not sole user " +
+System.err.println("renderbin. texture state changed  tb not sole user " +
 			ra.renderMolecule.textureBin + " tb.tbFlag= " +
 			ra.renderMolecule.textureBin.tbFlag);
 
-System.out.println("......tb.soleUser= " + 
+System.err.println("......tb.soleUser= " + 
         ((ra.renderMolecule.textureBin.tbFlag & TextureBin.SOLE_USER) != 0) +
         " app.mirror.changedFrequent= " +
         ((app.mirror.changedFrequent & TEXTURE_STATE_CHANGED) != 0));
@@ -2666,9 +2666,9 @@ System.out.println("......tb.soleUser= " +
 				   AppearanceRetained.POLYGON |
 				   AppearanceRetained.LINE|
 				   AppearanceRetained.POINT)) != 0) {
-		//		System.out.println("AppearanceRetained.POINT = "+AppearanceRetained.POINT);
-		//		System.out.println("(app.mirror.changedFrequent & component) != 0 "+app.mirror.changedFrequent );
-		//		System.out.println("ra.renderMolecule.soleUser "+ra.renderMolecule.soleUser);
+		//		System.err.println("AppearanceRetained.POINT = "+AppearanceRetained.POINT);
+		//		System.err.println("(app.mirror.changedFrequent & component) != 0 "+app.mirror.changedFrequent );
+		//		System.err.println("ra.renderMolecule.soleUser "+ra.renderMolecule.soleUser);
 		if ((app.mirror.changedFrequent & component) != 0 &&
 		    ra.renderMolecule.soleUser) {
 		    for (i = start; i < gaArr.length; i++) {
@@ -3369,7 +3369,7 @@ System.out.println("......tb.soleUser= " +
 		    continue;
 		}
 		/*
-		  System.out.println("numShapes is " + numShapes +
+		  System.err.println("numShapes is " + numShapes +
 		  " transforms.length is " + transforms.length);
 		*/
 		for (j=0; j<transforms.length; j++) {
@@ -3409,10 +3409,10 @@ System.out.println("......tb.soleUser= " +
 	OrderedChildInfo cinfo = null;
 
 	/*
-	  System.out.println("RB : processOrderedGroupRemoved message " + m);
-	  System.out.println("RB : processOrderedGroupRemoved - ogList.length is " +
+	  System.err.println("RB : processOrderedGroupRemoved message " + m);
+	  System.err.println("RB : processOrderedGroupRemoved - ogList.length is " +
 	  ogList.length);
-	  System.out.println("RB : processOrderedGroupRemoved - obList " +
+	  System.err.println("RB : processOrderedGroupRemoved - obList " +
 	  obList);
 	*/
 	for (n = 0; n < ogList.length; n++) {
@@ -3420,7 +3420,7 @@ System.out.println("......tb.soleUser= " +
 	    index = ((Integer)ogChildIdList[n]).intValue();
 	
 	    ob = og.getOrderedBin(view.viewIndex);
-	    //	    System.out.println("Removed, index = "+index+" ob = "+ob);
+	    //	    System.err.println("Removed, index = "+index+" ob = "+ob);
 	    if (ob != null) {
 		// Add at the end of the childInfo, for remove we don't care about
 		// the childId
@@ -3448,9 +3448,9 @@ System.out.println("......tb.soleUser= " +
 	int orderedId;
 	OrderedBin ob;
 	OrderedChildInfo cinfo;
-	//	System.out.println("Inserted OG, index = "+index+" orderedId = "+orderedId+" og = "+og+" og.orderedBin = "+og.orderedBin);
-	//	System.out.println("Inserted OG, orderedId = "+orderedId);
-	//	System.out.println("Inserted, index = "+index+" oid = "+orderedId+" ob = "+ob);
+	//	System.err.println("Inserted OG, index = "+index+" orderedId = "+orderedId+" og = "+og+" og.orderedBin = "+og.orderedBin);
+	//	System.err.println("Inserted OG, orderedId = "+orderedId);
+	//	System.err.println("Inserted, index = "+index+" oid = "+orderedId+" ob = "+ob);
 	
 	if(ogList == null)
 	    return;
@@ -3499,14 +3499,14 @@ System.out.println("......tb.soleUser= " +
 	    size = arrList.size();
 	    nodesArr = arrList.toArray(false);
 
-	    //System.out.println("GS:");
+	    //System.err.println("GS:");
 	    for (n = 0; n < size; n++) {
 		list = (Object[])nodesArr[n];
 
 		for (i=0; i<list.length; i++) {
 
 		    GeometryAtom ga = (GeometryAtom) list[i];
-		    //System.out.println("  ga " + ga);
+		    //System.err.println("  ga " + ga);
 		    ra = ga.getRenderAtom(view);
 		    if (ra == null || !ra.inRenderBin())
 			continue;		    
@@ -3591,7 +3591,7 @@ System.out.println("......tb.soleUser= " +
 				// Do the updating of the centroid
 				// when the render is running
 				ra.geometryAtom.updateCentroid();
-				//				System.out.println("========> adding to the dirty list .., transpSortMode = "+transpSortMode);
+				//				System.err.println("========> adding to the dirty list .., transpSortMode = "+transpSortMode);
 				if (dirtyDepthSortRenderAtom.add(ra)) {
 				    numDirtyTinfo += ra.rListInfo.length;
 				}
@@ -3851,7 +3851,7 @@ System.out.println("......tb.soleUser= " +
 	RenderAtom renderAtom;
 	RenderMolecule rm;
 
-	// System.out.println("+");
+	// System.err.println("+");
 
 
 	GeometryRetained geo = null;
@@ -3878,8 +3878,8 @@ System.out.println("......tb.soleUser= " +
 
 	if (renderAtom.geometryAtom.source.viewList != null) {
 	    if (renderAtom.geometryAtom.source.viewList.contains(view)) {
-		//		System.out.println("Inserting RenderAtom, ra = "+renderAtom);
-		//		System.out.println("ga = "+renderAtom.geometryAtom+" renderAtom.geometryAtom.source.viewList = "+renderAtom.geometryAtom.source.viewList);
+		//		System.err.println("Inserting RenderAtom, ra = "+renderAtom);
+		//		System.err.println("ga = "+renderAtom.geometryAtom+" renderAtom.geometryAtom.source.viewList = "+renderAtom.geometryAtom.source.viewList);
 		rm = insertRenderAtom(renderAtom);
 	    }
 	}
@@ -4294,7 +4294,7 @@ System.out.println("......tb.soleUser= " +
     private void reInsertShaderBin(AttributeBin ab, RenderAtom ra) {
 	ShaderBin sb;
 	
-	// System.out.println("RenderBin.reInsertShaderBin() ra= " + ra);
+	// System.err.println("RenderBin.reInsertShaderBin() ra= " + ra);
 	sb = findShaderBin(ab, ra);
 	reInsertTextureBin(sb, ra);
     }
@@ -4368,7 +4368,7 @@ System.out.println("......tb.soleUser= " +
 	Object[] retVal;
         GeometryAtom ga = ra.geometryAtom;
 
-	//	System.out.println("insertRenderAtom ga " + ra.geometryAtom);
+	//	System.err.println("insertRenderAtom ga " + ra.geometryAtom);
         // determine if a separate copy of localeVwcBounds is needed
         // based on the locale info
 
@@ -4418,7 +4418,7 @@ System.out.println("......tb.soleUser= " +
 	environmentSet = findEnvironmentSet(ra);
 	attributeBin = findAttributeBin(environmentSet, ra);
 
-	// System.out.println("RenderBin : findShaderBin()");
+	// System.err.println("RenderBin : findShaderBin()");
 	shaderBin = findShaderBin(attributeBin, ra);
 
 	textureBin = findTextureBin(shaderBin, ra);
@@ -4754,7 +4754,7 @@ System.out.println("......tb.soleUser= " +
 	currentBin = shaderBin.textureBinList;
 	while (currentBin != null) {
 	    if (currentBin.equals(texUnitState, ra)) {
-		//System.out.println("1: Equal");
+		//System.err.println("1: Equal");
 		return(currentBin);
 	    }
 	    currentBin = currentBin.next;
@@ -4764,7 +4764,7 @@ System.out.println("......tb.soleUser= " +
 	for (i = 0; i < size; i++) {
 	    currentBin = (TextureBin)shaderBin.addTextureBins.get(i);
 	    if (currentBin.equals(texUnitState, ra)) {
-		//System.out.println("2: Equal");
+		//System.err.println("2: Equal");
 		return(currentBin);
 	    }
 	}
@@ -5154,9 +5154,9 @@ System.out.println("......tb.soleUser= " +
      */
     void renderOpaque(Canvas3D cv) {
 	LightBin currentBin = opaqueBin;
-	//System.out.println("========> renderOpaque");
+	//System.err.println("========> renderOpaque");
 	while (currentBin != null) {
-	    //System.out.println("====> rendering Opaque Bin ");
+	    //System.err.println("====> rendering Opaque Bin ");
 	    currentBin.render(cv);
 	    currentBin = currentBin.next;
 	}
@@ -5169,10 +5169,10 @@ System.out.println("......tb.soleUser= " +
     void renderTransparent(Canvas3D cv) {
         boolean savedDepthBufferWriteEnable = true;
 
-        //System.out.println("====> renderTransparent");
+        //System.err.println("====> renderTransparent");
 	TransparentRenderingInfo tinfo = transparentInfo;
 	if (tinfo != null) {
-	    //System.out.println("====> rendering transparent Bin");
+	    //System.err.println("====> rendering transparent Bin");
 
 	    if (cv.view.depthBufferFreezeTransparent) {
 		cv.setDepthBufferWriteEnableOverride(true);
@@ -5203,7 +5203,7 @@ System.out.println("......tb.soleUser= " +
      * This renders the ordered objects
      */
     void renderOrdered(Canvas3D cv) {
-	//	System.out.println("******renderOrdered, orderedBins.size() = "+orderedBins.size()+" RenderBin = "+this);
+	//	System.err.println("******renderOrdered, orderedBins.size() = "+orderedBins.size()+" RenderBin = "+this);
         if (orderedBins.size() > 0)
             renderOrderedBins(cv, orderedBins, false);
     }
@@ -5228,7 +5228,7 @@ System.out.println("......tb.soleUser= " +
 	boolean isDecal = (og instanceof DecalGroupRetained) && cv.systemStencilAvailable;
 	int size = orderedBin.orderedCollections.size();
 	
-	// System.out.println("RB : orderedBin.orderedCollections.size() " + size);
+	// System.err.println("RB : orderedBin.orderedCollections.size() " + size);
         for (i=0; i<size; i++) {
 	    if((og != null) && (og.childIndexOrder != null)) {
 		index = og.childIndexOrder[i];
@@ -5876,7 +5876,7 @@ System.out.println("......tb.soleUser= " +
     // This removes a renderAtom and also does the necessary changes
     // for a orientShape3D
     void removeARenderAtom(RenderAtom ra) {
-	//	System.out.println("===> remove ga = "+ra.geometryAtom);
+	//	System.err.println("===> remove ga = "+ra.geometryAtom);
 	ra.setRenderBin(false);
 	ra.renderMolecule.removeRenderAtom(ra);
 	if (ra.inDirtyOrientedRAs()) {
@@ -5962,27 +5962,27 @@ System.out.println("......tb.soleUser= " +
     void dumpBin(LightBin bin) {
 	LightBin obin = bin;
 	while (obin != null) {
-	    System.out.println("LightBin = "+obin);
+	    System.err.println("LightBin = "+obin);
 	    EnvironmentSet envSet = obin.environmentSetList;
 	    while (envSet != null) {
-		System.out.println("   EnvSet = "+envSet);
+		System.err.println("   EnvSet = "+envSet);
 		AttributeBin abin = envSet.attributeBinList;
 		while (abin != null) {
-		    System.out.println("      ABin = "+abin);
+		    System.err.println("      ABin = "+abin);
 		    ShaderBin sbin = abin.shaderBinList;
 		    while (sbin != null) {
-			System.out.println("         SBin = "+sbin);
+			System.err.println("         SBin = "+sbin);
 			TextureBin tbin = sbin.textureBinList;
 			while (tbin != null) {
-			    System.out.println("             Tbin = "+tbin);
+			    System.err.println("             Tbin = "+tbin);
 			    RenderMolecule rm = tbin.opaqueRMList;
-			    System.out.println("===> Begin Dumping OpaqueBin");
+			    System.err.println("===> Begin Dumping OpaqueBin");
 			    dumpRM(rm);
-			    System.out.println("===> End Dumping OpaqueBin");
+			    System.err.println("===> End Dumping OpaqueBin");
 			    rm = tbin.transparentRMList;
-			    System.out.println("===> Begin Dumping transparentBin");
+			    System.err.println("===> Begin Dumping transparentBin");
 			    dumpRM(rm);
-			    System.out.println("===> End Dumping transparentBin");
+			    System.err.println("===> End Dumping transparentBin");
 			    tbin = tbin.next;
 			}
 			sbin = sbin.next;
@@ -5998,33 +5998,33 @@ System.out.println("......tb.soleUser= " +
 
     void dumpRM(RenderMolecule rm) {
 	while (rm != null) {
-	    System.out.println("            rm = "+rm+" numRAs = "+rm.numRenderAtoms);
-	    System.out.println("            primaryRenderAtomList = "+
+	    System.err.println("            rm = "+rm+" numRAs = "+rm.numRenderAtoms);
+	    System.err.println("            primaryRenderAtomList = "+
 			       rm.primaryRenderAtomList);
 	    RenderAtomListInfo rinfo = rm.primaryRenderAtomList;
 	    while (rinfo != null) {
-		System.out.println("             rinfo = "+rinfo);
- 		System.out.println("             rinfo.ra.localeVwcBounds = "
+		System.err.println("             rinfo = "+rinfo);
+ 		System.err.println("             rinfo.ra.localeVwcBounds = "
 				   + rinfo.renderAtom.localeVwcBounds);
- 		System.out.println("             rinfo.ra.ga.so.vwcBounds = "
+ 		System.err.println("             rinfo.ra.ga.so.vwcBounds = "
 				   + rinfo.renderAtom.geometryAtom.source.vwcBounds);
-		System.out.println("             geometry = "+rinfo.geometry());
+		System.err.println("             geometry = "+rinfo.geometry());
 
 		rinfo = rinfo.next;
 	    }
-	    System.out.println("            separateDlistRenderAtomList = "+
+	    System.err.println("            separateDlistRenderAtomList = "+
 			       rm.separateDlistRenderAtomList);
 	    rinfo = rm.separateDlistRenderAtomList;
 	    while (rinfo != null) {
-		System.out.println("             rinfo = "+rinfo);
- 		System.out.println("             rinfo.ra.localeVwcBounds = "
+		System.err.println("             rinfo = "+rinfo);
+ 		System.err.println("             rinfo.ra.localeVwcBounds = "
 				   + rinfo.renderAtom.localeVwcBounds);
- 		System.out.println("             rinfo.ra.ga.so.vwcBounds = "
+ 		System.err.println("             rinfo.ra.ga.so.vwcBounds = "
 				   + rinfo.renderAtom.geometryAtom.source.vwcBounds);
-		System.out.println("             geometry = "+rinfo.geometry());
+		System.err.println("             geometry = "+rinfo.geometry());
 		rinfo = rinfo.next;
 	    }
-	    System.out.println("            vertexArrayRenderAtomList = "+
+	    System.err.println("            vertexArrayRenderAtomList = "+
 			       rm.vertexArrayRenderAtomList);
 	    if (rm.next == null) {
 		rm= rm.nextMap;
@@ -6036,7 +6036,7 @@ System.out.println("......tb.soleUser= " +
     }
 
     void removeTransparentObject (Object obj) {
-	// System.out.println("&&&&&&&&&&&&removeTransparentObject r = "+obj);
+	// System.err.println("&&&&&&&&&&&&removeTransparentObject r = "+obj);
 	if (obj instanceof TextureBin) {
 	    TextureBin tb = (TextureBin) obj;
 	    if (tb.environmentSet.lightBin.geometryBackground != null) {
@@ -6060,7 +6060,7 @@ System.out.println("......tb.soleUser= " +
 	    else {
 		int index = allTransparentObjects.indexOf(obj);
 		if (index == -1) {
-		    // System.out.println("==> DEBUG1: Should never come here!");
+		    // System.err.println("==> DEBUG1: Should never come here!");
 		    return;
 		}
 		allTransparentObjects.remove(index);
@@ -6087,7 +6087,7 @@ System.out.println("......tb.soleUser= " +
 	else {
 	    int index = allTransparentObjects.indexOf(obj);
 	    if (index == -1) {
-		// System.out.println("==> DEBUG2: Should never come here!");
+		// System.err.println("==> DEBUG2: Should never come here!");
 		return;
 	    }
 
@@ -6121,7 +6121,7 @@ System.out.println("......tb.soleUser= " +
     }
 
     void updateTransparentInfo(RenderAtom r) {
-	// System.out.println("===> update transparent Info");
+	// System.err.println("===> update transparent Info");
 	for (int i = 0; i < r.parentTInfo.length; i++) {
 
 	    if (r.parentTInfo[i] == null)
@@ -6136,7 +6136,7 @@ System.out.println("......tb.soleUser= " +
     }
 
     void addTransparentObject (Object obj) {
-	// System.out.println("&&&&&&&&&&&&addTransparentObject r = "+obj);
+	// System.err.println("&&&&&&&&&&&&addTransparentObject r = "+obj);
 	if (obj instanceof TextureBin) {
 	    TextureBin tb = (TextureBin) obj;
 	    // Background geometry
@@ -6155,7 +6155,7 @@ System.out.println("......tb.soleUser= " +
 		r.parentTInfo = new TransparentRenderingInfo[r.rListInfo.length];
 	    }
 	    computeDirtyAcrossTransparentBins(r);
-	    //	    System.out.println("update Centroid 2, ga = "+r.geometryAtom);
+	    //	    System.err.println("update Centroid 2, ga = "+r.geometryAtom);
 	    r.geometryAtom.updateCentroid();
 	    if (dirtyDepthSortRenderAtom.add(r)) {
 		numDirtyTinfo += r.rListInfo.length;
@@ -6166,7 +6166,7 @@ System.out.println("......tb.soleUser= " +
 	    }
 	    */
 	    r.dirtyMask |= RenderAtom.IN_SORTED_POS_DIRTY_TRANSP_LIST;
-	    // System.out.println("transparentInfo  ="+transparentInfo);
+	    // System.err.println("transparentInfo  ="+transparentInfo);
 	}
     }
 
@@ -6279,7 +6279,7 @@ System.out.println("......tb.soleUser= " +
 		    // If this was a dlist molecule, since we will be rendering
 		    // as separate dlist per rinfo, destroy the display list
 		    if ((r.primaryMoleculeType &RenderMolecule.DLIST_MOLECULE) != 0) {
-			//			System.out.println("&&&&&&&&& changing from dlist to dlist_per_rinfo");
+			//			System.err.println("&&&&&&&&& changing from dlist to dlist_per_rinfo");
 			addDisplayListResourceFreeList(r);
 			removeDirtyRenderMolecule(r);
 			
@@ -6320,7 +6320,7 @@ System.out.println("......tb.soleUser= " +
 	    allTransparentObjects = newList;
 	}
 	else if (oldMode == View.TRANSPARENCY_SORT_GEOMETRY && newMode == View.TRANSPARENCY_SORT_NONE) {
-	    //	    System.out.println("oldMode = TRANSPARENCY_SORT_GEOMETRY, newMode = TRANSPARENCY_SORT_NONE");
+	    //	    System.err.println("oldMode = TRANSPARENCY_SORT_GEOMETRY, newMode = TRANSPARENCY_SORT_NONE");
 	    size = allTransparentObjects.size();
 	    for (i = 0; i < size; i++) {
 		RenderAtom r= (RenderAtom)allTransparentObjects.get(i);
@@ -6347,18 +6347,18 @@ System.out.println("......tb.soleUser= " +
 	TransparentRenderingInfo input1 = oldList , input2 = newList,  nextN;
 	TransparentRenderingInfo lastInput1 = oldList;
 	double zval1, zval2;
-	//	System.out.println("&&&&&&&&mergeDepthSort");
+	//	System.err.println("&&&&&&&&mergeDepthSort");
 	/*
 	  TransparentRenderingInfo t = oldList;
-	  System.out.println("");
+	  System.err.println("");
 	  while (t != null) {
-	  System.out.println("==> old t = "+t);
+	  System.err.println("==> old t = "+t);
 	  t = t.next;
 	  }
-	  System.out.println("");
+	  System.err.println("");
 	  t = newList;
 	  while (t != null) {
-	  System.out.println("==> new t = "+t);
+	  System.err.println("==> new t = "+t);
 	  t = t.next;
 	  }
 	*/
@@ -6370,16 +6370,16 @@ System.out.println("......tb.soleUser= " +
 	    zval2 = input2.zVal;
 	    // Put the newList before the current one
             
-//            System.out.print("Code path 1 ");
+//            System.err.print("Code path 1 ");
 //            if (transparencySortComparator!=null) 
 //                if (zval2 > zval1 && (transparencySortComparator.compare(input2, input1)>0))
-//                    System.out.println("PASS");
+//                    System.err.println("PASS");
 //                else
-//                    System.out.println("FAIL");
+//                    System.err.println("FAIL");
         
             if ((transparencySortComparator==null && zval2 > zval1) ||
                 (transparencySortComparator!=null && (transparencySortComparator.compare(input2, input1)>0))){
-		//		System.out.println("===> path1");
+		//		System.err.println("===> path1");
 		if (input1.prev == null) {
 		    input1.prev = input2;
 		    input2.prev = null;
@@ -6387,7 +6387,7 @@ System.out.println("......tb.soleUser= " +
 		    oldList = input2;
 		}
 		else {
-		    //		    System.out.println("===> path2");
+		    //		    System.err.println("===> path2");
 		    input2.prev = input1.prev;
 		    input1.prev.next = input2;
 		    input2.next = input1;
@@ -6396,7 +6396,7 @@ System.out.println("......tb.soleUser= " +
 		input2 = nextN;
 	    }
 	    else {
-		//		System.out.println("===> path3");
+		//		System.err.println("===> path3");
 		input1 = input1.next;
 	    }
 	}
@@ -6416,7 +6416,7 @@ System.out.println("......tb.soleUser= " +
 
 //    void insertDepthSort(RenderAtom r) {
 //	TransparentRenderingInfo tinfo = null;
-//	//	System.out.println("&&&&&&&&insertDepthSort");
+//	//	System.err.println("&&&&&&&&insertDepthSort");
 //	for (int i = 0; i < r.rListInfo.length; i++) {
 //	    if (r.parentTInfo[i] == null)
 //		continue;
@@ -6435,11 +6435,11 @@ System.out.println("......tb.soleUser= " +
 //                        tinfo = tinfo.next;
 //                    }
 //                else {
-//                    System.out.println("Code Path 2 ");
+//                    System.err.println("Code Path 2 ");
 //                    if (tinfo!=null && (transparencySortComparator.compare(r.parentTInfo[i], tinfo)<0)==r.parentTInfo[i].zVal < tinfo.zVal)
-//                        System.out.println("PASS");
+//                        System.err.println("PASS");
 //                    else
-//                        System.out.println("FAIL");
+//                        System.err.println("FAIL");
 //                    while (tinfo != null && transparencySortComparator.compare(r.parentTInfo[i], tinfo)<0) {
 //                        prevInfo = tinfo;
 //                        tinfo = tinfo.next;
@@ -6505,18 +6505,18 @@ System.out.println("......tb.soleUser= " +
         transparencySortComparator = com.sun.j3d.utils.scenegraph.transparency.TransparencySortController.getComparator(view);
 	TransparentRenderingInfo tinfo, previnfo, nextinfo;
 	double curZ;
-	//	System.out.println("&&&&&&&&&&&depthSortAll");
+	//	System.err.println("&&&&&&&&&&&depthSortAll");
 	// Do insertion sort
 	/*
 	  tinfo = startinfo;
 	  while (tinfo != null) {
-	  System.out.println("Soreted tinfo= "+tinfo+" tinfo.prev = "+tinfo.prev+" tinfo.next = "+tinfo.next);
+	  System.err.println("Soreted tinfo= "+tinfo+" tinfo.prev = "+tinfo.prev+" tinfo.next = "+tinfo.next);
 	  tinfo = tinfo.next;
 	  }
 	*/
 	tinfo = startinfo.next;
 	while (tinfo != null) {
-	    //	    System.out.println("====> Doing tinfo = "+tinfo);
+	    //	    System.err.println("====> Doing tinfo = "+tinfo);
 	    nextinfo = tinfo.next;
 	    curZ = tinfo.zVal;
 	    previnfo = tinfo.prev;
@@ -6527,11 +6527,11 @@ System.out.println("......tb.soleUser= " +
                     previnfo = previnfo.prev;
                 }
             } else {
-//                    System.out.println("Code Path 3 ");
+//                    System.err.println("Code Path 3 ");
 //                    if (tinfo!=null && (transparencySortComparator.compare(previnfo, tinfo)<0)==previnfo.zVal < curZ)
-//                        System.out.println("PASS");
+//                        System.err.println("PASS");
 //                    else
-//                        System.out.println("FAIL");
+//                        System.err.println("FAIL");
                 while (previnfo != null && transparencySortComparator.compare(previnfo,tinfo)<0) {
                     previnfo = previnfo.prev;
                 }               
@@ -6561,15 +6561,15 @@ System.out.println("......tb.soleUser= " +
 			previnfo.next.prev = tinfo;
 		    tinfo.prev = previnfo;
 		    previnfo.next = tinfo;
-		    //		    System.out.println("path2, tinfo.prev = "+tinfo.prev);
-		    //		    System.out.println("path2, tinfo.next = "+tinfo.next);
+		    //		    System.err.println("path2, tinfo.prev = "+tinfo.prev);
+		    //		    System.err.println("path2, tinfo.next = "+tinfo.next);
 		}
 		    
 	    }
 	    /*
 	      TransparentRenderingInfo tmp = startinfo;
 	      while (tmp != null) {
-	      System.out.println("Soreted tmp= "+tmp+" tmp.prev = "+tmp.prev+" tmp.next = "+tmp.next);
+	      System.err.println("Soreted tmp= "+tmp+" tmp.prev = "+tmp.prev+" tmp.next = "+tmp.next);
 	      tmp = tmp.next;
 	      }
 	    */
@@ -6601,20 +6601,20 @@ System.out.println("......tb.soleUser= " +
 	  }
 	  tinfo = startinfo;
 	  while (tinfo != null) {
-	  System.out.println("z = "+((double[])distMap.get(tinfo.rInfo.renderAtom))[tinfo.rInfo.index]+" ga = "+tinfo.rInfo.renderAtom.geometryAtom);
+	  System.err.println("z = "+((double[])distMap.get(tinfo.rInfo.renderAtom))[tinfo.rInfo.index]+" ga = "+tinfo.rInfo.renderAtom.geometryAtom);
 	  tinfo = tinfo.next;
 	  }
-	  System.out.println("\n\n");
+	  System.err.println("\n\n");
 	  tinfo = startinfo;
 	  while (tinfo != null) {
 	  if (tinfo.render) {
-	  System.out.println("same z = "+((double[])distMap.get(tinfo.rInfo.renderAtom))[tinfo.rInfo.index]+" ga = "+tinfo.rInfo.renderAtom.geometryAtom);
+	  System.err.println("same z = "+((double[])distMap.get(tinfo.rInfo.renderAtom))[tinfo.rInfo.index]+" ga = "+tinfo.rInfo.renderAtom.geometryAtom);
 	  GeometryAtom ga = tinfo.rInfo.renderAtom.geometryAtom;
-	  System.out.println("ga.geometryArray.length = "+ga.geometryArray.length);
+	  System.err.println("ga.geometryArray.length = "+ga.geometryArray.length);
 	  for (int k = 0; k < ga.geometryArray.length; k++) {
-	  System.out.println("geometry "+k+" = "+ga.geometryArray[k]);
+	  System.err.println("geometry "+k+" = "+ga.geometryArray[k]);
 	  if (ga.geometryArray[k] != null) {
-	  System.out.println("    vcount = "+((GeometryArrayRetained)ga.geometryArray[k]).getVertexCount());
+	  System.err.println("    vcount = "+((GeometryArrayRetained)ga.geometryArray[k]).getVertexCount());
 	  ((GeometryArrayRetained)ga.geometryArray[k]).printCoordinates();
 	  }
 	  }

@@ -462,7 +462,7 @@ class TextureBin extends Object implements ObjectUpdate {
 
 		if (numEditingRenderMolecules == 0) {
 
-		    //System.out.println("===> TB in zombie state  " + this);
+		    //System.err.println("===> TB in zombie state  " + this);
 
             	    if (soleUserCompDirty == 0) {
                         this.renderBin.tbUpdateList.add(this);
@@ -520,7 +520,7 @@ class TextureBin extends Object implements ObjectUpdate {
     // TextureBin. See bug# 4503926 for details.
     public void updateNodeComponentCheck() {
 
-	//System.out.println("TextureBin.updateNodeComponentCheck()");
+	//System.err.println("TextureBin.updateNodeComponentCheck()");
 
 	tbFlag &= ~TextureBin.ON_UPDATE_CHECK_LIST;
 
@@ -773,7 +773,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	    if (transparentRMList == null &&
 		(renderBin.transpSortMode == View.TRANSPARENCY_SORT_NONE ||
 		environmentSet.lightBin.geometryBackground != null)) {
-		//		System.out.println("========> addTransparentTextureBin "+this); 
+		//		System.err.println("========> addTransparentTextureBin "+this); 
 		transparentRMList = addAll(transparentRenderMoleculeMap, 
 				addTransparentRMs, transparentRMList, false);
 		// Eventhough we are adding to transparentList , if all the RMS
@@ -1219,7 +1219,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	cv.texLinearMode = false;
 
 	/*
-	System.out.println("TextureBin/render " + this +
+	System.err.println("TextureBin/render " + this +
 		" numActiveTexUnit= " + numActiveTexUnit + 
 		" maxTextureUnits= " + cv.maxTextureUnits);
 	*/
@@ -1313,7 +1313,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	ArrayList list;
 	int index;
 	boolean newRM = false;
-	//	System.out.println("changeLists r = "+r+" tBin = "+this);
+	//	System.err.println("changeLists r = "+r+" tBin = "+this);
 	// If its a new RM then do nothing, otherwise move lists
 	if (r.isOpaqueOrInOG) {
 	    if (opaqueRMList == null &&

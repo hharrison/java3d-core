@@ -499,14 +499,14 @@ class TextureAttributesRetained extends NodeComponentRetained {
 
     void updateNative(Canvas3D cv, boolean simulate, int textureFormat) {
 
-        //System.out.println("TextureAttributes/updateNative:  simulate= " + simulate + " " + this);
+        //System.err.println("TextureAttributes/updateNative:  simulate= " + simulate + " " + this);
 	
 	//if ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_COLOR_TABLE) 
 	//	== 0) && textureColorTable != null) {
-	//    System.out.println("TextureColorTable Not supported");
+	//    System.err.println("TextureColorTable Not supported");
 	//}
 
-	//System.out.println("textureMode= " + textureMode);
+	//System.err.println("textureMode= " + textureMode);
 	boolean isIdentity =
 			((transform.getType() & Transform3D.IDENTITY) != 0);
 	
@@ -949,7 +949,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
 	VirtualUniverse.mc.processMessage(createMessage);
 
 
-	// System.out.println("univList.size is " + univList.size());
+	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;

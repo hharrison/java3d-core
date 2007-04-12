@@ -1076,7 +1076,7 @@ abstract class SoundRetained extends LeafRetained
 		j = s.keys[i].equals(localToVworldKeys, 0,
 				     localToVworldKeys.length);
 		if(j < 0) {
-		    System.out.println("SoundRetained : Can't find hashKey"); 
+		    System.err.println("SoundRetained : Can't find hashKey"); 
 		}
 
                 ms.localToVworld[0] = localToVworld[j];
@@ -1276,7 +1276,7 @@ abstract class SoundRetained extends LeafRetained
 
     void debugPrint(String message) {
         if (debugFlag) {
-            System.out.println(message);
+            System.err.println(message);
 	}
     }
     void getMirrorObjects(ArrayList leafList, HashKey key) {

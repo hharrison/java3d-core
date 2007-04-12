@@ -41,7 +41,7 @@ class SwitchState {
     }
 
     void dump() {
-	System.out.println(
+	System.err.println(
 	                   " MASK " + compositeSwitchMask[0] +
 	                   " CACH " + cachedSwitchOn +
 	                   " CURR " + currentSwitchOn +

@@ -79,7 +79,7 @@ class BHLeafNode extends BHNode {
 
     void destroyTree(BHNode[] bhArr, int[] index) {
 	if(bhArr.length <= index[0]) {
-	    // System.out.println("BHLeafNode : Problem bhArr overflow!!!");
+	    // System.err.println("BHLeafNode : Problem bhArr overflow!!!");
 	    return;
 	}
 

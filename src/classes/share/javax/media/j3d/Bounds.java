@@ -221,7 +221,7 @@ public abstract class Bounds extends Object implements Cloneable {
 	    double dist = (new_point.x*planes[i].x + new_point.y*planes[i].y +
 		    new_point.z*planes[i].z + planes[i].w ) ;
 	    if (dist > EPSILON ){
-		System.out.println("new point is outside of" +
+		System.err.println("new point is outside of" +
 			" plane["+i+"] dist = " + dist);
 	    }
 	}
@@ -317,7 +317,7 @@ public abstract class Bounds extends Object implements Cloneable {
 	p.set(g);
 
 	if (debug) {
-	    System.out.println("closest_point():\nincoming g="+" "+g.x+" "+g.y+
+	    System.err.println("closest_point():\nincoming g="+" "+g.x+" "+g.y+
 		    " "+g.z);
 	}
 
@@ -329,7 +329,7 @@ public abstract class Bounds extends Object implements Cloneable {
 
 	while( !converged ) {
 	    if (debug) {
-		System.out.println("start: p="+" "+p.x+" "+p.y+" "+p.z);
+		System.err.println("start: p="+" "+p.x+" "+p.y+" "+p.z);
 	    }
 
 	    // test the current point against the planes, for each
@@ -362,7 +362,7 @@ public abstract class Bounds extends Object implements Cloneable {
 		if (dist > EPSILON ){
 		    inside = false;
 		    if (debug) {
-			System.out.println("point outside plane["+i+"]=("+
+			System.err.println("point outside plane["+i+"]=("+
 			    pln.x+ ","+pln.y+",\n\t"+pln.z+
 			    ","+ pln.w+")\ndist = " + dist);
 		    }
@@ -371,7 +371,7 @@ public abstract class Bounds extends Object implements Cloneable {
 	    // see if we are done
 	    if (inside) {
 		if (debug) {
-		    System.out.println("p is inside");
+		    System.err.println("p is inside");
 		}
 		if (firstPoint) {
 		    firstInside = true;
@@ -391,10 +391,10 @@ public abstract class Bounds extends Object implements Cloneable {
 		h33 = 1.0 + cc * w;
 
 		if (debug) {
-		    System.out.println(" hessin= ");
-		    System.out.println(h11+" "+h12+" "+h13);
-		    System.out.println("     "+h22+" "+h23);
-		    System.out.println("           "+h33);
+		    System.err.println(" hessin= ");
+		    System.err.println(h11+" "+h12+" "+h13);
+		    System.err.println("     "+h22+" "+h23);
+		    System.err.println("           "+h33);
 		}
 
 		// these are the constant terms
@@ -403,7 +403,7 @@ public abstract class Bounds extends Object implements Cloneable {
 		b3 = g.z - w * cd;
 
 		if (debug) {
-		    System.out.println(" b1,b2,b3 = "+b1+" "+b2+" " +b3);
+		    System.err.println(" b1,b2,b3 = "+b1+" "+b2+" " +b3);
 		}
 
 		// solve, d1, d2, d3 actually 1/dx, which is more useful
@@ -417,8 +417,8 @@ public abstract class Bounds extends Object implements Cloneable {
 		d3 = 1/(h33 - h13*l13 - t*l23);
 
 		if (debug) {
-		    System.out.println(" l12,l13,l23 "+l12+" "+l13+" "+l23);
-		    System.out.println(" d1,d2,d3 "+ d1+" "+d2+" "+d3);
+		    System.err.println(" l12,l13,l23 "+l12+" "+l13+" "+l23);
+		    System.err.println(" d1,d2,d3 "+ d1+" "+d2+" "+d3);
 		}
 
 		// we have L and D, now solve for y
@@ -427,7 +427,7 @@ public abstract class Bounds extends Object implements Cloneable {
 		y3 = d3 * (b3 - h13*y1 - t*y2);
 
 		if (debug) {
-		    System.out.println(" y1,y2,y3 = "+y1+" "+y2+" "+y3);
+		    System.err.println(" y1,y2,y3 = "+y1+" "+y2+" "+y3);
 		}
 
 		// we have y, solve for n
@@ -436,14 +436,14 @@ public abstract class Bounds extends Object implements Cloneable {
 		n.x = (y1 - l13*n.z - l12*n.y);
 
 		if (debug) {
-		    System.out.println("new point = " + n.x+" " + n.y+" " + 
+		    System.err.println("new point = " + n.x+" " + n.y+" " + 
 			n.z);
 		    test_point(planes, n);
 
 		    if (delta == null) delta = new Vector3d();
 		    delta.sub(n, p);
 		    delta.normalize();
-		    System.out.println("p->n direction: " + delta);
+		    System.err.println("p->n direction: " + delta);
 
 		    // check using the the javax.vecmath routine
 		    hMatrix.m00 = h11;
@@ -459,7 +459,7 @@ public abstract class Bounds extends Object implements Cloneable {
 		    Point3d check = new Point3d(b1, b2, b3);
 		    hMatrix.transform(check);
 
-		    System.out.println("check point = " + check.x+" " + 
+		    System.err.println("check point = " + check.x+" " + 
 			check.y+" " + check.z);
 		}
 
@@ -468,7 +468,7 @@ public abstract class Bounds extends Object implements Cloneable {
 		    (p.z-n.z)*(p.z-n.z);
 
 		if (debug) {
-		    System.out.println("p->n distance =" + dist );
+		    System.err.println("p->n distance =" + dist );
 		}
 
 		if( dist < EPSILON) { // close enough
@@ -485,10 +485,10 @@ public abstract class Bounds extends Object implements Cloneable {
 	    }
 	}
 	if (debug) {
-	    System.out.println("returning pnt ("+new_point.x+" "+
+	    System.err.println("returning pnt ("+new_point.x+" "+
 		    new_point.y+" "+new_point.z+")");
 
-	    if(firstInside) System.out.println("input point inside polytope ");
+	    if(firstInside) System.err.println("input point inside polytope ");
 	}
 	return firstInside;
     }
@@ -500,11 +500,11 @@ public abstract class Bounds extends Object implements Cloneable {
 
 
 	if (debug) {
-	    System.out.println("ptope_sphere intersect sphere ="+sphere);
+	    System.err.println("ptope_sphere intersect sphere ="+sphere);
 	}
 	inside = closest_point( sphere.center, polyTope.planes, p );
 	if (debug) {
-	    System.out.println("ptope sphere intersect point ="+p);
+	    System.err.println("ptope sphere intersect point ="+p);
 	}
 	if (!inside){
 	    // if distance between polytope and sphere center is greater than 
@@ -512,18 +512,18 @@ public abstract class Bounds extends Object implements Cloneable {
 	    if (p.distanceSquared( sphere.center) > 
 					sphere.radius*sphere.radius){
 		if (debug) {
-		    System.out.println("ptope_sphere returns false");
+		    System.err.println("ptope_sphere returns false");
 		}
 		return false;
 	    } else {
 		if (debug) {
-		    System.out.println("ptope_sphere returns true");
+		    System.err.println("ptope_sphere returns true");
 		}
 		return true;
 	    }
 	} else {
 	    if (debug) {
-		System.out.println("ptope_sphere returns true");
+		System.err.println("ptope_sphere returns true");
 	    }
 	    return true;
 	}
@@ -533,7 +533,7 @@ public abstract class Bounds extends Object implements Cloneable {
          Vector4d planes[] = new Vector4d[6];
 
 	if (debug) {
-	    System.out.println("ptope_abox, box = " + box);
+	    System.err.println("ptope_abox, box = " + box);
 	}
 	planes[0] = new Vector4d( -1.0, 0.0, 0.0, box.lower.x);
 	planes[1] = new Vector4d(  1.0, 0.0, 0.0,-box.upper.x);
@@ -547,7 +547,7 @@ public abstract class Bounds extends Object implements Cloneable {
  
 	boolean result = intersect_ptope_ptope( polyTope, pbox );
 	if (debug) {
-	    System.out.println("ptope_abox returns " + result);
+	    System.err.println("ptope_abox returns " + result);
 	}
 	return(result);
     }   
@@ -572,7 +572,7 @@ public abstract class Bounds extends Object implements Cloneable {
 	
 	// get the closest points on each polytope
 	if (debug) {
-	    System.out.println("ptope_ptope: first g = "+g); 
+	    System.err.println("ptope_ptope: first g = "+g); 
 	}
 	intersect = closest_point( g, poly2.planes, p);
 
@@ -581,11 +581,11 @@ public abstract class Bounds extends Object implements Cloneable {
 	}
 
 	if (debug) {
-	    System.out.println("first p = "+p+"\n"); 
+	    System.err.println("first p = "+p+"\n"); 
 	}
 	 intersect = closest_point( p, poly1.planes, gnew);
 	if (debug) {
-	    System.out.println("gnew = "+gnew+" intersect="+intersect); 
+	    System.err.println("gnew = "+gnew+" intersect="+intersect); 
 	}
 
 	// loop until the closest points on the two polytopes are not changing
@@ -601,7 +601,7 @@ public abstract class Bounds extends Object implements Cloneable {
 		g.set(gnew);
 		intersect = closest_point( g, poly2.planes, pnew );
 		if (debug) {
-		    System.out.println("pnew = "+pnew+" intersect="+intersect); 
+		    System.err.println("pnew = "+pnew+" intersect="+intersect); 
 		}
 	    } else {
 		g.set(gnew);
@@ -615,7 +615,7 @@ public abstract class Bounds extends Object implements Cloneable {
 		if( !intersect ) { 
 		    intersect = closest_point( p, poly1.planes, gnew );
 		    if (debug) {
-			System.out.println("gnew = "+gnew+" intersect="+
+			System.err.println("gnew = "+gnew+" intersect="+
 			    intersect); 
 		    }
 		}
@@ -627,8 +627,8 @@ public abstract class Bounds extends Object implements Cloneable {
 	}
 
 	if (debug) {
-	    System.out.println("gnew="+" "+gnew.x+" "+gnew.y+" "+gnew.z);
-	    System.out.println("pnew="+" "+pnew.x+" "+pnew.y+" "+pnew.z);
+	    System.err.println("gnew="+" "+gnew.x+" "+gnew.y+" "+gnew.z);
+	    System.err.println("pnew="+" "+pnew.x+" "+pnew.y+" "+pnew.z);
 	}
 	return intersect;
     }

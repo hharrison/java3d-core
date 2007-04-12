@@ -89,7 +89,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 	    viewLists = new ArrayList(1);
 	}
 	// If there are some ViewSpecificGroups in the path above this SharedGroup
-	//	System.out.println("====> hkIndex = "+hkIndex+" s.viewLists = "+s.viewLists);
+	//	System.err.println("====> hkIndex = "+hkIndex+" s.viewLists = "+s.viewLists);
 	if (s.viewLists != null) {
 	    viewLists.add(hkIndex, s.viewLists.get(index));
 	}
@@ -220,7 +220,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 		localToVworldIndex[hkIndex[0]] = s.currentTransformsIndex[j];
 	    }
 	    
-	    //	    System.out.println("SG: j = "+j+" hkIndex[0] = "+hkIndex[0]+" s.keys[j] = "+s.keys[j]);
+	    //	    System.err.println("SG: j = "+j+" hkIndex[0] = "+hkIndex[0]+" s.keys[j] = "+s.keys[j]);
 	    // For now (1.2.1beta2) only. We cleanup setLive, and clearLive in
 	    // next release.
 	    setAuxData(s, j, hkIndex[0]);
@@ -550,7 +550,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 		    j = currentKey.equals(ln.sharedGroup.localToVworldKeys,0,
 					  ln.sharedGroup.localToVworldKeys.length);
 		    if(j < 0) {
-			System.out.println("SharedGroupRetained : Can't find hashKey"); 
+			System.err.println("SharedGroupRetained : Can't find hashKey"); 
 		    }
 		    
                     if (j < ln.sharedGroup.localToVworldKeys.length) {
@@ -597,7 +597,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 		    j = switchKey.equals(ln.sharedGroup.localToVworldKeys,0,
 					 ln.sharedGroup.localToVworldKeys.length);
 		    if(j < 0) {
-			System.out.println("SharedGroupRetained : Can't find hashKey"); 
+			System.err.println("SharedGroupRetained : Can't find hashKey"); 
 		    }
 		    
 		    if (j < ln.sharedGroup.localToVworldKeys.length) {
@@ -655,7 +655,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
             }
             if (J3dDebug.doDebug(J3dDebug.compileState, J3dDebug.LEVEL_5)) {
                 this.traverse(false, 1);
-                System.out.println();
+                System.err.println();
             }
         }
 
@@ -709,7 +709,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 	if (type == TargetsInterface.TRANSFORM_TARGETS) {
             return targetThreads;
         } else {
-            System.out.println("getTargetThreads: wrong arguments");
+            System.err.println("getTargetThreads: wrong arguments");
 	    return -1;
         }
     }
@@ -751,7 +751,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 	    }
 
         } else {
-            System.out.println("computeTargetsThreads: wrong arguments");
+            System.err.println("computeTargetsThreads: wrong arguments");
         }
     }
 
@@ -767,7 +767,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
                                         targetThreads);
             }
         } else {
-            System.out.println("updateTargetThreads: wrong arguments");
+            System.err.println("updateTargetThreads: wrong arguments");
         }
     }
 
@@ -788,7 +788,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
                 }
             }
         } else {
-            System.out.println("propagateTargetThreads: wrong arguments");
+            System.err.println("propagateTargetThreads: wrong arguments");
         }
     }
 
@@ -796,7 +796,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 	if (type == TargetsInterface.TRANSFORM_TARGETS) {
             j3dCTs = newCt;
         } else {
-            System.out.println("updateCachedTargets: wrong arguments");
+            System.err.println("updateCachedTargets: wrong arguments");
         }
     }
 
@@ -807,7 +807,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
                 newCt[i] = cachedTargets[i];        
             }
 	} else {
-            System.out.println("copyCachedTargets: wrong arguments");
+            System.err.println("copyCachedTargets: wrong arguments");
         }
     }
 
@@ -832,9 +832,9 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
             // child info is not used, SG does not have per child states
             SwitchState switchState;
             if (newCtArr.length != switchStates.size()) {
-                System.out.println("resetCachedTargets: unmatched length!" +
+                System.err.println("resetCachedTargets: unmatched length!" +
                                    newCtArr.length + " " + switchStates.size());
-                System.out.println("  resetCachedTargets: " + this);
+                System.err.println("  resetCachedTargets: " + this);
             }
             for (int i=0; i<newCtArr.length; i++) {
                 switchState = (SwitchState)switchStates.get(i);
@@ -852,7 +852,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 	if (type == TargetsInterface.SWITCH_TARGETS) {
             return switchStates;
         } else {
-            System.out.println("getTargetsData: wrong arguments");
+            System.err.println("getTargetsData: wrong arguments");
 	    return null;
         }
     }

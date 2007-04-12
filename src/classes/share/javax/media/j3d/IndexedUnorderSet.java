@@ -361,7 +361,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 
 	if (debug) {
 	    if (o.listIdx[univIdx][listType] != -1) {
-		System.out.println("Illegal use of UnorderIndexedList idx in set " + 
+		System.err.println("Illegal use of UnorderIndexedList idx in set " + 
 				   o.listIdx[univIdx][listType]);
 		Thread.dumpStack();
 	    }
@@ -395,7 +395,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	    int idx = o.listIdx[univIdx][listType];
 	    if (idx >= 0) {
 		if (elementData[idx] != o) {
-		    System.out.println("Illegal use of UnorderIndexedList idx in add " + idx);
+		    System.err.println("Illegal use of UnorderIndexedList idx in add " + idx);
 		    Thread.dumpStack();
 		}
 	    }
@@ -423,7 +423,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 
 	if (debug) {
 	    if (elm.listIdx[univIdx][listType] != index) {
-		System.out.println("Inconsistent idx in remove, expect " + index + " actual " + elm.listIdx[univIdx][listType]);
+		System.err.println("Inconsistent idx in remove, expect " + index + " actual " + elm.listIdx[univIdx][listType]);
 		Thread.dumpStack();	    
 	    } 
 	}
@@ -480,7 +480,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	if (idx >= 0) {
 	    if (debug) {
 		if (o != elementData[idx]) {
-		    System.out.println(this + " Illegal use of UnorderIndexedList in remove expect " + o + " actual " + elementData[idx] + " idx = " + idx);
+		    System.err.println(this + " Illegal use of UnorderIndexedList in remove expect " + o + " actual " + elementData[idx] + " idx = " + idx);
 		    Thread.dumpStack();
 		}
 	    }

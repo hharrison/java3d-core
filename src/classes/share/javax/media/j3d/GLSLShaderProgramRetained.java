@@ -26,7 +26,7 @@ class GLSLShaderProgramRetained extends ShaderProgramRetained {
     }
 
     synchronized void createMirrorObject() {
-	// System.out.println("GLSLShaderProgramRetained : createMirrorObject");
+	// System.err.println("GLSLShaderProgramRetained : createMirrorObject");
         // This method should only call by setLive().
 	if (mirror == null) {
             GLSLShaderProgramRetained  mirrorGLSLSP = new GLSLShaderProgramRetained();

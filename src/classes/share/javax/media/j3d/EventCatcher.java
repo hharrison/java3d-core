@@ -146,7 +146,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
     public void componentResized(ComponentEvent e) {
 	if (e.getSource() == canvas) {
 	    if (DEBUG) {
-		System.out.println(e);
+		System.err.println(e);
 	    }
 	    canvas.sendEventToBehaviorScheduler(e);
 	    if (VirtualUniverse.mc.isD3D()) {
@@ -160,7 +160,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
     public void componentMoved(ComponentEvent e) {
 	if (e.getSource() == canvas) {
             if (DEBUG) {
-                System.out.println(e);
+                System.err.println(e);
             }
             canvas.sendEventToBehaviorScheduler(e);
 
@@ -174,7 +174,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 
     public void componentHidden(ComponentEvent e) {
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
 	if (e.getSource() == canvas) {
             canvas.sendEventToBehaviorScheduler(e);
@@ -184,7 +184,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 
     public void componentShown(ComponentEvent e) {
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
 	if (e.getSource() == canvas) {
             canvas.sendEventToBehaviorScheduler(e);
@@ -195,21 +195,21 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
     public void focusGained(FocusEvent e) {
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
     public void focusLost(FocusEvent e) {
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
     public void keyTyped(KeyEvent e) {
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
@@ -223,7 +223,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
 
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
@@ -235,7 +235,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	    stopped = true;
 	}
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
@@ -251,7 +251,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	    canvas.sendEventToBehaviorScheduler(e);
 	}
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
@@ -266,7 +266,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	    canvas.sendEventToBehaviorScheduler(e);
 	}
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
@@ -274,7 +274,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
         if (mouseEvents) 
 	    canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
@@ -282,7 +282,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
         if (mouseEvents)
 	    canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
@@ -290,7 +290,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
         if (mouseEvents)
 	    canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
@@ -299,7 +299,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	// this routine will never be called unless mouseMotionEvent is enabled.
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
@@ -308,7 +308,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	// this routine will never be called unless mouseMotionEvent is enabled.
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
     
@@ -317,7 +317,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	// this routine will never be called unless mouseWheelEvent is enabled.
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
     }
 
@@ -326,7 +326,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
      */
     public void windowClosed(WindowEvent e) {
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
        // Issue 458 - Don't set canvas visible to false
@@ -334,7 +334,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 
     public void windowClosing(WindowEvent e) {
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
         // Issue 458 - Don't set canvas.visible to false
@@ -342,21 +342,21 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 
     public void windowActivated(WindowEvent e) {
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
     }
 
     public void windowDeactivated(WindowEvent e) {
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
     }
 
     public void windowDeiconified(WindowEvent e) {
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
         if (canvas.view != null) {
@@ -367,7 +367,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 
     public void windowIconified(WindowEvent e) {
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
         if (canvas.view != null) {
@@ -378,7 +378,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 
     public void windowOpened(WindowEvent e) {
 	if (DEBUG) {
-	    System.out.println(e);
+	    System.err.println(e);
 	}
 	canvas.sendEventToBehaviorScheduler(e);
 	canvas.evaluateVisiblilty();

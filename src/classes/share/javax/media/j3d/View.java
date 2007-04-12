@@ -3079,7 +3079,7 @@ public class View extends Object {
 	// back door code, I've decided to put it here to isolate
 	// it from the rest of view snapshot code.
 	if(firstTime) {
-	    // System.out.println("View : First Time is " + firstTime);
+	    // System.err.println("View : First Time is " + firstTime);
 	    // viewer = Viewer.getViewer(this);
 	    // Since we've the handler to the viewer, we can remove the entry 
 	    // now to avoid confusion and prevent memory leak problem.
@@ -3093,8 +3093,8 @@ public class View extends Object {
 //		dvrResizeCompensation = 
 //		    viewer.getDvrResizeCompensationEnable();
 //		/*
-//		System.out.println("View : dvrFactor is " + dvrFactor);
-//		System.out.println("View : dvrResizeCompensation is " + 
+//		System.err.println("View : dvrFactor is " + dvrFactor);
+//		System.err.println("View : dvrResizeCompensation is " + 
 //				   dvrResizeCompensation);		 
 //		*/
 //	    }

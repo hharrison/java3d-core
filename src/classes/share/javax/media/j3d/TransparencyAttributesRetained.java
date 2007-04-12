@@ -292,7 +292,7 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
 	VirtualUniverse.mc.processMessage(createMessage);
 
 
-	// System.out.println("univList.size is " + univList.size());
+	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;

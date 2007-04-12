@@ -117,6 +117,6 @@ class ScreenViewCache extends Object {
 	this.screen = screen;
 
 	if (false)
-	    System.out.println("Constructed a ScreenViewCache");
+	    System.err.println("Constructed a ScreenViewCache");
     }
 }

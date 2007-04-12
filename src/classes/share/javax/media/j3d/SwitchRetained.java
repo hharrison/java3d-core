@@ -550,7 +550,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 		    j = switchKey.equals(ln.sharedGroup.localToVworldKeys,0,
 					 ln.sharedGroup.localToVworldKeys.length);
 		    if(j < 0) {
-			System.out.println("SwitchRetained : Can't find hashKey"); 
+			System.err.println("SwitchRetained : Can't find hashKey"); 
 		    }
 			
 		    if (j<ln.sharedGroup.localToVworldKeys.length) {
@@ -823,7 +823,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
                 return null;
 	    }
         } else {
-            System.out.println("getCachedTargets: wrong arguments");
+            System.err.println("getCachedTargets: wrong arguments");
             return null;
         }
     }
@@ -834,9 +834,9 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
             ArrayList switchStates = (ArrayList)childrenSwitchStates.get(
 								child);
             if (newCtArr.length != switchStates.size()) {
-                System.out.println("resetCachedTargets: unmatched length!" +
+                System.err.println("resetCachedTargets: unmatched length!" +
 				   newCtArr.length + " " + switchStates.size());
-                System.out.println("  resetCachedTargets: " + this);
+                System.err.println("  resetCachedTargets: " + this);
             }
             SwitchState switchState;
             for (int i=0; i<newCtArr.length; i++) {
@@ -844,7 +844,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
                 switchState.cachedTargets = newCtArr[i];
             }
 	} else {
-            System.out.println("resetCachedTargets: wrong arguments");
+            System.err.println("resetCachedTargets: wrong arguments");
 	}
     }
 
@@ -852,33 +852,33 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
         if (type == TargetsInterface.SWITCH_TARGETS) {
             return (ArrayList)childrenSwitchStates.get(child);
 	} else {
-            System.out.println("getTargetsData: wrong arguments");
+            System.err.println("getTargetsData: wrong arguments");
 	    return null;
 	}
     }
 
     public int getTargetThreads(int type) {
-        System.out.println("getTargetsThreads: wrong arguments");
+        System.err.println("getTargetsThreads: wrong arguments");
 	return -1;
     }
 
     public void updateCachedTargets(int type, CachedTargets[] newCt) {
-        System.out.println("updateCachedTarget: wrong arguments");
+        System.err.println("updateCachedTarget: wrong arguments");
     }
 
     public void computeTargetThreads(int type, CachedTargets[] newCt) {
-        System.out.println("computeTargetThreads: wrong arguments");
+        System.err.println("computeTargetThreads: wrong arguments");
     }
 
     public void updateTargetThreads(int type, CachedTargets[] newCt) {
-        System.out.println("updateTargetThreads: wrong arguments");
+        System.err.println("updateTargetThreads: wrong arguments");
     }
 
     public void propagateTargetThreads(int type, int newTargetThreads) {
-        System.out.println("propagateTargetThreads: wrong arguments");
+        System.err.println("propagateTargetThreads: wrong arguments");
     }
 
     public void copyCachedTargets(int type, CachedTargets[] newCt) {
-        System.out.println("copyCachedTarget: wrong arguments");
+        System.err.println("copyCachedTarget: wrong arguments");
     }
 }

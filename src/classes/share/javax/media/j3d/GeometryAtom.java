@@ -98,9 +98,9 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
     
     public BoundingBox computeBoundingHull() {
 	/*
-	  System.out.println("Bounds is " + source.vwcBounds); 
+	  System.err.println("Bounds is " + source.vwcBounds); 
 	  for(int i=0; i<geometryArray.length; i++) {
-	  System.out.println( i + " geoBounds " +
+	  System.err.println( i + " geoBounds " +
 	  geometryArray[i].geoBounds);
 	  }
 	  */

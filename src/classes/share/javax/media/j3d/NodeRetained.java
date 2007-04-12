@@ -627,7 +627,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	if(!(locale == null || universe == s.universe))
             throw new IllegalSharingException(J3dI18N.getString("NodeRetained3"));
 	if(s.locale == null)
-	    System.out.println("NodeRetained.setLive() locale is null");
+	    System.err.println("NodeRetained.setLive() locale is null");
 
 
 	locale = s.locale;

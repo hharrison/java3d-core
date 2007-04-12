@@ -784,8 +784,8 @@ public class BoundingBox extends Bounds {
 	double dirx, diry, dirz;
 	
 	/*
-	  System.out.println("BoundingBox.intersect(p,d,p) called\n");
-	  System.out.println("bounds = " + lower + " -> " + upper);
+	  System.err.println("BoundingBox.intersect(p,d,p) called\n");
+	  System.err.println("bounds = " + lower + " -> " + upper);
 	  */
 	
 	if( boundsIsEmpty ) {
@@ -813,8 +813,8 @@ public class BoundingBox extends Bounds {
 	dirz = direction.z*invMag;
 
 	/*
-	  System.out.println("dir = " + dirx + ", " + diry + ", " + dirz);
-	  System.out.println("origin = " + origin);
+	  System.err.println("dir = " + dirx + ", " + diry + ", " + dirz);
+	  System.err.println("origin = " + origin);
 	  */
 	
 	// initialize tnear and tfar to handle dir.? == 0 cases
@@ -822,9 +822,9 @@ public class BoundingBox extends Bounds {
 	tfar = Double.MAX_VALUE;
        
 	if(dirx == 0.0) {
-	    //System.out.println("dirx == 0.0");
+	    //System.err.println("dirx == 0.0");
 	    if (origin.x < lower.x || origin.x > upper.x ) {
-		//System.out.println( "parallel to x plane and outside");
+		//System.err.println( "parallel to x plane and outside");
 		return false;
 	    }
 	} else {
@@ -832,7 +832,7 @@ public class BoundingBox extends Bounds {
 	    t1 = (lower.x-origin.x)*invDir;
 	    t2 = (upper.x-origin.x)*invDir;
 	   
-	    //System.out.println("x t1 = " + t1 + " t2 = " + t2);
+	    //System.err.println("x t1 = " + t1 + " t2 = " + t2);
 	    if( t1 > t2) {
 		tnear = t2;
 		tfar = t1;
@@ -841,21 +841,21 @@ public class BoundingBox extends Bounds {
 		tfar = t2;
 	    }
 	    if( tfar < 0.0 ) {
-		//System.out.println( "x failed: tnear="+tnear+"  tfar="+tfar);
+		//System.err.println( "x failed: tnear="+tnear+"  tfar="+tfar);
 		return false;
 	    }
-	    //System.out.println("x tnear = " + tnear + " tfar = " + tfar);
+	    //System.err.println("x tnear = " + tnear + " tfar = " + tfar);
 	}
 	// y
 	if (diry == 0.0) {
-	    //System.out.println("diry == 0.0");
+	    //System.err.println("diry == 0.0");
 	    if( origin.y < lower.y || origin.y > upper.y ){
-		//System.out.println( "parallel to y plane and outside");
+		//System.err.println( "parallel to y plane and outside");
 		return false;
             }
 	} else {
 	    invDir = 1.0/diry;
-	    //System.out.println("invDir = " + invDir);
+	    //System.err.println("invDir = " + invDir);
 	    t1 = (lower.y-origin.y)*invDir;
 	    t2 = (upper.y-origin.y)*invDir;
 	   
@@ -864,22 +864,22 @@ public class BoundingBox extends Bounds {
 		t1 = t2;
 		t2 = tmp;
 	    }
-	    //System.out.println("y t1 = " + t1 + " t2 = " + t2);
+	    //System.err.println("y t1 = " + t1 + " t2 = " + t2);
 	    if( t1 > tnear) tnear = t1;
 	    if( t2 < tfar ) tfar  = t2;
 	   
 	    if( (tfar < 0.0) ||  (tnear > tfar)){
-		//System.out.println( "y failed: tnear="+tnear+"  tfar="+tfar);
+		//System.err.println( "y failed: tnear="+tnear+"  tfar="+tfar);
 		return false;
 	    }
-	    //System.out.println("y tnear = " + tnear + " tfar = " + tfar);
+	    //System.err.println("y tnear = " + tnear + " tfar = " + tfar);
 	}
        
 	// z
 	if (dirz == 0.0) {
-	    //System.out.println("dirz == 0.0");
+	    //System.err.println("dirz == 0.0");
 	    if( origin.z < lower.z || origin.z > upper.z ) {
-		//System.out.println( "parallel to z plane and outside");
+		//System.err.println( "parallel to z plane and outside");
 		return false;
 	    }
 	}  else {
@@ -892,15 +892,15 @@ public class BoundingBox extends Bounds {
 		t1 = t2;
 		t2 = tmp;
 	    }
-	    //System.out.println("z t1 = " + t1 + " t2 = " + t2);
+	    //System.err.println("z t1 = " + t1 + " t2 = " + t2);
 	    if( t1 > tnear) tnear = t1;
 	    if( t2 < tfar ) tfar  = t2;
 	   
 	    if( (tfar < 0.0) ||  (tnear > tfar)){
-		//System.out.println( "z failed: tnear="+tnear+"  tfar="+tfar);
+		//System.err.println( "z failed: tnear="+tnear+"  tfar="+tfar);
 		return false;
 	    }
-	    //System.out.println("z tnear = " + tnear + " tfar = " + tfar);
+	    //System.err.println("z tnear = " + tnear + " tfar = " + tfar);
 	}
        
 	if((tnear < 0.0) && (tfar >= 0.0)) {
@@ -989,17 +989,17 @@ public class BoundingBox extends Bounds {
 	  return intersect(start, position);
        
       dirLen = Math.sqrt(dirLen);
-      // System.out.println("dirLen is " + dirLen);
+      // System.err.println("dirLen is " + dirLen);
       invMag = 1.0/dirLen;
       dirx = dirx*invMag;
       diry = diry*invMag;
       dirz = dirz*invMag;
       
       /*
-	System.out.println("dir = " + dir);
-	System.out.println("start = " + start);
-	System.out.println("lower = " + lower);
-	System.out.println("upper = " + upper);
+	System.err.println("dir = " + dir);
+	System.err.println("start = " + start);
+	System.err.println("lower = " + lower);
+	System.err.println("upper = " + upper);
 	*/
       
       // initialize tnear and tfar to handle dir.? == 0 cases
@@ -1007,9 +1007,9 @@ public class BoundingBox extends Bounds {
       tfar = Double.MAX_VALUE;
       
         if(dirx == 0.0) {
-            //System.out.println("dirx == 0.0");
+            //System.err.println("dirx == 0.0");
             if (start.x < lower.x || start.x > upper.x ) {
-		//System.out.println( "parallel to x plane and outside");
+		//System.err.println( "parallel to x plane and outside");
 		return false;
             }
 	} else {
@@ -1017,7 +1017,7 @@ public class BoundingBox extends Bounds {
             t1 = (lower.x-start.x)*invDir;
             t2 = (upper.x-start.x)*invDir;
 	    
-            //System.out.println("x t1 = " + t1 + " t2 = " + t2);
+            //System.err.println("x t1 = " + t1 + " t2 = " + t2);
 	    if( t1 > t2) {
 		tnear = t2;
 		tfar = t1;
@@ -1026,21 +1026,21 @@ public class BoundingBox extends Bounds {
 		tfar = t2;
 	    }
 	    if( tfar < 0.0 ) {
-		//System.out.println( "x failed: tnear="+tnear+"  tfar="+tfar);
+		//System.err.println( "x failed: tnear="+tnear+"  tfar="+tfar);
 		return false;
 	    }
-            //System.out.println("x tnear = " + tnear + " tfar = " + tfar);
+            //System.err.println("x tnear = " + tnear + " tfar = " + tfar);
         }
 	// y
         if (diry == 0.0) {
-            //System.out.println("diry == 0.0");
+            //System.err.println("diry == 0.0");
             if( start.y < lower.y || start.y > upper.y ){
-		//System.out.println( "parallel to y plane and outside");
+		//System.err.println( "parallel to y plane and outside");
 		return false;
             }
         } else {
             invDir = 1.0/diry;
-            //System.out.println("invDir = " + invDir);
+            //System.err.println("invDir = " + invDir);
             t1 = (lower.y-start.y)*invDir;
             t2 = (upper.y-start.y)*invDir;
 	    
@@ -1049,22 +1049,22 @@ public class BoundingBox extends Bounds {
 		t1 = t2;
 		t2 = tmp;
             }
-            //System.out.println("y t1 = " + t1 + " t2 = " + t2);
+            //System.err.println("y t1 = " + t1 + " t2 = " + t2);
             if( t1 > tnear) tnear = t1;
             if( t2 < tfar ) tfar  = t2;
 	    
             if( (tfar < 0.0) ||  (tnear > tfar)){
-		//System.out.println( "y failed: tnear="+tnear+"  tfar="+tfar);
+		//System.err.println( "y failed: tnear="+tnear+"  tfar="+tfar);
 		return false;
             }
-            //System.out.println("y tnear = " + tnear + " tfar = " + tfar);
+            //System.err.println("y tnear = " + tnear + " tfar = " + tfar);
         }
 	
 	// z
         if (dirz == 0.0) {
-            //System.out.println("dirz == 0.0");
+            //System.err.println("dirz == 0.0");
             if( start.z < lower.z || start.z > upper.z ) {
-		//System.out.println( "parallel to z plane and outside");
+		//System.err.println( "parallel to z plane and outside");
 		return false;
             }
         }  else {
@@ -1077,15 +1077,15 @@ public class BoundingBox extends Bounds {
 		t1 = t2;
 		t2 = tmp;
             }
-            //System.out.println("z t1 = " + t1 + " t2 = " + t2);
+            //System.err.println("z t1 = " + t1 + " t2 = " + t2);
             if( t1 > tnear) tnear = t1;
             if( t2 < tfar ) tfar  = t2;
 	    
             if( (tfar < 0.0) ||  (tnear > tfar)){
-		//System.out.println( "z failed: tnear="+tnear+"  tfar="+tfar);
+		//System.err.println( "z failed: tnear="+tnear+"  tfar="+tfar);
 		return false;
             }
-            //System.out.println("z tnear = " + tnear + " tfar = " + tfar);
+            //System.err.println("z tnear = " + tnear + " tfar = " + tfar);
         }
 	
 	if((tnear < 0.0) && (tfar >= 0.0)) {
@@ -1099,7 +1099,7 @@ public class BoundingBox extends Bounds {
 	    if(tnear>dirLen) {
 		// Segment is behind BBox.
 		/*
-		  System.out.println("PickSegment : intersected postion : " + position
+		  System.err.println("PickSegment : intersected postion : " + position
 		  + " tnear " + tnear + " tfar " + tfar );
 		  */
 		return false;
@@ -1112,10 +1112,10 @@ public class BoundingBox extends Bounds {
         }
 	
 	/*  
-	    System.out.println("tnear = " + tnear + " tfar = " + tfar + " w " +
+	    System.err.println("tnear = " + tnear + " tfar = " + tfar + " w " +
 	    position.w);
-	    System.out.println("lower = " + lower);
-	    System.out.println("upper = " + upper + "\n");
+	    System.err.println("lower = " + lower);
+	    System.err.println("upper = " + upper + "\n");
 	*/
         return true;
 	
@@ -1356,7 +1356,7 @@ public class BoundingBox extends Bounds {
 		    return true;
 	    }
 	    else {
-		//	       System.out.println("intersect ?? ");
+		//	       System.err.println("intersect ?? ");
 	    }
 	}
 	
@@ -1452,7 +1452,7 @@ public class BoundingBox extends Bounds {
 		return false;
 	    }
 	    
-            //      System.out.println("intersect Sphere ");
+            //      System.err.println("intersect Sphere ");
         }
 	else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
@@ -1765,8 +1765,8 @@ public class BoundingBox extends Bounds {
 	if(boundsIsInfinite)
 	    return true;
 	
-	// System.out.println("intersect frustum with box="+this.toString()); 
-	// System.out.println("frustum "+frustum.toString()); 
+	// System.err.println("intersect frustum with box="+this.toString()); 
+	// System.err.println("frustum "+frustum.toString()); 
 	// check if box and bounding box  of frustum intersect 
         if ((upper.x < frustum.lower.x) || 
 	    (lower.x > frustum.upper.x) ||
@@ -1775,7 +1775,7 @@ public class BoundingBox extends Bounds {
             (upper.z < frustum.lower.z) ||
 	    (lower.z > frustum.upper.z) ) {
 	    
-	    // System.out.println("*** box and bounding box of frustum do not intersect");
+	    // System.err.println("*** box and bounding box of frustum do not intersect");
 	    return false;
 	}
 
@@ -1800,7 +1800,7 @@ public class BoundingBox extends Bounds {
 		(( lower.x*vc.x +  upper.y*vc.y + 
 		   lower.z*vc.z + vc.w ) < 0.0 )) {
 		// all corners outside this frustum plane
-		// System.out.println("*** all corners outside this frustum plane");
+		// System.err.println("*** all corners outside this frustum plane");
 		return false;
 	    }
 	}

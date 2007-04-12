@@ -58,7 +58,7 @@ class SourceCodeShaderRetained extends ShaderRetained {
     }    
 
     synchronized void createMirrorObject() {
-	// System.out.println("SourceCodeShaderRetained : createMirrorObject");
+	// System.err.println("SourceCodeShaderRetained : createMirrorObject");
 
 	if (mirror == null) {
 	    SourceCodeShaderRetained  mirrorSCS = new SourceCodeShaderRetained();
@@ -79,7 +79,7 @@ class SourceCodeShaderRetained extends ShaderRetained {
     }
 
     synchronized void updateMirrorObject(int component, Object value) {
-	System.out.println("SourceCodeShader.updateMirrorObject not implemented yet!");
+	System.err.println("SourceCodeShader.updateMirrorObject not implemented yet!");
     }
 
 }

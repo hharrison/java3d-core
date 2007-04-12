@@ -705,7 +705,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
   
     // Option 2:
     // use only necessary code from setCoordIndicesRef
-    // System.out.println("IndexedGeometryArrayretained#doUpdaterUpdate");
+    // System.err.println("IndexedGeometryArrayretained#doUpdaterUpdate");
 	int newMax = 0;
 
         if (indexCoord != null) {
@@ -1105,7 +1105,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) == 0) {
 	    if ((vertexFormat & GeometryArray.BY_REFERENCE) == 0) {
 		float[] vdata;
-		//	    System.out.println("by-copy");
+		//	    System.err.println("by-copy");
 		synchronized (this) {
 		    cdirty = dirtyFlag;
 		    if (updateAlpha && !ignoreVertexColors) {
@@ -1477,7 +1477,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    
 	    if ((vertexFormat & GeometryArray.BY_REFERENCE) == 0) {
                 float[] vdata;
-		//	    System.out.println("by-copy");
+		//	    System.err.println("by-copy");
 		synchronized (this) {
 		    cdirty = dirtyFlag;
 		    if (updateAlpha && !ignoreVertexColors) {

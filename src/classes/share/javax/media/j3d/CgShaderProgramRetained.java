@@ -26,7 +26,7 @@ class CgShaderProgramRetained extends ShaderProgramRetained {
     }
 
     synchronized void createMirrorObject() {
-	// System.out.println("CgShaderProgramRetained : createMirrorObject");
+	// System.err.println("CgShaderProgramRetained : createMirrorObject");
         // This method should only call by setLive().
 	if (mirror == null) {
 	    CgShaderProgramRetained  mirrorCgSP = new CgShaderProgramRetained();	    

@@ -576,7 +576,7 @@ class Text3DRetained extends GeometryRetained {
 				    }
 
 				    if(kk==newGAArray.length) {
-					System.out.println("Text3DRetained : Problem !!! Can't find matching geomAtom"); 
+					System.err.println("Text3DRetained : Problem !!! Can't find matching geomAtom"); 
 				    }
 
 				    ct = ti.getCachedTargets(TargetsInterface.

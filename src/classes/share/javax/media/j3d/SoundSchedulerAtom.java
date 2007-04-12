@@ -612,7 +612,7 @@ class SoundSchedulerAtom extends Object {
 
     void debugPrint(String message) {
         if (debugFlag) {
-            System.out.println(message);
+            System.err.println(message);
 	}
     }
 

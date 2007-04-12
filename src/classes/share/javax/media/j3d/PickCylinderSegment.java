@@ -161,12 +161,12 @@ public final class PickCylinderSegment extends PickCylinder {
 		{new Point3d(upper.x, lower.y, lower.z), new Point3d(upper.x, lower.y, upper.z)}
 	    };
 	    for (int i=0;i<edges.length;i++) {
-		//	System.out.println ("Testing edge: "+edges[i][0]+" - "+edges[i][1]);
+		//	System.err.println ("Testing edge: "+edges[i][0]+" - "+edges[i][1]);
 		double distToEdge = 
 		    Distance.segmentToSegment (origin, end, 
 					       edges[i][0], edges[i][1]);
 		if (distToEdge <= radius*radius) {
-		    //	  System.out.println ("Intersects!");
+		    //	  System.err.println ("Intersects!");
 		    return true;
 		}
 	    }

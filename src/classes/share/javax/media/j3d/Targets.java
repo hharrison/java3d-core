@@ -77,10 +77,10 @@ class Targets {
 		NnuId[] nArr = new NnuId[size];
 		targetList[i].toArray(nArr);
 		cachedTargets.targetArr[i] = nArr;
-		// System.out.println("Before sort : ");
+		// System.err.println("Before sort : ");
 		// NnuIdManager.printIds(cachedTargets.targetArr[i]);
 		NnuIdManager.sort((NnuId[])cachedTargets.targetArr[i]);
-		// System.out.println("After sort : ");
+		// System.err.println("After sort : ");
 		// NnuIdManager.printIds(cachedTargets.targetArr[i]);
 	    } else {
 		cachedTargets.targetArr[i] = null;
@@ -154,7 +154,7 @@ class Targets {
 		
 	    }
 	    else if((targetList[i] != null) && (cachedTargets.targetArr[i] == null)) {
-		System.out.println("You can't remove something that isn't there");
+		System.err.println("You can't remove something that isn't there");
 	    }
 
 	}
@@ -188,9 +188,9 @@ class Targets {
     void dump() {
         for(int i=0; i<Targets.MAX_NODELIST; i++) {
             if (targetList[i] != null) {
-                System.out.println("  " + CachedTargets.typeString[i]);
+                System.err.println("  " + CachedTargets.typeString[i]);
                 for(int j=0; j<targetList[i].size(); j++) {
-                    System.out.println("  " + targetList[i].get(j));
+                    System.err.println("  " + targetList[i].get(j));
                 }
             }
         }

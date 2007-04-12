@@ -249,7 +249,7 @@ class ViewCache extends Object {
 	    vcDirtyMask |= vpRetained.vprDirtyMask; 
 	    vpRetained.vprDirtyMask = 0;
 	    viewAttachPolicy = vpRetained.viewAttachPolicy;
-	    // System.out.println("ViewCache snapshot vcDirtyMask " + vcDirtyMask );
+	    // System.err.println("ViewCache snapshot vcDirtyMask " + vcDirtyMask );
 	}
 	
 	// PhysicalEnvironment parameters
@@ -305,8 +305,8 @@ class ViewCache extends Object {
     synchronized void computeDerivedData() {
 	if (doHeadTracking) {
 	    trackerBaseToHeadTracker.invert(headTrackerToTrackerBase);
-	    //System.out.println("trackerBaseToHeadTracker: ");
-	    //System.out.println(trackerBaseToHeadTracker);
+	    //System.err.println("trackerBaseToHeadTracker: ");
+	    //System.err.println(trackerBaseToHeadTracker);
 	}
 	else {
 	    trackerBaseToHeadTracker.setIdentity();
@@ -336,7 +336,7 @@ class ViewCache extends Object {
 	this.view = view;
 
 	if (false)
-	    System.out.println("Constructed a ViewCache");
+	    System.err.println("Constructed a ViewCache");
     }
 
 }

@@ -25,7 +25,7 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     }
     
     synchronized void createMirrorObject() {
-	// System.out.println("ShaderAttributeValueRetained : createMirrorObject");
+	// System.err.println("ShaderAttributeValueRetained : createMirrorObject");
         // This method should only call by setLive().
 	if (mirror == null) {
             ShaderAttributeValueRetained mirrorSAV = new ShaderAttributeValueRetained();

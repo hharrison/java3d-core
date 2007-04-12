@@ -1329,7 +1329,7 @@ abstract class TextureRetained extends NodeComponentRetained {
         // is a RenderedImage ( byRef and yUp), then imageData will be null
         
         if (imageData == null) {
-            //		    System.out.println("==========. subImage");
+            //		    System.err.println("==========. subImage");
 	    // Download all the tiles for this texture
 	    int xoffset = 0, yoffset = 0;
 	    int tmpw = image.width;
@@ -1404,7 +1404,7 @@ abstract class TextureRetained extends NodeComponentRetained {
         //The x and y here specifies the subregion of the imageData of
         //the associated RenderedImage.
 
-	//System.out.println("\nupdateTextureSubImage: x= " + x + " y= " + y +
+	//System.err.println("\nupdateTextureSubImage: x= " + x + " y= " + y +
 	//			" width= " + width + " height= " + height +
 	//			" format= " + format);
 
@@ -1428,7 +1428,7 @@ abstract class TextureRetained extends NodeComponentRetained {
             
         } else {
 
-	    // System.out.println("RenderedImage subImage update");
+	    // System.err.println("RenderedImage subImage update");
 	    // determine the first tile of the image
 
             float mt;
@@ -1569,7 +1569,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	int blevel, mlevel;
 
-	//System.out.println("reloadTexture: baseLevel= " + baseLevel +
+	//System.err.println("reloadTexture: baseLevel= " + baseLevel +
 	//			" maximumLevel= " + maximumLevel);
 
 	if ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_LOD_RANGE) == 0 ) {
@@ -1611,7 +1611,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
     void updateTexture(Canvas3D cv, int resourceBit) {
 
-	//System.out.println("updateTexture\n");
+	//System.err.println("updateTexture\n");
 
 	ImageComponentUpdateInfo info;
 
@@ -1724,7 +1724,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	boolean updateTexture = false; // true - update a portion of texture
 	boolean updateTextureLod = false; // true - update texture Lod info
 
-        //System.out.println("Texture/updateNative: " + this + "object= " + objectId + " enable= " + enable);
+        //System.err.println("Texture/updateNative: " + this + "object= " + objectId + " enable= " + enable);
 
 	bindTexture(cv);
         
@@ -1784,11 +1784,11 @@ abstract class TextureRetained extends NodeComponentRetained {
 	}
 
 
-//System.out.println("......... reloadTexture= " + reloadTexture +
+//System.err.println("......... reloadTexture= " + reloadTexture +
 //		 " updateTexture= " + updateTexture + 
 //		 " updateTextureLod= " + updateTextureLod);
 
-//System.out.println("......... resourceCreationMask= " + resourceCreationMask +
+//System.err.println("......... resourceCreationMask= " + resourceCreationMask +
 //		   " resourceUpdatedMask= " + resourceUpdatedMask);
  
 	if (reloadTexture) {
@@ -2009,7 +2009,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     void pruneImageUpdateInfo() {
 	ImageComponentUpdateInfo info;
 
-	//System.out.println("Texture.pruneImageUpdateInfo");
+	//System.err.println("Texture.pruneImageUpdateInfo");
 
 	for (int k = 0; k < numFaces; k++) {
 	    for (int i = baseLevel; i <= maximumLevel; i++) {
@@ -2315,7 +2315,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     void notifyImageComponentImageChanged(ImageComponentRetained image,
 					ImageComponentUpdateInfo value) {
 
-        //System.out.println("Texture.notifyImageComponentImageChanged");
+        //System.err.println("Texture.notifyImageComponentImageChanged");
 
 
 	// if this texture is to be reloaded, don't bother to keep
@@ -2449,7 +2449,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	createMessage.args[3] = new Integer(changedFrequent);
 	VirtualUniverse.mc.processMessage(createMessage);
 
-	// System.out.println("univList.size is " + univList.size());
+	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;

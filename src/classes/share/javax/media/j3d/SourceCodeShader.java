@@ -73,7 +73,7 @@ public class SourceCodeShader extends Shader {
     void createRetained() {
 	this.retained = new SourceCodeShaderRetained();
 	this.retained.setSource(this);
-	// System.out.println("SourceCodeShader.createRetained()");
+	// System.err.println("SourceCodeShader.createRetained()");
     }
     
     /**

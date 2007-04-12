@@ -158,16 +158,16 @@ public class PickInfo extends Object {
 	    IntersectionInfo iInfoArr[];
 
 	    Sort(IntersectionInfo[] iInfoArr) {
-                // System.out.println("Sort IntersectionInfo ...");
+                // System.err.println("Sort IntersectionInfo ...");
 		this.iInfoArr = iInfoArr;
 	    }
 
 	    void sorting() {
 		if (iInfoArr.length < 7) {
-                    // System.out.println(" -- insertSort.");
+                    // System.err.println(" -- insertSort.");
 		    insertSort();
 	    	} else {
-                    // System.out.println(" -- quicksort.");                    
+                    // System.err.println(" -- quicksort.");                    
 		    quicksort(0, iInfoArr.length-1);
     		}
 	    }
@@ -217,16 +217,16 @@ public class PickInfo extends Object {
 	    PickInfo pIArr[];
 
 	    Sort(PickInfo[] pIArr) {
-                // System.out.println("Sort PickInfo ...");
+                // System.err.println("Sort PickInfo ...");
 		this.pIArr = pIArr;
 	    }
 
 	    void sorting() {
 		if (pIArr.length < 7) {
-                    // System.out.println(" -- insertSort.");
+                    // System.err.println(" -- insertSort.");
 		    insertSort();
 	    	} else {
-                    // System.out.println(" -- quicksort.");                    
+                    // System.err.println(" -- quicksort.");                    
 		    quicksort(0, pIArr.length-1);
     		}
 	    }
@@ -802,7 +802,7 @@ public class PickInfo extends Object {
         if((mode == PICK_GEOMETRY) && (pickInfoList != null) && 
 	   ((pickInfoListSize = pickInfoList.size()) > 0)) {
             
-            //System.out.println("PickInfo.pick() - In geometry case : pickInfoList.size() is " + pickInfoListSize);
+            //System.err.println("PickInfo.pick() - In geometry case : pickInfoList.size() is " + pickInfoListSize);
             PickInfo pickInfo = null;
             Node pickNode = null;
             
@@ -872,7 +872,7 @@ public class PickInfo extends Object {
 		    }
 		    
 		    if (((Shape3DRetained)(pickNode.retained)).intersect(pickInfo, pickShape, flags) == false) {
-			// System.out.println("  ---- geom " + i + " not intersected");
+			// System.err.println("  ---- geom " + i + " not intersected");
 
                         pickInfoList.remove(i);			
 
@@ -946,11 +946,11 @@ public class PickInfo extends Object {
             }
         }
 
-	// System.out.println("PickInfo : pickInfoList " + pickInfoList);
+	// System.err.println("PickInfo : pickInfoList " + pickInfoList);
 
         if ((pickInfoList != null) && (pickInfoList.size() > 0)) {
-	    // System.out.println("   ---  : pickInfoList.size() " + pickInfoList.size());
-	    // System.out.println("   ---  : pickInfoList's sgp " + 
+	    // System.err.println("   ---  : pickInfoList.size() " + pickInfoList.size());
+	    // System.err.println("   ---  : pickInfoList's sgp " + 
 	    // ((PickInfo)(pickInfoList.get(0))).getSceneGraphPath());
 	    pickInfoArr = new PickInfo[pickInfoList.size()];
 	    return (PickInfo []) pickInfoList.toArray(pickInfoArr); 

@@ -849,7 +849,7 @@ public class BoundingSphere extends Bounds {
  
 	rad2 = radius*radius;
 	if( l2oc < rad2 ){
-	    //      System.out.println("ray origin inside sphere" );
+	    //      System.err.println("ray origin inside sphere" );
 	    return true;   // ray origin inside sphere
 	}
  
@@ -862,7 +862,7 @@ public class BoundingSphere extends Bounds {
 	tca = oc.x*dir.x + oc.y*dir.y + oc.z*dir.z;
  
 	if( tca <= 0.0 ) {
-	    //      System.out.println("ray points away from sphere" );
+	    //      System.err.println("ray points away from sphere" );
 	    return false;  // ray points away from sphere
 	}
 	
@@ -870,14 +870,14 @@ public class BoundingSphere extends Bounds {
 	
 	if( t2hc > 0.0 ){
 	    t = tca - Math.sqrt(t2hc);
-	    //      System.out.println("ray  hits sphere:"+this.toString()+" t="+t+" direction="+dir );
+	    //      System.err.println("ray  hits sphere:"+this.toString()+" t="+t+" direction="+dir );
 	    position.x = origin.x + dir.x*t;
 	    position.y = origin.y + dir.y*t;
 	    position.z = origin.z + dir.z*t;
 	    position.w = t;
 	    return true;   // ray hits sphere
 	}else {
-	    //      System.out.println("ray does not hit sphere" );
+	    //      System.err.println("ray does not hit sphere" );
 	    return false;
 	}
 
@@ -965,14 +965,14 @@ public class BoundingSphere extends Bounds {
  
 	rad2 = radius*radius;
 	if( l2oc < rad2 ){
-	    //      System.out.println("ray origin inside sphere" );
+	    //      System.err.println("ray origin inside sphere" );
 	    return true;   // ray origin inside sphere
 	}   
  
 	tca = oc.x*dir.x + oc.y*dir.y + oc.z*dir.z;
  
 	if( tca <= 0.0 ) {
-	    //      System.out.println("ray points away from sphere" );
+	    //      System.err.println("ray points away from sphere" );
 	    return false;  // ray points away from sphere
 	}   
  
@@ -1022,7 +1022,7 @@ public class BoundingSphere extends Bounds {
 
 	rad2 = radius*radius;
 	if( l2oc < rad2 ){
-	    //	System.out.println("ray origin inside sphere" );
+	    //	System.err.println("ray origin inside sphere" );
 	    return true;   // ray origin inside sphere
 	}
 
@@ -1035,17 +1035,17 @@ public class BoundingSphere extends Bounds {
 	tca = oc.x*dir.x + oc.y*dir.y + oc.z*dir.z;
 
 	if( tca <= 0.0 ) {
-	    //	System.out.println("ray points away from sphere" );
+	    //	System.err.println("ray points away from sphere" );
 	    return false;  // ray points away from sphere
 	}
 
 	t2hc = rad2 - l2oc + tca*tca;
 
 	if( t2hc > 0.0 ){ 
-	    //	System.out.println("ray hits sphere" );
+	    //	System.err.println("ray hits sphere" );
 	    return true;   // ray hits sphere
 	}else { 
-	    //	System.out.println("ray does not hit sphere" );
+	    //	System.err.println("ray does not hit sphere" );
 	    return false;
 	}
     }  
@@ -1081,7 +1081,7 @@ public class BoundingSphere extends Bounds {
 
 	rad2 = radius*radius;
 	if( l2oc < rad2 ){
-	    //	System.out.println("ray origin inside sphere" );
+	    //	System.err.println("ray origin inside sphere" );
 	    return true;   // ray origin inside sphere
 	}
 	
@@ -1094,7 +1094,7 @@ public class BoundingSphere extends Bounds {
 	tca = oc.x*dir.x + oc.y*dir.y + oc.z*dir.z;
 
 	if( tca <= 0.0 ) {
-	    //	System.out.println("ray points away from sphere" );
+	    //	System.err.println("ray points away from sphere" );
 	    return false;  // ray points away from sphere
 	}
 
@@ -1105,10 +1105,10 @@ public class BoundingSphere extends Bounds {
 	    intersectPoint.x = origin.x + direction.x*t;
 	    intersectPoint.y = origin.y + direction.y*t;
 	    intersectPoint.z = origin.z + direction.z*t;
-	    //	System.out.println("ray hits sphere" );
+	    //	System.err.println("ray hits sphere" );
 	    return true;   // ray hits sphere
 	}else { 
-	    //	System.out.println("ray does not hit sphere" );
+	    //	System.err.println("ray does not hit sphere" );
 	    return false;
 	}
     }
@@ -1688,7 +1688,7 @@ public class BoundingSphere extends Bounds {
 	    dist = planes[i].x*center.x + planes[i].y*center.y + 
 	        planes[i].z*center.z + planes[i].w;
 	    if (dist < 0.0 && (dist + radius) < 0.0) {
-		//System.out.println("Tossing " + i + " " + dist + " " + radius);
+		//System.err.println("Tossing " + i + " " + dist + " " + radius);
 		return(false);
 	    }
 	}

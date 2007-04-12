@@ -217,20 +217,20 @@ abstract class GeometryDecompressor {
 	}
 
 	if (printNormalTable) {
-	    System.out.println("struct {") ;
-	    System.out.println("    double nx, ny, nz ;") ;
-	    System.out.println("} gcNormals[65][65] = {");
+	    System.err.println("struct {") ;
+	    System.err.println("    double nx, ny, nz ;") ;
+	    System.err.println("} gcNormals[65][65] = {");
 	    for (i = 0 ; i <= 64 ; i++) {
-		System.out.println("{") ;
+		System.err.println("{") ;
 		for (j = 0 ; j <= 64 ; j++) {
 		    if (j+i > 64) continue ;
-		    System.out.println("{ " + gcNormals[i][j][0] +
+		    System.err.println("{ " + gcNormals[i][j][0] +
 				       ", " + gcNormals[i][j][1] +
 				       ", " + gcNormals[i][j][2] + " }") ;
 		}
-		System.out.println("},") ;
+		System.err.println("},") ;
 	    }
-	    System.out.println("}") ;
+	    System.err.println("}") ;
 	}
     }
 
@@ -274,7 +274,7 @@ abstract class GeometryDecompressor {
      */
     void decompress(int start, int length, byte data[]) {
 	if (debug)
-	    System.out.println("GeometryDecompressor.decompress\n" +
+	    System.err.println("GeometryDecompressor.decompress\n" +
 			       " start: " + start +
 			       " length: " + length +
 			       " data array size: " + data.length) ;
@@ -320,12 +320,12 @@ abstract class GeometryDecompressor {
 	int bits ;
 
 	if (debug)
-	    System.out.print(" getBits(" + bitCount + ") " + d + ", " +
+	    System.err.print(" getBits(" + bitCount + ") " + d + ", " +
 			     bitBufferCount + " available at gcIndex " +
 			     gcIndex) ;
 
 	if (bitCount == 0) {
-	    if (debug) System.out.println(": got 0x0") ;
+	    if (debug) System.err.println(": got 0x0") ;
 	    return 0 ;
 	}
 	
@@ -361,7 +361,7 @@ abstract class GeometryDecompressor {
 	}
 
 	if (debug)
-	    System.out.println(": got 0x" + Integer.toHexString(bits)) ;
+	    System.err.println(": got 0x" + Integer.toHexString(bits)) ;
 
 	return bits ;
     }
@@ -481,7 +481,7 @@ abstract class GeometryDecompressor {
     private void processSetState() {
 	int ii ;
 	if (debug)
-	    System.out.println("GeometryDecompressor.processSetState") ;
+	    System.err.println("GeometryDecompressor.processSetState") ;
 
 	ii = getBits(3, "bundling") ;
 
@@ -490,7 +490,7 @@ abstract class GeometryDecompressor {
 	doingAlpha    = (((ii >>> 1) & 0x1) != 0) ;
 
 	if (debug)
-	    System.out.println(" bundling normal: " + bundlingNorm  +
+	    System.err.println(" bundling normal: " + bundlingNorm  +
 			       " bundling color: "  + bundlingColor +
 			       " alpha present: "   + doingAlpha) ;
 
@@ -510,7 +510,7 @@ abstract class GeometryDecompressor {
 	int ii, index ;
 
 	if (debug)
-	    System.out.println("GeometryDecompressor.processSetTable") ;
+	    System.err.println("GeometryDecompressor.processSetTable") ;
 
 	// Get reference to approprate 64 entry table.
 	index = (currentHeader & 0x6) >>> 1 ;
@@ -544,7 +544,7 @@ abstract class GeometryDecompressor {
 	adr = (adr << (6 - tagLength)) & 0x3F ;
 
 	if (debug)
-	    System.out.println(" table " + ((currentHeader & 0x6) >>> 1) +
+	    System.err.println(" table " + ((currentHeader & 0x6) >>> 1) +
 			       " address "     + adr +
 			       " tag length "  + tagLength +
 			       " data length " + dataLength +
@@ -579,7 +579,7 @@ abstract class GeometryDecompressor {
 	// Get a reference to the approprate tag table entry.
 	gct = gctables[0][currentHeader & 0x3F] ;
 
-	if (debug) System.out.println("GeometryDecompressor.processVertex\n" +
+	if (debug) System.err.println("GeometryDecompressor.processVertex\n" +
 				      gct.toString()) ;
 
 	// Get the true length of the data.
@@ -650,11 +650,11 @@ abstract class GeometryDecompressor {
 	// Update current position, first adding deltas if in relative mode.
 	if (gct.absolute != 0) {
 	    curX = dx ; curY = dy ; curZ = dz ;
-	    if (debug) System.out.println(" absolute position: " +
+	    if (debug) System.err.println(" absolute position: " +
 					  curX + " " + curY + " " + curZ) ;
 	} else {
 	    curX += dx ; curY += dy ; curZ += dz ;
-	    if (debug) System.out.println(" delta position: " +
+	    if (debug) System.err.println(" delta position: " +
 					  dx + " " + dy + " " + dz) ;
 	}
 
@@ -666,7 +666,7 @@ abstract class GeometryDecompressor {
 	    meshBuffer[meshIndex].y = curY ;
 	    meshBuffer[meshIndex].z = curZ ;
 	    if (debug)
-		System.out.println(" pushed position into mesh buffer at " +
+		System.err.println(" pushed position into mesh buffer at " +
 				   meshIndex) ;
 	}
 
@@ -675,7 +675,7 @@ abstract class GeometryDecompressor {
 	fY = curY ; fY /= 32768.0 ;
 	fZ = curZ ; fZ /= 32768.0 ;
 	if (debug)
-	    System.out.println(" result position " + fX + " " + fY + " " + fZ) ;
+	    System.err.println(" result position " + fX + " " + fY + " " + fZ) ;
 
 	curPos.set(fX, fY, fZ) ;
 	return mbp ;
@@ -697,7 +697,7 @@ abstract class GeometryDecompressor {
 	gct = gctables[2][currentHeader & 0x3F] ;
 
 	if (debug)
-	    System.out.println("GeometryDecompressor.processSetNormal\n" +
+	    System.err.println("GeometryDecompressor.processSetNormal\n" +
 			       gct.toString()) ;
 
 	// subtract up-shift amount to get true data (u, v) length
@@ -728,11 +728,11 @@ abstract class GeometryDecompressor {
 
 	    if (debug) {
 		if (curSex < 6)
-		    System.out.println(" absolute normal: sex " + curSex +
+		    System.err.println(" absolute normal: sex " + curSex +
 				       " oct " + curOct +
 				       " u "   + curU   + " v " + curV) ;
 		else
-		    System.out.println(" special normal: sex " + curSex +
+		    System.err.println(" special normal: sex " + curSex +
 				       " oct " + curOct) ;
 	    }
 	} else {
@@ -780,7 +780,7 @@ abstract class GeometryDecompressor {
 	    curV += dv ;
 
 	    if (debug)
-		System.out.println(" delta normal: du " + du + " dv " + dv) ;
+		System.err.println(" delta normal: du " + du + " dv " + dv) ;
 
 	    //
 	    // Check for normal wrap.
@@ -832,7 +832,7 @@ abstract class GeometryDecompressor {
 	// do optional mesh buffer push
 	if (mbp != 0) {
 	    if (debug)
-		System.out.println(" pushing normal into mesh buffer at " +
+		System.err.println(" pushing normal into mesh buffer at " +
 				   meshIndex) ;
 
 	    meshBuffer[meshIndex].sextant = (short)curSex ;
@@ -856,7 +856,7 @@ abstract class GeometryDecompressor {
     private void indexNormal(int sex, int oct, int u, int v, Vector3f n) {
 	float nx, ny, nz, t ;
 
-	if (debug) System.out.println(" sextant " + sex + " octant " + oct  +
+	if (debug) System.err.println(" sextant " + sex + " octant " + oct  +
 				      " u " + u + " v " + v) ;
 	if (sex > 5) {
 	    // special normals
@@ -902,7 +902,7 @@ abstract class GeometryDecompressor {
 	// return resulting normal
 	n.set(nx, ny, nz) ;
 	if (debug)
-	    System.out.println(" result normal: " + nx + " " + ny + " " + nz) ;
+	    System.err.println(" result normal: " + nx + " " + ny + " " + nz) ;
     }
 
 
@@ -923,7 +923,7 @@ abstract class GeometryDecompressor {
 	gct = gctables[1][currentHeader & 0x3F] ;
 
 	if (debug)
-	    System.out.println("GeometryDecompressor.processSetColor\n" +
+	    System.err.println("GeometryDecompressor.processSetColor\n" +
 			       gct.toString()) ;
 
 	// Get the true length of the data.
@@ -1014,13 +1014,13 @@ abstract class GeometryDecompressor {
 	if (gct.absolute != 0) {
 	    curR = dr ; curG = dg ; curB = db ;
 	    if (doingAlpha) curA = da ;
-	    if (debug) System.out.println(" absolute color: r " + curR +
+	    if (debug) System.err.println(" absolute color: r " + curR +
 					  " g " + curG + " b " + curB +
 					  " a " + curA) ;
 	} else {
 	    curR += dr ; curG += dg ; curB += db ;
 	    if (doingAlpha) curA += da ;
-	    if (debug) System.out.println(" delta color: dr "  + dr +
+	    if (debug) System.err.println(" delta color: dr "  + dr +
 					  " dg " + dg + " db " + db +
 					  " da " + da) ;
 	}
@@ -1028,7 +1028,7 @@ abstract class GeometryDecompressor {
 	// Do optional mesh buffer push.
 	if (mbp != 0) {
 	    if (debug)
-		System.out.println(" pushing color into mesh buffer at " +
+		System.err.println(" pushing color into mesh buffer at " +
 				   meshIndex) ;
 
 	    meshBuffer[meshIndex].r = curR ;
@@ -1044,7 +1044,7 @@ abstract class GeometryDecompressor {
 	fA = curA ; fA /= 32768.0 ;
 
 	curColor.set(fR, fG, fB, fA) ;
-	if (debug) System.out.println(" result color: " + fR +
+	if (debug) System.err.println(" result color: " + fR +
 				      " " + fG + " " + fB + " " + fA) ;
 
 	// A set color opcode when colors aren't bundled with the vertices
@@ -1062,7 +1062,7 @@ abstract class GeometryDecompressor {
 	int ii ;
 
 	if (debug)
-	    System.out.println("GeometryDecompressor.processMeshBR") ;
+	    System.err.println("GeometryDecompressor.processMeshBR") ;
 
 	ii = getBits(1, "mbr") ;
 
@@ -1072,7 +1072,7 @@ abstract class GeometryDecompressor {
 	// Adjust index to proper place in fifo.
 	index = (meshIndex - index) & 0xf ;
 	if (debug)
-	    System.out.println(" using index " + index) ;
+	    System.err.println(" using index " + index) ;
 
 	// Get reference to mesh buffer entry.
 	entry = meshBuffer[index] ;
@@ -1085,7 +1085,7 @@ abstract class GeometryDecompressor {
 		   ((float)curY)/32768.0f,
 		   ((float)curZ)/32768.0f) ;
 
-	if (debug) System.out.println(" retrieved position " + curPos.x +
+	if (debug) System.err.println(" retrieved position " + curPos.x +
 				      " " + curPos.y + " " + curPos.z +
 				      " replace code " + repCode) ;
 
@@ -1099,7 +1099,7 @@ abstract class GeometryDecompressor {
 	    // Convert normal back to -1.0 - 1.0 floating point from index.
 	    normal = (curSex<<15) | (curOct<<12) | (curU<<6) | curV ;
 
-	    if (debug) System.out.println(" retrieving normal") ;
+	    if (debug) System.err.println(" retrieving normal") ;
 	    indexNormal(curSex, curOct, curU, curV, curNorm) ;
 	}
 
@@ -1119,7 +1119,7 @@ abstract class GeometryDecompressor {
 		curColor.w = curA ; curColor.w /= 32768.0 ;
 	    }
 	    if (debug)
-		System.out.println(" retrieved color "    + curColor.x + 
+		System.err.println(" retrieved color "    + curColor.x + 
 				   " " + curColor.y + " " + curColor.z +
 				   " " + curColor.w) ;
 	}
@@ -1131,13 +1131,13 @@ abstract class GeometryDecompressor {
 
     // Process a end-of-stream opcode.
     private void processEos() {
-	if (debug) System.out.println("GeometryDecompressor.processEos") ;
+	if (debug) System.err.println("GeometryDecompressor.processEos") ;
     }
 
     // Process a variable length no-op opcode.
     private void processVNoop() {
 	int ii, ct ;
-	if (debug) System.out.println("GeometryDecompressor.processVNoop") ;
+	if (debug) System.err.println("GeometryDecompressor.processVNoop") ;
 
 	ct = getBits(5, "noop count") ;
 	ii = getBits(ct, "noop bits") ;
@@ -1147,7 +1147,7 @@ abstract class GeometryDecompressor {
     private void processPassThrough() {
 	int ignore ;
 	if (debug)
-	    System.out.println("GeometryDecompressor.processPassThrough") ;
+	    System.err.println("GeometryDecompressor.processPassThrough") ;
 
 	ignore = getBits(24, "passthrough") ;
 	ignore = getBits(32, "passthrough") ;
@@ -1156,42 +1156,42 @@ abstract class GeometryDecompressor {
     // Process a skip-8 opcode.
     private void processSkip8() {
 	int skip ;
-	if (debug) System.out.println("GeometryDecompressor.processSkip8") ;
+	if (debug) System.err.println("GeometryDecompressor.processSkip8") ;
 
 	skip = getBits(8, "skip8") ;
     }
 
     private void benchmarkStart(int length) {
 	vertexCount = 0 ;
-	System.out.println(" GeometryDecompressor: decompressing " +
+	System.err.println(" GeometryDecompressor: decompressing " +
 			   length + " bytes...") ;
 	startTime = J3dClock.currentTimeMillis() ;
     }
 
     private void benchmarkPrint(int length) {
 	float t = (J3dClock.currentTimeMillis() - startTime) / 1000.0f ;
-	System.out.println
+	System.err.println
 	    ("  done in " + t + " sec." + "\n" +
 	     "  decompressed " + vertexCount + " vertices at " + 
 	     (vertexCount/t) + " vertices/sec\n") ;
 
-	System.out.print("  vertex data present: coords") ;
+	System.err.print("  vertex data present: coords") ;
 	int floatVertexSize = 12 ;
 	if (bundlingNorm) {
-	    System.out.print(" normals") ;
+	    System.err.print(" normals") ;
 	    floatVertexSize += 12 ;
 	}
 	if (bundlingColor) {
-	    System.out.println(" colors") ;
+	    System.err.println(" colors") ;
 	    floatVertexSize += 12 ;
 	}
 	if (doingAlpha) {
-	    System.out.println(" alpha") ;
+	    System.err.println(" alpha") ;
 	    floatVertexSize +=  4 ;
 	}
-	System.out.println() ;
+	System.err.println() ;
 
-	System.out.println
+	System.err.println
 	    ("  bytes of data in generalized strip output: " +
 	     (vertexCount * floatVertexSize) + "\n" +
 	     "  compression ratio: " +

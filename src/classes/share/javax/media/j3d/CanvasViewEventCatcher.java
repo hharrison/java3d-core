@@ -33,12 +33,12 @@ class CanvasViewEventCatcher extends ComponentAdapter {
     
     public void componentResized(ComponentEvent e) {
 	if (DEBUG) {
-	    System.out.println("Component resized " + e);
+	    System.err.println("Component resized " + e);
 	}
 	
 	if(e.getComponent() == canvas ) {
 	    if (DEBUG) {
-		System.out.println("It is canvas!");
+		System.err.println("It is canvas!");
 	    }
 	    synchronized(canvas) {
                 synchronized (canvas.dirtyMaskLock) {
@@ -59,7 +59,7 @@ class CanvasViewEventCatcher extends ComponentAdapter {
     
     public void componentMoved(ComponentEvent e) {
 	if (DEBUG) {
-	    System.out.println("Component moved " + e);
+	    System.err.println("Component moved " + e);
 	}
 
         synchronized(canvas) {

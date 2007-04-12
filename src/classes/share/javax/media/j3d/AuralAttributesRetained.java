@@ -190,7 +190,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
 
     void debugPrint(String message) {
         if (debugFlag) // leave test in in case debugFlag made non-static final
-            System.out.println(message);
+            System.err.println(message);
     }
 
 

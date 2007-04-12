@@ -937,7 +937,7 @@ public class BoundingPolytope extends Bounds {
 	    vd = planes[i].x*dx + planes[i].y*dy + planes[i].z*dz;
 	    v0 = -(planes[i].x*origin.x + planes[i].y*origin.y +
 		   planes[i].z*origin.z + planes[i].w);
-	    // System.out.println("v0="+v0+" vd="+vd);
+	    // System.err.println("v0="+v0+" vd="+vd);
 	    if(vd != 0.0) { // ray is parallel to plane
 		t = v0/vd;
  
@@ -946,7 +946,7 @@ public class BoundingPolytope extends Bounds {
 		    x = origin.x + dx*t;   // compute intersection point
 		    y = origin.y + dy*t;
 		    z = origin.z + dz*t;
-		    // System.out.println("t="+t+" point="+x+" "+y+" "+z);
+		    // System.err.println("t="+t+" point="+x+" "+y+" "+z);
  
 		    if( pointInPolytope(x,y,z) ) {
 			position.x = x;
@@ -1006,7 +1006,7 @@ public class BoundingPolytope extends Bounds {
 	double t,v0,vd,x,y,z;
 	int i,j;
 
-	//System.out.println("line segment intersect : planes.length " + planes.length);
+	//System.err.println("line segment intersect : planes.length " + planes.length);
 	
 	if( boundsIsEmpty ) {
 	    return false;
@@ -1031,18 +1031,18 @@ public class BoundingPolytope extends Bounds {
 		planes[i].z*direction.z;
 	    v0 = -(planes[i].x*start.x + planes[i].y*start.y +
 		   planes[i].z*start.z + planes[i].w);
-	    // System.out.println("v0="+v0+" vd="+vd);
+	    // System.err.println("v0="+v0+" vd="+vd);
 	    if(vd != 0.0) { // ray is parallel to plane
 		t = v0/vd;
 	     
-		// System.out.println("t is  " + t);
+		// System.err.println("t is  " + t);
 	     
 		if( t >= 0.0) { // plane is behind start
 	       
 		    x = start.x + direction.x*t;   // compute intersection point
 		    y = start.y + direction.y*t;
 		    z = start.z + direction.z*t;
-		    // System.out.println("t="+t+" point="+x+" "+y+" "+z);
+		    // System.err.println("t="+t+" point="+x+" "+y+" "+z);
 	       
 		    if( pointInPolytope(x,y,z) ) {
 			//                   if((t*t) > (end.x-start.x)*(end.x-start.x) +
@@ -1102,7 +1102,7 @@ public class BoundingPolytope extends Bounds {
 		    if( pointInPolytope(x,y,z) ) {
 			return true;  // ray intersects a face of polytope
 		    } else {
-			// System.out.println("point outside polytope");
+			// System.err.println("point outside polytope");
 		    }
 		} 
 	    }
@@ -1562,9 +1562,9 @@ public class BoundingPolytope extends Bounds {
 	    planes[a].z*planes[b].x*planes[c].y - planes[a].z*planes[b].y*planes[c].x -
 	    planes[a].y*planes[b].x*planes[c].z - planes[a].x*planes[b].z*planes[c].y; 
 
-	// System.out.println("\n det="+det);
+	// System.err.println("\n det="+det);
 	if( det*det < EPSILON ){
-	    // System.out.println("parallel planes="+a+" "+b+" "+c);
+	    // System.err.println("parallel planes="+a+" "+b+" "+c);
 	    return; // two planes are parallel
 	}
 	

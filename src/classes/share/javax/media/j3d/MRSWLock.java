@@ -47,7 +47,7 @@ class MRSWLock {
 	if(readCount>0)
 	    readCount--;
 	else
-	    if(debug) System.out.println("ReadWriteLock.java : Problem! readCount is >= 0.");
+	    if(debug) System.err.println("ReadWriteLock.java : Problem! readCount is >= 0.");
 	
 	if(lockRequested>0)
 	    notifyAll();

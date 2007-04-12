@@ -132,7 +132,7 @@ abstract class BHNode {
     void deleteFromParent() {
 	BHInternalNode parent;
 
-	// System.out.println("deleteFromParent - this " + this );
+	// System.err.println("deleteFromParent - this " + this );
 	parent = (BHInternalNode) (this.parent);
 	if(parent != null) {
 	    if(parent.rChild == this)
@@ -141,13 +141,13 @@ abstract class BHNode {
 		parent.lChild = null;
 	    else {
 		if(debug2) { 
-		    System.out.println("BHNode.java: Trouble! No match found. This can't happen.");
-		    System.out.println("this " + this );
+		    System.err.println("BHNode.java: Trouble! No match found. This can't happen.");
+		    System.err.println("this " + this );
 		    if ( this.nodeType == BHNode.BH_TYPE_INTERNAL) {
-			System.out.println("rChild " + ((BHInternalNode)this).rChild +
+			System.err.println("rChild " + ((BHInternalNode)this).rChild +
 					   " lChild " + ((BHInternalNode)this).lChild);
 		    }
-		    System.out.println("parent " + parent +
+		    System.err.println("parent " + parent +
 				       " parent.rChild " + parent.rChild +
 				       " parent.lChild " + parent.lChild);
 		}
@@ -167,7 +167,7 @@ abstract class BHNode {
 	    } else {
 		if(debug)
 		    if(((BHInternalNode)(this)).rChild == ((BHInternalNode)(this)).lChild)
-			System.out.println("rChild " + ((BHInternalNode)(this)).rChild +
+			System.err.println("rChild " + ((BHInternalNode)(this)).rChild +
 					   " lChild " + ((BHInternalNode)(this)).lChild);
 		
 		

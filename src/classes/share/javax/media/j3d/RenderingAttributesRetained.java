@@ -650,11 +650,11 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 	createMessage.args[0] = this;
 	createMessage.args[1]= new Integer(attrMask);
 	createMessage.args[2] = attr;
-	//	System.out.println("changedFreqent1 = "+changedFrequent);
+	//	System.err.println("changedFreqent1 = "+changedFrequent);
 	createMessage.args[3] = new Integer(changedFrequent);
 	VirtualUniverse.mc.processMessage(createMessage);
 
-	// System.out.println("univList.size is " + univList.size());
+	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
@@ -705,7 +705,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 
 	if (mask != 0)
 	    setFrequencyChangeMask(bit, mask);
-	//	System.out.println("changedFreqent2 = "+changedFrequent);
+	//	System.err.println("changedFreqent2 = "+changedFrequent);
     }
     
 }

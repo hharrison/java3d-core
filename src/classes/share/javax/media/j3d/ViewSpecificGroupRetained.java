@@ -72,7 +72,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 			objAry[2] = addLeafList;
 			/*
 			for (int n = 0; n < addLeafList.size(); n++) {
-			    System.out.println("Shared:n = "+n+" addLeafList = "+addLeafList.get(n));
+			    System.err.println("Shared:n = "+n+" addLeafList = "+addLeafList.get(n));
 			}
 			*/
 		      objAry[3] = super.processViewSpecificInfo(ADD_VIEW,
@@ -116,7 +116,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 
 		    /*
 		      for (int n = 0; n < addLeafList.size(); n++) {
-		      System.out.println("n = "+n+" addLeafList = "+addLeafList.get(n));
+		      System.err.println("n = "+n+" addLeafList = "+addLeafList.get(n));
 		      }
 		      */		      
 
@@ -268,10 +268,10 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		parentList.remove(v);
 	    }
 	    if(apiViewList.contains(v)) {
-	    //	    System.out.println("processViewSpecificInfo, this = "+this+" key = "+key);
+	    //	    System.err.println("processViewSpecificInfo, this = "+this+" key = "+key);
 		vsgList.add(this);
 		if (keyList.length< vsgList.size()) {
-		    //		    System.out.println("====> allocating new array");
+		    //		    System.err.println("====> allocating new array");
 		    newKeyList = new int[keyList.length+20];
 		    System.arraycopy(keyList, 0, newKeyList, 0, keyList.length);
 		    keyList = newKeyList;
@@ -331,7 +331,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 			objAry[2] = addLeafList;
 			/*
 			for (int n = 0; n < addLeafList.size(); n++) {
-			    System.out.println("Shared:n = "+n+" addLeafList = "+addLeafList.get(n));
+			    System.err.println("Shared:n = "+n+" addLeafList = "+addLeafList.get(n));
 			}
 			*/
 		      objAry[3] = super.processViewSpecificInfo(ADD_VIEW,
@@ -375,7 +375,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 
 		    /*
 		      for (int n = 0; n < addLeafList.size(); n++) {
-		      System.out.println("n = "+n+" addLeafList = "+addLeafList.get(n));
+		      System.err.println("n = "+n+" addLeafList = "+addLeafList.get(n));
 		      }
 		      */		      
 
@@ -465,7 +465,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 
 		    /*
 		      for (int n = 0; n < removeKeyList.size(); n++) {
-		      System.out.println("n = "+n+" keyValue = "+removeKeyList.get(n));
+		      System.err.println("n = "+n+" keyValue = "+removeKeyList.get(n));
 		      }
 		      */
 		    J3dMessage message = new J3dMessage();
@@ -588,7 +588,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		int[] newKeyList = new int[s.keyList.length+20];
 		System.arraycopy(s.keyList, 0, newKeyList, 0, s.keyList.length);
 		s.keyList = newKeyList;
-		//		System.out.println("====> RemovedNodeData: Allocating Non-shared");
+		//		System.err.println("====> RemovedNodeData: Allocating Non-shared");
 	    }
 	    s.keyList[size -1] = -1;
 	    parentLists.clear();
@@ -601,7 +601,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		int[] newKeyList = new int[s.keyList.length+s.keys.length+20];
 		System.arraycopy(s.keyList, 0, newKeyList, 0, s.keyList.length);
 		s.keyList = newKeyList;
-		//		System.out.println("====> RemovedNodeData: Allocating Shared");
+		//		System.err.println("====> RemovedNodeData: Allocating Shared");
 	    }
 	    // Must be in reverse, to preserve right indexing.
 	    for (i = s.keys.length-1; i >= 0; i--) {
@@ -621,9 +621,9 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	ArrayList list = (ArrayList) cachedViewList.get(index);
 
 	/*
-	System.out.println("updateCachedInformation v = "+this+" index = "+index+" list = "+list+" cachedViewList.size() = "+cachedViewList.size());
+	System.err.println("updateCachedInformation v = "+this+" index = "+index+" list = "+list+" cachedViewList.size() = "+cachedViewList.size());
 	for (int k = 0; k < cachedViewList.size(); k++) {
-	    System.out.println("v = "+this+" k = "+k+" v.cachedViewList.get(k) = "+cachedViewList.get(k));
+	    System.err.println("v = "+this+" k = "+k+" v.cachedViewList.get(k) = "+cachedViewList.get(k));
 	}
 	*/
 	if ((component & ADD_VIEW) != 0) {
@@ -633,9 +633,9 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	    list.remove(view);
 	}
 	/*
-	System.out.println("After updateCachedInformation v = "+this+" index = "+index+" list = "+list+" cachedViewList.size() = "+cachedViewList.size());
+	System.err.println("After updateCachedInformation v = "+this+" index = "+index+" list = "+list+" cachedViewList.size() = "+cachedViewList.size());
 	for (int k = 0; k < cachedViewList.size(); k++) {
-	    System.out.println("v = "+this+" k = "+k+" v.cachedViewList.get(k) = "+cachedViewList.get(k));
+	    System.err.println("v = "+this+" k = "+k+" v.cachedViewList.get(k) = "+cachedViewList.get(k));
 	}
 	*/
 
@@ -649,7 +649,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		int[] newKeyList = new int[s.keyList.length+20];
 		System.arraycopy(s.keyList, 0, newKeyList, 0, s.keyList.length);
 		s.keyList = newKeyList;
-		//		System.out.println("====> setNodeData: Allocating Non-shared");
+		//		System.err.println("====> setNodeData: Allocating Non-shared");
 	    }
             setAuxData(s, 0, 0);
         } else {
@@ -661,7 +661,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		int[] newKeyList = new int[s.keyList.length+s.keys.length+20];
 		System.arraycopy(s.keyList, 0, newKeyList, 0, s.keyList.length);
 		s.keyList = newKeyList;
-		//		System.out.println("====> setNodeData: Allocating Shared");
+		//		System.err.println("====> setNodeData: Allocating Shared");
 	    }
 
 	    for(j=0; j<s.keys.length; j++) {
@@ -686,7 +686,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	ArrayList parentList = null;
 	int size = apiViewList.size();
 	if (s.viewLists != null) {
-	    //	    System.out.println("=====> VSG: = "+this+" hkIndex = "+hkIndex+" s.viewLists = "+s.viewLists);
+	    //	    System.err.println("=====> VSG: = "+this+" hkIndex = "+hkIndex+" s.viewLists = "+s.viewLists);
 	    parentList = (ArrayList) s.viewLists.get(hkIndex);
 	    if (parentList != null) {
 		vl = new ArrayList();

@@ -194,7 +194,7 @@ class Texture3DRetained extends TextureRetained {
 			ImageComponentRetained image, int numLevels) {
 
 /*
-        System.out.println("Texture3D.reloadTextureImage: level= " + level +
+        System.err.println("Texture3D.reloadTextureImage: level= " + level +
 		" image.imageYup= " + image.imageYup + " w= " + image.width + 
 		" h= " + image.height + " d= " + depth + 
 		" numLevels= " + numLevels);

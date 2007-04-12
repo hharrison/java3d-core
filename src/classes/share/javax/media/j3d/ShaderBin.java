@@ -284,7 +284,7 @@ class ShaderBin implements ObjectUpdate {
 
 	TextureBin tb;
         
-	// System.out.println("ShaderBin.render() shaderProgram = " + shaderProgram);
+	// System.err.println("ShaderBin.render() shaderProgram = " + shaderProgram);
 
         // include this ShaderBin to the to-be-updated list in canvas
         cv.setStateToUpdate(Canvas3D.SHADERBIN_BIT, this);
@@ -304,7 +304,7 @@ class ShaderBin implements ObjectUpdate {
     
     void updateAttributes(Canvas3D cv) {
 
-        // System.out.println("ShaderBin.updateAttributes() shaderProgram is " + shaderProgram);
+        // System.err.println("ShaderBin.updateAttributes() shaderProgram is " + shaderProgram);
 	if (shaderProgram != null) {
             // Compile, link, and enable shader program
 	    shaderProgram.updateNative(cv, true);
@@ -326,20 +326,20 @@ class ShaderBin implements ObjectUpdate {
     }
 
     void updateNodeComponent() {
-	// System.out.println("ShaderBin.updateNodeComponent() ...");
+	// System.err.println("ShaderBin.updateNodeComponent() ...");
 	
 	// We don't need to clone shaderProgram. 	
 	// ShaderProgram object can't be modified once it is live, 
 	// so each update should be a new reference.
 	if ((componentDirty & SHADER_PROGRAM_DIRTY) != 0) {
-	    // System.out.println("  - SHADER_PROGRAM_DIRTY");
+	    // System.err.println("  - SHADER_PROGRAM_DIRTY");
 
 	    shaderProgram = shaderAppearance.shaderProgram;
 	}
 
 	// We need to clone the shaderAttributeSet.
 	if ((componentDirty & SHADER_ATTRIBUTE_SET_DIRTY) != 0) {
-	    // System.out.println("  - SHADER_ATTRIBUTE_SET_DIRTY");
+	    // System.err.println("  - SHADER_ATTRIBUTE_SET_DIRTY");
 
 	    HashMap attrs = (HashMap)shaderAttributeSet.getAttrs();
 	    attrs.clear();

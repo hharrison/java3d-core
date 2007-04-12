@@ -355,7 +355,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         super.doSetLive(inBackgroundGroup, refCount);
 	super.markAsLive();
 	// Send message to RenderingAttribute structure to obtain a dlistId
-	//	System.out.println("Geometry - "+this+"refCount = "+this.refCount);
+	//	System.err.println("Geometry - "+this+"refCount = "+this.refCount);
 	if (this.refCount > 1) {
 	    // Send to rendering attribute structure,
 	    /*
@@ -412,14 +412,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     void computeBoundingBox() {
 
-	//	System.out.println("computeBoundingBox ....");
+	//	System.err.println("computeBoundingBox ....");
 
 	if ((vertexFormat & GeometryArray.BY_REFERENCE) == 0) {
 	    // by copy	    
 	    computeBoundingBox(initialVertexIndex, vertexData);
 	    
 	} else if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) != 0) { // USE_NIO_BUFFER 
-	    //System.out.println("vertexFormat & GeometryArray.USE_NIO_BUFFER");
+	    //System.err.println("vertexFormat & GeometryArray.USE_NIO_BUFFER");
 	    if((vertexFormat & GeometryArray.INTERLEAVED) != 0) {
 		computeBoundingBox(initialCoordIndex, interleavedFloatBufferImpl);
 	    } else if((vertexType & PF) != 0) {
@@ -429,19 +429,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
 	    
 	} else if ((vertexFormat & GeometryArray.INTERLEAVED) != 0) {
-	    //System.out.println("vertexFormat & GeometryArray.INTERLEAVED");
+	    //System.err.println("vertexFormat & GeometryArray.INTERLEAVED");
 	    computeBoundingBox(initialCoordIndex, interLeavedVertexData);
 	} else if ((vertexType & PF) != 0) {
-	    //System.out.println("vertexType & PF");
+	    //System.err.println("vertexType & PF");
 	    computeBoundingBox(floatRefCoords);
 	} else if ((vertexType & P3F) != 0) {
-	    //System.out.println("vertexType & P3F");
+	    //System.err.println("vertexType & P3F");
 	    computeBoundingBox(p3fRefCoords);
 	} else if ((vertexType & P3D) != 0) {
-	    //System.out.println("vertexType & P3D");
+	    //System.err.println("vertexType & P3D");
 	    computeBoundingBox(p3dRefCoords);
 	} else if ((vertexType & PD) != 0) {
-	    //System.out.println("vertexType & PD");
+	    //System.err.println("vertexType & PD");
 	    computeBoundingBox(doubleRefCoords);
 	}
     }
@@ -451,9 +451,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void processCoordsChanged(boolean nullGeo) {
 	
 	/*
-	  System.out.println("processCoordsChanged : nullGeo " + nullGeo);
-	  System.out.println("Before :processCoordsChanged : geoBounds ");
-	  System.out.println(geoBounds);
+	  System.err.println("processCoordsChanged : nullGeo " + nullGeo);
+	  System.err.println("Before :processCoordsChanged : geoBounds ");
+	  System.err.println(geoBounds);
 	*/
 	if (nullGeo) {
 	    synchronized(geoBounds) {
@@ -479,8 +479,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
 	   
 	    /*
-	      System.out.println("After :processCoordsChanged : geoBounds ");
-	      System.out.println(geoBounds);
+	      System.err.println("After :processCoordsChanged : geoBounds ");
+	      System.err.println(geoBounds);
 	    */
 	}
     }
@@ -491,8 +491,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	double xmin, xmax, ymin, ymax, zmin, zmax;
 
 
-	//System.out.println("Before : computeBoundingBox : geoBounds ");
-	//  System.out.println(geoBounds);
+	//System.err.println("Before : computeBoundingBox : geoBounds ");
+	//  System.err.println(geoBounds);
 
 	synchronized(geoBounds) {
 
@@ -536,8 +536,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    boundsDirty = false; 
 	}
 	/*
-	  System.out.println("After : computeBoundingBox : geoBounds ");
-	  System.out.println(geoBounds);
+	  System.err.println("After : computeBoundingBox : geoBounds ");
+	  System.err.println(geoBounds);
 	*/	
     }
 
@@ -688,7 +688,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     }
 
     void computeBoundingBox(float[] coords) {
-	// System.out.println("GeometryArrayRetained : computeBoundingBox(float[] coords)"); 
+	// System.err.println("GeometryArrayRetained : computeBoundingBox(float[] coords)"); 
 	int i, j, k, sIndex;
 	double xmin, xmax, ymin, ymax, zmin, zmax;
 
@@ -730,9 +730,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
       
 	    }
 	    geoBounds.setUpper(xmax, ymax, zmax);
-	    // System.out.println("max(" + xmax + ", " + ymax + ", " + zmax + ")"); 
+	    // System.err.println("max(" + xmax + ", " + ymax + ", " + zmax + ")"); 
 	    geoBounds.setLower(xmin, ymin, zmin);
-	    // System.out.println("min(" + xmin + ", " + ymin + ", " + zmin + ")"); 
+	    // System.err.println("min(" + xmin + ", " + ymin + ", " + zmin + ")"); 
 
 	    boundsDirty = false; 
 	}
@@ -1654,7 +1654,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     float[] updateAlphaInFloatRefColors(Canvas3D cv, int screen, float alpha) {
 
-	//System.out.println("updateAlphaInFloatRefColors  screen = " + screen +
+	//System.err.println("updateAlphaInFloatRefColors  screen = " + screen +
 	//		   " alpha " + alpha );
 	
 	// no need to update alpha values if canvas supports global alpha
@@ -1688,7 +1688,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    lastAlpha = la;
 	}
 
-	//System.out.println("updateAlphaInFloatRefColors screen is " + screen 
+	//System.err.println("updateAlphaInFloatRefColors screen is " + screen 
 	//		     + " mirrorFloatRefColors.length " + 
 	//		     mirrorFloatRefColors.length);
 
@@ -1718,10 +1718,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
         assert lastAlpha[screen] >= 0.0;
 	/*
-	  System.out.println("updateAlphaInFloatRefColors ** : lastAlpha[screen] " +
+	  System.err.println("updateAlphaInFloatRefColors ** : lastAlpha[screen] " +
 			     lastAlpha[screen]);
 	  
-	  System.out.println("((colorChanged & (1<<screen)) == 0) " +
+	  System.err.println("((colorChanged & (1<<screen)) == 0) " +
 			     ((colorChanged & (1<<screen)) == 0));
 	*/
 
@@ -1730,13 +1730,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if (Math.abs(lastAlpha[screen] - alpha) <= EPSILON) {
 		// and if alpha is the same as the last one,
 		// just return the data
-		//System.out.println("updateAlphaInFloatRefColors 0 : alpha is the same as the last one " + alpha);
+		//System.err.println("updateAlphaInFloatRefColors 0 : alpha is the same as the last one " + alpha);
 
 	        return mirrorFloatRefColors[screen];
 	    } else {
 	
 		// if alpha is different, update the alpha values
-		//System.out.println("updateAlphaInFloatRefColors 1 : alpha is different, update the alpha values " + alpha);
+		//System.err.println("updateAlphaInFloatRefColors 1 : alpha is different, update the alpha values " + alpha);
 
 		float m = alpha / lastAlpha[screen];
 
@@ -1754,7 +1754,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		// just update alpha values since screen 0 data is
 		// already updated in setupMirrorColorPointer
 		
-		//System.out.println("updateAlphaInFloatRefColors 2 : just update alpha = " + alpha);
+		//System.err.println("updateAlphaInFloatRefColors 2 : just update alpha = " + alpha);
 		
 		float[] cdata = mirrorFloatRefColors[screen];
 		
@@ -1769,7 +1769,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 	    } else {
 		// update color values from screen 0 data
-		//System.out.println("updateAlphaInFloatRefColors 3 : update color values from screen 0 data " + alpha);
+		//System.err.println("updateAlphaInFloatRefColors 3 : update color values from screen 0 data " + alpha);
 
 		float m;
 
@@ -1803,7 +1803,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     byte[] updateAlphaInByteRefColors(Canvas3D cv, int screen, float alpha) {
 
 	/*
-	  System.out.println("updateAlphaInByteRefColors  screen = " + screen +
+	  System.err.println("updateAlphaInByteRefColors  screen = " + screen +
 	  " alpha " + alpha );
 	*/
 
@@ -1864,10 +1864,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
         assert lastAlpha[screen] >= 0.0;
         /*
-	System.out.println("updateAlphaInByteRefColors ## : lastAlpha[screen] " +
+	System.err.println("updateAlphaInByteRefColors ## : lastAlpha[screen] " +
 			   lastAlpha[screen]);
 	
-	System.out.println("((colorChanged & (1<<screen)) == 0) " +
+	System.err.println("((colorChanged & (1<<screen)) == 0) " +
 			   ((colorChanged & (1<<screen)) == 0));
 	*/
 
@@ -1876,13 +1876,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
             if (Math.abs(lastAlpha[screen] - alpha) <= EPSILON) {
                 // and if alpha is the same as the last one,
                 // just return the data
-		//System.out.println("updateAlphaInByteRefColors 0 : alpha is the same as the last one " + alpha);
+		//System.err.println("updateAlphaInByteRefColors 0 : alpha is the same as the last one " + alpha);
 
                 return mirrorUnsignedByteRefColors[screen];
             } else {
                 // if alpha is different, update the alpha values
 
-		//System.out.println("updateAlphaInByteRefColors 1 : alpha is different, update the alpha values " + alpha);
+		//System.err.println("updateAlphaInByteRefColors 1 : alpha is different, update the alpha values " + alpha);
 		
                 float m = alpha / lastAlpha[screen];
 
@@ -1896,7 +1896,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         } else {
             // color data is modified
             if (screen == 0) {
-		//System.out.println("updateAlphaInByteRefColors 2 : just update alpha =" + alpha);
+		//System.err.println("updateAlphaInByteRefColors 2 : just update alpha =" + alpha);
 		
                 // just update alpha values since screen 0 data is
                 // already updated in setupMirrorColorPointer
@@ -1915,7 +1915,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                 // update color values from screen 0 data
                 float m;
 
-		//System.out.println("updateAlphaInByteRefColors 3 : update color values from screen 0 data " + alpha);
+		//System.err.println("updateAlphaInByteRefColors 3 : update color values from screen 0 data " + alpha);
 
                 if ((colorChanged & 1) == 0) {
                     // alpha is up to date in screen 0
@@ -2614,8 +2614,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 	if (vdata != null) {
 	    /*
-	     System.out.println("calling native buildGA()");
-	     System.out.println("geoType = "+geoType+" initialVertexIndex = "+initialVertexIndex+" validVertexCount = "+validVertexCount+" vertexFormat = "+vertexFormat+"  vertexData = "+vertexData);
+	     System.err.println("calling native buildGA()");
+	     System.err.println("geoType = "+geoType+" initialVertexIndex = "+initialVertexIndex+" validVertexCount = "+validVertexCount+" vertexFormat = "+vertexFormat+"  vertexData = "+vertexData);
 	     */
 	    Pipeline.getPipeline().buildGA(cv.ctx,
                     this, geoType, isNonUniformScale, 
@@ -2783,7 +2783,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    colorStride = 3;
 	    }
 
-	    //	    System.out.println("===> start = "+start+" end = "+end);
+	    //	    System.err.println("===> start = "+start+" end = "+end);
 	    for (index= start; index < end; index++) {
 		if ((vertexFormat & GeometryArray.NORMALS) != 0){
 		    System.arraycopy(vdata,
@@ -2791,12 +2791,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vertexData, vOffset + normalOffset, 3);
 		}
 		if (colorStride == 4){
-		    //		    System.out.println("===> copying color3");
+		    //		    System.err.println("===> copying color3");
 		    System.arraycopy(vdata,
 			src.indexColor[index]*src.stride + src.colorOffset,
 			vertexData, vOffset + colorOffset, colorStride);
 		} else if (colorStride == 3) {
-		    //		    System.out.println("===> copying color4");
+		    //		    System.err.println("===> copying color4");
 		    System.arraycopy(vdata,
 			src.indexColor[index]*src.stride + src.colorOffset,
 			vertexData, vOffset + colorOffset, colorStride);
@@ -2834,7 +2834,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                 }
 
 		if ((vertexFormat & GeometryArray.COORDINATES) != 0){
-		    //		    System.out.println("===> copying coords");
+		    //		    System.err.println("===> copying coords");
 		    System.arraycopy(vdata,
 			src.indexCoord[index]*src.stride 
 				+ src.coordinateOffset,
@@ -3088,7 +3088,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    else if ((src.vertexFormat & GeometryArray.COLOR) != 0)
 		colorStride = 3;
 
-	    //	    System.out.println("===> start = "+start+" end = "+end);
+	    //	    System.err.println("===> start = "+start+" end = "+end);
 	    for (index= start; index < end; index++) {
 		if ((vertexFormat & GeometryArray.NORMALS) != 0){
 		    src.interleavedFloatBufferImpl.position(src.indexNormal[index]*src.stride + src.normalOffset);
@@ -3469,7 +3469,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	synchronized(liveStateLock) {
 	    if (source != null && source.isLive()) {		
-		// System.out.println("In GeometryArrayRetained - "); 
+		// System.err.println("In GeometryArrayRetained - "); 
 
 		// Send a message to renderBin to rebuild the display list or
 		// process the vertex array accordingly
@@ -6303,22 +6303,22 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
       
 	    if(j == (coordinates.length-1)) {
-		// System.out.println("(1) Degenerate polygon.");
+		// System.err.println("(1) Degenerate polygon.");
 		return false;  // Degenerate polygon.
 	    }
 
 	    /*
 	      for(i=0; i<coordinates.length; i++) 
-	      System.out.println("coordinates P" + i + " " + coordinates[i]);
+	      System.err.println("coordinates P" + i + " " + coordinates[i]);
 	      for(i=0; i<coord2.length; i++) 
-	      System.out.println("coord2 P" + i + " " + coord2[i]);
+	      System.err.println("coord2 P" + i + " " + coord2[i]);
 	      */
       
 	    pNrm.cross(vec0,vec1);
       
 	    nLenSq = pNrm.lengthSquared(); 
 	    if( nLenSq == 0.0) {
-		// System.out.println("(2) Degenerate polygon.");
+		// System.err.println("(2) Degenerate polygon.");
 		return false;  // Degenerate polygon.
 	    }
 
@@ -6394,14 +6394,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    // the input coordinates 3*1 = K*1 vector
 
 	    if (debug) { 
-		System.out.println("The value of the input vertices are: ");
+		System.err.println("The value of the input vertices are: ");
 		for(int i=0; i < coordinates.length; i++) {
-		    System.out.println("The " +i+ " th vertex is: " + coordinates[i]);
+		    System.err.println("The " +i+ " th vertex is: " + coordinates[i]);
 		}
       
-		System.out.println("The value of the input bounding Polytope's planes =");
+		System.err.println("The value of the input bounding Polytope's planes =");
 		for(int i=0; i < polytope.planes.length; i++) {
-		    System.out.println("The " +i+ " th plane is: " + polytope.planes[i]);
+		    System.err.println("The " +i+ " th plane is: " + polytope.planes[i]);
 		}
       
 	    }
@@ -6489,19 +6489,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
     
 	    if(debug) {
-		System.out.println("The value of the problem tableau is: " );
+		System.err.println("The value of the problem tableau is: " );
 		for(int i=0; i < problemTableau.length; i++) {
 		    for(int j=0; j < problemTableau[0].length; j++) {
-			System.out.print(problemTableau[i][j] + "  ");
+			System.err.print(problemTableau[i][j] + "  ");
 		    }
-		    System.out.println();
+		    System.err.println();
 		}
 	    }
     
 	    double distance = generalStandardSimplexSolver(problemTableau, 
 							   Float.NEGATIVE_INFINITY);
 	    if(debug) {
-		System.out.println("The value returned by the general standard simplex = " +
+		System.err.println("The value returned by the general standard simplex = " +
 				   distance);
 	    }
 	    if (distance == Float.POSITIVE_INFINITY) {
@@ -6534,8 +6534,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	double multiplier;
     
 	if(debug) {
-	    System.out.println("The number of rows is : " + numRow);
-	    System.out.println("The number of columns is : " + numCol);
+	    System.err.println("The number of rows is : " + numRow);
+	    System.err.println("The number of columns is : " + numCol);
 	}
     
 	// until the optimal solution is found continue to do
@@ -6543,10 +6543,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	while(!optimal) {
 
 	    if(debug) {
-		System.out.println("input problem tableau is:");
+		System.err.println("input problem tableau is:");
 		for(int k=0; k < numRow; k++) {
 		    for(int j=0; j < numCol; j++) {
-			System.out.println("kth, jth value is:" +k+" "+j+" : " +
+			System.err.println("kth, jth value is:" +k+" "+j+" : " +
 					   problemTableau[k][j]);
 		    }
 		}
@@ -6568,11 +6568,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    // have found an optimal solution (the last row of the tableau)
 	    if(pivotColIndex == -1) {
 		// found an optimal solution
-		//System.out.println("Found an optimal solution");
+		//System.err.println("Found an optimal solution");
 		optimal = true;
 	    }
       
-	    //System.out.println("The value of maxElement is:" + maxElement);
+	    //System.err.println("The value of maxElement is:" + maxElement);
       
 	    if(!optimal) {
 		// Case when the solution is not optimal but not known to be
@@ -6601,29 +6601,29 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    // ratio is negative, i.e. either r or s are negative (case 2)
 		    if(element == 0) {
 			if(debug) {
-			    System.out.println("Division by zero has occurred");
-			    System.out.println("Within the linear program solver");
-			    System.out.println("Ignoring the zero as a potential pivot");
+			    System.err.println("Division by zero has occurred");
+			    System.err.println("Within the linear program solver");
+			    System.err.println("Ignoring the zero as a potential pivot");
 			}
 		    } else if ( (element < 0.0) || (endElement < 0.0) ){
 			if(debug) {
-			    System.out.println("Ignoring cases where element is negative");
-			    System.out.println("The value of element is: " + element);
-			    System.out.println("The value of end Element is: " + endElement);
+			    System.err.println("Ignoring cases where element is negative");
+			    System.err.println("The value of element is: " + element);
+			    System.err.println("The value of end Element is: " + endElement);
 			}
 		    } else {
 			ratio = endElement/element;  // should be s/r
 			if(debug) {
-			    System.out.println("The value of element is: " + element);
-			    System.out.println("The value of endElement is: " + endElement);
-			    System.out.println("The value of ratio is: " + ratio);
-			    System.out.println("The value of prevRatio is: " + prevRatio);
-			    System.out.println("Value of ratio <= prevRatio is :" + 
+			    System.err.println("The value of element is: " + element);
+			    System.err.println("The value of endElement is: " + endElement);
+			    System.err.println("The value of ratio is: " + ratio);
+			    System.err.println("The value of prevRatio is: " + prevRatio);
+			    System.err.println("Value of ratio <= prevRatio is :" + 
 					       (ratio <= prevRatio));
 			}
 			if(ratio <= prevRatio) {
 			    if(debug) {
-				System.out.println("updating prevRatio with ratio");
+				System.err.println("updating prevRatio with ratio");
 			    }
 			    prevRatio = ratio;
 			    pivotRowIndex = i;
@@ -6637,8 +6637,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		// the right most value was negative (the later shouldn't happen?)
 		if(pivotRowIndex == -1) {
 		    if(debug) {
-			System.out.println("UNABLE TO FIND SOLUTION");
-			System.out.println("The system is infeasable or unbounded");
+			System.err.println("UNABLE TO FIND SOLUTION");
+			System.err.println("The system is infeasable or unbounded");
 		    }
 		    return(Float.POSITIVE_INFINITY);
 		}
@@ -6653,9 +6653,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		double pivotValue = problemTableau[pivotRowIndex][pivotColIndex];
 	
 		if(debug) {
-		    System.out.println("The value of row index is: " + pivotRowIndex);
-		    System.out.println("The value of col index is: " + pivotColIndex);
-		    System.out.println("The value of pivotValue is: " + pivotValue);
+		    System.err.println("The value of row index is: " + pivotRowIndex);
+		    System.err.println("The value of col index is: " + pivotColIndex);
+		    System.err.println("The value of pivotValue is: " + pivotValue);
 		}
 		// divide through by s on the pivot row to obtain a 1 in pivot col
 		for(i = 0; i < numCol; i++) {
@@ -6762,7 +6762,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    axis = 2;
 	    }    
     
-	    // System.out.println("Normal " + normal + " axis " + axis );
+	    // System.err.println("Normal " + normal + " axis " + axis );
      	
 	    for(i=0; i<coord.length; i++) {
 		coord2D[i] = new Point2d();
@@ -6784,7 +6784,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    break;      
 		} 
     
-		// System.out.println("i " + i + " u " + uCoor[i] + " v " + vCoor[i]); 
+		// System.err.println("i " + i + " u " + uCoor[i] + " v " + vCoor[i]); 
 	    }
 
 
@@ -6844,7 +6844,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     
 	    // edge is parallel to plane. 
 	    if(pNrmDotrDir== 0.0) {
-		// System.out.println("Edge is parallel to plane.");
+		// System.err.println("Edge is parallel to plane.");
 		return false;        
 	    }
 
@@ -6855,7 +6855,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    // Edge intersects the plane behind the edge's start.
 	    // or exceed the edge's length.
 	    if((tr < 0.0 ) || (tr > 1.0 )) {
-		// System.out.println("Edge intersects the plane behind the start or exceed end.");
+		// System.err.println("Edge intersects the plane behind the start or exceed end.");
 		return false;
 	    }
 
@@ -6901,7 +6901,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    axis = 2;
 	    }    
     
-	    // System.out.println("Normal " + normal + " axis " + axis );
+	    // System.err.println("Normal " + normal + " axis " + axis );
      	
 	    for(i=0; i<coord.length; i++) {
 		coord2D[i] = new Point2d();
@@ -6923,7 +6923,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    break;      
 		} 
     
-		// System.out.println("i " + i + " u " + uCoor[i] + " v " + vCoor[i]); 
+		// System.err.println("i " + i + " u " + uCoor[i] + " v " + vCoor[i]); 
 	    }
 
 	    for(i=0; i<2; i++) {
@@ -6945,7 +6945,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    break;      
 		} 
     
-		// System.out.println("i " + i + " u " + uSeg[i] + " v " + vSeg[i]); 
+		// System.err.println("i " + i + " u " + uSeg[i] + " v " + vSeg[i]); 
 	    }
 
 	    // Do determinant test.
@@ -7216,7 +7216,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	n1.cross(e1,e2);
 	
 	if(n1.length() == 0.0) {
-	    // System.out.println("(1) Degenerate triangle.");
+	    // System.err.println("(1) Degenerate triangle.");
 	    return false;  // Degenerate triangle.
 	}
 	
@@ -7295,7 +7295,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean intersectTriTri(Point3d v0, Point3d v1, Point3d v2,
 			    Point3d u0, Point3d u1, Point3d u2) {
 
-	// System.out.println("In intersectTriTri ...");
+	// System.err.println("In intersectTriTri ...");
 	Vector3d e1 = new Vector3d();
 	Vector3d e2 = new Vector3d();
 	Vector3d n1 = new Vector3d();
@@ -7322,7 +7322,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	n1.cross(e1,e2);
 	
 	if(n1.length() == 0.0) {
-	    // System.out.println("(1) Degenerate triangle.");
+	    // System.err.println("(1) Degenerate triangle.");
 	    return false;  // Degenerate triangle.
 	}
 	
@@ -7349,7 +7349,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// same sign on all of them + not equal 0 ?
 	// no intersection occurs
 	if(du0du1>0.0 && du0du2>0.0) {
-	    // System.out.println("In intersectTriTri : du0du1>0.0 && du0du2>0.0");
+	    // System.err.println("In intersectTriTri : du0du1>0.0 && du0du2>0.0");
 	    return false;
 	}
 	
@@ -7365,7 +7365,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	n2.cross(e1,e2);
 	
 	if(n2.length() == 0.0) {
-	    // System.out.println("(2) Degenerate triangle.");
+	    // System.err.println("(2) Degenerate triangle.");
 	    return false;  // Degenerate triangle.
 	}
 	
@@ -7392,7 +7392,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// same sign on all of them + not equal 0 ?
 	// no intersection occurs
 	if(dv0dv1>0.0 && dv0dv2>0.0) {
-	    // System.out.println("In intersectTriTri : dv0dv1>0.0 && dv0dv2>0.0");
+	    // System.err.println("In intersectTriTri : dv0dv1>0.0 && dv0dv2>0.0");
 	    return false;
 	}
 	// compute direction of intersection line.
@@ -7505,7 +7505,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}	    
 	else {
 	    // triangles are coplanar
-	    //	    System.out.println("In intersectTriTri : coplanarTriTri test 2");
+	    //	    System.err.println("In intersectTriTri : coplanarTriTri test 2");
 	    boolean toreturn =  coplanarTriTri(n2, v0, v1, v2, u0, u1, u2);
 	    return toreturn;
 	}
@@ -7538,12 +7538,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 
 	if(isect1E<isect2S || isect2E<isect1S) {
-	    // System.out.println("In intersectTriTri :isect1E<isect2S || isect2E<isect1S");
-	    // System.out.println("In intersectTriTri : return false");
+	    // System.err.println("In intersectTriTri :isect1E<isect2S || isect2E<isect1S");
+	    // System.err.println("In intersectTriTri : return false");
 	    return false;
 	}
 
-	//	 System.out.println("In intersectTriTri : return true");
+	//	 System.err.println("In intersectTriTri : return true");
 	return true;
 	
     }
@@ -7576,21 +7576,21 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
       
 	if(j == (coord1.length-1)) {
-	    // System.out.println("(1) Degenerate polygon.");
+	    // System.err.println("(1) Degenerate polygon.");
 	    return false;  // Degenerate polygon.
 	}
 
 	/*
 	  for(i=0; i<coord1.length; i++) 
-	  System.out.println("coord1 P" + i + " " + coord1[i]);
+	  System.err.println("coord1 P" + i + " " + coord1[i]);
 	  for(i=0; i<coord2.length; i++) 
-	  System.out.println("coord2 P" + i + " " + coord2[i]);
+	  System.err.println("coord2 P" + i + " " + coord2[i]);
 	  */
       
 	pNrm.cross(vec0,vec1);
       
 	if(pNrm.length() == 0.0) {
-	    // System.out.println("(2) Degenerate polygon.");
+	    // System.err.println("(2) Degenerate polygon.");
 	    return false;  // Degenerate polygon.
 	}
 
@@ -7972,15 +7972,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
     
 	if(j == (coordinates.length-1)) {
-	    // System.out.println("(1) Degenerate polygon.");
+	    // System.err.println("(1) Degenerate polygon.");
 	    return false;  // Degenerate polygon.
 	}
 
 	/* 
-	   System.out.println("Ray orgin : " + ray.origin + " dir " + ray.direction);
-	   System.out.println("Triangle/Quad :");
+	   System.err.println("Ray orgin : " + ray.origin + " dir " + ray.direction);
+	   System.err.println("Triangle/Quad :");
 	   for(i=0; i<coordinates.length; i++) 
-	   System.out.println("P" + i + " " + coordinates[i]);
+	   System.err.println("P" + i + " " + coordinates[i]);
 	   */
 
 	if( ccw == 0x1)
@@ -7989,7 +7989,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    pNrm.cross(vec1,vec0);
     
 	if(pNrm.length() == 0.0) {
-	    // System.out.println("(2) Degenerate polygon.");
+	    // System.err.println("(2) Degenerate polygon.");
 	    return false;  // Degenerate polygon.
 	}
 	// Compute plane D.
@@ -8059,9 +8059,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	double dmt, t, s, tmp1, tmp2;
 	Vector3d lDir;
 
-	//     System.out.println("GeometryArrayRetained : intersectLineAndRay");
-	//     System.out.println("start " + start + " end " + end );
-	//     System.out.println("ori " + ori + " dir " + dir);
+	//     System.err.println("GeometryArrayRetained : intersectLineAndRay");
+	//     System.err.println("start " + start + " end " + end );
+	//     System.err.println("ori " + ori + " dir " + dir);
     
 	lDir = new Vector3d();
 	lDir.x = (end.x - start.x);
@@ -8101,11 +8101,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	s = mInv10 * tmp1 + mInv11 * tmp2;
     
 	if(s<0.0) { // Before the origin of ray.
-	    // System.out.println("Before the origin of ray " + s);
+	    // System.err.println("Before the origin of ray " + s);
 	    return false;
 	}
 	if((t<0)||(t>1.0)) {// Before or after the end points of line.
-	    // System.out.println("Before or after the end points of line. " + t);
+	    // System.err.println("Before or after the end points of line. " + t);
 	    return false;
 	}
 
@@ -8113,7 +8113,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	tmp2 = start.z + t * lDir.z;
   
 	if((tmp1 < (tmp2 - EPS)) || (tmp1 > (tmp2 + EPS))) {
-	    // System.out.println("No intersection : tmp1 " + tmp1 + " tmp2 " + tmp2);
+	    // System.err.println("No intersection : tmp1 " + tmp1 + " tmp2 " + tmp2);
 	    return false;
 	}
 
@@ -8126,7 +8126,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    iPnt.z = ori.z + dir.z * dist[0];
 	}
 	
-	// System.out.println("Intersected : tmp1 " + tmp1 + " tmp2 " + tmp2);
+	// System.err.println("Intersected : tmp1 " + tmp1 + " tmp2 " + tmp2);
 	return true;
     }
 
@@ -8265,7 +8265,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    distance = originToIpnt.length();
 	    radius = Math.tan (cone.getSpreadAngle()) * distance;
 	    if (sqDistToEdge <= radius*radius) {
-		//	System.out.println ("intersectCone: edge "+i+" intersected");
+		//	System.err.println ("intersectCone: edge "+i+" intersected");
 		dist[0] = distance;
 		return true;
 	    }

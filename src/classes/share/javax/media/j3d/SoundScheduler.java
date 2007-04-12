@@ -3135,7 +3135,7 @@ class SoundScheduler extends J3dStructure {
 
     void debugPrint(String message) {
 	if (debugFlag)
-	    System.out.println("SS."+message);
+	    System.err.println("SS."+message);
     }
 
     void processViewSpecificGroupChanged(J3dMessage m) {

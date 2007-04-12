@@ -89,9 +89,9 @@ class UpdateTargets {
     void dump() {
         for(int i=0; i<Targets.MAX_NODELIST; i++) {
             if (targetList[i] != null) {
-                System.out.println("  " + CachedTargets.typeString[i]);
+                System.err.println("  " + CachedTargets.typeString[i]);
                 for(int j=0; j<targetList[i].size(); j++) {
-                    System.out.println("  " + targetList[i].get(j));
+                    System.err.println("  " + targetList[i].get(j));
                 }
             }
         }

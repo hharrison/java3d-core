@@ -526,9 +526,9 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	}
 
         pickInfo.setLocalToVWorldRef( localToVworld);
-        //System.out.println("MorphRetained.intersect() : ");
+        //System.err.println("MorphRetained.intersect() : ");
         if (dist == null) {
-            //System.out.println("      no dist request ....");
+            //System.err.println("      no dist request ....");
             return intersect(pickInfo, pickShape, 0);
         }
         
@@ -1205,7 +1205,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	if ((component & APPEARANCEOVERRIDE_CHANGED) != 0) {
 	    Object[] arg = (Object[])objs[3];
 	    int val = ((Integer)arg[1]).intValue();
-	    System.out.println("ChangedFrequent = "+changedFrequent);
+	    System.err.println("ChangedFrequent = "+changedFrequent);
 	    for ( i = msArr.length-1; i >=0; i--) {
 		msArr[i].appearanceOverrideEnable = ((Boolean)arg[0]).booleanValue();
 		msArr[i].changedFrequent = val;
@@ -1263,7 +1263,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		j = s.keys[i].equals(localToVworldKeys, 0,
 				     localToVworldKeys.length);
 		if(j < 0) {
-		    System.out.println("MorphRetained : Can't find hashKey"); 
+		    System.err.println("MorphRetained : Can't find hashKey"); 
 		}
 
 		shape.localToVworld[0] = localToVworld[j];

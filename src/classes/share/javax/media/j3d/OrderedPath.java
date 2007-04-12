@@ -29,12 +29,12 @@ class OrderedPath extends Object {
     }
 
     void printPath() {
-        System.out.println("orderedPath: [");
+        System.err.println("orderedPath: [");
         OrderedPathElement ope;
         for (int i=0; i<pathElements.size(); i++) {
             ope = (OrderedPathElement)pathElements.get(i);
-            System.out.println("(" + ope.orderedGroup + "," + ope.childId);
+            System.err.println("(" + ope.orderedGroup + "," + ope.childId);
         }
-        System.out.println("]");
+        System.err.println("]");
     }
 }

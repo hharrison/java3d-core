@@ -182,7 +182,7 @@ class GeometryStructure extends J3dStructure {
 		    processBoundsChanged((Object [])m.args[0], false);
 		    break;
 		case J3dMessage.GEOMETRY_CHANGED:
-		    // System.out.println("J3dMessage.GEOMETRY_CHANGED");
+		    // System.err.println("J3dMessage.GEOMETRY_CHANGED");
 		    processBoundsChanged((Object []) m.args[0], false);
 		    break;
 		case J3dMessage.RENDERINGATTRIBUTES_CHANGED:
@@ -301,7 +301,7 @@ class GeometryStructure extends J3dStructure {
         
 	clearBhNodeArr();
 
-	// System.out.println("GS : nodes.length is " + nodes.length);
+	// System.err.println("GS : nodes.length is " + nodes.length);
 
 	for (int i=0; i<nodes.length; i++) {
 	    node = nodes[i];
@@ -317,7 +317,7 @@ class GeometryStructure extends J3dStructure {
 		    bhLeafNode.leafIF = geomAtom;
 		    geomAtom.bhLeafNode = bhLeafNode;
 		    bhLeafNode.computeBoundingHull();
-		    // System.out.println("bhLeafNode.bHull is " + bhLeafNode.bHull); 
+		    // System.err.println("bhLeafNode.bHull is " + bhLeafNode.bHull); 
 		    addToBhNodeArr(bhLeafNode);
 		}
 	    } else if (node instanceof GroupRetained) {
@@ -582,7 +582,7 @@ class GeometryStructure extends J3dStructure {
 	int i, j;
 	boolean unviInFB = true;
 	    
-	// System.out.println("GeometryStructure : view's locale is " + locale);
+	// System.err.println("GeometryStructure : view's locale is " + locale);
 	lock.readLock();
 
         // Issue 353: create a new array list each time rather than passing it
@@ -593,10 +593,10 @@ class GeometryStructure extends J3dStructure {
 	    // For debugging only.
 	    if (J3dDebug.devPhase) {
 		if (J3dDebug.doDebug(J3dDebug.geometryStructure, J3dDebug.LEVEL_2)) {
-		    System.out.println("GeometryStructure : In simple case");
-		    System.out.println("GeometryStructure : view's locale is " +
+		    System.err.println("GeometryStructure : In simple case");
+		    System.err.println("GeometryStructure : view's locale is " +
 				       locale);
-		    System.out.println("GeometryStructure : bhTreeArr[0].locale is " +
+		    System.err.println("GeometryStructure : bhTreeArr[0].locale is " +
 				       bhTreeArr[0].locale);
 		}
 	    }

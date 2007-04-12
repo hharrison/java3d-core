@@ -196,12 +196,12 @@ class GeometryDecompressorShape3D extends GeometryDecompressor {
 	vlist.addVertex(position, normal, color, vertexReplaceCode) ;
 
 	if (debug) {
-	    System.out.println(" outputVertex: flag " + vertexReplaceCode) ;
-	    System.out.println("  position " + position.toString()) ;
+	    System.err.println(" outputVertex: flag " + vertexReplaceCode) ;
+	    System.err.println("  position " + position.toString()) ;
 	    if (normal != null)
-		System.out.println("  normal " + normal.toString()) ;
+		System.err.println("  normal " + normal.toString()) ;
 	    if (color != null)
-		System.out.println("  color " + color.toString()) ;
+		System.err.println("  color " + color.toString()) ;
 	}
     }
 
@@ -212,7 +212,7 @@ class GeometryDecompressorShape3D extends GeometryDecompressor {
      * with each vertex in the compressed buffer.
      */
     void outputColor(Color4f color) {
-	if (debug) System.out.println(" outputColor: " + color.toString()) ;
+	if (debug) System.err.println(" outputColor: " + color.toString()) ;
 
 	if (vlist.size() > 0) {
 	    // Construct Shape3D using the current color.
@@ -234,7 +234,7 @@ class GeometryDecompressorShape3D extends GeometryDecompressor {
      * buffer.
      */
     void outputNormal(Vector3f normal) {
-	if (debug) System.out.println(" outputNormal: " + normal.toString()) ;
+	if (debug) System.err.println(" outputNormal: " + normal.toString()) ;
 
 	if ((vlist.vertexFormat & GeometryArray.NORMALS) == 0) {
 	    if (vlist.size() > 0)
@@ -335,33 +335,33 @@ class GeometryDecompressorShape3D extends GeometryDecompressor {
     }
 
     private void beginPrint() {
-	System.out.println("\nGeometryDecompressorShape3D") ;
+	System.err.println("\nGeometryDecompressorShape3D") ;
 
 	switch(bufferDataType) {
 	  case TYPE_TRIANGLE:
-	    System.out.println(" buffer TYPE_TRIANGLE") ;
+	    System.err.println(" buffer TYPE_TRIANGLE") ;
  	    break ;
 	  case TYPE_LINE:
-	    System.out.println(" buffer TYPE_LINE") ;
+	    System.err.println(" buffer TYPE_LINE") ;
 	    break ;
 	  case TYPE_POINT:
-	    System.out.println(" buffer TYPE_POINT") ;
+	    System.err.println(" buffer TYPE_POINT") ;
 	    break ;
 	  default:
 	    throw new IllegalArgumentException
 		(J3dI18N.getString("GeometryDecompressorShape3D1")) ;
 	}
 
-	System.out.print(" buffer data present: coords") ;
+	System.err.print(" buffer data present: coords") ;
 
 	if ((dataPresent & CompressedGeometryHeader.NORMAL_IN_BUFFER) != 0)
-	    System.out.print(" normals") ;
+	    System.err.print(" normals") ;
 	if ((dataPresent & CompressedGeometryHeader.COLOR_IN_BUFFER) != 0)
-	    System.out.print(" colors") ;
+	    System.err.print(" colors") ;
 	if ((dataPresent & CompressedGeometryHeader.ALPHA_IN_BUFFER) != 0)
-	    System.out.print(" alpha") ;
+	    System.err.print(" alpha") ;
 
-	System.out.println() ;
+	System.err.println() ;
 
 	stripCount = 0 ;
 	vertexCount = 0 ;
@@ -383,24 +383,24 @@ class GeometryDecompressorShape3D extends GeometryDecompressor {
 
     private void printBench() {
 	float t = (endTime - startTime) / 1000.0f ;
-	System.out.println
+	System.err.println
 	    (" decompression + strip conversion took " + t + " sec.") ;
 
 	switch(bufferDataType) {
   	  case TYPE_POINT:
-	    System.out.println
+	    System.err.println
 		(" points decompressed: " + vertexCount + "\n" +
 		 " net decompression rate: " + (vertexCount/t) +
 		 " points/sec.\n") ;
 	    break ;
 	  case TYPE_LINE:
-	    System.out.println
+	    System.err.println
 		(" lines decompressed: " + (vertexCount - stripCount) + "\n" +
 		 " net decompression rate: " + ((vertexCount - stripCount)/t) +
 		 " lines/sec.\n") ;
 	    break ;
 	  case TYPE_TRIANGLE:
-	    System.out.println
+	    System.err.println
 		(" triangles decompressed: " +
 		   (vertexCount - 2*stripCount) + "\n" +
 		 " net decompression rate: " +
@@ -412,55 +412,55 @@ class GeometryDecompressorShape3D extends GeometryDecompressor {
     private void printStats() {
 	switch(triOutputType) {
 	  case TRI_SET:
-	    System.out.println(" using individual triangle output") ;
+	    System.err.println(" using individual triangle output") ;
 	    break ;
 	  case TRI_STRIP_SET:
-	    System.out.println(" using strip output") ;
+	    System.err.println(" using strip output") ;
 	    break ;
 	  case TRI_STRIP_AND_FAN_SET:
-	    System.out.println(" using strips and fans for output") ;
+	    System.err.println(" using strips and fans for output") ;
 	    break ;
 	  case TRI_STRIP_AND_TRI_SET:
-	    System.out.println(" using strips and triangles for output") ;
+	    System.err.println(" using strips and triangles for output") ;
 	    break ;
 	}
 
-	System.out.print
+	System.err.print
 	    (" number of Shape3D objects: " + shapes.size() +
 	     "\n number of Shape3D decompressed vertices: ") ;
 
 	if (triOutputType == TRI_SET || bufferDataType == TYPE_POINT) {
-	    System.out.println(vertexCount) ;
+	    System.err.println(vertexCount) ;
 	}
 	else if (triOutputType == TRI_STRIP_AND_TRI_SET) {
-	    System.out.println((vertexCount + triangleCount*3) + 
+	    System.err.println((vertexCount + triangleCount*3) + 
 			       "\n number of strips: " + stripCount +
 			       "\n number of individual triangles: " +
 			       triangleCount) ;
 	    if (stripCount > 0) 
-		System.out.println
+		System.err.println
 		    (" vertices/strip: " + (float)vertexCount/stripCount +
 		     "\n triangles represented in strips: " +
 		     (vertexCount - 2*stripCount)) ;
 	}
 	else {
-	    System.out.println(vertexCount +
+	    System.err.println(vertexCount +
 			       "\n number of strips: " + stripCount) ;
 	    if (stripCount > 0) 
-		System.out.println
+		System.err.println
 		    (" vertices/strip: " + (float)vertexCount/stripCount) ;
 	}
 
-	System.out.print(" vertex data present in last Shape3D: coords") ;
+	System.err.print(" vertex data present in last Shape3D: coords") ;
 	if ((vlist.vertexFormat & GeometryArray.NORMALS) != 0)
-	    System.out.print(" normals") ;
+	    System.err.print(" normals") ;
 
 	if ((vlist.vertexFormat & GeometryArray.COLOR) != 0) {
-	    System.out.print(" colors") ;
+	    System.err.print(" colors") ;
 	    if ((vlist.vertexFormat & GeometryArray.WITH_ALPHA) != 0)
-		System.out.print(" alpha") ;
+		System.err.print(" alpha") ;
 	}
-	System.out.println() ;
+	System.err.println() ;
     }
 }
 

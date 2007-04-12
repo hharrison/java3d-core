@@ -563,7 +563,7 @@ class BackgroundRetained extends LeafRetained {
 	} else {
 	    s.nodeList.add(this);
 	}
-	// System.out.println("bkg.setlive nodeList " + s.nodeList);
+	// System.err.println("bkg.setlive nodeList " + s.nodeList);
 
         // process switch leaf
         if (s.switchTargets != null && s.switchTargets[0] != null) {

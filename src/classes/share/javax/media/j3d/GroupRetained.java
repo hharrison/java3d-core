@@ -2378,7 +2378,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    j = s.keys[i].equals(localToVworldKeys, 0,
 					 localToVworldKeys.length);
 		    if(j < 0) {
-			System.out.println("GroupRetained : Can't find hashKey"); 
+			System.err.println("GroupRetained : Can't find hashKey"); 
 		    }
 		    
 		    g.localToVworld[0] = localToVworld[j];
@@ -2389,7 +2389,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    g.locale = locale; // need by getVisibleGeometryAtom()
 		    mirrorGroup.add(g);
 		    /*
-		      System.out.println("processCollisionTarget mirrorGroup.add() : " +
+		      System.err.println("processCollisionTarget mirrorGroup.add() : " +
 		      g.getId() + " mirrorGroup.size() "
 		      + mirrorGroup.size());
 		    */
@@ -2511,11 +2511,11 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    super.traverse(true, level);
 
 	    if (source.getCapability(Group.ALLOW_CHILDREN_READ)) {
-		System.out.print(" (r)");
+		System.err.print(" (r)");
 	    } else if (isStatic()) {
-		System.out.print(" (s)");
+		System.err.print(" (s)");
 	    } else if (source.getCapability(Group.ALLOW_CHILDREN_WRITE)) {
-		System.out.print(" (w)");
+		System.err.print(" (w)");
 	    } 
 	}
 

@@ -218,12 +218,12 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
 	vlist.addVertex(position, normal, color, vertexReplaceCode) ;
 
 	if (debug) {
-	    System.out.println("outputVertex: flag " + vertexReplaceCode) ;
-	    System.out.println(" position " + position.toString()) ;
+	    System.err.println("outputVertex: flag " + vertexReplaceCode) ;
+	    System.err.println(" position " + position.toString()) ;
 	    if (normal != null)
-		System.out.println(" normal " + normal.toString()) ;
+		System.err.println(" normal " + normal.toString()) ;
 	    if (color != null)
-		System.out.println(" color " + color.toString()) ;
+		System.err.println(" color " + color.toString()) ;
 	}
     }
 
@@ -239,7 +239,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
      */
     void outputColor(Color4f color) {
 	if (boundsOnly || positionsOnly) return ;
-	if (debug) System.out.println("outputColor: " + color.toString()) ;
+	if (debug) System.err.println("outputColor: " + color.toString()) ;
 
 	if ((vlist.vertexFormat & GeometryArray.COLOR) == 0) {
 	    if (vlist.size() > 0)
@@ -262,7 +262,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
      */
     void outputNormal(Vector3f normal) {
 	if (boundsOnly || positionsOnly) return ;
-	if (debug) System.out.println("outputNormal: " + normal.toString()) ;
+	if (debug) System.err.println("outputNormal: " + normal.toString()) ;
 
 	if ((vlist.vertexFormat & GeometryArray.NORMALS) == 0) {
 	    if (vlist.size() > 0)
@@ -277,35 +277,35 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
     }
 
     private void beginPrint() {
-	System.out.println("\nGeometryDecompressorRetained") ;
+	System.err.println("\nGeometryDecompressorRetained") ;
 
 	switch(bufferDataType) {
 	  case TYPE_TRIANGLE:
-	    System.out.println(" buffer TYPE_TRIANGLE") ;
+	    System.err.println(" buffer TYPE_TRIANGLE") ;
  	    break ;
 	  case TYPE_LINE:
-	    System.out.println(" buffer TYPE_LINE") ;
+	    System.err.println(" buffer TYPE_LINE") ;
 	    break ;
 	  case TYPE_POINT:
-	    System.out.println(" buffer TYPE_POINT") ;
+	    System.err.println(" buffer TYPE_POINT") ;
 	    break ;
 	  default:
 	    throw new IllegalArgumentException
 		(J3dI18N.getString("GeometryDecompressorRetained4")) ;
 	}
 
-	System.out.print(" buffer data present: coords") ;
+	System.err.print(" buffer data present: coords") ;
 
 	if ((dataPresent & CompressedGeometryHeader.NORMAL_IN_BUFFER) != 0)
-	    System.out.print(" normals") ;
+	    System.err.print(" normals") ;
 	if ((dataPresent & CompressedGeometryHeader.COLOR_IN_BUFFER) != 0)
-	    System.out.print(" colors") ;
+	    System.err.print(" colors") ;
 	if ((dataPresent & CompressedGeometryHeader.ALPHA_IN_BUFFER) != 0)
-	    System.out.print(" alpha") ;
+	    System.err.print(" alpha") ;
 
-	System.out.println() ;
-	if (boundsOnly) System.out.println(" computing bounds only") ;
-	if (positionsOnly) System.out.println(" computing positions only") ;
+	System.err.println() ;
+	if (boundsOnly) System.err.println(" computing bounds only") ;
+	if (positionsOnly) System.err.println(" computing positions only") ;
 
 	startTime = J3dClock.currentTimeMillis() ;
     }
@@ -324,28 +324,28 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
 	float t = (endTime - startTime) / 1000.0f ;
 
 	if (boundsOnly) {
-	    System.out.println(" decompression took " + t + " sec.\n") ;
+	    System.err.println(" decompression took " + t + " sec.\n") ;
 	    return ;
 	}
 
-	System.out.println
+	System.err.println
 	    (" decompression + strip conversion took " + t + " sec.") ;
 
 	switch(bufferDataType) {
   	  case TYPE_POINT:
-	    System.out.println
+	    System.err.println
 		(" decompressed " + (vlist.size()) +
 		 " points at " + (vlist.size()/t) +
 		 " points/sec.\n") ;
 	    break ;
 	  case TYPE_LINE:
-	    System.out.println
+	    System.err.println
 		(" decompressed " + (vlist.vertexCount - vlist.stripCount) +
 		 " lines at " + ((vlist.vertexCount - vlist.stripCount)/t) +
 		 " lines/sec.\n") ;
 	    break ;
 	  case TYPE_TRIANGLE:
-	      System.out.println
+	      System.err.println
 		  (" decompressed " +
 		   (vlist.vertexCount - 2*vlist.stripCount) +
 		   " triangles at " +
@@ -356,28 +356,28 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
     }
 
     private void printStats() {
-	System.out.println(" bounding box:\n  lower " + lbounds.toString() +
+	System.err.println(" bounding box:\n  lower " + lbounds.toString() +
 			   "\n  upper " + ubounds.toString()) ;
 
 	if (boundsOnly) return ;
 
-	System.out.print
+	System.err.print
 	    (" number of vertices in GeometryArray output: " +
 	     vlist.vertexCount + "\n" +
 	     " GeometryArray vertex data present: coords") ;
 
 	if ((vlist.vertexFormat & GeometryArray.NORMALS) != 0)
-	    System.out.print(" normals") ;
+	    System.err.print(" normals") ;
 
 	if ((vlist.vertexFormat & GeometryArray.COLOR) != 0)
-	    System.out.print(" colors") ;
+	    System.err.print(" colors") ;
 
 	if ((vlist.vertexFormat & GeometryArray.WITH_ALPHA) != 0)
-	    System.out.print(" alpha") ;
+	    System.err.print(" alpha") ;
 
-	System.out.println("\n number of strips: " + vlist.stripCount) ;
+	System.err.println("\n number of strips: " + vlist.stripCount) ;
 	if (vlist.stripCount > 0) 
-	    System.out.println
+	    System.err.println
 		(" vertices/strip: " +
 		 ((float)vlist.vertexCount / (float)vlist.stripCount)) ;
     }

@@ -441,7 +441,7 @@ public class Alpha extends NodeComponent {
 	  = (float)(atTime  - startTime) * .001f; // startTime is in millisec
 	float alpha, a1, a2, dt, alphaRampDuration;
 
-	//	System.out.println("alpha mode: " + mode);
+	//	System.err.println("alpha mode: " + mode);
 
 	// If non-looping and before start
 	//	if ((loopCount != -1) &&

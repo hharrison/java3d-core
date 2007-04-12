@@ -98,7 +98,7 @@ class AttributeBin extends Object implements ObjectUpdate {
             }
         }
 
-        //System.out.println("soleUser = "+soleUser+" renderingAttributes ="+renderingAttributes);
+        //System.err.println("soleUser = "+soleUser+" renderingAttributes ="+renderingAttributes);
 	// Set the appearance only for soleUser case
 	if (soleUser)
 	    this.app = app;
@@ -232,7 +232,7 @@ class AttributeBin extends Object implements ObjectUpdate {
 
 	if(sApp != null) {
 	    // ShaderBin should reference to the mirror components. -- JADA.
-	    // System.out.println("AttributeBin : sApp.isMirror = " + sApp.isMirror);
+	    // System.err.println("AttributeBin : sApp.isMirror = " + sApp.isMirror);
 	    assert(sApp.isMirror);
 	    sb.shaderProgram = sApp.shaderProgram;
 	    sb.shaderAttributeSet = sApp.shaderAttributeSet;

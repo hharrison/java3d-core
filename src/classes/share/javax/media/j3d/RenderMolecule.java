@@ -696,7 +696,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	evalAlphaUsage(renderAttrs, texUnits);
 	isOpaqueOrInOG = isOpaque() || (ga.source.orderedPath != null);
 	inOrderedGroup = (ga.source.orderedPath != null);
-	//	System.out.println("isOpaque = "+isOpaque() +" OrInOG = "+isOpaqueOrInOG);
+	//	System.err.println("isOpaque = "+isOpaque() +" OrInOG = "+isOpaqueOrInOG);
 	if (mask != 0) {
 	    if ((soleUserCompDirty& ALL_DIRTY_BITS) == 0 ) {
 		renderBin.rmUpdateList.add(this);
@@ -808,7 +808,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 
 	if(!(ra.geometryAtom.source instanceof OrientedShape3DRetained)
 	   && ((primaryMoleculeType & ORIENTEDSHAPE3D_MOLECULE) != 0)) {
-	    //System.out.println("RA's NOT a OrientedShape3DRetained and RM is a ORIENTEDSHAPE3D_MOLECULE ");
+	    //System.err.println("RA's NOT a OrientedShape3DRetained and RM is a ORIENTEDSHAPE3D_MOLECULE ");
 
 	    return (false);
 	}
@@ -1428,7 +1428,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		// If the molecule is already defined to be SEPARATE_DLIST_PER_RINFO_MOLECULE
 		// continue adding in that mode even if it was switched back to
 		// no depth sorted mode
-		//		System.out.println("isOpaqueOrInOG ="+isOpaqueOrInOG+" primaryMoleculeType ="+primaryMoleculeType+" renderBin.transpSortMode ="+renderBin.transpSortMode);
+		//		System.err.println("isOpaqueOrInOG ="+isOpaqueOrInOG+" primaryMoleculeType ="+primaryMoleculeType+" renderBin.transpSortMode ="+renderBin.transpSortMode);
 		if (primaryMoleculeType == SEPARATE_DLIST_PER_RINFO_MOLECULE) {
 		    groupType = RenderAtom.SEPARATE_DLIST_PER_RINFO;
 		}
@@ -1824,10 +1824,10 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	}
 
 	/*
-	System.out.println("texCoord " + texCoordSetMapLen + " " +
+	System.err.println("texCoord " + texCoordSetMapLen + " " +
 			   cv.maxTexCoordSets + " " + modeSupportDL);
 
-	System.out.println("primaryMoleculeType = "+primaryMoleculeType+" primaryRenderAtomList ="+primaryRenderAtomList+" separateDlistRenderAtomList ="+separateDlistRenderAtomList+" vertexArrayRenderAtomList ="+vertexArrayRenderAtomList);
+	System.err.println("primaryMoleculeType = "+primaryMoleculeType+" primaryRenderAtomList ="+primaryRenderAtomList+" separateDlistRenderAtomList ="+separateDlistRenderAtomList+" vertexArrayRenderAtomList ="+vertexArrayRenderAtomList);
 	*/
 	// Send down the model view only once, if its not of type text
 	if ((primaryMoleculeType & (TEXT3D_MOLECULE| ORIENTEDSHAPE3D_MOLECULE)) == 0) {
@@ -1901,7 +1901,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 
 	// If this is a beginning of a frame OR diff. geometryType 
 	// then reload everything for the first rendermolecule
-	//	System.out.println("updateAttributes");
+	//	System.err.println("updateAttributes");
 	int bitMask = geometryType | Canvas3D.MATERIAL_DIRTY|
 	    Canvas3D.COLORINGATTRS_DIRTY|
 	    Canvas3D.TRANSPARENCYATTRS_DIRTY;
@@ -2075,13 +2075,13 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	}
 	
 	if ((primaryMoleculeType & (TEXT3D_MOLECULE| ORIENTEDSHAPE3D_MOLECULE)) == 0) {
-	    /* System.out.println("updateAttributes  setModelViewMatrix (1)"); */
+	    /* System.err.println("updateAttributes  setModelViewMatrix (1)"); */
 
 	    Transform3D modelMatrix =
 	        trans[localToVworldIndex[NodeRetained.LAST_LOCAL_TO_VWORLD]];
 	    
 	    if (cv.modelMatrix != modelMatrix) {
-		/* System.out.println("updateAttributes  setModelViewMatrix (2)"); */
+		/* System.err.println("updateAttributes  setModelViewMatrix (2)"); */
 
 		cv.setModelViewMatrix(cv.ctx, cv.vworldToEc.mat, 
 				      modelMatrix);
@@ -2131,7 +2131,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    modeSupportDL = false;
 	}
 
-	//	System.out.println("r.isOpaque = "+isOpaque+" rinfo = "+tinfo.rInfo+" groupType = "+tinfo.rInfo.groupType);
+	//	System.err.println("r.isOpaque = "+isOpaque+" rinfo = "+tinfo.rInfo+" groupType = "+tinfo.rInfo.groupType);
 	// Only support individual dlist or varray
 	// If this rInfo is a part of a bigger dlist, render as VA
 	// XXXX: What to do with Text3D, Raster, CG?
@@ -2139,8 +2139,8 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    RenderAtomListInfo save= tinfo.rInfo.next;
 	    // Render only one geometry
 	    tinfo.rInfo.next = null;
-	    //	    System.out.println("cachedVertexArrayRenderMethod = "+cachedVertexArrayRenderMethod);
-	    //	    System.out.println("tinfo.rInfo = "+tinfo.rInfo);
+	    //	    System.err.println("cachedVertexArrayRenderMethod = "+cachedVertexArrayRenderMethod);
+	    //	    System.err.println("tinfo.rInfo = "+tinfo.rInfo);
 	    if (modeSupportDL) {
 		renderBin.dlistRenderMethod.renderSeparateDlistPerRinfo(this, cv,
 									tinfo.rInfo,
@@ -2155,8 +2155,8 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    RenderAtomListInfo save= tinfo.rInfo.next;
 	    // Render only one geometry
 	    tinfo.rInfo.next = null;
-	    //	    System.out.println("cachedVertexArrayRenderMethod = "+cachedVertexArrayRenderMethod);
-	    //	    System.out.println("tinfo.rInfo = "+tinfo.rInfo);
+	    //	    System.err.println("cachedVertexArrayRenderMethod = "+cachedVertexArrayRenderMethod);
+	    //	    System.err.println("tinfo.rInfo = "+tinfo.rInfo);
 	    cachedVertexArrayRenderMethod.render(this, cv, tinfo.rInfo,
 						 ALL_DIRTY_BITS);
 	    tinfo.rInfo.next = save;
@@ -2375,7 +2375,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	}
     }
     void translate() {
-	//	System.out.println("onUpdateList = "+onUpdateList+" renderBin.localeChanged = "+renderBin.localeChanged+" rm = "+this);
+	//	System.err.println("onUpdateList = "+onUpdateList+" renderBin.localeChanged = "+renderBin.localeChanged+" rm = "+this);
 	int i = localToVworldIndex[NodeRetained.LAST_LOCAL_TO_VWORLD];
 	
 	localeLocalToVworld[i].mat[0] = localToVworld[i].mat[0];
@@ -2394,7 +2394,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	localeLocalToVworld[i].mat[13] = localToVworld[i].mat[13];
 	localeLocalToVworld[i].mat[14] = localToVworld[i].mat[14];
 	localeLocalToVworld[i].mat[15] = localToVworld[i].mat[15];
-	//	System.out.println("rm = "+this+" localTovworld = "+localeLocalToVworld[i]+" localeTranslation = "+localeTranslation);
+	//	System.err.println("rm = "+this+" localTovworld = "+localeLocalToVworld[i]+" localeTranslation = "+localeTranslation);
     }
 
 
@@ -2440,7 +2440,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 
 
     boolean updateNodeComponent() {
-	//	System.out.println("soleUser = "+soleUser+" rm = "+this);
+	//	System.err.println("soleUser = "+soleUser+" rm = "+this);
 	if ((soleUserCompDirty & MATERIAL_DIRTY) != 0) {
 	    // Note: this RM is a soleUser(only then this function is called)
 	    // and if definingMaterial == material, then the material is freq
@@ -2451,10 +2451,10 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    // Evaluate before replacing the old Value
 	    if (soleUser) {
 		boolean cloned = definingMaterial != null && definingMaterial != material;
-		//		System.out.println("===>Rm = "+this);
+		//		System.err.println("===>Rm = "+this);
 
-		//		System.out.println("===> updating node component, cloned = "+cloned+" material.changedFrequent = "+material.changedFrequent);
-		//		System.out.println("===> definingMaterial ="+definingMaterial+" material = "+material);
+		//		System.err.println("===> updating node component, cloned = "+cloned+" material.changedFrequent = "+material.changedFrequent);
+		//		System.err.println("===> definingMaterial ="+definingMaterial+" material = "+material);
 		
 		material = ((AppearanceRetained)appHandle).material;
 		if (material == null)
@@ -2611,15 +2611,15 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		boolean cloned = definingColoringAttributes != null && definingColoringAttributes != coloringAttributes;
 
 		coloringAttributes = ((AppearanceRetained)appHandle).coloringAttributes;
-		//		System.out.println("coloringAttributes and soleUser");
-		//		System.out.println("coloringAttributes ="+coloringAttributes);
+		//		System.err.println("coloringAttributes and soleUser");
+		//		System.err.println("coloringAttributes ="+coloringAttributes);
 		if (coloringAttributes == null) {
 		    definingColoringAttributes = null;
 		    red = 1.0f;
 		    green = 1.0f;
 		    blue = 1.0f;
 		} else {
-		    //		    System.out.println("coloringAttributes.changedFrequent  = "+coloringAttributes.changedFrequent );
+		    //		    System.err.println("coloringAttributes.changedFrequent  = "+coloringAttributes.changedFrequent );
 		    if (coloringAttributes.changedFrequent != 0) {
 			definingColoringAttributes = coloringAttributes;
 		    }
@@ -2643,7 +2643,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		blue = definingColoringAttributes.color.z;
 	    }
 	}
-	//	System.out.println("rm = "+this+"red = "+red+" green = "+green+" blue = "+blue);
+	//	System.err.println("rm = "+this+"red = "+red+" green = "+green+" blue = "+blue);
 	boolean newVal = isOpaque() || inOrderedGroup;
 	return (isOpaqueOrInOG != newVal);
 	

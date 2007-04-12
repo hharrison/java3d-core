@@ -365,7 +365,7 @@ public class Screen3D extends Object {
 	screen = Pipeline.getPipeline().getScreen(graphicsDevice);
 
 	if (debug)
-	    System.out.println("Screen3D: display " + display +
+	    System.err.println("Screen3D: display " + display +
 			       " screen " + screen + " hashcode " +
 			       this.hashCode());
 
@@ -474,7 +474,7 @@ public class Screen3D extends Object {
      */
     void updateViewCache() {
 	if (false)
-	    System.out.println("Screen3D.updateViewCache()");
+	    System.err.println("Screen3D.updateViewCache()");
 	synchronized(this) {
 	    screenViewCache.snapshot();
 	}

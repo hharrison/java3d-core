@@ -639,7 +639,7 @@ public class SceneGraphPath {
     }
     
     final void setIntersectPointDis( Point4d pickLocation ) {
-	//	System.out.println( "setIntersectPointDis pickLocation= "+pickLocation);
+	//	System.err.println( "setIntersectPointDis pickLocation= "+pickLocation);
 	intersectPoint.x = pickLocation.x;
 	intersectPoint.y = pickLocation.y;
 	intersectPoint.z = pickLocation.z;

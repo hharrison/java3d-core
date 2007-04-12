@@ -486,15 +486,15 @@ public class Transform3D {
 
     /*
     private void print_type() {
-        if ((type & ZERO)                 > 0 ) System.out.print(" ZERO");
-	if ((type & IDENTITY)             > 0 ) System.out.print(" IDENTITY");
-	if ((type & SCALE)                > 0 ) System.out.print(" SCALE");
-	if ((type & TRANSLATION)          > 0 ) System.out.print(" TRANSLATION");
-	if ((type & ORTHOGONAL)           > 0 ) System.out.print(" ORTHOGONAL");
-	if ((type & RIGID)                > 0 ) System.out.print(" RIGID");
-	if ((type & CONGRUENT)            > 0 ) System.out.print(" CONGRUENT");
-	if ((type & AFFINE)               > 0 ) System.out.print(" AFFINE");
-	if ((type & NEGATIVE_DETERMINANT) > 0 ) System.out.print(" NEGATIVE_DETERMINANT");
+        if ((type & ZERO)                 > 0 ) System.err.print(" ZERO");
+	if ((type & IDENTITY)             > 0 ) System.err.print(" IDENTITY");
+	if ((type & SCALE)                > 0 ) System.err.print(" SCALE");
+	if ((type & TRANSLATION)          > 0 ) System.err.print(" TRANSLATION");
+	if ((type & ORTHOGONAL)           > 0 ) System.err.print(" ORTHOGONAL");
+	if ((type & RIGID)                > 0 ) System.err.print(" RIGID");
+	if ((type & CONGRUENT)            > 0 ) System.err.print(" CONGRUENT");
+	if ((type & AFFINE)               > 0 ) System.err.print(" AFFINE");
+	if ((type & NEGATIVE_DETERMINANT) > 0 ) System.err.print(" NEGATIVE_DETERMINANT");
 	}
     */
 
@@ -4963,7 +4963,7 @@ public class Transform3D {
 		    negCnt++;
 
 	    if((negCnt==0)||(negCnt==2)) {
-		//System.out.println("Optimize!!");
+		//System.err.println("Optimize!!");
 		outScale[0] = outScale[1] = outScale[2] = 1.0;
 		for(i=0;i<9;i++)
 		    outRot[i] = svdRot[i];
@@ -5094,11 +5094,12 @@ public class Transform3D {
 	    outScale[2] = scales[index];
 
 	    index = svdOut[in0];
-	    if (outRot == null)
-		System.out.println("outRot == null");
-	    if ( rot == null)
-		System.out.println("rot == null");
-	    System.out.flush();
+	    if (outRot == null) {
+                MasterControl.getCoreLogger().severe("outRot == null");
+            }
+	    if (rot == null) {
+                MasterControl.getCoreLogger().severe("rot == null");
+            }
 
 	    outRot[0] = rot[index];
 
@@ -5230,7 +5231,7 @@ public class Transform3D {
 	    v[7] = cosr[1]*vtemp + sinr[1]*v[8];
 	    v[8] = -sinr[1]*vtemp + cosr[1]*v[8];
 
-	    // if(debug)System.out.println("\n*********************** iteration #"+k+" ***********************\n");
+	    // if(debug)System.err.println("\n*********************** iteration #"+k+" ***********************\n");
 
 	    qr_m[0] = s[0];  qr_m[1] = e[0]; qr_m[2] = 0.0;
 	    qr_m[3] =  0.0;  qr_m[4] = s[1]; qr_m[5] =e[1];

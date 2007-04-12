@@ -110,10 +110,10 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
      */
     synchronized void updateMirrorObject(int component, Object value) {
 
-	//System.out.println("ShaderAttributeObjectRetained : updateMirrorObject");
+	//System.err.println("ShaderAttributeObjectRetained : updateMirrorObject");
 	ShaderAttributeObjectRetained mirrorSAV = (ShaderAttributeObjectRetained)mirror;
         if ((component & ShaderConstants.ATTRIBUTE_VALUE_UPDATE) != 0) {
-	    //System.out.println("     -- SHADER_ATTRIBUTE_VALUE_UPDATE");
+	    //System.err.println("     -- SHADER_ATTRIBUTE_VALUE_UPDATE");
 	    mirrorSAV.attrWrapper = (AttrWrapper) value;
 	}
     }
@@ -132,11 +132,11 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
 	createMessage.args[0] = this;
 	createMessage.args[1]= new Integer(attrMask);
 	createMessage.args[2] = attr;
-	//	System.out.println("changedFreqent1 = "+changedFrequent);
+	//	System.err.println("changedFreqent1 = "+changedFrequent);
 	createMessage.args[3] = new Integer(changedFrequent);
 	VirtualUniverse.mc.processMessage(createMessage);
 
-	// System.out.println("univList.size is " + univList.size());
+	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;

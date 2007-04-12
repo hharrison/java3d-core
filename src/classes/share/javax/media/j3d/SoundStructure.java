@@ -463,10 +463,10 @@ class SoundStructure extends J3dStructure {
                 leaf = (LeafRetained)nodes[i];
                 sound = (SoundRetained) leaf;
                 if (sound.switchState.currentSwitchOn) {
-                    // System.out.println("SoundStructure.switch on");
+                    // System.err.println("SoundStructure.switch on");
                     // add To Schedule List
                 } else {
-                    // System.out.println("SoundStructure.switch off");
+                    // System.err.println("SoundStructure.switch off");
                     // remove From Schedule List
                 }
             }
@@ -609,7 +609,7 @@ class SoundStructure extends J3dStructure {
 
     void debugPrint(String message) {
         if (debugFlag) {
-            System.out.println(message);
+            System.err.println(message);
 	}
     }
 

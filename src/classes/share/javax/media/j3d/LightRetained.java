@@ -779,7 +779,7 @@ abstract class LightRetained extends LeafRetained {
 		j = s.keys[i].equals(localToVworldKeys, 0,
 				     localToVworldKeys.length);
 		if(j < 0) {
-		    System.out.println("LightRetained : Can't find hashKey"); 
+		    System.err.println("LightRetained : Can't find hashKey"); 
 		}
 		
 		ml.localToVworld[0] = localToVworld[j];
@@ -818,7 +818,7 @@ abstract class LightRetained extends LeafRetained {
 	    // Initialization of the mirror object 
 	    // If its view Scoped, then add this list
 	    // to be sent to Rendering Env
-	    //	    System.out.println("lightSetLive, s.viewList = "+s.viewLists);
+	    //	    System.err.println("lightSetLive, s.viewList = "+s.viewLists);
 	    if ((s.viewScopedNodeList != null) && (s.viewLists != null)) {
 		s.viewScopedNodeList.add(ml);
 		s.scopedNodesViewList.add(s.viewLists.get(0));
@@ -932,7 +932,7 @@ abstract class LightRetained extends LeafRetained {
 	    }
 	    if ((s.viewScopedNodeList != null) && (s.viewLists != null)) {
 		s.viewScopedNodeList.add(ml);
-		//System.out.println("s.viewList is " + s.viewLists); 
+		//System.err.println("s.viewList is " + s.viewLists); 
 		s.scopedNodesViewList.add(s.viewLists.get(0));
 	    } else {
 		s.nodeList.add(ml);

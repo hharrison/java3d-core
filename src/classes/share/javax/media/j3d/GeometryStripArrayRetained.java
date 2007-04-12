@@ -182,13 +182,13 @@ abstract class GeometryStripArrayRetained extends GeometryArrayRetained {
 
                     if (colorStride == 4) {
 			/*
-			System.out.println("vdata.length = "+vdata.length);
-			System.out.println("vertexData.length = "+vertexData.length);
-			System.out.println("src.stride = "+src.stride);
-			System.out.println("src.colorOffset = "+src.colorOffset);
-			System.out.println("index = "+index+" src.indexColor.length = "+src.indexColor.length);
-			System.out.println("src.indexColor[index] = "+src.indexColor[index]);
-			System.out.println("base = "+base);
+			System.err.println("vdata.length = "+vdata.length);
+			System.err.println("vertexData.length = "+vertexData.length);
+			System.err.println("src.stride = "+src.stride);
+			System.err.println("src.colorOffset = "+src.colorOffset);
+			System.err.println("index = "+index+" src.indexColor.length = "+src.indexColor.length);
+			System.err.println("src.indexColor[index] = "+src.indexColor[index]);
+			System.err.println("base = "+base);
 			*/
 			System.arraycopy(vdata,
 				src.indexColor[index]*src.stride + src.colorOffset,

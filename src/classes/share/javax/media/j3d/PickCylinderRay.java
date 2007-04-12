@@ -141,11 +141,11 @@ public final class PickCylinderRay extends PickCylinder {
 	    };
 
 	    for (int i=0;i<edges.length;i++) {
-		//	System.out.println ("Testing edge: "+edges[i][0]+" - "+edges[i][1]);
+		//	System.err.println ("Testing edge: "+edges[i][0]+" - "+edges[i][1]);
 		double distToEdge = 
 		    Distance.rayToSegment (origin, direction, edges[i][0], edges[i][1]);
 		if (distToEdge <= radius*radius) {
-		    //	  System.out.println ("Intersects!");
+		    //	  System.err.println ("Intersects!");
 		    return true;
 		}
 	    }
@@ -221,8 +221,8 @@ public final class PickCylinderRay extends PickCylinder {
 	PickCylinderRay newPCR = new PickCylinderRay();
 	Point3d end = new Point3d();
 	/*
-	  System.out.println("t3d : ");
-	  System.out.println(t3d);
+	  System.err.println("t3d : ");
+	  System.err.println(t3d);
 	*/
 	newPCR.origin.x = origin.x;
 	newPCR.origin.y = origin.y;

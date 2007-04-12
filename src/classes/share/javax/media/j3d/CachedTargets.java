@@ -98,9 +98,9 @@ class CachedTargets {
     void dump() {
         for(int i=0; i<Targets.MAX_NODELIST; i++) {
 	    if (targetArr[i] != null) {
-		System.out.println("  " + typeString[i]);
+		System.err.println("  " + typeString[i]);
         	for(int j=0; j<targetArr[i].length; j++) {
-		    System.out.println("  " + targetArr[i][j]);
+		    System.err.println("  " + targetArr[i][j]);
 	        }
 	    }
         }

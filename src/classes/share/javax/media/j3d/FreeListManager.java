@@ -40,7 +40,7 @@ class FreeListManager {
 
     // see if the current list can be shrunk
     static void manageLists() {
-// 	System.out.println("manageLists");
+// 	System.err.println("manageLists");
 	if (freelist[currlist] != null) {
 	    freelist[currlist].shrink();
 	}
@@ -52,7 +52,7 @@ class FreeListManager {
     // return the freelist specified by the list param
     static MemoryFreeList getFreeList(int list) {
 	if (list < 0 || list > maxFreeListNum) {
-	    if (DEBUG) System.out.println("illegal list");
+	    if (DEBUG) System.err.println("illegal list");
 	    return null;
 	}
 	else {

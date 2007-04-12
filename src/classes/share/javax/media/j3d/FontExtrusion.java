@@ -186,17 +186,17 @@ public class FontExtrusion extends Object {
 	//}
 	int i, num = coords.size();
 	pnts = new Point2f[num];
-	//System.out.println("num "+num+" inc "+inc);
+	//System.err.println("num "+num+" inc "+inc);
 	if (inc == 0){
 	  for (i=0;i < num;i++){
 		pnts[i] = (Point2f)coords.get(i);
-		//System.out.println("i "+i+" x "+ pnts[i].x+" y "+pnts[i].y);
+		//System.err.println("i "+i+" x "+ pnts[i].x+" y "+pnts[i].y);
 	  }
 	}
 	else {
 	  for (i=0;i < num;i++) {
 		pnts[i] = (Point2f)coords.get(num - i -1);
-		//System.out.println("i "+i+" x "+ pnts[i].x+" y "+pnts[i].y);
+		//System.err.println("i "+i+" x "+ pnts[i].x+" y "+pnts[i].y);
 	  }
 	}
 

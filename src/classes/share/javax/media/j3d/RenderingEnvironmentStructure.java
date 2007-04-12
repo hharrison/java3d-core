@@ -518,8 +518,8 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	GeometryAtom ga;
 	LeafRetained oldsrc = null;
 
-	// System.out.println("RE : removeNodes message " + m);
-	// System.out.println("RE : removeNodes m.args[0] " + m.args[0]);
+	// System.err.println("RE : removeNodes message " + m);
+	// System.err.println("RE : removeNodes m.args[0] " + m.args[0]);
 
 	for (i=0; i<nodes.length; i++) {
 	    n = nodes[i];
@@ -717,10 +717,10 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	if (size > 0) {
 	    for (i=0; i<size; i++) {
 		LightRetained light = (LightRetained)globalLights.get(i);
-		//		System.out.println("vwcBounds = "+bounds);
-		//		System.out.println("light.region = "+light.region);
-		//		System.out.println("Intersected = "+bounds.intersect(light.region));
-		//		System.out.println("");
+		//		System.err.println("vwcBounds = "+bounds);
+		//		System.err.println("light.region = "+light.region);
+		//		System.err.println("Intersected = "+bounds.intersect(light.region));
+		//		System.err.println("");
 		    
 		//		    if ((light.viewList != null && light.viewList.contains(view)) &&
 		// Treat lights in background geo as having infinite bounds
@@ -730,7 +730,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		    n = ((Shape3DRetained)ra.geometryAtom.source).numlights;
 		    shapeScopedLt = ((Shape3DRetained)ra.geometryAtom.source).lights;
 
-		    // System.out.println("numLights per shape= "+n);
+		    // System.err.println("numLights per shape= "+n);
 		    // scoped Fog/light is kept in the original
 		    // shape3D node, what happens if this list changes
 		    // while accessing them?. So, Lock.
@@ -961,7 +961,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		for (j=0; j<nbacks; j++) {
 		    if (intersectedBounds[j] == closestBounds) {
 			bg = intersectedBacks[j];
-			//System.out.println("matched " + closestBounds);
+			//System.err.println("matched " + closestBounds);
 			break;
 		    }
 		}
@@ -1381,8 +1381,8 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	if (size > 0) {
 	    for (i = 0; i < size; i++) {
 		altApp = (AlternateAppearanceRetained) globalAltApps.get(i);
-		//		    System.out.println("altApp.region = "+altApp.region+" altApp.switchState.currentSwitchOn = "+altApp.switchState.currentSwitchOn+" intersect = "+altApp.region.intersect(ra.geometryAtom.vwcBounds));
-		//		    System.out.println("altApp.isScoped = "+altApp.isScoped);
+		//		    System.err.println("altApp.region = "+altApp.region+" altApp.switchState.currentSwitchOn = "+altApp.switchState.currentSwitchOn+" intersect = "+altApp.region.intersect(ra.geometryAtom.vwcBounds));
+		//		    System.err.println("altApp.isScoped = "+altApp.isScoped);
 		// Note : There is no enable check for fog
 		if (altApp.region != null && altApp.switchState.currentSwitchOn) {
 		    if (altApp.region.intersect(bounds) == true) {
@@ -1416,17 +1416,17 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	ArrayList vlists = (ArrayList)m.args[1];
 	ArrayList vsgs = (ArrayList)m.args[0];
 	if (vsgs != null) {
-	    //	    System.out.println("===> non null Vsg");
+	    //	    System.err.println("===> non null Vsg");
 	    int size = vsgs.size();
 	    for (int i = 0; i < size; i++) {
 		ViewSpecificGroupRetained v = (ViewSpecificGroupRetained)vsgs.get(i);
 		ArrayList l = (ArrayList)vlists.get(i);
 		int index = keys[i];
-		//		System.out.println("v = "+v+" index = "+index+" l = "+l);
+		//		System.err.println("v = "+v+" index = "+index+" l = "+l);
 		v.cachedViewList.add(index, l);
 		/*
 		for (int k = 0; k <  v.cachedViewList.size(); k++) {
-		    System.out.println("v = "+v+" k = "+k+" v.cachedViewList.get(k) = "+v.cachedViewList.get(k));
+		    System.err.println("v = "+v+" k = "+k+" v.cachedViewList.get(k) = "+v.cachedViewList.get(k));
 		}
 		*/
 	    }

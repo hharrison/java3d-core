@@ -874,7 +874,7 @@ class AppearanceRetained extends NodeComponentRetained {
     }
 
     void setLive(boolean backgroundGroup, int refCount) {
-	// System.out.println("AppearceRetained.setLive()");
+	// System.err.println("AppearceRetained.setLive()");
 	doSetLive(backgroundGroup, refCount);
 	markAsLive();
     }
@@ -884,7 +884,7 @@ class AppearanceRetained extends NodeComponentRetained {
      * objects.
      */
     void doSetLive(boolean backgroundGroup, int refCount) {
-	// System.out.println("AppearceRetained.doSetLive()");
+	// System.err.println("AppearceRetained.doSetLive()");
 	
 	if (material != null) {	    
 	
@@ -1256,7 +1256,7 @@ class AppearanceRetained extends NodeComponentRetained {
 	VirtualUniverse.mc.processMessage(createMessage);
 
 	    
-	// System.out.println("univList.size is " + univList.size());
+	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
@@ -1292,7 +1292,7 @@ class AppearanceRetained extends NodeComponentRetained {
 	ArrayList univList = new ArrayList();
 	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
 	
-	// System.out.println("univList.size is " + univList.size());
+	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_GEOMETRY;

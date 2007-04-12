@@ -145,7 +145,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
     void updateNative(int unitIndex, Canvas3D cv, 
 			boolean reload, boolean simulate) {
 
-	//System.out.println("TextureUnitState/updateNative: unitIndex= " + unitIndex + " reload= " + reload + " simulate= " + simulate);
+	//System.err.println("TextureUnitState/updateNative: unitIndex= " + unitIndex + " reload= " + reload + " simulate= " + simulate);
 
 	// unitIndex can be -1 for the single texture case, so
 	// can't use unitIndex to index into the cv.texUnitState;
@@ -164,7 +164,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 	    // disabled for this texture unit; and no more
 	    // state update is needed
 
-	    //System.out.println("texture is null");
+	    //System.err.println("texture is null");
 
 	    if (cv.texUnitState[index].texture != null) {
 	        cv.resetTexture(cv.ctx, unitIndex);
@@ -563,7 +563,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 	createMessage.args[3] = new Integer(changedFrequent);
 	VirtualUniverse.mc.processMessage(createMessage);
 
-	// System.out.println("univList.size is " + univList.size());
+	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;

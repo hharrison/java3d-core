@@ -175,7 +175,7 @@ public final class PickConeSegment extends PickCone {
 		{new Point3d(upper.x, lower.y, lower.z), new Point3d(upper.x, lower.y, upper.z)}
 	    };
 	    for (int i=0;i<edges.length;i++) {
-		//	System.out.println ("Testing edge: "+edges[i][0]+" - "+edges[i][1]);
+		//	System.err.println ("Testing edge: "+edges[i][0]+" - "+edges[i][1]);
 		double distToEdge = 
 		    Distance.segmentToSegment (origin, end, edges[i][0], edges[i][1], 
 					       rayPt, null, null);
@@ -183,13 +183,13 @@ public final class PickConeSegment extends PickCone {
 		vector.sub (rayPt, origin);
 		distance = vector.length();
 		radius = getRadius (distance);
-		/* System.out.println ("PickConeSegment: distance: " +
+		/* System.err.println ("PickConeSegment: distance: " +
 		   distance+" radius: " + radius +
 		   " distToEdge:" +Math.sqrt(distToEdge));
 		*/
 		
 		if (distToEdge <= radius*radius) {
-		    //	  System.out.println ("Intersects!");
+		    //	  System.err.println ("Intersects!");
 		    return true;
 		}
 	    }

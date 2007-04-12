@@ -166,24 +166,24 @@ class CompileState {
 
 
     void printStats() {
-	System.out.println("numTransformGroups= " + numTransformGroups);
-	System.out.println("numStaticTransformGroups= " + numStaticTransformGroups);
-	System.out.println("numMergedTransformGroups= " + numMergedTransformGroups);
-	System.out.println("numGroups= " + numGroups);
-	System.out.println("numMergedGroups= " + numMergedGroups);
-	System.out.println("numShapes= " + numShapes);
-	System.out.println("numShapesWStaticTG= " + numShapesWStaticTG);
-	System.out.println("numMergeShapes= " + numMergeShapes);
-	System.out.println("numMergeSets= " + numMergeSets);
-	System.out.println("numLinks= " + numLinks);
-	System.out.println("numSwitches= " + numSwitches);
-	System.out.println("numOrderedGroups= " + numOrderedGroups);
-	System.out.println("numMorphs= " + numMorphs);
+	System.err.println("numTransformGroups= " + numTransformGroups);
+	System.err.println("numStaticTransformGroups= " + numStaticTransformGroups);
+	System.err.println("numMergedTransformGroups= " + numMergedTransformGroups);
+	System.err.println("numGroups= " + numGroups);
+	System.err.println("numMergedGroups= " + numMergedGroups);
+	System.err.println("numShapes= " + numShapes);
+	System.err.println("numShapesWStaticTG= " + numShapesWStaticTG);
+	System.err.println("numMergeShapes= " + numMergeShapes);
+	System.err.println("numMergeSets= " + numMergeSets);
+	System.err.println("numLinks= " + numLinks);
+	System.err.println("numSwitches= " + numSwitches);
+	System.err.println("numOrderedGroups= " + numOrderedGroups);
+	System.err.println("numMorphs= " + numMorphs);
     }
 
     void doShapeMerge() {
 
-	//	System.out.println("doShapeMerge, shapeList = "+shapeLists);
+	//	System.err.println("doShapeMerge, shapeList = "+shapeLists);
 	if (shapeLists != null) {
 	    // loop over the shapes in each list, creating a single shape 
 	    // for each.  Add the shape to the group 
@@ -264,7 +264,7 @@ class CompileState {
 				    }
 				}
 				if (!found) {
-				    System.out.println("ShapeSet.add(): Can't remove " +
+				    System.err.println("ShapeSet.add(): Can't remove " +
 						       "shape from parent, can't find shape!");
 				}				    
 				
@@ -274,18 +274,18 @@ class CompileState {
 
 			    if (J3dDebug.devPhase && J3dDebug.debug) {
 				if (J3dDebug.doDebug(J3dDebug.compileState, J3dDebug.LEVEL_3)) {
-				    System.out.println("Dest is "+ parentGroup);
-				    System.out.println("Compile Shape "+mergeShape);
-				    System.out.println(mergeShape.geometryList.size()+" geoemtryList");
+				    System.err.println("Dest is "+ parentGroup);
+				    System.err.println("Compile Shape "+mergeShape);
+				    System.err.println(mergeShape.geometryList.size()+" geoemtryList");
 				    for (int j = 0; j < mergeShape.geometryList.size(); j++) {
 					GeometryRetained geo = ((GeometryRetained)mergeShape.geometryList.get(j));
 					if (geo != null)
-					    System.out.println("\t Geo_type = "+geo.geoType);
+					    System.err.println("\t Geo_type = "+geo.geoType);
 				    }
 
-				    System.out.println(numMerge+" Shapes were merged ");
+				    System.err.println(numMerge+" Shapes were merged ");
 				    for (int j = 0; j < numMerge; j++) {
-					System.out.println("\t" + toBeMergedShapes[j]);
+					System.err.println("\t" + toBeMergedShapes[j]);
 				    }
 				}
 			    }

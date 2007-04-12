@@ -191,7 +191,7 @@ class CachedFrustum {
 
 
 	if( det*det < EPSILON ){
-	    // System.out.println("************** Two planes are parallel : det = " + det);
+	    // System.err.println("************** Two planes are parallel : det = " + det);
 	    return;       // two planes are parallel
 	}
 

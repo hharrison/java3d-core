@@ -137,7 +137,7 @@ class J3dMessage extends Object {
     }
 
     final synchronized void clear() {
-	// System.out.println("J3dMessage : " + this );
+	// System.err.println("J3dMessage : " + this );
 	view = null;
 	universe = null;
 	args[0] = null;

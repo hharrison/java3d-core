@@ -2902,7 +2902,7 @@ public class GraphicsContext3D extends Object   {
 
 
     void resetAppearance() {
-        //System.out.println("GC3D.resetAppearance ....");
+        //System.err.println("GC3D.resetAppearance ....");
 
 	if (canvas3d.material != null) {
 	    canvas3d.updateMaterial(canvas3d.ctx, 

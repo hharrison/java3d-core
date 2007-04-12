@@ -139,8 +139,8 @@ class BHInternalNode extends BHNode {
 	// NOTE: the node must already be inside this node if its not then fail.
 	if(debug2)
 	    if ( !this.isInside(node.bHull) ) {
-		System.out.println("Incorrect use of insertion, current node");
-		System.out.println("must contain the input element ...");
+		System.err.println("Incorrect use of insertion, current node");
+		System.err.println("must contain the input element ...");
 	    }
 	
 	boolean insideRightChild = false;

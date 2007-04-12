@@ -375,7 +375,7 @@ class J3dDebug  {
     
     static boolean doDebug(int j3dClassLevel, int level, String str) {
 	if(j3dClassLevel >= level) {
-	    System.out.print(str);
+	    System.err.print(str);
 	    return true;
 	}
 	return false;
@@ -403,33 +403,33 @@ class J3dDebug  {
 	    
 	    Package p = Package.getPackage(pkgName);
 	    if (p == null) {
-		System.out.println("WARNING: Package.getPackage(" +
+		System.err.println("WARNING: Package.getPackage(" +
 				   pkgName +
 				   ") is null");
 	    }
 	    else {
 		if(devPhase && debug) {
-		    System.out.println(p);
-		    System.out.println("Specification Title = " +
+		    System.err.println(p);
+		    System.err.println("Specification Title = " +
 				       p.getSpecificationTitle());
-		    System.out.println("Specification Vendor = " +
+		    System.err.println("Specification Vendor = " +
 				       p.getSpecificationVendor());
-		    System.out.println("Specification Version = " +
+		    System.err.println("Specification Version = " +
 				       p.getSpecificationVersion());
-		    System.out.println("Implementation Vendor = " +
+		    System.err.println("Implementation Vendor = " +
 				       p.getImplementationVendor());
-		    System.out.println("Implementation Version = " +
+		    System.err.println("Implementation Version = " +
 				       p.getImplementationVersion());
 		}
 		else if(devPhase)
-		        System.out.println(", Java 3D " + p.getImplementationVersion() + ".");
+		        System.err.println(", Java 3D " + p.getImplementationVersion() + ".");
 	    }
 	}
 	catch (ClassNotFoundException e) {
-	    System.out.println("Unable to load " + pkgName);
+	    System.err.println("Unable to load " + pkgName);
 	}
 
-	// 	System.out.println();
+	// 	System.err.println();
     }
 
     

@@ -144,7 +144,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	  tchangeMessage.args[2] = trans;
 
 	  tchangeMessage.universe = universe;
-	  //System.out.println("TransformGroupRetained --- TRANSFORM_CHANGED " + this);
+	  //System.err.println("TransformGroupRetained --- TRANSFORM_CHANGED " + this);
 	  VirtualUniverse.mc.processMessage(tchangeMessage);
       }
   }
@@ -392,19 +392,19 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
     void traverse(boolean sameLevel, int level) {
 
-	System.out.println();
+	System.err.println();
 	for (int i = 0; i < level; i++) {
-	     System.out.print(".");
+	     System.err.print(".");
 	}
-	System.out.print(this);
+	System.err.print(this);
 
 	if (isStatic()) {
-	    System.out.print(" (s)");
+	    System.err.print(" (s)");
 	} else {
-	    System.out.print(" (w)");
+	    System.err.print(" (w)");
 	}
-	System.out.println();
-	System.out.println(transform.toString());
+	System.err.println();
+	System.err.println(transform.toString());
 	super.traverse(true, level);
     }
 
@@ -812,7 +812,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 						     keySet, targets,
 						     blUsers);
 			} else {
-			    //System.out.println("tg.procChild markedDiry skip");
+			    //System.err.println("tg.procChild markedDiry skip");
 			}
 		    }
 		}
@@ -821,7 +821,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 		    updateChildLocalToVworld(dirtyTransformGroups, keySet,
 						     targets, blUsers);
 		} else {
-		    //System.out.println("tg.procChild markedDiry skip");
+		    //System.err.println("tg.procChild markedDiry skip");
 		} 
 	    }
 	}
@@ -863,7 +863,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
                     }
 		} else {
 		    perPathData[index].switchDirty = true;
-		    //System.out.println("tg.updateChild skip");
+		    //System.err.println("tg.updateChild skip");
 		}
 
 
@@ -889,7 +889,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 				j = currentKey.equals(ln.sharedGroup.localToVworldKeys,0,
 						      ln.sharedGroup.localToVworldKeys.length);
 				if(j < 0) {
-				    System.out.
+				    System.err.
 					println("TransformGroupRetained : Can't find hashKey"); 
 				}
 			    
@@ -941,7 +941,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 		    }
 		} else {
 		    perPathData[0].switchDirty = true;
-		    //System.out.println("tg.updateChild skip");
+		    //System.err.println("tg.updateChild skip");
 		} 
 		
 
@@ -967,7 +967,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 				j = currentKey.equals(ln.sharedGroup.localToVworldKeys,0,
 						      ln.sharedGroup.localToVworldKeys.length);
 				if(j < 0) {
-				    System.out.
+				    System.err.
 					println("TransformGroupRetained : Can't find hashKey"); 
 				}
 				
@@ -1069,7 +1069,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         if (type == TargetsInterface.TRANSFORM_TARGETS) {
 	    return targetThreads;
 	} else {
-	    System.out.println("getTargetsThreads: wrong arguments");
+	    System.err.println("getTargetsThreads: wrong arguments");
 	    return -1;
 	} 
     }
@@ -1080,7 +1080,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         if (type == TargetsInterface.TRANSFORM_TARGETS) {
 	    return cachedTargets[index];
 	} else {
-	    System.out.println("getCachedTargets: wrong arguments");
+	    System.err.println("getCachedTargets: wrong arguments");
 	    return null;
 	}
     }
@@ -1125,7 +1125,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 		}
 	    }
         } else {
-	    System.out.println("computeTargetsThreads: wrong arguments");
+	    System.err.println("computeTargetsThreads: wrong arguments");
         }	
 
     }
@@ -1143,7 +1143,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
                                         targetThreads);
             }
         } else {
-            System.out.println("updateTargetThreads: wrong arguments");
+            System.err.println("updateTargetThreads: wrong arguments");
         }
     }
 
@@ -1162,7 +1162,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
                                         targetThreads);
             }
         } else {
-            System.out.println("propagateTargetThreads: wrong arguments");
+            System.err.println("propagateTargetThreads: wrong arguments");
         }
     }
 
@@ -1171,7 +1171,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         if (type == TargetsInterface.TRANSFORM_TARGETS) {
 	    j3dCTs = newCt;
         } else {
-	    System.out.println("updateCachedTargets: wrong arguments");
+	    System.err.println("updateCachedTargets: wrong arguments");
 	}
     }
 
@@ -1183,7 +1183,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	        newCt[i] = cachedTargets[i];
             }
         } else {
-	    System.out.println("copyCachedTargets: wrong arguments");
+	    System.err.println("copyCachedTargets: wrong arguments");
         }
     }
 
@@ -1194,7 +1194,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         if (type == TargetsInterface.TRANSFORM_TARGETS) {
             cachedTargets = newCtArr;
 	} else {
-	    System.out.println("resetCachedTargets: wrong arguments");
+	    System.err.println("resetCachedTargets: wrong arguments");
 	}
     }
 

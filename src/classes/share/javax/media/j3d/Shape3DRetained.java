@@ -716,9 +716,9 @@ class Shape3DRetained extends LeafRetained {
 	    throw new IllegalArgumentException(J3dI18N.getString("Shape3DRetained3"));   
 	}
         pickInfo.setLocalToVWorldRef( localToVworld);
-        //System.out.println("Shape3DRetained.intersect() : ");
+        //System.err.println("Shape3DRetained.intersect() : ");
         if (dist == null) {
-            //System.out.println("      no dist request ....");
+            //System.err.println("      no dist request ....");
             return intersect(pickInfo, pickShape, 0);
         }
         
@@ -776,7 +776,7 @@ class Shape3DRetained extends LeafRetained {
         } else {
             ms.orderedPath = op;
 /*
-            System.out.println("initMirrorShape3D ms.orderedPath ");
+            System.err.println("initMirrorShape3D ms.orderedPath ");
             ms.orderedPath.printPath();
 */
         }
@@ -837,7 +837,7 @@ class Shape3DRetained extends LeafRetained {
     Bounds getBounds() {
 
         if(boundsAutoCompute) {
-	    // System.out.println("getBounds ---- localBounds is " + localBounds);
+	    // System.err.println("getBounds ---- localBounds is " + localBounds);
 	    
 
 	    if(geometryList != null) {
@@ -928,7 +928,7 @@ class Shape3DRetained extends LeafRetained {
     }
     
     void doSetLive(SetLiveState s) {
-	// System.out.println("S3DRetained : setLive " + s);
+	// System.err.println("S3DRetained : setLive " + s);
 	Shape3DRetained shape;
 	GeometryRetained geometry;
 	int i, j, k, gaCnt;
@@ -953,9 +953,9 @@ class Shape3DRetained extends LeafRetained {
 		j = s.keys[i].equals(localToVworldKeys, 0,
 				     localToVworldKeys.length);
 		/*
-		    System.out.print("s.keys[i] = "+s.keys[i]+" j = "+j);
+		    System.err.print("s.keys[i] = "+s.keys[i]+" j = "+j);
 		    if(j < 0) {
-		    System.out.println("Shape3dRetained : Can't find hashKey"); 
+		    System.err.println("Shape3dRetained : Can't find hashKey"); 
 		    }
 		*/
 		shape.localToVworld[0] = localToVworld[j];
@@ -1218,7 +1218,7 @@ class Shape3DRetained extends LeafRetained {
      */
     void clearLive(SetLiveState s) {
 
-	//System.out.println("S3DRetained : clearLive " + s);
+	//System.err.println("S3DRetained : clearLive " + s);
 
 	int i, j, gaCnt;
 	Shape3DRetained shape;
@@ -1537,7 +1537,7 @@ class Shape3DRetained extends LeafRetained {
 	Shape3DRetained ms;
 	if (inSharedGroup) {
 	    if (k.count == 0) {
-		//		System.out.println("===> CAN NEVER BE TRUE");
+		//		System.err.println("===> CAN NEVER BE TRUE");
 		return;
 	    }
 	    else {
@@ -2481,7 +2481,7 @@ class Shape3DRetained extends LeafRetained {
                 }
             }
 	    
-	    // System.out.println("Shape3DRetained - getCombineBounds");
+	    // System.err.println("Shape3DRetained - getCombineBounds");
 	    // Enlarge boundingBox to the "minmium bounds" that encompasses all possible
 	    // orientation.
 	    if (this instanceof OrientedShape3DRetained) {
@@ -2502,10 +2502,10 @@ class Shape3DRetained extends LeafRetained {
 		if(tempVal > maxVal)
 		    maxVal = tempVal;
 
-		// System.out.println("Shape3DRetained - bounds (Before) " + bounds);
+		// System.err.println("Shape3DRetained - bounds (Before) " + bounds);
 		bounds.setLower(-maxVal, -maxVal, -maxVal);
 		bounds.setUpper(maxVal, maxVal, maxVal);
-		// System.out.println("Shape3DRetained - bounds (After) " + bounds);
+		// System.err.println("Shape3DRetained - bounds (After) " + bounds);
 	    }
 	    
         }
@@ -2770,7 +2770,7 @@ class Shape3DRetained extends LeafRetained {
                 }
             }
 	}
-	//	System.out.println("changedFrequent="+changedFrequent+" sourceNode = "+sourceNode+" isAlphaFrequentlyEditable, = "+alphaFrequentlyEditable);
+	//	System.err.println("changedFrequent="+changedFrequent+" sourceNode = "+sourceNode+" isAlphaFrequentlyEditable, = "+alphaFrequentlyEditable);
 	return alphaFrequentlyEditable;
     }
 

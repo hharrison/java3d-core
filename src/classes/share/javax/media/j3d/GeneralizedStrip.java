@@ -86,7 +86,7 @@ class GeneralizedStrip {
 		System.arraycopy(ints, 0, newints, 0, count) ;
 		ints = newints ;
 		if (debug)
-		    System.out.println
+		    System.err.println
 			("GeneralizedStrip.IntList: reallocated " +
 			 (2*count) + " ints") ;
 	    }
@@ -281,29 +281,29 @@ class GeneralizedStrip {
 		(J3dI18N.getString("GeneralizedStrip0")) ;
 
 	if (debug) {
-	    System.out.println("GeneralizedStrip.toStripsAndFans") ;
+	    System.err.println("GeneralizedStrip.toStripsAndFans") ;
 	    if (v > size)
-		System.out.println(" ended with a degenerate triangle:" +
+		System.err.println(" ended with a degenerate triangle:" +
 				   " number of vertices: " + (v-size)) ;
 	    
-	    System.out.println("\n number of strips: " + stripCounts.count) ;
+	    System.err.println("\n number of strips: " + stripCounts.count) ;
 	    if (stripCounts.count > 0) {
-		System.out.println(" number of vertices: " + stripVerts.count) ;
-		System.out.println(" vertices/strip: " +
+		System.err.println(" number of vertices: " + stripVerts.count) ;
+		System.err.println(" vertices/strip: " +
 				   (float)stripVerts.count/stripCounts.count) ;
-		System.out.println(" strip counts: " + stripCounts.toString()) ;
-		// System.out.println(" indices: " + stripVerts.toString()) ;
+		System.err.println(" strip counts: " + stripCounts.toString()) ;
+		// System.err.println(" indices: " + stripVerts.toString()) ;
 	    }
 
-	    System.out.println("\n number of fans: " + fanCounts.count) ;
+	    System.err.println("\n number of fans: " + fanCounts.count) ;
 	    if (fanCounts.count > 0) {
-		System.out.println(" number of vertices: " + fanVerts.count) ;
-		System.out.println(" vertices/strip: " +
+		System.err.println(" number of vertices: " + fanVerts.count) ;
+		System.err.println(" vertices/strip: " +
 				   (float)fanVerts.count/fanCounts.count) ;
-		System.out.println(" fan counts: " + fanCounts.toString()) ;
-		// System.out.println(" indices: " + fanVerts.toString()) ;
+		System.err.println(" fan counts: " + fanCounts.toString()) ;
+		// System.err.println(" indices: " + fanVerts.toString()) ;
 	    }
-	    System.out.println("\n total vertices: " +
+	    System.err.println("\n total vertices: " +
 			       (stripVerts.count + fanVerts.count) + 
 			       "\n original number of vertices: " + size +
 			       "\n") ;
@@ -444,21 +444,21 @@ class GeneralizedStrip {
 	StripArray sa = new StripArray(stripVerts, stripCounts) ;
 
 	if (debug) {
-	    System.out.println("GeneralizedStrip.toTriangleStrips" + 
+	    System.err.println("GeneralizedStrip.toTriangleStrips" + 
 			       "\n number of strips: " +
 			       sa.stripCounts.count) ;
 	    if (sa.stripCounts.count > 0) {
-		System.out.println(" number of vertices: " +
+		System.err.println(" number of vertices: " +
 				   sa.vertices.count + 
 				   "\n vertices/strip: " +
 				   ((float)sa.vertices.count /
 				    (float)sa.stripCounts.count)) ;
-		System.out.print(" strip counts: [") ;
+		System.err.print(" strip counts: [") ;
 		for (i = 0 ; i < sa.stripCounts.count-1 ; i++)
-		    System.out.print(sa.stripCounts.ints[i] + ", ") ;
-		System.out.println(sa.stripCounts.ints[i] + "]") ;
+		    System.err.print(sa.stripCounts.ints[i] + ", ") ;
+		System.err.println(sa.stripCounts.ints[i] + "]") ;
 	    }
-	    System.out.println() ;
+	    System.err.println() ;
 	}
 	return sa ;
     }
@@ -536,7 +536,7 @@ class GeneralizedStrip {
 	    vertexCount += 3 * getTriangleCount(sa[1].stripCounts) ;
 
 	if (debug)
-	    System.out.println("GeneralizedStrip.toTriangles\n" +
+	    System.err.println("GeneralizedStrip.toTriangles\n" +
 			       " number of triangles: " + vertexCount/3 + "\n" +
 			       " number of vertices: " + vertexCount + "\n") ;
 	int t = 0 ;
@@ -636,7 +636,7 @@ class GeneralizedStrip {
 	    }
 
 	if (debug)
-	    System.out.print("GeneralizedStrip.toStripsAndTriangles\n" +
+	    System.err.print("GeneralizedStrip.toStripsAndTriangles\n" +
 			     " short strip size: " + shortStripSize +
 			     " short strips tolerated: " + maxShortStrips +
 			     " number of short strips: " + shortStripCount +
@@ -673,17 +673,17 @@ class GeneralizedStrip {
 	    sa[1] = new StripArray(new IntList(triangles), null) ;
 
 	    if (debug) {
-		System.out.println(" triangles separated: " + triangleCount) ;
+		System.err.println(" triangles separated: " + triangleCount) ;
 		if (longStripCount > 0) {
-		    System.out.println
+		    System.err.println
 			(" new vertices/strip: " +
 			 ((float)longStripVertexCount/(float)longStripCount)) ;
 
-		    System.out.print(" long strip counts: [") ;
+		    System.err.print(" long strip counts: [") ;
 		    for (int i = 0 ; i < longStripCount-1 ; i++)
-			System.out.print(newStripCounts[i++] + ", ") ;
+			System.err.print(newStripCounts[i++] + ", ") ;
 		    
-		    System.out.println
+		    System.err.println
 			(newStripCounts[longStripCount-1] + "]\n") ;
 		}
 	    }
@@ -746,19 +746,19 @@ class GeneralizedStrip {
 		(J3dI18N.getString("GeneralizedStrip0")) ;
 
 	if (debug) {
-	    System.out.println("GeneralizedStrip.toLineStrips\n") ;
+	    System.err.println("GeneralizedStrip.toLineStrips\n") ;
 	    if (v > size)
-		System.out.println(" ended with a degenerate line") ;
+		System.err.println(" ended with a degenerate line") ;
 
-	    System.out.println(" number of strips: " + stripCounts.count) ;
+	    System.err.println(" number of strips: " + stripCounts.count) ;
 	    if (stripCounts.count > 0) {
-		System.out.println(" number of vertices: " + stripVerts.count) ;
-		System.out.println(" vertices/strip: " +
+		System.err.println(" number of vertices: " + stripVerts.count) ;
+		System.err.println(" vertices/strip: " +
 				   (float)stripVerts.count/stripCounts.count) ;
-		System.out.println(" strip counts: " + stripCounts.toString()) ;
-		// System.out.println(" indices: " + stripVerts.toString()) ;
+		System.err.println(" strip counts: " + stripCounts.toString()) ;
+		// System.err.println(" indices: " + stripVerts.toString()) ;
 	    }
-	    System.out.println() ;
+	    System.err.println() ;
 	}
 
 	if (stripCounts.count > 0)

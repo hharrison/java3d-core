@@ -441,9 +441,9 @@ class Shape3DCompileRetained extends Shape3DRetained {
 	// geomtryList contains several shapes
 	ArrayList glist =  (ArrayList) geometryInfo.get(shape.id);	        
         
-        // System.out.println("Shape3DCompileRetained.intersect() : ");
+        // System.err.println("Shape3DCompileRetained.intersect() : ");
         if (dist == null) {
-            // System.out.println("      no dist request ....");
+            // System.err.println("      no dist request ....");
             return intersect(pickInfo, pickShape, 0, glist);
         }
         

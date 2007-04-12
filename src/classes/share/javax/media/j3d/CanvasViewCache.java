@@ -223,12 +223,12 @@ class CanvasViewCache extends Object {
 
     void getCanvasPositionAndSize() {
 	if(J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2) {
-	    System.out.println("Get canvas position and size");
-	    System.out.println("Before");
-	    System.out.println("Canvas pos = (" + awtCanvasX + ", " +
+	    System.err.println("Get canvas position and size");
+	    System.err.println("Before");
+	    System.err.println("Canvas pos = (" + awtCanvasX + ", " +
 			       awtCanvasY + "), size = " + awtCanvasWidth +
 			       "x" + awtCanvasHeight);
-	    System.out.println("After");
+	    System.err.println("After");
 	}
 	awtCanvasX = canvas.newPosition.x;
 	awtCanvasY = canvas.newPosition.y;
@@ -243,7 +243,7 @@ class CanvasViewCache extends Object {
 	}
 
 	if (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1) {
-	    System.out.println("Canvas pos = (" + awtCanvasX + ", " +
+	    System.err.println("Canvas pos = (" + awtCanvasX + ", " +
 			       awtCanvasY + "), size = " + awtCanvasWidth +
 			       "x" + awtCanvasHeight);
 	}
@@ -376,7 +376,7 @@ class CanvasViewCache extends Object {
 
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1)) {
 	    synchronized(debugLock) {
-		System.out.println("------------------------------");
+		System.err.println("------------------------------");
 		doComputeDerivedData(currentFlag,cvc,frustumBBox,doInfinite);
 	    }
 	}
@@ -412,20 +412,20 @@ class CanvasViewCache extends Object {
 
         if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
 	    if(cvcDirtyMask != 0)
-		System.out.println("cvcDirtyMask : " +  cvcDirtyMask);
+		System.err.println("cvcDirtyMask : " +  cvcDirtyMask);
 
 	    if(scrvcDirtyMask != 0)
-		System.out.println("scrvcDirtyMask : "+ scrvcDirtyMask);
+		System.err.println("scrvcDirtyMask : "+ scrvcDirtyMask);
 
 	    if(viewCache.vcDirtyMask != 0)
-		System.out.println("vcDirtyMask : " +  viewCache.vcDirtyMask);
+		System.err.println("vcDirtyMask : " +  viewCache.vcDirtyMask);
 	}
 
 
 	// NOTE: This fix is only fixing the symptoms, but not the
 	// root of the bug.  We shouldn't have to check for null here.
 	if(viewCache.vpRetained == null) {
-	     System.out.println("CanvasViewCache : Error! viewCache.vpRetained is null");
+	     System.err.println("CanvasViewCache : Error! viewCache.vpRetained is null");
 	    return;
 	}
 
@@ -463,14 +463,14 @@ class CanvasViewCache extends Object {
 	    vpcToVworld.set(viewCache.vpRetained.getLastLocalToVworld(null));
 	}
 
-	// System.out.println("vpcToVworld is \n" + vpcToVworld);
+	// System.err.println("vpcToVworld is \n" + vpcToVworld);
 
         try {
 	    vworldToVpc.invert(vpcToVworld);
 	}
 	catch (SingularMatrixException e) {
 	    vworldToVpc.setIdentity();
-	    //System.out.println("SingularMatrixException encountered when doing vworldToVpc invert");
+	    //System.err.println("SingularMatrixException encountered when doing vworldToVpc invert");
 	}
         if (doInfinite) {
             vworldToVpc.getRotation(infVworldToVpc);
@@ -519,23 +519,23 @@ class CanvasViewCache extends Object {
 
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1)) {
 	    // Print some data :
-	    System.out.println("useStereo = " + useStereo);
-	    System.out.println("leftProjection:\n" + leftProjection);
-	    System.out.println("rightProjection:\n " + rightProjection);
-	    System.out.println("leftVpcToEc:\n" + leftVpcToEc);
-	    System.out.println("rightVpcToEc:\n" + rightVpcToEc);
-	    System.out.println("vpcToVworld:\n" + vpcToVworld);
-	    System.out.println("vworldToVpc:\n" + vworldToVpc);
+	    System.err.println("useStereo = " + useStereo);
+	    System.err.println("leftProjection:\n" + leftProjection);
+	    System.err.println("rightProjection:\n " + rightProjection);
+	    System.err.println("leftVpcToEc:\n" + leftVpcToEc);
+	    System.err.println("rightVpcToEc:\n" + rightVpcToEc);
+	    System.err.println("vpcToVworld:\n" + vpcToVworld);
+	    System.err.println("vworldToVpc:\n" + vworldToVpc);
 
 	    if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
 		int i;
 		for (i = 0; i < leftFrustumPlanes.length; i++) {
-		    System.out.println("leftFrustumPlanes " + i + " is " +
+		    System.err.println("leftFrustumPlanes " + i + " is " +
 				       leftFrustumPlanes[i]);
 		}
 
 		for (i = 0; i < rightFrustumPlanes.length; i++) {
-		    System.out.println("rightFrustumPlanes " + i + " is " +
+		    System.err.println("rightFrustumPlanes " + i + " is " +
 				       rightFrustumPlanes[i]);
 		}
 	    }
@@ -590,20 +590,20 @@ class CanvasViewCache extends Object {
 	physicalWindowCenter.z = 0.0;
 
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-	    System.out.println("Canvas pos = (" + awtCanvasX + ", " +
+	    System.err.println("Canvas pos = (" + awtCanvasX + ", " +
 			       awtCanvasY + "), size = " + awtCanvasWidth +
 			       "x" + awtCanvasHeight);
 
-	    System.out.println("Window LL corner (in plate coordinates): " +
+	    System.err.println("Window LL corner (in plate coordinates): " +
 		"(" + physicalWindowXLeft + "," + physicalWindowYBottom + ")");
 
-	    System.out.println("Window size (in plate coordinates): " +
+	    System.err.println("Window size (in plate coordinates): " +
 		"(" + physicalWindowWidth + "," + physicalWindowHeight + ")");
 
-	    System.out.println("Window center (in plate coordinates): " +
+	    System.err.println("Window center (in plate coordinates): " +
 			       physicalWindowCenter);
 
-	    System.out.println();
+	    System.err.println();
 	}
 
 	// Compute the view platform scale.  This combines
@@ -616,7 +616,7 @@ class CanvasViewCache extends Object {
 		switch(effectiveMonoscopicViewPolicy) {
 		case View.CYCLOPEAN_EYE_VIEW:
 		    if(J3dDebug.devPhase) {
-			System.out.println("CanvasViewCache : Should never reach here.\n" +
+			System.err.println("CanvasViewCache : Should never reach here.\n" +
 					   "HMD_VIEW with CYCLOPEAN_EYE_VIEW is not allowed");
 		    }
 		    break;
@@ -665,19 +665,19 @@ class CanvasViewCache extends Object {
 
 	viewPlatformScale = windowScale * screenScale;
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-	    System.out.println("viewCache.windowResizePolicy = " +
+	    System.err.println("viewCache.windowResizePolicy = " +
 			       viewCache.windowResizePolicy);
-	    System.out.println("physicalWindowWidth = " + physicalWindowWidth);
-	    System.out.println("physicalScreenWidth = " + physicalScreenWidth);
-	    System.out.println("windowScale = " + windowScale);
-	    System.out.println("screenScale = " + screenScale);
-	    System.out.println("viewPlatformScale = " + viewPlatformScale);
+	    System.err.println("physicalWindowWidth = " + physicalWindowWidth);
+	    System.err.println("physicalScreenWidth = " + physicalScreenWidth);
+	    System.err.println("windowScale = " + windowScale);
+	    System.err.println("screenScale = " + screenScale);
+	    System.err.println("viewPlatformScale = " + viewPlatformScale);
 	}
     }
 
     private void cacheEyePosFixedField() {
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1))
-	    System.out.println("cacheEyePosFixedField:");
+	    System.err.println("cacheEyePosFixedField:");
 
 	// y is always the window center
 	rightEyeInImagePlate.y =
@@ -735,7 +735,7 @@ class CanvasViewCache extends Object {
     private void cacheEyePosWindowRelative() {
 
 	if ((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1))
-	    System.out.println("cacheEyePosWindowRelative:");
+	    System.err.println("cacheEyePosWindowRelative:");
 
 	// y is always the window center
 	rightEyeInImagePlate.y =
@@ -803,7 +803,7 @@ class CanvasViewCache extends Object {
      */
     private void cacheEyePosScreenRelative(Point3d leftEye, Point3d rightEye) {
 	if ((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1))
-	    System.out.println("cacheEyePosScreenRelative:");
+	    System.err.println("cacheEyePosScreenRelative:");
 
 	if (!useStereo) {
 	    switch(effectiveMonoscopicViewPolicy) {
@@ -862,18 +862,18 @@ class CanvasViewCache extends Object {
      */
     private void computeTrackedEyePosition() {
 	if ((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-	    System.out.println("computeTrackedEyePosition:");
-	    System.out.println("viewCache.headTrackerToTrackerBase:");
-	    System.out.println(viewCache.headTrackerToTrackerBase);
+	    System.err.println("computeTrackedEyePosition:");
+	    System.err.println("viewCache.headTrackerToTrackerBase:");
+	    System.err.println(viewCache.headTrackerToTrackerBase);
 
-	    System.out.println("viewCache.headToHeadTracker:");
-	    System.out.println(viewCache.headToHeadTracker);
+	    System.err.println("viewCache.headToHeadTracker:");
+	    System.err.println(viewCache.headToHeadTracker);
 	}
 
 	if (viewCache.viewPolicy != View.HMD_VIEW) {
 	    if ((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-		System.out.println("screenViewCache.trackerBaseToImagePlate:");
-		System.out.println(screenViewCache.trackerBaseToImagePlate);
+		System.err.println("screenViewCache.trackerBaseToImagePlate:");
+		System.err.println(screenViewCache.trackerBaseToImagePlate);
 	    }
 
 	    headToLeftImagePlate.set(coexistenceCenter);
@@ -889,8 +889,8 @@ class CanvasViewCache extends Object {
 	}
 	else {
 	    if ((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-		System.out.println("headTrackerToLeftImagePlate:");
-		System.out.println(headTrackerToLeftImagePlate);
+		System.err.println("headTrackerToLeftImagePlate:");
+		System.err.println(headTrackerToLeftImagePlate);
 	    }
 
 	    headToLeftImagePlate.mul(headTrackerToLeftImagePlate,
@@ -914,10 +914,10 @@ class CanvasViewCache extends Object {
 	}
 
 	if ((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-	    System.out.println("headToLeftImagePlate:");
-	    System.out.println(headToLeftImagePlate);
-	    System.out.println("headToRightImagePlate:");
-	    System.out.println(headToRightImagePlate);
+	    System.err.println("headToLeftImagePlate:");
+	    System.err.println(headToLeftImagePlate);
+	    System.err.println("headToRightImagePlate:");
+	    System.err.println(headToRightImagePlate);
 
 	}
     }
@@ -971,15 +971,15 @@ class CanvasViewCache extends Object {
 	    nominalEyeOffset = viewCache.nominalEyeOffsetFromNominalScreen;
 
 	if ((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1)) {
-	    System.out.println("leftEyeInImagePlate = " +
+	    System.err.println("leftEyeInImagePlate = " +
 			       leftEyeInImagePlate);
-	    System.out.println("rightEyeInImagePlate = " +
+	    System.err.println("rightEyeInImagePlate = " +
 			       rightEyeInImagePlate);
-	    System.out.println("centerEyeInImagePlate = " +
+	    System.err.println("centerEyeInImagePlate = " +
 			       centerEyeInImagePlate);
-	    System.out.println("nominalEyeOffset = " +
+	    System.err.println("nominalEyeOffset = " +
 			       nominalEyeOffset);
-	    System.out.println();
+	    System.err.println();
 	}
     }
 
@@ -996,7 +996,7 @@ class CanvasViewCache extends Object {
 	    catch (SingularMatrixException e) {
 		leftPlateToVpc.setIdentity();
 		/*
-		  System.out.println("SingularMatrixException encountered when doing" +
+		  System.err.println("SingularMatrixException encountered when doing" +
 		  " leftPlateToVpc invert");
 		  */
 	    }
@@ -1011,7 +1011,7 @@ class CanvasViewCache extends Object {
 		catch (SingularMatrixException e) {
 		    rightPlateToVpc.setIdentity();
 		    /*
-		      System.out.println("SingularMatrixException encountered when doing" +
+		      System.err.println("SingularMatrixException encountered when doing" +
 		      " rightPlateToVpc invert");
 		      */
 		}
@@ -1022,13 +1022,13 @@ class CanvasViewCache extends Object {
 	    }
 
 	    if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-		System.out.println("vpcToVworld:");
-		System.out.println(vpcToVworld);
-		System.out.println("vpcToLeftPlate:");
-		System.out.println(vpcToLeftPlate);
+		System.err.println("vpcToVworld:");
+		System.err.println(vpcToVworld);
+		System.err.println("vpcToLeftPlate:");
+		System.err.println(vpcToLeftPlate);
 		if(useStereo) {
-		    System.out.println("vpcToRightPlate:");
-		    System.out.println(vpcToRightPlate);
+		    System.err.println("vpcToRightPlate:");
+		    System.err.println(vpcToRightPlate);
 
 		}
 
@@ -1054,12 +1054,12 @@ class CanvasViewCache extends Object {
 	    headToVworld.mul(leftPlateToVworld, headToLeftImagePlate);
 
 	    if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-		System.out.println("leftPlateToVworld:");
-		System.out.println(leftPlateToVworld);
-		System.out.println("headToLeftImagePlate:");
-		System.out.println(headToLeftImagePlate);
-		System.out.println("...gives -> headToVworld:");
-		System.out.println(headToVworld);
+		System.err.println("leftPlateToVworld:");
+		System.err.println(leftPlateToVworld);
+		System.err.println("headToLeftImagePlate:");
+		System.err.println(headToLeftImagePlate);
+		System.err.println("...gives -> headToVworld:");
+		System.err.println(headToVworld);
 	    }
 	}
 
@@ -1138,8 +1138,8 @@ class CanvasViewCache extends Object {
 	}
 
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-	    System.out.println("vpcToCoexistence:");
-	    System.out.println(vpcToCoexistence);
+	    System.err.println("vpcToCoexistence:");
+	    System.err.println(vpcToCoexistence);
 	}
     }
 
@@ -1174,7 +1174,7 @@ class CanvasViewCache extends Object {
 
 	if(J3dDebug.devPhase) {
 	    if (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1) {
-		System.out.println("coexistenceCenter = " + coexistenceCenter);
+		System.err.println("coexistenceCenter = " + coexistenceCenter);
 	    }
 	}
     }
@@ -1208,11 +1208,11 @@ class CanvasViewCache extends Object {
 	}
 
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-	    System.out.println("coexistenceToLeftPlate:");
-	    System.out.println(coexistenceToLeftPlate);
+	    System.err.println("coexistenceToLeftPlate:");
+	    System.err.println(coexistenceToLeftPlate);
 	    if(useStereo) {
-		System.out.println("coexistenceToRightPlate:");
-		System.out.println(coexistenceToRightPlate);
+		System.err.println("coexistenceToRightPlate:");
+		System.err.println(coexistenceToRightPlate);
 
 	    }
 	}
@@ -1243,7 +1243,7 @@ class CanvasViewCache extends Object {
         }
 
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-	    System.out.println("vworldToCoexistenceScale = " +
+	    System.err.println("vworldToCoexistenceScale = " +
 			       vworldToCoexistenceScale);
 	}
 
@@ -1258,11 +1258,11 @@ class CanvasViewCache extends Object {
 	    leftVpcToEc.set(viewCache.compatVpcToEc);
 
 	    if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1)) {
-		System.out.println("Left projection and view matrices");
-		System.out.println("ecToCc (leftProjection) :");
-		System.out.println(leftProjection);
-		System.out.println("vpcToEc:");
-		System.out.println(leftVpcToEc);
+		System.err.println("Left projection and view matrices");
+		System.err.println("ecToCc (leftProjection) :");
+		System.err.println(leftProjection);
+		System.err.println("vpcToEc:");
+		System.err.println(leftVpcToEc);
 	    }
 
 	    computeFrustumPlanes(leftProjection, leftVpcToEc,
@@ -1274,10 +1274,10 @@ class CanvasViewCache extends Object {
 		rightVpcToEc.set(viewCache.compatVpcToEc);
 
 		if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1)) {
-		    System.out.println("Right projection and view matrices");
-		    System.out.println("ecToCc:");
-		    System.out.println("vpcToEc:");
-		    System.out.println(rightVpcToEc);
+		    System.err.println("Right projection and view matrices");
+		    System.err.println("ecToCc:");
+		    System.err.println("vpcToEc:");
+		    System.err.println(rightVpcToEc);
 		}
 
 		computeFrustumPlanes(rightProjection, rightVpcToEc,
@@ -1360,11 +1360,11 @@ class CanvasViewCache extends Object {
 	    // Call buildProjView to build the projection and view matrices.
 
 	    if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-		System.out.println("Left projection and view matrices");
-		System.out.println("Fl " + Fl + " B " + B);
-		System.out.println("leftEyeInImagePlate\n" + leftEyeInImagePlate);
-		System.out.println("Before : leftProjection\n" + leftProjection);
-		System.out.println("Before leftVpcToEc\n" + leftVpcToEc);
+		System.err.println("Left projection and view matrices");
+		System.err.println("Fl " + Fl + " B " + B);
+		System.err.println("leftEyeInImagePlate\n" + leftEyeInImagePlate);
+		System.err.println("Before : leftProjection\n" + leftProjection);
+		System.err.println("Before leftVpcToEc\n" + leftVpcToEc);
 	    }
 
 	    buildProjView(leftEyeInImagePlate, coexistenceToLeftPlate,
@@ -1372,8 +1372,8 @@ class CanvasViewCache extends Object {
 
 
 	    if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-		System.out.println("After : leftProjection\n" + leftProjection);
-		System.out.println("After leftVpcToEc\n" + leftVpcToEc);
+		System.err.println("After : leftProjection\n" + leftProjection);
+		System.err.println("After leftVpcToEc\n" + leftVpcToEc);
 	    }
 
 	    computeFrustumPlanes(leftProjection, leftVpcToEc,
@@ -1382,7 +1382,7 @@ class CanvasViewCache extends Object {
 
 	    if(useStereo) {
 		if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2))
-		    System.out.println("Right projection and view matrices");
+		    System.err.println("Right projection and view matrices");
 
 		buildProjView(rightEyeInImagePlate, coexistenceToRightPlate,
 			      vpcToRightPlate, Fr, B, rightProjection,
@@ -1442,16 +1442,16 @@ class CanvasViewCache extends Object {
      */
     private void analyzeProjection(Transform3D p, double xMax) {
 	if (viewCache.projectionPolicy == View.PARALLEL_PROJECTION)
-	    System.out.println("PARALLEL_PROJECTION =");
+	    System.err.println("PARALLEL_PROJECTION =");
 	else
-	    System.out.println("PERSPECTIVE_PROJECTION =");
+	    System.err.println("PERSPECTIVE_PROJECTION =");
 
-	System.out.println(p);
+	System.err.println(p);
 
 	double projectionPlaneZ = ((p.mat[0] * xMax + p.mat[3] - p.mat[15]) /
 				   (p.mat[14] - p.mat[2]));
 
-	System.out.println("projection plane at z = " + projectionPlaneZ);
+	System.err.println("projection plane at z = " + projectionPlaneZ);
     }
 
     /**
@@ -1510,10 +1510,10 @@ class CanvasViewCache extends Object {
 	*/
 
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-	    System.out.println("ep = " + ep);
-	    System.out.println("Lx = " + Lx + ", Hx = " + Hx);
-	    System.out.println("Ly = " + Ly + ", Hy = " + Hy);
-	    System.out.println("F = " + F + ", B = " + B);
+	    System.err.println("ep = " + ep);
+	    System.err.println("Lx = " + Lx + ", Hx = " + Hx);
+	    System.err.println("Ly = " + Ly + ", Hy = " + Hy);
+	    System.err.println("F = " + F + ", B = " + B);
 	}
 
 	// Compute the proper projection equation.  Note that we
@@ -1569,7 +1569,7 @@ class CanvasViewCache extends Object {
 	ecToCc.mul(tMat1);
 
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-	    System.out.println("ecToCc:");
+	    System.err.println("ecToCc:");
 	    analyzeProjection(ecToCc, Hx);
 	}
 
@@ -1587,8 +1587,8 @@ class CanvasViewCache extends Object {
 	    vpcToEc.mul(tMat1, vpc2Plate);
 
 	    if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
-		System.out.println("vpcToEc:");
-		System.out.println(vpcToEc);
+		System.err.println("vpcToEc:");
+		System.err.println(vpcToEc);
 	    }
 	}
 	else {
@@ -1634,23 +1634,23 @@ class CanvasViewCache extends Object {
 	// gives us the Cc to Vworld transform.
 	tMat2.mul(ecToCc, vpcToEc);
 	ccToVworld.mul(tMat2, vworldToVpc);
-	// System.out.println("ccToVworld = " + ccToVworld);
+	// System.err.println("ccToVworld = " + ccToVworld);
 	try {
 	    ccToVworld.invert();
 	}
 	catch (SingularMatrixException e) {
 	    ccToVworld.setIdentity();
-	    // System.out.println("SingularMatrixException encountered when doing invert in computeFrustumPlanes");
+	    // System.err.println("SingularMatrixException encountered when doing invert in computeFrustumPlanes");
 	}
 
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_2)) {
 	    Transform3D t = new Transform3D();
 	    t.mul(ecToCc, vpcToEc);
 	    t.mul(vworldToVpc);
-	    System.out.println("\nvworldToCc = " + t);
-	    System.out.println("ccToVworld = " + ccToVworld);
+	    System.err.println("\nvworldToCc = " + t);
+	    System.err.println("ccToVworld = " + ccToVworld);
 	    t.mul(ccToVworld);
-	    System.out.println("vworldToCc * ccToVworld = " + t);
+	    System.err.println("vworldToCc * ccToVworld = " + t);
 	}
 
 	// Transform the 8 corners of the viewing frustum into Vpc
@@ -1704,12 +1704,12 @@ class CanvasViewCache extends Object {
 		       frustumPoints[6], frustumPoints[5],
 		       frustumPlanes[5]);
 
-	//System.out.println("left plane = "   + frustumPlanes[0]);
-	//System.out.println("right plane = "  + frustumPlanes[1]);
-	//System.out.println("top plane = "    + frustumPlanes[2]);
-	//System.out.println("bottom plane = " + frustumPlanes[3]);
-	//System.out.println("front plane = "  + frustumPlanes[4]);
-	//System.out.println("back plane = "   + frustumPlanes[5]);
+	//System.err.println("left plane = "   + frustumPlanes[0]);
+	//System.err.println("right plane = "  + frustumPlanes[1]);
+	//System.err.println("top plane = "    + frustumPlanes[2]);
+	//System.err.println("bottom plane = " + frustumPlanes[3]);
+	//System.err.println("front plane = "  + frustumPlanes[4]);
+	//System.err.println("back plane = "   + frustumPlanes[5]);
     }
 
     private void computePlaneEq(Point4d p1, Point4d p2, Point4d p3, Point4d p4,
@@ -1947,8 +1947,8 @@ class CanvasViewCache extends Object {
             //     eye->imagePlate Plane dist  / eye->imagePlatePt dist
             // eye dist to plane is eyePos.z (eye is in +z space)
             // image->eye dist is -tVec1.z (image->eye is in -z dir)
-            //System.out.println("eye dist = " + (centerEyeInImagePlate.z));
-            //System.out.println("image dist = " + (-tVec1.z));
+            //System.err.println("eye dist = " + (centerEyeInImagePlate.z));
+            //System.err.println("image dist = " + (-tVec1.z));
 	    if (tVec1.z != 0) {
 		double zScale = centerEyeInImagePlate.z / (-tVec1.z);
 		screenX = centerEyeInImagePlate.x + tVec1.x * zScale;
@@ -1964,14 +1964,14 @@ class CanvasViewCache extends Object {
             screenY = imagePlatePoint.y;
         }
 
-	//System.out.println("screenX = " + screenX + " screenY = " + screenY);
+	//System.err.println("screenX = " + screenX + " screenY = " + screenY);
         // Note: screenPt is in image plate coords, at z=0
 
         // Transform from image plate coords to screen coords
         pixelLocation.x = (screenX / screenViewCache.metersPerPixelX) - canvasX;
         pixelLocation.y = screenViewCache.screenHeight - 1 -
 	    (screenY / screenViewCache.metersPerPixelY) - canvasY;
-        //System.out.println("pixelLocation = " + pixelLocation);
+        //System.err.println("pixelLocation = " + pixelLocation);
     }
 
     /**
@@ -2010,7 +2010,7 @@ class CanvasViewCache extends Object {
 	}
 
 	if((J3dDebug.devPhase) && (J3dDebug.canvasViewCache >= J3dDebug.LEVEL_1))
-	    System.out.println("Constructed a CanvasViewCache");
+	    System.err.println("Constructed a CanvasViewCache");
     }
 
     synchronized void setCanvas(Canvas3D c) {

@@ -325,7 +325,7 @@ class NnuIdManager {
     
     final static void printIds(NnuId nnuIdArr[]) {
 	for(int i=0; i<nnuIdArr.length; i++) {
-	    System.out.println("[" + i +"] is " + nnuIdArr[i].getId());
+	    System.err.println("[" + i +"] is " + nnuIdArr[i].getId());
 	}
 
     }

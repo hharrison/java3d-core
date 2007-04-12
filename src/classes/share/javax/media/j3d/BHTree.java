@@ -72,7 +72,7 @@ class BHTree  {
 				+ "\n")) {	    
 		
 		for(int i=0; i<bhArr.length; i++) {
-		    System.out.println(bhArr[i]);
+		    System.err.println(bhArr[i]);
 		}
 	    }
 	}
@@ -114,29 +114,29 @@ class BHTree  {
 	    
 	    boolean inSide = aEncompassB(frustumBBox, root.bHull);
 	    /*
-	      System.out.println("stateChanged is " + stateChanged); 
-	      System.out.println("frustumBBox is " + frustumBBox);
-	      System.out.println("root.bHull is " + root.bHull);
-	      System.out.println("inSide is " + inSide);
+	      System.err.println("stateChanged is " + stateChanged); 
+	      System.err.println("frustumBBox is " + frustumBBox);
+	      System.err.println("root.bHull is " + root.bHull);
+	      System.err.println("inSide is " + inSide);
 	    */
 	     
 	    if(singleLocale && !stateChanged && inSide && stable) {
 		// just return the whole tree, no change in render mol..
-		// System.out.println("Optimize case 1 ..." + this);
+		// System.err.println("Optimize case 1 ..." + this);
 		bhTrees.add(root);
 		return true;
 	    }
 	    else if(!stateChanged && inSide) {
 		// the whole tree is in, but we've to be sure that RenderBin is
 		// stable ...
-		// System.out.println("Optimize case 2 ..." + this);
+		// System.err.println("Optimize case 2 ..." + this);
 		select(rBin, bhTrees, frustumBBox, root, referenceTime,
 		       visibilityPolicy, true);
 		
 		bhTrees.add(root);
 		stable = true;
 	    } else {
-		// System.out.println("Not in Optimize case ..." + this);
+		// System.err.println("Not in Optimize case ..." + this);
 		select(rBin, bhTrees, frustumBBox, root, referenceTime,
 		       visibilityPolicy, false);
 
@@ -625,9 +625,9 @@ class BHTree  {
 	float centerValues[][] = computeCenterValues(bhArr, centerValuesIndex);
 
 	/*
-	  System.out.println("Length of array is " +  bhArr.length);
+	  System.err.println("Length of array is " +  bhArr.length);
 	  for(int kk=0; kk<bhArr.length;kk++) {	
-	  System.out.println("( " + centerValues[kk][0] + ", " + 
+	  System.err.println("( " + centerValues[kk][0] + ", " + 
 	  centerValues[kk][1] + ", " + centerValues[kk][2] + " )");
 	  }
 	  */
@@ -699,7 +699,7 @@ class BHTree  {
 	}
 	
 	insertStructure.updateBoundingTree(this);
-	// System.out.println("BHTree - Inserting ...");
+	// System.err.println("BHTree - Inserting ...");
         
         // Issue 353: clear temporary insertStructure so we don't leak.
         insertStructure.clear();
@@ -712,10 +712,10 @@ class BHTree  {
 	    int leafCount = root.countNumberOfLeaves();
 	    double compDepth = Math.log(leafCount)/LOG_OF_2;
 	    /*
-	      System.out.println("BHTree - evaluate for reConstructTree ...");
-	      System.out.println("compDepth " + compDepth);
-	      System.out.println("maxDepth " + maxDepth);
-	      System.out.println("leafCount " + leafCount);
+	      System.err.println("BHTree - evaluate for reConstructTree ...");
+	      System.err.println("compDepth " + compDepth);
+	      System.err.println("maxDepth " + maxDepth);
+	      System.err.println("leafCount " + leafCount);
 	      */
 	    
 	    // Upper bound guard. 
@@ -723,9 +723,9 @@ class BHTree  {
 		reConstructTree(leafCount);
 		maxDepth = root.computeMaxDepth(0);
 		/*
-		  System.out.println("BHTree - Did reConstructTree ...");
-		  System.out.println("compDepth " + compDepth);
-		  System.out.println("maxDepth " + maxDepth);
+		  System.err.println("BHTree - Did reConstructTree ...");
+		  System.err.println("compDepth " + compDepth);
+		  System.err.println("maxDepth " + maxDepth);
 		  */
 	    }
 
@@ -791,10 +791,10 @@ class BHTree  {
 	/*
 	  if((bhArr == null) || (bhArr.length < 1))
 	  return;
-	  System.out.println("BHTree.java : delete - bhArr.length is " +
+	  System.err.println("BHTree.java : delete - bhArr.length is " +
 	  bhArr.length);
 	  for(int i=0; i<bhArr.length; i++)
-	  System.out.println("bhArr[" + i +"] " + bhArr[i]);
+	  System.err.println("bhArr[" + i +"] " + bhArr[i]);
 	  
 	    */
 	
@@ -1024,7 +1024,7 @@ class BHTree  {
 		// check to make sure that rightSet and leftSet sum to the
 		// number of elements in the original array.
 		if ( bhArr.length != (rightSetCount + leftSetCount) ) {
-		    System.out.println("An error has occurred in spliting");	
+		    System.err.println("An error has occurred in spliting");	
 		}
 	       
 	BHNode rightSet[] = new BHNode[rightSetCount];
@@ -1082,7 +1082,7 @@ class BHTree  {
 
 	/*
 	  if(bhArr.length != index[0])
-	  System.out.println("BHTree - This isn't right!!! - bhArr.length " +
+	  System.err.println("BHTree - This isn't right!!! - bhArr.length " +
 	  bhArr.length + " index " + index[0]); 
 	  */
 	
@@ -1098,14 +1098,14 @@ class BHTree  {
 	float averageDepth = root.computeAverageLeafDepth ( leafCount, 0);	
 	
 	
-	System.out.println("Statistics for tree = " + this);
-	System.out.println("Total Number of nodes in tree = " + 
+	System.err.println("Statistics for tree = " + this);
+	System.err.println("Total Number of nodes in tree = " + 
 			   (leafCount + internalCount) );
-	System.out.println("Number of Leaf Nodes = " + leafCount );
-	System.out.println("Number of Internal Nodes = " + internalCount );
-	System.out.println("Maximum Leaf depth = " + maxDepth );
-	System.out.println("Average Leaf depth = " + averageDepth );
-	System.out.println("root.bHull = " + root.bHull);
+	System.err.println("Number of Leaf Nodes = " + leafCount );
+	System.err.println("Number of Internal Nodes = " + internalCount );
+	System.err.println("Maximum Leaf depth = " + maxDepth );
+	System.err.println("Average Leaf depth = " + averageDepth );
+	System.err.println("root.bHull = " + root.bHull);
 	// printTree(root);
 	
     }    
@@ -1114,16 +1114,16 @@ class BHTree  {
     void printTree(BHNode bh) {
 	if(bh!= null) {
 	    if(bh.nodeType == BHNode.BH_TYPE_INTERNAL) {
-		System.out.println("BH_TYPE_INTERNAL - bHull : " + bh);
-		System.out.println(bh.bHull);
-		System.out.println("rChild : " + ((BHInternalNode)bh).rChild +
+		System.err.println("BH_TYPE_INTERNAL - bHull : " + bh);
+		System.err.println(bh.bHull);
+		System.err.println("rChild : " + ((BHInternalNode)bh).rChild +
 				   " lChild : " + ((BHInternalNode)bh).lChild);
 		printTree(((BHInternalNode)bh).rChild);
 		printTree(((BHInternalNode)bh).lChild);
 	    }
 	    else if(bh.nodeType == BHNode.BH_TYPE_LEAF) {
-		System.out.println("BH_TYPE_LEAF - bHull : " + bh);
-		System.out.println(bh.bHull);    
+		System.err.println("BH_TYPE_LEAF - bHull : " + bh);
+		System.err.println(bh.bHull);    
 	    }
 		
 	}

@@ -70,7 +70,7 @@ class BHInsertStructure  {
 	    if(bhListArrCnt >= bhListArrMaxCnt) {
 		// allocate a bigger array here....
 		if(debug)
-		    System.out.println("(1) Expanding bhListArr array ...");
+		    System.err.println("(1) Expanding bhListArr array ...");
 		bhListArrMaxCnt += blockSize; 
 		oldBhListArr = bhListArr;
 		oldBhListArrRef = bhListArrRef;
@@ -122,8 +122,8 @@ class BHInsertStructure  {
 	    
 	    if(debug2)
 		if((child1 == null) || (child2 == null)) {
-		    System.out.println("child1 or child2 is null ...");
-		    System.out.println("This is bad, it shouldn't happen");
+		    System.err.println("child1 or child2 is null ...");
+		    System.err.println("This is bad, it shouldn't happen");
 		    
 		}
 	    

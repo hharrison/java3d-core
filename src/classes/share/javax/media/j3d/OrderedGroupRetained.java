@@ -236,7 +236,7 @@ class OrderedGroupRetained extends GroupRetained {
 	int size = 0;
 	int i;
 
-	//System.out.println("updateChildIdTableInserted childId " + childId + " orderedId " + orderedId + " " + this);
+	//System.err.println("updateChildIdTableInserted childId " + childId + " orderedId " + orderedId + " " + this);
         if (orderedChildIdTable != null) { 
 	    size = orderedChildIdTable.length;
 	    for (i=0; i<size; i++) {
@@ -281,7 +281,7 @@ class OrderedGroupRetained extends GroupRetained {
 		}
 		else if (orderedChildIdTable[i] == childId) {
 		    orderedChildIdTable[i] = -1;
-		    //System.out.println("og.updateChildIdTableRemoved freeId " + i);
+		    //System.err.println("og.updateChildIdTableRemoved freeId " + i);
 		    freeOrderedChildId(i);
 		}
 	    }
@@ -392,7 +392,7 @@ class OrderedGroupRetained extends GroupRetained {
     void clearDerivedDataStructures() {
 	int i;
 	
-        //System.out.println("og clearDerivedDataStructures " + this); 
+        //System.err.println("og clearDerivedDataStructures " + this); 
 	// Clear the orderedBin and childId table for all views
 	// since this orderedGroup has been clearLived!
 	for (i = 0; i < orderedBin.length; i++) {
@@ -405,7 +405,7 @@ class OrderedGroupRetained extends GroupRetained {
 	    for (i=0; i<orderedChildIdTable.length; i++) {
 		if (orderedChildIdTable[i] != -1) {
 		    orderedChildIdTable[i] = -1;
-		    //System.out.println("og.clearDerivedDataStructures freeId " + i);
+		    //System.err.println("og.clearDerivedDataStructures freeId " + i);
 		    freeOrderedChildId(i);
 		}
 	    }
@@ -424,9 +424,9 @@ class OrderedGroupRetained extends GroupRetained {
     
     void printTable(int[] table) {
 	for (int i=0; i<table.length; i++) {
-	    System.out.print(" " + table[i]);
+	    System.err.print(" " + table[i]);
 	}	
-	System.out.println("");
+	System.err.println("");
    }
 
     void insertChildrenData(int index) {

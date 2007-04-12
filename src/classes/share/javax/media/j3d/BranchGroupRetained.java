@@ -193,7 +193,7 @@ class BranchGroupRetained extends GroupRetained {
 	    }
 	    if (J3dDebug.doDebug(J3dDebug.compileState, J3dDebug.LEVEL_5)) {
 		this.traverse(false, 1);
-		System.out.println();
+		System.err.println();
 	    }
 	}
     }
