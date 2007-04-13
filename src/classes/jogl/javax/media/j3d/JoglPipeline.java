@@ -5025,8 +5025,8 @@ class JoglPipeline extends Pipeline {
     };
     private static final ByteBuffer[] screen_door_table = new ByteBuffer[screen_door.length];
     static {
-        int eachLen = screen_door[0].length;
-        ByteBuffer buf = BufferUtil.newByteBuffer(screen_door.length * eachLen * BufferUtil.SIZEOF_INT);
+        int eachLen = screen_door[0].length * BufferUtil.SIZEOF_INT;
+        ByteBuffer buf = BufferUtil.newByteBuffer(screen_door.length * eachLen);
         IntBuffer intBuf = buf.asIntBuffer();
         for (int i = 0; i < screen_door.length; i++) {
             intBuf.put(screen_door[i]);
