@@ -786,6 +786,10 @@
 	<ant dir="src/classes" target="install-debug"/>
   </target>
 
+  <target name="install-opt" depends="jar-opt">
+	<ant dir="src/classes" target="install-opt"/>
+  </target>
+
   <target name="uninstall" depends="setupPlatform">
 	<ant dir="src/classes" target="uninstall"/>
   </target>

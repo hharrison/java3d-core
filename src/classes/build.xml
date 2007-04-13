@@ -361,6 +361,16 @@
     </copy>
   </target>
  
+  <target name="install-opt">
+    <copy todir="${java.home}/lib/ext">
+        <fileset dir="${build}/${platform}/opt/lib/ext" includes="*.jar"/>
+        <fileset dir="${vecmath_home}/build/opt/lib/ext" includes="vecmath.jar"/>
+    </copy>
+    <copy todir="${java.home}/${install.bin}">
+       <fileset dir="${build}/${platform}/opt/${install.bin}" includes="*"/>
+    </copy>
+  </target>
+ 
   <target name="uninstall">
     <delete>
         <fileset dir="${java.home}/lib/ext" includes="j3dcore.jar, j3dutils.jar, vecmath.jar"/>
