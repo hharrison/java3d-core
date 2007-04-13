@@ -1846,7 +1846,7 @@ public class Canvas3D extends Canvas {
 	if (buffer != null) {
 	    ImageComponent2DRetained bufferRetained =
 		(ImageComponent2DRetained)buffer.retained;
-
+ 
 	    if (bufferRetained.byReference &&
 		!(bufferRetained.getRefImage(0) instanceof BufferedImage)) {
 
@@ -1896,23 +1896,25 @@ public class Canvas3D extends Canvas {
 		// Will do destroyOffScreenBuffer in the Renderer thread. 
 		sendDestroyCtxAndOffScreenBuffer();
 		drawable = null;
-	    }
-
+            }
+            // Issue 396. Since context is invalid here, we should set it to null.
+            ctx = null;
+            
             // set the canvas dimension according to the buffer dimension
 	    offScreenCanvasSize.setSize(width, height);
 	    this.setSize(offScreenCanvasSize);
 
-	    if (width > 0 && height > 0) {
+	    if (width > 0 && height > 0) {     
 		sendCreateOffScreenBuffer();
 	    }
-	    ctx = null; 
+
 	}
-	else if (ctx != null) {
+	else if (ctx != null) {            
             removeCtx();
 	}
 
         if (freeCanvasId) {
-            sendFreeCanvasId();
+                sendFreeCanvasId();
         }
 
         offScreenBuffer = buffer;

@@ -1112,18 +1112,10 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
     jlong fbConfigListPtr,
     jint width,
     jint height)
-{
-
-    
-    if (ctx == 0) {
-	// createContext() will be invoked later in Renderer
-	return 1;
-    }  else {
-	GetCtx2();
-	d3dCtx->d3dPresent.BackBufferWidth = width;
-	d3dCtx->d3dPresent.BackBufferHeight = height;
-	return SUCCEEDED(d3dCtx->resetSurface(env, cv));
-    }
+ {
+     // Issue 396.
+     // createContext() will be invoked later in Renderer
+     return 1;
 }
 
 

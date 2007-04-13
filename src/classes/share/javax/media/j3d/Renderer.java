@@ -546,8 +546,11 @@ class Renderer extends J3dThread {
 
                     canvas.drawable = null;
                     try {
+                        // Issue 396. Pass in a null ctx for 2 reasons : 
+                        //   1) We should not use ctx field directly without buffering in a msg.
+                        //   2) canvas.ctx should be null.
                         canvas.drawable =
-                                canvas.createOffScreenBuffer(canvas.ctx,
+                                canvas.createOffScreenBuffer(null,
                                     canvas.screen.display,
                                     canvas.fbConfig,
                                     canvas.offScreenCanvasSize.width,
