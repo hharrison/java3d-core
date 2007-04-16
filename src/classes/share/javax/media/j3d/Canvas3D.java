@@ -3984,9 +3984,7 @@ public class Canvas3D extends Canvas {
             cvDirtyMask[0] |= VIEW_INFO_DIRTY;
             cvDirtyMask[1] |= VIEW_INFO_DIRTY;
         }
-	needToRebuildDisplayList = true;
 
-	ctxTimeStamp = VirtualUniverse.mc.getContextTimeStamp();
     }
 
   
@@ -4065,7 +4063,13 @@ public class Canvas3D extends Canvas {
 	for (i=0; i < curStateToUpdate.length; i++) {
 	    curStateToUpdate[i] = null;
 	}
-	
+
+        // Issue 362 - need to reset display lists and ctxTimeStamp in this
+        // method, so that display lists  will be recreated when canvas is
+        // removed from a view and then added back into a view with another
+        // canvas
+	needToRebuildDisplayList = true;
+	ctxTimeStamp = VirtualUniverse.mc.getContextTimeStamp();
     }
 
 
