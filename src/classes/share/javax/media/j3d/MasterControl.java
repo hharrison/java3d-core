@@ -706,27 +706,42 @@ class MasterControl {
         canvasFreeIndex = 0;
     }
 
-    private static Logger createLogger(String loggerName, Level defaultLevel) {
-        Logger logger = Logger.getLogger(loggerName);
-
-        if (defaultLevel != null && logger.getLevel() == null &&
-                logger.getLogger("j3d").getLevel() == null) {
-
-            // Set default logger level rather than inheriting from system global
-            logger.setLevel(defaultLevel);
+    private static boolean initLogger(Logger logger, Level defaultLevel) {
+        if (logger == null) {
+            return false;
         }
 
-        return logger;
+        if (defaultLevel != null &&
+                logger.getLevel() == null &&
+                Logger.getLogger("j3d").getLevel() == null) {
+
+            try {
+                // Set default logger level rather than inheriting from system global
+                logger.setLevel(defaultLevel);
+            } catch (SecurityException ex) {
+                System.err.println(ex);
+                return false;
+            }
+        }
+
+        return logger.isLoggable(Level.SEVERE);
     }
 
     // Called by the static initializer to initialize the loggers
     private static void initLoggers() {
-        devLogger = createLogger("j3d.developer", Level.OFF);
-        devLoggerEnabled = devLogger.isLoggable(Level.SEVERE);
-        statsLogger = createLogger("j3d.stats", Level.OFF);
-        statsLoggerEnabled = statsLogger.isLoggable(Level.SEVERE);
-        coreLogger = createLogger("j3d.core", null);
-        coreLoggerEnabled = coreLogger.isLoggable(Level.SEVERE);
+        coreLogger = Logger.getLogger("j3d.core");
+        devLogger = Logger.getLogger("j3d.developer");
+        statsLogger = Logger.getLogger("j3d.stats");
+
+        java.security.AccessController.doPrivileged(
+            new java.security.PrivilegedAction() {
+                public Object run() {
+                    coreLoggerEnabled = initLogger(coreLogger, null);
+                    devLoggerEnabled = initLogger(devLogger, Level.OFF);
+                    statsLoggerEnabled = initLogger(statsLogger, Level.OFF);
+                    return null;
+                }
+        });
     }
 
     /**
@@ -3647,7 +3662,11 @@ class MasterControl {
         });
 
         // Initialize loggers
-        initLoggers();
+        try {
+            initLoggers();
+        } catch (RuntimeException ex) {
+            System.err.println(ex);
+        }
     }
 
 
