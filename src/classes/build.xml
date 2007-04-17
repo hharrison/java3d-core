@@ -354,7 +354,7 @@
   <target name="install-debug">
     <copy todir="${java.home}/lib/ext">
         <fileset dir="${build}/${platform}/debug/lib/ext" includes="*.jar"/>
-        <fileset dir="${vecmath_home}/build/opt/lib/ext" includes="vecmath.jar"/>
+        <fileset dir="${vecmath_home}/build/debug/lib/ext" includes="vecmath.jar"/>
     </copy>
     <copy todir="${java.home}/${install.bin}">
        <fileset dir="${build}/${platform}/debug/${install.bin}" includes="*"/>
