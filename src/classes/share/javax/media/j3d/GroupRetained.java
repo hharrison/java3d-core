@@ -199,6 +199,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		}		
 	    }
 	}
+        dirtyBoundsCache();
     }
     
     // The method that does the work once the lock is acquired.
@@ -295,6 +296,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		}		
 	    }
 	}
+        dirtyBoundsCache();
     }
     
     // The method that does the work once the lock is acquired.
@@ -345,6 +347,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		}		
 	    }
 	}
+        dirtyBoundsCache();
     }
 
     /** 
@@ -476,6 +479,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		}		
 	    }
 	}
+        dirtyBoundsCache();
     }
     
     // The method that does the work once the lock is acquired.
@@ -499,6 +503,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     }
     
     void moveTo(BranchGroup bg) {
+        ((GroupRetained)bg.retained).dirtyBoundsCache();
 	if (this.source.isLive()) {
 	    universe.resetWaitMCFlag();
 	    synchronized (universe.sceneGraphLock) {
@@ -519,6 +524,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		}		
 	    }
 	}
+        dirtyBoundsCache();
     }
     
     // The method that does the work once the lock is acquired.
@@ -2218,7 +2224,6 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	s.fogs = savedScopedFogs;
 	s.altAppearances = savedScopedAltApps;
 	s.modelClips = savedScopedMclips;
-
     }
 
     void setScopingInfo(SetLiveState s) {
@@ -2419,19 +2424,42 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     }
 
     void computeCombineBounds(Bounds bounds) {
-    
-	if (boundsAutoCompute) {    
-	    for (int i=children.size()-1; i>=0; i--) {
-		NodeRetained child = (NodeRetained)children.get(i); 
-		if(child != null)
-		    child.computeCombineBounds(bounds);
-	    }
-	} else {
-	    // Should this be lock too ? ( MT safe  ? )
-	    synchronized(localBounds) {
-		bounds.combine(localBounds);
-	    }
-	}
+        if (!VirtualUniverse.mc.cacheAutoComputedBounds) {
+            if (boundsAutoCompute) {    
+                for (int i=children.size()-1; i>=0; i--) {
+                    NodeRetained child = (NodeRetained)children.get(i); 
+                    if(child != null)
+                        child.computeCombineBounds(bounds);
+                }
+            } else {
+                // Should this be lock too ? ( MT safe  ? )
+                synchronized(localBounds) {
+                    bounds.combine(localBounds);
+                }
+            }
+        } else {
+            if (cachedBounds!=null && boundsAutoCompute) {
+                bounds.combine(cachedBounds);
+                return;
+            }
+
+            if (boundsAutoCompute) {
+                cachedBounds = new BoundingSphere();
+                ((BoundingSphere)cachedBounds).setRadius(-1);
+                for (int i=children.size()-1; i>=0; i--) {
+                    NodeRetained child = (NodeRetained)children.get(i);
+                    if(child != null)
+                        child.computeCombineBounds(cachedBounds);
+                }
+                bounds.combine(cachedBounds);
+            } else {
+                // Should this be lock too ? ( MT safe  ? )
+                synchronized(localBounds) {
+                    bounds.combine(localBounds);
+                }
+            }
+        }
+        
     }
   
   
@@ -2442,6 +2470,10 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     Bounds getBounds() {
     
 	if ( boundsAutoCompute) {
+            if (cachedBounds!=null) {
+                return (Bounds) cachedBounds.clone();
+            }
+            
 	    BoundingSphere boundingSphere = new BoundingSphere();
 	    boundingSphere.setRadius(-1.0);
 	    

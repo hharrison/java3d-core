@@ -55,6 +55,7 @@ class BranchGroupRetained extends GroupRetained {
      * Detaches this BranchGroup from its parent.
      */
     void detach() {
+        dirtyBoundsCache();
 	if (universe != null) {
 	    universe.resetWaitMCFlag();
 	    synchronized (universe.sceneGraphLock) {

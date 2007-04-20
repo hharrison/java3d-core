@@ -414,6 +414,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	//	System.err.println("computeBoundingBox ....");
 
+        if (boundsDirty && VirtualUniverse.mc.cacheAutoComputedBounds) {
+            for(ArrayList<Shape3DRetained> users : userLists) {
+                for(Shape3DRetained shape : users)
+                    shape.dirtyBoundsCache();
+            }
+        }
+        
 	if ((vertexFormat & GeometryArray.BY_REFERENCE) == 0) {
 	    // by copy	    
 	    computeBoundingBox(initialVertexIndex, vertexData);
@@ -444,6 +451,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    //System.err.println("vertexType & PD");
 	    computeBoundingBox(doubleRefCoords);
 	}
+        
     }
 
 

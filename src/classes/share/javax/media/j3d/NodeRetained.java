@@ -140,6 +140,8 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
     // Bounds set by the API
     Bounds apiBounds;
     
+    protected Bounds cachedBounds=null;     // Cached auto compute bounds, could we use localBounds ?
+    
     /**
      * Each element, p, of branchGroupPaths is a list of BranchGroup from
      * root of the tree to this.
@@ -275,7 +277,12 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
      * of bounds 
      */
     void setBoundsAutoCompute(boolean autoCompute) {
+        if (this.boundsAutoCompute==autoCompute) {
+            return;
+        }
+        
 	this.boundsAutoCompute = autoCompute;
+        dirtyBoundsCache();
     } 
     
     /**
@@ -941,5 +948,20 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
     }
 
     void searchGeometryAtoms(UnorderList list) {}
+    
+    /** 
+     * Make the boundsCache of this node and all its parents dirty
+     */
+    void dirtyBoundsCache() {
+        // Possible optimisation is to not traverse up the tree
+        // if the cachedBounds==null. However this is not the case
+        // if the node is the child of a SharedGroup
+        if (VirtualUniverse.mc.cacheAutoComputedBounds) {
+            cachedBounds = null;
+            if (parent!=null) {
+                parent.dirtyBoundsCache();
+            }
+        }
+    }
 }
 

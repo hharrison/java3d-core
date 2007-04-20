@@ -873,4 +873,25 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
         s.parentTransformLink = this;
         child.setLive(s);
     }
+    
+    /** 
+     * Make the boundsCache of this node and all its parents dirty
+     */
+    void dirtyBoundsCache() {
+        // Possible optimisation is to not traverse up the tree
+        // if the cachedBounds==null. However this is not the case
+        // if the node is the child of a SharedGroup
+        if (VirtualUniverse.mc.cacheAutoComputedBounds) {
+            cachedBounds = null;
+            synchronized(parents) {
+                Enumeration e = parents.elements();
+                while(e.hasMoreElements()) {
+                    LinkRetained parent = (LinkRetained) e.nextElement();
+                    if (parent!=null) {
+                        parent.dirtyBoundsCache();
+                    }
+                }
+            }
+        }
+    }
 }

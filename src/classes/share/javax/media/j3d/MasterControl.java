@@ -472,6 +472,10 @@ class MasterControl {
     //Set as true if you have memory leaks after disposing Canvas3D.
     //Default false value does affect Java3D View dispose behavior.
     boolean forceReleaseView = false;
+    
+    // Issue 480: Cache the bounds of nodes so that getBounds does not 
+    // recompute the boounds of the entire graph per call
+    boolean cacheAutoComputedBounds = false;
 
     /**
      * Constructs a new MasterControl object.  Note that there is
@@ -661,7 +665,13 @@ class MasterControl {
 	    disableXinerama = true;
 	}
 
-	// Initialize the native J3D library
+        // Issue 480 : Cache bounds returned by getBounds()
+	cacheAutoComputedBounds = 
+	    getBooleanProperty("j3d.cacheAutoComputeBounds",
+			       cacheAutoComputedBounds,
+			       "Cache AutoCompute Bounds, accelerates getBounds()");
+
+        // Initialize the native J3D library
 	if (!Pipeline.getPipeline().initializeJ3D(disableXinerama)) {
 	    throw new RuntimeException(J3dI18N.getString("MasterControl0"));
 	}

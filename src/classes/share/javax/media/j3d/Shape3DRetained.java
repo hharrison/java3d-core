@@ -286,7 +286,7 @@ class Shape3DRetained extends LeafRetained {
 	        geometryList.add(null);
 	    }
 	}
-
+        dirtyBoundsCache();                
     }    
 
     /**
@@ -350,6 +350,7 @@ class Shape3DRetained extends LeafRetained {
 	        geometryList.set(index,null);
 	    }
 	}
+        dirtyBoundsCache();
     }
 
     /**
@@ -396,7 +397,8 @@ class Shape3DRetained extends LeafRetained {
 	    } else {
 		geometryList.add(index,null);
 	    }
-	}	
+	}
+        dirtyBoundsCache();
     }
 
     /**
@@ -435,7 +437,7 @@ class Shape3DRetained extends LeafRetained {
 	    geometryList.remove(index);	
 	}
 	
-
+        dirtyBoundsCache();
 	
     }
     
@@ -838,7 +840,9 @@ class Shape3DRetained extends LeafRetained {
 
         if(boundsAutoCompute) {
 	    // System.err.println("getBounds ---- localBounds is " + localBounds);
-	    
+	    if (cachedBounds!=null) {
+                return (Bounds) cachedBounds.clone();
+            }
 
 	    if(geometryList != null) {
 		BoundingBox bbox = new BoundingBox((Bounds) null);
@@ -880,43 +884,66 @@ class Shape3DRetained extends LeafRetained {
      */
     void computeCombineBounds(Bounds bounds) {
 	
-	if(boundsAutoCompute) {
-	    
-	    if(geometryList != null) {
-		GeometryRetained geometry;    
-		BoundingBox bbox = null;
-		
-		if (staticTransform != null) {
-		    bbox = new BoundingBox((BoundingBox) null);
-		}
-		
-		for(int i=0; i<geometryList.size(); i++) {
-		    geometry = (GeometryRetained) geometryList.get(i);
-		    if ((geometry != null) &&
-			(geometry.geoType != GeometryRetained.GEO_TYPE_NONE)) {
-			geometry.computeBoundingBox();
-			// Should this be lock too ? ( MT safe  ? )
-			synchronized(geometry.geoBounds) {
-			    if (staticTransform != null) {
-			        bbox.set(geometry.geoBounds);
-				bbox.transform(staticTransform.transform);
-				bounds.combine((Bounds)bbox);
-			    } else {
-			        bounds.combine((Bounds)geometry.geoBounds);
-			    }
-			}
-		    }
-		}
-	    }
-	    
-	} else {
-	    
-	    // Should this be lock too ? ( MT safe  ? )
-	    synchronized(localBounds) {
-		bounds.combine((Bounds) localBounds);
-	    }
-	}
-    } 
+        if(boundsAutoCompute) {
+            if(geometryList != null) {
+                GeometryRetained geometry;
+                BoundingBox bbox = null;
+                
+                if (staticTransform != null) {
+                    bbox = new BoundingBox((BoundingBox) null);
+                }
+                    
+                if (!VirtualUniverse.mc.cacheAutoComputedBounds) {                    
+                    for(int i=0; i<geometryList.size(); i++) {
+                        geometry = (GeometryRetained) geometryList.get(i);
+                        if ((geometry != null) &&
+                                (geometry.geoType != GeometryRetained.GEO_TYPE_NONE)) {
+                            geometry.computeBoundingBox();
+                            // Should this be lock too ? ( MT safe  ? )
+                            synchronized(geometry.geoBounds) {
+                                if (staticTransform != null) {
+                                    bbox.set(geometry.geoBounds);
+                                    bbox.transform(staticTransform.transform);
+                                    bounds.combine((Bounds)bbox);
+                                } else {
+                                    bounds.combine((Bounds)geometry.geoBounds);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    if (cachedBounds==null) {
+                        cachedBounds = new BoundingBox((BoundingBox) null);
+
+                        for(int i=0; i<geometryList.size(); i++) {
+                            geometry = (GeometryRetained) geometryList.get(i);
+                            if ((geometry != null) &&
+                                    (geometry.geoType != GeometryRetained.GEO_TYPE_NONE)) {
+                                geometry.computeBoundingBox();
+                                // Should this be lock too ? ( MT safe  ? )
+                                synchronized(geometry.geoBounds) {
+                                    if (staticTransform != null) {
+                                        bbox.set(geometry.geoBounds);
+                                        bbox.transform(staticTransform.transform);
+                                        cachedBounds.combine((Bounds)bbox);
+                                    } else {
+                                        cachedBounds.combine((Bounds)geometry.geoBounds);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    bounds.combine(cachedBounds);
+                }
+            }
+        } else {
+            
+            // Should this be lock too ? ( MT safe  ? )
+            synchronized(localBounds) {
+                bounds.combine((Bounds) localBounds);
+            }
+        }
+    }
 
   /**
    * assign a name to this node when it is made live.
@@ -2700,6 +2727,7 @@ class Shape3DRetained extends LeafRetained {
 	  geometryList.remove(index);	
 	}
       }
+      dirtyBoundsCache();
     }
 
     boolean willRemainOpaque(int geoType) {

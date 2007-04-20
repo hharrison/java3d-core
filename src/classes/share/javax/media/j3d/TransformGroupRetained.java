@@ -147,6 +147,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	  //System.err.println("TransformGroupRetained --- TRANSFORM_CHANGED " + this);
 	  VirtualUniverse.mc.processMessage(tchangeMessage);
       }
+      dirtyBoundsCache();
   }
 
     /**
@@ -768,10 +769,16 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
    
     void computeCombineBounds(Bounds bounds) {
+        
+        if (cachedBounds!=null && boundsAutoCompute) {
+            bounds.combine(cachedBounds);
+            return;
+        }
+                    
 	NodeRetained child;
 	BoundingSphere boundingSphere = new BoundingSphere();
 	boundingSphere.setRadius(-1.0);
-  
+          
 	if(boundsAutoCompute) {    
 	    for (int i=children.size()-1; i>=0; i--) {
 		child = (NodeRetained)children.get(i); 
@@ -794,6 +801,9 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	}
 	bounds.combine(boundingSphere);
 	
+        if (boundsAutoCompute && VirtualUniverse.mc.cacheAutoComputedBounds) {
+            cachedBounds = boundingSphere;
+        }
     }
     
     void processChildLocalToVworld(ArrayList dirtyTransformGroups,

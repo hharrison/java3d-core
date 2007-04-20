@@ -130,6 +130,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
             }
 	    sendMessage(updateList);
         }
+        dirtyBoundsCache();
     }
 
     /**
@@ -182,6 +183,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
             }
 	    sendMessage(updateList);
         }
+        dirtyBoundsCache();
     }
 
     void sendMessage(ArrayList updateList) {
@@ -614,37 +616,62 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
     NodeRetained child;
     
     if(boundsAutoCompute) {
-      
-      if(whichChild == Switch.CHILD_ALL) {     	    
-	for(i=0; i<children.size(); i++) { 
-	  child = (NodeRetained)children.get(i);
-	  if(child != null)
-	      child.computeCombineBounds(bounds);
-	}
-      } 
-      else if(whichChild == Switch.CHILD_MASK) {
-	  for(i=0; i<children.size(); i++) { 
-	      if(childMask.get(i)) { 
-		  child = (NodeRetained)children.get(i);
-		  if(child != null)
-		      child.computeCombineBounds(bounds);  
-	      }
-	  }
-      }
-      else if(whichChild != Switch.CHILD_NONE) {
-	  if (whichChild < children.size()) {
-	      child = (NodeRetained)children.get(whichChild);
-	      if(child != null)
-	          child.computeCombineBounds(bounds);
-	  }  
-      }
-      
+        if (!VirtualUniverse.mc.cacheAutoComputedBounds) {
+            if(whichChild == Switch.CHILD_ALL) {
+                for(i=0; i<children.size(); i++) {
+                    child = (NodeRetained)children.get(i);
+                    if(child != null)
+                        child.computeCombineBounds(bounds);
+                }
+            } else if(whichChild == Switch.CHILD_MASK) {
+                for(i=0; i<children.size(); i++) {
+                    if(childMask.get(i)) {
+                        child = (NodeRetained)children.get(i);
+                        if(child != null)
+                            child.computeCombineBounds(bounds);
+                    }
+                }
+            } else if(whichChild != Switch.CHILD_NONE) {
+                if (whichChild < children.size()) {
+                    child = (NodeRetained)children.get(whichChild);
+                    if(child != null)
+                        child.computeCombineBounds(bounds);
+                }
+            }
+        } else {
+            if (cachedBounds==null) {
+                cachedBounds = new BoundingSphere();
+                ((BoundingSphere)cachedBounds).setRadius(-1);
+                if(whichChild == Switch.CHILD_ALL) {
+                    for(i=0; i<children.size(); i++) {
+                        child = (NodeRetained)children.get(i);
+                        if(child != null)
+                            child.computeCombineBounds(cachedBounds);
+                    }
+                } else if(whichChild == Switch.CHILD_MASK) {
+                    for(i=0; i<children.size(); i++) {
+                        if(childMask.get(i)) {
+                            child = (NodeRetained)children.get(i);
+                            if(child != null)
+                                child.computeCombineBounds(cachedBounds);
+                        }
+                    }
+                } else if(whichChild != Switch.CHILD_NONE) {
+                    if (whichChild < children.size()) {
+                        child = (NodeRetained)children.get(whichChild);
+                        if(child != null)
+                            child.computeCombineBounds(cachedBounds);
+                    }
+                }
+            }
+            bounds.combine(cachedBounds);
+        }
+    } else {
+        // Should this be lock too ? ( MT safe  ? )
+        synchronized(localBounds) {
+            bounds.combine(localBounds);
+        }
     }
-    else
-	// Should this be lock too ? ( MT safe  ? )
-	synchronized(localBounds) {
-	    bounds.combine(localBounds);    
-	}
   }
 
 
@@ -658,6 +685,10 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
     NodeRetained child;
     
     if(boundsAutoCompute) {
+        if (cachedBounds!=null) {
+            return (Bounds) cachedBounds.clone();
+        }
+        
       BoundingSphere boundingSphere = new BoundingSphere();
       boundingSphere.setRadius(-1.0);
       

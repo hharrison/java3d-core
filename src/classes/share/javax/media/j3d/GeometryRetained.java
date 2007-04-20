@@ -81,7 +81,7 @@ abstract class GeometryRetained extends NodeComponentRetained {
     // A list of ArrayLists which contain all the Shape3DRetained objects
     // refering to this geometry.  Each list corresponds to the universe
     // above.
-    ArrayList userLists = new ArrayList();
+    ArrayList<ArrayList<Shape3DRetained>> userLists = new ArrayList();
 
     // true if color not specified with alpha channel 
     boolean noAlpha = false;
