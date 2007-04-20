@@ -389,9 +389,6 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
         }
         
         // System.err.println("This is a RenderedImage or BufferedImage with TYPE_CUSTOM. It imageType classification may not be correct.");
-        // TODO : Dead code - need to clean up for 1.6
-        assert false;
-               
         ColorModel cm = ri.getColorModel();
         ColorSpace cs = cm.getColorSpace();
         SampleModel sm = ri.getSampleModel();
