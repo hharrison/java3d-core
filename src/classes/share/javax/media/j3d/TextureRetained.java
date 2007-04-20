@@ -1317,6 +1317,8 @@ abstract class TextureRetained extends NodeComponentRetained {
         
         boolean useAsRaster = isUseAsRaster();
         ImageComponentRetained.ImageData imageData = image.getImageData(useAsRaster);
+
+        assert imageData != null;
         
         updateTextureImage(cv,
                 face, numLevels, level,
@@ -1325,6 +1327,8 @@ abstract class TextureRetained extends NodeComponentRetained {
                 boundaryWidth, image.getImageDataTypeIntValue(),
                 imageData.get());
         
+        
+        // TODO : Dead code - need to clean up for 1.6
         // Now take care of the RenderedImage (byRef and yUp) case. Note, if image
         // is a RenderedImage ( byRef and yUp), then imageData will be null
         
@@ -1428,6 +1432,9 @@ abstract class TextureRetained extends NodeComponentRetained {
             
         } else {
 
+            assert false;
+            
+            // TODO : Dead code - need to clean up for 1.6
 	    // System.err.println("RenderedImage subImage update");
 	    // determine the first tile of the image
 
