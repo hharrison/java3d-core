@@ -771,7 +771,14 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
     void computeCombineBounds(Bounds bounds) {
         
         if (cachedBounds!=null && boundsAutoCompute) {
-            bounds.combine(cachedBounds);
+            Bounds b = (Bounds) cachedBounds.clone();
+            // Should this be lock too ? ( MT safe  ? ) 
+            // Thoughts :
+            // Make a temp copy with lock :  transform.getWithLock(trans);, but this will cause gc ...
+            synchronized(transform) {
+                b.transform(transform);
+            }
+            bounds.combine(b);
             return;
         }
                     
@@ -784,7 +791,11 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 		child = (NodeRetained)children.get(i); 
 		if(child != null)
 		    child.computeCombineBounds(boundingSphere);
-	    }        
+	    }   
+            
+            if (VirtualUniverse.mc.cacheAutoComputedBounds) {
+                cachedBounds = (Bounds) boundingSphere.clone();
+            }
 	}
 	else {
 	    // Should this be lock too ? ( MT safe  ? )
@@ -793,7 +804,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	    }      
 	}
 	
-	// Should this be lock too ? ( MT safe  ? ) 
+        // Should this be lock too ? ( MT safe  ? ) 
 	// Thoughts :
 	// Make a temp copy with lock :  transform.getWithLock(trans);, but this will cause gc ...
 	synchronized(transform) {
@@ -801,9 +812,6 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	}
 	bounds.combine(boundingSphere);
 	
-        if (boundsAutoCompute && VirtualUniverse.mc.cacheAutoComputedBounds) {
-            cachedBounds = boundingSphere;
-        }
     }
     
     void processChildLocalToVworld(ArrayList dirtyTransformGroups,
