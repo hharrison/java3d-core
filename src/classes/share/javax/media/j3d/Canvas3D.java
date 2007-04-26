@@ -4418,11 +4418,6 @@ public class Canvas3D extends Canvas {
 	stateUpdateMask &= ~(1 << bit);
     }
 
-    // mark that the current bin specified by the bit needs to be updated
-    void setStateToUpdate(int bit) {
-	stateUpdateMask |= 1 << bit;
-    }
-
     // mark that the bin specified by the bit needs to be updated
     void setStateToUpdate(int bit, Object bin) {
 	stateUpdateMask |= 1 << bit;

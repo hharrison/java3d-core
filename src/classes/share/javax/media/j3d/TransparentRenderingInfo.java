@@ -71,10 +71,15 @@ class TransparentRenderingInfo extends Object implements com.sun.j3d.utils.scene
                     == View.VISIBILITY_DRAW_INVISIBLE && visible)) {
                 return false;
             }
-            attributeBin.environmentSet.lightBin.updateAttributes(cv);
-            attributeBin.environmentSet.updateAttributes(cv);
-            attributeBin.updateAttributes(cv);
-            shaderBin.updateTransparentAttributes(cv);
+            
+            // Fix to issue 314. Set the appropriate bits for the dirty bins 
+            // and call the update state method.
+            cv.setStateToUpdate(Canvas3D.LIGHTBIN_BIT, attributeBin.environmentSet.lightBin);
+            cv.setStateToUpdate(Canvas3D.ENVIRONMENTSET_BIT, attributeBin.environmentSet);
+            cv.setStateToUpdate(Canvas3D.ATTRIBUTEBIN_BIT, attributeBin);
+            cv.setStateToUpdate(Canvas3D.SHADERBIN_BIT, shaderBin);
+            cv.updateEnvState();
+
         } else if (cv.attributeBin != attributeBin) {
             boolean visible = (attributeBin.definingRenderingAttributes == null ||
                     attributeBin.definingRenderingAttributes.visible);
@@ -85,10 +90,20 @@ class TransparentRenderingInfo extends Object implements com.sun.j3d.utils.scene
                     == View.VISIBILITY_DRAW_INVISIBLE && visible)) {
                 return false;
             }
-            attributeBin.updateAttributes(cv);
-            shaderBin.updateTransparentAttributes(cv);
+            
+            // Fix to issue 314. Set the appropriate bits for the dirty bins 
+            // and call the update state method.
+            cv.setStateToUpdate(Canvas3D.ATTRIBUTEBIN_BIT, attributeBin);
+            cv.setStateToUpdate(Canvas3D.SHADERBIN_BIT, shaderBin);
+            cv.updateEnvState();
+            
         } else if (cv.shaderBin != shaderBin) {
-            shaderBin.updateTransparentAttributes(cv);
+
+            // Fix to issue 314. Set the appropriate bits for the dirty bins 
+            // and call the update state method.
+            cv.setStateToUpdate(Canvas3D.SHADERBIN_BIT, shaderBin);
+            cv.updateEnvState();
+ 
         } 
 
         return true;

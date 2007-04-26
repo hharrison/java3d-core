@@ -295,12 +295,6 @@ class ShaderBin implements ObjectUpdate {
 	    tb = tb.next;
 	}
     }
-
-    void updateTransparentAttributes(Canvas3D cv) {
-   
-        // include this ShaderBin to the to-be-updated state set in canvas
-        cv.setStateToUpdate(Canvas3D.SHADERBIN_BIT, this);              
-    }
     
     void updateAttributes(Canvas3D cv) {
 
