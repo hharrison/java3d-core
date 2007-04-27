@@ -2410,9 +2410,9 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
             // Issue 471 - Don't check ATTRIBUTE_VALUE_UPDATE, there is no need
             // to do anything to the shader bins when a value changes.
 	    boolean spUpdate = 
-		((component & ShaderConstants.SHADER_PROGRAM) != 0);
+		((component & ShaderAppearanceRetained.SHADER_PROGRAM) != 0);
 	    boolean sasUpdate = 
-		(((component & ShaderConstants.SHADER_ATTRIBUTE_SET) != 0) ||
+		(((component & ShaderAppearanceRetained.SHADER_ATTRIBUTE_SET) != 0) ||
 		 ((component & ShaderConstants.ATTRIBUTE_SET_PUT) != 0) ||
 		 ((component & ShaderConstants.ATTRIBUTE_SET_REMOVE) != 0) ||
 		 ((component & ShaderConstants.ATTRIBUTE_SET_CLEAR) != 0));
