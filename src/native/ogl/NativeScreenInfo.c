@@ -203,8 +203,8 @@ Java_javax_media_j3d_NativeScreenInfo_queryWglARB(
     
     if (!wglMakeCurrent(hdc, hrc)) {
 	printErrorMessage("Failed in wglMakeCurrent");
-	ReleaseDC(hwnd, hdc);
 	wglDeleteContext(hrc);
+	ReleaseDC(hwnd, hdc);
 	DestroyWindow(hwnd);
 	UnregisterClass(szAppName, (HINSTANCE)NULL);
 	return JNI_FALSE;
@@ -231,8 +231,8 @@ Java_javax_media_j3d_NativeScreenInfo_queryWglARB(
 	}
     }
     
-    ReleaseDC(hwnd, hdc);
     wglDeleteContext(hrc);
+    ReleaseDC(hwnd, hdc);
     DestroyWindow(hwnd);
     UnregisterClass(szAppName, (HINSTANCE)NULL);
     return JNI_TRUE;

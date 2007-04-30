@@ -2311,8 +2311,8 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
     
     if (!wglMakeCurrent(hdc, hrc)) {
 	printErrorMessage("In Canvas3D : Failed in wglMakeCurrent");
-	ReleaseDC(hwnd, hdc);
 	wglDeleteContext(hrc);
+	ReleaseDC(hwnd, hdc);
 	DestroyWindow(hwnd);
 	UnregisterClass(szAppName, (HINSTANCE)NULL);
 	return 0;
@@ -2329,8 +2329,8 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
 						     width, height, piAttrs);
 	if(hpbuf == NULL) {
 	    printErrorMessage("In Canvas3D : wglCreatePbufferARB FAIL.");
-	    ReleaseDC(hwnd, hdc);
 	    wglDeleteContext(hrc);
+	    ReleaseDC(hwnd, hdc);
 	    DestroyWindow(hwnd);
 	    UnregisterClass(szAppName, (HINSTANCE)NULL);
 	    return 0;
@@ -2340,8 +2340,8 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
 	
 	if(hpbufdc == NULL) {
 	    printErrorMessage("In Canvas3D : Can't get pbuffer's device context.");
-	    ReleaseDC(hwnd, hdc);
 	    wglDeleteContext(hrc);
+	    ReleaseDC(hwnd, hdc);
 	    DestroyWindow(hwnd);
 	    UnregisterClass(szAppName, (HINSTANCE)NULL);
 	    return 0;
@@ -2354,8 +2354,8 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
 	*/
 
 	/* Destroy all dummy objects */
-	ReleaseDC(hwnd, hdc);
 	wglDeleteContext(hrc);
+	ReleaseDC(hwnd, hdc);
 	DestroyWindow(hwnd);
 	UnregisterClass(szAppName, (HINSTANCE)NULL);
 	
@@ -2409,8 +2409,8 @@ jlong JNICALL Java_javax_media_j3d_NativePipeline_createOffScreenBuffer(
     /* Choosing and setting of pixel format is done in createContext */    
     
     /* Destroy all dummy objects and fall BitMap  */    
-    ReleaseDC(hwnd, hdc);
     wglDeleteContext(hrc);
+    ReleaseDC(hwnd, hdc);
     DestroyWindow(hwnd);
     UnregisterClass(szAppName, (HINSTANCE)NULL);
 

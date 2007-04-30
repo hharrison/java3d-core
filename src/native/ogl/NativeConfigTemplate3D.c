@@ -1474,8 +1474,8 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
     
     if (!wglMakeCurrent(hdc, hrc)) {
 	printErrorMessage("In NativeConfigTemplate : Failed in wglMakeCurrent");
-	ReleaseDC(hwnd, hdc);
 	wglDeleteContext(hrc);
+	ReleaseDC(hwnd, hdc);
 	DestroyWindow(hwnd);
 	UnregisterClass(szAppName, (HINSTANCE)NULL);
 	return -1;
@@ -1557,8 +1557,8 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 		(*env)->ReleaseLongArrayElements(env, offScreenPFArray, offScreenPFListPtr, 0);
 
 		/* Destroy all dummy objects */
-		ReleaseDC(hwnd, hdc);
 		wglDeleteContext(hrc);
+		ReleaseDC(hwnd, hdc);
 		DestroyWindow(hwnd);
 		UnregisterClass(szAppName, (HINSTANCE)NULL);
 
@@ -1598,8 +1598,8 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 	(*env)->ReleaseLongArrayElements(env, offScreenPFArray, offScreenPFListPtr, 0);
 
 	/* We are done with dummy context, so destroy all dummy objects */
-	ReleaseDC(hwnd, hdc);
 	wglDeleteContext(hrc);
+	ReleaseDC(hwnd, hdc);
 	DestroyWindow(hwnd);
 	UnregisterClass(szAppName, (HINSTANCE)NULL);
 
@@ -1623,8 +1623,8 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
     (*env)->ReleaseLongArrayElements(env, offScreenPFArray, offScreenPFListPtr, 0);
 
     /* We are done with dummy context, so destroy all dummy objects */
-    ReleaseDC(hwnd, hdc);
     wglDeleteContext(hrc);
+    ReleaseDC(hwnd, hdc);
     DestroyWindow(hwnd);
     UnregisterClass(szAppName, (HINSTANCE)NULL);
 

@@ -391,8 +391,8 @@ Java_javax_media_j3d_NativePipeline_getSupportedOglVendorNative(
     }
 
     /* Destroy all dummy objects */
-    ReleaseDC(hwnd, hdc);
     wglDeleteContext(hrc);
+    ReleaseDC(hwnd, hdc);
     DestroyWindow(hwnd);
     UnregisterClass(szAppName, (HINSTANCE)NULL);
 
