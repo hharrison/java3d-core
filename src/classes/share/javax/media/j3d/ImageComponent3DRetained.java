@@ -46,8 +46,9 @@ class ImageComponent3DRetained extends ImageComponentRetained {
         
         geomLock.getLock();        
         
-        if(byReference) {            
-            setRefImage(image,0);    
+        if(byReference) {
+            // Fix to issue 488.
+            setRefImage(image, index);    
         }
 
         if(imageData == null) {
