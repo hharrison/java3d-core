@@ -1422,26 +1422,30 @@ class Renderer extends J3dThread {
                             canvas.endOffScreenRendering();
                             canvas.offScreenRendering = false;
 
-                            // do the postSwap for offscreen here
-                            canvas.view.inCanvasCallback = true;
-                            try {
-                                canvas.postSwap();
-                            } catch (RuntimeException e) {
-                                System.err.println("Exception occurred during Canvas 3D callback:");
-                                e.printStackTrace();
-                            } catch (Error e) {
-                                // Issue 264 - catch Error so Renderer doesn't die
-                                System.err.println("Error occurred during Canvas3D callback:");
-                                e.printStackTrace();
+                            // Issue 489 - don't call postSwap here for auto-offscreen,
+                            // since it will be called later by the SWAP operation
+                            if (canvas.manualRendering) {
+                                // do the postSwap for offscreen here
+                                canvas.view.inCanvasCallback = true;
+                                try {
+                                    canvas.postSwap();
+                                } catch (RuntimeException e) {
+                                    System.err.println("Exception occurred during Canvas 3D callback:");
+                                    e.printStackTrace();
+                                } catch (Error e) {
+                                    // Issue 264 - catch Error so Renderer doesn't die
+                                    System.err.println("Error occurred during Canvas3D callback:");
+                                    e.printStackTrace();
+                                }
+
+                                if (offBufRetained.isByReference()) {
+                                    offBufRetained.geomLock.unLock();
+                                }
+
+                                canvas.view.inCanvasCallback = false;
+
+                                canvas.releaseCtx();
                             }
-
-			    if (offBufRetained.isByReference()) {
-                    	        offBufRetained.geomLock.unLock();
-			    }
-
-                            canvas.view.inCanvasCallback = false;
-
-                            canvas.releaseCtx();
                         }
 
 			canvas.endScene();
