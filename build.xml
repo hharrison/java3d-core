@@ -223,8 +223,6 @@
     <property name="wstype" value="jogl"/>
     <property name="platformname" value="macosx"/>
     <property name="platform" value="macosx"/>
-    <!-- Exclude native pipeline from compilation as we don't have a NativeConfigTemplate3D, etc. for this platform -->
-    <property name="javac.excludes" value="javax/media/j3d/NativeContext.java,javax/media/j3d/NativeDrawable.java,javax/media/j3d/NativePipeline.java,javax/media/j3d/NativeShaderObject.java"/>
   </target>
 
   <target name="init-jogl" if="build.jogl">
