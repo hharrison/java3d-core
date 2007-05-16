@@ -40,12 +40,12 @@
 
 
 /*
- * Class:     javax_media_j3d_NativeScreenInfo
+ * Class:     javax_media_j3d_X11NativeScreenInfo
  * Method:    openDisplay
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL
-Java_javax_media_j3d_NativeScreenInfo_openDisplay(
+Java_javax_media_j3d_X11NativeScreenInfo_openDisplay(
     JNIEnv *env,
     jclass cls)
 {
@@ -55,12 +55,12 @@ Java_javax_media_j3d_NativeScreenInfo_openDisplay(
 }
 
 /*
- * Class:     javax_media_j3d_NativeScreenInfo
+ * Class:     javax_media_j3d_X11NativeScreenInfo
  * Method:    getDefaultScreen
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
-Java_javax_media_j3d_NativeScreenInfo_getDefaultScreen(
+Java_javax_media_j3d_X11NativeScreenInfo_getDefaultScreen(
     JNIEnv *env,
     jclass cls,
     jlong display)
@@ -70,12 +70,12 @@ Java_javax_media_j3d_NativeScreenInfo_getDefaultScreen(
 }
 
 /*
- * Class:     javax_media_j3d_NativeScreenInfo
+ * Class:     javax_media_j3d_X11NativeScreenInfo
  * Method:    queryGLX13
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_javax_media_j3d_NativeScreenInfo_queryGLX13(
+Java_javax_media_j3d_X11NativeScreenInfo_queryGLX13(
     JNIEnv *env,
     jclass cls,
     jlong display)
@@ -141,12 +141,12 @@ extern PIXELFORMATDESCRIPTOR getDummyPFD();
 extern BOOL isSupportedWGL(const char *extensions, const char *extension_string);    
 
 /*
- * Class:     javax_media_j3d_NativeScreenInfo
+ * Class:     javax_media_j3d_Win32NativeScreenInfo
  * Method:    queryWglARB
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_javax_media_j3d_NativeScreenInfo_queryWglARB(
+Java_javax_media_j3d_Win32NativeScreenInfo_queryWglARB(
     JNIEnv *env,
     jclass cls)
 {

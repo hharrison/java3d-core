@@ -14,7 +14,7 @@
 
 
 extern "C" JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isStereoAvailable(
+jboolean JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_isStereoAvailable(
     JNIEnv *env,
     jobject obj,
     jlong pFormatInfo,
@@ -26,7 +26,7 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isStereoAvailable(
 }
 
 extern "C" JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isDoubleBufferAvailable(
+jboolean JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_isDoubleBufferAvailable(
     JNIEnv *env,
     jobject obj,
     jlong pFormatInfo,
@@ -37,7 +37,7 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isDoubleBufferAvail
 }
 
 extern "C" JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(
+jboolean JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(
     JNIEnv *env,
     jobject obj,
     jlong pFormatInfo,
@@ -70,7 +70,7 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasing
     return antialiasingSupport;
 }
 extern "C" JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingAccumAvailable(JNIEnv *env,
+jboolean JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_isSceneAntialiasingAccumAvailable(JNIEnv *env,
     jobject obj,
     jlong pFormatInfo,
     jboolean offScreen)
@@ -81,7 +81,7 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasing
 
 
 extern "C" JNIEXPORT
-jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
+jint JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_choosePixelFormat(
     JNIEnv   *env,
     jobject   obj,
     jlong ctx,
@@ -141,7 +141,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 
     if (mx_ptr[ANTIALIASING] == REQUIRED) 
 	{
-	  if (Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(env, obj, 0, JNI_TRUE, screen) == JNI_TRUE)
+	  if (Java_javax_media_j3d_Win32NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(env, obj, 0, JNI_TRUE, screen) == JNI_TRUE)
 	    {
 		 retValue |= (1 << 31);
 	    } 
@@ -156,11 +156,11 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 
 
 /*
- * Class:     javax_media_j3d_NativeConfigTemplate3D
+ * Class:     javax_media_j3d_Win32NativeConfigTemplate3D
  * Method:    getStencilSize
  * Signature: (JZ)I * 
  */
-JNIEXPORT jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_getStencilSize
+JNIEXPORT jint JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_getStencilSize
   (JNIEnv *env, jobject obj, jlong pFormatInfo, jboolean offScreen)
 {
     jlong stencilSize = pFormatInfo;	

@@ -15,7 +15,11 @@ package javax.media.j3d;
 import java.awt.GraphicsDevice;
 import sun.awt.Win32GraphicsDevice;
 
-class NativeScreenInfo {
+/**
+ * Native screen info class. A singleton instance of this class is created by
+ * a factory method in the base class using reflection.
+ */
+class Win32NativeScreenInfo extends NativeScreenInfo {
     private static final long display = 0; // unused for Win32
 
     private static boolean wglARBChecked = false;
@@ -23,8 +27,7 @@ class NativeScreenInfo {
 
     private static native boolean queryWglARB();
     
-    private NativeScreenInfo() {
-        throw new AssertionError("constructor should never be called");
+    Win32NativeScreenInfo() {
     }
 
     // This method will return true if wglGetExtensionsStringARB is supported, 
@@ -39,16 +42,18 @@ class NativeScreenInfo {
 	return isWglARB;
     }
 
-    static long getDisplay() {
+    @Override
+    long getDisplay() {
 	return display;
     }
 
-    static int getScreen(GraphicsDevice graphicsDevice) {
+    @Override
+    int getScreen(GraphicsDevice graphicsDevice) {
 	return ((Win32GraphicsDevice)graphicsDevice).getScreen();
     }
 
     // Ensure that the native libraries are loaded
     static {
- 	VirtualUniverse.loadLibraries();
+        VirtualUniverse.loadLibraries();
     }
 }

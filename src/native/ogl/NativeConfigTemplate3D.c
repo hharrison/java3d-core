@@ -335,7 +335,7 @@ GLXFBConfig *find_DB_AA_S_S_FBConfigs(jlong display,
  * combinations in hopes of finding an valid visual.
  */
 JNIEXPORT
-jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
+jint JNICALL Java_javax_media_j3d_X11NativeConfigTemplate3D_chooseOglVisual(
     JNIEnv    *env,
     jobject    obj,
     jlong      display,
@@ -464,7 +464,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_chooseOglVisual(
 
 
 JNIEXPORT 
-void JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_freeFBConfig(
+void JNICALL Java_javax_media_j3d_X11NativeConfigTemplate3D_freeFBConfig(
      JNIEnv *env,
      jclass  class,	/* this is a static native method */
      jlong   fbConfigListPtr)
@@ -475,7 +475,7 @@ void JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_freeFBConfig(
 
 
 JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isStereoAvailable(
+jboolean JNICALL Java_javax_media_j3d_X11NativeConfigTemplate3D_isStereoAvailable(
     JNIEnv *env,
     jobject obj,
     jlong display,
@@ -511,7 +511,7 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isStereoAvailable(
     return (stereoFlag ? JNI_TRUE : JNI_FALSE);
 }
 
-JNIEXPORT jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_getStencilSize(
+JNIEXPORT jint JNICALL Java_javax_media_j3d_X11NativeConfigTemplate3D_getStencilSize(
      JNIEnv *env,
      jobject obj,
      jlong display,
@@ -535,7 +535,7 @@ JNIEXPORT jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_getStencilSiz
 }
 
 JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isDoubleBufferAvailable(
+jboolean JNICALL Java_javax_media_j3d_X11NativeConfigTemplate3D_isDoubleBufferAvailable(
     JNIEnv *env,
     jobject obj,
     jlong display,
@@ -559,7 +559,7 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isDoubleBufferAvail
 }
 
 JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingAccumAvailable(
+jboolean JNICALL Java_javax_media_j3d_X11NativeConfigTemplate3D_isSceneAntialiasingAccumAvailable(
     JNIEnv *env,
     jobject obj,
     jlong display,
@@ -583,7 +583,7 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasing
 }
 
 JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(
+jboolean JNICALL Java_javax_media_j3d_X11NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(
     JNIEnv *env,
     jobject obj,
     jlong display,
@@ -1408,7 +1408,7 @@ PixelFormatInfo * newPixelFormatInfo(HDC hdc, jboolean usePbuffer)
 
 
 JNIEXPORT
-jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
+jint JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_choosePixelFormat(
     JNIEnv   *env,
     jobject   obj,
     jlong     ctxInfo,
@@ -1633,7 +1633,7 @@ jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_choosePixelFormat(
 
 
 JNIEXPORT 
-void JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_freePixelFormatInfo(
+void JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_freePixelFormatInfo(
      JNIEnv *env,
      jclass  class,	/* this is a static native method */
      jlong   pFormatInfo)
@@ -1655,7 +1655,7 @@ void JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_freePixelFormatInfo(
 
 
 JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isStereoAvailable(
+jboolean JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_isStereoAvailable(
     JNIEnv *env,
     jobject obj,
     jlong pFormatInfo,
@@ -1692,7 +1692,7 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isStereoAvailable(
 
 }
 
-JNIEXPORT jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_getStencilSize(
+JNIEXPORT jint JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_getStencilSize(
     JNIEnv *env,
     jobject obj,
     jlong pFormatInfo,
@@ -1717,7 +1717,7 @@ JNIEXPORT jint JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_getStencilSiz
 
 
 JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isDoubleBufferAvailable(
+jboolean JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_isDoubleBufferAvailable(
     JNIEnv *env,
     jobject obj,
     jlong pFormatInfo,
@@ -1741,7 +1741,7 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isDoubleBufferAvail
 }
 
 JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingAccumAvailable(
+jboolean JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_isSceneAntialiasingAccumAvailable(
     JNIEnv *env,
     jobject obj,
     jlong pFormatInfo,
@@ -1763,7 +1763,7 @@ jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasing
 }
 
 JNIEXPORT
-jboolean JNICALL Java_javax_media_j3d_NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(
+jboolean JNICALL Java_javax_media_j3d_Win32NativeConfigTemplate3D_isSceneAntialiasingMultisampleAvailable(
     JNIEnv *env,
     jobject obj,
     jlong pFormatInfo,

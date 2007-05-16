@@ -1253,7 +1253,7 @@ class MasterControl {
      * Returns whether we are running on Windows
      * TODO: most code that cares about this should move into the pipeline
      */
-    final boolean isWindows() {
+    static final boolean isWindows() {
 	return isWindowsOs;
     }
 

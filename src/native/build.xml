@@ -20,37 +20,51 @@
   <target name="nativeSetup-debug-solaris" if="isSolarisOnSparc">
 	<property name="bldFlag" value="-g -DDEBUG"/>
 	<property name="coreLibDependency" value="lib/sparc/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-debug-solaris-x86" if="isSolarisOnX86">
 	<property name="bldFlag" value="-g -DDEBUG"/>
 	<property name="coreLibDependency" value="lib/i386/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-debug-linux" if="isLinuxOnX86">
 	<property name="bldFlag" value="-g -DDEBUG"/>
 	<property name="coreLibDependency" value="lib/i386/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-debug-linux-amd64" if="isLinuxOnAmd64">
 	<property name="bldFlag" value="-g -DDEBUG -fPIC -march=k8 -msse2 -mfpmath=sse"/>
 	<property name="coreLibDependency" value="lib/amd64/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-debug-linux-ia64" if="isLinuxOnIA64">
 	<property name="bldFlag" value="-g -DDEBUG"/>
 	<property name="coreLibDependency" value="lib/ia64/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
   
   <target name="nativeSetup-debug-linux-ppc" if="isLinuxOnPPC">
 	<property name="bldFlag" value="-g -DDEBUG"/>
 	<property name="coreLibDependency" value="lib/ppc/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-debug-win32" if="isWindowsOnX86">
 	<property name="bldFlag" 
 	         value="-DDEBUG -DWIN32 -D_WINDOWS"/>
 	<property name="coreLibDependency" value="bin/j3dcore-${build.rend}.dll"/>
+        <property name="osNativeConfigTemplate3D" value="Win32NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="Win32NativeScreenInfo"/>
   </target>
 
 
@@ -58,6 +72,8 @@
 	<property name="bldFlag" 
 	         value="-DDEBUG -DWIN32 -D_WINDOWS"/>
 	<property name="coreLibDependency" value="bin/j3dcore-${build.rend}.dll"/>
+        <property name="osNativeConfigTemplate3D" value="Win32NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="Win32NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-debug" depends="nativeSetup-debug-solaris, nativeSetup-debug-solaris-x86, nativeSetup-debug-linux, nativeSetup-debug-linux-amd64, nativeSetup-debug-linux-ia64, nativeSetup-debug-linux-ppc, nativeSetup-debug-win32, nativeSetup-debug-winamd64">
@@ -71,43 +87,59 @@
   <target name="nativeSetup-opt-solaris" if="isSolarisOnSparc">
 	<property name="bldFlag" value="-O"/>
 	<property name="coreLibDependency" value="lib/sparc/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-opt-solaris-x86" if="isSolarisOnX86">
 	<property name="bldFlag" value="-O"/>
 	<property name="coreLibDependency" value="lib/i386/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-opt-linux" if="isLinuxOnX86">
 	<property name="bldFlag" value="-O"/>
 	<property name="coreLibDependency" value="lib/i386/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-opt-linux-amd64" if="isLinuxOnAmd64">
 	<property name="bldFlag" value="-O -fPIC -march=k8 -msse2 -mfpmath=sse"/>
 	<property name="coreLibDependency" value="lib/amd64/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-opt-linux-ia64" if="isLinuxOnIA64">
 	<property name="bldFlag" value="-O"/>
 	<property name="coreLibDependency" value="lib/ia64/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-opt-linux-ppc" if="isLinuxOnPPC">
 	<property name="bldFlag" value="-O"/>
 	<property name="coreLibDependency" value="lib/ppc/libj3dcore-ogl.so"/>
+        <property name="osNativeConfigTemplate3D" value="X11NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="X11NativeScreenInfo"/>
   </target>
   
   <target name="nativeSetup-opt-win32" if="isWindowsOnX86">
 	<property name="bldFlag" 
 	         value="-DWIN32 -D_WINDOWS"/>
 	<property name="coreLibDependency" value="bin/j3dcore-${build.rend}.dll"/>
+        <property name="osNativeConfigTemplate3D" value="Win32NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="Win32NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-opt-winamd64" if="isWindowsOnAmd64">
 	<property name="bldFlag" 
 	         value="-DWIN32 -D_WINDOWS"/>
 	<property name="coreLibDependency" value="bin/j3dcore-${build.rend}.dll"/>
+        <property name="osNativeConfigTemplate3D" value="Win32NativeConfigTemplate3D"/>
+        <property name="osNativeScreenInfo" value="Win32NativeScreenInfo"/>
   </target>
 
   <target name="nativeSetup-opt" depends="nativeSetup-opt-solaris, nativeSetup-opt-solaris-x86, nativeSetup-opt-linux, nativeSetup-opt-linux-amd64, nativeSetup-opt-linux-ia64, nativeSetup-opt-linux-ppc, nativeSetup-opt-win32, nativeSetup-opt-winamd64">
@@ -202,8 +234,14 @@
              srcfile="${javahCoreSrc}/NativePipeline.java"
              targetfile="${javahCoreTarget}/javax_media_j3d_NativePipeline.h"/>
             <uptodate
-     	     srcfile="${src}/classes/${wstype}/javax/media/j3d/NativeConfigTemplate3D.java"
+     	     srcfile="${javahCoreSrc}/NativeConfigTemplate3D.java"
     	     targetfile="${javahCoreTarget}/javax_media_j3d_NativeConfigTemplate3D.h"/>
+            <uptodate
+     	     srcfile="${src}/classes/${wstype}/javax/media/j3d/${osNativeConfigTemplate3D}.java"
+    	     targetfile="${javahCoreTarget}/javax_media_j3d_${osNativeConfigTemplate3D}.h"/>
+            <uptodate
+     	     srcfile="${src}/classes/${wstype}/javax/media/j3d/${osNativeScreenInfo}.java"
+    	     targetfile="${javahCoreTarget}/javax_media_j3d_${osNativeScreenInfo}.h"/>
 	    <uptodate
      	     srcfile="${javahCoreSrc}/NodeRetained.java"
     	     targetfile="${javahCoreTarget}/javax_media_j3d_NodeRetained.h"/>
@@ -352,6 +390,8 @@
 	<class name="javax.media.j3d.ModelClipRetained"/>
         <class name="javax.media.j3d.NativePipeline"/>
 	<class name="javax.media.j3d.NativeConfigTemplate3D"/>
+	<class name="javax.media.j3d.${osNativeConfigTemplate3D}"/>
+	<class name="javax.media.j3d.${osNativeScreenInfo}"/>
 	<class name="javax.media.j3d.NodeRetained"/>
 	<class name="javax.media.j3d.PointAttributesRetained"/>
 	<class name="javax.media.j3d.PointLightRetained"/>

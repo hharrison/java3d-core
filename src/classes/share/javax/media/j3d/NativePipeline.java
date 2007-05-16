@@ -43,13 +43,6 @@ class NativePipeline extends Pipeline {
     private boolean cgLibraryAvailable = false;
     private boolean glslLibraryAvailable = false;
     
-    /**
-     * The platform dependent template.  Since there is no
-     * template-specific instance data in the NativeConfigTemplate3D
-     * class, we can create one statically.
-     */
-    private static NativeConfigTemplate3D nativeTemplate = new NativeConfigTemplate3D();
-
     // Flag indicating that the ogl-chk library has been loaded
     private static boolean oglChkLibraryLoaded = false;
 
@@ -86,7 +79,7 @@ class NativePipeline extends Pipeline {
      */
     void initialize(Pipeline.Type pipelineType) {
         super.initialize(pipelineType);
-        
+
         // This works around a native load library bug
         try {
             java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
@@ -106,6 +99,11 @@ class NativePipeline extends Pipeline {
             default:
                 assert false; // Should never get here
         }
+
+        // Create the singleton, OS-dependent NativeConfigTemplate3D and
+         // NativeScreenInfo objects.
+        NativeConfigTemplate3D.createNativeConfigTemplate3D();
+        NativeScreenInfo.createNativeScreenInfo();
     }
     
     /**
@@ -3263,42 +3261,42 @@ class NativePipeline extends Pipeline {
     // Get best graphics config from pipeline
     GraphicsConfiguration getBestConfiguration(GraphicsConfigTemplate3D gct,
             GraphicsConfiguration[] gc) {
-        return nativeTemplate.getBestConfiguration(gct, gc);
+        return NativeConfigTemplate3D.getNativeConfigTemplate3D().getBestConfiguration(gct, gc);
     }
     
     // Determine whether specified graphics config is supported by pipeline
     boolean isGraphicsConfigSupported(GraphicsConfigTemplate3D gct,
             GraphicsConfiguration gc) {
-        return nativeTemplate.isGraphicsConfigSupported(gct, gc);
+        return NativeConfigTemplate3D.getNativeConfigTemplate3D().isGraphicsConfigSupported(gct, gc);
     }
     
     // Methods to get actual capabilities from Canvas3D
     boolean hasDoubleBuffer(Canvas3D cv) {
-        return nativeTemplate.hasDoubleBuffer(cv);
+        return NativeConfigTemplate3D.getNativeConfigTemplate3D().hasDoubleBuffer(cv);
     }
     
     boolean hasStereo(Canvas3D cv) {
-        return nativeTemplate.hasStereo(cv);
+        return NativeConfigTemplate3D.getNativeConfigTemplate3D().hasStereo(cv);
     }
     
     int getStencilSize(Canvas3D cv) {
-        return nativeTemplate.getStencilSize(cv);
+        return NativeConfigTemplate3D.getNativeConfigTemplate3D().getStencilSize(cv);
     }
     
     boolean hasSceneAntialiasingMultisample(Canvas3D cv) {
-        return nativeTemplate.hasSceneAntialiasingMultisample(cv);
+        return NativeConfigTemplate3D.getNativeConfigTemplate3D().hasSceneAntialiasingMultisample(cv);
     }
     
     boolean hasSceneAntialiasingAccum(Canvas3D cv) {
-        return nativeTemplate.hasSceneAntialiasingAccum(cv);
+        return NativeConfigTemplate3D.getNativeConfigTemplate3D().hasSceneAntialiasingAccum(cv);
     }
     
     // Methods to get native WS display and screen
     long getDisplay() {
-        return NativeScreenInfo.getDisplay();
+        return NativeScreenInfo.getNativeScreenInfo().getDisplay();
     }
     int getScreen(GraphicsDevice graphicsDevice) {
-        return NativeScreenInfo.getScreen(graphicsDevice);
+        return NativeScreenInfo.getNativeScreenInfo().getScreen(graphicsDevice);
     }
     
     // ---------------------------------------------------------------------

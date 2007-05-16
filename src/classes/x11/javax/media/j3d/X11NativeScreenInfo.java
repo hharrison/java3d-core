@@ -15,7 +15,11 @@ package javax.media.j3d;
 import java.awt.GraphicsDevice;
 import sun.awt.X11GraphicsDevice;
 
-class NativeScreenInfo {
+/**
+ * Native screen info class. A singleton instance of this class is created by
+ * a factory method in the base class using reflection.
+ */
+class X11NativeScreenInfo extends NativeScreenInfo {
     private static long display = 0;
     private static boolean glxChecked = false;
     private static boolean isGLX13;
@@ -23,8 +27,7 @@ class NativeScreenInfo {
     private static native long openDisplay();
     private static native boolean queryGLX13(long display);
 
-    private NativeScreenInfo() {
-        throw new AssertionError("constructor should never be called");
+    X11NativeScreenInfo() {
     }
 
     // Fix for issue 20.
@@ -36,7 +39,7 @@ class NativeScreenInfo {
 	    getStaticDisplay();
 
             // Query for glx1.3 support.
-	    isGLX13 = queryGLX13(getDisplay());
+	    isGLX13 = queryGLX13(getStaticDisplay());
 	    glxChecked = true;
 	}
 
@@ -50,18 +53,20 @@ class NativeScreenInfo {
 	return display;
     }
 
-    static long getDisplay() {
+    @Override
+    long getDisplay() {
 	// Open a new static display connection if one is not already opened
         return getStaticDisplay();
     }
 
-    static int getScreen(GraphicsDevice graphicsDevice) {
+    @Override
+    int getScreen(GraphicsDevice graphicsDevice) {
 	// Get the screen number
 	return ((X11GraphicsDevice)graphicsDevice).getScreen();
     }
 
     // Ensure that the native libraries are loaded
     static {
- 	VirtualUniverse.loadLibraries();
+        VirtualUniverse.loadLibraries();
     }
 }

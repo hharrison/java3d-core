@@ -19,24 +19,15 @@ import java.awt.Rectangle;
 import sun.awt.X11GraphicsDevice;
 import sun.awt.X11GraphicsConfig;
 
-class NativeConfigTemplate3D {
+/**
+ * Native config template class. A singleton instance of this class is
+ * created by a factory method in the base class using reflection.
+ */
+class X11NativeConfigTemplate3D extends NativeConfigTemplate3D {
     private final static boolean debug = false;
 
-    NativeConfigTemplate3D() {
+    X11NativeConfigTemplate3D() {
     }
-
-    //  These definitions should match those in win32 NativeConfigTemplate3D.java
-    final static int RED_SIZE		= 0;
-    final static int GREEN_SIZE		= 1;
-    final static int BLUE_SIZE		= 2;
-    final static int ALPHA_SIZE		= 3;
-    final static int ACCUM_BUFFER	= 4;
-    final static int DEPTH_SIZE		= 5;
-    final static int DOUBLEBUFFER	= 6;
-    final static int STEREO		= 7;
-    final static int ANTIALIASING	= 8;
-    final static int STENCIL_SIZE       = 9;
-    final static int NUM_ITEMS		= 10;
 
     // Native method to get an OpenGL visual id and a pointer to the
     // GLXFBConfig structure list itself.
@@ -45,7 +36,7 @@ class NativeConfigTemplate3D {
 
     // Native method to free an GLXFBConfig struct.  This is static since it
     // may need to be called to clean up the Canvas3D graphicsConfigTable
-    // after the NativeConfigTemplate3D has been disposed of.
+    // after the X11NativeConfigTemplate3D has been disposed of.
     static native void freeFBConfig(long fbConfig);
 
     // Native methods to return whether a particular attribute is available
@@ -58,21 +49,22 @@ class NativeConfigTemplate3D {
     /*
      *  Chooses the best FBConfig for Java 3D apps.
      */
+    @Override
     GraphicsConfiguration getBestConfiguration(GraphicsConfigTemplate3D template,
             GraphicsConfiguration[] gc) {
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc[0]).getDevice();
 
-	if (!NativeScreenInfo.isGLX13()) {
+	if (!X11NativeScreenInfo.isGLX13()) {
 	    return null;
 	}
 
-	long display = NativeScreenInfo.getDisplay();
-	int screen = NativeScreenInfo.getScreen(gd);
+	long display = NativeScreenInfo.getNativeScreenInfo().getDisplay();
+	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);
 
 	if (debug) {
-	    System.out.println("  NativeConfigTemplate3D: using device " + gd);
+	    System.out.println("  X11NativeConfigTemplate3D: using device " + gd);
 	    System.out.println("    display " + display + " screen " + screen);
 	    System.out.println("    configuration count: " + gc.length);
 	    for (int i = 0 ; i < gc.length ; i++) {
@@ -109,7 +101,7 @@ class NativeConfigTemplate3D {
         attrList[STEREO] = template.getStereo();
         attrList[ANTIALIASING] = template.getSceneAntialiasing();
     	attrList[STENCIL_SIZE] = template.getStencilSize();
-	// System.out.println("NativeConfigTemplate3D : getStencilSize " + 
+	// System.out.println("X11NativeConfigTemplate3D : getStencilSize " + 
 	// attrList[STENCIL_SIZE]);
 
 	long[] fbConfig = new long[1];
@@ -162,18 +154,19 @@ class NativeConfigTemplate3D {
      * Determine if a given GraphicsConfiguration object can be used
      * by Java 3D.
      */
+    @Override
     boolean isGraphicsConfigSupported(GraphicsConfigTemplate3D template,
                                       GraphicsConfiguration gc) {
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
 
-	if (!NativeScreenInfo.isGLX13()) {
+	if (!X11NativeScreenInfo.isGLX13()) {
 	    return false;
 	}
 
-	long display = NativeScreenInfo.getDisplay();
-	int screen = NativeScreenInfo.getScreen(gd);
+	long display = NativeScreenInfo.getNativeScreenInfo().getDisplay();
+	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);
 
         int[] attrList;   // holds the list of attributes to be tramslated
                           // for glxChooseVisual call
@@ -190,7 +183,7 @@ class NativeConfigTemplate3D {
         attrList[STEREO] = template.getStereo();
         attrList[ANTIALIASING] = template.getSceneAntialiasing();
     	attrList[STENCIL_SIZE] = template.getStencilSize();
-	// System.out.println("NativeConfigTemplate3D : getStencilSize " + 
+	// System.out.println("X11NativeConfigTemplate3D : getStencilSize " + 
 	// attrList[STENCIL_SIZE]);
 	
 	long[] fbConfig = new long[1];
@@ -204,56 +197,60 @@ class NativeConfigTemplate3D {
 
 
     // Return whether stereo is available.
+    @Override
     boolean hasStereo(Canvas3D c3d) {
 	GraphicsConfiguration gc = c3d.graphicsConfiguration;
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
 
-	long display = NativeScreenInfo.getDisplay();
-	int screen = NativeScreenInfo.getScreen(gd);
+	long display = NativeScreenInfo.getNativeScreenInfo().getDisplay();
+	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
 	return isStereoAvailable(display, screen, vid);
     }
 
     // Return the stencil of this canvas.
+    @Override
     int getStencilSize(Canvas3D c3d) {
 	GraphicsConfiguration gc = c3d.graphicsConfiguration;
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
 
-	long display = NativeScreenInfo.getDisplay();
-	int screen = NativeScreenInfo.getScreen(gd);
+	long display = NativeScreenInfo.getNativeScreenInfo().getDisplay();
+	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
 	return getStencilSize(display, screen, vid);
     }
 
     // Return whether a double buffer is available.
+    @Override
     boolean hasDoubleBuffer(Canvas3D c3d) {
 	GraphicsConfiguration gc = c3d.graphicsConfiguration;
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
 
-	long display = NativeScreenInfo.getDisplay();
-	int screen = NativeScreenInfo.getScreen(gd);
+	long display = NativeScreenInfo.getNativeScreenInfo().getDisplay();
+	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
 	return isDoubleBufferAvailable(display, screen, vid);
     }
 
     // Return whether scene antialiasing is available.
+    @Override
     boolean hasSceneAntialiasingAccum(Canvas3D c3d) {
 	GraphicsConfiguration gc = c3d.graphicsConfiguration;
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
 
-	long display = NativeScreenInfo.getDisplay();
-	int screen = NativeScreenInfo.getScreen(gd);
+	long display = NativeScreenInfo.getNativeScreenInfo().getDisplay();
+	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
 	return isSceneAntialiasingAccumAvailable(display, screen, vid);
@@ -261,14 +258,15 @@ class NativeConfigTemplate3D {
 
 
     // Return whether scene antialiasing is available.
+    @Override
     boolean hasSceneAntialiasingMultisample(Canvas3D c3d) {
 	GraphicsConfiguration gc = c3d.graphicsConfiguration;
 
         X11GraphicsDevice gd =
             (X11GraphicsDevice)((X11GraphicsConfig)gc).getDevice();
 
-	long display = NativeScreenInfo.getDisplay();
-	int screen = NativeScreenInfo.getScreen(gd);
+	long display = NativeScreenInfo.getNativeScreenInfo().getDisplay();
+	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);
 	int vid = ((X11GraphicsConfig)gc).getVisual();
 
 	return isSceneAntialiasingMultisampleAvailable(display, screen, vid);

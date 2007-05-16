@@ -161,6 +161,14 @@
 #include "javax_media_j3d_ShaderAttributeObjectRetained.h"
 #include "javax_media_j3d_ShaderError.h"
 
+#ifdef WIN32
+#include "javax_media_j3d_Win32NativeConfigTemplate3D.h"
+#include "javax_media_j3d_Win32NativeScreenInfo.h"
+#else
+#include "javax_media_j3d_X11NativeConfigTemplate3D.h"
+#include "javax_media_j3d_X11NativeScreenInfo.h"
+#endif
+
 /* Used to compare floating point values close to 0.0 */
 #define  J3D_SMALL_FLOAT 0.00001f
 

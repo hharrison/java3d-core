@@ -18,25 +18,16 @@ import sun.awt.Win32GraphicsDevice;
 import sun.awt.Win32GraphicsConfig;
 import java.awt.GraphicsConfigTemplate;
 
-class NativeConfigTemplate3D {
+/**
+ * Native config template class. A singleton instance of this class is
+ * created by a factory method in the base class using reflection.
+ */
+class Win32NativeConfigTemplate3D extends NativeConfigTemplate3D {
     private final static boolean debug = false;
 
-    NativeConfigTemplate3D() {
+    Win32NativeConfigTemplate3D() {
     }
 
-    // This definition should match those in solaris NativeConfigTemplate3D.java
-    final static int RED_SIZE		= 0;
-    final static int GREEN_SIZE		= 1;
-    final static int BLUE_SIZE		= 2;
-    final static int ALPHA_SIZE		= 3;
-    final static int ACCUM_BUFFER	= 4;
-    final static int DEPTH_SIZE		= 5;
-    final static int DOUBLEBUFFER	= 6;
-    final static int STEREO		= 7;
-    final static int ANTIALIASING	= 8;
-    final static int STENCIL_SIZE       = 9;
-    final static int NUM_ITEMS		= 10;
-    
     /**
      * selects the proper visual
      */
@@ -45,7 +36,7 @@ class NativeConfigTemplate3D {
 
     // Native method to free an PixelFormatInfo struct.  This is static since it
     // may need to be called to clean up the Canvas3D graphicsConfigTable after the
-    // NativeConfigTemplate3D has been disposed of.
+    // Win32NativeConfigTemplate3D has been disposed of.
     static native void freePixelFormatInfo(long pFormatInfo);
 
     // Native methods to return whether a particular attribute is available
@@ -58,6 +49,7 @@ class NativeConfigTemplate3D {
     /**
      *  Chooses the best PixelFormat for Java 3D apps.
      */
+    @Override
     GraphicsConfiguration
       getBestConfiguration(GraphicsConfigTemplate3D template,
                            GraphicsConfiguration[] gc) {
@@ -69,7 +61,7 @@ class NativeConfigTemplate3D {
 	    do so in J3D 1.4.
 	System.out.println("getBestConfiguration : Checking WGL ARB support\n");
 	
-	if (!NativeScreenInfo.isWglARB()) {
+	if (!Win32NativeScreenInfo.isWglARB()) {
 	    Thread.dumpStack();
 	    System.out.println("getBestConfiguration : WGL ARB support fail\n");
 	    return null;
@@ -89,10 +81,10 @@ class NativeConfigTemplate3D {
 	attrList[STEREO] = template.getStereo();
 	attrList[ANTIALIASING] = template.getSceneAntialiasing();
     	attrList[STENCIL_SIZE] = template.getStencilSize();
-	// System.out.println("NativeConfigTemplate3D : getStencilSize " + 
+	// System.out.println("Win32NativeConfigTemplate3D : getStencilSize " + 
 	// attrList[STENCIL_SIZE]);
 
-        int screen = NativeScreenInfo.getScreen(gd);	
+        int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);	
 
 	long[] pFormatInfo = new long[1];
 
@@ -139,6 +131,7 @@ class NativeConfigTemplate3D {
      * Determine if a given GraphicsConfiguration object can be used
      * by Java 3D.
      */
+    @Override
     boolean isGraphicsConfigSupported(GraphicsConfigTemplate3D template,
                                       GraphicsConfiguration gc) {
 
@@ -149,7 +142,7 @@ class NativeConfigTemplate3D {
 	    do so in J3D 1.4.
 	System.out.println("isGraphicsConfigSupported : Checking WGL ARB support\n");
 
-	if (!NativeScreenInfo.isWglARB()) {
+	if (!Win32NativeScreenInfo.isWglARB()) {
 	    Thread.dumpStack();
 	    System.out.println("isGraphicsConfigSupported : WGL ARB support fail\n");
 	    return false;
@@ -169,10 +162,10 @@ class NativeConfigTemplate3D {
 	attrList[STEREO] = template.getStereo();
         attrList[ANTIALIASING] = template.getSceneAntialiasing();
     	attrList[STENCIL_SIZE] = template.getStencilSize();
-	// System.out.println("NativeConfigTemplate3D : getStencilSize " + 
+	// System.out.println("Win32NativeConfigTemplate3D : getStencilSize " + 
 	// attrList[STENCIL_SIZE]);
 
-	int screen = NativeScreenInfo.getScreen(gd);	
+	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);	
 
 	long[] pFormatInfo = new long[1];
 
@@ -192,32 +185,37 @@ class NativeConfigTemplate3D {
 
 
     // Return whether stereo is available.
+    @Override
     boolean hasStereo(Canvas3D c3d) {
 	return isStereoAvailable(c3d.fbConfig, c3d.offScreen);
     }
 
     // Return the stencil of this canvas.
+    @Override
     int getStencilSize(Canvas3D c3d) {
         return getStencilSize(c3d.fbConfig, c3d.offScreen);
     }
     
     // Return whether a double buffer is available.
+    @Override
     boolean hasDoubleBuffer(Canvas3D c3d) {
 	return isDoubleBufferAvailable(c3d.fbConfig, c3d.offScreen);
     }
 
     // Return whether scene antialiasing is available.
+    @Override
     boolean hasSceneAntialiasingAccum(Canvas3D c3d) {
 	return isSceneAntialiasingAccumAvailable(c3d.fbConfig, c3d.offScreen);
     }
     
     // Return whether scene antialiasing is available.
+    @Override
     boolean hasSceneAntialiasingMultisample(Canvas3D c3d) {
 	GraphicsConfiguration gc = c3d.graphicsConfiguration;
 
         Win32GraphicsDevice gd =
 	    (Win32GraphicsDevice)((Win32GraphicsConfig)gc).getDevice();
-	int screen = NativeScreenInfo.getScreen(gd);
+	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);
 	/* Fix to issue 77 */ 
 	return isSceneAntialiasingMultisampleAvailable(c3d.fbConfig, c3d.offScreen, screen);
     }
