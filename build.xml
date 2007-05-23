@@ -478,12 +478,50 @@
 	<ant dir="src/classes" target="docs"/>
   </target>
 
-  <target name="dist" depends="jar-opt,docs-public,src">
+  <target name="setupCheckBuild" depends="setupPlatform">
+    <available file="${build}/linux-i586/opt/lib/ext/j3dcore.jar" property="buildLinuxFilesExist"/>
+    <available file="${build}/windows-i586-vc/opt/lib/ext/j3dcore.jar" property="buildWindowsFilesExist"/>
+  </target>
+
+  <target name="checkBuildLinux" unless="buildLinuxFilesExist">
+      <fail message="You must run the jar-opt target on Linux before running dist-common" />
+  </target>
+
+  <target name="checkBuildWindows" unless="buildWindowsFilesExist">
+      <fail message="You must run the jar-opt target on Windows before running dist-common" />
+  </target>
+  
+  <target name="checkBuildPlatform" unless="isLinuxOnX86">
+      <fail message="You must run the dist-common target on linux-i586 platform" />
+  </target>
+
+  <target name="checkBuild" depends="setupCheckBuild,checkBuildPlatform,checkBuildLinux,checkBuildWindows">
+  </target>
+
+  <target name="dist-common" depends="setupPlatform,checkBuild">
+	<ant dir="src/classes" target="dist-common"/>
+  </target>
+
+  <target name="setupCheckDist" depends="setupPlatform">
+    <available file="${dist}/common/lib/ext/j3dcore.jar" property="distCommonFilesExist"/>
+  </target>
+
+  <target name="checkDistCommon" unless="distCommonFilesExist">
+      <fail message="You must run the dist-common target before running dist" />
+  </target>
+
+  <target name="checkDist" depends="setupCheckDist,checkDistCommon">
+  </target>
+
+  <!-- NOTE: the dist target no longer depends on jar-opt; you must run the
+       jar-opt and dist-common (linux-only) targets prior to dist -->
+  <target name="dist" depends="setupPlatform,checkDist,src">
 	<ant dir="src/classes" target="dist"/>
 	<ant dir="src/native" target="dist"/>
   </target>
 
-  <target name="all" depends="jar-debug,dist,docs-jcp,docs-private"/>
+  <!-- NOTE: the all target no longer depends on dist, which must be run separately -->
+  <target name="all" depends="jar,docs"/>
 
   <target name="release" description="Package distribution for release"
 	depends="dist,init-release,release-daily,release-milestone,release-final">
@@ -760,7 +798,11 @@
     <delete dir="${build}/default"/>
   </target>
 
-  <target name="clean" depends="setupPlatform,clean-default">
+  <target name="clean-dist-common" if="isLinuxOnX86">
+    <delete dir="${dist}/common"/>
+  </target>
+
+  <target name="clean" depends="setupPlatform,clean-default,clean-dist-common">
     <!-- Delete the ${build}, and ${dist} directory trees for current platform -->
     <delete dir="${build}/${platform}"/>
     <delete dir="${dist}/${platform}"/>
@@ -797,57 +839,67 @@ The following ant targets are available ("jar-opt" is the default):
 
       all            - execute targets jar-debug and dist.
 
-      clean          - removes WS/build/ and WS/dist/ for current platform
+      clean          - removes build/ and dist/ for current platform
       
-      clean-all      - removes WS/build/ and WS/dist/ for all platforms
+      clean-all      - removes build/ and dist/ for all platforms
 
-      clean-dist     - removes WS/dist.
+      clean-dist     - removes dist.
       
-      clean-javaonly - removes java portion of WS/build for current platform 
+      clean-javaonly - removes java portion of build for current platform 
 
       compile        - execute targets compile-debug and compile-opt.
  
-      compile-debug  - builds all classes and native layer in WS/src into 
-                      class files under WS/build/${platform}/debug/classes/ and
-                      native files under WS/build/${platform}/debug/native/
+      compile-debug  - builds all classes and native layer in src into 
+                      class files under build/${platform}/debug/classes/ and
+                      native files under build/${platform}/debug/native/
 
-      compile-opt    - builds all classes and native layer in WS/src into 
-                      class files under WS/build/${platform}/opt/classes/ and
-                      native files under WS/build/${platform}/opt/native/
+      compile-opt    - builds all classes and native layer in src into 
+                      class files under build/${platform}/opt/classes/ and
+                      native files under build/${platform}/opt/native/
 
-      dist           - creates the distribution jar, native library and javadoc
-                      under WS/dist/${platform}.
+      dist           - THIS TARGET IS FOR RELEASE ENGINEERING ONLY; DEVELOPERS NEED NOT
+                       USE THIS TARGET.
+                       Copies the shared jars, and the platform-specific native
+                       libraries, src files, and javadoc to dist/${platform}.
+                       The dist-common target must be run first.
 
-      docs           - builds all classes in WS/src into javadoc under 
-                      WS/build/javadocs.
+      dist-common    - THIS TARGET IS FOR RELEASE ENGINEERING ONLY; DEVELOPERS NEED NOT
+                       USE THIS TARGET.
+                       This target must be run on a 32-bit Linux-x86 system.
+                       Creates the shared jar from the linux-i586 and
+                       windows-i586-vc build directories.
+                       The jar-opt target must be run first.
 
-      docs-jcp       - builds JCP docs of all classes in WS/src into javadoc 
-                      under WS/build/javadocs/docs-jcp.
+      docs           - builds all classes in src into javadoc under 
+                       build/javadocs.
 
-      docs-private   - builds private docs of all classes in WS/src into javadoc 
-                      under WS/build/javadocs/docs-private.
+      docs-jcp       - builds JCP docs of all classes in src into javadoc 
+                       under build/javadocs/docs-jcp.
 
-      docs-public    - builds public docs of all classes in WS/src into javadoc 
-                      under WS/build/javadocs/docs-public.
+      docs-private   - builds private docs of all classes in src into javadoc 
+                       under build/javadocs/docs-private.
+
+      docs-public    - builds public docs of all classes in src into javadoc 
+                      under build/javadocs/docs-public.
 
       echo           - echo some useful information, such as user.home,
                       ant.home, java.home and platform.
 
       jar            - execute targets jar-debug and jar-opt.
 
-      jar-debug      - creates WS/build/${platform}/debug/lib for all jar
+      jar-debug      - creates build/${platform}/debug/lib for all jar
                       files and libraries from class and native code files under 
-                      WS/build/${platform}/debug/classes and 
-                      WS/build/${platform}/debug/native.
+                      build/${platform}/debug/classes and 
+                      build/${platform}/debug/native.
                       
       jar-debug-javaonly 
                      - compiles only the java portion of Java3D and builds
                       jars in same locations as jar-debug
 
-      jar-opt        - creates WS/build/${platform}/opt/lib for all jar
+      jar-opt        - creates build/${platform}/opt/lib for all jar
                       files and libraries from class and native code files under 
-                      WS/build/${platform}/opt/classes and 
-                      WS/build/${platform}/opt/native.
+                      build/${platform}/opt/classes and 
+                      build/${platform}/opt/native.
                       
       jar-opt-javaonly 
                      - compiles only the java portion of Java3D and builds

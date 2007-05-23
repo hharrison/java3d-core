@@ -184,7 +184,7 @@
             <filter token="VERSION_BASE" value="${version_base}"/>
         </filterset>
     </copy>
-                                                                                                     
+
     <!-- Copy the copyright file and all license files for j3dcore.jar -->
     <copy todir="${build}/${platform}/opt/classes/javax">
       <fileset dir="${src}/.." includes="COPYRIGHT.txt"/>
@@ -333,22 +333,38 @@
 
   <target name="docs" depends="docs-jcp,docs-public,docs-private"/>
 
+  <target name="dist-common">
+     <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/common/lib/ext"/>
+
+    <!--
+     * Create a new j3dcore jar file from the linux-i586 platform files plus
+     * the Win32* class files. We assume that the manifest file, the license files,
+     * and the copyright files have been copied into the libux-i586 build directory
+    -->
+    <jar jarfile="${dist}/common/lib/ext/j3dcore.jar"
+         manifest="${build}/linux-i586/opt/gen/J3dVersion" update="no"
+	 compress="false">
+	<fileset dir="${build}/linux-i586/opt/classes" includes="javax/**/*"/>
+	<fileset dir="${build}/windows-i586-vc/opt/classes" includes="javax/**/Win32*.class"/>
+    </jar>
+
+    <!-- Copy the vecmath and j3dutils jar files -->
+    <copy todir="${dist}/common/lib/ext">
+      <fileset dir="${build}/linux-i586/opt/lib/ext" includes="j3dutils.jar"/>
+      <fileset dir="${vecmath_home}/build/opt/lib/ext" includes="vecmath.jar"/>
+    </copy>
+
+  </target>
+
   <target name="dist">
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}/${platform}/lib/ext"/>
 
     <!-- Copy the jar files -->
     <copy todir="${dist}/${platform}/lib/ext">
-      <fileset dir="${build}/${platform}/opt/lib/ext" includes="*.jar"/>
-      <fileset dir="${vecmath_home}/build/opt/lib/ext" includes="vecmath.jar"/>
+      <fileset dir="${dist}/common/lib/ext" includes="*.jar"/>
     </copy>
-
-    <!-- Create the docs distribution directory -->
-    <mkdir dir="${dist}/${platform}/javadocs"/>
-
-    <!-- Put everything in ${build}/javadocs into the zip docname file -->
-    <zip zipfile="${dist}/${platform}/javadocs/${docname}.zip" 
-	 basedir="${build}/${platform}/javadocs/docs-public"/>
   </target>
 
   <target name="install-debug">
