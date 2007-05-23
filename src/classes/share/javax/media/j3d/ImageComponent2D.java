@@ -546,14 +546,15 @@ public class ImageComponent2D extends ImageComponent {
         int w = ((ImageComponent2DRetained)this.retained).getWidth();
         int h = ((ImageComponent2DRetained)this.retained).getHeight();
 
-        if ((srcX < 0) || (srcY < 0) || 
-		((srcX + width) > w) || ((srcY + height) > h) ||
-            (dstX < 0) || (dstY < 0) || 
-		((dstX + width) > w) || ((dstY + height) > h)) {
+        // Fix to issue 492
+        if ((srcX < 0) || (srcY < 0) ||
+                ((srcX + width) > image.getWidth()) || ((srcY + height) > image.getHeight()) ||
+                (dstX < 0) || (dstY < 0) ||
+                ((dstX + width) > w) || ((dstY + height) > h)) {
             throw new IllegalArgumentException(
-                                J3dI18N.getString("ImageComponent2D3"));
-        }
-
+                    J3dI18N.getString("ImageComponent2D3"));
+        }       
+        
         ((ImageComponent2DRetained)this.retained).setSubImage(
                                 image, width, height, srcX, srcY, dstX, dstY);
     }
