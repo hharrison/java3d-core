@@ -333,7 +333,7 @@
 
   <target name="docs" depends="docs-jcp,docs-public,docs-private"/>
 
-  <target name="dist-common">
+  <target name="dist-common-jar">
      <!-- Create the distribution directory -->
     <mkdir dir="${dist}/common/lib/ext"/>
 
@@ -355,6 +355,16 @@
       <fileset dir="${vecmath_home}/build/opt/lib/ext" includes="vecmath.jar"/>
     </copy>
 
+  </target>
+  
+  <target name="dist-common-sign" if="releaseType_milestone">
+    <property name="staging" location="../../staging"/>
+    <exec dir="${dist}/common/lib/ext" executable="${shell}">
+      <arg line="${staging}/doSignJars.sh *.jar"/>
+    </exec>
+  </target>
+  
+  <target name="dist-common" depends="dist-common-jar,dist-common-sign">
   </target>
 
   <target name="dist">
