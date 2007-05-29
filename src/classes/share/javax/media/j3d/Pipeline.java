@@ -14,7 +14,6 @@ package javax.media.j3d;
 
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
-import java.lang.reflect.Method;
 
 /**
  * Abstract pipeline class for rendering pipeline methods. All rendering
@@ -56,8 +55,18 @@ abstract class Pipeline {
      * on Windows. We will use D3D if OpenGL is unavailable or undesirable.
      */
     static boolean useNativeOgl(boolean isWindowsVista, boolean nativeOglRequested) {
+
         // Get the OpenGL vendor string.
-        String vendorString = getSupportedOglVendor();
+        String vendorString;
+        try {
+            vendorString = NativePipeline.getSupportedOglVendor();
+        } catch (Exception ex) {
+            MasterControl.getCoreLogger().severe(ex.toString());
+            return false;
+        } catch (Error ex) {
+            MasterControl.getCoreLogger().severe(ex.toString());
+            return false;
+        }
 
         // A null vendor string means OpenGL 1.2+ support unavailable.
         if (vendorString == null) {
@@ -71,37 +80,6 @@ abstract class Pipeline {
 
         // Check OS type and vendor string to see whether OGL is preferred
         return preferOgl(isWindowsVista, vendorString);
-    }
-    
-    /**
-     * Wrapper method that calls the corresponding NativePipeline method via
-     * reflection. We use reflection to avoid initializing the NativePipeline
-     * class uless we are actually going to call it.
-     */
-    private static String getSupportedOglVendor() {
-        try {
-            Method nativeMethod = (Method)
-                java.security.AccessController.doPrivileged(new
-                    java.security.PrivilegedAction() {
-                        public Object run() {
-                            try {
-                                Class pipelineClass = Class.forName(CLASSNAME_NATIVE);
-                                return pipelineClass.getDeclaredMethod("getSupportedOglVendor");
-                            } catch (Exception ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        }
-                    });
-
-            String vendorString = (String) nativeMethod.invoke(null);
-            return vendorString;
-        } catch (Exception ex) {
-            System.err.println(ex);
-        } catch (Error ex) {
-            System.err.println(ex);
-        }
-
-        return null;
     }
 
     // Returns a flag inticating whether the specified vendor prefers OpenGL.

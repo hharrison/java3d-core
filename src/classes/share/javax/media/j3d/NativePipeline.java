@@ -15,6 +15,8 @@ package javax.media.j3d;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.io.File;
+import java.lang.reflect.Method;
+import java.security.AccessController;
 import java.util.ArrayList;
 
 /**
@@ -52,12 +54,12 @@ class NativePipeline extends Pipeline {
     static String getSupportedOglVendor() {
         if (!oglChkLibraryLoaded) {
             try {
-                loadLibrary("j3dcore-ogl-chk");
-            } catch (RuntimeException ex) {
-                System.err.println(ex);
+                loadLibrary("j3dcore-ogl-chk", true);
+            } catch (Exception ex) {
+                MasterControl.getCoreLogger().severe(ex.toString());
                 return null;
             } catch (Error ex) {
-                System.err.println(ex);
+                MasterControl.getCoreLogger().severe(ex.toString());
                 return null;
             }
             oglChkLibraryLoaded = true;
@@ -101,29 +103,46 @@ class NativePipeline extends Pipeline {
         }
 
         // Create the singleton, OS-dependent NativeConfigTemplate3D and
-         // NativeScreenInfo objects.
+        // NativeScreenInfo objects.
         NativeConfigTemplate3D.createNativeConfigTemplate3D();
         NativeScreenInfo.createNativeScreenInfo();
     }
-    
+
     /**
      * Load all of the required libraries
      */
     void loadLibraries(int globalShadingLanguage) {
-        // Load the native JAWT library
-        loadLibrary("jawt");
-        
+        // Load the native JAWT library as a workaround for a problem whereby
+        // the native libraries can't find it in some cases.
+        // Issue 257: ignore UnsatisfiedLinkError exception as a result of
+        // trying to load the library more than once. Try to continue in
+        // all cases if the load library fails, since it is just a workaround
+        // for a native bug.
+        try {
+            loadLibrary("jawt", false);
+        } catch (UnsatisfiedLinkError ex) {
+            if (ex.getMessage().indexOf("already loaded") == -1) {
+                // If it failed for a reason other than already being
+                // loaded, log the error. In either case, we will continue
+                MasterControl.getCoreLogger().severe(ex.toString());
+            }
+        } catch (Error ex) {
+            MasterControl.getCoreLogger().severe(ex.toString());
+        } catch (Exception ex) {
+            MasterControl.getCoreLogger().severe(ex.toString());
+        }
+
         // Load the native rendering library
         String libraryName = libPrefix + "-" + rendererName;
-        loadLibrary(libraryName);
-        
+        loadLibrary(libraryName, true);
+
         // Check whether the Cg library is available
         if (globalShadingLanguage == Shader.SHADING_LANGUAGE_CG) {
             String cgLibraryName = libPrefix + "-" + rendererName + "-cg";
             String[] libpath = setupLibPath(cgLibraryName);
             cgLibraryAvailable = loadNativeCgLibrary(libpath);
         }
-        
+
         // Check whether the GLSL library is available
         if (globalShadingLanguage == Shader.SHADING_LANGUAGE_GLSL) {
             if (getPipelineType() == Pipeline.Type.NATIVE_OGL) {
@@ -151,17 +170,30 @@ class NativePipeline extends Pipeline {
     }
 
     /**
-     * Load the specified native library.
+     * Load the specified native library. If we are running in "appletLauncher"
+     * mode, we will use JNLPAppletLauncher to load the native library.
+     * Otherwise, we will use System.loadLibrary().
      */
-    private static void loadLibrary(String libName) {
-        final String libraryName = libName;
-        java.security.AccessController.doPrivileged(
-                new java.security.PrivilegedAction() {
-            public Object run() {
-                System.loadLibrary(libraryName);
-                return null;
-            }
-        });
+    private static void loadLibrary(final String libName, boolean allowAppletLauncher) {
+        // Issue 257: Call JNLPAppletLauncher to load native libraries if needed
+        final boolean useAppletLauncher = allowAppletLauncher && MasterControl.isAppletLauncher();
+        AccessController.doPrivileged(
+            new java.security.PrivilegedAction() {
+                public Object run() {
+                    try {
+                        if (useAppletLauncher) {
+                            Class jnlpAppletLauncherClass = Class.forName("com.sun.applet.util.JNLPAppletLauncher");
+                            Method loadLibraryMethod = jnlpAppletLauncherClass.getDeclaredMethod("loadLibrary", String.class);
+                            loadLibraryMethod.invoke(null, libName);
+                        } else {
+                            System.loadLibrary(libName);
+                        }
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    return null;
+                }
+            });
     }
 
     /**
@@ -174,40 +206,40 @@ class NativePipeline extends Pipeline {
     private String[] setupLibPath(String libName) {
         final String libraryName = libName;
         return (String[])
-        java.security.AccessController.doPrivileged(
+            AccessController.doPrivileged(
                 new java.security.PrivilegedAction() {
-            public Object run() {
-                ArrayList pathList = new ArrayList();
-                
-                String filename = System.mapLibraryName(libraryName);
-                for (int n = 0; n < systemPathProps.length; n++) {
-                    String pathString = System.getProperty(systemPathProps[n]);
-                    boolean done = false;
-                    int posStart = 0;
-                    while (!done) {
-                        int posEnd = pathString.indexOf(File.pathSeparator, posStart);
-                        if (posEnd == -1) {
-                            posEnd = pathString.length();
-                            done = true;
-                        }
-                        String pathDir = pathString.substring(posStart, posEnd);
-                        File pathFile = new File(pathDir, filename);
-                        if (pathFile.exists()) {
-                            pathList.add(pathFile.getAbsolutePath());
+                    public Object run() {
+                        ArrayList pathList = new ArrayList();
+                        
+                        String filename = System.mapLibraryName(libraryName);
+                        for (int n = 0; n < systemPathProps.length; n++) {
+                            String pathString = System.getProperty(systemPathProps[n]);
+                            boolean done = false;
+                            int posStart = 0;
+                            while (!done) {
+                                int posEnd = pathString.indexOf(File.pathSeparator, posStart);
+                                if (posEnd == -1) {
+                                    posEnd = pathString.length();
+                                    done = true;
+                                }
+                                String pathDir = pathString.substring(posStart, posEnd);
+                                File pathFile = new File(pathDir, filename);
+                                if (pathFile.exists()) {
+                                    pathList.add(pathFile.getAbsolutePath());
+                                }
+                                
+                                posStart = posEnd + 1;
+                            }
                         }
                         
-                        posStart = posEnd + 1;
+                        // If no absolute path names exist, add in the relative library name
+                        if (pathList.size() == 0) {
+                            pathList.add(filename);
+                        }
+                        
+                        return (String[])pathList.toArray(new String[0]);
                     }
-                }
-                
-                // If no absolute path names exist, add in the relative library name
-                if (pathList.size() == 0) {
-                    pathList.add(filename);
-                }
-                
-                return (String[])pathList.toArray(new String[0]);
-            }
-        });
+                });
     }
     
     // Method to verify whether the native Cg library is available

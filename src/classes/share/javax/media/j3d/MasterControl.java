@@ -86,6 +86,10 @@ class MasterControl {
     // Flag indicating that the rendering pipeline libraries are loaded
     private static boolean librariesLoaded = false;
 
+    // Issue 257: flag indicating that we are running in "appletLauncher" mode
+    // and should use JNLPAppletLauncher to load any native libraries
+    private static boolean appletLauncher = false;
+
     /**
      * reference to MasterControl thread
      */
@@ -856,6 +860,10 @@ class MasterControl {
         boolean isWindowsVista = isWindowsOs && osName.indexOf("vista") != -1;
         boolean is64Bit = (sunArchDataModel != null) && sunArchDataModel.equals("64");
 
+        // Issue 257: check to see if the sun.applet.launcher property is set to true
+        String sunAppletLauncher = getProperty("sun.applet.launcher");
+        appletLauncher = Boolean.valueOf(sunAppletLauncher);
+
         if (isCoreLoggable(Level.CONFIG)) {
             StringBuffer strBuf = new StringBuffer();
             strBuf.append("MasterControl.loadLibraries()\n").
@@ -1255,6 +1263,14 @@ class MasterControl {
      */
     static final boolean isWindows() {
 	return isWindowsOs;
+    }
+
+    /**
+     * Returns a flag indicating whether the sun.jnlp.applet.launcher system
+     * property is set to true.
+     */
+    static boolean isAppletLauncher() {
+        return appletLauncher;
     }
 
     /**
