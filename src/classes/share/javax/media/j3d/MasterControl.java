@@ -860,8 +860,8 @@ class MasterControl {
         boolean isWindowsVista = isWindowsOs && osName.indexOf("vista") != -1;
         boolean is64Bit = (sunArchDataModel != null) && sunArchDataModel.equals("64");
 
-        // Issue 257: check to see if the sun.applet.launcher property is set to true
-        String sunAppletLauncher = getProperty("sun.applet.launcher");
+        // Issue 257: check to see if the sun.jnlp.applet.launcher property is set to true
+        String sunAppletLauncher = getProperty("sun.jnlp.applet.launcher");
         appletLauncher = Boolean.valueOf(sunAppletLauncher);
 
         if (isCoreLoggable(Level.CONFIG)) {

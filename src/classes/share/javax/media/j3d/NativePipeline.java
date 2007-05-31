@@ -182,7 +182,7 @@ class NativePipeline extends Pipeline {
                 public Object run() {
                     try {
                         if (useAppletLauncher) {
-                            Class jnlpAppletLauncherClass = Class.forName("com.sun.applet.util.JNLPAppletLauncher");
+                            Class jnlpAppletLauncherClass = Class.forName("org.jdesktop.applet.util.JNLPAppletLauncher");
                             Method loadLibraryMethod = jnlpAppletLauncherClass.getDeclaredMethod("loadLibrary", String.class);
                             loadLibraryMethod.invoke(null, libName);
                         } else {
