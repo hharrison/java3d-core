@@ -503,7 +503,9 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     }
     
     void moveTo(BranchGroup bg) {
-        ((GroupRetained)bg.retained).dirtyBoundsCache();
+        if (bg != null) {
+            ((GroupRetained)bg.retained).dirtyBoundsCache();
+        }
 	if (this.source.isLive()) {
 	    universe.resetWaitMCFlag();
 	    synchronized (universe.sceneGraphLock) {
