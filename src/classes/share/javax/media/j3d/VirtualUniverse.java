@@ -609,8 +609,10 @@ public class VirtualUniverse extends Object {
 	   str = Long.toString(nodeIdCount);
            nodeIdCount++;
 	} else {
-	   str = (String) nodeIdFreeList.lastElement();
-	   nodeIdFreeList.removeElement(str);
+            // Issue 496: Remove last object using index to avoid performance
+            // hit of a needless linear search.
+           int idx = nodeIdFreeList.size() - 1;
+           str = (String) nodeIdFreeList.remove(idx);
 	}
         return(str);
     }
