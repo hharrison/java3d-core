@@ -1,0 +1,1085 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<!--
+/*
+* $RCSfile$
+*
+* Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved.
+*
+* Use is subject to license terms.
+*
+* $Revision$
+* $Date$
+* $State$
+*/
+-->
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <title>Java 3D 1.5.1 Release Notes</title>
+
+
+</head>
+
+
+<body>
+
+<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup>
+1.5.1
+Release Notes</h2>
+
+<p>This file contains important release information for users of
+the
+Java&nbsp;3D<sup><font size="-2">TM</font></sup>
+API, version
+1.5.1.
+</p>
+
+<ul>
+
+  <a href="#System_Requirements">System Requirements</a>
+(<a href="#Solaris_Sparc">Solaris Sparc</a>, <a href="#Solaris_x86">Solaris
+x86</a>, <a href="#Linux">Linux</a>, <a href="#Windows">Windows</a>, <a href="#MacOSX">Mac
+OS X</a>)<br>
+
+  <a href="#Improvements_In_1_5_1">Improvements in
+1.5.1</a><br>
+
+  <a href="#JoglPipeline">JOGL Rendering Pipeline</a><br>
+
+  <a href="#More_Information">More Information</a><br>
+
+</ul>
+
+<p><span style="font-style: italic;">NOTE: We
+recommend that you </span><span style="font-style: italic;">uninstall
+all </span><span style="font-style: italic;">previous
+versions of Java&nbsp;3D before
+installing this version.</span>
+</p>
+
+<h3><a name="System_Requirements"></a>System
+Requirements</h3>
+
+<p>The 1.5.1 version of the Java&nbsp;3D API has been
+released
+for
+Solaris (both sparc and x86/amd64), Linux (both x86 and amd64), Windows
+(both x86 and amd64), and
+Mac OS X (both PPC and x86).
+</p>
+
+<h4><a name="Solaris_Sparc"></a>Solaris Sparc</h4>
+
+<p>
+The 1.5.1 version of Java&nbsp;3D for Solaris SPARC requires
+the
+following:
+</p>
+
+<ul>
+
+  <li>JDK 1.5.0 or later from Sun Microsystems: <a href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+
+  <li>Solaris 9 or later</li>
+
+  <li>Frame Buffer with OpenGL 1.3 support or better (XVR-600,
+XVR-1200, Expert3D, etc.). A frame buffer with OpenGL 1.2 support will
+work, but with reduced texture mapping functionality.</li>
+
+  <li>OpenGL 1.3 for Solaris or later. To find your current
+version,
+use: "<code>pkginfo -l SUNWglrt</code>". OpenGL for Solaris
+can be
+obtained at: <a href="http://www.sun.com/software/graphics/opengl/">http://www.sun.com/software/graphics/opengl/</a></li>
+
+</ul>
+
+<h4><a name="Solaris_x86"></a>Solaris x86</h4>
+
+<p>
+The 1.5.1 version of Java&nbsp;3D for Solaris x86/amd64
+requires
+the
+following:
+</p>
+
+<ul>
+
+  <li>JDK 1.5.0 or later from Sun Microsystems: <a href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+
+  <li>Solaris 10 or later</li>
+
+  <li>NVIDIA Frame Buffer with OpenGL 1.3 or later</li>
+
+</ul>
+
+<h4><a name="Linux"></a>Linux<br>
+
+</h4>
+
+<p>The 1.5.1 version of Java&nbsp;3D for Linux (x86 or
+amd64)
+requires
+the
+following:<br>
+
+</p>
+
+<ul>
+
+  <li>JDK 1.5.0 or later from Sun Microsystems: <a href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+
+  <li>Graphics adapter with driver that supports the GLX
+extension: GLX
+1.3 or later and OpenGL 1.3 or later. A graphics adapter with OpenGL
+1.2 support will work, but with reduced texture mapping functionality. </li>
+
+</ul>
+
+<h4><a name="Windows"></a>Windows<br>
+
+</h4>
+
+<p>The 1.5.1 version of Java&nbsp;3D for Windows 2000,
+Windows XP (x86 or amd64), or Windows Vista
+requires the following:<br>
+
+</p>
+
+<ul>
+
+  <li>JDK 1.5.0 or later from Sun Microsystems: <a href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+
+  <li>Windows 2000, Windows XP, or Windows Vista</li>
+
+  <li>Support for either OpenGL or DirectX as shown below.<br>
+
+  </li>
+
+</ul>
+
+<ul>
+
+  <span style="font-weight: bold;">OpenGL version</span><br>
+
+  <ul>
+
+The (default) OpenGL renderer of Java&nbsp;3D requires OpenGL 1.3
+or
+later,
+available from your graphics card manufacturer.
+  </ul>
+
+</ul>
+
+<ul>
+
+  <span style="font-weight: bold;">DirectX version</span><br>
+
+  <ul>
+
+The (optional) DirectX renderer of Java&nbsp;3D requires
+DirectX 9.0 or
+later, which is available from Microsoft at: <a href="http://www.microsoft.com/windows/directx/">http://www.microsoft.com/windows/directx/</a>
+. The DirectX version of
+Java&nbsp;3D is selected by setting the "<code>j3d.rend</code>"
+system
+property
+to "<code>d3d</code>",
+for example:
+    <ul>
+
+      <code>java -Dj3d.rend=d3d ClassName</code>
+    </ul>
+
+  </ul>
+
+  <br>
+
+NOTE: The DirectX version of Java 3D is used if a suitable version of
+OpenGL cannot be found. Note also that DirectX is chosen by default on
+Windows Vista systems with an ATI graphics card (due to ATI driver
+bugs).
+</ul>
+
+<h4><a name="MacOSX"></a>Mac OS X</h4>
+
+<p>The 1.5.1 version of Java&nbsp;3D for Mac OS X (PPC
+or x86)
+requires the following:<br>
+
+</p>
+
+<ul>
+
+  <li>JDK 1.5.0 or later from Apple: <a href="http://developer.apple.com/java/download/">http://developer.apple.com/java/download/</a></li>
+
+  <li>Java Binding for OpenGL (JOGL), available at: <a href="https://jogl.dev.java.net/">https://jogl.dev.java.net/</a><br>
+
+you can <a href="https://jogl.dev.java.net/servlets/ProjectDocumentList?folderID=5971&amp;expandFolder=5971">click
+here</a> for a direct link to the download folder<br>
+
+  </li>
+
+  <li>Apple OS X 10.3 or later (10.4 or later is required for
+Intel-based Apple systems)<br>
+
+  </li>
+
+  <li>Support for OpenGL 1.3 or later<br>
+
+  </li>
+
+</ul>
+
+<h3><a name="Improvements_In_1_5_1"></a>Improvements
+in 1.5.1</h3>
+
+<h4>Enhancements</h4>
+
+<ul>
+
+  <li>Windows Vista Support</li>
+
+  <li>Pack200 Support for Java Web Start Applications</li>
+
+  <li><a href="http://wiki.java.net/bin/view/Javadesktop/Java3DApplicationDevelopment#Logging">Logging
+Framework</a></li>
+
+  <li>Added support for JNLPAppletLauncher (will be available
+shortly)</li>
+
+</ul>
+
+<h4>Issues Fixed in 1.5.1</h4>
+
+<br>
+
+<table style="text-align: left;" border="1" cellpadding="2" cellspacing="0" width="100%">
+
+  <tbody>
+
+    <tr>
+
+      <th style="vertical-align: top; text-align: right;">Issue</th>
+
+      <th style="vertical-align: top;">&nbsp; </th>
+
+      <th style="vertical-align: top;">Description</th>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">126</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Use OpenGL
+automatic mipmap generation</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">157</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Would like a
+JOALMixer implementation of AudioEngine3DL2</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">197</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Consider supporting
+pack200 for Java Web Start / JNLP</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">226</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">D3D : fail on
+stress test for the creation and destruction of Canvases</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">239</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Stencil buffer
+should be cleared at the start of each frame</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">257</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Java3D Applet
+Launcher support</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">274</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">NPE With
+Simultaneous View and Content Side PickingBehaviors</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">293</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Need better logging
+for j3d error, warning, assertion messages.</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">314</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Issue with
+Stenciled Transparent Objects</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">347</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">OffScreen Canvas3D
+always reloads textures, display lists</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">348</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Programmable
+shaders do not work for OffScreen Canvas3D</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">357</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Memory leak when
+using textures with multiple views</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">362</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">dynamic assignment
+if Canvas3D to View makes content disappear</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">364</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Canvas3D.setOffScreenBuffer(null)
+sometimes hangs</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">378</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Shaders are not
+rendered when Canvas3D is created and destroyed</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">381</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">ByRef, yDown,
+4BYTE_ABGR throws ArrayIndexOOB Exception</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">396</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Off-screen Canvas3D
+/ D3D: Resizing crashes VM</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">402</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Off-screen Canvas3D
+throws Exception on BufferedImage of TYPE_4BYTE_ABGR and TYPE_INT_ARGB</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">408</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Poor quality of
+auto-generated mipmaps</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">411</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Add Primitive flag
+to reverse Y for tex coords</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">412</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Exception when
+updating Y_UP BY_REFERENCE image</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">414</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">D3D: NPOT textures
+not properly disabled on card that lacks support</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">415</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Need ability to
+disable NPOT textures for raster/background</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">416</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">JOGL:
+ClassCastException in Renderer with NioImageBuffer</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">417</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">JOGL: Mip-mapped
+NPOT textures rendered incorrectly</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">424</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">JOALMixer requires
+the default Viewer's setUserHeadToVworldEnable setting to true</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">425</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">NullPointerException
+in automatic mipmap generation</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">427</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Method with
+constructor name: ObjectFileMaterial</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">430</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Deliver JOALMixer
+for JNLP and download bundle<br>
+
+      </td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">431</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">disabled PointSound
+starts playing when scheduling bounds are entered</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">433</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">JCanvas3D crashed
+when using jogl pipe</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">434</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">OutOfMemory after
+creating millions of RenderAtomListInfo objects</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">437</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">SceneGraphStreamWriter
+NPE</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">435</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Memory leak when
+reusing an Appearance with a single Texture</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">438</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">ConfiguredUniverse
+&amp; SimpleUniverse constructor missing</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">441</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">ArrayIndexOutOfBoundsException
+in IndexedTriangleArrayRetained Intersect</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">444</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Transform updates
+overly expensive</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">446</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">JCanvas3D and focus</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">447</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Enhance Element
+Traversal To Improve Pick Hits</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">449</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">SceneGraphIO can
+not support ImageComponent2DURL</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">452</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Java 3D should fall
+back to D3D if OpenGL not available</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">453</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">SceneGraphIO does
+not support SceneGraphObjects name field</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">455</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Need to disable
+NPOT textures for older cards that claim to support it.</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">456</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">NPOT background (
+maybe raster) fail to work if HW doesn't support NPOT texture</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">457</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">ClassCastException
+in MasterControl when updating Texture3D</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">458</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Canvas3D stops
+rendering on window close</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">461</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">ClassCastException
+thrown when using filters with NioImageBuffer</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">466</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">NPE when updating
+lights with multiple views</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">467</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Add Java3D source
+jar file as a separate or part of the distribution</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">468</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">SceneGraphStreamReader/Writer
+do not close the stream</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">470</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Need informative
+error message for mismatched NioImageBuffer</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">471</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Performance
+degradation with shader attribute object setValue()</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">474</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Update javadoc for
+TextureLoader for ImageException</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">478</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Memory leak in
+TransparencySortController</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">479</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">JOGL: Screen door
+transparency renders incorrectly on JoglPipeline</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">480</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">getBounds should
+cache results</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">481</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">JOALSample: cannot
+load if only URLString is given in MediaContainer</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">485</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">ClassCastException
+when switching shaders in PhongShadingGLSL example</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">486</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Java 3D hangs on
+some Windows Vista systems</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">488</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">ImageComponent3D
+bug with by-reference images</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">489</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">AutoOffScreenCanvas3D:
+postSwap() is called twice</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">490</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">JOALSample fails to
+load second sample</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">491</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Refactor
+platform-specific classes to use non-overlapping class names</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">492</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">ImageComponent2D.setSubImage
+throws IllegalArgumentException</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">494</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Group.moveto(null)
+throws a NullPointerException<br>
+
+      </td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">496</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Big performance hit
+in VirtualUniverse.getNodeId<br>
+
+      </td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: right;">500</td>
+
+      <td style="vertical-align: top;">&nbsp; </td>
+
+      <td style="vertical-align: top;">Reuse JOAL buffers
+where possible<br>
+
+      </td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<br>
+
+<h3><a name="JoglPipeline"></a>JOGL Rendering
+Pipeline</h3>
+
+<p>A JOGL rendering pipeline, as described
+in <a href="https://java3d.dev.java.net/issues/show_bug.cgi?id=229">issue
+229</a>, is now
+available on all supported platforms, including Apple Mac
+OS X (x86 or PPC). The easiest way to run Java&nbsp;3D applications
+using the JOGL
+pipeline is via Java Webstart from your browser (with no setup
+required).
+<a href="https://j3d-webstart.dev.java.net/test/">Click here</a>
+to run
+a Java&nbsp;3D example program from your browser via the
+JOGL pipeline. These
+examples will use JOGL on Mac OS X and the native OpenGL pipeline on
+all
+other platforms.<br>
+
+</p>
+
+<p>The JOGL renderer is the default on Mac OS X.
+You can select the JOGL renderer on other platforms by setting the "<code>j3d.rend</code>"
+system
+property
+to "<code>jogl</code>",
+for example:
+</p>
+
+<ul>
+
+  <code>java -Dj3d.rend=jogl ClassName</code>
+</ul>
+
+<p>You will need to <a href="https://jogl.dev.java.net/">download
+JOGL</a>
+and install it into the JRE along with the Java&nbsp;3D jar files
+(or
+include it in your PATH/CLASSPATH).<br>
+
+</p>
+
+<p>NOTE: You must install <i>both</i> Java 3D and
+JOGL into the JRE,
+or else you must install <i>neither</i> Java 3D nor JOGL
+into the
+JRE. If you install Java 3D into the JRE and put JOGL on your
+CLASSPATH, the JoglPipeline will fail to find the JOGL classes.</p>
+
+<h3><a name="More_Information"></a>More
+Information</h3>
+
+<p>For the latest information on Java&nbsp;3D, see the <a href="https://java3d.dev.java.net/">main Java&nbsp;3D
+project page</a>
+on
+java.net.<br>
+
+</p>
+
+<p>Click <a href="https://java3d.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=java3d&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED">here</a>
+for a list of open issues.</p>
+
+</body>
+</html>
