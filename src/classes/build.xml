@@ -357,7 +357,7 @@
 
   </target>
   
-  <target name="dist-common-sign" if="releaseType_milestone">
+  <target name="dist-common-sign" unless="releaseType_daily">
     <property name="staging" location="../../staging"/>
     <exec dir="${dist}/common/lib/ext" executable="${shell}">
       <arg line="${staging}/doSignJars.sh *.jar"/>

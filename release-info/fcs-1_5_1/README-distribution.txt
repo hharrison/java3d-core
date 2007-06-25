@@ -38,4 +38,4 @@ the use or distribution of any and all Programs and/or Software.
 
 Redistributable:
 
-JAVA 3D, VERSION 1.5
+JAVA 3D, VERSION 1.5.1
