@@ -4,7 +4,7 @@
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
             <!-- Do not use Project Properties customizer when editing this file manually. -->
-            <name>java3d-1.5.1</name>
+            <name>java3d-1.5.2</name>
             <properties/>
             <folders>
                 <source-folder>
@@ -20,11 +20,6 @@
                     <label>../j3d-core-utils/src/classes/share</label>
                     <type>java</type>
                     <location>../j3d-core-utils/src/classes/share</location>
-                </source-folder>
-                <source-folder>
-                    <label>src\native\ogl</label>
-                    <type>java</type>
-                    <location>src/native/ogl</location>
                 </source-folder>
             </folders>
             <ide-actions>
@@ -62,10 +57,6 @@
                         <label>../j3d-core-utils/src/classes/share</label>
                         <location>../j3d-core-utils/src/classes/share</location>
                     </source-folder>
-                    <source-folder style="packages">
-                        <label>src\native\ogl</label>
-                        <location>src/native/ogl</location>
-                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -77,13 +68,14 @@
                     <ide-action name="rebuild"/>
                 </context-menu>
             </view>
-            <subprojects/>
+            <subprojects>
+                <project>../vecmath</project>
+            </subprojects>
         </general-data>
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
             <compilation-unit>
                 <package-root>src/classes/share</package-root>
                 <package-root>../j3d-core-utils/src/classes/share</package-root>
-                <package-root>src/native/ogl</package-root>
                 <classpath mode="compile">../vecmath/build/debug/lib/ext/vecmath.jar</classpath>
                 <built-to>build/default/debug/lib/ext/j3dcore.jar</built-to>
                 <built-to>build/default/debug/lib/ext/j3dutils.jar</built-to>
