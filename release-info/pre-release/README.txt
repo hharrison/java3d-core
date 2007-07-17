@@ -1,4 +1,4 @@
-Java 3D(TM) 1.5.1 Pre-Release
+Java 3D(TM) 1.5.2 Pre-Release
 -----------------------------
 
 This software is licensed by Sun:
@@ -7,7 +7,7 @@ i) for research use under terms of the Java Research License (JRL) as
 specified in the LICENSE-JRL.txt file and on the web at
 "http://java3d.dev.java.net/jrl.html"
 
-This binary pre-release of Java 3D 1.5.1 (experimental) is an intermediate
+This binary pre-release of Java 3D 1.5.2 (experimental) is an intermediate
 build made available for testing purposes only. The code is untested
 and presumed incompatible with the Java 3D(TM) API specification. You
 must only use this code in accordance with the terms under which the
@@ -26,10 +26,10 @@ environment. A list of these can be found at
 "http://java.sun.com/products/java-media/3D/ports.html"
 
 
-Instructions for unzipping Java 3D 1.5.1
+Instructions for unzipping Java 3D 1.5.2
 ----------------------------------------
 
-After downloading and unzipping the java3d-1_5_1-XXX.zip file into a temporary directory, for example, "/tmp", you will see the following files in the java3d-1_5_1-XXX directory:
+After downloading and unzipping the java3d-1_5_2-XXX.zip file into a temporary directory, for example, "/tmp", you will see the following files in the java3d-1_5_2-XXX directory:
 
     COPYRIGHT.txt              Copyright notice
     LICENSE-JRL.txt            Software License Agreement
