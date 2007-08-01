@@ -164,6 +164,7 @@
     <mkdir dir="${build}/default/debug/native"/>
     <copy todir="${build}/default/debug" overwrite="true">
       <fileset dir="${build}/${platform}/debug" includes="lib/ext/**/*.jar"/>
+      <fileset dir="${build}/${platform}/debug" includes="gen/classes/**/*.java"/>
     </copy>
     <copy todir="${build}/default/debug/native" overwrite="true" includeemptydirs="false" flatten="true">
       <fileset dir="${build}/${platform}/debug" includes="lib/** bin/**" excludes="**/*.jar"/>
@@ -218,6 +219,7 @@
     <mkdir dir="${build}/default/opt/native"/>
     <copy todir="${build}/default/opt" overwrite="true">
       <fileset dir="${build}/${platform}/opt" includes="lib/ext/**/*.jar"/>
+      <fileset dir="${build}/${platform}/opt" includes="gen/classes/**/*.java"/>
     </copy>
     <copy todir="${build}/default/opt/native" overwrite="true" includeemptydirs="false" flatten="true">
       <fileset dir="${build}/${platform}/opt" includes="lib/** bin/**" excludes="**/*.jar"/>

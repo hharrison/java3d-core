@@ -76,7 +76,7 @@
             <compilation-unit>
                 <package-root>src/classes/share</package-root>
                 <package-root>../j3d-core-utils/src/classes/share</package-root>
-                <classpath mode="compile">../vecmath/build/debug/lib/ext/vecmath.jar</classpath>
+                <classpath mode="compile">../vecmath/build/debug/lib/ext/vecmath.jar:build/default/debug/gen/classes</classpath>
                 <built-to>build/default/debug/lib/ext/j3dcore.jar</built-to>
                 <built-to>build/default/debug/lib/ext/j3dutils.jar</built-to>
                 <source-level>1.5</source-level>
