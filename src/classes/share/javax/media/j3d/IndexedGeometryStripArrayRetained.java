@@ -11,7 +11,6 @@
  */
 
 package javax.media.j3d;
-import java.util.Vector;
 import java.util.ArrayList;
 
 /**
@@ -138,29 +137,32 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
 
     }
 
-  GeometryArrayRetained cloneNonIndexedGeometry() {
-      GeometryStripArrayRetained obj = null;
-      int i;
-      switch (this.geoType) {
-      case GEO_TYPE_INDEXED_LINE_STRIP_SET:
-          obj = new LineStripArrayRetained();
-          break;
-      case GEO_TYPE_INDEXED_TRI_FAN_SET:
-          obj = new TriangleFanArrayRetained();
-          break;
-      case GEO_TYPE_INDEXED_TRI_STRIP_SET:
-          obj = new TriangleStripArrayRetained();
-          break;
-      }
-      obj.createGeometryArrayData(validIndexCount,
-              (vertexFormat & ~(GeometryArray.BY_REFERENCE|GeometryArray.INTERLEAVED|GeometryArray.USE_NIO_BUFFER)),
-              texCoordSetCount, texCoordSetMap,
-              vertexAttrCount, vertexAttrSizes);
-      obj.unIndexify(this); 
-      obj.setStripVertexCounts(stripIndexCounts);
+    @Override
+    GeometryArrayRetained cloneNonIndexedGeometry() {
+        GeometryStripArrayRetained obj = null;
 
-      return obj;
-    }    
+        switch (this.geoType) {
+            case GEO_TYPE_INDEXED_LINE_STRIP_SET:
+                obj = new LineStripArrayRetained();
+                break;
+            case GEO_TYPE_INDEXED_TRI_FAN_SET:
+                obj = new TriangleFanArrayRetained();
+                break;
+            case GEO_TYPE_INDEXED_TRI_STRIP_SET:
+                obj = new TriangleStripArrayRetained();
+                break;
+        }
+        obj.createGeometryArrayData(validIndexCount,
+               (vertexFormat & ~(GeometryArray.BY_REFERENCE|GeometryArray.INTERLEAVED|GeometryArray.USE_NIO_BUFFER)),
+               texCoordSetCount, texCoordSetMap,
+               vertexAttrCount, vertexAttrSizes);
+        obj.unIndexify(this);
+        obj.setStripVertexCounts(stripIndexCounts);
+        obj.cloneSourceArray = this;
+        obj.source = source;
+
+        return obj;
+    }
 
 
   /**

@@ -91,7 +91,6 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 
     GeometryArrayRetained cloneNonIndexedGeometry() {
         GeometryArrayRetained obj = null;
-        int vOffset;
 
         switch (this.geoType) {
         case GEO_TYPE_INDEXED_LINE_SET:
@@ -116,7 +115,8 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
                 vertexAttrCount, vertexAttrSizes);
         obj.cloneSourceArray = this;
         obj.unIndexify(this);
-
+        obj.source=source;
+        
         return obj;
     }
 
