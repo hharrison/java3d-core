@@ -15,6 +15,7 @@ package javax.media.j3d;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.util.ArrayList;
@@ -180,16 +181,35 @@ class NativePipeline extends Pipeline {
         AccessController.doPrivileged(
             new java.security.PrivilegedAction() {
                 public Object run() {
-                    try {
-                        if (useAppletLauncher) {
+                    boolean loaded = false;
+                    if (useAppletLauncher) {
+                        try {
                             Class jnlpAppletLauncherClass = Class.forName("org.jdesktop.applet.util.JNLPAppletLauncher");
                             Method loadLibraryMethod = jnlpAppletLauncherClass.getDeclaredMethod("loadLibrary", String.class);
                             loadLibraryMethod.invoke(null, libName);
-                        } else {
-                            System.loadLibrary(libName);
+                            loaded = true;
+                        } catch (ClassNotFoundException ex) {
+                            System.err.println("Java 3D: loadLibrary(" + libName + ")");
+                            System.err.println(ex);
+                            System.err.println("Attempting to use System.loadLibrary instead");
+                        } catch (Exception ex) {
+                            Throwable t = ex;
+                            if (t instanceof InvocationTargetException) {
+                                t = ((InvocationTargetException) t).getTargetException();
+                            }
+                            if (t instanceof Error) {
+                                throw (Error) t;
+                            }
+                            if (t instanceof RuntimeException) {
+                                throw (RuntimeException) t;
+                            }
+                            // Throw UnsatisfiedLinkError for best compatibility with System.loadLibrary()
+                            throw (UnsatisfiedLinkError) new UnsatisfiedLinkError().initCause(ex);
                         }
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
+                    }
+
+                    if (!loaded) {
+                        System.loadLibrary(libName);
                     }
                     return null;
                 }
