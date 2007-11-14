@@ -1331,6 +1331,12 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	int i=0;
 	NodeRetained child;
 
+        // Fix for issue 540
+        if (children.size()==0) {
+            return;
+        }
+        // End fix for issue 540
+
 	for (i = 0; i < nchild; i++) {
 	    child = (NodeRetained)children.get(i);
 	    if(child != null)
