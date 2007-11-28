@@ -15,7 +15,6 @@ package javax.media.j3d;
 import java.util.Vector;
 import java.util.Enumeration;
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 /**
  * Group node.
@@ -1089,7 +1088,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    newFogs = new ArrayList();
 		    for (int i = 0; i < localToVworldKeys.length; i++) {
 			newFogs.add(new ArrayList());
-		    };
+		    }
 		}
 		else {
 		    newFogs = new ArrayList();
@@ -1326,18 +1325,18 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     
     
     void updatePickable(HashKey keys[], boolean pick[]) {
-	int nchild = children.size()-1;
+	int numChildLessOne = children.size() - 1;
 	super.updatePickable(keys, pick);
 	int i=0;
 	NodeRetained child;
 
         // Fix for issue 540
-        if (children.size()==0) {
+        if (numChildLessOne < 0) {
             return;
         }
         // End fix for issue 540
 
-	for (i = 0; i < nchild; i++) {
+	for (i = 0; i < numChildLessOne; i++) {
 	    child = (NodeRetained)children.get(i);
 	    if(child != null)
 		child.updatePickable(keys, (boolean []) pick.clone());
@@ -1352,12 +1351,18 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     
 
     void updateCollidable(HashKey keys[], boolean collide[]) {
-	int nchild = children.size()-1;
+	int numChildLessOne = children.size() - 1;
 	super.updateCollidable(keys, collide);
 	int i=0;
 	NodeRetained child;
 	
-	for (i = 0; i < nchild; i++) {
+        // Fix for issue 540
+        if (numChildLessOne < 0) {
+            return;
+        }
+        // End fix for issue 540
+        
+        for (i = 0; i < numChildLessOne; i++) {
 	    child = (NodeRetained)children.get(i);
 	    if(child != null) 
 		child.updateCollidable(keys, (boolean []) collide.clone()); 
