@@ -882,7 +882,8 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
         // if the cachedBounds==null. However this is not the case
         // if the node is the child of a SharedGroup
         if (VirtualUniverse.mc.cacheAutoComputedBounds) {
-            cachedBounds = null;
+            // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
+            validCachedBounds = false;
             synchronized(parents) {
                 Enumeration e = parents.elements();
                 while(e.hasMoreElements()) {

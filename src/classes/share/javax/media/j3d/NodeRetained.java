@@ -141,7 +141,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
     Bounds apiBounds;
     
     protected Bounds cachedBounds=null;     // Cached auto compute bounds, could we use localBounds ?
-    
+    protected boolean validCachedBounds = false; // Fix to Issue 514
     /**
      * Each element, p, of branchGroupPaths is a list of BranchGroup from
      * root of the tree to this.
@@ -957,7 +957,8 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
         // if the cachedBounds==null. However this is not the case
         // if the node is the child of a SharedGroup
         if (VirtualUniverse.mc.cacheAutoComputedBounds) {
-            cachedBounds = null;
+            // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
+            validCachedBounds = false;
             if (parent!=null) {
                 parent.dirtyBoundsCache();
             }

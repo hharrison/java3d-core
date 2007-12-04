@@ -2451,7 +2451,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
                 }
             }
         } else {
-            if (cachedBounds!=null && boundsAutoCompute) {
+            // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
+            if (validCachedBounds && boundsAutoCompute) {
                 bounds.combine(cachedBounds);
                 return;
             }
@@ -2483,7 +2484,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     Bounds getBounds() {
     
 	if ( boundsAutoCompute) {
-            if (cachedBounds!=null) {
+            // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
+            if (validCachedBounds) {
                 return (Bounds) cachedBounds.clone();
             }
             

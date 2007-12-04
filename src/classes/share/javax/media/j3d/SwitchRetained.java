@@ -639,7 +639,9 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
                 }
             }
         } else {
-            if (cachedBounds==null) {
+            // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
+            if (!validCachedBounds) {
+                validCachedBounds = true;
                 cachedBounds = new BoundingSphere();
                 ((BoundingSphere)cachedBounds).setRadius(-1);
                 if(whichChild == Switch.CHILD_ALL) {
@@ -685,7 +687,8 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
     NodeRetained child;
     
     if(boundsAutoCompute) {
-        if (cachedBounds!=null) {
+        // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
+        if (validCachedBounds) {
             return (Bounds) cachedBounds.clone();
         }
         

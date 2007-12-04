@@ -769,8 +769,8 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
    
     void computeCombineBounds(Bounds bounds) {
-        
-        if (cachedBounds!=null && boundsAutoCompute) {
+        // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
+        if (validCachedBounds && boundsAutoCompute) {
             Bounds b = (Bounds) cachedBounds.clone();
             // Should this be lock too ? ( MT safe  ? ) 
             // Thoughts :

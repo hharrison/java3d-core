@@ -840,7 +840,8 @@ class Shape3DRetained extends LeafRetained {
 
         if(boundsAutoCompute) {
 	    // System.err.println("getBounds ---- localBounds is " + localBounds);
-	    if (cachedBounds!=null) {
+            // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
+	    if (validCachedBounds) {
                 return (Bounds) cachedBounds.clone();
             }
 
@@ -912,7 +913,9 @@ class Shape3DRetained extends LeafRetained {
                         }
                     }
                 } else {
-                    if (cachedBounds==null) {
+                    // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
+                    if (!validCachedBounds) {
+                        validCachedBounds = true;
                         cachedBounds = new BoundingBox((BoundingBox) null);
 
                         for(int i=0; i<geometryList.size(); i++) {
