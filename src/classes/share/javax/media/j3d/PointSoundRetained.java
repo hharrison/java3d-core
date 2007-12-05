@@ -254,10 +254,13 @@ class PointSoundRetained extends SoundRetained {
         }
         if ((component & POSITION_DIRTY_BIT) != 0) {
             for (int i = 0; i < numSnds; i++) {
-                PointSoundRetained point = (PointSoundRetained)mSnds[i];
-                point.position = (Point3f)objs[4];
-                point.getLastLocalToVworld().transform(point.position,
-                                                      point.xformPosition);
+                PointSoundRetained point = (PointSoundRetained) mSnds[i];
+                Object o = objs[4];
+                if (o instanceof Point3f) {
+                    point.position = (Point3f) objs[4];
+                    point.getLastLocalToVworld().transform(point.position,
+                            point.xformPosition);
+                }
             }
         }
 
