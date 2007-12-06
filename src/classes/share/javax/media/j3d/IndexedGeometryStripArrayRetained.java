@@ -92,7 +92,10 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
 	    }
 	}
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	validIndexCount = total;
 	this.stripIndexCounts = new int[num];
 	for (i=0;i < num;i++)
@@ -128,10 +131,12 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
 		}
 	    }
 	}
-	geomLock.unLock();
+	if(isLive) {
+            geomLock.unLock();
+	}
 	// bbox is computed for the entries list.
 	// so, send as false
-	if (!inUpdater && source != null && source.isLive()) {
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(true);
 	}
 

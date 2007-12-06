@@ -42,7 +42,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     //       ByRef is needed, the ByRef object reference is
     //       set to null. Hence saving memory!
     //       Need object such as Texture, D3d and ByRef ...
-    // 
+    //
 
 
     // Contains a bitset indicating which components are present
@@ -73,7 +73,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     int stride;
 
     // Stride (in words) from one texture coordinate to the next
-    int texCoordStride;   
+    int texCoordStride;
 
     // Offset (in words) within each vertex of the coordinate position
     int coordinateOffset;
@@ -89,7 +89,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     // Offset (in words) within each vertex of each vertex attribute
     int[] vertexAttrOffsets;
-    
+
     // Stride (size) of all vertex attributes
     int vertexAttrStride;
 
@@ -183,7 +183,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     // the vertexType field only when the references for all texture coordinate
     // sets are set to non-null values.
     private int texCoordType = 0;
-    
+
     // Flag word indicating the type of by-ref vertex attr. We will copy this to
     // the vertexType field only when the references for all vertex attrs
     // are set to non-null values.
@@ -195,7 +195,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     static final int COLOR_FLOAT  = 0x04;
     static final int COLOR_BYTE   = 0x08;
     static final int NORMAL_FLOAT = 0x10;
-    static final int TEXCOORD_FLOAT = 0x20; 
+    static final int TEXCOORD_FLOAT = 0x20;
     static final int VATTR_FLOAT = 0x40;
 
 
@@ -256,7 +256,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     static final int COLOR_CHANGED 		= 0x04;
     static final int TEXTURE_CHANGED 		= 0x08;
     static final int BOUNDS_CHANGED 		= 0x10;
-    static final int INDEX_CHANGED 		= 0x20;    
+    static final int INDEX_CHANGED 		= 0x20;
     static final int STRIPCOUNT_CHANGED 	= 0x40;
     static final int VATTR_CHANGED 		= 0x80;
     static final int VERTEX_CHANGED             = COORDINATE_CHANGED |
@@ -307,7 +307,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     // Unique display list Id, if this geometry is shared
     int dlistId = -1;
     Integer dlistObj = null;
-    
+
     // A list of pre-defined bits to indicate which component
     // in this Texture object changed.
     //    static final int DLIST_CREATE_CHANGED      = 0x01;
@@ -325,7 +325,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     // The following variables are only used in compile mode
 
     // Offset of a geometry array into the merged array
-    int[] geoOffset;    
+    int[] geoOffset;
 
     // vertexcount of a geometry array in a merge array
     int[] compileVcount;
@@ -344,13 +344,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     }
 
     GeometryArrayRetained() {
-	dirtyFlag = INDEX_CHANGED|VERTEX_CHANGED; 
+	dirtyFlag = INDEX_CHANGED|VERTEX_CHANGED;
         lastAlpha[0] = 1.0f;
     }
 
 
     void setLive(boolean inBackgroundGroup, int refCount) {
-	dirtyFlag = VERTEX_CHANGED|INDEX_CHANGED;	    
+	dirtyFlag = VERTEX_CHANGED|INDEX_CHANGED;
         isEditable = !isWriteStatic();
         super.doSetLive(inBackgroundGroup, refCount);
 	super.markAsLive();
@@ -365,14 +365,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    createMessage.universe = null;
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(DLIST_CREATE_CHANGED);
-	    VirtualUniverse.mc.processMessage(createMessage);	    
+	    VirtualUniverse.mc.processMessage(createMessage);
 	    */
 	    isShared = true;
 	} // Clone geometry only for the first setLive
 	else {
 	    // If geometry is indexed and use_index_coord is false, unindexify
 	    // otherwise, set mirrorGeometry to null (from previous clearLive)
-	    if (this instanceof IndexedGeometryArrayRetained) { 
+	    if (this instanceof IndexedGeometryArrayRetained) {
 		// Send to rendering attribute structure,
 		J3dMessage createMessage = new J3dMessage();
 		createMessage.threads = J3dThread.UPDATE_RENDERING_ATTRIBUTES;
@@ -384,7 +384,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		VirtualUniverse.mc.processMessage(createMessage);
 	    }
 	}
-	    
+
     }
 
     void clearLive(int refCount) {
@@ -420,12 +420,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                     shape.dirtyBoundsCache();
             }
         }
-        
+
 	if ((vertexFormat & GeometryArray.BY_REFERENCE) == 0) {
-	    // by copy	    
+	    // by copy
 	    computeBoundingBox(initialVertexIndex, vertexData);
-	    
-	} else if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) != 0) { // USE_NIO_BUFFER 
+
+	} else if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) != 0) { // USE_NIO_BUFFER
 	    //System.err.println("vertexFormat & GeometryArray.USE_NIO_BUFFER");
 	    if((vertexFormat & GeometryArray.INTERLEAVED) != 0) {
 		computeBoundingBox(initialCoordIndex, interleavedFloatBufferImpl);
@@ -434,7 +434,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    } else if((vertexType & PD) != 0) {
 		computeBoundingBox(doubleBufferRefCoords);
 	    }
-	    
+
 	} else if ((vertexFormat & GeometryArray.INTERLEAVED) != 0) {
 	    //System.err.println("vertexFormat & GeometryArray.INTERLEAVED");
 	    computeBoundingBox(initialCoordIndex, interLeavedVertexData);
@@ -451,13 +451,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    //System.err.println("vertexType & PD");
 	    computeBoundingBox(doubleRefCoords);
 	}
-        
+
     }
 
 
     // NullGeometry is true only for byRef case
     void processCoordsChanged(boolean nullGeo) {
-	
+
 	/*
 	  System.err.println("processCoordsChanged : nullGeo " + nullGeo);
 	  System.err.println("Before :processCoordsChanged : geoBounds ");
@@ -476,16 +476,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	}
 	else {
-	    // re-compute centroid if used 
+	    // re-compute centroid if used
 	    synchronized(centroid) {
 		recompCentroid = true;
 	    }
-	    
+
 	    synchronized(geoBounds) {
 		boundsDirty = true;
 		computeBoundingBox();
 	    }
-	   
+
 	    /*
 	      System.err.println("After :processCoordsChanged : geoBounds ");
 	      System.err.println(geoBounds);
@@ -493,7 +493,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
     }
 
-    
+
     void computeBoundingBox(int vIndex, float[] vdata) {
 	int i, offset;
 	double xmin, xmax, ymin, ymax, zmin, zmax;
@@ -525,28 +525,28 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    xmax = vdata[offset];
 		if (vdata[offset] < xmin)
 		    xmin = vdata[offset];
-      
+
 		if (vdata[offset+1] > ymax)
 		    ymax = vdata[offset+1];
 		if (vdata[offset+1] < ymin)
 		    ymin = vdata[offset+1];
-   
+
 		if (vdata[offset+2] > zmax)
 		    zmax = vdata[offset+2];
 		if (vdata[offset+2] < zmin)
 		    zmin = vdata[offset+2];
-      
+
 		offset += stride;
 	    }
 
 	    geoBounds.setUpper(xmax, ymax, zmax);
 	    geoBounds.setLower(xmin, ymin, zmin);
-	    boundsDirty = false; 
+	    boundsDirty = false;
 	}
 	/*
 	  System.err.println("After : computeBoundingBox : geoBounds ");
 	  System.err.println(geoBounds);
-	*/	
+	*/
     }
 
     // Compute boundingbox for interleaved nio buffer
@@ -564,7 +564,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if (!boundsDirty)
 		return;
 
-	    // Initial offset	    
+	    // Initial offset
 	    offset = vIndex * stride+coordinateOffset;
 	    // Compute the bounding box
 	    xmin = xmax = vdata.get(offset);
@@ -576,23 +576,23 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    xmax = vdata.get(offset);
 		if (vdata.get(offset) < xmin)
 		    xmin = vdata.get(offset);
-      
+
 		if (vdata.get(offset+1) > ymax)
 		    ymax = vdata.get(offset+1);
 		if (vdata.get(offset+1) < ymin)
 		    ymin = vdata.get(offset+1);
-   
+
 		if (vdata.get(offset+2) > zmax)
 		    zmax = vdata.get(offset+2);
 		if (vdata.get(offset+2) < zmin)
 		    zmin = vdata.get(offset+2);
-      
+
 		offset += stride;
 	    }
 
 	    geoBounds.setUpper(xmax, ymax, zmax);
 	    geoBounds.setLower(xmin, ymin, zmin);
-	    boundsDirty = false; 
+	    boundsDirty = false;
 	}
     }
 
@@ -601,16 +601,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void computeBoundingBox( DoubleBufferWrapper buffer) {
 	int i, j, k, sIndex;
 	double xmin, xmax, ymin, ymax, zmin, zmax;
-	
+
 	synchronized(geoBounds) {
 	    // If autobounds compute is false  then return
 	    if ((computeGeoBounds == 0) && (refCount > 0)) {
 		return;
 	    }
 
-	    if (!boundsDirty) 
+	    if (!boundsDirty)
 		return;
-	    
+
 	    sIndex = initialCoordIndex;
 	    int maxIndex = 3*validVertexCount;
 
@@ -618,30 +618,30 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    xmin = xmax = buffer.get(sIndex++);
 	    ymin = ymax = buffer.get(sIndex++);
 	    zmin = zmax = buffer.get(sIndex++);
-	
+
 	    for (i=sIndex; i<maxIndex; i+=3) {
 		j = i + 1;
 		k = i + 2;
-		
+
 		if (buffer.get(i) > xmax)
 		    xmax = buffer.get(i);
 		if (buffer.get(i) < xmin)
 		    xmin = buffer.get(i);
-	    
+
 		if (buffer.get(j) > ymax)
 		    ymax = buffer.get(j);
 		if (buffer.get(j) < ymin)
 		    ymin = buffer.get(j);
-   
+
 		if (buffer.get(k) > zmax)
 		    zmax = buffer.get(k);
 		if (buffer.get(k) < zmin)
 		    zmin = buffer.get(k);
-      
+
 	    }
 	    geoBounds.setUpper(xmax, ymax, zmax);
 	    geoBounds.setLower(xmin, ymin, zmin);
-	    boundsDirty = false; 
+	    boundsDirty = false;
 	}
     }
 
@@ -668,35 +668,35 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    xmin = xmax = buffer.get(sIndex++);
 	    ymin = ymax = buffer.get(sIndex++);
 	    zmin = zmax = buffer.get(sIndex++);
-	
+
 	    for (i=sIndex; i<maxIndex; i+=3) {
 		j = i + 1;
 		k = i + 2;
-		
+
 		if (buffer.get(i) > xmax)
 		    xmax = buffer.get(i);
 		if (buffer.get(i) < xmin)
 		    xmin = buffer.get(i);
-	    
+
 		if (buffer.get(j) > ymax)
 		    ymax = buffer.get(j);
 		if (buffer.get(j) < ymin)
 		    ymin = buffer.get(j);
-   
+
 		if (buffer.get(k) > zmax)
 		    zmax = buffer.get(k);
 		if (buffer.get(k) < zmin)
 		    zmin = buffer.get(k);
-      
+
 	    }
 	    geoBounds.setUpper(xmax, ymax, zmax);
 	    geoBounds.setLower(xmin, ymin, zmin);
-	    boundsDirty = false; 
+	    boundsDirty = false;
 	}
     }
 
     void computeBoundingBox(float[] coords) {
-	// System.err.println("GeometryArrayRetained : computeBoundingBox(float[] coords)"); 
+	// System.err.println("GeometryArrayRetained : computeBoundingBox(float[] coords)");
 	int i, j, k, sIndex;
 	double xmin, xmax, ymin, ymax, zmin, zmax;
 
@@ -711,38 +711,38 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	    sIndex = initialCoordIndex;
 	    int maxIndex = 3*validVertexCount;
-	
+
 	// Compute the bounding box
 	    xmin = xmax = coords[sIndex++];
 	    ymin = ymax = coords[sIndex++];
 	    zmin = zmax = coords[sIndex++];
-	
+
 	    for (i=sIndex; i<maxIndex; i+=3) {
 		j = i + 1;
 		k = i + 2;
-		
+
 		if (coords[i] > xmax)
 		    xmax = coords[i];
 		if (coords[i] < xmin)
 		    xmin = coords[i];
-	    
+
 		if (coords[j] > ymax)
 		    ymax = coords[j];
 		if (coords[j] < ymin)
 		    ymin = coords[j];
-   
+
 		if (coords[k] > zmax)
 		    zmax = coords[k];
 		if (coords[k] < zmin)
 		    zmin = coords[k];
-      
+
 	    }
 	    geoBounds.setUpper(xmax, ymax, zmax);
-	    // System.err.println("max(" + xmax + ", " + ymax + ", " + zmax + ")"); 
+	    // System.err.println("max(" + xmax + ", " + ymax + ", " + zmax + ")");
 	    geoBounds.setLower(xmin, ymin, zmin);
-	    // System.err.println("min(" + xmin + ", " + ymin + ", " + zmin + ")"); 
+	    // System.err.println("min(" + xmin + ", " + ymin + ", " + zmin + ")");
 
-	    boundsDirty = false; 
+	    boundsDirty = false;
 	}
 
     }
@@ -763,41 +763,41 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	    sIndex = initialCoordIndex;
 	    int maxIndex = 3*validVertexCount;
-	    
+
 	    // Compute the bounding box
 	    xmin = xmax = coords[sIndex++];
 	    ymin = ymax = coords[sIndex++];
 	    zmin = zmax = coords[sIndex++];
-	
+
 	    for (i=sIndex; i<maxIndex; i+=3) {
 		j = i + 1;
 		k = i + 2;
-		
+
 		if (coords[i] > xmax)
 		    xmax = coords[i];
 		if (coords[i] < xmin)
 		    xmin = coords[i];
-	    
+
 		if (coords[j] > ymax)
 		    ymax = coords[j];
 		if (coords[j] < ymin)
 		    ymin = coords[j];
-   
+
 		if (coords[k] > zmax)
 		    zmax = coords[k];
 		if (coords[k] < zmin)
 		    zmin = coords[k];
-      
+
 	    }
 	    geoBounds.setUpper(xmax, ymax, zmax);
 	    geoBounds.setLower(xmin, ymin, zmin);
-	    boundsDirty = false; 
+	    boundsDirty = false;
 	}
 
     }
 
     void computeBoundingBox(Point3f[] coords) {
-    
+
 	double xmin, xmax, ymin, ymax, zmin, zmax;
 	Point3f p;
 
@@ -821,23 +821,23 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		p = coords[i];
 		if (p.x > xmax) xmax = p.x;
 		if (p.x < xmin) xmin = p.x;
-      
+
 		if (p.y > ymax) ymax = p.y;
 		if (p.y < ymin) ymin = p.y;
-   
+
 		if (p.z > zmax) zmax = p.z;
 		if (p.z < zmin) zmin = p.z;
-      
+
 	    }
 	    geoBounds.setUpper(xmax, ymax, zmax);
 	    geoBounds.setLower(xmin, ymin, zmin);
-	    boundsDirty = false; 
+	    boundsDirty = false;
 	}
 
     }
 
     void computeBoundingBox(Point3d[] coords) {
-    
+
 	double xmin, xmax, ymin, ymax, zmin, zmax;
 	Point3d p;
 
@@ -860,29 +860,29 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		p = coords[i];
 		if (p.x > xmax) xmax = p.x;
 		if (p.x < xmin) xmin = p.x;
-      
+
 		if (p.y > ymax) ymax = p.y;
 		if (p.y < ymin) ymin = p.y;
-   
+
 		if (p.z > zmax) zmax = p.z;
 		if (p.z < zmin) zmin = p.z;
-      
+
 	    }
 	    geoBounds.setUpper(xmax, ymax, zmax);
 	    geoBounds.setLower(xmin, ymin, zmin);
-	    boundsDirty = false; 
+	    boundsDirty = false;
 	}
 
     }
-    
-    
+
+
     synchronized void update() {
     }
-    
+
     void setupMirrorVertexPointer(int vType) {
 	int i, index;
-	
-	switch (vType) { 
+
+	switch (vType) {
 	case PF:
 	    if (floatRefCoords == null) {
 		if ((vertexType & VERTEX_DEFINED) == PF) {
@@ -923,7 +923,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
 	    else {
 		vertexType |= P3F;
-		
+
 		if ((mirrorVertexAllocated & PF) == 0) {
 		    mirrorFloatRefCoords = new float[vertexCount * 3];
 		    mirrorVertexAllocated |= PF;
@@ -962,7 +962,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    break;
 	default:
 	    break;
-	    
+
 	}
 
     }
@@ -973,39 +973,39 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int i;
 
 	if (force || (c4fAllocated != 0)) { // Color is present
-	    
+
 	    length = 4 * vertexCount;
-	    
+
 	    if (mirrorInterleavedColorPointer == null) {
 		mirrorInterleavedColorPointer = new float[1][length];
 	    }
-	    
+
 	    index = 4 * initialVertexIndex;
 	    offset = stride * initialVertexIndex + colorOffset;
-	    
-	    if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) == 0 && 
-		interLeavedVertexData != null ) { // java array	    
+
+	    if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) == 0 &&
+		interLeavedVertexData != null ) { // java array
 		if ((vertexFormat  & GeometryArray.WITH_ALPHA) != 0) {
 
 		    for (i = initialVertexIndex; i < validVertexCount; i++) {
-			mirrorInterleavedColorPointer[0][index++] = 
+			mirrorInterleavedColorPointer[0][index++] =
 			    interLeavedVertexData[offset];
-			mirrorInterleavedColorPointer[0][index++] = 
+			mirrorInterleavedColorPointer[0][index++] =
 			    interLeavedVertexData[offset+1];
-			mirrorInterleavedColorPointer[0][index++] = 
+			mirrorInterleavedColorPointer[0][index++] =
 			    interLeavedVertexData[offset+2];
-			mirrorInterleavedColorPointer[0][index++] = 
+			mirrorInterleavedColorPointer[0][index++] =
 			    interLeavedVertexData[offset+3];
 			offset += stride;
 		    }
 		}
 		else {
 		    for (i = initialVertexIndex; i < validVertexCount; i++) {
-			mirrorInterleavedColorPointer[0][index++] = 
+			mirrorInterleavedColorPointer[0][index++] =
 			    interLeavedVertexData[offset];
-			mirrorInterleavedColorPointer[0][index++] = 
+			mirrorInterleavedColorPointer[0][index++] =
 			    interLeavedVertexData[offset+1];
-			mirrorInterleavedColorPointer[0][index++] = 
+			mirrorInterleavedColorPointer[0][index++] =
 			    interLeavedVertexData[offset+2];
 			mirrorInterleavedColorPointer[0][index++] = 1.0f;
 			offset += stride;
@@ -1016,7 +1016,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if ((vertexFormat  & GeometryArray.WITH_ALPHA) != 0 &&
 		    interleavedFloatBufferImpl != null) {
 		    for (i = initialVertexIndex; i < validVertexCount; i++) {
-			interleavedFloatBufferImpl.position(offset); 
+			interleavedFloatBufferImpl.position(offset);
 			interleavedFloatBufferImpl.get(mirrorInterleavedColorPointer[0],
 						       index , 4);
 			index += 4;
@@ -1031,14 +1031,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			mirrorInterleavedColorPointer[0][index+3] = 1.0f;
 			index += 4;
 			offset += stride;
-			
+
 		    }
-		}		
+		}
 	    }
 	    c4fAllocated = GeometryArray.WITH_ALPHA;
 	}
     }
-    
+
     // If turned transparent the first time, then force it to allocate
     void setupMirrorColorPointer(int ctype, boolean force) {
 	int i, srcIndex = 0, dstIndex = 0;
@@ -1047,7 +1047,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
  	if (c4fAllocated == 0 && !force) {
 	    multiplier = 3;
 	} else {
-		
+
 	    // If the first time, we are forced to allocate 4f, then
 	    // we need to force the allocation of the colors again
 	    // for the case when allocation has previously occurred
@@ -1061,7 +1061,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 
 	if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) == 0) { // java array
-	    switch (ctype) { 
+	    switch (ctype) {
 	    case CF:
 		if (floatRefColors == null) {
 		    if ((c4fAllocated == 0) && !force &&
@@ -1072,7 +1072,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    vertexType &= ~CF;
 		    return;
 		}
-	
+
 		vertexType |= CF;
 		if (c4fAllocated == 0 && !force) {
 		    mirrorFloatRefColors[0] = floatRefColors;
@@ -1088,27 +1088,27 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 			srcIndex = initialColorIndex * 3;
 			dstIndex = initialColorIndex * 4;
-			
+
 			for (i = initialColorIndex; i < validVertexCount; i++) {
-			    mirrorFloatRefColors[0][dstIndex++] = 
+			    mirrorFloatRefColors[0][dstIndex++] =
 				floatRefColors[srcIndex++];
-			    mirrorFloatRefColors[0][dstIndex++] = 
+			    mirrorFloatRefColors[0][dstIndex++] =
 				floatRefColors[srcIndex++];
-			    mirrorFloatRefColors[0][dstIndex++] = 
+			    mirrorFloatRefColors[0][dstIndex++] =
 				floatRefColors[srcIndex++];
 			    mirrorFloatRefColors[0][dstIndex++] = 1.0f;
 			}
-		    
+
 		    }
 		    else {
 			srcIndex = initialColorIndex * 4;
-			System.arraycopy(floatRefColors, srcIndex, 
-					 mirrorFloatRefColors[0], srcIndex, 
+			System.arraycopy(floatRefColors, srcIndex,
+					 mirrorFloatRefColors[0], srcIndex,
 					 (4*validVertexCount));
 		    }
 		}
 		break;
-	    case CUB: 
+	    case CUB:
 		if (byteRefColors == null) {
 		    if (c4fAllocated == 0 && !force &&
 			((vertexType & COLOR_DEFINED) == CUB) ) {
@@ -1132,7 +1132,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 			srcIndex = initialColorIndex * 3;
 			dstIndex = initialColorIndex * 4;
-			
+
 			for (i = initialColorIndex; i < validVertexCount; i++) {
 			    mirrorUnsignedByteRefColors[0][dstIndex++] =
 				byteRefColors[srcIndex++];
@@ -1146,12 +1146,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    }
 		    else {
 			srcIndex = initialColorIndex * 4;
-			System.arraycopy(byteRefColors, srcIndex, 
+			System.arraycopy(byteRefColors, srcIndex,
 					 mirrorUnsignedByteRefColors[0], srcIndex,
 					 (4*validVertexCount));
 		    }
 		}
-		
+
 		break;
 	    case C3F:
 		if (c3fRefColors == null) {
@@ -1184,7 +1184,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 
 		break;
-	    case C4F: 
+	    case C4F:
 		if (c4fRefColors == null) {
 		    vertexType &= ~C4F;
 		    return;
@@ -1204,7 +1204,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    mirrorFloatRefColors[0][dstIndex++] = c4fRefColors[i].w;
 		}
 		break;
-	    case C3UB: 
+	    case C3UB:
 		if (c3bRefColors == null) {
 		    vertexType &= ~C3UB;
 		    return;
@@ -1212,7 +1212,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		vertexType |=C3UB ;
 
 		if ((mirrorColorAllocated & CUB) == 0) {
-		    mirrorUnsignedByteRefColors[0] = 
+		    mirrorUnsignedByteRefColors[0] =
 			new byte[vertexCount * multiplier];
 		    mirrorColorAllocated |= CUB;
 		}
@@ -1233,7 +1233,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    }
 		}
 		break;
-	    case C4UB: 
+	    case C4UB:
 		if (c4bRefColors == null) {
 		    vertexType &= ~C4UB;
 		    return;
@@ -1264,7 +1264,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    mirrorColorAllocated &= ~CF;
 		}
 		vertexType &= ~CF;
-		
+
 		if (c4fAllocated == 0 && !force &&
 		    ((vertexType & COLOR_DEFINED) == CUB) ) {
 		    mirrorUnsignedByteRefColors[0] = null;
@@ -1272,13 +1272,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 		vertexType &= ~CUB;
 		return;
-		
+
 	    } else if( floatBufferRefColors != null) {
 		vertexType |= CF;
 		vertexType &= ~CUB;
 		if (c4fAllocated == 0 && !force) {
 		    // NOTE: make suren mirrorFloatRefColors[0] is set right
-		    mirrorFloatRefColors[0] = null; 
+		    mirrorFloatRefColors[0] = null;
 		    mirrorColorAllocated &= ~CF;
 		}
 		else {
@@ -1291,7 +1291,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			srcIndex = initialColorIndex * 3;
 			dstIndex = initialColorIndex * 4;
 			floatBufferRefColors.position(srcIndex);
-			
+
 			for (i = initialColorIndex; i < validVertexCount; i++) {
 			    floatBufferRefColors.get(mirrorFloatRefColors[0], dstIndex, 3);
 			    mirrorFloatRefColors[0][dstIndex+3] = 1.0f;
@@ -1304,7 +1304,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			dstIndex = initialColorIndex * 4;
 			floatBufferRefColors.position(srcIndex);
 			for (i = initialColorIndex; i < validVertexCount; i++) {
-			    floatBufferRefColors.get(mirrorFloatRefColors[0], dstIndex, 4); 
+			    floatBufferRefColors.get(mirrorFloatRefColors[0], dstIndex, 4);
 			    dstIndex+= 4;
 			}
 		    }
@@ -1322,7 +1322,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			mirrorUnsignedByteRefColors[0] = new byte[4 * vertexCount];
 			mirrorColorAllocated |= CUB;
 		    }
-		    
+
 		    byteBufferRefColors.rewind();
 		    if ((vertexFormat & GeometryArray.WITH_ALPHA) == 0) {
 			srcIndex = initialColorIndex * 3;
@@ -1344,10 +1344,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    dstIndex+= 4;
 			}
 		    }
-		} // end of else 
+		} // end of else
 	    }//end of else if ( byteBufferRefColors != null)
 	}//end of NIO BUFFER case
-	
+
 	colorChanged = 0xffff;
     }
 
@@ -1355,8 +1355,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setupMirrorNormalPointer(int ntype) {
 	int i, index;
 
-	switch (ntype) { 
-	case NF: 
+	switch (ntype) {
+	case NF:
 	    if (floatRefNormals == null) {
 		if ((vertexType & NORMAL_DEFINED) == NF) {
 		    vertexType &= ~NF;
@@ -1380,11 +1380,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    else {
 		vertexType |= N3F;
 	    }
-	    if (!mirrorNormalAllocated) { 
+	    if (!mirrorNormalAllocated) {
 		mirrorFloatRefNormals = new float[vertexCount * 3];
 		mirrorNormalAllocated = true;
 	    }
-	    
+
 	    index = initialNormalIndex * 3;
 	    for (i = initialNormalIndex; i < validVertexCount; i++) {
 		mirrorFloatRefNormals[index++] = v3fRefNormals[i].x;
@@ -1403,7 +1403,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
         validateTexCoordPointerType();
     }
-    
+
     void setupMirrorTexCoordPointer(int texCoordSet, int type) {
         doSetupMirrorTexCoordPointer(texCoordSet, type);
         validateTexCoordPointerType();
@@ -1433,11 +1433,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
             vertexType |= texCoordType;
         }
     }
-    
+
     private void doSetupMirrorTexCoordPointer(int texCoordSet, int type) {
 	int i, index;
 
-        switch (type) { 
+        switch (type) {
 	case TF:
             texCoordType = TF;
             mirrorRefTexCoords[texCoordSet] = refTexCoords[texCoordSet];
@@ -1462,8 +1462,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                 mirrorRefTexCoords[texCoordSet] =
                         mirrorFloatRefTexCoords = new float[vertexCount * 2];
             }
-	    
-	    index = initialTexCoordIndex[texCoordSet] * 2;	    
+
+	    index = initialTexCoordIndex[texCoordSet] * 2;
 	    for (i = initialTexCoordIndex[texCoordSet]; i < validVertexCount; i++) {
 		mirrorFloatRefTexCoords[index++] = t2fRefTexCoords[i].x;
 		mirrorFloatRefTexCoords[index++] = t2fRefTexCoords[i].y;
@@ -1510,12 +1510,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
         validateVertexAttrPointerType();
     }
-    
+
     void setupMirrorVertexAttrPointer(int vertexAttrNum, int type) {
         doSetupMirrorVertexAttrPointer(vertexAttrNum, type);
         validateVertexAttrPointerType();
     }
-    
+
     // If all vertex attr pointers are set to a non-null value, then set the
     // vertex attr type in the vertexType flag word, else clear the
     // vertex attr type
@@ -1568,7 +1568,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     void createGeometryArrayData(int vertexCount, int vertexFormat) {
 	if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
-	    createGeometryArrayData(vertexCount, vertexFormat, 1, 
+	    createGeometryArrayData(vertexCount, vertexFormat, 1,
 				    defaultTexCoordSetMap);
 	} else {
 	    createGeometryArrayData(vertexCount, vertexFormat, 0, null);
@@ -1652,7 +1652,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	Pipeline.getPipeline().setVertexFormat(ctx,
                 this, vertexFormat, useAlpha, ignoreVC);
     }
-    
+
     void disableGlobalAlpha(Context ctx, boolean useAlpha, boolean ignoreVC) {
 	// If global alpha was turned on, then disable it
 	Pipeline.getPipeline().disableGlobalAlpha(ctx,
@@ -1664,7 +1664,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	//System.err.println("updateAlphaInFloatRefColors  screen = " + screen +
 	//		   " alpha " + alpha );
-	
+
 	// no need to update alpha values if canvas supports global alpha
 	if (cv.supportGlobalAlpha()) {
 	    cv.setGlobalAlpha(cv.ctx, alpha);
@@ -1696,8 +1696,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    lastAlpha = la;
 	}
 
-	//System.err.println("updateAlphaInFloatRefColors screen is " + screen 
-	//		     + " mirrorFloatRefColors.length " + 
+	//System.err.println("updateAlphaInFloatRefColors screen is " + screen
+	//		     + " mirrorFloatRefColors.length " +
 	//		     mirrorFloatRefColors.length);
 
 	// allocate a copy of the color data for the screen if needed.
@@ -1728,7 +1728,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	/*
 	  System.err.println("updateAlphaInFloatRefColors ** : lastAlpha[screen] " +
 			     lastAlpha[screen]);
-	  
+
 	  System.err.println("((colorChanged & (1<<screen)) == 0) " +
 			     ((colorChanged & (1<<screen)) == 0));
 	*/
@@ -1742,14 +1742,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	        return mirrorFloatRefColors[screen];
 	    } else {
-	
+
 		// if alpha is different, update the alpha values
 		//System.err.println("updateAlphaInFloatRefColors 1 : alpha is different, update the alpha values " + alpha);
 
 		float m = alpha / lastAlpha[screen];
 
 		float[] cdata = mirrorFloatRefColors[screen];
-		
+
 		// We've to traverse the whole due to BugId : 4676483
 		for (int i = 0, j = 0; i < vertexCount; i++, j+=4) {
 	    	    cdata[j+3] = cdata[j+3] * m;
@@ -1758,14 +1758,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	} else {
 	    // color data is modified
 	    if (screen == 0) {
-		
+
 		// just update alpha values since screen 0 data is
 		// already updated in setupMirrorColorPointer
-		
+
 		//System.err.println("updateAlphaInFloatRefColors 2 : just update alpha = " + alpha);
-		
+
 		float[] cdata = mirrorFloatRefColors[screen];
-		
+
 
 		// This part is also incorrect due to BugId : 4676483
 		// But traversing the whole array doesn't help either, as there
@@ -1816,8 +1816,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	*/
 
 	// no need to update alpha values if canvas supports global alpha
-	
-	if (cv.supportGlobalAlpha()) { 
+
+	if (cv.supportGlobalAlpha()) {
 	    cv.setGlobalAlpha(cv.ctx, alpha);
 	    return mirrorUnsignedByteRefColors[0];
 	}
@@ -1874,12 +1874,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         /*
 	System.err.println("updateAlphaInByteRefColors ## : lastAlpha[screen] " +
 			   lastAlpha[screen]);
-	
+
 	System.err.println("((colorChanged & (1<<screen)) == 0) " +
 			   ((colorChanged & (1<<screen)) == 0));
 	*/
 
-        if ((colorChanged & (1<<screen)) == 0) {	    
+        if ((colorChanged & (1<<screen)) == 0) {
             // color data is not modified
             if (Math.abs(lastAlpha[screen] - alpha) <= EPSILON) {
                 // and if alpha is the same as the last one,
@@ -1891,7 +1891,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                 // if alpha is different, update the alpha values
 
 		//System.err.println("updateAlphaInByteRefColors 1 : alpha is different, update the alpha values " + alpha);
-		
+
                 float m = alpha / lastAlpha[screen];
 
                 byte[] cdata = mirrorUnsignedByteRefColors[screen];
@@ -1905,12 +1905,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
             // color data is modified
             if (screen == 0) {
 		//System.err.println("updateAlphaInByteRefColors 2 : just update alpha =" + alpha);
-		
+
                 // just update alpha values since screen 0 data is
                 // already updated in setupMirrorColorPointer
 
                 byte[] cdata = mirrorUnsignedByteRefColors[screen];
-		
+
 		// This part is also incorrect due to BugId : 4676483
 		// But traversing the whole array doesn't help either, as there
 		// isn't a mechanism to indicate the the alpha component has
@@ -1930,7 +1930,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                     m = alpha / lastAlpha[0];
                 } else {
                     m = alpha;
-                }		
+                }
                 byte[] sdata = mirrorUnsignedByteRefColors[0];
                 byte[] cdata = mirrorUnsignedByteRefColors[screen];
 
@@ -2026,7 +2026,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
             // Issue 113 - since we copied the data from screen 0, we don't need
             // to do any further special processing.
 	}
-        
+
         assert lastAlpha[screen] >= 0.0;
 
 	if ((colorChanged & (1<<screen)) == 0) {
@@ -2041,7 +2041,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		float m = alpha / lastAlpha[screen];
 
 		float[] cdata = mvertexData[screen];
-		for (int i = 0, j = colorOffset; i < vertexCount; 
+		for (int i = 0, j = colorOffset; i < vertexCount;
 					i++, j+=stride) {
 	    	    cdata[j+3] *= m;
 		}
@@ -2053,9 +2053,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		// already updated in setupMirrorColorPointer
 
 		float[] cdata = mvertexData[screen];
-		double m = alpha / lastAlpha[0];	       
+		double m = alpha / lastAlpha[0];
 
-		for (int i = 0, j = colorOffset; i < vertexCount; 
+		for (int i = 0, j = colorOffset; i < vertexCount;
 					i++, j+=stride) {
 	    	    cdata[j+3] *= m;
 		}
@@ -2066,7 +2066,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		float[] sdata = mvertexData[0];
 		float[] cdata = mvertexData[screen];
 
-		for (int i = 0, j = colorOffset; i < vertexCount; 
+		for (int i = 0, j = colorOffset; i < vertexCount;
 					i++, j+=stride) {
 		    System.arraycopy(sdata, j, cdata, j, 3);
 		    cdata[j+3] = sdata[j+3] * m;
@@ -2215,11 +2215,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 
     // pass < 0  implies underlying library supports multiTexture, so
-    // 		 use the multiTexture extension to send all texture units 
+    // 		 use the multiTexture extension to send all texture units
     //		 data in one pass
     // pass >= 0 implies one pass for one texture unit state
 
-    void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
+    void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale,
 		 boolean updateAlpha, float alpha,
 		 int screen,
                  boolean ignoreVertexColors) {
@@ -2264,12 +2264,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                     this, geoType, isNonUniformScale,
 		    useAlpha,
 		    ignoreVertexColors,
-		    initialVertexIndex, 
-		     validVertexCount, 
+		    initialVertexIndex,
+		     validVertexCount,
 		    ((vertexFormat & GeometryArray.COLOR) != 0)?(vertexFormat|GeometryArray.COLOR_4):vertexFormat,
                     texCoordSetCount, texCoordSetMap,
                     (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
-                    texCoordSetMapOffset, 
+                    texCoordSetMapOffset,
 		    cv.numActiveTexUnit,
                     vertexAttrCount, vertexAttrSizes,
                     vdata, null,
@@ -2282,7 +2282,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if ((vertexFormat & GeometryArray.INTERLEAVED) != 0) {
 		if(interLeavedVertexData == null)
 		    return;
-		
+
 		float[] cdata = null;
 
 		synchronized (this) {
@@ -2292,7 +2292,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			retVal = updateAlphaInInterLeavedData(cv, screen, alpha);
 			useAlpha = (retVal[0] == Boolean.TRUE);
 			cdata = (float[])retVal[1];
-			if (alpha != lastScreenAlpha) { 
+			if (alpha != lastScreenAlpha) {
 			    lastScreenAlpha = alpha;
 			    cdirty |= COLOR_CHANGED;
 			}
@@ -2310,19 +2310,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                         this, geoType, isNonUniformScale,
 			useAlpha,
 			ignoreVertexColors,
-			initialVertexIndex, 
-			validVertexCount, 
-			vertexFormat, 
+			initialVertexIndex,
+			validVertexCount,
+			vertexFormat,
 			texCoordSetCount, texCoordSetMap,
 			(texCoordSetMap == null) ? 0 : texCoordSetMap.length,
-			texCoordSetMapOffset, 
+			texCoordSetMapOffset,
 			cv.numActiveTexUnit,
                         vertexAttrCount, vertexAttrSizes,
                         interLeavedVertexData, cdata,
 			cdirty);
 
 	    } // end of interleaved case
-	    
+
 	    // non interleaved data
 	    else {
 
@@ -2338,11 +2338,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		     (vertexType & VATTR_DEFINED) == 0) ||
 		    (((vertexFormat& GeometryArray.TEXTURE_COORDINATE) != 0) &&
 		     (vertexType & TEXCOORD_DEFINED) == 0)) {
-		    return;  
+		    return;
 		} else {
 		    byte[] cbdata = null;
 		    float[] cfdata = null;
-		    
+
 		    if ((vertexType & (CF | C3F | C4F )) != 0) {
 
 			synchronized (this) {
@@ -2360,7 +2360,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				    lastScreenAlpha = -1;
 				    cdirty |= COLOR_CHANGED;
 				}
-			    
+
 			    }
 			    dirtyFlag = 0;
 			}
@@ -2433,8 +2433,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 		if ( interleavedFloatBufferImpl == null)
 		    return;
-		
-		float[] cdata = null; 
+
+		float[] cdata = null;
 		synchronized (this) {
 		    cdirty = dirtyFlag;
 		    if (updateAlpha && !ignoreVertexColors) {
@@ -2443,8 +2443,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			retVal = updateAlphaInInterLeavedData(cv, screen, alpha);
 			useAlpha = (retVal[0] == Boolean.TRUE);
 			cdata = (float[])retVal[1];
-			
-			if (alpha != lastScreenAlpha) { 
+
+			if (alpha != lastScreenAlpha) {
 			    lastScreenAlpha = alpha;
 			    cdirty |= COLOR_CHANGED;
 			}
@@ -2491,7 +2491,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		     (vertexType & VATTR_DEFINED) == 0) ||
 		    (((vertexFormat& GeometryArray.TEXTURE_COORDINATE) != 0) &&
 		     (vertexType & TEXCOORD_DEFINED) == 0)) {
-		    return;  
+		    return;
 		} else {
 		    byte[] cbdata = null;
 		    float[] cfdata = null;
@@ -2509,13 +2509,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    } else {
 				// XXXX: handle transparency case
 				//cfdata = null;
-				cfdata = mirrorFloatRefColors[0]; 
+				cfdata = mirrorFloatRefColors[0];
 				// if transparency switch between on/off
 				if (lastScreenAlpha != -1) {
 				    lastScreenAlpha = -1;
 				    cdirty |= COLOR_CHANGED;
 				}
-			    
+
 			    }
 			    dirtyFlag = 0;
 			}
@@ -2525,7 +2525,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    cdirty = dirtyFlag;
 			    if (updateAlpha && !ignoreVertexColors) {
 				cbdata = updateAlphaInByteRefColors(
-								    cv, screen, alpha); 
+								    cv, screen, alpha);
 				if (alpha != lastScreenAlpha) {
 				    lastScreenAlpha = alpha;
 				    cdirty |= COLOR_CHANGED;
@@ -2533,7 +2533,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    } else {
 				// XXXX: handle transparency case
 				//cbdata = null;
-				cbdata = mirrorUnsignedByteRefColors[0]; 
+				cbdata = mirrorUnsignedByteRefColors[0];
 				// if transparency switch between on/off
 				if (lastScreenAlpha != -1) {
 				    lastScreenAlpha = -1;
@@ -2548,7 +2548,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    }
 
 		    Object vcoord = null, cdataBuffer=null, normal=null;
-		    
+
 		    int vdefined = 0;
 		    if((vertexType & PF)  != 0) {
 			vdefined |= COORD_FLOAT;
@@ -2557,7 +2557,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vdefined |= COORD_DOUBLE;
 			vcoord = doubleBufferRefCoords.getBufferAsObject();
 		    }
-		    
+
 		    if((vertexType & CF ) != 0) {
 			vdefined |= COLOR_FLOAT;
 			cdataBuffer = floatBufferRefColors.getBufferAsObject();
@@ -2565,7 +2565,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vdefined |= COLOR_BYTE;
 			cdataBuffer = byteBufferRefColors.getBufferAsObject();
 		    }
-		    
+
 		    if((vertexType & NORMAL_DEFINED) != 0) {
 			vdefined |= NORMAL_FLOAT;
 			normal = floatBufferRefNormals.getBufferAsObject();
@@ -2604,7 +2604,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}// end of by reference with nio-buffer case
     }
 
-    void buildGA(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
+    void buildGA(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale,
 		 boolean updateAlpha, float alpha, boolean ignoreVertexColors,
 		 Transform3D xform, Transform3D nxform) {
 
@@ -2626,13 +2626,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	     System.err.println("geoType = "+geoType+" initialVertexIndex = "+initialVertexIndex+" validVertexCount = "+validVertexCount+" vertexFormat = "+vertexFormat+"  vertexData = "+vertexData);
 	     */
 	    Pipeline.getPipeline().buildGA(cv.ctx,
-                    this, geoType, isNonUniformScale, 
+                    this, geoType, isNonUniformScale,
 		    updateAlpha, alpha, ignoreVertexColors,
 		    initialVertexIndex,
-		    validVertexCount, vertexFormat, 
+		    validVertexCount, vertexFormat,
 		    texCoordSetCount, texCoordSetMap,
 		    (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
-		    texCoordSetMapOffset, 
+		    texCoordSetMapOffset,
                     vertexAttrCount, vertexAttrSizes,
                     (xform == null) ? null : xform.mat,
 		    (nxform == null) ? null : nxform.mat,
@@ -2752,7 +2752,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
             */
 
 	}
-      
+
     }
 
     void unIndexify(IndexedGeometryArrayRetained src) {
@@ -2810,12 +2810,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vertexData, vOffset + colorOffset, colorStride);
 		    vertexData[vOffset + colorOffset + 3] = 1.0f;
 		}
-		
+
 		if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
 		    int tcOffset = vOffset + textureOffset;
                     int interleavedOffset = 0;
 
-		    for (i = 0; i < texCoordSetCount; 
+		    for (i = 0; i < texCoordSetCount;
 				i++, tcOffset += texCoordStride) {
 
                         if ((src.vertexFormat & GeometryArray.INTERLEAVED) != 0) {
@@ -2844,9 +2844,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if ((vertexFormat & GeometryArray.COORDINATES) != 0){
 		    //		    System.err.println("===> copying coords");
 		    System.arraycopy(vdata,
-			src.indexCoord[index]*src.stride 
+			src.indexCoord[index]*src.stride
 				+ src.coordinateOffset,
-			vertexData, 
+			vertexData,
 			vOffset + coordinateOffset, 3);
 		}
 		vOffset += stride;
@@ -2855,8 +2855,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	} else {
 	    if ((vertexFormat & GeometryArray.NORMALS) != 0) {
 		vOffset = normalOffset;
-		switch ((src.vertexType & NORMAL_DEFINED)) { 
-		case NF: 
+		switch ((src.vertexType & NORMAL_DEFINED)) {
+		case NF:
 		    for (index=start; index < end; index++) {
 			System.arraycopy(src.floatRefNormals,
 					 src.indexNormal[index]*3,
@@ -2865,7 +2865,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case N3F: 
+		case N3F:
 		    for (index=start; index < end; index++) {
 			srcOffset = src.indexNormal[index];
 			vertexData[vOffset] = src.v3fRefNormals[srcOffset].x;
@@ -2884,8 +2884,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		int multiplier = 3;
 		if ((src.vertexFormat & GeometryArray.WITH_ALPHA) != 0)
 		    multiplier = 4;
-		
-		switch ((src.vertexType & COLOR_DEFINED)) { 
+
+		switch ((src.vertexType & COLOR_DEFINED)) {
 		case CF:
 		    for (index=start; index < end; index++) {
 			if ((src.vertexFormat & GeometryArray.WITH_ALPHA) != 0) {
@@ -2904,7 +2904,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case CUB: 
+		case CUB:
 		    for (index=start; index < end; index++) {
 			srcOffset = src.indexColor[index] * multiplier;
 			vertexData[vOffset] = (src.byteRefColors[srcOffset] & 0xff) * ByteToFloatScale;
@@ -2919,7 +2919,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case C3F: 
+		case C3F:
 		    for (index=start; index < end; index++) {
 			srcOffset = src.indexColor[index];
 			vertexData[vOffset] = src.c3fRefColors[srcOffset].x;
@@ -2929,7 +2929,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case C4F: 
+		case C4F:
 		    for (index=start; index < end; index++) {
 			srcOffset = src.indexColor[index];
 			vertexData[vOffset] = src.c4fRefColors[srcOffset].x;
@@ -2939,7 +2939,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case C3UB: 
+		case C3UB:
 		    for (index=start; index < end; index++) {
 			srcOffset = src.indexColor[index];
 			vertexData[vOffset] = (src.c3bRefColors[srcOffset].x & 0xff) * ByteToFloatScale;
@@ -2949,7 +2949,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case C4UB: 
+		case C4UB:
 		    for (index=start; index < end; index++) {
 			srcOffset = src.indexColor[index];
 			vertexData[vOffset] = (src.c4bRefColors[srcOffset].x & 0xff) * ByteToFloatScale;
@@ -2969,7 +2969,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		switch ((src.vertexType & TEXCOORD_DEFINED)) {
 		case TF:
 		    for (index=start; index < end; index++) {
-			for (i = 0, tOffset = vOffset; 
+			for (i = 0, tOffset = vOffset;
 				i < texCoordSetCount; i++) {
 			    System.arraycopy(src.refTexCoords[i],
 				src.indexTexCoord[i][index]*texCoordStride,
@@ -2979,30 +2979,30 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case T2F: 
+		case T2F:
 		    for (index=start; index < end; index++) {
 			for (i = 0, tOffset = vOffset;
 			        i < texCoordSetCount; i++) {
 			     srcOffset = src.indexTexCoord[i][index];
-			     vertexData[tOffset] = 
+			     vertexData[tOffset] =
 			      ((TexCoord2f[])src.refTexCoords[i])[srcOffset].x;
-			     vertexData[tOffset+1] = 
+			     vertexData[tOffset+1] =
 			      ((TexCoord2f[])src.refTexCoords[i])[srcOffset].y;
 			     tOffset += texCoordStride;
 			}
 			vOffset += stride;
 		    }
 		    break;
-		case T3F: 
+		case T3F:
 		    for (index=start; index < end; index++) {
 			for (i = 0, tOffset = vOffset;
 			        i < texCoordSetCount; i++) {
 			     srcOffset = src.indexTexCoord[i][index];
-			     vertexData[tOffset] = 
+			     vertexData[tOffset] =
 			      ((TexCoord3f[])src.refTexCoords[i])[srcOffset].x;
-			     vertexData[tOffset+1] = 
+			     vertexData[tOffset+1] =
 			      ((TexCoord3f[])src.refTexCoords[i])[srcOffset].y;
-			     vertexData[tOffset+2] = 
+			     vertexData[tOffset+2] =
 			      ((TexCoord3f[])src.refTexCoords[i])[srcOffset].z;
 			     tOffset += texCoordStride;
 			}
@@ -3043,7 +3043,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case PD: 
+		case PD:
 		    for (index=start; index < end; index++) {
 			srcOffset = src.indexCoord[index] * 3;
 			vertexData[vOffset] = (float)src.doubleRefCoords[srcOffset];
@@ -3052,7 +3052,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case P3F: 
+		case P3F:
 		    for (index=start; index < end; index++) {
 			srcOffset = src.indexCoord[index];
 			vertexData[vOffset] = src.p3fRefCoords[srcOffset].x;
@@ -3061,7 +3061,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case P3D: 
+		case P3D:
 		    for (index=start; index < end; index++) {
 			srcOffset = src.indexCoord[index];
 			vertexData[vOffset] = (float)src.p3dRefCoords[srcOffset].x;
@@ -3073,7 +3073,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		default:
 		    break;
 		}
-	    }		
+	    }
 
 	}
     }
@@ -3102,7 +3102,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    src.interleavedFloatBufferImpl.position(src.indexNormal[index]*src.stride + src.normalOffset);
 		    src.interleavedFloatBufferImpl.get(vertexData, vOffset + normalOffset, 3);
 		}
-		
+
 		if (colorStride == 4){
 		    src.interleavedFloatBufferImpl.position(src.indexColor[index]*src.stride + src.colorOffset);
 		    src.interleavedFloatBufferImpl.get(vertexData, vOffset + colorOffset, colorStride);
@@ -3111,12 +3111,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    src.interleavedFloatBufferImpl.get(vertexData, vOffset + colorOffset, colorStride);
 		    vertexData[vOffset + colorOffset + 3] = 1.0f;
 		}
-		
+
 		if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
 		    int tcOffset = vOffset + textureOffset;
-		    for (i = 0; i < texCoordSetCount; 
+		    for (i = 0; i < texCoordSetCount;
 				i++, tcOffset += texCoordStride) {
-			
+
 			src.interleavedFloatBufferImpl.position((src.indexTexCoord[i][index])*src.stride +
 							    src.textureOffset);
 			src.interleavedFloatBufferImpl.get(vertexData, tcOffset, texCoordStride);
@@ -3132,7 +3132,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	} else {
 	    if ((vertexFormat & GeometryArray.NORMALS) != 0){
 		vOffset = normalOffset;
-		if ((src.vertexType & NORMAL_DEFINED) != 0) {	
+		if ((src.vertexType & NORMAL_DEFINED) != 0) {
 		    for (index=start; index < end; index++) {
 			src.floatBufferRefNormals.position(src.indexNormal[index]*3);
 			src.floatBufferRefNormals.get(vertexData, vOffset, 3);
@@ -3146,8 +3146,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		int multiplier = 3;
 		if ((src.vertexFormat & GeometryArray.WITH_ALPHA) != 0)
 		    multiplier = 4;
-		
-		switch ((src.vertexType & COLOR_DEFINED)) { 
+
+		switch ((src.vertexType & COLOR_DEFINED)) {
 		case CF:
 		    for (index=start; index < end; index++) {
 			if ((src.vertexFormat & GeometryArray.WITH_ALPHA) != 0) {
@@ -3162,7 +3162,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case CUB: 
+		case CUB:
 		    for (index=start; index < end; index++) {
 			srcOffset = src.indexColor[index] * multiplier;
 			vertexData[vOffset] = (src.byteBufferRefColors.get(srcOffset) & 0xff) * ByteToFloatScale;
@@ -3188,7 +3188,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		 FloatBufferWrapper texBuffer;
 		if ((src.vertexType & TEXCOORD_DEFINED) != 0) {
 		    for (index=start; index < end; index++) {
-			for (i = 0, tOffset = vOffset; 
+			for (i = 0, tOffset = vOffset;
 				i < texCoordSetCount; i++) {
 			    texBuffer = (FloatBufferWrapper)(((J3DBuffer) (src.refTexCoordsBuffer[i])).getBufferImpl());
 			    texBuffer.position(src.indexTexCoord[i][index]*texCoordStride);
@@ -3225,7 +3225,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			vOffset += stride;
 		    }
 		    break;
-		case PD: 
+		case PD:
 		    for (index=start; index < end; index++) {
 			srcOffset = src.indexCoord[index] * 3;
 			vertexData[vOffset] = (float)src.doubleBufferRefCoords.get(srcOffset);
@@ -3237,14 +3237,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		default:
 		    break;
 		}
-	    }		
+	    }
 
 	}
     }
 
 
     /**
-     * Returns the vertex stride in numbers of floats as a function 
+     * Returns the vertex stride in numbers of floats as a function
      * of the vertexFormat.
      * @return the stride in floats for this vertex array
      */
@@ -3268,16 +3268,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 	    }
 	}
-	    
+
 	if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
 
-	    if ((this.vertexFormat & 
+	    if ((this.vertexFormat &
 			GeometryArray.TEXTURE_COORDINATE_2) != 0) {
 	        texCoordStride = 2;
-	    } else if ((this.vertexFormat & 
+	    } else if ((this.vertexFormat &
 			GeometryArray.TEXTURE_COORDINATE_3) != 0) {
 		texCoordStride = 3;
-	    } else if ((this.vertexFormat & 
+	    } else if ((this.vertexFormat &
 			GeometryArray.TEXTURE_COORDINATE_4) != 0) {
 		texCoordStride = 4;
 	    }
@@ -3297,7 +3297,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     {
 	if (texCoordSetMap == null)
 	    return null;
-	
+
         texCoordSetMapOffset = new int[texCoordSetMap.length];
 	for (int i = 0; i < texCoordSetMap.length; i++) {
 	     if (texCoordSetMap[i] == -1) {
@@ -3321,7 +3321,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         }
         return sum;
     }
-    
+
     /**
      * Returns the offset in number of floats from the start of a vertex to
      * each per-vertex vertex attribute.
@@ -3329,7 +3329,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      */
     int[] vertexAttrOffsets() {
 	int[] offsets;
-        
+
         // Create array of offsets to the start of each vertex attribute.
         // The offset of the first attribute is always 0. If no vertex attributes exist,
         // then we will allocate an array of length 1 to avoid some checking elsewhere.
@@ -3343,7 +3343,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         for (int i = 1; i < vertexAttrCount; i++) {
             offsets[i] = offsets[i-1] + vertexAttrSizes[i-1];
         }
-        
+
         return offsets;
     }
 
@@ -3476,8 +3476,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	MorphRetained morph;
 
 	synchronized(liveStateLock) {
-	    if (source != null && source.isLive()) {		
-		// System.err.println("In GeometryArrayRetained - "); 
+	    if (source != null && source.isLive()) {
+		// System.err.println("In GeometryArrayRetained - ");
 
 		// Send a message to renderBin to rebuild the display list or
 		// process the vertex array accordingly
@@ -3506,7 +3506,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				src.boundsDirty = true;
 			    }
 			}
-		
+
 			for (j=0; j<shapeList.size(); j++) {
 			    s = (Shape3DRetained)shapeList.get(j);
 			    LeafRetained src = (LeafRetained)s.sourceNode;
@@ -3522,9 +3522,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			}
 
 			m[k] = new J3dMessage();
-		
+
 			m[k].type = J3dMessage.GEOMETRY_CHANGED;
-			// Who to send this message to ?	
+			// Who to send this message to ?
 			m[k].threads = threads;
 			m[k].args[0] = gaList.toArray();
 			m[k].args[1] = this;
@@ -3532,11 +3532,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			m[k].args[3] = new Integer(changedFrequent);
 			m[k].universe=(VirtualUniverse)universeList.get(i);
 		    }
-		    VirtualUniverse.mc.processMessage(m);  
+		    VirtualUniverse.mc.processMessage(m);
 		}
 
 		if (morphUniverseList != null) {
-		    synchronized (morphUniverseList) {		
+		    synchronized (morphUniverseList) {
 			numMorphMessages = morphUniverseList.size();
 
 			// take care of morph that is referencing this geometry
@@ -3555,7 +3555,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 	    }
 	}
-	
+
     }
     /**
      * Sets the coordinate associated with the vertex at
@@ -3565,28 +3565,31 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      */
     void setCoordinate(int index, float coordinate[]) {
 	int offset = this.stride * index + coordinateOffset;
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 
 	this.vertexData[offset]  = coordinate[0];
 	this.vertexData[offset+1]= coordinate[1];
 	this.vertexData[offset+2]= coordinate[2];
-    
-	geomLock.unLock();
-    
-    	if (inUpdater || (source == null)) {
-	    return;
-	}
-	if (!source.isLive()) {
-	    boundsDirty = true;
+
+        if (isLive) {
+            geomLock.unLock();
+        }
+        if (inUpdater || (source == null)) {
+            return;
+        }
+	if (!isLive) {
+		boundsDirty = true;
 	    return;
 	}
 
 	// Compute geo's bounds
 	processCoordsChanged(false);
 	sendDataChangedMessage(true);
-    
+
     }
 
     /**
@@ -3597,24 +3600,27 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      */
     void setCoordinate(int index, double coordinate[]) {
 	int offset = this.stride * index + coordinateOffset;
-    
-    
-    
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 	this.vertexData[offset]  = (float)coordinate[0];
 	this.vertexData[offset+1]= (float)coordinate[1];
 	this.vertexData[offset+2]= (float)coordinate[2];
-	geomLock.unLock();
 
-    	if (inUpdater || (source == null)) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+
+        if (inUpdater || (source == null)) {
 	    return;
 	}
-	if (!source.isLive()) {
-	    boundsDirty = true;
+	if (!isLive) {
+            boundsDirty = true;
 	    return;
-	}    
-    
+	}
+
 	// Compute geo's bounds
 	processCoordsChanged(false);
 	sendDataChangedMessage(true);
@@ -3628,19 +3634,22 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      */
     void setCoordinate(int index, Point3f coordinate) {
 	int offset = this.stride * index + coordinateOffset;
-    
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 	this.vertexData[offset]  = coordinate.x;
 	this.vertexData[offset+1]= coordinate.y;
 	this.vertexData[offset+2]= coordinate.z;
-    
-	geomLock.unLock();
 
-    	if (inUpdater || (source == null)) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+        if (inUpdater || (source == null)) {
 	    return;
 	}
-	if (!source.isLive()) {
+	if (!isLive) {
 	    boundsDirty = true;
 	    return;
 	}
@@ -3658,25 +3667,24 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      */
     void setCoordinate(int index, Point3d coordinate) {
 	int offset = this.stride * index + coordinateOffset;
-    
-	geomLock.getLock();    
-
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 	this.vertexData[offset]  = (float)coordinate.x;
 	this.vertexData[offset+1]= (float)coordinate.y;
 	this.vertexData[offset+2]= (float)coordinate.z;
-    
-	geomLock.unLock();
-
-	if (inUpdater ||source == null ) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (inUpdater || source == null ) {
 	    return;
 	}
-	if (!source.isLive()) {
+	if (!isLive) {
 	    boundsDirty = true;
 	    return;
 	}
-
-    
 	// Compute geo's bounds
 	processCoordsChanged(false);
 	sendDataChangedMessage(true);
@@ -3691,8 +3699,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setCoordinates(int index, float coordinates[]) {
 	int offset = this.stride * index + coordinateOffset;
 	int i, j, num = coordinates.length;
-    
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 
 	for (i=0, j= offset;i < num; i+=3, j+= this.stride)
@@ -3702,11 +3712,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		this.vertexData[j+2]= coordinates[i+2];
 	    }
 
-	geomLock.unLock();
+	if(isLive) {
+            geomLock.unLock();
+	}
 	if (inUpdater ||source == null ) {
 	    return;
 	}
-	if (!source.isLive()) {
+	if (!isLive) {
 	    boundsDirty = true;
 	    return;
 	}
@@ -3727,8 +3739,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setCoordinates(int index, double coordinates[]) {
 	int offset = this.stride * index + coordinateOffset;
 	int i, j, num = coordinates.length;
-    
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 
 	for (i=0, j= offset;i < num; i+=3, j+= this.stride)
@@ -3737,18 +3751,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		this.vertexData[j+1]= (float)coordinates[i+1];
 		this.vertexData[j+2]= (float)coordinates[i+2];
 	    }
-    
-	geomLock.unLock();
+
+	if(isLive) {
+            geomLock.unLock();
+	}
 
 	if (inUpdater ||source == null ) {
 	    return;
 	}
-	if (!source.isLive()) {
+	if (!isLive) {
 	    boundsDirty = true;
 	    return;
 	}
 
-    
 	// Compute geo's bounds
 	processCoordsChanged(false);
 
@@ -3764,8 +3779,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setCoordinates(int index, Point3f coordinates[]) {
 	int offset = this.stride * index + coordinateOffset;
 	int i, j, num = coordinates.length;
-    
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 
 	for (i=0, j= offset;i < num; i++, j+= this.stride)
@@ -3774,13 +3791,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		this.vertexData[j+1]= coordinates[i].y;
 		this.vertexData[j+2]= coordinates[i].z;
 	    }
-    
-	geomLock.unLock();
+	if(isLive) {
+            geomLock.unLock();
+	}
 
 	if (inUpdater ||source == null ) {
 	    return;
 	}
-	if (!source.isLive()) {
+	if (!isLive) {
 	    boundsDirty = true;
 	    return;
 	}
@@ -3789,7 +3807,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	processCoordsChanged(false);
 
 	sendDataChangedMessage(true);
-    
+
     }
 
     /**
@@ -3801,8 +3819,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setCoordinates(int index, Point3d coordinates[]) {
 	int offset = this.stride * index + coordinateOffset;
 	int i, j, num = coordinates.length;
-    
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 
 	for (i=0, j= offset;i < num; i++, j+= this.stride)
@@ -3811,13 +3831,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		this.vertexData[j+1]= (float)coordinates[i].y;
 		this.vertexData[j+2]= (float)coordinates[i].z;
 	    }
+        if(isLive) {
+            geomLock.unLock();
+        }
 
-	geomLock.unLock();
-
-    	if (inUpdater ||source == null ) {
+        if (inUpdater ||source == null ) {
 	    return;
 	}
-	if (!source.isLive()) {
+	if (!isLive) {
 	    boundsDirty = true;
 	    return;
 	}
@@ -3828,83 +3849,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	sendDataChangedMessage(true);
     }
 
-
-    /** 
-     * Sets the coordinates associated with the vertices starting at 
-     * the specified index for this object using coordinate data starting 
-     * from vertex index <code>start</code> for <code>length</code> vertices. 
-     * @param index the vertex index 
-     * @param coordinates an array of vectors containing new coordinates 
-     * @param start starting vertex index of data in <code>coordinates</code>  .
-     * @param length number of vertices to be copied. 
-     */ 
-    void setCoordinates(int index, float coordinates[], int start, int length) {
-	int offset = this.stride * index + coordinateOffset;
-	int i, j;
-    
-	geomLock.getLock();
-	dirtyFlag |= COORDINATE_CHANGED;
-	for (i= start * 3, j= offset; i < (start+length) * 3; 
-	     i+=3, j+= this.stride) {
-	    this.vertexData[j]  = coordinates[i];
-	    this.vertexData[j+1]= coordinates[i+1];
-	    this.vertexData[j+2]= coordinates[i+2];
-	}
-    
-	geomLock.unLock();
-	if (inUpdater ||source == null ) {
-	    return;
-	}
-	if (!source.isLive()) {
-	    boundsDirty = true;
-	    return;
-	}
-
-	// Compute geo's bounds
-	processCoordsChanged(false);
-
-	sendDataChangedMessage(true);
-    }     
-
-    /**
-     * Sets the coordinates associated with the vertices starting at
-     * the specified index for this object  using coordinate data starting
-     * from vertex index <code>start</code> for <code>length</code> vertices.
-     * @param index the vertex index
-     * @param coordinates an array of 3*n values containing n new coordinates
-     * @param start starting vertex index of data in <code>coordinates</code>  .
-     * @param length number of vertices to be copied.
-     */
-    void setCoordinates(int index, double coordinates[], int start, int length) { 
-	int offset = this.stride * index + coordinateOffset; 
-	int i, j;
-
-	geomLock.getLock();
-	dirtyFlag |= COORDINATE_CHANGED;
-
-	for (i= start*3, j= offset; i < (start+length)*3; 		
-	     i+=3, j+= this.stride) {
-	    this.vertexData[j]  = (float)coordinates[i]; 
-	    this.vertexData[j+1]= (float)coordinates[i+1]; 
-	    this.vertexData[j+2]= (float)coordinates[i+2]; 
-	} 
-
-	geomLock.unLock();
-
-    	if (inUpdater || (source == null)) {
-	    return;
-	}
-	if (!source.isLive()) {
-	    boundsDirty = true;
-	    return;
-	}    
-
-    
-	// Compute geo's bounds
-	processCoordsChanged(false);
-
-	sendDataChangedMessage(true);
-    } 
 
     /**
      * Sets the coordinates associated with the vertices starting at
@@ -3915,12 +3859,97 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      * @param start starting vertex index of data in <code>coordinates</code>  .
      * @param length number of vertices to be copied.
      */
-    void setCoordinates(int index, Point3f coordinates[], int start, 
+    void setCoordinates(int index, float coordinates[], int start, int length) {
+	int offset = this.stride * index + coordinateOffset;
+	int i, j;
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
+	dirtyFlag |= COORDINATE_CHANGED;
+	for (i= start * 3, j= offset; i < (start+length) * 3;
+	     i+=3, j+= this.stride) {
+	    this.vertexData[j]  = coordinates[i];
+	    this.vertexData[j+1]= coordinates[i+1];
+	    this.vertexData[j+2]= coordinates[i+2];
+	}
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (inUpdater ||source == null ) {
+	    return;
+	}
+	if (!isLive) {
+	    boundsDirty = true;
+	    return;
+	}
+
+	// Compute geo's bounds
+	processCoordsChanged(false);
+
+	sendDataChangedMessage(true);
+    }
+
+    /**
+     * Sets the coordinates associated with the vertices starting at
+     * the specified index for this object  using coordinate data starting
+     * from vertex index <code>start</code> for <code>length</code> vertices.
+     * @param index the vertex index
+     * @param coordinates an array of 3*n values containing n new coordinates
+     * @param start starting vertex index of data in <code>coordinates</code>  .
+     * @param length number of vertices to be copied.
+     */
+    void setCoordinates(int index, double coordinates[], int start, int length) {
+	int offset = this.stride * index + coordinateOffset;
+	int i, j;
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
+	dirtyFlag |= COORDINATE_CHANGED;
+
+	for (i= start*3, j= offset; i < (start+length)*3;
+	     i+=3, j+= this.stride) {
+	    this.vertexData[j]  = (float)coordinates[i];
+	    this.vertexData[j+1]= (float)coordinates[i+1];
+	    this.vertexData[j+2]= (float)coordinates[i+2];
+	}
+
+	if(isLive) {
+            geomLock.unLock();
+	}
+        if (inUpdater || (source == null)) {
+	    return;
+	}
+	if (!isLive) {
+	    boundsDirty = true;
+	    return;
+	}
+
+
+	// Compute geo's bounds
+	processCoordsChanged(false);
+
+	sendDataChangedMessage(true);
+    }
+
+    /**
+     * Sets the coordinates associated with the vertices starting at
+     * the specified index for this object using coordinate data starting
+     * from vertex index <code>start</code> for <code>length</code> vertices.
+     * @param index the vertex index
+     * @param coordinates an array of vectors containing new coordinates
+     * @param start starting vertex index of data in <code>coordinates</code>  .
+     * @param length number of vertices to be copied.
+     */
+    void setCoordinates(int index, Point3f coordinates[], int start,
 			int length) {
 	int offset = this.stride * index + coordinateOffset;
 	int i, j;
-    
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 
 	for (i=start, j= offset;i < start + length; i++, j+= this.stride) {
@@ -3929,39 +3958,42 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    this.vertexData[j+2]= coordinates[i].z;
 	}
 
-	geomLock.unLock();
+	if(isLive) {
+            geomLock.unLock();
+        }
 
-
-    	if (inUpdater || (source == null)) {
+        if (inUpdater || (source == null)) {
 	    return;
 	}
-	if (!source.isLive()) {
+	if (!isLive) {
 	    boundsDirty = true;
 	    return;
-	}    
+	}
 
-    
+
 	// Compute geo's bounds
 	processCoordsChanged(false);
 
 	sendDataChangedMessage(true);
     }
-  
-    /** 
-     * Sets the coordinates associated with the vertices starting at 
-     * the specified index for this object using coordinate data starting 
-     * from vertex index <code>start</code> for <code>length</code> vertices. 
-     * @param index the vertex index 
-     * @param coordinates an array of vectors containing new coordinates 
+
+    /**
+     * Sets the coordinates associated with the vertices starting at
+     * the specified index for this object using coordinate data starting
+     * from vertex index <code>start</code> for <code>length</code> vertices.
+     * @param index the vertex index
+     * @param coordinates an array of vectors containing new coordinates
      * @param start starting vertex index of data in <code>coordinates</code>  .
-     * @param length number of vertices to be copied. 
-     */ 
-    void setCoordinates(int index, Point3d coordinates[], int start, 
+     * @param length number of vertices to be copied.
+     */
+    void setCoordinates(int index, Point3d coordinates[], int start,
 			int length) {
 	int offset = this.stride * index + coordinateOffset;
 	int i, j;
-    
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 
 	for (i=start, j= offset;i < start + length; i++, j+= this.stride) {
@@ -3969,23 +4001,23 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    this.vertexData[j+1]= (float)coordinates[i].y;
 	    this.vertexData[j+2]= (float)coordinates[i].z;
 	}
-	
-	geomLock.unLock();
 
-
-    	if (inUpdater || (source == null)) {
+	if(isLive) {
+            geomLock.unLock();
+        }
+        if (inUpdater || (source == null)) {
 	    return;
 	}
-	if (!source.isLive()) {
+	if (!isLive) {
 	    boundsDirty = true;
 	    return;
-	}    
-    
+	}
+
 	// Compute geo's bounds
 	processCoordsChanged(false);
 
 	sendDataChangedMessage(true);
-    }    
+    }
 
     /**
      * Sets the color associated with the vertex at
@@ -3995,8 +4027,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      */
     void setColor(int index, float color[]) {
 	int offset = this.stride*index + colorOffset;
-    
-	geomLock.getLock();
+
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	this.vertexData[offset]   = color[0];
@@ -4007,13 +4042,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else
 	    this.vertexData[offset+3] = lastAlpha[0];
 
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
 
     }
 
@@ -4026,7 +4058,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setColor(int index, byte color[]) {
 	int offset = this.stride*index + colorOffset;
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive) {
+            geomLock.getLock();
+	}
+
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	this.vertexData[offset]   = (color[0] & 0xff) * ByteToFloatScale;
@@ -4037,13 +4073,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         else
 	    this.vertexData[offset+3] = lastAlpha[0];
 
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
 
     }
 
@@ -4056,7 +4089,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setColor(int index, Color3f color) {
 	int offset = this.stride*index + colorOffset;
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+        }
+
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	this.vertexData[offset]   = color.x;
@@ -4064,13 +4101,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	this.vertexData[offset+2] = color.z;
         this.vertexData[offset+3] = lastAlpha[0];
 
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
 
     }
 
@@ -4082,8 +4117,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      */
     void setColor(int index, Color4f color) {
 	int offset = this.stride*index + colorOffset;
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	this.vertexData[offset]   = color.x;
@@ -4091,12 +4128,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	this.vertexData[offset+2] = color.z;
 	this.vertexData[offset+3] = color.w*lastAlpha[0];
 
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
-	geomLock.unLock();
-	sendDataChangedMessage(false);
 
     }
 
@@ -4109,7 +4144,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setColor(int index, Color3b color) {
 	int offset = this.stride*index + colorOffset;
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
+
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	this.vertexData[offset]   = (color.x & 0xff) * ByteToFloatScale;
@@ -4117,13 +4156,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	this.vertexData[offset+2] = (color.z & 0xff) * ByteToFloatScale;
         this.vertexData[offset+3] = lastAlpha[0];
 
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
 
     }
 
@@ -4136,20 +4172,21 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setColor(int index, Color4b color) {
 	int offset = this.stride*index + colorOffset;
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	this.vertexData[offset]   = (color.x * 0xff) * ByteToFloatScale;
 	this.vertexData[offset+1] = (color.y * 0xff) * ByteToFloatScale;
 	this.vertexData[offset+2] = (color.z * 0xff) * ByteToFloatScale;
 	this.vertexData[offset+3] = ((color.w & 0xff) * ByteToFloatScale)*lastAlpha[0];
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+	if(isLive){
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+	}
 
     }
 
@@ -4163,7 +4200,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int offset = this.stride*index + colorOffset;
 	int i, j, num = colors.length;
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 
@@ -4187,13 +4227,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			this.vertexData[j+3] = lastAlpha[0];
 		    }
 	    }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+	}
 
     }
 
@@ -4207,7 +4245,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int offset = this.stride*index + colorOffset;
 	int i, j, num = colors.length;
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 
@@ -4231,13 +4272,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			this.vertexData[j+3] = lastAlpha[0];
 		    }
 	    }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+	}
 
     }
 
@@ -4251,7 +4291,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int offset = this.stride*index + colorOffset;
 	int i, j, num = colors.length;
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 
@@ -4262,13 +4305,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		this.vertexData[j+2] = colors[i].z;
 		this.vertexData[j+3] = lastAlpha[0];
 	    }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
 
     }
 
@@ -4281,8 +4321,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setColors(int index, Color4f colors[]) {
 	int offset = this.stride*index + colorOffset;
 	int i, j, num = colors.length;
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 
@@ -4293,13 +4335,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		this.vertexData[j+2] = colors[i].z;
 		this.vertexData[j+3] = colors[i].w*lastAlpha[0];
 	    }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
 
     }
 
@@ -4312,8 +4351,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setColors(int index, Color3b colors[]) {
 	int offset = this.stride*index + colorOffset;
 	int i, j, num = colors.length;
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	for (i=0, j= offset;i < num; i++, j+= this.stride)
@@ -4323,13 +4364,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		this.vertexData[j+2] = (colors[i].z & 0xff) * ByteToFloatScale;
 		this.vertexData[j+3] = lastAlpha[0];
 	    }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
     }
 
 
@@ -4343,7 +4382,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int offset = this.stride*index + colorOffset;
 	int i, j, num = colors.length;
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 
@@ -4354,14 +4396,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		this.vertexData[j+2] = (colors[i].z & 0xff) * ByteToFloatScale;
 		this.vertexData[j+3] = ((colors[i].w & 0xff) * ByteToFloatScale)*lastAlpha[0];
 	    }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
-    
     }
 
     /**
@@ -4376,8 +4416,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setColors(int index, float colors[], int start, int length) {
         int offset = this.stride*index + colorOffset;
         int i, j;
-
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 
@@ -4398,13 +4440,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                 this.vertexData[j+3] = lastAlpha[0];
             }
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
 
     }
 
@@ -4420,20 +4460,23 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setColors(int index, byte colors[], int start, int length) {
         int offset = this.stride*index + colorOffset;
         int i, j;
- 
-	geomLock.getLock();
+
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 
 	if ((this.vertexFormat & GeometryArray.WITH_ALPHA) != 0) {
-            for (i = start * 4, j = offset; i < (start + length) * 4; 
-		 i += 4, j += this.stride) { 
+            for (i = start * 4, j = offset; i < (start + length) * 4;
+		 i += 4, j += this.stride) {
                 this.vertexData[j]   = (colors[i] & 0xff) * ByteToFloatScale;
                 this.vertexData[j+1] = (colors[i+1] & 0xff) * ByteToFloatScale;
                 this.vertexData[j+2] = (colors[i+2] & 0xff) * ByteToFloatScale;
                 this.vertexData[j+3] = ((colors[i+3] & 0xff) * ByteToFloatScale)*lastAlpha[0];
             }
-        } else { 
+        } else {
             for (i = start * 3, j = offset; i < (start + length) * 3;
 		 i += 3, j += this.stride) {
                 this.vertexData[j]   = (colors[i] & 0xff) * ByteToFloatScale;
@@ -4442,30 +4485,30 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                 this.vertexData[j+3] = lastAlpha[0];
             }
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        if(isLive) {
+            geomLock.unLock();
+	    sendDataChangedMessage(false);
+        }
 
     }
 
-    /** 
+    /**
      * Sets the colors associated with the vertices starting at
-     * the specified index for this object using data in <code>color</code>s 
-     * starting at index <code>start</code> for <code>length</code> colors. 
-     * @param index the vertex index 
-     * @param colors an array of 3*n or 4*n values containing n new colors 
-     * @param start starting color index of data in <code>colors</code>. 
-     * @param length number of colors to be copied. 
-     */ 
-    void setColors(int index, Color3f colors[], int start, int length) { 
+     * the specified index for this object using data in <code>color</code>s
+     * starting at index <code>start</code> for <code>length</code> colors.
+     * @param index the vertex index
+     * @param colors an array of 3*n or 4*n values containing n new colors
+     * @param start starting color index of data in <code>colors</code>.
+     * @param length number of colors to be copied.
+     */
+    void setColors(int index, Color3f colors[], int start, int length) {
         int offset = this.stride*index + colorOffset;
         int i, j;
- 
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 
@@ -4475,15 +4518,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
             this.vertexData[j+2] = colors[i].z;
             this.vertexData[j+3] = lastAlpha[0];
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
-
-    }      
+    }
 
     /**
      * Sets the colors associated with the vertices starting at
@@ -4497,8 +4538,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setColors(int index, Color4f colors[], int start, int length) {
         int offset = this.stride*index + colorOffset;
         int i, j;
- 
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 
@@ -4508,15 +4551,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
             this.vertexData[j+2] = colors[i].z;
             this.vertexData[j+3] = colors[i].w*lastAlpha[0];
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
 
-    }      
+    }
 
     /**
      * Sets the colors associated with the vertices starting at
@@ -4530,59 +4571,59 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setColors(int index, Color3b colors[], int start, int length) {
         int offset = this.stride*index + colorOffset;
         int i, j;
-
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 
-	for (i = start, j = offset; i < start+length; i++, j += this.stride) { 
+	for (i = start, j = offset; i < start+length; i++, j += this.stride) {
             this.vertexData[j]   = (colors[i].x & 0xff) * ByteToFloatScale;
             this.vertexData[j+1] = (colors[i].y & 0xff) * ByteToFloatScale;
             this.vertexData[j+2] = (colors[i].z & 0xff) * ByteToFloatScale;
             this.vertexData[j+3] = lastAlpha[0];
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
 
-    } 
+    }
 
-    /** 
+    /**
      * Sets the colors associated with the vertices starting at
-     * the specified index for this object using data in <code>color</code>s 
-     * starting at index <code>start</code> for <code>length</code> colors. 
-     * @param index the vertex index 
-     * @param colors an array of 3*n or 4*n values containing n new colors 
-     * @param start starting color index of data in <code>colors</code>. 
-     * @param length number of colors to be copied. 
-     */   
-    void setColors(int index, Color4b colors[], int start, int length) { 
-        int offset = this.stride*index + colorOffset; 
+     * the specified index for this object using data in <code>color</code>s
+     * starting at index <code>start</code> for <code>length</code> colors.
+     * @param index the vertex index
+     * @param colors an array of 3*n or 4*n values containing n new colors
+     * @param start starting color index of data in <code>colors</code>.
+     * @param length number of colors to be copied.
+     */
+    void setColors(int index, Color4b colors[], int start, int length) {
+        int offset = this.stride*index + colorOffset;
         int i, j;
- 
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+    	if(isLive){
+            geomLock.getLock();
+    	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 
 	for (i = start, j = offset; i < start+length; i++, j += this.stride) {
-	    this.vertexData[j]   = (colors[i].x & 0xff) * ByteToFloatScale; 
-	    this.vertexData[j+1] = (colors[i].y & 0xff) * ByteToFloatScale; 
-	    this.vertexData[j+2] = (colors[i].z & 0xff) * ByteToFloatScale; 
+	    this.vertexData[j]   = (colors[i].x & 0xff) * ByteToFloatScale;
+	    this.vertexData[j+1] = (colors[i].y & 0xff) * ByteToFloatScale;
+	    this.vertexData[j+2] = (colors[i].z & 0xff) * ByteToFloatScale;
 	    this.vertexData[j+3] = ((colors[i].w & 0xff) * ByteToFloatScale)*lastAlpha[0];
-        } 
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+        }
+
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
-
-    }  
+    }
 
     /**
      * Sets the normal associated with the vertex at
@@ -4592,20 +4633,18 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      */
     void setNormal(int index, float normal[]) {
 	int offset = this.stride*index + normalOffset;
-
-	geomLock.getLock();
-
-
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	this.vertexData[offset]   = normal[0];
 	this.vertexData[offset+1] = normal[1];
 	this.vertexData[offset+2] = normal[2];
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        
+        if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
 
     }
 
@@ -4617,20 +4656,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      */
     void setNormal(int index, Vector3f normal) {
 	int offset = this.stride*index + normalOffset;
-
-	geomLock.getLock();
-
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= NORMAL_CHANGED;
 	this.vertexData[offset]   = normal.x;
 	this.vertexData[offset+1] = normal.y;
 	this.vertexData[offset+2] = normal.z;
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+	if(isLive){
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+	}
 
     }
 
@@ -4643,9 +4681,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setNormals(int index, float normals[]) {
 	int offset = this.stride*index + normalOffset;
 	int i, j, num = normals.length;
-
-	geomLock.getLock();
-
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= NORMAL_CHANGED;
 	for (i=0, j= offset;i < num;i += 3, j+= this.stride)
 	    {
@@ -4653,13 +4692,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		this.vertexData[j+1] = normals[i+1];
 		this.vertexData[j+2] = normals[i+2];
 	    }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+		geomLock.unLock();
+		sendDataChangedMessage(false);
 	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
 
     }
 
@@ -4672,9 +4708,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setNormals(int index, Vector3f normals[]) {
 	int offset = this.stride*index + normalOffset;
 	int i, j, num = normals.length;
-
-	geomLock.getLock();
-
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+	   geomLock.getLock();
+	}
 	dirtyFlag |= NORMAL_CHANGED;
 	for (i=0, j= offset;i < num;i++, j+= this.stride)
 	    {
@@ -4682,13 +4719,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		this.vertexData[j+1] = normals[i].y;
 		this.vertexData[j+2] = normals[i].z;
 	    }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
 
     }
 
@@ -4704,23 +4738,21 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setNormals(int index, float normals[], int start, int length) {
         int offset = this.stride*index + normalOffset;
         int i, j;
-
-	geomLock.getLock();
-
-	dirtyFlag |= NORMAL_CHANGED;
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
+        dirtyFlag |= NORMAL_CHANGED;
 	for (i = start * 3, j = offset; i < (start + length) * 3;
 	     i+=3, j += this.stride) {
 	    this.vertexData[j]   = normals[i];
 	    this.vertexData[j+1] = normals[i+1];
 	    this.vertexData[j+2] = normals[i+2];
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
 
     }
 
@@ -4736,22 +4768,20 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setNormals(int index, Vector3f normals[], int start, int length) {
         int offset = this.stride*index + normalOffset;
         int i, j;
-
-	geomLock.getLock();
-
-	dirtyFlag |= NORMAL_CHANGED;
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
+        dirtyFlag |= NORMAL_CHANGED;
 	for (i = start, j = offset; i < start+length; i++, j += this.stride) {
 	    this.vertexData[j]   = normals[i].x;
 	    this.vertexData[j+1] = normals[i].y;
 	    this.vertexData[j+2] = normals[i].z;
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
 
     }
 
@@ -4765,7 +4795,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      * @param start starting texture coordinate index of data in <code>texCoords</code>  .
      * @param length number of texture Coordinates to be copied.
      */
-    void setTextureCoordinates(int texCoordSet, int index, float texCoords[], 
+    void setTextureCoordinates(int texCoordSet, int index, float texCoords[],
 				int start, int length) {
 
 	if ((this.vertexFormat & GeometryArray.BY_REFERENCE) != 0)
@@ -4774,11 +4804,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE ) == 0)
             throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray79"));
 
-	int offset = this.stride*index + textureOffset + 
+	int offset = this.stride*index + textureOffset +
 			texCoordSet * texCoordStride;
         int i, j, k;
-
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= TEXTURE_CHANGED;
 
 	if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE_4) != 0) {
@@ -4789,7 +4821,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                 this.vertexData[j+2] = texCoords[i++];
                 this.vertexData[j+3] = texCoords[i++];
             }
-	} else if ((this.vertexFormat & 
+	} else if ((this.vertexFormat &
 			GeometryArray.TEXTURE_COORDINATE_3) != 0) {
             for (i = start * 3, j = offset, k = 0; k < length;
 		 	j += this.stride, k++) {
@@ -4804,13 +4836,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                 this.vertexData[j+1] = texCoords[i++];
             }
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
 
     }
 
@@ -4832,24 +4861,24 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE ) == 0)
             throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray79"));
 
-	int offset = this.stride*index + textureOffset + 
+	int offset = this.stride*index + textureOffset +
 			texCoordSet * texCoordStride;
         int i, j;
 
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= TEXTURE_CHANGED;
 
 	for (i = start, j = offset; i < start+length; i++, j += this.stride) {
             this.vertexData[j]   = texCoords[i].x;
             this.vertexData[j+1] = texCoords[i].y;
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
 
     }
 
@@ -4871,11 +4900,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE ) == 0)
             throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray79"));
 
-	int offset = this.stride*index + textureOffset + 
+	int offset = this.stride*index + textureOffset +
 			texCoordSet * texCoordStride;
         int i, j;
- 
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= TEXTURE_CHANGED;
 
 	for (i = start, j = offset; i < start+length; i++, j += this.stride) {
@@ -4883,52 +4914,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
             this.vertexData[j+1] = texCoords[i].y;
             this.vertexData[j+2] = texCoords[i].z;
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
-	
-	geomLock.unLock();
-	sendDataChangedMessage(false);
-
-    }      
-
-    /**
-     * Sets the texture coordinates associated with the vertices starting at
-     * the specified index for this object using data in <code>texCoords</code>
-     * starting at index <code>start</code> and ending at index <code>start+length</code>.
-     * @param index the vertex index
-     * @param texCoords the new texture coordinates
-     * @param start starting texture coordinate index of data in <code>texCoords</code>  .
-     * @param length number of texture Coordinates to be copied.
-     */
-    void setTextureCoordinates(int texCoordSet, int index, TexCoord2f texCoords[],
-				int start, int length) {
-
-	geomLock.getLock();
-	dirtyFlag |= TEXTURE_CHANGED;
-
-	if ((this.vertexFormat & GeometryArray.BY_REFERENCE) != 0)
-            throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
-
-        if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE ) == 0)
-            throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray79"));
-
-	int offset = this.stride*index + textureOffset + 
-			texCoordSet * texCoordStride;
-        int i, j;
-
-	for (i = start, j = offset; i < start+length; i++, j += this.stride) {
-            this.vertexData[j]   = texCoords[i].x;
-            this.vertexData[j+1] = texCoords[i].y;
-        }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
 
     }
 
@@ -4941,36 +4930,33 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      * @param start starting texture coordinate index of data in <code>texCoords</code>  .
      * @param length number of texture Coordinates to be copied.
      */
-    void setTextureCoordinates(int texCoordSet, int index, 
-				TexCoord3f texCoords[],
+    void setTextureCoordinates(int texCoordSet, int index, TexCoord2f texCoords[],
 				int start, int length) {
-
-	geomLock.getLock();
-	dirtyFlag |= TEXTURE_CHANGED;
-
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
+        dirtyFlag |= TEXTURE_CHANGED;
 	if ((this.vertexFormat & GeometryArray.BY_REFERENCE) != 0)
             throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
 
         if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE ) == 0)
             throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray79"));
 
-	int offset = this.stride*index + textureOffset + 
+	int offset = this.stride*index + textureOffset +
 			texCoordSet * texCoordStride;
         int i, j;
- 
+
 	for (i = start, j = offset; i < start+length; i++, j += this.stride) {
             this.vertexData[j]   = texCoords[i].x;
             this.vertexData[j+1] = texCoords[i].y;
-            this.vertexData[j+2] = texCoords[i].z;
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
-	
-	geomLock.unLock();
-	sendDataChangedMessage(false);
-    }      
+
+    }
 
     /**
      * Sets the texture coordinates associated with the vertices starting at
@@ -4981,11 +4967,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      * @param start starting texture coordinate index of data in <code>texCoords</code>  .
      * @param length number of texture Coordinates to be copied.
      */
-    void setTextureCoordinates(int texCoordSet, int index, 
-				TexCoord4f texCoords[],
+    void setTextureCoordinates(int texCoordSet, int index,
+				TexCoord3f texCoords[],
 				int start, int length) {
-
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= TEXTURE_CHANGED;
 
 	if ((this.vertexFormat & GeometryArray.BY_REFERENCE) != 0)
@@ -4994,23 +4982,59 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE ) == 0)
             throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray79"));
 
-	int offset = this.stride*index + textureOffset + 
+	int offset = this.stride*index + textureOffset +
 			texCoordSet * texCoordStride;
         int i, j;
- 
+
+	for (i = start, j = offset; i < start+length; i++, j += this.stride) {
+            this.vertexData[j]   = texCoords[i].x;
+            this.vertexData[j+1] = texCoords[i].y;
+            this.vertexData[j+2] = texCoords[i].z;
+        }
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+	}
+    }
+
+    /**
+     * Sets the texture coordinates associated with the vertices starting at
+     * the specified index for this object using data in <code>texCoords</code>
+     * starting at index <code>start</code> and ending at index <code>start+length</code>.
+     * @param index the vertex index
+     * @param texCoords the new texture coordinates
+     * @param start starting texture coordinate index of data in <code>texCoords</code>  .
+     * @param length number of texture Coordinates to be copied.
+     */
+    void setTextureCoordinates(int texCoordSet, int index,
+				TexCoord4f texCoords[],
+				int start, int length) {
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
+	dirtyFlag |= TEXTURE_CHANGED;
+
+	if ((this.vertexFormat & GeometryArray.BY_REFERENCE) != 0)
+            throw new IllegalStateException(J3dI18N.getString("GeometryArray82"));
+
+        if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE ) == 0)
+            throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray79"));
+
+	int offset = this.stride*index + textureOffset +
+			texCoordSet * texCoordStride;
+        int i, j;
+
 	for (i = start, j = offset; i < start+length; i++, j += this.stride) {
             this.vertexData[j]   = texCoords[i].x;
             this.vertexData[j+1] = texCoords[i].y;
             this.vertexData[j+2] = texCoords[i].z;
             this.vertexData[j+3] = texCoords[i].w;
         }
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
+	if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
 	}
-	
-	geomLock.unLock();
-	sendDataChangedMessage(false);
     }
 
 
@@ -5027,20 +5051,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		       Point2f vertexAttr) {
 
 	int offset = this.stride*index + vertexAttrOffsets[vertexAttrNum];
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= VATTR_CHANGED;
 
 	this.vertexData[offset] = vertexAttr.x;
 	this.vertexData[offset+1] = vertexAttr.y;
-        
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
     }
 
     /**
@@ -5056,21 +5079,20 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		       Point3f vertexAttr) {
 
 	int offset = this.stride*index + vertexAttrOffsets[vertexAttrNum];
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= VATTR_CHANGED;
 
 	this.vertexData[offset] = vertexAttr.x;
 	this.vertexData[offset+1] = vertexAttr.y;
 	this.vertexData[offset+2] = vertexAttr.z;
-        
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+	if (isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+	}
     }
 
     /**
@@ -5086,22 +5108,21 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		       Point4f vertexAttr) {
 
 	int offset = this.stride*index + vertexAttrOffsets[vertexAttrNum];
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= VATTR_CHANGED;
 
 	this.vertexData[offset] = vertexAttr.x;
 	this.vertexData[offset+1] = vertexAttr.y;
 	this.vertexData[offset+2] = vertexAttr.z;
 	this.vertexData[offset+3] = vertexAttr.w;
-        
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
     }
 
     /**
@@ -5125,23 +5146,22 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int offset = this.stride*index + vertexAttrOffsets[vertexAttrNum];
         int size = vertexAttrSizes[vertexAttrNum];
         int i, j, k;
-
-	geomLock.getLock();
-	dirtyFlag |= VATTR_CHANGED;
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
+        dirtyFlag |= VATTR_CHANGED;
 
         for (i = start * size, j = offset, k = 0; k < length; i += size, j += this.stride, k++) {
             for (int ii = 0; ii < size; ii++) {
                 this.vertexData[j+ii] = vertexAttrs[i+ii];
             }
         }
-        
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
 
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
     }
 
     /**
@@ -5165,22 +5185,20 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	int offset = this.stride*index + vertexAttrOffsets[vertexAttrNum];
         int i, j, k;
-
-	geomLock.getLock();
-	dirtyFlag |= VATTR_CHANGED;
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
+        dirtyFlag |= VATTR_CHANGED;
 
         for (i = start, j = offset, k = 0; k < length; i++, j += this.stride, k++) {
 	    this.vertexData[j] = vertexAttrs[i].x;
 	    this.vertexData[j+1] = vertexAttrs[i].y;
         }
-        
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
     }
 
     /**
@@ -5204,23 +5222,21 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	int offset = this.stride*index + vertexAttrOffsets[vertexAttrNum];
         int i, j, k;
-
-	geomLock.getLock();
-	dirtyFlag |= VATTR_CHANGED;
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
+        dirtyFlag |= VATTR_CHANGED;
 
         for (i = start, j = offset, k = 0; k < length; i++, j += this.stride, k++) {
 	    this.vertexData[j] = vertexAttrs[i].x;
 	    this.vertexData[j+1] = vertexAttrs[i].y;
 	    this.vertexData[j+2] = vertexAttrs[i].z;
         }
-        
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
     }
 
     /**
@@ -5245,8 +5261,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int offset = this.stride*index + vertexAttrOffsets[vertexAttrNum];
         int i, j, k;
 
-	geomLock.getLock();
-	dirtyFlag |= VATTR_CHANGED;
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
+        dirtyFlag |= VATTR_CHANGED;
 
         for (i = start, j = offset, k = 0; k < length; i++, j += this.stride, k++) {
 	    this.vertexData[j] = vertexAttrs[i].x;
@@ -5254,14 +5273,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    this.vertexData[j+2] = vertexAttrs[i].z;
 	    this.vertexData[j+3] = vertexAttrs[i].w;
         }
-        
-	if (source == null || !source.isLive()) {
-	    geomLock.unLock();
-	    return;
-	}
-
-	geomLock.unLock();
-	sendDataChangedMessage(false);
+        if(isLive) {
+            geomLock.unLock();
+            sendDataChangedMessage(false);
+        }
     }
 
 
@@ -5339,7 +5354,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
     }
 
-    
+
     /**
      * Gets the coordinates associated with the vertices starting at
      * the specified index.
@@ -5526,7 +5541,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int offset = this.stride*index + colorOffset;
 	int i, j, num = colors.length;
 	float val = 1.0f/lastAlpha[0];
-	
+
 
 	if ((this.vertexFormat & GeometryArray.WITH_ALPHA) != 0)
 	    {
@@ -5662,7 +5677,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void getNormals(int index, float normals[]) {
 	int offset = this.stride*index + normalOffset;
 	int i, j, num = normals.length;
-	
+
 	for (i=0, j= offset;i < num;i+=3, j+= this.stride)
 	    {
 		normals[i]  = this.vertexData[j];
@@ -5680,7 +5695,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void getNormals(int index, Vector3f normals[]) {
 	int offset = this.stride*index + normalOffset;
 	int i, j, num = normals.length;
-	
+
 	for (i=0, j= offset;i < num;i++, j+= this.stride)
 	    {
 		normals[i].x= this.vertexData[j];
@@ -5704,7 +5719,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE_3) != 0) {
 	    texCoord[2]= this.vertexData[offset+2];
 
-	} else if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE_4) 
+	} else if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE_4)
 				!= 0) {
 	    texCoord[2]= this.vertexData[offset+2];
 	    texCoord[3]= this.vertexData[offset+3];
@@ -5775,7 +5790,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			texCoords[i+2]= this.vertexData[j+2];
 			texCoords[i+3]= this.vertexData[j+3];
 		    }
-	} else if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE_3) 
+	} else if ((this.vertexFormat & GeometryArray.TEXTURE_COORDINATE_3)
 				!= 0) {
 		for (i=0, j= offset;i < num;i+=3, j+= this.stride)
 		    {
@@ -5798,7 +5813,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      * @param index the vertex index
      * @param texCoords the vector that will receive the new texture co-ordinates
      */
-    void getTextureCoordinates(int texCoordSet, int index, 
+    void getTextureCoordinates(int texCoordSet, int index,
 					TexCoord2f texCoords[]) {
 	int offset = this.stride*index + textureOffset +
 			texCoordSet * texCoordStride;
@@ -5890,7 +5905,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	for (int i = 0; i < size; i++) {
 	    vertexAttr[i] = this.vertexData[offset+i];
-	    
+
         }
 
     }
@@ -5955,8 +5970,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         int size = vertexAttrSizes[vertexAttrNum];
         int i, j, k;
 
-        for (i = 0, j = offset; 
-	     ((i < vertexAttrs.length) && (j < this.vertexData.length)) ; 
+        for (i = 0, j = offset;
+	     ((i < vertexAttrs.length) && (j < this.vertexData.length)) ;
 	     i += size, j += this.stride) {
             for (k = 0; k < size; k++) {
                 vertexAttrs[i+k] = this.vertexData[j+k];
@@ -5976,8 +5991,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int offset = this.stride*index + vertexAttrOffsets[vertexAttrNum];
         int i, j;
 
-        for (i = 0, j = offset; 
-	     ((i < vertexAttrs.length) && (j < this.vertexData.length)) ; 
+        for (i = 0, j = offset;
+	     ((i < vertexAttrs.length) && (j < this.vertexData.length)) ;
 	     i++, j += this.stride) {
 	    vertexAttrs[i].x = this.vertexData[j];
 	    vertexAttrs[i].y = this.vertexData[j+1];
@@ -5996,8 +6011,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int offset = this.stride*index + vertexAttrOffsets[vertexAttrNum];
         int i, j;
 
-        for (i = 0, j = offset; 
-	     ((i < vertexAttrs.length) && (j < this.vertexData.length)) ; 
+        for (i = 0, j = offset;
+	     ((i < vertexAttrs.length) && (j < this.vertexData.length)) ;
 	     i++, j += this.stride) {
 	    vertexAttrs[i].x = this.vertexData[j];
 	    vertexAttrs[i].y = this.vertexData[j+1];
@@ -6017,8 +6032,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int offset = this.stride*index + vertexAttrOffsets[vertexAttrNum];
         int i, j;
 
-        for (i = 0, j = offset; 
-	     ((i < vertexAttrs.length) && (j < this.vertexData.length)) ; 
+        for (i = 0, j = offset;
+	     ((i < vertexAttrs.length) && (j < this.vertexData.length)) ;
 	     i++, j += this.stride) {
 	    vertexAttrs[i].x = this.vertexData[j];
 	    vertexAttrs[i].y = this.vertexData[j+1];
@@ -6074,12 +6089,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    }
 		}
 	    }
-            
+
             //NVaidya
-            // User may or may not have changed indices in updater callback. 
-            // We need to presume that the user may indeed have and, thus, will 
+            // User may or may not have changed indices in updater callback.
+            // We need to presume that the user may indeed have and, thus, will
             // need to recompute maxCoordIndex unconditionally while
-            // geomLock is still locked. 
+            // geomLock is still locked.
             if ((vertexFormat & GeometryArray.BY_REFERENCE_INDICES) != 0) {
                 assert (this instanceof IndexedGeometryArrayRetained);
 
@@ -6100,13 +6115,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
     }
 
-    boolean intersectBoundingBox( Point3d coordinates[], 
+    boolean intersectBoundingBox( Point3d coordinates[],
 				  BoundingBox box,
 				  double dist[],
 				  Point3d iPnt) {
 	int i, j;
-	int out[] = new int[6];      
-       
+	int out[] = new int[6];
+
 	//Do trivial vertex test.
 	for(i=0; i<6; i++)
 	    out[i] = 0;
@@ -6115,7 +6130,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	       (coordinates[i].y >= box.lower.y) && (coordinates[i].y <= box.upper.y) &&
 	       (coordinates[i].z >= box.lower.z) && (coordinates[i].z <= box.upper.z))
 		// We're done! It's inside the boundingbox.
-		return true;	  
+		return true;
 	    else {
 		if(coordinates[i].x < box.lower.x)
 		    out[0]++; // left
@@ -6128,38 +6143,38 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if(coordinates[i].y > box.upper.y)
 		    out[4]++; // top
 		if(coordinates[i].z > box.upper.z)
-		    out[5]++; // front	  
+		    out[5]++; // front
 	    }
-      
+
 	}
-      
+
 	if((out[0] == coordinates.length) || (out[1] == coordinates.length) ||
 	   (out[2] == coordinates.length) || (out[3] == coordinates.length) ||
-	   (out[4] == coordinates.length) || (out[5] == coordinates.length))	 
+	   (out[4] == coordinates.length) || (out[5] == coordinates.length))
 	    // we're done. primitive is outside of boundingbox.
 	    return false;
-      
+
 	// Setup bounding planes.
 	Point3d pCoor[] = new Point3d[4];
 	for(i=0; i<4; i++)
 	    pCoor[i] = new Point3d();
-      
+
 	// left plane.
 	pCoor[0].set(box.lower.x, box.lower.y, box.lower.z);
 	pCoor[1].set(box.lower.x, box.lower.y, box.upper.z);
 	pCoor[2].set(box.lower.x, box.upper.y, box.upper.z);
 	pCoor[3].set(box.lower.x, box.upper.y, box.lower.z);
-	
- 
+
+
 	if (intersectPolygon(pCoor, coordinates)) {
 	    if (dist != null) {
-		computeMinDistance(pCoor, box.getCenter(), 
+		computeMinDistance(pCoor, box.getCenter(),
 				   null,
 				   dist, iPnt);
 	    }
 	    return true;
 	}
-	
+
 	// right plane.
 	pCoor[0].set(box.upper.x, box.lower.y, box.lower.z);
 	pCoor[1].set(box.upper.x, box.upper.y, box.lower.z);
@@ -6167,7 +6182,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	pCoor[3].set(box.upper.x, box.lower.y, box.upper.z);
 	if (intersectPolygon(pCoor, coordinates)) {
 	    if (dist != null) {
-		computeMinDistance(pCoor, box.getCenter(), 
+		computeMinDistance(pCoor, box.getCenter(),
 				   null,
 				   dist, iPnt);
 	    }
@@ -6181,7 +6196,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	pCoor[3].set(box.upper.x, box.lower.y, box.lower.z);
 	if (intersectPolygon(pCoor, coordinates)) {
 	    if (dist != null) {
-		computeMinDistance(pCoor, box.getCenter(), 
+		computeMinDistance(pCoor, box.getCenter(),
 				   null,
 				   dist, iPnt);
 	    }
@@ -6208,13 +6223,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	pCoor[3].set(box.upper.x, box.lower.y, box.upper.z);
 	if (intersectPolygon(pCoor, coordinates)) {
 	    if (dist != null) {
-		computeMinDistance(pCoor, box.getCenter(), 
+		computeMinDistance(pCoor, box.getCenter(),
 				   null,
 				   dist, iPnt);
 	    }
 	    return true;
 	}
-      
+
 	// back plane.
 	pCoor[0].set(box.upper.x, box.upper.y, box.lower.z);
 	pCoor[1].set(box.upper.x, box.lower.y, box.lower.z);
@@ -6222,7 +6237,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	pCoor[3].set(box.lower.x, box.upper.y, box.lower.z);
 	if (intersectPolygon(pCoor, coordinates)) {
 	    if (dist != null) {
-		computeMinDistance(pCoor, box.getCenter(), 
+		computeMinDistance(pCoor, box.getCenter(),
 				   null,
 				   dist, iPnt);
 	    }
@@ -6232,10 +6247,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     }
 
 
-    boolean intersectBoundingSphere(Point3d coordinates[], 
+    boolean intersectBoundingSphere(Point3d coordinates[],
 				    BoundingSphere sphere,
 				    double dist[],
-				    Point3d iPnt) 
+				    Point3d iPnt)
     {
 	int i, j;
 	Vector3d tempV3D = new Vector3d();
@@ -6247,12 +6262,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    tempV3D.x = coordinates[i].x - sphere.center.x;
 	    tempV3D.y = coordinates[i].y - sphere.center.y;
 	    tempV3D.z = coordinates[i].z - sphere.center.z;
-	
+
 	    if (tempV3D.length() <= sphere.radius) {
 		// We're done! It's inside the boundingSphere.
 		if (dist != null) {
-		    computeMinDistance(coordinates, 
-				       sphere.getCenter(), 
+		    computeMinDistance(coordinates,
+				       sphere.getCenter(),
 				       null, dist, iPnt);
 		}
 
@@ -6262,15 +6277,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	for (i=0; i<coordinates.length; i++) {
 	    if (i < (coordinates.length-1))
-		esFlag = edgeIntersectSphere(sphere, coordinates[i], 
+		esFlag = edgeIntersectSphere(sphere, coordinates[i],
 					     coordinates[i+1]);
 	    else
-		esFlag = edgeIntersectSphere(sphere, coordinates[i], 
+		esFlag = edgeIntersectSphere(sphere, coordinates[i],
 					     coordinates[0]);
 	    if (esFlag == true) {
 		if (dist != null) {
 		    computeMinDistance(coordinates,
-				       sphere.getCenter(), 
+				       sphere.getCenter(),
 				       null,
 				       dist, iPnt);
 		}
@@ -6278,7 +6293,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		return true;
 	    }
 	}
-      
+
 
 	if (coordinates.length < 3) {
 	    return false; // We're done with line.
@@ -6301,7 +6316,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if(vec0.length() > 0.0)
 		    break;
 	    }
-        
+
 	    for(j=i; j<coordinates.length-1; j++) {
 		vec1.x = coordinates[j+1].x - coordinates[j].x;
 		vec1.y = coordinates[j+1].y - coordinates[j].y;
@@ -6309,22 +6324,22 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if(vec1.length() > 0.0)
 		    break;
 	    }
-      
+
 	    if(j == (coordinates.length-1)) {
 		// System.err.println("(1) Degenerate polygon.");
 		return false;  // Degenerate polygon.
 	    }
 
 	    /*
-	      for(i=0; i<coordinates.length; i++) 
+	      for(i=0; i<coordinates.length; i++)
 	      System.err.println("coordinates P" + i + " " + coordinates[i]);
-	      for(i=0; i<coord2.length; i++) 
+	      for(i=0; i<coord2.length; i++)
 	      System.err.println("coord2 P" + i + " " + coord2[i]);
 	      */
-      
+
 	    pNrm.cross(vec0,vec1);
-      
-	    nLenSq = pNrm.lengthSquared(); 
+
+	    nLenSq = pNrm.lengthSquared();
 	    if( nLenSq == 0.0) {
 		// System.err.println("(2) Degenerate polygon.");
 		return false;  // Degenerate polygon.
@@ -6335,9 +6350,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    pa.z = coordinates[0].z - sphere.center.z;
 
 	    pNrmDotPa = pNrm.dot(pa);
-      
+
 	    pqLen = Math.sqrt(pNrmDotPa * pNrmDotPa/ nLenSq);
-      
+
 	    if(pqLen > sphere.radius) {
 		return false;
 	    }
@@ -6352,10 +6367,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if (pointIntersectPolygon2D( pNrm, coordinates, q)) {
 		if (dist != null) {
 		    computeMinDistance(coordinates,
-				       sphere.getCenter(), 
+				       sphere.getCenter(),
 				       pNrm,
 				       dist, iPnt);
-		}		
+		}
 		return true;
 	    }
 	    return false;
@@ -6363,18 +6378,18 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     }
 
 
-    boolean intersectBoundingPolytope(Point3d coordinates[], 
+    boolean intersectBoundingPolytope(Point3d coordinates[],
 				      BoundingPolytope polytope,
 				      double dist[],
 				      Point3d iPnt)
     {
-	boolean debug = false;    
-    
+	boolean debug = false;
+
 	Point4d tP4d = new Point4d();
 
 	// this is a multiplier to the halfplane distance coefficients
 	double distanceSign = -1.0;
-      
+
 	    if(coordinates.length == 2) {
 		// we'll handle line separately.
 		if (polytope.intersect( coordinates[0],
@@ -6384,50 +6399,50 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			iPnt.y = tP4d.y;
 			iPnt.z = tP4d.z;
 			Point3d pc = polytope.getCenter();
-			double x = iPnt.x - pc.x; 
-			double y = iPnt.y - pc.y; 
-			double z = iPnt.z - pc.z; 
+			double x = iPnt.x - pc.x;
+			double y = iPnt.y - pc.y;
+			double z = iPnt.z - pc.z;
 			dist[0] = Math.sqrt(x*x + y*y + z*z);
 		    }
 		    return true;
-		} 
+		}
 		return false;
 	    }
 
 	    // It is a triangle or a quad.
-      
+
 	    // first test to see if any of the coordinates are all inside of the
 	    // intersection polytope's half planes
 	    // essentially do a matrix multiply of the constraintMatrix K*3 with
 	    // the input coordinates 3*1 = K*1 vector
 
-	    if (debug) { 
+	    if (debug) {
 		System.err.println("The value of the input vertices are: ");
 		for(int i=0; i < coordinates.length; i++) {
 		    System.err.println("The " +i+ " th vertex is: " + coordinates[i]);
 		}
-      
+
 		System.err.println("The value of the input bounding Polytope's planes =");
 		for(int i=0; i < polytope.planes.length; i++) {
 		    System.err.println("The " +i+ " th plane is: " + polytope.planes[i]);
 		}
-      
+
 	    }
-    
+
 	    // the direction for the intersection cost function
 	    double centers[] = new double[4];
 	    centers[0] = 0.8; centers[1] = 0.9; centers[2] = 1.1; centers[3] = 1.2;
-      
+
 	    boolean intersection = true;
 	    boolean PreTest = false;
-    
+
 	    if(PreTest) {
 		// for each coordinate, test it with each half plane
 		for( int i=0; i < coordinates.length; i++) {
 		    for (int j=0; j < polytope.planes.length; j++) {
 			if ( ( polytope.planes[j].x * coordinates[i].x +
 			       polytope.planes[j].y * coordinates[i].y +
-			       polytope.planes[j].z*coordinates[i].z) <= 
+			       polytope.planes[j].z*coordinates[i].z) <=
 			     (distanceSign)*polytope.planes[j].w){
 			    // the point satisfies this particular hyperplane
 			    intersection = true;
@@ -6441,25 +6456,25 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			// a point was found to be completely inside the bounding hull
 			if (dist != null) {
 			    computeMinDistance(coordinates,
-					       polytope.getCenter(), 
+					       polytope.getCenter(),
 					       null,
 					       dist, iPnt);
-			}			
+			}
 			return true;
 		    }
 		}
 	    }  // end of pretest
-    
+
 	    // at this point all points are outside of the bounding hull
 	    // build the problem tableau for the linear program
-    
+
 	    int numberCols = polytope.planes.length + 2 + coordinates.length + 1;
 	    int numberRows = 1 + coordinates.length;
-    
+
 	    double problemTableau[][] = new double[numberRows][numberCols];
-    
+
 	    // compute -Mtrans = -A*P
-    
+
 	    for( int i = 0; i < polytope.planes.length; i++) {
 		for( int j=0; j < coordinates.length;  j++) {
 		    problemTableau[j][i] = (-1.0)* (polytope.planes[i].x*coordinates[j].x+
@@ -6467,27 +6482,27 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 						    polytope.planes[i].z*coordinates[j].z);
 		}
 	    }
-    
+
 	    // add the other rows
 	    for(int i = 0; i < coordinates.length; i++) {
 		problemTableau[i][polytope.planes.length] = -1.0;
 		problemTableau[i][polytope.planes.length + 1] =  1.0;
-      
+
 		for(int j=0; j < coordinates.length; j++) {
 		    if ( i==j ) {
 			problemTableau[i][j + polytope.planes.length + 2] = 1.0;
 		    } else {
 			problemTableau[i][j + polytope.planes.length + 2] = 0.0;
 		    }
-	
+
 		    // place the last column elements the Ci's
 		    problemTableau[i][numberCols - 1] = centers[i];
 		}
 	    }
-    
+
 	    // place the final rows value
 	    for(int j = 0; j < polytope.planes.length; j++) {
-		problemTableau[numberRows - 1][j] = 
+		problemTableau[numberRows - 1][j] =
 		    (distanceSign)*polytope.planes[j].w;
 	    }
 	    problemTableau[numberRows - 1][polytope.planes.length] =  1.0;
@@ -6495,7 +6510,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    for(int j = 0; j < coordinates.length; j++) {
 		problemTableau[numberRows - 1][polytope.planes.length+2+j] = 0.0;
 	    }
-    
+
 	    if(debug) {
 		System.err.println("The value of the problem tableau is: " );
 		for(int i=0; i < problemTableau.length; i++) {
@@ -6505,8 +6520,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    System.err.println();
 		}
 	    }
-    
-	    double distance = generalStandardSimplexSolver(problemTableau, 
+
+	    double distance = generalStandardSimplexSolver(problemTableau,
 							   Float.NEGATIVE_INFINITY);
 	    if(debug) {
 		System.err.println("The value returned by the general standard simplex = " +
@@ -6514,13 +6529,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
 	    if (distance == Float.POSITIVE_INFINITY) {
 		return false;
-	    } 
+	    }
 	    if (dist != null) {
 		computeMinDistance(coordinates,
-				   polytope.getCenter(), 
+				   polytope.getCenter(),
 				   null,
 				   dist, iPnt);
-	    }			
+	    }
 	    return true;
 
 	}
@@ -6530,7 +6545,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     // method to solve the LP tableau.  This version has not been optimized to
     // work with a particular size input tableau and is much slower than some
     // of the other variants...supposedly
-    double generalStandardSimplexSolver(double problemTableau[][], 
+    double generalStandardSimplexSolver(double problemTableau[][],
 					double stopingValue) {
 	boolean debug = false;
 	int numRow = problemTableau.length;
@@ -6540,12 +6555,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	double maxElement, element, endElement, ratio, prevRatio;
 	int count = 0;
 	double multiplier;
-    
+
 	if(debug) {
 	    System.err.println("The number of rows is : " + numRow);
 	    System.err.println("The number of columns is : " + numCol);
 	}
-    
+
 	// until the optimal solution is found continue to do
 	// iterations of the simplex method
 	while(!optimal) {
@@ -6559,7 +6574,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    }
 		}
 	    }
-      
+
 	    // test to see if the current solution is optimal
 	    // check all bottom row elements except the right most one and
 	    // if all positive or zero its optimal
@@ -6571,7 +6586,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    pivotColIndex = i;
 		}
 	    }
-      
+
 	    // if there is no negative non-zero element then we
 	    // have found an optimal solution (the last row of the tableau)
 	    if(pivotColIndex == -1) {
@@ -6579,24 +6594,24 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		//System.err.println("Found an optimal solution");
 		optimal = true;
 	    }
-      
+
 	    //System.err.println("The value of maxElement is:" + maxElement);
-      
+
 	    if(!optimal) {
 		// Case when the solution is not optimal but not known to be
 		// either unbounded or infeasable
-	
+
 		// from the above we have found the maximum negative element in
 		// bottom row, we have also found the column for this value
 		// the pivotColIndex represents this
-	
+
 		// initialize the values for the algorithm, -1 for pivotRowIndex
 		// indicates no solution
-	
+
 		prevRatio = Float.POSITIVE_INFINITY;
 		ratio = 0.0;
 		pivotRowIndex = -1;
-	
+
 		// note if all of the elements in the pivot column are zero or
 		// negative the problem is unbounded.
 		for(i = 0; i < numRow - 1; i++) {
@@ -6626,7 +6641,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    System.err.println("The value of endElement is: " + endElement);
 			    System.err.println("The value of ratio is: " + ratio);
 			    System.err.println("The value of prevRatio is: " + prevRatio);
-			    System.err.println("Value of ratio <= prevRatio is :" + 
+			    System.err.println("Value of ratio <= prevRatio is :" +
 					       (ratio <= prevRatio));
 			}
 			if(ratio <= prevRatio) {
@@ -6638,7 +6653,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			}
 		    }
 		}
-	
+
 		// if the pivotRowIndex is still -1 then we know the pivotColumn
 		// has no viable pivot points and the solution is unbounded or
 		// infeasable (all pivot elements were either zero or negative or
@@ -6650,16 +6665,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    }
 		    return(Float.POSITIVE_INFINITY);
 		}
-	
+
 		// we now have the pivot row and col all that remains is
 		// to divide through by this value and subtract the appropriate
 		// multiple of the pivot row from all other rows to obtain
 		// a tableau which has a column of all zeros and one 1 in the
 		// intersection of pivot row and col
-	
+
 		// divide through by the pivot value
 		double pivotValue = problemTableau[pivotRowIndex][pivotColIndex];
-	
+
 		if(debug) {
 		    System.err.println("The value of row index is: " + pivotRowIndex);
 		    System.err.println("The value of col index is: " + pivotColIndex);
@@ -6670,7 +6685,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    problemTableau[pivotRowIndex][i] =
 			problemTableau[pivotRowIndex][i] / pivotValue;
 		}
-	
+
 		// subtract appropriate multiple of pivot row from all other rows
 		// to zero out all rows except the final row and the pivot row
 		for(i = 0; i < numRow; i++) {
@@ -6690,23 +6705,23 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 
 
-    boolean edgeIntersectSphere(BoundingSphere sphere, Point3d start, 
+    boolean edgeIntersectSphere(BoundingSphere sphere, Point3d start,
 				Point3d end)
-	{ 
+	{
 	    double abLenSq, acLenSq, apLenSq, abDotAp, radiusSq;
 	    Vector3d ab = new Vector3d();
 	    Vector3d ap = new Vector3d();
-	    
+
 	    ab.x = end.x - start.x;
 	    ab.y = end.y - start.y;
 	    ab.z = end.z - start.z;
-      
+
 	    ap.x = sphere.center.x - start.x;
 	    ap.y = sphere.center.y - start.y;
 	    ap.z = sphere.center.z - start.z;
-      
+
 	    abDotAp = ab.dot(ap);
-      
+
 	    if(abDotAp < 0.0) {
 		return false; // line segment points away from sphere.
 	    }
@@ -6720,7 +6735,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	    radiusSq = sphere.radius * sphere.radius;
 	    apLenSq = ap.lengthSquared();
-     
+
 	    if((apLenSq - acLenSq) <= radiusSq) {
 		return true;
 	    }
@@ -6732,12 +6747,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     double det2D(Point2d a, Point2d b, Point2d p)
 	{
-	    return (((p).x - (a).x) * ((a).y - (b).y) + 
+	    return (((p).x - (a).x) * ((a).y - (b).y) +
 		    ((a).y - (p).y) * ((a).x - (b).x));
 	}
 
     // Assume coord is CCW.
-    boolean pointIntersectPolygon2D(Vector3d normal, Point3d[] coord, 
+    boolean pointIntersectPolygon2D(Vector3d normal, Point3d[] coord,
 				    Point3d point)
 	{
 
@@ -6746,53 +6761,53 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    Point2d pnt = new Point2d();
 
 	    int i, j, axis;
-      
+
 	    // Project 3d points onto 2d plane.
 	    // Note : Area of polygon is not preserve in this projection, but
-	    // it doesn't matter here. 
-    
+	    // it doesn't matter here.
+
 	    // Find the axis of projection.
 	    absNrmX = Math.abs(normal.x);
 	    absNrmY = Math.abs(normal.y);
 	    absNrmZ = Math.abs(normal.z);
-      
+
 	    if(absNrmX > absNrmY)
 		axis = 0;
-	    else 
+	    else
 		axis = 1;
-      
+
 	    if(axis == 0) {
 		if(absNrmX < absNrmZ)
 		    axis = 2;
-	    }    
+	    }
 	    else if(axis == 1) {
 		if(absNrmY < absNrmZ)
 		    axis = 2;
-	    }    
-    
+	    }
+
 	    // System.err.println("Normal " + normal + " axis " + axis );
-     	
+
 	    for(i=0; i<coord.length; i++) {
 		coord2D[i] = new Point2d();
-	
+
 		switch (axis) {
 		case 0:
 		    coord2D[i].x = coord[i].y;
 		    coord2D[i].y = coord[i].z;
 		    break;
-	
+
 		case 1:
 		    coord2D[i].x = coord[i].x;
 		    coord2D[i].y = coord[i].z;
 		    break;
-	
+
 		case 2:
 		    coord2D[i].x = coord[i].x;
 		    coord2D[i].y = coord[i].y;
-		    break;      
-		} 
-    
-		// System.err.println("i " + i + " u " + uCoor[i] + " v " + vCoor[i]); 
+		    break;
+		}
+
+		// System.err.println("i " + i + " u " + uCoor[i] + " v " + vCoor[i]);
 	    }
 
 
@@ -6801,16 +6816,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		pnt.x = point.y;
 		pnt.y = point.z;
 		break;
-	
+
 	    case 1:
 		pnt.x = point.x;
 		pnt.y = point.z;
 		break;
-	
+
 	    case 2:
 		pnt.x = point.x;
 		pnt.y = point.y;
-		break;      
+		break;
 	    }
 
 	    // Do determinant test.
@@ -6826,7 +6841,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    else
 			return false;
 	    }
-      
+
 	    return true;
 
 	}
@@ -6835,31 +6850,31 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean edgeIntersectPlane(Vector3d normal, Point3d pnt, Point3d start,
 			       Point3d end, Point3d iPnt)
 	{
-      
+
 	    Vector3d tempV3d = new Vector3d();
 	    Vector3d direction = new Vector3d();
 	    double pD, pNrmDotrDir, tr;
-      
+
 	    // Compute plane D.
 	    tempV3d.set((Tuple3d) pnt);
 	    pD = normal.dot(tempV3d);
-      
+
 	    direction.x = end.x - start.x;
 	    direction.y = end.y - start.y;
 	    direction.z = end.z - start.z;
 
 	    pNrmDotrDir = normal.dot(direction);
-    
-	    // edge is parallel to plane. 
+
+	    // edge is parallel to plane.
 	    if(pNrmDotrDir== 0.0) {
 		// System.err.println("Edge is parallel to plane.");
-		return false;        
+		return false;
 	    }
 
 	    tempV3d.set((Tuple3d) start);
-      
+
 	    tr = (pD - normal.dot(tempV3d))/ pNrmDotrDir;
-      
+
 	    // Edge intersects the plane behind the edge's start.
 	    // or exceed the edge's length.
 	    if((tr < 0.0 ) || (tr > 1.0 )) {
@@ -6876,7 +6891,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 
     // Assume coord is CCW.
-    boolean edgeIntersectPolygon2D(Vector3d normal, Point3d[] coord, 
+    boolean edgeIntersectPolygon2D(Vector3d normal, Point3d[] coord,
 				   Point3d[] seg)
 	{
 
@@ -6885,53 +6900,53 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    Point2d seg2D[] = new Point2d[2];
 
 	    int i, j, axis;
-      
+
 	    // Project 3d points onto 2d plane.
 	    // Note : Area of polygon is not preserve in this projection, but
-	    // it doesn't matter here. 
-    
+	    // it doesn't matter here.
+
 	    // Find the axis of projection.
 	    absNrmX = Math.abs(normal.x);
 	    absNrmY = Math.abs(normal.y);
 	    absNrmZ = Math.abs(normal.z);
-      
+
 	    if(absNrmX > absNrmY)
 		axis = 0;
-	    else 
+	    else
 		axis = 1;
-      
+
 	    if(axis == 0) {
 		if(absNrmX < absNrmZ)
 		    axis = 2;
-	    }    
+	    }
 	    else if(axis == 1) {
 		if(absNrmY < absNrmZ)
 		    axis = 2;
-	    }    
-    
+	    }
+
 	    // System.err.println("Normal " + normal + " axis " + axis );
-     	
+
 	    for(i=0; i<coord.length; i++) {
 		coord2D[i] = new Point2d();
-	
+
 		switch (axis) {
 		case 0:
 		    coord2D[i].x = coord[i].y;
 		    coord2D[i].y = coord[i].z;
 		    break;
-	
+
 		case 1:
 		    coord2D[i].x = coord[i].x;
 		    coord2D[i].y = coord[i].z;
 		    break;
-	
+
 		case 2:
 		    coord2D[i].x = coord[i].x;
 		    coord2D[i].y = coord[i].y;
-		    break;      
-		} 
-    
-		// System.err.println("i " + i + " u " + uCoor[i] + " v " + vCoor[i]); 
+		    break;
+		}
+
+		// System.err.println("i " + i + " u " + uCoor[i] + " v " + vCoor[i]);
 	    }
 
 	    for(i=0; i<2; i++) {
@@ -6941,19 +6956,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    seg2D[i].x = seg[i].y;
 		    seg2D[i].y = seg[i].z;
 		    break;
-	
+
 		case 1:
 		    seg2D[i].x = seg[i].x;
 		    seg2D[i].y = seg[i].z;
 		    break;
-	
+
 		case 2:
 		    seg2D[i].x = seg[i].x;
 		    seg2D[i].y = seg[i].y;
-		    break;      
-		} 
-    
-		// System.err.println("i " + i + " u " + uSeg[i] + " v " + vSeg[i]); 
+		    break;
+		}
+
+		// System.err.println("i " + i + " u " + uSeg[i] + " v " + vSeg[i]);
 	    }
 
 	    // Do determinant test.
@@ -6971,7 +6986,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if((pntTest[0][j]==false) && (pntTest[1][j]==false))
 		    return false;
 	    }
-      
+
 	    testFlag = true;
 	    for(i=0; i<coord.length; i++) {
 		if(pntTest[0][i]==false) {
@@ -6979,7 +6994,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    break;
 		}
 	    }
-      
+
 	    if(testFlag == true)
 		return true; // start point is inside polygon.
 
@@ -6990,10 +7005,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    break;
 		}
 	    }
-      
+
 	    if(testFlag == true)
 		return true; // end point is inside polygon.
-      
+
 
 	    int cnt = 0;
 	    for(i=0; i<coord.length; i++) {
@@ -7018,7 +7033,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// Has to return something, so set the default to z component.
 	return v.z;
     }
-    
+
     double getCompValue(Point3d v0, Point3d v1, int i) {
 	switch (i) {
 	case 0: return (v0.x - v1.x);
@@ -7072,17 +7087,17 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	a = getCompValue(u1, u0, i1);
 	b = -(getCompValue(u1, u0, i0));
-	c = -a * getCompValue(u0, i0) - b * getCompValue(u0, i1); 
+	c = -a * getCompValue(u0, i0) - b * getCompValue(u0, i1);
 	d0 = a * getCompValue(v0, i0) + b * getCompValue(v0, i1) + c;
 
 	a = getCompValue(u2, u1, i1);
 	b = -(getCompValue(u2, u1, i0));
-	c = -a * getCompValue(u1, i0) - b * getCompValue(u1, i1); 
+	c = -a * getCompValue(u1, i0) - b * getCompValue(u1, i1);
 	d1 = a * getCompValue(v0, i0) + b * getCompValue(v0, i1) + c;
 
 	a = getCompValue(u0, u2, i1);
 	b = -(getCompValue(u0, u2, i0));
-	c = -a * getCompValue(u2, i0) - b * getCompValue(u2, i1); 
+	c = -a * getCompValue(u2, i0) - b * getCompValue(u2, i1);
 	d2 = a * getCompValue(v0, i0) + b * getCompValue(v0, i1) + c;
 
 	if(d0*d1>0.0) {
@@ -7093,7 +7108,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	return false;
     }
 
-    
+
     // this edge to edge test is based on Franlin Antonio's gem:
     // "Faster line segment intersection", in Graphics Gems III, pp 199-202
     boolean edgeAgainstEdge(Point3d v0, Point3d u0, Point3d u1, double aX, double aY,
@@ -7118,11 +7133,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    return true;
 	    }
 	}
-	
+
 	return false;
     }
 
-    
+
     boolean edgeAgainstTriEdges(Point3d v0, Point3d v1, Point3d u0,
 				Point3d u1, Point3d u2, int i0, int i1) {
 	double aX, aY;
@@ -7131,7 +7146,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// aY = v1[i1] - v0[i1];
 	aX = getCompValue(v1, v0, i0);
 	aY = getCompValue(v1, v0, i1);
-	
+
 	// test edge u0, u1 against v0, v1
 	if(edgeAgainstEdge(v0, u0, u1, aX, aY, i0, i1))
 	    return true;
@@ -7145,13 +7160,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	return false;
 
     }
-    
+
     boolean coplanarTriTri(Vector3d normal, Point3d v0, Point3d v1, Point3d v2,
 			   Point3d u0, Point3d u1, Point3d u2) {
 
 	double nAbsX, nAbsY, nAbsZ;
 	int i0, i1;
-	
+
 	// first project onto an axis-aligned plane, that maximizes the area
 	// of the triangles, compute indices i0, i1.
 	nAbsX = Math.abs(normal.x);
@@ -7182,62 +7197,62 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// test all edges of triangle 1 against the edges of triangle 2
 	if(edgeAgainstTriEdges(v0, v1, u0, u1, u2, i0, i1))
 	    return true;
-	
+
 	if(edgeAgainstTriEdges(v1, v2, u0, u1, u2, i0, i1))
 	    return true;
-	
+
 	if(edgeAgainstTriEdges(v2, v0, u0, u1, u2, i0, i1))
 	    return true;
 
 	// finally, test if tri1 is totally contained in tri2 or vice versa.
 	if(pointInTri(v0, u0, u1, u2, i0, i1))
 	    return true;
-	
+
 	if(pointInTri(u0, v0, v1, v2, i0, i1))
 	    return true;
-	
+
 	return false;
     }
-    
+
 
 
 
 
     boolean intersectTriPnt(Point3d v0, Point3d v1, Point3d v2, Point3d u) {
-	
+
 	Vector3d e1 = new Vector3d();
 	Vector3d e2 = new Vector3d();
 	Vector3d n1 = new Vector3d();
 	Vector3d tempV3d = new Vector3d();
-	
+
 	double d1, du;
-	
+
 	// compute plane equation of triange(coord1)
 	e1.x = v1.x - v0.x;
 	e1.y = v1.y - v0.y;
 	e1.z = v1.z - v0.z;
-	
+
 	e2.x = v2.x - v0.x;
 	e2.y = v2.y - v0.y;
 	e2.z = v2.z - v0.z;
-	
+
 	n1.cross(e1,e2);
-	
+
 	if(n1.length() == 0.0) {
 	    // System.err.println("(1) Degenerate triangle.");
 	    return false;  // Degenerate triangle.
 	}
-	
+
 	tempV3d.set((Tuple3d) v0);
-	d1 = - n1.dot(tempV3d); // plane equation 1: n1.x + d1 = 0 
-	
+	d1 = - n1.dot(tempV3d); // plane equation 1: n1.x + d1 = 0
+
 	// put u to compute signed distance to the plane.
 	tempV3d.set((Tuple3d) u);
 	du = n1.dot(tempV3d) + d1;
-	
+
 	// coplanarity robustness check
 	if(Math.abs(du)<EPS) du = 0.0;
-	
+
 	// no intersection occurs
 	if(du != 0.0) {
 	    return false;
@@ -7245,7 +7260,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	double nAbsX, nAbsY, nAbsZ;
 	int i0, i1;
-	
+
 	// first project onto an axis-aligned plane, that maximizes the area
 	// of the triangles, compute indices i0, i1.
 	nAbsX = Math.abs(n1.x);
@@ -7272,17 +7287,17 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		i1 = 2;
 	    }
 	}
-	
-	
-	// finally, test if u is totally contained in tri.	
+
+
+	// finally, test if u is totally contained in tri.
 	if(pointInTri(u, v0, v1, v2, i0, i1)) {
 	    return true;
 	}
-	
+
 	return false;
     }
 
-    
+
     /**
      * Return flag indicating whether two triangles intersect.  This
      * uses Tomas Moller's code for fast triangle-triangle
@@ -7309,7 +7324,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	Vector3d n1 = new Vector3d();
 	Vector3d n2 = new Vector3d();
 	Vector3d tempV3d = new Vector3d();
-	
+
 	double d1, d2;
 	double du0, du1, du2, dv0, dv1, dv2;
 	double du0du1, du0du2, dv0dv1, dv0dv2;
@@ -7317,26 +7332,26 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	double vp0=0.0, vp1=0.0, vp2=0.0;
 	double up0=0.0, up1=0.0, up2=0.0;
 	double bb, cc, max;
-	
+
 	// compute plane equation of triange(coord1)
 	e1.x = v1.x - v0.x;
 	e1.y = v1.y - v0.y;
 	e1.z = v1.z - v0.z;
-	
+
 	e2.x = v2.x - v0.x;
 	e2.y = v2.y - v0.y;
 	e2.z = v2.z - v0.z;
-	
+
 	n1.cross(e1,e2);
-	
+
 	if(n1.length() == 0.0) {
 	    // System.err.println("(1) Degenerate triangle.");
 	    return false;  // Degenerate triangle.
 	}
-	
+
 	tempV3d.set((Tuple3d) v0);
-	d1 = - n1.dot(tempV3d); // plane equation 1: n1.x + d1 = 0 
-	
+	d1 = - n1.dot(tempV3d); // plane equation 1: n1.x + d1 = 0
+
 	// put u0, u1, and u2 into plane equation 1
 	// to compute signed distance to the plane.
 	tempV3d.set((Tuple3d) u0);
@@ -7345,40 +7360,40 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	du1 = n1.dot(tempV3d) + d1;
 	tempV3d.set((Tuple3d) u2);
 	du2 = n1.dot(tempV3d) + d1;
-	
+
 	// coplanarity robustness check
 	if(Math.abs(du0)<EPS) du0 = 0.0;
 	if(Math.abs(du1)<EPS) du1 = 0.0;
 	if(Math.abs(du2)<EPS) du2 = 0.0;
-	
+
 	du0du1 = du0 * du1;
 	du0du2 = du0 * du2;
-	
+
 	// same sign on all of them + not equal 0 ?
 	// no intersection occurs
 	if(du0du1>0.0 && du0du2>0.0) {
 	    // System.err.println("In intersectTriTri : du0du1>0.0 && du0du2>0.0");
 	    return false;
 	}
-	
+
 	// compute plane of triangle(coord2)
 	e1.x = u1.x - u0.x;
 	e1.y = u1.y - u0.y;
 	e1.z = u1.z - u0.z;
-	
+
 	e2.x = u2.x - u0.x;
 	e2.y = u2.y - u0.y;
 	e2.z = u2.z - u0.z;
-	
+
 	n2.cross(e1,e2);
-	
+
 	if(n2.length() == 0.0) {
 	    // System.err.println("(2) Degenerate triangle.");
 	    return false;  // Degenerate triangle.
 	}
-	
+
 	tempV3d.set((Tuple3d) u0);
-	d2 = - n2.dot(tempV3d); // plane equation 2: n2.x + d2 = 0 
+	d2 = - n2.dot(tempV3d); // plane equation 2: n2.x + d2 = 0
 
 	// put v0, v1, and v2 into plane equation 2
 	// to compute signed distance to the plane.
@@ -7388,15 +7403,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	dv1 = n2.dot(tempV3d) + d2;
 	tempV3d.set((Tuple3d) v2);
 	dv2 = n2.dot(tempV3d) + d2;
-	
+
 	// coplanarity robustness check
 	if(Math.abs(dv0)<EPS) dv0 = 0.0;
 	if(Math.abs(dv1)<EPS) dv1 = 0.0;
 	if(Math.abs(dv2)<EPS) dv2 = 0.0;
-	 
+
 	dv0dv1 = dv0 * dv1;
 	dv0dv2 = dv0 * dv2;
-	
+
 	// same sign on all of them + not equal 0 ?
 	// no intersection occurs
 	if(dv0dv1>0.0 && dv0dv2>0.0) {
@@ -7427,7 +7442,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    vp0 = v0.x;
 	    vp1 = v1.x;
 	    vp2 = v2.x;
-	    
+
 	    up0 = u0.x;
 	    up1 = u1.x;
 	    up2 = u2.x;
@@ -7436,7 +7451,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    vp0 = v0.y;
 	    vp1 = v1.y;
 	    vp2 = v2.y;
-	    
+
 	    up0 = u0.y;
 	    up1 = u1.y;
 	    up2 = u2.y;
@@ -7445,13 +7460,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    vp0 = v0.z;
 	    vp1 = v1.z;
 	    vp2 = v2.z;
-	    
+
 	    up0 = u0.z;
 	    up1 = u1.z;
 	    up2 = u2.z;
 	    break;
 	}
-	
+
 	// compute intereval for triangle 1.
 	double a=0.0, b=0.0, c=0.0, x0=0.0, x1=0.0;
 	if(dv0dv1>0.0) {
@@ -7477,7 +7492,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else if(dv2 != 0.0) {
 	    a = vp2; b = (vp0 - vp2) * dv2; c = (vp1 - vp2) * dv2;
 	    x0 = dv2 - dv0; x1 = dv2 - dv1;
-	}	    
+	}
 	else {
 	    // triangles are coplanar
 	    boolean toreturn = coplanarTriTri(n1, v0, v1, v2, u0, u1, u2);
@@ -7510,7 +7525,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else if(du2 != 0.0) {
 	    d = up2; e = (up0 - up2) * du2; f = (up1 - up2) * du2;
 	    y0 = du2 - du0; y1 = du2 - du1;
-	}	    
+	}
 	else {
 	    // triangles are coplanar
 	    //	    System.err.println("In intersectTriTri : coplanarTriTri test 2");
@@ -7537,7 +7552,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    isect1S = isect1E;
 	    isect1E = tmp;
 	}
-	
+
 	// sort so that isect2S <= isect2E
 	if(isect2S > isect2E) {
 	    tmp = isect2S;
@@ -7553,10 +7568,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	//	 System.err.println("In intersectTriTri : return true");
 	return true;
-	
+
     }
-    
-    
+
+
 
     boolean intersectPolygon(Point3d coord1[], Point3d coord2[]) {
 	int i, j;
@@ -7574,7 +7589,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if(vec0.length() > 0.0)
 		break;
 	}
-        
+
 	for(j=i; j<coord1.length-1; j++) {
 	    vec1.x = coord1[j+1].x - coord1[j].x;
 	    vec1.y = coord1[j+1].y - coord1[j].y;
@@ -7582,37 +7597,37 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if(vec1.length() > 0.0)
 		break;
 	}
-      
+
 	if(j == (coord1.length-1)) {
 	    // System.err.println("(1) Degenerate polygon.");
 	    return false;  // Degenerate polygon.
 	}
 
 	/*
-	  for(i=0; i<coord1.length; i++) 
+	  for(i=0; i<coord1.length; i++)
 	  System.err.println("coord1 P" + i + " " + coord1[i]);
-	  for(i=0; i<coord2.length; i++) 
+	  for(i=0; i<coord2.length; i++)
 	  System.err.println("coord2 P" + i + " " + coord2[i]);
 	  */
-      
+
 	pNrm.cross(vec0,vec1);
-      
+
 	if(pNrm.length() == 0.0) {
 	    // System.err.println("(2) Degenerate polygon.");
 	    return false;  // Degenerate polygon.
 	}
 
-	j = 0;      
+	j = 0;
 	Point3d seg[] = new Point3d[2];
 	seg[0] = new Point3d();
 	seg[1] = new Point3d();
 
 	for(i=0; i<coord2.length; i++) {
 	    if(i < (coord2.length-1))
-		epFlag = edgeIntersectPlane(pNrm, coord1[0], coord2[i], 
+		epFlag = edgeIntersectPlane(pNrm, coord1[0], coord2[i],
 					    coord2[i+1], seg[j]);
 	    else
-		epFlag = edgeIntersectPlane(pNrm, coord1[0], coord2[i], 
+		epFlag = edgeIntersectPlane(pNrm, coord1[0], coord2[i],
 					    coord2[0], seg[j]);
 	    if (epFlag) {
 		if(++j>1) {
@@ -7634,7 +7649,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
     }
 
-        
+
     /**
      * Return true if triangle or quad intersects with ray and the
      * distance is stored in dist[0] and the intersect point in iPnt
@@ -7642,8 +7657,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      */
     boolean intersectRay(Point3d coordinates[], PickRay ray, double dist[],
 			 Point3d iPnt) {
-	
-	return intersectRayOrSegment(coordinates, ray.direction, ray.origin, 
+
+	return intersectRayOrSegment(coordinates, ray.direction, ray.origin,
 				     dist, iPnt, false);
 
     }
@@ -7662,14 +7677,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	result = intersectRayOrSegment(coordinates, direction, start, dist, iPnt, true);
 	return result;
     }
-    
+
 
 
     /**
-     *  Return true if triangle or quad intersects with ray and the distance is 
+     *  Return true if triangle or quad intersects with ray and the distance is
      *  stored in pr.
      */
-    boolean intersectRayOrSegment(Point3d coordinates[], 
+    boolean intersectRayOrSegment(Point3d coordinates[],
 				  Vector3d direction, Point3d origin,
 				  double dist[], Point3d iPnt, boolean isSegment) {
 	Vector3d vec0, vec1, pNrm, tempV3d;
@@ -7678,7 +7693,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	pNrm = new Vector3d();
 
 	double  absNrmX, absNrmY, absNrmZ, pD = 0.0;
-	double pNrmDotrDir = 0.0; 
+	double pNrmDotrDir = 0.0;
 
 	boolean isIntersect = false;
 	int i, j, k=0, l = 0;
@@ -7697,7 +7712,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		break;
 	    }
 	}
-		
+
 
 	for (j=l; j<coordinates.length; j++) {
 	    if (j != coordinates.length-1) {
@@ -7711,7 +7726,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if (vec1.length() > 0.0) {
 		break;
 	    }
-	}		
+	}
 
 	pNrm.cross(vec0,vec1);
 
@@ -7722,7 +7737,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    isIntersect = intersectLineAndRay(coordinates[l],
 					      coordinates[k],
 					      origin,
-					      direction, 
+					      direction,
 					      dist,
 					      iPnt);
 
@@ -7730,12 +7745,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    return isIntersect;
 	}
 
-	// It is possible that Quad is degenerate to Triangle 
+	// It is possible that Quad is degenerate to Triangle
 	// at this point
 
 	pNrmDotrDir = pNrm.dot(direction);
 
-    	// Ray is parallel to plane. 
+    	// Ray is parallel to plane.
 	if (pNrmDotrDir == 0.0) {
 	    // Ray is parallel to plane
 	    // Check line/triangle intersection on plane.
@@ -7748,7 +7763,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if (intersectLineAndRay(coordinates[i],
 					coordinates[k],
 					origin,
-					direction, 
+					direction,
 					dist,
 					iPnt)) {
 		    isIntersect = true;
@@ -7766,7 +7781,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	// Substitute Ray equation:
 	// p = origin + pi.distance*direction
-	// into the above Plane equation 
+	// into the above Plane equation
 
 	dist[0] = (pD - pNrm.dot(tempV3d))/ pNrmDotrDir;
 
@@ -7774,7 +7789,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if ((dist[0] < -EPS ) ||
 	    (isSegment && (dist[0] > 1.0+EPS))) {
 	    // Ray intersects the plane behind the ray's origin
-	    // or intersect point not fall in Segment 
+	    // or intersect point not fall in Segment
 	    return false;
 	}
 
@@ -7787,14 +7802,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	iPnt.y = origin.y + direction.y * dist[0];
 	iPnt.z = origin.z + direction.z * dist[0];
 
-	// Project 3d points onto 2d plane 
+	// Project 3d points onto 2d plane
 	// Find the axis so that area of projection is maximize.
 	absNrmX = Math.abs(pNrm.x);
 	absNrmY = Math.abs(pNrm.y);
 	absNrmZ = Math.abs(pNrm.z);
 
 	// All sign of (y - y0) (x1 - x0) - (x - x0) (y1 - y0)
-	// must agree. 
+	// must agree.
 	double sign, t, lastSign = 0;
 	Point3d p0 = coordinates[coordinates.length-1];
 	Point3d p1 = coordinates[0];
@@ -7806,7 +7821,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		for (i=0; i < coordinates.length; i++) {
 		    p0 = coordinates[i];
 		    p1 = (i != coordinates.length-1 ? coordinates[i+1]: coordinates[0]);
- 		    sign = (iPnt.y - p0.y)*(p1.x - p0.x) - 
+ 		    sign = (iPnt.y - p0.y)*(p1.x - p0.x) -
 			   (iPnt.x - p0.x)*(p1.y - p0.y);
 		    if (isNonZero(sign)) {
 			if (sign*lastSign < 0) {
@@ -7827,19 +7842,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 				isIntersect = ((t > -EPS) && (t < 1+EPS));
 				break;
 			    } else {
-    // Ignore degenerate line=>point happen when Quad => Triangle. 
+    // Ignore degenerate line=>point happen when Quad => Triangle.
     // Note that by next round sign*lastSign = 0 so it will
     // not pass the interest test. This should only happen once in the
     // loop because we already check for degenerate geometry before.
 			    }
 			}
 		    }
-		} 
+		}
 	    } else {
 		for (i=0; i<coordinates.length; i++) {
 		    p0 = coordinates[i];
 		    p1 = (i != coordinates.length-1 ? coordinates[i+1]: coordinates[0]);
-		    sign = (iPnt.y - p0.y)*(p1.z - p0.z) - 
+		    sign = (iPnt.y - p0.y)*(p1.z - p0.z) -
 			   (iPnt.z - p0.z)*(p1.y - p0.y);
 		    if (isNonZero(sign)) {
 			if (sign*lastSign < 0) {
@@ -7866,14 +7881,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    }
 			}
 		    }
-		} 
+		}
 	    }
 	} else {
 	    if (absNrmY < absNrmZ) {
 		for (i=0; i<coordinates.length; i++) {
 		    p0 = coordinates[i];
 		    p1 = (i != coordinates.length-1 ? coordinates[i+1]: coordinates[0]);
-		    sign = (iPnt.y - p0.y)*(p1.x - p0.x) - 
+		    sign = (iPnt.y - p0.y)*(p1.x - p0.x) -
 			   (iPnt.x - p0.x)*(p1.y - p0.y);
 		    if (isNonZero(sign)) {
 			if (sign*lastSign < 0) {
@@ -7903,7 +7918,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		for (i=0; i<coordinates.length; i++) {
 		    p0 = coordinates[i];
 		    p1 = (i != coordinates.length-1 ? coordinates[i+1]: coordinates[0]);
-		    sign = (iPnt.x - p0.x)*(p1.z - p0.z) - 
+		    sign = (iPnt.x - p0.x)*(p1.z - p0.z) -
 			   (iPnt.z - p0.z)*(p1.x - p0.x);
 		    if (isNonZero(sign)) {
 			if (sign*lastSign < 0) {
@@ -7931,7 +7946,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 	    }
 	}
-	
+
 	if (isIntersect) {
 	    dist[0] *= direction.length();
 	}
@@ -7942,7 +7957,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     static final boolean isNonZero(double v) {
 	return ((v > EPS) || (v < -EPS));
-	
+
     }
 
     /**
@@ -7950,14 +7965,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
      * halfspace is partition by the plane of triangle or quad.
      */
     boolean inside( Point3d coordinates[], PickPoint point, int ccw ) {
-    
+
 	Vector3d vec0 = new Vector3d(); // Edge vector from point 0 to point 1;
 	Vector3d vec1 = new Vector3d(); // Edge vector from point 0 to point 2 or 3;
 	Vector3d pNrm = new Vector3d();
 	double  absNrmX, absNrmY, absNrmZ, pD = 0.0;
 	Vector3d tempV3d = new Vector3d();
-	double pNrmDotrDir = 0.0; 
-    
+	double pNrmDotrDir = 0.0;
+
 	double tempD;
 
 	int i, j;
@@ -7970,7 +7985,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if(vec0.length() > 0.0)
 		break;
 	}
-        
+
 	for(j=i; j<coordinates.length-1; j++) {
 	    vec1.x = coordinates[j+1].x - coordinates[j].x;
 	    vec1.y = coordinates[j+1].y - coordinates[j].y;
@@ -7978,16 +7993,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if(vec1.length() > 0.0)
 		break;
 	}
-    
+
 	if(j == (coordinates.length-1)) {
 	    // System.err.println("(1) Degenerate polygon.");
 	    return false;  // Degenerate polygon.
 	}
 
-	/* 
+	/*
 	   System.err.println("Ray orgin : " + ray.origin + " dir " + ray.direction);
 	   System.err.println("Triangle/Quad :");
-	   for(i=0; i<coordinates.length; i++) 
+	   for(i=0; i<coordinates.length; i++)
 	   System.err.println("P" + i + " " + coordinates[i]);
 	   */
 
@@ -7995,7 +8010,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    pNrm.cross(vec0,vec1);
 	else
 	    pNrm.cross(vec1,vec0);
-    
+
 	if(pNrm.length() == 0.0) {
 	    // System.err.println("(2) Degenerate polygon.");
 	    return false;  // Degenerate polygon.
@@ -8009,12 +8024,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     }
 
     boolean intersectPntAndPnt( Point3d pnt1, Point3d pnt2 ) {
-	return ((pnt1.x == pnt2.x) && 
-		(pnt1.y == pnt2.y) && 
+	return ((pnt1.x == pnt2.x) &&
+		(pnt1.y == pnt2.y) &&
 		(pnt1.z == pnt2.z));
     }
 
-    boolean intersectPntAndRay(Point3d pnt, Point3d ori, Vector3d dir, 
+    boolean intersectPntAndRay(Point3d pnt, Point3d ori, Vector3d dir,
 			       double dist[]) {
 	int flag = 0;
 	double temp;
@@ -8034,7 +8049,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		return false;
 	    flag = 2;
 	    dist[0] = (pnt.z - ori.z)/dir.z;
-           
+
 	}
 	else
 	    return false;
@@ -8045,9 +8060,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if(flag == 0) {
 	    temp = ori.y + dist[0] * dir.y;
 	    if((pnt.y < (temp - EPS)) || (pnt.y > (temp + EPS)))
-		return false;    
+		return false;
 	}
-    
+
 	if(flag < 2) {
 	    temp = ori.z + dist[0] * dir.z;
 	    if((pnt.z < (temp - EPS)) || (pnt.z > (temp + EPS)))
@@ -8055,13 +8070,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 
 	return true;
-    
+
     }
-    
-    boolean intersectLineAndRay(Point3d start, Point3d end, 
+
+    boolean intersectLineAndRay(Point3d start, Point3d end,
 				Point3d ori, Vector3d dir, double dist[],
 				Point3d iPnt) {
-    
+
 	double m00, m01, m10, m11;
 	double mInv00, mInv01, mInv10, mInv11;
 	double dmt, t, s, tmp1, tmp2;
@@ -8070,12 +8085,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	//     System.err.println("GeometryArrayRetained : intersectLineAndRay");
 	//     System.err.println("start " + start + " end " + end );
 	//     System.err.println("ori " + ori + " dir " + dir);
-    
+
 	lDir = new Vector3d();
 	lDir.x = (end.x - start.x);
 	lDir.y = (end.y - start.y);
 	lDir.z = (end.z - start.z);
-    
+
 	m00 = lDir.x;
 	m01 = -dir.x;
 	m10 = lDir.y;
@@ -8107,7 +8122,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	t = mInv00 * tmp1 + mInv01 * tmp2;
 	s = mInv10 * tmp1 + mInv11 * tmp2;
-    
+
 	if(s<0.0) { // Before the origin of ray.
 	    // System.err.println("Before the origin of ray " + s);
 	    return false;
@@ -8119,7 +8134,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	tmp1 = ori.z + s * dir.z;
 	tmp2 = start.z + t * lDir.z;
-  
+
 	if((tmp1 < (tmp2 - EPS)) || (tmp1 > (tmp2 + EPS))) {
 	    // System.err.println("No intersection : tmp1 " + tmp1 + " tmp2 " + tmp2);
 	    return false;
@@ -8133,18 +8148,18 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    iPnt.y = ori.y + dir.y * dist[0];
 	    iPnt.z = ori.z + dir.z * dist[0];
 	}
-	
+
 	// System.err.println("Intersected : tmp1 " + tmp1 + " tmp2 " + tmp2);
 	return true;
     }
 
     /**
-      Return true if triangle or quad intersects with cylinder. The 
+      Return true if triangle or quad intersects with cylinder. The
       distance is stored in dist.
       */
     boolean intersectCylinder(Point3d coordinates[], PickCylinder cyl,
 			      double dist[], Point3d iPnt) {
-	
+
 	Point3d origin = new Point3d();
 	Point3d end = new Point3d();
 	Vector3d direction = new Vector3d();
@@ -8168,9 +8183,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// a segment
 	if (coordinates.length > 2) {
 	    if (cyl instanceof PickCylinderRay) {
-		if (intersectRay(coordinates, 
+		if (intersectRay(coordinates,
 				 new PickRay(origin, direction),
-				 dist, iPnt)) {	    
+				 dist, iPnt)) {
 		    return true;
 		}
 	    }
@@ -8180,21 +8195,21 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 	    }
 	}
-	
+
 	// Ray doesn't intersect, check distance to edges
 	double sqDistToEdge;
 	int j;
 	for (int i=0; i<coordinates.length;i++) {
 	    j = (i < coordinates.length-1 ? i+1: 0);
 	    if (cyl instanceof PickCylinderSegment) {
-		sqDistToEdge = 
-		    Distance.segmentToSegment(origin, end, 
+		sqDistToEdge =
+		    Distance.segmentToSegment(origin, end,
 					      coordinates[i], coordinates[j],
 					      iPnt1, iPnt, null);
 	    }
 	    else {
-		sqDistToEdge = 
-		    Distance.rayToSegment(origin, direction, 
+		sqDistToEdge =
+		    Distance.rayToSegment(origin, direction,
 					  coordinates[i], coordinates[j],
 					  iPnt1, iPnt, null);
 	    }
@@ -8206,20 +8221,20 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 	return false;
     }
-    
+
     /**
-      Return true if triangle or quad intersects with cone. The 
+      Return true if triangle or quad intersects with cone. The
       distance is stored in dist.
       */
     boolean intersectCone(Point3d coordinates[], PickCone cone,
 			  double[] dist, Point3d iPnt) {
-	
+
 	Point3d origin = new Point3d();
 	Point3d end = new Point3d();
 	Vector3d direction = new Vector3d();
 	Vector3d originToIpnt = new Vector3d();
 	double distance;
-    
+
 	Point3d iPnt1 = new Point3d();
 	Vector3d vector = new Vector3d();
 
@@ -8239,8 +8254,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// a segment
 	if (coordinates.length > 2) {
 	    if (cone instanceof PickConeRay) {
-		if (intersectRay(coordinates, 
-				 new PickRay (origin, direction), 
+		if (intersectRay(coordinates,
+				 new PickRay (origin, direction),
 				 dist, iPnt)) {
 		    return true;
 		}
@@ -8258,18 +8273,18 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	for (int i=0; i<coordinates.length;i++) {
 	    j = (i < coordinates.length-1 ? i+1: 0);
 	    if (cone instanceof PickConeSegment) {
-		sqDistToEdge = 
-		    Distance.segmentToSegment (origin, end, 
+		sqDistToEdge =
+		    Distance.segmentToSegment (origin, end,
 					       coordinates[i], coordinates[j],
 					       iPnt1, iPnt, null);
 	    }
 	    else {
-		sqDistToEdge = 
-		    Distance.rayToSegment (origin, direction, 
+		sqDistToEdge =
+		    Distance.rayToSegment (origin, direction,
 					   coordinates[i], coordinates[j],
 					   iPnt1, iPnt, null);
 	    }
-	    originToIpnt.sub(iPnt1, origin);      
+	    originToIpnt.sub(iPnt1, origin);
 	    distance = originToIpnt.length();
 	    radius = Math.tan (cone.getSpreadAngle()) * distance;
 	    if (sqDistToEdge <= radius*radius) {
@@ -8281,14 +8296,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	return false;
     }
 
-    
+
     /**
       Return true if point intersects with cylinder and the distance is
       stored in dist.
       */
     boolean intersectCylinder(Point3d pt, PickCylinder cyl,
 			      double[] dist) {
-	
+
 	Point3d origin = new Point3d();
 	Point3d end = new Point3d();
 	Vector3d direction = new Vector3d();
@@ -8315,12 +8330,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 	return false;
     }
-    
+
     /**
-      Return true if point intersects with cone and the 
+      Return true if point intersects with cone and the
       distance is stored in pi.
       */
-    boolean intersectCone(Point3d pt, PickCone cone, double[] dist) 
+    boolean intersectCone(Point3d pt, PickCone cone, double[] dist)
     {
 	Point3d origin = new Point3d();
 	Point3d end = new Point3d();
@@ -8372,7 +8387,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    default:
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray116"));
 	    }
-	    
+
 	    if (this instanceof IndexedGeometryArrayRetained) {
 		IndexedGeometryArrayRetained idx = (IndexedGeometryArrayRetained)this;
 		if (3 * idx.maxCoordIndex >= coords.getBufferImpl().limit()) {
@@ -8384,14 +8399,17 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 
 	// lock the geometry and start to do real work
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 	coordRefBuffer = coords;
 	if(coords == null) {
 	    floatBufferRefCoords = null;
 	    doubleBufferRefCoords = null;
 	    // XXXX: if not mix java array with nio buffer
-	    // vertexType can be used as vertexTypeBuffer 
+	    // vertexType can be used as vertexTypeBuffer
 	    vertexType &= ~PD;
 	    vertexType &= ~PF;
 	}else {
@@ -8420,17 +8438,18 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// XXXX: if we need to mix java array with buffer,
 	//        we may need to consider setupMirrorVertexPointer()
 
-	geomLock.unLock();
-	
+	if(isLive) {
+            geomLock.unLock();
+        }
 	if (!inUpdater && source != null) {
-	    if (source.isLive()) {
+	    if (isLive) {
 		processCoordsChanged((coords == null));
 		sendDataChangedMessage(true);
 	    } else {
 		boundsDirty = true;
 	    }
 	}
-	
+
     }
 
 
@@ -8440,7 +8459,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 
     void setCoordRefFloat(float[] coords) {
-	
+
 	// If non-null coordinate and vertType is either  defined
 	// to be something other than PF, then issue an error
 	if (coords != null) {
@@ -8455,13 +8474,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 		if (3 * idx.maxCoordIndex >= coords.length) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray23"));
-		} 
+		}
 	    } else if (coords.length < 3 * (initialCoordIndex+validVertexCount)) {
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray99"));
 	    }
 	}
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 
 	floatRefCoords = coords;
@@ -8475,14 +8496,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorVertexPointer(PF);
 	}
-	
-	geomLock.unLock();
-	
+
+	if(isLive) {
+            geomLock.unLock();
+        }
 	if (!inUpdater && source != null) {
-	    if (source.isLive()) {
-		processCoordsChanged(coords == null);
+            if (isLive) {
+                processCoordsChanged(coords == null);
 		sendDataChangedMessage(true);
-	    } else {
+            } else {
 		boundsDirty = true;
 	    }
 	}
@@ -8506,14 +8528,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		IndexedGeometryArrayRetained idx = (IndexedGeometryArrayRetained)this;
 		if (3 * idx.maxCoordIndex >= coords.length) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray23"));
-		} 
+		}
 	    } else if (coords.length < 3 * (initialCoordIndex+validVertexCount)) {
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray99"));
 	    }
 	}
-
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 	doubleRefCoords = coords;
 	if (inUpdater || (this instanceof IndexedGeometryArrayRetained &&
@@ -8526,12 +8549,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorVertexPointer(PD);
 	}
-	geomLock.unLock();
-	
+	if(isLive) {
+            geomLock.unLock();
+        }
 	if (!inUpdater && source != null) {
-	    if (source.isLive()) {
-		processCoordsChanged(coords == null);    
-		sendDataChangedMessage(true);	
+	    if (isLive) {
+		processCoordsChanged(coords == null);
+		sendDataChangedMessage(true);
 	    } else {
 		boundsDirty = true;
 	    }
@@ -8555,13 +8579,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 		if (idx.maxCoordIndex >= coords.length) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray23"));
-		} 
+		}
 	    } else if (coords.length < (initialCoordIndex+validVertexCount) ) {
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray99"));
 	    }
 	}
-	
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 	p3fRefCoords = coords;
 	if (inUpdater || (this instanceof IndexedGeometryArrayRetained &&
@@ -8574,10 +8600,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorVertexPointer(P3F);
 	}
-	geomLock.unLock();
-	
+	if(isLive) {
+            geomLock.unLock();
+        }
 	if (!inUpdater && source != null) {
-	    if (source.isLive()) {
+	    if (isLive) {
 		processCoordsChanged(coords == null);
 		sendDataChangedMessage(true);
 	    } else {
@@ -8604,12 +8631,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 		if (idx.maxCoordIndex >= coords.length) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray23"));
-		} 
+		}
 	    } else if (coords.length <  (initialCoordIndex+validVertexCount) ) {
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray99"));
 	    }
 	}
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 	p3dRefCoords = coords;
 	if (inUpdater || (this instanceof IndexedGeometryArrayRetained &&
@@ -8617,15 +8647,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if (coords == null)
 		vertexType &= ~P3D;
 	    else
-		vertexType |= P3D;	
+		vertexType |= P3D;
 	} else {
 	    setupMirrorVertexPointer(P3D);
 	}
-	geomLock.unLock();
-	
+	if(isLive) {
+            geomLock.unLock();
+        }
 	if (!inUpdater && source != null) {
-	    if (source.isLive()) {
-		processCoordsChanged(coords == null);    
+	    if (isLive) {
+		processCoordsChanged(coords == null);
 		sendDataChangedMessage(true);
 	    } else {
 		boundsDirty = true;
@@ -8660,7 +8691,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
 	}
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	floatRefColors = colors;
@@ -8674,8 +8708,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorColorPointer(CF, false);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(false);
 	}
 
@@ -8685,7 +8722,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	return floatRefColors;
     }
 
-    
+
     // set the color with nio buffer
     void setColorRefBuffer(J3DBuffer colors) {
 	if (colors != null) {
@@ -8713,13 +8750,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if (getColorStride() * idx.maxColorIndex >= colors.getBufferImpl().limit()) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray24"));
 		}
-	    } else if (colors.getBufferImpl().limit() < 
+	    } else if (colors.getBufferImpl().limit() <
 		       getColorStride() * (initialColorIndex+validVertexCount)) {
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 	    }
 	}
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	colorRefBuffer = colors;
@@ -8730,12 +8770,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    switch (colors.getBufferType()) {
 	    case J3DBuffer.TYPE_FLOAT:
 		floatBufferRefColors = (FloatBufferWrapper)colors.getBufferImpl();
-		byteBufferRefColors = null; 
+		byteBufferRefColors = null;
 		break;
 
 	    case J3DBuffer.TYPE_BYTE:
 		byteBufferRefColors = (ByteBufferWrapper)colors.getBufferImpl();
-		floatBufferRefColors = null; 
+		floatBufferRefColors = null;
 		break;
 	    default:
 		break;
@@ -8765,8 +8805,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorColorPointer(CF|CUB, false);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+
+	if(isLive) {
+            geomLock.unLock();
+	}
+
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(false);
 	}
     }
@@ -8775,7 +8819,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     J3DBuffer getColorRefBuffer() {
 	return colorRefBuffer;
     }
-    
+
     void setColorRefByte(byte[] colors) {
 
 	if (colors != null) {
@@ -8798,8 +8842,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 	    }
 	}
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	byteRefColors = colors;
@@ -8813,13 +8859,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorColorPointer(CUB, false);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+	if(isLive){
+            geomLock.unLock();
+	}
+
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(false);
 	}
 
     }
-    
+
     byte[] getColorRefByte() {
 	return byteRefColors;
     }
@@ -8843,11 +8892,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 	    } else if (colors.length < (initialColorIndex + validVertexCount) ) {
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
-	    } 
+	    }
 	}
 
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	c3fRefColors = colors;
@@ -8861,13 +8912,17 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorColorPointer(C3F, false);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+
+	if(isLive) {
+            geomLock.unLock();
+	}
+
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(false);
 	}
 
     }
-    
+
     Color3f[] getColorRef3f() {
 	return c3fRefColors;
     }
@@ -8893,8 +8948,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 	    }
 	}
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	c4fRefColors = colors;
@@ -8908,12 +8965,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorColorPointer(C4F, false);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(false);
 	}
     }
-    
+
     Color4f[] getColorRef4f() {
 	return c4fRefColors;
     }
@@ -8922,12 +8982,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void setColorRef3b(Color3b[] colors) {
 
 	if (colors != null) {
-	
+
 	    if ((vertexType & COLOR_DEFINED) != 0 &&
 		(vertexType & COLOR_DEFINED) != C3UB) {
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray98"));
 	    }
-	    
+
 	    if ((vertexFormat & GeometryArray.COLOR_3) == 0) {
 		throw new IllegalStateException(J3dI18N.getString("GeometryArray92"));
 	    }
@@ -8942,10 +9002,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 	    }
 	}
-	geomLock.getLock();
+
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
-	c3bRefColors = colors;	    
+	c3bRefColors = colors;
 	if (inUpdater || (this instanceof IndexedGeometryArrayRetained &&
 			  ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0))) {
 	    if (colors == null)
@@ -8956,17 +9020,20 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorColorPointer(C3UB, false);
 	}
-	
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
-	    sendDataChangedMessage(false);
+
+	if(isLive) {
+            geomLock.unLock();
 	}
+
+	if (!inUpdater && isLive) {
+	    sendDataChangedMessage(false);
+        }
     }
 
-    
+
     Color3b[] getColorRef3b() {
 	return c3bRefColors;
-    }        
+    }
 
     void setColorRef4b(Color4b[] colors) {
 
@@ -8975,7 +9042,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		(vertexType & COLOR_DEFINED) != C4UB) {
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray98"));
 	    }
-	    
+
 	    if ((vertexFormat & GeometryArray.COLOR_4) == 0) {
 		throw new IllegalStateException(J3dI18N.getString("GeometryArray93"));
 	    }
@@ -8990,7 +9057,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 	    }
 	}
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	c4bRefColors = colors;
@@ -9004,13 +9074,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorColorPointer(C4UB, false);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
-	    sendDataChangedMessage(false);
+
+	if(isLive) {
+            geomLock.unLock();
 	}
+	if (!inUpdater && isLive) {
+	    sendDataChangedMessage(false);
+        }
     }
-    
-    
+
+
     Color4b[] getColorRef4b() {
 	return c4bRefColors;
     }
@@ -9029,7 +9102,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	    if (this instanceof IndexedGeometryArrayRetained) {
 		IndexedGeometryArrayRetained idx = (IndexedGeometryArrayRetained)this;
-		
+
 		if (idx.maxNormalIndex*3 >= normals.length) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray26"));
 		}
@@ -9037,7 +9110,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray111"));
 	    }
 	}
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= NORMAL_CHANGED;
 	floatRefNormals = normals;
 	if (inUpdater || (this instanceof IndexedGeometryArrayRetained &&
@@ -9050,14 +9126,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorNormalPointer(NF);
 	}
-	geomLock.unLock();
-
-	if (!inUpdater && source != null && source.isLive()) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (!inUpdater && isLive) {
 		sendDataChangedMessage(false);
 	}
 
     }
-    
+
     float[] getNormalRefFloat() {
 	return floatRefNormals;
     }
@@ -9070,7 +9147,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if (normals != null) {
 	    if(normals.getBufferType() != J3DBuffer.TYPE_FLOAT)
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray116"));
-	    
+
 	    bufferImpl = (FloatBufferWrapper)normals.getBufferImpl();
 
 	    assert bufferImpl.isDirect();
@@ -9081,7 +9158,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	    if (this instanceof IndexedGeometryArrayRetained) {
 		IndexedGeometryArrayRetained idx = (IndexedGeometryArrayRetained)this;
-		if (idx.maxNormalIndex * 3 >= 
+		if (idx.maxNormalIndex * 3 >=
 		    ((FloatBufferWrapper)normals.getBufferImpl()).limit()) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray26"));
 		}
@@ -9089,21 +9166,25 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray111"));
 	    }
 	}
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= NORMAL_CHANGED;
 	normalRefBuffer = normals;
-	
+
 	if (normals == null) {
 	    vertexType &= ~NF;
-	    floatBufferRefNormals = null; 
+	    floatBufferRefNormals = null;
 	}
 	else {
 	    vertexType |= NF;
 	    floatBufferRefNormals = bufferImpl;
 	}
-	geomLock.unLock();
-
-	if (!inUpdater && source != null && source.isLive()) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (!inUpdater && isLive) {
 		sendDataChangedMessage(false);
 	}
     }
@@ -9133,7 +9214,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray111"));
 	    }
 	}
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= NORMAL_CHANGED;
 	v3fRefNormals = normals;
 	if (inUpdater || (this instanceof IndexedGeometryArrayRetained &&
@@ -9146,15 +9230,17 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorNormalPointer(N3F);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(false);
 	}
     }
-    
+
     Vector3f[] getNormalRef3f() {
 	return v3fRefNormals;
-    }        
+    }
 
     final int getColorStride() {
 	return ((vertexFormat & GeometryArray.WITH_ALPHA) != 0 ? 4 : 3);
@@ -9163,10 +9249,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     final int getTexStride() {
 	if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_2) != 0) {
 	    return 2;
-	} 
-	if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_3) != 0) { 
+	}
+	if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_3) != 0) {
 	    return 3;
-	} 
+	}
 	if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_4) != 0) {
 	    return 4;
 	}
@@ -9198,8 +9284,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray113"));
 	    }
 	}
-
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= TEXTURE_CHANGED;
 	refTexCoords[texCoordSet] = texCoords;
 	if (inUpdater || (this instanceof IndexedGeometryArrayRetained &&
@@ -9210,8 +9298,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorTexCoordPointer(texCoordSet, TF);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(false);
 	}
     }
@@ -9246,8 +9336,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray113"));
 	    }
 	}
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= TEXTURE_CHANGED;
 	// refTexCoordsBuffer contains J3DBuffer object for tex coord
 	refTexCoordsBuffer[texCoordSet] = texCoords;
@@ -9260,8 +9352,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
         texCoordType = TF;
         validateTexCoordPointerType();
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+            geomLock.unLock();
+        }
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(false);
 	}
     }
@@ -9297,10 +9391,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
 
 	}
-
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= TEXTURE_CHANGED;
-	refTexCoords[texCoordSet] = texCoords;	
+	refTexCoords[texCoordSet] = texCoords;
 	if (inUpdater || (this instanceof IndexedGeometryArrayRetained &&
 			  ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0))) {
 	    texCoordType = T2F;
@@ -9309,16 +9405,18 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorTexCoordPointer(texCoordSet, T2F);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+	if(isLive) {
+            geomLock.unLock();
+        }
+	if (!inUpdater && isLive) {
 		sendDataChangedMessage(false);
 	}
     }
 
-    
+
     TexCoord2f[] getTexCoordRef2f(int texCoordSet) {
 	if (refTexCoords != null && refTexCoords[texCoordSet] != null &&
-		refTexCoords[texCoordSet] instanceof TexCoord2f[]) { 
+		refTexCoords[texCoordSet] instanceof TexCoord2f[]) {
 	    return ((TexCoord2f[])refTexCoords[texCoordSet]);
 	} else {
 	    return null;
@@ -9355,8 +9453,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
 
 	}
-
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= TEXTURE_CHANGED;
 	refTexCoords[texCoordSet] = texCoords;
 	if (inUpdater || (this instanceof IndexedGeometryArrayRetained &&
@@ -9367,21 +9467,23 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorTexCoordPointer(texCoordSet, T3F);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(false);
 	}
     }
 
-    
+
     TexCoord3f[] getTexCoordRef3f(int texCoordSet) {
 	if (refTexCoords != null && refTexCoords[texCoordSet] != null &&
-		refTexCoords[texCoordSet] instanceof TexCoord3f[]) { 
+		refTexCoords[texCoordSet] instanceof TexCoord3f[]) {
 	    return ((TexCoord3f[])refTexCoords[texCoordSet]);
 	} else {
 	    return null;
 	}
-    }    
+    }
 
 
     /**
@@ -9416,8 +9518,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray129"));
 	    }
 	}
-
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= VATTR_CHANGED;
 	floatRefVertexAttrs[vertexAttrNum] = vertexAttrs;
 	if (inUpdater || (this instanceof IndexedGeometryArrayRetained &&
@@ -9428,8 +9532,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    setupMirrorVertexAttrPointer(vertexAttrNum, AF);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+	if(isLive) {
+            geomLock.unLock();
+        }
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(false);
 	}
     }
@@ -9472,8 +9578,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray129"));
             }
         }
-
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
         dirtyFlag |= VATTR_CHANGED;
         vertexAttrsRefBuffer[vertexAttrNum] = vertexAttrs;
         if (vertexAttrs == null) {
@@ -9487,8 +9595,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         }
         vertexAttrType = AF;
         validateVertexAttrPointerType();
-        geomLock.unLock();
-        if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+            geomLock.unLock();
+        }
+        if (!inUpdater && isLive) {
             sendDataChangedMessage(false);
         }
 
@@ -9521,7 +9631,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			}
 		    }
 		}
-		
+
 		if (((this.vertexFormat & GeometryArray.COLOR) != 0) &&
 		    (stride * idx.maxColorIndex >= vertexData.length)) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray24"));
@@ -9533,13 +9643,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 	    } else {
 		if (vertexData.length < (stride * (initialVertexIndex+validVertexCount)))
-		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray114"));		
+		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray114"));
 	    }
-	}	
+	}
 
 	// If the geometry has been rendered transparent, then make a copy
 	// of the color pointer with 4f
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= VERTEX_CHANGED;
 	colorChanged = 0xffff;
 	interLeavedVertexData = vertexData;
@@ -9547,9 +9660,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			  ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0))) {
 	    setupMirrorInterleavedColorPointer(false);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
-	    processCoordsChanged(vertexData == null);    
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (!inUpdater && isLive) {
+	    processCoordsChanged(vertexData == null);
 	    sendDataChangedMessage(true);
 	}
     }
@@ -9563,7 +9678,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	    if (vertexData.getBufferType() != J3DBuffer.TYPE_FLOAT)
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray116"));
-	    
+
 	    bufferImpl = (FloatBufferWrapper)vertexData.getBufferImpl();
 
             assert bufferImpl.isDirect();
@@ -9585,7 +9700,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			}
 		    }
 		}
-		
+
 		if (((this.vertexFormat & GeometryArray.COLOR) != 0) &&
 		    (stride * idx.maxColorIndex >= bufferSize)) {
 		    	throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray24"));
@@ -9602,23 +9717,28 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 	// If the geometry has been rendered transparent, then make a copy
 	// of the color pointer with 4f
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= VERTEX_CHANGED;
 	colorChanged = 0xffff;
 	interleavedVertexBuffer = vertexData;
 
-	if(vertexData == null) 
+	if(vertexData == null)
 	    interleavedFloatBufferImpl = null;
 	else
 	    interleavedFloatBufferImpl = bufferImpl;
-	
+
 	if (inUpdater || (this instanceof IndexedGeometryArrayRetained &&
 			  ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0))) {
-	    setupMirrorInterleavedColorPointer(false); 
+	    setupMirrorInterleavedColorPointer(false);
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
-	    processCoordsChanged(vertexData == null);    
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (!inUpdater && isLive) {
+	    processCoordsChanged(vertexData == null);
 	    sendDataChangedMessage(true);
 	}
     }
@@ -9628,9 +9748,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     }
 
     J3DBuffer getInterleavedVertexBuffer() {
-	return interleavedVertexBuffer; 
+	return interleavedVertexBuffer;
     }
-    
+
     void setValidVertexCount(int validVertexCount) {
 
 	boolean nullGeo = false;
@@ -9649,7 +9769,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if(( vertexFormat & GeometryArray.USE_NIO_BUFFER) != 0 && interleavedFloatBufferImpl != null){
 		if(interleavedFloatBufferImpl.limit() <  stride * (initialVertexIndex + validVertexCount)) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray114"));
-		}	
+		}
 	    }
 	    //use java array for interleaved data
 	    else if( interLeavedVertexData != null) {
@@ -9709,21 +9829,21 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    }
 		    break;
 		}
-		
+
 		switch ((vertexType & COLOR_DEFINED)) {
 		case CF:
 		    if ((vertexFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_3) {
 			if (floatBufferRefColors.limit() < 3 * (initialColorIndex+validVertexCount)) {
 			    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
-			} 
+			}
 		    }
 		    else if ((vertexFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_4) {
 			if (floatBufferRefColors.limit() < 4 * (initialColorIndex+validVertexCount)) {
 			    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
-			} 
+			}
 		    }
 		    break;
-		case CUB: 
+		case CUB:
 		    if ((vertexFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_3) {
 			if (byteBufferRefColors.limit() < 3 * (initialColorIndex + validVertexCount)) {
 			    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
@@ -9761,7 +9881,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    break;
 		}
 		switch ((vertexType & GeometryArrayRetained.NORMAL_DEFINED)) {
-		case NF: 
+		case NF:
 		    if (floatBufferRefNormals.limit() < 3 * (initialNormalIndex + validVertexCount )) {
 			throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray111"));
 		    }
@@ -9781,9 +9901,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 	    }
 	    // By reference with java array
-	    else { 
+	    else {
 		switch ((vertexType & GeometryArrayRetained.VERTEX_DEFINED)) {
-		case PF: 
+		case PF:
 		    if (floatRefCoords.length < 3 * (initialCoordIndex+validVertexCount)) {
 			throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray99"));
 		    }
@@ -9817,7 +9937,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			}
 		    }
 		    break;
-		case CUB: 
+		case CUB:
 		    if ((vertexFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_3) {
 			if (byteRefColors.length < 3 * (initialColorIndex + validVertexCount)) {
 			    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
@@ -9829,22 +9949,22 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			}
 		    }
 		    break;
-		case C3F: 
+		case C3F:
 		    if (c3fRefColors.length < (initialColorIndex + validVertexCount) ) {
 			throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 		    }
 		    break;
-		case C4F: 
+		case C4F:
 		    if (c4fRefColors.length < (initialColorIndex + validVertexCount) ) {
 			throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 		    }
 		    break;
-		case C3UB: 
+		case C3UB:
 		    if (c3bRefColors.length < (initialColorIndex + validVertexCount)) {
 			throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 		    }
 		    break;
-		case C4UB: 
+		case C4UB:
 		    if (c4bRefColors.length < (initialColorIndex + validVertexCount) ) {
 			throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 		    }
@@ -9879,7 +9999,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			}
 		    }
 		    break;
-		case T3F: 
+		case T3F:
 		    for (int i = 0; i < texCoordSetCount; i++) {
 			if (((TexCoord3f[])refTexCoords[i]).length < (initialTexCoordIndex[i] + validVertexCount) ) {
 			    throw new ArrayIndexOutOfBoundsException(
@@ -9889,12 +10009,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    break;
 		}
 		switch ((vertexType & GeometryArrayRetained.NORMAL_DEFINED)) {
-		case NF: 
+		case NF:
 		    if (floatRefNormals.length < 3 * (initialNormalIndex + validVertexCount )) {
 			throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray111"));
 		    }
 		    break;
-		case N3F: 
+		case N3F:
 		    if (v3fRefNormals.length < (initialNormalIndex + validVertexCount) ) {
 			throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray111"));
 		    }
@@ -9913,13 +10033,19 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 	    }
 	}
-
-	geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= VERTEX_CHANGED;
 	this.validVertexCount = validVertexCount;
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
-	    processCoordsChanged(nullGeo);    
+
+	if(isLive){
+            geomLock.unLock();
+	}
+
+	if (!inUpdater && isLive) {
+	    processCoordsChanged(nullGeo);
 	    sendDataChangedMessage(true);
 	}
     }
@@ -9932,11 +10058,11 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     //Used for interleaved data (array or nio buffer)
     void setInitialVertexIndex(int initialVertexIndex) {
 	boolean nullGeo = false;
-	
+
 	if ((initialVertexIndex + validVertexCount) > vertexCount) {
 	    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray100"));
 	}
-	 
+
 	if((vertexFormat & GeometryArray.USE_NIO_BUFFER) != 0 && interleavedFloatBufferImpl != null) {
 	    if(interleavedFloatBufferImpl.limit() <  stride * (initialVertexIndex + validVertexCount)) {
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray114"));
@@ -9951,11 +10077,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	else {
 	    nullGeo = (vertexFormat & GeometryArray.INTERLEAVED) != 0; // Only for byRef
 	}
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= VERTEX_CHANGED;
 	this.initialVertexIndex = initialVertexIndex;
-	geomLock.unLock();
-	if (!inUpdater&& source != null && source.isLive()) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (!inUpdater && isLive) {
 	    processCoordsChanged(nullGeo);
 	    sendDataChangedMessage(true);
 	}
@@ -9969,7 +10100,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	if ((initialCoordIndex + validVertexCount) > vertexCount) {
 	    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray104"));
 	}
-	// use NIO buffer 
+	// use NIO buffer
 	if((vertexFormat & GeometryArray.USE_NIO_BUFFER) != 0){
 	    switch ((vertexType & GeometryArrayRetained.VERTEX_DEFINED)) {
 	    case PF:
@@ -9985,7 +10116,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
 	} else {
 	    switch ((vertexType & GeometryArrayRetained.VERTEX_DEFINED)) {
-	    case PF: 
+	    case PF:
 		if (floatRefCoords.length < 3 * (initialCoordIndex+validVertexCount)) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray99"));
 		}
@@ -10007,13 +10138,18 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		break;
 	    }
 	}
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COORDINATE_CHANGED;
 	this.initialCoordIndex = initialCoordIndex;
 	dirtyFlag |= COORDINATE_CHANGED;
-	geomLock.unLock();
+	if(isLive) {
+            geomLock.unLock();
+	}
 	// Send a message, since bounds changed
-	if (!inUpdater && source != null && source.isLive()) {
+	if (!inUpdater && isLive) {
 	    processCoordsChanged((vertexType & GeometryArrayRetained.VERTEX_DEFINED) == 0);
 	    sendDataChangedMessage(true);
 	}
@@ -10034,12 +10170,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if ((vertexFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_3) {
 		    if (floatBufferRefColors.limit() < 3 * (initialColorIndex+validVertexCount)) {
 			throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
-		    } 
+		    }
 		}
 		else if ((vertexFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_4) {
 		    if (floatBufferRefColors.limit() < 4 * (initialColorIndex+validVertexCount)) {
 			throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
-		    } 
+		    }
 		}
 		break;
 
@@ -10072,7 +10208,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    }
 		}
 		break;
-	    case CUB: 
+	    case CUB:
 		if ((vertexFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_3) {
 		    if (byteRefColors.length < 3 * (initialColorIndex + validVertexCount)) {
 			throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
@@ -10084,36 +10220,41 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    }
 		}
 		break;
-	    case C3F: 
+	    case C3F:
 		if (c3fRefColors.length < (initialColorIndex + validVertexCount) ) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 		}
 		break;
-	    case C4F: 
+	    case C4F:
 		if (c4fRefColors.length < (initialColorIndex + validVertexCount) ) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 		}
 		break;
-	    case C3UB: 
+	    case C3UB:
 		if (c3bRefColors.length < (initialColorIndex + validVertexCount)) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 		}
 		break;
-	    case C4UB: 
+	    case C4UB:
 		if (c4bRefColors.length < (initialColorIndex + validVertexCount) ) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 		}
 		break;
 	    }
 	}
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
 	this.initialColorIndex = initialColorIndex;
-	geomLock.unLock();
+	if(isLive) {
+            geomLock.unLock();
+	}
 	// There is no need to send message for by reference, since we
 	// use VA
-	
+
     }
 
     int getInitialColorIndex() {
@@ -10128,25 +10269,30 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    if((vertexType & NORMAL_DEFINED) == NF){
 		if (floatBufferRefNormals.limit() < 3 * (initialNormalIndex + validVertexCount )) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray111"));
-		}	
+		}
 	    }
 	} else {
 	    switch((vertexType & NORMAL_DEFINED)){
-	    case NF: 
+	    case NF:
 		if (floatRefNormals.length < 3 * (initialNormalIndex + validVertexCount )) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray111"));
 		}
 		break;
-	    case N3F: 
+	    case N3F:
 		if (v3fRefNormals.length < (initialNormalIndex + validVertexCount) ) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray111"));
 		}
 	    }
 	}
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= NORMAL_CHANGED;
 	this.initialNormalIndex = initialNormalIndex;
-	geomLock.unLock();
+	if(isLive) {
+            geomLock.unLock();
+	}
 	// There is no need to send message for by reference, since we
 	// use VA
     }
@@ -10181,10 +10327,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
                 }
             }
         }
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+    	if(isLive){
+            geomLock.getLock();
+    	}
         dirtyFlag |= VATTR_CHANGED;
         this.initialVertexAttrIndex[vertexAttrNum] = initialVertexAttrIndex;
-        geomLock.unLock();
+        if(isLive) {
+            geomLock.unLock();
+    	}
         // There is no need to send message for by reference, since we
         // use VA
     }
@@ -10198,7 +10349,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
         return initialVertexAttrIndex[vertexAttrNum];
     }
 
-    void setInitialTexCoordIndex(int texCoordSet, int initialTexCoordIndex) {	
+    void setInitialTexCoordIndex(int texCoordSet, int initialTexCoordIndex) {
 	if ((initialTexCoordIndex + validVertexCount) > vertexCount) {
 	    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray103"));
 	}
@@ -10249,7 +10400,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 							     J3dI18N.getString("GeometryArray113"));
 		}
 		break;
-	    case T3F: 
+	    case T3F:
 		if (((TexCoord3f[])refTexCoords[texCoordSet]).length < (initialTexCoordIndex+ validVertexCount) ) {
 		    throw new ArrayIndexOutOfBoundsException(
 							     J3dI18N.getString("GeometryArray113"));
@@ -10257,10 +10408,15 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		break;
 	    }
 	}
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+	if(isLive){
+            geomLock.getLock();
+	}
 	dirtyFlag |= TEXTURE_CHANGED;
 	this.initialTexCoordIndex[texCoordSet] = initialTexCoordIndex;
-	geomLock.unLock();
+	if(isLive) {
+            geomLock.unLock();
+	}
 	// There is no need to send message for by reference, since we
 	// use VA
     }
@@ -10282,7 +10438,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     }
 
     void getTexCoordSetMap(int [] texCoordSetMap) {
-	
+
 	if (this.texCoordSetMap!=null) {
 	    for (int i = 0; i < this.texCoordSetMap.length; i++) {
 	         texCoordSetMap[i] = this.texCoordSetMap[i];
@@ -10366,7 +10522,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		 newList[i] = timeStampPerDlist[i];
 	    }
 	    timeStampPerDlist = newList;
-	} 
+	}
 	timeStampPerDlist[index] = timeStamp;
     }
 
@@ -10382,7 +10538,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     int getIndex(int bit) {
 	int num = 0;
-	
+
 	while (bit > 0) {
 	    num++;
 	    bit >>= 1;
@@ -10394,7 +10550,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     boolean isWriteStatic() {
 
 	if (source.getCapability(GeometryArray.ALLOW_COORDINATE_WRITE ) ||
-	    source.getCapability(GeometryArray.ALLOW_COLOR_WRITE) || 
+	    source.getCapability(GeometryArray.ALLOW_COLOR_WRITE) ||
 	    source.getCapability(GeometryArray.ALLOW_NORMAL_WRITE) ||
 	    source.getCapability(GeometryArray.ALLOW_TEXCOORD_WRITE) ||
             source.getCapability(GeometryArray.ALLOW_VERTEX_ATTR_WRITE) ||
@@ -10417,7 +10573,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	int vcount = 0, vformat = 0;
 	vcount = 0;
 	isCompiled = true;
-	
+
 	if (num > 0)
 	    source = ((SceneGraphObjectRetained)curList.get(0)).source;
 	for (i = 0; i < num; i++) {
@@ -10435,7 +10591,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	// Assign the initial and valid fields
 	validVertexCount = vcount;
 	initialVertexIndex = 0;
-	
+
 	mergeGeometryArrays(curList);
 
     }
@@ -10449,7 +10605,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     int getValidVertexCount(int index) {
 	return compileVcount[index];
-    }	
+    }
 
 
     int getInitialVertexIndex(int index) {
@@ -10480,20 +10636,20 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	    // assign geoBounds
 	    geoBounds.combine(geo.geoBounds);
-	    
+
 	}
 	this.centroid.set(geoBounds.getCenter());
     }
 
     boolean isMergeable() {
-	
+
 	// For now, turn off by ref geometry
-	if ((vertexFormat & GeometryArray.BY_REFERENCE) != 0) 
+	if ((vertexFormat & GeometryArray.BY_REFERENCE) != 0)
 	    return false;
 
 	if (!isStatic())
 	    return false;
-	
+
 	// If there is more than one set of texture coordinate set defined
 	// then don't merge geometry (we avoid dealing with texCoordSetMap
 	if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0 &&
@@ -10501,7 +10657,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	     texCoordSetMap != null && texCoordSetMap.length > 1)) {
 	    return false;
 	}
-        
+
         // We will avoid merging geometry if there are any vertex attributes.
         if ((vertexFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
             return false;
@@ -10558,7 +10714,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	if(morphUniverseList == null)
 	    return;
-	
+
         synchronized (morphUniverseList) {
             index = morphUniverseList.indexOf(m.universe);
             morphList = (ArrayList)morphUserLists.get(index);
@@ -10582,7 +10738,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
 	}
 	geomLock.unLock();
-	
+
     }
 
     // Update Mirror Object in response to change in geometry
@@ -10595,24 +10751,24 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
 	}
 	geomLock.unLock();
-	
-    }
-    
 
-    // Used by the picking intersect routines 
+    }
+
+
+    // Used by the picking intersect routines
     void getVertexData(int i, Point3d pnts) {
 	int offset;
 	if ((vertexFormat & GeometryArray.BY_REFERENCE) == 0) {
-	    offset = stride * i + coordinateOffset;    
+	    offset = stride * i + coordinateOffset;
 	    pnts.x = this.vertexData[offset];
 	    pnts.y = this.vertexData[offset+1];
 	    pnts.z = this.vertexData[offset+2];
 	    return;
 	}
-	
+
 	if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) == 0 ) {
 	    if ((vertexFormat & GeometryArray.INTERLEAVED) != 0) {
-		offset = stride * i + coordinateOffset;    
+		offset = stride * i + coordinateOffset;
 		pnts.x = this.interLeavedVertexData[offset];
 		pnts.y = this.interLeavedVertexData[offset+1];
 		pnts.z = this.interLeavedVertexData[offset+2];
@@ -10646,7 +10802,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}// end of non nio buffer
 	else { // NIO BUFFER
 	    if ((vertexFormat & GeometryArray.INTERLEAVED) != 0) {
-		offset = stride * i + coordinateOffset;    
+		offset = stride * i + coordinateOffset;
 		pnts.x = this.interleavedFloatBufferImpl.get(offset);
 		pnts.y = this.interleavedFloatBufferImpl.get(offset+1);
 		pnts.z = this.interleavedFloatBufferImpl.get(offset+2);
@@ -10666,7 +10822,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    pnts.z = this.doubleBufferRefCoords.get(offset+2);
 		    break;
 		}
-	    }	
+	    }
 	} // end of nio buffer
     }
 
@@ -10677,9 +10833,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     }
 
 
-    boolean intersect(Transform3D thisLocalToVworld, 
+    boolean intersect(Transform3D thisLocalToVworld,
 		      Transform3D otherLocalToVworld, GeometryRetained  geom) {
-	
+
 	Transform3D t3d =  new Transform3D();
 	boolean isIntersect = false;
 
@@ -10693,12 +10849,12 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    } else {
 		t3d.invert(thisLocalToVworld);
 		t3d.mul(otherLocalToVworld);
-		isIntersect = geomArray.intersect(t3d, this);	    
+		isIntersect = geomArray.intersect(t3d, this);
 	    }
 	} else {
 		t3d.invert(thisLocalToVworld);
 		t3d.mul(otherLocalToVworld);
-		isIntersect = geom.intersect(t3d, this);	    
+		isIntersect = geom.intersect(t3d, this);
 	}
 	return isIntersect;
     }
@@ -10710,7 +10866,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		count = vertexCount;
 		return count;
 	    }
-	    
+
 	    if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) == 0) {
 		if ((vertexFormat & GeometryArray.INTERLEAVED) == 0){
 		    switch ((vertexType & GeometryArrayRetained.VERTEX_DEFINED)) {
@@ -10769,7 +10925,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    count =  floatRefColors.length/4;
 			}
 			break;
-		    case CUB: 
+		    case CUB:
 			if ((vertexFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_3) {
 			    count =  byteRefColors.length/3;
 			}
@@ -10777,16 +10933,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    count =  byteRefColors.length/4;
 			}
 			break;
-		    case C3F: 
+		    case C3F:
 			count = c3fRefColors.length;
 			break;
-		    case C4F: 
+		    case C4F:
 			count = c4fRefColors.length;
 			break;
 		    case C3UB:
 			count = c3bRefColors.length;
 			break;
-		    case C4UB: 
+		    case C4UB:
 			count = c4bRefColors.length;
 			break;
 		    }
@@ -10806,7 +10962,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    count =  floatBufferRefColors.limit()/4;
 			}
 			break;
-		    case CUB: 
+		    case CUB:
 			if ((vertexFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_3) {
 			    count =  byteBufferRefColors.limit()/3;
 			}
@@ -10818,7 +10974,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		}
 		else {
 		    count = interleavedFloatBufferImpl.limit()/stride;
-		}		    
+		}
 	    } // end of nio buffer
 	}
 	return count;
@@ -10831,7 +10987,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		count = vertexCount;
 		return count;
 	    }
-	    
+
 	    if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) == 0) {
 		if ((vertexFormat & GeometryArray.INTERLEAVED) == 0){
 		    switch ((vertexType & NORMAL_DEFINED)) {
@@ -10868,7 +11024,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		count = vertexCount;
 		return count;
 	    }
-	   
+
 	    if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) == 0) {
 		if ((vertexFormat & GeometryArray.INTERLEAVED) == 0){
 		    switch ((vertexType & TEXCOORD_DEFINED)) {
@@ -10934,16 +11090,16 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    x = iPnt.x - center.x;
 	    y = iPnt.y - center.y;
 	    z = iPnt.z - center.z;
-	    dist[0] = Math.sqrt(x*x + y*y + z*z);	    
+	    dist[0] = Math.sqrt(x*x + y*y + z*z);
 	    return;
 	}
 
 
 	if (coordinates.length == 2) {
 	    // a line
-	    dist[0] = Math.sqrt(Distance.pointToSegment(center, 
-							coordinates[0], 
-							coordinates[1], 
+	    dist[0] = Math.sqrt(Distance.pointToSegment(center,
+							coordinates[0],
+							coordinates[1],
 							iPnt, null));
 	    return;
 	}
@@ -10962,7 +11118,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if(vec0.length() > 0.0)
 		    break;
 	    }
-        
+
 	    for (j=i; j<coordinates.length-1; j++) {
 		vec1.x = coordinates[j+1].x - coordinates[j].x;
 		vec1.y = coordinates[j+1].y - coordinates[j].y;
@@ -10970,7 +11126,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		if(vec1.length() > 0.0)
 		    break;
 	    }
-      
+
 	    if (j == (coordinates.length-1)) {
 		// Degenerate polygon, check with edge only
 		normal = null;
@@ -10980,7 +11136,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 
 	if (normal != null) {
-	    normalLen = normal.length(); 
+	    normalLen = normal.length();
 	    if ( normalLen == 0.0) {
 		// Degenerate polygon, check with edge only
 		normal = null;
@@ -11011,9 +11167,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    double minDist;
 	    Point3d minPnt = new Point3d();
 
-	    dist[0] = Distance.pointToSegment(center, coordinates[0], 
+	    dist[0] = Distance.pointToSegment(center, coordinates[0],
 					      coordinates[1], iPnt, null);
-	    minDist = Distance.pointToSegment(center, coordinates[1], 
+	    minDist = Distance.pointToSegment(center, coordinates[1],
 					      coordinates[2], minPnt, null);
 	    if (minDist < dist[0]) {
 		dist[0] = minDist;
@@ -11021,14 +11177,14 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		iPnt.y = minPnt.y;
 		iPnt.z = minPnt.z;
 	    }
-	    minDist = Distance.pointToSegment(center, coordinates[2], 
-					      coordinates[0], minPnt, null);    
+	    minDist = Distance.pointToSegment(center, coordinates[2],
+					      coordinates[0], minPnt, null);
 	    if (minDist < dist[0]) {
 		dist[0] = minDist;
 		iPnt.x = minPnt.x;
 		iPnt.y = minPnt.y;
 		iPnt.z = minPnt.z;
-	    }	    
+	    }
 	    dist[0] = Math.sqrt(dist[0]);
 	    return;
 	}
@@ -11044,7 +11200,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    iPnt.x = center.x - dist[0]*normal.x/normalLen;
 	    iPnt.y = center.y - dist[0]*normal.y/normalLen;
 	    iPnt.z = center.z - dist[0]*normal.z/normalLen;
-	    
+
 	    if (pointInTri(iPnt, coordinates[0], coordinates[1],
 			   coordinates[2], normal) ||
 		pointInTri(iPnt, coordinates[1], coordinates[2],
@@ -11057,9 +11213,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	double minDist;
 	Point3d minPnt = new Point3d();
 
-	dist[0] = Distance.pointToSegment(center, coordinates[0], 
+	dist[0] = Distance.pointToSegment(center, coordinates[0],
 					  coordinates[1], iPnt, null);
-	minDist = Distance.pointToSegment(center, coordinates[1], 
+	minDist = Distance.pointToSegment(center, coordinates[1],
 					  coordinates[2], minPnt, null);
 	if (minDist < dist[0]) {
 	    dist[0] = minDist;
@@ -11067,23 +11223,23 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    iPnt.y = minPnt.y;
 	    iPnt.z = minPnt.z;
 	}
-	minDist = Distance.pointToSegment(center, coordinates[2], 
-					  coordinates[3], minPnt, null);    
+	minDist = Distance.pointToSegment(center, coordinates[2],
+					  coordinates[3], minPnt, null);
 	if (minDist < dist[0]) {
 	    dist[0] = minDist;
 	    iPnt.x = minPnt.x;
 	    iPnt.y = minPnt.y;
 	    iPnt.z = minPnt.z;
-	}	    
+	}
 
-	minDist = Distance.pointToSegment(center, coordinates[3], 
-					  coordinates[0], minPnt, null);    
+	minDist = Distance.pointToSegment(center, coordinates[3],
+					  coordinates[0], minPnt, null);
 	if (minDist < dist[0]) {
 	    dist[0] = minDist;
 	    iPnt.x = minPnt.x;
 	    iPnt.y = minPnt.y;
 	    iPnt.z = minPnt.z;
-	}	    
+	}
 
 	dist[0] = Math.sqrt(dist[0]);
     }

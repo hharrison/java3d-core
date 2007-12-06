@@ -491,12 +491,17 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    }	    
 	}
 	
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= INDEX_CHANGED;
 	this.indexCoord[index] = coordinateIndex;
 	maxCoordIndex = newMax;
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(true);
 	}
     }
@@ -612,14 +617,19 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    }	    
 	}
 	
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= INDEX_CHANGED;
 	maxCoordIndex = newMax;
 	for (i=0, j = index; i < num;i++, j++) {
 	    this.indexCoord[j] = coordinateIndices[i];
 	}
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+	if(isLive) {
+            geomLock.unLock();
+	}
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(true);
 	}
     }
@@ -674,12 +684,17 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
             }
         }
 
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
         dirtyFlag |= INDEX_CHANGED;
         maxCoordIndex = newMax;
         this.indexCoord = coordinateIndices;
-        geomLock.unLock();
-        if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+            geomLock.unLock();
+        }
+        if (!inUpdater && isLive) {
             sendDataChangedMessage(true);
         }
     }
@@ -751,15 +766,20 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
         if (newMax > maxColorIndex) {
             doColorCheck(newMax);
         }
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
         // No need to set INDEX_CHANGED since IndexBuffer
         // is used only when USE_COORD_INDEX_ONLY specified.
         // In this case only coordinate index array is 
         // considered.
         this.indexColor[index] = colorIndex;
         maxColorIndex = newMax;
-        geomLock.unLock();
-        if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+            geomLock.unLock();
+        }
+        if (!inUpdater && isLive) {
             sendDataChangedMessage(false);
         }
     }
@@ -778,13 +798,18 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
         if (newMax > maxColorIndex) {
             doColorCheck(newMax);
         }
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
         maxColorIndex = newMax;
         for (i=0, j = index; i < num;i++, j++) {
             this.indexColor[j] = colorIndices[i];
         }
-        geomLock.unLock();
-        if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+            geomLock.unLock();
+        }
+        if (!inUpdater && isLive) {
             sendDataChangedMessage(false);
         }
     }
@@ -802,11 +827,16 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
         if (newMax > maxNormalIndex) {
             doNormalCheck(newMax);
         }
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
         maxNormalIndex = newMax;
         this.indexNormal[index] = normalIndex;
-        geomLock.unLock();
-        if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+        	geomLock.unLock();
+        }
+        if (!inUpdater && isLive) {
             sendDataChangedMessage(false);
         }
     }
@@ -825,13 +855,18 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
         if (newMax > maxNormalIndex) {
             doNormalCheck(newMax);
         }
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
         for (i=0, j = index; i < num;i++, j++) {
             this.indexNormal[j] = normalIndices[i];
         }
         maxNormalIndex = newMax;
-        geomLock.unLock();
-        if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+            geomLock.unLock();
+        }
+        if (!inUpdater && isLive) {
             sendDataChangedMessage(false);
         }
     }
@@ -851,11 +886,16 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
         if (newMax > maxTexCoordIndices[texCoordSet]) {
             doTexCoordCheck(newMax, texCoordSet);
         }
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
         maxTexCoordIndices[texCoordSet] = newMax;
         indices[index] = texCoordIndex;
-        geomLock.unLock();
-        if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+            geomLock.unLock();
+        }
+        if (!inUpdater && isLive) {
             sendDataChangedMessage(false);
         }
     }
@@ -877,13 +917,18 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
         if (newMax > maxTexCoordIndices[texCoordSet]) {
             doTexCoordCheck(newMax, texCoordSet);
         }
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
         maxTexCoordIndices[texCoordSet] = newMax;
         for (i=0, j = index; i < num;i++, j++) {
             indices[j] = texCoordIndices[i];
         }
-        geomLock.unLock();
-        if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+            geomLock.unLock();
+        }
+        if (!inUpdater && isLive) {
             sendDataChangedMessage(false);
         }
     }
@@ -904,11 +949,16 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
         if (newMax > maxVertexAttrIndices[vertexAttrNum]) {
             doVertexAttrCheck(newMax, vertexAttrNum);
         }
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
         maxVertexAttrIndices[vertexAttrNum] = newMax;
         indices[index] = vertexAttrIndex;
-        geomLock.unLock();
-        if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+            geomLock.unLock();
+        }
+        if (!inUpdater && isLive) {
             sendDataChangedMessage(false);
         }
     }
@@ -931,13 +981,18 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
         if (newMax > maxVertexAttrIndices[vertexAttrNum]) {
             doVertexAttrCheck(newMax, vertexAttrNum);
         }
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
         maxVertexAttrIndices[vertexAttrNum] = newMax;
         for (i=0, j = index; i < num;i++, j++) {
             indices[j] = vertexAttrIndices[i];
         }
-        geomLock.unLock();
-        if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+            geomLock.unLock();
+        }
+        if (!inUpdater && isLive) {
             sendDataChangedMessage(false);
         }
     }
@@ -1686,7 +1741,10 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    }
 	}
 
-	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	this.validIndexCount = validIndexCount;
 	maxCoordIndex = newCoordMax;
 	if ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0) {
@@ -1717,10 +1775,12 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		}
 	    }
 	}
-	geomLock.unLock();
+	if(isLive) {
+            geomLock.unLock();
+	}
 	// bbox is computed for the entries list.
 	// so, send as false
-	if (!inUpdater && source != null && source.isLive()) {
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(true);
 	}
     
@@ -1772,7 +1832,10 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	    }
 	}
 	    
- 	geomLock.getLock();
+	boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= INDEX_CHANGED;
 	this.initialIndexIndex = initialIndexIndex;
 	maxCoordIndex = newCoordMax;
@@ -1804,10 +1867,12 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		}
 	    }
 	}
-	geomLock.unLock();
+	if(isLive) {
+            geomLock.unLock();
+	}
 	// bbox is computed for the entries list.
 	// so, send as false
-	if (!inUpdater && source != null && source.isLive()) {
+	if (!inUpdater && isLive) {
 	    sendDataChangedMessage(true);
 	}
     }

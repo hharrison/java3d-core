@@ -101,8 +101,10 @@ abstract class GeometryStripArrayRetained extends GeometryArrayRetained {
                 }
             }
         }
-
-        geomLock.getLock();
+        boolean isLive = source!=null && source.isLive();
+        if(isLive){
+            geomLock.getLock();
+        }
 	dirtyFlag |= STRIPCOUNT_CHANGED;
 	validVertexCount = total;
 	this.stripVertexCounts = new int[num];
@@ -132,9 +134,10 @@ abstract class GeometryStripArrayRetained extends GeometryArrayRetained {
 	    stripStartOffsetIndices[i+1] = stripStartOffsetIndices[i]+stripVertexCounts[i];
 	}
 	this.stripVertexCounts[num-1] = stripVertexCounts[num-1];
-
-	geomLock.unLock();
-	if (!inUpdater && source != null && source.isLive()) {
+        if(isLive) {
+            geomLock.unLock();
+        }
+	if (!inUpdater && isLive) {
 	    processCoordsChanged(nullGeo);    
 	    sendDataChangedMessage(true);
 	}
