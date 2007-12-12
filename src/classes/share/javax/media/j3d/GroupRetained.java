@@ -138,10 +138,15 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
     GroupRetained() {
         this.nodeType = NodeRetained.GROUP;
-	localBounds = new BoundingSphere();
-	((BoundingSphere)localBounds).setRadius( -1.0 );
+        // issue 544
+        if (VirtualUniverse.mc.useBoxForGroupBounds) {
+            localBounds = new BoundingBox((Bounds) null);
+        } else {
+            localBounds = new BoundingSphere();
+            ((BoundingSphere) localBounds).setRadius(-1.0);
+        }
     }
-
+    
     /**
      * Sets the collision bounds of a node.
      * @param bounds the bounding object for the node
@@ -2184,8 +2189,6 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
      */
     void doSetLive(SetLiveState s) {
       	int i, nchildren;
-
-	BoundingSphere boundingSphere = new BoundingSphere();
 	NodeRetained child;
         super.doSetLive(s);
 	locale = s.locale;
@@ -2458,12 +2461,18 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
             }
 
             if (boundsAutoCompute) {
-                cachedBounds = new BoundingSphere();
-                ((BoundingSphere)cachedBounds).setRadius(-1);
-                for (int i=children.size()-1; i>=0; i--) {
-                    NodeRetained child = (NodeRetained)children.get(i);
-                    if(child != null)
+                // issue 544
+                if (VirtualUniverse.mc.useBoxForGroupBounds) {
+                    cachedBounds = new BoundingBox((Bounds) null);
+                } else {
+                    cachedBounds = new BoundingSphere();
+                    ((BoundingSphere) cachedBounds).setRadius(-1);
+                }
+                for (int i = children.size() - 1; i >= 0; i--) {
+                    NodeRetained child = (NodeRetained) children.get(i);
+                    if (child != null) {
                         child.computeCombineBounds(cachedBounds);
+                    }
                 }
                 bounds.combine(cachedBounds);
             } else {
@@ -2488,19 +2497,24 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
             if (validCachedBounds) {
                 return (Bounds) cachedBounds.clone();
             }
-            
-	    BoundingSphere boundingSphere = new BoundingSphere();
-	    boundingSphere.setRadius(-1.0);
-	    
-	    for (int i=children.size()-1; i>=0; i--) {
-		NodeRetained child = (NodeRetained)children.get(i); 
-		if(child != null)
-		    child.computeCombineBounds((Bounds) boundingSphere);
-	    }
-	    
-	    return (Bounds) boundingSphere;
-	} 
-	return super.getBounds();
+            // issue 544
+            Bounds boundingObject = null;
+            if (VirtualUniverse.mc.useBoxForGroupBounds) {
+                boundingObject = new BoundingBox((Bounds) null);
+            } else {
+                boundingObject = new BoundingSphere();
+                ((BoundingSphere) boundingObject).setRadius(-1.0);
+            }
+            for (int i = children.size() - 1; i >= 0; i--) {
+                NodeRetained child = (NodeRetained) children.get(i);
+                if (child != null) {
+                    child.computeCombineBounds((Bounds) boundingObject);
+                }
+            }
+
+            return (Bounds) boundingObject;
+        }
+        return super.getBounds();
     } 
 
     /**

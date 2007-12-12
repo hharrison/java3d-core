@@ -611,121 +611,140 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
     }
 
 
-  void computeCombineBounds(Bounds bounds) {
-    int i;
-    NodeRetained child;
-    
-    if(boundsAutoCompute) {
-        if (!VirtualUniverse.mc.cacheAutoComputedBounds) {
-            if(whichChild == Switch.CHILD_ALL) {
-                for(i=0; i<children.size(); i++) {
-                    child = (NodeRetained)children.get(i);
-                    if(child != null)
-                        child.computeCombineBounds(bounds);
-                }
-            } else if(whichChild == Switch.CHILD_MASK) {
-                for(i=0; i<children.size(); i++) {
-                    if(childMask.get(i)) {
-                        child = (NodeRetained)children.get(i);
-                        if(child != null)
+    void computeCombineBounds(Bounds bounds) {
+        int i;
+        NodeRetained child;
+
+        if (boundsAutoCompute) {
+            if (!VirtualUniverse.mc.cacheAutoComputedBounds) {
+                if (whichChild == Switch.CHILD_ALL) {
+                    for (i = 0; i < children.size(); i++) {
+                        child = (NodeRetained) children.get(i);
+                        if (child != null) {
                             child.computeCombineBounds(bounds);
-                    }
-                }
-            } else if(whichChild != Switch.CHILD_NONE) {
-                if (whichChild < children.size()) {
-                    child = (NodeRetained)children.get(whichChild);
-                    if(child != null)
-                        child.computeCombineBounds(bounds);
-                }
-            }
-        } else {
-            // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
-            if (!validCachedBounds) {
-                validCachedBounds = true;
-                cachedBounds = new BoundingSphere();
-                ((BoundingSphere)cachedBounds).setRadius(-1);
-                if(whichChild == Switch.CHILD_ALL) {
-                    for(i=0; i<children.size(); i++) {
-                        child = (NodeRetained)children.get(i);
-                        if(child != null)
-                            child.computeCombineBounds(cachedBounds);
-                    }
-                } else if(whichChild == Switch.CHILD_MASK) {
-                    for(i=0; i<children.size(); i++) {
-                        if(childMask.get(i)) {
-                            child = (NodeRetained)children.get(i);
-                            if(child != null)
-                                child.computeCombineBounds(cachedBounds);
                         }
                     }
-                } else if(whichChild != Switch.CHILD_NONE) {
+                } else if (whichChild == Switch.CHILD_MASK) {
+                    for (i = 0; i < children.size(); i++) {
+                        if (childMask.get(i)) {
+                            child = (NodeRetained) children.get(i);
+                            if (child != null) {
+                                child.computeCombineBounds(bounds);
+                            }
+                        }
+                    }
+                } else if (whichChild != Switch.CHILD_NONE) {
                     if (whichChild < children.size()) {
-                        child = (NodeRetained)children.get(whichChild);
-                        if(child != null)
-                            child.computeCombineBounds(cachedBounds);
+                        child = (NodeRetained) children.get(whichChild);
+                        if (child != null) {
+                            child.computeCombineBounds(bounds);
+                        }
                     }
                 }
+            } else {
+                // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
+                if (!validCachedBounds) {
+                    validCachedBounds = true;
+
+                    // Issue 544
+                    if (VirtualUniverse.mc.useBoxForGroupBounds) {
+                        cachedBounds = new BoundingBox((Bounds) null);
+                    } else {
+                        cachedBounds = new BoundingSphere();
+                        ((BoundingSphere) cachedBounds).setRadius(-1);
+                    }
+                    if (whichChild == Switch.CHILD_ALL) {
+                        for (i = 0; i < children.size(); i++) {
+                            child = (NodeRetained) children.get(i);
+                            if (child != null) {
+                                child.computeCombineBounds(cachedBounds);
+                            }
+                        }
+                    } else if (whichChild == Switch.CHILD_MASK) {
+                        for (i = 0; i < children.size(); i++) {
+                            if (childMask.get(i)) {
+                                child = (NodeRetained) children.get(i);
+                                if (child != null) {
+                                    child.computeCombineBounds(cachedBounds);
+                                }
+                            }
+                        }
+                    } else if (whichChild != Switch.CHILD_NONE) {
+                        if (whichChild < children.size()) {
+                            child = (NodeRetained) children.get(whichChild);
+                            if (child != null) {
+                                child.computeCombineBounds(cachedBounds);
+                            }
+                        }
+                    }
+                }
+                bounds.combine(cachedBounds);
             }
-            bounds.combine(cachedBounds);
-        }
-    } else {
-        // Should this be lock too ? ( MT safe  ? )
-        synchronized(localBounds) {
-            bounds.combine(localBounds);
+        } else {
+            // Should this be lock too ? ( MT safe  ? )
+            synchronized (localBounds) {
+                bounds.combine(localBounds);
+            }
         }
     }
-  }
 
 
   /**
    * Gets the bounding object of a node.
    * @return the node's bounding object
    */
-  Bounds getBounds() {
-    
-    int i;
-    NodeRetained child;
-    
-    if(boundsAutoCompute) {
-        // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
-        if (validCachedBounds) {
-            return (Bounds) cachedBounds.clone();
-        }
-        
-      BoundingSphere boundingSphere = new BoundingSphere();
-      boundingSphere.setRadius(-1.0);
-      
-      if(whichChild == Switch.CHILD_ALL) {     	    
-	for(i=0; i<children.size(); i++) { 
-	  child = (NodeRetained)children.get(i);
-	  if(child != null)
-	      child.computeCombineBounds((Bounds) boundingSphere);
-	}
-      } 
-      else if(whichChild == Switch.CHILD_MASK) {
-	  for(i=0; i<children.size(); i++) { 
-	      if(childMask.get(i)) { 
-		  child = (NodeRetained)children.get(i);
-		  if(child != null)
-		      child.computeCombineBounds((Bounds) boundingSphere);
-	      }
-	  }
-      }
-      else if(whichChild != Switch.CHILD_NONE &&
-              whichChild >= 0 &&
-              whichChild < children.size()) {
+    Bounds getBounds() {
 
-	  child = (NodeRetained)children.get(whichChild);
-	  if(child != null)
-	      child.computeCombineBounds((Bounds) boundingSphere);
-      }
-      
-      return (Bounds) boundingSphere;
-    } 
-    else
-	return super.getBounds();
-  } 
-  
+        int i;
+        NodeRetained child;
+
+        if (boundsAutoCompute) {
+            // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
+            if (validCachedBounds) {
+                return (Bounds) cachedBounds.clone();
+            }
+            
+            // issue 544
+            Bounds boundingObject = null;
+            if (VirtualUniverse.mc.useBoxForGroupBounds) {
+                boundingObject = new BoundingBox((Bounds) null);
+            } else {
+                boundingObject = new BoundingSphere();
+                ((BoundingSphere) boundingObject).setRadius(-1.0);
+            }
+
+            if (whichChild == Switch.CHILD_ALL) {
+                for (i = 0; i < children.size(); i++) {
+                    child = (NodeRetained) children.get(i);
+                    if (child != null) {
+                        child.computeCombineBounds((Bounds) boundingObject);
+                    }
+                }
+            } else if (whichChild == Switch.CHILD_MASK) {
+                for (i = 0; i < children.size(); i++) {
+                    if (childMask.get(i)) {
+                        child = (NodeRetained) children.get(i);
+                        if (child != null) {
+                            child.computeCombineBounds((Bounds) boundingObject);
+                        }
+                    }
+                }
+            } else if (whichChild != Switch.CHILD_NONE &&
+                    whichChild >= 0 &&
+                    whichChild < children.size()) {
+
+                child = (NodeRetained) children.get(whichChild);
+                if (child != null) {
+                    child.computeCombineBounds((Bounds) boundingObject);
+                }
+            }
+
+            return (Bounds) boundingObject;
+        } else {
+            return super.getBounds();
+        }
+    }
+
 
     /*
     void compile(CompileState compState) {

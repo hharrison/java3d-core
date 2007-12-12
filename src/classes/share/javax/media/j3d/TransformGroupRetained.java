@@ -4,7 +4,7 @@
  * Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
- *
+ * 
  * $Revision$
  * $Date$
  * $State$
@@ -783,24 +783,29 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         }
                     
 	NodeRetained child;
-	BoundingSphere boundingSphere = new BoundingSphere();
-	boundingSphere.setRadius(-1.0);
-          
+        //issue 544
+        Bounds boundingObject = null;
+        if (VirtualUniverse.mc.useBoxForGroupBounds) {
+            boundingObject = new BoundingBox((Bounds) null);
+        } else {
+            boundingObject = new BoundingSphere();
+            ((BoundingSphere) boundingObject).setRadius(-1.0);
+        }
 	if(boundsAutoCompute) {    
 	    for (int i=children.size()-1; i>=0; i--) {
 		child = (NodeRetained)children.get(i); 
 		if(child != null)
-		    child.computeCombineBounds(boundingSphere);
+		    child.computeCombineBounds(boundingObject);
 	    }   
             
             if (VirtualUniverse.mc.cacheAutoComputedBounds) {
-                cachedBounds = (Bounds) boundingSphere.clone();
+                cachedBounds = (Bounds) boundingObject.clone();
             }
 	}
 	else {
 	    // Should this be lock too ? ( MT safe  ? )
 	    synchronized(localBounds) {
-		boundingSphere.set(localBounds);
+		boundingObject.set(localBounds);
 	    }      
 	}
 	
@@ -808,9 +813,9 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	// Thoughts :
 	// Make a temp copy with lock :  transform.getWithLock(trans);, but this will cause gc ...
 	synchronized(transform) {
-	    boundingSphere.transform(transform);
+	    boundingObject.transform(transform);
 	}
-	bounds.combine(boundingSphere);
+	bounds.combine(boundingObject);
 	
     }
     

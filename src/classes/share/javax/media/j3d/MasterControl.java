@@ -480,7 +480,10 @@ class MasterControl {
     // Issue 480: Cache the bounds of nodes so that getBounds does not 
     // recompute the boounds of the entire graph per call
     boolean cacheAutoComputedBounds = false;
-
+    
+    // issue 544
+    boolean useBoxForGroupBounds = false;
+    
     /**
      * Constructs a new MasterControl object.  Note that there is
      * exatly one MasterControl object, created statically by
@@ -670,11 +673,17 @@ class MasterControl {
 	}
 
         // Issue 480 : Cache bounds returned by getBounds()
-	cacheAutoComputedBounds = 
-	    getBooleanProperty("j3d.cacheAutoComputeBounds",
-			       cacheAutoComputedBounds,
-			       "Cache AutoCompute Bounds, accelerates getBounds()");
+        cacheAutoComputedBounds =
+                getBooleanProperty("j3d.cacheAutoComputeBounds",
+                cacheAutoComputedBounds,
+                "Cache AutoCompute Bounds, accelerates getBounds()");
 
+        // Issue 544
+        useBoxForGroupBounds =
+                getBooleanProperty("j3d.useBoxForGroupBounds",
+                useBoxForGroupBounds,
+                "Use of BoundingBox for group geometric bounds");
+	
         // Initialize the native J3D library
 	if (!Pipeline.getPipeline().initializeJ3D(disableXinerama)) {
 	    throw new RuntimeException(J3dI18N.getString("MasterControl0"));
