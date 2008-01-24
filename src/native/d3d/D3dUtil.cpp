@@ -20,7 +20,7 @@ HANDLE surfaceListSema = CreateSemaphore(NULL, 1, 1, "Java3d_SurfaceListLock");
 
 BOOL firstError = true;
 BOOL firstWarning = true;
-BOOL debug;
+BOOL debug = false;
 
 
 vector<void *> freePointerList0;
@@ -30,7 +30,7 @@ BOOL useFreePointerList0 = true;
 char *D3dErrorMessage[] = {
     "Can't found 3D Driver !",
     "Current display driver did not support renderer inside window. Now switch to full screen mode...",
-    "DirectX 9.0 or above is required for this version of Java3D.",
+    "DirectX 9.0c or above is required for this version of Java3D.",
     "Your graphics card did not support >= 16 bit color mode which Java 3D required.",
     "Please switch your display mode to at least 16 bit color depth.",
     "No compatible device found, please switch to other display mode and try again !",
@@ -53,7 +53,9 @@ char *D3dErrorMessage[] = {
     "Fail to lock Vertex Buffer",
     "Fail to create Vertex Buffer",
     "Fail to create Index Buffer",
-    "Fail to lock Index Buffer"
+    "Fail to lock Index Buffer",
+	"Graphics card doesn't support Hardware Acceleration. \n Java3D will use DirectX Reference Rasterizer (Soft).",
+	"Unable to create DirectX D3D context.\n Neither Hardware and Software Renderer are available.\n Please update your video card drivers\n and get the latest DirectX available at http://microsoft.com/directx \n"
 };
 
 D3DTRANSFORMSTATETYPE transformState[] = {
@@ -199,7 +201,7 @@ typedef struct _PIXELFORMAT {
     DWORD dwRBitMask;
     DWORD dwGBitMask;
     DWORD dwBBitMask;
-    DWORD dwRGBAlphaBitMask;	
+    DWORD dwRGBAlphaBitMask;
     BOOL  noAlpha;
 } PIXELFORMAT;
 
@@ -955,7 +957,7 @@ void copyDataFromSurface(jint imageFormat,
 	destRow += (subHeight-1)*dstPitch;
 
 	/* printf("[Java 3D] copyDataFromSurface:  (1) %d\n", ddpf.dwRGBBitCount); */
-	
+
 	if ((ddpf.dwRGBBitCount == 32) &&
 	    (ddpf.dwRBitMask == 0xff0000) &&
 	    (ddpf.dwGBitMask == 0xff00) &&
@@ -998,10 +1000,10 @@ void copyDataFromSurface(jint imageFormat,
 		ucountBits(ddpf.dwBBitMask) - 8;
 	    int ashift = firstBit(ddpf.dwRGBAlphaBitMask) +
 		ucountBits(ddpf.dwRGBAlphaBitMask) - 8;
-	    
+
 	    if ((ddpf.dwRGBBitCount <= 32) &&
 		(ddpf.dwRGBBitCount > 24)) {
-		
+
 		for (int i=yoffset; i < ylimit; i++) {
 		    src = srcRow;
 		    dst = destRow;
@@ -1068,7 +1070,7 @@ void copyDataFromSurface(jint imageFormat,
 
 	dstPitch = subWidth << 2;
 	destRow += (subHeight-1)*dstPitch;
-	
+
 	if ((ddpf.dwRGBBitCount == 32) &&
 	    (ddpf.dwRBitMask == 0xff0000) &&
 	    (ddpf.dwGBitMask == 0xff00) &&
@@ -1117,10 +1119,10 @@ void copyDataFromSurface(jint imageFormat,
 		ucountBits(ddpf.dwBBitMask) - 8;
 	    int ashift = firstBit(ddpf.dwRGBAlphaBitMask) +
 		ucountBits(ddpf.dwRGBAlphaBitMask) - 8;
-	    
+
 	    if ((ddpf.dwRGBBitCount <= 32) &&
 		(ddpf.dwRGBBitCount > 24)) {
-		
+
 		for (int i=yoffset; i < ylimit; i++) {
 		    src = srcRow;
 		    dst = destRow;
@@ -8788,7 +8790,7 @@ void copyInt_ARGB_DataToSurface(jint textureFormat,
 	    for (int i=yoffset; i < ylimit; i++) {
 		src = srcRow;
 		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {		    
+		for (int j=xoffset; j < xlimit; j++) {
 		    *dst++ = *src++; /* b */
 		    *dst++ = *src++; /* g */
   		    *dst++ = *src++; /* r */
@@ -8827,7 +8829,7 @@ void copyInt_ARGB_DataToSurface(jint textureFormat,
 	    int bshift = firstBit(ddpf->dwBBitMask);
 	    int ashift = firstBit(ddpf->dwRGBAlphaBitMask);
 	    DWORD mask;
-	    
+
 	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += (xoffset << 2);
@@ -9432,7 +9434,7 @@ void copyInt_XRGB_DataToSurface(jint textureFormat,
 	    for (int i=yoffset; i < ylimit; i++) {
 		src = srcRow;
 		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {		    
+		for (int j=xoffset; j < xlimit; j++) {
 		    *dst++ = *src++; /* b */
 		    *dst++ = *src++; /* g */
   		    *dst++ = *src++; /* r */
@@ -9468,7 +9470,7 @@ void copyInt_XRGB_DataToSurface(jint textureFormat,
 	    int gshift = firstBit(ddpf->dwGBitMask);
 	    int bshift = firstBit(ddpf->dwBBitMask);
 	    DWORD mask;
-	    
+
 	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += (xoffset << 2);
@@ -9995,8 +9997,8 @@ void copyInt_XBGR_DataToSurface(jint textureFormat,
 	    for (int i=yoffset; i < ylimit; i++) {
 		src = srcRow;
 		dst = destRow;
-		for (int j=xoffset; j < xlimit; j++) {		    
-		    r = *src++; 
+		for (int j=xoffset; j < xlimit; j++) {
+		    r = *src++;
 		    g = *src++;
 		    b = *src++;
 		    *dst++ = b; /* b */
@@ -10034,7 +10036,7 @@ void copyInt_XBGR_DataToSurface(jint textureFormat,
 	    int gshift = firstBit(ddpf->dwGBitMask);
 	    int bshift = firstBit(ddpf->dwBBitMask);
 	    DWORD mask;
-	    
+
 	    if ((ddpf->dwRGBBitCount <= 32) &&
 		(ddpf->dwRGBBitCount > 24)) {
 		destRow += (xoffset << 2);
@@ -10581,7 +10583,7 @@ void copyDataToSurface(jint imageFormat,
     case  IMAGE_FORMAT_BYTE_RGBA :
 	/* printf("[IMAGE_FORMAT_BYTE_RGBA] imageFormat %d, textureFormat %d\n",
 	   imageFormat, textureFormat); */
-	
+
 	// This is the one we use when byReference = false
 	copyDataToSurfaceRGBA(textureFormat, &ddpf,
 			      (unsigned char *) lockedRect.pBits,
@@ -10603,7 +10605,7 @@ void copyDataToSurface(jint imageFormat,
     case IMAGE_FORMAT_BYTE_ABGR:
 	/* printf("[IMAGE_FORMAT_BYTE_ABGR] imageFormat %d, textureFormat %d\n",
 	   imageFormat, textureFormat); */
-	
+
 	copyDataToSurfaceABGR(textureFormat, &ddpf,
 			      (unsigned char *) lockedRect.pBits,
 			      lockedRect.Pitch,
@@ -10614,7 +10616,7 @@ void copyDataToSurface(jint imageFormat,
     case IMAGE_FORMAT_BYTE_BGR:
 	/* printf("[IMAGE_FORMAT_BYTE_BGR] imageFormat %d, textureFormat %d\n",
 	   imageFormat, textureFormat); */
-	
+
 	copyDataToSurfaceBGR(textureFormat, &ddpf,
 			     (unsigned char *) lockedRect.pBits,
 			     lockedRect.Pitch,
@@ -10647,7 +10649,7 @@ void copyDataToSurface(jint imageFormat,
 				   data + (offset << 2),
 				   xoffset, yoffset,
 				   xlimit, ylimit, tilew);
-	
+
 	break;
         case IMAGE_FORMAT_INT_RGB:
 	    /* printf("[IMAGE_FORMAT_INT_RGB] imageFormat %d, textureFormat %d\n",
@@ -10673,7 +10675,7 @@ void copyDataToSurface(jint imageFormat,
 	printf("[Java 3D] imageFormat %d, textureFormat %d not support !\n",
 	       imageFormat, textureFormat);
     }
-    
+
     hr = surf->UnlockRect(level);
     if (FAILED(hr)) {
 	printf("Fail to unlock surface: %s\n", DXGetErrorString9(hr));
@@ -11753,7 +11755,7 @@ void copyDataToVolume(jint imageFormat,
 	break;
     case IMAGE_FORMAT_BYTE_GRAY:
 	data += imgOffset;
-	
+
 	for (i = zoffset; i < zlimit; i++) {
 	    copyDataToSurfaceGray(textureFormat, &ddpf,
 				  p,
@@ -11769,7 +11771,7 @@ void copyDataToVolume(jint imageFormat,
     case IMAGE_FORMAT_INT_BGR:
 	data += (imgOffset << 2);
 	srcSlicePitch <<= 2;
-	
+
 	for (i = zoffset; i < zlimit; i++) {
 	    copyInt_XBGR_DataToSurface(textureFormat, &ddpf,
 				       p,
@@ -11785,7 +11787,7 @@ void copyDataToVolume(jint imageFormat,
     case IMAGE_FORMAT_INT_RGB:
 	data += (imgOffset << 2);
 	srcSlicePitch <<= 2;
-	
+
 	for (i = zoffset; i < zlimit; i++) {
 	    copyInt_XRGB_DataToSurface(textureFormat, &ddpf,
 				       p,
@@ -11801,7 +11803,7 @@ void copyDataToVolume(jint imageFormat,
     case IMAGE_FORMAT_INT_ARGB:
 	data += (imgOffset << 2);
 	srcSlicePitch <<= 2;
-	
+
 	for (i = zoffset; i < zlimit; i++) {
 	    copyInt_ARGB_DataToSurface(textureFormat, &ddpf,
 				       p,
@@ -11818,7 +11820,7 @@ void copyDataToVolume(jint imageFormat,
 	printf("[Java 3D] StoredFormat %d, textureFormat %d not support !\n",
 	       imageFormat, textureFormat);
     }
-    
+
     hr = surf->UnlockBox(level);
     if (FAILED(hr)) {
 	printf("Fail to unlock volume: %s\n", DXGetErrorString9(hr));
@@ -11870,7 +11872,7 @@ BOOL createQuadIndices(D3dCtx *d3dCtx, int vcount)
     if (dwIndexCount > d3dCtx->deviceInfo->maxVertexIndex) {
 	// We'll render the VB multiple times in this case
 	dwIndexCount = min(d3dCtx->deviceInfo->maxVertexIndex,
-			   (d3dCtx->deviceInfo->maxPrimitiveCount << 1));
+			          (d3dCtx->deviceInfo->maxPrimitiveCount << 1));
 	adjustIdx = TRUE;
     }
 
@@ -12189,7 +12191,7 @@ void copyDataToCubeMap(jint imageFormat,
 					  xlimit, ylimit, tilew);
 	    */
 	}
-	break;	
+	break;
     case  IMAGE_FORMAT_INT_RGB :
         printf("[Java 3D] Cubemap doesn't support FORMAT_INT_RGB!\n");
         printf("please see issue 377 : https://java3d.dev.java.net/issues/show_bug.cgi?id=377\n");
@@ -12464,11 +12466,11 @@ void drawTextureRect(D3dCtx *d3dCtx,
 	device->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
 }
 
-DWORD ucountBits(DWORD mask) 
+DWORD ucountBits(DWORD mask)
 {
     DWORD count = 0;
     int i;
-    
+
     for (i=sizeof(DWORD)*8-1; i >=0 ; i--) {
 	if ((mask & 0x01) > 0) {
 	    count++;
