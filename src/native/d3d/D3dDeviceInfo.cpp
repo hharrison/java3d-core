@@ -25,7 +25,6 @@ D3dDeviceInfo::~D3dDeviceInfo()
 VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
     
     BOOL supportNPOT;
-
     if (deviceType == D3DDEVTYPE_HAL ){
         isHardware = true;
         isHardwareTnL = (d3dCaps->DevCaps &  D3DDEVCAPS_HWTRANSFORMANDLIGHT);
@@ -84,15 +83,16 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
     else {
         supportShaders11 = true;
     }
-    DWORD vsVersion = d3dCaps->VertexShaderVersion;
-    if (debug) {
+    
+	DWORD vsVersion = d3dCaps->VertexShaderVersion;
+    if (debug) {		
         char* dt;
         if (isHardware)
             dt = "HAL";
         else
             dt ="REL";
         
-        printf("Java3D: Supported Shaders = %d.%d in mode %s ",
+        printf("Java3D: Supported Shaders = %d.%d in mode %s \n",
         HIBYTE(LOWORD(vsVersion)),
         LOBYTE(LOWORD(vsVersion)),
         dt);        
@@ -106,7 +106,6 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
     maxSimultaneousTextures = d3dCaps->MaxSimultaneousTextures;
     
     maxTextureUnitStageSupport = min(maxTextureBlendStages,  maxSimultaneousTextures);
-    
     supportMipmap = ((d3dCaps->TextureCaps & D3DPTEXTURECAPS_MIPMAP) != 0);
     
     texturePow2Only =  ((d3dCaps->TextureCaps &  D3DPTEXTURECAPS_POW2) != 0);
@@ -121,6 +120,7 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
 
     canRenderWindowed = true;//((d3dCaps->Caps2 &  D3DCAPS2_CANRENDERWINDOWED) != 0);
     
+
     maxPrimitiveCount = d3dCaps->MaxPrimitiveCount;
     maxVertexIndex = min(vertexBufferMaxVertexLimit, d3dCaps->MaxVertexIndex);
     
@@ -131,9 +131,8 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
     maxActiveLights = d3dCaps->MaxActiveLights;
     maxPointSize = DWORD(d3dCaps->MaxPointSize);
     maxAnisotropy = d3dCaps->MaxAnisotropy;
-    
-    maxVertexCount[GEO_TYPE_QUAD_SET] = min(vertexBufferMaxVertexLimit,
-    maxPrimitiveCount << 1);
+   	
+    maxVertexCount[GEO_TYPE_QUAD_SET] = min(vertexBufferMaxVertexLimit,  maxPrimitiveCount << 1);
     
     // Since index is used, we need to make sure than index range
     // is also support.
@@ -159,6 +158,7 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
     maxVertexCount[GEO_TYPE_INDEXED_TRI_FAN_SET] = maxVertexCount[GEO_TYPE_TRI_FAN_SET];
     maxVertexCount[GEO_TYPE_INDEXED_LINE_STRIP_SET] = maxVertexCount[GEO_TYPE_LINE_STRIP_SET];
     
+
     if ( (d3dCaps->PresentationIntervals & D3DPRESENT_INTERVAL_IMMEDIATE) != 0)
         supportRasterPresImmediate = true;
     else
@@ -193,7 +193,6 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
     } 
     
     texMask = 0;
-
     if(supportNPOT){
         texMask |= javax_media_j3d_Canvas3D_TEXTURE_NON_POWER_OF_TWO;
     }
@@ -215,6 +214,7 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
         texMask |= javax_media_j3d_Canvas3D_TEXTURE_MULTI_TEXTURE;
     }
     
+
     if (d3dCaps->TextureOpCaps & D3DTEXOPCAPS_DOTPRODUCT3) {
         texMask |= javax_media_j3d_Canvas3D_TEXTURE_COMBINE_DOT3;
     }
@@ -237,6 +237,7 @@ VOID D3dDeviceInfo::setCaps(D3DCAPS9 *d3dCaps) {
     if (maxAnisotropy > 1) {
         texMask |= javax_media_j3d_Canvas3D_TEXTURE_ANISOTROPIC_FILTER;
     }
+
 }
 
 BOOL D3dDeviceInfo::supportAntialiasing() {
