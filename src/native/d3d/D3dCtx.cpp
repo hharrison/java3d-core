@@ -175,7 +175,8 @@ D3dCtx::D3dCtx(JNIEnv* env, jobject obj, HWND _hwnd, BOOL _offScreen,
 	 * (3) No adapter found in the system.
 	 */
 	SafeRelease(pD3D);
-        return;
+	error(D3DNOTFOUND);
+	return;
     }
 
     pD3D = Direct3DCreate9( D3D_SDK_VERSION );
@@ -420,6 +421,7 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
     }
 
     dwBehavior = findBehavior();
+     
 
     if (debug) {
 	printf("[Java3D]: Use %s, ", driverInfo->adapterIdentifier.Description);
@@ -496,12 +498,24 @@ if(bUseNvPerfHUD)
 else
 {
    // NORMAL Mode
+     
      hr = pD3D->CreateDevice(driverInfo->iAdapter,
 			    deviceInfo->deviceType,
 			    topHwnd,
 			    dwBehavior,
 			    &d3dPresent,
 			    &pDevice);
+	 if(debug){
+		 char* ok = SUCCEEDED(hr) ? " Successful ! " : " Failed !";	
+		 char* devTypeName = deviceInfo->deviceType==D3DDEVTYPE_HAL ? " HAL " : "REF"; 
+         printf("\n[Java3D] CreateDevice using \"%s\" was %s (%s) \n", deviceInfo->deviceName, ok, devTypeName );
+	}
+
+	 if(SUCCEEDED(hr) && deviceInfo->deviceType==D3DDEVTYPE_REF){
+		// error(HALDEVICENOTFOUND);
+		 error(NOHARDWAREACCEL);
+	}
+
 }
 
 
@@ -523,8 +537,8 @@ else
 		return false;
 	    }
 	    if (debug) {
-		printf("[Java3D]: Fallback to create reference device :\n");
-		printInfo(&d3dPresent);
+			printf("[Java3D]: Fallback to create reference device :\n");
+			printInfo(&d3dPresent);
 	    }
 
     	    hr = pD3D->CreateDevice(driverInfo->iAdapter,
@@ -533,6 +547,11 @@ else
 				    dwBehavior,
 				    &d3dPresent,
 				    &pDevice);
+
+			if(SUCCEEDED(hr)){
+				// error(HALDEVICENOTFOUND);
+				error(NOHARDWAREACCEL);
+				}
 	}
     }
 
@@ -578,11 +597,15 @@ else
     setWindowMode();
 
     if (FAILED(hr)) {
-	release();
-	if (!inToggle) {
-	    error(CREATEREFDEVICEFAIL, hr);
-	} else {
-	    warning(CREATEREFDEVICEFAIL, hr);
+		release();
+		if (!inToggle) {
+			if(debug){
+				error(PLEASEUPDATEDRIVERS, hr);
+			}else{
+				error(PLEASEUPDATEDRIVERS);
+			}
+	     } else {
+		warning(PLEASEUPDATEDRIVERS, hr);
 	}
 	return false;
     }
@@ -1018,7 +1041,9 @@ D3dDeviceInfo* D3dCtx::selectDevice(int deviceID,
 		      // should not happen, REF device always support
 		      d3dError(DEVICENOTFOUND);
 		    }
-		  exit(1);
+		  // exit is not allowed on applets
+		  //exit(1);
+		  return NULL;
 	    }
 	  if (pDevice->maxZBufferDepthSize == 0) 
 	    {
@@ -1031,7 +1056,9 @@ D3dDeviceInfo* D3dCtx::selectDevice(int deviceID,
 		    // should not happen, REF device always support
 		    d3dError(DEVICENOTFOUND);
 		  }
-		  exit(1);
+          // exit is not allowed on applets
+		  //exit(1);
+		  return NULL;
 	    }
 	   if (pDevice->deviceType == D3DDEVTYPE_HAL) 
 	   {
@@ -1039,7 +1066,9 @@ D3dDeviceInfo* D3dCtx::selectDevice(int deviceID,
 		    !pDevice->isHardwareTnL) 
 		  {
 		    d3dError(TNLHALDEVICENOTFOUND);
-		    exit(1);
+			// exit is not allowed on applets
+			//exit(1);
+			return NULL;
 		  }
 	   }
 
@@ -1047,7 +1076,9 @@ D3dDeviceInfo* D3dCtx::selectDevice(int deviceID,
 	    if (pDevice->depthStencilFormat == D3DFMT_UNKNOWN) 
 		{
 		  d3dError(DEPTHSTENCILNOTFOUND);
-		  exit(1);
+		  // exit is not allowed on applets
+		  //exit(1);
+		  return NULL;
 	    }
 	    return pDevice;
 	}
@@ -1055,7 +1086,9 @@ D3dDeviceInfo* D3dCtx::selectDevice(int deviceID,
 
     // should not happen
     d3dError(DEVICENOTFOUND);
-    exit(1);
+    // exit is not allowed on applets
+	//exit(1);
+	return NULL;
 }
 
 
@@ -1170,7 +1203,10 @@ VOID D3dCtx::setDeviceFromProperty(JNIEnv *env)
 			requiredDeviceID = DEVICE_HAL_TnL;
 		    } else {
 			d3dError(UNKNOWNDEVICE);
-			exit(1);
+			//switch to default
+			requiredDeviceID = 0;
+			//exit(1);
+
 		    }
                     env->ReleaseStringUTFChars( property, chars );
                 }
@@ -1877,7 +1913,7 @@ VOID D3dCtx::printInfo(D3DPRESENT_PARAMETERS *d3dPresent)
 	printf("FullScreen ");
     }
 
-	printf("%dx%d %s, handle=%x, MultiSampleType %s, SwapEffect %s, AutoDepthStencilFormat: %s\n",
+	printf("%dx%d %s, handle=%p, MultiSampleType %s, SwapEffect %s, AutoDepthStencilFormat: %s\n",
 	   d3dPresent->BackBufferWidth,
 	   d3dPresent->BackBufferHeight,
 	   getPixelFormatName(d3dPresent->BackBufferFormat),
