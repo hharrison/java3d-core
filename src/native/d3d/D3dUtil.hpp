@@ -43,6 +43,8 @@
 #define CREATEVBFAIL            23
 #define CREATEINDEXVBFAIL       24
 #define LOCKINDEXVBFAIL         25
+#define NOHARDWAREACCEL         26
+#define PLEASEUPDATEDRIVERS     27
 
 #define PI  3.14159265f
 
