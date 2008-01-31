@@ -717,6 +717,8 @@ public class Background extends Leaf {
 	rt.initColor(c);
 	rt.initApplicationBounds(attr.getApplicationBounds());
 	rt.initGeometry(attr.getGeometry());
+	// issue # 563: add call to cloneTree()
+	rt.initGeometry((BranchGroup) (attr.getGeometry() == null ? null : attr.getGeometry().cloneTree(true)));
 	rt.initImage((ImageComponent2D) getNodeComponent(
 					     attr.getImage(),
 					     forceDuplicate, 
