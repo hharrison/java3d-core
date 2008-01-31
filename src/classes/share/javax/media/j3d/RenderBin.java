@@ -5820,12 +5820,18 @@ System.err.println("......tb.soleUser= " +
     // dirtyOrientedShapes
     void updateOrientedRAs() {
         int i, nRAs;
-        Canvas3D cv;
+        Canvas3D cv = null;
         RenderAtom ra;
         OrientedShape3DRetained os;
 
-        cv = (Canvas3D)view.getCanvas3D(0);
-        if (view.viewCache.vcDirtyMask != 0) {
+        // Issue 562 : use cached list of canvases to avoid index OOB exception
+        Canvas3D[] canvases = view.getCanvases();
+        if (canvases.length > 0) {
+            cv = canvases[0];
+        }
+
+        if (cv != null) {
+          if (view.viewCache.vcDirtyMask != 0) {
             nRAs = orientedRAs.size();
 
 	    // Update ra's localToVworld given orientedTransform
@@ -5846,7 +5852,7 @@ System.err.println("......tb.soleUser= " +
                 }
                 ra.updateOrientedTransform();
             }
-        } else {
+          } else {
             nRAs = cachedDirtyOrientedRAs.size();
 	    // Update ra's localToVworld given orientedTransform
 	    // Mark Oriented shape as dirty, since multiple ra could point
@@ -5867,6 +5873,7 @@ System.err.println("......tb.soleUser= " +
 		}
                 ra.updateOrientedTransform();
 	    }
+          }
         }
 	cachedDirtyOrientedRAs.clear();
 
