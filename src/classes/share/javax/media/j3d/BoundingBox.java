@@ -42,7 +42,7 @@ public class BoundingBox extends Bounds {
     private BoundingSphere tmpSphere = null;
     private BoundingBox tmpBox = null;
     private BoundingPolytope tmpPolytope = null;    
-    private Point3d tmpP3d = new Point3d();
+    private Point3d tmpP3d = null;
 
 
     /**
@@ -683,6 +683,13 @@ public class BoundingBox extends Bounds {
 	else {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingBox5"));
 	}
+
+        // Release the temporary fields:
+        if (VirtualUniverse.mc.releaseBoundingBoxMemory) {
+            tmpSphere = null;
+            tmpBox = null;
+            tmpPolytope = null;
+        }
     }
 
     /** 
@@ -693,7 +700,11 @@ public class BoundingBox extends Bounds {
 
 	if(boundsIsInfinite)
 	    return;
-	
+
+        if (tmpP3d == null) {
+            tmpP3d = new Point3d();
+        }
+
 	double ux, uy, uz, lx, ly, lz;
 	ux = upper.x; uy = upper.y; uz = upper.z;
 	lx = lower.x; ly = lower.y; lz = lower.z;
@@ -769,6 +780,11 @@ public class BoundingBox extends Bounds {
 	if ( tmpP3d.x < lower.x ) lower.x = tmpP3d.x;
 	if ( tmpP3d.y < lower.y ) lower.y = tmpP3d.y;
 	if ( tmpP3d.z < lower.z ) lower.z = tmpP3d.z;
+
+        if (VirtualUniverse.mc.releaseBoundingBoxMemory) {
+            // Free memory
+            tmpP3d = null;
+        }
 
     }
     
