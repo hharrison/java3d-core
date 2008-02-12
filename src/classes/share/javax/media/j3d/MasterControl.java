@@ -1428,7 +1428,7 @@ class MasterControl {
 		} else {
 		    synchronized (views) {
 			View v[] = (View []) views.toArray(false);
-			int i = i=views.arraySize()-1;
+			int i = views.arraySize()-1;
 			if (u == null) {
 			    while (i>=0) {
 				v[i--].renderBin.addMessage(message);
