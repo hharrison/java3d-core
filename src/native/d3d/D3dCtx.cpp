@@ -420,14 +420,14 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 	CopyMemory(&screenRect, &savedClientRect, sizeof (RECT));
     }
 
-    dwBehavior = findBehavior();
-     
+    dwBehavior = findBehavior();    
+
 
     if (debug) {
 	printf("[Java3D]: Use %s, ", driverInfo->adapterIdentifier.Description);
 
 	if (deviceInfo->isHardwareTnL &&
-	    (dwBehavior == D3DCREATE_SOFTWARE_VERTEXPROCESSING))
+	    (dwBehavior & D3DCREATE_SOFTWARE_VERTEXPROCESSING)!=0)
 	{
 	    // user select non-TnL device
 	    printf("Hardware Rasterizer\n");
@@ -453,7 +453,8 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 	}
 	return false;
     }
-
+	
+	
 if(bUseNvPerfHUD)
 {
    // using NVIDIA NvPerfHUD profiler
@@ -474,7 +475,7 @@ if(bUseNvPerfHUD)
 	{
 	     adapterToUse=adapter;
 		 deviceType=D3DDEVTYPE_REF;
-		 behaviorFlags = D3DCREATE_HARDWARE_VERTEXPROCESSING;
+		 behaviorFlags = D3DCREATE_HARDWARE_VERTEXPROCESSING ;
          isHUDavail = true;
          printf("\n[Java3D]: found  a NVIDIA NvPerfHUD adapter");
 		 break;
@@ -1845,15 +1846,29 @@ VOID D3dCtx::enumDisplayMode(DEVMODE* dmode)
 }
 // check what kind of Vertex processing will be used
 DWORD D3dCtx::findBehavior()
-{
+{    
 	bForceHwdVertexProcess = getSystemProperty(jniEnv,"j3d.d3dVertexProcess","hardware");
 	bForceMixVertexProcess = getSystemProperty(jniEnv,"j3d.d3dVertexProcess","mixed");
 	bForceSWVertexProcess = getSystemProperty(jniEnv,"j3d.d3dVertexProcess","software");
 
 	bUseNvPerfHUD = getSystemProperty(jniEnv,"j3d.useNvPerfHUD","true");
+    
+	//Issue #560 - use D3DCREATE_FPU_PRESERV
+	//This is just way to disable it, as FPUPreserv is enabled by default
+	boolean useD3D_FPU_PRESERV = !(getSystemProperty(jniEnv,"j3d.d3dFPUPreserv","false"));
+    
+	int behavior = 0;
+
+	if(useD3D_FPU_PRESERV){
+		behavior = D3DCREATE_FPU_PRESERVE;
+		}else{
+           printf("\n[Java3D]: Disabled D3DCREATE_FPU_PRESERVE \n");
+		}
+    
+
 
 	if (bUseNvPerfHUD) // must have bForceHwdVertexProcess as true
-        {
+      {
             printf("\n[Java3D]: using j3d.useNvPerfHUD=true and HARDWARE_VERTEXPROCESSING \n");
             bForceHwdVertexProcess = true;
             bForceMixVertexProcess =  false;
@@ -1864,43 +1879,50 @@ DWORD D3dCtx::findBehavior()
 	{
       softwareVertexProcessing = FALSE;
 	  printf("\n[Java3D]: using d3dVertexProcess=hardware\n");
-	  return D3DCREATE_HARDWARE_VERTEXPROCESSING;
+	  return D3DCREATE_HARDWARE_VERTEXPROCESSING | behavior;
 	}
 
 	if (bForceMixVertexProcess)
 	{
       printf("\n[Java3D]: using d3dVertexProcess=mixed\n");
       softwareVertexProcessing = FALSE;
-	  return D3DCREATE_MIXED_VERTEXPROCESSING;
+	  return D3DCREATE_MIXED_VERTEXPROCESSING | behavior;
 	}
 
 	if (bForceSWVertexProcess)
 	{
       printf("\n[Java3D]: using d3dVertexProcess=software\n");
       softwareVertexProcessing = TRUE;
-	  return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+	  return D3DCREATE_SOFTWARE_VERTEXPROCESSING | behavior;
 	}
+
+    // below is the default path.
+	// Rule : Shader capable videocards uses Hardware
+	//        Low end devices (No shaders support) uses Software
+	//        Middle end devices (TnL but no Shader) uses Mixed
+
 	// high-end video cards: NV25 and above
 	if (deviceInfo->isHardwareTnL && deviceInfo->supportShaders11 &&
 	     ((requiredDeviceID < 0) || (requiredDeviceID == DEVICE_HAL_TnL)))
 	   {
         if (debug){printf("\n[Java3D]: using hardware Vertex Processing.\n");}
 	    softwareVertexProcessing = FALSE;
-	    return D3DCREATE_HARDWARE_VERTEXPROCESSING;
+	    return D3DCREATE_HARDWARE_VERTEXPROCESSING | behavior;
        }
-    // midle-end video cards
+   
+    // middle-end video cards
     if (deviceInfo->isHardwareTnL &&
 	   ((requiredDeviceID < 0) || (requiredDeviceID == DEVICE_HAL_TnL)))
 	   {
         if (debug){printf("\n[Java3D]: using mixed Vertex Processing.\n");}
 	    softwareVertexProcessing = FALSE;
-	    return D3DCREATE_MIXED_VERTEXPROCESSING;
+	    return D3DCREATE_MIXED_VERTEXPROCESSING | behavior ;
        }
 	 else // low-end vcards use Software Vertex Processing
 	  {
 		if (debug){printf("\n[Java3D]: using software Vertex Processing.\n");}
         softwareVertexProcessing = TRUE;
-	    return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+	    return D3DCREATE_SOFTWARE_VERTEXPROCESSING | behavior;
       }
 }
 
