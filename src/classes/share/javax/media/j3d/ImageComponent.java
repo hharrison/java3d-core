@@ -233,7 +233,7 @@ public abstract class ImageComponent extends NodeComponent {
    // Array for setting default read capabilities
     private static final int[] readCapabilities = {
         ALLOW_SIZE_READ,
-        ALLOW_SIZE_READ,
+        ALLOW_IMAGE_READ,
         ALLOW_FORMAT_READ
     };
     
