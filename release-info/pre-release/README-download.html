@@ -3,82 +3,77 @@
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>Java 3D 1.5.2 Installation Instructions</title>
+  <title>3D Graphics API for the Java Platform 1.5.2: Installation Instructions</title>
 </head>
 <body>
-<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.5.2-build1
-Pre-Release</h2>
-<p>This software is licensed by Sun, as specified in the <a
- href="LICENSE-JRL.txt">LICENSE-JRL.txt</a>
-file. You
-must only use this software in accordance with the terms under which
-the
-code is licensed.</p>
-<h2>Instructions for Installing Java&nbsp;3D 1.5.2-build1</h2>
-<p>The 1.5.2-build1 version of the Java&nbsp;3D<sup><font size="-2">TM</font></sup>
-API runs on JDK version 1.5.0 and higher. It has been released for
-the <a href="#Solaris">Solaris</a>, <a href="#Linux">Linux</a>, <a
- href="#Windows">Windows</a>, and <a href="#MacOSX">Mac OS X</a>
-operating
-environments. See the <a
- href="http://j3d-core.dev.java.net/j3d1_5_2/RELEASE-NOTES-build1.html">release
-notes</a>
-for more information.<br>
+<h2>3D Graphics API for the Java Platform 1.5.2-beta1 Pre-Release</h2>
+<p>This software is licensed by Sun, as specified in the
+<a href="LICENSE-GPLv2.txt">LICENSE-GPLv2.txt</a> file. You must only
+use this software in accordance with the terms under which the code is
+licensed.
 </p>
-<h4><a name="Linux"></a>Linux</h4>
-<p>This release of Java&nbsp;3D runs on JDK version 1.5.0 and
-higher.
-To install this build, chdir to the "jre" directory within the jdk
-and execute the self-extracting binary that you downloaded. For
-example, if you are running on a Linux/x86 platform and your JDK is
-installed
-in /usr/java/jdk1.5.0_08, you would install Java&nbsp;3D as follows:
+<h2>Instructions for installing the 3D Graphics API for the Java Platform</h2>
+<p>The 1.5.2-build1 version of the j3d package runs on JDK version
+1.5.0 and higher. It has been released for the Windows, Linux,
+Solaris, and Mac&nbsp;OS&nbsp;X operating environments. See the
+<a href="http://j3d-core.dev.java.net/j3d1_5_2/RELEASE-NOTES-beta1.html">release
+notes</a> for more information.
 </p>
-<ul>
-cd /usr/java/jdk1.5.0_08/jre<br>
-sh /path-to-download-files/java3d-1_5_2-build1-linux-i586.bin<br>
-</ul>
-<p>You may need to be "root" to do this on Linux.<br>
+
+<h3>Preferred method</h3>
+
+<p>Developers who wish to develop an application using the j3d package
+are encouraged to download the j3d-1_5_2-beta1-XXX-i586.zip file for
+their platform, and manually install the necessary files into a
+directory on their local disk. To do this, unzip the downloaded file,
+and follow the instructions in the unzipped README.txt file.
 </p>
-<h4><a name="Solaris"></a>Solaris</h4>
-<p>This release of Java&nbsp;3D runs on JDK version 1.5.0 and
-higher.
-To install this build, chdir to the "jre" directory within the jdk
-and execute the self-extracting binary that you downloaded. For
-example, if you are running on a Solaris/x86 platform (including amd64)
-and your JDK is
-installed
-in /usr/java/jdk1.5.0_08, you would install Java&nbsp;3D as follows:
+
+<h3>Alternative method</h3>
+
+<p>Alternatively, you can run the installer as shown below, keeping in
+mind that it is not recommended to install the j3d jar files and
+native libraries directly into the JRE.
+</p>
+
+<h4>Windows</h4>
+<p>To install the j3d package on Windows, download the binary
+installer and then execute it, by double-clicking on the
+j3d-1_5_2-beta1-windows-i586.exe (or j3d-1_5_2-beta1-windows-amd64.exe)
+icon.
+</p>
+
+<h4>Linux or Solaris</h4>
+<p>To install the j3d package on Linux or Solaris, download the
+self-extracting binary file, chdir to the desired directory, and then
+execute it.  For example, on a 32-bit Linux system:
 </p>
 <ul>
-cd /usr/java/jdk1.5.0_08/jre<br>
-sh /path-to-download-files/java3d-1_5_2-build1-solaris-x86.bin<br>
+cd /myhome/j3d<br>
+sh /path-to-download-files/j3d-1_5_2-beta1-linux-i586.bin<br>
 </ul>
-<p>You may need to be "root" to do this on Solaris.<br>
+
+<p>After doing this, you will need to modify your CLASSPATH
+environment variable to include the full paths to j3dcore.jar,
+j3dutils.jar, and vecmath.jar. For example:
 </p>
-<h4><a name="Windows"></a>Windows</h4>
-<p>
-This release of Java&nbsp;3D runs on JDK version 1.5.0 and
-higher. To install
-this build, execute the binary installer that you downloaded, by
-double-clicking on the java3d-1_5_2-build1-windows-i586.exe (or
-java3d-1_5_2-build1-windows-amd64.exe) icon.<br>
+
+<ul>
+export CLASSPATH=".:/myhome/j3d/lib/ext/j3dcore.jar:/myhome/j3d/lib/ext/j3dutils.jar:/myhome/j3d/lib/ext/vecmath.jar
+</ul>
+
+<p>Then modify your LD_LIBRARY_PATH environment variable to contain the
+full path to the "lib/ARCH" directory. For example, on 32-bit Linux:
 </p>
-<p>Alternatively, you can download the
-java3d-1_5_2-build1-windows-i586.zip
-file and manually install
-the
-necessary files into your JRE. In this case, unzip the file, and follow
-the instructions in the unzipped README.txt file.<br>
+
+<ul>
+export LD_LIBRARY_PATH=/myhome/j3d/lib/i386
+</ul>
+
+<h4>Mac OS X</h4>
+<p>No installer is available for the Mac&nbsp;OS&nbsp;X operating environment.
+You will need to download the j3d-1_5_2-beta1-macosx.zip file, unzip it,
+and follow the instructions in the unzipped README.txt file.
 </p>
-<h4><a name="MacOSX"></a>Mac OS X<br>
-</h4>
-No installer is currently available for the Mac OS X operating
-environment. You will need to download the
-java3d-1_5_2-build1-macosx.zip
-file and manually install
-the
-necessary files into your JRE. After you unzip this file, follow
-the instructions in the unzipped README.txt file.
 </body>
 </html>

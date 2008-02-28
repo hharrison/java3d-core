@@ -1,9 +1,28 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc.  All Rights Reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
- * Use is subject to license terms.
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Sun designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Sun in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
+ * CA 95054 USA or visit www.sun.com if you need additional information or
+ * have any questions.
  *
  * $Revision$
  * $Date$
@@ -47,7 +66,7 @@ import java.util.logging.Logger;
 public class VirtualUniverse extends Object {
     // NOTE TO DEVELOPERS:
     //
-    // Developers who modify Java 3D in any way are required to modify
+    // Developers who modify Java 3D in any way should modify
     // the auxiliary implementation vendor string in VersionInfo.java.
     // See that file for instructions.
 
@@ -230,7 +249,7 @@ public class VirtualUniverse extends Object {
         // Print out version information unless this is a
         // non-debuggable, release (fcs) build
         if (isLoggableConfig || J3dDebug.devPhase || VersionInfo.isDebug) {
-            StringBuffer strBuf = new StringBuffer("Java 3D ");
+            StringBuffer strBuf = new StringBuffer("3D ");
 	    if (J3dDebug.devPhase) {
 		strBuf.append("[dev] ");
 	    }
@@ -247,7 +266,7 @@ public class VirtualUniverse extends Object {
 	// Print out debugging information for debug builds
 	if (isLoggableConfig || VersionInfo.isDebug) {
             StringBuffer strBuf = new StringBuffer();
-            strBuf.append("Initializing Java 3D runtime system:\n").
+            strBuf.append("Initializing 3D runtime system:\n").
                     append("    version = ").
                     append(VersionInfo.getVersion()).
                     append("\n").
@@ -283,7 +302,7 @@ public class VirtualUniverse extends Object {
         // Print out debugging information for debug builds
         if (isLoggableConfig || VersionInfo.isDebug) {
             StringBuffer strBuf = new StringBuffer();
-            strBuf.append("Java 3D system initialized\n").
+            strBuf.append("3D system initialized\n").
                     append("    rendering pipeline = ").
                     append(Pipeline.getPipeline().getPipelineName());
             String str = strBuf.toString();

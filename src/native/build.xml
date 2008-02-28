@@ -1,21 +1,7 @@
 <?xml version="1.0"?>
 
-<!--
-/*
- * $RCSfile$
- *
- * Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved.
- *
- * Use is subject to license terms.
- *
- * $Revision$
- * $Date$
- * $State$
- */
- -->
-
 <!-- Ant file for building native files -->
-<project name="Java 3D" default="compile-opt">
+<project name="j3d-core native" default="compile-opt">
 
   <target name="nativeSetup-debug-solaris" if="isSolarisOnSparc">
 	<property name="bldFlag" value="-g -DDEBUG"/>

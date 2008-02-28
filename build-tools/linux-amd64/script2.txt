@@ -15,7 +15,7 @@ while [ x$agreed = x ]; do
 done
 if [ ! -w `pwd` ] ; then
     echo "You do not have write permission to `pwd`"
-    echo "Java 3D installation failed"
+    echo "3D installation failed"
     exit 1
 fi
 outname=install.sfx.$$

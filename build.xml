@@ -1,20 +1,6 @@
 <?xml version="1.0"?>
 
-<!--
-/*
- * $RCSfile$
- *
- * Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved.
- *
- * Use is subject to license terms.
- *
- * $Revision$
- * $Date$
- * $State$
- */
- -->
-
-<project name="java3d-1.5.2" default="jar-debug" basedir=".">
+<project name="j3d-1.5.2" default="jar-debug" basedir=".">
 
   <!--
   *********************************************************************
@@ -45,7 +31,7 @@
 
   <!--
   * The following property specifies the build number of the current
-  * Java 3D version being built. This build number is a monotonically
+  * version of 3D being built. This build number is a monotonically
   * increasing number that is incremented for each new stable, beta,
   * fcs, or patch build.  Each non-daily build will have a unique
   * build number that is greater than the previous build's build
@@ -55,20 +41,20 @@
 
   <!--
   * The following property specifies the beta revision of the current
-  * Java 3D version being built. It is ignored for non-beta builds.
+  * version of 3D being built. It is ignored for non-beta builds.
   -->
   <property name="version_betastr"    value="beta1"/>
 
   <!--
   * The following property specifies the patch revision of the current
-  * Java 3D version being built. It is ignored for non-beta builds.
+  * version of 3D being built. It is ignored for non-beta builds.
   -->
   <property name="version_patchstr"   value="01"/>
 
   <!--
-  * The following properties specify the current version of Java 3D.
+  * The following properties specify the current version of 3D.
   * The "version_base" property specifies the dot-dot base version
-  * number of Java 3D; it must contain exactly three integer numbers
+  * number of 3D; it must contain exactly three integer numbers
   * separated by "periods ("."). The version_base_file property must
   * be the same version number as version_base with "_" replacing ".".
   -->
@@ -83,7 +69,7 @@
   <!--
   *********************************************************************
   *
-  * A build of Java 3D is one of the following five types: daily
+  * A build of j3d is one of the following five types: daily
   * build, stable build, beta build (or release candidate), fcs build,
   * patch build. Daily builds are identified with a "-preN-YYMMDDHHMM"
   * suffix; stable builds are identified with a "-buildN" suffix; beta
@@ -120,6 +106,14 @@
   <property name="dist"    location="dist"/>
   <property name="build.comp" value="gcc"/>
   <property name="build.rend" value="ogl"/>
+
+  <property name="build.spec.title" value="3D Graphics API for the Java Platform"/>
+  <property name="build.impl.title" value="3D Graphics API for the Java Platform"/>
+  <property name="build.spec.vendor" value=""/>
+  <property name="build.impl.vendor" value=""/>
+  <property name="build.impl.vendor.id" value=""/>
+  <property name="build.javadoc.name" value="3D"/>
+  <property name="build.relprefix" value="j3d"/>
 
   <target name="echo" depends="setupPlatform">	
     <echo message="platform        = ${platform}"/>
@@ -241,7 +235,7 @@
        depends="init, setupBuildType, setupSolaris, setupSolarisX86, setupLinux, setupLinuxAmd64, setupLinuxIA64, setupLinuxPPC, setupWindows, setupWindowsAmd64, setupMacOSX, setupJogl">
     <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
     <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
-    <property name="docname" value="java3d-${version_file}-doc"/>
+    <property name="docname" value="${build.relprefix}-${version_file}-doc"/>
   </target>
 
 
@@ -531,7 +525,7 @@
       <property name="platformTmp" location="${dist}/${platform}/tmp"/>
       <property name="platformTmpBund" location="${platformTmp}/bund"/>
       <property name="platformTmpInst" location="${platformTmp}/inst"/>
-      <property name="release_name" value="java3d-${version_file}-${platformname}"/>
+      <property name="release_name" value="${build.relprefix}-${version_file}-${platformname}"/>
       <property name="inst_name" value="j3d-instfiles-${version_file}-${platformname}"/>
       <mkdir dir="${dist}/release"/>
   </target>
@@ -893,7 +887,7 @@ The following ant targets are available ("jar-opt" is the default):
                       build/${platform}/debug/native.
                       
       jar-debug-javaonly 
-                     - compiles only the java portion of Java3D and builds
+                     - compiles only the java portion of j3d and builds
                       jars in same locations as jar-debug
 
       jar-opt        - creates build/${platform}/opt/lib for all jar
@@ -902,13 +896,13 @@ The following ant targets are available ("jar-opt" is the default):
                       build/${platform}/opt/native.
                       
       jar-opt-javaonly 
-                     - compiles only the java portion of Java3D and builds
+                     - compiles only the java portion of j3d and builds
                       jars in same location as jar-opt
 
       install-debug  - installs the debug build into the JDK pointed to by JAVA_HOME
       
-      src            - generate a zip file Java 3D project source code.
+      src            - generate a zip file j3d project source code.
 
-      uninstall      - uninstalls Java 3D from the JDK pointed to by JAVA_HOME
+      uninstall      - uninstalls j3d from the JDK pointed to by JAVA_HOME
   </description>
 </project>

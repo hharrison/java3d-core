@@ -1,21 +1,7 @@
 <?xml version="1.0"?>
 
-<!--
-/*
- * $RCSfile$
- *
- * Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved.
- *
- * Use is subject to license terms.
- *
- * $Revision$
- * $Date$
- * $State$
- */
- -->
-
 <!-- Ant file for building java classes and jar files -->
-<project name="Java 3D" default="jar-debug">
+<project name="j3d-core classes" default="jar-debug">
 
   <path id="vecmath.debug.classpath">
     <pathelement location="${vecmath_home}/build/debug/lib/ext/vecmath.jar"/>
@@ -49,6 +35,10 @@
             <filter token="VERSION_BASE" value="${version_base}"/>
             <filter token="VERSION_BUILD" value="${version_build}"/>
             <filter token="VERSION_SUFFIX" value="${version_suffix}"/>
+            <filter token="SPEC_TITLE" value="${build.spec.title}"/>
+            <filter token="SPEC_VENDOR" value="${build.spec.vendor}"/>
+            <filter token="IMPL_TITLE" value="${build.impl.title}"/>
+            <filter token="IMPL_VENDOR" value="${build.impl.vendor}"/>
         </filterset>
     </copy>
 
@@ -94,6 +84,10 @@
             <filter token="VERSION_BASE" value="${version_base}"/>
             <filter token="VERSION_BUILD" value="${version_build}"/>
             <filter token="VERSION_SUFFIX" value="${version_suffix}"/>
+            <filter token="SPEC_TITLE" value="${build.spec.title}"/>
+            <filter token="SPEC_VENDOR" value="${build.spec.vendor}"/>
+            <filter token="IMPL_TITLE" value="${build.impl.title}"/>
+            <filter token="IMPL_VENDOR" value="${build.impl.vendor}"/>
         </filterset>
     </copy>
 
@@ -128,6 +122,11 @@
         <fileset dir="${core_utils_src}/classes" includes="ToolsVersion"/>
         <filterset>
             <filter token="VERSION_BASE" value="${version_base}"/>
+            <filter token="SPEC_TITLE" value="${build.spec.title}"/>
+            <filter token="SPEC_VENDOR" value="${build.spec.vendor}"/>
+            <filter token="IMPL_TITLE" value="${build.impl.title}"/>
+            <filter token="IMPL_VENDOR" value="${build.impl.vendor}"/>
+            <filter token="IMPL_VENDOR_ID" value="${build.impl.vendor.id}"/>
         </filterset>
     </copy>
 
@@ -183,6 +182,11 @@
         <fileset dir="${core_utils_src}/classes" includes="ToolsVersion"/>
         <filterset>
             <filter token="VERSION_BASE" value="${version_base}"/>
+            <filter token="SPEC_TITLE" value="${build.spec.title}"/>
+            <filter token="SPEC_VENDOR" value="${build.spec.vendor}"/>
+            <filter token="IMPL_TITLE" value="${build.impl.title}"/>
+            <filter token="IMPL_VENDOR" value="${build.impl.vendor}"/>
+            <filter token="IMPL_VENDOR_ID" value="${build.impl.vendor.id}"/>
         </filterset>
     </copy>
 
@@ -228,7 +232,7 @@
 
   <target name="setup-docs">
     <property name="javadoc.bottom"
-       value="&lt;font size=&quot;-1&quot;&gt;Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved. Use is subject to &lt;a href=&quot;{@docRoot}/LICENSE-SPEC.html&quot;&gt;license terms&lt;/a&gt;."/>
+       value="&lt;font size=&quot;-1&quot;&gt;Copyright 1996-2008 Sun Microsystems, Inc. All Rights Reserved. Use is subject to &lt;a href=&quot;{@docRoot}/LICENSE-SPEC.html&quot;&gt;license terms&lt;/a&gt;."/>
   </target>
 
   <target name="docs-jcp" depends="setup-docs">
@@ -241,7 +245,7 @@
              maxmemory="128m"
              destdir="${build}/${platform}/javadocs/docs-jcp"
 	     bottom="${javadoc.bottom}"
-             windowtitle="Java 3D ${version}">
+             windowtitle="${build.javadoc.name} ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
 		<pathelement location="${src}/classes/${wstype}"/>
@@ -263,12 +267,12 @@
 
     <!--
       ** TODO: there is an implicit dependency on "compile-opt",
-      ** since the J3dBuildInfo source file is only built as part of
+      ** since the VersionInfo.java source file is only built as part of
       ** that target. We don't want to make this an explicit
       ** dependency because we don't want the time stamp regenerated.
       **
       ** Ideally, we should make a "time-stamp-opt" target that only
-      ** creates J3DBuildInfo.java if it doesn't exist, and a
+      ** creates VersionInfo.java if it doesn't exist, and a
       ** "force-time-stamp-opt" target that unconditionally creates
       ** it. The "docs-*" targets would depend on "time-stamp-opt"
       ** while the "compile-opt" target would depend on
@@ -283,7 +287,7 @@
 	     private="true"
              destdir="${build}/${platform}/javadocs/docs-private"
 	     bottom="${javadoc.bottom}"
-             windowtitle="Java 3D ${version}">
+             windowtitle="${build.javadoc.name} ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
 		<pathelement location="${src}/classes/${wstype}"/>
@@ -317,7 +321,7 @@
              maxmemory="128m"
              destdir="${build}/${platform}/javadocs/docs-public"
 	     bottom="${javadoc.bottom}"
-             windowtitle="Java 3D ${version}">
+             windowtitle="${build.javadoc.name} ${version}">
 	     <sourcepath>
 		<pathelement location="${src}/classes/share"/>
 		<pathelement location="${src}/classes/${wstype}"/>

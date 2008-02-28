@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
-Specification-Title: Java 3D API Specification
+Specification-Title: @SPEC_TITLE@
 Specification-Version: 1.5
-Specification-Vendor: Sun Microsystems, Inc.
-Implementation-Title: Java 3D Core Runtime Environment
+Specification-Vendor: @SPEC_VENDOR@
+Implementation-Title: @IMPL_TITLE@
 Implementation-Version: @VERSION_BASE@
-Implementation-Vendor: Sun Microsystems, Inc.
+Implementation-Vendor: @IMPL_VENDOR@
 Extension-Name: javax.media.j3d
-Implementation-Vendor-Id: com.sun
+Implementation-Vendor-Id: @IMPL_VENDOR_ID@

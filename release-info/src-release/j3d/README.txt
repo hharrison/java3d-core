@@ -19,8 +19,7 @@ Additional information and license restrictions for third party source
 code are found in the javax/THIRDPARTY-LICENSE-*.txt and
 com/THIRDPARTY-LICENSE-*.txt files.
 
-
 Note that the source files in this directory are not sufficient to
-build Java 3D. If you want to build Java 3D, you can use CVS to get a
-complete source tree.  See
+build the 3D graphics packages. If you want to build the 3D packages,
+you can use CVS to get a complete source tree.  See
 https://j3d-core.dev.java.net/build-instr.html for more information.

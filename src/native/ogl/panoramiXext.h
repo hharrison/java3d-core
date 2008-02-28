@@ -1,15 +1,3 @@
-/*
- * $RCSfile$
- *
- * Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved.
- *
- * Use is subject to license terms.
- *
- * $Revision$
- * $Date$
- * $State$
- */
-
 /* $TOG: panoramiXext.h /main/3 1998/02/13 13:08:51 kaleb $ */
 /*****************************************************************
 

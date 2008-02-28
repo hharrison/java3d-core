@@ -1,20 +1,7 @@
 <?xml version="1.0"?>
-<!--
-/*
- * $RCSfile$
- *
- * Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved.
- *
- * Use is subject to license terms.
- *
- * $Revision$
- * $Date$
- * $State$
- */
- -->
 
 <!-- Ant file for building native ogl renderer files for Linux PPC -->
-<project name="Java 3D" default="compile">
+<project name="j3d-core native" default="compile">
 
   <target name="compile">
 

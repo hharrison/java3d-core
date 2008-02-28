@@ -1,20 +1,6 @@
 <?xml version="1.0"?>
 
 <!--
-/*
- * $RCSfile$
- *
- * Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved.
- *
- * Use is subject to license terms.
- *
- * $Revision$
- * $Date$
- * $State$
- */
- -->
-
-<!--
 /* 1. define the following property to change the location of the CG library:
  *
  *    ant -Dcg.home="path-to-cg-installation"
@@ -22,7 +8,7 @@
  -->
 
 <!-- Ant file for building native  ogl renderer files for Windows-amd64 -->
-<project name="Java 3D" default="compile">
+<project name="j3d-core native" default="compile">
 
 
 

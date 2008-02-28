@@ -1,9 +1,28 @@
 /*
  * $RCSfile$
  *
- * Copyright (c) 2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2000-2008 Sun Microsystems, Inc.  All Rights Reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
- * Use is subject to license terms.
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Sun designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Sun in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
+ * CA 95054 USA or visit www.sun.com if you need additional information or
+ * have any questions.
  *
  * $Revision$
  * $Date$
@@ -322,7 +341,7 @@ VOID D3dDriverInfo::release()
 
 VOID printInfo() 
 {
-    printf("Java 3D 1.5.2, Windows version is %d.%d ", 
+    printf("javax.media.j3d 1.5.2, Windows version is %d.%d ", 
 	   osvi.dwMajorVersion, osvi.dwMinorVersion);
     printf("Build: %d, ", LOWORD(osvi.dwBuildNumber)); 
     
@@ -398,8 +417,8 @@ VOID D3dDriverInfo::initialize(JNIEnv *env)
 	
     LPDIRECT3D9 pD3D = Direct3DCreate9( D3D_SDK_VERSION );
 	if (debug && pD3D != NULL){
-		printf("[Java3D] Using DirectX D3D 9.0 or higher.\n");
-		printf("[Java3D] DirectX D3D renderer build 1.5.2\n");
+		printf("[j3d] Using DirectX D3D 9.0 or higher.\n");
+		printf("[j3d] DirectX D3D renderer build 1.5.2\n");
 	}
     if (pD3D == NULL) {
 	D3dCtx::d3dError(D3DNOTFOUND);

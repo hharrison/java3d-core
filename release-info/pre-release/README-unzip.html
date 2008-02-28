@@ -1,124 +1,209 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="content-type">
-  <title>Java 3D 1.5.2 Installation Instructions</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>3D Graphics API for the Java Platform 1.5.2: Unzip
+Instructions</title>
 </head>
 <body>
-<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.5.2 Pre-Release</h2>
-<p>This software is licensed by Sun, as specified in the <a
- href="LICENSE-JRL.txt">LICENSE-JRL.txt</a>
+<h2>3D Graphics API for the Java Platform 1.5.2 Pre-Release</h2>
+<p>This software is licensed by Sun, as specified in the
+<a href="LICENSE-GPLv2.txt">LICENSE-GPLv2.txt</a>
 file. You
 must only use this software in accordance with the terms under which
-the
-code is licensed.</p>
-<h2>Instructions for Unzipping Java&nbsp;3D 1.5.2 Pre-Release</h2>
-The 1.5.2-XXX pre-release version of the
-Java&nbsp;3D<sup><font size="-2">TM</font></sup>
-API runs on JDK version 1.5.0 and higher. It has been released for
-the <a href="#Solaris">Solaris</a>, <a href="#Linux">Linux</a>, <a
- href="#Windows">Windows</a>, and <a href="#MacOSX">Mac OS X</a>
-operating
-environments.<br>
-<br>
-<h3><a name="Windows"></a>Windows<br>
-</h3>
-The 1.5.2 pre-release version of the Java&nbsp;3D<sup><font size="-2">TM</font></sup>
-API for Windows/XP and Windows 2000 runs on JDK version 1.5.0 and
+the code is licensed.
+</p>
+<h2>Instructions for Unzipping 3D Graphics API for the Java
+Platform 1.5.2 Pre-Release</h2>
+<p>The 1.5.2-XXX pre-release version of 3D graphics API for the
+Java
+platform runs on JDK version 1.5.0 and higher. It has been released
+for the <a href="#Windows">Windows</a>, <a href="#Linux">Linux</a>,
+<a href="#Solaris">Solaris</a>,
+and <a href="#MacOSX">Mac&nbsp;OS&nbsp;X</a>
+operating environments.
+</p>
+<p>NOTE: Installing the j3d jars and native libs into the "ext"
+directory of the JRE is discouraged, especially on
+Mac&nbsp;OS&nbsp;X
+where JOGL is used as the rendering engine. Doing so can cause
+conflicts with third-party applications launched via Java Web Start,
+and causes confusion later when upgrading the distribution.
+</p>
+<h3><a name="Windows"></a>Windows</h3>
+<p>The 1.5.2 pre-release version of 3D graphics API for the Java
+platform for Windows/XP and Windows 2000 runs on JDK version 1.5.0 and
 higher. To manually install this build, do the following:
+</p>
 <ol>
-  <li>Download java3d-1_5_2-XXX.zip to a temporary
-directory,
-for example, "c:\Temp"</li>
-  <br>
-  <li>Unzip java3d-1_5_2-XXX.zip (using WinZip or a
-similar
-tool) into "c:\Temp". This will create a
-"java3d-1_5_2-XXX" subdirectory in \Temp where the
+  <li>Download and unzip <code>j3d-1_5_2-XXX.zip</code>
+(using Windows
+Explorer or an unzip tool such as WinZip) to a temporary
+download folder,
+for example, <code>c:\Downloads</code>. This will
+create a <code>j3d-1_5_2-XXX</code> subfolder in
+your download folder where the
 downloaded files can be found. The file you need for manual
-installation is "j3d-jre.zip".<br>
+installation is <code>j3d-jre.zip</code>.<br>
     <br>
   </li>
-  <li>Unzip Java 3D 1.5.2 into your JRE as follows:<br>
+  <li>Create a folder for the j3d jar files and native libraries,
+for example, <code>C:\Users\myhome\j3d</code>, and
+unzip <code>j3d-jre.zip</code> into this folder.<br>
     <br>
   </li>
-  <ul>
-    <li>Locate your "JRE". The default location for the current release
-is:
-"c:\Program&nbsp;Files\Java\jre1.5.0_08"</li>
+  <li>Modify your <code>CLASSPATH</code> environment
+variable to include the full paths to <code>j3dcore.jar</code>,
+    <code>j3dutils.jar</code>, and <code>vecmath.jar</code>.
+For example, add the following to your <code>CLASSPATH</code>
+variable,
+using the System control panel, Advanced tab, Environment Variables
+button:<br>
     <br>
-    <li>Unzip j3d-jre.zip (found in
-c:\Temp\java3d-1_5_2-XXX)
-to the jre directory.</li>
+    <code>.;C:\Users\myhome\j3d\lib\ext\j3dcore.jar;C:\Users\myhome\j3d\lib\ext\j3dutils.jar;C:\Users\myhome\j3d\lib\ext\vecmath.jar</code>
     <br>
-    <li>Verify that the j3dcore.jar, j3dutils.jar, and vecmath.jar
-files end up in:
-"c:\Program&nbsp;Files\Java\jre1.5.0_08\lib\ext"</li>
     <br>
-    <li>Verify that the j3d*.dll files end up in:
-"c:\Program&nbsp;Files\Java\jre1.5.0_08\bin"</li>
-  </ul>
-  <br>
-  <li>If you also installed the JDK, unzip Java 3D 1.5.2 into the
-"jre"
-directory of your JDK as follows:</li>
-  <br>
-  <ul>
-    <li>Locate the jre directory of your "JDK". The default location
-for the
-current release is: "c:\Program&nbsp;Files\Java\jdk1.5.0_08\jre"</li>
+  </li>
+  <li>Modify your <code>PATH</code> environment
+variable to contain the full path to the <code>lib\i386</code>
+folder (or <code>lib\amd64</code> for
+Windows/x64). For example, on 32-bit Windows, add the following to your
+    <code>PATH</code> variable, using the System control
+panel, Advanced tab, Environment Variables button.<br>
     <br>
-    <li>Unzip j3d-jre.zip (found in
-c:\Temp\java3d-1_5_2-XXX)
-to the jre directory of the JDK.</li>
-    <br>
-    <li>Verify that the j3dcore.jar, j3dutils.jar, and vecmath.jar
-files end up in:
-"c:\Program&nbsp;Files\Java\jdk1.5.0_08\jre\lib\ext"</li>
-    <br>
-    <li>Verify that the j3d*.dll files end up in:
-"c:\Program&nbsp;Files\Java\jdk1.5.0_08\jre\bin"</li>
-  </ul>
+    <code>C:\Users\myhome\j3d\lib\i386</code><br>
+  </li>
 </ol>
-<h3><a name="Linux"></a><a name="Solaris"></a><a name="MacOSX"></a>Linux,
-Solaris, Mac OS X<br>
-</h3>
-<p>The 1.5.2 pre-release version of the Java&nbsp;3D<sup><font size="-2">TM</font></sup>
-API for Linux or Solaris runs on JDK version 1.5.0 and
+<p>At this point your Java installation should be able to see
+the j3d class files. Users of IDEs such as NetBeans and Eclipse should
+consult the IDE's documentation to see how to add jar files and native
+libraries to their current project.<br>
+</p>
+<h3><a name="Linux"></a><a name="Solaris"></a>Linux,
+Solaris</h3>
+<p>The 1.5.2 pre-release version of 3D graphics API for the Java
+platform
+for Linux or Solaris runs on JDK version 1.5.0 and
 higher. To manually install this build, do the following:</p>
 <ol>
-  <li>Download java3d-1_5_2-XXX.zip to a temporary
-directory,
-for example, "/tmp"</li>
-  <br>
-  <li>Unzip java3d-1_5_2-XXX.zip into "/tmp" as follows:<br>
-    <br>
-    <ul>
-      <code>cd /tmp</code><br>
-      <code>unzip java3d-1_5_2-*.zip</code><br>
-    </ul>
-    <br>
-This will create a
-"java3d-1_5_2-XXX" subdirectory in /tmp where the
+  <li>Download and unzip <code>j3d-1_5_2-XXX.zip</code>
+into a temporary
+download directory,
+for example, <code>/tmp</code>. This will
+create a <code>j3d-1_5_2-XXX</code> subdirectory
+in <code>/tmp</code> where the
 downloaded files can be found. The file you need for manual
-installation is "j3d-jre.zip".<br>
+installation is <code>j3d-jre.zip</code>.<br>
     <br>
   </li>
-  <li>Unzip Java 3D 1.5.2 into the
-"jre"
-directory of your JDK. For example, if your JDK is in
-"/usr/java/jdk1.5.0_08/jre", you would do the following:<br>
+  <li>Create a folder for the j3d jar files and native libraries,
+for example, <code>/myhome/j3d</code>, and
+unzip <code>j3d-jre.zip</code> into this directory
+as follows:<br>
     <br>
     <ul>
-      <code>cd /usr/java/jdk1.5.0_08/jre</code><br>
-      <code>unzip /tmp/java3d-1_5_2-*/j3d-jre.zip</code><br>
+      <code>cd /myhome/j3d</code><br>
+      <code>unzip /tmp/j3d-1_5_2-*/j3d-jre.zip</code><br>
     </ul>
     <br>
-Verify that the j3dcore.jar, j3dutils.jar, and vecmath.jar files end up
-in
-"/usr/java/jdk1.5.0_08/jre/lib/ext"</li>
+  </li>
+  <li>Modify your <code>CLASSPATH</code> environment
+variable to include the full paths to <code>j3dcore.jar</code>,
+    <code>j3dutils.jar</code>, and <code>vecmath.jar</code>.
+For example:<br>
+    <br>
+    <code>export
+CLASSPATH=.:/myhome/j3d/lib/ext/j3dcore.jar:/myhome/j3d/lib/ext/j3dutils.jar:/myhome/j3d/lib/ext/vecmath.jar</code><br>
+    <br>
+  </li>
+  <li>Modify your <code>LD_LIBRARY_PATH</code>
+environment
+variable to contain the full path to the <code>lib/&lt;ARCH&gt;</code>
+directory. For example, on 32-bit Linux:<br>
+    <br>
+    <code>export LD_LIBRARY_PATH=/myhome/j3d/lib/i386</code><br>
+  </li>
 </ol>
-<br>
+<p>At this point your Java installation should be able to see
+the j3d class files. Users of IDEs such as NetBeans and Eclipse should
+consult the IDE's documentation to see how to add jar files and native
+libraries to their current project.
+</p>
+<h3><a name="MacOSX"></a>Mac OS X</h3>
+<p>The 1.5.2 pre-release version of 3D graphics API for the Java
+platform
+for Mac&nbsp;OS&nbsp;X runs on JDK version 1.5.0 and
+higher. To manually install this build, do the following:</p>
+<ol>
+  <li>Download and unzip <code>j3d-1_5_2-XXX.zip</code>
+into a temporary
+download directory,
+for example, <code>/tmp</code>. This will
+create a <code>j3d-1_5_2-XXX</code> subdirectory
+in <code>/tmp</code> where the
+downloaded files can be found. The file you need for manual
+installation is <code>j3d-jre.zip</code>.<br>
+    <br>
+  </li>
+  <li>Create a folder for the j3d jar files,
+for example, <code>/myhome/j3d</code>, and
+unzip <code>j3d-jre.zip</code> into this directory
+as follows:<br>
+    <br>
+    <ul>
+      <code>cd /myhome/j3d</code><br>
+      <code>unzip /tmp/j3d-1_5_2-*/j3d-jre.zip</code><br>
+    </ul>
+    <br>
+  </li>
+  <li>Modify your <code>CLASSPATH</code> environment
+variable to include the full paths to <code>j3dcore.jar</code>,
+    <code>j3dutils.jar</code>, and <code>vecmath.jar</code>.
+For example:<br>
+    <br>
+    <code>export
+CLASSPATH=.:/myhome/j3d/lib/ext/j3dcore.jar:/myhome/j3d/lib/ext/j3dutils.jar:/myhome/j3d/lib/ext/vecmath.jar</code><br>
+  </li>
+  <br>
+  <li>Download a recent version of <a href="https://jogl.dev.java.net/">JOGL</a> for the Mac
+platform into a temporary
+download directory,
+for example, <code>/tmp</code>.<br>
+    <br>
+  </li>
+  <li>Create a folder for the jogl jar files and native
+libraries,
+for example, <code>/myhome/jogl</code>, and
+unzip <code>jogl-*.zip</code> into this directory
+as follows:<br>
+    <br>
+    <ul>
+      <code>cd /myhome/jogl</code><br>
+      <code>unzip /tmp/jogl-*.zip</code><br>
+    </ul>
+    <br>
+  </li>
+  <li>Modify your <code>CLASSPATH</code> environment
+variable to include the full paths to <code>jogl.jar</code>
+and <code>gluegen-rt.jar</code>.
+For example:<br>
+    <br>
+    <code>export
+CLASSPATH="${CLASSPATH}:/myhome/jogl/lib/jogl.jar:/myhome/jogl/lib/gluegen-rt.jar</code><br>
+  </li>
+  <br>
+  <li>Modify your <code>DYLD_LIBRARY_PATH</code>
+environment
+variable to contain the full path to the <code>lib</code>
+directory. For example:<br>
+    <br>
+    <code>export DYLD_LIBRARY_PATH=/myhome/jogl/lib</code><br>
+  </li>
+</ol>
+<p>At this point your Java installation should be able to see
+the j3d and jogl class files. Users of IDEs such as NetBeans and
+Eclipse should
+consult the IDE's documentation to see how to add jar files and native
+libraries to their current project.</p>
 </body>
 </html>
