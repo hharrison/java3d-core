@@ -37,13 +37,13 @@
   * build number that is greater than the previous build's build
   * number.
   -->
-  <property name="version_buildnum"   value="2"/>
+  <property name="version_buildnum"   value="3"/>
 
   <!--
   * The following property specifies the beta revision of the current
   * version of 3D being built. It is ignored for non-beta builds.
   -->
-  <property name="version_betastr"    value="beta1"/>
+  <property name="version_betastr"    value="beta2"/>
 
   <!--
   * The following property specifies the patch revision of the current
