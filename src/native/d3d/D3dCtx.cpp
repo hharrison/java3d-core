@@ -470,7 +470,11 @@ BOOL D3dCtx::initialize(JNIEnv *env, jobject obj)
 		   d3dPresent.BackBufferWidth,
 		   d3dPresent.BackBufferHeight);
 	}
-	return false;
+	//return false;
+    // Issue #578 fix on zero dimension window size
+	d3dPresent.BackBufferWidth  = 1;
+	d3dPresent.BackBufferHeight = 1;    
+    // end fix 	
     }
 	
 	
