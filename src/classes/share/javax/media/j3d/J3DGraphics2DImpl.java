@@ -894,6 +894,11 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     // Issue 121 - release all resources, mark as disposed
     public void dispose() {
 
+        // Issue 583 - do nothing if graphics has already been disposed
+        if (hasBeenDisposed) {
+            return;
+        }
+
         if (Thread.currentThread() == canvas3d.screen.renderer) {
             doDispose();
         } else {
@@ -927,6 +932,8 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 
         // Mark as disposed
         hasBeenDisposed = true;
+        // Issue 583 - set graphics2D field to null so it will get recreated
+        canvas3d.graphics2D = null;
     }
 
     public void drawAndFlushImage(BufferedImage img, int x, int y,

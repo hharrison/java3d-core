@@ -762,7 +762,10 @@ class Renderer extends J3dThread {
 					      (ImageObserver) ar[4]);
 			break;
 		    case GraphicsContext3D.DISPOSE2D:
-			canvas.graphics2D.doDispose();
+                        // Issue 583 - the graphics2D field may be null here
+			if (canvas.graphics2D != null) {
+                            canvas.graphics2D.doDispose();
+                        }
 			break;
 		    case GraphicsContext3D.SET_MODELCLIP:
 			canvas.graphicsContext3D.doSetModelClip(
