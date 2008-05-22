@@ -37,6 +37,10 @@ package javax.media.j3d;
  */
 class J3dClock {
 
+    // Issue 543 - Flag to indicate whether clock skews are taken in account
+    // and corrected. false by default. Set by the "j3d.adjustClockSkew" property.
+    private static boolean skewAdjustedClock = false;
+
     private static long deltaTime;
     private static final long nsecPerMsec = 1000000;
 
@@ -45,7 +49,7 @@ class J3dClock {
      */
     private J3dClock() {
     }
-    
+
     /**
      * Returns the current time in milliseconds. This is a more
      * accurate version of System.currentTimeMillis and should be used in
@@ -54,10 +58,30 @@ class J3dClock {
      * @return the current time in milliseconds.
      */
     static long currentTimeMillis() {
-        return (System.nanoTime() / nsecPerMsec) + deltaTime;
+        if (!skewAdjustedClock) {
+            return (System.nanoTime() / nsecPerMsec) + deltaTime;
+        } else {
+            // Issue 543 - Adjust for possible clock skew
+            long time = (System.nanoTime() / nsecPerMsec) + deltaTime;
+            long sysTime = System.currentTimeMillis();
+            if (Math.abs(time - sysTime) > 50) {
+                long baseTime, baseTimerValue;
+                synchronized (J3dClock.class) {
+                    baseTime = System.currentTimeMillis();
+                    baseTimerValue = System.nanoTime();
+                }
+                deltaTime = baseTime - (baseTimerValue / nsecPerMsec);
+                time = (System.nanoTime() / nsecPerMsec) + deltaTime;
+            }
+            return time;
+        }
     }
 
     static {
+        // Issue 543: get property for clock skew adjustment
+        skewAdjustedClock = MasterControl.getBooleanProperty("j3d.adjustClockSkew",
+                skewAdjustedClock, "clock skew adjustment");
+
         // Call time methods once without using their values to ensure that
         // the methods are "warmed up". We need to make sure that the actual
         // calls that we use take place as close together as possible in time.

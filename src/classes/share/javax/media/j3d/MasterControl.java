@@ -857,7 +857,7 @@ class MasterControl {
    	    });
     }
 
-    private static boolean getBooleanProperty(String prop,
+    static boolean getBooleanProperty(String prop,
 					      boolean defaultValue,
 					      String trueMsg,
 					      String falseMsg) {
@@ -871,7 +871,7 @@ class MasterControl {
 	return value;
     }
 
-    private static boolean getBooleanProperty(String prop,
+    static boolean getBooleanProperty(String prop,
 					      boolean defaultValue,
 					      String msg) {
 	return getBooleanProperty(prop,
