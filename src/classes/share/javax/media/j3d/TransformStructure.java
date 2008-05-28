@@ -598,7 +598,7 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
 	if (m.args[0] instanceof GroupRetained) {
             GroupRetained g = (GroupRetained) m.args[0];
             if (g.mirrorGroup != null) {
-                objectList.add(g.mirrorGroup);
+                objectList.add(g.mirrorGroup.toArray());
             }
         } else {
 	    Object[] gaArray = (Object[]) m.args[0]; 
