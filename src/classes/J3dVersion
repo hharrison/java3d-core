@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Specification-Title: @SPEC_TITLE@
-Specification-Version: 1.5
+Specification-Version: 1.6
 Specification-Vendor: @SPEC_VENDOR@
 Implementation-Title: @IMPL_TITLE@
 Implementation-Version: @VERSION_BASE@

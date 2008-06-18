@@ -167,7 +167,7 @@ class VersionInfo extends Object {
      * Specification version (major and minor version only). This
      * string must not be modified by developers.
      */
-    private static final String SPECIFICATION_VERSION = "1.5";
+    private static final String SPECIFICATION_VERSION = "1.6";
 
     /**
      * Specification vendor.
