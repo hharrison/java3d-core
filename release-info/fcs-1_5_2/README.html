@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Java 3D 1.5.2 Release Notes</title>
+</head>
+<body>
+<h2>Java&nbsp;3D<sup><font size="-2">TM</font></sup> 1.5.2
+Release Notes</h2>
+<p>This file contains important release information for users of
+the
+Java&nbsp;3D<sup><font size="-2">TM</font></sup> API, version
+1.5.2.
+</p>
+<ul>
+  <a href="#System_Requirements">System Requirements</a>
+(<a href="#Solaris_Sparc">Solaris Sparc</a>, <a href="#Solaris_x86">Solaris
+x86</a>, <a href="#Linux">Linux</a>, <a href="#Windows">Windows</a>, <a
+ href="#MacOSX">Mac OS X</a>)<br>
+  <a href="#Improvements_In_1_5_2">Improvements in 1.5.2</a><br>
+  <a href="#JoglPipeline">JOGL Rendering Pipeline</a><br>
+  <a href="#More_Information">More Information</a><br>
+</ul>
+<p><span style="font-style: italic;">NOTE: We recommend that you </span><span
+ style="font-style: italic;">uninstall all </span><span
+ style="font-style: italic;">previous versions of Java&nbsp;3D before
+installing this version.</span>
+</p>
+<h3><a name="System_Requirements"></a>System Requirements</h3>
+<p>The 1.5.2 version of the Java&nbsp;3D API has been released
+for
+Solaris (both sparc and x86/amd64), Linux (both x86 and amd64), Windows
+(both x86 and amd64), and
+Mac&nbsp;OS&nbsp;X (both PPC and x86).
+</p>
+<h4><a name="Solaris_Sparc"></a>Solaris Sparc</h4>
+<p>
+The 1.5.2 version of Java&nbsp;3D for Solaris SPARC requires the
+following:
+</p>
+<ul>
+  <li>JDK 1.5.0 or later from Sun Microsystems: <a
+ href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+  <li>Solaris 9 or later</li>
+  <li>Frame Buffer with OpenGL 1.3 support or better (XVR-600,
+XVR-1200, Expert3D, etc.). A frame buffer with OpenGL 1.2 support will
+work, but with reduced texture mapping functionality.</li>
+  <li>OpenGL 1.3 for Solaris or later. To find your current version,
+use: "<code>pkginfo -l SUNWglrt</code>". OpenGL for Solaris can be
+obtained at: <a href="http://www.sun.com/software/graphics/opengl/">http://www.sun.com/software/graphics/opengl/</a></li>
+</ul>
+<h4><a name="Solaris_x86"></a>Solaris x86</h4>
+<p>
+The 1.5.2 version of Java&nbsp;3D for Solaris x86/amd64 requires
+the
+following:
+</p>
+<ul>
+  <li>JDK 1.5.0 or later from Sun Microsystems: <a
+ href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+  <li>Solaris 10 or later</li>
+  <li>NVIDIA Frame Buffer with OpenGL 1.3 or later</li>
+</ul>
+<h4><a name="Linux"></a>Linux<br>
+</h4>
+<p>The 1.5.2 version of Java&nbsp;3D for Linux (x86 or amd64)
+requires
+the
+following:<br>
+</p>
+<ul>
+  <li>JDK 1.5.0 or later from Sun Microsystems: <a
+ href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+  <li>Graphics adapter with driver that supports the GLX
+extension: GLX
+1.3 or later and OpenGL 1.3 or later. A graphics adapter with OpenGL
+1.2 support will work, but with reduced texture mapping functionality. </li>
+</ul>
+<h4><a name="Windows"></a>Windows<br>
+</h4>
+<p>The 1.5.2 version of Java&nbsp;3D for Windows 2000,
+Windows XP (x86 or amd64), or Windows Vista
+requires the following:<br>
+</p>
+<ul>
+  <li>JDK 1.5.0 or later from Sun Microsystems: <a
+ href="http://java.sun.com/j2se/">http://java.sun.com/j2se/</a></li>
+  <li>Windows 2000, Windows XP, or Windows Vista</li>
+  <li>Support for either OpenGL or DirectX as shown below.<br>
+  </li>
+</ul>
+<ul>
+  <span style="font-weight: bold;">OpenGL version</span><br>
+  <ul>
+The (default) OpenGL renderer of Java&nbsp;3D requires OpenGL 1.3 or
+later,
+available from your graphics card manufacturer.
+  </ul>
+</ul>
+<ul>
+  <span style="font-weight: bold;">DirectX version</span><br>
+  <ul>
+The (optional) DirectX renderer of Java&nbsp;3D requires
+DirectX 9.0 or
+later, which is available from Microsoft at: <a
+ href="http://www.microsoft.com/windows/directx/">http://www.microsoft.com/windows/directx/</a>
+. The DirectX version of
+Java&nbsp;3D is selected by setting the "<code>j3d.rend</code>" system
+property
+to "<code>d3d</code>",
+for example:
+    <ul>
+      <code>java -Dj3d.rend=d3d ClassName</code>
+    </ul>
+  </ul>
+  <br>
+  NOTE: The DirectX version of Java 3D is used if a suitable version
+  of OpenGL cannot be found. Note also that DirectX is chosen by
+  default on Windows Vista systems with an ATI graphics card (due to
+  ATI driver bugs).
+</ul>
+<h4><a name="MacOSX"></a>Mac OS X</h4>
+<p>The 1.5.2 version of Java&nbsp;3D for Mac&nbsp;OS&nbsp;X (PPC or x86)
+requires the following:<br>
+</p>
+<ul>
+  <li>JDK 1.5.0 or later from Apple: <a
+ href="http://developer.apple.com/java/download/">http://developer.apple.com/java/download/</a></li>
+  <li>Java Binding for OpenGL (JOGL), available at: <a
+ href="https://jogl.dev.java.net/">https://jogl.dev.java.net/</a><br>
+you can <a
+ href="https://jogl.dev.java.net/servlets/ProjectDocumentList?folderID=5971&amp;expandFolder=5971">click
+here</a> for a direct link to the download folder<br>
+  </li>
+  <li>Apple OS X 10.3 or later (10.4 or later is required for
+Intel-based Apple systems)<br>
+  </li>
+  <li>Support for OpenGL 1.3 or later<br>
+  </li>
+</ul>
+<h3><a name="Improvements_In_1_5_2"></a>Improvements in 1.5.2</h3>
+<h4>Enhancements</h4>
+<ul>
+  <li>Source code license changed to GPL v2 + CLASSPATH</li>
+</ul>
+<h4>Issues Fixed in 1.5.2</h4>
+<br>
+<table width="100%" style="text-align: left;" border="1" cellpadding="2"
+ cellspacing="0">
+  <tbody>
+    <tr>
+      <th style="vertical-align: top; text-align: right;">Issue</th>
+      <th style="vertical-align: top;">&nbsp; </th>
+      <th style="vertical-align: top;">Description</th>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">179</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">OrbitBehavior.setRotationCenter gives spurious view shift</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">483</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">NullPointerException when writing Font3D using scenegraph.io</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">506</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">NullPointerException: Calling getNominalSensorRotation in WandViewBehavior when internal nominalSensorRotation is null causes a NullPointerException.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">510</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">J3DGraphics2D context lost when canvas changes frame</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">513</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Down-rev D3D driver can cause JVM to crash</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">514</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">NPE in Wonderland : triggered in cached bounds computation</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">519</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">IntersectionInfo.getGeometry return null for IndexedArrayGeometry</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">525</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">JOALMixer only playing one sample</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">532</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Background geometry BG isn't saved with SceneGraphFileWriter</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">534</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">ClassNotFoundException when running applet if Java 3D installed into JRE</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">538</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Machine precision bug in AxisAngle4d and Quat4d</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">540</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">ArrayIndexOutOfBoundsException when calling setPickable</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">541</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Bound.closest_point() method creates unused Matrix3d</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">543</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">J3DClock does not adjust to clock skew</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">544</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">GroupRetained.getBounds() should return BoundingBox?</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">545</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Update docs to discourage installing Java 3D into JRE</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">548</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">RFE - Disable getLock() / unLock() on non-alive GeometryArray</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">555</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Muting a PointSound causes a ClassCastException</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">560</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Use D3DCREATE_FPU_PRESERVE flag on D3D pipeline</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">561</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Decrease memory footprint of BoundingBox</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">562</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Error occurs when Canvas3D removed from View</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">563</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Background cloneNode() fails with Background geometry</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">567</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">Update license to GPL v2 + CLASSPATH</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">569</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">ImageComponent.ALLOW_IMAGE_READ is false</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">583</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">A disposed Graphics2D remains in Canvas3D after removal and addtion</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: right;">585</td>
+      <td style="vertical-align: top;">&nbsp; </td>
+      <td style="vertical-align: top;">ClassCastException in TransformStructure.java</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<h3><a name="JoglPipeline"></a>JOGL Rendering Pipeline</h3>
+<p>A JOGL rendering pipeline, as described
+in <a href="https://java3d.dev.java.net/issues/show_bug.cgi?id=229">issue
+229</a>, is now
+available on all supported platforms, including Apple Mac&nbsp;OS&nbsp;X
+(x86 or PPC). The easiest way to run Java&nbsp;3D applications
+using the JOGL
+pipeline is via Java Webstart from your browser (with no setup
+required).
+<a href="https://j3d-webstart.dev.java.net/test">Click here</a> to run
+a Java&nbsp;3D example program from your browser via the
+JOGL pipeline. These
+examples will use JOGL on Mac&nbsp;OS&nbsp;X and the native OpenGL pipeline on
+all
+other platforms.<br>
+</p>
+<p>The JOGL renderer is the default on Mac&nbsp;OS&nbsp;X.
+You can select the JOGL renderer on other platforms by setting the "<code>j3d.rend</code>"
+system
+property
+to "<code>jogl</code>",
+for example:
+</p>
+<ul>
+  <code>java -Dj3d.rend=jogl ClassName</code>
+</ul>
+<p>You will need to <a href="https://jogl.dev.java.net/">download
+JOGL</a>
+and include it in your PATH/CLASSPATH along with the Java&nbsp;3D jar files.<br>
+</p>
+<p>NOTE: Installing the j3d or jogl jars and native libs into the "ext"
+directory of the JRE is strongly discouraged. Doing so can cause
+conflicts with third-party applications launched via Java Web Start,
+and causes confusion later when upgrading the distribution.
+</p>
+<h3><a name="More_Information"></a>More Information</h3>
+<p>For the latest information on Java&nbsp;3D, see the <a
+ href="https://java3d.dev.java.net/">main Java&nbsp;3D project page</a>
+on
+java.net.<br>
+</p>
+<p>Click <a
+ href="https://java3d.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=java3d&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED">here</a>
+for a list of open issues.</p>
+</body>
+</html>
