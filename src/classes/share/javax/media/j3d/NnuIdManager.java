@@ -218,29 +218,38 @@ class NnuIdManager {
 	if(size > 0) {
 	    NnuId newNnuIdArr[] = new NnuId[size];
 	    
-	    for(i=0; i<nnuIdArr1.length; i++) {
-		index = equals(nnuIdArr0, nnuIdArr1[i], 0, nnuIdArr0.length);
-		
-		if(index >= 0) {
-		    found = true;		
-		    if(index == curStart) {
-			curStart++;
-		    }
-		    else {
-			len = index - curStart;
-			System.arraycopy(nnuIdArr0, curStart,
-					 newNnuIdArr, newStart, len);
-		    
-			curStart = index+1;
-			newStart = newStart + len;
-		    }
-		}
-		else {
-		    found = false;
-		    MasterControl.getCoreLogger().severe("Can't Find matching nnuId.");
-		}
-	    }
-	    
+            for (i = 0; i < nnuIdArr1.length; i++) {
+                index = equals(nnuIdArr0, nnuIdArr1[i], 0, nnuIdArr0.length);
+
+                if (index >= 0) {
+                    found = true;
+                    if ((i < (nnuIdArr1.length - 1)) && nnuIdArr1[i].getId() == nnuIdArr1[i + 1].getId()) {
+                        // Remove element from original array
+                        NnuId[] tmpNnuIdArr0 = new NnuId[nnuIdArr0.length - 1];
+                        System.arraycopy(nnuIdArr0, 0, tmpNnuIdArr0, 0, index);
+                        System.arraycopy(nnuIdArr0, index + 1,
+                                    tmpNnuIdArr0, index, nnuIdArr0.length - index - 1);
+                        nnuIdArr0 = tmpNnuIdArr0;
+                    } else {
+                        // Copy elements from original array to new array up to
+                        // but not including the element we are removing
+                        if (index == curStart) {
+                            curStart++;
+                        } else {
+                            len = index - curStart;
+                            System.arraycopy(nnuIdArr0, curStart,
+                                    newNnuIdArr, newStart, len);
+
+                            curStart = index + 1;
+                            newStart = newStart + len;
+                        }
+                    }
+                } else {
+                    found = false;
+                    MasterControl.getCoreLogger().severe("Can't Find matching nnuId.");
+                }
+            }
+
 	    if((found == true) && (curStart < nnuIdArr0.length)) {
 		len = nnuIdArr0.length - curStart;
 		System.arraycopy(nnuIdArr0, curStart, newNnuIdArr, newStart, len);
@@ -253,6 +262,7 @@ class NnuIdManager {
 	}
 	else {
 	    // We are in trouble !!!
+            MasterControl.getCoreLogger().severe("Attempt to remove more elements than are present");
 	}
 
 	return null;
