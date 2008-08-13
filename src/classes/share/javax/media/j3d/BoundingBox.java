@@ -63,6 +63,22 @@ public class BoundingBox extends Bounds {
     private BoundingPolytope tmpPolytope = null;    
     private Point3d tmpP3d = null;
 
+     // Issue 561: Set by -Dj3d.releaseBoundingBoxMemory property.
+     // When set to true, the per-instance fields used in bounding box
+     // transformation are released at the end of transform methods. This saves
+     // a significant amount of memory in large scenes containing huge amounts
+     // of bounding boxes. Setting this false can improve performance when
+     // lots of transforms are performed. The default is false.
+    // This was initialing in MasterControl, but was moved to here to fix issue 592. This avoids
+    // instantiating and intializing VirtualUniverse and MasterControl
+    private static boolean releaseBoundingBoxMemory = false;
+
+    static {
+        releaseBoundingBoxMemory = MasterControl.getBooleanProperty("j3d.releaseBoundingBoxMemory",
+                releaseBoundingBoxMemory, "releasing memory after bounding box transform");
+
+    }
+
 
     /**
      * Constructs and initializes a BoundingBox given min,max in x,y,z.
@@ -704,7 +720,7 @@ public class BoundingBox extends Bounds {
 	}
 
         // Release the temporary fields:
-        if (VirtualUniverse.mc.releaseBoundingBoxMemory) {
+        if (releaseBoundingBoxMemory) {
             tmpSphere = null;
             tmpBox = null;
             tmpPolytope = null;
@@ -800,7 +816,7 @@ public class BoundingBox extends Bounds {
 	if ( tmpP3d.y < lower.y ) lower.y = tmpP3d.y;
 	if ( tmpP3d.z < lower.z ) lower.z = tmpP3d.z;
 
-        if (VirtualUniverse.mc.releaseBoundingBoxMemory) {
+        if (releaseBoundingBoxMemory) {
             // Free memory
             tmpP3d = null;
         }
