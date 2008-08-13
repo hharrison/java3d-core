@@ -496,14 +496,6 @@ class MasterControl {
     //Default false value does affect Java3D View dispose behavior.
     boolean forceReleaseView = false;
 
-    // Issue 561: Set by -Dj3d.releaseBoundingBoxMemory property.
-    // When set to true, the per-instance fields used in bounding box
-    // transformation are released at the end of transform methods. This saves
-    // a significant amount of memory in large scenes containing huge amounts
-    // of bounding boxes. Setting this false can improve performance when
-    // lots of transforms are performed. The default is false.
-    boolean releaseBoundingBoxMemory = false;
-
     // Issue 480: Cache the bounds of nodes so that getBounds does not 
     // recompute the boounds of the entire graph per call
     boolean cacheAutoComputedBounds = false;
@@ -561,9 +553,6 @@ class MasterControl {
 	    getBooleanProperty("j3d.forceReleaseView", forceReleaseView,
 			       "forceReleaseView  after Canvas3D dispose enabled",
 			       "forceReleaseView  after Canvas3D dispose disabled");
-
-        releaseBoundingBoxMemory = getBooleanProperty("j3d.releaseBoundingBoxMemory",
-                releaseBoundingBoxMemory, "releasing memory after bounding box transform");
 
 	useCombiners = getBooleanProperty("j3d.usecombiners", useCombiners,
 					  "Using NV_register_combiners if available",
