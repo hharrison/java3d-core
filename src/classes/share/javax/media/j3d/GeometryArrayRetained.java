@@ -4197,9 +4197,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	}
 	dirtyFlag |= COLOR_CHANGED;
 	colorChanged = 0xffff;
-	this.vertexData[offset]   = (color.x * 0xff) * ByteToFloatScale;
-	this.vertexData[offset+1] = (color.y * 0xff) * ByteToFloatScale;
-	this.vertexData[offset+2] = (color.z * 0xff) * ByteToFloatScale;
+	this.vertexData[offset]   = (color.x & 0xff) * ByteToFloatScale;
+	this.vertexData[offset+1] = (color.y & 0xff) * ByteToFloatScale;
+	this.vertexData[offset+2] = (color.z & 0xff) * ByteToFloatScale;
 	this.vertexData[offset+3] = ((color.w & 0xff) * ByteToFloatScale)*lastAlpha[0];
 
 	if(isLive){
@@ -4659,7 +4659,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	this.vertexData[offset]   = normal[0];
 	this.vertexData[offset+1] = normal[1];
 	this.vertexData[offset+2] = normal[2];
-        
+
         if(isLive) {
             geomLock.unLock();
             sendDataChangedMessage(false);
