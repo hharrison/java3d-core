@@ -43,21 +43,21 @@ import java.util.*;
  * Canvas3D is an extension of the AWT Canvas class that users may
  * further subclass to implement additional functionality.
  * <p>
- * The Canvas3D object extends the Canvas object to include 
- * 3D-related information such as the size of the canvas in pixels, 
- * the Canvas3D's location, also in pixels, within a Screen3D object, 
+ * The Canvas3D object extends the Canvas object to include
+ * 3D-related information such as the size of the canvas in pixels,
+ * the Canvas3D's location, also in pixels, within a Screen3D object,
  * and whether or not the canvas has stereo enabled.
  * <p>
- * Because all Canvas3D objects contain a 
- * reference to a Screen3D object and because Screen3D objects define 
- * the size of a pixel in physical units, Java 3D can convert a Canvas3D 
- * size in pixels to a physical world size in meters. It can also 
+ * Because all Canvas3D objects contain a
+ * reference to a Screen3D object and because Screen3D objects define
+ * the size of a pixel in physical units, Java 3D can convert a Canvas3D
+ * size in pixels to a physical world size in meters. It can also
  * determine the Canvas3D's position and orientation in the
  * physical world.
  * <p>
  * <b>On-screen Rendering vs. Off-screen Rendering</b>
  * <p>
- * The Canvas3D class is used either for on-screen rendering or 
+ * The Canvas3D class is used either for on-screen rendering or
  * off-screen rendering.
  * On-screen Canvas3Ds are added to AWT or Swing Container objects
  * like any other canvas.  Java 3D automatically and continuously
@@ -74,115 +74,115 @@ import java.util.*;
  * the Canvas when the rendering is complete, at "buffer swap" time.
  * Off-screen Canvas3Ds are monoscopic.
  * <p>
- * The setOffScreenBuffer method sets the off-screen buffer for this 
- * Canvas3D. The specified image is written into by the Java 3D renderer. 
- * The size of the specified ImageComponent determines the size, in 
- * pixels, of this Canvas3D - the size inherited from Component is 
+ * The setOffScreenBuffer method sets the off-screen buffer for this
+ * Canvas3D. The specified image is written into by the Java 3D renderer.
+ * The size of the specified ImageComponent determines the size, in
+ * pixels, of this Canvas3D - the size inherited from Component is
  * ignored. Note that the size, physical width, and physical height of the
  * associated Screen3D must be set
- * explicitly prior to rendering. Failure to do so will result in an 
+ * explicitly prior to rendering. Failure to do so will result in an
  * exception.
  * <p>
- * The getOffScreenBuffer method retrieves the off-screen 
+ * The getOffScreenBuffer method retrieves the off-screen
  * buffer for this Canvas3D.
  * <p>
- * The renderOffScreenBuffer method schedules the rendering of a frame 
- * into this Canvas3D's off-screen buffer. The rendering is done from 
- * the point of view of the View object to which this Canvas3D has been 
- * added. No rendering is performed if this Canvas3D object has not been 
- * added to an active View. This method does not wait for the rendering 
- * to actually happen. An application that wishes to know when the 
+ * The renderOffScreenBuffer method schedules the rendering of a frame
+ * into this Canvas3D's off-screen buffer. The rendering is done from
+ * the point of view of the View object to which this Canvas3D has been
+ * added. No rendering is performed if this Canvas3D object has not been
+ * added to an active View. This method does not wait for the rendering
+ * to actually happen. An application that wishes to know when the
  * rendering is complete must either subclass Canvas3D and
  * override the postSwap method, or call waitForOffScreenRendering.
  * <p>
- * The setOfScreenLocation methods set the location of this off-screen 
- * Canvas3D.  The location is the upper-left corner of the Canvas3D 
- * relative to the upper-left corner of the corresponding off-screen 
- * Screen3D. The function of these methods is similar to that of 
- * Component.setLocation for on-screen Canvas3D objects. The default 
+ * The setOfScreenLocation methods set the location of this off-screen
+ * Canvas3D.  The location is the upper-left corner of the Canvas3D
+ * relative to the upper-left corner of the corresponding off-screen
+ * Screen3D. The function of these methods is similar to that of
+ * Component.setLocation for on-screen Canvas3D objects. The default
  * location is (0,0).
  * <p>
  * <b>Accessing and Modifying an Eye's Image Plate Position</b>
  * <p>
- * A Canvas3D object provides sophisticated applications with access 
- * to the eye's position information in head-tracked, room-mounted 
- * runtime environments. It also allows applications to manipulate 
- * the position of an eye relative to an image plate in non-head-tracked 
+ * A Canvas3D object provides sophisticated applications with access
+ * to the eye's position information in head-tracked, room-mounted
+ * runtime environments. It also allows applications to manipulate
+ * the position of an eye relative to an image plate in non-head-tracked
  * runtime environments.
  * <p>
  * The setLeftManualEyeInImagePlate and setRightManualEyeInImagePlate
- * methods set the position of the manual left and right eyes in image 
- * plate coordinates. These values determine eye placement when a head 
- * tracker is not in use and the application is directly controlling the 
- * eye position in image plate coordinates. In head-tracked mode or 
+ * methods set the position of the manual left and right eyes in image
+ * plate coordinates. These values determine eye placement when a head
+ * tracker is not in use and the application is directly controlling the
+ * eye position in image plate coordinates. In head-tracked mode or
  * when the windowEyepointPolicy is RELATIVE_TO_FIELD_OF_VIEW or
- * RELATIVE_TO_COEXISTENCE, this 
- * value is ignored. When the windowEyepointPolicy is RELATIVE_TO_WINDOW, 
+ * RELATIVE_TO_COEXISTENCE, this
+ * value is ignored. When the windowEyepointPolicy is RELATIVE_TO_WINDOW,
  * only the Z value is used.
  * <p>
  * The getLeftEyeInImagePlate, getRightEyeInImagePlate, and
- * getCenterEyeInImagePlate methods retrieve the actual position of the 
- * left eye, right eye, and center eye in image plate coordinates and 
- * copy that value into the object provided. The center eye is the 
- * fictional eye half-way between the left and right eye. These three 
- * values are a function of the windowEyepointPolicy, the tracking 
+ * getCenterEyeInImagePlate methods retrieve the actual position of the
+ * left eye, right eye, and center eye in image plate coordinates and
+ * copy that value into the object provided. The center eye is the
+ * fictional eye half-way between the left and right eye. These three
+ * values are a function of the windowEyepointPolicy, the tracking
  * enable flag, and the manual left, right, and center eye positions.
  * <p>
  * <b>Monoscopic View Policy</b>
  * <p>
  * The setMonoscopicViewPolicy and getMonoscopicViewPolicy methods
- * set and retrieve the policy regarding how Java 3D generates monoscopic 
- * view. If the policy is set to View.LEFT_EYE_VIEW, the view generated 
- * corresponds to the view as seen from the left eye. If set to 
- * View.RIGHT_EYE_VIEW, the view generated corresponds to the view as 
- * seen from the right eye. If set to View.CYCLOPEAN_EYE_VIEW, the view 
- * generated corresponds to the view as seen from the "center eye," the 
- * fictional eye half-way between the left and right eye. The default 
+ * set and retrieve the policy regarding how Java 3D generates monoscopic
+ * view. If the policy is set to View.LEFT_EYE_VIEW, the view generated
+ * corresponds to the view as seen from the left eye. If set to
+ * View.RIGHT_EYE_VIEW, the view generated corresponds to the view as
+ * seen from the right eye. If set to View.CYCLOPEAN_EYE_VIEW, the view
+ * generated corresponds to the view as seen from the "center eye," the
+ * fictional eye half-way between the left and right eye. The default
  * monoscopic view policy is View.CYCLOPEAN_EYE_VIEW.
  * <p>
  * <b>Immediate Mode Rendering</b>
  * <p>
- * Pure immediate-mode rendering provides for those applications and 
- * applets that do not want Java 3D to do any automatic rendering of 
- * the scene graph. Such applications may not even wish to build a 
- * scene graph to represent their graphical data. However, they use 
- * Java 3D's attribute objects to set graphics state and Java 3D's 
+ * Pure immediate-mode rendering provides for those applications and
+ * applets that do not want Java 3D to do any automatic rendering of
+ * the scene graph. Such applications may not even wish to build a
+ * scene graph to represent their graphical data. However, they use
+ * Java 3D's attribute objects to set graphics state and Java 3D's
  * geometric objects to render geometry.
  * <p>
- * A pure immediate mode application must create a minimal set of 
- * Java 3D objects before rendering. In addition to a Canvas3D object, 
- * the application must create a View object, with its associated 
- * PhysicalBody and PhysicalEnvironment objects, and the following 
- * scene graph elements: a VirtualUniverse object, a high-resolution 
- * Locale object, a BranchGroup node object, a TransformGroup node 
- * object with associated transform, and a ViewPlatform 
+ * A pure immediate mode application must create a minimal set of
+ * Java 3D objects before rendering. In addition to a Canvas3D object,
+ * the application must create a View object, with its associated
+ * PhysicalBody and PhysicalEnvironment objects, and the following
+ * scene graph elements: a VirtualUniverse object, a high-resolution
+ * Locale object, a BranchGroup node object, a TransformGroup node
+ * object with associated transform, and a ViewPlatform
  * leaf node object that defines the position and orientation within
  * the virtual universe that generates the view.
  * <p>
- * In immediate mode, all rendering is done completely under user 
- * control. It is necessary for the user to clear the 3D canvas, 
- * render all geometry, and swap the buffers.  Additionally, 
+ * In immediate mode, all rendering is done completely under user
+ * control. It is necessary for the user to clear the 3D canvas,
+ * render all geometry, and swap the buffers.  Additionally,
  * rendering the right and left eye for stereo viewing becomes the
- * sole responsibility of the application.  In pure immediate mode, 
+ * sole responsibility of the application.  In pure immediate mode,
  * the user must stop the Java 3D renderer, via the
- * Canvas3D object <code>stopRenderer</code> method, prior to adding the 
- * Canvas3D object to an active View object (that is, one that is 
+ * Canvas3D object <code>stopRenderer</code> method, prior to adding the
+ * Canvas3D object to an active View object (that is, one that is
  * attached to a live ViewPlatform object).
  * <p>
  * Other Canvas3D methods related to immediate mode rendering are:
  * <p>
  * <ul>
- * <code>getGraphicsContext3D</code> retrieves the immediate-mode 
- * 3D graphics context associated with this Canvas3D. It creates a 
+ * <code>getGraphicsContext3D</code> retrieves the immediate-mode
+ * 3D graphics context associated with this Canvas3D. It creates a
  * new graphics context if one does not already exist.
  * <p>
- * <code>getGraphics2D</code> retrieves the 
- * 2D graphics object associated with this Canvas3D. It creates a 
+ * <code>getGraphics2D</code> retrieves the
+ * 2D graphics object associated with this Canvas3D. It creates a
  * new 2D graphics object if one does not already exist.
  * <p>
- * <code>swap</code> synchronizes and swaps buffers on a 
- * double-buffered canvas for this Canvas3D object. This method 
- * should only be called if the Java 3D renderer has been stopped. 
+ * <code>swap</code> synchronizes and swaps buffers on a
+ * double-buffered canvas for this Canvas3D object. This method
+ * should only be called if the Java 3D renderer has been stopped.
  * In the normal case, the renderer automatically swaps
  * the buffer.
  * </ul>
@@ -190,9 +190,9 @@ import java.util.*;
  * <p>
  * <b>Mixed Mode Rendering</b>
  * <p>
- * Mixing immediate mode and retained or compiled-retained mode 
- * requires more structure than pure immediate mode. In mixed mode, 
- * the Java 3D renderer is running continuously, rendering the scene 
+ * Mixing immediate mode and retained or compiled-retained mode
+ * requires more structure than pure immediate mode. In mixed mode,
+ * the Java 3D renderer is running continuously, rendering the scene
  * graph into the canvas.
  *
  * <p>
@@ -200,30 +200,30 @@ import java.util.*;
  *
  * <p>
  * <ul>
- * <code>preRender</code> called by the Java 3D rendering loop after 
- * clearing the canvas and before any rendering has been done for 
- * this frame. 
+ * <code>preRender</code> called by the Java 3D rendering loop after
+ * clearing the canvas and before any rendering has been done for
+ * this frame.
  * <p>
  * <code>postRender</code> called by the Java 3D rendering loop after
- * completing all rendering to the canvas for this frame and before 
+ * completing all rendering to the canvas for this frame and before
  * the buffer swap.
  * <p>
- * <code>postSwap</code> called by the Java 3D rendering loop after 
- * completing all rendering to the canvas, and all other canvases 
+ * <code>postSwap</code> called by the Java 3D rendering loop after
+ * completing all rendering to the canvas, and all other canvases
  * associated with this view, for this frame following the
  * buffer swap.
  * <p>
- * <code>renderField</code> called by the Java 3D rendering loop 
- * during the execution of the rendering loop. It is called once 
- * for each field (i.e., once per frame on a mono system or once 
- * each for the right eye and left eye on a two-pass stereo system. 
+ * <code>renderField</code> called by the Java 3D rendering loop
+ * during the execution of the rendering loop. It is called once
+ * for each field (i.e., once per frame on a mono system or once
+ * each for the right eye and left eye on a two-pass stereo system.
  * </ul>
  * <p>
  * The above callback methods are called by the Java 3D rendering system
  * and should <i>not</i> be called by an application directly.
  *
  * <p>
- * The basic Java 3D <i>stereo</i> rendering loop, 
+ * The basic Java 3D <i>stereo</i> rendering loop,
  * executed for each Canvas3D, is as follows:
  * <ul><pre>
  * clear canvas (both eyes)
@@ -254,12 +254,12 @@ import java.util.*;
  * call postSwap()                             // user-supplied method
  * </pre></ul>
  * <p>
- * In both cases, the entire loop, beginning with clearing the canvas 
- * and ending with swapping the buffers, defines a frame. The application 
- * is given the opportunity to render immediate-mode geometry at any of 
- * the clearly identified spots in the rendering loop. A user specifies 
- * his or her own rendering methods by extending the Canvas3D class and 
- * overriding the preRender, postRender, postSwap, and/or renderField 
+ * In both cases, the entire loop, beginning with clearing the canvas
+ * and ending with swapping the buffers, defines a frame. The application
+ * is given the opportunity to render immediate-mode geometry at any of
+ * the clearly identified spots in the rendering loop. A user specifies
+ * his or her own rendering methods by extending the Canvas3D class and
+ * overriding the preRender, postRender, postSwap, and/or renderField
  * methods.
  * Updates to live Geometry, Texture, and ImageComponent objects
  * in the scene graph are not allowed from any of these callback
@@ -302,10 +302,10 @@ public class Canvas3D extends Canvas {
      */
     public static final int FIELD_ALL = 2;
 
-    // 
+    //
     // The following constants are bit masks to specify which of the node
     // components are dirty and need updates.
-    // 
+    //
     // Values for the geometryType field.
     static final int POLYGONATTRS_DIRTY      = 0x01;
     static final int LINEATTRS_DIRTY         = 0x02;
@@ -323,7 +323,7 @@ public class Canvas3D extends Canvas {
     static final int TEXTUREATTRIBUTES_DIRTY   = 0x800;
     static final int RENDERMOLECULE_DIRTY      = 0x1000;
     static final int FOG_DIRTY                 = 0x2000;
-    static final int MODELCLIP_DIRTY           = 0x4000;    
+    static final int MODELCLIP_DIRTY           = 0x4000;
     static final int VIEW_MATRIX_DIRTY         = 0x8000;
     // static final int SHADER_DIRTY              = 0x10000; Not ready for this yet -- JADA
 
@@ -403,7 +403,7 @@ public class Canvas3D extends Canvas {
     //
     int monoscopicViewPolicy = View.CYCLOPEAN_EYE_VIEW;
 
-    // User requested stencil size 
+    // User requested stencil size
     int requestedStencilSize;
 
     // Actual stencil size return for this canvas
@@ -413,8 +413,8 @@ public class Canvas3D extends Canvas {
     boolean userStencilAvailable;
 
     // True if stencil buffer is available for system ( decal )
-    boolean systemStencilAvailable;    
-    
+    boolean systemStencilAvailable;
+
     //
     // Read-only flag that indicates whether double buffering is supported
     // for this canvas.  This is always false for off-screen canvases.
@@ -439,7 +439,7 @@ public class Canvas3D extends Canvas {
     // is supported for this canvas.
     //
     boolean sceneAntialiasingAvailable;
-    boolean sceneAntialiasingMultiSamplesAvailable; 
+    boolean sceneAntialiasingMultiSamplesAvailable;
 
     // Use to see whether antialiasing is already set
     boolean antialiasingSet = false;
@@ -451,10 +451,10 @@ public class Canvas3D extends Canvas {
     //
     int textureColorTableSize;
 
-    // number of active/enabled texture unit 
+    // number of active/enabled texture unit
     int numActiveTexUnit = 0;
 
-    // index iof last enabled texture unit 
+    // index iof last enabled texture unit
     int lastActiveTexUnit = -1;
 
     // True if shadingLanguage is supported, otherwise false.
@@ -490,10 +490,10 @@ public class Canvas3D extends Canvas {
     // View cache for this canvas and its associated view.
     //
     CanvasViewCache canvasViewCache = null;
-    
+
     // Issue 109: View cache for this canvas, for computing view frustum planes
     CanvasViewCache canvasViewCacheFrustum = null;
-    
+
     // Since multiple renderAtomListInfo, share the same vecBounds
     // we want to do the intersection test only once per renderAtom
     // this flag is set to true after the first intersect and set to
@@ -501,7 +501,7 @@ public class Canvas3D extends Canvas {
     boolean raIsVisible = false;
 
     RenderAtom ra = null;
-    
+
     // Stereo related field has changed.
     static final int STEREO_DIRTY                   = 0x01;
     // MonoscopicViewPolicy field has changed.
@@ -509,7 +509,7 @@ public class Canvas3D extends Canvas {
     // Left/right eye in image plate field has changed.
     static final int EYE_IN_IMAGE_PLATE_DIRTY       = 0x04;
     // Canvas has moved/resized.
-    static final int MOVED_OR_RESIZED_DIRTY         = 0x08;    
+    static final int MOVED_OR_RESIZED_DIRTY         = 0x08;
 
     // Canvas Background changed (this may affect doInfinite flag)
     static final int BACKGROUND_DIRTY               = 0x10;
@@ -517,15 +517,15 @@ public class Canvas3D extends Canvas {
     // Canvas Background Image changed
     static final int BACKGROUND_IMAGE_DIRTY         = 0x20;
 
-    
+
     // Mask that indicates this Canvas view dependence info. has changed,
     // and CanvasViewCache may need to recompute the final view matries.
-    static final int VIEW_INFO_DIRTY = (STEREO_DIRTY | 
+    static final int VIEW_INFO_DIRTY = (STEREO_DIRTY |
 					MONOSCOPIC_VIEW_POLICY_DIRTY |
-					EYE_IN_IMAGE_PLATE_DIRTY | 
-					MOVED_OR_RESIZED_DIRTY | 
+					EYE_IN_IMAGE_PLATE_DIRTY |
+					MOVED_OR_RESIZED_DIRTY |
 					BACKGROUND_DIRTY |
-					BACKGROUND_IMAGE_DIRTY);    
+					BACKGROUND_IMAGE_DIRTY);
 
     // Issue 163: Array of dirty bits is used because the Renderer and
     // RenderBin run asynchronously. Now that they each have a separate
@@ -561,15 +561,15 @@ public class Canvas3D extends Canvas {
     // The Screen3D that corresponds to this Canvas3D
     Screen3D screen = null;
 
-    // Flag to indicate that image is render completely 
+    // Flag to indicate that image is render completely
     // so swap is valid.
     boolean imageReady = false;
 
 
     //
-    // The current fog enable state 
-    //   
-    int fogOn = 0; 
+    // The current fog enable state
+    //
+    int fogOn = 0;
 
     // The 3D Graphics context used for immediate mode rendering
     // into this canvas.
@@ -578,7 +578,7 @@ public class Canvas3D extends Canvas {
     boolean swapDone = false;
 
     GraphicsConfiguration graphicsConfiguration;
-    
+
     // The Java 3D Graphics2D object used for Java2D/AWT rendering
     // into this Canvas3D
     J3DGraphics2DImpl graphics2D = null;
@@ -602,7 +602,7 @@ public class Canvas3D extends Canvas {
     // is defined by the Pipeline.
     Drawable drawable = null;
 
-    // fbConfig is a pointer to the fbConfig object that is associated with 
+    // fbConfig is a pointer to the fbConfig object that is associated with
     // the GraphicsConfiguration object used to create this Canvas.
     //
     // For Unix : Fix for issue 20.
@@ -631,17 +631,17 @@ public class Canvas3D extends Canvas {
     static Hashtable<GraphicsConfiguration,GraphicsConfigInfo> graphicsConfigTable =
             new Hashtable<GraphicsConfiguration,GraphicsConfigInfo>();
 
-    // The native graphics version, vendor, and renderer information 
+    // The native graphics version, vendor, and renderer information
     String nativeGraphicsVersion = "<UNKNOWN>";
     String nativeGraphicsVendor = "<UNKNOWN>";
     String nativeGraphicsRenderer = "<UNKNOWN>";
-    
+
     boolean firstPaintCalled = false;
 
     // This reflects whether or not this canvas has seen an addNotify. It is
     // forced to true for off-screen canvases
     boolean added = false;
-    
+
     // Flag indicating whether addNotify has been called (so we don't process it twice).
     private boolean addNotifyCalled = false;
 
@@ -656,7 +656,7 @@ public class Canvas3D extends Canvas {
     // The current context setting for local eye lighting
     boolean ctxEyeLightingEnable = false;
 
-    // This AppearanceRetained Object refelects the current state of this 
+    // This AppearanceRetained Object refelects the current state of this
     // canvas.  It is used to optimize setting of attributes at render time.
     AppearanceRetained currentAppear = new AppearanceRetained();
 
@@ -670,7 +670,7 @@ public class Canvas3D extends Canvas {
     CachedFrustum viewFrustum = new CachedFrustum();
 
     /**
-     * The RenderBin bundle references used to decide what the underlying 
+     * The RenderBin bundle references used to decide what the underlying
      * context contains.
      */
     LightBin lightBin = null;
@@ -688,7 +688,7 @@ public class Canvas3D extends Canvas {
     Transform3D modelMatrix = null;
     Transform3D projTrans = null;
     TextureBin textureBin = null;
-    
+
 
     /**
      * cached RenderBin states for lazy native states update
@@ -700,7 +700,7 @@ public class Canvas3D extends Canvas {
     ModelClipRetained modelClip = null;
     Color3f sceneAmbient = new Color3f();
     TextureUnitStateRetained[] texUnitState = null;
-    
+
     /**
      * These cached values are only used in Pure Immediate and Mixed Mode rendering
      */
@@ -709,7 +709,7 @@ public class Canvas3D extends Canvas {
     TexCoordGenerationRetained texCoordGeneration = null;
     RenderingAttributesRetained renderingAttrs = null;
     AppearanceRetained appearance = null;
-    
+
     ShaderProgramRetained  shaderProgram = null;
 
     // only used in Mixed Mode rendering
@@ -723,7 +723,7 @@ public class Canvas3D extends Canvas {
      *
      * TODO aces : is this still true in DX9?
      */
-    boolean texLinearMode = false; 
+    boolean texLinearMode = false;
 
     /**
      * Dirty bit to determine if the NodeComponent needs to be re-sent
@@ -749,8 +749,8 @@ public class Canvas3D extends Canvas {
     int canvasId = 0;
     // Indicates whether the canvasId has been allocated
     private boolean canvasIdAlloc = false;
-    
-    // Avoid using this as lock, it cause deadlock 
+
+    // Avoid using this as lock, it cause deadlock
     Object cvLock = new Object();
     Object evaluateLock = new Object();
     Object dirtyMaskLock = new Object();
@@ -786,12 +786,12 @@ public class Canvas3D extends Canvas {
     static final int TEXTURE_ANISOTROPIC_FILTER	= 0x0800;
     static final int TEXTURE_LOD_RANGE		= 0x1000;
     static final int TEXTURE_LOD_OFFSET		= 0x2000;
-    // Use by D3D to indicate using one pass Blend mode 
+    // Use by D3D to indicate using one pass Blend mode
     // if Texture interpolation mode is support.
     static final int TEXTURE_LERP               = 0x4000;
     static final int TEXTURE_NON_POWER_OF_TWO	= 0x8000;
     static final int TEXTURE_AUTO_MIPMAP_GENERATION = 0x10000;
-    
+
     int textureExtendedFeatures = 0;
 
     // Extensions supported by the underlying canvas
@@ -831,7 +831,7 @@ public class Canvas3D extends Canvas {
 
     // Max number of combined shader texture units
     int maxCombinedTextureImageUnits = 0;
-    
+
     // Max number of vertex attrs (not counting coord, etc.)
     int maxVertexAttrs = 0;
 
@@ -855,7 +855,7 @@ public class Canvas3D extends Canvas {
     // We don't want to call canvas.getxx method in Renderer
     // since it will cause deadlock as removeNotify() need to get
     // component lock of Canvas also and need to wait Renderer to
-    // finish before continue. So we invoke the method now in 
+    // finish before continue. So we invoke the method now in
     // CanvasViewEventCatcher.
     Point newPosition = new Point();
     Dimension newSize = new Dimension();
@@ -877,7 +877,7 @@ public class Canvas3D extends Canvas {
     static final int SHADERBIN_BIT	= 0x6;
 
     // bitmask to specify if the corresponding "bin" needs to be updated
-    int stateUpdateMask = 0;   
+    int stateUpdateMask = 0;
 
     // the set of current "bins" that is to be updated, the stateUpdateMask
     // specifies if each bin in this set is updated or not.
@@ -1153,7 +1153,7 @@ public class Canvas3D extends Canvas {
 
  	    eventCatcher = new EventCatcher(this);
 	    canvasViewEventCatcher = new CanvasViewEventCatcher(this);
-	    
+
 	    synchronized(VirtualUniverse.mc.deviceScreenMap) {
 		screen = (Screen3D) VirtualUniverse.mc.
 		                   deviceScreenMap.get(graphicsDevice);
@@ -1199,7 +1199,7 @@ public class Canvas3D extends Canvas {
     void sendEventToBehaviorScheduler(AWTEvent evt) {
 
 	ViewPlatform vp;
-	
+
 
 	if ((view != null) && ((vp = view.getViewPlatform()) != null)) {
 	    VirtualUniverse univ =
@@ -1272,7 +1272,7 @@ public class Canvas3D extends Canvas {
 
 	    try {
 		newSize = getSize();
-		newPosition = getLocationOnScreen();	    
+		newPosition = getLocationOnScreen();
 	    } catch (IllegalComponentStateException e) {
 		return;
 	    }
@@ -1284,12 +1284,12 @@ public class Canvas3D extends Canvas {
 	    firstPaintCalled = true;
 	    visible = true;
 	    evaluateActive();
-	} 
+	}
 	redraw();
     }
 
     // When this canvas is added to a frame, this notification gets called.  We
-    // can get drawing surface information at this time.  Note: we cannot get 
+    // can get drawing surface information at this time.  Note: we cannot get
     // the X11 window id yet, unless it is a reset condition.
     /**
      * Canvas3D uses the addNotify callback to track when it is added
@@ -1438,7 +1438,7 @@ public class Canvas3D extends Canvas {
 	// runMonotor(RUN_RENDERER_CLEANUP) which skip userStop
 	// thread checking.
 	// For non-offscreen rendering the following call will
-	// block waiting until all resources is free before 
+	// block waiting until all resources is free before
 	// continue
 
 	synchronized (drawingSurfaceObject) {
@@ -1463,7 +1463,7 @@ public class Canvas3D extends Canvas {
 	graphicsContext3D = null;
 
 	ctx = null;
-	// must be after removeCtx() because 
+	// must be after removeCtx() because
 	// it will free graphics2D textureID
 	graphics2D = null;
 
@@ -1514,7 +1514,7 @@ public class Canvas3D extends Canvas {
             canvasIdAlloc = true;
         }
     }
- 
+
     void freeCanvasId() {
         if (canvasIdAlloc) {
             VirtualUniverse.mc.freeCanvasId(canvasId);
@@ -1523,14 +1523,14 @@ public class Canvas3D extends Canvas {
             canvasIdAlloc = false;
         }
     }
- 
+
     // This decides if the canvas is active
     void evaluateActive() {
 	// Note that no need to check for isRunning, we want
 	// view register in order to create scheduler in pure immedite mode
 	// Also we can't use this as lock, otherwise there is a
 	// deadlock where updateViewCache get a lock of this and
-        // get a lock of this component. But Container 
+        // get a lock of this component. But Container
 	// remove will get a lock of this component follows by evaluateActive.
 
 	synchronized (evaluateLock) {
@@ -1540,12 +1540,12 @@ public class Canvas3D extends Canvas {
 		    active = true;
 		    if (pendingView != null) {
 			pendingView.evaluateActive();
-		    } 
+		    }
 		} else {
 		    if ((pendingView != null) &&
 			!pendingView.activeStatus) {
 			pendingView.evaluateActive();
-		    } 
+		    }
 		}
 	    } else {
 		if (active) {
@@ -1553,10 +1553,10 @@ public class Canvas3D extends Canvas {
 		    if (view != null) {
 			view.evaluateActive();
 		    }
-		} 
+		}
 	    }
 	}
-	
+
 	if ((view != null) && (!active)) {
 	    VirtualUniverse u = view.universe;
 	    if ((u != null) && !u.isSceneGraphLock) {
@@ -1566,7 +1566,7 @@ public class Canvas3D extends Canvas {
     }
 
     void setFrustumPlanes(Vector4d[] planes) {
-	
+
 	if(VirtualUniverse.mc.viewFrustumCulling) {
 	    /* System.err.println("Canvas3D.setFrustumPlanes()"); */
 	    viewFrustum.set(planes);
@@ -1855,17 +1855,17 @@ public class Canvas3D extends Canvas {
 
 	// Check that offScreenBufferPending is not already set
 	J3dDebug.doAssert(!offScreenBufferPending, "!offScreenBufferPending");
-       
+
         if (offScreenBuffer != null && offScreenBuffer != buffer) {
-            ImageComponent2DRetained i2dRetained = 
-                    (ImageComponent2DRetained)offScreenBuffer.retained;            
+            ImageComponent2DRetained i2dRetained =
+                    (ImageComponent2DRetained)offScreenBuffer.retained;
             i2dRetained.setUsedByOffScreen(false);
         }
 
 	if (buffer != null) {
 	    ImageComponent2DRetained bufferRetained =
 		(ImageComponent2DRetained)buffer.retained;
- 
+
 	    if (bufferRetained.byReference &&
 		!(bufferRetained.getRefImage(0) instanceof BufferedImage)) {
 
@@ -1912,23 +1912,23 @@ public class Canvas3D extends Canvas {
 
 	    if (drawable != null) {
 		// Fix for Issue 18 and Issue 175
-		// Will do destroyOffScreenBuffer in the Renderer thread. 
+		// Will do destroyOffScreenBuffer in the Renderer thread.
 		sendDestroyCtxAndOffScreenBuffer();
 		drawable = null;
             }
             // Issue 396. Since context is invalid here, we should set it to null.
             ctx = null;
-            
+
             // set the canvas dimension according to the buffer dimension
 	    offScreenCanvasSize.setSize(width, height);
 	    this.setSize(offScreenCanvasSize);
 
-	    if (width > 0 && height > 0) {     
+	    if (width > 0 && height > 0) {
 		sendCreateOffScreenBuffer();
 	    }
 
 	}
-	else if (ctx != null) {            
+	else if (ctx != null) {
             removeCtx();
 	}
 
@@ -2032,7 +2032,7 @@ public class Canvas3D extends Canvas {
 
 	// Fix to issue 66
 	if ((!active) || (pendingView == null)) {
-	    /* No rendering is performed if this Canvas3D object has not been 
+	    /* No rendering is performed if this Canvas3D object has not been
 	       added to an active View. */
 	    return;
 	}
@@ -2045,23 +2045,23 @@ public class Canvas3D extends Canvas {
 	// Fix to issue 66.
 	/* This is an attempt to do the following check in one atomic operation :
 	   ((view != null) && (view.inCanvasCallback)) */
-	
+
 	boolean inCanvasCallback = false;
 	try {
 	    inCanvasCallback = view.inCanvasCallback;
-	    
+
 	} catch (NullPointerException npe) {
 	    /* Do nothing here */
 	}
 
         if (inCanvasCallback) {
 	    // Here we assume that view is stable if inCanvasCallback
-	    // is true. This assumption is valid among all j3d threads as 
+	    // is true. This assumption is valid among all j3d threads as
 	    // all access to view is synchronized by MasterControl.
 	    // Issue : user threads access to view isn't synchronize hence
 	    // is model will break.
 	    if (screen.renderer == null) {
-	
+
 		// It is possible that screen.renderer = null when this View
 		// is shared by another onScreen Canvas and this callback
 		// is from that Canvas. In this case it need one more
@@ -2073,7 +2073,7 @@ public class Canvas3D extends Canvas {
 		// screen sharing the same View not yet initialize.
 	    }
 
-	    // if called from render call back, send a message directly to 
+	    // if called from render call back, send a message directly to
 	    // the renderer message queue, and call renderer doWork
 	    // to do the offscreen rendering now
 	    if (Thread.currentThread() == screen.renderer) {
@@ -2084,9 +2084,9 @@ public class Canvas3D extends Canvas {
 		createMessage.universe = this.view.universe;
 		createMessage.view = this.view;
 		createMessage.args[0] = this;
-		
+
 		screen.renderer.rendererStructure.addMessage(createMessage);
-		
+
 		// modify the args to reflect offScreen rendering
 		screen.renderer.args = new Object[4];
 		((Object[])screen.renderer.args)[0] =
@@ -2096,13 +2096,13 @@ public class Canvas3D extends Canvas {
 		// This extra argument 3 is needed in MasterControl to
 		// test whether offscreen Rendering is used or not
 		((Object[])screen.renderer.args)[3] = null;
-		
+
 		// call renderer doWork directly since we are already in
 		// the renderer thread
 		screen.renderer.doWork(0);
 	    } else {
 
-		// XXXX: 
+		// XXXX:
 		// Now we are in trouble, this will cause deadlock if
 		// waitForOffScreenRendering() is invoked
 		  J3dMessage createMessage = new J3dMessage();
@@ -2117,9 +2117,9 @@ public class Canvas3D extends Canvas {
 
         } else if (Thread.currentThread() instanceof BehaviorScheduler) {
 
-	    // If called from behavior scheduler, send a message directly to 
+	    // If called from behavior scheduler, send a message directly to
 	    // the renderer message queue.
-	    // Note that we didn't use 
+	    // Note that we didn't use
 	    // currentThread() == view.universe.behaviorScheduler
 	    // since the caller may be another universe Behavior
 	    // scheduler.
@@ -2134,7 +2134,7 @@ public class Canvas3D extends Canvas {
 
  	} else {
             // send a message to renderBin
-	    // Fix for issue 66 : Since view might not been set yet, 
+	    // Fix for issue 66 : Since view might not been set yet,
 	    // we have to use pendingView instead.
             J3dMessage createMessage = new J3dMessage();
             createMessage.threads = J3dThread.UPDATE_RENDER;
@@ -2299,7 +2299,7 @@ public class Canvas3D extends Canvas {
     }
 
     void endOffScreenRendering() {
-               
+
         ImageComponent2DRetained icRetained = (ImageComponent2DRetained)offScreenBuffer.retained;
         boolean isByRef = icRetained.isByReference();
         boolean isYUp = icRetained.isYUp();
@@ -2321,17 +2321,17 @@ public class Canvas3D extends Canvas {
             readOffScreenBuffer(ctx, icRetained.getImageFormatTypeIntValue(false),
                     icRetained.getImageDataTypeIntValue(), imageData.get(),
                     offScreenCanvasSize.width, offScreenCanvasSize.height);
-            
+
         } else {
             icRetained.geomLock.getLock();
             // Create a copy of format converted image in imageData if format is unsupported.
             icRetained.evaluateExtensions(this);
-            
+
             // read the image from the offscreen buffer
             readOffScreenBuffer(ctx, icRetained.getImageFormatTypeIntValue(false),
                     icRetained.getImageDataTypeIntValue(), imageData.get(),
                     offScreenCanvasSize.width, offScreenCanvasSize.height);
-            
+
             // For byRef, we might have to copy buffer back into
             // the user's referenced ImageComponent2D
             if(!imageData.isDataByRef()) {
@@ -2342,7 +2342,7 @@ public class Canvas3D extends Canvas {
                     icRetained.copyToRefImageWithFormatConversion(0);
                 }
             }
-            
+
             icRetained.geomLock.unLock();
         }
     }
@@ -2376,7 +2376,7 @@ public class Canvas3D extends Canvas {
 	}
 
 	if (view != null && graphicsContext3D != null) {
-	    if ((view.universe != null) && 
+	    if ((view.universe != null) &&
 		(Thread.currentThread() == view.universe.behaviorScheduler)) {
 		graphicsContext3D.sendRenderMessage(false, GraphicsContext3D.SWAP, null, null);
 	    } else {
@@ -2400,7 +2400,7 @@ public class Canvas3D extends Canvas {
 			    this.syncRender(ctx, true);
 			    int status = swapBuffers(ctx, screen.display, drawable);
 			    if (status != NOCHANGE) {
-				resetImmediateRendering(status);		    
+				resetImmediateRendering(status);
 			    }
 			    drawingSurfaceObject.unLock();
 			}
@@ -2427,7 +2427,7 @@ public class Canvas3D extends Canvas {
 	    // reset everything
 	    if (status != NOCHANGE) {
 		resetImmediateRendering(status);
-	    } 
+	    }
 	    reEvaluateCanvasCmd = 0;
 	}
 	graphicsContext3D.runMonitor(J3dThread.NOTIFY);
@@ -2446,10 +2446,10 @@ public class Canvas3D extends Canvas {
                 VirtualUniverse.mc.cgLibraryAvailable);
         // compute the max available texture units
         maxAvailableTextureUnits = Math.max(maxTextureUnits, maxTextureImageUnits);
-        
+
         return retVal;
     }
-    
+
     /**
      * Make the context associated with the specified canvas current.
      */
@@ -2518,7 +2518,7 @@ public class Canvas3D extends Canvas {
 	}
 	redraw();
     }
-    
+
     /**
      * Sets the position of the manual right eye in image-plate
      * coordinates.  This value determines eye placement when a head
@@ -2610,7 +2610,7 @@ public class Canvas3D extends Canvas {
      * @param position the object that will receive the position
      * @see #setMonoscopicViewPolicy
      */
-    // XXXX: This might not make sense for field-sequential HMD. 
+    // XXXX: This might not make sense for field-sequential HMD.
     public void getCenterEyeInImagePlate(Point3d position) {
 	if (canvasViewCache != null) {
 	    synchronized(canvasViewCache) {
@@ -2676,7 +2676,7 @@ public class Canvas3D extends Canvas {
      void getPixelLocationInImagePlate(double x, double y, double z,
 				       Point3d imagePlatePoint) {
 	 if (canvasViewCache != null) {
-	     synchronized(canvasViewCache) {	 
+	     synchronized(canvasViewCache) {
 		 canvasViewCache.getPixelLocationInImagePlate(
                                        x, y, z, imagePlatePoint);
 	     }
@@ -2698,7 +2698,7 @@ public class Canvas3D extends Canvas {
      *
      * @since Java 3D 1.2
      */
-    // TODO: Document -- This transform the pixel location to the left image plate.    
+    // TODO: Document -- This transform the pixel location to the left image plate.
     public void getPixelLocationInImagePlate(Point2d pixelLocation,
 						   Point3d imagePlatePoint) {
 
@@ -2768,14 +2768,14 @@ public class Canvas3D extends Canvas {
                (ViewPlatformRetained)view.getViewPlatform().retained;
 
 	    synchronized(canvasViewCache) {
-                leftProjection.mul(canvasViewCache.getLeftProjection(), 
+                leftProjection.mul(canvasViewCache.getLeftProjection(),
                         canvasViewCache.getLeftVpcToEc());
                 leftProjection.mul(viewPlatformRetained.getVworldToVpc());
 
                 // caluclate right eye if in stereo, otherwise
                 // this is the same as the left eye.
                 if (useStereo) {
-                    rightProjection.mul(canvasViewCache.getRightProjection(), 
+                    rightProjection.mul(canvasViewCache.getRightProjection(),
                             canvasViewCache.getRightVpcToEc());
                     rightProjection.mul(viewPlatformRetained.getVworldToVpc());
                 }
@@ -2921,7 +2921,7 @@ public class Canvas3D extends Canvas {
 		canvasViewCache = null;
                 canvasViewCacheFrustum = null;
 	    } else {
-		
+
 		canvasViewCache = new CanvasViewCache(this,
 						      screen.screenViewCache,
                                                       view.viewCache);
@@ -2991,8 +2991,8 @@ public class Canvas3D extends Canvas {
     public boolean getStereoEnable() {
 	return this.stereoEnable;
     }
-    
-    
+
+
     /**
      * Specifies how Java 3D generates monoscopic view. If set to
      * View.LEFT_EYE_VIEW, the view generated corresponds to the view as
@@ -3020,14 +3020,14 @@ public class Canvas3D extends Canvas {
      */
     public void setMonoscopicViewPolicy(int policy) {
 
-	
+
 	if((view !=null) && (view.viewPolicy == View.HMD_VIEW) &&
 	   (monoscopicViewPolicy == View.CYCLOPEAN_EYE_VIEW) &&
 	   (!useStereo)) {
 	    throw new
 		IllegalStateException(J3dI18N.getString("View31"));
 	}
-	
+
 	monoscopicViewPolicy = policy;
 	synchronized(dirtyMaskLock) {
             cvDirtyMask[0] |= MONOSCOPIC_VIEW_POLICY_DIRTY;
@@ -3135,7 +3135,7 @@ public class Canvas3D extends Canvas {
     public boolean isShadingLanguageSupported(int shadingLanguage) {
         // Call queryProperties to ensure that the shading language flags are valid
         queryProperties();
-        
+
         // Return flag for specified shading language
         switch (shadingLanguage) {
         case Shader.SHADING_LANGUAGE_GLSL:
@@ -3308,7 +3308,7 @@ public class Canvas3D extends Canvas {
      * <code>shadingLanguageCg</code>
      * <ul>
      * A Boolean indicating whether or not Cg shading Language
-     * is available for this Canvas3D. 
+     * is available for this Canvas3D.
      * </ul>
      * </li>
      *
@@ -3316,7 +3316,7 @@ public class Canvas3D extends Canvas {
      * <code>shadingLanguageGLSL</code>
      * <ul>
      * A Boolean indicating whether or not GLSL shading Language
-     * is available for this Canvas3D.     
+     * is available for this Canvas3D.
      * </ul>
      * </li>
      *
@@ -3356,11 +3356,11 @@ public class Canvas3D extends Canvas {
      * <code>sceneAntialiasingNumPasses</code>
      * <ul>
      * An Integer indicating the number of passes scene antialiasing
-     * requires to render a single frame for this Canvas3D.  
-     * If this value is zero, scene antialiasing is not supported.  
+     * requires to render a single frame for this Canvas3D.
+     * If this value is zero, scene antialiasing is not supported.
      * If this value is one, multisampling antialiasing is used.
      * Otherwise, the number indicates the number of rendering passes
-     * needed. 
+     * needed.
      * </ul>
      * </li>
      *
@@ -3368,7 +3368,7 @@ public class Canvas3D extends Canvas {
      * <code>stencilSize</code>
      * <ul>
      * An Integer indicating the number of stencil bits that are available
-     * for this Canvas3D. 
+     * for this Canvas3D.
      * </ul>
      * </li>
      *
@@ -3401,10 +3401,10 @@ public class Canvas3D extends Canvas {
      * <code>textureLodRangeAvailable</code>
      * <ul>
      * A Boolean indicating whether or not setting only a subset of mipmap
-     * levels and setting a range of texture LOD are available for this 
-     * Canvas3D. 
+     * levels and setting a range of texture LOD are available for this
+     * Canvas3D.
      * If it indicates false, setting a subset of mipmap levels and
-     * setting a texture LOD range are not supported by the underlying 
+     * setting a texture LOD range are not supported by the underlying
      * rendering layer, and an attempt to set base level, or maximum level,
      * or minimum LOD, or maximum LOD will be ignored. In this case,
      * images for all mipmap levels must be defined for the texture to be
@@ -3417,7 +3417,7 @@ public class Canvas3D extends Canvas {
      * <ul>
      * A Boolean indicating whether or not setting texture LOD offset is
      * available for this Canvas3D. If it indicates false, setting
-     * texture LOD offset is not supported by the underlying rendering 
+     * texture LOD offset is not supported by the underlying rendering
      * layer, and an attempt to set the texture LOD offset will be ignored.
      * </ul>
      * </li>
@@ -3428,7 +3428,7 @@ public class Canvas3D extends Canvas {
      * An Integer indicating the maximum texture width supported by
      * this Canvas3D. If the width of a texture exceeds the maximum texture
      * width for a Canvas3D, then the texture will be effectively disabled
-     * for that Canvas3D. 
+     * for that Canvas3D.
      * </ul>
      * </li>
      *
@@ -3446,10 +3446,10 @@ public class Canvas3D extends Canvas {
      * <code>textureBoundaryWidthMax</code>
      * <ul>
      * An Integer indicating the maximum texture boundary width
-     * supported by the underlying rendering layer for this Canvas3D. If 
+     * supported by the underlying rendering layer for this Canvas3D. If
      * the maximum supported texture boundary width is 0, then texture
      * boundary is not supported by the underlying rendering layer.
-     * An attempt to specify a texture boundary width > the 
+     * An attempt to specify a texture boundary width > the
      * textureBoundaryWidthMax will effectively disable the texture.
      * </ul>
      * </li>
@@ -3469,7 +3469,7 @@ public class Canvas3D extends Canvas {
      * <li>
      * <code>textureCombineDot3Available</code>
      * <ul>
-     * A Boolean indicating whether or not texture combine mode 
+     * A Boolean indicating whether or not texture combine mode
      * COMBINE_DOT3 is
      * supported for this Canvas3D. If it indicates false, then
      * texture combine mode COMBINE_DOT3 is not supported by
@@ -3482,7 +3482,7 @@ public class Canvas3D extends Canvas {
      * <li>
      * <code>textureCombineSubtractAvailable</code>
      * <ul>
-     * A Boolean indicating whether or not texture combine mode 
+     * A Boolean indicating whether or not texture combine mode
      * COMBINE_SUBTRACT is
      * supported for this Canvas3D. If it indicates false, then
      * texture combine mode COMBINE_SUBTRACT is not supported by
@@ -3605,7 +3605,7 @@ public class Canvas3D extends Canvas {
      * A Boolean indicating whether or not texture dimensions that are
      * not powers of two are supported for
      * for this Canvas3D. If it indicates false, then textures with
-     * non power of two sizes will be ignored. Set the property 
+     * non power of two sizes will be ignored. Set the property
      * j3d.textureEnforcePowerOfTwo to revert to the pre-1.5 behavior
      * of throwing exceptions for non power of two textures.
      * </ul>
@@ -3658,7 +3658,7 @@ public class Canvas3D extends Canvas {
 	    if (createDummyCtx) {
 		GraphicsConfigTemplate3D.setQueryProps(this);
 	    }
-            
+
 	    //create query Properties
 	    createQueryProps();
 	}
@@ -3673,7 +3673,7 @@ public class Canvas3D extends Canvas {
     void createQueryContext() {
 	// create a dummy context to query for support of certain
 	// extensions, the context will destroy immediately
-	// inside the native code after setting the various 
+	// inside the native code after setting the various
 	// fields in this object
 	createQueryContext(screen.display, drawable,
 			   fbConfig, offScreen, 1, 1,
@@ -3705,7 +3705,7 @@ public class Canvas3D extends Canvas {
 	keys.add("sceneAntialiasingNumPasses");
 
 	if (sceneAntialiasingAvailable) {
-	    pass = (sceneAntialiasingMultiSamplesAvailable ? 
+	    pass = (sceneAntialiasingMultiSamplesAvailable ?
 		    1: Renderer.NUM_ACCUMULATION_SAMPLES);
 	}
 	values.add(new Integer(pass));
@@ -3725,7 +3725,7 @@ public class Canvas3D extends Canvas {
 	values.add(new Integer(GeometryDecompressor.minorVersionNumber));
 	keys.add("compressedGeometry.minorMinorVersionNumber");
 	values.add(new Integer(GeometryDecompressor.minorMinorVersionNumber));
-	
+
 	// Properties associated with graphics context
 	keys.add("texture3DAvailable");
 	values.add(new Boolean((textureExtendedFeatures & TEXTURE_3D) != 0));
@@ -3796,8 +3796,8 @@ public class Canvas3D extends Canvas {
 
         keys.add("textureAutoMipMapGenerationAvailable");
         values.add(new Boolean(
-                (textureExtendedFeatures & TEXTURE_AUTO_MIPMAP_GENERATION) != 0));        
-        
+                (textureExtendedFeatures & TEXTURE_AUTO_MIPMAP_GENERATION) != 0));
+
         keys.add("textureCoordSetsMax");
         values.add(new Integer(maxTexCoordSets));
 
@@ -3841,11 +3841,11 @@ public class Canvas3D extends Canvas {
     /**
      * Update the view cache associated with this canvas.
      */
-    void updateViewCache(boolean flag, CanvasViewCache cvc, 
+    void updateViewCache(boolean flag, CanvasViewCache cvc,
 		BoundingBox frustumBBox, boolean doInfinite) {
 
         assert cvc == null;
-	synchronized(cvLock) {	
+	synchronized(cvLock) {
             if (firstPaintCalled && (canvasViewCache != null)) {
                 assert canvasViewCacheFrustum != null;
                 // Issue 109 : choose the appropriate cvCache
@@ -3861,29 +3861,29 @@ public class Canvas3D extends Canvas {
             }
 	}
     }
-    
+
     /**
      * Set depthBufferWriteEnableOverride flag
-     */  
-    void setDepthBufferWriteEnableOverride(boolean flag) { 
+     */
+    void setDepthBufferWriteEnableOverride(boolean flag) {
 	depthBufferWriteEnableOverride = flag;
     }
-    
+
     /**
      * Set depthBufferEnableOverride flag
-     */  
+     */
     void setDepthBufferEnableOverride(boolean flag) {
         depthBufferEnableOverride = flag;
     }
-    
+
     // Static initializer for Canvas3D class
     static {
 	VirtualUniverse.loadLibraries();
     }
 
-    
+
     void resetTexture(Context ctx, int texUnitIndex) {
-	// D3D also need to reset texture attributes 
+	// D3D also need to reset texture attributes
 	this.resetTextureNative(ctx, texUnitIndex);
 
  	if (texUnitIndex < 0) {
@@ -3894,11 +3894,11 @@ public class Canvas3D extends Canvas {
 
 	if (VirtualUniverse.mc.isD3D()) {
 	    texUnitState[texUnitIndex].texAttrs = null;
-	    texUnitState[texUnitIndex].texGen = null;	    
+	    texUnitState[texUnitIndex].texGen = null;
 	}
     }
 
-    
+
     // use by D3D only
     void resetTextureBin() {
 	Object obj;
@@ -3912,14 +3912,14 @@ public class Canvas3D extends Canvas {
 	    // let J3DGraphics2DImpl to initialize texture again
 	    graphics2D.objectId = -1;
 	}
-	
+
 	for (int id = textureIDResourceTable.size()-1; id >= 0; id--) {
 	    obj = textureIDResourceTable.get(id);
 	    if (obj != null) {
 		if (obj instanceof TextureRetained) {
 		    tex = (TextureRetained) obj;
 		    tex.resourceCreationMask &= ~canvasBit;
-		} 
+		}
 	    }
 	}
     }
@@ -3932,7 +3932,7 @@ public class Canvas3D extends Canvas {
 	antialiasingSet = false;
 
 	// We need to reevaluate everything since d3d may create
-	// a new ctx 
+	// a new ctx
 	if (status != NOCHANGE) {
 	    resetRendering(status);
 	}
@@ -3953,10 +3953,10 @@ public class Canvas3D extends Canvas {
         assert VirtualUniverse.mc.isD3D();
 	if (active) {
 	    if (isRunning) {
-		if ((view != null) && 
+		if ((view != null) &&
 		    (view.active) &&
 		    // it is possible that view is set active by MC
-		    // but renderer not yet set 
+		    // but renderer not yet set
 		    (screen.renderer != null)) {
 		    VirtualUniverse.mc.postRequest(MasterControl.STOP_RENDERER, this);
 
@@ -3975,7 +3975,7 @@ public class Canvas3D extends Canvas {
 		    renderMessage.args[0] = this;
 
 		    screen.renderer.rendererStructure.addMessage(renderMessage);
-		    VirtualUniverse.mc.postRequest(MasterControl.START_RENDERER, this);	
+		    VirtualUniverse.mc.postRequest(MasterControl.START_RENDERER, this);
 		    VirtualUniverse.mc.sendRunMessage(view,
 						      J3dThread.RENDER_THREAD);
 		}
@@ -3993,7 +3993,7 @@ public class Canvas3D extends Canvas {
 	if (status == RECREATEDDRAW) {
 	    // D3D use MANAGE_POOL when createTexture, so there
 	    // is no need to download texture again in case of RESETSURFACE
-	    resetTextureBin(); 
+	    resetTextureBin();
 	    screen.renderer.needToResendTextureDown = true;
 	}
 
@@ -4006,7 +4006,7 @@ public class Canvas3D extends Canvas {
 
     }
 
-  
+
     void reset() {
 	int i;
 	currentAppear = new AppearanceRetained();
@@ -4055,7 +4055,7 @@ public class Canvas3D extends Canvas {
 	fog = null;
 	texLinearMode = false;
 	sceneAmbient = new Color3f();
-	
+
 
 	for (i=0; i< frameCount.length;i++) {
 	    frameCount[i] = -1;
@@ -4109,12 +4109,12 @@ public class Canvas3D extends Canvas {
 	resetPolygonAttributes(ctx);
 	resetLineAttributes(ctx);
 	resetPointAttributes(ctx);
-	resetTransparency(ctx, 
+	resetTransparency(ctx,
 			  RenderMolecule.SURFACE,
 			  PolygonAttributes.POLYGON_FILL,
 			  false, false);
 	resetColoringAttributes(ctx,
-				1.0f, 1.0f, 
+				1.0f, 1.0f,
 				1.0f, 1.0f, false);
 	updateMaterial(ctx, 1.0f, 1.0f, 1.0f, 1.0f);
 	resetRendering(NOCHANGE);
@@ -4125,10 +4125,10 @@ public class Canvas3D extends Canvas {
         }
 	needToRebuildDisplayList = true;
 
-	ctxTimeStamp = VirtualUniverse.mc.getContextTimeStamp();	    
+	ctxTimeStamp = VirtualUniverse.mc.getContextTimeStamp();
 	if (status == RECREATEDDRAW) {
 	    screen.renderer.needToResendTextureDown = true;
-	} 
+	}
     }
 
 
@@ -4159,9 +4159,9 @@ public class Canvas3D extends Canvas {
 	    try {
 		return super.getLocationOnScreen();
 	    } catch (IllegalComponentStateException e) {}
-	} 
+	}
 	return new Point();
-    }    
+    }
 
     public int getX() {
 	if (!fullScreenMode) {
@@ -4208,7 +4208,7 @@ public class Canvas3D extends Canvas {
 	    }
 	}
     }
-    
+
     public Point getLocation() {
 	if (!fullScreenMode) {
 	    return super.getLocation();
@@ -4221,7 +4221,7 @@ public class Canvas3D extends Canvas {
 	if (!fullScreenMode) {
 	    return super.getBounds();
 	} else {
-	    return new Rectangle(0, 0, 
+	    return new Rectangle(0, 0,
 				 screen.screenSize.width,
 				 screen.screenSize.height);
 	}
@@ -4232,35 +4232,35 @@ public class Canvas3D extends Canvas {
 	    return super.getBounds(rv);
 	} else {
 	    if (rv != null) {
-		rv.setBounds(0, 0, 
+		rv.setBounds(0, 0,
 			     screen.screenSize.width,
 			     screen.screenSize.height);
 		return rv;
 	    } else {
-		return new Rectangle(0, 0, 
+		return new Rectangle(0, 0,
 				     screen.screenSize.width,
 				     screen.screenSize.height);
 	    }
 	}
     }
-    
+
     void setProjectionMatrix(Context ctx, Transform3D projTrans) {
        this.projTrans = projTrans;
        setProjectionMatrix(ctx, projTrans.mat);
     }
-    
+
     void setModelViewMatrix(Context ctx, double[] viewMatrix, Transform3D mTrans) {
 	setModelViewMatrix(ctx, viewMatrix, mTrans.mat);
 	if (!useStereo) {
 	    this.modelMatrix = mTrans;
 	} else {
             // TODO : This seems wrong to do only for the right eye.
-            // A possible approach is to invalidate the cache at begin of 
-            // each eye.            
+            // A possible approach is to invalidate the cache at begin of
+            // each eye.
 	    if (rightStereoPass) {
 		//  Only set cache in right stereo pass, otherwise
-		//  if the left stereo pass set the cache value, 
-		//  setModelViewMatrix() in right stereo pass will not 
+		//  if the left stereo pass set the cache value,
+		//  setModelViewMatrix() in right stereo pass will not
 		//  perform in RenderMolecules.
 		this.modelMatrix = mTrans;
 	    }
@@ -4318,7 +4318,7 @@ public class Canvas3D extends Canvas {
     final void endScene() {
 	endScene(ctx);
     }
-    
+
 
     // Send a createOffScreenBuffer message to Renderer (via
     // MasterControl) and wait for it to be done
@@ -4357,7 +4357,7 @@ public class Canvas3D extends Canvas {
 	// Fix for Issue 18 and Issue 175
 	// Send message to Renderer thread to perform remove Ctx and destroyOffScreenBuffer.
 
-        VirtualUniverse.mc.sendDestroyCtxAndOffScreenBuffer(this);            
+        VirtualUniverse.mc.sendDestroyCtxAndOffScreenBuffer(this);
 
 	// Wait for ctx and off-screen buffer to be destroyed
         while (offScreenBufferPending) {
@@ -4382,8 +4382,8 @@ public class Canvas3D extends Canvas {
     }
 
     private void removeCtx() {
-        
-	if ((screen != null) && 
+
+	if ((screen != null) &&
 	    (screen.renderer != null) &&
 	    (ctx != null)) {
             VirtualUniverse.mc.postRequest(MasterControl.FREE_CONTEXT,
@@ -4446,8 +4446,8 @@ public class Canvas3D extends Canvas {
     // update LightBin, EnvironmentSet, AttributeBin & ShaderBin if neccessary
     // according to the stateUpdateMask
 
-    static int ENV_STATE_MASK = (1 << LIGHTBIN_BIT) | 
-				(1 << ENVIRONMENTSET_BIT) |	
+    static int ENV_STATE_MASK = (1 << LIGHTBIN_BIT) |
+				(1 << ENVIRONMENTSET_BIT) |
 	                        (1 << ATTRIBUTEBIN_BIT) |
                                 (1 << SHADERBIN_BIT);
 
@@ -4498,135 +4498,136 @@ public class Canvas3D extends Canvas {
 
 	if ((stateUpdateMask & (1 << RENDERMOLECULE_BIT)) != 0) {
 	    ((RenderMolecule)
-	     curStateToUpdate[RENDERMOLECULE_BIT]).updateAttributes(this, 
+	     curStateToUpdate[RENDERMOLECULE_BIT]).updateAttributes(this,
 								    dirtyBits);
 
-	} 
+	}
 
         if ((stateUpdateMask & (1 << TRANSPARENCY_BIT)) != 0) {
 	    ((RenderMolecule)curStateToUpdate[RENDERMOLECULE_BIT]).updateTransparencyAttributes(this);
 	    stateUpdateMask &= ~(1 << TRANSPARENCY_BIT);
 	}
 
-	// reset state update mask 
+	// reset state update mask
 	stateUpdateMask = 0;
     }
 
-  
-    // This method updates this Texture2D for raster. 
+
+    // This method updates this Texture2D for raster.
     // Note : No multi-texture is not used.
     void updateTextureForRaster(Texture2DRetained texture) {
-        
+
         // Setup texture and texture attributes for texture unit 0.
         Pipeline.getPipeline().updateTextureUnitState(ctx, 0, true);
         setLastActiveTexUnit(0);
-        setNumActiveTexUnit(1);        
-        
+        setNumActiveTexUnit(1);
+
         texture.updateNative(this);
+        resetTexCoordGeneration(ctx);
         resetTextureAttributes(ctx);
-        
+
         for(int i=1; i < maxTextureUnits; i++) {
             resetTexture(ctx, i);
         }
-        
+
         // set the active texture unit back to 0
         activeTextureUnit(ctx, 0);
-        
+
         // Force the next textureBin to reload.
         canvasDirty |= Canvas3D.TEXTUREBIN_DIRTY | Canvas3D.TEXTUREATTRIBUTES_DIRTY;
     }
-    
+
     void restoreTextureBin() {
-        
+
         // Need to check TextureBin's shaderBin for null
         // TextureBin can get clear() if there isn't any RM under it.
         if((textureBin != null) && (textureBin.shaderBin != null)) {
             textureBin.updateAttributes(this);
         }
     }
-    
-    void textureFill(RasterRetained raster, Point2d winCoord, 
-           float mapZ, float alpha) { 
-                
+
+    void textureFill(RasterRetained raster, Point2d winCoord,
+           float mapZ, float alpha) {
+
         int winWidth = canvasViewCache.getCanvasWidth();
         int winHeight = canvasViewCache.getCanvasHeight();
-        
+
         int rasterImageWidth = raster.image.width;
         int rasterImageHeight = raster.image.height;
-        
+
         float texMinU = 0, texMinV = 0, texMaxU = 0, texMaxV = 0;
         float mapMinX = 0, mapMinY = 0, mapMaxX = 0, mapMaxY = 0;
-        
+
         Point rasterSrcOffset = new Point();
         raster.getSrcOffset(rasterSrcOffset);
 
         Dimension rasterSize = new Dimension();
         raster.getSize(rasterSize);
-        
+
 //        System.err.println("rasterImageWidth " + rasterImageWidth + " rasterImageHeight " + rasterImageHeight);
 //        System.err.println("rasterSrcOffset " + rasterSrcOffset + " rasterSize " + rasterSize);
-        
+
         int rasterMinX = rasterSrcOffset.x;
-        int rasterMaxX = rasterSrcOffset.x + rasterSize.width;        
+        int rasterMaxX = rasterSrcOffset.x + rasterSize.width;
         int rasterMinY = rasterSrcOffset.y;
         int rasterMaxY = rasterSrcOffset.y + rasterSize.height;
- 
+
         if ((rasterMinX >= rasterImageWidth) || (rasterMinY >= rasterImageHeight) ||
                 (rasterMaxX <= 0) || (rasterMaxY <= 0)) {
             return;
         }
-        
+
         if (rasterMinX < 0) {
             rasterMinX = 0;
-        } 
+        }
         if (rasterMinY < 0) {
             rasterMinY = 0;
         }
-        
+
         if (rasterMaxX > rasterImageWidth) {
             rasterMaxX = rasterImageWidth;
         }
-        
+
         if (rasterMaxY > rasterImageHeight) {
             rasterMaxY = rasterImageHeight;
         }
-        
+
         texMinU = (float) rasterMinX / (float) rasterImageWidth;
         texMaxU = (float) rasterMaxX / (float) rasterImageWidth;
         mapMinX = (float) winCoord.x / (float) winWidth;
         mapMaxX = (float) (winCoord.x + (rasterMaxX - rasterMinX)) / (float) winWidth;
-        
+
         if (raster.image.isYUp()) {
             texMinV = (float) rasterMinY / (float) rasterImageHeight;
             texMaxV = (float) rasterMaxY / (float) rasterImageHeight;
         } else {
           //  System.err.println("In yUp is false case");
-            texMinV = 1.0f - (float) rasterMaxY / (float) rasterImageHeight;  
+            texMinV = 1.0f - (float) rasterMaxY / (float) rasterImageHeight;
             texMaxV = 1.0f - (float) rasterMinY / (float) rasterImageHeight;
         }
-        
+
         mapMinY = 1.0f - ((float) (winCoord.y + (rasterMaxY - rasterMinY)) / (float) winHeight);
-        mapMaxY = 1.0f - ((float) winCoord.y / (float) winHeight);       
-        
+        mapMaxY = 1.0f - ((float) winCoord.y / (float) winHeight);
+
         textureFillRaster(ctx, texMinU, texMaxU, texMinV, texMaxV,
                 mapMinX, mapMaxX, mapMinY, mapMaxY, mapZ, alpha, raster.image.useBilinearFilter());
-        
+
     }
-    
+
     void textureFill(BackgroundRetained bg, int winWidth, int winHeight) {
-        
+
         final int maxX = bg.image.width;
         final int maxY = bg.image.height;
 
 //        System.err.println("maxX " + maxX + " maxY " + maxY);
-        
+
         float xzoom = (float)winWidth  / maxX;
         float yzoom = (float)winHeight / maxY;
         float zoom = 0;
         float texMinU = 0, texMinV = 0, texMaxU = 0, texMaxV = 0, adjustV = 0;
         float mapMinX = 0, mapMinY = 0, mapMaxX = 0, mapMaxY = 0;
         float halfWidth = 0, halfHeight = 0;
-        
+
         switch (bg.imageScaleMode) {
             case Background.SCALE_NONE:
                 texMinU = 0.0f;
@@ -4699,7 +4700,7 @@ public class Canvas3D extends Canvas {
                 mapMaxY = 1.0f;
                 break;
             case Background.SCALE_NONE_CENTER:
-                // TODO : Why is there a zoom ? 
+                // TODO : Why is there a zoom ?
                 if(xzoom >= 1.0f){
                     texMinU = 0.0f;
                     texMaxU = 1.0f;
@@ -4723,16 +4724,16 @@ public class Canvas3D extends Canvas {
                     mapMaxY = 1.0f;
                 }
                 break;
-        }       
-    
-//        System.err.println("Java 3D : mapMinX " + mapMinX + " mapMinY " + mapMinY + 
+        }
+
+//        System.err.println("Java 3D : mapMinX " + mapMinX + " mapMinY " + mapMinY +
 //                           " mapMaxX " + mapMaxX + " mapMaxY " + mapMaxY);
         textureFillBackground(ctx, texMinU, texMaxU, texMinV, texMaxV,
                 mapMinX, mapMaxX, mapMinY, mapMaxY, bg.image.useBilinearFilter());
-        
+
     }
-    
-    
+
+
     void clear(BackgroundRetained bg, int winWidth, int winHeight) {
 
         // Issue 239 - clear stencil if requested and available
@@ -4741,29 +4742,29 @@ public class Canvas3D extends Canvas {
         boolean clearStencil = VirtualUniverse.mc.stencilClear &&
                 userStencilAvailable;
 
-        clear(ctx, bg.color.x, bg.color.y, bg.color.z, clearStencil);        
+        clear(ctx, bg.color.x, bg.color.y, bg.color.z, clearStencil);
 
         // TODO : This is a bug on not mirror bg. Will fix this as a bug after 1.5 beta.
         // For now, as a workaround, we will check bg.image and bg.image.imageData not null.
         if((bg.image != null) && (bg.image.imageData != null)) {
             // setup Texture pipe.
             updateTextureForRaster(bg.texture);
-            
+
             textureFill(bg, winWidth, winHeight);
-            
+
             // Restore texture pipe.
-            restoreTextureBin();    
+            restoreTextureBin();
         }
     }
-    
+
     /**
-     * obj is either TextureRetained or DetailTextureImage 
+     * obj is either TextureRetained or DetailTextureImage
      * if obj is DetailTextureImage then we just clear
-     * the resourceCreationMask of all the formats 
-     * no matter it is create or not since we don't 
+     * the resourceCreationMask of all the formats
+     * no matter it is create or not since we don't
      * remember the format information for simplicity.
      * We don't need to check duplicate value of id in the
-     * table since this procedure is invoke only when id 
+     * table since this procedure is invoke only when id
      * of texture is -1 one time only.
      * This is always call from Renderer thread.
      */
@@ -4777,16 +4778,16 @@ public class Canvas3D extends Canvas {
 	} else {
 	    // This will replace the previous key if exists
 	    if (textureIDResourceTable.size() <= id) {
-		for (int i=textureIDResourceTable.size(); 
+		for (int i=textureIDResourceTable.size();
 		     i < id; i++) {
 		    textureIDResourceTable.add(null);
 		}
-		textureIDResourceTable.add(obj);		
+		textureIDResourceTable.add(obj);
 	    } else {
 		textureIDResourceTable.set(id, obj);
 	    }
 
-	}	
+	}
     }
 
     // handle free resource in the FreeList
@@ -4845,7 +4846,7 @@ public class Canvas3D extends Canvas {
 
 	Object obj;
 	TextureRetained tex;
-	
+
 	// Just return if we don't have a valid renderer or context
 	if (rdr == null || ctx == null) {
 	    return;
@@ -4880,7 +4881,7 @@ public class Canvas3D extends Canvas {
 		}
 	    }
 	}
-	textureIDResourceTable.clear();	
+	textureIDResourceTable.clear();
 
 	freeAllDisplayListResources(ctx);
     }
@@ -4938,12 +4939,12 @@ public class Canvas3D extends Canvas {
         assert drawable != null;
         Pipeline.getPipeline().destroyOffScreenBuffer(this, ctx, display, fbConfig, drawable);
     }
-    
+
     // This is the native for reading the image from the offscreen buffer
     private void readOffScreenBuffer(Context ctx, int format, int type, Object data, int width, int height) {
         Pipeline.getPipeline().readOffScreenBuffer(this, ctx, format, type, data, width, height);
     }
-    
+
     // The native method for swapBuffers
     int swapBuffers(Context ctx, long dpy, Drawable drawable) {
         return Pipeline.getPipeline().swapBuffers(this, ctx, dpy, drawable);
@@ -5169,7 +5170,7 @@ public class Canvas3D extends Canvas {
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, boolean useBiliearFilter) {
         Pipeline.getPipeline().textureFillBackground(ctx, texMinU, texMaxU, texMinV, texMaxV,
                 mapMinX, mapMaxX, mapMinY, mapMaxY, useBiliearFilter);
-    }    
+    }
 
     void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha, boolean useBiliearFilter)  {
@@ -5178,12 +5179,12 @@ public class Canvas3D extends Canvas {
     }
 
     void executeRasterDepth(Context ctx, float posX, float posY, float posZ,
-            int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight, 
+            int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight,
             int depthWidth, int depthHeight, int depthType, Object depthData) {
         Pipeline.getPipeline().executeRasterDepth(ctx, posX, posY, posZ,
                 srcOffsetX, srcOffsetY, rasterWidth, rasterHeight, depthWidth, depthHeight, depthType, depthData);
     }
-    
+
     // The native method for setting the ModelView matrix.
     void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {
         Pipeline.getPipeline().setModelViewMatrix(ctx, viewMatrix, modelMatrix);
