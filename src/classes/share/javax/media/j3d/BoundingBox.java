@@ -56,11 +56,11 @@ public class BoundingBox extends Bounds {
 
     private Point3d centroid = null;
     private static final double EPS = 1.0E-8;
-    
+
     // reusable temp objects
     private BoundingSphere tmpSphere = null;
     private BoundingBox tmpBox = null;
-    private BoundingPolytope tmpPolytope = null;    
+    private BoundingPolytope tmpPolytope = null;
     private Point3d tmpP3d = null;
 
      // Issue 561: Set by -Dj3d.releaseBoundingBoxMemory property.
@@ -91,7 +91,7 @@ public class BoundingBox extends Bounds {
 	this.upper = new Point3d(upper);
 	updateBoundsStates();
     }
-    
+
     /**
      * Constructs and initializes a 2X bounding box about the
      * origin. The lower corner is initialized to (-1.0d, -1.0d, -1.0d)
@@ -103,10 +103,10 @@ public class BoundingBox extends Bounds {
 	upper = new Point3d( 1.0d,  1.0d,  1.0d);
 	updateBoundsStates();
     }
-    
+
     /**
-     * Constructs a BoundingBox from a  bounding object. 
-     * @param boundsObject  a bounds object 
+     * Constructs a BoundingBox from a  bounding object.
+     * @param boundsObject  a bounds object
      */
     public BoundingBox(Bounds boundsObject) {
 	int i;
@@ -126,22 +126,22 @@ public class BoundingBox extends Bounds {
 	}
 	else if( boundsObject.boundId == BOUNDING_BOX){
 	    BoundingBox box = (BoundingBox)boundsObject;
-	    
+
 	    lower = new Point3d(box.lower.x, box.lower.y, box.lower.z);
 	    upper = new Point3d(box.upper.x, box.upper.y, box.upper.z);
 
 	}
 	else if( boundsObject.boundId == BOUNDING_SPHERE ) {
 	    BoundingSphere sphere = (BoundingSphere)boundsObject;
-	    
-	    lower = new Point3d(sphere.center.x-sphere.radius, 
+
+	    lower = new Point3d(sphere.center.x-sphere.radius,
 				sphere.center.y-sphere.radius,
 				sphere.center.z-sphere.radius);
-	    
-	    upper = new Point3d(sphere.center.x+sphere.radius, 
+
+	    upper = new Point3d(sphere.center.x+sphere.radius,
 				sphere.center.y+sphere.radius,
 				sphere.center.z+sphere.radius);
-	    
+
 	}
 	else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
@@ -153,7 +153,7 @@ public class BoundingBox extends Bounds {
 				     polytope.verts[0].z);
 		upper = new Point3d( polytope.verts[0].x, polytope.verts[0].y,
 				     polytope.verts[0].z);
-		
+
 		for(i=1;i<polytope.nVerts;i++) {
 		    if( polytope.verts[i].x < lower.x )
 			lower.x = polytope.verts[i].x;
@@ -169,7 +169,7 @@ public class BoundingBox extends Bounds {
 			upper.z = polytope.verts[i].z;
 		}
 	    }
-	    
+
 	} else {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingBox0"));
 	}
@@ -178,7 +178,7 @@ public class BoundingBox extends Bounds {
     }
 
     /**
-     * Constructs a BoundingBox from an array of bounding objects. 
+     * Constructs a BoundingBox from an array of bounding objects.
      * @param bounds an array of bounding objects
      */
     public BoundingBox(Bounds[] bounds) {
@@ -197,22 +197,22 @@ public class BoundingBox extends Bounds {
        }
 
        // find first non empty bounds object
-       while( bounds[i] == null && i < bounds.length) {
+       while ((i < bounds.length) && ((bounds[i] == null) || bounds[i].boundsIsEmpty)) {
 	   i++;
        }
- 
+
        if( i >= bounds.length ) { // all bounds objects were empty
 	   // Negative volume.
 	   lower = new Point3d( 1.0d,  1.0d,  1.0d);
 	   upper = new Point3d(-1.0d, -1.0d, -1.0d);
 	   updateBoundsStates();
 	   return;
-       } 
- 
+       }
+
        this.set(bounds[i++]);
        if(boundsIsInfinite)
 	   return;
-       
+
        for(;i<bounds.length;i++) {
            if( bounds[i] == null );   // do nothing
            else if( bounds[i].boundsIsEmpty); // do nothing
@@ -281,7 +281,7 @@ public class BoundingBox extends Bounds {
         p1.y = lower.y;
         p1.z = lower.z;
     }
-    
+
     /**
      * Sets the lower corner of this bounding box.
      * @param xmin minimum x value of boundining box
@@ -295,7 +295,7 @@ public class BoundingBox extends Bounds {
 
         updateBoundsStates();
     }
-    
+
     /**
      * Sets the lower corner of this bounding box.
      * @param p1 a Point defining the new lower corner of the bounding box
@@ -356,21 +356,21 @@ public class BoundingBox extends Bounds {
 	  // Negative volume.
 	  lower.x = lower.y = lower.z = 1.0d;
 	  upper.x = upper.y = upper.z = -1.0d;
-	  
+
       } else if( boundsObject.boundsIsInfinite ) {
 	  lower.x = lower.y = lower.z = Double.NEGATIVE_INFINITY;
 	  upper.x = upper.y = upper.z = Double.POSITIVE_INFINITY;
-	  
+
       } else if( boundsObject.boundId == BOUNDING_BOX){
 	  BoundingBox box = (BoundingBox)boundsObject;
-	  
+
 	  lower.x = box.lower.x;
 	  lower.y = box.lower.y;
 	  lower.z = box.lower.z;
 	  upper.x = box.upper.x;
 	  upper.y = box.upper.y;
 	  upper.z = box.upper.z;
-	  
+
       } else if( boundsObject.boundId == BOUNDING_SPHERE ) {
 	  BoundingSphere sphere = (BoundingSphere)boundsObject;
 	  lower.x = sphere.center.x - sphere.radius;
@@ -379,13 +379,13 @@ public class BoundingBox extends Bounds {
 	  upper.x = sphere.center.x + sphere.radius;
 	  upper.y = sphere.center.y + sphere.radius;
 	  upper.z = sphere.center.z + sphere.radius;
-	  
+
       } else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	  BoundingPolytope polytope = (BoundingPolytope)boundsObject;
 	  lower.x = upper.x = polytope.verts[0].x;
 	  lower.y = upper.y = polytope.verts[0].y;
 	  lower.z = upper.z = polytope.verts[0].z;
-	  
+
 	  for(i=1;i<polytope.nVerts;i++) {
 	      if( polytope.verts[i].x < lower.x ) lower.x = polytope.verts[i].x;
 	      if( polytope.verts[i].y < lower.y ) lower.y = polytope.verts[i].y;
@@ -394,7 +394,7 @@ public class BoundingBox extends Bounds {
 	      if( polytope.verts[i].y > upper.y ) upper.y = polytope.verts[i].y;
 	      if( polytope.verts[i].z > upper.z ) upper.z = polytope.verts[i].z;
 	  }
-	  
+
       } else {
 	  throw new IllegalArgumentException(J3dI18N.getString("BoundingBox0"));
       }
@@ -405,7 +405,7 @@ public class BoundingBox extends Bounds {
 
     /**
      * Creates a copy of this bounding box.
-     * @return a new bounding box 
+     * @return a new bounding box
      */
     public Object clone() {
 	return new BoundingBox(this.lower, this.upper);
@@ -464,33 +464,33 @@ public class BoundingBox extends Bounds {
     }
 
 
-    /** 
+    /**
      * Combines this bounding box with a bounding object   so that the
      * resulting bounding box encloses the original bounding box and the
      * specified bounds object.
      * @param boundsObject another bounds object
      */
     public void combine(Bounds boundsObject) {
-	
+
 	if((boundsObject == null) || (boundsObject.boundsIsEmpty)
-	   || (boundsIsInfinite)) 
+	   || (boundsIsInfinite))
 	    return;
-	
+
 	if((boundsIsEmpty) || (boundsObject.boundsIsInfinite)) {
 	    this.set(boundsObject);
 	    return;
 	}
-	
+
 	if( boundsObject.boundId == BOUNDING_BOX){
 	    BoundingBox box = (BoundingBox)boundsObject;
-	    
+
 	    if( lower.x > box.lower.x) lower.x = box.lower.x;
 	    if( lower.y > box.lower.y) lower.y = box.lower.y;
 	    if( lower.z > box.lower.z) lower.z = box.lower.z;
 	    if( upper.x < box.upper.x) upper.x = box.upper.x;
 	    if( upper.y < box.upper.y) upper.y = box.upper.y;
 	    if( upper.z < box.upper.z) upper.z = box.upper.z;
-	    
+
 	}
 	else if( boundsObject.boundId == BOUNDING_SPHERE ) {
 	    BoundingSphere sphere = (BoundingSphere)boundsObject;
@@ -506,7 +506,7 @@ public class BoundingBox extends Bounds {
 		upper.y = sphere.center.y + sphere.radius;
 	    if( upper.z < (sphere.center.z + sphere.radius))
 		upper.z = sphere.center.z + sphere.radius;
-	    
+
 	}
 	else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
@@ -522,13 +522,13 @@ public class BoundingBox extends Bounds {
 	} else {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingBox3"));
 	}
-	
+
         updateBoundsStates();
     }
 
-    /** 
-     * Combines this bounding box with an array of bounding objects  
-     * so that the resulting bounding box encloses the original bounding 
+    /**
+     * Combines this bounding box with an array of bounding objects
+     * so that the resulting bounding box encloses the original bounding
      * box and the array of bounding objects.
      * @param bounds an array of bounds objects
      */
@@ -538,20 +538,20 @@ public class BoundingBox extends Bounds {
        if( (bounds == null) || (bounds.length <= 0)
 	   || (boundsIsInfinite))
 	   return;
-       
+
        // find first non empty bounds object
        while( (i<bounds.length) && ((bounds[i]==null) || bounds[i].boundsIsEmpty)) {
 	   i++;
        }
        if( i >= bounds.length)
 	   return;   // no non empty bounds so do not modify current bounds
-       
+
        if(boundsIsEmpty)
 	   this.set(bounds[i++]);
 
        if(boundsIsInfinite)
 	   return;
-       
+
        for(;i<bounds.length;i++) {
           if( bounds[i] == null );  // do nothing
           else if( bounds[i].boundsIsEmpty); // do nothing
@@ -562,7 +562,7 @@ public class BoundingBox extends Bounds {
 	  }
 	  else if( bounds[i].boundId == BOUNDING_BOX){
  	      BoundingBox box = (BoundingBox)bounds[i];
-	      
+
               if( lower.x > box.lower.x) lower.x = box.lower.x;
               if( lower.y > box.lower.y) lower.y = box.lower.y;
               if( lower.z > box.lower.z) lower.z = box.lower.z;
@@ -599,21 +599,21 @@ public class BoundingBox extends Bounds {
 	      throw new IllegalArgumentException(J3dI18N.getString("BoundingBox4"));
  	  }
        }
-       
+
        updateBoundsStates();
     }
 
-    /** 
+    /**
      * Combines this bounding box with a point so that the resulting
      * bounding box encloses the original bounding box and the point.
-     * @param point a 3d point in space 
+     * @param point a 3d point in space
      */
     public void combine(Point3d point) {
 
 	if( boundsIsInfinite) {
 	    return;
 	}
-	
+
 	if( boundsIsEmpty) {
             upper.x = lower.x = point.x;
             upper.y = lower.y = point.y;
@@ -622,20 +622,20 @@ public class BoundingBox extends Bounds {
 	    if( point.x > upper.x) upper.x = point.x;
    	    if( point.y > upper.y) upper.y = point.y;
 	    if( point.z > upper.z) upper.z = point.z;
-	    
+
 	    if( point.x < lower.x) lower.x = point.x;
 	    if( point.y < lower.y) lower.y = point.y;
 	    if( point.z < lower.z) lower.z = point.z;
 	}
-	
+
          updateBoundsStates();
     }
 
-    /** 
+    /**
      * Combines this bounding box with an array of points so that the
      * resulting bounding box encloses the original bounding box and the
      * array of points.
-     * @param points an array of 3d points in space 
+     * @param points an array of 3d points in space
      */
     public void combine(Point3d[] points) {
 
@@ -644,33 +644,33 @@ public class BoundingBox extends Bounds {
 	if( boundsIsInfinite) {
 	    return;
 	}
-	
+
 	if( boundsIsEmpty) {
 	    this.setUpper(points[0]);
 	    this.setLower(points[0]);
 	}
-	
+
 	for(i=0;i<points.length;i++) {
 	    if( points[i].x > upper.x) upper.x = points[i].x;
 	    if( points[i].y > upper.y) upper.y = points[i].y;
 	    if( points[i].z > upper.z) upper.z = points[i].z;
-	    
+
 	    if( points[i].x < lower.x) lower.x = points[i].x;
 	    if( points[i].y < lower.y) lower.y = points[i].y;
 	    if( points[i].z < lower.z) lower.z = points[i].z;
 	}
-	
+
         updateBoundsStates();
     }
 
     /**
      * Modifies the bounding box so that it bounds the volume
      * generated by transforming the given bounding object.
-     * @param boundsObject the bounding object to be transformed 
+     * @param boundsObject the bounding object to be transformed
      * @param matrix a transformation matrix
      */
     public void transform( Bounds boundsObject, Transform3D matrix) {
-	
+
 	if( boundsObject == null || boundsObject.boundsIsEmpty)  {
 	  // Negative volume.
 	  lower.x = lower.y = lower.z = 1.0d;
@@ -702,7 +702,7 @@ public class BoundingBox extends Bounds {
 	        tmpSphere.set((BoundingSphere)boundsObject);
 	    }
 	    tmpSphere.transform(matrix);
-	    this.set(tmpSphere);   
+	    this.set(tmpSphere);
 	}
 	else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    if (tmpPolytope == null) {
@@ -713,7 +713,7 @@ public class BoundingBox extends Bounds {
 	    }
 	    tmpPolytope.transform(matrix);
 	    this.set(tmpPolytope);
-	    
+
 	}
 	else {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingBox5"));
@@ -727,7 +727,7 @@ public class BoundingBox extends Bounds {
         }
     }
 
-    /** 
+    /**
      * Transforms this bounding box by the given matrix.
      * @param matrix a transformation matrix
      */
@@ -743,7 +743,7 @@ public class BoundingBox extends Bounds {
 	double ux, uy, uz, lx, ly, lz;
 	ux = upper.x; uy = upper.y; uz = upper.z;
 	lx = lower.x; ly = lower.y; lz = lower.z;
-	
+
 	tmpP3d.set(ux, uy, uz);
 	matrix.transform( tmpP3d );
 	upper.x = tmpP3d.x;
@@ -752,16 +752,16 @@ public class BoundingBox extends Bounds {
 	lower.x = tmpP3d.x;
 	lower.y = tmpP3d.y;
 	lower.z = tmpP3d.z;
-	
+
 	tmpP3d.set(lx, uy, uz);
-	matrix.transform( tmpP3d );	
+	matrix.transform( tmpP3d );
 	if ( tmpP3d.x  > upper.x ) upper.x = tmpP3d.x;
 	if ( tmpP3d.y  > upper.y ) upper.y = tmpP3d.y;
 	if ( tmpP3d.z  > upper.z ) upper.z = tmpP3d.z;
 	if ( tmpP3d.x  < lower.x ) lower.x = tmpP3d.x;
 	if ( tmpP3d.y  < lower.y ) lower.y = tmpP3d.y;
 	if ( tmpP3d.z  < lower.z ) lower.z = tmpP3d.z;
-	
+
 	tmpP3d.set(lx, ly, uz);
 	matrix.transform( tmpP3d );
 	if ( tmpP3d.x  > upper.x ) upper.x = tmpP3d.x;
@@ -770,7 +770,7 @@ public class BoundingBox extends Bounds {
 	if ( tmpP3d.x  < lower.x ) lower.x = tmpP3d.x;
 	if ( tmpP3d.y  < lower.y ) lower.y = tmpP3d.y;
 	if ( tmpP3d.z  < lower.z ) lower.z = tmpP3d.z;
-	
+
 	tmpP3d.set(ux, ly, uz);
 	matrix.transform( tmpP3d );
 	if ( tmpP3d.x > upper.x ) upper.x = tmpP3d.x;
@@ -797,7 +797,7 @@ public class BoundingBox extends Bounds {
 	if ( tmpP3d.x < lower.x ) lower.x = tmpP3d.x;
 	if ( tmpP3d.y < lower.y ) lower.y = tmpP3d.y;
 	if ( tmpP3d.z < lower.z ) lower.z = tmpP3d.z;
-	
+
 	tmpP3d.set(lx, ly, lz);
 	matrix.transform( tmpP3d );
 	if ( tmpP3d.x > upper.x ) upper.x = tmpP3d.x;
@@ -806,7 +806,7 @@ public class BoundingBox extends Bounds {
 	if ( tmpP3d.x < lower.x ) lower.x = tmpP3d.x;
 	if ( tmpP3d.y < lower.y ) lower.y = tmpP3d.y;
 	if ( tmpP3d.z < lower.z ) lower.z = tmpP3d.z;
-	
+
 	tmpP3d.set(ux, ly, lz);
 	matrix.transform( tmpP3d );
 	if ( tmpP3d.x > upper.x ) upper.x = tmpP3d.x;
@@ -822,23 +822,23 @@ public class BoundingBox extends Bounds {
         }
 
     }
-    
-    /** 
+
+    /**
      * Test for intersection with a ray.
-     * @param origin the starting point of the ray   
+     * @param origin the starting point of the ray
      * @param direction the direction of the ray
      * @param position3 a point defining the location of the pick w= distance to pick
-     * @return true or false indicating if an intersection occured 
+     * @return true or false indicating if an intersection occured
      */
     boolean intersect(Point3d origin, Vector3d direction, Point4d position ) {
         double t1,t2,tmp,tnear,tfar,invDir,invMag;
 	double dirx, diry, dirz;
-	
+
 	/*
 	  System.err.println("BoundingBox.intersect(p,d,p) called\n");
 	  System.err.println("bounds = " + lower + " -> " + upper);
 	  */
-	
+
 	if( boundsIsEmpty ) {
 	    return false;
 	}
@@ -850,14 +850,14 @@ public class BoundingBox extends Bounds {
 	    position.w = 0.0;
 	    return true;
 	}
-       
+
 	double dirLen = direction.x*direction.x + direction.y*direction.y +
 	    direction.z*direction.z;
-       
+
 	// Handle zero length direction vector.
 	if(dirLen == 0.0)
 	    return intersect(origin, position);
-       
+
 	invMag = 1.0/Math.sqrt(dirLen);
 	dirx = direction.x*invMag;
 	diry = direction.y*invMag;
@@ -867,11 +867,11 @@ public class BoundingBox extends Bounds {
 	  System.err.println("dir = " + dirx + ", " + diry + ", " + dirz);
 	  System.err.println("origin = " + origin);
 	  */
-	
+
 	// initialize tnear and tfar to handle dir.? == 0 cases
 	tnear = -Double.MAX_VALUE;
 	tfar = Double.MAX_VALUE;
-       
+
 	if(dirx == 0.0) {
 	    //System.err.println("dirx == 0.0");
 	    if (origin.x < lower.x || origin.x > upper.x ) {
@@ -882,7 +882,7 @@ public class BoundingBox extends Bounds {
 	    invDir = 1.0/dirx;
 	    t1 = (lower.x-origin.x)*invDir;
 	    t2 = (upper.x-origin.x)*invDir;
-	   
+
 	    //System.err.println("x t1 = " + t1 + " t2 = " + t2);
 	    if( t1 > t2) {
 		tnear = t2;
@@ -909,7 +909,7 @@ public class BoundingBox extends Bounds {
 	    //System.err.println("invDir = " + invDir);
 	    t1 = (lower.y-origin.y)*invDir;
 	    t2 = (upper.y-origin.y)*invDir;
-	   
+
 	    if( t1 > t2) {
 		tmp = t1;
 		t1 = t2;
@@ -918,14 +918,14 @@ public class BoundingBox extends Bounds {
 	    //System.err.println("y t1 = " + t1 + " t2 = " + t2);
 	    if( t1 > tnear) tnear = t1;
 	    if( t2 < tfar ) tfar  = t2;
-	   
+
 	    if( (tfar < 0.0) ||  (tnear > tfar)){
 		//System.err.println( "y failed: tnear="+tnear+"  tfar="+tfar);
 		return false;
 	    }
 	    //System.err.println("y tnear = " + tnear + " tfar = " + tfar);
 	}
-       
+
 	// z
 	if (dirz == 0.0) {
 	    //System.err.println("dirz == 0.0");
@@ -937,7 +937,7 @@ public class BoundingBox extends Bounds {
 	    invDir = 1.0/dirz;
 	    t1 = (lower.z-origin.z)*invDir;
 	    t2 = (upper.z-origin.z)*invDir;
-	   
+
 	    if( t1 > t2) {
 		tmp = t1;
 		t1 = t2;
@@ -946,14 +946,14 @@ public class BoundingBox extends Bounds {
 	    //System.err.println("z t1 = " + t1 + " t2 = " + t2);
 	    if( t1 > tnear) tnear = t1;
 	    if( t2 < tfar ) tfar  = t2;
-	   
+
 	    if( (tfar < 0.0) ||  (tnear > tfar)){
 		//System.err.println( "z failed: tnear="+tnear+"  tfar="+tfar);
 		return false;
 	    }
 	    //System.err.println("z tnear = " + tnear + " tfar = " + tfar);
 	}
-       
+
 	if((tnear < 0.0) && (tfar >= 0.0)) {
 	    // origin is inside the BBox.
 	    position.x = origin.x + dirx*tfar;
@@ -967,17 +967,17 @@ public class BoundingBox extends Bounds {
 	    position.z = origin.z + dirz*tnear;
 	    position.w = tnear;
 	}
-       
-	return true;
-       
-    }
-    
 
-    /** 
+	return true;
+
+    }
+
+
+    /**
      * Test for intersection with a point.
-     * @param point the pick point   
+     * @param point the pick point
      * @param position a point defining the location  of the pick w= distance to pick
-     * @return true or false indicating if an intersection occured 
+     * @return true or false indicating if an intersection occured
      */
     boolean intersect(Point3d point,  Point4d position ) {
 
@@ -1003,20 +1003,20 @@ public class BoundingBox extends Bounds {
 	   return true;
        } else
 	   return false;
-       
+
     }
-    
+
    /**
     * Test for intersection with a segment.
-    * @param start a point defining  the start of the line segment 
-    * @param end a point defining the end of the line segment 
+    * @param start a point defining  the start of the line segment
+    * @param end a point defining the end of the line segment
     * @param position a point defining the location  of the pick w= distance to pick
     * @return true or false indicating if an intersection occured
     */
   boolean intersect( Point3d start, Point3d end, Point4d position ) {
       double t1,t2,tmp,tnear,tfar,invDir,invMag;
       double dirx, diry, dirz;
-      
+
       if( boundsIsEmpty ) {
 	  return false;
       }
@@ -1028,35 +1028,35 @@ public class BoundingBox extends Bounds {
 	  position.w = 0.0;
 	  return true;
       }
-      
+
       dirx = end.x - start.x;
       diry = end.y - start.y;
       dirz = end.z - start.z;
-      
+
       double dirLen = dirx*dirx + diry*diry + dirz*dirz;
-      
+
       // Optimization : Handle zero length direction vector.
       if(dirLen == 0.0)
 	  return intersect(start, position);
-       
+
       dirLen = Math.sqrt(dirLen);
       // System.err.println("dirLen is " + dirLen);
       invMag = 1.0/dirLen;
       dirx = dirx*invMag;
       diry = diry*invMag;
       dirz = dirz*invMag;
-      
+
       /*
 	System.err.println("dir = " + dir);
 	System.err.println("start = " + start);
 	System.err.println("lower = " + lower);
 	System.err.println("upper = " + upper);
 	*/
-      
+
       // initialize tnear and tfar to handle dir.? == 0 cases
       tnear = -Double.MAX_VALUE;
       tfar = Double.MAX_VALUE;
-      
+
         if(dirx == 0.0) {
             //System.err.println("dirx == 0.0");
             if (start.x < lower.x || start.x > upper.x ) {
@@ -1067,7 +1067,7 @@ public class BoundingBox extends Bounds {
             invDir = 1.0/dirx;
             t1 = (lower.x-start.x)*invDir;
             t2 = (upper.x-start.x)*invDir;
-	    
+
             //System.err.println("x t1 = " + t1 + " t2 = " + t2);
 	    if( t1 > t2) {
 		tnear = t2;
@@ -1094,7 +1094,7 @@ public class BoundingBox extends Bounds {
             //System.err.println("invDir = " + invDir);
             t1 = (lower.y-start.y)*invDir;
             t2 = (upper.y-start.y)*invDir;
-	    
+
             if( t1 > t2) {
 		tmp = t1;
 		t1 = t2;
@@ -1103,14 +1103,14 @@ public class BoundingBox extends Bounds {
             //System.err.println("y t1 = " + t1 + " t2 = " + t2);
             if( t1 > tnear) tnear = t1;
             if( t2 < tfar ) tfar  = t2;
-	    
+
             if( (tfar < 0.0) ||  (tnear > tfar)){
 		//System.err.println( "y failed: tnear="+tnear+"  tfar="+tfar);
 		return false;
             }
             //System.err.println("y tnear = " + tnear + " tfar = " + tfar);
         }
-	
+
 	// z
         if (dirz == 0.0) {
             //System.err.println("dirz == 0.0");
@@ -1122,7 +1122,7 @@ public class BoundingBox extends Bounds {
             invDir = 1.0/dirz;
             t1 = (lower.z-start.z)*invDir;
             t2 = (upper.z-start.z)*invDir;
-	    
+
             if( t1 > t2) {
 		tmp = t1;
 		t1 = t2;
@@ -1131,14 +1131,14 @@ public class BoundingBox extends Bounds {
             //System.err.println("z t1 = " + t1 + " t2 = " + t2);
             if( t1 > tnear) tnear = t1;
             if( t2 < tfar ) tfar  = t2;
-	    
+
             if( (tfar < 0.0) ||  (tnear > tfar)){
 		//System.err.println( "z failed: tnear="+tnear+"  tfar="+tfar);
 		return false;
             }
             //System.err.println("z tnear = " + tnear + " tfar = " + tfar);
         }
-	
+
 	if((tnear < 0.0) && (tfar >= 0.0)) {
 	    // origin is inside the BBox.
  	    position.x = start.x + dirx*tfar;
@@ -1161,29 +1161,29 @@ public class BoundingBox extends Bounds {
 
             position.w = tnear;
         }
-	
-	/*  
+
+	/*
 	    System.err.println("tnear = " + tnear + " tfar = " + tfar + " w " +
 	    position.w);
 	    System.err.println("lower = " + lower);
 	    System.err.println("upper = " + upper + "\n");
 	*/
         return true;
-	
+
   }
 
-    /** 
+    /**
      * Test for intersection with a ray.
-     * @param origin the starting point of the ray   
+     * @param origin the starting point of the ray
      * @param direction the direction of the ray
-     * @return true or false indicating if an intersection occured 
+     * @return true or false indicating if an intersection occured
      */
     public boolean intersect(Point3d origin, Vector3d direction ) {
-	
+
         if( boundsIsEmpty ) {
 	    return false;
         }
-	
+
 	if( boundsIsInfinite ) {
 	    return true;
 	}
@@ -1191,7 +1191,7 @@ public class BoundingBox extends Bounds {
 	Point3d p=new Point3d();
 	return intersect( origin, direction, p );
     }
-    
+
     /**
      * A protected intersect method that returns the point of intersection.
      * Used by Picking methods to sort or return closest picked item.
@@ -1238,10 +1238,10 @@ public class BoundingBox extends Bounds {
 
     }
 
-    /** 
+    /**
      * Test for intersection with a point.
-     * @param point a point defining a position in 3-space 
-     * @return true or false indicating if an intersection occured 
+     * @param point a point defining a position in 3-space
+     * @return true or false indicating if an intersection occured
      */
     public boolean intersect(Point3d point ) {
 
@@ -1254,7 +1254,7 @@ public class BoundingBox extends Bounds {
 
 	if( point.x <= upper.x && point.x >= lower.x &&
 	    point.y <= upper.y && point.y >= lower.y &&
-	    point.z <= upper.z && point.z >= lower.z) 
+	    point.z <= upper.z && point.z >= lower.z)
 	    return true;
         else
 	    return false;
@@ -1271,22 +1271,22 @@ public class BoundingBox extends Bounds {
 	 return boundsIsEmpty;
     }
 
-   /** 
+   /**
      * Test for intersection with another bounds object.
-     * @param boundsObject another bounds object 
-     * @return true or false indicating if an intersection occured 
+     * @param boundsObject another bounds object
+     * @return true or false indicating if an intersection occured
      */
     boolean intersect(Bounds boundsObject, Point4d position) {
 	return intersect(boundsObject);
     }
 
-    /** 
-     * Test for intersection with another bounds object. 
-     * @param boundsObject another bounds object 
-     * @return true or false indicating if an intersection occured 
+    /**
+     * Test for intersection with another bounds object.
+     * @param boundsObject another bounds object
+     * @return true or false indicating if an intersection occured
      */
     public boolean intersect(Bounds boundsObject) {
-            
+
 	if( boundsObject == null ) {
 	    return false;
 	}
@@ -1312,7 +1312,7 @@ public class BoundingBox extends Bounds {
 	    BoundingSphere sphere = (BoundingSphere)boundsObject;
 	    double rad_sq = sphere.radius*sphere.radius;
 	    double dis = 0.0;
-	      
+
 	    if( sphere.center.x < lower.x )
 		dis = (sphere.center.x-lower.x)*(sphere.center.x-lower.x);
 	    else
@@ -1330,40 +1330,40 @@ public class BoundingBox extends Bounds {
 	    else
 		if( sphere.center.z > upper.z )
 		    dis += (sphere.center.z-upper.z)*(sphere.center.z-upper.z);
-                      
-	    if( dis <= rad_sq ) 
+
+	    if( dis <= rad_sq )
 		return true;
-	    else 
-		return false; 
+	    else
+		return false;
         } else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    // intersect an axis aligned box with a polytope
 	    return intersect_ptope_abox ( (BoundingPolytope)boundsObject, this );
         } else {
-            throw new IllegalArgumentException(J3dI18N.getString("BoundingBox6"));    
-        }    
+            throw new IllegalArgumentException(J3dI18N.getString("BoundingBox6"));
+        }
 
     }
 
-    /** 
+    /**
      * Test for intersection with an array of bounds objects.
-     * @param boundsObjects an array of bounding objects 
-     * @return true or false indicating if an intersection occured 
+     * @param boundsObjects an array of bounding objects
+     * @return true or false indicating if an intersection occured
      */
     public boolean intersect(Bounds[] boundsObjects) {
 
 	double distsq, radsq;
 	int i;
-	
+
 	if( boundsObjects == null || boundsObjects.length <= 0  )  {
 	    return false;
 	}
-	
+
 	if( boundsIsEmpty ) {
 	    return false;
 	}
-	
+
 	for(i = 0; i < boundsObjects.length; i++){
-	    if( boundsObjects[i] == null || boundsObjects[i].boundsIsEmpty) ;	    
+	    if( boundsObjects[i] == null || boundsObjects[i].boundsIsEmpty) ;
 	    else if( boundsIsInfinite || boundsObjects[i].boundsIsInfinite ) {
 		return true; // We're done here.
 	    }
@@ -1379,26 +1379,26 @@ public class BoundingBox extends Bounds {
 		BoundingSphere sphere = (BoundingSphere)boundsObjects[i];
 		double rad_sq = sphere.radius*sphere.radius;
 		double dis = 0.0;
-	       
+
 		if( sphere.center.x < lower.x )
 		    dis = (sphere.center.x-lower.x)*(sphere.center.x-lower.x);
 		else
 		    if( sphere.center.x > upper.x )
 			dis = (sphere.center.x-upper.x)*(sphere.center.x-upper.x);
-	       
+
 		if( sphere.center.y < lower.y )
 		    dis += (sphere.center.y-lower.y)*(sphere.center.y-lower.y);
 		else
 		    if( sphere.center.y > upper.y )
 			dis += (sphere.center.y-upper.y)*(sphere.center.y-upper.y);
-		
+
 		if( sphere.center.z < lower.z )
 		    dis += (sphere.center.z-lower.z)*(sphere.center.z-lower.z);
 		else
 		    if( sphere.center.z > upper.z )
 			dis += (sphere.center.z-upper.z)*(sphere.center.z-upper.z);
-                      
-		if( dis <= rad_sq ) 
+
+		if( dis <= rad_sq )
 		    return true;
 
 	    }
@@ -1410,16 +1410,16 @@ public class BoundingBox extends Bounds {
 		//	       System.err.println("intersect ?? ");
 	    }
 	}
-	
+
 	return false;
     }
-    
-    /** 
+
+    /**
      * Test for intersection with another bounding box.
-     * @param boundsObject another bounding object 
+     * @param boundsObject another bounding object
      * @param newBoundBox the new bounding box which is the intersection of
      *        the boundsObject and this BoundingBox
-     * @return true or false indicating if an intersection occured 
+     * @return true or false indicating if an intersection occured
      */
     public boolean intersect(Bounds boundsObject, BoundingBox newBoundBox) {
 
@@ -1450,36 +1450,36 @@ public class BoundingBox extends Bounds {
 		upper.y > box.lower.y && box.upper.y > lower.y &&
 		upper.z > box.lower.z && box.upper.z > lower.z ){
 
-               
-		if(upper.x > box.upper.x) 
-		    newBoundBox.upper.x = box.upper.x; 
-		else
-		    newBoundBox.upper.x = upper.x; 
 
-		if(upper.y > box.upper.y) 
-		    newBoundBox.upper.y = box.upper.y; 
+		if(upper.x > box.upper.x)
+		    newBoundBox.upper.x = box.upper.x;
 		else
-		    newBoundBox.upper.y = upper.y; 
+		    newBoundBox.upper.x = upper.x;
 
-		if(upper.z > box.upper.z) 
-		    newBoundBox.upper.z = box.upper.z; 
+		if(upper.y > box.upper.y)
+		    newBoundBox.upper.y = box.upper.y;
 		else
-		    newBoundBox.upper.z = upper.z; 
+		    newBoundBox.upper.y = upper.y;
 
-		if(lower.x < box.lower.x) 
-		    newBoundBox.lower.x = box.lower.x; 
+		if(upper.z > box.upper.z)
+		    newBoundBox.upper.z = box.upper.z;
 		else
-		    newBoundBox.lower.x = lower.x; 
+		    newBoundBox.upper.z = upper.z;
 
-		if(lower.y < box.lower.y) 
-		    newBoundBox.lower.y = box.lower.y; 
+		if(lower.x < box.lower.x)
+		    newBoundBox.lower.x = box.lower.x;
 		else
-		    newBoundBox.lower.y = lower.y; 
+		    newBoundBox.lower.x = lower.x;
 
-		if(lower.z < box.lower.z) 
-		    newBoundBox.lower.z = box.lower.z; 
+		if(lower.y < box.lower.y)
+		    newBoundBox.lower.y = box.lower.y;
 		else
-		    newBoundBox.lower.z = lower.z; 
+		    newBoundBox.lower.y = lower.y;
+
+		if(lower.z < box.lower.z)
+		    newBoundBox.lower.z = box.lower.z;
+		else
+		    newBoundBox.lower.z = lower.z;
 
 		newBoundBox.updateBoundsStates();
 		return true;
@@ -1502,7 +1502,7 @@ public class BoundingBox extends Bounds {
 		newBoundBox.setUpper(-1.0d, -1.0d, -1.0d);
 		return false;
 	    }
-	    
+
             //      System.err.println("intersect Sphere ");
         }
 	else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
@@ -1518,16 +1518,16 @@ public class BoundingBox extends Bounds {
 		return false;
 	    }
         } else {
-            throw new IllegalArgumentException(J3dI18N.getString("BoundingBox7"));    
-        }    
+            throw new IllegalArgumentException(J3dI18N.getString("BoundingBox7"));
+        }
     }
 
-    /** 
+    /**
      * Test for intersection with an array of  bounds objects.
-     * @param boundsObjects an array of  bounds objects 
+     * @param boundsObjects an array of  bounds objects
      * @param newBoundBox the new bounding box which is the intersection of
      *	      the boundsObject and this BoundingBox
-     * @return true or false indicating if an intersection occured 
+     * @return true or false indicating if an intersection occured
      */
     public boolean intersect(Bounds[] boundsObjects, BoundingBox newBoundBox) {
 
@@ -1543,15 +1543,15 @@ public class BoundingBox extends Bounds {
        while( boundsObjects[i] == null && i < boundsObjects.length) {
 	   i++;
        }
- 
+
        if( i >= boundsObjects.length ) { // all bounds objects were empty
 	   // Negative volume.
 	   newBoundBox.setLower( 1.0d,  1.0d,  1.0d);
 	   newBoundBox.setUpper(-1.0d, -1.0d, -1.0d);
 	   return false;
-       } 
-       
-       
+       }
+
+
        boolean status = false;
        BoundingBox tbox = new BoundingBox();
 
@@ -1563,44 +1563,44 @@ public class BoundingBox extends Bounds {
 	       if( upper.x > box.lower.x && box.upper.x > lower.x &&
 		   upper.y > box.lower.y && box.upper.y > lower.y &&
 		   upper.z > box.lower.z && box.upper.z > lower.z ){
-               
-		   if(upper.x > box.upper.x) 
-		       newBoundBox.upper.x = box.upper.x; 
-		   else
-		       newBoundBox.upper.x = upper.x; 
 
-		   if(upper.y > box.upper.y) 
-		       newBoundBox.upper.y = box.upper.y; 
+		   if(upper.x > box.upper.x)
+		       newBoundBox.upper.x = box.upper.x;
 		   else
-		       newBoundBox.upper.y = upper.y; 
+		       newBoundBox.upper.x = upper.x;
 
-		   if(upper.z > box.upper.z) 
-		       newBoundBox.upper.z = box.upper.z; 
+		   if(upper.y > box.upper.y)
+		       newBoundBox.upper.y = box.upper.y;
 		   else
-		       newBoundBox.upper.z = upper.z; 
+		       newBoundBox.upper.y = upper.y;
 
-		   if(lower.x < box.lower.x) 
-		       newBoundBox.lower.x = box.lower.x; 
+		   if(upper.z > box.upper.z)
+		       newBoundBox.upper.z = box.upper.z;
 		   else
-		       newBoundBox.lower.x = lower.x; 
+		       newBoundBox.upper.z = upper.z;
 
-		   if(lower.y < box.lower.y) 
-		       newBoundBox.lower.y = box.lower.y; 
+		   if(lower.x < box.lower.x)
+		       newBoundBox.lower.x = box.lower.x;
 		   else
-		       newBoundBox.lower.y = lower.y; 
+		       newBoundBox.lower.x = lower.x;
 
-		   if(lower.z < box.lower.z) 
-		       newBoundBox.lower.z = box.lower.z; 
+		   if(lower.y < box.lower.y)
+		       newBoundBox.lower.y = box.lower.y;
 		   else
-		       newBoundBox.lower.z = lower.z; 
+		       newBoundBox.lower.y = lower.y;
+
+		   if(lower.z < box.lower.z)
+		       newBoundBox.lower.z = box.lower.z;
+		   else
+		       newBoundBox.lower.z = lower.z;
 		   status = true;
 		   newBoundBox.updateBoundsStates();
-	       } 
+	       }
 	   }
 	   else if( boundsObjects[i].boundId == BOUNDING_SPHERE) {
 	       BoundingSphere sphere = (BoundingSphere)boundsObjects[i];
 	       if( this.intersect(sphere)) {
-		   BoundingBox sbox = new BoundingBox( sphere ); // convert sphere to box 
+		   BoundingBox sbox = new BoundingBox( sphere ); // convert sphere to box
 		   this.intersect(sbox,tbox); // insersect two boxes
 		   if( status ) {
 		       newBoundBox.combine( tbox );
@@ -1614,35 +1614,35 @@ public class BoundingBox extends Bounds {
 	   else if(boundsObjects[i].boundId == BOUNDING_POLYTOPE) {
 	       BoundingPolytope polytope = (BoundingPolytope)boundsObjects[i];
 	       if( this.intersect( polytope)) {
-		   BoundingBox pbox = new BoundingBox( polytope ); // convert polytope to box 
+		   BoundingBox pbox = new BoundingBox( polytope ); // convert polytope to box
 		   this.intersect(pbox,tbox); // insersect two boxes
 		   if ( status ) {
-		       newBoundBox.combine( tbox );                          
+		       newBoundBox.combine( tbox );
 		   } else {
-		       newBoundBox.set( tbox );                              
+		       newBoundBox.set( tbox );
 		       status = true;
 		   }
 	       }
 	   } else {
-	       throw new IllegalArgumentException(J3dI18N.getString("BoundingBox6"));    
+	       throw new IllegalArgumentException(J3dI18N.getString("BoundingBox6"));
 	   }
-	   
+
 	   if(newBoundBox.boundsIsInfinite)
-	       break; // We're done. 
+	       break; // We're done.
        }
        if( status == false ) {
 	   // Negative volume.
 	   newBoundBox.setLower( 1.0d,  1.0d,  1.0d);
 	   newBoundBox.setUpper(-1.0d, -1.0d, -1.0d);
-       } 
+       }
        return status;
     }
 
 
-    /** 
+    /**
      * Finds closest bounding object that intersects this bounding box.
-     * @param boundsObjects an array of bounds objects 
-     * @return closest bounding object 
+     * @param boundsObjects an array of bounds objects
+     * @return closest bounding object
      */
     public Bounds closestIntersection( Bounds[] boundsObjects) {
 
@@ -1655,13 +1655,13 @@ public class BoundingBox extends Bounds {
         }
 
 	getCenter();
-	
+
 	double dis,far_dis,pdist,x,y,z,rad_sq;
 	double cenX = 0.0, cenY = 0.0, cenZ = 0.0;
 	boolean contains = false;
 	boolean inside;
 	boolean intersect = false;
-	double smallest_distance = Double.MAX_VALUE; 
+	double smallest_distance = Double.MAX_VALUE;
 	int i,j,index=0;
 
 	for(i = 0; i < boundsObjects.length; i++){
@@ -1678,13 +1678,13 @@ public class BoundingBox extends Bounds {
 				     (centroid.y-cenY)*(centroid.y-cenY) +
 				     (centroid.z-cenZ)*(centroid.z-cenZ) );
 		    inside = false;
-		    
+
 		    if( lower.x <= box.lower.x &&
 			lower.y <= box.lower.y &&
 			lower.z <= box.lower.z &&
 			upper.x >= box.upper.x &&
 			upper.y >= box.upper.y &&
-			upper.z >= box.upper.z ) { // box is contained 
+			upper.z >= box.upper.z ) { // box is contained
 			inside = true;
 		    }
 		    if( inside ) {
@@ -1704,7 +1704,7 @@ public class BoundingBox extends Bounds {
 			    smallest_distance = dis;
 			}
 		    }
-		    
+
 		}
 		else if( boundsObjects[i].boundId == BOUNDING_SPHERE ) {
 		    BoundingSphere sphere = (BoundingSphere)boundsObjects[i];
@@ -1714,15 +1714,15 @@ public class BoundingBox extends Bounds {
 				     (centroid.y-sphere.center.y) +
 				     (centroid.z-sphere.center.z)*
 				     (centroid.z-sphere.center.z) );
-		    
+
 		    inside = false;
-		    
+
 		    // sphere sphere.center is inside box
 		    if(sphere.center.x <= upper.x && sphere.center.x >= lower.x &&
 		       sphere.center.y <= upper.y && sphere.center.y >= lower.y &&
-		       sphere.center.z <= upper.z && sphere.center.z >= lower.z ) { 
-			// check if sphere intersects any side 
-			if (sphere.center.x - lower.x >= sphere.radius && 
+		       sphere.center.z <= upper.z && sphere.center.z >= lower.z ) {
+			// check if sphere intersects any side
+			if (sphere.center.x - lower.x >= sphere.radius &&
 			    upper.x - sphere.center.x >= sphere.radius &&
 			    sphere.center.y - lower.y >= sphere.radius &&
 			    upper.y - sphere.center.y >= sphere.radius &&
@@ -1744,7 +1744,7 @@ public class BoundingBox extends Bounds {
 				smallest_distance = dis;
 			    }
 			}
-		    } else if (!contains) { 
+		    } else if (!contains) {
 			if( dis < smallest_distance){
 			    index = i;
 			    smallest_distance = dis;
@@ -1769,11 +1769,11 @@ public class BoundingBox extends Bounds {
 			    polytope.verts[j].y > upper.y ||
 			    polytope.verts[j].z > upper.z ) { // box contains polytope
 			    inside = false;
-			    
+
 			}
-			
+
 		    }
-		    if( inside ) { 
+		    if( inside ) {
 			if( !contains ){ // initialize smallest_distance for the first containment
 			    index = i;
 			    smallest_distance = dis;
@@ -1790,23 +1790,23 @@ public class BoundingBox extends Bounds {
 			    smallest_distance = dis;
 			}
 		    }
-		    
+
 		} else {
-		    throw new IllegalArgumentException(J3dI18N.getString("BoundingBox9"));    
+		    throw new IllegalArgumentException(J3dI18N.getString("BoundingBox9"));
 		}
 	    }
 	}
-	
-	if ( intersect ) 
+
+	if ( intersect )
             return boundsObjects[index];
-	else 
+	else
 	    return null;
     }
-    
-    /** 
+
+    /**
      * Tests for intersection of box and frustum.
-     * @param frustum  
-     * @return true if they intersect 
+     * @param frustum
+     * @return true if they intersect
      */
     boolean intersect(CachedFrustum frustum ) {
 
@@ -1815,58 +1815,58 @@ public class BoundingBox extends Bounds {
 
 	if(boundsIsInfinite)
 	    return true;
-	
-	// System.err.println("intersect frustum with box="+this.toString()); 
-	// System.err.println("frustum "+frustum.toString()); 
-	// check if box and bounding box  of frustum intersect 
-        if ((upper.x < frustum.lower.x) || 
+
+	// System.err.println("intersect frustum with box="+this.toString());
+	// System.err.println("frustum "+frustum.toString());
+	// check if box and bounding box  of frustum intersect
+        if ((upper.x < frustum.lower.x) ||
 	    (lower.x > frustum.upper.x) ||
-            (upper.y < frustum.lower.y) || 
+            (upper.y < frustum.lower.y) ||
 	    (lower.y > frustum.upper.y) ||
             (upper.z < frustum.lower.z) ||
 	    (lower.z > frustum.upper.z) ) {
-	    
+
 	    // System.err.println("*** box and bounding box of frustum do not intersect");
 	    return false;
 	}
 
-	// check if all box points out any frustum plane  
+	// check if all box points out any frustum plane
 	int i = 5;
 	while (i>=0){
 	    Vector4d vc = frustum.clipPlanes[i--];
-	    if ((( upper.x*vc.x + upper.y*vc.y + 
+	    if ((( upper.x*vc.x + upper.y*vc.y +
 		   upper.z*vc.z + vc.w ) < 0.0 ) &&
-		(( upper.x*vc.x + lower.y*vc.y + 
+		(( upper.x*vc.x + lower.y*vc.y +
 		   upper.z*vc.z + vc.w ) < 0.0 ) &&
-		(( upper.x*vc.x + lower.y*vc.y + 
+		(( upper.x*vc.x + lower.y*vc.y +
 		   lower.z*vc.z + vc.w ) < 0.0 ) &&
-		(( upper.x*vc.x + upper.y*vc.y + 
+		(( upper.x*vc.x + upper.y*vc.y +
 		   lower.z*vc.z + vc.w ) < 0.0 ) &&
-		(( lower.x*vc.x + upper.y*vc.y + 
+		(( lower.x*vc.x + upper.y*vc.y +
 		   upper.z*vc.z + vc.w ) < 0.0 ) &&
-		(( lower.x*vc.x + lower.y*vc.y + 
+		(( lower.x*vc.x + lower.y*vc.y +
 		   upper.z*vc.z + vc.w ) < 0.0 ) &&
-		(( lower.x*vc.x + lower.y*vc.y + 
+		(( lower.x*vc.x + lower.y*vc.y +
 		   lower.z*vc.z + vc.w ) < 0.0 ) &&
-		(( lower.x*vc.x +  upper.y*vc.y + 
+		(( lower.x*vc.x +  upper.y*vc.y +
 		   lower.z*vc.z + vc.w ) < 0.0 )) {
 		// all corners outside this frustum plane
 		// System.err.println("*** all corners outside this frustum plane");
 		return false;
 	    }
 	}
-	    
+
 	return true;
     }
 
-    /** 
+    /**
      * Returns a string representation of this class.
-     */ 
-    public String toString() { 
+     */
+    public String toString() {
 	return new String( "Bounding box: Lower="+lower.x+" "+
 			   lower.y+" "+lower.z+" Upper="+upper.x+" "+
-			   upper.y+" "+upper.z  ); 
-    } 
+			   upper.y+" "+upper.z  );
+    }
 
     private void updateBoundsStates() {
 	if((lower.x == Double.NEGATIVE_INFINITY) &&
@@ -1882,7 +1882,7 @@ public class BoundingBox extends Bounds {
 
 	if (checkBoundsIsNaN()) {
 	     boundsIsEmpty = true;
-	     boundsIsInfinite = false;	     
+	     boundsIsInfinite = false;
 	     return;
 	}
 	else {
@@ -1893,16 +1893,16 @@ public class BoundingBox extends Bounds {
 		boundsIsEmpty = true;
 	    } else {
 		boundsIsEmpty = false;
-	    }   
+	    }
 	}
     }
-    
-    // For a infinite bounds. What is the centroid ?    
+
+    // For a infinite bounds. What is the centroid ?
      Point3d getCenter() {
 	 if(centroid == null) {
 	     centroid = new Point3d();
 	 }
-	 
+
          centroid.x = (upper.x+lower.x)*0.5;
          centroid.y = (upper.y+lower.y)*0.5;
          centroid.z = (upper.z+lower.z)*0.5;
@@ -1921,7 +1921,7 @@ public class BoundingBox extends Bounds {
 	    this.set(bbox);
 	    return;
 	}
-	
+
 	lower.x = bbox.lower.x + value.x;
 	lower.y = bbox.lower.y + value.y;
 	lower.z = bbox.lower.z + value.z;
@@ -1967,5 +1967,5 @@ public class BoundingBox extends Bounds {
     int getPickType() {
 	return PickShape.PICKBOUNDINGBOX;
     }
-}      
+}
 
