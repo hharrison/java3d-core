@@ -399,7 +399,7 @@ class OrientedShape3DRetained extends Shape3DRetained {
 		orientedxform.setIdentity();
 	    }
 
-        } else { // rotate about point
+        } else if(mode == OrientedShape3D.ROTATE_ABOUT_POINT ){ // rotate about point
 	    // Need to rotate Z axis to point to eye, and Y axis to be 
 	    // parallel to view platform Y axis, rotating around rotation pt 
 
