@@ -39,26 +39,26 @@ const D3DDEVTYPE deviceTypes[2] = { D3DDEVTYPE_HAL, D3DDEVTYPE_REF };
 D3dDriverInfo **d3dDriverList = NULL;
 int numDriver = 0; // size of above array list
 
-int requiredDeviceID = -1;   // must use this Device or die   
+int requiredDeviceID = -1;   // must use this Device or die
 
-// If this number is greater than zero, J3D must use the 
+// If this number is greater than zero, J3D must use the
 // adapter index in the order of GetAdapterIdentifier() starting from one.
 // Otherwise, the first driver found with monitor matching the display
 // driver is used.
-int requiredDriverID = -1;  
+int requiredDriverID = -1;
 OSVERSIONINFO osvi;
 
 // There is bug in Nvidia driver which prevent VB too big
-// in TnL hardware vertex processing mode. 
+// in TnL hardware vertex processing mode.
 // When the index is greater than 65535, the nvidia driver will
 // consider it to be N % 65535. However it works fine in
 // hardware vertex processing mode.
 //@TODO check this with Cap Bits
 UINT vertexBufferMaxVertexLimit = 65535;
 
-// True to disable setting D3DRS_MULTISAMPLEANTIALIAS 
+// True to disable setting D3DRS_MULTISAMPLEANTIALIAS
 // Rendering state.
-BOOL implicitMultisample; 
+BOOL implicitMultisample;
 
 // Fix to Issue 226 : D3D - fail on stress test for the creation and destruction of Canvases
 D3DFORMAT d3dDepthFormat[D3DDEPTHFORMATSIZE] = { D3DFMT_D24S8, // this is the best choice
@@ -74,7 +74,7 @@ D3DFORMAT d3dDepthFormat[D3DDEPTHFORMATSIZE] = { D3DFMT_D24S8, // this is the be
 int d3dDepthTable[D3DDEPTHFORMATSIZE]        = {24, 24, 15, 24, 16, 16, 32};
 int d3dStencilDepthTable[D3DDEPTHFORMATSIZE] = { 8,  4,  1,  0,  0,  0,  0};
 
-D3DLIGHT9 ambientLight; 
+D3DLIGHT9 ambientLight;
 
 D3dDriverInfo::D3dDriverInfo()
 {
@@ -94,7 +94,7 @@ VOID computeRGBDepth(D3dDriverInfo *pDriver)
 {
     switch (pDriver->desktopMode.Format) {
         case D3DFMT_R8G8B8:
-        case D3DFMT_A8R8G8B8: 
+        case D3DFMT_A8R8G8B8:
         case D3DFMT_X8R8G8B8:
 	    pDriver->redDepth = pDriver->greenDepth =
 		pDriver->blueDepth = 8;
@@ -104,31 +104,31 @@ VOID computeRGBDepth(D3dDriverInfo *pDriver)
 	    pDriver->greenDepth = 6;
 	    break;
         case D3DFMT_X1R5G5B5:
-        case D3DFMT_A1R5G5B5: 
+        case D3DFMT_A1R5G5B5:
 	    pDriver->redDepth = pDriver->blueDepth =
-		pDriver->greenDepth = 5;	
+		pDriver->greenDepth = 5;
 	    break;
         case D3DFMT_A4R4G4B4:
         case D3DFMT_X4R4G4B4:
 	    pDriver->redDepth = pDriver->blueDepth =
-		pDriver->greenDepth = 4;		
+		pDriver->greenDepth = 4;
 	    break;
         case D3DFMT_R3G3B2:
         case D3DFMT_A8R3G3B2:
-	    pDriver->redDepth = pDriver->greenDepth = 3;		
+	    pDriver->redDepth = pDriver->greenDepth = 3;
 	    pDriver->blueDepth = 2;
 		break;
         default: // 8 color indexed or less
 	    pDriver->redDepth = pDriver->blueDepth =
-		pDriver->greenDepth = 0;			
+		pDriver->greenDepth = 0;
     }
 
 }
 
 
-VOID setInfo(D3dDeviceInfo* pDevice,D3DADAPTER_IDENTIFIER9 *identifier)
-{ 
-	 char* str = (char *)"UNKNOW VGA Vendor.";	
+VOID setInfo(D3dDeviceInfo* pDevice, D3DADAPTER_IDENTIFIER9 *identifier)
+{
+	 char* str = (char *)"UNKNOW VGA Vendor.";
      switch( identifier->VendorId )
      {
      // A more complete list can be found from http://www.pcidatabase.com/vendors.php?sort=id
@@ -178,7 +178,7 @@ VOID setInfo(D3dDeviceInfo* pDevice,D3DADAPTER_IDENTIFIER9 *identifier)
 	 case 0x1295:   str = (char *) "Imagination Technologies.";            break;
 	 case 0x1414:   str = (char *) "MicroSoft.";                           break;
 	 case 0x15AD:   str = (char *) "VMware Inc.";                          break;
-	 case 0x18CA:   str = (char *) "XGI xgitech.";                         break;	 
+	 case 0x18CA:   str = (char *) "XGI xgitech.";                         break;
 	 case 0x1888:   str = (char *) "Varisys Limited";                      break;
 
 	 case 0x1B13:   str = (char *) "Jaton Corporation USA.";               break;
@@ -189,23 +189,24 @@ VOID setInfo(D3dDeviceInfo* pDevice,D3DADAPTER_IDENTIFIER9 *identifier)
 
 	 case 0xDEAF:   str = (char *) "Middle Digital, Inc.";                 break;
 	 case 0xEDD8:   str = (char *) "ARK Logic, Inc.";                      break;
-	 case 0xFFF3:   str = (char *) "VMWare Inc.(Legacy)";                  break;   
-     }	
+	 case 0xFFF3:   str = (char *) "VMWare Inc.(Legacy)";                  break;
+     }
+     pDevice->vendorID = identifier->VendorId;
      pDevice->deviceVendor = str;
-        
-     pDevice->deviceRenderer = identifier->Description;  
+
+     pDevice->deviceRenderer = identifier->Description;
      // better handling of RDP - Remote Desktop
 	 if(identifier->VendorId==0 && identifier->DeviceId==0){
-		 pDevice->deviceRenderer = (char *) "RDP - No Hardware D3D"; 
+		 pDevice->deviceRenderer = (char *) "RDP - No Hardware D3D";
 	 }
 
      char version[ 128 ];
      sprintf( version, "%x.%x.%x.%x", HIWORD( identifier->DriverVersion.HighPart ),
-		      LOWORD( identifier->DriverVersion.HighPart ), 
-			  HIWORD( identifier->DriverVersion.LowPart ), 
+		      LOWORD( identifier->DriverVersion.HighPart ),
+			  HIWORD( identifier->DriverVersion.LowPart ),
 			  LOWORD( identifier->DriverVersion.LowPart ) );
-     pDevice->deviceVersion = (char *)version;	
-	
+     pDevice->deviceVersion = (char *)version;
+
 }
 
 
@@ -217,16 +218,16 @@ VOID buildDriverList(LPDIRECT3D9 pD3D)
         D3dCtx::d3dError(DRIVERNOTFOUND);
         return;
     }
-    
+
     d3dDriverList = new LPD3dDriverInfo[numDriver];
-    
+
     if (d3dDriverList == NULL) {
         D3dCtx::d3dError(OUTOFMEMORY);
         return;
     }
-    
+
     D3dDriverInfo *pDriver;
-    
+
     for (int i = 0; i < numDriver; i++ ) {
         pDriver = new D3dDriverInfo();
         d3dDriverList[i] = pDriver;
@@ -235,8 +236,8 @@ VOID buildDriverList(LPDIRECT3D9 pD3D)
         computeRGBDepth(pDriver);
         pDriver->hMonitor = pD3D->GetAdapterMonitor(i);
         pDriver->iAdapter = i;
-        
-        
+
+
         for (int j = 0; j < numDeviceTypes; j++ ) {
             D3DCAPS9 d3dCaps;
             D3dDeviceInfo* pDevice = pDriver->d3dDeviceList[j];
@@ -244,7 +245,7 @@ VOID buildDriverList(LPDIRECT3D9 pD3D)
             pD3D->GetDeviceCaps(i, deviceTypes[j], &d3dCaps);
             pDevice->setCaps(&d3dCaps);
 
-            pDevice->desktopCompatible = 
+            pDevice->desktopCompatible =
             SUCCEEDED(pD3D->CheckDeviceType(i, deviceTypes[j],
             pDriver->desktopMode.Format,
             pDriver->desktopMode.Format,
@@ -255,9 +256,9 @@ VOID buildDriverList(LPDIRECT3D9 pD3D)
             pDriver->desktopMode.Format,
             pDriver->desktopMode.Format,
             FALSE));
-            
+
             pDevice->maxZBufferDepthSize = 0;
-            
+
 
             if (pDevice->isHardwareTnL) {
                 strcpy(pDevice->deviceName, "Transform & Light Hardware Rasterizer");
@@ -303,7 +304,7 @@ VOID buildDriverList(LPDIRECT3D9 pD3D)
                 // consider desktop mode only for multisampling
                 HRESULT hrMSBack;
                 // HRESULT hrMSDepth; // should also check DephStencil ??? TODO - aces
-                
+
                 bitmask = 1 << mtype;
                 hrMSBack = pD3D->CheckDeviceMultiSampleType(i, deviceTypes[j],
                 pDriver->desktopMode.Format,
@@ -320,7 +321,7 @@ VOID buildDriverList(LPDIRECT3D9 pD3D)
                          */
                     }
                 }//if hrMSBack
-                
+
             }// for mtype
         }//for j - device Types
     }// for i - numDriver
@@ -329,22 +330,22 @@ VOID buildDriverList(LPDIRECT3D9 pD3D)
 
 
 
-// Cleanup when no more ctx exists 
+// Cleanup when no more ctx exists
 VOID D3dDriverInfo::release()
 {
     for (int i = 0; i < numDriver; i++ ) {
 	SafeDelete(d3dDriverList[i]);
-    }    
+    }
     SafeDelete(d3dDriverList);
     numDriver = 0;
 }
 
-VOID printInfo() 
+VOID printInfo()
 {
-    printf("javax.media.j3d 1.6.0, Windows version is %d.%d ", 
+    printf("javax.media.j3d 1.6.0, Windows version is %d.%d ",
 	   osvi.dwMajorVersion, osvi.dwMinorVersion);
-    printf("Build: %d, ", LOWORD(osvi.dwBuildNumber)); 
-    
+    printf("Build: %d, ", LOWORD(osvi.dwBuildNumber));
+
     switch(osvi.dwPlatformId) {
     case VER_PLATFORM_WIN32s:
 	printf("Windows3.1");
@@ -352,7 +353,7 @@ VOID printInfo()
     case VER_PLATFORM_WIN32_WINDOWS:
 	printf("Windows 95/98");
 	break;
-    case VER_PLATFORM_WIN32_NT:		
+    case VER_PLATFORM_WIN32_NT:
 	//printf("Windows NT/2000/XP");
 		if(osvi.dwMajorVersion==5){
             printf("Windows NT/2000/XP");
@@ -374,14 +375,14 @@ VOID printInfo()
 	       id->Driver, id->Description,
 	       HIWORD(id->DriverVersion.HighPart));
 	printf("                 Version %d.%d, Build %d, VendorId %x\n",
-	       LOWORD(id->DriverVersion.HighPart),	       
-	       HIWORD(id->DriverVersion.LowPart),	       
-	       LOWORD(id->DriverVersion.LowPart),		   
+	       LOWORD(id->DriverVersion.HighPart),
+	       HIWORD(id->DriverVersion.LowPart),
+	       LOWORD(id->DriverVersion.LowPart),
 		   id->VendorId);
 	printf("                 DeviceId %x, SubSysId %x, Revision %d\n",
 	       id->VendorId, id->DeviceId,
 	       id->SubSysId, id->Revision);
-	printf("  [Desktop Mode] %dx%d ", 
+	printf("  [Desktop Mode] %dx%d ",
 	       dm->Width, dm->Height);
 
 	if (dm->RefreshRate != 0) {
@@ -403,7 +404,7 @@ VOID printInfo()
 
 
 // Construct the D3dDriverList by enumerate all the drivers
-VOID D3dDriverInfo::initialize(JNIEnv *env) 
+VOID D3dDriverInfo::initialize(JNIEnv *env)
 {
     HINSTANCE hD3D9DLL = LoadLibrary( "D3D9.DLL" );
 
@@ -414,7 +415,7 @@ VOID D3dDriverInfo::initialize(JNIEnv *env)
 	return;
     }
     FreeLibrary(hD3D9DLL);
-	
+
     LPDIRECT3D9 pD3D = Direct3DCreate9( D3D_SDK_VERSION );
 	if (debug && pD3D != NULL){
 		printf("[j3d] Using DirectX D3D 9.0 or higher.\n");
@@ -442,7 +443,7 @@ VOID D3dDriverInfo::initialize(JNIEnv *env)
 	printInfo();
     }
 
-    // compute requiredGUID  
+    // compute requiredGUID
     D3dCtx::setDeviceFromProperty(env);
 
     D3dCtx::setImplicitMultisamplingProperty(env);
@@ -452,7 +453,7 @@ VOID D3dDriverInfo::initialize(JNIEnv *env)
     BackgroundImageList.init();
     */
 
-    // Setup Global constant Ambient light 
+    // Setup Global constant Ambient light
     ambientLight.Type = D3DLIGHT_DIRECTIONAL;
     ambientLight.Direction.x = 0;
     ambientLight.Direction.y = 0;

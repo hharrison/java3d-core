@@ -53,26 +53,28 @@ class D3dDeviceInfo {
         char* deviceVendor;
         char* deviceRenderer;
         char* deviceVersion;
-        
+        // #Issue 629 vendor ID
+        UINT vendorID;
+
         // each bitmask correspond to the support of
         // D3DMULTISAMPLE_i_SAMPLES type, i = 2...16
         DWORD multiSampleSupport;
-        
+
         // TRUE when d3dDepthFormat[i] support
         BOOL  depthFormatSupport[D3DDEPTHFORMATSIZE];
-        
+
         // depth format select
         D3DFORMAT depthStencilFormat;
-        
+
         // max z buffer depth support
         UINT  maxZBufferDepthSize;
-        
+
         // max stencil buffer depth support
         UINT  maxStencilDepthSize; // new on 1.4
-        
+
         // Max vertex count support for each primitive
         DWORD maxVertexCount[GEO_TYPE_INDEXED_LINE_STRIP_SET+1];
-        
+
         BOOL supportStencil; // new on 1.4
         BOOL supportShaders11;
         BOOL isHardware;
@@ -100,20 +102,20 @@ class D3dDeviceInfo {
         D3DRENDERSTATETYPE  fogMode;
         int texMask;
         int maxAnisotropy;
-        
+
         BOOL supportStreamOffset;
-        
+
         D3dDeviceInfo();
         ~D3dDeviceInfo();
-        
+
         // set capabilities of this device
         VOID setCaps(D3DCAPS9 *d3dCaps);
         BOOL supportAntialiasing();
         D3DMULTISAMPLE_TYPE getBestMultiSampleType();
         int getTextureFeaturesMask();
         void findDepthStencilFormat(int minZDepth, int minZDepthStencil);
-        
-        
+
+
 };
 
 #endif

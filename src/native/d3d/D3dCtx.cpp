@@ -1919,6 +1919,13 @@ DWORD D3dCtx::findBehavior()
 	  return D3DCREATE_SOFTWARE_VERTEXPROCESSING | behavior;
 	}
 
+      // Issue #629 - Intel vcards must use Software Vertex Processing
+       if(!bForceHwdVertexProcess && !bForceMixVertexProcess && deviceInfo->vendorID == 0x8086 ){
+            softwareVertexProcessing = TRUE;
+	    return D3DCREATE_SOFTWARE_VERTEXPROCESSING | behavior;
+       }
+
+
     // below is the default path.
 	// Rule : Shader capable videocards uses Hardware
 	//        Low end devices (No shaders support) uses Software
