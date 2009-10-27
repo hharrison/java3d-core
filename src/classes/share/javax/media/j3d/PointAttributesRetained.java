@@ -92,7 +92,7 @@ class PointAttributesRetained extends NodeComponentRetained {
      * @param state true or false to enable or disable point antialiasing
      */
     final void setPointAntialiasingEnable(boolean state) {
-	initPointAntialiasingEnable(pointAntialiasing);
+	initPointAntialiasingEnable(state);
 	sendMessage(POINT_AA_CHANGED, 
 		    (state ? Boolean.TRUE: Boolean.FALSE));
     }
