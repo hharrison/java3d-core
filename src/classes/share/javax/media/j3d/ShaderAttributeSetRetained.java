@@ -31,11 +31,11 @@
 
 package javax.media.j3d;
 
-import java.util.Iterator;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-import javax.vecmath.*;
+
 
 /**
  * The ShaderAttributeSet object provides uniform attributes to shader
@@ -135,7 +135,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
     void remove(ShaderAttribute attr) {
 	synchronized(liveStateLock) {   
 	    String attrName = attr.getAttributeName();
-	    if (attrs.get(attrName) == attr) {
+	    if (attrs.get(attrName) == attr.retained) {
 		attrs.remove(attrName);
 		if (source.isLive()) {
 		    ((ShaderAttributeRetained)attr.retained).clearLive(refCount);
