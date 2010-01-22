@@ -588,6 +588,7 @@ void JNICALL Java_javax_media_j3d_NativePipeline_updateRenderingAttributes(
 		{
 	      d3dCtx->zEnable = TRUE;
 	      device->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
+		   device->SetRenderState(D3DRS_ZFUNC, getDepthFunc(db_func));
         }
 		else
 		{
