@@ -3,17 +3,14 @@
 <head>
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
-  <title>CVS download and build instructions</title>
+  <title>Subversion (svn) download and build instructions</title>
   <meta name="author" content="Kevin Rushforth">
 </head>
 <body>
-<h3>CVS download and build instructions for j3d-core
+<h3>Subversion (svn) download and build instructions for j3d-core
 </h3>
-<p>To
-build the j3d-core
-packages, you must checkout the following three
-CVS
-repositories:<br>
+<p>To build the j3d packages,
+you must checkout the following three svn repositories:<br>
 </p>
 <ul>
   <li><a href="https://j3d-core.dev.java.net/">j3d-core</a></li>
@@ -22,27 +19,25 @@ repositories:<br>
 </ul>
 <p>These three top-level directories must be named exactly as
 shown above and they must be sibling directories. To ensure this, run
-the cvs checkout command for each of the respositories from the same
+the svn checkout command for each of the respositories from the same
 parent
 directory. For example:<br>
 </p>
 <ul>
-  <code>cd &lt;cvs-root-dir&gt;</code><br>
-  <code>cvs checkout vecmath</code><br>
-  <code>cvs checkout j3d-core</code><br>
-  <code>cvs checkout j3d-core-utils</code>
+  <code>cd &lt;j3d-root-dir&gt;</code><br>
+  <code>svn checkout https://vecmath.dev.java.net/svn/vecmath/trunk vecmath</code><br>
+  <code>svn checkout https://j3d-core.dev.java.net/svn/j3d-core/trunk j3d-core</code><br>
+  <code>svn checkout https://j3d-core-utils.dev.java.net/svn/j3d-core-utils/trunk j3d-core-utils</code>
 </ul>
-<p>After you have downloaded the three CVS repositories, read the
+<p>After you have downloaded the three svn repositories, read the
 README-FIRST.txt file, then read and follow the
 instructions in the README-build.html
-files in all three CVS repositories.<br>
+files in all three svn repositories.<br>
 </p>
-<p>Go to the "<a href="servlets/ProjectSource">CVS client setup</a>"
-page for instructions on how to access the j3d-core source code from
-CVS.
-Click on the "<a href="source/browse/j3d-core/">Version Control - CVS</a>"
-link to browse the j3d-core source code. Automated CVS change
-messages are sent to the <span style="color: blue;">cvs 'at'
+<p>Go to the "<a href="source/browse/j3d-core/">Subversion</a>"
+page for instructions on how to access the j3d-core source code.
+Automated svn change messages are sent to the <span
+ style="color: blue;">commits 'at'
 j3d-core.dev.java.net</span>
 list list.&nbsp;<a href="servlets/ProjectMailingListList">Click here to
 subscribe</a> to this list.<br>

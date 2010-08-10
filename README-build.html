@@ -13,7 +13,7 @@ the 3D packages</span></h3>
  style="font-weight: bold; text-decoration: underline;"> </span></p>
 <p>To
 build the 3D packages, you must checkout the following three
-CVS
+svn
 repositories:<br>
 </p>
 <ul>
@@ -23,15 +23,15 @@ repositories:<br>
 </ul>
 <p>These three top-level directories must be named exactly as
 shown above and they must be sibling directories. To ensure this, run
-the cvs checkout command for each of the respositories from the same
+the svn checkout command for each of the respositories from the same
 parent
 directory. For example:<br>
 </p>
 <ul>
-  <code>cd &lt;cvs-root-dir&gt;</code><br>
-  <code>cvs checkout vecmath</code><br>
-  <code>cvs checkout j3d-core</code><br>
-  <code>cvs checkout j3d-core-utils</code>
+  <code>cd &lt;j3d-root-dir&gt;</code><br>
+  <code>svn checkout https://vecmath.dev.java.net/svn/vecmath/trunk vecmath</code><br>
+  <code>svn checkout https://j3d-core.dev.java.net/svn/j3d-core/trunk j3d-core</code><br>
+  <code>svn checkout https://j3d-core-utils.dev.java.net/svn/j3d-core-utils/trunk j3d-core-utils</code>
 </ul>
 <p>NOTE: you must first build the javax.vecmath package before building
 the javax.media.j3d and com.sun.j3d.* packages. See the <a
@@ -111,7 +111,7 @@ the environment variable ANT_OPTS to -Xmx256m.<br>
 <p>Steps:
 </p>
 <ul>
-  <code> cd &lt;cvs-root-dir&gt;/j3d-core<br>
+  <code> cd &lt;j3d-root-dir&gt;/j3d-core<br>
 ant</code>
 </ul>
 <p>The above steps build both the Java and native code for
