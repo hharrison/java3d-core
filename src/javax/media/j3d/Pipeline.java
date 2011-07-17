@@ -65,67 +65,6 @@ abstract class Pipeline {
     }
 
     /**
-     * Method to check whether the native OpenGL library can and should be used
-     * on Windows. We will use D3D if OpenGL is unavailable or undesirable.
-     */
-    static boolean useNativeOgl(boolean isWindowsVista, boolean nativeOglRequested) {
-
-        // Get the OpenGL vendor string.
-        String vendorString;
-        try {
-            vendorString = NativePipeline.getSupportedOglVendor();
-        } catch (Exception ex) {
-            MasterControl.getCoreLogger().severe(ex.toString());
-            return false;
-        } catch (Error ex) {
-            MasterControl.getCoreLogger().severe(ex.toString());
-            return false;
-        }
-
-        // A null vendor string means OpenGL 1.2+ support unavailable.
-        if (vendorString == null) {
-            return false;
-        }
-
-        // If OGL was explicitly requested, we will use it
-        if (nativeOglRequested) {
-            return true;
-        }
-
-        // Check OS type and vendor string to see whether OGL is preferred
-        return preferOgl(isWindowsVista, vendorString);
-    }
-
-    // Returns a flag inticating whether the specified vendor prefers OpenGL.
-    private static boolean preferOgl(boolean isWindowsVista, String vendorString) {
-        // We prefer OpenGL on all Windows/XP cards
-        if (!isWindowsVista) {
-            return true;
-        }
-
-        // List of vendors for which we will prefer to use D3D on Windows Vista
-        // This must be all lower case.
-        final String[] vistaD3dList = {
-            "microsoft",
-            "ati",
-            // TODO: add the following if Intel's OpenGL driver turns out to be buggy on Vista
-            // "intel",
-        };
-        final String lcVendorString = vendorString.toLowerCase();
-
-        // If we are running on Windows Vista, we will check the vendor string
-        // against the list of vendors that prefer D3D on Vista, and return true
-        // *unless* the vendor is in that list.
-        for (int i = 0; i < vistaD3dList.length; i++) {
-            if (lcVendorString.startsWith(vistaD3dList[i])) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-    
-    /**
      * Initialize the Pipeline. Called exactly once by
      * MasterControl.loadLibraries() to create the singleton
      * Pipeline object.

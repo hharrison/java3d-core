@@ -936,15 +936,6 @@ class MasterControl {
             // Use default pipeline
         }
 
-        // Issue 452 : if we are on 32-bit Windows, then check whether we
-        // can and should use OpenGL. Note that we can't do this on 64-bit
-        // Windows until we have a 64-bit D3D pipeline.
-        if (isWindowsOs && !is64Bit && pipelineType == Pipeline.Type.NATIVE_OGL) {
-            if (!Pipeline.useNativeOgl(isWindowsVista, nativeOglRequested)) {
-                pipelineType = Pipeline.Type.NATIVE_D3D;
-            }
-        }
-
         // Construct the singleton Pipeline instance
         Pipeline.createPipeline(pipelineType);
 
