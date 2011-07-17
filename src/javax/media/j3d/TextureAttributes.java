@@ -1432,5 +1432,23 @@ public class TextureAttributes extends NodeComponent {
 	    attr.getTextureColorTable(table);
 	    rt.initTextureColorTable(table);
 	}
+    // start fix issue 636
+    rt.initCombineRgbMode(attr.getCombineRgbMode());
+    rt.initCombineAlphaMode(attr.getCombineAlphaMode());
+    
+    rt.initCombineRgbScale(attr.getCombineRgbScale());
+    rt.initCombineAlphaScale(attr.getCombineAlphaScale());
+    
+    // Check one of the combine source or function arrays
+    if (attr.combineRgbSrc != null) {
+        for (int i=0; i < 3; i++) {
+            rt.initCombineRgbSource(i, attr.getCombineRgbSource(i));
+            rt.initCombineAlphaSource(i, attr.getCombineAlphaSource(i));
+            rt.initCombineRgbFunction(i, attr.getCombineRgbFunction(i));
+            rt.initCombineAlphaFunction(i, attr.getCombineAlphaFunction(i));
+        }
+    }
+    // end fix
+
     }
 }
