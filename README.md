@@ -6,8 +6,8 @@ Core part of the java3d library. This is part of a fork of Java3D started by [hh
 
 ## Dependencies
 
-* (Vecmath)[http://github.com/hharrison/vecmath]
-* (Java3D Utils)[http://github.com/hharrison/j3d-utils]
+* [Vecmath](http://github.com/hharrison/vecmath])
+* [Java3D Utils](http://github.com/hharrison/j3d-utils)
 
 These are done via submodules.
 
