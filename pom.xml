@@ -1,20 +1,126 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>javax.media.j3d</groupId>
-  <artifactId>j3d-core</artifactId>
-  <packaging>jar</packaging>
-  <version>1.6-SNAPSHOT</version>
-  <name>j3d</name>
-  <url>http://github.com/hharrison/java3d-core</url>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.2</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>javax.media.j3d</groupId>
+    <artifactId>j3d-core</artifactId>
+    <packaging>jar</packaging>
+    <version>1.6-SNAPSHOT</version>
+    <name>j3d</name>
+    <url>http://github.com/hharrison/java3d-core</url>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <!--
+    <modules>
+         <module>java3d-utils</module>
+        <module>vecmath</module>
+    </modules>
+    -->
+  
+    <dependencies>
+<!--
+        <dependency>
+            <groupId>net.java.dev.jogl</groupId>
+            <artifactId>jogl</artifactId>
+            <version>1.1.1-rc6</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.vecmath</groupId>
+            <artifactId>vecmath</artifactId>
+            <version>1.6-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency> -->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        
+    </dependencies>
+    
+    <repositories>
+        <repository>
+            <id>maven2-repository.java.net</id>
+            <name>Java.net Repository for Maven</name>
+            <url>http://download.java.net/maven/2</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+  
+    <profiles>
+        <profile>
+            <id>linux-i586</id>
+            <activation>
+                <os>
+                    <arch>i386</arch>
+                    <family>unix</family>
+                    <name>linux</name>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>net.java.dev.jogl</groupId>
+                    <artifactId>jogl-linux-i586</artifactId>
+                    <version>1.1.1-rc6</version>
+                    <type>jar</type>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>windows-i586</id>
+            <activation>
+                <os>
+                    <arch>i386</arch>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>net.java.dev.jogl</groupId>
+                    <artifactId>jogl-windows-i586</artifactId>
+                    <version>1.1.1-rc6</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>macosx-universal</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>net.java.dev.jogl</groupId>
+                    <artifactId>jogl-macosx-universal</artifactId>
+                    <version>1.1.1-rc6</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+  
 </project> 
