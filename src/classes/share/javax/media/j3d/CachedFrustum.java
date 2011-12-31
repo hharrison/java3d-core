@@ -31,7 +31,8 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector4d;
 
 /**
  * The CachedFrustum class is used to pre compute data for a set of view

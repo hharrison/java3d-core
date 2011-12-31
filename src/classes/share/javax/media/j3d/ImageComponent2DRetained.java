@@ -31,8 +31,8 @@
 
 package javax.media.j3d;
 
-import java.awt.image.*;
-import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 
 /**
  * This class defines a 2D image component.

@@ -33,6 +33,7 @@ package javax.media.j3d;
 
 import java.util.ArrayList;
 import java.util.Vector;
+
 import javax.vecmath.Point4d;
 
 class BHTree  {

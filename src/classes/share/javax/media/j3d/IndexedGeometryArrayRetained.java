@@ -31,8 +31,11 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
 import java.util.ArrayList;
+
+import javax.vecmath.TexCoord2f;
+import javax.vecmath.TexCoord3f;
+
 import com.sun.j3d.internal.FloatBufferWrapper;
 
 /**

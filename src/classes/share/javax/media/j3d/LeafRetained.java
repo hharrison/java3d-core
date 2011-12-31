@@ -30,8 +30,6 @@
  */
 
 package javax.media.j3d;
-import java.util.Hashtable;
-
 import java.util.ArrayList;
 
 /**

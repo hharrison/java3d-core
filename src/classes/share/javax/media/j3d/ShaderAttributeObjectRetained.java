@@ -32,7 +32,15 @@
 package javax.media.j3d;
 
 import java.util.ArrayList;
-import javax.vecmath.*;
+
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Tuple2f;
+import javax.vecmath.Tuple2i;
+import javax.vecmath.Tuple3f;
+import javax.vecmath.Tuple3i;
+import javax.vecmath.Tuple4f;
+import javax.vecmath.Tuple4i;
 
 /**
  * The ShaderAttributeObjectRetained class is an abstract class that

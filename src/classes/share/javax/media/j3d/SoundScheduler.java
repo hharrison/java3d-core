@@ -31,17 +31,19 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.lang.Math;
-import java.util.Vector;
-import java.util.ArrayList;
-import java.net.URL;
+import java.awt.AWTEvent;
+import java.awt.event.WindowEvent;
 import java.io.InputStream;
-import java.util.Enumeration;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 
-import java.awt.*;
-import java.awt.event.*;
+import javax.vecmath.Point2f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
 
 /**
  * This structure parallels the RenderBin structure and

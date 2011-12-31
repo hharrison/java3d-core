@@ -31,11 +31,7 @@
 
 package javax.media.j3d;
 
-import java.io.DataOutputStream;
-import java.io.OutputStream;
 import java.util.Hashtable;
-import javax.vecmath.Color3f;
-import javax.vecmath.Tuple3f;
 
 /**
  * The J3dNodeTable object provides utilities for the save/load

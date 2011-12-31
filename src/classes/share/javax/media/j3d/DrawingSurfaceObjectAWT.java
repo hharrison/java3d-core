@@ -31,7 +31,6 @@
 
 package javax.media.j3d;
 
-import java.awt.Point;
 
 /**
  * The DrawingSurfaceObject class is used to manage native drawing surface

@@ -30,7 +30,6 @@
  */
 
 package javax.media.j3d;
-import java.util.ArrayList;
 
 /**
  * Class specifying a wakeup when the transform within a specified

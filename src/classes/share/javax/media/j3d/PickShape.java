@@ -30,8 +30,8 @@
  */
 
 package javax.media.j3d;
-import javax.vecmath.Point4d;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point4d;
 
 /**
  * An abstract class for describing a pick shape that can be used with

@@ -37,8 +37,11 @@
 
 package javax.media.j3d;
 
-import java.util.*;
-import java.awt.*;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

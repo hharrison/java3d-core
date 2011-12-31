@@ -30,7 +30,9 @@
  */
 
 package javax.media.j3d;
-import javax.vecmath.* ;
+import javax.vecmath.Color4f;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /**
  * This abstract class provides the base methods needed to create a geometry

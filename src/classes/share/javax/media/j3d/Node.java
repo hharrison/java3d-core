@@ -31,9 +31,8 @@
 
 package javax.media.j3d;
 
-import java.util.Hashtable;
 import java.util.Enumeration;
-import java.lang.reflect.Constructor;
+import java.util.Hashtable;
 
 /**
  * The Node class provides an abstract class for all Group and Leaf Nodes.

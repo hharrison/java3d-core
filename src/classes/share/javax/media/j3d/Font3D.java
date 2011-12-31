@@ -31,16 +31,24 @@
 
 package javax.media.j3d;
 
-import com.sun.j3d.utils.geometry.*;
-import com.sun.j3d.internal.FastVector;
 import java.awt.Font;
-import java.awt.font.*;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.AffineTransform;
-import javax.vecmath.*;
 import java.awt.Shape;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphMetrics;
+import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
-import java.util.*;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Hashtable;
+
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
+
+import com.sun.j3d.internal.FastVector;
+import com.sun.j3d.utils.geometry.GeometryInfo;
+import com.sun.j3d.utils.geometry.NormalGenerator;
 
 /**
  * The Font3D object is used to store extruded 2D glyphs.  These

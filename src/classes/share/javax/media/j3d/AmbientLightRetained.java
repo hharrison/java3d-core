@@ -31,7 +31,6 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
 
 /**
  * An ambient light source object.

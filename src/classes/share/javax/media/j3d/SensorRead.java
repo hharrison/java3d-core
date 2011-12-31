@@ -31,7 +31,6 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
 
 /**
  * A SensorRead encapsulates all the information associated with a single

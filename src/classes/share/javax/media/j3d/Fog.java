@@ -32,6 +32,7 @@
 package javax.media.j3d;
 
 import java.util.Enumeration;
+
 import javax.vecmath.Color3f;
 
 /**

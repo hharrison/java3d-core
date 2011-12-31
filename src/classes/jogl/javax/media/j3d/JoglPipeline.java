@@ -31,18 +31,49 @@
 
 package javax.media.j3d;
 
-import com.sun.j3d.internal.ByteBufferWrapper;
-import java.awt.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.nio.*;
-import java.security.*;
-import java.util.*;
-import java.util.regex.*;
-import javax.media.opengl.*;
-import javax.media.opengl.glu.*;
-import com.sun.opengl.cg.*;
-import com.sun.opengl.util.*;
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.DisplayMode;
+import java.awt.EventQueue;
+import java.awt.Frame;
+import java.awt.GraphicsConfigTemplate;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.media.opengl.AWTGraphicsConfiguration;
+import javax.media.opengl.AWTGraphicsDevice;
+import javax.media.opengl.AbstractGraphicsConfiguration;
+import javax.media.opengl.DefaultGLCapabilitiesChooser;
+import javax.media.opengl.GL;
+import javax.media.opengl.GLCapabilities;
+import javax.media.opengl.GLCapabilitiesChooser;
+import javax.media.opengl.GLContext;
+import javax.media.opengl.GLDrawable;
+import javax.media.opengl.GLDrawableFactory;
+import javax.media.opengl.GLException;
+import javax.media.opengl.GLPbuffer;
+import javax.media.opengl.Threading;
+import javax.media.opengl.glu.GLU;
+
+import com.sun.opengl.cg.CGcontext;
+import com.sun.opengl.cg.CGparameter;
+import com.sun.opengl.cg.CGprogram;
+import com.sun.opengl.cg.CgGL;
+import com.sun.opengl.util.BufferUtil;
 
 /**
  * Concrete implementation of Pipeline class for the JOGL rendering

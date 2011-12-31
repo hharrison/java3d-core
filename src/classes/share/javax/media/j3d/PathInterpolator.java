@@ -31,7 +31,6 @@
 
 package javax.media.j3d;
 
-import java.util.Enumeration;
 
 /**
  * PathInterpolator behavior.  This class defines the base class for

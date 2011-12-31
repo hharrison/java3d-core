@@ -31,11 +31,16 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
+import java.awt.AWTEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.awt.*;
-import java.awt.event.*;
 import java.util.Arrays;
+
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 /**
  * A behavior structure is a object that organizes behaviors,

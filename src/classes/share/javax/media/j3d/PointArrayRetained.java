@@ -31,8 +31,8 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.lang.Math;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 /**
  * The PointArray object draws the array of vertices as individual points.

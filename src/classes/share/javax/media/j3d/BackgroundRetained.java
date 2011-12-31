@@ -31,11 +31,9 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
 import java.util.ArrayList;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
+
+import javax.vecmath.Color3f;
 
 
 /**

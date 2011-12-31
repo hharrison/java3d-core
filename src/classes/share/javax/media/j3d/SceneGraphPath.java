@@ -31,8 +31,8 @@
 
 package javax.media.j3d;
 
-import  javax.vecmath.Point3d;
-import  javax.vecmath.Point4d;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point4d;
 
 /**
  * A SceneGraphPath object represents the path from a Locale to a

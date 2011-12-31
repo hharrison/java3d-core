@@ -31,8 +31,8 @@
 
 package javax.media.j3d;
 
-import java.io.*;
-import java.util.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 
 class J3dI18N {

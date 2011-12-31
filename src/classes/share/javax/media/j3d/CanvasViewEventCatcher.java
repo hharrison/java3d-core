@@ -31,9 +31,9 @@
 
 package javax.media.j3d;
 
-import java.util.ArrayList;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.IllegalComponentStateException;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * The CanvasViewEventCatcher class is used to track events on a Canvas3D that

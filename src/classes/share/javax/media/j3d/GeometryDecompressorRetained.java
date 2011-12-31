@@ -30,8 +30,10 @@
  */
 
 package javax.media.j3d;
-import javax.vecmath.* ;
-import java.util.* ;
+import javax.vecmath.Color4f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /**
  * This class implements a retained geometry backend for the abstract

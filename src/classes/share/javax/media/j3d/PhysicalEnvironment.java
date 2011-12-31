@@ -31,9 +31,10 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * This object contains a specification of the physical environment in

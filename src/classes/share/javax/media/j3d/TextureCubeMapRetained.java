@@ -31,10 +31,6 @@
 
 package javax.media.j3d;
 
-import java.util.*;
-import javax.vecmath.Color4f;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
 
 /**
  * TextureCubeMap is a subclass of Texture class.

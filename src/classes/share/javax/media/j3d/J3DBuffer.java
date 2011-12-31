@@ -31,11 +31,10 @@
 
 package javax.media.j3d;
 
-import com.sun.j3d.internal.ByteBufferWrapper;
 import com.sun.j3d.internal.BufferWrapper;
-import com.sun.j3d.internal.FloatBufferWrapper;
+import com.sun.j3d.internal.ByteBufferWrapper;
 import com.sun.j3d.internal.DoubleBufferWrapper;
-import com.sun.j3d.internal.ByteOrderWrapper;
+import com.sun.j3d.internal.FloatBufferWrapper;
 
 /**
  * Java 3D wrapper class for java.nio.Buffer objects.

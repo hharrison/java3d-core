@@ -31,8 +31,9 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
 import java.util.Enumeration;
+
+import javax.vecmath.Vector4d;
 
 /**
  * The ModelClip leaf node defines a set of 6 arbitrary clipping

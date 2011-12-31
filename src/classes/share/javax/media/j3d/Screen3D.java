@@ -31,8 +31,10 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Hashtable;
 

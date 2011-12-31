@@ -31,8 +31,7 @@
 
 package javax.media.j3d;
 
-import java.util.*;
-import javax.vecmath.*;
+import javax.vecmath.Point2f;
 
 /**
  * Texture2D is a subclass of Texture class. It extends Texture

@@ -30,7 +30,6 @@
  */
 
 package javax.media.j3d;
-import java.util.ArrayList;
 
 /**
  * Behavior is an abstract class that contains the framework for all

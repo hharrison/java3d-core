@@ -37,11 +37,16 @@
 
 package javax.media.j3d;
 
+import java.awt.GraphicsConfiguration;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.logging.Level;
-import javax.vecmath.*;
-import java.awt.*;
-import java.awt.image.*;
-import java.util.*;
+
+import javax.vecmath.Color3f;
 
 
 class Renderer extends J3dThread {

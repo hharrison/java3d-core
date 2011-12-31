@@ -31,11 +31,15 @@
 
 package javax.media.j3d;
 
-import java.awt.Point;
-import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.IllegalComponentStateException;
-import javax.vecmath.*;
+
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Point2d;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point4d;
+import javax.vecmath.SingularMatrixException;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector4d;
 
 /**
  * The CanvasViewCache class is used to cache all data, both API data

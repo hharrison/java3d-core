@@ -31,10 +31,30 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.awt.*;
+import java.awt.AWTEvent;
+import java.awt.Canvas;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.IllegalComponentStateException;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+
+import javax.vecmath.Color3f;
+import javax.vecmath.Point2d;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector4d;
 
 
 /**

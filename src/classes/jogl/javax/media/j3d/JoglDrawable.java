@@ -31,7 +31,7 @@
 
 package javax.media.j3d;
 
-import javax.media.opengl.*;
+import javax.media.opengl.GLDrawable;
 
 /**
  * Drawable class for the Jogl rendering pipeline.

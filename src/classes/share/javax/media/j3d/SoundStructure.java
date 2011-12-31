@@ -31,7 +31,9 @@
 
 package javax.media.j3d;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * A sound structure is a object that organizes Sounds and

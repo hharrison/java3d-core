@@ -31,7 +31,6 @@
 
 package javax.media.j3d;
 
-import java.util.Vector;
 
 /**
  * Class specifying any number of AND wakeup conditions ORed together.

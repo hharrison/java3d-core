@@ -31,7 +31,10 @@
 
 package javax.media.j3d;
 
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.RenderedImage;
+import java.awt.image.WritableRaster;
 
 /**
  * This class defines a 3D array of pixels.

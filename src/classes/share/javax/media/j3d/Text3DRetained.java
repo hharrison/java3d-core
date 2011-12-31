@@ -31,11 +31,13 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.awt.font.*;
-import java.awt.*;
+import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /**
  * Implements Text3D class.

@@ -31,8 +31,8 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.Point3f;
 import javax.vecmath.Color3f;
+import javax.vecmath.Point3f;
 
 
 /**

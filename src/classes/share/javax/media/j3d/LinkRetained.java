@@ -30,7 +30,7 @@
  */
 
 package javax.media.j3d;
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * A Link leaf node consisting of a reference to a SharedGroup node.

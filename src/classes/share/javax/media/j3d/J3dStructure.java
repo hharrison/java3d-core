@@ -31,8 +31,6 @@
 
 package javax.media.j3d;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * The J3dStructure is the super class of all structures in Java 3D.

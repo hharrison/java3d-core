@@ -31,7 +31,10 @@
 
 package javax.media.j3d;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * A transform update is a object that manages TransformGroups

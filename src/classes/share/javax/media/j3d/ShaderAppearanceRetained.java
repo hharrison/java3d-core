@@ -31,8 +31,6 @@
 
 package javax.media.j3d;
 
-import java.util.Vector;
-import java.util.BitSet;
 import java.util.ArrayList;
 
 

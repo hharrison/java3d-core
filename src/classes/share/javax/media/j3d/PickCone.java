@@ -31,7 +31,9 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point4d;
+import javax.vecmath.Vector3d;
 
 /**
  * PickCone is the abstract base class of all cone pick shapes.

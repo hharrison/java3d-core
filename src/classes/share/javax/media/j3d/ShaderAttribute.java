@@ -31,7 +31,6 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
 
 /**
  * The ShaderAttribute object encapsulates a uniform attribute for a

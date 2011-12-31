@@ -31,7 +31,9 @@
 
 package javax.media.j3d;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * The SharedGroup node provides the ability to share a scene graph from

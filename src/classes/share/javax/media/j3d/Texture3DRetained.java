@@ -30,8 +30,6 @@
  */
 
 package javax.media.j3d;
-import java.util.Enumeration;
-import java.util.BitSet;
 
 /**
  * Texture3D is a subclass of Texture class. It extends Texture

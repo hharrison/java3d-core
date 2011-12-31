@@ -31,7 +31,24 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
+import javax.vecmath.AxisAngle4d;
+import javax.vecmath.AxisAngle4f;
+import javax.vecmath.GMatrix;
+import javax.vecmath.Matrix3d;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point4d;
+import javax.vecmath.Quat4d;
+import javax.vecmath.Quat4f;
+import javax.vecmath.SingularMatrixException;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
+import javax.vecmath.Vector4d;
+import javax.vecmath.Vector4f;
+
 import com.sun.j3d.internal.HashCodeUtil;
 
 /**

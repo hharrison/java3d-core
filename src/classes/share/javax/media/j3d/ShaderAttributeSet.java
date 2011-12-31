@@ -31,10 +31,6 @@
 
 package javax.media.j3d;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-import javax.vecmath.*;
 
 /**
  * The ShaderAttributeSet object provides uniform attributes to shader

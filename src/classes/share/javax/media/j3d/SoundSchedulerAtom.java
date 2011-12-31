@@ -31,7 +31,6 @@
 
 package javax.media.j3d;
 
-import java.util.ArrayList;
 
 /**
  * A SoundSchedulerAtom is the smallest object representing a Sound within

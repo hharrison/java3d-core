@@ -31,8 +31,7 @@
 
 package javax.media.j3d;
 
-import java.util.ArrayList;
-import javax.vecmath.*;
+import javax.vecmath.Point3d;
 
 /**
  * A GeometryAtom is the smallest object representing Geometry.

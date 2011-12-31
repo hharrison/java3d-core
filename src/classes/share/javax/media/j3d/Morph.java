@@ -32,7 +32,6 @@
 package javax.media.j3d;
 
 import java.util.Hashtable;
-import javax.vecmath.*;
 
 /**
  * The Morph leaf node permits an application to morph between

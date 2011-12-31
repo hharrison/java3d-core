@@ -31,12 +31,11 @@
 
 package javax.media.j3d;
 
-import java.awt.GraphicsDevice;
 import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsConfigTemplate;
 import java.awt.Rectangle;
-import sun.awt.X11GraphicsDevice;
+
 import sun.awt.X11GraphicsConfig;
+import sun.awt.X11GraphicsDevice;
 
 /**
  * Native config template class. A singleton instance of this class is

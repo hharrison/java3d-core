@@ -31,8 +31,11 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import javax.vecmath.Point3d;
 
 /**
  * A leaf node that holds a merged shapes in compile mode

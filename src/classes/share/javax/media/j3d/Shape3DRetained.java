@@ -31,10 +31,11 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import javax.vecmath.Point3d;
 
 /**
  * A shape leaf node consisting of geometry and appearance properties.

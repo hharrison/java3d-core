@@ -31,10 +31,11 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
-import java.util.ArrayList;
+
+import javax.vecmath.Color3f;
 
 /**
  * The Fog leaf node defines Fog parameters.

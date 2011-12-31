@@ -31,7 +31,9 @@
 
 package javax.media.j3d;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * This thread manages all input device scheduling.  It monitors and caches

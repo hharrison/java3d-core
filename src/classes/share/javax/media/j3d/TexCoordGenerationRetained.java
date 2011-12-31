@@ -31,8 +31,9 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.Vector4f;
 import java.util.ArrayList;
+
+import javax.vecmath.Vector4f;
 
 /**
  * The TexCoordGeneration object contains all parameters needed for texture

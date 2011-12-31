@@ -31,9 +31,14 @@
 
 package javax.media.j3d;
 
-import java.nio.*;
-import javax.media.opengl.*;
-import com.sun.opengl.cg.*;
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.GLContext;
+
+import com.sun.opengl.cg.CGcontext;
+import com.sun.opengl.cg.CgGL;
 
 /**
  * Graphics context objects for Jogl rendering pipeline.

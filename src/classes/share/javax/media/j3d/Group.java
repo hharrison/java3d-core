@@ -31,10 +31,8 @@
 
 package javax.media.j3d;
 
-import java.util.BitSet;
-import java.util.Vector;
-import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * The Group node object is a general-purpose grouping node. Group

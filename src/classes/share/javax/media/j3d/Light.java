@@ -31,8 +31,9 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.Color3f;
 import java.util.Enumeration;
+
+import javax.vecmath.Color3f;
 
 /**
  * The Light leaf node is an abstract class that defines a set of

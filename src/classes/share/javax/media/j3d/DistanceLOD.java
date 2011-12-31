@@ -31,8 +31,9 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.Point3f;
 import java.util.Enumeration;
+
+import javax.vecmath.Point3f;
 
 /**
  * This class defines a distance-based LOD behavior node that operates on

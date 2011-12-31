@@ -31,12 +31,13 @@
 
 package javax.media.j3d;
 
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-import javax.vecmath.*;
-import java.util.Vector;
-import java.util.Enumeration;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import javax.vecmath.Color3f;
+import javax.vecmath.Vector3d;
 
 /**
  * A GraphicsContext3D object is used for immediate mode rendering into

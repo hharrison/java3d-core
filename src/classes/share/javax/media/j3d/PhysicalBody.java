@@ -31,8 +31,10 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
 import java.util.ArrayList;
+
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 /**
  * This object contains a specification of the user's head.

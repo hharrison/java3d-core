@@ -31,13 +31,15 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.awt.Point;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.util.ArrayList;
 
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
+import javax.vecmath.Point2d;
+import javax.vecmath.Point2i;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point4d;
 
 /**
  * A Retained Raster.

@@ -31,10 +31,18 @@
 
 package javax.media.j3d;
 
-import java.awt.*;
-import java.awt.geom.*;
-import java.awt.image.*;
-import javax.media.opengl.*;
+import java.awt.AWTException;
+import java.awt.DisplayMode;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.ImageCapabilities;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.VolatileImage;
+
+import javax.media.opengl.GLCapabilities;
 
 /**
  * Class implementing the GraphicsConfiguration API, but not a "real"

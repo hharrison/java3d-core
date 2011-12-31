@@ -31,7 +31,8 @@
 
 package javax.media.j3d;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Class for storing various free lists.  This class must be

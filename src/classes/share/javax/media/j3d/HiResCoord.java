@@ -31,8 +31,7 @@
 
 package javax.media.j3d;
 
-import java.lang.Integer;
-import javax.vecmath.*;
+import javax.vecmath.Vector3d;
 
 /**
  * High resolution coordinate object.

@@ -31,14 +31,17 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.util.Vector;
+import java.awt.AWTEvent;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.Enumeration;
-import java.awt.*;
-import com.sun.j3d.utils.universe.Viewer; // Needed for Support of DVR.
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Vector;
+
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+
+import com.sun.j3d.utils.universe.Viewer;
 
 /**
  * The View object contains all parameters needed in rendering a

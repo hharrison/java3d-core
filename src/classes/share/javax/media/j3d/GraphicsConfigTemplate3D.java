@@ -31,9 +31,9 @@
 
 package javax.media.j3d;
 
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsConfigTemplate;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 
 /**
  * This class is used to obtain a valid GraphicsConfiguration that can be used by Java 3D.

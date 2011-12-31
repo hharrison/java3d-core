@@ -31,7 +31,6 @@
 
 package javax.media.j3d;
 
-import java.util.*;
 
 /**
  * The ShaderRetained object is the abstract base class for programmable

@@ -31,7 +31,7 @@
 
 package javax.media.j3d;
 
-import java.util.*;
+import java.util.Vector;
 
 /**
  * Class specifying a wakeup when the specified object

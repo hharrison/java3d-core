@@ -31,7 +31,8 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /**
  * The OrientedShape3D leaf node is a Shape3D node that is oriented

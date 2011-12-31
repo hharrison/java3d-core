@@ -31,8 +31,12 @@
 
 package javax.media.j3d;
 
-import java.util.*;
-import java.security.*;
+import java.security.AccessControlException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * The CompileState holds information used during a compile.  It is

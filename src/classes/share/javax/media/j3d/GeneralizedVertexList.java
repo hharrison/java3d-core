@@ -30,8 +30,12 @@
  */
 
 package javax.media.j3d;
-import javax.vecmath.* ;
-import java.util.* ;
+import java.util.ArrayList;
+
+import javax.vecmath.Color3f;
+import javax.vecmath.Color4f;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /**
  * The GeneralizedVertexList class is a variable-size list used to

@@ -31,10 +31,11 @@
 
 package javax.media.j3d;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
-import java.util.ArrayList;
-import javax.vecmath.*;
+
+import javax.vecmath.Vector4d;
 
 /**
  * The ModelClip retained object.

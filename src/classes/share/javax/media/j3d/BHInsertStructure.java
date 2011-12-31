@@ -31,7 +31,8 @@
 
 package javax.media.j3d;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Random;
 
 class BHInsertStructure  {
 

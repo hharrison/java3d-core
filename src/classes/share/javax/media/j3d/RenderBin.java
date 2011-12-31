@@ -31,8 +31,18 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+
+import javax.vecmath.Color3f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 /**
  * The RenderBin is a structure that optimizes rendering by doing efficient

@@ -32,11 +32,12 @@
 package javax.media.j3d;
 
 import java.util.Enumeration;
-import javax.vecmath.Point3f;
+
+import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
-import javax.vecmath.AxisAngle4d;
 
 /**
  * The Billboard behavior node operates on the TransformGroup node

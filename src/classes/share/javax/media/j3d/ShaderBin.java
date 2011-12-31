@@ -31,10 +31,8 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 // XXXX : We should have a common Bin object that all other Bins extend from.

@@ -31,10 +31,15 @@
 
 package javax.media.j3d;
 
-import java.util.*;
-import javax.vecmath.*;
 import java.awt.image.DataBufferByte;
 import java.awt.image.RenderedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.vecmath.Color4f;
+import javax.vecmath.Point2f;
+import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 
 /**
  * The Texture object is a component object of an Appearance object

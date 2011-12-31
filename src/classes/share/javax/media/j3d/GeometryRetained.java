@@ -31,8 +31,9 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
 import java.util.ArrayList;
+
+import javax.vecmath.Point3d;
 
 abstract class GeometryRetained extends NodeComponentRetained {
 

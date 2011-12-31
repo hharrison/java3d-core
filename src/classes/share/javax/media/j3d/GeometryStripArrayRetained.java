@@ -31,13 +31,12 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
 import java.util.ArrayList;
-import java.util.Vector;
-import com.sun.j3d.internal.ByteBufferWrapper;
-import com.sun.j3d.internal.BufferWrapper;
+
+import javax.vecmath.TexCoord2f;
+import javax.vecmath.TexCoord3f;
+
 import com.sun.j3d.internal.FloatBufferWrapper;
-import com.sun.j3d.internal.DoubleBufferWrapper;
 
 
 /**

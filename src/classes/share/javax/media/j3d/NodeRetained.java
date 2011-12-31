@@ -32,9 +32,8 @@
 package javax.media.j3d;
 
 
-import java.util.Vector;
-import java.util.Hashtable;
 import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * The Node class provides an abstract class for all Group and Leaf

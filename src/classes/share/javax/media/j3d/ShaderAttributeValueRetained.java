@@ -31,7 +31,20 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Point2f;
+import javax.vecmath.Point2i;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+import javax.vecmath.Point4f;
+import javax.vecmath.Point4i;
+import javax.vecmath.Tuple2f;
+import javax.vecmath.Tuple2i;
+import javax.vecmath.Tuple3f;
+import javax.vecmath.Tuple3i;
+import javax.vecmath.Tuple4f;
+import javax.vecmath.Tuple4i;
 
 /**
  * The ShaderAttributeValueRetained object encapsulates a uniform shader

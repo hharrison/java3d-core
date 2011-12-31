@@ -32,7 +32,6 @@
 package javax.media.j3d;
 
 
-import java.util.Vector;
 
 /**
  * Interpolator is an abstract class that extends Behavior to provide

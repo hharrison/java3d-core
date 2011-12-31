@@ -31,8 +31,8 @@
 
 package javax.media.j3d;
 
-import java.net.URL;
 import java.io.InputStream;
+import java.net.URL;
 
 /**
  * The MediaContainerRetained object defines all rendering state that can

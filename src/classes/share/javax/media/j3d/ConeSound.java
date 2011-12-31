@@ -31,7 +31,6 @@
 
 package javax.media.j3d;
 
-import java.lang.Math;
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;

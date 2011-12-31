@@ -31,19 +31,33 @@
 
 package javax.media.j3d;
 
-import com.sun.j3d.internal.Distance;
-import javax.vecmath.*;
-import java.lang.Math;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Vector;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.vecmath.Color3b;
+import javax.vecmath.Color3f;
+import javax.vecmath.Color4b;
+import javax.vecmath.Color4f;
+import javax.vecmath.Point2d;
+import javax.vecmath.Point2f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point4d;
+import javax.vecmath.Point4f;
+import javax.vecmath.TexCoord2f;
+import javax.vecmath.TexCoord3f;
+import javax.vecmath.TexCoord4f;
+import javax.vecmath.Tuple3d;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
+
 import com.sun.j3d.internal.ByteBufferWrapper;
-import com.sun.j3d.internal.BufferWrapper;
-import com.sun.j3d.internal.FloatBufferWrapper;
+import com.sun.j3d.internal.Distance;
 import com.sun.j3d.internal.DoubleBufferWrapper;
+import com.sun.j3d.internal.FloatBufferWrapper;
 
 
 /**

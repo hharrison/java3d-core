@@ -31,11 +31,8 @@
 
 package javax.media.j3d;
 
-import java.lang.Math;
-import java.net.URL;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3d;
 import javax.vecmath.Point2f;
+import javax.vecmath.Point3f;
 
 /**
  * The PointSoundRetained node (a sub-class of the SoundRetained node) defines

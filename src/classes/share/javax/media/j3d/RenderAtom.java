@@ -30,7 +30,6 @@
  */
 
 package javax.media.j3d;
-import javax.vecmath.*;
 
 /**
  * A RenderAtom is a wrapper for a GeometryAtom in a given RenderBin.

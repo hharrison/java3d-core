@@ -31,8 +31,9 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.Color4f;
 import java.util.ArrayList;
+
+import javax.vecmath.Color4f;
 
 /**
  * The TextureAttributes object defines attributes that apply to

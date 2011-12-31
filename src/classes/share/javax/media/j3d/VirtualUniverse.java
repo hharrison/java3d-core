@@ -31,12 +31,12 @@
 
 package javax.media.j3d;
 
-import java.util.Vector;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

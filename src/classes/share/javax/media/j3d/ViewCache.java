@@ -31,7 +31,7 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
+import javax.vecmath.Point3d;
 
 /**
  * The ViewCache class is used to cache all data, both API data and derived

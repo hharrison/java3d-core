@@ -31,8 +31,12 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.util.ArrayList;
+import javax.vecmath.AxisAngle4d;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
+import javax.vecmath.Vector4d;
 
 class OrientedShape3DRetained extends Shape3DRetained {
 

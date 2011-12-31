@@ -30,11 +30,11 @@
  */
 
 package javax.media.j3d;
-import javax.vecmath.*;
-import java.lang.Math;
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
+
+import javax.vecmath.Point2f;
 
     /**
      * The FontExtrusion object is used to describe the extrusion path

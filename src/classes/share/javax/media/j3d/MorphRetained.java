@@ -31,9 +31,17 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
 import java.util.ArrayList;
-import java.util.Vector;
+
+import javax.vecmath.Color3b;
+import javax.vecmath.Color3f;
+import javax.vecmath.Color4b;
+import javax.vecmath.Color4f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.TexCoord2f;
+import javax.vecmath.TexCoord3f;
+import javax.vecmath.Vector3f;
 
 /**
  * A morph leaf node consisting of geometery and appearance properties.

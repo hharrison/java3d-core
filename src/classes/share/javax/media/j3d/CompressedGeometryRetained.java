@@ -30,7 +30,7 @@
  */
 
 package javax.media.j3d ;
-import javax.vecmath.* ;
+import javax.vecmath.Point3d;
 
 /**
  * The compressed geometry object is used to store geometry in a

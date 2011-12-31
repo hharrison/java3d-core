@@ -31,7 +31,6 @@
 
 package javax.media.j3d;
 
-import java.util.Hashtable;
 import javax.vecmath.Point2f;
 
 /**

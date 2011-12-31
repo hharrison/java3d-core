@@ -31,7 +31,6 @@
 
 package javax.media.j3d;
 
-import java.util.ArrayList;
 import java.util.logging.Level;
 
 class BehaviorScheduler extends J3dThread {

@@ -31,8 +31,7 @@
 
 package javax.media.j3d;
 
-import javax.vecmath.*;
-import java.lang.Math;
+import javax.vecmath.Point3d;
 
 /**
  * The IndexedTriangleArray object draws the array of vertices as individual
