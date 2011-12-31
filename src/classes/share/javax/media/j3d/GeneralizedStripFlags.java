@@ -45,7 +45,7 @@ interface GeneralizedStripFlags {
 
     /**
      * This flag indicates that a vertex starts a new strip with clockwise
-     * winding. 
+     * winding.
      */
     static final int RESTART_CW = 0 ;
 

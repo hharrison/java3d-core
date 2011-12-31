@@ -70,7 +70,7 @@ class InputDeviceBlockingThread extends Thread {
 	// yield() call should not be necessary (and may be ineffective),
 	// but we can't call MasterControl.threadYield() because it will
 	// sleep for at least a millisecond.
-	while (running) {	
+	while (running) {
 	    while (!stop) {
 		device.pollAndProcessInput();
 		Thread.yield();

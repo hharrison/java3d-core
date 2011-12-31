@@ -54,7 +54,7 @@ public final class PickCylinderRay extends PickCylinder {
      */
     public PickCylinderRay() {
     }
-    
+
     /**
      * Constructs an infinite cylindrical ray pick shape from the specified
      * parameters.
@@ -97,13 +97,13 @@ public final class PickCylinderRay extends PickCylinder {
 	if (bounds instanceof BoundingSphere) {
 	    Point3d sphCenter = ((BoundingSphere)bounds).getCenter();
 	    double sphRadius = ((BoundingSphere)bounds).getRadius();
-	    double sqDist = 
+	    double sqDist =
 		Distance.pointToRay (sphCenter, origin, direction);
 	    if (sqDist <= (sphRadius+radius)*(sphRadius+radius)) {
-		return true; 
+		return true;
 	    }
 	    return false;
-	}  
+	}
 	//
 	// ================ BOUNDING BOX ================
 	//
@@ -113,16 +113,16 @@ public final class PickCylinderRay extends PickCylinder {
 	    ((BoundingBox)bounds).getLower (lower);
 
 	    Point3d center = ((BoundingBox)bounds).getCenter ();
-	    
+
 	    double temp = (center.x - lower.x + radius);
 	    double boxRadiusSquared = temp*temp;
 	    temp = (center.y - lower.y + radius);
 	    boxRadiusSquared += temp*temp;
 	    temp = (center.z - lower.z + radius);
-	    boxRadiusSquared += temp*temp;				       
+	    boxRadiusSquared += temp*temp;
 
 	    // First, see if cylinder is too far away from BoundingBox
-	    double sqDist = 
+	    double sqDist =
 		Distance.pointToRay (center, origin, direction);
 
 	    if (sqDist > boxRadiusSquared ) {
@@ -140,7 +140,7 @@ public final class PickCylinderRay extends PickCylinder {
 	    // Ray does not intersect, test for distance with each edge
 	    Point3d upper = new Point3d();
 	    ((BoundingBox)bounds).getUpper (upper);
-      
+
 	    Point3d[][] edges = {
 		// Top horizontal 4
 		{upper, new Point3d (lower.x, upper.y, upper.z)},
@@ -161,7 +161,7 @@ public final class PickCylinderRay extends PickCylinder {
 
 	    for (int i=0;i<edges.length;i++) {
 		//	System.err.println ("Testing edge: "+edges[i][0]+" - "+edges[i][1]);
-		double distToEdge = 
+		double distToEdge =
 		    Distance.rayToSegment (origin, direction, edges[i][0], edges[i][1]);
 		if (distToEdge <= radius*radius) {
 		    //	  System.err.println ("Intersects!");
@@ -185,7 +185,7 @@ public final class PickCylinderRay extends PickCylinder {
 	    bsphere.getCenter (sphCenter);
 	    double sphRadius = bsphere.getRadius();
 
-	    double sqDist = 
+	    double sqDist =
 		Distance.pointToRay (sphCenter, origin, direction);
 	    if (sqDist > (sphRadius+radius) * (sphRadius+radius)) {
 		return false; // we are too far to intersect
@@ -210,12 +210,12 @@ public final class PickCylinderRay extends PickCylinder {
 		    midpt.y = (ptope.verts[i].y + ptope.verts[j].y) * 0.5;
 		    midpt.z = (ptope.verts[i].z + ptope.verts[j].z) * 0.5;
 
-		    if (! PickCylinder.pointInPolytope (ptope, 
+		    if (! PickCylinder.pointInPolytope (ptope,
 							midpt.x, midpt.y, midpt.z)) {
 			continue;
 		    }
-		    distToEdge = 
-			Distance.rayToSegment (origin, direction, 
+		    distToEdge =
+			Distance.rayToSegment (origin, direction,
 					       ptope.verts[i], ptope.verts[j]);
 		    if (distToEdge <= radius*radius) {
 			return true;
@@ -234,9 +234,9 @@ public final class PickCylinderRay extends PickCylinder {
 
 
     // Only use within J3D.
-    // Return a new PickCylinderRay that is the transformed (t3d) of this pickCylinderRay.  
+    // Return a new PickCylinderRay that is the transformed (t3d) of this pickCylinderRay.
     PickShape transform(Transform3D t3d) {
-	
+
 	PickCylinderRay newPCR = new PickCylinderRay();
 	Point3d end = new Point3d();
 	/*
@@ -251,15 +251,15 @@ public final class PickCylinderRay extends PickCylinder {
 	end.x = origin.x + direction.x;
 	end.y = origin.y + direction.y;
 	end.z = origin.z + direction.z;
-	
+
 	t3d.transform(newPCR.origin);
 	t3d.transform(end);
-	
+
 	newPCR.direction.x = end.x - newPCR.origin.x;
 	newPCR.direction.y = end.y - newPCR.origin.y;
 	newPCR.direction.z = end.z - newPCR.origin.z;
 	newPCR.direction.normalize();
-	
+
 	return newPCR;
     }
 

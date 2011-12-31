@@ -33,7 +33,7 @@ package javax.media.j3d;
 
 
 /**
- * The AudioDevice Class defines and encapsulates the 
+ * The AudioDevice Class defines and encapsulates the
  * audio device's basic information and characteristics.
  * <P>
  * A Java3D application running on a particular machine could have one of
@@ -52,13 +52,13 @@ package javax.media.j3d;
  * outputs to.
  *<P>
  * AudioDevice Interface
- *<P> 
+ *<P>
  *<UL> The selection of this device driver is done through methods in the
  *     PhysicalEnvironment object - see PhysicalEnvironment class.
  *     The application would query how many audio devices are available. For
  *     each device, the user can get the AudioDevice object that describes it
  *     and query its characteristics. Once a decision is made about which of
- *     the available audio devices to use for a PhysicalEnvironment, the 
+ *     the available audio devices to use for a PhysicalEnvironment, the
  *     particular device is set into this PhysicalEnvironment's fields. Each
  *     PhysicalEnvironment object may use only a single audio device.
  *<P>
@@ -71,9 +71,9 @@ package javax.media.j3d;
  *<P>
  *Initialization
  *<P><UL>
- *  Each audio device driver must be initialized. 
- *  The chosen device driver should be initialized before any Java3D 
- *  Sound methods are executed because the implementation of the Sound 
+ *  Each audio device driver must be initialized.
+ *  The chosen device driver should be initialized before any Java3D
+ *  Sound methods are executed because the implementation of the Sound
  *  methods, in general, are potentially device driver dependent.</UL>
  *<P>
  * Audio Playback Type
@@ -92,8 +92,8 @@ package javax.media.j3d;
  *<P>
  * Distance to Speaker
  *<P><UL>
- * These methods set and retrieve the distance in meters from the center 
- * ear (the midpoint between the left and right ears) and one of the 
+ * These methods set and retrieve the distance in meters from the center
+ * ear (the midpoint between the left and right ears) and one of the
  * speakers in the listener's environment. For monaural speaker playback,
  * a typical distance from the listener to the speaker in a workstation
  * cabinet is 0.76 meters. For stereo speakers placed at the sides of the
@@ -111,12 +111,12 @@ package javax.media.j3d;
  *<P><UL>
  *  While the sound image created for final output to the playback system
  *  is either only mono or stereo (for this version of Java3D) most device
- *  driver implementations will mix the left and right image signals 
+ *  driver implementations will mix the left and right image signals
  *  generated for each rendered sound source before outputting the final
  *  playback image. Each sound source will use N input channels of this
  *  internal mixer. Each implemented Java3D audio device driver will have
  *  its own limitations and driver-specific characteristics. These include
- *  channel availability and usage (during rendering).  Methods for 
+ *  channel availability and usage (during rendering).  Methods for
  *  querying these device-driver specific characteristics are provided.</UL></UL>
  *<P>
  * Instantiating and Registering a New Device
@@ -139,7 +139,7 @@ package javax.media.j3d;
  *     environment. See PhysicalEnvironment class for more details.</UL>
  * <P>
  * General Rules for calling AudioDevice methods:
- * It is illegal for an application to call any non-query AudioDevice method 
+ * It is illegal for an application to call any non-query AudioDevice method
  * if the AudioDevice is created then explicitly assigned to a
  * PhysicalEnvironment using PhysicalEnvironment.setAudioDevice();
  * When either PhysicalEnvironment.setAudioDevice() is called - including
@@ -151,7 +151,7 @@ package javax.media.j3d;
  * initializes it directly, rather than using PhysicalEnvironment.
  * setAudioDevice(), that application may make <i>any</i> AudioDevice3D methods calls
  * without fear of the Java 3D Core also trying to control the AudioDevice.
- * Under this condition it is safe to call AudioDevice non-query methods. 
+ * Under this condition it is safe to call AudioDevice non-query methods.
  */
 
 public interface AudioDevice {
@@ -161,7 +161,7 @@ public interface AudioDevice {
      * Constants
      *
      ****************/
-    /** 
+    /**
      *  Audio Playback Types
      *
      *  Types of audio output device Java3D sound is played over:
@@ -174,7 +174,7 @@ public interface AudioDevice {
     public static final int HEADPHONES = 0;
 
     /**
-     *     Choosing a 
+     *     Choosing a
      *     single near-field monoaural speaker
      *     as the audio playback type
      *     specifies that the audio playback will be through a single speaker
@@ -183,11 +183,11 @@ public interface AudioDevice {
     public static final int MONO_SPEAKER = 1;
 
     /**
-     *     Choosing a 
+     *     Choosing a
      *     two near-field stereo speakers
      *     as the audio playback type
      *     specifies that the audio playback will be through stereo speakers
-     *     some supplied distance away from, and at some given angle to 
+     *     some supplied distance away from, and at some given angle to
      *     the listener.
      */
     public static final int STEREO_SPEAKERS = 2;
@@ -239,7 +239,7 @@ public interface AudioDevice {
      * @param angle in radians from head Z axis and vector from center ear to speaker
      */
     public abstract void setAngleOffsetToSpeaker(float angle);
-  
+
     /**
      * Get Angle Offset (in radians) To Speaker.
      * @return angle in radians from head Z axis and vector from center ear to speaker
@@ -248,12 +248,12 @@ public interface AudioDevice {
 
     /**
      * Query total number of channels available for sound rendering
-     * for this audio device.  This returns the maximum number of channels 
+     * for this audio device.  This returns the maximum number of channels
      * available for Java3D sound rendering for all sound sources.
      * @return total number of channels that can be used for this audio device
      */
      public abstract int getTotalChannels();
- 
+
     /**
      * Query number of channels currently available for use.
      * During rendering, when sound nodes are playing, this method returns the
@@ -262,9 +262,9 @@ public interface AudioDevice {
      * @return total number of channels current available
      */
      public abstract int getChannelsAvailable();
- 
+
     /**
-     * Query number of channels that are used, or would be used to render 
+     * Query number of channels that are used, or would be used to render
      * a particular sound node.  This method returns the number of channels
      * needed to render a particular Sound node.  The return value is the same
      * no matter if the Sound is currently active and enabled (being played) or

@@ -196,7 +196,7 @@ class ViewCache extends Object {
     Transform3D compatRightProjection = new Transform3D();
 
     // Mask that indicates ViewCache's view dependence info. has changed,
-    // and CanvasViewCache may need to recompute the final view matries. 
+    // and CanvasViewCache may need to recompute the final view matries.
     int vcDirtyMask = 0;
 
     //
@@ -219,7 +219,7 @@ class ViewCache extends Object {
      * Take snapshot of all per-view API parameters and input values.
      */
     synchronized void snapshot() {
-	
+
 	// View parameters
 	vcDirtyMask = view.vDirtyMask;
 	view.vDirtyMask = 0;
@@ -231,20 +231,20 @@ class ViewCache extends Object {
 	projectionPolicy = view.projectionPolicy;
 	screenScalePolicy = view.screenScalePolicy;
 	windowResizePolicy = view.windowResizePolicy;
-	windowMovementPolicy = view.windowMovementPolicy;	
+	windowMovementPolicy = view.windowMovementPolicy;
 	windowEyepointPolicy = view.windowEyepointPolicy;
 	monoscopicViewPolicy = view.monoscopicViewPolicy;
 
 	fieldOfView = view.fieldOfView;
 	screenScale = view.screenScale;
-	
+
 	frontClipDistance = view.frontClipDistance;
-	backClipDistance = view.backClipDistance;	
+	backClipDistance = view.backClipDistance;
 	frontClipPolicy = view.frontClipPolicy;
 	backClipPolicy = view.backClipPolicy;
 
 	visibilityPolicy = view.visibilityPolicy;
-	
+
 	trackingEnable = view.trackingEnable;
 	userHeadToVworldEnable = view.userHeadToVworldEnable;
 
@@ -263,30 +263,30 @@ class ViewCache extends Object {
 	}
 
 	vpRetained = (ViewPlatformRetained) vpp.retained;
-	
+
 	synchronized(vpRetained) {
-	    vcDirtyMask |= vpRetained.vprDirtyMask; 
+	    vcDirtyMask |= vpRetained.vprDirtyMask;
 	    vpRetained.vprDirtyMask = 0;
 	    viewAttachPolicy = vpRetained.viewAttachPolicy;
 	    // System.err.println("ViewCache snapshot vcDirtyMask " + vcDirtyMask );
 	}
-	
+
 	// PhysicalEnvironment parameters
 	PhysicalEnvironment env = view.getPhysicalEnvironment();
 
 	synchronized(env) {
-	    vcDirtyMask |= env.peDirtyMask; 
+	    vcDirtyMask |= env.peDirtyMask;
 	    env.peDirtyMask = 0;
-	    
+
 	    env.coexistenceToTrackerBase.getWithLock(coexistenceToTrackerBase);
 	    trackingAvailable = env.trackingAvailable;
 	    coexistenceCenterInPworldPolicy = env.coexistenceCenterInPworldPolicy;
-	    
+
 	    // NOTE: this is really derived data, but we need it here in order
 	    // to avoid reading head tracked data when no tracker is available
 	    // and enabled.
 	    doHeadTracking = trackingEnable && trackingAvailable;
-	    
+
 	    if (doHeadTracking) {
 		headIndex = env.getHeadIndex();
 		env.getSensor(headIndex).getRead(headTrackerToTrackerBase);
@@ -296,14 +296,14 @@ class ViewCache extends Object {
 		headTrackerToTrackerBase.setIdentity();
 	    }
 	}
-	
+
 	// PhysicalBody parameters
 	PhysicalBody body = view.getPhysicalBody();
 
 	synchronized(body) {
-	    vcDirtyMask |= body.pbDirtyMask; 
+	    vcDirtyMask |= body.pbDirtyMask;
 	    body.pbDirtyMask = 0;
-	    
+
 	    leftEyePosInHead.set(body.leftEyePosition);
 	    rightEyePosInHead.set(body.rightEyePosition);
 	    leftEarPosInHead.set(body.leftEarPosition);

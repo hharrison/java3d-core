@@ -71,8 +71,8 @@ public class IndexedQuadArray extends IndexedGeometryArray {
     public IndexedQuadArray(int vertexCount, int vertexFormat, int indexCount) {
 	super(vertexCount,vertexFormat, indexCount);
 
-        if (vertexCount < 1) 
-	    throw new IllegalArgumentException(J3dI18N.getString("IndexedQuadArray0")); 
+        if (vertexCount < 1)
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedQuadArray0"));
 
         if (indexCount < 4 || ((indexCount%4) != 0))
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedQuadArray1"));
@@ -121,8 +121,8 @@ public class IndexedQuadArray extends IndexedGeometryArray {
 	      texCoordSetCount, texCoordSetMap,
 	      indexCount);
 
-        if (vertexCount < 1) 
-	    throw new IllegalArgumentException(J3dI18N.getString("IndexedQuadArray0")); 
+        if (vertexCount < 1)
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedQuadArray0"));
 
         if (indexCount < 4 || ((indexCount%4) != 0))
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedQuadArray1"));
@@ -178,8 +178,8 @@ public class IndexedQuadArray extends IndexedGeometryArray {
 	      vertexAttrCount, vertexAttrSizes,
 	      indexCount);
 
-        if (vertexCount < 1) 
-	    throw new IllegalArgumentException(J3dI18N.getString("IndexedQuadArray0")); 
+        if (vertexCount < 1)
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedQuadArray0"));
 
         if (indexCount < 4 || ((indexCount%4) != 0))
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedQuadArray1"));
@@ -194,7 +194,7 @@ public class IndexedQuadArray extends IndexedGeometryArray {
 	this.retained.setSource(this);
     }
 
-  
+
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */

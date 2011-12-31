@@ -41,14 +41,14 @@ class Shape3DCompileRetained extends Shape3DRetained {
 
 
     int numShapes = 0;
-    
+
     // Each element in the arraylist is an array of geometries for a
-    // particular merged shape 
+    // particular merged shape
     ArrayList geometryInfo = null;
 
 
     Object[] srcList = null;
-    
+
     Shape3DCompileRetained(Shape3DRetained[] shapes, int nShapes, int compileFlags) {
 	int i, j;
 	Shape3DRetained shape;
@@ -70,7 +70,7 @@ class Shape3DCompileRetained extends Shape3DRetained {
 	    boundsAutoCompute = shapes[0].boundsAutoCompute;
 	    source = shapes[0].source;
 	}
-					  
+
 	// Remove the null that was added by Shape3DRetained constructor
 	geometryList.remove(0);
 	int geoIndex = 0;
@@ -85,11 +85,11 @@ class Shape3DCompileRetained extends Shape3DRetained {
 	appearance = shapes[0].appearance;
 	collisionBound = shapes[0].collisionBound;
 	localBounds = shapes[0].localBounds;
-	
+
 
 	if ((compileFlags & CompileState.GEOMETRY_READ) != 0)
 	    geometryInfo = new ArrayList();
-	
+
 	for (i = 0; i < nShapes; i++) {
 	    shape = shapes[i];
 	    ((Shape3D)shape.source).id = i;
@@ -121,7 +121,7 @@ class Shape3DCompileRetained extends Shape3DRetained {
 		}
 
 	    }
-	    
+
 	    // Point to the geometryList's source, so the
 	    // retained side will be garbage collected
 	    if ((compileFlags & CompileState.GEOMETRY_READ) != 0) {
@@ -369,7 +369,7 @@ class Shape3DCompileRetained extends Shape3DRetained {
 		break;
 	    }
 	}
-		
+
 
     }
 
@@ -377,7 +377,7 @@ class Shape3DCompileRetained extends Shape3DRetained {
     Bounds getCollisionBounds(int childIndex) {
 	return collisionBound;
     }
-    
+
 
     int numGeometries(int childIndex) {
 	ArrayList geo = (ArrayList) geometryInfo.get(childIndex);
@@ -389,17 +389,17 @@ class Shape3DCompileRetained extends Shape3DRetained {
 	ArrayList geoInfo = (ArrayList) geometryInfo.get(childIndex);
 	return (Geometry)geoInfo.get(i);
 
-	
+
     }
 
     Enumeration getAllGeometries(int childIndex) {
 	ArrayList geoInfo = (ArrayList) geometryInfo.get(childIndex);
 	Vector geomList = new Vector();
-	
+
 	for(int i=0; i<geoInfo.size(); i++) {
 	    geomList.add(geoInfo.get(i));
 	}
-	
+
 	return geomList.elements();
     }
 
@@ -423,11 +423,11 @@ class Shape3DCompileRetained extends Shape3DRetained {
 		}
 
 		return (Bounds) bbox;
-		
+
 	    } else {
 		return null;
             }
-	    
+
         } else {
             return super.getBounds();
         }
@@ -445,45 +445,45 @@ class Shape3DCompileRetained extends Shape3DRetained {
      */
     boolean intersect(SceneGraphPath path,
             PickShape pickShape, double[] dist) {
-        
+
         int flags;
         PickInfo pickInfo = new PickInfo();
-        
+
         Transform3D localToVworld = path.getTransform();
         if (localToVworld == null) {
-	    throw new IllegalArgumentException(J3dI18N.getString("Shape3DRetained3"));   
+	    throw new IllegalArgumentException(J3dI18N.getString("Shape3DRetained3"));
 	}
         pickInfo.setLocalToVWorldRef( localToVworld);
-        
+
         Shape3D shape  = (Shape3D) path.getObject();
 	// Get the geometries for this shape only, since the compiled
 	// geomtryList contains several shapes
-	ArrayList glist =  (ArrayList) geometryInfo.get(shape.id);	        
-        
+	ArrayList glist =  (ArrayList) geometryInfo.get(shape.id);
+
         // System.err.println("Shape3DCompileRetained.intersect() : ");
         if (dist == null) {
             // System.err.println("      no dist request ....");
             return intersect(pickInfo, pickShape, 0, glist);
         }
-        
+
         flags = PickInfo.CLOSEST_DISTANCE;
         if (intersect(pickInfo, pickShape, flags, glist)) {
             dist[0] = pickInfo.getClosestDistance();
             return true;
         }
-        
+
         return false;
-          
+
       }
-    
+
       boolean intersect(PickInfo pickInfo, PickShape pickShape, int flags,
               ArrayList geometryList) {
-          
+
         Transform3D localToVworld = pickInfo.getLocalToVWorldRef();
-                
+
  	Transform3D t3d = new Transform3D();
 	t3d.invert(localToVworld);
-	PickShape newPS = pickShape.transform(t3d);     
+	PickShape newPS = pickShape.transform(t3d);
 
 	int geomListSize = geometryList.size();
 	GeometryRetained geometry;
@@ -492,9 +492,9 @@ class Shape3DCompileRetained extends Shape3DRetained {
             ((flags & PickInfo.CLOSEST_DISTANCE) == 0) &&
             ((flags & PickInfo.CLOSEST_GEOM_INFO) == 0) &&
             ((flags & PickInfo.ALL_GEOM_INFO) == 0)) {
-            
+
 	    for (int i=0; i < geomListSize; i++) {
-		geometry =  (GeometryRetained) geometryList.get(i);	     
+		geometry =  (GeometryRetained) geometryList.get(i);
 		if (geometry != null) {
 		    if (geometry.mirrorGeometry != null) {
 			geometry = geometry.mirrorGeometry;
@@ -511,30 +511,30 @@ class Shape3DCompileRetained extends Shape3DRetained {
             double distance;
 	    double minDist = Double.POSITIVE_INFINITY;
             Point3d closestIPnt = new Point3d();
-            Point3d iPnt = new Point3d();            
-            Point3d iPntVW = new Point3d();            
-            
+            Point3d iPnt = new Point3d();
+            Point3d iPntVW = new Point3d();
+
 	    for (int i=0; i < geomListSize; i++) {
 		geometry =  (GeometryRetained) geometryList.get(i);
 		if (geometry != null) {
 		    if (geometry.mirrorGeometry != null) {
 			geometry = geometry.mirrorGeometry;
 		    }
-                    if (geometry.intersect(newPS, pickInfo, flags, iPnt, geometry, i)) {  
+                    if (geometry.intersect(newPS, pickInfo, flags, iPnt, geometry, i)) {
 
                         iPntVW.set(iPnt);
                         localToVworld.transform(iPntVW);
 			distance = pickShape.distance(iPntVW);
-                       
+
 			if (minDist > distance) {
-			    minDist = distance; 
+			    minDist = distance;
                             closestIPnt.set(iPnt);
-                        }    
+                        }
                     }
 		}
 	    }
-            
-	    if (minDist < Double.POSITIVE_INFINITY) {                 
+
+	    if (minDist < Double.POSITIVE_INFINITY) {
                 if ((flags & PickInfo.CLOSEST_DISTANCE) != 0) {
                     pickInfo.setClosestDistance(minDist);
                 }
@@ -542,11 +542,11 @@ class Shape3DCompileRetained extends Shape3DRetained {
                     pickInfo.setClosestIntersectionPoint(closestIPnt);
                 }
 		return true;
-	    }	
+	    }
 	}
-        
+
 	return false;
-       
-    }            
+
+    }
 
 }

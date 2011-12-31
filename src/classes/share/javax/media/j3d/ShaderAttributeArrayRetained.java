@@ -53,7 +53,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 
     }
 
-    
+
     /**
      * Sets the specified array element of the value of this shader
      * attribute to the specified value.
@@ -67,16 +67,16 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
      * the same base class as the individual elements of the array object
      * used to construct this shader attribute object.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     void setValue(int index, Object value) {
 	initValue(index, value);
 	// We should only need to update the array instead of replacing it.
-	// Until this become a really bottleneck, it will just be a convenience 
-	// method for end user. 
-	// An efficient approach is to 
-	// (1) Create a new ShaderAttributeValue object for the "value" object 
+	// Until this become a really bottleneck, it will just be a convenience
+	// method for end user.
+	// An efficient approach is to
+	// (1) Create a new ShaderAttributeValue object for the "value" object
 	// and pass it to sendMessage(), (2) Create a new sendMessage that take in
 	// a third arguement, ie. index.
 	setValue(attrWrapper.getRef());
@@ -87,7 +87,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
      *
      * @return the number of elements in the value array
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     int length() {
@@ -105,7 +105,7 @@ class ShaderAttributeArrayRetained extends ShaderAttributeObjectRetained {
 	    mirrorSAA.createObjectData(getValue());
 	    mirror = mirrorSAA;
 	    mirror.source = source;
-	    
+
 	}
 	initMirrorObject();
     }

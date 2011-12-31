@@ -35,7 +35,7 @@ import javax.vecmath.*;
 
 /**
  * The BoundingLeaf node defines a bounding region object that can be
- * referenced by other nodes to define a region of influence 
+ * referenced by other nodes to define a region of influence
  * (Fog and Light nodes), an application region (Background, Clip,
  * and Soundscape nodes), or a scheduling region (Sound and
  * Behavior nodes). The bounding region is defined in the local
@@ -73,14 +73,14 @@ public class BoundingLeaf extends Leaf {
     private static final int[] readCapabilities = {
         ALLOW_REGION_READ
     };
-    
+
         /**
      * Constructs a BoundingLeaf node with a null (empty) bounding region.
      */
     public BoundingLeaf() {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
-        
+
 	((BoundingLeafRetained)this.retained).createBoundingLeaf();
     }
 
@@ -91,7 +91,7 @@ public class BoundingLeaf extends Leaf {
     public BoundingLeaf(Bounds region) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
-        
+
 	((BoundingLeafRetained)this.retained).createBoundingLeaf();
 	((BoundingLeafRetained)this.retained).initRegion(region);
     }
@@ -123,18 +123,18 @@ public class BoundingLeaf extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_REGION_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("BoundingLeaf1"));
-	
+
 	return ((BoundingLeafRetained)this.retained).getRegion();
     }
-    
-    /** 
-     * Creates the BoundingLeafRetained object that this 
-     * BoundingLeaf object will point to. 
-     */   
+
+    /**
+     * Creates the BoundingLeafRetained object that this
+     * BoundingLeaf object will point to.
+     */
     void createRetained() {
-        this.retained = new BoundingLeafRetained(); 
-        this.retained.setSource(this); 
-    } 
+        this.retained = new BoundingLeafRetained();
+        this.retained.setSource(this);
+    }
 
    /**
      * Used to create a new instance of the node.  This routine is called
@@ -156,7 +156,7 @@ public class BoundingLeaf extends Leaf {
         return bl;
     }
 
-    
+
 
    /**
      * Copies all BoundingLeaf information from

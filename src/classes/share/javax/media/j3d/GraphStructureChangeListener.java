@@ -49,7 +49,7 @@ public interface GraphStructureChangeListener {
      * @param child the child being added
      */
     public void branchGroupAdded(Object parent, BranchGroup child);
-    
+
     /**
      * Invoked when a branch group is removed.
      * Called just after the child has been removed from the parent.
@@ -59,7 +59,7 @@ public interface GraphStructureChangeListener {
      * @param child the child being added
      */
     public void branchGroupRemoved(Object parent, BranchGroup child);
-    
+
     /**
      * Invoked when a branch group is moved.
      * Called after a child has been moved to it's new parent. This call differs

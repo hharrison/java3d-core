@@ -32,7 +32,7 @@
 package javax.media.j3d;
 
 /**
- * Used by ImageComponent for data conversions 
+ * Used by ImageComponent for data conversions
  */
 
 class Table extends Object {
@@ -45,12 +45,12 @@ class Table extends Object {
 
     // 4 to 8 bit data conversion
     static final int[] table4To8Bit = {
-	0,17,34,51,68,85,102,119,136,153,170,187,204,221,238,255}; 
+	0,17,34,51,68,85,102,119,136,153,170,187,204,221,238,255};
 
     // 5 to 8 bit data conversion
     static final int[] table5To8Bit = {
 	0,8,16,25,33,41,49,58,66,74,82,90,99,107,115,123,132,140,148,156,
-	165,173,181,189,197,206,214,222,230,239,247,255}; 
+	165,173,181,189,197,206,214,222,230,239,247,255};
 
     // 8 to 4 bit data conversion
     static final int[] table8To4Bit = {
@@ -63,7 +63,7 @@ class Table extends Object {
         11,11,11,11,11,11,11,11,11,11,11,12,12,12,12,12,12,12,12,12,12,12,12,
         12,12,12,12,12,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,14,
         14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,15,15,15,15,15,15,15,
-        15,15}; 
+        15,15};
 
     // 8 to 5 bit data conversion
     static int[] table8To5Bit = {
@@ -77,7 +77,7 @@ class Table extends Object {
         22,22,22,22,23,23,23,23,23,23,23,23,24,24,24,24,24,24,24,24,25,25,25,
         25,25,25,25,25,26,26,26,26,26,26,26,26,27,27,27,27,27,27,27,27,27,28,
         28,28,28,28,28,28,28,29,29,29,29,29,29,29,29,30,30,30,30,30,30,30,30,
-        31,31,31,31,31}; 
+        31,31,31,31,31};
 
     // 8 to 3 bit data conversion
     static int[] table8To3Bit = {

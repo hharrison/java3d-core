@@ -41,7 +41,7 @@ import com.sun.j3d.internal.HashCodeUtil;
  */
 
 public class BoundingSphere extends Bounds {
-	
+
     /**
      * The center of the bounding sphere.
      */
@@ -51,14 +51,14 @@ public class BoundingSphere extends Bounds {
      * The radius of the bounding sphere.
      */
     double	radius;
-	
+
     Point3d boxVerts[];
     boolean allocBoxVerts = false;
 
     // reusable temp objects
     private BoundingBox tmpBox = null;
     private BoundingPolytope tmpPolytope = null;
-    
+
     /**
      * Constructs and initializes a BoundingSphere from a center and radius.
      * @param center the center of the bounding sphere
@@ -80,22 +80,22 @@ public class BoundingSphere extends Bounds {
     }
 
     /**
-     * Constructs and initializes a BoundingSphere from a bounding object. 
+     * Constructs and initializes a BoundingSphere from a bounding object.
      * @param boundsObject  a bounds object
      */
     public BoundingSphere(Bounds boundsObject) {
 	int i;
-	
+
 	boundId = BOUNDING_SPHERE;
-	if (boundsObject == null) { 
+	if (boundsObject == null) {
 	    // Negative volume.
 	    center = new Point3d();
 	    radius = -1.0;
-	} 
+	}
 	else if( boundsObject.boundsIsInfinite ) {
 	    center = new Point3d();
 	    radius = Double.POSITIVE_INFINITY;
-	    
+
 	} else if( boundsObject.boundId == BOUNDING_BOX){
 	    BoundingBox box = (BoundingBox)boundsObject;
 	    center = new Point3d();
@@ -108,12 +108,12 @@ public class BoundingSphere extends Bounds {
 				    (box.upper.y-box.lower.y)+
 				    (box.upper.z-box.lower.z)*
 				    (box.upper.z-box.lower.z)));
-	    
+
 	} else if (boundsObject.boundId == BOUNDING_SPHERE) {
 	    BoundingSphere sphere = (BoundingSphere)boundsObject;
 	    center = new Point3d(sphere.center);
 	    radius = sphere.radius;
-	    
+
 	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
 	    double t,dis,dis_sq,rad_sq,oldc_to_new_c;
@@ -127,10 +127,10 @@ public class BoundingSphere extends Bounds {
 				(polytope.verts[0].y - center.y) +
 				(polytope.verts[0].z - center.z)*
 				(polytope.verts[0].z - center.z));
-	    
+
 	    for(i=1;i<polytope.nVerts;i++) {
 	        rad_sq = radius * radius;
-		
+
                 dis_sq =  (polytope.verts[i].x - center.x)*
 		    (polytope.verts[i].x - center.x) +
                     (polytope.verts[i].y - center.y)*
@@ -144,7 +144,7 @@ public class BoundingSphere extends Bounds {
 		    dis = Math.sqrt( dis_sq);
 		    radius = (radius + dis)*.5;
 		    oldc_to_new_c = dis - radius;
-		    t = oldc_to_new_c/dis; 
+		    t = oldc_to_new_c/dis;
 		    center.x = center.x + (polytope.verts[i].x - center.x)*t;
 		    center.y = center.y + (polytope.verts[i].y - center.y)*t;
 		    center.z = center.z + (polytope.verts[i].z - center.z)*t;
@@ -153,13 +153,13 @@ public class BoundingSphere extends Bounds {
 	} else {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingSphere0"));
 	}
-	
+
 	updateBoundsStates();
     }
 
     /**
-     * Constructs and initializes a BoundingSphere from an array of bounding objects. 
-     * @param boundsObjects an array of bounds objects 
+     * Constructs and initializes a BoundingSphere from an array of bounding objects.
+     * @param boundsObjects an array of bounds objects
      */
     public BoundingSphere(Bounds[] boundsObjects) {
 	int i=0;
@@ -184,7 +184,7 @@ public class BoundingSphere extends Bounds {
 	   // Negative volume.
 	    radius = -1.0;
 	    updateBoundsStates();
-	    return; 
+	    return;
 	}
 
 	this.set(boundsObjects[i++]);
@@ -231,7 +231,7 @@ public class BoundingSphere extends Bounds {
 			center.x = sphere.center.x + (center.x-sphere.center.x)*t;
 			center.y = sphere.center.y + (center.y-sphere.center.y)*t;
 			center.z = sphere.center.z + (center.z-sphere.center.z)*t;
-		    }  
+		    }
 		}else {
 		    if( (dis+radius) <= sphere.radius) {
 			center.x = sphere.center.x;
@@ -246,7 +246,7 @@ public class BoundingSphere extends Bounds {
 			center.y = center.y + (sphere.center.y-center.y)*t;
 			center.z = center.z + (sphere.center.z-center.z)*t;
 		    }
-		}    
+		}
 	    }
 	    else if(boundsObjects[i].boundId == BOUNDING_POLYTOPE) {
 		BoundingPolytope polytope = (BoundingPolytope)boundsObjects[i];
@@ -299,7 +299,7 @@ public class BoundingSphere extends Bounds {
 	this.center.z = center.z;
 	checkBoundsIsNaN();
     }
-    
+
     /**
      * Sets the value of this BoundingSphere.
      * @param boundsObject another bounds object
@@ -346,7 +346,7 @@ public class BoundingSphere extends Bounds {
 			       (polytope.verts[0].y - center.y) +
 			       (polytope.verts[0].z - center.z)*
 			       (polytope.verts[0].z - center.z));
-	    
+
 	    for(i=1;i<polytope.nVerts;i++) {
 	        rad_sq = radius * radius;
 
@@ -356,14 +356,14 @@ public class BoundingSphere extends Bounds {
 		    (polytope.verts[i].y - center.y) +
                     (polytope.verts[i].z - center.z)*
 		    (polytope.verts[i].z - center.z);
-		
+
 		// change sphere so one side passes through the point
 		// and other passes through the old sphere
    	        if( dis_sq > rad_sq) { // point is outside sphere
 		    dis = Math.sqrt( dis_sq);
 		    radius = (radius + dis)*.5;
 		    oldc_to_new_c = dis - radius;
-		    t = oldc_to_new_c/dis; 
+		    t = oldc_to_new_c/dis;
 		    center.x = center.x + (polytope.verts[i].x - center.x)*t;
 		    center.y = center.y + (polytope.verts[i].y - center.y)*t;
 		    center.z = center.z + (polytope.verts[i].z - center.z)*t;
@@ -377,7 +377,7 @@ public class BoundingSphere extends Bounds {
 
     /**
      * Creates a copy of the bounding sphere.
-     * @return a BoundingSphere 
+     * @return a BoundingSphere
      */
     public Object clone() {
 	return new BoundingSphere(this.center, this.radius);
@@ -434,7 +434,7 @@ public class BoundingSphere extends Bounds {
     }
 
 
-    /** 
+    /**
      * Combines this bounding sphere with a bounding object so that the
      * resulting bounding sphere encloses the original bounding sphere and the
      * given bounds object.
@@ -447,7 +447,7 @@ public class BoundingSphere extends Bounds {
 	if((boundsObject == null) || (boundsObject.boundsIsEmpty)
 	   || (boundsIsInfinite))
 	    return;
-	
+
 	if((boundsIsEmpty) || (boundsObject.boundsIsInfinite)) {
 	    this.set(boundsObject);
 	    return;
@@ -456,25 +456,25 @@ public class BoundingSphere extends Bounds {
 
 	if( boundsObject.boundId == BOUNDING_BOX){
             BoundingBox b = (BoundingBox)boundsObject;
-	    
-	    //       start with point furthest from sphere 
+
+	    //       start with point furthest from sphere
 	    u = b.upper.x-center.x;
 	    l = b.lower.x-center.x;
-	    if( u*u > l*l) 
+	    if( u*u > l*l)
                 x = b.upper.x;
 	    else
                 x = b.lower.x;
 
 	    u = b.upper.y-center.y;
 	    l = b.lower.y-center.y;
-	    if( u*u > l*l) 
+	    if( u*u > l*l)
                 y = b.upper.y;
 	    else
                 y = b.lower.y;
 
 	    u = b.upper.z-center.z;
 	    l = b.lower.z-center.z;
-	    if( u*u > l*l) 
+	    if( u*u > l*l)
                 z = b.upper.z;
 	    else
                 z = b.lower.z;
@@ -482,7 +482,7 @@ public class BoundingSphere extends Bounds {
 	    dis = Math.sqrt( (x - center.x)*(x - center.x) +
 			     (y - center.y)*(y - center.y) +
 			     (z - center.z)*(z - center.z) );
- 
+
 	    if( dis > radius) {
                 radius = (dis + radius)*.5;
                 oldc_to_new_c = dis - radius;
@@ -514,7 +514,7 @@ public class BoundingSphere extends Bounds {
 		    center.x = sphere.center.x + (center.x-sphere.center.x)*t;
 		    center.y = sphere.center.y + (center.y-sphere.center.y)*t;
 		    center.z = sphere.center.z + (center.z-sphere.center.z)*t;
-		}  
+		}
 	    }else {
 		if( (dis+radius) <= sphere.radius) {
 		    center.x = sphere.center.x;
@@ -529,7 +529,7 @@ public class BoundingSphere extends Bounds {
 		    center.y = center.y + (sphere.center.y-center.y)*t;
 		    center.z = center.z + (sphere.center.z-center.z)*t;
 		}
-	    }    
+	    }
 
 	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
@@ -539,13 +539,13 @@ public class BoundingSphere extends Bounds {
 	}
 	updateBoundsStates();
     }
-    
+
     private void combinePoint( double x, double y, double z) {
 	double dis,oldc_to_new_c;
 	dis = Math.sqrt( (x - center.x)*(x - center.x) +
 			 (y - center.y)*(y - center.y) +
 			 (z - center.z)*(z - center.z) );
- 
+
 	if( dis > radius) {
 	    radius = (dis + radius)*.5;
 	    oldc_to_new_c = dis - radius;
@@ -555,7 +555,7 @@ public class BoundingSphere extends Bounds {
 	}
     }
 
-    /** 
+    /**
      * Combines this bounding sphere with an array of bounding objects so that the
      * resulting bounding sphere encloses the original bounding sphere and the
      * given array of bounds object.
@@ -567,12 +567,12 @@ public class BoundingSphere extends Bounds {
 	BoundingPolytope polytope;
 	double t,dis,d1,u,l,x,y,z,oldc_to_new_c;
 	int i=0;
-        
- 
+
+
 	if((boundsObjects == null) || (boundsObjects.length <= 0)
 	   || (boundsIsInfinite))
 	    return;
-	
+
 	// find first non empty bounds object
 	while((i<boundsObjects.length) &&
 	      ((boundsObjects[i] == null) || boundsObjects[i].boundsIsEmpty)) {
@@ -580,13 +580,13 @@ public class BoundingSphere extends Bounds {
 	}
 	if( i >= boundsObjects.length)
 	    return;   // no non empty bounds so do not modify current bounds
- 
+
 	if( boundsIsEmpty)
 	    this.set(boundsObjects[i++]);
 
 	if(boundsIsInfinite)
 	    return;
-	
+
 	for(;i<boundsObjects.length;i++) {
 	    if( boundsObjects[i] == null );  // do nothing
 	    else if( boundsObjects[i].boundsIsEmpty); // do nothing
@@ -596,35 +596,35 @@ public class BoundingSphere extends Bounds {
 		center.z = 0.0;
 		radius = Double.POSITIVE_INFINITY;
 		break;  // We're done.
-	    } else if( boundsObjects[i].boundId == BOUNDING_BOX){ 
-		b = (BoundingBox)boundsObjects[i]; 
- 
-		//       start with point furthest from sphere 
+	    } else if( boundsObjects[i].boundId == BOUNDING_BOX){
+		b = (BoundingBox)boundsObjects[i];
+
+		//       start with point furthest from sphere
 		u = b.upper.x-center.x;
 		l = b.lower.x-center.x;
-		if( u*u > l*l) 
+		if( u*u > l*l)
 		    x = b.upper.x;
 		else
 		    x = b.lower.x;
- 
+
 		u = b.upper.y-center.y;
 		l = b.lower.y-center.y;
-		if( u*u > l*l) 
+		if( u*u > l*l)
 		    y = b.upper.y;
 		else
 		    y = b.lower.y;
 
 		u = b.upper.z-center.z;
 		l = b.lower.z-center.z;
-		if( u*u > l*l) 
+		if( u*u > l*l)
 		    z = b.upper.z;
 		else
 		    z = b.lower.z;
- 
+
 		dis = Math.sqrt( (x - center.x)*(x - center.x) +
 				 (y - center.y)*(y - center.y) +
 				 (z - center.z)*(z - center.z) );
- 
+
 		if( dis > radius) {
 		    radius = (dis + radius)*.5;
 		    oldc_to_new_c = dis - radius;
@@ -649,14 +649,14 @@ public class BoundingSphere extends Bounds {
 				 (center.z - sphere.center.z)*
 				 (center.z - sphere.center.z) );
 		if( radius > sphere.radius) {
-		    if( (dis+sphere.radius) > radius) { 
+		    if( (dis+sphere.radius) > radius) {
 			d1 = .5*(radius-sphere.radius+dis);
 			t = d1/dis;
 			radius = d1+sphere.radius;
 			center.x = sphere.center.x + (center.x-sphere.center.x)*t;
 			center.y = sphere.center.y + (center.y-sphere.center.y)*t;
 			center.z = sphere.center.z + (center.z-sphere.center.z)*t;
-		    }   
+		    }
 		}else {
 		    if( (dis+radius) <= sphere.radius) {
 			center.x = sphere.center.x;
@@ -671,10 +671,10 @@ public class BoundingSphere extends Bounds {
 			center.y = center.y + (sphere.center.y-center.y)*t;
 			center.z = center.z + (sphere.center.z-center.z)*t;
 		    }
-		}    
+		}
 	    } else if(boundsObjects[i].boundId == BOUNDING_POLYTOPE) {
-		polytope = (BoundingPolytope)boundsObjects[i]; 
-		this.combine(polytope.verts); 
+		polytope = (BoundingPolytope)boundsObjects[i];
+		this.combine(polytope.verts);
 	    } else {
 		throw new IllegalArgumentException(J3dI18N.getString("BoundingSphere4"));
 	    }
@@ -683,7 +683,7 @@ public class BoundingSphere extends Bounds {
 	updateBoundsStates();
     }
 
-    /** 
+    /**
      * Combines this bounding sphere with a point.
      * @param point a 3D point in space
      */
@@ -693,7 +693,7 @@ public class BoundingSphere extends Bounds {
 	if( boundsIsInfinite) {
 	    return;
 	}
-	
+
 	if( boundsIsEmpty) {
 	    radius = 0.0;
 	    center.x = point.x;
@@ -712,16 +712,16 @@ public class BoundingSphere extends Bounds {
                 center.z = (radius*center.z + oldc_to_new_c*point.z)/dis;
 	    }
 	}
-	
+
 	updateBoundsStates();
-    }  
- 
+    }
+
     /**
      * Combines this bounding sphere with an array of points.
      * @param points an array of 3D points in space
      */
     public void combine(Point3d[] points) {
-	int i; 
+	int i;
 	double dis,dis_sq,rad_sq,oldc_to_new_c;
 
 	if( boundsIsInfinite) {
@@ -740,7 +740,7 @@ public class BoundingSphere extends Bounds {
 	    dis_sq =  (points[i].x - center.x)*(points[i].x - center.x) +
 		(points[i].y - center.y)*(points[i].y - center.y) +
 		(points[i].z - center.z)*(points[i].z - center.z);
-	    
+
 	    // change sphere so one side passes through the point and
 	    // other passes through the old sphere
 	    if( dis_sq > rad_sq) {
@@ -752,15 +752,15 @@ public class BoundingSphere extends Bounds {
                 center.z = (radius*center.z + oldc_to_new_c*points[i].z)/dis;
 	    }
 	}
-	
+
 	updateBoundsStates();
     }
-    
+
 
     /**
      * Modifies the bounding sphere so that it bounds the volume
      * generated by transforming the given bounding object.
-     * @param boundsObject the bounding object to be transformed 
+     * @param boundsObject the bounding object to be transformed
      * @param matrix a transformation matrix
      */
     public void transform( Bounds boundsObject, Transform3D matrix) {
@@ -773,14 +773,14 @@ public class BoundingSphere extends Bounds {
 	    updateBoundsStates();
 	    return;
 	}
-	
+
 	if(boundsObject.boundsIsInfinite) {
 	    center.x = center.y = center.z = 0.0;
 	    radius = Double.POSITIVE_INFINITY;
 	    updateBoundsStates();
 	    return;
 	}
-	
+
 	if( boundsObject.boundId == BOUNDING_BOX){
 	    if (tmpBox == null) {
                 tmpBox = new BoundingBox( (BoundingBox)boundsObject);
@@ -814,7 +814,7 @@ public class BoundingSphere extends Bounds {
 	}
     }
 
-    /** 
+    /**
      * Transforms this bounding sphere by the given matrix.
      */
     public void transform( Transform3D trans) {
@@ -835,15 +835,15 @@ public class BoundingSphere extends Bounds {
 	}
     }
 
-    /** 
-     * Test for intersection with a ray 
-     * @param origin the starting point of the ray   
+    /**
+     * Test for intersection with a ray
+     * @param origin the starting point of the ray
      * @param direction the direction of the ray
      * @param position3 a point defining the location of the pick w= distance to pick
-     * @return true or false indicating if an intersection occured 
+     * @return true or false indicating if an intersection occured
      */
     boolean intersect(Point3d origin, Vector3d direction, Point4d position ) {
- 
+
 	if( boundsIsEmpty ) {
 	    return false;
 	}
@@ -863,15 +863,15 @@ public class BoundingSphere extends Bounds {
 	oc.x = center.x - origin.x;
 	oc.y = center.y - origin.y;
 	oc.z = center.z - origin.z;
- 
+
 	l2oc = oc.x*oc.x + oc.y*oc.y + oc.z*oc.z; // center to origin squared
- 
+
 	rad2 = radius*radius;
 	if( l2oc < rad2 ){
 	    //      System.err.println("ray origin inside sphere" );
 	    return true;   // ray origin inside sphere
 	}
- 
+
 	invMag = 1.0/Math.sqrt(direction.x*direction.x +
 			       direction.y*direction.y +
 			       direction.z*direction.z);
@@ -879,14 +879,14 @@ public class BoundingSphere extends Bounds {
 	dir.y = direction.y*invMag;
 	dir.z = direction.z*invMag;
 	tca = oc.x*dir.x + oc.y*dir.y + oc.z*dir.z;
- 
+
 	if( tca <= 0.0 ) {
 	    //      System.err.println("ray points away from sphere" );
 	    return false;  // ray points away from sphere
 	}
-	
+
 	t2hc = rad2 - l2oc + tca*tca;
-	
+
 	if( t2hc > 0.0 ){
 	    t = tca - Math.sqrt(t2hc);
 	    //      System.err.println("ray  hits sphere:"+this.toString()+" t="+t+" direction="+dir );
@@ -902,15 +902,15 @@ public class BoundingSphere extends Bounds {
 
     }
 
-    /** 
-     * Test for intersection with a point 
-     * @param point the pick point   
+    /**
+     * Test for intersection with a point
+     * @param point the pick point
      * @param position a point defining the location  of the pick w= distance to pick
-     * @return true or false indicating if an intersection occured 
+     * @return true or false indicating if an intersection occured
      */
     boolean intersect(Point3d point,  Point4d position ) {
 	double x,y,z,dist;
- 
+
 	if( boundsIsEmpty ) {
 	    return false;
 	}
@@ -942,13 +942,13 @@ public class BoundingSphere extends Bounds {
 
     /**
      * Test for intersection with a segment
-     * @param start a point defining  the start of the line segment 
-     * @param end a point defining the end of the line segment 
+     * @param start a point defining  the start of the line segment
+     * @param end a point defining the end of the line segment
      * @param position a point defining the location  of the pick w= distance to pick
      * @return true or false indicating if an intersection occured
      */
     boolean intersect( Point3d start, Point3d end, Point4d position ) {
- 
+
 	if( boundsIsEmpty ) {
 	    return false;
 	}
@@ -960,7 +960,7 @@ public class BoundingSphere extends Bounds {
 	    position.w = 0.0;
 	    return true;
 	}
-	
+
 	double l2oc,rad2,tca,t2hc,mag,invMag,t;
 	Vector3d dir = new Vector3d();  // normalized direction of ray
 	Point3d oc  = new Point3d();  // vector from sphere center to ray origin
@@ -979,24 +979,24 @@ public class BoundingSphere extends Bounds {
 	dir.y = direction.y*invMag;
 	dir.z = direction.z*invMag;
 
- 
+
 	l2oc = oc.x*oc.x + oc.y*oc.y + oc.z*oc.z; // center to origin squared
- 
+
 	rad2 = radius*radius;
 	if( l2oc < rad2 ){
 	    //      System.err.println("ray origin inside sphere" );
 	    return true;   // ray origin inside sphere
-	}   
- 
+	}
+
 	tca = oc.x*dir.x + oc.y*dir.y + oc.z*dir.z;
- 
+
 	if( tca <= 0.0 ) {
 	    //      System.err.println("ray points away from sphere" );
 	    return false;  // ray points away from sphere
-	}   
- 
+	}
+
 	t2hc = rad2 - l2oc + tca*tca;
- 
+
 	if( t2hc > 0.0 ){
 	    t = tca - Math.sqrt(t2hc);
 	    if( t*t <= ((end.x-start.x)*(end.x-start.x)+
@@ -1013,12 +1013,12 @@ public class BoundingSphere extends Bounds {
 	return false;
     }
 
-    /** 
+    /**
      * Test for intersection with a ray.
      * @param origin the starting point of the ray
      * @param direction the direction of the ray
      * @return true or false indicating if an intersection occured
-     */ 
+     */
     public boolean intersect(Point3d origin, Vector3d direction ) {
 
 	if( boundsIsEmpty ) {
@@ -1032,7 +1032,7 @@ public class BoundingSphere extends Bounds {
 	double l2oc,rad2,tca,t2hc,mag;
 	Vector3d dir = new Vector3d();  // normalized direction of ray
 	Point3d oc  = new Point3d();  // vector from sphere center to ray origin
-	
+
 	oc.x = center.x - origin.x;
 	oc.y = center.y - origin.y;
 	oc.z = center.z - origin.z;
@@ -1060,16 +1060,16 @@ public class BoundingSphere extends Bounds {
 
 	t2hc = rad2 - l2oc + tca*tca;
 
-	if( t2hc > 0.0 ){ 
+	if( t2hc > 0.0 ){
 	    //	System.err.println("ray hits sphere" );
 	    return true;   // ray hits sphere
-	}else { 
+	}else {
 	    //	System.err.println("ray does not hit sphere" );
 	    return false;
 	}
-    }  
+    }
 
-    
+
     /**
      *	Returns the position of the intersect point if the ray intersects with
      * the sphere.
@@ -1080,7 +1080,7 @@ public class BoundingSphere extends Bounds {
 	if( boundsIsEmpty ) {
 	    return false;
 	}
-	
+
 	if( boundsIsInfinite ) {
 	  intersectPoint.x = origin.x;
 	  intersectPoint.y = origin.y;
@@ -1103,7 +1103,7 @@ public class BoundingSphere extends Bounds {
 	    //	System.err.println("ray origin inside sphere" );
 	    return true;   // ray origin inside sphere
 	}
-	
+
 	mag = Math.sqrt(direction.x*direction.x +
 			direction.y*direction.y +
 			direction.z*direction.z);
@@ -1119,14 +1119,14 @@ public class BoundingSphere extends Bounds {
 
 	t2hc = rad2 - l2oc + tca*tca;
 
-	if( t2hc > 0.0 ){ 
+	if( t2hc > 0.0 ){
 	    t = tca - Math.sqrt(t2hc);
 	    intersectPoint.x = origin.x + direction.x*t;
 	    intersectPoint.y = origin.y + direction.y*t;
 	    intersectPoint.z = origin.z + direction.z*t;
 	    //	System.err.println("ray hits sphere" );
 	    return true;   // ray hits sphere
-	}else { 
+	}else {
 	    //	System.err.println("ray does not hit sphere" );
 	    return false;
 	}
@@ -1137,7 +1137,7 @@ public class BoundingSphere extends Bounds {
      * Test for intersection with a point.
      * @param point a point defining a position in 3-space
      * @return true or false indicating if an intersection occured
-     */ 
+     */
     public boolean intersect(Point3d point ) {
 	double x,y,z,dist;
 
@@ -1147,17 +1147,17 @@ public class BoundingSphere extends Bounds {
 	if( boundsIsInfinite ) {
 	    return true;
 	}
-	
+
 	x = point.x - center.x;
 	y = point.y - center.y;
 	z = point.z - center.z;
-	
+
 	dist = x*x + y*y + z*z;
 	if( dist > radius*radius)
 	    return false;
 	else
 	    return true;
-      
+
     }
 
     /**
@@ -1176,7 +1176,7 @@ public class BoundingSphere extends Bounds {
      * Test for intersection with another bounds object.
      * @param boundsObject another bounds object
      * @return true or false indicating if an intersection occured
-     */ 
+     */
     boolean intersect(Bounds boundsObject, Point4d position) {
 	return intersect(boundsObject);
     }
@@ -1185,15 +1185,15 @@ public class BoundingSphere extends Bounds {
      * Test for intersection with another bounds object.
      * @param boundsObject another bounds object
      * @return true or false indicating if an intersection occured
-     */ 
+     */
     public boolean intersect(Bounds boundsObject) {
 	double distsq, radsq;
 	BoundingSphere sphere;
 	boolean intersect;
-      
+
 	if( boundsObject == null ) {
 	    return false;
-	} 
+	}
 
         if( boundsIsEmpty || boundsObject.boundsIsEmpty ) {
 	    return false;
@@ -1227,8 +1227,8 @@ public class BoundingSphere extends Bounds {
 	    else
 		if( center.z > box.upper.z )
 		    dis += (center.z-box.upper.z)*(center.z-box.upper.z);
-	      
-	    return ( dis <= rad_sq ); 
+
+	    return ( dis <= rad_sq );
 	} else if( boundsObject.boundId == BOUNDING_SPHERE ) {
 	    sphere = (BoundingSphere)boundsObject;
 	    radsq = radius + sphere.radius;
@@ -1246,12 +1246,12 @@ public class BoundingSphere extends Bounds {
      * Test for intersection with another bounds object.
      * @param boundsObjects an array of bounding objects
      * @return true or false indicating if an intersection occured
-     */ 
+     */
     public boolean intersect(Bounds[] boundsObjects) {
 	double distsq, radsq;
 	BoundingSphere sphere;
 	int i;
-      
+
 	if( boundsObjects == null || boundsObjects.length <= 0  )  {
 	    return false;
 	}
@@ -1259,7 +1259,7 @@ public class BoundingSphere extends Bounds {
 	if( boundsIsEmpty ) {
 	    return false;
 	}
-	
+
 	for(i = 0; i < boundsObjects.length; i++){
 	    if( boundsObjects[i] == null || boundsObjects[i].boundsIsEmpty);
 	    else if( boundsIsInfinite || boundsObjects[i].boundsIsInfinite ) {
@@ -1280,10 +1280,10 @@ public class BoundingSphere extends Bounds {
 		throw new IllegalArgumentException(J3dI18N.getString("BoundingSphere7"));
 	    }
 	}
-	
+
 	return false;
-	
-    }    
+
+    }
 
     /**
      * Test for intersection with another bounds object.
@@ -1291,9 +1291,9 @@ public class BoundingSphere extends Bounds {
      * @param newBoundSphere the new bounding sphere which is the intersection of
      *      the boundsObject and this BoundingSphere
      * @return true or false indicating if an intersection occured
-     */ 
+     */
     public boolean intersect(Bounds boundsObject, BoundingSphere newBoundSphere) {
-      
+
 	if((boundsObject == null ) || boundsIsEmpty || boundsObject.boundsIsEmpty) {
 	    // Negative volume.
 	    newBoundSphere.center.x = newBoundSphere.center.y =
@@ -1318,7 +1318,7 @@ public class BoundingSphere extends Bounds {
 	    BoundingBox tbox =  new BoundingBox();
 	    BoundingBox box = (BoundingBox)boundsObject;
 	    if( this.intersect( box) ){
-		BoundingBox sbox = new BoundingBox( this ); // convert sphere to box 
+		BoundingBox sbox = new BoundingBox( this ); // convert sphere to box
 		sbox.intersect(box, tbox);  // insersect two boxes
 		newBoundSphere.set( tbox ); // set sphere to the intersection of 2 boxes
 		return true;
@@ -1368,7 +1368,7 @@ public class BoundingSphere extends Bounds {
 
 	    newBoundSphere.updateBoundsStates();
 	    return status;
-	    
+
 	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingBox tbox =  new BoundingBox();
 
@@ -1398,8 +1398,8 @@ public class BoundingSphere extends Bounds {
      * @param newBoundSphere the new bounding sphere which is the intersection of
      *      the boundsObject and this BoundingSphere
      * @return true or false indicating if an intersection occured
-     */ 
-    public boolean intersect(Bounds[] boundsObjects, BoundingSphere newBoundSphere) {        
+     */
+    public boolean intersect(Bounds[] boundsObjects, BoundingSphere newBoundSphere) {
 
 	if( boundsObjects == null || boundsObjects.length <= 0 ||  boundsIsEmpty ) {
 	    // Negative volume.
@@ -1411,12 +1411,12 @@ public class BoundingSphere extends Bounds {
 	}
 
 	int i=0;
-	
+
 	// find first non null bounds object
 	while( boundsObjects[i] == null && i < boundsObjects.length) {
 	    i++;
 	}
-	
+
 	if( i >= boundsObjects.length ) { // all bounds objects were empty
 	    // Negative volume.
 	    newBoundSphere.center.x = newBoundSphere.center.y =
@@ -1424,8 +1424,8 @@ public class BoundingSphere extends Bounds {
 	    newBoundSphere.radius = -1.0;
 	    newBoundSphere.updateBoundsStates();
 	    return false;
-	} 
-	
+	}
+
 	boolean status = false;
 	double newRadius;
 	Point3d newCenter = new Point3d();
@@ -1436,7 +1436,7 @@ public class BoundingSphere extends Bounds {
 	    else if( boundsObjects[i].boundId == BOUNDING_BOX) {
 		BoundingBox box = (BoundingBox)boundsObjects[i];
 		if( this.intersect( box) ){
-		    BoundingBox sbox = new BoundingBox( this ); // convert sphere to box 
+		    BoundingBox sbox = new BoundingBox( this ); // convert sphere to box
 		    sbox.intersect(box,tbox); // insersect two boxes
 		    if( status ) {
 			newBoundSphere.combine( tbox );
@@ -1520,10 +1520,10 @@ public class BoundingSphere extends Bounds {
 	return status;
     }
 
-    /** 
+    /**
      * Finds closest bounding object that intersects this bounding sphere.
-     * @param boundsObjects an array of  bounds objects 
-     * @return closest bounding object 
+     * @param boundsObjects an array of  bounds objects
+     * @return closest bounding object
      */
     public Bounds closestIntersection( Bounds[] boundsObjects) {
 
@@ -1540,7 +1540,7 @@ public class BoundingSphere extends Bounds {
 	boolean contains = false;
 	boolean inside;
 	boolean intersect = false;
-	double smallest_distance = Double.MAX_VALUE; 
+	double smallest_distance = Double.MAX_VALUE;
 	int i,j,index=0;
 
 
@@ -1559,23 +1559,23 @@ public class BoundingSphere extends Bounds {
 				     (center.z-cenZ)*(center.z-cenZ) );
 		    if( (center.x-box.lower.x)*(center.x-box.lower.x) >
 			(center.x-box.upper.x)*(center.x-box.upper.x) )
-			far_dis = (center.x-box.lower.x)*(center.x-box.lower.x); 
+			far_dis = (center.x-box.lower.x)*(center.x-box.lower.x);
 		    else
 			far_dis = (center.x-box.upper.x)*(center.x-box.upper.x);
-		    
+
 		    if( (center.y-box.lower.y)*(center.y-box.lower.y) >
 			(center.y-box.upper.y)*(center.y-box.upper.y) )
-			far_dis += (center.y-box.lower.y)*(center.y-box.lower.y); 
+			far_dis += (center.y-box.lower.y)*(center.y-box.lower.y);
 		    else
 			far_dis += (center.y-box.upper.y)*(center.y-box.upper.y);
-		    
+
 		    if( (center.z-box.lower.z)*(center.z-box.lower.z) >
 			(center.z-box.upper.z)*(center.z-box.upper.z) )
-			far_dis += (center.z-box.lower.z)*(center.z-box.lower.z); 
+			far_dis += (center.z-box.lower.z)*(center.z-box.lower.z);
 		    else
 			far_dis += (center.z-box.upper.z)*(center.z-box.upper.z);
-		    
-		    rad_sq = radius * radius;  
+
+		    rad_sq = radius * radius;
 		    if( far_dis <= rad_sq )  { // contains box
 			if( !contains ){ // initialize smallest_distance for the first containment
 			    index = i;
@@ -1626,12 +1626,12 @@ public class BoundingSphere extends Bounds {
 			x = polytope.verts[j].x - center.x;
 			y = polytope.verts[j].y - center.y;
 			z = polytope.verts[j].z - center.z;
- 
+
 			pdist = x*x + y*y + z*z;
 			if( pdist > radius*radius)
 			    inside=false;
 		    }
-		    if( inside ) { 
+		    if( inside ) {
 			if( !contains ){ // initialize smallest_distance for the first containment
 			    index = i;
 			    smallest_distance = dis;
@@ -1679,7 +1679,7 @@ public class BoundingSphere extends Bounds {
 	    return true;
 
 	for (i=0; i<6; i++) {
-	    dist = frustum.clipPlanes[i].x*center.x + frustum.clipPlanes[i].y*center.y + 
+	    dist = frustum.clipPlanes[i].x*center.x + frustum.clipPlanes[i].y*center.y +
 	        frustum.clipPlanes[i].z*center.z + frustum.clipPlanes[i].w;
 	    if (dist < 0.0 && (dist + radius) < 0.0) {
 		return(false);
@@ -1704,7 +1704,7 @@ public class BoundingSphere extends Bounds {
 	    return true;
 
 	for (i=0; i<6; i++) {
-	    dist = planes[i].x*center.x + planes[i].y*center.y + 
+	    dist = planes[i].x*center.x + planes[i].y*center.y +
 	        planes[i].z*center.z + planes[i].w;
 	    if (dist < 0.0 && (dist + radius) < 0.0) {
 		//System.err.println("Tossing " + i + " " + dist + " " + radius);
@@ -1720,15 +1720,15 @@ public class BoundingSphere extends Bounds {
     public String toString() {
 	return new String( "Center="+center+"  Radius="+radius);
     }
-    
+
     private void updateBoundsStates() {
 
 	if (checkBoundsIsNaN()) {
 	     boundsIsEmpty = true;
-	     boundsIsInfinite = false;	     
+	     boundsIsInfinite = false;
 	     return;
 	}
-	
+
 	if(radius == Double.POSITIVE_INFINITY) {
 	    boundsIsEmpty = false;
 	    boundsIsInfinite = true;
@@ -1746,7 +1746,7 @@ public class BoundingSphere extends Bounds {
     Point3d getCenter() {
 	return center;
     }
-    
+
     /**
      * if the passed the "region" is same type as this object
      * then do a copy, otherwise clone the Bounds  and

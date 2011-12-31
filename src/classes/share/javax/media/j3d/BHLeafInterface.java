@@ -32,14 +32,14 @@
 package javax.media.j3d;
 
 interface BHLeafInterface {
-    
+
     abstract BoundingBox computeBoundingHull();
 
     abstract boolean isEnable();
 
     abstract boolean isEnable(int visibilityPolicy);
-    
+
     // Can't use getLocale, it is used by BranchGroupRetained
     abstract Locale getLocale2();
-    
+
 }

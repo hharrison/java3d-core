@@ -49,11 +49,11 @@ import java.util.Hashtable;
  * <code>getNewObjectReference</code> method from this object to get updated
  * references to objects that have been duplicated in the new cloneTree
  * sub-graph.  If a match is found, a
- * reference to the corresponding SceneGraphObject in the newly cloned sub-graph 
+ * reference to the corresponding SceneGraphObject in the newly cloned sub-graph
  * is returned.  If no corresponding reference is found, either a
  * DanglingReferenceException is thrown by the <code>cloneTree</code>
  * method or a reference to the original
- * SceneGraphObject is returned depending on the value of the 
+ * SceneGraphObject is returned depending on the value of the
  * <code>allowDanglingReferences</code> parameter passed in the
  * <code>cloneTree</code> call.
  * @see SceneGraphObject#updateNodeReferences

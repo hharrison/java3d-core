@@ -50,10 +50,10 @@ public final class WakeupOnBehaviorPost extends WakeupCriterion {
     /**
      * Constructs a new WakeupOnBehaviorPost criterion.  A behavior of null
      * specifies a wakeup from any behavior on the specified postId. A postId
-     * of 0 specifies a wakeup on any postId from the specified behavior. 
+     * of 0 specifies a wakeup on any postId from the specified behavior.
      * A behavior of null AND a postId of 0 specify a wakeup on any postId
      * from any behavior.
-     * @param behavior the behavior that must be the source of the post, 
+     * @param behavior the behavior that must be the source of the post,
      * if behavior == null, then any behavior posting the postId will cause
      * the wakeup.
      * @param postId the postId that will trigger a wakeup if posted by the
@@ -67,7 +67,7 @@ public final class WakeupOnBehaviorPost extends WakeupCriterion {
 	triggeringBehavior = null;
 	WakeupIndexedList.init(this, TOTAL_INDEXED_UNORDER_SET_TYPES);
     }
-    
+
     /**
      * Retrieve the WakeupCriterion's specified postId
      * @return the post id specified in this object's construction.
@@ -88,8 +88,8 @@ public final class WakeupOnBehaviorPost extends WakeupCriterion {
 
     /**
      *  Returns the postId that caused the behavior to wakeup.  If the postId
-     *  used to construct this wakeup criterion was not zero, then the 
-     *  triggering postId will always be equal to the postId used in the 
+     *  used to construct this wakeup criterion was not zero, then the
+     *  triggering postId will always be equal to the postId used in the
      *  constructor.
      */
     public int getTriggeringPostId() {
@@ -98,17 +98,17 @@ public final class WakeupOnBehaviorPost extends WakeupCriterion {
 
 
     /**
-     *  Returns the behavior that triggered this wakeup.  If the arming 
-     *  behavior used to construct this object was not null, then the 
+     *  Returns the behavior that triggered this wakeup.  If the arming
+     *  behavior used to construct this object was not null, then the
      *  triggering behavior will be the same as the arming behavior.
      */
     public Behavior getTriggeringBehavior() {
 	return triggeringBehavior;
     }
 
- 
+
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
     void addBehaviorCondition(BehaviorStructure bs) {
@@ -117,7 +117,7 @@ public final class WakeupOnBehaviorPost extends WakeupCriterion {
 
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
     void removeBehaviorCondition(BehaviorStructure bs) {

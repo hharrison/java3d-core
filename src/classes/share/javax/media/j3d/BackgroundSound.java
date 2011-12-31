@@ -30,7 +30,7 @@
  */
 
 package javax.media.j3d;
- 
+
 /**
  * A BackgroundSound node defines an unattenuated, nonspatialized sound
  * source that has no position or direction. It has the same attributes as a
@@ -41,9 +41,9 @@ package javax.media.j3d;
  */
 public class BackgroundSound extends Sound {
     /**
-     * Constructs a new BackgroundSound node using the default parameters 
+     * Constructs a new BackgroundSound node using the default parameters
      * for Sound nodes.
-     */  
+     */
     public BackgroundSound() {
         /**
          * Uses default values defined in SoundRetained.java
@@ -51,12 +51,12 @@ public class BackgroundSound extends Sound {
     }
 
     /**
-     * Constructs a BackgroundSound node object using only the provided 
+     * Constructs a BackgroundSound node object using only the provided
      * parameter values for sound data and sample gain. The remaining fields
      * are set to the default values for a Sound node.
      * @param soundData sound data associated with this sound source node
      * @param initialGain amplitude scale factor applied to sound source
-     */  
+     */
     public BackgroundSound(MediaContainer soundData, float initialGain ) {
         super(soundData, initialGain);
     }
@@ -72,7 +72,7 @@ public class BackgroundSound extends Sound {
      * @param enable sound switched on/off
      * @param region scheduling bounds
      * @param priority playback ranking value
-     */  
+     */
     public BackgroundSound(MediaContainer soundData,
                            float initialGain,
                            int loopCount,
@@ -81,12 +81,12 @@ public class BackgroundSound extends Sound {
                            boolean enable,
                            Bounds  region,
                            float   priority) {
- 
+
         super(soundData, initialGain, loopCount, release, continuous,
                    enable, region, priority );
     }
 
-    
+
     /**
      * Creates the retained mode BackgroundSoundRetained object that this
      * BackgroundSound component object will point to.
@@ -95,7 +95,7 @@ public class BackgroundSound extends Sound {
 	this.retained = new BackgroundSoundRetained();
 	this.retained.setSource(this);
     }
-  
+
 
     /**
      * Creates a new instance of the node.  This routine is called
@@ -142,7 +142,7 @@ public class BackgroundSound extends Sound {
      *  <code>false</code>, the value of each node's
      *  <code>duplicateOnCloneTree</code> variable determines whether
      *  NodeComponent data is duplicated or copied.
-     * @exception ClassCastException if originalNode is not an instance of 
+     * @exception ClassCastException if originalNode is not an instance of
      *  <code>Sound</code>
      *
      * @see Node#cloneTree

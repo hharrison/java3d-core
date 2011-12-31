@@ -43,7 +43,7 @@ import javax.vecmath.Vector3f;
  * by gain scale factors and filters based on the angle between the vector from
  * the source to the listener, and the ConeSound's direction vector. This
  * attenuation is either a single spherical distance gain attenuation (as for
- * a general PointSound source) or dual front and back distance gain 
+ * a general PointSound source) or dual front and back distance gain
  * attenuations defining elliptical attenuation areas. The angular filter and the
  * active AuralAttribute component filter define what filtering is applied to
  * the sound source. (See AuralAtttribute class for more details on filtering.)
@@ -51,7 +51,7 @@ import javax.vecmath.Vector3f;
  * direction vector and an array of points each containing: angular distance (in
  * radians), gain scale factor, and filter (which for now consists of a lowpass
  * filter cutoff frequency). Similar to the definition of the back distance gain
- * array for PointSounds, a piece-wise linear curve (defined in terms of 
+ * array for PointSounds, a piece-wise linear curve (defined in terms of
  * radians from the axis) specifies the slope of these additional attenuation
  * values.
  *   <P>
@@ -68,7 +68,7 @@ import javax.vecmath.Vector3f;
  * attenuation array separate from the back distance attenuation array.
  * A front distance attenuation array defines monotonically-increasing
  * distances from the sound source origin along the position direction
- * vector. A back distance attenuation array (if given) defines 
+ * vector. A back distance attenuation array (if given) defines
  * monotonically-increasing distances from the sound source origin along the
  * negative direction vector. The two arrays must be of the same length.
  * The backDistance[i] gain values must be less than or equal to
@@ -105,7 +105,7 @@ import javax.vecmath.Vector3f;
  *<P>
  * If this is not set, no angular gain attenuation or filtering is performed
  * (equivalent to using an angular gain scale factor of 1.0 and an angular
- * filter of Sound.NO_FILTER for all distances). 
+ * filter of Sound.NO_FILTER for all distances).
  *   <P>
  * If angular distance from the listener-sound-position vector and a sound's
  * direction vector is less than the first distance in the array, only the first
@@ -128,7 +128,7 @@ import javax.vecmath.Vector3f;
  * attenuation arrays. Arrays passed into getAngularAttenuation methods
  * should all be at least this size.
  *</UL>
- */ 
+ */
 
 public class ConeSound extends PointSound {
     // Constants
@@ -200,7 +200,7 @@ public class ConeSound extends PointSound {
      */
      public ConeSound(MediaContainer soundData,
                       float initialGain,
-                      Point3f position, 
+                      Point3f position,
                       Vector3f direction) {
 
         super(soundData, initialGain, position );
@@ -215,7 +215,7 @@ public class ConeSound extends PointSound {
      * Constructs a ConeSound node object using only the provided parameter
      * values for sound, overall initial gain, position, and direction.  The
      * remaining fields are set to the default values above. This form uses
-     * individual float parameters for the elements of the position and 
+     * individual float parameters for the elements of the position and
      * direction vectors.
      * @param soundData sound source data
      * @param initialGain amplitude scale factor applied to sound
@@ -228,7 +228,7 @@ public class ConeSound extends PointSound {
      */
      public ConeSound(MediaContainer soundData,
                       float initialGain,
-                      float posX, float posY, float posZ, 
+                      float posX, float posY, float posZ,
                       float dirX, float dirY, float dirZ) {
 
         super(soundData, initialGain, posX, posY, posZ );
@@ -241,13 +241,13 @@ public class ConeSound extends PointSound {
 
     /**
      * Constructs a ConeSound node object using all the provided PointSound
-     * parameter values.  This form uses points or vectors as input for its 
+     * parameter values.  This form uses points or vectors as input for its
      * position, direction, and front/back distance attenuation arrays.
      *<P>
      * Unlike the single distance gain attenuation array for PointSounds which
      * define spherical areas about the sound source between which gains are
      * linearly interpolated, this directed ConeSound can have two distance gain
-     * attenuation arrays that define ellipsoidal attenuation areas. See the 
+     * attenuation arrays that define ellipsoidal attenuation areas. See the
      * setDistanceGain PointSound method for details on how the separate distance
      * and distanceGain arrays are interpreted.
      *<P>
@@ -262,9 +262,9 @@ public class ConeSound extends PointSound {
      * @param region scheduling bounds
      * @param priority playback ranking value
      * @param position 3D location of source
-     * @param frontDistanceAttenuation array of (distance,gain) pairs controlling 
+     * @param frontDistanceAttenuation array of (distance,gain) pairs controlling
      * attenuation values along the positive direction axis
-     * @param backDistanceAttenuation array of (distance,gain) pairs controlling 
+     * @param backDistanceAttenuation array of (distance,gain) pairs controlling
      * attenuation values along the negative direction axis
      * @param direction vector defining cones' axii
      */
@@ -294,13 +294,13 @@ public class ConeSound extends PointSound {
 
     /**
      * Constructs a ConeSound node object using the provided parameter values.
-     * This form uses individual float parameters for the elements of the 
+     * This form uses individual float parameters for the elements of the
      * position, direction, and two distance attenuation arrays.
-     * Unlike the single distance gain attenuation array for PointSounds, which 
+     * Unlike the single distance gain attenuation array for PointSounds, which
      * define spherical areas about the sound source between which gains are
      * linearly interpolated, this directed ConeSound can have two distance
-     * gain attenuation arrays that define ellipsoidal attenuation areas. 
-     * See the setDistanceGain PointSound method for details on how the 
+     * gain attenuation arrays that define ellipsoidal attenuation areas.
+     * See the setDistanceGain PointSound method for details on how the
      * separate distance and distanceGain arrays are interpreted.
      * The ConeSound's direction vector and angular measurements are defined
      * in the local coordinate system of the node.
@@ -338,7 +338,7 @@ public class ConeSound extends PointSound {
                      float[] backDistanceGain,
                      float dirX, float dirY, float dirZ ) {
         super(soundData, initialGain, loopCount, release, continuous, enable,
-                     region, priority, posX, posY, posZ, 
+                     region, priority, posX, posY, posZ,
                      frontDistance, frontDistanceGain );
 
         // set default read capabilities
@@ -352,7 +352,7 @@ public class ConeSound extends PointSound {
     /**
      * Constructs a ConeSound node object using all the provided PointSound
      * parameter values, which include a single spherical distance attenuation
-     * array, but includes an angular attenuation array. 
+     * array, but includes an angular attenuation array.
      * This form uses points and vectors as input for its position, direction,
      * single spherical distanceAttenuation array, and angularAttenuation array.
      * It also accepts arrays of points for the distance attenuation and angular
@@ -369,7 +369,7 @@ public class ConeSound extends PointSound {
      * @param region scheduling bounds
      * @param priority playback ranking value
      * @param position 3D location of source
-     * @param distanceAttenuation array of (distance,gain) pairs controlling 
+     * @param distanceAttenuation array of (distance,gain) pairs controlling
      * attenuation values along the positive direction axis
      * @param direction vector defining cones' axii
      * @param angularAttenuation array of tuples defining angular gain/filtering
@@ -408,7 +408,7 @@ public class ConeSound extends PointSound {
      * components of distance attenuation, and separate arrays for the angular
      * distance, angular gain, and filtering components of angular attenuation.
      * See the setDistanceGain ConeSound method for details on how the separate
-     * distance and distanceGain arrays are interpreted. See the 
+     * distance and distanceGain arrays are interpreted. See the
      * setAngularAttenuation ConeSound method for details on how the separate
      * angularDistance, angularGain, and filter arrays are interpreted.
      * @param soundData sound source data associated with this node
@@ -447,7 +447,7 @@ public class ConeSound extends PointSound {
                      float[] angularGain,
                      float[] frequencyCutoff) {
         super(soundData, initialGain, loopCount, release, continuous, enable,
-                     region, priority, posX, posY, posZ, 
+                     region, priority, posX, posY, posZ,
                      distance, distanceGain );
 
         // set default read capabilities
@@ -472,9 +472,9 @@ public class ConeSound extends PointSound {
      * @param region scheduling bounds
      * @param priority playback ranking value
      * @param position 3D location of source
-     * @param frontDistanceAttenuation array of (distance,gain) pairs controlling 
+     * @param frontDistanceAttenuation array of (distance,gain) pairs controlling
      * attenuation values along the positive direction axis
-     * @param backDistanceAttenuation array of (distance,gain) pairs controlling 
+     * @param backDistanceAttenuation array of (distance,gain) pairs controlling
      * attenuation values along the negative direction axis
      * @param direction vector defining cones' axii
      * @param angularAttenuation array of tuples defining angular gain/filtering
@@ -550,7 +550,7 @@ public class ConeSound extends PointSound {
                      float[] angularGain,
                      float[] frequencyCutoff) {
         super(soundData, initialGain, loopCount, release, continuous, enable,
-                     region, priority, posX, posY, posZ, 
+                     region, priority, posX, posY, posZ,
                      frontDistance, frontDistanceGain );
 
         // set default read capabilities
@@ -576,20 +576,20 @@ public class ConeSound extends PointSound {
     // OVERLOADED Sound methods
     //
     /**
-     * Sets this sound's distance gain elliptical attenuation - 
+     * Sets this sound's distance gain elliptical attenuation -
      * where gain scale factor is applied to sound based on distance listener
      * is from sound source.
      * @param frontAttenuation defined by pairs of (distance,gain-scale-factor)
      * @param backAttenuation defined by pairs of (distance,gain-scale-factor)
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setDistanceGain(Point2f[] frontAttenuation,
                                       Point2f[] backAttenuation ) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DISTANCE_GAIN_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("ConeSound0"));
-  
+
         ((ConeSoundRetained)this.retained).setDistanceGain(frontAttenuation,
                              backAttenuation);
     }
@@ -602,30 +602,30 @@ public class ConeSound extends PointSound {
      * @param backGain array of non-negative scale factors
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setDistanceGain(float[] frontDistance, float[] frontGain,
                                       float[] backDistance, float[] backGain) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DISTANCE_GAIN_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("ConeSound0"));
-  
+
         ((ConeSoundRetained)this.retained).setDistanceGain(
                  frontDistance, frontGain, backDistance, backGain);
     }
 
     /**
-     * Sets this sound's back distance gain attenuation - where gain scale 
+     * Sets this sound's back distance gain attenuation - where gain scale
      * factor is applied to sound based on distance listener along the negative
      * sound direction axis from sound source.
      * @param attenuation defined by pairs of (distance,gain-scale-factor)
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setBackDistanceGain(Point2f[] attenuation) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DISTANCE_GAIN_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("ConeSound0"));
-  
+
         ((ConeSoundRetained)this.retained).setBackDistanceGain(attenuation);
     }
 
@@ -635,12 +635,12 @@ public class ConeSound extends PointSound {
      * @param gain array of non-negative scale factors
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setBackDistanceGain(float[] distance, float[] gain) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DISTANCE_GAIN_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("ConeSound0"));
-  
+
         ((ConeSoundRetained)this.retained).setBackDistanceGain(distance, gain);
     }
 
@@ -652,43 +652,43 @@ public class ConeSound extends PointSound {
      * The individual array elements must be allocated by the
      * caller. The Point2f x,y values are defined as follows:
      * x is the distance, y is the gain.
-     * @param frontAttenuation arrays containing forward distances 
+     * @param frontAttenuation arrays containing forward distances
      * attenuation pairs
-     * @param backAttenuation arrays containing backward distances 
+     * @param backAttenuation arrays containing backward distances
      * attenuation pairs
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */ 
+     */
     public void getDistanceGain(Point2f[] frontAttenuation,
-                                      Point2f[] backAttenuation) { 
+                                      Point2f[] backAttenuation) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DISTANCE_GAIN_READ))
                 throw new CapabilityNotSetException(J3dI18N.getString("ConeSound2"));
-  
+
         ((ConeSoundRetained)this.retained).getDistanceGain(
                    frontAttenuation, backAttenuation);
     }
 
     /**
-     * Gets this sound's elliptical distance gain attenuation values in 
+     * Gets this sound's elliptical distance gain attenuation values in
      * separate arrays. The arrays must be large enough to hold all
      * of the values.
      * @param frontDistance array of float distances along the sound axis
-     * @param frontGain array of non-negative scale factors associated with 
+     * @param frontGain array of non-negative scale factors associated with
      * front distances
-     * @param backDistance array of float negative distances along the sound 
+     * @param backDistance array of float negative distances along the sound
      * axis
-     * @param backGain array of non-negative scale factors associated with 
+     * @param backGain array of non-negative scale factors associated with
      * back distances
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */ 
+     */
     public void getDistanceGain(float[] frontDistance, float[] frontGain,
-                                      float[] backDistance, float[] backGain) { 
+                                      float[] backDistance, float[] backGain) {
         if (isLiveOrCompiled())
         if(!this.getCapability(ALLOW_DISTANCE_GAIN_READ))
             throw new CapabilityNotSetException(J3dI18N.getString("ConeSound10"));
-      
+
         ((ConeSoundRetained)this.retained).getDistanceGain(
                  frontDistance, frontGain, backDistance, backGain);
     }
@@ -703,7 +703,7 @@ public class ConeSound extends PointSound {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DIRECTION_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("ConeSound3"));
-   
+
         ((ConeSoundRetained)this.retained).setDirection(direction);
     }
 
@@ -740,9 +740,9 @@ public class ConeSound extends PointSound {
 
     /**
      * Sets this sound's angular gain attenuation (not including filter).
-     * In this form of setAngularAttenuation, only the angular distances 
-     * and angular gain scale factors pairs are given. The filter values for 
-     * these tuples are implicitly set to Sound.NO_FILTER. 
+     * In this form of setAngularAttenuation, only the angular distances
+     * and angular gain scale factors pairs are given. The filter values for
+     * these tuples are implicitly set to Sound.NO_FILTER.
      * @param attenuation array containing angular distance and gain
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
@@ -756,7 +756,7 @@ public class ConeSound extends PointSound {
     }
 
     /**
-     * In the second form of setAngularAttenuation, an array of all three values 
+     * In the second form of setAngularAttenuation, an array of all three values
      * is supplied.
      * @param attenuation array containing angular distance, gain, and filter
      * @exception CapabilityNotSetException if appropriate capability is
@@ -778,7 +778,7 @@ public class ConeSound extends PointSound {
      * angularDistance array length, the array elements beyond the length of
      * the angularDistance array are ignored. If the angularGain or filtering
      * array is shorter than the angularDistance array, the last value of the
-     * short array is repeated to fill an array of length equal to 
+     * short array is repeated to fill an array of length equal to
      * angularDistance array.
      * @param distance array containing angular distance
      * @param gain array containing angular gain attenuation
@@ -801,24 +801,24 @@ public class ConeSound extends PointSound {
      * All arrays are forced to same size.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public int getAngularAttenuationLength() {
-        if (isLiveOrCompiled()) 
-            if(!this.getCapability(ALLOW_ANGULAR_ATTENUATION_READ)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("ConeSound9")); 
- 
+        if (isLiveOrCompiled())
+            if(!this.getCapability(ALLOW_ANGULAR_ATTENUATION_READ))
+                throw new CapabilityNotSetException(J3dI18N.getString("ConeSound9"));
+
        return (((ConeSoundRetained)this.retained).getAngularAttenuationLength());
     }
 
     /**
-     * Copies the array of attenuation values from this sound, including 
+     * Copies the array of attenuation values from this sound, including
      * gain and filter, into the specified array. The array must be
      * large enough to hold all of the points. The individual array
      * elements must be allocated by the caller. The Point3f x,y,z values
      * are defined as follows: x is the angular distance, y is
      * the angular gain attenuation, and z is the frequency
      * cutoff.
-     * @param attenuation the array to receive the attenuation values 
+     * @param attenuation the array to receive the attenuation values
      * applied to gain when listener is between cones
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
@@ -896,7 +896,7 @@ public class ConeSound extends PointSound {
      *  <code>false</code>, the value of each node's
      *  <code>duplicateOnCloneTree</code> variable determines whether
      *  NodeComponent data is duplicated or copied.
-     * @exception ClassCastException if originalNode is not an instance of 
+     * @exception ClassCastException if originalNode is not an instance of
      *  <code>ConeSound</code>
      *
      * @see Node#cloneTree
@@ -913,7 +913,7 @@ public class ConeSound extends PointSound {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -935,18 +935,18 @@ public class ConeSound extends PointSound {
 	ConeSoundRetained orgRetained = (ConeSoundRetained)originalNode.retained;
 	ConeSoundRetained thisRetained = (ConeSoundRetained)this.retained;
 
-	// front distance gain & attenuation is set in super      
+	// front distance gain & attenuation is set in super
 	// set back distance gain only
 	int len = orgRetained.getDistanceGainLength();
 	float distance[] = new float[len];
 	float gain[] = new float[len];
 	orgRetained.getDistanceGain(null, null,distance, gain);
 	thisRetained.setBackDistanceGain(distance, gain);
-	
+
 	Vector3f v = new Vector3f();
 	orgRetained.getDirection(v);
 	thisRetained.setDirection(v);
-	
+
 	len = orgRetained.getAngularAttenuationLength();
 	distance = gain = null;
 	float angle[] = new float[len];

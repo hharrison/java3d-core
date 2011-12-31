@@ -46,10 +46,10 @@ class Text3DRenderMethod implements RenderMethod {
 
 	boolean isNonUniformScale;
 	Transform3D trans = null;
-	
+
         GeometryArrayRetained geo = (GeometryArrayRetained)ra.geometry();
-        geo.setVertexFormat((rm.useAlpha && ((geo.vertexFormat & 
-					      GeometryArray.COLOR) != 0)), 
+        geo.setVertexFormat((rm.useAlpha && ((geo.vertexFormat &
+					      GeometryArray.COLOR) != 0)),
 			    rm.textureBin.attributeBin.ignoreVertexColors, cv.ctx);
 
 	if (rm.doInfinite) {
@@ -58,7 +58,7 @@ class Text3DRenderMethod implements RenderMethod {
 		trans = ra.infLocalToVworld;
 		isNonUniformScale = !trans.isCongruent();
 		cv.setModelViewMatrix(cv.ctx, cv.vworldToEc.mat, trans);
-		
+
 		ra.geometry().execute(cv, ra.renderAtom, isNonUniformScale,
 				      (rm.useAlpha && ra.geometry().noAlpha),
 				      rm.alpha,
@@ -68,7 +68,7 @@ class Text3DRenderMethod implements RenderMethod {
 	    }
 	    return true;
 	}
-	
+
 	boolean isVisible = false; // True if any of the RAs is visible.
 	while (ra != null) {
 	    if (cv.ra == ra.renderAtom) {
@@ -76,7 +76,7 @@ class Text3DRenderMethod implements RenderMethod {
 		    cv.updateState(dirtyBits);
 		    trans = ra.localToVworld;
 		    isNonUniformScale = !trans.isCongruent();
-		    
+
 		    cv.setModelViewMatrix(cv.ctx, cv.vworldToEc.mat, trans);
 		    ra.geometry().execute(cv, ra.renderAtom, isNonUniformScale,
 					  (rm.useAlpha && ra.geometry().noAlpha),
@@ -94,7 +94,7 @@ class Text3DRenderMethod implements RenderMethod {
 		    cv.raIsVisible = true;
 		    trans = ra.localToVworld;
 		    isNonUniformScale = !trans.isCongruent();
-		    
+
 		    cv.setModelViewMatrix(cv.ctx, cv.vworldToEc.mat, trans);
 		    ra.geometry().execute(cv, ra.renderAtom, isNonUniformScale,
 					  (rm.useAlpha && ra.geometry().noAlpha),
@@ -109,16 +109,16 @@ class Text3DRenderMethod implements RenderMethod {
 		}
 		cv.ra = ra.renderAtom;
 	    }
-		
+
 	    ra = ra.next;
-	    
+
 	}
-	
-        geo.disableGlobalAlpha(cv.ctx, 
-			       (rm.useAlpha && ((geo.vertexFormat & 
-						 GeometryArray.COLOR) != 0)), 
+
+        geo.disableGlobalAlpha(cv.ctx,
+			       (rm.useAlpha && ((geo.vertexFormat &
+						 GeometryArray.COLOR) != 0)),
 			       rm.textureBin.attributeBin.ignoreVertexColors);
-   
+
 	return isVisible;
     }
 }

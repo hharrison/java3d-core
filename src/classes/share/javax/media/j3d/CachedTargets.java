@@ -33,7 +33,7 @@ package javax.media.j3d;
 
 class CachedTargets {
     // cached targets, used by J3d threads
-    
+
     // 0 - Data type is GeometryAtom.
     // 1 - Data type is Light, Fog, Background, ModelClip, AlternateAppearance,
     //                  Clip
@@ -44,7 +44,7 @@ class CachedTargets {
     // 6 - Data type is GroupRetained.
 
     // Order of index is as above.
-    // The handling of BoundingLeaf isn't optimize. Target threads should be 
+    // The handling of BoundingLeaf isn't optimize. Target threads should be
     // more specific.
 
     static String typeString[] = {
@@ -59,7 +59,7 @@ class CachedTargets {
 
     static int updateTargetThreads[] = {
 	// GEO
-        J3dThread.UPDATE_TRANSFORM | J3dThread.UPDATE_RENDER | 
+        J3dThread.UPDATE_TRANSFORM | J3dThread.UPDATE_RENDER |
 	J3dThread.UPDATE_GEOMETRY,
 
 	// ENV
@@ -83,12 +83,12 @@ class CachedTargets {
         J3dThread.UPDATE_TRANSFORM | J3dThread.UPDATE_GEOMETRY
     };
 
-    
+
     NnuId targetArr[][] = new NnuId[Targets.MAX_NODELIST][];
- 
+
     int computeTargetThreads() {
 	int targetThreads = 0;
-	
+
 	for (int i=0; i < Targets.MAX_NODELIST; i++) {
 	    if (targetArr[i] != null) {
 		targetThreads |= updateTargetThreads[i];
@@ -110,7 +110,7 @@ class CachedTargets {
         System.arraycopy(targetArr[type], 0, newArr,
                          0, targetArr[type].length);
         targetArr[type] = newArr;
-        NnuIdManager.replace((NnuId)oldObj, (NnuId)newObj, 
+        NnuIdManager.replace((NnuId)oldObj, (NnuId)newObj,
 				(NnuId[])targetArr[type]);
     }
 

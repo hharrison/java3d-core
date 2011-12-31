@@ -87,7 +87,7 @@ class X11NativeConfigTemplate3D extends NativeConfigTemplate3D {
 	    System.out.println("    display " + display + " screen " + screen);
 	    System.out.println("    configuration count: " + gc.length);
 	    for (int i = 0 ; i < gc.length ; i++) {
-		System.out.println("      visual id at index " + i + ": " + 
+		System.out.println("      visual id at index " + i + ": " +
 				   ((X11GraphicsConfig)gc[i]).getVisual());
 	    }
 	}
@@ -120,7 +120,7 @@ class X11NativeConfigTemplate3D extends NativeConfigTemplate3D {
         attrList[STEREO] = template.getStereo();
         attrList[ANTIALIASING] = template.getSceneAntialiasing();
     	attrList[STENCIL_SIZE] = template.getStencilSize();
-	// System.out.println("X11NativeConfigTemplate3D : getStencilSize " + 
+	// System.out.println("X11NativeConfigTemplate3D : getStencilSize " +
 	// attrList[STENCIL_SIZE]);
 
 	long[] fbConfig = new long[1];
@@ -165,7 +165,7 @@ class X11NativeConfigTemplate3D extends NativeConfigTemplate3D {
             } else {
 		freeFBConfig(fbConfig[0]);
             }
-	}   
+	}
 	return gc1;
     }
 
@@ -202,16 +202,16 @@ class X11NativeConfigTemplate3D extends NativeConfigTemplate3D {
         attrList[STEREO] = template.getStereo();
         attrList[ANTIALIASING] = template.getSceneAntialiasing();
     	attrList[STENCIL_SIZE] = template.getStencilSize();
-	// System.out.println("X11NativeConfigTemplate3D : getStencilSize " + 
+	// System.out.println("X11NativeConfigTemplate3D : getStencilSize " +
 	// attrList[STENCIL_SIZE]);
-	
+
 	long[] fbConfig = new long[1];
         int visID = chooseOglVisual(display, screen, attrList, fbConfig);
-	
+
         if (visID == 0 || fbConfig[0] == 0)
 	    return false;  // no valid visual was found
 	else
-	    return true;	
+	    return true;
     }
 
 
@@ -290,7 +290,7 @@ class X11NativeConfigTemplate3D extends NativeConfigTemplate3D {
 
 	return isSceneAntialiasingMultisampleAvailable(display, screen, vid);
     }
-    
+
     // Ensure that the native libraries are loaded
     static {
  	VirtualUniverse.loadLibraries();

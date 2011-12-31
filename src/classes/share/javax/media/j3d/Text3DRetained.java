@@ -57,7 +57,7 @@ class Text3DRetained extends GeometryRetained {
      * The temporary transforms for this Text3D
      */
     Transform3D[] charTransforms = new Transform3D[0];
-      
+
     /**
      * A cached list of geometry arrays for the current settings
      */
@@ -98,14 +98,14 @@ class Text3DRetained extends GeometryRetained {
         double width = 0, height = 0;
         Rectangle2D bounds;
 
-        //Reset bounds data 
+        //Reset bounds data
         l.set(location);
         u.set(location);
 
 	if (numChars != 0) {
 	    // Set loop counters based on path type
 	    if (path == Text3D.PATH_RIGHT || path == Text3D.PATH_UP) {
-		k = 0; 
+		k = 0;
 		numTotal = numChars + 1;
 	    } else if (path == Text3D.PATH_LEFT || path == Text3D.PATH_DOWN) {
 		k = 1;
@@ -150,8 +150,8 @@ class Text3DRetained extends GeometryRetained {
 		    break;
 		}
 	    }
-	    
-	    // Handle string alignment. ALIGN_FIRST is handled by default 
+
+	    // Handle string alignment. ALIGN_FIRST is handled by default
 	    if (alignment != Text3D.ALIGN_FIRST) {
 		double cx = (u.x - l.x);
 		double cy = (u.y - l.y);
@@ -344,7 +344,7 @@ class Text3DRetained extends GeometryRetained {
      *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     * 
+     *
      * @see #getPosition
      */
     final void setAlignment(int alignment) {
@@ -496,10 +496,10 @@ class Text3DRetained extends GeometryRetained {
 			    }
 
 			    gSize = s.geometryList.size();
-			    
+
 			    GeometryAtom oldGA = Shape3DRetained.getGeomAtom(s);
 			    GeometryAtom newGA = new GeometryAtom();
-			    
+
 			    int geometryCnt = 0;
 			    for(k = 0; k<gSize; k++) {
 				GeometryRetained geomRetained =
@@ -509,17 +509,17 @@ class Text3DRetained extends GeometryRetained {
 				    geometryCnt += tempT3d.numChars;
 				}
 				else {
-				    // Slightly wasteful, but not quite worth to optimize yet. 
+				    // Slightly wasteful, but not quite worth to optimize yet.
 				    geometryCnt++;
 				}
 			    }
-			    
+
 			    newGA.geometryArray = new GeometryRetained[geometryCnt];
 			    newGA.lastLocalTransformArray = new Transform3D[geometryCnt];
 			    // Reset geometryCnt;
 			    geometryCnt = 0;
-			    
-			    newGA.locale = s.locale; 
+
+			    newGA.locale = s.locale;
 			    newGA.visible = s.visible;
 			    newGA.source = s;
 			    int gaCnt=0;
@@ -532,7 +532,7 @@ class Text3DRetained extends GeometryRetained {
 				    break;
 				}
 			    }
-			    
+
 			    for(; gaCnt<gSize; gaCnt++) {
 				geometry = (GeometryRetained) s.geometryList.get(gaCnt);
 				if(geometry == null) {
@@ -547,22 +547,22 @@ class Text3DRetained extends GeometryRetained {
 					    newGA.geometryArray[geometryCnt] = geo;
 					    newGA.lastLocalTransformArray[geometryCnt] =
 						t.charTransforms[k];
-					    
+
 					} else {
 					    newGA.geometryArray[geometryCnt] = null;
 					    newGA.lastLocalTransformArray[geometryCnt] = null;
 					}
-					
+
 				    }
-				    
+
 				}
 			    }
-			    
+
 			    oldGeometryAtomList.add(oldGA);
 			    newGeometryAtomList.add(newGA);
 			    Shape3DRetained.setGeomAtom(s, newGA);
 			}
-			
+
 			Object[] oldGAArray = oldGeometryAtomList.toArray();
 			Object[] newGAArray = newGeometryAtomList.toArray();
 			ArrayList uniqueList = getUniqueSource(shapeList);
@@ -574,11 +574,11 @@ class Text3DRetained extends GeometryRetained {
             		    CachedTargets[] newCtArr = null;
 			    src = (Shape3DRetained)uniqueList.get(j);
 			    numMS3D = src.mirrorShape3D.size();
-			    
+
         		    TargetsInterface ti = ((GroupRetained)src.
 				parent).getClosestTargetsInterface(
                                         TargetsInterface.TRANSFORM_TARGETS);
-			    
+
         		    if (ti != null) {
             		        CachedTargets ct;
             		        newCtArr = new CachedTargets[numMS3D];
@@ -586,7 +586,7 @@ class Text3DRetained extends GeometryRetained {
 				for (k=0; k<numMS3D; k++) {
 				    ms = (Shape3DRetained)src.mirrorShape3D.get(k);
 
-				    GeometryAtom ga = 
+				    GeometryAtom ga =
 					Shape3DRetained.getGeomAtom(ms);
 				    for(kk=0; kk<newGAArray.length; kk++) {
 					if(ga == newGAArray[kk]) {
@@ -595,7 +595,7 @@ class Text3DRetained extends GeometryRetained {
 				    }
 
 				    if(kk==newGAArray.length) {
-					System.err.println("Text3DRetained : Problem !!! Can't find matching geomAtom"); 
+					System.err.println("Text3DRetained : Problem !!! Can't find matching geomAtom");
 				    }
 
 				    ct = ti.getCachedTargets(TargetsInterface.
@@ -603,8 +603,8 @@ class Text3DRetained extends GeometryRetained {
 				    if (ct != null) {
 					newCtArr[k] = new CachedTargets();
 					newCtArr[k].copy(ct);
-					newCtArr[k].replace((NnuId)oldGAArray[kk], 
-							    (NnuId)newGAArray[kk], 
+					newCtArr[k].replace((NnuId)oldGAArray[kk],
+							    (NnuId)newGAArray[kk],
 							    Targets.GEO_TARGETS);
 				    } else {
 					newCtArr[k] = null;
@@ -619,9 +619,9 @@ class Text3DRetained extends GeometryRetained {
 				newCtArrArrList.add(newCtArr);
 
 			    }
-			    
+
 			}
-			
+
 			m[i].args[0] = oldGAArray;
 			m[i].args[1] = newGAArray;
 			m[i].universe = (VirtualUniverse)universeList.get(i);
@@ -630,18 +630,18 @@ class Text3DRetained extends GeometryRetained {
 			    m[i].args[2] = tiArrList.toArray();
 			    m[i].args[3] = newCtArrArrList.toArray();
 			}
-			
+
 			tiArrList.clear();
 			newCtArrArrList.clear();
 
 		    }
 		    VirtualUniverse.mc.processMessage(m);
 		}
-		
+
 	    }
 	}
     }
-	
+
 
     final void sendTransformChangedMessage() {
 	J3dMessage[] m;
@@ -671,8 +671,8 @@ class Text3DRetained extends GeometryRetained {
 				    break;
 				}
 			    }
-			
-			    if(sCnt < s.geometryList.size()) 
+
+			    if(sCnt < s.geometryList.size())
 				gaList.add(Shape3DRetained.getGeomAtom(s));
 
 			}
@@ -705,13 +705,13 @@ class Text3DRetained extends GeometryRetained {
 	        geometryList[i] = font3D.triangulateGlyphs(glyphVecs[i], c[0]);
             }
 	}
-	
+
         updateTransformData();
     }
 
     /**
      * Update per character transform based on Text3D location,
-     * per character size and path. 
+     * per character size and path.
      *
      * WARNING: Caller of this method must make sure SceneGraph is live,
      * else exceptions may be thrown.
@@ -722,7 +722,7 @@ class Text3DRetained extends GeometryRetained {
         Vector3f location = new Vector3f(this.position);
         Rectangle2D bounds;
 
-        //Reset bounds data 
+        //Reset bounds data
         lower.set(location);
         upper.set(location);
 
@@ -736,7 +736,7 @@ class Text3DRetained extends GeometryRetained {
 
 	    // Set loop counters based on path type
 	    if (path == Text3D.PATH_RIGHT || path == Text3D.PATH_UP) {
-		k = 0; 
+		k = 0;
 		numTotal = numChars + 1;
 	    } else if (path == Text3D.PATH_LEFT || path == Text3D.PATH_DOWN) {
 		k = 1;
@@ -763,21 +763,21 @@ class Text3DRetained extends GeometryRetained {
 		    }
 		    break;
 		case Text3D.PATH_LEFT:
-		    location.x -= width; 
+		    location.x -= width;
 		    lower.x    -= (width);
 		    if (upper.y < ( height + location.y)) {
 			upper.y = location.y + height;
 		    }
 		    break;
 		case Text3D.PATH_UP:
-		    location.y += height; 
+		    location.y += height;
 		    upper.y    += height;
 		    if (upper.x < (bounds.getWidth() + location.x)) {
 			upper.x = location.x + bounds.getWidth();
 		    }
 		    break;
 		case Text3D.PATH_DOWN:
-		    location.y -= height; 
+		    location.y -= height;
 		    lower.y    -= height;
 		    if (upper.x < (bounds.getWidth() + location.x)) {
 			upper.x = location.x + bounds.getWidth();
@@ -788,8 +788,8 @@ class Text3DRetained extends GeometryRetained {
 		    charTransforms[i].set(location);
 		}
 	    }
-	    
-	    // Handle string alignment. ALIGN_FIRST is handled by default 
+
+	    // Handle string alignment. ALIGN_FIRST is handled by default
 	    if (alignment != Text3D.ALIGN_FIRST) {
 		double cx = (upper.x - lower.x);
 		double cy = (upper.y - lower.y);
@@ -867,7 +867,7 @@ class Text3DRetained extends GeometryRetained {
 	double minDist = Double.MAX_VALUE;
         double distance =0.0;
         Point3d closestIPnt = new Point3d();
-        
+
 	for (int i=0; i < numChars; i++) {
 	    geo= geometryList[i];
 	    if (geo != null) {
@@ -882,11 +882,11 @@ class Text3DRetained extends GeometryRetained {
 			sIndex = i;
 			minDist = distance;
                         closestIPnt.set(iPnt);
-		    }    
+		    }
 		}
 	    }
 	}
-	
+
 	if (sIndex >= 0) {
 	    // We need to transform iPnt to the vworld to compute the actual distance.
 	    // In this method we'll transform iPnt by its char. offset. Shape3D will
@@ -894,8 +894,8 @@ class Text3DRetained extends GeometryRetained {
 	    iPnt.set(closestIPnt);
 	    charTransforms[sIndex].transform(iPnt);
 	    return true;
-	} 
-	return false;    
+	}
+	return false;
     }
 
     boolean intersect(Point3d[] pnts) {
@@ -933,7 +933,7 @@ class Text3DRetained extends GeometryRetained {
 		return true;
 	    }
 	}
-	
+
 	return false;
     }
 
@@ -946,9 +946,9 @@ class Text3DRetained extends GeometryRetained {
 		return true;
 	    }
 	}
-	
+
 	return false;
-	
+
     }
 
     void setModelViewMatrix(Transform3D vpcToEc, Transform3D drawTransform) {
@@ -957,10 +957,10 @@ class Text3DRetained extends GeometryRetained {
     }
 
 
-    void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale, 
+    void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale,
 		 boolean updateAlpha, float alpha,
-		 int screen, 
-		 boolean ignoreVertexColors) { 
+		 int screen,
+		 boolean ignoreVertexColors) {
 
 	Transform3D trans = new Transform3D();
 

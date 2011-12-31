@@ -98,7 +98,7 @@ public class ShaderAttributeArray extends ShaderAttributeObject {
         if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_VALUE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("ShaderAttributeObject1"));
-	
+
 	if (isLive())
 	    ((ShaderAttributeArrayRetained)this.retained).setValue(value);
 	else
@@ -120,7 +120,7 @@ public class ShaderAttributeArray extends ShaderAttributeObject {
      * the same base class as the individual elements of the array object
      * used to construct this shader attribute object.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setValue(int index, Object value) {
@@ -144,7 +144,7 @@ public class ShaderAttributeArray extends ShaderAttributeObject {
      *
      * @return the number of elements in the value array
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public int length() {

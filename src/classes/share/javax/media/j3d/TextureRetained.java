@@ -39,7 +39,7 @@ import java.awt.image.RenderedImage;
 /**
  * The Texture object is a component object of an Appearance object
  * that defines the texture properties used when texture mapping is
- * enabled. Texture object is an abstract class and all texture 
+ * enabled. Texture object is an abstract class and all texture
  * objects must be created as either a Texture2D object or a
  * Texture3D object.
  */
@@ -73,7 +73,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     int		minFilter = Texture.BASE_LEVEL_POINT;
     int		magFilter = Texture.BASE_LEVEL_POINT;
 
-    // Integer flag that contains bitset to indicate 
+    // Integer flag that contains bitset to indicate
     // which field changed.
     int isDirty = 0xffff;
 
@@ -83,20 +83,20 @@ abstract class TextureRetained extends NodeComponentRetained {
     // Texture Object Id used by native code.
     int 	objectId = -1;
 
-    int		mipmapMode = Texture.BASE_LEVEL; // Type of mip-mapping 
+    int		mipmapMode = Texture.BASE_LEVEL; // Type of mip-mapping
     int		format = Texture.RGB;		// Texture format
     int		width = 1;			// Width in pixels (2**n)
     int		height = 1;			// Height in pixels (2**m)
 
-    // true if width or height is non power of two    
-    private boolean widthOrHeightIsNPOT = false; 
-    // Array of images (one for each mipmap level)    
+    // true if width or height is non power of two
+    private boolean widthOrHeightIsNPOT = false;
+    // Array of images (one for each mipmap level)
     ImageComponentRetained images[][];
     // maximum number of levels needed for the mipmapMode of this texture
-    int	     maxLevels = 0;    
+    int	     maxLevels = 0;
     // maximum number of mipmap levels that can be defined for this texture
     private int	     maxMipMapLevels = 0;
-    
+
     int 	numFaces = 1;		// For CubeMap, it is 6
     int		baseLevel = 0;
     int		maximumLevel = 0;
@@ -122,8 +122,8 @@ abstract class TextureRetained extends NodeComponentRetained {
     int numSharpenTextureFuncPts = 0;
     float sharpenTextureFuncPts[] = null;  // array of pairs of floats
 					   // first value for LOD
-					   // second value for the fcn value	
-    
+					   // second value for the fcn value
+
     // filter4 info
     float filter4FuncPts[] = null;
 
@@ -146,24 +146,24 @@ abstract class TextureRetained extends NodeComponentRetained {
     // 0 at a particular bit means texture images are not up-to-date.
     // 1 means otherwise. If it specifies 0, then it needs to go
     // through the imageUpdateInfo to update the images accordingly.
-    // 
-    int resourceUpdatedMask = 0x0; 
+    //
+    int resourceUpdatedMask = 0x0;
 
     // Each bit corresponds to a unique renderer if shared context
     // or a unique canvas otherwise
     // This mask specifies if texture lod info is up-to-date.
     // 0 at a particular bit means texture lod info is not up-to-date.
-    // 1 means otherwise. 
-    // 
-    int resourceLodUpdatedMask = 0x0; 
+    // 1 means otherwise.
+    //
+    int resourceLodUpdatedMask = 0x0;
 
     // Each bit corresponds to a unique renderer if shared context
     // or a unique canvas otherwise
     // This mask specifies if texture is in the resource reload list
     // 0 at a particular bit means texture is not in reload list
-    // 1 means otherwise. 
-    // 
-    int resourceInReloadList = 0x0; 
+    // 1 means otherwise.
+    //
+    int resourceInReloadList = 0x0;
 
     // image update info
     ArrayList imageUpdateInfo[][];
@@ -181,18 +181,18 @@ abstract class TextureRetained extends NodeComponentRetained {
     // This is used for D3D only to check whether texture need to
     // resend down
     private int texTimestamp = 0;
- 
-    // need to synchronize access from multiple rendering threads 
+
+    // need to synchronize access from multiple rendering threads
     Object resourceLock = new Object();
 
     private static boolean isPowerOfTwo(int val) {
         return ((val & (val - 1)) == 0);
     }
-    
-    void initialize(int	format, int width, int widLevels, 
+
+    void initialize(int	format, int width, int widLevels,
 			int height, int heiLevels, int mipmapMode,
 			int boundaryWidth) {
-        
+
 	this.mipmapMode = mipmapMode;
 	this.format = format;
 	this.width = width;
@@ -202,7 +202,7 @@ abstract class TextureRetained extends NodeComponentRetained {
         if(!isPowerOfTwo(width) || !isPowerOfTwo(height)) {
             this.widthOrHeightIsNPOT = true;
         }
-        
+
 	// determine the maximum number of mipmap levels that can be
 	// defined from the specified dimension
 
@@ -225,7 +225,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    maximumLevel = 0;
 	    maxLevels = 1;
 	}
-        
+
         images = new ImageComponentRetained[numFaces][maxLevels];
 
 	for (int j = 0; j < numFaces; j++) {
@@ -306,7 +306,7 @@ abstract class TextureRetained extends NodeComponentRetained {
      * function is used when the pixel being rendered maps to an area
      * greater than one texel.
      * @param minFilter the minification filter, one of:
-     * FASTEST, NICEST, BASE_LEVEL_POINT, BASE_LEVEL_LINEAR, 
+     * FASTEST, NICEST, BASE_LEVEL_POINT, BASE_LEVEL_LINEAR,
      * MULTI_LEVEL_POINT, MULTI_LEVEL_LINEAR.
      * @exception RestrictedAccessException if the method is called
      * when this object is part of live or compiled scene graph.
@@ -365,7 +365,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	if (this.images == null) {
            throw new IllegalArgumentException(J3dI18N.getString("TextureRetained0"));
-	} 
+	}
 
         if (this.source instanceof Texture2D) {
             if (image instanceof ImageComponent3D)
@@ -385,7 +385,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 		this.images[0][level].clearLive(refCount);
 	    }
 
-	    
+
 	    if (image != null) {
 		((ImageComponentRetained)image.retained).setLive(inBackgroundGroup, refCount);
 	    }
@@ -413,7 +413,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	    if (wdh < 1) wdh = 1;
 	    if (hgt < 1) hgt = 1;
-    
+
 	    if ((wdh != (imgWidth - 2*boundaryWidth)) ||
                     (hgt != (imgHeight - 2*boundaryWidth))) {
 	       throw new IllegalArgumentException(
@@ -434,7 +434,7 @@ abstract class TextureRetained extends NodeComponentRetained {
             for (int level = 0; level < images.length; level++) {
                 int imgWidth  = images[level].width;
                 int imgHeight = images[level].height;
-                
+
                 assert (wdh == (imgWidth - 2*boundaryWidth)) &&
                        (hgt == (imgHeight - 2*boundaryWidth));
 
@@ -472,7 +472,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 			enable = false;
 		    }
 		}
-		if (!enable) 
+		if (!enable)
 		    sendMessage(ENABLE_CHANGED, Boolean.FALSE);
 	    }
 	}
@@ -512,7 +512,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    enable = userSpecifiedEnable;
 	    for (i = baseLevel; i <= maximumLevel && enable; i++) {
 		if (images[i] != null) {
-		    ImageComponentRetained img= 
+		    ImageComponentRetained img=
 			(ImageComponentRetained)images[i].retained;
 		    if (img.isByReference()) {
 			if (img.getRefImage(0) == null) {
@@ -532,7 +532,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	}
     }
 
-	
+
 
 
     /**
@@ -543,7 +543,7 @@ abstract class TextureRetained extends NodeComponentRetained {
      * when this object is part of live or compiled scene graph.
      */
     final ImageComponent getImage(int level) {
-	return  (((images != null) && (images[0][level] != null)) ? 
+	return  (((images != null) && (images[0][level] != null)) ?
 		 (ImageComponent)images[0][level].source : null);
     }
 
@@ -562,14 +562,14 @@ abstract class TextureRetained extends NodeComponentRetained {
     }
 
     /**
-     * Sets mipmap mode for texture mapping for this texture object.  
+     * Sets mipmap mode for texture mapping for this texture object.
      * @param mipMapMode the new mipmap mode for this object.  One of:
      * BASE_LEVEL or MULTI_LEVEL_MIPMAP.
      * @exception RestrictedAccessException if the method is called
      */
     final void initMipMapMode(int mipmapMode) {
 
-	if (this.mipmapMode == mipmapMode) 
+	if (this.mipmapMode == mipmapMode)
 	    return;
 
 
@@ -584,9 +584,9 @@ abstract class TextureRetained extends NodeComponentRetained {
             maximumLevel = 0;
 	    maxLevels = 1;
         }
-	
 
-	ImageComponentRetained[][] newImages = 
+
+	ImageComponentRetained[][] newImages =
 			new ImageComponentRetained[numFaces][maxLevels];
 
 	if (prevMaxLevels < maxLevels) {
@@ -594,7 +594,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	        for (int i = 0; i < prevMaxLevels; i++) {
 		     newImages[f][i] = images[f][i];
 		}
-	    
+
 	        for (int j = prevMaxLevels; j < maxLevels; j++) {
 		     newImages[f][j] = null;
 		}
@@ -628,7 +628,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
     /**
      * Enables or disables texture mapping for this
-     * appearance component object and sends a 
+     * appearance component object and sends a
      * message notifying the interested structures of the change.
      * @param state true or false to enable or disable texture mapping
      */
@@ -642,7 +642,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    // because one of the images is null and user specifies false
 	    return;
 	}
-	    
+
 	enable = state;
 
 	for (int j = 0; j < numFaces && enable; j++) {
@@ -700,10 +700,10 @@ abstract class TextureRetained extends NodeComponentRetained {
                     J3dI18N.getString("Texture37"));
         }
         if((mipmapMode == Texture.BASE_LEVEL) && (level != 0)) {
-            throw new IllegalArgumentException( 
+            throw new IllegalArgumentException(
                     J3dI18N.getString("Texture48"));
         }
-        
+
         maximumLevel = level;
     }
 
@@ -810,7 +810,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	boundaryColor.set(this.boundaryColor);
     }
 
-    
+
     /**
      * Set Anisotropic Filter
      */
@@ -1025,7 +1025,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    if (!enable)
 		sendMessage(ENABLE_CHANGED, Boolean.FALSE);
 	}
-	    
+
 	super.markAsLive();
     }
 
@@ -1107,7 +1107,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     }
 
 
-    // get an ID for Texture 2D 
+    // get an ID for Texture 2D
     int getTextureId() {
 	return (VirtualUniverse.mc.getTexture2DId());
     }
@@ -1130,17 +1130,17 @@ abstract class TextureRetained extends NodeComponentRetained {
         }
         return enable;
     }
-    
-    
+
+
     // bind a named texture to a texturing target
     void bindTexture(Canvas3D cv) {
-        
+
         synchronized(resourceLock) {
 	    if (objectId == -1) {
 		objectId = getTextureId();
 	    }
 	    cv.addTextureResource(objectId, this);
- 	}	
+ 	}
 	bindTexture(cv.ctx, objectId, isEnabled(cv));
     }
 
@@ -1157,12 +1157,12 @@ abstract class TextureRetained extends NodeComponentRetained {
                     images[0][0].getImageDataTypeIntValue(), null);
         }
     }
-    
+
 
     void updateTextureLOD(Canvas3D cv) {
 
 	if ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_LOD_RANGE) != 0 ) {
-            
+
             int max = 0;
             if( mipmapMode == Texture.BASE_LEVEL ) {
                 max = maxMipMapLevels;
@@ -1170,7 +1170,7 @@ abstract class TextureRetained extends NodeComponentRetained {
             else {
                 max = maximumLevel;
             }
-            
+
             updateTextureLodRange(cv.ctx, baseLevel, max,
                     minimumLod, maximumLod);
 	}
@@ -1194,7 +1194,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	int magnificationFilter = magFilter;
 	int minificationFilter = minFilter;
-        
+
 	// update sharpen texture function if applicable
 
 	if ((magnificationFilter >= Texture.LINEAR_SHARPEN) &&
@@ -1204,7 +1204,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 		// send down sharpen texture LOD function
 		//
-	        updateTextureSharpenFunc(cv.ctx, 
+	        updateTextureSharpenFunc(cv.ctx,
 			numSharpenTextureFuncPts, sharpenTextureFuncPts);
 
 	    } else {
@@ -1223,7 +1223,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 		magnificationFilter = Texture.BASE_LEVEL_LINEAR;
 	    }
-	} 
+	}
 
 	if (minificationFilter == Texture.FILTER4 || magnificationFilter == Texture.FILTER4) {
 
@@ -1233,7 +1233,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 		if (filter4FuncPts == null) {
 
-		    // filter4 function is not defined, 
+		    // filter4 function is not defined,
 		    // fallback to BASE_LEVEL_LINEAR
 
 		    noFilter4 = true;
@@ -1247,7 +1247,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 		// library, fallback to BASE_LEVEL_LINEAR
 
 		noFilter4 = true;
-	    } 
+	    }
 
 	    if (noFilter4) {
 		if (minificationFilter == Texture.FILTER4) {
@@ -1262,7 +1262,7 @@ abstract class TextureRetained extends NodeComponentRetained {
         // Fallback to BASE mode if hardware mipmap generation is not supported.
         if ((mipmapMode == Texture.BASE_LEVEL) && ((cv.textureExtendedFeatures &
                 Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) == 0)) {
-            
+
             if (minificationFilter == Texture.NICEST ||
                     minificationFilter == Texture.MULTI_LEVEL_LINEAR) {
                 minificationFilter = Texture.BASE_LEVEL_LINEAR;
@@ -1270,12 +1270,12 @@ abstract class TextureRetained extends NodeComponentRetained {
                 minificationFilter = Texture.BASE_LEVEL_POINT;
             }
         }
-        
+
 	// update texture filtering modes
-	updateTextureFilterModes(cv.ctx, minificationFilter, 
+	updateTextureFilterModes(cv.ctx, minificationFilter,
 						magnificationFilter);
 
-	if ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_ANISOTROPIC_FILTER) 
+	if ((cv.textureExtendedFeatures & Canvas3D.TEXTURE_ANISOTROPIC_FILTER)
 			!= 0) {
 	    if (anisotropicFilterMode == Texture.ANISOTROPIC_NONE) {
 	        updateTextureAnisotropicFilter(cv.ctx, 1.0f);
@@ -1287,7 +1287,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	// update texture boundary modes, boundary color
 
 	updateTextureBoundary(cv);
-	
+
     }
 
 
@@ -1299,7 +1299,7 @@ abstract class TextureRetained extends NodeComponentRetained {
             int width, int height,
             int boundaryWidth,
             int imageDataType, Object data) {
-        
+
         Pipeline.getPipeline().updateTexture2DImage(cv.ctx,
                 numLevels, level,
                 textureFormat, imageFormat,
@@ -1316,7 +1316,7 @@ abstract class TextureRetained extends NodeComponentRetained {
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
             int imageDataType, Object data) {
-        
+
         Pipeline.getPipeline().updateTexture2DSubImage(cv.ctx,
                 level, xoffset, yoffset,
                 textureFormat, imageFormat,
@@ -1324,7 +1324,7 @@ abstract class TextureRetained extends NodeComponentRetained {
                 tilew, width, height,
                 imageDataType, data, useAutoMipMapGeneration(cv));
     }
-    
+
 
     /**
      * reloadTextureImage is used to load a particular level of image
@@ -1333,24 +1333,24 @@ abstract class TextureRetained extends NodeComponentRetained {
      */
     void reloadTextureImage(Canvas3D cv, int face, int level,
             ImageComponentRetained image, int numLevels) {
-        
+
         boolean useAsRaster = isUseAsRaster();
         ImageComponentRetained.ImageData imageData = image.getImageData(useAsRaster);
 
         assert imageData != null;
-        
+
         updateTextureImage(cv,
                 face, numLevels, level,
                 format, image.getImageFormatTypeIntValue(useAsRaster),
                 imageData.getWidth(), imageData.getHeight(),
                 boundaryWidth, image.getImageDataTypeIntValue(),
                 imageData.get());
-        
-        
+
+
         // TODO : Dead code - need to clean up for 1.6
         // Now take care of the RenderedImage (byRef and yUp) case. Note, if image
         // is a RenderedImage ( byRef and yUp), then imageData will be null
-        
+
         if (imageData == null) {
             //		    System.err.println("==========. subImage");
 	    // Download all the tiles for this texture
@@ -1365,7 +1365,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    if (tmpw < curw) {
 	        curw = tmpw;
 	    }
-	
+
 	    if (tmph < curh) {
 	        curh = tmph;
 	    }
@@ -1393,7 +1393,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	  	    xoffset += curw;
 	  	    imageXOffset = 0;
 		    tmpw -= curw;
-		    if (tmpw < image.tilew) 
+		    if (tmpw < image.tilew)
 		        curw = tmpw;
 		    else
 		        curw = image.tilew;
@@ -1415,7 +1415,7 @@ abstract class TextureRetained extends NodeComponentRetained {
      * This method needs to take care of RenderedImage as well as
      * BufferedImage
      */
-    void reloadTextureSubImage(Canvas3D cv, int face, int level, 
+    void reloadTextureSubImage(Canvas3D cv, int face, int level,
 				ImageComponentUpdateInfo info,
 				ImageComponentRetained image) {
 
@@ -1423,7 +1423,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    y = info.y,
 	    width = info.width,
 	    height = info.height;
-        
+
         //The x and y here specifies the subregion of the imageData of
         //the associated RenderedImage.
 
@@ -1435,12 +1435,12 @@ abstract class TextureRetained extends NodeComponentRetained {
         if(imageData != null) {
             int xoffset = x;
             int yoffset = y;
-            
+
             // TODO Check this logic : If !yUp adjust yoffset
             if (!image.yUp) {
                 yoffset = image.height - yoffset - height;
             }
-            
+
             updateTextureSubImage(cv, face, level,
                     xoffset, yoffset,
                     format, image.getImageFormatTypeIntValue(false),
@@ -1448,11 +1448,11 @@ abstract class TextureRetained extends NodeComponentRetained {
                     image.width, width, height,
                     image.getImageDataTypeIntValue(),
                     imageData.get());
-            
+
         } else {
 
             assert false;
-            
+
             // TODO : Dead code - need to clean up for 1.6
 	    // System.err.println("RenderedImage subImage update");
 	    // determine the first tile of the image
@@ -1462,7 +1462,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	    int rx = x;
 	    int ry = y;
-	
+
             mt = (float)(rx) / (float)image.tilew;
             if (mt < 0) {
                 minTileX = (int)(mt - 1);
@@ -1533,16 +1533,16 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	    java.awt.image.Raster ras;
 
-	    int textureX = x; 	// x offset in the texture 
-	    int textureY = y; 	// y offset in the texture 
+	    int textureX = x; 	// x offset in the texture
+	    int textureY = y; 	// y offset in the texture
 
 	    for (int yTile = minTileY; yTile < minTileY + numYTiles;
 			yTile++) {
-		
+
 		tmpw = width;
 		curw = startw;
 		imgX = rx - startXTile;
-		
+
 		for (int xTile = minTileX; xTile < minTileX + numXTiles;
 			xTile++) {
 		    ras = ((RenderedImage)image.getRefImage(0)).getTile(xTile, yTile);
@@ -1552,7 +1552,7 @@ abstract class TextureRetained extends NodeComponentRetained {
                             textureX, textureY,
                             format, image.getImageFormatTypeIntValue(false),
                             imgX, imgY,
-                            image.tilew, curw, curh, 
+                            image.tilew, curw, curh,
                             ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY,
                             (Object)data);
 
@@ -1568,7 +1568,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 			curw = tmpw;
 		    } else {
 			curw = image.tilew;
-		    }	
+		    }
 	   	}
 
                 // move to the next set of tiles in y direction
@@ -1608,8 +1608,8 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	if (blevel != 0) {
 	    // level 0 is not the base level, hence, need
-            // to load level 0 explicitly with a null pointer in order 
-	    // for mipmapping to be active. 
+            // to load level 0 explicitly with a null pointer in order
+	    // for mipmapping to be active.
 
 	    updateTextureDimensions(cv);
 	}
@@ -1641,7 +1641,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	ImageComponentUpdateInfo info;
 
-	for (int k = 0; k < numFaces; k++) { 
+	for (int k = 0; k < numFaces; k++) {
 	    for (int i = baseLevel; i <= maximumLevel; i++) {
 		if (imageUpdateInfo[k][i] != null) {
 		    for (int j = 0; j < imageUpdateInfo[k][i].size(); j++) {
@@ -1664,15 +1664,15 @@ abstract class TextureRetained extends NodeComponentRetained {
 			    // all the current resources have updated this
 			    // info, so this info can be removed from the
 			    // update list
-			    if ((info.updateMask & resourceCreationMask) 
+			    if ((info.updateMask & resourceCreationMask)
 					== 0) {
 				info.updateMask = 0; // mark this update as
 						     // done
 
 			 	// mark the prune flag so as to prune the
-				// update list next time when the update 
+				// update list next time when the update
 				// list is to be modified.
-				// Don't want to clean up the list at 
+				// Don't want to clean up the list at
 				// rendering time because (1) MT issue,
 				// other renderer could be processing
 				// the update list now;
@@ -1685,7 +1685,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 			}
 
 			if (info.entireImage == true) {
-			    reloadTextureImage(cv, k, i, 
+			    reloadTextureImage(cv, k, i,
 						images[k][i], maxLevels);
 			} else {
 			    reloadTextureSubImage(cv, k, i, info, images[k][i]);
@@ -1715,7 +1715,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	}
 
 	bindTexture(cv);
-        
+
 	// reload all levels of texture image
 
 	// update texture parameters such as boundary modes, filtering
@@ -1740,9 +1740,9 @@ abstract class TextureRetained extends NodeComponentRetained {
 	}
     }
 
-	
+
     /**
-     * updateNative is called while traversing the RenderBin to 
+     * updateNative is called while traversing the RenderBin to
      * update the texture state
      */
     void updateNative(Canvas3D cv) {
@@ -1753,7 +1753,7 @@ abstract class TextureRetained extends NodeComponentRetained {
         //System.err.println("Texture/updateNative: " + this + "object= " + objectId + " enable= " + enable);
 
 	bindTexture(cv);
-        
+
 	// if texture is not enabled, don't bother downloading the
 	// the texture state
 
@@ -1766,8 +1766,8 @@ abstract class TextureRetained extends NodeComponentRetained {
             if ((resourceCreationMask & cv.screen.renderer.rendererBit) == 0) {
 		reloadTexture = true;
 	    } else {
-	        if (((resourceUpdatedMask & 
-		      cv.screen.renderer.rendererBit) == 0) && 
+	        if (((resourceUpdatedMask &
+		      cv.screen.renderer.rendererBit) == 0) &&
 		    (imageUpdateInfo != null)) {
 		    updateTexture = true;
 		}
@@ -1785,7 +1785,7 @@ abstract class TextureRetained extends NodeComponentRetained {
             if ((resourceCreationMask & cv.canvasBit) == 0) {
 		reloadTexture = true;
 	    } else {
-	  	if (((resourceUpdatedMask & cv.canvasBit) == 0) && 
+	  	if (((resourceUpdatedMask & cv.canvasBit) == 0) &&
 			(imageUpdateInfo != null)) {
 		    updateTexture = true;
 		}
@@ -1795,7 +1795,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 		}
 	    }
 	}
-	
+
 
 	if (VirtualUniverse.mc.isD3D()) {
 	    if (texTimestamp != VirtualUniverse.mc.resendTexTimestamp) {
@@ -1811,12 +1811,12 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 
 //System.err.println("......... reloadTexture= " + reloadTexture +
-//		 " updateTexture= " + updateTexture + 
+//		 " updateTexture= " + updateTexture +
 //		 " updateTextureLod= " + updateTextureLod);
 
 //System.err.println("......... resourceCreationMask= " + resourceCreationMask +
 //		   " resourceUpdatedMask= " + resourceUpdatedMask);
- 
+
 	if (reloadTexture) {
 
 	    // reload all levels of texture image
@@ -1933,7 +1933,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	mirror.source = source;
 	if (this instanceof Texture3DRetained) {
 	    Texture3DRetained t3d = (Texture3DRetained)this;
-	   
+
 	    ((Texture3DRetained)mirror).boundaryModeR = t3d.boundaryModeR;
 	    ((Texture3DRetained)mirror).depth = t3d.depth;
 	}
@@ -1969,11 +1969,11 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    if ((mirrorTexture.sharpenTextureFuncPts == null) ||
 		    (mirrorTexture.sharpenTextureFuncPts.length !=
 			sharpenTextureFuncPts.length)) {
-		mirrorTexture.sharpenTextureFuncPts = 
+		mirrorTexture.sharpenTextureFuncPts =
 			new float[sharpenTextureFuncPts.length];
 	    }
 	    for (int i = 0; i < sharpenTextureFuncPts.length; i++) {
-		mirrorTexture.sharpenTextureFuncPts[i] = 
+		mirrorTexture.sharpenTextureFuncPts[i] =
 			sharpenTextureFuncPts[i];
 	    }
 	}
@@ -2000,11 +2000,11 @@ abstract class TextureRetained extends NodeComponentRetained {
 
         mirrorTexture.maxLevels = maxLevels;
         if (images != null) {
-            
+
             for (int j = 0; j < numFaces; j++) {
                 for (int i = 0; i < maxLevels; i++) {
                     mirrorTexture.images[j][i] = images[j][i];
-                    
+
                     // add texture to the userList of the images
                     if (images[j][i] != null) {
                         images[j][i].addUser(mirrorTexture);
@@ -2015,18 +2015,18 @@ abstract class TextureRetained extends NodeComponentRetained {
     }
 
     boolean useAutoMipMapGeneration(Canvas3D cv) {
-	if (mipmapMode == Texture.BASE_LEVEL && 
+	if (mipmapMode == Texture.BASE_LEVEL &&
                 (minFilter == Texture.NICEST ||
                 minFilter == Texture.MULTI_LEVEL_POINT ||
                 minFilter == Texture.MULTI_LEVEL_LINEAR) &&
                 ((cv.textureExtendedFeatures &
                 Canvas3D.TEXTURE_AUTO_MIPMAP_GENERATION) != 0)) {
             return true;
-        }  
-        
-        return false;        
+        }
+
+        return false;
     }
-    
+
     /**
      * Go through the image update info list
      * and remove those that are already done
@@ -2137,7 +2137,7 @@ abstract class TextureRetained extends NodeComponentRetained {
     }
 
     /**
-     * Update the "component" field of the mirror object with the 
+     * Update the "component" field of the mirror object with the
      *  given "value"
      */
     synchronized void updateMirrorObject(int component, Object value) {
@@ -2166,7 +2166,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	        mirrorTexture.images[face][level] = null;
 
 	    } else {
-	        mirrorTexture.images[face][level] = 
+	        mirrorTexture.images[face][level] =
 			(ImageComponentRetained)image.retained;
 	        mirrorTexture.images[face][level].addUser(mirror);
 
@@ -2178,7 +2178,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    // in the RenderBin itself in response to the
 	    // IMAGE_CHANGED message
 
-		
+
 	    // mark that texture images need to be updated
 	    mirrorTexture.resourceUpdatedMask = 0;
 
@@ -2186,30 +2186,30 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    mirrorTexture.addImageUpdateInfo(level, face, null);
 
 	} else if ((component & IMAGES_CHANGED) != 0) {
-	    
+
 	    Object [] arg = (Object []) value;
 	    ImageComponent [] images = (ImageComponent[])arg[0];
 	    int face = ((Integer)arg[1]).intValue();
-	    
+
 	    for (int i = 0; i < images.length; i++) {
-		
+
 		// first remove texture from the userList of the current
 		// referencing image
 		if (mirrorTexture.images[face][i] != null) {
 		    mirrorTexture.images[face][i].removeUser(mirror);
 		}
-		
+
 		// assign the new image and add texture to the userList
 		if (images[i] == null) {
 		    mirrorTexture.images[face][i] = null;
 		} else {
-		    mirrorTexture.images[face][i] = 
+		    mirrorTexture.images[face][i] =
 			(ImageComponentRetained)images[i].retained;
 		    mirrorTexture.images[face][i].addUser(mirror);
 		}
 	    }
 	    mirrorTexture.updateResourceCreationMask();
-	    
+
 	    // NOTE: the old images have to be removed from the
 	    // renderBins' NodeComponentList and new image have to be
 	    // added to the lists. This will be taken care of
@@ -2218,10 +2218,10 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	} else if ((component & BASE_LEVEL_CHANGED) != 0) {
 	    int level = ((Integer)value).intValue();
-	    
+
 	    if (level < mirrorTexture.baseLevel) {
 
-		// add texture to the userList of those new levels of 
+		// add texture to the userList of those new levels of
 		// enabling images
 
 		for (int j = 0; j < numFaces; j++) {
@@ -2317,7 +2317,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 	} else if ((component & LOD_OFFSET_CHANGED) != 0) {
 	    if ((mirrorTexture.lodOffset) == null) {
-		mirrorTexture.lodOffset = 
+		mirrorTexture.lodOffset =
 					new Point3f((Point3f)value);
 	    } else {
 		mirrorTexture.lodOffset.set((Point3f)value);
@@ -2374,7 +2374,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	// first find which texture image is being affected
 
 	boolean done;
-	
+
 	for (int j = 0; j < numFaces; j++) {
 
 	    done = false;
@@ -2396,12 +2396,12 @@ abstract class TextureRetained extends NodeComponentRetained {
 	}
     }
 
-	
+
     // reset the resourceCreationMask
     // Note: called from the mirror object only
 
     void updateResourceCreationMask() {
-        resourceCreationMask = 0x0; 
+        resourceCreationMask = 0x0;
     }
 
     void incTextureBinRefCount(TextureBin tb) {
@@ -2424,7 +2424,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 		// hence don't have source and therefore they are
 		// guaranteed not modifiable
 
-		if (image != null && 
+		if (image != null &&
 		     (image.isByReference() ||
 		      (image.source != null &&
 		       image.source.getCapability(
@@ -2446,7 +2446,7 @@ abstract class TextureRetained extends NodeComponentRetained {
         for (int j = 0; j < numFaces; j++) {
             for (int i = 0; i < maxLevels; i++) {
 		image = images[j][i];
-		if (image != null && 
+		if (image != null &&
 		     (image.isByReference() ||
 		      (image.source != null &&
 		       image.source.getCapability(
@@ -2457,11 +2457,11 @@ abstract class TextureRetained extends NodeComponentRetained {
 	}
     }
 
-    
+
     final void sendMessage(int attrMask, Object attr) {
 
        	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
@@ -2480,7 +2480,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.TEXTURE_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
@@ -2490,7 +2490,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
 	    createMessage.args[3] = gaArr;
-	    
+
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
 
@@ -2507,11 +2507,11 @@ abstract class TextureRetained extends NodeComponentRetained {
             break;
         }
     }
-    
+
     void setUseAsRaster(boolean useAsRaster) {
         this.useAsRaster = useAsRaster;
     }
-    
+
     boolean isUseAsRaster() {
         return this.useAsRaster;
     }

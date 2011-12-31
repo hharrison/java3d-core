@@ -126,7 +126,7 @@ public class PointLight extends Light {
      */
     public PointLight(Color3f color,
 		      Point3f position,
-		      Point3f attenuation) { 
+		      Point3f attenuation) {
 	super(color);
 
         // set default read capabilities
@@ -146,7 +146,7 @@ public class PointLight extends Light {
     public PointLight(boolean lightOn,
 		      Color3f color,
 		      Point3f position,
-		      Point3f attenuation) { 
+		      Point3f attenuation) {
 	super(lightOn, color);
 
         // set default read capabilities
@@ -164,7 +164,7 @@ public class PointLight extends Light {
 	this.retained = new PointLightRetained();
 	this.retained.setSource(this);
     }
-  
+
 
   /**
    * Set light position.
@@ -235,9 +235,9 @@ public class PointLight extends Light {
 
   /**
    * Sets this Light's current attenuation values and places it in the parameter specified.
-   * @param constant the light's constant attenuation 
-   * @param linear the light's linear attenuation 
-   * @param quadratic the light's quadratic attenuation 
+   * @param constant the light's constant attenuation
+   * @param linear the light's linear attenuation
+   * @param quadratic the light's quadratic attenuation
    * @exception CapabilityNotSetException if appropriate capability is
    * not set and this object is part of live or compiled scene graph
    */
@@ -267,7 +267,7 @@ public class PointLight extends Light {
     }
 
 
-  
+
 
    /**
      * Used to create a new instance of the node.  This routine is called
@@ -295,7 +295,7 @@ public class PointLight extends Light {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -320,7 +320,7 @@ public class PointLight extends Light {
 	Point3f p = new Point3f();
 	attr.getPosition(p);
 	rt.initPosition(p);
-	
+
 	attr.getAttenuation(p);
 	rt.initAttenuation(p);
     }

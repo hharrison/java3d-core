@@ -51,7 +51,7 @@ import javax.vecmath.Point2f;
  *   <P><UL>
  *    Rolloff scale factor is used to model atmospheric changes from normal
  *    speed of sound.  The base value, 0.344 meters/millisecond is used
- *    to approximate the speed of sound through air at room temperature, 
+ *    to approximate the speed of sound through air at room temperature,
  *    is multipled by this scale factor whenever the speed of sound is
  *    applied during spatialization calculations.
  *    Valid values are >= 0.0.  Values > 1.0 increase the speed of sound,
@@ -63,17 +63,17 @@ import javax.vecmath.Point2f;
  *<UL>
  *    Auralization is the environmental modeling of sound iteratively
  *    reflecting off the surfaces of the bounded region the listener is in.
- *    Auralization components include 
+ *    Auralization components include
  *    early, distinct, low-order reflections and later, dense,
  *    higher-order reflections referred to as reverberation.
- *    These reflections are attenuated relative to the direct, unreflected 
+ *    These reflections are attenuated relative to the direct, unreflected
  *    sound.  The difference in gain between direct and reflected sound
- *    gives the listener a sense of the surface material and 
+ *    gives the listener a sense of the surface material and
  *    the relative distance of the sound.
- *    The delay between the start of the direct sound and start of 
- *    reverberation (as detected by the listener), 
+ *    The delay between the start of the direct sound and start of
+ *    reverberation (as detected by the listener),
  *    as well as the length of time reverberation is audible as it
- *    exponentially decays, give the listener a sense of the size of the 
+ *    exponentially decays, give the listener a sense of the size of the
  *    listening space.
  *   <P>
  *    In Java3D's model for auralization there are several parameters
@@ -97,8 +97,8 @@ import javax.vecmath.Point2f;
  *     <UL>Diffusion  <UL>Echo dispersement of reverberation.</UL></UL>
  *     <UL>Reverb Bounds  <UL>Approximates the volume of the listening space.
  *         If specified, it defines the reverberation delay.</UL></UL>
- *     <UL>Reverb Order  <UL>Optionally limits the amount of times during 
- *         reverb calculation that a sound is recursively reflected off the 
+ *     <UL>Reverb Order  <UL>Optionally limits the amount of times during
+ *         reverb calculation that a sound is recursively reflected off the
  *         bounding region.</UL></UL>
  *   <P>
  *    Reflection Coefficient
@@ -108,7 +108,7 @@ import javax.vecmath.Point2f;
  *       for early reflections
  *       of the composite surfaces in the region the listener is in.
  *       This scale factor is applied to the sound's amplitude regardless of the
- *       sound's position.  
+ *       sound's position.
  *       The range of valid values is 0.0 to 1.0.
  *       A value of 1.0 denotes that reflections are unattenuated -
  *       the amplitude of reflected sound waves are not decreased.
@@ -171,7 +171,7 @@ import javax.vecmath.Point2f;
  *    Decay Time
  *   <P><UL>
  *       The reverberation decay time explicitly defines the length of time in
- *       milliseconds it takes for the amplitude of late reflections to 
+ *       milliseconds it takes for the amplitude of late reflections to
  *       exponentally decrease to effective zero.
  *       In the case where reverb delay is set non-positive
  *       the renderer will perform the shortest reverberation decay
@@ -185,7 +185,7 @@ import javax.vecmath.Point2f;
  *   <P><UL>
  *       The reverberation decay filter defines how frequencies above a given
  *       value are attenuated by the listening space.  This allows for modelling
- *       materials on surfaces that absorb high frequencies at a faster rate 
+ *       materials on surfaces that absorb high frequencies at a faster rate
  *       than low frequencies.
  *     </UL>
  *   <P>
@@ -196,15 +196,15 @@ import javax.vecmath.Point2f;
  *       is proportional to the number of echos per second heard in late
  *       reverberation, especially noticable at the tail of the reverberation
  *       decay.  The greater the diffusion the more 'natural' the reverberation
- *       decay sounds.  Reducing diffusion makes the decay sound hollow as 
+ *       decay sounds.  Reducing diffusion makes the decay sound hollow as
  *       produced in a small highly reflecive space (such as a bathroom).
  *     </UL>
  *   <P>
  *    Reverberation Density
  *   <P><UL>
- *       The reverberation density explicitly defines modal reverb density 
+ *       The reverberation density explicitly defines modal reverb density
  *       The value for this modal density is proportional to the number of
- *       resonances heard in late reverberation perceived as spectral 
+ *       resonances heard in late reverberation perceived as spectral
  *       coloration.  The greater the density, the smoother, less grainy the
  *       later reverberation decay.
  *     </UL>
@@ -255,8 +255,8 @@ import javax.vecmath.Point2f;
  *  Values must be > zero for sounds to be heard.  If the value is zero,
  *  sounds affected by this AuralAttribute object are paused.
  *   <P>
- *  To simulate Doppler effect, the relative velocity (change in 
- *  distance in the local coordinate system between the sound source and 
+ *  To simulate Doppler effect, the relative velocity (change in
+ *  distance in the local coordinate system between the sound source and
  *  the listener over time, in meters per second) is calculated. This
  *  calculated velocity is multipled by the given VelocityScaleFactor.
  *  Values must be >= zero.  If is a scale factor value of zero is given,
@@ -507,13 +507,13 @@ public class AuralAttributes extends NodeComponent {
         ALLOW_REVERB_DELAY_READ,
         ALLOW_REVERB_ORDER_READ,
         ALLOW_ROLLOFF_READ,
-        ALLOW_VELOCITY_SCALE_FACTOR_READ        
+        ALLOW_VELOCITY_SCALE_FACTOR_READ
     };
-    
+
     /** *****************
-     *   
+     *
      *  Constructors
-     *   
+     *
      * ******************/
     /**
      * Constructs and initializes a new AuralAttributes object using default
@@ -535,7 +535,7 @@ public class AuralAttributes extends NodeComponent {
      * frequency scale factor: 1.0<br>
      * velocity scale factor: 0.0<br>
      * </ul>
-     */  
+     */
     public AuralAttributes() {
          // Just use default values
         // set default read capabilities
@@ -553,7 +553,7 @@ public class AuralAttributes extends NodeComponent {
      * @param distanceFilter frequency cutoff
      * @param frequencyScaleFactor applied to change of pitch
      * @param velocityScaleFactor applied to velocity of sound in relation to listener
-     */  
+     */
     public AuralAttributes(float     	gain,
                       float      	rolloff,
                       float      	reflectionCoefficient,
@@ -590,7 +590,7 @@ public class AuralAttributes extends NodeComponent {
      * @param frequencyCutoff distance filter frequency cutoff
      * @param frequencyScaleFactor applied to velocity/wave-length
      * @param velocityScaleFactor applied to velocity of sound in relation to listener
-     */  
+     */
     public AuralAttributes(float     	gain,
                       float      	rolloff,
                       float      	reflectionCoefficient,
@@ -679,79 +679,79 @@ public class AuralAttributes extends NodeComponent {
     /**
      * Creates the retained mode AuralAttributesRetained object that this
      * component object will point to.
-     */  
+     */
     void createRetained() {
         this.retained = new AuralAttributesRetained();
         this.retained.setSource(this);
     }
 
     /** ****************************************
-     *   
+     *
      *  Attribute Gain
      *
      * ****************************************/
     /**
      * Set Attribute Gain (amplitude) scale factor.
      * @param gain scale factor applied to amplitude of direct and reflected sound
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setAttributeGain(float gain) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_ATTRIBUTE_GAIN_WRITE)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes0")); 
+            if (!this.getCapability(ALLOW_ATTRIBUTE_GAIN_WRITE))
+                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes0"));
         ((AuralAttributesRetained)this.retained).setAttributeGain(gain);
     }
 
     /**
      * Retrieve Attribute Gain (amplitude).
      * @return gain amplitude scale factor
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public float getAttributeGain() {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_ATTRIBUTE_GAIN_READ)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes1")); 
+            if (!this.getCapability(ALLOW_ATTRIBUTE_GAIN_READ))
+                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes1"));
         return ((AuralAttributesRetained)this.retained).getAttributeGain();
     }
 
     /**
      * Set Attribute Gain Rolloff.
      * @param rolloff atmospheric gain scale factor (changing speed of sound)
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setRolloff(float rolloff) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_ROLLOFF_WRITE)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes2")); 
+            if (!this.getCapability(ALLOW_ROLLOFF_WRITE))
+                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes2"));
         ((AuralAttributesRetained)this.retained).setRolloff(rolloff);
     }
 
     /**
      * Retrieve Attribute Gain Rolloff.
      * @return rolloff atmospheric gain scale factor (changing speed of sound)
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public float getRolloff() {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_ROLLOFF_READ)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes3")); 
+            if (!this.getCapability(ALLOW_ROLLOFF_READ))
+                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes3"));
         return ((AuralAttributesRetained)this.retained).getRolloff();
     }
 
     /**
-     * Set Reflective Coefficient.  
+     * Set Reflective Coefficient.
      * Scales the amplitude of the early reflections of reverberated sounds
      * @param coefficient reflection/absorption factor applied to reflections
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setReflectionCoefficient(float coefficient) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_REFLECTION_COEFFICIENT_WRITE)) 
+            if (!this.getCapability(ALLOW_REFLECTION_COEFFICIENT_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes4"));
         ((AuralAttributesRetained)this.retained).setReflectionCoefficient(coefficient);
     }
@@ -759,19 +759,19 @@ public class AuralAttributes extends NodeComponent {
     /**
      * Retrieve Reflective Coefficient.
      * @return reflection coeff reflection/absorption factor
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public float getReflectionCoefficient() {
         if (isLiveOrCompiled())
-             if (!this.getCapability(ALLOW_REFLECTION_COEFFICIENT_READ)) 
-                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes21")); 
+             if (!this.getCapability(ALLOW_REFLECTION_COEFFICIENT_READ))
+                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes21"));
         return ((AuralAttributesRetained)this.retained).getReflectionCoefficient();
     }
 
     /*********************
      *
-     * Early Reflection Delay 
+     * Early Reflection Delay
      *
      ********************/
     /**
@@ -780,21 +780,21 @@ public class AuralAttributes extends NodeComponent {
      * direct, unreflected sound and the start of first order early reflections.
      * In this method, this time is explicitly given in milliseconds.
      * @param reflectionDelay delay time before start of reverberation
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
     public void setReflectionDelay(float reflectionDelay) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_REFLECTION_DELAY_WRITE)) 
+            if (!this.getCapability(ALLOW_REFLECTION_DELAY_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes22"));
         ((AuralAttributesRetained)this.retained).setReflectionDelay(reflectionDelay);
     }
 
     /**
      * Retrieve Reflection Delay Time.
-     * @return reflection delay time 
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @return reflection delay time
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
@@ -811,17 +811,17 @@ public class AuralAttributes extends NodeComponent {
      *
      ********************/
     /**
-     * Set Reverb Coefficient.  
+     * Set Reverb Coefficient.
      * Scale the amplitude of the late reflections including the decaying tail
      * of reverberated sound.
      * @param coefficient reflective/absorptive factor applied to late reflections
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
     public void setReverbCoefficient(float coefficient) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_REVERB_COEFFICIENT_WRITE)) 
+            if (!this.getCapability(ALLOW_REVERB_COEFFICIENT_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes24"));
         ((AuralAttributesRetained)this.retained).setReverbCoefficient(coefficient);
     }
@@ -829,7 +829,7 @@ public class AuralAttributes extends NodeComponent {
     /**
      * Retrieve Reverb Coefficient.
      * @return late reflection coeff. reflection/absorption factor
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
@@ -842,7 +842,7 @@ public class AuralAttributes extends NodeComponent {
 
     /*********************
      *
-     * Reverberation Delay 
+     * Reverberation Delay
      *
      ********************/
     /**
@@ -851,25 +851,25 @@ public class AuralAttributes extends NodeComponent {
      * direct, unreflected sound and the start of reverberation. In this
      * method, this time is explicitly given in milliseconds.
      * @param reverbDelay delay time before start of reverberation
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setReverbDelay(float reverbDelay) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_REVERB_DELAY_WRITE)) 
+            if (!this.getCapability(ALLOW_REVERB_DELAY_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes5"));
         ((AuralAttributesRetained)this.retained).setReverbDelay(reverbDelay);
     }
 
     /**
      * Retrieve Reverberation Delay Time.
-     * @return reverb delay time 
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @return reverb delay time
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public float getReverbDelay() {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_REVERB_DELAY_READ)) 
+            if (!this.getCapability(ALLOW_REVERB_DELAY_READ))
                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes7"));
         return ((AuralAttributesRetained)this.retained).getReverbDelay();
     }
@@ -880,11 +880,11 @@ public class AuralAttributes extends NodeComponent {
      *
      ********************/
     /**
-     * Set Decay Time  
+     * Set Decay Time
      * Length of time from the start of late reflections reverberation volume
      * takes to decay to effective zero (-60 dB of initial signal amplitude).
      * @param decayTime of late reflections (reverb) in milliseconds
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
@@ -898,7 +898,7 @@ public class AuralAttributes extends NodeComponent {
     /**
      * Retrieve Decay Time.
      * @return reverb decay time
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
@@ -915,13 +915,13 @@ public class AuralAttributes extends NodeComponent {
      *
      ********************/
     /**
-     * Set Decay Filter 
+     * Set Decay Filter
      * In this form, reverberation decay filtering is defined as a low-pass
      * filter, starting at the given reference frequency.  This allows for
      * higher frequencies to be attenuated at a different (typically faster)
      * rate than lower frequencies.
      * @param frequencyCutoff of reverberation decay low-pass filter
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
@@ -935,7 +935,7 @@ public class AuralAttributes extends NodeComponent {
     /**
      * Retrieve Decay Filter.
      * @return reverb decay filter cutoff frequency
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
@@ -952,12 +952,12 @@ public class AuralAttributes extends NodeComponent {
      *
      ********************/
     /**
-     * Set Diffusion. 
+     * Set Diffusion.
      * Sets the echo dispersement of reverberation to an amount between
      * the minimum (0.0) to the maximum (1.0) available.  Changing this
      * increases/decreases the 'smoothness' of reverb decay.
      * @param ratio reverberation echo dispersement factor
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
@@ -971,7 +971,7 @@ public class AuralAttributes extends NodeComponent {
     /**
      * Retrieve Diffusion.
      * @return reverb diffusion ratio
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
@@ -988,12 +988,12 @@ public class AuralAttributes extends NodeComponent {
      *
      ********************/
     /**
-     * Set Density.  
+     * Set Density.
      * Sets the density of reverberation to an amount between
      * the minimum (0.0) to the maximum (1.0) available.  Changing this
      * effects the spectral coloration (timbre) of late reflections.
      * @param ratio reverberation modal density factor
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
@@ -1007,7 +1007,7 @@ public class AuralAttributes extends NodeComponent {
     /**
      * Retrieve Density.
      * @return reverb density
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.3
      */
@@ -1019,12 +1019,12 @@ public class AuralAttributes extends NodeComponent {
     }
 
     /**
-     * @deprecated As of Java 3D version 1.2, replaced by 
+     * @deprecated As of Java 3D version 1.2, replaced by
      * <code>setReverbBounds(Bounds)</code>
      */
     public void setReverbDelay(Bounds reverbVolume) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_REVERB_DELAY_WRITE)) 
+            if (!this.getCapability(ALLOW_REVERB_DELAY_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes5"));
         ((AuralAttributesRetained)this.retained).setReverbBounds(reverbVolume);
     }
@@ -1033,12 +1033,12 @@ public class AuralAttributes extends NodeComponent {
      * Set Reverberation Bounds volume.
      * In this form, the reverberation bounds volume parameter is used to
      * calculate the reverberation Delay and Decay times.  Specification
-     * of a non-null bounding volume causes the explicit values given for 
-     * Reverb Delay and Decay to be overridden by the implicit values 
+     * of a non-null bounding volume causes the explicit values given for
+     * Reverb Delay and Decay to be overridden by the implicit values
      * calculated from these bounds.
      * ALLOW_REVERB_DELAY_WRITE flag used setting capability of this method.
      * @param reverbVolume the bounding region
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.2
      */
@@ -1054,7 +1054,7 @@ public class AuralAttributes extends NodeComponent {
      * @return reverb bounds volume that defines the Reverberation space and
      * indirectly the delay/decay
      * ALLOW_REVERB_DELAY_READ flag used setting capability of this method.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.2
      */
@@ -1076,12 +1076,12 @@ public class AuralAttributes extends NodeComponent {
      * to the reverberation being rendered.
      * A non-positive value specifies an unbounded number of reflections.
      * @param reverbOrder limit to the number of times reflections added to reverb signal
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setReverbOrder(int reverbOrder) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_REVERB_ORDER_WRITE)) 
+            if (!this.getCapability(ALLOW_REVERB_ORDER_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes8"));
         ((AuralAttributesRetained)this.retained).setReverbOrder(reverbOrder);
     }
@@ -1089,27 +1089,27 @@ public class AuralAttributes extends NodeComponent {
     /**
      * Retrieve Reverberation Order
      * @return reverb order
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public int getReverbOrder() {
-        if (!this.getCapability(ALLOW_REVERB_ORDER_READ)) 
+        if (!this.getCapability(ALLOW_REVERB_ORDER_READ))
             if (isLiveOrCompiled())
                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes9"));
         return ((AuralAttributesRetained)this.retained).getReverbOrder();
     }
 
     /**
-     * Set Distance Filter using a single array containing distances and 
+     * Set Distance Filter using a single array containing distances and
      * frequency cutoff as pairs of values as a single  array of Point2f.
      * @param attenuation array of pairs of distance and frequency cutoff
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setDistanceFilter(Point2f[] attenuation) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_DISTANCE_FILTER_WRITE)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes10")); 
+            if (!this.getCapability(ALLOW_DISTANCE_FILTER_WRITE))
+                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes10"));
         ((AuralAttributesRetained)this.retained).setDistanceFilter(attenuation);
     }
 
@@ -1117,20 +1117,20 @@ public class AuralAttributes extends NodeComponent {
      * Set Distance Filter using separate arrays for distances and frequency
      * cutoff.  The distance and frequencyCutoff arrays should be of the same
      * length. If the frequencyCutoff array length is greater than the distance
-     * array length, the frequencyCutoff array elements beyond the length of 
+     * array length, the frequencyCutoff array elements beyond the length of
      * the distance array are ignored. If the frequencyCutoff array is shorter
      * than the distance array, the last frequencyCutoff array value is repeated
      * to fill an array of length equal to distance array.
      * @param distance array of float distance with corresponding cutoff values
      * @param frequencyCutoff array of frequency cutoff values in Hertz
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
-    public void setDistanceFilter(float[] distance, 
+    public void setDistanceFilter(float[] distance,
                                         float[] frequencyCutoff) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_DISTANCE_FILTER_WRITE)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes10")); 
+            if (!this.getCapability(ALLOW_DISTANCE_FILTER_WRITE))
+                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes10"));
         ((AuralAttributesRetained)this.retained).setDistanceFilter(
                                 distance, frequencyCutoff );
     }
@@ -1138,7 +1138,7 @@ public class AuralAttributes extends NodeComponent {
     /**
      * Retrieve Distance Filter array length.
      * @return attenuation array length
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public int getDistanceFilterLength() {
@@ -1146,17 +1146,17 @@ public class AuralAttributes extends NodeComponent {
             if (!this.getCapability(ALLOW_DISTANCE_FILTER_READ))
                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes12"));
         return (((AuralAttributesRetained)this.retained).getDistanceFilterLength());
-    } 
+    }
     /**
      * Retrieve Distance Filter as a single array containing distances
      * and frequency cutoff. The distance filter is copied into
      * the specified array.
-     * The array must be large enough to hold all of the points. 
+     * The array must be large enough to hold all of the points.
      * The individual array elements must be allocated by the caller.
      * @param attenuation array of pairs of distance and frequency cutoff values
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void getDistanceFilter(Point2f[] attenuation) {
         if (isLiveOrCompiled())
             if (!this.getCapability(ALLOW_DISTANCE_FILTER_READ))
@@ -1170,34 +1170,34 @@ public class AuralAttributes extends NodeComponent {
      * and frequency cutoff values.
      * @param distance array
      * @param frequencyCutoff cutoff array
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
-    public void getDistanceFilter(float[] distance, 
+    public void getDistanceFilter(float[] distance,
                                         float[] frequencyCutoff) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_DISTANCE_FILTER_READ)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes12")); 
+            if (!this.getCapability(ALLOW_DISTANCE_FILTER_READ))
+                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes12"));
         ((AuralAttributesRetained)this.retained).getDistanceFilter(
                                    distance, frequencyCutoff);
     }
 
     /**
-     * This parameter specifies a scale factor applied to the frequency 
+     * This parameter specifies a scale factor applied to the frequency
      * of sound during rendering playback.  If the Doppler effect is
-     * disabled, this scale factor can be used to increase or 
+     * disabled, this scale factor can be used to increase or
      * decrease the original pitch of the sound.  During rendering,
-     * this scale factor expands or contracts the usual frequency shift 
-     * applied to the sound source due to Doppler calculations. 
+     * this scale factor expands or contracts the usual frequency shift
+     * applied to the sound source due to Doppler calculations.
      * Valid values are >= 0.0.
      * A value of zero causes playing sounds to pause.
      * @param frequencyScaleFactor factor applied to change of frequency
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setFrequencyScaleFactor(float frequencyScaleFactor) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_FREQUENCY_SCALE_FACTOR_WRITE)) 
+            if (!this.getCapability(ALLOW_FREQUENCY_SCALE_FACTOR_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes15"));
         ((AuralAttributesRetained)this.retained).setFrequencyScaleFactor(
                                     frequencyScaleFactor);
@@ -1206,12 +1206,12 @@ public class AuralAttributes extends NodeComponent {
     /**
      * Retrieve Frequency Scale Factor.
      * @return scaleFactor factor applied to change of frequency
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public float getFrequencyScaleFactor() {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_FREQUENCY_SCALE_FACTOR_READ)) 
+            if (!this.getCapability(ALLOW_FREQUENCY_SCALE_FACTOR_READ))
                 throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes17"));
         return ((AuralAttributesRetained)this.retained).getFrequencyScaleFactor();
     }
@@ -1223,21 +1223,21 @@ public class AuralAttributes extends NodeComponent {
      *********************************/
     /**
      * Set Velocity scale factor applied during Doppler Effect calculation.
-     * This parameter specifies a scale factor applied to the velocity of 
-     * the sound relative to the listener's position and movement in relation 
+     * This parameter specifies a scale factor applied to the velocity of
+     * the sound relative to the listener's position and movement in relation
      * to the sound's position and movement.  This scale factor is multipled
-     * by the calculated velocity portion of the Doppler effect equation used 
+     * by the calculated velocity portion of the Doppler effect equation used
      * during sound rendering.
      * A value of zero disables Doppler calculations.
-     * @param velocityScaleFactor applied to velocity of sound in relation 
+     * @param velocityScaleFactor applied to velocity of sound in relation
      * to listener
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setVelocityScaleFactor(float velocityScaleFactor) {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_VELOCITY_SCALE_FACTOR_WRITE)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes19")); 
+            if (!this.getCapability(ALLOW_VELOCITY_SCALE_FACTOR_WRITE))
+                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes19"));
         ((AuralAttributesRetained)this.retained).setVelocityScaleFactor(
                                      velocityScaleFactor);
     }
@@ -1245,13 +1245,13 @@ public class AuralAttributes extends NodeComponent {
     /**
      * Retrieve Velocity Scale Factor used to calculate Doppler Effect.
      * @return scale factor applied to Doppler velocity of sound
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public float getVelocityScaleFactor() {
         if (isLiveOrCompiled())
-            if (!this.getCapability(ALLOW_VELOCITY_SCALE_FACTOR_READ)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes20")); 
+            if (!this.getCapability(ALLOW_VELOCITY_SCALE_FACTOR_READ))
+                throw new CapabilityNotSetException(J3dI18N.getString("AuralAttributes20"));
         return ((AuralAttributesRetained)this.retained).getVelocityScaleFactor();
     }
 
@@ -1272,7 +1272,7 @@ public class AuralAttributes extends NodeComponent {
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -1284,11 +1284,11 @@ public class AuralAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
-     void duplicateAttributes(NodeComponent originalNodeComponent, 
-			      boolean forceDuplicate) { 
+     void duplicateAttributes(NodeComponent originalNodeComponent,
+			      boolean forceDuplicate) {
 	 super.duplicateAttributes(originalNodeComponent,
 				   forceDuplicate);
-	 
+
 	 AuralAttributesRetained aural = (AuralAttributesRetained) originalNodeComponent.retained;
 	 AuralAttributesRetained rt = (AuralAttributesRetained) retained;
 

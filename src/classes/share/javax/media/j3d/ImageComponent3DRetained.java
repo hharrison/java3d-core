@@ -62,16 +62,16 @@ class ImageComponent3DRetained extends ImageComponentRetained {
      * ImageComponent3D object.
      */
     void set(int index, BufferedImage image) {
-        
-        geomLock.getLock();        
-        
+
+        geomLock.getLock();
+
         if(byReference) {
             // Fix to issue 488.
-            setRefImage(image, index);    
+            setRefImage(image, index);
         }
 
         if(imageData == null) {
-            // Only do this once, on the first image            
+            // Only do this once, on the first image
             // Reset this flag to true, incase it was set to false due to
             // the previous image type.
             abgrSupported = true;
@@ -83,7 +83,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
                  // TODO need to throw illegal state exception
              }
         }
-        
+
         if (imageTypeIsSupported) {
             copySupportedImageToImageData(image, index, imageData);
         } else {
@@ -91,17 +91,17 @@ class ImageComponent3DRetained extends ImageComponentRetained {
             // TODO : borrow code from JAI to convert to right format.
             copyUnsupportedImageToImageData(image, index, imageData);
 
-        }    
-        
+        }
+
         geomLock.unLock();
-        
+
         if (source.isLive()) {
             // send a IMAGE_CHANGED message in order to
             // notify all the users of the change
             sendMessage(IMAGE_CHANGED, null);
-        }        
+        }
     }
-    
+
     /**
      * Copies the specified BufferedImage to this 3D image component
      * object at the specified index.
@@ -112,81 +112,81 @@ class ImageComponent3DRetained extends ImageComponentRetained {
      * ImageComponent3D object.
      *
     void set(int index, NioImageBuffer nioImage) {
-        
+
         int width = nioImage.getWidth();
         int height = nioImage.getHeight();
-        
+
         if (!byReference) {
-            throw new IllegalArgumentException(J3dI18N.getString("Need_New_Message_XXXXXImageComponent2D7"));    
+            throw new IllegalArgumentException(J3dI18N.getString("Need_New_Message_XXXXXImageComponent2D7"));
         }
         if (!yUp) {
-            throw new IllegalArgumentException(J3dI18N.getString("Need_New_Message_XXXXXImageComponent2D8"));           
+            throw new IllegalArgumentException(J3dI18N.getString("Need_New_Message_XXXXXImageComponent2D8"));
         }
-        
+
         if (width != this.width) {
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent3D2"));
         }
         if (height != this.height) {
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent3D4"));
         }
-       
+
         geomLock.getLock();
-        
+
         setImageClass(nioImage);
-        
-        // This is a byRef image.                
-         setRefImage(nioImage,0);           
+
+        // This is a byRef image.
+         setRefImage(nioImage,0);
 
         if(imageData == null) {
-            // Only do this once, on the first image            
+            // Only do this once, on the first image
             // Reset this flag to true, incase it was set to false due to
             // the previous image type.
             abgrSupported = true;
-            
+
             imageTypeIsSupported = isImageTypeSupported(nioImage);
 
-       
+
             // TODO : Need to handle null ....
             imageData = createNioImageBufferDataObject(null);
         }
         else {
-             
+
              //if(getImageType() != evaluateImageType(image)) {
                  // TODO need to throw illegal state exception
              //}
-              
+
         }
-        
+
         if (imageTypeIsSupported) {
-             // TODO : Need to handle this ..... case .... 
+             // TODO : Need to handle this ..... case ....
             // copySupportedImageToImageData(image, index, imageData);
         } else {
              // System.err.println("Image format is unsupported -- illogical case");
             throw new AssertionError();
-        }    
-        
+        }
+
         geomLock.unLock();
-        
+
         if (source.isLive()) {
             // send a IMAGE_CHANGED message in order to
             // notify all the users of the change
             sendMessage(IMAGE_CHANGED, null);
-        }        
+        }
     }
     */
-            
+
     void set(int index, RenderedImage image) {
-        
+
         int width = image.getWidth();
         int height = image.getHeight();
-        
+
         if (width != this.width) {
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent3D2"));
         }
         if (height != this.height) {
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent3D4"));
         }
-       
+
 	if (image instanceof BufferedImage) {
 	    set(index, ((BufferedImage)image));
 	}
@@ -210,7 +210,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
     RenderedImage[] getRenderedImage() {
 	int i;
 	RenderedImage bi[] = new RenderedImage[depth];
-        
+
 	if (!byReference) {
 	    for (i=0; i<depth; i++) {
                 bi[i] = imageData.createBufferedImage(i);
@@ -221,7 +221,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
                 bi[i] = imageData.createBufferedImage(i);
             }
         }
-        
+
         return bi;
     }
 
@@ -239,7 +239,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
 	    for (i=0; i<depth; i++) {
                 bi[i] = imageData.createBufferedImage(i);
 	    }
-	} 
+	}
         else {
             for (i = 0; i < depth; i++) {
                 bi[i] = imageData.createBufferedImage(i);
@@ -262,7 +262,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
 	if (!byReference) {
             return imageData.createBufferedImage(index);
 	}
-        
+
         return (RenderedImage) getRefImage(index);
     }
 
@@ -283,12 +283,12 @@ class ImageComponent3DRetained extends ImageComponentRetained {
         assert (refImage != null);
         assert (imageData != null);
 
-        
+
         // update the internal copy of the image data if a copy has been
         // made
         int srcX = x + refImage.getMinX();
         int srcY = y + refImage.getMinY();
-        
+
         if (imageTypeIsSupported) {
             if (refImage instanceof BufferedImage) {
                 copyImageLineByLine((BufferedImage)refImage, srcX, srcY, x, y, index, width, height, imageData);
@@ -304,7 +304,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
                 copyUnsupportedImageToImageData(refImage, srcX, srcY, x, y, index, width, height, imageData);
             }
         }
-        
+
         geomLock.unLock();
 
 
@@ -331,16 +331,16 @@ class ImageComponent3DRetained extends ImageComponentRetained {
 
          if(!isSubImageTypeEqual(image)) {
             throw new IllegalStateException(
-                                J3dI18N.getString("ImageComponent2D6"));           
+                                J3dI18N.getString("ImageComponent2D6"));
         }
 
         // Can't be byReference
         assert (!byReference);
         assert (imageData != null);
-        
+
         geomLock.getLock();
 
-        if (imageTypeIsSupported) {            
+        if (imageTypeIsSupported) {
             // Either not byRef or not yUp or not both
             // System.err.println("ImageComponen3DRetained.setSubImage() : (imageTypeSupported ) --- (1)");
             if (image instanceof BufferedImage) {
@@ -354,12 +354,12 @@ class ImageComponent3DRetained extends ImageComponentRetained {
             // TODO : Should look into borrow code from JAI to convert to right format.
             // System.err.println("ImageComponent3DRetained.setSubImage() : (imageTypeSupported == false) --- (2)");
              if (image instanceof BufferedImage) {
-                copyUnsupportedImageToImageData((BufferedImage)image, srcX, srcY, dstX, dstY, index, width, height, imageData);             
+                copyUnsupportedImageToImageData((BufferedImage)image, srcX, srcY, dstX, dstY, index, width, height, imageData);
             }
             else {
                 copyUnsupportedImageToImageData(image, srcX, srcY, dstX, dstY, index, width, height, imageData);
             }
-        }    
+        }
 
         geomLock.unLock();
 

@@ -34,12 +34,12 @@ package javax.media.j3d;
 import java.awt.Point;
 
 /**
- * The DrawingSurfaceObject class is used to manage native drawing surface 
+ * The DrawingSurfaceObject class is used to manage native drawing surface
  */
 
 class DrawingSurfaceObjectAWT extends DrawingSurfaceObject {
 
-    // drawing surface 
+    // drawing surface
     private long nativeDS = 0;
     private long dsi = 0;
 
@@ -81,7 +81,7 @@ class DrawingSurfaceObjectAWT extends DrawingSurfaceObject {
 	    if (nativeDS == 0) {
 		return false;
 	    } else {
-                if (lockAWT(nativeDS)) { 
+                if (lockAWT(nativeDS)) {
                     gotDsiLock = true;
 		    return true;
 	        } else {
@@ -104,12 +104,12 @@ class DrawingSurfaceObjectAWT extends DrawingSurfaceObject {
 		    gotDsiLock = false;
 		    if (doLastUnlock) {
 			nativeDS = 0;
-			dsi = 0;	
+			dsi = 0;
 			doLastUnlock = false;
 		    }
 		}
 	    } else {
-		unlockGlobal(nativeAWT);	    
+		unlockGlobal(nativeAWT);
 		gotDsiLock = false;
 	    }
 	}
@@ -166,5 +166,5 @@ class DrawingSurfaceObjectAWT extends DrawingSurfaceObject {
     long getDS() {
 	return nativeDS;
     }
-    
+
 }

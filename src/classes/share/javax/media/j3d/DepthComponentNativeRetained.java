@@ -49,9 +49,9 @@ class DepthComponentNativeRetained extends DepthComponentRetained {
      */
     void initialize(int width, int height) {
         type = DEPTH_COMPONENT_TYPE_NATIVE;
-        depthData = new int[width * height]; 
-        this.width = width; 
-        this.height = height; 
+        depthData = new int[width * height];
+        this.width = width;
+        this.height = height;
     }
 
     /**
@@ -70,13 +70,13 @@ class DepthComponentNativeRetained extends DepthComponentRetained {
      */
     final void retrieveDepth(int[] buf, int wRead, int hRead) {
         int srcOffset, dstOffset, i;
- 
+
         // Yup -> Ydown
         for (srcOffset = (hRead - 1) * wRead, dstOffset = 0,
                 i = 0; i < hRead; i++,
              srcOffset -= wRead, dstOffset += width) {
- 
+
             System.arraycopy(buf, srcOffset, depthData, dstOffset, wRead);
         }
-    }   
+    }
 }

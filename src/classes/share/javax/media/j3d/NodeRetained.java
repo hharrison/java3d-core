@@ -78,19 +78,19 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 
     // traverse flags
     static final int CONTAINS_VIEWPLATFORM 	= 0x1;
- 
+
 
     /**
      * The universe that we are in
-     */  
+     */
     VirtualUniverse universe = null;
 
-    /** 
+    /**
      * The locale that this node is attatched to.  This is only non-null
      * if this instance is directly linked into a locale.
      */
     Locale locale = null;
-    
+
     /**
      * The node's parent.
      */
@@ -102,7 +102,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
     String nodeId = null;
 
     /**
-     * An int that represents the nodes type.  Used for quick if tests 
+     * An int that represents the nodes type.  Used for quick if tests
      * in the traverser.
      */
     int nodeType;
@@ -138,17 +138,17 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
     //		TransformGroupRetained
     Transform3D localToVworld[][] = null;
     int		localToVworldIndex[][] = null;
- 
+
     static final int  LAST_LOCAL_TO_VWORLD    = 0;
     static final int  CURRENT_LOCAL_TO_VWORLD = 1;
 
-    // A parallel array to localToVworld.  This is the keys for 
+    // A parallel array to localToVworld.  This is the keys for
     // localToVworld transforms in shared groups.
     HashKey localToVworldKeys[] = null;
 
     /**
-     * This boolean is true when the geometric bounds for the node is 
-     * automatically updated 
+     * This boolean is true when the geometric bounds for the node is
+     * automatically updated
      */
     boolean boundsAutoCompute = true;
 
@@ -158,7 +158,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 
     // Bounds set by the API
     Bounds apiBounds;
-    
+
     protected Bounds cachedBounds=null;     // Cached auto compute bounds, could we use localBounds ?
     protected boolean validCachedBounds = false; // Fix to Issue 514
     /**
@@ -167,13 +167,13 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
      * For BranchGroup under a non-shared group this size of
      * branchGroupPaths is always 1. Otherwise, the size is equal to
      * the number of possible paths to reach this node.
-     * This variable is used to cached BranchGroup for fast picking. 
+     * This variable is used to cached BranchGroup for fast picking.
      * For non BranchGroupRetained class this is a reference to
      * the previous BranchGroupRetained branchGroupPaths.
      */
     ArrayList branchGroupPaths = new ArrayList(1);
 
-    // background node whose geometry branch contains this node 
+    // background node whose geometry branch contains this node
     BackgroundRetained geometryBackground = null;
 
     // closest parent which is a TransformGroupRetained or sharedGroupRetained
@@ -190,11 +190,11 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 
     // Id use for quick search.
     int nnuId;
-    
+
     NodeRetained() {
 	// Get a not necessary unique Id.
 	nnuId = NnuIdManager.getId();
-	
+
 	localBounds = new BoundingBox();
 	((BoundingBox)localBounds).setUpper(-1.0, -1.0, -1.0);
 	((BoundingBox)localBounds).setLower( 1.0,  1.0,  1.0);
@@ -221,7 +221,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
     Bounds getLocalBounds(Bounds bounds) {
 	return (Bounds)bounds.clone();
     }
-    
+
     /**
      * Sets the geometric bounds of a node.
      * @param bounds the bounding object for the node
@@ -236,7 +236,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 			localBounds.transform(staticTransform.transform);
 		    }
 		} else {
-		    if(localBounds != null) { 
+		    if(localBounds != null) {
 			localBounds.set((Bounds)null);
 		    }
 		    else {
@@ -251,7 +251,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 		    localBounds.transform(staticTransform.transform);
 		}
 	    } else {
-		if(localBounds != null) { 
+		if(localBounds != null) {
 		    localBounds.set((Bounds)null);
 		}
 		else {
@@ -260,7 +260,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	    }
 	}
     }
-    
+
     /**
      * Gets the bounding object of a node.
      * @return the node's bounding object
@@ -275,43 +275,43 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
             }
 	}
 	return b;
-    } 
-    
+    }
+
     Bounds getBounds() {
 	return apiBounds;
     }
-    
+
     /**
      * ONLY needed for SHAPE, MORPH, and LINK node type.
      * Compute the combine bounds of bounds and its localBounds.
      */
     void computeCombineBounds(Bounds bounds) {
 	// Do nothing except for Group, Shape3D, Morph, and Link node.
-    } 
-    
-    
+    }
+
+
     /**
      * Sets the automatic calcuation of geometric bounds of a node.
-     * @param autoCompute is a boolean value indicating if automatic calcuation 
-     * of bounds 
+     * @param autoCompute is a boolean value indicating if automatic calcuation
+     * of bounds
      */
     void setBoundsAutoCompute(boolean autoCompute) {
         if (this.boundsAutoCompute==autoCompute) {
             return;
         }
-        
+
 	this.boundsAutoCompute = autoCompute;
         dirtyBoundsCache();
-    } 
-    
+    }
+
     /**
      * Gets the auto Compute flag for the geometric bounds.
      * @return the node's auto Compute flag for the geometric bounding object
      */
     boolean getBoundsAutoCompute() {
 	return boundsAutoCompute;
-    } 
-    
+    }
+
     /**
      * Replaces the specified parent by a new parent.
      * @param parent the new parent
@@ -319,7 +319,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
     void setParent(NodeRetained parent) {
 	this.parent = parent;
     }
-    
+
     /**
      * Returns the parent of the node.
      * @return the parent.
@@ -339,39 +339,39 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	}
     }
 
-    
-    // Note : key will get modified in this method.   
+
+    // Note : key will get modified in this method.
     private void computeLocalToVworld( NodeRetained caller, NodeRetained nodeR,
 				       HashKey key, Transform3D l2Vw) {
 	int i;
-	
+
 	//  To handle localToVworld under a SG.
-	if(nodeR instanceof SharedGroupRetained) {      	
+	if(nodeR instanceof SharedGroupRetained) {
 	    // Get the immediate parent's id and remove last id from key.
 	    String nodeId = key.getLastNodeId();
-	    
+
 	    SharedGroupRetained sgRetained = (SharedGroupRetained) nodeR;
-	    
+
 	    // Search for the right parent.
 	    for(i=0; i<sgRetained.parents.size(); i++) {
-		
+
 		if(nodeId.equals((String)(((NodeRetained)
 					   (sgRetained.parents.elementAt(i))).nodeId))) {
 		    // Found the right link. Now traverse upward.
-		    
+
 		    computeLocalToVworld(caller,
 					 (NodeRetained)(sgRetained.parents.elementAt(i)),
 					 key, l2Vw);
-		    return; 
+		    return;
 		}
 	    }
 	    // Problem !
 	    throw new RuntimeException(J3dI18N.getString("NodeRetained4"));
 	}
 	else {
-	    
+
 	    NodeRetained nodeParentR =(NodeRetained)nodeR.getParent();
-	    
+
 	    if(nodeParentR == null) {
 		// Base case. It has to be a BG attached to a locale.
 		if(((BranchGroupRetained)(nodeR)).locale != null) {
@@ -380,14 +380,14 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 		else {
 		    throw new RuntimeException(J3dI18N.getString("NodeRetained5"));
 		}
-	    }		
-	    else {		
-		computeLocalToVworld(caller, (NodeRetained)nodeParentR, key, l2Vw);
-		
 	    }
-	    
+	    else {
+		computeLocalToVworld(caller, (NodeRetained)nodeParentR, key, l2Vw);
+
+	    }
+
 	}
-	
+
 	if((nodeR instanceof TransformGroupRetained) && (nodeR != caller)) {
 	    Transform3D t1 = new Transform3D();
 	    ((TransformGroupRetained)(nodeR)).transform.getWithLock(t1);
@@ -395,30 +395,30 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	} else if ((nodeR == caller) && (staticTransform != null)) {
 	    l2Vw.mul(staticTransform.transform);
 	}
-	
+
 	return;
-    }    
-    
+    }
+
     /**
      * Compute the LocalToVworld of this node even though it is not live. We
      * assume the graph is attached at the origin of a locale
      */
     void computeNonLiveLocalToVworld(Transform3D t, Node caller) {
         NodeRetained n = getParent();
-        
+
         if (n==null)
             t.setIdentity();
         else
             n.computeNonLiveLocalToVworld(t, caller);
-        
+
         if (this instanceof TransformGroupRetained && this.source!=caller) {
             Transform3D trans = new Transform3D();
             ((TransformGroupRetained)this).getTransform(trans);
             t.mul(trans);
         }
-        
+
     }
-        
+
     /**
      * Get the localToVworld transform for a node.
      */
@@ -426,7 +426,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	if (inSharedGroup) {
 	    throw new IllegalSharingException(J3dI18N.getString("NodeRetained0"));
 	}
-	
+
 	// Lock the object while writing into t.
 	if (localToVworld == null) {
 	    t.setIdentity();
@@ -434,8 +434,8 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	    computeLocalToVworld(this, this, null, t);
 	}
     }
-    
-    
+
+
     /**
      * Get the localToVworld transform for a node.
      */
@@ -449,13 +449,13 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	computeLocalToVworld(this, this, key, t);
 
     }
-    
+
     /**
      * Get the localToVworld transform for a node
      */
     void getLocalToVworld(Transform3D t, HashKey key) {
-	HashKey newKey = new HashKey(key);	
-	computeLocalToVworld(this, this, newKey, t);	
+	HashKey newKey = new HashKey(key);
+	computeLocalToVworld(this, this, newKey, t);
     }
 
 
@@ -476,7 +476,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
      */
     Transform3D getCurrentLocalToVworld() {
 
-	if (localToVworld != null) { 
+	if (localToVworld != null) {
 	    return localToVworld[0][localToVworldIndex[0][CURRENT_LOCAL_TO_VWORLD]];
 	} else {
 	    return new Transform3D();
@@ -491,7 +491,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 
     Transform3D getCurrentLocalToVworld(HashKey key) {
 
-	if (localToVworld != null) { 
+	if (localToVworld != null) {
 	    if (!inSharedGroup) {
 	        return localToVworld[0][localToVworldIndex[0][CURRENT_LOCAL_TO_VWORLD]];
 	    } else {
@@ -499,11 +499,11 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 		if(i>= 0) {
 		    return localToVworld[i][localToVworldIndex[i][CURRENT_LOCAL_TO_VWORLD]];
 		}
-	    }		
+	    }
 	}
 	return new Transform3D();
     }
-    
+
     /**
      * Get the last localToVworld transform for a node
      */
@@ -530,16 +530,16 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 		if(i>= 0) {
 		    return localToVworld[i][localToVworldIndex[i][LAST_LOCAL_TO_VWORLD]];
 		}
-	    } 
+	    }
 	}
 	return new Transform3D();
     }
 
     // Do nothing for NodeRetained.
     void setAuxData(SetLiveState s, int index, int hkIndex) {
-	
+
     }
-    
+
     void setNodeData(SetLiveState s) {
 	localToVworld = s.localToVworld;
 	localToVworldIndex = s.localToVworldIndex;
@@ -552,21 +552,21 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
         parentSwitchLink = s.parentSwitchLink;
     }
 
-   
+
     // set pickable, recursively update cache result
     void setPickable(boolean pickable) {
 	if (this.pickable == pickable)
 	    return;
 
 	this.pickable = pickable;
-	
+
 	if (source.isLive()) {
 	    synchronized(universe.sceneGraphLock) {
 		boolean pick[];
 		if (!inSharedGroup) {
 		    pick = new boolean[1];
 		} else {
-		    pick = new boolean[localToVworldKeys.length];		    
+		    pick = new boolean[localToVworldKeys.length];
 		}
 
 		findPickableFlags(pick);
@@ -595,14 +595,14 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	    return;
 
 	this.collidable = collidable;
-	
+
 	if (source.isLive()) {
 	    synchronized(universe.sceneGraphLock) {
 		boolean collide[];
 		if (!inSharedGroup) {
 		    collide = new boolean[1];
 		} else {
-		    collide = new boolean[localToVworldKeys.length];		    
+		    collide = new boolean[localToVworldKeys.length];
 		}
 
 		findCollidableFlags(collide);
@@ -648,7 +648,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
     void doSetLive(SetLiveState s) {
 	int i;
 	int oldrefCount = refCount;
-	
+
 	refCount += s.refCount;
 	if(!(locale == null || universe == s.universe))
             throw new IllegalSharingException(J3dI18N.getString("NodeRetained3"));
@@ -658,7 +658,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 
 	locale = s.locale;
 	inSharedGroup = s.inSharedGroup;
-	
+
 	if (oldrefCount <= 0) {
 	    if (listIdx == null) {
 		universe = s.universe;
@@ -682,19 +682,19 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	    if (!collidable) {
 		s.collidable[i] = false;
 	    }
-	} 
+	}
 
 
 	if (oldrefCount <= 0)
 	    super.doSetLive(s);
-	
+
         if (inBackgroundGroup) {
             geometryBackground = s.geometryBackground;
         }
-	
-	setNodeData(s);   
+
+	setNodeData(s);
     }
-    
+
 
     /**
      * remove the localToVworld transform for this node.
@@ -705,7 +705,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
             localToVworld = null;
             localToVworldIndex = null;
             localToVworldKeys = null;
-	    // restore to default and avoid calling clear() 
+	    // restore to default and avoid calling clear()
 	    // that may clear parent reference branchGroupPaths
 	    branchGroupPaths = new ArrayList(1);
             parentTransformLink = null;
@@ -717,15 +717,15 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	    localToVworld = s.localToVworld;
 	    localToVworldIndex = s.localToVworldIndex;
 	    localToVworldKeys = s.localToVworldKeys;
-	    
+
             // Reference of parent branchGroupPaths will not change
 
-	    // no need to reset parentSwitchLink or parentTransformLink 
+	    // no need to reset parentSwitchLink or parentTransformLink
 	    // because there are not per path data
 	}
-	
+
     }
-    
+
     // The default set of clearLive actions
     void clearLive(SetLiveState s) {
 
@@ -743,8 +743,8 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 
 	universe.numNodes--;
 
-	
-	removeNodeData(s);	
+
+	removeNodeData(s);
 
 	if(refCount <= 0) {
 	    locale = null;
@@ -766,7 +766,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 		    break;
 		}
 		nodeR = nodeR.parent;
-	    } 
+	    }
 	} else {
 	    HashKey key;
 	    for (int i=0; i < pick.length; i++) {
@@ -776,7 +776,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 
 		do {
 		    if (nodeR instanceof SharedGroupRetained) {
-			String nodeId = key.getLastNodeId();               
+			String nodeId = key.getLastNodeId();
 			Vector parents = ((SharedGroupRetained) nodeR).parents;
 			int sz = parents.size();
 			NodeRetained prevNodeR = nodeR;
@@ -789,10 +789,10 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 			}
 			if (prevNodeR == nodeR) {
 			    // branch is already detach
-			    return; 
+			    return;
 			}
 		    } else {
-			nodeR = nodeR.parent;		    
+			nodeR = nodeR.parent;
 		    }
 		    if (nodeR == null)
 			break;
@@ -819,7 +819,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 		    break;
 		}
 		nodeR = nodeR.parent;
-	    } 
+	    }
 	} else {
 	    HashKey key;
 	    for (int i=0; i < collide.length; i++) {
@@ -844,7 +844,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 			    return;
 			}
 		    } else {
-			nodeR = nodeR.parent;		    
+			nodeR = nodeR.parent;
 		    }
 		    if (nodeR == null)
 			break;
@@ -889,7 +889,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
                         int sz = parents.size();
                         NodeRetained prevNodeR = nodeR;
                         for (j=0; j< sz; j++) {
-                            NodeRetained linkR = 
+                            NodeRetained linkR =
 				(NodeRetained) parents.elementAt(j);
                             if (linkR.nodeId.equals(nodeId)) {
                                 nodeR = linkR;
@@ -904,23 +904,23 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
                     else if (nodeR.nodeType == NodeRetained.TRANSFORMGROUP) {
                         tg = (TransformGroupRetained)nodeR;
                         if (tg.inSharedGroup) {
-			    
+
 			    j = key.equals(tg.localToVworldKeys, 0,
 					   tg.localToVworldKeys.length);
-			    
+
                             transformLevels[i] = tg.transformLevels[j];
                         } else {
                             transformLevels[i] = tg.transformLevels[0];
                         }
                         break;
                     }
-		    
+
                     nodeR = nodeR.parent;
                 } while (true);
             }
         }
     }
-    
+
 
     boolean isStatic() {
 	if (source.getCapability(Node.ALLOW_LOCAL_TO_VWORLD_READ) ||
@@ -967,8 +967,8 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
     }
 
     void searchGeometryAtoms(UnorderList list) {}
-    
-    /** 
+
+    /**
      * Make the boundsCache of this node and all its parents dirty
      */
     void dirtyBoundsCache() {

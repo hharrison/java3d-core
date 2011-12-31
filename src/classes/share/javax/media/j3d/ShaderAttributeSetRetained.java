@@ -77,13 +77,13 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	    // System.err.println("attrName is " + sAttr.attrName + " attr.Retained is "+ sAttr );
 	    assert(sAttr != null);
 	    attrs.put(sAttr.attrName, sAttr);
-	    
+
 	    if (source.isLive()) {
 		sAttr.setLive(inBackgroundGroup, refCount);
 		sAttr.copyMirrorUsers(this);
-                
+
 		sendMessage(ShaderConstants.ATTRIBUTE_SET_PUT, sAttr.mirror);
-	    }	    
+	    }
 	}
     }
 
@@ -94,7 +94,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
      *
      * @param attrName the name of the shader attribute to be retrieved
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     ShaderAttribute get(String attrName) {
@@ -115,7 +115,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	    if (source.isLive()) {
 		sAttr.clearLive(refCount);
 		sAttr.removeMirrorUsers(this);
-		
+
 		sendMessage(ShaderConstants.ATTRIBUTE_SET_REMOVE, attrName);
 	    }
 	}
@@ -133,14 +133,14 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
      * @param attr the shader attribute to be removed
      */
     void remove(ShaderAttribute attr) {
-	synchronized(liveStateLock) {   
+	synchronized(liveStateLock) {
 	    String attrName = attr.getAttributeName();
 	    if (attrs.get(attrName) == attr.retained) {
 		attrs.remove(attrName);
 		if (source.isLive()) {
 		    ((ShaderAttributeRetained)attr.retained).clearLive(refCount);
 		    ((ShaderAttributeRetained)attr.retained).removeMirrorUsers(this);
-		    
+
 		    sendMessage(ShaderConstants.ATTRIBUTE_SET_REMOVE, attrName);
 		}
 	    }
@@ -181,7 +181,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	for(int i=0; i < sAttrsRetained.length; i++) {
 	    sAttrs[i] = (ShaderAttribute) sAttrsRetained[i].source;
 	}
-	
+
 	return sAttrs;
     }
 
@@ -196,24 +196,24 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
     }
 
 
-    void updateNative(Canvas3D cv, ShaderProgramRetained shaderProgram) {        
+    void updateNative(Canvas3D cv, ShaderProgramRetained shaderProgram) {
         shaderProgram.setShaderAttributes(cv, this);
     }
 
     Map getAttrs() {
         return attrs;
     }
-    
+
 
     void setLive(boolean backgroundGroup, int refCount) {
-	
+
 	// System.err.println("ShaderAttributeSetRetained.setLive()");
 	ShaderAttributeRetained[] sAttrsRetained = new ShaderAttributeRetained[attrs.size()];
 	sAttrsRetained = (ShaderAttributeRetained[])attrs.values().toArray(sAttrsRetained);
 	for(int i=0; i < sAttrsRetained.length; i++) {
 	    sAttrsRetained[i].setLive(backgroundGroup, refCount);
 	}
-	
+
 	super.doSetLive(backgroundGroup, refCount);
         super.markAsLive();
     }
@@ -225,7 +225,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	ShaderAttributeRetained[] sAttrsRetained = new ShaderAttributeRetained[attrs.size()];
 	sAttrsRetained = (ShaderAttributeRetained[])attrs.values().toArray(sAttrsRetained);
 	for(int i=0; i < sAttrsRetained.length; i++) {
-	    sAttrsRetained[i].addAMirrorUser(shape); 
+	    sAttrsRetained[i].addAMirrorUser(shape);
 	}
     }
 
@@ -256,15 +256,15 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	ShaderAttributeRetained[] sAttrsRetained = new ShaderAttributeRetained[attrs.size()];
 	sAttrsRetained = (ShaderAttributeRetained[])attrs.values().toArray(sAttrsRetained);
 	for(int i=0; i < sAttrsRetained.length; i++) {
-	    sAttrsRetained[i].copyMirrorUsers(node); 
+	    sAttrsRetained[i].copyMirrorUsers(node);
 	}
     }
 
     void clearLive(int refCount) {
 	// System.err.println("ShaderAttributeSetRetained.clearLive()");
-	
+
 	super.clearLive(refCount);
-	
+
 	ShaderAttributeRetained[] sAttrsRetained = new ShaderAttributeRetained[attrs.size()];
 	sAttrsRetained = (ShaderAttributeRetained[])attrs.values().toArray(sAttrsRetained);
 	for(int i=0; i < sAttrsRetained.length; i++) {
@@ -283,28 +283,28 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	}
 	initMirrorObject();
     }
-    
+
     void initMirrorObject() {
 
 	ShaderAttributeRetained[] sAttrs = new ShaderAttributeRetained[attrs.size()];
 	sAttrs = (ShaderAttributeRetained[])attrs.values().toArray(sAttrs);
-	// Need to copy the mirror attrs 
+	// Need to copy the mirror attrs
 	for (int i = 0; i < sAttrs.length; i++) {
 	    ShaderAttributeRetained mirrorSA = (ShaderAttributeRetained) sAttrs[i].mirror;
 	    assert(mirrorSA != null);
 	    ((ShaderAttributeSetRetained)mirror).attrs.put(mirrorSA.attrName, mirrorSA);
 	}
     }
-    
+
      /**
      * Update the "component" field of the mirror object with the  given "value"
      */
     synchronized void updateMirrorObject(int component, Object value) {
 
 	// System.err.println("ShaderAttributeSetRetained : updateMirrorObject");
-        
+
 	ShaderAttributeSetRetained mirrorSAS = (ShaderAttributeSetRetained)mirror;
-	
+
 	if ((component & ShaderConstants.ATTRIBUTE_SET_PUT) != 0) {
 	    // System.err.println("     -- ATTRIBUTE_SET_PUT");
 	    ShaderAttributeRetained mirrorSA = (ShaderAttributeRetained)value;
@@ -322,12 +322,12 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	else {
 	    assert(false);
 	}
-    }   
+    }
 
     final void sendMessage(int attrMask, Object attr) {
 
 	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
@@ -347,7 +347,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.SHADER_ATTRIBUTE_SET_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
@@ -356,8 +356,8 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	    ArrayList gL = (ArrayList)gaList.get(i);
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
-	    createMessage.args[3] = gaArr;  
-	    
+	    createMessage.args[3] = gaArr;
+
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
 

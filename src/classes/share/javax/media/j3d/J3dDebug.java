@@ -34,7 +34,7 @@ package javax.media.j3d;
 class J3dDebug  {
 
     // For production release devPhase is set to false.
-    
+
     // Do no debugging.
     static final int NO_DEBUG			= 0;
 
@@ -68,7 +68,7 @@ class J3dDebug  {
     // devPhase is put before debug, smart compiler will not include
     // code_segment when devPhase is false.
     static boolean debug;
-    
+
     // Class debug variable, there is one debug variable per class.
     // Set one of the 5 debug levels to the class debug variable when
     // debugging.
@@ -330,7 +330,7 @@ class J3dDebug  {
     // switch is a reserved word.
     static final int Switch = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int switchRetained = !devPhase?NO_DEBUG:NO_DEBUG;
-    static final int switchValueInterpolator = !devPhase?NO_DEBUG:NO_DEBUG;    
+    static final int switchValueInterpolator = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int table = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int texCoordGeneration = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int texCoordGenerationRetained = !devPhase?NO_DEBUG:NO_DEBUG;
@@ -360,7 +360,7 @@ class J3dDebug  {
     static final int triangleFanArray = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int triangleFanArrayRetained = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int triangleStripArray = !devPhase?NO_DEBUG:NO_DEBUG;
-    static final int triangleStripArrayRetained = !devPhase?NO_DEBUG:NO_DEBUG; 
+    static final int triangleStripArrayRetained = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int unorderList = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int vertexArrayRenderMethod = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int view = !devPhase?NO_DEBUG:NO_DEBUG;
@@ -391,7 +391,7 @@ class J3dDebug  {
     static final int wakeupOr = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int wakeupOrOfAnds = !devPhase?NO_DEBUG:NO_DEBUG;
 
-    
+
     static boolean doDebug(int j3dClassLevel, int level, String str) {
 	if(j3dClassLevel >= level) {
 	    System.err.print(str);
@@ -416,10 +416,10 @@ class J3dDebug  {
     static void pkgInfo(ClassLoader classLoader,
 			String pkgName,
 			String className) {
-	
+
 	try {
 	    classLoader.loadClass(pkgName + "." + className);
-	    
+
 	    Package p = Package.getPackage(pkgName);
 	    if (p == null) {
 		System.err.println("WARNING: Package.getPackage(" +
@@ -451,7 +451,7 @@ class J3dDebug  {
 	// 	System.err.println();
     }
 
-    
+
     static {
 	// initialize the debug flag
 	debug = false;

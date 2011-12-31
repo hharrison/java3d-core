@@ -188,7 +188,7 @@ public class TriangleFanArray extends GeometryStripArray {
 	this.retained.setSource(this);
     }
 
-   
+
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */

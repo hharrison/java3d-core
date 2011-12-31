@@ -61,12 +61,12 @@ public final class WakeupOnElapsedTime extends WakeupCriterion {
      * constructing this object.
      * @return the elapsed time specified when constructing this object
      */
-    public long getElapsedFrameTime(){  
+    public long getElapsedFrameTime(){
 	return wait;
     }
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
     void addBehaviorCondition(BehaviorStructure bs) {
@@ -78,7 +78,7 @@ public final class WakeupOnElapsedTime extends WakeupCriterion {
 
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
     void removeBehaviorCondition(BehaviorStructure bs) {
@@ -92,8 +92,8 @@ public final class WakeupOnElapsedTime extends WakeupCriterion {
     /**
      * This is invoked when Behavior processStimulus can't schedule
      * to run because behav.active = false. In this case we must
-     * reinsert the wakeupOnElapseTime condition back to the 
-     * TimerThread wakeup heap 
+     * reinsert the wakeupOnElapseTime condition back to the
+     * TimerThread wakeup heap
      */
     void reInsertElapseTimeCond() {
 	super.reInsertElapseTimeCond();

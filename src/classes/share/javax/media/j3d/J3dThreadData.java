@@ -32,7 +32,7 @@
 package javax.media.j3d;
 
 /**
- * The J3dThreadData is the data wrapper for threads in Java 3D.  
+ * The J3dThreadData is the data wrapper for threads in Java 3D.
  */
 
 class J3dThreadData extends Object {
@@ -44,7 +44,7 @@ class J3dThreadData extends Object {
     static final int WAIT_THIS_THREAD = 0x04;
     static final int START_TIMER      = 0x08;
     static final int STOP_TIMER       = 0x10;
-    static final int LAST_STOP_TIMER  = 0x20; 
+    static final int LAST_STOP_TIMER  = 0x20;
     //static final int LOCK_RENDERBIN   = 0x20;
     //static final int RELEASE_RENDERBIN = 0x40;
 

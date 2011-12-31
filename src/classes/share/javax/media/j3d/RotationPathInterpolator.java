@@ -55,13 +55,13 @@ public class RotationPathInterpolator extends PathInterpolator {
     private Quat4f quats[];
     private float prevInterpolationValue = Float.NaN;
 
-    // We can't use a boolean flag since it is possible 
+    // We can't use a boolean flag since it is possible
     // that after alpha change, this procedure only run
     // once at alpha.finish(). So the best way is to
     // detect alpha value change.
     private float prevAlphaValue = Float.NaN;
-    private WakeupCriterion passiveWakeupCriterion = 
-    (WakeupCriterion) new WakeupOnElapsedFrames(0, true);    
+    private WakeupCriterion passiveWakeupCriterion =
+    (WakeupCriterion) new WakeupOnElapsedFrames(0, true);
     // non-public, default constructor used by cloneNode
     RotationPathInterpolator() {
     }
@@ -170,7 +170,7 @@ public class RotationPathInterpolator extends PathInterpolator {
     public void setAxisOfRotation(Transform3D axisOfRotation) {
 	setTransformAxis(axisOfRotation);
     }
-       
+
     /**
      * @deprecated As of Java 3D version 1.3, replaced by
      * <code>TransformInterpolator.getTransformAxis()</code>
@@ -178,7 +178,7 @@ public class RotationPathInterpolator extends PathInterpolator {
     public Transform3D getAxisOfRotation() {
         return getTransformAxis();
     }
-    
+
     // The RotationPathInterpolator's initialize routine uses the default
     // initialization routine.
 
@@ -198,7 +198,7 @@ public class RotationPathInterpolator extends PathInterpolator {
 	double quatDot;
 	computePathInterpolation(alphaValue);
 	// For RPATH, take quaternion average and set rotation in TransformGroup
-		
+
 	if (currentKnotIndex == 0 &&
 	    currentInterpolationValue == 0f) {
 	    tQuat.x = quats[0].x;
@@ -240,12 +240,12 @@ public class RotationPathInterpolator extends PathInterpolator {
 		tQuat.w = quats[currentKnotIndex].w +
 		    (quats[currentKnotIndex+1].w -
 		     quats[currentKnotIndex].w)*currentInterpolationValue;
-	    }       
+	    }
 	}
-		
-	tQuat.normalize();	    
+
+	tQuat.normalize();
 	rotation.set(tQuat);
-		
+
 	// construct a Transform3D from:  axis * rotation * axisInverse
 	transform.mul(axis, rotation);
 	transform.mul(transform, axisInverse);
@@ -277,7 +277,7 @@ public class RotationPathInterpolator extends PathInterpolator {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -296,7 +296,7 @@ public class RotationPathInterpolator extends PathInterpolator {
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
-	RotationPathInterpolator ri = 
+	RotationPathInterpolator ri =
 	    (RotationPathInterpolator) originalNode;
 
 	int len = ri.getArrayLengths();

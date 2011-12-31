@@ -82,10 +82,10 @@ class AppearanceRetained extends NodeComponentRetained {
 
     // Lock used for synchronization of live state
     Object liveStateLock = new Object();
-    
+
     // NOTE: Consider grouping random state into common objects
 
-    // Cache used during compilation.  If map == compState, then 
+    // Cache used during compilation.  If map == compState, then
     // mapAppearance can be used for this appearance
     CompileState map = null;
     AppearanceRetained mapAppearance = null;
@@ -131,7 +131,7 @@ class AppearanceRetained extends NodeComponentRetained {
 		    // appaearance as users of this material
 		    ((MaterialRetained)material.retained).copyMirrorUsers(this);
 		}
-		sendMessage(MATERIAL,  
+		sendMessage(MATERIAL,
 			    (material != null ?
 			     ((MaterialRetained)material.retained).mirror : null), true);
 	    }
@@ -150,7 +150,7 @@ class AppearanceRetained extends NodeComponentRetained {
     Material getMaterial() {
         return (material == null ? null : (Material)material.source);
     }
-    
+
     /**
      * Sets the texture object to the specified object.
      * @param texture object that specifies the desired texture
@@ -169,11 +169,11 @@ class AppearanceRetained extends NodeComponentRetained {
 		    ((TextureRetained)texture.retained).setLive(inBackgroundGroup, refCount);
 		    ((TextureRetained)texture.retained).copyMirrorUsers(this);
 	    	}
-		sendMessage(TEXTURE,  
+		sendMessage(TEXTURE,
 			    (texture != null ?
 			     ((TextureRetained)texture.retained).mirror : null), true);
 
-	    } 
+	    }
 
 
 	    if (texture == null) {
@@ -185,7 +185,7 @@ class AppearanceRetained extends NodeComponentRetained {
     }
 
     /**
-     * Retrieves the current texture object. 
+     * Retrieves the current texture object.
      * @return the texture object
      */
     Texture getTexture() {
@@ -211,12 +211,12 @@ class AppearanceRetained extends NodeComponentRetained {
 		    ((TextureAttributesRetained)textureAttributes.retained).setLive(inBackgroundGroup, refCount);
 		    ((TextureAttributesRetained)textureAttributes.retained).copyMirrorUsers(this);
 		}
-		sendMessage(TEXTURE_ATTR, 
+		sendMessage(TEXTURE_ATTR,
 			    (textureAttributes != null ?
 			     ((TextureAttributesRetained)textureAttributes.retained).mirror:
 			     null), true);
 
-	    } 
+	    }
 
 
 	    if (textureAttributes == null) {
@@ -255,11 +255,11 @@ class AppearanceRetained extends NodeComponentRetained {
 		    ((ColoringAttributesRetained)coloringAttributes.retained).setLive(inBackgroundGroup, refCount);
 		    ((ColoringAttributesRetained)coloringAttributes.retained).copyMirrorUsers(this);
 		}
-		sendMessage(COLOR, 
-			    (coloringAttributes != null ? 
+		sendMessage(COLOR,
+			    (coloringAttributes != null ?
 			     ((ColoringAttributesRetained)coloringAttributes.retained).mirror:
 			     null), true);
-	    } 
+	    }
 
 
 	    if (coloringAttributes == null) {
@@ -299,10 +299,10 @@ class AppearanceRetained extends NodeComponentRetained {
 		    ((TransparencyAttributesRetained)transparencyAttributes.retained).copyMirrorUsers(this);
 		}
 
-		sendMessage(TRANSPARENCY, 
-			    (transparencyAttributes != null ? 
+		sendMessage(TRANSPARENCY,
+			    (transparencyAttributes != null ?
 			     ((TransparencyAttributesRetained)transparencyAttributes.retained).mirror: null), true);
-	    } 
+	    }
 
 
 	    if (transparencyAttributes == null) {
@@ -389,12 +389,12 @@ class AppearanceRetained extends NodeComponentRetained {
 		    ((PolygonAttributesRetained)polygonAttributes.retained).setLive(inBackgroundGroup, refCount);
 		    ((PolygonAttributesRetained)polygonAttributes.retained).copyMirrorUsers(this);
 		}
-		sendMessage(POLYGON, 
+		sendMessage(POLYGON,
 			    (polygonAttributes != null ?
 			     ((PolygonAttributesRetained)polygonAttributes.retained).mirror :
 			     null), true);
 
-	    } 
+	    }
 
 	    if (polygonAttributes == null) {
 		this.polygonAttributes = null;
@@ -432,10 +432,10 @@ class AppearanceRetained extends NodeComponentRetained {
 		    ((LineAttributesRetained)lineAttributes.retained).setLive(inBackgroundGroup, refCount);
 		    ((LineAttributesRetained)lineAttributes.retained).copyMirrorUsers(this);
 		}
-		sendMessage(LINE, 
-			    (lineAttributes != null ? 
+		sendMessage(LINE,
+			    (lineAttributes != null ?
 			     ((LineAttributesRetained)lineAttributes.retained).mirror: null), true);
-	    } 
+	    }
 
 
 	    if (lineAttributes == null) {
@@ -473,11 +473,11 @@ class AppearanceRetained extends NodeComponentRetained {
 		    ((PointAttributesRetained)pointAttributes.retained).setLive(inBackgroundGroup, refCount);
 		    ((PointAttributesRetained)pointAttributes.retained).copyMirrorUsers(this);
 		}
-		sendMessage(POINT, 
+		sendMessage(POINT,
 			    (pointAttributes != null ?
-			     ((PointAttributesRetained)pointAttributes.retained).mirror: 
+			     ((PointAttributesRetained)pointAttributes.retained).mirror:
 			     null), true);
-	    } 
+	    }
 
 
 	    if (pointAttributes == null) {
@@ -515,10 +515,10 @@ class AppearanceRetained extends NodeComponentRetained {
 		    ((TexCoordGenerationRetained)texGen.retained).setLive(inBackgroundGroup, refCount);
 		    ((TexCoordGenerationRetained)texGen.retained).copyMirrorUsers(this);
 		}
-		sendMessage(TEXCOORD_GEN, 
+		sendMessage(TEXCOORD_GEN,
 			    (texGen != null ?
 			     ((TexCoordGenerationRetained)texGen.retained).mirror : null), true);
-	    } 
+	    }
 
 	    if (texGen == null) {
 		this.texCoordGeneration = null;
@@ -545,7 +545,7 @@ class AppearanceRetained extends NodeComponentRetained {
     void setTextureUnitState(TextureUnitState[] stateArray) {
 
 	int i;
-        
+
 	synchronized(liveStateLock) {
 	    if (source.isLive()) {
 
@@ -567,9 +567,9 @@ class AppearanceRetained extends NodeComponentRetained {
 
 		    // -1 index means the entire array is to be set
 		    args[0] = new Integer(-1);
-	   
+
 		    // make a copy of the array for the message,
-		    TextureUnitStateRetained mirrorStateArray[] = 
+		    TextureUnitStateRetained mirrorStateArray[] =
 			new TextureUnitStateRetained[stateArray.length];
 
 		    args[1] = (Object) mirrorStateArray;
@@ -592,7 +592,7 @@ class AppearanceRetained extends NodeComponentRetained {
 		} else {
 		    sendMessage(TEXTURE_UNIT_STATE, null, true);
 		}
-	    } 
+	    }
 
 	    // assign the retained copy of the texture unit state to the
 	    // appearance
@@ -603,14 +603,14 @@ class AppearanceRetained extends NodeComponentRetained {
 		// make another copy of the array for the retained object
 		// itself if it doesn't have a copy or the array size is
 		// not the same
-		if ((this.texUnitState == null) || 
+		if ((this.texUnitState == null) ||
 		    (this.texUnitState.length != stateArray.length)) {
 		    this.texUnitState = new TextureUnitStateRetained[
 								     stateArray.length];
 		}
 		for (i = 0; i < stateArray.length; i++) {
 		    if (stateArray[i] != null) {
-			this.texUnitState[i] = 
+			this.texUnitState[i] =
 			    (TextureUnitStateRetained)stateArray[i].retained;
 		    } else {
 			this.texUnitState[i] = null;
@@ -621,7 +621,7 @@ class AppearanceRetained extends NodeComponentRetained {
     }
 
     void setTextureUnitState(int index, TextureUnitState state) {
-                
+
         synchronized(liveStateLock) {
 	    if (source.isLive()) {
 
@@ -648,7 +648,7 @@ class AppearanceRetained extends NodeComponentRetained {
 		    args[1] =  null;
 		    sendMessage(TEXTURE_UNIT_STATE, args, true);
 		}
-	    } 
+	    }
 
 	    // assign the retained copy of the texture unit state to the
 	    // appearance
@@ -672,7 +672,7 @@ class AppearanceRetained extends NodeComponentRetained {
 	if (texUnitState == null) {
 	    return null;
 	} else {
-	    TextureUnitState tus[] = 
+	    TextureUnitState tus[] =
 		new TextureUnitState[texUnitState.length];
 	    for (int i = 0; i < texUnitState.length; i++) {
 		 if (texUnitState[i] != null) {
@@ -687,13 +687,13 @@ class AppearanceRetained extends NodeComponentRetained {
 
     /**
      * Retrieves the texture unit state object at the specified
-     * index within the texture unit state array.  
+     * index within the texture unit state array.
      */
     TextureUnitState getTextureUnitState(int index) {
 
 	// let Java throw an exception if texUnitState == null or
 	// index is >= length
-	if (texUnitState[index] != null) 
+	if (texUnitState[index] != null)
 	    return (TextureUnitState)texUnitState[index].source;
 	else
 	    return null;
@@ -719,7 +719,7 @@ class AppearanceRetained extends NodeComponentRetained {
     synchronized void createMirrorObject() {
 	if (mirror == null) {
 	    // we can't check isStatic() since it sub-NodeComponent
-	    // create a new one, we should create a 
+	    // create a new one, we should create a
 	    // new AppearanceRetained() even though isStatic() = true.
 	    // For simplicity, always create a retained side.
 	    mirror = new AppearanceRetained();
@@ -742,24 +742,24 @@ class AppearanceRetained extends NodeComponentRetained {
 	// Fix for Issue 33: copy the changedFrequent mask to mirror
 	mirrorApp.changedFrequent = changedFrequent;
 
-	if (material != null) { 
+	if (material != null) {
 	    mirrorApp.material = (MaterialRetained)material.mirror;
 	} else {
 	    mirrorApp.material = null;
 	}
 
-	if (texture != null) { 
+	if (texture != null) {
 	    mirrorApp.texture = (TextureRetained)texture.mirror;
 	} else {
 	    mirrorApp.texture = null;
 	}
-	if (texCoordGeneration != null) { 
+	if (texCoordGeneration != null) {
 	    mirrorApp.texCoordGeneration = (TexCoordGenerationRetained)texCoordGeneration.mirror;
 	} else {
 	    mirrorApp.texCoordGeneration = null;
 	}
 
-	if (textureAttributes != null) { 
+	if (textureAttributes != null) {
 	    mirrorApp.textureAttributes = (TextureAttributesRetained)textureAttributes.mirror;
 	} else {
 	    mirrorApp.textureAttributes = null;
@@ -767,11 +767,11 @@ class AppearanceRetained extends NodeComponentRetained {
 
 	// TextureUnitState supercedes the single texture interface
 	if (texUnitState != null && texUnitState.length > 0) {
-	    mirrorApp.texUnitState = 
+	    mirrorApp.texUnitState =
 		new TextureUnitStateRetained[texUnitState.length];
 	    for (int i = 0; i < texUnitState.length; i++) {
 		if (texUnitState[i] != null) {
-		    mirrorApp.texUnitState[i] = 
+		    mirrorApp.texUnitState[i] =
 			(TextureUnitStateRetained)texUnitState[i].mirror;
 		}
 	    }
@@ -787,44 +787,44 @@ class AppearanceRetained extends NodeComponentRetained {
                                 mirrorApp.texCoordGeneration);
 	}
 
-	if (coloringAttributes != null) { 
+	if (coloringAttributes != null) {
 	    mirrorApp.coloringAttributes = (ColoringAttributesRetained)coloringAttributes.mirror;
 	} else {
 	    mirrorApp.coloringAttributes = null;
 	}
-	if (transparencyAttributes != null) { 
+	if (transparencyAttributes != null) {
 	    mirrorApp.transparencyAttributes = (TransparencyAttributesRetained)transparencyAttributes.mirror;
 	} else {
 	    mirrorApp.transparencyAttributes = null;
 	}
 
-	if (renderingAttributes != null) { 
+	if (renderingAttributes != null) {
 	    mirrorApp.renderingAttributes = (RenderingAttributesRetained)renderingAttributes.mirror;
 	} else {
 	    mirrorApp.renderingAttributes = null;
 	}
 
-	if (polygonAttributes != null) { 
+	if (polygonAttributes != null) {
 	    mirrorApp.polygonAttributes = (PolygonAttributesRetained)polygonAttributes.mirror;
 	} else {
 	    mirrorApp.polygonAttributes = null;
 	}
 
-	if (lineAttributes != null) { 
+	if (lineAttributes != null) {
 	    mirrorApp.lineAttributes = (LineAttributesRetained)lineAttributes.mirror;
 	} else {
 	    mirrorApp.lineAttributes = null;
 	}
 
-	if (pointAttributes != null) { 
+	if (pointAttributes != null) {
 	    mirrorApp.pointAttributes = (PointAttributesRetained)pointAttributes.mirror;
 	} else {
 	    mirrorApp.pointAttributes = null;
 	}
     }
 
-  /** 
-   * Update the "component" field of the mirror object with the 
+  /**
+   * Update the "component" field of the mirror object with the
    *  given "value"
    */
     synchronized void updateMirrorObject(int component, Object value) {
@@ -863,10 +863,10 @@ class AppearanceRetained extends NodeComponentRetained {
 	  } else {
 	      int index = ((Integer)args[0]).intValue();
 	      if (index == -1) {
-	          mirrorApp.texUnitState = 
+	          mirrorApp.texUnitState =
 			(TextureUnitStateRetained [])args[1];
 	      } else {
-	          mirrorApp.texUnitState[index] = 
+	          mirrorApp.texUnitState[index] =
 			(TextureUnitStateRetained)args[1];
 	      }
 	  }
@@ -904,9 +904,9 @@ class AppearanceRetained extends NodeComponentRetained {
      */
     void doSetLive(boolean backgroundGroup, int refCount) {
 	// System.err.println("AppearceRetained.doSetLive()");
-	
-	if (material != null) {	    
-	
+
+	if (material != null) {
+
 	    material.setLive(backgroundGroup, refCount);
 	}
 
@@ -921,7 +921,7 @@ class AppearanceRetained extends NodeComponentRetained {
 	}
 
 	if (textureAttributes != null) {
-	    
+
 	    textureAttributes.setLive(backgroundGroup, refCount);
 	}
 
@@ -932,7 +932,7 @@ class AppearanceRetained extends NodeComponentRetained {
 	    }
 	}
 
-		
+
 	if (coloringAttributes != null) {
 	    coloringAttributes.setLive(backgroundGroup, refCount);
 	}
@@ -984,7 +984,7 @@ class AppearanceRetained extends NodeComponentRetained {
 
 	if (texUnitState != null) {
 	    for (int i = 0; i < texUnitState.length; i++) {
-		if (texUnitState[i] != null) 
+		if (texUnitState[i] != null)
 		    texUnitState[i].clearLive(refCount);
 	    }
 	}
@@ -1022,26 +1022,26 @@ class AppearanceRetained extends NodeComponentRetained {
     boolean isStatic() {
 	boolean flag;
 
-	flag = (source.capabilityBitsEmpty() && 
+	flag = (source.capabilityBitsEmpty() &&
 		((texture == null) ||
 		 texture.source.capabilityBitsEmpty()) &&
-		((texCoordGeneration == null) || 
-		 texCoordGeneration.source.capabilityBitsEmpty()) && 
-		((textureAttributes == null) || 
+		((texCoordGeneration == null) ||
+		 texCoordGeneration.source.capabilityBitsEmpty()) &&
+		((textureAttributes == null) ||
 		 textureAttributes.source.capabilityBitsEmpty()) &&
 		((coloringAttributes == null) ||
 		 coloringAttributes.source.capabilityBitsEmpty()) &&
-		((transparencyAttributes == null) || 
+		((transparencyAttributes == null) ||
 		 transparencyAttributes.source.capabilityBitsEmpty()) &&
-		((renderingAttributes == null) || 
+		((renderingAttributes == null) ||
 		 renderingAttributes.source.capabilityBitsEmpty()) &&
-		((polygonAttributes == null) || 
+		((polygonAttributes == null) ||
 		 polygonAttributes.source.capabilityBitsEmpty()) &&
-		((lineAttributes == null) || 
+		((lineAttributes == null) ||
 		 lineAttributes.source.capabilityBitsEmpty()) &&
-		((pointAttributes == null) || 
+		((pointAttributes == null) ||
 		 pointAttributes.source.capabilityBitsEmpty()) &&
-		((material == null) || 
+		((material == null) ||
 		 material.source.capabilityBitsEmpty()));
 
 	if (!flag)
@@ -1081,7 +1081,7 @@ class AppearanceRetained extends NodeComponentRetained {
 		     texUnitState[i].compile(compState);
 	    }
 	}
-	   
+
 	if (coloringAttributes != null) {
 	   coloringAttributes.compile(compState);
 	}
@@ -1113,13 +1113,13 @@ class AppearanceRetained extends NodeComponentRetained {
 
     /**
      * Returns the hashcode for this object.
-     * hashcode should be constant for object but same for two objects 
+     * hashcode should be constant for object but same for two objects
      * if .equals() is true.  For an appearance (where .equals() is going
      * to use the values in the appearance), the only way to have a
      * constant value is for all appearances to have the same hashcode, so
      * we use the hashcode of the class obj.
      *
-     * Since hashCode is only used by AppearanceMap (at present) we may be 
+     * Since hashCode is only used by AppearanceMap (at present) we may be
      * able to improve efficency by calcing a hashCode from the values.
      */
     public int hashCode() {
@@ -1141,30 +1141,30 @@ class AppearanceRetained extends NodeComponentRetained {
 	        ((texture == app.texture) ||
 	         ((texture != null) && texture.equals(app.texture))) &&
 	        ((renderingAttributes == app.renderingAttributes) ||
-	         ((renderingAttributes != null) && 
+	         ((renderingAttributes != null) &&
 			renderingAttributes.equivalent(
 				app.renderingAttributes))) &&
-	        ((polygonAttributes == app.polygonAttributes) || 
-		 ((polygonAttributes != null) && 
+	        ((polygonAttributes == app.polygonAttributes) ||
+		 ((polygonAttributes != null) &&
 			polygonAttributes.equivalent(app.polygonAttributes))) &&
 	        ((texCoordGeneration == app.texCoordGeneration) ||
-	         ((texCoordGeneration != null) && 
-			texCoordGeneration.equivalent(app.texCoordGeneration))) && 
+	         ((texCoordGeneration != null) &&
+			texCoordGeneration.equivalent(app.texCoordGeneration))) &&
 	        ((textureAttributes == app.textureAttributes) ||
-	         ((textureAttributes != null) && 
-			textureAttributes.equivalent(app.textureAttributes))) && 
+	         ((textureAttributes != null) &&
+			textureAttributes.equivalent(app.textureAttributes))) &&
 	        ((coloringAttributes == app.coloringAttributes) ||
-	         ((coloringAttributes != null) && 
-			coloringAttributes.equivalent(app.coloringAttributes))) && 
+	         ((coloringAttributes != null) &&
+			coloringAttributes.equivalent(app.coloringAttributes))) &&
 	        ((transparencyAttributes == app.transparencyAttributes) ||
-	         ((transparencyAttributes != null) && 
+	         ((transparencyAttributes != null) &&
 			transparencyAttributes.equivalent(
-				app.transparencyAttributes))) && 
+				app.transparencyAttributes))) &&
 	        ((lineAttributes == app.lineAttributes) ||
-	         ((lineAttributes != null) && 
-			lineAttributes.equivalent(app.lineAttributes))) && 
+	         ((lineAttributes != null) &&
+			lineAttributes.equivalent(app.lineAttributes))) &&
 	        ((pointAttributes == app.pointAttributes) ||
-	         ((pointAttributes != null) && 
+	         ((pointAttributes != null) &&
 			pointAttributes.equivalent(app.pointAttributes)))));
 
 	if (!flag)
@@ -1178,7 +1178,7 @@ class AppearanceRetained extends NodeComponentRetained {
 	    return (false);
 
 	for (int i = 0; i < texUnitState.length; i++) {
-	     if (texUnitState[i] == app.texUnitState[i]) 
+	     if (texUnitState[i] == app.texUnitState[i])
 		 continue;
 
 	     if (texUnitState[i] == null || app.texUnitState[i] == null ||
@@ -1194,14 +1194,14 @@ class AppearanceRetained extends NodeComponentRetained {
     synchronized void addAMirrorUser(Shape3DRetained shape) {
 
 	super.addAMirrorUser(shape);
-	if (material != null) 
+	if (material != null)
 	    material.addAMirrorUser(shape);
 
-	if (texture != null) 
+	if (texture != null)
 	    texture.addAMirrorUser(shape);
-	if (texCoordGeneration != null) 
+	if (texCoordGeneration != null)
 	    texCoordGeneration.addAMirrorUser(shape);
-	if (textureAttributes != null) 
+	if (textureAttributes != null)
 	    textureAttributes.addAMirrorUser(shape);
 
 	if (texUnitState != null) {
@@ -1211,29 +1211,29 @@ class AppearanceRetained extends NodeComponentRetained {
 	    }
         }
 
-	if (coloringAttributes != null) 
+	if (coloringAttributes != null)
 	    coloringAttributes.addAMirrorUser(shape);
-	if (transparencyAttributes != null) 
+	if (transparencyAttributes != null)
 	    transparencyAttributes.addAMirrorUser(shape);
-	if (renderingAttributes != null) 
+	if (renderingAttributes != null)
 	    renderingAttributes.addAMirrorUser(shape);
-	if (polygonAttributes != null) 
+	if (polygonAttributes != null)
 	    polygonAttributes.addAMirrorUser(shape);
-	if (lineAttributes != null) 
+	if (lineAttributes != null)
 	    lineAttributes.addAMirrorUser(shape);
-	if (pointAttributes != null) 
+	if (pointAttributes != null)
 	    pointAttributes.addAMirrorUser(shape);
     }
 
   synchronized void removeAMirrorUser(Shape3DRetained shape) {
 	super.removeAMirrorUser(shape);
-	if (material != null) 
+	if (material != null)
 	    material.removeAMirrorUser(shape);
-	if (texture != null) 
+	if (texture != null)
 	    texture.removeAMirrorUser(shape);
-	if (texCoordGeneration != null) 
+	if (texCoordGeneration != null)
 	    texCoordGeneration.removeAMirrorUser(shape);
-	if (textureAttributes != null) 
+	if (textureAttributes != null)
 	    textureAttributes.removeAMirrorUser(shape);
 
 	if (texUnitState != null) {
@@ -1243,24 +1243,24 @@ class AppearanceRetained extends NodeComponentRetained {
 	    }
 	}
 
-	if (coloringAttributes != null) 
+	if (coloringAttributes != null)
 	    coloringAttributes.removeAMirrorUser(shape);
-	if (transparencyAttributes != null) 
+	if (transparencyAttributes != null)
 	    transparencyAttributes.removeAMirrorUser(shape);
-	if (renderingAttributes != null) 
+	if (renderingAttributes != null)
 	    renderingAttributes.removeAMirrorUser(shape);
-	if (polygonAttributes != null) 
+	if (polygonAttributes != null)
 	    polygonAttributes.removeAMirrorUser(shape);
-	if (lineAttributes != null) 
+	if (lineAttributes != null)
 	    lineAttributes.removeAMirrorUser(shape);
-	if (pointAttributes != null) 
+	if (pointAttributes != null)
 	    pointAttributes.removeAMirrorUser(shape);
     }
 
     // 3rd argument used only when Rendering Attr comp changes
     final void sendMessage(int attrMask, Object attr, boolean visible) {
 	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
 	J3dMessage createMessage = new J3dMessage();
@@ -1274,13 +1274,13 @@ class AppearanceRetained extends NodeComponentRetained {
 
 	VirtualUniverse.mc.processMessage(createMessage);
 
-	    
+
 	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.APPEARANCE_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
@@ -1293,35 +1293,35 @@ class AppearanceRetained extends NodeComponentRetained {
 	    // Send the value itself, since Geometry Structure cannot rely on the
 	    // mirror (which may be updated lazily)
 	    if (attrMask == RENDERING) {
-		if (attr != null) { 
-		    createMessage.args[4] = visible?Boolean.TRUE:Boolean.FALSE; 
-		} 
-		else { 
-		    createMessage.args[4] = Boolean.TRUE; 
-		} 
-	    } 
+		if (attr != null) {
+		    createMessage.args[4] = visible?Boolean.TRUE:Boolean.FALSE;
+		}
+		else {
+		    createMessage.args[4] = Boolean.TRUE;
+		}
+	    }
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
     }
 
-  
+
 
     final void sendRenderingAttributesChangedMessage(boolean visible) {
 
 	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
-	
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
+
 	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_GEOMETRY;
 	    createMessage.type = J3dMessage.RENDERINGATTRIBUTES_CHANGED;
-	    
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1] = null; // Sync with RenderingAttrRetained sendMessage
 	    createMessage.args[2]= visible?Boolean.TRUE:Boolean.FALSE;
-	    
+
 	    ArrayList gL = (ArrayList) gaList.get(i);
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
@@ -1342,7 +1342,7 @@ class AppearanceRetained extends NodeComponentRetained {
 	     (ta.transparencyMode !=
 	      TransparencyAttributes.SCREEN_DOOR)))) {
            return(false);
-        } 
+        }
 
 	switch (geoType) {
 	case GeometryRetained.GEO_TYPE_POINT_SET:
@@ -1366,12 +1366,12 @@ class AppearanceRetained extends NodeComponentRetained {
 	    break;
 	default:
 	    if (polygonAttributes != null) {
-		if((polygonAttributes.polygonMode == 
+		if((polygonAttributes.polygonMode ==
 		    PolygonAttributes.POLYGON_POINT) &&
 		   (pointAttributes != null) &&
 		   pointAttributes.pointAntialiasing) {
 		    return (false);
-		} else if ((polygonAttributes.polygonMode == 
+		} else if ((polygonAttributes.polygonMode ==
 			    PolygonAttributes.POLYGON_LINE) &&
 			   (lineAttributes != null) &&
 			    lineAttributes.lineAntialiasing) {
@@ -1382,7 +1382,7 @@ class AppearanceRetained extends NodeComponentRetained {
 	}
 
         return(true);
-    }    
+    }
 
     void handleFrequencyChange(int bit) {
 	int mask = 0;

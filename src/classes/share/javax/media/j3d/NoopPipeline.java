@@ -330,7 +330,7 @@ class NoopPipeline extends Pipeline {
             Object imageBuffer,
             int depthFormat,
             Object depthBuffer) {
-        
+
     }
 
     // ---------------------------------------------------------------------
@@ -1007,7 +1007,7 @@ class NoopPipeline extends Pipeline {
             int tilew, int width, int height,
             int imageDataType, Object data, boolean useAutoMipMap) {
     }
-    
+
     void updateTexture2DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod) {
@@ -1216,7 +1216,7 @@ class NoopPipeline extends Pipeline {
     // This is the native for reading the image from the offscreen buffer
     void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int type, Object data, int width, int height) {
     }
-    
+
     // The native method for swapBuffers
     int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable) {
         return 0;
@@ -1388,26 +1388,26 @@ class NoopPipeline extends Pipeline {
     }
 
     void clear(Context ctx, float r, float g, float b, boolean clearStencil) {
-        
+
     }
 
     void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, boolean useBiliearFilter) {
 
     }
-    
+
     void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
-            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha, 
+            float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha,
             boolean useBiliearFilter)  {
 
     }
-    
+
     void executeRasterDepth(Context ctx, float posX, float posY, float posZ,
-            int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight, 
+            int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight,
             int depthWidth, int depthHeight, int depthType, Object depthData) {
-        
+
     }
-    
+
     // The native method for setting the ModelView matrix.
     void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {
     }
@@ -1498,7 +1498,7 @@ class NoopPipeline extends Pipeline {
 //                gcInfo.setPrivateData(privateData);
 		Canvas3D.graphicsConfigTable.put(gc1, gcInfo);
             }
-	}   
+	}
         return gc1;
     }
 

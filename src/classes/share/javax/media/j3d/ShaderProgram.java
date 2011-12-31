@@ -69,9 +69,9 @@ public abstract class ShaderProgram extends NodeComponent {
    // Array for setting default read capabilities
     private static final int[] readCapabilities = {
         ALLOW_SHADERS_READ,
-        ALLOW_NAMES_READ        
+        ALLOW_NAMES_READ
     };
-    
+
     /*
      * Default values (copied from GeometryArray.java):
      *
@@ -178,7 +178,7 @@ public abstract class ShaderProgram extends NodeComponent {
      * shaders array is null.
      */
     public abstract void setShaders(Shader[] shaders);
-    
+
     /**
      * Retrieves the array of shaders from this shader program. A
      * shallow copy of the array is returned. The return value may

@@ -62,7 +62,7 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 
 
     /**
-     * The arraylist of ambient lights in this env list 
+     * The arraylist of ambient lights in this env list
      */
     ArrayList ambLights = new ArrayList();
 
@@ -111,7 +111,7 @@ class EnvironmentSet extends Object implements ObjectUpdate{
     EnvironmentSet next = null;
     EnvironmentSet prev = null;
 
-    /** 
+    /**
      * List of attrributeBins to be added next Frame
      */
     ArrayList addAttributeBins = new ArrayList();
@@ -137,13 +137,13 @@ class EnvironmentSet extends Object implements ObjectUpdate{
      */
     AttributeBin attributeBinList = null;
 
-    EnvironmentSet(RenderAtom ra, LightRetained[] lightList, FogRetained fog, 
+    EnvironmentSet(RenderAtom ra, LightRetained[] lightList, FogRetained fog,
 			ModelClipRetained modelClip, RenderBin rb) {
 	renderBin = rb;
 	reset(ra, lightList, fog, modelClip);
     }
 
-    private void reset(RenderAtom ra, LightRetained[] lightList, FogRetained fog, 
+    private void reset(RenderAtom ra, LightRetained[] lightList, FogRetained fog,
 		ModelClipRetained modelClip) {
 	int i;
 	LightRetained light;
@@ -187,7 +187,7 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 	enableMCMaskCache = 0;
 	if (modelClip != null) {
 	    for (i = 0; i < 6; i++) {
-		 if (modelClip.enables[i]) 
+		 if (modelClip.enables[i])
 		     enableMCMaskCache |= 1 << i;
 	    }
 	    enableMCMask = enableMCMaskCache;
@@ -204,11 +204,11 @@ class EnvironmentSet extends Object implements ObjectUpdate{
                 lightList[i].environmentSets.add(this);
             }
         }
-        
+
         if (fog != null) {
             fog.environmentSets.add(this);
         }
-        
+
         if (modelClip != null) {
             modelClip.environmentSets.add(this);
         }
@@ -217,7 +217,7 @@ class EnvironmentSet extends Object implements ObjectUpdate{
     /**
      * This tests if the qiven lights and fog match this EnviornmentSet
      */
-    boolean equals(RenderAtom ra, LightRetained[] lights, FogRetained fog, 
+    boolean equals(RenderAtom ra, LightRetained[] lights, FogRetained fog,
 			ModelClipRetained modelClip) {
 	int i;
 
@@ -334,13 +334,13 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 
 	    if ((canvasDirty & Canvas3D.AMBIENTLIGHT_DIRTY) != 0) {
 		updateSceneAmbient();
-	    } 
+	    }
 
-	    if ((canvasDirty & Canvas3D.LIGHTENABLES_DIRTY) != 0) { 
+	    if ((canvasDirty & Canvas3D.LIGHTENABLES_DIRTY) != 0) {
 		enableMask = enableMaskCache;
 	    }
 
-	    if ((canvasDirty & Canvas3D.MODELCLIP_DIRTY) != 0) { 
+	    if ((canvasDirty & Canvas3D.MODELCLIP_DIRTY) != 0) {
 		enableMCMask = enableMCMaskCache;
 	    }
 
@@ -413,7 +413,7 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 	}
     }
 
-    void updateSceneAmbient() 
+    void updateSceneAmbient()
     {
 	int i;
 	sceneAmbient.x = 0.0f;
@@ -481,35 +481,35 @@ class EnvironmentSet extends Object implements ObjectUpdate{
             if (cv.modelClip != modelClip) {
 		updateModelClip = true;
             }
-	} 
+	}
 
 	// Check for dirtybit.
-	if ((cv.canvasDirty & (Canvas3D.LIGHTENABLES_DIRTY| 
+	if ((cv.canvasDirty & (Canvas3D.LIGHTENABLES_DIRTY|
 			       Canvas3D.AMBIENTLIGHT_DIRTY|
 			       Canvas3D.FOG_DIRTY|
 			       Canvas3D.MODELCLIP_DIRTY|
 			       Canvas3D.VIEW_MATRIX_DIRTY)) != 0)  {
-	    
+
 	    if ((cv.canvasDirty & Canvas3D.LIGHTENABLES_DIRTY) != 0) {
 		updateLightEnables = true;
 	    }
-	    
+
 	    if ((cv.canvasDirty & Canvas3D.AMBIENTLIGHT_DIRTY) != 0) {
 		updateSceneAmbient = true;
 	    }
-	    
+
 	    if ((cv.canvasDirty & Canvas3D.FOG_DIRTY) != 0) {
 		updateFog = true;
 	    }
-	    
+
 	    if ((cv.canvasDirty & Canvas3D.MODELCLIP_DIRTY) != 0) {
 		updateModelClip = true;
 	    }
 
-	    if ((cv.canvasDirty &  Canvas3D.VIEW_MATRIX_DIRTY) != 0) {	
+	    if ((cv.canvasDirty &  Canvas3D.VIEW_MATRIX_DIRTY) != 0) {
 		updateFog = true;
 		updateModelClip = true;
-	    }	    
+	    }
 	}
 
 	// do states update here.
@@ -550,8 +550,8 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 			    Canvas3D.FOG_DIRTY |
 			    Canvas3D.MODELCLIP_DIRTY |
 			    Canvas3D.VIEW_MATRIX_DIRTY);
-	
+
 	cv.environmentSet = this;
-	
+
     }
 }

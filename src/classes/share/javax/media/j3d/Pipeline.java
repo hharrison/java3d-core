@@ -44,7 +44,7 @@ abstract class Pipeline {
         // Native rendering pipelines using OGL or D3D library
         NATIVE_OGL,
         NATIVE_D3D,
-        
+
         // Java rendering pipeline using Java Bindings for OpenGL
         JOGL,
 
@@ -129,7 +129,7 @@ abstract class Pipeline {
 
         return true;
     }
-    
+
     /**
      * Initialize the Pipeline. Called exactly once by
      * MasterControl.loadLibraries() to create the singleton
@@ -355,7 +355,7 @@ abstract class Pipeline {
             int vcount, int vformat,
             int texCoordSetCount, int[] texCoordSetMap,
             int texCoordSetMapLen, int[] texCoordSetMapOffset,
-            int vertexAttrCount, int[] vertexAttrSizes,    
+            int vertexAttrCount, int[] vertexAttrSizes,
             double[] xform, double[] nxform,
             float[] varray);
 
@@ -519,7 +519,7 @@ abstract class Pipeline {
             Object imageBuffer,
             int depthFormat,
             Object depthBuffer);
-    
+
     // ---------------------------------------------------------------------
 
     //
@@ -1072,7 +1072,7 @@ abstract class Pipeline {
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
             int imageDataType, Object data, boolean useAutoMipMap);
-    
+
     abstract void updateTexture2DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod);
@@ -1166,14 +1166,14 @@ abstract class Pipeline {
             int width, int height,
             int boundaryWidth,
             int imageDataType, Object imageData, boolean useAutoMipMap);
-    
+
     abstract void updateTextureCubeMapSubImage(Context ctx,
             int face, int level, int xoffset, int yoffset,
             int textureFormat, int imageFormat,
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
             int imageDataType, Object imageData, boolean useAutoMipMap);
-    
+
     abstract void updateTextureCubeMapLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod);
@@ -1212,7 +1212,7 @@ abstract class Pipeline {
     // Method to initialize the native J3D library
     abstract boolean initializeJ3D(boolean disableXinerama);
 
-    // Maximum lights supported by the native API 
+    // Maximum lights supported by the native API
     abstract int getMaximumLights();
 
 
@@ -1372,19 +1372,19 @@ abstract class Pipeline {
     boolean releaseCtx(Context ctx, long dpy) {
         return false;
     }
-    
+
     abstract void clear(Context ctx, float r, float g, float b, boolean clearStencil);
-    
+
     abstract void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, boolean useBiliearFilter);
-    
+
     abstract void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha, boolean useBiliearFilter);
 
-    abstract void executeRasterDepth(Context ctx, float posX, float posY, float posZ, 
-            int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight, int depthWidth, int depthHeight, 
-            int depthType, Object depthData); 
-    
+    abstract void executeRasterDepth(Context ctx, float posX, float posY, float posZ,
+            int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight, int depthWidth, int depthHeight,
+            int depthType, Object depthData);
+
         // The native method for setting the ModelView matrix.
     abstract void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix);
 
@@ -1457,7 +1457,7 @@ abstract class Pipeline {
     abstract int getStencilSize(Canvas3D cv);
     abstract boolean hasSceneAntialiasingMultisample(Canvas3D cv);
     abstract boolean hasSceneAntialiasingAccum(Canvas3D cv);
-    
+
     // Methods to get native WS display and screen
     abstract long getDisplay();
     abstract int getScreen(GraphicsDevice graphicsDevice);

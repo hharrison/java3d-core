@@ -53,7 +53,7 @@ public abstract class PickCylinder extends PickShape {
     public PickCylinder() {
 	origin = new Point3d();
 	direction = new Vector3d();
-	radius = 0.0;	
+	radius = 0.0;
     }
 
     /**
@@ -88,11 +88,11 @@ public abstract class PickCylinder extends PickShape {
      */
     abstract boolean intersect(Bounds bounds, Point4d pickPos);
 
-    // This is a duplicate of the same method, declared private inside of 
+    // This is a duplicate of the same method, declared private inside of
     // BoundingPolytope
     // XXXX: remove this once the original method is available (public) in
     // BoundingPolytope
-    static boolean pointInPolytope(BoundingPolytope ptope, 
+    static boolean pointInPolytope(BoundingPolytope ptope,
 				   double x, double y, double z ){
 	Vector4d p;
 	int i = ptope.planes.length - 1;
@@ -102,7 +102,7 @@ public abstract class PickCylinder extends PickShape {
 	    if (( x*p.x + y*p.y + z*p.z + p.w ) > Bounds.EPSILON) {
 		return false;
 	    }
-	}   
+	}
 	return true;
     }
 

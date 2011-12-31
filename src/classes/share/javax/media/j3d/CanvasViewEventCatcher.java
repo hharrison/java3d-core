@@ -38,7 +38,7 @@ import java.awt.event.*;
 /**
  * The CanvasViewEventCatcher class is used to track events on a Canvas3D that
  * may cause view matries to change.
- * 
+ *
  */
 class CanvasViewEventCatcher extends ComponentAdapter {
 
@@ -49,12 +49,12 @@ class CanvasViewEventCatcher extends ComponentAdapter {
     CanvasViewEventCatcher(Canvas3D c) {
 	canvas = c;
     }
-    
+
     public void componentResized(ComponentEvent e) {
 	if (DEBUG) {
 	    System.err.println("Component resized " + e);
 	}
-	
+
 	if(e.getComponent() == canvas ) {
 	    if (DEBUG) {
 		System.err.println("It is canvas!");
@@ -66,7 +66,7 @@ class CanvasViewEventCatcher extends ComponentAdapter {
                 }
 		canvas.resizeGraphics2D = true;
 	    }
-	    
+
 	    // see comment below
 	    try {
 		canvas.newSize = canvas.getSize();
@@ -75,7 +75,7 @@ class CanvasViewEventCatcher extends ComponentAdapter {
 
 	}
     }
-    
+
     public void componentMoved(ComponentEvent e) {
 	if (DEBUG) {
 	    System.err.println("Component moved " + e);
@@ -88,15 +88,15 @@ class CanvasViewEventCatcher extends ComponentAdapter {
             }
         }
 	// Can't sync. with canvas lock since canvas.getLocationOnScreen()
-	// required Component lock. The order is reverse of 
+	// required Component lock. The order is reverse of
 	// removeNotify() lock sequence which required Component lock
 	// first, then canvas lock in removeComponentListener()
-	
+
 	try {
 	    canvas.newSize = canvas.getSize();
 	    canvas.newPosition = canvas.getLocationOnScreen();
 	} catch (IllegalComponentStateException ex) {}
 
     }
-    
+
 }

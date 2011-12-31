@@ -35,7 +35,7 @@ package javax.media.j3d;
  * Class specifying a wakeup the first time an active Viewplatform's
  * activation
  * volume intersects with this object's scheduling region.
- * This gives the behavior an explicit means of executing code when 
+ * This gives the behavior an explicit means of executing code when
  * it is activated.
  */
 public final class WakeupOnActivation extends WakeupCriterion {
@@ -54,7 +54,7 @@ public final class WakeupOnActivation extends WakeupCriterion {
     }
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
     void addBehaviorCondition(BehaviorStructure bs) {
@@ -65,7 +65,7 @@ public final class WakeupOnActivation extends WakeupCriterion {
 
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
     void removeBehaviorCondition(BehaviorStructure bs) {

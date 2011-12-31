@@ -71,7 +71,7 @@ public class ImageComponent2D extends ImageComponent {
 
     // non-public, no parameter constructor
     ImageComponent2D() {}
-    
+
     /**
      * Constructs a 2D image component object using the specified
      * format, width, and height. Default values are used for
@@ -95,7 +95,7 @@ public class ImageComponent2D extends ImageComponent {
 			    int		height) {
 
         if (MasterControl.isDevLoggable(Level.FINER)) {
-            MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");            
+            MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");
         }
         ((ImageComponent2DRetained)this.retained).processParams(format, width, height, 1);
     }
@@ -115,7 +115,7 @@ public class ImageComponent2D extends ImageComponent {
     public ImageComponent2D(int format, BufferedImage image) {
 
         if (MasterControl.isDevLoggable(Level.FINER)) {
-            MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");            
+            MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");
         }
         ((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
 	((ImageComponent2DRetained)this.retained).set(image);
@@ -139,7 +139,7 @@ public class ImageComponent2D extends ImageComponent {
 
 
         if (MasterControl.isDevLoggable(Level.FINER)) {
-            MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");            
+            MasterControl.getDevLogger().finer("ImageComponent - using default of byCopy");
         }
 	((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
 	((ImageComponent2DRetained)this.retained).set(image);
@@ -180,7 +180,7 @@ public class ImageComponent2D extends ImageComponent {
                         "otherwise an extra copy of the image will be created");
             }
         }
-        
+
  	((ImageComponentRetained)this.retained).setByReference(byReference);
  	((ImageComponentRetained)this.retained).setYUp(yUp);
  	((ImageComponent2DRetained)this.retained).processParams(format, width, height, 1);
@@ -217,7 +217,7 @@ public class ImageComponent2D extends ImageComponent {
                         "otherwise an extra copy of the image will be created");
             }
         }
-        
+
  	((ImageComponentRetained)this.retained).setByReference(byReference);
  	((ImageComponentRetained)this.retained).setYUp(yUp);
  	((ImageComponent2DRetained)this.retained).processParams(format, image.getWidth(), image.getHeight(), 1);
@@ -285,7 +285,7 @@ public class ImageComponent2D extends ImageComponent {
      *
      * @exception IllegalArgumentException if the yUp flag is false.
      *
-     * @exception IllegalArgumentException if the number of components in format 
+     * @exception IllegalArgumentException if the number of components in format
      * does not match the number of components in image.
      *
      * @since Java 3D 1.5
@@ -393,7 +393,7 @@ public class ImageComponent2D extends ImageComponent {
      * specified image is not equal to the width and height of this
      * ImageComponent object.
      *
-     * @exception IllegalArgumentException if the number of components in format 
+     * @exception IllegalArgumentException if the number of components in format
      * does not match the number of components in image.
      *
      * @since Java 3D 1.5
@@ -435,7 +435,7 @@ public class ImageComponent2D extends ImageComponent {
 
 	if ((img != null) && !(img instanceof BufferedImage)) {
 	    throw new IllegalStateException(J3dI18N.getString("ImageComponent2D5"));
-	}	
+	}
 	return (BufferedImage) img;
 
     }
@@ -499,7 +499,7 @@ public class ImageComponent2D extends ImageComponent {
     /**
      * Modifies a contiguous subregion of the image component.
      * Block of data of dimension (width * height)
-     * starting at the offset (srcX, srcY) of the specified 
+     * starting at the offset (srcX, srcY) of the specified
      * RenderedImage object will be copied into the image component
      * starting at the offset (dstX, dstY) of the ImageComponent2D object.
      * The specified RenderedImage object must be of the same format as
@@ -510,13 +510,13 @@ public class ImageComponent2D extends ImageComponent {
      * @param image RenderedImage object containing the subimage.
      * @param width width of the subregion.
      * @param height height of the subregion.
-     * @param srcX starting X offset of the subregion in the 
+     * @param srcX starting X offset of the subregion in the
      * specified image.
-     * @param srcY starting Y offset of the subregion in the 
+     * @param srcY starting Y offset of the subregion in the
      * specified image.
-     * @param dstX starting X offset of the subregion in the image 
+     * @param dstX starting X offset of the subregion in the image
      * component of this object.
-     * @param dstY starting Y offset of the subregion in the image 
+     * @param dstY starting Y offset of the subregion in the image
      * component of this object.
      *
      * @exception CapabilityNotSetException if appropriate capability is
@@ -525,24 +525,24 @@ public class ImageComponent2D extends ImageComponent {
      * @exception IllegalStateException if the data access mode is
      * <code>BY_REFERENCE</code>.
      *
-     * @exception IllegalArgumentException if <code>width</code> or 
+     * @exception IllegalArgumentException if <code>width</code> or
      * <code>height</code> of
      * the subregion exceeds the dimension of the image of this object.
      *
      * @exception IllegalArgumentException if <code>dstX</code> < 0, or
-     * (<code>dstX</code> + <code>width</code>) > width of this object, or 
+     * (<code>dstX</code> + <code>width</code>) > width of this object, or
      * <code>dstY</code> < 0, or
      * (<code>dstY</code> + <code>height</code>) > height of this object.
      *
      * @exception IllegalArgumentException if <code>srcX</code> < 0, or
      * (<code>srcX</code> + <code>width</code>) > width of the RenderedImage
-     * object containing the subimage, or 
+     * object containing the subimage, or
      * <code>srcY</code> < 0, or
-     * (<code>srcY</code> + <code>height</code>) > height of the 
+     * (<code>srcY</code> + <code>height</code>) > height of the
      * RenderedImage object containing the subimage.
      *
      * @exception IllegalArgumentException if the specified RenderedImage
-     * is not compatible with the existing RenderedImage. 
+     * is not compatible with the existing RenderedImage.
      *
      * @exception IllegalStateException if the image class is not one of:
      * ImageClass.BUFFERED_IMAGE or ImageClass.RENDERED_IMAGE.
@@ -572,8 +572,8 @@ public class ImageComponent2D extends ImageComponent {
                 ((dstX + width) > w) || ((dstY + height) > h)) {
             throw new IllegalArgumentException(
                     J3dI18N.getString("ImageComponent2D3"));
-        }       
-        
+        }
+
         ((ImageComponent2DRetained)this.retained).setSubImage(
                                 image, width, height, srcX, srcY, dstX, dstY);
     }
@@ -615,7 +615,7 @@ public class ImageComponent2D extends ImageComponent {
      *
      * @since Java 3D 1.3
      */
-    public void updateData(Updater updater, 
+    public void updateData(Updater updater,
 			   int x, int y,
 			   int width, int height) {
 
@@ -666,13 +666,13 @@ public class ImageComponent2D extends ImageComponent {
 	return img;
     }
 
-      
+
    /**
-     * Copies all node information from <code>originalNodeComponent</code> 
+     * Copies all node information from <code>originalNodeComponent</code>
      * into the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate
      * @param forceDuplicate when set to <code>true</code>, causes the

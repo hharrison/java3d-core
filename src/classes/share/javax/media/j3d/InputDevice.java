@@ -52,20 +52,20 @@ public interface InputDevice {
      * Signifies that the driver for a device is a blocking driver and that
      * it should be scheduled for regular reads by Java 3D.  A blocking driver
      * is defined as a driver that can cause the thread accessing the driver
-     * (the Java 3D implementation thread calling the pollAndProcessInput 
-     * method) to block while the data is being accessed from the driver.      
-     */ 
+     * (the Java 3D implementation thread calling the pollAndProcessInput
+     * method) to block while the data is being accessed from the driver.
+     */
     public static final int BLOCKING = 3;
 
 
-   /**  
+   /**
     * Signifies that the driver for a device is a non-blocking driver and
     * that it should be scheduled for regular reads by Java 3D.  A
     * non-blocking driver is defined as a driver that does not cause the
     * calling thread to block while data is being retrieved from the
     * driver.  If no data is available from the device, pollAndProcessInput
     * should return without updating the sensor read value.
-    */ 
+    */
     public static final int NON_BLOCKING = 4;
 
    /**
@@ -76,13 +76,13 @@ public interface InputDevice {
     * must always provide the current value of the sensor on demand whenever
     * pollAndProcessInput is called.  This means that DEMAND_DRIVEN drivers
     * are non-blocking by definition.
-    */ 
+    */
     public static final int DEMAND_DRIVEN = 5;
 
 
     /**
-     * This method initializes the device.  A device should be initialized 
-     * before it is registered with Java 3D via the 
+     * This method initializes the device.  A device should be initialized
+     * before it is registered with Java 3D via the
      * PhysicalEnvironment.addInputDevice(InputDevice) method call.
      * @return return true for succesful initialization, false for failure
      */
@@ -90,7 +90,7 @@ public interface InputDevice {
 
     /**
      * This method sets the device's current position and orientation as the
-     * devices nominal position and orientation (establish its reference 
+     * devices nominal position and orientation (establish its reference
      * frame relative to the "Tracker base" reference frame).
      */
     public abstract void setNominalPositionAndOrientation();
@@ -98,35 +98,35 @@ public interface InputDevice {
 
     /**
      * This method causes the device's sensor readings to be updated by the
-     * device driver.  For BLOCKING and NON_BLOCKING drivers, this method is 
-     * called regularly and the Java 3D implementation can cache the sensor 
-     * values.  For DEMAND_DRIVEN drivers this method is called each time one 
+     * device driver.  For BLOCKING and NON_BLOCKING drivers, this method is
+     * called regularly and the Java 3D implementation can cache the sensor
+     * values.  For DEMAND_DRIVEN drivers this method is called each time one
      * of the Sensor.getRead methods is called, and is not otherwise called.
      */
     public abstract void pollAndProcessInput();
 
     /**
-     * This method will not be called by the Java 3D implementation and 
+     * This method will not be called by the Java 3D implementation and
      * should be implemented as an empty method.
      */
     public abstract void processStreamInput();
 
     /**
-     * Code to process the clean up of the device and relinquish associated 
-     * resources.  This method should be called after the device has been 
+     * Code to process the clean up of the device and relinquish associated
+     * resources.  This method should be called after the device has been
      * unregistered from Java 3D via the
      * PhysicalEnvironment.removeInputDevice(InputDevice) method call.
      */
     public abstract void close();
-    
+
     /**
-     * This method retrieves the device's processing mode: one of BLOCKING, 
+     * This method retrieves the device's processing mode: one of BLOCKING,
      * NON_BLOCKING, or DEMAND_DRIVEN.  The Java 3D implementation calls
      * this method when PhysicalEnvironment.addInputDevice(InputDevice) is
-     * called to register the device with Java 3D.  If this method returns 
+     * called to register the device with Java 3D.  If this method returns
      * any value other than BLOCKING, NON_BLOCKING, or DEMAND_DRIVEN,
      * addInputDevice will throw an IllegalArgumentException.
-     * @return Returns the devices processing mode, one of BLOCKING, 
+     * @return Returns the devices processing mode, one of BLOCKING,
      * NON_BLOCKING, or DEMAND_DRIVEN
      */
     public abstract int getProcessingMode();
@@ -134,10 +134,10 @@ public interface InputDevice {
 
     /**
      * This method sets the device's processing mode to one of: BLOCKING,
-     * NON_BLOCKING, or DEMAND_DRIVEN.  Many drivers will be written to run 
-     * in only one mode.  Applications using such drivers should not attempt 
-     * to set the processing mode.  This method should throw an 
-     * IllegalArgumentException if there is an attempt to set the processing 
+     * NON_BLOCKING, or DEMAND_DRIVEN.  Many drivers will be written to run
+     * in only one mode.  Applications using such drivers should not attempt
+     * to set the processing mode.  This method should throw an
+     * IllegalArgumentException if there is an attempt to set the processing
      * mode to anything other than the aforementioned three values.
      *
      * <p>
@@ -160,13 +160,13 @@ public interface InputDevice {
     /**
      * Gets the specified Sensor associated with the device.  Each InputDevice
      * implementation is responsible for creating and managing its own set of
-     * sensors.  The sensor indices begin at zero and end at number of 
-     * sensors minus one.  Each sensor should have had 
+     * sensors.  The sensor indices begin at zero and end at number of
+     * sensors minus one.  Each sensor should have had
      * Sensor.setDevice(InputDevice) set properly before addInputDevice
      * is called.
      * @param sensorIndex the sensor to retrieve
      * @return Returns the specified sensor.
      */
-    public Sensor getSensor(int sensorIndex);   
+    public Sensor getSensor(int sensorIndex);
 
 }

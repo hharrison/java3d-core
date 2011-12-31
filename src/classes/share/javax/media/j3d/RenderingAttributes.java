@@ -53,17 +53,17 @@ package javax.media.j3d;
  *
  * <li>NOT_EQUAL - pixels are drawn if the incoming pixel depth is
  * not equal to the stored pixel depth in the frame buffer.</li><p>
- * 
+ *
  * <li>LESS - pixels are drawn if the incoming pixel depth is less
  * than the stored pixel depth in the frame buffer.</li><p>
- * 
+ *
  * <li>LESS_OR_EQUAL - pixels are drawn if the incoming pixel depth
  * is less than or equal to the stored pixel depth in the frame buffer.
  * This is the default setting.</li><p>
- * 
+ *
  * <li>GREATER - pixels are drawn if the incoming pixel depth is greater
  * than the stored pixel depth in the frame buffer.</li><p>
- * 
+ *
  * <li>GREATER_OR_EQUAL - pixels are drawn if the incoming pixel depth
  * is greater than or equal to the stored pixel depth in the frame buffer.</li><p>
  * </ul>
@@ -87,16 +87,16 @@ package javax.media.j3d;
  *
  * <li>NOT_EQUAL - pixels are drawn if the incoming pixel alpha value is
  * not equal to the alpha test value.</li><p>
- * 
+ *
  * <li>LESS - pixels are drawn if the incoming pixel alpha value is less
  * than the alpha test value.</li><p>
- * 
+ *
  * <li>LESS_OR_EQUAL - pixels are drawn if the incoming pixel alpha value
  * is less than or equal to the alpha test value.</li><p>
- * 
+ *
  * <li>GREATER - pixels are drawn if the incoming pixel alpha value is greater
  * than the alpha test value.</li><p>
- * 
+ *
  * <li>GREATER_OR_EQUAL - pixels are drawn if the incoming pixel alpha
  * value is greater than or equal to the alpha test value.</li><p>
  * </ul>
@@ -105,7 +105,7 @@ package javax.media.j3d;
  * This value is compared to the alpha value of each rendered pixel.
  * The alpha test value is set with the <code>setAlphaTestValue</code>
  * method. The default alpha test value is 0.0.</li><p>
- * 
+ *
  * <li>Raster operation - the raster operation function for this
  * RenderingAttributes component object. The raster operation is
  * set with the <code>setRasterOp</code> method. The raster operation
@@ -131,26 +131,26 @@ package javax.media.j3d;
  * </ul>
  * <li>Vertex colors - vertex colors can be ignored for this
  * RenderingAttributes object. This capability is set with the
- * <code>setIgnoreVertexColors</code> method. If 
- * ignoreVertexColors is false, per-vertex colors are used, when 
+ * <code>setIgnoreVertexColors</code> method. If
+ * ignoreVertexColors is false, per-vertex colors are used, when
  * present in the associated geometry objects, taking
  * precedence over the ColoringAttributes color and the
  * specified Material color(s). If ignoreVertexColors is true, per-vertex
- * colors are ignored. In this case, if lighting is enabled, the 
+ * colors are ignored. In this case, if lighting is enabled, the
  * Material diffuse color will be used as the object color.
  * if lighting is disabled, the ColoringAttributes color is
  * used. The default value is false.</li><p>
- * 
+ *
  * <li>Visibility flag - when set, invisible objects are
  * not rendered (subject to the visibility policy for
  * the current view), but they can be picked or collided with.
  * This flag is set with the <code>setVisible</code>
  * method. By default, the visibility flag is true.</li><p>
- * 
+ *
  * <li>Depth buffer - can be enabled or disabled for this
- * RenderingAttributes component object. The 
+ * RenderingAttributes component object. The
  * <code>setDepthBufferEnable</code> method enables
- * or disabled the depth buffer. The 
+ * or disabled the depth buffer. The
  * <code>setDepthBufferWriteEnable</code> method enables or disables
  * writing the depth buffer for this object. During the transparent
  * rendering pass, this attribute can be overridden by the
@@ -210,16 +210,16 @@ package javax.media.j3d;
  *
  * <li>NOT_EQUAL - pixels are drawn if the stencil reference value is
  * not equal to the stored stencil value in the frame buffer.</li><p>
- * 
+ *
  * <li>LESS - pixels are drawn if the stencil reference value is less
  * than the stored stencil value in the frame buffer.</li><p>
- * 
+ *
  * <li>LESS_OR_EQUAL - pixels are drawn if the stencil reference value
  * is less than or equal to the stored stencil value in the frame buffer.</li><p>
- * 
+ *
  * <li>GREATER - pixels are drawn if the stencil reference value is greater
  * than the stored stencil value in the frame buffer.</li><p>
- * 
+ *
  * <li>GREATER_OR_EQUAL - pixels are drawn if the stencil reference value
  * is greater than or equal to the stored stencil value in the frame buffer.</li><p>
  * </ul>
@@ -424,7 +424,7 @@ public class RenderingAttributes extends NodeComponent {
     public static final int NOT_EQUAL = 3;
 
     /**
-     * Specifies that pixels are drawn if the source/reference value is less 
+     * Specifies that pixels are drawn if the source/reference value is less
      * than the destination/test value.
      * Can be used to specify the alpha test function, the depth test function,
      * or the stencil function.
@@ -436,7 +436,7 @@ public class RenderingAttributes extends NodeComponent {
     public static final int LESS = 4;
 
     /**
-     * Specifies that pixels are drawn if the source/reference value is less 
+     * Specifies that pixels are drawn if the source/reference value is less
      * than or equal to the destination/test value.
      * Can be used to specify the alpha test function, the depth test function,
      * or the stencil function.
@@ -448,7 +448,7 @@ public class RenderingAttributes extends NodeComponent {
     public static final int LESS_OR_EQUAL = 5;
 
     /**
-     * Specifies that pixels are drawn if the source/reference value is greater 
+     * Specifies that pixels are drawn if the source/reference value is greater
      * than the destination/test value.
      * Can be used to specify the alpha test function, the depth test function,
      * or the stencil function.
@@ -460,7 +460,7 @@ public class RenderingAttributes extends NodeComponent {
     public static final int GREATER = 6;
 
     /**
-     * Specifies that pixels are drawn if the source/reference value is greater 
+     * Specifies that pixels are drawn if the source/reference value is greater
      * than or equal to the destination/test value.
      * Can be used to specify the alpha test function, the depth test function,
      * or the stencil function.
@@ -515,7 +515,7 @@ public class RenderingAttributes extends NodeComponent {
      * @since Java 3D 1.4
      */
     public static final int ROP_AND_INVERTED = 0x4;
-		
+
     /**
      * Raster operation: <code>DST = DST</code>.
      * @see #setRasterOp
@@ -555,7 +555,7 @@ public class RenderingAttributes extends NodeComponent {
      * @since Java 3D 1.4
      */
     public static final int ROP_EQUIV = 0x9;
-		
+
     /**
      * Raster operation: <code>DST = ~DST</code>.
      * @see #setRasterOp
@@ -563,7 +563,7 @@ public class RenderingAttributes extends NodeComponent {
      * @since Java 3D 1.4
      */
     public static final int ROP_INVERT = 0xA;
-		
+
     /**
      * Raster operation: <code>DST = src | ~DST</code>.
      * @see #setRasterOp
@@ -663,7 +663,7 @@ public class RenderingAttributes extends NodeComponent {
         ALLOW_ALPHA_TEST_VALUE_READ,
         ALLOW_DEPTH_ENABLE_READ,
         ALLOW_DEPTH_TEST_FUNCTION_READ,
-        ALLOW_IGNORE_VERTEX_COLORS_READ,        
+        ALLOW_IGNORE_VERTEX_COLORS_READ,
         ALLOW_RASTER_OP_READ,
         ALLOW_STENCIL_ATTRIBUTES_READ,
         ALLOW_VISIBLE_READ
@@ -745,14 +745,14 @@ public class RenderingAttributes extends NodeComponent {
 			       int rasterOp) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
-	
+
 	((RenderingAttributesRetained)this.retained).initDepthBufferEnable(depthBufferEnable);
 	((RenderingAttributesRetained)this.retained).initDepthBufferWriteEnable(depthBufferWriteEnable);
 	((RenderingAttributesRetained)this.retained).initAlphaTestValue(alphaTestValue);
 	((RenderingAttributesRetained)this.retained).initAlphaTestFunction(alphaTestFunction);
 	((RenderingAttributesRetained)this.retained).initVisible(visible);
 
-	
+
 	((RenderingAttributesRetained)this.retained).initIgnoreVertexColors(ignoreVertexColors);
 	((RenderingAttributesRetained)this.retained).initRasterOpEnable(rasterOpEnable);
 	((RenderingAttributesRetained)this.retained).initRasterOp(rasterOp);
@@ -764,7 +764,7 @@ public class RenderingAttributes extends NodeComponent {
      *
      * @param state true or false to enable or disable depth buffer mode
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see GraphicsConfigTemplate3D#setDepthSize
@@ -785,7 +785,7 @@ public class RenderingAttributes extends NodeComponent {
      * Retrieves the state of zBuffer Enable flag
      * @return true if depth buffer mode is enabled, false
      * if depth buffer mode is disabled
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public boolean getDepthBufferEnable(){
@@ -802,7 +802,7 @@ public class RenderingAttributes extends NodeComponent {
      * this attribute can be overridden by
      * the depthBufferFreezeTransparent attribute in the View object.
      * @param state true or false to enable or disable depth buffer Write mode
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @see View#setDepthBufferFreezeTransparent
      */
@@ -820,7 +820,7 @@ public class RenderingAttributes extends NodeComponent {
      * Retrieves the state of Depth Buffer Write Enable flag.
      * @return true if depth buffer is writable, false
      * if depth buffer is read-only
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public boolean getDepthBufferWriteEnable(){
@@ -835,7 +835,7 @@ public class RenderingAttributes extends NodeComponent {
      * Set alpha test value used by alpha test function.  This value is
      * compared to the alpha value of each rendered pixel.
      * @param value the alpha test value
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setAlphaTestValue(float value){
@@ -852,7 +852,7 @@ public class RenderingAttributes extends NodeComponent {
     /**
      * Retrieves the alpha test value.
      * @return the alpha test value.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public float getAlphaTestValue(){
@@ -871,7 +871,7 @@ public class RenderingAttributes extends NodeComponent {
      * @param function the new alpha test function.  One of
      * ALWAYS, NEVER, EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER,
      * GREATER_OR_EQUAL
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setAlphaTestFunction(int function){
@@ -889,7 +889,7 @@ public class RenderingAttributes extends NodeComponent {
     /**
      * Retrieves current alpha test function.
      * @return the current alpha test function
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public int getAlphaTestFunction(){
@@ -906,7 +906,7 @@ public class RenderingAttributes extends NodeComponent {
      * the visibility policy for the current view), but they can be picked
      * or collided with. The default value is true.
      * @param visible true or false to enable or disable visibility
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see View#setVisibilityPolicy
@@ -917,7 +917,7 @@ public class RenderingAttributes extends NodeComponent {
 	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_VISIBLE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("RenderingAttributes8"));
-	
+
 	if (isLive())
 	    ((RenderingAttributesRetained)this.retained).setVisible(visible);
 	else
@@ -928,7 +928,7 @@ public class RenderingAttributes extends NodeComponent {
      * Retrieves the visibility flag for this RenderingAttributes object.
      * @return true if the object is visible; false
      * if the object is invisible.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -937,7 +937,7 @@ public class RenderingAttributes extends NodeComponent {
 	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_VISIBLE_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("RenderingAttributes9"));
-	
+
 	return ((RenderingAttributesRetained)this.retained).getVisible();
     }
 
@@ -955,7 +955,7 @@ public class RenderingAttributes extends NodeComponent {
      *
      * @param ignoreVertexColors true or false to enable or disable
      * the ignoring of per-vertex colors
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see ColoringAttributes
@@ -980,7 +980,7 @@ public class RenderingAttributes extends NodeComponent {
      * RenderingAttributes object.
      * @return true if per-vertex colors are ignored; false
      * if per-vertex colors are used.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -1006,7 +1006,7 @@ public class RenderingAttributes extends NodeComponent {
      *
      * @param rasterOpEnable true or false to enable or disable
      * raster operations
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see #setRasterOp
@@ -1029,7 +1029,7 @@ public class RenderingAttributes extends NodeComponent {
      * object.
      * @return true if raster operations are enabled; false
      * if raster operations are disabled.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -1051,7 +1051,7 @@ public class RenderingAttributes extends NodeComponent {
      * ROP_CLEAR, ROP_AND, ROP_AND_REVERSE, ROP_COPY, ROP_AND_INVERTED,
      * ROP_NOOP, ROP_XOR, ROP_OR, ROP_NOR, ROP_EQUIV, ROP_INVERT,
      * ROP_OR_REVERSE, ROP_COPY_INVERTED, ROP_OR_INVERTED, ROP_NAND or ROP_SET.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -1074,7 +1074,7 @@ public class RenderingAttributes extends NodeComponent {
      * ROP_CLEAR, ROP_AND, ROP_AND_REVERSE, ROP_COPY, ROP_AND_INVERTED,
      * ROP_NOOP, ROP_XOR, ROP_OR, ROP_NOR, ROP_EQUIV, ROP_INVERT,
      * ROP_OR_REVERSE, ROP_COPY_INVERTED, ROP_OR_INVERTED, ROP_NAND or ROP_SET
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -1098,7 +1098,7 @@ public class RenderingAttributes extends NodeComponent {
 
 
     /**
-     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)  
+     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
         RenderingAttributes ra = new RenderingAttributes();
@@ -1112,7 +1112,7 @@ public class RenderingAttributes extends NodeComponent {
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -1124,12 +1124,12 @@ public class RenderingAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
-    void duplicateAttributes(NodeComponent originalNodeComponent, 
-			     boolean forceDuplicate) { 
+    void duplicateAttributes(NodeComponent originalNodeComponent,
+			     boolean forceDuplicate) {
 
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
 
-	RenderingAttributesRetained attr = 
+	RenderingAttributesRetained attr =
 	    (RenderingAttributesRetained) originalNodeComponent.retained;
 	RenderingAttributesRetained rt =
 	    (RenderingAttributesRetained) retained;
@@ -1163,7 +1163,7 @@ public class RenderingAttributes extends NodeComponent {
      * ALWAYS, NEVER, EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER,
      * or GREATER_OR_EQUAL.
      * The default value is LESS_OR_EQUAL.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.4
@@ -1182,7 +1182,7 @@ public class RenderingAttributes extends NodeComponent {
     /**
      * Retrieves current depth test function.
      * @return the current depth test function
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.4
@@ -1207,7 +1207,7 @@ public class RenderingAttributes extends NodeComponent {
      * If this is set to false, the stencilOp and stencilFunction parameters
      * are not used.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see GraphicsConfigTemplate3D#setStencilSize
@@ -1235,7 +1235,7 @@ public class RenderingAttributes extends NodeComponent {
      * @return true if stencil buffer operations are enabled; false
      * if stencil buffer operations are disabled.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.4
@@ -1268,7 +1268,7 @@ public class RenderingAttributes extends NodeComponent {
      * STENCIL_KEEP, STENCIL_ZERO, STENCIL_REPLACE, STENCIL_INCR, STENCIL_DECR,
      * or STENCIL_INVERT.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.4
@@ -1281,12 +1281,12 @@ public class RenderingAttributes extends NodeComponent {
         }
 
 	if (isLive())
-	    ((RenderingAttributesRetained)this.retained).setStencilOp(failOp, 
-								      zFailOp, 
+	    ((RenderingAttributesRetained)this.retained).setStencilOp(failOp,
+								      zFailOp,
 								      zPassOp);
 	else
-	    ((RenderingAttributesRetained)this.retained).initStencilOp(failOp, 
-								       zFailOp, 
+	    ((RenderingAttributesRetained)this.retained).initStencilOp(failOp,
+								       zFailOp,
 								       zPassOp);
 
     }
@@ -1301,7 +1301,7 @@ public class RenderingAttributes extends NodeComponent {
      * <code>zFailOp</code> parameter, and element 2 specifies the
      * <code>zPassOp</code> parameter.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see #setStencilOp(int,int,int)
@@ -1316,11 +1316,11 @@ public class RenderingAttributes extends NodeComponent {
         }
 
 	if (isLive())
-	    ((RenderingAttributesRetained)this.retained).setStencilOp(stencilOps[0], 
+	    ((RenderingAttributesRetained)this.retained).setStencilOp(stencilOps[0],
 								      stencilOps[1],
 								      stencilOps[2]);
 	else
-	    ((RenderingAttributesRetained)this.retained).initStencilOp(stencilOps[0], 
+	    ((RenderingAttributesRetained)this.retained).initStencilOp(stencilOps[0],
 								       stencilOps[1],
 								       stencilOps[2]);
     }
@@ -1336,7 +1336,7 @@ public class RenderingAttributes extends NodeComponent {
      * into element 1, and the <code>zPassOp</code> parameter is copied
      * into element 2.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.4
@@ -1347,7 +1347,7 @@ public class RenderingAttributes extends NodeComponent {
 		throw new CapabilityNotSetException(J3dI18N.getString("RenderingAttributes17"));
             }
         }
-	
+
 	((RenderingAttributesRetained)this.retained).getStencilOp(stencilOps);
     }
 
@@ -1382,11 +1382,11 @@ public class RenderingAttributes extends NodeComponent {
             }
         }
 	if (isLive())
-	    ((RenderingAttributesRetained)this.retained).setStencilFunction(function, 
+	    ((RenderingAttributesRetained)this.retained).setStencilFunction(function,
 									    refValue,
 									    compareMask);
 	else
-	    ((RenderingAttributesRetained)this.retained).initStencilFunction(function, 
+	    ((RenderingAttributesRetained)this.retained).initStencilFunction(function,
 									     refValue,
 									     compareMask);
     }
@@ -1402,7 +1402,7 @@ public class RenderingAttributes extends NodeComponent {
      * reference value, and element 2 specifies the
      * comparison mask.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see #setStencilFunction(int,int,int)
@@ -1417,11 +1417,11 @@ public class RenderingAttributes extends NodeComponent {
         }
 
 	if (isLive())
-	    ((RenderingAttributesRetained)this.retained).setStencilFunction(params[0], 
+	    ((RenderingAttributesRetained)this.retained).setStencilFunction(params[0],
 									    params[1],
 									    params[2]);
 	else
-	    ((RenderingAttributesRetained)this.retained).initStencilFunction(params[0], 
+	    ((RenderingAttributesRetained)this.retained).initStencilFunction(params[0],
 									     params[1],
 									     params[2]);
 
@@ -1438,7 +1438,7 @@ public class RenderingAttributes extends NodeComponent {
      * into element 1, and the comparison mask is copied
      * into element 2.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.4
@@ -1461,7 +1461,7 @@ public class RenderingAttributes extends NodeComponent {
      *
      * @param mask the new stencil write mask.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.4
@@ -1485,7 +1485,7 @@ public class RenderingAttributes extends NodeComponent {
      *
      * @return the stencil write mask.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.4

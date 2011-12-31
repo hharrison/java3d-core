@@ -38,15 +38,15 @@ package javax.media.j3d;
 
 class VertexArrayRenderMethod implements RenderMethod {
 
-  
-    public boolean render(RenderMolecule rm, Canvas3D cv, 
+
+    public boolean render(RenderMolecule rm, Canvas3D cv,
 			  RenderAtomListInfo ra, int dirtyBits) {
 
         GeometryArrayRetained geo = (GeometryArrayRetained)ra.geometry();
-        geo.setVertexFormat((rm.useAlpha && ((geo.vertexFormat & 
-					      GeometryArray.COLOR) != 0)), 
+        geo.setVertexFormat((rm.useAlpha && ((geo.vertexFormat &
+					      GeometryArray.COLOR) != 0)),
 			    rm.textureBin.attributeBin.ignoreVertexColors, cv.ctx);
-	
+
 	if (rm.doInfinite) {
 	    cv.updateState(dirtyBits);
 	    while (ra != null) {
@@ -78,12 +78,12 @@ class VertexArrayRenderMethod implements RenderMethod {
 		}
 		cv.ra = ra.renderAtom;
 	    }
-	    
+
 	    ra = ra.next;
 	}
-        geo.disableGlobalAlpha(cv.ctx, 
-			       (rm.useAlpha && ((geo.vertexFormat & 
-						 GeometryArray.COLOR) != 0)), 
+        geo.disableGlobalAlpha(cv.ctx,
+			       (rm.useAlpha && ((geo.vertexFormat &
+						 GeometryArray.COLOR) != 0)),
 			       rm.textureBin.attributeBin.ignoreVertexColors);
 	return isVisible;
     }
@@ -91,9 +91,9 @@ class VertexArrayRenderMethod implements RenderMethod {
     void renderGeo(RenderAtomListInfo ra, RenderMolecule rm, Canvas3D cv) {
 	GeometryArrayRetained geo;
         boolean useAlpha;
-	
+
 	useAlpha = rm.useAlpha;
-	
+
 	geo = (GeometryArrayRetained)ra.geometry();
 
 

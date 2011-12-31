@@ -59,7 +59,7 @@ class SoundRenderer extends Object {
         else
 	    System.err.println("AuralAttributes is null");
     }
- 
+
     void update(SoundRetained sound, SoundscapeRetained ss) {
         AuralAttributesRetained aa = ss.attributes.mirrorAa;
 
@@ -74,7 +74,7 @@ class SoundRenderer extends Object {
 	    System.err.println("Soundscape is " + ss);
 	}
     }
- 
+
     void deactivate(SoundRetained sound) {
 	if (false) {
 	    if (sound instanceof BackgroundSoundRetained) {
@@ -86,9 +86,9 @@ class SoundRenderer extends Object {
 	    }
 	}
     }
- 
+
     public String toString() {
            return "";
     }
- 
+
 }

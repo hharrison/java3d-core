@@ -34,8 +34,8 @@ package javax.media.j3d;
 import javax.vecmath.Vector4f;
 
 /**
- * The TexCoordGeneration object contains all parameters needed for 
- * automatic texture coordinate generation.  It is included as part 
+ * The TexCoordGeneration object contains all parameters needed for
+ * automatic texture coordinate generation.  It is included as part
  * of an Appearance component object.
  * <p>
  * Texture coordinates determine which texel in the texture map is
@@ -52,17 +52,17 @@ import javax.vecmath.Vector4f;
  * coordinate, similar to the <i>w</i> coordinate of the <i>(x, y, z, w)</i>
  * object coordinates, is used to create homogeneous coordinates.
  * <p>
- * Rather than the programmer having to explicitly assign texture 
+ * Rather than the programmer having to explicitly assign texture
  * coordinates, Java 3D can automatically generate the texture
  * coordinates to achieve texture mapping onto contours.
  * The TexCoordGeneration attributes specify the functions for automatically
- * generating texture coordinates. The texture attributes that can be 
+ * generating texture coordinates. The texture attributes that can be
  * defined are:
  * <p><ul>
- * <li>Texture format - defines whether the generated texture 
+ * <li>Texture format - defines whether the generated texture
  * coordinates are 2D, 3D, or 4D:<p>
  * <ul>
- * <li>TEXTURE_COORDINATE_2 - generates 2D texture coordinates 
+ * <li>TEXTURE_COORDINATE_2 - generates 2D texture coordinates
  * (S and T).<p>
  * <li>TEXTURE_COORDINATE_3 - generates 3D texture coordinates
  * (S, T, and R).<p>
@@ -99,12 +99,12 @@ import javax.vecmath.Vector4f;
  * are the plane equation coefficients transformed into eye
  * coordinates.<p>
  * </ul></ul>
- * 
- * <li>SPHERE_MAP - texture coordinates are generated using 
+ *
+ * <li>SPHERE_MAP - texture coordinates are generated using
  * spherical reflection mapping in eye coordinates. Used to simulate
  * the reflected image of a spherical environment onto a polygon.<p>
  *
- * <li>NORMAL_MAP - texture coordinates are generated to match 
+ * <li>NORMAL_MAP - texture coordinates are generated to match
  * vertices' normals in eye coordinates. This is only available if
  * TextureCubeMap is available.
  * </li><p>
@@ -114,8 +114,8 @@ import javax.vecmath.Vector4f;
  * if TextureCubeMap is available.
  * </li><p>
  * </ul>
- * <li>Plane equation coefficients - defines the coefficients for the 
- * plane equations used to generate the coordinates in the 
+ * <li>Plane equation coefficients - defines the coefficients for the
+ * plane equations used to generate the coordinates in the
  * OBJECT_LINEAR and EYE_LINEAR texture generation modes.
  * The coefficients define a reference plane in either object coordinates
  * or in eye coordinates, depending on the texture generation mode.
@@ -139,7 +139,7 @@ import javax.vecmath.Vector4f;
  *
  * @see Canvas3D#queryProperties
  */
-public class TexCoordGeneration extends NodeComponent {    
+public class TexCoordGeneration extends NodeComponent {
 
     /**
      * Specifies that this TexCoordGeneration object allows reading its
@@ -254,9 +254,9 @@ public class TexCoordGeneration extends NodeComponent {
         ALLOW_ENABLE_READ,
         ALLOW_FORMAT_READ,
         ALLOW_MODE_READ,
-        ALLOW_PLANE_READ        
+        ALLOW_PLANE_READ
     };
-    
+
     /**
      * Constructs a TexCoordGeneration object with default parameters.
      * The default values are as follows:
@@ -329,7 +329,7 @@ public class TexCoordGeneration extends NodeComponent {
      *
      * @see Canvas3D#queryProperties
      */
-    public TexCoordGeneration(int genMode, int format, Vector4f planeS, 
+    public TexCoordGeneration(int genMode, int format, Vector4f planeS,
 			      Vector4f planeT) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
@@ -353,7 +353,7 @@ public class TexCoordGeneration extends NodeComponent {
      *
      * @see Canvas3D#queryProperties
      */
-    public TexCoordGeneration(int genMode, int format, Vector4f planeS, 
+    public TexCoordGeneration(int genMode, int format, Vector4f planeS,
 			      Vector4f planeT, Vector4f planeR) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
@@ -381,7 +381,7 @@ public class TexCoordGeneration extends NodeComponent {
      *
      * @since Java 3D 1.3
      */
-    public TexCoordGeneration(int genMode, int format, Vector4f planeS, 
+    public TexCoordGeneration(int genMode, int format, Vector4f planeS,
 			      Vector4f planeT, Vector4f planeR,
 			      Vector4f planeQ) {
         // set default read capabilities
@@ -461,7 +461,7 @@ public class TexCoordGeneration extends NodeComponent {
      *
      * @exception IllegalArgumentException if <code>genMode</code> is
      * a value other than <code>OBJECT_LINEAR</code>, <code>EYE_LINEAR</code>,
-     * <code>SPHERE_MAP</code>, <code>NORMAL_MAP</code>, or 
+     * <code>SPHERE_MAP</code>, <code>NORMAL_MAP</code>, or
      * <code>REFLECTION_MAP</code>.
      *
      * @see Canvas3D#queryProperties
@@ -494,7 +494,7 @@ public class TexCoordGeneration extends NodeComponent {
      * is used to generate the S coordinate in OBJECT_LINEAR and EYE_LINEAR
      * texture generation modes.
      * @param planeS plane equation for the S coordinate
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setPlaneS(Vector4f planeS) {
@@ -527,7 +527,7 @@ public class TexCoordGeneration extends NodeComponent {
      * is used to generate the T coordinate in OBJECT_LINEAR and EYE_LINEAR
      * texture generation modes.
      * @param planeT plane equation for the T coordinate
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setPlaneT(Vector4f planeT) {
@@ -560,7 +560,7 @@ public class TexCoordGeneration extends NodeComponent {
      * is used to generate the R coordinate in OBJECT_LINEAR and EYE_LINEAR
      * texture generation modes.
      * @param planeR plane equation for the R coordinate
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setPlaneR(Vector4f planeR) {
@@ -593,7 +593,7 @@ public class TexCoordGeneration extends NodeComponent {
      * is used to generate the Q coordinate in OBJECT_LINEAR and EYE_LINEAR
      * texture generation modes.
      * @param planeQ plane equation for the Q coordinate
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.3
@@ -635,7 +635,7 @@ public class TexCoordGeneration extends NodeComponent {
     }
 
     /**
-     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)  
+     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
         TexCoordGeneration tga = new TexCoordGeneration();
@@ -649,7 +649,7 @@ public class TexCoordGeneration extends NodeComponent {
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -662,12 +662,12 @@ public class TexCoordGeneration extends NodeComponent {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
 
-    void duplicateAttributes(NodeComponent originalNodeComponent, 
-			     boolean forceDuplicate) { 
+    void duplicateAttributes(NodeComponent originalNodeComponent,
+			     boolean forceDuplicate) {
 
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
-      
-	TexCoordGenerationRetained tex = (TexCoordGenerationRetained) 
+
+	TexCoordGenerationRetained tex = (TexCoordGenerationRetained)
 	    originalNodeComponent.retained;
 	TexCoordGenerationRetained rt = (TexCoordGenerationRetained) retained;
 
@@ -679,9 +679,9 @@ public class TexCoordGeneration extends NodeComponent {
 	tex.getPlaneT(v);
 	rt.initPlaneT(v);
 	tex.getPlaneR(v);
-	rt.initPlaneR(v);      
+	rt.initPlaneR(v);
 	tex.getPlaneQ(v);
-	rt.initPlaneQ(v);      
+	rt.initPlaneQ(v);
 	rt.initFormat(tex.getFormat());
 	rt.initEnable(tex.getEnable());
     }

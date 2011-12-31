@@ -35,13 +35,13 @@ import java.util.Hashtable;
 
 /**
  * The Appearance object defines all rendering state that can be set
- * as a component object of a Shape3D node. The rendering state 
+ * as a component object of a Shape3D node. The rendering state
  * consists of the following:<p>
  * <ul>
  * <li>Coloring attributes - defines attributes used in color selection
  * and shading. These attributes are defined in a ColoringAttributes
  * object.</li><p>
- * 
+ *
  * <li>Line attributes - defines attributes used to define lines, including
  * the pattern, width, and whether antialiasing is to be used. These
  * attributes are defined in a LineAttributes object.</li><p>
@@ -60,16 +60,16 @@ import java.util.Hashtable;
  * including the alpha test function and test value, the raster
  * operation, whether vertex colors are ignored, whether invisible
  * objects are rendered, and whether the depth buffer is enabled.
- * These attributes are defined in a RenderingAttributes 
+ * These attributes are defined in a RenderingAttributes
  * object.</li><p>
  *
  * <li>Transparency attributes - defines the attributes that affect
- * transparency of the object, such as the transparency mode 
+ * transparency of the object, such as the transparency mode
  * (blended, screen-door), blending function (used in transparency
  * and antialiasing operations), and a blend value that defines
- * the amount of transparency to be applied to this Appearance 
+ * the amount of transparency to be applied to this Appearance
  * component object.</li><p>
- * 
+ *
  * <li>Material - defines the appearance of an object under illumination,
  * such as the ambient color, diffuse color, specular color, emissive
  * color, and shininess. These attributes are defined in a Material
@@ -86,7 +86,7 @@ import java.util.Hashtable;
  *
  * <li>Texture coordinate generation - defines the attributes
  * that apply to texture coordinate generation, such as whether
- * texture coordinate generation is enabled, coordinate format 
+ * texture coordinate generation is enabled, coordinate format
  * (2D or 3D coordinates), coordinate generation mode (object
  * linear, eye linear, or spherical reflection mapping), and the
  * R, S, and T coordinate plane equations. These attributes
@@ -316,12 +316,12 @@ public class Appearance extends NodeComponent {
         ALLOW_TEXTURE_ATTRIBUTES_READ,
         ALLOW_TEXTURE_READ,
         ALLOW_TEXTURE_UNIT_STATE_READ,
-        ALLOW_TRANSPARENCY_ATTRIBUTES_READ        
+        ALLOW_TRANSPARENCY_ATTRIBUTES_READ
     };
-    
+
     /**
      * Constructs an Appearance component object using defaults for all
-     * state variables. All component object references are initialized 
+     * state variables. All component object references are initialized
      * to null.
      */
     public Appearance() {
@@ -338,13 +338,13 @@ public class Appearance extends NodeComponent {
 	this.retained = new AppearanceRetained();
 	this.retained.setSource(this);
     }
-  
+
     /**
      * Sets the material object to the specified object.
      * Setting it to null disables lighting.
      * @param material object that specifies the desired material
      * properties
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setMaterial(Material material) {
@@ -357,7 +357,7 @@ public class Appearance extends NodeComponent {
     /**
      * Retrieves the current material object.
      * @return the material object
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public Material getMaterial() {
@@ -372,7 +372,7 @@ public class Appearance extends NodeComponent {
      * Setting it to null will result in default attribute usage.
      * @param coloringAttributes object that specifies the desired
      * coloringAttributes parameters
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setColoringAttributes(ColoringAttributes coloringAttributes) {
@@ -385,7 +385,7 @@ public class Appearance extends NodeComponent {
     /**
      * Retrieves the current coloringAttributes object.
      * @return the coloringAttributes object
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public ColoringAttributes getColoringAttributes() {
@@ -400,7 +400,7 @@ public class Appearance extends NodeComponent {
      * Setting it to null will result in default attribute usage.
      * @param transparencyAttributes object that specifies the desired
      * transparencyAttributes parameters
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setTransparencyAttributes(TransparencyAttributes transparencyAttributes) {
@@ -413,7 +413,7 @@ public class Appearance extends NodeComponent {
     /**
      * Retrieves the current transparencyAttributes object.
      * @return the transparencyAttributes object
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public TransparencyAttributes getTransparencyAttributes() {
@@ -428,7 +428,7 @@ public class Appearance extends NodeComponent {
      * Setting it to null will result in default attribute usage.
      * @param renderingAttributes object that specifies the desired
      * renderingAttributes parameters
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setRenderingAttributes(RenderingAttributes renderingAttributes) {
@@ -441,7 +441,7 @@ public class Appearance extends NodeComponent {
     /**
      * Retrieves the current renderingAttributes object.
      * @return the renderingAttributes object
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public RenderingAttributes getRenderingAttributes() {
@@ -454,9 +454,9 @@ public class Appearance extends NodeComponent {
     /**
      * Sets the polygonAttributes object to the specified object.
      * Setting it to null will result in default attribute usage.
-     * @param polygonAttributes object that specifies the desired 
+     * @param polygonAttributes object that specifies the desired
      * polygonAttributes parameters
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setPolygonAttributes(PolygonAttributes polygonAttributes) {
@@ -469,7 +469,7 @@ public class Appearance extends NodeComponent {
     /**
      * Retrieves the current polygonAttributes object.
      * @return the polygonAttributes object
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public PolygonAttributes getPolygonAttributes() {
@@ -484,7 +484,7 @@ public class Appearance extends NodeComponent {
      * Setting it to null will result in default attribute usage.
      * @param lineAttributes object that specifies the desired
      * lineAttributes parameters
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setLineAttributes(LineAttributes lineAttributes) {
@@ -497,7 +497,7 @@ public class Appearance extends NodeComponent {
     /**
      * Retrieves the current lineAttributes object.
      * @return the lineAttributes object
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public LineAttributes getLineAttributes() {
@@ -512,7 +512,7 @@ public class Appearance extends NodeComponent {
      * Setting it to null will result in default attribute usage.
      * @param pointAttributes object that specifies the desired
      * pointAttributes parameters
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setPointAttributes(PointAttributes pointAttributes) {
@@ -525,7 +525,7 @@ public class Appearance extends NodeComponent {
     /**
      * Retrieves the current pointAttributes object.
      * @return the pointAttributes object
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public PointAttributes getPointAttributes() {
@@ -548,7 +548,7 @@ public class Appearance extends NodeComponent {
      * @param texture object that specifies the desired texture
      * map and texture parameters
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @exception IllegalStateException if the specified texture
@@ -568,7 +568,7 @@ public class Appearance extends NodeComponent {
 	if (isLiveOrCompiled())
 	  if (!this.getCapability(ALLOW_TEXTURE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Appearance2"));
-   
+
         // Do illegal sharing check
         if(texture != null) {
             ImageComponent[] images = ((TextureRetained)(texture.retained)).getImages();
@@ -578,14 +578,14 @@ public class Appearance extends NodeComponent {
                 }
             }
         }
-        
+
         ((AppearanceRetained)this.retained).setTexture(texture);
     }
 
     /**
      * Retrieves the current texture object.
      * @return the texture object
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public Texture getTexture() {
@@ -608,7 +608,7 @@ public class Appearance extends NodeComponent {
      * @param textureAttributes object that specifies the desired
      * textureAttributes map and textureAttributes parameters
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @exception IllegalStateException if the specified textureAttributes
@@ -625,7 +625,7 @@ public class Appearance extends NodeComponent {
     /**
      * Retrieves the current textureAttributes object.
      * @return the textureAttributes object
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public TextureAttributes getTextureAttributes() {
@@ -648,7 +648,7 @@ public class Appearance extends NodeComponent {
      * @param texCoordGeneration object that specifies the texture coordinate
      * generation parameters
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @exception IllegalStateException if the specified texCoordGeneration
@@ -665,7 +665,7 @@ public class Appearance extends NodeComponent {
     /**
      * Retrieves the current texCoordGeneration object.
      * @return the texCoordGeneration object
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public TexCoordGeneration getTexCoordGeneration() {
@@ -696,7 +696,7 @@ public class Appearance extends NodeComponent {
      * numbered from <code>0</code> through
      * <code>stateArray.length-1</code>.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @exception IllegalStateException if the specified array is
@@ -719,7 +719,7 @@ public class Appearance extends NodeComponent {
         if (isLiveOrCompiled())
             if (!this.getCapability(ALLOW_TEXTURE_UNIT_STATE_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("Appearance20"));
-        
+
         // Do illegal sharing check
         if (stateArray != null) {
             for(int j=0; j<stateArray.length; j++) {
@@ -752,7 +752,7 @@ public class Appearance extends NodeComponent {
      *
      * @param state new texture unit state object
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @exception NullPointerException if the texture unit state array is
      * null.
@@ -799,7 +799,7 @@ public class Appearance extends NodeComponent {
      *
      * @return the array of texture unit state objects
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -821,7 +821,7 @@ public class Appearance extends NodeComponent {
      *
      * @return the texture unit state object at the specified index
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -843,7 +843,7 @@ public class Appearance extends NodeComponent {
      *
      * @return the length of the texture unit state array
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -882,7 +882,7 @@ public class Appearance extends NodeComponent {
      * <code>originalNodeComponent</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -899,62 +899,62 @@ public class Appearance extends NodeComponent {
      */
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
-	super.duplicateAttributes(originalNodeComponent, forceDuplicate); 
-	
+	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
+
 	Hashtable hashtable = originalNodeComponent.nodeHashtable;
-	
+
 	AppearanceRetained app = (AppearanceRetained) originalNodeComponent.retained;
 
 	AppearanceRetained rt = (AppearanceRetained) retained;
-	
+
 	rt.setMaterial((Material) getNodeComponent(app.getMaterial(),
 						forceDuplicate,
 						hashtable));
-	
+
 	rt.setColoringAttributes((ColoringAttributes) getNodeComponent(
 					    app.getColoringAttributes(),
 					    forceDuplicate,
 					    hashtable));
-	
-	
+
+
 	rt.setTransparencyAttributes((TransparencyAttributes) getNodeComponent(
 					    app.getTransparencyAttributes(),
 					    forceDuplicate,
 					    hashtable));
-	
-	
+
+
 	rt.setRenderingAttributes((RenderingAttributes) getNodeComponent(
 				      app.getRenderingAttributes(),
 				      forceDuplicate,
 				      hashtable));
-	
-	
+
+
 	rt.setPolygonAttributes((PolygonAttributes) getNodeComponent(
 					  app.getPolygonAttributes(),
 					  forceDuplicate,
 					  hashtable));
-	
-	
+
+
 	rt.setLineAttributes((LineAttributes) getNodeComponent(
 					    app.getLineAttributes(),
 					    forceDuplicate,
 					    hashtable));
-	
-	
+
+
 	rt.setPointAttributes((PointAttributes) getNodeComponent(
 					      app.getPointAttributes(),
 					      forceDuplicate,
 					      hashtable));
-	
+
 	rt.setTexture((Texture) getNodeComponent(app.getTexture(),
 					      forceDuplicate,
 					      hashtable));
-	
+
 	rt.setTextureAttributes((TextureAttributes) getNodeComponent(
 						  app.getTextureAttributes(),
 						  forceDuplicate,
 						  hashtable));
-	
+
 	rt.setTexCoordGeneration((TexCoordGeneration) getNodeComponent(
 					    app.getTexCoordGeneration(),
 					    forceDuplicate,
@@ -970,14 +970,14 @@ public class Appearance extends NodeComponent {
 							hashtable));
 	    }
 	}
-	
+
     }
-    
+
     /**
      *  This function is called from getNodeComponent() to see if any of
-     *  the sub-NodeComponents  duplicateOnCloneTree flag is true. 
-     *  If it is the case, current NodeComponent needs to 
-     *  duplicate also even though current duplicateOnCloneTree flag is false. 
+     *  the sub-NodeComponents  duplicateOnCloneTree flag is true.
+     *  If it is the case, current NodeComponent needs to
+     *  duplicate also even though current duplicateOnCloneTree flag is false.
      *  This should be overwrite by NodeComponent which contains sub-NodeComponent.
      */
     boolean duplicateChild() {
@@ -991,27 +991,27 @@ public class Appearance extends NodeComponent {
 	nc = rt.getMaterial();
 	if ((nc != null) && nc.getDuplicateOnCloneTree())
 	    return true;
-	
+
 	nc = rt.getColoringAttributes();
 	if ((nc != null) && nc.getDuplicateOnCloneTree())
 	    return true;
-	
+
 	nc = rt.getTransparencyAttributes();
 	if ((nc != null) && nc.getDuplicateOnCloneTree())
 	    return true;
-	
+
 	nc = rt.getPolygonAttributes();
 	if ((nc != null) && nc.getDuplicateOnCloneTree())
 	    return true;
-	
+
 	nc = rt.getLineAttributes();
 	if ((nc != null) && nc.getDuplicateOnCloneTree())
 	    return true;
-	
+
 	nc = rt.getPointAttributes();
 	if ((nc != null) && nc.getDuplicateOnCloneTree())
 	    return true;
-	
+
 	nc = rt.getTexture();
 	if ((nc != null) && nc.duplicateChild())
 	    return true;
@@ -1025,7 +1025,7 @@ public class Appearance extends NodeComponent {
 	    return true;
 
 	// XXXX: TextureUnitState
-	
+
 	return false;
     }
 

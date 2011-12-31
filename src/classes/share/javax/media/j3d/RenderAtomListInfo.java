@@ -37,12 +37,12 @@ package javax.media.j3d;
 class RenderAtomListInfo extends Object {
     // RenderAtom that its a part of
 
-    RenderAtom renderAtom = null; 
+    RenderAtom renderAtom = null;
 
     // Specific geometry index in the GeometryAtom geometryArr list that
     // corresponds to this RenderAtomListInfo
     int index;
-    
+
     // Prev and next pointer
     RenderAtomListInfo next = null;
     RenderAtomListInfo prev = null;

@@ -37,17 +37,17 @@ package javax.media.j3d;
  * sound sources. A scene graph can contain multiple sounds. Associated with each
  * sound source are: a reference to sound data, an amplitude scale factor, a release
  * flag denoting that the sound associated with this node is to play to end when
- * it is disabled, the number of times sound is to be repeated, the sound's state 
+ * it is disabled, the number of times sound is to be repeated, the sound's state
  * (on or off), a scheduling region, and a flag denoting if the sound is to
- * continue playing "silently" even while it is inactive. Whenever the listener 
+ * continue playing "silently" even while it is inactive. Whenever the listener
  * is within a sound node's scheduling bounds this sound is potentially audible.
  *<P>
- * Sound Data 
+ * Sound Data
  *
  * <UL>Associated with each Sound node is a MediaContainer
  * which includes audio data and information about this data.
  * This data can be cached (buffered) or non-cached (unbuffered or streaming).
- * If an AudioDevice has been attached to the PhysicalEnvironment, the sound 
+ * If an AudioDevice has been attached to the PhysicalEnvironment, the sound
  * data is made ready to begin playing.
  * Certain functionality can not be applied to true streaming sound data:<p>
  * 1) querying the sound's duration (Sound.DURATION_UNKNOWN will be returned),<br>
@@ -58,24 +58,24 @@ package javax.media.j3d;
  *<P>
  * Initial Gain
  *
- * <UL>This gain is a scale factor applied to the sound data associated 
+ * <UL>This gain is a scale factor applied to the sound data associated
  * with this sound source to increase or decrease its overall amplitude.</UL>
  *<P>
  * Loop
  *
  * <UL>Data for non-streaming sound (such as a sound sample) can contain two
  * loop points marking a section of the data that is to be looped a specific
- * number of times. Thus sound data can be divided into three segments: 
+ * number of times. Thus sound data can be divided into three segments:
  * the attack (before the begin loop point), the sustain (between the begin
- * and end loop points), and the release (after the end loop point). If 
+ * and end loop points), and the release (after the end loop point). If
  * there are no loop begin and end points defined as part of the sound data,
  * the begin loop point is set at the beginning of the sound data,
  * and the end loop point at the end of the sound data.
- * If this is the case, looping the sound would mean repeating the whole 
- * sound. However, these allow a portion in the middle of the sound to 
+ * If this is the case, looping the sound would mean repeating the whole
+ * sound. However, these allow a portion in the middle of the sound to
  * be looped.
  *<P>
- * A sound can be looped a specified number of times after it is activated 
+ * A sound can be looped a specified number of times after it is activated
  * before it is completed. The loop count value explicitly sets the number
  * of times the sound is looped. Any non-negative number is a valid value.
  * A value of zero denotes that the looped section is not repeated, but is
@@ -88,20 +88,20 @@ package javax.media.j3d;
  * <P>
  * Release Flag
  *
- * <UL>When a sound is disabled, its playback would normally stop immediately 
- * no matter what part of the sound data was currently being played. By 
+ * <UL>When a sound is disabled, its playback would normally stop immediately
+ * no matter what part of the sound data was currently being played. By
  * setting the Release Flag to true for nodes with non-streaming sound data,
- * the sound is allowed to play from its current position in the sound data 
+ * the sound is allowed to play from its current position in the sound data
  * to the end of the data (without repeats), thus playing the release portion
  * of the sound before stopping.</UL>
  *<P>
  * Continuous Flag
  *
- * <UL>For some applications, it's useful to turn a sound source "off" but to 
+ * <UL>For some applications, it's useful to turn a sound source "off" but to
  * continue "silently" playing the sound so that when it is turned back "on"
- * the sound picks up playing in the same location (over time) as it would 
- * have been if the sound had never been disabled (turned off). Setting the 
- * Continuous flag true causes the sound renderer to keep track of where 
+ * the sound picks up playing in the same location (over time) as it would
+ * have been if the sound had never been disabled (turned off). Setting the
+ * Continuous flag true causes the sound renderer to keep track of where
  * (over time) the sound would be playing even when the sound is disabled.</UL>
  *<P>
  *  Enable Sound
@@ -111,14 +111,14 @@ package javax.media.j3d;
  * state, gain control parameters, continuation state, and spatialization
  * parameters.  If the continuous state is true, even if the sound is not
  * active, enabling the sound starts the sound silently "playing," so that
- * when the sound is activated, the sound is (potentially) heard from 
+ * when the sound is activated, the sound is (potentially) heard from
  * somewhere in the middle of the sound data. Activation state can change
  * from active to inactive any number of times without stopping or starting
  * the sound. To re-start a sound at the beginning of its data, re-enable
  * the sound by calling setEnable with true.
  *<P>
  * Setting the enable flag to true during construction acts as a request
- * to start the sound playing "as soon as it can" be started.  
+ * to start the sound playing "as soon as it can" be started.
  * This could be close to immediately in limited cases, but several conditions,
  * detailed below, must be met for a sound to be ready to be played.</UL>
  *<P>
@@ -131,20 +131,20 @@ package javax.media.j3d;
  * <UL>When the pause state is set true, a playing sound is paused.
  *<P>
  * Setting the enable flag to true during construction acts as a request
- * to start the sound playing "as soon as it can" be started.  
+ * to start the sound playing "as soon as it can" be started.
  * This could be close to immediately in limited cases, but several conditions,
  * detailed below, must be met for a sound to be ready to be played.</UL>
  *   <P>
  *  Scheduling Bounds
  *
  * <UL>
- * A Sound is scheduled for activation when its scheduling region intersects 
- * the ViewPlatform's activation volume. This is used when the scheduling 
+ * A Sound is scheduled for activation when its scheduling region intersects
+ * the ViewPlatform's activation volume. This is used when the scheduling
  * bounding leaf is set to null.</UL>
  *<P>
  * Scheduling Bounding Leaf
- * 
- * <UL>When set to a value other than null, the scheduling bounding leaf 
+ *
+ * <UL>When set to a value other than null, the scheduling bounding leaf
  * region overrides the scheduling bounds
  * object.</UL>
  *<P>
@@ -153,11 +153,11 @@ package javax.media.j3d;
  * <UL>Sound Priority is used
  * to rank concurrently playing sounds in order of importance during playback.
  * When more sounds are started than the AudioDevice
- * can handle, the sound node with the lowest priority ranking is 
+ * can handle, the sound node with the lowest priority ranking is
  * deactivated (but continues playing silently). If a sound is deactivated
- * (due to a sound with a higher 
+ * (due to a sound with a higher
  * priority being started), it is automatically re-activated when
- * resources become available (e.g., when a sound with a higher priority 
+ * resources become available (e.g., when a sound with a higher priority
  * finishes playing), or when the ordering of sound nodes are changed due to
  * a change in a sound node's priority.
  * <P>
@@ -172,7 +172,7 @@ package javax.media.j3d;
  * channels
  * and the fourth sound needs only one channel.  The first and second sounds
  * can be started because they require seven of the eight available channels.  The
- * third sound can not be audibly started because it requires three channels and 
+ * third sound can not be audibly started because it requires three channels and
  * only one is still available.  Consequently, the third sound starts playing
  * 'silently.' The fourth sound can and will be started since it only requires
  * one channel.  The third sound will be made audible when three channels become
@@ -186,8 +186,8 @@ package javax.media.j3d;
  * available audio output resources are described in the AudioDevice class.</UL>
  *   <P>
  * Duration
- *  
- * <UL>Each sound has a length of time in milliseconds that it 
+ *
+ * <UL>Each sound has a length of time in milliseconds that it
  * can run (including repeating loop section)
  * if it plays to completion. If the sound
  * media type is streaming, or if the sound is looped indefinitely, then a
@@ -197,7 +197,7 @@ package javax.media.j3d;
  *
  * <UL>When a sound is started, it could use more than one channel on the
  * selected AudioDevice it is to be played on.  The number of Audio Device
- * channels currently used for a sound can be queried using 
+ * channels currently used for a sound can be queried using
  * getNumberOfChannelsUsed().</UL>
  *<P>
  * Preparing a Sound to be Played
@@ -232,7 +232,7 @@ package javax.media.j3d;
  * 2) is enabled then deactivated while playing; it continues playing silently<br>
  * 3) is enabled while it mute state is true
  *<P>
- * When the sound finishes playing it's sound data (including all loops), it 
+ * When the sound finishes playing it's sound data (including all loops), it
  * is implicitly disabled.</UL>
  *<P>
  * @see AudioDevice
@@ -242,9 +242,9 @@ public abstract class Sound extends Leaf {
     // Constants for Sound object.
     //
     // These flags, when enabled using the setCapability method, allow an
-    // application to invoke methods that respectively read and write the 
-    // sound fields. 
-    // These capability flags are enforced only when the node is part of 
+    // application to invoke methods that respectively read and write the
+    // sound fields.
+    // These capability flags are enforced only when the node is part of
     // a live or compiled scene graph.
 
     /**
@@ -316,7 +316,7 @@ public abstract class Sound extends Leaf {
      */
     public static final int
     ALLOW_CONT_PLAY_WRITE = CapabilityBits.SOUND_ALLOW_CONT_PLAY_WRITE;
-    
+
     /**
      * Specifies that this node allows access to its object's sound on
      *  information.
@@ -330,7 +330,7 @@ public abstract class Sound extends Leaf {
      */
     public static final int
     ALLOW_ENABLE_WRITE = CapabilityBits.SOUND_ALLOW_ENABLE_WRITE;
-    
+
     /**
      * Specifies that this node allows read access to its scheduling bounds
      * information.
@@ -344,21 +344,21 @@ public abstract class Sound extends Leaf {
      */
     public static final int
     ALLOW_SCHEDULING_BOUNDS_WRITE = CapabilityBits.SOUND_ALLOW_SCHEDULING_BOUNDS_WRITE;
- 
+
     /**
      * Specifies that this node allows read access to its priority order
      * value.
      */
     public static final int
     ALLOW_PRIORITY_READ = CapabilityBits.SOUND_ALLOW_PRIORITY_READ;
- 
+
     /**
      * Specifies that this node allows write access to its priority order
      * value.
      */
     public static final int
     ALLOW_PRIORITY_WRITE = CapabilityBits.SOUND_ALLOW_PRIORITY_WRITE;
-    
+
     /**
      * Specifies that this node allows access to its object's sound duration
      *  information.
@@ -386,7 +386,7 @@ public abstract class Sound extends Leaf {
      */
     public static final int
     ALLOW_CHANNELS_USED_READ = CapabilityBits.SOUND_ALLOW_CHANNELS_USED_READ;
-   
+
     /**
      * Specifies that this node allows access to its object's mute flag
      * information.
@@ -475,10 +475,10 @@ public abstract class Sound extends Leaf {
         ALLOW_RATE_SCALE_FACTOR_READ,
         ALLOW_RELEASE_READ,
         ALLOW_SCHEDULING_BOUNDS_READ,
-        ALLOW_SOUND_DATA_READ  
+        ALLOW_SOUND_DATA_READ
     };
-    
-    
+
+
     /**
      * Constructs and initializes a new Sound node using default
      * parameters.  The following defaults values are used:
@@ -500,11 +500,11 @@ public abstract class Sound extends Leaf {
     public Sound() {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
-    } 
+    }
 
     /**
-     * Constructs and initializes a new Sound node object using the provided 
-     * data and gain parameter values, and defaults for all other fields. This 
+     * Constructs and initializes a new Sound node object using the provided
+     * data and gain parameter values, and defaults for all other fields. This
      * constructor implicitly loads the sound data associated with this node if
      * the implementation uses sound caching.
      * @param soundData description of JMF source data used by this sound source
@@ -516,7 +516,7 @@ public abstract class Sound extends Leaf {
 
         ((SoundRetained)this.retained).setSoundData(soundData);
         ((SoundRetained)this.retained).setInitialGain(initialGain);
-    } 
+    }
 
 
     /**
@@ -531,7 +531,7 @@ public abstract class Sound extends Leaf {
      * when disabled
      * @param enable flag specifying whether the sound is enabled
      * @param region scheduling bounds
-     * @param priority defines playback priority if too many sounds started 
+     * @param priority defines playback priority if too many sounds started
      */
     public Sound(MediaContainer soundData,
                  float initialGain,
@@ -552,7 +552,7 @@ public abstract class Sound extends Leaf {
         ((SoundRetained)this.retained).setEnable(enable);
         ((SoundRetained)this.retained).setSchedulingBounds(region);
         ((SoundRetained)this.retained).setPriority(priority);
-    } 
+    }
 
     /**
      * Constructs and initializes a new Sound node using provided parameter
@@ -566,7 +566,7 @@ public abstract class Sound extends Leaf {
      * when disabled
      * @param enable flag specifying whether the sound is enabled
      * @param region scheduling bounds
-     * @param priority defines playback priority if too many sounds started 
+     * @param priority defines playback priority if too many sounds started
      * @param rateFactor defines playback sample rate scale factor
      * @since Java 3D 1.3
      */
@@ -581,7 +581,7 @@ public abstract class Sound extends Leaf {
                  float   rateFactor ) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
-        
+
         ((SoundRetained)this.retained).setSoundData(soundData);
         ((SoundRetained)this.retained).setInitialGain(initialGain);
         ((SoundRetained)this.retained).setLoop(loopCount);
@@ -591,7 +591,7 @@ public abstract class Sound extends Leaf {
         ((SoundRetained)this.retained).setSchedulingBounds(region);
         ((SoundRetained)this.retained).setPriority(priority);
         ((SoundRetained)this.retained).setRateScaleFactor(rateFactor);
-    } 
+    }
 
     /**
      * Sets fields that define the sound source data of this node.
@@ -603,8 +603,8 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_SOUND_DATA_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound0"));
-	
-	if (this instanceof BackgroundSound) 
+
+	if (this instanceof BackgroundSound)
 	    ((SoundRetained)this.retained).setSoundData(soundData);
 	else // instanceof PointSound or ConeSound
 	    ((PointSoundRetained)this.retained).setSoundData(soundData);
@@ -620,12 +620,12 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_SOUND_DATA_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound1"));
-	
+
 	return ((SoundRetained)this.retained).getSoundData();
     }
 
     /**
-     * Set the overall gain scale factor applied to data associated with this 
+     * Set the overall gain scale factor applied to data associated with this
      * source to increase or decrease its overall amplitude.
      * @param amplitude (gain) scale factor
      * @exception CapabilityNotSetException if appropriate capability is
@@ -635,7 +635,7 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_INITIAL_GAIN_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound2"));
-	
+
 	((SoundRetained)this.retained).setInitialGain(amplitude);
     }
 
@@ -649,7 +649,7 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_INITIAL_GAIN_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound3"));
-	
+
 	return ((SoundRetained)this.retained).getInitialGain();
     }
 
@@ -663,7 +663,7 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_LOOP_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound4"));
-	
+
 	((SoundRetained)this.retained).setLoop(loopCount);
     }
 
@@ -677,10 +677,10 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_LOOP_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound5"));
-	
+
 	return ((SoundRetained)this.retained).getLoop();
     }
-    
+
     /**
      * Enables or disables the release flag for the sound associated with
      * this sound.
@@ -692,7 +692,7 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_RELEASE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound6"));
-	
+
 	((SoundRetained)this.retained).setReleaseEnable(state);
     }
 
@@ -706,10 +706,10 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_RELEASE_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound7"));
-	
+
 	return ((SoundRetained)this.retained).getReleaseEnable();
     }
-    
+
     /**
      * Enables or disables continuous play flag.
      * @param state denotes if deactivated sound silently continues playing
@@ -720,7 +720,7 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_CONT_PLAY_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound8"));
-	
+
 	((SoundRetained)this.retained).setContinuousEnable(state);
     }
 
@@ -734,10 +734,10 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_CONT_PLAY_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound9"));
-	
+
 	return ((SoundRetained)this.retained).getContinuousEnable();
     }
-    
+
     /**
      * Enable or disable sound.
      * @param state enable (on/off) flag denotes if active sound is heard
@@ -748,13 +748,13 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_ENABLE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound10"));
-	
-	if (this instanceof BackgroundSound) 
+
+	if (this instanceof BackgroundSound)
 	    ((SoundRetained)this.retained).setEnable(state);
 	else // instanceof PointSound or ConeSound
 	    ((PointSoundRetained)this.retained).setEnable(state);
     }
-    
+
     /**
      * Retrieves sound's enabled flag.
      * @return sound enabled flag
@@ -765,7 +765,7 @@ public abstract class Sound extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_ENABLE_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound21"));
-	
+
 	return ((SoundRetained)this.retained).getEnable();
     }
 
@@ -777,7 +777,7 @@ public abstract class Sound extends Leaf {
      * region.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setSchedulingBounds(Bounds region) {
         if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_SCHEDULING_BOUNDS_WRITE))
@@ -786,12 +786,12 @@ public abstract class Sound extends Leaf {
 	((SoundRetained)this.retained).setSchedulingBounds(region);
     }
 
-    /**  
+    /**
      * Retrieves the Sound node's scheduling bounds.
      * @return this Sound's scheduling bounds information
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public Bounds getSchedulingBounds() {
         if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_SCHEDULING_BOUNDS_READ))
@@ -809,7 +809,7 @@ public abstract class Sound extends Leaf {
      * node's new scheduling region.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setSchedulingBoundingLeaf(BoundingLeaf region) {
         if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_SCHEDULING_BOUNDS_WRITE))
@@ -818,12 +818,12 @@ public abstract class Sound extends Leaf {
 	((SoundRetained)this.retained).setSchedulingBoundingLeaf(region);
     }
 
-    /**  
+    /**
      * Retrieves the Sound node's scheduling bounding leaf.
      * @return this Sound's scheduling bounding leaf information
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public BoundingLeaf getSchedulingBoundingLeaf() {
         if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_SCHEDULING_BOUNDS_READ))
@@ -838,26 +838,26 @@ public abstract class Sound extends Leaf {
      * @param priority value used to order sound's importance for playback.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setPriority(float priority) {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_PRIORITY_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound15"));
-	
+
 	((SoundRetained)this.retained).setPriority(priority);
     }
-    
+
     /**
      * Retrieves sound's priority value.
      * @return sound priority value
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public float getPriority() {
         if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_PRIORITY_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound16"));
-	
+
         return ((SoundRetained)this.retained).getPriority();
     }
 
@@ -869,7 +869,7 @@ public abstract class Sound extends Leaf {
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
-    public long getDuration() { 
+    public long getDuration() {
         if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_DURATION_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound17"));
@@ -890,7 +890,7 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if (!this.getCapability(ALLOW_IS_READY_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound22"));
-	
+
         return ((SoundRetained)this.retained).isReady();
     }
 
@@ -908,7 +908,7 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if (!this.getCapability(ALLOW_IS_READY_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound22"));
-	
+
         return ((SoundRetained)this.retained).isReady(view);
     }
 
@@ -924,7 +924,7 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if (!this.getCapability(ALLOW_IS_PLAYING_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound18"));
-  
+
         return ((SoundRetained)this.retained).isPlaying();
     }
 
@@ -942,7 +942,7 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if (!this.getCapability(ALLOW_IS_PLAYING_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound18"));
-  
+
         return ((SoundRetained)this.retained).isPlaying(view);
     }
 
@@ -957,7 +957,7 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_IS_PLAYING_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound18"));
-	
+
         return ((SoundRetained)this.retained).isPlayingSilently();
     }
 
@@ -977,23 +977,23 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_IS_PLAYING_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound18"));
-	
+
         return ((SoundRetained)this.retained).isPlayingSilently(view);
     }
 
 
-    /**  
+    /**
      * Retrieves number of channels that are being used to render this sound
      * on the audio device associated with the Virtual Universe's primary view.
      * @return number of channels used by sound; returns 0 if not playing
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public int getNumberOfChannelsUsed()  {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_CHANNELS_USED_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound20"));
-	
+
         return ((SoundRetained)this.retained).getNumberOfChannelsUsed();
     }
 
@@ -1010,7 +1010,7 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_CHANNELS_USED_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound20"));
-	
+
         return ((SoundRetained)this.retained).getNumberOfChannelsUsed(view);
     }
 
@@ -1026,13 +1026,13 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_MUTE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound23"));
-	
+
         ((SoundRetained)this.retained).setMute(state);
     }
 
     /**
      * Retrieves sound Mute state.
-     * A return value of true does not imply that the sound has 
+     * A return value of true does not imply that the sound has
      * been started playing or is still playing silently.
      * @return mute state flag
      * @exception CapabilityNotSetException if appropriate capability is
@@ -1043,7 +1043,7 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_MUTE_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound24"));
-	
+
         return ((SoundRetained)this.retained).getMute();
     }
 
@@ -1058,13 +1058,13 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_PAUSE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound25"));
-	
+
         ((SoundRetained)this.retained).setPause(state);
     }
 
     /**
      * Retrieves the value of the Pause state flag.
-     * A return value of true does not imply that the sound was 
+     * A return value of true does not imply that the sound was
      * started playing and then paused.
      * @return pause state
      * @exception CapabilityNotSetException if appropriate capability is
@@ -1075,7 +1075,7 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_PAUSE_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound26"));
-	
+
         return ((SoundRetained)this.retained).getPause();
     }
 
@@ -1093,7 +1093,7 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_RATE_SCALE_FACTOR_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound27"));
-	
+
         ((SoundRetained)this.retained).setRateScaleFactor(scaleFactor);
     }
 
@@ -1108,7 +1108,7 @@ public abstract class Sound extends Leaf {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_RATE_SCALE_FACTOR_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Sound28"));
-	
+
         return ((SoundRetained)this.retained).getRateScaleFactor();
     }
 
@@ -1117,7 +1117,7 @@ public abstract class Sound extends Leaf {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the

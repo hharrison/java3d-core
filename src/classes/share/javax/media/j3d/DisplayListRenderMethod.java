@@ -54,35 +54,35 @@ class DisplayListRenderMethod implements RenderMethod {
     public boolean render(RenderMolecule rm, Canvas3D cv,
 			  RenderAtomListInfo ra,
 			  int dirtyBits) {
-	
-        if (rm.doInfinite || 
+
+        if (rm.doInfinite ||
 	    !VirtualUniverse.mc.viewFrustumCulling ||
 	    rm.vwcBounds.intersect(cv.viewFrustum)) {
 	    cv.updateState(dirtyBits);
 	    cv.callDisplayList(cv.ctx, rm.displayListId,
 			       rm.isNonUniformScale);
 	    return true;
-	}	
+	}
 	return false;
     }
 
-    public boolean renderSeparateDlists(RenderMolecule rm, 
+    public boolean renderSeparateDlists(RenderMolecule rm,
 					Canvas3D cv,
 					RenderAtomListInfo r, int dirtyBits) {
-	
+
 	if (rm.doInfinite) {
 	    cv.updateState(dirtyBits);
 	    while (r != null) {
-		cv.callDisplayList(cv.ctx, 
+		cv.callDisplayList(cv.ctx,
 				   ((GeometryArrayRetained)r.geometry()).dlistId,
 				   rm.isNonUniformScale);
 		r = r.next;
 	    }
-	    
+
 	    return true;
 	}
-	
-	boolean isVisible = false; // True if any of the RAs is visible.	
+
+	boolean isVisible = false; // True if any of the RAs is visible.
 	while (r != null) {
 	    if (cv.ra == r.renderAtom) {
 		if (cv.raIsVisible) {
@@ -97,7 +97,7 @@ class DisplayListRenderMethod implements RenderMethod {
 		if (r.renderAtom.localeVwcBounds.intersect(cv.viewFrustum)) {
 		    cv.updateState(dirtyBits);
 		    cv.raIsVisible = true;
-		    cv.callDisplayList(cv.ctx, 
+		    cv.callDisplayList(cv.ctx,
 				       ((GeometryArrayRetained)r.geometry()).dlistId,
 				       rm.isNonUniformScale);
 		    isVisible = true;
@@ -109,13 +109,13 @@ class DisplayListRenderMethod implements RenderMethod {
 	    }
 	    r = r.next;
 	}
-	
+
 	return isVisible;
     }
-    
 
 
-    public boolean renderSeparateDlistPerRinfo(RenderMolecule rm, 
+
+    public boolean renderSeparateDlistPerRinfo(RenderMolecule rm,
 					       Canvas3D cv,
 					       RenderAtomListInfo r,
 					       int dirtyBits) {
@@ -129,7 +129,7 @@ class DisplayListRenderMethod implements RenderMethod {
 	    }
 	    return true;
 	}
-	boolean isVisible = false; // True if any of the RAs is visible.	
+	boolean isVisible = false; // True if any of the RAs is visible.
 	while (r != null) {
 	    if (cv.ra == r.renderAtom) {
 		if (cv.raIsVisible) {
@@ -155,11 +155,11 @@ class DisplayListRenderMethod implements RenderMethod {
 	    r = r.next;
 	}
 	return isVisible;
-	
+
     }
 
 
-    
+
 
     void buildDisplayList(RenderMolecule rm, Canvas3D cv) {
         RenderAtomListInfo ra;
@@ -182,10 +182,10 @@ class DisplayListRenderMethod implements RenderMethod {
 		    staticTransform = null;
 		    staticNormalTransform = null;
 		} else {
-		    staticTransform = 
+		    staticTransform =
 			ra.renderAtom.geometryAtom.source.staticTransform.transform;
 		    if ((geo.vertexFormat & GeometryArray.NORMALS) != 0) {
-		        staticNormalTransform = 
+		        staticNormalTransform =
 			    ra.renderAtom.geometryAtom.source.staticTransform.getNormalTransform();
 		    } else {
 			staticNormalTransform = null;
@@ -204,12 +204,12 @@ class DisplayListRenderMethod implements RenderMethod {
 	}
     }
 
-    void buildIndividualDisplayList(RenderAtomListInfo ra, Canvas3D cv, 
+    void buildIndividualDisplayList(RenderAtomListInfo ra, Canvas3D cv,
 					Context ctx) {
 	GeometryArrayRetained geo;
 
 	geo = (GeometryArrayRetained)ra.geometry();
-	if ((geo.texCoordSetMap != null) && 
+	if ((geo.texCoordSetMap != null) &&
 		(geo.texCoordSetMap.length > cv.maxTexCoordSets)) {
 	    return;
         }
@@ -224,7 +224,7 @@ class DisplayListRenderMethod implements RenderMethod {
 	geo.buildGA(cv, ra.renderAtom, false,
 		    false,
 		    1.0f,
-		    false, 
+		    false,
 		    null, null);
 	cv.endDisplayList(ctx);
     }
@@ -236,7 +236,7 @@ class DisplayListRenderMethod implements RenderMethod {
 	Transform3D staticTransform;
 	Transform3D staticNormalTransform;
 	int id;
-	
+
 	geo = (GeometryArrayRetained)ra.geometry();
 	if ((rm.primaryRenderAtomList != null) &&
                 (rm.texCoordSetMapLen <= cv.maxTexCoordSets)) {
@@ -248,10 +248,10 @@ class DisplayListRenderMethod implements RenderMethod {
 		staticTransform = null;
 		staticNormalTransform = null;
 	    } else {
-		staticTransform = 
+		staticTransform =
 		    ra.renderAtom.geometryAtom.source.staticTransform.transform;
 		if ((geo.vertexFormat & GeometryArray.NORMALS) != 0) {
-		    staticNormalTransform = 
+		    staticNormalTransform =
 			ra.renderAtom.geometryAtom.source.staticTransform.getNormalTransform();
 		} else {
 		    staticNormalTransform = null;
@@ -269,5 +269,5 @@ class DisplayListRenderMethod implements RenderMethod {
 	}
 
     }
-    
+
 }

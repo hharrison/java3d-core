@@ -54,7 +54,7 @@ abstract class J3dThread extends Thread {
     static final int UPDATE_TRANSFORM    	        = 0x2000;
 
     /**
-     * The classification types.  
+     * The classification types.
      */
     static final int WORK_THREAD   = 0x01;
     static final int UPDATE_THREAD = 0x02;
@@ -65,7 +65,7 @@ abstract class J3dThread extends Thread {
     static final int WAIT = 0;
 
     /**
-     * This runMonitor action notifies MasterControl that this thread 
+     * This runMonitor action notifies MasterControl that this thread
      * has completed and wait.
      */
     static final int NOTIFY_AND_WAIT = 1;
@@ -77,7 +77,7 @@ abstract class J3dThread extends Thread {
     static final int NOTIFY = 2;
 
     /**
-     * This runMonitor action tells the thread to run N number of 
+     * This runMonitor action tells the thread to run N number of
      * iterations.
      */
     static final int RUN = 2;
@@ -96,7 +96,7 @@ abstract class J3dThread extends Thread {
      * This indicates that this thread is alive and running
      */
     private volatile boolean running = true;
-    
+
     /**
      * This flag is set by the RUN action of runMonitor to indicate that the
      * waiting thread has work to do.
@@ -184,7 +184,7 @@ abstract class J3dThread extends Thread {
 	J3dThreadData threadData;
 	int i, j;
 	J3dThreadData[] newData;
-	
+
 	if (type != RENDER_THREAD) { // Regular Thread
 	    if (data == null) {
 		data = new J3dThreadData[1];
@@ -211,7 +211,7 @@ abstract class J3dThread extends Thread {
 		threadData = data[0];
 	    } else {
 		for (i=0; i<data.length; i++) {
-		    if (data[i].view == v && data[i].canvas == c) { 
+		    if (data[i].view == v && data[i].canvas == c) {
 			break;
 		    }
 		}
@@ -237,7 +237,7 @@ abstract class J3dThread extends Thread {
 		    args[3] = null;
 		}
 	    }
-	    
+
 	}
 
 	return (threadData);
@@ -254,7 +254,7 @@ abstract class J3dThread extends Thread {
 	}
     }
 
-    /** 
+    /**
      * This causes the threads run method to exit.
      */
     void finish() {
@@ -340,7 +340,7 @@ abstract class J3dThread extends Thread {
     // default resource clean up method
     void shutdown() {
     }
-    
+
     void cleanup() {
 	active = false;
 	running = true;
@@ -352,7 +352,7 @@ abstract class J3dThread extends Thread {
 	args = null;
 	userStop = false;
 	referenceTime = 0;
-	
+
     }
 
 }

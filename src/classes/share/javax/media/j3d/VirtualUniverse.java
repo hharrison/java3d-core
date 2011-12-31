@@ -127,7 +127,7 @@ public class VirtualUniverse extends Object {
 
     // This is a global counter for node id's.
     long nodeIdCount = 0;
- 
+
     // This is a global counter for view id's.
     int viewIdCount = 0;
 
@@ -206,7 +206,7 @@ public class VirtualUniverse extends Object {
 	initMCStructure();
     }
 
-    
+
     void initMCStructure() {
 	if (geometryStructure != null) {
 	    geometryStructure.cleanup();
@@ -341,7 +341,7 @@ public class VirtualUniverse extends Object {
 	if (locale.getVirtualUniverse() != this) {
 	    throw new IllegalArgumentException(J3dI18N.getString("VirtualUniverse0"));
 	}
-	
+
 	listOfLocales.removeElement(locale);
 	locale.removeFromUniverse();
 	if (isEmpty()) {
@@ -391,7 +391,7 @@ public class VirtualUniverse extends Object {
 
     /**
      * Returns the enumeration object of all locales in this virtual universe.
-     * @return the enumeration object 
+     * @return the enumeration object
      */
     public Enumeration getAllLocales() {
 	return this.listOfLocales.elements();
@@ -623,7 +623,7 @@ public class VirtualUniverse extends Object {
     // BUG 4181362
     String getNodeId() {
         String str;
- 
+
 	if (nodeIdFreeList.size() == 0) {
 	   str = Long.toString(nodeIdCount);
            nodeIdCount++;
@@ -712,7 +712,7 @@ public class VirtualUniverse extends Object {
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];               
+                vp =(ViewPlatformRetained)vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
 	            cvs = views[j].getAllCanvas3Ds();
@@ -739,7 +739,7 @@ public class VirtualUniverse extends Object {
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];               
+                vp =(ViewPlatformRetained)vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -765,7 +765,7 @@ public class VirtualUniverse extends Object {
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];               
+                vp =(ViewPlatformRetained)vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -792,7 +792,7 @@ public class VirtualUniverse extends Object {
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];               
+                vp =(ViewPlatformRetained)vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -819,7 +819,7 @@ public class VirtualUniverse extends Object {
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];               
+                vp =(ViewPlatformRetained)vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -846,7 +846,7 @@ public class VirtualUniverse extends Object {
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];               
+                vp =(ViewPlatformRetained)vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -872,7 +872,7 @@ public class VirtualUniverse extends Object {
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];               
+                vp =(ViewPlatformRetained)vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -899,7 +899,7 @@ public class VirtualUniverse extends Object {
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];               
+                vp =(ViewPlatformRetained)vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -925,7 +925,7 @@ public class VirtualUniverse extends Object {
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];               
+                vp =(ViewPlatformRetained)vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -951,7 +951,7 @@ public class VirtualUniverse extends Object {
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];               
+                vp =(ViewPlatformRetained)vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -977,7 +977,7 @@ public class VirtualUniverse extends Object {
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];               
+                vp =(ViewPlatformRetained)vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -993,19 +993,19 @@ public class VirtualUniverse extends Object {
     }
 
     /**
-     * Sets the "current" view (during view activation) for this virtual 
+     * Sets the "current" view (during view activation) for this virtual
      * universe.
      * @param last activated view
-     */  
+     */
     final void setCurrentView(View view) {
         this.currentView = view;
     }
 
     /**
-     * Returns the "current" view (the last view activated for this virtual 
+     * Returns the "current" view (the last view activated for this virtual
      * universe.
      * @return last activated view
-     */  
+     */
     final View getCurrentView() {
         return this.currentView;
     }
@@ -1055,7 +1055,7 @@ public class VirtualUniverse extends Object {
 		    unRegViewWaiting = null;
 		}
 	    }
-	    
+
 	    if (regViewWaiting != null) {
 		while (!VirtualUniverse.mc.isRegistered(regViewWaiting)) {
 		    MasterControl.threadYield();
@@ -1065,11 +1065,11 @@ public class VirtualUniverse extends Object {
 	    isSceneGraphLock = false;
 	}
     }
-    
+
     /**
      * Adds the specified GraphStructureChangeListener to the set of listeners
      * that will be notified when the graph structure is changed on a live
-     * scene graph. If the specifed listener is null no action is taken and no 
+     * scene graph. If the specifed listener is null no action is taken and no
      * exception is thrown.
      *
      * @param listener the listener to add to the set.
@@ -1080,16 +1080,16 @@ public class VirtualUniverse extends Object {
         if (listener == null) {
             return;
         }
-        
+
         if (structureChangeListenerSet == null) {
             structureChangeListenerSet = new HashSet();
         }
-        
+
         synchronized(structureChangeListenerSet) {
             structureChangeListenerSet.add(listener);
         }
     }
-    
+
     /**
      * Removes the specified GraphStructureChangeListener from the set of listeners. This
      * method performs no function, nor does it throw an exception if the specified listener
@@ -1108,7 +1108,7 @@ public class VirtualUniverse extends Object {
             structureChangeListenerSet.remove(listener);
         }
     }
-    
+
     /**
      * Processes all live BranchGroup add and removes and notifies
      * any registered listeners. Used for add and remove
@@ -1117,7 +1117,7 @@ public class VirtualUniverse extends Object {
         if (structureChangeListenerSet == null) {
             return;
 	}
-        
+
         synchronized(structureChangeListenerSet) {
             Iterator<GraphStructureChangeListener> it = structureChangeListenerSet.iterator();
             while(it.hasNext()) {
@@ -1141,7 +1141,7 @@ public class VirtualUniverse extends Object {
             }
         }
     }
-    
+
     /**
      * Processes all live BranchGroup moves and notifies
      * any registered listeners. Used for moveTo
@@ -1273,7 +1273,7 @@ public class VirtualUniverse extends Object {
      * of listeners is empty, a default listener is notified. The
      * default listener prints the error information to System.err and
      * then calls System.exit().
-     * 
+     *
      * @param listener the listener to add to the set.
      *
      * @since Java 3D 1.5
@@ -1297,7 +1297,7 @@ public class VirtualUniverse extends Object {
      * listeners. This method performs no function, nor does it throw
      * an exception if the specified listener is not currently in the
      * set or is null.
-     * 
+     *
      * @param listener the listener to remove from the set.
      *
      * @since Java 3D 1.5

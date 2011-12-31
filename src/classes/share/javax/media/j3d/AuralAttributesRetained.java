@@ -44,7 +44,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
       *  Gain Scale Factor applied to source with this attribute
       */
      float      attributeGain = 1.0f;      // Valid values are >= 0.0.
- 
+
      /**
       * Atmospheric Rolloff - speed of sound - coeff
       *    Normal gain attenuation based on distance of sound from
@@ -59,17 +59,17 @@ class AuralAttributesRetained extends NodeComponentRetained {
       *
       *   Within Java 3D's model for auralization, the components to
       *   reverberation for a particular space are:
-      *     Reflection and Reverb Coefficients - 
-      *         attenuation of sound (uniform for all frequencies) due to 
-      *         absorption of reflected sound off materials within the 
+      *     Reflection and Reverb Coefficients -
+      *         attenuation of sound (uniform for all frequencies) due to
+      *         absorption of reflected sound off materials within the
       *         listening space.
-      *     Reflection and Reverb Delay - 
+      *     Reflection and Reverb Delay -
       *         approximating time from the start of the direct sound that
       *         initial early and late reflection waves take to reach listener.
-      *     Reverb Decay - 
+      *     Reverb Decay -
       *         approximating time from the start of the direct sound that
       *         reverberation is audible.
-      */  
+      */
 
      /**
       *   Coefficients for reverberation
@@ -97,17 +97,17 @@ class AuralAttributesRetained extends NodeComponentRetained {
 
      /**
       *   Decay parameters
-      *     Length and timbre of reverb decay tail 
+      *     Length and timbre of reverb decay tail
       */
      float      decayTime = 1000.0f;        // in milliseconds
      float      decayFilter = 5000.0f;      // low-pass cutoff frequency
-     
+
      /**
       *   Reverb Diffusion and Density ratios (0=min, 1=max)
       */
      float      diffusion = 1.0f;
      float      density = 1.0f;
-     
+
      /**
       *   Reverberation order
       *     This limits the number of Reverberation iterations executed while
@@ -128,7 +128,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
       *   from the listener.
       *   For now the only supported filterType will be LOW_PASS frequency cutoff.
       *   At some time full FIR filtering will be supported.
-      */  
+      */
      static final int  NO_FILTERING  = -1;
      static final int  LOW_PASS      =  1;
 
@@ -143,21 +143,21 @@ class AuralAttributesRetained extends NodeComponentRetained {
       *     If there has been no change in the distance between head and sound
       *     source over this delta time:
       *         f' = f
-      *      
+      *
       *     If there has been a change in the distance between head and sound:
       *         f' = f * Af * v
-      *      
+      *
       *     When head and sound are moving towards each other then
       *                |  (S * Ar)  +  (deltaV(h,t) * Av) |
       *         v  =   | -------------------------------- |
       *                |  (S * Ar)  -  (deltaV(s,t) * Av)  |
-      *     
+      *
       *     When head and sound are moving away from each other then
       *                |  (S * Ar)  -  (deltaV(h,t) * Av) |
       *         v  =   | -------------------------------- |
       *                |  (S * Ar)  +  (deltaV(s,t) * Av) |
-      *     
-      *     
+      *
+      *
       *     Af = AuralAttribute frequency scalefactor
       *     Ar = AuralAttribute rolloff scalefactor
       *     Av = AuralAttribute velocity scalefactor
@@ -169,8 +169,8 @@ class AuralAttributesRetained extends NodeComponentRetained {
       *     S = Speed of sound
       *     s = Sound source position
       *     t = time
-      *     
-      *     If adjusted velocity of head or adjusted velocity of sound is 
+      *
+      *     If adjusted velocity of head or adjusted velocity of sound is
       *     greater than adjusted speed of sound, f' is undefined.
       */
      /**
@@ -182,8 +182,8 @@ class AuralAttributesRetained extends NodeComponentRetained {
      float      frequencyScaleFactor = 1.0f;
      /**
       *   Velocity Scale Factor
-      *     Float value applied to the Change of distance between Sound Source 
-      *     and Listener over some delta time.  Non-zero if listener moving 
+      *     Float value applied to the Change of distance between Sound Source
+      *     and Listener over some delta time.  Non-zero if listener moving
       *     even if sound is not.  Value of zero implies no Doppler applied.
       */
      float      velocityScaleFactor = 0.0f;
@@ -200,12 +200,12 @@ class AuralAttributesRetained extends NodeComponentRetained {
 
     /**
      ** Debug print mechanism for Sound nodes
-     **/ 
+     **/
     static final // 'static final' so compiler doesn't include debugPrint calls
     boolean  debugFlag = false;
 
     static final  // 'static final' so internal error message are not compiled
-    boolean internalErrors = false; 
+    boolean internalErrors = false;
 
     void debugPrint(String message) {
         if (debugFlag) // leave test in in case debugFlag made non-static final
@@ -221,7 +221,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
 
     /**
      * Set Attribute Gain (amplitude)
-     * @param gain scale factor applied to amplitude 
+     * @param gain scale factor applied to amplitude
      */
     void setAttributeGain(float gain) {
         this.attributeGain = gain;
@@ -255,7 +255,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
 
     /**
      * Set Reflective Coefficient
-     * @param reflectionCoefficient reflection/absorption factor applied to 
+     * @param reflectionCoefficient reflection/absorption factor applied to
      * early reflections.
      */
     void setReflectionCoefficient(float reflectionCoefficient) {
@@ -265,7 +265,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
     }
     /**
      * Retrieve Reflective Coefficient
-     * @return reflection coeff reflection/absorption factor applied to 
+     * @return reflection coeff reflection/absorption factor applied to
      * early reflections.
      */
     float getReflectionCoefficient() {
@@ -284,7 +284,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
     }
     /**
      * Retrieve Reflection Delay Time
-     * @return reflection delay time 
+     * @return reflection delay time
      */
     float getReflectionDelay() {
         return this.reflectionDelay;
@@ -292,7 +292,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
 
     /**
      * Set Reverb Coefficient
-     * @param reverbCoefficient reflection/absorption factor applied to 
+     * @param reverbCoefficient reflection/absorption factor applied to
      * late reflections.
      */
     void setReverbCoefficient(float reverbCoefficient) {
@@ -336,7 +336,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
     }
     /**
      * Retrieve Revereration Decay Time
-     * @return reverb delay time 
+     * @return reverb delay time
      */
     float getDecayTime() {
         return this.decayTime;
@@ -354,7 +354,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
 
     /**
      * Retrieve Revereration Decay Filter
-     * @return reverb delay Filter 
+     * @return reverb delay Filter
      */
     float getDecayFilter() {
         return this.decayFilter;
@@ -406,11 +406,11 @@ class AuralAttributesRetained extends NodeComponentRetained {
 	this.aaDirty = true;
 	notifyUsers();
     }
-    /**  
+    /**
      * Retrieve Revereration Delay Bounds volume
      * @return reverb bounds volume that defines the Reverberation space and
      * indirectly the delay
-     */  
+     */
     Bounds getReverbBounds() {
         return this.reverbBounds;
     }
@@ -461,11 +461,11 @@ class AuralAttributesRetained extends NodeComponentRetained {
 	notifyUsers();
     }
     /**
-     * Set Distance Filter (based on distances and frequency cutoff) using 
+     * Set Distance Filter (based on distances and frequency cutoff) using
      * separate arrays
      * @param distance array containing distance values
      * @param filter array containing low-pass frequency cutoff values
-     */  
+     */
     synchronized void setDistanceFilter(float[] distance, float[] filter) {
         if (distance == null || filter == null) {
             this.filterType = NO_FILTERING;
@@ -515,13 +515,13 @@ class AuralAttributesRetained extends NodeComponentRetained {
     /**
      * Retrieve Distance Filter array length
      * @return attenuation array length
-     */  
-    int getDistanceFilterLength() { 
+     */
+    int getDistanceFilterLength() {
         if (distance == null)
             return 0;
         else
-            return this.distance.length; 
-    } 
+            return this.distance.length;
+    }
 
 
     /**
@@ -530,7 +530,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
      */
     void getDistanceFilter(Point2f[] attenuation) {
         // Write into existing param array already allocated
-        if (attenuation == null)  
+        if (attenuation == null)
             return;
         if (this.distance == null || this.frequencyCutoff == null)
             return;
@@ -560,7 +560,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
      */
     void getDistanceFilter(float[] distance, float[] filter) {
         // Write into existing param arrays already allocated
-        if (distance == null || filter == null)  
+        if (distance == null || filter == null)
             return;
         if (this.distance == null || this.frequencyCutoff == null)
             return;
@@ -578,7 +578,7 @@ class AuralAttributesRetained extends NodeComponentRetained {
         int filterLength = this.frequencyCutoff.length;
         if (filter.length < filterLength)
             // parameter array not large enough to hold all this.filter data
-            filterLength = filter.length; 
+            filterLength = filter.length;
         if (filterType == NO_FILTERING) {
             for (int i=0; i< filterLength; i++)
                 filter[i] = Sound.NO_FILTER;
@@ -669,5 +669,5 @@ class AuralAttributesRetained extends NodeComponentRetained {
     void update(AuralAttributesRetained aa) {
 	this.reset(aa);
     }
-   
+
 }

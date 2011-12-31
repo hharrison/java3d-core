@@ -78,10 +78,10 @@ public class ShaderAttributeValue extends ShaderAttributeObject {
     public ShaderAttributeValue(String attrName, Object value) {
 	super(attrName, value);
     }
-    
+
     // Implement abstract getValue method
     public Object getValue() {
-        
+
         if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_VALUE_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("ShaderAttributeObject0"));
@@ -95,7 +95,7 @@ public class ShaderAttributeValue extends ShaderAttributeObject {
         if (value == null) {
 	    throw new NullPointerException();
 	}
-        
+
         if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_VALUE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("ShaderAttributeObject1"));

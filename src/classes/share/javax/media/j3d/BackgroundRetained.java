@@ -57,21 +57,21 @@ class BackgroundRetained extends LeafRetained {
     Color3f		color = new Color3f(0.0f, 0.0f, 0.0f);
     ImageComponent2DRetained	image = null;
     Texture2DRetained           texture = null;
-    
+
     // the image scale mode if image is used.
-    int imageScaleMode = Background.SCALE_NONE; 
-    
+    int imageScaleMode = Background.SCALE_NONE;
+
     /**
      * The Boundary object defining the lights's application region.
-     */  
+     */
     Bounds applicationRegion = null;
 
-    /** 
+    /**
      * The bounding leaf reference
      */
     BoundingLeafRetained boundingLeaf = null;
 
-    /** 
+    /**
      * Background geometry branch group
      */
     BranchGroup geometryBranch = null;
@@ -121,7 +121,7 @@ class BackgroundRetained extends LeafRetained {
 
     // Is true, if the background is viewScoped
     boolean isViewScoped = false;
-    
+
     BackgroundRetained () {
         this.nodeType = NodeRetained.BACKGROUND;
 	localBounds = new BoundingBox();
@@ -130,7 +130,7 @@ class BackgroundRetained extends LeafRetained {
     }
 
     /**
-     * Initializes the background color to the specified color.  
+     * Initializes the background color to the specified color.
      * This color is used
      * if the image is null.
      * @param color the new background color
@@ -153,7 +153,7 @@ class BackgroundRetained extends LeafRetained {
     }
 
     /**
-     * Initializes the background color to the specified color.  
+     * Initializes the background color to the specified color.
      * This color is used
      * if the image is null.
      * @param r the red component of the background color
@@ -195,7 +195,7 @@ class BackgroundRetained extends LeafRetained {
     final void initImageScaleMode(int imageScaleMode){
 	this.imageScaleMode = imageScaleMode;
     }
-    
+
     /**
      * Sets the image scale mode for this Background node.
      * @param imageScaleMode the image scale mode
@@ -206,16 +206,16 @@ class BackgroundRetained extends LeafRetained {
 	    sendMessage(IMAGE_SCALE_CHANGED, new Integer(imageScaleMode));
 	}
     }
-    
+
     /**
      * gets the image scale mode for this Background node.
      */
     final int getImageScaleMode(){
 	return imageScaleMode;
     }
-    
+
     /**
-     * Initializes the background image to the specified image.  
+     * Initializes the background image to the specified image.
      * @param image new ImageCompoent2D object used as the background image
      */
     final void initImage(ImageComponent2D img) {
@@ -260,7 +260,7 @@ class BackgroundRetained extends LeafRetained {
     }
 
     /**
-     * Sets the background image to the specified image.  
+     * Sets the background image to the specified image.
      * @param image new ImageCompoent3D object used as the background image
      */
     final void setImage(ImageComponent2D img) {
@@ -268,16 +268,16 @@ class BackgroundRetained extends LeafRetained {
 	    if (texture != null) {
 		texture.clearLive(refCount);
 	    }
-	}	
+	}
 	initImage(img);
         if (source.isLive()) {
             if (texture != null) {
                 texture.setLive(inBackgroundGroup, refCount);
             }
-            
+
             sendMessage(IMAGE_CHANGED,
                     (texture != null ? texture.mirror : null));
-            
+
         }
     }
 
@@ -286,23 +286,23 @@ class BackgroundRetained extends LeafRetained {
      * @return the current background image
      */
     final ImageComponent2D getImage() {
-        return (image == null ? null : 
+        return (image == null ? null :
 		(ImageComponent2D)image.source);
     }
 
     /**
-     * Initializes the background geometry branch group to the specified branch.  
+     * Initializes the background geometry branch group to the specified branch.
      * @param branch new branch group object used for background geometry
-     */  
+     */
     final void initGeometry(BranchGroup branch) {
         geometryBranch = branch;
     }
 
 
     /**
-     * Sets the background geometry branch group to the specified branch.  
+     * Sets the background geometry branch group to the specified branch.
      * @param branch new branch group object used for background geometry
-     */  
+     */
     final void setGeometry(BranchGroup branch) {
         int numMessages = 0;
         int i;
@@ -320,7 +320,7 @@ class BackgroundRetained extends LeafRetained {
             i = 0;
             if (geometryBranch != null) {
                 clearGeometryBranch((BranchGroupRetained)geometryBranch.retained);
-                m[i].threads = (J3dThread.UPDATE_RENDER | 
+                m[i].threads = (J3dThread.UPDATE_RENDER |
 				J3dThread.UPDATE_RENDERING_ENVIRONMENT);
                 m[i].type = J3dMessage.ORDERED_GROUP_REMOVED;
                 m[i].universe = universe;
@@ -339,7 +339,7 @@ class BackgroundRetained extends LeafRetained {
             }
             if (branch != null) {
                 setGeometryBranch((BranchGroupRetained)branch.retained);
-                m[i].threads = (J3dThread.UPDATE_RENDER | 
+                m[i].threads = (J3dThread.UPDATE_RENDER |
 				J3dThread.UPDATE_RENDERING_ENVIRONMENT);
                 m[i].type = J3dMessage.ORDERED_GROUP_INSERTED;
                 m[i].universe = universe;
@@ -373,7 +373,7 @@ class BackgroundRetained extends LeafRetained {
     /**
      * Initializes the Background's application region.
      * @param region a region that contains the Backgound's new application bounds
-     */  
+     */
     final void initApplicationBounds(Bounds region) {
 	if (region != null) {
 	    applicationRegion = (Bounds) region.clone();
@@ -385,19 +385,19 @@ class BackgroundRetained extends LeafRetained {
     /**
      * Set the Background's application region.
      * @param region a region that contains the Backgound's new application bounds
-     */  
+     */
     final void setApplicationBounds(Bounds region) {
 	initApplicationBounds(region);
 	// Don't send the message if there is a valid boundingleaf
 	if (boundingLeaf == null) {
 	    J3dMessage createMessage = new J3dMessage();
-	    createMessage.threads = targetThreads | 
+	    createMessage.threads = targetThreads |
 		J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	    createMessage.type = J3dMessage.BACKGROUND_CHANGED;
 	    createMessage.universe = universe;
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(BOUNDS_CHANGED);
-	    if (region != null) 
+	    if (region != null)
 		createMessage.args[2] = region.clone();
 	    else
 		createMessage.args[2] = null;
@@ -405,18 +405,18 @@ class BackgroundRetained extends LeafRetained {
 	}
     }
 
-    /**  
+    /**
      * Get the Backgound's application region.
      * @return this Backgound's application region information
-     */  
+     */
     final Bounds getApplicationBounds() {
 	return (applicationRegion != null ?  (Bounds) applicationRegion.clone() : null);
     }
 
     /**
-     * Initializes the Background's application region 
+     * Initializes the Background's application region
      * to the specified Leaf node.
-     */  
+     */
     void initApplicationBoundingLeaf(BoundingLeaf region) {
 	if (region != null) {
 	    boundingLeaf = (BoundingLeafRetained)region.retained;
@@ -427,11 +427,11 @@ class BackgroundRetained extends LeafRetained {
 
     /**
      * Set the Background's application region to the specified Leaf node.
-     */  
+     */
     void setApplicationBoundingLeaf(BoundingLeaf region) {
 	if (boundingLeaf != null)
 	    boundingLeaf.mirrorBoundingLeaf.removeUser(this);
-	    
+
 	if (region != null) {
 	    boundingLeaf = (BoundingLeafRetained)region.retained;
 	    boundingLeaf.mirrorBoundingLeaf.addUser(this);
@@ -439,7 +439,7 @@ class BackgroundRetained extends LeafRetained {
 	    boundingLeaf = null;
 	}
 	J3dMessage createMessage = new J3dMessage();
-	createMessage.threads = targetThreads | 
+	createMessage.threads = targetThreads |
 	    J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	createMessage.type = J3dMessage.BACKGROUND_CHANGED;
 	createMessage.universe = universe;
@@ -452,7 +452,7 @@ class BackgroundRetained extends LeafRetained {
 	    createMessage.args[2] = null;
 	    if (applicationRegion != null)
 		createMessage.args[3] = applicationRegion.clone();
-	    else 
+	    else
 		createMessage.args[3] = null;
 	}
 	VirtualUniverse.mc.processMessage(createMessage);
@@ -461,7 +461,7 @@ class BackgroundRetained extends LeafRetained {
 
     /**
      * Get the Background's application region
-     */  
+     */
     BoundingLeaf getApplicationBoundingLeaf() {
 	return (boundingLeaf != null ?
 		(BoundingLeaf)boundingLeaf.source : null);
@@ -473,7 +473,7 @@ class BackgroundRetained extends LeafRetained {
     void setInImmCtx(boolean inCtx) {
         inImmCtx = inCtx;
     }
- 
+
     /**
      * This gets the immedate mode context flag
      */
@@ -547,17 +547,17 @@ class BackgroundRetained extends LeafRetained {
 
 
         if (geometryBranch != null) {
-            BranchGroupRetained branch = 
+            BranchGroupRetained branch =
                 (BranchGroupRetained)geometryBranch.retained;
             if (branch.inBackgroundGroup == true)
                throw new IllegalSharingException(
 				J3dI18N.getString("BackgroundRetained0"));
 
-            if (branch.parent != null)               
+            if (branch.parent != null)
                throw new IllegalSharingException(
 				J3dI18N.getString("BackgroundRetained3"));
 
-            if (branch.locale != null)   
+            if (branch.locale != null)
                throw new IllegalSharingException(
 				J3dI18N.getString("BackgroundRetained4"));
 
@@ -575,7 +575,7 @@ class BackgroundRetained extends LeafRetained {
 	    // Free up memory.
             setLiveState.reset(null);
         }
-	
+
 	if ((s.viewScopedNodeList != null) && (s.viewLists != null)) {
 	    s.viewScopedNodeList.add(this);
 	    s.scopedNodesViewList.add(s.viewLists.get(0));
@@ -592,7 +592,7 @@ class BackgroundRetained extends LeafRetained {
 
 	// Initialize some mirror values
 	if (boundingLeaf != null) {
-	    transformedRegion = 
+	    transformedRegion =
 		(Bounds)boundingLeaf.mirrorBoundingLeaf.transformedRegion;
 	}
 	else { // Evaluate applicationRegion if not null
@@ -605,7 +605,7 @@ class BackgroundRetained extends LeafRetained {
 	    else {
 		transformedRegion = null;
 	    }
-	    
+
 	}
 	cachedLocale = s.locale;
 
@@ -624,7 +624,7 @@ class BackgroundRetained extends LeafRetained {
 	super.markAsLive();
 
     }
- 
+
     /**
      * This clearLive routine first calls the superclass's method, then
      * it removes itself to the list of lights
@@ -674,7 +674,7 @@ class BackgroundRetained extends LeafRetained {
 	int component = ((Integer)objs[1]).intValue();
 	Transform3D trans;
 	// If initialization
-	
+
 	// Bounds message only sent when boundingleaf is null
 	if  ((component & BOUNDS_CHANGED) != 0) {
 	    if (objs[2] != null) {
@@ -700,15 +700,15 @@ class BackgroundRetained extends LeafRetained {
 		else {
 		    transformedRegion = null;
 		}
-		
+
 	    }
 	}
 
     }
 
-    /** Note: This routine will only be called 
+    /** Note: This routine will only be called
      * to  update the object's
-     * transformed region 
+     * transformed region
      */
     void updateBoundingLeaf() {
         if (boundingLeaf != null &&
@@ -791,5 +791,5 @@ class BackgroundRetained extends LeafRetained {
     }
     void getMirrorObjects(ArrayList leafList, HashKey key) {
 	leafList.add(this); // No Mirror in this case
-    }    
+    }
 }

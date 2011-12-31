@@ -4660,7 +4660,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	this.vertexData[offset]   = normal[0];
 	this.vertexData[offset+1] = normal[1];
 	this.vertexData[offset+2] = normal[2];
-        
+
         if(isLive) {
             geomLock.unLock();
             sendDataChangedMessage(false);

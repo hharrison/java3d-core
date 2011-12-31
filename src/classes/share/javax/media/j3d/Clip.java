@@ -55,28 +55,28 @@ public class Clip extends Leaf {
     /**
      * Specifies that the Clip allows read access to its application
      * bounds and bounding leaf at runtime.
-     */  
+     */
     public static final int
     ALLOW_APPLICATION_BOUNDS_READ = CapabilityBits.CLIP_ALLOW_APPLICATION_BOUNDS_READ;
 
     /**
      * Specifies that the Clip allows write access to its application
      * bounds and bounding leaf at runtime.
-     */  
+     */
     public static final int
     ALLOW_APPLICATION_BOUNDS_WRITE = CapabilityBits.CLIP_ALLOW_APPLICATION_BOUNDS_WRITE;
 
     /**
       * Specifies that the Clip allows read access to its back distance
       * at runtime.
-      */ 
+      */
      public static final int
     ALLOW_BACK_DISTANCE_READ = CapabilityBits.CLIP_ALLOW_BACK_DISTANCE_READ;
 
     /**
       * Specifies that the Clip allows write access to its back distance
       * at runtime.
-      */ 
+      */
      public static final int
     ALLOW_BACK_DISTANCE_WRITE = CapabilityBits.CLIP_ALLOW_BACK_DISTANCE_WRITE;
 
@@ -85,7 +85,7 @@ public class Clip extends Leaf {
         ALLOW_APPLICATION_BOUNDS_READ,
         ALLOW_BACK_DISTANCE_READ
     };
-    
+
     /**
      * Constructs a Clip node with default parameters.  The default
      * values are as follows:
@@ -126,7 +126,7 @@ public class Clip extends Leaf {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_BACK_DISTANCE_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("Clip0"));
-	
+
 	if (isLive())
 	    ((ClipRetained)this.retained).setBackDistance(backDistance);
 	else
@@ -140,7 +140,7 @@ public class Clip extends Leaf {
     public double getBackDistance() {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_BACK_DISTANCE_READ))
-                throw new CapabilityNotSetException(J3dI18N.getString("Clip1"));       
+                throw new CapabilityNotSetException(J3dI18N.getString("Clip1"));
         return ((ClipRetained)this.retained).getBackDistance();
     }
 
@@ -151,29 +151,29 @@ public class Clip extends Leaf {
      * region.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setApplicationBounds(Bounds region) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_APPLICATION_BOUNDS_WRITE))
-                throw new CapabilityNotSetException(J3dI18N.getString("Clip2"));  
- 
+                throw new CapabilityNotSetException(J3dI18N.getString("Clip2"));
+
 	if (isLive())
 	    ((ClipRetained)this.retained).setApplicationBounds(region);
 	else
 	    ((ClipRetained)this.retained).initApplicationBounds(region);
     }
 
-    /**  
+    /**
      * Retrieves the Clip node's application bounds.
      * @return this Clip's application bounds information
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public Bounds getApplicationBounds() {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_APPLICATION_BOUNDS_READ))
-                throw new CapabilityNotSetException(J3dI18N.getString("Clip3"));  
- 
+                throw new CapabilityNotSetException(J3dI18N.getString("Clip3"));
+
         return ((ClipRetained)this.retained).getApplicationBounds();
     }
 
@@ -185,40 +185,40 @@ public class Clip extends Leaf {
      * node's new application region.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setApplicationBoundingLeaf(BoundingLeaf region) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_APPLICATION_BOUNDS_WRITE))
-                throw new CapabilityNotSetException(J3dI18N.getString("Clip2"));  
- 
+                throw new CapabilityNotSetException(J3dI18N.getString("Clip2"));
+
 	if (isLive())
 	    ((ClipRetained)this.retained).setApplicationBoundingLeaf(region);
 	else
 	    ((ClipRetained)this.retained).initApplicationBoundingLeaf(region);
     }
 
-    /**  
+    /**
      * Retrieves the Clip node's application bounding leaf.
      * @return this Clip's application bounding leaf information
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public BoundingLeaf getApplicationBoundingLeaf() {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_APPLICATION_BOUNDS_READ))
-                throw new CapabilityNotSetException(J3dI18N.getString("Clip3"));  
- 
+                throw new CapabilityNotSetException(J3dI18N.getString("Clip3"));
+
         return ((ClipRetained)this.retained).getApplicationBoundingLeaf();
     }
 
-    /** 
-     * Creates the retained mode ClipRetained object that this 
-     * Clip component object will point to. 
-     */   
+    /**
+     * Creates the retained mode ClipRetained object that this
+     * Clip component object will point to.
+     */
     void createRetained() {
-        this.retained = new ClipRetained(); 
-        this.retained.setSource(this); 
-    } 
+        this.retained = new ClipRetained();
+        this.retained.setSource(this);
+    }
 
     /**
      * Used to create a new instance of the node.  This routine is called
@@ -283,7 +283,7 @@ public class Clip extends Leaf {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the

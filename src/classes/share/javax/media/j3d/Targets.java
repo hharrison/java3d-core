@@ -46,18 +46,18 @@ class Targets {
     static final int GRP_TARGETS = 6; // For group nodes.
 
     ArrayList[] targetList = new ArrayList[MAX_NODELIST];
-    
+
     void addNode(NnuId node, int targetType) {
 	if(targetList[targetType] == null)
 	    targetList[targetType] = new ArrayList(1);
-	
+
 	targetList[targetType].add(node);
     }
 
     void addNodeArray(NnuId[] nodeArr, int targetType) {
 	if(targetList[targetType] == null)
 	    targetList[targetType] = new ArrayList(1);
-	
+
 	targetList[targetType].add(nodeArr);
     }
 
@@ -72,12 +72,12 @@ class Targets {
     void addNodes(ArrayList nodeList, int targetType) {
 	if(targetList[targetType] == null)
 	    targetList[targetType] = new ArrayList(1);
-	
+
 	targetList[targetType].addAll(nodeList);
     }
-    
-    
-    void clearNodes() {	
+
+
+    void clearNodes() {
 	for(int i=0; i<MAX_NODELIST; i++) {
 	    if (targetList[i] != null) {
 	        targetList[i].clear();
@@ -105,25 +105,25 @@ class Targets {
 		cachedTargets.targetArr[i] = null;
 	    }
 	}
-	
+
 	clearNodes();
-	
+
 	return cachedTargets;
     }
 
-    
+
     CachedTargets snapShotAdd(CachedTargets cachedTargets) {
-	
+
 	int i, size;
-	
+
 	CachedTargets newCachedTargets = new CachedTargets();
-	
-	for(i=0; i<MAX_NODELIST; i++) {	    
+
+	for(i=0; i<MAX_NODELIST; i++) {
 	    if((targetList[i] != null) && (cachedTargets.targetArr[i] == null)) {
 		size = targetList[i].size();
 		NnuId[] nArr = new NnuId[size];
 		targetList[i].toArray(nArr);
-		newCachedTargets.targetArr[i] = nArr;		
+		newCachedTargets.targetArr[i] = nArr;
 		NnuIdManager.sort(newCachedTargets.targetArr[i]);
 
 	    }
@@ -135,13 +135,13 @@ class Targets {
 		NnuIdManager.sort(targetArr);
 		newCachedTargets.targetArr[i] =
 		    NnuIdManager.merge(cachedTargets.targetArr[i], targetArr);
-		
+
 	    }
 	    else if((targetList[i] == null) && (cachedTargets.targetArr[i] != null)) {
 		newCachedTargets.targetArr[i] = cachedTargets.targetArr[i];
 	    }
 	}
-	
+
 	clearNodes();
 
 	return 	newCachedTargets;
@@ -150,15 +150,15 @@ class Targets {
 
 
     CachedTargets snapShotRemove(CachedTargets cachedTargets) {
-	
+
 	int i, size;
 	NnuId[] targetArr;
-	
+
 
 	CachedTargets newCachedTargets = new CachedTargets();
 
 	for(i=0; i<MAX_NODELIST; i++) {
-	    
+
 	    if((targetList[i] != null) && (cachedTargets.targetArr[i] != null)) {
 		size = targetList[i].size();
 		targetArr = new NnuId[size];
@@ -166,27 +166,27 @@ class Targets {
 		NnuIdManager.sort(targetArr);
 		newCachedTargets.targetArr[i] =
 		    NnuIdManager.delete(cachedTargets.targetArr[i], targetArr);
-		
+
 	    }
 	    else if((targetList[i] == null) && (cachedTargets.targetArr[i] != null)) {
 		newCachedTargets.targetArr[i] = cachedTargets.targetArr[i];
-		
+
 	    }
 	    else if((targetList[i] != null) && (cachedTargets.targetArr[i] == null)) {
 		System.err.println("You can't remove something that isn't there");
 	    }
 
 	}
-	
+
 	clearNodes();
 
 	return 	newCachedTargets;
-	
+
     }
 
     boolean isEmpty() {
 	boolean empty = true;
-	
+
         for (int i=0; i < MAX_NODELIST; i++) {
             if (targetList[i] != null) {
                 empty = false;

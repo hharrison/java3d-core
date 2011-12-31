@@ -50,7 +50,7 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 
     // Shade model (flat, smooth)
     int shadeModel = ColoringAttributes.SHADE_GOURAUD;
-  
+
     /**
      * Sets the intrinsic color of this ColoringAttributes
      * component object.
@@ -140,7 +140,7 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 
 
     /**
-     * Creates and initializes a mirror object, point the mirror object 
+     * Creates and initializes a mirror object, point the mirror object
      * to the retained object if the object is not editable
      */
     synchronized void createMirrorObject() {
@@ -150,7 +150,7 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 	    if (isStatic()) {
 		mirror = this;
 	    } else {
-		ColoringAttributesRetained mirrorCa  
+		ColoringAttributesRetained mirrorCa
 		    = new ColoringAttributesRetained();
 		mirrorCa.source = source;
 		mirrorCa.set(this);
@@ -178,11 +178,11 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 	((ColoringAttributesRetained)mirror).set(this);
     }
 
-    /** Update the "component" field of the mirror object with the 
+    /** Update the "component" field of the mirror object with the
      *  given "value"
      */
     synchronized void updateMirrorObject(int component, Object value) {
-	
+
 	ColoringAttributesRetained mirrorCa =
 	    (ColoringAttributesRetained) mirror;
 
@@ -196,7 +196,7 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 
     boolean equivalent(ColoringAttributesRetained cr) {
 	return ((cr != null) &&
-		color.equals(cr.color) && 
+		color.equals(cr.color) &&
 		(shadeModel == cr.shadeModel));
     }
 
@@ -217,11 +217,11 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 	 super.set(cr);
          color.set(cr.color);
          shadeModel = cr.shadeModel;
-     } 
+     }
 
     final void sendMessage(int attrMask, Object attr) {
 	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
 	J3dMessage createMessage = new J3dMessage();
@@ -234,23 +234,23 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 	createMessage.args[3] = new Integer(changedFrequent);
 	VirtualUniverse.mc.processMessage(createMessage);
 
-	    
+
 	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.COLORINGATTRIBUTES_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
 	    createMessage.args[2] = attr;
-	    
+
 	    ArrayList gL = (ArrayList) gaList.get(i);
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
 	    createMessage.args[3] = gaArr;
-	    
+
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
     }
@@ -260,5 +260,5 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 	    setFrequencyChangeMask(bit, 0x1);
 	}
     }
-    
+
 }

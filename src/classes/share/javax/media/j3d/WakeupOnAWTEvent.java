@@ -54,7 +54,7 @@ public final class WakeupOnAWTEvent extends WakeupCriterion {
 
     /**
      * Constructs a new WakeupOnAWTEvent object that informs the Java 3D
-     * scheduler to wake up the specified Behavior object whenever the 
+     * scheduler to wake up the specified Behavior object whenever the
      * specified AWT event occurs.
      * @param AWTId the AWT ids that this behavior wishes to intercept
      */
@@ -87,7 +87,7 @@ public final class WakeupOnAWTEvent extends WakeupCriterion {
 	synchronized (events) {
 	    eventArray = new AWTEvent[events.size()];
 	    events.copyInto(eventArray);
-	    events.removeAllElements(); 
+	    events.removeAllElements();
 	}
 
 	return eventArray;
@@ -103,9 +103,9 @@ public final class WakeupOnAWTEvent extends WakeupCriterion {
 	this.setTriggered();
     }
 
- 
+
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
     void addBehaviorCondition(BehaviorStructure bs) {
@@ -115,7 +115,7 @@ public final class WakeupOnAWTEvent extends WakeupCriterion {
 
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
     void removeBehaviorCondition(BehaviorStructure bs) {
@@ -141,9 +141,9 @@ public final class WakeupOnAWTEvent extends WakeupCriterion {
 		(EventMask & AWTEvent.KEY_EVENT_MASK) != 0) {
 		behav.universe.enableKeyEvents();
 	    }
-	    if ((AwtId >= MouseEvent.MOUSE_FIRST) && 
+	    if ((AwtId >= MouseEvent.MOUSE_FIRST) &&
 		(AwtId <= MouseEvent.MOUSE_LAST)) {
-		if ((AwtId == MouseEvent.MOUSE_DRAGGED) || 
+		if ((AwtId == MouseEvent.MOUSE_DRAGGED) ||
 		    (AwtId == MouseEvent.MOUSE_MOVED)) {
 		    behav.universe.enableMouseMotionEvents();
 		}

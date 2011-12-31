@@ -134,21 +134,21 @@ public class GLSLShaderProgram extends ShaderProgram {
      */
     public void setShaders(Shader[] shaders) {
 	checkForLiveOrCompiled();
-        
+
         if(shaders != null) {
             // Check shaders for valid shading language and class type
             for (int i = 0; i < shaders.length; i++) {
                 if (shaders[i].getShadingLanguage() != Shader.SHADING_LANGUAGE_GLSL) {
                     throw new IllegalArgumentException(J3dI18N.getString("GLSLShaderProgram2"));
                 }
-                
+
                 // Try to cast shader to SourceCodeShader; it will throw
                 // ClassCastException if it isn't.
                 SourceCodeShader shad = (SourceCodeShader)shaders[i];
             }
-            
+
         }
-        
+
  	((GLSLShaderProgramRetained)this.retained).setShaders(shaders);
     }
 

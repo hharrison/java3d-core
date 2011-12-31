@@ -45,14 +45,14 @@ import java.util.logging.Logger;
 class MasterControl {
 
     /**
-     * Options for the runMonitor 
+     * Options for the runMonitor
      */
     static final int CHECK_FOR_WORK = 0;
     static final int SET_WORK       = 1;
     static final int RUN_THREADS    = 2;
     static final int THREAD_DONE    = 3;
     static final int SET_WORK_FOR_REQUEST_RENDERER   = 5;
-    static final int RUN_RENDERER_CLEANUP            = 6;    
+    static final int RUN_RENDERER_CLEANUP            = 6;
 
     // The thread states for MC
     static final int SLEEPING            = 0;
@@ -86,7 +86,7 @@ class MasterControl {
     static final Integer GETBESTCONFIG = new Integer(17);
     static final Integer ISCONFIGSUPPORT = new Integer(18);
     static final Integer SET_GRAPHICSCONFIG_FEATURES = new Integer(19);
-    static final Integer SET_QUERYPROPERTIES = new Integer(20);    
+    static final Integer SET_QUERYPROPERTIES = new Integer(20);
     static final Integer SET_VIEW = new Integer(21);
 
     // Developer logger for reporting informational messages; see getDevLogger()
@@ -119,7 +119,7 @@ class MasterControl {
      */
     private UnorderList views = new UnorderList(1, View.class);
 
-    
+
     /**
      * by MIK OF CLASSX
      *
@@ -149,12 +149,12 @@ class MasterControl {
      */
 
     private boolean lockGeometry = false;
-    
+
     /**
-     * The number of registered views that are active 
+     * The number of registered views that are active
      */
     private int numActiveViews = 0;
-    
+
     /**
      * The list of active universes get from View
      */
@@ -177,16 +177,16 @@ class MasterControl {
     private long time = 0;
 
     /**
-     * Use to assign threadOpts in Renderer thread. 
+     * Use to assign threadOpts in Renderer thread.
      */
     private long waitTimestamp = 0;
 
     /**
      * The current list of work threads
      */
-    private UnorderList stateWorkThreads = 
+    private UnorderList stateWorkThreads =
                                new UnorderList(J3dThreadData.class);
-    private UnorderList renderWorkThreads = 
+    private UnorderList renderWorkThreads =
                                new UnorderList(J3dThreadData.class);
     private UnorderList requestRenderWorkThreads =
 			       new UnorderList(J3dThreadData.class);
@@ -199,7 +199,7 @@ class MasterControl {
     /**
      * The list of input device scheduler thread
      */
-    private UnorderList inputDeviceThreads = 
+    private UnorderList inputDeviceThreads =
                              new UnorderList(1, InputDeviceScheduler.class);
 
     /**
@@ -241,13 +241,13 @@ class MasterControl {
      */
     private boolean requestRenderWorkToDo = false;
 
-   /** 
+   /**
      * The number of THREAD_DONE messages pending
      */
     private int threadPending = 0;
     private int renderPending = 0;
     private int statePending = 0;
-   
+
     /**
      * State variables for work lists
      */
@@ -267,17 +267,17 @@ class MasterControl {
      * The number of cpu's Java 3D may use
      */
     private int cpuLimit;
-    
+
     /**
      * A list of mirror objects to be updated
      */
     private UnorderList mirrorObjects = new UnorderList(ObjectUpdate.class);
 
     /**
-     * The renderingAttributesStructure for updating node component 
+     * The renderingAttributesStructure for updating node component
      * objects
      */
-    private RenderingAttributesStructure renderingAttributesStructure = 
+    private RenderingAttributesStructure renderingAttributesStructure =
                         new RenderingAttributesStructure();
 
     /**
@@ -319,7 +319,7 @@ class MasterControl {
 
     // Flag indicating that we are on a Windows OS
     private static boolean isWindowsOs = false;
-    
+
     // Flag indicating we are on MacOS
     private static boolean isMacOs = false;
 
@@ -331,7 +331,7 @@ class MasterControl {
 
     // This is a time stamp used when context is created
     private long contextTimeStamp = 0;
-    
+
     // This is an array of  canvasIds in used
     private boolean[] canvasIds = null;
     private int canvasFreeIndex = 0;
@@ -361,7 +361,7 @@ class MasterControl {
     // If this flag is set, then by-ref geometry will not be
     // put in display list
     boolean buildDisplayListIfPossible = false;
-    
+
     // If this flag is set, then geometry arrays with vertex attributes can
     // be in display list.
     boolean vertexAttrsInDisplayList = false;
@@ -401,7 +401,7 @@ class MasterControl {
     static Integer REMOVENOTIFY_CLEANUP  = new Integer(3);
     static Integer RESETCANVAS_CLEANUP   = new Integer(4);
     static Integer FREECONTEXT_CLEANUP   = new Integer(5);
-    
+
     // arguments for renderer resource cleanup run
     Object rendererCleanupArgs[] = {new Integer(Renderer.REQUESTCLEANUP),
 				    null, null};
@@ -411,15 +411,15 @@ class MasterControl {
     // first_time and all the extension initilialization
     // are done in the MT safe manner
     Object contextCreationLock = new Object();
-    
+
     // Flag that indicates whether to lock the DSI while rendering
     boolean doDsiRenderLock = false;
-    
+
     // Flag that indicates the pre-1.5 behavior of enforcing power-of-two
     // textures. If set, then any non-power-of-two textures will throw an
     // exception.
     boolean enforcePowerOfTwo = false;
-    
+
     // Flag that indicates whether the framebuffer is sharing the
     // Z-buffer with both the left and right eyes when in stereo mode.
     // If this is true, we need to clear the Z-buffer between rendering
@@ -427,7 +427,7 @@ class MasterControl {
     boolean sharedStereoZBuffer = true;
 
     // True to disable all underlying multisampling API so it uses
-    // the setting in the driver. 
+    // the setting in the driver.
     boolean implicitAntialiasing = false;
 
     // False to disable compiled vertex array extensions if support
@@ -496,13 +496,13 @@ class MasterControl {
     //Default false value does affect Java3D View dispose behavior.
     boolean forceReleaseView = false;
 
-    // Issue 480: Cache the bounds of nodes so that getBounds does not 
+    // Issue 480: Cache the bounds of nodes so that getBounds does not
     // recompute the boounds of the entire graph per call
     boolean cacheAutoComputedBounds = false;
-    
+
     // issue 544
     boolean useBoxForGroupBounds = false;
-    
+
     /**
      * Constructs a new MasterControl object.  Note that there is
      * exatly one MasterControl object, created statically by
@@ -543,7 +543,7 @@ class MasterControl {
 					"Off-screen Pbuffer");
 
 	viewFrustumCulling = getBooleanProperty("j3d.viewFrustumCulling", viewFrustumCulling,"View frustum culling in the renderer is");
-	
+
 	sortShape3DBounds =
 	    getBooleanProperty("j3d.sortShape3DBounds", sortShape3DBounds,
 			       "Shape3D bounds enabled for transparency sorting",
@@ -603,7 +603,7 @@ class MasterControl {
 	doDsiRenderLock = getBooleanProperty("j3d.renderLock",
 					     doDsiRenderLock,
 					     "render lock");
-        
+
         // Check to see whether we enforce power-of-two textures
         enforcePowerOfTwo = getBooleanProperty("j3d.textureEnforcePowerOfTwo",
 					       enforcePowerOfTwo,
@@ -625,7 +625,7 @@ class MasterControl {
                                           "per-frame stencil clear");
 
         // Check to see if stereo mode is sharing the Z-buffer for both eyes.
-	sharedStereoZBuffer = 
+	sharedStereoZBuffer =
 	    getBooleanProperty("j3d.sharedstereozbuffer",
 			       sharedStereoZBuffer,
 			       "shared stereo Z buffer");
@@ -657,7 +657,7 @@ class MasterControl {
 		    return Integer.getInteger("j3d.deviceSampleTime", 0);
 		}
 	    });
-	
+
 	if (samplingTime.intValue() > 0) {
 	    InputDeviceScheduler.samplingTime =
 		samplingTime.intValue();
@@ -702,7 +702,7 @@ class MasterControl {
                 getBooleanProperty("j3d.useBoxForGroupBounds",
                 useBoxForGroupBounds,
                 "Use of BoundingBox for group geometric bounds");
-	
+
         // Initialize the native J3D library
 	if (!Pipeline.getPipeline().initializeJ3D(disableXinerama)) {
 	    throw new RuntimeException(J3dI18N.getString("MasterControl0"));
@@ -719,11 +719,11 @@ class MasterControl {
 
         // Check for obsolete properties
         String[] obsoleteProps = {
-            "j3d.backgroundtexture",            
+            "j3d.backgroundtexture",
             "j3d.forceNormalized",
             "j3d.g2ddrawpixel",
-            "j3d.simulatedMultiTexture",            
-            "j3d.useFreeLists",            
+            "j3d.simulatedMultiTexture",
+            "j3d.useFreeLists",
         };
         for (int i = 0; i < obsoleteProps.length; i++) {
             if (getProperty(obsoleteProps[i]) != null) {
@@ -734,12 +734,12 @@ class MasterControl {
 	// Get the maximum Lights
 	maxLights = Pipeline.getPipeline().getMaximumLights();
 
-	// create the freelists 
+	// create the freelists
 	FreeListManager.createFreeLists();
 
 	// create an array canvas use registers
 	// The 32 limit can be lifted once the
-	// resourceXXXMasks in other classes 
+	// resourceXXXMasks in other classes
 	// are change not to use integer.
 	canvasIds = new boolean[32];
 	for(int i=0; i<canvasIds.length; i++) {
@@ -994,7 +994,7 @@ class MasterControl {
 
     /**
      * Invoke from InputDeviceScheduler to create an
-     * InputDeviceBlockingThread. 
+     * InputDeviceBlockingThread.
      */
     InputDeviceBlockingThread getInputDeviceBlockingThread(
 					   final InputDevice device) {
@@ -1125,7 +1125,7 @@ class MasterControl {
         int i;
 
 	synchronized(canvasIdLock) {
-	    // Master control need to keep count itself        
+	    // Master control need to keep count itself
 	    for(i=canvasFreeIndex; i<canvasIds.length; i++) {
 		if(canvasIds[i] == false)
 		    break;
@@ -1140,7 +1140,7 @@ class MasterControl {
 	}
 
         return i;
-        
+
     }
 
     void freeCanvasId(int canvasId) {
@@ -1157,7 +1157,7 @@ class MasterControl {
 
     /**
      * Create a Renderer if it is not already done so.
-     * This is used for GraphicsConfigTemplate3D passing 
+     * This is used for GraphicsConfigTemplate3D passing
      * graphics call to RequestRenderer, and for creating
      * an off-screen buffer for an off-screen Canvas3D.
      */
@@ -1197,7 +1197,7 @@ class MasterControl {
 	synchronized (mcThreadLock) {
 	    synchronized (requestObjList) {
 		if (mcThread == null) {
-		    if ((type == ACTIVATE_VIEW) || 
+		    if ((type == ACTIVATE_VIEW) ||
 			(type == GETBESTCONFIG) ||
 			(type == SET_VIEW) ||
 			(type == ISCONFIGSUPPORT) ||
@@ -1241,8 +1241,8 @@ class MasterControl {
 
 
     /**
-     * This procedure is invoked when isRunning is false.  
-     * Return true when there is no more pending request so that 
+     * This procedure is invoked when isRunning is false.
+     * Return true when there is no more pending request so that
      * Thread can terminate. Otherwise we have to recreate
      * the MC related threads.
      */
@@ -1260,8 +1260,8 @@ class MasterControl {
 		    renderingAttributesStructure = new RenderingAttributesStructure();
 		    if (timerThread != null) {
 			timerThread.finish();
-			timerThread = null;		
-		    }    
+			timerThread = null;
+		    }
 		    if (notificationThread != null) {
 			notificationThread.finish();
 			notificationThread = null;
@@ -1308,9 +1308,9 @@ class MasterControl {
     final long getTime() {
 	return (time++);
     }
-    
-  
-    /** 
+
+
+    /**
      * This takes a given message and parses it out to the structures and
      * marks its time value.
      */
@@ -1322,8 +1322,8 @@ class MasterControl {
 	}
 	setWork();
     }
-		
-    /** 
+
+    /**
      * This takes an array of messages and parses them out to the structures and
      * marks the time value. Make sure, setWork() is done at the very end
      * to make sure all the messages will be processed in the same frame
@@ -1411,7 +1411,7 @@ class MasterControl {
 		    u.renderingEnvironmentStructure.addMessage(message);
 		}
 	    }
-	    
+
             if ((targetThreads & J3dThread.SOUND_SCHEDULER) != 0) {
                 // Note that we don't check for active view
                 if (message.view != null && message.view.soundScheduler != null ) {
@@ -1435,7 +1435,7 @@ class MasterControl {
 			    }
 			}
 		    }
-                }    
+                }
             }
 
 	    if ((targetThreads & J3dThread.UPDATE_RENDER) != 0) {
@@ -1455,7 +1455,7 @@ class MasterControl {
 			}
 			else {
 			    while (i>=0) {
-				if (v[i].universe == u) { 
+				if (v[i].universe == u) {
 				    v[i].renderBin.addMessage(message);
 				}
 				i--;
@@ -1485,7 +1485,7 @@ class MasterControl {
 
 	    if ((targetThreads & J3dThread.INPUT_DEVICE_SCHEDULER) != 0) {
 		synchronized (inputDeviceThreads) {
-		    InputDeviceScheduler ds[] = (InputDeviceScheduler []) 
+		    InputDeviceScheduler ds[] = (InputDeviceScheduler [])
 			inputDeviceThreads.toArray(false);
 		    for (int i=inputDeviceThreads.size()-1; i >=0; i--) {
 			if (ds[i].physicalEnv.activeViewRef > 0) {
@@ -1498,18 +1498,18 @@ class MasterControl {
 		    // destroyUniverseThreads() so we need to check if
 		    // TimerThread kick in to sendRunMessage() after that.
 		    // It happens because TimerThread is the only thread run
-		    // asychronizously with MasterControl thread. 
+		    // asychronizously with MasterControl thread.
 
 		    if (timerThread != null) {
-			// Notify TimerThread to wakeup this procedure 
-			// again next time. 
+			// Notify TimerThread to wakeup this procedure
+			// again next time.
 			timerThread.addInputDeviceSchedCond();
 		    }
 		}
 	    }
 	    if ((targetThreads & J3dThread.RENDER_THREAD) != 0) {
 		synchronized (renderThreadData) {
-		    J3dThreadData[] threads = (J3dThreadData []) 
+		    J3dThreadData[] threads = (J3dThreadData [])
 			renderThreadData.toArray(false);
 		    int i=renderThreadData.arraySize()-1;
 		    J3dThreadData thr;
@@ -1541,7 +1541,7 @@ class MasterControl {
 		}
 		// wakeup this procedure next time
 		// QUESTION: waitTime calculated some milliseconds BEFORE
-		//     this methods getTime() called - shouldn't actual 
+		//     this methods getTime() called - shouldn't actual
 		//     sound Complete time be passed by SoundScheduler
 		// QUESTION: will this wake up only soundScheduler associated
 		//     with this view?? (since only it's lastUpdateTime is set)
@@ -1563,7 +1563,7 @@ class MasterControl {
 
 	    if ((targetThreads & J3dThread.RENDER_THREAD) != 0) {
 		synchronized (renderThreadData) {
-		    J3dThreadData[] threads = (J3dThreadData []) 
+		    J3dThreadData[] threads = (J3dThreadData [])
 			renderThreadData.toArray(false);
 		    int i=renderThreadData.arraySize()-1;
 		    J3dThreadData thr;
@@ -1595,19 +1595,19 @@ class MasterControl {
 						      null).lastUpdateTime = time;
 		}
 	    }
-	    
+
 	    if ((targetThreads & J3dThread.UPDATE_BEHAVIOR) != 0) {
 		u.behaviorStructure.threadData.lastUpdateTime = time;
 	    }
-	    
+
 	    if ((targetThreads & J3dThread.UPDATE_GEOMETRY) != 0) {
 		u.geometryStructure.threadData.lastUpdateTime = time;
 	    }
-	    
+
 	    if ((targetThreads & J3dThread.UPDATE_SOUND) != 0) {
 		u.soundStructure.threadData.lastUpdateTime = time;
 	    }
-	    
+
 	    if ((targetThreads & J3dThread.SOUND_SCHEDULER) != 0) {
 		synchronized (views) {
 		    View v[] = (View []) views.toArray(false);
@@ -1621,9 +1621,9 @@ class MasterControl {
 	    }
 
 	    if ((targetThreads & J3dThread.RENDER_THREAD) != 0) {
-		
+
 		synchronized (renderThreadData) {
-		    J3dThreadData[] threads = (J3dThreadData []) 
+		    J3dThreadData[] threads = (J3dThreadData [])
 			renderThreadData.toArray(false);
 		    int i=renderThreadData.arraySize()-1;
 		    J3dThreadData thr;
@@ -1642,14 +1642,14 @@ class MasterControl {
 
 
     /**
-     * Return a clone of View, we can't access 
+     * Return a clone of View, we can't access
      * individual element of View after getting the size
      * in separate API call without synchronized views.
      */
     UnorderList cloneView() {
 	return (UnorderList) views.clone();
     }
-	
+
     /**
      * Return true if view is already registered with MC
      */
@@ -1673,14 +1673,14 @@ class MasterControl {
 
             currentTime = getTime();
 
-            J3dThreadData threads[] = (J3dThreadData []) 
+            J3dThreadData threads[] = (J3dThreadData [])
                                     stateWorkThreads.toArray(false);
             int size = stateWorkThreads.arraySize();
 
             while (i<lastTransformStructureThread) {
                 thread = threads[i++];
 
-                if ((thread.lastUpdateTime > thread.lastRunTime) && 
+                if ((thread.lastUpdateTime > thread.lastRunTime) &&
                     !thread.thread.userStop) {
                     lastThread = thread;
                     thread.needsRun = true;
@@ -1715,7 +1715,7 @@ class MasterControl {
 
             while (i<size) {
                 thread = threads[i++];
-                if ((thread.lastUpdateTime > thread.lastRunTime) && 
+                if ((thread.lastUpdateTime > thread.lastRunTime) &&
                     !thread.thread.userStop) {
                     lastThread = thread;
                     thread.needsRun = true;
@@ -1768,7 +1768,7 @@ class MasterControl {
                     !thread.thread.userStop) {
 
                     if (thread.thread.lastWaitTimestamp == waitTimestamp) {
-                        // This renderer thread is repeated. We must wait 
+                        // This renderer thread is repeated. We must wait
                         // until all previous renderer threads done before
                         // allowing this thread to continue. Note that
                         // lastRunThread can't be null in this case.
@@ -1786,7 +1786,7 @@ class MasterControl {
                         } else {
                             if ((lastRunThread.threadOpts &
                                  J3dThreadData.START_TIMER) != 0) {
-                                lastRunThread.threadOpts = 
+                                lastRunThread.threadOpts =
                                     (J3dThreadData.START_TIMER |
                                      J3dThreadData.WAIT_ALL_THREADS);
 
@@ -1829,11 +1829,11 @@ class MasterControl {
 
 
             if (lastRunThread != null) {
-                lastRunThread.threadOpts = 
+                lastRunThread.threadOpts =
                                     (J3dThreadData.STOP_TIMER |
                                      J3dThreadData.WAIT_ALL_THREADS|
                                      J3dThreadData.LAST_STOP_TIMER);
-                lockGeometry = true; 
+                lockGeometry = true;
                 ((Object []) lastRunThread.threadArgs)[3] = lastRunThread.view;
             }  else {
                 lockGeometry = false;
@@ -1873,12 +1873,12 @@ class MasterControl {
 	    s.threadData.thread = s.updateThread;
 	    // This takes into accout for thread that just destroy and
 	    // create again. In this case the threadData may receive
-	    // message before the thread actually created. We don't want 
+	    // message before the thread actually created. We don't want
 	    // the currentTime to overwrite the update time of which
 	    // is set by threadData when get message.
 	    s.threadData.lastUpdateTime = Math.max(currentTime,
 						   s.threadData.lastUpdateTime);
-	} 
+	}
     }
 
     private void emptyMessageList(J3dStructure structure, View v) {
@@ -1887,7 +1887,7 @@ class MasterControl {
 		if (structure.threadData != null) {
 		    structure.threadData.thread = null;
 		}
-	    
+
 		if (structure.updateThread != null) {
 		    structure.updateThread.structure = null;
 		}
@@ -1918,11 +1918,11 @@ class MasterControl {
 		    Object oldRef= null;
 		    while (i < size) {
 			m = mess[i];
-			if ((v == null) || (m.view == v) || 
+			if ((v == null) || (m.view == v) ||
 			    ((m.view == null) && !otherViewExist)) {
 			    if (m.type == J3dMessage.INSERT_NODES) {
 				// There is another View register request
-				// immediately following, so no need 
+				// immediately following, so no need
 				// to remove message.
 				break;
 			    }
@@ -1954,7 +1954,7 @@ class MasterControl {
     }
 
     /**
-     * This register a View with MasterControl.  
+     * This register a View with MasterControl.
      * The View has at least one Canvas3D added to a container.
      */
     private void registerView(View v) {
@@ -1979,10 +1979,10 @@ class MasterControl {
 	createUpdateThread(univ.soundStructure);
 	createUpdateThread(univ.renderingEnvironmentStructure);
 	createUpdateThread(univ.transformStructure);
-	
+
 	// create Behavior scheduler
 	J3dThreadData threadData = null;
-	
+
 	if (univ.behaviorScheduler == null) {
 	    java.security.AccessController.doPrivileged(
 		new java.security.PrivilegedAction() {
@@ -1998,12 +1998,12 @@ class MasterControl {
 	    univ.behaviorScheduler.initialize();
 	    univ.behaviorScheduler.userStop = v.stopBehavior;
 	    threadData = univ.behaviorScheduler.getThreadData(null, null);
-	    threadData.thread = univ.behaviorScheduler;		
+	    threadData.thread = univ.behaviorScheduler;
 	    threadData.threadType = J3dThread.BEHAVIOR_SCHEDULER;
 	    threadData.lastUpdateTime = Math.max(currentTime,
 						 threadData.lastUpdateTime);
-	} 
-	
+	}
+
 	createUpdateThread(v.renderBin);
 	createUpdateThread(v.soundScheduler);
 
@@ -2011,16 +2011,16 @@ class MasterControl {
 	    v.physicalEnvironment.addUser(v);
 	}
 	// create InputDeviceScheduler
-	evaluatePhysicalEnv(v);	
+	evaluatePhysicalEnv(v);
 
 	regUniverseList.addUnique(univ);
-	views.addUnique(v);	
+	views.addUnique(v);
     }
 
 
 
     /**
-     * This unregister a View with MasterControl.  
+     * This unregister a View with MasterControl.
      * The View no longer has any Canvas3Ds in a container.
      */
     private void unregisterView(View v) {
@@ -2052,14 +2052,14 @@ class MasterControl {
 
 	synchronized (timeLock) {
 	    // The reason we need to sync. with timeLock is because we
-	    // don't want user thread running sendMessage() to 
+	    // don't want user thread running sendMessage() to
 	    // dispatch it in different structure queue when
 	    // part of the structure list is empty at the same time.
 	    // This will cause inconsistence in the message reference
 	    // count.
 	    emptyMessageList(v.soundScheduler, v);
 	    emptyMessageList(v.renderBin, v);
-	    
+
 	    if (univ.isEmpty()) {
 		destroyUniverseThreads(univ);
 	    }  else {
@@ -2074,7 +2074,7 @@ class MasterControl {
 	if (v.physicalEnvironment != null) {
 	    v.physicalEnvironment.removeUser(v);
 	}
-	    
+
 	// remove all InputDeviceScheduler if this is the last View
 	UnorderList list = new UnorderList(1, PhysicalEnvironment.class);
 	for (Enumeration e = PhysicalEnvironment.physicalEnvMap.keys();
@@ -2103,7 +2103,7 @@ class MasterControl {
 	    PhysicalEnvironment.physicalEnvMap.remove(list.get(i));
 	}
 
-	
+
 	freeContext(v);
 
 	if (views.isEmpty()) {
@@ -2116,7 +2116,7 @@ class MasterControl {
 		 e.hasMoreElements(); ) {
 		Renderer rdr = (Renderer) e.nextElement();
 		Screen3D scr;
-		
+
 		rendererCleanupArgs[2] = REMOVEALLCTXS_CLEANUP;
 		runMonitor(RUN_RENDERER_CLEANUP, null, null, null, rdr);
 		scr = rdr.onScreen;
@@ -2127,13 +2127,13 @@ class MasterControl {
 				   null, scr.renderer);
 			scr.renderer = null;
 		    }
-			
+
 		}
 		scr = rdr.offScreen;
 		if (scr != null) {
 		    if (scr.renderer != null) {
 			rendererCleanupArgs[2] = REMOVEALLCTXS_CLEANUP;
-			runMonitor(RUN_RENDERER_CLEANUP, null, null, 
+			runMonitor(RUN_RENDERER_CLEANUP, null, null,
 				   null, scr.renderer);
 			scr.renderer = null;
 		    }
@@ -2170,7 +2170,7 @@ class MasterControl {
 	renderWorkThreads.clear();
 	requestRenderWorkThreads.clear();
 	threadListsChanged = true;
-	
+
 	// This notify VirtualUniverse waitForMC() thread to continue
 	v.doneUnregister = true;
     }
@@ -2233,7 +2233,7 @@ class MasterControl {
 	    univ.behaviorScheduler = null;
 	    univ.initMCStructure();
 	    activeUniverseList.remove(univ);
-	    regUniverseList.remove(univ);	
+	    regUniverseList.remove(univ);
 	} else {
 	    emptyMessageList(univ.behaviorStructure, null);
 	    emptyMessageList(univ.geometryStructure, null);
@@ -2246,7 +2246,7 @@ class MasterControl {
 	    if(J3dDebug.devPhase) {
 		J3dDebug.doDebug(J3dDebug.masterControl, J3dDebug.LEVEL_1,
 				 "MC: Destroy RenderingAttributes Update and Timer threads");
-	    }	    
+	    }
 	    if (renderingAttributesStructure.updateThread != null) {
 		renderingAttributesStructure.updateThread.finish();
 		renderingAttributesStructure.updateThread = null;
@@ -2271,13 +2271,13 @@ class MasterControl {
 	    mirrorObjects.clear();
 	    // Note: We should not clear the DISPLAYLIST/TEXTURE
 	    // list here because other structure may release them
-	    // later 
+	    // later
 
 	    for(int i=0; i<canvasIds.length; i++) {
 		canvasIds[i] = false;
 	    }
 	    canvasFreeIndex = 0;
-	    
+
 	    renderOnceList.clear();
 	    timestampUpdateList.clear();
 
@@ -2322,33 +2322,33 @@ class MasterControl {
 		View v = viewArr[i];
 		Canvas3D canvasList[][] = v.getCanvasList(false);
 		if (!v.active) {
-		    continue;	    
+		    continue;
 		}
-		
+
 		for (int j=canvasList.length-1; j>=0; j--) {
 		    boolean added = false;
 
 		    for (int k=canvasList[j].length-1; k>=0; k--) {
 			Canvas3D cv = canvasList[j][k];
-			
+
 			final Screen3D screen  = cv.screen;
 
 			if (cv.active) {
 			    if (screen.canvasCount++ == 0) {
 				// Create Renderer, one per screen
 				if (screen.renderer == null) {
-                    	        // get the renderer created for the graphics 
+                    	        // get the renderer created for the graphics
 			        // device of the screen of the canvas
 				// No need to synchronized since only
-				// MC use it. 
-				    Renderer rdr = 
+				// MC use it.
+				    Renderer rdr =
 					(Renderer) screen.deviceRendererMap.get(
 							cv.screen.graphicsDevice);
 				    if (rdr == null) {
 					java.security.AccessController.doPrivileged(
 					    new java.security.PrivilegedAction() {
                                               public Object run() {
-						  
+
 						  synchronized (rootThreadGroup) {
 						      screen.renderer
 							  = new Renderer(
@@ -2364,7 +2364,7 @@ class MasterControl {
 				    } else {
 					screen.renderer = rdr;
 				    }
-				} 
+				}
 			    }
 		    	    // offScreen canvases will be handled by the
 			    // request renderer, so don't add offScreen canvas
@@ -2385,36 +2385,36 @@ class MasterControl {
 			    }
 
 			    if (!added) {
-				// Swap message data thread, one per 
+				// Swap message data thread, one per
 				// screen only. Note that we don't set
 				// lastUpdateTime for this thread so
 				// that it won't run in the first round
-			        J3dThreadData renderData = 
+			        J3dThreadData renderData =
 			      	    screen.renderer.getThreadData(v, null);
 				renderThreadData.add(renderData);
 
 				// only if renderBin is ready then we
-				// update the lastUpdateTime to make it run 
+				// update the lastUpdateTime to make it run
 				if (v.renderBinReady) {
-	    		    	    renderData.lastUpdateTime = 
+	    		    	    renderData.lastUpdateTime =
 					Math.max(currentTime,
 						   renderData.lastUpdateTime);
 				}
 				added = true;
 			    }
 			    // Renderer message data thread
-			    J3dThreadData renderData = 
+			    J3dThreadData renderData =
 			      	    screen.renderer.getThreadData(v, cv);
 			    renderThreadData.add(renderData);
 			    if (v.renderBinReady) {
-	    		    	renderData.lastUpdateTime = 
+	    		    	renderData.lastUpdateTime =
 					Math.max(currentTime,
 						   renderData.lastUpdateTime);
 			    }
 			}
 		    }
 		}
-		
+
 	    }
 	}
 
@@ -2442,7 +2442,7 @@ class MasterControl {
 	}
 	threadListsChanged = true;
     }
-   
+
     final private void addToStateThreads(J3dThreadData threadData) {
 	if (threadData.thread.active) {
 	    stateWorkThreads.add(threadData);
@@ -2471,7 +2471,7 @@ class MasterControl {
 	}
 	univ.setCurrentView(null);
     }
-    
+
 
     /**
      * This returns the default RenderMethod
@@ -2535,7 +2535,7 @@ class MasterControl {
 	return orientedShape3DRenderMethod;
     }
 
-    /** 
+    /**
      * This notifies MasterControl that the given view has been activated
      */
     private void viewActivate(View v) {
@@ -2593,9 +2593,9 @@ class MasterControl {
 	threadListsChanged = true;
 	// Notify GeometryStructure to query visible atom again
 	// We should send message instead of just setting
-	// v.vDirtyMask = View.VISIBILITY_POLICY_DIRTY;  
+	// v.vDirtyMask = View.VISIBILITY_POLICY_DIRTY;
 	// since RenderBin may not run immediately next time.
-	// In this case the dirty flag will lost since 
+	// In this case the dirty flag will lost since
 	// updateViewCache() will reset it to 0.
 	v.renderBin.reactivateView = true;
     }
@@ -2610,7 +2610,7 @@ class MasterControl {
 	    for (int k=canvasList[j].length-1; k>=0; k--) {
 		Canvas3D cv = canvasList[j][k];
 		if (!cv.validCanvas) {
-		    if ((cv.screen != null) && 
+		    if ((cv.screen != null) &&
 			(cv.screen.renderer != null)) {
 			rendererCleanupArgs[1] = cv;
 			rendererCleanupArgs[2] = FREECONTEXT_CLEANUP;
@@ -2623,7 +2623,7 @@ class MasterControl {
 	}
     }
 
-    /** 
+    /**
      * This notifies MasterControl that the given view has been deactivated
      */
     private void viewDeactivate(View v) {
@@ -2641,7 +2641,7 @@ class MasterControl {
 	    --numActiveViews;
 	    --univ.activeViewCount;
 	}
-	 
+
 	if (numActiveViews == 0) {
 	    renderingAttributesStructure.updateThread.active = false;
 	}
@@ -2678,7 +2678,7 @@ class MasterControl {
     }
 
 
-   /** 
+   /**
      * This notifies MasterControl to start given view
      */
     private void startView(View v) {
@@ -2708,7 +2708,7 @@ class MasterControl {
     }
 
 
-   /** 
+   /**
      * This notifies MasterControl to stop given view
      */
     private void stopView(View v) {
@@ -2741,7 +2741,7 @@ class MasterControl {
 	synchronized (inputDeviceThreads) {
 	    inputDeviceThreads.add(ds);
 	    if (inputDeviceThreads.size() == 1) {
-		timerThread.addInputDeviceSchedCond();	
+		timerThread.addInputDeviceSchedCond();
 	    }
 	}
 	postRequest(INPUTDEVICE_CHANGE, null);
@@ -2761,7 +2761,7 @@ class MasterControl {
     }
 
     /**
-     * This updates any mirror objects.  It is called when threads 
+     * This updates any mirror objects.  It is called when threads
      * are done.
      */
     void updateMirrorObjects() {
@@ -2770,7 +2770,7 @@ class MasterControl {
 
 	for (int i = 0; i< sz; i++) {
 	    objs[i].updateObject();
-	} 
+	}
 	mirrorObjects.clear();
     }
 
@@ -2780,7 +2780,7 @@ class MasterControl {
      * work thread list.
      */
     private void updateWorkThreads() {
-	
+
 	stateWorkThreads.clear();
 	renderWorkThreads.clear();
 	requestRenderWorkThreads.clear();
@@ -2791,7 +2791,7 @@ class MasterControl {
 	}
 
 	// Next, each of the transform structure updates
-	VirtualUniverse universes[] = (VirtualUniverse []) 
+	VirtualUniverse universes[] = (VirtualUniverse [])
 	                         activeUniverseList.toArray(false);
 	VirtualUniverse univ;
 	int i;
@@ -2802,7 +2802,7 @@ class MasterControl {
 	}
 	lastTransformStructureThread = stateWorkThreads.size();
 
-	// Next, the GeometryStructure, BehaviorStructure, 
+	// Next, the GeometryStructure, BehaviorStructure,
 	//       RenderingEnvironmentStructure, and SoundStructure
 	for (i=size-1; i>=0; i--) {
 	    univ = universes[i];
@@ -2823,7 +2823,7 @@ class MasterControl {
 
 	// Now InputDeviceScheduler
 
-	InputDeviceScheduler ds[] = (InputDeviceScheduler []) 
+	InputDeviceScheduler ds[] = (InputDeviceScheduler [])
 	                              inputDeviceThreads.toArray(true);
 	for (i=inputDeviceThreads.size()-1; i >=0; i--) {
 	    J3dThreadData threadData = ds[i].getThreadData();
@@ -2843,7 +2843,7 @@ class MasterControl {
 	        Canvas3D canvasList[][] = v.getCanvasList(false);
 	        int longestScreenList = v.getLongestScreenList();
 		Object args[] = null;
-		// renderer render 
+		// renderer render
 	        for (int j=0; j<longestScreenList; j++) {
 	            for (int k=0; k < canvasList.length; k++) {
 	                if (j < canvasList[k].length) {
@@ -2863,9 +2863,9 @@ class MasterControl {
 			}
 		    }
 		}
-    
+
 		// renderer swap
-	        for (int j=0; j<canvasList.length; j++) {	           
+	        for (int j=0; j<canvasList.length; j++) {
 		    for (int k=0; k < canvasList[j].length; k++) {
 			Canvas3D cv = canvasList[j][k];
 			// create swap thread only if there is at
@@ -2913,10 +2913,10 @@ class MasterControl {
     void dumpWorkThreads() {
 	System.err.println("-----------------------------");
 	System.err.println("MasterControl/dumpWorkThreads");
-	
+
 	J3dThreadData threads[];
 	int size = 0;
-	
+
 	for (int k=0; k<3; k++) {
 	    switch (k) {
 	    case 0:
@@ -3014,7 +3014,7 @@ class MasterControl {
 	    }
         }
     }
-    
+
     // Fix for Issue 18
     // Pass CreateOffScreenBuffer to the Renderer thread for execution.
     void sendCreateOffScreenBuffer(Canvas3D c) {
@@ -3103,7 +3103,7 @@ class MasterControl {
      */
     void doWork() {
 	runMonitor(CHECK_FOR_WORK, null, null, null, null);
-        
+
 	synchronized (timeLock) {
 	    synchronized (requestObjList) {
 		if (pendingRequest) {
@@ -3121,7 +3121,7 @@ class MasterControl {
 	}
 
 	synchronized (timeLock) {
-	    // This is neccesary to prevent updating 
+	    // This is neccesary to prevent updating
 	    // thread.lastUpdateTime from user thread
 	    // in sendMessage() or sendRunMessage()
 	    updateTimeValues();
@@ -3133,16 +3133,16 @@ class MasterControl {
 	    if (v[i].active) {
 		v[i].updateViewCache();
 		// update OrientedShape3D
-		if ((v[i].viewCache.vcDirtyMask != 0 && 
+		if ((v[i].viewCache.vcDirtyMask != 0 &&
 		     !v[i].renderBin.orientedRAs.isEmpty()) ||
-		    (v[i].renderBin.cachedDirtyOrientedRAs != null && 
+		    (v[i].renderBin.cachedDirtyOrientedRAs != null &&
 		     !v[i].renderBin.cachedDirtyOrientedRAs.isEmpty())) {
 		    v[i].renderBin.updateOrientedRAs();
 		}
 	    }
 	}
 
-	runMonitor(RUN_THREADS, stateWorkThreads, renderWorkThreads, 
+	runMonitor(RUN_THREADS, stateWorkThreads, renderWorkThreads,
 		   requestRenderWorkThreads, null);
 
 	if (renderOnceList.size() > 0) {
@@ -3154,14 +3154,14 @@ class MasterControl {
     }
 
     private void handlePendingRequest() {
-	
+
 	Object objs[];
 	Integer types[];
 	int size;
 	boolean rendererRun = false;
 
 	objs = requestObjList.toArray(false);
-	types = (Integer []) requestTypeList.toArray(false);	    
+	types = (Integer []) requestTypeList.toArray(false);
 	size = requestObjList.size();
 
 	for (int i=0; i < size; i++) {
@@ -3170,21 +3170,21 @@ class MasterControl {
 	    Object o = objs[i];
            if (type == RESET_CANVAS) {
                Canvas3D cv = (Canvas3D) o;
-		if ((cv.screen != null) && 
+		if ((cv.screen != null) &&
 		    (cv.screen.renderer != null)) {
 		    rendererCleanupArgs[1] = o;
 		    rendererCleanupArgs[2] = RESETCANVAS_CLEANUP;
 		    runMonitor(RUN_RENDERER_CLEANUP, null, null, null,
 			       cv.screen.renderer);
 		    rendererCleanupArgs[1] = null;
-		} 
+		}
                cv.reset();
 	       cv.view = null;
 	       cv.computeViewCache();
            }
 	   else if (type == ACTIVATE_VIEW) {
 		viewActivate((View) o);
-	   } 
+	   }
 	   else if (type == DEACTIVATE_VIEW) {
 		viewDeactivate((View) o);
 	    } else if (type == REEVALUATE_CANVAS) {
@@ -3199,7 +3199,7 @@ class MasterControl {
 		// Collision takes 3 rounds to finish its request
 		if (++v.stopViewCount > 4) {
 		    v.stopViewCount = -1; // reset counter
-		    stopView(v);	
+		    stopView(v);
 		} else {
 		    tempViewList.add(v);
 		}
@@ -3250,18 +3250,18 @@ class MasterControl {
 		startView(v);
 		renderOnceList.add(v);
 		sendRunMessage(v, J3dThread.UPDATE_RENDER);
-		threadListsChanged = true;		
+		threadListsChanged = true;
 		rendererRun = true;
 	    } else if (type == FREE_CONTEXT) {
 		Canvas3D cv = (Canvas3D ) ((Object []) o)[0];
-		if ((cv.screen != null) && 
+		if ((cv.screen != null) &&
 		    (cv.screen.renderer != null)) {
 		    rendererCleanupArgs[1] = o;
 		    rendererCleanupArgs[2] = REMOVECTX_CLEANUP;
 		    runMonitor(RUN_RENDERER_CLEANUP, null, null, null,
 			       cv.screen.renderer);
 		    rendererCleanupArgs[1] = null;
-		} 
+		}
 		rendererRun = true;
             } else if (type == FREE_DRAWING_SURFACE) {
                 Pipeline.getPipeline().freeDrawingSurfaceNative(o);
@@ -3271,14 +3271,14 @@ class MasterControl {
 		sendRenderMessage(gc, o, type);
 		rendererRun = true;
 	    } else if (type == ISCONFIGSUPPORT) {
-		GraphicsConfiguration  gc = (GraphicsConfiguration) 
+		GraphicsConfiguration  gc = (GraphicsConfiguration)
 			  ((GraphicsConfigTemplate3D) o).testCfg;
 		sendRenderMessage(gc, o, type);
 		rendererRun = true;
 	    } else if ((type == SET_GRAPHICSCONFIG_FEATURES) ||
 		       (type == SET_QUERYPROPERTIES)) {
-		GraphicsConfiguration gc = (GraphicsConfiguration) 
-		          ((Canvas3D) o).graphicsConfiguration; 
+		GraphicsConfiguration gc = (GraphicsConfiguration)
+		          ((Canvas3D) o).graphicsConfiguration;
 		sendRenderMessage(gc, o, type);
 		rendererRun = true;
 	    } else if (type == SET_VIEW) {
@@ -3296,7 +3296,7 @@ class MasterControl {
 		    VirtualUniverse u = (VirtualUniverse) objs[i];
 		    if (!regUniverseList.contains(u)) {
 			emptyMessageList(u.behaviorStructure, null);
-			emptyMessageList(u.geometryStructure, null);			
+			emptyMessageList(u.geometryStructure, null);
 			emptyMessageList(u.soundStructure, null);
 			emptyMessageList(u.renderingEnvironmentStructure, null);
 		    }
@@ -3318,7 +3318,7 @@ class MasterControl {
 				FreeListManager.clearList(FreeListManager.DISPLAYLIST);
 				FreeListManager.clearList(FreeListManager.TEXTURE2D);
 				FreeListManager.clearList(FreeListManager.TEXTURE3D);
-	    
+
 				synchronized (textureIdLock) {
 				    textureIdCount = 0;
 				}
@@ -3344,7 +3344,7 @@ class MasterControl {
 		setWork();
 	    } else { // MC will shutdown
 		for (int i=0; i < size; i++) {
-		    View v = (View) tempViewList.get(i); 
+		    View v = (View) tempViewList.get(i);
 		    v.stopViewCount = -1;
 		    v.isRunning = false;
 		}
@@ -3355,7 +3355,7 @@ class MasterControl {
 	    pendingRequest = rendererRun || (requestObjList.size() > 0);
 
 	}
-	
+
 	size = freeMessageList.size();
 	if (size > 0) {
 	    for (int i=0; i < size; i++) {
@@ -3368,7 +3368,7 @@ class MasterControl {
 	if (!running && (renderOnceList.size() > 0)) {
 	    clearRenderOnceList();
 	}
-	
+
 	if (pendingRequest) {
 	    setWork();
 	}
@@ -3391,8 +3391,8 @@ class MasterControl {
 
     }
 
-    synchronized void runMonitor(int action, 
-				 UnorderList stateThreadList, 
+    synchronized void runMonitor(int action,
+				 UnorderList stateThreadList,
 				 UnorderList renderThreadList,
 				 UnorderList requestRenderThreadList,
 				 J3dThread nthread) {
@@ -3407,9 +3407,9 @@ class MasterControl {
 	    J3dThreadData thread;
 	    J3dThreadData renderThreads[] = (J3dThreadData [])
 		                             renderThreadList.toArray(false);
-	    J3dThreadData stateThreads[] = (J3dThreadData []) 
+	    J3dThreadData stateThreads[] = (J3dThreadData [])
 		                            stateThreadList.toArray(false);
-	    J3dThreadData requestRenderThreads[] = (J3dThreadData []) 
+	    J3dThreadData requestRenderThreads[] = (J3dThreadData [])
 		                       requestRenderThreadList.toArray(false);
 	    int renderThreadSize = renderThreadList.arraySize();
 	    int stateThreadSize = stateThreadList.arraySize();
@@ -3452,10 +3452,10 @@ class MasterControl {
 			thread.thread.doWork(currentTime);
 		    } else {
 			threadPending++;
-			thread.thread.runMonitor(J3dThread.RUN, 
-						 currentTime, 
+			thread.thread.runMonitor(J3dThread.RUN,
+						 currentTime,
 						 (Object[])thread.threadArgs);
-		    }		    
+		    }
 
 		    if ((thread.threadOpts & J3dThreadData.STOP_TIMER) != 0) {
 			view = (View)((Object[])thread.threadArgs)[3];
@@ -3469,8 +3469,8 @@ class MasterControl {
 			    currentV.renderBin.releaseGeometry();
 			}
 		    }
-		    
-		    if ((cpuLimit != 1) && 
+
+		    if ((cpuLimit != 1) &&
 			(thread.threadOpts &
 			 J3dThreadData.WAIT_ALL_THREADS) != 0) {
 
@@ -3493,7 +3493,7 @@ class MasterControl {
 		while (!stateWaiting &&
 		       currentStateThread != stateThreadSize) {
 		    thread = stateThreads[currentStateThread++];
-		    
+
 		    if (!thread.needsRun) {
 			continue;
 		    }
@@ -3505,19 +3505,19 @@ class MasterControl {
 			thread.thread.doWork(currentTime);
 		    } else {
 			threadPending++;
-			thread.thread.runMonitor(J3dThread.RUN, 
-						 currentTime, 
+			thread.thread.runMonitor(J3dThread.RUN,
+						 currentTime,
 						 (Object[])thread.threadArgs);
 		    }
-		    if (cpuLimit != 1 && (thread.threadOpts & 
+		    if (cpuLimit != 1 && (thread.threadOpts &
 			 J3dThreadData.WAIT_ALL_THREADS) != 0) {
 			stateWaiting = true;
 		    }
 
 		    if ((cpuLimit != 1) && (cpuLimit <= threadPending)) {
 			// Fix bug 4686766 - always allow
-			// renderer thread to continue if not finish 
-			// geomLock can release for Behavior thread to 
+			// renderer thread to continue if not finish
+			// geomLock can release for Behavior thread to
 			// continue.
 			if (currentRenderThread == renderThreadSize) {
 			    state = WAITING_FOR_CPU;
@@ -3543,7 +3543,7 @@ class MasterControl {
                            (currentRequestRenderThread !=
                                 requestRenderThreadSize)) {
 
-                        thread = 
+                        thread =
 			   requestRenderThreads[currentRequestRenderThread++];
 
                         renderPending++;
@@ -3553,7 +3553,7 @@ class MasterControl {
                             thread.thread.doWork(currentTime);
                         } else {
                             threadPending++;
-                            thread.thread.runMonitor(J3dThread.RUN, 
+                            thread.thread.runMonitor(J3dThread.RUN,
                                                 currentTime,
                                                 (Object[])thread.threadArgs);
                         }
@@ -3574,9 +3574,9 @@ class MasterControl {
                 }
 
 		if (cpuLimit != 1) {
-		    if ((renderWaiting && 
+		    if ((renderWaiting &&
 			 (currentStateThread == stateThreadSize)) ||
-		          (stateWaiting && 
+		          (stateWaiting &&
 		            currentRenderThread == renderThreadSize) ||
 		    	    (renderWaiting && stateWaiting)) {
 			if (!requestRenderWorkToDo) {
@@ -3832,7 +3832,7 @@ class MasterControl {
         if ((threads & J3dThread.UPDATE_TRANSFORM) != 0) {
             strBuf.append(" UPDATE_TRANSFORM");
         }
-        
+
         return strBuf.toString();
     }
 

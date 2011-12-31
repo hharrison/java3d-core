@@ -128,7 +128,7 @@ class BranchGroupRetained extends GroupRetained {
             // For inSharedGroup case.
             int j, hkIndex;
             for(j=0; j<s.keys.length; j++) {
-                hkIndex = s.keys[j].equals(localToVworldKeys, 0, 
+                hkIndex = s.keys[j].equals(localToVworldKeys, 0,
 						localToVworldKeys.length);
 
                 if(hkIndex >= 0) {
@@ -146,7 +146,7 @@ class BranchGroupRetained extends GroupRetained {
     void setAuxData(SetLiveState s, int index, int hkIndex) {
 	super.setAuxData(s, index, hkIndex);
 
-	BranchGroupRetained path[] = (BranchGroupRetained[]) 
+	BranchGroupRetained path[] = (BranchGroupRetained[])
 	    s.branchGroupPaths.get(index);
 	BranchGroupRetained clonePath[] =
 	    new BranchGroupRetained[path.length+1];
@@ -163,7 +163,7 @@ class BranchGroupRetained extends GroupRetained {
     void removeNodeData(SetLiveState s) {
 
 	if((!inSharedGroup) || (s.keys.length == localToVworld.length)) {
-	    // restore to default and avoid calling clear() 
+	    // restore to default and avoid calling clear()
 	    // that may clear parent reference branchGroupPaths
 	    branchGroupPaths = new ArrayList(1);
 	}
@@ -181,14 +181,14 @@ class BranchGroupRetained extends GroupRetained {
 	}
         super.removeNodeData(s);
     }
-    
+
     void setLive(SetLiveState s) {
 	// recursively call child
 	super.doSetLive(s);
 	super.markAsLive();
     }
 
-   
+
     // Top level compile call
     void compile()  {
 
@@ -196,7 +196,7 @@ class BranchGroupRetained extends GroupRetained {
 	    return;
 
 	if (J3dDebug.devPhase && J3dDebug.debug) {
-	    J3dDebug.doDebug(J3dDebug.compileState, J3dDebug.LEVEL_3, 
+	    J3dDebug.doDebug(J3dDebug.compileState, J3dDebug.LEVEL_3,
 			"BranchGroupRetained.compile()....\n");
 	}
 
@@ -234,12 +234,12 @@ class BranchGroupRetained extends GroupRetained {
 	// without any capabilities set
 	mergeFlag = SceneGraphObjectRetained.DONT_MERGE;
     }
-    
+
     SceneGraphPath[] pickAll(PickShape pickShape) {
-        
+
         PickInfo[] pickInfoArr = pickAll(PickInfo.PICK_BOUNDS,
 					 PickInfo.SCENEGRAPHPATH, pickShape);
-	
+
 	if(pickInfoArr == null) {
             return null;
 	}
@@ -249,27 +249,27 @@ class BranchGroupRetained extends GroupRetained {
             sgpArr[i] = pickInfoArr[i].getSceneGraphPath();
         }
 
-        return sgpArr;              
+        return sgpArr;
     }
-    
+
     PickInfo[] pickAll( int mode, int flags, PickShape pickShape ) {
-        
+
 	if (inSharedGroup) {
 	    throw new RestrictedAccessException(J3dI18N.getString("BranchGroup9"));
 	}
-        
+
 	GeometryAtom geomAtoms[] =
 	    locale.universe.geometryStructure.pickAll(locale, pickShape);
 
         return PickInfo.pick(this, geomAtoms, mode, flags, pickShape, PickInfo.PICK_ALL);
 
     }
-    
+
     SceneGraphPath[] pickAllSorted(PickShape pickShape) {
-        
+
         PickInfo[] pickInfoArr = pickAllSorted(PickInfo.PICK_BOUNDS,
 					       PickInfo.SCENEGRAPHPATH, pickShape);
-	
+
 	if(pickInfoArr == null) {
             return null;
 	}
@@ -278,23 +278,23 @@ class BranchGroupRetained extends GroupRetained {
         for( int i=0; i<sgpArr.length; i++) {
             sgpArr[i] = pickInfoArr[i].getSceneGraphPath();
         }
-	
+
         return sgpArr;
 
     }
-    
+
     PickInfo[] pickAllSorted( int mode, int flags, PickShape pickShape ) {
-        
+
 	if (inSharedGroup) {
 	    throw new RestrictedAccessException(J3dI18N.getString("BranchGroup9"));
 	}
-        
+
 	GeometryAtom geomAtoms[] =
 	    locale.universe.geometryStructure.pickAll(locale, pickShape);
 
         PickInfo[] pickInfoArr  = null;
-        
-	
+
+
         if ((geomAtoms == null) || (geomAtoms.length == 0)) {
             return null;
         }
@@ -302,7 +302,7 @@ class BranchGroupRetained extends GroupRetained {
 	if (mode == PickInfo.PICK_GEOMETRY) {
             // Need to have closestDistance set
             flags |= PickInfo.CLOSEST_DISTANCE;
-            pickInfoArr= PickInfo.pick(this, geomAtoms, mode, flags, 
+            pickInfoArr= PickInfo.pick(this, geomAtoms, mode, flags,
 				       pickShape, PickInfo.PICK_ALL);
             if (pickInfoArr != null) {
                 PickInfo.sortPickInfoArray(pickInfoArr);
@@ -310,19 +310,19 @@ class BranchGroupRetained extends GroupRetained {
         }
         else {
             PickInfo.sortGeomAtoms(geomAtoms, pickShape);
-            pickInfoArr= PickInfo.pick(this, geomAtoms, mode, flags, 
-				       pickShape, PickInfo.PICK_ALL);          
+            pickInfoArr= PickInfo.pick(this, geomAtoms, mode, flags,
+				       pickShape, PickInfo.PICK_ALL);
         }
-        
+
         return pickInfoArr;
-        
+
     }
 
     SceneGraphPath pickClosest( PickShape pickShape ) {
 
         PickInfo pickInfo = pickClosest( PickInfo.PICK_BOUNDS,
 					 PickInfo.SCENEGRAPHPATH, pickShape);
-        
+
         if(pickInfo == null) {
             return null;
         }
@@ -330,32 +330,32 @@ class BranchGroupRetained extends GroupRetained {
         return pickInfo.getSceneGraphPath();
 
     }
-    
+
     PickInfo pickClosest( int mode, int flags, PickShape pickShape ) {
 
         PickInfo[] pickInfoArr = null;
 
         pickInfoArr = pickAllSorted( mode, flags, pickShape );
-        
+
         if(pickInfoArr == null) {
             return null;
         }
-        
+
         return pickInfoArr[0];
-        
+
     }
- 
+
     SceneGraphPath pickAny( PickShape pickShape ) {
 
         PickInfo pickInfo = pickAny( PickInfo.PICK_BOUNDS,
 				     PickInfo.SCENEGRAPHPATH, pickShape);
-        
+
         if(pickInfo == null) {
             return null;
         }
         return pickInfo.getSceneGraphPath();
     }
-    
+
     PickInfo pickAny( int mode, int flags, PickShape pickShape ) {
 
 	if (inSharedGroup) {
@@ -364,15 +364,15 @@ class BranchGroupRetained extends GroupRetained {
 
 	GeometryAtom geomAtoms[] =
 	    locale.universe.geometryStructure.pickAll(locale, pickShape);
-        
-        PickInfo[] pickInfoArr = PickInfo.pick(this, geomAtoms, mode, 
+
+        PickInfo[] pickInfoArr = PickInfo.pick(this, geomAtoms, mode,
 					       flags, pickShape, PickInfo.PICK_ANY);
-        
+
         if(pickInfoArr == null) {
             return null;
         }
-        
+
         return pickInfoArr[0];
-        
-    }    
+
+    }
 }

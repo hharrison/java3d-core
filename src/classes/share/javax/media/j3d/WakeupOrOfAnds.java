@@ -35,7 +35,7 @@ import java.util.Vector;
 
 /**
  * Class specifying any number of AND wakeup conditions ORed together.
- * This WakeupCondition object specifies that Java 3D should awaken 
+ * This WakeupCondition object specifies that Java 3D should awaken
  * this Behavior when any of the WakeupCondition's constituent WakeupAnd
  * conditions becomes valid.
  * <p>
@@ -59,7 +59,7 @@ public final class WakeupOrOfAnds extends WakeupCondition {
 	}
     }
 
-    
+
     /**
      * This sets the bit for the given child, then checks if the full condition is met
      */
@@ -70,20 +70,20 @@ public final class WakeupOrOfAnds extends WakeupCondition {
 	    parent.setConditionMet(this.id, checkSchedulingRegion);
 	}
     }
-    
+
     /**
      * This gets called when this condition is added to the AndOr tree.
      */
     void buildTree(WakeupCondition parent, int id, BehaviorRetained b) {
 	super.buildTree(parent, id, b);
-	
+
 	for(int i = 0; i < conditions.length; i++) {
 	    if (conditions[i] != null) {
 		conditions[i].buildTree(this, i, b);
 	    }
 	}
     }
-    
+
     /**
      * This goes through the AndOr tree to remove the various criterion from the
      * BehaviorStructure lists
@@ -102,9 +102,9 @@ public final class WakeupOrOfAnds extends WakeupCondition {
 	    }
 	}
     }
-  
+
    /**
-     * This goes through the AndOr tree to remove the various criterion from the 
+     * This goes through the AndOr tree to remove the various criterion from the
      * BehaviorStructure.
      */
     void resetTree() {
@@ -115,5 +115,5 @@ public final class WakeupOrOfAnds extends WakeupCondition {
 	    }
 	}
     }
-    
+
 }

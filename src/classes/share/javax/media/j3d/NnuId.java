@@ -36,9 +36,9 @@ package javax.media.j3d;
  */
 
 interface NnuId {
-    
+
     abstract int equal(NnuId obj);
 
     abstract int getId();
-    
+
 }

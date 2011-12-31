@@ -38,8 +38,8 @@ import javax.vecmath.*;
  * data.  Examples include six-degree-of-freedom tracking, a joystick,
  * or a data file being read back during a program.  A sensor must be
  * used in conjuction with an implementation of the InputDevice
- * interface.<P> 
- * 
+ * interface.<P>
+ *
  * The Sensor object provides an abstract concept of a hardware
  * input device. A Sensor consists of a timestamped sequence of
  * input values and the state of buttons or switches at the time
@@ -60,15 +60,15 @@ import javax.vecmath.*;
  * Java 3D includes three special six-degrees-of-freedom (6DOF) entities.
  * These include UserHead, DominantHand, and NondominantHand. You
  * can assign or change which sensor drives one
- * of these predefined entities. Java 3D uses the specified sensor to 
+ * of these predefined entities. Java 3D uses the specified sensor to
  * drive the 6DOF entity - most visibly the View.<P>
  *
- * Java 3D does not provide raw tracker or joystick-generated data in 
- * a sensor. At a minimum, Java 3D normalizes the raw data using the 
- * registration and calibration parameters either provided by or 
- * provided for the end user. It additionally may filter and process 
+ * Java 3D does not provide raw tracker or joystick-generated data in
+ * a sensor. At a minimum, Java 3D normalizes the raw data using the
+ * registration and calibration parameters either provided by or
+ * provided for the end user. It additionally may filter and process
  * the data to remove noise and improve latency.
- * The application programmer can suppress this latter effect on a 
+ * The application programmer can suppress this latter effect on a
  * sensor-by-sensor basis.<P>
  *
  * @see SensorRead
@@ -111,13 +111,13 @@ public class Sensor {
     public static final int HAND_PREDICTOR = 64;
 
     /**
-     * Default SensorRead object count (30); the number of SensorRead 
+     * Default SensorRead object count (30); the number of SensorRead
      * objects constructed if no count is specified.
      */
     public static final int DEFAULT_SENSOR_READ_COUNT = 30;
 
     /**
-     * SENSOR_READ_COUNT_BUFFER is the number of extra sensor reading  
+     * SENSOR_READ_COUNT_BUFFER is the number of extra sensor reading
      * values to store at the end of the circular list.  It helps provide
      * MT-safeness.  This is necessary if someone asks for the last
      * k sensor values and k is close to sensor read count.
@@ -128,7 +128,7 @@ public class Sensor {
 
     static int num_reads_so_far = 0;
 
-    // specifies whether a DEMAND_DRIVEN device has been added that 
+    // specifies whether a DEMAND_DRIVEN device has been added that
     // manages this sensor
     boolean demand_driven = false;
 
@@ -136,7 +136,7 @@ public class Sensor {
     int sensorReadCount;
 
     // Prediction policy -- unused
-    private int predictionPolicy = NO_PREDICTOR; 
+    private int predictionPolicy = NO_PREDICTOR;
 
     // Predictor type -- unused
     private int predictorType = PREDICT_NONE;
@@ -155,10 +155,10 @@ public class Sensor {
 
     // These matrices used as a temporary workspace for the local SVD
     // calculations (thus minimimizing garbage collection).
-    Matrix3d orig_rot = new Matrix3d(); 
-    Matrix3d orig_rot_transpose = new Matrix3d(); 
-    Matrix3d temp_rot = new Matrix3d(); 
-    Matrix3d local_svd = new Matrix3d(); 
+    Matrix3d orig_rot = new Matrix3d();
+    Matrix3d orig_rot_transpose = new Matrix3d();
+    Matrix3d temp_rot = new Matrix3d();
+    Matrix3d local_svd = new Matrix3d();
 
 
     /**
@@ -205,7 +205,7 @@ public class Sensor {
 	     new Point3d(0.0,0.0, 0.0));
     }
 
-    /**  
+    /**
      * Constructs a Sensor object for the specified input device using
      * the specified hotspot.
      * Default values are used for all other parameters.
@@ -258,7 +258,7 @@ public class Sensor {
         this.hotspot = new Point3d(hotspot);
     }
 
-    //  argument of 0 is last reading (ie, currentIndex), argument 
+    //  argument of 0 is last reading (ie, currentIndex), argument
     //  of 1 means next to last index, etc.
     int previousIndex(int k){
 	int temp = currentIndex - k;
@@ -291,7 +291,7 @@ public class Sensor {
      *
      * @deprecated As of Java 3D version 1.4, prediction is not a
      * supported feature.
-     */ 
+     */
     public int getPredictor(){
 	return predictorType;
     }
@@ -322,7 +322,7 @@ public class Sensor {
      *
      * @deprecated As of Java 3D version 1.4, prediction is not a
      * supported feature.
-     */ 
+     */
     public int getPredictionPolicy(){
 	return predictionPolicy;
     }
@@ -397,8 +397,8 @@ public class Sensor {
 
     /**
      * Extracts the kth-most recent sensor reading and copies that value into
-     * the specified argument; where 0 is the most recent sensor reading, 1 is 
-     * the next most recent sensor reading, etc.  
+     * the specified argument; where 0 is the most recent sensor reading, 1 is
+     * the next most recent sensor reading, etc.
      * @param read the matrix that will receive the most recent sensor reading
      * @param kth  the kth previous sensor reading
      */
@@ -438,14 +438,14 @@ public class Sensor {
      *  placed
      */
     public void lastButtons(int[] values) {
-       System.arraycopy(readings[currentIndex].buttonValues, 0, values,  
+       System.arraycopy(readings[currentIndex].buttonValues, 0, values,
                             0, sensorButtonCount);
     }
 
     /**
      *  Places the kth-most recent sensor reading value for each button into
-     *  the array parameter; where k=0 is the most recent sensor reading, k=1 
-     *  is the next most recent sensor reading, etc.;  will throw an 
+     *  the array parameter; where k=0 is the most recent sensor reading, k=1
+     *  is the next most recent sensor reading, etc.;  will throw an
      *  ArrayIndexOutOfBoundsException if values.length is less than
      *  the number of buttons.
      *  @param k  the time associated with the most recent sensor reading
@@ -470,8 +470,8 @@ public class Sensor {
     }
 
     /**
-     * Set the number of sensor read objects per Sensor. This is a 
-     * calibration parameter that should normally be set in this 
+     * Set the number of sensor read objects per Sensor. This is a
+     * calibration parameter that should normally be set in this
      * object's constructor.  Calling this method resets all of this
      * sensor's values that are already in the buffer.
      * It is illegal to change this value after the device has been
@@ -487,7 +487,7 @@ public class Sensor {
         }
         currentIndex = 0;
     }
-    
+
 
     /**
      * Returns the number of buttons associated with this sensor.
@@ -502,7 +502,7 @@ public class Sensor {
      * @return the current sensor read object
      */
     public SensorRead getCurrentSensorRead() {
-        // not sure if this should return a reference or a copy 
+        // not sure if this should return a reference or a copy
         SensorRead read = new SensorRead(sensorButtonCount);
         read.set(readings[currentIndex]);
 	return read;
@@ -511,7 +511,7 @@ public class Sensor {
     /**
       *  Sets the next sensor read to the specified values; once these
       *  values are set via this method they become the current values
-      *  returned by methods such as lastRead(), lastTime(), and 
+      *  returned by methods such as lastRead(), lastTime(), and
       *  lastButtons(); note that if there are no buttons associated with
       *  this sensor, values can just be an empty array.
       *  @param time  the next SensorRead's associated time
@@ -523,7 +523,7 @@ public class Sensor {
 
         int temp = currentIndex + 1;
         if (temp > MaxSensorReadIndex) temp = 0;
- 
+
         readings[temp].setTime(time);
         readings[temp].set(transform);
         if(sensorButtonCount > 0)
@@ -537,10 +537,10 @@ public class Sensor {
       *  returned by methods such as lastRead(), lastTime(), and
       *  lastButtons().
       *  @param read  the next SensorRead's values
-      */ 
+      */
    public void setNextSensorRead(SensorRead read) {
-        int temp = currentIndex + 1; 
-        if (temp > MaxSensorReadIndex) temp = 0; 
+        int temp = currentIndex + 1;
+        if (temp > MaxSensorReadIndex) temp = 0;
         readings[temp].set(read);
         currentIndex = temp;
    }

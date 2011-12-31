@@ -171,7 +171,7 @@ class SpotLightRetained extends PointLightRetained {
             staticTransform.transform.transform(this.direction, this.direction);
         }
      }
-    
+
     /**
      * Sets this light's direction from the three values provided.
      * @param x the new x direction
@@ -196,7 +196,7 @@ class SpotLightRetained extends PointLightRetained {
          }
      }
 
-    /** 
+    /**
      * This update function, and its native counterpart,
      * updates a spot light.  This includes its color, attenuation,
      * transformed position, spread angle, concentration,
@@ -215,7 +215,7 @@ class SpotLightRetained extends PointLightRetained {
     }
 
 
-    /** 
+    /**
      * This update function, and its native counterpart,
      * updates a directional light.  This includes its
      * color and its transformed direction.
@@ -234,7 +234,7 @@ class SpotLightRetained extends PointLightRetained {
 		if (mLgts[i].nodeType == NodeRetained.SPOTLIGHT) {
 		    SpotLightRetained ml = (SpotLightRetained)mLgts[i];
 		    ml.direction = (Vector3f)objs[4];
-		    ml.getLastLocalToVworld().transform(ml.direction, 
+		    ml.getLastLocalToVworld().transform(ml.direction,
 						      ml.xformDirection);
 		    ml.xformDirection.normalize();
 		}
@@ -247,10 +247,10 @@ class SpotLightRetained extends PointLightRetained {
 		    ml.spreadAngle = ((Float)objs[4]).floatValue();
 		}
 	    }
-	    
+
 	}
 	else if ((component & CONCENTRATION_CHANGED) != 0) {
-	    
+
 	    for (i = 0; i < numLgts; i++) {
 		if (mLgts[i].nodeType == NodeRetained.SPOTLIGHT) {
 		    SpotLightRetained ml = (SpotLightRetained)mLgts[i];
@@ -265,7 +265,7 @@ class SpotLightRetained extends PointLightRetained {
 		    ml.spreadAngle = ((Float)((Object[])objs[4])[9]).floatValue();
 		    ml.concentration = ((Float)((Object[])objs[4])[10]).floatValue();
 		    ml.direction = (Vector3f)((Object[])objs[4])[11];
-		    ml.getLastLocalToVworld().transform(ml.direction, 
+		    ml.getLastLocalToVworld().transform(ml.direction,
 							ml.xformDirection);
 		    ml.xformDirection.normalize();
 		}
@@ -283,7 +283,7 @@ class SpotLightRetained extends PointLightRetained {
          sr.direction = new Vector3f(direction);
          sr.xformDirection = new Vector3f();
          return sr;
-     }   
+     }
 
 
 

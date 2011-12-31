@@ -90,13 +90,13 @@ public class DepthComponentNative extends DepthComponent {
         return d;
     }
 
-  
+
    /**
      * Copies all node information from <code>originalNodeComponent</code> into
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -110,9 +110,9 @@ public class DepthComponentNative extends DepthComponent {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
     void duplicateAttributes(NodeComponent originalNodeComponent,
-			     boolean forceDuplicate) { 
+			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
-      
+
 	int originalData[] = ((DepthComponentNativeRetained)
 			      originalNodeComponent.retained).depthData;
 

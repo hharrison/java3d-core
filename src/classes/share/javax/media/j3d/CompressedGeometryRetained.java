@@ -92,11 +92,11 @@ class CompressedGeometryRetained extends GeometryRetained {
 
     // True if the platform supports hardware decompression.
     private static boolean hardwareDecompression = false ;
-    
+
     // This field retains a reference to the GeometryRetained object used for
     // geometry-based picking.  It is normally the same reference as the
     // mirror geometry used for rendering unless hardware decompression is
-    // supported. 
+    // supported.
     private GeometryRetained pickGeometry = null ;
 
     /**
@@ -137,25 +137,25 @@ class CompressedGeometryRetained extends GeometryRetained {
 	execute(cv.ctx, packedVersion, bufferType, bufferContents,
 		renderFlags, offset, size, compressedGeometry) ;
     }
-  
+
     /**
      * The package-scoped constructor.
      */
     CompressedGeometryRetained() {
 	this.geoType = GEO_TYPE_COMPRESSED ;
-    
+
 	// Compressed geometry is always bounded by [-1..1] on each axis, so
 	// set that as the initial bounding box.
 	geoBounds.setUpper( 1.0, 1.0, 1.0) ;
 	geoBounds.setLower(-1.0,-1.0,-1.0) ;
     }
-  
+
     /**
      * Compressed geometry is immutable so this method does nothing.
      */
     void computeBoundingBox() {
     }
-  
+
     /**
      * Update this object.  Compressed geometry is immutable so there's
      * nothing to do.
@@ -177,7 +177,7 @@ class CompressedGeometryRetained extends GeometryRetained {
 	// GL_SUNX_geometry_compression extension.  The header is unnecessary
 	// if only the newer GL_SUN_geometry_compression API needs support.
 	compressedGeometry = new byte[HEADER_LENGTH + this.size] ;
-	
+
 	compressedGeometry[HEADER_MAJOR_VERSION_OFFSET] =
 	    (byte)this.majorVersionNumber ;
 
@@ -192,7 +192,7 @@ class CompressedGeometryRetained extends GeometryRetained {
 
 	compressedGeometry[HEADER_BUFFER_DATA_OFFSET] =
 	    (byte)this.bufferContents ;
-	
+
 	System.arraycopy(geometry, this.offset,
 			 compressedGeometry, HEADER_LENGTH, this.size) ;
 
@@ -284,7 +284,7 @@ class CompressedGeometryRetained extends GeometryRetained {
 	    // Return this object if hardware decompression is available.
 	    if (hardwareDecompression)
 		return (GeometryRetained)this ;
-	
+
 	    // Check to see if hardware decompression is available.
 	    if (decompressHW(cv.ctx, majorVersionNumber, minorVersionNumber)) {
 		hardwareDecompression = true ;
@@ -292,7 +292,7 @@ class CompressedGeometryRetained extends GeometryRetained {
 		// If hardware can't handle by-reference, punt to by-copy.
 		if (isByReference() && !decompressByRef(cv.ctx)) {
 		    createByCopy(compressedGeometry) ;
-		} 
+		}
 
 		return (GeometryRetained)this ;
 	    }
@@ -334,7 +334,7 @@ class CompressedGeometryRetained extends GeometryRetained {
 	gdr.getBoundingBox(geoBounds) ;
 	return pickGeometry ;
     }
-    
+
     //
     // The following intersect() methods are used to implement geometry-based
     // picking and collision.
@@ -345,7 +345,7 @@ class CompressedGeometryRetained extends GeometryRetained {
 	return (geomR != null ?
 		geomR.intersect(pickShape, pickInfo, flags, iPnt, geom, geomIndex) : false);
     }
-    
+
     boolean intersect(Bounds targetBound) {
 	GeometryRetained geom = getPickGeometry() ;
 	return (geom != null ? geom.intersect(targetBound) : false);
@@ -353,13 +353,13 @@ class CompressedGeometryRetained extends GeometryRetained {
 
     boolean intersect(Transform3D thisToOtherVworld,  GeometryRetained g) {
 	GeometryRetained geom = getPickGeometry() ;
-	return (geom != null ? 
+	return (geom != null ?
 		geom.intersect(thisToOtherVworld, g) : false);
     }
 
     boolean intersect(Point3d[] pnts) {
 	GeometryRetained geom = getPickGeometry() ;
-	return (geom != null ? geom.intersect(pnts) : false);	
+	return (geom != null ? geom.intersect(pnts) : false);
     }
 
     /**
@@ -372,15 +372,15 @@ class CompressedGeometryRetained extends GeometryRetained {
 	if ((this.bufferContents &
 	     CompressedGeometryHeader.NORMAL_IN_BUFFER) != 0)
 	    vertexFormat |= GeometryArray.NORMALS ;
-	
+
 	if ((this.bufferContents &
 	     CompressedGeometryHeader.COLOR_IN_BUFFER) != 0)
 	    vertexFormat |= GeometryArray.COLOR ;
-	
+
 	if ((this.bufferContents &
 	     CompressedGeometryHeader.ALPHA_IN_BUFFER) != 0)
 	    vertexFormat |= GeometryArray.WITH_ALPHA ;
-	
+
 	return vertexFormat ;
     }
 

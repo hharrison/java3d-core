@@ -50,12 +50,12 @@ class SourceCodeShaderRetained extends ShaderRetained {
     SourceCodeShaderRetained() {
     }
 
-    // This method is similar to setShaderSource(). 
-    // To conform to j3d frame in retained creation, we will stick with method 
+    // This method is similar to setShaderSource().
+    // To conform to j3d frame in retained creation, we will stick with method
     // with init name.
     final void initShaderSource(String shaderSource) {
 	this.shaderSource = shaderSource;
-    }    
+    }
 
     final void set(int shadingLanguage, int shaderType, String shaderSource) {
 	this.shadingLanguage = shadingLanguage;
@@ -74,7 +74,7 @@ class SourceCodeShaderRetained extends ShaderRetained {
 
     final void setShaderSource(String shaderSource) {
 	this.shaderSource = shaderSource;
-    }    
+    }
 
     synchronized void createMirrorObject() {
 	// System.err.println("SourceCodeShaderRetained : createMirrorObject");
@@ -86,7 +86,7 @@ class SourceCodeShaderRetained extends ShaderRetained {
 
 	initMirrorObject();
     }
-    
+
     /**
      * Initializes a mirror object.
      */
@@ -94,7 +94,7 @@ class SourceCodeShaderRetained extends ShaderRetained {
 	mirror.source = source;
 
 	((SourceCodeShaderRetained) mirror).set(shadingLanguage, shaderType, shaderSource);
-	((SourceCodeShaderRetained) mirror).shaderData = null;	
+	((SourceCodeShaderRetained) mirror).shaderData = null;
     }
 
     synchronized void updateMirrorObject(int component, Object value) {

@@ -52,7 +52,7 @@ abstract class IndexedObject extends Object {
     int[][] listIdx;
 
     abstract VirtualUniverse getVirtualUniverse();
-    
+
     synchronized int getIdxUsed(VirtualUniverse u) {
 	int idx = listIdx[2][0];
 	if (u == getVirtualUniverse()) {
@@ -63,10 +63,10 @@ abstract class IndexedObject extends Object {
 
     void incIdxUsed() {
 	if (listIdx[2][0] == 0) {
-	    listIdx[2][0] = 1; 
+	    listIdx[2][0] = 1;
 	} else {
-	    listIdx[2][0] = 0; 		    
-	}	
+	    listIdx[2][0] = 0;
+	}
     }
 }
 

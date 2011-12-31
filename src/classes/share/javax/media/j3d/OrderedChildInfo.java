@@ -42,7 +42,7 @@ class OrderedChildInfo extends Object {
     static int ADD      = 0x1;
     static int REMOVE   = 0x2;
 
-    
+
     /**
      * Type of operation, could be add/remove or set
      */
@@ -77,7 +77,7 @@ class OrderedChildInfo extends Object {
 	value = val;
 	prev = null;
 	next = null;
-	
+
     }
 
 }

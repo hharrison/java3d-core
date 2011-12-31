@@ -37,7 +37,7 @@ import java.util.Hashtable;
 /**
  * The Texture object is a component object of an Appearance object
  * that defines the texture properties used when texture mapping is
- * enabled. The Texture object is an abstract class and all texture 
+ * enabled. The Texture object is an abstract class and all texture
  * objects must be created as either a Texture2D object or a
  * Texture3D object.
  * <P>
@@ -58,7 +58,7 @@ import java.util.Hashtable;
  * S and T coordinates, respectively. The boundary modes are as
  * follows:</LI><P>
  * <UL>
- * <LI>CLAMP - clamps texture coordinates to be in the range [0,1]. 
+ * <LI>CLAMP - clamps texture coordinates to be in the range [0,1].
  * Texture boundary texels or the constant boundary color if boundary width
  * is 0 will be used for U,V values that fall outside this range.</LI><P>
  * <LI>WRAP - repeats the texture by wrapping texture coordinates
@@ -66,19 +66,19 @@ import java.util.Hashtable;
  * of the texture coordinates is used. The integer portion is
  * discarded</LI><P>
  * <LI>CLAMP_TO_EDGE - clamps texture coordinates such that filtering
- * will not sample a texture boundary texel. Texels at the edge of the 
+ * will not sample a texture boundary texel. Texels at the edge of the
  * texture will be used instead.</LI><P>
  * <LI>CLAMP_TO_BOUNDARY - clamps texture coordinates such that filtering
  * will sample only texture boundary texels, that is, it will never
  * get some samples from the boundary and some from the edge. This
- * will ensure clean unfiltered boundaries. If the texture does not 
- * have a boundary, that is the boundary width is equal to 0, then the 
+ * will ensure clean unfiltered boundaries. If the texture does not
+ * have a boundary, that is the boundary width is equal to 0, then the
  * constant boundary color will be used.</LI></P>
  * </UL>
  * <LI>Image - an image or an array of images for all the mipmap
  * levels. If only one image is provided, the MIPmap mode must be
  * set to BASE_LEVEL.</LI><P>
- * <LI>Magnification filter - the magnification filter function. 
+ * <LI>Magnification filter - the magnification filter function.
  * Used when the pixel being rendered maps to an area less than or
  * equal to one texel. The magnification filter functions are as
  * follows:</LI><P>
@@ -99,13 +99,13 @@ import java.util.Hashtable;
  * j<sub>1</sub> = j<sub>0</sub> + 1<P>
  * a = frac(u - 0.5)<P>
  * b = frac(v - 0.5)<P>
- * T' = (1-a)*(1-b)*T<sub>i<sub>0</sub>j<sub>0</sub></sub> + 
+ * T' = (1-a)*(1-b)*T<sub>i<sub>0</sub>j<sub>0</sub></sub> +
  * a*(1-b)*T<sub>i<sub>1</sub>j<sub>0</sub></sub> +
  * (1-a)*b*T<sub>i<sub>0</sub>j<sub>1</sub></sub> +
  * a*b*T<sub>i<sub>1</sub>j<sub>1</sub></sub><P>
  * </UL>
  * <LI>LINEAR_SHARPEN - sharpens the resulting image by extrapolating
- * from the base level plus one image to the base level image of this 
+ * from the base level plus one image to the base level image of this
  * texture object.</LI><P>
  * <LI>LINEAR_SHARPEN_RGB - performs linear sharpen filter for the rgb
  * components only. The alpha component is computed using BASE_LEVEL_LINEAR
@@ -133,21 +133,21 @@ import java.util.Hashtable;
  * <td>b = frac(v - 0.5)</td>
  * </table>
  * f(x) : filter4 function where 0<=x<=2<P>
- * T' = f(1+a) * f(1+b) * T<sub>i<sub>0</sub>j<sub>0</sub></sub> + 
- * f(a) * f(1+b) * T<sub>i<sub>1</sub>j<sub>0</sub></sub> + 
- * f(1-a) * f(1+b) * T<sub>i<sub>2</sub>j<sub>0</sub></sub> + 
+ * T' = f(1+a) * f(1+b) * T<sub>i<sub>0</sub>j<sub>0</sub></sub> +
+ * f(a) * f(1+b) * T<sub>i<sub>1</sub>j<sub>0</sub></sub> +
+ * f(1-a) * f(1+b) * T<sub>i<sub>2</sub>j<sub>0</sub></sub> +
  * f(2-a) * f(1+b) * T<sub>i<sub>3</sub>j<sub>0</sub></sub> + <br>
- * f(1+a) * f(b) * T<sub>i<sub>0</sub>j<sub>1</sub></sub> + 
- * f(a) * f(b) * T<sub>i<sub>1</sub>j<sub>1</sub></sub> + 
- * f(1-a) * f(b) * T<sub>i<sub>2</sub>j<sub>1</sub></sub> + 
+ * f(1+a) * f(b) * T<sub>i<sub>0</sub>j<sub>1</sub></sub> +
+ * f(a) * f(b) * T<sub>i<sub>1</sub>j<sub>1</sub></sub> +
+ * f(1-a) * f(b) * T<sub>i<sub>2</sub>j<sub>1</sub></sub> +
  * f(2-a) * f(b) * T<sub>i<sub>3</sub>j<sub>1</sub></sub> + <br>
- * f(1+a) * f(1-b) * T<sub>i<sub>0</sub>j<sub>2</sub></sub> + 
- * f(a) * f(1-b) * T<sub>i<sub>1</sub>j<sub>2</sub></sub> + 
- * f(1-a) * f(1-b) * T<sub>i<sub>2</sub>j<sub>2</sub></sub> + 
+ * f(1+a) * f(1-b) * T<sub>i<sub>0</sub>j<sub>2</sub></sub> +
+ * f(a) * f(1-b) * T<sub>i<sub>1</sub>j<sub>2</sub></sub> +
+ * f(1-a) * f(1-b) * T<sub>i<sub>2</sub>j<sub>2</sub></sub> +
  * f(2-a) * f(1-b) * T<sub>i<sub>3</sub>j<sub>2</sub></sub> + <br>
- * f(1+a) * f(2-b) * T<sub>i<sub>0</sub>j<sub>3</sub></sub> + 
- * f(a) * f(2-b) * T<sub>i<sub>1</sub>j<sub>3</sub></sub> + 
- * f(1-a) * f(2-b) * T<sub>i<sub>2</sub>j<sub>3</sub></sub> + 
+ * f(1+a) * f(2-b) * T<sub>i<sub>0</sub>j<sub>3</sub></sub> +
+ * f(a) * f(2-b) * T<sub>i<sub>1</sub>j<sub>3</sub></sub> +
+ * f(1-a) * f(2-b) * T<sub>i<sub>2</sub>j<sub>3</sub></sub> +
  * f(2-a) * f(2-b) * T<sub>i<sub>3</sub>j<sub>3</sub></sub> <P>
  * </UL>
  * </UL>
@@ -211,14 +211,14 @@ import java.util.Hashtable;
  * this texture object. The anisotropic modes are as follows:</LI><P>
  * <UL>
  * <LI>ANISOTROPIC_NONE - no anisotropic filtering.</LI><P>
- * <LI>ANISOTROPIC_SINGLE_VALUE - applies the degree of anisotropic filter 
+ * <LI>ANISOTROPIC_SINGLE_VALUE - applies the degree of anisotropic filter
  * in both the minification and magnification filters.</LI><P>
  * </UL>
  * <LI>Anisotropic Filter Degree - controls the degree of anisotropy. This
- * property applies to both minification and magnification filtering. 
+ * property applies to both minification and magnification filtering.
  * If it is equal to 1.0, then an isotropic filtering as specified in the
- * minification or magnification filter will be used. If it is greater 
- * than 1.0, and the anisotropic mode is equal to ANISOTROPIC_SINGLE_VALUE, 
+ * minification or magnification filter will be used. If it is greater
+ * than 1.0, and the anisotropic mode is equal to ANISOTROPIC_SINGLE_VALUE,
  * then
  * the degree of anisotropy will also be applied in the filtering.</LI><P>
  * <LI>Sharpen Texture Function - specifies the function of level-of-detail
@@ -324,7 +324,7 @@ public abstract class Texture extends NodeComponent {
 
     /**
      * Specifies that this Texture object allows reading its LOD range
-     * information (e.g., base level, maximum level, minimum lod, 
+     * information (e.g., base level, maximum level, minimum lod,
      * maximum lod, lod offset)
      *
      * @since Java 3D 1.3
@@ -334,7 +334,7 @@ public abstract class Texture extends NodeComponent {
 
     /**
      * Specifies that this Texture object allows writing its LOD range
-     * information (e.g., base level, maximum level, minimum lod, 
+     * information (e.g., base level, maximum level, minimum lod,
      * maximum lod, lod offset)
      *
      * @since Java 3D 1.3
@@ -361,7 +361,7 @@ public abstract class Texture extends NodeComponent {
     public static final int
     ALLOW_SHARPEN_TEXTURE_READ = CapabilityBits.TEXTURE_ALLOW_SHARPEN_TEXTURE_READ;
 
-    /**  
+    /**
      * Specifies that this Texture object allows reading its filter4
      * function information.
      *
@@ -395,7 +395,7 @@ public abstract class Texture extends NodeComponent {
      * @see #setMagFilter
      */
     public static final int BASE_LEVEL_POINT = 2;
-  
+
     /**
      * Performs bilinear interpolation on the four nearest texels
      * in level 0 texture map.
@@ -404,18 +404,18 @@ public abstract class Texture extends NodeComponent {
      * @see #setMagFilter
      */
     public static final int BASE_LEVEL_LINEAR = 3;
-  
+
     /**
      * Selects the nearest texel in the nearest mipmap.
      * Maps to NEAREST_MIPMAP_NEAREST.
      * @see #setMinFilter
      */
     public static final int MULTI_LEVEL_POINT = 4;
-  
+
     /**
      * Performs tri-linear interpolation of texels between four
      * texels each from two nearest mipmap levels.
-     * Maps to LINEAR_MIPMAP_LINEAR, but an implementation can 
+     * Maps to LINEAR_MIPMAP_LINEAR, but an implementation can
      * fall back to LINEAR_MIPMAP_NEAREST or NEAREST_MIPMAP_LINEAR.
      * @see #setMinFilter
      */
@@ -436,7 +436,7 @@ public abstract class Texture extends NodeComponent {
 
     /**
      * Performs linear sharpen filter for the rgb
-     * components only. The alpha component is computed using 
+     * components only. The alpha component is computed using
      * BASE_LEVEL_LINEAR filter.
      *
      * @since Java 3D 1.3
@@ -446,7 +446,7 @@ public abstract class Texture extends NodeComponent {
 
     /**
      * Performs linear sharpen filter for the alpha
-     * component only. The rgb components are computed using 
+     * component only. The rgb components are computed using
      * BASE_LEVEL_LINEAR filter.
      *
      * @since Java 3D 1.3
@@ -463,7 +463,7 @@ public abstract class Texture extends NodeComponent {
      * @see #setMagFilter
      */
     public static final int FILTER4               = 12;
-  
+
     // Texture boundary mode parameter values
     /**
      * Clamps texture coordinates to be in the range [0, 1].
@@ -504,7 +504,7 @@ public abstract class Texture extends NodeComponent {
     public static final int BASE_LEVEL = 1;
 
     /**
-     * Indicates that this Texture object has multiple images, one for 
+     * Indicates that this Texture object has multiple images, one for
      * each mipmap level.  In this mode, there are
      * <code>log<sub><font size=-2>2</font></sub>(max(width,height))+1</code>
      * separate images.
@@ -565,16 +565,16 @@ public abstract class Texture extends NodeComponent {
     private static final int[] readCapabilities = {
         ALLOW_ANISOTROPIC_FILTER_READ,
         ALLOW_BOUNDARY_COLOR_READ,
-        ALLOW_BOUNDARY_MODE_READ,        
+        ALLOW_BOUNDARY_MODE_READ,
         ALLOW_ENABLE_READ,
         ALLOW_FILTER4_READ,
-        ALLOW_FILTER_READ,        
+        ALLOW_FILTER_READ,
         ALLOW_FORMAT_READ,
         ALLOW_IMAGE_READ,
         ALLOW_LOD_RANGE_READ,
-        ALLOW_MIPMAP_MODE_READ,        
+        ALLOW_MIPMAP_MODE_READ,
         ALLOW_SHARPEN_TEXTURE_READ,
-        ALLOW_SIZE_READ        
+        ALLOW_SIZE_READ
     };
 
     /**
@@ -604,7 +604,7 @@ public abstract class Texture extends NodeComponent {
      * filter4 func: null<br>
      * </ul>
      * <p>
-     * Note that the default constructor creates a texture object with 
+     * Note that the default constructor creates a texture object with
      * a width and height of 0 and is, therefore, not useful.
      */
     public Texture() {
@@ -621,7 +621,7 @@ public abstract class Texture extends NodeComponent {
      * by the application (using either the <code>setImage</code> or
      * <code>setImages</code> method). If <code>mipMapMode</code> is
      * set to <code>MULTI_LEVEL_MIPMAP</code>, then images for levels
-     * Base Level through Maximum Level must be set. 
+     * Base Level through Maximum Level must be set.
      * Note that a texture with a non-power-of-two width or height will
      * only be rendered on a graphics device that supports non-power-of-two
      * textures.
@@ -646,12 +646,12 @@ public abstract class Texture extends NodeComponent {
         if ((mipMapMode != BASE_LEVEL) && (mipMapMode != MULTI_LEVEL_MIPMAP))
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture0"));
 
-	if ((format != INTENSITY) && (format != LUMINANCE) && 
+	if ((format != INTENSITY) && (format != LUMINANCE) &&
 	    (format != ALPHA) && (format != LUMINANCE_ALPHA) &&
 	    (format != RGB) && (format != RGBA)) {
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture1"));
 	}
-        
+
         if (width < 1) {
             throw new IllegalArgumentException(J3dI18N.getString("Texture46"));
         }
@@ -662,7 +662,7 @@ public abstract class Texture extends NodeComponent {
 
 	int widthLevels;
         int heightLevels;
-        
+
         widthLevels = getLevelsNPOT(width);
         heightLevels = getLevelsNPOT(height);
 
@@ -672,14 +672,14 @@ public abstract class Texture extends NodeComponent {
 
     /**
      * Constructs an empty Texture object with specified mipMapMode,
-     * format, width, height, and boundaryWidth.  
+     * format, width, height, and boundaryWidth.
      * Defaults are used for all other
      * parameters.  If <code>mipMapMode</code> is set to
      * <code>BASE_LEVEL</code>, then the image at level 0 must be set
      * by the application (using either the <code>setImage</code> or
      * <code>setImages</code> method). If <code>mipMapMode</code> is
      * set to <code>MULTI_LEVEL_MIPMAP</code>, then images for levels
-     * Base Level through Maximum Level must be set. 
+     * Base Level through Maximum Level must be set.
      * Note that a texture with a non-power-of-two width or height will
      * only be rendered on a graphics device that supports non-power-of-two
      * textures.
@@ -711,7 +711,7 @@ public abstract class Texture extends NodeComponent {
         if ((mipMapMode != BASE_LEVEL) && (mipMapMode != MULTI_LEVEL_MIPMAP))
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture0"));
 
-	if ((format != INTENSITY) && (format != LUMINANCE) && 
+	if ((format != INTENSITY) && (format != LUMINANCE) &&
 	    (format != ALPHA) && (format != LUMINANCE_ALPHA) &&
 	    (format != RGB) && (format != RGBA)) {
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture1"));
@@ -727,7 +727,7 @@ public abstract class Texture extends NodeComponent {
 
         int widthLevels;
         int heightLevels;
-        
+
         widthLevels = getLevelsNPOT(width);
         heightLevels = getLevelsNPOT(height);
 
@@ -817,7 +817,7 @@ public abstract class Texture extends NodeComponent {
      * function is used when the pixel being rendered maps to an area
      * greater than one texel.
      * @param minFilter the minification filter. One of:
-     * FASTEST, NICEST, BASE_LEVEL_POINT, BASE_LEVEL_LINEAR, 
+     * FASTEST, NICEST, BASE_LEVEL_POINT, BASE_LEVEL_LINEAR,
      * MULTI_LEVEL_POINT, MULTI_LEVEL_LINEAR, or FILTER4
      * @exception RestrictedAccessException if the method is called
      * when this object is part of live or compiled scene graph.
@@ -866,15 +866,15 @@ public abstract class Texture extends NodeComponent {
      * function is used when the pixel being rendered maps to an area
      * less than or equal to one texel.
      * @param magFilter the magnification filter, one of:
-     * FASTEST, NICEST, BASE_LEVEL_POINT, BASE_LEVEL_LINEAR, 
+     * FASTEST, NICEST, BASE_LEVEL_POINT, BASE_LEVEL_LINEAR,
      * LINEAR_SHARPEN, LINEAR_SHARPEN_RGB, LINEAR_SHARPEN_ALPHA, or FILTER4.
-     *     
+     *
      * @exception RestrictedAccessException if the method is called
      * when this object is part of live or compiled scene graph.
      * @exception IllegalArgumentException if <code>magFilter</code>
      * is a value other than <code>FASTEST</code>, <code>NICEST</code>,
      * <code>BASE_LEVEL_POINT</code>, <code>BASE_LEVEL_LINEAR</code>,
-     * <code>LINEAR_SHARPEN</code>, <code>LINEAR_SHARPEN_RGB</code>, 
+     * <code>LINEAR_SHARPEN</code>, <code>LINEAR_SHARPEN_RGB</code>,
      * <code>LINEAR_SHARPEN_ALPHA</code>,  or
      * <code>FILTER4</code>.
      *
@@ -949,10 +949,10 @@ public abstract class Texture extends NodeComponent {
 	  if(!this.getCapability(ALLOW_IMAGE_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Texture15"));
 	}
-        
+
         // Do illegal sharing check
         validateImageIllegalSharing(image);
-            
+
 	if (isLive())
 	    ((TextureRetained)this.retained).setImage(level, image);
 	else
@@ -1018,11 +1018,11 @@ public abstract class Texture extends NodeComponent {
 	    throw new CapabilityNotSetException(J3dI18N.getString("Texture15"));
 	}
 
-        // Do illegal sharing check     
+        // Do illegal sharing check
         for(int i=0; i<images.length; i++) {
             validateImageIllegalSharing(images[i]);
         }
-        
+
 	if (images == null)
 	    throw new IllegalArgumentException(J3dI18N.getString("Texture20"));
 
@@ -1116,7 +1116,7 @@ public abstract class Texture extends NodeComponent {
 
     /**
      * Retrieves the number of mipmap levels needed for this Texture object.
-     * @return (maximum Level - base Level + 1) 
+     * @return (maximum Level - base Level + 1)
      * if <code>mipMapMode</code> is
      * <code>MULTI_LEVEL_MIPMAP</code>; otherwise it returns 1.
      * @exception CapabilityNotSetException if appropriate capability is
@@ -1133,13 +1133,13 @@ public abstract class Texture extends NodeComponent {
     }
 
     /**
-     * Sets mipmap mode for texture mapping for this texture object.  
+     * Sets mipmap mode for texture mapping for this texture object.
      * @param mipMapMode the new mipmap mode for this object.  One of:
      * BASE_LEVEL or MULTI_LEVEL_MIPMAP.
      * @exception RestrictedAccessException if the method is called
      * when this object is part of live or compiled scene graph.
      * @exception IllegalArgumentException if <code>mipMapMode</code>
-     * is a value other than <code>BASE_LEVEL</code> or 
+     * is a value other than <code>BASE_LEVEL</code> or
      * <code>MULTI_LEVEL_MIPMAP</code>.
      */
     public void setMipMapMode(int mipMapMode) {
@@ -1200,11 +1200,11 @@ public abstract class Texture extends NodeComponent {
     // num is NOT power of 2.
     // NOTE: ********** Assumes 32 bit integer******************
     static int getPowerOf2(int num) {
-    
+
 	int i, tmp;
 	// Can only handle positive numbers, return error.
 	if (num < 1) return -1;
-    
+
 	for (i=0, tmp = num; i < 32;i++) {
 	    // Check if leftmost bit is 1
 	    if ((tmp & 0x80000000) != 0) {
@@ -1231,7 +1231,7 @@ public abstract class Texture extends NodeComponent {
 	}
 	return levels;
     }
-	    
+
     /**
      * Sets the texture boundary color for this texture object.  The
      * texture boundary color is used when boundaryModeS or boundaryModeT
@@ -1327,10 +1327,10 @@ public abstract class Texture extends NodeComponent {
      * @param maximumLevel index of the highest defined mipmap level.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     * @exception IllegalArgumentException if specified 
+     * @exception IllegalArgumentException if specified
      * maximumLevel < baseLevel, or
      * if maximumLevel > <code>log<sub><font size=-2>2</font></sub>(max(width,height))</code>
-     * @exception IllegalArgumentException if mipMipMapMode is equal to BASE_LEVEL 
+     * @exception IllegalArgumentException if mipMipMapMode is equal to BASE_LEVEL
      * and maximumLevel is not equal to zero.
      *
      * @since Java 3D 1.3
@@ -1541,7 +1541,7 @@ public abstract class Texture extends NodeComponent {
      */
     public void setAnisotropicFilterMode(int mode) {
 	checkForLiveOrCompiled();
-        if ((mode != ANISOTROPIC_NONE) && 
+        if ((mode != ANISOTROPIC_NONE) &&
 		(mode != ANISOTROPIC_SINGLE_VALUE)) {
 	     throw new IllegalArgumentException(
                         J3dI18N.getString("Texture25"));
@@ -1569,7 +1569,7 @@ public abstract class Texture extends NodeComponent {
 
     /**
      * Specifies the degree of anisotropy to be
-     * used when the anisotropic filter mode specifies 
+     * used when the anisotropic filter mode specifies
      * ANISOTROPIC_SINGLE_VALUE.
      * @param degree degree of anisotropy
      * @exception RestrictedAccessException if the method is called
@@ -1607,14 +1607,14 @@ public abstract class Texture extends NodeComponent {
 	}
 	return ((TextureRetained)this.retained).getAnisotropicFilterDegree();
     }
-  
+
     /**
      * sets the sharpen texture LOD function for this texture object.
      * @param lod array containing the level-of-detail values.
      * @param pts array containing the function values for the corresponding
      * level-of-detail values.
      *
-     * @exception IllegalStateException if the length of <code>lod</code> 
+     * @exception IllegalStateException if the length of <code>lod</code>
      * does not match the length of <code>pts</code>
      * @exception RestrictedAccessException if the method is called
      * when this object is part of live or compiled scene graph.
@@ -1638,7 +1638,7 @@ public abstract class Texture extends NodeComponent {
      * The Point2f x,y values are defined as follows: x is the lod value,
      * y is the corresponding function value.
      *
-     * @param pts array of Point2f containing the lod as well as the 
+     * @param pts array of Point2f containing the lod as well as the
      * corresponding function value.
      *
      * @exception RestrictedAccessException if the method is called
@@ -1672,14 +1672,14 @@ public abstract class Texture extends NodeComponent {
         }
         return ((TextureRetained)this.retained).getSharpenTextureFuncPointsCount();
     }
-   
+
     /**
      * Copies the array of sharpen texture LOD function points into the
      * specified arrays. The arrays must be large enough to hold all the
      * points.
      *
      * @param lod the array to receive the level-of-detail values.
-     * @param pts the array to receive the function values for the 
+     * @param pts the array to receive the function values for the
      * corresponding level-of-detail values.
      *
      * @exception CapabilityNotSetException if appropriate capability is
@@ -1720,12 +1720,12 @@ public abstract class Texture extends NodeComponent {
         }
         ((TextureRetained)this.retained).getSharpenTextureFunc(pts);
     }
-     
+
     /**
      * sets the filter4 function for this texture object.
      * @param weights array containing samples of the filter4 function.
      *
-     * @exception IllegalArgumentException if the length of 
+     * @exception IllegalArgumentException if the length of
      * <code>weight</code> < 4
      * @exception RestrictedAccessException if the method is called
      * when this object is part of live or compiled scene graph.
@@ -1787,11 +1787,11 @@ public abstract class Texture extends NodeComponent {
 
 
    /**
-     * Copies all node information from <code>originalNodeComponent</code> 
+     * Copies all node information from <code>originalNodeComponent</code>
      * into the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -1803,8 +1803,8 @@ public abstract class Texture extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
-    void duplicateAttributes(NodeComponent originalNodeComponent, 
-			     boolean forceDuplicate) { 
+    void duplicateAttributes(NodeComponent originalNodeComponent,
+			     boolean forceDuplicate) {
 
       super.duplicateAttributes(originalNodeComponent, forceDuplicate);
 
@@ -1816,7 +1816,7 @@ public abstract class Texture extends NodeComponent {
       rt.initBoundaryModeS(tex.getBoundaryModeS());
       rt.initBoundaryModeT(tex.getBoundaryModeT());
       rt.initMinFilter(tex.getMinFilter());
-      rt.initMagFilter(tex.getMagFilter());      
+      rt.initMagFilter(tex.getMagFilter());
       rt.initMipMapMode(tex.getMipMapMode());
       rt.initEnable(tex.getEnable());
       rt.initAnisotropicFilterMode(tex.getAnisotropicFilterMode());
@@ -1839,7 +1839,7 @@ public abstract class Texture extends NodeComponent {
 
       // No API available to get the current level
       for (int i=tex.maxLevels-1; i>=0; i-- ) {
-	ImageComponent image = (ImageComponent) 
+	ImageComponent image = (ImageComponent)
 	                       getNodeComponent(tex.getImage(i),
 						forceDuplicate,
 						hashtable);
@@ -1851,11 +1851,11 @@ public abstract class Texture extends NodeComponent {
       // NOTE: This sppears to have already been done
     }
 
- /** 
+ /**
    *  This function is called from getNodeComponent() to see if any of
-   *  the sub-NodeComponents  duplicateOnCloneTree flag is true. 
-   *  If it is the case, current NodeComponent needs to 
-   *  duplicate also even though current duplicateOnCloneTree flag is false. 
+   *  the sub-NodeComponents  duplicateOnCloneTree flag is true.
+   *  If it is the case, current NodeComponent needs to
+   *  duplicate also even though current duplicateOnCloneTree flag is false.
    *  This should be overwrite by NodeComponent which contains sub-NodeComponent.
    */
    boolean duplicateChild() {

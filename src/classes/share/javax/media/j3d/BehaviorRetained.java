@@ -47,13 +47,13 @@ class BehaviorRetained extends LeafRetained  {
     static final int WAKEUP_TIME_INDEX          = 4;
 
     static final int NUM_WAKEUPS		= 5;
-    
+
     static final int WAKEUP_ACTIVATE 	= 0x0001;
     static final int WAKEUP_DEACTIVATE 	= 0x0002;
     static final int WAKEUP_VP_ENTRY 	= 0x0004;
     static final int WAKEUP_VP_EXIT 	= 0x0008;
     static final int WAKEUP_TIME        = 0x0010;
-    
+
     /**
      * The number of scheduling intervals supported by this
      * implementation.  This is fixed for a particular implementation
@@ -64,7 +64,7 @@ class BehaviorRetained extends LeafRetained  {
     // different types of IndexedUnorderedSet that use in  BehaviorStructure
     static final int BEHAIVORS_IN_BS_LIST = 0;
     static final int SCHEDULE_IN_BS_LIST  = 1;
-    
+
     // total number of different IndexedUnorderedSet types
     static final int TOTAL_INDEXED_UNORDER_SET_TYPES = 2;
 
@@ -72,20 +72,20 @@ class BehaviorRetained extends LeafRetained  {
      * The Boundary object defining the behavior's scheduling region.
      */
     Bounds schedulingRegion = null;
-    
-    /** 
+
+    /**
      * The bounding leaf reference
      */
     BoundingLeafRetained boundingLeaf = null;
-    
+
     /**
      * The current wakeup condition.
      */
     WakeupCondition wakeupCondition = null;
 
     /**
-     * This is the new WakeupCondition to be set in 
-     * initialize wakeupOn() 
+     * This is the new WakeupCondition to be set in
+     * initialize wakeupOn()
      */
     WakeupCondition newWakeupCondition = null;
 
@@ -94,7 +94,7 @@ class BehaviorRetained extends LeafRetained  {
      * false until it comes into range of a view platform.
      */
     ViewPlatformRetained vp = null;
-    
+
     /**
      * The current activation status for this behavior; this value
      * is false until it comes into range of a view platform.
@@ -105,7 +105,7 @@ class BehaviorRetained extends LeafRetained  {
      * Flag indicating whether the behavior is enabled.
      */
     boolean enable = true;
-    
+
     /**
      * Current scheduling interval.
      */
@@ -117,7 +117,7 @@ class BehaviorRetained extends LeafRetained  {
      * not, then the wakeupCondition will be set to null.
      */
     boolean conditionSet = false;
-    
+
     /**
      * This is a flag that indicates whether we are in an initialize or
      * processStimulus callback.  If wakeupOn is called for this behavior
@@ -128,7 +128,7 @@ class BehaviorRetained extends LeafRetained  {
     /**
      * This is a flag that indicates whether we are in initialize
      * callback. If wakeupOn is called for this behavior when
-     * this flag is true, then its 
+     * this flag is true, then its
      * buildTree() will delay until insert nodes message
      * is get. This is because some localToVworld[] that wakeup
      * depends may not initialize when this behavior setLive().
@@ -139,15 +139,15 @@ class BehaviorRetained extends LeafRetained  {
      * The transformed schedulingRegion
      */
     Bounds transformedRegion = null;
-    
+
     // A bitmask that indicates that the scheduling region has changed.
     int isDirty = 0xffff;
-    
+
     /**
      * A bitmask that represents all conditions that this behavior is waiting on.
      */
     int wakeupMask = 0;
-    
+
     /**
      * An array of ints that count how many of each wakup is present
      */
@@ -164,7 +164,7 @@ class BehaviorRetained extends LeafRetained  {
 	targets[0] = this;
 	IndexedUnorderSet.init(this, TOTAL_INDEXED_UNORDER_SET_TYPES);
     }
-    
+
     /**
      * Get the Behavior's scheduling region.
      * @return this Behavior's scheduling region information
@@ -181,7 +181,7 @@ class BehaviorRetained extends LeafRetained  {
         }
         return b;
     }
-    
+
     /**
      * Set the Behavior's scheduling region.
      * @param region a region that contains the Behavior's new scheduling
@@ -205,7 +205,7 @@ class BehaviorRetained extends LeafRetained  {
 
     /**
      * Set the Sound's scheduling region to the specified Leaf node.
-     */  
+     */
     synchronized void setSchedulingBoundingLeaf(BoundingLeaf region) {
 
 	if (source != null && source.isLive()) {
@@ -283,7 +283,7 @@ class BehaviorRetained extends LeafRetained  {
 
     /**
      * Get the Behavior's scheduling region
-     */  
+     */
     BoundingLeaf getSchedulingBoundingLeaf() {
 	return (boundingLeaf != null ?
 		(BoundingLeaf)boundingLeaf.source : null);
@@ -325,7 +325,7 @@ class BehaviorRetained extends LeafRetained  {
 	}
 	super.markAsLive();
     }
-    
+
     /**
      * This clearLive routine first calls the superclass's method, then
      * it deactivates all canvases that are associated with the attached
@@ -409,7 +409,7 @@ class BehaviorRetained extends LeafRetained  {
     // The above wakeupOn() just remember the reference
     // We only need to handle (and ignore the rest) the
     // last wakeupOn() condition set in the behavior.
-    // This handle the case when multiple wakeupOn() 
+    // This handle the case when multiple wakeupOn()
     // are invoked in the same processStimulus()
     void handleLastWakeupOn(WakeupCondition prevWakeupCond,
 			    BehaviorStructure bs) {
@@ -430,29 +430,29 @@ class BehaviorRetained extends LeafRetained  {
 	}
     }
 
-    
-    /** 
+
+    /**
      * Returns this behavior's wakeup criteria.
      * @return criteria The wakeup criteria of this object
      */
     WakeupCondition getWakeupCondition() {
 	return wakeupCondition;
     }
-    
+
     /**
      * Post the specified Id.  Behaviors use this method to cause sequential
      * scheduling of other behavior object.
      * @param postId The Id being posted
      */
-    
+
     void postId(int postId){
 	if (source != null && source.isLive()) {
 	    universe.behaviorStructure.handleBehaviorPost((Behavior) source, postId);
 	}
     }
-    
+
     protected View getView() {
-	return (universe != null ? 
+	return (universe != null ?
 		universe.getCurrentView() : null);
     }
 
@@ -489,7 +489,7 @@ class BehaviorRetained extends LeafRetained  {
 	    // use boundingLeaf
 	    transformedRegion =
 		boundingLeaf.mirrorBoundingLeaf.transformedRegion;
-	    
+
 	}
     }
 

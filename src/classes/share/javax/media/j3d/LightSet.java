@@ -39,13 +39,13 @@ class LightSet extends Object {
      * The Lights that make up this set
      */
     LightRetained[] lights = null;
- 
+
     // The number of lights in this lightset, may be less than lights.length
     int nlights = 0;
 
     // A reference to the next LightSet
     LightSet next = null;
- 
+
     // A reference to the previous LightSet
     LightSet prev = null;
 
@@ -56,14 +56,14 @@ class LightSet extends Object {
     boolean isDirty = true;
 
     /**
-     * Constructs a new LightSet 
+     * Constructs a new LightSet
      */
-    LightSet(RenderBin rb, RenderAtom ra, LightRetained[] lights, 
+    LightSet(RenderBin rb, RenderAtom ra, LightRetained[] lights,
 	     int nlights, boolean lightOn) {
 	this.reset(rb, ra, lights, nlights, lightOn);
     }
 
-    void reset(RenderBin rb, RenderAtom ra, LightRetained[] lights, 
+    void reset(RenderBin rb, RenderAtom ra, LightRetained[] lights,
 	       int nlights, boolean lightOn) {
 	int i;
 
@@ -78,11 +78,11 @@ class LightSet extends Object {
 	}
 
 	this.nlights = nlights;
-	
+
         //lists = new RenderList(ro);
         //lists.prims[ro.geometry.geoType-1] = ro;
     }
-	
+
     boolean equals(RenderBin rb, LightRetained[] lights, int nlights,
 		   boolean lightOn) {
 	int i, j;
@@ -90,7 +90,7 @@ class LightSet extends Object {
 
 	if (this.nlights != nlights)
 	   return(false);
-	
+
 	if (this.lightingOn != lightOn)
 	   return(false);
 

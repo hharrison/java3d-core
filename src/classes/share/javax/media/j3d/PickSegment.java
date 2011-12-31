@@ -45,7 +45,7 @@ public final class PickSegment extends PickShape {
     Point3d start;
     Point3d end;
 
-    /** 
+    /**
      * Constructs an empty PickSegment.
      * The start and end points of the line segment are
      * initialized to (0,0,0).
@@ -105,9 +105,9 @@ public final class PickSegment extends PickShape {
     }
 
 
-    
+
     // Only use within J3D.
-    // Return a new PickSegment that is the transformed (t3d) of this pickSegment.  
+    // Return a new PickSegment that is the transformed (t3d) of this pickSegment.
     PickShape transform(Transform3D t3d) {
 	PickSegment newPS = new PickSegment(start, end);
 	t3d.transform(newPS.start);

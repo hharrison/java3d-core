@@ -32,13 +32,13 @@
 package javax.media.j3d;
 
 /**
- * The DrawingSurfaceObject class is used to manage native drawing surface 
+ * The DrawingSurfaceObject class is used to manage native drawing surface
  */
 class NoopDrawingSurfaceObject extends DrawingSurfaceObject {
-    
+
     NoopDrawingSurfaceObject(Canvas3D cv) {
         super(cv);
-        
+
         System.err.println("NoopDrawingSurfaceObject constructed");
     }
 

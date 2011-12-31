@@ -145,11 +145,11 @@ class HashKey extends Object {
         return false;
     }
 
-    
+
     /* For internal use only. */
     private int equals(HashKey hk) {
 	int index = 0;
-	
+
 	while((index < count) && (index < hk.count)) {
 	    if(value[index] < hk.value[index])
 		return -1;
@@ -157,7 +157,7 @@ class HashKey extends Object {
 		return 1;
 	    index++;
 	}
-	
+
 	if(count == hk.count)
 	    // Found it!
 	    return 0;
@@ -165,10 +165,10 @@ class HashKey extends Object {
 	    return -1;
 	else
 	    return 1;
-	
+
     }
 
-    
+
     /* For package use only. */
     int equals(HashKey localToVworldKeys[], int start, int end) {
 	int mid;
@@ -182,7 +182,7 @@ class HashKey extends Object {
 	    else if((test > 0) && (start != mid))
 		return equals(localToVworldKeys, mid, end);
 	    else if(test == 0)
-		return mid;	     
+		return mid;
 	    else
 		return -1;
 	}
@@ -195,11 +195,11 @@ class HashKey extends Object {
 		   int start, int end) {
 
 	int mid;
-	
+
 	mid = start +((end - start)/ 2);
 	if(localToVworldKeys[mid] != null) {
 	    int test = equals(localToVworldKeys[mid]);
-	    
+
 	    if(start != mid) {
 		if(test < 0) {
 		    return equals(localToVworldKeys, index, start, mid);
@@ -213,34 +213,34 @@ class HashKey extends Object {
 		    index[0] = mid;
 		    return false;
 		}
-		else if(test > 0) { 
+		else if(test > 0) {
 		    index[0] = mid+1;
 		    return false;
 		}
 	    }
-	    
-	    // (test == 0) 
+
+	    // (test == 0)
 	    index[0] = mid;
 	    return true;
-	    
+
 	}
 	// A null haskey encountered.
 	// But we still want to return the index where we encounter it.
 	index[0] = mid;
 	return  false;
     }
-    
+
     public String toString() {
 	return new String(value, 0, count);
     }
- 
+
     String getLastNodeId() {
       int i, j, temp;
-      
-      for(i=(count-1); i>0; i--) 
+
+      for(i=(count-1); i>0; i--)
 	if(value[i] == '+')
 	  break;
-     
+
       if(i>0) {
 	value[i++] = '\0';
 	temp = count-i;
@@ -249,10 +249,10 @@ class HashKey extends Object {
 	  v1[j] = value[i];
 	  value[i] = '\0';
 	}
-	count = count - (temp+1);	
+	count = count - (temp+1);
 	return new String(v1);
       }
-      
+
       return new String(value, 0, count);
     }
 

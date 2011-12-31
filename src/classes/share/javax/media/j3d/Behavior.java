@@ -253,15 +253,15 @@ public abstract class Behavior extends Leaf {
      * This is used when the scheduling bounding leaf is set to null.
      * @param region the bounds that contains the Behavior's new scheduling
      * region
-     */  
+     */
     public void setSchedulingBounds(Bounds region) {
 	((BehaviorRetained)this.retained).setSchedulingBounds(region);
     }
 
-    /**  
+    /**
      * Retrieves the Behavior node's scheduling bounds.
      * @return this Behavior's scheduling bounds information
-     */  
+     */
     public Bounds getSchedulingBounds() {
 	return ((BehaviorRetained)this.retained).getSchedulingBounds();
     }
@@ -272,15 +272,15 @@ public abstract class Behavior extends Leaf {
      * bounds object.
      * @param region the bounding leaf node used to specify the Behavior
      * node's new scheduling region
-     */  
+     */
     public void setSchedulingBoundingLeaf(BoundingLeaf region) {
 	((BehaviorRetained)this.retained).setSchedulingBoundingLeaf(region);
     }
 
-    /**  
+    /**
      * Retrieves the Behavior node's scheduling bounding leaf.
      * @return this Behavior's scheduling bounding leaf information
-     */  
+     */
     public BoundingLeaf getSchedulingBoundingLeaf() {
 	return ((BehaviorRetained)this.retained).getSchedulingBoundingLeaf();
     }
@@ -310,7 +310,7 @@ public abstract class Behavior extends Leaf {
 		throw new IllegalStateException(J3dI18N.getString("Behavior0"));
 	    }
 	}
-	behavret.wakeupOn(criteria);    
+	behavret.wakeupOn(criteria);
     }
 
     /**
@@ -330,9 +330,9 @@ public abstract class Behavior extends Leaf {
     }
 
     /**
-     * Posts the specified postId to the Behavior Scheduler.  All behaviors 
-     * that have registered WakeupOnBehaviorPost with this postId, or a postId 
-     * of 0, and with this behavior, or a null behavior, will have that wakeup 
+     * Posts the specified postId to the Behavior Scheduler.  All behaviors
+     * that have registered WakeupOnBehaviorPost with this postId, or a postId
+     * of 0, and with this behavior, or a null behavior, will have that wakeup
      * condition met.
      * <p>
      * This feature allows applications to send arbitrary events into the
@@ -441,7 +441,7 @@ public abstract class Behavior extends Leaf {
      * View.  So, for instance, Billboard behaviors would be oriented toward
      * this primary view, in the case of multiple active views into the same
      * scene graph.
-     */ 
+     */
     protected View getView() {
         return ((BehaviorRetained)this.retained).getView();
     }
@@ -452,7 +452,7 @@ public abstract class Behavior extends Leaf {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -470,7 +470,7 @@ public abstract class Behavior extends Leaf {
      */
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
-	
+
 	BehaviorRetained attr = (BehaviorRetained) originalNode.retained;
 	BehaviorRetained rt = (BehaviorRetained) retained;
 
@@ -520,7 +520,7 @@ public abstract class Behavior extends Leaf {
         if (bl != null) {
 	    Object o = referenceTable.getNewObjectReference(bl);
             rt.setSchedulingBoundingLeaf((BoundingLeaf) o);
-			      
+
         }
     }
 

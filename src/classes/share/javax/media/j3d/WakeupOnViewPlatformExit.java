@@ -81,7 +81,7 @@ public final class WakeupOnViewPlatformExit extends WakeupCriterion {
      *
      * @return the triggering ViewPlatform node
      *
-     * @exception IllegalStateException if not called from within 
+     * @exception IllegalStateException if not called from within
      * a behavior's processStimulus method that was awoken by a
      * view platform exit.
      *
@@ -116,9 +116,9 @@ public final class WakeupOnViewPlatformExit extends WakeupCriterion {
 	transformedRegion.transform(b.getCurrentLocalToVworld(null));
     }
 
-   
+
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
     void addBehaviorCondition(BehaviorStructure bs) {
@@ -130,7 +130,7 @@ public final class WakeupOnViewPlatformExit extends WakeupCriterion {
 
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
     void removeBehaviorCondition(BehaviorStructure bs) {

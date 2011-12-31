@@ -55,7 +55,7 @@ public final class WakeupOnViewPlatformEntry extends WakeupCriterion {
      * ViewPlatform that triggered this wakeup condition.
      */
     ViewPlatformRetained triggeredVP;
-    
+
     /**
      * Constructs a new WakeupOnEntry criterion.
      * @param region the region that will trigger a wakeup if a ViewPlatform
@@ -65,7 +65,7 @@ public final class WakeupOnViewPlatformEntry extends WakeupCriterion {
 	this.region = (Bounds)region.clone();
 	WakeupIndexedList.init(this, TOTAL_INDEXED_UNORDER_SET_TYPES);
     }
-    
+
     /**
      * Returns this object's bounds specification
      * @return the bounds used in constructing this WakeupCriterion.
@@ -79,7 +79,7 @@ public final class WakeupOnViewPlatformEntry extends WakeupCriterion {
      *
      * @return the triggering ViewPlatform node
      *
-     * @exception IllegalStateException if not called from within 
+     * @exception IllegalStateException if not called from within
      * a behavior's processStimulus method that was awoken by a
      * view platform entry.
      *
@@ -115,7 +115,7 @@ public final class WakeupOnViewPlatformEntry extends WakeupCriterion {
     }
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
     void addBehaviorCondition(BehaviorStructure bs) {
@@ -127,7 +127,7 @@ public final class WakeupOnViewPlatformEntry extends WakeupCriterion {
 
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
     void removeBehaviorCondition(BehaviorStructure bs) {

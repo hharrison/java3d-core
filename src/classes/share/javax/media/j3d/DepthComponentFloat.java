@@ -46,7 +46,7 @@ public class DepthComponentFloat extends DepthComponent {
     }
 
     /**
-     * Constructs a new floating-point depth (z-buffer) component object with 
+     * Constructs a new floating-point depth (z-buffer) component object with
      * the specified width and height.
      * @param width the width of the array of depth values
      * @param height the height of the array of depth values
@@ -68,7 +68,7 @@ public class DepthComponentFloat extends DepthComponent {
 
     /**
      * Copies the depth data from this object to the specified array.
-     * The array must be large enough to hold all of the floats. 
+     * The array must be large enough to hold all of the floats.
      * @param depthData array of floats that will receive a copy of
      * the depth data
      * @exception CapabilityNotSetException if appropriate capability is
@@ -92,7 +92,7 @@ public class DepthComponentFloat extends DepthComponent {
 
 
     /**
-     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)  
+     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
 	DepthComponentFloatRetained rt = (DepthComponentFloatRetained) retained;
@@ -108,7 +108,7 @@ public class DepthComponentFloat extends DepthComponent {
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -120,8 +120,8 @@ public class DepthComponentFloat extends DepthComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
-     void duplicateAttributes(NodeComponent originalNodeComponent, 
-			      boolean forceDuplicate) { 
+     void duplicateAttributes(NodeComponent originalNodeComponent,
+			      boolean forceDuplicate) {
 	 super.duplicateAttributes(originalNodeComponent,
 				   forceDuplicate);
 	 // width, height is copied in cloneNode before

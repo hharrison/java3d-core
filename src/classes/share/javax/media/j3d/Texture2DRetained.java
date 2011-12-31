@@ -41,12 +41,12 @@ import javax.vecmath.*;
  */
 class Texture2DRetained extends TextureRetained {
 
-    // Note : There is hardly any HW vendor supports detail Image. 
+    // Note : There is hardly any HW vendor supports detail Image.
     //        Detail Image operation is simply no-op in 1.5.
-    
+
     // currently detail image is only applicable to 2D texture
     // detail texture info
-    
+
    // These members are unused except for public set and get methods.
     private ImageComponent2DRetained detailImage = null;
     private int detailTextureMode = Texture2D.DETAIL_MODULATE;
@@ -190,8 +190,8 @@ class Texture2DRetained extends TextureRetained {
         if (detailTextureFuncPts != null) {
             for (int i = 0, j = 0; i < numDetailTextureFuncPts; i++) {
                 pts[i].x = detailTextureFuncPts[j++];
-                pts[i].y = detailTextureFuncPts[j++]; 
-	    } 
+                pts[i].y = detailTextureFuncPts[j++];
+	    }
 	}
     }
 

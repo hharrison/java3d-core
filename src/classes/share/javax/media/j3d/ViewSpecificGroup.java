@@ -100,7 +100,7 @@ public class ViewSpecificGroup extends Group {
      */
     public ViewSpecificGroup() {
         // set default read capabilities
-        setDefaultReadCapabilities(readCapabilities);        
+        setDefaultReadCapabilities(readCapabilities);
     }
 
 
@@ -184,9 +184,9 @@ public class ViewSpecificGroup extends Group {
 	    if(!this.getCapability(ALLOW_VIEW_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("ViewSpecificGroup1"));
 	((ViewSpecificGroupRetained)this.retained).removeView(index);
-	
+
     }
-  
+
 
     /**
      * Returns an enumeration of this ViewSpecificGroup node's list
@@ -220,7 +220,7 @@ public class ViewSpecificGroup extends Group {
 	((ViewSpecificGroupRetained)this.retained).addView(view);
     }
 
-  
+
     /**
      * Returns the number of View objects in this node's list of views.
      * If this number is 0, then the list of views is empty and

@@ -54,7 +54,7 @@ class CompressedGeometryRenderMethod implements RenderMethod {
 	    }
 	    return true;
 	}
-	
+
 	boolean isVisible = false; // True if any of the RAs is visible.
 
 	while (ra != null) {
@@ -77,21 +77,21 @@ class CompressedGeometryRenderMethod implements RenderMethod {
 		    cv.raIsVisible = false;
 		}
 		cv.ra = ra.renderAtom;
-	    }		    
-	    
+	    }
+
 	    ra = ra.next;
 	}
 
 	return isVisible;
-	
+
     }
 
     void renderCompressedGeo(RenderAtomListInfo ra, RenderMolecule rm, Canvas3D cv) {
-	
+
         boolean useAlpha ;
 	CompressedGeometryRetained cgr ;
 	useAlpha = rm.useAlpha ;
-	    
+
 	cgr = (CompressedGeometryRetained)ra.renderAtom.geometryAtom.geometryArray[ra.index];
 
 	/* force_decompression  if lighting is disabled and
@@ -110,7 +110,7 @@ class CompressedGeometryRenderMethod implements RenderMethod {
 		// decompressor error
 		return ;
 	}
-	      
+
 	cgr.mirrorGeometry.execute(cv, ra.renderAtom, rm.isNonUniformScale,
 	     (useAlpha && ra.geometry().noAlpha), rm.alpha,
 	     cv.screen.screen,

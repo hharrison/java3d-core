@@ -34,11 +34,11 @@ package javax.media.j3d;
 import java.util.ArrayList;
 
 /**
- * A SoundSchedulerAtom is the smallest object representing a Sound within 
+ * A SoundSchedulerAtom is the smallest object representing a Sound within
  * SoundScheduler.  This class contains View-Depedent fields.  Some of these
- * fields may appear to over lap fields in the Sound Node classes, but 
+ * fields may appear to over lap fields in the Sound Node classes, but
  * remember that the Sound Node fields are universal, user-defined fields
- * and do not take into account specific Audio Device view-dependent 
+ * and do not take into account specific Audio Device view-dependent
  * conditions.
  */
 
@@ -46,12 +46,12 @@ class SoundSchedulerAtom extends Object {
 
     /**
      * The mirror sound node component of this sound scheduler atom
-     */  
+     */
     SoundRetained sound = null;
 
     /**
      * MediaContainer currently loaded for this atom
-     */  
+     */
     MediaContainer soundData = null;
 
     // Maintain continuously playing silent sound sources.
@@ -70,12 +70,12 @@ class SoundSchedulerAtom extends Object {
 
     /**
      *  Is this sound in an active scheduling region
-     */  
+     */
     boolean   activated = false;
 
     /**
      *  Switch for turning sound on or off while the sound is "active"
-     */  
+     */
     static final int OFF         = 0;
     static final int ON          = 1;
     static final int PENDING_ON  = 2;
@@ -128,7 +128,7 @@ class SoundSchedulerAtom extends Object {
 
     /**
      * This status flag is used for sound scheduling
-     */  
+     */
     static final int SOUND_OFF      = 0; // The sound is not playing
     static final int SOUND_AUDIBLE  = 1; // The sound is potentially audible
     static final int SOUND_SILENT   = 2; // The sound is playing silently
@@ -142,38 +142,38 @@ class SoundSchedulerAtom extends Object {
     // passed to all SoundSchedulers to update sound rendering or 'run' state
     // the bit for that field is cleared by the SoundStructure thread.
 
-    /**  
+    /**
      * attribsDirty bit field
      * This bitmask is set when sound node attribute is changed by the user.
-     */  
+     */
     int       attribsDirty = 0x0000;
-   
-    /**  
+
+    /**
      * stateDirty bit field
      * This bitmask is set when scene graph state is changed.
-     */  
+     */
     int       stateDirty   = 0x0000;
 
     // Load Sound Data Status maintained in SoundRetained class
 
     /**
      *  Identifiers of sample associated with sound source
-     */  
+     */
     int       sampleId = SoundRetained.NULL_SOUND;
 
     /**
      *  reference to Sound Scheduler this atom is associated with
-     */  
+     */
     SoundScheduler  soundScheduler = null;
 
 
-    /**  
+    /**
      * Calculate absolute time at which sample completes
      * Checks playing flag denoting if sound is started already or not:
      *    false - calcalutes endTime in relation to startTime
      *    true  - re-calculates endTime based on current position in
      *            loop portion of sample plus release length
-     */  
+     */
     synchronized void calculateEndTime() {
         SoundRetained sgSound = sound.sgSound;
         int loops = sgSound.loopCount;
@@ -212,16 +212,16 @@ class SoundSchedulerAtom extends Object {
                     debugPrint("calculateEndTime: NOT Playing so = " + endTime);
             }
         }
-    }    
+    }
 
- 
+
     void enable(boolean enabled) {
         if (enabled) {
                     setEnableState(PENDING_ON);
                     if (debugFlag)
                         debugPrint(" enableSound calls soundAtom " +
                                this + " setEnableState PENDING_ON");
-        }        
+        }
         else {
                     setEnableState(PENDING_OFF);
                     if (debugFlag)
@@ -230,35 +230,35 @@ class SoundSchedulerAtom extends Object {
         }
     }
 
- 
+
     void mute(boolean muted) {
         if (muted) {
             setMuteState(PENDING_MUTE);
             if (debugFlag)
                         debugPrint(" muteSound() calls soundAtom " +
                                this + " setMuteState PENDING_ON");
-        }        
+        }
         else {
             setMuteState(PENDING_UNMUTE);
-            if (debugFlag) 
+            if (debugFlag)
                         debugPrint(" muteSound() calls soundAtom " +
                                this + " setMuteState PENDING_UNMUTE");
         }
     }
- 
+
     void pause(boolean paused) {
         if (paused) {
             setPauseState(PENDING_PAUSE);
             if (debugFlag)
                 debugPrint(this + ".pause calls setPauseState(PENDING_PAUSE)");
-        }        
+        }
         else {
             setPauseState(PENDING_UNPAUSE);
             if (debugFlag)
                 debugPrint(this +".pause calls setPauseState(PENDING_UNPAUSE)");
         }
     }
- 
+
 
 // XXXX: remove this
 // just set the state after debug no longer needed
@@ -286,8 +286,8 @@ class SoundSchedulerAtom extends Object {
                     debugPrint("state = " + state);
                 break;
         }
-    }   
- 
+    }
+
 // XXXX: remove this
 // just set the state after debug no longer needed
     void setMuteState(int state) {
@@ -314,8 +314,8 @@ class SoundSchedulerAtom extends Object {
                     debugPrint("state = " + state);
                 break;
         }
-    }   
- 
+    }
+
 // XXXX: remove this
 // just set the state after debug no longer needed
     void setPauseState(int state) {
@@ -342,8 +342,8 @@ class SoundSchedulerAtom extends Object {
                     debugPrint("state = " + state);
                 break;
         }
-    }   
- 
+    }
+
 
     /**
      * calcActiveSchedAction()
@@ -354,7 +354,7 @@ class SoundSchedulerAtom extends Object {
      * what SoundScheduler action to perform when sound is Active
      *     set sound active flag true
      *     switch on enable value, to set pending scheduling action
-     *         depending on continuous and release flags and sound status 
+     *         depending on continuous and release flags and sound status
      */
     synchronized int calcActiveSchedAction() {
         SoundRetained sgSound = sound.sgSound;
@@ -377,7 +377,7 @@ class SoundSchedulerAtom extends Object {
                 if (status == SOUND_OFF)
                     // should NOT see this, but if we do...
                     action = START_AUDIBLE;
-		else if (status == SOUND_SILENT) 
+		else if (status == SOUND_SILENT)
                     action = MAKE_AUDIBLE;
 		else // status == SOUND_AUDIBLE
                     action = LEAVE_AUDIBLE;
@@ -428,8 +428,8 @@ class SoundSchedulerAtom extends Object {
                                     "action <- TURN_OFF");
                         action = TURN_OFF;
                     }
-                }   
-		else { //  status == SOUND_OFF 
+                }
+		else { //  status == SOUND_OFF
                     action = LEAVE_OFF;
                 }
                 break;
@@ -439,7 +439,7 @@ class SoundSchedulerAtom extends Object {
          if (paused == PENDING_PAUSE) {
              // if this pause state is set to PAUSE then assume the sound is
              // already paused, so any incoming action that leave the state
-             // as it already is, leaves the sound paused. 
+             // as it already is, leaves the sound paused.
             if (debugFlag)
                 debugPrint("    PENDING_PAUSE");
             switch (action) {
@@ -447,12 +447,12 @@ class SoundSchedulerAtom extends Object {
                 case LEAVE_AUDIBLE:
                 case RESUME_AUDIBLE:
                     action = PAUSE_AUDIBLE;
-                    break;    
+                    break;
                 case MAKE_SILENT:
                 case LEAVE_SILENT:
                 case RESUME_SILENT:
                     action = PAUSE_SILENT;
-                    break;    
+                    break;
                 default:
                     // don't change action for any other cases
                     break;
@@ -468,12 +468,12 @@ class SoundSchedulerAtom extends Object {
                 case LEAVE_AUDIBLE:
                 case PAUSE_AUDIBLE:
                     action = RESUME_AUDIBLE;
-                    break;    
+                    break;
                 case MAKE_SILENT:
                 case LEAVE_SILENT:
                 case PAUSE_SILENT:
                     action = RESUME_SILENT;
-                    break;    
+                    break;
                 default:
                     // don't change action for any other cases
                     break;
@@ -491,14 +491,14 @@ class SoundSchedulerAtom extends Object {
      * what SoundScheduler action to perform when sound is inactive.
      *     set sound active flag false
      *     switch on enable value, to set pending scheduling action
-     *         depending on continuous and release flags and sound status 
+     *         depending on continuous and release flags and sound status
      */
     synchronized int calcInactiveSchedAction() {
         int action  = DO_NOTHING;
         SoundRetained sgSound = sound.sgSound;
 
 	// Sound is Inactive
-	// Generally, sound is OFF unless continuous flag true 
+	// Generally, sound is OFF unless continuous flag true
 	// then sound is silently playing if on.
 	activated = false;
 
@@ -572,7 +572,7 @@ class SoundSchedulerAtom extends Object {
                                      ", already OFF, action <- LEAVE_OFF");
                          action = LEAVE_OFF;
                      }
-                } 
+                }
                 else  { // continuous and release flag not both true
                      if (status == SOUND_OFF) {
                          if (debugFlag)
@@ -583,7 +583,7 @@ class SoundSchedulerAtom extends Object {
                      else {
                          if (debugFlag)
                              debugPrint("Enable = " + enabled +
-                                     ", not already OFF, action <- TURN_OFF"); 
+                                     ", not already OFF, action <- TURN_OFF");
                          action = TURN_OFF;
                      }
                 }
@@ -596,7 +596,7 @@ class SoundSchedulerAtom extends Object {
          if (paused == PENDING_PAUSE) {
              // if this pause state is set to PAUSE then assume the sound is
              // already paused, so any incoming action that leave the state
-             // as it already is, leaves the sound paused. 
+             // as it already is, leaves the sound paused.
             switch (action) {
                 case MAKE_SILENT:
                 case LEAVE_SILENT:
@@ -639,24 +639,24 @@ class SoundSchedulerAtom extends Object {
     /**
      * Set bit(s) in soundDirty field
      * @param binary flag denotes bits to set ON
-     */ 
+     */
     void setAttribsDirtyFlag(int bitFlag) {
         attribsDirty |= bitFlag;
         if (debugFlag)
             debugPrint("setAttribsDirtyFlag = " + bitFlag);
         return ;
-    }    
+    }
     void setStateDirtyFlag(int bitFlag) {
         stateDirty |= bitFlag;
         if (debugFlag)
             debugPrint("setStateDirtyFlag = " + bitFlag);
         return ;
-    }    
- 
+    }
+
     /**
      * Clear sound's dirty flag bit value.
      * @param binary flag denotes bits to set OFF
-     */ 
+     */
     void clearAttribsDirtyFlag(int bitFlag) {
         if (debugFlag)
             debugPrint("clearAttribsDirtyFlag = " + bitFlag);
@@ -682,25 +682,25 @@ class SoundSchedulerAtom extends Object {
         stateDirty = 0x0;
         return ;
     }
- 
- 
+
+
     /**
      * Test sound's dirty flag bit(s)
      * @param field denotes which bitmask to set into
      * @param binary flag denotes bits to set Test
      * @return true if bit(s) in bitFlag are set dirty (on)
-     */ 
+     */
     boolean testDirtyFlag(int field, int bitFlag) {
         if ((field & bitFlag) > 0)
             return true;
         else
             return false;
     }
- 
+
     /**
      * Test sound's dirty flags for ANY bits on
      * @return true if any bit in bitFlag is flipped on
-     */ 
+     */
     boolean testDirtyFlags() {
         if ((attribsDirty & 0xFFFF) > 0)
             return true;

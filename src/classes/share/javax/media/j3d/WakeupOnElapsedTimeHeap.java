@@ -32,16 +32,16 @@
 package javax.media.j3d;
 
 /**
- * A Binary heap to store WakeupOnElapsedTime. It is arranged so that the 
+ * A Binary heap to store WakeupOnElapsedTime. It is arranged so that the
  * smallest triggeredTime of the wakeup object is put at the top of the heap.
- * Add/deletion takes O(log n) time. 
+ * Add/deletion takes O(log n) time.
  * For better performance we can consider to use Fibonacci Heaps.
  *
  */
 class WakeupOnElapsedTimeHeap implements Cloneable {
 
     // entry 0 is not used so index can be calculated more efficiently
-    WakeupOnElapsedTime data[]; 
+    WakeupOnElapsedTime data[];
     int size = 0;
 
     /**
@@ -77,9 +77,9 @@ class WakeupOnElapsedTimeHeap implements Cloneable {
      * User has to make sure that size > 0 before it is called.
      */
     final WakeupOnElapsedTime getMin() {
-	return data[1]; 
+	return data[1];
     }
-    
+
 
     /**
      * Insert the key into the heap
@@ -158,13 +158,13 @@ class WakeupOnElapsedTimeHeap implements Cloneable {
 	    l = i << 1;
 	    r = l+1;
 
-	    if ((l <= size) && 
+	    if ((l <= size) &&
 		(data[l].triggeredTime < data[i].triggeredTime)) {
 		smallest = l;
 	    } else {
 		smallest = i;
 	    }
-	    if ((r <= size) && 
+	    if ((r <= size) &&
 		(data[r].triggeredTime < data[smallest].triggeredTime)) {
 		smallest = r;
 	    }
@@ -176,14 +176,14 @@ class WakeupOnElapsedTimeHeap implements Cloneable {
 	    data[i] = temp;
 	    i = smallest;
 	} while (true);
-	
+
 	return min;
     }
 
 
     /***
      * Trims the capacity of this instance to be the
-     * list's current size.  
+     * list's current size.
      */
     final void trimToSize() {
 	if (data.length > size+1) {
@@ -197,22 +197,22 @@ class WakeupOnElapsedTimeHeap implements Cloneable {
      * Clone this heap
      */
     protected final Object clone() {
-	try { 
+	try {
 	    WakeupOnElapsedTimeHeap heap = (WakeupOnElapsedTimeHeap)super.clone();
 	    heap.data =  new WakeupOnElapsedTime[size+1];
 	    System.arraycopy(data, 0, heap.data, 0, size+1);
 	    return heap;
-	} catch (CloneNotSupportedException e) { 
+	} catch (CloneNotSupportedException e) {
 	    // this shouldn't happen, since we are Cloneable
 	    throw new InternalError();
 	}
 
     }
-    
+
 
     public String toString() {
 	StringBuffer sb = new StringBuffer("[ ");
-	
+
 	if (size > 0) {
 	    sb.append(data[1]);
 	}

@@ -58,13 +58,13 @@ public class ColorInterpolator extends Interpolator {
     Color3f endColor = new Color3f();
     Color3f newColor = new Color3f();
 
-    // We can't use a boolean flag since it is possible 
+    // We can't use a boolean flag since it is possible
     // that after alpha change, this procedure only run
     // once at alpha.finish(). So the best way is to
     // detect alpha value change.
     private float prevAlphaValue = Float.NaN;
     private int prevColorTarget = -1;
-    private WakeupCriterion passiveWakeupCriterion = 
+    private WakeupCriterion passiveWakeupCriterion =
 	(WakeupCriterion) new WakeupOnElapsedFrames(0, true);
 
     // non-public, no parameter constructor used by cloneNode
@@ -144,7 +144,7 @@ public class ColorInterpolator extends Interpolator {
     }
 
     /**
-     * This method sets the target material component object for 
+     * This method sets the target material component object for
      * this interpolator.
      * @param target the material component object whose
      * color is affected by this color interpolator
@@ -163,7 +163,7 @@ public class ColorInterpolator extends Interpolator {
 	return target;
     }
 
-    // The ColorInterpolator's initialize routine uses the default 
+    // The ColorInterpolator's initialize routine uses the default
     // initialization routine.
 
     /**
@@ -241,14 +241,14 @@ public class ColorInterpolator extends Interpolator {
         ci.duplicateNode(this, forceDuplicate);
         return ci;
     }
-   
+
 
    /**
      * Copies all ColorInterpolator information from
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -266,7 +266,7 @@ public class ColorInterpolator extends Interpolator {
      */
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
-	
+
 	ColorInterpolator ci = (ColorInterpolator) originalNode;
 
         ci.getStartColor(startColor);

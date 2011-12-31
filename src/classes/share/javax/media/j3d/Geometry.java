@@ -45,7 +45,7 @@ package javax.media.j3d;
  * Each of these geometric types defines a visible object or set of
  * objects. A Geometry object is used as a component object of a Shape3D
  * leaf node.
- * 
+ *
  */
 
 public abstract class Geometry extends NodeComponent {
@@ -61,7 +61,7 @@ public abstract class Geometry extends NodeComponent {
     private static final int[] readCapabilities = {
         ALLOW_INTERSECT
     };
-    
+
     /**
      * Constructs a new Geometry object.
      */

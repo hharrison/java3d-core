@@ -45,11 +45,11 @@ class Shape3DRetained extends LeafRetained {
     static final int GEOMETRY_CHANGED		= 0x00001;
     static final int APPEARANCE_CHANGED 	= 0x00002;
     static final int COLLISION_CHANGED		= 0x00004;
-    static final int BOUNDS_CHANGED		= 0x00008;    
+    static final int BOUNDS_CHANGED		= 0x00008;
     static final int APPEARANCEOVERRIDE_CHANGED	= 0x00010;
     static final int LAST_DEFINED_BIT        = 0x00010;
 
-    
+
     // Target threads to be notified when light changes
     static final int targetThreads = J3dThread.UPDATE_RENDERING_ENVIRONMENT |
                                      J3dThread.UPDATE_RENDER;
@@ -63,10 +63,10 @@ class Shape3DRetained extends LeafRetained {
      * The arraylist of geometry component of the shape node.
      */
     ArrayList geometryList = null;
-    
+
     /**
-     * A 2D storage of all geometry atoms associated with this shape node.  
-     * There may be more than one geometry for a Shape3D node. 
+     * A 2D storage of all geometry atoms associated with this shape node.
+     * There may be more than one geometry for a Shape3D node.
      * Do not change the following private variables to public, its access need to synchronize
      * via mirrorShape3DLock.
      */
@@ -75,7 +75,7 @@ class Shape3DRetained extends LeafRetained {
     private GeometryAtom geomAtom = null;
 
     /**
-     * To sychronize access of the mirrorShape3D's geomAtomArray*. 
+     * To sychronize access of the mirrorShape3D's geomAtomArray*.
      * A multiple read single write Lock to sychronize access into mirrorShape3D.
      * To prevent deadlock a call to read/write lock must end with a read/write unlock
      * respectively.
@@ -89,11 +89,11 @@ class Shape3DRetained extends LeafRetained {
      * Do not change the following private variables to public, its access need to synchronize
      * via mirrorShape3DLock.
      */
-    ArrayList mirrorShape3D = new ArrayList(1); 
-    
+    ArrayList mirrorShape3D = new ArrayList(1);
+
     /**
      * This field is used for mirror Shape3D nodes accessing their
-     * original nodes.  It is a NodeRetained because the original 
+     * original nodes.  It is a NodeRetained because the original
      * node may be a Shape3DRetained or a MorphRetained node.
      */
     NodeRetained sourceNode = null;
@@ -139,11 +139,11 @@ class Shape3DRetained extends LeafRetained {
      */
     BranchGroupRetained branchGroupPath[];
 
-    // cache value for picking in mirror shape. 
+    // cache value for picking in mirror shape.
     // True if all the node of the path from this to root are all pickable
     boolean isPickable = true;
 
-    // cache value for collidable in mirror shape. 
+    // cache value for collidable in mirror shape.
     // True if all the node of the path from this to root are all collidable
     boolean isCollidable = true;
 
@@ -153,7 +153,7 @@ class Shape3DRetained extends LeafRetained {
     // the child index from the closest switch parent
     int closestSwitchIndex = -1;
 
-    // Is this S3D visible ? The default is true.  
+    // Is this S3D visible ? The default is true.
     boolean visible = true;
 
     // Whether the normal appearance is overrided by the alternate app
@@ -196,7 +196,7 @@ class Shape3DRetained extends LeafRetained {
 	geometryList = new ArrayList(1);
 	geometryList.add(null);
     }
-    
+
     /**
      * Sets the collision bounds of a node.
      * @param bounds the bounding object for the node
@@ -207,7 +207,7 @@ class Shape3DRetained extends LeafRetained {
 	} else {
 	    this.collisionBound = (Bounds)bounds.clone();
 	}
-	
+
 	if (source.isLive()) {
 	    // Notify Geometry Structure to check for collision
 	    J3dMessage message = new J3dMessage();
@@ -219,10 +219,10 @@ class Shape3DRetained extends LeafRetained {
 	    message.args[1] = collisionBound;
 	    VirtualUniverse.mc.processMessage(message);
 	}
-    } 
+    }
 
     Bounds getLocalBounds(Bounds bounds) {
-	if(localBounds != null) { 
+	if(localBounds != null) {
 	    localBounds.set(bounds);
 	}
 	else {
@@ -237,9 +237,9 @@ class Shape3DRetained extends LeafRetained {
      * @param bounds the bounding object for the node
      */
     void setBounds(Bounds bounds) {
-	super.setBounds(bounds);	
-	
-	if (source.isLive() && !boundsAutoCompute) { 
+	super.setBounds(bounds);
+
+	if (source.isLive() && !boundsAutoCompute) {
 	    J3dMessage message = new J3dMessage();
 	    message.type = J3dMessage.REGION_BOUND_CHANGED;
             message.threads = J3dThread.UPDATE_TRANSFORM |
@@ -253,7 +253,7 @@ class Shape3DRetained extends LeafRetained {
 	    VirtualUniverse.mc.processMessage(message);
 	}
     }
-    
+
     /**
      * Gets the collision bounds of a node.
      * @return the node's bounding object
@@ -261,8 +261,8 @@ class Shape3DRetained extends LeafRetained {
     Bounds getCollisionBounds(int id) {
       return (collisionBound == null ?
 	      null: (Bounds)collisionBound.clone());
-    } 
-	    
+    }
+
     /**
      * Appends the specified geometry component to this Shape3D
      * node's list of geometry components.
@@ -281,23 +281,23 @@ class Shape3DRetained extends LeafRetained {
 	int i;
 	Shape3DRetained s;
 	GeometryRetained newGeom = null;
-	
+
 	checkEquivalenceClass(geometry, -1);
-	
+
 	if(((Shape3D)this.source).isLive()) {
 	    if (geometry != null) {
-		
-		newGeom = ((GeometryRetained)geometry.retained);	
+
+		newGeom = ((GeometryRetained)geometry.retained);
                 newGeom.setLive(inBackgroundGroup, refCount);
 
 		geometryList.add(newGeom);
-		
+
 	    } else {
 		geometryList.add(null);
 		newGeom = null;
 	    }
 	    sendDataChangedMessage(newGeom);
-	    
+
         } else {
 	    if (geometry != null) {
                 geometryList.add((GeometryRetained) geometry.retained);
@@ -305,8 +305,8 @@ class Shape3DRetained extends LeafRetained {
 	        geometryList.add(null);
 	    }
 	}
-        dirtyBoundsCache();                
-    }    
+        dirtyBoundsCache();
+    }
 
     /**
      * Replaces the geometry component at the specified index in this
@@ -332,9 +332,9 @@ class Shape3DRetained extends LeafRetained {
 	GeometryRetained oldGeom = null;
 
 	checkEquivalenceClass(geometry, index);
-	
+
 	if (((Shape3D)this.source).isLive()) {
-	    
+
 	    oldGeom = (GeometryRetained) (geometryList.get(index));
 	    if (oldGeom != null) {
 		oldGeom.clearLive(refCount);
@@ -349,13 +349,13 @@ class Shape3DRetained extends LeafRetained {
 		newGeom = (GeometryRetained) geometry.retained;
 		newGeom.incRefCnt();
                 newGeom.setLive(inBackgroundGroup, refCount);
-		geometryList.set(index, newGeom);	
+		geometryList.set(index, newGeom);
 		sendDataChangedMessage(newGeom);
 	    } else {
 		geometryList.set(index, null);
 		sendDataChangedMessage(null);
 	    }
-	    
+
         } else {
 
 	    oldGeom = (GeometryRetained) (geometryList.get(index));
@@ -390,17 +390,17 @@ class Shape3DRetained extends LeafRetained {
 	Shape3DRetained mShape;
 	GeometryRetained newGeom = null;
 	GeometryRetained oldGeom = null;
-	
+
 	checkEquivalenceClass(geometry, -1);
-	
+
 	if (((Shape3D)this.source).isLive()) {
-	    
+
 	    if (geometry != null) {
 		// Note : The order of the statements in important. Want ArrayList class to do index bounds
 		// check before creating internal object.
 		newGeom = (GeometryRetained) geometry.retained;
 		newGeom.incRefCnt();
-		geometryList.add(index, newGeom);		
+		geometryList.add(index, newGeom);
 		newGeom.setLive(inBackgroundGroup, refCount);
 		sendDataChangedMessage(newGeom);
 	    } else {
@@ -409,7 +409,7 @@ class Shape3DRetained extends LeafRetained {
 	    }
 
         } else {
-	    
+
 	    if (geometry != null) {
 		geometryList.add(index,(GeometryRetained) geometry.retained);
 		((GeometryRetained)geometry.retained).incRefCnt();
@@ -431,9 +431,9 @@ class Shape3DRetained extends LeafRetained {
 	int i;
 	Shape3DRetained mShape;
 	GeometryRetained oldGeom = null;
-	
+
 	if (((Shape3D)this.source).isLive()) {
-	    
+
 	    oldGeom = (GeometryRetained) (geometryList.get(index));
 	    if (oldGeom != null) {
 		oldGeom.clearLive(refCount);
@@ -441,25 +441,25 @@ class Shape3DRetained extends LeafRetained {
 		for (i=0; i<mirrorShape3D.size(); i++) {
 		    mShape = (Shape3DRetained)mirrorShape3D.get(i);
 		    oldGeom.removeUser(mShape);
-		    
+
 		}
 	    }
-	    
-	    geometryList.remove(index);		    
+
+	    geometryList.remove(index);
 	    sendDataChangedMessage(null);
-	    
+
 	} else {
 	    oldGeom = (GeometryRetained) (geometryList.get(index));
 	    if (oldGeom != null) {
 		oldGeom.decRefCnt();
 	    }
-	    geometryList.remove(index);	
+	    geometryList.remove(index);
 	}
-	
+
         dirtyBoundsCache();
-	
+
     }
-    
+
     /**
      * Retrieves the geometry component of this Shape3D node.
      * @return the geometry component of this shape node
@@ -470,8 +470,8 @@ class Shape3DRetained extends LeafRetained {
 	GeometryRetained ga = (GeometryRetained) geometryList.get(index);
         return (ga == null ? null : (Geometry)ga.source);
     }
-    
-    
+
+
     /**
      * Returns an enumeration of this Shape3D node's list of geometry
      * components.
@@ -483,15 +483,15 @@ class Shape3DRetained extends LeafRetained {
     Enumeration getAllGeometries(int id) {
 	GeometryRetained ga = null;
 	Vector geomList = new Vector(geometryList.size());
-	
+
 	for(int i=0; i<geometryList.size(); i++) {
 	    ga = (GeometryRetained) geometryList.get(i);
-	    if(ga != null) 
+	    if(ga != null)
 		geomList.add((Geometry)ga.source);
 	    else
 		geomList.add(null);
 	}
-	
+
 	return geomList.elements();
     }
 
@@ -507,7 +507,7 @@ class Shape3DRetained extends LeafRetained {
 
 	return geometryList.size();
     }
-	
+
     /**
      * Sets the appearance component of this Shape3D node.
      * @param appearance the new apearance component for this shape node
@@ -516,16 +516,16 @@ class Shape3DRetained extends LeafRetained {
 
 	Shape3DRetained s;
 	boolean visibleIsDirty = false;
-	
-	if (((Shape3D)this.source).isLive()) {	    
+
+	if (((Shape3D)this.source).isLive()) {
 	    if (appearance != null) {
 	        appearance.clearLive(refCount);
 		for (int i=0; i<mirrorShape3D.size(); i++) {
 		    s = (Shape3DRetained)mirrorShape3D.get(i);
 		    appearance.removeAMirrorUser(s);
-		}	   
+		}
 	    }
-	    
+
 	    if (newAppearance != null) {
 	       ((AppearanceRetained)newAppearance.retained).setLive(inBackgroundGroup, refCount);
 		appearance = ((AppearanceRetained)newAppearance.retained);
@@ -573,7 +573,7 @@ class Shape3DRetained extends LeafRetained {
 	    createMessage[0].args[4] = getGeomAtomsArray(mirrorShape3D);
 	    if(visibleIsDirty) {
 		createMessage[1] = new J3dMessage();
-		createMessage[1].threads = J3dThread.UPDATE_GEOMETRY;	    
+		createMessage[1].threads = J3dThread.UPDATE_GEOMETRY;
 		createMessage[1].type = J3dMessage.SHAPE3D_CHANGED;
 		createMessage[1].universe = universe;
 		createMessage[1].args[0] = this;
@@ -582,17 +582,17 @@ class Shape3DRetained extends LeafRetained {
 		createMessage[1].args[3]= createMessage[0].args[4];
 	    }
 	    VirtualUniverse.mc.processMessage(createMessage);
-	
+
         }
 	else { // not live.
 	    if (newAppearance == null) {
 		appearance = null;
 	    } else {
-		appearance = (AppearanceRetained) newAppearance.retained;    
+		appearance = (AppearanceRetained) newAppearance.retained;
 	    }
 	}
     }
-    
+
     /**
      * Retrieves the shape node's appearance component.
      * @return the shape node's appearance
@@ -603,7 +603,7 @@ class Shape3DRetained extends LeafRetained {
 
     void setAppearanceOverrideEnable(boolean flag) {
 	if (((Shape3D)this.source).isLive()) {
-	    
+
 	    // Send a message
 	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = targetThreads;
@@ -633,11 +633,11 @@ class Shape3DRetained extends LeafRetained {
     boolean getAppearanceOverrideEnable() {
 	return appearanceOverrideEnable;
     }
-    
+
     boolean intersect(PickInfo pickInfo, PickShape pickShape, int flags ) {
-          
+
         Transform3D localToVworld = pickInfo.getLocalToVWorldRef();
-        
+
         // Support OrientedShape3D here.
 	// Note - BugId : 4363899 - APIs issue : OrientedShape3D's intersect needs view
 	//                          info. temp. fix use the primary view.
@@ -646,7 +646,7 @@ class Shape3DRetained extends LeafRetained {
 		getOrientedTransform(getPrimaryViewIdx());
 	    localToVworld.mul(orientedTransform);
 	}
-        
+
  	Transform3D t3d = new Transform3D();
 	t3d.invert(localToVworld);
 	PickShape newPS = pickShape.transform(t3d);
@@ -661,7 +661,7 @@ class Shape3DRetained extends LeafRetained {
                 ((flags & PickInfo.CLOSEST_DISTANCE) == 0) &&
                 ((flags & PickInfo.CLOSEST_GEOM_INFO) == 0) &&
                 ((flags & PickInfo.ALL_GEOM_INFO) == 0)) {
-            
+
             for (int i=0; i < geomListSize; i++) {
                 geometry =  (GeometryRetained) geometryList.get(i);
                 if (geometry != null) {
@@ -679,7 +679,7 @@ class Shape3DRetained extends LeafRetained {
             Point3d closestIPnt = new Point3d();
             Point3d iPnt = new Point3d();
             Point3d iPntVW = new Point3d();
-            
+
             for (int i=0; i < geomListSize; i++) {
                 geometry =  (GeometryRetained) geometryList.get(i);
                 if (geometry != null) {
@@ -688,11 +688,11 @@ class Shape3DRetained extends LeafRetained {
                     }
                     //if (geometry.intersect(newPS, intersectionInfo, flags, iPnt)) {
                     if(geometry.intersect(newPS, pickInfo, flags, iPnt, geometry, i)) {
-                        
+
                         iPntVW.set(iPnt);
                         localToVworld.transform(iPntVW);
                         distance = pickShape.distance(iPntVW);
-                        
+
                         if (minDist > distance) {
                             minDist = distance;
                             closestIPnt.set(iPnt);
@@ -700,7 +700,7 @@ class Shape3DRetained extends LeafRetained {
                     }
                 }
             }
-            
+
             if (minDist < Double.POSITIVE_INFINITY) {
                 if ((flags & PickInfo.CLOSEST_DISTANCE) != 0) {
                     pickInfo.setClosestDistance(minDist);
@@ -711,30 +711,30 @@ class Shape3DRetained extends LeafRetained {
                 return true;
             }
         }
-        
+
 	return false;
-       
-    }    
-    
-    
+
+    }
+
+
     /**
      * Check if the geometry component of this shape node under path
      * intersects with the pickShape.
      * This is an expensive method. It should only be called if and only
-     * if the path's bound intersects pickShape.  
+     * if the path's bound intersects pickShape.
      * @exception IllegalArgumentException if <code>path</code> is
      * invalid.
      */
- 
+
     boolean intersect(SceneGraphPath path,
             PickShape pickShape, double[] dist) {
-        
+
         int flags;
         PickInfo pickInfo = new PickInfo();
-        
+
         Transform3D localToVworld = path.getTransform();
         if (localToVworld == null) {
-	    throw new IllegalArgumentException(J3dI18N.getString("Shape3DRetained3"));   
+	    throw new IllegalArgumentException(J3dI18N.getString("Shape3DRetained3"));
 	}
         pickInfo.setLocalToVWorldRef( localToVworld);
         //System.err.println("Shape3DRetained.intersect() : ");
@@ -742,27 +742,27 @@ class Shape3DRetained extends LeafRetained {
             //System.err.println("      no dist request ....");
             return intersect(pickInfo, pickShape, 0);
         }
-        
+
         flags = PickInfo.CLOSEST_DISTANCE;
         if (intersect(pickInfo, pickShape, flags)) {
             dist[0] = pickInfo.getClosestDistance();
             return true;
         }
-        
+
         return false;
-          
+
       }
 
     /**
      * This sets the immedate mode context flag
-     */  
+     */
     void setInImmCtx(boolean inCtx) {
         inImmCtx = inCtx;
     }
 
     /**
      * This gets the immedate mode context flag
-     */  
+     */
     boolean getInImmCtx() {
         return (inImmCtx);
     }
@@ -774,7 +774,7 @@ class Shape3DRetained extends LeafRetained {
     private void initMirrorShape3D(SetLiveState s, Shape3DRetained ms, int index) {
 
 	// New 1.2.1 code
-	
+
         ms.inBackgroundGroup = inBackgroundGroup;
         ms.geometryBackground = geometryBackground;
 	ms.source = source;
@@ -808,9 +808,9 @@ class Shape3DRetained extends LeafRetained {
 
 
 	ms.appearanceOverrideEnable = appearanceOverrideEnable;
-	
+
 	ms.geometryList = geometryList;
-	
+
 	// Assign the parent of this mirror shape node
 	ms.sourceNode = this;
 
@@ -823,13 +823,13 @@ class Shape3DRetained extends LeafRetained {
 	    oms.initConstantScaleEnable(os.constantScale);
 	    oms.initScale(os.scaleFactor);
         }
-	
+
     }
 
     void updateImmediateMirrorObject(Object[] objs) {
 	int component = ((Integer)objs[1]).intValue();
 	GeometryArrayRetained ga;
-	
+
 	Shape3DRetained[] msArr = (Shape3DRetained[]) objs[2];
 	int i, j;
 	if ((component & APPEARANCE_CHANGED) != 0) {
@@ -854,7 +854,7 @@ class Shape3DRetained extends LeafRetained {
      * Gets the bounding object of a node.
      * @return the node's bounding object
      */
-    
+
     Bounds getBounds() {
 
         if(boundsAutoCompute) {
@@ -866,10 +866,10 @@ class Shape3DRetained extends LeafRetained {
 
 	    if(geometryList != null) {
 		BoundingBox bbox = new BoundingBox((Bounds) null);
-		GeometryRetained geometry;    
+		GeometryRetained geometry;
 		for(int i=0; i<geometryList.size(); i++) {
 		    geometry = (GeometryRetained) geometryList.get(i);
-		    if ((geometry != null) && 
+		    if ((geometry != null) &&
 			(geometry.geoType != GeometryRetained.GEO_TYPE_NONE)) {
 			geometry.computeBoundingBox();
 			synchronized(geometry.geoBounds) {
@@ -878,16 +878,16 @@ class Shape3DRetained extends LeafRetained {
 		    }
 		}
 		return (Bounds) bbox;
-		
+
 	    } else {
 		return null;
             }
-	    
+
         } else {
             return super.getBounds();
         }
-    } 
-    
+    }
+
     Bounds getEffectiveBounds() {
         if(boundsAutoCompute) {
 	    return getBounds();
@@ -896,24 +896,24 @@ class Shape3DRetained extends LeafRetained {
 	    return super.getEffectiveBounds();
 	}
     }
-    
-    
+
+
     /**
      * ONLY needed for SHAPE, MORPH, and LINK node type.
      * Compute the combine bounds of bounds and its localBounds.
      */
     void computeCombineBounds(Bounds bounds) {
-	
+
         if(boundsAutoCompute) {
             if(geometryList != null) {
                 GeometryRetained geometry;
                 BoundingBox bbox = null;
-                
+
                 if (staticTransform != null) {
                     bbox = new BoundingBox((BoundingBox) null);
                 }
-                    
-                if (!VirtualUniverse.mc.cacheAutoComputedBounds) {                    
+
+                if (!VirtualUniverse.mc.cacheAutoComputedBounds) {
                     for(int i=0; i<geometryList.size(); i++) {
                         geometry = (GeometryRetained) geometryList.get(i);
                         if ((geometry != null) &&
@@ -959,7 +959,7 @@ class Shape3DRetained extends LeafRetained {
                 }
             }
         } else {
-            
+
             // Should this be lock too ? ( MT safe  ? )
             synchronized(localBounds) {
                 bounds.combine((Bounds) localBounds);
@@ -975,19 +975,19 @@ class Shape3DRetained extends LeafRetained {
 	doSetLive(s);
 	markAsLive();
     }
-    
+
     void doSetLive(SetLiveState s) {
 	// System.err.println("S3DRetained : setLive " + s);
 	Shape3DRetained shape;
 	GeometryRetained geometry;
 	int i, j, k, gaCnt;
 	ArrayList msList = new ArrayList();
-	
+
 	super.doSetLive(s);
-	
+
 	nodeId = universe.getNodeId();
 
-	
+
 	if (inSharedGroup) {
 	    for (i=0; i<s.keys.length; i++) {
                 if (this instanceof OrientedShape3DRetained) {
@@ -1004,7 +1004,7 @@ class Shape3DRetained extends LeafRetained {
 		/*
 		    System.err.print("s.keys[i] = "+s.keys[i]+" j = "+j);
 		    if(j < 0) {
-		    System.err.println("Shape3dRetained : Can't find hashKey"); 
+		    System.err.println("Shape3dRetained : Can't find hashKey");
 		    }
 		*/
 		shape.localToVworld[0] = localToVworld[j];
@@ -1012,7 +1012,7 @@ class Shape3DRetained extends LeafRetained {
 		shape.branchGroupPath = (BranchGroupRetained []) branchGroupPaths.get(j);
 		shape.isPickable = s.pickable[i];
 		shape.isCollidable = s.collidable[i];
-		
+
 		initMirrorShape3D(s, shape, j);
 
                 if (s.switchTargets != null &&
@@ -1033,7 +1033,7 @@ class Shape3DRetained extends LeafRetained {
 			}
 		    }
 		}
-		
+
 		// Add any scoped fog
 		if (s.fogs != null) {
 		    ArrayList l = (ArrayList)s.fogs.get(j);
@@ -1053,7 +1053,7 @@ class Shape3DRetained extends LeafRetained {
 			}
 		    }
 		}
-		    
+
 		// Add any scoped alt app
 		if (s.altAppearances != null) {
 		    ArrayList l = (ArrayList)s.altAppearances.get(j);
@@ -1089,7 +1089,7 @@ class Shape3DRetained extends LeafRetained {
 	    shape.isPickable = s.pickable[0];
 	    shape.isCollidable = s.collidable[0];
 	    initMirrorShape3D(s, shape, 0);
-	    
+
 	    // Add any scoped lights to the mirror shape
 	    if (s.lights != null) {
 		ArrayList l = (ArrayList)s.lights.get(0);
@@ -1097,7 +1097,7 @@ class Shape3DRetained extends LeafRetained {
 		    shape.addLight((LightRetained)l.get(i));
 		}
 	    }
-	    
+
 	    // Add any scoped fog
 	    if (s.fogs != null) {
 		ArrayList l = (ArrayList)s.fogs.get(0);
@@ -1105,7 +1105,7 @@ class Shape3DRetained extends LeafRetained {
 		    shape.addFog((FogRetained)l.get(i));
 		}
 	    }
-	    
+
 	    // Add any scoped modelClip
 	    if (s.modelClips != null) {
 		ArrayList l = (ArrayList)s.modelClips.get(0);
@@ -1114,7 +1114,7 @@ class Shape3DRetained extends LeafRetained {
 		}
 
 	    }
-	    
+
 	    // Add any scoped alt app
 	    if (s.altAppearances != null) {
 		ArrayList l = (ArrayList)s.altAppearances.get(0);
@@ -1131,7 +1131,7 @@ class Shape3DRetained extends LeafRetained {
 		shape.viewList = (ArrayList)s.viewLists.get(0);
 	    else
 		shape.viewList = null;
-	    
+
             if (s.switchTargets != null &&
                         s.switchTargets[0] != null) {
 		s.switchTargets[0].addNode(shape, Targets.GEO_TARGETS);
@@ -1146,7 +1146,7 @@ class Shape3DRetained extends LeafRetained {
 
 	    if (appearance != null) {
 		synchronized(appearance.liveStateLock) {
-		    if (k == 0) { // Do only first time 
+		    if (k == 0) { // Do only first time
 			appearance.setLive(inBackgroundGroup, s.refCount);
 			appearance.initMirrorObject();
 			if (appearance.renderingAttributes != null)
@@ -1166,7 +1166,7 @@ class Shape3DRetained extends LeafRetained {
 		    geometry = (GeometryRetained) geometryList.get(gaCnt);
 		    if(geometry != null) {
 			synchronized(geometry.liveStateLock) {
-			    if (k == 0) { // Do only first time 
+			    if (k == 0) { // Do only first time
 				geometry.setLive(inBackgroundGroup, s.refCount);
 			    }
 			    geometry.addUser(sh);
@@ -1177,22 +1177,22 @@ class Shape3DRetained extends LeafRetained {
 	    }
 
 	    // after the geometry has been setLived and bounds computed
-	    if (k== 0 && boundsAutoCompute) { // Do only once 
+	    if (k== 0 && boundsAutoCompute) { // Do only once
 		// user may call setBounds with a bounds other than boundingBox
 		if (! (localBounds instanceof BoundingBox)) {
 		    localBounds = new BoundingBox((BoundingBox) null);
 		}
 		getCombineBounds((BoundingBox)localBounds);
-		    
+
 	    }
 	    // Assign GAtom and set the bounds if we are not using switch
 	    initializeGAtom(sh);
 
             GeometryAtom ga = getGeomAtom(sh);
-		
+
 	    // Add the geometry atom for this shape to the nodeList
 	    s.nodeList.add(ga);
-		
+
             if (s.transformTargets != null &&
             		s.transformTargets[k] != null) {
 		// Add the geometry atom for this shape to the transformTargets
@@ -1200,14 +1200,14 @@ class Shape3DRetained extends LeafRetained {
 		s.transformTargets[k].addNode(ga, Targets.GEO_TARGETS);
 	    }
 	}
-	
-	s.notifyThreads |= (J3dThread.UPDATE_GEOMETRY | 
+
+	s.notifyThreads |= (J3dThread.UPDATE_GEOMETRY |
 			    J3dThread.UPDATE_TRANSFORM |
 			    J3dThread.UPDATE_RENDER |
 			    J3dThread.UPDATE_RENDERING_ENVIRONMENT);
 
     }
- 
+
     /**
      * This clears all references in a mirror shape
      */
@@ -1242,24 +1242,24 @@ class Shape3DRetained extends LeafRetained {
 	for (i = 0; i <  numfogs; i++)
 	     fogs[i] = null;
 	 numfogs = 0;
-	    
+
 	// Remove all the modelClips
 	for (i = 0; i <  numModelClips; i++)
 	     modelClips[i] = null;
 	 numModelClips = 0;
-	    
+
 	// Remove all the lights
 	for (i = 0; i < numlights; i++)
 	     lights[i] = null;
 	 numlights = 0;
-	    
+
 	// Remove all the al app
 	for (i = 0; i <  numAltApps; i++)
 	     altApps[i] = null;
 	numAltApps = 0;
-	
+
 	viewList = null;
-	
+
     }
 
     /**
@@ -1274,11 +1274,11 @@ class Shape3DRetained extends LeafRetained {
 	GeometryRetained geometry;
 	Object[] shapes;
 	ArrayList msList = new ArrayList();
-	
-	super.clearLive(s);
-	
 
-	
+	super.clearLive(s);
+
+
+
 	if (inSharedGroup) {
 	    synchronized(mirrorShape3D) {
 		shapes = mirrorShape3D.toArray();
@@ -1321,7 +1321,7 @@ class Shape3DRetained extends LeafRetained {
 	    msList.add(shape);
 
             GeometryAtom ga = getGeomAtom(shape);
-	    
+
 	    // Add the geometry atom for this shape to the nodeList
 	    s.nodeList.add(ga);
             if (s.transformTargets != null &&
@@ -1332,7 +1332,7 @@ class Shape3DRetained extends LeafRetained {
 
 
 	for (int k = 0; k < msList.size(); k++) {
-	    Shape3DRetained sh = (Shape3DRetained)msList.get(k); 
+	    Shape3DRetained sh = (Shape3DRetained)msList.get(k);
 	    if (appearance != null) {
 		synchronized(appearance.liveStateLock) {
 		    if (k == 0) {
@@ -1360,7 +1360,7 @@ class Shape3DRetained extends LeafRetained {
 			    J3dThread.UPDATE_TRANSFORM |
 			    // This is used to clear the scope info
 			    // of all the mirror shapes
-			    J3dThread.UPDATE_RENDERING_ENVIRONMENT | 
+			    J3dThread.UPDATE_RENDERING_ENVIRONMENT |
 			    J3dThread.UPDATE_RENDER);
 
 	if (!source.isLive()) {
@@ -1369,17 +1369,17 @@ class Shape3DRetained extends LeafRetained {
 	    for (i = 0; i < numfogs; i++)
 		fogs[i] = null;
 	    numfogs = 0;
-	    
+
 	    // Remove all the modelClips
 	    for (i = 0; i < numModelClips; i++)
 		modelClips[i] = null;
 	    numModelClips = 0;
-	    
+
 	    // Remove all the lights
 	    for (i = 0; i < numlights; i++)
 		lights[i] = null;
 	    numlights = 0;
-	    
+
 	    // Remove all the al app
 	    for (i = 0; i < numAltApps; i++)
 		altApps[i] = null;
@@ -1419,7 +1419,7 @@ class Shape3DRetained extends LeafRetained {
 	if (appearance != null &&
 	    (appearance.transparencyAttributes != null && appearance.transparencyAttributes.transparencyMode != TransparencyAttributes.NONE))
 	    return false;
-	
+
 	GeometryRetained geo;
 	boolean alphaEditable;
 
@@ -1462,7 +1462,7 @@ class Shape3DRetained extends LeafRetained {
             if (J3dDebug.devPhase && J3dDebug.debug) {
 	        compState.numShapesWStaticTG++;
 	    }
-	} else 
+	} else
 	{
 	    mergeFlag = SceneGraphObjectRetained.DONT_MERGE;
 	    compState.keepTG = true;
@@ -1489,18 +1489,18 @@ class Shape3DRetained extends LeafRetained {
 	    GeometryRetained geo = (GeometryRetained)geometryList.get(i);
 	    if (geo != null)
 		geo.compile(compState);
-	}	
-	
+	}
+
     }
 
     void merge(CompileState compState) {
-	
-	
+
+
 	if (mergeFlag == SceneGraphObjectRetained.DONT_MERGE) {
 
 	    // no need to save the staticTransform here
 
-	    TransformGroupRetained saveStaticTransform = 
+	    TransformGroupRetained saveStaticTransform =
 					compState.staticTransform;
 	    compState.staticTransform = null;
 	    super.merge(compState);
@@ -1519,7 +1519,7 @@ class Shape3DRetained extends LeafRetained {
 	boolean mergeable = true;
 	AppearanceRetained newApp;
 	int i;
-	    
+
 	GeometryRetained geometry = null;
 	int index = 0;
 	i = 0;
@@ -1549,7 +1549,7 @@ class Shape3DRetained extends LeafRetained {
 	}
 
 	GeometryArrayRetained firstGeo = (GeometryArrayRetained) geometry;
-	
+
 	for(i=index; (i<geometryList.size() && mergeable); i++) {
 	    geometry = (GeometryRetained) geometryList.get(i);
 	    if (geometry != null) {
@@ -1560,14 +1560,14 @@ class Shape3DRetained extends LeafRetained {
 
 		if (geo.vertexFormat != firstGeo.vertexFormat)
 		    mergeable = false;
-		    
+
 
 	    }
 	}
 
-	// For now, turn off lots of capability bits 
+	// For now, turn off lots of capability bits
 	if (source.getCapability(Shape3D.ALLOW_COLLISION_BOUNDS_WRITE) ||
-	    source.getCapability(Shape3D.ALLOW_APPEARANCE_WRITE) || 
+	    source.getCapability(Shape3D.ALLOW_APPEARANCE_WRITE) ||
 	    source.getCapability(Shape3D.ALLOW_APPEARANCE_OVERRIDE_WRITE) ||
 	    source.getCapability(Shape3D.ALLOW_AUTO_COMPUTE_BOUNDS_WRITE) ||
 	    source.getCapability(Shape3D.ALLOW_BOUNDS_WRITE) ||
@@ -1576,9 +1576,9 @@ class Shape3DRetained extends LeafRetained {
 	    source.getCapability(Shape3D.ALLOW_GEOMETRY_WRITE)) {
 	    mergeable = false;
 	}
-	  
+
 	return mergeable;
-      
+
     }
 
 
@@ -1596,12 +1596,12 @@ class Shape3DRetained extends LeafRetained {
 	else {
 	    ms = (Shape3DRetained)mirrorShape3D.get(0);
 	}
-	
+
 	list.add(getGeomAtom(ms));
-	
+
     }
 
-    
+
     // Called on the mirror Object
     void addLight(LightRetained light) {
 	 LightRetained[] newlights;
@@ -1683,7 +1683,7 @@ class Shape3DRetained extends LeafRetained {
 	 ModelClipRetained[] newModelClips;
 	 int i;
 
-	 
+
 	 if (modelClips == null) {
 	     modelClips = new ModelClipRetained[10];
 	 }
@@ -1756,7 +1756,7 @@ class Shape3DRetained extends LeafRetained {
 
 
 
-    void updatePickable(HashKey keys[], boolean pick[]) { 
+    void updatePickable(HashKey keys[], boolean pick[]) {
       super.updatePickable(keys, pick);
       Shape3DRetained shape;
 
@@ -1779,7 +1779,7 @@ class Shape3DRetained extends LeafRetained {
     }
 
 
-    void updateCollidable(HashKey keys[], boolean collide[]) { 
+    void updateCollidable(HashKey keys[], boolean collide[]) {
       super.updateCollidable(keys, collide);
       Shape3DRetained shape;
 
@@ -1809,34 +1809,34 @@ class Shape3DRetained extends LeafRetained {
     // Remove the old geometry atoms and reInsert
     // the new geometry atoms and update the transform
     // target list
-    
+
     private void sendDataChangedMessage( GeometryRetained newGeom ) {
-	
+
 	int i, j, gaCnt;
 	GeometryAtom[] newGAArray =  null;
 	GeometryAtom[] oldGAArray = null;
 	GeometryAtom[] newGeometryAtoms = null;
 	int geometryCnt = 0;
 	GeometryRetained geometry = null;
-	
+
 	int s3dMSize = mirrorShape3D.size();
 
 	if(s3dMSize < 1)
 	    return;
-	
+
 	Shape3DRetained mS3d = (Shape3DRetained) mirrorShape3D.get(0);
-	
+
 	mS3d.mirrorShape3DLock.writeLock();
-	
+
 	GeometryAtom oldGA = mS3d.geomAtom;
-	
+
 	GeometryAtom newGA = new GeometryAtom();
-	
+
 	if(newGeom != null) {
 	    newGeom.addUser(mS3d);
 	}
-	
-	int gSize = geometryList.size();    
+
+	int gSize = geometryList.size();
 
 	for(i=0; i<gSize; i++) {
 	    geometry = (GeometryRetained) geometryList.get(i);
@@ -1846,10 +1846,10 @@ class Shape3DRetained extends LeafRetained {
 		break;
 	    }
 	}
-	
+
 	if((geometry != null) &&
 	   (geometry.geoType == GeometryRetained.GEO_TYPE_TEXT3D)) {
-	    
+
 	    for(i = 0; i<gSize; i++) {
 		geometry = (GeometryRetained) geometryList.get(i);
 		if(geometry != null) {
@@ -1857,7 +1857,7 @@ class Shape3DRetained extends LeafRetained {
 		    geometryCnt += tempT3d.numChars;
 		}
 		else {
-		    // This is slightly wasteful, but not quite worth to optimize yet. 
+		    // This is slightly wasteful, but not quite worth to optimize yet.
 		    geometryCnt++;
 		}
 	    }
@@ -1870,11 +1870,11 @@ class Shape3DRetained extends LeafRetained {
 	else {
 	    newGA.geometryArray = new GeometryRetained[gSize];
 	}
-	
+
 	newGA.locale = mS3d.locale;
 	newGA.visible = visible;
 	newGA.source = mS3d;
-		    
+
 
 	for(gaCnt = 0; gaCnt<gSize; gaCnt++) {
 	    geometry = (GeometryRetained) geometryList.get(gaCnt);
@@ -1891,14 +1891,14 @@ class Shape3DRetained extends LeafRetained {
 			    newGA.geometryArray[geometryCnt] = geo;
 			    newGA.lastLocalTransformArray[geometryCnt] =
 				t.charTransforms[i];
-			    
+
 			} else {
 			    newGA.geometryArray[geometryCnt] = null;
 			    newGA.lastLocalTransformArray[geometryCnt] = null;
 			}
-			
+
 		    }
-		    
+
 		} else {
 		    newGA.geometryArray[geometryCnt++] = geometry;
 		}
@@ -1912,26 +1912,26 @@ class Shape3DRetained extends LeafRetained {
 
 	mS3d.geomAtom = newGA;
 	mS3d.mirrorShape3DLock.writeUnlock();
-	
+
 	// ..... clone the rest of mirrorS3D's GA with the above newGA, but modify
 	// its source.
-	
-	for (i = 1; i < s3dMSize; i++) {	
+
+	for (i = 1; i < s3dMSize; i++) {
 	    mS3d = (Shape3DRetained) mirrorShape3D.get(i);
 	    mS3d.mirrorShape3DLock.writeLock();
-	    oldGA = mS3d.geomAtom;	    
+	    oldGA = mS3d.geomAtom;
 	    newGA = new GeometryAtom();
 
 	    if(newGeom != null) {
 		newGeom.addUser(mS3d);
 	    }
-	    
+
 	    newGA.geoType = newGAArray[0].geoType;
 	    newGA.locale = mS3d.locale;
 	    newGA.visible = visible;
 	    newGA.source = mS3d;
 	    newGA.alphaEditable = newGAArray[0].alphaEditable;
-	    
+
 	    newGA.geometryArray = new GeometryRetained[newGAArray[0].geometryArray.length];
 	    for(j=0; j<newGA.geometryArray.length; j++) {
 		newGA.geometryArray[j] = newGAArray[0].geometryArray[j];
@@ -1939,12 +1939,12 @@ class Shape3DRetained extends LeafRetained {
 
 	    oldGAArray[i] = oldGA;
 	    newGAArray[i] = newGA;
-	    
+
 	    mS3d.geomAtom = newGA;
-	    mS3d.mirrorShape3DLock.writeUnlock();	    
+	    mS3d.mirrorShape3DLock.writeUnlock();
 	}
-	
-        TargetsInterface ti = 
+
+        TargetsInterface ti =
 		((GroupRetained)parent).getClosestTargetsInterface(
                                         TargetsInterface.TRANSFORM_TARGETS);
 	CachedTargets[] newCtArr = null;
@@ -1960,20 +1960,20 @@ class Shape3DRetained extends LeafRetained {
                 if (ct != null) {
 		    newCtArr[i] = new CachedTargets();
 		    newCtArr[i].copy(ct);
-		    newCtArr[i].replace(oldGAArray[i], newGAArray[i], 
+		    newCtArr[i].replace(oldGAArray[i], newGAArray[i],
 					Targets.GEO_TARGETS);
                 } else {
 		    newCtArr[i] = null;
                 }
             }
-            ti.resetCachedTargets(TargetsInterface.TRANSFORM_TARGETS, 
+            ti.resetCachedTargets(TargetsInterface.TRANSFORM_TARGETS,
 							newCtArr, -1);
 	}
 
-	
+
 	J3dMessage changeMessage  = new J3dMessage();
 	changeMessage.type = J3dMessage.SHAPE3D_CHANGED;
-	// Who to send this message to ?	
+	// Who to send this message to ?
 	changeMessage.threads = J3dThread.UPDATE_RENDER |
 	    J3dThread.UPDATE_TRANSFORM |
 	    J3dThread.UPDATE_GEOMETRY;
@@ -1989,23 +1989,23 @@ class Shape3DRetained extends LeafRetained {
 	if (boundsAutoCompute) {
 	    getCombineBounds((BoundingBox)localBounds);
 	}
-	VirtualUniverse.mc.processMessage(changeMessage);  
-	
+	VirtualUniverse.mc.processMessage(changeMessage);
+
     }
 
 
     // ********** End of New 1.2.1 code ....
-    
 
 
-    
+
+
 
     Shape3DRetained getMirrorShape(SceneGraphPath path) {
 	if (!inSharedGroup) {
 	    return (Shape3DRetained) mirrorShape3D.get(0);
 	}
 	HashKey key = new HashKey("");
-	path.getHashKey(key);	
+	path.getHashKey(key);
 	return getMirrorShape(key);
     }
 
@@ -2022,7 +2022,7 @@ class Shape3DRetained extends LeafRetained {
 	// Not possible
 	throw new RuntimeException("Shape3DRetained: MirrorShape Not found!");
     }
-    
+
     void setBoundsAutoCompute(boolean autoCompute) {
 	GeometryRetained geometry;
         if (autoCompute != boundsAutoCompute) {
@@ -2066,7 +2066,7 @@ class Shape3DRetained extends LeafRetained {
     }
     // This method is called when coordinates of a geometry in the geometrylist
     // changed and autoBoundsCompute is true
-    
+
     void updateBounds() {
 	localBounds = new BoundingBox((BoundingBox) null);
 	getCombineBounds((BoundingBox)localBounds);
@@ -2088,7 +2088,7 @@ class Shape3DRetained extends LeafRetained {
 
     boolean allowIntersect() {
 	GeometryRetained ga = null;
-	
+
 	for(int i=0; i<geometryList.size(); i++) {
 	    ga = (GeometryRetained) geometryList.get(i);
 	    if(ga != null)
@@ -2102,7 +2102,7 @@ class Shape3DRetained extends LeafRetained {
 	GeometryRetained geom1, geom2;
 	ArrayList gaList = otherShape.geometryList;
 	int gaSize =  gaList.size();
-	Transform3D otherLocalToVworld = otherShape.getCurrentLocalToVworld(); 	
+	Transform3D otherLocalToVworld = otherShape.getCurrentLocalToVworld();
 	Transform3D thisLocalToVworld = getCurrentLocalToVworld();
 	View views = null;
 	int primaryViewIdx = -1;
@@ -2113,7 +2113,7 @@ class Shape3DRetained extends LeafRetained {
 	    thisLocalToVworld.mul(((OrientedShape3DRetained)this).
 				  getOrientedTransform(primaryViewIdx));
 	}
-	
+
 	if (otherShape instanceof OrientedShape3DRetained) {
 	    if (primaryViewIdx < 0) {
 		primaryViewIdx = getPrimaryViewIdx();
@@ -2135,7 +2135,7 @@ class Shape3DRetained extends LeafRetained {
 		}
 	    }
 	}
-	
+
 	return false;
     }
 
@@ -2144,7 +2144,7 @@ class Shape3DRetained extends LeafRetained {
 	GeometryRetained geometry;
 
 	if (this instanceof OrientedShape3DRetained) {
-	    Transform3D orientedTransform = 
+	    Transform3D orientedTransform =
 		((OrientedShape3DRetained)this).
 		getOrientedTransform(getPrimaryViewIdx());
 	    thisLocalToVworld.mul(orientedTransform);
@@ -2157,9 +2157,9 @@ class Shape3DRetained extends LeafRetained {
 		return true;
 	    }
 	}
-	
+
 	return false;
-	
+
     }
 
 
@@ -2209,16 +2209,16 @@ class Shape3DRetained extends LeafRetained {
 	// mga is the final geometry we're interested.
 	geometryList = new ArrayList(1);
 	geometryList.add((GeometryArrayRetained)morph.morphedGeometryArray.retained);
-	
+
 	GeometryAtom gAtom = new GeometryAtom();
 	gAtom.geometryArray = new GeometryRetained[1];
-	
+
 	gAtom.locale = locale;
 	gAtom.visible = morph.visible;
 	gAtom.source = this;
-	
+
 	geometry = (GeometryRetained) geometryList.get(0);
-	
+
 	if(geometry ==null) {
 	    gAtom.geometryArray[0] = null;
 	} else {
@@ -2260,7 +2260,7 @@ class Shape3DRetained extends LeafRetained {
             if (geometry ==null) {
                 newGA.geometryArray[0] = null;
             } else {
-                newGA.geometryArray[0] = 
+                newGA.geometryArray[0] =
 			(GeometryArrayRetained)geometry.retained;
                 newGA.geoType = newGA.geometryArray[0].geoType;
             }
@@ -2275,7 +2275,7 @@ class Shape3DRetained extends LeafRetained {
 	    Shape3DRetained.setGeomAtom(ms, newGA);
 	}
 
-        TargetsInterface ti = 
+        TargetsInterface ti =
 		((GroupRetained)parent).getClosestTargetsInterface(
                                         TargetsInterface.TRANSFORM_TARGETS);
 	CachedTargets[] newCtArr = null;
@@ -2291,7 +2291,7 @@ class Shape3DRetained extends LeafRetained {
                 if (ct != null) {
 		    newCtArr[i] = new CachedTargets();
 		    newCtArr[i].copy(ct);
-		    newCtArr[i].replace(oldGAArray[i], newGAArray[i], 
+		    newCtArr[i].replace(oldGAArray[i], newGAArray[i],
 					Targets.GEO_TARGETS);
                 } else {
 		    newCtArr[i] = null;
@@ -2315,28 +2315,28 @@ class Shape3DRetained extends LeafRetained {
             changeMessage.args[4] = ti;
             changeMessage.args[5] = newCtArr;
         }
-	VirtualUniverse.mc.processMessage(changeMessage);  
+	VirtualUniverse.mc.processMessage(changeMessage);
     }
-    
+
 
     /**
      * Return an array of geometry atoms belongs to userList.
      * The input is an arraylist of Shape3DRetained type.
-     * This is used to send a message of the snapshot of the 
+     * This is used to send a message of the snapshot of the
      * geometry atoms that are affected by this change.
      */
     final static GeometryAtom[] getGeomAtomsArray(ArrayList userList) {
 	Shape3DRetained ms = null;
 	GeometryAtom[] gaArr = null;
 	int size, nullCnt=0, i, j;
-	
+
 	synchronized(userList) {
 	    size = userList.size();
 	    gaArr = new GeometryAtom[size];
 	    for (i = 0; i < size; i++) {
 		ms = (Shape3DRetained) userList.get(i);
 		ms.mirrorShape3DLock.readLock();
-		if(ms.geomAtom == null) { 
+		if(ms.geomAtom == null) {
 		    nullCnt++;
 		}
 		gaArr[i] = ms.geomAtom;
@@ -2351,7 +2351,7 @@ class Shape3DRetained extends LeafRetained {
 	}
 	else {
 	    GeometryAtom[] newGaArr = new GeometryAtom[size - nullCnt];
-	    
+
 	    for (i=0, j=0; i < size; i++) {
 		if(gaArr[i] != null) {
 		    newGaArr[j++] = gaArr[i];
@@ -2366,7 +2366,7 @@ class Shape3DRetained extends LeafRetained {
      * universe found in userList in univList.
      * The input is an array of Shape3DRetained type.
      * univList is assume to be empty.
-     * This is used to send a message of the snapshot of the 
+     * This is used to send a message of the snapshot of the
      * geometry atoms that are affected by this change.
      */
     final static ArrayList getGeomAtomsList(ArrayList userList, ArrayList univList) {
@@ -2376,7 +2376,7 @@ class Shape3DRetained extends LeafRetained {
 	Shape3DRetained ms = null;
 	boolean moreThanOneUniv = false;
 	VirtualUniverse firstFndUniv = null;
-	
+
 	synchronized(userList) {
 	    for (int i = userList.size()-1; i >=0; i--) {
 		ms = (Shape3DRetained) userList.get(i);
@@ -2420,10 +2420,10 @@ class Shape3DRetained extends LeafRetained {
 	}
 	return listPerUniverse;
     }
-    
+
     final static GeometryAtom getGeomAtom(Shape3DRetained shape) {
 	GeometryAtom ga;
-	
+
 	shape.mirrorShape3DLock.readLock();
 	ga = shape.geomAtom;
 	shape.mirrorShape3DLock.readUnlock();
@@ -2436,7 +2436,7 @@ class Shape3DRetained extends LeafRetained {
 	shape.geomAtom = ga;
 	shape.mirrorShape3DLock.writeUnlock();
     }
-    
+
 
     // Alpha is editable due to the appearance
     boolean isAlphaEditable(GeometryRetained geo) {
@@ -2509,7 +2509,7 @@ class Shape3DRetained extends LeafRetained {
 	    if (staticTransform != null) {
 		bbox = new BoundingBox((BoundingBox) null);
 	    }
-	    
+
             synchronized(bounds) {
                 bounds.setLower( 1.0, 1.0, 1.0);
                 bounds.setUpper(-1.0,-1.0,-1.0);
@@ -2529,7 +2529,7 @@ class Shape3DRetained extends LeafRetained {
                     }
                 }
             }
-	    
+
 	    // System.err.println("Shape3DRetained - getCombineBounds");
 	    // Enlarge boundingBox to the "minmium bounds" that encompasses all possible
 	    // orientation.
@@ -2556,7 +2556,7 @@ class Shape3DRetained extends LeafRetained {
 		bounds.setUpper(maxVal, maxVal, maxVal);
 		// System.err.println("Shape3DRetained - bounds (After) " + bounds);
 	    }
-	    
+
         }
     }
 
@@ -2594,7 +2594,7 @@ class Shape3DRetained extends LeafRetained {
 	}
 	else if (shape.collisionBound != null)
 	    return false;
-	
+
 	return true;
     }
 
@@ -2637,7 +2637,7 @@ class Shape3DRetained extends LeafRetained {
 		    geometryCnt += tempT3d.numChars;
 		}
 		else {
-		    // This is slightly wasteful, but not quite worth to optimize yet. 
+		    // This is slightly wasteful, but not quite worth to optimize yet.
 		    geometryCnt++;
 		}
 	    }
@@ -2645,7 +2645,7 @@ class Shape3DRetained extends LeafRetained {
 	    gAtom.lastLocalTransformArray = new Transform3D[geometryCnt];
 	    // Reset geometryCnt;
 	    geometryCnt = 0;
-	    
+
 	}
 	else {
 	    gAtom.geometryArray = new GeometryRetained[gSize];
@@ -2671,9 +2671,9 @@ class Shape3DRetained extends LeafRetained {
 			    gAtom.geometryArray[geometryCnt] = null;
 			    gAtom.lastLocalTransformArray[geometryCnt] = null;
 			}
-			
+
 		    }
-		    
+
 		} else {
 		    gAtom.geometryArray[gaCnt] = geometry;
 		}
@@ -2689,13 +2689,13 @@ class Shape3DRetained extends LeafRetained {
     void checkEquivalenceClass(Geometry geometry, int index) {
 
 	if (geometry != null) {
-	    for (int i=geometryList.size()-1; i >= 0; i--) {  
+	    for (int i=geometryList.size()-1; i >= 0; i--) {
 		GeometryRetained geomRetained = (GeometryRetained) geometryList.get(i);
 		if ((geomRetained != null) &&
 		    (index != i)) { // this geometry will replace
 		    // current one so there is no need to check
 		    if (!geomRetained.isEquivalenceClass((GeometryRetained)geometry.retained)) {
-			throw new IllegalArgumentException(J3dI18N.getString("Shape3DRetained5"));	
+			throw new IllegalArgumentException(J3dI18N.getString("Shape3DRetained5"));
 		    }
 		    break;
 		}
@@ -2704,14 +2704,14 @@ class Shape3DRetained extends LeafRetained {
     }
 
     int indexOfGeometry(Geometry geometry) {
-      if(geometry != null) 
+      if(geometry != null)
 	return geometryList.indexOf(geometry.retained);
       else
 	return geometryList.indexOf(null);
     }
 
 
-  // Removes the specified geometry from this Shape3DRetained's list of geometries 
+  // Removes the specified geometry from this Shape3DRetained's list of geometries
     void removeGeometry(Geometry geometry) {
       int ind = indexOfGeometry(geometry);
       if(ind >= 0)
@@ -2721,13 +2721,13 @@ class Shape3DRetained extends LeafRetained {
   // Removes all the geometries from this node
     void removeAllGeometries() {
       int n = geometryList.size();
-      
+
       int i;
       Shape3DRetained mShape;
       GeometryRetained oldGeom = null;
-	
+
       if (((Shape3D)this.source).isLive()) {
-	for(int index = n-1; index >= 0; index--) {	    
+	for(int index = n-1; index >= 0; index--) {
 	  oldGeom = (GeometryRetained) (geometryList.get(index));
 	  if (oldGeom != null) {
 	    oldGeom.clearLive(refCount);
@@ -2737,16 +2737,16 @@ class Shape3DRetained extends LeafRetained {
 	      oldGeom.removeUser(mShape);
 	    }
 	  }
-	  geometryList.remove(index);		    
+	  geometryList.remove(index);
 	}
 	sendDataChangedMessage(null);
       } else {
-	for(int index = n-1; index >= 0; index--) {	    
+	for(int index = n-1; index >= 0; index--) {
 	  oldGeom = (GeometryRetained) (geometryList.get(index));
 	  if (oldGeom != null) {
 	    oldGeom.decRefCnt();
 	  }
-	  geometryList.remove(index);	
+	  geometryList.remove(index);
 	}
       }
       dirtyBoundsCache();
@@ -2782,7 +2782,7 @@ class Shape3DRetained extends LeafRetained {
 		changedFrequent &= ~mask;
 	    }
 	}
-    }    
+    }
 
 
     // Alpha is editable due to the appearance(Called on the MirrorShape3D)
@@ -2799,10 +2799,10 @@ class Shape3DRetained extends LeafRetained {
                 ((app.changedFrequent &(AppearanceRetained.RENDERING|AppearanceRetained.TRANSPARENCY)) != 0) ||
                 (app.renderingAttributes != null &&
                  (((app.renderingAttributes.changedFrequent & (RenderingAttributesRetained.IGNORE_VCOLOR |RenderingAttributesRetained.ALPHA_TEST_FUNC)) != 0))) ||
-		
+
                 (app.transparencyAttributes != null &&
                  ((app.transparencyAttributes.changedFrequent != 0)))) {
-		
+
                 alphaFrequentlyEditable = true;
 
 	    } else if (geo instanceof GeometryArrayRetained &&
@@ -2824,13 +2824,13 @@ class Shape3DRetained extends LeafRetained {
 	return alphaFrequentlyEditable;
     }
 
-    
+
     int getPrimaryViewIdx() {
 	// To avoid MT-safe issues when using View, just clone it.
 	UnorderList viewList  = VirtualUniverse.mc.cloneView();
 	View views[] = (View []) viewList.toArray(false);
 	int size = viewList.arraySize();
-	
+
 	for (int i=0; i < size; i++) {
 	    if (views[i].primaryView) {
 		return views[i].viewIndex;
@@ -2838,7 +2838,7 @@ class Shape3DRetained extends LeafRetained {
 	}
 	return 0;
     }
-    
+
     void searchGeometryAtoms(UnorderList list) {
 	list.add(getGeomAtom(getMirrorShape(key)));
     }

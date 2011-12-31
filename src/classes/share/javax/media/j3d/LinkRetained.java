@@ -41,7 +41,7 @@ class LinkRetained extends LeafRetained {
      * The SharedGroup component of the link node.
      */
     SharedGroupRetained sharedGroup;
-    
+
     static String plus = "+";
 
     // This is used when setLive to check for cycle scene graph
@@ -53,7 +53,7 @@ class LinkRetained extends LeafRetained {
 	((BoundingBox)localBounds).setLower( 1.0, 1.0, 1.0);
 	((BoundingBox)localBounds).setUpper(-1.0,-1.0,-1.0);
     }
-    
+
     /**
      * Sets the SharedGroup reference.
      * @param sharedGroup the SharedGroup node
@@ -63,7 +63,7 @@ class LinkRetained extends LeafRetained {
 	// in already link to another link and live.
 	HashKey newKeys[] = null;
 	boolean abort = false;
-	
+
 	if (source.isLive()) {
 	    // bug 4370407: if sharedGroup is a parent, then don't do anything
 	    if (sharedGroup != null) {
@@ -76,27 +76,27 @@ class LinkRetained extends LeafRetained {
 	                }
 	            }
 	        }
-	        if (abort) 
+	        if (abort)
 		    return;
 	    }
-	
+
 	    newKeys = getNewKeys(locale.nodeId, localToVworldKeys);
-	    
+
 	    if (this.sharedGroup != null) {
 		((GroupRetained) parent).checkClearLive(this.sharedGroup,
 							newKeys, true, null,
-							0, 0, this); 
+							0, 0, this);
 		this.sharedGroup.parents.removeElement(this);
-	    } 
+	    }
 	}
-	
+
 	if (sharedGroup != null) {
 	    this.sharedGroup =
 		(SharedGroupRetained)sharedGroup.retained;
 	}  else {
 	    this.sharedGroup = null;
 	}
-	
+
       if (source.isLive() && (sharedGroup != null)) {
 
 	  this.sharedGroup.parents.addElement(this);
@@ -105,16 +105,16 @@ class LinkRetained extends LeafRetained {
 	      int ci = ((GroupRetained) parent).indexOfChild((Node)this.sharedGroup.source);
 	      ((GroupRetained) parent).checkSetLive(this.sharedGroup,  ci,
 						    newKeys, true, null,
-						    0, this); 
+						    0, this);
 	  } catch (SceneGraphCycleException e) {
 	      throw e;
           } finally {
 	      visited = false;
 	  }
       }
-      
+
     }
-    
+
   /**
    * Retrieves the SharedGroup reference.
    * @return the SharedGroup node
@@ -126,7 +126,7 @@ class LinkRetained extends LeafRetained {
 
     void computeCombineBounds(Bounds bounds) {
 
-	if (boundsAutoCompute) {    
+	if (boundsAutoCompute) {
 	    sharedGroup.computeCombineBounds(bounds);
 	} else {
 	    // Should this be lock too ? ( MT safe  ? )
@@ -135,8 +135,8 @@ class LinkRetained extends LeafRetained {
 	    }
 	}
     }
-  
-  
+
+
     /**
      * Gets the bounding object of a node.
      * @return the node's bounding object
@@ -145,9 +145,9 @@ class LinkRetained extends LeafRetained {
 	return (boundsAutoCompute ?
 	        (Bounds)sharedGroup.getBounds().clone() :
 	        super.getBounds());
-    } 
-    
-    
+    }
+
+
     /**
      * assign a name to this node when it is made live.
      */
@@ -177,14 +177,14 @@ class LinkRetained extends LeafRetained {
 	    try {
 		this.sharedGroup.setLive(s);
 	    } catch (SceneGraphCycleException e) {
-		throw e;		
+		throw e;
 	    } finally {
-		visited = false;		
+		visited = false;
 	    }
 
 	    s.inSharedGroup = inSharedGroup;
 	    s.keys = oldKeys;
-	    
+
 	    localBounds.setWithLock(this.sharedGroup.localBounds);
 	}
 
@@ -220,12 +220,12 @@ class LinkRetained extends LeafRetained {
         localBounds.setWithLock(sharedGroup.localBounds);
 	parent.recombineAbove();
     }
-    
+
     /**
      * assign a name to this node when it is made live.
      */
     void clearLive(SetLiveState s) {
-	
+
 	if (sharedGroup != null) {
 	    HashKey newKeys[] = getNewKeys(s.locale.nodeId, s.keys);
             super.clearLive(s);
@@ -325,7 +325,7 @@ class LinkRetained extends LeafRetained {
 
     HashKey[] getNewKeys(String localeNodeId,  HashKey oldKeys[]) {
 	HashKey newKeys[];
-	
+
 	if (!inSharedGroup) {
 	    newKeys = new HashKey[1];
 	    newKeys[0] = new HashKey(localeNodeId);
@@ -334,7 +334,7 @@ class LinkRetained extends LeafRetained {
 	    // Need to append this link node id to all keys passed in.
 	    newKeys = new HashKey[oldKeys.length];
 	    for (int i=oldKeys.length-1; i>=0; i--) {
-		newKeys[i] = new HashKey(oldKeys[i].toString() 
+		newKeys[i] = new HashKey(oldKeys[i].toString()
 					 + plus + nodeId);
 	    }
 	}

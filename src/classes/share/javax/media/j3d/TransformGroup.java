@@ -32,13 +32,13 @@
 package javax.media.j3d;
 
 /**
- * Group node that contains a transform. The TransformGroup node 
+ * Group node that contains a transform. The TransformGroup node
  * specifies a single spatial transformation, via a Transform3D
  * object, that can position, orient, and scale all of its children.
  * <P>
- * The specified transformation must be affine. Further, if the 
- * TransformGroup node is used as an ancestor of a ViewPlatform node 
- * in the scene graph, the transformation must be congruent-only 
+ * The specified transformation must be affine. Further, if the
+ * TransformGroup node is used as an ancestor of a ViewPlatform node
+ * in the scene graph, the transformation must be congruent-only
  * rotations, translations, and uniform scales are allowed in
  * a direct path from a Locale to a ViewPlatform node.
  * <P>
@@ -47,34 +47,34 @@ package javax.media.j3d;
  * within a branch graph are congruent, containing only rotations
  * translation, and uniform scale.
  * <P>
- * The effects of transformations in the scene graph are cumulative. 
- * The concatenation of the transformations of each TransformGroup in 
- * a direct path from the Locale to a Leaf node defines a composite 
- * model transformation (CMT) that takes points in that Leaf node's 
- * local coordinates and transforms them into Virtual World (Vworld) 
+ * The effects of transformations in the scene graph are cumulative.
+ * The concatenation of the transformations of each TransformGroup in
+ * a direct path from the Locale to a Leaf node defines a composite
+ * model transformation (CMT) that takes points in that Leaf node's
+ * local coordinates and transforms them into Virtual World (Vworld)
  * coordinates. This composite transformation is used to
- * transform points, normals, and distances into Vworld coordinates. 
- * Points are transformed by the CMT. Normals are transformed by the 
- * inverse-transpose of the CMT. Distances are transformed by the scale 
- * of the CMT. In the case of a transformation containing a nonuniform 
+ * transform points, normals, and distances into Vworld coordinates.
+ * Points are transformed by the CMT. Normals are transformed by the
+ * inverse-transpose of the CMT. Distances are transformed by the scale
+ * of the CMT. In the case of a transformation containing a nonuniform
  * scale or shear, the maximum scale value in
- * any direction is used. This ensures, for example, that a transformed 
- * bounding sphere, which is specified as a point and a radius, 
- * continues to enclose all objects that are also transformed using 
+ * any direction is used. This ensures, for example, that a transformed
+ * bounding sphere, which is specified as a point and a radius,
+ * continues to enclose all objects that are also transformed using
  * a nonuniform scale.
  * <P>
  */
 
 public class TransformGroup extends Group {
   /**
-   * Specifies that the node allows access to 
+   * Specifies that the node allows access to
    * its object's transform information.
    */
   public static final int
     ALLOW_TRANSFORM_READ = CapabilityBits.TRANSFORM_GROUP_ALLOW_TRANSFORM_READ;
 
   /**
-   * Specifies that the node allows writing 
+   * Specifies that the node allows writing
    * its object's transform information.
    */
   public static final int
@@ -91,7 +91,7 @@ public class TransformGroup extends Group {
      */
     public TransformGroup() {
         // set default read capabilities
-        setDefaultReadCapabilities(readCapabilities);        
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -100,14 +100,14 @@ public class TransformGroup extends Group {
      * @param t1 the transform3D object
      * @exception BadTransformException if the transform is not affine.
      */
-    public TransformGroup(Transform3D t1) {        
+    public TransformGroup(Transform3D t1) {
 	if (!t1.isAffine()) {
 	    throw new BadTransformException(J3dI18N.getString("TransformGroup0"));
 	}
-        
+
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
-        
+
 	((TransformGroupRetained)this.retained).setTransform(t1);
     }
 
@@ -151,11 +151,11 @@ public class TransformGroup extends Group {
         if (isLiveOrCompiled())
 	  if(!this.getCapability(ALLOW_TRANSFORM_READ))
 	    throw new CapabilityNotSetException(J3dI18N.getString("TransformGroup2"));
-    
+
 	((TransformGroupRetained)this.retained).getTransform(t1);
     }
 
-  
+
     /**
      * Creates a new instance of the node.  This routine is called
      * by <code>cloneTree</code> to duplicate the current node.
@@ -182,7 +182,7 @@ public class TransformGroup extends Group {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -198,9 +198,9 @@ public class TransformGroup extends Group {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
-    void duplicateAttributes(Node originalNode, boolean forceDuplicate) { 
+    void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
-      
+
 	Transform3D t = new Transform3D();
 	((TransformGroupRetained) originalNode.retained).getTransform(t);
 	((TransformGroupRetained) retained).setTransform(t);

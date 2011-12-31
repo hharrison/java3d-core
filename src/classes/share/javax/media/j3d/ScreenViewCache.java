@@ -55,14 +55,14 @@ class ScreenViewCache extends Object {
     int screenHeight;
 
     // Mask that indicates Screen3D view dependence info. has changed,
-    // and CanvasViewCache may need to recompute the final view matries. 
+    // and CanvasViewCache may need to recompute the final view matries.
     // Issue 163: Array of dirty bits is used because the Renderer and
     // RenderBin run asynchronously. Now that they each have a separate
     // instance of CanvasViewCache (due to the fix for Issue 109), they
     // need separate dirty bits. Array element 0 is used for the Renderer and
     // element 1 is used for the RenderBin.
     int[] scrvcDirtyMask = new int[2];
-    
+
     //
     // Tracker-base coordinate system to image-plate coordinate
     // system transform.  If head tracking is enabled, this transform
@@ -113,14 +113,14 @@ class ScreenViewCache extends Object {
 	physicalScreenHeight = screen.physicalScreenHeight;
 	screenWidth = screen.screenSize.width;
 	screenHeight = screen.screenSize.height;
-	
+
 	screen.trackerBaseToImagePlate.getWithLock(trackerBaseToImagePlate);
 
 	screen.headTrackerToLeftImagePlate.getWithLock
 	    (headTrackerToLeftImagePlate);
 	screen.headTrackerToRightImagePlate.getWithLock
 	    (headTrackerToRightImagePlate);
-	
+
 	// This isn't really API data, but since we have no other derived
 	// data, and it's a simple calculation, it's easier if we just do
 	// it here.

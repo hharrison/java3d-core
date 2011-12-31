@@ -140,7 +140,7 @@ public class Locale extends Object {
      * @param y an eight element array specifying the y position
      * @param z an eight element array specifying the z position
      */
-    public void setHiRes(int[] x, int[] y, int[] z) { 
+    public void setHiRes(int[] x, int[] y, int[] z) {
 	this.hiRes.setHiResCoord(x, y, z);
     }
 
@@ -163,7 +163,7 @@ public class Locale extends Object {
     }
 
     /**
-     * Add a new branch graph rooted at BranchGroup to 
+     * Add a new branch graph rooted at BranchGroup to
      * the list of branch graphs.
      * @param branchGroup root of the branch graph to be added
      * @exception IllegalStateException if this Locale has been
@@ -214,7 +214,7 @@ public class Locale extends Object {
 	s.currentTransformsIndex[0] = new int[2];
 	s.currentTransformsIndex[0][0] = 0;
 	s.currentTransformsIndex[0][1] = 0;
-	
+
 	s.localToVworld = s.currentTransforms;
 	s.localToVworldIndex = s.currentTransformsIndex;
 
@@ -238,7 +238,7 @@ public class Locale extends Object {
 	createMessage.args[2] = s.ogOrderedIdList.toArray();
 	createMessage.args[3] = s.ogCIOList.toArray();
 	createMessage.args[4] = s.ogCIOTableList.toArray();
-	
+
 	VirtualUniverse.mc.processMessage(createMessage);
 
 	createMessage = new J3dMessage();
@@ -249,8 +249,8 @@ public class Locale extends Object {
 	createMessage.args[1] = s.changedViewList;
 	createMessage.args[2] = s.keyList;
 	VirtualUniverse.mc.processMessage(createMessage);
-	
-	
+
+
 	createMessage = new J3dMessage();
 	createMessage.threads = s.notifyThreads;
         createMessage.type = J3dMessage.INSERT_NODES;
@@ -282,7 +282,7 @@ public class Locale extends Object {
     }
 
     /**
-     * Removes a branch graph rooted at BranchGroup from 
+     * Removes a branch graph rooted at BranchGroup from
      * the list of branch graphs.
      * @param branchGroup root of the branch graph to be removed
      * @exception IllegalStateException if this Locale has been
@@ -337,7 +337,7 @@ public class Locale extends Object {
 
 
     // The method that does the work once the lock is acquired.
-    void doRemoveBranchGraph(BranchGroup branchGroup, 
+    void doRemoveBranchGraph(BranchGroup branchGroup,
                                 J3dMessage messages[], int startIndex) {
 
 	BranchGroupRetained bgr = (BranchGroupRetained)branchGroup.retained;
@@ -411,7 +411,7 @@ public class Locale extends Object {
     }
 
     /**
-     * Replaces the branch graph rooted at oldGroup in the list of 
+     * Replaces the branch graph rooted at oldGroup in the list of
      * branch graphs with the branch graph rooted at
      * newGroup.
      * @param oldGroup root of the branch graph to be replaced.
@@ -455,7 +455,7 @@ public class Locale extends Object {
 	BranchGroupRetained nbgr = (BranchGroupRetained)newGroup.retained;
 	J3dMessage createMessage;
 	J3dMessage destroyMessage;
-	
+
 
 	branchGroups.removeElement(oldGroup);
 	obgr.attachedToLocale = false;
@@ -514,7 +514,7 @@ public class Locale extends Object {
         universe.setLiveState.switchStates.add(new SwitchState(false));
 
 	nbgr.setLive(universe.setLiveState);
-	
+
 
 	createMessage = new J3dMessage();
 	createMessage.threads = J3dThread.UPDATE_RENDER| J3dThread.UPDATE_RENDERING_ENVIRONMENT;
@@ -569,7 +569,7 @@ public class Locale extends Object {
     public int numBranchGraphs(){
 	return  branchGroups.size();
     }
-    
+
     /**
      * Gets an Enumeration object of all branch graphs in this Locale.
      * @return an Enumeration object of all branch graphs.
@@ -584,44 +584,44 @@ public class Locale extends Object {
 	return branchGroups.elements();
     }
 
-    
+
     void validateModeFlagAndPickShape(int mode, int flags, PickShape pickShape) {
 
         if (universe == null) {
 	    throw new IllegalStateException(J3dI18N.getString("Locale4"));
 	}
-        
+
         if((mode != PickInfo.PICK_BOUNDS) && (mode != PickInfo.PICK_GEOMETRY)) {
-          
+
           throw new IllegalArgumentException(J3dI18N.getString("Locale5"));
         }
-        
+
         if((pickShape instanceof PickPoint) && (mode == PickInfo.PICK_GEOMETRY)) {
           throw new IllegalArgumentException(J3dI18N.getString("Locale6"));
         }
-        
+
         if(((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) &&
                 ((flags & PickInfo.ALL_GEOM_INFO) != 0)) {
             throw new IllegalArgumentException(J3dI18N.getString("Locale7"));
         }
-        
-        if((mode == PickInfo.PICK_BOUNDS) && 
-                (((flags & (PickInfo.CLOSEST_GEOM_INFO | 
+
+        if((mode == PickInfo.PICK_BOUNDS) &&
+                (((flags & (PickInfo.CLOSEST_GEOM_INFO |
                             PickInfo.ALL_GEOM_INFO |
                             PickInfo.CLOSEST_DISTANCE |
                             PickInfo.CLOSEST_INTERSECTION_POINT)) != 0))) {
-          
+
           throw new IllegalArgumentException(J3dI18N.getString("Locale8"));
         }
-  
-        if((pickShape instanceof PickBounds) && 
-                (((flags & (PickInfo.CLOSEST_GEOM_INFO | 
+
+        if((pickShape instanceof PickBounds) &&
+                (((flags & (PickInfo.CLOSEST_GEOM_INFO |
                             PickInfo.ALL_GEOM_INFO |
                             PickInfo.CLOSEST_DISTANCE |
                             PickInfo.CLOSEST_INTERSECTION_POINT)) != 0))) {
-          
+
           throw new IllegalArgumentException(J3dI18N.getString("Locale9"));
-        }        
+        }
     }
 
     /**
@@ -643,7 +643,7 @@ public class Locale extends Object {
 
         PickInfo[] pickInfoArr = pickAll( PickInfo.PICK_BOUNDS,
                 PickInfo.SCENEGRAPHPATH, pickShape);
-        
+
        if(pickInfoArr == null) {
             return null;
        }
@@ -653,25 +653,25 @@ public class Locale extends Object {
         }
 
         return sgpArr;
-    
+
     }
 
 
     /**
-     * Returns an array unsorted references to all the PickInfo objects that are pickable 
-     * below this <code>Locale</code> that intersect with PickShape. 
-     * The accuracy of the pick is set by the pick mode. The mode include : 
-     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned 
-     * is specified via a masked variable, flags, indicating which components are 
-     * present in each returned PickInfo object. 
+     * Returns an array unsorted references to all the PickInfo objects that are pickable
+     * below this <code>Locale</code> that intersect with PickShape.
+     * The accuracy of the pick is set by the pick mode. The mode include :
+     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned
+     * is specified via a masked variable, flags, indicating which components are
+     * present in each returned PickInfo object.
      *
      * @param mode  picking mode, one of <code>PickInfo.PICK_BOUNDS</code> or <code>PickInfo.PICK_GEOMETRY</code>.
      *
-     * @param flags a mask indicating which components are present in each PickInfo object.  
-     * This is specified as one or more individual bits that are bitwise "OR"ed together to 
+     * @param flags a mask indicating which components are present in each PickInfo object.
+     * This is specified as one or more individual bits that are bitwise "OR"ed together to
      * describe the PickInfo data. The flags include :
      * <ul>
-     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>    
+     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>
      * <code>PickInfo.NODE</code> - request for computed intersected Node.<br>
      * <code>PickInfo.LOCAL_TO_VWORLD</code> - request for computed local to virtual world transform.<br>
      * <code>PickInfo.CLOSEST_INTERSECTION_POINT</code> - request for closest intersection point.<br>
@@ -682,20 +682,20 @@ public class Locale extends Object {
      *
      * @param pickShape the description of this picking volume or area.
      *
-     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and 
+     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and
      * ALL_GEOM_INFO.
      *
      * @exception IllegalArgumentException if pickShape is a PickPoint and pick mode
      * is set to PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS
      * nor PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
-     * @exception IllegalArgumentException if pickShape is PickBounds 
+     * @exception IllegalArgumentException if pickShape is PickBounds
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
@@ -706,14 +706,14 @@ public class Locale extends Object {
      * PICK_GEOMETRY and the Geometry.ALLOW_INTERSECT capability bit
      * is not set in any Geometry objects referred to by any shape
      * node whose bounds intersects the PickShape.
-     *   
+     *
      * @exception CapabilityNotSetException if flags contains any of
      * CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE, CLOSEST_GEOM_INFO
      * or ALL_GEOM_INFO, and the capability bits that control reading of
      * coordinate data are not set in any GeometryArray object referred
      * to by any shape node that intersects the PickShape.
      * The capability bits that must be set to avoid this exception are as follows :
-     * <ul> 
+     * <ul>
      * <li>By-copy geometry : GeometryArray.ALLOW_COORDINATE_READ</li>
      * <li>By-reference geometry : GeometryArray.ALLOW_REF_DATA_READ</li>
      * <li>Indexed geometry : IndexedGeometryArray.ALLOW_COORDINATE_INDEX_READ
@@ -722,16 +722,16 @@ public class Locale extends Object {
      *
      * @see BranchGroup#pickAll(int,int,javax.media.j3d.PickShape)
      * @see PickInfo
-     * 
+     *
      * @since Java 3D 1.4
      *
      */
     public PickInfo[] pickAll( int mode, int flags, PickShape pickShape ) {
-        
-        validateModeFlagAndPickShape(mode, flags, pickShape);   
+
+        validateModeFlagAndPickShape(mode, flags, pickShape);
 
 	GeometryAtom geomAtoms[] = universe.geometryStructure.pickAll(this, pickShape);
-        
+
         return PickInfo.pick(this, geomAtoms, mode, flags, pickShape, PickInfo.PICK_ALL);
 
     }
@@ -768,27 +768,27 @@ public class Locale extends Object {
             sgpArr[i] = pickInfoArr[i].getSceneGraphPath();
         }
 
-        return sgpArr;                
-        
+        return sgpArr;
+
     }
 
     /**
      * Returns a sorted array of PickInfo references to all the pickable
-     * items that intersect with the pickShape. Element [0] references 
+     * items that intersect with the pickShape. Element [0] references
      * the item closest to <i>origin</i> of PickShape successive array
      * elements are further from the <i>origin</i>
-     * The accuracy of the pick is set by the pick mode. The mode include : 
-     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned 
-     * is specified via a masked variable, flags, indicating which components are 
-     * present in each returned PickInfo object. 
+     * The accuracy of the pick is set by the pick mode. The mode include :
+     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned
+     * is specified via a masked variable, flags, indicating which components are
+     * present in each returned PickInfo object.
      *
      * @param mode  picking mode, one of <code>PickInfo.PICK_BOUNDS</code> or <code>PickInfo.PICK_GEOMETRY</code>.
      *
-     * @param flags a mask indicating which components are present in each PickInfo object.  
-     * This is specified as one or more individual bits that are bitwise "OR"ed together to 
+     * @param flags a mask indicating which components are present in each PickInfo object.
+     * This is specified as one or more individual bits that are bitwise "OR"ed together to
      * describe the PickInfo data. The flags include :
      * <ul>
-     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>    
+     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>
      * <code>PickInfo.NODE</code> - request for computed intersected Node.<br>
      * <code>PickInfo.LOCAL_TO_VWORLD</code> - request for computed local to virtual world transform.<br>
      * <code>PickInfo.CLOSEST_INTERSECTION_POINT</code> - request for closest intersection point.<br>
@@ -799,20 +799,20 @@ public class Locale extends Object {
      *
      * @param pickShape the description of this picking volume or area.
      *
-     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and 
+     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and
      * ALL_GEOM_INFO.
      *
      * @exception IllegalArgumentException if pickShape is a PickPoint and pick mode
      * is set to PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS
      * nor PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
-     * @exception IllegalArgumentException if pickShape is PickBounds 
+     * @exception IllegalArgumentException if pickShape is PickBounds
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
@@ -823,14 +823,14 @@ public class Locale extends Object {
      * PICK_GEOMETRY and the Geometry.ALLOW_INTERSECT capability bit
      * is not set in any Geometry objects referred to by any shape
      * node whose bounds intersects the PickShape.
-     *   
+     *
      * @exception CapabilityNotSetException if flags contains any of
      * CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE, CLOSEST_GEOM_INFO
      * or ALL_GEOM_INFO, and the capability bits that control reading of
      * coordinate data are not set in any GeometryArray object referred
      * to by any shape node that intersects the PickShape.
      * The capability bits that must be set to avoid this exception are as follows :
-     * <ul> 
+     * <ul>
      * <li>By-copy geometry : GeometryArray.ALLOW_COORDINATE_READ</li>
      * <li>By-reference geometry : GeometryArray.ALLOW_REF_DATA_READ</li>
      * <li>Indexed geometry : IndexedGeometryArray.ALLOW_COORDINATE_INDEX_READ
@@ -839,21 +839,21 @@ public class Locale extends Object {
      *
      * @see BranchGroup#pickAllSorted(int,int,javax.media.j3d.PickShape)
      * @see PickInfo
-     * 
+     *
      * @since Java 3D 1.4
      *
      */
     public PickInfo[] pickAllSorted( int mode, int flags, PickShape pickShape ) {
 
-        validateModeFlagAndPickShape(mode, flags, pickShape);   
+        validateModeFlagAndPickShape(mode, flags, pickShape);
         GeometryAtom geomAtoms[] = universe.geometryStructure.pickAll(this, pickShape);
 
         if ((geomAtoms == null) || (geomAtoms.length == 0)) {
             return null;
         }
-        
+
         PickInfo[] pickInfoArr  = null;
-        
+
 	if (mode == PickInfo.PICK_GEOMETRY) {
             // Need to have closestDistance set
             flags |= PickInfo.CLOSEST_DISTANCE;
@@ -864,9 +864,9 @@ public class Locale extends Object {
         }
         else {
             PickInfo.sortGeomAtoms(geomAtoms, pickShape);
-            pickInfoArr= PickInfo.pick(this, geomAtoms, mode, flags, pickShape, PickInfo.PICK_ALL);          
+            pickInfoArr= PickInfo.pick(this, geomAtoms, mode, flags, pickShape, PickInfo.PICK_ALL);
         }
-        
+
         return pickInfoArr;
     }
 
@@ -891,7 +891,7 @@ public class Locale extends Object {
 
         PickInfo pickInfo = pickClosest( PickInfo.PICK_BOUNDS,
                 PickInfo.SCENEGRAPHPATH, pickShape);
-        
+
         if(pickInfo == null) {
             return null;
         }
@@ -901,18 +901,18 @@ public class Locale extends Object {
     /**
      * Returns a PickInfo which references the pickable item
      * which is closest to the origin of <code>pickShape</code>.
-     * The accuracy of the pick is set by the pick mode. The mode include : 
-     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned 
-     * is specified via a masked variable, flags, indicating which components are 
-     * present in each returned PickInfo object. 
+     * The accuracy of the pick is set by the pick mode. The mode include :
+     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned
+     * is specified via a masked variable, flags, indicating which components are
+     * present in each returned PickInfo object.
      *
      * @param mode  picking mode, one of <code>PickInfo.PICK_BOUNDS</code> or <code>PickInfo.PICK_GEOMETRY</code>.
      *
-     * @param flags a mask indicating which components are present in each PickInfo object.  
-     * This is specified as one or more individual bits that are bitwise "OR"ed together to 
+     * @param flags a mask indicating which components are present in each PickInfo object.
+     * This is specified as one or more individual bits that are bitwise "OR"ed together to
      * describe the PickInfo data. The flags include :
      * <ul>
-     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>    
+     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>
      * <code>PickInfo.NODE</code> - request for computed intersected Node.<br>
      * <code>PickInfo.LOCAL_TO_VWORLD</code> - request for computed local to virtual world transform.<br>
      * <code>PickInfo.CLOSEST_INTERSECTION_POINT</code> - request for closest intersection point.<br>
@@ -923,20 +923,20 @@ public class Locale extends Object {
      *
      * @param pickShape the description of this picking volume or area.
      *
-     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and 
+     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and
      * ALL_GEOM_INFO.
      *
      * @exception IllegalArgumentException if pickShape is a PickPoint and pick mode
      * is set to PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS
      * nor PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
-     * @exception IllegalArgumentException if pickShape is PickBounds 
+     * @exception IllegalArgumentException if pickShape is PickBounds
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
@@ -947,14 +947,14 @@ public class Locale extends Object {
      * PICK_GEOMETRY and the Geometry.ALLOW_INTERSECT capability bit
      * is not set in any Geometry objects referred to by any shape
      * node whose bounds intersects the PickShape.
-     *   
+     *
      * @exception CapabilityNotSetException if flags contains any of
      * CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE, CLOSEST_GEOM_INFO
      * or ALL_GEOM_INFO, and the capability bits that control reading of
      * coordinate data are not set in any GeometryArray object referred
      * to by any shape node that intersects the PickShape.
      * The capability bits that must be set to avoid this exception are as follows :
-     * <ul> 
+     * <ul>
      * <li>By-copy geometry : GeometryArray.ALLOW_COORDINATE_READ</li>
      * <li>By-reference geometry : GeometryArray.ALLOW_REF_DATA_READ</li>
      * <li>Indexed geometry : IndexedGeometryArray.ALLOW_COORDINATE_INDEX_READ
@@ -963,7 +963,7 @@ public class Locale extends Object {
      *
      * @see BranchGroup#pickClosest(int,int,javax.media.j3d.PickShape)
      * @see PickInfo
-     * 
+     *
      * @since Java 3D 1.4
      *
      */
@@ -972,13 +972,13 @@ public class Locale extends Object {
         PickInfo[] pickInfoArr = null;
 
         pickInfoArr = pickAllSorted( mode, flags, pickShape );
-        
+
         if(pickInfoArr == null) {
             return null;
         }
-        
+
         return pickInfoArr[0];
-        
+
     }
 
     /**
@@ -996,32 +996,32 @@ public class Locale extends Object {
 	if (universe == null) {
 	    throw new IllegalStateException(J3dI18N.getString("Locale4"));
 	}
-       
+
         PickInfo pickInfo = pickAny( PickInfo.PICK_BOUNDS,
                 PickInfo.SCENEGRAPHPATH, pickShape);
-        
+
         if(pickInfo == null) {
             return null;
         }
         return pickInfo.getSceneGraphPath();
-        
+
     }
 
     /**
      * Returns a PickInfo which references the pickable item  below this
      * Locale which intersects with <code>pickShape</code>.
-     * The accuracy of the pick is set by the pick mode. The mode include : 
-     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned 
-     * is specified via a masked variable, flags, indicating which components are 
-     * present in each returned PickInfo object. 
+     * The accuracy of the pick is set by the pick mode. The mode include :
+     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned
+     * is specified via a masked variable, flags, indicating which components are
+     * present in each returned PickInfo object.
      *
      * @param mode  picking mode, one of <code>PickInfo.PICK_BOUNDS</code> or <code>PickInfo.PICK_GEOMETRY</code>.
      *
-     * @param flags a mask indicating which components are present in each PickInfo object.  
-     * This is specified as one or more individual bits that are bitwise "OR"ed together to 
+     * @param flags a mask indicating which components are present in each PickInfo object.
+     * This is specified as one or more individual bits that are bitwise "OR"ed together to
      * describe the PickInfo data. The flags include :
      * <ul>
-     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>    
+     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>
      * <code>PickInfo.NODE</code> - request for computed intersected Node.<br>
      * <code>PickInfo.LOCAL_TO_VWORLD</code> - request for computed local to virtual world transform.<br>
      * <code>PickInfo.CLOSEST_INTERSECTION_POINT</code> - request for closest intersection point.<br>
@@ -1032,20 +1032,20 @@ public class Locale extends Object {
      *
      * @param pickShape the description of this picking volume or area.
      *
-     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and 
+     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and
      * ALL_GEOM_INFO.
      *
      * @exception IllegalArgumentException if pickShape is a PickPoint and pick mode
      * is set to PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS
      * nor PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
-     * @exception IllegalArgumentException if pickShape is PickBounds 
+     * @exception IllegalArgumentException if pickShape is PickBounds
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
@@ -1056,14 +1056,14 @@ public class Locale extends Object {
      * PICK_GEOMETRY and the Geometry.ALLOW_INTERSECT capability bit
      * is not set in any Geometry objects referred to by any shape
      * node whose bounds intersects the PickShape.
-     *   
+     *
      * @exception CapabilityNotSetException if flags contains any of
      * CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE, CLOSEST_GEOM_INFO
      * or ALL_GEOM_INFO, and the capability bits that control reading of
      * coordinate data are not set in any GeometryArray object referred
      * to by any shape node that intersects the PickShape.
      * The capability bits that must be set to avoid this exception are as follows :
-     * <ul> 
+     * <ul>
      * <li>By-copy geometry : GeometryArray.ALLOW_COORDINATE_READ</li>
      * <li>By-reference geometry : GeometryArray.ALLOW_REF_DATA_READ</li>
      * <li>Indexed geometry : IndexedGeometryArray.ALLOW_COORDINATE_INDEX_READ
@@ -1072,7 +1072,7 @@ public class Locale extends Object {
      *
      * @see BranchGroup#pickAny(int,int,javax.media.j3d.PickShape)
      * @see PickInfo
-     * 
+     *
      * @since Java 3D 1.4
      *
      */
@@ -1080,15 +1080,15 @@ public class Locale extends Object {
 
         validateModeFlagAndPickShape(mode, flags, pickShape);
 	GeometryAtom geomAtoms[] = universe.geometryStructure.pickAll(this, pickShape);
-        
+
         PickInfo[] pickInfoArr = PickInfo.pick(this, geomAtoms, mode, flags, pickShape, PickInfo.PICK_ANY);
-        
+
         if(pickInfoArr == null) {
             return null;
         }
-        
+
         return pickInfoArr[0];
-        
+
     }
 
 }

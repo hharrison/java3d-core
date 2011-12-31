@@ -49,7 +49,7 @@ import java.util.ArrayList;
      * modified via the extrusionShape parameter, a Shape object that
      * describes the 3D contour of a Font3D object.
      * <P>
-     * User is responsible for data sanity and must make sure that 
+     * User is responsible for data sanity and must make sure that
      * extrusionShape does not cause intersection of adjacent glyphs
      * or within single glyph. Else undefined output may be generated.
      *
@@ -95,7 +95,7 @@ public class FontExtrusion extends Object {
      * A null shape specifies that a straight line from 0.0 to 0.2
      * (straight bevel) is used.
      *
-     * @exception IllegalArgumentException if multiple contours in 
+     * @exception IllegalArgumentException if multiple contours in
      * extrusionShape, or contour is not monotonic or least x-value
      * of a contour point is not 0.0f
      *
@@ -122,7 +122,7 @@ public class FontExtrusion extends Object {
      * This corresponds to the <code>flatness</code> parameter in
      * the <code>java.awt.Shape.getPathIterator</code> method.
      *
-     * @exception IllegalArgumentException if multiple contours in 
+     * @exception IllegalArgumentException if multiple contours in
      * extrusionShape, or contour is not monotonic or least x-value
      * of a contour point is not 0.0f
      *
@@ -147,7 +147,7 @@ public class FontExtrusion extends Object {
      * A null shape specifies that a straight line from 0.0 to 0.2
      * (straight bevel) is used.
      *
-     * @exception IllegalArgumentException if multiple contours in 
+     * @exception IllegalArgumentException if multiple contours in
      * extrusionShape, or contour is not monotonic or least x-value
      * of a contour point is not 0.0f
      *
@@ -160,7 +160,7 @@ public class FontExtrusion extends Object {
 
 	PathIterator pIt = shape.getPathIterator(null, tessellationTolerance);
 	ArrayList  coords = new ArrayList();
-	float tmpCoords[] = new float[6], prevX = 0.0f;	
+	float tmpCoords[] = new float[6], prevX = 0.0f;
 	int flag, n = 0, inc = -1;
 
 	// Extrusion shape is restricted to be single contour, monotonous
@@ -172,12 +172,12 @@ public class FontExtrusion extends Object {
 	     vertex.x = tmpCoords[0];
 	     vertex.y = tmpCoords[1];
 	     if (inc == -1){
-	        if (prevX < vertex.x) inc = 0; 
+	        if (prevX < vertex.x) inc = 0;
 		else if (prevX > vertex.x) inc = 1;
 	     }
-	     //Flag 'inc' indicates if curve is monotonic increasing or 
+	     //Flag 'inc' indicates if curve is monotonic increasing or
 	     // monotonic decreasing. It is set to -1 initially and remains
-	     // -1 if consecutive x values are same. Once 'inc' is set to 
+	     // -1 if consecutive x values are same. Once 'inc' is set to
 	     // 1 or 0, exception is thrown is curve changes direction.
 	     if (((inc == 0) && (prevX > vertex.x)) ||
 		 ((inc == 1) && (prevX < vertex.x)))

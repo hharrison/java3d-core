@@ -40,12 +40,12 @@ package javax.media.j3d;
  * <ul>
  * <li>FASTEST - uses the fastest available method for transparency.</li><p>
  * <li>NICEST - uses the nicest available method for transparency.</li><p>
- * <li>SCREEN_DOOR - uses screen-door transparency. This is done using 
- * an on/off stipple pattern in which the percentage of transparent pixels 
- * is approximately equal to the value specified by the transparency 
+ * <li>SCREEN_DOOR - uses screen-door transparency. This is done using
+ * an on/off stipple pattern in which the percentage of transparent pixels
+ * is approximately equal to the value specified by the transparency
  * parameter.</li><p>
- * <li>BLENDED - uses alpha blended transparency. The blend equation is 
- * specified by the srcBlendFunction and dstBlendFunction attributes. 
+ * <li>BLENDED - uses alpha blended transparency. The blend equation is
+ * specified by the srcBlendFunction and dstBlendFunction attributes.
  * The default equation is:
  * <ul>
  * <code>alpha<sub><font size=-1>src</font></sub>*src +
@@ -72,25 +72,25 @@ package javax.media.j3d;
  * range [0.0,&nbsp;1.0], with 0.0 being fully opaque and 1.0 being
  * fully transparent.</li><p>
  * <li>Blend function - used in blended transparency and antialiasing
- * operations. The source function specifies the factor that is 
- * multiplied by the source color. This value is added to the product 
- * of the destination factor and the destination color. The default 
- * source blend function is BLEND_SRC_ALPHA. The source blend function 
+ * operations. The source function specifies the factor that is
+ * multiplied by the source color. This value is added to the product
+ * of the destination factor and the destination color. The default
+ * source blend function is BLEND_SRC_ALPHA. The source blend function
  * is one of the following:</li><p>
  * <ul>
  * <li>BLEND_ZERO - the blend function is <code>f = 0</code></li>
  * <li>BLEND_ONE - the blend function is <code>f = 1</code></li>
- * <li>BLEND_SRC_ALPHA - the blend function is <code>f = 
+ * <li>BLEND_SRC_ALPHA - the blend function is <code>f =
  * alpha<sub><font size=-1>src</font></sub></code></li>
- * <li>BLEND_ONE_MINUS_SRC_ALPHA - the blend function is <code>f = 
+ * <li>BLEND_ONE_MINUS_SRC_ALPHA - the blend function is <code>f =
  * 1 - alpha<sub><font size=-1>src</font></sub></code></li>
- * <li>BLEND_DST_COLOR - the blend function is <code>f = 
+ * <li>BLEND_DST_COLOR - the blend function is <code>f =
  * color<sub><font size=-1>dst</font></sub></code></li>
- * <li>BLEND_ONE_MINUS_DST_COLOR - the blend function is <code>f = 
+ * <li>BLEND_ONE_MINUS_DST_COLOR - the blend function is <code>f =
  * 1 - color<sub><font size=-1>dst</font></sub></code></li>
- * <li>BLEND_SRC_COLOR - the blend function is <code>f = 
+ * <li>BLEND_SRC_COLOR - the blend function is <code>f =
  * color<sub><font size=-1>src</font></sub></code></li>
- * <li>BLEND_ONE_MINUS_SRC_COLOR - the blend function is <code>f = 
+ * <li>BLEND_ONE_MINUS_SRC_COLOR - the blend function is <code>f =
  * 1 - color<sub><font size=-1>src</font></sub></code></li>
  * </ul>
  * </ul>
@@ -289,7 +289,7 @@ public class TransparencyAttributes extends NodeComponent {
         ALLOW_MODE_READ,
         ALLOW_VALUE_READ
     };
-    
+
     /**
      * Constructs a TransparencyAttributes object with default parameters.
      * The default values are as follows:
@@ -312,9 +312,9 @@ public class TransparencyAttributes extends NodeComponent {
      * @param tVal the transparency value
      * @exception IllegalArgumentException if
      * <code>tMode</code> is a value other than
-     * <code>NONE</code>, <code>FASTEST</code>, <code>NICEST</code>, 
+     * <code>NONE</code>, <code>FASTEST</code>, <code>NICEST</code>,
      * <code>SCREEN_DOOR</code>, or <code>BLENDED</code>
-     * 
+     *
      */
     public TransparencyAttributes(int tMode, float tVal){
 	this(tMode, tVal, BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
@@ -335,7 +335,7 @@ public class TransparencyAttributes extends NodeComponent {
      * <code>BLEND_SRC_COLOR</code>, or <code>BLEND_ONE_MINUS_SRC_COLOR</code>.
      * @exception IllegalArgumentException if
      * <code>tMode</code> is a value other than
-     * <code>NONE</code>, <code>FASTEST</code>, <code>NICEST</code>, 
+     * <code>NONE</code>, <code>FASTEST</code>, <code>NICEST</code>,
      * <code>SCREEN_DOOR</code>, or <code>BLENDED</code>
      * @exception IllegalArgumentException if
      * <code>srcBlendFunction</code> or <code>dstBlendFunction</code>
@@ -348,7 +348,7 @@ public class TransparencyAttributes extends NodeComponent {
 				  int srcBlendFunction,
 				  int dstBlendFunction) {
 	if ((tMode < FASTEST) ||(tMode > NONE)) {
-	    throw new IllegalArgumentException(J3dI18N.getString("TransparencyAttributes6"));	    
+	    throw new IllegalArgumentException(J3dI18N.getString("TransparencyAttributes6"));
 	}
 
         switch (srcBlendFunction) {
@@ -388,13 +388,13 @@ public class TransparencyAttributes extends NodeComponent {
      * Sets the transparency mode for this
      * appearance component object.
      * @param transparencyMode the transparency mode to be used, one of
-     * <code>NONE</code>, <code>FASTEST</code>, <code>NICEST</code>, 
+     * <code>NONE</code>, <code>FASTEST</code>, <code>NICEST</code>,
      * <code>SCREEN_DOOR</code>, or <code>BLENDED</code>
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @exception IllegalArgumentException if
      * <code>transparencyMode</code> is a value other than
-     * <code>NONE</code>, <code>FASTEST</code>, <code>NICEST</code>, 
+     * <code>NONE</code>, <code>FASTEST</code>, <code>NICEST</code>,
      * <code>SCREEN_DOOR</code>, or <code>BLENDED</code>
      */
     public void setTransparencyMode(int transparencyMode) {
@@ -403,7 +403,7 @@ public class TransparencyAttributes extends NodeComponent {
 		throw new CapabilityNotSetException(J3dI18N.getString("TransparencyAttributes0"));
 
 	if ((transparencyMode < FASTEST) || (transparencyMode > NONE)) {
-		throw new IllegalArgumentException(J3dI18N.getString("TransparencyAttributes6"));	    
+		throw new IllegalArgumentException(J3dI18N.getString("TransparencyAttributes6"));
 	}
 
 	if (isLive())
@@ -418,7 +418,7 @@ public class TransparencyAttributes extends NodeComponent {
      * Gets the transparency mode for this
      * appearance component object.
      * @return transparencyMode the transparency mode
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public int getTransparencyMode() {
@@ -449,7 +449,7 @@ public class TransparencyAttributes extends NodeComponent {
 	    ((TransparencyAttributesRetained)this.retained).initTransparency(transparency);
 
     }
-    
+
 
     /**
      * Retrieves this appearance's transparency.
@@ -478,7 +478,7 @@ public class TransparencyAttributes extends NodeComponent {
      * <code>BLEND_SRC_ALPHA</code>, <code>BLEND_ONE_MINUS_SRC_ALPHA</code>,
      * <code>BLEND_DST_COLOR</code>, or <code>BLEND_ONE_MINUS_DST_COLOR</code>.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @exception IllegalArgumentException if <code>blendFunction</code>
      * is a value other than one of the supported functions listed above.
@@ -503,7 +503,7 @@ public class TransparencyAttributes extends NodeComponent {
             throw new IllegalArgumentException(J3dI18N.getString("TransparencyAttributes7"));
         }
 
-	if (isLive()) 
+	if (isLive())
 	    ((TransparencyAttributesRetained)this.retained).setSrcBlendFunction(blendFunction);
 	else
 	    ((TransparencyAttributesRetained)this.retained).initSrcBlendFunction(blendFunction);
@@ -515,7 +515,7 @@ public class TransparencyAttributes extends NodeComponent {
      * Gets the source blend function for this
      * TransparencyAttributes object.
      * @return the source blend function.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -540,7 +540,7 @@ public class TransparencyAttributes extends NodeComponent {
      * <code>BLEND_SRC_ALPHA</code>, <code>BLEND_ONE_MINUS_SRC_ALPHA</code>,
      * <code>BLEND_SRC_COLOR</code>, or <code>BLEND_ONE_MINUS_SRC_COLOR</code>.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @exception IllegalArgumentException if <code>blendFunction</code>
      * is a value other than one of the supported functions listed above.
@@ -564,7 +564,7 @@ public class TransparencyAttributes extends NodeComponent {
             throw new IllegalArgumentException(J3dI18N.getString("TransparencyAttributes8"));
         }
 
-	if (isLive()) 
+	if (isLive())
 	    ((TransparencyAttributesRetained)this.retained).setDstBlendFunction(blendFunction);
 	else
 	    ((TransparencyAttributesRetained)this.retained).initDstBlendFunction(blendFunction);
@@ -576,7 +576,7 @@ public class TransparencyAttributes extends NodeComponent {
      * Gets the destination blend function for this
      * TransparencyAttributes object.
      * @return the destination blend function.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -600,22 +600,22 @@ public class TransparencyAttributes extends NodeComponent {
 
 
     /**
-     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)  
+     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
         TransparencyAttributes transa = new TransparencyAttributes();
         transa.duplicateNodeComponent(this);
         return transa;
-    } 
+    }
 
-   
+
 
    /**
      * Copies all node information from <code>originalNodeComponent</code> into
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -627,15 +627,15 @@ public class TransparencyAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
-    void duplicateAttributes(NodeComponent originalNodeComponent, 
-			     boolean forceDuplicate) { 
+    void duplicateAttributes(NodeComponent originalNodeComponent,
+			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
-	
-	TransparencyAttributesRetained attr = 
+
+	TransparencyAttributesRetained attr =
 	    (TransparencyAttributesRetained) originalNodeComponent.retained;
 	TransparencyAttributesRetained rt =
-	    (TransparencyAttributesRetained) retained;	
-	
+	    (TransparencyAttributesRetained) retained;
+
 	rt.initTransparencyMode(attr.getTransparencyMode());
 	rt.initTransparency(attr.getTransparency());
 	rt.initSrcBlendFunction(attr.getSrcBlendFunction());

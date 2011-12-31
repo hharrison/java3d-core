@@ -105,25 +105,25 @@ public final class PickRay extends PickShape {
 
 
     // Only use within J3D.
-    // Return a new PickRay that is the transformed (t3d) of this pickRay.  
+    // Return a new PickRay that is the transformed (t3d) of this pickRay.
     PickShape transform(Transform3D t3d) {
 
 	Point3d end = new Point3d();
-    
+
 	PickRay newPR = new PickRay(origin, direction);
-	
+
 	end.x = origin.x + direction.x;
 	end.y = origin.y + direction.y;
 	end.z = origin.z + direction.z;
-	
+
 	t3d.transform(newPR.origin);
 	t3d.transform(end);
-	
+
 	newPR.direction.x = end.x - newPR.origin.x;
 	newPR.direction.y = end.y - newPR.origin.y;
 	newPR.direction.z = end.z - newPR.origin.z;
 	newPR.direction.normalize();
-	
+
 	return newPR;
     }
 

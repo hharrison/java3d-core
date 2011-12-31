@@ -43,10 +43,10 @@ class ViewSpecificGroupRetained extends GroupRetained {
 
     // Used by leaf objects particularly GAs
     // Updated in a MT Safe manner and also used by RenderBin
-    ArrayList cachedViewList = new ArrayList(); 
+    ArrayList cachedViewList = new ArrayList();
 
    // The object that contains the dynamic HashKey - a string type object
-    // Used in scoping 
+    // Used in scoping
     HashKey tempKey = new HashKey(250);
 
     // ArrayList of Integer indices
@@ -56,7 +56,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
     static final int SET_VIEW       = 0x1;
     static final int ADD_VIEW       = 0x2;
     static final int REMOVE_VIEW    = 0x4;
-    
+
     // Construct retained object
     ViewSpecificGroupRetained() {
           this.nodeType = NodeRetained.VIEWSPECIFICGROUP;
@@ -113,7 +113,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	    }
 	    else {
 		ArrayList parentList = (ArrayList)parentLists.get(0);
-		
+
 		// If the parentList contains this view or if this is the
 		// first VSG then ..
 		if (parentList == null || parentList.contains(view)) {
@@ -137,7 +137,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		      for (int n = 0; n < addLeafList.size(); n++) {
 		      System.err.println("n = "+n+" addLeafList = "+addLeafList.get(n));
 		      }
-		      */		      
+		      */
 
 		    J3dMessage message = new J3dMessage();
 		    message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
@@ -155,7 +155,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 
 	}
     }
-    
+
 
     void setView(View view, int index) {
 	int i;
@@ -165,7 +165,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 
 	if (oldView == view)
 	    return;
-	
+
 	apiViewList.set(index, view);
 	if (source.isLive()) {
 	    // Gather all affected leaf nodes and send a message to
@@ -188,19 +188,19 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		    objAry[4] = oldView;
 		    objAry[5] = removeVsgList;
 		    objAry[6] = removeLeafList;
-		    
+
 		    HashKey key = localToVworldKeys[k];
 		    if (oldView != null && (parentList == null || parentList.contains(oldView))) {
 			removeVsgList.add(this);
 			removeKeyList[0] = k;
-			objAry[7] = super.processViewSpecificInfo(REMOVE_VIEW, (HashKey)key, 
+			objAry[7] = super.processViewSpecificInfo(REMOVE_VIEW, (HashKey)key,
 						      oldView, removeVsgList, removeKeyList, removeLeafList);
 		    }
-		    
+
 		    if (view != null && (parentList == null || parentList.contains(view))) {
 			addVsgList.add(this);
 			addKeyList[0] = k;
-			objAry[3] = super.processViewSpecificInfo(ADD_VIEW, (HashKey)key, 
+			objAry[3] = super.processViewSpecificInfo(ADD_VIEW, (HashKey)key,
 						      view, addVsgList, addKeyList, addLeafList);
 		    }
 		    J3dMessage message = new J3dMessage();
@@ -239,14 +239,14 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		if (oldView != null && (parentList == null || parentList.contains(oldView))) {
 		    removeVsgList.add(this);
 		    removeKeyList[0] = 0;
-		    objAry[7] = super.processViewSpecificInfo(REMOVE_VIEW, (HashKey)tempKey, 
+		    objAry[7] = super.processViewSpecificInfo(REMOVE_VIEW, (HashKey)tempKey,
 						  oldView, removeVsgList, removeKeyList, removeLeafList);
 		}
 		if (view != null && (parentList == null || parentList.contains(view))) {
 		    tempKey.reset();
 		    addVsgList.add(this);
 		    addKeyList[0] = 0;
-		    objAry[3] =  super.processViewSpecificInfo(ADD_VIEW, (HashKey)tempKey, 
+		    objAry[3] =  super.processViewSpecificInfo(ADD_VIEW, (HashKey)tempKey,
 					      view, addVsgList, addKeyList, addLeafList);
 		}
 		J3dMessage message = new J3dMessage();
@@ -255,7 +255,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 				   J3dThread.UPDATE_RENDER |
 				   J3dThread.UPDATE_SOUND|
 				   J3dThread.SOUND_SCHEDULER);
-			
+
 		message.universe = universe;
 		message.args[0] = mtype;
 		message.args[1] = objAry;
@@ -264,23 +264,23 @@ class ViewSpecificGroupRetained extends GroupRetained {
 
 
 	}
-	
+
     }
 
     int[] processViewSpecificInfo(int mode, HashKey key, View v, ArrayList vsgList, int[] keyList, ArrayList leaflist) {
 	int hkIndex = 0;
 	Integer hashInt = null;
 	int[] newKeyList = null;
-	// Get the intersection of the viewList with this view, 
+	// Get the intersection of the viewList with this view,
 
 	if (source.isLive()) {
 	    if (inSharedGroup) {
 		hkIndex = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
 	    }
-	    
+
 	    if (mode == ADD_VIEW) {
 		ArrayList parentList = (ArrayList)parentLists.get(hkIndex);
-		parentList.add(v);		
+		parentList.add(v);
 	    }
 	    else if (mode == REMOVE_VIEW) {
 		ArrayList parentList = (ArrayList)parentLists.get(hkIndex);
@@ -372,7 +372,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	    }
 	    else {
 		ArrayList parentList = (ArrayList)parentLists.get(0);
-		
+
 		// If the parentList contains this view or if this is the
 		// first VSG then ..
 		if (parentList == null || parentList.contains(view)) {
@@ -396,7 +396,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		      for (int n = 0; n < addLeafList.size(); n++) {
 		      System.err.println("n = "+n+" addLeafList = "+addLeafList.get(n));
 		      }
-		      */		      
+		      */
 
 		    J3dMessage message = new J3dMessage();
 		    message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
@@ -432,12 +432,12 @@ class ViewSpecificGroupRetained extends GroupRetained {
 			ArrayList removeVsgList = new ArrayList();
 			ArrayList removeLeafList = new ArrayList();
 			int[] removeKeyList = new int[10];
-		    
+
 			objAry[0] = v;
 			objAry[1] = removeVsgList;
 			objAry[2] = removeLeafList;
 			HashKey key = localToVworldKeys[k];
-		    
+
 			removeVsgList.add(this);
 			removeKeyList[0] = k;
 
@@ -462,7 +462,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	    }
 	    else {
 		ArrayList parentList = (ArrayList)parentLists.get(0);
-		
+
 		// If the parentList contains this view or if this is the
 		// first VSG then ..
 		if (parentList == null || parentList.contains(v)) {
@@ -476,7 +476,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 		    objAry[2] = removeLeafList;
 		    removeVsgList.add(this);
 		    removeKeyList[0] = 0;
-		    
+
 		    tempKey.reset();
 		    objAry[3] = super.processViewSpecificInfo(REMOVE_VIEW,
 						  (HashKey)tempKey, v,
@@ -518,7 +518,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
     int indexOfView(View view) {
 	return apiViewList.indexOf(view);
     }
-    
+
     void removeView(View view) {
 	removeView(apiViewList.indexOf(view));
     }
@@ -529,7 +529,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	    removeView(0);
 	}
     }
-    
+
     void compile(CompileState compState) {
         super.compile(compState);
 
@@ -538,7 +538,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 
 	// XXXX: complete this
     }
-    
+
     void setLive(SetLiveState s) {
         if (inBackgroundGroup) {
             throw new
@@ -556,7 +556,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	}
 	super.setLive(s);
         s.viewLists = savedViewList;
-	
+
     }
 
     void clearLive(SetLiveState s) {
@@ -625,7 +625,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	    // Must be in reverse, to preserve right indexing.
 	    for (i = s.keys.length-1; i >= 0; i--) {
 		index = s.keys[i].equals(localToVworldKeys, 0, localToVworldKeys.length);
-		if(index >= 0) { 
+		if(index >= 0) {
 		    s.changedViewGroup.add(this);
 		    s.keyList[s.changedViewGroup.size() -1] = index;
 		    parentLists.remove(index);
@@ -633,10 +633,10 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	    }
 	}
 	s.viewLists =viewLists;
-        super.removeNodeData(s); 
+        super.removeNodeData(s);
     }
-    
-    void updateCachedInformation(int component, View view, int index ) {	
+
+    void updateCachedInformation(int component, View view, int index ) {
 	ArrayList list = (ArrayList) cachedViewList.get(index);
 
 	/*
@@ -697,8 +697,8 @@ class ViewSpecificGroupRetained extends GroupRetained {
         }
 	// Make the VSG's viewLists as the relavant one for its children
 	s.viewLists = viewLists;
-   
-    }    
+
+    }
 
     void setAuxData(SetLiveState s, int index, int hkIndex) {
 	ArrayList vl;
@@ -747,7 +747,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	else {
 	    parentLists.add(hkIndex, null);
 	}
-	    
+
 	viewLists.add(hkIndex,vl);
 	s.changedViewGroup.add(this);
 	s.changedViewList.add(vl);
@@ -757,8 +757,8 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	else {
 	    s.keyList[s.changedViewGroup.size() -1] = 0;
 	}
-	    
-	
+
+
 
     }
 

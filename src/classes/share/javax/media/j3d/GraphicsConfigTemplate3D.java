@@ -44,7 +44,7 @@ import java.awt.GraphicsConfigTemplate;
  * GraphicsConfiguration means that this GraphicsConfiguration is supported and it
  * meets or exceeds what was requested in the GraphicsConfigTemplate.
  * Null is returned if no such "best" GraphicsConfiguration is found.
- * 
+ *
  * @see GraphicsConfigTemplate
  * @see GraphicsDevice
  * @see GraphicsConfiguration
@@ -98,7 +98,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      * If the value of double buffering is
      * GraphicsConfigTemplate.REQUIRED, and no GraphicsConfiguration is found
      * that meets this requirement, null will be returned in getBestConfiguration().
-     * @param value the value to set this field to 
+     * @param value the value to set this field to
      */
     public void setDoubleBuffer(int value) {
         if (value < REQUIRED && value > UNNECESSARY)
@@ -122,7 +122,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      * is passed in, it is ignored. If the value of stereo requirement is
      * GraphicsConfigTemplate.REQUIRED, and no GraphicsConfiguration is found
      * that meets this requirement, null will be returned in getBestConfiguration().
-     * @param value the value to set this field to 
+     * @param value the value to set this field to
      */
     public void setStereo(int value) {
         if (value < REQUIRED && value > UNNECESSARY)
@@ -146,7 +146,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      * is passed in, it is ignored. If the value of scene antialiasing is
      * GraphicsConfigTemplate.REQUIRED, and no GraphicsConfiguration is found
      * that meets this requirement, null will be returned in getBestConfiguration().
-     * @param value the value to set this field to 
+     * @param value the value to set this field to
      */
     public void setSceneAntialiasing(int value) {
         if (value < REQUIRED && value > UNNECESSARY)
@@ -167,7 +167,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      * Sets the depth buffer size requirement.  This is the minimum requirement.
      * If no GraphicsConfiguration is found that meets or
      * exceeds this minimum requirement, null will be returned in
-     * getBestConfiguration(). 
+     * getBestConfiguration().
      * @param value the value to set this field to
      */
     public void setDepthSize(int value) {
@@ -199,7 +199,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
     public void setStencilSize(int value) {
         if (value < 0)
             return;
-        
+
 	stencilSize = value;
     }
 
@@ -218,7 +218,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      * Sets the number of red bits required. This is the minimum requirement.
      * If no GraphicsConfiguration is found that meets or
      * exceeds this minimum requirement, null will be returned in
-     * getBestConfiguration().  
+     * getBestConfiguration().
      * @param value the value to set this field to
      */
     public void setRedSize(int value) {
@@ -241,7 +241,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      * Sets the number of green bits required.  This is the minimum requirement.
      * If no GraphicsConfiguration is found that meets or
      * exceeds this minimum requirement, null will be returned in
-     * getBestConfiguration().  
+     * getBestConfiguration().
      * @param value the value to set this field to
      */
     public void setGreenSize(int value) {
@@ -263,7 +263,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      * Sets the number of blue bits required. This is the minimum requirement.
      * If no GraphicsConfiguration is found that meets or
      * exceeds this minimum requirement, null will be returned in
-     * getBestConfiguration().  
+     * getBestConfiguration().
      * @param value the value to set this field to
      */
     public void setBlueSize(int value) {
@@ -306,7 +306,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
 
 	    // It is possible that the followign postRequest will
 	    // cause request renderer run immediately before
-	    // runMonitor(WAIT). So we need to set 
+	    // runMonitor(WAIT). So we need to set
 	    // threadWaiting to true.
 	    threadWaiting = true;
 
@@ -315,7 +315,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
 	    // MC can only handle postRequest and put it in Renderer
 	    // queue when free.
 	    if (Thread.currentThread() instanceof BehaviorScheduler) {
-		VirtualUniverse.mc.sendRenderMessage(gc[0], this, 
+		VirtualUniverse.mc.sendRenderMessage(gc[0], this,
 						     MasterControl.GETBESTCONFIG);
 	    } else {
 		VirtualUniverse.mc.postRequest(MasterControl.GETBESTCONFIG, this);
@@ -390,10 +390,10 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
 	}
     }
 
-    
+
     static void runMonitor(int action) {
 	// user thread will locked the globalLock when Renderer
-	// thread invoke this function so we can't use 
+	// thread invoke this function so we can't use
 	// the same lock.
 	synchronized (monitorLock) {
 	    switch (action) {

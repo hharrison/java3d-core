@@ -71,7 +71,7 @@ class DepthComponentIntRetained extends DepthComponentRetained {
      */
     void getDepthData(int[] depthData) {
 	int i;
-	
+
 	for (i = 0; i < this.depthData.length; i++)
 	    depthData[i] = this.depthData[i];
     }
@@ -81,13 +81,13 @@ class DepthComponentIntRetained extends DepthComponentRetained {
      */
     final void retrieveDepth(int[] buf, int wRead, int hRead) {
         int srcOffset, dstOffset, i;
- 
+
         // Yup -> Ydown
         for (srcOffset = (hRead - 1) * wRead, dstOffset = 0,
                 i = 0; i < hRead; i++,
              srcOffset -= wRead, dstOffset += width) {
- 
+
             System.arraycopy(buf, srcOffset, depthData, dstOffset, wRead);
         }
-    }   
+    }
 }

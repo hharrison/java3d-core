@@ -50,7 +50,7 @@ class X11NativeScreenInfo extends NativeScreenInfo {
     }
 
     // Fix for issue 20.
-    // This method will return true if glx version is 1.3 or higher, 
+    // This method will return true if glx version is 1.3 or higher,
     // else return false.
     static synchronized boolean isGLX13() {
 	if (!glxChecked) {

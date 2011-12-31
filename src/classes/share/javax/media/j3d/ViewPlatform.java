@@ -35,8 +35,8 @@ package javax.media.j3d;
 /**
  * The ViewPlatform leaf node object controls the position, orientation
  * and scale of the viewer.  It is the node in the scene graph that a
- * View object connects to. A viewer navigates through the virtual 
- * universe by changing the transform in the scene graph hierarchy above 
+ * View object connects to. A viewer navigates through the virtual
+ * universe by changing the transform in the scene graph hierarchy above
  * the ViewPlatform.
  * <p>
  * <b>The View Attach Policy</b>
@@ -79,7 +79,7 @@ package javax.media.j3d;
  * <p>
  * The ViewPlatform's activation radius defines an activation
  * volume surrounding the center of the ViewPlatform. This activation
- * volume is a spherical region that intersects with the scheduling regions 
+ * volume is a spherical region that intersects with the scheduling regions
  * and application regions
  * of other leaf node objects to determine which of those objects may
  * affect rendering.  Only active view platforms--that is, view platforms
@@ -92,12 +92,12 @@ package javax.media.j3d;
  * (Background, Clip, or Soundscape) intersects an active ViewPlatform's
  * activation volume, the "most appropriate" node is selected for that View.
  * Sound leaf objects and Behavior objects become active when
- * their scheduling region intersects an active ViewPlatform's activation 
- * volume. 
+ * their scheduling region intersects an active ViewPlatform's activation
+ * volume.
  * <p>
  * The activation radius is in view platform coordinates. For the
- * default screen scale policy of SCALE_SCREEN_SIZE, the 
- * activationRadius parameter value is multiplied by half the 
+ * default screen scale policy of SCALE_SCREEN_SIZE, the
+ * activationRadius parameter value is multiplied by half the
  * monitor screen size to derive the actual activation radius. For example,
  * for the default screen size of 0.35 meters, and the default activation
  * radius value of 62, the actual activation radius would be 10.85
@@ -131,7 +131,7 @@ public class ViewPlatform extends Leaf {
     private static final int[] readCapabilities = {
         ALLOW_POLICY_READ
     };
-    
+
     /**
      * Constructs a ViewPlatform object with default parameters.
      * The default values are as follows:
@@ -153,7 +153,7 @@ public class ViewPlatform extends Leaf {
 	this.retained = new ViewPlatformRetained();
 	this.retained.setSource(this);
     }
-  
+
 
     /**
      * Sets the view attach policy that determines the coexistence center
@@ -201,7 +201,7 @@ public class ViewPlatform extends Leaf {
 	return ((ViewPlatformRetained)this.retained).getViewAttachPolicy();
     }
 
-    /** 
+    /**
      * Set the ViewPlatform's activation radius which defines an activation
      * volume around the view platform.
      * @param activationRadius the new activation radius
@@ -210,7 +210,7 @@ public class ViewPlatform extends Leaf {
 	((ViewPlatformRetained)this.retained).setActivationRadius(activationRadius);
     }
 
-    /** 
+    /**
      * Get the ViewPlatform's activation radius.
      * @return the ViewPlatform activation radius
      */
@@ -248,7 +248,7 @@ public class ViewPlatform extends Leaf {
         return v;
     }
 
-   
+
     /**
      * Copies all ViewPlatform information from <code>originalNode</code> into
      * the current node.  This method is called from the
@@ -277,10 +277,10 @@ public class ViewPlatform extends Leaf {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
 
-    void duplicateAttributes(Node originalNode, boolean forceDuplicate) { 
+    void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 	super.duplicateAttributes(originalNode, forceDuplicate);
 
-	ViewPlatformRetained attr = 
+	ViewPlatformRetained attr =
 	        (ViewPlatformRetained) originalNode.retained;
 	ViewPlatformRetained rt = (ViewPlatformRetained) retained;
 

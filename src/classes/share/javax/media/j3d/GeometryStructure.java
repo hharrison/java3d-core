@@ -59,9 +59,9 @@ class GeometryStructure extends J3dStructure {
      * A lock object to prevent concurrent getVisibleBHTree query.
      */
     private Object  visLock = new Object();
-    
+
     /**
-     * A lock object to prevent concurrent collideEntryList, 
+     * A lock object to prevent concurrent collideEntryList,
      * collideExitList using toArray() in BehaviorStructure buildTree()
      * while clearMirror() is invoked in GeometryStructure removeNode()
      */
@@ -89,8 +89,8 @@ class GeometryStructure extends J3dStructure {
 
     // Support for multi-locale.
     private Vector3d localeTrans = new Vector3d();
-    
-    
+
+
     //The lists of wakeupCriterion object currently in collision.
     WakeupIndexedList collideEntryList;
     WakeupIndexedList collideExitList;
@@ -103,11 +103,11 @@ class GeometryStructure extends J3dStructure {
 
     // When Shape insert/remove for WakeupOnCollisionxxx() using
     // Group node and USE_GEOMETRY, we need to reevaluate the
-    // cache geometryAtoms list. 
+    // cache geometryAtoms list.
     boolean reEvaluateWakeupCollisionGAs;
 
     private boolean transformMsg = false;
-    
+
     /**
      *  Constructor.
      */
@@ -115,7 +115,7 @@ class GeometryStructure extends J3dStructure {
 	super(u, J3dThread.UPDATE_GEOMETRY);
 	bhNodeCount = 0;
 	bhNodeMax = bhNodeBlockSize;
-	bhNodeArr = new BHNode[bhNodeMax];	
+	bhNodeArr = new BHNode[bhNodeMax];
 	bhTreeMax = 1;
 	bhTreeArr = new BHTree[bhTreeMax];
 	bhTreeCount=0;
@@ -133,12 +133,12 @@ class GeometryStructure extends J3dStructure {
 	wakeupOnCollisionMovement = new WakeupIndexedList(WakeupOnCollisionMovement.class,
 							  WakeupOnCollisionMovement.COND_IN_GS_LIST, u);
     }
-    
+
     void processMessages(long referenceTime) {
 	J3dMessage m;
 	J3dMessage[] messages = getMessages(referenceTime);
 	int nMsg = getNumMessage();
-	
+
 	if (nMsg > 0) {
 	    reEvaluateWakeupCollisionGAs = false;
 	    for (int i=0; i < nMsg; i++) {
@@ -163,7 +163,7 @@ class GeometryStructure extends J3dStructure {
 		    removeNodes(m);
 		    reEvaluateWakeupCollisionGAs = true;
 		    break;
-		case J3dMessage.SHAPE3D_CHANGED: {		
+		case J3dMessage.SHAPE3D_CHANGED: {
 		    int comp = ((Integer)m.args[1]).intValue();
 		    if (comp == Shape3DRetained.GEOMETRY_CHANGED) {
 			m.args[0] = m.args[2];
@@ -174,7 +174,7 @@ class GeometryStructure extends J3dStructure {
 		    else if (comp == Shape3DRetained.APPEARANCE_CHANGED) {
 			processVisibleChanged(m.args[2],
 					      ((GeometryAtom[]) m.args[3]));
-		    } 
+		    }
 		    break;
 		}
 		case J3dMessage.TEXT3D_DATA_CHANGED:
@@ -192,7 +192,7 @@ class GeometryStructure extends J3dStructure {
 		    else if (comp == MorphRetained.APPEARANCE_CHANGED) {
 			processVisibleChanged(m.args[2],
 					      ((GeometryAtom[]) m.args[3]));
-		    }		  
+		    }
 		    break;
 		}
 		case J3dMessage.REGION_BOUND_CHANGED:
@@ -209,36 +209,36 @@ class GeometryStructure extends J3dStructure {
 					  ((GeometryAtom[]) m.args[3]));
 		    break;
 		}
-		
-		lock.writeUnlock();		
+
+		lock.writeUnlock();
 		m.decRefcount();
 	    }
-	    
+
 	    if (transformMsg) {
 		targets = universe.transformStructure.getTargetList();
 		lock.writeLock();
-		
+
 		processTransformChanged(targets);
-		
+
 		lock.writeUnlock();
-		
+
 		transformMsg = false;
 		targets = null;
 	    }
 
-	    Arrays.fill(messages, 0, nMsg, null);	    
+	    Arrays.fill(messages, 0, nMsg, null);
 	}
 
 	processCollisionDetection();
     }
-    
+
 
     private int getBHTreeIndex(Locale  locale) {
 	int i;
 
 	for (i=0; i< bhTreeCount; i++) {
 	    if (bhTreeArr[i].locale == locale)
-		return i;	    
+		return i;
 	}
 	// Can't find will return -1 so that other
 	// program know this
@@ -247,27 +247,27 @@ class GeometryStructure extends J3dStructure {
 
     private int getOrAddBHTreeIndex(Locale  locale) {
 	int i;
-	
+
 	for (i=0; i< bhTreeCount; i++) {
 	    if (bhTreeArr[i].locale == locale)
-		return i;	    
+		return i;
 	}
-	
+
 	if (bhTreeCount >= bhTreeMax) {
 	    // allocate a bigger array here....
-	    if (J3dDebug.devPhase) 
+	    if (J3dDebug.devPhase)
 		J3dDebug.doDebug(J3dDebug.geometryStructure, J3dDebug.LEVEL_2,
 				 "Expanding bhTreeArr array ...\n");
-	    bhTreeMax += bhTreeBlockSize; 
+	    bhTreeMax += bhTreeBlockSize;
 	    BHTree[] oldBhTreeArr = bhTreeArr;
-	    
+
 	    bhTreeArr = new BHTree[bhTreeMax];
 	    System.arraycopy(oldBhTreeArr, 0, bhTreeArr, 0, oldBhTreeArr.length);
 	}
-	
+
 	bhTreeArr[bhTreeCount] = new BHTree(locale);
 	bhTreeCount++;
-	return i;	
+	return i;
     }
 
     private void clearBhNodeArr() {
@@ -282,42 +282,42 @@ class GeometryStructure extends J3dStructure {
     }
 
     private void addToBhNodeArr(BHNode bhNode) {
-	
+
 	// Add to bhNodeArr.
 	if (bhNodeCount >= bhNodeMax) {
-	    bhNodeMax += bhNodeBlockSize; 
+	    bhNodeMax += bhNodeBlockSize;
 	    BHNode[] oldbhNodeArr = bhNodeArr;
-	    
+
 	    bhNodeArr = new BHNode[bhNodeMax];
 	    System.arraycopy(oldbhNodeArr, 0, bhNodeArr, 0, oldbhNodeArr.length);
 	}
-	
+
 	bhNodeArr[bhNodeCount] = bhNode;
 	bhNodeCount++;
     }
-    
+
     private void processVisibleChanged(Object valueObj, GeometryAtom[] gaArr) {
 	boolean visible = true;  // Default is true.
 	int i, treeIndex;
-	
+
 	if ((gaArr == null) || (gaArr.length < 1))
 	    return;
 
 	treeIndex = getBHTreeIndex(gaArr[0].locale);
-	
+
 	visible = ((Boolean)valueObj).booleanValue();
-	
+
 	for ( i=gaArr.length-1; i>=0; i--) {
 	    gaArr[i].visible = visible;
 	}
-	
+
     }
-    
+
     private void insertNodes(Object[] nodes) {
 	Object node;
 	GeometryAtom geomAtom;
 	BHTree  currTree = null;
-        
+
 	clearBhNodeArr();
 
 	// System.err.println("GS : nodes.length is " + nodes.length);
@@ -336,7 +336,7 @@ class GeometryStructure extends J3dStructure {
 		    bhLeafNode.leafIF = geomAtom;
 		    geomAtom.bhLeafNode = bhLeafNode;
 		    bhLeafNode.computeBoundingHull();
-		    // System.err.println("bhLeafNode.bHull is " + bhLeafNode.bHull); 
+		    // System.err.println("bhLeafNode.bHull is " + bhLeafNode.bHull);
 		    addToBhNodeArr(bhLeafNode);
 		}
 	    } else if (node instanceof GroupRetained) {
@@ -345,27 +345,27 @@ class GeometryStructure extends J3dStructure {
 		    BHLeafNode bhLeafNode = new BHLeafNode();
 		    bhLeafNode.leafIF = group;
 		    group.bhLeafNode = bhLeafNode;
-		    bhLeafNode.computeBoundingHull();		    
+		    bhLeafNode.computeBoundingHull();
 		    addToBhNodeArr(bhLeafNode);
 		}
-	    } 
+	    }
 	}
 
 	if (bhNodeCount < 1) {
 	    return;
 	}
-	
+
 	// Look for the right BHTree to insert to.
 	if (currTree == null) {
-	    // We must separate the following two calls 
+	    // We must separate the following two calls
 	    // since the first Call will allocate storage bhTreeArr
 	    // for the second index operation. (see bug 4361998)
 	    int idx = getOrAddBHTreeIndex(((BHLeafNode)bhNodeArr[0]).getLocale());
 	    currTree = bhTreeArr[idx];
 
 	}
-	
-	currTree.insert(bhNodeArr, bhNodeCount);	
+
+	currTree.insert(bhNodeArr, bhNodeCount);
 
         // Issue 353: must clear array after we are done with it
         clearBhNodeArr();
@@ -378,7 +378,7 @@ class GeometryStructure extends J3dStructure {
 	BHTree  currTree = null;
 	Object node;
 	int index;
-	
+
 	clearBhNodeArr();
 
 	for (int i=0; i<nodes.length; i++) {
@@ -395,9 +395,9 @@ class GeometryStructure extends J3dStructure {
 		    if (geomAtom.bhLeafNode != null) {
 			addToBhNodeArr(geomAtom.bhLeafNode);
 			// Dereference BHLeafNode in GeometryAtom.
-			geomAtom.bhLeafNode = null;		
+			geomAtom.bhLeafNode = null;
 		    }
-			
+
 		}
 	    } else if (node instanceof GroupRetained) {
 		if (((NodeRetained)node).nodeType != NodeRetained.ORDEREDGROUP) {
@@ -420,7 +420,7 @@ class GeometryStructure extends J3dStructure {
 		    // Note that GeometryStructure may run in
 		    // parallel with BehaviorStructure when
 		    // BS invoke activateBehaviors() to buildTree()
-		    // which in turn call addWakeupOnCollision() 
+		    // which in turn call addWakeupOnCollision()
 		    // to modify collideEntryList at the same time.
 
 		    WakeupOnCollisionEntry wentry;
@@ -444,11 +444,11 @@ class GeometryStructure extends J3dStructure {
 		}
 	    }
 	}
-	
+
 	if (bhNodeCount < 1) {
 	    return;
 	}
-	
+
 	if (currTree == null) {
 	    index = getBHTreeIndex(((BHLeafNode)bhNodeArr[0]).getLocale());
 	    if (index<0) {
@@ -476,13 +476,13 @@ class GeometryStructure extends J3dStructure {
 	    collideExitList.clearMirror();
 	}
     }
-    
-    
+
+
     private void processBoundsChanged(Object[] nodes, boolean transformChanged) {
-	
+
 	int index;
 	Object node;
-	
+
 	clearBhNodeArr();
 
 	for (int i = 0; i < nodes.length; i++) {
@@ -491,10 +491,10 @@ class GeometryStructure extends J3dStructure {
 		synchronized (node) {
 
 		    GeometryAtom geomAtom = (GeometryAtom) node;
-                    if (geomAtom.bhLeafNode != null) { 
+                    if (geomAtom.bhLeafNode != null) {
 			addToBhNodeArr(geomAtom.bhLeafNode);
 		    }
-		}   
+		}
 	    } else if (node instanceof GroupRetained) {
 
 		GroupRetained group = (GroupRetained) node;
@@ -507,11 +507,11 @@ class GeometryStructure extends J3dStructure {
 		}
 	    }
 	}
-	
+
 	if (bhNodeCount < 1) {
 	    return;
 	}
-	
+
 	index = getBHTreeIndex(((BHLeafNode)bhNodeArr[0]).getLocale());
 
 	if (index >= 0) {
@@ -524,11 +524,11 @@ class GeometryStructure extends J3dStructure {
     }
 
     private void processTransformChanged(UpdateTargets targets) {
-	
+
 	int i, j, index;
         Object[] nodes, nodesArr;
 	UnorderList arrList;
-	int size;		
+	int size;
 
 	clearBhNodeArr();
 
@@ -543,19 +543,19 @@ class GeometryStructure extends J3dStructure {
 		for (i = 0; i < nodes.length; i++) {
 		    GeometryAtom geomAtom = (GeometryAtom) nodes[i];
 		    synchronized (geomAtom) {
-			if (geomAtom.bhLeafNode != null) { 
+			if (geomAtom.bhLeafNode != null) {
 			    addToBhNodeArr(geomAtom.bhLeafNode);
 			}
 		    }
 		}
-	    }    
+	    }
 	}
 
-	
+
 	arrList = targets.targetList[Targets.GRP_TARGETS];
 	if (arrList != null) {
 	    size = arrList.size();
-	    nodesArr = arrList.toArray(false);	
+	    nodesArr = arrList.toArray(false);
 	    for ( j = 0; j < size; j++) {
 		nodes = (Object[])nodesArr[j];
 		for ( i = 0; i < nodes.length; i++) {
@@ -570,37 +570,37 @@ class GeometryStructure extends J3dStructure {
 		}
 	    }
 	}
-	
+
 	if (bhNodeCount < 1) {
 	    return;
 	}
-	
+
 	index = getBHTreeIndex(((BHLeafNode)bhNodeArr[0]).getLocale());
-	
+
 	if (index >= 0) {
-	    bhTreeArr[index].boundsChanged(bhNodeArr, bhNodeCount);	    
-	    
+	    bhTreeArr[index].boundsChanged(bhNodeArr, bhNodeCount);
+
 	}
 
         // Issue 353: must clear array after we are done with it
         clearBhNodeArr();
 
-    }    
+    }
 
     // This method is called by RenderBin to get a array of possibly visible
     // sub-trees.
     // bhTrees mustn't be null.
     // Return true if bhTree's root in encompass by frustumBBox.
-    
+
     boolean getVisibleBHTrees(RenderBin rBin,
 			      BoundingBox frustumBBox,
 			      Locale locale, long referenceTime,
 			      boolean stateChanged,
 			      int visibilityPolicy) {
-	
+
 	int i, j;
 	boolean unviInFB = true;
-	    
+
 	// System.err.println("GeometryStructure : view's locale is " + locale);
 	lock.readLock();
 
@@ -629,18 +629,18 @@ class GeometryStructure extends J3dStructure {
 	}
 	else {
 	    // Multiple locale case.
-	    
+
 	    // For debugging only.
-	    if (J3dDebug.devPhase) 
+	    if (J3dDebug.devPhase)
 		J3dDebug.doDebug(J3dDebug.geometryStructure, J3dDebug.LEVEL_2,
 				 "GeometryStructure : bhTreeCount is " +
 				 universe.geometryStructure.bhTreeCount +
-				 " view's locale is " + locale + "\n");	    
-	    
+				 " view's locale is " + locale + "\n");
+
 	    BoundingBox localeFrustumBBox = new BoundingBox();
-	    
+
 	    synchronized(visLock) {
-		
+
 		for (j=0; j<bhTreeCount; j++) {
 		    if (J3dDebug.devPhase) {
 			J3dDebug.doDebug(J3dDebug.geometryStructure, J3dDebug.LEVEL_2,
@@ -650,7 +650,7 @@ class GeometryStructure extends J3dStructure {
 		    }
 		    if (!locale.hiRes.equals(bhTreeArr[j].locale.hiRes)) {
 			bhTreeArr[j].locale.hiRes.difference(locale.hiRes, localeTrans);
-			
+
 			if (J3dDebug.devPhase) {
 			    J3dDebug.doDebug(J3dDebug.geometryStructure,
 					     J3dDebug.LEVEL_2,
@@ -658,7 +658,7 @@ class GeometryStructure extends J3dStructure {
 					     "GeometryStructure : localeFrustumBBox " +
 					     localeFrustumBBox + "\n" );
 			}
-			
+
 			// Need to translate view frustumBBox here.
 			localeFrustumBBox.lower.x = frustumBBox.lower.x + localeTrans.x;
 			localeFrustumBBox.lower.y = frustumBBox.lower.y + localeTrans.y;
@@ -670,7 +670,7 @@ class GeometryStructure extends J3dStructure {
 		    else {
 			frustumBBox.copy(localeFrustumBBox);
 		    }
-		    
+
 		    if(!(bhTreeArr[j].getVisibleBHTrees(rBin, bhTrees,
 							localeFrustumBBox,
 							referenceTime,
@@ -679,14 +679,14 @@ class GeometryStructure extends J3dStructure {
 							false))) {
 			unviInFB = false;
 		    }
-		}	
+		}
 	    }
 	}
-	
+
 	lock.readUnlock();
 	return unviInFB;
     }
-    
+
     GeometryAtom[] pickAll(Locale locale, PickShape shape) {
 
 	int i;
@@ -694,40 +694,40 @@ class GeometryStructure extends J3dStructure {
 	hitList.clear();
 
 	lock.readLock();
-	
+
 	i = getBHTreeIndex(locale);
 	if (i < 0) {
 	    lock.readUnlock();
 	    return null;
 	}
-	
+
 	bhTreeArr[i].select(shape, hitList);
 	lock.readUnlock();
 
 	int size = hitList.size();
-	
+
 	if (size < 1)
 	    return null;
-	
+
 	BHNode[] hitArr = (BHNode []) hitList.toArray(false);
-	
+
 	GeometryAtom[] geometryAtoms = new GeometryAtom[size];
 	for (i=0; i<size; i++) {
 	    geometryAtoms[i] = (GeometryAtom)(((BHLeafNode)hitArr[i]).leafIF);
-	}	
-	
+	}
+
 	return geometryAtoms;
     }
-    
+
     GeometryAtom pickAny(Locale locale, PickShape shape) {
-	
+
 	int i;
-	
+
 	BHNode hitNode = null;
 
 	lock.readLock();
-	
-	i = getBHTreeIndex(locale);	
+
+	i = getBHTreeIndex(locale);
 	if (i < 0) {
 	    lock.readUnlock();
 	    return null;
@@ -739,20 +739,20 @@ class GeometryStructure extends J3dStructure {
 
 	if (hitNode == null)
 	    return null;
-	    
+
 	return (GeometryAtom)(((BHLeafNode)hitNode).leafIF);
 
-    }    
-    
+    }
+
 
     void addWakeupOnCollision(WakeupOnCollisionEntry w) {
-	
+
 	boolean needTrigger = true;
 
 	// Cleanup, since collideEntryList did not remove
 	// its condition in removeWakeupOnCollision
 	synchronized (collideListLock) {
-	    WakeupOnCollisionEntry collideEntryArr[] = 
+	    WakeupOnCollisionEntry collideEntryArr[] =
 		(WakeupOnCollisionEntry []) collideEntryList.toArray();
 	    WakeupOnCollisionEntry wentry;
 	    for (int i=collideEntryList.arraySize()-1; i>=0; i--) {
@@ -772,7 +772,7 @@ class GeometryStructure extends J3dStructure {
 	// check for collision and triggered event
 	BHLeafInterface target = collide(w.behav.locale,
 					 w.accuracyMode,
-					 w.geometryAtoms, 
+					 w.geometryAtoms,
 					 w.vwcBounds,
 					 w.boundingLeaf,
 					 w.armingNode,
@@ -796,7 +796,7 @@ class GeometryStructure extends J3dStructure {
 	boolean needTrigger = true;
 
 	synchronized (collideListLock) {
-	    WakeupOnCollisionExit collideExitArr[] = 
+	    WakeupOnCollisionExit collideExitArr[] =
 		(WakeupOnCollisionExit []) collideExitList.toArray();
 	    WakeupOnCollisionExit wexit;
 	    for (int i=collideExitList.arraySize()-1; i>=0; i--) {
@@ -810,12 +810,12 @@ class GeometryStructure extends J3dStructure {
 	    }
 	}
 
-	// add condition 
+	// add condition
 	wakeupOnCollisionExit.add(w);
 	w.updateCollisionBounds(false);
 	BHLeafInterface target = collide(w.behav.locale,
 					 w.accuracyMode,
-					 w.geometryAtoms, 
+					 w.geometryAtoms,
 					 w.vwcBounds,
 					 w.boundingLeaf,
 					 w.armingNode,
@@ -838,7 +838,7 @@ class GeometryStructure extends J3dStructure {
 	    WakeupOnCollisionEntry collideEntryArr[] =
 		(WakeupOnCollisionEntry []) collideEntryList.toArray();
 	    WakeupOnCollisionEntry wentry;
-	    
+
 	    for (int i=collideEntryList.arraySize()-1; i>=0; i--) {
 		wentry = collideEntryArr[i];
 		if ((wentry.behav == w.behav) &&
@@ -860,10 +860,10 @@ class GeometryStructure extends J3dStructure {
 	w.updateCollisionBounds(false);
 	BHLeafInterface target = collide(w.behav.locale,
 					 w.accuracyMode,
-					 w.geometryAtoms, 
+					 w.geometryAtoms,
 					 w.vwcBounds,
 					 w.boundingLeaf,
-					 w.armingNode, 
+					 w.armingNode,
 					 w);
 	if (target != null) {
 	    w.setTarget(target);
@@ -905,7 +905,7 @@ class GeometryStructure extends J3dStructure {
                                        wakeupOnCollisionEntry.toArray();
 
 	for (i = wakeupOnCollisionEntry.arraySize()-1; i >=0; i--) {
-	    wentry = wentryArr[i]; 
+	    wentry = wentryArr[i];
 	    wentry.updateCollisionBounds(reEvaluateWakeupCollisionGAs);
 	    target = collide(wentry.behav.locale,
 			     wentry.accuracyMode,
@@ -936,7 +936,7 @@ class GeometryStructure extends J3dStructure {
                                        wakeupOnCollisionMovement.toArray();
 
 	for (i = wakeupOnCollisionMovement.arraySize()-1; i >=0; i--) {
-	    wmove = wmoveArr[i]; 
+	    wmove = wmoveArr[i];
 	    wmove.updateCollisionBounds(reEvaluateWakeupCollisionGAs);
 	    target = collide(wmove.behav.locale,
 			     wmove.accuracyMode,
@@ -972,7 +972,7 @@ class GeometryStructure extends J3dStructure {
                                        wakeupOnCollisionExit.toArray();
 
 	for (i = wakeupOnCollisionExit.arraySize()-1; i >=0; i--) {
-	    wexit = wexitArr[i]; 
+	    wexit = wexitArr[i];
 	    wexit.updateCollisionBounds(reEvaluateWakeupCollisionGAs);
 	    target = collide(wexit.behav.locale,
 			     wexit.accuracyMode,
@@ -1000,7 +1000,7 @@ class GeometryStructure extends J3dStructure {
 
     /**
      * Check for duplicate WakeupOnCollisionMovement event.
-     * We don't want to continue deliver event even though the 
+     * We don't want to continue deliver event even though the
      * two colliding object did not move but this Geometry update
      * thread continue to run due to transform change in others
      * shape not in collision.
@@ -1036,7 +1036,7 @@ class GeometryStructure extends J3dStructure {
      * bound or boundingLeaf collide with BHTree.
      * Only one of geomAtoms, bound, boundingLeaf is non-null.
      * If accurancyMode is USE_GEOMETRY, object geometry is used,
-     * otherwise object bounding box is used for collision 
+     * otherwise object bounding box is used for collision
      * detection.
      * In case of GROUP & BOUND, the armingNode is used
      * to tell whether the colliding Group is itself or not.
@@ -1045,7 +1045,7 @@ class GeometryStructure extends J3dStructure {
      */
      BHLeafInterface collide(Locale locale,
 			     int accurancyMode,
-			     UnorderList geomAtoms, 
+			     UnorderList geomAtoms,
 			     Bounds bound,
 			     BoundingLeafRetained boundingLeaf,
 			     NodeRetained armingNode,
@@ -1066,7 +1066,7 @@ class GeometryStructure extends J3dStructure {
 		     (armingNode instanceof GroupRetained)) {
 		     // Check Bound intersect first before process
 		     // to individual Shape3D geometryAtoms
-		     hitNode = bhTreeArr[idx].selectAny(bound, 
+		     hitNode = bhTreeArr[idx].selectAny(bound,
 							accurancyMode,
 							(GroupRetained)
 							armingNode);
@@ -1077,9 +1077,9 @@ class GeometryStructure extends J3dStructure {
 		     GeometryAtom galist[] = (GeometryAtom [])
 			 geomAtoms.toArray(false);
 
-		     hitNode = bhTreeArr[idx].selectAny(galist, 
+		     hitNode = bhTreeArr[idx].selectAny(galist,
 							geomAtoms.arraySize(),
-							accurancyMode);			     
+							accurancyMode);
 
 		     if (hitNode != null) {
 			 lock.readUnlock();
@@ -1118,7 +1118,7 @@ class GeometryStructure extends J3dStructure {
 	     }
 	     if (armingNode instanceof GroupRetained) {
 		 synchronized (bhTreeArr[idx]) {
-		     hitNode = bhTreeArr[idx].selectAny(bound, 
+		     hitNode = bhTreeArr[idx].selectAny(bound,
 							accurancyMode,
 							(GroupRetained)
 							armingNode);
@@ -1157,7 +1157,7 @@ class GeometryStructure extends J3dStructure {
     void resetConditionMet() {
 	BehaviorStructure.resetConditionMet(wakeupOnCollisionEntry);
 	BehaviorStructure.resetConditionMet(wakeupOnCollisionExit);
-	BehaviorStructure.resetConditionMet(wakeupOnCollisionMovement);	
+	BehaviorStructure.resetConditionMet(wakeupOnCollisionMovement);
     }
 
     /**
@@ -1188,7 +1188,7 @@ class GeometryStructure extends J3dStructure {
             }
         }
 */
-    }  
+    }
 
     void cleanup() {
 	collideEntryList.clear();

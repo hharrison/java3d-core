@@ -106,8 +106,8 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	    }
 	}
     }
-    
-  
+
+
 
     void enableMouseEvents() {
 	if (!mouseEvents) {
@@ -236,7 +236,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	canvas.sendEventToBehaviorScheduler(e);
 
 	if (VirtualUniverse.mc.isD3D() &&
-	    e.isAltDown() && 
+	    e.isAltDown() &&
 	    (e.getKeyCode() == KeyEvent.VK_ENTER)) {
 	    canvas.notifyD3DPeer(Canvas3D.TOGGLEFULLSCREEN);
 	}
@@ -290,7 +290,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
     }
 
     public void mouseExited(MouseEvent e) {
-        if (mouseEvents) 
+        if (mouseEvents)
 	    canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
 	    System.err.println(e);
@@ -314,7 +314,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
     }
 
     public void mouseDragged(MouseEvent e) {
-	// Note : We don't have to test for mouseMotionEvent here because 
+	// Note : We don't have to test for mouseMotionEvent here because
 	// this routine will never be called unless mouseMotionEvent is enabled.
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
@@ -323,16 +323,16 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
     }
 
     public void mouseMoved(MouseEvent e) {
-	// Note : We don't have to test for mouseMotionEvent here because 
+	// Note : We don't have to test for mouseMotionEvent here because
 	// this routine will never be called unless mouseMotionEvent is enabled.
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
 	    System.err.println(e);
 	}
     }
-    
+
     public void mouseWheelMoved(MouseWheelEvent e) {
-	// Note : We don't have to test for mouseWheelEvent here because 
+	// Note : We don't have to test for mouseWheelEvent here because
 	// this routine will never be called unless mouseWheelEvent is enabled.
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
@@ -402,16 +402,16 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	canvas.sendEventToBehaviorScheduler(e);
 	canvas.evaluateVisiblilty();
     }
-    
+
     void reset() {
 	focusEvents = false;
 	keyEvents = false;
 	mouseEvents = false;
 	mouseMotionEvents = false;
 	mouseWheelEvents = false;
-	mouseListenerAdded = false;	
+	mouseListenerAdded = false;
 	stopped = false;
     }
-		
+
 }
 

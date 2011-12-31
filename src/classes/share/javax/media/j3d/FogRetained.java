@@ -57,10 +57,10 @@ abstract class FogRetained extends LeafRetained{
 
     /**
      * The Boundary object defining the lights's region of influence.
-     */  
+     */
     Bounds regionOfInfluence = null;
 
-    /** 
+    /**
      * The bounding leaf reference
      */
     BoundingLeafRetained boundingLeaf = null;
@@ -70,7 +70,7 @@ abstract class FogRetained extends LeafRetained{
      */
     Vector scopes = new Vector();
 
-    // An int that is set when this fog is changed 
+    // An int that is set when this fog is changed
     int isDirty = 0xffff;
 
     // This is true when this fog is referenced in an immediate mode context
@@ -81,7 +81,7 @@ abstract class FogRetained extends LeafRetained{
      */
     Bounds region = null;
 
-    // A reference to the scene graph fog 
+    // A reference to the scene graph fog
     FogRetained sgFog = null;
 
     // The mirror copy of this fog
@@ -95,7 +95,7 @@ abstract class FogRetained extends LeafRetained{
     boolean isScoped = false;
 
     // The object that contains the dynamic HashKey - a string type object
-    // Used in scoping 
+    // Used in scoping
     HashKey tempKey = new HashKey(250);
 
     /**
@@ -157,7 +157,7 @@ abstract class FogRetained extends LeafRetained{
 
     /**
      * Set the Fog's region of influence.
-     */  
+     */
     void initInfluencingBounds(Bounds region) {
 	if (region != null) {
             this.regionOfInfluence = (Bounds) region.clone();
@@ -171,16 +171,16 @@ abstract class FogRetained extends LeafRetained{
 
     /**
      * Set the Fog's region of influence and send message
-     */  
+     */
     void setInfluencingBounds(Bounds region) {
 	initInfluencingBounds(region);
-	sendMessage(BOUNDS_CHANGED, 
+	sendMessage(BOUNDS_CHANGED,
 		    (region != null ? region.clone() : null));
     }
 
-    /**  
+    /**
      * Get the Fog's region of Influence.
-     */  
+     */
     Bounds getInfluencingBounds() {
 	Bounds b = null;
 	if (regionOfInfluence != null) {
@@ -195,7 +195,7 @@ abstract class FogRetained extends LeafRetained{
 
     /**
      * Set the Fog's region of influence to the specified Leaf node.
-     */  
+     */
     void initInfluencingBoundingLeaf(BoundingLeaf region) {
 	if (region != null) {
 	    boundingLeaf = (BoundingLeafRetained)region.retained;
@@ -206,7 +206,7 @@ abstract class FogRetained extends LeafRetained{
 
     /**
      * Set the Fog's region of influence to the specified Leaf node.
-     */  
+     */
     void setInfluencingBoundingLeaf(BoundingLeaf region) {
 	if (boundingLeaf != null)
 	    boundingLeaf.mirrorBoundingLeaf.removeUser(mirrorFog);
@@ -216,17 +216,17 @@ abstract class FogRetained extends LeafRetained{
 	} else {
 	    boundingLeaf = null;
 	}
-	sendMessage(BOUNDINGLEAF_CHANGED, 
-		    (boundingLeaf != null ? 
+	sendMessage(BOUNDINGLEAF_CHANGED,
+		    (boundingLeaf != null ?
 		     boundingLeaf.mirrorBoundingLeaf : null));
     }
 
 
-    /**  
+    /**
      * Get the Fog's region of influence.
-     */  
+     */
     BoundingLeaf getInfluencingBoundingLeaf() {
-	return (boundingLeaf != null ? 
+	return (boundingLeaf != null ?
 		(BoundingLeaf)boundingLeaf.source : null);
     }
 
@@ -252,7 +252,7 @@ abstract class FogRetained extends LeafRetained{
 	GroupRetained group;
 	Object[] scopeInfo = new Object[3];
 
-	
+
 	group = (GroupRetained) scopes.get(index);
 	tempKey.reset();
 	group.removeAllNodesForScopedFog(mirrorFog, removeScopeList, tempKey);
@@ -270,7 +270,7 @@ abstract class FogRetained extends LeafRetained{
 	scopeInfo[2] = (scopes.size() > 0 ? Boolean.TRUE:Boolean.FALSE);
 	sendMessage(SCOPE_CHANGED, scopeInfo);
     }
-    
+
     /**
      * Inserts the specified scope at specified index.before the
      * fog is live
@@ -302,7 +302,7 @@ abstract class FogRetained extends LeafRetained{
 	scopeInfo[2] = (scopes.size() > 0 ? Boolean.TRUE: Boolean.FALSE);
 	sendMessage(SCOPE_CHANGED, scopeInfo);
     }
-    
+
 
     void initRemoveScope(int index) {
 	GroupRetained group  = (GroupRetained)scopes.elementAt(index);
@@ -327,7 +327,7 @@ abstract class FogRetained extends LeafRetained{
 	sendMessage(SCOPE_CHANGED, scopeInfo);
     }
 
-    
+
     /**
      * Returns the scope specified by the index.
      * @param index which scope to return
@@ -336,11 +336,11 @@ abstract class FogRetained extends LeafRetained{
     Group getScope(int index) {
 	return (Group)(((GroupRetained)(scopes.elementAt(index))).source);
     }
-  
+
     /**
      * Returns an enumeration object of the scoperen.
      * @return an enumeration object of the scoperen
-     */  
+     */
     Enumeration getAllScopes() {
 	Enumeration elm = scopes.elements();
 	Vector v = new Vector(scopes.size());
@@ -379,7 +379,7 @@ abstract class FogRetained extends LeafRetained{
 	scopeInfo[2] = (scopes.size() > 0 ? Boolean.TRUE: Boolean.FALSE);
 	sendMessage(SCOPE_CHANGED, scopeInfo);
     }
-   
+
     /**
      * Returns a count of this nodes' scopes.
      * @return the number of scopes descendant from this node
@@ -388,7 +388,7 @@ abstract class FogRetained extends LeafRetained{
 	return scopes.size();
     }
 
-  /** 
+  /**
    * Returns the index of the specified scope within this nodes' list of scopes
    * @param scope whose index is desired
    * @return index of specified scope
@@ -400,7 +400,7 @@ abstract class FogRetained extends LeafRetained{
       return scopes.indexOf(null);
   }
 
-  /** 
+  /**
    * Removes the specified scope from this nodes' list of scopes
    * @param scope to be removed. If the scope is not found,
    * the method returns silently
@@ -415,11 +415,11 @@ abstract class FogRetained extends LeafRetained{
    int i = indexOfScope(scope);
     if(i >= 0)
       initRemoveScope(i);
-  } 
+  }
 
-  /** 
+  /**
    * Removes all the scopes from this node's list of scopes.
-   * The node should revert to universal 
+   * The node should revert to universal
    * scope after this method returns
    */
   void removeAllScopes() {
@@ -439,13 +439,13 @@ abstract class FogRetained extends LeafRetained{
     scopeInfo[2] = Boolean.FALSE;
     sendMessage(SCOPE_CHANGED, scopeInfo);
   }
-  
+
     /**
      * Removes all scopes from this node
      */
     void initRemoveAllScopes() {
 	int n = scopes.size();
-	for(int index = n-1; index >= 0; index--) 
+	for(int index = n-1; index >= 0; index--)
 	    initRemoveScope(index);
     }
 
@@ -455,7 +455,7 @@ abstract class FogRetained extends LeafRetained{
     void setInImmCtx(boolean inCtx) {
         inImmCtx = inCtx;
     }
- 
+
     /**
      * This gets the immedate mode context flag
      */
@@ -500,7 +500,7 @@ abstract class FogRetained extends LeafRetained{
 	    if (objs[2] != null) {
 		mirrorFog.region = (Bounds)mirrorFog.boundingLeaf.transformedRegion;
 	    }
-	    else { 
+	    else {
 		if (mirrorFog.regionOfInfluence != null) {
 		    mirrorFog.region = ((Bounds)mirrorFog.regionOfInfluence).copy(mirrorFog.region);
 		    mirrorFog.region.transform(
@@ -510,7 +510,7 @@ abstract class FogRetained extends LeafRetained{
 		else {
 		    mirrorFog.region = null;
 		}
-		
+
 	    }
 	}
 	else if ((component & SCOPE_CHANGED) != 0) {
@@ -518,7 +518,7 @@ abstract class FogRetained extends LeafRetained{
 	    ArrayList addList = (ArrayList)scopeList[0];
 	    ArrayList removeList = (ArrayList)scopeList[1];
 	    boolean isScoped = ((Boolean)scopeList[2]).booleanValue();
-	    
+
 	    if (addList != null) {
 		mirrorFog.isScoped = isScoped;
 		for (i = 0; i < addList.size(); i++) {
@@ -526,7 +526,7 @@ abstract class FogRetained extends LeafRetained{
 		    obj.addFog(mirrorFog);
 		}
 	    }
-	    
+
 	    if (removeList != null) {
 		mirrorFog.isScoped = isScoped;
 		for (i = 0; i < removeList.size(); i++) {
@@ -557,7 +557,7 @@ abstract class FogRetained extends LeafRetained{
     /**
      * Note: This routine will only be called on
      * the mirror object - will update the object's
-     * cached region and transformed region 
+     * cached region and transformed region
      */
     void updateBoundingLeaf() {
         if (boundingLeaf != null && boundingLeaf.switchState.currentSwitchOn) {
@@ -565,7 +565,7 @@ abstract class FogRetained extends LeafRetained{
         } else {
             if (regionOfInfluence != null) {
 		region = regionOfInfluence.copy(region);
-                region.transform(regionOfInfluence, 
+                region.transform(regionOfInfluence,
 				 getCurrentLocalToVworld());
             } else {
                 region = null;
@@ -594,7 +594,7 @@ abstract class FogRetained extends LeafRetained{
 		IllegalSharingException(J3dI18N.getString("FogRetained1"));
 	}
 
-	
+
 	// Create the mirror object
 	// Initialization of the mirror object during the INSERT_NODE
 	// message (in updateMirrorObject)
@@ -613,7 +613,7 @@ abstract class FogRetained extends LeafRetained{
 	if (boundingLeaf != null) {
 	    boundingLeaf.mirrorBoundingLeaf.addUser(mirrorFog);
 	}
-	
+
 	if ((s.viewScopedNodeList != null) && (s.viewLists != null)) {
 	    s.viewScopedNodeList.add(mirrorFog);
 	    s.scopedNodesViewList.add(s.viewLists.get(0));
@@ -668,7 +668,7 @@ abstract class FogRetained extends LeafRetained{
 	    mirrorFog.boundingLeaf = null;
 	    mirrorFog.region = null;
 	}
-	
+
 	if (bnds != null) {
 	    mirrorFog.regionOfInfluence = bnds;
 	    if (mirrorFog.region == null) {
@@ -687,18 +687,18 @@ abstract class FogRetained extends LeafRetained{
 	Shape3DRetained shape;
 	ArrayList shapeList = (ArrayList)args[2];
 	ArrayList removeScopeList = new ArrayList();
-	
+
 	for (int i = 0; i < shapeList.size(); i++) {
 	    shape = ((GeometryAtom)shapeList.get(i)).source;
 	    shape.removeFog(mirrorFog);
-	}		
-	mirrorFog.isScoped = false;	
+	}
+	mirrorFog.isScoped = false;
 
 
 
     }
 
-    
+
 
     /**
      * This clearLive routine first calls the superclass's method, then
@@ -717,10 +717,10 @@ abstract class FogRetained extends LeafRetained{
 	s.notifyThreads |= J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 	    J3dThread.UPDATE_RENDER;
 
-	// Remove this mirror light as users of the bounding leaf 
+	// Remove this mirror light as users of the bounding leaf
 	if (mirrorFog.boundingLeaf != null)
 	    mirrorFog.boundingLeaf.removeUser(mirrorFog);
-	
+
 	if ((s.viewScopedNodeList != null) && (s.viewLists != null)) {
 	    s.viewScopedNodeList.add(mirrorFog);
 	    s.scopedNodesViewList.add(s.viewLists.get(0));
@@ -751,7 +751,7 @@ abstract class FogRetained extends LeafRetained{
 	}
     }
 
-    // Clone the retained side only, internal use only	
+    // Clone the retained side only, internal use only
      protected Object clone() {
          FogRetained fr = (FogRetained)super.clone();
 
@@ -760,7 +760,7 @@ abstract class FogRetained extends LeafRetained{
          if (b != null) {
              fr.initInfluencingBounds(b);
          }
- 
+
          fr.scopes = new Vector();
          fr.isDirty = 0xffff;
          fr.inImmCtx = false;
@@ -785,10 +785,10 @@ abstract class FogRetained extends LeafRetained{
 		region.transform(regionOfInfluence,
 				 sgFog.getCurrentLocalToVworld());
 	    }
-	    
+
 	}
     }
-    
+
     final void sendMessage(int attrMask, Object attr) {
 	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
@@ -798,7 +798,7 @@ abstract class FogRetained extends LeafRetained{
 	createMessage.args[1]= new Integer(attrMask);
 	createMessage.args[2] = attr;
 	VirtualUniverse.mc.processMessage(createMessage);
-    }    
+    }
 
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);

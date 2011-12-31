@@ -71,8 +71,8 @@ public class IndexedTriangleArray extends IndexedGeometryArray {
     public IndexedTriangleArray(int vertexCount, int vertexFormat, int indexCount) {
 	super(vertexCount,vertexFormat, indexCount);
 
-        if (vertexCount < 1) 
-	    throw new IllegalArgumentException(J3dI18N.getString("IndexedTriangleArray0")); 
+        if (vertexCount < 1)
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedTriangleArray0"));
 
         if (indexCount < 3 || ((indexCount%3) != 0))
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedTriangleArray1"));
@@ -121,8 +121,8 @@ public class IndexedTriangleArray extends IndexedGeometryArray {
 	      texCoordSetCount, texCoordSetMap,
 	      indexCount);
 
-        if (vertexCount < 1) 
-	    throw new IllegalArgumentException(J3dI18N.getString("IndexedTriangleArray0")); 
+        if (vertexCount < 1)
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedTriangleArray0"));
 
         if (indexCount < 3 || ((indexCount%3) != 0))
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedTriangleArray1"));
@@ -178,8 +178,8 @@ public class IndexedTriangleArray extends IndexedGeometryArray {
 	      vertexAttrCount, vertexAttrSizes,
 	      indexCount);
 
-        if (vertexCount < 1) 
-	    throw new IllegalArgumentException(J3dI18N.getString("IndexedTriangleArray0")); 
+        if (vertexCount < 1)
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedTriangleArray0"));
 
         if (indexCount < 3 || ((indexCount%3) != 0))
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedTriangleArray1"));
@@ -216,7 +216,7 @@ public class IndexedTriangleArray extends IndexedGeometryArray {
                 rt.getVertexFormat(),
                 texSetCount,
                 texMap,
-                vertexAttrCount, 
+                vertexAttrCount,
                 vertexAttrSizes,
                 rt.getIndexCount());
         t.duplicateNodeComponent(this);

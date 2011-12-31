@@ -45,13 +45,13 @@ import java.util.*;
 
 
 class Renderer extends J3dThread {
-    
+
     // This action causes this thread to wait
     static final int WAIT = 0;
- 
+
     // This action causes this thread to notify the view, and then wait.
     static final int NOTIFY_AND_WAIT = 1;
- 
+
     // This action causes this thread to be notified
     static final int NOTIFY = 2;
 
@@ -59,16 +59,16 @@ class Renderer extends J3dThread {
     static final int DECAL_NONE      = 0;
     static final int DECAL_1ST_CHILD = 1;
     static final int DECAL_NTH_CHILD = 2;
- 
+
     // stuff for scene antialiasing
     static final int NUM_ACCUMULATION_SAMPLES = 8;
 
     static final float ACCUM_SAMPLES_X[] =
-		{ -0.54818f,  0.56438f,  0.39462f, -0.54498f, 
+		{ -0.54818f,  0.56438f,  0.39462f, -0.54498f,
 	 	  -0.83790f, -0.39263f,  0.32254f,  0.84216f};
 
     static final float ACCUM_SAMPLES_Y[] =
-		{  0.55331f, -0.53495f,  0.41540f, -0.52829f, 
+		{  0.55331f, -0.53495f,  0.41540f, -0.52829f,
 	 	   0.82102f, -0.27383f,  0.09133f, -0.84399f};
 
     static final float accumValue =  1.0f / NUM_ACCUMULATION_SAMPLES;
@@ -91,7 +91,7 @@ class Renderer extends J3dThread {
 
     // Local copy of sharedStereZBuffer flag
     boolean sharedStereoZBuffer;
-    
+
     // This is the id for the underlying sharable graphics context
     Context sharedCtx = null;
 
@@ -102,7 +102,7 @@ class Renderer extends J3dThread {
 
     // display and drawable, used to free shared context
     private long sharedCtxDisplay = 0;
-    private Drawable sharedCtxDrawable = null; 
+    private Drawable sharedCtxDrawable = null;
 
     /**
      * This is the id of the current rendering context
@@ -130,7 +130,7 @@ class Renderer extends J3dThread {
     // List of (Rm, rInfo) pair of individual dlists that need to be rebuilt
     ArrayList dirtyDlistPerRinfoList = new ArrayList();
 
-    
+
     // Texture and display list that should be freed
     ArrayList textureIdResourceFreeList = new ArrayList();
     ArrayList displayListResourceFreeList = new ArrayList();
@@ -147,12 +147,12 @@ class Renderer extends J3dThread {
     Screen3D onScreen;
     Screen3D offScreen;
 
-    // full screen anti-aliasing projection matrices   
+    // full screen anti-aliasing projection matrices
     Transform3D accumLeftProj = new Transform3D();
     Transform3D accumRightProj = new Transform3D();
     Transform3D accumInfLeftProj = new Transform3D();
-    Transform3D accumInfRightProj = new Transform3D(); 
-    
+    Transform3D accumInfRightProj = new Transform3D();
+
     // rendering messages
     J3dMessage m[];
     int nmesg = 0;
@@ -189,7 +189,7 @@ class Renderer extends J3dThread {
     }
 
     /**
-     * Constructs a new Renderer 
+     * Constructs a new Renderer
      */
     Renderer(ThreadGroup t) {
 	super(t);
@@ -201,7 +201,7 @@ class Renderer extends J3dThread {
         renderMessage = new J3dMessage[1];
     }
 
-   
+
     /**
      * The main loop for the renderer.
      */
@@ -219,14 +219,14 @@ class Renderer extends J3dThread {
         double accumDx = 0.0f, accumDy = 0.0f;
 	double accumDxFactor = 1.0f, accumDyFactor = 1.0f;
 
-	double accumLeftX = 0.0, accumLeftY = 0.0, 
+	double accumLeftX = 0.0, accumLeftY = 0.0,
 		accumRightX = 0.0, accumRightY = 0.0,
-		accumInfLeftX = 0.0, accumInfLeftY = 0.0, 
+		accumInfLeftX = 0.0, accumInfLeftY = 0.0,
 		accumInfRightX = 0.0, accumInfRightY = 0.0;
 	int opArg, status;
         boolean done = false;
 	Transform3D t3d = null;
-	
+
         opArg = ((Integer)args[0]).intValue();
 
         try {
@@ -363,7 +363,7 @@ class Renderer extends J3dThread {
                                 J3dThread.RENDER_THREAD);
                     }
                 }
-                
+
             } else if (opArg == REQUESTCLEANUP) {
 	    Integer mtype = (Integer) args[2];
 
@@ -382,17 +382,17 @@ class Renderer extends J3dThread {
 		    cv.makeCtxCurrent();
 		}
 		cv.freeContextResources(cv.screen.renderer, true, cv.ctx);
-	    } else if (mtype == MasterControl.REMOVECTX_CLEANUP) { 
+	    } else if (mtype == MasterControl.REMOVECTX_CLEANUP) {
 		// from Canvas3D removeCtx() postRequest
 		Object[] obj = (Object []) args[1];
-		Canvas3D c = (Canvas3D) obj[0]; 
+		Canvas3D c = (Canvas3D) obj[0];
 		removeCtx(c,
 			  ((Long) obj[1]).longValue(),
 			  (Drawable) obj[2],
-			  (Context) obj[3], 
-			  false, !c.offScreen, 
-			  false);		
-	    } 
+			  (Context) obj[3],
+			  false, !c.offScreen,
+			  false);
+	    }
 	    return;
 	} else { // RENDER || REQUESTRENDER
 
@@ -446,8 +446,8 @@ class Renderer extends J3dThread {
 			    // Setup stencil related variables.
                             c.actualStencilSize = c.getStencilSize();
                             boolean userOwnsStencil = c.requestedStencilSize > 0;
-                            
-                            c.userStencilAvailable = 
+
+                            c.userStencilAvailable =
                                     (userOwnsStencil && (c.actualStencilSize > 0));
                             c.systemStencilAvailable =
                                     (!userOwnsStencil && (c.actualStencilSize > 0));
@@ -458,7 +458,7 @@ class Renderer extends J3dThread {
 			    if (c.sceneAntialiasingMultiSamplesAvailable) {
 				c.sceneAntialiasingAvailable = true;
 			    } else {
-				c.sceneAntialiasingAvailable = 
+				c.sceneAntialiasingAvailable =
 				    c.hasSceneAntialiasingAccum();
 			    }
                           } catch (RuntimeException ex) {
@@ -493,7 +493,7 @@ class Renderer extends J3dThread {
 			    GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
 			    currentCtx = null;
                             currentDrawable = null;
-			} 
+			}
 		    } else if (secondArg instanceof Integer) {
                         // Issue 121 - This was formerly used as a message from
                         // the now-nonexistant TextureRetained finalize() method
@@ -565,7 +565,7 @@ class Renderer extends J3dThread {
 
                     canvas.drawable = null;
                     try {
-                        // Issue 396. Pass in a null ctx for 2 reasons : 
+                        // Issue 396. Pass in a null ctx for 2 reasons :
                         //   1) We should not use ctx field directly without buffering in a msg.
                         //   2) canvas.ctx should be null.
                         canvas.drawable =
@@ -592,7 +592,7 @@ class Renderer extends J3dThread {
 		    canvas.offScreenBufferPending = false;
 		    m[nmesg++].decRefcount();
 		    continue;
-		} 
+		}
                 else if (renderType == J3dMessage.DESTROY_CTX_AND_OFFSCREENBUFFER) {
                     Object[] obj = m[nmesg].args;
 
@@ -622,7 +622,7 @@ class Renderer extends J3dThread {
                     continue;
                 }
 
-		if (!canvas.validCanvas && 
+		if (!canvas.validCanvas &&
                     (renderType != J3dMessage.RENDER_OFFSCREEN)) {
 		    m[nmesg++].decRefcount();
 		    continue;
@@ -705,7 +705,7 @@ class Renderer extends J3dThread {
 				(HiResCoord)m[nmesg].args[2]);
 			break;
 		    case GraphicsContext3D.SET_MODEL_TRANSFORM:
-			t3d = (Transform3D)m[nmesg].args[2]; 
+			t3d = (Transform3D)m[nmesg].args[2];
 			canvas.graphicsContext3D.doSetModelTransform(t3d);
 			break;
 		    case GraphicsContext3D.MULTIPLY_MODEL_TRANSFORM:
@@ -756,7 +756,7 @@ class Renderer extends J3dThread {
 		    case GraphicsContext3D.DRAWANDFLUSH2D:
 			Object ar[] = m[nmesg].args;
 			canvas.graphics2D.doDrawAndFlushImage(
-					      (BufferedImage) ar[2], 
+					      (BufferedImage) ar[2],
 					      ((Point) ar[3]).x,
 					      ((Point) ar[3]).y,
 					      (ImageObserver) ar[4]);
@@ -800,13 +800,13 @@ class Renderer extends J3dThread {
                     }
 
                     m[nmesg++].decRefcount();
-                    
+
                     if (canvas.isFatalError()) {
                         continue;
                     }
 
 		    ImageComponent2DRetained offBufRetained = null;
-		    
+
 		    if (renderType == J3dMessage.RENDER_OFFSCREEN) {
                         // Issue 131: set offScreenRendering flag here, since it
                         // otherwise won't be set for auto-off-screen rendering
@@ -818,15 +818,15 @@ class Renderer extends J3dThread {
 			} else {
 			    offBufRetained = (ImageComponent2DRetained)
 				canvas.offScreenBuffer.retained;
-			    
+
                             if (offBufRetained.isByReference()) {
                                 offBufRetained.geomLock.getLock();
                             }
-                            
+
                             offBufRetained.evaluateExtensions(canvas);
-			    
+
 			}
-                        
+
                     } else if (!canvas.active) {
 			continue;
 		    }
@@ -841,7 +841,7 @@ class Renderer extends J3dThread {
 
 		    renderBin = canvas.view.renderBin;
 
-	            // setup rendering context 
+	            // setup rendering context
 
 	            // We need to catch NullPointerException when the dsi
   	            // gets yanked from us during a remove.
@@ -864,7 +864,7 @@ class Renderer extends J3dThread {
 
 			    synchronized (VirtualUniverse.mc.contextCreationLock) {
                                 sharedCtx = null;
-				try { 
+				try {
                                     sharedCtx = canvas.createNewContext(null, true);
                                 } catch (RuntimeException ex) {
                                     ex.printStackTrace();
@@ -889,7 +889,7 @@ class Renderer extends J3dThread {
 
 				    break doneRender;
 				}
-				sharedCtxTimeStamp = 
+				sharedCtxTimeStamp =
 				    VirtualUniverse.mc.getContextTimeStamp();
 
 				needToRebuildDisplayList = true;
@@ -901,7 +901,7 @@ class Renderer extends J3dThread {
 
             	    if (canvas.ctx == null) {
 
-			// Always lock for context create			
+			// Always lock for context create
 			if (!canvas.drawingSurfaceObject.renderLock()) {
 			    if ((offBufRetained != null) &&
 				offBufRetained.isByReference()) {
@@ -920,7 +920,7 @@ class Renderer extends J3dThread {
                             }
 
                             if (canvas.ctx == null) {
-				canvas.drawingSurfaceObject.unLock();			    
+				canvas.drawingSurfaceObject.unLock();
 				if ((offBufRetained != null) &&
 				    offBufRetained.isByReference()) {
 				    offBufRetained.geomLock.unLock();
@@ -943,7 +943,7 @@ class Renderer extends J3dThread {
 				canvas.graphics2D.init();
 			    }
 
-			    canvas.ctxTimeStamp = 
+			    canvas.ctxTimeStamp =
 				    VirtualUniverse.mc.getContextTimeStamp();
 			    listOfCtxs.add(canvas.ctx);
 			    listOfCanvases.add(canvas);
@@ -951,7 +951,7 @@ class Renderer extends J3dThread {
 			    if (renderBin.nodeComponentList.size() > 0) {
 				for (i = 0; i < renderBin.nodeComponentList.size(); i++) {
 				    NodeComponentRetained nc = (NodeComponentRetained)renderBin.nodeComponentList.get(i);
-                                    if(nc instanceof ImageComponentRetained) {    
+                                    if(nc instanceof ImageComponentRetained) {
                                         ((ImageComponentRetained)nc).evaluateExtensions(canvas);
                                     }
 				}
@@ -973,7 +973,7 @@ class Renderer extends J3dThread {
                         if (!canvas.useSharedCtx) {
                             canvas.needToRebuildDisplayList = true;
                         }
-			canvas.drawingSurfaceObject.unLock();			    
+			canvas.drawingSurfaceObject.unLock();
             	    } else {
 
 			if (canvas.isRunning) {
@@ -1026,7 +1026,7 @@ class Renderer extends J3dThread {
                             canvas.offScreenRendering = false;
 			    break doneRender;
 			}
-								
+
                         // setup viewport
                         canvas.setViewport(canvas.ctx, 0, 0,
                            cvCache.getCanvasWidth(),
@@ -1061,7 +1061,7 @@ class Renderer extends J3dThread {
 				}
 				textureReloadList.clear();
 			    }
-				
+
                         } else {
                             // update each canvas
 			    if (canvas.needToRebuildDisplayList) {
@@ -1099,7 +1099,7 @@ class Renderer extends J3dThread {
                             num_stereo_passes = 1;
                             stereo_mode = Canvas3D.FIELD_ALL;
 
-			    // just in case user set flag - 
+			    // just in case user set flag -
 			    // disable since we are not in stereo
 			    sharedStereoZBuffer = false;
                         }
@@ -1107,9 +1107,9 @@ class Renderer extends J3dThread {
 		        // full screen anti-aliasing setup
 			if (canvas.view.getSceneAntialiasingEnable() &&
 			    canvas.sceneAntialiasingAvailable) {
-			    
-			    if (!VirtualUniverse.mc.isD3D() && 
-				((canvas.extensionsSupported & Canvas3D.MULTISAMPLE) == 0) || 
+
+			    if (!VirtualUniverse.mc.isD3D() &&
+				((canvas.extensionsSupported & Canvas3D.MULTISAMPLE) == 0) ||
 				!canvas.sceneAntialiasingMultiSamplesAvailable) {
 				doAccum = true;
 				num_accum_passes = NUM_ACCUMULATION_SAMPLES;
@@ -1126,7 +1126,7 @@ class Renderer extends J3dThread {
                                 accumDyFactor = (
                                     canvas.canvasViewCache.getPhysicalWindowHeight() /
                                     canvas.canvasViewCache.getCanvasHeight())*canvas.view.fieldOfView;
-				
+
 
 			        accumLeftX = accumLeftProj.mat[3];
 			        accumLeftY = accumLeftProj.mat[7];
@@ -1152,7 +1152,7 @@ class Renderer extends J3dThread {
 				        accumInfRightX = accumInfRightProj.mat[3];
 				        accumInfRightY = accumInfRightProj.mat[7];
 				    }
-				}				
+				}
 			    } else {
 
 				if (!canvas.antialiasingSet) {
@@ -1192,9 +1192,9 @@ class Renderer extends J3dThread {
                         // and not in stereo mode
                         if (!doAccum && !sharedStereoZBuffer) {
 			    BackgroundRetained bg = renderBin.background;
-                            
+
                             canvas.clear(bg, winWidth, winHeight);
-                            
+
                         }
 
 		        // handle preRender callback
@@ -1233,8 +1233,8 @@ class Renderer extends J3dThread {
                             canvas.setRenderMode(canvas.ctx, stereo_mode,
                                                   canvas.useDoubleBuffer);
 
-			
-			
+
+
                             for (apass = 0; apass < num_accum_passes; apass++) {
 
 			        // jitter projection matrix and clear background
@@ -1273,12 +1273,12 @@ class Renderer extends J3dThread {
 					    accumInfLeftProj.mat[5] * accumDy;
 
 				        if (useStereo) {
-                                            accumInfRightProj.mat[3] = 
+                                            accumInfRightProj.mat[3] =
 					      accumInfRightX +
 					      accumInfRightProj.mat[0] * accumDx +
 					      accumInfRightProj.mat[1] * accumDy;
 
-                                            accumInfRightProj.mat[7] = 
+                                            accumInfRightProj.mat[7] =
 					      accumInfRightY +
 					      accumInfRightProj.mat[4] * accumDx +
 					      accumInfRightProj.mat[5] * accumDy;
@@ -1300,7 +1300,7 @@ class Renderer extends J3dThread {
 
 				    // setup rendering matrices
 				    if (pass == 0) {
-                                        canvas.vpcToEc = 
+                                        canvas.vpcToEc =
 					    cvCache.getInfLeftVpcToEc();
 	    	                        if (doAccum) {
                                             canvas.setProjectionMatrix(
@@ -1311,7 +1311,7 @@ class Renderer extends J3dThread {
 					       	cvCache.getInfLeftProjection());
 				        }
 				    } else {
-                                        canvas.vpcToEc = 
+                                        canvas.vpcToEc =
 					    cvCache.getInfRightVpcToEc();
 	    	                        if (doAccum) {
                                             canvas.setProjectionMatrix(
@@ -1347,7 +1347,7 @@ class Renderer extends J3dThread {
                                         canvas.setProjectionMatrix(canvas.ctx,
 						cvCache.getRightProjection());
 				    }
-			        } 
+			        }
                                 canvas.vworldToEc.mul(canvas.vpcToEc,
                                         cvCache.getVworldToVpc());
 
@@ -1364,7 +1364,7 @@ class Renderer extends J3dThread {
 				if (useStereo) {
 				    canvas.canvasDirty |= Canvas3D.VIEW_MATRIX_DIRTY;
 				}
-				
+
 			        // render opaque geometry
                                 renderBin.renderOpaque(canvas);
 
@@ -1482,7 +1482,7 @@ class Renderer extends J3dThread {
 			if ((offBufRetained != null) &&
 			    offBufRetained.isByReference()) {
 			    offBufRetained.geomLock.unLock();
-			}	
+			}
 		    }
 		}
 	    }
@@ -1540,9 +1540,9 @@ class Renderer extends J3dThread {
     void cleanup() {
 	super.cleanup();
         renderMessage = new J3dMessage[1];
-	rendererStructure = new RendererStructure();	
+	rendererStructure = new RendererStructure();
 	bgVworldToVpc = new Transform3D();
-	sharedCtx = null;	 
+	sharedCtx = null;
 	sharedCtxTimeStamp = 0;
 	sharedCtxDisplay = 0;
         sharedCtxDrawable = null;
@@ -1579,7 +1579,7 @@ class Renderer extends J3dThread {
     // user thread will not wait for it. Also we can just
     // reuse it as Canvas3D did not destroy.
     private void removeCtx(Canvas3D cv, long display, Drawable drawable, Context ctx,
-			   boolean resetCtx, boolean freeBackground, 
+			   boolean resetCtx, boolean freeBackground,
 			   boolean destroyOffScreenBuffer) {
 
 	synchronized (VirtualUniverse.mc.contextCreationLock) {
@@ -1631,7 +1631,7 @@ class Renderer extends J3dThread {
 	    }
 
 	    // Fix for issue 18.
-	    // Since we are now the renderer thread, 
+	    // Since we are now the renderer thread,
 	    // we can safely execute destroyOffScreenBuffer.
 	    if(destroyOffScreenBuffer) {
 		cv.destroyOffScreenBuffer(ctx, display, cv.fbConfig, drawable);
@@ -1680,7 +1680,7 @@ class Renderer extends J3dThread {
 		cv.ctx = null;
 		cv.ctxTimeStamp = 0;
 	    }
-	    
+
 	    if (sharedCtx != null) {
 		sharedCtx = null;
 		sharedCtxTimeStamp = 0;
@@ -1703,7 +1703,7 @@ class Renderer extends J3dThread {
 	    if (cv != null) {
 		cv.makeCtxCurrent(sharedCtx);
 	    }
-	    
+
 	    if (isFreeDL) {
 		for (it = displayListResourceFreeList.iterator(); it.hasNext();) {
 		    val = ((Integer) it.next()).intValue();
@@ -1740,7 +1740,7 @@ class Renderer extends J3dThread {
                         textureIDResourceTable.set(val, null);
 		    }
 		    Canvas3D.freeTexture(sharedCtx, val);
-		}		    
+		}
 		textureIdResourceFreeList.clear();
 	    }
 	    if (cv != null) {
@@ -1751,11 +1751,11 @@ class Renderer extends J3dThread {
 
     final void addTextureResource(int id, Object obj) {
 	if (textureIDResourceTable.size() <= id) {
-	    for (int i=textureIDResourceTable.size(); 
+	    for (int i=textureIDResourceTable.size();
 		 i < id; i++) {
 		textureIDResourceTable.add(null);
 	    }
-	    textureIDResourceTable.add(obj);		
+	    textureIDResourceTable.add(obj);
 	} else {
 	    textureIDResourceTable.set(id, obj);
 	}
@@ -1781,11 +1781,11 @@ class Renderer extends J3dThread {
 		}
 	    }
 	}
-	textureIDResourceTable.clear();	
-	
+	textureIDResourceTable.clear();
+
 	// displayList is free in Canvas.freeContextResources()
     }
-    
+
     /**
      * Send a message to the notification thread, which will call the
      * shader error listeners.

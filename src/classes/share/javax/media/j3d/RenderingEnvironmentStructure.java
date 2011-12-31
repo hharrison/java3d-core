@@ -161,16 +161,16 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	}
 	return objs;
     }
-    
+
     void addObjArrayToFreeList(Object[] objs) {
 	int i;
 
 	for (i = 0; i < objs.length; i++)
 	    objs[i] = null;
-	
+
 	objFreeList.add(objs);
     }
-    
+
 
 
     public void updateObject() {
@@ -275,14 +275,14 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	    }
 	    m.decRefcount();
 	}
-	 
+
 	if (transformMsg) {
 	    updateTransformChange();
 	    transformMsg = false;
 	}
-	
+
 	VirtualUniverse.mc.addMirrorObject(this);
-	
+
 	Arrays.fill(messages, 0, nMsg, null);
     }
 
@@ -297,7 +297,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	for (int n = 0; n < ogList.length; n++) {
 	    og = (OrderedGroupRetained)ogList[n];
 	    og.updateChildIdTableInserted(((Integer) ogChildIdList[n]).intValue(),
-					  ((Integer) ogOrderedIdList[n]).intValue()); 
+					  ((Integer) ogOrderedIdList[n]).intValue());
 	    og.incrChildCount();
 	}
     }
@@ -308,7 +308,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	OrderedGroupRetained og;
 	int index;
 	Object[] objs;
-	
+
 	for (int n = 0; n < ogList.length; n++) {
 	    og = (OrderedGroupRetained)ogList[n];
 	    og.updateChildIdTableRemoved(((Integer) ogChildIdList[n]).intValue());
@@ -373,7 +373,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	LightRetained lt;
 	FogRetained fg;
 	ModelClipRetained mc;
-	ArrayList list;	
+	ArrayList list;
 
 	for (i=0; i<nodes.length; i++) {
 	    n = nodes[i];
@@ -399,14 +399,14 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		    nonViewScopedFogs.add(fg);
 		}
 
-	    
+
 	    } else if (n instanceof AlternateAppearanceRetained) {
 		AlternateAppearanceRetained altApp = (AlternateAppearanceRetained)n;
-		
+
 		numberOfAltApps++;
 
 		nonViewScopedAltAppearances.add(n);
-	    
+
 	    } else if (n instanceof BackgroundRetained) {
 		BackgroundRetained bg = (BackgroundRetained)n;
 		numberOfBgs++;
@@ -425,7 +425,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 
 		nonViewScopedModelClips.add(n);
 
-	    } 
+	    }
 
 	}
 
@@ -485,7 +485,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 			    viewScopedBackgrounds.put(view, list);
 			}
 			list.add(n);
-		    }		    
+		    }
 		} else if (n instanceof ClipRetained) {
 		    ((ClipRetained)n).isViewScoped = true;
 		    numberOfClips++;
@@ -520,9 +520,9 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	    intersectedFogs = new FogRetained[numberOfFogs];
 	if (intersectedAltApps.length < numberOfAltApps)
 	    intersectedAltApps = new AlternateAppearanceRetained[numberOfAltApps];
-	if (intersectedBacks.length < numberOfBgs) 
+	if (intersectedBacks.length < numberOfBgs)
 	    intersectedBacks = new BackgroundRetained[numberOfBgs];
-	if (intersectedClips.length < numberOfClips) 
+	if (intersectedClips.length < numberOfClips)
 	    intersectedClips = new ClipRetained[numberOfClips];
 	if (intersectedModelClips.length < numberOfModelClips)
 	    intersectedModelClips = new ModelClipRetained[numberOfModelClips];
@@ -550,7 +550,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		else {
 		    nonViewScopedLights.remove(nonViewScopedLights.indexOf(n));
 		}
-		
+
 		numberOfLights--;
 	    } else if (n instanceof FogRetained) {
 		numberOfFogs--;
@@ -573,7 +573,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		ModelClipRetained mc = (ModelClipRetained)n;
 		numberOfModelClips--;
 		nonViewScopedModelClips.remove(nonViewScopedModelClips.indexOf(n));
-		    
+
 	    }
 	    else if (n instanceof GeometryAtom) {
 		ga = (GeometryAtom)n;
@@ -644,7 +644,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 			if (list.size() == 0) {
 			    viewScopedBackgrounds.remove(view);
 			}
-		    }		    
+		    }
 		} else if (n instanceof ClipRetained) {
 		    ((ClipRetained)n).isViewScoped = false;
 		    numberOfClips--;
@@ -740,12 +740,12 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		//		System.err.println("light.region = "+light.region);
 		//		System.err.println("Intersected = "+bounds.intersect(light.region));
 		//		System.err.println("");
-		    
+
 		//		    if ((light.viewList != null && light.viewList.contains(view)) &&
 		// Treat lights in background geo as having infinite bounds
 		if (light.lightOn && light.switchState.currentSwitchOn &&
 		    (ra.geometryAtom.source.inBackgroundGroup || bounds.intersect(light.region))){
-		    // Get the mirror Shape3D node 
+		    // Get the mirror Shape3D node
 		    n = ((Shape3DRetained)ra.geometryAtom.source).numlights;
 		    shapeScopedLt = ((Shape3DRetained)ra.geometryAtom.source).lights;
 
@@ -755,7 +755,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		    // while accessing them?. So, Lock.
 		    if (light.isScoped) {
 			for (j = 0; j < n; j++) {
-			    // then check if the light is scoped to 
+			    // then check if the light is scoped to
 			    // this group
 			    if (light == shapeScopedLt[j]) {
 				retlights[numLights++] = light;
@@ -781,7 +781,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 
 	// Need to lock lockObj, since on a multi-processor
 	// system with 2 views on a single universe, there might
-	// be councurrent access	
+	// be councurrent access
 	synchronized(lockObj) {
 	    nfogs = 0;
 	    Bounds bounds = ra.localeVwcBounds;
@@ -795,14 +795,14 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		// If background, then nfogs > 1, take the first one
 		if (nfogs >= 1)
 		    fog = intersectedFogs[0];
-		
+
 	    } else {
 		if ((globalFogs = (ArrayList)viewScopedFogs.get(view)) != null) {
 		    nfogs = processFogs(globalFogs, ra, nfogs);
 		}
 		// now process the common fogs
 		nfogs = processFogs(nonViewScopedFogs, ra, nfogs);
-	    
+
 
 		if (nfogs == 1)
 		    fog = intersectedFogs[0];
@@ -840,9 +840,9 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 
 		    if (fog.isScoped) {
 			for (k = 0; k < n; k++) {
-			    // then check if the Fog is scoped to 
+			    // then check if the Fog is scoped to
 			    // this group
-			    if (fog == shapeScopedFog[k]) {				    
+			    if (fog == shapeScopedFog[k]) {
 				intersectedBounds[numFogs] = fog.region;
 				intersectedFogs[numFogs++] = fog;
 				break;
@@ -866,13 +866,13 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
         ArrayList globalModelClips;
 
 
-	
+
 	if (ra.geometryAtom.source.inBackgroundGroup) {
 	    return null;
 	}
 	// Need to lock lockObj, since on a multi-processor
 	// system with 2 views on a single universe, there might
-	// be councurrent access	
+	// be councurrent access
 	synchronized(lockObj) {
 	    Bounds bounds = ra.localeVwcBounds;
 	    nModelClips = 0;
@@ -901,7 +901,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 			break;
 		    }
 		}
-	    } 
+	    }
 	    return (modelClip);
 	}
 
@@ -913,11 +913,11 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	ModelClipRetained modelClip;
         Bounds bounds = ra.localeVwcBounds;
 	ModelClipRetained[] shapeScopedModelClip;
-	    
+
 	if (size > 0) {
 	    for (i = 0; i < size; i++) {
 		modelClip = (ModelClipRetained) globalModelClips.get(i);
-		if (modelClip.enableFlag == true && 
+		if (modelClip.enableFlag == true &&
 		    modelClip.region != null && modelClip.switchState.currentSwitchOn) {
 		    if (modelClip.region.intersect(bounds) == true) {
 			n = ((Shape3DRetained)ra.geometryAtom.source).numModelClips;
@@ -925,7 +925,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 
 			if (modelClip.isScoped) {
 			    for (k = 0; k < n; k++) {
-				// then check if the modelClip is scoped to 
+				// then check if the modelClip is scoped to
 				// this group
 				if (shapeScopedModelClip[k] == modelClip) {
 
@@ -945,7 +945,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	}
 	return nModelClips;
     }
-	    
+
     BackgroundRetained getApplicationBackground(BoundingSphere bounds, Locale viewLocale, View view) {
 	BackgroundRetained bg = null;
 	Bounds closestBounds;
@@ -958,7 +958,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 
 	// Need to lock lockObj, since on a multi-processor
 	// system with 2 views on a single universe, there might
-	// be councurrent access	
+	// be councurrent access
 	synchronized(lockObj) {
 	    nbacks = 0;
 	    if (intersectedBounds.length < numberOfBgs)
@@ -975,7 +975,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	    if (nbacks == 1) {
 		bg = intersectedBacks[0];
 	    } else  if (nbacks > 1) {
-		closestBounds = 
+		closestBounds =
 		    bounds.closestIntersection(intersectedBounds);
 		for (j=0; j<nbacks; j++) {
 		    if (intersectedBounds[j] == closestBounds) {
@@ -1021,7 +1021,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	}
 	return nbacks;
     }
-    
+
     double[] backClipDistanceInVworld (BoundingSphere bounds, View view) {
 	int i,j;
         int nclips;
@@ -1034,7 +1034,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 
 	// Need to lock intersectedBounds, since on a multi-processor
 	// system with 2 views on a single universe, there might
-	// be councurrent access	
+	// be councurrent access
 	synchronized(lockObj) {
 	    backClipDistance = null;
 	    backClipActive = false;
@@ -1048,9 +1048,9 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	    }
 	    nclips = processClips(nonViewScopedClips, bounds, nclips);
 
-	    
 
-	
+
+
 	    if (nclips == 1)  {
 		distance = intersectedClips[0].backDistanceInVworld;
 		backClipActive = true;
@@ -1062,7 +1062,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 			distance = intersectedClips[j].backDistanceInVworld;
 			backClipActive = true;
 			break;
-		    }   
+		    }
 		}
 	    }
 	    if (backClipActive) {
@@ -1077,7 +1077,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	int i;
 	int size = globalClips.size();
 	ClipRetained clip;
-	
+
 	for (i=0 ; i<size; i++) {
 	    clip = (ClipRetained)globalClips.get(i);
 	    if (clip.transformedRegion != null &&
@@ -1090,7 +1090,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	return nclips;
     }
 
-    
+
     void updateLight(Object[] args) {
 	Object[] objs;
 	LightRetained light = (LightRetained)args[0];
@@ -1152,7 +1152,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	    objs[2] = args[2];
 	    objs[3] = args[3];
 	    objs[4] = args[4];
-	    objList.add(objs);	    
+	    objList.add(objs);
 	}
 	else if ((component & FogRetained.CLEAR_MIRROR) != 0) {
 	    fog.clearMirrorObject(args);
@@ -1219,14 +1219,14 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	    objs[2] = args[2];
 	    objs[3] = args[3];
 	    objs[4] = args[4];
-	    objList.add(objs);  
+	    objList.add(objs);
 	}
 	else {
 	    modelClip.updateImmediateMirrorObject(args);
 	}
 
     }
-    
+
     void updateBoundingLeaf(Object[] args) {
 	BoundingLeafRetained bl = (BoundingLeafRetained)args[0];
 	Object[] users = (Object[])(args[3]);
@@ -1246,7 +1246,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
     void updateOrientedShape3D(Object[] args) {
 	OrientedShape3DRetained shape = (OrientedShape3DRetained)args[4];
 	shape.updateImmediateMirrorObject(args);
-    }    
+    }
 
     void updateMorph(Object[] args) {
 	MorphRetained morph = (MorphRetained)args[0];
@@ -1256,7 +1256,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 
     void updateTransformChange() {
 	int i,j;
- 	Object[] nodes, nodesArr; 
+ 	Object[] nodes, nodesArr;
 	BoundingLeafRetained bl;
 	LightRetained ml;
         UnorderList arrList;
@@ -1286,7 +1286,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 			xformChangeList.add(nodes[i]);
 
 	    	    } else if (nodes[i] instanceof AlternateAppearanceRetained){
-			AlternateAppearanceRetained mAltApp = 
+			AlternateAppearanceRetained mAltApp =
 					(AlternateAppearanceRetained) nodes[i];
 			mAltApp.updateImmediateTransformChange();
 			xformChangeList.add(nodes[i]);
@@ -1348,10 +1348,10 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	    retVal[0] = Boolean.FALSE;
 	    return retVal;
 	}
-	
+
 	// Need to lock lockObj, since on a multi-processor
 	// system with 2 views on a single universe, there might
-	// be councurrent access	
+	// be councurrent access
 	synchronized(lockObj) {
 	    nAltApp = 0;
 	    bounds = ra.localeVwcBounds;
@@ -1376,7 +1376,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 			break;
 		    }
 		}
-	    } 
+	    }
 	    if (altApp == null) {
 		retVal[0] = Boolean.FALSE;
 		return retVal;
@@ -1409,7 +1409,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 			shapeScopedAltApp = ((Shape3DRetained)ra.geometryAtom.source).altApps;
 			if (altApp.isScoped) {
 			    for (k = 0; k < n; k++) {
-				// then check if the light is scoped to 
+				// then check if the light is scoped to
 				// this group
 				if (altApp == shapeScopedAltApp[k]) {
 
@@ -1504,7 +1504,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		    ViewSpecificGroupRetained vsg = (ViewSpecificGroupRetained)vsgList.get(i);
 		    int index = keyList[i];
 		    vsg.updateCachedInformation(ViewSpecificGroupRetained.ADD_VIEW, view, index);
-		
+
 		}
 		size = leafList.size();
 		// Leaves is non-null only for the top VSG
@@ -1580,15 +1580,15 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 			    bgList.add(obj);
 			}
 		    }
-		    if (numberOfLights > retlights.length) 
+		    if (numberOfLights > retlights.length)
 			retlights = new LightRetained[numberOfLights];
 		    if (intersectedFogs.length < numberOfFogs)
 			intersectedFogs = new FogRetained[numberOfFogs];
 		    if (intersectedAltApps.length < numberOfAltApps)
 			intersectedAltApps = new AlternateAppearanceRetained[numberOfAltApps];
-		    if (intersectedBacks.length < numberOfBgs) 
+		    if (intersectedBacks.length < numberOfBgs)
 			intersectedBacks = new BackgroundRetained[numberOfBgs];
-		    if (intersectedClips.length < numberOfClips) 
+		    if (intersectedClips.length < numberOfClips)
 			intersectedClips = new ClipRetained[numberOfClips];
 		    if (intersectedModelClips.length < numberOfModelClips)
 			intersectedModelClips = new ModelClipRetained[numberOfModelClips];
@@ -1603,7 +1603,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	    ArrayList leafList;
 	    int[] keyList;
 	    View view;
-	    
+
 	    if ((component & ViewSpecificGroupRetained.REMOVE_VIEW) != 0) {
 		view = (View)objAry[0];
 		vsgList = (ArrayList)objAry[1];
@@ -1623,7 +1623,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		    ViewSpecificGroupRetained vsg = (ViewSpecificGroupRetained)vsgList.get(i);
 		    int index = keyList[i];
 		    vsg.updateCachedInformation(ViewSpecificGroupRetained.REMOVE_VIEW, view, index);
-		
+
 		}
 		size = leafList.size();
 		// Leaves is non-null only for the top VSG
@@ -1698,7 +1698,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		}
 	    }
 	}
-    
+
     }
 
     boolean isLightScopedToThisView(Object obj, View view) {
@@ -1722,7 +1722,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	}
 	return true;
     }
-    
+
     boolean isAltAppScopedToThisView(Object obj, View view) {
 	AlternateAppearanceRetained altApp = (AlternateAppearanceRetained)obj;
 	if (altApp.isViewScoped) {
@@ -1732,7 +1732,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		return false;
 	}
 	return true;
-    }    
+    }
 
     boolean isBgScopedToThisView(Object obj, View view) {
 	BackgroundRetained bg = (BackgroundRetained)obj;
@@ -1754,7 +1754,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		return false;
 	}
 	return true;
-    }    
+    }
 
 
     boolean isMclipScopedToThisView(Object obj, View view) {
@@ -1766,9 +1766,9 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		return false;
 	}
 	return true;
-    }    
+    }
 
     void cleanup() {}
 }
 
-  
+

@@ -62,16 +62,16 @@ public abstract class TransformInterpolator extends Interpolator {
      * is called implicitly from processStimulus()
      */
    private Transform3D currentTransform = new Transform3D();
-  
-    // We can't use a boolean flag since it is possible 
+
+    // We can't use a boolean flag since it is possible
     // that after alpha change, this procedure only run
     // once at alpha.finish(). So the best way is to
     // detect alpha value change.
     private float prevAlphaValue = Float.NaN;
-    private WakeupCriterion passiveWakeupCriterion = 
+    private WakeupCriterion passiveWakeupCriterion =
     (WakeupCriterion) new WakeupOnElapsedFrames(0, true);
 
-    
+
     /**
      * Constructs a TransformInterpolator node with a null alpha value and
      * a null target of TransformGroup
@@ -83,7 +83,7 @@ public abstract class TransformInterpolator extends Interpolator {
      * Constructs a trivial transform interpolator with a specified alpha,
      * a specified target and an default axis set to Identity.
      * @param alpha The alpha object for this transform Interpolator
-     * @param target The target TransformGroup for this TransformInterpolator 
+     * @param target The target TransformGroup for this TransformInterpolator
      */
     public TransformInterpolator(Alpha alpha, TransformGroup target) {
 	super(alpha);
@@ -97,7 +97,7 @@ public abstract class TransformInterpolator extends Interpolator {
      * @param alpha the alpha object for this interpolator
      * @param target the transformGroup node affected by this transformInterpolator
      * @param axisOfTransform the transform that defines the local coordinate
-     * system in which this interpolator operates.  
+     * system in which this interpolator operates.
      */
     public TransformInterpolator(Alpha alpha,
 				TransformGroup target,
@@ -108,9 +108,9 @@ public abstract class TransformInterpolator extends Interpolator {
 	axis.set(axisOfTransform);
 	axisInverse.invert(axis);
     }
-    
+
     /**
-     * This method sets the target TransformGroup node for this 
+     * This method sets the target TransformGroup node for this
      * interpolator.
      * @param target The target TransformGroup
      */
@@ -131,16 +131,16 @@ public abstract class TransformInterpolator extends Interpolator {
      * This method sets the axis of transform for this interpolator.
      * @param axisOfTransform the transform that defines the local coordinate
      * system in which this interpolator operates
-     */ 
+     */
     public void setTransformAxis(Transform3D axisOfTransform) {
         this.axis.set(axisOfTransform);
         this.axisInverse.invert(this.axis);
     }
-       
+
     /**
      * This method retrieves this interpolator's axis of transform.
      * @return the interpolator's axis of transform
-     */ 
+     */
     public Transform3D getTransformAxis() {
         return new Transform3D(this.axis);
     }
@@ -181,13 +181,13 @@ public abstract class TransformInterpolator extends Interpolator {
 	}
 	wakeupOn(criterion);
     }
-    
+
    /**
      * Copies all TransformInterpolator information from
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -209,7 +209,7 @@ public abstract class TransformInterpolator extends Interpolator {
 	TransformInterpolator ti = (TransformInterpolator) originalNode;
 
         setTransformAxis(ti.getTransformAxis());
-	
+
 	// this reference will be updated in updateNodeReferences()
         setTarget(ti.getTarget());
     }

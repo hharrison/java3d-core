@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * The J3dStructure is the super class of all structures in Java 3D.  
+ * The J3dStructure is the super class of all structures in Java 3D.
  * A structure is a object that organizes a collection of objects.
  */
 
@@ -144,13 +144,13 @@ abstract class J3dStructure extends Object {
 	    nMessage = 0;
 	    msgList = new J3dMessage[5];
 	}
-	
+
     }
 
     int  getNumMessage() {
 	return nMessage;
     }
-    
+
     /**
      * This gets overriden by the structure
      */
@@ -161,12 +161,12 @@ abstract class J3dStructure extends Object {
      * for final cleanup. DON'T decrememt message count in
      * the method, as it is done by MasterControl.
      */
-    abstract void removeNodes(J3dMessage m); 
+    abstract void removeNodes(J3dMessage m);
 
     /**
      * Release resource associate with this structure before GC
-     * We need to clear all those IndexedUnorderSet/WakeupIndexedList 
+     * We need to clear all those IndexedUnorderSet/WakeupIndexedList
      * so that the listIdx associate with IndexedObject reset to -1.
      */
-    abstract void cleanup(); 
+    abstract void cleanup();
 }

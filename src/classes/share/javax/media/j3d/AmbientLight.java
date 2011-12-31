@@ -40,7 +40,7 @@ import javax.vecmath.Color3f;
  * influencing bounds, scopes, and
  * a flag indicating whether this light source is on or off.
  * Ambient reflections do not depend on the orientation or
- * position of a surface. 
+ * position of a surface.
  * Ambient light has only an ambient reflection component.
  * It does not have diffuse or specular reflection components.
  * <p>

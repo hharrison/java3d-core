@@ -69,7 +69,7 @@ abstract class GeometryRetained extends NodeComponentRetained {
     boolean boundsDirty = true; // Changed while holding the geoBounds lock
 
     int computeGeoBounds = 0; // Changed while holding the geoBounds lock
- 
+
     // The "type" of this object
     int geoType = GEO_TYPE_NONE;
 
@@ -102,7 +102,7 @@ abstract class GeometryRetained extends NodeComponentRetained {
     // above.
     ArrayList<ArrayList<Shape3DRetained>> userLists = new ArrayList();
 
-    // true if color not specified with alpha channel 
+    // true if color not specified with alpha channel
     boolean noAlpha = false;
     static final double EPSILON = 1.0e-6;
 
@@ -111,16 +111,16 @@ abstract class GeometryRetained extends NodeComponentRetained {
     // The cached value is evaluated by renderBin and used in determining
     // whether to put it in display list or not
     int cachedChangedFrequent = 0;
-    
+
     static final int POINT_TYPE        = 1;
     static final int LINE_TYPE         = 2;
     static final int TRIANGLE_TYPE     = 3;
     static final int QUAD_TYPE         = 4;
-    static final int RASTER_TYPE       = 5;    
-    static final int TEXT3D_TYPE       = 6;    
-    static final int COMPRESS_TYPE     = 7;    
+    static final int RASTER_TYPE       = 5;
+    static final int TEXT3D_TYPE       = 6;
+    static final int COMPRESS_TYPE     = 7;
 
-    
+
     boolean isEquivalenceClass( GeometryRetained geometry ) {
 	int t1 = getClassType();
 	int t2 = geometry.getClassType();
@@ -155,11 +155,11 @@ abstract class GeometryRetained extends NodeComponentRetained {
     void addUser(Shape3DRetained s) {
 	int index;
 	ArrayList shapeList;
-	    
+
 	if (s.sourceNode.boundsAutoCompute) {
 	    incrComputeGeoBounds();
 	}
-	
+
 	// If static, no need to maintain a userlist
 	if (this instanceof GeometryArrayRetained) {
 	    if (((GeometryArrayRetained)this).isWriteStatic()) {
@@ -189,13 +189,13 @@ abstract class GeometryRetained extends NodeComponentRetained {
 	if (s.sourceNode.boundsAutoCompute) {
 	    decrComputeGeoBounds();
 	}
-	
+
 	if (this instanceof GeometryArrayRetained) {
 	    if (((GeometryArrayRetained)this).isWriteStatic()) {
 		return;
 	    }
 	}
-	
+
 	synchronized (universeList) {
 	    index = universeList.indexOf(s.universe);
 	    shapeList = (ArrayList)userLists.get(index);
@@ -207,12 +207,12 @@ abstract class GeometryRetained extends NodeComponentRetained {
 	}
 
     }
-    
+
     public void updateObject() {
 	this.update();
     }
 
-  
+
     abstract void computeBoundingBox();
 
     void setLive(boolean inBackgroundGroup, int refCount) {
@@ -223,7 +223,7 @@ abstract class GeometryRetained extends NodeComponentRetained {
     /**
      * This setLive routine calls the superclass's method when reference
      * count is 1
-     */  
+     */
     void doSetLive(boolean inBackgroundGroup, int refCount) {
         super.doSetLive(inBackgroundGroup, refCount);
 	this.update();
@@ -249,10 +249,10 @@ abstract class GeometryRetained extends NodeComponentRetained {
     // Issue 199 -- Chien
     abstract boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                                GeometryRetained geom, int geomIndex);
-    
+
     // Old stuff -- Chien
-    //abstract boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo, int flags, Point3d iPnt);   
-    
+    //abstract boolean intersect(PickShape pickShape, PickInfo.IntersectionInfo iInfo, int flags, Point3d iPnt);
+
     abstract boolean intersect(Bounds targetBound);
     abstract boolean intersect(Point3d[] pnts);
     abstract boolean intersect(Transform3D thisToOtherVworld, GeometryRetained geom);
@@ -261,12 +261,12 @@ abstract class GeometryRetained extends NodeComponentRetained {
 			   int[] vtxIndexArr, Point3d iPnt, double dist) {
 
 	PickInfo.IntersectionInfo iInfo = null;
-	
+
 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
 	    PickInfo.IntersectionInfo iInfoArr[] = pickInfo.getIntersectionInfos();
 	    if((iInfoArr == null) || (iInfoArr.length == 0)) {
 		iInfo = pickInfo.createIntersectionInfo();
-		pickInfo.insertIntersectionInfo(iInfo);		
+		pickInfo.insertIntersectionInfo(iInfo);
 	    }
 	    else {
 		assert(iInfoArr.length == 1);
@@ -289,7 +289,7 @@ abstract class GeometryRetained extends NodeComponentRetained {
 	iInfo.setVertexIndices(vtxIndexArr);
     }
 
-    boolean intersect(Transform3D thisLocalToVworld, 
+    boolean intersect(Transform3D thisLocalToVworld,
 		      Transform3D otherLocalToVworld, GeometryRetained  geom) {
 	Transform3D t3d =  new Transform3D();
 	t3d.invert(otherLocalToVworld);

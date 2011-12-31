@@ -45,7 +45,7 @@ import java.util.BitSet;
  */
 
 public class Switch extends Group {
-  
+
     /**
      * Specifies that this node allows reading its child selection
      * and mask values and its current child.
@@ -87,7 +87,7 @@ public class Switch extends Group {
     private static final int[] readCapabilities = {
         ALLOW_SWITCH_READ
     };
-    
+
     /**
      * Constructs a Switch node with default parameters.
      * The default values are as follows:
@@ -98,7 +98,7 @@ public class Switch extends Group {
      */
     public Switch() {
         // set default read capabilities
-        setDefaultReadCapabilities(readCapabilities);        
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -108,7 +108,7 @@ public class Switch extends Group {
      */
     public Switch(int whichChild) {
         // set default read capabilities
-        setDefaultReadCapabilities(readCapabilities);        
+        setDefaultReadCapabilities(readCapabilities);
 
         ((SwitchRetained)this.retained).setWhichChild(whichChild, true);
     }
@@ -121,7 +121,7 @@ public class Switch extends Group {
      */
     public Switch(int whichChild, BitSet childMask){
         // set default read capabilities
-        setDefaultReadCapabilities(readCapabilities);        
+        setDefaultReadCapabilities(readCapabilities);
 
         ((SwitchRetained)this.retained).setWhichChild(whichChild, true);
 	((SwitchRetained)this.retained).setChildMask(childMask);

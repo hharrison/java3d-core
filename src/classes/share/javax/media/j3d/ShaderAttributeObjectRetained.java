@@ -53,18 +53,18 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
     }
 
     void createObjectData(Object value) {
-        
+
   	classType = computeClassType(value);
 	baseClass = getBaseClass(classType);
-	attrWrapper = createAttrWrapper(value, classType);      
+	attrWrapper = createAttrWrapper(value, classType);
  	/*
 	System.err.println("    classType = " + classType +
 			   ", baseClass = " + baseClass +
 			   ", attrWrapper.get() = " + attrWrapper.get());
-	*/   
+	*/
     }
-    
-    
+
+
     void initValue(Object value) {
 	/*
 	System.err.println("ShaderAttributeObjectRetained : attrName = " + attrName +
@@ -98,7 +98,7 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
      */
     void setValue(Object value) {
         initValue(value);
-	AttrWrapper valueWrapper = createAttrWrapper(value, this.classType);	
+	AttrWrapper valueWrapper = createAttrWrapper(value, this.classType);
 	sendMessage(ShaderConstants.ATTRIBUTE_VALUE_UPDATE, valueWrapper);
     }
 
@@ -115,15 +115,15 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
     Class getValueClass() {
 	return baseClass;
     }
-    
+
    /**
      * Initializes a mirror object.
      */
     synchronized void initMirrorObject() {
-	super.initMirrorObject();        
+	super.initMirrorObject();
 	((ShaderAttributeObjectRetained)mirror).initValue(getValue());
     }
-    
+
      /**
      * Update the "component" field of the mirror object with the  given "value"
      */
@@ -136,11 +136,11 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
 	    mirrorSAV.attrWrapper = (AttrWrapper) value;
 	}
     }
-    
+
     final void sendMessage(int attrMask, Object attr) {
-	
+
 	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
@@ -160,7 +160,7 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.SHADER_ATTRIBUTE_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
@@ -169,14 +169,14 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
 	    ArrayList gL = (ArrayList)gaList.get(i);
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
-	    createMessage.args[3] = gaArr;  
-	    
+	    createMessage.args[3] = gaArr;
+
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
 
     }
-        
-        
+
+
     // Enumerated types representing allowed classes for shader
     // attributes.
     //

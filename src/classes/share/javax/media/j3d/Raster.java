@@ -126,71 +126,71 @@ public class Raster extends Geometry {
     public static final int
     ALLOW_POSITION_WRITE = CapabilityBits.RASTER_ALLOW_POSITION_WRITE;
 
-    /** 
+    /**
      * Specifies that this Raster allows reading the source or
      * destination offset.
-     */ 
+     */
     public static final int
     ALLOW_OFFSET_READ = CapabilityBits.RASTER_ALLOW_OFFSET_READ;
- 
-    /** 
+
+    /**
      * Specifies that this Raster allows writing the source or
      * destination offset.
-     */ 
-    public static final int 
+     */
+    public static final int
     ALLOW_OFFSET_WRITE = CapabilityBits.RASTER_ALLOW_OFFSET_WRITE;
 
-    /**  
+    /**
      * Specifies that this Raster allows reading the image.
-     */  
-    public static final int 
+     */
+    public static final int
     ALLOW_IMAGE_READ = CapabilityBits.RASTER_ALLOW_IMAGE_READ;
-  
-    /**  
-     * Specifies that this Raster allows writing the image. 
-     */  
-    public static final int  
+
+    /**
+     * Specifies that this Raster allows writing the image.
+     */
+    public static final int
     ALLOW_IMAGE_WRITE = CapabilityBits.RASTER_ALLOW_IMAGE_WRITE;
 
-    /**  
+    /**
      * Specifies that this Raster allows reading the depth component.
-     */  
-    public static final int 
+     */
+    public static final int
     ALLOW_DEPTH_COMPONENT_READ = CapabilityBits.RASTER_ALLOW_DEPTH_COMPONENT_READ;
-  
-    /**  
-     * Specifies that this Raster allows writing the depth component. 
-     */  
-    public static final int  
+
+    /**
+     * Specifies that this Raster allows writing the depth component.
+     */
+    public static final int
     ALLOW_DEPTH_COMPONENT_WRITE = CapabilityBits.RASTER_ALLOW_DEPTH_COMPONENT_WRITE;
 
-    /**  
+    /**
      * Specifies that this Raster allows reading the size.
      */
     public static final int
     ALLOW_SIZE_READ = CapabilityBits.RASTER_ALLOW_SIZE_READ;
- 
-    /**                                                        
+
+    /**
      * Specifies that this Raster allows writing the size.
      */
     public static final int
     ALLOW_SIZE_WRITE = CapabilityBits.RASTER_ALLOW_SIZE_WRITE;
 
-    /**  
-     * Specifies that this Raster allows reading the type. 
-     */  
-    public static final int 
+    /**
+     * Specifies that this Raster allows reading the type.
+     */
+    public static final int
     ALLOW_TYPE_READ = CapabilityBits.RASTER_ALLOW_TYPE_READ;
-  
-    /**  
+
+    /**
      * Specifies that this Raster allows reading the clip mode.
      *
      * @since Java 3D 1.3
      */
     public static final int
     ALLOW_CLIP_MODE_READ = CapabilityBits.RASTER_ALLOW_CLIP_MODE_READ;
- 
-    /**                                                        
+
+    /**
      * Specifies that this Raster allows writing the clip mode.
      *
      * @since Java 3D 1.3
@@ -281,17 +281,17 @@ public class Raster extends Geometry {
      * @param image the ImageComponent2D object containing the
      * color data
      * @param depthComponent the DepthComponent object containing the depth
-     * (z-buffer) data 
+     * (z-buffer) data
      *
      * @exception IllegalArgumentException if the image class of the specified
      * ImageComponent2D is ImageClass.NIO_IMAGE_BUFFER.
      */
-    public Raster(Point3f pos, 
-                  int type, 
+    public Raster(Point3f pos,
+                  int type,
                   Point srcOffset,
                   Dimension size,
-                  ImageComponent2D image, 
-                  DepthComponent depthComponent) { 
+                  ImageComponent2D image,
+                  DepthComponent depthComponent) {
 
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
@@ -336,7 +336,7 @@ public class Raster extends Geometry {
 		  ImageComponent2D image,
 		  DepthComponent depthComponent) {
 
-        
+
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
 
@@ -366,11 +366,11 @@ public class Raster extends Geometry {
      * @param pos the new position of this raster
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setPosition(Point3f pos) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_POSITION_WRITE))
-                throw new CapabilityNotSetException(J3dI18N.getString("Raster0"));  
+                throw new CapabilityNotSetException(J3dI18N.getString("Raster0"));
         ((RasterRetained)this.retained).setPosition(pos);
     }
 
@@ -383,7 +383,7 @@ public class Raster extends Geometry {
     public void getPosition(Point3f pos) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_POSITION_READ))
-                throw new CapabilityNotSetException(J3dI18N.getString("Raster1"));  
+                throw new CapabilityNotSetException(J3dI18N.getString("Raster1"));
 
         ((RasterRetained)this.retained).getPosition(pos);
     }
@@ -399,8 +399,8 @@ public class Raster extends Geometry {
         checkForLiveOrCompiled();
         ((RasterRetained)this.retained).setType(type);
     }
- 
- 
+
+
     /**
      * Retrieves the current type of this raster object, one of: RASTER_COLOR,
      * RASTER_DEPTH, or RASTER_COLOR_DEPTH.
@@ -411,7 +411,7 @@ public class Raster extends Geometry {
     public int getType() {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_TYPE_READ))
-                throw new CapabilityNotSetException(J3dI18N.getString("Raster2"));  
+                throw new CapabilityNotSetException(J3dI18N.getString("Raster2"));
         return (((RasterRetained)this.retained).getType());
     }
 
@@ -550,8 +550,8 @@ public class Raster extends Geometry {
                 throw new CapabilityNotSetException(J3dI18N.getString("Raster9"));
 
         ((RasterRetained)this.retained).setSize(width, height);
-    }  
- 
+    }
+
     /**
      * Sets the size of the array of pixels to be copied.
      * @param size the new size
@@ -564,9 +564,9 @@ public class Raster extends Geometry {
                 throw new CapabilityNotSetException(J3dI18N.getString("Raster9"));
 
         ((RasterRetained)this.retained).setSize(size.width, size.height);
-    }  
- 
- 
+    }
+
+
     /**
      * Retrieves the current raster size.
      * @param size the object that will receive the size
@@ -576,10 +576,10 @@ public class Raster extends Geometry {
     public void getSize(Dimension size) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_SIZE_READ))
-                throw new CapabilityNotSetException(J3dI18N.getString("Raster1"));  
+                throw new CapabilityNotSetException(J3dI18N.getString("Raster1"));
 
         ((RasterRetained)this.retained).getSize(size);
-    }  
+    }
 
 
     /**
@@ -659,13 +659,13 @@ public class Raster extends Geometry {
      * @exception IllegalArgumentException if the image class of the specified
      * ImageComponent2D is ImageClass.NIO_IMAGE_BUFFER.
      *
-     */  
+     */
     public void setImage(ImageComponent2D image) {
-        
+
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_IMAGE_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("Raster3"));
-        
+
         // Do illegal sharing check
         if(image != null) {
             ImageComponent2DRetained imageRetained = (ImageComponent2DRetained) image.retained;
@@ -675,7 +675,7 @@ public class Raster extends Geometry {
                 }
             }
         }
-        
+
         ((RasterRetained)this.retained).setImage(image);
     }
 
@@ -685,11 +685,11 @@ public class Raster extends Geometry {
      * color data
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public ImageComponent2D getImage() {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_IMAGE_READ))
-                throw new CapabilityNotSetException(J3dI18N.getString("Raster4"));  
+                throw new CapabilityNotSetException(J3dI18N.getString("Raster4"));
         return (((RasterRetained)this.retained).getImage());
     }
 
@@ -700,7 +700,7 @@ public class Raster extends Geometry {
      * depth (z-buffer) data
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setDepthComponent(DepthComponent depthComponent) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DEPTH_COMPONENT_WRITE))
@@ -714,22 +714,22 @@ public class Raster extends Geometry {
      * depth (z-buffer) data
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public DepthComponent getDepthComponent() {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DEPTH_COMPONENT_READ))
-                throw new CapabilityNotSetException(J3dI18N.getString("Raster6"));  
+                throw new CapabilityNotSetException(J3dI18N.getString("Raster6"));
         return (((RasterRetained)this.retained).getDepthComponent());
     }
 
-   
+
 
    /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
         Raster r = new Raster();
-        r.duplicateNodeComponent(this);           
+        r.duplicateNodeComponent(this);
         return r;
     }
 
@@ -745,14 +745,14 @@ public class Raster extends Geometry {
 	checkDuplicateNodeComponent(originalNodeComponent);
     }
 
-   
+
 
    /**
      * Copies all node information from <code>originalNodeComponent</code> into
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -764,7 +764,7 @@ public class Raster extends Geometry {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
-    void duplicateAttributes(NodeComponent originalNodeComponent, 
+    void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
 
@@ -795,11 +795,11 @@ public class Raster extends Geometry {
     }
 
 
- /** 
+ /**
    *  This function is called from getNodeComponent() to see if any of
-   *  the sub-NodeComponents  duplicateOnCloneTree flag is true. 
-   *  If it is the case, current NodeComponent needs to 
-   *  duplicate also even though current duplicateOnCloneTree flag is false. 
+   *  the sub-NodeComponents  duplicateOnCloneTree flag is true.
+   *  If it is the case, current NodeComponent needs to
+   *  duplicate also even though current duplicateOnCloneTree flag is false.
    *  This should be overwrite by NodeComponent which contains sub-NodeComponent.
    */
    boolean duplicateChild() {

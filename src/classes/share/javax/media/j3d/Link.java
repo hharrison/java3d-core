@@ -40,14 +40,14 @@ package javax.media.j3d;
 
 public class Link extends Leaf {
     /**
-     * For Link nodes, specifies that the node allows access to 
+     * For Link nodes, specifies that the node allows access to
      * its object's SharedGroup information.
      */
     public static final int
     ALLOW_SHARED_GROUP_READ = CapabilityBits.LINK_ALLOW_SHARED_GROUP_READ;
 
     /**
-     * For Link nodes, specifies that the node allows writing 
+     * For Link nodes, specifies that the node allows writing
      * its object's SharedGroup information.
      */
     public static final int
@@ -57,7 +57,7 @@ public class Link extends Leaf {
     private static final int[] readCapabilities = {
         ALLOW_SHARED_GROUP_READ
     };
-    
+
     /**
      * Constructs a Link node object that does not yet point to a
      * SharedGroup node.
@@ -145,7 +145,7 @@ public class Link extends Leaf {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the

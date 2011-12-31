@@ -46,7 +46,7 @@ class TimerThread extends Thread {
     private WakeupOnElapsedTimeHeap heap = new WakeupOnElapsedTimeHeap();
 
     // Wakeup InputDeviceScheduler for every sample time reach
-    private WakeupOnElapsedTime inputDeviceSchedCond = 
+    private WakeupOnElapsedTime inputDeviceSchedCond =
         new WakeupOnElapsedTime(InputDeviceScheduler.samplingTime);
 
     // Wakeup {all?} Sound Scheduler{s} for every sample time reach
@@ -54,7 +54,7 @@ class TimerThread extends Thread {
     //          Schedulers are not pinged often unless explicitly requested
     // XXXX: need a way to remove/null this condition when all
     //          soundschedulers are halted
-    private WakeupOnElapsedTime soundSchedCond = 
+    private WakeupOnElapsedTime soundSchedCond =
         new WakeupOnElapsedTime(120000);  // every 2 minutes
 
     private volatile boolean running = true;
@@ -74,7 +74,7 @@ class TimerThread extends Thread {
     }
 
     void addInputDeviceSchedCond() {
-	inputDeviceSchedCond.triggeredTime = 
+	inputDeviceSchedCond.triggeredTime =
 	    InputDeviceScheduler.samplingTime +
 	    J3dClock.currentTimeMillis();
 	add(inputDeviceSchedCond);
@@ -102,7 +102,7 @@ class TimerThread extends Thread {
 
     public void run() {
 	long waitTime = -1;
-	long time; 
+	long time;
 	WakeupOnElapsedTime cond;
 
 	while (running) {

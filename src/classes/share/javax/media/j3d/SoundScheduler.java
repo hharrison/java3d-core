@@ -576,7 +576,7 @@ class SoundScheduler extends J3dStructure {
 			    // flag which is not implement
 			    turnOff(soundAtom);
                             // Fix to Issue 431.
-                            soundAtom.enable(soundRetained.enable); 
+                            soundAtom.enable(soundRetained.enable);
 			}
 		    }
 		}
@@ -3226,7 +3226,7 @@ class SoundScheduler extends J3dStructure {
 	// result in the re-evaluation of the lights/fogs/backgrounds
 	Object[] users = (Object[])(m.args[3]);
 	int i;
-	
+
 	for (i = 0; i < users.length; i++) {
 	    LeafRetained leaf = (LeafRetained)users[i];
 	    if  (leaf instanceof SoundRetained && universe.soundStructure.isSoundScopedToView(leaf, view)) {

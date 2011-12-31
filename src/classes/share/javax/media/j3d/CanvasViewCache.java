@@ -417,7 +417,7 @@ class CanvasViewCache extends Object {
         int dirtyIndex = (frustumBBox != null) ?
             Canvas3D.RENDER_BIN_DIRTY_IDX : Canvas3D.RENDERER_DIRTY_IDX;
         int scrvcDirtyMask;
-        
+
         // Issue 109 : read/clear the dirty bits for the correct index
         synchronized (screenViewCache) {
             scrvcDirtyMask = screenViewCache.scrvcDirtyMask[dirtyIndex];

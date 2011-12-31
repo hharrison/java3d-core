@@ -135,7 +135,7 @@ public class ModelClip extends Leaf {
         ALLOW_INFLUENCING_BOUNDS_READ,
         ALLOW_PLANE_READ
     };
-                
+
     /**
      * Constructs a ModelClip node with default parameters.  The default
      * values are as follows:
@@ -156,7 +156,7 @@ public class ModelClip extends Leaf {
 	// Just use the defaults
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
-        
+
     }
 
 
@@ -183,7 +183,7 @@ public class ModelClip extends Leaf {
     public ModelClip(Vector4d[] planes, boolean[] enables) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
-        
+
 	((ModelClipRetained)this.retained).initPlanes(planes);
 	((ModelClipRetained)this.retained).initEnables(enables);
     }
@@ -196,7 +196,7 @@ public class ModelClip extends Leaf {
      * region.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setInfluencingBounds(Bounds region) {
 	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_INFLUENCING_BOUNDS_WRITE))
@@ -209,12 +209,12 @@ public class ModelClip extends Leaf {
     }
 
 
-    /**  
+    /**
      * Retrieves the ModelClip node's influencing bounds.
      * @return this node's influencing bounds information
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public Bounds getInfluencingBounds() {
 	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_INFLUENCING_BOUNDS_READ))
@@ -233,7 +233,7 @@ public class ModelClip extends Leaf {
      * new influencing region.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setInfluencingBoundingLeaf(BoundingLeaf region) {
         if (isLiveOrCompiled())
             if (!this.getCapability(ALLOW_INFLUENCING_BOUNDS_WRITE))
@@ -246,12 +246,12 @@ public class ModelClip extends Leaf {
     }
 
 
-    /**  
+    /**
      * Retrieves the ModelClip node's influencing bounding leaf.
      * @return this node's influencing bounding leaf information
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public BoundingLeaf getInfluencingBoundingLeaf() {
         if (isLiveOrCompiled())
             if (!this.getCapability(ALLOW_INFLUENCING_BOUNDS_READ))
@@ -349,7 +349,7 @@ public class ModelClip extends Leaf {
 	else
 	    ((ModelClipRetained)this.retained).initRemoveScope(index);
     }
-  
+
 
     /**
      * Returns an enumeration of this ModelClip node's list of scopes.
@@ -389,7 +389,7 @@ public class ModelClip extends Leaf {
 	    ((ModelClipRetained)this.retained).initAddScope(scope);
     }
 
-  
+
     /**
      * Returns the number of nodes in this ModelClip node's list of scopes.
      * If this number is 0, then the list of scopes is empty and this
@@ -614,7 +614,7 @@ public class ModelClip extends Leaf {
     }
 
     /**
-     * Creates the retained mode ModelClipRetained object that 
+     * Creates the retained mode ModelClipRetained object that
      * this ModelClip node will point to.
      */
     void createRetained() {
@@ -693,7 +693,7 @@ public class ModelClip extends Leaf {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -712,10 +712,10 @@ public class ModelClip extends Leaf {
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
-	ModelClipRetained attr = (ModelClipRetained) 
+	ModelClipRetained attr = (ModelClipRetained)
 	                              originalNode.retained;
 	ModelClipRetained rt = (ModelClipRetained) retained;
-	
+
 	Vector4d plane = new Vector4d();
 
 	for (int i=5; i >=0; i--) {

@@ -50,12 +50,12 @@ import java.lang.reflect.Constructor;
 public abstract class Node extends SceneGraphObject {
 
     /**
-     * Specifies that this Node will be reported in the pick 
-     * SceneGraphPath if a pick occurs.  This capability is only 
+     * Specifies that this Node will be reported in the pick
+     * SceneGraphPath if a pick occurs.  This capability is only
      * specifiable for Group nodes; it is ignored for leaf nodes.
-     * The default for Group nodes is false.  All interior nodes not 
-     * needed for uniqueness in a SceneGraphPath that don't have 
-     * ENABLE_PICK_REPORTING set to true will not be reported in the 
+     * The default for Group nodes is false.  All interior nodes not
+     * needed for uniqueness in a SceneGraphPath that don't have
+     * ENABLE_PICK_REPORTING set to true will not be reported in the
      * SceneGraphPath.
      * @see SceneGraphPath
      */
@@ -63,15 +63,15 @@ public abstract class Node extends SceneGraphObject {
     ENABLE_PICK_REPORTING = CapabilityBits.NODE_ENABLE_PICK_REPORTING;
 
     /**
-     * Specifies that this Node will be reported in the collision 
+     * Specifies that this Node will be reported in the collision
      * SceneGraphPath if a collision occurs.  This capability is only
      * specifiable for Group nodes; it is ignored for leaf nodes.
-     * The default for Group nodes is false.  All interior nodes not 
+     * The default for Group nodes is false.  All interior nodes not
      * needed for uniqueness in a SceneGraphPath that don't have
      * ENABLE_COLLISION_REPORTING set to true will not be reported
      * in the SceneGraphPath.
      * @see SceneGraphPath
-     */  
+     */
     public static final int
     ENABLE_COLLISION_REPORTING = CapabilityBits.NODE_ENABLE_COLLISION_REPORTING;
 
@@ -220,7 +220,7 @@ public abstract class Node extends SceneGraphObject {
      * scene graph
      */
     public Bounds getBounds() {
-	
+
 	if (isLiveOrCompiled()) {
 	    if(!this.getCapability(ALLOW_BOUNDS_READ)) {
 		throw new CapabilityNotSetException(J3dI18N.getString("Node2"));
@@ -231,37 +231,37 @@ public abstract class Node extends SceneGraphObject {
 	    // a cycle
 	    checkForCycle();
 	}
-		
+
 	return ((NodeRetained)this.retained).getBounds();
     }
 
    /**
      * Returns the collidable value; this value determines whether this node
      * and it's children, if a group node, can be considered for collision
-     * purposes; if it is set to false, then neither this node nor any 
+     * purposes; if it is set to false, then neither this node nor any
      * children nodes will be traversed for collision purposes; the default
-     * value is true.   The collidable setting is the way that an 
+     * value is true.   The collidable setting is the way that an
      * application can perform collision culling.
      *  @return the present collidable value for this node
-     */ 
+     */
     public boolean getCollidable() {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_COLLIDABLE_READ))
-                throw new CapabilityNotSetException(J3dI18N.getString("Node16"));               
+                throw new CapabilityNotSetException(J3dI18N.getString("Node16"));
 
         return ((NodeRetained)retained).getCollidable();
     }
 
     /**
-     * Sets the collidable value; determines whether this node and any of its 
+     * Sets the collidable value; determines whether this node and any of its
      * children, if a group node, can be considered for collision purposes.
      * @param collidable  the new collidable value for this node
-     */  
+     */
     public void setCollidable( boolean collidable ) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_COLLIDABLE_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("Node4"));
-	
+
         ((NodeRetained)retained).setCollidable(collidable);
     }
 
@@ -304,7 +304,7 @@ public abstract class Node extends SceneGraphObject {
      * calculated as if the graph was attached at the origin of a locale.
      * @param t the object that will receive the local coordinates to
      * Vworld coordinates transform.
-     * @exception RestrictedAccessException if the node is compiled but not 
+     * @exception RestrictedAccessException if the node is compiled but not
      * part of a live scene graph
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this node is part of live or compiled scene graph
@@ -316,12 +316,12 @@ public abstract class Node extends SceneGraphObject {
             if(!this.getCapability(ALLOW_LOCAL_TO_VWORLD_READ))
                     throw new CapabilityNotSetException(J3dI18N.getString("Node8"));
         }
-        
+
 	if (!isLive()) {
             // TODO Support compiled graphs
             if (isCompiled())
                 throw new RestrictedAccessException(J3dI18N.getString("Node7"));
-            
+
             // In 1.4 we support getLocalToVworld for non live nodes
             ((NodeRetained)this.retained).computeNonLiveLocalToVworld(t, this);
 	    //throw new RestrictedAccessException(J3dI18N.getString("Node7"));
@@ -329,7 +329,7 @@ public abstract class Node extends SceneGraphObject {
             ((NodeRetained)this.retained).getLocalToVworld(t);
         }
     }
-    
+
 
     /**
      * Retrieves the local coordinates to virtual world coordinates
@@ -354,13 +354,13 @@ public abstract class Node extends SceneGraphObject {
     public void getLocalToVworld(SceneGraphPath path, Transform3D t) {
 	if (!isLive()) {
 	    throw new RestrictedAccessException(J3dI18N.getString("Node7"));
-        } 
-        
+        }
+
         if(!this.getCapability(ALLOW_LOCAL_TO_VWORLD_READ))
             throw new CapabilityNotSetException(J3dI18N.getString("Node8"));
 
         ((NodeRetained)this.retained).getLocalToVworld(path,t);
-        
+
     }
 
     /**
@@ -463,7 +463,7 @@ public abstract class Node extends SceneGraphObject {
      * @return a reference to the cloned scene graph.
      *
      * @exception DanglingReferenceException When a dangling reference is
-     *  discovered during the cloneTree operation and the 
+     *  discovered during the cloneTree operation and the
      *  <code>allowDanglingReference</code> parameter is </code>false</code>.
      * @exception RestrictedAccessException if this object is part of live
      * or compiled scene graph
@@ -474,8 +474,8 @@ public abstract class Node extends SceneGraphObject {
      */
     public Node cloneTree(boolean forceDuplicate,
 			  boolean allowDanglingReferences) {
-       return cloneTree(new NodeReferenceTable(), 
-			forceDuplicate, allowDanglingReferences); 
+       return cloneTree(new NodeReferenceTable(),
+			forceDuplicate, allowDanglingReferences);
     }
 
 
@@ -582,7 +582,7 @@ public abstract class Node extends SceneGraphObject {
 	    // a cycle
 	    checkForCycle();
 	}
-	
+
         referenceTable.set(allowDanglingReferences, new Hashtable());
         Node n = cloneTree(forceDuplicate, referenceTable.objectHashtable);
 
@@ -629,9 +629,9 @@ public abstract class Node extends SceneGraphObject {
 	    this.nodeHashtable = null;
 	    throw e;
 	}
-	// must reset to null so that we can tell whether the call is from user 
+	// must reset to null so that we can tell whether the call is from user
 	// or cloneTree
-        this.nodeHashtable = null;  
+        this.nodeHashtable = null;
 	nodeHashtable.put(this, l);
 	return l;
     }
@@ -639,7 +639,7 @@ public abstract class Node extends SceneGraphObject {
 
     /**
      * Used to create a new instance of the node.  This routine is called
-     * by <code>cloneTree</code> to duplicate the current node. 
+     * by <code>cloneTree</code> to duplicate the current node.
      * <code>cloneNode</code> should be overridden by any user subclassed
      * objects.  All subclasses must have their <code>cloneNode</code>
      * method consist of the following lines:
@@ -740,8 +740,8 @@ public abstract class Node extends SceneGraphObject {
         if (originalNode.nodeHashtable != null) {
 	    duplicateAttributes(originalNode, forceDuplicate);
 	} else {
-	    //  user call cloneNode() or duplicateNode() directly 
-	    // instead of via cloneTree() 
+	    //  user call cloneNode() or duplicateNode() directly
+	    // instead of via cloneTree()
 	    originalNode.nodeHashtable = new Hashtable();
 	    duplicateAttributes(originalNode, forceDuplicate);
 	    originalNode.nodeHashtable = null;
@@ -754,7 +754,7 @@ public abstract class Node extends SceneGraphObject {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -825,5 +825,5 @@ public abstract class Node extends SceneGraphObject {
 	}
 	visited = false;
     }
-	
+
 }

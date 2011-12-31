@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 
 
-// XXXX : We should have a common Bin object that all other Bins extend from. 
+// XXXX : We should have a common Bin object that all other Bins extend from.
 
 
 //class ShaderBin extends Object implements ObjectUpdate, NodeComponentUpdate {
@@ -85,11 +85,11 @@ class ShaderBin implements ObjectUpdate {
     ShaderAppearanceRetained shaderAppearance = null;
     ShaderProgramRetained shaderProgram = null;
     ShaderAttributeSetRetained shaderAttributeSet = new ShaderAttributeSetRetained();
-    
+
     ShaderBin(ShaderAppearanceRetained sApp,  RenderBin rBin) {
 	reset(sApp, rBin);
     }
-    
+
     void reset(ShaderAppearanceRetained sApp, RenderBin rBin) {
 	prev = null;
 	next = null;
@@ -101,7 +101,7 @@ class ShaderBin implements ObjectUpdate {
 	addTextureBins.clear();
 	if(sApp != null) {
 	    shaderProgram = sApp.shaderProgram;
-	    shaderAttributeSet = sApp.shaderAttributeSet; 
+	    shaderAttributeSet = sApp.shaderAttributeSet;
 	}
 	else {
 	    shaderProgram = null;
@@ -109,19 +109,19 @@ class ShaderBin implements ObjectUpdate {
 	}
 	shaderAppearance = sApp;
     }
-    
+
     void clear() {
 	reset(null, null);
     }
-    
+
     /**
      * This tests if the qiven ra.shaderProgram  match this shaderProgram
      */
     boolean equals(ShaderAppearanceRetained sApp) {
-	
+
 	ShaderProgramRetained sp;
 	ShaderAttributeSetRetained ss;
-	 
+
 	if (sApp == null) {
 	    sp = null;
 	    ss = null;
@@ -129,19 +129,19 @@ class ShaderBin implements ObjectUpdate {
 	    sp = sApp.shaderProgram;
 	    ss = sApp.shaderAttributeSet;
 	}
-	
+
 	if((shaderProgram != sp) || (shaderAttributeSet != ss)) {
 	    return false;
 	}
-	
+
 	return true;
-	
+
     }
 
     public void updateObject() {
 	TextureBin t;
 	int i;
-	
+
 	if (addTextureBins.size() > 0) {
 	    t = (TextureBin)addTextureBins.get(0);
 	    if (textureBinList == null) {
@@ -150,8 +150,8 @@ class ShaderBin implements ObjectUpdate {
 	    }
 	    else {
 		// Look for a TextureBin that has the same texture
-		insertTextureBin(t);	
-	    }	    
+		insertTextureBin(t);
+	    }
 	    for (i = 1; i < addTextureBins.size() ; i++) {
 		t = (TextureBin)addTextureBins.get(i);
 		// Look for a TextureBin that has the same texture
@@ -163,7 +163,7 @@ class ShaderBin implements ObjectUpdate {
 	onUpdateList = false;
 
     }
-    
+
     void insertTextureBin(TextureBin t) {
 	TextureBin tb;
 	int i;
@@ -177,26 +177,26 @@ class ShaderBin implements ObjectUpdate {
 
 	// use the texture in the first texture unit as the sorting criteria
 	if (texture != null) {
-	    tb = textureBinList; 
-	    while (tb != null) { 
+	    tb = textureBinList;
+	    while (tb != null) {
 		if (tb.texUnitState == null || tb.texUnitState[0] == null ||
 			tb.texUnitState[0].texture != texture) {
 		    tb = tb.next;
 		} else {
-		    // put it here  
-		    t.next = tb; 
-		    t.prev = tb.prev; 
-		    if (tb.prev == null) { 
-		        textureBinList = t; 
-		    } 
-		    else { 
-		        tb.prev.next = t; 
-		    } 
-		    tb.prev = t; 
-		    return; 
-	        } 
+		    // put it here
+		    t.next = tb;
+		    t.prev = tb.prev;
+		    if (tb.prev == null) {
+		        textureBinList = t;
+		    }
+		    else {
+		        tb.prev.next = t;
+		    }
+		    tb.prev = t;
+		    return;
+	        }
 	    }
-	} 
+	}
 	// Just put it up front
 	t.prev = null;
 	t.next = textureBinList;
@@ -245,7 +245,7 @@ class ShaderBin implements ObjectUpdate {
      * Adds the given TextureBin to this AttributeBin.
      */
     void addTextureBin(TextureBin t, RenderBin rb, RenderAtom ra) {
-	 
+
 	t.environmentSet = this.attributeBin.environmentSet;
 	t.attributeBin = this.attributeBin;
 	t.shaderBin = this;
@@ -263,8 +263,8 @@ class ShaderBin implements ObjectUpdate {
      * Removes the given TextureBin from this ShaderBin.
      */
     void removeTextureBin(TextureBin t) {
-	
-	// If the TextureBin being remove is contained in addTextureBins, 
+
+	// If the TextureBin being remove is contained in addTextureBins,
 	// then remove the TextureBin from the addList
 	if (addTextureBins.contains(t)) {
 	    addTextureBins.remove(addTextureBins.indexOf(t));
@@ -302,7 +302,7 @@ class ShaderBin implements ObjectUpdate {
     void render(Canvas3D cv) {
 
 	TextureBin tb;
-        
+
 	// System.err.println("ShaderBin.render() shaderProgram = " + shaderProgram);
 
         // include this ShaderBin to the to-be-updated list in canvas
@@ -314,7 +314,7 @@ class ShaderBin implements ObjectUpdate {
 	    tb = tb.next;
 	}
     }
-    
+
     void updateAttributes(Canvas3D cv) {
 
         // System.err.println("ShaderBin.updateAttributes() shaderProgram is " + shaderProgram);
@@ -340,9 +340,9 @@ class ShaderBin implements ObjectUpdate {
 
     void updateNodeComponent() {
 	// System.err.println("ShaderBin.updateNodeComponent() ...");
-	
-	// We don't need to clone shaderProgram. 	
-	// ShaderProgram object can't be modified once it is live, 
+
+	// We don't need to clone shaderProgram.
+	// ShaderProgram object can't be modified once it is live,
 	// so each update should be a new reference.
 	if ((componentDirty & SHADER_PROGRAM_DIRTY) != 0) {
 	    // System.err.println("  - SHADER_PROGRAM_DIRTY");
@@ -360,7 +360,7 @@ class ShaderBin implements ObjectUpdate {
                 attrs.putAll(shaderAppearance.shaderAttributeSet.getAttrs());
             }
 	}
-	
+
 	componentDirty = 0;
    }
 

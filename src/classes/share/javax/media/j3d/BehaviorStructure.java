@@ -43,7 +43,7 @@ import java.util.Arrays;
  */
 
 class BehaviorStructure extends J3dStructure {
-       
+
     /**
      * The list of behaviors
      */
@@ -52,10 +52,10 @@ class BehaviorStructure extends J3dStructure {
     /**
      * The list of view platforms
      */
-    IndexedUnorderSet viewPlatforms; 
+    IndexedUnorderSet viewPlatforms;
 
     /**
-     * An array of schedulable behaviors, use in 
+     * An array of schedulable behaviors, use in
      * removeViewPlatform() to go through only active behaviors
      */
     IndexedUnorderSet scheduleList;
@@ -74,17 +74,17 @@ class BehaviorStructure extends J3dStructure {
     Point3d vpTransCenter = new Point3d();
 
     /**
-     * A list of bounds WakeupOnViewPlatformEntry objects that 
+     * A list of bounds WakeupOnViewPlatformEntry objects that
      * have seen ViewPlatformEntry
      */
     WakeupIndexedList boundsEntryList;
 
     /**
-     * A list of bounds WakeupOnViewPlatformExit objects that have 
+     * A list of bounds WakeupOnViewPlatformExit objects that have
      * seen ViewPlatformEntry
      */
     WakeupIndexedList boundsExitList;
-				       
+
     /**
      * A list of WakeupOnSensorEntry objects that have seen a sensor
      */
@@ -96,7 +96,7 @@ class BehaviorStructure extends J3dStructure {
     WakeupIndexedList currentSensorExitList;
 
     /**
-     * The lists of the WakeupCriterion objects that the 
+     * The lists of the WakeupCriterion objects that the
      * behavior scheduler keeps.
      */
     WakeupIndexedList wakeupOnAWTEvent;
@@ -129,11 +129,11 @@ class BehaviorStructure extends J3dStructure {
 
     // Use generic integer array to avoid new Integer() for individual element
     int postIDBuffer[] = new int[10]; // size of default UnorderList
-    int clonePostIDBuffer[] = new int[postIDBuffer.length]; 
+    int clonePostIDBuffer[] = new int[postIDBuffer.length];
 
     UnorderList behaviorPostBuffer = new UnorderList(Behavior.class);
 
-    // temp values for transformed hotspot used in 
+    // temp values for transformed hotspot used in
     // wakeupOnSensorEntry/ExitupdateSensorsHotspot
     Transform3D sensorTransform = new Transform3D();
     Vector3d sensorLoc = new Vector3d();
@@ -145,8 +145,8 @@ class BehaviorStructure extends J3dStructure {
 
     // list of Behavior waiting to be add to behavior list and buildTree()
     UnorderList pendingBehaviors = new UnorderList(BehaviorRetained.class);
-    
-    // true if branch detach 
+
+    // true if branch detach
     boolean branchDetach = false;
 
     // This is used to notify WakeupOnAWTEvent re-enable Canvas3D events
@@ -159,7 +159,7 @@ class BehaviorStructure extends J3dStructure {
     BehaviorStructure(VirtualUniverse u) {
 	super(u, J3dThread.UPDATE_BEHAVIOR);
 
-	for (int i=BehaviorRetained.NUM_SCHEDULING_INTERVALS-1; 
+	for (int i=BehaviorRetained.NUM_SCHEDULING_INTERVALS-1;
 	     i >= 0; i--) {
 	    processList[i] = new UnorderList(BehaviorRetained.class);
 	}
@@ -174,9 +174,9 @@ class BehaviorStructure extends J3dStructure {
 	boundsExitList = new WakeupIndexedList(WakeupOnViewPlatformExit.class,
 					       WakeupOnViewPlatformExit.BOUNDSEXIT_IN_BS_LIST, u);
 	currentSensorEntryList = new WakeupIndexedList(WakeupOnSensorEntry.class,
-						       WakeupOnSensorEntry.SENSORENTRY_IN_BS_LIST, u);	
+						       WakeupOnSensorEntry.SENSORENTRY_IN_BS_LIST, u);
 	currentSensorExitList = new WakeupIndexedList(WakeupOnSensorExit.class,
-						       WakeupOnSensorExit.SENSOREXIT_IN_BS_LIST, u);	
+						       WakeupOnSensorExit.SENSOREXIT_IN_BS_LIST, u);
 	wakeupOnAWTEvent = new WakeupIndexedList(WakeupOnAWTEvent.class,
 						 WakeupOnAWTEvent.COND_IN_BS_LIST, u);
 	wakeupOnActivation = new WakeupIndexedList(WakeupOnActivation.class,
@@ -207,7 +207,7 @@ class BehaviorStructure extends J3dStructure {
 	if (nMsg > 0) {
 	    for (int i=0; i<nMsg; i++) {
 		m = messages[i];
-		
+
 		switch (m.type) {
 		case J3dMessage.TRANSFORM_CHANGED: // Compress Message
 		    transformMsg = true;
@@ -216,7 +216,7 @@ class BehaviorStructure extends J3dStructure {
 		    // No need to compress Message since wakeupCondition
 		    // will make sure that only one message is sent.
 		    processConditionMet((BehaviorRetained) m.args[0],
-					(Boolean) m.args[1]); 
+					(Boolean) m.args[1]);
 		    break;
 		case J3dMessage.INSERT_NODES:
 		    insertNodes((Object[])m.args[0]);
@@ -254,7 +254,7 @@ class BehaviorStructure extends J3dStructure {
 		    reEvaluatePhysicalEnvironments();
 		    ViewPlatform v = ((View)
 				      m.args[0]).getViewPlatform();
-		    if (v != null) { 
+		    if (v != null) {
 			// ViewPlatform may set to null when deactivate()
 			processViewPlatformTransform((ViewPlatformRetained) v.retained);
 		    }
@@ -266,18 +266,18 @@ class BehaviorStructure extends J3dStructure {
 		    // then process the VP transform
 		    processViewPlatformTransform(vp);
 		    break;
-		case J3dMessage.REGION_BOUND_CHANGED: 
+		case J3dMessage.REGION_BOUND_CHANGED:
 		    {
 			BehaviorRetained behav = (BehaviorRetained) m.args[1];
 			behav.updateTransformRegion();
 			processBehaviorTransform(behav);
 		    }
 		    break;
-		case J3dMessage.BEHAVIOR_REEVALUATE: 
+		case J3dMessage.BEHAVIOR_REEVALUATE:
 		    {
 			BehaviorRetained behav = (BehaviorRetained) m.args[0];
 			behav.active = false;
-			addToScheduleList(behav);	
+			addToScheduleList(behav);
 		    }
 		    break;
 		}
@@ -287,28 +287,28 @@ class BehaviorStructure extends J3dStructure {
 	    if (transformMsg) {
 		// get the targets from the transform structure
 		targets = universe.transformStructure.getTargetList();
-		
+
 		// process the transform changed for each target
 		UnorderList arrList;
-		
+
 		arrList = targets.targetList[Targets.BEH_TARGETS];
 		if (arrList != null) {
 		    processBehXformChanged(arrList);
 		}
-		
+
 		arrList = targets.targetList[Targets.VPF_TARGETS];
 		if (arrList != null) {
 		    processVpfXformChanged(arrList);
 		}
-		
+
 		transformMsg = false;
 		targets = null;
 	    }
 	    Arrays.fill(messages, 0, nMsg, null);
 	}
-    
+
 	// wakeup even when message is null since wakeupOnElapsedFrame
-	// will wakeup this 
+	// will wakeup this
 
 	if (activeWakeupOnSensorCount <= 0) {
 	    if (activeWakeupOnFrameCount > 0) {
@@ -316,12 +316,12 @@ class BehaviorStructure extends J3dStructure {
 		VirtualUniverse.mc.sendRunMessage(universe,
 						  J3dThread.BEHAVIOR_SCHEDULER|
 						  J3dThread.RENDER_THREAD);
-		
+
 	    } else {
-		VirtualUniverse.mc.sendRunMessage(universe, 
+		VirtualUniverse.mc.sendRunMessage(universe,
 						      J3dThread.BEHAVIOR_SCHEDULER);
 	    }
-	} else { 
+	} else {
 	    checkSensorEntryExit();
 	    // we have to invoke checkSensorEntryExit() next time
 	    if (activeWakeupOnFrameCount > 0) {
@@ -329,9 +329,9 @@ class BehaviorStructure extends J3dStructure {
 						  J3dThread.UPDATE_BEHAVIOR|
 						  J3dThread.BEHAVIOR_SCHEDULER|
 						  J3dThread.RENDER_THREAD);
-		
+
 		} else {
-		    VirtualUniverse.mc.sendRunMessage(universe, 
+		    VirtualUniverse.mc.sendRunMessage(universe,
 						      J3dThread.UPDATE_BEHAVIOR|
 						      J3dThread.BEHAVIOR_SCHEDULER);
 		}
@@ -344,7 +344,7 @@ class BehaviorStructure extends J3dStructure {
 
 	    if (node instanceof BehaviorRetained) {
 		pendingBehaviors.add(node);
-	    } 
+	    }
 	    else if (node instanceof ViewPlatformRetained) {
 		addViewPlatform((ViewPlatformRetained) node);
 	    }
@@ -353,7 +353,7 @@ class BehaviorStructure extends J3dStructure {
 
     void activateBehaviors() {
 	BehaviorRetained behav;
-	BehaviorRetained behavArr[] = (BehaviorRetained []) 
+	BehaviorRetained behavArr[] = (BehaviorRetained [])
 	                            pendingBehaviors.toArray(false);
 
 	for (int i=pendingBehaviors.arraySize()-1; i>=0; i--) {
@@ -364,7 +364,7 @@ class BehaviorStructure extends J3dStructure {
 		behav.conditionSet = true;
 		behaviors.add(behav);
 		behav.updateTransformRegion();
-		addToScheduleList(behav);	
+		addToScheduleList(behav);
 	    }
 	}
 	pendingBehaviors.clear();
@@ -374,10 +374,10 @@ class BehaviorStructure extends J3dStructure {
 	int i;
 	BehaviorRetained behav;
 	BehaviorRetained behavArr[] = (BehaviorRetained []) behaviors.toArray(false);
-	
+
 	viewPlatforms.add(vp);
 	vp.updateTransformRegion();
-	
+
 	if (!vp.isActiveViewPlatform()) {
 	    return;
 	}
@@ -410,7 +410,7 @@ class BehaviorStructure extends J3dStructure {
 	WakeupOnViewPlatformExit wexit;
 
 	for (i=wakeupOnViewPlatformExit.arraySize()-1; i >=0; i--) {
-	    wexit = wakeupOnViewPlatformExitArr[i];	
+	    wexit = wakeupOnViewPlatformExitArr[i];
 	    if (!boundsExitList.contains(wexit) &&
 		wexit.transformedRegion.intersect(vp.center)) {
 		wexit.triggeredVP = vp;
@@ -447,7 +447,7 @@ class BehaviorStructure extends J3dStructure {
 
 	if (behavRemove) {
 	    // disable AWT Event from Canvas3D
-	    WakeupOnAWTEvent awtConds[] = (WakeupOnAWTEvent []) 
+	    WakeupOnAWTEvent awtConds[] = (WakeupOnAWTEvent [])
 		wakeupOnAWTEvent.toArray();
 	    int eventSize = wakeupOnAWTEvent.arraySize();
 
@@ -466,7 +466,7 @@ class BehaviorStructure extends J3dStructure {
 		awtCond = awtConds[i];
 		awtId = awtCond.AwtId;
 		eventMask = awtCond.EventMask;
-		
+
 		if ((awtId >= FocusEvent.FOCUS_FIRST && awtId <= FocusEvent.FOCUS_LAST) ||
 		    (eventMask & AWTEvent.FOCUS_EVENT_MASK) != 0) {
 		    focusEnable = true;
@@ -475,19 +475,19 @@ class BehaviorStructure extends J3dStructure {
 		    (eventMask & AWTEvent.KEY_EVENT_MASK) != 0) {
 		    keyEnable = true;
 		}
-		if ((awtId >= MouseEvent.MOUSE_FIRST) && 
+		if ((awtId >= MouseEvent.MOUSE_FIRST) &&
 		    (awtId <= MouseEvent.MOUSE_LAST)) {
-		    if ((awtId == MouseEvent.MOUSE_DRAGGED) || 
+		    if ((awtId == MouseEvent.MOUSE_DRAGGED) ||
 			(awtId == MouseEvent.MOUSE_MOVED)) {
 			mouseMotionEnable = true;
 		    }
-		    else if ((awtId == MouseEvent.MOUSE_ENTERED) || 
-			     (awtId == MouseEvent.MOUSE_EXITED)  || 
-			     (awtId == MouseEvent.MOUSE_CLICKED) || 
-			     (awtId == MouseEvent.MOUSE_PRESSED) || 
+		    else if ((awtId == MouseEvent.MOUSE_ENTERED) ||
+			     (awtId == MouseEvent.MOUSE_EXITED)  ||
+			     (awtId == MouseEvent.MOUSE_CLICKED) ||
+			     (awtId == MouseEvent.MOUSE_PRESSED) ||
 			     (awtId == MouseEvent.MOUSE_RELEASED) ) {
 			mouseEnable = true;
-		    } 
+		    }
 		    else if (awtId == MouseEvent.MOUSE_WHEEL) {
 			mouseWheelEnable = true;
 		    }
@@ -503,7 +503,7 @@ class BehaviorStructure extends J3dStructure {
 		    }
 		}
 	    }
-	    
+
 	    if (!focusEnable && universe.enableFocus) {
 		incTimestamp = true;
 		universe.disableFocusEvents();
@@ -537,7 +537,7 @@ class BehaviorStructure extends J3dStructure {
 
 	viewPlatforms.remove(vp);
 
-	BehaviorRetained scheduleArr[] = (BehaviorRetained []) 
+	BehaviorRetained scheduleArr[] = (BehaviorRetained [])
 	                                   scheduleList.toArray(false);
 
 	// handle Deactive
@@ -596,10 +596,10 @@ class BehaviorStructure extends J3dStructure {
 
 	// cleanup  boundsEntryList
         // since we didn't remove it on removeVPEntryCondition
-	WakeupOnViewPlatformEntry boundsEntryArr[] = 
+	WakeupOnViewPlatformEntry boundsEntryArr[] =
 	    (WakeupOnViewPlatformEntry []) boundsEntryList.toArray(false);
 	WakeupOnViewPlatformEntry wentry;
-	
+
 	for (int i=boundsEntryList.arraySize()-1; i>=0; i--) {
 	    wentry = boundsEntryArr[i];
 	    if (wentry.behav == behav) {
@@ -609,10 +609,10 @@ class BehaviorStructure extends J3dStructure {
 
 	// cleanup  boundsExitList
         // since we didn't remove it on removeVPExitCondition
-	WakeupOnViewPlatformExit boundsExitArr[] = 
+	WakeupOnViewPlatformExit boundsExitArr[] =
 	    (WakeupOnViewPlatformExit []) boundsExitList.toArray(false);
 	WakeupOnViewPlatformExit wexit;
-	
+
 	for (int i=boundsExitList.arraySize()-1; i>=0; i--) {
 	    wexit = boundsExitArr[i];
 	    if (wexit.behav == behav) {
@@ -623,7 +623,7 @@ class BehaviorStructure extends J3dStructure {
 
 	// cleanup currentSensorEntryList
 	// since we didn't remove it on removeSensorEntryCondition
-	WakeupOnSensorEntry currentSensorEntryArr[] = 
+	WakeupOnSensorEntry currentSensorEntryArr[] =
 	    (WakeupOnSensorEntry []) currentSensorEntryList.toArray(false);
 	WakeupOnSensorEntry sentry;
 
@@ -637,7 +637,7 @@ class BehaviorStructure extends J3dStructure {
 
 	// cleanup currentSensorExitList
 	// since we didn't remove it on removeSensorExitCondition
-	WakeupOnSensorExit currentSensorExitArr[] = 
+	WakeupOnSensorExit currentSensorExitArr[] =
 	    (WakeupOnSensorExit []) currentSensorExitList.toArray(false);
 	WakeupOnSensorExit sexit;
 
@@ -663,7 +663,7 @@ class BehaviorStructure extends J3dStructure {
      * conditions
      */
     void handleAWTEvent() {
-	WakeupOnAWTEvent awtConds[] = (WakeupOnAWTEvent []) 
+	WakeupOnAWTEvent awtConds[] = (WakeupOnAWTEvent [])
 	                                   wakeupOnAWTEvent.toArray();
 	AWTEvent events[];
 	int eventSize = wakeupOnAWTEvent.arraySize();
@@ -691,22 +691,22 @@ class BehaviorStructure extends J3dStructure {
 			awtCond.addAWTEvent(evt);
 		    }
 		} else {
-		    if (id >= ComponentEvent.COMPONENT_FIRST && 
+		    if (id >= ComponentEvent.COMPONENT_FIRST &&
 			id <= ComponentEvent.COMPONENT_LAST &&
 			(awtCond.EventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0) {
 		        awtCond.addAWTEvent(evt);
-		    } 
-		    else if (id >= FocusEvent.FOCUS_FIRST && 
+		    }
+		    else if (id >= FocusEvent.FOCUS_FIRST &&
 			     id <= FocusEvent.FOCUS_LAST &&
 			     (awtCond.EventMask & AWTEvent.FOCUS_EVENT_MASK) != 0) {
 			awtCond.addAWTEvent(evt);
 		    }
-		    else if (id >= KeyEvent.KEY_FIRST && 
+		    else if (id >= KeyEvent.KEY_FIRST &&
 			     id <= KeyEvent.KEY_LAST &&
 			     (awtCond.EventMask & AWTEvent.KEY_EVENT_MASK) != 0) {
 			awtCond.addAWTEvent(evt);
 		    }
-		    else if ((id == MouseEvent.MOUSE_CLICKED || 
+		    else if ((id == MouseEvent.MOUSE_CLICKED ||
 			      id == MouseEvent.MOUSE_ENTERED ||
 			      id == MouseEvent.MOUSE_EXITED ||
 			      id == MouseEvent.MOUSE_PRESSED ||
@@ -714,7 +714,7 @@ class BehaviorStructure extends J3dStructure {
 			     (awtCond.EventMask & AWTEvent.MOUSE_EVENT_MASK) != 0) {
 			awtCond.addAWTEvent(evt);
 		    }
-		    else if ((id == MouseEvent.MOUSE_DRAGGED || 
+		    else if ((id == MouseEvent.MOUSE_DRAGGED ||
 			      id == MouseEvent.MOUSE_MOVED) &&
 			     (awtCond.EventMask & AWTEvent.MOUSE_MOTION_EVENT_MASK) != 0) {
 			awtCond.addAWTEvent(evt);
@@ -728,7 +728,7 @@ class BehaviorStructure extends J3dStructure {
 	}
 
 
-	   
+
     }
 
 
@@ -748,7 +748,7 @@ class BehaviorStructure extends J3dStructure {
     }
 
    /**
-     * This goes through all of the criteria waiting for Behavior Posts 
+     * This goes through all of the criteria waiting for Behavior Posts
      * and notifys them.
      */
     void handleBehaviorPost() {
@@ -762,7 +762,7 @@ class BehaviorStructure extends J3dStructure {
 
 	synchronized (behaviorPostBuffer) {
 	    behavArr = (Behavior []) behaviorPostBuffer.toArray();
-	    behavBufferSize = behaviorPostBuffer.size();	    
+	    behavBufferSize = behaviorPostBuffer.size();
 	    if (clonePostIDBuffer.length < behavBufferSize) {
 		clonePostIDBuffer = new int[behavBufferSize];
 	    }
@@ -777,7 +777,7 @@ class BehaviorStructure extends J3dStructure {
 	    for (int j=0; j < behavBufferSize; j++) {
 		behav = behavArr[j];
 		postid = clonePostIDBuffer[j];
-		if ((wakeup.post == postid || wakeup.post == 0) && 
+		if ((wakeup.post == postid || wakeup.post == 0) &&
 		    (behav == wakeup.armingBehavior || wakeup.armingBehavior == null)) {
 		    wakeup.triggeringBehavior = behav;
 		    wakeup.triggeringPost = postid;
@@ -791,7 +791,7 @@ class BehaviorStructure extends J3dStructure {
     /**
      * This goes through all of the criteria waiting for Elapsed Frames
      * and notified them.
-     */  
+     */
     void incElapsedFrames() {
 
 	WakeupOnElapsedFrames wakeupConds[] = (WakeupOnElapsedFrames [])
@@ -801,13 +801,13 @@ class BehaviorStructure extends J3dStructure {
 
 	while (i < size) {
              wakeupConds[i++].newFrame();
-        }  
+        }
 
 	if ( size > 0) {
-	    VirtualUniverse.mc.sendRunMessage(universe, 
+	    VirtualUniverse.mc.sendRunMessage(universe,
 		      J3dThread.BEHAVIOR_SCHEDULER|J3dThread.UPDATE_BEHAVIOR);
 	}
-	
+
 	if (branchDetach) {
 	    // Since this procedure may call by immediate mode user
 	    // thread, we can't just clear it in removeNodes()
@@ -815,14 +815,14 @@ class BehaviorStructure extends J3dStructure {
 	    branchDetach = false;
 	}
 
-    }  
+    }
 
     void removeVPEntryCondition(WakeupCondition w) {
 	wakeupOnViewPlatformEntry.remove(w);
 	// don't remove boundsEntryList, it is use next time
 	// when addVPExitCondition invoke to determine whether to
 	// trigger an event or not.
-	
+
     }
 
     void addVPEntryCondition(WakeupOnViewPlatformEntry w) {
@@ -830,10 +830,10 @@ class BehaviorStructure extends J3dStructure {
 
 	// see if the matching wakeupOnViewPlatformEntry
 	// condition exists & do cleanup
-	WakeupOnViewPlatformEntry boundsEntryArr[] = 
+	WakeupOnViewPlatformEntry boundsEntryArr[] =
 	    (WakeupOnViewPlatformEntry []) boundsEntryList.toArray(false);
 	WakeupOnViewPlatformEntry wentry;
-	
+
 	for (int i=boundsEntryList.arraySize()-1; i>=0; i--) {
 	    wentry = boundsEntryArr[i];
 	    if ((wentry.behav == w.behav) &&
@@ -871,7 +871,7 @@ class BehaviorStructure extends J3dStructure {
 	// Cleanup, since collideEntryList did not remove
 	// its condition in removeVPEntryCondition
 	boolean needTrigger = true;
-	WakeupOnViewPlatformExit boundsExitArr[] = 
+	WakeupOnViewPlatformExit boundsExitArr[] =
 	    (WakeupOnViewPlatformExit []) boundsExitList.toArray(false);
 	WakeupOnViewPlatformExit wexit;
 	for (int i=boundsExitList.arraySize()-1; i>=0; i--) {
@@ -883,14 +883,14 @@ class BehaviorStructure extends J3dStructure {
 		break;
 	    }
 	}
-	
+
 	ViewPlatformRetained triggeredVP = intersectVPCenter(w.transformedRegion);
 	wakeupOnViewPlatformExit.add(w);
 
 	if (triggeredVP != null) {
 	    w.triggeredVP = triggeredVP;
 	    boundsExitList.add(w);
-	} 
+	}
 
 	if (!needTrigger) {
 	    return;
@@ -899,15 +899,15 @@ class BehaviorStructure extends J3dStructure {
 	// see if the matching wakeupOnViewPlatformEntry
 	// condition exists
 
-	WakeupOnViewPlatformEntry boundsEntryArr[] = 
+	WakeupOnViewPlatformEntry boundsEntryArr[] =
 	    (WakeupOnViewPlatformEntry []) boundsEntryList.toArray(false);
 	WakeupOnViewPlatformEntry wentry;
-	
+
 	for (int i=boundsEntryList.arraySize()-1; i>=0; i--) {
 	    wentry = boundsEntryArr[i];
 	    if ((wentry.behav == w.behav) &&
 		(wentry.region.equals(w.region))) {
-		// Don't remove this since if user wakeupOr() 
+		// Don't remove this since if user wakeupOr()
 		// Entry and Exit condition together we may have trouble
 		//		boundsEntryList.remove(i);
 		if (triggeredVP == null) {
@@ -932,10 +932,10 @@ class BehaviorStructure extends J3dStructure {
 
 	// see if the matching wakeupOnSensorEntry
 	// condition exists
-	WakeupOnSensorEntry sensorEntryArr[] = 
+	WakeupOnSensorEntry sensorEntryArr[] =
 	    (WakeupOnSensorEntry []) currentSensorEntryList.toArray(false);
 	WakeupOnSensorEntry wentry;
-	
+
 	for (int i=currentSensorEntryList.arraySize()-1; i>=0; i--) {
 	    wentry = sensorEntryArr[i];
 	    if ((wentry.behav == w.behav) &&
@@ -954,7 +954,7 @@ class BehaviorStructure extends J3dStructure {
 	    w.setTarget(target);
 	    currentSensorEntryList.add(w);
 	}
-	
+
 	if (needTrigger && (target != null)) {
 	    w.setTriggered();
 
@@ -974,7 +974,7 @@ class BehaviorStructure extends J3dStructure {
 	// Cleanup
 	boolean needTrigger = true;
 
-	WakeupOnSensorExit currentSensorExitArr[] = 
+	WakeupOnSensorExit currentSensorExitArr[] =
 	    (WakeupOnSensorExit []) currentSensorExitList.toArray(false);
 	WakeupOnSensorExit wexit;
 	for (int i=currentSensorExitList.arraySize()-1; i>=0; i--) {
@@ -994,17 +994,17 @@ class BehaviorStructure extends J3dStructure {
 	if (target != null) {
 	    w.setTarget(target);
 	    currentSensorExitList.add(w);
-	} 
+	}
 
 	if (!needTrigger) {
 	    return;
 	}
 	// see if the matching wakeupOnSensorEntry
 	// condition exists
-	WakeupOnSensorEntry sensorEntryArr[] = 
+	WakeupOnSensorEntry sensorEntryArr[] =
 	    (WakeupOnSensorEntry []) currentSensorEntryList.toArray(false);
 	WakeupOnSensorEntry wentry;
-	
+
 	for (int i=currentSensorEntryList.arraySize()-1; i>=0; i--) {
 	    wentry = sensorEntryArr[i];
 	    if ((wentry.behav == w.behav) &&
@@ -1020,17 +1020,17 @@ class BehaviorStructure extends J3dStructure {
 					  J3dThread.UPDATE_BEHAVIOR);
     }
 
-    void processConditionMet(BehaviorRetained behav,  
+    void processConditionMet(BehaviorRetained behav,
 			     Boolean checkSchedulingRegion) {
 
 	// Since we reuse wakeup condition, the old wakeupCondition
 	// will not reactivate again while processStimulus is running
-	// which may set another wakeupCondition. 
+	// which may set another wakeupCondition.
 	// Previously we don't reuse wakeupCondition and cleanTree()
 	// everytime before calling processStimulus() so the flag
 	// inCallback is not necessary to check.
-	if (!behav.inCallback && 
-	    ((checkSchedulingRegion == Boolean.FALSE) || 
+	if (!behav.inCallback &&
+	    ((checkSchedulingRegion == Boolean.FALSE) ||
 	     behav.active))  {
 	    processList[behav.schedulingInterval].add(behav);
 	} else {
@@ -1083,7 +1083,7 @@ class BehaviorStructure extends J3dStructure {
 	int i;
 
 	// We have to process them in group rather then one by one,
-	// otherwise we may have both activation/deactivation 
+	// otherwise we may have both activation/deactivation
 	// conditions wakeup at the same time when both ViewPlatform
 	// and Behavior transform under a branch.
 
@@ -1097,7 +1097,7 @@ class BehaviorStructure extends J3dStructure {
 	    } else if (node instanceof ViewPlatformRetained) {
 		((ViewPlatformRetained) node).updateTransformRegion();
 		transformViewPlatformList.add(node);
-	    } 
+	    }
 	}
 
 	// finally handle ViewPlatformRetained Transform change
@@ -1107,7 +1107,7 @@ class BehaviorStructure extends J3dStructure {
 
 	    int size = transformViewPlatformList.arraySize();
 	    for (i=0; i < size; i++) {
-		processViewPlatformTransform((ViewPlatformRetained) 
+		processViewPlatformTransform((ViewPlatformRetained)
 					     vpArr[i]);
 	    }
 	    transformViewPlatformList.clear();
@@ -1119,10 +1119,10 @@ class BehaviorStructure extends J3dStructure {
     final void processBehaviorTransform(BehaviorRetained behav) {
 	if ((behav.wakeupMask & BehaviorRetained.WAKEUP_VP_ENTRY) != 0) {
 	    updateVPEntryTransformRegion(behav);
-	} 
+	}
 
 	if ((behav.wakeupMask & BehaviorRetained.WAKEUP_VP_EXIT) != 0) {
-	    updateVPExitTransformRegion(behav);	    
+	    updateVPExitTransformRegion(behav);
 	}
 
 	if (behav.active) {
@@ -1144,7 +1144,7 @@ class BehaviorStructure extends J3dStructure {
 	if (!vp.isActiveViewPlatform()) {
 	    return;
 	}
-	
+
 	BehaviorRetained behavArr[] = (BehaviorRetained []) behaviors.toArray(false);
 
 	// re-evaulate all behaviors affected by this vp
@@ -1202,7 +1202,7 @@ class BehaviorStructure extends J3dStructure {
 		if (triggeredVP == null) {
 		    boundsExitList.remove(idx);
 		    wexit.setTriggered();
-		} 
+		}
 	    }
 	}
     }
@@ -1218,7 +1218,7 @@ class BehaviorStructure extends J3dStructure {
 	    if (wentry.behav == behav) {
 		wentry.updateTransformRegion(behav);
 		int idx = boundsEntryList.indexOf(wentry);
-		
+
 		triggeredVP = intersectVPCenter(wentry.transformedRegion);
 		if (triggeredVP != null) {
 		    if (idx < 0) {
@@ -1281,7 +1281,7 @@ class BehaviorStructure extends J3dStructure {
 	    views = ((ViewPlatformRetained) vpList.get(i)).getViewList();
 	    for (int j=views.length-1; j>=0; j--) {
 		v = views[j];
-		if (v.active && 
+		if (v.active &&
 		    !physicalEnvironments.contains(v.physicalEnvironment)) {
 		    physicalEnvironments.add(v.physicalEnvironment);
 		}
@@ -1295,9 +1295,9 @@ class BehaviorStructure extends J3dStructure {
 
 	// handle WakeupOnSensorEntry
 	WakeupOnSensorEntry wentry;
-	WakeupOnSensorEntry wentryArr[] = (WakeupOnSensorEntry []) 
+	WakeupOnSensorEntry wentryArr[] = (WakeupOnSensorEntry [])
 	                                    wakeupOnSensorEntry.toArray();
-	
+
 	for (i=wakeupOnSensorEntry.arraySize()-1; i>=0; i--) {
 	    wentry = wentryArr[i];
 	    idx = currentSensorEntryList.indexOf(wentry);
@@ -1318,9 +1318,9 @@ class BehaviorStructure extends J3dStructure {
 
 	// handle WakeupOnSensorExit
 	WakeupOnSensorExit wexit;
-	WakeupOnSensorExit wexitArr[] = (WakeupOnSensorExit []) 
+	WakeupOnSensorExit wexitArr[] = (WakeupOnSensorExit [])
 	                                    wakeupOnSensorExit.toArray();
-	
+
 	for (i=wakeupOnSensorExit.arraySize()-1; i>=0; i--) {
 	    wexit = wexitArr[i];
 	    idx = currentSensorExitList.indexOf(wexit);
@@ -1350,14 +1350,14 @@ class BehaviorStructure extends J3dStructure {
 	if (behregion == null)
 	    return null;
 
-	PhysicalEnvironment env[] = (PhysicalEnvironment []) 
+	PhysicalEnvironment env[] = (PhysicalEnvironment [])
 	                               physicalEnvironments.toArray(false);
 	Sensor sensors[];
 	Sensor s;
 	View v;
 	for (int i=physicalEnvironments.arraySize()-1; i>=0; i--) {
 	    if (env[i].activeViewRef > 0) {
-		sensors = env[i].getSensorList();	    
+		sensors = env[i].getSensorList();
 		if (sensors != null) {
 		    for (int j= env[i].users.size()-1; j>=0; j--) {
 			v = (View) env[i].users.get(j);
@@ -1396,7 +1396,7 @@ class BehaviorStructure extends J3dStructure {
 
 	for (int i=viewPlatforms.arraySize()- 1; i>=0; i--) {
 	    vp = vpLists[i];
-	    if (vp.isActiveViewPlatform() && 
+	    if (vp.isActiveViewPlatform() &&
 		vp.schedSphere.intersect(behregion)) {
 		return true;
 	    }
@@ -1419,7 +1419,7 @@ class BehaviorStructure extends J3dStructure {
 
 	for (int i=viewPlatforms.arraySize()- 1; i>=0; i--) {
 	    vp = vpLists[i];
-	    if (vp.isActiveViewPlatform() && 
+	    if (vp.isActiveViewPlatform() &&
 		behregion.intersect(vp.center)) {
 		return vp;
 	    }
@@ -1443,7 +1443,7 @@ class BehaviorStructure extends J3dStructure {
     void notifyActivationCondition(BehaviorRetained behav) {
 	WakeupOnActivation wakeup;
 	WakeupOnActivation wakeupConds[] = (WakeupOnActivation [])
-	                                  wakeupOnActivation.toArray(false);	
+	                                  wakeupOnActivation.toArray(false);
 
 	for (int i=wakeupOnActivation.arraySize()-1; i>=0; i--) {
 	    wakeup = wakeupConds[i];
@@ -1542,7 +1542,7 @@ class BehaviorStructure extends J3dStructure {
 
     final void removeFromScheduleList(BehaviorRetained behav) {
 	if (behav.active) {
-	    if ((behav.wakeupMask & 
+	    if ((behav.wakeupMask &
 		 BehaviorRetained.WAKEUP_DEACTIVATE) != 0) {
 		notifyDeactivationCondition(behav);
 	    }
@@ -1560,7 +1560,7 @@ class BehaviorStructure extends J3dStructure {
     }
 
     final void addToScheduleList(BehaviorRetained behav) {
-	
+
 	if (!behav.inCallback &&
 	    !behav.active &&
 	    behav.enable &&
@@ -1571,13 +1571,13 @@ class BehaviorStructure extends J3dStructure {
 
 	    scheduleList.add(behav);
 	    behav.active = true;
-	    if ((behav.wakeupMask & 
+	    if ((behav.wakeupMask &
 		 BehaviorRetained.WAKEUP_ACTIVATE) != 0) {
 		notifyActivationCondition(behav);
 	    }
 
 	    if (behav.wakeupCondition != null) {
-		// This reset the conditionMet, otherwise 
+		// This reset the conditionMet, otherwise
 		// if conditionMet is true then WakeupCondition
 		// will never post message to BehaviorStructure
 		behav.wakeupCondition.conditionMet = false;
@@ -1595,9 +1595,9 @@ class BehaviorStructure extends J3dStructure {
     void resetConditionMet() {
 	resetConditionMet(wakeupOnAWTEvent);
 	resetConditionMet(wakeupOnActivation);
-	resetConditionMet(wakeupOnDeactivation);	
-	resetConditionMet(wakeupOnBehaviorPost);	
-	resetConditionMet(wakeupOnElapsedFrames);	
+	resetConditionMet(wakeupOnDeactivation);
+	resetConditionMet(wakeupOnBehaviorPost);
+	resetConditionMet(wakeupOnElapsedFrames);
 	resetConditionMet(wakeupOnViewPlatformEntry);
 	resetConditionMet(wakeupOnViewPlatformExit);
 	resetConditionMet(wakeupOnSensorEntry);
@@ -1617,25 +1617,25 @@ class BehaviorStructure extends J3dStructure {
 	                          wakeupOnElapsedFrames.toArray(true);
 	int size = wakeupOnElapsedFrames.arraySize();
 	int i = 0;
-	WakeupOnElapsedFrames cond; 
-	
+	WakeupOnElapsedFrames cond;
+
 	activeWakeupOnFrameCount = 0;
 
 	while (i < size) {
 	    cond = wakeupConds[i++];
-	    if (!cond.passive && 
-		(cond.behav != null) && 
+	    if (!cond.passive &&
+		(cond.behav != null) &&
 		cond.behav.enable) {
 		activeWakeupOnFrameCount++;
 	    }
-        }  
+        }
 
 
 	activeWakeupOnSensorCount = 0;
 	WakeupOnSensorEntry wentry;
-	WakeupOnSensorEntry wentryArr[] = (WakeupOnSensorEntry []) 
+	WakeupOnSensorEntry wentryArr[] = (WakeupOnSensorEntry [])
 	                                    wakeupOnSensorEntry.toArray();
-	
+
 	for (i=wakeupOnSensorEntry.arraySize()-1; i>=0; i--) {
 	    wentry = wentryArr[i];
 	    if ((wentry.behav != null) &&
@@ -1645,9 +1645,9 @@ class BehaviorStructure extends J3dStructure {
 	}
 
 	WakeupOnSensorExit wexit;
-	WakeupOnSensorExit wexitArr[] = (WakeupOnSensorExit []) 
+	WakeupOnSensorExit wexitArr[] = (WakeupOnSensorExit [])
 	                                    wakeupOnSensorExit.toArray();
-	
+
 	for (i=wakeupOnSensorExit.arraySize()-1; i>=0; i--) {
 	    wexit = wexitArr[i];
 	    if ((wexit.behav != null) &&
@@ -1663,7 +1663,7 @@ class BehaviorStructure extends J3dStructure {
 	viewPlatforms.clear();
 	scheduleList.clear();
 	boundsEntryList.clear();
-	boundsExitList.clear();	
+	boundsExitList.clear();
 	currentSensorEntryList.clear();
 	currentSensorExitList.clear();
 	wakeupOnAWTEvent.clear();

@@ -48,12 +48,12 @@ class RenderAtom extends Object implements ObjectUpdate {
     RenderMolecule renderMolecule = null;
 
 
-    /** 
+    /**
      * The lights that influence this RenderAtom
      */
     LightRetained[] lights = null;
 
-    /** 
+    /**
      * The fog that influences this RenderAtom
      */
     FogRetained fog = null;
@@ -102,10 +102,10 @@ class RenderAtom extends Object implements ObjectUpdate {
 
     // true if in dirty depth sort position list
     static int IN_SORTED_POS_DIRTY_TRANSP_LIST     = 0x80;
-    
+
     // A bitmask for all the bit specified above in this renderAtom
     int dirtyMask = 0;
-    
+
     /**
      * Environment set that this renderAtom belongs to, used
      * to compare the new env set with the old one when the
@@ -123,7 +123,7 @@ class RenderAtom extends Object implements ObjectUpdate {
      * The last time this atom was reported visible
      */
     long lastVisibleTime = -1;
-    
+
     /**
      * Next and Previous references for the list of RenderAtoms
      * groupType is a  mask set to true if this renderAtom is part of the displaylist array
@@ -172,7 +172,7 @@ class RenderAtom extends Object implements ObjectUpdate {
     RenderAtom() {
     }
 
-    /** 
+    /**
      * This sets the inRenderBin flag
      */
     synchronized void setRenderBin(boolean value) {
@@ -185,7 +185,7 @@ class RenderAtom extends Object implements ObjectUpdate {
 	else {
 	    dirtyMask |= IN_RENDERBIN;
 	}
-	    
+
     }
 
     /**
@@ -225,12 +225,12 @@ class RenderAtom extends Object implements ObjectUpdate {
 		break;
 	    default:
 		if (app.polygonAttributes != null) {
-		    if ((app.polygonAttributes.polygonMode == 
+		    if ((app.polygonAttributes.polygonMode ==
 			 PolygonAttributes.POLYGON_POINT) &&
 			(app.pointAttributes != null) &&
 			app.pointAttributes.pointAntialiasing) {
 			return false;
-		    } else if ((app.polygonAttributes.polygonMode == 
+		    } else if ((app.polygonAttributes.polygonMode ==
 				PolygonAttributes.POLYGON_LINE) &&
 			       (app.lineAttributes != null) &&
 			       app.lineAttributes.lineAntialiasing) {
@@ -241,9 +241,9 @@ class RenderAtom extends Object implements ObjectUpdate {
 	    }
 
 	    return ((ta == null) ||
-		    (ta.transparencyMode == 
+		    (ta.transparencyMode ==
 		     TransparencyAttributes.NONE) ||
-		    (ta.transparencyMode == 
+		    (ta.transparencyMode ==
 		     TransparencyAttributes.SCREEN_DOOR));
 	} else {
 	    return ((ta == null) ||
@@ -270,7 +270,7 @@ class RenderAtom extends Object implements ObjectUpdate {
 
     boolean onLocaleVwcBoundsUpdateList() {
 	return ((dirtyMask & ON_LOCALE_VWC_BOUNDS_UPDATELIST) != 0);
-    }	
+    }
 
     boolean isOriented() {
 	return ((dirtyMask & IS_ORIENTED) != 0);
@@ -284,16 +284,16 @@ class RenderAtom extends Object implements ObjectUpdate {
     boolean inDirtyOrientedRAs() {
 	return ((dirtyMask & IN_DIRTY_ORIENTED_RAs) != 0);
     }
-    
+
     public void updateObject() {
 	if (inRenderBin()) {
-	    int lastLVWIndex = 
+	    int lastLVWIndex =
 	      renderMolecule.localToVworldIndex[NodeRetained.LAST_LOCAL_TO_VWORLD];
 
 	    for (int i = 0; i < rListInfo.length; i++) {
 		if (rListInfo[i].geometry() == null)
 		    continue;
-		
+
 		if (geometryAtom.source.inBackgroundGroup) {
 		    if (rListInfo[i].infLocalToVworld == null)
 			rListInfo[i].infLocalToVworld = new Transform3D();
@@ -314,9 +314,9 @@ class RenderAtom extends Object implements ObjectUpdate {
     }
 
     void updateOrientedTransform() {
-	int lastLVWIndex = 
+	int lastLVWIndex =
 	  renderMolecule.localToVworldIndex[NodeRetained.LAST_LOCAL_TO_VWORLD];
-	Transform3D orientedTransform = 
+	Transform3D orientedTransform =
 	    ((OrientedShape3DRetained)geometryAtom.source).
 	    getOrientedTransform(renderMolecule.renderBin.view.viewIndex);
 	for (int i = 0; i < rListInfo.length; i++) {
@@ -362,19 +362,19 @@ class RenderAtom extends Object implements ObjectUpdate {
     void updateLocaleVwcBounds() {
 
 	// it is possible that inRenderBin could be false because
-	// the renderAtom could have been removed from RenderBin 
+	// the renderAtom could have been removed from RenderBin
 	// in the same frame, and removeRenderAtoms does happen
 	// before updateLocaleVwcBounds
 	if (inRenderBin()) {
 	    // Check if the locale of this is different from the
-	    // locale on which the view is,then compute the translated 
+	    // locale on which the view is,then compute the translated
 	    // localeVwcBounds
 	    if (renderMolecule.renderBin.locale != geometryAtom.source.locale) {
-		
+
 		geometryAtom.source.locale.
-		    hiRes.difference(renderMolecule.renderBin.locale.hiRes, 
+		    hiRes.difference(renderMolecule.renderBin.locale.hiRes,
 				     renderMolecule.renderBin.localeTranslation);
-		localeVwcBounds.translate(geometryAtom.source.vwcBounds, 
+		localeVwcBounds.translate(geometryAtom.source.vwcBounds,
 					  renderMolecule.renderBin.localeTranslation);
 	    } else {
 		localeVwcBounds.set(geometryAtom.source.vwcBounds);

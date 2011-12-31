@@ -103,7 +103,7 @@ public class OrderedGroup extends Group {
      */
     public OrderedGroup() {
         // set default read capabilities
-        setDefaultReadCapabilities(readCapabilities);        
+        setDefaultReadCapabilities(readCapabilities);
     }
 
 
@@ -162,7 +162,7 @@ public class OrderedGroup extends Group {
 
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_CHILD_INDEX_ORDER_READ))
-		throw new 
+		throw new
 		    CapabilityNotSetException(J3dI18N.getString("OrderedGroup5"));
 
 	return ((OrderedGroupRetained)this.retained).getChildIndexOrder();
@@ -215,7 +215,7 @@ public class OrderedGroup extends Group {
      * @since Java 3D 1.3
      */
     public void addChild(Node child, int[] childIndexOrder) {
-	
+
 	verifyAddStates(child);
 	verifyChildIndexOrderArray(childIndexOrder, 1);
 
@@ -403,17 +403,17 @@ public class OrderedGroup extends Group {
 	this.retained = new OrderedGroupRetained();
 	this.retained.setSource(this);
     }
-    
+
     void verifyAddStates(Node child) {
 
 	if (child instanceof SharedGroup) {
 	    throw new IllegalArgumentException(J3dI18N.getString("Group2"));
 	}
-	
+
 	if (isLiveOrCompiled()) {
 	    if (! (child instanceof BranchGroup))
 		throw new RestrictedAccessException(J3dI18N.getString("Group12"));
-	    
+
 	    if(!this.getCapability(ALLOW_CHILDREN_EXTEND))
 		throw new CapabilityNotSetException(J3dI18N.getString("Group16"));
 	}
@@ -422,25 +422,25 @@ public class OrderedGroup extends Group {
     void verifyChildIndexOrderArray(int[] cIOArr, int plus) {
 
 	if (isLiveOrCompiled()) {
-	    
-	    if(!this.getCapability(ALLOW_CHILD_INDEX_ORDER_WRITE)) 
+
+	    if(!this.getCapability(ALLOW_CHILD_INDEX_ORDER_WRITE))
 		throw new
 		    CapabilityNotSetException(J3dI18N.getString("OrderedGroup4"));
 	}
 
-	if(cIOArr != null) {	    
-	    
+	if(cIOArr != null) {
+
 	    if(cIOArr.length != (((GroupRetained)retained).children.size() + plus)) {
-		throw new 
+		throw new
 		    IllegalArgumentException(J3dI18N.getString("OrderedGroup0"));
 	    }
-	    
+
 	    if((checkArr == null) || (checkArr.length != cIOArr.length)) {
 		checkArr = new boolean[cIOArr.length];
 	    }
-	    
+
 	    Arrays.fill(checkArr, false);
-	    
+
 	    for(int i=0; i<cIOArr.length; i++) {
 		if(cIOArr[i] < 0) {
 		    throw new

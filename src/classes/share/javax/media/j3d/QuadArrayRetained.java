@@ -45,23 +45,23 @@ class QuadArrayRetained extends GeometryArrayRetained {
     QuadArrayRetained() {
 	this.geoType = GEO_TYPE_QUAD_SET;
     }
-        
+
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
-        
+
 	Point3d pnts[] = new Point3d[4];
 	double sdist[] = new double[1];
 	double minDist = Double.MAX_VALUE;
 	double x = 0, y = 0, z = 0;
         int[] vtxIndexArr = new int[4];
-        
+
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
 		 initialVertexIndex : initialCoordIndex);
 	pnts[0] = new Point3d();
 	pnts[1] = new Point3d();
 	pnts[2] = new Point3d();
 	pnts[3] = new Point3d();
-    
+
 	switch (pickShape.getPickType()) {
 	case PickShape.PICKRAY:
 	    PickRay pickRay= (PickRay) pickShape;
@@ -81,13 +81,13 @@ class QuadArrayRetained extends GeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
@@ -111,19 +111,19 @@ class QuadArrayRetained extends GeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
 	    break;
 	case PickShape.PICKBOUNDINGBOX:
-	    BoundingBox bbox = (BoundingBox) 
+	    BoundingBox bbox = (BoundingBox)
 		               ((PickBounds) pickShape).bounds;
 	    while (i < validVertexCount) {
                 for(int j=0; j<4; j++) {
@@ -140,19 +140,19 @@ class QuadArrayRetained extends GeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
 	    break;
 	case PickShape.PICKBOUNDINGSPHERE:
-	    BoundingSphere bsphere = (BoundingSphere) 
+	    BoundingSphere bsphere = (BoundingSphere)
 		                     ((PickBounds) pickShape).bounds;
 
 	    while (i < validVertexCount) {
@@ -170,20 +170,20 @@ class QuadArrayRetained extends GeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
 	    break;
 	case PickShape.PICKBOUNDINGPOLYTOPE:
 
-	    BoundingPolytope bpolytope = (BoundingPolytope) 
+	    BoundingPolytope bpolytope = (BoundingPolytope)
 		                      ((PickBounds) pickShape).bounds;
 
 	    while (i < validVertexCount) {
@@ -201,13 +201,13 @@ class QuadArrayRetained extends GeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
@@ -230,13 +230,13 @@ class QuadArrayRetained extends GeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
@@ -259,13 +259,13 @@ class QuadArrayRetained extends GeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
@@ -274,8 +274,8 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    // Should not happen since API already check for this
 	    throw new IllegalArgumentException(J3dI18N.getString("QuadArrayRetained0"));
 	default:
-	    throw new RuntimeException("PickShape not supported for intersection "); 
-	} 
+	    throw new RuntimeException("PickShape not supported for intersection ");
+	}
 
 	if (minDist < Double.MAX_VALUE) {
 	    iPnt.x = x;
@@ -284,7 +284,7 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    return true;
 	}
 	return false;
-   
+
     }
 
     // intersect pnts[] with every quad in this object
@@ -298,14 +298,14 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	points[1] = new Point3d();
 	points[2] = new Point3d();
 	points[3] = new Point3d();
-	
+
 	switch (pnts.length) {
 	case 3: // Triangle
 	    while (i < validVertexCount) {
-		getVertexData(i++, points[0]);		
-		getVertexData(i++, points[1]);		
-		getVertexData(i++, points[2]);		
-		getVertexData(i++, points[3]);		
+		getVertexData(i++, points[0]);
+		getVertexData(i++, points[1]);
+		getVertexData(i++, points[2]);
+		getVertexData(i++, points[3]);
 		if (intersectTriTri(points[0], points[1], points[2],
 				    pnts[0], pnts[1], pnts[2]) ||
 		    intersectTriTri(points[0], points[2], points[3],
@@ -315,12 +315,12 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    }
 	    break;
 	case 4: // Quad
-	    
+
 	    while (i < validVertexCount) {
-		getVertexData(i++, points[0]);		
-		getVertexData(i++, points[1]);		
-		getVertexData(i++, points[2]);		
-		getVertexData(i++, points[3]);		
+		getVertexData(i++, points[0]);
+		getVertexData(i++, points[1]);
+		getVertexData(i++, points[2]);
+		getVertexData(i++, points[3]);
 		if (intersectTriTri(points[0], points[1], points[2],
 				    pnts[0], pnts[1], pnts[2]) ||
 		    intersectTriTri(points[0], points[1], points[2],
@@ -335,10 +335,10 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    break;
 	case 2: // Line
 	    while (i < validVertexCount) {
-		getVertexData(i++, points[0]);		
-		getVertexData(i++, points[1]);		
-		getVertexData(i++, points[2]);		
-		getVertexData(i++, points[3]);		
+		getVertexData(i++, points[0]);
+		getVertexData(i++, points[1]);
+		getVertexData(i++, points[2]);
+		getVertexData(i++, points[3]);
 		if (intersectSegment(points, pnts[0], pnts[1], dist,
 				     null)) {
 		    return true;
@@ -347,10 +347,10 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    break;
 	case 1: // Point
 	    while (i < validVertexCount) {
-		getVertexData(i++, points[0]);		
-		getVertexData(i++, points[1]);		
-		getVertexData(i++, points[2]);		
-		getVertexData(i++, points[3]);		
+		getVertexData(i++, points[0]);
+		getVertexData(i++, points[1]);
+		getVertexData(i++, points[2]);
+		getVertexData(i++, points[3]);
 		if (intersectTriPnt(points[0], points[1], points[2],
 				    pnts[0]) ||
 		    intersectTriPnt(points[0], points[2], points[3],
@@ -362,7 +362,7 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	}
 	return false;
     }
-    
+
 
     boolean intersect(Transform3D thisToOtherVworld,  GeometryRetained geom) {
 
@@ -374,12 +374,12 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	points[1] = new Point3d();
 	points[2] = new Point3d();
 	points[3] = new Point3d();
-	
+
 	while (i < validVertexCount) {
-	    getVertexData(i++, points[0]);		
-	    getVertexData(i++, points[1]);		
-	    getVertexData(i++, points[2]);		
-	    getVertexData(i++, points[3]);		
+	    getVertexData(i++, points[0]);
+	    getVertexData(i++, points[1]);
+	    getVertexData(i++, points[2]);
+	    getVertexData(i++, points[3]);
 	    thisToOtherVworld.transform(points[0]);
 	    thisToOtherVworld.transform(points[1]);
 	    thisToOtherVworld.transform(points[2]);
@@ -407,10 +407,10 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    BoundingBox box = (BoundingBox) targetBound;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, points[0]);		
-		getVertexData(i++, points[1]);		
-		getVertexData(i++, points[2]);		
-		getVertexData(i++, points[3]);		
+		getVertexData(i++, points[0]);
+		getVertexData(i++, points[1]);
+		getVertexData(i++, points[2]);
+		getVertexData(i++, points[3]);
 		if (intersectBoundingBox(points, box, null, null)) {
 		    return true;
 		}
@@ -420,10 +420,10 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    BoundingSphere bsphere = (BoundingSphere) targetBound;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, points[0]);		
-		getVertexData(i++, points[1]);		
-		getVertexData(i++, points[2]);		
-		getVertexData(i++, points[3]);		
+		getVertexData(i++, points[0]);
+		getVertexData(i++, points[1]);
+		getVertexData(i++, points[2]);
+		getVertexData(i++, points[3]);
 		if (intersectBoundingSphere(points, bsphere, null,
 					    null)) {
 		    return true;
@@ -434,10 +434,10 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    BoundingPolytope bpolytope = (BoundingPolytope) targetBound;
 
 	    while (i < validVertexCount) {
-		getVertexData(i++, points[0]);		
-		getVertexData(i++, points[1]);		
-		getVertexData(i++, points[2]);		
-		getVertexData(i++, points[3]);		
+		getVertexData(i++, points[0]);
+		getVertexData(i++, points[1]);
+		getVertexData(i++, points[2]);
+		getVertexData(i++, points[3]);
 		if (intersectBoundingPolytope(points, bpolytope, null, null)) {
 		    return true;
 		}
@@ -445,11 +445,11 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	    break;
 	default:
 	    throw new RuntimeException("Bounds not supported for intersection "
-				       + targetBound); 
+				       + targetBound);
 	}
 	return false;
     }
-    
+
     // From Graphics Gems IV (pg5) and Graphics Gems II, Pg170
     // The centroid is the area-weighted sum of the centroids of
     // disjoint triangles that make up the polygon.

@@ -77,7 +77,7 @@ import javax.vecmath.Color4f;
  * <LI>Combine Mode - defines the combine operation when texture mode
  * specifies COMBINE. The combine mode includes the following:<p>
  * <UL>
- * <LI>COMBINE_REPLACE<P> 
+ * <LI>COMBINE_REPLACE<P>
  * <UL>
  * C' = C<sub>0</sub> <P>
  * </UL></LI><P>
@@ -97,19 +97,19 @@ import javax.vecmath.Color4f;
  * <UL>
  * C' = C<sub>0</sub> - C<sub>1</sub> <P>
  * </UL></LI><P>
- * <LI>COMBINE_INTERPOLATE<P> 
+ * <LI>COMBINE_INTERPOLATE<P>
  * <UL>
  * C' = C<sub>0</sub> C<sub>2</sub> + C<sub>1</sub> (1 - C<sub>2</sub>) <P>
  * </UL></LI><P>
  * <LI>COMBINE_DOT3<P>
  * <UL>
  * C' = 4 * (
- * (C<sub>0<sub>r</sub></sub> - 0.5) * (C<sub>1<sub>r</sub></sub> - 0.5) + 
- * (C<sub>0<sub>g</sub></sub> - 0.5) * (C<sub>1<sub>g</sub></sub> - 0.5) + 
+ * (C<sub>0<sub>r</sub></sub> - 0.5) * (C<sub>1<sub>r</sub></sub> - 0.5) +
+ * (C<sub>0<sub>g</sub></sub> - 0.5) * (C<sub>1<sub>g</sub></sub> - 0.5) +
  * (C<sub>0<sub>b</sub></sub> - 0.5) * (C<sub>1<sub>b</sub></sub> - 0.5))<P>
  * where C<sub>N<sub>x</sub></sub> is the x component of the Nth color operand
  * in the combine operation.<P>
- * The value C' will be placed to the all three r,g,b components or the 
+ * The value C' will be placed to the all three r,g,b components or the
  * a component of the output.
  * </UL></LI><P>
  * </UL></LI><P>
@@ -124,7 +124,7 @@ import javax.vecmath.Color4f;
  * <LI> COMBINE_TEXTURE_COLOR  - texture color<P>
  * <LI> COMBINE_CONSTANT_COLOR - texture blend color<P>
  * <LI> COMBINE_PREVIOUS_TEXTURE_UNIT_STATE - color from the previous texture
- * unit state. For texture unit state 0, this is equivalent to 
+ * unit state. For texture unit state 0, this is equivalent to
  * COMBINE_OBJECT_COLOR.<P>
  * </UL></LI><P>
  * <LI>Combine Color Function - specifies the function for a color operand
@@ -285,16 +285,16 @@ public class TextureAttributes extends NodeComponent {
      * @see #setTextureMode
      */
     public static final int REPLACE  = 5;
-  
+
     /**
-     * Combine the object color with texture color as specified in 
+     * Combine the object color with texture color as specified in
      * the combine mode.
      *
      * @see #setTextureMode
      * @since Java 3D 1.3
      */
     public static final int COMBINE  = 6;
-    
+
 
     /**
      * Replace the input color with the specified color.
@@ -359,7 +359,7 @@ public class TextureAttributes extends NodeComponent {
      */
     public static final int COMBINE_DOT3        = 6;
 
-   
+
     /**
      * Object color coming into the texturing state.
      *
@@ -379,7 +379,7 @@ public class TextureAttributes extends NodeComponent {
     public static final int COMBINE_TEXTURE_COLOR	= 1;
 
     /**
-     * Texture blend color. 
+     * Texture blend color.
      *
      * @since Java 3D 1.3
      * @see #setCombineRgbSource
@@ -396,7 +396,7 @@ public class TextureAttributes extends NodeComponent {
      */
     public static final int COMBINE_PREVIOUS_TEXTURE_UNIT_STATE	= 3;
 
-    /** 
+    /**
      * Color function is f = C<sub>rgb</sub>
      *
      * @since Java 3D 1.3
@@ -404,7 +404,7 @@ public class TextureAttributes extends NodeComponent {
      */
     public static final int COMBINE_SRC_COLOR		= 0;
 
-    /** 
+    /**
      * Color function is f = (1 - C<sub>rgb</sub>)
      *
      * @since Java 3D 1.3
@@ -412,7 +412,7 @@ public class TextureAttributes extends NodeComponent {
      */
     public static final int COMBINE_ONE_MINUS_SRC_COLOR	= 1;
 
-    /** 
+    /**
      * Color function is f = C<sub>a</sub>
      *
      * @since Java 3D 1.3
@@ -421,7 +421,7 @@ public class TextureAttributes extends NodeComponent {
      */
     public static final int COMBINE_SRC_ALPHA		= 2;
 
-    /** 
+    /**
      * Color function is f = (1 - C<sub>a</sub>)
      *
      * @since Java 3D 1.3
@@ -436,9 +436,9 @@ public class TextureAttributes extends NodeComponent {
         ALLOW_COLOR_TABLE_READ,
         ALLOW_COMBINE_READ,
         ALLOW_MODE_READ,
-        ALLOW_TRANSFORM_READ        
+        ALLOW_TRANSFORM_READ
     };
-    
+
     /**
      * Constructs a TextureAttributes object with default parameters.
      * The default values are as follows:
@@ -450,20 +450,20 @@ public class TextureAttributes extends NodeComponent {
      * texture color table : null<br>
      * combine rgb mode : COMBINE_MODULATE<br>
      * combine alpha mode : COMBINE_MODULATE<br>
-     * combine rgb source : 
+     * combine rgb source :
      * <ul>
      * 		C<sub>0</sub>=COMBINE_TEXTURE_COLOR<br>
      *          C<sub>1</sub>=COMBINE_PREVIOUS_TEXTURE_UNIT_STATE<br>
      *          C<sub>2</sub>=COMBINE_CONSTANT_COLOR<br>
      * </ul>
-     * combine alpha source : 
+     * combine alpha source :
      * <ul>
      * 		C<sub>0</sub>=COMBINE_TEXTURE_COLOR<br>
      *          C<sub>1</sub>=COMBINE_PREVIOUS_TEXTURE_UNIT_STATE<br>
      *          C<sub>2</sub>=COMBINE_CONSTANT_COLOR<br>
      * </ul>
      * combine rgb function : COMBINE_SRC_COLOR<br>
-     * combine alpha function : COMBINE_SRC_ALPHA<br> 
+     * combine alpha function : COMBINE_SRC_ALPHA<br>
      * combine rgb scale : 1<br>
      * combine alpha scale : 1<br>
      * </ul>
@@ -472,16 +472,16 @@ public class TextureAttributes extends NodeComponent {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
     }
-  
+
     /**
      * Constructs a TextureAttributes object with the specified values.
-     * @param textureMode the texture mode; one of <code>MODULATE</code>, 
+     * @param textureMode the texture mode; one of <code>MODULATE</code>,
      * <code>DECAL</code>, <code>BLEND</code>, <code>REPLACE</code>, or
      * <code>COMBINE</code>
      * @param transform the transform object, used to transform texture
      * coordinates
      * @param textureBlendColor the texture constant color
-     * @param perspCorrectionMode the perspective correction mode to 
+     * @param perspCorrectionMode the perspective correction mode to
      * be used for color and/or texture coordinate interpolation;
      * one of <code>NICEST</code> or <code>FASTEST</code>
      * @exception IllegalArgumentException if <code>textureMode</code>
@@ -499,7 +499,7 @@ public class TextureAttributes extends NodeComponent {
 	    throw new IllegalArgumentException(J3dI18N.getString("TextureAttributes10"));
 	}
 
-	if ((perspCorrectionMode != FASTEST) && 
+	if ((perspCorrectionMode != FASTEST) &&
 	    (perspCorrectionMode!= NICEST)) {
 	    throw new IllegalArgumentException(J3dI18N.getString("TextureAttributes9"));
 	}
@@ -512,7 +512,7 @@ public class TextureAttributes extends NodeComponent {
 	((TextureAttributesRetained)this.retained).initTextureTransform(transform);
 	((TextureAttributesRetained)this.retained).initPerspectiveCorrectionMode(perspCorrectionMode);
     }
-  
+
     /**
      * Sets the texture  mode parameter for this
      * appearance component object.
@@ -545,7 +545,7 @@ public class TextureAttributes extends NodeComponent {
      * Gets the texture  mode parameter for this
      * texture attributes object.
      * @return textureMode the texture  mode
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public int getTextureMode() {
@@ -560,7 +560,7 @@ public class TextureAttributes extends NodeComponent {
      * Sets the texture constant color for this
      * texture attributes object.
      * @param textureBlendColor the texture constant color
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setTextureBlendColor(Color4f textureBlendColor) {
@@ -576,12 +576,12 @@ public class TextureAttributes extends NodeComponent {
 
     /**
      * Sets the texture blend color for this
-     * appearance component object.  
+     * appearance component object.
      * @param r the red component of the color
      * @param g the green component of the color
      * @param b the blue component of the color
      * @param a the alpha component of the color
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setTextureBlendColor(float r, float g, float b, float a) {
@@ -599,8 +599,8 @@ public class TextureAttributes extends NodeComponent {
      * Gets the texture blend color for this
      * appearance component object.
      * @param textureBlendColor the vector that will receive the texture
-     * constant color 
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * constant color
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void getTextureBlendColor(Color4f textureBlendColor) {
@@ -654,7 +654,7 @@ public class TextureAttributes extends NodeComponent {
      * correction method should be used.
      * @param mode one of <code>NICEST</code> or <code>FASTEST</code>
      * The default value is <code>NICEST</code>.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @exception IllegalArgumentException if mode value is other
      * than <code>FASTEST</code> or <code>NICEST</code>.
@@ -676,7 +676,7 @@ public class TextureAttributes extends NodeComponent {
     /**
      * Gets perspective correction mode value.
      * @return mode the value of perspective correction mode
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public int getPerspectiveCorrectionMode() {
@@ -720,7 +720,7 @@ public class TextureAttributes extends NodeComponent {
      * is not 3 or 4, or if the arrays for each component are not all
      * the same length, or if the texture color table size
      * is not a power of 2
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see Canvas3D#queryProperties
@@ -749,7 +749,7 @@ public class TextureAttributes extends NodeComponent {
      * enough to hold the entire table (that is,
      * <code>int[numTextureColorTableComponents][textureColorTableSize]</code>).
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -791,21 +791,21 @@ public class TextureAttributes extends NodeComponent {
 
 
     /**
-     * Sets the combine mode for the rgb components of the output color 
+     * Sets the combine mode for the rgb components of the output color
      * for this object.
      *
-     * @param combineMode the combine  mode, one of: 
+     * @param combineMode the combine  mode, one of:
      * <code>COMBINE_REPLACE</code>,
-     * <code>COMBINE_MODULATE</code>, <code>COMBINE_ADD</code>, 
+     * <code>COMBINE_MODULATE</code>, <code>COMBINE_ADD</code>,
      * <code>COMBINE_ADD_SIGNED</code>, <code>COMBINE_SUBTRACT</code>,
      * <code>COMBINE_INTERPOLATE</code>, or <code>COMBINE_DOT3</code>
      *
      * @exception IllegalArgumentException if <code>combineMode</code>
      * is a value other than <code>COMBINE_REPLACE</code>,
-     * <code>COMBINE_MODULATE</code>, <code>COMBINE_ADD</code>, 
+     * <code>COMBINE_MODULATE</code>, <code>COMBINE_ADD</code>,
      * <code>COMBINE_ADD_SIGNED</code>, <code>COMBINE_SUBTRACT</code>,
      * <code>COMBINE_INTERPOLATE</code>, or <code>COMBINE_DOT3</code>
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see Canvas3D#queryProperties
@@ -833,21 +833,21 @@ public class TextureAttributes extends NodeComponent {
     }
 
     /**
-     * Sets the combine mode for the alpha component of the output color 
+     * Sets the combine mode for the alpha component of the output color
      * for this object.
      *
-     * @param combineMode the combine  mode, one of: 
+     * @param combineMode the combine  mode, one of:
      * <code>COMBINE_REPLACE</code>,
-     * <code>COMBINE_MODULATE</code>, <code>COMBINE_ADD</code>, 
+     * <code>COMBINE_MODULATE</code>, <code>COMBINE_ADD</code>,
      * <code>COMBINE_ADD_SIGNED</code>, <code>COMBINE_SUBTRACT</code>,
      * <code>COMBINE_INTERPOLATE</code>, or <code>COMBINE_DOT3</code>
      *
      * @exception IllegalArgumentException if <code>combineMode</code>
      * is a value other than <code>COMBINE_REPLACE</code>,
-     * <code>COMBINE_MODULATE</code>, <code>COMBINE_ADD</code>, 
+     * <code>COMBINE_MODULATE</code>, <code>COMBINE_ADD</code>,
      * <code>COMBINE_ADD_SIGNED</code>, <code>COMBINE_SUBTRACT</code>,
      * <code>COMBINE_INTERPOLATE</code>, or <code>COMBINE_DOT3</code>
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see Canvas3D#queryProperties
@@ -859,7 +859,7 @@ public class TextureAttributes extends NodeComponent {
             if (!this.getCapability(ALLOW_COMBINE_WRITE)) {
                 throw new CapabilityNotSetException(
                                 J3dI18N.getString("TextureAttributes18"));
-            }   
+            }
         }
 
         if ((combineMode < COMBINE_REPLACE) || (combineMode > COMBINE_DOT3)) {
@@ -879,7 +879,7 @@ public class TextureAttributes extends NodeComponent {
      * for this object.
      * @return the combine mode for the rgb components.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.3
@@ -900,7 +900,7 @@ public class TextureAttributes extends NodeComponent {
      * for this object.
      * @return the combine mode for the alpha component.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.3
@@ -917,25 +917,25 @@ public class TextureAttributes extends NodeComponent {
     }
 
     /**
-     * Sets the source for the rgb components of the specified color operand 
+     * Sets the source for the rgb components of the specified color operand
      * for this object.
      *
      * @param index color operand in the combine operation
      * @param src the color source, one of: <code>COMBINE_OBJECT_COLOR</code>,
-     * <code>COMBINE_TEXTURE_COLOR</code>, 
+     * <code>COMBINE_TEXTURE_COLOR</code>,
      * <code>COMBINE_CONSTANT_COLOR</code>, or
      * <code>COMBINE_PREVIOUS_TEXTURE_UNIT_STATE</code>
      *
-     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or 
+     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or
      * <code>index</code> > 2
      * @exception IllegalArgumentException if <code>src</code>
      * is a value other than <code>COMBINE_OBJECT_COLOR</code>,
-     * <code>COMBINE_TEXTURE_COLOR</code>, 
+     * <code>COMBINE_TEXTURE_COLOR</code>,
      * <code>COMBINE_CONSTANT_COLOR</code>, or
      * <code>COMBINE_PREVIOUS_TEXTURE_UNIT_STATE</code>
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     * 
+     *
      * @see Canvas3D#queryProperties
      *
      * @since Java 3D 1.3
@@ -945,7 +945,7 @@ public class TextureAttributes extends NodeComponent {
             if (!this.getCapability(ALLOW_COMBINE_WRITE)) {
                 throw new CapabilityNotSetException(
                                 J3dI18N.getString("TextureAttributes21"));
-            }   
+            }
         }
 
 	if ((index < 0) || (index > 2)) {
@@ -953,7 +953,7 @@ public class TextureAttributes extends NodeComponent {
                 J3dI18N.getString("TextureAttributes25"));
 	}
 
-        if ((src < COMBINE_OBJECT_COLOR) || 
+        if ((src < COMBINE_OBJECT_COLOR) ||
 		(src > COMBINE_PREVIOUS_TEXTURE_UNIT_STATE)) {
             throw new IllegalArgumentException(
                 J3dI18N.getString("TextureAttributes26"));
@@ -969,25 +969,25 @@ public class TextureAttributes extends NodeComponent {
     }
 
     /**
-     * Sets the source for the alpha component of the specified color operand 
+     * Sets the source for the alpha component of the specified color operand
      * for this object.
      *
      * @param index color operand in the combine operation
      * @param src the color source, one of: <code>COMBINE_OBJECT_COLOR</code>,
-     * <code>COMBINE_TEXTURE_COLOR</code>, 
+     * <code>COMBINE_TEXTURE_COLOR</code>,
      * <code>COMBINE_CONSTANT_COLOR</code>, or
      * <code>COMBINE_PREVIOUS_TEXTURE_UNIT_STATE</code>
      *
-     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or 
+     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or
      * <code>index</code> > 2
      * @exception IllegalArgumentException if <code>src</code>
      * is a value other than <code>COMBINE_OBJECT_COLOR</code>,
-     * <code>COMBINE_TEXTURE_COLOR</code>, 
+     * <code>COMBINE_TEXTURE_COLOR</code>,
      * <code>COMBINE_CONSTANT_COLOR</code>, or
      * <code>COMBINE_PREVIOUS_TEXTURE_UNIT_STATE</code>
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     * 
+     *
      * @see Canvas3D#queryProperties
      *
      * @since Java 3D 1.3
@@ -1005,7 +1005,7 @@ public class TextureAttributes extends NodeComponent {
                 J3dI18N.getString("TextureAttributes25"));
         }
 
-        if ((src < COMBINE_OBJECT_COLOR) || 
+        if ((src < COMBINE_OBJECT_COLOR) ||
                 (src > COMBINE_PREVIOUS_TEXTURE_UNIT_STATE)) {
             throw new IllegalArgumentException(
                 J3dI18N.getString("TextureAttributes26"));
@@ -1029,11 +1029,11 @@ public class TextureAttributes extends NodeComponent {
      * @return the source for the rgb components of the specified color
      * operand for this object
      *
-     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or 
+     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or
      * <code>index</code> > 2
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     * 
+     *
      * @since Java 3D 1.3
      */
     public int getCombineRgbSource(int index) {
@@ -1061,11 +1061,11 @@ public class TextureAttributes extends NodeComponent {
      * @return the source for the alpha component of the specified color
      * operand for this object
      *
-     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or 
+     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or
      * <code>index</code> > 2
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     * 
+     *
      * @since Java 3D 1.3
      */
     public int getCombineAlphaSource(int index) {
@@ -1089,17 +1089,17 @@ public class TextureAttributes extends NodeComponent {
      * for this object.
      *
      * @param index color operand in the combine operation
-     * @param function the color function, one of: 
+     * @param function the color function, one of:
      * <code>COMBINE_SRC_COLOR</code>,
-     * <code>COMBINE_ONE_MINUS_SRC_COLOR</code>, 
+     * <code>COMBINE_ONE_MINUS_SRC_COLOR</code>,
      * <code>COMBINE_SRC_ALPHA</code>, or
      * <code>COMBINE_ONE_MINUS_SRC_ALPHA</code>
      *
-     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or 
+     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or
      * <code>index</code> > 2
      * @exception IllegalArgumentException if <code>function</code>
      * is a value other than <code>COMBINE_SRC_COLOR</code>,
-     * <code>COMBINE_ONE_MINUS_SRC_COLOR</code>, 
+     * <code>COMBINE_ONE_MINUS_SRC_COLOR</code>,
      * <code>COMBINE_SRC_ALPHA</code>, or
      * <code>COMBINE_ONE_MINUS_SRC_ALPHA</code>
      * @exception CapabilityNotSetException if appropriate capability is
@@ -1142,14 +1142,14 @@ public class TextureAttributes extends NodeComponent {
      * for this object.
      *
      * @param index color operand in the combine operation
-     * @param function the color function, one of: 
+     * @param function the color function, one of:
      * <code>COMBINE_SRC_ALPHA</code>, or
      * <code>COMBINE_ONE_MINUS_SRC_ALPHA</code>
      *
-     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or 
+     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or
      * <code>index</code> > 2
      * @exception IllegalArgumentException if <code>function</code>
-     * is a value other than 
+     * is a value other than
      * <code>COMBINE_SRC_ALPHA</code> or
      * <code>COMBINE_ONE_MINUS_SRC_ALPHA</code>
      * @exception CapabilityNotSetException if appropriate capability is
@@ -1196,7 +1196,7 @@ public class TextureAttributes extends NodeComponent {
      * @return the function for the rgb components of the specified color
      * operand for this object.
      *
-     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or 
+     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or
      * <code>index</code> > 2
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
@@ -1228,7 +1228,7 @@ public class TextureAttributes extends NodeComponent {
      * @return the function for the alpha component of the specified color
      * operand for this object.
      *
-     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or 
+     * @exception IndexOutOfBoundsException if <code>index</code> < 0 or
      * <code>index</code> > 2
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
@@ -1255,7 +1255,7 @@ public class TextureAttributes extends NodeComponent {
      * Sets the scale factor for the rgb components of the output color
      * for this object.
      *
-     * @param scale the scale factor for the rgb components of the output 
+     * @param scale the scale factor for the rgb components of the output
      * color. It must be one of the following: 1, 2, or 4.
      *
      * @exception IllegalArgumentException if <code>scale</code> is a
@@ -1292,7 +1292,7 @@ public class TextureAttributes extends NodeComponent {
      * Sets the scale factor for the alpha component of the output color
      * for this object.
      *
-     * @param scale the scale factor for the alpha component of the output 
+     * @param scale the scale factor for the alpha component of the output
      * color. It must be one of the following: 1, 2, or 4.
      *
      * @exception IllegalArgumentException if <code>scale</code> is a
@@ -1380,7 +1380,7 @@ public class TextureAttributes extends NodeComponent {
 
 
     /**
-     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)  
+     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
         TextureAttributes ta = new TextureAttributes();
@@ -1394,7 +1394,7 @@ public class TextureAttributes extends NodeComponent {
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -1406,14 +1406,14 @@ public class TextureAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
-    void duplicateAttributes(NodeComponent originalNodeComponent, 
-			     boolean forceDuplicate) { 
+    void duplicateAttributes(NodeComponent originalNodeComponent,
+			     boolean forceDuplicate) {
 
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
-      
-	TextureAttributesRetained attr = 
+
+	TextureAttributesRetained attr =
 	    (TextureAttributesRetained) originalNodeComponent.retained;
-	TextureAttributesRetained rt =  (TextureAttributesRetained) retained;	
+	TextureAttributesRetained rt =  (TextureAttributesRetained) retained;
 
 	Color4f c = new Color4f();
 	attr.getTextureBlendColor(c);
@@ -1435,10 +1435,10 @@ public class TextureAttributes extends NodeComponent {
     // start fix issue 636
     rt.initCombineRgbMode(attr.getCombineRgbMode());
     rt.initCombineAlphaMode(attr.getCombineAlphaMode());
-    
+
     rt.initCombineRgbScale(attr.getCombineRgbScale());
     rt.initCombineAlphaScale(attr.getCombineAlphaScale());
-    
+
     // Check one of the combine source or function arrays
     if (attr.combineRgbSrc != null) {
         for (int i=0; i < 3; i++) {

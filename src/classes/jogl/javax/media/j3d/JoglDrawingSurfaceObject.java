@@ -32,13 +32,13 @@
 package javax.media.j3d;
 
 /**
- * The DrawingSurfaceObject class is used to manage native drawing surface 
+ * The DrawingSurfaceObject class is used to manage native drawing surface
  */
 class JoglDrawingSurfaceObject extends DrawingSurfaceObject {
-    
+
     JoglDrawingSurfaceObject(Canvas3D cv) {
         super(cv);
-        
+
         // System.err.println("JoglDrawingSurfaceObject constructed");
     }
 
@@ -56,9 +56,9 @@ class JoglDrawingSurfaceObject extends DrawingSurfaceObject {
     synchronized void getDrawingSurfaceObjectInfo() {
       // FIXME: we don't have all of the information we need here to
       // create a GLDrawable for the Canvas3D, so for now, do nothing
-      
+
       // FIXME: this mechanism is much too complicated
-      
+
       /*
       System.err.println("JoglDrawingSurfaceObject.getDrawingSurfaceObjectInfo()");
 

@@ -30,7 +30,7 @@
  */
 
 package javax.media.j3d;
- 
+
 /**
  *  BackgroundSound is a class for sounds that are not spatially rendered.
  *  These sounds are simply added to the stereo sound mix without modification.

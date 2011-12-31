@@ -62,7 +62,7 @@ public class Texture2D extends Texture {
     public static final int
     ALLOW_DETAIL_TEXTURE_READ = CapabilityBits.TEXTURE2D_ALLOW_DETAIL_TEXTURE_READ;
 
-    /** 
+    /**
      * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
      * longer supported.
      * Performs linear sampling in both the base level
@@ -78,7 +78,7 @@ public class Texture2D extends Texture {
      * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
      * longer supported.
      * Performs linear detail for the rgb
-     * components only. The alpha component is computed using 
+     * components only. The alpha component is computed using
      * BASE_LEVEL_LINEAR filter.
      *
      * @since Java 3D 1.3
@@ -90,7 +90,7 @@ public class Texture2D extends Texture {
      * @deprecated As of Java 3D 1.5 the optional detail texture feature is no
      * longer supported.
      * Performs linear detail for the alpha
-     * component only. The rgb components are computed using 
+     * component only. The rgb components are computed using
      * BASE_LEVEL_LINEAR filter.
      *
      * @since Java 3D 1.3
@@ -224,7 +224,7 @@ public class Texture2D extends Texture {
      * function is used when the pixel being rendered maps to an area
      * less than or equal to one texel.
      * @param magFilter the magnification filter, one of:
-     * FASTEST, NICEST, BASE_LEVEL_POINT, BASE_LEVEL_LINEAR, 
+     * FASTEST, NICEST, BASE_LEVEL_POINT, BASE_LEVEL_LINEAR,
      * LINEAR_DETAIL, LINEAR_DETAIL_RGB, LINEAR_DETAIL_ALPHA,
      * LINEAR_SHARPEN, LINEAR_SHARPEN_RGB, LINEAR_SHARPEN_ALPHA, or FILTER4.
      *
@@ -233,9 +233,9 @@ public class Texture2D extends Texture {
      * @exception IllegalArgumentException if <code>minFilter</code>
      * is a value other than <code>FASTEST</code>, <code>NICEST</code>,
      * <code>BASE_LEVEL_POINT</code>, <code>BASE_LEVEL_LINEAR</code>,
-     * <code>LINEAR_DETAIL</code>, <code>LINEAR_DETAIL_RGB</code>, 
-     * <code>LINEAR_DETAIL_ALPHA</code>, 
-     * <code>LINEAR_SHARPEN</code>, <code>LINEAR_SHARPEN_RGB</code>, 
+     * <code>LINEAR_DETAIL</code>, <code>LINEAR_DETAIL_RGB</code>,
+     * <code>LINEAR_DETAIL_ALPHA</code>,
+     * <code>LINEAR_SHARPEN</code>, <code>LINEAR_SHARPEN_RGB</code>,
      * <code>LINEAR_SHARPEN_ALPHA</code>,  or
      * <code>FILTER4</code>.
      *
@@ -514,12 +514,12 @@ public class Texture2D extends Texture {
 
 
     /**
-     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)  
+     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
 	Texture2DRetained t2d = (Texture2DRetained) retained;
 
-	Texture2D t = new Texture2D(t2d.getMipMapMode(), t2d.format, 
+	Texture2D t = new Texture2D(t2d.getMipMapMode(), t2d.format,
 				    t2d.width, t2d.height);
         t.duplicateNodeComponent(this);
         return t;
@@ -557,7 +557,7 @@ public class Texture2D extends Texture {
                              boolean forceDuplicate) {
         super.duplicateAttributes(originalNodeComponent, forceDuplicate);
 
-	Texture2DRetained tex = (Texture2DRetained) 
+	Texture2DRetained tex = (Texture2DRetained)
 					originalNodeComponent.retained;
 	Texture2DRetained rt = (Texture2DRetained) retained;
 

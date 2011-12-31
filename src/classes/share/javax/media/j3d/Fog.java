@@ -100,9 +100,9 @@ public abstract class Fog extends Leaf {
     private static final int[] readCapabilities = {
         ALLOW_INFLUENCING_BOUNDS_READ,
         ALLOW_COLOR_READ,
-        ALLOW_SCOPE_READ        
+        ALLOW_SCOPE_READ
     };
-    
+
     /**
      * Constructs a Fog node with default parameters.  The default
      * values are as follows:
@@ -154,7 +154,7 @@ public abstract class Fog extends Leaf {
 	    if(!this.getCapability(ALLOW_COLOR_WRITE))
 	    	throw new CapabilityNotSetException(J3dI18N.getString("Fog0"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((FogRetained)this.retained).setColor(color);
 	else
 	    ((FogRetained)this.retained).initColor(color);
@@ -173,7 +173,7 @@ public abstract class Fog extends Leaf {
 	    if(!this.getCapability(ALLOW_COLOR_WRITE))
 	    	throw new CapabilityNotSetException(J3dI18N.getString("Fog0"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((FogRetained)this.retained).setColor(r, g, b);
 	else
 	    ((FogRetained)this.retained).initColor(r, g, b);
@@ -199,25 +199,25 @@ public abstract class Fog extends Leaf {
      * @param region the bounds that contains the Fog's new influencing region.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setInfluencingBounds(Bounds region) {
     	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_INFLUENCING_BOUNDS_WRITE))
 	    	throw new CapabilityNotSetException(J3dI18N.getString("Fog3"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((FogRetained)this.retained).setInfluencingBounds(region);
 	else
 	    ((FogRetained)this.retained).initInfluencingBounds(region);
 
     }
 
-    /**  
+    /**
      * Retrieves the Fog node's influencing bounds.
      * @return this Fog's influencing bounds information
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public Bounds getInfluencingBounds() {
     	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_INFLUENCING_BOUNDS_READ))
@@ -234,7 +234,7 @@ public abstract class Fog extends Leaf {
      * node's new influencing region.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setInfluencingBoundingLeaf(BoundingLeaf region) {
     	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_INFLUENCING_BOUNDS_WRITE))
@@ -246,12 +246,12 @@ public abstract class Fog extends Leaf {
 	    ((FogRetained)this.retained).initInfluencingBoundingLeaf(region);
     }
 
-    /**  
+    /**
      * Retrieves the Fog node's influencing bounding leaf.
      * @return this Fog's influencing bounding leaf information
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public BoundingLeaf getInfluencingBoundingLeaf() {
     	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_INFLUENCING_BOUNDS_READ))
@@ -279,7 +279,7 @@ public abstract class Fog extends Leaf {
 	    if(!this.getCapability(ALLOW_SCOPE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Fog7"));
 
-	
+
 	if (isLive())
 	    ((FogRetained)this.retained).setScope(scope, index);
 	else
@@ -350,7 +350,7 @@ public abstract class Fog extends Leaf {
 	else
 	    ((FogRetained)this.retained).initRemoveScope(index);
     }
-  
+
 
     /**
      * Returns an enumeration of this Fog node's list of scopes.
@@ -390,7 +390,7 @@ public abstract class Fog extends Leaf {
 	    ((FogRetained)this.retained).initAddScope(scope);
     }
 
-  
+
     /**
      * Returns the number of nodes in this Fog node's list of scopes.
      * If this number is 0, then the list of scopes is empty and this
@@ -487,7 +487,7 @@ public abstract class Fog extends Leaf {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -519,7 +519,7 @@ public abstract class Fog extends Leaf {
 	  // this reference will set correctly in updateNodeReferences() callback
 	    rt.initAddScope((Group) elm.nextElement());
 	}
-	
+
 	  // this reference will set correctly in updateNodeReferences() callback
 	rt.initInfluencingBoundingLeaf(attr.getInfluencingBoundingLeaf());
     }
@@ -553,7 +553,7 @@ public abstract class Fog extends Leaf {
 
 	FogRetained rt = (FogRetained) retained;
         BoundingLeaf bl = rt.getInfluencingBoundingLeaf();
-	
+
         if (bl != null) {
             Object o = referenceTable.getNewObjectReference(bl);
             rt.initInfluencingBoundingLeaf((BoundingLeaf) o);

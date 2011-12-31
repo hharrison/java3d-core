@@ -33,7 +33,7 @@ package javax.media.j3d;
 
 /**
  * Indicates a graph that contains a cycle.
- * Java 3D scene graphs are directed acyclic graphs and, as such, do not 
+ * Java 3D scene graphs are directed acyclic graphs and, as such, do not
  * permit cycles.
  * This exception is thrown when a graph containing a cycle:
  * <ul>

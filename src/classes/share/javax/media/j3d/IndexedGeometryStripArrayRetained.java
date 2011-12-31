@@ -71,16 +71,16 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
 		}
 	    }
 	}
-	
-        // Sum of all stripIndexCounts MUST be same as indexCount 
-        if ((initialIndexIndex + total) > indexCount) 
+
+        // Sum of all stripIndexCounts MUST be same as indexCount
+        if ((initialIndexIndex + total) > indexCount)
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedGeometryStripArrayRetained0"));
 	int newCoordMax =0;
 	int newColorIndex=0;
 	int newNormalIndex=0;
 	int[] newTexCoordIndex = null;
         int[] newVertexAttrIndex = null;
-	
+
 	newCoordMax = computeMaxIndex(initialIndexIndex, total, indexCoord);
 	doErrorCheck(newCoordMax);
 	if ((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0) {
@@ -211,12 +211,12 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
 	int numMerge = list.size();
 	int numCount = 0;
 	int i, j;
-	    
+
 	for (i = 0; i < numMerge; i++) {
 	    IndexedGeometryStripArrayRetained geo = (IndexedGeometryStripArrayRetained) list.get(i);
 	    numCount += geo.stripIndexCounts.length;
 	}
-	    
+
 	stripIndexCounts = new int[numCount];
 	compileIndexLength = new int[numCount];
 	compileStripICOffset = new int[numMerge];
@@ -247,5 +247,5 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
 	  stripIndexCounts[i] = this.stripIndexCounts[coffset+1];
       }
   }
-    
+
 }

@@ -45,12 +45,12 @@ public abstract class PickShape {
    // Use for picking
     static final int PICKRAY              = 1;
     static final int PICKSEGMENT          = 2;
-    static final int PICKPOINT            = 3;    
-    static final int PICKCYLINDER         = 4;    
-    static final int PICKCONE             = 5;    
-    static final int PICKBOUNDINGBOX      = 6;    
-    static final int PICKBOUNDINGSPHERE   = 7;    
-    static final int PICKBOUNDINGPOLYTOPE = 8;    
+    static final int PICKPOINT            = 3;
+    static final int PICKCYLINDER         = 4;
+    static final int PICKCONE             = 5;
+    static final int PICKBOUNDINGBOX      = 6;
+    static final int PICKBOUNDINGSPHERE   = 7;
+    static final int PICKBOUNDINGPOLYTOPE = 8;
     static final int PICKUNKNOWN          = 9;
 
     /**
@@ -63,7 +63,7 @@ public abstract class PickShape {
      * Return true if shape intersect with bounds.
      * The point of intersection is stored in pickPos.
      */
-    abstract boolean intersect(Bounds bounds, Point4d pickPos); 
+    abstract boolean intersect(Bounds bounds, Point4d pickPos);
 
     // Only use within J3D.
     // Return a new PickShape that is the transformed (t3d) of this pickShape.
@@ -81,7 +81,7 @@ public abstract class PickShape {
 	double y = iPnt.y - p.y;
 	double z = iPnt.z - p.z;
 	return Math.sqrt(x*x + y*y + z*z);
-    } 
+    }
 
     // Return one of PickShape type constant define above
     abstract int getPickType();

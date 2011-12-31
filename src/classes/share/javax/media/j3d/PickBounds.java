@@ -41,7 +41,7 @@ import javax.vecmath.*;
  * @see Locale#pickAll
  */
 public final class PickBounds extends PickShape {
-  
+
     Bounds bounds;
 
     /**
@@ -50,7 +50,7 @@ public final class PickBounds extends PickShape {
     public PickBounds() {
 	bounds = null;
     }
-  
+
     /**
      * Constructs a PickBounds from the specified bounds object.
      * @param boundsObject the bounds of this PickBounds.
@@ -58,8 +58,8 @@ public final class PickBounds extends PickShape {
     public PickBounds(Bounds boundsObject) {
 	bounds = boundsObject;
     }
-  
-  
+
+
     /**
      * Sets the bounds object of this PickBounds to the specified object.
      * @param boundsObject the new bounds of this PickBounds.
@@ -67,7 +67,7 @@ public final class PickBounds extends PickShape {
     public void set(Bounds boundsObject) {
 	bounds = boundsObject;
     }
-  
+
     /**
      * Gets the bounds object from this PickBounds.
      * @return the bounds.
@@ -83,26 +83,26 @@ public final class PickBounds extends PickShape {
     final boolean intersect(Bounds bounds, Point4d pickPos) {
 	return bounds.intersect(this.bounds, pickPos);
     }
-    
+
     // Only use within J3D.
-    // Return a new PickBounds that is the transformed (t3d) of this pickBounds.  
+    // Return a new PickBounds that is the transformed (t3d) of this pickBounds.
     PickShape transform(Transform3D t3d) {
 	// If the bounds is a BoundingBox, then the transformed bounds will
 	// get bigger. So this is a potential bug, and we'll have to deal with
-	// if there is a complain. 
+	// if there is a complain.
 	Bounds newBds = (Bounds)bounds.clone();
 	newBds.transform(t3d);
 	PickBounds newPB = new PickBounds(newBds);
-	
+
 	return newPB;
     }
 
     Point3d getStartPoint() {
 	return bounds.getCenter();
-    }    
+    }
 
     int getPickType() {
-	return (bounds != null ? bounds.getPickType() : 
+	return (bounds != null ? bounds.getPickType() :
 		                 PickShape.PICKUNKNOWN);
     }
 }

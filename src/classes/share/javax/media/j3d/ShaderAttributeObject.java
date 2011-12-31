@@ -91,7 +91,7 @@ public abstract class ShaderAttributeObject extends ShaderAttribute {
      * Package scope constructor
      */
     ShaderAttributeObject(String attrName, Object value) {
-	super(attrName);	
+	super(attrName);
 
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
@@ -106,7 +106,7 @@ public abstract class ShaderAttributeObject extends ShaderAttribute {
      *
      * @return a copy of the value of this shader attribute
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public abstract Object getValue();
@@ -123,7 +123,7 @@ public abstract class ShaderAttributeObject extends ShaderAttribute {
      * the same base class as the object used to construct this shader
      * attribute object.
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public abstract void setValue(Object value);
@@ -138,7 +138,7 @@ public abstract class ShaderAttributeObject extends ShaderAttribute {
      *
      * @return the base class of the value of this shader attribute
      *
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public Class getValueClass() {

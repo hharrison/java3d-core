@@ -71,7 +71,7 @@ public final class PickCylinderSegment extends PickCylinder {
 	this.radius = radius;
 	calcDirection(); // calculate direction, based on start and end
     }
-    
+
     /**
      * Sets the parameters of this PickCylinderSegment to the specified values.
      * @param origin the origin point of the cylindrical segment.
@@ -119,13 +119,13 @@ public final class PickCylinderSegment extends PickCylinder {
 	if (bounds instanceof BoundingSphere) {
 	    Point3d sphCenter = ((BoundingSphere)bounds).getCenter();
 	    double sphRadius = ((BoundingSphere)bounds).getRadius();
-	    double sqDist = 
+	    double sqDist =
 		Distance.pointToSegment (sphCenter, origin, end);
 	    if (sqDist <= (sphRadius+radius)*(sphRadius+radius)) {
-		return true; 
+		return true;
 	    }
 	    return false; // we are too far to intersect
-	}  
+	}
 	//
 	// ================ BOUNDING BOX ================
 	//
@@ -141,10 +141,10 @@ public final class PickCylinderSegment extends PickCylinder {
 	    temp = (center.y - lower.y + radius);
 	    boxRadiusSquared += temp*temp;
 	    temp = (center.z - lower.z + radius);
-	    boxRadiusSquared += temp*temp;		
+	    boxRadiusSquared += temp*temp;
 
 	    // First, see if cylinder is too far away from BoundingBox
-	    double sqDist = 
+	    double sqDist =
 		Distance.pointToSegment (center, origin, end);
 	    if (sqDist > boxRadiusSquared) {
 		return false; // we are too far to intersect
@@ -161,7 +161,7 @@ public final class PickCylinderSegment extends PickCylinder {
 	    // Ray does not intersect, test for distance with each edge
 	    Point3d upper = new Point3d();
 	    ((BoundingBox)bounds).getUpper (upper);
-      
+
 	    Point3d[][] edges = {
 		// Top horizontal 4
 		{upper, new Point3d (lower.x, upper.y, upper.z)},
@@ -181,8 +181,8 @@ public final class PickCylinderSegment extends PickCylinder {
 	    };
 	    for (int i=0;i<edges.length;i++) {
 		//	System.err.println ("Testing edge: "+edges[i][0]+" - "+edges[i][1]);
-		double distToEdge = 
-		    Distance.segmentToSegment (origin, end, 
+		double distToEdge =
+		    Distance.segmentToSegment (origin, end,
 					       edges[i][0], edges[i][1]);
 		if (distToEdge <= radius*radius) {
 		    //	  System.err.println ("Intersects!");
@@ -205,7 +205,7 @@ public final class PickCylinderSegment extends PickCylinder {
 	    bsphere.getCenter (sphCenter);
 	    double sphRadius = bsphere.getRadius();
 
-	    double sqDist = 
+	    double sqDist =
 		Distance.pointToSegment (sphCenter, origin, end);
 	    if (sqDist > (sphRadius+radius)*(sphRadius+radius)) {
 		return false; // we are too far to intersect
@@ -230,12 +230,12 @@ public final class PickCylinderSegment extends PickCylinder {
 		    midpt.y = (ptope.verts[i].y + ptope.verts[j].y) * 0.5;
 		    midpt.z = (ptope.verts[i].z + ptope.verts[j].z) * 0.5;
 
-		    if (! PickCylinder.pointInPolytope (ptope, 
+		    if (! PickCylinder.pointInPolytope (ptope,
 							midpt.x, midpt.y, midpt.z)) {
 			continue;
 		    }
-		    distToEdge = 
-			Distance.segmentToSegment (origin, end, 
+		    distToEdge =
+			Distance.segmentToSegment (origin, end,
 						   ptope.verts[i], ptope.verts[j]);
 		    if (distToEdge <= radius*radius) {
 			return true;
@@ -254,11 +254,11 @@ public final class PickCylinderSegment extends PickCylinder {
 
     // Only use within J3D.
     // Return a new PickCylinderSegment that is the transformed (t3d) of this
-    // pickCylinderSegment.  
+    // pickCylinderSegment.
     PickShape transform(Transform3D t3d) {
-	
+
 	PickCylinderSegment newPCS = new PickCylinderSegment();
-	
+
 	newPCS.origin.x = origin.x;
 	newPCS.origin.y = origin.y;
 	newPCS.origin.z = origin.z;
@@ -266,15 +266,15 @@ public final class PickCylinderSegment extends PickCylinder {
 	newPCS.end.x = end.x;
 	newPCS.end.y = end.y;
 	newPCS.end.z = end.z;
-	
+
 	t3d.transform(newPCS.origin);
 	t3d.transform(newPCS.end);
-	
+
 	newPCS.direction.x = newPCS.end.x - newPCS.origin.x;
 	newPCS.direction.y = newPCS.end.y - newPCS.origin.y;
 	newPCS.direction.z = newPCS.end.z - newPCS.origin.z;
 	newPCS.direction.normalize();
-	
+
 	return newPCS;
     }
 

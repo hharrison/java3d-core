@@ -102,10 +102,10 @@ class TextureBin extends Object implements ObjectUpdate {
      * TextureUnitState dirty bit. The ith bit set means the (i-1)
      * texture unit state is modified. Note, this mask only supports
      * 30 texture unit states. If the appearance uses more than 31
-     * texture unit states, then the modification of the 32nd texture 
+     * texture unit states, then the modification of the 32nd texture
      * unit state and up will have the first bit set, that means
      * the TextureBin will be reset, rather than only the particular
-     * texture unit state will be reset. 
+     * texture unit state will be reset.
      */
     int soleUserCompDirty;
 
@@ -137,7 +137,7 @@ class TextureBin extends Object implements ObjectUpdate {
 
     int numRenderMolecules = 0;
     int numEditingRenderMolecules = 0;
-    
+
     int tbFlag = 0;	// a general bitmask for TextureBin
 
     // Following are the bits used in flag
@@ -148,12 +148,12 @@ class TextureBin extends Object implements ObjectUpdate {
     final static int CONTIGUOUS_ACTIVE_UNITS    = 0x0008;
     final static int RESORT    			= 0x0010;
     final static int ON_UPDATE_CHECK_LIST	= 0x0020;
-    
+
     final static int USE_DISPLAYLIST = -2;
     final static int USE_VERTEXARRAY = -1;
 
     TextureBin(TextureUnitStateRetained[] state, AppearanceRetained app,
-			RenderBin rb) { 
+			RenderBin rb) {
         renderBin = rb;
 	tbFlag = 0;
 	reset(state, app);
@@ -176,8 +176,8 @@ class TextureBin extends Object implements ObjectUpdate {
 	// TextureBin
         tbFlag &= ~TextureBin.SOLE_USER;
         if (VirtualUniverse.mc.allowSoleUser) {
-            if ((app != null) && 
-                 (app.changedFrequent & 
+            if ((app != null) &&
+                 (app.changedFrequent &
                     (AppearanceRetained.TEXTURE |
                      AppearanceRetained.TEXCOORD_GEN |
                      AppearanceRetained.TEXTURE_ATTR |
@@ -192,7 +192,7 @@ class TextureBin extends Object implements ObjectUpdate {
         } else {
 	    this.app = null;
         }
-	
+
 	resetTextureState(state);
 
 	if ((tbFlag & TextureBin.ON_RENDER_BIN_LIST) == 0) {
@@ -243,7 +243,7 @@ class TextureBin extends Object implements ObjectUpdate {
 			texUnitState[i].mirror = state[i];
 		    }
 
-		    // for the lowest level of node component in 
+		    // for the lowest level of node component in
 		    // TextureBin, clone it only if it is not
 		    // changedFrequent; in other words, if the
 		    // lowest level of texture related node components
@@ -261,18 +261,18 @@ class TextureBin extends Object implements ObjectUpdate {
 			if (soleUser &&
 			    (tex.getTextureBinRefCount(this) == 0) &&
 			    (tex != state[i].texture)) {
-			    // In this case texture change but 
+			    // In this case texture change but
 			    // TextureBin will not invoke clear() to reset.
 			    // So we need to free the texture resource here.
-                            renderBin.addTextureResourceFreeList(tex);			    
+                            renderBin.addTextureResourceFreeList(tex);
 			}
 		    }
-		    
+
 		    texUnitState[i].texture = state[i].texture;
 
 		    // increment the TextureBin ref count of the new
 		    // texture
-		    
+
 		    if (texUnitState[i].texture != null) {
 			texUnitState[i].texture.incTextureBinRefCount(this);
 		    }
@@ -291,9 +291,9 @@ class TextureBin extends Object implements ObjectUpdate {
 
 			    if (texUnitState[i].texAttrs == null ||
 				  texUnitState[i].texAttrs.source != null) {
-			 	texUnitState[i].texAttrs = 
+			 	texUnitState[i].texAttrs =
 				    new TextureAttributesRetained();
-			    } 
+			    }
 			    texUnitState[i].texAttrs.set(
 						state[i].texAttrs);
 			    texUnitState[i].texAttrs.mirrorCompDirty = true;
@@ -302,7 +302,7 @@ class TextureBin extends Object implements ObjectUpdate {
 			    // the mirror node component in the mirror
 			    // reference in the clone object. This
 			    // will be used in state download to
-			    // avoid redundant download 
+			    // avoid redundant download
 
 			    if (soleUser) {
 				texUnitState[i].texAttrs.mirror =
@@ -329,9 +329,9 @@ class TextureBin extends Object implements ObjectUpdate {
 
 			    if (texUnitState[i].texGen == null ||
 				  texUnitState[i].texGen.source != null) {
-			 	texUnitState[i].texGen = 
+			 	texUnitState[i].texGen =
 				    new TexCoordGenerationRetained();
-			    } 
+			    }
 
 			    texUnitState[i].texGen.set(state[i].texGen);
 			    texUnitState[i].texGen.mirrorCompDirty = true;
@@ -341,7 +341,7 @@ class TextureBin extends Object implements ObjectUpdate {
                             // the mirror node component in the mirror
                             // reference in the clone object. This
                             // will be used in state download to
-                            // avoid redundant download 
+                            // avoid redundant download
 
 			    if (soleUser) {
 				texUnitState[i].texGen.mirror = state[i].texGen;
@@ -379,7 +379,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	    // resorting is needed
 
 	    if ((texUnitState[0] == null && prevFirstTexture != null) ||
-		(texUnitState[0] != null && 
+		(texUnitState[0] != null &&
 			texUnitState[0].texture != prevFirstTexture)) {
 		tbFlag |= TextureBin.RESORT;
 	    }
@@ -413,7 +413,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	// the reference count. If the reference count == 0, tell
 	// the renderer to free up the resource
         if (texUnitState != null) {
-		
+
             TextureRetained tex;
 
             for (int i = 0; i < texUnitState.length; i++) {
@@ -445,7 +445,7 @@ class TextureBin extends Object implements ObjectUpdate {
             }
         }
     }
-	
+
 
 
     /**
@@ -455,13 +455,13 @@ class TextureBin extends Object implements ObjectUpdate {
 
 	int i, j, k = 0;
 	TextureRetained texture;
-														      
+
 	// if this TextureBin is a soleUser case or the incoming
 	// app has changedFrequent bit set for any of the texture
 	// related component, then either the current TextureBin
 	// or the incoming app requires the same app match
-	if (((tbFlag & TextureBin.SOLE_USER) != 0) || 
-		((ra.app != null) && 
+	if (((tbFlag & TextureBin.SOLE_USER) != 0) ||
+		((ra.app != null) &&
              		 (ra.app.changedFrequent &
                 	    (AppearanceRetained.TEXTURE |
                  	     AppearanceRetained.TEXCOORD_GEN |
@@ -500,8 +500,8 @@ class TextureBin extends Object implements ObjectUpdate {
 
 	if (texUnitState == null || state == null)
 	    return (false);
-	    
-	if (state.length != texUnitState.length) 
+
+	if (state.length != texUnitState.length)
 	    return (false);
 
 	for (i = 0; i < texUnitState.length; i++) {
@@ -531,7 +531,7 @@ class TextureBin extends Object implements ObjectUpdate {
 
 
     /*
-    // updateNodeComponentCheck is called for each soleUser TextureBin 
+    // updateNodeComponentCheck is called for each soleUser TextureBin
     // into which new renderAtom has been added. This method is called before
     // updateNodeComponent() to allow TextureBin to catch any node
     // component changes that have been missed because the changes
@@ -602,9 +602,9 @@ class TextureBin extends Object implements ObjectUpdate {
 	}
     }
      */
-		    
 
- 
+
+
 
     /**
      * updateNodeComponent is called from RenderBin to update the
@@ -616,18 +616,18 @@ class TextureBin extends Object implements ObjectUpdate {
 	// don't bother to update if the TextureBin is already
 	// removed from RenderBin
 
-	if ((tbFlag & TextureBin.ON_RENDER_BIN_LIST) == 0) 
+	if ((tbFlag & TextureBin.ON_RENDER_BIN_LIST) == 0)
 	    return;
 
 	// if any of the texture reference in the appearance referenced
 	// by a sole user TextureBin is being modified, just do a reset
 
-	if (((tbFlag & TextureBin.SOLE_USER) != 0) && 
-		((soleUserCompDirty & TextureBin.SOLE_USER_DIRTY_REF) != 0)) { 
+	if (((tbFlag & TextureBin.SOLE_USER) != 0) &&
+		((soleUserCompDirty & TextureBin.SOLE_USER_DIRTY_REF) != 0)) {
 
 	    resetTextureState(app.texUnitState);
 	    return;
-	} 
+	}
 
 	if (texUnitState == null)  {
 	    soleUserCompDirty = 0;
@@ -646,7 +646,7 @@ class TextureBin extends Object implements ObjectUpdate {
 		    if (tus.mirror != null) {
 
 		        mirrorTUS = (TextureUnitStateRetained)tus.mirror;
-		
+
 			if (tus.texture != mirrorTUS.texture) {
 			    if (tus.texture != null) {
 				tus.texture.decTextureBinRefCount(this);
@@ -663,7 +663,7 @@ class TextureBin extends Object implements ObjectUpdate {
 				tbFlag |= TextureBin.RESORT;
 			    }
 			}
-			  
+
 
 		        if (mirrorTUS.texAttrs != null) {
 			    if (mirrorTUS.texAttrs.changedFrequent != 0) {
@@ -671,11 +671,11 @@ class TextureBin extends Object implements ObjectUpdate {
 			    } else {
 			        if (tus.texAttrs == null ||
 				  	tus.texAttrs.source != null) {
-				    tus.texAttrs = 
+				    tus.texAttrs =
 					new TextureAttributesRetained();
 			        }
 			        tus.texAttrs.set(mirrorTUS.texAttrs);
-				tus.texAttrs.mirrorCompDirty = true;				
+				tus.texAttrs.mirrorCompDirty = true;
 
 				if (soleUser) {
 				    tus.texAttrs.mirror = mirrorTUS.texAttrs;
@@ -686,19 +686,19 @@ class TextureBin extends Object implements ObjectUpdate {
 		        } else {
 			    tus.texAttrs = null;
 		        }
-		
+
 		        if (mirrorTUS.texGen != null) {
 			    if (mirrorTUS.texGen.changedFrequent != 0) {
 			        tus.texGen = mirrorTUS.texGen;
 			    } else {
 			        if (tus.texGen == null ||
 				  	tus.texGen.source != null) {
-				    tus.texGen = 
+				    tus.texGen =
 					    new TexCoordGenerationRetained();
 			        }
 			        tus.texGen.set(mirrorTUS.texGen);
 				tus.texGen.mirrorCompDirty = true;
-				
+
 				if (soleUser) {
 				    tus.texGen.mirror = mirrorTUS.texGen;
 				} else {
@@ -720,7 +720,7 @@ class TextureBin extends Object implements ObjectUpdate {
 
 	    soleUserCompDirty &= ~(TextureBin.SOLE_USER_DIRTY_TA |
 					TextureBin.SOLE_USER_DIRTY_TC);
-	} 
+	}
 
 	if ((soleUserCompDirty & TextureBin.SOLE_USER_DIRTY_TEXTURE) != 0) {
 
@@ -783,17 +783,17 @@ class TextureBin extends Object implements ObjectUpdate {
 
     public void updateObject() {
 	if (!addOpaqueRMs.isEmpty()) {
-	    opaqueRMList = addAll(opaqueRenderMoleculeMap, addOpaqueRMs, 
+	    opaqueRMList = addAll(opaqueRenderMoleculeMap, addOpaqueRMs,
 					opaqueRMList, true);
 	}
 	if (!addTransparentRMs.isEmpty()) {
-	    // If transparent and not in bg geometry and inodepth 
+	    // If transparent and not in bg geometry and inodepth
 	    // sorted transparency
 	    if (transparentRMList == null &&
 		(renderBin.transpSortMode == View.TRANSPARENCY_SORT_NONE ||
 		environmentSet.lightBin.geometryBackground != null)) {
-		//		System.err.println("========> addTransparentTextureBin "+this); 
-		transparentRMList = addAll(transparentRenderMoleculeMap, 
+		//		System.err.println("========> addTransparentTextureBin "+this);
+		transparentRMList = addAll(transparentRenderMoleculeMap,
 				addTransparentRMs, transparentRMList, false);
 		// Eventhough we are adding to transparentList , if all the RMS
 		// have been switched already due to changeLists, then there is
@@ -804,9 +804,9 @@ class TextureBin extends Object implements ObjectUpdate {
 
 	    }
 	    else {
-		transparentRMList = addAll(transparentRenderMoleculeMap, 
+		transparentRMList = addAll(transparentRenderMoleculeMap,
 				addTransparentRMs, transparentRMList, false);
-	    }		
+	    }
 	}
         tbFlag &= ~TextureBin.ON_UPDATE_LIST;
 
@@ -823,24 +823,24 @@ class TextureBin extends Object implements ObjectUpdate {
      * to access another list and use rm.next to continue
      * until both rm.next and rm.nextMap are null.
      *
-     * renderMoleculeMap is use to assist faster location of 
+     * renderMoleculeMap is use to assist faster location of
      * renderMolecule List with the same localToVWorld. The
-     * start of renderMolecule in the list with same 
+     * start of renderMolecule in the list with same
      * localToVworld is insert in renderMoleculeMap. This
      * map is clean up at removeRenderMolecule(). TextureBin
      * also use the map for quick location of renderMolecule
      * with the same localToVworld and attributes in
      * findRenderMolecule().
      */
-    RenderMolecule addAll(HashMap renderMoleculeMap, HashMap addRMs, 
-				RenderMolecule startList, 
+    RenderMolecule addAll(HashMap renderMoleculeMap, HashMap addRMs,
+				RenderMolecule startList,
 				boolean opaqueList) {
         int i;
         RenderMolecule r;
 	Collection c = addRMs.values();
 	Iterator listIterator = c.iterator();
 	RenderMolecule renderMoleculeList, head;
-	
+
 	while (listIterator.hasNext()) {
 	    boolean changed = false;
 	    ArrayList curList = (ArrayList)listIterator.next();
@@ -875,10 +875,10 @@ class TextureBin extends Object implements ObjectUpdate {
 		    startList.nextMap.checkEquivalenceWithLeftNeighbor(r,
 						RenderMolecule.ALL_DIRTY_BITS);
 		}
-		    
+
             }
             else {
-                // Insert the renderMolecule next to a RM that has equivalent 
+                // Insert the renderMolecule next to a RM that has equivalent
 		// texture unit state
                 if ((head = insertRenderMolecule(r, renderMoleculeList)) != null) {
 		    if (renderMoleculeList.prevMap != null) {
@@ -921,12 +921,12 @@ class TextureBin extends Object implements ObjectUpdate {
 		}
 		else {
 		    startList = renderMoleculeList;
-		    startList.dirtyAttrsAcrossRms = 
+		    startList.dirtyAttrsAcrossRms =
 					RenderMolecule.ALL_DIRTY_BITS;
 		}
 	    }
 	}
- 
+
         addRMs.clear();
 	return startList;
     }
@@ -935,7 +935,7 @@ class TextureBin extends Object implements ObjectUpdate {
     // XXXX: Could the analysis be done during insertRenderMolecule?
     // Return the head of the list,
     // if the insertion occurred at beginning of the list
-    RenderMolecule insertRenderMolecule(RenderMolecule r, 
+    RenderMolecule insertRenderMolecule(RenderMolecule r,
 				RenderMolecule renderMoleculeList) {
         RenderMolecule rm, retval;
 
@@ -991,13 +991,13 @@ class TextureBin extends Object implements ObjectUpdate {
 	    map = addOpaqueRMs;
 	else
 	    map = addTransparentRMs;
-	
+
 	if ((list = (ArrayList)map.get(r.localToVworld)) == null) {
 	    list = new ArrayList();
 	    map.put(r.localToVworld, list);
 	}
 	list.add(r);
-	
+
         if ((tbFlag & TextureBin.ON_UPDATE_LIST) == 0) {
             tbFlag |= TextureBin.ON_UPDATE_LIST;
             rb.objUpdateList.add(this);
@@ -1036,7 +1036,7 @@ class TextureBin extends Object implements ObjectUpdate {
 		if (list.isEmpty()) {
 		    addMap.remove(r.localToVworld);
 		}
-		    
+
 		r.prev = null;
 		r.next = null;
 		found = true;
@@ -1070,7 +1070,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	    if (r.definingTransparency != null &&
 		(r.definingTransparency.changedFrequent != 0))
 		r.definingTransparency = null;
-	    
+
 	    renderBin.removeRenderMolecule(r);
 	    if (r.isOpaqueOrInOG) {
 		opaqueRMList = head;
@@ -1078,7 +1078,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	    else {
 		transparentRMList = head;
 	    }
-		  
+
 	}
 	// If the renderMolecule removed is not opaque then ..
 	if (!r.isOpaqueOrInOG && transparentRMList == null && (renderBin.transpSortMode == View.TRANSPARENCY_SORT_NONE ||
@@ -1105,7 +1105,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	    texUnitState = null;
         }
     }
-    
+
     /**
      * This method is called to update the state for this
      * TextureBin. This is only applicable in the single-pass case.
@@ -1122,7 +1122,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	}
 
 	cv.textureBin = this;
-        
+
 	// save the current number of active texture unit so as
         // to be able to reset the one that is not enabled in this bin
 
@@ -1180,18 +1180,18 @@ class TextureBin extends Object implements ObjectUpdate {
 		if (j >= cv.texUnitState.length) {
 		    // We finish enabling the texture state.
 		    // Note that it is possible
-		    // texUnitState.length > cv.texUnitState.length 
+		    // texUnitState.length > cv.texUnitState.length
 
 		    break;
 		}
 
 		if ((texUnitState[i] != null) &&
 			      texUnitState[i].isTextureEnabled()) {
-		    if (dirty || 
+		    if (dirty ||
 			 cv.texUnitState[j].mirror == null ||
 			 cv.texUnitState[j].mirror != texUnitState[i].mirror) {
 		        // update the texture unit state
-		        texUnitState[i].updateNative(j, cv, false, false); 
+		        texUnitState[i].updateNative(j, cv, false, false);
 			cv.texUnitState[j].mirror = texUnitState[i].mirror;
 		    }
 
@@ -1200,11 +1200,11 @@ class TextureBin extends Object implements ObjectUpdate {
 
 		    lastActiveTexUnitIdx = j;
 		} else {
-		    if (j <= cv.getLastActiveTexUnit()) { 
+		    if (j <= cv.getLastActiveTexUnit()) {
 			cv.resetTexture(cv.ctx, j);
 		    }
 		}
-                
+
                 j++;
 	    }
 
@@ -1239,7 +1239,7 @@ class TextureBin extends Object implements ObjectUpdate {
 
 	/*
 	System.err.println("TextureBin/render " + this +
-		" numActiveTexUnit= " + numActiveTexUnit + 
+		" numActiveTexUnit= " + numActiveTexUnit +
 		" maxTextureUnits= " + cv.maxTextureUnits);
 	*/
 
@@ -1280,17 +1280,17 @@ class TextureBin extends Object implements ObjectUpdate {
 
 
     /**
-     * render list of RenderMolecule 
+     * render list of RenderMolecule
      */
     void renderList(Canvas3D cv, int pass, RenderMolecule rlist) {
         assert pass < 0;
 
-        // bit mask of all attr fields that are equivalent across 
+        // bit mask of all attr fields that are equivalent across
 	// renderMolecules thro. ORing of invisible RMs.
 	int combinedDirtyBits = 0;
 	boolean rmVisible = true;
         RenderMolecule rm = rlist;
-	
+
         while (rm != null) {
 	    if(rmVisible) {
 		combinedDirtyBits = rm.dirtyAttrsAcrossRms;
@@ -1300,7 +1300,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	    }
 
 	    rmVisible = rm.render(cv, pass, combinedDirtyBits);
-	    
+
 
             // next render molecule or the nextmap
             if (rm.next == null) {
@@ -1311,10 +1311,10 @@ class TextureBin extends Object implements ObjectUpdate {
             }
         }
     }
-    
+
 
     /**
-     * render sorted transparent list 
+     * render sorted transparent list
      */
     void renderList(Canvas3D cv, int pass, TransparentRenderingInfo tinfo) {
         assert pass < 0;
@@ -1344,7 +1344,7 @@ class TextureBin extends Object implements ObjectUpdate {
 		rmlist = opaqueRMList;
 		allMap = opaqueRenderMoleculeMap;
 	    }
-	    
+
 	}
 	else {
 	    if (transparentRMList == null &&
@@ -1380,7 +1380,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	}
 	HashMap renderMoleculeMap;
 	RenderMolecule startList;
-	
+
 	// Now insert in the other bin
 	r.evalAlphaUsage(shaderBin.attributeBin.definingRenderingAttributes, texUnitState);
 	r.isOpaqueOrInOG = r.isOpaque() ||r.inOrderedGroup;
@@ -1396,7 +1396,7 @@ class TextureBin extends Object implements ObjectUpdate {
 		renderBin.transpSortMode != View.TRANSPARENCY_SORT_NONE) {
 		renderBin.addDisplayListResourceFreeList(r);
 		renderBin.removeDirtyRenderMolecule(r);
-			
+
 		r.vwcBounds.set(null);
 		r.displayListId = 0;
 		r.displayListIdObj = null;
@@ -1422,10 +1422,10 @@ class TextureBin extends Object implements ObjectUpdate {
 	    else {
 		markDlistAsDirty(r);
 	    }
-		
+
 	}
 	renderMoleculeList = (RenderMolecule)renderMoleculeMap.get(r.localToVworld);
-	
+
 	if (renderMoleculeList == null) {
 	    renderMoleculeList = r;
 	    renderMoleculeMap.put(r.localToVworld, renderMoleculeList);
@@ -1446,7 +1446,7 @@ class TextureBin extends Object implements ObjectUpdate {
             startList.dirtyAttrsAcrossRms = RenderMolecule.ALL_DIRTY_BITS;
 	}
 	else {
-	    // Insert the renderMolecule next to a RM that has equivalent 
+	    // Insert the renderMolecule next to a RM that has equivalent
 	    // texture unit state
 	    if ((head = insertRenderMolecule(r, renderMoleculeList)) != null) {
 		if (renderMoleculeList.prevMap != null) {
@@ -1525,7 +1525,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	// Update the maps and remove this entry from the map list
 	else if (r.prev == null && r.next == null) {
 	    if (r.prevMap != null) {
-		r.prevMap.nextMap = r.nextMap;	
+		r.prevMap.nextMap = r.nextMap;
 
 	    }
 	    else {
@@ -1539,9 +1539,9 @@ class TextureBin extends Object implements ObjectUpdate {
 		if (r.prevMap != null) {
 		    r.nextMap.checkEquivalenceWithLeftNeighbor(r.prevMap,RenderMolecule.ALL_DIRTY_BITS);
 		}
-			
+
 	    }
-		
+
 	    allMap.remove(r.localToVworld);
 
 
@@ -1590,7 +1590,7 @@ class TextureBin extends Object implements ObjectUpdate {
 
 	    shaderBin.incrActiveTextureBin();
 	}
-	    
+
 	numEditingRenderMolecules++;
     }
 }

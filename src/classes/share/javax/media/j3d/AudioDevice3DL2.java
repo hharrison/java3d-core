@@ -37,7 +37,7 @@ package javax.media.j3d;
  * that are defined in the MIDI Manufactures' Association Interactive Audio
  * Special Interest Group (MMA IASIG) Level 2 Specification.
  *<P>
- * The reverberation methods of AudioDevice3DL2 interface augment the 
+ * The reverberation methods of AudioDevice3DL2 interface augment the
  * reverberation methods defined in AudioDevice3D.
  *<P>
  * The intent is for this interface to be implemented by AudioDevice Driver
@@ -48,10 +48,10 @@ package javax.media.j3d;
  * to be performed on.
  *<P>
  * The non-query methods of this interface should only be called by
- * an application if the AudioDevice instance 
+ * an application if the AudioDevice instance
  * is not referenced by any PhysicalEnvironment
  * explicitly with .setAudioDevice() or implicitly through Universe
- * utility method  in which case these are called by Core Java 3D 
+ * utility method  in which case these are called by Core Java 3D
  * Sound classes and Sound Scheduler thread(s).
  *<P>
  * After the application chooses the AudioDevice3DL2 implementation
@@ -92,17 +92,17 @@ public interface AudioDevice3DL2 extends AudioDevice3D {
      */
     public abstract void pause();
 
-    /**  
+    /**
      * Resumes audio device engine (if previously paused) without reinitializing
      * the device.
      * Causes all paused cached sounds to be resumed and all streaming sounds
-     * restarted. 
+     * restarted.
      * <P>
      * This method should NOT be called by any application if the audio device
      * is associated with a Physical Environment used by Java3D Core.
-     * This method will be implicitly called when View (associated with this  
-     * device) is actived. 
-     */  
+     * This method will be implicitly called when View (associated with this
+     * device) is actived.
+     */
     public abstract void resume();
 
     /**
@@ -128,7 +128,7 @@ public interface AudioDevice3DL2 extends AudioDevice3D {
      * This method should NOT be called by any application if the audio device
      * is associated with a Physical Environment used by Java3D Core.
      * @param sampleId device specific reference number to device driver sample
-     * @param scaleFactor non-negative factor applied to calculated 
+     * @param scaleFactor non-negative factor applied to calculated
      * amplitudes for all sounds playing on this device
      */
     public abstract void  setRateScaleFactor(int sampleId, float scaleFactor);
@@ -151,17 +151,17 @@ public interface AudioDevice3DL2 extends AudioDevice3D {
      * <P>
      * This method should NOT be called by any application if the audio device
      * is associated with a Physical Environment used by Java3D Core.
-     * @param coefficient late reflection attenuation factor 
+     * @param coefficient late reflection attenuation factor
      * @see AuralAttributes#setReverbCoefficient
      */
     public abstract void setReverbCoefficient(float coefficient);
 
 
-    /**  
+    /**
      * Sets the early reflection delay time.
      * In this form,  the parameter specifies the delay time between each order
      * of reflection (while reverberation is being rendered) explicitly given
-     * in milliseconds. 
+     * in milliseconds.
      * Valid values are non-negative floats.
      * There may be limitations imposed by the device on how small or large this
      * value can be made.
@@ -176,7 +176,7 @@ public interface AudioDevice3DL2 extends AudioDevice3D {
      * is associated with a Physical Environment used by Java3D Core.
      * @param reflectionDelay time between each order of early reflection
      * @see AuralAttributes#setReflectionDelay
-     */ 
+     */
     public abstract void  setReflectionDelay(float reflectionDelay);
 
     /**
@@ -198,7 +198,7 @@ public interface AudioDevice3DL2 extends AudioDevice3D {
      * Set reverb decay filter.
      * This provides for frequencies above the given cutoff frequency to be
      * attenuated during reverb decay at a different rate than frequencies
-     * below this value.  Thus, defining a different reverb decay curve for 
+     * below this value.  Thus, defining a different reverb decay curve for
      * frequencies above the cutoff value.
      * Default: 1.0 decay is uniform for all frequencies.
      * <P>
@@ -206,7 +206,7 @@ public interface AudioDevice3DL2 extends AudioDevice3D {
      * Until high frequency attenuation is supported by new Core API,
      * this will be set by the Core with the value 1.0.
      * It is highly recommended that this method should NOT be
-     * called by any application if the audio device is associated with 
+     * called by any application if the audio device is associated with
      * a Physical Environment used by Java3D Core.
      * @param frequencyCutoff value of frequencies in Hertz above which a
      * low-pass filter is applied.
@@ -226,14 +226,14 @@ public interface AudioDevice3DL2 extends AudioDevice3D {
      * <P>
      * This method should NOT be called by any application if the audio device
      * is associated with a Physical Environment used by Java3D Core.
-     * @param diffusion percentage expressed within the range of 0.0 and 1.0 
+     * @param diffusion percentage expressed within the range of 0.0 and 1.0
      * @see AuralAttributes#setDiffusion
      */
     public abstract void  setDiffusion(float diffusion);
 
     /**
      * Set reverb density.
-     * This defines the modal density (also referred to as 'spectral 
+     * This defines the modal density (also referred to as 'spectral
      * coloration').
      * The value of this parameter is expressed as a percent of the audio
      * device's minimum-to-maximum values for this reverb parameter.
@@ -245,10 +245,10 @@ public interface AudioDevice3DL2 extends AudioDevice3D {
      * This method should NOT be called by any application if the audio device
      * is associated with a Physical Environment used by Java3D Core.
      * @param density reverb density expressed as a percentage,
-     * within the range of 0.0 and 1.0 
+     * within the range of 0.0 and 1.0
      * @see AuralAttributes#setDensity
      */
-    public abstract void setDensity(float density); 
+    public abstract void setDensity(float density);
 
 
     /**
@@ -282,7 +282,7 @@ public interface AudioDevice3DL2 extends AudioDevice3D {
      * called by any application if the audio device is associated with
      * a Physical Environment used by Java3D Core.
      * @param frequencyCutoff value of frequencies in Hertz above which a
-     * low-pass filter is applied. 
+     * low-pass filter is applied.
      */
 
     public abstract void  setObstructionFilter(int sampleId, float frequencyCutoff);
@@ -318,7 +318,7 @@ public interface AudioDevice3DL2 extends AudioDevice3D {
      * called by any application if the audio device is associated with
      * a Physical Environment used by Java3D Core.
      * @param frequencyCutoff value of frequencies in Hertz above which a
-     * low-pass filter is applied. 
+     * low-pass filter is applied.
      */
     public abstract void  setOcclusionFilter(int sampleId, float frequencyCutoff);
 }

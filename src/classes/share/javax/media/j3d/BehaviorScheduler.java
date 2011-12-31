@@ -89,7 +89,7 @@ class BehaviorScheduler extends J3dThread {
 	type = J3dThread.BEHAVIOR_SCHEDULER;
     }
 
-    void stopBehaviorScheduler(long[] intervalTime) { 
+    void stopBehaviorScheduler(long[] intervalTime) {
 
 	stopCount = 2;
 	VirtualUniverse.mc.sendRunMessage(univ, J3dThread.BEHAVIOR_SCHEDULER);
@@ -121,9 +121,9 @@ class BehaviorScheduler extends J3dThread {
     /**
      * The main loop for the Behavior Scheduler.
      * Main method for firing off vector of satisfied conditions that
-     * are contained in the condMet vector.  Method is synchronized 
+     * are contained in the condMet vector.  Method is synchronized
      * because it is modifying the current wakeup vectors in the
-     * clean (emptying out satisfied conditions) and processStimulus 
+     * clean (emptying out satisfied conditions) and processStimulus
      * (adding conditions again if wakeupOn called) calls.
      */
     void doWork(long referenceTime) {
@@ -161,7 +161,7 @@ class BehaviorScheduler extends J3dThread {
 		synchronized (behavret) {
 		    Behavior behav = (Behavior) behavret.source;
 
-		    if (!behav.isLive() || 
+		    if (!behav.isLive() ||
 			!behavret.conditionSet ||
 			(behavret.wakeupCondition == null)) {
 			continue;
@@ -178,7 +178,7 @@ class BehaviorScheduler extends J3dThread {
 		    }
 
 		    // BehaviorRetained now cache the old
-		    // wakeupCondition in order to 
+		    // wakeupCondition in order to
 		    // reuse it without the heavyweight cleanTree()
 		    // behavret.wakeupCondition.cleanTree();
 
@@ -221,7 +221,7 @@ class BehaviorScheduler extends J3dThread {
 			behavret.handleLastWakeupOn(wakeupCond,
 						    behaviorStructure);
 		    }
-		}    
+		}
 	    }
 	    list.clear();
 	}
@@ -229,7 +229,7 @@ class BehaviorScheduler extends J3dThread {
 	behaviorStructure.handleAWTEvent();
 	behaviorStructure.handleBehaviorPost();
 	lastStopTime = J3dClock.currentTimeMillis();
-	
+
         if (MasterControl.isStatsLoggable(Level.FINE)) {
             VirtualUniverse.mc.recordTime(MasterControl.TimeType.BEHAVIOR, (lastStopTime-lastStartTime)*1000000);
         }
@@ -239,7 +239,7 @@ class BehaviorScheduler extends J3dThread {
 	behaviorStructure = null;
 	getThreadData(null, null).thread = null;
 	univ = null;
-	for (int i=BehaviorRetained.NUM_SCHEDULING_INTERVALS-1; 
+	for (int i=BehaviorRetained.NUM_SCHEDULING_INTERVALS-1;
 	     i >= 0; i--) {
 	    processList[i].clear();
 	}

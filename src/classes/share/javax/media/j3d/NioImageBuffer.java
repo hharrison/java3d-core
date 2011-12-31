@@ -45,7 +45,7 @@ import java.nio.IntBuffer;
  *
  * @see ImageComponent2D
  * @see ImageComponent3D
- * 
+ *
  * @since Java 3D 1.5
  */
 public class NioImageBuffer {
@@ -251,7 +251,7 @@ public class NioImageBuffer {
      * The the byte order of the specified dataBuffer must match the native
      * byte order of the underlying platform.
      * For best performance, the NIO buffer should be a direct buffer.
-     * 
+     *
      * @param dataBuffer an NIO buffer of the correct type (ByteBuffer or
      * IntBuffer) to match the imageType of this
      * NioImageBuffer. This method will create a new view of

@@ -93,23 +93,23 @@ public final class PickPoint extends PickShape {
     }
 
     // Only use within J3D.
-    // Return a new PickPoint that is the transformed (t3d) of this pickPoint.  
+    // Return a new PickPoint that is the transformed (t3d) of this pickPoint.
     PickShape transform(Transform3D t3d) {
-	
+
 	PickPoint newPPt = new PickPoint();
-	
+
 	newPPt.location.x = location.x;
 	newPPt.location.y = location.y;
 	newPPt.location.z = location.z;
-	
+
 	t3d.transform(newPPt.location);
-	
+
 	return newPPt;
     }
 
     Point3d getStartPoint() {
 	return location;
-    }    
+    }
 
     int getPickType() {
 	return PICKPOINT;

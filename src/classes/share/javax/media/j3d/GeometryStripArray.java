@@ -244,7 +244,7 @@ public abstract class GeometryStripArray extends GeometryArray {
 
     /**
      * Get a list of vertexCounts for each strip. The list is copied
-     * into the specified array. The array must be large enough to hold 
+     * into the specified array. The array must be large enough to hold
      * all of the ints.
      * @param stripVertexCounts an array that will receive vertexCounts
      */

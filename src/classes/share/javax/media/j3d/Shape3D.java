@@ -134,10 +134,10 @@ public class Shape3D extends Leaf {
     private static final int[] readCapabilities = {
         ALLOW_GEOMETRY_READ,
         ALLOW_APPEARANCE_READ,
-        ALLOW_COLLISION_BOUNDS_READ,        
-        ALLOW_APPEARANCE_OVERRIDE_READ        
+        ALLOW_COLLISION_BOUNDS_READ,
+        ALLOW_APPEARANCE_OVERRIDE_READ
     };
-    
+
     /**
      * Constructs a Shape3D node with default parameters.  The default
      * values are as follows:
@@ -155,7 +155,7 @@ public class Shape3D extends Leaf {
      */
     public Shape3D() {
         // set default read capabilities
-        setDefaultReadCapabilities(readCapabilities);        
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -214,7 +214,7 @@ public class Shape3D extends Leaf {
 	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_COLLISION_BOUNDS_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Shape3D0"));
-	
+
 	((Shape3DRetained)this.retained).setCollisionBounds(bounds);
     }
 
@@ -233,7 +233,7 @@ public class Shape3D extends Leaf {
 	return ((Shape3DRetained)this.retained).getCollisionBounds(id);
     }
 
- 
+
     /**
      * Replaces the geometry component at index 0 in this Shape3D node's
      * list of geometry components with the specified geometry component.
@@ -253,7 +253,7 @@ public class Shape3D extends Leaf {
 	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_GEOMETRY_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Shape3D2"));
-	
+
 	((Shape3DRetained)retained).setGeometry(geometry, 0);
     }
 
@@ -269,7 +269,7 @@ public class Shape3D extends Leaf {
 	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_GEOMETRY_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Shape3D3"));
-	
+
 	return ((Shape3DRetained)retained).getGeometry(0, id);
     }
 
@@ -298,7 +298,7 @@ public class Shape3D extends Leaf {
 	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_GEOMETRY_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Shape3D2"));
-	
+
 	((Shape3DRetained)retained).setGeometry(geometry, index);
     }
 
@@ -318,7 +318,7 @@ public class Shape3D extends Leaf {
 	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_GEOMETRY_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Shape3D3"));
-	
+
 	return ((Shape3DRetained)retained).getGeometry(index, id);
     }
 
@@ -368,7 +368,7 @@ public class Shape3D extends Leaf {
 
 	((Shape3DRetained)retained).removeGeometry(index);
     }
-  
+
 
     /**
      * Returns an enumeration of this Shape3D node's list of geometry
@@ -411,11 +411,11 @@ public class Shape3D extends Leaf {
 	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_GEOMETRY_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Shape3D2"));
-	
+
 	((Shape3DRetained)retained).addGeometry(geometry);
     }
 
-  
+
     /**
      * Returns the number of geometry components in this Shape3D node's
      * list of geometry components.
@@ -570,7 +570,7 @@ public class Shape3D extends Leaf {
 
 	if (isLiveOrCompiled()) {
 	    if (!((Shape3DRetained)retained).allowIntersect())
-		throw new CapabilityNotSetException(J3dI18N.getString("Shape3D6"));    
+		throw new CapabilityNotSetException(J3dI18N.getString("Shape3D6"));
 	}
 	return ((Shape3DRetained)this.retained).intersect(path, pickRay, dist);
 
@@ -604,7 +604,7 @@ public class Shape3D extends Leaf {
 
 	if (isLiveOrCompiled()) {
 	    if (!((Shape3DRetained)retained).allowIntersect())
-		throw new CapabilityNotSetException(J3dI18N.getString("Shape3D6"));    
+		throw new CapabilityNotSetException(J3dI18N.getString("Shape3D6"));
 	}
 
 	if (pickShape instanceof PickPoint) {
@@ -624,7 +624,7 @@ public class Shape3D extends Leaf {
      * The default value is false.
      *
      * @param flag the apperance override enable flag.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see AlternateAppearance
@@ -644,7 +644,7 @@ public class Shape3D extends Leaf {
      * Retrieves the appearanceOverrideEnable flag for this node.
      * @return true if the appearance can be overridden; false
      * otherwise.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -711,7 +711,7 @@ public class Shape3D extends Leaf {
      *  <code>false</code>, the value of each node's
      *  <code>duplicateOnCloneTree</code> variable determines whether
      *  NodeComponent data is duplicated or copied.
-     * @exception ClassCastException if originalNode is not an instance of 
+     * @exception ClassCastException if originalNode is not an instance of
      *  <code>Shape3D</code>
      *
      * @see Node#cloneTree
@@ -719,7 +719,7 @@ public class Shape3D extends Leaf {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
     public void duplicateNode(Node originalNode, boolean forceDuplicate) {
-	checkDuplicateNode(originalNode, forceDuplicate);       
+	checkDuplicateNode(originalNode, forceDuplicate);
     }
 
 
@@ -746,26 +746,26 @@ public class Shape3D extends Leaf {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
-  
+
 	super.duplicateAttributes(originalNode, forceDuplicate);
 
 	Shape3DRetained attr = (Shape3DRetained) originalNode.retained;
 	Shape3DRetained rt = (Shape3DRetained) retained;
 
 	rt.setAppearance((Appearance) getNodeComponent(
-						       attr.getAppearance(), 
+						       attr.getAppearance(),
 						       forceDuplicate,
 						       originalNode.nodeHashtable));
 	int num = attr.numGeometries(id);
 	if (num > 0) {
 	    rt.setGeometry((Geometry) getNodeComponent(
 					       attr.getGeometry(0, id),
-					       forceDuplicate, 
+					       forceDuplicate,
 					       originalNode.nodeHashtable), 0);
 	    for(int i=1; i< num; i++) {
 		rt.addGeometry((Geometry) getNodeComponent(
 						   attr.getGeometry(i, id),
-						   forceDuplicate, 
+						   forceDuplicate,
 						   originalNode.nodeHashtable));
 	    }
 	}
@@ -789,6 +789,6 @@ public class Shape3D extends Leaf {
 
 	return ((Shape3DRetained)this.retained).getBounds();
     }
-    
+
 
 }

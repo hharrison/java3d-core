@@ -86,7 +86,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
     // per shared path ordered path data
     ArrayList orderedPaths = null;
-    
+
     /**
      * If collisionBound is set, this is equal to the
      * transformed collisionBounds, otherwise it is equal
@@ -111,7 +111,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     HashKey key;
 
     /**
-     * sourceNode of this mirror Group 
+     * sourceNode of this mirror Group
      */
     GroupRetained sourceNode;
 
@@ -138,7 +138,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     // > 0 if this group is being used in scoping
     int scopingRefCount = 0;
 
-    
+
     ArrayList compiledChildrenList = null;
 
     boolean isInClearLive = false;
@@ -165,7 +165,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
             ((BoundingSphere) localBounds).setRadius(-1.0);
         }
     }
-    
+
     /**
      * Sets the collision bounds of a node.
      * @param bounds the bounding object for the node
@@ -187,7 +187,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    VirtualUniverse.mc.processMessage(message);
 	}
 
-    } 
+    }
 
 
     /**
@@ -196,8 +196,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
      */
     Bounds getCollisionBounds() {
 	return (collisionBound == null ? null : (Bounds)collisionBound.clone());
-    } 
-	    
+    }
+
     /**
      * Replaces the specified child with the child provided.
      * @param child the new child
@@ -210,7 +210,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    universe.resetWaitMCFlag();
 	    synchronized (universe.sceneGraphLock) {
 	        doSetChild(child, index);
-		universe.setLiveState.clear();	
+		universe.setLiveState.clear();
 	    }
 	    universe.waitForMC();
 
@@ -218,27 +218,27 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    doSetChild(child, index);
 	    if (universe != null) {
 		synchronized (universe.sceneGraphLock) {
-		    universe.setLiveState.clear();	
-		}		
+		    universe.setLiveState.clear();
+		}
 	    }
 	}
         dirtyBoundsCache();
     }
-    
+
     // The method that does the work once the lock is acquired.
     void doSetChild(Node child, int index) {
 	NodeRetained oldchildr;
 	J3dMessage[] messages = null;
 	int numMessages = 0;
 	int attachStartIndex = 0;
-	
+
 
 	// since we want to make sure the replacement of the child
         // including removal of the oldChild and insertion of the newChild
 	// all happen in the same frame, we'll send all the necessary
 	// messages to masterControl for processing in one call.
 	// So let's first find out how many messages will be sent
-	
+
 	oldchildr = (NodeRetained) children.get(index);
 
 	if (this.source.isLive()) {
@@ -275,7 +275,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    }
 	    return;
 	}
-	
+
         if (this.source.isLive()) {
             universe.notifyStructureChangeListeners(true, this.source, (BranchGroup)child);
         }
@@ -294,7 +294,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    VirtualUniverse.mc.processMessage(messages);
 	}
     }
-    
+
     /**
      * Inserts the specified child at specified index.
      * @param child the new child
@@ -308,20 +308,20 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    synchronized (universe.sceneGraphLock) {
                 universe.notifyStructureChangeListeners(true, this.source, (BranchGroup)child);
 	        doInsertChild(child, index);
-		universe.setLiveState.clear();	
+		universe.setLiveState.clear();
 	    }
 	    universe.waitForMC();
 	} else {
 	    doInsertChild(child, index);
 	    if (universe != null) {
 		synchronized (universe.sceneGraphLock) {
-		    universe.setLiveState.clear();	
-		}		
+		    universe.setLiveState.clear();
+		}
 	    }
 	}
         dirtyBoundsCache();
     }
-    
+
     // The method that does the work once the lock is acquired.
     void doInsertChild(Node child, int index) {
 	int i;
@@ -332,12 +332,12 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    childi = (NodeRetained) children.get(i);
 	    if(childi != null)
 		childi.childIndex++;
-	}	
+	}
 	if(child==null) {
 	    children.add(index, null);
 	    return;
 	}
-	
+
 	NodeRetained childr = (NodeRetained) child.retained;
 	childr.setParent(this);
 	children.add(index, childr);
@@ -346,19 +346,19 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    ((BranchGroupRetained)childr).isNew = true;
 	}
     }
-    
+
     /**
      * Removes the child at specified index.
      * @param index which child to remove
      */
     void removeChild(int index) {
-	
+
 	if (this.source.isLive()) {
 	    universe.resetWaitMCFlag();
 	    synchronized (universe.sceneGraphLock) {
               NodeRetained childr = (NodeRetained)children.get(index);
 	      doRemoveChild(index, null, 0);
-	      universe.setLiveState.clear();	
+	      universe.setLiveState.clear();
               universe.notifyStructureChangeListeners(false, this.source, (BranchGroup)childr.source);
 	    }
 	    universe.waitForMC();
@@ -366,20 +366,20 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    doRemoveChild(index, null, 0);
 	    if (universe != null) {
 		synchronized (universe.sceneGraphLock) {
-		    universe.setLiveState.clear();	
-		}		
+		    universe.setLiveState.clear();
+		}
 	    }
 	}
         dirtyBoundsCache();
     }
 
-    /** 
+    /**
      * Returns the index of the specified Node in this Group's list of Nodes
      * @param Node whose index is desired
      * @return index of the Node
      */
     int indexOfChild(Node child) {
-	if(child != null) 
+	if(child != null)
 	    return children.indexOf((NodeRetained)child.retained);
 	else
 	    return children.indexOf(null);
@@ -410,7 +410,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     void doRemoveChild(int index, J3dMessage messages[], int messageIndex) {
 	NodeRetained oldchildr, child;
 	int i;
-  
+
 	oldchildr = (NodeRetained) children.get(index);
 
 	int size = children.size();
@@ -424,7 +424,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    oldchildr.setParent(null);
 	    checkClearLive(oldchildr, messages, messageIndex, index, null);
 	}
-	
+
 	children.remove(index);
 	removeChildrenData(index);
 
@@ -435,7 +435,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
         }
 
     }
-    
+
     /**
      * Returns the child specified by the index.
      * @param index which child to return
@@ -446,18 +446,18 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	SceneGraphObjectRetained sgo = (SceneGraphObjectRetained) children.get(index);
 	if(sgo == null)
 	    return null;
-	else 
+	else
 	    return (Node) sgo.source;
     }
-  
+
     /**
      * Returns an enumeration object of the children.
      * @return an enumeration object of the children
-     */  
+     */
     Enumeration getAllChildren() {
         Vector userChildren=new Vector(children.size());
 	SceneGraphObjectRetained sgo;
-	
+
 	for(int i=0; i<children.size(); i++) {
 	    sgo = (SceneGraphObjectRetained)children.get(i);
 	    if(sgo != null)
@@ -465,14 +465,14 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    else
 		userChildren.add(null);
 	}
-	
+
         return userChildren.elements();
     }
 
     void checkValidChild(Node child, String s) {
 
 	if ((child != null) &&
-            (((child instanceof BranchGroup) && 
+            (((child instanceof BranchGroup) &&
 	      (((BranchGroupRetained) child.retained).attachedToLocale)) ||
 	     (((NodeRetained)child.retained).parent != null))) {
 		throw new MultipleParentException(J3dI18N.getString(s));
@@ -485,36 +485,36 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
      */
     void addChild(Node child) {
 	checkValidChild(child, "GroupRetained2");
- 
+
 	if (this.source.isLive()) {
 	    universe.resetWaitMCFlag();
 	    synchronized (universe.sceneGraphLock) {
                 universe.notifyStructureChangeListeners(true, this.source, (BranchGroup)child);
 	        doAddChild(child, null, 0);
-		universe.setLiveState.clear();	
+		universe.setLiveState.clear();
 	    }
 	    universe.waitForMC();
 	} else {
 	    doAddChild(child, null, 0);
 	    if (universe != null) {
 		synchronized (universe.sceneGraphLock) {
-		    universe.setLiveState.clear();	
-		}		
+		    universe.setLiveState.clear();
+		}
 	    }
 	}
         dirtyBoundsCache();
     }
-    
+
     // The method that does the work once the lock is acquired.
     void doAddChild(Node child, J3dMessage messages[], int messageIndex) {
 
 	appendChildrenData();
 
-	if(child == null) { 
+	if(child == null) {
 	    children.add(null);
 	    return;
 	}
-	    
+
 	NodeRetained childr = (NodeRetained) child.retained;
 	childr.setParent(this);
 	children.add(childr);
@@ -524,7 +524,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	}
 
     }
-    
+
     void moveTo(BranchGroup bg) {
         if (bg != null) {
             ((GroupRetained)bg.retained).dirtyBoundsCache();
@@ -534,7 +534,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    synchronized (universe.sceneGraphLock) {
                 GroupRetained oldParent = (GroupRetained)((BranchGroupRetained)bg.retained).parent;
 	        doMoveTo(bg);
-		universe.setLiveState.clear();	
+		universe.setLiveState.clear();
                 if (oldParent==null)
                     universe.notifyStructureChangeListeners(((BranchGroupRetained)bg.retained).locale, this.source, bg);
                 else
@@ -545,26 +545,26 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    doMoveTo(bg);
 	    if (universe != null) {
 		synchronized (universe.sceneGraphLock) {
-		    universe.setLiveState.clear();	
-		}		
+		    universe.setLiveState.clear();
+		}
 	    }
 	}
         dirtyBoundsCache();
     }
-    
+
     // The method that does the work once the lock is acquired.
     void doMoveTo(BranchGroup branchGroup) {
 	J3dMessage messages[] = null;
 	int numMessages = 0;
 	int detachStartIndex = 0;
-	int attachStartIndex = 0;	    
+	int attachStartIndex = 0;
 	if(branchGroup != null) {
 	    BranchGroupRetained bg = (BranchGroupRetained) branchGroup.retained;
 	    GroupRetained g = (GroupRetained)bg.parent;
 
 	    // Find out how many messages to be created
 	    // Note that g can be NULL if branchGroup parent is
-	    // a Locale, in this case the following condition 
+	    // a Locale, in this case the following condition
 	    // will fail.
 	    // Figure out the number of messages based on whether the group
 	    // from which its moving from is live and group to which its
@@ -578,7 +578,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    numMessages = 0;
 		    attachStartIndex = 0;
 		}
-		    
+
 	    }
 	    else { // Attached to locale
 		numMessages = 3; // REMOVE_NODES, ORDERED_GROUP_REMOVED, VIEWSPECIFICGROUP_CLEAR
@@ -590,7 +590,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		numMessages+=4;		// INSERT_NODES, BEHAVIOR_ACTIVATE
 		                        // ORDERED_GROUP_INSERTED, VIEWSPECIFICGROUP_INIT
 
-	    }		
+	    }
 	    messages = new J3dMessage[numMessages];
 	    for (int i=0; i<numMessages; i++) {
 		messages[i] = new J3dMessage();
@@ -600,17 +600,17 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    // Remove it from it's parents state
 	    if (g == null) {
 		if (bg.locale != null) {
-		    bg.locale.doRemoveBranchGraph(branchGroup, 
+		    bg.locale.doRemoveBranchGraph(branchGroup,
 						  messages, detachStartIndex);
 		}
 	    } else {
 		g.doRemoveChild(g.children.indexOf(bg),
-				messages, 
+				messages,
 				detachStartIndex);
 	    }
 	}
 
-	
+
 	// Add it to it's new parent
 	doAddChild(branchGroup, messages, attachStartIndex);
 
@@ -630,13 +630,13 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		if (count > 0) {
 		    ms = new J3dMessage[count];
 		}
-		 
+
 		int k=0;
 		for (int i=0; i < numMessages; i++) {
 		    if (messages[i].type != J3dMessage.INVALID_TYPE) {
 			ms[k++] = messages[i];
-		    }  
-		}		
+		    }
+		}
 		if (ms != null) {
 		    VirtualUniverse.mc.processMessage(ms);
 		}
@@ -652,7 +652,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     int numChildren() {
 	return children.size();
     }
-  
+
     // Remove a light from the list of lights
     void removeLight(int numLgt, LightRetained[] removelight, HashKey key) {
 	ArrayList l;
@@ -680,7 +680,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	// one from itself and one call from every LightRetained
 	// reference this.  So there is case that this procedure get
 	// called when light already removed.
-	if (i >= 0) 
+	if (i >= 0)
 	    lights.remove(i);
 	*/
     }
@@ -777,7 +777,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    }
 	}
     }
-    
+
 
     void addAllNodesForScopedFog(FogRetained mfog, ArrayList list, HashKey k) {
 	if (inSharedGroup) {
@@ -792,8 +792,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     }
 
     void processAddNodesForScopedFog(FogRetained mfog, ArrayList list, HashKey k) {
-	// If this group has it own scoping list then add .. 
-	if (allocatedFogs) 
+	// If this group has it own scoping list then add ..
+	if (allocatedFogs)
 	    addFog(mfog, k);
 	// If the source is live, then notify the children
 	if (this.source.isLive() || this.isInSetLive()) {
@@ -821,7 +821,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    }
 	}
     }
-    
+
     // If its a group, then add the scope to the group, if
     // its a shape, then keep a list to be added during
     // updateMirrorObject
@@ -838,7 +838,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     }
     void processRemoveAllNodesForScopedFog(FogRetained mfog, ArrayList list, HashKey k) {
 	// If the source is live, then notify the children
-	if (allocatedFogs) 
+	if (allocatedFogs)
 	    removeFog(mfog, k);
 	if (this.source.isLive() && !isInClearLive) {
 	    for (int i = children.size()-1; i >=0; i--) {
@@ -878,7 +878,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    processAddNodesForScopedModelClip(mModelClip,  list,  k);
 	}
     }
-    
+
     void processAddNodesForScopedModelClip(ModelClipRetained mModelClip,
 				       ArrayList list,
 					HashKey k) {
@@ -921,7 +921,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	else {
 	    processRemoveAllNodesForScopedModelClip(mModelClip,  list,  k);
 	}
-	
+
     }
 
     // If its a group, then add the scope to the group, if
@@ -968,7 +968,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	else {
 	    processAddNodesForScopedAltApp(mAltApp,  list,  k);
 	}
-    }    
+    }
 
     // If its a group, then add the scope to the group, if
     // its a shape, then keep a list to be added during
@@ -1080,7 +1080,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		}
 	    }
 	    lights = newLights;
-	    
+
 	}
 	scopingRefCount++;
     }
@@ -1120,7 +1120,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		}
 	    }
 	    fogs = newFogs;
-	    
+
 	}
 	scopingRefCount++;
     }
@@ -1160,7 +1160,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		}
 	    }
 	    modelClips = newMclips;
-	    
+
 	}
 	scopingRefCount++;
     }
@@ -1200,20 +1200,20 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		}
 	    }
 	    altAppearances = newAltApps;
-	    
+
 	}
 	scopingRefCount++;
     }
 
     synchronized void removeAltAppScope() {
 	scopingRefCount--;
-    }    
+    }
 
 
     synchronized boolean usedInScoping() {
 	return (scopingRefCount > 0);
     }
-    
+
      // Add a light to the list of lights
      void addLight(LightRetained[] addlight, int numLgts, HashKey key) {
 	 ArrayList l;
@@ -1248,9 +1248,9 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	     l = (ArrayList)fogs.get(0);
 	     l.add(fog);
 	 }
- 
+
       }
- 
+
       // Add a ModelClip to the list of ModelClip
       void addModelClip(ModelClipRetained modelClip, HashKey key) {
 	 ArrayList l;
@@ -1281,10 +1281,10 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	     l = (ArrayList)altAppearances.get(0);
 	     l.add(altApp);
 	 }
- 
+
       }
- 
-   
+
+
     // Remove a fog from the list of fogs
     void removeFog(FogRetained fog, HashKey key) {
 	 ArrayList l;
@@ -1346,8 +1346,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	 }
 
      }
-    
-    
+
+
     void updatePickable(HashKey keys[], boolean pick[]) {
 	int numChildLessOne = children.size() - 1;
 	super.updatePickable(keys, pick);
@@ -1368,28 +1368,28 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	// No need to clone for the last value
 
 	child = (NodeRetained)children.get(i);
-	if(child != null) 
+	if(child != null)
 	    child.updatePickable(keys, pick);
 
     }
-    
+
 
     void updateCollidable(HashKey keys[], boolean collide[]) {
 	int numChildLessOne = children.size() - 1;
 	super.updateCollidable(keys, collide);
 	int i=0;
 	NodeRetained child;
-	
+
         // Fix for issue 540
         if (numChildLessOne < 0) {
             return;
         }
         // End fix for issue 540
-        
+
         for (i = 0; i < numChildLessOne; i++) {
 	    child = (NodeRetained)children.get(i);
-	    if(child != null) 
-		child.updateCollidable(keys, (boolean []) collide.clone()); 
+	    if(child != null)
+		child.updateCollidable(keys, (boolean []) collide.clone());
 	}
 	// No need to clone for the last value
 	child = (NodeRetained)children.get(i);
@@ -1432,7 +1432,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    for (int i=0; i<numPath; i++) {
                         ct = ti.getCachedTargets(TargetsInterface.TRANSFORM_TARGETS, i, -1);
 			if (ct != null) {
-		            targets.addNode((NnuId)mirrorGroup.get(i), 
+		            targets.addNode((NnuId)mirrorGroup.get(i),
 					    Targets.GRP_TARGETS);
                             newCtArr[i] = targets.snapShotAdd(ct);
 			} else {
@@ -1455,7 +1455,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
                 message.args[2] = newCtArr;
 
 	    } else {
-                TargetsInterface ti = 
+                TargetsInterface ti =
 		    getClosestTargetsInterface(TargetsInterface.TRANSFORM_TARGETS);
                 if (ti != null) {
 
@@ -1466,7 +1466,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    newCtArr = 	new CachedTargets[numPath];
 		    for (int i=0; i<numPath; i++) {
                         ct = ti.getCachedTargets(TargetsInterface.TRANSFORM_TARGETS, i, -1);
-			if (ct != null) {			    
+			if (ct != null) {
                             targets.addNode((NnuId)mirrorGroup.get(i),
 					    Targets.GRP_TARGETS);
 			    //Note snapShotRemove calls targets.clearNode()
@@ -1503,19 +1503,19 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
      * This checks is setLive needs to be called.  If it does, it gets the
      * needed info and calls it.
      */
-    void checkSetLive(NodeRetained child, int childIndex, J3dMessage messages[], 
+    void checkSetLive(NodeRetained child, int childIndex, J3dMessage messages[],
 				int messageIndex, NodeRetained linkNode) {
 	checkSetLive(child, childIndex, localToVworldKeys, inSharedGroup,
 		     messages, messageIndex, linkNode);
     }
 
-    
+
     /**
      * This checks is setLive needs to be called.  If it does, it gets the
      * needed info and calls it.
      */
-    void checkSetLive(NodeRetained child, int childIndex, HashKey keys[], 
-		      boolean isShared, J3dMessage messages[], 
+    void checkSetLive(NodeRetained child, int childIndex, HashKey keys[],
+		      boolean isShared, J3dMessage messages[],
 		      int messageIndex, NodeRetained linkNode) {
 
         SceneGraphObject me = this.source;
@@ -1534,7 +1534,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    s.inBackgroundGroup = inBackgroundGroup;
 	    s.inViewSpecificGroup = inViewSpecificGroup;
             s.geometryBackground = geometryBackground;
-	    s.keys = keys;	    
+	    s.keys = keys;
 	    s.viewLists = viewLists;
 	    s.parentBranchGroupPaths = branchGroupPaths;
 	    // Note that there is no need to clone individual
@@ -1565,7 +1565,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    s.pickable = pick;
 
 	    findCollidableFlags(collide);
-	    super.updateCollidable(null, collide); 
+	    super.updateCollidable(null, collide);
 	    s.collidable = collide;
 
             TargetsInterface transformInterface, switchInterface;
@@ -1573,7 +1573,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
             switchInterface = initSwitchStates(s, this, child, linkNode, true);
 
 
-	    if (s.inViewSpecificGroup && 
+	    if (s.inViewSpecificGroup &&
 		(s.changedViewGroup == null)) {
 		s.changedViewGroup = new ArrayList();
 		s.changedViewList = new ArrayList();
@@ -1593,7 +1593,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    // We need to create an array of messages to MasterControl, this
 	    // will ensure that all these messages will get the same time stamp.
 
-	    // If it is called from "moveTo",  messages is not null. 
+	    // If it is called from "moveTo",  messages is not null.
 	    if (messages == null) {
 		int numMessages = 2;
 		if(s.ogList.size() > 0) {
@@ -1616,10 +1616,10 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		}
 		sendMessages = true;
 	    }
-	    
+
 	    if(sendOGMessage) {
-		createMessage = messages[messageIndex++];	    
-		createMessage.threads = J3dThread.UPDATE_RENDER | 
+		createMessage = messages[messageIndex++];
+		createMessage.threads = J3dThread.UPDATE_RENDER |
 		    J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 		createMessage.type = J3dMessage.ORDERED_GROUP_INSERTED;
 		createMessage.universe = universe;
@@ -1652,13 +1652,13 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    } else {
                 createMessage.args[1] = null;
                 createMessage.args[2] = null;
-	    } 
+	    }
 
 	    if (s.viewScopedNodeList != null) {
 		createMessage.args[3] = s.viewScopedNodeList;
 		createMessage.args[4] = s.scopedNodesViewList;
 	    }
-	   
+
             // execute user behavior's initialize methods
 	    int sz = s.behaviorNodes.size();
 
@@ -1671,7 +1671,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
             s.behaviorNodes.clear();
 
 	    createMessage = messages[messageIndex++];
-            
+
 	    createMessage.threads = J3dThread.UPDATE_BEHAVIOR;
 	    createMessage.type = J3dMessage.BEHAVIOR_ACTIVATE;
 	    createMessage.universe = universe;
@@ -1692,15 +1692,15 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     }
 
 
-  
+
     void checkClearLive(NodeRetained child,
-                        J3dMessage messages[], int messageIndex, 
+                        J3dMessage messages[], int messageIndex,
 			int childIndex, NodeRetained linkNode) {
 	checkClearLive(child, localToVworldKeys, inSharedGroup,
 		       messages, messageIndex, childIndex, linkNode);
     }
 
-    
+
 
     /**
      * This checks if clearLive needs to be called.  If it does, it gets the
@@ -1735,7 +1735,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    s.modelClips = modelClips;
 
             // Issue 312: Allocate data structures if we are in a ViewSpecificGroup
-	    if (s.inViewSpecificGroup && 
+	    if (s.inViewSpecificGroup &&
 		(s.changedViewGroup == null)) {
 		s.changedViewGroup = new ArrayList();
 		s.changedViewList = new ArrayList();
@@ -1757,7 +1757,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 				     0, og.userChildIndexOrder.length);
 		}
 		s.ogCIOTableList.add(newArr);
-		
+
 	    }
 
             // Issue 312: always initialize s.viewLists
@@ -1805,7 +1805,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
 	    if(sendOGMessage) {
 		destroyMessage = messages[messageIndex++];
-		destroyMessage.threads = J3dThread.UPDATE_RENDER | 
+		destroyMessage.threads = J3dThread.UPDATE_RENDER |
 		    J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 		destroyMessage.type = J3dMessage.ORDERED_GROUP_REMOVED;
 		destroyMessage.universe = universe;
@@ -1819,26 +1819,26 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
             // RenderingEnvironmentStructure before we send VIEWSPECIFICGROUP_CLEAR,
             // since the latter clears the list of views that is referred to by
             // scopedNodesViewList and used by removeNodes.
-	    destroyMessage = messages[messageIndex++];            
+	    destroyMessage = messages[messageIndex++];
             destroyMessage.threads = s.notifyThreads;
             destroyMessage.type = J3dMessage.REMOVE_NODES;
             destroyMessage.universe = universe;
             destroyMessage.args[0] = s.nodeList.toArray();
-	    
+
 	    if (newCtArr != null) {
                 destroyMessage.args[1] = transformInterface;
                 destroyMessage.args[2] = newCtArr;
 	    } else {
                 destroyMessage.args[1] = null;
                 destroyMessage.args[2] = null;
-	    } 
+	    }
 	    if (s.viewScopedNodeList != null) {
 		destroyMessage.args[3] = s.viewScopedNodeList;
 		destroyMessage.args[4] = s.scopedNodesViewList;
 	    }
 
 	    if(sendVSGMessage) {
-		destroyMessage = messages[messageIndex++];            
+		destroyMessage = messages[messageIndex++];
 		destroyMessage.threads =  J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 		destroyMessage.type = J3dMessage.VIEWSPECIFICGROUP_CLEAR;
 		destroyMessage.universe = universe;
@@ -1849,7 +1849,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
             if (sendMessages == true) {
 		VirtualUniverse.mc.processMessage(messages);
 	    }
-	    
+
 	    s.reset(null); // for GC
         }
     }
@@ -1885,23 +1885,23 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	int transformLevels[] = new int[numPaths];
 	findTransformLevels(transformLevels);
 	s.transformLevels = transformLevels;
-	
+
 	if (ti != null) {
 	    Targets[] newTargets = new Targets[numPaths];
 	    for(int i=0; i<numPaths; i++) {
-		if (s.transformLevels[i] >= 0) {		    
+		if (s.transformLevels[i] >= 0) {
 		    newTargets[i] = new Targets();
 		} else {
 		    newTargets[i] = null;
 		}
 	    }
 	    s.transformTargets = newTargets;
-	    
+
 	    // XXXX: optimization for targetThreads computation, require
 	    // cleanup in GroupRetained.doSetLive()
 	    //s.transformTargetThreads = 0;
 	}
-        
+
 	return ti;
     }
 
@@ -1983,12 +1983,12 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    			   newCtArr);
 	    ti.resetCachedTargets(TargetsInterface.TRANSFORM_TARGETS,
 	    			  newCtArr, -1);
-	    
+
         }
         return newCtArr;
     }
 
-    TargetsInterface initSwitchStates(SetLiveState s, 
+    TargetsInterface initSwitchStates(SetLiveState s,
 				NodeRetained parentNode, NodeRetained childNode,
 				NodeRetained linkNode, boolean isSetLive) {
         NodeRetained child;
@@ -2042,11 +2042,11 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
                 s.switchStates = new ArrayList(1);
                 s.switchStates.add(new SwitchState(false));
             }
-	} 
+	}
         return ti;
     }
 
-    void updateSwitchStates(SetLiveState s, TargetsInterface ti, 
+    void updateSwitchStates(SetLiveState s, TargetsInterface ti,
 				boolean isSetLive) {
 
         // update switch leaves's compositeSwitchMask for ancestors
@@ -2078,10 +2078,10 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
                     for (int i=0; i<s.keys.length; i++) {
                         if (s.switchTargets[i] != null) {
                             ct = ti.getCachedTargets(
-                                TargetsInterface.SWITCH_TARGETS, i, 
+                                TargetsInterface.SWITCH_TARGETS, i,
                                         parentSwitchLinkChildIndex);
                             if (ct != null) {
-                                newCtArr[i] = 
+                                newCtArr[i] =
 					s.switchTargets[i].snapShotAdd(ct);
                             } else {
                                 newCtArr[i] =
@@ -2102,7 +2102,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    } else {
                 CachedTargets ct;
 
-                CachedTargets[] newCtArr = 
+                CachedTargets[] newCtArr =
 			new CachedTargets[localToVworld.length];
 
                 if (! inSharedGroup) {
@@ -2155,7 +2155,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
     synchronized void updateLocalToVworld() {
 	NodeRetained child;
-	
+
 	// For each children call .....
 	for (int i=children.size()-1; i>=0; i--) {
 	    child = (NodeRetained)children.get(i);
@@ -2218,7 +2218,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	ArrayList savedScopedFogs = s.fogs;
 	ArrayList savedScopedAltApps = s.altAppearances;
 	ArrayList savedScopedMclips = s.modelClips;
-	
+
 	boolean oldpickableArray[] = (boolean []) s.pickable.clone();
 	boolean oldcollidableArray[] = (boolean []) s.collidable.clone();
 	boolean workingpickableArray[] = new boolean[oldpickableArray.length];
@@ -2281,7 +2281,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 				l.add(src.get(k));
 			    }
 			}
-			    
+
 		    }
 		}
 		else {
@@ -2314,7 +2314,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 				l.add(src.get(k));
 			    }
 			}
-			    
+
 		    }
 		}
 		else {
@@ -2347,7 +2347,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 				l.add(src.get(k));
 			    }
 			}
-			    
+
 		    }
 		}
 		else {
@@ -2380,7 +2380,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 				l.add(src.get(k));
 			    }
 			}
-			    
+
 		    }
 		}
 		else {
@@ -2418,9 +2418,9 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    j = s.keys[i].equals(localToVworldKeys, 0,
 					 localToVworldKeys.length);
 		    if(j < 0) {
-			System.err.println("GroupRetained : Can't find hashKey"); 
+			System.err.println("GroupRetained : Can't find hashKey");
 		    }
-		    
+
 		    g.localToVworld[0] = localToVworld[j];
 		    g.localToVworldIndex[0] = localToVworldIndex[j];
 		    g.collisionVwcBounds = new BoundingBox();
@@ -2450,7 +2450,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		g.sourceNode = this;
 		g.locale = locale; // need by getVisibleGeometryAtom()
 		mirrorGroup.add(g);
-                if (s.transformTargets != null && 
+                if (s.transformTargets != null &&
 			s.transformTargets[0] != null) {
 		    s.transformTargets[0].addNode(g, Targets.GRP_TARGETS);
 		}
@@ -2460,9 +2460,9 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
     void computeCombineBounds(Bounds bounds) {
         if (!VirtualUniverse.mc.cacheAutoComputedBounds) {
-            if (boundsAutoCompute) {    
+            if (boundsAutoCompute) {
                 for (int i=children.size()-1; i>=0; i--) {
-                    NodeRetained child = (NodeRetained)children.get(i); 
+                    NodeRetained child = (NodeRetained)children.get(i);
                     if(child != null)
                         child.computeCombineBounds(bounds);
                 }
@@ -2501,16 +2501,16 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
                 }
             }
         }
-        
+
     }
-  
-  
+
+
     /**
      * Gets the bounding object of a node.
      * @return the node's bounding object
      */
     Bounds getBounds() {
-    
+
 	if ( boundsAutoCompute) {
             // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
             if (validCachedBounds) {
@@ -2534,7 +2534,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
             return (Bounds) boundingObject;
         }
         return super.getBounds();
-    } 
+    }
 
     /**
      * Gets the bounding object of a node.
@@ -2543,10 +2543,10 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     Bounds getEffectiveBounds() {
 	if ( boundsAutoCompute) {
 	    return getBounds();
-	} 
+	}
 	return super.getEffectiveBounds();
     }
-    
+
     // returns true if children cannot be read/written and none of the
     // children can read their parent (i.e., "this") group node
     boolean isStaticChildren() {
@@ -2577,7 +2577,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     void setCompiled() {
 	super.setCompiled();
 	for (int i=children.size()-1; i>=0; i--) {
-	    SceneGraphObjectRetained node = 
+	    SceneGraphObjectRetained node =
 		(SceneGraphObjectRetained) children.get(i);
 	    if (node != null)
 		node.setCompiled();
@@ -2596,7 +2596,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		System.err.print(" (s)");
 	    } else if (source.getCapability(Group.ALLOW_CHILDREN_WRITE)) {
 		System.err.print(" (w)");
-	    } 
+	    }
 	}
 
 	level++;
@@ -2621,7 +2621,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    mergeFlag = SceneGraphObjectRetained.DONT_MERGE;
         }
 
-	if (isRoot || this.usedInScoping() || 
+	if (isRoot || this.usedInScoping() ||
 	    (parent instanceof SwitchRetained)) {
 	    mergeFlag = SceneGraphObjectRetained.DONT_MERGE;
 	}
@@ -2645,12 +2645,12 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	GroupRetained saveParentGroup = null;
 	SceneGraphObjectRetained node;
 
-	if (mergeFlag != SceneGraphObjectRetained.MERGE_DONE) { 
+	if (mergeFlag != SceneGraphObjectRetained.MERGE_DONE) {
             if (mergeFlag == SceneGraphObjectRetained.DONT_MERGE) {
 
 	 	// don't merge/eliminate this node
 		super.merge(compState);
-		
+
 		saveParentGroup = compState.parentGroup;
 		compState.parentGroup = this;
 	    }
@@ -2682,7 +2682,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
             if (compState.parentGroup != null) {
                 compState.parentGroup.compiledChildrenList.add(this);
                 parent = compState.parentGroup;
-            }     
+            }
 	}
     }
 
@@ -2701,15 +2701,15 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	int groupScopedMcSize = 0;
 	int groupScopedAltAppSize = 0;
 	int size;
-	
+
 	isInClearLive = true;
 
-	// Save this for later use in this method. Temporary. to be removed when OG cleanup. 
+	// Save this for later use in this method. Temporary. to be removed when OG cleanup.
 	HashKey[] savedLocalToVworldKeys = localToVworldKeys;
 
 	super.clearLive(s);
 
-	    
+
 	nchildren = this.children.size();
 
 	if (!(this instanceof ViewSpecificGroupRetained)) {
@@ -2736,14 +2736,14 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	if (allocatedAltApps) {
 	    s.altAppearances = altAppearances;
 	}
-	
-	
+
+
 	for (i=nchildren-1; i >=0 ; i--) {
 	    child = (NodeRetained)children.get(i);
-	    if (this instanceof OrderedGroupRetained) { 
+	    if (this instanceof OrderedGroupRetained) {
 	        OrderedGroupRetained og = (OrderedGroupRetained)this;
 
-		// adjust refCount, which has been decremented 
+		// adjust refCount, which has been decremented
 	        //in super.clearLive
 		if ((refCount+1) == s.refCount) {
 		    //only need to do it once if in shared group. Add
@@ -2754,7 +2754,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
                 s.orderedPaths = (ArrayList)og.childrenOrderedPaths.get(i);
 	    }
 
-	    if (child != null) {		    
+	    if (child != null) {
 	        child.clearLive(s);
 	    }
 	}
@@ -2764,7 +2764,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	if (savedParentLights != null) {
 	    if (allocatedLights) {
 		if (inSharedGroup) {
-		    
+
 		    for (i=0; i < s.keys.length; i++) {
 			hkIndex = s.keys[i].equals(localToVworldKeys, 0,
 						   localToVworldKeys.length);
@@ -2776,7 +2776,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 				gl.remove(l.get(k));
 			    }
 			}
-			    
+
 		    }
 		}
 		else {
@@ -2804,7 +2804,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 				gl.remove(l.get(k));
 			    }
 			}
-			    
+
 		    }
 		}
 		else {
@@ -2831,7 +2831,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 				gl.remove(l.get(k));
 			    }
 			}
-			    
+
 		    }
 		}
 		else {
@@ -2858,7 +2858,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 				gl.remove(l.get(k));
 			    }
 			}
-			    
+
 		    }
 		}
 		else {
@@ -2869,7 +2869,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    }
 		}
 	    }
-	}	
+	}
 
 	if (collisionTarget) {
 	    GroupRetained g;
@@ -2886,7 +2886,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 			    }
 			    break;
 			}
-			
+
 		    }
 		}
 	    } else {
@@ -2895,7 +2895,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 			s.transformTargets[0] != null) {
                     s.transformTargets[0].addNode(g, Targets.GRP_TARGETS);
 		}
-                s.nodeList.add(mirrorGroup.remove(0)); 
+                s.nodeList.add(mirrorGroup.remove(0));
 	    }
 	}
 	s.lights = savedParentLights;
@@ -2939,7 +2939,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	synchronized (node.universe.sceneGraphLock) {
 	    do {
 		if ((node instanceof SwitchRetained) &&
-		    (prevNode != null) && 
+		    (prevNode != null) &&
 		    !validSwitchChild((SwitchRetained) node, prevNode)) {
 		    return false;
 		}
@@ -2958,7 +2958,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    }
 		    if (node == prevNode) {
 			// Fail to found a matching link, this is
-			// probably cause by BHTree not yet updated 
+			// probably cause by BHTree not yet updated
 			// because message not yet arrive
 			// when collision so it return current node as target.
 			return false;
@@ -2973,8 +2973,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     }
 
 
-						       
-    /** 
+
+    /**
      * Determinte if nodeR is a valid child to render for
      * Switch Node swR.
      */
@@ -2982,7 +2982,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 				    NodeRetained node) {
 
 	int whichChild = sw.whichChild;
-	
+
 	if (whichChild == Switch.CHILD_NONE) {
 	    return false;
 	}
@@ -2992,7 +2992,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	}
 
 	ArrayList children = sw.children;
-	
+
 	if (whichChild >= 0) { // most common case
 	    return (children.get(whichChild) == node);
 	}
@@ -3012,11 +3012,11 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
      * Create mirror group when this Group AlternateCollisionTarget
      * is set to true while live.
      */
-    void createMirrorGroup() {	
+    void createMirrorGroup() {
 	GroupRetained g;
 
 	mirrorGroup = new ArrayList();
-    
+
 	Bounds bound = (collisionBound != null ?
 			collisionBound : getEffectiveBounds());
 
@@ -3045,7 +3045,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    g.sourceNode = this;
 	    g.locale = locale; // need by getVisibleGeometryAtom()
 	    mirrorGroup.add(g);
-	}	
+	}
     }
 
     void setBoundsAutoCompute(boolean autoCompute) {
@@ -3054,7 +3054,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
             if (!autoCompute) {
                 localBounds = getEffectiveBounds();
             }
-            if (source.isLive() && collisionBound == null && autoCompute 
+            if (source.isLive() && collisionBound == null && autoCompute
                 && mirrorGroup != null) {
 
                 J3dMessage message = new J3dMessage();
@@ -3130,16 +3130,16 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    s.switchLevels[0]++;
 		    if (s.closestSwitchParents[0] == null) {
 		        s.closestSwitchParents[0] = (SwitchRetained)parent;
-		        s.closestSwitchIndices[0] = 
+		        s.closestSwitchIndices[0] =
 				((SwitchRetained)parent).switchIndexCount++;
 		    }
 		    if (parentSwitchLinkChildIndex == -1) {
-		        parentSwitchLinkChildIndex = 
+		        parentSwitchLinkChildIndex =
                             	((GroupRetained)parent).children.indexOf(child);
 		    }
 		} else if (parent instanceof SharedGroupRetained) {
 		    if (parentSwitchLinkChildIndex == -1) {
-		        parentSwitchLinkChildIndex = 
+		        parentSwitchLinkChildIndex =
                             	((GroupRetained)parent).children.indexOf(child);
 		    }
 		}
@@ -3171,12 +3171,12 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		        s.switchLevels[i]++;
 		        if (s.closestSwitchParents[i] == null) {
 		            s.closestSwitchParents[i] = (SwitchRetained)parent;
-		            s.closestSwitchIndices[i] = 
+		            s.closestSwitchIndices[i] =
                                 ((SwitchRetained)parent).switchIndexCount++;
 
 		        }
 		        if (parentSwitchLinkChildIndex == -1) {
-		            parentSwitchLinkChildIndex = 
+		            parentSwitchLinkChildIndex =
                             	((GroupRetained)parent).children.indexOf(child);
 		        }
 		    } else if (parent instanceof SharedGroupRetained) {
@@ -3185,7 +3185,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
                         NodeRetained ln;
 
 		        if (parentSwitchLinkChildIndex == -1) {
-		            parentSwitchLinkChildIndex = 
+		            parentSwitchLinkChildIndex =
                             	((GroupRetained)parent).children.indexOf(child);
 		        }
 
@@ -3196,7 +3196,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
                                 break;
                             }
                         }
-		    } 
+		    }
 		    child = parent;
 		    parent = child.parent;
 		}

@@ -49,7 +49,7 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
     TriangleStripArrayRetained() {
 	this.geoType = GEO_TYPE_TRI_STRIP_SET;
     }
-    
+
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
 	Point3d pnts[] = new Point3d[3];
@@ -66,8 +66,8 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	switch (pickShape.getPickType()) {
 	case PickShape.PICKRAY:
 	    PickRay pickRay= (PickRay) pickShape;
-	
-	    while (i < stripVertexCounts.length) {  
+
+	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
                 for(int k=0; k<2; k++) {
@@ -76,7 +76,7 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
                 }
 		while (j < end) {
                     vtxIndexArr[2] = j;
-                    getVertexData(j++, pnts[2]);          
+                    getVertexData(j++, pnts[2]);
 		    if (intersectRay(pnts, pickRay, sdist, iPnt)) {
 			if (flags == 0) {
 			    return true;
@@ -87,13 +87,13 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 			    y = iPnt.y;
 			    z = iPnt.z;
                             if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
                                                   vtxIndexArr, iPnt, sdist[0]);
                             }
                         }
                         if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                              vtxIndexArr, iPnt, sdist[0]);                      
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                              vtxIndexArr, iPnt, sdist[0]);
        		        }
                     }
 		    pnts[0].set(pnts[1]);
@@ -106,7 +106,7 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	case PickShape.PICKSEGMENT:
 	    PickSegment pickSegment = (PickSegment) pickShape;
 
-	    while (i < stripVertexCounts.length) {  
+	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
                 for(int k=0; k<2; k++) {
@@ -116,7 +116,7 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 		while (j < end) {
                     vtxIndexArr[2] = j;
 		    getVertexData(j++, pnts[2]);
-		    if (intersectSegment(pnts, pickSegment.start, 
+		    if (intersectSegment(pnts, pickSegment.start,
 					 pickSegment.end, sdist, iPnt)) {
 			if (flags == 0) {
 			    return true;
@@ -127,13 +127,13 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 			    y = iPnt.y;
 			    z = iPnt.z;
                             if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
                                                   vtxIndexArr, iPnt, sdist[0]);
                             }
                         }
                         if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                              vtxIndexArr, iPnt, sdist[0]);                      
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                              vtxIndexArr, iPnt, sdist[0]);
        		        }
                     }
 		    pnts[0].set(pnts[1]);
@@ -144,10 +144,10 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    }
 	    break;
 	case PickShape.PICKBOUNDINGBOX:
-	    BoundingBox bbox = (BoundingBox) 
+	    BoundingBox bbox = (BoundingBox)
 		((PickBounds) pickShape).bounds;
 
-	    while (i < stripVertexCounts.length) {  
+	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
                 for(int k=0; k<2; k++) {
@@ -167,13 +167,13 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 			    y = iPnt.y;
 			    z = iPnt.z;
                             if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
                                                   vtxIndexArr, iPnt, sdist[0]);
                             }
                         }
                         if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                              vtxIndexArr, iPnt, sdist[0]);                      
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                              vtxIndexArr, iPnt, sdist[0]);
        		        }
                     }
 		    pnts[0].set(pnts[1]);
@@ -184,10 +184,10 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    }
 	    break;
 	case PickShape.PICKBOUNDINGSPHERE:
-	    BoundingSphere bsphere = (BoundingSphere) 
+	    BoundingSphere bsphere = (BoundingSphere)
 		                     ((PickBounds) pickShape).bounds;
 
-	    while (i < stripVertexCounts.length) {  
+	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
                 for(int k=0; k<2; k++) {
@@ -198,7 +198,7 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
                     vtxIndexArr[2] = j;
 		    getVertexData(j++, pnts[2]);
 		    if (intersectBoundingSphere(pnts, bsphere, sdist,
-						iPnt)) { 
+						iPnt)) {
 			if (flags == 0) {
 			    return true;
 			}
@@ -208,13 +208,13 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 			    y = iPnt.y;
 			    z = iPnt.z;
                             if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
                                                   vtxIndexArr, iPnt, sdist[0]);
                             }
                         }
                         if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                              vtxIndexArr, iPnt, sdist[0]);                      
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                              vtxIndexArr, iPnt, sdist[0]);
        		        }
                     }
 		    pnts[0].set(pnts[1]);
@@ -225,10 +225,10 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    }
 	    break;
 	case PickShape.PICKBOUNDINGPOLYTOPE:
-	    BoundingPolytope bpolytope = (BoundingPolytope) 
+	    BoundingPolytope bpolytope = (BoundingPolytope)
 		((PickBounds) pickShape).bounds;
 
-	    while (i < stripVertexCounts.length) {  
+	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
                 for(int k=0; k<2; k++) {
@@ -249,13 +249,13 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 			    y = iPnt.y;
 			    z = iPnt.z;
                             if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
                                                   vtxIndexArr, iPnt, sdist[0]);
                             }
                         }
                         if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                              vtxIndexArr, iPnt, sdist[0]);                      
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                              vtxIndexArr, iPnt, sdist[0]);
        		        }
                     }
 		    pnts[0].set(pnts[1]);
@@ -268,7 +268,7 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	case PickShape.PICKCYLINDER:
 	    PickCylinder pickCylinder= (PickCylinder) pickShape;
 
-	    while (i < stripVertexCounts.length) {  
+	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
                 for(int k=0; k<2; k++) {
@@ -288,13 +288,13 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 			    y = iPnt.y;
 			    z = iPnt.z;
                             if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
                                                   vtxIndexArr, iPnt, sdist[0]);
                             }
                         }
                         if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                              vtxIndexArr, iPnt, sdist[0]);                      
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                              vtxIndexArr, iPnt, sdist[0]);
        		        }
                     }
 		    pnts[0].set(pnts[1]);
@@ -307,7 +307,7 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	case PickShape.PICKCONE:
 	    PickCone pickCone= (PickCone) pickShape;
 
-	    while (i < stripVertexCounts.length) {  
+	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
                 for(int k=0; k<2; k++) {
@@ -327,13 +327,13 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 			    y = iPnt.y;
 			    z = iPnt.z;
                             if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                                storeInterestData(pickInfo, flags, geom, geomIndex, 
+                                storeInterestData(pickInfo, flags, geom, geomIndex,
                                                   vtxIndexArr, iPnt, sdist[0]);
                             }
                         }
                         if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                              vtxIndexArr, iPnt, sdist[0]);                      
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
+                                              vtxIndexArr, iPnt, sdist[0]);
        		        }
                     }
 		    pnts[0].set(pnts[1]);
@@ -347,8 +347,8 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    // Should not happen since API already check for this
 	    throw new IllegalArgumentException(J3dI18N.getString("TriangleStripArrayRetained0"));
 	default:
-	    throw new RuntimeException ("PickShape not supported for intersection"); 
-	} 
+	    throw new RuntimeException ("PickShape not supported for intersection");
+	}
 
 	if (minDist < Double.MAX_VALUE) {
 	    iPnt.x = x;
@@ -358,7 +358,7 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	}
 	return false;
     }
- 
+
     // intersect pnts[] with every triangle in this object
     boolean intersect(Point3d[] pnts) {
 	int j, end;
@@ -375,10 +375,10 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-		getVertexData(j++, points[0]);		
-		getVertexData(j++, points[1]);		
+		getVertexData(j++, points[0]);
+		getVertexData(j++, points[1]);
 		while (j < end) {
-		    getVertexData(j++, points[2]);		
+		    getVertexData(j++, points[2]);
 		    if (intersectTriTri(points[0], points[1], points[2],
 					pnts[0], pnts[1], pnts[2])) {
 			return true;
@@ -392,10 +392,10 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-		getVertexData(j++, points[0]);		
-		getVertexData(j++, points[1]);		
+		getVertexData(j++, points[0]);
+		getVertexData(j++, points[1]);
 		while (j < end) {
-		    getVertexData(j++, points[2]);		
+		    getVertexData(j++, points[2]);
 		    if (intersectTriTri(points[0], points[1], points[2],
 					pnts[0], pnts[1], pnts[2]) ||
 			intersectTriTri(points[0], points[1], points[2],
@@ -411,10 +411,10 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-		getVertexData(j++, points[0]);		
-		getVertexData(j++, points[1]);		
+		getVertexData(j++, points[0]);
+		getVertexData(j++, points[1]);
 		while (j < end) {
-		    getVertexData(j++, points[2]);		
+		    getVertexData(j++, points[2]);
 		    if (intersectSegment(points, pnts[0], pnts[1],
 					 dist, null)) {
 			return true;
@@ -428,10 +428,10 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-		getVertexData(j++, points[0]);		
-		getVertexData(j++, points[1]);		
+		getVertexData(j++, points[0]);
+		getVertexData(j++, points[1]);
 		while (j < end) {
-		    getVertexData(j++, points[2]);		
+		    getVertexData(j++, points[2]);
 		    if (intersectTriPnt(points[0], points[1], points[2],
 					pnts[0])) {
 			return true;
@@ -444,7 +444,7 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	}
 	return false;
     }
-    
+
     boolean intersect(Transform3D thisToOtherVworld, GeometryRetained geom) {
 	int i = 0, j, end;
 	Point3d[] pnts = new Point3d[3];
@@ -455,12 +455,12 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	while (i < stripVertexCounts.length) {
 	    j = stripStartVertexIndices[i];
 	    end = j + stripVertexCounts[i++];
-	    getVertexData(j++, pnts[0]);		
-	    getVertexData(j++, pnts[1]);	
+	    getVertexData(j++, pnts[0]);
+	    getVertexData(j++, pnts[1]);
 	    thisToOtherVworld.transform(pnts[0]);
 	    thisToOtherVworld.transform(pnts[1]);
 	    while (j < end) {
-		getVertexData(j++, pnts[2]);		
+		getVertexData(j++, pnts[2]);
 		thisToOtherVworld.transform(pnts[2]);
 		if (geom.intersect(pnts)) {
 		    return true;
@@ -489,10 +489,10 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-		getVertexData(j++, pnts[0]);		
-		getVertexData(j++, pnts[1]);		
+		getVertexData(j++, pnts[0]);
+		getVertexData(j++, pnts[1]);
 		while ( j < end) {
-		    getVertexData(j++, pnts[2]);		
+		    getVertexData(j++, pnts[2]);
 		    if (intersectBoundingBox(pnts, box, null, null)) {
 			return true;
 		    }
@@ -507,10 +507,10 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-		getVertexData(j++, pnts[0]);		
-		getVertexData(j++, pnts[1]);		
+		getVertexData(j++, pnts[0]);
+		getVertexData(j++, pnts[1]);
 		while ( j < end) {
-		    getVertexData(j++, pnts[2]);		
+		    getVertexData(j++, pnts[2]);
 		    if (intersectBoundingSphere(pnts, bsphere, null, null)) {
 			return true;
 		    }
@@ -525,10 +525,10 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    while (i < stripVertexCounts.length) {
 		j = stripStartVertexIndices[i];
 		end = j + stripVertexCounts[i++];
-		getVertexData(j++, pnts[0]);		
-		getVertexData(j++, pnts[1]);		
+		getVertexData(j++, pnts[0]);
+		getVertexData(j++, pnts[1]);
 		while ( j < end) {
-		    getVertexData(j++, pnts[2]);		
+		    getVertexData(j++, pnts[2]);
 		    if (intersectBoundingPolytope(pnts, bpolytope, null, null)) {
 			return true;
 		    }
@@ -539,7 +539,7 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    break;
 	default:
 	    throw new RuntimeException("Bounds not supported for intersection "
-				       + targetBound); 
+				       + targetBound);
 	}
 	return false;
     }
@@ -562,11 +562,11 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	while( i < stripVertexCounts.length) {
 	    j = stripStartVertexIndices[i];
 	    end = j + stripVertexCounts[i++];
-	    getVertexData(j++, pnt0); 
+	    getVertexData(j++, pnt0);
 	    getVertexData(j++, pnt1);
 	    replaceIndex = 2;
 	    while (j < end) {
-		area = 0; 
+		area = 0;
 		switch (replaceIndex) {
 		case 0:
 		    getVertexData(j++, pnt0);
@@ -581,20 +581,20 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 		    replaceIndex = 0;
 		}
 
-		// Determine the normal 
-		vec.sub(pnt0, pnt1); 
-		tmpvec.sub(pnt1, pnt2); 
+		// Determine the normal
+		vec.sub(pnt0, pnt1);
+		tmpvec.sub(pnt1, pnt2);
 
 		// Do the cross product
-		normal.cross(vec, tmpvec); 
+		normal.cross(vec, tmpvec);
 		normal.normalize();
 		// If a degenerate triangle, don't include
 		if (Double.isNaN(normal.x + normal.y + normal.z))
 		    continue;
 
 		tmpvec.set(0,0,0);
-		
-		// compute the area 
+
+		// compute the area
 		getCrossValue(pnt0, pnt1, tmpvec);
 		getCrossValue(pnt1, pnt2, tmpvec);
 		getCrossValue(pnt2, pnt0, tmpvec);
@@ -612,7 +612,7 @@ class TriangleStripArrayRetained extends GeometryStripArrayRetained {
 	    centroid.x *= area;
 	    centroid.y *= area;
 	    centroid.z *= area;
-	} 
+	}
     }
 
 

@@ -32,7 +32,7 @@
 package javax.media.j3d;
 
 /**
- * A Node Component Update interface.  Any object that can be put in the 
+ * A Node Component Update interface.  Any object that can be put in the
  * node component updateCheck list must implement this interface.
  */
 

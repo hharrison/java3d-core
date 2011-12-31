@@ -49,15 +49,15 @@ public abstract class Interpolator extends Behavior {
     Alpha alpha;
 
 
-    /** 
+    /**
      * Default WakeupCondition for all interpolators. The
      * wakeupOn method of Behavior, which takes a WakeupCondition as
      * the method parameter, will need to be called at the end
      * of the processStimulus method of any class that subclasses
-     * Interpolator; this can be done with the following method call: 
+     * Interpolator; this can be done with the following method call:
      * wakeupOn(defaultWakeupCriterion).
      */
-    protected WakeupCriterion defaultWakeupCriterion = 
+    protected WakeupCriterion defaultWakeupCriterion =
 	(WakeupCriterion) new WakeupOnElapsedFrames(0);
 
 
@@ -116,7 +116,7 @@ public abstract class Interpolator extends Behavior {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -134,7 +134,7 @@ public abstract class Interpolator extends Behavior {
      */
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
-	
+
 	Interpolator it = (Interpolator) originalNode;
 
 	Alpha a = it.getAlpha();

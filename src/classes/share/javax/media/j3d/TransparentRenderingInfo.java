@@ -47,14 +47,14 @@ class TransparentRenderingInfo extends Object implements com.sun.j3d.utils.scene
     // XXXX: Add Dirty info
 
     /**
-     * update state before rendering transparent objects 
+     * update state before rendering transparent objects
      */
     boolean updateState(Canvas3D cv) {
 
 	TextureBin textureBin = rm.textureBin;
 	AttributeBin attributeBin = textureBin.attributeBin;
         ShaderBin shaderBin = textureBin.shaderBin;
-        
+
 	// Get a collection to check if switch is on
 
 	RenderMolecule rm = textureBin.transparentRMList ;
@@ -72,7 +72,7 @@ class TransparentRenderingInfo extends Object implements com.sun.j3d.utils.scene
 		rm = rm.nextMap;
 	    }
 	}
-	
+
 	if (rm == null) {
 	    return false;
 	}
@@ -80,18 +80,18 @@ class TransparentRenderingInfo extends Object implements com.sun.j3d.utils.scene
         // XXXX : Code cleanup needed : The following code segment should simply test
         //        each bin independently and update it if necessary.
         if (cv.environmentSet != attributeBin.environmentSet) {
-            
+
             boolean visible = (attributeBin.definingRenderingAttributes == null ||
                     attributeBin.definingRenderingAttributes.visible);
-            
+
             if ( (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
                     == View.VISIBILITY_DRAW_VISIBLE && !visible) ||
                     (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
                     == View.VISIBILITY_DRAW_INVISIBLE && visible)) {
                 return false;
             }
-            
-            // Fix to issue 314. Set the appropriate bits for the dirty bins 
+
+            // Fix to issue 314. Set the appropriate bits for the dirty bins
             // and call the update state method.
             cv.setStateToUpdate(Canvas3D.LIGHTBIN_BIT, attributeBin.environmentSet.lightBin);
             cv.setStateToUpdate(Canvas3D.ENVIRONMENTSET_BIT, attributeBin.environmentSet);
@@ -102,34 +102,34 @@ class TransparentRenderingInfo extends Object implements com.sun.j3d.utils.scene
         } else if (cv.attributeBin != attributeBin) {
             boolean visible = (attributeBin.definingRenderingAttributes == null ||
                     attributeBin.definingRenderingAttributes.visible);
-            
+
             if ( (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
                     == View.VISIBILITY_DRAW_VISIBLE && !visible) ||
                     (attributeBin.environmentSet.renderBin.view.viewCache.visibilityPolicy
                     == View.VISIBILITY_DRAW_INVISIBLE && visible)) {
                 return false;
             }
-            
-            // Fix to issue 314. Set the appropriate bits for the dirty bins 
+
+            // Fix to issue 314. Set the appropriate bits for the dirty bins
             // and call the update state method.
             cv.setStateToUpdate(Canvas3D.ATTRIBUTEBIN_BIT, attributeBin);
             cv.setStateToUpdate(Canvas3D.SHADERBIN_BIT, shaderBin);
             cv.updateEnvState();
-            
+
         } else if (cv.shaderBin != shaderBin) {
 
-            // Fix to issue 314. Set the appropriate bits for the dirty bins 
+            // Fix to issue 314. Set the appropriate bits for the dirty bins
             // and call the update state method.
             cv.setStateToUpdate(Canvas3D.SHADERBIN_BIT, shaderBin);
             cv.updateEnvState();
- 
-        } 
+
+        }
 
         return true;
     }
 
     void render(Canvas3D cv) {
-	if (updateState(cv)) {      
+	if (updateState(cv)) {
 	    rm.textureBin.render(cv, rm.textureBin.transparentRMList);
 	}
     }
@@ -146,8 +146,8 @@ class TransparentRenderingInfo extends Object implements com.sun.j3d.utils.scene
     }
 
     public Geometry getGeometry() {
-        // XXXX: verify 0 is always the correct index. Assumption is that for 
-        // Shape3D with multiple geometry each geometry is put in it's 
+        // XXXX: verify 0 is always the correct index. Assumption is that for
+        // Shape3D with multiple geometry each geometry is put in it's
         // own geometryAtom.
         if (geometryAtom.geometryArray[0]==null)
             return null;

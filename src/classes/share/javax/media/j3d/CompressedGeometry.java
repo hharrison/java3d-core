@@ -145,7 +145,7 @@ public class CompressedGeometry extends Geometry {
      *
      * @see CompressedGeometryHeader
      * @see Canvas3D#queryProperties
-     */ 
+     */
     public CompressedGeometry(CompressedGeometryHeader hdr,
 			      byte[] compressedGeometry) {
 	this(hdr, compressedGeometry, false) ;
@@ -266,7 +266,7 @@ public class CompressedGeometry extends Geometry {
      * Retrieves the compressed geometry associated with the
      * CompressedGeometry NodeComponent object.  Copies the compressed
      * geometry from the CompressedGeometry node into the given array.
-     * The array must be large enough to hold all of the bytes. 
+     * The array must be large enough to hold all of the bytes.
      * The individual array elements must be allocated by the caller.
      *
      * @param compressedGeometry the array into which to copy the compressed
@@ -286,7 +286,7 @@ public class CompressedGeometry extends Geometry {
 	  if (!this.getCapability(ALLOW_GEOMETRY_READ))
 	    throw new CapabilityNotSetException
 		(J3dI18N.getString("CompressedGeometry3")) ;
-	
+
 	if (isByReference())
 	    throw new IllegalStateException
 		(J3dI18N.getString("CompressedGeometry7")) ;
@@ -294,7 +294,7 @@ public class CompressedGeometry extends Geometry {
 	if (cgHeader.size > compressedGeometry.length)
 	    throw new ArrayIndexOutOfBoundsException
 		(J3dI18N.getString("CompressedGeometry4")) ;
-	
+
 	((CompressedGeometryRetained)this.retained).copy(compressedGeometry) ;
     }
 

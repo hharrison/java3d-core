@@ -48,7 +48,7 @@ class SetLiveState extends Object {
     // The transforms used to update state
     Transform3D[][] currentTransforms = new Transform3D[1][];
     int[][]	    currentTransformsIndex = new int[1][];
-    
+
     // The keys used when dealing with SharedGroups
     HashKey[] keys = null;
 
@@ -123,9 +123,9 @@ class SetLiveState extends Object {
     ArrayList ogCIOTableList = new ArrayList(5);
 
     /**
-     * List of BranchGroup from this node to the root of tree 
-     * This is used by BranchGroupRetained to construct 
-     * BranchGroup lists for picking. 
+     * List of BranchGroup from this node to the root of tree
+     * This is used by BranchGroupRetained to construct
+     * BranchGroup lists for picking.
      *
      * @see NodeRetained.branchGroupPaths
      */
@@ -150,7 +150,7 @@ class SetLiveState extends Object {
     // many references of the original branch that attach()/detach()
     int refCount = 1;
 
-    // background node whose geometry branch contains this node 
+    // background node whose geometry branch contains this node
     BackgroundRetained geometryBackground = null;
 
     // behavior nodes
@@ -184,7 +184,7 @@ class SetLiveState extends Object {
     GroupRetained parentSwitchLink = null;
 
     SharedGroupRetained lastSharedGroup = null;
-    
+
     int traverseFlags = 0;
 
     // Use for set live.
@@ -197,13 +197,13 @@ class SetLiveState extends Object {
     int[] hashkeyIndex = null;
 
     ArrayList switchStates = null;
-    
+
     SetLiveState(VirtualUniverse u) {
 	universe = u;
     }
 
 
-    void reset(Locale l) {	
+    void reset(Locale l) {
 	locale = l;
 	clear();
     }
@@ -215,7 +215,7 @@ class SetLiveState extends Object {
 	nodeList.clear();
 	viewScopedNodeList = null;
 	scopedNodesViewList = null;
-	
+
 	notifyThreads = 0;
 	transformTargets = null;
 	lights = null;
@@ -226,7 +226,7 @@ class SetLiveState extends Object {
 	changedViewGroup = null;
 	changedViewList = null;
 	keyList = null;
-	
+
         behaviorNodes.clear();
 	traverseFlags = 0;
 
@@ -261,13 +261,13 @@ class SetLiveState extends Object {
 	localToVworld = null;
 	localToVworldIndex = null;
 	localToVworldKeys = null;
-	
+
         // XXXX: optimization for targetThreads computation, require
         // cleanup in GroupRetained.doSetLive()
 	//transformTargetThreads = 0;
 
         hashkeyIndex = null;
-        
+
         // Fix for issue 75
         parentBranchGroupPaths = null;
         branchGroupPaths = null;

@@ -53,7 +53,7 @@ import javax.vecmath.*;
  * <P>
  *    Start, stop, pause, unpause, mute, and unmute of sample on the device.
  * <P>
- *    Set parameters for each sample corresponding to the fields in the 
+ *    Set parameters for each sample corresponding to the fields in the
  *    Sound node.
  * <P>
  *    Set the current active aural parameters that affect all positional samples.
@@ -64,20 +64,20 @@ import javax.vecmath.*;
  * Sound types match the Sound node classes defined for Java 3D core
  * for BackgroundSound, PointSound, and ConeSound.  The type of sound
  * a sample is loaded as determines which methods affect it.
- * 
+ *
  * <P>
  * Sound Data Types
  * <P>
  * Samples can be processed as streaming or buffered data.
  * Fully spatializing sound sources may require data to be buffered.
- * 
+ *
  */
 
 public interface AudioDevice3D extends AudioDevice {
 
      /**
       *  Specifies the sound type as background sound.
-      */  
+      */
      public static final int BACKGROUND_SOUND = 1;
 
      /**
@@ -109,7 +109,7 @@ public interface AudioDevice3D extends AudioDevice {
     /**
      * Accepts a reference to the current View.
      * Passes reference to current View Object.  The PhysicalEnvironment
-     * parameters (with playback type and speaker placement), and the 
+     * parameters (with playback type and speaker placement), and the
      * PhysicalBody parameters (position/orientation of ears)
      * can be obtained from this object, and the transformations to/from
      * ViewPlatform coordinate (space the listener's head is in) and
@@ -136,9 +136,9 @@ public interface AudioDevice3D extends AudioDevice {
      * specific index, used to reference the sample in future method calls,
      * is returned.  All the rest of the methods described below require
      * this index as a parameter.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and NOT by any application.
-     * @param soundType defines the type of Sound Node: Background, Point, and 
+     * @param soundType defines the type of Sound Node: Background, Point, and
      * Cone
      * @param soundData reference to MediaContainer sound data and cached flag
      * @return device specific sample index used for referencing this sound
@@ -148,7 +148,7 @@ public interface AudioDevice3D extends AudioDevice {
     /**
      * Requests that the AudioDevice free all
      * resources associated with sample with index id.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and NOT by any application.
      * @param index device specific reference number to device driver sample
      */
@@ -159,7 +159,7 @@ public interface AudioDevice3D extends AudioDevice {
      * if this information can be determined.
      * For non-cached
      * streams, this method returns Sound.DURATION_UNKNOWN.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and NOT by any application.
      * @param index device specific reference number to device driver sample
      * @return sound duration in milliseconds if this can be determined,
@@ -168,47 +168,47 @@ public interface AudioDevice3D extends AudioDevice {
     public abstract long   getSampleDuration(int index);
 
     /**
-     *   
-     * Retrieves the number of channels (on executing audio device) that 
-     * this sound is using, if it is playing, or is expected to use 
+     *
+     * Retrieves the number of channels (on executing audio device) that
+     * this sound is using, if it is playing, or is expected to use
      * if it were begun to be played.  This form of this method takes the
      * sound's current state (including whether it is muted or unmuted)
      * into account.
      *<P>
-     * For some AudioDevice3D implementations: 
+     * For some AudioDevice3D implementations:
      *<UL>
      *     Muted sound take channels up on the systems mixer (because they're
      *         rendered as samples playing with gain zero.
      *<P>
-     *     A single sound could be rendered using multiple samples, each taking 
+     *     A single sound could be rendered using multiple samples, each taking
      *         up mixer channels.
      *</UL>
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and NOT by any application.
      * @param index device specific reference number to device driver sample
      * @return number of channels used by sound if it were playing
-     */  
+     */
     public abstract int    getNumberOfChannelsUsed(int index);
 
     /**
-     *   
-     * Retrieves the number of channels (on executing audio device) that 
+     *
+     * Retrieves the number of channels (on executing audio device) that
      * this sound is using, if it is playing, or is projected to use if
      * it were to be started playing.  Rather than using the actual current
      * muted/unmuted state of the sound, the muted parameter is used in
      * making the determination.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and NOT by any application.
      * @param index device specific reference number to device driver sample
      * @param muted flag to use as the current muted state ignoring current
      * mute state
      * @return number of channels used by sound if it were playing
-     */  
+     */
     public abstract int    getNumberOfChannelsUsed(int index, boolean muted);
 
     /**
      * Begins a sound playing on the AudioDevice.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and NOT by any application.
      * @param index device specific reference number to device driver sample
      * @return flag denoting if sample was started; 1 if true, 0 if false
@@ -220,7 +220,7 @@ public interface AudioDevice3D extends AudioDevice {
      * was last "started".  Note that this start time will be as accurate
      * as the AudioDevice implementation can make it - but that it is not
      * guaranteed to be exact.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and NOT by any application.
      * @param index device specific reference number to device driver sample
      * @return system time in milliseconds of the last time sound was started
@@ -229,7 +229,7 @@ public interface AudioDevice3D extends AudioDevice {
 
     /**
      * Stops the sound on the AudioDevice.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and NOT by any application.
      * @param index device specific reference number to device driver sample
      * associated with sound data to be played
@@ -238,12 +238,12 @@ public interface AudioDevice3D extends AudioDevice {
     public abstract int    stopSample(int index);
 
     /**
-     * Sets the overall gain scale factor applied to data associated with this 
+     * Sets the overall gain scale factor applied to data associated with this
      * source to increase or decrease its overall amplitude.
      * The gain scale factor value passed into this method is the combined value
      * of the Sound node's Initial Gain and the current AuralAttribute Gain
      * scale factors.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and NOT by any application.
      * @param index device specific reference number to device driver sample
      * @param scaleFactor amplitude (gain) scale factor
@@ -252,9 +252,9 @@ public interface AudioDevice3D extends AudioDevice {
 
     /**
      * Sets a sound's loop count.
-     * A full description of this parameter and how it is used is in 
+     * A full description of this parameter and how it is used is in
      * the documentation for Sound.setLoop.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and NOT by any application.
      * @param index device specific reference number to device driver sample
      * @param count number of times sound is looped during play
@@ -265,7 +265,7 @@ public interface AudioDevice3D extends AudioDevice {
     /**
      * Passes a reference to the concatenated transformation to be applied to
      * local sound position and direction parameters.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and NOT by any application.
      * @param index device specific reference number to device driver sample
      * @param trans transformation matrix applied to local coordinate parameters
@@ -277,9 +277,9 @@ public interface AudioDevice3D extends AudioDevice {
      * Sets this sound's location (in Local coordinates) from specified
      * Point. The form of the position parameter matches those of the PointSound
      * method of the same name.
-     * A full description of this parameter and how it is used is in 
+     * A full description of this parameter and how it is used is in
      * the documentation for PointSound class.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param index device specific reference number to device driver sample
      * @param position location of Point or Cone Sound in Virtual World
@@ -291,10 +291,10 @@ public interface AudioDevice3D extends AudioDevice {
 
     /**
      * Sets this sound's distance gain elliptical attenuation (not
-     * including filter cutoff frequency) by defining corresponding 
+     * including filter cutoff frequency) by defining corresponding
      * arrays containing distances from the sound's origin and gain
      * scale factors applied to all active positional sounds.
-     * Gain scale factor is applied to sound based on the distance 
+     * Gain scale factor is applied to sound based on the distance
      * the listener
      * is from sound source.
      * These attenuation parameters are ignored for BackgroundSound nodes.
@@ -302,9 +302,9 @@ public interface AudioDevice3D extends AudioDevice {
      * <P>
      * The form of the attenuation parameters match that of the ConeSound method
      * of the same name.
-     * A full description of this parameter and how it is used is in 
+     * A full description of this parameter and how it is used is in
      * the documentation for ConeSound class.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param index device specific reference number to device driver sample
      * @param frontDistance defines an array of distance along positive axis
@@ -317,17 +317,17 @@ public interface AudioDevice3D extends AudioDevice {
      * float[] backDistance, float[] backGain)
      * @see ConeSound#setDistanceGain(Point2f[] frontAttenuation,
      * Point2f[] backAttenuation)
-     */  
-    public abstract void setDistanceGain(int index, 
+     */
+    public abstract void setDistanceGain(int index,
               double[] frontDistance, float[]  frontAttenuationScaleFactor,
               double[] backDistance, float[]  backAttenuationScaleFactor);
     /**
      * Sets this sound's direction from the local coordinate vector provided.
      * The form of the direction parameter matches that of the ConeSound method
      * of the same name.
-     * A full description of this parameter and how it is used is in 
+     * A full description of this parameter and how it is used is in
      * the documentation for the ConeSound class.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param index device specific reference number to device driver sample
      * @param direction the new direction vector in local coordinates
@@ -339,22 +339,22 @@ public interface AudioDevice3D extends AudioDevice {
     /**
      * Sets this sound's angular gain attenuation (including filter)
      * by defining corresponding arrays containing angular offsets from
-     * the sound's axis, gain scale factors, and frequency cutoff applied 
+     * the sound's axis, gain scale factors, and frequency cutoff applied
      * to all active directional sounds.
      * Gain scale factor is applied to sound based on the angle between the
      * sound's axis and the ray from the sound source origin to the listener.
-     * The form of the attenuation parameter matches that of the ConeSound 
+     * The form of the attenuation parameter matches that of the ConeSound
      * method of the same name.
-     * A full description of this parameter and how it is used is in 
+     * A full description of this parameter and how it is used is in
      * the documentation for the ConeSound class.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param index device specific reference number to device driver sample
      * @param filterType describes type (if any) of filtering defined by attenuation
      * @param angle array containing angular distances from sound axis
      * @param attenuationScaleFactor array containing gain scale factor
      * @param filterCutoff array containing filter cutoff frequencies.
-     * The filter values for each tuples can be set to Sound.NO_FILTER. 
+     * The filter values for each tuples can be set to Sound.NO_FILTER.
      * @see ConeSound#setAngularAttenuation(float[] distance, float[] gain,
      * float[] filter)
      * @see ConeSound#setAngularAttenuation(Point3f[] attenuation)
@@ -365,9 +365,9 @@ public interface AudioDevice3D extends AudioDevice {
 
     /**
      * Changes the speed of sound factor.
-     * A full description of this parameter and how it is used is in 
+     * A full description of this parameter and how it is used is in
      * the documentation for the AuralAttributes class.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param rolloff atmospheric gain scale factor (changing speed of sound)
      * @see AuralAttributes#setRolloff
@@ -378,10 +378,10 @@ public interface AudioDevice3D extends AudioDevice {
      * Sets the Reflective Coefficient scale factor applied to distinct
      * low-order early reflections of sound off the surfaces in the region
      * defined by the current listening region.
-     * <P> 
-     * A full description of this parameter and how it is used is in 
+     * <P>
+     * A full description of this parameter and how it is used is in
      * the documentation for the AuralAttributes class.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param coefficient reflection/absorption factor applied to reverb
      * @see AuralAttributes#setReflectionCoefficient
@@ -395,13 +395,13 @@ public interface AudioDevice3D extends AudioDevice {
      * explicitly given in milliseconds.
      * A value for delay time of 0.0 disables
      * reverberation.
-     * <P> 
-     * A full description of this parameter and how it is used is in 
+     * <P>
+     * A full description of this parameter and how it is used is in
      * the documentation for the AuralAttributes class.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param reverbDelay time between each order of late reflection
-     * @see AuralAttributes#setReverbDelay(float reverbDelay) 
+     * @see AuralAttributes#setReverbDelay(float reverbDelay)
      */
     public abstract void setReverbDelay(float reverbDelay);
 
@@ -410,9 +410,9 @@ public interface AudioDevice3D extends AudioDevice {
      * The reverbOrder parameter specifies the number of times reflections are added to
      * reverberation being calculated. A value of -1 specifies an unbounded
      * number of reverberations.
-     * A full description of this parameter and how it is used is in 
+     * A full description of this parameter and how it is used is in
      * the documentation for the AuralAttributes class.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param reverbOrder number of times reflections added to reverb signal
      * @see AuralAttributes#setReverbOrder
@@ -420,35 +420,35 @@ public interface AudioDevice3D extends AudioDevice {
     public abstract void setReverbOrder(int reverbOrder);
 
     /**
-     * Sets Distance Filter corresponding arrays containing distances and 
+     * Sets Distance Filter corresponding arrays containing distances and
      * frequency cutoff applied to all active positional sounds.
      * Gain scale factor is applied to sound based on the distance the listener
      * is from the sound source.
-     * A full description of this parameter and how it is used is in 
+     * A full description of this parameter and how it is used is in
      * the documentation for the AuralAttributes class.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param filterType denotes the type of filtering to be applied
      * @param distance array of offset distances from sound origin
      * @param filterCutoff array of frequency cutoff
      * @see AuralAttributes#setDistanceFilter(float[] distance,
-     *       float[] frequencyCutoff) 
-     * @see AuralAttributes#setDistanceFilter(Point2f[] attenuation) 
+     *       float[] frequencyCutoff)
+     * @see AuralAttributes#setDistanceFilter(Point2f[] attenuation)
      */
-    public abstract void setDistanceFilter(int filterType, 
+    public abstract void setDistanceFilter(int filterType,
               double[] distance, float[]  filterCutoff);
 
     /**
-     * Specifies a scale factor applied to the frequency (or 
+     * Specifies a scale factor applied to the frequency (or
      * wavelength).  A value less than 1.0 will result of slowing the playback
      * rate of the sample.  A value greater than 1.0 will increase the playback
      * rate.
      * This parameter is also used to expand or contract the usual
      * frequency shift applied to the sound source due to Doppler effect
      * calculations. Valid values are >= 0.0.
-     * A full description of this parameter and how it is used is in 
+     * A full description of this parameter and how it is used is in
      * the documentation for the AuralAttributes class.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param frequencyScaleFactor factor applied to change of frequency
      * @see AuralAttributes#setFrequencyScaleFactor
@@ -457,15 +457,15 @@ public interface AudioDevice3D extends AudioDevice {
 
     /**
      * Sets the Velocity scale factor applied during Doppler Effect calculation.
-     * This parameter specifies a scale factor applied to the velocity of sound 
+     * This parameter specifies a scale factor applied to the velocity of sound
      * relative to the listener's position and movement in relation to the sound's
      * position and movement.  This scale factor is multipled by the calculated
      * velocity portion of the Doppler effect equation used during sound rendering.
-     * A full description of this parameter and how it is used is in 
+     * A full description of this parameter and how it is used is in
      * the documentation for the AuralAttributes class.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
-     * @param velocityScaleFactor applied to velocity of sound in relation 
+     * @param velocityScaleFactor applied to velocity of sound in relation
      * to listener
      * @see AuralAttributes#setVelocityScaleFactor
      */
@@ -477,21 +477,21 @@ public interface AudioDevice3D extends AudioDevice {
      * of a playing sound sample.  Ideally this is implemented by
      * stopping a sample and freeing channel resources (rather than
      * just setting the gain of the sample to zero).
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param index device specific reference number to device driver sample
-     */  
+     */
     public abstract void muteSample(int index);
 
     /**
      * Makes a silently playing sample audible.
      * In the ideal, this restarts a muted sample by offset from the
      * beginning by the number of milliseconds since the time the sample
-     * began playing (rather than setting gain to current non-zero gain). 
-     * <P> 
+     * began playing (rather than setting gain to current non-zero gain).
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param index device specific reference number to device driver sample
-     */  
+     */
     public abstract void unmuteSample(int index);
 
     /**
@@ -500,35 +500,35 @@ public interface AudioDevice3D extends AudioDevice {
      * that it can be unpaused at a later time from the same location in the
      * sample when the pause was initiated.  Pausing a streaming, non-cached
      * sound sample will be treated as a mute.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param index device specific reference number to device driver sample
-     */  
+     */
     public abstract void pauseSample(int index);
 
     /**
      * Restarts the paused sample from the location in the sample where
      * paused.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param index device specific reference number to device driver sample
-     */  
+     */
     public abstract void unpauseSample(int index);
 
     /**
-     * 
+     *
      * Explicitly updates a Sample.
      * This method is called when a Sound is to be explicitly updated.
      * It is only called when all a sounds parameters are known to have
      * been passed to the audio device.  In this way, an implementation
-     * can choose to perform lazy-evaluation of a sample, rather than 
+     * can choose to perform lazy-evaluation of a sample, rather than
      * updating the rendering state of the sample after every individual
      * parameter changed.
      * This method can be left as a null method if the implementor so chooses.
-     * <P> 
+     * <P>
      * This method should only be called by Java3D Core and  NOT by any application.
      * @param index device specific reference number to device driver sample
-     */  
+     */
     public abstract void updateSample(int index);
 
 }

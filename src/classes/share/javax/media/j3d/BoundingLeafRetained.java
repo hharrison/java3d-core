@@ -48,8 +48,8 @@ class BoundingLeafRetained extends LeafRetained {
     Bounds      region = null;
 
 
-    // For the mirror object, this region is the transformed region 
-    // (the region of the original bounding leaf object transformed 
+    // For the mirror object, this region is the transformed region
+    // (the region of the original bounding leaf object transformed
     // by the cache transform)
     Bounds  transformedRegion = null;
 
@@ -76,7 +76,7 @@ class BoundingLeafRetained extends LeafRetained {
 	this.nodeType = NodeRetained.BOUNDINGLEAF;
 	mirrorBoundingLeaf = new BoundingLeafRetained();
     }
-    
+
     /**
      * Initialize the bounding region
      */
@@ -173,7 +173,7 @@ class BoundingLeafRetained extends LeafRetained {
     }
 
 
-  /** Update the "component" field of the mirror object with the 
+  /** Update the "component" field of the mirror object with the
    *  given "value"
    */
     synchronized void updateImmediateMirrorObject(Object[] objs) {
@@ -181,7 +181,7 @@ class BoundingLeafRetained extends LeafRetained {
 	int component = ((Integer)objs[1]).intValue();
 	Bounds b = ((Bounds)objs[2]);
 	Transform3D t;
-			 
+
 	if ((component & REGION_CHANGED) != 0) {
 	    mirrorBoundingLeaf.region = b;
 	    if (b != null) {
@@ -192,7 +192,7 @@ class BoundingLeafRetained extends LeafRetained {
 	    else {
 		mirrorBoundingLeaf.transformedRegion = null;
 	    }
-	    
+
 	}
     }
 

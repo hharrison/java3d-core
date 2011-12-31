@@ -70,9 +70,9 @@ class RenderingAttributesRetained extends NodeComponentRetained {
     boolean depthBufferEnable = true;
 
     boolean depthBufferWriteEnable = true;
-    
+
     float alphaTestValue = 0.0f;
-    
+
     int alphaTestFunction = RenderingAttributes.ALWAYS;
 
     int depthTestFunction = RenderingAttributes.LESS_OR_EQUAL;
@@ -101,9 +101,9 @@ class RenderingAttributesRetained extends NodeComponentRetained {
     static final int LEQUAL = 1;
 
     /**
-     * Sets the visibility flag for this RenderingAttributes component object. 
+     * Sets the visibility flag for this RenderingAttributes component object.
      * @param visible true or false to enable or disable visibility
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see View#setVisibilityPolicy
@@ -111,19 +111,19 @@ class RenderingAttributesRetained extends NodeComponentRetained {
     final void initVisible(boolean state){
 	visible = state;
     }
-    
+
     /**
      * Sets the visibility flag for this RenderingAttributes
      * component object.  Invisible objects are not rendered (subject to
      * the visibility policy for the current view), but they can be picked
      * or collided with.
      * @param visible true or false to enable or disable visibility
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see View#setVisibilityPolicy
      */
-    final void setVisible(boolean  state){	
+    final void setVisible(boolean  state){
 	// Optimize : If new state equal to current state, should I simply return ?
 	// Is it safe ?
 	initVisible(state);
@@ -136,19 +136,19 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 	sendMessage(VISIBLE, (state ? Boolean.TRUE: Boolean.FALSE));
 
     }
-    
+
     /**
      * Retrieves the visibility flag for this RenderingAttributes object.
      * @return true if the object is visible; false
      * if the object is invisible.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     final boolean getVisible() {
    	return visible;
     }
 
- 
+
     /**
      * Enables or disables vertex colors for this RenderAttributes
      * component object.
@@ -160,7 +160,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 
     /**
      * Enables or disables vertex colors for this RenderAttributes
-     * component object and sends a 
+     * component object and sends a
      * message notifying the interested structures of the change.
      * @param state true or false to enable or disable depth vertex colors
      */
@@ -190,7 +190,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 
     /**
      * Enables or disables depth buffer mode for this RenderAttributes
-     * component object and sends a 
+     * component object and sends a
      * message notifying the interested structures of the change.
      * @param state true or false to enable or disable depth buffer mode
      */
@@ -253,7 +253,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 	alphaTestValue = value;
     }
     /**
-     * Set alpha test value used by alpha test function and sends a 
+     * Set alpha test value used by alpha test function and sends a
      * message notifying the interested structures of the change.
      * This value is compared to the alpha value of each rendered pixel.
      * @param value the alpha value
@@ -288,7 +288,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 
 
     /**
-     * Set alpha test function and sends a 
+     * Set alpha test function and sends a
      * message notifying the interested structures of the change.
      * This function is used to compare the
      * alpha test value with each per-pixel alpha value.  If the test
@@ -299,7 +299,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      * GREATER_OR_EQUAL.
      */
     final void setAlphaTestFunction(int function){
-	
+
 	initAlphaTestFunction(function);
 	sendMessage(ALPHA_TEST_FUNC, new Integer(function));
     }
@@ -344,7 +344,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
     /**
      * Retrieves current depth test function.
      * @return the current depth test function
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     final int getDepthTestFunction(){
@@ -396,7 +396,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
     }
 
 
-    // Stencil operations 
+    // Stencil operations
     /**
      * Initialize the stencil enable state
      */
@@ -433,7 +433,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      */
     final void setStencilOp(int failOp, int zFailOp, int zPassOp) {
 	initStencilOp(failOp, zFailOp, zPassOp);
-	
+
 	ArrayList arrList = new ArrayList(3);
 	arrList.add(new Integer(failOp));
 	arrList.add(new Integer(zFailOp));
@@ -465,7 +465,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      */
     final void setStencilFunction(int function, int refValue, int compareMask) {
 	initStencilOp(function, refValue, compareMask);
-	
+
 	ArrayList arrList = new ArrayList(3);
 	arrList.add(new Integer(function));
 	arrList.add(new Integer(refValue));
@@ -494,7 +494,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      * Set the stencil write mask
      */
     final void setStencilWriteMask(int mask) {
-	initStencilWriteMask(mask);	
+	initStencilWriteMask(mask);
 	sendMessage(STENCIL_WRITE_MASK, new Integer(mask));
     }
 
@@ -505,7 +505,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 	return stencilWriteMask;
     }
 
-    
+
     /**
      * Updates the native context.
      */
@@ -516,11 +516,11 @@ class RenderingAttributesRetained extends NodeComponentRetained {
     void updateNative(Canvas3D c3d,
 		      boolean depthBufferWriteEnableOverride,
                       boolean depthBufferEnableOverride) {
-	Pipeline.getPipeline().updateRenderingAttributes(c3d.ctx, 
+	Pipeline.getPipeline().updateRenderingAttributes(c3d.ctx,
 		     depthBufferWriteEnableOverride, depthBufferEnableOverride,
 		     depthBufferEnable, depthBufferWriteEnable,  depthTestFunction,
                      alphaTestValue, alphaTestFunction, ignoreVertexColors,
-		     rasterOpEnable, rasterOp, c3d.userStencilAvailable, stencilEnable, 
+		     rasterOpEnable, rasterOp, c3d.userStencilAvailable, stencilEnable,
 		     stencilFailOp, stencilZFailOp, stencilZPassOp,
 		     stencilFunction, stencilReferenceValue, stencilCompareMask,
 		     stencilWriteMask  );
@@ -538,14 +538,14 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 		mirror = this;
 	    }
 	    else {
-		RenderingAttributesRetained mirrorRa  
+		RenderingAttributesRetained mirrorRa
 		    = new RenderingAttributesRetained();
 		mirrorRa.set(this);
                 mirrorRa.source = source;
 		mirror = mirrorRa;
 	    }
 	} else {
-	    ((RenderingAttributesRetained) mirror).set(this);	    
+	    ((RenderingAttributesRetained) mirror).set(this);
 	}
     }
 
@@ -558,11 +558,11 @@ class RenderingAttributesRetained extends NodeComponentRetained {
     }
 
     /**
-     * Update the "component" field of the mirror object with the 
+     * Update the "component" field of the mirror object with the
      *  given "value"
      */
     synchronized void updateMirrorObject(int component, Object value) {
-	RenderingAttributesRetained mirrorRa = (RenderingAttributesRetained)mirror;      
+	RenderingAttributesRetained mirrorRa = (RenderingAttributesRetained)mirror;
 
 	if ((component & DEPTH_ENABLE) != 0) {
 	    mirrorRa.depthBufferEnable = ((Boolean)value).booleanValue();
@@ -584,10 +584,10 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 	}
 	else if ((component & IGNORE_VCOLOR) != 0) {
 	    mirrorRa.ignoreVertexColors = (((Boolean)value).booleanValue());
-	}	
+	}
 	else if ((component & RASTER_OP_ENABLE) != 0) {
 	    mirrorRa.rasterOpEnable = (((Boolean)value).booleanValue());
-	}	
+	}
 	else if ((component & RASTER_OP_VALUE) != 0) {
 	    mirrorRa.rasterOp = (((Integer)value).intValue());
 	}
@@ -615,7 +615,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 	return (this == rr) ||
 	       ((rr != null) &&
 		(rr.depthBufferEnable  == depthBufferEnable) &&
-		(rr.depthBufferWriteEnable == depthBufferWriteEnable) && 
+		(rr.depthBufferWriteEnable == depthBufferWriteEnable) &&
 		(rr.alphaTestValue == alphaTestValue) &&
 		(rr.alphaTestFunction == alphaTestFunction) &&
 		(rr.visible == visible) &&
@@ -654,11 +654,11 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 	stencilWriteMask = ra.stencilWriteMask;
 
     }
-    
+
     final void sendMessage(int attrMask, Object attr) {
 
 	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
@@ -680,7 +680,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 	    if (attrMask == VISIBLE)
 	        createMessage.threads |= J3dThread.UPDATE_GEOMETRY;
 	    createMessage.type = J3dMessage.RENDERINGATTRIBUTES_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
@@ -689,8 +689,8 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 	    ArrayList gL = (ArrayList)gaList.get(i);
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
-	    createMessage.args[3] = gaArr;  
-	    
+	    createMessage.args[3] = gaArr;
+
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
 
@@ -699,7 +699,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
     // TODO : Need to handle stencil operation -- Chien
     void handleFrequencyChange(int bit) {
 	int mask = 0;
-	
+
 	if (bit == RenderingAttributes.ALLOW_ALPHA_TEST_VALUE_WRITE)
 	    mask = ALPHA_TEST_VALUE;
 	if( bit == RenderingAttributes.ALLOW_ALPHA_TEST_FUNCTION_WRITE)
@@ -719,12 +719,12 @@ class RenderingAttributesRetained extends NodeComponentRetained {
 	    mask = DEPTH_TEST_FUNC;
 
 	if( bit == RenderingAttributes.ALLOW_DEPTH_TEST_FUNCTION_WRITE)
-	    mask = STENCIL_ENABLE | STENCIL_OP_VALUES | STENCIL_FUNC | 
+	    mask = STENCIL_ENABLE | STENCIL_OP_VALUES | STENCIL_FUNC |
 		STENCIL_WRITE_MASK;
 
 	if (mask != 0)
 	    setFrequencyChangeMask(bit, mask);
 	//	System.err.println("changedFreqent2 = "+changedFrequent);
     }
-    
+
 }

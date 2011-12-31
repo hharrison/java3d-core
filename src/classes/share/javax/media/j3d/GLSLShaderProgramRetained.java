@@ -37,7 +37,7 @@ package javax.media.j3d;
  */
 
 class GLSLShaderProgramRetained extends ShaderProgramRetained {
-    
+
     /**
      * Constructs a GLSL shader program node component.
      */
@@ -298,7 +298,7 @@ class GLSLShaderProgramRetained extends ShaderProgramRetained {
                 numElements,
                 value);
     }
- 
+
     /**
      * Method to return a flag indicating whether this
      * ShaderProgram is supported on the specified Canvas.
@@ -310,17 +310,17 @@ class GLSLShaderProgramRetained extends ShaderProgramRetained {
     /**
      * Method to create the native shader.
      */
-    ShaderError createShader(Context ctx, ShaderRetained shader, ShaderId[] shaderIdArr) {	
+    ShaderError createShader(Context ctx, ShaderRetained shader, ShaderId[] shaderIdArr) {
 	  return Pipeline.getPipeline().createGLSLShader(ctx, shader.shaderType, shaderIdArr);
     }
-    
+
     /**
      * Method to destroy the native shader.
      */
     ShaderError destroyShader(Context ctx, ShaderId shaderId) {
 	return Pipeline.getPipeline().destroyGLSLShader(ctx, shaderId);
     }
-    
+
     /**
      * Method to compile the native shader.
      */
@@ -332,7 +332,7 @@ class GLSLShaderProgramRetained extends ShaderProgramRetained {
      * Method to create the native shader program.
      */
     ShaderError createShaderProgram(Context ctx, ShaderProgramId[] shaderProgramIdArr) {
-	    return Pipeline.getPipeline().createGLSLShaderProgram(ctx, shaderProgramIdArr);  
+	    return Pipeline.getPipeline().createGLSLShaderProgram(ctx, shaderProgramIdArr);
     }
 
     /**
@@ -348,7 +348,7 @@ class GLSLShaderProgramRetained extends ShaderProgramRetained {
     ShaderError linkShaderProgram(Context ctx, ShaderProgramId shaderProgramId, ShaderId[] shaderIds) {
         return Pipeline.getPipeline().linkGLSLShaderProgram(ctx, shaderProgramId, shaderIds);
     }
- 
+
     ShaderError bindVertexAttrName(Context ctx, ShaderProgramId shaderProgramId, String attrName, int attrIndex) {
         return Pipeline.getPipeline().bindGLSLVertexAttrName(ctx, shaderProgramId, attrName, attrIndex);
     }
@@ -361,7 +361,7 @@ class GLSLShaderProgramRetained extends ShaderProgramRetained {
             String[] attrNames, AttrNameInfo[] attrNameInfoArr) {
 
         int numAttrNames = attrNames.length;
-        
+
         ShaderAttrLoc[] locArr = new ShaderAttrLoc[numAttrNames];
         int[] typeArr = new int[numAttrNames];
         int[] sizeArr = new int[numAttrNames]; // currently unused
@@ -382,14 +382,14 @@ class GLSLShaderProgramRetained extends ShaderProgramRetained {
 //                    ", size = " + sizeArr[i]);
         }
     }
-    
+
     /**
      * Method to enable the native shader program.
      */
     ShaderError enableShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
 	return Pipeline.getPipeline().useGLSLShaderProgram(ctx, shaderProgramId);
     }
-	
+
     /**
      * Method to disable the native shader program.
      */

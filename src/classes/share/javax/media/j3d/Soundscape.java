@@ -94,14 +94,14 @@ public class Soundscape extends Leaf {
    // Array for setting default read capabilities
     private static final int[] readCapabilities = {
         ALLOW_APPLICATION_BOUNDS_READ,
-        ALLOW_ATTRIBUTES_READ        
+        ALLOW_ATTRIBUTES_READ
     };
      /**
      * Constructs and initializes a new Sound node using following
      * defaults:
      *<UL>   application region: null (no active region)</UL>
      *<UL>  aural attributes: null (uses default aural attributes)</UL>
-     */  
+     */
     public Soundscape() {
          // Just use default values
         // set default read capabilities
@@ -113,7 +113,7 @@ public class Soundscape extends Leaf {
      * parameters
      * @param region application region
      * @param attributes array of aural attribute component objects
-     */  
+     */
     public Soundscape(Bounds region,
                       AuralAttributes attributes) {
         // set default read capabilities
@@ -126,7 +126,7 @@ public class Soundscape extends Leaf {
     /**
      * Creates the retained mode SoundscapeRetained object that this
      * component object will point to.
-     */  
+     */
     void createRetained() {
         this.retained = new SoundscapeRetained();
         this.retained.setSource(this);
@@ -134,17 +134,17 @@ public class Soundscape extends Leaf {
 
     /**
      * Set the Soundscape's application region to the specified bounds
-     * specified in local coordinates of this leaf node.  The aural 
-     * attributes associated with this Soundscape are used to render 
-     * the active sounds when this application region intersects the 
-     * ViewPlatform's activation volume. The getApplicationBounds method 
+     * specified in local coordinates of this leaf node.  The aural
+     * attributes associated with this Soundscape are used to render
+     * the active sounds when this application region intersects the
+     * ViewPlatform's activation volume. The getApplicationBounds method
      * returns a new Bounds object.
      * This region is used when the application bounding leaf is null.
      * @param region the bounds that contains the Soundscape's new application
      * region.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setApplicationBounds(Bounds region) {
         if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_APPLICATION_BOUNDS_WRITE))
@@ -153,12 +153,12 @@ public class Soundscape extends Leaf {
 	((SoundscapeRetained)this.retained).setApplicationBounds(region);
     }
 
-    /**  
+    /**
      * Retrieves the Soundscape node's application bounds.
      * @return this Soundscape's application bounds information
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public Bounds getApplicationBounds() {
         if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_APPLICATION_BOUNDS_READ))
@@ -175,7 +175,7 @@ public class Soundscape extends Leaf {
      * node's new application region.
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setApplicationBoundingLeaf(BoundingLeaf region) {
         if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_APPLICATION_BOUNDS_WRITE))
@@ -184,12 +184,12 @@ public class Soundscape extends Leaf {
 	((SoundscapeRetained)this.retained).setApplicationBoundingLeaf(region);
     }
 
-    /**  
+    /**
      * Retrieves the Soundscape node's application bounding leaf.
      * @return this Soundscape's application bounding leaf information
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public BoundingLeaf getApplicationBoundingLeaf() {
         if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_APPLICATION_BOUNDS_READ))
@@ -220,13 +220,13 @@ public class Soundscape extends Leaf {
      */
     public AuralAttributes getAuralAttributes() {
       if (isLiveOrCompiled())
-       if(!this.getCapability(ALLOW_ATTRIBUTES_READ)) 
-         throw new CapabilityNotSetException(J3dI18N.getString("Soundscape5")); 
- 
+       if(!this.getCapability(ALLOW_ATTRIBUTES_READ))
+         throw new CapabilityNotSetException(J3dI18N.getString("Soundscape5"));
+
        return ((SoundscapeRetained)this.retained).getAuralAttributes();
     }
 
-   
+
     /**
      * Creates a new instance of the node.  This routine is called
      * by <code>cloneTree</code> to duplicate the current node.
@@ -271,7 +271,7 @@ public class Soundscape extends Leaf {
      *  <code>false</code>, the value of each node's
      *  <code>duplicateOnCloneTree</code> variable determines whether
      *  NodeComponent data is duplicated or copied.
-     * @exception ClassCastException if originalNode is not an instance of 
+     * @exception ClassCastException if originalNode is not an instance of
      *  <code>Soundscape</code>
      *
      * @see Node#cloneTree
@@ -287,7 +287,7 @@ public class Soundscape extends Leaf {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -310,7 +310,7 @@ public class Soundscape extends Leaf {
 	SoundscapeRetained rt = (SoundscapeRetained) retained;
 
 	rt.setApplicationBounds(attr.getApplicationBounds());
-	
+
 	rt.setAuralAttributes((AuralAttributes) getNodeComponent(
 					       attr.getAuralAttributes(),
 					       forceDuplicate,

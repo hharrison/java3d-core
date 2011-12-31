@@ -48,12 +48,12 @@ public class ScaleInterpolator extends TransformInterpolator {
     private Transform3D scale = new Transform3D();
 
 
-    // We can't use a boolean flag since it is possible 
+    // We can't use a boolean flag since it is possible
     // that after alpha change, this procedure only run
     // once at alpha.finish(). So the best way is to
     // detect alpha value change.
     private float prevAlphaValue = Float.NaN;
-    private WakeupCriterion passiveWakeupCriterion = 
+    private WakeupCriterion passiveWakeupCriterion =
     (WakeupCriterion) new WakeupOnElapsedFrames(0, true);
 
     // non-public, default constructor used by cloneNode
@@ -62,8 +62,8 @@ public class ScaleInterpolator extends TransformInterpolator {
 
     /**
       * Constructs a trivial scale interpolator that varies its target
-      * TransformGroup node between the two specified alpha values 
-      * using the specified alpha, an identity matrix, 
+      * TransformGroup node between the two specified alpha values
+      * using the specified alpha, an identity matrix,
       * a minimum scale = 0.1f, and a maximum scale = 1.0f.
       * @param alpha the alpha object for this interpolator
       * @param target the TransformGroup node affected by this interpolator
@@ -77,9 +77,9 @@ public class ScaleInterpolator extends TransformInterpolator {
     }
 
     /**
-      * Constructs a new scaleInterpolator object that varies its target 
+      * Constructs a new scaleInterpolator object that varies its target
       * TransformGroup node's scale component between two scale values
-      * (minimumScale and maximumScale).  
+      * (minimumScale and maximumScale).
       * @param alpha the alpha object for this interpolator
       * @param target the TransformGroup node affected by this interpolator
       * @param axisOfTransform the transform that defines the local coordinate
@@ -98,7 +98,7 @@ public class ScaleInterpolator extends TransformInterpolator {
 
 	this.minimumScale = minimumScale;
 	this.maximumScale = maximumScale;
-    }    
+    }
 
     /**
       * This method sets the minimumScale for this interpolator.
@@ -139,7 +139,7 @@ public class ScaleInterpolator extends TransformInterpolator {
     public void setAxisOfScale(Transform3D axisOfScale) {
         setTransformAxis(axisOfScale);
     }
-    
+
      /**
      * @deprecated As of Java 3D version 1.3, replaced by
      * <code>TransformInterpolator.getTransformAxis()</code>
@@ -195,7 +195,7 @@ public class ScaleInterpolator extends TransformInterpolator {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -214,7 +214,7 @@ public class ScaleInterpolator extends TransformInterpolator {
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 
         super.duplicateAttributes(originalNode, forceDuplicate);
-	
+
 	ScaleInterpolator si = (ScaleInterpolator) originalNode;
 
         setMinimumScale(si.getMinimumScale());

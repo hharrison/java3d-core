@@ -59,7 +59,7 @@ class PointAttributesRetained extends NodeComponentRetained {
     }
 
     /**
-     * Sets the point size for this appearance component object and sends a 
+     * Sets the point size for this appearance component object and sends a
      * message notifying the interested structures of the change.
      * @param pointSize the size, in pixels, of point primitives
      */
@@ -87,13 +87,13 @@ class PointAttributesRetained extends NodeComponentRetained {
 
     /**
      * Enables or disables point antialiasing
-     * for this appearance component object and sends a 
+     * for this appearance component object and sends a
      * message notifying the interested structures of the change.
      * @param state true or false to enable or disable point antialiasing
      */
     final void setPointAntialiasingEnable(boolean state) {
 	initPointAntialiasingEnable(state);
-	sendMessage(POINT_AA_CHANGED, 
+	sendMessage(POINT_AA_CHANGED,
 		    (state ? Boolean.TRUE: Boolean.FALSE));
     }
 
@@ -107,7 +107,7 @@ class PointAttributesRetained extends NodeComponentRetained {
     }
 
    /**
-    * Creates and initializes a mirror object, point the mirror object 
+    * Creates and initializes a mirror object, point the mirror object
     * to the retained object if the object is not editable
     */
     synchronized void createMirrorObject() {
@@ -146,7 +146,7 @@ class PointAttributesRetained extends NodeComponentRetained {
 
 
     /**
-     * Update the "component" field of the mirror object with the 
+     * Update the "component" field of the mirror object with the
      * given "value"
      */
     synchronized void updateMirrorObject(int component, Object value) {
@@ -163,7 +163,7 @@ class PointAttributesRetained extends NodeComponentRetained {
 
     boolean equivalent(PointAttributesRetained pr) {
 	return ((pr != null) &&
-		(pr.pointSize == pointSize) && 
+		(pr.pointSize == pointSize) &&
 		(pr.pointAntialiasing == pointAntialiasing));
     }
 
@@ -174,10 +174,10 @@ class PointAttributesRetained extends NodeComponentRetained {
 	 pointAntialiasing = pr.pointAntialiasing;
      }
 
-    
+
     final void sendMessage(int attrMask, Object attr) {
        	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
@@ -197,7 +197,7 @@ class PointAttributesRetained extends NodeComponentRetained {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.POINTATTRIBUTES_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
@@ -207,7 +207,7 @@ class PointAttributesRetained extends NodeComponentRetained {
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
 	    createMessage.args[3] = gaArr;
-	    
+
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
 
@@ -218,5 +218,5 @@ class PointAttributesRetained extends NodeComponentRetained {
 	    setFrequencyChangeMask(bit, 0x1);
 	}
     }
-    
+
 }

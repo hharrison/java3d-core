@@ -33,7 +33,7 @@ package javax.media.j3d;
 
 /**
  * Texture3D is a subclass of Texture class. It extends Texture
- * class by adding a third coordinate, constructor and a mutator 
+ * class by adding a third coordinate, constructor and a mutator
  * method for setting a 3D texture image.
  * If 3D texture mapping is not supported on a particular Canvas3D,
  * 3D texture mapping is ignored for that canvas.
@@ -61,7 +61,7 @@ public class Texture3D extends Texture {
      * boundary mode R : WRAP<br>
      * </ul>
      * <p>
-     * Note that the default constructor creates a texture object with 
+     * Note that the default constructor creates a texture object with
      * a width, height, and depth of 0 and is, therefore, not useful.
      */
     public Texture3D() {
@@ -70,7 +70,7 @@ public class Texture3D extends Texture {
 
     /**
      * Constructs an empty Texture3D object with specified mipmapMode
-     * format, width, height, and depth. Image at base level must be set by 
+     * format, width, height, and depth. Image at base level must be set by
      * the application using 'setImage' method. If mipmapMode is
      * set to MULTI_LEVEL_MIPMAP, images for base level through
      * maximum level must be set.
@@ -97,19 +97,19 @@ public class Texture3D extends Texture {
 	super(mipmapMode, format, width, height);
 
         int  depthLevels = -1;
-        
+
         depthLevels = getLevelsNPOT(depth);
-        
-        // TODO : Need to verify whether this is a bug. Why depthLevels isn't 
+
+        // TODO : Need to verify whether this is a bug. Why depthLevels isn't
         // use to determine maxMipMapLevels ? See also Texture.java
-        
+
 	((Texture3DRetained)this.retained).setDepth(depth);
     }
 
     /**
      * Constructs an empty Texture3D object with specified mipmapMode
-     * format, width, height, depth, and boundaryWidth. 
-     * Image at base level must be set by 
+     * format, width, height, depth, and boundaryWidth.
+     * Image at base level must be set by
      * the application using 'setImage' method. If mipmapMode is
      * set to MULTI_LEVEL_MIPMAP, images for base level through
      * maximum level must be set.
@@ -143,12 +143,12 @@ public class Texture3D extends Texture {
 
 	super(mipmapMode, format, width, height, boundaryWidth);
         int  depthLevels = -1;
-        
+
         depthLevels = getLevelsNPOT(depth);
-        
-        // TODO : Need to verify whether this is a bug. Why depthLevels isn't 
+
+        // TODO : Need to verify whether this is a bug. Why depthLevels isn't
         // use to determine maxMipMapLevels ? See also Texture.java
-        
+
 	((Texture3DRetained)this.retained).setDepth(depth);
     }
 
@@ -243,7 +243,7 @@ public class Texture3D extends Texture {
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -255,8 +255,8 @@ public class Texture3D extends Texture {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
-    void duplicateAttributes(NodeComponent originalNodeComponent, 
-			     boolean forceDuplicate) { 
+    void duplicateAttributes(NodeComponent originalNodeComponent,
+			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
 
 	((Texture3DRetained) retained).initBoundaryModeR(((Texture3DRetained)

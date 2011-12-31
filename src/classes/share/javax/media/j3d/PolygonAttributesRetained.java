@@ -162,9 +162,9 @@ class PolygonAttributesRetained extends NodeComponentRetained {
     }
 
     /**
-     * Sets the polygon offset to the specified value and sends a 
+     * Sets the polygon offset to the specified value and sends a
      * message notifying the interested structures of the change.
-     * This screen space offset is added to the final, device 
+     * This screen space offset is added to the final, device
      * coordinate Z value of polygon primitives.
      * @param polygonOffset the polygon offset
      */
@@ -173,9 +173,9 @@ class PolygonAttributesRetained extends NodeComponentRetained {
     }
 
     /**
-     * Sets the polygon offset to the specified value and sends a 
+     * Sets the polygon offset to the specified value and sends a
      * message notifying the interested structures of the change.
-     * This screen space offset is added to the final, device 
+     * This screen space offset is added to the final, device
      * coordinate Z value of polygon primitives.
      * @param polygonOffset the polygon offset
      */
@@ -195,7 +195,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
 
 
     /**
-     * Sets the polygon offset factor to the specified value and sends a 
+     * Sets the polygon offset factor to the specified value and sends a
      * message notifying the interested structures of the change.
      * This factor is multiplied by the slope of the polygon, and
      * then added to the final, device coordinate Z value of polygon
@@ -207,7 +207,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
     }
 
     /**
-     * Sets the polygon offset factor to the specified value and sends a 
+     * Sets the polygon offset factor to the specified value and sends a
      * message notifying the interested structures of the change.
      * This factor is multiplied by the slope of the polygon, and
      * then added to the final, device coordinate Z value of polygon
@@ -216,7 +216,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
      */
     final void setPolygonOffsetFactor(float polygonOffsetFactor) {
 	initPolygonOffsetFactor(polygonOffsetFactor);
-	sendMessage(POLYGON_OFFSETFACTOR_CHANGED, 
+	sendMessage(POLYGON_OFFSETFACTOR_CHANGED,
 		    new Float(polygonOffsetFactor));
     }
 
@@ -230,7 +230,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
     }
 
    /**
-    * Creates and initializes a mirror object, point the mirror object 
+    * Creates and initializes a mirror object, point the mirror object
     * to the retained object if the object is not editable
     */
     synchronized void createMirrorObject() {
@@ -244,9 +244,9 @@ class PolygonAttributesRetained extends NodeComponentRetained {
 		mirrorPa.set(this);
 		mirrorPa.source = source;
 		mirror = mirrorPa;
-	    } 
+	    }
 	} else {
-	    ((PolygonAttributesRetained) mirror).set(this);	    
+	    ((PolygonAttributesRetained) mirror).set(this);
 	}
     }
 
@@ -269,7 +269,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
     }
 
     /**
-     * Update the "component" field of the mirror object with the 
+     * Update the "component" field of the mirror object with the
      * given "value"
      */
     synchronized void updateMirrorObject(int component, Object value) {
@@ -287,12 +287,12 @@ class PolygonAttributesRetained extends NodeComponentRetained {
       }
       else if ((component & POLYGON_OFFSET_CHANGED) != 0) {
 	  mirrorPa.polygonOffset = ((Float)value).floatValue();
-      } 
+      }
       else if ((component & POLYGON_OFFSETFACTOR_CHANGED) != 0) {
 	  mirrorPa.polygonOffsetFactor = ((Float) value).floatValue();
       }
     }
-  
+
 
     boolean equivalent(PolygonAttributesRetained pr) {
 	return ((pr != null) &&
@@ -311,10 +311,10 @@ class PolygonAttributesRetained extends NodeComponentRetained {
 	polygonOffset = pr.polygonOffset;
 	polygonOffsetFactor = pr.polygonOffsetFactor;
     }
-    
+
     final void sendMessage(int attrMask, Object attr) {
        	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
@@ -333,7 +333,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.POLYGONATTRIBUTES_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
@@ -343,7 +343,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
 	    createMessage.args[3] = gaArr;
-	    
+
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
 
@@ -356,6 +356,6 @@ class PolygonAttributesRetained extends NodeComponentRetained {
 	    bit == PolygonAttributes.ALLOW_OFFSET_WRITE) {
 	    setFrequencyChangeMask(bit, 0x1);
 	}
-    }    
+    }
 
 }

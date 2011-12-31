@@ -34,7 +34,7 @@ package javax.media.j3d;
 import java.util.Enumeration;
 
 /**
- * SwitchValueInterpolator behavior.  This class defines a 
+ * SwitchValueInterpolator behavior.  This class defines a
  * behavior that modifies the selected child of the target
  * switch node by linearly interpolating between a pair of
  * specified child index values (using the value generated
@@ -48,12 +48,12 @@ public class SwitchValueInterpolator extends Interpolator {
     int lastSwitchIndex;
     int childCount;
 
-    // We can't use a boolean flag since it is possible 
+    // We can't use a boolean flag since it is possible
     // that after alpha change, this procedure only run
     // once at alpha.finish(). So the best way is to
     // detect alpha value change.
     private float prevAlphaValue = Float.NaN;
-    private WakeupCriterion passiveWakeupCriterion = 
+    private WakeupCriterion passiveWakeupCriterion =
 	(WakeupCriterion) new WakeupOnElapsedFrames(0, true);
 
     // non-public, default constructor used by cloneNode
@@ -61,7 +61,7 @@ public class SwitchValueInterpolator extends Interpolator {
     }
 
     /**
-     * Constructs a SwitchValueInterpolator behavior that varies its target 
+     * Constructs a SwitchValueInterpolator behavior that varies its target
      * Switch node's child index between 0 and <i>n</i>-1, where <i>n</i>
      * is the number of children in the target Switch node.
      * @param alpha the alpha object for this interpolator
@@ -76,11 +76,11 @@ public class SwitchValueInterpolator extends Interpolator {
 	firstSwitchIndex = 0;
 	childCount = target.numChildren();
 	lastSwitchIndex = childCount - 1;
-	
+
     }
 
     /**
-     * Constructs a SwitchValueInterpolator behavior that varies its target 
+     * Constructs a SwitchValueInterpolator behavior that varies its target
      * Switch node's child index between the two values provided.
      * @param alpha the alpha object for this interpolator
      * @param target the Switch node affected by this interpolator
@@ -101,7 +101,7 @@ public class SwitchValueInterpolator extends Interpolator {
 	lastSwitchIndex = lastChildIndex;
 	computeChildCount();
     }
-    
+
     /**
       * This method sets the firstChildIndex for this interpolator.
       * @param firstIndex the new index for the first child
@@ -153,11 +153,11 @@ public class SwitchValueInterpolator extends Interpolator {
 	return target;
     }
 
-    // The SwitchValueInterpolator's initialize routine uses the default 
+    // The SwitchValueInterpolator's initialize routine uses the default
     // initialization routine.
 
     /**
-     * This method is invoked by the behavior scheduler every frame.  
+     * This method is invoked by the behavior scheduler every frame.
      * It maps the alpha value that corresponds to the current time
      * into a child index value and updates the specified Switch node
      * with this new child index value.
@@ -178,7 +178,7 @@ public class SwitchValueInterpolator extends Interpolator {
 		    child = (int)(firstSwitchIndex +
 				  (int)(value * (childCount-1) + 0.49999999999f));
 		} else {
-		    child = (int)(firstSwitchIndex - 
+		    child = (int)(firstSwitchIndex -
 				  (int)(value * (childCount-1) + 0.49999999999f));
 		}
 		target.setWhichChild(child);
@@ -193,13 +193,13 @@ public class SwitchValueInterpolator extends Interpolator {
 
 
     /**
-     * calculate the number of the child to manage for this switch node 
+     * calculate the number of the child to manage for this switch node
      */
     final private void computeChildCount() {
-	if (lastSwitchIndex >= firstSwitchIndex) {	
+	if (lastSwitchIndex >= firstSwitchIndex) {
 	    childCount = lastSwitchIndex - firstSwitchIndex + 1;
 	} else {
-	    childCount = firstSwitchIndex - lastSwitchIndex + 1;	    
+	    childCount = firstSwitchIndex - lastSwitchIndex + 1;
 	}
     }
 
@@ -248,7 +248,7 @@ public class SwitchValueInterpolator extends Interpolator {
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
-	SwitchValueInterpolator si = 
+	SwitchValueInterpolator si =
 	    (SwitchValueInterpolator) originalNode;
 
         setFirstChildIndex(si.getFirstChildIndex());

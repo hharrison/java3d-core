@@ -50,10 +50,10 @@ import javax.vecmath.Color3f;
  * <LI>Specular color - the RGB specular color of the material (highlights).
  * The range of values is 0.0 to 1.0. The default specular color
  * is (1.0, 1.0, 1.0).<p></LI>
- * <LI>Emissive color - the RGB color of the light the material emits, if 
+ * <LI>Emissive color - the RGB color of the light the material emits, if
  * any. The range of values is 0.0 to 1.0. The default emissive
  * color is (0.0, 0.0, 0.0).<p></LI>
- * <LI>Shininess - the material's shininess, in the range [1.0, 128.0] 
+ * <LI>Shininess - the material's shininess, in the range [1.0, 128.0]
  * with 1.0 being not shiny and 128.0 being very shiny. Values outside
  * this range are clamped. The default value for the material's
  * shininess is 64.<p></LI>
@@ -126,7 +126,7 @@ public class Material extends NodeComponent {
     private static final int[] readCapabilities = {
         ALLOW_COMPONENT_READ
     };
-    
+
     /**
      * Constructs and initializes a Material object using default parameters.
      * The default values are as follows:
@@ -168,7 +168,7 @@ public class Material extends NodeComponent {
         setDefaultReadCapabilities(readCapabilities);
 
         ((MaterialRetained)this.retained).createMaterial(ambientColor,
-		    emissiveColor, diffuseColor, specularColor, 
+		    emissiveColor, diffuseColor, specularColor,
 		    shininess);
     }
 
@@ -214,7 +214,7 @@ public class Material extends NodeComponent {
     /**
      * Sets this material's ambient color.
      * This specifies how much ambient light is reflected by
-     * the surface.  
+     * the surface.
      * The ambient color in this Material object may be overridden by
      * per-vertex colors in some cases.  If vertex colors are present
      * in the geometry, and lighting is enabled, and the colorTarget
@@ -232,7 +232,7 @@ public class Material extends NodeComponent {
      * @see #setColorTarget
      */
     public void setAmbientColor(float r, float g, float b) {
-	if (isLiveOrCompiled()) 
+	if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_COMPONENT_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Material0"));
 	if (isLive()) {
@@ -278,12 +278,12 @@ public class Material extends NodeComponent {
 	if (isLiveOrCompiled())
 	  if (!this.getCapability(ALLOW_COMPONENT_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Material0"));
-	if (isLive()) 
+	if (isLive())
 	    ((MaterialRetained)this.retained).setEmissiveColor(color);
 	else
 	    ((MaterialRetained)this.retained).initEmissiveColor(color);
 
-    
+
 
 
     }
@@ -312,7 +312,7 @@ public class Material extends NodeComponent {
 	  if (!this.getCapability(ALLOW_COMPONENT_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Material0"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((MaterialRetained)this.retained).setEmissiveColor(r,g,b);
 	else
 	    ((MaterialRetained)this.retained).initEmissiveColor(r,g,b);
@@ -355,7 +355,7 @@ public class Material extends NodeComponent {
 	  if (!this.getCapability(ALLOW_COMPONENT_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Material0"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((MaterialRetained)this.retained).setDiffuseColor(color);
 	else
 	    ((MaterialRetained)this.retained).initDiffuseColor(color);
@@ -385,7 +385,7 @@ public class Material extends NodeComponent {
 	  if (!this.getCapability(ALLOW_COMPONENT_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Material0"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((MaterialRetained)this.retained).setDiffuseColor(r,g,b);
 	else
 	    ((MaterialRetained)this.retained).initDiffuseColor(r,g,b);
@@ -416,7 +416,7 @@ public class Material extends NodeComponent {
 	  if (!this.getCapability(ALLOW_COMPONENT_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Material0"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((MaterialRetained)this.retained).setDiffuseColor(r,g,b,a);
 	else
 	    ((MaterialRetained)this.retained).initDiffuseColor(r,g,b,a);
@@ -458,7 +458,7 @@ public class Material extends NodeComponent {
 	  if (!this.getCapability(ALLOW_COMPONENT_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Material0"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((MaterialRetained)this.retained).setSpecularColor(color);
 	else
 	    ((MaterialRetained)this.retained).initSpecularColor(color);
@@ -488,7 +488,7 @@ public class Material extends NodeComponent {
 	  if (!this.getCapability(ALLOW_COMPONENT_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Material0"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((MaterialRetained)this.retained).setSpecularColor(r,g,b);
 	else
 	    ((MaterialRetained)this.retained).initSpecularColor(r,g,b);
@@ -523,7 +523,7 @@ public class Material extends NodeComponent {
 	  if (!this.getCapability(ALLOW_COMPONENT_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Material0"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((MaterialRetained)this.retained).setShininess(shininess);
 	else
 	    ((MaterialRetained)this.retained).initShininess(shininess);
@@ -546,14 +546,14 @@ public class Material extends NodeComponent {
     /**
      * Enables or disables lighting for this appearance component object.
      * @param state true or false to enable or disable lighting
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setLightingEnable(boolean state) {
 	if (isLiveOrCompiled())
 	  if (!this.getCapability(ALLOW_COMPONENT_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Material15"));
-	if (isLive()) 
+	if (isLive())
 	    ((MaterialRetained)this.retained).setLightingEnable(state);
 	else
 	    ((MaterialRetained)this.retained).initLightingEnable(state);
@@ -562,7 +562,7 @@ public class Material extends NodeComponent {
     /**
      * Retrieves the state of the lighting enable flag.
      * @return true if lighting is enabled, false if lighting is disabled
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public boolean getLightingEnable() {
@@ -599,7 +599,7 @@ public class Material extends NodeComponent {
 	  if (!this.getCapability(ALLOW_COMPONENT_WRITE))
 	    throw new CapabilityNotSetException(J3dI18N.getString("Material3"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((MaterialRetained)this.retained).setColorTarget(colorTarget);
 	else
 	    ((MaterialRetained)this.retained).initColorTarget(colorTarget);
@@ -665,7 +665,7 @@ public class Material extends NodeComponent {
 	}
 
     /**
-     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)  
+     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
         Material m = new Material();
@@ -679,7 +679,7 @@ public class Material extends NodeComponent {
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -692,16 +692,16 @@ public class Material extends NodeComponent {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
     void duplicateAttributes(NodeComponent originalNodeComponent,
-			     boolean forceDuplicate) { 
-	super.duplicateAttributes(originalNodeComponent, 
+			     boolean forceDuplicate) {
+	super.duplicateAttributes(originalNodeComponent,
 				  forceDuplicate);
-	
+
 	MaterialRetained mat =  (MaterialRetained)
 	    originalNodeComponent.retained;
-	MaterialRetained rt =  (MaterialRetained) retained;	
-	
+	MaterialRetained rt =  (MaterialRetained) retained;
+
 	Color3f c = new Color3f();
-	mat.getAmbientColor(c);      
+	mat.getAmbientColor(c);
 
 	rt.initAmbientColor(c);
 	mat.getEmissiveColor(c);

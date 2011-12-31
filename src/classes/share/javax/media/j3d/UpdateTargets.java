@@ -80,16 +80,16 @@ class UpdateTargets {
         targetList[targetType].add(node);
     }
 
-    
+
     void addNodeArray(Object[] nodeArr, int targetType) {
 	if(targetList[targetType] == null)
 	    targetList[targetType] = new UnorderList(1);
-	
+
 	targetList[targetType].add(nodeArr);
     }
 
 
-    void clearNodes() {	
+    void clearNodes() {
 	for(int i=0; i<Targets.MAX_NODELIST; i++) {
 	    if (targetList[i] != null) {
 	        targetList[i].clear();

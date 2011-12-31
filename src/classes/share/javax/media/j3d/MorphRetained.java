@@ -59,12 +59,12 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      * a SharedGroup, only index 0 is valid.
      */
     ArrayList mirrorShape3D = new ArrayList();
-  
-  
+
+
     // Target threads to be notified when morph changes
     final static int targetThreads = (J3dThread.UPDATE_RENDER |
-				      J3dThread.UPDATE_GEOMETRY); 
-  
+				      J3dThread.UPDATE_GEOMETRY);
+
     /**
      * The appearance component of the morph node.
      */
@@ -89,12 +89,12 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     BranchGroupRetained branchGroupPath[];
 
 
-    // cache value for picking in mirror shape. 
+    // cache value for picking in mirror shape.
     // True if all the node of the path from this to root are all pickable
     boolean isPickable = true;
 
 
-    // cache value for collidable in mirror shape. 
+    // cache value for collidable in mirror shape.
     // True if all the node of the path from this to root are all collidable
     boolean isCollidable = true;
 
@@ -105,9 +105,9 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     // the child index from the closest switch parent
     int closestSwitchIndex = -1;
 
-    // Is this Morph visible ? The default is true.  
+    // Is this Morph visible ? The default is true.
     boolean visible = true;
-    
+
     // geometry Bounds in local coordinate
     Bounds bounds = null;
 
@@ -120,9 +120,9 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     // collision Bounds in virtual world coordinate
     Bounds collisionVwcBound = null;
 
-    
+
     GeometryArray morphedGeometryArray = null;
-    
+
     // Morph data
     float[] Mcoord = null;
     float[] Mcolor = null;
@@ -130,13 +130,13 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     // First dimension is the coordSet, second dimenension is the vertex index
     // each vertex has 2 or 3floats
     float[][]MtexCoord = null;
-    
+
     // Whether the normal appearance is overrided by the alternate app
     boolean appearanceOverrideEnable = false;
 
     int changedFrequent = 0;
 
-    
+
     MorphRetained() {
         this.nodeType = NodeRetained.MORPH;
 	localBounds = new BoundingBox();
@@ -164,7 +164,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
             message.args[1] = collisionBound;
 	    VirtualUniverse.mc.processMessage(message);
 	}
-    } 
+    }
 
     /**
      * Sets the geometric bounds of a node.
@@ -172,7 +172,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      */
     void setBounds(Bounds bounds) {
 	super.setBounds(bounds);
-	if (source.isLive() && !boundsAutoCompute) { 
+	if (source.isLive() && !boundsAutoCompute) {
 	    J3dMessage message = new J3dMessage();
 	    message.type = J3dMessage.REGION_BOUND_CHANGED;
 	    message.threads = J3dThread.UPDATE_TRANSFORM |
@@ -190,8 +190,8 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      */
     Bounds getCollisionBounds() {
         return (collisionBound == null? null : (Bounds)collisionBound.clone());
-    } 
-	    
+    }
+
     /**
      * Sets the geometryArrays component of the Morph node.
      * @param geometryArrays the new vector of geometryArrays for the morph node
@@ -201,7 +201,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 
 	if ((geometryArrays == null || geometryArrays.length == 0) && numGeometryArrays == 0)
 	    return;
-	
+
         GeometryArrayRetained geo, prevGeo;
 
         if (numGeometryArrays != 0 && (geometryArrays == null || numGeometryArrays != geometryArrays.length))
@@ -235,7 +235,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
             this.geometryArrays = new GeometryArrayRetained[geometryArrays.length];
 	    numGeometryArrays = geometryArrays.length;
 	}
-	
+
         for (i=0;i < numGeometryArrays;i++) {
 	    geo = (GeometryArrayRetained)geometryArrays[i].retained;
 	    if (((Morph)this.source).isLive()) {
@@ -248,7 +248,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		    geo.addMorphUser(this);
 		}
 	    }
-	  
+
 	    this.geometryArrays[i] = geo;
 	}
 	if (this.geometryArrays[0] == null)
@@ -265,14 +265,14 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    int texCoordSetCount = this.geometryArrays[0].getTexCoordSetCount();
 	    if (this.geometryArrays[0] instanceof IndexedGeometryArrayRetained) {
 		Mcoord = new float[this.geometryArrays[0].getNumCoordCount()* 3];
-	  
+
 		if ((vFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_3)
 		    Mcolor = new float[this.geometryArrays[0].getNumColorCount()* 3];
 		else if ((vFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_4)
 		    Mcolor = new float[this.geometryArrays[0].getNumColorCount()* 4];
 
 		MtexCoord = new float[texCoordSetCount][];
-		if ((vFormat & GeometryArray.NORMALS) != 0)    
+		if ((vFormat & GeometryArray.NORMALS) != 0)
 		    Mnormal = new float[this.geometryArrays[0].getNumNormalCount() *3];
 		for (int k = 0; k < texCoordSetCount; k++) {
 		    if ((vFormat & GeometryArray.TEXTURE_COORDINATE_2) != 0)
@@ -285,7 +285,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    }
 	    else {
 		Mcoord = new float[this.geometryArrays[0].validVertexCount* 3];
-	  
+
 		if ((vFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_3) {
 		    Mcolor = new float[this.geometryArrays[0].validVertexCount* 3];
 		} else if ((vFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_4) {
@@ -305,8 +305,8 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		}
 	    }
 	}
-	
-	//  create a new morphedGeometryArray 
+
+	//  create a new morphedGeometryArray
 	initMorphedGeometry();
 
 	if (source.isLive()) {
@@ -331,17 +331,17 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    VirtualUniverse.mc.processMessage(mChangeMessage);
 
 	    if (boundsAutoCompute) {
-		GeometryArrayRetained mga = (GeometryArrayRetained)morphedGeometryArray.retained; 
+		GeometryArrayRetained mga = (GeometryArrayRetained)morphedGeometryArray.retained;
 		// Compute the bounds once
 		mga.incrComputeGeoBounds();// This compute the bbox if dirty
 		mga.decrComputeGeoBounds();
 	    }
 	}
 
-	
+
 
     }
-  
+
     /**
      * Retrieves the geometryArrays component of this Morph node.
      * @param index the index of GeometryArray to be returned
@@ -350,7 +350,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     GeometryArray getGeometryArray(int index) {
         return (GeometryArray)this.geometryArrays[index].source;
     }
-  
+
     /**
      * Sets the appearance component of this Morph node.
      * @param appearance the new apearance component for this morph node
@@ -359,15 +359,15 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	boolean visibleIsDirty = false;
 
         if (((Morph)this.source).isLive()) {
-	    
+
 	    if (appearance != null) {
 		this.appearance.clearLive(refCount);
 		for (int i=mirrorShape3D.size()-1; i>=0; i--) {
 		    this.appearance.removeAMirrorUser(
 					(Shape3DRetained)mirrorShape3D.get(i));
-		}	   
+		}
 	    }
-	    
+
 	    if (newAppearance != null) {
 		((AppearanceRetained)newAppearance.retained).setLive(inBackgroundGroup, refCount);
 		appearance = ((AppearanceRetained)newAppearance.retained);
@@ -385,17 +385,17 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		if(visible == false) {
 		    visible = true;
 		    visibleIsDirty = true;
-		}	
+		}
 	    }
 
 	    // Send a message
 	    int size = 0;
-	    
+
 	    if (visibleIsDirty)
 		size = 2;
 	    else
 		size = 1;
-	    J3dMessage[] createMessage = new J3dMessage[size];	    
+	    J3dMessage[] createMessage = new J3dMessage[size];
 	    createMessage[0] = new J3dMessage();
 	    createMessage[0].threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT |
 		J3dThread.UPDATE_RENDER;
@@ -418,7 +418,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    createMessage[0].args[4] = Shape3DRetained.getGeomAtomsArray(mirrorShape3D);
 	    if(visibleIsDirty) {
 		createMessage[1] = new J3dMessage();
-		createMessage[1].threads = J3dThread.UPDATE_GEOMETRY;	    
+		createMessage[1].threads = J3dThread.UPDATE_GEOMETRY;
 		createMessage[1].type = J3dMessage.SHAPE3D_CHANGED;
 		createMessage[1].universe = universe;
 		createMessage[1].args[0] = this;
@@ -436,7 +436,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    }
 	}
     }
-  
+
     /**
      * Retrieves the morph node's appearance component.
      * @return the morph node's appearance
@@ -445,10 +445,10 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
         return (appearance == null ? null :
 		(Appearance) this.appearance.source);
     }
-  
+
     void setAppearanceOverrideEnable(boolean flag) {
         if (((Morph)this.source).isLive()) {
-	    
+
 	    // Send a message
 	    J3dMessage createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT |
@@ -478,7 +478,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     boolean getAppearanceOverrideEnable() {
 	return appearanceOverrideEnable;
     }
-   
+
     boolean intersect(PickInfo pickInfo, PickShape pickShape, int flags ) {
 
         Transform3D localToVworld = pickInfo.getLocalToVWorldRef();
@@ -492,7 +492,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
         if (geo.mirrorGeometry != null) {
             geo = geo.mirrorGeometry;
         }
-        
+
         if (((flags & PickInfo.CLOSEST_INTERSECTION_POINT) == 0) &&
                 ((flags & PickInfo.CLOSEST_DISTANCE) == 0) &&
                 ((flags & PickInfo.CLOSEST_GEOM_INFO) == 0) &&
@@ -504,11 +504,11 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
             Point3d iPntVW = new Point3d();
 
             if (geo.intersect(newPS, pickInfo, flags, iPnt, geo, 0)) {
-                
+
                 iPntVW.set(iPnt);
                 localToVworld.transform(iPntVW);
                 double distance = pickShape.distance(iPntVW);
-                
+
                 if ((flags & PickInfo.CLOSEST_DISTANCE) != 0) {
                     pickInfo.setClosestDistance(distance);
                 }
@@ -520,8 +520,8 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
         }
         return false;
     }
-    
-    
+
+
     /**
      * Check if the geometry component of this shape node under path
      *  intersects with the pickShape.
@@ -531,17 +531,17 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      */
     boolean intersect(SceneGraphPath path,
             PickShape pickShape, double[] dist) {
-        
+
 	// This method will not do bound intersect check, as it assume caller
 	// has already done that. ( For performance and code simplification
 	// reasons. )
 
         int flags;
         PickInfo pickInfo = new PickInfo();
-        
+
         Transform3D localToVworld = path.getTransform();
 	if (localToVworld == null) {
-	    throw new RuntimeException(J3dI18N.getString("MorphRetained5"));   
+	    throw new RuntimeException(J3dI18N.getString("MorphRetained5"));
 	}
 
         pickInfo.setLocalToVWorldRef( localToVworld);
@@ -550,17 +550,17 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
             //System.err.println("      no dist request ....");
             return intersect(pickInfo, pickShape, 0);
         }
-        
+
         flags = PickInfo.CLOSEST_DISTANCE;
         if (intersect(pickInfo, pickShape, flags)) {
             dist[0] = pickInfo.getClosestDistance();
             return true;
         }
-        
+
         return false;
-          
-      }    
-   
+
+      }
+
     /**
      * Sets the Morph node's weight vector
      * @param wieghts the new vector of weights for the morph node
@@ -580,9 +580,9 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    throw new IllegalArgumentException(J3dI18N.getString("MorphRetained8"));
 
 	// Weights array is ALWAYS malloced in setGeometryArrays method
-	for (i=numGeometryArrays-1; i>=0; i--) 
+	for (i=numGeometryArrays-1; i>=0; i--)
 	    this.weights[i] = weights[i];
-      
+
 
 	if (source.isLive()) {
 	    ((GeometryArrayRetained)morphedGeometryArray.retained).updateData(this);
@@ -592,7 +592,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    mChangeMessage.threads = (J3dThread.UPDATE_GEOMETRY |
 				      J3dThread.UPDATE_TRANSFORM);
 	    // If its a indexed geometry array, unindexify in renderBin
-	    if (this.geometryArrays[0] instanceof IndexedGeometryArrayRetained) 
+	    if (this.geometryArrays[0] instanceof IndexedGeometryArrayRetained)
 		mChangeMessage.threads |= J3dThread.UPDATE_RENDERING_ATTRIBUTES;
 	    mChangeMessage.args[0] = this;
 	    mChangeMessage.args[1]= new Integer(GEOMETRY_CHANGED);
@@ -602,7 +602,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	}
 
     }
-  
+
     /**
      * Retrieves the Morph node's weight vector
      * @return the morph node's weight vector.
@@ -645,7 +645,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      * Compute the combine bounds of bounds and its localBounds.
      */
     void computeCombineBounds(Bounds bounds) {
- 
+
 	if(boundsAutoCompute) {
 	    GeometryArrayRetained mga =
 		(GeometryArrayRetained)morphedGeometryArray.retained;
@@ -660,7 +660,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		bounds.combine((Bounds) localBounds);
 	    }
 	}
-    } 
+    }
 
     // Return the number of geometry arrays in this MorphRetained object.
     int getNumGeometryArrays() {
@@ -680,15 +680,15 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		if (numGeometryArrays > 1) {
 		    doErrorCheck(geo, geometryArrays[1]);
 		}
-		
+
 	    }
 	}
 
-	    
+
 	((GeometryArrayRetained)morphedGeometryArray.retained).updateData(this);
 	// Compute the bounds once
 	if (boundsAutoCompute && coordinatesChanged) {
-	    GeometryArrayRetained mga = (GeometryArrayRetained)morphedGeometryArray.retained; 
+	    GeometryArrayRetained mga = (GeometryArrayRetained)morphedGeometryArray.retained;
 	    mga.incrComputeGeoBounds();  // This compute the bbox if dirty
 	    mga.decrComputeGeoBounds();
 	}
@@ -700,11 +700,11 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      */
     public void updateData(Geometry mga) {
 
-	int i,j,k, vFormat, geoType, stripVCount[]; 
+	int i,j,k, vFormat, geoType, stripVCount[];
 	int iCount = 0;
 	int numStrips = 0;
 	int texCoordSetCount = 0;
-	float coord[] = new float[3], color[] = new float[4], 
+	float coord[] = new float[3], color[] = new float[4],
 	    normal[] = new float[3], texCoord[] = new float[3];
 
 	vFormat = geometryArrays[0].vertexFormat;
@@ -720,11 +720,11 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	} else {
 	     count = geometryArrays[0].validVertexCount;
 	}
-	
+
 	for (i=0; i < count; i++) {
 	    Mcoord[vc++] = Mcoord[vc++] = Mcoord[vc++] = 0.0f;
 	}
-	
+
 
 	if ((vFormat & GeometryArray.COLOR) != 0) {
 	    if (geometryArrays[0] instanceof IndexedGeometryArrayRetained){
@@ -735,12 +735,12 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    for (i=0; i < count; i++) {
 		if ((vFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_3)
 		    Mcolor[cc++] = Mcolor[cc++] = Mcolor[cc++] = 0.0f;
-		
+
 		else if ((vFormat & GeometryArray.COLOR_4) == GeometryArray.COLOR_4)
 		    Mcolor[cc++] = Mcolor[cc++] = Mcolor[cc++] = Mcolor[cc++] = 0.0f;
 	    }
 	}
-	
+
 
 	if ((vFormat & GeometryArray.NORMALS) != 0) {
 	    if (geometryArrays[0] instanceof IndexedGeometryArrayRetained){
@@ -752,9 +752,9 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		Mnormal[nc++] = Mnormal[nc++] = Mnormal[nc++] = 0.0f;
 	    }
 	}
-    
+
 	if ((vFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
-	    for (k = 0; k < texCoordSetCount; k++) {	
+	    for (k = 0; k < texCoordSetCount; k++) {
 		if (geometryArrays[0] instanceof IndexedGeometryArrayRetained){
 		    count = geometryArrays[0].getNumTexCoordCount(k);
 		} else {
@@ -822,7 +822,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 			    Mnormal[nc++] += normal[2]*w;
 			}
 		    }
-	
+
 		    if ((vFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
 			for (k = 0; k < texCoordSetCount; k++) {
 			    int tcount = 0;
@@ -873,7 +873,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		int noffset = geometryArrays[0].normalOffset();
 		int voffset = geometryArrays[0].coordinateOffset();
 		int offset = 0;
-		
+
 		int initialVertex = 0;
 		for (j=0;j < numGeometryArrays;j++) {
 		    double w = weights[j];
@@ -954,7 +954,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 			    Mcoord[vc++] += vdata[offset]*w;
 			    Mcoord[vc++] += vdata[offset+1]*w;
 			    Mcoord[vc++] += vdata[offset+2]*w;
-			    
+
 			}
 		    }
 		}
@@ -1103,7 +1103,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 				    Mcolor[cc++] += (c4b[cIndex].w & 0xff) * val;
 				}
 				break;
-				
+
 			    }
 			}
 			if ((vFormat & GeometryArray.NORMALS) != 0) {
@@ -1126,7 +1126,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 				    Mnormal[nc++] += nf[nIndex++]*w;
 				}
 				break;
-			    case GeometryArrayRetained.N3F: 
+			    case GeometryArrayRetained.N3F:
 				Vector3f[] n3f = geometryArrays[j].getNormalRef3f();
 				for (i=0; i< count; i++, nIndex++) {
 				    Mnormal[nc++] += n3f[nIndex].x*w;
@@ -1181,27 +1181,27 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 				Mcoord[vc++] += (float)p3d[vIndex].z*w;
 			    }
 			    break;
-		    
+
 			}
-			
-		    }		    
+
+		    }
 		}
 	    }
 	}
-	
+
 	GeometryArrayRetained mgaR =
 	    (GeometryArrayRetained)mga.retained;
 
 	mgaR.setCoordRefFloat(Mcoord);
-      
+
 	if ((vFormat & GeometryArray.COLOR) != 0)
 	    mgaR.setColorRefFloat(Mcolor);
-      
+
 	// *******Need to normalize normals
 	if ((vFormat & GeometryArray.NORMALS) != 0)
 	    mgaR.setNormalRefFloat(Mnormal);
-      
-	if ((vFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {	
+
+	if ((vFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
     	    for (k = 0; k < texCoordSetCount; k++) {
 		mgaR.setTexCoordRefFloat(k, MtexCoord[k]);
 	    }
@@ -1210,7 +1210,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 
     void updateImmediateMirrorObject(Object[] objs) {
 	int i;
-	
+
 	int component = ((Integer)objs[1]).intValue();
 	Shape3DRetained[] msArr = (Shape3DRetained[]) objs[2];
 	if ((component & APPEARANCE_CHANGED) != 0) {
@@ -1231,7 +1231,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    }
 	}
     }
-    
+
     /**
      * assign a name to this node when it is made live.
      */
@@ -1241,10 +1241,10 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	ArrayList msList = new ArrayList();
         GeometryAtom ga;
 	int oldrefCount = refCount;
-	
+
 	super.doSetLive(s);
 	nodeId = universe.getNodeId();
-	
+
 
 	for (i = 0; i < numGeometryArrays; i++) {
 	    synchronized(geometryArrays[i].liveStateLock) {
@@ -1263,14 +1263,14 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	((GeometryArrayRetained)(morphedGeometryArray.retained)).setLive(inBackgroundGroup, s.refCount);
 
 	if (boundsAutoCompute) {
-	    GeometryArrayRetained mga = (GeometryArrayRetained)morphedGeometryArray.retained; 
+	    GeometryArrayRetained mga = (GeometryArrayRetained)morphedGeometryArray.retained;
 	    // Compute the bounds once
 	    mga.incrComputeGeoBounds(); // This compute the bbox if dirty
 	    mga.decrComputeGeoBounds();
 	    localBounds.setWithLock(mga.geoBounds);
 	}
 
-    
+
 	if (inSharedGroup) {
 	    for (i=0; i<s.keys.length; i++) {
 		shape = new Shape3DRetained();
@@ -1282,7 +1282,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		j = s.keys[i].equals(localToVworldKeys, 0,
 				     localToVworldKeys.length);
 		if(j < 0) {
-		    System.err.println("MorphRetained : Can't find hashKey"); 
+		    System.err.println("MorphRetained : Can't find hashKey");
 		}
 
 		shape.localToVworld[0] = localToVworld[j];
@@ -1304,7 +1304,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 			}
 		    }
 		}
-		
+
 		// Add any scoped fog
 		if (s.fogs != null) {
 		    ArrayList l = (ArrayList)s.fogs.get(j);
@@ -1324,7 +1324,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 			}
 		    }
 		}
-		
+
 		// Add any scoped alt app
 		if (s.altAppearances != null) {
 		    ArrayList l = (ArrayList)s.altAppearances.get(j);
@@ -1341,7 +1341,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		    shape.viewList = null;
 
 		//		((GeometryArrayRetained)(morphedGeometryArray.retained)).addUser(shape);
-    
+
 
                 ga = Shape3DRetained.getGeomAtom(shape);
 
@@ -1383,7 +1383,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		    }
 		}
 	    }
-		
+
 	    // Add any scoped fog
 	    if (s.fogs != null) {
 		ArrayList l = (ArrayList)s.fogs.get(0);
@@ -1403,7 +1403,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		    }
 		}
 	    }
-		    
+
 	    // Add any scoped alt app
 	    if (s.altAppearances != null) {
 		ArrayList l = (ArrayList)s.altAppearances.get(0);
@@ -1418,14 +1418,14 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		shape.viewList = (ArrayList)s.viewLists.get(0);
 	    else
 		shape.viewList = null;
-         
+
 	    //	    ((GeometryArrayRetained)(morphedGeometryArray.retained)).addUser(shape);
 
             ga = Shape3DRetained.getGeomAtom(shape);
 
     	    // Add the geometry atom for this shape to the Targets
 	    s.nodeList.add(ga);
-	    
+
             if (s.transformTargets != null &&
                                 s.transformTargets[0] != null) {
 		s.transformTargets[0].addNode(ga, Targets.GEO_TARGETS);
@@ -1459,7 +1459,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    }
 	}
 
-	s.notifyThreads |= (J3dThread.UPDATE_GEOMETRY | 
+	s.notifyThreads |= (J3dThread.UPDATE_GEOMETRY |
 			    J3dThread.UPDATE_TRANSFORM |
 			    J3dThread.UPDATE_RENDER |
 			    J3dThread.UPDATE_RENDERING_ATTRIBUTES);
@@ -1475,10 +1475,10 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    VirtualUniverse.mc.processMessage(mChangeMessage);
 	}
 	super.markAsLive();
- 
+
     }
 
-  
+
     /**
      * assign a name to this node when it is made live.
      */
@@ -1488,9 +1488,9 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	Object[] shapes;
 	ArrayList appList = new ArrayList();
 	GeometryAtom ga;
-	
+
 	super.clearLive(s);
-	
+
 	for (i = 0; i < numGeometryArrays; i++) {
 	    synchronized(geometryArrays[i].liveStateLock) {
 		geometryArrays[i].clearLive(s.refCount);
@@ -1501,7 +1501,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		}
 	    }
 	}
-	GeometryArrayRetained mga = (GeometryArrayRetained)morphedGeometryArray.retained; 
+	GeometryArrayRetained mga = (GeometryArrayRetained)morphedGeometryArray.retained;
 
 	mga.clearLive( s.refCount);
 
@@ -1569,13 +1569,13 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 			    J3dThread.UPDATE_TRANSFORM |
 			    // This is used to clear the scope info
 			    // of all the mirror shapes
-			    J3dThread.UPDATE_RENDERING_ENVIRONMENT | 
+			    J3dThread.UPDATE_RENDERING_ENVIRONMENT |
 			    J3dThread.UPDATE_RENDER);
 
     }
 
 
-    void updatePickable(HashKey keys[], boolean pick[]) { 
+    void updatePickable(HashKey keys[], boolean pick[]) {
 	super.updatePickable(keys, pick);
 
 	Shape3DRetained shape;
@@ -1595,11 +1595,11 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 
 		}
 	    }
-	} 
+	}
     }
 
 
-    void updateCollidable(HashKey keys[], boolean collide[]) { 
+    void updateCollidable(HashKey keys[], boolean collide[]) {
 	super.updateCollidable(keys, collide);
 	Shape3DRetained shape;
 
@@ -1618,7 +1618,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 
 		}
 	    }
-	} 
+	}
     }
 
     Shape3DRetained getMirrorShape(SceneGraphPath path) {
@@ -1626,7 +1626,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    return (Shape3DRetained) mirrorShape3D.get(0);
 	}
 	HashKey key = new HashKey("");
-	path.getHashKey(key);	
+	path.getHashKey(key);
 	return getMirrorShape(key);
     }
 
@@ -1635,7 +1635,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	if (i>=0) {
 	    return (Shape3DRetained) mirrorShape3D.get(i);
 	}
-	
+
 	// Not possible
 	throw new RuntimeException("Shape3DRetained: MirrorShape Not found!");
     }
@@ -1650,7 +1650,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	}
 	GeometryAtom ga = Shape3DRetained.getGeomAtom(ms);
 	leafList.add(ga);
-	
+
     }
 
     void setBoundsAutoCompute(boolean autoCompute) {
@@ -1659,13 +1659,13 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
                 // localBounds may not have been set to bbox
                 localBounds = new BoundingBox();
 		if (source.isLive() && morphedGeometryArray != null) {
-		    GeometryArrayRetained mga = (GeometryArrayRetained)morphedGeometryArray.retained; 
+		    GeometryArrayRetained mga = (GeometryArrayRetained)morphedGeometryArray.retained;
 		    mga.incrComputeGeoBounds(); // This compute the bbox if dirty
-		    mga.decrComputeGeoBounds();		    
+		    mga.decrComputeGeoBounds();
 		}
-            } 
+            }
 
-		
+
 	    localBounds = getBounds();
             super.setBoundsAutoCompute(autoCompute);
             if (source.isLive()) {
@@ -1701,7 +1701,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      * Initialization of morphed geometry
      */
     void initMorphedGeometry() {
-      int  vFormat, geoType, stripVCount[]; 
+      int  vFormat, geoType, stripVCount[];
       int iCount = 0;
       int numStrips = 0;
       int texCoordSetCount = 0;
@@ -1717,25 +1717,25 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	   geo.getTexCoordSetMap(texCoordSetMap);
       }
       geoType = geo.geoType;
-      
+
       switch (geoType){
 	case GeometryRetained.GEO_TYPE_QUAD_SET:
-	    this.morphedGeometryArray = 
-	     	new QuadArray(geometryArrays[0].validVertexCount, vFormat, texCoordSetCount, 
+	    this.morphedGeometryArray =
+	     	new QuadArray(geometryArrays[0].validVertexCount, vFormat, texCoordSetCount,
 				texCoordSetMap);
 	    break;
-	case GeometryRetained.GEO_TYPE_TRI_SET: 
-	    this.morphedGeometryArray = 
+	case GeometryRetained.GEO_TYPE_TRI_SET:
+	    this.morphedGeometryArray =
 		new TriangleArray(geometryArrays[0].validVertexCount, vFormat, texCoordSetCount,
 				texCoordSetMap);
 	    break;
 	case GeometryRetained.GEO_TYPE_POINT_SET:
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new PointArray(geometryArrays[0].validVertexCount, vFormat, texCoordSetCount,
 				texCoordSetMap);
 	    break;
 	case GeometryRetained.GEO_TYPE_LINE_SET:
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new LineArray(geometryArrays[0].validVertexCount, vFormat, texCoordSetCount,
 				texCoordSetMap);
 	    break;
@@ -1743,7 +1743,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    numStrips = ((TriangleStripArrayRetained)geo).getNumStrips();
 	    stripVCount = new int[numStrips];
 	    ((TriangleStripArrayRetained)geo).getStripVertexCounts(stripVCount);
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new TriangleStripArray(geometryArrays[0].validVertexCount, vFormat, texCoordSetCount,
 			texCoordSetMap, stripVCount);
 	    break;
@@ -1751,7 +1751,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    numStrips = ((TriangleFanArrayRetained)geo).getNumStrips();
 	    stripVCount = new int[numStrips];
 	    ((TriangleFanArrayRetained)geo).getStripVertexCounts(stripVCount);
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new TriangleFanArray(geometryArrays[0].validVertexCount, vFormat, texCoordSetCount,
 			texCoordSetMap, stripVCount);
 		break;
@@ -1759,32 +1759,32 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    numStrips = ((LineStripArrayRetained)geo).getNumStrips();
 	    stripVCount = new int[numStrips];
 	    ((LineStripArrayRetained)geo).getStripVertexCounts(stripVCount);
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new LineStripArray(geometryArrays[0].validVertexCount, vFormat, texCoordSetCount,
 			texCoordSetMap, stripVCount);
 		break;
 
 	case GeometryRetained.GEO_TYPE_INDEXED_QUAD_SET:
 	    iCount = ((IndexedGeometryArrayRetained)geo).getIndexCount();
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new IndexedQuadArray(geometryArrays[0].getNumCoordCount(), vFormat, texCoordSetCount,
 			texCoordSetMap, iCount);
 		break;
 	case GeometryRetained.GEO_TYPE_INDEXED_TRI_SET:
 	    iCount = ((IndexedGeometryArrayRetained)geo).getIndexCount();
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new IndexedTriangleArray(geometryArrays[0].getNumCoordCount(), vFormat, texCoordSetCount,
 			texCoordSetMap, iCount);
 		break;
 	case GeometryRetained.GEO_TYPE_INDEXED_POINT_SET:
 	    iCount = ((IndexedGeometryArrayRetained)geo).getIndexCount();
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new IndexedPointArray(geometryArrays[0].getNumCoordCount(), vFormat, texCoordSetCount,
 			texCoordSetMap, iCount);
 		break;
 	case GeometryRetained.GEO_TYPE_INDEXED_LINE_SET:
 	    iCount = ((IndexedGeometryArrayRetained)geo).getIndexCount();
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new IndexedLineArray(geometryArrays[0].getNumCoordCount(), vFormat, texCoordSetCount,
 			texCoordSetMap, iCount);
 	    break;
@@ -1793,7 +1793,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    numStrips = ((IndexedTriangleStripArrayRetained)geo).getNumStrips();
 	    stripVCount = new int[numStrips];
 	    ((IndexedTriangleStripArrayRetained)geo).getStripIndexCounts(stripVCount);
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new IndexedTriangleStripArray(geometryArrays[0].getNumCoordCount(), vFormat, texCoordSetCount,
 			texCoordSetMap, iCount, stripVCount);break;
 	case GeometryRetained.GEO_TYPE_INDEXED_TRI_FAN_SET:
@@ -1801,7 +1801,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    numStrips = ((IndexedTriangleFanArrayRetained)geo).getNumStrips();
 	    stripVCount = new int[numStrips];
 	    ((IndexedTriangleFanArrayRetained)geo).getStripIndexCounts(stripVCount);
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new IndexedTriangleFanArray(geometryArrays[0].getNumCoordCount(), vFormat, texCoordSetCount,
 			texCoordSetMap, iCount, stripVCount);break;
 	case GeometryRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET:
@@ -1809,7 +1809,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    numStrips = ((IndexedLineStripArrayRetained)geo).getNumStrips();
 	    stripVCount = new int[numStrips];
 	    ((IndexedLineStripArrayRetained)geo).getStripIndexCounts(stripVCount);
-	    this.morphedGeometryArray = 
+	    this.morphedGeometryArray =
 		new IndexedLineStripArray(geometryArrays[0].getNumCoordCount(), vFormat, texCoordSetCount,
 			texCoordSetMap, iCount, stripVCount);break;
 	}
@@ -1827,7 +1827,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	        }
 	        if ((vFormat & GeometryArray.COLOR) != 0) {
 	            morphedGeo.setColorIndices(0, igeo.indexColor);
-	        }		
+	        }
 	        if ((vFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
 	            for (k = 0; k < texCoordSetCount; k++) {
 	                 morphedGeo.setTextureCoordinateIndices(k, 0,
@@ -1841,9 +1841,9 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	GeometryArrayRetained mga = (GeometryArrayRetained)morphedGeometryArray.retained;
 	mga.updateData(this);
 
-	
+
     }
-    
+
     void getMirrorShape3D(ArrayList list, HashKey k) {
 	Shape3DRetained ms;
 	if (inSharedGroup) {
@@ -1853,7 +1853,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    ms = (Shape3DRetained)mirrorShape3D.get(0);
 	}
 	list.add(ms);
-	    
+
     }
 
     void compile(CompileState compState) {
@@ -1900,7 +1900,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	} else if (geo instanceof IndexedGeometryArrayRetained) {
 	    if (((IndexedGeometryArrayRetained)prevGeo).validIndexCount != ((IndexedGeometryArrayRetained)geo).validIndexCount)
 		throw new IllegalArgumentException(J3dI18N.getString("MorphRetained1"));
-	    
+
 	    // If by reference, then all array lengths should be same
 	    if (geo.getNumCoordCount() != prevGeo.getNumCoordCount() ||
 		geo.getNumColorCount() != prevGeo.getNumColorCount() ||
@@ -1912,8 +1912,8 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		if (geo.getNumTexCoordCount(k) != prevGeo.getNumTexCoordCount(k)) {
 		    throw new IllegalArgumentException(J3dI18N.getString("MorphRetained1"));
 		}
-	    }		    
-	    
+	    }
+
 	    if (geo instanceof IndexedGeometryStripArrayRetained) {
 		prevSvc= ((IndexedGeometryStripArrayRetained)prevGeo).stripIndexCounts;
 		svc= ((IndexedGeometryStripArrayRetained)geo).stripIndexCounts;
@@ -1945,7 +1945,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		changedFrequent &= ~mask;
 	    }
 	}
-    }    
+    }
 
     void searchGeometryAtoms(UnorderList list) {
 	list.add(Shape3DRetained.getGeomAtom(

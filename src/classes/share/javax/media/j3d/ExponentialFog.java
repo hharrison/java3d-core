@@ -45,7 +45,7 @@ import javax.vecmath.Color3f;
  * where
  * <ul>z is the distance from the viewpoint.<br>
  * density is the density of the fog.<P></ul></UL>
- * 
+ *
  * In addition to specifying the fog density, ExponentialFog lets you
  * specify the fog color, which is represented by R, G, and B
  * color values, where a color of (0,0,0) represents black.
@@ -205,7 +205,7 @@ public class ExponentialFog extends Fog {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the

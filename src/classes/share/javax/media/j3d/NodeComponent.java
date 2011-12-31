@@ -43,7 +43,7 @@ import java.util.Hashtable;
 public abstract class NodeComponent extends SceneGraphObject {
 
     // This is use for cloneTree only, set to false after the operation
-    boolean forceDuplicate = false; 
+    boolean forceDuplicate = false;
     /**
      * Constructs a NodeComponent object with default parameters.
      * The default values are as follows:
@@ -106,7 +106,7 @@ public abstract class NodeComponent extends SceneGraphObject {
      * originalNodeComponent, boolean forceDuplicate)</code>
      */
     public void duplicateNodeComponent(NodeComponent originalNodeComponent) {
-        duplicateAttributes(originalNodeComponent, 
+        duplicateAttributes(originalNodeComponent,
 			    originalNodeComponent.forceDuplicate);
     }
 
@@ -114,7 +114,7 @@ public abstract class NodeComponent extends SceneGraphObject {
      * Copies all node information from <code>originalNodeComponent</code> into
      * the current node component.  This method is called from subclass of
      * <code>duplicateNodeComponent</code> method which is, in turn, called by the
-     * <code>cloneNodeComponent</code> method. 
+     * <code>cloneNodeComponent</code> method.
      *
      * For any <i>NodeComponent</i> objects
      * contained by the object being duplicated, each <i>NodeComponent</i>
@@ -134,10 +134,10 @@ public abstract class NodeComponent extends SceneGraphObject {
 	    duplicateAttributes(originalNodeComponent,
 				originalNodeComponent.forceDuplicate);
 	} else {
-	    //  user call cloneNodeComponent() or duplicateNodeComponent() 
+	    //  user call cloneNodeComponent() or duplicateNodeComponent()
 	    // directly instead of via cloneTree()
 	    originalNodeComponent.nodeHashtable = new Hashtable();
-	    duplicateAttributes(originalNodeComponent, 
+	    duplicateAttributes(originalNodeComponent,
 				originalNodeComponent.forceDuplicate);
 	    originalNodeComponent.nodeHashtable = null;
 	}
@@ -182,9 +182,9 @@ public abstract class NodeComponent extends SceneGraphObject {
 
   /**
    * Used to create a new instance of a NodeComponent object.  This
-   * routine is called  by <code>cloneNode</code> to duplicate the 
+   * routine is called  by <code>cloneNode</code> to duplicate the
    * current node. <br>
-   * 
+   *
    * <code>cloneNodeComponent</code> should be overridden by any user
    * subclassed <i>NodeComponent</i> objects. All subclasses must have their
    * <code>cloneNodeComponent</code>
@@ -202,7 +202,7 @@ public abstract class NodeComponent extends SceneGraphObject {
    *  <code>false</code>, the value of each node's
    *  <code>duplicateOnCloneTree</code> variable determines whether
    *  NodeComponent data is duplicated or copied.
-   *   
+   *
    * @exception RestrictedAccessException if forceDuplicate is set and
    *  this object is part of a compiled scenegraph
    *
@@ -216,12 +216,12 @@ public abstract class NodeComponent extends SceneGraphObject {
 	// For backward compatibility !
 	//
 	// If user did not overwrite this procedure, it will fall back
-	// to call cloneNodeComponent() 
-	// So for core API, 
+	// to call cloneNodeComponent()
+	// So for core API,
 	// don't implement cloneNodeComponent(boolean forceDuplicate)
 	// otherwise this prcedure will not call and the user
 	// cloneNodeComponent() will not invoke.
-        NodeComponent nc; 
+        NodeComponent nc;
 	this.forceDuplicate = forceDuplicate;
 	try {
 	    nc = cloneNodeComponent();
@@ -239,7 +239,7 @@ public abstract class NodeComponent extends SceneGraphObject {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -274,17 +274,17 @@ public abstract class NodeComponent extends SceneGraphObject {
 	this.retained.setSource(this);
     }
 
-    /** 
+    /**
      *  This function is called from getNodeComponent() to see if any of
-     *  the sub-NodeComponents  duplicateOnCloneTree flag is true. 
-     *  If it is the case, current NodeComponent needs to 
-     *  duplicate also even though current duplicateOnCloneTree flag is false. 
+     *  the sub-NodeComponents  duplicateOnCloneTree flag is true.
+     *  If it is the case, current NodeComponent needs to
+     *  duplicate also even though current duplicateOnCloneTree flag is false.
      *  This should be overwrite by NodeComponent which contains sub-NodeComponent.
      */
     boolean duplicateChild() {
         return getDuplicateOnCloneTree();
     }
-    
+
    /*
     * @exception IllegalSharingException if this NodeComponent is live and
     * the specified image is being used by a Canvas3D as an off-screen buffer.
@@ -307,6 +307,6 @@ public abstract class NodeComponent extends SceneGraphObject {
                 }
             }
         }
-   } 
-   
+   }
+
 }

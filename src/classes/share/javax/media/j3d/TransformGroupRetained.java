@@ -92,7 +92,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
     boolean needNormalsTransform = false; // true if normals transformation
 					  // is needed to push this
 					  // transform down to geometry
-    
+
     // key which identifies a unique path from a
     // locale to this transform group
     HashKey currentKey = new HashKey();
@@ -131,7 +131,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
       J3dMessage tchangeMessage = null;
       int i, j;
       Transform3D trans = null;
-    
+
       if (staticTransform != null) {
 	  // this writeable transformGroup has a static transform
 	  // merged into this node
@@ -200,8 +200,8 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
 
     // get the inverse of the transpose -- note: this method only
-    // supports static transform, the translation component will 
-    // not transform 
+    // supports static transform, the translation component will
+    // not transform
     Transform3D getNormalTransform() {
 	if (normalTransform == null) {
             normalTransform = new Transform3D(transform);
@@ -264,7 +264,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
 	    // For inSharedGroup case.
 	    int j, len;
-	
+
 	    if (childLocalToVworld == null) {
 	        childLocalToVworld = new Transform3D[s.keys.length][];
 	        childLocalToVworldIndex = new int[s.keys.length][];
@@ -275,15 +275,15 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	    } else {
 
 	        len = localToVworld.length - s.keys.length;
-	    
-	        int newLen = localToVworld.length;	    
-	    
+
+	        int newLen = localToVworld.length;
+
 	        Transform3D newChildTList[][] = new Transform3D[newLen][];
-	        int newChildIndexList[][] = new int[newLen][]; 
+	        int newChildIndexList[][] = new int[newLen][];
 	        int newTransformLevels[] = new int[newLen];
                 CachedTargets newTargets[] = new CachedTargets[newLen];
                 TransformGroupData newPerPathData[] = new TransformGroupData[newLen];
-	    
+
 	        System.arraycopy(childLocalToVworld, 0,
 			     newChildTList, 0, childLocalToVworld.length);
 	        System.arraycopy(childLocalToVworldIndex, 0,
@@ -296,9 +296,9 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
                 System.arraycopy(perPathData, 0,
                              newPerPathData, 0, perPathData.length);
-	    
+
 	        childLocalToVworld = newChildTList;
-	        childLocalToVworldIndex = newChildIndexList; 
+	        childLocalToVworldIndex = newChildIndexList;
 	        transformLevels = newTransformLevels;
                 cachedTargets = newTargets;
 		perPathData = newPerPathData;
@@ -308,23 +308,23 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	    int hkIndexPlus1, blkSize;
 
 	    for(i=len, j=0; i<localToVworld.length; i++, j++) {
-	        hkIndex = s.keys[j].equals(localToVworldKeys, 0, 
+	        hkIndex = s.keys[j].equals(localToVworldKeys, 0,
 						localToVworldKeys.length);
-	    
-	        if(hkIndex < 0) {		
+
+	        if(hkIndex < 0) {
 		    MasterControl.getCoreLogger().severe("Can't Find matching hashKey in setNodeData.");
 		    break;
 	        } else if(hkIndex >= i) { // Append to last.
 		    childLocalToVworld[i] = childTrans[j];
-		    childLocalToVworldIndex[i] = childTransIndex[j]; 
+		    childLocalToVworldIndex[i] = childTransIndex[j];
 		    transformLevels[i] = s.transformLevels[j];
 	        } else {
 		    hkIndexPlus1 = hkIndex + 1;
 		    blkSize = i - hkIndex;
-		
+
 		    System.arraycopy(childLocalToVworld, hkIndex,
 				 childLocalToVworld, hkIndexPlus1, blkSize);
-		
+
 		    System.arraycopy(childLocalToVworldIndex, hkIndex,
 				 childLocalToVworldIndex, hkIndexPlus1, blkSize);
 
@@ -338,10 +338,10 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
                                  perPathData, hkIndexPlus1, blkSize);
 
 		    childLocalToVworld[hkIndex] = childTrans[j];
-		    childLocalToVworldIndex[hkIndex] = childTransIndex[j]; 
+		    childLocalToVworldIndex[hkIndex] = childTransIndex[j];
 		    transformLevels[hkIndex] = s.transformLevels[j];
 	        }
-	    
+
 	        setAuxData(s, j, hkIndex);
 	    }
 	}
@@ -361,12 +361,12 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
         s.childTransformLinks = childTransformLinks;
         s.parentTransformLink = this;
-    }    
+    }
 
     void setAuxData(SetLiveState s, int index, int hkIndex) {
         super.setAuxData(s, index, hkIndex);
         perPathData[hkIndex] = new TransformGroupData();
-        perPathData[hkIndex].switchState = 
+        perPathData[hkIndex].switchState =
                                 (SwitchState)s.switchStates.get(hkIndex);
     }
 
@@ -460,7 +460,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	    compState.staticTransform = null;
 	    compState.parentGroup = null;
 	    super.merge(compState);
-	
+
 	} else {
 	    // flag this TG as to be merged later on
 	    mergeFlag = SceneGraphObjectRetained.MERGE;
@@ -506,7 +506,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	    // pushing down the static transform until it hits
 	    // a leaf or a subtree which is already merged.
 	    super.merge(compState);
-	   
+
 	    // reset the compile state
 	    compState.staticTransform = saveStaticTransform;
 
@@ -530,7 +530,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
       int oldTraverseFlags = 0;
       int len;
       Object obj;
-      
+
       // XXXX - optimization for targetThreads computation, require
       // cleanup in GroupRetained.doSetLive()
       //int savedTargetThreads = 0;
@@ -548,11 +548,11 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
       }
 
       s.transformTargets = newTargets;
-      s.traverseFlags = 0; 
-      
+      s.traverseFlags = 0;
+
       // This is needed b/c super.setlive is called after inSharedGroup check.
       inSharedGroup = s.inSharedGroup;
-      
+
       trans = new Transform3D();
       transform.getWithLock(trans);
       currentTransform.set(trans);
@@ -570,7 +570,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
       if (! inSharedGroup) {
           if (s.transformTargets[0] != null) {
               cachedTargets[0] = s.transformTargets[0].snapShotInit();
-          }         
+          }
           if (s.switchTargets != null &&
                         s.switchTargets[0] != null) {
               s.switchTargets[0].addNode(this, Targets.GRP_TARGETS);
@@ -586,15 +586,15 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
               if (s.switchTargets != null &&
                         s.switchTargets[i] != null) {
                   s.switchTargets[i].addNode(this, Targets.GRP_TARGETS);
-              }         
+              }
           }
       }
 
       // Assign data in cachedTargets to j3dCTs.
       j3dCTs = new CachedTargets[cachedTargets.length];
-      copyCachedTargets(TargetsInterface.TRANSFORM_TARGETS, j3dCTs);	  
-		       
-      computeTargetThreads(TargetsInterface.TRANSFORM_TARGETS, cachedTargets); 
+      copyCachedTargets(TargetsInterface.TRANSFORM_TARGETS, j3dCTs);
+
+      computeTargetThreads(TargetsInterface.TRANSFORM_TARGETS, cachedTargets);
 
       // restore setLiveState from it's local variables.
       // setNodeData did keep a reference to these variables.
@@ -616,7 +616,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
           }
       }
 
-      
+
       if ((s.traverseFlags & NodeRetained.CONTAINS_VIEWPLATFORM) != 0) {
           aboveAViewPlatform = true;
       }
@@ -636,7 +636,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
     void removeNodeData(SetLiveState s) {
 
 	synchronized (this) { // synchronized with TransformStructure
-	
+
 	    if (refCount <= 0) {
 		childLocalToVworld = null;
 		childLocalToVworldIndex = null;
@@ -665,27 +665,27 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	    }
 	    else {
 		int i, index, len;
-		// Remove the localToVworld key 
+		// Remove the localToVworld key
 		int newLen = localToVworld.length - s.keys.length;
-	    
+
 		Transform3D[][] newChildTList = new Transform3D[newLen][];
 		int[][] newChildIndexList = new int[newLen][];
 		int[] newTransformLevels = new int[newLen];
 		ArrayList[] newChildPTG = new ArrayList[newLen];
 		CachedTargets[] newTargets = new CachedTargets[newLen];
                 TransformGroupData[] newPerPathData = new TransformGroupData[newLen];
-	    
+
 		int[] tempIndex = new int[s.keys.length];
 		int curStart =0, newStart =0;
 		boolean found = false;
 		for(i=0;i<s.keys.length;i++) {
 		    index = s.keys[i].equals(localToVworldKeys, 0, localToVworldKeys.length);
-		
+
 		    tempIndex[i] = index;
-		
+
 		    if(index >= 0) {
 			found = true;
-		    
+
 			if(index == curStart) {
 			    curStart++;
 			}
@@ -700,7 +700,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 			    System.arraycopy(cachedTargets, curStart, newTargets, newStart, len);
                             System.arraycopy(perPathData, curStart,
                                                 newPerPathData, newStart, len);
-		    
+
 			    curStart = index+1;
 			    newStart = newStart + len;
 			}
@@ -710,7 +710,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 			MasterControl.getCoreLogger().severe("TG.removeNodeData-Can't find matching hashKey.");
 		    }
 		}
-	
+
 		if((found == true) && (curStart < localToVworld.length)) {
 		    len = localToVworld.length - curStart;
 		    System.arraycopy(childLocalToVworld, curStart, newChildTList,
@@ -731,19 +731,19 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
                 perPathData = newPerPathData;
 	    }
             super.removeNodeData(s);
-	    // Set it back to its parent localToVworld data. 
+	    // Set it back to its parent localToVworld data.
 	    // This is b/c the parent has changed it localToVworld data arrays.
 	    s.localToVworld = childLocalToVworld;
 	    s.localToVworldIndex = childLocalToVworldIndex;
 	}
     }
-    
+
     void clearLive(SetLiveState s) {
 
         Targets[] savedTransformTargets = null;
 
         savedTransformTargets = s.transformTargets;
-	// no need to gather targets from tg in clear live 
+	// no need to gather targets from tg in clear live
         s.transformTargets = null;
 
 	super.clearLive(s);
@@ -766,8 +766,8 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
             } else {
 		maxTransformLevel = -1;
 	    }
-	
-            if (s.switchTargets != null) { 
+
+            if (s.switchTargets != null) {
                 for (int i=0; i<s.switchTargets.length; i++) {
                     if (s.switchTargets[i] != null) {
                         s.switchTargets[i].addNode(this, Targets.GRP_TARGETS);
@@ -786,12 +786,12 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	// XXXX: recontruct targetThreads
     }
 
-   
+
     void computeCombineBounds(Bounds bounds) {
         // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
         if (validCachedBounds && boundsAutoCompute) {
             Bounds b = (Bounds) cachedBounds.clone();
-            // Should this be lock too ? ( MT safe  ? ) 
+            // Should this be lock too ? ( MT safe  ? )
             // Thoughts :
             // Make a temp copy with lock :  transform.getWithLock(trans);, but this will cause gc ...
             synchronized(transform) {
@@ -800,7 +800,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
             bounds.combine(b);
             return;
         }
-                    
+
 	NodeRetained child;
         //issue 544
         Bounds boundingObject = null;
@@ -810,13 +810,13 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
             boundingObject = new BoundingSphere();
             ((BoundingSphere) boundingObject).setRadius(-1.0);
         }
-	if(boundsAutoCompute) {    
+	if(boundsAutoCompute) {
 	    for (int i=children.size()-1; i>=0; i--) {
-		child = (NodeRetained)children.get(i); 
+		child = (NodeRetained)children.get(i);
 		if(child != null)
 		    child.computeCombineBounds(boundingObject);
-	    }   
-            
+	    }
+
             if (VirtualUniverse.mc.cacheAutoComputedBounds) {
                 cachedBounds = (Bounds) boundingObject.clone();
             }
@@ -825,32 +825,32 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	    // Should this be lock too ? ( MT safe  ? )
 	    synchronized(localBounds) {
 		boundingObject.set(localBounds);
-	    }      
+	    }
 	}
-	
-        // Should this be lock too ? ( MT safe  ? ) 
+
+        // Should this be lock too ? ( MT safe  ? )
 	// Thoughts :
 	// Make a temp copy with lock :  transform.getWithLock(trans);, but this will cause gc ...
 	synchronized(transform) {
 	    boundingObject.transform(transform);
 	}
 	bounds.combine(boundingObject);
-	
+
     }
-    
+
     void processChildLocalToVworld(ArrayList dirtyTransformGroups,
                                                 ArrayList keySet,
 						UpdateTargets targets,
 						ArrayList blUsers) {
-	
+
 	synchronized(this) { // sync with setLive/clearLive
-	    
+
 	    if (inSharedGroup) {
 		if (localToVworldKeys != null) {
 		    for(int j=0; j<localToVworldKeys.length; j++) {
 			if (perPathData[j].markedDirty) {
 			    updateChildLocalToVworld(localToVworldKeys[j], j,
-						     dirtyTransformGroups, 
+						     dirtyTransformGroups,
 						     keySet, targets,
 						     blUsers);
 			} else {
@@ -864,31 +864,31 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 						     targets, blUsers);
 		} else {
 		    //System.err.println("tg.procChild markedDiry skip");
-		} 
+		}
 	    }
 	}
     }
-    
+
     // for shared case
     void updateChildLocalToVworld(HashKey key, int index,
 				  ArrayList dirtyTransformGroups,
 				  ArrayList keySet,
 				  UpdateTargets targets,
 				  ArrayList blUsers) {
-	
+
 	int i, j;
 	Object obj;
 	Transform3D lToVw, childLToVw;
 	TransformGroupRetained tg;
 	LinkRetained ln;
 	CachedTargets ct;
-	
+
 	synchronized(this) { // sync with setLive/clearLive
-	    
-	    if (localToVworld != null) { 
+
+	    if (localToVworld != null) {
 		perPathData[index].markedDirty = false;
 		// update immediate child's localToVworld
-	    
+
 		if (perPathData[index].switchState.currentSwitchOn ) {
 		    lToVw = getCurrentLocalToVworld(index);
 		    childLToVw = getUpdateChildLocalToVworld(index);
@@ -899,7 +899,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
                     if (ct != null) {
                         targets.addCachedTargets(ct);
                         if (ct.targetArr[Targets.BLN_TARGETS] != null) {
-                            gatherBlUsers(blUsers, 
+                            gatherBlUsers(blUsers,
 					ct.targetArr[Targets.BLN_TARGETS]);
                         }
                     }
@@ -915,26 +915,26 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 		synchronized(childTransformLinks) {
 		    for (i=0; i<childTransformLinks.size(); i++) {
 			obj = childTransformLinks.get(i);
-		    
+
 			if (obj instanceof TransformGroupRetained) {
 			    tg = (TransformGroupRetained)obj;
 			    tg.updateChildLocalToVworld(
-					tg.localToVworldKeys[index], 
+					tg.localToVworldKeys[index],
 					index, dirtyTransformGroups, keySet,
 					targets, blUsers);
 			} else { // LinkRetained
 			    ln = (LinkRetained)obj;
 			    currentKey.set(localToVworldKeys[index]);
 			    currentKey.append(LinkRetained.plus).append(ln.nodeId);
-			    if ((ln.sharedGroup != null) && 
+			    if ((ln.sharedGroup != null) &&
 				(ln.sharedGroup.localToVworldKeys != null)) {
 				j = currentKey.equals(ln.sharedGroup.localToVworldKeys,0,
 						      ln.sharedGroup.localToVworldKeys.length);
 				if(j < 0) {
 				    System.err.
-					println("TransformGroupRetained : Can't find hashKey"); 
+					println("TransformGroupRetained : Can't find hashKey");
 				}
-			    
+
 				if (j < ln.sharedGroup.localToVworldKeys.length) {
 				    ln.sharedGroup.
 					updateChildLocalToVworld(ln.sharedGroup.
@@ -961,10 +961,10 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	TransformGroupRetained tg;
         LinkRetained ln;
 	CachedTargets ct;
-	
+
 	synchronized(this) { // sync with setLive/clearLive
-	    
-	    if (localToVworld != null) { 
+
+	    if (localToVworld != null) {
 		perPathData[0].markedDirty = false;
 		// update immediate child's localToVworld
 
@@ -977,15 +977,15 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 		    if (ct != null) {
 		        targets.addCachedTargets(ct);
 		        if (ct.targetArr[Targets.BLN_TARGETS] != null) {
-                            gatherBlUsers(blUsers, 
+                            gatherBlUsers(blUsers,
 					ct.targetArr[Targets.BLN_TARGETS]);
 		        }
 		    }
 		} else {
 		    perPathData[0].switchDirty = true;
 		    //System.err.println("tg.updateChild skip");
-		} 
-		
+		}
+
 
 		// update child's localToVworld of its children
 		// transformLink contains top level transform group nodes
@@ -993,12 +993,12 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 		synchronized(childTransformLinks) {
 		    for (i=0; i<childTransformLinks.size(); i++) {
 			obj = childTransformLinks.get(i);
-			
+
 			if (obj instanceof TransformGroupRetained) {
 			    tg = (TransformGroupRetained)obj;
-			    tg.updateChildLocalToVworld(dirtyTransformGroups, 
+			    tg.updateChildLocalToVworld(dirtyTransformGroups,
 						keySet, targets, blUsers);
-			    
+
 			} else { // LinkRetained
 			    ln = (LinkRetained)obj;
 			    currentKey.reset();
@@ -1010,14 +1010,14 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 						      ln.sharedGroup.localToVworldKeys.length);
 				if(j < 0) {
 				    System.err.
-					println("TransformGroupRetained : Can't find hashKey"); 
+					println("TransformGroupRetained : Can't find hashKey");
 				}
-				
+
 				if (j<ln.sharedGroup.localToVworldKeys.length) {
 				    ln.sharedGroup.
 					updateChildLocalToVworld(
 						ln.sharedGroup.
-							localToVworldKeys[j], 
+							localToVworldKeys[j],
 						j, dirtyTransformGroups,
 						keySet, targets, blUsers);
 				}
@@ -1040,7 +1040,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	    bound.transform(getCurrentChildLocalToVworld());
 	} else {
 	    HashKey key = new HashKey("");
-	    path.getHashKey(key);	    
+	    path.getHashKey(key);
 	    bound.transform(getCurrentChildLocalToVworld(key));
 	}
     }
@@ -1075,7 +1075,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	if (!inSharedGroup) {
             return childLocalToVworld[0][childLocalToVworldIndex[0][NodeRetained.CURRENT_LOCAL_TO_VWORLD]];
         } else {
-	    int i = key.equals(localToVworldKeys, 0, localToVworldKeys.length); 
+	    int i = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
 	    if(i>= 0) {
 		return childLocalToVworld[i]
 		    [childLocalToVworldIndex[i][NodeRetained.CURRENT_LOCAL_TO_VWORLD]];
@@ -1089,11 +1089,11 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
      * Get the last child localToVworld transform for a node
      */
     Transform3D getLastChildLocalToVworld(HashKey key) {
-	
+
         if (!inSharedGroup) {
             return childLocalToVworld[0][childLocalToVworldIndex[0][NodeRetained.LAST_LOCAL_TO_VWORLD]];
         } else {
-	    int i = key.equals(localToVworldKeys, 0, localToVworldKeys.length); 
+	    int i = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
 	    if(i>= 0) {
 		return childLocalToVworld[i]
 		    [childLocalToVworldIndex[i][NodeRetained.LAST_LOCAL_TO_VWORLD]];
@@ -1113,7 +1113,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	} else {
 	    System.err.println("getTargetsThreads: wrong arguments");
 	    return -1;
-	} 
+	}
     }
 
     public CachedTargets getCachedTargets(int type, int index, int child) {
@@ -1135,7 +1135,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
     // re-evalute localTargetThreads using newCachedTargets and
     // re-evaluate targetThreads
-    public void computeTargetThreads(int type, 
+    public void computeTargetThreads(int type,
 				CachedTargets[] newCachedTargets) {
 
         // type is ignored here, only need for SharedGroup
@@ -1153,28 +1153,28 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
             TargetsInterface childLink;
  	    NodeRetained node;
             for(int i=0; i<numLinks; i++) {
-	    
+
                 node = (NodeRetained)childTransformLinks.get(i);
     	        if (node.nodeType == NodeRetained.LINK) {
-		    childLink = (TargetsInterface) 
+		    childLink = (TargetsInterface)
 				((LinkRetained)node).sharedGroup;
 	        } else {
 		    childLink = (TargetsInterface) node;
 	        }
 		if (childLink != null) {
-                    targetThreads |= 
+                    targetThreads |=
 			childLink.getTargetThreads(TargetsInterface.TRANSFORM_TARGETS);
 		}
 	    }
         } else {
 	    System.err.println("computeTargetsThreads: wrong arguments");
-        }	
+        }
 
     }
 
     // re-compute localTargetThread, targetThreads and
     // propagate changes to ancestors
-    public void updateTargetThreads(int type, 
+    public void updateTargetThreads(int type,
 				CachedTargets[] newCachedTargets) {
         // type is ignored here, only need for SharedGroup
         if (type == TargetsInterface.TRANSFORM_TARGETS) {
@@ -1189,11 +1189,11 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         }
     }
 
-    // re-evaluate targetThreads using childTargetThreads and 
+    // re-evaluate targetThreads using childTargetThreads and
     // propagate changes to ancestors
     public void propagateTargetThreads(int type, int childTargetThreads) {
         // type is ignored here, only need for SharedGroup
-	
+
         if (type == TargetsInterface.TRANSFORM_TARGETS) {
 	    // XXXX : For now we'll OR more than exact.
 	    //targetThreads = localTargetThreads | childTargetThreads;
@@ -1229,7 +1229,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         }
     }
 
-    public void resetCachedTargets(int type, 
+    public void resetCachedTargets(int type,
 				CachedTargets[] newCtArr, int child) {
         // type is ignored here, only need for SharedGroup
         // child is ignored here

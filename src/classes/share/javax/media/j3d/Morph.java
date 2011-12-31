@@ -174,15 +174,15 @@ public class Morph extends Leaf {
     private static final int[] readCapabilities = {
         ALLOW_GEOMETRY_ARRAY_READ,
         ALLOW_APPEARANCE_READ,
-        ALLOW_WEIGHTS_READ,        
+        ALLOW_WEIGHTS_READ,
         ALLOW_COLLISION_BOUNDS_READ,
         ALLOW_APPEARANCE_OVERRIDE_READ
     };
-                
+
     // non public default constructor
     Morph() {
         // set default read capabilities
-        setDefaultReadCapabilities(readCapabilities);        
+        setDefaultReadCapabilities(readCapabilities);
     }
 
     /**
@@ -227,7 +227,7 @@ public class Morph extends Leaf {
     public Morph(GeometryArray geometryArrays[]) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
-        
+
 	((MorphRetained)retained).setGeometryArrays(geometryArrays);
     }
 
@@ -290,7 +290,7 @@ public class Morph extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_COLLISION_BOUNDS_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Morph0"));
-	
+
 	((MorphRetained)this.retained).setCollisionBounds(bounds);
     }
 
@@ -305,11 +305,11 @@ public class Morph extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_COLLISION_BOUNDS_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Morph1"));
-	
+
 	return ((MorphRetained)this.retained).getCollisionBounds();
     }
 
- 
+
     /**
      * Sets the geometryArrays component of the Morph node.
      *
@@ -361,7 +361,7 @@ public class Morph extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_GEOMETRY_ARRAY_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Morph2"));
-	
+
 	((MorphRetained)this.retained).setGeometryArrays(geometryArrays);
     }
 
@@ -377,7 +377,7 @@ public class Morph extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_GEOMETRY_ARRAY_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Morph3"));
-	
+
 	return ((MorphRetained)this.retained).getGeometryArray(index);
     }
 
@@ -394,7 +394,7 @@ public class Morph extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_APPEARANCE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Morph4"));
-	
+
 	((MorphRetained)this.retained).setAppearance(appearance);
     }
 
@@ -409,7 +409,7 @@ public class Morph extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_APPEARANCE_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Morph5"));
-	
+
 	return ((MorphRetained)this.retained).getAppearance();
     }
 
@@ -505,7 +505,7 @@ public class Morph extends Leaf {
 
     /**
      * Sets this Morph node's morph weight vector. The Morph node "weights"
-     * the corresponding GeometryArray by the amount specified. 
+     * the corresponding GeometryArray by the amount specified.
      * The weights apply a morph weight vector component that creates
      * the desired morphing effect.
      * The length
@@ -519,14 +519,14 @@ public class Morph extends Leaf {
      *
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     * @exception IllegalArgumentException if sum of all 'weights' is 
+     * @exception IllegalArgumentException if sum of all 'weights' is
      * NOT 1.0 or number of weights is NOT exqual to number of GeometryArrays.
      */
     public void setWeights(double weights[]) {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_WEIGHTS_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Morph8"));
-	
+
 	((MorphRetained)this.retained).setWeights(weights);
     }
 
@@ -540,10 +540,10 @@ public class Morph extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_WEIGHTS_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("Morph9"));
-	
+
 	return ((MorphRetained)this.retained).getWeights();
     }
-    
+
     /**
      * Sets a flag that indicates whether this node's appearance can
      * be overridden.  If the flag is true, this node's
@@ -553,7 +553,7 @@ public class Morph extends Leaf {
      * The default value is false.
      *
      * @param flag the apperance override enable flag
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @see AlternateAppearance
@@ -572,7 +572,7 @@ public class Morph extends Leaf {
      * Retrieves the appearanceOverrideEnable flag for this node.
      * @return true if the appearance can be overridden; false
      * otherwise.
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      *
      * @since Java 3D 1.2
@@ -629,7 +629,7 @@ public class Morph extends Leaf {
      *  <code>false</code>, the value of each node's
      *  <code>duplicateOnCloneTree</code> variable determines whether
      *  NodeComponent data is duplicated or copied.
-     * @exception ClassCastException if originalNode is not an instance of 
+     * @exception ClassCastException if originalNode is not an instance of
      *  <code>Morph</code>
      *
      * @see Node#cloneTree
@@ -645,7 +645,7 @@ public class Morph extends Leaf {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -663,7 +663,7 @@ public class Morph extends Leaf {
      */
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
-	
+
 	MorphRetained attr = (MorphRetained) originalNode.retained;
 	MorphRetained rt = (MorphRetained) retained;
 
@@ -688,7 +688,7 @@ public class Morph extends Leaf {
 	rt.setGeometryArrays(ga);
 	rt.setWeights(weights);
     }
-   
+
     // Method to check whether all geometries have allow intersect
     // capability bit set; it will throw an exception if any don't
     // have the bit set.

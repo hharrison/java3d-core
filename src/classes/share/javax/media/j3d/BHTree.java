@@ -36,15 +36,15 @@ import java.util.Vector;
 import javax.vecmath.Point4d;
 
 class BHTree  {
-    
+
     Locale locale;
 
     private BHNode root;
     private BHInsertStructure insertStructure = null;
 
     // Temporary point, so we dont generate garbage
-    Point4d tPoint4d = new Point4d();    
-    
+    Point4d tPoint4d = new Point4d();
+
     // A flag to signal that number of renderAtoms sent to RenderBin is stable.
     private boolean stable = false;
 
@@ -58,12 +58,12 @@ class BHTree  {
     static final int DEPTH_UPPER_BOUND = 56;
     static final int INCR_DEPTH_BOUND = 5;
     int  depthUpperBound = DEPTH_UPPER_BOUND;
-    
+
     BHTree() {
 	locale = null;
 	root = null;
     }
-    
+
     BHTree(Locale loc) {
 	locale = loc;
 	root = null;
@@ -82,63 +82,63 @@ class BHTree  {
     Locale getLocale() {
 	return locale;
     }
-    
+
     void cluster(BHInternalNode root, BHNode[] bhArr) {
 
 	if(J3dDebug.devPhase) {
 	    if(J3dDebug.doDebug(J3dDebug.bHTree, J3dDebug.LEVEL_4,
 				"BHTree.java :In cluster length is " + bhArr.length
-				+ "\n")) {	    
-		
+				+ "\n")) {
+
 		for(int i=0; i<bhArr.length; i++) {
 		    System.err.println(bhArr[i]);
 		}
 	    }
 	}
-	
+
 	if((bhArr == null) || (bhArr.length < 2) || (root == null)){
 	    if(J3dDebug.devPhase)
 		J3dDebug.doDebug(J3dDebug.bHTree, J3dDebug.LEVEL_1,
 				 "BHTree.java : cluster : trouble! \n");
 	    return;
 	}
-	
+
 	int centerValuesIndex[] = new int[bhArr.length];
 	float centerValues[][] = computeCenterValues(bhArr, centerValuesIndex);
-	
-	constructTree(root, bhArr, centerValues, centerValuesIndex);  
-	
+
+	constructTree(root, bhArr, centerValues, centerValuesIndex);
+
     }
-    
+
     // bhArr can only contains BHLeafNode.
 
     void boundsChanged(BHNode bhArr[], int size) {
 	// Mark phase.
 	markParentChain(bhArr, size);
-	
+
 	// Compute phase.
 	root.updateMarkedBoundingHull();
     }
 
-    
+
     // Return true if bhTree's root in encompass by frustumBBox and nothing changed.
     boolean getVisibleBHTrees(RenderBin rBin, ArrayList bhTrees,
 			      BoundingBox frustumBBox, long referenceTime,
 			      boolean stateChanged, int visibilityPolicy,
 			      boolean singleLocale) {
-	
+
 	int i, j, size;
-	
+
 	if ((frustumBBox != null) && (root != null)) {
-	    
+
 	    boolean inSide = aEncompassB(frustumBBox, root.bHull);
 	    /*
-	      System.err.println("stateChanged is " + stateChanged); 
+	      System.err.println("stateChanged is " + stateChanged);
 	      System.err.println("frustumBBox is " + frustumBBox);
 	      System.err.println("root.bHull is " + root.bHull);
 	      System.err.println("inSide is " + inSide);
 	    */
-	     
+
 	    if(singleLocale && !stateChanged && inSide && stable) {
 		// just return the whole tree, no change in render mol..
 		// System.err.println("Optimize case 1 ..." + this);
@@ -151,7 +151,7 @@ class BHTree  {
 		// System.err.println("Optimize case 2 ..." + this);
 		select(rBin, bhTrees, frustumBBox, root, referenceTime,
 		       visibilityPolicy, true);
-		
+
 		bhTrees.add(root);
 		stable = true;
 	    } else {
@@ -166,7 +166,7 @@ class BHTree  {
 
 	return false;
     }
-    
+
     private void select(RenderBin rBin, ArrayList bhTrees, BoundingBox frustumBBox,
 			BHNode bh, long referenceTime, int visibilityPolicy,
 			boolean inSide) {
@@ -174,19 +174,19 @@ class BHTree  {
 	if ((bh == null) || (bh.bHull.isEmpty())) {
 	    return;
 	}
-	
+
 	switch(bh.nodeType) {
 	case BHNode.BH_TYPE_LEAF:
 	    if((((BHLeafNode) bh).leafIF instanceof GeometryAtom) &&
 	       (((BHLeafNode) bh).isEnable(visibilityPolicy)) &&
 	       ((inSide) ||  (frustumBBox.intersect(bh.bHull)))) {
-		
+
 	       // do render atom setup.
 		rBin.processGeometryAtom((GeometryAtom)
 					 (((BHLeafNode)bh).leafIF),
 					 referenceTime);
 		if(!inSide) {
-		    bhTrees.add(bh);	
+		    bhTrees.add(bh);
 		}
 	    }
 	    break;
@@ -197,17 +197,17 @@ class BHTree  {
 		       referenceTime, visibilityPolicy, true);
 		select(rBin, bhTrees, frustumBBox,
 		       ((BHInternalNode)bh).getLeftChild(),
-		       referenceTime, visibilityPolicy, true);	
+		       referenceTime, visibilityPolicy, true);
 	    }
 	    else if(aEncompassB(frustumBBox, bh.bHull)) {
-		bhTrees.add(bh);	
+		bhTrees.add(bh);
 		select(rBin, bhTrees, frustumBBox,
 		       ((BHInternalNode)bh).getRightChild(),
 		       referenceTime, visibilityPolicy, true);
 		select(rBin, bhTrees, frustumBBox,
 		       ((BHInternalNode)bh).getLeftChild(),
 		       referenceTime, visibilityPolicy, true);
-	    }  
+	    }
 	    else if(frustumBBox.intersect(bh.bHull)) {
 		select(rBin, bhTrees, frustumBBox,
 		       ((BHInternalNode)bh).getRightChild(),
@@ -216,10 +216,10 @@ class BHTree  {
 		       ((BHInternalNode)bh).getLeftChild(),
 		       referenceTime, visibilityPolicy, false);
 	    }
-	    break;		  	 
+	    break;
 	}
-    }    
-    
+    }
+
     // returns true iff the bBox is completely inside aBox
     // i.e.  bBoxl values are strictly less than or equal to all aBox values.
     static boolean aEncompassB(BoundingBox aBox, BoundingBox bBox) {
@@ -231,7 +231,7 @@ class BHTree  {
 		(aBox.lower.z <= bBox.lower.z));
     }
 
-    
+
     BHLeafInterface selectAny(GeometryAtom atom, int accurancyMode) {
 	if (atom.source.geometryList == null)
 	    return null;
@@ -243,7 +243,7 @@ class BHTree  {
 	return ((BHLeafNode) bhNode).leafIF;
     }
 
-    
+
     BHLeafInterface selectAny(GeometryAtom atoms[], int size, int accurancyMode) {
 	BHNode bhNode = doSelectAny(atoms, size, root, accurancyMode);
 	if (bhNode == null) {
@@ -282,7 +282,7 @@ class BHTree  {
 			if ((atom.source.sourceNode != leafAtom.source.sourceNode) &&
 			    (atom.source.collisionVwcBound.intersect(leafAtom.source.collisionVwcBound)) &&
 			    ((accurancyMode == WakeupOnCollisionEntry.USE_BOUNDS) ||
-			     ((leafAtom.source.geometryList != null) && 
+			     ((leafAtom.source.geometryList != null) &&
 			      (atom.source.intersectGeometryList(leafAtom.source))))) {
 			    return bh;
 			}
@@ -308,13 +308,13 @@ class BHTree  {
 		atom = atoms[i];
 		if (atom.source.collisionVwcBound.intersect(bh.bHull))
 		    {
-			BHNode hitNode = doSelectAny(atoms, 
+			BHNode hitNode = doSelectAny(atoms,
 						     atomSize,
 						     ((BHInternalNode) bh).getRightChild(),
 						     accurancyMode);
 			if (hitNode != null)
 			    return hitNode;
-		
+
 			return doSelectAny(atoms, atomSize,
 					   ((BHInternalNode) bh).getLeftChild(),
 					   accurancyMode);
@@ -337,10 +337,10 @@ class BHTree  {
 		GeometryAtom leafAtom = (GeometryAtom) leaf;
 		if ((atom.source.sourceNode != leafAtom.source.sourceNode) &&
 		    (((BHLeafNode) bh).isEnable()) &&
-		    (leafAtom.source.isCollidable) && 
+		    (leafAtom.source.isCollidable) &&
 		    (atom.source.collisionVwcBound.intersect(leafAtom.source.collisionVwcBound)) &&
 		    ((accurancyMode == WakeupOnCollisionEntry.USE_BOUNDS) ||
-		     ((leafAtom.source.geometryList != null) && 
+		     ((leafAtom.source.geometryList != null) &&
 		      (atom.source.intersectGeometryList(leafAtom.source))))) {
 		    return bh;
 		}
@@ -356,13 +356,13 @@ class BHTree  {
 	    }
 	    return null;
 	case BHNode.BH_TYPE_INTERNAL:
-	    if (atom.source.collisionVwcBound.intersect(bh.bHull)) {		
-		BHNode hitNode = doSelectAny(atom, 
+	    if (atom.source.collisionVwcBound.intersect(bh.bHull)) {
+		BHNode hitNode = doSelectAny(atom,
 					     ((BHInternalNode) bh).getRightChild(),
 					     accurancyMode);
 		if (hitNode != null)
 		    return hitNode;
-		
+
 		return doSelectAny(atom,
 				   ((BHInternalNode) bh).getLeftChild(),
 				   accurancyMode);
@@ -396,10 +396,10 @@ class BHTree  {
 	    if (leaf instanceof GeometryAtom) {
 		GeometryAtom leafAtom = (GeometryAtom) leaf;
 		if ((((BHLeafNode) bh).isEnable()) &&
-		    (leafAtom.source.isCollidable) && 
+		    (leafAtom.source.isCollidable) &&
 		    (bound.intersect(leafAtom.source.collisionVwcBound)) &&
 		    ((accurancyMode == WakeupOnCollisionEntry.USE_BOUNDS) ||
-		     ((leafAtom.source.geometryList != null) && 
+		     ((leafAtom.source.geometryList != null) &&
 		      (leafAtom.source.intersectGeometryList(
 			leafAtom.source.getCurrentLocalToVworld(0), bound))))) {
 		    return bh;
@@ -414,14 +414,14 @@ class BHTree  {
 	    }
 	    return null;
 	case BHNode.BH_TYPE_INTERNAL:
-	    if (bound.intersect(bh.bHull)) {		
+	    if (bound.intersect(bh.bHull)) {
 		BHNode hitNode = doSelectAny(bound,
 				      ((BHInternalNode) bh).getRightChild(),
 				      accurancyMode,
 				      armingNode);
 		if (hitNode != null)
 		    return hitNode;
-		
+
 		return doSelectAny(bound,
 				   ((BHInternalNode) bh).getLeftChild(),
 				   accurancyMode,
@@ -457,12 +457,12 @@ class BHTree  {
 	    if (leaf instanceof GeometryAtom) {
 		GeometryAtom leafAtom = (GeometryAtom) leaf;
 		if ((((BHLeafNode) bh).isEnable()) &&
-		    (leafAtom.source.isCollidable) && 
+		    (leafAtom.source.isCollidable) &&
 		    (bound.intersect(leafAtom.source.collisionVwcBound)) &&
 	 	    (!isDescendent(leafAtom.source.sourceNode,
 				   armingGroup, leafAtom.source.key)) &&
 		    ((accurancyMode == WakeupOnCollisionEntry.USE_BOUNDS) ||
-		     ((leafAtom.source.geometryList != null) && 
+		     ((leafAtom.source.geometryList != null) &&
 		      (leafAtom.source.intersectGeometryList(
 			leafAtom.source.getCurrentLocalToVworld(0), bound))))) {
 		    return bh;
@@ -478,14 +478,14 @@ class BHTree  {
 	    }
 	    return null;
 	case BHNode.BH_TYPE_INTERNAL:
-	    if (bound.intersect(bh.bHull)) {		
+	    if (bound.intersect(bh.bHull)) {
 		BHNode hitNode = doSelectAny(bound,
 				      ((BHInternalNode) bh).getRightChild(),
 				      accurancyMode,
 				      armingGroup);
 		if (hitNode != null)
 		    return hitNode;
-		
+
 		return doSelectAny(bound,
 				   ((BHInternalNode) bh).getLeftChild(),
 				   accurancyMode,
@@ -497,7 +497,7 @@ class BHTree  {
     }
 
     // Return true if node is a descendent of group
-    private boolean isDescendent(NodeRetained node, 
+    private boolean isDescendent(NodeRetained node,
 				 GroupRetained group,
 				 HashKey key) {
 
@@ -508,7 +508,7 @@ class BHTree  {
 		    key = new HashKey(key);
 		}
 	    }
-	    
+
 	    do {
 		if (node == group) {
 		    return true;
@@ -538,22 +538,22 @@ class BHTree  {
 
 
     void select(PickShape pickShape, UnorderList hitArrList) {
-	
+
 	if((pickShape == null)||(root == null))
 	    return;
 
 	doSelect(pickShape, hitArrList, root, tPoint4d);
-	
+
     }
-    
-    
+
+
     private void doSelect(PickShape pickShape, UnorderList hitArrList,
 			  BHNode bh, Point4d pickPos) {
-	
+
 	if ((bh == null) || (bh.bHull.isEmpty())) {
 	    return;
 	}
-	    
+
 	switch(bh.nodeType) {
 	case BHNode.BH_TYPE_LEAF:
 	    if (((BHLeafNode)(bh)).isEnable() &&
@@ -561,38 +561,38 @@ class BHTree  {
 		 ((GeometryAtom) (((BHLeafNode)
 				   bh).leafIF)).source.isPickable &&
 		pickShape.intersect(bh.bHull, pickPos)) {
-		hitArrList.add(bh);	 
+		hitArrList.add(bh);
 	    }
 	    break;
 	case BHNode.BH_TYPE_INTERNAL:
 	    if (pickShape.intersect(bh.bHull, pickPos)) {
-		doSelect(pickShape, 
+		doSelect(pickShape,
 			 hitArrList,
 			 ((BHInternalNode)bh).getRightChild(),
 			 pickPos);
-		doSelect(pickShape, 
+		doSelect(pickShape,
 			 hitArrList,
 			 ((BHInternalNode)bh).getLeftChild(),
 			 pickPos);
 	    }
-	    break;		  	 
-	} 
+	    break;
+	}
     }
 
     BHNode selectAny(PickShape pickShape) {
-	
+
 	if((pickShape == null)||(root == null))
 	    return null;
-	
+
 	return doSelectAny(pickShape, root, tPoint4d);
-	
+
     }
-    
-    
+
+
     private BHNode doSelectAny(PickShape pickShape, BHNode bh, Point4d pickPos) {
 
 	BHNode hitNode = null;
-	
+
 	if((bh == null) || (bh.bHull.isEmpty()))
 	    return null;
 
@@ -604,19 +604,19 @@ class BHTree  {
 				   bh).leafIF)).source.isPickable &&
 		pickShape.intersect(bh.bHull, pickPos)) {
 		return bh;
-	    } 
+	    }
 	    break;
 	case BHNode.BH_TYPE_INTERNAL:
 	    if (pickShape.intersect(bh.bHull, pickPos)) {
-		hitNode = doSelectAny(pickShape, 
+		hitNode = doSelectAny(pickShape,
 				      ((BHInternalNode)bh).getRightChild(),
 				      pickPos);
-		
+
 		if (hitNode != null) {
 		    return hitNode;
 		}
-		
-		return doSelectAny(pickShape, 
+
+		return doSelectAny(pickShape,
 				   ((BHInternalNode)bh).getLeftChild(),
 				   pickPos);
 	    }
@@ -624,8 +624,8 @@ class BHTree  {
 	}
 	return null;
     }
-    
-    
+
+
     private void create(BHNode bhArr[]) {
 	int i;
 
@@ -633,34 +633,34 @@ class BHTree  {
 	    root = null;
 	    return;
 	}
-	
-	if(bhArr.length == 1) {   
-	    bhArr[0].computeBoundingHull();	    
+
+	if(bhArr.length == 1) {
+	    bhArr[0].computeBoundingHull();
 	    root = (BHNode)bhArr[0];
 	    return;
 	}
-	
+
 	int centerValuesIndex[] = new int[bhArr.length];
 	float centerValues[][] = computeCenterValues(bhArr, centerValuesIndex);
 
 	/*
 	  System.err.println("Length of array is " +  bhArr.length);
-	  for(int kk=0; kk<bhArr.length;kk++) {	
-	  System.err.println("( " + centerValues[kk][0] + ", " + 
+	  for(int kk=0; kk<bhArr.length;kk++) {
+	  System.err.println("( " + centerValues[kk][0] + ", " +
 	  centerValues[kk][1] + ", " + centerValues[kk][2] + " )");
 	  }
 	  */
-	
+
 	root = new BHInternalNode();
 	constructTree((BHInternalNode) root, bhArr, centerValues,
-		      centerValuesIndex);  
+		      centerValuesIndex);
 
 
 	if(J3dDebug.devPhase && J3dDebug.debug)
 	    gatherTreeStatistics();
-    
+
     }
-    
+
     void insert(BHNode bhArr[], int size) {
 	// first pass: add all elements to the tree creating k array internal
 	// nodes using the auxiliaryInsertStucture
@@ -672,15 +672,15 @@ class BHTree  {
 	    J3dDebug.doDebug(J3dDebug.bHTree, J3dDebug.LEVEL_4,
 			     "BHTree.java : Insert - bhArr.length is " +
 			     bhArr.length + "\n");
-	
+
 	if((bhArr == null) || (size < 1) || (bhArr.length < 1))
-	    return;	
-	
+	    return;
+
 	if(root == null) {
 	    if(J3dDebug.devPhase)
 		J3dDebug.doDebug(J3dDebug.bHTree, J3dDebug.LEVEL_4,
 				 "BHTree.java : Tree has not be created yet.\n");
-	    
+
 	    // This extra "new" is needed, because create() require its input
 	    // array's length be equal to the number of inserted nodes.
 	    BHNode[] newbhArr = new BHNode[size];
@@ -688,7 +688,7 @@ class BHTree  {
 	    create(newbhArr);
 	    return;
 	}
-	
+
 	if(root.nodeType == BHNode.BH_TYPE_LEAF) {
 	    BHNode[] oldBhArr = bhArr;
 	    bhArr = new BHNode[size + 1];
@@ -697,36 +697,36 @@ class BHTree  {
 	    create(bhArr);
 	    return;
 	}
-	
+
 	if(insertStructure == null) {
 	    insertStructure = new BHInsertStructure(size);
 	}
 	else {
 	    insertStructure.clear();
 	}
-	
+
 	for (int i=0; i<size; i++) {
 	    // test if its inside the 'root' element
 	    if ( root.isInside(bhArr[i].bHull) ) {
 		((BHInternalNode)root).insert(bhArr[i], insertStructure);
-	    } 
+	    }
 	    else {
 		// extend the bounds of root  by joining with current element
 		root.bHull.combine(bhArr[i].bHull);
 		insertStructure.lookupAndInsert(root, bhArr[i]);
 	    }
 	}
-	
+
 	insertStructure.updateBoundingTree(this);
 	// System.err.println("BHTree - Inserting ...");
-        
+
         // Issue 353: clear temporary insertStructure so we don't leak.
         insertStructure.clear();
-	
+
 	// Guard against size<1 is done at the start of this method.
 	estMaxDepth += (int) (Math.log(size)/LOG_OF_2) + 1;
-	
-	if(estMaxDepth > depthUpperBound) {  
+
+	if(estMaxDepth > depthUpperBound) {
 	    int maxDepth = root.computeMaxDepth(0);
 	    int leafCount = root.countNumberOfLeaves();
 	    double compDepth = Math.log(leafCount)/LOG_OF_2;
@@ -736,8 +736,8 @@ class BHTree  {
 	      System.err.println("maxDepth " + maxDepth);
 	      System.err.println("leafCount " + leafCount);
 	      */
-	    
-	    // Upper bound guard. 
+
+	    // Upper bound guard.
 	    if(maxDepth > depthUpperBound) {
 		reConstructTree(leafCount);
 		maxDepth = root.computeMaxDepth(0);
@@ -757,27 +757,27 @@ class BHTree  {
 	    }else if((depthUpperBound != DEPTH_UPPER_BOUND) &&
 		     (maxDepth * 1.5 < depthUpperBound)) {
 		depthUpperBound = depthUpperBound - INCR_DEPTH_BOUND;
-		
+
 		if(depthUpperBound < DEPTH_UPPER_BOUND) {
-		    // Be sure that DEPTH_UPPER_BOUND is the min. 
+		    // Be sure that DEPTH_UPPER_BOUND is the min.
 		    depthUpperBound = DEPTH_UPPER_BOUND;
 		}
 	    }
-	    
+
 	    // This is the only place for resetting estMaxDepth to the tree real
 	    // maxDepth. Hence in cases where tree may get deteriorate fast, such
 	    // as multiple inserts and deletes frequently. estMaxDepth is accuminated,
 	    // and will lead to tree re-evaluation and possibly re-balancing.
 	    estMaxDepth = maxDepth;
 	}
-    
+
     }
 
 
     // mark all elements of the node and its parent as needing updating
     private void markParentChain(BHNode[] nArr, int size) {
 	BHNode node;
-	
+
 	for(int i=0; i<size; i++) {
 	    node = nArr[i];
 	    node.mark = true;
@@ -796,17 +796,17 @@ class BHTree  {
 	    node.mark = true;
 	}
     }
-    
+
     // Delete a series of n node elements from the input binary tree.
     // These elements are removed from the tree in a 2 phase process.
     // First, all elements to be removed are marked and all parent
     // chains are marked ... then a second phase of the algorithm goes
     // through and deletes them and updates all of the bounds ...
-    
+
     // delete the n elements in the array from the tree
     void delete(BHNode bhArr[], int size) {
 	BHNode node;
-	
+
 	/*
 	  if((bhArr == null) || (bhArr.length < 1))
 	  return;
@@ -814,9 +814,9 @@ class BHTree  {
 	  bhArr.length);
 	  for(int i=0; i<bhArr.length; i++)
 	  System.err.println("bhArr[" + i +"] " + bhArr[i]);
-	  
+
 	    */
-	
+
 	for(int i=0; i<size; i++) {
 	    if((bhArr[i] != null) && (bhArr[i].nodeType == BHNode.BH_TYPE_LEAF)) {
 		markParentChain(bhArr[i]);
@@ -829,65 +829,65 @@ class BHTree  {
 				     "In tree = " + this +
 				     " can not delete it ...\n");
 	    }
-	    
+
 	}
-	
+
 	root = root.deleteAndUpdateMarkedNodes();
-	
+
 	if(J3dDebug.devPhase)
 	    if (root == null) {
 		J3dDebug.doDebug(J3dDebug.bHTree, J3dDebug.LEVEL_4,
 				 "Tree has been completely deleted ...\n");
-	    }	
+	    }
     }
-    
+
     // compute the center values along each of the three dimensions given
     // the array of leaf objects to be split and joined
     float[][] computeCenterValues(BHNode[] bhArr, int[] cIndex) {
 	float centers[][] = new float[bhArr.length][3];
-	
+
 	// compute the center values of the input array of nodes
 	for ( int i=0; i < bhArr.length; i++ ) {
 	    cIndex[i] = i;
-	    
+
 	    bhArr[i].computeBoundingHull();
-		
+
 	    centers[i][0] =
 		(float)((bhArr[i].bHull.upper.x + bhArr[i].bHull.lower.x))/ 2.0f;
 	    centers[i][1] =
 		(float)((bhArr[i].bHull.upper.y + bhArr[i].bHull.lower.y)) / 2.0f;
 	    centers[i][2] =
 		(float)((bhArr[i].bHull.upper.z + bhArr[i].bHull.lower.z)) / 2.0f;
-	    
+
 	}
 	return centers;
     }
-    
-    
+
+
     void computeMeansAndSumSquares(float[][] centerValues, int[] centerValuesIndex,
 				   float[] means, float[] ss) {
-	
+
 	int i, arrLen;
 	float sumCenters[] = new float[3];
 	float temp = 0.0f;
-	
+
 	arrLen = centerValuesIndex.length;
 	// Initialization.
 	for(i=2; i>=0; i--) {
 	    sumCenters[i] = 0.0f;
 	    ss[i] = 0.0f;
 	}
-	
+
 	for(i=arrLen-1; i>=0 ; i--) {
 	    sumCenters[0] += centerValues[centerValuesIndex[i]][0];
 	    sumCenters[1] += centerValues[centerValuesIndex[i]][1];
 	    sumCenters[2] += centerValues[centerValuesIndex[i]][2];
 	}
-	
+
 	means[0] = sumCenters[0]/(float)arrLen;
 	means[1] = sumCenters[1]/(float)arrLen;
 	means[2] = sumCenters[2]/(float)arrLen;
-	
+
 	for(i=arrLen-1; i>=0 ; i--) {
 	    temp = (centerValues[centerValuesIndex[i]][0] - means[0]);
 	    ss[0] += (temp*temp);
@@ -895,17 +895,17 @@ class BHTree  {
 	    ss[1] += (temp*temp);
 	    temp = (centerValues[centerValuesIndex[i]][2] - means[2]);
 	    ss[2] += (temp*temp);
-	    
-	}	
-	
+
+	}
+
     }
-    
+
     // find the split axis (the highest ss and return its index) for
     // a given set of ss values
     int findSplitAxis ( float ss[] ) {
 	int splitAxis = -1;
 	float maxSS = 0.0f;
-	
+
 	// the largest ss  index value
 	for (int i=0; i < 3; i++) {
 	    if ( ss[i] > maxSS ) {
@@ -915,18 +915,18 @@ class BHTree  {
 	}
 	return splitAxis;
     }
-    
-    // Recursive method for constructing a binary tree.    
+
+    // Recursive method for constructing a binary tree.
     void constructTree( BHInternalNode parent, BHNode bhArr[],
-			float[][] centerValues, 
+			float[][] centerValues,
 			int[] centerValuesIndex ){
-	
+
 	int i, splitAxis;
 	int rightSetCount = 0;
 	int leftSetCount = 0;
 	float means[] = new float[3];
 	float ss[] = new float[3];
-	
+
 	if(J3dDebug.devPhase)
 	    if ( bhArr.length <= 1 ) {
 		// this is only here for debugging can be removed after testing
@@ -934,22 +934,22 @@ class BHTree  {
 		J3dDebug.doDebug(J3dDebug.bHTree, J3dDebug.LEVEL_1,
 				 "constructTree - bhArr.length <= 1. Bad !!!\n");
 	    }
-	
+
 	computeMeansAndSumSquares(centerValues, centerValuesIndex, means, ss);
-	
+
 	splitAxis = findSplitAxis(ss);
 
 	// an array of decision variables for storing the values of inside
 	// the right or left set for a particular element of bhArr.
 	// true if its in the left set, false if its in the right set
 	boolean leftOrRightSet[] = new boolean[bhArr.length];
-	
+
 	if ( splitAxis == -1 ) {
 	    // This is bad. Since we can't find a split axis, the best thing
 	    // to do is to split the set in two sets; each with about the
 	    // same number of elements. By doing this we can avoid constructing
 	    // a skew tree.
-	    
+
 	    // split elements into half.
 	    for ( i=0; i < bhArr.length; i++) {
 		if(leftSetCount > rightSetCount) {
@@ -958,7 +958,7 @@ class BHTree  {
 		} else {
 		    leftSetCount++;
 		    leftOrRightSet[i] = true;
-		}	
+		}
 	    }
 	}
 	else {
@@ -966,7 +966,7 @@ class BHTree  {
 		// the split criterion, special multiple equals cases added
 		if ( centerValues[centerValuesIndex[i]][splitAxis] <
 		     means[splitAxis]) {
-		    
+
 		    if(J3dDebug.devPhase)
 			J3dDebug.doDebug(J3dDebug.bHTree, J3dDebug.LEVEL_4,
 					 "Found a left element\n");
@@ -1000,8 +1000,8 @@ class BHTree  {
 			     rightSetCount + "\n");
 
 
-	// Don't think that this guard is needed, but still like to have it. 
-	// Just in case, bad means and the sum of squares might lead us into the guard. 
+	// Don't think that this guard is needed, but still like to have it.
+	// Just in case, bad means and the sum of squares might lead us into the guard.
 	if (leftSetCount == bhArr.length) {
 	    if(J3dDebug.devPhase)
 		J3dDebug.doDebug(J3dDebug.bHTree, J3dDebug.LEVEL_1,
@@ -1017,8 +1017,8 @@ class BHTree  {
 		} else {
 		    leftSetCount++;
 		    leftOrRightSet[i] = true;
-		}	
-	    }	    
+		}
+	    }
 	} else if (rightSetCount == bhArr.length) {
 	    if(J3dDebug.devPhase)
 		J3dDebug.doDebug(J3dDebug.bHTree, J3dDebug.LEVEL_1,
@@ -1034,29 +1034,29 @@ class BHTree  {
 		} else {
 		    leftSetCount++;
 		    leftOrRightSet[i] = true;
-		}	
+		}
 	    }
 	}
-	
+
 	if(J3dDebug.devPhase)
 	    if(J3dDebug.doDebug(J3dDebug.bHTree, J3dDebug.LEVEL_4))
 		// check to make sure that rightSet and leftSet sum to the
 		// number of elements in the original array.
 		if ( bhArr.length != (rightSetCount + leftSetCount) ) {
-		    System.err.println("An error has occurred in spliting");	
+		    System.err.println("An error has occurred in spliting");
 		}
-	       
+
 	BHNode rightSet[] = new BHNode[rightSetCount];
 	BHNode leftSet[] = new BHNode[leftSetCount];
 	int centerValuesIndexR[] = new int[rightSetCount];
 	int centerValuesIndexL[] = new int[leftSetCount];
-	
+
 	rightSetCount = 0;
 	leftSetCount = 0;
-	
+
 	for (i=0; i < bhArr.length; i++) {
 	    if ( leftOrRightSet[i] ) { // element in left set
-		leftSet[leftSetCount] = bhArr[i];	  
+		leftSet[leftSetCount] = bhArr[i];
 		centerValuesIndexL[leftSetCount] = centerValuesIndex[i];
 		leftSetCount++;
 	    } else {
@@ -1065,27 +1065,27 @@ class BHTree  {
 		rightSetCount++;
 	    }
 	}
-	
+
 	if (rightSet.length != 1) {
 	    parent.rChild = new BHInternalNode();
 	    parent.rChild.setParent(parent);
 	    constructTree((BHInternalNode)(parent.rChild),  rightSet, centerValues,
-			  centerValuesIndexR); 
+			  centerValuesIndexR);
 	} else {
 	    parent.rChild = rightSet[0];
 	    parent.rChild.setParent(parent);
 	}
-	
+
 	if (leftSet.length != 1) {
 	    parent.lChild = new BHInternalNode();
 	    parent.lChild.setParent(parent);
-	    constructTree((BHInternalNode)(parent.lChild), leftSet, centerValues, 
-			  centerValuesIndexL); 
+	    constructTree((BHInternalNode)(parent.lChild), leftSet, centerValues,
+			  centerValuesIndexL);
 	} else {
 	    parent.lChild = leftSet[0];
 	    parent.lChild.setParent(parent);
 	}
-	    
+
 	parent.combineBHull(parent.rChild, parent.lChild);
     }
 
@@ -1102,23 +1102,23 @@ class BHTree  {
 	/*
 	  if(bhArr.length != index[0])
 	  System.err.println("BHTree - This isn't right!!! - bhArr.length " +
-	  bhArr.length + " index " + index[0]); 
+	  bhArr.length + " index " + index[0]);
 	  */
-	
+
 	create(bhArr);
 
     }
-    
+
     void gatherTreeStatistics() {
-	
+
 	int leafCount = root.countNumberOfLeaves();
 	int internalCount = root.countNumberOfInternals();
 	int maxDepth = root.computeMaxDepth(0);
-	float averageDepth = root.computeAverageLeafDepth ( leafCount, 0);	
-	
-	
+	float averageDepth = root.computeAverageLeafDepth ( leafCount, 0);
+
+
 	System.err.println("Statistics for tree = " + this);
-	System.err.println("Total Number of nodes in tree = " + 
+	System.err.println("Total Number of nodes in tree = " +
 			   (leafCount + internalCount) );
 	System.err.println("Number of Leaf Nodes = " + leafCount );
 	System.err.println("Number of Internal Nodes = " + internalCount );
@@ -1126,8 +1126,8 @@ class BHTree  {
 	System.err.println("Average Leaf depth = " + averageDepth );
 	System.err.println("root.bHull = " + root.bHull);
 	// printTree(root);
-	
-    }    
+
+    }
 
 
     void printTree(BHNode bh) {
@@ -1142,9 +1142,9 @@ class BHTree  {
 	    }
 	    else if(bh.nodeType == BHNode.BH_TYPE_LEAF) {
 		System.err.println("BH_TYPE_LEAF - bHull : " + bh);
-		System.err.println(bh.bHull);    
+		System.err.println(bh.bHull);
 	    }
-		
+
 	}
 
 

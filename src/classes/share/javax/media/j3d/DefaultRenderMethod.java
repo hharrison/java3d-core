@@ -45,14 +45,14 @@ class DefaultRenderMethod implements RenderMethod {
      */
     public boolean render(RenderMolecule rm, Canvas3D cv,
 			  RenderAtomListInfo ra, int dirtyBits) {
-        
+
 	boolean isVisible = false; // True if any of the RAs is visible.
-	
+
 	while (ra != null) {
 	    if (cv.ra == ra.renderAtom) {
 		if (cv.raIsVisible) {
 		    cv.updateState(dirtyBits);
-		    ra.geometry().execute(cv, ra.renderAtom, 
+		    ra.geometry().execute(cv, ra.renderAtom,
 					  rm.isNonUniformScale,
 					  rm.useAlpha, rm.alpha,
 					  cv.screen.screen,
@@ -80,11 +80,11 @@ class DefaultRenderMethod implements RenderMethod {
 	    }
 	    ra = ra.next;
 	}
-	
-	return isVisible;
-	
-    }
-    
 
-    
+	return isVisible;
+
+    }
+
+
+
 }

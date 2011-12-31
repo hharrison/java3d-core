@@ -32,7 +32,7 @@
 package javax.media.j3d;
 
 /**
- * Class specifying a wakeup on first detection of sensors no 
+ * Class specifying a wakeup on first detection of sensors no
  * longer intersecting the specified boundary.
  */
 public final class WakeupOnSensorExit extends WakeupCriterion {
@@ -59,7 +59,7 @@ public final class WakeupOnSensorExit extends WakeupCriterion {
 	this.region = (Bounds)region.clone();
 	WakeupIndexedList.init(this, TOTAL_INDEXED_UNORDER_SET_TYPES);
     }
-    
+
     /**
      * Returns this object's bounds specification
      * @return the bounds used in constructing this WakeupCriterion.
@@ -83,7 +83,7 @@ public final class WakeupOnSensorExit extends WakeupCriterion {
     }
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
     void addBehaviorCondition(BehaviorStructure bs) {
@@ -95,7 +95,7 @@ public final class WakeupOnSensorExit extends WakeupCriterion {
 
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
     void removeBehaviorCondition(BehaviorStructure bs) {
@@ -118,7 +118,7 @@ public final class WakeupOnSensorExit extends WakeupCriterion {
      *
      * @return the triggering Sensor object
      *
-     * @exception IllegalStateException if not called from within 
+     * @exception IllegalStateException if not called from within
      * a behavior's processStimulus method which was awoken by a sensor
      * exit.
      *

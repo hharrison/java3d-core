@@ -67,7 +67,7 @@ public class DepthComponentInt extends DepthComponent {
 
     /**
      * Copies the depth data from this object to the specified array.
-     * The array must be large enough to hold all of the ints. 
+     * The array must be large enough to hold all of the ints.
      * @param depthData array of ints that will receive a copy of
      * the depth data
      * @exception CapabilityNotSetException if appropriate capability is
@@ -91,7 +91,7 @@ public class DepthComponentInt extends DepthComponent {
 
 
     /**
-     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)  
+     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
 	DepthComponentIntRetained rt = (DepthComponentIntRetained) retained;
@@ -101,13 +101,13 @@ public class DepthComponentInt extends DepthComponent {
         return d;
     }
 
-  
+
    /**
      * Copies all node information from <code>originalNodeComponent</code> into
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -120,9 +120,9 @@ public class DepthComponentInt extends DepthComponent {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
     void duplicateAttributes(NodeComponent originalNodeComponent,
-			     boolean forceDuplicate) { 
+			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
-      
+
 	// width, height is copied in cloneNode before
 	int len = getWidth()*getHeight();
 	int d[] = new int[len];

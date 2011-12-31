@@ -84,8 +84,8 @@ public class Group extends Node {
         ALLOW_CHILDREN_READ,
         ALLOW_COLLISION_BOUNDS_READ
     };
-    
-    
+
+
     /**
      * Creates the retained mode GroupRetained object that this
      * Group component object will point to.
@@ -94,7 +94,7 @@ public class Group extends Node {
 	retained = new GroupRetained();
 	retained.setSource(this);
     }
-  
+
 
     /**
       * Sets the collision bounds of a node.
@@ -154,7 +154,7 @@ public class Group extends Node {
 	    if (!getCapability(ALLOW_CHILDREN_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Group13"));
 
-	    if ((oldchild != null) && 
+	    if ((oldchild != null) &&
 		(! ((BranchGroup)oldchild).getCapability(BranchGroup.ALLOW_DETACH))) {
 		throw new CapabilityNotSetException(J3dI18N.getString("Group4"));
 	    }
@@ -162,7 +162,7 @@ public class Group extends Node {
 
 	((GroupRetained)retained).setChild(child, index);
     }
-  
+
     /**
      * Inserts the specified child node in this group node's list of
      * children at the specified index.
@@ -196,7 +196,7 @@ public class Group extends Node {
 
 	((GroupRetained)this.retained).insertChild(child, index);
     }
-  
+
     /**
      * Removes the child node at the specified index from this group node's
      * list of children.
@@ -228,7 +228,7 @@ public class Group extends Node {
 
 	((GroupRetained)this.retained).removeChild(index);
     }
-  
+
     /**
      * Retrieves the child node at the specified index in
      * this group node's list of children.
@@ -247,7 +247,7 @@ public class Group extends Node {
 
 	return (Node) ((GroupRetained)this.retained).getChild(index);
     }
-  
+
     /**
      * Returns an Enumeration object of this group node's list of children.
      * @return an Enumeration object of all the children
@@ -289,7 +289,7 @@ public class Group extends Node {
 
 	((GroupRetained)this.retained).addChild(child);
     }
-  
+
     /**
      * Moves the specified branch group node from its existing location to
      * the end of this group node's list of children.
@@ -310,7 +310,7 @@ public class Group extends Node {
 
 	((GroupRetained)this.retained).moveTo(branchGroup);
     }
-  
+
     /**
      * Returns a count of this group node's children.
      * @return the number of children descendant from this node.
@@ -417,12 +417,12 @@ public class Group extends Node {
 
     /**
      * Causes this Group node to be reported as the collision target when
-     * collision is being used and this node or any of its children is in 
+     * collision is being used and this node or any of its children is in
      * a collision. The default value is false.  For collision with
      * USE_GEOMETRY set, the collision traverser will check the geometry
-     * of all the Group node's leaf descendants; for collision with 
+     * of all the Group node's leaf descendants; for collision with
      * USE_BOUNDS set, the collision traverser will only check the bounds
-     * at this Group node.  In both cases, if there is a collision, this 
+     * at this Group node.  In both cases, if there is a collision, this
      * Group node will be reported as the colliding object in the
      * SceneGraphPath.  This reporting is done regardless of whether
      * ENABLE_COLLISION_REPORTING
@@ -475,7 +475,7 @@ public class Group extends Node {
 
         int nChildren = rt.numChildren();
         // call cloneTree on all child nodes
-        for (int i = 0; i < nChildren; i++) { 
+        for (int i = 0; i < nChildren; i++) {
             Node n = rt.getChild(i);
             Node clonedN = n.cloneTree(forceDuplicate, nodeHashtable);
             // add the cloned child to the cloned group node
@@ -492,7 +492,7 @@ public class Group extends Node {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -523,7 +523,7 @@ public class Group extends Node {
 	rt.children.clear();
     }
 
-    
+
     /**
      * Used to create a new instance of the node.  This routine is called
      * by <code>cloneTree</code> to duplicate the current node.
@@ -555,6 +555,6 @@ public class Group extends Node {
      */
     public Group() {
         // set default read capabilities
-        setDefaultReadCapabilities(readCapabilities);        
+        setDefaultReadCapabilities(readCapabilities);
     }
 }

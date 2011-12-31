@@ -36,8 +36,8 @@ import javax.vecmath.Point3f;
 
 
 /**
- * The PointSound node (a sub-class of the Sound node) defines a spatially 
- * located sound source whose waves radiate uniformly in all directions from 
+ * The PointSound node (a sub-class of the Sound node) defines a spatially
+ * located sound source whose waves radiate uniformly in all directions from
  * a given location in space.  It has the same attributes as a Sound object
  * with the addition of a location and the specification of distance-based
  * gain attenuation for listener positions between an array of distances.
@@ -45,7 +45,7 @@ import javax.vecmath.Point3f;
  * A sound's amplitude is attenuated based on the distance between the listener
  * and the sound source position. A piecewise linear curve (defined in terms of
  * pairs of distance and gain scale factor) specifies the gain scale factor slope.
- * 
+ *
  * The PointSound's location and attenuation distances are defined in the local
  * coordinate system of the node.
  *<P>
@@ -54,7 +54,7 @@ import javax.vecmath.Point3f;
  * Associated with distances from the listener to the sound source via an
  * array of (distance, gain-scale-factor) pairs. The gain scale factor
  * applied to the sound source is the linear interpolated gain value between
- * the distance value range that includes the current distance from 
+ * the distance value range that includes the current distance from
  * the listener to the sound source. If the distance from the listener to
  * the sound source is less than the first distance in the array, the first
  * gain scale factor is applied to the sound source. This creates a
@@ -69,16 +69,16 @@ import javax.vecmath.Point3f;
  * positive floating point numbers. While for most applications this list
  * of gain scale factors will usually be monotonically-decreasing, they
  * do not have to be.
- * If this 
- * is not set, no distance gain attenuation is performed (equivalent to 
- * using a distance gain of 1.0 for all distances). 
+ * If this
+ * is not set, no distance gain attenuation is performed (equivalent to
+ * using a distance gain of 1.0 for all distances).
  *<P>
  * getDistanceGainLength method returns the length of the distance gain
  * attenuation arrays. Arrays passed into getDistanceGain methods should all
  * be at least this size.
  *<P>
  * There are two methods for getDistanceGain, one returning an array of
- * points, the other returning separate arrays for each attenuation 
+ * points, the other returning separate arrays for each attenuation
  * component.</UL>
  */
 
@@ -140,7 +140,7 @@ public class PointSound extends Sound {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
 
-    }   
+    }
 
     /**
      * Constructs a PointSound node object using only the provided parameter
@@ -150,7 +150,7 @@ public class PointSound extends Sound {
      * @param soundData sound data associated with this sound source node
      * @param initialGain amplitude scale factor applied to sound source
      * @param position 3D location of source
-     */  
+     */
     public PointSound(MediaContainer soundData,
                       float initialGain,
                       Point3f position) {
@@ -160,7 +160,7 @@ public class PointSound extends Sound {
         setDefaultReadCapabilities(readCapabilities);
 
         ((PointSoundRetained)this.retained).setPosition(position);
-    }   
+    }
 
      /**
       * Constructs a PointSound node object using only the provided parameter
@@ -172,7 +172,7 @@ public class PointSound extends Sound {
       * @param posX x coordinate of location of source
       * @param posY y coordinate of location of source
       * @param posZ z coordinate of location of source
-      */  
+      */
      public PointSound(MediaContainer soundData,
                       float initialGain,
                       float posX, float posY, float posZ ) {
@@ -182,7 +182,7 @@ public class PointSound extends Sound {
         setDefaultReadCapabilities(readCapabilities);
 
         ((PointSoundRetained)this.retained).setPosition(posX,posY,posZ);
-    }   
+    }
 
     // The next four constructors fill all this classes fields with the provided
     // arguments values.
@@ -191,7 +191,7 @@ public class PointSound extends Sound {
 
     /**
      * Construct a PointSound object accepting Point3f as input for the position
-     * and accepting an array of Point2f for the distance attenuation values 
+     * and accepting an array of Point2f for the distance attenuation values
      * where each pair in the array contains a distance and a gain scale factor.
      * @param soundData sound data associated with this sound source node
      * @param initialGain amplitude scale factor applied to sound source
@@ -203,7 +203,7 @@ public class PointSound extends Sound {
      * @param priority playback ranking value
      * @param position 3D location of source
      * @param distanceGain array of (distance,gain) pairs controling attenuation
-     */  
+     */
     public PointSound(MediaContainer soundData,
                       float initialGain,
                       int loopCount,
@@ -212,10 +212,10 @@ public class PointSound extends Sound {
                       boolean enable,
                       Bounds  region,
                       float   priority,
-                      Point3f position, 
+                      Point3f position,
                       Point2f[] distanceGain) {
 
-        super(soundData, initialGain, loopCount, release, continuous, 
+        super(soundData, initialGain, loopCount, release, continuous,
                    enable, region, priority );
 
         // set default read capabilities
@@ -223,13 +223,13 @@ public class PointSound extends Sound {
 
         ((PointSoundRetained)this.retained).setPosition(position);
         ((PointSoundRetained)this.retained).setDistanceGain(distanceGain);
-    }   
+    }
 
     /**
-     * Construct a PointSound object accepting individual float parameters for 
+     * Construct a PointSound object accepting individual float parameters for
      * the elements of the position point, and accepting an array of Point2f for
-     * the distance attenuation values where each pair in the array contains a 
-     * distance and a gain scale factor. 
+     * the distance attenuation values where each pair in the array contains a
+     * distance and a gain scale factor.
      * @param soundData sound data associated with this sound source node
      * @param initialGain amplitude scale factor applied to sound source
      * @param loopCount number of times loop is looped
@@ -242,7 +242,7 @@ public class PointSound extends Sound {
      * @param posY y coordinate of location of source
      * @param posZ z coordinate of location of source
      * @param distanceGain array of (distance,gain) pairs controling attenuation
-     */  
+     */
     public PointSound(MediaContainer soundData,
                       float initialGain,
                       int loopCount,
@@ -251,7 +251,7 @@ public class PointSound extends Sound {
                       boolean enable,
                       Bounds  region,
                       float   priority,
-                      float posX, float posY, float posZ, 
+                      float posX, float posY, float posZ,
                       Point2f[] distanceGain) {
 
         super(soundData, initialGain, loopCount, release,
@@ -262,12 +262,12 @@ public class PointSound extends Sound {
 
         ((PointSoundRetained)this.retained).setPosition(posX,posY,posZ);
         ((PointSoundRetained)this.retained).setDistanceGain(distanceGain);
-    }   
+    }
 
     /**
      * Construct a PointSound object accepting points as input for the position.
-     * and accepting separate arrays for the distance and gain scale factors 
-     * components of distance attenuation. 
+     * and accepting separate arrays for the distance and gain scale factors
+     * components of distance attenuation.
      * @param soundData sound data associated with this sound source node
      * @param initialGain amplitude scale factor applied to sound source
      * @param loopCount number of times loop is looped
@@ -279,7 +279,7 @@ public class PointSound extends Sound {
      * @param position 3D location of source
      * @param attenuationDistance array of distance values used for attenuation
      * @param attenuationGain array of gain scale factors used for attenuation
-     */  
+     */
     public PointSound(MediaContainer soundData,
                       float initialGain,
                       int loopCount,
@@ -288,11 +288,11 @@ public class PointSound extends Sound {
                       boolean enable,
                       Bounds  region,
                       float   priority,
-                      Point3f position, 
+                      Point3f position,
                       float[] attenuationDistance,
                       float[] attenuationGain) {
 
-        super(soundData, initialGain, loopCount, release, continuous, 
+        super(soundData, initialGain, loopCount, release, continuous,
                 enable, region, priority );
 
         // set default read capabilities
@@ -301,12 +301,12 @@ public class PointSound extends Sound {
         ((PointSoundRetained)this.retained).setPosition(position);
         ((PointSoundRetained)this.retained).setDistanceGain(
                         attenuationDistance, attenuationGain);
-    }   
+    }
 
     /**
-     * Construct a PointSound object accepting individual float parameters for 
-     * the elements of the position points, and accepting separate arrays for 
-     * the distance and gain scale factors components of distance attenuation. 
+     * Construct a PointSound object accepting individual float parameters for
+     * the elements of the position points, and accepting separate arrays for
+     * the distance and gain scale factors components of distance attenuation.
      * @param soundData sound data associated with this sound source node
      * @param initialGain amplitude scale factor applied to sound source
      * @param loopCount number of times loop is looped
@@ -320,7 +320,7 @@ public class PointSound extends Sound {
      * @param posZ z coordinate of location of source
      * @param attenuationDistance array of distance values used for attenuation
      * @param attenuationGain array of gain scale factors used for attenuation
-     */  
+     */
     public PointSound(MediaContainer soundData,
                       float initialGain,
                       int loopCount,
@@ -329,7 +329,7 @@ public class PointSound extends Sound {
                       boolean enable,
                       Bounds  region,
                       float   priority,
-                      float posX, float posY, float posZ, 
+                      float posX, float posY, float posZ,
                       float[] attenuationDistance,
                       float[] attenuationGain) {
 
@@ -342,7 +342,7 @@ public class PointSound extends Sound {
         ((PointSoundRetained)this.retained).setPosition(posX,posY,posZ);
         ((PointSoundRetained)this.retained).setDistanceGain(
                         attenuationDistance, attenuationGain);
-    }   
+    }
 
     /**
      * Creates the retained mode PointSoundRetained object that this
@@ -363,7 +363,7 @@ public class PointSound extends Sound {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_POSITION_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("PointSound0"));
-  
+
         ((PointSoundRetained)this.retained).setPosition(position);
     }
 
@@ -379,7 +379,7 @@ public class PointSound extends Sound {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_POSITION_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("PointSound0"));
-  
+
         ((PointSoundRetained)this.retained).setPosition(x,y,z);
     }
 
@@ -394,7 +394,7 @@ public class PointSound extends Sound {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_POSITION_READ))
                 throw new CapabilityNotSetException(J3dI18N.getString("PointSound2"));
-  
+
         ((PointSoundRetained)this.retained).getPosition(position);
     }
 
@@ -402,25 +402,25 @@ public class PointSound extends Sound {
      * Sets this sound's distance gain attenuation - where gain scale factor
      * is applied to sound based on distance listener is from sound source.
      * This form of setDistanceGain takes these pairs of values as an array of
-     * Point2f. 
+     * Point2f.
      * @param attenuation defined by pairs of (distance,gain-scale-factor)
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setDistanceGain(Point2f[] attenuation) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DISTANCE_GAIN_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("PointSound3"));
-  
+
         ((PointSoundRetained)this.retained).setDistanceGain(attenuation);
     }
 
     /**
      * Sets this sound's distance gain attenuation as an array of Point2fs.
      * This form of setDistanceGain accepts two separate arrays for these values.
-     * The distance and gainScale arrays should be of the same length. If the 
-     * gainScale array length is greater than the distance array length, the 
-     * gainScale array elements beyond the length of the distance array are 
+     * The distance and gainScale arrays should be of the same length. If the
+     * gainScale array length is greater than the distance array length, the
+     * gainScale array elements beyond the length of the distance array are
      * ignored. If the gainScale array is shorter than the distance array, the
      * last gainScale array value is repeated to fill an array of length equal
      * to distance array.
@@ -428,12 +428,12 @@ public class PointSound extends Sound {
      * @param gain array of non-negative scale factors
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public void setDistanceGain(float[] distance, float[] gain) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DISTANCE_GAIN_WRITE))
                 throw new CapabilityNotSetException(J3dI18N.getString("PointSound3"));
-  
+
         ((PointSoundRetained)this.retained).setDistanceGain(distance, gain);
     }
 
@@ -442,7 +442,7 @@ public class PointSound extends Sound {
      * @return distance gain attenuation array length
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */  
+     */
     public int getDistanceGainLength() {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DISTANCE_GAIN_READ))
@@ -454,17 +454,17 @@ public class PointSound extends Sound {
     /**
      * Gets this sound's distance attenuation. The distance attenuation
      * pairs are copied into the specified array.
-     * The array must be large enough to hold all of the points. 
+     * The array must be large enough to hold all of the points.
      * The individual array elements must be allocated by the caller.
      * @param attenuation arrays containing distance attenuation pairs
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */ 
-    public void getDistanceGain(Point2f[] attenuation) { 
+     */
+    public void getDistanceGain(Point2f[] attenuation) {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_DISTANCE_GAIN_READ))
                 throw new CapabilityNotSetException(J3dI18N.getString("PointSound4"));
-  
+
         ((PointSoundRetained)this.retained).getDistanceGain(attenuation);
     }
 
@@ -472,15 +472,15 @@ public class PointSound extends Sound {
      * Gets this sound's distance gain attenuation values in separate arrays.
      * The arrays must be large enough to hold all of the values.
      * @param distance array of float distance from sound source
-     * @param gain array of non-negative scale factors associated with 
+     * @param gain array of non-negative scale factors associated with
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
-     */ 
-    public void getDistanceGain(float[] distance, float[] gain) { 
+     */
+    public void getDistanceGain(float[] distance, float[] gain) {
         if (isLiveOrCompiled())
         if(!this.getCapability(ALLOW_DISTANCE_GAIN_READ))
             throw new CapabilityNotSetException(J3dI18N.getString("PointSound4"));
-      
+
         ((PointSoundRetained)this.retained).getDistanceGain(distance,gain);
     }
 
@@ -528,7 +528,7 @@ public class PointSound extends Sound {
      *  <code>false</code>, the value of each node's
      *  <code>duplicateOnCloneTree</code> variable determines whether
      *  NodeComponent data is duplicated or copied.
-     * @exception ClassCastException if originalNode is not an instance of 
+     * @exception ClassCastException if originalNode is not an instance of
      *  <code>PointSound</code>
      *
      * @see Node#cloneTree
@@ -536,7 +536,7 @@ public class PointSound extends Sound {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
     public void duplicateNode(Node originalNode, boolean forceDuplicate) {
-	checkDuplicateNode(originalNode, forceDuplicate);	
+	checkDuplicateNode(originalNode, forceDuplicate);
     }
 
 
@@ -545,7 +545,7 @@ public class PointSound extends Sound {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -577,5 +577,5 @@ public class PointSound extends Sound {
 	orgRetained.getDistanceGain(distance, gain);
 	thisRetained.setDistanceGain(distance, gain);
     }
-   
+
 }

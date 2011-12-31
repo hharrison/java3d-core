@@ -75,7 +75,7 @@ public abstract class IndexedGeometryStripArray extends IndexedGeometryArray {
 				     int vertexFormat,
 				     int indexCount,
 				     int[] stripIndexCounts) {
-	
+
 	super(vertexCount, vertexFormat, indexCount);
 	((IndexedGeometryStripArrayRetained)this.retained).
 	    setStripIndexCounts(stripIndexCounts);
@@ -127,7 +127,7 @@ public abstract class IndexedGeometryStripArray extends IndexedGeometryArray {
 				     int[] texCoordSetMap,
 				     int indexCount,
 				     int[] stripIndexCounts) {
-	
+
 	super(vertexCount, vertexFormat,
 	      texCoordSetCount, texCoordSetMap,
 	      indexCount);

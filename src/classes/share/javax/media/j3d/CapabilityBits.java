@@ -236,7 +236,7 @@ class CapabilityBits extends Object {
     static final int POINT_SOUND_ALLOW_DISTANCE_GAIN_READ		= 34;
     static final int POINT_SOUND_ALLOW_DISTANCE_GAIN_WRITE		= 35;
 
-    // ConeSound extends PointSound 
+    // ConeSound extends PointSound
     static final int CONE_SOUND_ALLOW_DIRECTION_READ			= 36;
     static final int CONE_SOUND_ALLOW_DIRECTION_WRITE			= 37;
     static final int CONE_SOUND_ALLOW_ANGULAR_ATTENUATION_READ		= 38;
@@ -267,7 +267,7 @@ class CapabilityBits extends Object {
 
     // NodeComponent extends SceneGraphObject
 
-    // Appearance extends NodeComponent 
+    // Appearance extends NodeComponent
     static final int APPEARANCE_ALLOW_MATERIAL_READ			= 0;
     static final int APPEARANCE_ALLOW_MATERIAL_WRITE			= 1;
     static final int APPEARANCE_ALLOW_TEXTURE_READ			= 2;
@@ -291,13 +291,13 @@ class CapabilityBits extends Object {
     static final int APPEARANCE_ALLOW_TEXTURE_UNIT_STATE_READ		= 20;
     static final int APPEARANCE_ALLOW_TEXTURE_UNIT_STATE_WRITE		= 21;
 
-    // ShaderAppearance extends Appearance 
+    // ShaderAppearance extends Appearance
     static final int SHADER_APPEARANCE_ALLOW_SHADER_PROGRAM_READ	= 22;
     static final int SHADER_APPEARANCE_ALLOW_SHADER_PROGRAM_WRITE	= 23;
     static final int SHADER_APPEARANCE_ALLOW_SHADER_ATTRIBUTE_SET_READ	= 24;
     static final int SHADER_APPEARANCE_ALLOW_SHADER_ATTRIBUTE_SET_WRITE	= 25;
 
-    // AuralAttributes extends NodeComponent 
+    // AuralAttributes extends NodeComponent
     static final int AURAL_ATTRIBUTES_ALLOW_ATTRIBUTE_GAIN_READ		= 0;
     static final int AURAL_ATTRIBUTES_ALLOW_ATTRIBUTE_GAIN_WRITE	= 1;
     static final int AURAL_ATTRIBUTES_ALLOW_ROLLOFF_READ		= 2;
@@ -327,23 +327,23 @@ class CapabilityBits extends Object {
     static final int AURAL_ATTRIBUTES_ALLOW_DENSITY_READ                = 26;
     static final int AURAL_ATTRIBUTES_ALLOW_DENSITY_WRITE               = 27;
 
-    // ColoringAttributes extends NodeComponent 
+    // ColoringAttributes extends NodeComponent
     static final int COLORING_ATTRIBUTES_ALLOW_COLOR_READ		= 0;
     static final int COLORING_ATTRIBUTES_ALLOW_COLOR_WRITE		= 1;
     static final int COLORING_ATTRIBUTES_ALLOW_SHADE_MODEL_READ		= 2;
     static final int COLORING_ATTRIBUTES_ALLOW_SHADE_MODEL_WRITE	= 3;
 
-    // DepthComponent extends NodeComponent 
+    // DepthComponent extends NodeComponent
     static final int DEPTH_COMPONENT_ALLOW_SIZE_READ			= 0;
     static final int DEPTH_COMPONENT_ALLOW_DATA_READ			= 1;
 
-    // ImageComponent extends NodeComponent 
+    // ImageComponent extends NodeComponent
     static final int IMAGE_COMPONENT_ALLOW_SIZE_READ			= 0;
     static final int IMAGE_COMPONENT_ALLOW_FORMAT_READ			= 1;
     static final int IMAGE_COMPONENT_ALLOW_IMAGE_READ			= 2;
     static final int IMAGE_COMPONENT_ALLOW_IMAGE_WRITE			= 3;
 
-    // LineAttributes extends NodeComponent 
+    // LineAttributes extends NodeComponent
     static final int LINE_ATTRIBUTES_ALLOW_WIDTH_READ			= 0;
     static final int LINE_ATTRIBUTES_ALLOW_WIDTH_WRITE			= 1;
     static final int LINE_ATTRIBUTES_ALLOW_PATTERN_READ			= 2;
@@ -351,23 +351,23 @@ class CapabilityBits extends Object {
     static final int LINE_ATTRIBUTES_ALLOW_ANTIALIASING_READ		= 4;
     static final int LINE_ATTRIBUTES_ALLOW_ANTIALIASING_WRITE		= 5;
 
-    // Material extends NodeComponent 
+    // Material extends NodeComponent
     static final int MATERIAL_ALLOW_COMPONENT_READ			= 0;
     static final int MATERIAL_ALLOW_COMPONENT_WRITE			= 1;
 
-    // MediaContainer extends NodeComponent 
+    // MediaContainer extends NodeComponent
     static final int MEDIA_CONTAINER_ALLOW_CACHE_READ			= 0;
     static final int MEDIA_CONTAINER_ALLOW_CACHE_WRITE			= 1;
     static final int MEDIA_CONTAINER_ALLOW_URL_READ			= 2;
     static final int MEDIA_CONTAINER_ALLOW_URL_WRITE			= 3;
 
-    // PointAttributes extends NodeComponent 
+    // PointAttributes extends NodeComponent
     static final int POINT_ATTRIBUTES_ALLOW_SIZE_READ			= 0;
     static final int POINT_ATTRIBUTES_ALLOW_SIZE_WRITE			= 1;
     static final int POINT_ATTRIBUTES_ALLOW_ANTIALIASING_READ		= 2;
     static final int POINT_ATTRIBUTES_ALLOW_ANTIALIASING_WRITE		= 3;
 
-    // PolygonAttributes extends NodeComponent 
+    // PolygonAttributes extends NodeComponent
     static final int POLYGON_ATTRIBUTES_ALLOW_CULL_FACE_READ		= 0;
     static final int POLYGON_ATTRIBUTES_ALLOW_CULL_FACE_WRITE		= 1;
     static final int POLYGON_ATTRIBUTES_ALLOW_MODE_READ			= 2;
@@ -377,7 +377,7 @@ class CapabilityBits extends Object {
     static final int POLYGON_ATTRIBUTES_ALLOW_NORMAL_FLIP_READ		= 6;
     static final int POLYGON_ATTRIBUTES_ALLOW_NORMAL_FLIP_WRITE		= 7;
 
-    // RenderingAttributes extends NodeComponent 
+    // RenderingAttributes extends NodeComponent
     static final int RENDERING_ATTRIBUTES_ALLOW_ALPHA_TEST_VALUE_READ	= 0;
     static final int RENDERING_ATTRIBUTES_ALLOW_ALPHA_TEST_VALUE_WRITE	= 1;
     static final int RENDERING_ATTRIBUTES_ALLOW_ALPHA_TEST_FUNCTION_READ = 2;
@@ -397,7 +397,7 @@ class CapabilityBits extends Object {
     static final int RENDERING_ATTRIBUTES_ALLOW_STENCIL_ATTRIBUTES_READ = 14;
     static final int RENDERING_ATTRIBUTES_ALLOW_STENCIL_ATTRIBUTES_WRITE = 15;
 
-    // TexCoordGeneration extends NodeComponent 
+    // TexCoordGeneration extends NodeComponent
     static final int TEX_COORD_GENERATION_ALLOW_ENABLE_READ		= 0;
     static final int TEX_COORD_GENERATION_ALLOW_ENABLE_WRITE		= 1;
     static final int TEX_COORD_GENERATION_ALLOW_FORMAT_READ		= 2;
@@ -405,7 +405,7 @@ class CapabilityBits extends Object {
     static final int TEX_COORD_GENERATION_ALLOW_PLANE_READ		= 4;
     static final int TEX_COORD_GENERATION_ALLOW_PLANE_WRITE		= 5;
 
-    // Texture extends NodeComponent 
+    // Texture extends NodeComponent
     static final int TEXTURE_ALLOW_ENABLE_READ				= 0;
     static final int TEXTURE_ALLOW_ENABLE_WRITE				= 1;
     static final int TEXTURE_ALLOW_BOUNDARY_MODE_READ			= 2;
@@ -425,7 +425,7 @@ class CapabilityBits extends Object {
     // Texture2D extends Texture
     static final int TEXTURE2D_ALLOW_DETAIL_TEXTURE_READ		= 15;
 
-    // TextureAttributes extends NodeComponent 
+    // TextureAttributes extends NodeComponent
     static final int TEXTURE_ATTRIBUTES_ALLOW_MODE_READ			= 0;
     static final int TEXTURE_ATTRIBUTES_ALLOW_MODE_WRITE		= 1;
     static final int TEXTURE_ATTRIBUTES_ALLOW_BLEND_COLOR_READ		= 2;
@@ -437,7 +437,7 @@ class CapabilityBits extends Object {
     static final int TEXTURE_ATTRIBUTES_ALLOW_COMBINE_READ		= 8;
     static final int TEXTURE_ATTRIBUTES_ALLOW_COMBINE_WRITE        	= 9;
 
-    // TransparencyAttributes extends NodeComponent 
+    // TransparencyAttributes extends NodeComponent
     static final int TRANSPARENCY_ATTRIBUTES_ALLOW_MODE_READ		= 0;
     static final int TRANSPARENCY_ATTRIBUTES_ALLOW_MODE_WRITE		= 1;
     static final int TRANSPARENCY_ATTRIBUTES_ALLOW_VALUE_READ		= 2;
@@ -445,19 +445,19 @@ class CapabilityBits extends Object {
     static final int TRANSPARENCY_ATTRIBUTES_ALLOW_BLEND_FUNCTION_READ	= 4;
     static final int TRANSPARENCY_ATTRIBUTES_ALLOW_BLEND_FUNCTION_WRITE	= 5;
 
-    // TextureUnitState extends NodeComponent 
+    // TextureUnitState extends NodeComponent
     static final int TEXTURE_UNIT_STATE_ALLOW_STATE_READ		= 0;
     static final int TEXTURE_UNIT_STATE_ALLOW_STATE_WRITE		= 1;
 
-    // ShaderProgram extends NodeComponent 
+    // ShaderProgram extends NodeComponent
     static final int SHADER_PROGRAM_ALLOW_SHADERS_READ			= 0;
     static final int SHADER_PROGRAM_ALLOW_NAMES_READ			= 1;
 
-    // ShaderAttributeSet extends NodeComponent 
+    // ShaderAttributeSet extends NodeComponent
     static final int SHADER_ATTRIBUTE_SET_ALLOW_ATTRIBUTES_READ		= 0;
     static final int SHADER_ATTRIBUTE_SET_ALLOW_ATTRIBUTES_WRITE	= 1;
 
-    // ShaderAttribute extends NodeComponent 
+    // ShaderAttribute extends NodeComponent
 
     // ShaderAttributeObject extends ShaderAttribute
     static final int SHADER_ATTRIBUTE_OBJECT_ALLOW_VALUE_READ		= 0;
@@ -466,7 +466,7 @@ class CapabilityBits extends Object {
     // Geometry extends NodeComponent
     // NOTE: additional bits are below the subclasses
 
-    // GeometryArray extends Geometry 
+    // GeometryArray extends Geometry
     static final int GEOMETRY_ARRAY_ALLOW_COORDINATE_READ		= 0;
     static final int GEOMETRY_ARRAY_ALLOW_COORDINATE_WRITE		= 1;
     static final int GEOMETRY_ARRAY_ALLOW_COLOR_READ			= 2;
@@ -477,7 +477,7 @@ class CapabilityBits extends Object {
     static final int GEOMETRY_ARRAY_ALLOW_TEXCOORD_WRITE		= 7;
     static final int GEOMETRY_ARRAY_ALLOW_COUNT_READ			= 8;
 
-    // IndexedGeometryArray extends GeometryArray 
+    // IndexedGeometryArray extends GeometryArray
     static final int INDEXED_GEOMETRY_ARRAY_ALLOW_COORDINATE_INDEX_READ	= 9;
     static final int INDEXED_GEOMETRY_ARRAY_ALLOW_COORDINATE_INDEX_WRITE= 10;
     static final int INDEXED_GEOMETRY_ARRAY_ALLOW_COLOR_INDEX_READ	= 11;
@@ -500,13 +500,13 @@ class CapabilityBits extends Object {
     static final int INDEXED_GEOMETRY_ARRAY_ALLOW_VERTEX_ATTR_INDEX_READ = 24;
     static final int INDEXED_GEOMETRY_ARRAY_ALLOW_VERTEX_ATTR_INDEX_WRITE = 25;
 
-    // CompressedGeometry extends Geometry 
+    // CompressedGeometry extends Geometry
     static final int COMPRESSED_GEOMETRY_ALLOW_COUNT_READ		= 0;
     static final int COMPRESSED_GEOMETRY_ALLOW_HEADER_READ		= 1;
     static final int COMPRESSED_GEOMETRY_ALLOW_GEOMETRY_READ		= 2;
     static final int COMPRESSED_GEOMETRY_ALLOW_REF_DATA_READ		= 3;
 
-    // Raster extends Geometry 
+    // Raster extends Geometry
     static final int RASTER_ALLOW_POSITION_READ				= 0;
     static final int RASTER_ALLOW_POSITION_WRITE			= 1;
     static final int RASTER_ALLOW_OFFSET_READ				= 2;
@@ -521,7 +521,7 @@ class CapabilityBits extends Object {
     static final int RASTER_ALLOW_CLIP_MODE_READ			= 11;
     static final int RASTER_ALLOW_CLIP_MODE_WRITE			= 12;
 
-    // Text3D extends Geometry 
+    // Text3D extends Geometry
     static final int TEXT3D_ALLOW_FONT3D_READ				= 0;
     static final int TEXT3D_ALLOW_FONT3D_WRITE				= 1;
     static final int TEXT3D_ALLOW_STRING_READ				= 2;

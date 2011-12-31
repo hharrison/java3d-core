@@ -44,7 +44,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 
     ImageComponent2DRetained() {
     }
-       
+
     /**
      * This method handles NioImageBuffer
      * Refers or copies the specified NioImageBuffer to this 2D image component object.
@@ -58,19 +58,19 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         int height = image.getHeight();
 
         if (!byReference) {
-            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2D7"));    
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2D7"));
         }
         if (!yUp) {
-            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2D8"));           
+            throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2D8"));
         }
-        
+
         if (width != this.width) {
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained0"));
         }
         if (height != this.height) {
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained1"));
         }
-        
+
         geomLock.getLock();
 
         setImageClass(image);
@@ -85,27 +85,27 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         imageTypeIsSupported = isImageTypeSupported(image);
 
         if (imageTypeIsSupported) {
-            
+
             /* Use reference when ( format is OK, Yup is true, and byRef is true). */
             // Create image data object with the byRef image. */
             imageData = createNioImageBufferDataObject(image);
-            
+
         } else {
             // Handle abgrSupported is false case.
             imageData = createNioImageBufferDataObject(null);
             copyUnsupportedNioImageToImageData(image, 0, 0, 0, 0, width, height, imageData);
 
         }
-        
+
         geomLock.unLock();
-        
+
         if (source.isLive()) {
             // send a IMAGE_CHANGED message in order to
             // notify all the users of the change
             sendMessage(IMAGE_CHANGED, null);
         }
     }
-    
+
      /**
      * This method handles both BufferedImage and RenderedImage
      * Copies the specified RenderedImage to this 2D image component object.
@@ -114,46 +114,46 @@ class ImageComponent2DRetained extends ImageComponentRetained {
      * ImageComponent2D object.
      */
     void set(RenderedImage image) {
-        
+
         int width = image.getWidth();
         int height = image.getHeight();
-        
+
         if (width != this.width) {
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained0"));
         }
         if (height != this.height) {
             throw new IllegalArgumentException(J3dI18N.getString("ImageComponent2DRetained1"));
         }
-        
+
         setImageClass(image);
-        
-        geomLock.getLock();        
-        
-        if (byReference) {            
-            setRefImage(image,0);    
+
+        geomLock.getLock();
+
+        if (byReference) {
+            setRefImage(image,0);
         }
-        
-        // Reset this flag to true, incase it was set to false due to 
+
+        // Reset this flag to true, incase it was set to false due to
         // the previous image type.
         abgrSupported = true;
-        
+
         imageTypeIsSupported = isImageTypeSupported(image);
-        
+
         if (imageTypeIsSupported) {
 
             if (byReference && yUp) {
                 /* Use reference when ( format is OK, Yup is true, and byRef is true). */
                 // System.err.println("ImageComponent2DRetained.set() : (imageTypeSupported && byReference && yUp) --- (1)");
                 if (image instanceof BufferedImage) {
-                    // Create image data object with the byRef image. */                    
-                    imageData = createRenderedImageDataObject(image); 
+                    // Create image data object with the byRef image. */
+                    imageData = createRenderedImageDataObject(image);
                 }
                 else {
                     // System.err.println("byRef and not BufferedImage !!!");
                     imageData = null;
                 }
 
-            } else { 
+            } else {
                 // Either not byRef or not yUp or not both
                 // System.err.println("ImageComponent2DRetained.set() : (imageTypeSupported && ((!byReference && yUp) || (imageTypeSupported && !yUp)) --- (2)");
 
@@ -172,10 +172,10 @@ class ImageComponent2DRetained extends ImageComponentRetained {
             imageData = createRenderedImageDataObject(null);
             copyUnsupportedImageToImageData(image, 0, imageData);
 
-        }    
-        
+        }
+
         geomLock.unLock();
-        
+
         if (source.isLive()) {
             // send a IMAGE_CHANGED message in order to
             // notify all the users of the change
@@ -183,12 +183,12 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         }
     }
 
-    void setSubImage(RenderedImage image, int width, int height, 
+    void setSubImage(RenderedImage image, int width, int height,
 			   int srcX, int srcY, int dstX, int dstY) {
 
         if (!isSubImageTypeEqual(image)) {
             throw new IllegalStateException(
-                                J3dI18N.getString("ImageComponent2D6"));           
+                                J3dI18N.getString("ImageComponent2D6"));
         }
 
         // Can't be byReference
@@ -197,7 +197,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 
         geomLock.getLock();
 
-        if (imageTypeIsSupported) {            
+        if (imageTypeIsSupported) {
             // Either not byRef or not yUp or not both
             // System.err.println("ImageComponent2DRetained.setSubImage() : (imageTypeSupported ) --- (1)");
             if (image instanceof BufferedImage) {
@@ -211,12 +211,12 @@ class ImageComponent2DRetained extends ImageComponentRetained {
             // TODO : Should look into borrow code from JAI to convert to right format.
             // System.err.println("ImageComponent2DRetained.setSubImage() : (imageTypeSupported == false) --- (2)");
              if (image instanceof BufferedImage) {
-                copyUnsupportedImageToImageData((BufferedImage)image, srcX, srcY, dstX, dstY, 0, width, height, imageData);             
+                copyUnsupportedImageToImageData((BufferedImage)image, srcX, srcY, dstX, dstY, 0, width, height, imageData);
             }
             else {
                 copyUnsupportedImageToImageData(image, srcX, srcY, dstX, dstY, 0, width, height, imageData);
             }
-        }    
+        }
         geomLock.unLock();
 
         if (source.isLive()) {
@@ -235,23 +235,23 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 
             sendMessage(SUBIMAGE_CHANGED, info);
         }
-    }    
-    
+    }
+
     /**
      * Retrieves a copy of the image in this ImageComponent2D object.
      * @return a new RenderedImage object created from the image in this
      * ImageComponent2D object
      */
     RenderedImage getImage() {
-        
+
         if (isByReference()) {
             return (RenderedImage) getRefImage(0);
         }
-        
+
         if(imageData != null) {
             return imageData.createBufferedImage(0);
         }
-        
+
         return null;
     }
 
@@ -261,11 +261,11 @@ class ImageComponent2DRetained extends ImageComponentRetained {
     NioImageBuffer getNioImage() {
 
         if (getImageClass() != ImageComponent.ImageClass.NIO_IMAGE_BUFFER) {
-             throw new IllegalStateException(J3dI18N.getString("ImageComponent2D9"));          
+             throw new IllegalStateException(J3dI18N.getString("ImageComponent2D9"));
         }
-        
+
         assert (byReference == true);
-        
+
         return (NioImageBuffer) getRefImage(0);
     }
 
@@ -284,11 +284,11 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         Object refImage = getRefImage(0);
         assert (refImage != null);
         assert (imageData != null);
-        
+
         // Check is data copied internally.
         if(!imageData.isDataByRef()) {
             // update the internal copy of the image data if a copy has been
-            // made            
+            // made
             if (imageTypeIsSupported) {
                 assert !(refImage instanceof NioImageBuffer);
 
@@ -298,7 +298,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
                     RenderedImage ri = (RenderedImage)refImage;
                     copySupportedImageToImageData(ri, (x + ri.getMinX()), (y + ri.getMinY()), x, y, 0, width, height, imageData);
                 }
-            } else {                
+            } else {
                 // image type is unsupported, need to create a supported local copy.
                 // TODO : Should look into borrow code from JAI to convert to right format.
                 if (refImage instanceof BufferedImage) {
@@ -315,10 +315,10 @@ class ImageComponent2DRetained extends ImageComponentRetained {
         }
 	geomLock.unLock();
 
-	
+
 	if (source.isLive()) {
 
-            // send a SUBIMAGE_CHANGED message in order to 
+            // send a SUBIMAGE_CHANGED message in order to
 	    // notify all the users of the change
 
 	    ImageComponentUpdateInfo info;

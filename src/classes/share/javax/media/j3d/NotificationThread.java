@@ -46,17 +46,17 @@ class NotificationThread extends Thread {
     private volatile boolean running = true;
     private boolean waiting = false;
     private boolean ready = false;
-    
+
     private LinkedList notificationQueue = new LinkedList();
 
     /**
-     * Creates a new instance of NotificationThread 
+     * Creates a new instance of NotificationThread
      */
     NotificationThread(ThreadGroup t) {
         // Only one notification thread for the entire system
 	super(t, "J3D-NotificationThread");
     }
-    
+
     /**
      * Adds a notification message to the queue
      */
@@ -73,13 +73,13 @@ class NotificationThread extends Thread {
         notificationQueue.clear();
         return notifications;
     }
-    
+
     /**
      * Processes all pending notification messages
      */
     private void processNotifications() {
         J3dNotification[] notifications = getNotifications();
-        
+
         for (int i = 0; i < notifications.length; i++) {
             J3dNotification n = notifications[i];
             switch (n.type) {
@@ -103,7 +103,7 @@ class NotificationThread extends Thread {
     public void run() {
 	while (running) {
 	    runMonitor(WAIT);
-            
+
             processNotifications();
 	}
 //        System.err.println("Notification thread finished");

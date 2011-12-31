@@ -115,7 +115,7 @@ class MaterialRetained extends NodeComponentRetained {
     }
 
     /**
-     * Sets this material's ambient color 
+     * Sets this material's ambient color
      * @param r the new ambient color's red component
      * @param g the new ambient color's green component
      * @param b the new ambient color's blue component
@@ -253,7 +253,7 @@ class MaterialRetained extends NodeComponentRetained {
     }
 
     /**
-     * Sets this material's diffuse color plus alpha and sends 
+     * Sets this material's diffuse color plus alpha and sends
      * a message notifying the interested structures of the change.
      * This is the color of the material when illuminated by a light source.
      * @param r the new diffuse color's red component
@@ -355,7 +355,7 @@ class MaterialRetained extends NodeComponentRetained {
        */
       final void setShininess(float shininess) {
 	  initShininess(shininess);
-	  sendMessage(SHININESS_CHANGED, new Float(this.shininess)); 
+	  sendMessage(SHININESS_CHANGED, new Float(this.shininess));
       }
 
       /**
@@ -382,7 +382,7 @@ class MaterialRetained extends NodeComponentRetained {
      */
     void setLightingEnable(boolean state) {
 	initLightingEnable(state);
-	sendMessage(ENABLE_CHANGED, 
+	sendMessage(ENABLE_CHANGED,
 		    (state ? Boolean.TRUE: Boolean.FALSE));
     }
 
@@ -420,7 +420,7 @@ class MaterialRetained extends NodeComponentRetained {
 		mirror = mirrorMat;
 	    }
 	} else {
-	    ((MaterialRetained) mirror).set(this);	    
+	    ((MaterialRetained) mirror).set(this);
 	}
     }
 
@@ -431,11 +431,11 @@ class MaterialRetained extends NodeComponentRetained {
     void updateNative(Context ctx,
 		      float red, float green, float blue, float alpha,
 		      boolean enableLighting) {
-	Pipeline.getPipeline().updateMaterial(ctx, red, green, blue, alpha, 
+	Pipeline.getPipeline().updateMaterial(ctx, red, green, blue, alpha,
 		     ambientColor.x, ambientColor.y, ambientColor.z,
-		     emissiveColor.x, emissiveColor.y, emissiveColor.z, 
-		     diffuseColor.x, diffuseColor.y, diffuseColor.z, 
-		     specularColor.x, specularColor.y, specularColor.z, 
+		     emissiveColor.x, emissiveColor.y, emissiveColor.z,
+		     diffuseColor.x, diffuseColor.y, diffuseColor.z,
+		     specularColor.x, specularColor.y, specularColor.z,
 		     shininess, colorTarget, enableLighting);
     }
 
@@ -450,7 +450,7 @@ class MaterialRetained extends NodeComponentRetained {
     }
 
     /**
-     * Update the "component" field of the mirror object with the 
+     * Update the "component" field of the mirror object with the
      * given "value"
      */
     synchronized void updateMirrorObject(int component, Object value) {
@@ -475,8 +475,8 @@ class MaterialRetained extends NodeComponentRetained {
 	}
 	else if ((component & COLORTARGET_CHANGED) != 0) {
 	    mirrorMaterial.colorTarget = ((Integer)value).intValue();
-	}	
-	
+	}
+
     }
 
 
@@ -484,14 +484,14 @@ class MaterialRetained extends NodeComponentRetained {
 	return ((m != null) &&
 		lightingEnable == m.lightingEnable &&
 		diffuseColor.equals(m.diffuseColor) &&
-		emissiveColor.equals(m.emissiveColor) && 
+		emissiveColor.equals(m.emissiveColor) &&
 		specularColor.equals(m.specularColor) &&
-		ambientColor.equals(m.ambientColor) && 
+		ambientColor.equals(m.ambientColor) &&
 		colorTarget == m.colorTarget &&
-		shininess == m.shininess); 
+		shininess == m.shininess);
     }
-    
-   
+
+
     // This functions clones the retained side only and is used
     // internally
      protected Object clone() {
@@ -517,7 +517,7 @@ class MaterialRetained extends NodeComponentRetained {
 	 lightingEnable = mat.lightingEnable;
 	 colorTarget = mat.colorTarget;
     }
- 
+
 
     final void sendMessage(int attrMask, Object attr) {
        	ArrayList univList = new ArrayList();
@@ -539,7 +539,7 @@ class MaterialRetained extends NodeComponentRetained {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.MATERIAL_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);

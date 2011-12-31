@@ -86,7 +86,7 @@ class ExponentialFogRetained extends FogRetained {
     void setLive(SetLiveState s) {
 	super.setLive(s);
 	GroupRetained group;
-	
+
 	// Initialize the mirror object, this needs to be done, when
 	// renderBin is not accessing any of the fields
 	J3dMessage createMessage = new J3dMessage();
@@ -116,14 +116,14 @@ class ExponentialFogRetained extends FogRetained {
 	obj[2] = (inBackgroundGroup? Boolean.TRUE:Boolean.FALSE);
 	obj[3] = geometryBackground;
 	obj[4] = new Float(density);
-	
+
 	createMessage.args[4] = obj;
 	VirtualUniverse.mc.processMessage(createMessage);
 
     }
-    
-    
-    /** 
+
+
+    /**
      * This method and its native counterpart update the native context
      * fog values.
      */
@@ -148,22 +148,22 @@ class ExponentialFogRetained extends FogRetained {
 
 	if ((component & INIT_MIRROR) != 0) {
 	    ((ExponentialFogRetained)mirrorFog).density = ((Float)((Object[])objs[4])[4]).floatValue();
-	    
+
 	}
         // Issue 144: store the local to vworld scale used to transform the density
-	((ExponentialFogRetained)mirrorFog).setLocalToVworldScale(getLastLocalToVworld().getDistanceScale());	
+	((ExponentialFogRetained)mirrorFog).setLocalToVworldScale(getLastLocalToVworld().getDistanceScale());
 
 	super.updateMirrorObject(objs);
     }
 
 
-    // Clone the retained side only, internal use only	
+    // Clone the retained side only, internal use only
     protected Object clone() {
 	ExponentialFogRetained efr =
              (ExponentialFogRetained)super.clone();
- 
+
          efr.initDensity(getDensity());
- 
+
          return efr;
     }
 

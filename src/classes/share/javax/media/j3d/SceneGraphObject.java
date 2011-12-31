@@ -171,7 +171,7 @@ public abstract class SceneGraphObject extends Object {
 
 	capabilityBits |= (1L << bit);
 	retained.handleFrequencyChange(bit);
-	
+
     }
 
     /**
@@ -301,7 +301,7 @@ public abstract class SceneGraphObject extends Object {
      * allowed by the object's capability bits are allowed.
      * @return true if node is part of a compiled scene graph, else false
      */
-      
+
     public final boolean isCompiled() {
 	return this.compiled;
     }
@@ -370,7 +370,7 @@ public abstract class SceneGraphObject extends Object {
 
    /**
      * Callback used to allow a node to check if any scene graph objects
-     * referenced by that node have been duplicated via a call to 
+     * referenced by that node have been duplicated via a call to
      * <code>cloneTree</code>.
      * This method is called by <code>cloneTree</code> after all nodes in
      * the sub-graph have been duplicated. The cloned Leaf
@@ -417,7 +417,7 @@ public abstract class SceneGraphObject extends Object {
      * @return the name of this object
      *
      * @since Java 3D 1.4
-     */             
+     */
     public String getName() {
 	return objectName;
     }
@@ -448,12 +448,12 @@ public abstract class SceneGraphObject extends Object {
 
 
     /**
-     * If <code>forceDuplicate</code> is <code>true</code> or 
+     * If <code>forceDuplicate</code> is <code>true</code> or
      * <code>duplicateOnCloneTree</code> flag is true. This procedure
      * will return a clone of originalNode or the value in
-     * in <code>nodeHashtable</code> if found. Otherwise return 
+     * in <code>nodeHashtable</code> if found. Otherwise return
      * <code>originalNode</code>
-     * 
+     *
      * This method is called from the
      * <code>duplicateAttributes</code> method during cloneNodeComponent.
      *
@@ -463,16 +463,16 @@ public abstract class SceneGraphObject extends Object {
      *  <code>false</code>, the value of each node's
      *  <code>duplicateOnCloneTree</code> variable determines whether
      *  NodeComponent data is duplicated or copied.
-     * @param nodeHashtable is used to keep track of mapping between old and 
+     * @param nodeHashtable is used to keep track of mapping between old and
      *  new node references.
      */
     NodeComponent getNodeComponent(NodeComponent originalNodeComponent,
 				   boolean forceDuplicate,
 				   Hashtable hashtable) {
         if ((originalNodeComponent != null) &&
-	        (forceDuplicate || 
+	        (forceDuplicate ||
 		 originalNodeComponent.duplicateChild())) {
-	    NodeComponent nc = (NodeComponent) 
+	    NodeComponent nc = (NodeComponent)
 	                           hashtable.get(originalNodeComponent);
 	    if (nc == null) {
 	        originalNodeComponent.nodeHashtable = hashtable;
@@ -481,7 +481,7 @@ public abstract class SceneGraphObject extends Object {
 		             cloneNodeComponent(forceDuplicate);
 		} catch (RuntimeException e) {
 		  // must reset nodeHashtable in any case
-		  originalNodeComponent.nodeHashtable = null;		
+		  originalNodeComponent.nodeHashtable = null;
 		  throw e;
 		}
 		originalNodeComponent.nodeHashtable = null;

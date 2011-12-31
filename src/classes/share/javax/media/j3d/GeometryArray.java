@@ -348,10 +348,10 @@ public abstract class GeometryArray extends Geometry {
 
     //NVaidya
     /**
-     * Specifies that the indices in this GeometryArray 
-     * are accessed by reference. This flag is only valid for 
+     * Specifies that the indices in this GeometryArray
+     * are accessed by reference. This flag is only valid for
      * indexed geometry arrays (subclasses of IndexedGeometryArray) and only
-     * when used in conjunction with the <code>BY_REFERENCE</code> and  
+     * when used in conjunction with the <code>BY_REFERENCE</code> and
      * <code>USE_COORD_INDEX_ONLY</code> flags.
      *
      * @since Java 3D 1.5
@@ -367,7 +367,7 @@ public abstract class GeometryArray extends Geometry {
     private TexCoord4f [] texCoord4fArray = null;
     private TexCoord2f texCoord2fScratch = null;
     private TexCoord3f texCoord3fScratch = null;
-    
+
     private static final int[] defTexCoordMap = { 0 };
 
    // Array for setting default read capabilities
@@ -379,9 +379,9 @@ public abstract class GeometryArray extends Geometry {
         ALLOW_NORMAL_READ,
         ALLOW_REF_DATA_READ,
         ALLOW_TEXCOORD_READ,
-        ALLOW_VERTEX_ATTR_READ        
+        ALLOW_VERTEX_ATTR_READ
     };
-    
+
 
     // non-public, no parameter constructor
     GeometryArray() {
@@ -444,7 +444,7 @@ public abstract class GeometryArray extends Geometry {
      * include <code>COORDINATES</code>
      *
      * @exception IllegalArgumentException if the <code>USE_COORD_INDEX_ONLY</code>
-     * bit or the <code>BY_REFERENCE_INDICES</code> bit is set for 
+     * bit or the <code>BY_REFERENCE_INDICES</code> bit is set for
      * non-indexed geometry arrays (that is, GeometryArray objects
      * that are not a subclass of IndexedGeometryArray)
      *
@@ -457,9 +457,9 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
      * bit and the <code>VERTEX_ATTRIBUTES</code> bit are both set
      *
-     * @exception IllegalArgumentException if the 
+     * @exception IllegalArgumentException if the
      * <code>BY_REFERENCE_INDICES</code>
-     * bit is set without the <code>BY_REFERENCE</code> and 
+     * bit is set without the <code>BY_REFERENCE</code> and
      * <code>USE_COORD_INDEX_ONLY</code> bits being set
      */
     public GeometryArray(int vertexCount, int vertexFormat) {
@@ -578,7 +578,7 @@ public abstract class GeometryArray extends Geometry {
      * include <code>COORDINATES</code>
      *
      * @exception IllegalArgumentException if the <code>USE_COORD_INDEX_ONLY</code>
-     * bit or the <code>BY_REFERENCE_INDICES</code> bit is set for 
+     * bit or the <code>BY_REFERENCE_INDICES</code> bit is set for
      * non-indexed geometry arrays (that is, GeometryArray objects
      * that are not a subclass of IndexedGeometryArray)
      *
@@ -591,9 +591,9 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
      * bit and the <code>VERTEX_ATTRIBUTES</code> bit are both set
      *
-     * @exception IllegalArgumentException if the 
+     * @exception IllegalArgumentException if the
      * <code>BY_REFERENCE_INDICES</code>
-     * bit is set without the <code>BY_REFERENCE</code> and 
+     * bit is set without the <code>BY_REFERENCE</code> and
      * <code>USE_COORD_INDEX_ONLY</code> bits being set
      *
      * @exception IllegalArgumentException if
@@ -733,7 +733,7 @@ public abstract class GeometryArray extends Geometry {
      * include <code>COORDINATES</code>
      *
      * @exception IllegalArgumentException if the <code>USE_COORD_INDEX_ONLY</code>
-     * bit or the <code>BY_REFERENCE_INDICES</code> bit is set for 
+     * bit or the <code>BY_REFERENCE_INDICES</code> bit is set for
      * non-indexed geometry arrays (that is, GeometryArray objects
      * that are not a subclass of IndexedGeometryArray)
      *
@@ -746,9 +746,9 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalArgumentException if the <code>INTERLEAVED</code>
      * bit and the <code>VERTEX_ATTRIBUTES</code> bit are both set
      *
-     * @exception IllegalArgumentException if the 
+     * @exception IllegalArgumentException if the
      * <code>BY_REFERENCE_INDICES</code>
-     * bit is set without the <code>BY_REFERENCE</code> and 
+     * bit is set without the <code>BY_REFERENCE</code> and
      * <code>USE_COORD_INDEX_ONLY</code> bits being set
      *
      * @exception IllegalArgumentException if
@@ -844,13 +844,13 @@ public abstract class GeometryArray extends Geometry {
 	        texCoord4fArray = new TexCoord4f[1];
 	    }
 	}
-        
+
         if ((vertexFormat & VERTEX_ATTRIBUTES) != 0) {
             if (vertexAttrCount > 0) {
                 if (vertexAttrCount != vertexAttrSizes.length) {
                     throw new IllegalArgumentException(J3dI18N.getString("GeometryArray132"));
                 }
-                
+
                 for (int i = 0; i < vertexAttrSizes.length; i++) {
                     if (vertexAttrSizes[i] < 1 || vertexAttrSizes[i] > 4) {
                         throw new IllegalArgumentException(J3dI18N.getString("GeometryArray133"));
@@ -866,10 +866,10 @@ public abstract class GeometryArray extends Geometry {
                 throw new IllegalArgumentException(J3dI18N.getString("GeometryArray131"));
             }
         }
-        
+
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
-        
+
         ((GeometryArrayRetained)this.retained).createGeometryArrayData(
 	    vertexCount, vertexFormat,
 	    texCoordSetCount, texCoordSetMap,
@@ -1642,7 +1642,7 @@ public abstract class GeometryArray extends Geometry {
    * constructor <code>vertexFormat</code> or array index for element is out of bounds.
    * @exception IllegalStateException if the data mode for this geometry
    * array object is <code>BY_REFERENCE</code>.
-   * @exception IllegalStateException if COLOR_4 is specified in the vertex 
+   * @exception IllegalStateException if COLOR_4 is specified in the vertex
    * format
    */
   public void setColor(int index, Color3f color) {
@@ -1659,7 +1659,7 @@ public abstract class GeometryArray extends Geometry {
 
     if ((format & WITH_ALPHA) != 0)
       throw new IllegalStateException(J3dI18N.getString("GeometryArray92"));
-    
+
     ((GeometryArrayRetained)this.retained).setColor(index, color);
   }
 
@@ -1674,7 +1674,7 @@ public abstract class GeometryArray extends Geometry {
    * constructor <code>vertexFormat</code> or array index for element is out of bounds.
    * @exception IllegalStateException if the data mode for this geometry
    * array object is <code>BY_REFERENCE</code>.
-   * @exception IllegalStateException if COLOR_3 is specified in the vertex 
+   * @exception IllegalStateException if COLOR_3 is specified in the vertex
    * format
    */
   public void setColor(int index, Color4f color) {
@@ -1706,7 +1706,7 @@ public abstract class GeometryArray extends Geometry {
    * constructor <code>vertexFormat</code> or array index for element is out of bounds.
    * @exception IllegalStateException if the data mode for this geometry
    * array object is <code>BY_REFERENCE</code>.
-   * @exception IllegalStateException if COLOR_4 is specified in the vertex 
+   * @exception IllegalStateException if COLOR_4 is specified in the vertex
    * format
    */
   public void setColor(int index, Color3b color) {
@@ -1738,7 +1738,7 @@ public abstract class GeometryArray extends Geometry {
    * constructor <code>vertexFormat</code> or array index for element is out of bounds.
    * @exception IllegalStateException if the data mode for this geometry
    * array object is <code>BY_REFERENCE</code>.
-   * @exception IllegalStateException if COLOR_3 is specified in the vertex 
+   * @exception IllegalStateException if COLOR_3 is specified in the vertex
    * format
    */
   public void setColor(int index, Color4b color) {
@@ -2405,7 +2405,7 @@ public abstract class GeometryArray extends Geometry {
 	    if(!this.getCapability(ALLOW_TEXCOORD_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray39"));
 
-	if (((((GeometryArrayRetained)this.retained).vertexFormat) & 
+	if (((((GeometryArrayRetained)this.retained).vertexFormat) &
 		(TEXTURE_COORDINATE_3 | TEXTURE_COORDINATE_4)) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray94"));
 
@@ -2454,7 +2454,7 @@ public abstract class GeometryArray extends Geometry {
 	    if(!this.getCapability(ALLOW_TEXCOORD_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray39"));
 
-	if (((((GeometryArrayRetained)this.retained).vertexFormat) & 
+	if (((((GeometryArrayRetained)this.retained).vertexFormat) &
 		(TEXTURE_COORDINATE_2 | TEXTURE_COORDINATE_4)) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray95"));
 
@@ -2494,7 +2494,7 @@ public abstract class GeometryArray extends Geometry {
 	    if(!this.getCapability(ALLOW_TEXCOORD_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray39"));
 
-	if (((((GeometryArrayRetained)this.retained).vertexFormat) & 
+	if (((((GeometryArrayRetained)this.retained).vertexFormat) &
 		(TEXTURE_COORDINATE_2 | TEXTURE_COORDINATE_3)) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray109"));
 
@@ -2548,7 +2548,7 @@ public abstract class GeometryArray extends Geometry {
 	else if ((format & GeometryArray.TEXTURE_COORDINATE_3) != 0)
 	    ((GeometryArrayRetained)this.retained).setTextureCoordinates(
 		texCoordSet, index, texCoords, 0, texCoords.length / 3);
-	else 
+	else
 	    ((GeometryArrayRetained)this.retained).setTextureCoordinates(
 		texCoordSet, index, texCoords, 0, texCoords.length / 4);
     }
@@ -2600,7 +2600,7 @@ public abstract class GeometryArray extends Geometry {
 	    if(!this.getCapability(ALLOW_TEXCOORD_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray42"));
 
-	if (((((GeometryArrayRetained)this.retained).vertexFormat) & 
+	if (((((GeometryArrayRetained)this.retained).vertexFormat) &
 		(TEXTURE_COORDINATE_3 | TEXTURE_COORDINATE_4)) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray94"));
 
@@ -2655,7 +2655,7 @@ public abstract class GeometryArray extends Geometry {
 		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray42"));
 
 
-	if (((((GeometryArrayRetained)this.retained).vertexFormat) & 
+	if (((((GeometryArrayRetained)this.retained).vertexFormat) &
 		(TEXTURE_COORDINATE_2 | TEXTURE_COORDINATE_4)) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray95"));
 
@@ -2697,7 +2697,7 @@ public abstract class GeometryArray extends Geometry {
 		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray42"));
 
 
-	if (((((GeometryArrayRetained)this.retained).vertexFormat) & 
+	if (((((GeometryArrayRetained)this.retained).vertexFormat) &
 		(TEXTURE_COORDINATE_2 | TEXTURE_COORDINATE_3)) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray109"));
 
@@ -2722,7 +2722,7 @@ public abstract class GeometryArray extends Geometry {
      * ending at index <code>start+length</code>.
      *
      * @param index starting destination vertex index in this geometry array
-     * @param texCoords source array of 2*n , 3*n or 4*n values containing 
+     * @param texCoords source array of 2*n , 3*n or 4*n values containing
      * n new texture coordinates
      * @param start starting source vertex index in <code>texCoords</code>
      * array.
@@ -2792,7 +2792,7 @@ public abstract class GeometryArray extends Geometry {
      * @exception IllegalStateException if the data mode for this geometry
      * array object is <code>BY_REFERENCE</code>.
      *
-     * @exception IllegalStateException if TEXTURE_COORDINATE_3 or 
+     * @exception IllegalStateException if TEXTURE_COORDINATE_3 or
      * TEXTURE_COORDINATE_4 is specified in vertex format
      *
      * @since Java 3D 1.2
@@ -2804,7 +2804,7 @@ public abstract class GeometryArray extends Geometry {
 	    if(!this.getCapability(ALLOW_TEXCOORD_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray42"));
 
-	if (((((GeometryArrayRetained)this.retained).vertexFormat) & 
+	if (((((GeometryArrayRetained)this.retained).vertexFormat) &
 		(TEXTURE_COORDINATE_3 | TEXTURE_COORDINATE_4)) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray94"));
 
@@ -2863,7 +2863,7 @@ public abstract class GeometryArray extends Geometry {
 	    if(!this.getCapability(ALLOW_TEXCOORD_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray42"));
 
-	if (((((GeometryArrayRetained)this.retained).vertexFormat) & 
+	if (((((GeometryArrayRetained)this.retained).vertexFormat) &
 		(TEXTURE_COORDINATE_2 | TEXTURE_COORDINATE_4)) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray95"));
 
@@ -2908,7 +2908,7 @@ public abstract class GeometryArray extends Geometry {
 	    if(!this.getCapability(ALLOW_TEXCOORD_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray42"));
 
-	if (((((GeometryArrayRetained)this.retained).vertexFormat) & 
+	if (((((GeometryArrayRetained)this.retained).vertexFormat) &
 		(TEXTURE_COORDINATE_2 | TEXTURE_COORDINATE_3)) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray109"));
 
@@ -3702,7 +3702,7 @@ public abstract class GeometryArray extends Geometry {
   /**
    * Gets the color associated with the vertex at
    * the specified index for this object. The color is copied into the
-   * specified array. The array must be large enough to hold all 
+   * specified array. The array must be large enough to hold all
    * of the colors.
    * @param index source vertex index in this geometry array
    * @param color destination array of 3 or 4 values that will receive the color
@@ -3886,7 +3886,7 @@ public abstract class GeometryArray extends Geometry {
    * many colors as the array will hold are copied.
    *
    * @param index starting source vertex index in this geometry array
-   * @param colors destination array of 3*n or 4*n values that will 
+   * @param colors destination array of 3*n or 4*n values that will
    * receive n new colors
    * @exception CapabilityNotSetException if the appropriate capability is
    * not set and this object is part of a live or compiled scene graph
@@ -3921,7 +3921,7 @@ public abstract class GeometryArray extends Geometry {
    * many colors as the array will hold are copied.
    *
    * @param index starting source vertex index in this geometry array
-   * @param colors destination array of 3*n or 4*n values that will 
+   * @param colors destination array of 3*n or 4*n values that will
    * receive new colors
    * @exception CapabilityNotSetException if the appropriate capability is
    * not set and this object is part of a live or compiled scene graph
@@ -5104,7 +5104,7 @@ public abstract class GeometryArray extends Geometry {
         if (initialCoordIndex < 0)
 	    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray97"));
 	if ((format & BY_REFERENCE) == 0)
-	    throw new IllegalStateException(J3dI18N.getString("GeometryArray83"));	
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray83"));
 
 	if ((format & INTERLEAVED) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray84"));
@@ -5182,7 +5182,7 @@ public abstract class GeometryArray extends Geometry {
 	    throw new IllegalArgumentException(J3dI18N.getString("GeometryArray97"));
 	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
 	if ((format & BY_REFERENCE) == 0)
-	    throw new IllegalStateException(J3dI18N.getString("GeometryArray83"));	
+	    throw new IllegalStateException(J3dI18N.getString("GeometryArray83"));
 
 	if ((format & INTERLEAVED) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray84"));
@@ -5541,7 +5541,7 @@ public abstract class GeometryArray extends Geometry {
 		throw new CapabilityNotSetException(J3dI18N.getString("GeometryArray86"));
 
 	int format = ((GeometryArrayRetained)this.retained).vertexFormat;
-	
+
 	if ((format & USE_NIO_BUFFER) == 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray118"));
 
@@ -5925,7 +5925,7 @@ public abstract class GeometryArray extends Geometry {
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray84"));
 
 	((GeometryArrayRetained)this.retained).setColorRefBuffer(colors);
-	
+
     }
 
 
@@ -5955,7 +5955,7 @@ public abstract class GeometryArray extends Geometry {
 	if ((format & INTERLEAVED) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray84"));
 
-	return ((GeometryArrayRetained)this.retained).getColorRefBuffer();	
+	return ((GeometryArrayRetained)this.retained).getColorRefBuffer();
     }
 
 
@@ -6474,7 +6474,7 @@ public abstract class GeometryArray extends Geometry {
 	if ((format & INTERLEAVED) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray84"));
 
-	return ((GeometryArrayRetained)this.retained).getNormalRefBuffer();	
+	return ((GeometryArrayRetained)this.retained).getNormalRefBuffer();
     }
 
 
@@ -6631,9 +6631,9 @@ public abstract class GeometryArray extends Geometry {
      * texture coordinate set to the
      * specified buffer object.  The buffer contains a java.nio.FloatBuffer
      * object containing <i>s</i>,
-     * <i>t</i>, and, optionally, <i>r</i> and <i>q</i> values for each 
+     * <i>t</i>, and, optionally, <i>r</i> and <i>q</i> values for each
      * vertex (for
-     * a total of 2*<i>n</i> , 3*<i>n</i> or 4*<i>n</i> values, 
+     * a total of 2*<i>n</i> , 3*<i>n</i> or 4*<i>n</i> values,
      * where <i>n</i> is
      * the number of vertices).
      * If the texCoord buffer reference is null and texture
@@ -6735,7 +6735,7 @@ public abstract class GeometryArray extends Geometry {
 	if ((format & INTERLEAVED) != 0)
 	    throw new IllegalStateException(J3dI18N.getString("GeometryArray84"));
 
-	return ((GeometryArrayRetained)this.retained).getTexCoordRefBuffer(texCoordSet);	
+	return ((GeometryArrayRetained)this.retained).getTexCoordRefBuffer(texCoordSet);
     }
 
 
@@ -6743,9 +6743,9 @@ public abstract class GeometryArray extends Geometry {
      * Sets the float texture coordinate array reference for the specified
      * texture coordinate set to the
      * specified array.  The array contains floating-point <i>s</i>,
-     * <i>t</i>, and, optionally, <i>r</i> and <i>q</i> values for each 
+     * <i>t</i>, and, optionally, <i>r</i> and <i>q</i> values for each
      * vertex (for
-     * a total of 2*<i>n</i> , 3*<i>n</i> or 4*<i>n</i> values, 
+     * a total of 2*<i>n</i> , 3*<i>n</i> or 4*<i>n</i> values,
      * where <i>n</i> is
      * the number of vertices).  Only one of
      * <code>texCoordRefFloat</code>, <code>texCoordRef2f</code>, or

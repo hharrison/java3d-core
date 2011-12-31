@@ -57,7 +57,7 @@ class LineAttributesRetained extends NodeComponentRetained {
 
     // user-defined line pattern mask
     int linePatternMask = 0xffff;
-    
+
     // line mask pattern scale factor
     int linePatternScaleFactor = 1;
 
@@ -116,7 +116,7 @@ class LineAttributesRetained extends NodeComponentRetained {
 
     /**
      * Enables or disables line antialiasing
-     * for this lineAttributes component object and sends a 
+     * for this lineAttributes component object and sends a
      * message notifying the interested structures of the change.
      * @param state true or false to enable or disable line antialiasing
      */
@@ -125,13 +125,13 @@ class LineAttributesRetained extends NodeComponentRetained {
     }
     /**
      * Enables or disables line antialiasing
-     * for this lineAttributes component object and sends a 
+     * for this lineAttributes component object and sends a
      * message notifying the interested structures of the change.
      * @param state true or false to enable or disable line antialiasing
      */
     final void setLineAntialiasingEnable(boolean state) {
 	initLineAntialiasingEnable(state);
-	sendMessage(LINE_AA_CHANGED, 
+	sendMessage(LINE_AA_CHANGED,
 		    (state ?  Boolean.TRUE: Boolean.FALSE));
     }
 
@@ -147,7 +147,7 @@ class LineAttributesRetained extends NodeComponentRetained {
 
    /**
      * Sets the pattern mask for this LineAttributes component object.
-     * This is used when the linePattern attribute is set to 
+     * This is used when the linePattern attribute is set to
      * PATTERN_USER_DEFINED.
      * @param mask the line pattern mask to be used.
      */
@@ -158,8 +158,8 @@ class LineAttributesRetained extends NodeComponentRetained {
     /**
      * Sets the pattern mask for this LineAttributes component object
      * and sends a message notifying the interested structures of change.
-     * This is used when the linePattern attribute is set to 
-     * PATTERN_USER_DEFINED. 
+     * This is used when the linePattern attribute is set to
+     * PATTERN_USER_DEFINED.
      * @param mask the line pattern mask to be used.
      */
     final void setPatternMask(int mask) {
@@ -176,7 +176,7 @@ class LineAttributesRetained extends NodeComponentRetained {
     }
 
    /**
-     * Sets the pattern mask scale factor for this LineAttributes 
+     * Sets the pattern mask scale factor for this LineAttributes
      * component object. This is used when the linePattern attribute
      * is set to PATTERN_USER_DEFINED.
      * @param scaleFactor the scale factor of mask, clamp to [1, 15]
@@ -191,10 +191,10 @@ class LineAttributesRetained extends NodeComponentRetained {
     }
 
     /**
-     * Sets the pattern mask scale factor for this LineAttributes 
-     * component object and sends a message notifying the interested 
+     * Sets the pattern mask scale factor for this LineAttributes
+     * component object and sends a message notifying the interested
      * structures of change. This is used when the linePattern
-     * attribute is set to PATTERN_USER_DEFINED. 
+     * attribute is set to PATTERN_USER_DEFINED.
      * @param scaleFactor  the scale factor of mask, clamp to [1, 15]
      */
     final void setPatternScaleFactor(int scaleFactor) {
@@ -203,7 +203,7 @@ class LineAttributesRetained extends NodeComponentRetained {
     }
 
    /**
-     * Retrieves the pattern scale factor for this LineAttributes 
+     * Retrieves the pattern scale factor for this LineAttributes
      * component object.
      * @return the pattern mask scale factor
      */
@@ -212,7 +212,7 @@ class LineAttributesRetained extends NodeComponentRetained {
     }
 
    /**
-    * Creates and initializes a mirror object, point the mirror object 
+    * Creates and initializes a mirror object, point the mirror object
     * to the retained object if the object is not editable
     */
     synchronized void createMirrorObject() {
@@ -251,13 +251,13 @@ class LineAttributesRetained extends NodeComponentRetained {
 	((LineAttributesRetained)mirror).set(this);
     }
 
-    /** Update the "component" field of the mirror object with the 
+    /** Update the "component" field of the mirror object with the
      *  given "value"
      */
     synchronized void updateMirrorObject(int component, Object value) {
 
 	LineAttributesRetained mirrorLa = (LineAttributesRetained) mirror;
- 
+
 	if ((component & LINE_WIDTH_CHANGED) != 0) {
 	    mirrorLa.lineWidth = ((Float)value).floatValue();
 	}
@@ -266,7 +266,7 @@ class LineAttributesRetained extends NodeComponentRetained {
 	}
 	else if ((component & LINE_AA_CHANGED) != 0) {
 	    mirrorLa.lineAntialiasing = ((Boolean)value).booleanValue();
-	} 
+	}
 	else if ((component & LINE_PATTERN_MASK_CHANGED) != 0) {
 	    mirrorLa.linePatternMask = ((Integer)value).intValue();
 	}
@@ -275,7 +275,7 @@ class LineAttributesRetained extends NodeComponentRetained {
 	    mirrorLa.linePatternScaleFactor = ((Integer)value).intValue();
 	}
     }
-   
+
 
     boolean equivalent(LineAttributesRetained lr) {
         return ((lr != null) &&
@@ -298,7 +298,7 @@ class LineAttributesRetained extends NodeComponentRetained {
 
      final void sendMessage(int attrMask, Object attr) {
        	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
@@ -318,7 +318,7 @@ class LineAttributesRetained extends NodeComponentRetained {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.LINEATTRIBUTES_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
@@ -328,7 +328,7 @@ class LineAttributesRetained extends NodeComponentRetained {
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
 	    createMessage.args[3] = gaArr;
-	    
+
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
 

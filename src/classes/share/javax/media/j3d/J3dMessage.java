@@ -76,8 +76,8 @@ class J3dMessage extends Object {
     static final int ORDERED_GROUP_INSERTED         = 32;
     static final int ORDERED_GROUP_REMOVED          = 33;
     static final int COLLISION_BOUND_CHANGED        = 34;
-    static final int REGION_BOUND_CHANGED           = 35;    
-    static final int MODELCLIP_CHANGED        	    = 36; 
+    static final int REGION_BOUND_CHANGED           = 35;
+    static final int MODELCLIP_CHANGED        	    = 36;
     static final int BOUNDS_AUTO_COMPUTE_CHANGED    = 37;
     static final int SOUND_ATTRIB_CHANGED           = 38;
     static final int AURALATTRIBUTES_CHANGED        = 39;
@@ -93,8 +93,8 @@ class J3dMessage extends Object {
     static final int BEHAVIOR_ACTIVATE  	    = 49;
     static final int GEOMETRYARRAY_CHANGED  	    = 50;
     static final int MEDIA_CONTAINER_CHANGED        = 51;
-    static final int RESIZE_CANVAS                  = 52;    
-    static final int TOGGLE_CANVAS                  = 53;    
+    static final int RESIZE_CANVAS                  = 52;
+    static final int TOGGLE_CANVAS                  = 53;
     static final int IMAGE_COMPONENT_CHANGED	    = 54;
     static final int SCHEDULING_INTERVAL_CHANGED    = 55;
     static final int VIEWSPECIFICGROUP_CHANGED      = 56;
@@ -116,12 +116,12 @@ class J3dMessage extends Object {
     long time = -1;
 
     /**
-     * This is the number of references to this message 
+     * This is the number of references to this message
      */
     private int refcount = 0;
 
     /**
-     * This is a bitmask of the types of threads that need to be run 
+     * This is a bitmask of the types of threads that need to be run
      * once this message is consumed.
      */
     int threads = 0;
@@ -138,7 +138,7 @@ class J3dMessage extends Object {
 
     /**
      * This holds the target view of this message, null means all views
-     */ 
+     */
     View view = null;
 
 

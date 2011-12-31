@@ -53,7 +53,7 @@ import javax.vecmath.Vector3f;
  * lower than 0 are clamped to 0 and values over PI/2 are clamped
  * to PI. The default spread angle is PI radians. </LI>
  * <P>
- * <LI>Concentration - Specifies how quickly the light intensity 
+ * <LI>Concentration - Specifies how quickly the light intensity
  * attenuates as a function of the angle of radiation as measured from
  * the direction of radiation. The light's intensity is highest at the
  * center of the cone and is attenuated toward the edges of the cone
@@ -62,7 +62,7 @@ import javax.vecmath.Vector3f;
  * to the power of the spot concentration exponent.
  * The higher the concentration value, the more focused the light
  * source. The range of values is [0.0,128.0]. The default
- * concentration is 0.0, which provides uniform light 
+ * concentration is 0.0, which provides uniform light
  * distribution.</LI><P>
  * </UL>
  * A spot light contributes to diffuse and specular reflections, which
@@ -147,7 +147,7 @@ public class SpotLight extends PointLight {
      */
     public SpotLight(Color3f color,
 		     Point3f position,
-		     Point3f attenuation, 
+		     Point3f attenuation,
 		     Vector3f direction,
 		     float spreadAngle,
 		     float concentration) {
@@ -175,7 +175,7 @@ public class SpotLight extends PointLight {
     public SpotLight(boolean lightOn,
 		     Color3f color,
 		     Point3f position,
-		     Point3f attenuation, 
+		     Point3f attenuation,
 		     Vector3f direction,
 		     float spreadAngle,
 		     float concentration) {
@@ -197,7 +197,7 @@ public class SpotLight extends PointLight {
 	this.retained = new SpotLightRetained();
 	this.retained.setSource(this);
     }
-  
+
 
     /**
      * Sets spot light spread angle.
@@ -361,7 +361,7 @@ public class SpotLight extends PointLight {
      */
     void duplicateAttributes(Node originalNode, boolean
 			     forceDuplicate) {
-	
+
         super.duplicateAttributes(originalNode, forceDuplicate);
 
 	SpotLightRetained attr = (SpotLightRetained) originalNode.retained;
@@ -372,6 +372,6 @@ public class SpotLight extends PointLight {
 	Vector3f v = new Vector3f();
 	attr.getDirection(v);
 	rt.initDirection(v);
-	
+
     }
 }

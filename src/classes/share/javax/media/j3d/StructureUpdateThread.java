@@ -40,13 +40,13 @@ class StructureUpdateThread extends J3dThread {
      * The structure that this thread works for
      */
     J3dStructure structure;
-    
+
     /**
      * Some variables used to name threads correctly
      */
     private static int numInstances[] = new int[7];
     private int instanceNum[] = new int[7];
-    
+
     private synchronized int newInstanceNum(int idx) {
 	return (++numInstances[idx]);
     }
@@ -90,12 +90,12 @@ class StructureUpdateThread extends J3dThread {
 	case J3dThread.UPDATE_TRANSFORM:
 	    setName("J3D-TransformStructureUpdateThread-"+ getInstanceNum(5));
 	    break;
-        case J3dThread.SOUND_SCHEDULER:  
+        case J3dThread.SOUND_SCHEDULER:
             setName("J3D-SoundSchedulerUpdateThread-"+ getInstanceNum(6));
             break;
 
 	}
-	
+
     }
 
     void doWork(long referenceTime) {

@@ -55,7 +55,7 @@ abstract class ShaderRetained extends NodeComponentRetained {
     // TODO KCR: Add code to clear this in setLive or clearLive
     boolean compileErrorOccurred = false;
 
-    // need to synchronize access from multiple rendering threads 
+    // need to synchronize access from multiple rendering threads
     Object resourceLock = new Object();
 
     void initializeShader(int shadingLanguage, int shaderType) {
@@ -70,7 +70,7 @@ abstract class ShaderRetained extends NodeComponentRetained {
     int getShaderType() {
 	return shaderType;
     }
- 
+
     void setLive(boolean inBackgroundGroup, int refCount) {
 	// System.err.println("SourceCodeShaderRetained.setLive()");
 	super.setLive(inBackgroundGroup, refCount);
@@ -101,7 +101,7 @@ abstract class ShaderRetained extends NodeComponentRetained {
                 shaderData = new ShaderData[cvRdrIndex+1];
             } else if (shaderData.length <= cvRdrIndex) {
                 ShaderData[] tempSData = new ShaderData[cvRdrIndex+1];
-                
+
                 System.arraycopy(shaderData, 0,
                         tempSData, 0,
                         shaderData.length);

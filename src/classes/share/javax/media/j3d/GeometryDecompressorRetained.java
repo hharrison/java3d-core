@@ -84,13 +84,13 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
     private long endTime ;
 
     // Private convenience copies of various constants.
-    private static final int TYPE_POINT = 
+    private static final int TYPE_POINT =
 	CompressedGeometryRetained.TYPE_POINT ;
-    private static final int TYPE_LINE = 
+    private static final int TYPE_LINE =
 	CompressedGeometryRetained.TYPE_LINE ;
-    private static final int TYPE_TRIANGLE = 
+    private static final int TYPE_TRIANGLE =
 	CompressedGeometryRetained.TYPE_TRIANGLE ;
-    private static final int FRONTFACE_CCW = 
+    private static final int FRONTFACE_CCW =
 	GeneralizedStripFlags.FRONTFACE_CCW ;
 
     /**
@@ -105,7 +105,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
     }
 
     /**
-     * If the given argument is true, sets the decompressor to output only the 
+     * If the given argument is true, sets the decompressor to output only the
      * decompressed positions, their connections, and the bounding box.
      * @param positionsOnly set to true if the decompressor should output only
      * position, connection, and bounding box data.
@@ -121,12 +121,12 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
      * efficient rendering.  Global color and normal changes output by the
      * decompressor are stored as redundant per-vertex data so that a single
      * GeometryArray can be used.
-     * 
+     *
      * Since only one GeometryArray is created, if the bundling attributes
      * change while building the vertex list then the decompression is
      * aborted.  There should be only one SetState bundling attribute command
      * per CompressedGeometry.
-     * 
+     *
      * @param cgr CompressedGeometryRetained containing compressed geometry
      * @return GeometryArrayRetained containing the results of the
      * decompression, or null if only the bounds are computed.
@@ -156,7 +156,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
 	if (boundsOnly) {
 	    if (printInfo) endPrint() ;
 	    return null ;
-	} 
+	}
 
 	// Convert the output to a GeometryRetained.
 	GeometryArray ga ;
@@ -183,7 +183,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
     }
 
     /**
-     * Get the bounds of the decompressed geometry. 
+     * Get the bounds of the decompressed geometry.
      * @param bb BoundingBox to receive bounds
      */
     void getBoundingBox(BoundingBox bb) {
@@ -264,7 +264,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
 	    if (vlist.size() > 0)
 		throw new IllegalStateException
 		    (J3dI18N.getString("GeometryDecompressorRetained2")) ;
-		
+
 	    vlist.setVertexFormat(vlist.vertexFormat | GeometryArray.COLOR) ;
 	}
 
@@ -287,7 +287,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
 	    if (vlist.size() > 0)
 		throw new IllegalStateException
 		    (J3dI18N.getString("GeometryDecompressorRetained3")) ;
-		
+
 	    vlist.setVertexFormat(vlist.vertexFormat | GeometryArray.NORMALS) ;
 	}
 
@@ -334,7 +334,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
 
 	if (benchmark || statistics)
 	    printBench() ;
-	     
+
 	if (statistics)
 	    printStats() ;
     }
@@ -368,7 +368,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
 		  (" decompressed " +
 		   (vlist.vertexCount - 2*vlist.stripCount) +
 		   " triangles at " +
-		   ((vlist.vertexCount - 2*vlist.stripCount)/t) + 
+		   ((vlist.vertexCount - 2*vlist.stripCount)/t) +
 		   " triangles/sec.\n") ;
 	    break ;
 	}
@@ -395,7 +395,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
 	    System.err.print(" alpha") ;
 
 	System.err.println("\n number of strips: " + vlist.stripCount) ;
-	if (vlist.stripCount > 0) 
+	if (vlist.stripCount > 0)
 	    System.err.println
 		(" vertices/strip: " +
 		 ((float)vlist.vertexCount / (float)vlist.stripCount)) ;

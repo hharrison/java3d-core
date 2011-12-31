@@ -56,10 +56,10 @@ import java.util.Hashtable;
  * <b>Offscreen Rendering</b><P>
  * New for Java 3D 1.2, an off-screen rendering mode allows rendering
  * to a memory image, which is possibly larger than the screen. The
- * setSize and getSize methods are defined specifically for this 
+ * setSize and getSize methods are defined specifically for this
  * mode. Note that the off-screen size, physical width, and physical height
  * must be set prior to rendering
- * to the associated off-screen canvas. Failure to do so will result 
+ * to the associated off-screen canvas. Failure to do so will result
  * in an exception.<P>
  * <b>Calibration Parameters</b><P>
  * The Screen3D object must be calibrated with the coexistence volume.
@@ -145,7 +145,7 @@ public class Screen3D extends Object {
     Transform3D headTrackerToLeftImagePlate = new Transform3D();
     Transform3D headTrackerToRightImagePlate = new Transform3D();
 
-    
+
     //  Physical screen size related field has changed.
     static final int PHYSICAL_SCREEN_SIZE_DIRTY          = 0x01;
     // Screen size field has changed.
@@ -153,14 +153,14 @@ public class Screen3D extends Object {
     // Tracker base to image plate field has changed.
     static final int TRACKER_BASE_TO_IMAGE_PLATE_DIRTY   = 0x04;
     // Head tracker to  image plate field has changed.
-    static final int HEAD_TRACKER_TO_IMAGE_PLATE_DIRTY   = 0x08;    
+    static final int HEAD_TRACKER_TO_IMAGE_PLATE_DIRTY   = 0x08;
 
     // Mask that indicates this Screen3D view dependence info. has changed,
     // and CanvasViewCache may need to recompute the final view matries.
     int scrDirtyMask = (PHYSICAL_SCREEN_SIZE_DIRTY | SCREEN_SIZE_DIRTY_DIRTY
 			| TRACKER_BASE_TO_IMAGE_PLATE_DIRTY
-			| HEAD_TRACKER_TO_IMAGE_PLATE_DIRTY);    
-    
+			| HEAD_TRACKER_TO_IMAGE_PLATE_DIRTY);
+
     //
     // View cache for this screen
     //
@@ -168,7 +168,7 @@ public class Screen3D extends Object {
 
     // The renderer for this screen
     Renderer renderer = null;
-    
+
     // Hashtable that maps a GraphicsDevice to its associated renderer
     static Hashtable deviceRendererMap = new Hashtable();
 
@@ -272,7 +272,7 @@ public class Screen3D extends Object {
 
 	if (!offScreen)
             throw new IllegalStateException(J3dI18N.getString("Screen3D1"));
-	    
+
 	synchronized(this) {
 	    screenSize.width = width;
 	    screenSize.height = height;
@@ -298,7 +298,7 @@ public class Screen3D extends Object {
     public void setSize(Dimension d) {
 	if (!offScreen)
             throw new IllegalStateException(J3dI18N.getString("Screen3D1"));
-	    
+
 	synchronized(this) {
 	    screenSize.width = d.width;
 	    screenSize.height = d.height;
@@ -341,7 +341,7 @@ public class Screen3D extends Object {
 	}
 	notifyUsers();
     }
-    
+
     /**
      * Retrieves the the screen's physical height in meters.
      * @return the screen's physical height in meters
@@ -375,7 +375,7 @@ public class Screen3D extends Object {
      */
     Screen3D(GraphicsConfiguration graphicsConfiguration, boolean offScreen) {
 	this.offScreen = offScreen;
-	this.graphicsDevice = graphicsConfiguration.getDevice(); 
+	this.graphicsDevice = graphicsConfiguration.getDevice();
 
 	screenViewCache = new ScreenViewCache(this);
 
@@ -444,11 +444,11 @@ public class Screen3D extends Object {
 		throw new BadTransformException(J3dI18N.getString("Screen3D0"));
 	    }
 	    headTrackerToLeftImagePlate.setWithLock(t);
-	    scrDirtyMask |= Screen3D.HEAD_TRACKER_TO_IMAGE_PLATE_DIRTY; 
+	    scrDirtyMask |= Screen3D.HEAD_TRACKER_TO_IMAGE_PLATE_DIRTY;
 	}
 	notifyUsers();
     }
-    
+
     /**
      * Retrieves the head-tracker coordinate system to left image-plate
      * coordinate system transform and copies it into the specified
@@ -477,7 +477,7 @@ public class Screen3D extends Object {
 	}
 	notifyUsers();
     }
-    
+
     /**
      * Retrieves the head-tracker coordinate system to right image-plate
      * coordinate system transform and copies it into the specified
@@ -498,14 +498,14 @@ public class Screen3D extends Object {
 	    screenViewCache.snapshot();
 	}
     }
-    
+
     /**
      * Increment canvas count, initialize renderer if needed
      */
     synchronized void incCanvasCount() {
 	canvasCount++;
     }
-    
+
     /**
      * Decrement canvas count, kill renderer if needed
      */

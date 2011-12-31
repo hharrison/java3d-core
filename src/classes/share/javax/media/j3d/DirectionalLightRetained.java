@@ -142,8 +142,8 @@ class DirectionalLightRetained extends LightRetained
 	VirtualUniverse.mc.processMessage(createMessage);
 
     }
-    
-    /** 
+
+    /**
      * This update function, and its native counterpart,
      * updates a directional light.  This includes its
      * color and its transformed direction.
@@ -155,16 +155,16 @@ class DirectionalLightRetained extends LightRetained
 	int component = ((Integer)objs[1]).intValue();
 	Transform3D trans;
 	int numLgts =  ((Integer)objs[2]).intValue();
-	  
-	LightRetained[] mLgts = (LightRetained[]) objs[3];	
+
+	LightRetained[] mLgts = (LightRetained[]) objs[3];
 	DirectionalLightRetained ml;
 	if ((component & DIRECTION_CHANGED) != 0) {
-	    
+
 	    for (i = 0; i < numLgts; i++) {
 		if (mLgts[i].nodeType == NodeRetained.DIRECTIONALLIGHT) {
 		    ml = (DirectionalLightRetained) mLgts[i];
 		    ml.direction = (Vector3f)objs[4];
-		    ml.getLastLocalToVworld().transform(ml.direction, 
+		    ml.getLastLocalToVworld().transform(ml.direction,
 						      ml.xformDirection);
 		    ml.xformDirection.normalize();
 		}
@@ -176,7 +176,7 @@ class DirectionalLightRetained extends LightRetained
 		if (mLgts[i].nodeType == NodeRetained.DIRECTIONALLIGHT) {
 		    ml = (DirectionalLightRetained) mLgts[i];
 		    ml.direction = (Vector3f)((Object[])objs[4])[7];
-		    ml.getLastLocalToVworld().transform(ml.direction, 
+		    ml.getLastLocalToVworld().transform(ml.direction,
 						      ml.xformDirection);
 		    ml.xformDirection.normalize();
 		}
@@ -186,8 +186,8 @@ class DirectionalLightRetained extends LightRetained
 	super.updateMirrorObject(objs);
     }
 
-      
-    void update(Context ctx, int lightSlot, double scale) { 
+
+    void update(Context ctx, int lightSlot, double scale) {
         Pipeline.getPipeline().updateDirectionalLight(ctx,
                 lightSlot, color.x, color.y, color.z,
                 xformDirection.x, xformDirection.y,
@@ -201,9 +201,9 @@ class DirectionalLightRetained extends LightRetained
          dr.direction = new Vector3f(direction);
          dr.xformDirection = new Vector3f(0.0f, 0.0f, -1.0f);
          return dr;
-     }   
+     }
 
-    
+
     // Called on the mirror object
     void updateTransformChange() {
 	super.updateTransformChange();

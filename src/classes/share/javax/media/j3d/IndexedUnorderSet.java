@@ -36,7 +36,7 @@ package javax.media.j3d;
  * All operations remove(IndexedObject, ListType), add(IndexedObject, ListType),
  * contains(IndexedObject, ListType) etc. take O(1) time.
  * The class is designed to optimize speed. So many reductance
- * procedures call and range check as found in ArrayList are 
+ * procedures call and range check as found in ArrayList are
  * removed.
  *
  * <p>
@@ -61,7 +61,7 @@ package javax.media.j3d;
  * 1) The array return is a copied of internal array.<br>
  * 2) Don't use arr.length , use IUset.arraySize();<br>
  * 3) IndexedObject contains an array of listIndex, the number of
- * array elements depends on the number of different types of 
+ * array elements depends on the number of different types of
  * IndexedUnorderSet that use it.<br>
  * 4) No need to do casting for individual element as in ArrayList.<br>
  * 5) IndexedUnorderSet is thread safe.<br>
@@ -176,7 +176,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	    obj.listIdx[0][i] = -1;
 	    obj.listIdx[1][i] = -1;
 	}
-	
+
 	// Just want to set both RenderMolecule idx
 	// and BehaviorRetained idx to 0 by default
 	// It is OK without the following lines
@@ -197,9 +197,9 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	return size;
     }
 
-  
+
     /**
-     * Returns the size of entry use in toArray() number of elements 
+     * Returns the size of entry use in toArray() number of elements
      * in this list.
      *
      * @return  the number of elements in this list.
@@ -229,8 +229,8 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 
 
     /**
-     * Searches for the last occurence of the given argument, testing 
-     * for equality using the <tt>equals</tt> method. 
+     * Searches for the last occurence of the given argument, testing
+     * for equality using the <tt>equals</tt> method.
      *
      * @param   o   an object.
      * @return  the index of the first occurrence of the argument in this
@@ -248,14 +248,14 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
      * @return  a clone of this <tt>ArrayList</tt> instance.
      */
     synchronized protected final Object clone() {
-	try { 
+	try {
 	    IndexedUnorderSet v = (IndexedUnorderSet)super.clone();
 	    v.elementData =  (IndexedObject[])java.lang.reflect.Array.newInstance(
 						   componentType, size);
 	    System.arraycopy(elementData, 0, v.elementData, 0, size);
 	    isDirty = true; // can't use the old cloneData reference
 	    return v;
-	} catch (CloneNotSupportedException e) { 
+	} catch (CloneNotSupportedException e) {
 	    // this shouldn't happen, since we are Cloneable
 	    throw new InternalError();
 	}
@@ -265,7 +265,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
     /**
      * Returns an array containing all of the elements in this list.
      * The size of the array may longer than the actual size. Use
-     * arraySize() to retrieve the size. 
+     * arraySize() to retrieve the size.
      * The array return is a copied of internal array. if copy
      * is true.
      *
@@ -287,13 +287,13 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	    cloneSize = size;
 	    return elementData;
 	}
- 
+
     }
 
     /**
      * Returns an array containing all of the elements in this list.
      * The size of the array may longer than the actual size. Use
-     * arraySize() to retrieve the size. 
+     * arraySize() to retrieve the size.
      * The array return is a copied of internal array. So another
      * thread can continue add/delete the current list. However,
      * it should be noticed that two call to toArray() may return
@@ -308,10 +308,10 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 
     /**
      * Returns an array containing elements starting from startElement
-     * all of the elements in this list. A new array of exact size 
+     * all of the elements in this list. A new array of exact size
      * is always allocated.
      *
-     * @param startElement starting element to copy 
+     * @param startElement starting element to copy
      *
      * @return an array containing elements starting from
      *         startElement, null if element not found.
@@ -343,7 +343,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	    System.arraycopy(oldData, 0, elementData, 0, size);
 	}
     }
-   
+
 
     // Positional Access Operations
 
@@ -375,12 +375,12 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	    oldElm.listIdx[oldElm.getIdxUsed(univ)][listType] = -1;
 	}
 	elementData[index] = o;
-	
+
 	int univIdx = o.getIdxUsed(univ);
 
 	if (debug) {
 	    if (o.listIdx[univIdx][listType] != -1) {
-		System.err.println("Illegal use of UnorderIndexedList idx in set " + 
+		System.err.println("Illegal use of UnorderIndexedList idx in set " +
 				   o.listIdx[univIdx][listType]);
 		Thread.dumpStack();
 	    }
@@ -398,7 +398,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
      * @param o element to be appended to this list.
      */
     synchronized final void add(IndexedObject o) {
-	 
+
 	if (elementData.length == size) {
 	    IndexedObject oldData[] = elementData;
 	    elementData = (IndexedObject[])java.lang.reflect.Array.newInstance(
@@ -426,7 +426,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	isDirty = true;
     }
 
-  
+
     /**
      * Removes the element at the specified position in this list.
      * Replace the removed element by the last one.
@@ -443,17 +443,17 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	if (debug) {
 	    if (elm.listIdx[univIdx][listType] != index) {
 		System.err.println("Inconsistent idx in remove, expect " + index + " actual " + elm.listIdx[univIdx][listType]);
-		Thread.dumpStack();	    
-	    } 
+		Thread.dumpStack();
+	    }
 	}
 
 	elm.listIdx[univIdx][listType] = -1;
 	size--;
 	if (index != size) {
-	    elm = elementData[size];   
+	    elm = elementData[size];
 	    elm.listIdx[univIdx][listType] = index;
 	    elementData[index] = elm;
-	} 
+	}
 	elementData[size] = null;
 	isDirty = true;
 	/*
@@ -463,7 +463,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	*/
     }
 
- 
+
    /**
      * Removes the element at the last position in this list.
      * @return    The element remove
@@ -514,7 +514,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	    o.listIdx[univIdx][listType] = -1;
 	    isDirty = true;
 	    return true;
-	} 
+	}
 	return false;
     }
 
@@ -556,7 +556,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
 	StringBuffer sb = new StringBuffer("Size = " + size + "\n[");
 	int len = size-1;
 	Object obj;
-	
+
 	for (int i=0; i < size; i++) {
 	    obj = elementData[i];
 	    if (obj != null) {

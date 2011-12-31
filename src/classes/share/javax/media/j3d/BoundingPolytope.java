@@ -53,20 +53,20 @@ import com.sun.j3d.internal.HashCodeUtil;
  */
 
 public class BoundingPolytope extends Bounds {
-	
+
     /**
      * An array of bounding planes.
      */
-    Vector4d[]    planes;     
+    Vector4d[]    planes;
     double[]      mag;        // magnitude of plane vector
     double[]      pDotN;      // point on plane dotted with normal
     Point3d[]     verts;      // vertices of polytope
     int           nVerts;     // number of verts in polytope
     Point3d       centroid = new Point3d();   // centroid of polytope
-    
+
     Point3d boxVerts[];
     boolean allocBoxVerts = false;
-	
+
     /**
      * Constructs a BoundingPolytope using the specified planes.
      * @param planes a set of planes defining the polytope.
@@ -84,16 +84,16 @@ public class BoundingPolytope extends Bounds {
 	this.planes = new Vector4d[planes.length];
 	mag = new double[planes.length];
 	pDotN  = new double[planes.length];
-	
+
 	for(i=0;i<planes.length;i++) {
-	    
+
 	    // normalize the plane normals
 	    mag[i] = Math.sqrt(planes[i].x*planes[i].x + planes[i].y*planes[i].y +
 			       planes[i].z*planes[i].z);
 	    invMag = 1.0/mag[i];
 	    this.planes[i] = new Vector4d( planes[i].x*invMag, planes[i].y*invMag,
 					   planes[i].z*invMag, planes[i].w*invMag );
-	    
+
 	}
 	computeAllVerts();  // XXXX: lazy evaluate
     }
@@ -153,7 +153,7 @@ public class BoundingPolytope extends Bounds {
 	    computeAllVerts(); // XXXX: lazy evaluate
 	    return;
 	}
-       
+
 	boundsIsEmpty = boundsObject.boundsIsEmpty;
 	boundsIsInfinite = boundsObject.boundsIsInfinite;
 
@@ -162,7 +162,7 @@ public class BoundingPolytope extends Bounds {
 	    planes = new Vector4d[6];
 	    mag = new double[planes.length];
 	    pDotN  = new double[planes.length];
-	   
+
 	    planes[0] = new Vector4d( 1.0, 0.0, 0.0, -(sphere.center.x+sphere.radius) );
 	    planes[1] = new Vector4d(-1.0, 0.0, 0.0,   sphere.center.x-sphere.radius );
 	    planes[2] = new Vector4d( 0.0, 1.0, 0.0, -(sphere.center.y+sphere.radius) );
@@ -176,13 +176,13 @@ public class BoundingPolytope extends Bounds {
 	    mag[4] = 1.0;
 	    mag[5] = 1.0;
 	    computeAllVerts(); // XXXX: lazy evaluate
-	   
+
 	} else if( boundsObject.boundId == BOUNDING_BOX ){
 	    BoundingBox box = (BoundingBox)boundsObject;
 	    planes = new Vector4d[6];
 	    pDotN  = new double[planes.length];
 	    mag = new double[planes.length];
-	   
+
 	    planes[0] = new Vector4d( 1.0, 0.0, 0.0, -box.upper.x );
 	    planes[1] = new Vector4d(-1.0, 0.0, 0.0,  box.lower.x );
 	    planes[2] = new Vector4d( 0.0, 1.0, 0.0, -box.upper.y );
@@ -196,14 +196,14 @@ public class BoundingPolytope extends Bounds {
 	    mag[4] = 1.0;
 	    mag[5] = 1.0;
 	    computeAllVerts(); // XXXX: lazy evaluate
-	   
+
 	} else if( boundsObject.boundId == BOUNDING_POLYTOPE ) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
 	    planes = new Vector4d[polytope.planes.length];
 	    mag = new double[planes.length];
 	    pDotN  = new double[planes.length];
 	    nVerts = polytope.nVerts;
-	    verts  = new Point3d[nVerts];  
+	    verts  = new Point3d[nVerts];
 	    for(i=0;i<planes.length;i++) {
 		planes[i] = new Vector4d(polytope.planes[i]);
 		mag[i] = polytope.mag[i];
@@ -228,7 +228,7 @@ public class BoundingPolytope extends Bounds {
      */
     public BoundingPolytope(Bounds[] boundsObjects) {
 	int i=0;
-       
+
 	boundId = BOUNDING_POLYTOPE;
 	if( boundsObjects ==  null || boundsObjects.length <= 0  ) {
 	    boundsIsEmpty = true;
@@ -241,18 +241,18 @@ public class BoundingPolytope extends Bounds {
 	while( boundsObjects[i] == null && i < boundsObjects.length) {
 	    i++;
 	}
-       
+
 	if( i >= boundsObjects.length ) { // all bounds objects were empty
 	    boundsIsEmpty = true;
 	    boundsIsInfinite = false;
 	    initEmptyPolytope();
 	    computeAllVerts(); // XXXX: lazy evaluate
-	    return; 
+	    return;
 	}
-       
+
 	boundsIsEmpty = boundsObjects[i].boundsIsEmpty;
 	boundsIsInfinite = boundsObjects[i].boundsIsInfinite;
-       
+
 	if( boundsObjects[i].boundId == BOUNDING_SPHERE ) {
 	    BoundingSphere sphere = (BoundingSphere)boundsObjects[i];
 	    planes = new Vector4d[6];
@@ -278,7 +278,7 @@ public class BoundingPolytope extends Bounds {
 	    planes = new Vector4d[6];
 	    mag    = new double[planes.length];
 	    pDotN  = new double[planes.length];
-	   
+
 	    planes[0] = new Vector4d( 1.0, 0.0, 0.0, -box.upper.x );
 	    planes[1] = new Vector4d(-1.0, 0.0, 0.0,  box.lower.x );
 	    planes[2] = new Vector4d( 0.0, 1.0, 0.0, -box.upper.y );
@@ -299,7 +299,7 @@ public class BoundingPolytope extends Bounds {
 	    mag    = new double[planes.length];
 	    pDotN  = new double[planes.length];
 	    nVerts = polytope.nVerts;
-	    verts  = new Point3d[nVerts];  
+	    verts  = new Point3d[nVerts];
 	    for(i=0;i<planes.length;i++) {
 		planes[i] = new Vector4d(polytope.planes[i]);
 		pDotN[i] = polytope.pDotN[i];
@@ -350,17 +350,17 @@ public class BoundingPolytope extends Bounds {
 		invMag = 1.0/mag[i];
 		this.planes[i] = new Vector4d( planes[i].x*invMag, planes[i].y*invMag,
 					       planes[i].z*invMag, planes[i].w*invMag );
-	    } 
+	    }
 	    computeAllVerts();  // XXXX: lazy evaluate
 
 	}
-    
+
     /**
      * Returns the equations of the bounding planes for this bounding polytope.
      * The equations are copied into the specified array.
-     * The array must be large enough to hold all of the vectors. 
+     * The array must be large enough to hold all of the vectors.
      * The individual array elements must be allocated by the caller.
-     * @param planes an array  Vector4d to receive the bounding planes 
+     * @param planes an array  Vector4d to receive the bounding planes
      */
     public void getPlanes(Vector4d[] planes)
 	{
@@ -393,18 +393,18 @@ public class BoundingPolytope extends Bounds {
 	    boundsIsEmpty = true;
 	    boundsIsInfinite = false;
 	    computeAllVerts(); // XXXX: lazy evaluate
-	      
+
 	}else if( boundsObject.boundId == BOUNDING_SPHERE ) {
 	    BoundingSphere sphere = (BoundingSphere)boundsObject;
-	      
+
 	    if( boundsIsEmpty) {
-		initEmptyPolytope();  // no ptope exist so must initialize to default 
-		computeAllVerts(); 
+		initEmptyPolytope();  // no ptope exist so must initialize to default
+		computeAllVerts();
 	    }
-	     
+
 	    for(i=0;i<planes.length;i++) { // D = -(N dot C + radius)
-	        planes[i].w = -(sphere.center.x*planes[i].x + 
-	 		        sphere.center.y*planes[i].y + 
+	        planes[i].w = -(sphere.center.x*planes[i].x +
+	 		        sphere.center.y*planes[i].y +
 			        sphere.center.z*planes[i].z + sphere.radius);
 	    }
 
@@ -417,15 +417,15 @@ public class BoundingPolytope extends Bounds {
 	    double ux,uy,uz,lx,ly,lz,newD;
 
 	    if( boundsIsEmpty) {
-                initEmptyPolytope();  // no ptope exist so must initialize to default 
-                computeAllVerts(); 
+                initEmptyPolytope();  // no ptope exist so must initialize to default
+                computeAllVerts();
 	    }
 
-	    for(i=0;i<planes.length;i++) { 
-	        ux = box.upper.x*planes[i].x;  
+	    for(i=0;i<planes.length;i++) {
+	        ux = box.upper.x*planes[i].x;
    	        uy = box.upper.y*planes[i].y;
 	        uz = box.upper.z*planes[i].z;
-	        lx = box.lower.x*planes[i].x;  
+	        lx = box.lower.x*planes[i].x;
 	        ly = box.lower.y*planes[i].y;
 	        lz = box.lower.z*planes[i].z;
  	        planes[i].w = -(ux + uy + uz ); // initalize plane to upper vert
@@ -438,7 +438,7 @@ public class BoundingPolytope extends Bounds {
 		if( (newD = lx + ly + uz ) + planes[i].w > 0.0) planes[i].w = -newD;
 		if( (newD = lx + ly + lz ) + planes[i].w > 0.0) planes[i].w = -newD;
 	    }
-	    
+
 	    boundsIsEmpty = boundsObject.boundsIsEmpty;
 	    boundsIsInfinite = boundsObject.boundsIsInfinite;
 	    computeAllVerts(); // XXXX: lazy evaluate
@@ -452,7 +452,7 @@ public class BoundingPolytope extends Bounds {
 		pDotN  = new double[polytope.planes.length];
 	    }
 
-             
+
 	    for(i=0;i<polytope.planes.length;i++) {
 		planes[i].x = polytope.planes[i].x;
 		planes[i].y = polytope.planes[i].y;
@@ -468,7 +468,7 @@ public class BoundingPolytope extends Bounds {
 
 	    boundsIsEmpty = boundsObject.boundsIsEmpty;
 	    boundsIsInfinite = boundsObject.boundsIsInfinite;
-	    
+
 	} else {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingPolytope2"));
 	}
@@ -554,24 +554,24 @@ public class BoundingPolytope extends Bounds {
         BoundingSphere sphere;
 
 	if((boundsObject == null) || (boundsObject.boundsIsEmpty)
-	   || (boundsIsInfinite)) 
+	   || (boundsIsInfinite))
 	    return;
 
-		
+
 	if((boundsIsEmpty) || (boundsObject.boundsIsInfinite)) {
 	    this.set(boundsObject);
 	    return;
 	}
-	
+
 	boundsIsEmpty = boundsObject.boundsIsEmpty;
 	boundsIsInfinite = boundsObject.boundsIsInfinite;
-	
+
 	if( boundsObject.boundId == BOUNDING_SPHERE ) {
             sphere = (BoundingSphere)boundsObject;
  	    int i;
 	    double dis;
 	    for(i = 0; i < planes.length; i++){
-	        dis = sphere.radius+ sphere.center.x*planes[i].x + 
+	        dis = sphere.radius+ sphere.center.x*planes[i].x +
 		    sphere.center.y*planes[i].y + sphere.center.z *
 		    planes[i].z + planes[i].w;
 	        if( dis > 0.0 ) {
@@ -594,17 +594,17 @@ public class BoundingPolytope extends Bounds {
 	    boxVerts[6].set(b.upper.x, b.lower.y, b.upper.z );
 	    boxVerts[7].set(b.upper.x, b.upper.y, b.upper.z );
 	    this.combine(boxVerts);
-	    
+
 	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
 	    this.combine(polytope.verts);
 	}   else {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingPolytope3"));
 	}
-	
+
 	computeAllVerts();
     }
-    
+
     /**
      * Combines this bounding polytope with an array of bounding objects so that the
      * resulting bounding polytope encloses the original bounding polytope and the
@@ -618,7 +618,7 @@ public class BoundingPolytope extends Bounds {
 	if( (boundsObjects == null) || (boundsObjects.length <= 0)
 	    || (boundsIsInfinite))
 	    return;
-	
+
 	// find first non empty bounds object
 	while( (i<boundsObjects.length) && ((boundsObjects[i]==null)
 					    || boundsObjects[i].boundsIsEmpty)) {
@@ -626,13 +626,13 @@ public class BoundingPolytope extends Bounds {
 	}
 	if( i >= boundsObjects.length)
 	    return;   // no non empty bounds so do not modify current bounds
-       
+
 	if(boundsIsEmpty)
 	    this.set(boundsObjects[i++]);
-      
+
 	if(boundsIsInfinite)
 	    return;
- 
+
 	for(;i<boundsObjects.length;i++) {
 	    if( boundsObjects[i] == null );  // do nothing
 	    else if( boundsObjects[i].boundsIsEmpty ); // do nothing
@@ -643,7 +643,7 @@ public class BoundingPolytope extends Bounds {
 	    else if( boundsObjects[i].boundId == BOUNDING_SPHERE ) {
 		BoundingSphere sphere = (BoundingSphere)boundsObjects[i];
 		for(int j = 0; j < planes.length; j++){
-		    dis = sphere.radius+ sphere.center.x*planes[j].x + 
+		    dis = sphere.radius+ sphere.center.x*planes[j].x +
 			sphere.center.y*planes[j].y + sphere.center.z*
 			planes[j].z + planes[j].w;
 		    if( dis > 0.0 ) {
@@ -666,23 +666,23 @@ public class BoundingPolytope extends Bounds {
 		boxVerts[6].set(b.upper.x, b.lower.y, b.upper.z );
 		boxVerts[7].set(b.upper.x, b.upper.y, b.upper.z );
 		this.combine(boxVerts);
-	   
+
 	    } else if(boundsObjects[i] instanceof BoundingPolytope) {
 		BoundingPolytope polytope = (BoundingPolytope)boundsObjects[i];
 		this.combine(polytope.verts);
-	   
+
 	    } else {
 		throw new IllegalArgumentException(J3dI18N.getString("BoundingPolytope4"));
 	    }
-       
+
 	    computeAllVerts();
 	}
     }
- 
+
     /**
      * Combines this bounding polytope with a point.
      * @param point a 3d point in space
-     */ 
+     */
     public void combine(Point3d point) {
 	int i;
 	double dis;
@@ -690,7 +690,7 @@ public class BoundingPolytope extends Bounds {
 	if(boundsIsInfinite) {
 	    return;
 	}
-	
+
 	if( boundsIsEmpty ){
 	    planes = new Vector4d[6];
 	    mag = new double[planes.length];
@@ -708,7 +708,7 @@ public class BoundingPolytope extends Bounds {
 	    planes[3] = new Vector4d( 0.0,-1.0, 0.0,  point.y );
 	    planes[4] = new Vector4d( 0.0, 0.0, 1.0, -point.z );
 	    planes[5] = new Vector4d( 0.0, 0.0,-1.0,  point.z );
-	    mag[0] = 1.0;    
+	    mag[0] = 1.0;
 	    mag[1] = 1.0;
 	    mag[2] = 1.0;
 	    mag[3] = 1.0;
@@ -730,12 +730,12 @@ public class BoundingPolytope extends Bounds {
 	    }
 	    computeAllVerts();
 	}
-    }  
-    
+    }
+
     /**
      * Combines this bounding polytope with an array of points.
      * @param points an array of 3d points in space
-     */  
+     */
     public void combine(Point3d[] points) {
 	int i,j;
 	double dis;
@@ -761,7 +761,7 @@ public class BoundingPolytope extends Bounds {
 	    planes[3] = new Vector4d( 0.0,-1.0, 0.0,  points[0].y );
 	    planes[4] = new Vector4d( 0.0, 0.0, 1.0, -points[0].z );
 	    planes[5] = new Vector4d( 0.0, 0.0,-1.0,  points[0].z );
-	    mag[0] = 1.0;    
+	    mag[0] = 1.0;
 	    mag[1] = 1.0;
 	    mag[2] = 1.0;
 	    mag[3] = 1.0;
@@ -773,7 +773,7 @@ public class BoundingPolytope extends Bounds {
 	    boundsIsEmpty = false;
 	    boundsIsInfinite = false;
 	}
-	
+
 	for(j = 0; j < points.length; j++){
 	    for(i = 0; i < planes.length; i++){
 		dis = points[j].x*planes[i].x + points[j].y*planes[i].y +
@@ -783,30 +783,30 @@ public class BoundingPolytope extends Bounds {
 		}
 	    }
 	}
-	
+
 	computeAllVerts();
     }
 
     /**
      * Modifies the bounding polytope so that it bounds the volume
      * generated by transforming the given bounding object.
-     * @param boundsObject the bounding object to be transformed 
+     * @param boundsObject the bounding object to be transformed
      * @param matrix a transformation matrix
      */
     public void transform( Bounds boundsObject, Transform3D matrix) {
-	
+
 	if( boundsObject == null || boundsObject.boundsIsEmpty)  {
 	    boundsIsEmpty = true;
 	    boundsIsInfinite = false;
 	    computeAllVerts();
 	    return;
 	}
-	
+
 	if(boundsObject.boundsIsInfinite) {
 	    this.set(boundsObject);
 	    return;
 	}
-	
+
 	if( boundsObject.boundId == BOUNDING_SPHERE ) {
 	    BoundingSphere sphere = new BoundingSphere((BoundingSphere)boundsObject);
 	    sphere.transform(matrix);
@@ -823,8 +823,8 @@ public class BoundingPolytope extends Bounds {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingPolytope5"));
 	}
     }
-    
-    /** 
+
+    /**
      * Transforms this  bounding polytope by the given transformation matrix.
      * @param matrix a transformation matrix
      */
@@ -832,12 +832,12 @@ public class BoundingPolytope extends Bounds {
 
 	if(boundsIsInfinite)
 	    return;
-	
+
 	int i;
 	double invMag;
 	Transform3D invTrans = new Transform3D(matrix);
-	
-	invTrans.invert(); 
+
+	invTrans.invert();
 	invTrans.transpose();
 
 	for(i = 0; i < planes.length; i++){
@@ -845,9 +845,9 @@ public class BoundingPolytope extends Bounds {
 	    planes[i].y = planes[i].y * mag[i];
 	    planes[i].z = planes[i].z * mag[i];
 	    planes[i].w = planes[i].w * mag[i];
-	    invTrans.transform( planes[i] ); 
+	    invTrans.transform( planes[i] );
 	}
-	
+
 	for(i=0;i<planes.length;i++) {
 
 	    // normalize the plane normals
@@ -856,21 +856,21 @@ public class BoundingPolytope extends Bounds {
 	    invMag = 1.0/mag[i];
 	    this.planes[i] = new Vector4d( planes[i].x*invMag, planes[i].y*invMag,
 					   planes[i].z*invMag, planes[i].w*invMag );
-	    
+
 	}
-	
+
 	for (i=0; i < verts.length; i++) {
 	    matrix.transform(verts[i]);
 	}
-	
+
     }
 
-    /** 
+    /**
      * Test for intersection with a ray.
-     * @param origin is a the starting point of the ray   
+     * @param origin is a the starting point of the ray
      * @param direction is the direction of the ray
      * @param intersectPoint is a point defining the location  of the intersection
-     * @return true or false indicating if an intersection occured 
+     * @return true or false indicating if an intersection occured
      */
     boolean intersect(Point3d origin, Vector3d direction, Point3d intersectPoint ) {
 
@@ -888,13 +888,13 @@ public class BoundingPolytope extends Bounds {
 	    intersectPoint.z = origin.z;
 	    return true;
 	}
-	
+
 	invMag = 1.0/Math.sqrt(direction.x*direction.x +
 			       direction.y*direction.y + direction.z*direction.z);
 	dx = direction.x*invMag;
 	dy = direction.y*invMag;
 	dz = direction.z*invMag;
-	
+
 	// compute intersection point of ray and each plane then test if point is in polytope
 	for(i=0;i<planes.length;i++) {
 	    vd = planes[i].x*dx + planes[i].y*dy + planes[i].z*dz;
@@ -902,38 +902,38 @@ public class BoundingPolytope extends Bounds {
 		   planes[i].z*origin.z + planes[i].w);
 	    if(vd != 0.0) { // ray is parallel to plane
 		t = v0/vd;
-		
+
 		if( t >= 0.0) { // plane is behind origin
-		    
+
 		    x = origin.x + dx*t;   // compute intersection point
 		    y = origin.y + dy*t;
 		    z = origin.z + dz*t;
-		    
+
 		    if( pointInPolytope(x,y,z) ) {
 			intersectPoint.x = x;
 			intersectPoint.y = y;
 			intersectPoint.z = z;
 			return true;  // ray intersects a face of polytope
-		    } 
-		} 
+		    }
+		}
 	    }
-	} 
-	
-	return false;	
+	}
+
+	return false;
     }
 
-    /** 
-     * Test for intersection with a ray 
-     * @param origin is a the starting point of the ray   
+    /**
+     * Test for intersection with a ray
+     * @param origin is a the starting point of the ray
      * @param direction is the direction of the ray
      * @param position is a point defining the location  of the pick w= distance to pick
-     * @return true or false indicating if an intersection occured 
+     * @return true or false indicating if an intersection occured
      */
     boolean intersect(Point3d origin, Vector3d direction, Point4d position ) {
 	double t,v0,vd,x,y,z,invMag;
 	double dx, dy, dz;
 	int i,j;
-	
+
 	if( boundsIsEmpty ) {
 	    return false;
 	}
@@ -945,13 +945,13 @@ public class BoundingPolytope extends Bounds {
 	    position.w = 0.0;
 	    return true;
 	}
-	
+
 	invMag = 1.0/Math.sqrt(direction.x*direction.x + direction.y*
 			       direction.y + direction.z*direction.z);
 	dx = direction.x*invMag;
 	dy = direction.y*invMag;
 	dz = direction.z*invMag;
-	
+
 	for(i=0;i<planes.length;i++) {
 	    vd = planes[i].x*dx + planes[i].y*dy + planes[i].z*dz;
 	    v0 = -(planes[i].x*origin.x + planes[i].y*origin.y +
@@ -959,38 +959,38 @@ public class BoundingPolytope extends Bounds {
 	    // System.err.println("v0="+v0+" vd="+vd);
 	    if(vd != 0.0) { // ray is parallel to plane
 		t = v0/vd;
- 
+
 		if( t >= 0.0) { // plane is behind origin
- 
+
 		    x = origin.x + dx*t;   // compute intersection point
 		    y = origin.y + dy*t;
 		    z = origin.z + dz*t;
 		    // System.err.println("t="+t+" point="+x+" "+y+" "+z);
- 
+
 		    if( pointInPolytope(x,y,z) ) {
 			position.x = x;
 			position.y = y;
 			position.z = z;
 			position.w = t;
 			return true;  // ray intersects a face of polytope
-		    } 
-		} 
+		    }
+		}
 	    }
-	} 
- 
+	}
+
 	return false;
 
     }
 
-    /** 
-     * Test for intersection with a point 
-     * @param point is the pick point   
+    /**
+     * Test for intersection with a point
+     * @param point is the pick point
      * @param position is a point defining the location  of the pick w= distance to pick
-     * @return true or false indicating if an intersection occured 
+     * @return true or false indicating if an intersection occured
      */
     boolean intersect(Point3d point,  Point4d position ) {
 	int i;
-    
+
         if( boundsIsEmpty ) {
 	    return false;
         }
@@ -1008,16 +1008,16 @@ public class BoundingPolytope extends Bounds {
 		 point.y*this.planes[i].y +
 		 point.z*this.planes[i].z + planes[i].w ) > 0.0 )
 		return false;
-	   
-	}   
+
+	}
 	return true;
 
     }
 
     /**
      * Test for intersection with a segment
-     * @param start is a point defining  the start of the line segment 
-     * @param end is a point defining the end of the line segment 
+     * @param start is a point defining  the start of the line segment
+     * @param end is a point defining the end of the line segment
      * @param position is a point defining the location  of the pick w= distance to pick
      * @return true or false indicating if an intersection occured
      */
@@ -1026,11 +1026,11 @@ public class BoundingPolytope extends Bounds {
 	int i,j;
 
 	//System.err.println("line segment intersect : planes.length " + planes.length);
-	
+
 	if( boundsIsEmpty ) {
 	    return false;
 	}
-	
+
 	if( boundsIsInfinite ) {
 	    position.x = start.x;
 	    position.y = start.y;
@@ -1040,11 +1040,11 @@ public class BoundingPolytope extends Bounds {
 	}
 
 	Point3d direction = new Point3d();
-	
+
 	direction.x = end.x - start.x;
 	direction.y = end.y - start.y;
 	direction.z = end.z - start.z;
-       
+
 	for(i=0;i<planes.length;i++) {
 	    vd = planes[i].x*direction.x + planes[i].y*direction.y +
 		planes[i].z*direction.z;
@@ -1053,16 +1053,16 @@ public class BoundingPolytope extends Bounds {
 	    // System.err.println("v0="+v0+" vd="+vd);
 	    if(vd != 0.0) { // ray is parallel to plane
 		t = v0/vd;
-	     
+
 		// System.err.println("t is  " + t);
-	     
+
 		if( t >= 0.0) { // plane is behind start
-	       
+
 		    x = start.x + direction.x*t;   // compute intersection point
 		    y = start.y + direction.y*t;
 		    z = start.z + direction.z*t;
 		    // System.err.println("t="+t+" point="+x+" "+y+" "+z);
-	       
+
 		    if( pointInPolytope(x,y,z) ) {
 			//                   if((t*t) > (end.x-start.x)*(end.x-start.x) +
 			//                              (end.y-start.y)*(end.y-start.y) +
@@ -1075,31 +1075,31 @@ public class BoundingPolytope extends Bounds {
 			    return true;  // ray intersects a face of polytope
 			}
 		    }
-		} 
+		}
 	    }
-	} 
- 
+	}
+
 	return false;
 
     }
 
-    /** 
+    /**
      * Test for intersection with a ray.
      * @param origin the starting point of the ray
      * @param direction the direction of the ray
      * @return true or false indicating if an intersection occured
-     */ 
+     */
     public boolean intersect(Point3d origin, Vector3d direction ) {
 
 	// compute intersection point of ray and each plane then test if point is in polytope
-	
+
 	double t,v0,vd,x,y,z;
 	int i,j;
- 
+
         if( boundsIsEmpty ) {
 	    return false;
         }
-	
+
 	if( boundsIsInfinite ) {
 	    return true;
 	}
@@ -1111,7 +1111,7 @@ public class BoundingPolytope extends Bounds {
 		   planes[i].z*origin.z + planes[i].w);
 	    if(vd != 0.0) { // ray is parallel to plane
 		t = v0/vd;
-		
+
 		if( t >= 0.0) { // plane is behind origin
 
 		    x = origin.x + direction.x*t;   // compute intersection point
@@ -1123,13 +1123,13 @@ public class BoundingPolytope extends Bounds {
 		    } else {
 			// System.err.println("point outside polytope");
 		    }
-		} 
+		}
 	    }
 	}
- 
+
 	return false;
- 
-    }   
+
+    }
 
     /**
      * Tests whether the bounding polytope is empty.  A bounding polytope is
@@ -1149,7 +1149,7 @@ public class BoundingPolytope extends Bounds {
      * Test for intersection with a point.
      * @param point a Point defining a position in 3-space
      * @return true or false indicating if an intersection occured
-     */  
+     */
     public boolean intersect(Point3d point ) {
 
 	int i;
@@ -1159,14 +1159,14 @@ public class BoundingPolytope extends Bounds {
 	if( boundsIsInfinite ) {
 	  return true;
 	}
- 
+
 	for(i = 0; i < this.planes.length; i++){
 	    if(( point.x*this.planes[i].x +
 		 point.y*this.planes[i].y +
 		 point.z*this.planes[i].z + planes[i].w ) > 0.0 )
 		return false;
- 
-	}   
+
+	}
 	return true;
     }
 
@@ -1175,7 +1175,7 @@ public class BoundingPolytope extends Bounds {
      * Test for intersection with another bounds object.
      * @param boundsObject another bounds object
      * @return true or false indicating if an intersection occured
-     */  
+     */
     boolean intersect(Bounds boundsObject, Point4d position) {
 	return intersect(boundsObject);
     }
@@ -1184,12 +1184,12 @@ public class BoundingPolytope extends Bounds {
      * Test for intersection with another bounds object.
      * @param boundsObject another bounds object
      * @return true or false indicating if an intersection occured
-     */  
+     */
     public boolean intersect(Bounds boundsObject) {
- 
+
 	if( boundsObject == null ) {
 	    return false;
-	} 
+	}
 
         if( boundsIsEmpty || boundsObject.boundsIsEmpty ) {
 	    return false;
@@ -1209,27 +1209,27 @@ public class BoundingPolytope extends Bounds {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingPolytope6"));
 	}
     }
-    
+
     /**
      * Test for intersection with another bounds object.
      * @param boundsObjects an array of bounding objects
      * @return true or false indicating if an intersection occured
-     */  
+     */
     public boolean intersect(Bounds[] boundsObjects) {
- 
+
 	double distsq, radsq;
 	BoundingSphere sphere;
 	int i;
       	if( boundsObjects == null || boundsObjects.length <= 0  )  {
 	    return false;
 	}
-	
+
 	if( boundsIsEmpty ) {
 	    return false;
 	}
-	
+
 	for(i = 0; i < boundsObjects.length; i++){
-	    if( boundsObjects[i] == null || boundsObjects[i].boundsIsEmpty) ;	    
+	    if( boundsObjects[i] == null || boundsObjects[i].boundsIsEmpty) ;
 	    else if( boundsIsInfinite || boundsObjects[i].boundsIsInfinite ) {
 		return true; // We're done here.
 	    }
@@ -1240,7 +1240,7 @@ public class BoundingPolytope extends Bounds {
 		distsq = sphere.center.distanceSquared(sphere.center);
 		if (distsq < radsq) {
 		    return true;
-		} 
+		}
 	    } else if(boundsObjects[i].boundId == BOUNDING_BOX){
 		if( this.intersect(boundsObjects[i])) return true;
 	    } else if(boundsObjects[i].boundId == BOUNDING_POLYTOPE) {
@@ -1258,7 +1258,7 @@ public class BoundingPolytope extends Bounds {
      * @param newBoundPolytope the new bounding polytope, which is the intersection of
      *      the boundsObject and this BoundingPolytope
      * @return true or false indicating if an intersection occured
-     */  
+     */
     public boolean intersect(Bounds boundsObject, BoundingPolytope newBoundPolytope) {
 	int i;
 
@@ -1281,26 +1281,26 @@ public class BoundingPolytope extends Bounds {
 	    return true;
 	}
 
-	
-	BoundingBox tbox = new BoundingBox(); // convert sphere to box        
-	
+
+	BoundingBox tbox = new BoundingBox(); // convert sphere to box
+
 	if( boundsObject.boundId == BOUNDING_SPHERE ) {
 	    BoundingSphere sphere = (BoundingSphere)boundsObject;
 	    if( this.intersect( sphere)) {
-		BoundingBox sbox = new BoundingBox( sphere ); // convert sphere to box 
-		BoundingBox pbox = new BoundingBox( this ); // convert polytope to box 
+		BoundingBox sbox = new BoundingBox( sphere ); // convert sphere to box
+		BoundingBox pbox = new BoundingBox( this ); // convert polytope to box
 		pbox.intersect(sbox, tbox);                        // insersect two boxes
 		newBoundPolytope.set( tbox );
 		return true;
-	    } 
+	    }
 	} else if( boundsObject.boundId == BOUNDING_BOX){
-	    BoundingBox box = (BoundingBox)boundsObject; 
+	    BoundingBox box = (BoundingBox)boundsObject;
 	    if( this.intersect( box)) {
-		BoundingBox pbox = new BoundingBox( this ); // convert polytope to box 
+		BoundingBox pbox = new BoundingBox( this ); // convert polytope to box
 		pbox.intersect(box, tbox);                        // insersect two boxes
 		newBoundPolytope.set( tbox );
 		return true;
-	    } 
+	    }
 
 	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
@@ -1316,75 +1316,75 @@ public class BoundingPolytope extends Bounds {
 
 		newBoundPolytope.set(newPtope);
 		return true;
-	    } 
+	    }
 
 	} else {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingPolytope8"));
 	}
- 
+
 	newBoundPolytope.boundsIsEmpty = true;
 	newBoundPolytope.boundsIsInfinite = false;
 	newBoundPolytope.computeAllVerts();
 
 	return false;
     }
-    
+
     /**
      * Test for intersection with an array of  bounds objects.
      * @param boundsObjects an array of bounds objects
      * @param newBoundingPolytope the new bounding polytope, which is the intersection of
      *      the boundsObject and this BoundingPolytope
      * @return true or false indicating if an intersection occured
-     */  
+     */
     public boolean intersect(Bounds[] boundsObjects, BoundingPolytope newBoundingPolytope) {
-	
+
 	if( boundsObjects == null || boundsObjects.length <= 0 || boundsIsEmpty ) {
 	    newBoundingPolytope.boundsIsEmpty = true;
 	    newBoundingPolytope.boundsIsInfinite = false;
 	    newBoundingPolytope.computeAllVerts();
 	    return false;
-	} 
+	}
 
 	int i=0;
 	// find first non null bounds object
 	while( boundsObjects[i] == null && i < boundsObjects.length) {
 	    i++;
 	}
-	
+
 	if( i >= boundsObjects.length ) { // all bounds objects were empty
 	    newBoundingPolytope.boundsIsEmpty = true;
 	    newBoundingPolytope.boundsIsInfinite = false;
 	    newBoundingPolytope.computeAllVerts();
 	    return false;
 	}
-	
+
 	boolean status = false;
-	BoundingBox tbox = new BoundingBox(); // convert sphere to box 
+	BoundingBox tbox = new BoundingBox(); // convert sphere to box
 
 	for(i=0;i<boundsObjects.length;i++) {
 	    if( boundsObjects[i] == null || boundsObjects[i].boundsIsEmpty) ;
 	    else if(  boundsObjects[i].boundId == BOUNDING_SPHERE ) {
 		BoundingSphere sphere = (BoundingSphere)boundsObjects[i];
 		if( this.intersect( sphere)) {
-		    BoundingBox sbox = new BoundingBox( sphere ); // convert sphere to box 
-		    BoundingBox pbox = new BoundingBox( this ); // convert polytope to box 
+		    BoundingBox sbox = new BoundingBox( sphere ); // convert sphere to box
+		    BoundingBox pbox = new BoundingBox( this ); // convert polytope to box
 		    pbox.intersect(sbox, tbox);                        // insersect two boxes
 		    if ( status ) {
-			newBoundingPolytope.combine( tbox );                       
+			newBoundingPolytope.combine( tbox );
 		    } else {
-			newBoundingPolytope.set( tbox );                       
+			newBoundingPolytope.set( tbox );
 			status = true;
 		    }
 		}
 	    } else if( boundsObjects[i].boundId == BOUNDING_BOX){
 		BoundingBox box = (BoundingBox)boundsObjects[i];
 		if( this.intersect( box) ){
-		    BoundingBox pbox = new BoundingBox( this ); // convert polytope to box 
+		    BoundingBox pbox = new BoundingBox( this ); // convert polytope to box
 		    pbox.intersect(box,tbox);                        // insersect two boxes
 		    if ( status ) {
-			newBoundingPolytope.combine( tbox );                       
+			newBoundingPolytope.combine( tbox );
 		    } else {
-			newBoundingPolytope.set( tbox );                       
+			newBoundingPolytope.set( tbox );
 			status = true;
 		    }
 		} else {
@@ -1411,10 +1411,10 @@ public class BoundingPolytope extends Bounds {
 	    } else {
 		throw new IllegalArgumentException(J3dI18N.getString("BoundingPolytope8"));
 	    }
-	    
+
 	    if(newBoundingPolytope.boundsIsInfinite)
-		break; // We're done. 
-	    
+		break; // We're done.
+
 	}
 
 	if( status == false ) {
@@ -1423,12 +1423,12 @@ public class BoundingPolytope extends Bounds {
 	    newBoundingPolytope.computeAllVerts();
 	}
 	return status;
- 
-    }   
-    /** 
+
+    }
+    /**
      * Finds closest bounding object that intersects this bounding polytope.
-     * @param boundsObjects is an array of  bounds objects 
-     * @return closest bounding object 
+     * @param boundsObjects is an array of  bounds objects
+     * @return closest bounding object
      */
     public Bounds closestIntersection( Bounds[] boundsObjects) {
 
@@ -1443,7 +1443,7 @@ public class BoundingPolytope extends Bounds {
 	double dis,disToPlane;
 	boolean contains = false;
 	boolean inside;
-	double smallest_distance = Double.MAX_VALUE; 
+	double smallest_distance = Double.MAX_VALUE;
 	int i,j,index=0;
 	double cenX = 0.0, cenY = 0.0, cenZ = 0.0;
 
@@ -1460,13 +1460,13 @@ public class BoundingPolytope extends Bounds {
 		    for(j=0;j<planes.length;j++) {
 			if( ( sphere.center.x*planes[j].x +
 			      sphere.center.y*planes[j].y +
-			      sphere.center.z*planes[j].z + planes[i].w ) > 0.0 ) { // check if sphere center in polytope 
-			    disToPlane = sphere.center.x*planes[j].x + 
+			      sphere.center.z*planes[j].z + planes[i].w ) > 0.0 ) { // check if sphere center in polytope
+			    disToPlane = sphere.center.x*planes[j].x +
 				sphere.center.y*planes[j].y +
 				sphere.center.z*planes[j].z + planes[j].w;
 
 				// check if distance from center to plane is larger than radius
-			    if( disToPlane > sphere.radius ) inside = false; 
+			    if( disToPlane > sphere.radius ) inside = false;
 			}
 		    }
 		    if( inside) { // contains the sphere
@@ -1529,10 +1529,10 @@ public class BoundingPolytope extends Bounds {
 				     (centroid.z-polytope.centroid.z)*(centroid.z-polytope.centroid.z) );
 		    inside = true;
 		    for(j=0;j<polytope.nVerts;j++) {
-			if ( !pointInPolytope( polytope.verts[j].x, polytope.verts[j].y, polytope.verts[j].z ) ) 
+			if ( !pointInPolytope( polytope.verts[j].x, polytope.verts[j].y, polytope.verts[j].z ) )
 			    inside = false;
 		    }
-		    if( inside ) { 
+		    if( inside ) {
 			if( !contains ){ // initialize smallest_distance for the first containment
 			    index = i;
 			    smallest_distance = dis;
@@ -1559,18 +1559,18 @@ public class BoundingPolytope extends Bounds {
 	return boundsObjects[index];
     }
 
-    /** 
+    /**
      * Returns a string representation of this class
      */
     public String toString() {
 	int i;
-	
+
 	String description = new String("BoundingPolytope:\n Num Planes ="+planes.length);
 	for(i = 0; i < planes.length; i++){
 	    description = description+"\n"+mag[i]*planes[i].x+" "+
 		mag[i]*planes[i].y+" "+mag[i]*planes[i].z+" "+mag[i]*planes[i].w;
 	}
-	
+
 	return description;
     }
 
@@ -1579,39 +1579,39 @@ public class BoundingPolytope extends Bounds {
 
 	det = planes[a].x*planes[b].y*planes[c].z + planes[a].y*planes[b].z*planes[c].x +
 	    planes[a].z*planes[b].x*planes[c].y - planes[a].z*planes[b].y*planes[c].x -
-	    planes[a].y*planes[b].x*planes[c].z - planes[a].x*planes[b].z*planes[c].y; 
+	    planes[a].y*planes[b].x*planes[c].z - planes[a].x*planes[b].z*planes[c].y;
 
 	// System.err.println("\n det="+det);
 	if( det*det < EPSILON ){
 	    // System.err.println("parallel planes="+a+" "+b+" "+c);
 	    return; // two planes are parallel
 	}
-	
+
 	det = 1.0/det;
-	
+
 	x = (planes[b].y*planes[c].z - planes[b].z*planes[c].y) * pDotN[a];
 	y = (planes[b].z*planes[c].x - planes[b].x*planes[c].z) * pDotN[a];
 	z = (planes[b].x*planes[c].y - planes[b].y*planes[c].x) * pDotN[a];
-	
+
 	x += (planes[c].y*planes[a].z - planes[c].z*planes[a].y) * pDotN[b];
 	y += (planes[c].z*planes[a].x - planes[c].x*planes[a].z) * pDotN[b];
 	z += (planes[c].x*planes[a].y - planes[c].y*planes[a].x) * pDotN[b];
-	
+
 	x += (planes[a].y*planes[b].z - planes[a].z*planes[b].y) * pDotN[c];
 	y += (planes[a].z*planes[b].x - planes[a].x*planes[b].z) * pDotN[c];
 	z += (planes[a].x*planes[b].y - planes[a].y*planes[b].x) * pDotN[c];
-	
+
 	x = x*det;
 	y = y*det;
 	z = z*det;
-	
+
 	if (pointInPolytope( x, y, z ) ) {
 	    if (nVerts >= verts.length) {
 		Point3d newVerts[] = new Point3d[nVerts << 1];
 		for(int i=0;i<nVerts;i++) {
 		    newVerts[i] = verts[i];
 		}
-		verts = newVerts; 
+		verts = newVerts;
 	    }
 	    verts[nVerts++] = new Point3d( x,y,z);
 	}
@@ -1621,18 +1621,18 @@ public class BoundingPolytope extends Bounds {
     private void computeAllVerts() {
 	int i,a,b,c;
 	double x,y,z;
-	
+
 	nVerts = 0;
-	
+
 	if( boundsIsEmpty) {
 	    verts = null;
 	    return;
 	}
-	
-	verts = new Point3d[planes.length*planes.length];	
+
+	verts = new Point3d[planes.length*planes.length];
 
 	for(i=0;i<planes.length;i++) {
-	    pDotN[i] = -planes[i].x*planes[i].w*planes[i].x - 
+	    pDotN[i] = -planes[i].x*planes[i].w*planes[i].x -
 		planes[i].y*planes[i].w*planes[i].y -
 		planes[i].z*planes[i].w*planes[i].z;
 	}
@@ -1645,8 +1645,8 @@ public class BoundingPolytope extends Bounds {
 	    }
 	}
 	// XXXX: correctly compute centroid
-	
-	x=y=z=0.0; 
+
+	x=y=z=0.0;
 	Point3d newVerts[] = new Point3d[nVerts];
 
 	for(i=0;i<nVerts;i++) {
@@ -1656,15 +1656,15 @@ public class BoundingPolytope extends Bounds {
 	    // copy the verts into an array of the correct size
 	    newVerts[i] = verts[i];
 	}
-	
+
 	this.verts = newVerts; // copy the verts into an array of the correct size
-	
+
 	centroid.x = x/nVerts;
 	centroid.y = y/nVerts;
 	centroid.z = z/nVerts;
-	
+
 	checkBoundsIsEmpty();
-	
+
     }
 
     private boolean pointInPolytope( double x, double y, double z ){
@@ -1675,22 +1675,22 @@ public class BoundingPolytope extends Bounds {
 		 z*planes[i].z + planes[i].w ) > EPSILON ) {
 		return false;
 	    }
-	    
-	}   
+
+	}
 	return true;
     }
 
     private void checkBoundsIsEmpty() {
 	boundsIsEmpty = (planes.length < 4);
     }
-    
+
     private void initEmptyPolytope() {
 	planes = new Vector4d[6];
 	pDotN  = new double[6];
 	mag    = new double[6];
 	verts  = new Point3d[planes.length*planes.length];
 	nVerts = 0;
-	
+
 	planes[0] = new Vector4d( 1.0, 0.0, 0.0, -1.0 );
 	planes[1] = new Vector4d(-1.0, 0.0, 0.0, -1.0 );
 	planes[2] = new Vector4d( 0.0, 1.0, 0.0, -1.0 );
@@ -1703,7 +1703,7 @@ public class BoundingPolytope extends Bounds {
 	mag[3] = 1.0;
 	mag[4] = 1.0;
 	mag[5] = 1.0;
-	
+
 	checkBoundsIsEmpty();
     }
 
@@ -1718,7 +1718,7 @@ public class BoundingPolytope extends Bounds {
      */
     Bounds copy(Bounds r) {
 	int i, k;
-	
+
 	if (r != null && this.boundId == r.boundId) {
 	    BoundingPolytope region = (BoundingPolytope) r;
 	    if( region.planes.length !=planes.length) {
@@ -1734,8 +1734,8 @@ public class BoundingPolytope extends Bounds {
 		for(k=0;k<nVerts;k++)
 		    region.verts[k] = new Point3d(verts[k]);
 	    }
-	    
-             
+
+
 	    for(i=0;i<planes.length;i++) {
 		region.planes[i].x = planes[i].x;
 		region.planes[i].y = planes[i].y;

@@ -139,11 +139,11 @@ public final class WakeupOnElapsedFrames extends WakeupCriterion {
 	    this.countdown--;
 	}
     }
-  
 
-   
+
+
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
     void addBehaviorCondition(BehaviorStructure bs) {
@@ -155,13 +155,13 @@ public final class WakeupOnElapsedFrames extends WakeupCriterion {
 
 	// This is necessary to invoke this condition next time
 	// Otherwise jftc won't work for static scene.
-	VirtualUniverse.mc.sendRunMessage(bs.universe, 
+	VirtualUniverse.mc.sendRunMessage(bs.universe,
 					  J3dThread.UPDATE_BEHAVIOR);
     }
 
 
     /**
-     * This is a callback from BehaviorStructure. It is 
+     * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
     void removeBehaviorCondition(BehaviorStructure bs) {

@@ -47,7 +47,7 @@ package javax.media.j3d;
  * a repeating pattern of 1 pixel on and 7 pixels off.</li>
  * <p>
  * <li>PATTERN_DASH_DOT - draws dashed-dotted lines. Ideally, these will be
- * drawn with a repeating pattern of 7 pixels on, 4 pixels off, 1 pixel on, 
+ * drawn with a repeating pattern of 7 pixels on, 4 pixels off, 1 pixel on,
  * and 4 pixels off.</li>
  * <p>
  * <li>PATTERN_USER_DEFINED - draws lines with a user-defined line pattern.
@@ -59,48 +59,48 @@ package javax.media.j3d;
  * <p>
  * <p>
  * If antialiasing is enabled, the lines are considered transparent
- * for rendering purposes.  They are rendered with all the other transparent 
+ * for rendering purposes.  They are rendered with all the other transparent
  * objects and adhere to the other transparency settings such as the
- * View transparency sorting policy and the View depth buffer freeze 
+ * View transparency sorting policy and the View depth buffer freeze
  * transparent enable.
- * </p> 
+ * </p>
  * <LI>Width (in pixels). The default is a line width of one pixel.
  * </LI></UL><p>
  *
  * <b>User-defined Line Patterns</b>
  * <p>
- * A user-defined line pattern is specified with a pattern mask and 
+ * A user-defined line pattern is specified with a pattern mask and
  * an optional scale factor.
  * <p>
  * The Pattern Mask<p>
  *
  * The pattern is specified
- * using a 16-bit mask that specifies on and off segments. Bit 0 in 
- * the pattern mask corresponds to the first pixel of the line or line 
- * strip primitive. A value of 1 for a bit in the pattern mask indicates 
+ * using a 16-bit mask that specifies on and off segments. Bit 0 in
+ * the pattern mask corresponds to the first pixel of the line or line
+ * strip primitive. A value of 1 for a bit in the pattern mask indicates
  * that the corresponding pixel is drawn, while a value of 0
- * indicates that the corresponding pixel is not drawn. After all 16 bits 
+ * indicates that the corresponding pixel is not drawn. After all 16 bits
  * in the pattern are used, the pattern is repeated.
  * <p>
  * For example, a mask of 0x00ff defines a dashed line with a repeating
- * pattern of 8 pixels on followed by 8 pixels off. A value of 0x0101 
- * defines a a dotted line with a repeating pattern of 1 pixel on and 7 
+ * pattern of 8 pixels on followed by 8 pixels off. A value of 0x0101
+ * defines a a dotted line with a repeating pattern of 1 pixel on and 7
  * pixels off.
  * <p>
  * The pattern continues around individual line segments of a line strip
- * primitive. It is restarted at the beginning of each new line strip. 
- * For line array primitives, the pattern is restarted at the beginning 
+ * primitive. It is restarted at the beginning of each new line strip.
+ * For line array primitives, the pattern is restarted at the beginning
  * of each line.
  * <p>
  * The Scale Factor
  * <p>
  * The pattern is multiplied by the scale factor such that each bit in
  * the pattern mask corresponds to that many consecutive pixels.
- * For example, a scale factor of 3 applied to a pattern mask of 0x001f 
+ * For example, a scale factor of 3 applied to a pattern mask of 0x001f
  * would produce a repeating pattern of 15 pixels on followed by 33
  * pixels off. The valid range for this attribute is [1,15]. Values
  * outside this range are clamped.<p>
- * 
+ *
  * @see Appearance
  * @see View
  */
@@ -192,9 +192,9 @@ public class LineAttributes extends NodeComponent {
     private static final int[] readCapabilities = {
         ALLOW_ANTIALIASING_READ,
         ALLOW_PATTERN_READ,
-        ALLOW_WIDTH_READ        
+        ALLOW_WIDTH_READ
     };
-    
+
     /**
      * Constructs a LineAttributes object with default parameters.
      * The default values are as follows:
@@ -242,7 +242,7 @@ public class LineAttributes extends NodeComponent {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_WIDTH_WRITE))
               throw new CapabilityNotSetException(J3dI18N.getString("LineAttributes1"));
-	if (isLive()) 
+	if (isLive())
 	    ((LineAttributesRetained)this.retained).setLineWidth(lineWidth);
 	else
 	    ((LineAttributesRetained)this.retained).initLineWidth(lineWidth);
@@ -283,7 +283,7 @@ public class LineAttributes extends NodeComponent {
 	else
 	    ((LineAttributesRetained)this.retained).initLinePattern(linePattern);
 
-    
+
 }
 
     /**
@@ -407,11 +407,11 @@ public class LineAttributes extends NodeComponent {
      * for this LineAttributes component object.
      * <p>
      * If antialiasing is enabled, the lines are considered transparent
-     * for rendering purposes.  They are rendered with all the other 
-     * transparent objects and adhere to the other transparency settings 
-     * such as the View transparency sorting policy and the View depth buffer 
+     * for rendering purposes.  They are rendered with all the other
+     * transparent objects and adhere to the other transparency settings
+     * such as the View transparency sorting policy and the View depth buffer
      * freeze transparent enable.
-     * </p> 
+     * </p>
      * @param state true or false to enable or disable line antialiasing
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
@@ -456,7 +456,7 @@ public class LineAttributes extends NodeComponent {
 
 
     /**
-     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)   
+     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
     public NodeComponent cloneNodeComponent() {
         LineAttributes la = new LineAttributes();
@@ -464,14 +464,14 @@ public class LineAttributes extends NodeComponent {
         return la;
     }
 
-   
-   
+
+
     /**
      * Copies all node information from <code>originalNodeComponent</code> into
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -483,12 +483,12 @@ public class LineAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
-     void duplicateAttributes(NodeComponent originalNodeComponent, 
-			      boolean forceDuplicate) { 
+     void duplicateAttributes(NodeComponent originalNodeComponent,
+			      boolean forceDuplicate) {
 	 super.duplicateAttributes(originalNodeComponent,
 				   forceDuplicate);
-      
-	 LineAttributesRetained attr = (LineAttributesRetained) 
+
+	 LineAttributesRetained attr = (LineAttributesRetained)
 	                                originalNodeComponent.retained;
 	 LineAttributesRetained rt = (LineAttributesRetained) retained;
 

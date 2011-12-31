@@ -123,7 +123,7 @@ class AttributeBin extends Object implements ObjectUpdate {
 	    this.app = app;
 	else
 	    app = null;
-	
+
 	if (renderingAttributes != null) {
 	    if (renderingAttributes.changedFrequent != 0) {
 		definingRenderingAttributes = renderingAttributes;
@@ -156,24 +156,24 @@ class AttributeBin extends Object implements ObjectUpdate {
 	// If the any reference to the appearance components  that is cached renderMolecule
 	// can change frequently, make a separate bin
 	if (soleUser || (ra.geometryAtom.source.appearance != null &&
-			 ((ra.geometryAtom.source.appearance.changedFrequent & 
+			 ((ra.geometryAtom.source.appearance.changedFrequent &
 			   AppearanceRetained.RENDERING) != 0))) {
 	    if (app == (Object)ra.geometryAtom.source.appearance) {
 
 		// if this AttributeBin is currently on a zombie state,
                 // we'll need to put it on the update list to reevaluate
                 // the state, because while it is on a zombie state,
-                // rendering attributes reference could have been changed. 
+                // rendering attributes reference could have been changed.
 	        // Example, application could have detached an appearance,
                 // made changes to the reference, and then
                 // reattached the appearance. In this case, the rendering
-                // attributes reference change would not have reflected to 
+                // attributes reference change would not have reflected to
 	        // the AttributeBin
 
                 if (numEditingShaderBins == 0) {
 		    if ((onUpdateList & ON_CHANGED_FREQUENT_UPDATE_LIST) == 0) {
 			renderBin.aBinUpdateList.add(this);
-			onUpdateList |= 
+			onUpdateList |=
 				AttributeBin.ON_CHANGED_FREQUENT_UPDATE_LIST;
 		    }
 		}
@@ -182,11 +182,11 @@ class AttributeBin extends Object implements ObjectUpdate {
 	    else {
 		return false;
 	    }
-	    
+
 	}
 	// Either a changedFrequent or a null case
 	// and the incoming one is not equal or null
-	// then return;	
+	// then return;
 	// This check also handles null == null case
 	if (definingRenderingAttributes != null) {
 	    if ((this.definingRenderingAttributes.changedFrequent != 0) ||
@@ -217,7 +217,7 @@ class AttributeBin extends Object implements ObjectUpdate {
 	ShaderBin sb;
 	TextureBin t;
 	int i, size;
-	
+
 	size = addShaderBins.size();
 	if (size > 0) {
 	    sb = (ShaderBin)addShaderBins.get(0);
@@ -229,7 +229,7 @@ class AttributeBin extends Object implements ObjectUpdate {
 		shaderBinList.prev = sb;
 		shaderBinList = sb;
 	    }
-	    	    
+
 	    for (i = 1; i < size ; i++) {
 		sb = (ShaderBin)addShaderBins.get(i);
 		sb.next = shaderBinList;
@@ -257,7 +257,7 @@ class AttributeBin extends Object implements ObjectUpdate {
 	    sb.shaderAttributeSet = sApp.shaderAttributeSet;
 	}
 	sb.shaderAppearance = sApp;
-	
+
 	// TODO : JADA - sort by ShaderProgram to avoid state trashing.
 	addShaderBins.add(sb);
 	if ((onUpdateList & ON_OBJ_UPDATE_LIST) == 0) {
@@ -272,8 +272,8 @@ class AttributeBin extends Object implements ObjectUpdate {
      * Removes the given shaderBin from this AttributeBin.
      */
     void removeShaderBin(ShaderBin sb) {
-	
-	// If the shaderBin being remove is contained in addShaderBins, 
+
+	// If the shaderBin being remove is contained in addShaderBins,
 	// then remove the shadereBin from the addList
 	if (addShaderBins.contains(sb)) {
 	    addShaderBins.remove(addShaderBins.indexOf(sb));
@@ -307,8 +307,8 @@ class AttributeBin extends Object implements ObjectUpdate {
     void render(Canvas3D cv) {
 
 	ShaderBin sb;
-	
-	boolean visible = (definingRenderingAttributes == null || 
+
+	boolean visible = (definingRenderingAttributes == null ||
 	    		       definingRenderingAttributes.visible);
 
 	if ( (renderBin.view.viewCache.visibilityPolicy
@@ -317,7 +317,7 @@ class AttributeBin extends Object implements ObjectUpdate {
 			== View.VISIBILITY_DRAW_INVISIBLE && visible)) {
 	    return;
 	}
-	        	
+
 
         // include this AttributeBin to the to-be-updated list in Canvas
         cv.setStateToUpdate(Canvas3D.ATTRIBUTEBIN_BIT, this);
@@ -347,7 +347,7 @@ class AttributeBin extends Object implements ObjectUpdate {
 	    cv.renderingAttrs = renderingAttrs;
 	}
 
-	else if (cv.renderingAttrs != renderingAttrs && 
+	else if (cv.renderingAttrs != renderingAttrs &&
 			cv.attributeBin != this) {
 	    // Update Attribute Bundles
 	    if (definingRenderingAttributes == null) {
@@ -362,7 +362,7 @@ class AttributeBin extends Object implements ObjectUpdate {
 				    	cv.depthBufferEnableOverride);
 	    }
 	    cv.renderingAttrs = renderingAttrs;
-	} 
+	}
 	cv.attributeBin = this;
 	cv.canvasDirty &= ~Canvas3D.ATTRIBUTEBIN_DIRTY;
     }
@@ -413,7 +413,7 @@ class AttributeBin extends Object implements ObjectUpdate {
     void updateFromShaderBin(RenderAtom ra) {
 
 	AppearanceRetained raApp = ra.geometryAtom.source.appearance;
-	RenderingAttributesRetained rAttrs = 
+	RenderingAttributesRetained rAttrs =
 	    (raApp == null)? null : raApp.renderingAttributes;
 
  	if (!soleUser && renderingAttrs != rAttrs) {

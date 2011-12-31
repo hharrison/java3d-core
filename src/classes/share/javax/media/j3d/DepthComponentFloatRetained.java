@@ -42,7 +42,7 @@ class DepthComponentFloatRetained extends DepthComponentRetained {
     float depthData[];
 
     /**
-     * Constructs a new floating-point depth (z-buffer) component object with 
+     * Constructs a new floating-point depth (z-buffer) component object with
      * the specified width and height.
      * @param width the width of the array of depth values
      * @param height the height of the array of depth values
@@ -81,7 +81,7 @@ class DepthComponentFloatRetained extends DepthComponentRetained {
      */
     final void retrieveDepth(float[] buf, int wRead, int hRead) {
         int srcOffset, dstOffset, i;
- 
+
 	// Yup -> Ydown
         for (srcOffset = (hRead - 1) * wRead, dstOffset = 0,
                 i = 0; i < hRead; i++,

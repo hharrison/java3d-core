@@ -42,7 +42,7 @@ import javax.vecmath.Point3f;
  * modifies the rotational and translational components of its target
  * TransformGroup by linearly interpolating among a series of predefined
  * knot/positon and knot/orientation pairs (using the value generated
- * by the specified Alpha object).  The interpolated position and 
+ * by the specified Alpha object).  The interpolated position and
  * orientation are used to generate a transform in the local coordinate
  * system of this interpolator.
  */
@@ -59,12 +59,12 @@ public class RotPosPathInterpolator extends PathInterpolator {
     private Point3f positions[];
     private float prevInterpolationValue = Float.NaN;
 
-    // We can't use a boolean flag since it is possible 
+    // We can't use a boolean flag since it is possible
     // that after alpha change, this procedure only run
     // once at alpha.finish(). So the best way is to
     // detect alpha value change.
     private float prevAlphaValue = Float.NaN;
-    private WakeupCriterion passiveWakeupCriterion = 
+    private WakeupCriterion passiveWakeupCriterion =
     (WakeupCriterion) new WakeupOnElapsedFrames(0, true);
 
     // non-public, default constructor used by cloneNode
@@ -98,7 +98,7 @@ public class RotPosPathInterpolator extends PathInterpolator {
 
 	if (knots.length != quats.length)
 	    throw new IllegalArgumentException(J3dI18N.getString("RotPosPathInterpolator0"));
-	
+
 	setPathArrays(quats, positions);
     }
 
@@ -230,7 +230,7 @@ public class RotPosPathInterpolator extends PathInterpolator {
     public void setAxisOfRotPos(Transform3D axisOfRotPos) {
         setTransformAxis(axisOfRotPos);
     }
-      
+
     /**
      * @deprecated As of Java 3D version 1.3, replaced by
      * <code>TransformInterpolator.getTransformAxis()</code>
@@ -252,7 +252,7 @@ public class RotPosPathInterpolator extends PathInterpolator {
      */
     public void computeTransform(float alphaValue, Transform3D transform) {
         double quatDot;
-	
+
 	computePathInterpolation(alphaValue);
 
 	if (currentKnotIndex == 0 &&
@@ -299,7 +299,7 @@ public class RotPosPathInterpolator extends PathInterpolator {
 		tQuat.w = quats[currentKnotIndex].w +
 		    (quats[currentKnotIndex+1].w -
 		     quats[currentKnotIndex].w)*currentInterpolationValue;
-	    }       
+	    }
 	    pos.x = positions[currentKnotIndex].x +
 		(positions[currentKnotIndex+1].x -
 		 positions[currentKnotIndex].x) * currentInterpolationValue;
@@ -310,17 +310,17 @@ public class RotPosPathInterpolator extends PathInterpolator {
 		(positions[currentKnotIndex+1].z -
 		 positions[currentKnotIndex].z) * currentInterpolationValue;
 	}
-	tQuat.normalize();	    
-		
+	tQuat.normalize();
+
 	// Set the rotation components
 	tMat.set(tQuat);
-		
+
 	// Set the translation components.
 	tMat.m03 = pos.x;
 	tMat.m13 = pos.y;
 	tMat.m23 = pos.z;
 	rotation.set(tMat);
-		
+
 	// construct a Transform3D from:  axis * rotation * axisInverse
 	transform.mul(axis, rotation);
 	transform.mul(transform, axisInverse);
@@ -353,7 +353,7 @@ public class RotPosPathInterpolator extends PathInterpolator {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -373,7 +373,7 @@ public class RotPosPathInterpolator extends PathInterpolator {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
 	RotPosPathInterpolator ri = (RotPosPathInterpolator) originalNode;
-	
+
         int len = ri.getArrayLengths();
 
 	// No API availble to set array size, so explicitly set it here

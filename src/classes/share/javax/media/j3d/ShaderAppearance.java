@@ -165,7 +165,7 @@ public class ShaderAppearance extends Appearance {
 	}
 
 	((ShaderAppearanceRetained)this.retained).setShaderProgram(shaderProgram);
-	
+
     }
 
 

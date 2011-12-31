@@ -51,7 +51,7 @@ abstract class GeometryDecompressor {
 
     /**
      * This method is called when a SetState command is encountered in the
-     * decompression stream.  
+     * decompression stream.
      *
      * @param bundlingNorm true indicates normals are bundled with vertices
      * @param bundlingColor true indicates colors are bundled with vertices
@@ -65,11 +65,11 @@ abstract class GeometryDecompressor {
      * This method captures the vertex output of the decompressor.  The normal
      * or color references may be null if the corresponding data is not
      * bundled with the vertices in the compressed geometry buffer.  Alpha
-     * values may be included in the color.  
-     * 
+     * values may be included in the color.
+     *
      * @param position The coordinates of the vertex.
      * @param normal The normal bundled with the vertex.  May be null.
-     * @param color The color bundled with the vertex.  May be null.  
+     * @param color The color bundled with the vertex.  May be null.
      * Alpha may be present.
      * @param vertexReplaceCode Specifies the generalized strip flag
      * that is bundled with each vertex.
@@ -129,7 +129,7 @@ abstract class GeometryDecompressor {
 		" shift: "       + rightShift +
 		" abs/rel: "     + absolute ;
 	}
-    } 
+    }
 
     // A 16-entry mesh buffer is used.
     private MeshBufferEntry meshBuffer[] ;
@@ -186,7 +186,7 @@ abstract class GeometryDecompressor {
 	0xFFFFF,    0x1FFFFF,   0x3FFFFF,   0x7FFFFF,
 	0xFFFFFF,   0x1FFFFFF,  0x3FFFFFF,  0x7FFFFFF,
 	0xFFFFFFF,  0x1FFFFFFF, 0x3FFFFFFF, 0x7FFFFFFF,
-	0xFFFFFFFF, 
+	0xFFFFFFFF,
     } ;
 
     // A reference to the compressed data and the current offset.
@@ -267,7 +267,7 @@ abstract class GeometryDecompressor {
 	    gctables[1][i] = new HuffmanTableEntry() ;
 	    gctables[2][i] = new HuffmanTableEntry() ;
 	}
-	
+
 	meshBuffer = new MeshBufferEntry[16] ;
 	for (int i = 0 ; i < 16 ; i++)
 	    meshBuffer[i] = new MeshBufferEntry() ;
@@ -297,9 +297,9 @@ abstract class GeometryDecompressor {
 			       " start: " + start +
 			       " length: " + length +
 			       " data array size: " + data.length) ;
-	if (benchmark) 
+	if (benchmark)
 	    benchmarkStart(length) ;
-	    
+
 	if (start+length > data.length)
 	    throw new ArrayIndexOutOfBoundsException
 		(J3dI18N.getString("GeometryDecompressor0")) ;
@@ -347,7 +347,7 @@ abstract class GeometryDecompressor {
 	    if (debug) System.err.println(": got 0x0") ;
 	    return 0 ;
 	}
-	
+
 	if (bitBufferCount == 0) {
 	    bitBuffer = (((gcData[gcIndex++] & 0xff) << 24) |
 			 ((gcData[gcIndex++] & 0xff) << 16) |
@@ -454,7 +454,7 @@ abstract class GeometryDecompressor {
 
     //
     // Decode the opcode in currentHeader, and dispatch to the appropriate
-    // processing method.  
+    // processing method.
     //
     private int processDecompressionOpcode(int mbp) {
 	if ((currentHeader & 0xC0) == GC_SET_NORM)
@@ -490,7 +490,7 @@ abstract class GeometryDecompressor {
 	    processPassThrough() ;
 	else if ((currentHeader & 0xFF) == GC_SKIP_8)
 	    processSkip8() ;
-    
+
 	return 0 ;
     }
 
@@ -907,12 +907,12 @@ abstract class GeometryDecompressor {
 	    ny = (float)gcNormals[v][u][1] ;
 	    nz = (float)gcNormals[v][u][2] ;
 
-	    // reverse the swap 
+	    // reverse the swap
 	    if ((sex & 0x4) != 0) { t = nx ; nx = nz ; nz = t ; }
 	    if ((sex & 0x2) != 0) { t = ny ; ny = nz ; nz = t ; }
 	    if ((sex & 0x1) != 0) { t = nx ; nx = ny ; ny = t ; }
 
-	    // reverse the sign flip 
+	    // reverse the sign flip
 	    if ((oct & 0x1) != 0) nz = -nz ;
 	    if ((oct & 0x2) != 0) ny = -ny ;
 	    if ((oct & 0x4) != 0) nx = -nx ;
@@ -990,7 +990,7 @@ abstract class GeometryDecompressor {
 			    a = (a << (dataLength -
 				       (6-gct.tagLength - 3*dataLength))) | ii ;
 			}
-		    } 
+		    }
 		} else {
 		    ii = getBits(dataLength -
 				 (6 - gct.tagLength - 2*dataLength), "b") ;
@@ -1138,7 +1138,7 @@ abstract class GeometryDecompressor {
 		curColor.w = curA ; curColor.w /= 32768.0 ;
 	    }
 	    if (debug)
-		System.err.println(" retrieved color "    + curColor.x + 
+		System.err.println(" retrieved color "    + curColor.x +
 				   " " + curColor.y + " " + curColor.z +
 				   " " + curColor.w) ;
 	}
@@ -1191,7 +1191,7 @@ abstract class GeometryDecompressor {
 	float t = (J3dClock.currentTimeMillis() - startTime) / 1000.0f ;
 	System.err.println
 	    ("  done in " + t + " sec." + "\n" +
-	     "  decompressed " + vertexCount + " vertices at " + 
+	     "  decompressed " + vertexCount + " vertices at " +
 	     (vertexCount/t) + " vertices/sec\n") ;
 
 	System.err.print("  vertex data present: coords") ;

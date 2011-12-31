@@ -41,7 +41,7 @@ import java.lang.Math;
  */
 
 class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
-    
+
     IndexedQuadArrayRetained() {
 	this.geoType = GEO_TYPE_INDEXED_QUAD_SET;
     }
@@ -53,7 +53,7 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	double minDist = Double.MAX_VALUE;
 	double x = 0, y = 0, z = 0;
         int[] vtxIndexArr = new int[4];
-        
+
         //NVaidya
         // Bug 447: While loops below now traverse over all
         // elements in the valid index range from initialIndexIndex
@@ -64,7 +64,7 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
         pnts[1] = new Point3d();
         pnts[2] = new Point3d();
 	pnts[3] = new Point3d();
-    
+
 	switch (pickShape.getPickType()) {
 	case PickShape.PICKRAY:
 	    PickRay pickRay= (PickRay) pickShape;
@@ -84,13 +84,13 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
@@ -114,19 +114,19 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
 	    break;
 	case PickShape.PICKBOUNDINGBOX:
-	    BoundingBox bbox = (BoundingBox) 
+	    BoundingBox bbox = (BoundingBox)
 		               ((PickBounds) pickShape).bounds;
 	    while (i < loopStopIndex) {
                 for(int j=0; j<4; j++) {
@@ -143,19 +143,19 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
 	    break;
 	case PickShape.PICKBOUNDINGSPHERE:
-	    BoundingSphere bsphere = (BoundingSphere) 
+	    BoundingSphere bsphere = (BoundingSphere)
 		                     ((PickBounds) pickShape).bounds;
 	    while (i < loopStopIndex) {
                 for(int j=0; j<4; j++) {
@@ -172,19 +172,19 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
 	    break;
 	case PickShape.PICKBOUNDINGPOLYTOPE:
-	    BoundingPolytope bpolytope = (BoundingPolytope) 
+	    BoundingPolytope bpolytope = (BoundingPolytope)
 		                      ((PickBounds) pickShape).bounds;
 	    while (i < loopStopIndex) {
                 for(int j=0; j<4; j++) {
@@ -201,13 +201,13 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
@@ -229,13 +229,13 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
@@ -257,13 +257,13 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 			y = iPnt.y;
 			z = iPnt.z;
                 	if((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) {
-                            storeInterestData(pickInfo, flags, geom, geomIndex, 
+                            storeInterestData(pickInfo, flags, geom, geomIndex,
                                               vtxIndexArr, iPnt, sdist[0]);
                         }
 		    }
                     if((flags & PickInfo.ALL_GEOM_INFO) != 0) {
-                        storeInterestData(pickInfo, flags, geom, geomIndex, 
-                                          vtxIndexArr, iPnt, sdist[0]);                      
+                        storeInterestData(pickInfo, flags, geom, geomIndex,
+                                          vtxIndexArr, iPnt, sdist[0]);
                     }
 		}
 	    }
@@ -272,8 +272,8 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	    // Should not happen since API already check for this
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedQuadArrayRetained0"));
 	default:
-	    throw new RuntimeException("PickShape not supported for intersection "); 
-	} 
+	    throw new RuntimeException("PickShape not supported for intersection ");
+	}
 
 	if (minDist < Double.MAX_VALUE) {
 	    iPnt.x = x;
@@ -282,8 +282,8 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	    return true;
 	}
 	return false;
-   
-    }    
+
+    }
 
     // intersect pnts[] with every quad in this object
     boolean intersect(Point3d[] pnts) {
@@ -293,19 +293,19 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
         // Bug 447: correction for loop indices
         int i = initialIndexIndex;
         int loopStopIndex = initialIndexIndex + validIndexCount;
-        
+
         points[0] = new Point3d();
         points[1] = new Point3d();
 	points[2] = new Point3d();
 	points[3] = new Point3d();
-	
+
 	switch (pnts.length) {
 	case 3: // Triangle
 	    while (i < loopStopIndex) {
-		getVertexData(indexCoord[i++], points[0]);		
-		getVertexData(indexCoord[i++], points[1]);		
-		getVertexData(indexCoord[i++], points[2]);		
-		getVertexData(indexCoord[i++], points[3]);		
+		getVertexData(indexCoord[i++], points[0]);
+		getVertexData(indexCoord[i++], points[1]);
+		getVertexData(indexCoord[i++], points[2]);
+		getVertexData(indexCoord[i++], points[3]);
 		if (intersectTriTri(points[0], points[1], points[2],
 				    pnts[0], pnts[1], pnts[2]) ||
 		    intersectTriTri(points[0], points[2], points[3],
@@ -316,10 +316,10 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	    break;
 	case 4: // Quad
 	    while (i < loopStopIndex) {
-		getVertexData(indexCoord[i++], points[0]);		
-		getVertexData(indexCoord[i++], points[1]);		
-		getVertexData(indexCoord[i++], points[2]);		
-		getVertexData(indexCoord[i++], points[3]);		
+		getVertexData(indexCoord[i++], points[0]);
+		getVertexData(indexCoord[i++], points[1]);
+		getVertexData(indexCoord[i++], points[2]);
+		getVertexData(indexCoord[i++], points[3]);
 		if (intersectTriTri(points[0], points[1], points[2],
 				    pnts[0], pnts[1], pnts[2]) ||
 		    intersectTriTri(points[0], points[1], points[2],
@@ -334,10 +334,10 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	    break;
 	case 2: // Line
 	    while (i < loopStopIndex) {
-		getVertexData(indexCoord[i++], points[0]);		
-		getVertexData(indexCoord[i++], points[1]);		
-		getVertexData(indexCoord[i++], points[2]);		
-		getVertexData(indexCoord[i++], points[3]);		
+		getVertexData(indexCoord[i++], points[0]);
+		getVertexData(indexCoord[i++], points[1]);
+		getVertexData(indexCoord[i++], points[2]);
+		getVertexData(indexCoord[i++], points[3]);
 		if (intersectSegment(points, pnts[0], pnts[1], dist,
 				     null)) {
 		    return true;
@@ -346,10 +346,10 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	    break;
 	case 1: // Point
 	    while (i < loopStopIndex) {
-		getVertexData(indexCoord[i++], points[0]);		
-		getVertexData(indexCoord[i++], points[1]);		
-		getVertexData(indexCoord[i++], points[2]);		
-		getVertexData(indexCoord[i++], points[3]);		
+		getVertexData(indexCoord[i++], points[0]);
+		getVertexData(indexCoord[i++], points[1]);
+		getVertexData(indexCoord[i++], points[2]);
+		getVertexData(indexCoord[i++], points[3]);
 		if (intersectTriPnt(points[0], points[1], points[2],
 				    pnts[0]) ||
 		    intersectTriPnt(points[0], points[2], points[3],
@@ -361,9 +361,9 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	}
 	return false;
     }
-    
 
-    boolean intersect(Transform3D thisToOtherVworld, 
+
+    boolean intersect(Transform3D thisToOtherVworld,
 		      GeometryRetained geom) {
 
         Point3d[] points = new Point3d[4];
@@ -371,17 +371,17 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
         // Bug 447: correction for loop indices
         int i = initialIndexIndex;
         int loopStopIndex = initialIndexIndex + validIndexCount;
-        
+
         points[0] = new Point3d();
 	points[1] = new Point3d();
 	points[2] = new Point3d();
 	points[3] = new Point3d();
-	
+
 	while (i < loopStopIndex) {
-	    getVertexData(indexCoord[i++], points[0]);		
-	    getVertexData(indexCoord[i++], points[1]);		
-	    getVertexData(indexCoord[i++], points[2]);		
-	    getVertexData(indexCoord[i++], points[3]);		
+	    getVertexData(indexCoord[i++], points[0]);
+	    getVertexData(indexCoord[i++], points[1]);
+	    getVertexData(indexCoord[i++], points[2]);
+	    getVertexData(indexCoord[i++], points[3]);
 	    thisToOtherVworld.transform(points[0]);
 	    thisToOtherVworld.transform(points[1]);
 	    thisToOtherVworld.transform(points[2]);
@@ -400,7 +400,7 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
         // Bug 447: correction for loop indices
         int i = initialIndexIndex;
         int loopStopIndex = initialIndexIndex + validIndexCount;
-        
+
         points[0] = new Point3d();
         points[1] = new Point3d();
         points[2] = new Point3d();
@@ -411,10 +411,10 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	    BoundingBox box = (BoundingBox) targetBound;
 
 	    while (i < loopStopIndex) {
-		getVertexData(indexCoord[i++], points[0]);		
-		getVertexData(indexCoord[i++], points[1]);		
-		getVertexData(indexCoord[i++], points[2]);		
-		getVertexData(indexCoord[i++], points[3]);		
+		getVertexData(indexCoord[i++], points[0]);
+		getVertexData(indexCoord[i++], points[1]);
+		getVertexData(indexCoord[i++], points[2]);
+		getVertexData(indexCoord[i++], points[3]);
 		if (intersectBoundingBox(points, box, null, null)) {
 		    return true;
 		}
@@ -424,10 +424,10 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	    BoundingSphere bsphere = (BoundingSphere) targetBound;
 
 	    while (i < loopStopIndex) {
-		getVertexData(indexCoord[i++], points[0]);		
-		getVertexData(indexCoord[i++], points[1]);		
-		getVertexData(indexCoord[i++], points[2]);		
-		getVertexData(indexCoord[i++], points[3]);		
+		getVertexData(indexCoord[i++], points[0]);
+		getVertexData(indexCoord[i++], points[1]);
+		getVertexData(indexCoord[i++], points[2]);
+		getVertexData(indexCoord[i++], points[3]);
 		if (intersectBoundingSphere(points, bsphere, null,
 					    null)) {
 		    return true;
@@ -437,10 +437,10 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	case PickShape.PICKBOUNDINGPOLYTOPE:
 	    BoundingPolytope bpolytope = (BoundingPolytope) targetBound;
 	    while (i < loopStopIndex) {
-		getVertexData(indexCoord[i++], points[0]);		
-		getVertexData(indexCoord[i++], points[1]);		
-		getVertexData(indexCoord[i++], points[2]);		
-		getVertexData(indexCoord[i++], points[3]);		
+		getVertexData(indexCoord[i++], points[0]);
+		getVertexData(indexCoord[i++], points[1]);
+		getVertexData(indexCoord[i++], points[2]);
+		getVertexData(indexCoord[i++], points[3]);
 		if (intersectBoundingPolytope(points, bpolytope, null, null)) {
 		    return true;
 		}
@@ -448,11 +448,11 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	    break;
 	default:
 	    throw new RuntimeException("Bounds not supported for intersection "
-				       + targetBound); 
+				       + targetBound);
 	}
 	return false;
     }
-    
+
 
     int getClassType() {
 	return QUAD_TYPE;

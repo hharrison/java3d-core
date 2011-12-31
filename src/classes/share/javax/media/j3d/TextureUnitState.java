@@ -89,7 +89,7 @@ public class TextureUnitState extends NodeComponent {
     private static final int[] readCapabilities = {
         ALLOW_STATE_READ
     };
-    
+
     /**
      * Constructs a TextureUnitState component object using defaults for all
      * state variables. All component object references are initialized
@@ -165,7 +165,7 @@ public class TextureUnitState extends NodeComponent {
 
         // Do illegal sharing check
         if(texture != null) {
-            TextureRetained texRetained = (TextureRetained)texture.retained;            
+            TextureRetained texRetained = (TextureRetained)texture.retained;
             ImageComponent[] images = texRetained.getImages();
             if(images != null) {
                 for(int i=0; i<images.length; i++) {
@@ -173,7 +173,7 @@ public class TextureUnitState extends NodeComponent {
                 }
             }
         }
-        
+
 	((TextureUnitStateRetained)this.retained).setTextureUnitState(
 				texture, textureAttributes, texCoordGeneration);
     }
@@ -205,7 +205,7 @@ public class TextureUnitState extends NodeComponent {
 
         // Do illegal sharing check
         if(texture != null) {
-            TextureRetained texRetained = (TextureRetained)texture.retained;            
+            TextureRetained texRetained = (TextureRetained)texture.retained;
             ImageComponent[] images = texRetained.getImages();
             if(images != null) {
                 for(int i=0; i<images.length; i++) {

@@ -44,13 +44,13 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 
     // Issue 485 - these values must start after the last value in Appearance
     static final int SHADER_PROGRAM         = 0x0800;
-    static final int SHADER_ATTRIBUTE_SET   = 0x1000;    
+    static final int SHADER_ATTRIBUTE_SET   = 0x1000;
 
     //
     // State variables: these should all be initialized to approproate
     // Java 3D defaults.
     //
- 
+
     protected ShaderProgramRetained shaderProgram = null;
     protected ShaderAttributeSetRetained shaderAttributeSet = null;
     protected boolean isMirror = false; // For Debugging.
@@ -71,14 +71,14 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 		}
 
 		if (sp != null) {
-		    ((ShaderProgramRetained)sp.retained).setLive(inBackgroundGroup, 
+		    ((ShaderProgramRetained)sp.retained).setLive(inBackgroundGroup,
 								 refCount);
 		    ((ShaderProgramRetained)sp.retained).copyMirrorUsers(this);
 	    	}
-		
-		sendMessage(SHADER_PROGRAM,  
+
+		sendMessage(SHADER_PROGRAM,
 			    (sp != null ? ((ShaderProgramRetained)sp.retained).mirror : null));
-		
+
 	    }
 
 	    if (sp == null) {
@@ -95,7 +95,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
      * @return current shader program object
      */
     ShaderProgram getShaderProgram() {
-	return (shaderProgram == null ? null : (ShaderProgram)shaderProgram.source);	
+	return (shaderProgram == null ? null : (ShaderProgram)shaderProgram.source);
     }
 
 
@@ -116,18 +116,18 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 		}
 
 		if (sas != null) {
-		    ((ShaderAttributeSetRetained)sas.retained).setLive(inBackgroundGroup, 
+		    ((ShaderAttributeSetRetained)sas.retained).setLive(inBackgroundGroup,
 								       refCount);
 		    ((ShaderAttributeSetRetained)sas.retained).copyMirrorUsers(this);
 	    	}
-		
+
 		// System.err.println(" --   testing  needed!");
-		sendMessage(SHADER_ATTRIBUTE_SET,  
-			    (sas != null ? 
+		sendMessage(SHADER_ATTRIBUTE_SET,
+			    (sas != null ?
 			     ((ShaderAttributeSetRetained)sas.retained).mirror : null));
-		
+
 	    }
-	    
+
 	    if (sas == null) {
 		this.shaderAttributeSet = null;
 	    } else {
@@ -142,7 +142,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
      * @return current ShaderAttributeSet object
      */
     ShaderAttributeSet getShaderAttributeSet() {
-	return (shaderAttributeSet == null ? null : (ShaderAttributeSet)shaderAttributeSet.source);	
+	return (shaderAttributeSet == null ? null : (ShaderAttributeSet)shaderAttributeSet.source);
 
     }
 
@@ -155,7 +155,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
     boolean equals(ShaderAppearanceRetained sApp) {
 	boolean flag;
 	flag = (sApp == this);
-	
+
 	// If the reference is the same, we can stop check.
 	if(flag)
 	    return flag;
@@ -164,16 +164,16 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	flag = ((sApp != null) &&
 		(shaderProgram == sApp.shaderProgram)  &&
 		(shaderAttributeSet == sApp.shaderAttributeSet));
-	
+
 
 	if (!flag)
 	    return flag;
-	
+
 	return super.equals(sApp);
 
     }
 
-    
+
 
     synchronized void createMirrorObject() {
 	// System.err.println("ShaderAppearanceRetained : createMirrorObject()");
@@ -205,11 +205,11 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	    mirrorApp.shaderProgram = (ShaderProgramRetained)shaderProgram.mirror;
 	}
 	else {
-	    mirrorApp.shaderProgram = null;	    
+	    mirrorApp.shaderProgram = null;
 	}
 
 	if(shaderAttributeSet != null) {
-	    mirrorApp.shaderAttributeSet = 
+	    mirrorApp.shaderAttributeSet =
 		(ShaderAttributeSetRetained)shaderAttributeSet.mirror;
 	}
 	else {
@@ -235,7 +235,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	else if ((component & SHADER_ATTRIBUTE_SET) != 0) {
 	    mirrorApp.shaderAttributeSet = (ShaderAttributeSetRetained)value;
 	}
-	
+
     }
 
     /**
@@ -280,25 +280,25 @@ class ShaderAppearanceRetained extends AppearanceRetained {
     synchronized void addAMirrorUser(Shape3DRetained shape) {
 
 	super.addAMirrorUser(shape);
-	if (shaderProgram != null) 
+	if (shaderProgram != null)
 	    shaderProgram.addAMirrorUser(shape);
-        if (shaderAttributeSet != null) 
+        if (shaderAttributeSet != null)
 	    shaderAttributeSet.addAMirrorUser(shape);
     }
-    
+
     synchronized void removeAMirrorUser(Shape3DRetained shape) {
-        
+
 	super.removeAMirrorUser(shape);
-	if (shaderProgram != null) 
+	if (shaderProgram != null)
 	    shaderProgram.removeAMirrorUser(shape);
-        if (shaderAttributeSet != null) 
+        if (shaderAttributeSet != null)
 	    shaderAttributeSet.removeAMirrorUser(shape);
     }
-    
-    
+
+
     final void sendMessage(int attrMask, Object attr) {
 	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
 	J3dMessage createMessage = new J3dMessage();
@@ -311,13 +311,13 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	createMessage.args[3] = new Integer(changedFrequent);
 
 	VirtualUniverse.mc.processMessage(createMessage);
-	    
+
 	//System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.SHADER_APPEARANCE_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
@@ -332,7 +332,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	}
     }
 
-    
+
     boolean isStatic() {
 	if (!super.isStatic()) {
 	    return false;
@@ -363,11 +363,11 @@ class ShaderAppearanceRetained extends AppearanceRetained {
     }
 
     boolean isOpaque(int geoType) {
-	
+
 	if (!super.isOpaque(geoType)) {
 	    return false;
 	}
-	
+
 	// TODO: IMPLEMENT THIS
 	// TODO: How do we determine whether a ShaderAppearance is opaque???
 	return true;
@@ -382,7 +382,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	    mask = SHADER_PROGRAM;
 	else if (bit == ShaderAppearance.ALLOW_SHADER_ATTRIBUTE_SET_WRITE)
 	    mask = SHADER_ATTRIBUTE_SET;
-	
+
 
 	if (mask != 0)
 	    setFrequencyChangeMask(bit, mask);

@@ -47,14 +47,14 @@ public class RotationInterpolator extends TransformInterpolator {
     float maximumAngle;
     private Transform3D rotation = new Transform3D();
 
-    // We can't use a boolean flag since it is possible 
+    // We can't use a boolean flag since it is possible
     // that after alpha change, this procedure only run
     // once at alpha.finish(). So the best way is to
     // detect alpha value change.
     private float prevAlphaValue = Float.NaN;
-    private WakeupCriterion passiveWakeupCriterion = 
+    private WakeupCriterion passiveWakeupCriterion =
     (WakeupCriterion) new WakeupOnElapsedFrames(0, true);
-    
+
     // non-public, default constructor used by cloneNode
     RotationInterpolator() {
     }
@@ -104,7 +104,7 @@ public class RotationInterpolator extends TransformInterpolator {
     }
 
     /**
-      * This method retrieves this interpolator's minimumAngle, in 
+      * This method retrieves this interpolator's minimumAngle, in
       * radians.
       * @return the interpolator's minimal angle value
       */
@@ -122,7 +122,7 @@ public class RotationInterpolator extends TransformInterpolator {
     }
 
     /**
-      * This method retrieves this interpolator's maximumAngle, in 
+      * This method retrieves this interpolator's maximumAngle, in
       * radians.
       * @return the interpolator's maximal angle value
       */
@@ -137,7 +137,7 @@ public class RotationInterpolator extends TransformInterpolator {
      public void setAxisOfRotation(Transform3D axisOfRotation) {
         setTransformAxis(axisOfRotation);
     }
-       
+
     /**
      * @deprecated As of Java 3D version 1.3, replaced by
      * <code>TransformInterpolator.getTransformAxis()</code>
@@ -145,7 +145,7 @@ public class RotationInterpolator extends TransformInterpolator {
     public Transform3D getAxisOfRotation() {
         return getTransformAxis();
     }
-    
+
     /**
      * Computes the new transform for this interpolator for a given
      * alpha value.
@@ -191,7 +191,7 @@ public class RotationInterpolator extends TransformInterpolator {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -211,7 +211,7 @@ public class RotationInterpolator extends TransformInterpolator {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
 	RotationInterpolator ri = (RotationInterpolator) originalNode;
-	    
+
 	setMinimumAngle(ri.getMinimumAngle());
         setMaximumAngle(ri.getMaximumAngle());
 

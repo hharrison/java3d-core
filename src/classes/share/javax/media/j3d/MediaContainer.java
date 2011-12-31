@@ -35,10 +35,10 @@ import java.net.URL;
 import java.io.InputStream;
 
 /**
- * The MediaContainer object defines all sound data: cached state flag, and 
- * associated sound media. Currently this references the sound media in 
+ * The MediaContainer object defines all sound data: cached state flag, and
+ * associated sound media. Currently this references the sound media in
  * one of three forms: URL String, URL object, or InputStream object.
- * In future releases media data will include references to Java Media 
+ * In future releases media data will include references to Java Media
  * Player objects.
  * Only one type of sound media data specified using
  * <code>setURLString</code>, <code>setURLObject</code>,
@@ -84,7 +84,7 @@ public class MediaContainer extends NodeComponent {
         ALLOW_CACHE_READ,
         ALLOW_URL_READ
     };
-    
+
     /**
      * Constructs a MediaContainer object with default parameters.
      * The default values are as follows:
@@ -94,7 +94,7 @@ public class MediaContainer extends NodeComponent {
      * InputStream data : null<br>
      * cache enable : true<br>
      * </ul>
-     */  
+     */
     public MediaContainer() {
          // Just use default values
         // set default read capabilities
@@ -106,7 +106,7 @@ public class MediaContainer extends NodeComponent {
      * parameters.
      * @param path string of URL path containing sound data
      * @exception SoundException if the URL is not valid or cannot be opened
-     */  
+     */
     public MediaContainer(String path) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
@@ -119,7 +119,7 @@ public class MediaContainer extends NodeComponent {
      * parameters.
      * @param url URL path containing sound data
      * @exception SoundException if the URL is not valid or cannot be opened
-     */  
+     */
     public MediaContainer(URL url) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
@@ -133,7 +133,7 @@ public class MediaContainer extends NodeComponent {
      * @param stream input stream containing sound data
      *
      * @since Java 3D 1.2
-     */  
+     */
     public MediaContainer(InputStream stream) {
         // set default read capabilities
         setDefaultReadCapabilities(readCapabilities);
@@ -144,7 +144,7 @@ public class MediaContainer extends NodeComponent {
     /**
      * Creates the retained mode MediaContainerRetained object that this
      * component object will point to.
-     */  
+     */
     void createRetained() {
         this.retained = new MediaContainerRetained();
         this.retained.setSource(this);
@@ -154,29 +154,29 @@ public class MediaContainer extends NodeComponent {
      * Set Cache Enable state flag.
      * Allows the writing of sound data explicitly into the MediaContainer
      * rather than just referencing a JavaMedia container.
-     * @param flag boolean denoting if sound data is cached in this instance 
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @param flag boolean denoting if sound data is cached in this instance
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public void setCacheEnable(boolean flag)  {
 	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_CACHE_WRITE)) 
-		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer1")); 
-	
+	    if(!this.getCapability(ALLOW_CACHE_WRITE))
+		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer1"));
+
 	((MediaContainerRetained)this.retained).setCacheEnable(flag);
     }
 
     /**
      * Retrieve Cache Enable state flag.
      * @return flag denoting is sound data is non-cached or cached
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      */
     public boolean getCacheEnable() {
 	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_CACHE_READ)) 
-		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer2")); 
-	
+	    if(!this.getCapability(ALLOW_CACHE_READ))
+		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer2"));
+
 	return ((MediaContainerRetained)this.retained).getCacheEnable();
     }
 
@@ -186,27 +186,27 @@ public class MediaContainer extends NodeComponent {
      */
     public void setURL(String path) {
         if (isLiveOrCompiled()) {
-            if(!this.getCapability(ALLOW_URL_WRITE)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer3")); 
+            if(!this.getCapability(ALLOW_URL_WRITE))
+                throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer3"));
         }
 
         ((MediaContainerRetained)this.retained).setURLString(path);
     }
     /**
-     * @deprecated As of Java 3D version 1.2, replaced by 
+     * @deprecated As of Java 3D version 1.2, replaced by
      * <code>setURLObject</code>
      */
     public void setURL(URL url) {
 	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_URL_WRITE)) 
-		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer3")); 
+	    if(!this.getCapability(ALLOW_URL_WRITE))
+		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer3"));
 	((MediaContainerRetained)this.retained).setURLObject(url);
     }
 
     /**
      * Set URL String.
      * @param path string of URL containing sound data
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @exception SoundException if the URL is not valid or cannot be opened
      * @exception IllegalArgumentException if the specified sound data is
@@ -215,8 +215,8 @@ public class MediaContainer extends NodeComponent {
      */
     public void setURLString(String path) {
         if (isLiveOrCompiled()) {
-            if(!this.getCapability(ALLOW_URL_WRITE)) 
-                throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer3")); 
+            if(!this.getCapability(ALLOW_URL_WRITE))
+                throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer3"));
         }
         ((MediaContainerRetained)this.retained).setURLString(path);
     }
@@ -224,7 +224,7 @@ public class MediaContainer extends NodeComponent {
     /**
      * Set URL Object.
      * @param url URL object containing sound data
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @exception SoundException if the URL is not valid or cannot be opened
      * @exception IllegalArgumentException if the specified sound data is
@@ -233,15 +233,15 @@ public class MediaContainer extends NodeComponent {
      */
     public void setURLObject(URL url) {
 	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_URL_WRITE)) 
-		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer3")); 
+	    if(!this.getCapability(ALLOW_URL_WRITE))
+		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer3"));
 	((MediaContainerRetained)this.retained).setURLObject(url);
     }
 
     /**
      * Set Input Stream.
      * @param stream input stream object containing sound data
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @exception SoundException if InputStream is bad
      * @exception IllegalArgumentException if the specified sound data is
@@ -250,66 +250,66 @@ public class MediaContainer extends NodeComponent {
      */
     public void setInputStream(InputStream stream) {
 	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_URL_WRITE)) 
-		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer3")); 
+	    if(!this.getCapability(ALLOW_URL_WRITE))
+		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer3"));
 	((MediaContainerRetained)this.retained).setInputStream(stream);
     }
 
     /**
-     * @deprecated As of Java 3D version 1.2, replaced by 
+     * @deprecated As of Java 3D version 1.2, replaced by
      * <code>getURLString</code>
      */
     public String getURL() {
 	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_URL_READ)) 
-		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer4")); 
+	    if(!this.getCapability(ALLOW_URL_READ))
+		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer4"));
 	return ((MediaContainerRetained)this.retained).getURLString();
     }
 
     /**
      * Retrieve URL String.
      * @return string of URL containing sound data
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.2
      */
     public String getURLString() {
 	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_URL_READ)) 
-		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer4")); 
+	    if(!this.getCapability(ALLOW_URL_READ))
+		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer4"));
 	return ((MediaContainerRetained)this.retained).getURLString();
     }
 
     /**
      * Retrieve URL Object.
      * @return URL containing sound data
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.2
      */
     public URL getURLObject() {
 	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_URL_READ)) 
-		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer4")); 
+	    if(!this.getCapability(ALLOW_URL_READ))
+		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer4"));
 	return ((MediaContainerRetained)this.retained).getURLObject();
     }
 
     /**
      * Retrieve Input Stream.
      * @return reference to input stream containing sound data
-     * @exception CapabilityNotSetException if appropriate capability is 
+     * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
      * @since Java 3D 1.2
      */
     public InputStream getInputStream() {
 	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_URL_READ)) 
-		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer4")); 
+	    if(!this.getCapability(ALLOW_URL_READ))
+		throw new CapabilityNotSetException(J3dI18N.getString("MediaContainer4"));
 	return ((MediaContainerRetained)this.retained).getInputStream();
     }
 
     /**
-     * @deprecated As of Java 3D version 1.2, replaced with 
+     * @deprecated As of Java 3D version 1.2, replaced with
      * <code>cloneNodeComponent(boolean forceDuplicate)</code>
      */
     public NodeComponent cloneNodeComponent() {
@@ -325,7 +325,7 @@ public class MediaContainer extends NodeComponent {
      * the current node.  This method is called from the
      * <code>cloneNodeComponent</code> method and <code>duplicateNodeComponent</code>
      * method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNodeComponent the original node component to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -343,9 +343,9 @@ public class MediaContainer extends NodeComponent {
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 
-	super.duplicateAttributes(originalNodeComponent, forceDuplicate); 
-	
-	MediaContainerRetained mc = (MediaContainerRetained) 
+	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
+
+	MediaContainerRetained mc = (MediaContainerRetained)
 	    originalNodeComponent.retained;
 	MediaContainerRetained rt = (MediaContainerRetained) retained;
 	rt.setCacheEnable(mc.getCacheEnable());

@@ -35,12 +35,12 @@ import javax.vecmath.Color3f;
 import java.util.Enumeration;
 
 /**
- * The Light leaf node is an abstract class that defines a set of 
+ * The Light leaf node is an abstract class that defines a set of
  * parameters common to all
  * types of light.  These parameters include the light color, an enable
  * flag, and a region of influence in which this Light node is active.
  * A Light node also contains a list of Group nodes that specifies the
- * hierarchical scope of this Light.  If the scope list is empty, 
+ * hierarchical scope of this Light.  If the scope list is empty,
  * the Light node has universe scope: all nodes within the region of
  * influence are affected by this Light node.  If the scope list is
  * non-empty, only those Leaf nodes under the Group nodes in the
@@ -60,7 +60,7 @@ import java.util.Enumeration;
  * <b>Light Color</b>
  * <p>
  * The Java 3D lighting model approximates the way light works in
- * the real world. Light is defined in terms of the red, green, and 
+ * the real world. Light is defined in terms of the red, green, and
  * blue components that combine to create the light color. The
  * three color components represent the amount of light emitted
  * by the source.
@@ -77,12 +77,12 @@ import java.util.Enumeration;
  * red and green but no blue, produces a yellow light.
  * <p>
  * If a scene has multiple lights and all lights illuminate an object,
- * the effect of the light on the object is the sum of the 
- * lights. For example, in a scene with two lights, if the first 
- * light emits (R<sub>1</sub>, G<sub>1</sub>, B<sub>1</sub>) and 
- * the second light emits (R<sub>2</sub>, G<sub>2</sub>, 
- * B<sub>2</sub>), the components are added together giving 
- * (R<sub>1</sub>+R<sub>2</sub>, G<sub>1</sub>+G<sub>2</sub>, 
+ * the effect of the light on the object is the sum of the
+ * lights. For example, in a scene with two lights, if the first
+ * light emits (R<sub>1</sub>, G<sub>1</sub>, B<sub>1</sub>) and
+ * the second light emits (R<sub>2</sub>, G<sub>2</sub>,
+ * B<sub>2</sub>), the components are added together giving
+ * (R<sub>1</sub>+R<sub>2</sub>, G<sub>1</sub>+G<sub>2</sub>,
  * B<sub>1</sub>+B<sub>2</sub>).
  * If the sums of any of the color values is greater than 1.0,
  * brighter than the maximum brightness permitted, the color value is
@@ -103,15 +103,15 @@ import java.util.Enumeration;
  * <p>
  * The surface of each object in the scene has
  * certain material properties that define how light affects its
- * appearance. The object might reflect light in various ways, 
+ * appearance. The object might reflect light in various ways,
  * depending on the object's surface type. The object
- * might even emit its own light. The Java 3D lighting model specifies 
+ * might even emit its own light. The Java 3D lighting model specifies
  * these material properties as five independent components: emitted
  * color, ambient color, diffuse color, specular color, and shininess.
- * All of these properties are computed independently, then added 
+ * All of these properties are computed independently, then added
  * together to define how the surface of the object appears under
- * light (an exception is Ambient light, which does not contribute 
- * to specular reflection). The material properties are defined 
+ * light (an exception is Ambient light, which does not contribute
+ * to specular reflection). The material properties are defined
  * in the Material class.
  * <p>
  * <b>Influencing Bounds</b>
@@ -126,11 +126,11 @@ import java.util.Enumeration;
  * should both objects be set.
  * <p>
  * A Bounds object represents a convex, closed volume. Bounds
- * defines three different types of containing 
- * volumes: an axis-aligned-box volume, a spherical volume, and a 
+ * defines three different types of containing
+ * volumes: an axis-aligned-box volume, a spherical volume, and a
  * bounding polytope. A BoundingLeaf object also specifies a region
- * of influence, but allows an application to specify a bounding 
- * region in one coordinate system (the local coordinate system of 
+ * of influence, but allows an application to specify a bounding
+ * region in one coordinate system (the local coordinate system of
  * the BoundingLeaf node) other than the local coordinate
  * system of the node that references the bounds (the Light).
  * <p>
@@ -140,7 +140,7 @@ import java.util.Enumeration;
  * region of a scene, lighting can also be limited to groups of
  * nodes, defined by a Group object. This is known as "scoping."
  * All nodes attached to a Group node define a <i>list of scopes</i>.
- * Methods in the Light class permit the setting, addition, insertion, 
+ * Methods in the Light class permit the setting, addition, insertion,
  * removal, and enumeration of nodes in the list of scopes.
  * <p>
  * <b>Two-sided Lighting of Polygons</b>
@@ -167,14 +167,14 @@ import java.util.Enumeration;
  * <p>
  * If lighting is not enabled, the current color of an
  * object in the scene is simply mapped onto the object, and none of
- * the lighting equations regarding Material properties, such as ambient 
+ * the lighting equations regarding Material properties, such as ambient
  * color, diffuse color, specular color, and shininess, are performed.
  * However, an object's emitted color, if specified and enabled, will
  * still affect that object's appearance.
  * <p>
  * To disable lighting, call setEnable with <code>false</code> as
  * the argument.
- * 
+ *
  * @see Material
  * @see Bounds
  * @see BoundingLeaf
@@ -246,7 +246,7 @@ public abstract class Light extends Leaf {
         ALLOW_INFLUENCING_BOUNDS_READ,
         ALLOW_SCOPE_READ
     };
-    
+
     /**
      * Constructs a Light node with default parameters.  The default
      * values are as follows:
@@ -299,7 +299,7 @@ public abstract class Light extends Leaf {
 	    if(!this.getCapability(ALLOW_STATE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Light0"));
 
-	if (isLive()) 	    
+	if (isLive())
 	    ((LightRetained)this.retained).setEnable(state);
 	else
 	    ((LightRetained)this.retained).initEnable(state);
@@ -409,8 +409,8 @@ public abstract class Light extends Leaf {
 	if (isLiveOrCompiled())
 	    if(!this.getCapability(ALLOW_SCOPE_WRITE))
 		throw new CapabilityNotSetException(J3dI18N.getString("Light6"));
-      
-	if (isLive()) 
+
+	if (isLive())
 	    ((LightRetained)this.retained).insertScope(scope, index);
 	else
 	    ((LightRetained)this.retained).initInsertScope(scope, index);
@@ -645,7 +645,7 @@ public abstract class Light extends Leaf {
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -663,7 +663,7 @@ public abstract class Light extends Leaf {
      */
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
-	
+
 	LightRetained attr = (LightRetained) originalNode.retained;
 	LightRetained rt = (LightRetained) retained;
 
@@ -677,7 +677,7 @@ public abstract class Light extends Leaf {
 	  // this reference will set correctly in updateNodeReferences() callback
 	    rt.initAddScope((Group) elm.nextElement());
 	}
-	
+
 	  // this reference will set correctly in updateNodeReferences() callback
 	rt.initInfluencingBoundingLeaf(attr.getInfluencingBoundingLeaf());
 

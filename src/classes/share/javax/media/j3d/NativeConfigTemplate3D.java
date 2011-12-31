@@ -119,7 +119,7 @@ abstract class NativeConfigTemplate3D {
 
     // Return whether scene antialiasing is available.
     abstract boolean hasSceneAntialiasingMultisample(Canvas3D c3d);
-    
+
     // Ensure that the native libraries are loaded
     static {
  	VirtualUniverse.loadLibraries();

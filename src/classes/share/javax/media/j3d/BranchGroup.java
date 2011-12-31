@@ -56,7 +56,7 @@ package javax.media.j3d;
 public class BranchGroup extends Group {
 
   /**
-   * For BranchGroup nodes, specifies that this BranchGroup allows detaching 
+   * For BranchGroup nodes, specifies that this BranchGroup allows detaching
    * from its parent.
    */
     public static final int
@@ -76,7 +76,7 @@ public class BranchGroup extends Group {
 	this.retained = new BranchGroupRetained();
 	this.retained.setSource(this);
     }
-  
+
 
   /**
    * Compiles the source BranchGroup associated with this object and
@@ -96,7 +96,7 @@ public class BranchGroup extends Group {
 	    // will throw SceneGraphCycleException if there is a cycle
 	    // in the scene graph
 	    checkForCycle();
-	    
+
 	    ((BranchGroupRetained)this.retained).compile();
 	}
     }
@@ -106,62 +106,62 @@ public class BranchGroup extends Group {
    */
     public void detach() {
 	Group parent;
-	
+
 	if (isLiveOrCompiled()) {
 	    if(!this.getCapability(ALLOW_DETACH))
 		throw new CapabilityNotSetException(J3dI18N.getString("BranchGroup1"));
-	    
+
 	    if (((BranchGroupRetained)this.retained).parent != null) {
 		parent = (Group)((BranchGroupRetained)this.retained).parent.source;
 		if(!parent.getCapability(Group.ALLOW_CHILDREN_WRITE))
 		    throw new CapabilityNotSetException(J3dI18N.getString("BranchGroup2"));
 	    }
 	}
-	
+
 	((BranchGroupRetained)this.retained).detach();
     }
-    
-    
+
+
     void validateModeFlagAndPickShape(int mode, int flags, PickShape pickShape) {
 
         if(isLive()==false) {
 	    throw new IllegalStateException(J3dI18N.getString("BranchGroup3"));
         }
-        
+
         if((mode != PickInfo.PICK_BOUNDS) && (mode != PickInfo.PICK_GEOMETRY)) {
-          
+
           throw new IllegalArgumentException(J3dI18N.getString("BranchGroup4"));
         }
-        
+
         if((pickShape instanceof PickPoint) && (mode == PickInfo.PICK_GEOMETRY)) {
           throw new IllegalArgumentException(J3dI18N.getString("BranchGroup5"));
         }
-        
+
         if(((flags & PickInfo.CLOSEST_GEOM_INFO) != 0) &&
                 ((flags & PickInfo.ALL_GEOM_INFO) != 0)) {
             throw new IllegalArgumentException(J3dI18N.getString("BranchGroup6"));
         }
-        
-        if((mode == PickInfo.PICK_BOUNDS) && 
-                (((flags & (PickInfo.CLOSEST_GEOM_INFO | 
+
+        if((mode == PickInfo.PICK_BOUNDS) &&
+                (((flags & (PickInfo.CLOSEST_GEOM_INFO |
                             PickInfo.ALL_GEOM_INFO |
                             PickInfo.CLOSEST_DISTANCE |
                             PickInfo.CLOSEST_INTERSECTION_POINT)) != 0))) {
-          
+
           throw new IllegalArgumentException(J3dI18N.getString("BranchGroup7"));
         }
-  
-        if((pickShape instanceof PickBounds) && 
-                (((flags & (PickInfo.CLOSEST_GEOM_INFO | 
+
+        if((pickShape instanceof PickBounds) &&
+                (((flags & (PickInfo.CLOSEST_GEOM_INFO |
                             PickInfo.ALL_GEOM_INFO |
                             PickInfo.CLOSEST_DISTANCE |
                             PickInfo.CLOSEST_INTERSECTION_POINT)) != 0))) {
-          
-          throw new IllegalArgumentException(J3dI18N.getString("BranchGroup8"));
-        }        
 
-    }    
-    
+          throw new IllegalArgumentException(J3dI18N.getString("BranchGroup8"));
+        }
+
+    }
+
   /**
    * Returns an array referencing all the items that are pickable below this
    * <code>BranchGroup</code> that intersect with PickShape.
@@ -180,25 +180,25 @@ public class BranchGroup extends Group {
         if(isLive()==false)
 	    throw new IllegalStateException(J3dI18N.getString("BranchGroup3"));
 
-        return ((BranchGroupRetained)this.retained).pickAll(pickShape);           
-        
+        return ((BranchGroupRetained)this.retained).pickAll(pickShape);
+
  }
-    
+
     /**
-     * Returns an array unsorted references to all the PickInfo objects that are 
+     * Returns an array unsorted references to all the PickInfo objects that are
      * pickable  below this <code>BranchGroup</code> that intersect with PickShape.
-     * The accuracy of the pick is set by the pick mode. The mode include : 
-     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned 
-     * is specified via a masked variable, flags, indicating which components are 
-     * present in each returned PickInfo object. 
+     * The accuracy of the pick is set by the pick mode. The mode include :
+     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned
+     * is specified via a masked variable, flags, indicating which components are
+     * present in each returned PickInfo object.
      *
      * @param mode  picking mode, one of <code>PickInfo.PICK_BOUNDS</code> or <code>PickInfo.PICK_GEOMETRY</code>.
      *
-     * @param flags a mask indicating which components are present in each PickInfo object.  
-     * This is specified as one or more individual bits that are bitwise "OR"ed together to 
+     * @param flags a mask indicating which components are present in each PickInfo object.
+     * This is specified as one or more individual bits that are bitwise "OR"ed together to
      * describe the PickInfo data. The flags include :
      * <ul>
-     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>    
+     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>
      * <code>PickInfo.NODE</code> - request for computed intersected Node.<br>
      * <code>PickInfo.LOCAL_TO_VWORLD</code> - request for computed local to virtual world transform.<br>
      * <code>PickInfo.CLOSEST_INTERSECTION_POINT</code> - request for closest intersection point.<br>
@@ -209,20 +209,20 @@ public class BranchGroup extends Group {
      *
      * @param pickShape the description of this picking volume or area.
      *
-     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and 
+     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and
      * ALL_GEOM_INFO.
      *
      * @exception IllegalArgumentException if pickShape is a PickPoint and pick mode
      * is set to PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS
      * nor PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
-     * @exception IllegalArgumentException if pickShape is PickBounds 
+     * @exception IllegalArgumentException if pickShape is PickBounds
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
@@ -232,14 +232,14 @@ public class BranchGroup extends Group {
      * PICK_GEOMETRY and the Geometry.ALLOW_INTERSECT capability bit
      * is not set in any Geometry objects referred to by any shape
      * node whose bounds intersects the PickShape.
-     *   
+     *
      * @exception CapabilityNotSetException if flags contains any of
      * CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE, CLOSEST_GEOM_INFO
      * or ALL_GEOM_INFO, and the capability bits that control reading of
      * coordinate data are not set in any GeometryArray object referred
      * to by any shape node that intersects the PickShape.
      * The capability bits that must be set to avoid this exception are as follows :
-     * <ul> 
+     * <ul>
      * <li>By-copy geometry : GeometryArray.ALLOW_COORDINATE_READ</li>
      * <li>By-reference geometry : GeometryArray.ALLOW_REF_DATA_READ</li>
      * <li>Indexed geometry : IndexedGeometryArray.ALLOW_COORDINATE_INDEX_READ
@@ -248,62 +248,62 @@ public class BranchGroup extends Group {
      *
      * @see Locale#pickAll(int,int,javax.media.j3d.PickShape)
      * @see PickInfo
-     * 
+     *
      * @since Java 3D 1.4
      *
      */
 
     public PickInfo[] pickAll( int mode, int flags, PickShape pickShape ) {
 
-        validateModeFlagAndPickShape(mode, flags, pickShape);      
-        return ((BranchGroupRetained)this.retained).pickAll(mode, flags, pickShape);           
+        validateModeFlagAndPickShape(mode, flags, pickShape);
+        return ((BranchGroupRetained)this.retained).pickAll(mode, flags, pickShape);
 
     }
 
 
   /**
-   * Returns a sorted array of references to all the Pickable items that 
-   * intersect with the pickShape. Element [0] references the item closest 
-   * to <i>origin</i> of PickShape successive array elements are further 
+   * Returns a sorted array of references to all the Pickable items that
+   * intersect with the pickShape. Element [0] references the item closest
+   * to <i>origin</i> of PickShape successive array elements are further
    * from the <i>origin</i>
    *
-   * Note: If pickShape is of type PickBounds, the resulting array 
+   * Note: If pickShape is of type PickBounds, the resulting array
    * is unordered.
    * @param pickShape the PickShape object
-   * 
+   *
    * @see SceneGraphPath
    * @see Locale#pickAllSorted
    * @see PickShape
    * @exception IllegalStateException if BranchGroup is not live.
-   *  
+   *
    */
     public SceneGraphPath[] pickAllSorted( PickShape pickShape ) {
 
         if(isLive()==false)
-	    throw new IllegalStateException(J3dI18N.getString("BranchGroup3"));    
+	    throw new IllegalStateException(J3dI18N.getString("BranchGroup3"));
 
-        return ((BranchGroupRetained)this.retained).pickAllSorted(pickShape);           
+        return ((BranchGroupRetained)this.retained).pickAllSorted(pickShape);
 
     }
 
 
     /**
      * Returns a sorted array of PickInfo references to all the pickable
-     * items that intersect with the pickShape. Element [0] references 
+     * items that intersect with the pickShape. Element [0] references
      * the item closest to <i>origin</i> of PickShape successive array
      * elements are further from the <i>origin</i>
-     * The accuracy of the pick is set by the pick mode. The mode include : 
-     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned 
-     * is specified via a masked variable, flags, indicating which components are 
-     * present in each returned PickInfo object. 
+     * The accuracy of the pick is set by the pick mode. The mode include :
+     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned
+     * is specified via a masked variable, flags, indicating which components are
+     * present in each returned PickInfo object.
      *
      * @param mode  picking mode, one of <code>PickInfo.PICK_BOUNDS</code> or <code>PickInfo.PICK_GEOMETRY</code>.
      *
-     * @param flags a mask indicating which components are present in each PickInfo object.  
-     * This is specified as one or more individual bits that are bitwise "OR"ed together to 
+     * @param flags a mask indicating which components are present in each PickInfo object.
+     * This is specified as one or more individual bits that are bitwise "OR"ed together to
      * describe the PickInfo data. The flags include :
      * <ul>
-     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>    
+     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>
      * <code>PickInfo.NODE</code> - request for computed intersected Node.<br>
      * <code>PickInfo.LOCAL_TO_VWORLD</code> - request for computed local to virtual world transform.<br>
      * <code>PickInfo.CLOSEST_INTERSECTION_POINT</code> - request for closest intersection point.<br>
@@ -314,20 +314,20 @@ public class BranchGroup extends Group {
      *
      * @param pickShape the description of this picking volume or area.
      *
-     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and 
+     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and
      * ALL_GEOM_INFO.
      *
      * @exception IllegalArgumentException if pickShape is a PickPoint and pick mode
      * is set to PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS
      * nor PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
-     * @exception IllegalArgumentException if pickShape is PickBounds 
+     * @exception IllegalArgumentException if pickShape is PickBounds
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
@@ -337,14 +337,14 @@ public class BranchGroup extends Group {
      * PICK_GEOMETRY and the Geometry.ALLOW_INTERSECT capability bit
      * is not set in any Geometry objects referred to by any shape
      * node whose bounds intersects the PickShape.
-     *   
+     *
      * @exception CapabilityNotSetException if flags contains any of
      * CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE, CLOSEST_GEOM_INFO
      * or ALL_GEOM_INFO, and the capability bits that control reading of
      * coordinate data are not set in any GeometryArray object referred
      * to by any shape node that intersects the PickShape.
      * The capability bits that must be set to avoid this exception are as follows :
-     * <ul> 
+     * <ul>
      * <li>By-copy geometry : GeometryArray.ALLOW_COORDINATE_READ</li>
      * <li>By-reference geometry : GeometryArray.ALLOW_REF_DATA_READ</li>
      * <li>Indexed geometry : IndexedGeometryArray.ALLOW_COORDINATE_INDEX_READ
@@ -353,7 +353,7 @@ public class BranchGroup extends Group {
      *
      * @see Locale#pickAllSorted(int,int,javax.media.j3d.PickShape)
      * @see PickInfo
-     * 
+     *
      * @since Java 3D 1.4
      *
      */
@@ -365,7 +365,7 @@ public class BranchGroup extends Group {
     }
 
   /**
-   * Returns a SceneGraphPath that references the pickable item 
+   * Returns a SceneGraphPath that references the pickable item
    * closest to the origin of <code>pickShape</code>.
    *
    * Note: If pickShape is of type PickBounds, the return is any pickable node
@@ -376,32 +376,32 @@ public class BranchGroup extends Group {
    * @see Locale#pickClosest
    * @see PickShape
    * @exception IllegalStateException if BranchGroup is not live.
-   *  
+   *
    */
     public SceneGraphPath pickClosest( PickShape pickShape ) {
 
         if(isLive()==false)
 	    throw new IllegalStateException(J3dI18N.getString("BranchGroup3"));
 
-        return ((BranchGroupRetained)this.retained).pickClosest(pickShape);           
+        return ((BranchGroupRetained)this.retained).pickClosest(pickShape);
 
     }
 
     /**
      * Returns a PickInfo which references the pickable item
      * which is closest to the origin of <code>pickShape</code>.
-     * The accuracy of the pick is set by the pick mode. The mode include : 
-     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned 
-     * is specified via a masked variable, flags, indicating which components are 
-     * present in each returned PickInfo object. 
+     * The accuracy of the pick is set by the pick mode. The mode include :
+     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned
+     * is specified via a masked variable, flags, indicating which components are
+     * present in each returned PickInfo object.
      *
      * @param mode  picking mode, one of <code>PickInfo.PICK_BOUNDS</code> or <code>PickInfo.PICK_GEOMETRY</code>.
      *
-     * @param flags a mask indicating which components are present in each PickInfo object.  
-     * This is specified as one or more individual bits that are bitwise "OR"ed together to 
+     * @param flags a mask indicating which components are present in each PickInfo object.
+     * This is specified as one or more individual bits that are bitwise "OR"ed together to
      * describe the PickInfo data. The flags include :
      * <ul>
-     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>    
+     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>
      * <code>PickInfo.NODE</code> - request for computed intersected Node.<br>
      * <code>PickInfo.LOCAL_TO_VWORLD</code> - request for computed local to virtual world transform.<br>
      * <code>PickInfo.CLOSEST_INTERSECTION_POINT</code> - request for closest intersection point.<br>
@@ -412,20 +412,20 @@ public class BranchGroup extends Group {
      *
      * @param pickShape the description of this picking volume or area.
      *
-     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and 
+     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and
      * ALL_GEOM_INFO.
      *
      * @exception IllegalArgumentException if pickShape is a PickPoint and pick mode
      * is set to PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS
      * nor PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
-     * @exception IllegalArgumentException if pickShape is PickBounds 
+     * @exception IllegalArgumentException if pickShape is PickBounds
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
@@ -435,14 +435,14 @@ public class BranchGroup extends Group {
      * PICK_GEOMETRY and the Geometry.ALLOW_INTERSECT capability bit
      * is not set in any Geometry objects referred to by any shape
      * node whose bounds intersects the PickShape.
-     *   
+     *
      * @exception CapabilityNotSetException if flags contains any of
      * CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE, CLOSEST_GEOM_INFO
      * or ALL_GEOM_INFO, and the capability bits that control reading of
      * coordinate data are not set in any GeometryArray object referred
      * to by any shape node that intersects the PickShape.
      * The capability bits that must be set to avoid this exception are as follows :
-     * <ul> 
+     * <ul>
      * <li>By-copy geometry : GeometryArray.ALLOW_COORDINATE_READ</li>
      * <li>By-reference geometry : GeometryArray.ALLOW_REF_DATA_READ</li>
      * <li>Indexed geometry : IndexedGeometryArray.ALLOW_COORDINATE_INDEX_READ
@@ -451,7 +451,7 @@ public class BranchGroup extends Group {
      *
      * @see Locale#pickClosest(int,int,javax.media.j3d.PickShape)
      * @see PickInfo
-     * 
+     *
      * @since Java 3D 1.4
      *
      */
@@ -472,32 +472,32 @@ public class BranchGroup extends Group {
    * @see Locale#pickAny
    * @see PickShape
    * @exception IllegalStateException if BranchGroup is not live.
-   *  
+   *
    */
     public SceneGraphPath pickAny( PickShape pickShape ) {
 
         if(isLive()==false)
 	    throw new IllegalStateException(J3dI18N.getString("BranchGroup3"));
 
-        return ((BranchGroupRetained)this.retained).pickAny(pickShape);           
-    
+        return ((BranchGroupRetained)this.retained).pickAny(pickShape);
+
     }
 
     /**
      * Returns a PickInfo which references the pickable item  below this
      * BranchGroup that intersects with <code>pickShape</code>.
-     * The accuracy of the pick is set by the pick mode. The mode include : 
-     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned 
-     * is specified via a masked variable, flags, indicating which components are 
-     * present in each returned PickInfo object. 
+     * The accuracy of the pick is set by the pick mode. The mode include :
+     * PickInfo.PICK_BOUNDS and PickInfo.PICK_GEOMETRY. The amount of information returned
+     * is specified via a masked variable, flags, indicating which components are
+     * present in each returned PickInfo object.
      *
      * @param mode  picking mode, one of <code>PickInfo.PICK_BOUNDS</code> or <code>PickInfo.PICK_GEOMETRY</code>.
      *
-     * @param flags a mask indicating which components are present in each PickInfo object.  
-     * This is specified as one or more individual bits that are bitwise "OR"ed together to 
+     * @param flags a mask indicating which components are present in each PickInfo object.
+     * This is specified as one or more individual bits that are bitwise "OR"ed together to
      * describe the PickInfo data. The flags include :
      * <ul>
-     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>    
+     * <code>PickInfo.SCENEGRAPHPATH</code> - request for computed SceneGraphPath.<br>
      * <code>PickInfo.NODE</code> - request for computed intersected Node.<br>
      * <code>PickInfo.LOCAL_TO_VWORLD</code> - request for computed local to virtual world transform.<br>
      * <code>PickInfo.CLOSEST_INTERSECTION_POINT</code> - request for closest intersection point.<br>
@@ -508,20 +508,20 @@ public class BranchGroup extends Group {
      *
      * @param pickShape the description of this picking volume or area.
      *
-     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and 
+     * @exception IllegalArgumentException if flags contains both CLOSEST_GEOM_INFO and
      * ALL_GEOM_INFO.
      *
      * @exception IllegalArgumentException if pickShape is a PickPoint and pick mode
      * is set to PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is neither PICK_BOUNDS
      * nor PICK_GEOMETRY.
      *
-     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS 
+     * @exception IllegalArgumentException if pick mode is PICK_BOUNDS
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
-     * @exception IllegalArgumentException if pickShape is PickBounds 
+     * @exception IllegalArgumentException if pickShape is PickBounds
      * and flags includes any of CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE,
      * CLOSEST_GEOM_INFO or ALL_GEOM_INFO.
      *
@@ -531,14 +531,14 @@ public class BranchGroup extends Group {
      * PICK_GEOMETRY and the Geometry.ALLOW_INTERSECT capability bit
      * is not set in any Geometry objects referred to by any shape
      * node whose bounds intersects the PickShape.
-     *   
+     *
      * @exception CapabilityNotSetException if flags contains any of
      * CLOSEST_INTERSECTION_POINT, CLOSEST_DISTANCE, CLOSEST_GEOM_INFO
      * or ALL_GEOM_INFO, and the capability bits that control reading of
      * coordinate data are not set in any GeometryArray object referred
      * to by any shape node that intersects the PickShape.
      * The capability bits that must be set to avoid this exception are as follows :
-     * <ul> 
+     * <ul>
      * <li>By-copy geometry : GeometryArray.ALLOW_COORDINATE_READ</li>
      * <li>By-reference geometry : GeometryArray.ALLOW_REF_DATA_READ</li>
      * <li>Indexed geometry : IndexedGeometryArray.ALLOW_COORDINATE_INDEX_READ
@@ -547,7 +547,7 @@ public class BranchGroup extends Group {
      *
      * @see Locale#pickAny(int,int,javax.media.j3d.PickShape)
      * @see PickInfo
-     * 
+     *
      * @since Java 3D 1.4
      *
      */

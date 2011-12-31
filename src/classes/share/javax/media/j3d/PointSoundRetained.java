@@ -32,14 +32,14 @@
 package javax.media.j3d;
 
 import java.lang.Math;
-import java.net.URL; 
+import java.net.URL;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point2f;
 
 /**
  * The PointSoundRetained node (a sub-class of the SoundRetained node) defines
- * a spatially-located sound source whose waves radiate uniformly in all 
+ * a spatially-located sound source whose waves radiate uniformly in all
  * directions from a given location in space.
  */
 
@@ -59,7 +59,7 @@ class PointSoundRetained extends SoundRetained {
     // gain attenuation between each pair.
     float[]  attenuationDistance;
     float[]  attenuationGain;
-    
+
     PointSoundRetained() {
         this.nodeType = NodeRetained.POINTSOUND;
     }
@@ -72,7 +72,7 @@ class PointSoundRetained extends SoundRetained {
    	if (staticTransform != null) {
 	    staticTransform.transform.transform(position, this.position);
 	} else {
-	    this.position.set(position);	
+	    this.position.set(position);
 	}
 
         getLastLocalToVworld().transform(position, xformPosition);
@@ -126,15 +126,15 @@ class PointSoundRetained extends SoundRetained {
      * Sets this sound's distance gain attenuation - where gain scale factor
      * is applied to sound based on distance listener is from sound source.
      * @param distance attenuation pairs of (distance,gain-scale-factor)
-     */  
-    void setDistanceGain(Point2f[] attenuation) { 
+     */
+    void setDistanceGain(Point2f[] attenuation) {
         // if attenuation array null set both attenuation components to null
         if (attenuation == null) {
             this.attenuationDistance = null;
             this.attenuationGain = null;
 	    // QUESTION: is this needed so that dispatch***() doesn't
 	    // fail with null?
-            return; 
+            return;
         }
 
         int attenuationLength = attenuation.length;
@@ -155,17 +155,17 @@ class PointSoundRetained extends SoundRetained {
      * applied to sound based on distance listener is from sound source.
      * @param distance array of monotonically-increasing floats.
      * @param gain array of amplitude scale factors associated with distances.
-     */  
-    void setDistanceGain(float[] distance, float[] gain) { 
-        // if distance or gain arrays are null then treat both as null 
+     */
+    void setDistanceGain(float[] distance, float[] gain) {
+        // if distance or gain arrays are null then treat both as null
         if (distance == null) {
-            this.attenuationDistance = null; 
-            this.attenuationGain = null;   
+            this.attenuationDistance = null;
+            this.attenuationGain = null;
 	    // QUESTION: is this needed so that dispatch***() doesn't
 	    // fail with null?
             return;
         }
- 
+
         int gainLength = gain.length;
         int distanceLength = distance.length;
         this.attenuationDistance = new float[distanceLength];
@@ -195,23 +195,23 @@ class PointSoundRetained extends SoundRetained {
 	}
     }
 
-    /**     
-     * Gets this sound's distance attenuation array length 
+    /**
+     * Gets this sound's distance attenuation array length
      * @return distance gain attenuation array length
-     */  
-    int getDistanceGainLength() { 
-        if (attenuationDistance == null) 
+     */
+    int getDistanceGainLength() {
+        if (attenuationDistance == null)
             return 0;
         else
             return this.attenuationDistance.length;
-    } 
- 
+    }
+
     /**
      * Retieves sound's distance attenuation
      * Put the contents of the two separate distance and gain arrays into
      * an array of Point2f.
      * @param attenuation containing distance attenuation pairs
-     */ 
+     */
     void getDistanceGain(Point2f[] attenuation) {
         // write into arrays passed in, don't do a new
         if (attenuation == null)
@@ -231,12 +231,12 @@ class PointSoundRetained extends SoundRetained {
     }
 
     /**
-     * Retieves this sound's attenuation distance and gain arrays, returned in 
+     * Retieves this sound's attenuation distance and gain arrays, returned in
      * separate arrays.
      * @param distance array of monotonically-increasing floats.
      * @param gain array of amplitude scale factors associated with distances.
-     */  
-    void getDistanceGain(float[] distance, float[] gain) { 
+     */
+    void getDistanceGain(float[] distance, float[] gain) {
         // write into arrays passed in, don't do a new
         if (distance == null || gain == null)
             return;
@@ -246,20 +246,20 @@ class PointSoundRetained extends SoundRetained {
         int attenuationLength = this.attenuationDistance.length;
         int distanceLength = distance.length;
         if (distanceLength > attenuationLength)
-            distanceLength = attenuationLength;  
+            distanceLength = attenuationLength;
         System.arraycopy(this.attenuationDistance, 0, distance, 0, distanceLength);
         attenuationLength = this.attenuationDistance.length;
         int gainLength = gain.length;
         if (gainLength > attenuationLength)
-            gainLength = attenuationLength;  
+            gainLength = attenuationLength;
         System.arraycopy(this.attenuationGain, 0, gain, 0, gainLength);
     }
 
-    /**  
+    /**
      * This updates the positional fields of point sound.
      *
      * Distance gain attenuation field not maintained in mirror object.
-     */ 
+     */
     void updateMirrorObject(Object[] objs) {
         if (debugFlag)
             debugPrint("PointSoundRetained:updateMirrorObj()");
@@ -297,7 +297,7 @@ class PointSoundRetained extends SoundRetained {
     void updateTransformChange() {
         super.updateTransformChange();
         getLastLocalToVworld().transform(position, xformPosition);
-        // set flag looked at by Scheduler to denote Transform change 
+        // set flag looked at by Scheduler to denote Transform change
         // this flag will force resneding transformed position to AudioDevice
         if (debugFlag)
             debugPrint("PointSoundRetained xformPosition is (" + xformPosition.x +

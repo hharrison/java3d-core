@@ -32,12 +32,12 @@
 package javax.media.j3d;
 
 /**
- * The PointAttributes object defines all attributes that apply to 
+ * The PointAttributes object defines all attributes that apply to
  * point primitives. The point attributes that can be defined are:<p>
  * <ul>
  * <li>Size - the size of the point, in pixels. The default is a point
  * size of one pixel.</li><p>
- * <li>Antialiasing - for points greater than one-pixel in size, 
+ * <li>Antialiasing - for points greater than one-pixel in size,
  * antialiasing smooths the outline of the point when it is rendered.</li>
  * <p></ul>
  * If antialiasing is disabled (the default), fractional point sizes
@@ -45,11 +45,11 @@ package javax.media.j3d;
  * of pixels is drawn.<p>
  * <p>
  * If antialiasing is enabled, the points are considered transparent
- * for rendering purposes.  They are rendered with all the other transparent 
+ * for rendering purposes.  They are rendered with all the other transparent
  * objects and adhere to the other transparency settings such as the
- * View transparency sorting policy and the View depth buffer freeze 
+ * View transparency sorting policy and the View depth buffer freeze
  * transparent enable.
- * </p> 
+ * </p>
  *
  * @see Appearance
  * @see View
@@ -89,7 +89,7 @@ public class PointAttributes extends NodeComponent {
         ALLOW_SIZE_READ,
         ALLOW_ANTIALIASING_READ
     };
-    
+
     /**
      * Constructs a PointAttributes object with default parameters.
      * The default values are as follows:
@@ -127,7 +127,7 @@ public class PointAttributes extends NodeComponent {
             if(!this.getCapability(ALLOW_SIZE_WRITE))
               throw new CapabilityNotSetException(J3dI18N.getString("PointAttributes0"));
 
-	if (isLive()) 
+	if (isLive())
 	    ((PointAttributesRetained)this.retained).setPointSize(pointSize);
 	else
 	    ((PointAttributesRetained)this.retained).initPointSize(pointSize);
@@ -152,11 +152,11 @@ public class PointAttributes extends NodeComponent {
      * for this appearance component object.
      * <p>
      * If antialiasing is enabled, the points are considered transparent
-     * for rendering purposes.  They are rendered with all the other 
-     * transparent objects and adhere to the other transparency settings 
-     * such as the View transparency sorting policy and the View depth 
+     * for rendering purposes.  They are rendered with all the other
+     * transparent objects and adhere to the other transparency settings
+     * such as the View transparency sorting policy and the View depth
      * buffer freeze transparent enable.
-     * </p> 
+     * </p>
      * @param state true or false to enable or disable point antialiasing
      * @exception CapabilityNotSetException if appropriate capability is
      * not set and this object is part of live or compiled scene graph
@@ -166,7 +166,7 @@ public class PointAttributes extends NodeComponent {
         if (isLiveOrCompiled())
             if(!this.getCapability(ALLOW_ANTIALIASING_WRITE))
               throw new CapabilityNotSetException(J3dI18N.getString("PointAttributes2"));
-	if (isLive()) 
+	if (isLive())
 	    ((PointAttributesRetained)this.retained).setPointAntialiasingEnable(state);
 	else
 	    ((PointAttributesRetained)this.retained).initPointAntialiasingEnable(state);
@@ -197,7 +197,7 @@ public class PointAttributes extends NodeComponent {
     }
 
    /**
-    * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)  
+    * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
     */
     public NodeComponent cloneNodeComponent() {
         PointAttributes pa = new PointAttributes();
@@ -211,7 +211,7 @@ public class PointAttributes extends NodeComponent {
      * the current node.  This method is called from the
      * <code>duplicateNode</code> method. This routine does
      * the actual duplication of all "local data" (any data defined in
-     * this object). 
+     * this object).
      *
      * @param originalNodeComponent the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -223,11 +223,11 @@ public class PointAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
-    void duplicateAttributes(NodeComponent originalNodeComponent, 
-			     boolean forceDuplicate) { 
+    void duplicateAttributes(NodeComponent originalNodeComponent,
+			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
 
-	PointAttributesRetained attr = (PointAttributesRetained) 
+	PointAttributesRetained attr = (PointAttributesRetained)
 	                         originalNodeComponent.retained;
 	PointAttributesRetained rt = (PointAttributesRetained) retained;
 

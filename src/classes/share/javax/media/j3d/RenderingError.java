@@ -37,7 +37,7 @@ import java.io.PrintStream;
 /**
  * RenderingError is a container object that holds the details of
  * a runtime error that occurs in the Java 3D rendering system.
- * 
+ *
  * @since Java 3D 1.5
  */
 public class RenderingError extends Object {
@@ -90,7 +90,7 @@ public class RenderingError extends Object {
     /**
      * Constructs a new RenderingError object with the given error code
      * and message.  All other fields are initialized to null.
-     * 
+     *
      * @param errorCode the error code for this rendering error.
      * @param errorMessage a short error message describing this
      * rendering error.

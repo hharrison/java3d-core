@@ -41,7 +41,7 @@ import javax.vecmath.AxisAngle4d;
 /**
  * The Billboard behavior node operates on the TransformGroup node
  * to cause the local +z axis of the TransformGroup to point at
- * the viewer's eye position. This is done  regardless of the transforms 
+ * the viewer's eye position. This is done  regardless of the transforms
  * above the specified TransformGroup  node in the scene graph.
  *
  * <p>
@@ -95,7 +95,7 @@ public class Billboard extends Behavior {
     private Point3d viewPosition = new Point3d();
     private Point3d yUpPoint = new Point3d();
 
-    private Vector3d eyeVec = new Vector3d(); 
+    private Vector3d eyeVec = new Vector3d();
     private Vector3d yUp = new Vector3d();
     private Vector3d zAxis  = new Vector3d();
     private Vector3d yAxis  = new Vector3d();
@@ -150,7 +150,7 @@ public class Billboard extends Behavior {
      *
      * @param tg the TransformGroup node that this Billboard
      * node operates upon
-     * @param mode alignment mode, one of ROTATE_ABOUT_AXIS or 
+     * @param mode alignment mode, one of ROTATE_ABOUT_AXIS or
      * ROTATE_ABOUT_POINT
      * @param axis the ray about which the billboard rotates
      */
@@ -171,7 +171,7 @@ public class Billboard extends Behavior {
      * that operates on the specified TransformGroup node.
      * @param tg the TransformGroup node that this Billboard
      * node operates upon
-     * @param mode alignment mode, one of ROTATE_ABOUT_AXIS or 
+     * @param mode alignment mode, one of ROTATE_ABOUT_AXIS or
      * ROTATE_ABOUT_POINT
      * @param point the position about which the billboard rotates
      */
@@ -284,15 +284,15 @@ public class Billboard extends Behavior {
      * Sets the tranformGroup for this Billboard object.
      * @param tg the transformGroup node which replaces the current
      * transformGroup node for this Billboard
-     */  
+     */
     public void setTarget(TransformGroup tg ) {
         this.tg = tg;
     }
 
     /**
       *  Returns a copy of the transformGroup associated with this Billboard.
-      *  @return the TranformGroup for this Billboard 
-      */ 
+      *  @return the TranformGroup for this Billboard
+      */
     public TransformGroup getTarget() {
           return(tg);
     }
@@ -321,7 +321,7 @@ public class Billboard extends Behavior {
 	   wakeupOn(wakeupFrame);
 	   return;
         }
- 
+
 	//  get viewplatforms's location in virutal world
 	View v = this.getView();
 	if( v == null ) {
@@ -362,7 +362,7 @@ public class Billboard extends Behavior {
 	    // project the eye into the rotation plane
 	    status = projectToPlane(eyeVec, nAxis);
 
-	    // If the first project was successful .. 
+	    // If the first project was successful ..
 	    if (status) {
 		// project the z axis into the rotation plane
 		zAxis.x = 0.0;
@@ -374,16 +374,16 @@ public class Billboard extends Behavior {
 
 	    ((TransformGroupRetained) tg.retained).getTransform(xform);
 	    if (status) {
-		// compute the sign of the angle by checking if the cross product 
+		// compute the sign of the angle by checking if the cross product
 		// of the two vectors is in the same direction as the normal axis
-		vector.cross(eyeVec, zAxis); 
+		vector.cross(eyeVec, zAxis);
 		if (vector.dot(nAxis) > 0.0) {
 		    sign = 1.0;
-		} else { 
+		} else {
 		    sign = -1.0;
 		}
 
-		// compute the angle between the projected eye vector and the 
+		// compute the angle between the projected eye vector and the
 		// projected z
 		double dot = eyeVec.dot(zAxis);
 
@@ -392,12 +392,12 @@ public class Billboard extends Behavior {
 		} else if (dot < -1.0f) {
 		    dot = -1.0f;
 		}
-		
+
 		angle = sign*Math.acos(dot);
 
 		// use -angle because xform is to *undo* rotation by angle
-		aa.x = nAxis.x; 
-		aa.y = nAxis.y; 
+		aa.x = nAxis.x;
+		aa.y = nAxis.y;
 		aa.z = nAxis.z;
 		aa.angle = -angle;
 		bbXform.set(aa);
@@ -416,12 +416,12 @@ public class Billboard extends Behavior {
 	    }
 
         } else { // rotate about point
-	    // Need to rotate Z axis to point to eye, and Y axis to be 
-	    // parallel to view platform Y axis, rotating around rotation pt 
+	    // Need to rotate Z axis to point to eye, and Y axis to be
+	    // parallel to view platform Y axis, rotating around rotation pt
 
 	    Transform3D zRotate = new Transform3D();
 
-	    // get the eye point 
+	    // get the eye point
 	    canvas.getCenterEyeInImagePlate(viewPosition);
 
 	    // derive the yUp point
@@ -466,7 +466,7 @@ public class Billboard extends Behavior {
 	    // rotation axis is cross product of eyeVec and zAxis
 	    vector.cross(eyeVec, zAxis); // vector is cross product
 
-	    // if cross product is non-zero, vector is rotation axis and 
+	    // if cross product is non-zero, vector is rotation axis and
 	    // rotation angle is acos(eyeVec.dot(zAxis)));
 	    double length = vector.length();
 
@@ -496,11 +496,11 @@ public class Billboard extends Behavior {
 	    yAxis.z = 0.0;
 	    zRotate.transform(yAxis);
 
-	    // project the yAxis onto the plane perp to the eyeVec 
+	    // project the yAxis onto the plane perp to the eyeVec
 	    status = projectToPlane(yAxis, eyeVec);
 
 	    if (status) {
-		// project the yUp onto the plane perp to the eyeVec 
+		// project the yUp onto the plane perp to the eyeVec
 		status = projectToPlane(yUp, eyeVec);
 	    }
 
@@ -518,11 +518,11 @@ public class Billboard extends Behavior {
 
 		angle = Math.acos(dot);
 
-		// check the sign by looking a the cross product vs the eyeVec 
+		// check the sign by looking a the cross product vs the eyeVec
 		vector.cross(yUp, yAxis);  // vector is cross product
 		if (eyeVec.dot(vector) < 0) {
 		    angle *= -1;
-		} 
+		}
 		aa.x = eyeVec.x;
 		aa.y = eyeVec.y;
 		aa.z = eyeVec.z;
@@ -538,7 +538,7 @@ public class Billboard extends Behavior {
 		bbXform.mul(xform);   // yRotate
 		bbXform.mul(zRotate); // zRotate
 		vector.scale(-1.0);   // vector to translate back
-		xform.set(vector);    // xform to translate back 
+		xform.set(vector);    // xform to translate back
 		bbXform.mul(xform);   // translate back
 
 
@@ -566,10 +566,10 @@ private boolean projectToPlane(Vector3d projVec, Vector3d planeVec)  {
     projVec.z = projVec.z - planeVec.z*dis;
 
     double length = projVec.length();
-    
+
     if (length < EPSILON) {
 	return false;
-    } 
+    }
     projVec.scale(1 / length);
     return true;
 }
@@ -594,13 +594,13 @@ private boolean projectToPlane(Vector3d projVec, Vector3d planeVec)  {
         return b;
     }
 
-    
+
    /**
      * Copies all Billboard information from
      * <code>originalNode</code> into
      * the current node.  This method is called from the
      * <code>cloneNode</code> method which is, in turn, called by the
-     * <code>cloneTree</code> method.<P> 
+     * <code>cloneTree</code> method.<P>
      *
      * @param originalNode the original node to duplicate.
      * @param forceDuplicate when set to <code>true</code>, causes the
@@ -620,13 +620,13 @@ private boolean projectToPlane(Vector3d projVec, Vector3d planeVec)  {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
 	Billboard bb = (Billboard) originalNode;
- 
+
         setAlignmentMode(bb.getAlignmentMode());
 
         Vector3f v = new Vector3f();
         bb.getAlignmentAxis(v);
 	setAlignmentAxis(v);
-	
+
 	Point3f p = new Point3f();
 	bb.getRotationPoint(p);
         setRotationPoint(p);
@@ -634,7 +634,7 @@ private boolean projectToPlane(Vector3d projVec, Vector3d planeVec)  {
 	// this will be updated by updateNodeReferences() later
         setTarget(bb.getTarget());
     }
-    
+
 
     /**
      * Callback used to allow a node to check if any scene graph objects
@@ -664,7 +664,7 @@ private boolean projectToPlane(Vector3d projVec, Vector3d planeVec)  {
      */
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
 	super.updateNodeReferences(referenceTable);
-	
+
         // check for new TransformGroup
 	TransformGroup g = getTarget();
         if (g != null) {

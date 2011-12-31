@@ -45,7 +45,7 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
     static final int SRC_BLEND_FUNCTION_CHANGED     	= 0x04;
     static final int DST_BLEND_FUNCTION_CHANGED     	= 0x08;
 
-    // Integer flag that contains bitset to indicate 
+    // Integer flag that contains bitset to indicate
     // which field changed.
     int isDirty = 0xffff;
 
@@ -61,7 +61,7 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
      * Sets the transparency mode for this
      * appearance component object.
      * @param transparencyMode the transparency mode to be used, one of
-     * <code>NONE</code>, <code>FASTEST</code>, <code>NICEST</code>, 
+     * <code>NONE</code>, <code>FASTEST</code>, <code>NICEST</code>,
      * <code>SCREEN_DOOR</code>, or <code>BLENDED</code>
      */
     final void initTransparencyMode(int transparencyMode) {
@@ -185,8 +185,8 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
 
     /**
      * Sets the destination blend function used in blended transparency
-     * and antialiasing operations and sends a message notifying the 
-     * interested structures of the change.  The destination function 
+     * and antialiasing operations and sends a message notifying the
+     * interested structures of the change.  The destination function
      * specifies the factor that is multiplied by the destination
      * color; this value is added to the product of the source factor
      * and the source color.  The default destination blend function is
@@ -212,7 +212,7 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
 
 
    /**
-    * Creates and initializes a mirror object, point the mirror object 
+    * Creates and initializes a mirror object, point the mirror object
     * to the retained object if the object is not editable
     */
     synchronized void createMirrorObject() {
@@ -222,7 +222,7 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
 	    if (isStatic()) {
 		mirror = this;
 	    } else {
-		TransparencyAttributesRetained mirrorTa 
+		TransparencyAttributesRetained mirrorTa
 		    = new TransparencyAttributesRetained();
 		mirrorTa.source = source;
 		mirrorTa.set(this);
@@ -235,11 +235,11 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
     }
 
     void updateNative(Context ctx,
-		      float alpha, int geometryType, int polygonMode, 
-		      boolean lineAA, 
-		      boolean pointAA) { 
-	Pipeline.getPipeline().updateTransparencyAttributes(ctx, alpha, geometryType, polygonMode, 
-		     lineAA, pointAA, transparencyMode, 
+		      float alpha, int geometryType, int polygonMode,
+		      boolean lineAA,
+		      boolean pointAA) {
+	Pipeline.getPipeline().updateTransparencyAttributes(ctx, alpha, geometryType, polygonMode,
+		     lineAA, pointAA, transparencyMode,
 		     srcBlendFunction, dstBlendFunction);
     }
 
@@ -252,7 +252,7 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
     }
 
     /**
-     * Update the "component" field of the mirror object with the 
+     * Update the "component" field of the mirror object with the
      * given "value"
      */
     synchronized void updateMirrorObject(int component, Object value) {
@@ -265,12 +265,12 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
 	}
 	else if ((component & VALUE_CHANGED) != 0) {
 	    mirrorTa.transparency = ((Float)value).floatValue();
-	} 
+	}
 	else if ((component & SRC_BLEND_FUNCTION_CHANGED) != 0) {
-	    mirrorTa.srcBlendFunction = ((Integer) value).intValue();	    
-	} 
+	    mirrorTa.srcBlendFunction = ((Integer) value).intValue();
+	}
 	else if ((component & DST_BLEND_FUNCTION_CHANGED) != 0) {
-	    mirrorTa.dstBlendFunction = ((Integer) value).intValue();	    
+	    mirrorTa.dstBlendFunction = ((Integer) value).intValue();
 	}
     }
 
@@ -296,7 +296,7 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
    final void sendMessage(int attrMask, Object attr) {
 
        	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);  
+	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
@@ -316,17 +316,17 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
 	    createMessage = new J3dMessage();
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.TRANSPARENCYATTRIBUTES_CHANGED;
-		
+
 	    createMessage.universe = (VirtualUniverse) univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
 	    createMessage.args[2] = attr;
-	    
+
 	    ArrayList gL = (ArrayList) gaList.get(i);
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
 	    createMessage.args[3] = gaArr;
-	    
+
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
 
@@ -339,7 +339,7 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
 	    setFrequencyChangeMask(bit, 0x1);
 	}
     }
-    
 
-    
+
+
 }

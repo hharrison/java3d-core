@@ -35,8 +35,8 @@ import java.util.*;
 
 /**
  * This thread manages all input device scheduling.  It monitors and caches
- * all device additions and removals.  It spawns new threads for blocking 
- * devices, manages all non-blocking drivers itself, and tags the sensors 
+ * all device additions and removals.  It spawns new threads for blocking
+ * devices, manages all non-blocking drivers itself, and tags the sensors
  * of demand_driven devices. This implementation assume that
  * processMode of InputDevice will not change after addInputDevice().
  *
@@ -51,7 +51,7 @@ class InputDeviceScheduler extends J3dThread {
     ArrayList blockingDevices = new ArrayList(1);
     ArrayList threads = new ArrayList(1);
 
-    // This is used by MasterControl to keep track activeViewRef 
+    // This is used by MasterControl to keep track activeViewRef
     PhysicalEnvironment physicalEnv;
 
     // store all inputDevices
@@ -78,7 +78,7 @@ class InputDeviceScheduler extends J3dThread {
 	return instanceNum;
     }
 
-    InputDeviceScheduler(ThreadGroup threadGroup, 
+    InputDeviceScheduler(ThreadGroup threadGroup,
 			 PhysicalEnvironment physicalEnv) {
 	super(threadGroup);
 	setName("J3D-InputDeviceScheduler-" + getInstanceNum());
@@ -101,11 +101,11 @@ class InputDeviceScheduler extends J3dThread {
 
 	switch(device.getProcessingMode()) {
 	    case InputDevice.BLOCKING:
-		InputDeviceBlockingThread thread = 
+		InputDeviceBlockingThread thread =
 		    VirtualUniverse.mc.getInputDeviceBlockingThread(device);
 		thread.start();
 		synchronized (blockingDevices) {
-		    threads.add(thread); 
+		    threads.add(thread);
 		    blockingDevices.add(device);
 		}
 		break;
@@ -120,7 +120,7 @@ class InputDeviceScheduler extends J3dThread {
 	    default: //  InputDevice.DEMAND_DRIVEN:
 		// tag the sensors
 		for (int i=device.getSensorCount()-1; i>=0; i--) {
-		    device.getSensor(i).demand_driven = true; 
+		    device.getSensor(i).demand_driven = true;
 		}
 		break;
 	}
@@ -135,7 +135,7 @@ class InputDeviceScheduler extends J3dThread {
 		// tell the thread to clean up and permanently block
 		synchronized (blockingDevices) {
 		    int idx = blockingDevices.indexOf(device);
-		    InputDeviceBlockingThread thread = 
+		    InputDeviceBlockingThread thread =
 			(InputDeviceBlockingThread) threads.remove(idx);
 		    thread.finish();
 		    blockingDevices.remove(idx);
@@ -150,10 +150,10 @@ class InputDeviceScheduler extends J3dThread {
 		    }
 	        }
 	        break;
-	    default: //  InputDevice.DEMAND_DRIVEN: 
+	    default: //  InputDevice.DEMAND_DRIVEN:
 	        // untag the sensors
 	        for (int i=device.getSensorCount()-1; i>=0; i--) {
-		    device.getSensor(i).demand_driven = false; 
+		    device.getSensor(i).demand_driven = false;
 	        }
 	}
     }
@@ -185,7 +185,7 @@ class InputDeviceScheduler extends J3dThread {
 		    VirtualUniverse.mc.removeInputDeviceScheduler(this);
 		}
 	    }
-	    
+
 	    // stop all spawn threads
 	    synchronized (blockingDevices) {
 		for (int i=threads.size()-1; i >=0; i--) {

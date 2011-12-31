@@ -113,7 +113,7 @@ class LinearFogRetained extends FogRetained {
     double getBackDistance(){
 	return this.backDistance;
     }
-    /** 
+    /**
      * This method and its native counterpart update the native context
      * fog values.
      */
@@ -123,11 +123,11 @@ class LinearFogRetained extends FogRetained {
                 color.x, color.y, color.z, frontDistanceInEc, backDistanceInEc);
     }
 
-    
+
 
     void setLive(SetLiveState s) {
 	GroupRetained group;
-	
+
 	super.setLive(s);
 
 	// Initialize the mirror object, this needs to be done, when
@@ -148,7 +148,7 @@ class LinearFogRetained extends FogRetained {
 	}
 	Object[] scopeInfo = new Object[2];
 	scopeInfo[0] = ((scopes.size() > 0) ? Boolean.TRUE:Boolean.FALSE);
-	scopeInfo[1] = addScopeList;	
+	scopeInfo[1] = addScopeList;
 	createMessage.args[2] = scopeInfo;
 	Color3f clr = new Color3f(color);
 	createMessage.args[3] = clr;
@@ -160,12 +160,12 @@ class LinearFogRetained extends FogRetained {
 	obj[3] = geometryBackground;
 	obj[4] = new Double(frontDistance);
 	obj[5] = new Double(backDistance);
-	
+
 	createMessage.args[4] = obj;
 	VirtualUniverse.mc.processMessage(createMessage);
 
     }
-	
+
 
     // The update Object function.
     // Note : if you add any more fields here , you need to update
@@ -175,16 +175,16 @@ class LinearFogRetained extends FogRetained {
 	int component = ((Integer)objs[1]).intValue();
 	Transform3D trans;
 
-	if ((component & FRONT_DISTANCE_CHANGED) != 0) 
+	if ((component & FRONT_DISTANCE_CHANGED) != 0)
 	    ((LinearFogRetained)mirrorFog).frontDistance = ((Double)objs[2]).doubleValue();
-	if ((component & BACK_DISTANCE_CHANGED) != 0) 
+	if ((component & BACK_DISTANCE_CHANGED) != 0)
 	    ((LinearFogRetained)mirrorFog).backDistance = ((Double)objs[2]).doubleValue();
 	if ((component & INIT_MIRROR) != 0) {
 	    ((LinearFogRetained)mirrorFog).frontDistance = ((Double)((Object[])objs[4])[4]).doubleValue();
 	    ((LinearFogRetained)mirrorFog).backDistance = ((Double)((Object[])objs[4])[5]).doubleValue();
-	    
+
 	}
-	((LinearFogRetained)mirrorFog).setLocalToVworldScale(getLastLocalToVworld().getDistanceScale());	
+	((LinearFogRetained)mirrorFog).setLocalToVworldScale(getLastLocalToVworld().getDistanceScale());
 
 	super.updateMirrorObject(objs);
     }

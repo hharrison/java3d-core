@@ -171,7 +171,7 @@ public class Alpha extends NodeComponent {
     public Alpha() {
         loopCount = -1;
         mode = INCREASING_ENABLE;
-        increasingAlpha = 1.0f;          // converted to seconds internally 
+        increasingAlpha = 1.0f;          // converted to seconds internally
 	/*
 	// Java initialize them to zero by default
         triggerTime = 0L;
@@ -223,10 +223,10 @@ public class Alpha extends NodeComponent {
      */
     public Alpha(int loopCount, int mode,
 		 long triggerTime, long phaseDelayDuration,
-		 long increasingAlphaDuration, 
+		 long increasingAlphaDuration,
 		 long increasingAlphaRampDuration,
 		 long alphaAtOneDuration,
-		 long decreasingAlphaDuration, 
+		 long decreasingAlphaDuration,
 		 long decreasingAlphaRampDuration,
 		 long alphaAtZeroDuration) {
 
@@ -255,8 +255,8 @@ public class Alpha extends NodeComponent {
 
 
     /**
-     * Constructs a new Alpha object that assumes that the mode is 
-     * INCREASING_ENABLE.  
+     * Constructs a new Alpha object that assumes that the mode is
+     * INCREASING_ENABLE.
      *
      * @param loopCount number of times to run this alpha; a value
      * of -1 specifies that the alpha loops indefinitely.
@@ -280,7 +280,7 @@ public class Alpha extends NodeComponent {
 		 long increasingAlphaDuration,
 		 long increasingAlphaRampDuration,
 		 long alphaAtOneDuration) {
-	this(loopCount, INCREASING_ENABLE, 
+	this(loopCount, INCREASING_ENABLE,
 	     triggerTime, phaseDelayDuration,
 	     increasingAlphaDuration, increasingAlphaRampDuration,
 	     alphaAtOneDuration, 0, 0, 0);
@@ -290,12 +290,12 @@ public class Alpha extends NodeComponent {
     /**
       *  This constructor takes only the loopCount and increasingAlphaDuration
       *  as parameters and assigns the default values to all of the other
-      *  parameters.  
+      *  parameters.
       * @param loopCount number of times to run this alpha; a value
       * of -1 specifies that the alpha loops indefinitely
       * @param increasingAlphaDuration period of time during which alpha goes
       * from zero to one
-      */ 
+      */
     public Alpha(int loopCount, long increasingAlphaDuration) {
         // defaults
         mode = INCREASING_ENABLE;
@@ -465,7 +465,7 @@ public class Alpha extends NodeComponent {
 	// If non-looping and before start
 	//	if ((loopCount != -1) &&
 	//	    interpolatorTime <= ( triggerTime +  phaseDelay)) {
-	//	
+	//
 	//	    if (( mode & INCREASING_ENABLE ) == 0 &&
 	//		( mode & DECREASING_ENABLE) != 0)
 	//		alpha = 1.0f;
@@ -473,8 +473,8 @@ public class Alpha extends NodeComponent {
 	//		alpha = 0.0f;
 	//	    return alpha;
 	//	}
-	
-	
+
+
 	//  Case of {constantly} moving forward, snap back, forward again
 	if (( mode & INCREASING_ENABLE ) != 0 &&
 	    ( mode & DECREASING_ENABLE) == 0) {
@@ -495,7 +495,7 @@ public class Alpha extends NodeComponent {
 		if ( alpha > 1.0f)  alpha = 1.0f;
 		return alpha;
 	    }
-	
+
 	    //  Ramped velocity case
 	    alphaRampDuration =  incAlphaRampInternal;
 
@@ -503,7 +503,7 @@ public class Alpha extends NodeComponent {
 		       6.0f*( increasingAlpha +  alphaAtOne),
 		       ( increasingAlpha +  alphaAtOne));
 	    if (dt >=  increasingAlpha) {  alpha = 1.0f; return alpha; }
-	
+
 		// Original equation kept to help understand
 		// computation logic - simplification saves
  		// a multiply and an add
@@ -513,7 +513,7 @@ public class Alpha extends NodeComponent {
 
 		a1 = 1.0f/(increasingAlpha * alphaRampDuration -
 			alphaRampDuration * alphaRampDuration);
-	
+
 	    if (dt < alphaRampDuration) {
 		alpha = 0.5f*a1*dt*dt;
 	    } else if (dt <  increasingAlpha - alphaRampDuration) {
@@ -529,31 +529,31 @@ public class Alpha extends NodeComponent {
 		    ( increasingAlpha - dt);
 	    }
 	    return alpha;
-	
+
 	} else
-	
-	
+
+
 	    // Case of {constantly} moving backward, snap forward, backward
 	    // again
 	    if (( mode & INCREASING_ENABLE ) == 0 &&
 		( mode & DECREASING_ENABLE) != 0) {
-	
+
 		// If non-looping and past end
 		//		if ((loopCount != -1)
-		//		    && (interpolatorTime 
+		//		    && (interpolatorTime
 		//			>= (triggerTime + phaseDelay + decreasingAlpha))) {
 		//		    alpha = 0.0f;
 		//		    return alpha;
 		//		}
 
                 if(interpolatorTime <= (triggerTime + phaseDelay))
-                      return 1.0f; 
+                      return 1.0f;
 
                 if((loopCount != -1) && (interpolatorTime >= stopTime) )
-                      return 0.0f; 
+                      return 0.0f;
 
 
-	
+
 		//  Constant velocity case
 		if (decAlphaRampInternal == 0.0f) {
 		    alpha = mfmod((interpolatorTime -  triggerTime -
@@ -564,15 +564,15 @@ public class Alpha extends NodeComponent {
 		    alpha = 1.0f -  alpha;
 		    return alpha;
 		}
-	
+
 		//  Ramped velocity case
 		alphaRampDuration =  decAlphaRampInternal;
-	
+
 		dt = mfmod((interpolatorTime -  triggerTime -  phaseDelay) +
 			   6.0f*( decreasingAlpha +  alphaAtZero),
 			   ( decreasingAlpha +  alphaAtZero));
 		if (dt >=  decreasingAlpha) {  alpha = 0.0f; return alpha; }
-	
+
 		// Original equation kept to help understand
 		// computation logic - simplification saves
  		// a multiply and an add
@@ -582,7 +582,7 @@ public class Alpha extends NodeComponent {
 
 		a1 = 1.0f/(decreasingAlpha * alphaRampDuration -
 			alphaRampDuration * alphaRampDuration);
-	
+
 		if (dt < alphaRampDuration) {
 		    alpha = 0.5f*a1*dt*dt;
 		} else if (dt <  decreasingAlpha - alphaRampDuration) {
@@ -599,17 +599,17 @@ public class Alpha extends NodeComponent {
 		}
 		alpha = 1.0f -  alpha;
 		return alpha;
-	
+
 	    } else
-	
-	
+
+
 		//  Case of {osscilating} increasing and decreasing alpha
 		if (( mode & INCREASING_ENABLE) != 0 &&
 		    ( mode & DECREASING_ENABLE) != 0) {
-	
+
 		    // If non-looping and past end
 		  //		    if ((loopCount != -1) &&
-		  //			(interpolatorTime >= 
+		  //			(interpolatorTime >=
 		  //			 (triggerTime +  phaseDelay +  increasingAlpha +
 		  //			  alphaAtOne +  decreasingAlpha))) {
 		  //			alpha = 0.0f;
@@ -622,7 +622,7 @@ public class Alpha extends NodeComponent {
 		    if(interpolatorTime <= (triggerTime + phaseDelay))
                          return 0.0f;
 
-		    if( (loopCount != -1) && (interpolatorTime >= stopTime))	
+		    if( (loopCount != -1) && (interpolatorTime >= stopTime))
                          return 0.0f;
 
 		    //  Constant velocity case
@@ -645,7 +645,7 @@ public class Alpha extends NodeComponent {
 			else  alpha = 0.0f;
 			return alpha;
 		    }
-	
+
 		    //  Ramped velocity case
 		    alphaRampDuration =  incAlphaRampInternal;
 
@@ -669,7 +669,7 @@ public class Alpha extends NodeComponent {
 
 			a1 = 1.0f/(increasingAlpha * alphaRampDuration -
 				alphaRampDuration * alphaRampDuration);
-	
+
 			if (dt < alphaRampDuration) {
 			    alpha = 0.5f*a1*dt*dt;
 			} else if (dt <  increasingAlpha - alphaRampDuration) {
@@ -707,7 +707,7 @@ public class Alpha extends NodeComponent {
 			// a1 = 1.0f/(alphaRampDuration*alphaRampDuration +
 			//	   ( decreasingAlpha - 2*alphaRampDuration)*
 			//	   alphaRampDuration);
-	
+
 			a1 = 1.0f/(decreasingAlpha * alphaRampDuration -
 				alphaRampDuration * alphaRampDuration);
 
@@ -729,7 +729,7 @@ public class Alpha extends NodeComponent {
 			alpha = 1.0f -  alpha;
 			return alpha;
 		    }
-	
+
 		}
 	return 0.0f;
     }
@@ -741,7 +741,7 @@ public class Alpha extends NodeComponent {
 	if (ta < 0.0f) ta = -ta;
 
 	fmint =(int)( ta/tb);
-	fm = ta - (float)fmint * tb;	
+	fm = ta - (float)fmint * tb;
 
 	if ((a) < 0.0f) return ((b) - fm);
 	else return fm;
@@ -758,7 +758,7 @@ public class Alpha extends NodeComponent {
     }
 
     /**
-     * Sets this alpha's startTime to that specified in the argument; 
+     * Sets this alpha's startTime to that specified in the argument;
      * startTime sets the base (or zero) for all relative time
      * computations; the default value for startTime is the system
      * start time.
@@ -843,7 +843,7 @@ public class Alpha extends NodeComponent {
     }
 
     /**
-      * Set this alpha's phaseDelayDuration to that specified in 
+      * Set this alpha's phaseDelayDuration to that specified in
       * the argument.
       * @param phaseDelayDuration  the new phaseDelayDuration
       */
@@ -862,7 +862,7 @@ public class Alpha extends NodeComponent {
     }
 
     /**
-      * Set this alpha's increasingAlphaDuration to that specified in 
+      * Set this alpha's increasingAlphaDuration to that specified in
       * the argument.
       * @param increasingAlphaDuration  the new increasingAlphaDuration
       */
@@ -881,7 +881,7 @@ public class Alpha extends NodeComponent {
     }
 
     /**
-      * Set this alpha's increasingAlphaRampDuration to that specified 
+      * Set this alpha's increasingAlphaRampDuration to that specified
       * in the argument.
       * @param increasingAlphaRampDuration  the new increasingAlphaRampDuration
       */
@@ -903,7 +903,7 @@ public class Alpha extends NodeComponent {
     }
 
     /**
-     * Set this alpha object's alphaAtOneDuration to the specified 
+     * Set this alpha object's alphaAtOneDuration to the specified
      * value.
      * @param alphaAtOneDuration  the new alphaAtOneDuration
      */
@@ -922,7 +922,7 @@ public class Alpha extends NodeComponent {
     }
 
     /**
-      * Set this alpha's decreasingAlphaDuration to that specified in 
+      * Set this alpha's decreasingAlphaDuration to that specified in
       * the argument.
       * @param decreasingAlphaDuration  the new decreasingAlphaDuration
       */
@@ -941,7 +941,7 @@ public class Alpha extends NodeComponent {
     }
 
     /**
-      * Set this alpha's decreasingAlphaRampDuration to that specified 
+      * Set this alpha's decreasingAlphaRampDuration to that specified
       * in the argument.
       * @param decreasingAlphaRampDuration  the new decreasingAlphaRampDuration
       */
@@ -963,7 +963,7 @@ public class Alpha extends NodeComponent {
     }
 
     /**
-     * Set this alpha object's alphaAtZeroDuration to the specified 
+     * Set this alpha object's alphaAtZeroDuration to the specified
      * value.
      * @param alphaAtZeroDuration  the new alphaAtZeroDuration
      */
@@ -988,7 +988,7 @@ public class Alpha extends NodeComponent {
         if (loopCount >= 0) {
 	    float sum = 0;
 	    if (( mode & INCREASING_ENABLE ) != 0) {
-		sum = increasingAlpha+alphaAtOne; 
+		sum = increasingAlpha+alphaAtOne;
 	    }
 	    if ((mode & DECREASING_ENABLE) != 0) {
 		sum += decreasingAlpha+alphaAtZero;
@@ -999,7 +999,7 @@ public class Alpha extends NodeComponent {
 	}
     }
 
-    /** 
+    /**
      * This internal method returns a clone of the Alpha
      *
      * @return a duplicate of this Alpha

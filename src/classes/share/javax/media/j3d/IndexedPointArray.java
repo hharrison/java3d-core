@@ -69,8 +69,8 @@ public class IndexedPointArray extends IndexedGeometryArray {
     public IndexedPointArray(int vertexCount, int vertexFormat, int indexCount) {
 	super(vertexCount,vertexFormat, indexCount);
 
-        if (vertexCount < 1) 
-        throw new IllegalArgumentException(J3dI18N.getString("IndexedPointArray0")); 
+        if (vertexCount < 1)
+        throw new IllegalArgumentException(J3dI18N.getString("IndexedPointArray0"));
 
         if (indexCount < 1 )
         throw new IllegalArgumentException(J3dI18N.getString("IndexedPointArray1"));
@@ -118,8 +118,8 @@ public class IndexedPointArray extends IndexedGeometryArray {
 	      texCoordSetCount, texCoordSetMap,
 	      indexCount);
 
-        if (vertexCount < 1) 
-	    throw new IllegalArgumentException(J3dI18N.getString("IndexedPointArray0")); 
+        if (vertexCount < 1)
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedPointArray0"));
 
         if (indexCount < 1 )
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedPointArray1"));
@@ -174,8 +174,8 @@ public class IndexedPointArray extends IndexedGeometryArray {
 	      vertexAttrCount, vertexAttrSizes,
 	      indexCount);
 
-        if (vertexCount < 1) 
-	    throw new IllegalArgumentException(J3dI18N.getString("IndexedPointArray0")); 
+        if (vertexCount < 1)
+	    throw new IllegalArgumentException(J3dI18N.getString("IndexedPointArray0"));
 
         if (indexCount < 1 )
 	    throw new IllegalArgumentException(J3dI18N.getString("IndexedPointArray1"));

@@ -181,7 +181,7 @@ public class Font3D extends NodeComponent {
       GlyphVector gVec = font.createGlyphVector(frc, gCodes);
       Rectangle2D.Float bounds2d = (Rectangle2D.Float)
 	(((GlyphMetrics)(gVec.getGlyphMetrics(0))).getBounds2D());
-      
+
       Point3d lower = new Point3d(bounds2d.x, bounds2d.y, 0.0);
       Point3d upper;
       if (fontExtrusion != null) {
@@ -223,7 +223,7 @@ public class Font3D extends NodeComponent {
 
         // create a correctly sized TriangleArray
         TriangleArray ga = new TriangleArray(glyph_gar.getVertexCount(),glyph_gar.getVertexFormat());
-        
+
         // temp storage for coords, normals
         float tmp[] = new float[3];
 
@@ -267,7 +267,7 @@ public class Font3D extends NodeComponent {
 	    FastVector contours = new FastVector(10);
 	    float maxY = -Float.MAX_VALUE;
 	    int maxYIndex = 0, beginIdx = 0, endIdx = 0, start = 0;
-	    
+
 	    boolean setMaxY = false;
 
 
@@ -330,10 +330,10 @@ public class Font3D extends NodeComponent {
 			 coords.add(vertex);
 			 num++;
 			 numPoints++;
-		} 
+		}
 		pIt.next();
 	    }
-	    
+
 	    // No data(e.g space, control characters)
 	    // Two point can't form a valid contour
 	    if (numPoints == 0){
@@ -351,13 +351,13 @@ public class Font3D extends NodeComponent {
 		// must be true unless it is a single line
 		// define as "MoveTo p1 LineTo p2 Close" which is
 		// not a valid font definition.
-		
+
 		if (maxYIndex == beginIdx) {
-		    p1.set(vertices[endIdx]);		    
+		    p1.set(vertices[endIdx]);
 		} else {
-		    p1.set(vertices[maxYIndex-1]);		    
+		    p1.set(vertices[maxYIndex-1]);
 		}
-		p2.set(vertices[maxYIndex]);		    
+		p2.set(vertices[maxYIndex]);
 		if (maxYIndex == endIdx) {
 		    p3.set(vertices[beginIdx]);
 		} else {
@@ -374,7 +374,7 @@ public class Font3D extends NodeComponent {
 			    flip_side_orient = (p2.x > p1.x);
 			}
 		    } else {
-			flip_side_orient = (p3.x > p2.x);			
+			flip_side_orient = (p3.x > p2.x);
 		    }
 		} else {
 		    // p1.x != p2.x, otherwise all three
@@ -395,9 +395,9 @@ public class Font3D extends NodeComponent {
 		endIdx = startIdx + contourCounts[i];
 		islandsTree.insert(new IslandsNode(startIdx, endIdx), vertices);
 		startIdx = endIdx;
-	    }      
+	    }
 
-	    coords = null;   // Free memory 
+	    coords = null;   // Free memory
 	    contours = null;
 	    contourCounts = null;
 
@@ -408,7 +408,7 @@ public class Font3D extends NodeComponent {
 	    int islandCounts[][] = new int[islandsList.arraySize()][];
 	    Point3f outVerts[][] = new Point3f[islandCounts.length][];
 	    int nchild, sum;
-	    IslandsNode node;	    
+	    IslandsNode node;
 
 	    for (i=0; i < islandCounts.length; i++) {
 		node = nodes[i];
@@ -420,7 +420,7 @@ public class Font3D extends NodeComponent {
 		for (j=0; j < nchild; j++) {
 		    islandCounts[i][j+1] = node.getChild(j).numVertices();
 		    sum += islandCounts[i][j+1];
-		} 
+		}
 		outVerts[i] = new Point3f[sum];
 		startIdx = 0;
 		for (k=node.startIdx; k < node.endIdx; k++) {
@@ -434,10 +434,10 @@ public class Font3D extends NodeComponent {
 		    }
 		}
 	    }
-	    
 
 
-	    islandsTree = null; // Free memory 
+
+	    islandsTree = null; // Free memory
 	    islandsList = null;
 	    vertices = null;
 
@@ -446,7 +446,7 @@ public class Font3D extends NodeComponent {
 	    ArrayList triangData = new ArrayList();
 
 	    Point3f q1 = new Point3f(), q2 = new Point3f(), q3 = new Point3f();
-	    Vector3f n1 = new Vector3f(), n2 = new Vector3f();	    
+	    Vector3f n1 = new Vector3f(), n2 = new Vector3f();
 	    numPoints = 0;
 	    //Now loop thru each island, calling triangulator once per island.
 	    //Combine triangle data for all islands together in one object.
@@ -477,11 +477,11 @@ public class Font3D extends NodeComponent {
 	      }
 	    }
 
-	    // XXXX: Should use IndexedTriangleArray to avoid 
+	    // XXXX: Should use IndexedTriangleArray to avoid
 	    // duplication of vertices. To create triangles for
 	    // side faces, every vertex is duplicated currently.
 	    TriangleArray triAry = new TriangleArray(vertCnt,
-						     GeometryArray.COORDINATES | 
+						     GeometryArray.COORDINATES |
 						     GeometryArray.NORMALS);
 
 	    boolean flip_orient[] = new boolean[islandCounts.length];
@@ -495,7 +495,7 @@ public class Font3D extends NodeComponent {
 		vertOffset = ga.getVertexCount();
 
 		findOrient = false;
-		
+
 		//Create the triangle array
 		for (i= 0; i < vertOffset; i+= 3, currCoordIndex += 3){
 		    //Get 3 points. Since triangle is known to be flat, normal
@@ -504,14 +504,14 @@ public class Font3D extends NodeComponent {
 		    ga.getNormal(i, n1);
 		    ga.getCoordinate(i+1, p2);
 		    ga.getCoordinate(i+2, p3);
-		    
+
 		    if (!findOrient) {
 			//Check here if triangles are wound incorrectly and need
 			//to be flipped.
 			if (!getNormal(p1,p2, p3, n2)) {
 			    continue;
 			}
-			
+
 			if (n2.z >= EPS) {
 			    flip_orient[j] = false;
 			} else if (n2.z <= -EPS) {
@@ -530,22 +530,22 @@ public class Font3D extends NodeComponent {
 			p3.x = q1.x; p3.y = q1.y; p3.z = q1.z;
 			n1.x = -n1.x; n1.y = -n1.y; n1.z = -n1.z;
 		    }
-		    
-		    
+
+
 		    if (fontExtrusion != null) {
 			n2.x = -n1.x;n2.y = -n1.y;n2.z = -n1.z;
-			
+
 			triAry.setCoordinate(currCoordIndex, p1);
 			triAry.setNormal(currCoordIndex, n2);
 			triAry.setCoordinate(currCoordIndex+1, p3);
 			triAry.setNormal(currCoordIndex+1, n2);
 			triAry.setCoordinate(currCoordIndex+2, p2);
 			triAry.setNormal(currCoordIndex+2, n2);
-			
+
 			q1.x = p1.x; q1.y = p1.y; q1.z = p1.z + fontExtrusion.length;
 			q2.x = p2.x; q2.y = p2.y; q2.z = p2.z + fontExtrusion.length;
 			q3.x = p3.x; q3.y = p3.y; q3.z = p3.z + fontExtrusion.length;
-			
+
 			triAry.setCoordinate(currCoordIndex+vertOffset, q1);
 			triAry.setNormal(currCoordIndex+vertOffset, n1);
 			triAry.setCoordinate(currCoordIndex+1+vertOffset, q2);
@@ -562,11 +562,11 @@ public class Font3D extends NodeComponent {
 		    }
 
 		}
-		if (fontExtrusion != null) {		
+		if (fontExtrusion != null) {
 		    currCoordIndex += vertOffset;
 		}
 	    }
-		
+
 	    //Now add side triangles in both cases.
 
 	    // Since we duplicated triangles with different Z, make sure
@@ -590,7 +590,7 @@ public class Font3D extends NodeComponent {
 		    Vector3f q1Normal = new Vector3f();
 		    Vector3f q2Normal = new Vector3f();
 		    Vector3f q3Normal = new Vector3f();
-		    
+
 		    for (i=0;i < islandCounts.length;i++){
 			for (j=0, k=0, num =0;j < islandCounts[i].length;j++){
 			    num += islandCounts[i][j];
@@ -600,13 +600,13 @@ public class Font3D extends NodeComponent {
 			    q1.x = p1.x; q1.y = p1.y; q1.z = p1.z+fontExtrusion.length;
 			    p2.z = 0.0f;
 			    q2.z = p2.z+fontExtrusion.length;
-			    for (int m=0; m < num;m++) {	      
+			    for (int m=0; m < num;m++) {
 				p2.x = outVerts[i][m].x;
 				p2.y = outVerts[i][m].y;
-				q2.x = p2.x; 
-				q2.y = p2.y; 
+				q2.x = p2.x;
+				q2.y = p2.y;
 				if (getNormal(p1, q1, p2, n1)) {
-				    
+
 				    if (!flip_side_orient) {
 					n1.negate();
 				    }
@@ -614,11 +614,11 @@ public class Font3D extends NodeComponent {
 				    break;
 				}
 			    }
-			    
+
 			    for (;k < num;k++){
 				p2.x = outVerts[i][k].x;p2.y = outVerts[i][k].y;p2.z = 0.0f;
 				q2.x = p2.x; q2.y = p2.y; q2.z = p2.z+fontExtrusion.length;
-				
+
 				if (!getNormal(p1, q1, p2, n1)) {
 				    n1.set(goodNormal);
 				} else {
@@ -627,7 +627,7 @@ public class Font3D extends NodeComponent {
 				    }
 				    goodNormal.set(n1);
 				}
-				
+
 				if (!getNormal(p2, q1, q2, n2)) {
 				    n2.set(goodNormal);
 				} else {
@@ -638,7 +638,7 @@ public class Font3D extends NodeComponent {
 				}
 				// if there is a previous normal, see if we need to smooth
 				// this normal or make a crease
-				
+
 				if (pn1 != null) {
 				    cosine = n1.dot(pn2);
 				    smooth = cosine > threshold;
@@ -647,7 +647,7 @@ public class Font3D extends NodeComponent {
 					p1Normal.y = (pn1.y + pn2.y + n1.y);
 					p1Normal.z = (pn1.z + pn2.z + n1.z);
 					normalize(p1Normal);
-					
+
 					q1Normal.x = (pn2.x + n1.x + n2.x);
 					q1Normal.y = (pn2.y + n1.y + n2.y);
 					q1Normal.z = (pn2.z + n1.z + n2.z);
@@ -655,9 +655,9 @@ public class Font3D extends NodeComponent {
 				    } // if smooth
 				    else {
 					p1Normal.x = n1.x; p1Normal.y = n1.y; p1Normal.z = n1.z;
-					q1Normal.x = n1.x+n2.x; 
+					q1Normal.x = n1.x+n2.x;
 					q1Normal.y = n1.y+n2.y;
-					q1Normal.z = n1.z+ n2.z; 
+					q1Normal.z = n1.z+ n2.z;
 					normalize(q1Normal);
 				    } // else
 				} // if pn1 != null
@@ -667,20 +667,20 @@ public class Font3D extends NodeComponent {
 				    p1Normal.x = n1.x;
 				    p1Normal.y = n1.y;
 				    p1Normal.z = n1.z;
-				    
+
 				    q1Normal.x = (n1.x + n2.x);
 				    q1Normal.y = (n1.y + n2.y);
 				    q1Normal.z = (n1.z + n2.z);
 				    normalize(q1Normal);
 				} // else
-				
+
 				// if there is a next, check if we should smooth normal
-				
+
 				if (k+1 < num) {
-				    p3.x = outVerts[i][k+1].x; p3.y = outVerts[i][k+1].y; 
+				    p3.x = outVerts[i][k+1].x; p3.y = outVerts[i][k+1].y;
 				    p3.z = 0.0f;
 				    q3.x = p3.x; q3.y = p3.y; q3.z = p3.z + fontExtrusion.length;
-				    
+
 				    if (!getNormal(p2, q2, p3, n3)) {
 					n3.set(goodNormal);
 				    } else {
@@ -689,7 +689,7 @@ public class Font3D extends NodeComponent {
 					}
 					goodNormal.set(n3);
 				    }
-				    
+
 				    if (!getNormal(p3, q2, q3, n4)) {
 					n4.set(goodNormal);
 				    } else {
@@ -698,16 +698,16 @@ public class Font3D extends NodeComponent {
 					}
 					goodNormal.set(n4);
 				    }
-				    
+
 				    cosine = n2.dot(n3);
 				    smooth = cosine > threshold;
-				    
+
 				    if (smooth) {
 					p2Normal.x = (n1.x + n2.x + n3.x);
 					p2Normal.y = (n1.y + n2.y + n3.y);
 					p2Normal.z = (n1.z + n2.z + n3.z);
 					normalize(p2Normal);
-					
+
 					q2Normal.x = (n2.x + n3.x + n4.x);
 					q2Normal.y = (n2.y + n3.y + n4.y);
 					q2Normal.z = (n2.z + n3.z + n4.z);
@@ -724,32 +724,32 @@ public class Font3D extends NodeComponent {
 				    p2Normal.y = (n1.y + n2.y);
 				    p2Normal.z = (n1.z + n2.z);
 				    normalize(p2Normal);
-				    
+
 				    q2Normal.x = n2.x;
 				    q2Normal.y = n2.y;
 				    q2Normal.z = n2.z;
 				} // else
-				
+
 				// add pts for the 2 tris
 				// p1, q1, p2 and p2, q1, q2
-				
+
 				if (flip_side_orient) {
 				    triAry.setCoordinate(currCoordIndex, p1);
 				    triAry.setNormal(currCoordIndex, p1Normal);
 				    currCoordIndex++;
-		    
+
 				    triAry.setCoordinate(currCoordIndex, q1);
 				    triAry.setNormal(currCoordIndex, q1Normal);
 				    currCoordIndex++;
-				    
+
 				    triAry.setCoordinate(currCoordIndex, p2);
 				    triAry.setNormal(currCoordIndex, p2Normal);
 				    currCoordIndex++;
-				    
+
 				    triAry.setCoordinate(currCoordIndex, p2);
 				    triAry.setNormal(currCoordIndex, p2Normal);
 				    currCoordIndex++;
-				    
+
 				    triAry.setCoordinate(currCoordIndex, q1);
 				    triAry.setNormal(currCoordIndex, q1Normal);
 				    currCoordIndex++;
@@ -757,19 +757,19 @@ public class Font3D extends NodeComponent {
 				    triAry.setCoordinate(currCoordIndex, q1);
 				    triAry.setNormal(currCoordIndex, q1Normal);
 				    currCoordIndex++;
-				    
+
 				    triAry.setCoordinate(currCoordIndex, p1);
 				    triAry.setNormal(currCoordIndex, p1Normal);
 				    currCoordIndex++;
-				    
+
 				    triAry.setCoordinate(currCoordIndex, p2);
 				    triAry.setNormal(currCoordIndex, p2Normal);
 				    currCoordIndex++;
-				    
+
 				    triAry.setCoordinate(currCoordIndex, q1);
 				    triAry.setNormal(currCoordIndex, q1Normal);
 				    currCoordIndex++;
-				    
+
 				    triAry.setCoordinate(currCoordIndex, p2);
 				    triAry.setNormal(currCoordIndex, p2Normal);
 				    currCoordIndex++;
@@ -781,9 +781,9 @@ public class Font3D extends NodeComponent {
 				pn2.x = n2.x; pn2.y = n2.y; pn2.z = n2.z;
 				p1.x = p2.x; p1.y = p2.y; p1.z = p2.z;
 				q1.x = q2.x; q1.y = q2.y; q1.z = q2.z;
-				
+
 			    }// for k
-			    
+
 			    // set the previous normals to null when we are done
 			    pn1 = null;
 			    pn2 = null;
@@ -792,12 +792,12 @@ public class Font3D extends NodeComponent {
 		} else { // if shape
 		    int m, offset=0;
 		    Point3f P2 = new Point3f(), Q2 = new Point3f(), P1=new Point3f();
-		    Vector3f nn = new Vector3f(), nn1= new Vector3f(), 
+		    Vector3f nn = new Vector3f(), nn1= new Vector3f(),
 			nn2= new Vector3f(), nn3= new Vector3f();
 		    Vector3f nna = new Vector3f(), nnb=new Vector3f();
 		    float length;
 		    boolean validNormal = false;
-		    
+
 		    // fontExtrusion.shape is specified, and is NOT straight line
 		    for (i=0;i < islandCounts.length;i++){
 			for (j=0, k= 0, offset = num =0;j < islandCounts[i].length;j++){
@@ -811,7 +811,7 @@ public class Font3D extends NodeComponent {
 			    for (m=num-2; m >= 0; m--) {
 				p3.x = outVerts[i][m].x;
 				p3.y = outVerts[i][m].y;
-				
+
 				if (getNormal(p3, q1, p1, nn1)) {
 				    if (!flip_side_orient) {
 					nn1.negate();
@@ -824,7 +824,7 @@ public class Font3D extends NodeComponent {
 				p2.x = outVerts[i][k].x;p2.y = outVerts[i][k].y;p2.z = 0.0f;
 				q2.x = p2.x; q2.y = p2.y; q2.z = p2.z+fontExtrusion.length;
 				getNormal(p1, q1, p2, nn2);
-				
+
 				p3.x = outVerts[i][(k+1)==num ? offset:(k+1)].x;
 				p3.y = outVerts[i][(k+1)==num ? offset:(k+1)].y;
 				p3.z = 0.0f;
@@ -836,19 +836,19 @@ public class Font3D extends NodeComponent {
 				    }
 				    goodNormal.set(nn3);
 				}
-				
+
 				// Calculate normals at the point by averaging normals
 				// of two faces on each side of the point.
 				nna.x = (nn1.x+nn2.x);
 				nna.y = (nn1.y+nn2.y);
 				nna.z = (nn1.z+nn2.z);
 				normalize(nna);
-				
+
 				nnb.x = (nn3.x+nn2.x);
 				nnb.y = (nn3.y+nn2.y);
 				nnb.z = (nn3.z+nn2.z);
 				normalize(nnb);
-				
+
 				P1.x = p1.x;P1.y = p1.y;P1.z = p1.z;
 				P2.x = p2.x;P2.y = p2.y; P2.z = p2.z;
 				Q2.x = q2.x;Q2.y = q2.y; Q2.z = q2.z;
@@ -858,7 +858,7 @@ public class Font3D extends NodeComponent {
 				    q1.y = P1.y + nna.y * fontExtrusion.pnts[m].y;
 				    q2.x = P2.x + nnb.x * fontExtrusion.pnts[m].y;
 				    q2.y = P2.y + nnb.y * fontExtrusion.pnts[m].y;
-				    
+
 				    if (!getNormal(p1, q1, p2, n1)) {
 					n1.set(goodNormal);
 				    } else {
@@ -867,12 +867,12 @@ public class Font3D extends NodeComponent {
 					}
 					goodNormal.set(n1);
 				    }
-				    
+
 				    if (flip_side_orient) {
 					triAry.setCoordinate(currCoordIndex, p1);
 					triAry.setNormal(currCoordIndex, n1);
 					currCoordIndex++;
-					
+
 					triAry.setCoordinate(currCoordIndex, q1);
 					triAry.setNormal(currCoordIndex, n1);
 					currCoordIndex++;
@@ -880,15 +880,15 @@ public class Font3D extends NodeComponent {
 					triAry.setCoordinate(currCoordIndex, q1);
 					triAry.setNormal(currCoordIndex, n1);
 					currCoordIndex++;
-					
+
 					triAry.setCoordinate(currCoordIndex, p1);
 					triAry.setNormal(currCoordIndex, n1);
 					currCoordIndex++;
 				    }
 				    triAry.setCoordinate(currCoordIndex, p2);
 				    triAry.setNormal(currCoordIndex, n1);
-				    currCoordIndex++;		      
-				    
+				    currCoordIndex++;
+
 				    if (!getNormal(p2, q1, q2, n1)) {
 					n1.set(goodNormal);
 				    } else {
@@ -897,12 +897,12 @@ public class Font3D extends NodeComponent {
 					}
 					goodNormal.set(n1);
 				    }
-				    
+
 				    if (flip_side_orient) {
 					triAry.setCoordinate(currCoordIndex, p2);
 					triAry.setNormal(currCoordIndex, n1);
 					currCoordIndex++;
-					
+
 					triAry.setCoordinate(currCoordIndex, q1);
 					triAry.setNormal(currCoordIndex, n1);
 					currCoordIndex++;
@@ -910,7 +910,7 @@ public class Font3D extends NodeComponent {
 					triAry.setCoordinate(currCoordIndex, q1);
 					triAry.setNormal(currCoordIndex, n1);
 					currCoordIndex++;
-					
+
 					triAry.setCoordinate(currCoordIndex, p2);
 					triAry.setNormal(currCoordIndex, n1);
 					currCoordIndex++;
@@ -918,7 +918,7 @@ public class Font3D extends NodeComponent {
 				    triAry.setCoordinate(currCoordIndex, q2);
 				    triAry.setNormal(currCoordIndex, n1);
 				    currCoordIndex++;
-				    
+
 				    p1.x = q1.x;p1.y = q1.y;p1.z = q1.z;
 				    p2.x = q2.x;p2.y = q2.y;p2.z = q2.z;
 				}// for m
@@ -933,8 +933,8 @@ public class Font3D extends NodeComponent {
 	    }// if fontExtrusion
 	    geo = (GeometryArrayRetained) triAry.retained;
 	    geomHash.put(ch, geo);
-	} 
-	
+	}
+
 	return geo;
     }
 
@@ -942,15 +942,15 @@ public class Font3D extends NodeComponent {
     static boolean getNormal(Point3f p1, Point3f p2, Point3f p3, Vector3f normal) {
 	Vector3f v1 = new Vector3f();
 	Vector3f v2 = new Vector3f();
-	
+
 	// Must compute normal
 	v1.sub(p2, p1);
 	v2.sub(p2, p3);
 	normal.cross(v1, v2);
 	normal.negate();
-	
+
 	float length = normal.length();
-	
+
 	if (length > 0) {
 	    length = 1 / length;
 	    normal.x *= length;
@@ -961,7 +961,7 @@ public class Font3D extends NodeComponent {
 	return false;
     }
 
-    
+
     // check if 2 contours are inside/outside/intersect one another
     // INPUT:
     // vertCnt1, vertCnt2  - number of vertices in 2 contours
@@ -969,56 +969,56 @@ public class Font3D extends NodeComponent {
     // vertices            - actual vertex data
     // OUTPUT:
     // status == 1   - intersecting contours
-    //           2   - first contour inside the second 
+    //           2   - first contour inside the second
     //           3   - second contour inside the first
     //           0   - disjoint contours(2 islands)
-    
-    static int check2Contours(int begin1, int end1, int begin2, int end2, 
+
+    static int check2Contours(int begin1, int end1, int begin2, int end2,
 			      Point3f[] vertices) {
 	int i, j;
 	boolean inside2, inside1;
-	
-	inside2 = pointInPolygon2D(vertices[begin1].x, vertices[begin1].y, 
+
+	inside2 = pointInPolygon2D(vertices[begin1].x, vertices[begin1].y,
 				   begin2, end2, vertices);
-	
+
 	for (i=begin1+1; i < end1;i++) {
-	    if (pointInPolygon2D(vertices[i].x, vertices[i].y, 
+	    if (pointInPolygon2D(vertices[i].x, vertices[i].y,
 				 begin2, end2, vertices) != inside2) {
 		return 1;	  //intersecting contours
 	    }
 	}
-	
-	// Since we are using point in polygon test and not 
+
+	// Since we are using point in polygon test and not
 	// line in polygon test. There are cases we miss the interesting
 	// if we are not checking the reverse for all points. This happen
 	// when two points form a line pass through a polygon but the two
 	// points are outside of it.
-	
-	inside1 = pointInPolygon2D(vertices[begin2].x, vertices[begin2].y, 
+
+	inside1 = pointInPolygon2D(vertices[begin2].x, vertices[begin2].y,
 				   begin1, end1, vertices);
-	
+
 	for (i=begin2+1; i < end2;i++) {
-	    if (pointInPolygon2D(vertices[i].x, vertices[i].y, 
-				 begin1, end1, vertices) != inside1) { 
+	    if (pointInPolygon2D(vertices[i].x, vertices[i].y,
+				 begin1, end1, vertices) != inside1) {
 		return 1; //intersecting contours
 	    }
 	}
-	
+
 	if (!inside2) {
-	    if (!inside1) {  	
+	    if (!inside1) {
 		return 0;   // disjoint countours
-	    } 
+	    }
 	    // inside2 = false and inside1 = true
 	    return 3;  // second contour inside first
 	}
-	
+
 	// must be inside2 = true and inside1 = false
 	// Note that it is not possible inside2 = inside1 = true
 	// unless two contour overlap to each others.
 	//
 	return 2;  // first contour inside second
     }
-    
+
     // Test if 2D point (x,y) lies inside polygon represented by verts.
     // z-value of polygon vertices is ignored. Sent only to avoid data-copy.
     // Uses ray-shooting algorithm to compute intersections along +X axis.
@@ -1026,9 +1026,9 @@ public class Font3D extends NodeComponent {
     // is best solution here due to large number of polygon vertices.
     // Point is INSIDE if number of intersections is odd, OUTSIDE if number
     // of intersections is even.
-    static boolean pointInPolygon2D(float x, float y, int begIdx, int endIdx, 
+    static boolean pointInPolygon2D(float x, float y, int begIdx, int endIdx,
 				    Point3f[] verts){
-	
+
 	int i, num_intersections = 0;
 	float xi;
 
@@ -1036,42 +1036,42 @@ public class Font3D extends NodeComponent {
 	    if ((verts[i].y >= y && verts[i+1].y >= y) ||
 		(verts[i].y <  y && verts[i+1].y <  y))
 		continue;
-	    
+
 	    xi = verts[i].x + (verts[i].x - verts[i+1].x)*(y - verts[i].y)/
 		(verts[i].y - verts[i+1].y);
-	    
+
 	    if (x < xi) num_intersections++;
 	}
-	
+
 	// Check for segment from last vertex to first vertex.
-	
+
 	if (!((verts[i].y >= y && verts[begIdx].y >= y) ||
 	      (verts[i].y <  y && verts[begIdx].y <  y))) {
 		xi = verts[i].x + (verts[i].x - verts[begIdx].x)*(y - verts[i].y)/
 		    (verts[i].y - verts[begIdx].y);
-		
+
 		if (x < xi) num_intersections++;
 	    }
-	
+
 	return ((num_intersections % 2) != 0);
     }
-    
-    
+
+
     static final boolean normalize(Vector3f v) {
 	float len = v.length();
-	
+
 	if (len > 0) {
 	    len = 1.0f/len;
 	    v.x *= len;
 	    v.y *= len;
 	    v.z *= len;
 	    return true;
-	} 
+	}
 	return false;
-    }    
+    }
 
 
-    // A Tree of islands form based on contour, each parent's contour 
+    // A Tree of islands form based on contour, each parent's contour
     // enclosed all the child. We built this since Triangular fail to
     // handle the case of multiple concentrated contours. i.e. if
     // 4 contours A > B > C > D. Triangular will fail recongized
@@ -1115,11 +1115,11 @@ public class Font3D extends NodeComponent {
 
 	void insert(IslandsNode newNode, Point3f[] vertices) {
 	    boolean createNewLevel = false;
-	    
+
 	    if (islandsList != null) {
 		IslandsNode childNode;
 		int status;
-		
+
 		for (int i=numChild()-1; i>=0; i--) {
 		    childNode = getChild(i);
 		    status = check2Contours(newNode.startIdx, newNode.endIdx,
@@ -1129,15 +1129,15 @@ public class Font3D extends NodeComponent {
 		    case 2: // newNode inside childNode, go down recursively
 			childNode.insert(newNode, vertices);
 			return;
-		    case 3:// childNode inside newNode, 
+		    case 3:// childNode inside newNode,
 			// continue to search other childNode also
 			// inside this one and group them together.
 			newNode.addChild(childNode);
 			createNewLevel = true;
 			break;
 		    default: // intersecting or disjoint
-			
-		    }		
+
+		    }
 		}
 	    }
 
@@ -1146,8 +1146,8 @@ public class Font3D extends NodeComponent {
 		for (int i=newNode.numChild()-1; i>=0; i--) {
 		    removeChild(newNode.getChild(i));
 		}
-		// Add the newNode to parent 
-	    } 
+		// Add the newNode to parent
+	    }
 	    addChild(newNode);
 	}
 
