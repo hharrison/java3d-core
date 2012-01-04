@@ -64,13 +64,12 @@ ArrayList<J3dMessage> lightMessageList = new ArrayList<J3dMessage>(5);
     // Messges retrieved when a message is sent to RenderingEnv Structure
     J3dMessage[] m;
 
-    /**
-     * List of renderMolecules that are soleUser
-     * have to do a 2 pass, first update values
-     * then sort based on equivalent material
-     */
-    ArrayList rmUpdateList = new ArrayList();
-    ArrayList aBinUpdateList = new ArrayList();
+/**
+ * List of renderMolecules that are soleUser have to do a 2 pass, first update
+ * values then sort based on equivalent material
+ */
+ArrayList<RenderMolecule> rmUpdateList = new ArrayList<RenderMolecule>();
+ArrayList<AttributeBin> aBinUpdateList = new ArrayList<AttributeBin>();
 
     /**
      * List of ShaderBin that are soleUser that
@@ -409,7 +408,6 @@ ArrayList<J3dMessage> lightMessageList = new ArrayList<J3dMessage>(5);
      */
     public void updateObject() {
 	int i, j, k;
-	RenderMolecule rm;
 	RenderAtomListInfo ra;
 	LightBin tmp;
 	float radius;
@@ -540,7 +538,7 @@ ArrayList<J3dMessage> lightMessageList = new ArrayList<J3dMessage>(5);
 
 	if ((size = aBinUpdateList.size()) > 0) {
 	    for (i = 0; i < size; i++) {
-		AttributeBin abin = (AttributeBin)aBinUpdateList.get(i);
+			AttributeBin abin = aBinUpdateList.get(i);
 		abin.updateNodeComponent();
 	    }
 	}
@@ -582,7 +580,7 @@ ArrayList<J3dMessage> lightMessageList = new ArrayList<J3dMessage>(5);
 	// of new RMs is based on the updated ones
 	if ((size = rmUpdateList.size()) > 0) {
 	    for (i = 0; i < size; i++) {
-		rm = (RenderMolecule)rmUpdateList.get(i);
+			RenderMolecule rm = rmUpdateList.get(i);
 
 		boolean changeLists = rm.updateNodeComponent();
 		// If an existing rm went from opaque to transparent or vice-versa
@@ -591,10 +589,9 @@ ArrayList<J3dMessage> lightMessageList = new ArrayList<J3dMessage>(5);
 		    rm.textureBin.changeLists(rm);
 		}
 	    }
-	    for (i = 0; i < size; i++) {
-		rm = (RenderMolecule)rmUpdateList.get(i);
-		rm.reEvaluateEquivalence();
-	    }
+		for (i = 0; i < size; i++) {
+			rmUpdateList.get(i).reEvaluateEquivalence();
+		}
 	}
 
 
@@ -965,7 +962,7 @@ ArrayList<J3dMessage> lightMessageList = new ArrayList<J3dMessage>(5);
 	    // and just toggle?
 	    size = dirtyRenderMoleculeList.size();
 	    for (i = 0; i < size; i++) {
-		rm = (RenderMolecule)dirtyRenderMoleculeList.get(i);
+			RenderMolecule rm = (RenderMolecule)dirtyRenderMoleculeList.get(i);
 		rm.onUpdateList = 0;
 		ra = rm.primaryRenderAtomList;
 		while (ra != null) {
