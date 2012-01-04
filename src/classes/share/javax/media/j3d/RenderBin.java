@@ -83,14 +83,13 @@ ArrayList<ShaderBin> sBinUpdateList = new ArrayList<ShaderBin>();
  */
 ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
 
-    /**
-     * List of Bins that are soleUser that have new renderAtom
-     * added into, which requires a pre-update screening to
-     * check if any of its node component changes could have been
-     * missed because the changes happen when all the render atoms
-     * are temporarily removed from the bin.
-     */
-    ArrayList updateCheckList = new ArrayList();
+/**
+ * List of Bins that are soleUser that have new renderAtom added into, which
+ * requires a pre-update screening to check if any of its node component changes
+ * could have been missed because the changes happen when all the render atoms
+ * are temporarily removed from the bin.
+ */
+ArrayList<NodeComponentUpdate> updateCheckList = new ArrayList<NodeComponentUpdate>();
 
     /**
      * The number of lights supported by the underlying context.
@@ -1865,10 +1864,8 @@ ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
 
         if (updateCheckList.size() > 0) {
 	    int size = updateCheckList.size();
-	    NodeComponentUpdate bin;
 	    for (int k = 0; k < size; k++) {
-		bin = (NodeComponentUpdate) updateCheckList.get(k);
-		bin.updateNodeComponentCheck();
+			updateCheckList.get(k).updateNodeComponentCheck();
 	    }
 	    updateCheckList.clear();
 	}
