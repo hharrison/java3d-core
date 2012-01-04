@@ -51,10 +51,10 @@ import javax.vecmath.Vector3d;
 
 class RenderBin extends J3dStructure  implements ObjectUpdate {
 
-    /**
-     * The list of RenderAtoms
-     */
-    ArrayList renderAtoms = new ArrayList(5);
+/**
+ * The list of RenderAtoms
+ */
+ArrayList<RenderAtom> renderAtoms = new ArrayList<RenderAtom>(5);
 
     /**
      * A couple ArrayLists used during light Processing
@@ -1707,7 +1707,7 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
 			       locale != ((ViewPlatformRetained) (vp.retained)).locale) {
 
 				for (int n = (renderAtoms.size() - 1); n>=0 ; n--) {
-				    removeARenderAtom((RenderAtom) renderAtoms.get(n));
+							removeARenderAtom(renderAtoms.get(n));
 				}
 				renderAtoms.clear();
 				visGAIsDirty = true;
@@ -3974,7 +3974,7 @@ System.err.println("......tb.soleUser= " +
 
 	numRas = renderAtoms.size();
 	for (i=0; i<numRas; i++) {
-	    ra = (RenderAtom)renderAtoms.get(i);
+		ra = renderAtoms.get(i);
 	    // If the renderatom has not been visible for "notVisibleCount" then
 	    // add it to the deadlist
 	    if (ra.lastVisibleTime < removeCutoffTime) {
@@ -4001,10 +4001,8 @@ System.err.println("......tb.soleUser= " +
      * frames ago.  It also does compaction if it is needed.
      */
     void compact() {
-	RenderAtom ra;
-
 	for (int i=0; i < renderAtoms.size();) {
-	    ra = (RenderAtom)renderAtoms.get(i);
+		RenderAtom ra = renderAtoms.get(i);
 	    if (ra.lastVisibleTime < removeCutoffTime) {
 		renderAtoms.remove(i);
 		removeARenderAtom(ra);
@@ -4022,7 +4020,7 @@ System.err.println("......tb.soleUser= " +
 	int sz = renderAtoms.size();
 
 	for (int n = 0; n < sz; n++) {
-	    RenderAtom ra =  (RenderAtom)renderAtoms.get(n);
+		RenderAtom ra = renderAtoms.get(n);
 	    if (!ra.inRenderBin() || !ra.geometryAtom.source.appearanceOverrideEnable)
 		continue;
 
@@ -4069,7 +4067,7 @@ System.err.println("......tb.soleUser= " +
 	    FogRetained newfog;
 	    ModelClipRetained newModelClip;
 	    AppearanceRetained app;
-	    RenderAtom ra =  (RenderAtom)renderAtoms.get(n);
+		RenderAtom ra = renderAtoms.get(n);
 	    Object[] retVal;
 
 	    if (!ra.inRenderBin())
@@ -5364,7 +5362,6 @@ System.err.println("......tb.soleUser= " +
     void reEvaluateFog(ArrayList fogs, boolean updateDirty,
 		       boolean altAppDirty) {
 	EnvironmentSet e;
-	RenderAtom ra;
 	FogRetained newfog;
 	int i, j, n;
 	AppearanceRetained app;
@@ -5372,7 +5369,7 @@ System.err.println("......tb.soleUser= " +
 
 	int sz = renderAtoms.size();
 	for (i = 0; i < sz; i++) {
-	    ra =  (RenderAtom)renderAtoms.get(i);
+		RenderAtom ra = renderAtoms.get(i);
 	    if (!ra.inRenderBin())
 		continue;
 
@@ -5466,14 +5463,13 @@ System.err.println("......tb.soleUser= " +
 			     boolean updateDirty,
 			     boolean altAppDirty) {
         EnvironmentSet e;
-        RenderAtom ra;
 	ModelClipRetained newModelClip;
         int i, j, n;
 	AppearanceRetained app;
 	Object[] retVal;
 	int sz =  renderAtoms.size();
         for (i = 0; i < sz; i++) {
-            ra =  (RenderAtom)renderAtoms.get(i);
+		RenderAtom ra = renderAtoms.get(i);
 	    if (!ra.inRenderBin())
 		continue;
 
@@ -5577,14 +5573,13 @@ System.err.println("......tb.soleUser= " +
 
     void reEvaluateLights(boolean altAppDirty) {
 	EnvironmentSet e;
-	RenderAtom ra;
 	LightRetained[] lights;
 	int i, n;
 	AppearanceRetained app;
 	Object[] retVal;
 	int sz = renderAtoms.size();
 	for (i = 0; i < sz; i++) {
-	    ra =  (RenderAtom)renderAtoms.get(i);
+		RenderAtom ra = renderAtoms.get(i);
 	    if (!ra.inRenderBin())
 		continue;
 
@@ -5934,12 +5929,11 @@ System.err.println("......tb.soleUser= " +
     void removeAllRenderAtoms() {
 	int i;
 	J3dMessage m;
-	RenderAtom ra;
 	RenderMolecule rm;
 	int sz =  renderAtoms.size();
 
 	for (i = 0; i < sz; i++) {
-	    ra = (RenderAtom) renderAtoms.get(i);
+		RenderAtom ra = renderAtoms.get(i);
 	    rm = ra.renderMolecule;
 	    removeARenderAtom(ra);
 	    rm.updateRemoveRenderAtoms();
