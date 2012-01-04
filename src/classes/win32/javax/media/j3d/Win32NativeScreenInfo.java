@@ -32,6 +32,7 @@
 package javax.media.j3d;
 
 import java.awt.GraphicsDevice;
+
 import sun.awt.Win32GraphicsDevice;
 
 /**
@@ -45,11 +46,11 @@ class Win32NativeScreenInfo extends NativeScreenInfo {
     private static boolean isWglARB;
 
     private static native boolean queryWglARB();
-    
+
     Win32NativeScreenInfo() {
     }
 
-    // This method will return true if wglGetExtensionsStringARB is supported, 
+    // This method will return true if wglGetExtensionsStringARB is supported,
     // else return false
     static synchronized boolean isWglARB() {
 

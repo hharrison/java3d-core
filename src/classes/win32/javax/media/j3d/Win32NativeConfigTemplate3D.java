@@ -31,11 +31,10 @@
 
 package javax.media.j3d;
 
-import java.awt.GraphicsDevice;
 import java.awt.GraphicsConfiguration;
-import sun.awt.Win32GraphicsDevice;
+
 import sun.awt.Win32GraphicsConfig;
-import java.awt.GraphicsConfigTemplate;
+import sun.awt.Win32GraphicsDevice;
 
 /**
  * Native config template class. A singleton instance of this class is
@@ -76,10 +75,10 @@ class Win32NativeConfigTemplate3D extends NativeConfigTemplate3D {
         Win32GraphicsDevice gd =
             (Win32GraphicsDevice)((Win32GraphicsConfig)gc[0]).getDevice();
 
-	/*  Not ready to enforce ARB extension in J3D1.3.2, but will likely to 
+	/*  Not ready to enforce ARB extension in J3D1.3.2, but will likely to
 	    do so in J3D 1.4.
 	System.out.println("getBestConfiguration : Checking WGL ARB support\n");
-	
+
 	if (!Win32NativeScreenInfo.isWglARB()) {
 	    Thread.dumpStack();
 	    System.out.println("getBestConfiguration : WGL ARB support fail\n");
@@ -94,22 +93,22 @@ class Win32NativeConfigTemplate3D extends NativeConfigTemplate3D {
 	attrList[RED_SIZE] = template.getRedSize();
 	attrList[GREEN_SIZE] = template.getGreenSize();
 	attrList[BLUE_SIZE] = template.getBlueSize();
-	
+
 	attrList[DEPTH_SIZE] = template.getDepthSize();
 	attrList[DOUBLEBUFFER] = template.getDoubleBuffer();
 	attrList[STEREO] = template.getStereo();
 	attrList[ANTIALIASING] = template.getSceneAntialiasing();
     	attrList[STENCIL_SIZE] = template.getStencilSize();
-	// System.out.println("Win32NativeConfigTemplate3D : getStencilSize " + 
+	// System.out.println("Win32NativeConfigTemplate3D : getStencilSize " +
 	// attrList[STENCIL_SIZE]);
 
-        int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);	
+        int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);
 
 	long[] pFormatInfo = new long[1];
 
-	/* Deliberately set this to -1. pFormatInfo is not use in 
+	/* Deliberately set this to -1. pFormatInfo is not use in
 	   D3D, so this value will be unchange in the case of D3D.
-	   In the case of OGL, the return value should be 0 or a 
+	   In the case of OGL, the return value should be 0 or a
 	   positive valid address.
 	*/
 	pFormatInfo[0] = -1;
@@ -124,10 +123,10 @@ class Win32NativeConfigTemplate3D extends NativeConfigTemplate3D {
 	if (pixelFormat  < 0) {
 	    // current mode don't support the minimum config
 	    return null;
-	}	    
+	}
 
-	// Fix to issue 104 -- 
-	// Pass in 0 for pixel format to the AWT. 
+	// Fix to issue 104 --
+	// Pass in 0 for pixel format to the AWT.
 	// ATI driver will lockup pixelFormat, if it is passed to AWT.
         GraphicsConfiguration gc1 = Win32GraphicsConfig.getConfig(gd, 0);
 
@@ -157,7 +156,7 @@ class Win32NativeConfigTemplate3D extends NativeConfigTemplate3D {
         Win32GraphicsDevice gd =
             (Win32GraphicsDevice)((Win32GraphicsConfig) gc).getDevice();
 
-	/*  Not ready to enforce ARB extension in J3D1.3.2, but will likely to 
+	/*  Not ready to enforce ARB extension in J3D1.3.2, but will likely to
 	    do so in J3D 1.4.
 	System.out.println("isGraphicsConfigSupported : Checking WGL ARB support\n");
 
@@ -175,16 +174,16 @@ class Win32NativeConfigTemplate3D extends NativeConfigTemplate3D {
 	attrList[RED_SIZE] = template.getRedSize();
 	attrList[GREEN_SIZE] = template.getGreenSize();
 	attrList[BLUE_SIZE] = template.getBlueSize();
-	
+
 	attrList[DEPTH_SIZE] = template.getDepthSize();
 	attrList[DOUBLEBUFFER] = template.getDoubleBuffer();
 	attrList[STEREO] = template.getStereo();
         attrList[ANTIALIASING] = template.getSceneAntialiasing();
     	attrList[STENCIL_SIZE] = template.getStencilSize();
-	// System.out.println("Win32NativeConfigTemplate3D : getStencilSize " + 
+	// System.out.println("Win32NativeConfigTemplate3D : getStencilSize " +
 	// attrList[STENCIL_SIZE]);
 
-	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);	
+	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);
 
 	long[] pFormatInfo = new long[1];
 
@@ -198,7 +197,7 @@ class Win32NativeConfigTemplate3D extends NativeConfigTemplate3D {
 	if (pixelFormat < 0) {
 	    // current mode don't support the minimum config
 	    return false;
-	} else 
+	} else
             return true;
     }
 
@@ -214,7 +213,7 @@ class Win32NativeConfigTemplate3D extends NativeConfigTemplate3D {
     int getStencilSize(Canvas3D c3d) {
         return getStencilSize(c3d.fbConfig, c3d.offScreen);
     }
-    
+
     // Return whether a double buffer is available.
     @Override
     boolean hasDoubleBuffer(Canvas3D c3d) {
@@ -226,7 +225,7 @@ class Win32NativeConfigTemplate3D extends NativeConfigTemplate3D {
     boolean hasSceneAntialiasingAccum(Canvas3D c3d) {
 	return isSceneAntialiasingAccumAvailable(c3d.fbConfig, c3d.offScreen);
     }
-    
+
     // Return whether scene antialiasing is available.
     @Override
     boolean hasSceneAntialiasingMultisample(Canvas3D c3d) {
@@ -235,10 +234,10 @@ class Win32NativeConfigTemplate3D extends NativeConfigTemplate3D {
         Win32GraphicsDevice gd =
 	    (Win32GraphicsDevice)((Win32GraphicsConfig)gc).getDevice();
 	int screen = NativeScreenInfo.getNativeScreenInfo().getScreen(gd);
-	/* Fix to issue 77 */ 
+	/* Fix to issue 77 */
 	return isSceneAntialiasingMultisampleAvailable(c3d.fbConfig, c3d.offScreen, screen);
     }
-       
+
     // Ensure that the native libraries are loaded
     static {
  	VirtualUniverse.loadLibraries();
