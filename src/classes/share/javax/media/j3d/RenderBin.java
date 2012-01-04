@@ -2253,7 +2253,7 @@ ArrayList<NodeComponentUpdate> updateCheckList = new ArrayList<NodeComponentUpda
 
 	        // then add the new one to the list if it is byReference
 	        if (images[i] != null ) {
-	            this.addNodeComponent(((ImageComponent)images[i]).retained);
+				this.addNodeComponent((images[i]).retained);
 	        }
 	    }
 	    break;
@@ -3110,7 +3110,7 @@ System.err.println("......tb.soleUser= " +
 		if (g == renderAtom.rListInfo[j].geometry())
 		    break;
 	    }
-	    RenderAtomListInfo ra = (RenderAtomListInfo)renderAtom.rListInfo[j];
+		RenderAtomListInfo ra = renderAtom.rListInfo[j];
 	    if ((ra.groupType & RenderAtom.DLIST) != 0)
 		addDirtyRenderMolecule(ra.renderAtom.renderMolecule);
 
@@ -3547,7 +3547,7 @@ System.err.println("......tb.soleUser= " +
 
 			    if (ra.hasSeparateLocaleVwcBounds()
 				&& !ra.onLocaleVwcBoundsUpdateList()) {
-				ra.dirtyMask |= ra.ON_LOCALE_VWC_BOUNDS_UPDATELIST;
+							ra.dirtyMask |= RenderAtom.ON_LOCALE_VWC_BOUNDS_UPDATELIST;
 				raLocaleVwcBoundsUpdateList.add(ra);
 			    }
 
@@ -4444,12 +4444,12 @@ System.err.println("......tb.soleUser= " +
 	    if (!ra.hasSeparateLocaleVwcBounds()) {
 		ra.dirtyMask |= RenderAtom.HAS_SEPARATE_LOCALE_VWC_BOUNDS;
 		ra.localeVwcBounds = new BoundingBox(ga.source.vwcBounds);
-		ra.dirtyMask |= ra.ON_LOCALE_VWC_BOUNDS_UPDATELIST;
+		ra.dirtyMask |= RenderAtom.ON_LOCALE_VWC_BOUNDS_UPDATELIST;
 		raLocaleVwcBoundsUpdateList.add(ra);
 	    }
 	    else {
 		ra.localeVwcBounds.set(ga.source.vwcBounds);
-		ra.dirtyMask |= ra.ON_LOCALE_VWC_BOUNDS_UPDATELIST;
+		ra.dirtyMask |= RenderAtom.ON_LOCALE_VWC_BOUNDS_UPDATELIST;
 		raLocaleVwcBoundsUpdateList.add(ra);
 	    }
 	}
@@ -5773,7 +5773,7 @@ System.err.println("......tb.soleUser= " +
 	removeNodeComponentList.add(nc);
     }
 
-    void addDirtyNodeComponent(Object nc) {
+    void addDirtyNodeComponent(NodeComponentRetained nc) {
 	dirtyNodeComponentList.add(nc);
     }
 
@@ -6713,7 +6713,6 @@ System.err.println("......tb.soleUser= " +
 	ArrayList viewScopedNodes = (ArrayList)m.args[3];
 	ArrayList scopedNodesViewList = (ArrayList)m.args[4];
 	int i, j;
-	Object n;
 	nodes = (Object[])m.args[0];
 	for (j = 0; j < nodes.length; j++) {
     	    if (nodes[j] instanceof LightRetained) {
@@ -6748,7 +6747,7 @@ System.err.println("......tb.soleUser= " +
 	    int size = viewScopedNodes.size();
 	    int vlsize;
 	    for (i = 0; i < size; i++) {
-		n = (NodeRetained)viewScopedNodes.get(i);
+			NodeRetained n = (NodeRetained) viewScopedNodes.get(i);
 		ArrayList vl = (ArrayList) scopedNodesViewList.get(i);
 		// If the node object is scoped to this view, then ..
 		if (vl.contains(view)) {
@@ -6831,9 +6830,8 @@ System.err.println("......tb.soleUser= " +
         if (viewScopedNodes != null) {
             int size = viewScopedNodes.size();
             int vlsize;
-            Object node;
             for (i = 0; i < size; i++) {
-                node = (NodeRetained)viewScopedNodes.get(i);
+			NodeRetained node = (NodeRetained) viewScopedNodes.get(i);
                 ArrayList vl = (ArrayList) scopedNodesViewList.get(i);
                 // If the node object is scoped to this view, then ..
                 if (vl.contains(view)) {
