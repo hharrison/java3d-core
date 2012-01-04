@@ -410,12 +410,8 @@ ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
 	int i, j, k;
 	RenderAtomListInfo ra;
 	LightBin tmp;
-	float radius;
-	BackgroundRetained bg;
 	ObjectUpdate ob;
 	OrderedBin orderBin;
-	TextureRetained tex;
-	Integer texIdObj;
 	int size;
 
 	//	System.err.println("dirtyRenderMoleculeList.size = "+dirtyRenderMoleculeList.size());
@@ -873,7 +869,7 @@ ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
 	    }
 
 	    if (size > 0) {
-		TransparentRenderingInfo dirtyList = null, rList;
+		TransparentRenderingInfo dirtyList = null;
 		Iterator dirtyDepthSortIterator = dirtyDepthSortRenderAtom.iterator();
 		while (dirtyDepthSortIterator.hasNext()) {
 		    RenderAtom renderAtom = (RenderAtom)dirtyDepthSortIterator.next();
@@ -1356,8 +1352,7 @@ ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
     }
 
     void processMessages(long referenceTime) {
-	int i,j, index;
-	Object[] nodes;
+	int i;
 	J3dMessage messages[], m;
 	int component;
 
@@ -1897,7 +1892,6 @@ ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
 	UnorderList arrList;
 	int size;
 	Object[] nodes, nodesArr;
-	LeafRetained leaf;
 
 	RenderingEnvironmentStructure rdrEnvStr =
 	    universe.renderingEnvironmentStructure;
@@ -1942,7 +1936,6 @@ ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
 	    nodesArr = arrList.toArray(false);
 	    Object[] objArr = (Object[])m.args[1];
 	    Object[] obj, users;
-	    BoundingLeafRetained mbleaf;
 
 	    for (int h=0; h<size; h++) {
 		nodes = (Object[])nodesArr[h];
@@ -1950,7 +1943,7 @@ ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
 		for (i=0; i<nodes.length; i++) {
 
 		    users = (Object[])obj[i];
-		    mbleaf = (BoundingLeafRetained)nodes[i];
+			// BoundingLeafRetained mbleaf = (BoundingLeafRetained) nodes[i];
 		    for (int j = 0; j < users.length; j++) {
 
 			if (users[j] instanceof FogRetained &&
@@ -2010,7 +2003,7 @@ ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
     void processRenderMoleculeNodeComponentChanged(Object[] args, int mask, int start,
 						   boolean restructure) {
        	int i;
-	NodeComponentRetained nc = (NodeComponentRetained) args[0];
+	// NodeComponentRetained nc = (NodeComponentRetained) args[0];
 	GeometryAtom[] gaArr = (GeometryAtom[])args[3];
 	for (i = start; i < gaArr.length; i++) {
 	    RenderAtom ra = gaArr[i].getRenderAtom(view);
@@ -2181,8 +2174,6 @@ ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
 
 	RenderAtom ra = null;
 	TextureBin tb;
-        ShaderBin sb;
-	boolean reInsertNeeded = false;
         int command = ((Integer)args[1]).intValue();
 
 	switch (command) {
@@ -2413,7 +2404,6 @@ ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
 	int component = ((Integer)args[1]).intValue();
 	int i;
 	GeometryAtom[] gaArr = (GeometryAtom[] )args[3];
-	GeometryAtom  ga;
 	RenderAtom ra = null;
 	/* TODO : JADA - Sole user logic is incomplete. Will disable for JavaOne */
 	// Note : args[0] may be a ShaderAppearanceRetained or ShaderAttributeSetRetained
@@ -2564,7 +2554,6 @@ ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
 	int component = ((Integer)args[1]).intValue();
 	int i;
 	GeometryAtom[] gaArr = (GeometryAtom[] )args[3];
-	GeometryAtom  ga;
 	RenderAtom ra = null;
 	AppearanceRetained app = (AppearanceRetained) args[0];
 	int TEXTURE_STATE_CHANGED =
@@ -2839,9 +2828,7 @@ System.err.println("......tb.soleUser= " +
 	int component = ((Integer)args[1]).intValue();
 	int i;
 	RenderAtom ra;
-	RenderAtom raNext;
 	EnvironmentSet e;
-	TextureBin tb;
 	if ((component & Shape3DRetained.APPEARANCE_CHANGED) != 0) {
 	    GeometryAtom[] gaArr = (GeometryAtom[])args[4];
 	    if (gaArr.length > 0) {
@@ -2935,12 +2922,8 @@ System.err.println("......tb.soleUser= " +
      */
     void processDataChanged(Object[] oldGaList,
 			    Object[] newGaList, long referenceTime) {
-	Shape3DRetained s, src;
 	RenderAtom ra;
-	RenderMolecule rm;
-	int i, j;
-	Transform3D trans;
-	ArrayList rmChangedList = new ArrayList(5);
+	int i;
 	GeometryRetained geo;
 	GeometryAtom ga;
 
@@ -2974,9 +2957,7 @@ System.err.println("......tb.soleUser= " +
 	int component = ((Integer)args[1]).intValue();
 	int i;
 	RenderAtom ra;
-	TextureBin tb;
 	EnvironmentSet e;
-	RenderAtom raNext;
 	if ((component & MorphRetained.APPEARANCE_CHANGED) != 0) {
 	    GeometryAtom[] gaArr = (GeometryAtom[])args[4];
 	    if (gaArr.length > 0) {
@@ -3068,7 +3049,6 @@ System.err.println("......tb.soleUser= " +
      * has changed.
      */
     void updateViewPlatform(ViewPlatformRetained vp, float radius) {
-	Transform3D trans = null;
 	ViewPlatform viewP = view.getViewPlatform();
 	if (viewP != null && (ViewPlatformRetained)viewP.retained == vp) {
 	    vpcToVworld = vp.getCurrentLocalToVworld(null);
@@ -3180,7 +3160,6 @@ System.err.println("......tb.soleUser= " +
     }
 
     void addDirtyRenderMolecule(RenderMolecule rm) {
-	int i;
 
 	if ((rm.onUpdateList & RenderMolecule.IN_DIRTY_RENDERMOLECULE_LIST) == 0) {
 	    if (rm.onUpdateList == 0) {
@@ -3194,7 +3173,6 @@ System.err.println("......tb.soleUser= " +
 
 
     void removeDirtyRenderMolecule(RenderMolecule rm) {
-	int i;
 	if ((rm.onUpdateList & RenderMolecule.IN_DIRTY_RENDERMOLECULE_LIST) != 0) {
 	    rm.onUpdateList &= ~RenderMolecule.IN_DIRTY_RENDERMOLECULE_LIST;
 	    if (rm.onUpdateList == 0) {
@@ -3425,12 +3403,11 @@ System.err.println("......tb.soleUser= " +
 
 
     private void processOrderedGroupRemoved(J3dMessage m) {
-	int i, n;
+	int n;
 	Object[] ogList = (Object[])m.args[0];
 	Object[] ogChildIdList = (Object[])m.args[1];
 	OrderedGroupRetained og;
 	int index;
-	int val;
 	OrderedBin ob;
 	OrderedChildInfo cinfo = null;
 
@@ -3503,11 +3480,9 @@ System.err.println("......tb.soleUser= " +
     }
 
     private void processTransformChanged(long referenceTime) {
-	int i, j, k, numRenderMolecules, n;
-	Shape3DRetained s;
+	int i, j, n;
 	RenderMolecule rm;
 	RenderAtom ra;
-	Transform3D trans;
 	LightRetained[] lights;
 	FogRetained fog;
 	ModelClipRetained modelClip;
@@ -3748,7 +3723,7 @@ System.err.println("......tb.soleUser= " +
      * This processes a LIGHT change.
      */
     private void processLightChanged() {
-	int i, j, k, l, n;
+	int i, j, k, n;
 	LightRetained lt;
 	EnvironmentSet e;
 	Object[] args;
@@ -3922,7 +3897,6 @@ System.err.println("......tb.soleUser= " +
         int i;
 	GeometryAtom ga;
 	RenderAtom renderAtom;
-	RenderMolecule rm;
 	RenderAtomListInfo ra;
 	GeometryRetained geo;
 
@@ -3950,7 +3924,7 @@ System.err.println("......tb.soleUser= " +
 
 	    // This means that the renderAtom was not visible in the last
 	    // frame ,so , no contention with the renderer ...
-	    rm = insertRenderAtom(renderAtom);
+		RenderMolecule rm = insertRenderAtom(renderAtom);
         }
 
     }
@@ -4134,10 +4108,6 @@ System.err.println("......tb.soleUser= " +
 	LightBin currentBin, lightBin;
 	EnvironmentSet currentEnvSet, newBin;
 	EnvironmentSet eNew = null;
-	AttributeBin attributeBin;
-	TextureBin textureBin;
-	RenderMolecule renderMolecule;
-	FogRetained newfog;
 	LightBin addBin;
 	OrderedCollection oc = null;
 	int i;
@@ -4381,13 +4351,11 @@ System.err.println("......tb.soleUser= " +
      * This inserts a RenderAtom into the appropriate bin.
      */
     private RenderMolecule insertRenderAtom(RenderAtom ra) {
-	LightBin lightBin;
 	EnvironmentSet environmentSet;
 	AttributeBin attributeBin;
 	ShaderBin shaderBin;
 	TextureBin textureBin;
 	RenderMolecule renderMolecule;
-	OrderedCollection oc;
 	AppearanceRetained app;
 	Object[] retVal;
         GeometryAtom ga = ra.geometryAtom;
@@ -4654,15 +4622,7 @@ System.err.println("......tb.soleUser= " +
     }
 
     private void removeOrderedHeadLightBin(LightBin lightBin) {
-        int i, k;
-        int oi; // an id which identifies a children of the orderedGroup
-        int ci; // child index of the ordered group
-        ArrayList ocs;
         OrderedCollection oc;
-        OrderedBin ob, savedOb;
-	int n, val;
-
-
 
 	oc = lightBin.orderedCollection;
 
@@ -4766,7 +4726,6 @@ System.err.println("......tb.soleUser= " +
     private TextureBin findTextureBin(ShaderBin shaderBin, RenderAtom ra) {
 	int i, size;
 	TextureBin currentBin;
-	TextureRetained texture;
 	TextureUnitStateRetained texUnitState[];
 
 	if (ra.app == null) {
@@ -5360,7 +5319,7 @@ System.err.println("......tb.soleUser= " +
 		       boolean altAppDirty) {
 	EnvironmentSet e;
 	FogRetained newfog;
-	int i, j, n;
+	int i;
 	AppearanceRetained app;
 	Object[] retVal;
 
@@ -5461,7 +5420,7 @@ System.err.println("......tb.soleUser= " +
 			     boolean altAppDirty) {
         EnvironmentSet e;
 	ModelClipRetained newModelClip;
-        int i, j, n;
+        int i;
 	AppearanceRetained app;
 	Object[] retVal;
 	int sz =  renderAtoms.size();
@@ -5571,7 +5530,7 @@ System.err.println("......tb.soleUser= " +
     void reEvaluateLights(boolean altAppDirty) {
 	EnvironmentSet e;
 	LightRetained[] lights;
-	int i, n;
+	int i;
 	AppearanceRetained app;
 	Object[] retVal;
 	int sz = renderAtoms.size();
@@ -5824,9 +5783,7 @@ System.err.println("......tb.soleUser= " +
 
     void clearDirtyOrientedRAs() {
         int i, nRAs;
-        Canvas3D cv;
         RenderAtom ra;
-        OrientedShape3DRetained os;
 	nRAs = dirtyOrientedRAs.size();
 
 	// clear the dirtyMask
@@ -5925,7 +5882,6 @@ System.err.println("......tb.soleUser= " +
 
     void removeAllRenderAtoms() {
 	int i;
-	J3dMessage m;
 	RenderMolecule rm;
 	int sz =  renderAtoms.size();
 
@@ -6834,7 +6790,7 @@ System.err.println("......tb.soleUser= " +
         Object[] nodes;
         ArrayList viewScopedNodes = (ArrayList)m.args[3];
         ArrayList scopedNodesViewList = (ArrayList)m.args[4];
-        int i, j;
+        int i;
         nodes = (Object[])m.args[0];
         for (int n = 0; n < nodes.length; n++) {
             if (nodes[n] instanceof GeometryAtom) {
