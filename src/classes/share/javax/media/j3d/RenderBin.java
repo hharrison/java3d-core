@@ -71,17 +71,17 @@ ArrayList<J3dMessage> lightMessageList = new ArrayList<J3dMessage>(5);
 ArrayList<RenderMolecule> rmUpdateList = new ArrayList<RenderMolecule>();
 ArrayList<AttributeBin> aBinUpdateList = new ArrayList<AttributeBin>();
 
-    /**
-     * List of ShaderBin that are soleUser that
-     * needs to have its components updated @updateObject time
-     */
-    ArrayList sBinUpdateList = new ArrayList();
+/**
+ * List of ShaderBin that are soleUser that needs to have its components updated @updateObject
+ * time
+ */
+ArrayList<ShaderBin> sBinUpdateList = new ArrayList<ShaderBin>();
 
-    /**
-     * List of TextureBin that are soleUser that
-     * needs to have its components updated @updateObject time
-     */
-    ArrayList tbUpdateList = new ArrayList();
+/**
+ * List of TextureBin that are soleUser that needs to have its components
+ * updated @updateObject time
+ */
+ArrayList<TextureBin> tbUpdateList = new ArrayList<TextureBin>();
 
     /**
      * List of Bins that are soleUser that have new renderAtom
@@ -545,7 +545,7 @@ ArrayList<AttributeBin> aBinUpdateList = new ArrayList<AttributeBin>();
 
 	if ((size = sBinUpdateList.size()) > 0) {
 	    for (i = 0; i < size; i++) {
-		ShaderBin sbin = (ShaderBin)sBinUpdateList.get(i);
+			ShaderBin sbin = sBinUpdateList.get(i);
 		sbin.updateNodeComponent();
 	    }
 	}
@@ -555,14 +555,14 @@ ArrayList<AttributeBin> aBinUpdateList = new ArrayList<AttributeBin>();
 	    TextureBin tb;
 	    size = tbUpdateList.size();
 	    for (i = 0; i < size; i++) {
-		tb = (TextureBin) tbUpdateList.get(i);
+		tb = tbUpdateList.get(i);
 		tb.updateNodeComponent();
 	    }
 
 	    // do another pass to re-sort TextureBin based on the
 	    // texture in the first texture unit state
 	    for (i = 0; i < size; i++) {
-		tb = (TextureBin) tbUpdateList.get(i);
+		tb = tbUpdateList.get(i);
 		// Bug Id : 4701430 - Have to be sure tb.shaderBin is
 		// not equal to null. This is a temporary fix for j3d1.3.
 		if (((tb.tbFlag & TextureBin.RESORT) != 0) &&
