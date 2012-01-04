@@ -56,10 +56,10 @@ class RenderBin extends J3dStructure  implements ObjectUpdate {
  */
 ArrayList<RenderAtom> renderAtoms = new ArrayList<RenderAtom>(5);
 
-    /**
-     * A couple ArrayLists used during light Processing
-     */
-    ArrayList lightMessageList = new ArrayList(5);
+/**
+ * A couple ArrayLists used during light Processing
+ */
+ArrayList<J3dMessage> lightMessageList = new ArrayList<J3dMessage>(5);
 
     // Messges retrieved when a message is sent to RenderingEnv Structure
     J3dMessage[] m;
@@ -3760,7 +3760,7 @@ System.err.println("......tb.soleUser= " +
 	int lightSize = lightMessageList.size();
 
 	for (n = 0; n < lightSize; n++) {
-	    J3dMessage msg = (J3dMessage)lightMessageList.get(n);
+		J3dMessage msg = lightMessageList.get(n);
 	    args = msg.args;
 	    mLts = (LightRetained[])args[3];
 	    component = ((Integer)args[1]).intValue();
