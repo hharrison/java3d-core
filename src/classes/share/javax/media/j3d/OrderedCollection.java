@@ -42,8 +42,8 @@ class OrderedCollection extends Object implements ObjectUpdate{
 
     LightBin lightBin = null;
 
-    // a list of top level orderedBins under this orderedCollection
-    ArrayList childOrderedBins = new ArrayList();
+// a list of top level orderedBins under this orderedCollection
+ArrayList<OrderedBin> childOrderedBins = new ArrayList<OrderedBin>();
 
     // LightBin used for next frame
     LightBin nextFrameLightBin = null;

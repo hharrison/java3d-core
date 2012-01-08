@@ -189,11 +189,11 @@ ArrayList<RenderAtom> positionDirtyList = new ArrayList<RenderAtom>(5);
 
     private Comparator transparencySortComparator = null;
 
-    private ArrayList toBeAddedTextureResourceFreeList = new ArrayList(5);
+private ArrayList<TextureRetained> toBeAddedTextureResourceFreeList = new ArrayList<TextureRetained>(5);
 private ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>(5);
 
-    // a list of top level OrderedGroups
-    ArrayList orderedBins = new ArrayList(5);
+// a list of top level OrderedGroups
+ArrayList<OrderedBin> orderedBins = new ArrayList<OrderedBin>(5);
 
     // List of changed elements in the environment that needs to
     // be reloaded
@@ -224,10 +224,10 @@ private ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>(
 	new IndexedUnorderSet(RenderMolecule.class,
 			      RenderMolecule.RENDER_MOLECULE_LIST, null);
 
-    // List of renderAtoms that have a shared dlist (due to geo.refCount > 1)
-    // Fix for Issue 5: change this to a Set rather than a list to
-    // avoid duplicates entried
-    Collection sharedDList = new HashSet();
+// List of renderAtoms that have a shared dlist (due to geo.refCount > 1)
+// Fix for Issue 5: change this to a Set rather than a list to
+// avoid duplicates entried
+Collection<RenderAtomListInfo> sharedDList = new HashSet<RenderAtomListInfo>();
 
 ArrayList<RenderMolecule> dirtyRenderMoleculeList = new ArrayList<RenderMolecule>(5);
 
@@ -282,7 +282,7 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
     // background geometry processing
     LightBin bgOpaqueBin = null;
     LightBin bgAddOpaqueBin = null;
-    ArrayList bgOrderedBins = new ArrayList(5);
+ArrayList<OrderedBin> bgOrderedBins = new ArrayList<OrderedBin>(5);
     TransparentRenderingInfo  bgTransparentInfo;
 
 
@@ -1225,7 +1225,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 	size = toBeAddedTextureResourceFreeList.size();
 	int id;
 	for (int j=0; j < size; j++) {
-	    tex = (TextureRetained)toBeAddedTextureResourceFreeList.get(j);
+		tex = toBeAddedTextureResourceFreeList.get(j);
 	    id = tex.objectId;
 	    if ((id >= rdr.textureIDResourceTable.size()) ||
 		(id <= 0) ||
@@ -1310,7 +1310,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 	    size = toBeAddedTextureResourceFreeList.size();
 	    int id;
 	    for (j=0; j < size; j++) {
-		tex = (TextureRetained)toBeAddedTextureResourceFreeList.get(j);
+			tex = toBeAddedTextureResourceFreeList.get(j);
 		id = tex.objectId;
 		if ((id >= cv.textureIDResourceTable.size()) ||
 		    (id <= 0) ||
@@ -3267,7 +3267,7 @@ System.err.println("......tb.soleUser= " +
 	    RenderAtomListInfo ra;
 	    GeometryArrayRetained geo;
 	    RenderAtomListInfo arr[] = new RenderAtomListInfo[size];
-	    arr = (RenderAtomListInfo []) sharedDList.toArray(arr);
+		arr = sharedDList.toArray(arr);
 	    int bitMask = cv.canvasBit;
 
 	    // We need two passes to avoid extra buildDisplayList
@@ -3316,7 +3316,7 @@ System.err.println("......tb.soleUser= " +
 	size =  sharedDList.size();
 	if (size > 0) {
 	    RenderAtomListInfo arr[] = new RenderAtomListInfo[size];
-	    arr = (RenderAtomListInfo []) sharedDList.toArray(arr);
+		arr = sharedDList.toArray(arr);
 	    RenderAtomListInfo ra;
 
 	    if (!setCtx) {
@@ -4467,7 +4467,7 @@ System.err.println("......tb.soleUser= " +
         OrderedGroupRetained og;
         OrderedCollection oc = null;
 	ArrayList<OrderedCollection> ocs;
-        ArrayList parentChildOrderedBins;
+	ArrayList<OrderedBin> parentChildOrderedBins;
         OrderedBin parentOrderedBin;
         int parentOrderedChildId;
 	OrderedBin ob;
@@ -5187,15 +5187,13 @@ System.err.println("......tb.soleUser= " +
             renderOrderedBins(cv, orderedBins, false);
     }
 
-    void renderOrderedBins(Canvas3D cv, ArrayList bins, boolean doInfinite) {
-        int sz = bins.size();
+void renderOrderedBins(Canvas3D cv, ArrayList<OrderedBin> bins, boolean doInfinite) {
+	int sz = bins.size();
 
-        for (int i=0; i <sz; i++) {
-            renderOrderedBin(cv,
-			     (OrderedBin) bins.get(i),
-			     doInfinite);
-        }
-    }
+	for (int i = 0; i < sz; i++) {
+		renderOrderedBin(cv, bins.get(i), doInfinite);
+	}
+}
 
     void renderOrderedBin(Canvas3D cv, OrderedBin orderedBin,
 			  boolean doInfinite) {
@@ -5897,7 +5895,7 @@ System.err.println("......tb.soleUser= " +
 	lockGeometryList.clear();
 	// clear out this orderedBin's entry in the orderedGroup
 	for (i = 0; i < orderedBins.size(); i++) {
-	    removeOrderedBin((OrderedBin) orderedBins.get(i));
+		removeOrderedBin(orderedBins.get(i));
 	}
 	orderedBins.clear();
 	bgOrderedBins.clear();
@@ -5918,7 +5916,7 @@ System.err.println("......tb.soleUser= " +
 		continue;
 
 	    for (k = 0; k < oc.childOrderedBins.size(); k++) {
-		removeOrderedBin((OrderedBin)(oc.childOrderedBins.get(k)));
+			removeOrderedBin(oc.childOrderedBins.get(k));
 	    }
 	}
 	if (ob.source != null) {
@@ -6883,7 +6881,7 @@ void addGeometryDlist(RenderAtomListInfo ra) {
 	size =  sharedDList.size();
 	if (size > 0) {
 	    RenderAtomListInfo arr[] = new RenderAtomListInfo[size];
-	    arr = (RenderAtomListInfo []) sharedDList.toArray(arr);
+		arr = sharedDList.toArray(arr);
 
 	    GeometryArrayRetained geo;
 	    int mask = (cv.useSharedCtx ? rdr.rendererBit : cv.canvasBit);
@@ -6924,7 +6922,7 @@ void addGeometryDlist(RenderAtomListInfo ra) {
 	size =  sharedDList.size();
 	if (size > 0) {
 	    RenderAtomListInfo arr[] = new RenderAtomListInfo[size];
-	    arr = (RenderAtomListInfo []) sharedDList.toArray(arr);
+		arr = sharedDList.toArray(arr);
 	    GeometryArrayRetained geo;
 
 	    for (i = 0; i < size; i++) {
