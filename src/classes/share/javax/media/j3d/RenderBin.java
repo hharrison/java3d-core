@@ -113,11 +113,11 @@ ArrayList<NodeComponentUpdate> updateCheckList = new ArrayList<NodeComponentUpda
 
     TransparentRenderingInfo  transparentInfo;
 
-    /**
-     * List of RenderAtoms whose postion have changed - only used for
-     * depth sorted transparency
-     */
-    ArrayList positionDirtyList = new ArrayList(5);
+/**
+ * List of RenderAtoms whose postion have changed - only used for depth sorted
+ * transparency
+ */
+ArrayList<RenderAtom> positionDirtyList = new ArrayList<RenderAtom>(5);
 
     /**
      * Used when ColoringAttributes is null
@@ -229,7 +229,7 @@ ArrayList<NodeComponentUpdate> updateCheckList = new ArrayList<NodeComponentUpda
     // avoid duplicates entried
     Collection sharedDList = new HashSet();
 
-    ArrayList dirtyRenderMoleculeList = new ArrayList(5);
+ArrayList<RenderMolecule> dirtyRenderMoleculeList = new ArrayList<RenderMolecule>(5);
 
 
 /**
@@ -237,7 +237,7 @@ ArrayList<NodeComponentUpdate> updateCheckList = new ArrayList<NodeComponentUpda
  */
 ArrayList<ObjectUpdate> objUpdateList = new ArrayList<ObjectUpdate>(5);
 
-    ArrayList raLocaleVwcBoundsUpdateList = new ArrayList(5);
+ArrayList<RenderAtom> raLocaleVwcBoundsUpdateList = new ArrayList<RenderAtom>(5);
 
     /**
      * remove the bins first before adding them to new ones
@@ -525,7 +525,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
         if ( size > 0) {
             RenderAtom renderAtom;
             for (i = 0; i < size; i++) {
-                renderAtom = (RenderAtom)raLocaleVwcBoundsUpdateList.get(i);
+			renderAtom = raLocaleVwcBoundsUpdateList.get(i);
                 renderAtom.updateLocaleVwcBounds();
             }
         }
@@ -956,7 +956,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 	    // and just toggle?
 	    size = dirtyRenderMoleculeList.size();
 	    for (i = 0; i < size; i++) {
-			RenderMolecule rm = (RenderMolecule)dirtyRenderMoleculeList.get(i);
+			RenderMolecule rm = dirtyRenderMoleculeList.get(i);
 		rm.onUpdateList = 0;
 		ra = rm.primaryRenderAtomList;
 		while (ra != null) {
@@ -1215,7 +1215,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 	size = dirtyRenderMoleculeList.size();
 	if (size > 0) {
 	    for (int j = 0; j < size; j++) {
-		rm =(RenderMolecule)dirtyRenderMoleculeList.get(j);
+			rm = dirtyRenderMoleculeList.get(j);
 		rdr.dirtyRenderMoleculeList.add(rm);
 	    }
 	    rdr.dirtyDisplayList = true;
@@ -1301,7 +1301,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 	    size = dirtyRenderMoleculeList.size();
 	    if (size > 0) {
 		for (j = 0; j < size; j++) {
-		    rm = (RenderMolecule)dirtyRenderMoleculeList.get(j);
+				rm = dirtyRenderMoleculeList.get(j);
 		    cv.dirtyRenderMoleculeList.add(rm);
 		}
 		cv.dirtyDisplayList = true;
