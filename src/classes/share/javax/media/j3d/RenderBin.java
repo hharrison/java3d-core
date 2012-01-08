@@ -4671,7 +4671,7 @@ System.err.println("......tb.soleUser= " +
 	}
 	// Check the "to-be-added" list of attributeBins for a match
 	for (i = 0; i < envSet.addAttributeBins.size(); i++) {
-	    currentBin = (AttributeBin)envSet.addAttributeBins.get(i);
+		currentBin = envSet.addAttributeBins.get(i);
 	    if (currentBin.equals(renderingAttributes, ra)) {
 		return(currentBin);
 	    }
@@ -5623,7 +5623,7 @@ System.err.println("......tb.soleUser= " +
 			lmask = 0;
 			ltsize = e.lights.size();
 			for (j = 0; j < ltsize; j++) {
-			    LightRetained curLt = (LightRetained)e.lights.get(j);
+						LightRetained curLt = e.lights.get(j);
 			    if (lt == curLt) {
 				lmask = (1 << e.ltPos[j]);
 				if (curLt.lightOn == true) {

@@ -50,10 +50,10 @@ class EnvironmentSet extends Object implements ObjectUpdate{
     static final int FOG_CHANGED               = 0x04;
     static final int MODELCLIP_CHANGED         = 0x08;
 
-    /**
-     * The ArrayList of Lights in this EnvironmentSet
-     */
-    ArrayList lights = new ArrayList();
+/**
+ * The ArrayList of Lights in this EnvironmentSet
+ */
+ArrayList<LightRetained> lights = new ArrayList<LightRetained>();
 
     /**
      * The position of the light in the lightbin that the
@@ -62,10 +62,10 @@ class EnvironmentSet extends Object implements ObjectUpdate{
     int[] ltPos = null;
 
 
-    /**
-     * The arraylist of ambient lights in this env list
-     */
-    ArrayList ambLights = new ArrayList();
+/**
+ * The arraylist of ambient lights in this env list
+ */
+ArrayList<LightRetained> ambLights = new ArrayList<LightRetained>();
 
     /**
      * The LightBin that this EnvironmentSet resides
@@ -112,11 +112,10 @@ class EnvironmentSet extends Object implements ObjectUpdate{
     EnvironmentSet next = null;
     EnvironmentSet prev = null;
 
-    /**
-     * List of attrributeBins to be added next Frame
-     */
-    ArrayList addAttributeBins = new ArrayList();
-
+/**
+ * List of attrributeBins to be added next Frame
+ */
+ArrayList<AttributeBin> addAttributeBins = new ArrayList<AttributeBin>();
 
     /**
      * Canvas Dirty Mask for
@@ -306,7 +305,7 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 	AttributeBin a;
 
 	if (addAttributeBins.size() > 0) {
-	    a = (AttributeBin)addAttributeBins.get(0);
+		a = addAttributeBins.get(0);
 	    if (attributeBinList == null) {
 		attributeBinList = a;
 
@@ -317,7 +316,7 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 		attributeBinList = a;
 	    }
 	    for (i = 1; i < addAttributeBins.size() ; i++) {
-		a = (AttributeBin) addAttributeBins.get(i);
+			a = addAttributeBins.get(i);
 		a.next = attributeBinList;
 		attributeBinList.prev = a;
 		attributeBinList = a;
@@ -366,7 +365,6 @@ class EnvironmentSet extends Object implements ObjectUpdate{
      * Removes the given AttributeBin from this EnvironmentSet.
      */
     void removeAttributeBin(AttributeBin a) {
-	LightRetained light;
 	int i;
 
 	a.environmentSet = null;
@@ -401,11 +399,11 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 	    // that use this
 	    int sz = lights.size();
 	    for (i=0; i < sz; i++) {
-		((LightRetained) lights.get(i)).environmentSets.remove(this);
+			lights.get(i).environmentSets.remove(this);
 	    }
 	    sz = ambLights.size();
 	    for (i = 0; i < sz; i++) {
-		((LightRetained) ambLights.get(i)).environmentSets.remove(this);
+			ambLights.get(i).environmentSets.remove(this);
 	    }
 	    if (fog != null) {
 		fog.environmentSets.remove(this);
@@ -421,7 +419,7 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 	sceneAmbient.y = 0.0f;
 	sceneAmbient.z = 0.0f;
 	for (i=0; i<ambLights.size(); i++) {
-	    LightRetained aL = (LightRetained) ambLights.get(i);
+		LightRetained aL = ambLights.get(i);
 	    if (aL.lightOn) {
 		sceneAmbient.x += aL.color.x;
 		sceneAmbient.y += aL.color.y;
@@ -457,9 +455,6 @@ class EnvironmentSet extends Object implements ObjectUpdate{
 
 
     void updateAttributes(Canvas3D cv) {
-	LightRetained light;
-	int i, numLights;
-	float red, green, blue;
 	double scale;
 	boolean updateSceneAmbient = false, updateLightEnables = false;
 	boolean updateModelClip = false, updateFog = false;

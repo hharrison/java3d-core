@@ -161,7 +161,7 @@ class LightBin extends Object implements ObjectUpdate {
         numEsLights = e.lights.size();
 	slotsNeeded = numEsLights;
 	for (i=0; i<numEsLights; i++) {
-	    light = (LightRetained) e.lights.get(i);
+		light = e.lights.get(i);
 	    if (light instanceof AmbientLightRetained) {
 		continue;
 	    }
@@ -188,7 +188,7 @@ class LightBin extends Object implements ObjectUpdate {
 
 	numEsLights = e.lights.size();
 	for (i=0; i<numEsLights; i++) {
-	    light = (LightRetained) e.lights.get(i);
+		light = e.lights.get(i);
 	    if (light instanceof AmbientLightRetained) {
 		continue;
 	    }
@@ -311,7 +311,7 @@ class LightBin extends Object implements ObjectUpdate {
 	else {
 	    numEsLights = e.lights.size();
 	    for (i=0; i<numEsLights; i++) {
-		light = (LightRetained) e.lights.get(i);
+			light = e.lights.get(i);
 		for (j=0; j<maxLights; j++) {
 		    if (lights[j] == light) {
 			lightsRef[j]--;
