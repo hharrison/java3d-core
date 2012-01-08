@@ -130,11 +130,11 @@ ViewPlatformRetained[] viewPlatformList = null;
     // This is a global counter for view id's.
     int viewIdCount = 0;
 
-    // This is a vector of free nodeid's
-    Vector nodeIdFreeList = new Vector();
+// This is a vector of free nodeid's
+Vector<String> nodeIdFreeList = new Vector<String>();
 
-    // This is a vector of free viewid's
-    ArrayList viewIdFreeList = new ArrayList();
+// This is a vector of free viewid's
+ArrayList<Integer> viewIdFreeList = new ArrayList<Integer>();
 
     // The number of nodes in this universe
     int numNodes = 0;
@@ -631,7 +631,7 @@ public Enumeration<Locale> getAllLocales() {
             // Issue 496: Remove last object using index to avoid performance
             // hit of a needless linear search.
            int idx = nodeIdFreeList.size() - 1;
-           str = (String) nodeIdFreeList.remove(idx);
+		str = nodeIdFreeList.remove(idx);
 	}
         return(str);
     }
@@ -648,7 +648,7 @@ public Enumeration<Locale> getAllLocales() {
 	    if (size == 0) {
 		id = new Integer(viewIdCount++);
 	    } else {
-		id = (Integer) viewIdFreeList.remove(size-1);
+			id = viewIdFreeList.remove(size - 1);
 	    }
 	}
         return(id);
