@@ -2370,10 +2370,10 @@ class Shape3DRetained extends LeafRetained {
      * This is used to send a message of the snapshot of the
      * geometry atoms that are affected by this change.
      */
-    final static ArrayList getGeomAtomsList(ArrayList userList, ArrayList univList) {
-	ArrayList listPerUniverse = new ArrayList();
+final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userList, ArrayList<VirtualUniverse> univList) {
+	ArrayList<ArrayList<GeometryAtom>> listPerUniverse = new ArrayList<ArrayList<GeometryAtom>>();
 	int index;
-	ArrayList gaList = null;
+	ArrayList<GeometryAtom> gaList = null;
 	Shape3DRetained ms = null;
 	boolean moreThanOneUniv = false;
 	VirtualUniverse firstFndUniv = null;
@@ -2387,13 +2387,13 @@ class Shape3DRetained extends LeafRetained {
 			firstFndUniv = ms.universe;
 			univList.add(ms.universe);
 
-			gaList = new ArrayList();
+					gaList = new ArrayList<GeometryAtom>();
 			listPerUniverse.add(gaList);
 		    }
 		    else if(firstFndUniv != ms.universe) {
 			moreThanOneUniv = true;
 			univList.add(ms.universe);
-			gaList = new ArrayList();
+					gaList = new ArrayList<GeometryAtom>();
 			listPerUniverse.add(gaList);
 		    }
 		}
@@ -2401,11 +2401,11 @@ class Shape3DRetained extends LeafRetained {
 		    index = univList.indexOf(ms.universe);
 		    if (index < 0) {
 			univList.add(ms.universe);
-			gaList = new ArrayList();
+					gaList = new ArrayList<GeometryAtom>();
 			listPerUniverse.add(gaList);
 		    }
 		    else {
-			gaList = (ArrayList) listPerUniverse.get(index);
+					gaList = listPerUniverse.get(index);
 		    }
 		}
 

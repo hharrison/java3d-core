@@ -1257,8 +1257,8 @@ class AppearanceRetained extends NodeComponentRetained {
 
     // 3rd argument used only when Rendering Attr comp changes
     final void sendMessage(int attrMask, Object attr, boolean visible) {
-	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
+	ArrayList<VirtualUniverse> univList = new ArrayList<VirtualUniverse>();
+	ArrayList<ArrayList<GeometryAtom>> gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 	// Send to rendering attribute structure, regardless of
 	// whether there are users or not (alternate appearance case ..)
 	J3dMessage createMessage = new J3dMessage();
@@ -1279,12 +1279,12 @@ class AppearanceRetained extends NodeComponentRetained {
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.APPEARANCE_CHANGED;
 
-	    createMessage.universe = (VirtualUniverse) univList.get(i);
+		createMessage.universe = univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1]= new Integer(attrMask);
 	    createMessage.args[2] = attr;
 
-	    ArrayList gL = (ArrayList) gaList.get(i);
+		ArrayList<GeometryAtom> gL = gaList.get(i);
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
 	    createMessage.args[3] = gaArr;
@@ -1306,8 +1306,8 @@ class AppearanceRetained extends NodeComponentRetained {
 
     final void sendRenderingAttributesChangedMessage(boolean visible) {
 
-	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
+	ArrayList<VirtualUniverse> univList = new ArrayList<VirtualUniverse>();
+	ArrayList<ArrayList<GeometryAtom>> gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 
 	// System.err.println("univList.size is " + univList.size());
 	for(int i=0; i<univList.size(); i++) {
@@ -1315,12 +1315,12 @@ class AppearanceRetained extends NodeComponentRetained {
 	    createMessage.threads = J3dThread.UPDATE_GEOMETRY;
 	    createMessage.type = J3dMessage.RENDERINGATTRIBUTES_CHANGED;
 
-	    createMessage.universe = (VirtualUniverse) univList.get(i);
+		createMessage.universe = univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1] = null; // Sync with RenderingAttrRetained sendMessage
 	    createMessage.args[2]= visible?Boolean.TRUE:Boolean.FALSE;
 
-	    ArrayList gL = (ArrayList) gaList.get(i);
+		ArrayList<GeometryAtom> gL = gaList.get(i);
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
 	    createMessage.args[3] = gaArr;

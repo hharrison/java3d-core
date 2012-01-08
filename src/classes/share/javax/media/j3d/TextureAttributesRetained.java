@@ -951,8 +951,8 @@ class TextureAttributesRetained extends NodeComponentRetained {
 
     final void sendMessage(int attrMask, Object attr1, Object attr2) {
 
-       	ArrayList univList = new ArrayList();
-	ArrayList gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
+	ArrayList<VirtualUniverse> univList = new ArrayList<VirtualUniverse>();
+	ArrayList<ArrayList<GeometryAtom>> gaList = Shape3DRetained.getGeomAtomsList(mirror.users, univList);
 
 
 	// Send to rendering attribute structure, regardless of
@@ -975,12 +975,12 @@ class TextureAttributesRetained extends NodeComponentRetained {
 	    createMessage.threads = J3dThread.UPDATE_RENDER;
 	    createMessage.type = J3dMessage.TEXTUREATTRIBUTES_CHANGED;
 
-	    createMessage.universe = (VirtualUniverse) univList.get(i);
+		createMessage.universe = univList.get(i);
 	    createMessage.args[0] = this;
 	    createMessage.args[1] = new Integer(attrMask);
 	    createMessage.args[2] = attr1;
 
-	    ArrayList gL = (ArrayList) gaList.get(i);
+		ArrayList<GeometryAtom> gL = gaList.get(i);
 	    GeometryAtom[] gaArr = new GeometryAtom[gL.size()];
 	    gL.toArray(gaArr);
 	    createMessage.args[3] = gaArr;
