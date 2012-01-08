@@ -880,10 +880,10 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
     Point newPosition = new Point();
     Dimension newSize = new Dimension();
 
-    // Remember OGL context resources to free
-    // before context is destroy.
-    // It is used when sharedCtx = false;
-    ArrayList textureIDResourceTable = new ArrayList(5);
+// Remember OGL context resources to free
+// before context is destroy.
+// It is used when sharedCtx = false;
+ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetained>(5);
 
     // The following variables are used by the lazy download of
     // states code to keep track of the set of current to be update bins
@@ -3919,7 +3919,6 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
 
     // use by D3D only
     void resetTextureBin() {
-	Object obj;
 	TextureRetained tex;
 
 	// We don't use rdr.objectId for background texture in D3D
@@ -3931,14 +3930,12 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
 	    graphics2D.objectId = -1;
 	}
 
-	for (int id = textureIDResourceTable.size()-1; id >= 0; id--) {
-	    obj = textureIDResourceTable.get(id);
-	    if (obj != null) {
-		if (obj instanceof TextureRetained) {
-		    tex = (TextureRetained) obj;
-		    tex.resourceCreationMask &= ~canvasBit;
+	for (int id = textureIDResourceTable.size() - 1; id >= 0; id--) {
+		tex = textureIDResourceTable.get(id);
+		if (tex != null) {
+			tex.resourceCreationMask &= ~canvasBit;
+
 		}
-	    }
 	}
     }
 
@@ -4786,7 +4783,7 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
      * of texture is -1 one time only.
      * This is always call from Renderer thread.
      */
-    void addTextureResource(int id, Object obj) {
+void addTextureResource(int id, TextureRetained obj) {
 	if (id <= 0) {
 	    return;
 	}
@@ -4839,9 +4836,8 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
                             textureIDResourceTable.size() +
                             " val = " + val);
                 } else {
-                    Object obj = textureIDResourceTable.get(val);
-                    if (obj instanceof TextureRetained) {
-                        TextureRetained tex = (TextureRetained) obj;
+				TextureRetained tex = textureIDResourceTable.get(val);
+				if (tex != null) {
                         synchronized (tex.resourceLock) {
                             tex.resourceCreationMask &= ~canvasBit;
                             if (tex.resourceCreationMask == 0) {
@@ -4860,9 +4856,6 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
 
     void freeContextResources(Renderer rdr, boolean freeBackground,
 			      Context ctx) {
-
-
-	Object obj;
 	TextureRetained tex;
 
 	// Just return if we don't have a valid renderer or context
@@ -4878,18 +4871,16 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
 	}
 
 	for (int id = textureIDResourceTable.size()-1; id >= 0; id--) {
-	    obj = textureIDResourceTable.get(id);
-	    if (obj == null) {
-		continue;
-	    }
+		tex = textureIDResourceTable.get(id);
+		if (tex == null) {
+			continue;
+		}
 
             // Issue 403 : this assertion doesn't hold in some cases
             // TODO KCR : determine why this is the case
 //            assert id == ((TextureRetained)obj).objectId;
 
 	    freeTexture(ctx, id);
-	    if (obj instanceof TextureRetained) {
-		tex = (TextureRetained) obj;
 		synchronized (tex.resourceLock) {
 		    tex.resourceCreationMask &= ~canvasBit;
 		    if (tex.resourceCreationMask == 0) {
@@ -4897,7 +4888,6 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
 			tex.freeTextureId(id);
 		    }
 		}
-	    }
 	}
 	textureIDResourceTable.clear();
 

@@ -175,10 +175,10 @@ ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>();
     // dirtyDlistPerRinfoList, dirtyRenderAtomList size > 0
     boolean dirtyDisplayList = false;
 
-    // Remember OGL context resources to free
-    // before context is destroy.
-    // It is used when sharedCtx = true;
-    ArrayList textureIDResourceTable = new ArrayList(5);
+// Remember OGL context resources to free
+// before context is destroy.
+// It is used when sharedCtx = true;
+ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetained>(5);
 
     // Instrumentation of Java 3D renderer
     private long lastSwapTime = System.nanoTime();
@@ -1651,7 +1651,7 @@ ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>();
 	synchronized (VirtualUniverse.mc.contextCreationLock) {
 
 	    for (int i=listOfCanvases.size()-1; i >=0; i--) {
-		cv = (Canvas3D) listOfCanvases.get(i);
+			cv = listOfCanvases.get(i);
 
 		if ((cv.screen != null) && (cv.ctx != null)) {
                     // Issue 326 : don't check display variable here
@@ -1731,9 +1731,8 @@ ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>();
                                 textureIDResourceTable.size() +
                                 " val = " + val);
 		    } else {
-                        Object obj = textureIDResourceTable.get(val);
-                        if (obj instanceof TextureRetained) {
-                            TextureRetained tex = (TextureRetained) obj;
+					TextureRetained tex = textureIDResourceTable.get(val);
+					if (tex != null) {
                             synchronized (tex.resourceLock) {
                                 tex.resourceCreationMask &= ~rendererBit;
                                 if (tex.resourceCreationMask == 0) {
@@ -1754,7 +1753,7 @@ ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>();
 	}
     }
 
-    final void addTextureResource(int id, Object obj) {
+final void addTextureResource(int id, TextureRetained obj) {
 	if (textureIDResourceTable.size() <= id) {
 	    for (int i=textureIDResourceTable.size();
 		 i < id; i++) {
@@ -1767,24 +1766,20 @@ ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>();
     }
 
     void freeContextResources() {
-	Object obj;
 	TextureRetained tex;
 
 	for (int id = textureIDResourceTable.size()-1; id >= 0; id--) {
-	    obj = textureIDResourceTable.get(id);
-	    if (obj == null) {
-		continue;
-	    }
+		tex = textureIDResourceTable.get(id);
+		if (tex == null) {
+			continue;
+		}
 	    Canvas3D.freeTexture(sharedCtx, id);
-	    if (obj instanceof TextureRetained) {
-		tex = (TextureRetained) obj;
 		synchronized (tex.resourceLock) {
 		    tex.resourceCreationMask &= ~rendererBit;
 		    if (tex.resourceCreationMask == 0) {
 			tex.freeTextureId(id);
 		    }
 		}
-	    }
 	}
 	textureIDResourceTable.clear();
 
