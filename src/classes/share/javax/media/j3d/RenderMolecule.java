@@ -398,7 +398,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
         closestSwitchParent = ga.source.closestSwitchParent;
         closestSwitchIndex = ga.source.closestSwitchIndex;
 
-	int i1;
 	// Find the first non-null geometey
 	GeometryRetained geo = null;
 	int k = 0;
@@ -421,7 +420,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	if (soleUser)
 	    appHandle = ga.source.appearance;
 	else
-	    appHandle = (Object)this;
+		appHandle = this;
 
 	// If its of type GeometryArrayRetained
 	if (ga.geoType <= GeometryRetained.GEO_TYPE_GEOMETRYARRAY ||
@@ -737,7 +736,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		   Transform3D[] transform) {
 	int geoType = 0;
 	GeometryAtom ga = ra.geometryAtom;
-	int eAttrs = 0;
 
 	if (this.localToVworld != transform) {
 	    return (false);
@@ -875,7 +873,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	// can change frequently, make a separate bin
 	if (soleUser || (ra.geometryAtom.source.appearance != null &&
 			 ((ra.geometryAtom.source.appearance.changedFrequent & RM_COMPONENTS) != 0))) {
-	    if (appHandle == (Object)ra.geometryAtom.source.appearance) {
+		if (appHandle == ra.geometryAtom.source.appearance) {
 
                 // if this RenderMolecule is currently on a zombie state,
                 // we'll need to put it on the update list to reevaluate
@@ -1055,7 +1053,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
     }
 
     public void updateRemoveRenderAtoms() {
-	int i;
 	RenderAtom r;
 	RenderAtomListInfo rinfo;
 
@@ -1067,7 +1064,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	}
 
 	while (removeRAs != null) {
-	    r = (RenderAtom)removeRAs;
+		r = removeRAs;
 	    r.removed = null;
 	    numRenderAtoms--;
 
@@ -1210,11 +1207,11 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    while (addRAs != null) {
 
 		numRenderAtoms++;
-		renderAtom = (RenderAtom)addRAs;
+			renderAtom = addRAs;
 		renderAtom.renderMolecule = this;
 		renderAtom.added = null;
 		for (int j = 0; j < renderAtom.rListInfo.length; j++) {
-		    r = (RenderAtomListInfo)renderAtom.rListInfo[j];
+				r = renderAtom.rListInfo[j];
 		    // Don't add null geo
 		    if (r.geometry() == null)
 			continue;
@@ -1477,9 +1474,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
      * Adds the given RenderAtom to this RenderMolecule.
      */
     void addRenderAtom(RenderAtom renderAtom, RenderBin rb) {
-	int i, n;
-	RenderAtomListInfo r;
-	int index;
+	int i;
 
 	renderAtom.envSet = textureBin.environmentSet;
 	renderAtom.renderMolecule = this;
@@ -1622,7 +1617,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
      * Removes the given RenderAtom from this RenderMolecule.
      */
     void removeRenderAtom(RenderAtom r) {
-	int index;
 
 	r.renderMolecule = null;
 	if (r.added == this) {
@@ -2293,10 +2287,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
     }
 
     void checkEquivalenceWithBothNeighbors(int dirtyBits) {
-	RenderMolecule leftRm = prev;
-	RenderMolecule rightRm = next;
 	dirtyAttrsAcrossRms = ALL_DIRTY_BITS;
-	boolean reload_color = true;
 
 	if (prev != null) {
 	    checkEquivalenceWithLeftNeighbor(prev, dirtyBits);
