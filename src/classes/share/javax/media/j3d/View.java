@@ -703,7 +703,7 @@ public class View extends Object {
     // window upper left corner location in pixels relative to screen
     //
     // Use getCanvases() to access this
-    private Vector canvases = new Vector(3);
+private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
 
     //
     // The current universe associated with this view
@@ -1135,7 +1135,7 @@ public class View extends Object {
 	    // CYCLOPEAN_EYE_VIEW mode then throw exception.
 	    synchronized (canvasList) {
 		for (int i=canvases.size()-1; i>=0; i--) {
-		    Canvas3D c3d = (Canvas3D)canvases.elementAt(i);
+				Canvas3D c3d = canvases.elementAt(i);
 
 		    if ((c3d.monoscopicViewPolicy == View.CYCLOPEAN_EYE_VIEW) &&
 			(!c3d.useStereo)){
@@ -2151,7 +2151,7 @@ public class View extends Object {
 	synchronized(canvasList) {
             if (canvas3D.getView() != null)
 		throw new IllegalSharingException(J3dI18N.getString("View10"));
-	    cv = (Canvas3D) canvases.elementAt(index);
+		cv = canvases.elementAt(index);
 	    canvases.setElementAt(canvas3D, index);
 	    removeFromCanvasList(cv);
 	    addToCanvasList(canvas3D);
@@ -2183,7 +2183,7 @@ public class View extends Object {
      * Gets the enumeration object of all the Canvas3Ds.
      * @return the enumeration object of all the Canvas3Ds.
      */
-    public Enumeration getAllCanvas3Ds(){
+    public Enumeration<Canvas3D> getAllCanvas3Ds(){
         return canvases.elements();
     }
 
@@ -2286,7 +2286,7 @@ public class View extends Object {
 	Canvas3D cv;
 
 	synchronized(canvasList) {
-	    cv = (Canvas3D) canvases.elementAt(index);
+		cv = canvases.elementAt(index);
 
 	    canvases.removeElementAt(index);
 	    removeFromCanvasList(cv);
@@ -2440,7 +2440,7 @@ public class View extends Object {
 
 	    Canvas3D newCachedCanvases[] = new Canvas3D[len];
 	    for (int i=0; i < len; i++) {
-		newCachedCanvases[i] = (Canvas3D) canvases.get(i);
+			newCachedCanvases[i] = canvases.get(i);
 	    }
 	    // Do this in one instruction so there is no need to
 	    // synchronized getCanvases()
@@ -2915,7 +2915,7 @@ public class View extends Object {
 	if (inCanvasCallback) {
 	    synchronized (canvasList) {
 		for (int i=canvases.size()-1; i>=0; i--) {
-		    if (((Canvas3D)canvases.elementAt(i)).screen.renderer == me) {
+				if (canvases.elementAt(i).screen.renderer == me) {
 			throw new IllegalStateException(J3dI18N.getString(s1));
 		    }
 		}
@@ -3007,7 +3007,7 @@ public class View extends Object {
 	    Thread me = Thread.currentThread();
 	    synchronized (canvasList) {
 		for (int i= canvases.size()-1; i>=0; i--) {
-		    Canvas3D cv = (Canvas3D)canvases.elementAt(i);
+				Canvas3D cv = canvases.elementAt(i);
 		    if (cv.screen.renderer == me) {
 			throw new
 			    IllegalStateException(J3dI18N.getString(s1));
@@ -3142,8 +3142,7 @@ public class View extends Object {
 	synchronized (canvasList) {
 	    int i = canvases.size()-1;
 	    while (i>=0) {
-		Screen3D scr =
-		    ((Canvas3D)canvases.elementAt(i--)).getScreen3D();
+			Screen3D scr = canvases.elementAt(i--).getScreen3D();
 		if (scr != null)
 		    scr.updateViewCache();
 	    }
@@ -3196,7 +3195,7 @@ public class View extends Object {
 		synchronized (canvasList) {
 
 		    for (i=canvases.size()-1; i>=0; i--) {
-			Canvas3D cv = (Canvas3D)canvases.elementAt(i);
+					Canvas3D cv = canvases.elementAt(i);
 			if (cv.active) {
 
 			    if (!activeStatus && (universeCount > resetUnivCount)) {
@@ -3377,7 +3376,7 @@ public class View extends Object {
     void reset() {
 
 	for (int i=0; i < canvases.size(); i++) {
-	    ((Canvas3D) canvases.get(i)).reset();
+		canvases.get(i).reset();
 	}
 
         // reset the renderBinReady flag

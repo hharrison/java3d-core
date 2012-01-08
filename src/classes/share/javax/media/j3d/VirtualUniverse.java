@@ -728,8 +728,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
     }
 
     void disableFocusEvents() {
-	Enumeration cvs;
-	Canvas3D cv;
         ViewPlatformRetained vp;
 	View views[];
 	ViewPlatformRetained[] vps = getViewPlatformList();
@@ -740,9 +738,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
                 vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
-                    cvs = views[j].getAllCanvas3Ds();
+				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
 	            while(cvs.hasMoreElements()) {
-		        cv = (Canvas3D) cvs.nextElement();
+					Canvas3D cv = cvs.nextElement();
                         // offscreen canvas does not have event catcher
                         if (cv.eventCatcher != null)
 		            cv.eventCatcher.disableFocusEvents();
@@ -754,8 +752,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
     }
 
     void enableFocusEvents() {
-	Enumeration cvs;
-	Canvas3D cv;
         ViewPlatformRetained vp;
 	View views[];
 	ViewPlatformRetained[] vps = getViewPlatformList();
@@ -766,9 +762,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
-                    cvs = views[j].getAllCanvas3Ds();
+				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
 	            while(cvs.hasMoreElements()) {
-		        cv = (Canvas3D) cvs.nextElement();
+					Canvas3D cv = cvs.nextElement();
                         // offscreen canvas does not have event catcher
                         if (cv.eventCatcher != null)
 		            cv.eventCatcher.enableFocusEvents();
@@ -780,8 +776,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 
 
     void disableKeyEvents() {
-	Enumeration cvs;
-	Canvas3D cv;
         ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	View views[];
@@ -793,9 +787,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
                 vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
-                    cvs = views[j].getAllCanvas3Ds();
+				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
 	            while(cvs.hasMoreElements()) {
-		        cv = (Canvas3D) cvs.nextElement();
+					Canvas3D cv = cvs.nextElement();
                         // offscreen canvas does not have event catcher
                         if (cv.eventCatcher != null)
 			    cv.eventCatcher.disableKeyEvents();
@@ -807,8 +801,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 
 
     void enableKeyEvents() {
-	Enumeration cvs;
-	Canvas3D cv;
         ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	View views[];
@@ -820,9 +812,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
-                    cvs = views[j].getAllCanvas3Ds();
+				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
 	            while(cvs.hasMoreElements()) {
-		        cv = (Canvas3D) cvs.nextElement();
+					Canvas3D cv = cvs.nextElement();
                         // offscreen canvas does not have event catcher
                         if (cv.eventCatcher != null)
 			    cv.eventCatcher.enableKeyEvents();
@@ -834,8 +826,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 
 
    void disableMouseEvents() {
-	Enumeration cvs;
-	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
@@ -847,9 +837,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
-                    cvs = views[j].getAllCanvas3Ds();
+				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
 	            while(cvs.hasMoreElements()) {
-		        cv = (Canvas3D) cvs.nextElement();
+					Canvas3D cv = cvs.nextElement();
                         // offscreen canvas does not have event catcher
                         if (cv.eventCatcher != null)
 		            cv.eventCatcher.disableMouseEvents();
@@ -860,8 +850,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
     }
 
     void enableMouseEvents() {
-	Enumeration cvs;
-	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
@@ -873,9 +861,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
-                    cvs = views[j].getAllCanvas3Ds();
+				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
 	            while(cvs.hasMoreElements()) {
-		        cv = (Canvas3D) cvs.nextElement();
+					Canvas3D cv = cvs.nextElement();
                         // offscreen canvas does not have event catcher
                         if (cv.eventCatcher != null)
 		            cv.eventCatcher.enableMouseEvents();
@@ -887,8 +875,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 
 
     void disableMouseMotionEvents() {
-	Enumeration cvs;
-	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
@@ -900,9 +886,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
-                    cvs = views[j].getAllCanvas3Ds();
+				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
 	            while(cvs.hasMoreElements()) {
-		        cv = (Canvas3D) cvs.nextElement();
+					Canvas3D cv = cvs.nextElement();
                         // offscreen canvas does not have event catcher
                         if (cv.eventCatcher != null)
 		            cv.eventCatcher.disableMouseMotionEvents();
@@ -913,8 +899,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
     }
 
     void enableMouseMotionEvents() {
-	Enumeration cvs;
-	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
@@ -926,9 +910,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
-                    cvs = views[j].getAllCanvas3Ds();
+				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
 	            while(cvs.hasMoreElements()) {
-		        cv = (Canvas3D) cvs.nextElement();
+					Canvas3D cv = cvs.nextElement();
                         // offscreen canvas does not have event catcher
                         if (cv.eventCatcher != null)
 		            cv.eventCatcher.enableMouseMotionEvents();
@@ -939,8 +923,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
     }
 
     void disableMouseWheelEvents() {
-	Enumeration cvs;
-	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
@@ -952,9 +934,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
-                    cvs = views[j].getAllCanvas3Ds();
+				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
 	            while(cvs.hasMoreElements()) {
-		        cv = (Canvas3D) cvs.nextElement();
+					Canvas3D cv = cvs.nextElement();
                         // offscreen canvas does not have event catcher
                         if (cv.eventCatcher != null)
 		            cv.eventCatcher.disableMouseWheelEvents();
@@ -965,8 +947,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
     }
 
     void enableMouseWheelEvents() {
-	Enumeration cvs;
-	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
@@ -978,9 +958,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
-                    cvs = views[j].getAllCanvas3Ds();
+				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
 	            while(cvs.hasMoreElements()) {
-		        cv = (Canvas3D) cvs.nextElement();
+					Canvas3D cv = cvs.nextElement();
                         // offscreen canvas does not have event catcher
                         if (cv.eventCatcher != null)
 		            cv.eventCatcher.enableMouseWheelEvents();
@@ -1079,9 +1059,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
             return;
         }
 
-        if (structureChangeListenerSet == null) {
-            structureChangeListenerSet = new HashSet();
-        }
+	if (structureChangeListenerSet == null) {
+		structureChangeListenerSet = new HashSet<GraphStructureChangeListener>();
+	}
 
         synchronized(structureChangeListenerSet) {
             structureChangeListenerSet.add(listener);
@@ -1193,9 +1173,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
             return;
         }
 
-        if (shaderErrorListenerSet == null) {
-            shaderErrorListenerSet = new HashSet();
-        }
+	if (shaderErrorListenerSet == null) {
+		shaderErrorListenerSet = new HashSet<ShaderErrorListener>();
+	}
 
         synchronized(shaderErrorListenerSet) {
             shaderErrorListenerSet.add(listener);
@@ -1281,9 +1261,9 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
             return;
         }
 
-        if (renderingErrorListenerSet == null) {
-            renderingErrorListenerSet = new HashSet();
-        }
+	if (renderingErrorListenerSet == null) {
+		renderingErrorListenerSet = new HashSet<RenderingErrorListener>();
+	}
 
         synchronized(renderingErrorListenerSet) {
             renderingErrorListenerSet.add(listener);

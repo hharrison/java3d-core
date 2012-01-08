@@ -1056,9 +1056,9 @@ class SoundScheduler extends J3dStructure {
 		nRetainedSounds++;
 	    }
 	    // XXXX: sync canvases
-	    Enumeration canvases = view.getAllCanvas3Ds();
+		Enumeration<Canvas3D> canvases = view.getAllCanvas3Ds();
 	    while (canvases.hasMoreElements()) {
-		Canvas3D canvas = (Canvas3D)canvases.nextElement();
+			Canvas3D canvas = canvases.nextElement();
 		GraphicsContext3D graphicsContext = canvas.getGraphicsContext3D();
 		Enumeration nonretainedSounds = graphicsContext.getAllSounds();
 		while (nonretainedSounds.hasMoreElements()) {
