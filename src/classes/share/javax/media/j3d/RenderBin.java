@@ -4705,7 +4705,7 @@ System.err.println("......tb.soleUser= " +
 	// Check the "to-be-added" list of shaderBins for a match
 	size = attributeBin.addShaderBins.size();
 	for (i = 0; i < size; i++) {
-	    currentBin = (ShaderBin)attributeBin.addShaderBins.get(i);
+		currentBin = attributeBin.addShaderBins.get(i);
 	    if (currentBin.equals(sApp)) {
 		return currentBin;
 	    }

@@ -67,10 +67,10 @@ class AttributeBin extends Object implements ObjectUpdate {
      */
     ShaderBin shaderBinList = null;
 
-    /**
-     *  List of shaderBins to be added next frame
-     */
-    ArrayList addShaderBins = new ArrayList();
+/**
+ * List of shaderBins to be added next frame
+ */
+ArrayList<ShaderBin> addShaderBins = new ArrayList<ShaderBin>();
 
     /**
      * If the RenderingAttribute component of the appearance will be changed
@@ -157,7 +157,7 @@ class AttributeBin extends Object implements ObjectUpdate {
 	if (soleUser || (ra.geometryAtom.source.appearance != null &&
 			 ((ra.geometryAtom.source.appearance.changedFrequent &
 			   AppearanceRetained.RENDERING) != 0))) {
-	    if (app == (Object)ra.geometryAtom.source.appearance) {
+		if (app == ra.geometryAtom.source.appearance) {
 
 		// if this AttributeBin is currently on a zombie state,
                 // we'll need to put it on the update list to reevaluate
@@ -214,12 +214,11 @@ class AttributeBin extends Object implements ObjectUpdate {
 
     public void updateObject() {
 	ShaderBin sb;
-	TextureBin t;
 	int i, size;
 
 	size = addShaderBins.size();
 	if (size > 0) {
-	    sb = (ShaderBin)addShaderBins.get(0);
+		sb = addShaderBins.get(0);
 	    if (shaderBinList == null) {
 		shaderBinList = sb;
 	    }
@@ -230,7 +229,7 @@ class AttributeBin extends Object implements ObjectUpdate {
 	    }
 
 	    for (i = 1; i < size ; i++) {
-		sb = (ShaderBin)addShaderBins.get(i);
+			sb = addShaderBins.get(i);
 		sb.next = shaderBinList;
 		shaderBinList.prev = sb;
 		shaderBinList = sb;
