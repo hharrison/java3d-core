@@ -138,9 +138,8 @@ ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomList
 ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
 ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>();
 
-    // Texture that should be reload
-    ArrayList textureReloadList = new ArrayList();
-
+// Texture that should be reload
+ArrayList<TextureRetained> textureReloadList = new ArrayList<TextureRetained>();
 
     J3dMessage[] renderMessage;
 
@@ -1056,8 +1055,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
 			    if (sz > 0) {
 				for (j = sz-1; j>=0; j--) {
-				    ((TextureRetained)textureReloadList.get(j)).
-					reloadTextureSharedContext(canvas);
+									textureReloadList.get(j).reloadTextureSharedContext(canvas);
 				}
 				textureReloadList.clear();
 			    }

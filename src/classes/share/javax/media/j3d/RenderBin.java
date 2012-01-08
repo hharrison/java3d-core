@@ -683,8 +683,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 					  (texture.resourceCreationMask |
 					   texture.resourceInReloadList)) == 0)) {
 
-					cv.screen.renderer.textureReloadList.add(
-										 texture);
+					cv.screen.renderer.textureReloadList.add(texture);
 
 					texture.resourceInReloadList |=
 					    cv.screen.renderer.rendererBit;
