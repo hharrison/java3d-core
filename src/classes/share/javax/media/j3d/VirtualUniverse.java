@@ -78,15 +78,14 @@ public class VirtualUniverse extends Object {
     Object sceneGraphLock = new Object();
     Object behaviorLock = new Object();
 
-    // A list of locales that are contained within this universe
-    Vector listOfLocales = new Vector();
+// A list of locales that are contained within this universe
+Vector<Locale> listOfLocales = new Vector<Locale>();
 
-    // The list of view platforms.
-    ArrayList viewPlatforms = new ArrayList();
+// The list of view platforms.
+ArrayList<ViewPlatformRetained> viewPlatforms = new ArrayList<ViewPlatformRetained>();
 
-
-    // The cached list of vp's
-    Object[] viewPlatformList = null;
+// The cached list of vp's
+ViewPlatformRetained[] viewPlatformList = null;
 
     // A flag that indicates that the list of view platforms has changed
     boolean vpChanged = false;
@@ -369,8 +368,8 @@ public class VirtualUniverse extends Object {
 	int i;
 
 
-	for (i = listOfLocales.size()-1; i > 0;  i--) {
-	    ((Locale)listOfLocales.get(i)).removeFromUniverse();
+	for (i = listOfLocales.size() - 1; i > 0; i--) {
+		listOfLocales.get(i).removeFromUniverse();
 	}
 
 	if (i >= 0) {
@@ -378,7 +377,7 @@ public class VirtualUniverse extends Object {
 	    // invoke the last removeFromUniverse() so that isEmpty()
 	    // (call from View.deactivate() ) will return true and
 	    // threads can destroy from MC.
-	    Locale loc = (Locale) listOfLocales.get(0);
+		Locale loc = listOfLocales.get(0);
 	    listOfLocales.clear();
 	    loc.removeFromUniverse();
 	}
@@ -389,13 +388,14 @@ public class VirtualUniverse extends Object {
     }
 
 
-    /**
-     * Returns the enumeration object of all locales in this virtual universe.
-     * @return the enumeration object
-     */
-    public Enumeration getAllLocales() {
+/**
+ * Returns the enumeration object of all locales in this virtual universe.
+ * 
+ * @return the enumeration object
+ */
+public Enumeration<Locale> getAllLocales() {
 	return this.listOfLocales.elements();
-    }
+}
 
     /**
      * Returns the number of locales.
@@ -673,13 +673,13 @@ public class VirtualUniverse extends Object {
 	viewPlatforms.remove(viewPlatforms.indexOf(vp));
     }
 
-    synchronized Object[] getViewPlatformList() {
+synchronized ViewPlatformRetained[] getViewPlatformList() {
 	if (vpChanged) {
-	    viewPlatformList = viewPlatforms.toArray();
-	    vpChanged = false;
+		viewPlatformList = viewPlatforms.toArray(new ViewPlatformRetained[viewPlatforms.size()]);
+		vpChanged = false;
 	}
 	return viewPlatformList;
-    }
+}
 
     void checkForEnableEvents() {
 	enableComponentEvents();
@@ -734,12 +734,12 @@ public class VirtualUniverse extends Object {
 	Canvas3D cv;
         ViewPlatformRetained vp;
 	View views[];
-	Object[] vps = getViewPlatformList();
+	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableFocus = false;
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];
+                vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -760,12 +760,12 @@ public class VirtualUniverse extends Object {
 	Canvas3D cv;
         ViewPlatformRetained vp;
 	View views[];
-	Object[] vps = getViewPlatformList();
+	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableFocus = true;
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];
+			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -785,14 +785,14 @@ public class VirtualUniverse extends Object {
 	Enumeration cvs;
 	Canvas3D cv;
         ViewPlatformRetained vp;
-	Object[] vps = getViewPlatformList();
+	ViewPlatformRetained[] vps = getViewPlatformList();
 	View views[];
 
 	enableKey = false;
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];
+                vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -812,14 +812,14 @@ public class VirtualUniverse extends Object {
 	Enumeration cvs;
 	Canvas3D cv;
         ViewPlatformRetained vp;
-	Object[] vps = getViewPlatformList();
+	ViewPlatformRetained[] vps = getViewPlatformList();
 	View views[];
 
 	enableKey = true;
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];
+			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -840,13 +840,13 @@ public class VirtualUniverse extends Object {
 	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
-	Object[] vps = getViewPlatformList();
+	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouse = false;
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];
+			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -866,13 +866,13 @@ public class VirtualUniverse extends Object {
 	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
-	Object[] vps = getViewPlatformList();
+	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouse = true;
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];
+			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -893,13 +893,13 @@ public class VirtualUniverse extends Object {
 	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
-	Object[] vps = getViewPlatformList();
+	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouseMotion = false;
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];
+			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -919,13 +919,13 @@ public class VirtualUniverse extends Object {
 	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
-	Object[] vps = getViewPlatformList();
+	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouseMotion = true;
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];
+			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -945,13 +945,13 @@ public class VirtualUniverse extends Object {
 	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
-	Object[] vps = getViewPlatformList();
+	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouseWheel = false;
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];
+			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -971,13 +971,13 @@ public class VirtualUniverse extends Object {
 	Canvas3D cv;
 	View views[];
         ViewPlatformRetained vp;
-	Object[] vps = getViewPlatformList();
+	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouseWheel = true;
 
 	if (vps != null) {
 	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];
+			vp = vps[i];
 		views = vp.getViewList();
 		for (int j=views.length-1; j>=0; j--) {
                     cvs = views[j].getAllCanvas3Ds();
@@ -1024,10 +1024,10 @@ public class VirtualUniverse extends Object {
      * attach to it.
      */
     boolean isEmpty() {
-	Enumeration elm = listOfLocales.elements();
+	Enumeration<Locale> elm = listOfLocales.elements();
 
 	while (elm.hasMoreElements()) {
-	    Locale loc = (Locale) elm.nextElement();
+		Locale loc = elm.nextElement();
 	    if (!loc.branchGroups.isEmpty()) {
 		return false;
 	    }

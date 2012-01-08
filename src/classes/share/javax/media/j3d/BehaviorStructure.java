@@ -1278,12 +1278,12 @@ class BehaviorStructure extends J3dStructure {
 	View v;
 	View views[];
 	ViewPlatform vp;
-	ArrayList vpList = universe.viewPlatforms;
+	ArrayList<ViewPlatformRetained> vpList = universe.viewPlatforms;
 
 	physicalEnvironments.clear();
 
 	for (int i=vpList.size()-1; i>=0; i--) {
-	    views = ((ViewPlatformRetained) vpList.get(i)).getViewList();
+		views = vpList.get(i).getViewList();
 	    for (int j=views.length-1; j>=0; j--) {
 		v = views[j];
 		if (v.active &&
