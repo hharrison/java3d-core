@@ -232,10 +232,10 @@ ArrayList<NodeComponentUpdate> updateCheckList = new ArrayList<NodeComponentUpda
     ArrayList dirtyRenderMoleculeList = new ArrayList(5);
 
 
-    /**
-     * ArrayList of objects to be updated
-     */
-    ArrayList objUpdateList = new ArrayList(5);
+/**
+ * ArrayList of objects to be updated
+ */
+ArrayList<ObjectUpdate> objUpdateList = new ArrayList<ObjectUpdate>(5);
 
     ArrayList raLocaleVwcBoundsUpdateList = new ArrayList(5);
 
@@ -333,9 +333,9 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
     // Vector used for locale translation
     Vector3d localeTranslation = new Vector3d();
 
-    // Separate dlists that were added/removed in this snapshot
-    private HashSet addDlist = new HashSet();
-    private HashSet removeDlist = new HashSet();
+// Separate dlists that were added/removed in this snapshot
+private HashSet<RenderAtomListInfo> addDlist = new HashSet<RenderAtomListInfo>();
+private HashSet<RenderAtomListInfo> removeDlist = new HashSet<RenderAtomListInfo>();
 
     // Separate dlists per rinfo that were added/removed in this snapshot
     ArrayList addDlistPerRinfo = new ArrayList(5);
@@ -593,7 +593,7 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 	size = objUpdateList.size();
 	if ( size > 0) {
 	    for (i = 0; i < size; i++) {
-		ob = (ObjectUpdate)objUpdateList.get(i);
+			ob = objUpdateList.get(i);
 		ob.updateObject();
 	    }
 	}
@@ -895,7 +895,7 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 	// Remove entries that are found on both the add and remove lists
 	if (addDlist.size() > 0 && removeDlist.size() > 0) {
 	    RenderAtomListInfo arr[] = new RenderAtomListInfo[addDlist.size()];
-	    arr = (RenderAtomListInfo []) addDlist.toArray(arr);
+		arr = addDlist.toArray(arr);
 	    for (i = 0; i < arr.length; i++) {
 		if (removeDlist.contains(arr[i])) {
 		    addDlist.remove(arr[i]);
@@ -907,7 +907,7 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 	if (addDlist.size() > 0 || removeDlist.size() > 0) {
 	    Canvas3D canvasList[][] = view.getCanvasList(false);
 	    Canvas3D cv;
-	    ArrayList rlist = new ArrayList(5);
+		ArrayList<Renderer> rlist = new ArrayList<Renderer>(5);
 
 	    for (i = 0; i < canvasList.length; i++) {
 		cv = canvasList[i][0];
@@ -1004,8 +1004,8 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 	}
 
 	if ((size = addDlist.size()) > 0) {
-	    arr = new RenderAtomListInfo[size];
-	    arr = (RenderAtomListInfo []) addDlist.toArray(arr);
+		arr = new RenderAtomListInfo[size];
+		arr = addDlist.toArray(arr);
 	    for (i = 0; i < size; i++) {
 		ra = arr[i];
 		GeometryArrayRetained geo = (GeometryArrayRetained)ra.geometry();
@@ -1026,8 +1026,8 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 	}
 
 	if ((size = removeDlist.size()) > 0) {
-	    arr = new RenderAtomListInfo[size];
-	    arr = (RenderAtomListInfo []) removeDlist.toArray(arr);
+		arr = new RenderAtomListInfo[size];
+		arr = removeDlist.toArray(arr);
 	    for (i = 0; i < size; i++) {
 		ra = arr[i];
 		sharedDList.remove(ra);
@@ -1069,8 +1069,8 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 
 	// Add the newly added dlist to the sharedList
 	if ((size = addDlist.size()) > 0) {
-	    arr = new RenderAtomListInfo[size];
-	    arr = (RenderAtomListInfo []) addDlist.toArray(arr);
+		arr = new RenderAtomListInfo[size];
+		arr = addDlist.toArray(arr);
 	    for (i = 0; i <size; i++) {
 		sharedDList.add(arr[i]);
 		// Fix for Issue 5: add the render atom to the list of users
@@ -1082,8 +1082,8 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 
 	// Remove the newly removed dlist from the sharedList
 	if ((size = removeDlist.size()) > 0) {
-	    arr = new RenderAtomListInfo[size];
-	    arr = (RenderAtomListInfo []) removeDlist.toArray(arr);
+		arr = new RenderAtomListInfo[size];
+		arr = removeDlist.toArray(arr);
 	    for (i = 0; i < size; i++) {
 		sharedDList.remove(arr[i]);
 		// Fix for Issue 5: remove this render atom from the list of users
@@ -1098,8 +1098,8 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 	    cv = canvases[j];
 
 	    if ((size = addDlist.size()) > 0) {
-		arr = new RenderAtomListInfo[size];
-		arr = (RenderAtomListInfo []) addDlist.toArray(arr);
+			arr = new RenderAtomListInfo[size];
+			arr = addDlist.toArray(arr);
 		for (i = 0; i <size; i++) {
 		    ra = arr[i];
 		    GeometryArrayRetained geo = (GeometryArrayRetained) ra.geometry();
@@ -1114,8 +1114,8 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 		}
 	    }
 	    if ((size = removeDlist.size()) > 0) {
-		arr = new RenderAtomListInfo[size];
-		arr = (RenderAtomListInfo []) removeDlist.toArray(arr);
+			arr = new RenderAtomListInfo[size];
+			arr = removeDlist.toArray(arr);
 		for (i = 0; i < size; i++) {
 		    GeometryArrayRetained geo =
 			(GeometryArrayRetained) arr[i].geometry();
@@ -5928,15 +5928,13 @@ System.err.println("......tb.soleUser= " +
     }
 
 
-    void removeGeometryDlist(RenderAtomListInfo ra) {
+void removeGeometryDlist(RenderAtomListInfo ra) {
 	removeDlist.add(ra);
-    }
+}
 
-
-    void addGeometryDlist(RenderAtomListInfo ra) {
+void addGeometryDlist(RenderAtomListInfo ra) {
 	addDlist.add(ra);
-    }
-
+}
 
     void dumpBin(LightBin bin) {
 	LightBin obin = bin;
