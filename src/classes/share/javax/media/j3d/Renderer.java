@@ -124,13 +124,13 @@ class Renderer extends J3dThread {
     // an unique number to identify this renderer : ( rendererBit = 1 << rendererId)
     int rendererId = 0;
 
-    // List of renderMolecules that are dirty due to additions
-    // or removal of renderAtoms from their display list set
-    // of renderAtoms
-    ArrayList dirtyRenderMoleculeList = new ArrayList();
+// List of renderMolecules that are dirty due to additions
+// or removal of renderAtoms from their display list set
+// of renderAtoms
+ArrayList<RenderMolecule> dirtyRenderMoleculeList = new ArrayList<RenderMolecule>();
 
-    // List of individual dlists that need to be rebuilt
-    ArrayList dirtyRenderAtomList = new ArrayList();
+// List of individual dlists that need to be rebuilt
+ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomListInfo>();
 
     // List of (Rm, rInfo) pair of individual dlists that need to be rebuilt
     ArrayList dirtyDlistPerRinfoList = new ArrayList();

@@ -3179,8 +3179,8 @@ System.err.println("......tb.soleUser= " +
     }
 
     void updateDirtyDisplayLists(Canvas3D cv,
-				 ArrayList rmList, ArrayList dlistPerRinfoList,
-				 ArrayList raList, boolean useSharedCtx ) {
+				 ArrayList<RenderMolecule> rmList, ArrayList dlistPerRinfoList,
+				 ArrayList<RenderAtomListInfo> raList, boolean useSharedCtx ) {
 	int size, i, bitMask;
 	Context ctx;
 	long timeStamp;
@@ -3200,7 +3200,7 @@ System.err.println("......tb.soleUser= " +
 
 	if (size > 0) {
 	    for (i = size-1; i >= 0; i--) {
-		RenderMolecule rm = (RenderMolecule)rmList.get(i);
+			RenderMolecule rm = rmList.get(i);
 		rm.updateDisplayList(cv);
 	    }
 	    rmList.clear();
@@ -3222,13 +3222,13 @@ System.err.println("......tb.soleUser= " +
 	    GeometryArrayRetained geo;
 
 	    for (i = size-1; i >= 0; i--) {
-		ra = (RenderAtomListInfo)raList.get(i);
+			ra = raList.get(i);
 		geo = (GeometryArrayRetained) ra.geometry();
 		geo.resourceCreationMask &= ~bitMask;
 	    }
 
 	    for (i = size-1; i >= 0; i--) {
-		ra = (RenderAtomListInfo)raList.get(i);
+			ra = raList.get(i);
 		geo = (GeometryArrayRetained) ra.geometry();
 		if ((geo.resourceCreationMask & bitMask) == 0) {
 		    dlistRenderMethod.buildIndividualDisplayList(ra, cv, ctx);

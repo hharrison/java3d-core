@@ -755,8 +755,8 @@ public class Canvas3D extends Canvas {
     // dirtyDlistPerRinfoList, dirtyRenderAtomList size > 0
     boolean dirtyDisplayList = false;
 
-    ArrayList dirtyRenderMoleculeList = new ArrayList();
-    ArrayList dirtyRenderAtomList = new ArrayList();
+ArrayList<RenderMolecule> dirtyRenderMoleculeList = new ArrayList<RenderMolecule>();
+ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomListInfo>();
     // List of (Rm, rInfo) pair of individual dlists that need to be rebuilt
     ArrayList dirtyDlistPerRinfoList = new ArrayList();
 
