@@ -33,6 +33,7 @@ package javax.media.j3d;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
@@ -52,10 +53,10 @@ class J3dQueryProps extends AbstractMap {
      * array of keys and the specified values.  The arrays must be
      * the same size.
      */
-    J3dQueryProps(String[] keys, Object[] values) {
+    J3dQueryProps(ArrayList<String> keys, ArrayList<Object> values) {
 	table = new Hashtable();
-	for (int i = 0; i < keys.length; i++) {
-	    table.put(keys[i], values[i]);
+	for (int i = 0; i < keys.size(); i++) {
+		table.put(keys.get(i), values.get(i));
 	}
     }
 

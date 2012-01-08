@@ -582,9 +582,9 @@ public Enumeration<Locale> getAllLocales() {
      */
     public static final Map getProperties() {
 	if (properties == null) {
-	    // Create lists of keys and values
-	    ArrayList keys = new ArrayList();
-	    ArrayList values = new ArrayList();
+		// Create lists of keys and values
+		ArrayList<String> keys = new ArrayList<String>();
+		ArrayList<Object> values = new ArrayList<Object>();
 
             // Implementation version string is obtained from the
             // ImplementationVersion class.
@@ -606,10 +606,8 @@ public Enumeration<Locale> getAllLocales() {
             keys.add("j3d.pipeline");
             values.add(Pipeline.getPipeline().getPipelineName());
 
-	    // Now Create read-only properties object
-	    properties =
-		new J3dQueryProps((String[]) keys.toArray(new String[0]),
-				  values.toArray());
+		// Now Create read-only properties object
+		properties = new J3dQueryProps(keys, values);
 	}
   	return properties;
     }

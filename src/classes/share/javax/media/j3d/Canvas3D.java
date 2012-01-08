@@ -3708,8 +3708,8 @@ public class Canvas3D extends Canvas {
      */
     private void createQueryProps() {
 	// Create lists of keys and values
-	ArrayList keys = new ArrayList();
-	ArrayList values = new ArrayList();
+	ArrayList<String> keys = new ArrayList<String>();
+	ArrayList<Object> values = new ArrayList<Object>();
 	int pass = 0;
 
 	// properties not associated with graphics context
@@ -3852,9 +3852,7 @@ public class Canvas3D extends Canvas {
 	values.add(nativeGraphicsRenderer);
 
 	// Now Create read-only properties object
-	queryProps =
-	    new J3dQueryProps((String[]) keys.toArray(new String[0]),
-				   values.toArray());
+	queryProps = new J3dQueryProps(keys, values);
     }
 
 
