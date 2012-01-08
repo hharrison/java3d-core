@@ -127,14 +127,13 @@ class RasterRetained extends GeometryRetained {
 	if(source.isLive()) {
 	    //update the Shape3Ds that refer to this Raster
 	    int un = userLists.size();
-	    ArrayList shapeList;
 	    Shape3DRetained ms, shape;
 	    int sn;
 	    for(int i = 0; i < un; i++) {
-		shapeList = (ArrayList)userLists.get(i);
+			ArrayList<Shape3DRetained> shapeList = userLists.get(i);
 		sn = shapeList.size();
 		for(int j = 0; j < sn; j++) {
-		    ms = (Shape3DRetained)shapeList.get(j);
+				ms = shapeList.get(j);
 		    shape = (Shape3DRetained)ms.sourceNode;
 		    shape.setBoundsAutoCompute(false);
 		    shape.setBounds(geoBounds);
@@ -421,8 +420,7 @@ class RasterRetained extends GeometryRetained {
 			m[i] = new J3dMessage();
 			m[i].type = J3dMessage.GEOMETRY_CHANGED;
 			m[i].threads = threads;
-			m[i].args[0] = Shape3DRetained.
-			    getGeomAtomsArray((ArrayList)userLists.get(i));
+			m[i].args[0] = Shape3DRetained.getGeomAtomsArray(userLists.get(i));
 			m[i].args[1] = this;
 			Object[] obj = new Object[2];
 			obj[0] = arg1;
@@ -481,7 +479,7 @@ class RasterRetained extends GeometryRetained {
                 // setup Texture pipe.
                 cv.updateTextureForRaster(texture);
 
-                cv.textureFill(this, winCoord, (float) devCoordZ, alpha);
+			cv.textureFill(this, winCoord, devCoordZ, alpha);
 
                 // Restore texture pipe.
                 cv.restoreTextureBin();
