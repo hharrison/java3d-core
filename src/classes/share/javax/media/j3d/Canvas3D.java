@@ -760,8 +760,8 @@ ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomList
     // List of (Rm, rInfo) pair of individual dlists that need to be rebuilt
     ArrayList dirtyDlistPerRinfoList = new ArrayList();
 
-    ArrayList displayListResourceFreeList = new ArrayList();
-    ArrayList textureIdResourceFreeList = new ArrayList();
+ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>();
+ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
 
     // an unique bit to identify this canvas
     int canvasBit = 0;
@@ -4810,7 +4810,7 @@ ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomList
 
     // handle free resource in the FreeList
     void freeResourcesInFreeList(Context ctx) {
-	Iterator it;
+	Iterator<Integer> it;
 	ArrayList list;
 	int i, val;
 	GeometryArrayRetained geo;
@@ -4819,7 +4819,7 @@ ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomList
 	// don't use shared ctx
 	if (displayListResourceFreeList.size() > 0) {
 	    for (it = displayListResourceFreeList.iterator(); it.hasNext();) {
-		val = ((Integer) it.next()).intValue();
+			val = it.next().intValue();
 		if (val <= 0) {
 		    continue;
 		}
@@ -4830,7 +4830,7 @@ ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomList
 
         if (textureIdResourceFreeList.size() > 0) {
             for (it = textureIdResourceFreeList.iterator(); it.hasNext();) {
-                val = ((Integer) it.next()).intValue();
+			val = it.next().intValue();
                 if (val <= 0) {
                     continue;
                 }

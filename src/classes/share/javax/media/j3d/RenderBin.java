@@ -190,7 +190,7 @@ ArrayList<RenderAtom> positionDirtyList = new ArrayList<RenderAtom>(5);
     private Comparator transparencySortComparator = null;
 
     private ArrayList toBeAddedTextureResourceFreeList = new ArrayList(5);
-    private ArrayList displayListResourceFreeList = new ArrayList(5);
+private ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>(5);
 
     // a list of top level OrderedGroups
     ArrayList orderedBins = new ArrayList(5);
@@ -947,7 +947,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 	    Integer id;
 	    size = displayListResourceFreeList.size();
 	    for (i = 0; i < size; i++) {
-		id = (Integer)displayListResourceFreeList.get(i);
+			id = displayListResourceFreeList.get(i);
 		VirtualUniverse.mc.freeDisplayListId(id);
 	    }
 
@@ -1258,7 +1258,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 	Integer displayListIDObj;
 
 	for (int j=0; j <size; j++) {
-	    displayListIDObj = (Integer) displayListResourceFreeList.get(j);
+		displayListIDObj = displayListResourceFreeList.get(j);
 	    // It doesn't harm to free the same ID twice, the
 	    // underlying graphics library just ignore the second request
 	    rdr.displayListResourceFreeList.add(displayListIDObj);

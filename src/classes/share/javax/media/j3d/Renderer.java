@@ -136,9 +136,9 @@ ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomList
     ArrayList dirtyDlistPerRinfoList = new ArrayList();
 
 
-    // Texture and display list that should be freed
-    ArrayList textureIdResourceFreeList = new ArrayList();
-    ArrayList displayListResourceFreeList = new ArrayList();
+// Texture and display list that should be freed
+ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
+ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>();
 
     // Texture that should be reload
     ArrayList textureReloadList = new ArrayList();
@@ -1697,7 +1697,7 @@ ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomList
 
     // handle free resource in the FreeList
     void freeResourcesInFreeList(Canvas3D cv) {
-	Iterator it;
+	Iterator<Integer> it;
 	boolean isFreeTex = (textureIdResourceFreeList.size() > 0);
 	boolean isFreeDL = (displayListResourceFreeList.size() > 0);
 	ArrayList list;
@@ -1711,7 +1711,7 @@ ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomList
 
 	    if (isFreeDL) {
 		for (it = displayListResourceFreeList.iterator(); it.hasNext();) {
-		    val = ((Integer) it.next()).intValue();
+				val = it.next().intValue();
 		    if (val <= 0) {
 			continue;
 		    }
@@ -1721,7 +1721,7 @@ ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomList
 	    }
 	    if (isFreeTex) {
 		for (it = textureIdResourceFreeList.iterator(); it.hasNext();) {
-		    val = ((Integer) it.next()).intValue();
+				val = it.next().intValue();
 		    if (val <= 0) {
 			continue;
 		    }
