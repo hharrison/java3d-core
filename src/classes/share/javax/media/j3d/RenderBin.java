@@ -247,15 +247,15 @@ ArrayList<NodeComponentUpdate> updateCheckList = new ArrayList<NodeComponentUpda
 			      RenderMolecule.REMOVE_RENDER_ATOM_IN_RM_LIST, null);
 
 
-    /**
-     * list of affect OrderedGroups with childIndexOrder changed.
-     */
-    ArrayList ogCIOList = new ArrayList(5);
+/**
+ * list of affect OrderedGroups with childIndexOrder changed.
+ */
+ArrayList<J3dMessage> ogCIOList = new ArrayList<J3dMessage>(5);
 
-    /**
-     * list of ordered bins from which orderedCollection are added/removed
-     */
-    ArrayList obList = new ArrayList(5);
+/**
+ * list of ordered bins from which orderedCollection are added/removed
+ */
+ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 
     /**
      * Ordered Bin processing
@@ -438,16 +438,15 @@ ArrayList<NodeComponentUpdate> updateCheckList = new ArrayList<NodeComponentUpda
 	size = obList.size();
 	if ( size > 0) {
 	    for (i = 0 ; i < size; i++) {
-		orderBin = (OrderedBin)obList.get(i);
+			orderBin = obList.get(i);
 		orderBin.addRemoveOrderedCollection();
 	    }
 	}
 
 	size = ogCIOList.size();
 	if(size > 0) {
-	    J3dMessage m;
 	    for(i=0; i<size; i++) {
-		m = (J3dMessage) ogCIOList.get(i);
+			J3dMessage m = ogCIOList.get(i);
 
 		switch(m.type) {
 		case J3dMessage.ORDERED_GROUP_TABLE_CHANGED:
