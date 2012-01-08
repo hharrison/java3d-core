@@ -81,11 +81,10 @@ class LightBin extends Object implements ObjectUpdate {
      */
     EnvironmentSet environmentSetList = null;
 
-    /**
-     * List of envSet to be added for the next iteration
-     */
-    ArrayList insertEnvSet = new ArrayList();
-
+/**
+ * List of envSet to be added for the next iteration
+ */
+ArrayList<EnvironmentSet> insertEnvSet = new ArrayList<EnvironmentSet>();
 
 
     /**
@@ -105,11 +104,11 @@ class LightBin extends Object implements ObjectUpdate {
      */
     int lightDirtyMask = 0;
 
-    /**
-     * List of pointLts in this lightbin
-     * Need to reload these lights when vworld scale changes
-     */
-    ArrayList pointLts = new ArrayList();
+/**
+ * List of pointLts in this lightbin Need to reload these lights when vworld
+ * scale changes
+ */
+ArrayList<PointLightRetained> pointLts = new ArrayList<PointLightRetained>();
     int[] pointLtsSlotIndex;
 
     // OrderedGroup info
@@ -212,7 +211,7 @@ class LightBin extends Object implements ObjectUpdate {
 			lights[j] = light;
 			lightsRef[j] = 1;
 			if (light instanceof PointLightRetained) {
-			    pointLts.add(light);
+			    pointLts.add((PointLightRetained)light);
 
 			    // save the destinated light slot for point
 			    // so that point light can be updated without
@@ -255,13 +254,13 @@ class LightBin extends Object implements ObjectUpdate {
     }
 
     public void updateObject() {
-	int i, j;
+	int i;
 	EnvironmentSet e ;
 
 
 	// Handle insertion
 	if (insertEnvSet.size() > 0) {
-	    e = (EnvironmentSet)insertEnvSet.get(0);
+		e = insertEnvSet.get(0);
 	    if (environmentSetList == null) {
 		environmentSetList = e;
 	    }
@@ -271,7 +270,7 @@ class LightBin extends Object implements ObjectUpdate {
 		environmentSetList = e;
 	    }
 	    for (i = 1; i < insertEnvSet.size(); i++) {
-		e = (EnvironmentSet)insertEnvSet.get(i);
+			e = insertEnvSet.get(i);
 		e.next = environmentSetList;
 		environmentSetList.prev = e;
 		environmentSetList = e;
@@ -459,7 +458,7 @@ class LightBin extends Object implements ObjectUpdate {
 				      renderBin.infVworldToVpc);
 	    }
 	    for (i = 0; i < pointLts.size(); i++) {
-		LightRetained lt = (LightRetained) pointLts.get(i);
+			PointLightRetained lt = pointLts.get(i);
 		lt.update(cv.ctx, pointLtsSlotIndex[i], scale);
                 cv.lights[pointLtsSlotIndex[i]] = lt;
                 cv.frameCount[pointLtsSlotIndex[i]] = frameCount;

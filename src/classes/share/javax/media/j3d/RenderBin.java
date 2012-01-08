@@ -4152,7 +4152,7 @@ System.err.println("......tb.soleUser= " +
 	        if (eNew == null) {
 		    int size = currentBin.insertEnvSet.size();
 		    for (i = 0; i < size; i++) {
-		        newBin = (EnvironmentSet)currentBin.insertEnvSet.get(i);
+					newBin = currentBin.insertEnvSet.get(i);
 		        if (newBin.equals(ra, lights, fog, modelClip)) {
 			    eNew = newBin;
 			    break;
@@ -4175,7 +4175,7 @@ System.err.println("......tb.soleUser= " +
 		    // Check the "to-be-added" list of environmentSets for a match
 		    int size =  currentBin.insertEnvSet.size();
 		    for (i = 0; i < size; i++) {
-		        newBin = (EnvironmentSet)currentBin.insertEnvSet.get(i);
+					newBin = currentBin.insertEnvSet.get(i);
 		        if (newBin.equals(ra, lights, fog, modelClip)) {
 			    eNew = newBin;
 			    break;
@@ -4968,7 +4968,7 @@ System.err.println("......tb.soleUser= " +
 	        }
 	        // Check the "to-be-added" list of environmentSets for a match
 	        for (i = 0; i < currentBin.insertEnvSet.size(); i++) {
-		    newBin = (EnvironmentSet)currentBin.insertEnvSet.get(i);
+				newBin = currentBin.insertEnvSet.get(i);
 		    if (newBin.equals(ra, ra.lights, ra.fog, ra.modelClip)) {
 		        return(newBin);
 		    }
@@ -4987,7 +4987,7 @@ System.err.println("......tb.soleUser= " +
 
 	        // Check the "to-be-added" list of environmentSets for a match
 	        for (i = 0; i < currentBin.insertEnvSet.size(); i++) {
-		    newBin = (EnvironmentSet)currentBin.insertEnvSet.get(i);
+				newBin = currentBin.insertEnvSet.get(i);
 		    if (newBin.equals(ra, ra.lights, ra.fog, ra.modelClip)) {
 		        return(newBin);
 		    }
