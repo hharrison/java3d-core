@@ -46,8 +46,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.logging.Level;
 
-import javax.vecmath.Color3f;
-
 
 class Renderer extends J3dThread {
 
@@ -211,15 +209,13 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
      * The main loop for the renderer.
      */
     void doWork(long referenceTime) {
-	RenderAtom ra;
 	RenderBin renderBin = null;
 	Canvas3D cv, canvas=null;
 	Object firstArg;
 	View view = null;
-	Color3f col;
 	int stereo_mode;
-	int num_stereo_passes, num_render_passes, num_accum_passes = 1;
-	int pass, apass, i, j, k;
+	int num_stereo_passes, num_accum_passes = 1;
+	int pass, apass, i, j;
 	boolean doAccum = false;
         double accumDx = 0.0f, accumDy = 0.0f;
 	double accumDxFactor = 1.0f, accumDyFactor = 1.0f;
@@ -229,7 +225,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 		accumInfLeftX = 0.0, accumInfLeftY = 0.0,
 		accumInfRightX = 0.0, accumInfRightY = 0.0;
 	int opArg, status;
-        boolean done = false;
 	Transform3D t3d = null;
 
         opArg = ((Integer)args[0]).intValue();
@@ -553,7 +548,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
                             gct.testCfg = Boolean.valueOf(rval);
 			}
-			gct.runMonitor(J3dThread.NOTIFY);
+			GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
 		    }
 
 		    m[nmesg++].decRefcount();
@@ -1700,9 +1695,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	Iterator<Integer> it;
 	boolean isFreeTex = (textureIdResourceFreeList.size() > 0);
 	boolean isFreeDL = (displayListResourceFreeList.size() > 0);
-	ArrayList list;
-	int i, val;
-	GeometryArrayRetained geo;
+	int val;
 
 	if (isFreeTex || isFreeDL) {
 	    if (cv != null) {
