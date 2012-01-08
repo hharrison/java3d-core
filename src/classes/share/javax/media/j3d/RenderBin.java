@@ -4467,7 +4467,7 @@ System.err.println("......tb.soleUser= " +
 
         OrderedGroupRetained og;
         OrderedCollection oc = null;
-        ArrayList ocs;
+	ArrayList<OrderedCollection> ocs;
         ArrayList parentChildOrderedBins;
         OrderedBin parentOrderedBin;
         int parentOrderedChildId;
@@ -4543,9 +4543,9 @@ System.err.println("......tb.soleUser= " +
 	    // If we are in the update_view case then check the oi
 	    // exists in the setOCForOI list ..
 	    for (n = 0; n < ob.setOCForOI.size(); n++) {
-		val = ((Integer)ob.setOCForOI.get(n)).intValue();
+			val = ob.setOCForOI.get(n).intValue();
 		if (oi == val) {
-		    oc = (OrderedCollection)ob.valueOfSetOCForOI.get(n);
+				oc = ob.valueOfSetOCForOI.get(n);
 		    found = true;
 		}
 	    }
@@ -4574,10 +4574,10 @@ System.err.println("......tb.soleUser= " +
 		    ci = og.orderedChildIdTable[oi];
 
 		    for (n = 0; n < ob.setOCForCI.size(); n++) {
-			val = ((Integer)ob.setOCForCI.get(n)).intValue();
+					val = ob.setOCForCI.get(n).intValue();
 			if (val == ci) {
 
-			    oc=(OrderedCollection)ob.valueOfSetOCForCI.get(n);
+						oc = ob.valueOfSetOCForCI.get(n);
 			    if (oc == null) {
 				oc = new OrderedCollection();
 				ob.valueOfSetOCForCI.set(n, oc);
@@ -4587,7 +4587,7 @@ System.err.println("......tb.soleUser= " +
 			}
 		    }
 		    if (n == ob.setOCForCI.size()) {
-			oc = (OrderedCollection)ocs.get(ci);
+					oc = ocs.get(ci);
 			if (oc == null) {
 			    oc = new OrderedCollection();
 			    ob.setOCForCI.add(new Integer(ci));
@@ -5216,7 +5216,7 @@ System.err.println("......tb.soleUser= " +
 	    else {
 		index = i;
 	    }
-	    oc = (OrderedCollection)orderedBin.orderedCollections.get(index);
+		oc = orderedBin.orderedCollections.get(index);
             if (isDecal) {
                 if (index==0) { // first child
                     cv.setDepthBufferEnableOverride(true);
@@ -5914,7 +5914,7 @@ System.err.println("......tb.soleUser= " +
     void removeOrderedBin(OrderedBin ob) {
 	int i, k;
 	for (i = 0; i < ob.orderedCollections.size(); i++) {
-	    OrderedCollection oc = (OrderedCollection) ob.orderedCollections.get(i);
+		OrderedCollection oc = ob.orderedCollections.get(i);
 	    if (oc == null)
 		continue;
 

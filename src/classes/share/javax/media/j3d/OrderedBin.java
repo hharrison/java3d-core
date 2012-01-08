@@ -38,8 +38,8 @@ import java.util.ArrayList;
  * a child of the OrderedGroup
  */
 class OrderedBin extends Object {
-    // ArrayList of orderedCollection, one for each child of the orderedGroup
-    ArrayList orderedCollections = new ArrayList();
+// ArrayList of orderedCollection, one for each child of the orderedGroup
+ArrayList<OrderedCollection> orderedCollections = new ArrayList<OrderedCollection>();
 
     // orderedGroup source
     OrderedGroupRetained source;
@@ -48,14 +48,14 @@ class OrderedBin extends Object {
 
     boolean onUpdateList = false;
 
-    // Value of already existing orderedCollection
-    ArrayList setOCForCI = new ArrayList();
-    ArrayList valueOfSetOCForCI = new ArrayList();
+// Value of already existing orderedCollection
+ArrayList<Integer> setOCForCI = new ArrayList<Integer>();
+ArrayList<OrderedCollection> valueOfSetOCForCI = new ArrayList<OrderedCollection>();
 
-    // Value of orderedCollection based on oi, these arrays
-    // have size > 0 only during update_view;
-    ArrayList setOCForOI = new ArrayList();
-    ArrayList valueOfSetOCForOI = new ArrayList();
+// Value of orderedCollection based on oi, these arrays
+// have size > 0 only during update_view;
+ArrayList<Integer> setOCForOI = new ArrayList<Integer>();
+ArrayList<OrderedCollection> valueOfSetOCForOI = new ArrayList<OrderedCollection>();
 
     OrderedBin(int nchildren, OrderedGroupRetained src){
         int i;
@@ -71,8 +71,8 @@ class OrderedBin extends Object {
 	// Add the setValues first, since they reflect already existing
 	// orderedCollection
 	for (i = 0; i < setOCForCI.size(); i++) {
-	    index = ((Integer)setOCForCI.get(i)).intValue();
-	    OrderedCollection oc = (OrderedCollection)valueOfSetOCForCI.get(i);
+		index = setOCForCI.get(i).intValue();
+		OrderedCollection oc = valueOfSetOCForCI.get(i);
 	    orderedCollections.set(index, oc);
 	}
 
@@ -93,8 +93,8 @@ class OrderedBin extends Object {
 	// the childIds for the next frame, use the table to set the oc at the
 	// correct place
 	for (i = 0; i < setOCForOI.size(); i++) {
-	    index = ((Integer)setOCForOI.get(i)).intValue();
-	    OrderedCollection oc = (OrderedCollection)valueOfSetOCForOI.get(i);
+		index = setOCForOI.get(i).intValue();
+		OrderedCollection oc = valueOfSetOCForOI.get(i);
 	    int ci = source.orderedChildIdTable[index];
 	    orderedCollections.set(ci, oc);
 	}
