@@ -69,8 +69,8 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
     // an array of (uniform) shader attribute names
     protected String[] shaderAttrNames;
 
-    // Set of ShaderAttribute objects for which we have already reported an error
-    private HashSet shaderAttrErrorSet = null;
+// Set of ShaderAttribute objects for which we have already reported an error
+private HashSet<ShaderAttribute> shaderAttrErrorSet = null;
 
     // need to synchronize access from multiple rendering threads
     Object resourceLock = new Object();
@@ -98,7 +98,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
             this.vertexAttrNames = null;
         }
         else {
-            this.vertexAttrNames = (String[])vertexAttrNames.clone();
+		this.vertexAttrNames = vertexAttrNames.clone();
         }
     }
 
@@ -115,7 +115,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
 	    return null;
 	}
 
-	return (String[])vertexAttrNames.clone();
+	return vertexAttrNames.clone();
 
     }
 
@@ -137,7 +137,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
             this.shaderAttrNames = null;
         }
         else {
-            this.shaderAttrNames = (String[])shaderAttrNames.clone();
+		this.shaderAttrNames = shaderAttrNames.clone();
         }
     }
 
@@ -155,7 +155,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
 	    return null;
 	}
 
-	return (String[])shaderAttrNames.clone();
+	return shaderAttrNames.clone();
 
     }
 
@@ -471,7 +471,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
             ((ShaderProgramRetained)mirror).vertexAttrNames = null;
         }
         else {
-            ((ShaderProgramRetained)mirror).vertexAttrNames = (String[])this.vertexAttrNames.clone();
+		((ShaderProgramRetained)mirror).vertexAttrNames = this.vertexAttrNames.clone();
         }
 
         // Create mirror copy of shader attribute names
@@ -479,7 +479,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
             ((ShaderProgramRetained)mirror).shaderAttrNames = null;
         }
         else {
-            ((ShaderProgramRetained)mirror).shaderAttrNames = (String[])this.shaderAttrNames.clone();
+		((ShaderProgramRetained)mirror).shaderAttrNames = this.shaderAttrNames.clone();
         }
 
         // Clear shader attribute error set
@@ -1073,10 +1073,10 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
 
         ShaderProgramId shaderProgramId = spData.getShaderProgramId();
 
-        Iterator attrs = attributeSet.getAttrs().values().iterator();
+	Iterator<ShaderAttributeRetained> attrs = attributeSet.getAttrs().values().iterator();
         while (attrs.hasNext()) {
             ShaderError err = null;
-            ShaderAttributeRetained saRetained = (ShaderAttributeRetained)attrs.next();
+		ShaderAttributeRetained saRetained = attrs.next();
 
             // Lookup attribute info for the specified attrName; null means
             // that the name does not appear in the ShaderProgram, so we will
@@ -1122,9 +1122,9 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
                 // Before reporting the ShaderAttribute error, check
                 // whether it has already been reported for this ShaderProgram
                 if (shaderAttrErrorSet == null) {
-                    shaderAttrErrorSet = new HashSet();
+				shaderAttrErrorSet = new HashSet<ShaderAttribute>();
                 }
-                if (shaderAttrErrorSet.add(saRetained.source)) {
+			if (shaderAttrErrorSet.add((ShaderAttribute) saRetained.source)) {
                     err.setShaderProgram((ShaderProgram)this.source);
                     err.setShaderAttributeSet((ShaderAttributeSet)attributeSet.source);
                     err.setShaderAttribute((ShaderAttribute)saRetained.source);
@@ -1147,7 +1147,7 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
 	private boolean linked = false;
 
 	// A map of locations for ShaderAttributes.
-	private HashMap attrNameInfoMap = new HashMap();
+private HashMap<String, AttrNameInfo> attrNameInfoMap = new HashMap<String, AttrNameInfo>();
 
 	/** ShaderProgramData Constructor */
 	ShaderProgramData() {
@@ -1184,14 +1184,14 @@ abstract class ShaderProgramRetained extends NodeComponentRetained {
 	    return linked;
 	}
 
-	void setAttrNameInfo(String shaderAttribute, AttrNameInfo attrNameInfo) {
-	    assert(shaderAttribute != null);
-	    attrNameInfoMap.put(shaderAttribute, attrNameInfo);
-	}
+void setAttrNameInfo(String shaderAttribute, AttrNameInfo attrNameInfo) {
+	assert (shaderAttribute != null);
+	attrNameInfoMap.put(shaderAttribute, attrNameInfo);
+}
 
-	AttrNameInfo getAttrNameInfo(String shaderAttribute) {
-	    return  (AttrNameInfo) attrNameInfoMap.get(shaderAttribute);
-	}
+AttrNameInfo getAttrNameInfo(String shaderAttribute) {
+	return attrNameInfoMap.get(shaderAttribute);
+}
 
     }
 

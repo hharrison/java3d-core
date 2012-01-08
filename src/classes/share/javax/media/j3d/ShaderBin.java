@@ -32,7 +32,7 @@
 package javax.media.j3d;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 
 // XXXX : We should have a common Bin object that all other Bins extend from.
@@ -70,10 +70,10 @@ class ShaderBin implements ObjectUpdate {
      */
     TextureBin textureBinList = null;
 
-    /**
-     * The list of TextureBins to be added for the next frame
-     */
-    ArrayList addTextureBins = new ArrayList();
+/**
+ * The list of TextureBins to be added for the next frame
+ */
+ArrayList<TextureBin> addTextureBins = new ArrayList<TextureBin>();
 
     boolean onUpdateList = false;
 
@@ -141,7 +141,7 @@ class ShaderBin implements ObjectUpdate {
 	int i;
 
 	if (addTextureBins.size() > 0) {
-	    t = (TextureBin)addTextureBins.get(0);
+		t = addTextureBins.get(0);
 	    if (textureBinList == null) {
 		textureBinList = t;
 
@@ -151,7 +151,7 @@ class ShaderBin implements ObjectUpdate {
 		insertTextureBin(t);
 	    }
 	    for (i = 1; i < addTextureBins.size() ; i++) {
-		t = (TextureBin)addTextureBins.get(i);
+			t = addTextureBins.get(i);
 		// Look for a TextureBin that has the same texture
 		insertTextureBin(t);
 
@@ -164,7 +164,6 @@ class ShaderBin implements ObjectUpdate {
 
     void insertTextureBin(TextureBin t) {
 	TextureBin tb;
-	int i;
 	TextureRetained texture = null;
 
 	if (t.texUnitState != null && t.texUnitState.length > 0) {
@@ -352,7 +351,7 @@ class ShaderBin implements ObjectUpdate {
 	if ((componentDirty & SHADER_ATTRIBUTE_SET_DIRTY) != 0) {
 	    // System.err.println("  - SHADER_ATTRIBUTE_SET_DIRTY");
 
-	    HashMap attrs = (HashMap)shaderAttributeSet.getAttrs();
+		Map<String, ShaderAttributeRetained> attrs = shaderAttributeSet.getAttrs();
 	    attrs.clear();
             if(shaderAppearance.shaderAttributeSet != null) {
                 attrs.putAll(shaderAppearance.shaderAttributeSet.getAttrs());

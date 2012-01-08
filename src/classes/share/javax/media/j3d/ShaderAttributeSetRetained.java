@@ -44,7 +44,7 @@ import java.util.Map;
 
 class ShaderAttributeSetRetained extends NodeComponentRetained {
 
-    private Map attrs = new HashMap();
+private Map<String, ShaderAttributeRetained> attrs = new HashMap<String, ShaderAttributeRetained>();
 
     // Lock used for synchronization of live state
     Object liveStateLock = new Object();
@@ -98,7 +98,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
      * not set and this object is part of live or compiled scene graph
      */
     ShaderAttribute get(String attrName) {
-	return (ShaderAttribute)((ShaderAttributeRetained)attrs.get(attrName)).source;
+	return (ShaderAttribute)attrs.get(attrName).source;
     }
 
     /**
@@ -110,7 +110,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
      */
     void remove(String attrName) {
 	synchronized(liveStateLock) {
-	    ShaderAttributeRetained sAttr = (ShaderAttributeRetained)attrs.get(attrName);
+		ShaderAttributeRetained sAttr = attrs.get(attrName);
 	    attrs.remove(attrName);
 	    if (source.isLive()) {
 		sAttr.clearLive(refCount);
@@ -157,7 +157,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	    attrs.clear();
 	    if(source.isLive()) {
 		ShaderAttributeRetained[] sAttrs = new ShaderAttributeRetained[attrs.size()];
-		sAttrs = (ShaderAttributeRetained[])attrs.values().toArray(sAttrs);
+			sAttrs = attrs.values().toArray(sAttrs);
 		for (int i = 0; i < sAttrs.length; i++) {
 		    sAttrs[i].clearLive(refCount);
 		    sAttrs[i].removeMirrorUsers(this);
@@ -177,7 +177,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 
 	ShaderAttributeRetained[] sAttrsRetained = new ShaderAttributeRetained[attrs.size()];
 	ShaderAttribute[] sAttrs = new ShaderAttribute[sAttrsRetained.length];
-	sAttrsRetained = (ShaderAttributeRetained[])attrs.values().toArray(sAttrsRetained);
+	sAttrsRetained = attrs.values().toArray(sAttrsRetained);
 	for(int i=0; i < sAttrsRetained.length; i++) {
 	    sAttrs[i] = (ShaderAttribute) sAttrsRetained[i].source;
 	}
@@ -200,16 +200,15 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
         shaderProgram.setShaderAttributes(cv, this);
     }
 
-    Map getAttrs() {
-        return attrs;
-    }
-
+Map<String, ShaderAttributeRetained> getAttrs() {
+	return attrs;
+}
 
     void setLive(boolean backgroundGroup, int refCount) {
 
 	// System.err.println("ShaderAttributeSetRetained.setLive()");
 	ShaderAttributeRetained[] sAttrsRetained = new ShaderAttributeRetained[attrs.size()];
-	sAttrsRetained = (ShaderAttributeRetained[])attrs.values().toArray(sAttrsRetained);
+	sAttrsRetained = attrs.values().toArray(sAttrsRetained);
 	for(int i=0; i < sAttrsRetained.length; i++) {
 	    sAttrsRetained[i].setLive(backgroundGroup, refCount);
 	}
@@ -223,7 +222,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	super.addAMirrorUser(shape);
 
 	ShaderAttributeRetained[] sAttrsRetained = new ShaderAttributeRetained[attrs.size()];
-	sAttrsRetained = (ShaderAttributeRetained[])attrs.values().toArray(sAttrsRetained);
+	sAttrsRetained = attrs.values().toArray(sAttrsRetained);
 	for(int i=0; i < sAttrsRetained.length; i++) {
 	    sAttrsRetained[i].addAMirrorUser(shape);
 	}
@@ -233,7 +232,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	super.removeAMirrorUser(shape);
 
 	ShaderAttributeRetained[] sAttrsRetained = new ShaderAttributeRetained[attrs.size()];
-	sAttrsRetained = (ShaderAttributeRetained[])attrs.values().toArray(sAttrsRetained);
+	sAttrsRetained = attrs.values().toArray(sAttrsRetained);
 	for(int i=0; i < sAttrsRetained.length; i++) {
 	    sAttrsRetained[i].removeAMirrorUser(shape);
 	}
@@ -244,7 +243,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	super.removeMirrorUsers(node);
 
 	ShaderAttributeRetained[] sAttrsRetained = new ShaderAttributeRetained[attrs.size()];
-	sAttrsRetained = (ShaderAttributeRetained[])attrs.values().toArray(sAttrsRetained);
+	sAttrsRetained = attrs.values().toArray(sAttrsRetained);
 	for(int i=0; i < sAttrsRetained.length; i++) {
 	    sAttrsRetained[i].removeMirrorUsers(node);
 	}
@@ -254,7 +253,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	super.copyMirrorUsers(node);
 
 	ShaderAttributeRetained[] sAttrsRetained = new ShaderAttributeRetained[attrs.size()];
-	sAttrsRetained = (ShaderAttributeRetained[])attrs.values().toArray(sAttrsRetained);
+	sAttrsRetained = attrs.values().toArray(sAttrsRetained);
 	for(int i=0; i < sAttrsRetained.length; i++) {
 	    sAttrsRetained[i].copyMirrorUsers(node);
 	}
@@ -266,7 +265,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
 	super.clearLive(refCount);
 
 	ShaderAttributeRetained[] sAttrsRetained = new ShaderAttributeRetained[attrs.size()];
-	sAttrsRetained = (ShaderAttributeRetained[])attrs.values().toArray(sAttrsRetained);
+	sAttrsRetained = attrs.values().toArray(sAttrsRetained);
 	for(int i=0; i < sAttrsRetained.length; i++) {
 	    sAttrsRetained[i].clearLive(refCount);
 	}
@@ -287,7 +286,7 @@ class ShaderAttributeSetRetained extends NodeComponentRetained {
     void initMirrorObject() {
 
 	ShaderAttributeRetained[] sAttrs = new ShaderAttributeRetained[attrs.size()];
-	sAttrs = (ShaderAttributeRetained[])attrs.values().toArray(sAttrs);
+	sAttrs = attrs.values().toArray(sAttrs);
 	// Need to copy the mirror attrs
 	for (int i = 0; i < sAttrs.length; i++) {
 	    ShaderAttributeRetained mirrorSA = (ShaderAttributeRetained) sAttrs[i].mirror;

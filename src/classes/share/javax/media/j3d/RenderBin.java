@@ -337,9 +337,9 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 private HashSet<RenderAtomListInfo> addDlist = new HashSet<RenderAtomListInfo>();
 private HashSet<RenderAtomListInfo> removeDlist = new HashSet<RenderAtomListInfo>();
 
-    // Separate dlists per rinfo that were added/removed in this snapshot
-    ArrayList addDlistPerRinfo = new ArrayList(5);
-    ArrayList removeDlistPerRinfo = new ArrayList(5);
+// Separate dlists per rinfo that were added/removed in this snapshot
+ArrayList<RenderAtomListInfo> addDlistPerRinfo = new ArrayList<RenderAtomListInfo>(5);
+ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomListInfo>(5);
 
     Locale locale = null;
 
@@ -966,7 +966,7 @@ private HashSet<RenderAtomListInfo> removeDlist = new HashSet<RenderAtomListInfo
 	    }
 	    size = addDlistPerRinfo.size();
 	    for (i = 0; i < size; i++) {
-		ra = (RenderAtomListInfo)addDlistPerRinfo.get(i);
+			ra = addDlistPerRinfo.get(i);
 		if (ra.geometry() != null) {
 		    dlistLockList.add(ra.geometry());
 		}
@@ -1199,7 +1199,7 @@ private HashSet<RenderAtomListInfo> removeDlist = new HashSet<RenderAtomListInfo
 
 	if (size > 0) {
 	    for (int j = 0; j < size; j++) {
-		RenderAtomListInfo rinfo = (RenderAtomListInfo)addDlistPerRinfo.get(j);
+			RenderAtomListInfo rinfo = addDlistPerRinfo.get(j);
 		if (rinfo.renderAtom.inRenderBin()) {
 		    Object[] obj = new Object[2];
 		    obj[0] = rinfo;
@@ -1266,7 +1266,7 @@ private HashSet<RenderAtomListInfo> removeDlist = new HashSet<RenderAtomListInfo
 	// Take care of display list that should be freed
 	size = removeDlistPerRinfo.size();
 	for (int j=0; j < size; j++) {
-	    RenderAtomListInfo ra = (RenderAtomListInfo)removeDlistPerRinfo.get(j);
+		RenderAtomListInfo ra = removeDlistPerRinfo.get(j);
 	    rdr.displayListResourceFreeList.add(new Integer(ra.renderAtom.dlistIds[ra.index]));
 	    ra.groupType = 0;
 	    ra.renderAtom.dlistIds[ra.index] = -1;
@@ -1287,7 +1287,7 @@ private HashSet<RenderAtomListInfo> removeDlist = new HashSet<RenderAtomListInfo
 	    int size = addDlistPerRinfo.size();
 	    if (size > 0) {
 		for ( j = 0; j < size; j++) {
-		    RenderAtomListInfo rinfo = (RenderAtomListInfo)addDlistPerRinfo.get(j);
+				RenderAtomListInfo rinfo = addDlistPerRinfo.get(j);
 		    if (rinfo.renderAtom.inRenderBin()) {
 			Object[] obj = new Object[2];
 			obj[0] = rinfo;
@@ -1339,7 +1339,7 @@ private HashSet<RenderAtomListInfo> removeDlist = new HashSet<RenderAtomListInfo
 	    // Take care of display list that should be freed
 	    size = removeDlistPerRinfo.size();
 	    for (j=0; j < size; j++) {
-		RenderAtomListInfo ra = (RenderAtomListInfo)removeDlistPerRinfo.get(j);
+			RenderAtomListInfo ra = removeDlistPerRinfo.get(j);
 		cv.displayListResourceFreeList.add(new Integer(ra.renderAtom.dlistIds[ra.index]));
 		ra.groupType = 0;
 		ra.renderAtom.dlistIds[ra.index] = -1;
@@ -4741,7 +4741,7 @@ System.err.println("......tb.soleUser= " +
 	// Check the "to-be-added" list of TextureBins for a match
 	size = shaderBin.addTextureBins.size();
 	for (i = 0; i < size; i++) {
-	    currentBin = (TextureBin)shaderBin.addTextureBins.get(i);
+		currentBin = shaderBin.addTextureBins.get(i);
 	    if (currentBin.equals(texUnitState, ra)) {
 		//System.err.println("2: Equal");
 		return(currentBin);
