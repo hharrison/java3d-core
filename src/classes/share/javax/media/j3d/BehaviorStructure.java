@@ -345,7 +345,7 @@ class BehaviorStructure extends J3dStructure {
 
     void insertNodes(Object[] nodes) {
 	for (int i=0; i<nodes.length; i++) {
-	    Object node = (Object) nodes[i];
+		Object node = nodes[i];
 
 	    if (node instanceof BehaviorRetained) {
 		pendingBehaviors.add(node);
@@ -377,7 +377,6 @@ class BehaviorStructure extends J3dStructure {
 
     void addViewPlatform(ViewPlatformRetained vp) {
 	int i;
-	BehaviorRetained behav;
 	BehaviorRetained behavArr[] = (BehaviorRetained []) behaviors.toArray(false);
 
 	viewPlatforms.add(vp);
@@ -1069,7 +1068,6 @@ class BehaviorStructure extends J3dStructure {
     }
 
     final void processVpfXformChanged(UnorderList arrList) {
-	ViewPlatformRetained vpf;
 	Object[] nodes, nodesArr;
 
 	int size = arrList.size();
@@ -1112,8 +1110,7 @@ class BehaviorStructure extends J3dStructure {
 
 	    int size = transformViewPlatformList.arraySize();
 	    for (i=0; i < size; i++) {
-		processViewPlatformTransform((ViewPlatformRetained)
-					     vpArr[i]);
+			processViewPlatformTransform(vpArr[i]);
 	    }
 	    transformViewPlatformList.clear();
 	}
@@ -1277,7 +1274,6 @@ class BehaviorStructure extends J3dStructure {
 	// physicalEnvironment may be share by multiple view
 	View v;
 	View views[];
-	ViewPlatform vp;
 	ArrayList<ViewPlatformRetained> vpList = universe.viewPlatforms;
 
 	physicalEnvironments.clear();
@@ -1509,7 +1505,6 @@ class BehaviorStructure extends J3dStructure {
             nodesArr = arrList.toArray(false);
             Object[] objArr = (Object[])m.args[1];
             Object[] obj;
-            BoundingLeafRetained mbleaf;
 
             for (int h=0; h<size; h++) {
                 nodes = (Object[])nodesArr[h];
@@ -1518,7 +1513,6 @@ class BehaviorStructure extends J3dStructure {
 
                     Object[] users = (Object[])obj[i];
                     Object[] leafObj = new Object[1];
-                    mbleaf = (BoundingLeafRetained)nodes[i];
                     for (j = 0; j < users.length; j++) {
                         if (users[j] instanceof BehaviorRetained) {
                             leafObj[0] = users[j];
