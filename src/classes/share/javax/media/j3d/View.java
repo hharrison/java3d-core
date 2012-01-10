@@ -995,12 +995,12 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
     //
     boolean localEyeLightingEnable = false;
 
-    // Array Lists to track the screens and canvases associated with this View.
-    // use getScreens() to access this
-    private ArrayList screenList = new ArrayList();
+// Array Lists to track the screens and canvases associated with this View.
+// use getScreens() to access this
+private ArrayList<Screen3D> screenList = new ArrayList<Screen3D>();
 
-    // use getCanvasList() to access this
-    private ArrayList canvasList = new ArrayList();
+// use getCanvasList() to access this
+private ArrayList<ArrayList<Canvas3D>> canvasList = new ArrayList<ArrayList<Canvas3D>>();
 
     private Canvas3D[][] cachedCanvasList;
     private Canvas3D[] cachedCanvases;
@@ -1814,7 +1814,7 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
            // get the calculated userHeadToVworld transform
            // from the view cache.
            // grab the first canvas -- not sure for multiple canvases
-           Canvas3D canvas = (Canvas3D) this.canvases.firstElement();
+		Canvas3D canvas = this.canvases.firstElement();
            synchronized(canvas.canvasViewCache) {
               t.set(canvas.canvasViewCache.getHeadToVworld());
            }
@@ -2076,7 +2076,7 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
      */
     public void getSensorToVworld(Sensor sensor, Transform3D t) {
         // grab the first canvas -- not sure for multiple canvases
-        Canvas3D canvas = (Canvas3D) this.canvases.firstElement();
+	Canvas3D canvas = this.canvases.firstElement();
         Transform3D localTrans = new Transform3D();
         synchronized(canvas.canvasViewCache) {
               t.set(canvas.canvasViewCache.getVworldToTrackerBase());
@@ -2097,7 +2097,6 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
     public void getSensorHotspotInVworld(Sensor sensor,
 					 Point3f position) {
 
-        Canvas3D canvas = (Canvas3D) this.canvases.firstElement();
         Transform3D sensorToVworld = new Transform3D();
         Point3d hotspot3d = new Point3d();
 
@@ -2118,7 +2117,6 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
     public void getSensorHotspotInVworld(Sensor sensor,
 					 Point3d position) {
 
-        Canvas3D canvas = (Canvas3D) this.canvases.firstElement();
         Transform3D sensorToVworld = new Transform3D();
 
 	getSensorToVworld(sensor, sensorToVworld);
@@ -2176,7 +2174,7 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
      * @return the Canvas3D at the sprcified index position
      */
     public Canvas3D getCanvas3D(int index){
-	return (Canvas3D) this.canvases.elementAt(index);
+	return this.canvases.elementAt(index);
     }
 
     /**
@@ -2343,16 +2341,14 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
      * @since Java 3D 1.3
      */
     public void removeAllCanvas3Ds() {
-	LinkedList tmpCanvases = new LinkedList();
+	LinkedList<Canvas3D> tmpCanvases = new LinkedList<Canvas3D>();
 
 	synchronized(canvasList) {
 	    int numCanvases = canvases.size();
 
 	    // Remove in reverse order to ensure valid indices
 	    for (int index = numCanvases - 1; index >= 0; index--) {
-		Canvas3D cv;
-
-		cv = (Canvas3D) canvases.elementAt(index);
+			Canvas3D cv = canvases.elementAt(index);
 
 		// Record list of canvases to be deleted;
 		tmpCanvases.add(cv);
@@ -2366,9 +2362,9 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
 	// ISSUE 83: postRequest must *not* be called while holding
 	// canvasList lock. Holding the lock can cause a deadlock.
 
-	Iterator iterator = tmpCanvases.iterator();
+	Iterator<Canvas3D> iterator = tmpCanvases.iterator();
 	while (iterator.hasNext()) {
-	    Canvas3D cv = (Canvas3D)iterator.next();
+	    Canvas3D cv = iterator.next();
 
 	    // reset canvas will set view to null also
 	    VirtualUniverse.mc.postRequest(MasterControl.RESET_CANVAS,
@@ -2395,9 +2391,9 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
     private void addToCanvasList(Canvas3D c) {
 
 	for (int i=screenList.size()-1; i>=0; i--) {
-	    if ((Screen3D)screenList.get(i) == c.screen) {
+		if (screenList.get(i) == c.screen) {
 		// This is the right screen slot
-		((ArrayList)canvasList.get(i)).add(c);
+			canvasList.get(i).add(c);
 		canvasesDirty = true;
 		return;
 	    }
@@ -2405,7 +2401,7 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
 
 	// Add a screen slot
 	screenList.add(c.screen);
-	ArrayList clist = new ArrayList();
+	ArrayList<Canvas3D> clist = new ArrayList<Canvas3D>();
 	canvasList.add(clist);
 	clist.add(c);
 	canvasesDirty = true;
@@ -2416,9 +2412,9 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
     private void removeFromCanvasList(Canvas3D c) {
 
 	for (int i=screenList.size()-1; i>=0; i--) {
-	    if ((Screen3D) screenList.get(i) == c.screen) {
+		if (screenList.get(i) == c.screen) {
 		// This is the right screen slot
-		ArrayList clist = (ArrayList)canvasList.get(i);
+			ArrayList<Canvas3D> clist = canvasList.get(i);
 		clist.remove(clist.indexOf(c));
 
 		if (clist.size() == 0) {
@@ -2435,7 +2431,7 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
     void computeCanvasesCached() {
 
         synchronized (canvasList) {
-	    ArrayList cv;
+	    ArrayList<Canvas3D> cv;
 	    int len = canvases.size();
 
 	    Canvas3D newCachedCanvases[] = new Canvas3D[len];
@@ -2450,11 +2446,11 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
 	    longestScreenList = 0;
 	    cachedCanvasList = new Canvas3D[canvasList.size()][0];
 	    for (int i=0; i < cachedCanvasList.length; i++) {
-		cv = (ArrayList) canvasList.get(i);
+			cv = canvasList.get(i);
 		len = cv.size();
 		cachedCanvasList[i] = new Canvas3D[len];
 		for (int j=0; j < len; j++) {
-		    cachedCanvasList[i][j] = (Canvas3D) cv.get(j);
+				cachedCanvasList[i][j] = cv.get(j);
 		}
 
 		if (len > longestScreenList) {
@@ -2465,7 +2461,7 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
 	    Screen3D newCachedScreens[] = new Screen3D[len];
 
 	    for (int i=0; i < len; i++) {
-		newCachedScreens[i] = (Screen3D) screenList.get(i);
+			newCachedScreens[i] = screenList.get(i);
 	    }
 	    // Do this in one instruction so there is no need to
 	    // synchronized getScreens()
@@ -2505,7 +2501,7 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
     Canvas3D getFirstCanvas() {
 	synchronized (canvasList) {
 	    if (canvases.size() > 0) {
-		return (Canvas3D) canvases.elementAt(0);
+		return canvases.elementAt(0);
 	    }
 	    return null;
 	}
