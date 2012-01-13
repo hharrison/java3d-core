@@ -158,76 +158,41 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
      * Gets a RenderAtom for the given viewIndex.
      * If it doesn't exist, it creates one.
      */
-    RenderAtom getRenderAtom(View view) {
-	RenderAtom ra;
+RenderAtom getRenderAtom(View view) {
 	synchronized (lockObj) {
 		// If renderAtom is not scoped to this view, don't even
 		// bother creating the renderAtom, just return
 		if (source.viewList != null && !source.viewList.contains(view))
 			return null;
 
+		// Expand the renderAtoms array if needed
 		int index = view.viewIndex;
-	    if (index >= renderAtoms.length) {
-		RenderAtom[] newList = new RenderAtom[index+1];
-		for (int i = 0; i < renderAtoms.length; i++) {
-		    newList[i] = renderAtoms[i];
-		}
-		ra = new RenderAtom();
-		newList[index] = ra;
-		newList[index].geometryAtom = this;
-
-		// Allocate space based on number of geometry in the list
-		ra.rListInfo = new RenderAtomListInfo[geometryArray.length];
-		if (geoType != GeometryRetained.GEO_TYPE_TEXT3D) {
-		    for (int j = 0; j < ra.rListInfo.length; j++) {
-			ra.rListInfo[j] = new RenderAtomListInfo();
-			ra.rListInfo[j].renderAtom = ra;
-			ra.rListInfo[j].index = j;
-		    }
-		}
-		else {
-		    for (int j = 0; j < ra.rListInfo.length; j++) {
-			ra.rListInfo[j] = new RenderAtomListInfo();
-			ra.rListInfo[j].renderAtom = ra;
-			ra.rListInfo[j].index = j;
-			ra.rListInfo[j].localToVworld = new Transform3D();
-		    }
+		if (index >= renderAtoms.length) {
+			RenderAtom[] newList = new RenderAtom[index + 1];
+			System.arraycopy(renderAtoms, 0, newList, 0, renderAtoms.length);
+			renderAtoms = newList;
 		}
 
-		// Note this must be the last line in synchronized.
-		// Otherwise the lock is changed to newList and
-		// another thread can come in modified. This cause
-		// NullPointerException in
-		// renderAtoms[index].geometryAtom = this;
-		// which I encounter.
-		renderAtoms = newList;
-	    } else {
-		if (renderAtoms[index] == null) {
-		    ra = new RenderAtom();
-		    renderAtoms[index] = ra;
-		    renderAtoms[index].geometryAtom = this;
-		    // Allocate space based on number of geometry in the list
-		    ra.rListInfo = new RenderAtomListInfo[geometryArray.length];
-		    if (geoType != GeometryRetained.GEO_TYPE_TEXT3D) {
+		RenderAtom ra = renderAtoms[index];
+		if (ra == null) {
+			ra = new RenderAtom();
+			renderAtoms[index] = ra;
+			ra.geometryAtom = this;
+
+			// Allocate space based on number of geometry in the list
+			boolean isGeoTypeText3D = (geoType == GeometryRetained.GEO_TYPE_TEXT3D);
+			ra.rListInfo = new RenderAtomListInfo[geometryArray.length];
 			for (int j = 0; j < ra.rListInfo.length; j++) {
-			    ra.rListInfo[j] = new RenderAtomListInfo();
-			    ra.rListInfo[j].renderAtom = ra;
-			    ra.rListInfo[j].index = j;
+				ra.rListInfo[j] = new RenderAtomListInfo();
+				ra.rListInfo[j].renderAtom = ra;
+				ra.rListInfo[j].index = j;
+				if (isGeoTypeText3D)
+					ra.rListInfo[j].localToVworld = new Transform3D();
 			}
-		    }
-		    else {
-			for (int j = 0; j < ra.rListInfo.length; j++) {
-			    ra.rListInfo[j] = new RenderAtomListInfo();
-			    ra.rListInfo[j].renderAtom = ra;
-			    ra.rListInfo[j].index = j;
-			    ra.rListInfo[j].localToVworld = new Transform3D();
-			}
-		    }
 		}
-	    }
-		return (renderAtoms[index]);
+		return ra;
 	}
-    }
+}
     // If the renderAtom is transparent, then make sure that the
     // value is up-to-date
 
