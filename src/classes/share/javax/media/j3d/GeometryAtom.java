@@ -160,19 +160,14 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
      */
     RenderAtom getRenderAtom(View view) {
 	RenderAtom ra;
-	int index;
-	// If renderAtom is not scoped to this view, don't even
-	// bother creating the renderAtom
-
 	synchronized (lockObj) {
-	    index = view.viewIndex;
-	    if (index >= renderAtoms.length) {
+		// If renderAtom is not scoped to this view, don't even
+		// bother creating the renderAtom, just return
+		if (source.viewList != null && !source.viewList.contains(view))
+			return null;
 
-		// If creating a new RenderAtom, but this ga is not scoped
-		// to this view, then just return ..
-		if (source.viewList != null &&
-		    !source.viewList.contains(view))
-		    return null;
+		int index = view.viewIndex;
+	    if (index >= renderAtoms.length) {
 		RenderAtom[] newList = new RenderAtom[index+1];
 		for (int i = 0; i < renderAtoms.length; i++) {
 		    newList[i] = renderAtoms[i];
@@ -208,12 +203,6 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
 		renderAtoms = newList;
 	    } else {
 		if (renderAtoms[index] == null) {
-		    // If creating a new RenderAtom, but this ga is not scoped
-		    // to this view, then just return ..
-		    if (source.viewList != null &&
-			!source.viewList.contains(view))
-			return null;
-
 		    ra = new RenderAtom();
 		    renderAtoms[index] = ra;
 		    renderAtoms[index].geometryAtom = this;
