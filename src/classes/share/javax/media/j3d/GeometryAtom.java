@@ -164,7 +164,7 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
 	// If renderAtom is not scoped to this view, don't even
 	// bother creating the renderAtom
 
-	synchronized (renderAtoms) {
+	synchronized (lockObj) {
 	    index = view.viewIndex;
 	    if (index >= renderAtoms.length) {
 
@@ -236,9 +236,8 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
 		    }
 		}
 	    }
+		return (renderAtoms[index]);
 	}
-
-	return (renderAtoms[index]);
     }
     // If the renderAtom is transparent, then make sure that the
     // value is up-to-date
