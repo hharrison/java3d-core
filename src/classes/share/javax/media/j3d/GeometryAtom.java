@@ -183,9 +183,7 @@ RenderAtom getRenderAtom(View view) {
 			boolean isGeoTypeText3D = (geoType == GeometryRetained.GEO_TYPE_TEXT3D);
 			ra.rListInfo = new RenderAtomListInfo[geometryArray.length];
 			for (int j = 0; j < ra.rListInfo.length; j++) {
-				ra.rListInfo[j] = new RenderAtomListInfo();
-				ra.rListInfo[j].renderAtom = ra;
-				ra.rListInfo[j].index = j;
+				ra.rListInfo[j] = new RenderAtomListInfo(ra, j);
 				if (isGeoTypeText3D)
 					ra.rListInfo[j].localToVworld = new Transform3D();
 			}

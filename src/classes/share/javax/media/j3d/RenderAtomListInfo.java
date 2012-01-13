@@ -35,13 +35,12 @@ package javax.media.j3d;
  * of these per RenderAtom, one per geometry in GeometryAtom
  */
 class RenderAtomListInfo extends Object {
-    // RenderAtom that its a part of
 
-    RenderAtom renderAtom = null;
+final RenderAtom renderAtom; // RenderAtom that its a part of
 
-    // Specific geometry index in the GeometryAtom geometryArr list that
-    // corresponds to this RenderAtomListInfo
-    int index;
+// Specific geometry index in the GeometryAtom geometryArr list that
+// corresponds to this RenderAtomListInfo
+final int index;
 
     // Prev and next pointer
     RenderAtomListInfo next = null;
@@ -55,6 +54,10 @@ class RenderAtomListInfo extends Object {
     Transform3D infLocalToVworld = null;
     Transform3D localToVworld = null;
 
+RenderAtomListInfo(RenderAtom ra, int idx) {
+	renderAtom = ra;
+	index = idx;
+}
 
     GeometryRetained geometry() {
 	return renderAtom.geometryAtom.geometryArray[index];
