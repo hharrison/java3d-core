@@ -46,17 +46,15 @@ import com.sun.j3d.internal.HashCodeUtil;
 
 public class BoundingBox extends Bounds {
 
-    /**
-     * The corner of the bounding box with the numerically smallest
-     * values.
-     */
-    Point3d       lower;
+/**
+ * The corner of the bounding box with the numerically smallest values.
+ */
+final Point3d lower;
 
-    /**
-     * The corner of the bounding box with the numerically largest
-     * values.
-     */
-    Point3d       upper;
+/**
+ * The corner of the bounding box with the numerically largest values.
+ */
+final Point3d upper;
 
     private Point3d centroid = null;
     private static final double EPS = 1.0E-8;
@@ -188,14 +186,14 @@ public class BoundingBox extends Bounds {
     public BoundingBox(Bounds[] bounds) {
       int i=0;
 
-       upper = new Point3d();
-       lower = new Point3d();
+	upper = new Point3d();
+	lower = new Point3d();
        boundId = BOUNDING_BOX;
 
        if( bounds == null || bounds.length <= 0  ) {
-	   // Negative volume.
-	   lower = new Point3d( 1.0d,  1.0d,  1.0d);
-	   upper = new Point3d(-1.0d, -1.0d, -1.0d);
+		// Negative volume.
+		lower.set(1.0d, 1.0d, 1.0d);
+		upper.set(-1.0d, -1.0d, -1.0d);
 	   updateBoundsStates();
 	   return;
        }
@@ -206,9 +204,9 @@ public class BoundingBox extends Bounds {
        }
 
        if( i >= bounds.length ) { // all bounds objects were empty
-	   // Negative volume.
-	   lower = new Point3d( 1.0d,  1.0d,  1.0d);
-	   upper = new Point3d(-1.0d, -1.0d, -1.0d);
+		// Negative volume.
+		lower.set(1.0d, 1.0d, 1.0d);
+		upper.set(-1.0d, -1.0d, -1.0d);
 	   updateBoundsStates();
 	   return;
        }
