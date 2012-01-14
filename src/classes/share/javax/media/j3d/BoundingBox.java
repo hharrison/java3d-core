@@ -1353,7 +1353,6 @@ final Point3d upper;
      */
     public boolean intersect(Bounds[] boundsObjects) {
 
-	double distsq, radsq;
 	int i;
 
 	if( boundsObjects == null || boundsObjects.length <= 0  )  {
@@ -1658,7 +1657,7 @@ final Point3d upper;
 
 	getCenter();
 
-	double dis,far_dis,pdist,x,y,z,rad_sq;
+	double dis;
 	double cenX = 0.0, cenY = 0.0, cenZ = 0.0;
 	boolean contains = false;
 	boolean inside;
