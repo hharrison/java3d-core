@@ -82,41 +82,41 @@ final Point3d upper;
     }
 
 
-    /**
-     * Constructs and initializes a BoundingBox given min,max in x,y,z.
-     * @param lower the "small" corner
-     * @param upper the "large" corner
-     */
-    public BoundingBox(Point3d lower, Point3d upper) {
+/**
+ * Constructs and initializes a BoundingBox given min,max in x,y,z.
+ * @param lower the "small" corner
+ * @param upper the "large" corner
+ */
+public BoundingBox(Point3d lower, Point3d upper) {
 	boundId = BOUNDING_BOX;
 	this.lower = new Point3d(lower);
 	this.upper = new Point3d(upper);
 	updateBoundsStates();
-    }
+}
 
-    /**
-     * Constructs and initializes a 2X bounding box about the
-     * origin. The lower corner is initialized to (-1.0d, -1.0d, -1.0d)
-     * and the opper corner is initialized to (1.0d, 1.0d, 1.0d).
-     */
-    public BoundingBox() {
+/**
+ * Constructs and initializes a 2X bounding box about the origin. The lower
+ * corner is initialized to (-1.0d, -1.0d, -1.0d) and the upper corner is
+ * initialized to (1.0d, 1.0d, 1.0d).
+ */
+public BoundingBox() {
 	boundId = BOUNDING_BOX;
 	lower = new Point3d(-1.0d, -1.0d, -1.0d);
 	upper = new Point3d( 1.0d,  1.0d,  1.0d);
-	updateBoundsStates();
-    }
+	boundsIsEmpty = false;
+	boundsIsInfinite = false;
+}
 
-    /**
-     * Constructs a BoundingBox from a  bounding object.
-     * @param boundsObject  a bounds object
-     */
-    public BoundingBox(Bounds boundsObject) {
-	int i;
+/**
+ * Constructs a BoundingBox from a bounding object.
+ * @param boundsObject a bounds object
+ */
+public BoundingBox(Bounds boundsObject) {
 	boundId = BOUNDING_BOX;
 	lower = new Point3d();
 	upper = new Point3d();
 
-	if (boundsObject == null) {
+	if (boundsObject == null || boundsObject.boundsIsEmpty) {
 		setEmptyBounds();
 		return;
 	}
@@ -152,7 +152,7 @@ final Point3d upper;
 			lower.set(polytope.verts[0]);
 			upper.set(polytope.verts[0]);
 
-		for(i=1;i<polytope.nVerts;i++) {
+		for(int i=1;i<polytope.nVerts;i++) {
 		    if( polytope.verts[i].x < lower.x )
 			lower.x = polytope.verts[i].x;
 		    if( polytope.verts[i].y < lower.y )
@@ -175,22 +175,21 @@ final Point3d upper;
         updateBoundsStates();
     }
 
-    /**
-     * Constructs a BoundingBox from an array of bounding objects.
-     * @param bounds an array of bounding objects
-     */
-    public BoundingBox(Bounds[] bounds) {
-      int i=0;
-
+/**
+ * Constructs a BoundingBox from an array of bounding objects.
+ * @param bounds an array of bounding objects
+ */
+public BoundingBox(Bounds[] bounds) {
+	boundId = BOUNDING_BOX;
 	upper = new Point3d();
 	lower = new Point3d();
-       boundId = BOUNDING_BOX;
 
 	if (bounds == null || bounds.length <= 0) {
 		setEmptyBounds();
 		return;
 	}
 
+	int i = 0;
        // find first non empty bounds object
        while ((i < bounds.length) && ((bounds[i] == null) || bounds[i].boundsIsEmpty)) {
 	   i++;
