@@ -263,78 +263,61 @@ public BoundingBox(Bounds[] bounds) {
        updateBoundsStates();
     }
 
-    /**
-     * Gets the lower corner of this bounding box.
-     * @param p1 a Point to receive the lower corner of the bounding box
-     */
-    public void getLower(Point3d p1) {
-        p1.x = lower.x;
-        p1.y = lower.y;
-        p1.z = lower.z;
-    }
+/**
+ * Gets the lower corner of this bounding box.
+ * @param p1 a Point to receive the lower corner of the bounding box
+ */
+public void getLower(Point3d p1) {
+	p1.set(lower);
+}
 
-    /**
-     * Sets the lower corner of this bounding box.
-     * @param xmin minimum x value of boundining box
-     * @param ymin minimum y value of boundining box
-     * @param zmin minimum z value of boundining box
-     */
-    public void setLower(double xmin, double ymin, double zmin ) {
-        lower.x = xmin;
-        lower.y = ymin;
-        lower.z = zmin;
+/**
+ * Sets the lower corner of this bounding box.
+ * @param xmin minimum x value of bounding box
+ * @param ymin minimum y value of bounding box
+ * @param zmin minimum z value of bounding box
+ */
+public void setLower(double xmin, double ymin, double zmin) {
+	lower.set(xmin, ymin, zmin);
+	updateBoundsStates();
+}
 
-        updateBoundsStates();
-    }
+/**
+ * Sets the lower corner of this bounding box.
+ * @param p1 a Point defining the new lower corner of the bounding box
+ */
+public void setLower(Point3d p1) {
+	lower.set(p1);
+	updateBoundsStates();
+}
 
-    /**
-     * Sets the lower corner of this bounding box.
-     * @param p1 a Point defining the new lower corner of the bounding box
-     */
-    public void setLower(Point3d p1) {
+/**
+ * Gets the upper corner of this bounding box.
+ * @param p1 a Point to receive the upper corner of the bounding box
+ */
+public void getUpper(Point3d p1) {
+	p1.set(upper);
+}
 
-        lower.x = p1.x;
-        lower.y = p1.y;
-        lower.z = p1.z;
+/**
+ * Sets the upper corner of this bounding box.
+ * @param xmax max x value of bounding box
+ * @param ymax max y value of bounding box
+ * @param zmax max z value of bounding box
+ */
+public void setUpper(double xmax, double ymax, double zmax) {
+	upper.set(xmax, ymax, zmax);
+	updateBoundsStates();
+}
 
-        updateBoundsStates();
-    }
-
-    /**
-     * Gets the upper corner of this bounding box.
-     * @param p1 a Point to receive the upper corner of the bounding box
-     */
-    public void getUpper(Point3d p1) {
-        p1.x = upper.x;
-        p1.y = upper.y;
-        p1.z = upper.z;
-    }
-
-    /**
-     * Sets the upper corner of this bounding box.
-     * @param xmax max x value of boundining box
-     * @param ymax max y value of boundining box
-     * @param zmax max z value of boundining box
-     */
-    public void setUpper(double xmax, double ymax, double zmax ) {
-        upper.x = xmax;
-        upper.y = ymax;
-        upper.z = zmax;
-
-        updateBoundsStates();
-    }
-
-    /**
-     * Sets the upper corner of this bounding box.
-     * @param p1 a Point defining the new upper corner of the bounding box
-     */
-    public void setUpper(Point3d p1) {
-        upper.x = p1.x;
-        upper.y = p1.y;
-        upper.z = p1.z;
-
-        updateBoundsStates();
-    }
+/**
+ * Sets the upper corner of this bounding box.
+ * @param p1 a Point defining the new upper corner of the bounding box
+ */
+public void setUpper(Point3d p1) {
+	upper.set(p1);
+	updateBoundsStates();
+}
 
     /**
      * Sets the the value of this BoundingBox
