@@ -1877,7 +1877,7 @@ private void setInfiniteBounds() {
 	    return;
 	}
 
-	if (checkBoundsIsNaN()) {
+	if (Double.isNaN(lower.x + lower.y + lower.z + upper.x + upper.y + upper.z)) {
 	     boundsIsEmpty = true;
 	     boundsIsInfinite = false;
 	     return;
@@ -1948,16 +1948,6 @@ private void setInfiniteBounds() {
 	else {
 	    return (Bounds) this.clone();
 	}
-    }
-
-    // Check is any of the bounds is a NaN, if yes, then
-    // set it an empty bounds
-    boolean checkBoundsIsNaN() {
-	if (Double.isNaN(lower.x+lower.y+lower.z+upper.x+upper.y+upper.z)) {
-	     return true;
-	}
-
-	return false;
     }
 
     int getPickType() {
