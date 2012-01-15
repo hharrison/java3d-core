@@ -113,48 +113,44 @@ final Point3d upper;
     public BoundingBox(Bounds boundsObject) {
 	int i;
 	boundId = BOUNDING_BOX;
-	if( boundsObject == null ) {
-	    // Negative volume.
-	    lower = new Point3d( 1.0d,  1.0d,  1.0d);
-	    upper = new Point3d(-1.0d, -1.0d, -1.0d);
+	lower = new Point3d();
+	upper = new Point3d();
+
+	if (boundsObject == null) {
+		setEmptyBounds();
+		return;
 	}
-	else if( boundsObject.boundsIsInfinite ) {
-	    lower = new Point3d( Double.NEGATIVE_INFINITY,
-				 Double.NEGATIVE_INFINITY,
-				 Double.NEGATIVE_INFINITY);
-	    upper = new Point3d(Double.POSITIVE_INFINITY,
-				Double.POSITIVE_INFINITY,
-				Double.POSITIVE_INFINITY);
+
+	if (boundsObject.boundsIsInfinite) {
+		setInfiniteBounds();
+		return;
 	}
-	else if( boundsObject.boundId == BOUNDING_BOX){
+
+	if( boundsObject.boundId == BOUNDING_BOX){
 	    BoundingBox box = (BoundingBox)boundsObject;
 
-	    lower = new Point3d(box.lower.x, box.lower.y, box.lower.z);
-	    upper = new Point3d(box.upper.x, box.upper.y, box.upper.z);
-
+		lower.set(box.lower);
+		upper.set(box.upper);
 	}
 	else if( boundsObject.boundId == BOUNDING_SPHERE ) {
 	    BoundingSphere sphere = (BoundingSphere)boundsObject;
 
-	    lower = new Point3d(sphere.center.x-sphere.radius,
-				sphere.center.y-sphere.radius,
-				sphere.center.z-sphere.radius);
+		lower.set(sphere.center.x - sphere.radius,
+		          sphere.center.y - sphere.radius,
+		          sphere.center.z - sphere.radius);
 
-	    upper = new Point3d(sphere.center.x+sphere.radius,
-				sphere.center.y+sphere.radius,
-				sphere.center.z+sphere.radius);
-
+		upper.set(sphere.center.x + sphere.radius,
+		          sphere.center.y + sphere.radius,
+		          sphere.center.z + sphere.radius);
 	}
 	else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
 	    if( polytope.nVerts < 1 ) { // handle degenerate case
-		lower = new Point3d(-1.0d, -1.0d, -1.0d);
-		upper = new Point3d( 1.0d,  1.0d,  1.0d);
+		lower.set(-1.0d, -1.0d, -1.0d);
+		upper.set( 1.0d,  1.0d,  1.0d);
 	    } else {
-		lower = new Point3d( polytope.verts[0].x, polytope.verts[0].y,
-				     polytope.verts[0].z);
-		upper = new Point3d( polytope.verts[0].x, polytope.verts[0].y,
-				     polytope.verts[0].z);
+			lower.set(polytope.verts[0]);
+			upper.set(polytope.verts[0]);
 
 		for(i=1;i<polytope.nVerts;i++) {
 		    if( polytope.verts[i].x < lower.x )
@@ -190,26 +186,21 @@ final Point3d upper;
 	lower = new Point3d();
        boundId = BOUNDING_BOX;
 
-       if( bounds == null || bounds.length <= 0  ) {
-		// Negative volume.
-		lower.set(1.0d, 1.0d, 1.0d);
-		upper.set(-1.0d, -1.0d, -1.0d);
-	   updateBoundsStates();
-	   return;
-       }
+	if (bounds == null || bounds.length <= 0) {
+		setEmptyBounds();
+		return;
+	}
 
        // find first non empty bounds object
        while ((i < bounds.length) && ((bounds[i] == null) || bounds[i].boundsIsEmpty)) {
 	   i++;
        }
 
-       if( i >= bounds.length ) { // all bounds objects were empty
-		// Negative volume.
-		lower.set(1.0d, 1.0d, 1.0d);
-		upper.set(-1.0d, -1.0d, -1.0d);
-	   updateBoundsStates();
-	   return;
-       }
+	if (i >= bounds.length) {
+		// all bounds objects were empty
+		setEmptyBounds();
+		return;
+	}
 
        this.set(bounds[i++]);
        if(boundsIsInfinite)
@@ -219,9 +210,8 @@ final Point3d upper;
            if( bounds[i] == null );   // do nothing
            else if( bounds[i].boundsIsEmpty); // do nothing
 	   else if( bounds[i].boundsIsInfinite ) {
-	       lower.x = lower.y = lower.z = Double.NEGATIVE_INFINITY;
-	       upper.x = upper.y = upper.z = Double.POSITIVE_INFINITY;
-	       break;  // We're done.
+			setInfiniteBounds();
+			return; // We're done.
 	   }
 	   else if(bounds[i].boundId == BOUNDING_BOX){
 	       BoundingBox box = (BoundingBox)bounds[i];
@@ -354,16 +344,17 @@ final Point3d upper;
     public void set(Bounds  boundsObject) {
       int i;
 
-      if(( boundsObject == null ) ||( boundsObject.boundsIsEmpty)) {
-	  // Negative volume.
-	  lower.x = lower.y = lower.z = 1.0d;
-	  upper.x = upper.y = upper.z = -1.0d;
+	if ((boundsObject == null) || (boundsObject.boundsIsEmpty)) {
+		setEmptyBounds();
+		return;
+	}
 
-      } else if( boundsObject.boundsIsInfinite ) {
-	  lower.x = lower.y = lower.z = Double.NEGATIVE_INFINITY;
-	  upper.x = upper.y = upper.z = Double.POSITIVE_INFINITY;
+	if (boundsObject.boundsIsInfinite) {
+		setInfiniteBounds();
+		return;
+	}
 
-      } else if( boundsObject.boundId == BOUNDING_BOX){
+      if( boundsObject.boundId == BOUNDING_BOX){
 	  BoundingBox box = (BoundingBox)boundsObject;
 
 	  lower.x = box.lower.x;
@@ -673,19 +664,14 @@ final Point3d upper;
      */
     public void transform( Bounds boundsObject, Transform3D matrix) {
 
-	if( boundsObject == null || boundsObject.boundsIsEmpty)  {
-	  // Negative volume.
-	  lower.x = lower.y = lower.z = 1.0d;
-	  upper.x = upper.y = upper.z = -1.0d;
-	  updateBoundsStates();
-	  return;
+	if (boundsObject == null || boundsObject.boundsIsEmpty) {
+		setEmptyBounds();
+		return;
 	}
 
-	if(boundsObject.boundsIsInfinite) {
-	    lower.x = lower.y = lower.z = Double.NEGATIVE_INFINITY;
-	    upper.x = upper.y = upper.z = Double.POSITIVE_INFINITY;
-	    updateBoundsStates();
-	    return;
+	if (boundsObject.boundsIsInfinite) {
+		setInfiniteBounds();
+		return;
 	}
 
 	if(boundsObject.boundId == BOUNDING_BOX){
@@ -735,8 +721,8 @@ final Point3d upper;
      */
     public void transform(Transform3D matrix) {
 
-	if(boundsIsInfinite)
-	    return;
+	if (boundsIsInfinite)
+		return;
 
         if (tmpP3d == null) {
             tmpP3d = new Point3d();
@@ -1868,6 +1854,25 @@ final Point3d upper;
 			   lower.y+" "+lower.z+" Upper="+upper.x+" "+
 			   upper.y+" "+upper.z  );
     }
+
+private void setEmptyBounds() {
+	lower.set( 1.0d,  1.0d,  1.0d);
+	upper.set(-1.0d, -1.0d, -1.0d);
+	boundsIsInfinite = false;
+	boundsIsEmpty = true;
+}
+
+private void setInfiniteBounds() {
+	lower.set(Double.NEGATIVE_INFINITY,
+	          Double.NEGATIVE_INFINITY,
+	          Double.NEGATIVE_INFINITY);
+	upper.set(Double.POSITIVE_INFINITY,
+	          Double.POSITIVE_INFINITY,
+	          Double.POSITIVE_INFINITY);
+
+	boundsIsInfinite = true;
+	boundsIsEmpty = false;
+}
 
     private void updateBoundsStates() {
 	if((lower.x == Double.NEGATIVE_INFINITY) &&
