@@ -343,7 +343,7 @@ public BoundingBox(Bounds[] bounds) {
     public void set(Bounds  boundsObject) {
       int i;
 
-	if ((boundsObject == null) || (boundsObject.boundsIsEmpty)) {
+	if (boundsObject == null || boundsObject.boundsIsEmpty) {
 		setEmptyBounds();
 		return;
 	}
@@ -1410,9 +1410,7 @@ public BoundingBox(Bounds[] bounds) {
     public boolean intersect(Bounds boundsObject, BoundingBox newBoundBox) {
 
 	if((boundsObject == null) || boundsIsEmpty || boundsObject.boundsIsEmpty ) {
-	    // Negative volume.
-	    newBoundBox.setLower( 1.0d,  1.0d,  1.0d);
-	    newBoundBox.setUpper(-1.0d, -1.0d, -1.0d);
+		newBoundBox.set((Bounds)null);
 	    return false;
         }
 
@@ -1471,8 +1469,7 @@ public BoundingBox(Bounds[] bounds) {
 		return true;
 	    } else {
 		// Negative volume.
-		newBoundBox.setLower( 1.0d,  1.0d,  1.0d);
-		newBoundBox.setUpper(-1.0d, -1.0d, -1.0d);
+			newBoundBox.set((Bounds)null);
 		return false;
 	    }
         }
@@ -1484,8 +1481,7 @@ public BoundingBox(Bounds[] bounds) {
 		return true;
 	    } else {
 		// Negative volume.
-		newBoundBox.setLower( 1.0d,  1.0d,  1.0d);
-		newBoundBox.setUpper(-1.0d, -1.0d, -1.0d);
+			newBoundBox.set((Bounds)null);
 		return false;
 	    }
 
@@ -1499,8 +1495,7 @@ public BoundingBox(Bounds[] bounds) {
 		return true;
 	    } else {
 		// Negative volume.
-		newBoundBox.setLower( 1.0d,  1.0d,  1.0d);
-		newBoundBox.setUpper(-1.0d, -1.0d, -1.0d);
+			newBoundBox.set((Bounds)null);
 		return false;
 	    }
         } else {
@@ -1518,10 +1513,9 @@ public BoundingBox(Bounds[] bounds) {
     public boolean intersect(Bounds[] boundsObjects, BoundingBox newBoundBox) {
 
        if( boundsObjects == null || boundsObjects.length <= 0 ||  boundsIsEmpty ) {
-	    // Negative volume.
-	    newBoundBox.setLower( 1.0d,  1.0d,  1.0d);
-	    newBoundBox.setUpper(-1.0d, -1.0d, -1.0d);
-	    return false;
+		// Negative volume.
+		newBoundBox.set((Bounds)null);
+		return false;
        }
 
        int i=0;
@@ -1531,9 +1525,8 @@ public BoundingBox(Bounds[] bounds) {
        }
 
        if( i >= boundsObjects.length ) { // all bounds objects were empty
-	   // Negative volume.
-	   newBoundBox.setLower( 1.0d,  1.0d,  1.0d);
-	   newBoundBox.setUpper(-1.0d, -1.0d, -1.0d);
+		// Negative volume.
+		newBoundBox.set((Bounds)null);
 	   return false;
        }
 
@@ -1618,8 +1611,7 @@ public BoundingBox(Bounds[] bounds) {
        }
        if( status == false ) {
 	   // Negative volume.
-	   newBoundBox.setLower( 1.0d,  1.0d,  1.0d);
-	   newBoundBox.setUpper(-1.0d, -1.0d, -1.0d);
+		newBoundBox.set((Bounds)null);
        }
        return status;
     }
@@ -1917,14 +1909,13 @@ private void setInfiniteBounds() {
 
     void translate(BoundingBox bbox, Vector3d value) {
 	if (bbox == null || bbox.boundsIsEmpty) {
-	    // Negative volume.
-	    setLower( 1.0d,  1.0d,  1.0d);
-	    setUpper(-1.0d, -1.0d, -1.0d);
-	    return;
+		setEmptyBounds();
+		return;
 	}
-	if(bbox.boundsIsInfinite) {
-	    this.set(bbox);
-	    return;
+
+	if (bbox.boundsIsInfinite) {
+		setInfiniteBounds();
+		return;
 	}
 
 	lower.x = bbox.lower.x + value.x;
