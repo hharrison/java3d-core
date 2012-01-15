@@ -105,9 +105,7 @@ class AlternateAppearanceRetained extends LeafRetained {
 
     AlternateAppearanceRetained() {
 	this.nodeType = NodeRetained.ALTERNATEAPPEARANCE;
-	localBounds = new BoundingBox();
-	((BoundingBox)localBounds).setLower( 1.0, 1.0, 1.0);
-	((BoundingBox)localBounds).setUpper(-1.0,-1.0,-1.0);
+	localBounds = new BoundingBox((Bounds)null);
     }
 
     /**

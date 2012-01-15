@@ -157,9 +157,7 @@ class BehaviorRetained extends LeafRetained  {
 
     BehaviorRetained() {
 	this.nodeType = NodeRetained.BEHAVIOR;
-	localBounds = new BoundingBox();
-	((BoundingBox)localBounds).setLower( 1.0, 1.0, 1.0);
-	((BoundingBox)localBounds).setUpper(-1.0,-1.0,-1.0);
+	localBounds = new BoundingBox((Bounds)null);
 	targets[0] = this;
 	IndexedUnorderSet.init(this, TOTAL_INDEXED_UNORDER_SET_TYPES);
     }

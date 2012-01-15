@@ -122,9 +122,7 @@ class BackgroundRetained extends LeafRetained {
 
     BackgroundRetained () {
         this.nodeType = NodeRetained.BACKGROUND;
-	localBounds = new BoundingBox();
-	((BoundingBox)localBounds).setLower( 1.0, 1.0, 1.0);
-	((BoundingBox)localBounds).setUpper(-1.0,-1.0,-1.0);
+	localBounds = new BoundingBox((Bounds)null);
     }
 
     /**

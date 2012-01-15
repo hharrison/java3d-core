@@ -108,9 +108,7 @@ class ViewPlatformRetained extends LeafRetained {
 
     ViewPlatformRetained() {
         this.nodeType = NodeRetained.VIEWPLATFORM;
-	localBounds = new BoundingBox();
-	((BoundingBox)localBounds).setLower( 1.0, 1.0, 1.0);
-	((BoundingBox)localBounds).setUpper(-1.0,-1.0,-1.0);
+	localBounds = new BoundingBox((Bounds)null);
 	IndexedUnorderSet.init(this, TOTAL_INDEXED_UNORDER_SET_TYPES);
 	schedSphere = (BoundingSphere) sphere.clone();
     }

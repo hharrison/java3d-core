@@ -91,9 +91,7 @@ class ClipRetained extends LeafRetained {
      */
     ClipRetained () {
         this.nodeType = NodeRetained.CLIP;
-	localBounds = new BoundingBox();
-	((BoundingBox)localBounds).setLower( 1.0, 1.0, 1.0);
-	((BoundingBox)localBounds).setUpper(-1.0,-1.0,-1.0);
+	localBounds = new BoundingBox((Bounds)null);
     }
 
     /**

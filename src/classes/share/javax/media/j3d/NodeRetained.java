@@ -194,9 +194,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
 	// Get a not necessary unique Id.
 	nnuId = NnuIdManager.getId();
 
-	localBounds = new BoundingBox();
-	((BoundingBox)localBounds).setUpper(-1.0, -1.0, -1.0);
-	((BoundingBox)localBounds).setLower( 1.0,  1.0,  1.0);
+	localBounds = new BoundingBox((Bounds)null);
     }
 
 
