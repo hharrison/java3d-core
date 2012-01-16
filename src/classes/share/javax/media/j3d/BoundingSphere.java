@@ -59,33 +59,32 @@ double radius;
     private BoundingBox tmpBox = null;
     private BoundingPolytope tmpPolytope = null;
 
-    /**
-     * Constructs and initializes a BoundingSphere from a center and radius.
-     * @param center the center of the bounding sphere
-     * @param radius the radius of the bounding sphere
-     */
-    public BoundingSphere(Point3d center, double radius) {
+/**
+ * Constructs and initializes a BoundingSphere from a center and radius.
+ * @param center the center of the bounding sphere
+ * @param radius the radius of the bounding sphere
+ */
+public BoundingSphere(Point3d center, double radius) {
+	boundId = BOUNDING_SPHERE;
 	this.center = new Point3d(center);
 	this.radius = radius;
-	boundId = BOUNDING_SPHERE;
 	updateBoundsStates();
-    }
-    /**
-     * Constructs and initializes a BoundingSphere with radius = 1 at 0 0 0.
-     */
-    public BoundingSphere() {
+}
+
+/**
+ * Constructs and initializes a BoundingSphere with radius = 1 at 0 0 0.
+ */
+public BoundingSphere() {
 	boundId = BOUNDING_SPHERE;
 	center = new Point3d();
 	radius = 1.0;
-    }
+}
 
-    /**
-     * Constructs and initializes a BoundingSphere from a bounding object.
-     * @param boundsObject  a bounds object
-     */
-    public BoundingSphere(Bounds boundsObject) {
-	int i;
-
+/**
+ * Constructs and initializes a BoundingSphere from a bounding object.
+ * @param boundsObject a bounds object
+ */
+public BoundingSphere(Bounds boundsObject) {
 	boundId = BOUNDING_SPHERE;
 	center = new Point3d();
 
@@ -129,7 +128,7 @@ double radius;
 				(polytope.verts[0].z - center.z)*
 				(polytope.verts[0].z - center.z));
 
-	    for(i=1;i<polytope.nVerts;i++) {
+		for (int i = 1; i < polytope.nVerts; i++) {
 	        rad_sq = radius * radius;
 
                 dis_sq =  (polytope.verts[i].x - center.x)*
@@ -158,14 +157,12 @@ double radius;
 	updateBoundsStates();
     }
 
-    /**
-     * Constructs and initializes a BoundingSphere from an array of bounding objects.
-     * @param boundsObjects an array of bounds objects
-     */
-    public BoundingSphere(Bounds[] boundsObjects) {
-	int i=0;
-	double dis,t,d1;
-
+/**
+ * Constructs and initializes a BoundingSphere from an array of bounding
+ * objects.
+ * @param boundsObjects an array of bounds objects
+ */
+public BoundingSphere(Bounds[] boundsObjects) {
 	boundId = BOUNDING_SPHERE;
 	center = new Point3d();
 
@@ -175,6 +172,7 @@ double radius;
 	}
 
 	// find first non empty bounds object
+	int i = 0;
 	while( boundsObjects[i] == null && i < boundsObjects.length) {
 	    i++;
 	}
@@ -217,6 +215,7 @@ double radius;
 		this.combine(boxVerts);
 	    }
 	    else if( boundsObjects[i].boundId == BOUNDING_SPHERE ) {
+			double dis, t, d1;
 		BoundingSphere sphere = (BoundingSphere)boundsObjects[i];
 		dis = Math.sqrt( (center.x - sphere.center.x)*
 				 (center.x - sphere.center.x) +
