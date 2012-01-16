@@ -45,15 +45,15 @@ import com.sun.j3d.internal.HashCodeUtil;
 
 public class BoundingSphere extends Bounds {
 
-    /**
-     * The center of the bounding sphere.
-     */
-    Point3d	center;
+/**
+ * The center of the bounding sphere.
+ */
+final Point3d center;
 
-    /**
-     * The radius of the bounding sphere.
-     */
-    double	radius;
+/**
+ * The radius of the bounding sphere.
+ */
+double radius;
 
     Point3d boxVerts[];
     boolean allocBoxVerts = false;
@@ -90,18 +90,20 @@ public class BoundingSphere extends Bounds {
 	int i;
 
 	boundId = BOUNDING_SPHERE;
-	if (boundsObject == null) {
-	    // Negative volume.
-	    center = new Point3d();
-	    radius = -1.0;
-	}
-	else if( boundsObject.boundsIsInfinite ) {
-	    center = new Point3d();
-	    radius = Double.POSITIVE_INFINITY;
+	center = new Point3d();
 
-	} else if( boundsObject.boundId == BOUNDING_BOX){
+	if (boundsObject == null) {
+		setEmptyBounds();
+		return;
+	}
+
+	if (boundsObject.boundsIsInfinite) {
+		setInfiniteBounds();
+		return;
+	}
+
+	if( boundsObject.boundId == BOUNDING_BOX){
 	    BoundingBox box = (BoundingBox)boundsObject;
-	    center = new Point3d();
 	    center.x = (box.upper.x+box.lower.x)/2.0;
 	    center.y = (box.upper.y+box.lower.y)/2.0;
 	    center.z = (box.upper.z+box.lower.z)/2.0;
@@ -114,13 +116,12 @@ public class BoundingSphere extends Bounds {
 
 	} else if (boundsObject.boundId == BOUNDING_SPHERE) {
 	    BoundingSphere sphere = (BoundingSphere)boundsObject;
-	    center = new Point3d(sphere.center);
+		center.set(sphere.center);
 	    radius = sphere.radius;
 
 	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingPolytope polytope = (BoundingPolytope)boundsObject;
 	    double t,dis,dis_sq,rad_sq,oldc_to_new_c;
-	    center = new Point3d();
 	    center.x = polytope.centroid.x;
 	    center.y = polytope.centroid.y;
 	    center.z = polytope.centroid.z;
@@ -171,11 +172,9 @@ public class BoundingSphere extends Bounds {
 	boundId = BOUNDING_SPHERE;
 	center = new Point3d();
 
-	if( boundsObjects == null || boundsObjects.length <= 0  ) {
-	   // Negative volume.
-	    radius = -1.0;
-	    updateBoundsStates();
-	    return;
+	if (boundsObjects == null || boundsObjects.length <= 0) {
+		setEmptyBounds();
+		return;
 	}
 
 	// find first non empty bounds object
@@ -198,8 +197,8 @@ public class BoundingSphere extends Bounds {
 	    if( boundsObjects[i] == null ); // do nothing
 	    else if( boundsObjects[i].boundsIsEmpty); // do nothing
 	    else if( boundsObjects[i].boundsIsInfinite ) {
-		radius = Double.POSITIVE_INFINITY;
-		break;  // We're done.
+			setInfiniteBounds();
+			return; // We're done.
 	    }
 	    else if( boundsObjects[i].boundId == BOUNDING_BOX){
 		BoundingBox b = (BoundingBox)boundsObjects[i];
@@ -310,17 +309,17 @@ public class BoundingSphere extends Bounds {
     public void set(Bounds  boundsObject){
 	int i;
 
-	if ((boundsObject == null) || boundsObject.boundsIsEmpty) {
-	    center.x = 0.0;
-	    center.y = 0.0;
-	    center.z = 0.0;
-	    radius = -1.0;
-	} else if( boundsObject.boundsIsInfinite ) {
-	    center.x = 0.0;
-	    center.y = 0.0;
-	    center.z = 0.0;
-	    radius = Double.POSITIVE_INFINITY;
-	} else if( boundsObject.boundId == BOUNDING_BOX){
+	if (boundsObject == null || boundsObject.boundsIsEmpty) {
+		setEmptyBounds();
+		return;
+	}
+
+	if( boundsObject.boundsIsInfinite ) {
+		setInfiniteBounds();
+		return;
+	}
+
+	if( boundsObject.boundId == BOUNDING_BOX){
 	    BoundingBox box = (BoundingBox)boundsObject;
 	    center.x = (box.upper.x + box.lower.x )/2.0;
 	    center.y = (box.upper.y + box.lower.y )/2.0;
@@ -594,11 +593,8 @@ public class BoundingSphere extends Bounds {
 	    if( boundsObjects[i] == null );  // do nothing
 	    else if( boundsObjects[i].boundsIsEmpty); // do nothing
 	    else if( boundsObjects[i].boundsIsInfinite ) {
-		center.x = 0.0;
-		center.y = 0.0;
-		center.z = 0.0;
-		radius = Double.POSITIVE_INFINITY;
-		break;  // We're done.
+			setInfiniteBounds();
+			return; // We're done.
 	    } else if( boundsObjects[i].boundId == BOUNDING_BOX){
 		b = (BoundingBox)boundsObjects[i];
 
@@ -769,19 +765,14 @@ public class BoundingSphere extends Bounds {
     public void transform( Bounds boundsObject, Transform3D matrix) {
 	double scale;
 
-	if( boundsObject == null || boundsObject.boundsIsEmpty)  {
-	    // Negative volume.
-	    center.x = center.y = center.z = 0.0;
-	    radius = -1.0;
-	    updateBoundsStates();
-	    return;
+	if (boundsObject == null || boundsObject.boundsIsEmpty) {
+		setEmptyBounds();
+		return;
 	}
 
-	if(boundsObject.boundsIsInfinite) {
-	    center.x = center.y = center.z = 0.0;
-	    radius = Double.POSITIVE_INFINITY;
-	    updateBoundsStates();
-	    return;
+	if (boundsObject.boundsIsInfinite) {
+		setInfiniteBounds();
+		return;
 	}
 
 	if( boundsObject.boundId == BOUNDING_BOX){
@@ -798,11 +789,8 @@ public class BoundingSphere extends Bounds {
 	    scale = matrix.getDistanceScale();
 	    this.radius = ((BoundingSphere)boundsObject).radius * scale;
 	    if (Double.isNaN(radius)) {
-		// Negative volume.
-		center.x = center.y = center.z = 0.0;
-		radius = -1.0;
-		updateBoundsStates();
-		return;
+			setEmptyBounds();
+			return;
 	    }
 	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    if (tmpPolytope == null) {
@@ -830,11 +818,8 @@ public class BoundingSphere extends Bounds {
 	scale = trans.getDistanceScale();
 	radius = radius * scale;
 	if (Double.isNaN(radius)) {
-	    // Negative volume.
-	    center.x = center.y = center.z = 0.0;
-	    radius = -1.0;
-	    updateBoundsStates();
-	    return;
+		setEmptyBounds();
+		return;
 	}
     }
 
@@ -1296,27 +1281,22 @@ public class BoundingSphere extends Bounds {
      */
     public boolean intersect(Bounds boundsObject, BoundingSphere newBoundSphere) {
 
-	if((boundsObject == null ) || boundsIsEmpty || boundsObject.boundsIsEmpty) {
-	    // Negative volume.
-	    newBoundSphere.center.x = newBoundSphere.center.y =
-		newBoundSphere.center.z = 0.0;
-	    newBoundSphere.radius = -1.0;
-	    newBoundSphere.updateBoundsStates();
-	    return false;
+	if (boundsObject == null || boundsIsEmpty || boundsObject.boundsIsEmpty) {
+		newBoundSphere.set(null);
+		return false;
 	}
 
-	if(boundsIsInfinite && (!boundsObject.boundsIsInfinite)) {
-	    newBoundSphere.set(boundsObject);
-	    return true;
+	if (boundsIsInfinite && !boundsObject.boundsIsInfinite) {
+		newBoundSphere.set(boundsObject);
+		return true;
 	}
-	else if((!boundsIsInfinite) && boundsObject.boundsIsInfinite) {
-	    newBoundSphere.set(this);
-	    return true;
+
+	if (boundsObject.boundsIsInfinite) {
+		newBoundSphere.set(this);
+		return true;
 	}
-	else if(boundsIsInfinite && boundsObject.boundsIsInfinite) {
-	    newBoundSphere.set(this);
-	    return true;
-	} else if(boundsObject.boundId == BOUNDING_BOX){
+
+	if(boundsObject.boundId == BOUNDING_BOX){
 	    BoundingBox tbox =  new BoundingBox();
 	    BoundingBox box = (BoundingBox)boundsObject;
 	    if( this.intersect( box) ){
@@ -1325,38 +1305,28 @@ public class BoundingSphere extends Bounds {
 		newBoundSphere.set( tbox ); // set sphere to the intersection of 2 boxes
 		return true;
 	    } else {
-		// Negative volume.
-		newBoundSphere.center.x = newBoundSphere.center.y =
-		    newBoundSphere.center.z = 0.0;
-		newBoundSphere.radius = -1.0;
-		newBoundSphere.updateBoundsStates();
-		return false;
+			newBoundSphere.set(null);
+			return false;
 	    }
 	} else if( boundsObject.boundId == BOUNDING_SPHERE ) {
 	    BoundingSphere sphere = (BoundingSphere)boundsObject;
 	    double dis,t,d2;
-	    boolean status;
 	    dis = Math.sqrt( (center.x-sphere.center.x)*(center.x-sphere.center.x) +
 			     (center.y-sphere.center.y)*(center.y-sphere.center.y) +
 			     (center.z-sphere.center.z)*(center.z-sphere.center.z) );
 	    if ( dis > radius+sphere.radius) {
-		// Negative volume.
-		newBoundSphere.center.x = newBoundSphere.center.y =
-		    newBoundSphere.center.z = 0.0;
-		newBoundSphere.radius = -1.0;
-		status = false;
+			newBoundSphere.set(null);
+			return false;
 	    } else if( dis+radius <= sphere.radius ) { // this sphere is contained within boundsObject
 		newBoundSphere.center.x = center.x;
 		newBoundSphere.center.y = center.y;
 		newBoundSphere.center.z = center.z;
 		newBoundSphere.radius = radius;
-		status = true;
 	    } else if( dis+sphere.radius <= radius ) { // boundsObject is containted within this sphere
 		newBoundSphere.center.x = sphere.center.x;
 		newBoundSphere.center.y = sphere.center.y;
 		newBoundSphere.center.z = sphere.center.z;
 		newBoundSphere.radius = sphere.radius;
-		status = true;
 	    } else  {
 		// distance from this center to center of overlapped volume
 		d2 = (dis*dis + radius*radius - sphere.radius*sphere.radius)/(2.0*dis);
@@ -1365,11 +1335,10 @@ public class BoundingSphere extends Bounds {
 		newBoundSphere.center.x = center.x + (sphere.center.x - center.x)*t;
 		newBoundSphere.center.y = center.y + (sphere.center.y - center.y)*t;
 		newBoundSphere.center.z = center.z + (sphere.center.z - center.z)*t;
-		status =  true;
 	    }
 
 	    newBoundSphere.updateBoundsStates();
-	    return status;
+	    return true;
 
 	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    BoundingBox tbox =  new BoundingBox();
@@ -1382,12 +1351,8 @@ public class BoundingSphere extends Bounds {
 		newBoundSphere.set( tbox ); // set sphere to the intersection of 2 boxesf
 		return true;
 	    } else {
-		// Negative volume.
-		newBoundSphere.center.x = newBoundSphere.center.y =
-		    newBoundSphere.center.z = 0.0;
-		newBoundSphere.radius = -1.0;
-		newBoundSphere.updateBoundsStates();
-		return false;
+			newBoundSphere.set(null);
+			return false;
 	    }
 	} else {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingSphere8"));
@@ -1403,13 +1368,9 @@ public class BoundingSphere extends Bounds {
      */
     public boolean intersect(Bounds[] boundsObjects, BoundingSphere newBoundSphere) {
 
-	if( boundsObjects == null || boundsObjects.length <= 0 ||  boundsIsEmpty ) {
-	    // Negative volume.
-	    newBoundSphere.center.x = newBoundSphere.center.y =
-		newBoundSphere.center.z = 0.0;
-	    newBoundSphere.radius = -1.0;
-	    newBoundSphere.updateBoundsStates();
-	    return false;
+	if (boundsObjects == null || boundsObjects.length <= 0 || boundsIsEmpty) {
+		newBoundSphere.set(null);
+		return false;
 	}
 
 	int i=0;
@@ -1419,13 +1380,9 @@ public class BoundingSphere extends Bounds {
 	    i++;
 	}
 
-	if( i >= boundsObjects.length ) { // all bounds objects were empty
-	    // Negative volume.
-	    newBoundSphere.center.x = newBoundSphere.center.y =
-		newBoundSphere.center.z = 0.0;
-	    newBoundSphere.radius = -1.0;
-	    newBoundSphere.updateBoundsStates();
-	    return false;
+	if (i >= boundsObjects.length) { // all bounds objects were empty
+		newBoundSphere.set(null);
+		return false;
 	}
 
 	boolean status = false;
@@ -1512,13 +1469,8 @@ public class BoundingSphere extends Bounds {
 		throw new IllegalArgumentException(J3dI18N.getString("BoundingSphere9"));
 	    }
 	}
-	if( status  == false) {
-	    // Negative volume.
-	    newBoundSphere.center.x = newBoundSphere.center.y =
-		newBoundSphere.center.z = 0.0;
-	    newBoundSphere.radius = -1.0;
-	    newBoundSphere.updateBoundsStates();
-	}
+	if (status == false)
+		newBoundSphere.set(null);
 	return status;
     }
 
@@ -1722,6 +1674,20 @@ public class BoundingSphere extends Bounds {
     public String toString() {
 	return new String( "Center="+center+"  Radius="+radius);
     }
+
+private void setEmptyBounds() {
+	center.set(0.0d, 0.0d, 0.0d);
+	radius = -1.0;
+	boundsIsInfinite = false;
+	boundsIsEmpty = true;
+}
+
+private void setInfiniteBounds() {
+	center.set(0.0d, 0.0d, 0.0d);
+	radius = Double.POSITIVE_INFINITY;
+	boundsIsEmpty = false;
+	boundsIsInfinite = true;
+}
 
     private void updateBoundsStates() {
 
