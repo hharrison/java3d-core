@@ -669,8 +669,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
                     if (VirtualUniverse.mc.useBoxForGroupBounds) {
                         cachedBounds = new BoundingBox((Bounds) null);
                     } else {
-                        cachedBounds = new BoundingSphere();
-                        ((BoundingSphere) cachedBounds).setRadius(-1);
+					cachedBounds = new BoundingSphere((Bounds)null);
                     }
                     if (whichChild == Switch.CHILD_ALL) {
                         for (i = 0; i < children.size(); i++) {
@@ -728,8 +727,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
             if (VirtualUniverse.mc.useBoxForGroupBounds) {
                 boundingObject = new BoundingBox((Bounds) null);
             } else {
-                boundingObject = new BoundingSphere();
-                ((BoundingSphere) boundingObject).setRadius(-1.0);
+			boundingObject = new BoundingSphere((Bounds)null);
             }
 
             if (whichChild == Switch.CHILD_ALL) {

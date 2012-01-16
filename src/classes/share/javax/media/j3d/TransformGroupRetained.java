@@ -807,8 +807,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         if (VirtualUniverse.mc.useBoxForGroupBounds) {
             boundingObject = new BoundingBox((Bounds) null);
         } else {
-            boundingObject = new BoundingSphere();
-            ((BoundingSphere) boundingObject).setRadius(-1.0);
+		boundingObject = new BoundingSphere((Bounds)null);
         }
 	if(boundsAutoCompute) {
 	    for (int i=children.size()-1; i>=0; i--) {
