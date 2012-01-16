@@ -691,7 +691,7 @@ public class BoundingSphere extends Bounds {
      * @param point a 3D point in space
      */
     public void combine(Point3d point) {
-	double t,dis,oldc_to_new_c;
+	double dis,oldc_to_new_c;
 
 	if( boundsIsInfinite) {
 	    return;
@@ -859,7 +859,7 @@ public class BoundingSphere extends Bounds {
 	    return true;
 	}
 
-	double l2oc,rad2,tca,t2hc,mag,t,invMag;
+	double l2oc,rad2,tca,t2hc,t,invMag;
 	Vector3d dir = new Vector3d();  // normalized direction of ray
 	Point3d oc  = new Point3d();  // vector from sphere center to ray origin
 
@@ -964,7 +964,7 @@ public class BoundingSphere extends Bounds {
 	    return true;
 	}
 
-	double l2oc,rad2,tca,t2hc,mag,invMag,t;
+	double l2oc,rad2,tca,t2hc,invMag,t;
 	Vector3d dir = new Vector3d();  // normalized direction of ray
 	Point3d oc  = new Point3d();  // vector from sphere center to ray origin
 	Vector3d direction = new Vector3d();
@@ -1192,7 +1192,6 @@ public class BoundingSphere extends Bounds {
     public boolean intersect(Bounds boundsObject) {
 	double distsq, radsq;
 	BoundingSphere sphere;
-	boolean intersect;
 
 	if( boundsObject == null ) {
 	    return false;
