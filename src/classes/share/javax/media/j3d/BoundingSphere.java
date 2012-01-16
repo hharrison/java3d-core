@@ -55,10 +55,6 @@ final Point3d center;
  */
 double radius;
 
-    // reusable temp objects
-    private BoundingBox tmpBox = null;
-    private BoundingPolytope tmpPolytope = null;
-
 /**
  * Constructs and initializes a BoundingSphere from a center and radius.
  * @param center the center of the bounding sphere
@@ -767,25 +763,19 @@ public void setCenter(Point3d center) {
 		return;
 	}
 
-	if( boundsObject.boundId == BOUNDING_BOX){
-	    if (tmpBox == null) {
-                tmpBox = new BoundingBox( (BoundingBox)boundsObject);
-	    } else {
-                tmpBox.set((BoundingBox)boundsObject);
-	    }
-            tmpBox.transform(matrix);
-            this.set(tmpBox);
-	}else if( boundsObject.boundId == BOUNDING_SPHERE ) {
+	if (boundsObject.boundId == BOUNDING_BOX) {
+		BoundingBox tmpBox = new BoundingBox(boundsObject);
+		tmpBox.transform(matrix);
+		this.set(tmpBox);
+	}
+	else if (boundsObject.boundId == BOUNDING_SPHERE) {
 		this.set(boundsObject);
 		this.transform(matrix);
-	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
-	    if (tmpPolytope == null) {
-            	tmpPolytope = new BoundingPolytope((BoundingPolytope)boundsObject);
-	    } else {
-            	tmpPolytope.set((BoundingPolytope)boundsObject);
-	    }
-            tmpPolytope.transform(matrix);
-            this.set(tmpPolytope);
+	}
+	else if (boundsObject.boundId == BOUNDING_POLYTOPE) {
+		BoundingPolytope tmpPolytope = new BoundingPolytope(boundsObject);
+		tmpPolytope.transform(matrix);
+		this.set(tmpPolytope);
 	} else {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingSphere5"));
 	}

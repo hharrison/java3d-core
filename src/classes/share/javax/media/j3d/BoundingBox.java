@@ -59,27 +59,6 @@ final Point3d upper;
     private Point3d centroid = null;
     private static final double EPS = 1.0E-8;
 
-    // reusable temp objects
-    private BoundingSphere tmpSphere = null;
-    private BoundingPolytope tmpPolytope = null;
-
-     // Issue 561: Set by -Dj3d.releaseBoundingBoxMemory property.
-     // When set to true, the per-instance fields used in bounding box
-     // transformation are released at the end of transform methods. This saves
-     // a significant amount of memory in large scenes containing huge amounts
-     // of bounding boxes. Setting this false can improve performance when
-     // lots of transforms are performed. The default is false.
-    // This was initialing in MasterControl, but was moved to here to fix issue 592. This avoids
-    // instantiating and intializing VirtualUniverse and MasterControl
-    private static boolean releaseBoundingBoxMemory = false;
-
-    static {
-        releaseBoundingBoxMemory = MasterControl.getBooleanProperty("j3d.releaseBoundingBoxMemory",
-                releaseBoundingBoxMemory, "releasing memory after bounding box transform");
-
-    }
-
-
 /**
  * Constructs and initializes a BoundingBox given min,max in x,y,z.
  * @param lower the "small" corner
@@ -659,34 +638,18 @@ public void setUpper(Point3d p1) {
 		this.transform(matrix);
 	}
 	else if(boundsObject.boundId == BOUNDING_SPHERE) {
-	    if (tmpSphere == null) {
-	        tmpSphere = new BoundingSphere( (BoundingSphere)boundsObject);
-	    } else {
-	        tmpSphere.set((BoundingSphere)boundsObject);
-	    }
-	    tmpSphere.transform(matrix);
-	    this.set(tmpSphere);
+		BoundingSphere tmpSphere = new BoundingSphere(boundsObject);
+		tmpSphere.transform(matrix);
+		this.set(tmpSphere);
 	}
 	else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
-	    if (tmpPolytope == null) {
-	        tmpPolytope =
-		    new BoundingPolytope((BoundingPolytope) boundsObject);
-	    } else {
-	        tmpPolytope.set((BoundingPolytope)boundsObject);
-	    }
-	    tmpPolytope.transform(matrix);
-	    this.set(tmpPolytope);
-
+		BoundingPolytope tmpPolytope = new BoundingPolytope(boundsObject);
+		tmpPolytope.transform(matrix);
+		this.set(tmpPolytope);
 	}
 	else {
 	    throw new IllegalArgumentException(J3dI18N.getString("BoundingBox5"));
 	}
-
-        // Release the temporary fields:
-        if (releaseBoundingBoxMemory) {
-            tmpSphere = null;
-            tmpPolytope = null;
-        }
     }
 
     /**
