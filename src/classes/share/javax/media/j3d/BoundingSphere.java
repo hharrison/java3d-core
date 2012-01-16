@@ -88,7 +88,7 @@ public BoundingSphere(Bounds boundsObject) {
 	boundId = BOUNDING_SPHERE;
 	center = new Point3d();
 
-	if (boundsObject == null) {
+	if (boundsObject == null || boundsObject.boundsIsEmpty) {
 		setEmptyBounds();
 		return;
 	}
