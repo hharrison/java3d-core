@@ -62,7 +62,6 @@ final Point3d upper;
     // reusable temp objects
     private BoundingSphere tmpSphere = null;
     private BoundingPolytope tmpPolytope = null;
-    private Point3d tmpP3d = null;
 
      // Issue 561: Set by -Dj3d.releaseBoundingBoxMemory property.
      // When set to true, the per-instance fields used in bounding box
@@ -699,9 +698,7 @@ public void setUpper(Point3d p1) {
 	if (boundsIsInfinite)
 		return;
 
-        if (tmpP3d == null) {
-            tmpP3d = new Point3d();
-        }
+	Point3d tmpP3d = new Point3d();
 
 	double ux, uy, uz, lx, ly, lz;
 	ux = upper.x; uy = upper.y; uz = upper.z;
@@ -778,11 +775,6 @@ public void setUpper(Point3d p1) {
 	if ( tmpP3d.x < lower.x ) lower.x = tmpP3d.x;
 	if ( tmpP3d.y < lower.y ) lower.y = tmpP3d.y;
 	if ( tmpP3d.z < lower.z ) lower.z = tmpP3d.z;
-
-        if (releaseBoundingBoxMemory) {
-            // Free memory
-            tmpP3d = null;
-        }
 
     }
 
