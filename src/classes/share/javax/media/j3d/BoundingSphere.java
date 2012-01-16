@@ -177,11 +177,9 @@ public BoundingSphere(Bounds[] boundsObjects) {
 	    i++;
 	}
 
-	if( i >= boundsObjects.length ) { // all bounds objects were empty
-	   // Negative volume.
-	    radius = -1.0;
-	    updateBoundsStates();
-	    return;
+	if (i >= boundsObjects.length) { // all bounds objects were empty
+		setEmptyBounds();
+		return;
 	}
 
 	this.set(boundsObjects[i++]);
