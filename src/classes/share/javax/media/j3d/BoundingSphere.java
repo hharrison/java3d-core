@@ -1688,7 +1688,7 @@ private void setInfiniteBounds() {
 
     private void updateBoundsStates() {
 
-	if (checkBoundsIsNaN()) {
+	if (Double.isNaN(radius + center.x + center.y + center.z)) {
 	     boundsIsEmpty = true;
 	     boundsIsInfinite = false;
 	     return;
@@ -1731,13 +1731,6 @@ private void setInfiniteBounds() {
 	else {
 	    return (Bounds) this.clone();
 	}
-    }
-
-    boolean checkBoundsIsNaN() {
-	if (Double.isNaN(radius+center.x+center.y+center.z)) {
-	    return true;
-	}
-	return false;
     }
 
     int getPickType() {
