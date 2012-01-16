@@ -55,9 +55,6 @@ final Point3d center;
  */
 double radius;
 
-    Point3d boxVerts[];
-    boolean allocBoxVerts = false;
-
     // reusable temp objects
     private BoundingBox tmpBox = null;
     private BoundingPolytope tmpPolytope = null;
@@ -193,6 +190,7 @@ double radius;
 	if(boundsIsInfinite)
 	    return;
 
+	Point3d[] boxVerts = null;
 	for(;i<boundsObjects.length;i++) {
 	    if( boundsObjects[i] == null ); // do nothing
 	    else if( boundsObjects[i].boundsIsEmpty); // do nothing
@@ -202,11 +200,12 @@ double radius;
 	    }
 	    else if( boundsObjects[i].boundId == BOUNDING_BOX){
 		BoundingBox b = (BoundingBox)boundsObjects[i];
-		if( !allocBoxVerts){
-		    boxVerts = new Point3d[8];
-		    for(int j=0;j<8;j++)boxVerts[j] = new Point3d();
-		    allocBoxVerts = true;
-		}
+			if (boxVerts == null) {
+				boxVerts = new Point3d[8];
+				for (int j = 0; j < 8; j++)
+					boxVerts[j] = new Point3d();
+
+			}
 		boxVerts[0].set(b.lower.x, b.lower.y, b.lower.z );
 		boxVerts[1].set(b.lower.x, b.upper.y, b.lower.z );
 		boxVerts[2].set(b.upper.x, b.lower.y, b.lower.z );
