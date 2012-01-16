@@ -61,7 +61,6 @@ final Point3d upper;
 
     // reusable temp objects
     private BoundingSphere tmpSphere = null;
-    private BoundingBox tmpBox = null;
     private BoundingPolytope tmpPolytope = null;
     private Point3d tmpP3d = null;
 
@@ -657,13 +656,8 @@ public void setUpper(Point3d p1) {
 	}
 
 	if(boundsObject.boundId == BOUNDING_BOX){
-	    if (tmpBox == null) {
-		tmpBox = new BoundingBox( (BoundingBox)boundsObject);
-	    } else {
-		tmpBox.set((BoundingBox)boundsObject);
-	    }
-	    tmpBox.transform(matrix);
-	    this.set(tmpBox);
+		this.set(boundsObject);
+		this.transform(matrix);
 	}
 	else if(boundsObject.boundId == BOUNDING_SPHERE) {
 	    if (tmpSphere == null) {
@@ -692,7 +686,6 @@ public void setUpper(Point3d p1) {
         // Release the temporary fields:
         if (releaseBoundingBoxMemory) {
             tmpSphere = null;
-            tmpBox = null;
             tmpPolytope = null;
         }
     }

@@ -757,8 +757,6 @@ public void setCenter(Point3d center) {
      * @param matrix a transformation matrix
      */
     public void transform( Bounds boundsObject, Transform3D matrix) {
-	double scale;
-
 	if (boundsObject == null || boundsObject.boundsIsEmpty) {
 		setEmptyBounds();
 		return;
@@ -778,14 +776,8 @@ public void setCenter(Point3d center) {
             tmpBox.transform(matrix);
             this.set(tmpBox);
 	}else if( boundsObject.boundId == BOUNDING_SPHERE ) {
-	    matrix.transform(((BoundingSphere)boundsObject).center, this.center);
-	    // A very simple radius scale.
-	    scale = matrix.getDistanceScale();
-	    this.radius = ((BoundingSphere)boundsObject).radius * scale;
-	    if (Double.isNaN(radius)) {
-			setEmptyBounds();
-			return;
-	    }
+		this.set(boundsObject);
+		this.transform(matrix);
 	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
 	    if (tmpPolytope == null) {
             	tmpPolytope = new BoundingPolytope((BoundingPolytope)boundsObject);
