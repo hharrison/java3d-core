@@ -291,16 +291,14 @@ double radius;
 	center.z = this.center.z;
     }
 
-    /**
-     * Sets the position of this bounding sphere from a point.
-     * @param center a Point defining the new center of the bounding sphere
-     */
-    public void setCenter(Point3d center) {
-	this.center.x = center.x;
-	this.center.y = center.y;
-	this.center.z = center.z;
-	checkBoundsIsNaN();
-    }
+/**
+ * Sets the position of this bounding sphere from a point.
+ * @param center a Point defining the new center of the bounding sphere
+ */
+public void setCenter(Point3d center) {
+	this.center.set(center);
+	updateBoundsStates();
+}
 
     /**
      * Sets the value of this BoundingSphere.
