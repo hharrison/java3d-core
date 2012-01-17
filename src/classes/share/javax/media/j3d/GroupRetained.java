@@ -53,26 +53,25 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
     // The locale that this node is decended from
     Locale locale = null;
 
-    // The list of lights that are scoped to this node
-    // One such arraylist per path. If not in sharedGroup
-    // then only index 0 is valid
-    ArrayList lights = null;
+// The list of lights that are scoped to this node
+// One such arraylist per path. If not in sharedGroup
+// then only index 0 is valid
+ArrayList<ArrayList<LightRetained>> lights = null;
 
-    // The list of fogs that are scoped to this node
-    // One such arraylist per path. If not in sharedGroup
-    // then only index 0 is valid
-    ArrayList fogs = null;
+// The list of fogs that are scoped to this node
+// One such arraylist per path. If not in sharedGroup
+// then only index 0 is valid
+ArrayList<ArrayList<FogRetained>> fogs = null;
 
-    // The list of model clips that are scoped to this node
-    // One such arraylist per path. If not in sharedGroup
-    // then only index 0 is valid
-    ArrayList modelClips = null;
+// The list of model clips that are scoped to this node
+// One such arraylist per path. If not in sharedGroup
+// then only index 0 is valid
+ArrayList<ArrayList<ModelClipRetained>> modelClips = null;
 
-
-    // The list of alternateappearance that are scoped to this node
-    // One such arraylist per path. If not in sharedGroup
-    // then only index 0 is valid
-    ArrayList altAppearances = null;
+// The list of alternateappearance that are scoped to this node
+// One such arraylist per path. If not in sharedGroup
+// then only index 0 is valid
+ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 
 
     // indicates whether this Group node can be the target of a collision
@@ -654,11 +653,10 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
     // Remove a light from the list of lights
     void removeLight(int numLgt, LightRetained[] removelight, HashKey key) {
-	ArrayList l;
 	int index;
 	if (inSharedGroup) {
 	    int hkIndex = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
-	    l = (ArrayList)lights.get(hkIndex);
+		ArrayList<LightRetained> l = lights.get(hkIndex);
 	    if (l != null) {
 		for (int i = 0; i < numLgt; i++) {
 		    index = l.indexOf(removelight[i]);
@@ -667,7 +665,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    }
 	}
 	else {
-	    l = (ArrayList)lights.get(0);
+		ArrayList<LightRetained> l = lights.get(0);
 	    for (int i = 0; i < numLgt; i++) {
 		index = l.indexOf(removelight[i]);
 		l.remove(index);
@@ -1048,161 +1046,161 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	}
     }
 
-    synchronized void setLightScope() {
+synchronized void setLightScope() {
 	// Make group's own copy
-	ArrayList newLights;
+	ArrayList<ArrayList<LightRetained>> newLights;
 	if (!allocatedLights) {
-	    allocatedLights = true;
-	    if (lights != null) {
-		newLights = new ArrayList(lights.size());
-		int size = lights.size();
-		for (int i = 0; i < size; i++) {
-		    ArrayList l = (ArrayList)lights.get(i);
-		    if (l != null) {
-			newLights.add(l.clone());
-		    }
-		    else {
-			newLights.add(null);
-		    }
-		}
-	    }
-	    else {
-		if (inSharedGroup) {
-		    newLights = new ArrayList();
-		    for (int i = 0; i < localToVworldKeys.length; i++) {
-			newLights.add(new ArrayList());
-		    }
+		allocatedLights = true;
+		if (lights != null) {
+			newLights = new ArrayList<ArrayList<LightRetained>>(lights.size());
+			int size = lights.size();
+			for (int i = 0; i < size; i++) {
+				ArrayList<LightRetained> l = lights.get(i);
+				if (l != null) {
+					newLights.add(new ArrayList<LightRetained>(l));
+				}
+				else {
+					newLights.add(null);
+				}
+			}
 		}
 		else {
-		    newLights = new ArrayList();
-		    newLights.add(new ArrayList());
+			if (inSharedGroup) {
+				newLights = new ArrayList<ArrayList<LightRetained>>();
+				for (int i = 0; i < localToVworldKeys.length; i++) {
+					newLights.add(new ArrayList<LightRetained>());
+				}
+			}
+			else {
+				newLights = new ArrayList<ArrayList<LightRetained>>();
+				newLights.add(new ArrayList<LightRetained>());
+			}
 		}
-	    }
-	    lights = newLights;
+		lights = newLights;
 
 	}
 	scopingRefCount++;
-    }
+}
     synchronized void removeLightScope() {
 	scopingRefCount--;
     }
 
 
-   synchronized void setFogScope() {
+synchronized void setFogScope() {
 	// Make group's own copy
-	ArrayList newFogs;
+	ArrayList<ArrayList<FogRetained>> newFogs;
 	if (!allocatedFogs) {
-	    allocatedFogs = true;
-	    if (fogs != null) {
-		newFogs = new ArrayList(fogs.size());
-		int size = fogs.size();
-		for (int i = 0; i < size; i++) {
-		    ArrayList l = (ArrayList)fogs.get(i);
-		    if (l != null) {
-			newFogs.add(l.clone());
-		    }
-		    else {
-			newFogs.add(null);
-		    }
-		}
-	    }
-	    else {
-		if (inSharedGroup) {
-		    newFogs = new ArrayList();
-		    for (int i = 0; i < localToVworldKeys.length; i++) {
-			newFogs.add(new ArrayList());
-		    }
+		allocatedFogs = true;
+		if (fogs != null) {
+			newFogs = new ArrayList<ArrayList<FogRetained>>(fogs.size());
+			int size = fogs.size();
+			for (int i = 0; i < size; i++) {
+				ArrayList<FogRetained> l = fogs.get(i);
+				if (l != null) {
+					newFogs.add(new ArrayList<FogRetained>(l));
+				}
+				else {
+					newFogs.add(null);
+				}
+			}
 		}
 		else {
-		    newFogs = new ArrayList();
-		    newFogs.add(new ArrayList());
+			if (inSharedGroup) {
+				newFogs = new ArrayList<ArrayList<FogRetained>>();
+				for (int i = 0; i < localToVworldKeys.length; i++) {
+					newFogs.add(new ArrayList<FogRetained>());
+				}
+			}
+			else {
+				newFogs = new ArrayList<ArrayList<FogRetained>>();
+				newFogs.add(new ArrayList<FogRetained>());
+			}
 		}
-	    }
-	    fogs = newFogs;
+		fogs = newFogs;
 
 	}
 	scopingRefCount++;
-    }
+}
     synchronized void removeFogScope() {
 	scopingRefCount--;
     }
 
 
-   synchronized void setMclipScope() {
+synchronized void setMclipScope() {
 	// Make group's own copy
-	ArrayList newMclips;
+	ArrayList<ArrayList<ModelClipRetained>> newMclips;
 	if (!allocatedMclips) {
-	    allocatedMclips = true;
-	    if (modelClips != null) {
-		newMclips = new ArrayList(modelClips.size());
-		int size = modelClips.size();
-		for (int i = 0; i < size; i++) {
-		    ArrayList l = (ArrayList)modelClips.get(i);
-		    if (l != null) {
-			newMclips.add(l.clone());
-		    }
-		    else {
-			newMclips.add(null);
-		    }
-		}
-	    }
-	    else {
-		if (inSharedGroup) {
-		    newMclips =new ArrayList();
-		    for (int i = 0; i < localToVworldKeys.length; i++) {
-			newMclips.add(new ArrayList());
-		    }
+		allocatedMclips = true;
+		if (modelClips != null) {
+			newMclips = new ArrayList<ArrayList<ModelClipRetained>>(modelClips.size());
+			int size = modelClips.size();
+			for (int i = 0; i < size; i++) {
+				ArrayList<ModelClipRetained> l = modelClips.get(i);
+				if (l != null) {
+					newMclips.add(new ArrayList<ModelClipRetained>(l));
+				}
+				else {
+					newMclips.add(null);
+				}
+			}
 		}
 		else {
-		    newMclips = new ArrayList();
-		    newMclips.add(new ArrayList());
+			if (inSharedGroup) {
+				newMclips = new ArrayList<ArrayList<ModelClipRetained>>();
+				for (int i = 0; i < localToVworldKeys.length; i++) {
+					newMclips.add(new ArrayList<ModelClipRetained>());
+				}
+			}
+			else {
+				newMclips = new ArrayList<ArrayList<ModelClipRetained>>();
+				newMclips.add(new ArrayList<ModelClipRetained>());
+			}
 		}
-	    }
-	    modelClips = newMclips;
+		modelClips = newMclips;
 
 	}
 	scopingRefCount++;
-    }
+}
     synchronized void removeMclipScope() {
 	scopingRefCount--;
     }
 
 
-   synchronized void setAltAppScope() {
+synchronized void setAltAppScope() {
 	// Make group's own copy
-	ArrayList newAltApps;
+	ArrayList<ArrayList<AlternateAppearanceRetained>> newAltApps;
 	if (!allocatedAltApps) {
-	    allocatedAltApps = true;
-	    if (altAppearances != null) {
-		newAltApps = new ArrayList(altAppearances.size());
-		int size = altAppearances.size();
-		for (int i = 0; i < size; i++) {
-		    ArrayList l = (ArrayList)altAppearances.get(i);
-		    if (l != null) {
-			newAltApps.add(l.clone());
-		    }
-		    else {
-			newAltApps.add(null);
-		    }
-		}
-	    }
-	    else {
-		if (inSharedGroup) {
-		    newAltApps = new ArrayList();
-		    for (int i = 0; i < localToVworldKeys.length; i++) {
-			newAltApps.add(new ArrayList());
-		    }
+		allocatedAltApps = true;
+		if (altAppearances != null) {
+			newAltApps = new ArrayList<ArrayList<AlternateAppearanceRetained>>(altAppearances.size());
+			int size = altAppearances.size();
+			for (int i = 0; i < size; i++) {
+				ArrayList<AlternateAppearanceRetained> l = altAppearances.get(i);
+				if (l != null) {
+					newAltApps.add(new ArrayList<AlternateAppearanceRetained>(l));
+				}
+				else {
+					newAltApps.add(null);
+				}
+			}
 		}
 		else {
-		    newAltApps = new ArrayList();
-		    newAltApps.add(new ArrayList());
+			if (inSharedGroup) {
+				newAltApps = new ArrayList<ArrayList<AlternateAppearanceRetained>>();
+				for (int i = 0; i < localToVworldKeys.length; i++) {
+					newAltApps.add(new ArrayList<AlternateAppearanceRetained>());
+				}
+			}
+			else {
+				newAltApps = new ArrayList<ArrayList<AlternateAppearanceRetained>>();
+				newAltApps.add(new ArrayList<AlternateAppearanceRetained>());
+			}
 		}
-	    }
-	    altAppearances = newAltApps;
+		altAppearances = newAltApps;
 
 	}
 	scopingRefCount++;
-    }
+}
 
     synchronized void removeAltAppScope() {
 	scopingRefCount--;
@@ -1215,10 +1213,9 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
      // Add a light to the list of lights
      void addLight(LightRetained[] addlight, int numLgts, HashKey key) {
-	 ArrayList l;
 	 if (inSharedGroup) {
 	     int hkIndex = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
-	     l = (ArrayList)lights.get(hkIndex);
+		ArrayList<LightRetained> l = lights.get(hkIndex);
 	     if (l != null) {
 		 for (int i = 0; i < numLgts; i++) {
 		     l.add(addlight[i]);
@@ -1226,7 +1223,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	     }
 	 }
 	 else {
-	     l = (ArrayList)lights.get(0);
+		ArrayList<LightRetained> l = lights.get(0);
 	     for (int i = 0; i < numLgts; i++) {
 		 l.add(addlight[i]);
 	     }
@@ -1235,16 +1232,15 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
      }
       // Add a fog to the list of fogs
       void addFog(FogRetained fog, HashKey key) {
-	 ArrayList l;
 	 if (inSharedGroup) {
 	     int hkIndex = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
-	     l = (ArrayList)fogs.get(hkIndex);
+		ArrayList<FogRetained> l = fogs.get(hkIndex);
 	     if (l != null) {
 		 l.add(fog);
 	     }
 	 }
 	 else {
-	     l = (ArrayList)fogs.get(0);
+		ArrayList<FogRetained> l = fogs.get(0);
 	     l.add(fog);
 	 }
 
@@ -1252,32 +1248,30 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
       // Add a ModelClip to the list of ModelClip
       void addModelClip(ModelClipRetained modelClip, HashKey key) {
-	 ArrayList l;
 	 if (inSharedGroup) {
 	     int hkIndex = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
-	     l = (ArrayList)modelClips.get(hkIndex);
+		ArrayList<ModelClipRetained> l = modelClips.get(hkIndex);
 	     if (l != null) {
 		 l.add(modelClip);
 	     }
 	 }
 	 else {
-	     l = (ArrayList)modelClips.get(0);
+		ArrayList<ModelClipRetained> l = modelClips.get(0);
 	     l.add(modelClip);
 	 }
 
       }
       // Add a alt appearance to the list of alt appearance
       void addAltApp(AlternateAppearanceRetained altApp, HashKey key) {
-	 ArrayList l;
 	 if (inSharedGroup) {
 	     int hkIndex = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
-	     l = (ArrayList)altAppearances.get(hkIndex);
+		ArrayList<AlternateAppearanceRetained> l = altAppearances.get(hkIndex);
 	     if (l != null) {
 		 l.add(altApp);
 	     }
 	 }
 	 else {
-	     l = (ArrayList)altAppearances.get(0);
+		ArrayList<AlternateAppearanceRetained> l = altAppearances.get(0);
 	     l.add(altApp);
 	 }
 
@@ -1286,18 +1280,17 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
     // Remove a fog from the list of fogs
     void removeFog(FogRetained fog, HashKey key) {
-	 ArrayList l;
 	 int index;
 	 if (inSharedGroup) {
 	     int hkIndex = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
-	     l = (ArrayList)fogs.get(hkIndex);
+		ArrayList<FogRetained> l = fogs.get(hkIndex);
 	     if (l != null) {
 		 index = l.indexOf(fog);
 		 l.remove(index);
 	     }
 	 }
 	 else {
-	     l = (ArrayList)fogs.get(0);
+		ArrayList<FogRetained> l = fogs.get(0);
 	     index = l.indexOf(fog);
 	     l.remove(index);
 	 }
@@ -1307,18 +1300,17 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
     // Remove a ModelClip from the list of ModelClip
     void removeModelClip(ModelClipRetained modelClip, HashKey key) {
-	 ArrayList l;
 	 int index;
 	 if (inSharedGroup) {
 	     int hkIndex = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
-	     l = (ArrayList)modelClips.get(hkIndex);
+		ArrayList<ModelClipRetained> l = modelClips.get(hkIndex);
 	     if (l != null) {
 		 index = l.indexOf(modelClip);
 		 l.remove(index);
 	     }
 	 }
 	 else {
-	     l = (ArrayList)modelClips.get(0);
+		ArrayList<ModelClipRetained> l = modelClips.get(0);
 	     index = l.indexOf(modelClip);
 	     l.remove(index);
 	 }
@@ -1328,18 +1320,17 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
     // Remove a fog from the list of alt appearance
     void removeAltApp(AlternateAppearanceRetained altApp, HashKey key) {
-	 ArrayList l;
 	 int index;
 	 if (inSharedGroup) {
 	     int hkIndex = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
-	     l = (ArrayList)altAppearances.get(hkIndex);
+		ArrayList<AlternateAppearanceRetained> l = altAppearances.get(hkIndex);
 	     if (l != null) {
 		 index = l.indexOf(altApp);
 		 l.remove(index);
 	     }
 	 }
 	 else {
-	     l = (ArrayList)altAppearances.get(0);
+		ArrayList<AlternateAppearanceRetained> l = altAppearances.get(0);
 	     index = l.indexOf(altApp);
 	     l.remove(index);
 	 }
@@ -2213,10 +2204,10 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 
 	inViewSpecificGroup = s.inViewSpecificGroup;
 	nchildren = children.size();
-	ArrayList savedScopedLights = s.lights;
-	ArrayList savedScopedFogs = s.fogs;
-	ArrayList savedScopedAltApps = s.altAppearances;
-	ArrayList savedScopedMclips = s.modelClips;
+	ArrayList<ArrayList<LightRetained>> savedScopedLights = s.lights;
+	ArrayList<ArrayList<FogRetained>> savedScopedFogs = s.fogs;
+	ArrayList<ArrayList<AlternateAppearanceRetained>> savedScopedAltApps = s.altAppearances;
+	ArrayList<ArrayList<ModelClipRetained>> savedScopedMclips = s.modelClips;
 
 	boolean oldpickableArray[] = (boolean []) s.pickable.clone();
 	boolean oldcollidableArray[] = (boolean []) s.collidable.clone();
@@ -2272,8 +2263,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    for (i=0; i < s.keys.length; i++) {
 			hkIndex = s.keys[i].equals(localToVworldKeys, 0,
 						   localToVworldKeys.length);
-			ArrayList l = (ArrayList)lights.get(hkIndex);
-			ArrayList src = (ArrayList)s.lights.get(i);
+					ArrayList<LightRetained> l = lights.get(hkIndex);
+					ArrayList<LightRetained> src = s.lights.get(i);
 			if (src != null) {
 			    int size = src.size();
 			    for (k = 0; k < size; k++) {
@@ -2284,8 +2275,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    }
 		}
 		else {
-		    ArrayList l = (ArrayList)lights.get(0);
-		    ArrayList src = (ArrayList)s.lights.get(0);
+				ArrayList<LightRetained> l = lights.get(0);
+				ArrayList<LightRetained> src = s.lights.get(0);
 		    int size = src.size();
 		    for (i = 0; i < size; i++) {
 			l.add(src.get(i));
@@ -2305,8 +2296,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    for (i=0; i < s.keys.length; i++) {
 			hkIndex = s.keys[i].equals(localToVworldKeys, 0,
 						   localToVworldKeys.length);
-			ArrayList l = (ArrayList)fogs.get(hkIndex);
-			ArrayList src = (ArrayList)s.fogs.get(i);
+					ArrayList<FogRetained> l = fogs.get(hkIndex);
+					ArrayList<FogRetained> src = s.fogs.get(i);
 			if (src != null) {
 			    int size = src.size();
 			    for (k = 0; k < size; k++) {
@@ -2317,8 +2308,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    }
 		}
 		else {
-		    ArrayList l = (ArrayList)fogs.get(0);
-		    ArrayList src = (ArrayList)s.fogs.get(0);
+				ArrayList<FogRetained> l = fogs.get(0);
+				ArrayList<FogRetained> src = s.fogs.get(0);
 		    int size = src.size();
 		    for (i = 0; i < size; i++) {
 			l.add(src.get(i));
@@ -2338,8 +2329,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    for (i=0; i < s.keys.length; i++) {
 			hkIndex = s.keys[i].equals(localToVworldKeys, 0,
 						   localToVworldKeys.length);
-			ArrayList l = (ArrayList)modelClips.get(hkIndex);
-			ArrayList src = (ArrayList)s.modelClips.get(i);
+					ArrayList<ModelClipRetained> l = modelClips.get(hkIndex);
+					ArrayList<ModelClipRetained> src = s.modelClips.get(i);
 			if (src != null) {
 			    int size = src.size();
 			    for (k = 0; k < size; k++) {
@@ -2350,8 +2341,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    }
 		}
 		else {
-		    ArrayList l = (ArrayList)modelClips.get(0);
-		    ArrayList src = (ArrayList)s.modelClips.get(0);
+				ArrayList<ModelClipRetained> l = modelClips.get(0);
+				ArrayList<ModelClipRetained> src = s.modelClips.get(0);
 		    int size = src.size();
 		    for (i = 0; i < size; i++) {
 			l.add(src.get(i));
@@ -2371,8 +2362,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    for (i=0; i < s.keys.length; i++) {
 			hkIndex = s.keys[i].equals(localToVworldKeys, 0,
 						   localToVworldKeys.length);
-			ArrayList l = (ArrayList)altAppearances.get(hkIndex);
-			ArrayList src = (ArrayList)s.altAppearances.get(i);
+					ArrayList<AlternateAppearanceRetained> l = altAppearances.get(hkIndex);
+					ArrayList<AlternateAppearanceRetained> src = s.altAppearances.get(i);
 			if (src != null) {
 			    int size = src.size();
 			    for (k = 0; k < size; k++) {
@@ -2383,8 +2374,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    }
 		}
 		else {
-		    ArrayList l = (ArrayList)altAppearances.get(0);
-		    ArrayList src = (ArrayList)s.altAppearances.get(0);
+				ArrayList<AlternateAppearanceRetained> l = altAppearances.get(0);
+				ArrayList<AlternateAppearanceRetained> src = s.altAppearances.get(0);
 		    int size = src.size();
 		    for (i = 0; i < size; i++) {
 			l.add(src.get(i));
@@ -2713,25 +2704,24 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 	    viewLists = s.viewLists;
 	}
 
-	ArrayList savedParentLights = s.lights;
+	ArrayList<ArrayList<LightRetained>> savedParentLights = s.lights;
 	if (allocatedLights) {
-	    s.lights = lights;
+		s.lights = lights;
 	}
 
-	ArrayList savedParentFogs = s.fogs;
+	ArrayList<ArrayList<FogRetained>> savedParentFogs = s.fogs;
 	if (allocatedFogs) {
-	    s.fogs = fogs;
+		s.fogs = fogs;
 	}
 
-	ArrayList savedParentMclips = s.modelClips;
+	ArrayList<ArrayList<ModelClipRetained>> savedParentMclips = s.modelClips;
 	if (allocatedMclips) {
-	    s.modelClips = modelClips;
+		s.modelClips = modelClips;
 	}
 
-
-	ArrayList savedParentAltApps = s.altAppearances;
+	ArrayList<ArrayList<AlternateAppearanceRetained>> savedParentAltApps = s.altAppearances;
 	if (allocatedAltApps) {
-	    s.altAppearances = altAppearances;
+		s.altAppearances = altAppearances;
 	}
 
 
@@ -2765,8 +2755,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    for (i=0; i < s.keys.length; i++) {
 			hkIndex = s.keys[i].equals(localToVworldKeys, 0,
 						   localToVworldKeys.length);
-			ArrayList l = (ArrayList)savedParentLights.get(hkIndex);
-			ArrayList gl = (ArrayList)lights.get(hkIndex);
+					ArrayList<LightRetained> l = savedParentLights.get(hkIndex);
+					ArrayList<LightRetained> gl = lights.get(hkIndex);
 			if (l != null) {
 			    size = l.size();
 			    for (k = 0; k < size; k++) {
@@ -2777,8 +2767,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    }
 		}
 		else {
-		    ArrayList l = (ArrayList)savedParentLights.get(0);
-		    ArrayList gl = (ArrayList)lights.get(0);
+				ArrayList<LightRetained> l = savedParentLights.get(0);
+				ArrayList<LightRetained> gl = lights.get(0);
 		    size = l.size();
 		    for (int m = 0; m < size; m++) {
 			gl.remove(l.get(m));
@@ -2793,8 +2783,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    for (i=0; i < s.keys.length; i++) {
 			hkIndex = s.keys[i].equals(localToVworldKeys, 0,
 						   localToVworldKeys.length);
-			ArrayList l = (ArrayList)savedParentFogs.get(hkIndex);
-			ArrayList gl = (ArrayList)fogs.get(hkIndex);
+					ArrayList<FogRetained> l = savedParentFogs.get(hkIndex);
+					ArrayList<FogRetained> gl = fogs.get(hkIndex);
 			if (l != null) {
 			    size = l.size();
 			    for (k = 0; k < size; k++) {
@@ -2805,7 +2795,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    }
 		}
 		else {
-		    ArrayList l = (ArrayList)savedParentFogs.get(0);
+				ArrayList<FogRetained> l = savedParentFogs.get(0);
 		    size = l.size();
 		    for (int m = 0; m < size; m++) {
 			fogs.remove(l.get(m));
@@ -2820,8 +2810,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    for (i=0; i < s.keys.length; i++) {
 			hkIndex = s.keys[i].equals(localToVworldKeys, 0,
 						   localToVworldKeys.length);
-			ArrayList l = (ArrayList)savedParentMclips.get(hkIndex);
-			ArrayList gl = (ArrayList)modelClips.get(hkIndex);
+					ArrayList<ModelClipRetained> l = savedParentMclips.get(hkIndex);
+					ArrayList<ModelClipRetained> gl = modelClips.get(hkIndex);
 			if (l != null) {
 			    size = l.size();
 			    for (k = 0; k < size; k++) {
@@ -2832,7 +2822,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    }
 		}
 		else {
-		    ArrayList l = (ArrayList)savedParentMclips.get(0);
+				ArrayList<ModelClipRetained> l = savedParentMclips.get(0);
 		    size = l.size();
 		    for (int m = 0; m < size; m++) {
 			modelClips.remove(l.get(m));
@@ -2847,8 +2837,8 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    for (i=0; i < s.keys.length; i++) {
 			hkIndex = s.keys[i].equals(localToVworldKeys, 0,
 						   localToVworldKeys.length);
-			ArrayList l = (ArrayList)savedParentAltApps.get(hkIndex);
-			ArrayList gl = (ArrayList)altAppearances.get(hkIndex);
+					ArrayList<AlternateAppearanceRetained> l = savedParentAltApps.get(hkIndex);
+					ArrayList<AlternateAppearanceRetained> gl = altAppearances.get(hkIndex);
 			if (l != null) {
 			    size = l.size();
 			    for (k = 0; k < size; k++) {
@@ -2859,7 +2849,7 @@ class GroupRetained extends NodeRetained implements BHLeafInterface {
 		    }
 		}
 		else {
-		    ArrayList l = (ArrayList)savedParentAltApps.get(0);
+				ArrayList<AlternateAppearanceRetained> l = savedParentAltApps.get(0);
 		    size = l.size();
 		    for (int m = 0; m < size; m++) {
 			altAppearances.remove(l.get(m));

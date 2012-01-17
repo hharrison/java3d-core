@@ -1024,46 +1024,45 @@ class Shape3DRetained extends LeafRetained {
                 }
         	shape.switchState = (SwitchState)s.switchStates.get(j);
 
-
-		// Add any scoped lights to the mirror shape
-		if (s.lights != null) {
-		    ArrayList l = (ArrayList)s.lights.get(j);
-		    if (l != null) {
-			for (int m = 0; m < l.size(); m++) {
-			    shape.addLight((LightRetained)l.get(m));
+			// Add any scoped lights to the mirror shape
+			if (s.lights != null) {
+				ArrayList<LightRetained> l = s.lights.get(j);
+				if (l != null) {
+					for (int m = 0; m < l.size(); m++) {
+						shape.addLight(l.get(m));
+					}
+				}
 			}
-		    }
-		}
 
-		// Add any scoped fog
-		if (s.fogs != null) {
-		    ArrayList l = (ArrayList)s.fogs.get(j);
-		    if (l != null) {
-			for (int m = 0; m < l.size(); m++) {
-			    shape.addFog((FogRetained)l.get(m));
+			// Add any scoped fog
+			if (s.fogs != null) {
+				ArrayList<FogRetained> l = s.fogs.get(j);
+				if (l != null) {
+					for (int m = 0; m < l.size(); m++) {
+						shape.addFog(l.get(m));
+					}
+				}
 			}
-		    }
-		}
 
-		// Add any scoped modelClip
-		if (s.modelClips != null) {
-		    ArrayList l = (ArrayList)s.modelClips.get(j);
-		    if (l != null) {
-			for (int m = 0; m < l.size(); m++) {
-			    shape.addModelClip((ModelClipRetained)l.get(m));
+			// Add any scoped modelClip
+			if (s.modelClips != null) {
+				ArrayList<ModelClipRetained> l = s.modelClips.get(j);
+				if (l != null) {
+					for (int m = 0; m < l.size(); m++) {
+						shape.addModelClip(l.get(m));
+					}
+				}
 			}
-		    }
-		}
 
-		// Add any scoped alt app
-		if (s.altAppearances != null) {
-		    ArrayList l = (ArrayList)s.altAppearances.get(j);
-		    if (l != null) {
-			for (int m = 0; m < l.size(); m++) {
-			    shape.addAltApp((AlternateAppearanceRetained)l.get(m));
+			// Add any scoped alt app
+			if (s.altAppearances != null) {
+				ArrayList<AlternateAppearanceRetained> l = s.altAppearances.get(j);
+				if (l != null) {
+					for (int m = 0; m < l.size(); m++) {
+						shape.addAltApp(l.get(m));
+					}
+				}
 			}
-		    }
-		}
 		synchronized(mirrorShape3D) {
 		    mirrorShape3D.add(j,shape);
 		}
@@ -1091,38 +1090,38 @@ class Shape3DRetained extends LeafRetained {
 	    shape.isCollidable = s.collidable[0];
 	    initMirrorShape3D(s, shape, 0);
 
-	    // Add any scoped lights to the mirror shape
-	    if (s.lights != null) {
-		ArrayList l = (ArrayList)s.lights.get(0);
-		for (i = 0; i < l.size(); i++) {
-		    shape.addLight((LightRetained)l.get(i));
-		}
-	    }
-
-	    // Add any scoped fog
-	    if (s.fogs != null) {
-		ArrayList l = (ArrayList)s.fogs.get(0);
-		for (i = 0; i < l.size(); i++) {
-		    shape.addFog((FogRetained)l.get(i));
-		}
-	    }
-
-	    // Add any scoped modelClip
-	    if (s.modelClips != null) {
-		ArrayList l = (ArrayList)s.modelClips.get(0);
-		for (i = 0; i < l.size(); i++) {
-		    shape.addModelClip((ModelClipRetained)l.get(i));
+		// Add any scoped lights to the mirror shape
+		if (s.lights != null) {
+			ArrayList<LightRetained> l = s.lights.get(0);
+			for (i = 0; i < l.size(); i++) {
+				shape.addLight(l.get(i));
+			}
 		}
 
-	    }
-
-	    // Add any scoped alt app
-	    if (s.altAppearances != null) {
-		ArrayList l = (ArrayList)s.altAppearances.get(0);
-		for (i = 0; i < l.size(); i++) {
-		    shape.addAltApp((AlternateAppearanceRetained)l.get(i));
+		// Add any scoped fog
+		if (s.fogs != null) {
+			ArrayList<FogRetained> l = s.fogs.get(0);
+			for (i = 0; i < l.size(); i++) {
+				shape.addFog(l.get(i));
+			}
 		}
-	    }
+
+		// Add any scoped modelClip
+		if (s.modelClips != null) {
+			ArrayList<ModelClipRetained> l = s.modelClips.get(0);
+			for (i = 0; i < l.size(); i++) {
+				shape.addModelClip(l.get(i));
+			}
+
+		}
+
+		// Add any scoped alt app
+		if (s.altAppearances != null) {
+			ArrayList<AlternateAppearanceRetained> l = s.altAppearances.get(0);
+			for (i = 0; i < l.size(); i++) {
+				shape.addAltApp(l.get(i));
+			}
+		}
 	    synchronized(mirrorShape3D) {
 		mirrorShape3D.add(shape);
 	    }

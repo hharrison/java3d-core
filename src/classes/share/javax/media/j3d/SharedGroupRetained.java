@@ -119,7 +119,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 	}
 
 	if (lights == null) {
-	    lights = new ArrayList(1);
+		lights = new ArrayList<ArrayList<LightRetained>>(1);
 	}
 	if (s.lights != null) {
 	    lights.add(hkIndex, s.lights.get(index));
@@ -129,7 +129,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 	}
 
 	if (fogs == null) {
-	    fogs = new ArrayList(1);
+		fogs = new ArrayList<ArrayList<FogRetained>>(1);
 	}
 	if (s.fogs != null) {
 	    fogs.add(hkIndex, s.fogs.get(index));
@@ -140,7 +140,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 
 
 	if (modelClips == null) {
-	    modelClips = new ArrayList(1);
+		modelClips = new ArrayList<ArrayList<ModelClipRetained>>(1);
 	}
 	if (s.modelClips != null) {
 	    modelClips.add(hkIndex, s.modelClips.get(index));
@@ -151,7 +151,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 
 
 	if (altAppearances == null) {
-	    altAppearances = new ArrayList(1);
+		altAppearances = new ArrayList<ArrayList<AlternateAppearanceRetained>>(1);
 	}
 	if (s.altAppearances != null) {
 	    altAppearances.add(hkIndex, s.altAppearances.get(index));
@@ -278,10 +278,10 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 	HashKey savedLocalToVworldKeys[] = s.localToVworldKeys;
         ArrayList savedOrderedPaths = s.orderedPaths;
 	ArrayList savedViewList = s.viewLists;
-	ArrayList savedLights = s.lights;
-	ArrayList savedFogs = s.fogs;
-	ArrayList savedMclips = s.modelClips;
-	ArrayList savedAltApps = s.altAppearances;
+	ArrayList<ArrayList<LightRetained>> savedLights = s.lights;
+	ArrayList<ArrayList<FogRetained>> savedFogs = s.fogs;
+	ArrayList<ArrayList<ModelClipRetained>> savedMclips = s.modelClips;
+	ArrayList<ArrayList<AlternateAppearanceRetained>> savedAltApps = s.altAppearances;
 
 	SharedGroupRetained savedLastSharedGroup = s.lastSharedGroup;
         Targets[] savedSwitchTargets = s.switchTargets;
@@ -479,10 +479,10 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
         ArrayList savedOrderedPaths = s.orderedPaths;
         ArrayList savedViewLists = s.viewLists;
 
-	ArrayList savedLights = s.lights;
-	ArrayList savedFogs = s.fogs;
-	ArrayList savedMclips = s.modelClips;
-	ArrayList savedAltApps = s.altAppearances;
+	ArrayList<ArrayList<LightRetained>> savedLights = s.lights;
+	ArrayList<ArrayList<FogRetained>> savedFogs = s.fogs;
+	ArrayList<ArrayList<ModelClipRetained>> savedMclips = s.modelClips;
+	ArrayList<ArrayList<AlternateAppearanceRetained>> savedAltApps = s.altAppearances;
 
         Targets[] savedSwitchTargets = s.switchTargets;
         Targets[] savedTransformTargets = s.transformTargets;

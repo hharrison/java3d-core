@@ -1301,45 +1301,45 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		mirrorShape3D.add(j, shape);
 
 		msList.add(shape);
-		// Add any scoped lights to the mirror shape
-		if (s.lights != null) {
-		    ArrayList l = (ArrayList)s.lights.get(j);
-		    if (l != null) {
-			for (int m = 0; m < l.size(); m++) {
-			    shape.addLight((LightRetained)l.get(m));
+			// Add any scoped lights to the mirror shape
+			if (s.lights != null) {
+				ArrayList<LightRetained> l = s.lights.get(j);
+				if (l != null) {
+					for (int m = 0; m < l.size(); m++) {
+						shape.addLight(l.get(m));
+					}
+				}
 			}
-		    }
-		}
 
-		// Add any scoped fog
-		if (s.fogs != null) {
-		    ArrayList l = (ArrayList)s.fogs.get(j);
-		    if (l != null) {
-			for (int m = 0; m < l.size(); m++) {
-			    shape.addFog((FogRetained)l.get(m));
+			// Add any scoped fog
+			if (s.fogs != null) {
+				ArrayList<FogRetained> l = s.fogs.get(j);
+				if (l != null) {
+					for (int m = 0; m < l.size(); m++) {
+						shape.addFog(l.get(m));
+					}
+				}
 			}
-		    }
-		}
 
-		// Add any scoped modelClip
-		if (s.modelClips != null) {
-		    ArrayList l = (ArrayList)s.modelClips.get(j);
-		    if (l != null) {
-			for (int m = 0; m < l.size(); m++) {
-			    shape.addModelClip((ModelClipRetained)l.get(m));
+			// Add any scoped modelClip
+			if (s.modelClips != null) {
+				ArrayList<ModelClipRetained> l = s.modelClips.get(j);
+				if (l != null) {
+					for (int m = 0; m < l.size(); m++) {
+						shape.addModelClip(l.get(m));
+					}
+				}
 			}
-		    }
-		}
 
-		// Add any scoped alt app
-		if (s.altAppearances != null) {
-		    ArrayList l = (ArrayList)s.altAppearances.get(j);
-		    if (l != null) {
-			for (int m = 0; m < l.size(); m++) {
-			    shape.addAltApp((AlternateAppearanceRetained)l.get(m));
+			// Add any scoped alt app
+			if (s.altAppearances != null) {
+				ArrayList<AlternateAppearanceRetained> l = s.altAppearances.get(j);
+				if (l != null) {
+					for (int m = 0; m < l.size(); m++) {
+						shape.addAltApp(l.get(m));
+					}
+				}
 			}
-		    }
-		}
 
 		if (s.viewLists != null)
 		    shape.viewList = (ArrayList)s.viewLists.get(i);
@@ -1380,45 +1380,45 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    mirrorShape3D.add(shape);
 
 	    msList.add(shape);
-	    // Add any scoped lights to the mirror shape
-	    if (s.lights != null) {
-		ArrayList l = (ArrayList)s.lights.get(0);
-		if (l != null) {
-		    for (int m = 0; m < l.size(); m++) {
-			shape.addLight((LightRetained)l.get(m));
-		    }
+		// Add any scoped lights to the mirror shape
+		if (s.lights != null) {
+			ArrayList<LightRetained> l = s.lights.get(0);
+			if (l != null) {
+				for (int m = 0; m < l.size(); m++) {
+					shape.addLight(l.get(m));
+				}
+			}
 		}
-	    }
 
-	    // Add any scoped fog
-	    if (s.fogs != null) {
-		ArrayList l = (ArrayList)s.fogs.get(0);
-		if (l != null) {
-		    for (int m = 0; m < l.size(); m++) {
-			shape.addFog((FogRetained)l.get(m));
-		    }
+		// Add any scoped fog
+		if (s.fogs != null) {
+			ArrayList<FogRetained> l = s.fogs.get(0);
+			if (l != null) {
+				for (int m = 0; m < l.size(); m++) {
+					shape.addFog(l.get(m));
+				}
+			}
 		}
-	    }
 
-	    // Add any scoped modelClip
-	    if (s.modelClips != null) {
-		ArrayList l = (ArrayList)s.modelClips.get(0);
-		if (l != null) {
-		    for (int m = 0; m < l.size(); m++) {
-			shape.addModelClip((ModelClipRetained)l.get(m));
-		    }
+		// Add any scoped modelClip
+		if (s.modelClips != null) {
+			ArrayList<ModelClipRetained> l = s.modelClips.get(0);
+			if (l != null) {
+				for (int m = 0; m < l.size(); m++) {
+					shape.addModelClip(l.get(m));
+				}
+			}
 		}
-	    }
 
-	    // Add any scoped alt app
-	    if (s.altAppearances != null) {
-		ArrayList l = (ArrayList)s.altAppearances.get(0);
-		if (l != null) {
-		    for (int m = 0; m < l.size(); m++) {
-			shape.addAltApp((AlternateAppearanceRetained)l.get(m));
-		    }
+		// Add any scoped alt app
+		if (s.altAppearances != null) {
+			ArrayList<AlternateAppearanceRetained> l = s.altAppearances.get(0);
+			if (l != null) {
+				for (int m = 0; m < l.size(); m++) {
+					shape.addAltApp(l.get(m));
+				}
+			}
 		}
-	    }
 
 	    if (s.viewLists != null)
 		shape.viewList = (ArrayList)s.viewLists.get(0);

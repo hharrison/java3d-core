@@ -86,17 +86,17 @@ class SetLiveState extends Object {
     // List of transform level, one per shared path
     int transformLevels[] = new int[]{-1};
 
-    // List of scoped lights
-    ArrayList lights = null;
+// List of scoped lights
+ArrayList<ArrayList<LightRetained>> lights = null;
 
-    // List of scoped fogs
-    ArrayList fogs =null;
+// List of scoped fogs
+ArrayList<ArrayList<FogRetained>> fogs = null;
 
-    // List of scoped modelClips
-    ArrayList modelClips = null;
+// List of scoped modelClips
+ArrayList<ArrayList<ModelClipRetained>> modelClips = null;
 
-    // List of scoped alt app
-    ArrayList altAppearances =null;
+// List of scoped alt app
+ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 
     // List of viewes scoped to this Group, for all subclasses
     // of group, except ViewSpecificGroup its a pointer to closest
