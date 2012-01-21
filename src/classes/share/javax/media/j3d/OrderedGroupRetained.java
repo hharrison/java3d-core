@@ -48,11 +48,10 @@ class OrderedGroupRetained extends GroupRetained {
     // This is a vector of free orderedChildId
     private ArrayList orderedChildIdFreeList = new ArrayList();
 
-    // One OrderedBin per view
-    OrderedBin[] orderedBin = new OrderedBin[0];
-
-    // child id of the newly added child
-    Integer newChildId;
+// used to lock the orderedBin array
+private final Object lockObj = new Object();
+// One OrderedBin per view
+OrderedBin[] orderedBin = new OrderedBin[0];
 
     // ChildCount used by renderBin to initialize the
     // orderedCollection in each orderedBin (per view)
@@ -228,28 +227,23 @@ class OrderedGroupRetained extends GroupRetained {
         }
     }
 
-    void setOrderedBin(OrderedBin ob, int index) {
-	synchronized (orderedBin) {
-	    orderedBin[index] = ob;
+void setOrderedBin(OrderedBin ob, int index) {
+	synchronized (lockObj) {
+		orderedBin[index] = ob;
 	}
-    }
+}
 
-
-    // Get the orderedBin for this view index
-    OrderedBin getOrderedBin(int index) {
-	OrderedBin ob;
-	synchronized (orderedBin) {
-	    if (index >= orderedBin.length) {
-		OrderedBin[] newList = new OrderedBin[index+1];
-		for (int i= 0; i < orderedBin.length; i++) {
-		    newList[i] = orderedBin[i];
+// Get the orderedBin for this view index
+OrderedBin getOrderedBin(int index) {
+	synchronized (lockObj) {
+		if (index >= orderedBin.length) {
+			OrderedBin[] newList = new OrderedBin[index + 1];
+			System.arraycopy(orderedBin, 0, newList, 0, orderedBin.length);
+			orderedBin = newList;
 		}
-		newList[index] = null;
-		orderedBin = newList;
-	    }
+		return orderedBin[index];
 	}
-	return (orderedBin[index]);
-    }
+}
 
     void updateChildIdTableInserted(int childId, int orderedId) {
 	int size = 0;
@@ -411,14 +405,15 @@ class OrderedGroupRetained extends GroupRetained {
     void clearDerivedDataStructures() {
 	int i;
 
-        //System.err.println("og clearDerivedDataStructures " + this);
 	// Clear the orderedBin and childId table for all views
 	// since this orderedGroup has been clearLived!
-	for (i = 0; i < orderedBin.length; i++) {
-	    if (orderedBin[i] != null) {
-		orderedBin[i].source = null;
-		orderedBin[i] = null;
-	    }
+	synchronized (lockObj) {
+		for (i = 0; i < orderedBin.length; i++) {
+			if (orderedBin[i] == null)
+				continue;
+			orderedBin[i].source = null;
+			orderedBin[i] = null;
+		}
 	}
 	if (orderedChildIdTable != null) {
 	    for (i=0; i<orderedChildIdTable.length; i++) {
