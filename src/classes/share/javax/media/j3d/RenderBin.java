@@ -3397,14 +3397,10 @@ System.err.println("......tb.soleUser= " +
     }
 
 
-    private void processOrderedGroupRemoved(J3dMessage m) {
+private void processOrderedGroupRemoved(J3dMessage m) {
 	int n;
 	Object[] ogList = (Object[])m.args[0];
 	Object[] ogChildIdList = (Object[])m.args[1];
-	OrderedGroupRetained og;
-	int index;
-	OrderedBin ob;
-	OrderedChildInfo cinfo = null;
 
 	/*
 	  System.err.println("RB : processOrderedGroupRemoved message " + m);
@@ -3414,65 +3410,55 @@ System.err.println("......tb.soleUser= " +
 	  obList);
 	*/
 	for (n = 0; n < ogList.length; n++) {
-	    og = (OrderedGroupRetained)ogList[n];
-	    index = ((Integer)ogChildIdList[n]).intValue();
+		OrderedGroupRetained og = (OrderedGroupRetained)ogList[n];
+		OrderedBin ob = og.getOrderedBin(view.viewIndex);
+		if (ob == null)
+			continue;
 
-	    ob = og.getOrderedBin(view.viewIndex);
-	    //	    System.err.println("Removed, index = "+index+" ob = "+ob);
-	    if (ob != null) {
+		// System.err.println("Removed, index = "+index+" ob = "+ob);
 		// Add at the end of the childInfo, for remove we don't care about
 		// the childId
-		cinfo = new OrderedChildInfo(OrderedChildInfo.REMOVE, index, -1, null);
+		int index = ((Integer)ogChildIdList[n]).intValue();
+		OrderedChildInfo cinfo = new OrderedChildInfo(OrderedChildInfo.REMOVE, index, -1, null);
 		ob.addChildInfo(cinfo);
 
 		if (!ob.onUpdateList) {
-		    obList.add(ob);
-		    ob.onUpdateList = true;
+			obList.add(ob);
+			ob.onUpdateList = true;
 		}
-	    }
 	}
+}
 
-    }
-
-
-    private void processOrderedGroupInserted(J3dMessage m) {
+private void processOrderedGroupInserted(J3dMessage m) {
 	Object[] ogList = (Object[])m.args[0];
 	Object[] ogChildIdList = (Object[])m.args[1];
 	Object[] ogOrderedIdList = (Object[])m.args[2];
 
+	// System.err.println("Inserted OG, index = "+index+" orderedId = "+orderedId+" og = "+og+" og.orderedBin = "+og.orderedBin);
+	// System.err.println("Inserted OG, orderedId = "+orderedId);
+	// System.err.println("Inserted, index = "+index+" oid = "+orderedId+" ob = "+ob);
 
-	OrderedGroupRetained og;;
-	int index;
-	int orderedId;
-	OrderedBin ob;
-	OrderedChildInfo cinfo;
-	//	System.err.println("Inserted OG, index = "+index+" orderedId = "+orderedId+" og = "+og+" og.orderedBin = "+og.orderedBin);
-	//	System.err.println("Inserted OG, orderedId = "+orderedId);
-	//	System.err.println("Inserted, index = "+index+" oid = "+orderedId+" ob = "+ob);
-
-	if(ogList == null)
-	    return;
+	if (ogList == null)
+		return;
 
 	for (int n = 0; n < ogList.length; n++) {
-	    og = (OrderedGroupRetained)ogList[n];
-	    index = ((Integer)ogChildIdList[n]).intValue();
-	    orderedId = ((Integer)ogOrderedIdList[n]).intValue();
-	    ob = og.getOrderedBin(view.viewIndex);
-	    cinfo = null;
+		OrderedGroupRetained og = (OrderedGroupRetained)ogList[n];
+		OrderedBin ob = og.getOrderedBin(view.viewIndex);
+		if (ob == null)
+			continue;
 
-
-	    if (ob != null) {
 		// Add at the end of the childInfo
-		cinfo = new OrderedChildInfo(OrderedChildInfo.ADD, index, orderedId, null);
+		int index = ((Integer)ogChildIdList[n]).intValue();
+		int orderedId = ((Integer)ogOrderedIdList[n]).intValue();
+		OrderedChildInfo cinfo = new OrderedChildInfo(OrderedChildInfo.ADD, index, orderedId, null);
 		ob.addChildInfo(cinfo);
 
 		if (!ob.onUpdateList) {
-		    obList.add(ob);
-		    ob.onUpdateList = true;
+			obList.add(ob);
+			ob.onUpdateList = true;
 		}
-	    }
 	}
-    }
+}
 
     private void processTransformChanged(long referenceTime) {
 	int i, j, n;
@@ -4459,7 +4445,6 @@ System.err.println("......tb.soleUser= " +
         int i, n;
         int oi; // an id which identifies a children of the orderedGroup
         int ci; // child index of the ordered group
-	int index;
 	ArrayList list = null;
 	int val;
 
@@ -4469,7 +4454,6 @@ System.err.println("......tb.soleUser= " +
 	ArrayList<OrderedBin> parentChildOrderedBins;
         OrderedBin parentOrderedBin;
         int parentOrderedChildId;
-	OrderedBin ob;
         OrderedPathElement ope;
 
 	// Since the table has been incremented, in response to OG addition,
@@ -4492,31 +4476,30 @@ System.err.println("......tb.soleUser= " +
             og = ope.orderedGroup;
             oi = ope.childId.intValue();
 
-	    ob = og.getOrderedBin(view.viewIndex);
-	    if (ob == null) {
-		// create ordered bin tree
-		ob = new OrderedBin(og.childCount, og);
-		og.setOrderedBin(ob, view.viewIndex);
+		OrderedBin ob = og.getOrderedBin(view.viewIndex);
+		if (ob == null) {
+			// create ordered bin tree
+			ob = new OrderedBin(og.childCount, og);
+			og.setOrderedBin(ob, view.viewIndex);
 
-		index = -1;
-		for (n = 0; n < orderedBinsList.size(); n++) {
-		    if (parentChildOrderedBins == orderedBinsList.get(n)) {
-			index = n;
-			break;
-		    }
-
+			int index = -1;
+			for (n = 0; n < orderedBinsList.size(); n++) {
+				if (parentChildOrderedBins == orderedBinsList.get(n)) {
+					index = n;
+					break;
+				}
+			}
+			if (index == -1) {
+				orderedBinsList.add(parentChildOrderedBins);
+				list = new ArrayList(5);
+				list.add(ob);
+				toBeAddedBinList.add(list);
+			}
+			else {
+				list = (ArrayList)toBeAddedBinList.get(index);
+				list.add(ob);
+			}
 		}
-		if (index == -1) {
-		    orderedBinsList.add(parentChildOrderedBins);
-		    list = new ArrayList(5);
-		    list.add(ob);
-		    toBeAddedBinList.add(list);
-		}
-		else {
-		    list = (ArrayList)toBeAddedBinList.get(index);
-		    list.add(ob);
-		}
-	    }
             ocs = ob.orderedCollections;
 	    OrderedChildInfo cinfo = ob.lastChildInfo;
 	    boolean found = false;
