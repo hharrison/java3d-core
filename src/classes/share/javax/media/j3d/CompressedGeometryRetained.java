@@ -219,7 +219,7 @@ class CompressedGeometryRetained extends GeometryRetained {
 	if (hdr.upperBound != null)
 	    this.geoBounds.setUpper(hdr.upperBound) ;
 
-	this.centroid.set(geoBounds.getCenter());
+	geoBounds.getCenter(this.centroid);
 	recompCentroid = false;
 	this.majorVersionNumber = hdr.majorVersionNumber ;
 	this.minorVersionNumber = hdr.minorVersionNumber ;

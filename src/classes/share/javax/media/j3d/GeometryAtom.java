@@ -208,13 +208,14 @@ RenderAtom getRenderAtom(View view) {
 		if (centroid == null) {
 		    centroid = new Point3d[geometryArray.length];
 		    for (int j = 0; j < centroid.length; j++) {
-			centroid[j] = new Point3d(source.localBounds.getCenter());
+					centroid[j] = new Point3d();
+					source.localBounds.getCenter(centroid[j]);
 			source.getCurrentLocalToVworld(0).transform(centroid[j]);
 		    }
                 }
 		else {
 		    for (int j = 0; j < centroid.length; j++) {
-			centroid[j].set(source.localBounds.getCenter());
+					source.localBounds.getCenter(centroid[j]);
 			source.getCurrentLocalToVworld(0).transform(centroid[j]);
 		    }
 		}

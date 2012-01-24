@@ -504,7 +504,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    }
 	    synchronized(centroid) {
 		recompCentroid = false;
-		this.centroid.set(geoBounds.getCenter());
+			geoBounds.getCenter(this.centroid);
 	    }
 
 	}
@@ -6193,6 +6193,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	for(i=0; i<4; i++)
 	    pCoor[i] = new Point3d();
 
+	Point3d boxCenter = new Point3d();
+	box.getCenter(boxCenter);
+
 	// left plane.
 	pCoor[0].set(box.lower.x, box.lower.y, box.lower.z);
 	pCoor[1].set(box.lower.x, box.lower.y, box.upper.z);
@@ -6202,9 +6205,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
 	if (intersectPolygon(pCoor, coordinates)) {
 	    if (dist != null) {
-		computeMinDistance(pCoor, box.getCenter(),
-				   null,
-				   dist, iPnt);
+			computeMinDistance(pCoor, boxCenter, null, dist, iPnt);
 	    }
 	    return true;
 	}
@@ -6216,9 +6217,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	pCoor[3].set(box.upper.x, box.lower.y, box.upper.z);
 	if (intersectPolygon(pCoor, coordinates)) {
 	    if (dist != null) {
-		computeMinDistance(pCoor, box.getCenter(),
-				   null,
-				   dist, iPnt);
+			computeMinDistance(pCoor, boxCenter, null, dist, iPnt);
 	    }
 	    return true;
 	}
@@ -6230,9 +6229,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	pCoor[3].set(box.upper.x, box.lower.y, box.lower.z);
 	if (intersectPolygon(pCoor, coordinates)) {
 	    if (dist != null) {
-		computeMinDistance(pCoor, box.getCenter(),
-				   null,
-				   dist, iPnt);
+			computeMinDistance(pCoor, boxCenter, null, dist, iPnt);
 	    }
 	    return true;
 	}
@@ -6243,9 +6240,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	pCoor[3].set(box.lower.x, box.upper.y, box.upper.z);
 	if (intersectPolygon(pCoor, coordinates)) {
 	    if (dist != null) {
-		computeMinDistance(pCoor, box.getCenter(),
-				   null,
-				   dist, iPnt);
+			computeMinDistance(pCoor, boxCenter, null, dist, iPnt);
 	    }
 	    return true;
 	}
@@ -6257,9 +6252,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	pCoor[3].set(box.upper.x, box.lower.y, box.upper.z);
 	if (intersectPolygon(pCoor, coordinates)) {
 	    if (dist != null) {
-		computeMinDistance(pCoor, box.getCenter(),
-				   null,
-				   dist, iPnt);
+			computeMinDistance(pCoor, boxCenter, null, dist, iPnt);
 	    }
 	    return true;
 	}
@@ -6271,9 +6264,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	pCoor[3].set(box.lower.x, box.upper.y, box.lower.z);
 	if (intersectPolygon(pCoor, coordinates)) {
 	    if (dist != null) {
-		computeMinDistance(pCoor, box.getCenter(),
-				   null,
-				   dist, iPnt);
+			computeMinDistance(pCoor, boxCenter, null, dist, iPnt);
 	    }
 	    return true;
 	}
@@ -6428,16 +6419,17 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		// we'll handle line separately.
 		if (polytope.intersect( coordinates[0],
 					coordinates[1], tP4d)) {
-		    if (dist != null) {
-			iPnt.x = tP4d.x;
-			iPnt.y = tP4d.y;
-			iPnt.z = tP4d.z;
-			Point3d pc = polytope.getCenter();
-			double x = iPnt.x - pc.x;
-			double y = iPnt.y - pc.y;
-			double z = iPnt.z - pc.z;
-			dist[0] = Math.sqrt(x*x + y*y + z*z);
-		    }
+			if (dist != null) {
+				polytope.getCenter(iPnt);
+
+				double x = tP4d.x - iPnt.x;
+				double y = tP4d.y - iPnt.y;
+				double z = tP4d.z - iPnt.z;
+				dist[0] = Math.sqrt(x * x + y * y + z * z);
+				iPnt.x = tP4d.x;
+				iPnt.y = tP4d.y;
+				iPnt.z = tP4d.z;
+			}
 		    return true;
 		}
 		return false;
@@ -10672,7 +10664,7 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	    geoBounds.combine(geo.geoBounds);
 
 	}
-	this.centroid.set(geoBounds.getCenter());
+	geoBounds.getCenter(this.centroid);
     }
 
     boolean isMergeable() {

@@ -388,9 +388,9 @@ abstract class GeometryRetained extends NodeComponentRetained {
         }
     }
 
-    void computeCentroid() {
-	this.centroid.set(geoBounds.getCenter());
-    }
+void computeCentroid() {
+	geoBounds.getCenter(this.centroid);
+}
 
     abstract int getClassType();
 
