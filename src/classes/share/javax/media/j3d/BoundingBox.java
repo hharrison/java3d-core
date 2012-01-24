@@ -1838,6 +1838,11 @@ private void setInfiniteBounds() {
 	 return centroid;
      }
 
+public void getCenter(Point3d center) {
+	center.add(lower, upper);
+	center.scale(0.5d);
+}
+
     void translate(BoundingBox bbox, Vector3d value) {
 	if (bbox == null || bbox.boundsIsEmpty) {
 		setEmptyBounds();

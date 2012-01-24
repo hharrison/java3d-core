@@ -170,11 +170,17 @@ public abstract class Bounds extends Object implements Cloneable {
      */
   public abstract Bounds closestIntersection( Bounds[] boundsObjects);
 
-     /**
-     * Returns the center of the bounds
-     * @return bounds center
-     */
-  abstract Point3d getCenter();
+/**
+ * Returns the center of the bounds
+ * @return bounds center
+ */
+abstract Point3d getCenter();
+
+/**
+ * Gets the centroid of this bounding region.
+ * @param center a Point to receive the centroid of the bounding region
+ */
+public abstract void getCenter(Point3d center);
 
      /**
       * Combines this bounding object with a bounding object so that the

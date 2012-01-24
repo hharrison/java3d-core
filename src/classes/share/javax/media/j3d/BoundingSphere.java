@@ -272,16 +272,13 @@ public BoundingSphere(Bounds[] boundsObjects) {
 	updateBoundsStates();
     }
 
-    /**
-     * Returns the position of this bounding sphere as a point.
-     * @param center a Point to receive the center of the bounding sphere
-
-     */
-    public void getCenter(Point3d center) {
-	center.x = this.center.x;
-	center.y = this.center.y;
-	center.z = this.center.z;
-    }
+/**
+ * Returns the position of this bounding sphere as a point.
+ * @param center a Point to receive the center of the bounding sphere
+ */
+public void getCenter(Point3d center) {
+	center.set(this.center);
+}
 
 /**
  * Sets the position of this bounding sphere from a point.

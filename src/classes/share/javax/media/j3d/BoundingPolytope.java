@@ -1714,6 +1714,10 @@ public class BoundingPolytope extends Bounds {
 	return centroid;
     }
 
+public void getCenter(Point3d center) {
+	center.set(centroid);
+}
+
     /**
      * if the passed the "region" is same type as this object
      * then do a copy, otherwise clone the Bounds  and
