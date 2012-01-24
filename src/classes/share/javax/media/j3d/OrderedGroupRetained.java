@@ -51,7 +51,7 @@ class OrderedGroupRetained extends GroupRetained {
 // used to lock the orderedBin array
 private final Object lockObj = new Object();
 // One OrderedBin per view
-OrderedBin[] orderedBin = new OrderedBin[0];
+private OrderedBin[] orderedBin = new OrderedBin[0];
 
     // ChildCount used by renderBin to initialize the
     // orderedCollection in each orderedBin (per view)
@@ -229,6 +229,19 @@ OrderedBin[] orderedBin = new OrderedBin[0];
 
 void setOrderedBin(OrderedBin ob, int index) {
 	synchronized (lockObj) {
+		if (index < orderedBin.length) {
+			orderedBin[index] = ob;
+			return;
+		}
+
+		// If we're clearing the entry to null, just return, don't bother
+		// expanding the array
+		if (ob == null)
+			return;
+
+		OrderedBin[] newList = new OrderedBin[index + 1];
+		System.arraycopy(orderedBin, 0, newList, 0, orderedBin.length);
+		orderedBin = newList;
 		orderedBin[index] = ob;
 	}
 }
@@ -236,12 +249,10 @@ void setOrderedBin(OrderedBin ob, int index) {
 // Get the orderedBin for this view index
 OrderedBin getOrderedBin(int index) {
 	synchronized (lockObj) {
-		if (index >= orderedBin.length) {
-			OrderedBin[] newList = new OrderedBin[index + 1];
-			System.arraycopy(orderedBin, 0, newList, 0, orderedBin.length);
-			orderedBin = newList;
-		}
-		return orderedBin[index];
+		if (index >= orderedBin.length)
+			return null;
+		else
+			return orderedBin[index];
 	}
 }
 
