@@ -55,8 +55,6 @@ final Point3d lower;
  * The corner of the bounding box with the numerically largest values.
  */
 final Point3d upper;
-
-    private Point3d centroid = null;
     private static final double EPS = 1.0E-8;
 
 /**
@@ -1563,7 +1561,7 @@ public void setUpper(Point3d p1) {
 	    return null;
         }
 
-	getCenter();
+	Point3d centroid = getCenter();
 
 	double dis;
 	double cenX = 0.0, cenY = 0.0, cenZ = 0.0;
@@ -1825,18 +1823,13 @@ private void setInfiniteBounds() {
 	}
     }
 
-    // For a infinite bounds. What is the centroid ?
-     Point3d getCenter() {
-	 if(centroid == null) {
-	     centroid = new Point3d();
-	 }
-
-         centroid.x = (upper.x+lower.x)*0.5;
-         centroid.y = (upper.y+lower.y)*0.5;
-         centroid.z = (upper.z+lower.z)*0.5;
-
-	 return centroid;
-     }
+// For a infinite bounds. What is the centroid ?
+Point3d getCenter() {
+	Point3d cent = new Point3d();
+	cent.add(upper, lower);
+	cent.scale(0.5d);
+	return cent;
+}
 
 public void getCenter(Point3d center) {
 	center.add(lower, upper);
