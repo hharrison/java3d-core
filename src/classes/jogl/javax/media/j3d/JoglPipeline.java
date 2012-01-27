@@ -9271,13 +9271,13 @@ class JoglPipeline extends Pipeline {
     // General helper routines
     //
 
-    private static ThreadLocal nioVertexTemp = new ThreadLocal();
-    private static ThreadLocal nioVertexDoubleTemp = new ThreadLocal();
-    private static ThreadLocal nioColorTemp = new ThreadLocal();
-    private static ThreadLocal nioColorByteTemp = new ThreadLocal();
-    private static ThreadLocal nioNormalTemp = new ThreadLocal();
-    private static ThreadLocal nioTexCoordSetTemp = new ThreadLocal();
-    private static ThreadLocal nioVertexAttrSetTemp = new ThreadLocal();
+    private static ThreadLocal<FloatBuffer> nioVertexTemp = new ThreadLocal<FloatBuffer>();
+    private static ThreadLocal<DoubleBuffer> nioVertexDoubleTemp = new ThreadLocal<DoubleBuffer>();
+    private static ThreadLocal<FloatBuffer> nioColorTemp = new ThreadLocal<FloatBuffer>();
+    private static ThreadLocal<ByteBuffer> nioColorByteTemp = new ThreadLocal<ByteBuffer>();
+    private static ThreadLocal<FloatBuffer> nioNormalTemp = new ThreadLocal<FloatBuffer>();
+    private static ThreadLocal<FloatBuffer[]> nioTexCoordSetTemp = new ThreadLocal<FloatBuffer[]>();
+    private static ThreadLocal<FloatBuffer[]> nioVertexAttrSetTemp = new ThreadLocal<FloatBuffer[]>();
 
     private static FloatBuffer getVertexArrayBuffer(float[] vertexArray) {
         return getVertexArrayBuffer(vertexArray, true);
@@ -9327,11 +9327,11 @@ class JoglPipeline extends Pipeline {
         return getNIOBuffer(vertexAttrSet, nioVertexAttrSetTemp);
     }
 
-    private static FloatBuffer getNIOBuffer(float[] array, ThreadLocal threadLocal, boolean copyData) {
+    private static FloatBuffer getNIOBuffer(float[] array, ThreadLocal<FloatBuffer> threadLocal, boolean copyData) {
         if (array == null) {
             return null;
         }
-        FloatBuffer buf = (FloatBuffer) threadLocal.get();
+        FloatBuffer buf = threadLocal.get();
         if (buf == null) {
             buf = BufferUtil.newFloatBuffer(array.length);
             threadLocal.set(buf);
@@ -9350,11 +9350,11 @@ class JoglPipeline extends Pipeline {
         return buf;
     }
 
-    private static DoubleBuffer getNIOBuffer(double[] array, ThreadLocal threadLocal, boolean copyData) {
+    private static DoubleBuffer getNIOBuffer(double[] array, ThreadLocal<DoubleBuffer> threadLocal, boolean copyData) {
         if (array == null) {
             return null;
         }
-        DoubleBuffer buf = (DoubleBuffer) threadLocal.get();
+        DoubleBuffer buf = threadLocal.get();
         if (buf == null) {
             buf = BufferUtil.newDoubleBuffer(array.length);
             threadLocal.set(buf);
@@ -9373,11 +9373,11 @@ class JoglPipeline extends Pipeline {
         return buf;
     }
 
-    private static ByteBuffer getNIOBuffer(byte[] array, ThreadLocal threadLocal, boolean copyData) {
+    private static ByteBuffer getNIOBuffer(byte[] array, ThreadLocal<ByteBuffer> threadLocal, boolean copyData) {
         if (array == null) {
             return null;
         }
-        ByteBuffer buf = (ByteBuffer) threadLocal.get();
+        ByteBuffer buf = threadLocal.get();
         if (buf == null) {
             buf = BufferUtil.newByteBuffer(array.length);
             threadLocal.set(buf);
@@ -9396,11 +9396,11 @@ class JoglPipeline extends Pipeline {
         return buf;
     }
 
-    private static FloatBuffer[] getNIOBuffer(Object[] array, ThreadLocal threadLocal) {
+    private static FloatBuffer[] getNIOBuffer(Object[] array, ThreadLocal<FloatBuffer[]> threadLocal) {
         if (array == null) {
             return null;
         }
-        FloatBuffer[] bufs = (FloatBuffer[]) threadLocal.get();
+        FloatBuffer[] bufs = threadLocal.get();
 
         // First resize array of FloatBuffers
         if (bufs == null) {
