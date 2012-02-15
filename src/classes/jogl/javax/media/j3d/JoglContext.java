@@ -69,32 +69,32 @@ class JoglContext implements Context {
   class GLSLVertexAttributeImpl implements VertexAttributeImpl {
     public void vertexAttrPointer(GL gl,
                                   int index, int size, int type, int stride, Buffer pointer) {
-      gl.glVertexAttribPointerARB(index + glslVertexAttrOffset,
+		gl.getGL2().glVertexAttribPointerARB(index + glslVertexAttrOffset,
                                   size, type, false, stride, pointer);
     }
 
     public void enableVertexAttrArray(GL gl, int index) {
-      gl.glEnableVertexAttribArrayARB(index + glslVertexAttrOffset);
+		gl.getGL2().glEnableVertexAttribArrayARB(index + glslVertexAttrOffset);
     }
 
     public void disableVertexAttrArray(GL gl, int index) {
-      gl.glDisableVertexAttribArrayARB(index + glslVertexAttrOffset);
+		gl.getGL2().glDisableVertexAttribArrayARB(index + glslVertexAttrOffset);
     }
 
     public void vertexAttr1fv(GL gl, int index, FloatBuffer buf) {
-      gl.glVertexAttrib1fvARB(index + glslVertexAttrOffset, buf);
+		gl.getGL2().glVertexAttrib1fvARB(index + glslVertexAttrOffset, buf);
     }
 
     public void vertexAttr2fv(GL gl, int index, FloatBuffer buf) {
-      gl.glVertexAttrib2fvARB(index + glslVertexAttrOffset, buf);
+		gl.getGL2().glVertexAttrib2fvARB(index + glslVertexAttrOffset, buf);
     }
 
     public void vertexAttr3fv(GL gl, int index, FloatBuffer buf) {
-      gl.glVertexAttrib3fvARB(index + glslVertexAttrOffset, buf);
+		gl.getGL2().glVertexAttrib3fvARB(index + glslVertexAttrOffset, buf);
     }
 
     public void vertexAttr4fv(GL gl, int index, FloatBuffer buf) {
-      gl.glVertexAttrib4fvARB(index + glslVertexAttrOffset, buf);
+		gl.getGL2().glVertexAttrib4fvARB(index + glslVertexAttrOffset, buf);
     }
   }
 
