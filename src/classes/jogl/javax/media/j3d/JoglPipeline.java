@@ -69,7 +69,7 @@ import javax.media.opengl.GLPbuffer;
 import javax.media.opengl.Threading;
 import javax.media.opengl.glu.GLU;
 
-import com.sun.opengl.util.BufferUtil;
+import com.jogamp.common.nio.Buffers;
 
 /**
  * Concrete implementation of Pipeline class for the JOGL rendering
@@ -485,7 +485,7 @@ class JoglPipeline extends Pipeline {
             texCoordoff += vAttrStride;
         }
 
-        int bstride = stride * BufferUtil.SIZEOF_FLOAT;
+		int bstride = stride * Buffers.SIZEOF_FLOAT;
         // Start sending down from the startVIndex
         int initialOffset = startVIndex * stride;
         normoff += initialOffset;
@@ -1252,7 +1252,7 @@ class JoglPipeline extends Pipeline {
             texCoordoff += vAttrStride;
         }
 
-        bstride = stride * BufferUtil.SIZEOF_FLOAT;
+		bstride = stride * Buffers.SIZEOF_FLOAT;
 
         if (geo_type == GeometryRetained.GEO_TYPE_TRI_STRIP_SET ||
                 geo_type == GeometryRetained.GEO_TYPE_TRI_FAN_SET   ||
@@ -1281,7 +1281,7 @@ class JoglPipeline extends Pipeline {
             clrs = verts;
         }
 
-        cbstride = cstride * BufferUtil.SIZEOF_FLOAT;
+		cbstride = cstride * Buffers.SIZEOF_FLOAT;
 
         // Enable normalize for non-uniform scale (which rescale can't handle)
         if (isNonUniformScale) {
@@ -2016,7 +2016,7 @@ class JoglPipeline extends Pipeline {
             texCoordoff += vAttrStride;
         }
 
-        bstride = stride * BufferUtil.SIZEOF_FLOAT;
+		bstride = stride * Buffers.SIZEOF_FLOAT;
 
         // process alpha for geometryArray without alpha
         if (updateAlpha && !ignoreVertexColors) {
@@ -2327,7 +2327,7 @@ class JoglPipeline extends Pipeline {
             texCoordoff += vAttrStride;
         }
 
-        bstride = stride * BufferUtil.SIZEOF_FLOAT;
+		bstride = stride * Buffers.SIZEOF_FLOAT;
 
         if (geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET ||
                 geo_type == GeometryRetained.GEO_TYPE_INDEXED_TRI_FAN_SET   ||
@@ -2356,7 +2356,7 @@ class JoglPipeline extends Pipeline {
             clrs = verts;
         }
 
-        cbstride = cstride * BufferUtil.SIZEOF_FLOAT;
+		cbstride = cstride * Buffers.SIZEOF_FLOAT;
 
         // Enable normalize for non-uniform scale (which rescale can't handle)
         if (isNonUniformScale) {
@@ -4280,8 +4280,8 @@ class JoglPipeline extends Pipeline {
     };
     private static final ByteBuffer[] screen_door_table = new ByteBuffer[screen_door.length];
     static {
-        int eachLen = screen_door[0].length * BufferUtil.SIZEOF_INT;
-        ByteBuffer buf = BufferUtil.newByteBuffer(screen_door.length * eachLen);
+		int eachLen = screen_door[0].length * Buffers.SIZEOF_INT;
+		ByteBuffer buf = Buffers.newDirectByteBuffer(screen_door.length * eachLen);
         IntBuffer intBuf = buf.asIntBuffer();
         for (int i = 0; i < screen_door.length; i++) {
             intBuf.put(screen_door[i]);
@@ -8445,13 +8445,13 @@ class JoglPipeline extends Pipeline {
         }
         FloatBuffer buf = threadLocal.get();
         if (buf == null) {
-            buf = BufferUtil.newFloatBuffer(array.length);
+			buf = Buffers.newDirectFloatBuffer(array.length);
             threadLocal.set(buf);
         } else {
             buf.rewind();
             if (buf.remaining() < array.length) {
                 int newSize = Math.max(2 * buf.remaining(), array.length);
-                buf = BufferUtil.newFloatBuffer(newSize);
+				buf = Buffers.newDirectFloatBuffer(newSize);
                 threadLocal.set(buf);
             }
         }
@@ -8468,13 +8468,13 @@ class JoglPipeline extends Pipeline {
         }
         DoubleBuffer buf = threadLocal.get();
         if (buf == null) {
-            buf = BufferUtil.newDoubleBuffer(array.length);
+			buf = Buffers.newDirectDoubleBuffer(array.length);
             threadLocal.set(buf);
         } else {
             buf.rewind();
             if (buf.remaining() < array.length) {
                 int newSize = Math.max(2 * buf.remaining(), array.length);
-                buf = BufferUtil.newDoubleBuffer(newSize);
+				buf = Buffers.newDirectDoubleBuffer(newSize);
                 threadLocal.set(buf);
             }
         }
@@ -8491,13 +8491,13 @@ class JoglPipeline extends Pipeline {
         }
         ByteBuffer buf = threadLocal.get();
         if (buf == null) {
-            buf = BufferUtil.newByteBuffer(array.length);
+			buf = Buffers.newDirectByteBuffer(array.length);
             threadLocal.set(buf);
         } else {
             buf.rewind();
             if (buf.remaining() < array.length) {
                 int newSize = Math.max(2 * buf.remaining(), array.length);
-                buf = BufferUtil.newByteBuffer(newSize);
+				buf = Buffers.newDirectByteBuffer(newSize);
                 threadLocal.set(buf);
             }
         }
@@ -8530,13 +8530,13 @@ class JoglPipeline extends Pipeline {
             float[] cur = (float[]) array[i];
             FloatBuffer buf = bufs[i];
             if (buf == null) {
-                buf = BufferUtil.newFloatBuffer(cur.length);
+				buf = Buffers.newDirectFloatBuffer(cur.length);
                 bufs[i] = buf;
             } else {
                 buf.rewind();
                 if (buf.remaining() < cur.length) {
                     int newSize = Math.max(2 * buf.remaining(), cur.length);
-                    buf = BufferUtil.newFloatBuffer(newSize);
+					buf = Buffers.newDirectFloatBuffer(newSize);
                     bufs[i] = buf;
                 }
             }
