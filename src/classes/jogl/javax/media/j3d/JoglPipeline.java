@@ -384,13 +384,14 @@ class JoglPipeline extends Pipeline {
             gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
         }
 
-        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-            if (useAlpha) {
-                gl.glEnable(GL.GL_GLOBAL_ALPHA_SUN);
-            } else {
-                gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
-            }
-        }
+// FIXME: SUN_global_alpha
+//        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
+//            if (useAlpha) {
+//                gl.glEnable(GL.GL_GLOBAL_ALPHA_SUN);
+//            } else {
+//                gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
+//            }
+//        }
 
         if ((vformat & GeometryArray.COORDINATES) != 0) {
             gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
@@ -402,16 +403,16 @@ class JoglPipeline extends Pipeline {
     void disableGlobalAlpha(Context ctx, GeometryArrayRetained geo, int vformat,
             boolean useAlpha, boolean ignoreVertexColors) {
         if (VERBOSE) System.err.println("JoglPipeline.disableGlobalAlpha()");
+// FIXME: SUN_global_alpha
+//        GL gl = context(ctx).getGL();
 
-        GL gl = context(ctx).getGL();
-
-        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-            if (!ignoreVertexColors && ((vformat & GeometryArray.COLOR) != 0)) {
-                if (useAlpha) {
-                    gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
-                }
-            }
-        }
+//        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
+//            if (!ignoreVertexColors && ((vformat & GeometryArray.COLOR) != 0)) {
+//                if (useAlpha) {
+//                    gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
+//                }
+//            }
+//        }
     }
 
     // used for GeometryArrays
@@ -6596,12 +6597,12 @@ class JoglPipeline extends Pipeline {
 
     void setGlobalAlpha(Context ctx, float alpha) {
         if (VERBOSE) System.err.println("JoglPipeline.setGlobalAlpha()");
-
-        GL gl = context(ctx).getGL();
-        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-            gl.glEnable(GL.GL_GLOBAL_ALPHA_SUN);
-            gl.glGlobalAlphaFactorfSUN(alpha);
-        }
+// FIXME: SUN_global_alpha
+//        GL gl = context(ctx).getGL();
+//        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
+//            gl.glEnable(GL.GL_GLOBAL_ALPHA_SUN);
+//            gl.glGlobalAlphaFactorfSUN(alpha);
+//        }
     }
 
     // Native method to update separate specular color control
@@ -7742,9 +7743,10 @@ class JoglPipeline extends Pipeline {
         }
 
         // Setup GL_SUN_gloabl_alpha
-        if (gl.isExtensionAvailable("GL_SUN_gloabl_alpha")) {
-            cv.extensionsSupported |= Canvas3D.SUN_GLOBAL_ALPHA;
-        }
+// FIXME: SUN_global_alpha
+//        if (gl.isExtensionAvailable("GL_SUN_gloabl_alpha")) {
+//            cv.extensionsSupported |= Canvas3D.SUN_GLOBAL_ALPHA;
+//        }
 
         cv.textureBoundaryWidthMax = 1;
         {
@@ -7800,10 +7802,10 @@ class JoglPipeline extends Pipeline {
         if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
             gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
         }
-
-        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-            gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
-        }
+// FIXME: SUN_global_alpha
+//        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
+//            gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
+//        }
 
     }
 
@@ -7820,9 +7822,10 @@ class JoglPipeline extends Pipeline {
 //          gl.glDisable(GL2.GL_CLIP_PLANE0 + i);
 //      }
 
-        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-            gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
-        }
+// FIXME: SUN_global_alpha
+//        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
+//            gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
+//        }
     }
 
     private void copyTranspose(double[] src, double[] dst) {
