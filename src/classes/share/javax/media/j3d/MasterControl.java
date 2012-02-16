@@ -548,9 +548,10 @@ class MasterControl {
 			       "forceReleaseView  after Canvas3D dispose enabled",
 			       "forceReleaseView  after Canvas3D dispose disabled");
 
-	useCombiners = getBooleanProperty("j3d.usecombiners", useCombiners,
-					  "Using NV_register_combiners if available",
-					  "NV_register_combiners disabled");
+// FIXME: GL_NV_register_combiners
+//	useCombiners = getBooleanProperty("j3d.usecombiners", useCombiners,
+//					  "Using NV_register_combiners if available",
+//					  "NV_register_combiners disabled");
 
 	if (getProperty("j3d.disablecompile") != null) {
 	    disableCompile = true;

@@ -4441,203 +4441,204 @@ class JoglPipeline extends Pipeline {
             int[] combineRgbSrc, int[] combineAlphaSrc,
             int[] combineRgbFcn, int[] combineAlphaFcn,
             int combineRgbScale, int combineAlphaScale) {
-        if (VERBOSE) System.err.println("JoglPipeline.updateRegisterCombiners()");
-
-        JoglContext ctx = (JoglContext) absCtx;
-		GL2 gl = context(ctx).getGL().getGL2();
-
-        if (perspCorrectionMode == TextureAttributes.NICEST) {
-            gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
-        } else {
-            gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_FASTEST);
-        }
-
-        // set OGL texture matrix
-        gl.glPushAttrib(GL2.GL_TRANSFORM_BIT);
-        gl.glMatrixMode(GL.GL_TEXTURE);
-
-        if (isIdentity) {
-            gl.glLoadIdentity();
-        } else if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
-            gl.glLoadTransposeMatrixd(transform, 0);
-        } else {
-            double[] mx = new double[16];
-            copyTranspose(transform, mx);
-            gl.glLoadMatrixd(mx, 0);
-        }
-
-        gl.glPopAttrib();
-
-        // set texture color
-        float[] color = new float[4];
-        color[0] = textureBlendColorRed;
-        color[1] = textureBlendColorGreen;
-        color[2] = textureBlendColorBlue;
-        color[3] = textureBlendColorAlpha;
-        gl.glTexEnvfv(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_COLOR, color, 0);
-
-        // set texture environment mode
-        gl.glEnable(GL.GL_REGISTER_COMBINERS_NV);
-        int textureUnit = ctx.getCurrentTextureUnit();
-        int combinerUnit = ctx.getCurrentCombinerUnit();
-        int fragment;
-        if (combinerUnit == GL.GL_COMBINER0_NV) {
-            fragment = GL.GL_PRIMARY_COLOR_NV;
-        } else {
-            fragment = GL.GL_SPARE0_NV;
-        }
-
-        switch (textureMode) {
-            case TextureAttributes.MODULATE:
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_A_NV, fragment,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_B_NV, textureUnit,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_VARIABLE_A_NV, fragment,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_VARIABLE_B_NV, textureUnit,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
-
-                gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
-                        GL.GL_NONE, GL.GL_NONE, false, false, false);
-                gl.glCombinerOutputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
-                        GL.GL_NONE, GL.GL_NONE, false, false, false);
-                break;
-
-            case TextureAttributes.DECAL:
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_A_NV, fragment,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_B_NV, textureUnit,
-                        GL.GL_UNSIGNED_INVERT_NV, GL.GL_ALPHA);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_C_NV, textureUnit,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_D_NV, textureUnit,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
-
-                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_VARIABLE_A_NV, fragment,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_VARIABLE_B_NV, GL.GL_ZERO,
-                        GL.GL_UNSIGNED_INVERT_NV, GL.GL_ALPHA);
-
-                gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_DISCARD_NV, GL.GL_DISCARD_NV, GL.GL_SPARE0_NV,
-                        GL.GL_NONE, GL.GL_NONE, false, false, false);
-                gl.glCombinerOutputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
-                        GL.GL_NONE, GL.GL_NONE, false, false, false);
-                break;
-
-            case TextureAttributes.BLEND:
-                gl.glCombinerParameterfvNV(GL.GL_CONSTANT_COLOR0_NV, color, 0);
-
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_A_NV, fragment,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_B_NV, textureUnit,
-                        GL.GL_UNSIGNED_INVERT_NV, GL.GL_RGB);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_C_NV, GL.GL_CONSTANT_COLOR0_NV,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_D_NV, textureUnit,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-
-                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_VARIABLE_A_NV, fragment,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_VARIABLE_B_NV, textureUnit,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
-
-                gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_DISCARD_NV, GL.GL_DISCARD_NV, GL.GL_SPARE0_NV,
-                        GL.GL_NONE, GL.GL_NONE, false, false, false);
-                gl.glCombinerOutputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
-                        GL.GL_NONE, GL.GL_NONE, false, false, false);
-                break;
-
-            case TextureAttributes.REPLACE:
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_A_NV, textureUnit,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_VARIABLE_B_NV, GL.GL_ZERO,
-                        GL.GL_UNSIGNED_INVERT_NV, GL.GL_RGB);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_VARIABLE_A_NV, textureUnit,
-                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
-                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_VARIABLE_B_NV, GL.GL_ZERO,
-                        GL.GL_UNSIGNED_INVERT_NV, GL.GL_ALPHA);
-
-                gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB,
-                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
-                        GL.GL_NONE, GL.GL_NONE, false, false, false);
-                gl.glCombinerOutputNV(combinerUnit, GL.GL_ALPHA,
-                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
-                        GL.GL_NONE, GL.GL_NONE, false, false, false);
-                break;
-
-            case TextureAttributes.COMBINE:
-                if (combineRgbMode == TextureAttributes.COMBINE_DOT3) {
-                    int color1 = getCombinerArg(gl, combineRgbSrc[0], textureUnit, combinerUnit);
-                    gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                            GL.GL_VARIABLE_A_NV, color1,
-                            GL.GL_EXPAND_NORMAL_NV, GL.GL_RGB);
-                    int color2 = getCombinerArg(gl, combineRgbSrc[1], textureUnit, combinerUnit);
-                    gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
-                            GL.GL_VARIABLE_B_NV, color2,
-                            GL.GL_EXPAND_NORMAL_NV, GL.GL_RGB);
-                    gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
-                            GL.GL_VARIABLE_A_NV, GL.GL_ZERO,
-                            GL.GL_UNSIGNED_INVERT_NV, GL.GL_ALPHA);
-                    gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
-                            GL.GL_VARIABLE_B_NV, GL.GL_ZERO,
-                            GL.GL_UNSIGNED_INVERT_NV, GL.GL_ALPHA);
-
-                    gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB,
-                            GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
-                            GL.GL_NONE/*SCALE_BY_FOUR_NV*/, GL.GL_NONE, true,
-                            false, false);
-                    gl.glCombinerOutputNV(combinerUnit, GL.GL_ALPHA,
-                            GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
-                            GL.GL_NONE, GL.GL_NONE, false,
-                            false, false);
-                }
-                break;
-        }
-
-        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_A_NV,
-                GL.GL_SPARE0_NV, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_B_NV,
-                GL.GL_ZERO, GL.GL_UNSIGNED_INVERT_NV, GL.GL_RGB);
-        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_C_NV,
-                GL.GL_ZERO, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_D_NV,
-                GL.GL_ZERO, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_E_NV,
-                GL.GL_ZERO, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_F_NV,
-                GL.GL_ZERO, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
-        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_G_NV,
-                GL.GL_SPARE0_NV, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
-
-        if (gl.isExtensionAvailable("GL_SGI_texture_color_table"))
-            gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
+// FIXME: GL_NV_register_combiners
+//        if (VERBOSE) System.err.println("JoglPipeline.updateRegisterCombiners()");
+//
+//        JoglContext ctx = (JoglContext) absCtx;
+//		GL2 gl = context(ctx).getGL().getGL2();
+//
+//        if (perspCorrectionMode == TextureAttributes.NICEST) {
+//            gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+//        } else {
+//            gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_FASTEST);
+//        }
+//
+//        // set OGL texture matrix
+//        gl.glPushAttrib(GL2.GL_TRANSFORM_BIT);
+//        gl.glMatrixMode(GL.GL_TEXTURE);
+//
+//        if (isIdentity) {
+//            gl.glLoadIdentity();
+//        } else if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
+//            gl.glLoadTransposeMatrixd(transform, 0);
+//        } else {
+//            double[] mx = new double[16];
+//            copyTranspose(transform, mx);
+//            gl.glLoadMatrixd(mx, 0);
+//        }
+//
+//        gl.glPopAttrib();
+//
+//        // set texture color
+//        float[] color = new float[4];
+//        color[0] = textureBlendColorRed;
+//        color[1] = textureBlendColorGreen;
+//        color[2] = textureBlendColorBlue;
+//        color[3] = textureBlendColorAlpha;
+//        gl.glTexEnvfv(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_COLOR, color, 0);
+//
+//        // set texture environment mode
+//        gl.glEnable(GL.GL_REGISTER_COMBINERS_NV);
+//        int textureUnit = ctx.getCurrentTextureUnit();
+//        int combinerUnit = ctx.getCurrentCombinerUnit();
+//        int fragment;
+//        if (combinerUnit == GL.GL_COMBINER0_NV) {
+//            fragment = GL.GL_PRIMARY_COLOR_NV;
+//        } else {
+//            fragment = GL.GL_SPARE0_NV;
+//        }
+//
+//        switch (textureMode) {
+//            case TextureAttributes.MODULATE:
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_A_NV, fragment,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_B_NV, textureUnit,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_VARIABLE_A_NV, fragment,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_VARIABLE_B_NV, textureUnit,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
+//
+//                gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
+//                        GL.GL_NONE, GL.GL_NONE, false, false, false);
+//                gl.glCombinerOutputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
+//                        GL.GL_NONE, GL.GL_NONE, false, false, false);
+//                break;
+//
+//            case TextureAttributes.DECAL:
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_A_NV, fragment,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_B_NV, textureUnit,
+//                        GL.GL_UNSIGNED_INVERT_NV, GL.GL_ALPHA);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_C_NV, textureUnit,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_D_NV, textureUnit,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
+//
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_VARIABLE_A_NV, fragment,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_VARIABLE_B_NV, GL.GL_ZERO,
+//                        GL.GL_UNSIGNED_INVERT_NV, GL.GL_ALPHA);
+//
+//                gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_DISCARD_NV, GL.GL_DISCARD_NV, GL.GL_SPARE0_NV,
+//                        GL.GL_NONE, GL.GL_NONE, false, false, false);
+//                gl.glCombinerOutputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
+//                        GL.GL_NONE, GL.GL_NONE, false, false, false);
+//                break;
+//
+//            case TextureAttributes.BLEND:
+//                gl.glCombinerParameterfvNV(GL.GL_CONSTANT_COLOR0_NV, color, 0);
+//
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_A_NV, fragment,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_B_NV, textureUnit,
+//                        GL.GL_UNSIGNED_INVERT_NV, GL.GL_RGB);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_C_NV, GL.GL_CONSTANT_COLOR0_NV,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_D_NV, textureUnit,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_VARIABLE_A_NV, fragment,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_VARIABLE_B_NV, textureUnit,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
+//
+//                gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_DISCARD_NV, GL.GL_DISCARD_NV, GL.GL_SPARE0_NV,
+//                        GL.GL_NONE, GL.GL_NONE, false, false, false);
+//                gl.glCombinerOutputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
+//                        GL.GL_NONE, GL.GL_NONE, false, false, false);
+//                break;
+//
+//            case TextureAttributes.REPLACE:
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_A_NV, textureUnit,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_VARIABLE_B_NV, GL.GL_ZERO,
+//                        GL.GL_UNSIGNED_INVERT_NV, GL.GL_RGB);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_VARIABLE_A_NV, textureUnit,
+//                        GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
+//                gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_VARIABLE_B_NV, GL.GL_ZERO,
+//                        GL.GL_UNSIGNED_INVERT_NV, GL.GL_ALPHA);
+//
+//                gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB,
+//                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
+//                        GL.GL_NONE, GL.GL_NONE, false, false, false);
+//                gl.glCombinerOutputNV(combinerUnit, GL.GL_ALPHA,
+//                        GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
+//                        GL.GL_NONE, GL.GL_NONE, false, false, false);
+//                break;
+//
+//            case TextureAttributes.COMBINE:
+//                if (combineRgbMode == TextureAttributes.COMBINE_DOT3) {
+//                    int color1 = getCombinerArg(gl, combineRgbSrc[0], textureUnit, combinerUnit);
+//                    gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                            GL.GL_VARIABLE_A_NV, color1,
+//                            GL.GL_EXPAND_NORMAL_NV, GL.GL_RGB);
+//                    int color2 = getCombinerArg(gl, combineRgbSrc[1], textureUnit, combinerUnit);
+//                    gl.glCombinerInputNV(combinerUnit, GL.GL_RGB,
+//                            GL.GL_VARIABLE_B_NV, color2,
+//                            GL.GL_EXPAND_NORMAL_NV, GL.GL_RGB);
+//                    gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
+//                            GL.GL_VARIABLE_A_NV, GL.GL_ZERO,
+//                            GL.GL_UNSIGNED_INVERT_NV, GL.GL_ALPHA);
+//                    gl.glCombinerInputNV(combinerUnit, GL.GL_ALPHA,
+//                            GL.GL_VARIABLE_B_NV, GL.GL_ZERO,
+//                            GL.GL_UNSIGNED_INVERT_NV, GL.GL_ALPHA);
+//
+//                    gl.glCombinerOutputNV(combinerUnit, GL.GL_RGB,
+//                            GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
+//                            GL.GL_NONE/*SCALE_BY_FOUR_NV*/, GL.GL_NONE, true,
+//                            false, false);
+//                    gl.glCombinerOutputNV(combinerUnit, GL.GL_ALPHA,
+//                            GL.GL_SPARE0_NV, GL.GL_DISCARD_NV, GL.GL_DISCARD_NV,
+//                            GL.GL_NONE, GL.GL_NONE, false,
+//                            false, false);
+//                }
+//                break;
+//        }
+//
+//        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_A_NV,
+//                GL.GL_SPARE0_NV, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_B_NV,
+//                GL.GL_ZERO, GL.GL_UNSIGNED_INVERT_NV, GL.GL_RGB);
+//        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_C_NV,
+//                GL.GL_ZERO, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_D_NV,
+//                GL.GL_ZERO, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_E_NV,
+//                GL.GL_ZERO, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_F_NV,
+//                GL.GL_ZERO, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_RGB);
+//        gl.glFinalCombinerInputNV(GL.GL_VARIABLE_G_NV,
+//                GL.GL_SPARE0_NV, GL.GL_UNSIGNED_IDENTITY_NV, GL.GL_ALPHA);
+//
+//        if (gl.isExtensionAvailable("GL_SGI_texture_color_table"))
+//            gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
         // GL_SGI_texture_color_table
     }
 
@@ -4811,30 +4812,31 @@ class JoglPipeline extends Pipeline {
         GL.GL_ONE_MINUS_SRC_ALPHA,    // TextureAttributes.COMBINE_ONE_MINUS_SRC_ALPHA
     };
 
-    private int getCombinerArg(GL gl, int arg, int textureUnit, int combUnit) {
-        int comb = 0;
-
-        switch (arg) {
-            case TextureAttributes.COMBINE_OBJECT_COLOR:
-                if (combUnit == GL.GL_COMBINER0_NV) {
-                    comb = GL.GL_PRIMARY_COLOR_NV;
-                } else {
-                    comb = GL.GL_SPARE0_NV;
-                }
-                break;
-            case TextureAttributes.COMBINE_TEXTURE_COLOR:
-                comb = textureUnit;
-                break;
-            case TextureAttributes.COMBINE_CONSTANT_COLOR:
-                comb = GL.GL_CONSTANT_COLOR0_NV;
-                break;
-            case TextureAttributes.COMBINE_PREVIOUS_TEXTURE_UNIT_STATE:
-                comb = textureUnit -1;
-                break;
-        }
-
-        return comb;
-    }
+// FIXME: GL_NV_register_combiners
+//    private int getCombinerArg(GL gl, int arg, int textureUnit, int combUnit) {
+//        int comb = 0;
+//
+//        switch (arg) {
+//            case TextureAttributes.COMBINE_OBJECT_COLOR:
+//                if (combUnit == GL.GL_COMBINER0_NV) {
+//                    comb = GL.GL_PRIMARY_COLOR_NV;
+//                } else {
+//                    comb = GL.GL_SPARE0_NV;
+//                }
+//                break;
+//            case TextureAttributes.COMBINE_TEXTURE_COLOR:
+//                comb = textureUnit;
+//                break;
+//            case TextureAttributes.COMBINE_CONSTANT_COLOR:
+//                comb = GL.GL_CONSTANT_COLOR0_NV;
+//                break;
+//            case TextureAttributes.COMBINE_PREVIOUS_TEXTURE_UNIT_STATE:
+//                comb = textureUnit -1;
+//                break;
+//        }
+//
+//        return comb;
+//    }
 
 
     // ---------------------------------------------------------------------
@@ -4852,11 +4854,12 @@ class JoglPipeline extends Pipeline {
         if (index >= 0 && gl.isExtensionAvailable("GL_VERSION_1_3")) {
             gl.glActiveTexture(index + GL.GL_TEXTURE0);
             gl.glClientActiveTexture(GL.GL_TEXTURE0 + index);
-            if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
-                jctx.setCurrentTextureUnit(index + GL.GL_TEXTURE0);
-                jctx.setCurrentCombinerUnit(index + GL.GL_COMBINER0_NV);
-                gl.glCombinerParameteriNV(GL.GL_NUM_GENERAL_COMBINERS_NV, index + 1);
-            }
+// FIXME: GL_NV_register_combiners
+//            if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
+//                jctx.setCurrentTextureUnit(index + GL.GL_TEXTURE0);
+//                jctx.setCurrentCombinerUnit(index + GL.GL_COMBINER0_NV);
+//                gl.glCombinerParameteriNV(GL.GL_NUM_GENERAL_COMBINERS_NV, index + 1);
+//            }
         }
 
         if (!enable) {
@@ -6764,9 +6767,10 @@ class JoglPipeline extends Pipeline {
         gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
         gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
 
-        if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
-            gl.glDisable(GL.GL_REGISTER_COMBINERS_NV);
-        }
+// FIXME: GL_NV_register_combiners
+//        if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
+//            gl.glDisable(GL.GL_REGISTER_COMBINERS_NV);
+//        }
 
         if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
             gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
@@ -7513,9 +7517,10 @@ class JoglPipeline extends Pipeline {
             cv.textureExtendedFeatures |= Canvas3D.TEXTURE_COMBINE;
         }
 
-        if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
-            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_REGISTER_COMBINERS;
-        }
+// FIXME: GL_NV_register_combiners
+//        if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
+//            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_REGISTER_COMBINERS;
+//        }
 
         if (gl.isExtensionAvailable("GL_ARB_texture_env_dot3") ||
                 gl.isExtensionAvailable("GL_EXT_texture_env_dot3")) {
@@ -7795,9 +7800,10 @@ class JoglPipeline extends Pipeline {
         gl.glDisable(GL2.GL_TEXTURE_3D);
         gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
 
-        if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
-            gl.glDisable(GL.GL_REGISTER_COMBINERS_NV);
-        }
+// FIXME: GL_NV_register_combiners
+//        if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
+//            gl.glDisable(GL.GL_REGISTER_COMBINERS_NV);
+//        }
 
         if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
             gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
