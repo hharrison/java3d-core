@@ -2801,12 +2801,12 @@ class JoglPipeline extends Pipeline {
             if (depthFormat == DepthComponentRetained.DEPTH_COMPONENT_TYPE_INT) {
                 // yOffset is adjusted for OpenGL - Y upward
                 gl.glReadPixels(xSrcOffset, yAdjusted, width, height,
-                        GL.GL_DEPTH_COMPONENT, GL.GL_UNSIGNED_INT, IntBuffer.wrap((int[]) depthBuffer));
+                        GL2.GL_DEPTH_COMPONENT, GL.GL_UNSIGNED_INT, IntBuffer.wrap((int[]) depthBuffer));
             } else {
                 // DEPTH_COMPONENT_TYPE_FLOAT
                 // yOffset is adjusted for OpenGL - Y upward
                 gl.glReadPixels(xSrcOffset, yAdjusted, width, height,
-                        GL.GL_DEPTH_COMPONENT, GL.GL_FLOAT, FloatBuffer.wrap((float[]) depthBuffer));
+                        GL2.GL_DEPTH_COMPONENT, GL.GL_FLOAT, FloatBuffer.wrap((float[]) depthBuffer));
             }
         }
 
@@ -3048,9 +3048,9 @@ class JoglPipeline extends Pipeline {
 
         int shaderHandle = 0;
         if (shaderType == Shader.SHADER_TYPE_VERTEX) {
-            shaderHandle = gl.glCreateShaderObjectARB(GL.GL_VERTEX_SHADER_ARB);
+            shaderHandle = gl.glCreateShaderObjectARB(GL2.GL_VERTEX_SHADER);
         } else if (shaderType == Shader.SHADER_TYPE_FRAGMENT) {
-            shaderHandle = gl.glCreateShaderObjectARB(GL.GL_FRAGMENT_SHADER_ARB);
+            shaderHandle = gl.glCreateShaderObjectARB(GL2.GL_FRAGMENT_SHADER);
         }
 
         if (shaderHandle == 0) {
@@ -3274,7 +3274,7 @@ class JoglPipeline extends Pipeline {
     private int glslToJ3dType(int type) {
         switch (type) {
             case GL.GL_BOOL_ARB:
-            case GL.GL_INT:
+            case GL2.GL_INT:
             case GL.GL_SAMPLER_2D_ARB:
             case GL.GL_SAMPLER_3D_ARB:
             case GL.GL_SAMPLER_CUBE_ARB:
@@ -4305,7 +4305,7 @@ class JoglPipeline extends Pipeline {
         blendFunctionTable[TransparencyAttributes.BLEND_ONE_MINUS_DST_COLOR] = GL.GL_ONE_MINUS_DST_COLOR;
         blendFunctionTable[TransparencyAttributes.BLEND_SRC_COLOR] = GL.GL_SRC_COLOR;
         blendFunctionTable[TransparencyAttributes.BLEND_ONE_MINUS_SRC_COLOR] = GL.GL_ONE_MINUS_SRC_COLOR;
-        blendFunctionTable[TransparencyAttributes.BLEND_CONSTANT_COLOR] = GL.GL_CONSTANT_COLOR;
+        blendFunctionTable[TransparencyAttributes.BLEND_CONSTANT_COLOR] = GL2.GL_CONSTANT_COLOR;
     }
 
     void updateTransparencyAttributes(Context ctx,
@@ -4632,10 +4632,10 @@ class JoglPipeline extends Pipeline {
         if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
             if (numComponents == 3) {
                 gl.glColorTable(GL.GL_TEXTURE_COLOR_TABLE_SGI, GL.GL_RGB,
-                        colorTableSize, GL.GL_RGB, GL.GL_INT, IntBuffer.wrap(textureColorTable));
+                        colorTableSize, GL.GL_RGB, GL2.GL_INT, IntBuffer.wrap(textureColorTable));
             } else {
                 gl.glColorTable(GL.GL_TEXTURE_COLOR_TABLE_SGI, GL.GL_RGBA,
-                        colorTableSize, GL.GL_RGBA, GL.GL_INT, IntBuffer.wrap(textureColorTable));
+                        colorTableSize, GL.GL_RGBA, GL2.GL_INT, IntBuffer.wrap(textureColorTable));
             }
             gl.glEnable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
         }
@@ -4845,7 +4845,7 @@ class JoglPipeline extends Pipeline {
             // if not enabled, then don't enable any tex mapping
             gl.glDisable(GL.GL_TEXTURE_1D);
             gl.glDisable(GL.GL_TEXTURE_2D);
-            gl.glDisable(GL.GL_TEXTURE_3D);
+            gl.glDisable(GL2.GL_TEXTURE_3D);
             gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
         }
 
@@ -4866,7 +4866,7 @@ class JoglPipeline extends Pipeline {
 
         GL gl = context(ctx).getGL();
         gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
-        gl.glDisable(GL.GL_TEXTURE_3D);
+        gl.glDisable(GL2.GL_TEXTURE_3D);
 
         if (!enable) {
             gl.glDisable(GL.GL_TEXTURE_2D);
@@ -5017,10 +5017,10 @@ class JoglPipeline extends Pipeline {
         gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
 
         if (!enable) {
-            gl.glDisable(GL.GL_TEXTURE_3D);
+            gl.glDisable(GL2.GL_TEXTURE_3D);
         } else {
-            gl.glBindTexture(GL.GL_TEXTURE_3D, objectId);
-            gl.glEnable(GL.GL_TEXTURE_3D);
+            gl.glBindTexture(GL2.GL_TEXTURE_3D, objectId);
+            gl.glEnable(GL2.GL_TEXTURE_3D);
         }
     }
 
@@ -5065,10 +5065,10 @@ class JoglPipeline extends Pipeline {
         }
 
         if (useAutoMipMap) {
-            gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_GENERATE_MIPMAP, GL.GL_TRUE);
+            gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL.GL_GENERATE_MIPMAP, GL.GL_TRUE);
         }
         else {
-            gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_GENERATE_MIPMAP, GL.GL_FALSE);
+            gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL.GL_GENERATE_MIPMAP, GL.GL_FALSE);
         }
 
         if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) ||
@@ -5115,13 +5115,13 @@ class JoglPipeline extends Pipeline {
 
 	    if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_BYTE_ARRAY) {
 
-            gl.glTexImage3D(GL.GL_TEXTURE_3D,
+            gl.glTexImage3D(GL2.GL_TEXTURE_3D,
                     level, internalFormat,
                     width, height, depth, boundaryWidth,
                     format, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[]) data));
             }
 	    else {
-                gl.glTexImage3D(GL.GL_TEXTURE_3D,
+                gl.glTexImage3D(GL2.GL_TEXTURE_3D,
                     level, internalFormat,
                     width, height, depth, boundaryWidth,
                     format, GL.GL_UNSIGNED_BYTE, (ByteBuffer) data);
@@ -5164,12 +5164,12 @@ class JoglPipeline extends Pipeline {
             }
 
             if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) {
-                gl.glTexImage3D(GL.GL_TEXTURE_3D,
+                gl.glTexImage3D(GL2.GL_TEXTURE_3D,
                         level, internalFormat,
                         width, height, depth, boundaryWidth,
                         format, type, IntBuffer.wrap((int[]) data));
             } else {
-                gl.glTexImage3D(GL.GL_TEXTURE_3D,
+                gl.glTexImage3D(GL2.GL_TEXTURE_3D,
                         level, internalFormat,
                         width, height, depth, boundaryWidth,
                         format, type, (Buffer) data);
@@ -5295,7 +5295,7 @@ class JoglPipeline extends Pipeline {
             int offset = (tilew * tileh * imgZOffset +
                     tilew * imgYOffset + imgXOffset) * numBytes;
             buf.position(offset);
-            gl.glTexSubImage3D(GL.GL_TEXTURE_3D,
+            gl.glTexSubImage3D(GL2.GL_TEXTURE_3D,
                     level, xoffset, yoffset, zoffset,
                     width, height, depth,
                     format, GL.GL_UNSIGNED_BYTE,
@@ -5348,7 +5348,7 @@ class JoglPipeline extends Pipeline {
             int offset = tilew * tileh * imgZOffset +
                     tilew * imgYOffset + imgXOffset;
             buf.position(offset);
-            gl.glTexSubImage3D(GL.GL_TEXTURE_3D,
+            gl.glTexSubImage3D(GL2.GL_TEXTURE_3D,
                     level, xoffset, yoffset, zoffset,
                     width, height, depth,
                     format, type,
@@ -5376,7 +5376,7 @@ class JoglPipeline extends Pipeline {
             float minimumLod, float maximumLod) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DLodRange()");
 
-        updateTextureLodRange(ctx, GL.GL_TEXTURE_3D,
+        updateTextureLodRange(ctx, GL2.GL_TEXTURE_3D,
                 baseLevel, maximumLevel,
                 minimumLod, maximumLod);
     }
@@ -5386,7 +5386,7 @@ class JoglPipeline extends Pipeline {
             float lodOffsetR) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DLodOffset()");
 
-        updateTextureLodOffset(ctx, GL.GL_TEXTURE_3D,
+        updateTextureLodOffset(ctx, GL2.GL_TEXTURE_3D,
                 lodOffsetS, lodOffsetT, lodOffsetR);
     }
 
@@ -5407,7 +5407,7 @@ class JoglPipeline extends Pipeline {
             int minFilter, int magFilter) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DFilterModes()");
 
-        updateTextureFilterModes(ctx, GL.GL_TEXTURE_3D,
+        updateTextureFilterModes(ctx, GL2.GL_TEXTURE_3D,
                 minFilter, magFilter);
     }
 
@@ -5416,7 +5416,7 @@ class JoglPipeline extends Pipeline {
             float[] sharpenTextureFuncPts) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DSharpenFunc()");
 
-        updateTextureSharpenFunc(ctx, GL.GL_TEXTURE_3D,
+        updateTextureSharpenFunc(ctx, GL2.GL_TEXTURE_3D,
                 numSharpenTextureFuncPts, sharpenTextureFuncPts);
     }
 
@@ -5425,14 +5425,14 @@ class JoglPipeline extends Pipeline {
             float[] filter4FuncPts) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DFilter4Func()");
 
-        updateTextureFilter4Func(ctx, GL.GL_TEXTURE_3D,
+        updateTextureFilter4Func(ctx, GL2.GL_TEXTURE_3D,
                 numFilter4FuncPts, filter4FuncPts);
     }
 
     void updateTexture3DAnisotropicFilter(Context ctx, float degree) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DAnisotropicFilter()");
 
-        updateTextureAnisotropicFilter(ctx, GL.GL_TEXTURE_3D, degree);
+        updateTextureAnisotropicFilter(ctx, GL2.GL_TEXTURE_3D, degree);
     }
 
 
@@ -6020,21 +6020,21 @@ class JoglPipeline extends Pipeline {
             switch (boundaryModeR) {
                 case Texture.WRAP:
                     gl.glTexParameteri(target,
-                            GL.GL_TEXTURE_WRAP_R, GL.GL_REPEAT);
+                            GL2.GL_TEXTURE_WRAP_R, GL.GL_REPEAT);
                     break;
 
                 case Texture.CLAMP:
                     gl.glTexParameteri(target,
-                            GL.GL_TEXTURE_WRAP_R, GL.GL_CLAMP);
+                            GL2.GL_TEXTURE_WRAP_R, GL.GL_CLAMP);
                     break;
                 case Texture.CLAMP_TO_EDGE:
                     gl.glTexParameteri(target,
-                            GL.GL_TEXTURE_WRAP_R,
+                            GL2.GL_TEXTURE_WRAP_R,
                             GL.GL_CLAMP_TO_EDGE);
                     break;
                 case Texture.CLAMP_TO_BOUNDARY:
                     gl.glTexParameteri(target,
-                            GL.GL_TEXTURE_WRAP_R,
+                            GL2.GL_TEXTURE_WRAP_R,
                             GL.GL_CLAMP_TO_BORDER);
                     break;
             }
@@ -6704,7 +6704,7 @@ class JoglPipeline extends Pipeline {
 
         gl.glDisable(GL.GL_TEXTURE_1D);
         gl.glDisable(GL.GL_TEXTURE_2D);
-        gl.glDisable(GL.GL_TEXTURE_3D);
+        gl.glDisable(GL2.GL_TEXTURE_3D);
         gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
     }
 
@@ -7067,10 +7067,10 @@ class JoglPipeline extends Pipeline {
 
 
         if (depthFormat == DepthComponentRetained.DEPTH_COMPONENT_TYPE_INT) {
-            gl.glDrawPixels(rasterWidth, rasterHeight, GL.GL_DEPTH_COMPONENT,
+            gl.glDrawPixels(rasterWidth, rasterHeight, GL2.GL_DEPTH_COMPONENT,
                     GL.GL_UNSIGNED_INT, IntBuffer.wrap((int[]) depthData));
         } else { /* DepthComponentRetained.DEPTH_COMPONENT_TYPE_FLOAT */
-            gl.glDrawPixels(rasterWidth, rasterHeight, GL.GL_DEPTH_COMPONENT,
+            gl.glDrawPixels(rasterWidth, rasterHeight, GL2.GL_DEPTH_COMPONENT,
                     GL.GL_FLOAT, FloatBuffer.wrap((float[]) depthData));
         }
 
@@ -7448,7 +7448,7 @@ class JoglPipeline extends Pipeline {
         }
 
         gl.glColorTable(GL.GL_PROXY_TEXTURE_COLOR_TABLE_SGI, GL.GL_RGBA, 256, GL.GL_RGB,
-                GL.GL_INT, null);
+                GL2.GL_INT, null);
         int[] tmp = new int[1];
         gl.glGetColorTableParameteriv(GL.GL_PROXY_TEXTURE_COLOR_TABLE_SGI,
                 GL.GL_COLOR_TABLE_WIDTH, tmp, 0);
@@ -7559,9 +7559,9 @@ class JoglPipeline extends Pipeline {
             int[] tmp = new int[1];
             gl.glGetIntegerv(GL. GL_MAX_TEXTURE_IMAGE_UNITS_ARB, tmp, 0);
             cv.maxTextureImageUnits = tmp[0];
-            gl.glGetIntegerv(GL. GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, tmp, 0);
+            gl.glGetIntegerv(GL2.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, tmp, 0);
             cv.maxVertexTextureImageUnits = tmp[0];
-            gl.glGetIntegerv(GL. GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, tmp, 0);
+            gl.glGetIntegerv(GL2.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, tmp, 0);
             cv.maxCombinedTextureImageUnits = tmp[0];
             int vertexAttrOffset = VirtualUniverse.mc.glslVertexAttrOffset;
             ctx.setGLSLVertexAttrOffset(vertexAttrOffset);
@@ -7737,7 +7737,7 @@ class JoglPipeline extends Pipeline {
             cv.textureHeightMax = tmp[0];
 
             tmp[0] = -1;
-            gl.glGetIntegerv(GL.GL_MAX_3D_TEXTURE_SIZE, tmp, 0);
+            gl.glGetIntegerv(GL2.GL_MAX_3D_TEXTURE_SIZE, tmp, 0);
             cv.texture3DWidthMax = tmp[0];
             cv.texture3DHeightMax = tmp[0];
             cv.texture3DDepthMax = tmp[0];
@@ -7773,7 +7773,7 @@ class JoglPipeline extends Pipeline {
             gl.glDisable(GL.GL_CLIP_PLANE0 + i);
         }
 
-        gl.glDisable(GL.GL_TEXTURE_3D);
+        gl.glDisable(GL2.GL_TEXTURE_3D);
         gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
 
         if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
