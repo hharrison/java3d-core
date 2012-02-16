@@ -4423,10 +4423,10 @@ class JoglPipeline extends Pipeline {
                 gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_COMBINE);
                 break;
         }
-
-        if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
-            gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
-        }
+// FIXME: GL_SGI_texture_color_table
+//        if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
+//            gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
+//        }
     }
 
     void updateRegisterCombiners(Context absCtx,
@@ -4645,19 +4645,20 @@ class JoglPipeline extends Pipeline {
     void updateTextureColorTable(Context ctx, int numComponents,
             int colorTableSize,
             int[] textureColorTable) {
-        if (VERBOSE) System.err.println("JoglPipeline.updateTextureColorTable()");
-
-        GL gl = context(ctx).getGL();
-        if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
-            if (numComponents == 3) {
-                gl.glColorTable(GL.GL_TEXTURE_COLOR_TABLE_SGI, GL.GL_RGB,
-                        colorTableSize, GL.GL_RGB, GL2.GL_INT, IntBuffer.wrap(textureColorTable));
-            } else {
-                gl.glColorTable(GL.GL_TEXTURE_COLOR_TABLE_SGI, GL.GL_RGBA,
-                        colorTableSize, GL.GL_RGBA, GL2.GL_INT, IntBuffer.wrap(textureColorTable));
-            }
-            gl.glEnable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
-        }
+// FIXME: GL_SGI_texture_color_table
+//        if (VERBOSE) System.err.println("JoglPipeline.updateTextureColorTable()");
+//
+//        GL gl = context(ctx).getGL();
+//        if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
+//            if (numComponents == 3) {
+//                gl.glColorTable(GL.GL_TEXTURE_COLOR_TABLE_SGI, GL.GL_RGB,
+//                        colorTableSize, GL.GL_RGB, GL2.GL_INT, IntBuffer.wrap(textureColorTable));
+//            } else {
+//                gl.glColorTable(GL.GL_TEXTURE_COLOR_TABLE_SGI, GL.GL_RGBA,
+//                        colorTableSize, GL.GL_RGBA, GL2.GL_INT, IntBuffer.wrap(textureColorTable));
+//            }
+//            gl.glEnable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
+//        }
     }
 
     void updateCombiner(Context ctx,
@@ -6772,9 +6773,10 @@ class JoglPipeline extends Pipeline {
 //            gl.glDisable(GL.GL_REGISTER_COMBINERS_NV);
 //        }
 
-        if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
-            gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
-        }
+// FIXME: GL_SGI_texture_color_table
+//        if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
+//            gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
+//        }
     }
 
     // native method for setting default PolygonAttributes
@@ -7464,18 +7466,19 @@ class JoglPipeline extends Pipeline {
         return new int[] { major, minor };
     }
 
-    private int getTextureColorTableSize(GL gl) {
-        if (!gl.isExtensionAvailable("GL_ARB_imaging")) {
-            return 0;
-        }
-
-        gl.glColorTable(GL.GL_PROXY_TEXTURE_COLOR_TABLE_SGI, GL.GL_RGBA, 256, GL.GL_RGB,
-                GL2.GL_INT, null);
-        int[] tmp = new int[1];
-        gl.glGetColorTableParameteriv(GL.GL_PROXY_TEXTURE_COLOR_TABLE_SGI,
-                GL2.GL_COLOR_TABLE_WIDTH, tmp, 0);
-        return tmp[0];
-    }
+// FIXME: GL_SGI_texture_color_table
+//    private int getTextureColorTableSize(GL gl) {
+//        if (!gl.isExtensionAvailable("GL_ARB_imaging")) {
+//            return 0;
+//        }
+//
+//        gl.glColorTable(GL.GL_PROXY_TEXTURE_COLOR_TABLE_SGI, GL.GL_RGBA, 256, GL.GL_RGB,
+//                GL2.GL_INT, null);
+//        int[] tmp = new int[1];
+//        gl.glGetColorTableParameteriv(GL.GL_PROXY_TEXTURE_COLOR_TABLE_SGI,
+//                GL2.GL_COLOR_TABLE_WIDTH, tmp, 0);
+//        return tmp[0];
+//    }
 
 
     private void checkTextureExtensions(Canvas3D cv,
@@ -7494,21 +7497,21 @@ class JoglPipeline extends Pipeline {
                 cv.maxTexCoordSets = tmp[0];
             }
         }
-
-        if (gl.isExtensionAvailable("GL_SGI_texture_color_table") ||
-                gl.isExtensionAvailable("GL_ARB_imaging")) {
-            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_COLOR_TABLE;
-
-            // get texture color table size
-            // need to check later
-            cv.textureColorTableSize = getTextureColorTableSize(gl);
-            if (cv.textureColorTableSize <= 0) {
-                cv.textureExtendedFeatures &= ~Canvas3D.TEXTURE_COLOR_TABLE;
-            }
-            if (cv.textureColorTableSize > 256) {
-                cv.textureColorTableSize = 256;
-            }
-        }
+// FIXME: GL_SGI_texture_color_table
+//        if (gl.isExtensionAvailable("GL_SGI_texture_color_table") ||
+//                gl.isExtensionAvailable("GL_ARB_imaging")) {
+//            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_COLOR_TABLE;
+//
+//            // get texture color table size
+//            // need to check later
+//            cv.textureColorTableSize = getTextureColorTableSize(gl);
+//            if (cv.textureColorTableSize <= 0) {
+//                cv.textureExtendedFeatures &= ~Canvas3D.TEXTURE_COLOR_TABLE;
+//            }
+//            if (cv.textureColorTableSize > 256) {
+//                cv.textureColorTableSize = 256;
+//            }
+//        }
 
         if (gl.isExtensionAvailable("GL_ARB_texture_env_combine")) {
             cv.textureExtendedFeatures |= Canvas3D.TEXTURE_COMBINE;
@@ -7804,10 +7807,10 @@ class JoglPipeline extends Pipeline {
 //        if (gl.isExtensionAvailable("GL_NV_register_combiners")) {
 //            gl.glDisable(GL.GL_REGISTER_COMBINERS_NV);
 //        }
-
-        if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
-            gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
-        }
+// FIXME: GL_SGI_texture_color_table
+//        if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
+//            gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
+//        }
 // FIXME: SUN_global_alpha
 //        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
 //            gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
