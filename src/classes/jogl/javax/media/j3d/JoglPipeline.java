@@ -5962,28 +5962,34 @@ class JoglPipeline extends Pipeline {
                 gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
                 break;
             case Texture.LINEAR_SHARPEN:
-                gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
-                        GL.GL_LINEAR_SHARPEN_SGIS);
+// We should never get here as we've disabled the TEXTURE_SHARPEN feature
+//                gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+//                        GL.GL_LINEAR_SHARPEN_SGIS);
                 break;
             case Texture.LINEAR_SHARPEN_RGB:
-                gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
-                        GL.GL_LINEAR_SHARPEN_COLOR_SGIS);
+// We should never get here as we've disabled the TEXTURE_SHARPEN feature
+//                gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+//                        GL.GL_LINEAR_SHARPEN_COLOR_SGIS);
                 break;
             case Texture.LINEAR_SHARPEN_ALPHA:
-                gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
-                        GL.GL_LINEAR_SHARPEN_ALPHA_SGIS);
+// We should never get here as we've disabled the TEXTURE_SHARPEN feature
+//                gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+//                        GL.GL_LINEAR_SHARPEN_ALPHA_SGIS);
                 break;
             case Texture2D.LINEAR_DETAIL:
-                gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
-                        GL.GL_LINEAR_DETAIL_SGIS);
+// We should never get here as we've disabled the TEXTURE_DETAIL feature
+//            	gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+//                        GL.GL_LINEAR_DETAIL_SGIS);
                 break;
             case Texture2D.LINEAR_DETAIL_RGB:
-                gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
-                        GL.GL_LINEAR_DETAIL_COLOR_SGIS);
+// We should never get here as we've disabled the TEXTURE_DETAIL feature
+//            	gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+//                        GL.GL_LINEAR_DETAIL_COLOR_SGIS);
                 break;
             case Texture2D.LINEAR_DETAIL_ALPHA:
-                gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
-                        GL.GL_LINEAR_DETAIL_ALPHA_SGIS);
+// We should never get here as we've disabled the TEXTURE_DETAIL feature
+//            	gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+//                        GL.GL_LINEAR_DETAIL_ALPHA_SGIS);
                 break;
             case Texture.FILTER4:
 // We should never get here as we've disabled the FILTER4 feature
@@ -6116,8 +6122,9 @@ class JoglPipeline extends Pipeline {
             float[] pts) {
         // checking of the availability of sharpen texture functionality
         // is already done in shared code
-        GL gl = context(ctx).getGL();
-        gl.glSharpenTexFuncSGIS(target, numPts, pts, 0);
+// FIXME: GL_SGIS_sharpen_texture
+//        GL gl = context(ctx).getGL();
+//        gl.glSharpenTexFuncSGIS(target, numPts, pts, 0);
     }
 
     private void updateTextureFilter4Func(Context ctx,
@@ -7537,13 +7544,15 @@ class JoglPipeline extends Pipeline {
             cv.textureExtendedFeatures |= Canvas3D.TEXTURE_CUBE_MAP;
         }
 
-        if (gl.isExtensionAvailable("GL_SGIS_sharpen_texture")) {
-            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_SHARPEN;
-        }
+// FIXME: GL_SGIS_sharpen_texture
+//        if (gl.isExtensionAvailable("GL_SGIS_sharpen_texture")) {
+//            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_SHARPEN;
+//        }
 
-        if (gl.isExtensionAvailable("GL_SGIS_detail_texture")) {
-            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_DETAIL;
-        }
+// FIXME: GL_SGIS_sharpen_texture
+//        if (gl.isExtensionAvailable("GL_SGIS_detail_texture")) {
+//            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_DETAIL;
+//        }
 
 // FIXME: GL_SGIS_texture_filter4
 //        if (gl.isExtensionAvailable("GL_SGIS_texture_filter4")) {
