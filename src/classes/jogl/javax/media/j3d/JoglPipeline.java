@@ -370,7 +370,7 @@ class JoglPipeline extends Pipeline {
             int vformat, boolean useAlpha, boolean ignoreVertexColors) {
         if (VERBOSE) System.err.println("JoglPipeline.setVertexFormat()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         // Enable and disable the appropriate pointers
         if ((vformat & GeometryArray.NORMALS) != 0) {
@@ -429,7 +429,7 @@ class JoglPipeline extends Pipeline {
             float[] varray) {
         if (VERBOSE) System.err.println("JoglPipeline.buildGA()");
         JoglContext jctx = (JoglContext) ctx;
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         FloatBuffer verts = null;
         int stride = 0, coordoff = 0, normoff = 0, coloroff = 0, texCoordoff = 0;
         int texStride = 0;
@@ -881,7 +881,7 @@ class JoglPipeline extends Pipeline {
             double[] xform, double[] nxform) {
         if (VERBOSE) System.err.println("JoglPipeline.buildGAForByRef()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         boolean floatCoordDefined  = ((vdefined & GeometryArrayRetained.COORD_FLOAT)    != 0);
         boolean doubleCoordDefined = ((vdefined & GeometryArrayRetained.COORD_DOUBLE)   != 0);
@@ -1089,7 +1089,7 @@ class JoglPipeline extends Pipeline {
     }
 
     private void
-            enableTexCoordPointer(GL gl,
+            enableTexCoordPointer(GL2 gl,
             int texUnit,
             int texSize,
             int texDataType,
@@ -1101,17 +1101,13 @@ class JoglPipeline extends Pipeline {
         gl.glTexCoordPointer(texSize, texDataType, stride, pointer);
     }
 
-    private void
-            disableTexCoordPointer(GL gl,
-            int texUnit) {
+	private void disableTexCoordPointer(GL2 gl, int texUnit) {
         if (VERBOSE) System.err.println("JoglPipeline.disableTexCoordPointer()");
         clientActiveTextureUnit(gl, texUnit);
         gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
     }
 
-    private void
-            clientActiveTextureUnit(GL gl,
-            int texUnit) {
+	private void clientActiveTextureUnit(GL2 gl, int texUnit) {
         if (VERBOSE) System.err.println("JoglPipeline.clientActiveTextureUnit()");
         if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
             gl.glClientActiveTexture(texUnit + GL.GL_TEXTURE0);
@@ -1124,7 +1120,7 @@ class JoglPipeline extends Pipeline {
             int texSize, int bstride, int texCoordoff,
             int[] texCoordSetMapOffset,
             int numActiveTexUnit,
-            FloatBuffer verts, GL gl) {
+            FloatBuffer verts, GL2 gl) {
         if (VERBOSE) System.err.println("JoglPipeline.executeTexture()");
         int tus = 0;  /* texture unit state index */
 
@@ -1152,8 +1148,7 @@ class JoglPipeline extends Pipeline {
         }
     }
 
-    private void
-            resetTexture(GL gl, JoglContext ctx) {
+	private void resetTexture(GL2 gl, JoglContext ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.resetTexture()");
         /* Disable texture coordinate arrays for all texture units */
         for (int i = 0; i < ctx.getMaxTexCoordSets(); i++) {
@@ -1180,7 +1175,7 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.executeGeometryArray()");
         JoglContext ctx = (JoglContext) absCtx;
         GLContext context = context(ctx);
-        GL gl = context.getGL();
+		GL2 gl = context.getGL().getGL2();
 
         boolean useInterleavedArrays;
         int iaFormat = 0;
@@ -1367,7 +1362,7 @@ class JoglPipeline extends Pipeline {
             }
 
             if (gl.isExtensionAvailable("GL_EXT_multi_draw_arrays")) {
-                gl.glMultiDrawArraysEXT(primType, start_array, 0, sarray, 0, sarray.length);
+                gl.glMultiDrawArrays(primType, start_array, 0, sarray, 0, sarray.length);
             } else {
                 for (int i = 0; i < sarray.length; i++) {
                     gl.glDrawArrays(primType, start_array[i], sarray[i]);
@@ -1464,13 +1459,13 @@ class JoglPipeline extends Pipeline {
 
     // glLockArrays() is invoked only for indexed geometry, and the
     // vertexCount is guarenteed to be >= 0.
-    private void lockArray(GL gl, int vertexCount) {
+    private void lockArray(GL2 gl, int vertexCount) {
         if (gl.isExtensionAvailable("GL_EXT_compiled_vertex_array")) {
             gl.glLockArraysEXT(0, vertexCount);
         }
     }
 
-    private void unlockArray(GL gl) {
+    private void unlockArray(GL2 gl) {
         if (gl.isExtensionAvailable("GL_EXT_compiled_vertex_array")) {
             gl.glUnlockArraysEXT();
         }
@@ -1500,7 +1495,7 @@ class JoglPipeline extends Pipeline {
             int[] start_array) {
         JoglContext ctx = (JoglContext) absCtx;
         GLContext context = context(ctx);
-        GL gl = context.getGL();
+		GL2 gl = context.getGL().getGL2();
 
         boolean floatCoordDefined  = ((vdefined & GeometryArrayRetained.COORD_FLOAT)    != 0);
         boolean doubleCoordDefined = ((vdefined & GeometryArrayRetained.COORD_DOUBLE)   != 0);
@@ -1601,7 +1596,7 @@ class JoglPipeline extends Pipeline {
                     break;
             }
             if (gl.isExtensionAvailable("GL_EXT_multi_draw_arrays")) {
-                gl.glMultiDrawArraysEXT(primType, start_array, 0, sarray, 0, strip_len);
+                gl.glMultiDrawArrays(primType, start_array, 0, sarray, 0, strip_len);
             } else if (gl.isExtensionAvailable("GL_VERSION_1_4")) {
                 gl.glMultiDrawArrays(primType, start_array, 0, sarray, 0, strip_len);
             } else {
@@ -1949,7 +1944,7 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.buildIndexedGeometry()");
 
         JoglContext ctx = (JoglContext) absCtx;
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         boolean useInterleavedArrays;
         int iaFormat = 0;
@@ -2265,7 +2260,7 @@ class JoglPipeline extends Pipeline {
             int cDirty,
             int[] indexCoord) {
         JoglContext ctx = (JoglContext) absCtx;
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         boolean useInterleavedArrays;
         int iaFormat = 0;
@@ -2555,7 +2550,7 @@ class JoglPipeline extends Pipeline {
             FloatBuffer[] texCoords,
             int cDirty, int[] indexCoord, int[] sarray, int strip_len) {
         JoglContext ctx = (JoglContext) absCtx;
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         boolean floatCoordDefined  = ((vdefined & GeometryArrayRetained.COORD_FLOAT)    != 0);
         boolean doubleCoordDefined = ((vdefined & GeometryArrayRetained.COORD_DOUBLE)   != 0);
@@ -2699,7 +2694,7 @@ class JoglPipeline extends Pipeline {
             int depthFormat,
             Object depthBuffer) {
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glPixelStorei(GL2.GL_PACK_ROW_LENGTH, width);
         gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 1);
         int yAdjusted = hCanvas - height - ySrcOffset;
@@ -2825,8 +2820,8 @@ class JoglPipeline extends Pipeline {
             ShaderAttrLoc uniformLocation,
             int value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform1i()");
-
-        context(ctx).getGL().glUniform1iARB(unbox(uniformLocation), value);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform1iARB(unbox(uniformLocation), value);
         return null;
     }
 
@@ -2836,7 +2831,8 @@ class JoglPipeline extends Pipeline {
             float value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform1f()");
 
-        context(ctx).getGL().glUniform1fARB(unbox(uniformLocation), value);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform1fARB(unbox(uniformLocation), value);
         return null;
     }
 
@@ -2846,7 +2842,8 @@ class JoglPipeline extends Pipeline {
             int[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform2i()");
 
-        context(ctx).getGL().glUniform2iARB(unbox(uniformLocation), value[0], value[1]);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform2iARB(unbox(uniformLocation), value[0], value[1]);
         return null;
     }
 
@@ -2856,7 +2853,8 @@ class JoglPipeline extends Pipeline {
             float[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform2f()");
 
-        context(ctx).getGL().glUniform2fARB(unbox(uniformLocation), value[0], value[1]);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform2fARB(unbox(uniformLocation), value[0], value[1]);
         return null;
     }
 
@@ -2866,7 +2864,8 @@ class JoglPipeline extends Pipeline {
             int[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform3i()");
 
-        context(ctx).getGL().glUniform3iARB(unbox(uniformLocation), value[0], value[1], value[2]);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform3iARB(unbox(uniformLocation), value[0], value[1], value[2]);
         return null;
     }
 
@@ -2876,7 +2875,8 @@ class JoglPipeline extends Pipeline {
             float[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform3f()");
 
-        context(ctx).getGL().glUniform3fARB(unbox(uniformLocation), value[0], value[1], value[2]);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform3fARB(unbox(uniformLocation), value[0], value[1], value[2]);
         return null;
     }
 
@@ -2886,7 +2886,8 @@ class JoglPipeline extends Pipeline {
             int[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform4i()");
 
-        context(ctx).getGL().glUniform4iARB(unbox(uniformLocation), value[0], value[1], value[2], value[3]);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform4iARB(unbox(uniformLocation), value[0], value[1], value[2], value[3]);
         return null;
     }
 
@@ -2896,7 +2897,8 @@ class JoglPipeline extends Pipeline {
             float[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform4f()");
 
-        context(ctx).getGL().glUniform4fARB(unbox(uniformLocation), value[0], value[1], value[2], value[3]);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform4fARB(unbox(uniformLocation), value[0], value[1], value[2], value[3]);
         return null;
     }
 
@@ -2908,7 +2910,8 @@ class JoglPipeline extends Pipeline {
 
         // Load attribute
         // transpose is true : each matrix is supplied in row major order
-        context(ctx).getGL().glUniformMatrix3fvARB(unbox(uniformLocation), 1, true, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniformMatrix3fvARB(unbox(uniformLocation), 1, true, value, 0);
         return null;
     }
 
@@ -2920,7 +2923,8 @@ class JoglPipeline extends Pipeline {
 
         // Load attribute
         // transpose is true : each matrix is supplied in row major order
-        context(ctx).getGL().glUniformMatrix4fvARB(unbox(uniformLocation), 1, true, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniformMatrix4fvARB(unbox(uniformLocation), 1, true, value, 0);
         return null;
     }
 
@@ -2933,7 +2937,8 @@ class JoglPipeline extends Pipeline {
             int[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform1iArray()");
 
-        context(ctx).getGL().glUniform1ivARB(unbox(uniformLocation), numElements, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform1ivARB(unbox(uniformLocation), numElements, value, 0);
         return null;
     }
 
@@ -2944,7 +2949,8 @@ class JoglPipeline extends Pipeline {
             float[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform1fArray()");
 
-        context(ctx).getGL().glUniform1fvARB(unbox(uniformLocation), numElements, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform1fvARB(unbox(uniformLocation), numElements, value, 0);
         return null;
     }
 
@@ -2955,7 +2961,8 @@ class JoglPipeline extends Pipeline {
             int[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform2iArray()");
 
-        context(ctx).getGL().glUniform2ivARB(unbox(uniformLocation), numElements, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform2ivARB(unbox(uniformLocation), numElements, value, 0);
         return null;
     }
 
@@ -2966,7 +2973,8 @@ class JoglPipeline extends Pipeline {
             float[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform2fArray()");
 
-        context(ctx).getGL().glUniform2fvARB(unbox(uniformLocation), numElements, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform2fvARB(unbox(uniformLocation), numElements, value, 0);
         return null;
     }
 
@@ -2977,7 +2985,8 @@ class JoglPipeline extends Pipeline {
             int[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform3iArray()");
 
-        context(ctx).getGL().glUniform3ivARB(unbox(uniformLocation), numElements, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform3ivARB(unbox(uniformLocation), numElements, value, 0);
         return null;
     }
 
@@ -2988,7 +2997,8 @@ class JoglPipeline extends Pipeline {
             float[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform3fArray()");
 
-        context(ctx).getGL().glUniform3fvARB(unbox(uniformLocation), numElements, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform3fvARB(unbox(uniformLocation), numElements, value, 0);
         return null;
     }
 
@@ -2999,7 +3009,8 @@ class JoglPipeline extends Pipeline {
             int[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform4iArray()");
 
-        context(ctx).getGL().glUniform4ivARB(unbox(uniformLocation), numElements, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform4ivARB(unbox(uniformLocation), numElements, value, 0);
         return null;
     }
 
@@ -3010,7 +3021,8 @@ class JoglPipeline extends Pipeline {
             float[] value) {
         if (VERBOSE) System.err.println("JoglPipeline.setGLSLUniform4fArray()");
 
-        context(ctx).getGL().glUniform4fvARB(unbox(uniformLocation), numElements, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniform4fvARB(unbox(uniformLocation), numElements, value, 0);
         return null;
     }
 
@@ -3023,7 +3035,8 @@ class JoglPipeline extends Pipeline {
 
         // Load attribute
         // transpose is true : each matrix is supplied in row major order
-        context(ctx).getGL().glUniformMatrix3fvARB(unbox(uniformLocation), numElements, true, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniformMatrix3fvARB(unbox(uniformLocation), numElements, true, value, 0);
         return null;
     }
 
@@ -3036,7 +3049,8 @@ class JoglPipeline extends Pipeline {
 
         // Load attribute
         // transpose is true : each matrix is supplied in row major order
-        context(ctx).getGL().glUniformMatrix4fvARB(unbox(uniformLocation), numElements, true, value, 0);
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUniformMatrix4fvARB(unbox(uniformLocation), numElements, true, value, 0);
         return null;
     }
 
@@ -3044,7 +3058,7 @@ class JoglPipeline extends Pipeline {
     ShaderError createGLSLShader(Context ctx, int shaderType, ShaderId[] shaderId) {
         if (VERBOSE) System.err.println("JoglPipeline.createGLSLShader()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         int shaderHandle = 0;
         if (shaderType == Shader.SHADER_TYPE_VERTEX) {
@@ -3064,7 +3078,7 @@ class JoglPipeline extends Pipeline {
     ShaderError destroyGLSLShader(Context ctx, ShaderId shaderId) {
         if (VERBOSE) System.err.println("JoglPipeline.destroyGLSLShader()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glDeleteObjectARB(unbox(shaderId));
         return null;
     }
@@ -3080,7 +3094,7 @@ class JoglPipeline extends Pipeline {
             throw new AssertionError("shader program string is null");
         }
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glShaderSourceARB(id, 1, new String[] { program }, null, 0);
         gl.glCompileShaderARB(id);
         int[] status = new int[1];
@@ -3098,7 +3112,7 @@ class JoglPipeline extends Pipeline {
     ShaderError createGLSLShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId) {
         if (VERBOSE) System.err.println("JoglPipeline.createGLSLShaderProgram()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         int shaderProgramHandle = gl.glCreateProgramObjectARB();
         if (shaderProgramHandle == 0) {
@@ -3110,14 +3124,15 @@ class JoglPipeline extends Pipeline {
     }
     ShaderError destroyGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
         if (VERBOSE) System.err.println("JoglPipeline.destroyGLSLShaderProgram()");
-        context(ctx).getGL().glDeleteObjectARB(unbox(shaderProgramId));
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glDeleteObjectARB(unbox(shaderProgramId));
         return null;
     }
     ShaderError linkGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
             ShaderId[] shaderIds) {
         if (VERBOSE) System.err.println("JoglPipeline.linkGLSLShaderProgram()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         int id = unbox(shaderProgramId);
         for (int i = 0; i < shaderIds.length; i++) {
             gl.glAttachObjectARB(id, unbox(shaderIds[i]));
@@ -3139,7 +3154,8 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.bindGLSLVertexAttrName()");
 
         JoglContext jctx = (JoglContext) ctx;
-        context(ctx).getGL().glBindAttribLocationARB(unbox(shaderProgramId),
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glBindAttribLocation(unbox(shaderProgramId),
                 attrIndex + VirtualUniverse.mc.glslVertexAttrOffset,
                 attrName);
         return null;
@@ -3169,7 +3185,7 @@ class JoglPipeline extends Pipeline {
         int[] tmp = new int[1];
         int[] tmp2 = new int[1];
         int[] tmp3 = new int[1];
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glGetObjectParameterivARB(id,
                 GL2.GL_OBJECT_ACTIVE_UNIFORMS_ARB,
                 tmp, 0);
@@ -3228,7 +3244,8 @@ class JoglPipeline extends Pipeline {
     ShaderError useGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
         if (VERBOSE) System.err.println("JoglPipeline.useGLSLShaderProgram()");
 
-        context(ctx).getGL().glUseProgramObjectARB(unbox(shaderProgramId));
+		GL2 gl = context(ctx).getGL().getGL2();
+		gl.glUseProgramObjectARB(unbox(shaderProgramId));
         ((JoglContext) ctx).setShaderProgram((JoglShaderObject) shaderProgramId);
         return null;
     }
@@ -3254,7 +3271,7 @@ class JoglPipeline extends Pipeline {
         return ((JoglShaderObject) id).getValue();
     }
 
-    private String getInfoLog(GL gl, int id) {
+    private String getInfoLog(GL2 gl, int id) {
         int[] infoLogLength = new int[1];
         gl.glGetObjectParameterivARB(id, GL2.GL_OBJECT_INFO_LOG_LENGTH_ARB, infoLogLength, 0);
         if (infoLogLength[0] > 0) {
@@ -3349,7 +3366,7 @@ class JoglPipeline extends Pipeline {
             int shadeModel) {
         if (VERBOSE) System.err.println("JoglPipeline.updateColoringAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         float cr, cg, cb;
 
@@ -3379,7 +3396,7 @@ class JoglPipeline extends Pipeline {
             float blue, float dirx, float diry, float dirz) {
         if (VERBOSE) System.err.println("JoglPipeline.updateDirectionalLight()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         int lightNum = GL2.GL_LIGHT0 + lightSlot;
         float[] values = new float[4];
@@ -3416,7 +3433,7 @@ class JoglPipeline extends Pipeline {
             float posx, float posy, float posz) {
         if (VERBOSE) System.err.println("JoglPipeline.updatePointLight()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         int lightNum = GL2.GL_LIGHT0 + lightSlot;
         float[] values = new float[4];
@@ -3454,7 +3471,7 @@ class JoglPipeline extends Pipeline {
             float dirz) {
         if (VERBOSE) System.err.println("JoglPipeline.updateSpotLight()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         int lightNum = GL2.GL_LIGHT0 + lightSlot;
         float[] values = new float[4];
@@ -3493,7 +3510,7 @@ class JoglPipeline extends Pipeline {
             float density) {
         if (VERBOSE) System.err.println("JoglPipeline.updateExponentialFog()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         float[] color = new float[3];
         color[0] = red;
@@ -3517,7 +3534,7 @@ class JoglPipeline extends Pipeline {
             double fdist, double bdist) {
         if (VERBOSE) System.err.println("JoglPipeline.updateLinearFog()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         float[] color = new float[3];
         color[0] = red;
@@ -3544,7 +3561,7 @@ class JoglPipeline extends Pipeline {
             boolean lineAntialiasing) {
         if (VERBOSE) System.err.println("JoglPipeline.updateLineAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glLineWidth(lineWidth);
 
         if (linePattern == LineAttributes.PATTERN_SOLID) {
@@ -3588,7 +3605,7 @@ class JoglPipeline extends Pipeline {
 
         float[] color = new float[4];
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL2.GL_SHININESS, shininess);
         switch (colorTarget) {
@@ -3647,7 +3664,7 @@ class JoglPipeline extends Pipeline {
             double A, double B, double C, double D) {
         if (VERBOSE) System.err.println("JoglPipeline.updateModelClip()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         double[] equation = new double[4];
         int pl = GL2.GL_CLIP_PLANE0 + planeNum;
@@ -3675,7 +3692,7 @@ class JoglPipeline extends Pipeline {
     void updatePointAttributes(Context ctx, float pointSize, boolean pointAntialiasing) {
         if (VERBOSE) System.err.println("JoglPipeline.updatePointAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glPointSize(pointSize);
 
         // XXXX: Polygon Mode check, blend enable
@@ -3700,7 +3717,7 @@ class JoglPipeline extends Pipeline {
             float polygonOffsetFactor) {
         if (VERBOSE) System.err.println("JoglPipeline.updatePolygonAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         if (cullFace == PolygonAttributes.CULL_NONE) {
             gl.glDisable(GL.GL_CULL_FACE);
@@ -3776,7 +3793,7 @@ class JoglPipeline extends Pipeline {
             int stencilCompareMask, int stencilWriteMask ) {
         if (VERBOSE) System.err.println("JoglPipeline.updateRenderingAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         if (!depthBufferEnableOverride) {
             if (depthBufferEnable) {
@@ -3960,7 +3977,7 @@ class JoglPipeline extends Pipeline {
             double[] vworldToEc) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexCoordGeneration()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         float[] planeS = new float[4];
         float[] planeT = new float[4];
@@ -4317,7 +4334,7 @@ class JoglPipeline extends Pipeline {
             int dstBlendFunction) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTransparencyAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         if (transparencyMode != TransparencyAttributes.SCREEN_DOOR) {
             gl.glDisable(GL2.GL_POLYGON_STIPPLE);
@@ -4358,7 +4375,7 @@ class JoglPipeline extends Pipeline {
             int textureFormat) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTextureAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT,
                 (perspCorrectionMode == TextureAttributes.NICEST) ? GL.GL_NICEST : GL.GL_FASTEST);
 
@@ -4426,7 +4443,7 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.updateRegisterCombiners()");
 
         JoglContext ctx = (JoglContext) absCtx;
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         if (perspCorrectionMode == TextureAttributes.NICEST) {
             gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
@@ -4648,7 +4665,7 @@ class JoglPipeline extends Pipeline {
             int combineRgbScale, int combineAlphaScale) {
         if (VERBOSE) System.err.println("JoglPipeline.updateCombiner()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         int[] GLrgbMode = new int[1];
         int[] GLalphaMode = new int[1];
         getGLCombineMode(gl, combineRgbMode, combineAlphaMode,
@@ -4828,7 +4845,7 @@ class JoglPipeline extends Pipeline {
     void updateTextureUnitState(Context ctx, int index, boolean enable) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTextureUnitState()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         JoglContext jctx = (JoglContext) ctx;
 
         if (index >= 0 && gl.isExtensionAvailable("GL_VERSION_1_3")) {
@@ -5033,7 +5050,7 @@ class JoglPipeline extends Pipeline {
 
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DImage()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         int format = 0;
         int internalFormat = 0;
@@ -5198,7 +5215,7 @@ class JoglPipeline extends Pipeline {
 
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DSubImage()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         int format = 0;
         int internalFormat = 0;
@@ -5574,7 +5591,7 @@ class JoglPipeline extends Pipeline {
             int dataType,
             Object data,
             boolean useAutoMipMap) {
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         int format = 0, internalFormat = 0;
         int type = GL2.GL_UNSIGNED_INT_8_8_8_8;
@@ -5726,7 +5743,7 @@ class JoglPipeline extends Pipeline {
             int imgXOffset, int imgYOffset,
             int tilew, int width, int height,
             int dataType, Object data) {
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         int format = 0, internalFormat=0;
         int numBytes = 0;
@@ -6205,7 +6222,7 @@ class JoglPipeline extends Pipeline {
             throw new IllegalRenderingStateException("Unable to make new context current after " + failCount + "tries");
         }
 
-        GL gl = context.getGL();
+		GL2 gl = context.getGL().getGL2();
         JoglContext ctx = new JoglContext(context);
 
         try {
@@ -6318,7 +6335,7 @@ class JoglPipeline extends Pipeline {
     void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int dataType, Object data, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.readOffScreenBuffer()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glPixelStorei(GL2.GL_PACK_ROW_LENGTH, width);
         gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 1);
 
@@ -6424,7 +6441,7 @@ class JoglPipeline extends Pipeline {
     void updateMaterialColor(Context ctx, float r, float g, float b, float a) {
         if (VERBOSE) System.err.println("JoglPipeline.updateMaterialColor()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glColor4f(r, g, b, a);
         gl.glDisable(GL2.GL_LIGHTING);
     }
@@ -6445,7 +6462,7 @@ class JoglPipeline extends Pipeline {
     void accum(Context ctx, float value) {
         if (VERBOSE) System.err.println("JoglPipeline.accum()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glReadBuffer(GL.GL_BACK);
         gl.glAccum(GL2.GL_ACCUM, value);
         gl.glReadBuffer(GL.GL_FRONT);
@@ -6455,7 +6472,7 @@ class JoglPipeline extends Pipeline {
     void accumReturn(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.accumReturn()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glAccum(GL2.GL_RETURN, 1.0f);
     }
 
@@ -6518,7 +6535,7 @@ class JoglPipeline extends Pipeline {
     void ctxUpdateEyeLightingEnable(Context ctx, boolean localEyeLightingEnable) {
         if (VERBOSE) System.err.println("JoglPipeline.ctxUpdateEyeLightingEnable()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         if (localEyeLightingEnable) {
             gl.glLightModeli(GL2.GL_LIGHT_MODEL_LOCAL_VIEWER, GL.GL_TRUE);
@@ -6534,7 +6551,7 @@ class JoglPipeline extends Pipeline {
             float blue, float alpha) {
         if (VERBOSE) System.err.println("JoglPipeline.setBlendColor()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         if (gl.isExtensionAvailable("GL_ARB_imaging")) {
             gl.glBlendColor(red, green, blue, alpha);
         }
@@ -6591,7 +6608,7 @@ class JoglPipeline extends Pipeline {
     void updateSeparateSpecularColorEnable(Context ctx, boolean enable) {
         if (VERBOSE) System.err.println("JoglPipeline.updateSeparateSpecularColorEnable()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         if (enable) {
             gl.glLightModeli(GL2.GL_LIGHT_MODEL_COLOR_CONTROL, GL2.GL_SEPARATE_SPECULAR_COLOR);
@@ -6639,7 +6656,7 @@ class JoglPipeline extends Pipeline {
     void setSceneAmbient(Context ctx, float red, float green, float blue) {
         if (VERBOSE) System.err.println("JoglPipeline.setSceneAmbient()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         float[] color = new float[4];
         color[0] = red;
@@ -6677,7 +6694,7 @@ class JoglPipeline extends Pipeline {
             boolean depthBufferEnableOverride) {
         if (VERBOSE) System.err.println("JoglPipeline.resetRenderingAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         if (!depthBufferWriteEnableOverride) {
             gl.glDepthMask(true);
@@ -6695,7 +6712,7 @@ class JoglPipeline extends Pipeline {
     void resetTextureNative(Context ctx, int texUnitIndex) {
         if (VERBOSE) System.err.println("JoglPipeline.resetTextureNative()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         if (texUnitIndex >= 0 &&
                 gl.isExtensionAvailable("GL_VERSION_1_3")) {
             gl.glActiveTexture(texUnitIndex + GL.GL_TEXTURE0);
@@ -6712,7 +6729,7 @@ class JoglPipeline extends Pipeline {
     void activeTextureUnit(Context ctx, int texUnitIndex) {
         if (VERBOSE) System.err.println("JoglPipeline.activeTextureUnit()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
             gl.glActiveTexture(texUnitIndex + GL.GL_TEXTURE0);
             gl.glClientActiveTexture(texUnitIndex + GL.GL_TEXTURE0);
@@ -6734,7 +6751,7 @@ class JoglPipeline extends Pipeline {
     void resetTextureAttributes(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.resetTextureAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         float[] color = new float[4];
 
@@ -6759,7 +6776,7 @@ class JoglPipeline extends Pipeline {
     void resetPolygonAttributes(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.resetPolygonAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         gl.glCullFace(GL.GL_BACK);
         gl.glEnable(GL.GL_CULL_FACE);
@@ -6790,7 +6807,7 @@ class JoglPipeline extends Pipeline {
     void resetPointAttributes(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.resetPointAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glPointSize(1.0f);
 
         // XXXX: Polygon Mode check, blend enable
@@ -6826,7 +6843,7 @@ class JoglPipeline extends Pipeline {
             boolean enableLight) {
         if (VERBOSE) System.err.println("JoglPipeline.resetColoringAttributes()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         if (!enableLight) {
             gl.glColor4f(r, g, b, a);
@@ -6870,7 +6887,7 @@ class JoglPipeline extends Pipeline {
 
         JoglContext jctx = (JoglContext) ctx;
         GLContext context = context(ctx);
-        GL gl = context.getGL();
+		GL2 gl = context.getGL().getGL2();
 
         // OBSOLETE CLEAR CODE
         /*
@@ -6919,7 +6936,7 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.textureFillBackground()");
 
         GLContext context = context(ctx);
-        GL gl = context.getGL();
+		GL2 gl = context.getGL().getGL2();
 
         // Temporarily disable fragment and most 3D operations
         gl.glPushAttrib(GL2.GL_ENABLE_BIT | GL2.GL_TEXTURE_BIT | GL2.GL_POLYGON_BIT);
@@ -6973,7 +6990,7 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.textureFillRaster()");
 
         GLContext context = context(ctx);
-        GL gl = context.getGL();
+		GL2 gl = context.getGL().getGL2();
 
         // Temporarily disable fragment and most 3D operations
         gl.glPushAttrib(GL2.GL_ENABLE_BIT | GL2.GL_TEXTURE_BIT | GL2.GL_POLYGON_BIT |
@@ -7026,7 +7043,7 @@ class JoglPipeline extends Pipeline {
             int depthWidth, int depthHeight, int depthFormat, Object depthData) {
         if (VERBOSE) System.err.println("JoglPipeline.executeRasterDepth()");
         GLContext context = context(ctx);
-        GL gl = context.getGL();
+		GL2 gl = context.getGL().getGL2();
 
 
         gl.glRasterPos3f(posX, posY, posZ);
@@ -7087,7 +7104,7 @@ class JoglPipeline extends Pipeline {
     void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {
         if (VERBOSE) System.err.println("JoglPipeline.setModelViewMatrix()");
         GLContext context = context(ctx);
-        GL gl = context.getGL();
+		GL2 gl = context.getGL().getGL2();
 
         gl.glMatrixMode(GL2.GL_MODELVIEW);
 
@@ -7108,7 +7125,7 @@ class JoglPipeline extends Pipeline {
     void setProjectionMatrix(Context ctx, double[] projMatrix) {
         if (VERBOSE) System.err.println("JoglPipeline.setProjectionMatrix()");
         GLContext context = context(ctx);
-        GL gl = context.getGL();
+		GL2 gl = context.getGL().getGL2();
 
         gl.glMatrixMode(GL2.GL_PROJECTION);
 
@@ -7153,13 +7170,13 @@ class JoglPipeline extends Pipeline {
             System.err.println("JAVA 3D ERROR : glNewList(" + displayListId + ") -- IGNORED");
         }
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glNewList(displayListId, GL2.GL_COMPILE);
     }
 
     void endDisplayList(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.endDisplayList()");
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glEndList();
     }
 
@@ -7177,7 +7194,7 @@ class JoglPipeline extends Pipeline {
             return;
         }
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         // Set normalization if non-uniform scale
         if (isNonUniformScale) {
             gl.glEnable(GL2.GL_NORMALIZE);
@@ -7197,7 +7214,7 @@ class JoglPipeline extends Pipeline {
             System.err.println("JAVA 3D ERROR : glDeleteLists(" + id + ",1) -- IGNORED");
         }
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         gl.glDeleteLists(id, 1);
     }
     void freeTexture(Context ctx, int id) {
@@ -7225,7 +7242,7 @@ class JoglPipeline extends Pipeline {
             int winWidth, int winHeight) {
         if (VERBOSE) System.err.println("JoglPipeline.texturemapping()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         int glType = GL.GL_RGBA;
 
@@ -7313,7 +7330,7 @@ class JoglPipeline extends Pipeline {
             int texHeight, int objectId) {
         if (VERBOSE) System.err.println("JoglPipeline.initTexturemapping()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
 
         int glType = (gl.isExtensionAvailable("GL_EXT_abgr") ? GL2.GL_ABGR_EXT : GL.GL_RGBA);
 
@@ -7346,7 +7363,7 @@ class JoglPipeline extends Pipeline {
     void setRenderMode(Context ctx, int mode, boolean doubleBuffer) {
         if (VERBOSE) System.err.println("JoglPipeline.setRenderMode()");
 
-        GL gl = context(ctx).getGL();
+		GL2 gl = context(ctx).getGL().getGL2();
         int drawBuf = 0;
         if (doubleBuffer) {
             drawBuf = GL.GL_BACK;
