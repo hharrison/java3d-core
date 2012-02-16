@@ -5945,8 +5945,9 @@ class JoglPipeline extends Pipeline {
                         GL.GL_LINEAR_MIPMAP_LINEAR);
                 break;
             case Texture.FILTER4:
-                gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER,
-                        GL.GL_FILTER4_SGIS);
+// We should never get here as we've disabled the FILTER4 feature
+//                gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER,
+//                        GL.GL_FILTER4_SGIS);
                 break;
         }
 
@@ -5985,8 +5986,9 @@ class JoglPipeline extends Pipeline {
                         GL.GL_LINEAR_DETAIL_ALPHA_SGIS);
                 break;
             case Texture.FILTER4:
-                gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
-                        GL.GL_FILTER4_SGIS);
+// We should never get here as we've disabled the FILTER4 feature
+//                gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER,
+//                        GL.GL_FILTER4_SGIS);
                 break;
         }
     }
@@ -6124,9 +6126,10 @@ class JoglPipeline extends Pipeline {
             float[] pts) {
         // checking of the availability of filter4 functionality
         // is already done in shared code
-        GL gl = context(ctx).getGL();
-        gl.glTexFilterFuncSGIS(target, GL.GL_FILTER4_SGIS,
-                numPts, pts, 0);
+// FIXME: GL_SGIS_texture_filter4
+//        GL gl = context(ctx).getGL();
+//        gl.glTexFilterFuncSGIS(target, GL.GL_FILTER4_SGIS,
+//                numPts, pts, 0);
     }
 
     // mapping from java enum to gl enum
@@ -7542,9 +7545,10 @@ class JoglPipeline extends Pipeline {
             cv.textureExtendedFeatures |= Canvas3D.TEXTURE_DETAIL;
         }
 
-        if (gl.isExtensionAvailable("GL_SGIS_texture_filter4")) {
-            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_FILTER4;
-        }
+// FIXME: GL_SGIS_texture_filter4
+//        if (gl.isExtensionAvailable("GL_SGIS_texture_filter4")) {
+//            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_FILTER4;
+//        }
 
         if (gl.isExtensionAvailable("GL_EXT_texture_filter_anisotropic")) {
             cv.textureExtendedFeatures |= Canvas3D.TEXTURE_ANISOTROPIC_FILTER;
