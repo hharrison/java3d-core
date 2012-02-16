@@ -59,6 +59,7 @@ import javax.media.opengl.AWTGraphicsDevice;
 import javax.media.opengl.AbstractGraphicsConfiguration;
 import javax.media.opengl.DefaultGLCapabilitiesChooser;
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLCapabilitiesChooser;
 import javax.media.opengl.GLContext;
@@ -373,14 +374,14 @@ class JoglPipeline extends Pipeline {
 
         // Enable and disable the appropriate pointers
         if ((vformat & GeometryArray.NORMALS) != 0) {
-            gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
+            gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
         } else {
-            gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
+            gl.glDisableClientState(GL2.GL_NORMAL_ARRAY);
         }
         if (!ignoreVertexColors && ((vformat & GeometryArray.COLOR) != 0)) {
-            gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+            gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
         } else {
-            gl.glDisableClientState(GL.GL_COLOR_ARRAY);
+            gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
         }
 
         if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
@@ -392,9 +393,9 @@ class JoglPipeline extends Pipeline {
         }
 
         if ((vformat & GeometryArray.COORDINATES) != 0) {
-            gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+            gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
         } else {
-            gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
+            gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
         }
     }
 
@@ -933,7 +934,7 @@ class JoglPipeline extends Pipeline {
 
         // get coordinate array
         if (floatCoordDefined) {
-            gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+            gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
             fverts = getVertexArrayBuffer(vfcoords, (xform == null));
             if (xform != null) {
                 // Must copy in and transform data
@@ -950,7 +951,7 @@ class JoglPipeline extends Pipeline {
                 }
             }
         } else if (doubleCoordDefined) {
-            gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+            gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
             dverts = getVertexArrayBuffer(vdcoords, (xform == null));
             if (xform != null) {
                 // Must copy in and transform data
@@ -967,12 +968,12 @@ class JoglPipeline extends Pipeline {
                 }
             }
         } else {
-            gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
+            gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
         }
 
         // get color array
         if (floatColorsDefined) {
-            gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+            gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
             fclrs = getColorArrayBuffer(cfdata, !useAlpha);
             if (useAlpha) {
                 // Must copy in and modify color data
@@ -995,7 +996,7 @@ class JoglPipeline extends Pipeline {
                 vformat |= GeometryArray.WITH_ALPHA;
             }
         } else if (byteColorsDefined) {
-            gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+            gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
             bclrs = getColorArrayBuffer(cbdata, !useAlpha);
             if (useAlpha) {
                 // Must copy in and modify color data
@@ -1018,12 +1019,12 @@ class JoglPipeline extends Pipeline {
                 vformat |= GeometryArray.WITH_ALPHA;
             }
         } else {
-            gl.glDisableClientState(GL.GL_COLOR_ARRAY);
+            gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
         }
 
         // get normal array
         if (normalsDefined) {
-            gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
+            gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
             norms = getNormalArrayBuffer(ndata, (nxform == null));
             if (nxform != null) {
                 // Must copy in and transform data
@@ -1040,7 +1041,7 @@ class JoglPipeline extends Pipeline {
                 }
             }
         } else {
-            gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
+            gl.glDisableClientState(GL2.GL_NORMAL_ARRAY);
         }
 
         executeGeometryArrayVA(ctx, geo, geo_type,
@@ -1096,7 +1097,7 @@ class JoglPipeline extends Pipeline {
             Buffer pointer) {
         if (VERBOSE) System.err.println("JoglPipeline.enableTexCoordPointer()");
         clientActiveTextureUnit(gl, texUnit);
-        gl.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+        gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
         gl.glTexCoordPointer(texSize, texDataType, stride, pointer);
     }
 
@@ -1105,7 +1106,7 @@ class JoglPipeline extends Pipeline {
             int texUnit) {
         if (VERBOSE) System.err.println("JoglPipeline.disableTexCoordPointer()");
         clientActiveTextureUnit(gl, texUnit);
-        gl.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+        gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
     }
 
     private void
@@ -1965,27 +1966,27 @@ class JoglPipeline extends Pipeline {
         boolean useAlpha = false;
 
         if ((vformat & GeometryArray.COORDINATES) != 0) {
-            gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+            gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
             stride += 3;
         } else {
-            gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
+            gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
         }
 
         if ((vformat & GeometryArray.NORMALS) != 0) {
-            gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
+            gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
             stride += 3;
             coordoff += 3;
         } else {
-            gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
+            gl.glDisableClientState(GL2.GL_NORMAL_ARRAY);
         }
 
         if ((vformat & GeometryArray.COLOR) != 0) {
-            gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+            gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
             stride += 4;
             normoff += 4;
             coordoff += 4;
         } else {
-            gl.glDisableClientState(GL.GL_COLOR_ARRAY);
+            gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
         }
 
         if ((vformat & GeometryArray.TEXTURE_COORDINATE) != 0) {
