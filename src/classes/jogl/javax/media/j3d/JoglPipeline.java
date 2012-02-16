@@ -4016,7 +4016,7 @@ class JoglPipeline extends Pipeline {
                     break;
                 case TexCoordGeneration.EYE_LINEAR:
 
-                    gl.glMatrixMode(GL.GL_MODELVIEW);
+                    gl.glMatrixMode(GL2.GL_MODELVIEW);
                     gl.glPushMatrix();
 
                     if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
@@ -6941,10 +6941,10 @@ class JoglPipeline extends Pipeline {
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
 
         // load identity modelview and projection matrix
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
         gl.glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
         gl.glMatrixMode(GL.GL_TEXTURE);
         gl.glPushMatrix();
@@ -6960,7 +6960,7 @@ class JoglPipeline extends Pipeline {
         // Restore texture Matrix transform
         gl.glPopMatrix();
 
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         // Restore attributes
         gl.glPopAttrib();
 
@@ -6997,10 +6997,10 @@ class JoglPipeline extends Pipeline {
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
 
         // load identity modelview and projection matrix
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glLoadIdentity();
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glPushMatrix();
         gl.glLoadIdentity();
         gl.glOrtho(0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
@@ -7014,7 +7014,7 @@ class JoglPipeline extends Pipeline {
 
         // Restore matrices
         gl.glPopMatrix();
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glPopMatrix();
         // Restore attributes
         gl.glPopAttrib();
@@ -7089,7 +7089,7 @@ class JoglPipeline extends Pipeline {
         GLContext context = context(ctx);
         GL gl = context.getGL();
 
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
 
         if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
             gl.glLoadTransposeMatrixd(viewMatrix, 0);
@@ -7110,7 +7110,7 @@ class JoglPipeline extends Pipeline {
         GLContext context = context(ctx);
         GL gl = context.getGL();
 
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glMatrixMode(GL2.GL_PROJECTION);
 
         if (gl.isExtensionAvailable("GL_VERSION_1_3")) {
             // Invert the Z value in clipping coordinates because OpenGL uses
@@ -7252,12 +7252,12 @@ class JoglPipeline extends Pipeline {
         gl.glEnable(GL.GL_TEXTURE_2D);
 
         // loaded identity modelview and projection matrix
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
 
         gl.glOrtho(0.0, winWidth, 0.0, winHeight, 0.0, 0.0);
 
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
 
         if (gl.isExtensionAvailable("GL_EXT_abgr")) {
