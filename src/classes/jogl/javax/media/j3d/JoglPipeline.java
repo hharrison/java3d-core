@@ -5008,12 +5008,13 @@ class JoglPipeline extends Pipeline {
             int target,
             float lodOffsetS, float lodOffsetT,
             float lodOffsetR) {
-        GL gl = context(ctx).getGL();
+// FIXME: GL_SGIX_texture_lod_bias
+//        GL gl = context(ctx).getGL();
         // checking of the availability of the extension is already done
         // in the shared code
-        gl.glTexParameterf(target, GL.GL_TEXTURE_LOD_BIAS_S_SGIX, lodOffsetS);
-        gl.glTexParameterf(target, GL.GL_TEXTURE_LOD_BIAS_T_SGIX, lodOffsetT);
-        gl.glTexParameterf(target, GL.GL_TEXTURE_LOD_BIAS_R_SGIX, lodOffsetR);
+//        gl.glTexParameterf(target, GL.GL_TEXTURE_LOD_BIAS_S_SGIX, lodOffsetS);
+//        gl.glTexParameterf(target, GL.GL_TEXTURE_LOD_BIAS_T_SGIX, lodOffsetT);
+//        gl.glTexParameterf(target, GL.GL_TEXTURE_LOD_BIAS_R_SGIX, lodOffsetR);
     }
 
     private void updateTextureAnisotropicFilter(Context ctx, int target, float degree) {
@@ -7566,9 +7567,10 @@ class JoglPipeline extends Pipeline {
             cv.anisotropicDegreeMax = tmp[0];
         }
 
-        if (gl.isExtensionAvailable("GL_SGIX_texture_lod_bias")) {
-            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_LOD_OFFSET;
-        }
+// FIXME: GL_SGIX_texture_lod_bias
+//        if (gl.isExtensionAvailable("GL_SGIX_texture_lod_bias")) {
+//            cv.textureExtendedFeatures |= Canvas3D.TEXTURE_LOD_OFFSET;
+//        }
 
         if (!VirtualUniverse.mc.enforcePowerOfTwo &&
                 gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) {
