@@ -1286,7 +1286,7 @@ class JoglPipeline extends Pipeline {
 
         // Enable normalize for non-uniform scale (which rescale can't handle)
         if (isNonUniformScale) {
-            gl.glEnable(GL.GL_NORMALIZE);
+            gl.glEnable(GL2.GL_NORMALIZE);
         }
 
         int startVertex = stride  * startVIndex;
@@ -1449,7 +1449,7 @@ class JoglPipeline extends Pipeline {
 
         /* clean up if we turned on normalize */
         if (isNonUniformScale) {
-            gl.glDisable(GL.GL_NORMALIZE);
+            gl.glDisable(GL2.GL_NORMALIZE);
         }
 
         if ((vformat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
@@ -1512,7 +1512,7 @@ class JoglPipeline extends Pipeline {
 
         // Enable normalize for non-uniform scale (which rescale can't handle)
         if (isNonUniformScale) {
-            gl.glEnable(GL.GL_NORMALIZE);
+            gl.glEnable(GL2.GL_NORMALIZE);
         }
 
         int coordoff = 3 * initialCoordIndex;
@@ -1620,7 +1620,7 @@ class JoglPipeline extends Pipeline {
 
         // clean up if we turned on normalize
         if (isNonUniformScale) {
-            gl.glDisable(GL.GL_NORMALIZE);
+            gl.glDisable(GL2.GL_NORMALIZE);
         }
 
         if (vattrDefined) {
@@ -2361,7 +2361,7 @@ class JoglPipeline extends Pipeline {
 
         // Enable normalize for non-uniform scale (which rescale can't handle)
         if (isNonUniformScale) {
-            gl.glEnable(GL.GL_NORMALIZE);
+            gl.glEnable(GL2.GL_NORMALIZE);
         }
 
         /*** Handle non-indexed strip GeometryArray first *******/
@@ -2533,7 +2533,7 @@ class JoglPipeline extends Pipeline {
 
         // clean up if we turned on normalize
         if (isNonUniformScale) {
-            gl.glDisable(GL.GL_NORMALIZE);
+            gl.glDisable(GL2.GL_NORMALIZE);
         }
     }
 
@@ -2567,7 +2567,7 @@ class JoglPipeline extends Pipeline {
 
         // Enable normalize for non-uniform scale (which rescale can't handle)
         if (isNonUniformScale) {
-            gl.glEnable(GL.GL_NORMALIZE);
+            gl.glEnable(GL2.GL_NORMALIZE);
         }
 
         // Define the data pointers
@@ -2670,7 +2670,7 @@ class JoglPipeline extends Pipeline {
 
         // clean up if we turned on normalize
         if (isNonUniformScale) {
-            gl.glDisable(GL.GL_NORMALIZE);
+            gl.glDisable(GL2.GL_NORMALIZE);
         }
 
         if (vattrDefined) {
@@ -3360,9 +3360,9 @@ class JoglPipeline extends Pipeline {
         }
         gl.glColor4f(cr, cg, cb, alpha);
         if (shadeModel == ColoringAttributes.SHADE_FLAT) {
-            gl.glShadeModel(GL.GL_FLAT);
+            gl.glShadeModel(GL2.GL_FLAT);
         } else {
-            gl.glShadeModel(GL.GL_SMOOTH);
+            gl.glShadeModel(GL2.GL_SMOOTH);
         }
     }
 
@@ -3381,26 +3381,26 @@ class JoglPipeline extends Pipeline {
 
         GL gl = context(ctx).getGL();
 
-        int lightNum = GL.GL_LIGHT0 + lightSlot;
+        int lightNum = GL2.GL_LIGHT0 + lightSlot;
         float[] values = new float[4];
 
         values[0] = red;
         values[1] = green;
         values[2] = blue;
         values[3] = 1.0f;
-        gl.glLightfv(lightNum, GL.GL_DIFFUSE, values, 0);
-        gl.glLightfv(lightNum, GL.GL_SPECULAR, values, 0);
+        gl.glLightfv(lightNum, GL2.GL_DIFFUSE, values, 0);
+        gl.glLightfv(lightNum, GL2.GL_SPECULAR, values, 0);
         values[0] = -dirx;
         values[1] = -diry;
         values[2] = -dirz;
         values[3] = 0.0f;
-        gl.glLightfv(lightNum, GL.GL_POSITION, values, 0);
-        gl.glLightfv(lightNum, GL.GL_AMBIENT, black, 0);
-        gl.glLightf(lightNum, GL.GL_CONSTANT_ATTENUATION, 1.0f);
-        gl.glLightf(lightNum, GL.GL_LINEAR_ATTENUATION, 0.0f);
-        gl.glLightf(lightNum, GL.GL_QUADRATIC_ATTENUATION, 0.0f);
-        gl.glLightf(lightNum, GL.GL_SPOT_EXPONENT, 0.0f);
-        gl.glLightf(lightNum, GL.GL_SPOT_CUTOFF, 180.0f);
+        gl.glLightfv(lightNum, GL2.GL_POSITION, values, 0);
+        gl.glLightfv(lightNum, GL2.GL_AMBIENT, black, 0);
+        gl.glLightf(lightNum, GL2.GL_CONSTANT_ATTENUATION, 1.0f);
+        gl.glLightf(lightNum, GL2.GL_LINEAR_ATTENUATION, 0.0f);
+        gl.glLightf(lightNum, GL2.GL_QUADRATIC_ATTENUATION, 0.0f);
+        gl.glLightf(lightNum, GL2.GL_SPOT_EXPONENT, 0.0f);
+        gl.glLightf(lightNum, GL2.GL_SPOT_CUTOFF, 180.0f);
     }
 
 
@@ -3418,25 +3418,25 @@ class JoglPipeline extends Pipeline {
 
         GL gl = context(ctx).getGL();
 
-        int lightNum = GL.GL_LIGHT0 + lightSlot;
+        int lightNum = GL2.GL_LIGHT0 + lightSlot;
         float[] values = new float[4];
 
         values[0] = red;
         values[1] = green;
         values[2] = blue;
         values[3] = 1.0f;
-        gl.glLightfv(lightNum, GL.GL_DIFFUSE, values, 0);
-        gl.glLightfv(lightNum, GL.GL_SPECULAR, values, 0);
-        gl.glLightfv(lightNum, GL.GL_AMBIENT, black, 0);
+        gl.glLightfv(lightNum, GL2.GL_DIFFUSE, values, 0);
+        gl.glLightfv(lightNum, GL2.GL_SPECULAR, values, 0);
+        gl.glLightfv(lightNum, GL2.GL_AMBIENT, black, 0);
         values[0] = posx;
         values[1] = posy;
         values[2] = posz;
-        gl.glLightfv(lightNum, GL.GL_POSITION, values, 0);
-        gl.glLightf(lightNum, GL.GL_CONSTANT_ATTENUATION, attenx);
-        gl.glLightf(lightNum, GL.GL_LINEAR_ATTENUATION, atteny);
-        gl.glLightf(lightNum, GL.GL_QUADRATIC_ATTENUATION, attenz);
-        gl.glLightf(lightNum, GL.GL_SPOT_EXPONENT, 0.0f);
-        gl.glLightf(lightNum, GL.GL_SPOT_CUTOFF, 180.0f);
+        gl.glLightfv(lightNum, GL2.GL_POSITION, values, 0);
+        gl.glLightf(lightNum, GL2.GL_CONSTANT_ATTENUATION, attenx);
+        gl.glLightf(lightNum, GL2.GL_LINEAR_ATTENUATION, atteny);
+        gl.glLightf(lightNum, GL2.GL_QUADRATIC_ATTENUATION, attenz);
+        gl.glLightf(lightNum, GL2.GL_SPOT_EXPONENT, 0.0f);
+        gl.glLightf(lightNum, GL2.GL_SPOT_CUTOFF, 180.0f);
     }
 
 
@@ -3456,29 +3456,29 @@ class JoglPipeline extends Pipeline {
 
         GL gl = context(ctx).getGL();
 
-        int lightNum = GL.GL_LIGHT0 + lightSlot;
+        int lightNum = GL2.GL_LIGHT0 + lightSlot;
         float[] values = new float[4];
 
         values[0] = red;
         values[1] = green;
         values[2] = blue;
         values[3] = 1.0f;
-        gl.glLightfv(lightNum, GL.GL_DIFFUSE, values, 0);
-        gl.glLightfv(lightNum, GL.GL_SPECULAR, values, 0);
-        gl.glLightfv(lightNum, GL.GL_AMBIENT, black, 0);
+        gl.glLightfv(lightNum, GL2.GL_DIFFUSE, values, 0);
+        gl.glLightfv(lightNum, GL2.GL_SPECULAR, values, 0);
+        gl.glLightfv(lightNum, GL2.GL_AMBIENT, black, 0);
         values[0] = posx;
         values[1] = posy;
         values[2] = posz;
-        gl.glLightfv(lightNum, GL.GL_POSITION, values, 0);
-        gl.glLightf(lightNum, GL.GL_CONSTANT_ATTENUATION, attenx);
-        gl.glLightf(lightNum, GL.GL_LINEAR_ATTENUATION, atteny);
-        gl.glLightf(lightNum, GL.GL_QUADRATIC_ATTENUATION, attenz);
+        gl.glLightfv(lightNum, GL2.GL_POSITION, values, 0);
+        gl.glLightf(lightNum, GL2.GL_CONSTANT_ATTENUATION, attenx);
+        gl.glLightf(lightNum, GL2.GL_LINEAR_ATTENUATION, atteny);
+        gl.glLightf(lightNum, GL2.GL_QUADRATIC_ATTENUATION, attenz);
         values[0] = dirx;
         values[1] = diry;
         values[2] = dirz;
-        gl.glLightfv(lightNum, GL.GL_SPOT_DIRECTION, values, 0);
-        gl.glLightf(lightNum, GL.GL_SPOT_EXPONENT, concentration);
-        gl.glLightf(lightNum, GL.GL_SPOT_CUTOFF, (float) (spreadAngle * 180.0f / Math.PI));
+        gl.glLightfv(lightNum, GL2.GL_SPOT_DIRECTION, values, 0);
+        gl.glLightf(lightNum, GL2.GL_SPOT_EXPONENT, concentration);
+        gl.glLightf(lightNum, GL2.GL_SPOT_CUTOFF, (float) (spreadAngle * 180.0f / Math.PI));
     }
 
 
@@ -3590,33 +3590,33 @@ class JoglPipeline extends Pipeline {
 
         GL gl = context(ctx).getGL();
 
-        gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, shininess);
+        gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL2.GL_SHININESS, shininess);
         switch (colorTarget) {
             case Material.DIFFUSE:
-                gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE);
+                gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE);
                 break;
             case Material.AMBIENT:
-                gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT);
+                gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL2.GL_AMBIENT);
                 break;
             case Material.EMISSIVE:
-                gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION);
+                gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL2.GL_EMISSION);
                 break;
             case Material.SPECULAR:
-                gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR);
+                gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL2.GL_SPECULAR);
                 break;
             case Material.AMBIENT_AND_DIFFUSE:
-                gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE);
+                gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE);
                 break;
         }
 
         color[0] = eRed; color[1] = eGreen; color[2] = eBlue;
-        gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, color, 0);
+        gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_EMISSION, color, 0);
 
         color[0] = aRed; color[1] = aGreen; color[2] = aBlue;
-        gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, color, 0);
+        gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_AMBIENT, color, 0);
 
         color[0] = sRed; color[1] = sGreen; color[2] = sBlue;
-        gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, color, 0);
+        gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, color, 0);
 
         float cr, cg, cb;
 
@@ -3626,13 +3626,13 @@ class JoglPipeline extends Pipeline {
             color[0] = red; color[1] = green; color[2] = blue;
         }
         color[3] = alpha;
-        gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, color, 0);
+        gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE, color, 0);
         gl.glColor4f(color[0], color[1], color[2], color[3]);
 
         if (lightEnable) {
-            gl.glEnable(GL.GL_LIGHTING);
+            gl.glEnable(GL2.GL_LIGHTING);
         } else {
-            gl.glDisable(GL.GL_LIGHTING);
+            gl.glDisable(GL2.GL_LIGHTING);
         }
     }
 
@@ -3803,9 +3803,9 @@ class JoglPipeline extends Pipeline {
         }
 
         if (ignoreVertexColors) {
-            gl.glDisable(GL.GL_COLOR_MATERIAL);
+            gl.glDisable(GL2.GL_COLOR_MATERIAL);
         } else {
-            gl.glEnable(GL.GL_COLOR_MATERIAL);
+            gl.glEnable(GL2.GL_COLOR_MATERIAL);
         }
 
         if (rasterOpEnable) {
@@ -6221,9 +6221,9 @@ class JoglPipeline extends Pipeline {
             // Enable rescale normal
             gl.glEnable(GL.GL_RESCALE_NORMAL);
 
-            gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE);
+            gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE);
             gl.glDepthFunc(GL.GL_LEQUAL);
-            gl.glEnable(GL.GL_COLOR_MATERIAL);
+            gl.glEnable(GL2.GL_COLOR_MATERIAL);
             gl.glReadBuffer(GL.GL_FRONT);
 
             // Issue 417: JOGL: Mip-mapped NPOT textures rendered incorrectly
@@ -6426,7 +6426,7 @@ class JoglPipeline extends Pipeline {
 
         GL gl = context(ctx).getGL();
         gl.glColor4f(r, g, b, a);
-        gl.glDisable(GL.GL_LIGHTING);
+        gl.glDisable(GL2.GL_LIGHTING);
     }
 
     void destroyContext(long display, Drawable drawable, Context ctx) {
@@ -6628,9 +6628,9 @@ class JoglPipeline extends Pipeline {
 
         for (int i = 0; i < maxLights; i++) {
             if ((enableMask & (1 << i)) != 0) {
-                gl.glEnable(GL.GL_LIGHT0 + i);
+                gl.glEnable(GL2.GL_LIGHT0 + i);
             } else {
-                gl.glDisable(GL.GL_LIGHT0 + i);
+                gl.glDisable(GL2.GL_LIGHT0 + i);
             }
         }
     }
@@ -6687,7 +6687,7 @@ class JoglPipeline extends Pipeline {
         }
         gl.glAlphaFunc(GL.GL_ALWAYS, 0.0f);
         gl.glDepthFunc(GL.GL_LEQUAL);
-        gl.glEnable(GL.GL_COLOR_MATERIAL);
+        gl.glEnable(GL2.GL_COLOR_MATERIAL);
         gl.glDisable(GL.GL_COLOR_LOGIC_OP);
     }
 
@@ -6831,7 +6831,7 @@ class JoglPipeline extends Pipeline {
         if (!enableLight) {
             gl.glColor4f(r, g, b, a);
         }
-        gl.glShadeModel(GL.GL_SMOOTH);
+        gl.glShadeModel(GL2.GL_SMOOTH);
     }
 
     /**
@@ -7180,14 +7180,14 @@ class JoglPipeline extends Pipeline {
         GL gl = context(ctx).getGL();
         // Set normalization if non-uniform scale
         if (isNonUniformScale) {
-            gl.glEnable(GL.GL_NORMALIZE);
+            gl.glEnable(GL2.GL_NORMALIZE);
         }
 
         gl.glCallList(id);
 
         // Turn normalization back off
         if (isNonUniformScale) {
-            gl.glDisable(GL.GL_NORMALIZE);
+            gl.glDisable(GL2.GL_NORMALIZE);
         }
     }
 
@@ -7754,11 +7754,11 @@ class JoglPipeline extends Pipeline {
         gl.glDisable(GL.GL_ALPHA_TEST);
         gl.glDisable(GL.GL_BLEND);
         gl.glDisable(GL.GL_COLOR_LOGIC_OP);
-        gl.glDisable(GL.GL_COLOR_MATERIAL);
+        gl.glDisable(GL2.GL_COLOR_MATERIAL);
         gl.glDisable(GL.GL_CULL_FACE);
         gl.glDisable(GL.GL_DEPTH_TEST);
         gl.glDisable(GL.GL_FOG);
-        gl.glDisable(GL.GL_LIGHTING);
+        gl.glDisable(GL2.GL_LIGHTING);
         gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
         gl.glDisable(GL.GL_POLYGON_STIPPLE);
         gl.glDisable(GL.GL_STENCIL_TEST);
@@ -7792,9 +7792,9 @@ class JoglPipeline extends Pipeline {
 
     private void disableAttribForRaster(GL gl) {
 
-        gl.glDisable(GL.GL_COLOR_MATERIAL);
+        gl.glDisable(GL2.GL_COLOR_MATERIAL);
         gl.glDisable(GL.GL_CULL_FACE);
-        gl.glDisable(GL.GL_LIGHTING);
+        gl.glDisable(GL2.GL_LIGHTING);
         gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
         gl.glDisable(GL.GL_POLYGON_STIPPLE);
 
