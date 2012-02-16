@@ -1522,7 +1522,7 @@ class JoglPipeline extends Pipeline {
             gl.glVertexPointer(3, GL.GL_FLOAT, 0, fverts);
         } else if (doubleCoordDefined){
             dverts.position(coordoff);
-            gl.glVertexPointer(3, GL.GL_DOUBLE, 0, dverts);
+            gl.glVertexPointer(3, GL2.GL_DOUBLE, 0, dverts);
         }
 
         if (floatColorsDefined) {
@@ -2576,7 +2576,7 @@ class JoglPipeline extends Pipeline {
             gl.glVertexPointer(3, GL.GL_FLOAT, 0, fverts);
         } else if (doubleCoordDefined){
             dverts.position(0);
-            gl.glVertexPointer(3, GL.GL_DOUBLE, 0, dverts);
+            gl.glVertexPointer(3, GL2.GL_DOUBLE, 0, dverts);
         }
         if (floatColorsDefined) {
             fclrs.position(0);
@@ -2700,7 +2700,7 @@ class JoglPipeline extends Pipeline {
             Object depthBuffer) {
 
         GL gl = context(ctx).getGL();
-        gl.glPixelStorei(GL.GL_PACK_ROW_LENGTH, width);
+        gl.glPixelStorei(GL2.GL_PACK_ROW_LENGTH, width);
         gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 1);
         int yAdjusted = hCanvas - height - ySrcOffset;
 
@@ -2710,7 +2710,7 @@ class JoglPipeline extends Pipeline {
 
                 switch (imageFormat) {
                     case ImageComponentRetained.TYPE_BYTE_BGR:
-                        oglFormat = GL.GL_BGR;
+                        oglFormat = GL2.GL_BGR;
                         break;
                     case ImageComponentRetained.TYPE_BYTE_RGB:
                         oglFormat = GL.GL_RGB;
@@ -2746,22 +2746,22 @@ class JoglPipeline extends Pipeline {
 
 
             } else if(imageDataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) {
-                int intType = GL.GL_UNSIGNED_INT_8_8_8_8;
+                int intType = GL2.GL_UNSIGNED_INT_8_8_8_8;
                 boolean forceAlphaToOne = false;
 
                 switch (imageFormat) {
                     /* GL_BGR */
                     case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
                         oglFormat = GL.GL_RGBA;
-                        intType = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                        intType = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                         forceAlphaToOne = true;
                         break;
                     case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
                         forceAlphaToOne = true;
                         /* Fall through to next case */
                     case ImageComponentRetained.TYPE_INT_ARGB:
-                        oglFormat = GL.GL_BGRA;
-                        intType = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                        oglFormat = GL2.GL_BGRA;
+                        intType = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                         break;
                         /* This method only supports 3 and 4 components formats and INT types. */
                     case ImageComponentRetained.TYPE_BYTE_LA:
@@ -3720,11 +3720,11 @@ class JoglPipeline extends Pipeline {
         }
 
         if (polygonMode == PolygonAttributes.POLYGON_POINT) {
-            gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_POINT);
+            gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_POINT);
         } else if (polygonMode == PolygonAttributes.POLYGON_LINE) {
-            gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
+            gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_LINE);
         } else {
-            gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
+            gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
         }
 
         gl.glPolygonOffset(polygonOffsetFactor, polygonOffset);
@@ -3732,24 +3732,24 @@ class JoglPipeline extends Pipeline {
         if ((polygonOffsetFactor != 0.0) || (polygonOffset != 0.0)) {
             switch (polygonMode) {
                 case PolygonAttributes.POLYGON_POINT:
-                    gl.glEnable(GL.GL_POLYGON_OFFSET_POINT);
-                    gl.glDisable(GL.GL_POLYGON_OFFSET_LINE);
+                    gl.glEnable(GL2.GL_POLYGON_OFFSET_POINT);
+                    gl.glDisable(GL2.GL_POLYGON_OFFSET_LINE);
                     gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
                     break;
                 case PolygonAttributes.POLYGON_LINE:
-                    gl.glEnable(GL.GL_POLYGON_OFFSET_LINE);
-                    gl.glDisable(GL.GL_POLYGON_OFFSET_POINT);
+                    gl.glEnable(GL2.GL_POLYGON_OFFSET_LINE);
+                    gl.glDisable(GL2.GL_POLYGON_OFFSET_POINT);
                     gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
                     break;
                 case PolygonAttributes.POLYGON_FILL:
                     gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
-                    gl.glDisable(GL.GL_POLYGON_OFFSET_POINT);
-                    gl.glDisable(GL.GL_POLYGON_OFFSET_LINE);
+                    gl.glDisable(GL2.GL_POLYGON_OFFSET_POINT);
+                    gl.glDisable(GL2.GL_POLYGON_OFFSET_LINE);
                     break;
             }
         } else {
-            gl.glDisable(GL.GL_POLYGON_OFFSET_POINT);
-            gl.glDisable(GL.GL_POLYGON_OFFSET_LINE);
+            gl.glDisable(GL2.GL_POLYGON_OFFSET_POINT);
+            gl.glDisable(GL2.GL_POLYGON_OFFSET_LINE);
             gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
         }
     }
@@ -4843,7 +4843,7 @@ class JoglPipeline extends Pipeline {
 
         if (!enable) {
             // if not enabled, then don't enable any tex mapping
-            gl.glDisable(GL.GL_TEXTURE_1D);
+            gl.glDisable(GL2.GL_TEXTURE_1D);
             gl.glDisable(GL.GL_TEXTURE_2D);
             gl.glDisable(GL2.GL_TEXTURE_3D);
             gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
@@ -4976,10 +4976,10 @@ class JoglPipeline extends Pipeline {
         GL gl = context(ctx).getGL();
         // checking of the availability of the extension is already done
         // in the shared code
-        gl.glTexParameteri(target, GL.GL_TEXTURE_BASE_LEVEL, baseLevel);
-        gl.glTexParameteri(target, GL.GL_TEXTURE_MAX_LEVEL, maximumLevel);
-        gl.glTexParameterf(target, GL.GL_TEXTURE_MIN_LOD, minimumLOD);
-        gl.glTexParameterf(target, GL.GL_TEXTURE_MAX_LOD, maximumLOD);
+        gl.glTexParameteri(target, GL2.GL_TEXTURE_BASE_LEVEL, baseLevel);
+        gl.glTexParameteri(target, GL2.GL_TEXTURE_MAX_LEVEL, maximumLevel);
+        gl.glTexParameterf(target, GL2.GL_TEXTURE_MIN_LOD, minimumLOD);
+        gl.glTexParameterf(target, GL2.GL_TEXTURE_MAX_LOD, maximumLOD);
     }
 
     private void updateTextureLodOffset(Context ctx,
@@ -5037,7 +5037,7 @@ class JoglPipeline extends Pipeline {
 
         int format = 0;
         int internalFormat = 0;
-        int type = GL.GL_UNSIGNED_INT_8_8_8_8;
+        int type = GL2.GL_UNSIGNED_INT_8_8_8_8;
         boolean forceAlphaToOne = false;
 
         switch (textureFormat) {
@@ -5076,7 +5076,7 @@ class JoglPipeline extends Pipeline {
 
             switch (imageFormat) {
                 case ImageComponentRetained.TYPE_BYTE_BGR:
-                    format = GL.GL_BGR;
+                    format = GL2.GL_BGR;
                     break;
                 case ImageComponentRetained.TYPE_BYTE_RGB:
                     format = GL.GL_RGB;
@@ -5134,15 +5134,15 @@ class JoglPipeline extends Pipeline {
                 /* GL_BGR */
                 case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
                     format = GL.GL_RGBA;
-                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    type = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                     forceAlphaToOne = true;
                     break;
                 case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
                     forceAlphaToOne = true;
                     /* Fall through to next case */
                 case ImageComponentRetained.TYPE_INT_ARGB:
-                    format = GL.GL_BGRA;
-                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    format = GL2.GL_BGRA;
+                    type = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                     break;
                     /* This method only supports 3 and 4 components formats and INT types. */
                 case ImageComponentRetained.TYPE_BYTE_LA:
@@ -5202,14 +5202,14 @@ class JoglPipeline extends Pipeline {
 
         int format = 0;
         int internalFormat = 0;
-        int type = GL.GL_UNSIGNED_INT_8_8_8_8;
+        int type = GL2.GL_UNSIGNED_INT_8_8_8_8;
         int numBytes = 0;
         boolean forceAlphaToOne = false;
         boolean pixelStore = false;
 
         if (imgXOffset > 0 || (width < tilew)) {
             pixelStore = true;
-            gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, tilew);
+            gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, tilew);
         }
 
         switch (textureFormat) {
@@ -5240,7 +5240,7 @@ class JoglPipeline extends Pipeline {
 
             switch (imageFormat) {
                 case ImageComponentRetained.TYPE_BYTE_BGR:
-                    format = GL.GL_BGR;
+                    format = GL2.GL_BGR;
                     numBytes = 3;
                     break;
                 case ImageComponentRetained.TYPE_BYTE_RGB:
@@ -5308,15 +5308,15 @@ class JoglPipeline extends Pipeline {
                 /* GL_BGR */
                 case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
                     format = GL.GL_RGBA;
-                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    type = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                     forceAlphaToOne = true;
                     break;
                 case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
                     forceAlphaToOne = true;
                     /* Fall through to next case */
                 case ImageComponentRetained.TYPE_INT_ARGB:
-                    format = GL.GL_BGRA;
-                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    format = GL2.GL_BGRA;
+                    type = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                     break;
                     /* This method only supports 3 and 4 components formats and INT types. */
                 case ImageComponentRetained.TYPE_BYTE_LA:
@@ -5365,7 +5365,7 @@ class JoglPipeline extends Pipeline {
         }
 
         if (pixelStore) {
-            gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
+            gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
         }
 
     }
@@ -5577,7 +5577,7 @@ class JoglPipeline extends Pipeline {
         GL gl = context(ctx).getGL();
 
         int format = 0, internalFormat = 0;
-        int type = GL.GL_UNSIGNED_INT_8_8_8_8;
+        int type = GL2.GL_UNSIGNED_INT_8_8_8_8;
         boolean forceAlphaToOne = false;
 
         switch (textureFormat) {
@@ -5615,7 +5615,7 @@ class JoglPipeline extends Pipeline {
 
             switch (imageFormat) {
                 case ImageComponentRetained.TYPE_BYTE_BGR:
-                    format = GL.GL_BGR;
+                    format = GL2.GL_BGR;
                     break;
                 case ImageComponentRetained.TYPE_BYTE_RGB:
                     format = GL.GL_RGB;
@@ -5670,15 +5670,15 @@ class JoglPipeline extends Pipeline {
                 /* GL_BGR */
                 case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
                     format = GL.GL_RGBA;
-                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    type = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                     forceAlphaToOne = true;
                     break;
                 case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
                     forceAlphaToOne = true;
                     /* Fall through to next case */
                 case ImageComponentRetained.TYPE_INT_ARGB:
-                    format = GL.GL_BGRA;
-                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    format = GL2.GL_BGRA;
+                    type = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                     break;
                     /* This method only supports 3 and 4 components formats and INT types. */
                 case ImageComponentRetained.TYPE_BYTE_LA:
@@ -5730,13 +5730,13 @@ class JoglPipeline extends Pipeline {
 
         int format = 0, internalFormat=0;
         int numBytes = 0;
-        int type = GL.GL_UNSIGNED_INT_8_8_8_8;
+        int type = GL2.GL_UNSIGNED_INT_8_8_8_8;
         boolean forceAlphaToOne = false;
         boolean pixelStore = false;
 
         if (imgXOffset > 0 || (width < tilew)) {
             pixelStore = true;
-            gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, tilew);
+            gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, tilew);
         }
 
         switch (textureFormat) {
@@ -5767,7 +5767,7 @@ class JoglPipeline extends Pipeline {
 
             switch (imageFormat) {
                 case ImageComponentRetained.TYPE_BYTE_BGR:
-                    format = GL.GL_BGR;
+                    format = GL2.GL_BGR;
                     numBytes = 3;
                     break;
                 case ImageComponentRetained.TYPE_BYTE_RGB:
@@ -5831,15 +5831,15 @@ class JoglPipeline extends Pipeline {
                 /* GL_BGR */
                 case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
                     format = GL.GL_RGBA;
-                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    type = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                     forceAlphaToOne = true;
                     break;
                 case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
                     forceAlphaToOne = true;
                     /* Fall through to next case */
                 case ImageComponentRetained.TYPE_INT_ARGB:
-                    format = GL.GL_BGRA;
-                    type = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    format = GL2.GL_BGRA;
+                    type = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                     break;
                     /* This method only supports 3 and 4 components formats and INT types. */
                 case ImageComponentRetained.TYPE_BYTE_LA:
@@ -5883,7 +5883,7 @@ class JoglPipeline extends Pipeline {
         }
 
         if (pixelStore) {
-            gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
+            gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
         }
 
     }
@@ -5994,7 +5994,7 @@ class JoglPipeline extends Pipeline {
                 break;
             case Texture.CLAMP_TO_BOUNDARY:
                 gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_S,
-                        GL.GL_CLAMP_TO_BORDER);
+                        GL2.GL_CLAMP_TO_BORDER);
                 break;
         }
 
@@ -6011,7 +6011,7 @@ class JoglPipeline extends Pipeline {
                 break;
             case Texture.CLAMP_TO_BOUNDARY:
                 gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_T,
-                        GL.GL_CLAMP_TO_BORDER);
+                        GL2.GL_CLAMP_TO_BORDER);
                 break;
         }
 
@@ -6035,7 +6035,7 @@ class JoglPipeline extends Pipeline {
                 case Texture.CLAMP_TO_BOUNDARY:
                     gl.glTexParameteri(target,
                             GL2.GL_TEXTURE_WRAP_R,
-                            GL.GL_CLAMP_TO_BORDER);
+                            GL2.GL_CLAMP_TO_BORDER);
                     break;
             }
         }
@@ -6049,7 +6049,7 @@ class JoglPipeline extends Pipeline {
             color[1] = boundaryGreen;
             color[2] = boundaryBlue;
             color[3] = boundaryAlpha;
-            gl.glTexParameterfv(target, GL.GL_TEXTURE_BORDER_COLOR, color, 0);
+            gl.glTexParameterfv(target, GL2.GL_TEXTURE_BORDER_COLOR, color, 0);
         }
     }
 
@@ -6319,7 +6319,7 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.readOffScreenBuffer()");
 
         GL gl = context(ctx).getGL();
-        gl.glPixelStorei(GL.GL_PACK_ROW_LENGTH, width);
+        gl.glPixelStorei(GL2.GL_PACK_ROW_LENGTH, width);
         gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 1);
 
         int type = 0;
@@ -6329,7 +6329,7 @@ class JoglPipeline extends Pipeline {
             switch (format) {
                 // GL_BGR
                 case ImageComponentRetained.TYPE_BYTE_BGR:
-                    type = GL.GL_BGR;
+                    type = GL2.GL_BGR;
                     break;
                 case ImageComponentRetained.TYPE_BYTE_RGB:
                     type = GL.GL_RGB;
@@ -6363,22 +6363,22 @@ class JoglPipeline extends Pipeline {
         } else if((dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) ||
                 (dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_BUFFER)) {
 
-            int intType = GL.GL_UNSIGNED_INT_8_8_8_8;
+            int intType = GL2.GL_UNSIGNED_INT_8_8_8_8;
             boolean forceAlphaToOne = false;
 
             switch (format) {
                 /* GL_BGR */
                 case ImageComponentRetained.TYPE_INT_BGR: /* Assume XBGR format */
                     type = GL.GL_RGBA;
-                    intType = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    intType = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                     forceAlphaToOne = true;
                     break;
                 case ImageComponentRetained.TYPE_INT_RGB: /* Assume XRGB format */
                     forceAlphaToOne = true;
                     /* Fall through to next case */
                 case ImageComponentRetained.TYPE_INT_ARGB:
-                    type = GL.GL_BGRA;
-                    intType = GL.GL_UNSIGNED_INT_8_8_8_8_REV;
+                    type = GL2.GL_BGRA;
+                    intType = GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
                     break;
                     /* This method only supports 3 and 4 components formats and BYTE types. */
                 case ImageComponentRetained.TYPE_BYTE_LA:
@@ -6702,7 +6702,7 @@ class JoglPipeline extends Pipeline {
             gl.glClientActiveTexture(texUnitIndex + GL.GL_TEXTURE0);
         }
 
-        gl.glDisable(GL.GL_TEXTURE_1D);
+        gl.glDisable(GL2.GL_TEXTURE_1D);
         gl.glDisable(GL.GL_TEXTURE_2D);
         gl.glDisable(GL2.GL_TEXTURE_3D);
         gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
@@ -6766,11 +6766,11 @@ class JoglPipeline extends Pipeline {
 
         gl.glLightModeli(GL2.GL_LIGHT_MODEL_TWO_SIDE, GL.GL_FALSE);
 
-        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
         gl.glPolygonOffset(0.0f, 0.0f);
-        gl.glDisable(GL.GL_POLYGON_OFFSET_POINT);
-        gl.glDisable(GL.GL_POLYGON_OFFSET_LINE);
+        gl.glDisable(GL2.GL_POLYGON_OFFSET_POINT);
+        gl.glDisable(GL2.GL_POLYGON_OFFSET_LINE);
         gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
     }
 
@@ -6936,7 +6936,7 @@ class JoglPipeline extends Pipeline {
         }
 
         // reset the polygon mode
-        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
 
@@ -6992,7 +6992,7 @@ class JoglPipeline extends Pipeline {
         gl.glColor4f(1.0f, 1.0f, 1.0f, alpha);
 
         // reset the polygon mode
-        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
 
@@ -7032,7 +7032,7 @@ class JoglPipeline extends Pipeline {
         gl.glRasterPos3f(posX, posY, posZ);
 
         int[] drawBuf = new int[1];
-        gl.glGetIntegerv(GL.GL_DRAW_BUFFER, drawBuf, 0);
+        gl.glGetIntegerv(GL2.GL_DRAW_BUFFER, drawBuf, 0);
         /* disable draw buffer */
         gl.glDrawBuffer(GL.GL_NONE);
 
@@ -7041,9 +7041,9 @@ class JoglPipeline extends Pipeline {
          * ImageComponent currently has the data reverse in Y
          */
         gl.glPixelZoom(1.0f, -1.0f);
-        gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, depthWidth);
+        gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, depthWidth);
         if (srcOffsetX >= 0) {
-            gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, srcOffsetX);
+            gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, srcOffsetX);
             if (srcOffsetX + rasterWidth > depthWidth) {
                 rasterWidth = depthWidth - srcOffsetX;
             }
@@ -7054,7 +7054,7 @@ class JoglPipeline extends Pipeline {
             }
         }
         if (srcOffsetY >= 0) {
-            gl.glPixelStorei(GL.GL_UNPACK_SKIP_ROWS, srcOffsetY);
+            gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, srcOffsetY);
             if (srcOffsetY + rasterHeight > depthHeight) {
                 rasterHeight = depthHeight - srcOffsetY;
             }
@@ -7077,9 +7077,9 @@ class JoglPipeline extends Pipeline {
         /* re-enable draw buffer */
         gl.glDrawBuffer(drawBuf[0]);
 
-        gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
-        gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, 0);
-        gl.glPixelStorei(GL.GL_UNPACK_SKIP_ROWS, 0);
+        gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
+        gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
+        gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
 
     }
 
@@ -7234,7 +7234,7 @@ class JoglPipeline extends Pipeline {
         disableAttribFor2D(gl);
 
         // Reset the polygon mode
-        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
         gl.glDepthMask(false);
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
@@ -7272,16 +7272,16 @@ class JoglPipeline extends Pipeline {
                     break;
             }
         }
-        gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, rasWidth);
-        gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, minX);
-        gl.glPixelStorei(GL.GL_UNPACK_SKIP_ROWS, minY);
+        gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, rasWidth);
+        gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, minX);
+        gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, minY);
         gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, minX, minY,
                 maxX - minX, maxY - minY,
                 glType, GL.GL_UNSIGNED_BYTE,
                 ByteBuffer.wrap(imageYdown));
-        gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, 0);
-        gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, 0);
-        gl.glPixelStorei(GL.GL_UNPACK_SKIP_ROWS, 0);
+        gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
+        gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
+        gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
 
         float texMinU = (float) minX/ (float) texWidth;
         float texMinV = (float) minY/ (float) texHeight;
@@ -7319,12 +7319,12 @@ class JoglPipeline extends Pipeline {
 
         gl.glBindTexture(GL.GL_TEXTURE_2D, objectId);
 
-        gl.glTexImage2D(GL.GL_PROXY_TEXTURE_2D, 0, GL.GL_RGBA, texWidth,
+        gl.glTexImage2D(GL2.GL_PROXY_TEXTURE_2D, 0, GL.GL_RGBA, texWidth,
                 texHeight, 0, glType, GL.GL_UNSIGNED_BYTE, null);
 
         int[] width = new int[1];
-        gl.glGetTexLevelParameteriv(GL.GL_PROXY_TEXTURE_2D, 0,
-                GL.GL_TEXTURE_WIDTH, width, 0);
+        gl.glGetTexLevelParameteriv(GL2.GL_PROXY_TEXTURE_2D, 0,
+                GL2.GL_TEXTURE_WIDTH, width, 0);
 
         if (width[0] <= 0) {
             return false;
@@ -7352,10 +7352,10 @@ class JoglPipeline extends Pipeline {
             drawBuf = GL.GL_BACK;
             switch (mode) {
                 case Canvas3D.FIELD_LEFT:
-                    drawBuf = GL.GL_BACK_LEFT;
+                    drawBuf = GL2.GL_BACK_LEFT;
                     break;
                 case Canvas3D.FIELD_RIGHT:
-                    drawBuf = GL.GL_BACK_RIGHT;
+                    drawBuf = GL2.GL_BACK_RIGHT;
                     break;
                 case Canvas3D.FIELD_ALL:
                     drawBuf = GL.GL_BACK;
@@ -7365,10 +7365,10 @@ class JoglPipeline extends Pipeline {
             drawBuf = GL.GL_FRONT;
             switch (mode) {
                 case Canvas3D.FIELD_LEFT:
-                    drawBuf = GL.GL_FRONT_LEFT;
+                    drawBuf = GL2.GL_FRONT_LEFT;
                     break;
                 case Canvas3D.FIELD_RIGHT:
-                    drawBuf = GL.GL_FRONT_RIGHT;
+                    drawBuf = GL2.GL_FRONT_RIGHT;
                     break;
                 case Canvas3D.FIELD_ALL:
                     drawBuf = GL.GL_FRONT;
