@@ -682,7 +682,7 @@ class JoglPipeline extends Pipeline {
             int primType = 0;
             switch (geo_type) {
                 case GeometryRetained.GEO_TYPE_QUAD_SET :
-                    primType = GL.GL_QUADS;
+                    primType = GL2.GL_QUADS;
                     break;
                 case GeometryRetained.GEO_TYPE_TRI_SET :
                     primType = GL.GL_TRIANGLES;
@@ -1070,19 +1070,19 @@ class JoglPipeline extends Pipeline {
         useInterleavedArrays[0] = true;
         switch (vformat) {
             case GeometryArray.COORDINATES :
-                iaFormat[0] = GL.GL_V3F; break;
+                iaFormat[0] = GL2.GL_V3F; break;
             case (GeometryArray.COORDINATES | GeometryArray.NORMALS) :
-                iaFormat[0] = GL.GL_N3F_V3F; break;
+                iaFormat[0] = GL2.GL_N3F_V3F; break;
             case (GeometryArray.COORDINATES | GeometryArray.TEXTURE_COORDINATE_2) :
-                iaFormat[0] = GL.GL_T2F_V3F; break;
+                iaFormat[0] = GL2.GL_T2F_V3F; break;
             case (GeometryArray.COORDINATES | GeometryArray.NORMALS | GeometryArray.COLOR) :
             case (GeometryArray.COORDINATES | GeometryArray.NORMALS | GeometryArray.COLOR | GeometryArray.WITH_ALPHA) :
-                iaFormat[0] = GL.GL_C4F_N3F_V3F; break;
+                iaFormat[0] = GL2.GL_C4F_N3F_V3F; break;
             case (GeometryArray.COORDINATES | GeometryArray.NORMALS | GeometryArray.TEXTURE_COORDINATE_2) :
-                iaFormat[0] = GL.GL_T2F_N3F_V3F; break;
+                iaFormat[0] = GL2.GL_T2F_N3F_V3F; break;
             case (GeometryArray.COORDINATES | GeometryArray.NORMALS | GeometryArray.COLOR | GeometryArray.TEXTURE_COORDINATE_2):
             case (GeometryArray.COORDINATES | GeometryArray.NORMALS | GeometryArray.COLOR | GeometryArray.WITH_ALPHA | GeometryArray.TEXTURE_COORDINATE_2):
-                iaFormat[0] = GL.GL_T2F_C4F_N3F_V3F; break;
+                iaFormat[0] = GL2.GL_T2F_C4F_N3F_V3F; break;
             default:
                 useInterleavedArrays[0] = false; break;
         }
@@ -1440,7 +1440,7 @@ class JoglPipeline extends Pipeline {
                 }
             }
             switch (geo_type){
-                case GeometryRetained.GEO_TYPE_QUAD_SET : gl.glDrawArrays(GL.GL_QUADS,     0, vcount); break;
+                case GeometryRetained.GEO_TYPE_QUAD_SET : gl.glDrawArrays(GL2.GL_QUADS,     0, vcount); break;
                 case GeometryRetained.GEO_TYPE_TRI_SET  : gl.glDrawArrays(GL.GL_TRIANGLES, 0, vcount); break;
                 case GeometryRetained.GEO_TYPE_POINT_SET: gl.glDrawArrays(GL.GL_POINTS,    0, vcount); break;
                 case GeometryRetained.GEO_TYPE_LINE_SET : gl.glDrawArrays(GL.GL_LINES,     0, vcount); break;
@@ -1611,7 +1611,7 @@ class JoglPipeline extends Pipeline {
             }
         } else {
             switch (geo_type){
-                case GeometryRetained.GEO_TYPE_QUAD_SET  : gl.glDrawArrays(GL.GL_QUADS, 0, vcount);     break;
+                case GeometryRetained.GEO_TYPE_QUAD_SET  : gl.glDrawArrays(GL2.GL_QUADS, 0, vcount);     break;
                 case GeometryRetained.GEO_TYPE_TRI_SET   : gl.glDrawArrays(GL.GL_TRIANGLES, 0, vcount); break;
                 case GeometryRetained.GEO_TYPE_POINT_SET : gl.glDrawArrays(GL.GL_POINTS, 0, vcount);    break;
                 case GeometryRetained.GEO_TYPE_LINE_SET  : gl.glDrawArrays(GL.GL_LINES, 0, vcount);     break;
@@ -2210,7 +2210,7 @@ class JoglPipeline extends Pipeline {
 
                 switch (geo_type) {
                     case GeometryRetained.GEO_TYPE_INDEXED_QUAD_SET :
-                        primType = GL.GL_QUADS;
+                        primType = GL2.GL_QUADS;
                         break;
                     case GeometryRetained.GEO_TYPE_INDEXED_TRI_SET :
                         primType = GL.GL_TRIANGLES;
@@ -2514,7 +2514,7 @@ class JoglPipeline extends Pipeline {
             IntBuffer buf = IntBuffer.wrap(indexCoord);
             buf.position(initialIndexIndex);
             switch (geo_type){
-                case GeometryRetained.GEO_TYPE_INDEXED_QUAD_SET : gl.glDrawElements(GL.GL_QUADS,     indexCount, GL.GL_UNSIGNED_INT, buf); break;
+                case GeometryRetained.GEO_TYPE_INDEXED_QUAD_SET : gl.glDrawElements(GL2.GL_QUADS,     indexCount, GL.GL_UNSIGNED_INT, buf); break;
                 case GeometryRetained.GEO_TYPE_INDEXED_TRI_SET  : gl.glDrawElements(GL.GL_TRIANGLES, indexCount, GL.GL_UNSIGNED_INT, buf); break;
                 case GeometryRetained.GEO_TYPE_INDEXED_POINT_SET: gl.glDrawElements(GL.GL_POINTS,    indexCount, GL.GL_UNSIGNED_INT, buf); break;
                 case GeometryRetained.GEO_TYPE_INDEXED_LINE_SET : gl.glDrawElements(GL.GL_LINES,     indexCount, GL.GL_UNSIGNED_INT, buf); break;
@@ -2659,7 +2659,7 @@ class JoglPipeline extends Pipeline {
             IntBuffer buf = IntBuffer.wrap(indexCoord);
             buf.position(initialIndexIndex);
             switch (geo_type){
-                case GeometryRetained.GEO_TYPE_INDEXED_QUAD_SET : gl.glDrawElements(GL.GL_QUADS,     validIndexCount, GL.GL_UNSIGNED_INT, buf); break;
+                case GeometryRetained.GEO_TYPE_INDEXED_QUAD_SET : gl.glDrawElements(GL2.GL_QUADS,     validIndexCount, GL.GL_UNSIGNED_INT, buf); break;
                 case GeometryRetained.GEO_TYPE_INDEXED_TRI_SET  : gl.glDrawElements(GL.GL_TRIANGLES, validIndexCount, GL.GL_UNSIGNED_INT, buf); break;
                 case GeometryRetained.GEO_TYPE_INDEXED_POINT_SET: gl.glDrawElements(GL.GL_POINTS,    validIndexCount, GL.GL_UNSIGNED_INT, buf); break;
                 case GeometryRetained.GEO_TYPE_INDEXED_LINE_SET : gl.glDrawElements(GL.GL_LINES,     validIndexCount, GL.GL_UNSIGNED_INT, buf); break;
@@ -2717,7 +2717,7 @@ class JoglPipeline extends Pipeline {
                         break;
                     case ImageComponentRetained.TYPE_BYTE_ABGR:
                         if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
-                            oglFormat = GL.GL_ABGR_EXT;
+                            oglFormat = GL2.GL_ABGR_EXT;
                         } else {
                             assert false;
                             return;
@@ -2779,7 +2779,7 @@ class JoglPipeline extends Pipeline {
                 /* Force Alpha to 1.0 if needed */
                 if(forceAlphaToOne) {
                     gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 0.0f);
-                    gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+                    gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 1.0f);
                 }
 
                 gl.glReadPixels(xSrcOffset, yAdjusted, width, height,
@@ -2788,7 +2788,7 @@ class JoglPipeline extends Pipeline {
                 /* Restore Alpha scale and bias */
                 if(forceAlphaToOne) {
                     gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 1.0f);
-                    gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+                    gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 0.0f);
                 }
 
             } else {
@@ -3084,7 +3084,7 @@ class JoglPipeline extends Pipeline {
         gl.glShaderSourceARB(id, 1, new String[] { program }, null, 0);
         gl.glCompileShaderARB(id);
         int[] status = new int[1];
-        gl.glGetObjectParameterivARB(id, GL.GL_OBJECT_COMPILE_STATUS_ARB, status, 0);
+        gl.glGetObjectParameterivARB(id, GL2.GL_OBJECT_COMPILE_STATUS_ARB, status, 0);
         if (status[0] == 0) {
             String detailMsg = getInfoLog(gl, id);
             ShaderError res = new ShaderError(ShaderError.COMPILE_ERROR,
@@ -3124,7 +3124,7 @@ class JoglPipeline extends Pipeline {
         }
         gl.glLinkProgramARB(id);
         int[] status = new int[1];
-        gl.glGetObjectParameterivARB(id, GL.GL_OBJECT_LINK_STATUS_ARB, status, 0);
+        gl.glGetObjectParameterivARB(id, GL2.GL_OBJECT_LINK_STATUS_ARB, status, 0);
         if (status[0] == 0) {
             String detailMsg = getInfoLog(gl, id);
             ShaderError res = new ShaderError(ShaderError.LINK_ERROR,
@@ -3171,11 +3171,11 @@ class JoglPipeline extends Pipeline {
         int[] tmp3 = new int[1];
         GL gl = context(ctx).getGL();
         gl.glGetObjectParameterivARB(id,
-                GL.GL_OBJECT_ACTIVE_UNIFORMS_ARB,
+                GL2.GL_OBJECT_ACTIVE_UNIFORMS_ARB,
                 tmp, 0);
         int numActiveUniforms = tmp[0];
         gl.glGetObjectParameterivARB(id,
-                GL.GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB,
+                GL2.GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB,
                 tmp, 0);
         int maxStrLen = tmp[0];
         byte[] nameBuf = new byte[maxStrLen];
@@ -3256,7 +3256,7 @@ class JoglPipeline extends Pipeline {
 
     private String getInfoLog(GL gl, int id) {
         int[] infoLogLength = new int[1];
-        gl.glGetObjectParameterivARB(id, GL.GL_OBJECT_INFO_LOG_LENGTH_ARB, infoLogLength, 0);
+        gl.glGetObjectParameterivARB(id, GL2.GL_OBJECT_INFO_LOG_LENGTH_ARB, infoLogLength, 0);
         if (infoLogLength[0] > 0) {
             byte[] storage = new byte[infoLogLength[0]];
             int[] len = new int[1];
@@ -3273,43 +3273,43 @@ class JoglPipeline extends Pipeline {
 
     private int glslToJ3dType(int type) {
         switch (type) {
-            case GL.GL_BOOL_ARB:
+            case GL2.GL_BOOL_ARB:
             case GL2.GL_INT:
-            case GL.GL_SAMPLER_2D_ARB:
-            case GL.GL_SAMPLER_3D_ARB:
-            case GL.GL_SAMPLER_CUBE_ARB:
+            case GL2.GL_SAMPLER_2D_ARB:
+            case GL2.GL_SAMPLER_3D_ARB:
+            case GL2.GL_SAMPLER_CUBE_ARB:
                 return ShaderAttributeObjectRetained.TYPE_INTEGER;
 
             case GL.GL_FLOAT:
                 return ShaderAttributeObjectRetained.TYPE_FLOAT;
 
-            case GL.GL_INT_VEC2_ARB:
-            case GL.GL_BOOL_VEC2_ARB:
+            case GL2.GL_INT_VEC2_ARB:
+            case GL2.GL_BOOL_VEC2_ARB:
                 return ShaderAttributeObjectRetained.TYPE_TUPLE2I;
 
-            case GL.GL_FLOAT_VEC2_ARB:
+            case GL2.GL_FLOAT_VEC2_ARB:
                 return ShaderAttributeObjectRetained.TYPE_TUPLE2F;
 
-            case GL.GL_INT_VEC3_ARB:
-            case GL.GL_BOOL_VEC3_ARB:
+            case GL2.GL_INT_VEC3_ARB:
+            case GL2.GL_BOOL_VEC3_ARB:
                 return ShaderAttributeObjectRetained.TYPE_TUPLE3I;
 
-            case GL.GL_FLOAT_VEC3_ARB:
+            case GL2.GL_FLOAT_VEC3_ARB:
                 return ShaderAttributeObjectRetained.TYPE_TUPLE3F;
 
-            case GL.GL_INT_VEC4_ARB:
-            case GL.GL_BOOL_VEC4_ARB:
+            case GL2.GL_INT_VEC4_ARB:
+            case GL2.GL_BOOL_VEC4_ARB:
                 return ShaderAttributeObjectRetained.TYPE_TUPLE4I;
 
-            case GL.GL_FLOAT_VEC4_ARB:
+            case GL2.GL_FLOAT_VEC4_ARB:
                 return ShaderAttributeObjectRetained.TYPE_TUPLE4F;
 
                 // case GL.GL_FLOAT_MAT2_ARB:
 
-            case GL.GL_FLOAT_MAT3_ARB:
+            case GL2.GL_FLOAT_MAT3_ARB:
                 return ShaderAttributeObjectRetained.TYPE_MATRIX3F;
 
-            case GL.GL_FLOAT_MAT4_ARB:
+            case GL2.GL_FLOAT_MAT4_ARB:
                 return ShaderAttributeObjectRetained.TYPE_MATRIX4F;
 
                 // Java 3D does not support the following sampler types:
@@ -3548,7 +3548,7 @@ class JoglPipeline extends Pipeline {
         gl.glLineWidth(lineWidth);
 
         if (linePattern == LineAttributes.PATTERN_SOLID) {
-            gl.glDisable(GL.GL_LINE_STIPPLE);
+            gl.glDisable(GL2.GL_LINE_STIPPLE);
         } else {
             if (linePattern == LineAttributes.PATTERN_DASH) { // dashed lines
                 gl.glLineStipple(1, (short) 0x00ff);
@@ -3559,7 +3559,7 @@ class JoglPipeline extends Pipeline {
             } else if (linePattern == LineAttributes.PATTERN_USER_DEFINED) { // user-defined mask
                 gl.glLineStipple(linePatternScaleFactor, (short) linePatternMask);
             }
-            gl.glEnable(GL.GL_LINE_STIPPLE);
+            gl.glEnable(GL2.GL_LINE_STIPPLE);
         }
 
         /* XXXX: Polygon Mode check, blend enable */
@@ -3968,17 +3968,17 @@ class JoglPipeline extends Pipeline {
         float[] planeQ = new float[4];
 
         if (enable) {
-            gl.glEnable(GL.GL_TEXTURE_GEN_S);
-            gl.glEnable(GL.GL_TEXTURE_GEN_T);
+            gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+            gl.glEnable(GL2.GL_TEXTURE_GEN_T);
             if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
-                gl.glEnable(GL.GL_TEXTURE_GEN_R);
-                gl.glDisable(GL.GL_TEXTURE_GEN_Q);
+                gl.glEnable(GL2.GL_TEXTURE_GEN_R);
+                gl.glDisable(GL2.GL_TEXTURE_GEN_Q);
             } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
-                gl.glEnable(GL.GL_TEXTURE_GEN_R);
-                gl.glEnable(GL.GL_TEXTURE_GEN_Q);
+                gl.glEnable(GL2.GL_TEXTURE_GEN_R);
+                gl.glEnable(GL2.GL_TEXTURE_GEN_Q);
             } else {
-                gl.glDisable(GL.GL_TEXTURE_GEN_R);
-                gl.glDisable(GL.GL_TEXTURE_GEN_Q);
+                gl.glDisable(GL2.GL_TEXTURE_GEN_R);
+                gl.glDisable(GL2.GL_TEXTURE_GEN_Q);
             }
 
             if (genMode != TexCoordGeneration.SPHERE_MAP) {
@@ -3999,19 +3999,19 @@ class JoglPipeline extends Pipeline {
 
             switch (genMode) {
                 case TexCoordGeneration.OBJECT_LINEAR:
-                    gl.glTexGeni(GL.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL.GL_OBJECT_LINEAR);
-                    gl.glTexGeni(GL.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL.GL_OBJECT_LINEAR);
-                    gl.glTexGenfv(GL.GL_S, GL.GL_OBJECT_PLANE, planeS, 0);
-                    gl.glTexGenfv(GL.GL_T, GL.GL_OBJECT_PLANE, planeT, 0);
+                    gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_OBJECT_LINEAR);
+                    gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_OBJECT_LINEAR);
+                    gl.glTexGenfv(GL2.GL_S, GL2.GL_OBJECT_PLANE, planeS, 0);
+                    gl.glTexGenfv(GL2.GL_T, GL2.GL_OBJECT_PLANE, planeT, 0);
 
                     if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
-                        gl.glTexGeni(GL.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL.GL_OBJECT_LINEAR);
-                        gl.glTexGenfv(GL.GL_R, GL.GL_OBJECT_PLANE, planeR, 0);
+                        gl.glTexGeni(GL2.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_OBJECT_LINEAR);
+                        gl.glTexGenfv(GL2.GL_R, GL2.GL_OBJECT_PLANE, planeR, 0);
                     } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
-                        gl.glTexGeni(GL.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL.GL_OBJECT_LINEAR);
-                        gl.glTexGenfv(GL.GL_R, GL.GL_OBJECT_PLANE, planeR, 0);
-                        gl.glTexGeni(GL.GL_Q, GL2.GL_TEXTURE_GEN_MODE, GL.GL_OBJECT_LINEAR);
-                        gl.glTexGenfv(GL.GL_Q, GL.GL_OBJECT_PLANE, planeQ, 0);
+                        gl.glTexGeni(GL2.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_OBJECT_LINEAR);
+                        gl.glTexGenfv(GL2.GL_R, GL2.GL_OBJECT_PLANE, planeR, 0);
+                        gl.glTexGeni(GL2.GL_Q, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_OBJECT_LINEAR);
+                        gl.glTexGenfv(GL2.GL_Q, GL2.GL_OBJECT_PLANE, planeQ, 0);
                     }
                     break;
                 case TexCoordGeneration.EYE_LINEAR:
@@ -4027,59 +4027,59 @@ class JoglPipeline extends Pipeline {
                         gl.glLoadMatrixd(v, 0);
                     }
 
-                    gl.glTexGeni(GL.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
-                    gl.glTexGeni(GL.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
-                    gl.glTexGenfv(GL.GL_S, GL.GL_EYE_PLANE, planeS, 0);
-                    gl.glTexGenfv(GL.GL_T, GL.GL_EYE_PLANE, planeT, 0);
+                    gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_EYE_LINEAR);
+                    gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_EYE_LINEAR);
+                    gl.glTexGenfv(GL2.GL_S, GL2.GL_EYE_PLANE, planeS, 0);
+                    gl.glTexGenfv(GL2.GL_T, GL2.GL_EYE_PLANE, planeT, 0);
 
                     if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
-                        gl.glTexGeni(GL.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
-                        gl.glTexGenfv(GL.GL_R, GL.GL_EYE_PLANE, planeR, 0);
+                        gl.glTexGeni(GL2.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_EYE_LINEAR);
+                        gl.glTexGenfv(GL2.GL_R, GL2.GL_EYE_PLANE, planeR, 0);
                     } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
-                        gl.glTexGeni(GL.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
-                        gl.glTexGenfv(GL.GL_R, GL.GL_EYE_PLANE, planeR, 0);
-                        gl.glTexGeni(GL.GL_Q, GL2.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
-                        gl.glTexGenfv(GL.GL_Q, GL.GL_EYE_PLANE, planeQ, 0);
+                        gl.glTexGeni(GL2.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_EYE_LINEAR);
+                        gl.glTexGenfv(GL2.GL_R, GL2.GL_EYE_PLANE, planeR, 0);
+                        gl.glTexGeni(GL2.GL_Q, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_EYE_LINEAR);
+                        gl.glTexGenfv(GL2.GL_Q, GL2.GL_EYE_PLANE, planeQ, 0);
                     }
                     gl.glPopMatrix();
                     break;
                 case TexCoordGeneration.SPHERE_MAP:
-                    gl.glTexGeni(GL.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-                    gl.glTexGeni(GL.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
+                    gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+                    gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
                     if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
-                        gl.glTexGeni(GL.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
+                        gl.glTexGeni(GL2.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
                     } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
-                        gl.glTexGeni(GL.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-                        gl.glTexGeni(GL.GL_Q, GL2.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
+                        gl.glTexGeni(GL2.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+                        gl.glTexGeni(GL2.GL_Q, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
                     }
 
                     break;
                 case TexCoordGeneration.NORMAL_MAP:
-                    gl.glTexGeni(GL.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_NORMAL_MAP);
-                    gl.glTexGeni(GL.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_NORMAL_MAP);
+                    gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_NORMAL_MAP);
+                    gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_NORMAL_MAP);
                     if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
-                        gl.glTexGeni(GL.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_NORMAL_MAP);
+                        gl.glTexGeni(GL2.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_NORMAL_MAP);
                     } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
-                        gl.glTexGeni(GL.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_NORMAL_MAP);
-                        gl.glTexGeni(GL.GL_Q, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_NORMAL_MAP);
+                        gl.glTexGeni(GL2.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_NORMAL_MAP);
+                        gl.glTexGeni(GL2.GL_Q, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_NORMAL_MAP);
                     }
                     break;
                 case TexCoordGeneration.REFLECTION_MAP:
-                    gl.glTexGeni(GL.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_REFLECTION_MAP);
-                    gl.glTexGeni(GL.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_REFLECTION_MAP);
+                    gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_REFLECTION_MAP);
+                    gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_REFLECTION_MAP);
                     if (format == TexCoordGeneration.TEXTURE_COORDINATE_3) {
-                        gl.glTexGeni(GL.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_REFLECTION_MAP);
+                        gl.glTexGeni(GL2.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_REFLECTION_MAP);
                     } else if (format == TexCoordGeneration.TEXTURE_COORDINATE_4) {
-                        gl.glTexGeni(GL.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_REFLECTION_MAP);
-                        gl.glTexGeni(GL.GL_Q, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_REFLECTION_MAP);
+                        gl.glTexGeni(GL2.GL_R, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_REFLECTION_MAP);
+                        gl.glTexGeni(GL2.GL_Q, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_REFLECTION_MAP);
                     }
                     break;
             }
         } else {
-            gl.glDisable(GL.GL_TEXTURE_GEN_S);
-            gl.glDisable(GL.GL_TEXTURE_GEN_T);
-            gl.glDisable(GL.GL_TEXTURE_GEN_R);
-            gl.glDisable(GL.GL_TEXTURE_GEN_Q);
+            gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+            gl.glDisable(GL2.GL_TEXTURE_GEN_T);
+            gl.glDisable(GL2.GL_TEXTURE_GEN_R);
+            gl.glDisable(GL2.GL_TEXTURE_GEN_Q);
         }
     }
 
@@ -4320,9 +4320,9 @@ class JoglPipeline extends Pipeline {
         GL gl = context(ctx).getGL();
 
         if (transparencyMode != TransparencyAttributes.SCREEN_DOOR) {
-            gl.glDisable(GL.GL_POLYGON_STIPPLE);
+            gl.glDisable(GL2.GL_POLYGON_STIPPLE);
         } else  {
-            gl.glEnable(GL.GL_POLYGON_STIPPLE);
+            gl.glEnable(GL2.GL_POLYGON_STIPPLE);
             gl.glPolygonStipple(screen_door_table[(int)(alpha * 16)]);
         }
 
@@ -4363,7 +4363,7 @@ class JoglPipeline extends Pipeline {
                 (perspCorrectionMode == TextureAttributes.NICEST) ? GL.GL_NICEST : GL.GL_FASTEST);
 
         // set OGL texture matrix
-        gl.glPushAttrib(GL.GL_TRANSFORM_BIT);
+        gl.glPushAttrib(GL2.GL_TRANSFORM_BIT);
         gl.glMatrixMode(GL.GL_TEXTURE);
 
         if (isIdentity) {
@@ -4435,7 +4435,7 @@ class JoglPipeline extends Pipeline {
         }
 
         // set OGL texture matrix
-        gl.glPushAttrib(GL.GL_TRANSFORM_BIT);
+        gl.glPushAttrib(GL2.GL_TRANSFORM_BIT);
         gl.glMatrixMode(GL.GL_TEXTURE);
 
         if (isIdentity) {
@@ -4756,15 +4756,15 @@ class JoglPipeline extends Pipeline {
 
     // mapping from java enum to gl enum
     private static final int[] _gl_combineRgbSrcIndex = {
-        GL.GL_SOURCE0_RGB,
-        GL.GL_SOURCE1_RGB,
-        GL.GL_SOURCE2_RGB,
+        GL2.GL_SOURCE0_RGB,
+        GL2.GL_SOURCE1_RGB,
+        GL2.GL_SOURCE2_RGB,
     };
 
     private static final int[] _gl_combineAlphaSrcIndex = {
-        GL.GL_SOURCE0_ALPHA,
-        GL.GL_SOURCE1_ALPHA,
-        GL.GL_SOURCE2_ALPHA,
+        GL2.GL_SOURCE0_ALPHA,
+        GL2.GL_SOURCE1_ALPHA,
+        GL2.GL_SOURCE2_ALPHA,
     };
 
     private static final int[] _gl_combineRgbOpIndex = {
@@ -5042,7 +5042,7 @@ class JoglPipeline extends Pipeline {
 
         switch (textureFormat) {
             case Texture.INTENSITY:
-                internalFormat = GL.GL_INTENSITY;
+                internalFormat = GL2.GL_INTENSITY;
                 break;
             case Texture.LUMINANCE:
                 internalFormat = GL.GL_LUMINANCE;
@@ -5083,7 +5083,7 @@ class JoglPipeline extends Pipeline {
                     break;
                 case ImageComponentRetained.TYPE_BYTE_ABGR:
                     if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
-                        format = GL.GL_ABGR_EXT;
+                        format = GL2.GL_ABGR_EXT;
                     } else {
                         assert false;
                         return;
@@ -5160,7 +5160,7 @@ class JoglPipeline extends Pipeline {
             /* Force Alpha to 1.0 if needed */
             if(forceAlphaToOne) {
                 gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 0.0f);
-                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+                gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 1.0f);
             }
 
             if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) {
@@ -5178,7 +5178,7 @@ class JoglPipeline extends Pipeline {
             /* Restore Alpha scale and bias */
             if(forceAlphaToOne) {
                 gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 1.0f);
-                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+                gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 0.0f);
             }
         } else {
             assert false;
@@ -5214,7 +5214,7 @@ class JoglPipeline extends Pipeline {
 
         switch (textureFormat) {
             case Texture.INTENSITY:
-                internalFormat = GL.GL_INTENSITY;
+                internalFormat = GL2.GL_INTENSITY;
                 break;
             case Texture.LUMINANCE:
                 internalFormat = GL.GL_LUMINANCE;
@@ -5249,7 +5249,7 @@ class JoglPipeline extends Pipeline {
                     break;
                 case ImageComponentRetained.TYPE_BYTE_ABGR:
                     if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
-                        format = GL.GL_ABGR_EXT;
+                        format = GL2.GL_ABGR_EXT;
                         numBytes = 4;
                     } else {
                         assert false;
@@ -5334,7 +5334,7 @@ class JoglPipeline extends Pipeline {
             /* Force Alpha to 1.0 if needed */
             if(forceAlphaToOne) {
                 gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 0.0f);
-                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+                gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 1.0f);
             }
 
             IntBuffer buf = null;
@@ -5357,7 +5357,7 @@ class JoglPipeline extends Pipeline {
             /* Restore Alpha scale and bias */
             if(forceAlphaToOne) {
                 gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 1.0f);
-                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+                gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 0.0f);
             }
         } else {
             assert false;
@@ -5582,7 +5582,7 @@ class JoglPipeline extends Pipeline {
 
         switch (textureFormat) {
             case Texture.INTENSITY:
-                internalFormat = GL.GL_INTENSITY;
+                internalFormat = GL2.GL_INTENSITY;
                 break;
             case Texture.LUMINANCE:
                 internalFormat = GL.GL_LUMINANCE;
@@ -5622,7 +5622,7 @@ class JoglPipeline extends Pipeline {
                     break;
                 case ImageComponentRetained.TYPE_BYTE_ABGR:
                     if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
-                        format = GL.GL_ABGR_EXT;
+                        format = GL2.GL_ABGR_EXT;
                     } else {
                         assert false;
                         return;
@@ -5696,7 +5696,7 @@ class JoglPipeline extends Pipeline {
             /* Force Alpha to 1.0 if needed */
             if(forceAlphaToOne) {
                 gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 0.0f);
-                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+                gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 1.0f);
             }
 
             if(dataType == ImageComponentRetained.IMAGE_DATA_TYPE_INT_ARRAY) {
@@ -5712,7 +5712,7 @@ class JoglPipeline extends Pipeline {
             /* Restore Alpha scale and bias */
             if(forceAlphaToOne) {
                 gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 1.0f);
-                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+                gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 0.0f);
             }
         } else {
             assert false;
@@ -5741,7 +5741,7 @@ class JoglPipeline extends Pipeline {
 
         switch (textureFormat) {
             case Texture.INTENSITY:
-                internalFormat = GL.GL_INTENSITY;
+                internalFormat = GL2.GL_INTENSITY;
                 break;
             case Texture.LUMINANCE:
                 internalFormat = GL.GL_LUMINANCE;
@@ -5776,7 +5776,7 @@ class JoglPipeline extends Pipeline {
                     break;
                 case ImageComponentRetained.TYPE_BYTE_ABGR:
                     if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If its zero, should never come here!
-                        format = GL.GL_ABGR_EXT;
+                        format = GL2.GL_ABGR_EXT;
                         numBytes = 4;
                     } else {
                         assert false;
@@ -5856,7 +5856,7 @@ class JoglPipeline extends Pipeline {
             /* Force Alpha to 1.0 if needed */
             if(forceAlphaToOne) {
                 gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 0.0f);
-                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+                gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 1.0f);
             }
 
             IntBuffer buf = null;
@@ -5875,7 +5875,7 @@ class JoglPipeline extends Pipeline {
             /* Restore Alpha scale and bias */
             if(forceAlphaToOne) {
                 gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 1.0f);
-                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+                gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 0.0f);
             }
         } else {
             assert false;
@@ -5986,7 +5986,7 @@ class JoglPipeline extends Pipeline {
                 gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
                 break;
             case Texture.CLAMP:
-                gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
+                gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
                 break;
             case Texture.CLAMP_TO_EDGE:
                 gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_S,
@@ -6003,7 +6003,7 @@ class JoglPipeline extends Pipeline {
                 gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
                 break;
             case Texture.CLAMP:
-                gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
+                gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
                 break;
             case Texture.CLAMP_TO_EDGE:
                 gl.glTexParameteri(target, GL.GL_TEXTURE_WRAP_T,
@@ -6025,7 +6025,7 @@ class JoglPipeline extends Pipeline {
 
                 case Texture.CLAMP:
                     gl.glTexParameteri(target,
-                            GL2.GL_TEXTURE_WRAP_R, GL.GL_CLAMP);
+                            GL2.GL_TEXTURE_WRAP_R, GL2.GL_CLAMP);
                     break;
                 case Texture.CLAMP_TO_EDGE:
                     gl.glTexParameteri(target,
@@ -6231,7 +6231,7 @@ class JoglPipeline extends Pipeline {
             gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
 
             // Workaround for issue 400: Enable separate specular by default
-            gl.glLightModeli(GL.GL_LIGHT_MODEL_COLOR_CONTROL, GL.GL_SEPARATE_SPECULAR_COLOR);
+            gl.glLightModeli(GL2.GL_LIGHT_MODEL_COLOR_CONTROL, GL2.GL_SEPARATE_SPECULAR_COLOR);
         } finally {
             context.release();
         }
@@ -6337,7 +6337,7 @@ class JoglPipeline extends Pipeline {
                     // GL_ABGR_EXT
                 case ImageComponentRetained.TYPE_BYTE_ABGR:
                     if (gl.isExtensionAvailable("GL_EXT_abgr")) { // If false, should never come here!
-                        type = GL.GL_ABGR_EXT;
+                        type = GL2.GL_ABGR_EXT;
                     } else {
                         assert false;
                         return;
@@ -6395,7 +6395,7 @@ class JoglPipeline extends Pipeline {
             /* Force Alpha to 1.0 if needed */
             if(forceAlphaToOne) {
                 gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 0.0f);
-                gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 1.0f);
+                gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 1.0f);
             }
 
             gl.glReadPixels(0, 0, width, height, type, intType, IntBuffer.wrap((int[]) data));
@@ -6403,7 +6403,7 @@ class JoglPipeline extends Pipeline {
 	    /* Restore Alpha scale and bias */
 	    if(forceAlphaToOne) {
 		gl.glPixelTransferf(GL2.GL_ALPHA_SCALE, 1.0f);
-		gl.glPixelTransferf(GL.GL_ALPHA_BIAS, 0.0f);
+		gl.glPixelTransferf(GL2.GL_ALPHA_BIAS, 0.0f);
 	    }
 
         } else {
@@ -6447,7 +6447,7 @@ class JoglPipeline extends Pipeline {
 
         GL gl = context(ctx).getGL();
         gl.glReadBuffer(GL.GL_BACK);
-        gl.glAccum(GL.GL_ACCUM, value);
+        gl.glAccum(GL2.GL_ACCUM, value);
         gl.glReadBuffer(GL.GL_FRONT);
     }
 
@@ -6456,7 +6456,7 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.accumReturn()");
 
         GL gl = context(ctx).getGL();
-        gl.glAccum(GL.GL_RETURN, 1.0f);
+        gl.glAccum(GL2.GL_RETURN, 1.0f);
     }
 
     // This is the native method for clearing the accumulation buffer.
@@ -6464,7 +6464,7 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.clearAccum()");
 
         GL gl = context(ctx).getGL();
-        gl.glClear(GL.GL_ACCUM_BUFFER_BIT);
+        gl.glClear(GL2.GL_ACCUM_BUFFER_BIT);
     }
 
     // This is the native method for getting the number of lights the underlying
@@ -6521,9 +6521,9 @@ class JoglPipeline extends Pipeline {
         GL gl = context(ctx).getGL();
 
         if (localEyeLightingEnable) {
-            gl.glLightModeli(GL.GL_LIGHT_MODEL_LOCAL_VIEWER, GL.GL_TRUE);
+            gl.glLightModeli(GL2.GL_LIGHT_MODEL_LOCAL_VIEWER, GL.GL_TRUE);
         } else {
-            gl.glLightModeli(GL.GL_LIGHT_MODEL_LOCAL_VIEWER, GL.GL_FALSE);
+            gl.glLightModeli(GL2.GL_LIGHT_MODEL_LOCAL_VIEWER, GL.GL_FALSE);
         }
     }
 
@@ -6594,9 +6594,9 @@ class JoglPipeline extends Pipeline {
         GL gl = context(ctx).getGL();
 
         if (enable) {
-            gl.glLightModeli(GL.GL_LIGHT_MODEL_COLOR_CONTROL, GL.GL_SEPARATE_SPECULAR_COLOR);
+            gl.glLightModeli(GL2.GL_LIGHT_MODEL_COLOR_CONTROL, GL2.GL_SEPARATE_SPECULAR_COLOR);
         } else {
-            gl.glLightModeli(GL.GL_LIGHT_MODEL_COLOR_CONTROL, GL.GL_SINGLE_COLOR);
+            gl.glLightModeli(GL2.GL_LIGHT_MODEL_COLOR_CONTROL, GL2.GL_SINGLE_COLOR);
         }
     }
 
@@ -6724,10 +6724,10 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.resetTexCoordGeneration()");
 
         GL gl = context(ctx).getGL();
-        gl.glDisable(GL.GL_TEXTURE_GEN_S);
-        gl.glDisable(GL.GL_TEXTURE_GEN_T);
-        gl.glDisable(GL.GL_TEXTURE_GEN_R);
-        gl.glDisable(GL.GL_TEXTURE_GEN_Q);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_T);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_R);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_Q);
     }
 
     // native method for setting default TextureAttributes
@@ -6738,7 +6738,7 @@ class JoglPipeline extends Pipeline {
 
         float[] color = new float[4];
 
-        gl.glPushAttrib(GL.GL_TRANSFORM_BIT);
+        gl.glPushAttrib(GL2.GL_TRANSFORM_BIT);
         gl.glMatrixMode(GL.GL_TEXTURE);
         gl.glLoadIdentity();
         gl.glPopAttrib();
@@ -6780,7 +6780,7 @@ class JoglPipeline extends Pipeline {
 
         GL gl = context(ctx).getGL();
         gl.glLineWidth(1.0f);
-        gl.glDisable(GL.GL_LINE_STIPPLE);
+        gl.glDisable(GL2.GL_LINE_STIPPLE);
 
         // XXXX: Polygon Mode check, blend enable
         gl.glDisable(GL.GL_LINE_SMOOTH);
@@ -6816,7 +6816,7 @@ class JoglPipeline extends Pipeline {
         } else {
             gl.glDisable(GL.GL_BLEND);
         }
-        gl.glDisable(GL.GL_POLYGON_STIPPLE);
+        gl.glDisable(GL2.GL_POLYGON_STIPPLE);
     }
 
     // native method for setting default ColoringAttributes
@@ -6922,7 +6922,7 @@ class JoglPipeline extends Pipeline {
         GL gl = context.getGL();
 
         // Temporarily disable fragment and most 3D operations
-        gl.glPushAttrib(GL.GL_ENABLE_BIT | GL.GL_TEXTURE_BIT | GL.GL_POLYGON_BIT);
+        gl.glPushAttrib(GL2.GL_ENABLE_BIT | GL2.GL_TEXTURE_BIT | GL2.GL_POLYGON_BIT);
 
         disableAttribFor2D(gl);
         gl.glDepthMask(false);
@@ -6950,7 +6950,7 @@ class JoglPipeline extends Pipeline {
         gl.glPushMatrix();
         gl.glLoadIdentity();
 
-        gl.glBegin(GL.GL_QUADS);
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(texMinU, texMinV); gl.glVertex2f(mapMinX,mapMinY);
         gl.glTexCoord2f(texMaxU, texMinV); gl.glVertex2f(mapMaxX,mapMinY);
         gl.glTexCoord2f(texMaxU, texMaxV); gl.glVertex2f(mapMaxX,mapMaxY);
@@ -6976,8 +6976,8 @@ class JoglPipeline extends Pipeline {
         GL gl = context.getGL();
 
         // Temporarily disable fragment and most 3D operations
-        gl.glPushAttrib(GL.GL_ENABLE_BIT | GL.GL_TEXTURE_BIT | GL.GL_POLYGON_BIT |
-                GL.GL_CURRENT_BIT );
+        gl.glPushAttrib(GL2.GL_ENABLE_BIT | GL2.GL_TEXTURE_BIT | GL2.GL_POLYGON_BIT |
+                GL2.GL_CURRENT_BIT );
 
         disableAttribForRaster(gl);
 
@@ -7005,7 +7005,7 @@ class JoglPipeline extends Pipeline {
         gl.glLoadIdentity();
         gl.glOrtho(0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
 
-        gl.glBegin(GL.GL_QUADS);
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(texMinU, texMinV); gl.glVertex3f(mapMinX,mapMinY, mapZ);
         gl.glTexCoord2f(texMaxU, texMinV); gl.glVertex3f(mapMaxX,mapMinY, mapZ);
         gl.glTexCoord2f(texMaxU, texMaxV); gl.glVertex3f(mapMaxX,mapMaxY, mapZ);
@@ -7154,7 +7154,7 @@ class JoglPipeline extends Pipeline {
         }
 
         GL gl = context(ctx).getGL();
-        gl.glNewList(displayListId, GL.GL_COMPILE);
+        gl.glNewList(displayListId, GL2.GL_COMPILE);
     }
 
     void endDisplayList(Context ctx) {
@@ -7230,7 +7230,7 @@ class JoglPipeline extends Pipeline {
         int glType = GL.GL_RGBA;
 
         // Temporarily disable fragment and most 3D operations
-        gl.glPushAttrib(GL.GL_ENABLE_BIT | GL.GL_TEXTURE_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_POLYGON_BIT);
+        gl.glPushAttrib(GL2.GL_ENABLE_BIT | GL2.GL_TEXTURE_BIT | GL.GL_DEPTH_BUFFER_BIT | GL2.GL_POLYGON_BIT);
         disableAttribFor2D(gl);
 
         // Reset the polygon mode
@@ -7261,7 +7261,7 @@ class JoglPipeline extends Pipeline {
         gl.glLoadIdentity();
 
         if (gl.isExtensionAvailable("GL_EXT_abgr")) {
-            glType = GL.GL_ABGR_EXT;
+            glType = GL2.GL_ABGR_EXT;
         } else {
             switch (format) {
                 case ImageComponentRetained.TYPE_BYTE_RGBA:
@@ -7295,7 +7295,7 @@ class JoglPipeline extends Pipeline {
         float mapMaxX = (float) ((px + maxX - halfWidth)/halfWidth);
         float mapMaxY = (float) ((halfHeight - (py + minY))/halfHeight);
 
-        gl.glBegin(GL.GL_QUADS);
+        gl.glBegin(GL2.GL_QUADS);
 
         gl.glTexCoord2f(texMinU, texMaxV); gl.glVertex2f(mapMinX,mapMinY);
         gl.glTexCoord2f(texMaxU, texMaxV); gl.glVertex2f(mapMaxX,mapMinY);
@@ -7315,7 +7315,7 @@ class JoglPipeline extends Pipeline {
 
         GL gl = context(ctx).getGL();
 
-        int glType = (gl.isExtensionAvailable("GL_EXT_abgr") ? GL.GL_ABGR_EXT : GL.GL_RGBA);
+        int glType = (gl.isExtensionAvailable("GL_EXT_abgr") ? GL2.GL_ABGR_EXT : GL.GL_RGBA);
 
         gl.glBindTexture(GL.GL_TEXTURE_2D, objectId);
 
@@ -7408,7 +7408,7 @@ class JoglPipeline extends Pipeline {
             ctx.setAlphaClearValue(1.0f);
         }
         if (gl.isExtensionAvailable("GL_ARB_vertex_shader")) {
-            gl.glGetIntegerv(GL.GL_MAX_TEXTURE_COORDS_ARB, tmp, 0);
+            gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_COORDS_ARB, tmp, 0);
             ctx.setMaxTexCoordSets(tmp[0]);
         }
         return true;
@@ -7451,7 +7451,7 @@ class JoglPipeline extends Pipeline {
                 GL2.GL_INT, null);
         int[] tmp = new int[1];
         gl.glGetColorTableParameteriv(GL.GL_PROXY_TEXTURE_COLOR_TABLE_SGI,
-                GL.GL_COLOR_TABLE_WIDTH, tmp, 0);
+                GL2.GL_COLOR_TABLE_WIDTH, tmp, 0);
         return tmp[0];
     }
 
@@ -7468,7 +7468,7 @@ class JoglPipeline extends Pipeline {
             cv.maxTextureUnits = tmp[0];
             cv.maxTexCoordSets = cv.maxTextureUnits;
             if (gl.isExtensionAvailable("GL_ARB_vertex_shader")) {
-                gl.glGetIntegerv(GL.GL_MAX_TEXTURE_COORDS_ARB, tmp, 0);
+                gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_COORDS_ARB, tmp, 0);
                 cv.maxTexCoordSets = tmp[0];
             }
         }
@@ -7557,7 +7557,7 @@ class JoglPipeline extends Pipeline {
             // JoglContext for dispatch of various routines such as those
             // related to vertex attributes
             int[] tmp = new int[1];
-            gl.glGetIntegerv(GL. GL_MAX_TEXTURE_IMAGE_UNITS_ARB, tmp, 0);
+            gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_IMAGE_UNITS_ARB, tmp, 0);
             cv.maxTextureImageUnits = tmp[0];
             gl.glGetIntegerv(GL2.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, tmp, 0);
             cv.maxVertexTextureImageUnits = tmp[0];
@@ -7565,7 +7565,7 @@ class JoglPipeline extends Pipeline {
             cv.maxCombinedTextureImageUnits = tmp[0];
             int vertexAttrOffset = VirtualUniverse.mc.glslVertexAttrOffset;
             ctx.setGLSLVertexAttrOffset(vertexAttrOffset);
-            gl.glGetIntegerv(GL. GL_MAX_VERTEX_ATTRIBS_ARB, tmp, 0);
+            gl.glGetIntegerv(GL2.GL_MAX_VERTEX_ATTRIBS_ARB, tmp, 0);
             cv.maxVertexAttrs = tmp[0];
             // decr count to allow for reserved vertex attrs
             cv.maxVertexAttrs -= vertexAttrOffset;
@@ -7760,13 +7760,13 @@ class JoglPipeline extends Pipeline {
         gl.glDisable(GL2.GL_FOG);
         gl.glDisable(GL2.GL_LIGHTING);
         gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
-        gl.glDisable(GL.GL_POLYGON_STIPPLE);
+        gl.glDisable(GL2.GL_POLYGON_STIPPLE);
         gl.glDisable(GL.GL_STENCIL_TEST);
         gl.glDisable(GL.GL_TEXTURE_2D);
-        gl.glDisable(GL.GL_TEXTURE_GEN_Q);
-        gl.glDisable(GL.GL_TEXTURE_GEN_R);
-        gl.glDisable(GL.GL_TEXTURE_GEN_S);
-        gl.glDisable(GL.GL_TEXTURE_GEN_T);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_Q);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_R);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_T);
 
 
         for (int i = 0; i < 6; i++) {
@@ -7796,7 +7796,7 @@ class JoglPipeline extends Pipeline {
         gl.glDisable(GL.GL_CULL_FACE);
         gl.glDisable(GL2.GL_LIGHTING);
         gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
-        gl.glDisable(GL.GL_POLYGON_STIPPLE);
+        gl.glDisable(GL2.GL_POLYGON_STIPPLE);
 
         // TODO: Disable if Raster.CLIP_POSITION is true
 //      for (int i = 0; i < 6; i++) {
