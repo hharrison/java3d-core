@@ -50,13 +50,21 @@ import java.nio.IntBuffer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.media.opengl.AWTGraphicsConfiguration;
-import javax.media.opengl.AWTGraphicsDevice;
-import javax.media.opengl.AbstractGraphicsConfiguration;
+import com.jogamp.nativewindow.awt.AWTGraphicsConfiguration;
+import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
+import com.jogamp.nativewindow.awt.AWTGraphicsScreen;
+import javax.media.nativewindow.AbstractGraphicsConfiguration;
+import javax.media.nativewindow.CapabilitiesChooser;
+import javax.media.nativewindow.CapabilitiesImmutable;
+import javax.media.nativewindow.GraphicsConfigurationFactory;
+import javax.media.nativewindow.NativeWindow;
+import javax.media.nativewindow.NativeWindowFactory;
 import javax.media.opengl.DefaultGLCapabilitiesChooser;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -67,6 +75,7 @@ import javax.media.opengl.GLDrawable;
 import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLException;
 import javax.media.opengl.GLPbuffer;
+import javax.media.opengl.GLProfile;
 import javax.media.opengl.Threading;
 import javax.media.opengl.glu.GLU;
 
@@ -6200,10 +6209,13 @@ class JoglPipeline extends Pipeline {
             indexChooser = new IndexCapabilitiesChooser(config.getChosenIndex());
         }
         if (cv.drawable == null) {
-            draw =
-                    GLDrawableFactory.getFactory().getGLDrawable(cv,
-                    config.getGLCapabilities(),
-                    indexChooser);
+			AWTGraphicsScreen awtGraphicsScreen = new AWTGraphicsScreen(config.getAwtGraphicsDevice());
+			GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(config.getAwtGraphicsDevice());
+			AWTGraphicsConfiguration awtGraphicsConfiguration = (AWTGraphicsConfiguration)factory.chooseGraphicsConfiguration(config.getGLCapabilities(),
+					config.getGLCapabilities(),
+					indexChooser, awtGraphicsScreen);
+			NativeWindow nativeWindow = NativeWindowFactory.getNativeWindow(cv, awtGraphicsConfiguration);
+			draw = GLDrawableFactory.getFactory(getDefaultProfile()).createGLDrawable(nativeWindow);
             cv.drawable = new JoglDrawable(draw);
         } else {
             draw = drawable(cv.drawable);
@@ -6272,6 +6284,10 @@ class JoglPipeline extends Pipeline {
         return ctx;
     }
 
+	private GLProfile getDefaultProfile() {
+		return GLProfile.getMaxFixedFunc(true);
+	}
+
     void createQueryContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, boolean offScreen, int width, int height,
             boolean glslLibraryAvailable) {
@@ -6286,12 +6302,17 @@ class JoglPipeline extends Pipeline {
         Frame f = new Frame();
         f.setUndecorated(true);
         f.setLayout(new BorderLayout());
-        GLCapabilities caps = new GLCapabilities();
+        GLCapabilities caps = new GLCapabilities(getDefaultProfile());
         ContextQuerier querier = new ContextQuerier(cv, glslLibraryAvailable);
         // FIXME: should know what GraphicsDevice on which to create
         // this Canvas / Frame, and this should probably be known from
         // the incoming "display" parameter
-        QueryCanvas canvas = new QueryCanvas(caps, querier, null);
+
+        JoglGraphicsConfiguration joglGraphicsConfiguration = (JoglGraphicsConfiguration) cv.graphicsConfiguration;
+        AWTGraphicsDevice awtGraphicsDevice = joglGraphicsConfiguration.getAwtGraphicsDevice();
+        AWTGraphicsConfiguration awtGraphicsConfiguration = createAwtGraphicsConfiguration(caps, querier, awtGraphicsDevice/*null*/);
+
+        QueryCanvas canvas = new QueryCanvas(awtGraphicsConfiguration, querier);
         f.add(canvas, BorderLayout.CENTER);
         f.setSize(MIN_FRAME_SIZE, MIN_FRAME_SIZE);
         f.setVisible(true);
@@ -6329,13 +6350,17 @@ class JoglPipeline extends Pipeline {
         // those only enumerate the on-screen visuals, and we need to find one which is
         // pbuffer capable
         GLCapabilities caps = jcfg.getGLCapabilities();
-        if (!GLDrawableFactory.getFactory().canCreateGLPbuffer()) {
+        //FIXME use the real AWTGraphicsDevice
+        //((JoglDrawable)cv.drawable).getGLDrawable().
+        if (!GLDrawableFactory.getFactory(getDefaultProfile()).canCreateGLPbuffer(jcfg.getAwtGraphicsDevice())) {
+
             // FIXME: do anything else here? Throw exception?
             return null;
         }
 
-        GLPbuffer pbuffer = GLDrawableFactory.getFactory().createGLPbuffer(caps, null,
-                width, height, null);
+        //FIXME use the real AWTGraphicsDevice
+        GLPbuffer pbuffer = GLDrawableFactory.getFactory(getDefaultProfile()).createGLPbuffer(jcfg.getAwtGraphicsDevice() ,caps, null,
+                width, height, GLContext.getCurrent());
         return new JoglDrawable(pbuffer);
     }
 
@@ -7891,14 +7916,16 @@ class JoglPipeline extends Pipeline {
             indexChooser = new IndexCapabilitiesChooser(config.getChosenIndex());
         }
 
+        AWTGraphicsDevice awtGraphicsDevice = ((JoglGraphicsConfiguration)gconfig).getAwtGraphicsDevice()/*new AWTGraphicsDevice(config.getDevice(), 0)*/;
+        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(awtGraphicsDevice);
+
         AbstractGraphicsConfiguration absConfig =
-                GLDrawableFactory.getFactory().chooseGraphicsConfiguration(config.getGLCapabilities(),
-                indexChooser,
-                new AWTGraphicsDevice(config.getDevice()));
+                factory.chooseGraphicsConfiguration(config.getGLCapabilities(), config.getGLCapabilities(),
+                indexChooser, new AWTGraphicsScreen(awtGraphicsDevice));
         if (absConfig == null) {
             return null;
         }
-        return ((AWTGraphicsConfiguration) absConfig).getGraphicsConfiguration();
+        return ((AWTGraphicsConfiguration) absConfig).getAWTGraphicsConfiguration();
 
       /*
 
@@ -7936,7 +7963,7 @@ class JoglPipeline extends Pipeline {
        */
 
         // Create a GLCapabilities based on the GraphicsConfigTemplate3D
-        GLCapabilities caps = new GLCapabilities();
+        GLCapabilities caps = new GLCapabilities(getDefaultProfile());
         caps.setDoubleBuffered(gct.getDoubleBuffer() <= GraphicsConfigTemplate.PREFERRED);
         caps.setStereo        (gct.getStereo() <= GraphicsConfigTemplate.PREFERRED);
         caps.setDepthBits     (gct.getDepthSize());
@@ -7982,7 +8009,8 @@ class JoglPipeline extends Pipeline {
             f.setLayout(new BorderLayout());
             capturer = new CapabilitiesCapturer();
             try {
-                QueryCanvas canvas = new QueryCanvas(caps, capturer, dev);
+                AWTGraphicsConfiguration awtGraphicsConfiguration = createAwtGraphicsConfiguration(caps, capturer, dev/*null*/);
+                QueryCanvas canvas = new QueryCanvas(awtGraphicsConfiguration, capturer);
                 f.add(canvas, BorderLayout.CENTER);
                 f.setSize(MIN_FRAME_SIZE, MIN_FRAME_SIZE);
                 f.setVisible(true);
@@ -8206,9 +8234,7 @@ class JoglPipeline extends Pipeline {
         private ExtendedCapabilitiesChooser chooser;
         private boolean alreadyRan;
 
-        public QueryCanvas(GLCapabilities capabilities,
-                ExtendedCapabilitiesChooser chooser,
-                GraphicsDevice device) {
+        public QueryCanvas(AWTGraphicsConfiguration awtGraphicsConfiguration, ExtendedCapabilitiesChooser chooser) {
             // The platform-specific GLDrawableFactory will only provide a
             // non-null GraphicsConfiguration on platforms where this is
             // necessary (currently only X11, as Windows allows the pixel
@@ -8218,11 +8244,9 @@ class JoglPipeline extends Pipeline {
             // least in the Sun AWT implementation) that this will result in
             // equivalent behavior to calling the no-arg super() constructor
             // for Canvas.
-            super(unwrap((AWTGraphicsConfiguration)
-            GLDrawableFactory.getFactory().chooseGraphicsConfiguration(capabilities,
-                    chooser,
-                    new AWTGraphicsDevice(device))));
-            drawable = GLDrawableFactory.getFactory().getGLDrawable(this, capabilities, chooser);
+            super(unwrap(awtGraphicsConfiguration));
+            NativeWindow nativeWindow = NativeWindowFactory.getNativeWindow(this, awtGraphicsConfiguration);
+            drawable = GLDrawableFactory.getFactory(getDefaultProfile()).createGLDrawable(nativeWindow);
             this.chooser = chooser;
         }
 
@@ -8251,11 +8275,31 @@ class JoglPipeline extends Pipeline {
         }
     }
 
+    private static AWTGraphicsConfiguration createAwtGraphicsConfiguration(GLCapabilities capabilities,
+            CapabilitiesChooser chooser,
+            GraphicsDevice device) {
+        //FIXME unit id?
+        AWTGraphicsDevice awtGraphicsDevice = new AWTGraphicsDevice(device, 0);
+        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(awtGraphicsDevice);
+        AWTGraphicsConfiguration awtGraphicsConfiguration = (AWTGraphicsConfiguration) factory.chooseGraphicsConfiguration(capabilities, capabilities,
+        chooser, new AWTGraphicsScreen(awtGraphicsDevice));
+        return awtGraphicsConfiguration;
+    }
+
+    private static AWTGraphicsConfiguration createAwtGraphicsConfiguration(GLCapabilities capabilities,
+            CapabilitiesChooser chooser,
+            AWTGraphicsDevice awtGraphicsDevice) {
+        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(awtGraphicsDevice);
+        AWTGraphicsConfiguration awtGraphicsConfiguration = (AWTGraphicsConfiguration) factory.chooseGraphicsConfiguration(capabilities, capabilities,
+        chooser, new AWTGraphicsScreen(awtGraphicsDevice));
+        return awtGraphicsConfiguration;
+    }
+
     private static GraphicsConfiguration unwrap(AWTGraphicsConfiguration config) {
         if (config == null) {
             return null;
         }
-        return config.getGraphicsConfiguration();
+        return config.getAWTGraphicsConfiguration();
     }
 
     // Used in conjunction with IndexCapabilitiesChooser in pixel format
@@ -8280,7 +8324,7 @@ class JoglPipeline extends Pipeline {
         public int chooseCapabilities(GLCapabilities desired,
                 GLCapabilities[] available,
                 int windowSystemRecommendedChoice) {
-            int res = super.chooseCapabilities(desired, available, windowSystemRecommendedChoice);
+            int res = super.chooseCapabilities(desired, Arrays.asList(available), windowSystemRecommendedChoice);
             capabilities = available[res];
             chosenIndex = res;
             markDone();
@@ -8353,8 +8397,8 @@ class JoglPipeline extends Pipeline {
             this.indexToChoose = indexToChoose;
         }
 
-        public int chooseCapabilities(GLCapabilities desired,
-                GLCapabilities[] available,
+        public int chooseCapabilities(CapabilitiesImmutable desired,
+                List available,
                 int windowSystemRecommendedChoice) {
             if (DEBUG_CONFIG) {
                 System.err.println("IndexCapabilitiesChooser returning index=" + indexToChoose);

@@ -42,6 +42,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.VolatileImage;
 
+import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
 import javax.media.opengl.GLCapabilities;
 
 /**
@@ -55,6 +56,7 @@ class JoglGraphicsConfiguration extends GraphicsConfiguration {
   private GLCapabilities caps;
   private int chosenIndex;
   private GraphicsDevice device;
+  private AWTGraphicsDevice awtGraphicsDevice;
   // Needed for Screen3D
   private int width;
   private int height;
@@ -64,6 +66,8 @@ class JoglGraphicsConfiguration extends GraphicsConfiguration {
     this.caps = caps;
     this.chosenIndex = chosenIndex;
     this.device = device;
+    //FIXME unit id?
+    this.awtGraphicsDevice = new AWTGraphicsDevice(this.device, 0);
     DisplayMode m = device.getDisplayMode();
     width = m.getWidth();
     height = m.getHeight();
@@ -122,6 +126,10 @@ class JoglGraphicsConfiguration extends GraphicsConfiguration {
 
   public GraphicsDevice getDevice() {
     return device;
+  }
+
+  public AWTGraphicsDevice getAwtGraphicsDevice() {
+    return awtGraphicsDevice;
   }
 
   public AffineTransform getNormalizingTransform() {
