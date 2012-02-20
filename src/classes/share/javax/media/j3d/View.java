@@ -41,8 +41,6 @@ import java.util.Vector;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 
-import com.sun.j3d.utils.universe.Viewer;
-
 /**
  * The View object contains all parameters needed in rendering a
  * three dimensional scene from one viewpoint.  A view contains a list
@@ -740,12 +738,6 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
     long frameNumber = 0;
     long startTime = 0;
     long stopTime = 0;
-
-    // Support dynamic video resize -- DVR.
-    Viewer viewer = null; // Cached the associate viewer of this view.
-    boolean firstTime = true;
-//    float dvrFactor = 1.0f;
-//    boolean dvrResizeCompensation = true;
 
     // User adjustable minimum frame cycle time
     long minFrameCycleTime;
@@ -3085,45 +3077,6 @@ private ArrayList<ArrayList<Canvas3D>> canvasList = new ArrayList<ArrayList<Canv
      * to this view.
      */
     final void updateViewCache() {
-
-
-        // TODO KCR : remove obsolete DVR code (but make sure we don't end
-        // up with a leak in the Viewer Map object).
-
-        // DVR support
-	// This is a back door in j3d to provide DVR support.
-	// A better place to put this code segment is in
-	// ViewCache.snapshot(). Since it consists of some
-	// back door code, I've decided to put it here to isolate
-	// it from the rest of view snapshot code.
-	if(firstTime) {
-	    // System.err.println("View : First Time is " + firstTime);
-	    // viewer = Viewer.getViewer(this);
-	    // Since we've the handler to the viewer, we can remove the entry
-	    // now to avoid confusion and prevent memory leak problem.
-	    viewer = Viewer.removeViewerMapEntry(this);
-	    firstTime = false;
-	}
-
-//	if(viewer != null)  {
-//	    if(viewer.isDvrEnabled()) {
-//		dvrFactor = viewer.getDvrFactor();
-//		dvrResizeCompensation =
-//		    viewer.getDvrResizeCompensationEnable();
-//		/*
-//		System.err.println("View : dvrFactor is " + dvrFactor);
-//		System.err.println("View : dvrResizeCompensation is " +
-//				   dvrResizeCompensation);
-//		*/
-//	    }
-//	    else {
-//		// Reset back to default.
-//		dvrFactor = 1.0f;
-//		dvrResizeCompensation = true;
-//
-//	    }
-//	}
-	// End of back door -- DVR.
 
 	synchronized(this) {
 	    viewCache.snapshot();
