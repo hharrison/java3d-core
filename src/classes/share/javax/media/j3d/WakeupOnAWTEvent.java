@@ -36,7 +36,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Class that specifies a Behavior wakeup when a specific AWT event occurs.
@@ -53,7 +53,7 @@ public final class WakeupOnAWTEvent extends WakeupCriterion {
     int AwtId;
     long EventMask;
     long enableAWTEventTS = 0L;
-    Vector events = new Vector();
+final ArrayList<AWTEvent> events = new ArrayList<AWTEvent>();
 
     /**
      * Constructs a new WakeupOnAWTEvent object that informs the Java 3D
@@ -84,28 +84,24 @@ public final class WakeupOnAWTEvent extends WakeupCriterion {
      * @return either null (if not resposible for wakeup) or the array of
      * AWTEvents responsible for the wakeup.
      */
-    public AWTEvent[] getAWTEvent(){
-	AWTEvent eventArray[];
-
+public AWTEvent[] getAWTEvent() {
 	synchronized (events) {
-	    eventArray = new AWTEvent[events.size()];
-	    events.copyInto(eventArray);
-	    events.removeAllElements();
+		AWTEvent[] eventArray = events.toArray(new AWTEvent[events.size()]);
+		events.clear();
+		return eventArray;
 	}
-
-	return eventArray;
-    }
-
+}
 
    /**
     * Sets the AWT event that will cause a behavior wakeup.
     * @param event The event causing this wakeup
     */
-    void addAWTEvent(AWTEvent event){
-	events.addElement(event);
+void addAWTEvent(AWTEvent event) {
+	synchronized (events) {
+		events.add(event);
+	}
 	this.setTriggered();
-    }
-
+}
 
     /**
      * This is a callback from BehaviorStructure. It is
