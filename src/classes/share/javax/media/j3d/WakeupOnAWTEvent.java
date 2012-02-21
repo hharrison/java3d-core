@@ -32,7 +32,6 @@
 package javax.media.j3d;
 
 import java.awt.AWTEvent;
-import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -127,11 +126,6 @@ void addAWTEvent(AWTEvent event) {
      */
     void resetBehaviorCondition(BehaviorStructure bs) {
 	if (enableAWTEventTS != bs.awtEventTimestamp) {
-	    if ((AwtId >= ComponentEvent.COMPONENT_FIRST &&
-		 AwtId <= ComponentEvent.COMPONENT_LAST) ||
-		(EventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0) {
-		behav.universe.enableComponentEvents();
-	    }
 	    if ((AwtId >= FocusEvent.FOCUS_FIRST && AwtId <= FocusEvent.FOCUS_LAST) ||
 		(EventMask & AWTEvent.FOCUS_EVENT_MASK) != 0) {
 		behav.universe.enableFocusEvents();

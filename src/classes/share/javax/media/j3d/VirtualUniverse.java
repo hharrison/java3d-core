@@ -390,7 +390,7 @@ ArrayList<Integer> viewIdFreeList = new ArrayList<Integer>();
 
 /**
  * Returns the enumeration object of all locales in this virtual universe.
- * 
+ *
  * @return the enumeration object
  */
 public Enumeration<Locale> getAllLocales() {
@@ -680,7 +680,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 }
 
     void checkForEnableEvents() {
-	enableComponentEvents();
 	if (enableFocus) {
 	    enableFocusEvents();
 	}
@@ -697,34 +696,6 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 	    enableMouseWheelEvents();
 	}
 
-    }
-
-    void enableComponentEvents() {
-        // Issue 458 - This method is now a noop
-        /*
-	Enumeration cvs;
-	Canvas3D cv;
-        ViewPlatformRetained vp;
-	View views[];
-	Object[] vps = getViewPlatformList();
-
-	if (vps != null) {
-	    for (int i=0; i<vps.length; i++) {
-                vp =(ViewPlatformRetained)vps[i];
-		views = vp.getViewList();
-		for (int j=views.length-1; j>=0; j--) {
-	            cvs = views[j].getAllCanvas3Ds();
-	            while(cvs.hasMoreElements()) {
-		        cv = (Canvas3D) cvs.nextElement();
-                        // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null) {
-		            cv.eventCatcher.enableComponentEvents();
-                        }
-	            }
-		}
-	    }
-	}
-        */
     }
 
     void disableFocusEvents() {
