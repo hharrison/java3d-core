@@ -7871,14 +7871,14 @@ class JoglPipeline extends Pipeline {
         }
         if (srcOffsetY >= 0) {
             gl.glPixelStorei(GL.GL_UNPACK_SKIP_ROWS, srcOffsetY);
-            if (srcOffsetY + rasterHeight > rasterHeight) {
-                rasterHeight = rasterHeight - srcOffsetY;
+            if (srcOffsetY + rasterHeight > depthHeight) {
+                rasterHeight = depthHeight - srcOffsetY;
             }
         } else {
-            rasterHeight += srcOffsetY;
-            if (rasterHeight > rasterHeight) {
-                rasterHeight = rasterHeight;
-            }
+			rasterHeight += srcOffsetY;
+			if (rasterHeight > depthHeight) {
+				rasterHeight = depthHeight;
+			}
         }
 
 
