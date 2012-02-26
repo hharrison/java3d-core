@@ -492,8 +492,8 @@ class BackgroundRetained extends LeafRetained {
 	setLiveState.localToVworld = setLiveState.currentTransforms;
 	setLiveState.localToVworldIndex = setLiveState.currentTransformsIndex;
 
-        setLiveState.branchGroupPaths = new ArrayList();
-        setLiveState.branchGroupPaths.add(new BranchGroupRetained[0]);
+	setLiveState.branchGroupPaths = new ArrayList<BranchGroupRetained[]>();
+	setLiveState.branchGroupPaths.add(new BranchGroupRetained[0]);
 
         setLiveState.orderedPaths = new ArrayList(1);
         setLiveState.orderedPaths.add(new OrderedPath());

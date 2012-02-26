@@ -217,8 +217,8 @@ public class Locale extends Object {
 	s.localToVworld = s.currentTransforms;
 	s.localToVworldIndex = s.currentTransformsIndex;
 
-        s.branchGroupPaths = new ArrayList();
-        s.branchGroupPaths.add(new BranchGroupRetained[0]);
+	s.branchGroupPaths = new ArrayList<BranchGroupRetained[]>();
+	s.branchGroupPaths.add(new BranchGroupRetained[0]);
 
         s.orderedPaths = new ArrayList(1);
         s.orderedPaths.add(new OrderedPath());
@@ -503,8 +503,8 @@ public class Locale extends Object {
 	universe.setLiveState.localToVworldIndex =
 	    universe.setLiveState.currentTransformsIndex;
 
-        universe.setLiveState.branchGroupPaths = new ArrayList();
-        universe.setLiveState.branchGroupPaths.add(new BranchGroupRetained[0]);
+	universe.setLiveState.branchGroupPaths = new ArrayList<BranchGroupRetained[]>();
+	universe.setLiveState.branchGroupPaths.add(new BranchGroupRetained[0]);
 
         universe.setLiveState.orderedPaths = new ArrayList(1);
         universe.setLiveState.orderedPaths.add(new OrderedPath());

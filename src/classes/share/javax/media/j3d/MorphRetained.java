@@ -1293,7 +1293,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 
 		shape.localToVworld[0] = localToVworld[j];
 		shape.localToVworldIndex[0] = localToVworldIndex[j];
-		shape.branchGroupPath = (BranchGroupRetained []) branchGroupPaths.get(j);
+				shape.branchGroupPath = branchGroupPaths.get(j);
 		shape.isPickable = s.pickable[i];
 		shape.isCollidable = s.collidable[i];
 
@@ -1373,7 +1373,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    shape.localToVworldIndex = new int[1][];
 	    shape.localToVworld[0] = this.localToVworld[0];
 	    shape.localToVworldIndex[0] = this.localToVworldIndex[0];
-	    shape.branchGroupPath = (BranchGroupRetained []) branchGroupPaths.get(0);
+			shape.branchGroupPath = branchGroupPaths.get(0);
 	    shape.isPickable = s.pickable[0];
 	    shape.isCollidable = s.collidable[0];
 	    shape.initMirrorShape3D(s, this, 0);

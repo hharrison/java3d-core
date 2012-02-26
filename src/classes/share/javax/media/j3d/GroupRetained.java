@@ -1530,7 +1530,7 @@ synchronized void setAltAppScope() {
 	    // Note that there is no need to clone individual
 	    // branchGroupArray since they will get replace (not append)
 	    // by creating a new reference in child's group.
-            s.branchGroupPaths = (ArrayList) branchGroupPaths.clone();
+		s.branchGroupPaths = new ArrayList<BranchGroupRetained[]>(branchGroupPaths);
             s.orderedPaths = orderedPaths;
 
 	    // Make the scoped fogs and lights of the child to include, the
@@ -2213,7 +2213,7 @@ synchronized void setAltAppScope() {
 	boolean oldcollidableArray[] = (boolean []) s.collidable.clone();
 	boolean workingpickableArray[] = new boolean[oldpickableArray.length];
 	boolean workingcollidableArray[] = new boolean[oldcollidableArray.length];
-	ArrayList oldBranchGroupPaths = s.branchGroupPaths;
+	ArrayList<BranchGroupRetained[]> oldBranchGroupPaths = s.branchGroupPaths;
 	setScopingInfo(s);
 
 
@@ -2234,7 +2234,7 @@ synchronized void setAltAppScope() {
 	    // s.branchGroupPaths will be modified by child setLive()
 	    // so we have to restore it every time.
 	    s.parentBranchGroupPaths = branchGroupPaths;
-            s.branchGroupPaths = (ArrayList) oldBranchGroupPaths.clone();
+		s.branchGroupPaths = new ArrayList<BranchGroupRetained[]>(oldBranchGroupPaths);
 	    s.inViewSpecificGroup = inViewSpecificGroup;
             childDoSetLive(child, i, s);
 	}

@@ -170,7 +170,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
      * For non BranchGroupRetained class this is a reference to
      * the previous BranchGroupRetained branchGroupPaths.
      */
-    ArrayList branchGroupPaths = new ArrayList(1);
+ArrayList<BranchGroupRetained[]> branchGroupPaths = new ArrayList<BranchGroupRetained[]>(1);
 
     // background node whose geometry branch contains this node
     BackgroundRetained geometryBackground = null;
@@ -704,7 +704,7 @@ abstract class NodeRetained extends SceneGraphObjectRetained implements NnuId {
             localToVworldKeys = null;
 	    // restore to default and avoid calling clear()
 	    // that may clear parent reference branchGroupPaths
-	    branchGroupPaths = new ArrayList(1);
+		branchGroupPaths = new ArrayList<BranchGroupRetained[]>(1);
             parentTransformLink = null;
             parentSwitchLink = null;
 	}

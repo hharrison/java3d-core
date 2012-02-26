@@ -122,15 +122,14 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
     // ogCIOTableList contains a list of affected child index order.
     ArrayList ogCIOTableList = new ArrayList(5);
 
-    /**
-     * List of BranchGroup from this node to the root of tree
-     * This is used by BranchGroupRetained to construct
-     * BranchGroup lists for picking.
-     *
-     * @see NodeRetained.branchGroupPaths
-     */
-    ArrayList branchGroupPaths = null;
-    ArrayList parentBranchGroupPaths = null;
+/**
+ * List of BranchGroup from this node to the root of tree This is used by
+ * BranchGroupRetained to construct BranchGroup lists for picking.
+ * 
+ * @see NodeRetained.branchGroupPaths
+ */
+ArrayList<BranchGroupRetained[]> branchGroupPaths = null;
+ArrayList<BranchGroupRetained[]> parentBranchGroupPaths = null;
 
     /**
      * List of Pickable flags, one for each share path.

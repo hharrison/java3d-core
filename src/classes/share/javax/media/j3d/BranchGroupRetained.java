@@ -146,10 +146,8 @@ class BranchGroupRetained extends GroupRetained {
     void setAuxData(SetLiveState s, int index, int hkIndex) {
 	super.setAuxData(s, index, hkIndex);
 
-	BranchGroupRetained path[] = (BranchGroupRetained[])
-	    s.branchGroupPaths.get(index);
-	BranchGroupRetained clonePath[] =
-	    new BranchGroupRetained[path.length+1];
+	BranchGroupRetained path[] = s.branchGroupPaths.get(index);
+	BranchGroupRetained clonePath[] = new BranchGroupRetained[path.length + 1];
 	System.arraycopy(path, 0, clonePath, 0, path.length);
 	clonePath[path.length] = this;
 	s.branchGroupPaths.set(index, clonePath);
@@ -165,7 +163,7 @@ class BranchGroupRetained extends GroupRetained {
 	if((!inSharedGroup) || (s.keys.length == localToVworld.length)) {
 	    // restore to default and avoid calling clear()
 	    // that may clear parent reference branchGroupPaths
-	    branchGroupPaths = new ArrayList(1);
+	    branchGroupPaths = new ArrayList<BranchGroupRetained[]>(1);
 	}
 	else {
 	    int i, index;

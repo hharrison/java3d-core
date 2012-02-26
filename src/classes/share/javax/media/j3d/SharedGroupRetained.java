@@ -374,7 +374,7 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 	    // restore to default and avoid calling clear()
 	    // that may clear parent reference branchGroupPaths
 	    // Note that this function did not invoke super.removeNodeData()
-	    branchGroupPaths = new ArrayList(1);
+		branchGroupPaths = new ArrayList<BranchGroupRetained[]>(1);
             orderedPaths = null;
             switchStates = null;
             cachedTargets = null;

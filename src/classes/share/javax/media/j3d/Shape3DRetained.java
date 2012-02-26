@@ -1010,7 +1010,7 @@ class Shape3DRetained extends LeafRetained {
 		*/
 		shape.localToVworld[0] = localToVworld[j];
 		shape.localToVworldIndex[0] = localToVworldIndex[j];
-		shape.branchGroupPath = (BranchGroupRetained []) branchGroupPaths.get(j);
+			shape.branchGroupPath = branchGroupPaths.get(j);
 		shape.isPickable = s.pickable[i];
 		shape.isCollidable = s.collidable[i];
 
@@ -1085,7 +1085,7 @@ class Shape3DRetained extends LeafRetained {
 	    shape.localToVworldIndex = new int[1][];
 	    shape.localToVworld[0] = localToVworld[0];
 	    shape.localToVworldIndex[0] = localToVworldIndex[0];
-	    shape.branchGroupPath = (BranchGroupRetained []) branchGroupPaths.get(0);
+		shape.branchGroupPath = branchGroupPaths.get(0);
 	    shape.isPickable = s.pickable[0];
 	    shape.isCollidable = s.collidable[0];
 	    initMirrorShape3D(s, shape, 0);
