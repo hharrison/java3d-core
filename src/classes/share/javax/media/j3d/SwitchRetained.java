@@ -631,22 +631,19 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 
 
     void computeCombineBounds(Bounds bounds) {
-        int i;
-        NodeRetained child;
-
         if (boundsAutoCompute) {
             if (!VirtualUniverse.mc.cacheAutoComputedBounds) {
                 if (whichChild == Switch.CHILD_ALL) {
-                    for (i = 0; i < children.size(); i++) {
-                        child = (NodeRetained) children.get(i);
+				for (int i = 0; i < children.size(); i++) {
+					NodeRetained child = children.get(i);
                         if (child != null) {
                             child.computeCombineBounds(bounds);
                         }
                     }
                 } else if (whichChild == Switch.CHILD_MASK) {
-                    for (i = 0; i < children.size(); i++) {
+				for (int i = 0; i < children.size(); i++) {
                         if (childMask.get(i)) {
-                            child = (NodeRetained) children.get(i);
+						NodeRetained child = children.get(i);
                             if (child != null) {
                                 child.computeCombineBounds(bounds);
                             }
@@ -654,7 +651,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
                     }
                 } else if (whichChild != Switch.CHILD_NONE) {
                     if (whichChild < children.size()) {
-                        child = (NodeRetained) children.get(whichChild);
+					NodeRetained child = children.get(whichChild);
                         if (child != null) {
                             child.computeCombineBounds(bounds);
                         }
@@ -672,16 +669,16 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 					cachedBounds = new BoundingSphere((Bounds)null);
                     }
                     if (whichChild == Switch.CHILD_ALL) {
-                        for (i = 0; i < children.size(); i++) {
-                            child = (NodeRetained) children.get(i);
+					for (int i = 0; i < children.size(); i++) {
+						NodeRetained child = children.get(i);
                             if (child != null) {
                                 child.computeCombineBounds(cachedBounds);
                             }
                         }
                     } else if (whichChild == Switch.CHILD_MASK) {
-                        for (i = 0; i < children.size(); i++) {
+					for (int i = 0; i < children.size(); i++) {
                             if (childMask.get(i)) {
-                                child = (NodeRetained) children.get(i);
+							NodeRetained child = children.get(i);
                                 if (child != null) {
                                     child.computeCombineBounds(cachedBounds);
                                 }
@@ -689,7 +686,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
                         }
                     } else if (whichChild != Switch.CHILD_NONE) {
                         if (whichChild < children.size()) {
-                            child = (NodeRetained) children.get(whichChild);
+						NodeRetained child = children.get(whichChild);
                             if (child != null) {
                                 child.computeCombineBounds(cachedBounds);
                             }
@@ -712,10 +709,6 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
    * @return the node's bounding object
    */
     Bounds getBounds() {
-
-        int i;
-        NodeRetained child;
-
         if (boundsAutoCompute) {
             // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
             if (validCachedBounds) {
@@ -731,16 +724,16 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
             }
 
             if (whichChild == Switch.CHILD_ALL) {
-                for (i = 0; i < children.size(); i++) {
-                    child = (NodeRetained) children.get(i);
+			for (int i = 0; i < children.size(); i++) {
+				NodeRetained child = children.get(i);
                     if (child != null) {
                         child.computeCombineBounds((Bounds) boundingObject);
                     }
                 }
             } else if (whichChild == Switch.CHILD_MASK) {
-                for (i = 0; i < children.size(); i++) {
+			for (int i = 0; i < children.size(); i++) {
                     if (childMask.get(i)) {
-                        child = (NodeRetained) children.get(i);
+					NodeRetained child = children.get(i);
                         if (child != null) {
                             child.computeCombineBounds((Bounds) boundingObject);
                         }
@@ -750,7 +743,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
                     whichChild >= 0 &&
                     whichChild < children.size()) {
 
-                child = (NodeRetained) children.get(whichChild);
+			NodeRetained child = children.get(whichChild);
                 if (child != null) {
                     child.computeCombineBounds((Bounds) boundingObject);
                 }

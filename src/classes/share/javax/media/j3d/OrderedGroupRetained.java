@@ -316,11 +316,10 @@ OrderedBin getOrderedBin(int index) {
     void setAuxData(SetLiveState s, int index, int hkIndex) {
         OrderedPath setLiveStateOrderedPath, newOrderedPath;
         ArrayList childOrderedPaths;
-        NodeRetained child;
 
         setLiveStateOrderedPath = (OrderedPath) s.orderedPaths.get(hkIndex);
         for (int i=0; i<children.size(); i++) {
-            child = (NodeRetained)children.get(i);
+		NodeRetained child = children.get(i);
             if (refCount == s.refCount) {
                 // only need to do it once if in shared group when the first
                 // instances is to be added

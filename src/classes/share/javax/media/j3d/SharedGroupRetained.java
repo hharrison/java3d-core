@@ -363,7 +363,6 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
      */
     void removeNodeData(SetLiveState s) {
 
-	int numChildren = children.size();
         ArrayList switchTargets;
 	int i,j;
 

@@ -801,7 +801,6 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
             return;
         }
 
-	NodeRetained child;
         //issue 544
         Bounds boundingObject = null;
         if (VirtualUniverse.mc.useBoxForGroupBounds) {
@@ -811,7 +810,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         }
 	if(boundsAutoCompute) {
 	    for (int i=children.size()-1; i>=0; i--) {
-		child = (NodeRetained)children.get(i);
+			NodeRetained child = children.get(i);
 		if(child != null)
 		    child.computeCombineBounds(boundingObject);
 	    }

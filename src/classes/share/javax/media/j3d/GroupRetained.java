@@ -40,10 +40,10 @@ import java.util.Vector;
  */
 
 class GroupRetained extends NodeRetained implements BHLeafInterface {
-    /**
-     * The Group Node's children vector.
-     */
-    ArrayList children = new ArrayList(1);
+/**
+ * The Group Node's children vector.
+ */
+ArrayList<NodeRetained> children = new ArrayList<NodeRetained>(1);
 
     /**
      * The Group node's collision bounds in local coordinates.
@@ -138,7 +138,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
     int scopingRefCount = 0;
 
 
-    ArrayList compiledChildrenList = null;
+ArrayList<NodeRetained> compiledChildrenList = null;
 
     boolean isInClearLive = false;
 
@@ -225,7 +225,6 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 
     // The method that does the work once the lock is acquired.
     void doSetChild(Node child, int index) {
-	NodeRetained oldchildr;
 	J3dMessage[] messages = null;
 	int numMessages = 0;
 	int attachStartIndex = 0;
@@ -237,7 +236,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 	// messages to masterControl for processing in one call.
 	// So let's first find out how many messages will be sent
 
-	oldchildr = (NodeRetained) children.get(index);
+	NodeRetained oldchildr = children.get(index);
 
 	if (this.source.isLive()) {
 	    if (oldchildr != null) {
@@ -323,11 +322,10 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
     // The method that does the work once the lock is acquired.
     void doInsertChild(Node child, int index) {
 	int i;
-	NodeRetained childi;
 
 	insertChildrenData(index);
 	for (i=index; i<children.size(); i++) {
-	    childi = (NodeRetained) children.get(i);
+		NodeRetained childi = children.get(i);
 	    if(childi != null)
 		childi.childIndex++;
 	}
@@ -354,7 +352,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 	if (this.source.isLive()) {
 	    universe.resetWaitMCFlag();
 	    synchronized (universe.sceneGraphLock) {
-              NodeRetained childr = (NodeRetained)children.get(index);
+			NodeRetained childr = children.get(index);
 	      doRemoveChild(index, null, 0);
 	      universe.setLiveState.clear();
               universe.notifyStructureChangeListeners(false, this.source, (BranchGroup)childr.source);
@@ -406,14 +404,11 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 
     // The method that does the work once the lock is acquired.
     void doRemoveChild(int index, J3dMessage messages[], int messageIndex) {
-	NodeRetained oldchildr, child;
-	int i;
-
-	oldchildr = (NodeRetained) children.get(index);
+	NodeRetained oldchildr = children.get(index);
 
 	int size = children.size();
-	for (i=index; i<size; i++) {
-	    child = (NodeRetained) children.get(i);
+	for (int i = index; i < size; i++) {
+		NodeRetained child = children.get(i);
 	    if(child != null)
 		child.childIndex--;
 	}
@@ -441,7 +436,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
      */
     Node getChild(int index) {
 
-	SceneGraphObjectRetained sgo = (SceneGraphObjectRetained) children.get(index);
+	NodeRetained sgo = children.get(index);
 	if(sgo == null)
 	    return null;
 	else
@@ -454,10 +449,9 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
      */
     Enumeration getAllChildren() {
         Vector userChildren=new Vector(children.size());
-	SceneGraphObjectRetained sgo;
 
 	for(int i=0; i<children.size(); i++) {
-	    sgo = (SceneGraphObjectRetained)children.get(i);
+		NodeRetained sgo = children.get(i);
 	    if(sgo != null)
 		userChildren.add(sgo.source);
 	    else
@@ -704,7 +698,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 	}
 	if (this.source.isLive() || this.isInSetLive()) {
 	    for (int i = children.size()-1; i >=0; i--) {
-		NodeRetained child = (NodeRetained)children.get(i);
+			NodeRetained child = children.get(i);
 		if(child != null) {
 		    if (child instanceof GroupRetained  && (child.source.isLive() || child.isInSetLive()))
 			((GroupRetained)child).processAllNodesForScopedLight(numLgts, ml, list, k);
@@ -750,7 +744,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 	// If the source is live, then notify the children
 	if (this.source.isLive() && !isInClearLive) {
 	    for (int i = children.size()-1; i >=0; i--) {
-		NodeRetained child = (NodeRetained)children.get(i);
+			NodeRetained child = children.get(i);
 		if(child != null) {
 		    if (child instanceof GroupRetained &&(child.source.isLive() &&
 							    ! ((GroupRetained)child).isInClearLive))
@@ -795,7 +789,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 	// If the source is live, then notify the children
 	if (this.source.isLive() || this.isInSetLive()) {
 	    for (int i = children.size()-1; i >=0; i--) {
-		NodeRetained child = (NodeRetained)children.get(i);
+			NodeRetained child = children.get(i);
 		if(child != null) {
 		    if (child instanceof GroupRetained && (child.source.isLive()|| child.isInSetLive()))
 			((GroupRetained)child).processAddNodesForScopedFog(mfog, list, k);
@@ -839,7 +833,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 	    removeFog(mfog, k);
 	if (this.source.isLive() && !isInClearLive) {
 	    for (int i = children.size()-1; i >=0; i--) {
-		NodeRetained child = (NodeRetained)children.get(i);
+			NodeRetained child = children.get(i);
 		if(child != null) {
 		    if (child instanceof GroupRetained &&(child.source.isLive() &&
 							    ! ((GroupRetained)child).isInClearLive))
@@ -884,7 +878,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 	// If the source is live, then notify the children
 	if (this.source.isLive() || this.isInSetLive()) {
 	    for (int i = children.size()-1; i >=0; i--) {
-		NodeRetained child = (NodeRetained)children.get(i);
+			NodeRetained child = children.get(i);
 		if(child != null) {
 		    if (child instanceof GroupRetained && (child.source.isLive()||child.isInSetLive() ))
 			((GroupRetained)child).processAddNodesForScopedModelClip(
@@ -930,7 +924,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 	    removeModelClip(mModelClip, k);
 	if (this.source.isLive() && !isInClearLive) {
 	    for (int i = children.size()-1; i >=0; i--) {
-		NodeRetained child = (NodeRetained)children.get(i);
+			NodeRetained child = children.get(i);
 		if(child != null) {
 		    if (child instanceof GroupRetained &&(child.source.isLive() &&
 							    ! ((GroupRetained)child).isInClearLive))
@@ -976,7 +970,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 	    addAltApp(mAltApp, k);
 	if (this.source.isLive() || this.isInSetLive()) {
 	    for (int i = children.size()-1; i >=0; i--) {
-		NodeRetained child = (NodeRetained)children.get(i);
+			NodeRetained child = children.get(i);
 		if(child != null) {
 		    if (child instanceof GroupRetained && (child.source.isLive() || child.isInSetLive()))
 			((GroupRetained)child).processAddNodesForScopedAltApp(mAltApp, list, k);
@@ -1021,7 +1015,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 	    removeAltApp(mAltApp, k);
 	if (this.source.isLive() && !isInClearLive) {
 	    for (int i = children.size()-1; i >=0; i--) {
-		NodeRetained child = (NodeRetained)children.get(i);
+			NodeRetained child = children.get(i);
 		if(child != null) {
 		    if (child instanceof GroupRetained &&(child.source.isLive() &&
 							    ! ((GroupRetained)child).isInClearLive))
@@ -1342,7 +1336,6 @@ synchronized void setAltAppScope() {
 	int numChildLessOne = children.size() - 1;
 	super.updatePickable(keys, pick);
 	int i=0;
-	NodeRetained child;
 
         // Fix for issue 540
         if (numChildLessOne < 0) {
@@ -1351,13 +1344,13 @@ synchronized void setAltAppScope() {
         // End fix for issue 540
 
 	for (i = 0; i < numChildLessOne; i++) {
-	    child = (NodeRetained)children.get(i);
+		NodeRetained child = children.get(i);
 	    if(child != null)
 		child.updatePickable(keys, (boolean []) pick.clone());
 	}
 	// No need to clone for the last value
 
-	child = (NodeRetained)children.get(i);
+	NodeRetained child = children.get(i);
 	if(child != null)
 	    child.updatePickable(keys, pick);
 
@@ -1368,7 +1361,6 @@ synchronized void setAltAppScope() {
 	int numChildLessOne = children.size() - 1;
 	super.updateCollidable(keys, collide);
 	int i=0;
-	NodeRetained child;
 
         // Fix for issue 540
         if (numChildLessOne < 0) {
@@ -1376,13 +1368,13 @@ synchronized void setAltAppScope() {
         }
         // End fix for issue 540
 
-        for (i = 0; i < numChildLessOne; i++) {
-	    child = (NodeRetained)children.get(i);
-	    if(child != null)
-		child.updateCollidable(keys, (boolean []) collide.clone());
+	for (i = 0; i < numChildLessOne; i++) {
+		NodeRetained child = children.get(i);
+		if (child != null)
+			child.updateCollidable(keys, (boolean[]) collide.clone());
 	}
 	// No need to clone for the last value
-	child = (NodeRetained)children.get(i);
+	NodeRetained child = children.get(i);
 	if(child != null)
 	    child.updateCollidable(keys, collide);
     }
@@ -2144,11 +2136,9 @@ synchronized void setAltAppScope() {
 
 
     synchronized void updateLocalToVworld() {
-	NodeRetained child;
-
 	// For each children call .....
 	for (int i=children.size()-1; i>=0; i--) {
-	    child = (NodeRetained)children.get(i);
+		NodeRetained child = children.get(i);
 	    if(child != null)
 		child.updateLocalToVworld();
 	}
@@ -2198,7 +2188,6 @@ synchronized void setAltAppScope() {
      */
     void doSetLive(SetLiveState s) {
       	int i, nchildren;
-	NodeRetained child;
         super.doSetLive(s);
 	locale = s.locale;
 
@@ -2222,7 +2211,7 @@ synchronized void setAltAppScope() {
 	}
 
 	for (i=0; i<nchildren; i++) {
-	    child = (NodeRetained)children.get(i);
+		NodeRetained child = children.get(i);
 
 	    // Restore old values before child.setLive(s)
 	    System.arraycopy(oldpickableArray, 0, workingpickableArray, 0,
@@ -2452,7 +2441,7 @@ synchronized void setAltAppScope() {
         if (!VirtualUniverse.mc.cacheAutoComputedBounds) {
             if (boundsAutoCompute) {
                 for (int i=children.size()-1; i>=0; i--) {
-                    NodeRetained child = (NodeRetained)children.get(i);
+				NodeRetained child = children.get(i);
                     if(child != null)
                         child.computeCombineBounds(bounds);
                 }
@@ -2477,7 +2466,7 @@ synchronized void setAltAppScope() {
 				cachedBounds = new BoundingSphere((Bounds)null);
                 }
                 for (int i = children.size() - 1; i >= 0; i--) {
-                    NodeRetained child = (NodeRetained) children.get(i);
+				NodeRetained child = children.get(i);
                     if (child != null) {
                         child.computeCombineBounds(cachedBounds);
                     }
@@ -2513,7 +2502,7 @@ synchronized void setAltAppScope() {
 			boundingObject = new BoundingSphere((Bounds)null);
             }
             for (int i = children.size() - 1; i >= 0; i--) {
-                NodeRetained child = (NodeRetained) children.get(i);
+			NodeRetained child = children.get(i);
                 if (child != null) {
                     child.computeCombineBounds((Bounds) boundingObject);
                 }
@@ -2544,8 +2533,7 @@ synchronized void setAltAppScope() {
 	}
 
 	for (int i = children.size() - 1; i >= 0; i--) {
-	    SceneGraphObjectRetained nodeR =
-		(SceneGraphObjectRetained) children.get(i);
+		NodeRetained nodeR = children.get(i);
 	    if (nodeR != null && nodeR.source.getCapability(Node.ALLOW_PARENT_READ)) {
 		return false;
 	    }
@@ -2565,16 +2553,13 @@ synchronized void setAltAppScope() {
     void setCompiled() {
 	super.setCompiled();
 	for (int i=children.size()-1; i>=0; i--) {
-	    SceneGraphObjectRetained node =
-		(SceneGraphObjectRetained) children.get(i);
+		NodeRetained node = children.get(i);
 	    if (node != null)
 		node.setCompiled();
 	}
     }
 
     void traverse(boolean sameLevel, int level) {
-	SceneGraphObjectRetained node;
-
 	if (!sameLevel) {
 	    super.traverse(true, level);
 
@@ -2589,7 +2574,7 @@ synchronized void setAltAppScope() {
 
 	level++;
 	for (int i = 0; i < children.size(); i++) {
-	    node = (SceneGraphObjectRetained) children.get(i);
+		NodeRetained node = children.get(i);
 	    if (node != null) {
 		node.traverse(false, level);
 	    }
@@ -2597,9 +2582,6 @@ synchronized void setAltAppScope() {
     }
 
     void compile(CompileState compState) {
-
-	SceneGraphObjectRetained node;
-
 	super.compile(compState);
 
 	mergeFlag = SceneGraphObjectRetained.MERGE;
@@ -2614,10 +2596,10 @@ synchronized void setAltAppScope() {
 	    mergeFlag = SceneGraphObjectRetained.DONT_MERGE;
 	}
 
-        compiledChildrenList = new ArrayList(5);
+	compiledChildrenList = new ArrayList<NodeRetained>(5);
 
 	for (int i = 0; i < children.size(); i++) {
-	    node = (SceneGraphObjectRetained) children.get(i);
+		NodeRetained node = children.get(i);
 	    if (node != null) {
 		node.compile(compState);
 	    }
@@ -2631,7 +2613,6 @@ synchronized void setAltAppScope() {
     void merge(CompileState compState) {
 
 	GroupRetained saveParentGroup = null;
-	SceneGraphObjectRetained node;
 
 	if (mergeFlag != SceneGraphObjectRetained.MERGE_DONE) {
             if (mergeFlag == SceneGraphObjectRetained.DONT_MERGE) {
@@ -2644,7 +2625,7 @@ synchronized void setAltAppScope() {
 	    }
 
 	    for (int i = 0; i < children.size(); i++) {
-	        node = (SceneGraphObjectRetained) children.get(i);
+			NodeRetained node = children.get(i);
 	        if (node != null) {
 		    node.merge(compState);
 		}
@@ -2679,7 +2660,6 @@ synchronized void setAltAppScope() {
      */
     void clearLive(SetLiveState s) {
 	int i, k, hkIndex, nchildren;
-	NodeRetained child;
 	int parentScopedLtSize = 0;
 	int parentScopedFogSize = 0;
 	int parentScopedMcSize = 0;
@@ -2726,7 +2706,7 @@ synchronized void setAltAppScope() {
 
 
 	for (i=nchildren-1; i >=0 ; i--) {
-	    child = (NodeRetained)children.get(i);
+		NodeRetained child = children.get(i);
 	    if (this instanceof OrderedGroupRetained) {
 	        OrderedGroupRetained og = (OrderedGroupRetained)this;
 
@@ -2978,7 +2958,7 @@ synchronized void setAltAppScope() {
 	    return true;
 	}
 
-	ArrayList children = sw.children;
+	ArrayList<NodeRetained> children = sw.children;
 
 	if (whichChild >= 0) { // most common case
 	    return (children.get(whichChild) == node);
@@ -3076,7 +3056,7 @@ synchronized void setAltAppScope() {
 	int nchildren = children.size();
 	if (source.isLive()) {
 	    for (int i = 0; i < nchildren; i++) {
-		NodeRetained child = (NodeRetained) children.get(i);
+			NodeRetained child = children.get(i);
 		if (child instanceof LeafRetained) {
 		    if (child instanceof LinkRetained) {
 			int lastCount = k.count;
@@ -3205,7 +3185,7 @@ synchronized void setAltAppScope() {
     // recursively found all geometryAtoms under this Group
     void searchGeometryAtoms(UnorderList list) {
 	for (int i = children.size()-1; i >=0; i--) {
-	    NodeRetained child = (NodeRetained)children.get(i);
+		NodeRetained child = children.get(i);
 	    child.searchGeometryAtoms(list);
 	}
     }
