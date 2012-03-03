@@ -698,248 +698,243 @@ synchronized ViewPlatformRetained[] getViewPlatformList() {
 
     }
 
-    void disableFocusEvents() {
-        ViewPlatformRetained vp;
+void disableFocusEvents() {
+	ViewPlatformRetained vp;
 	View views[];
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableFocus = false;
 
 	if (vps != null) {
-	    for (int i=0; i<vps.length; i++) {
-                vp = vps[i];
-		views = vp.getViewList();
-		for (int j=views.length-1; j>=0; j--) {
+		for (int i = 0; i < vps.length; i++) {
+			vp = vps[i];
+			views = vp.getViewList();
+			for (int j = views.length - 1; j >= 0; j--) {
 				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
-	            while(cvs.hasMoreElements()) {
+				while (cvs.hasMoreElements()) {
 					Canvas3D cv = cvs.nextElement();
-                        // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null)
-		            cv.eventCatcher.disableFocusEvents();
-	            }
-	        }
-	    }
+					// offscreen canvas does not have event catcher
+					if (cv.eventCatcher != null)
+						cv.eventCatcher.disableFocusEvents();
+				}
+			}
+		}
 	}
+}
 
-    }
-
-    void enableFocusEvents() {
-        ViewPlatformRetained vp;
+void enableFocusEvents() {
+	ViewPlatformRetained vp;
 	View views[];
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableFocus = true;
 
 	if (vps != null) {
-	    for (int i=0; i<vps.length; i++) {
+		for (int i = 0; i < vps.length; i++) {
 			vp = vps[i];
-		views = vp.getViewList();
-		for (int j=views.length-1; j>=0; j--) {
+			views = vp.getViewList();
+			for (int j = views.length - 1; j >= 0; j--) {
 				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
-	            while(cvs.hasMoreElements()) {
+				while (cvs.hasMoreElements()) {
 					Canvas3D cv = cvs.nextElement();
-                        // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null)
-		            cv.eventCatcher.enableFocusEvents();
-	            }
-	        }
-	    }
+					// offscreen canvas does not have event catcher
+					if (cv.eventCatcher != null)
+						cv.eventCatcher.enableFocusEvents();
+				}
+			}
+		}
 	}
-    }
+}
 
-
-    void disableKeyEvents() {
-        ViewPlatformRetained vp;
+void disableKeyEvents() {
+	ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	View views[];
 
 	enableKey = false;
 
 	if (vps != null) {
-	    for (int i=0; i<vps.length; i++) {
-                vp = vps[i];
-		views = vp.getViewList();
-		for (int j=views.length-1; j>=0; j--) {
+		for (int i = 0; i < vps.length; i++) {
+			vp = vps[i];
+			views = vp.getViewList();
+			for (int j = views.length - 1; j >= 0; j--) {
 				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
-	            while(cvs.hasMoreElements()) {
+				while (cvs.hasMoreElements()) {
 					Canvas3D cv = cvs.nextElement();
-                        // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null)
-			    cv.eventCatcher.disableKeyEvents();
-	            }
-	        }
-	    }
+					// offscreen canvas does not have event catcher
+					if (cv.eventCatcher != null)
+						cv.eventCatcher.disableKeyEvents();
+				}
+			}
+		}
 	}
-    }
+}
 
-
-    void enableKeyEvents() {
-        ViewPlatformRetained vp;
+void enableKeyEvents() {
+	ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	View views[];
 
 	enableKey = true;
 
 	if (vps != null) {
-	    for (int i=0; i<vps.length; i++) {
+		for (int i = 0; i < vps.length; i++) {
 			vp = vps[i];
-		views = vp.getViewList();
-		for (int j=views.length-1; j>=0; j--) {
+			views = vp.getViewList();
+			for (int j = views.length - 1; j >= 0; j--) {
 				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
-	            while(cvs.hasMoreElements()) {
+				while (cvs.hasMoreElements()) {
 					Canvas3D cv = cvs.nextElement();
-                        // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null)
-			    cv.eventCatcher.enableKeyEvents();
-	            }
-	        }
-	    }
+					// offscreen canvas does not have event catcher
+					if (cv.eventCatcher != null)
+						cv.eventCatcher.enableKeyEvents();
+				}
+			}
+		}
 	}
-    }
+}
 
-
-   void disableMouseEvents() {
+void disableMouseEvents() {
 	View views[];
-        ViewPlatformRetained vp;
+	ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouse = false;
 
 	if (vps != null) {
-	    for (int i=0; i<vps.length; i++) {
+		for (int i = 0; i < vps.length; i++) {
 			vp = vps[i];
-		views = vp.getViewList();
-		for (int j=views.length-1; j>=0; j--) {
+			views = vp.getViewList();
+			for (int j = views.length - 1; j >= 0; j--) {
 				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
-	            while(cvs.hasMoreElements()) {
+				while (cvs.hasMoreElements()) {
 					Canvas3D cv = cvs.nextElement();
-                        // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null)
-		            cv.eventCatcher.disableMouseEvents();
-	            }
-	        }
-	    }
+					// offscreen canvas does not have event catcher
+					if (cv.eventCatcher != null)
+						cv.eventCatcher.disableMouseEvents();
+				}
+			}
+		}
 	}
-    }
+}
 
-    void enableMouseEvents() {
+void enableMouseEvents() {
 	View views[];
-        ViewPlatformRetained vp;
+	ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouse = true;
 
 	if (vps != null) {
-	    for (int i=0; i<vps.length; i++) {
+		for (int i = 0; i < vps.length; i++) {
 			vp = vps[i];
-		views = vp.getViewList();
-		for (int j=views.length-1; j>=0; j--) {
+			views = vp.getViewList();
+			for (int j = views.length - 1; j >= 0; j--) {
 				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
-	            while(cvs.hasMoreElements()) {
+				while (cvs.hasMoreElements()) {
 					Canvas3D cv = cvs.nextElement();
-                        // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null)
-		            cv.eventCatcher.enableMouseEvents();
-	            }
-	        }
-	    }
+					// offscreen canvas does not have event catcher
+					if (cv.eventCatcher != null)
+						cv.eventCatcher.enableMouseEvents();
+				}
+			}
+		}
 	}
-    }
+}
 
-
-    void disableMouseMotionEvents() {
+void disableMouseMotionEvents() {
 	View views[];
-        ViewPlatformRetained vp;
+	ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouseMotion = false;
 
 	if (vps != null) {
-	    for (int i=0; i<vps.length; i++) {
+		for (int i = 0; i < vps.length; i++) {
 			vp = vps[i];
-		views = vp.getViewList();
-		for (int j=views.length-1; j>=0; j--) {
+			views = vp.getViewList();
+			for (int j = views.length - 1; j >= 0; j--) {
 				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
-	            while(cvs.hasMoreElements()) {
+				while (cvs.hasMoreElements()) {
 					Canvas3D cv = cvs.nextElement();
-                        // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null)
-		            cv.eventCatcher.disableMouseMotionEvents();
-	            }
-	        }
-	    }
+					// offscreen canvas does not have event catcher
+					if (cv.eventCatcher != null)
+						cv.eventCatcher.disableMouseMotionEvents();
+				}
+			}
+		}
 	}
-    }
+}
 
-    void enableMouseMotionEvents() {
+void enableMouseMotionEvents() {
 	View views[];
-        ViewPlatformRetained vp;
+	ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouseMotion = true;
 
 	if (vps != null) {
-	    for (int i=0; i<vps.length; i++) {
+		for (int i = 0; i < vps.length; i++) {
 			vp = vps[i];
-		views = vp.getViewList();
-		for (int j=views.length-1; j>=0; j--) {
+			views = vp.getViewList();
+			for (int j = views.length - 1; j >= 0; j--) {
 				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
-	            while(cvs.hasMoreElements()) {
+				while (cvs.hasMoreElements()) {
 					Canvas3D cv = cvs.nextElement();
-                        // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null)
-		            cv.eventCatcher.enableMouseMotionEvents();
-	            }
-	        }
-	    }
+					// offscreen canvas does not have event catcher
+					if (cv.eventCatcher != null)
+						cv.eventCatcher.enableMouseMotionEvents();
+				}
+			}
+		}
 	}
-    }
+}
 
-    void disableMouseWheelEvents() {
+void disableMouseWheelEvents() {
 	View views[];
-        ViewPlatformRetained vp;
+	ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouseWheel = false;
 
 	if (vps != null) {
-	    for (int i=0; i<vps.length; i++) {
+		for (int i = 0; i < vps.length; i++) {
 			vp = vps[i];
-		views = vp.getViewList();
-		for (int j=views.length-1; j>=0; j--) {
+			views = vp.getViewList();
+			for (int j = views.length - 1; j >= 0; j--) {
 				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
-	            while(cvs.hasMoreElements()) {
+				while (cvs.hasMoreElements()) {
 					Canvas3D cv = cvs.nextElement();
-                        // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null)
-		            cv.eventCatcher.disableMouseWheelEvents();
-	            }
-	        }
-	    }
+					// offscreen canvas does not have event catcher
+					if (cv.eventCatcher != null)
+						cv.eventCatcher.disableMouseWheelEvents();
+				}
+			}
+		}
 	}
-    }
+}
 
-    void enableMouseWheelEvents() {
+void enableMouseWheelEvents() {
 	View views[];
-        ViewPlatformRetained vp;
+	ViewPlatformRetained vp;
 	ViewPlatformRetained[] vps = getViewPlatformList();
 
 	enableMouseWheel = true;
 
 	if (vps != null) {
-	    for (int i=0; i<vps.length; i++) {
+		for (int i = 0; i < vps.length; i++) {
 			vp = vps[i];
-		views = vp.getViewList();
-		for (int j=views.length-1; j>=0; j--) {
+			views = vp.getViewList();
+			for (int j = views.length - 1; j >= 0; j--) {
 				Enumeration<Canvas3D> cvs = views[j].getAllCanvas3Ds();
-	            while(cvs.hasMoreElements()) {
+				while (cvs.hasMoreElements()) {
 					Canvas3D cv = cvs.nextElement();
-                        // offscreen canvas does not have event catcher
-                        if (cv.eventCatcher != null)
-		            cv.eventCatcher.enableMouseWheelEvents();
-	            }
-	        }
-	    }
+					// offscreen canvas does not have event catcher
+					if (cv.eventCatcher != null)
+						cv.eventCatcher.enableMouseWheelEvents();
+				}
+			}
+		}
 	}
-    }
+}
 
     /**
      * Sets the "current" view (during view activation) for this virtual
