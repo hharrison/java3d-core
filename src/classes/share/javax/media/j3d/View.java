@@ -716,9 +716,6 @@ private Vector<Canvas3D> canvases = new Vector<Canvas3D>(3);
     // This is the SoundScheduler associated with this view.
     SoundScheduler soundScheduler = null;
 
-    // This is the thread associated with this view.
-    SoundRenderer soundRenderer = new SoundRenderer();
-
     // AudioDevice enumerator current position
     //    AudioDeviceEnumerator allAudioEnumerator = null;
 
@@ -3333,7 +3330,6 @@ private ArrayList<ArrayList<Canvas3D>> canvasList = new ArrayList<ArrayList<Canv
 
 	soundScheduler.cleanup();
 	soundScheduler = null;
-	soundRenderer = new SoundRenderer();
 
 	viewCache = new ViewCache(this);
 	getCanvasList(true);

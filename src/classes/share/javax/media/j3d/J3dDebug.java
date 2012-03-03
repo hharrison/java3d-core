@@ -317,7 +317,6 @@ class J3dDebug  {
     static final int sharedGroupRetained = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int sound = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int soundException = !devPhase?NO_DEBUG:NO_DEBUG;
-    static final int soundRenderer = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int soundRetained = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int soundScheduler = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int soundStructure = !devPhase?NO_DEBUG:NO_DEBUG;
