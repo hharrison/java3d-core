@@ -81,14 +81,10 @@ public class VirtualUniverse extends Object {
 // A list of locales that are contained within this universe
 Vector<Locale> listOfLocales = new Vector<Locale>();
 
-// The list of view platforms.
-ArrayList<ViewPlatformRetained> viewPlatforms = new ArrayList<ViewPlatformRetained>();
-
-// The cached list of vp's
-ViewPlatformRetained[] viewPlatformList = null;
-
-    // A flag that indicates that the list of view platforms has changed
-    boolean vpChanged = false;
+// The list of view platforms, a changed flag and a cached array 
+private ArrayList<ViewPlatformRetained> viewPlatforms = new ArrayList<ViewPlatformRetained>();
+private boolean vpChanged = false;
+private ViewPlatformRetained[] viewPlatformList = new ViewPlatformRetained[0];
 
     // The list of backgrounds
     Vector backgrounds = new Vector();
@@ -661,22 +657,29 @@ public Enumeration<Locale> getAllLocales() {
 	}
     }
 
-    void addViewPlatform(ViewPlatformRetained vp) {
-	vpChanged = true;
-	viewPlatforms.add(vp);
-    }
-
-    void removeViewPlatform(ViewPlatformRetained vp) {
-	vpChanged = true;
-	viewPlatforms.remove(viewPlatforms.indexOf(vp));
-    }
-
-synchronized ViewPlatformRetained[] getViewPlatformList() {
-	if (vpChanged) {
-		viewPlatformList = viewPlatforms.toArray(new ViewPlatformRetained[viewPlatforms.size()]);
-		vpChanged = false;
+void addViewPlatform(ViewPlatformRetained vp) {
+	synchronized (viewPlatforms) {
+		vpChanged = true;
+		viewPlatforms.add(vp);
 	}
-	return viewPlatformList;
+}
+
+void removeViewPlatform(ViewPlatformRetained vp) {
+	synchronized (viewPlatforms) {
+		if (viewPlatforms.remove(vp))
+			vpChanged = true;
+	}
+}
+
+ViewPlatformRetained[] getViewPlatformList() {
+	synchronized (viewPlatforms) {
+		if (vpChanged) {
+			viewPlatformList = viewPlatforms.toArray(new ViewPlatformRetained[viewPlatforms.size()]);
+			vpChanged = false;	
+		}
+
+		return viewPlatformList;
+	}
 }
 
     void checkForEnableEvents() {
@@ -702,9 +705,6 @@ void disableFocusEvents() {
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableFocus = false;
 
-	if (vps == null)
-		return;
-
 	for (int i = 0; i < vps.length; i++) {
 		View[] views = vps[i].getViewList();
 		for (int j = views.length - 1; j >= 0; j--) {
@@ -723,9 +723,6 @@ void enableFocusEvents() {
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableFocus = true;
 
-	if (vps == null)
-		return;
-	
 	for (int i = 0; i < vps.length; i++) {
 		View[] views = vps[i].getViewList();
 		for (int j = views.length - 1; j >= 0; j--) {
@@ -743,9 +740,6 @@ void enableFocusEvents() {
 void disableKeyEvents() {
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableKey = false;
-
-	if (vps == null)
-		return;
 
 	for (int i = 0; i < vps.length; i++) {
 		View[] views = vps[i].getViewList();
@@ -765,9 +759,6 @@ void enableKeyEvents() {
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableKey = true;
 
-	if (vps == null)
-		return;
-
 	for (int i = 0; i < vps.length; i++) {
 		View[] views = vps[i].getViewList();
 		for (int j = views.length - 1; j >= 0; j--) {
@@ -785,9 +776,6 @@ void enableKeyEvents() {
 void disableMouseEvents() {
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableMouse = false;
-
-	if (vps == null)
-		return;
 
 	for (int i = 0; i < vps.length; i++) {
 		View[] views = vps[i].getViewList();
@@ -807,9 +795,6 @@ void enableMouseEvents() {
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableMouse = true;
 
-	if (vps == null)
-		return;
-
 	for (int i = 0; i < vps.length; i++) {
 		View[] views = vps[i].getViewList();
 		for (int j = views.length - 1; j >= 0; j--) {
@@ -827,9 +812,6 @@ void enableMouseEvents() {
 void disableMouseMotionEvents() {
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableMouseMotion = false;
-
-	if (vps == null)
-		return;
 
 	for (int i = 0; i < vps.length; i++) {
 		View[] views = vps[i].getViewList();
@@ -849,9 +831,6 @@ void enableMouseMotionEvents() {
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableMouseMotion = true;
 
-	if (vps == null)
-		return;
-
 	for (int i = 0; i < vps.length; i++) {
 		View[] views = vps[i].getViewList();
 		for (int j = views.length - 1; j >= 0; j--) {
@@ -870,9 +849,6 @@ void disableMouseWheelEvents() {
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableMouseWheel = false;
 
-	if (vps == null)
-		return;
-
 	for (int i = 0; i < vps.length; i++) {
 		View[] views = vps[i].getViewList();
 		for (int j = views.length - 1; j >= 0; j--) {
@@ -890,9 +866,6 @@ void disableMouseWheelEvents() {
 void enableMouseWheelEvents() {
 	ViewPlatformRetained[] vps = getViewPlatformList();
 	enableMouseWheel = true;
-
-	if (vps == null)
-		return;
 
 	for (int i = 0; i < vps.length; i++) {
 		View[] views = vps[i].getViewList();

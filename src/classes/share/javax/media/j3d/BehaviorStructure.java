@@ -36,7 +36,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.vecmath.Point3d;
@@ -1269,26 +1268,26 @@ class BehaviorStructure extends J3dStructure {
     }
 
 
-    void reEvaluatePhysicalEnvironments() {
+void reEvaluatePhysicalEnvironments() {
 	// we can't just add or remove from the list since
 	// physicalEnvironment may be share by multiple view
-	View v;
-	View views[];
-	ArrayList<ViewPlatformRetained> vpList = universe.viewPlatforms;
+	ViewPlatformRetained[] vpr = universe.getViewPlatformList();
 
 	physicalEnvironments.clear();
 
-	for (int i=vpList.size()-1; i>=0; i--) {
-		views = vpList.get(i).getViewList();
-	    for (int j=views.length-1; j>=0; j--) {
-		v = views[j];
-		if (v.active &&
-		    !physicalEnvironments.contains(v.physicalEnvironment)) {
-		    physicalEnvironments.add(v.physicalEnvironment);
+	for (int i = vpr.length - 1; i >= 0; i--) {
+		View[] views = vpr[i].getViewList();
+		for (int j = views.length - 1; j >= 0; j--) {
+			View v = views[j];
+			if (!v.active)
+				continue;
+			
+			if (!physicalEnvironments.contains(v.physicalEnvironment)) {
+				physicalEnvironments.add(v.physicalEnvironment);
+			}
 		}
-	    }
 	}
-    }
+}
 
     void checkSensorEntryExit() {
 	int i, idx;
