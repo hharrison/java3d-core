@@ -54,11 +54,11 @@ class ViewPlatformRetained extends LeafRetained {
      */
     int viewAttachPolicy = View.NOMINAL_HEAD;
 
-    /**
-     * The list of views associated with this view platform.
-     * Use getViewList() to access this variable.
-     */
-    private ArrayList viewList = new ArrayList();
+/**
+ * The list of views associated with this view platform.
+ * Use getViewList() to access this variable.
+ */
+private ArrayList<View> viewList = new ArrayList<View>();
 
     /**
      * Cached list of viewList for synchronization
@@ -179,26 +179,26 @@ class ViewPlatformRetained extends LeafRetained {
       return (float) sphere.getRadius();
     }
 
-    /**
-     * This sets the view that is associated with this view platform.
-     */
-    void setView(View v) {
+/**
+ * This sets the view that is associated with this view platform.
+ */
+void setView(View v) {
 	synchronized (viewList) {
-	    if (!viewList.contains(v)) {
-		viewList.add(v);
-	    }
-	    viewListDirty = true;
+		if (!viewList.contains(v)) {
+			viewList.add(v);
+		}
+		viewListDirty = true;
 	}
-    }
+}
 
-    void removeView(View v) {
+void removeView(View v) {
 	synchronized (viewList) {
-	    if (viewList.contains(v)) {
-		viewList.remove(viewList.indexOf(v));
-	    }
-	    viewListDirty = true;
+		if (viewList.contains(v)) {
+			viewList.remove(viewList.indexOf(v));
+		}
+		viewListDirty = true;
 	}
-    }
+}
 
     Transform3D getVworldToVpc() {
 	if (vworldToVpc == null)
@@ -378,18 +378,18 @@ class ViewPlatformRetained extends LeafRetained {
 	}
     }
 
-    /**
-     * Get a copy of cached view list
-     */
-    View[] getViewList() {
+/**
+ * Get a copy of cached view list
+ */
+View[] getViewList() {
 	synchronized (viewList) {
-	    if (viewListDirty) {
-		views = (View []) viewList.toArray(new View[viewList.size()]);
-		viewListDirty = false;
-	    }
-	    return views;
+		if (viewListDirty) {
+			views = viewList.toArray(new View[viewList.size()]);
+			viewListDirty = false;
+		}
+		return views;
 	}
-    }
+}
 
     /**
      * Use by BehaviorStructure to determine whether current
