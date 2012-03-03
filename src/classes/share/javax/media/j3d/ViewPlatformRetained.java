@@ -186,17 +186,15 @@ void setView(View v) {
 	synchronized (viewList) {
 		if (!viewList.contains(v)) {
 			viewList.add(v);
+			viewListDirty = true;
 		}
-		viewListDirty = true;
 	}
 }
 
 void removeView(View v) {
 	synchronized (viewList) {
-		if (viewList.contains(v)) {
-			viewList.remove(viewList.indexOf(v));
-		}
-		viewListDirty = true;
+		if (viewList.remove(v))
+			viewListDirty = true;
 	}
 }
 
