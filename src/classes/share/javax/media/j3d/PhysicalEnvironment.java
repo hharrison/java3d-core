@@ -132,8 +132,8 @@ ArrayList<View> users = new ArrayList<View>();
     // Scheduler for input devices
     InputDeviceScheduler inputsched;
 
-    // store all inputDevices
-    Vector devices = new Vector(1);
+// store all inputDevices
+Vector<InputDevice> devices = new Vector<InputDevice>(1);
 
     // Number of active view users
     int activeViewRef = 0;
@@ -235,54 +235,54 @@ synchronized void notifyUsers() {
         return audioDevice;
     }
 
-    /**
-     * Create an enumerator that produces all input devices.
-     * @return an enumerator of all available devices
-     */
-    public Enumeration getAllInputDevices() {
+/**
+ * Create an enumerator that produces all input devices.
+ * @return an enumerator of all available devices
+ */
+public Enumeration<InputDevice> getAllInputDevices() {
 	return devices.elements();
-    }
+}
 
-    /**
-     * Add an input device to the list of input devices.  User is
-     * responsible for initializing the device and setting the
-     * processing mode (streaming or polling).
-     * @param device  the device to be added to the list of input devices
-     * @exception IllegalArgumentException if InputDevice.getProcessingMode()
-     * does not return one of BLOCKING, NON_BLOCKING, or DEMAND_DRIVEN.
-     */
-    public void addInputDevice(InputDevice device) {
+/**
+ * Add an input device to the list of input devices.  User is
+ * responsible for initializing the device and setting the
+ * processing mode (streaming or polling).
+ * @param device  the device to be added to the list of input devices
+ * @exception IllegalArgumentException if InputDevice.getProcessingMode()
+ * does not return one of BLOCKING, NON_BLOCKING, or DEMAND_DRIVEN.
+ */
+public void addInputDevice(InputDevice device) {
 
-        int driver_type = device.getProcessingMode();
+	int driver_type = device.getProcessingMode();
 
-        if ((driver_type == InputDevice.BLOCKING) ||
-            (driver_type == InputDevice.NON_BLOCKING) ||
-            (driver_type == InputDevice.DEMAND_DRIVEN)) {
-                synchronized (devices) {
-                    devices.add(device);
-                    if (inputsched != null) {
-                        inputsched.addInputDevice(device);
-                    }
-                }
-        } else {
-            throw new IllegalArgumentException(J3dI18N.getString("PhysicalEnvironment0"));
-        }
-    }
+	if ((driver_type == InputDevice.BLOCKING) ||
+	    (driver_type == InputDevice.NON_BLOCKING) ||
+	    (driver_type == InputDevice.DEMAND_DRIVEN)) {
+		synchronized (devices) {
+			devices.add(device);
+			if (inputsched != null) {
+				inputsched.addInputDevice(device);
+			}
+		}
+	} else {
+		throw new IllegalArgumentException(J3dI18N.getString("PhysicalEnvironment0"));
+	}
+}
 
-    /**
-      * Remove an input device from the list of input devices.
-      * User is responsible for closing out the device and releasing
-      * the device resources.
-      * @param device  the device to be removed
-      */
-    public void removeInputDevice(InputDevice device) {
-         devices.remove(device);
-         synchronized (devices) {
-             if (inputsched != null) {
-                 inputsched.removeInputDevice(device);
-             }
-         }
-    }
+/**
+ * Remove an input device from the list of input devices.
+ * User is responsible for closing out the device and releasing
+ * the device resources.
+ * @param device  the device to be removed
+ */
+public void removeInputDevice(InputDevice device) {
+	synchronized (devices) {
+		devices.remove(device);
+		if (inputsched != null) {
+			inputsched.removeInputDevice(device);
+		}
+	}
+}
 
     /**
      * Sets the index of the head to the specified sensor index.

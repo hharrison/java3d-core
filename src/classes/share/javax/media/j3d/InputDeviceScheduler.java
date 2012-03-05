@@ -32,7 +32,6 @@
 package javax.media.j3d;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Vector;
 
 /**
@@ -55,9 +54,6 @@ class InputDeviceScheduler extends J3dThread {
 
     // This is used by MasterControl to keep track activeViewRef
     PhysicalEnvironment physicalEnv;
-
-    // store all inputDevices
-    Vector devices = new Vector(1);
 
     J3dThreadData threadData = new J3dThreadData();
     boolean active = false;
@@ -89,15 +85,12 @@ class InputDeviceScheduler extends J3dThread {
 	this.physicalEnv = physicalEnv;
 
 	synchronized (physicalEnv.devices) {
-	    Enumeration elm = physicalEnv.devices.elements();
-	    while (elm.hasMoreElements()) {
-		addInputDevice((InputDevice) elm.nextElement());
-	    }
-	    physicalEnv.inputsched = this;
+		for (InputDevice each : physicalEnv.devices) {
+			addInputDevice(each);
+		}
+		physicalEnv.inputsched = this;
 	}
-
-    }
-
+}
 
     void addInputDevice(InputDevice device) {
 
@@ -219,7 +212,6 @@ class InputDeviceScheduler extends J3dThread {
 	threads.clear();
 	blockingDevices.clear();
 	nonBlockingDevices.clear();
-	devices.clear();
     }
 
 }
