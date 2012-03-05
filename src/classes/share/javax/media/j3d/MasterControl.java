@@ -2080,11 +2080,10 @@ class MasterControl {
 
 	// remove all InputDeviceScheduler if this is the last View
 	UnorderList list = new UnorderList(1, PhysicalEnvironment.class);
-	for (Enumeration e = PhysicalEnvironment.physicalEnvMap.keys();
+	for (Enumeration<PhysicalEnvironment> e = PhysicalEnvironment.physicalEnvMap.keys();
 	     e.hasMoreElements(); ) {
-	    PhysicalEnvironment phyEnv = (PhysicalEnvironment) e.nextElement();
-	    InputDeviceScheduler sched = (InputDeviceScheduler)
-		PhysicalEnvironment.physicalEnvMap.get(phyEnv);
+		PhysicalEnvironment phyEnv = e.nextElement();
+		InputDeviceScheduler sched = PhysicalEnvironment.physicalEnvMap.get(phyEnv);
 	    for (i=phyEnv.users.size()-1; i>=0; i--) {
 			if (views.contains(phyEnv.users.get(i))) {
 		    // at least one register view refer to it.

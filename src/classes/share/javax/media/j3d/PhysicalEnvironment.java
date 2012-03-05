@@ -138,9 +138,12 @@ Vector<InputDevice> devices = new Vector<InputDevice>(1);
     // Number of active view users
     int activeViewRef = 0;
 
-    // Hashtable that maps a PhysicalEnvironment to its InputDeviceScheduler
-    static Hashtable physicalEnvMap = new Hashtable();
+// Hashtable that maps a PhysicalEnvironment to its InputDeviceScheduler
+static final Hashtable<PhysicalEnvironment, InputDeviceScheduler> physicalEnvMap;
 
+static {
+	physicalEnvMap = new Hashtable<PhysicalEnvironment, InputDeviceScheduler>();
+}
     /**
      * Constructs a PhysicalEnvironment object with default parameters.
      * The default values are as follows:
