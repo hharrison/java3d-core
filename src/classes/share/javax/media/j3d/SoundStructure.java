@@ -421,7 +421,7 @@ class SoundStructure extends J3dStructure {
         for (int i=viewPlatforms.arraySize()- 1; i>=0; i--) {
             View[] views = vpLists[i].getViewList();
             for (int j=(views.length-1); j>=0; j--) {
-                View v = (View)(views[j]);
+			View v = views[j];
 // XXXX: Shouldn't this be done with messages??
                 v.soundScheduler.loadSound(sound, forceLoad);
             }
@@ -434,7 +434,7 @@ class SoundStructure extends J3dStructure {
         for (int i=viewPlatforms.arraySize()- 1; i>=0; i--) {
             View[] views = vpLists[i].getViewList();
             for (int j=(views.length-1); j>=0; j--) {
-                View v = (View)(views[j]);
+			View v = views[j];
                 v.soundScheduler.enableSound(sound);
             }
         }
@@ -446,7 +446,7 @@ class SoundStructure extends J3dStructure {
         for (int i=viewPlatforms.arraySize()- 1; i>=0; i--) {
             View[] views = vpLists[i].getViewList();
             for (int j=(views.length-1); j>=0; j--) {
-                View v = (View)(views[j]);
+			View v = views[j];
                 v.soundScheduler.muteSound(sound);
             }
         }
@@ -458,7 +458,7 @@ class SoundStructure extends J3dStructure {
         for (int i=viewPlatforms.arraySize()- 1; i>=0; i--) {
             View[] views = vpLists[i].getViewList();
             for (int j=(views.length-1); j>=0; j--) {
-                View v = (View)(views[j]);
+			View v = views[j];
                 v.soundScheduler.pauseSound(sound);
             }
         }
