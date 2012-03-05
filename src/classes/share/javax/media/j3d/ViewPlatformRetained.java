@@ -389,21 +389,20 @@ View[] getViewList() {
 	}
 }
 
-    /**
-     * Use by BehaviorStructure to determine whether current
-     * ViewPlatform is active or not.
-     */
-    boolean isActiveViewPlatform() {
+/**
+ * Use by BehaviorStructure to determine whether current
+ * ViewPlatform is active or not.
+ */
+boolean isActiveViewPlatform() {
 	View v[] = getViewList();
-	if (v != null) {
-	    for (int i=0; i < v.length; i++) {
+	for (int i = 0; i < v.length; i++) {
 		if (v[i].active) {
-		    return true;
+			return true;
 		}
-	    }
 	}
+
 	return false;
-    }
+}
 
     void processSwitchChanged() {
         reEvaluateView();
