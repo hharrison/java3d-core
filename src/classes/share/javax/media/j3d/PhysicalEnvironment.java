@@ -126,8 +126,8 @@ public class PhysicalEnvironment extends Object {
 
     Sensor[] sensorList = null;
 
-    // A list of View Objects that refer to this
-    ArrayList users = new ArrayList();
+// A list of View Objects that refer to this
+ArrayList<View> users = new ArrayList<View>();
 
     // Scheduler for input devices
     InputDeviceScheduler inputsched;
@@ -163,29 +163,23 @@ public class PhysicalEnvironment extends Object {
 	this(3);
     }
 
-    // Add a user to the list of users
-    synchronized void removeUser(View view) {
-	int idx = users.indexOf(view);
-	if (idx >= 0) {
-	    users.remove(idx);
-	}
-    }
+// Add a user to the list of users
+synchronized void removeUser(View view) {
+	users.remove(view);
+}
 
-    // Add a user to the list of users
-    synchronized void addUser(View view) {
-	int idx = users.indexOf(view);
-	if (idx < 0) {
-	    users.add(view);
-	}
-    }
+// Add a user to the list of users
+synchronized void addUser(View view) {
+	if (!users.contains(view))
+		users.add(view);
+}
 
-    // Add a user to the list of users
-    synchronized void notifyUsers() {
-	for (int i=users.size()-1; i>=0; i--) {
-	    View view = (View)users.get(i);
-	    view.repaint();
+// Add a user to the list of users
+synchronized void notifyUsers() {
+	for (int i = users.size() - 1; i >= 0; i--) {
+		users.get(i).repaint();
 	}
-    }
+}
 
     /**
      * Constructs and initializes a PhysicalEnvironment object with

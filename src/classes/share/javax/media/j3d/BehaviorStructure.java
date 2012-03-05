@@ -1281,7 +1281,7 @@ void reEvaluatePhysicalEnvironments() {
 			View v = views[j];
 			if (!v.active)
 				continue;
-			
+
 			if (!physicalEnvironments.contains(v.physicalEnvironment)) {
 				physicalEnvironments.add(v.physicalEnvironment);
 			}
@@ -1342,44 +1342,44 @@ void reEvaluatePhysicalEnvironments() {
     }
 
 
-    /**
-     * return the Senor that intersect with behregion or null
-     */
-    Sensor sensorIntersect(Bounds behregion) {
+/**
+ * return the Sensor that intersect with behregion or null
+ */
+Sensor sensorIntersect(Bounds behregion) {
 
 	if (behregion == null)
-	    return null;
+		return null;
 
 	PhysicalEnvironment env[] = (PhysicalEnvironment [])
 	                               physicalEnvironments.toArray(false);
-	Sensor sensors[];
-	Sensor s;
-	View v;
-	for (int i=physicalEnvironments.arraySize()-1; i>=0; i--) {
-	    if (env[i].activeViewRef > 0) {
-		sensors = env[i].getSensorList();
-		if (sensors != null) {
-		    for (int j= env[i].users.size()-1; j>=0; j--) {
-			v = (View) env[i].users.get(j);
+	for (int i = physicalEnvironments.arraySize() - 1; i >= 0; i--) {
+		if (env[i].activeViewRef <= 0)
+			continue;
+
+		Sensor[] sensors = env[i].getSensorList();
+		if (sensors == null)
+			continue;
+
+		for (int j = env[i].users.size() - 1; j >= 0; j--) {
+			View v = env[i].users.get(j);
 			synchronized (sensors) {
-			    for (int k=sensors.length-1; k >=0; k--) {
-				s = sensors[k];
-				if (s != null) {
-				    v.getSensorToVworld(s, sensorTransform);
-				    sensorTransform.get(sensorLoc);
-				    ptSensorLoc.set(sensorLoc);
-				    if (behregion.intersect(ptSensorLoc)) {
-					return s;
-				    }
+				for (int k = sensors.length - 1; k >= 0; k--) {
+					Sensor s = sensors[k];
+					if (s == null)
+						continue;
+
+					v.getSensorToVworld(s, sensorTransform);
+					sensorTransform.get(sensorLoc);
+					ptSensorLoc.set(sensorLoc);
+					if (behregion.intersect(ptSensorLoc)) {
+						return s;
+					}
 				}
-			    }
 			}
-		    }
 		}
-	    }
 	}
 	return null;
-    }
+}
 
 
     /**

@@ -2086,7 +2086,7 @@ class MasterControl {
 	    InputDeviceScheduler sched = (InputDeviceScheduler)
 		PhysicalEnvironment.physicalEnvMap.get(phyEnv);
 	    for (i=phyEnv.users.size()-1; i>=0; i--) {
-		if (views.contains((View) phyEnv.users.get(i))) {
+			if (views.contains(phyEnv.users.get(i))) {
 		    // at least one register view refer to it.
 		    break;
 		}
