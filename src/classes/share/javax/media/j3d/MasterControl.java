@@ -2051,7 +2051,6 @@ class MasterControl {
 	// remove VirtualUniverse related threads if Universe
 	// is empty
         VirtualUniverse univ = v.universe;
-	int i;
 
 	synchronized (timeLock) {
 	    // The reason we need to sync. with timeLock is because we
@@ -2079,32 +2078,33 @@ class MasterControl {
 	}
 
 	// remove all InputDeviceScheduler if this is the last View
-	UnorderList list = new UnorderList(1, PhysicalEnvironment.class);
-	for (Enumeration<PhysicalEnvironment> e = PhysicalEnvironment.physicalEnvMap.keys();
-	     e.hasMoreElements(); ) {
+	ArrayList<PhysicalEnvironment> list = new ArrayList<PhysicalEnvironment>();
+	for (Enumeration<PhysicalEnvironment> e = PhysicalEnvironment.physicalEnvMap.keys(); e.hasMoreElements();) {
 		PhysicalEnvironment phyEnv = e.nextElement();
 		InputDeviceScheduler sched = PhysicalEnvironment.physicalEnvMap.get(phyEnv);
-	    for (i=phyEnv.users.size()-1; i>=0; i--) {
+		boolean phyEnvHasUser = false;
+		for (int i = 0; i < phyEnv.users.size(); i++) {
 			if (views.contains(phyEnv.users.get(i))) {
-		    // at least one register view refer to it.
-		    break;
+				// at least one registered view refer to it.
+				phyEnvHasUser = true;
+				break;
+			}
 		}
-	    }
-	    if (i < 0) {
-		if(J3dDebug.devPhase) {
-		    J3dDebug.doDebug(J3dDebug.masterControl, J3dDebug.LEVEL_1,
-				     "MC: Destroy InputDeviceScheduler thread "
-				     + sched);
-		}
-		sched.finish();
-		phyEnv.inputsched = null;
-		list.add(phyEnv);
-	    }
-	}
-	for (i=list.size()-1; i>=0; i--) {
-	    PhysicalEnvironment.physicalEnvMap.remove(list.get(i));
-	}
 
+		if (!phyEnvHasUser) {
+			if (J3dDebug.devPhase) {
+				J3dDebug.doDebug(J3dDebug.masterControl, J3dDebug.LEVEL_1,
+						"MC: Destroy InputDeviceScheduler thread "
+								+ sched);
+			}
+			sched.finish();
+			phyEnv.inputsched = null;
+			list.add(phyEnv);
+		}
+	}
+	for (int i = 0; i < list.size(); i++) {
+		PhysicalEnvironment.physicalEnvMap.remove(list.get(i));
+	}
 
 	freeContext(v);
 
