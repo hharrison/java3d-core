@@ -180,8 +180,8 @@ public class Screen3D extends Object {
     // A count of the number of active View associated with this screen
     UnorderList activeViews = new UnorderList(1, View.class);
 
-    // A list of Canvas3D Objects that refer to this
-    ArrayList users = new ArrayList();
+	// A list of Canvas3D Objects that refer to this
+	private final ArrayList<Canvas3D> users = new ArrayList<Canvas3D>();
 
     void addActiveView(View v) {
 	activeViews.addUnique(v);
@@ -195,32 +195,23 @@ public class Screen3D extends Object {
 	return activeViews.isEmpty();
     }
 
-    // Add a user to the list of users
-    synchronized void removeUser(Canvas3D c) {
-	int idx = users.indexOf(c);
-	if (idx >= 0) {
-	    users.remove(idx);
-	}
-    }
+// Add a user to the list of users
+synchronized void removeUser(Canvas3D c) {
+	users.remove(c);
+}
 
-    // Add a user to the list of users
-    synchronized void addUser(Canvas3D c) {
-	int idx = users.indexOf(c);
-	if (idx < 0) {
-	    users.add(c);
-	}
-    }
+// Add a user to the list of users
+synchronized void addUser(Canvas3D c) {
+	if (!users.contains(c))
+		users.add(c);
+}
 
-    // Add a user to the list of users
-    synchronized void notifyUsers() {
-	int i;
-	Canvas3D c;
-
-	for (i=0; i<users.size(); i++) {
-	    c = (Canvas3D)users.get(i);
-	    c.redraw();
+// Add a user to the list of users
+synchronized void notifyUsers() {
+	for (int i = 0; i < users.size(); i++) {
+		users.get(i).redraw();
 	}
-    }
+}
 
     /**
      * Retrieves the width and height (in pixels) of this Screen3D.
