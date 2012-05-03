@@ -69,10 +69,6 @@ import javax.media.opengl.GLPbuffer;
 import javax.media.opengl.Threading;
 import javax.media.opengl.glu.GLU;
 
-import com.sun.opengl.cg.CGcontext;
-import com.sun.opengl.cg.CGparameter;
-import com.sun.opengl.cg.CGprogram;
-import com.sun.opengl.cg.CgGL;
 import com.sun.opengl.util.BufferUtil;
 
 /**
@@ -2819,760 +2815,6 @@ class JoglPipeline extends Pipeline {
         }
 
     }
-
-    // ---------------------------------------------------------------------
-
-    //
-    // CgShaderProgramRetained methods
-    //
-
-    // ShaderAttributeValue methods
-
-    ShaderError setCgUniform1i(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform1i()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgSetParameter1i(param.vParam(), value);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgSetParameter1i(param.fParam(), value);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform1f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform1f()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgSetParameter1f(param.vParam(), value);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgSetParameter1f(param.fParam(), value);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform2i(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform2i()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgSetParameter2i(param.vParam(), value[0], value[1]);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgSetParameter2i(param.fParam(), value[0], value[1]);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform2f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform2f()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgSetParameter2f(param.vParam(), value[0], value[1]);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgSetParameter2f(param.fParam(), value[0], value[1]);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform3i(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform3i()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgSetParameter3i(param.vParam(), value[0], value[1], value[2]);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgSetParameter3i(param.fParam(), value[0], value[1], value[2]);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform3f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform3f()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgSetParameter3f(param.vParam(), value[0], value[1], value[2]);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgSetParameter3f(param.fParam(), value[0], value[1], value[2]);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform4i(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform4i()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgSetParameter4i(param.vParam(), value[0], value[1], value[2], value[3]);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgSetParameter4i(param.fParam(), value[0], value[1], value[2], value[3]);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform4f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform4f()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgSetParameter4f(param.vParam(), value[0], value[1], value[2], value[3]);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgSetParameter4f(param.fParam(), value[0], value[1], value[2], value[3]);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniformMatrix3f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniformMatrix3f()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetMatrixParameterfr(param.vParam(), value, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetMatrixParameterfr(param.fParam(), value, 0);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniformMatrix4f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniformMatrix4f()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetMatrixParameterfr(param.vParam(), value, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetMatrixParameterfr(param.fParam(), value, 0);
-        }
-
-        return null;
-    }
-
-    // ShaderAttributeArray methods
-
-    ShaderError setCgUniform1iArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            int[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform1iArray()");
-
-        float[] fval = new float[value.length];
-        for (int i = 0; i < value.length; i++) {
-            fval[i] = value[i];
-        }
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetParameterArray1f(param.vParam(), 0, numElements, fval, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetParameterArray1f(param.fParam(), 0, numElements, fval, 0);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform1fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform1fArray()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetParameterArray1f(param.vParam(), 0, numElements, value, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetParameterArray1f(param.fParam(), 0, numElements, value, 0);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform2iArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            int[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform2iArray()");
-
-        float[] fval = new float[value.length];
-        for (int i = 0; i < value.length; i++) {
-            fval[i] = value[i];
-        }
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetParameterArray2f(param.vParam(), 0, numElements, fval, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetParameterArray2f(param.fParam(), 0, numElements, fval, 0);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform2fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform2fArray()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetParameterArray2f(param.vParam(), 0, numElements, value, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetParameterArray2f(param.fParam(), 0, numElements, value, 0);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform3iArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            int[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform3iArray()");
-
-        float[] fval = new float[value.length];
-        for (int i = 0; i < value.length; i++) {
-            fval[i] = value[i];
-        }
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetParameterArray3f(param.vParam(), 0, numElements, fval, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetParameterArray3f(param.fParam(), 0, numElements, fval, 0);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform3fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform3fArray()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetParameterArray2f(param.vParam(), 0, numElements, value, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetParameterArray2f(param.fParam(), 0, numElements, value, 0);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform4iArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            int[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform4iArray()");
-
-        float[] fval = new float[value.length];
-        for (int i = 0; i < value.length; i++) {
-            fval[i] = value[i];
-        }
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetParameterArray4f(param.vParam(), 0, numElements, fval, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetParameterArray4f(param.fParam(), 0, numElements, fval, 0);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniform4fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniform4fArray()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetParameterArray2f(param.vParam(), 0, numElements, value, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetParameterArray2f(param.fParam(), 0, numElements, value, 0);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniformMatrix3fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniformMatrix3fArray()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetMatrixParameterArrayfr(param.vParam(), 0, numElements, value, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetMatrixParameterArrayfr(param.fParam(), 0, numElements, value, 0);
-        }
-
-        return null;
-    }
-
-    ShaderError setCgUniformMatrix4fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value) {
-        if (VERBOSE) System.err.println("JoglPipeline.setCgUniformMatrix4fArray()");
-
-        JoglCgShaderParameter param = (JoglCgShaderParameter) uniformLocation;
-        if (param.vParam() != null) {
-            CgGL.cgGLSetMatrixParameterArrayfr(param.vParam(), 0, numElements, value, 0);
-        }
-
-        if (param.fParam() != null) {
-            CgGL.cgGLSetMatrixParameterArrayfr(param.fParam(), 0, numElements, value, 0);
-        }
-
-        return null;
-    }
-
-    // interfaces for shader compilation, etc.
-    ShaderError createCgShader(Context ctx, int shaderType, ShaderId[] shaderId) {
-        if (VERBOSE) System.err.println("JoglPipeline.createCgShader()");
-
-        JoglContext jctx = (JoglContext) ctx;
-        JoglCgShaderInfo info = new JoglCgShaderInfo();
-        info.setJ3DShaderType(shaderType);
-        if (shaderType == Shader.SHADER_TYPE_VERTEX) {
-            info.setShaderProfile(jctx.getCgVertexProfile());
-        } else if (shaderType == Shader.SHADER_TYPE_FRAGMENT) {
-            info.setShaderProfile(jctx.getCgFragmentProfile());
-        } else {
-            throw new AssertionError("unrecognized shaderType " + shaderType);
-        }
-        shaderId[0] = info;
-        return null;
-    }
-    ShaderError destroyCgShader(Context ctx, ShaderId shaderId) {
-        if (VERBOSE) System.err.println("JoglPipeline.destroyCgShader()");
-
-        JoglCgShaderInfo info = (JoglCgShaderInfo) shaderId;
-        CGprogram program = info.getCgShader();
-        if (program != null) {
-            CgGL.cgDestroyProgram(program);
-        }
-        return null;
-    }
-    ShaderError compileCgShader(Context ctx, ShaderId shaderId, String programString) {
-        if (VERBOSE) System.err.println("JoglPipeline.compileCgShader()");
-
-        if (programString == null)
-            throw new AssertionError("shader program string is null");
-        JoglCgShaderInfo info = (JoglCgShaderInfo) shaderId;
-        JoglContext jctx = (JoglContext) ctx;
-        CGprogram program = CgGL.cgCreateProgram(jctx.getCgContext(),
-                CgGL.CG_SOURCE,
-                programString,
-                info.getShaderProfile(),
-                null,
-                null);
-        int lastError = 0;
-        if ((lastError = CgGL.cgGetError()) != 0) {
-            ShaderError err = new ShaderError(ShaderError.COMPILE_ERROR,
-                    "Cg shader compile error");
-            err.setDetailMessage(getCgErrorLog(jctx, lastError));
-            return err;
-        }
-        info.setCgShader(program);
-        return null;
-    }
-
-    ShaderError createCgShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId) {
-        if (VERBOSE) System.err.println("JoglPipeline.createCgShaderProgram()");
-
-        JoglCgShaderProgramInfo info = new JoglCgShaderProgramInfo();
-        shaderProgramId[0] = info;
-        return null;
-    }
-    ShaderError destroyCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
-        if (VERBOSE) System.err.println("JoglPipeline.destroyCgShaderProgram()");
-        // Nothing to do in pure Java port
-        return null;
-    }
-    ShaderError linkCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
-            ShaderId[] shaderIds) {
-        if (VERBOSE) System.err.println("JoglPipeline.linkCgShaderProgram()");
-
-        JoglCgShaderProgramInfo shaderProgramInfo = (JoglCgShaderProgramInfo) shaderProgramId;
-        // NOTE: we assume that the caller has already verified that there
-        // is at most one vertex program and one fragment program
-        shaderProgramInfo.setVertexShader(null);
-        shaderProgramInfo.setFragmentShader(null);
-        for (int i = 0; i < shaderIds.length; i++) {
-            JoglCgShaderInfo shader = (JoglCgShaderInfo) shaderIds[i];
-            if (shader.getJ3DShaderType() == Shader.SHADER_TYPE_VERTEX) {
-                shaderProgramInfo.setVertexShader(shader);
-            } else {
-                shaderProgramInfo.setFragmentShader(shader);
-            }
-
-            CgGL.cgGLLoadProgram(shader.getCgShader());
-            int lastError = 0;
-            if ((lastError = CgGL.cgGetError()) != 0) {
-                ShaderError err = new ShaderError(ShaderError.LINK_ERROR,
-                        "Cg shader link/load error");
-                err.setDetailMessage(getCgErrorLog((JoglContext) ctx,
-                        lastError));
-                return err;
-            }
-
-            CgGL.cgGLBindProgram(shader.getCgShader());
-            if ((lastError = CgGL.cgGetError()) != 0) {
-                ShaderError err = new ShaderError(ShaderError.LINK_ERROR,
-                        "Cg shader link/bind error");
-                err.setDetailMessage(getCgErrorLog((JoglContext) ctx,
-                        lastError));
-                return err;
-            }
-        }
-
-        return null;
-    }
-    void lookupCgVertexAttrNames(Context ctx, ShaderProgramId shaderProgramId,
-            int numAttrNames, String[] attrNames, boolean[] errArr) {
-        if (VERBOSE) System.err.println("JoglPipeline.lookupCgVertexAttrNames()");
-
-        JoglCgShaderProgramInfo shaderProgramInfo = (JoglCgShaderProgramInfo) shaderProgramId;
-        if (shaderProgramInfo.getVertexShader() == null) {
-            // If there if no vertex shader, no attributes can be looked up, so all fail
-            for (int i = 0; i < errArr.length; i++) {
-                errArr[i] = false;
-            }
-            return;
-        }
-
-        shaderProgramInfo.setVertexAttributes(new CGparameter[numAttrNames]);
-        for (int i = 0; i < numAttrNames; i++) {
-            String attrName = attrNames[i];
-            shaderProgramInfo.getVertexAttributes()[i] =
-                    CgGL.cgGetNamedParameter(shaderProgramInfo.getVertexShader().getCgShader(),
-                    attrName);
-            if (shaderProgramInfo.getVertexAttributes()[i] == null) {
-                errArr[i] = true;
-            }
-        }
-    }
-    void lookupCgShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
-            int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
-            int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
-        if (VERBOSE) System.err.println("JoglPipeline.lookupCgShaderAttrNames()");
-
-        JoglCgShaderProgramInfo shaderProgramInfo =
-                (JoglCgShaderProgramInfo) shaderProgramId;
-
-        // Set the loc, type, and size arrays to out-of-bounds values
-        for (int i = 0; i < numAttrNames; i++) {
-            locArr[i] = null;
-            typeArr[i] = -1;
-            sizeArr[i] = -1;
-        }
-
-        int[] vType = new int[1];
-        int[] vSize = new int[1];
-        boolean[] vIsArray = new boolean[1];
-        int[] fType = new int[1];
-        int[] fSize = new int[1];
-        boolean[] fIsArray = new boolean[1];
-
-        boolean err = false;
-
-        // Now lookup the location of each name in the attrNames array
-        for (int i = 0; i < numAttrNames; i++) {
-            String attrName = attrNames[i];
-            // Get uniform attribute location -- note that we need to
-            // lookup the name in both the vertex and fragment shader
-            // (although we will generalize it to look at the list of "N"
-            // shaders). If all parameter locations are NULL, then no
-            // struct will be allocated and -1 will be stored for this
-            // attribute. If there is more than one non-NULL parameter,
-            // then all must be of the same type and dimensionality,
-            // otherwise an error will be generated and -1 will be stored
-            // for this attribute.  If all non-NULL parameters are of the
-            // same type and dimensionality, then a struct is allocated
-            // containing the list of parameters.
-            //
-            // When any of the setCgUniform methods are called, the
-            // attribute will be set for each parameter in the list.
-            CGparameter vLoc = null;
-            if (shaderProgramInfo.getVertexShader() != null) {
-                vLoc = lookupCgParams(shaderProgramInfo.getVertexShader(),
-                        attrName,
-                        vType, vSize, vIsArray);
-                if (vLoc != null) {
-                    sizeArr[i] = vSize[0];
-                    isArrayArr[i] = vIsArray[0];
-                    typeArr[i] = cgToJ3dType(vType[0]);
-                }
-            }
-
-            CGparameter fLoc = null;
-            if (shaderProgramInfo.getVertexShader() != null) {
-                fLoc = lookupCgParams(shaderProgramInfo.getFragmentShader(),
-                        attrName,
-                        fType, fSize, fIsArray);
-                if (fLoc != null) {
-                    sizeArr[i] = fSize[0];
-                    isArrayArr[i] = fIsArray[0];
-                    typeArr[i] = cgToJ3dType(fType[0]);
-                }
-            }
-
-            // If the name lookup found an entry in both vertex and
-            // fragment program, verify that the type and size are the
-            // same.
-            if (vLoc != null && fLoc != null) {
-                if (vType != fType || vSize != fSize || vIsArray != fIsArray) {
-                    // TODO: the following needs to be propagated to ShaderError
-                    System.err.println("JAVA 3D : error shader attribute type mismatch: " + attrName);
-                    System.err.println("    1 : type = " + vType[0] + ", size = " + vSize[0] + ", isArray = " + vIsArray[0]);
-                    System.err.println("    0 : type = " + fType[0] + ", size = " + fSize[0] + ", isArray = " + fIsArray[0]);
-                    err = true;
-                }
-            }
-
-            // Report an error if we got a mismatch or if the attribute
-            // was not found in either the vertex or the fragment program
-            if (err || (vLoc == null && fLoc == null)) {
-                // TODO: distinguish between (err) and (vParam and fParam both NULL)
-                // so we can report a more helpful error message
-                // locPtr[i] = (jlong)-1;
-            } else {
-                // TODO: need to store the cgParamInfo pointers in the
-                // shader program so we can free them later.
-                //
-                // NOTE: WE CURRENTLY HAVE A MEMORY LEAK.
-                locArr[i] = new JoglCgShaderParameter(vLoc, fLoc);
-            }
-        }
-    }
-
-    ShaderError useCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
-        if (VERBOSE) System.err.println("JoglPipeline.useCgShaderProgram()");
-
-        JoglCgShaderProgramInfo shaderProgramInfo =
-                (JoglCgShaderProgramInfo) shaderProgramId;
-        JoglContext jctx = (JoglContext) ctx;
-
-        // Disable shader profiles
-        CgGL.cgGLDisableProfile(jctx.getCgVertexProfile());
-        CgGL.cgGLDisableProfile(jctx.getCgFragmentProfile());
-        if (shaderProgramInfo != null) {
-            if (shaderProgramInfo.getVertexShader() != null) {
-                CgGL.cgGLBindProgram(shaderProgramInfo.getVertexShader().getCgShader());
-                CgGL.cgGLEnableProfile(shaderProgramInfo.getVertexShader().getShaderProfile());
-            } else {
-                CgGL.cgGLUnbindProgram(jctx.getCgVertexProfile());
-            }
-
-            if (shaderProgramInfo.getFragmentShader() != null) {
-                CgGL.cgGLBindProgram(shaderProgramInfo.getFragmentShader().getCgShader());
-                CgGL.cgGLEnableProfile(shaderProgramInfo.getFragmentShader().getShaderProfile());
-            } else {
-                CgGL.cgGLUnbindProgram(jctx.getCgFragmentProfile());
-            }
-        } else {
-            CgGL.cgGLUnbindProgram(jctx.getCgVertexProfile());
-            CgGL.cgGLUnbindProgram(jctx.getCgFragmentProfile());
-        }
-
-        jctx.setShaderProgram(shaderProgramInfo);
-        return null;
-    }
-
-    //
-    // Helper methods for above
-    //
-    private String getCgErrorLog(JoglContext ctx, int lastError) {
-        if (lastError == 0)
-            throw new AssertionError("lastError == 0");
-        String errString = CgGL.cgGetErrorString(lastError);
-        String listing = CgGL.cgGetLastListing(ctx.getCgContext());
-        return (errString + System.getProperty("line.separator") + listing);
-    }
-
-    private int cgToJ3dType(int type) {
-        switch (type) {
-            case CgGL.CG_BOOL:
-            case CgGL.CG_BOOL1:
-            case CgGL.CG_FIXED:
-            case CgGL.CG_FIXED1:
-            case CgGL.CG_HALF:
-            case CgGL.CG_HALF1:
-            case CgGL.CG_INT:
-            case CgGL.CG_INT1:
-                return ShaderAttributeObjectRetained.TYPE_INTEGER;
-
-                // XXXX: add ShaderAttribute support for setting samplers. In the
-                // mean time, the binding between sampler and texture unit will
-                // need to be specified in the shader itself (which it already is
-                // in most example shaders).
-                //
-                // case CgGL.CG_SAMPLER2D:
-                // case CgGL.CG_SAMPLER3D:
-                // case CgGL.CG_SAMPLERCUBE:
-
-            case CgGL.CG_BOOL2:
-            case CgGL.CG_FIXED2:
-            case CgGL.CG_HALF2:
-            case CgGL.CG_INT2:
-                return ShaderAttributeObjectRetained.TYPE_TUPLE2I;
-
-            case CgGL.CG_BOOL3:
-            case CgGL.CG_FIXED3:
-            case CgGL.CG_HALF3:
-            case CgGL.CG_INT3:
-                return ShaderAttributeObjectRetained.TYPE_TUPLE3I;
-
-            case CgGL.CG_BOOL4:
-            case CgGL.CG_FIXED4:
-            case CgGL.CG_HALF4:
-            case CgGL.CG_INT4:
-                return ShaderAttributeObjectRetained.TYPE_TUPLE4I;
-
-            case CgGL.CG_FLOAT:
-            case CgGL.CG_FLOAT1:
-                return ShaderAttributeObjectRetained.TYPE_FLOAT;
-
-            case CgGL.CG_FLOAT2:
-                return ShaderAttributeObjectRetained.TYPE_TUPLE2F;
-
-            case CgGL.CG_FLOAT3:
-                return ShaderAttributeObjectRetained.TYPE_TUPLE3F;
-
-            case CgGL.CG_FLOAT4:
-                return ShaderAttributeObjectRetained.TYPE_TUPLE4F;
-
-            case CgGL.CG_FLOAT3x3:
-                return ShaderAttributeObjectRetained.TYPE_MATRIX3F;
-
-            case CgGL.CG_FLOAT4x4:
-                return ShaderAttributeObjectRetained.TYPE_MATRIX4F;
-
-                // Java 3D does not support the following sampler types:
-                //
-                // case CgGL.CG_SAMPLER1D:
-                // case CgGL.CG_SAMPLERRECT:
-        }
-
-        return -1;
-    }
-
-    private CGparameter lookupCgParams(JoglCgShaderInfo shader,
-            String attrNameString,
-            int[] type,
-            int[] size,
-            boolean[] isArray) {
-        CGparameter loc = CgGL.cgGetNamedParameter(shader.getCgShader(), attrNameString);
-        if (loc != null) {
-            type[0] = CgGL.cgGetParameterType(loc);
-            if (type[0] == CgGL.CG_ARRAY) {
-                isArray[0] = true;
-                size[0] = CgGL.cgGetArraySize(loc, 0);
-                CGparameter firstElem = CgGL.cgGetArrayParameter(loc, 0);
-                type[0] = CgGL.cgGetParameterType(firstElem);
-            } else {
-                isArray[0] = false;
-                size[0] = 1;
-            }
-        }
-        return loc;
-    }
-
-
 
     // ---------------------------------------------------------------------
 
@@ -6920,8 +6162,7 @@ class JoglPipeline extends Pipeline {
     Context createNewContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
             boolean offScreen,
-            boolean glslLibraryAvailable,
-            boolean cgLibraryAvailable) {
+            boolean glslLibraryAvailable) {
         if (VERBOSE) System.err.println("JoglPipeline.createNewContext()");
         GLDrawable draw = null;
         GLCapabilitiesChooser indexChooser = null;
@@ -6978,7 +6219,7 @@ class JoglPipeline extends Pipeline {
 
             if(!isSharedCtx){
                 // Set up fields in Canvas3D
-                setupCanvasProperties(cv, ctx, gl, glslLibraryAvailable, cgLibraryAvailable);
+                setupCanvasProperties(cv, ctx, gl, glslLibraryAvailable);
             }
 
             // Enable rescale normal
@@ -7004,8 +6245,7 @@ class JoglPipeline extends Pipeline {
 
     void createQueryContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, boolean offScreen, int width, int height,
-            boolean glslLibraryAvailable,
-            boolean cgLibraryAvailable) {
+            boolean glslLibraryAvailable) {
         if (VERBOSE) System.err.println("JoglPipeline.createQueryContext()");
 
         // FIXME: for now, ignoring the "offscreen" flag -- unclear how
@@ -7018,9 +6258,7 @@ class JoglPipeline extends Pipeline {
         f.setUndecorated(true);
         f.setLayout(new BorderLayout());
         GLCapabilities caps = new GLCapabilities();
-        ContextQuerier querier = new ContextQuerier(cv,
-                glslLibraryAvailable,
-                cgLibraryAvailable);
+        ContextQuerier querier = new ContextQuerier(cv, glslLibraryAvailable);
         // FIXME: should know what GraphicsDevice on which to create
         // this Canvas / Frame, and this should probably be known from
         // the incoming "display" parameter
@@ -8360,74 +7598,10 @@ class JoglPipeline extends Pipeline {
         }
     }
 
-    private boolean createCgContext(JoglContext ctx) {
-        CGcontext cgContext = CgGL.cgCreateContext();
-
-        int err = CgGL.cgGetError();
-        if (err != 0) {
-            String detail = CgGL.cgGetErrorString(err);
-            System.err.println("JAVA 3D ERROR : Fatal error in creating Cg context: \"" +
-                    detail + "\"");
-            return false;
-        }
-
-        if (cgContext == null) {
-            System.err.println("JAVA 3D ERROR : Invalid null Cg context");
-            return false;
-        }
-
-        ctx.setCgContext(cgContext);
-
-        // Use GL_ARB_vertex_program extension if supported by video card
-        if (CgGL.cgGLIsProfileSupported(CgGL.CG_PROFILE_ARBVP1)) {
-            ctx.setCgVertexProfile(CgGL.CG_PROFILE_ARBVP1);
-        } else if (CgGL.cgGLIsProfileSupported(CgGL.CG_PROFILE_VP20)) {
-            ctx.setCgVertexProfile(CgGL.CG_PROFILE_VP20);
-        } else {
-            System.err.println("JAVA 3D ERROR : No CG vertex program profile is supported");
-            ctx.setCgContext(null);
-            return false;
-        }
-
-        // Use GL_ARB_fragment_program extension if supported by video card
-        if (CgGL.cgGLIsProfileSupported(CgGL.CG_PROFILE_ARBFP1)) {
-            ctx.setCgFragmentProfile(CgGL.CG_PROFILE_ARBFP1);
-        } else if (CgGL.cgGLIsProfileSupported(CgGL.CG_PROFILE_FP20)) {
-            ctx.setCgFragmentProfile(CgGL.CG_PROFILE_FP20);
-        } else {
-            System.err.println("JAVA 3D ERROR : No CG fragment program profile is supported");
-            ctx.setCgContext(null);
-            return false;
-        }
-
-        return true;
-    }
-
-    private void checkCgShaderExtensions(Canvas3D cv,
-            JoglContext ctx,
-            GL gl,
-            boolean cgLibraryAvailable) {
-        if (cgLibraryAvailable) {
-            if (!createCgContext(ctx)) {
-                return;
-            }
-            cv.shadingLanguageCg = true;
-            // TODO: Query Cg texture sampler limits
-            cv.maxTextureImageUnits = cv.maxTextureUnits;
-            cv.maxVertexTextureImageUnits = 0;
-            cv.maxCombinedTextureImageUnits = cv.maxTextureUnits;
-            // TODO: Query max vertex attrs
-            cv.maxVertexAttrs = 7;
-            // Initialize shader vertex attribute function pointers
-            ctx.initCgVertexAttributeImpl();
-        }
-    }
-
     private void setupCanvasProperties(Canvas3D cv,
             JoglContext ctx,
             GL gl,
-            boolean glslLibraryAvailable,
-            boolean cgLibraryAvailable) {
+            boolean glslLibraryAvailable) {
         // Note: this includes relevant portions from both the
         // NativePipeline's getPropertiesFromCurrentContext and setupCanvasProperties
 
@@ -8450,7 +7624,6 @@ class JoglPipeline extends Pipeline {
         cv.texture3DHeightMax = 0;
         cv.texture3DDepthMax = 0;
         cv.shadingLanguageGLSL = false;
-        cv.shadingLanguageCg = false;
 
         // Now make queries and set up these fields
         String glVersion  = gl.glGetString(GL.GL_VERSION);
@@ -8568,11 +7741,9 @@ class JoglPipeline extends Pipeline {
         // Check shader extensions
         if (gl13) {
             checkGLSLShaderExtensions(cv, ctx, gl, glslLibraryAvailable);
-            checkCgShaderExtensions(cv, ctx, gl, cgLibraryAvailable);
         } else {
             // Force shaders to be disabled, since no multitexture support
             checkGLSLShaderExtensions(cv, ctx, gl, false);
-            checkCgShaderExtensions(cv, ctx, gl, false);
         }
 
         // Setup GL_SUN_gloabl_alpha
@@ -9118,15 +8289,12 @@ class JoglPipeline extends Pipeline {
     class ContextQuerier extends DefaultGLCapabilitiesChooser implements ExtendedCapabilitiesChooser {
         private Canvas3D canvas;
         private boolean glslLibraryAvailable;
-        private boolean cgLibraryAvailable;
         private boolean done;
 
         public ContextQuerier(Canvas3D canvas,
-                boolean glslLibraryAvailable,
-                boolean cgLibraryAvailable) {
+                boolean glslLibraryAvailable) {
             this.canvas = canvas;
             this.glslLibraryAvailable = glslLibraryAvailable;
-            this.cgLibraryAvailable = cgLibraryAvailable;
         }
 
         public boolean done() {
@@ -9139,8 +8307,7 @@ class JoglPipeline extends Pipeline {
             // Set up various properties
             if (getPropertiesFromCurrentContext(jctx)) {
                 setupCanvasProperties(canvas, jctx, context.getGL(),
-                        glslLibraryAvailable,
-                        cgLibraryAvailable);
+                        glslLibraryAvailable);
             }
             markDone();
         }

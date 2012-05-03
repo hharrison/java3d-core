@@ -422,143 +422,6 @@ public Pipeline run() {
             int depthFormat,
             Object depthBuffer);
 
-    // ---------------------------------------------------------------------
-
-    //
-    // CgShaderProgramRetained methods
-    //
-
-    // ShaderAttributeValue methods
-
-    abstract ShaderError setCgUniform1i(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int value);
-
-    abstract ShaderError setCgUniform1f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float value);
-
-    abstract ShaderError setCgUniform2i(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int[] value);
-
-    abstract ShaderError setCgUniform2f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float[] value);
-
-    abstract ShaderError setCgUniform3i(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int[] value);
-
-    abstract ShaderError setCgUniform3f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float[] value);
-
-    abstract ShaderError setCgUniform4i(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int[] value);
-
-    abstract ShaderError setCgUniform4f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float[] value);
-
-    abstract ShaderError setCgUniformMatrix3f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float[] value);
-
-    abstract ShaderError setCgUniformMatrix4f(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            float[] value);
-
-    // ShaderAttributeArray methods
-
-    abstract ShaderError setCgUniform1iArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            int[] value);
-
-    abstract ShaderError setCgUniform1fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value);
-
-    abstract ShaderError setCgUniform2iArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            int[] value);
-
-    abstract ShaderError setCgUniform2fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value);
-
-    abstract ShaderError setCgUniform3iArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            int[] value);
-
-    abstract ShaderError setCgUniform3fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value);
-
-    abstract ShaderError setCgUniform4iArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            int[] value);
-
-    abstract ShaderError setCgUniform4fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value);
-
-    abstract ShaderError setCgUniformMatrix3fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value);
-
-    abstract ShaderError setCgUniformMatrix4fArray(Context ctx,
-            ShaderProgramId shaderProgramId,
-            ShaderAttrLoc uniformLocation,
-            int numElements,
-            float[] value);
-
-    // abstract interfaces for shader compilation, etc.
-    abstract ShaderError createCgShader(Context ctx, int shaderType, ShaderId[] shaderId);
-    abstract ShaderError destroyCgShader(Context ctx, ShaderId shaderId);
-    abstract ShaderError compileCgShader(Context ctx, ShaderId shaderId, String program);
-
-    abstract ShaderError createCgShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId);
-    abstract ShaderError destroyCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId);
-    abstract ShaderError linkCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
-            ShaderId[] shaderIds);
-    abstract void lookupCgVertexAttrNames(Context ctx, ShaderProgramId shaderProgramId,
-            int numAttrNames, String[] attrNames, boolean[] errArr);
-    abstract void lookupCgShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
-            int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
-            int[] typeArr, int[] sizeArr, boolean[] isArrayArr);
-
-    abstract ShaderError useCgShaderProgram(Context ctx, ShaderProgramId shaderProgramId);
-
 
     // ---------------------------------------------------------------------
 
@@ -1128,13 +991,11 @@ public Pipeline run() {
     abstract Context createNewContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
             boolean offScreen,
-            boolean glslLibraryAvailable,
-            boolean cgLibraryAvailable);
+            boolean glslLibraryAvailable);
 
     abstract void createQueryContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, boolean offScreen, int width, int height,
-            boolean glslLibraryAvailable,
-            boolean cgLibraryAvailable);
+            boolean glslLibraryAvailable);
 
     // This is the native for creating offscreen buffer
     abstract Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height);

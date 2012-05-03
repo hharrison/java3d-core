@@ -479,7 +479,6 @@ public class Canvas3D extends Canvas {
 
     // True if shadingLanguage is supported, otherwise false.
     boolean shadingLanguageGLSL = false;
-    boolean shadingLanguageCg = false;
 
     // Query properties
     J3dQueryProps queryProps;
@@ -2462,8 +2461,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                 this.fbConfig,
                 shareCtx, isSharedCtx,
                 this.offScreen,
-                VirtualUniverse.mc.glslLibraryAvailable,
-                VirtualUniverse.mc.cgLibraryAvailable);
+                VirtualUniverse.mc.glslLibraryAvailable);
         // compute the max available texture units
         maxAvailableTextureUnits = Math.max(maxTextureUnits, maxTextureImageUnits);
 
@@ -3156,16 +3154,11 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
         // Call queryProperties to ensure that the shading language flags are valid
         queryProperties();
 
-        // Return flag for specified shading language
-        switch (shadingLanguage) {
-        case Shader.SHADING_LANGUAGE_GLSL:
-            return shadingLanguageGLSL;
-        case Shader.SHADING_LANGUAGE_CG:
-            return shadingLanguageCg;
-        }
+		if (shadingLanguage == Shader.SHADING_LANGUAGE_GLSL)
+			return shadingLanguageGLSL;
 
-        return false;
-    }
+		return false;
+	}
 
 
     /**
@@ -3696,9 +3689,8 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	// inside the native code after setting the various
 	// fields in this object
 	createQueryContext(screen.display, drawable,
-			   fbConfig, offScreen, 1, 1,
-                           VirtualUniverse.mc.glslLibraryAvailable,
-                           VirtualUniverse.mc.cgLibraryAvailable);
+	                   fbConfig, offScreen, 1, 1,
+	                   VirtualUniverse.mc.glslLibraryAvailable);
         // compute the max available texture units
         maxAvailableTextureUnits = Math.max(maxTextureUnits, maxTextureImageUnits);
     }
@@ -3838,9 +3830,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
 	keys.add("shadingLanguageGLSL");
 	values.add(new Boolean(shadingLanguageGLSL));
-
-	keys.add("shadingLanguageCg");
-	values.add(new Boolean(shadingLanguageCg));
 
 	keys.add("native.version");
 	values.add(nativeGraphicsVersion);
@@ -4918,23 +4907,19 @@ void addTextureResource(int id, TextureRetained obj) {
     private Context createNewContext(long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
             boolean offScreen,
-            boolean glslLibraryAvailable,
-            boolean cgLibraryAvailable) {
+            boolean glslLibraryAvailable) {
         return Pipeline.getPipeline().createNewContext(this, display, drawable,
                 fbConfig, shareCtx, isSharedCtx,
                 offScreen,
-                glslLibraryAvailable,
-                cgLibraryAvailable);
+                glslLibraryAvailable);
     }
 
     private void createQueryContext(long display, Drawable drawable,
             long fbConfig, boolean offScreen, int width, int height,
-            boolean glslLibraryAvailable,
-            boolean cgLibraryAvailable) {
+            boolean glslLibraryAvailable) {
         Pipeline.getPipeline().createQueryContext(this, display, drawable,
                 fbConfig, offScreen, width, height,
-                glslLibraryAvailable,
-                cgLibraryAvailable);
+                glslLibraryAvailable);
     }
 
     // This is the native for creating offscreen buffer
