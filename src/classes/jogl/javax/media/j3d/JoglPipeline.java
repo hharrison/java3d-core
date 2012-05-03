@@ -124,11 +124,6 @@ class JoglPipeline extends Pipeline {
     // GeometryArrayRetained methods
     //
 
-    // Used by D3D to free vertex buffer
-    void freeD3DArray(GeometryArrayRetained geo, boolean deleteVB) {
-        // Nothing to do
-    }
-
     // used for GeometryArrays by Copy or interleaved
     void execute(Context ctx,
             GeometryArrayRetained geo, int geo_type,

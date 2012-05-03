@@ -2103,12 +2103,6 @@ public class GraphicsContext3D extends Object   {
 				ignoreVertexColors);
 
                 if (geoRetained != null) {
-                    if (geoRetained.pVertexBuffers != 0) {
-                        // Issue 121: always free D3D vertex buffer memory
-                        // after immediate mode rendering
-                        geoRetained.freeD3DArray(true);
-                    }
-
                     geoRetained.geomLock.unLock();
                 }
 

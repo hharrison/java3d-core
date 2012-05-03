@@ -32,7 +32,6 @@
 package javax.media.j3d;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -314,7 +313,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     // This point to a list of VertexBuffers in a Vector structure
     // Each element correspond to a D3D context that create this VB.
     // Note that this GeometryArray can be used by multiple ctx.
-    long pVertexBuffers = 0;
     int dirtyFlag;
 
     // each bit corresponds to a unique renderer if shared context
@@ -371,11 +369,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 
     static final double EPS = 1.0e-13;
 
-    void freeD3DArray(boolean deleteVB) {
-        assert VirtualUniverse.mc.isD3D();
-        Pipeline.getPipeline().freeD3DArray(this, deleteVB);
-    }
-
     GeometryArrayRetained() {
 	dirtyFlag = INDEX_CHANGED|VERTEX_CHANGED;
         lastAlpha[0] = 1.0f;
@@ -424,21 +417,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 	super.clearLive(refCount);
 
 	if (this.refCount <= 0) {
-	    if (pVertexBuffers != 0) {
-		J3dMessage renderMessage = new J3dMessage();
-		renderMessage.threads = J3dThread.RENDER_THREAD;
-		renderMessage.type = J3dMessage.RENDER_IMMEDIATE;
-		renderMessage.universe = null;
-		renderMessage.view = null;
-		renderMessage.args[0] = null;
-		renderMessage.args[1] = this;
-		// Any one renderer is fine since VB store the ctx
-		// where it is created.
-		Enumeration e = Screen3D.deviceRendererMap.elements();
-		Renderer rdr = (Renderer) e.nextElement();
-		rdr.rendererStructure.addMessage(renderMessage);
-		VirtualUniverse.mc.setWorkForRequestRenderer();
-	    }
 	    isShared = false;
 	}
     }

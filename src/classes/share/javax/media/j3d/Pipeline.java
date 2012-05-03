@@ -170,9 +170,6 @@ public Pipeline run() {
     // GeometryArrayRetained methods
     //
 
-    // Used by D3D to free vertex buffer
-    abstract void freeD3DArray(GeometryArrayRetained geo, boolean deleteVB);
-
     // used for GeometryArrays by Copy or interleaved
     abstract void execute(Context ctx,
             GeometryArrayRetained geo, int geo_type,

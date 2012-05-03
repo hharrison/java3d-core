@@ -501,7 +501,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 		    } else if (secondArg instanceof GeometryArrayRetained) {
 			// message from GeometryArrayRetained
 			// clearLive() to free D3D array
-			((GeometryArrayRetained) secondArg).freeD3DArray(false);
+			//((GeometryArrayRetained) secondArg).freeD3DArray(false);
 		    } else if (secondArg instanceof GraphicsConfigTemplate3D) {
 			GraphicsConfigTemplate3D gct =
 			    (GraphicsConfigTemplate3D) secondArg;
