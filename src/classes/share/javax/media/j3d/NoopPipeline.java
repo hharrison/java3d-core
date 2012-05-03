@@ -40,10 +40,6 @@ import java.awt.GraphicsEnvironment;
  * pipeline.
  */
 class NoopPipeline extends Pipeline {
-
-    // Flags indicating whether the Cg or GLSL libraries are available.
-    private boolean cgLibraryAvailable = false;
-
     /**
      * Constructor for singleton NoopPipeline instance
      */
@@ -57,20 +53,6 @@ class NoopPipeline extends Pipeline {
         super.initialize(pipelineType);
 
         assert pipelineType == Pipeline.Type.NOOP;
-    }
-
-    /**
-     * Load all of the required libraries
-     */
-    void loadLibraries(int globalShadingLanguage) {
-    }
-
-    /**
-     * Returns true if the Cg library is loaded and available. Note that this
-     * does not necessarily mean that Cg is supported by the graphics card.
-     */
-    boolean isCgLibraryAvailable() {
-        return cgLibraryAvailable;
     }
 
     /**

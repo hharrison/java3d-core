@@ -157,21 +157,6 @@ public Pipeline run() {
 
     // ---------------------------------------------------------------------
 
-    //
-    // Methods to initialize and load required libraries (from MasterControl)
-    //
-
-    /**
-     * Load all of the required libraries
-     */
-    abstract void loadLibraries(int globalShadingLanguage);
-
-    /**
-     * Returns true if the Cg library is loaded and available. Note that this
-     * does not necessarily mean that Cg is supported by the graphics card.
-     */
-    abstract boolean isCgLibraryAvailable();
-
     /**
      * Returns true if the GLSL library is loaded and available. Note that this
      * does not necessarily mean that GLSL is supported by the graphics card.

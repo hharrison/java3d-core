@@ -80,10 +80,6 @@ import com.sun.opengl.util.BufferUtil;
  * pipeline.
  */
 class JoglPipeline extends Pipeline {
-
-    // Flags indicating whether the Cg or GLSL libraries are available.
-    private boolean cgLibraryAvailable = false;
-
     // Currently prints for entry points not yet implemented
     private static final boolean DEBUG = true;
     // Currently prints for entry points already implemented
@@ -115,34 +111,6 @@ class JoglPipeline extends Pipeline {
         Threading.disableSingleThreading();
 
         // TODO: finish this with any other needed initialization
-    }
-
-    /**
-     * Load all of the required libraries
-     */
-    void loadLibraries(int globalShadingLanguage) {
-        if (globalShadingLanguage == Shader.SHADING_LANGUAGE_CG) {
-            // Try to load the jogl_cg library and set the
-            // cgLibraryAvailable flag to true if loads successfully; note
-            // that successfully performing initialization of this class
-            // will cause the Cg native library to be loaded on our behalf
-            try {
-                Class.forName("com.sun.opengl.cg.CgGL");
-                cgLibraryAvailable = true;
-            } catch (Exception ex) {
-                System.err.println(ex);
-            } catch (Error ex) {
-                System.err.println(ex);
-            }
-        }
-    }
-
-    /**
-     * Returns true if the Cg library is loaded and available. Note that this
-     * does not necessarily mean that Cg is supported by the graphics card.
-     */
-    boolean isCgLibraryAvailable() {
-        return cgLibraryAvailable;
     }
 
     /**

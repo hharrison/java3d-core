@@ -382,11 +382,6 @@ class MasterControl {
     // to control this.
     boolean stencilClear = false;
 
-    // The global shading language being used. Using a ShaderProgram
-    // with a shading language other than the one specified by
-    // globalShadingLanguage will cause a ShaderError to be generated,
-    static int globalShadingLanguage = Shader.SHADING_LANGUAGE_GLSL;
-
     // Flags indicating whether the Cg or GLSL libraries are available; we still need
     // to check for the actual extension support when the Canvas3D with its associated context
     // is created. Note that these are qualifed by the above globalShadingLanguage, so at
@@ -931,39 +926,8 @@ class MasterControl {
         }
 
         // Construct the singleton Pipeline instance
-        Pipeline.createPipeline(pipelineType);
-
-        // Get the global j3d.shadingLanguage system property
-        final String slStr = getProperty("j3d.shadingLanguage");
-        if (slStr != null) {
-            boolean found = false;
-            if (slStr.equals("GLSL")) {
-                globalShadingLanguage = Shader.SHADING_LANGUAGE_GLSL;
-                found = true;
-            } else if (slStr.equals("Cg")) {
-                globalShadingLanguage = Shader.SHADING_LANGUAGE_CG;
-                found = true;
-            }
-
-            if (found) {
-                System.err.println("Java 3D: Setting global shading language to " + slStr);
-            } else {
-                System.err.println("Java 3D: Unrecognized shading language: " + slStr);
-            }
-        }
-
-        // Load all required libraries
-        Pipeline.getPipeline().loadLibraries(globalShadingLanguage);
-
-        // Check whether the Cg library is available
-        if (globalShadingLanguage == Shader.SHADING_LANGUAGE_CG) {
-            cgLibraryAvailable = Pipeline.getPipeline().isCgLibraryAvailable();
-        }
-
-        // Check whether the GLSL library is available
-        if (globalShadingLanguage == Shader.SHADING_LANGUAGE_GLSL) {
-            glslLibraryAvailable = Pipeline.getPipeline().isGLSLLibraryAvailable();
-        }
+		Pipeline.createPipeline(pipelineType);
+		glslLibraryAvailable = Pipeline.getPipeline().isGLSLLibraryAvailable();
 
         assert !(glslLibraryAvailable && cgLibraryAvailable) :
             "ERROR: cannot support both GLSL and CG at the same time";
