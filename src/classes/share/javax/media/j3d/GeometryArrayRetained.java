@@ -3481,8 +3481,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void sendDataChangedMessage(boolean coordinatesChanged) {
 	J3dMessage[] m;
 	int i, j, k, index, numShapeMessages, numMorphMessages;
-	ArrayList shapeList;
-	Shape3DRetained s;
 	ArrayList morphList;
 	MorphRetained morph;
 
@@ -3508,9 +3506,9 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 		    for (i = 0; i < numShapeMessages; i++, k++) {
 			gaList.clear();
 
-			shapeList = (ArrayList)userLists.get(i);
-			for (j=0; j<shapeList.size(); j++) {
-			    s = (Shape3DRetained)shapeList.get(j);
+			ArrayList<Shape3DRetained> shapeList = userLists.get(i);
+			for (j = 0; j < shapeList.size(); j++) {
+				Shape3DRetained s = shapeList.get(j);
 			    LeafRetained src = (LeafRetained)s.sourceNode;
 			    // Should only need to update distinct localBounds.
 			    if (coordinatesChanged && src.boundsAutoCompute) {
@@ -3518,8 +3516,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			    }
 			}
 
-			for (j=0; j<shapeList.size(); j++) {
-			    s = (Shape3DRetained)shapeList.get(j);
+			for (j = 0; j < shapeList.size(); j++) {
+				Shape3DRetained s = shapeList.get(j);
 			    LeafRetained src = (LeafRetained)s.sourceNode;
 			    if (src.boundsDirty) {
 				// update combine bounds of mirrorShape3Ds. So we need to

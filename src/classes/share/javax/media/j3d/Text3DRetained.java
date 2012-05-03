@@ -467,8 +467,7 @@ class Text3DRetained extends GeometryRetained {
 	J3dMessage[] m;
 	int i, j, k, kk, numMessages;
 	int gSize;
-	ArrayList shapeList, gaList;
-	Shape3DRetained s;
+	ArrayList gaList;
 	GeometryAtom[] newGeometryAtoms;
 	ArrayList tiArrList = new ArrayList();
 	ArrayList newCtArrArrList = new ArrayList();
@@ -482,12 +481,12 @@ class Text3DRetained extends GeometryRetained {
 			m[i] = new J3dMessage();
 			m[i].type = J3dMessage.TEXT3D_DATA_CHANGED;
 			m[i].threads = targetThreads;
-			shapeList = (ArrayList)userLists.get(i);
+			ArrayList<Shape3DRetained> shapeList = userLists.get(i);
 			newGeometryAtomList.clear();
 			oldGeometryAtomList.clear();
 
 			for (j=0; j<shapeList.size(); j++) {
-			    s = (Shape3DRetained)shapeList.get(j);
+				Shape3DRetained s = shapeList.get(j);
 			    if (s.boundsAutoCompute) {
 				// update combine bounds of mirrorShape3Ds. So we need to
 				// use its bounds and not localBounds.
@@ -648,9 +647,7 @@ class Text3DRetained extends GeometryRetained {
     final void sendTransformChangedMessage() {
 	J3dMessage[] m;
 	int i, j, numMessages, sCnt;
-	ArrayList shapeList;
 	ArrayList gaList = new ArrayList();
-	Shape3DRetained s;
 	GeometryRetained geomR;
 	synchronized(liveStateLock) {
 	    if (source.isLive()) {
@@ -661,10 +658,10 @@ class Text3DRetained extends GeometryRetained {
 			m[i] = new J3dMessage();
 			m[i].type = J3dMessage.TEXT3D_TRANSFORM_CHANGED;
 			m[i].threads = targetThreads;
-			shapeList = (ArrayList)userLists.get(i);
+			ArrayList<Shape3DRetained> shapeList = userLists.get(i);
 			// gaList = new GeometryAtom[shapeList.size() * numChars];
-			for (j=0; j<shapeList.size(); j++) {
-			    s = (Shape3DRetained)shapeList.get(j);
+			for (j = 0; j < shapeList.size(); j++) {
+				Shape3DRetained s = shapeList.get(j);
 
 			    // Find the right geometry.
 			    for(sCnt=0; sCnt<s.geometryList.size(); sCnt++) {

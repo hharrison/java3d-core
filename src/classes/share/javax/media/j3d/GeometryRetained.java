@@ -101,7 +101,7 @@ abstract class GeometryRetained extends NodeComponentRetained {
     // A list of ArrayLists which contain all the Shape3DRetained objects
     // refering to this geometry.  Each list corresponds to the universe
     // above.
-    ArrayList<ArrayList<Shape3DRetained>> userLists = new ArrayList();
+    ArrayList<ArrayList<Shape3DRetained>> userLists = new ArrayList<ArrayList<Shape3DRetained>>();
 
     // true if color not specified with alpha channel
     boolean noAlpha = false;
@@ -154,9 +154,6 @@ abstract class GeometryRetained extends NodeComponentRetained {
 
     // This adds a Shape3DRetained to the list of users of this geometry
     void addUser(Shape3DRetained s) {
-	int index;
-	ArrayList shapeList;
-
 	if (s.sourceNode.boundsAutoCompute) {
 	    incrComputeGeoBounds();
 	}
@@ -168,25 +165,21 @@ abstract class GeometryRetained extends NodeComponentRetained {
 	    }
 	}
 	synchronized (universeList) {
-	    if (universeList.contains(s.universe)) {
-		index = universeList.indexOf(s.universe);
-		shapeList = (ArrayList)userLists.get(index);
-		shapeList.add(s);
-	    } else {
-		universeList.add(s.universe);
-		shapeList = new ArrayList();
-		shapeList.add(s);
-		userLists.add(shapeList);
-	    }
+		if (universeList.contains(s.universe)) {
+			int index = universeList.indexOf(s.universe);
+			userLists.get(index).add(s);
+		} else {
+			universeList.add(s.universe);
+			ArrayList<Shape3DRetained> shapeList = new ArrayList<Shape3DRetained>();
+			shapeList.add(s);
+			userLists.add(shapeList);
+		}
 	}
 
     }
 
     // This adds a Shape3DRetained to the list of users of this geometry
     void removeUser(Shape3DRetained s) {
-	int index;
-	ArrayList shapeList;
-
 	if (s.sourceNode.boundsAutoCompute) {
 	    decrComputeGeoBounds();
 	}
@@ -198,13 +191,13 @@ abstract class GeometryRetained extends NodeComponentRetained {
 	}
 
 	synchronized (universeList) {
-	    index = universeList.indexOf(s.universe);
-	    shapeList = (ArrayList)userLists.get(index);
-	    shapeList.remove(shapeList.indexOf(s));
-	    if (shapeList.size() == 0) {
-		userLists.remove(index);
-		universeList.remove(index);
-	    }
+		int index = universeList.indexOf(s.universe);
+		ArrayList<Shape3DRetained> shapeList = userLists.get(index);
+		shapeList.remove(s);
+		if (shapeList.size() == 0) {
+			userLists.remove(index);
+			universeList.remove(index);
+		}
 	}
 
     }
