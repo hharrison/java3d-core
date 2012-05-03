@@ -48,9 +48,6 @@ abstract class Pipeline {
         NOOP,
     }
 
-    private static final String CLASSNAME_JOGL = "javax.media.j3d.JoglPipeline";
-    private static final String CLASSNAME_NOOP = "javax.media.j3d.NoopPipeline";
-
     // Singleton pipeline instance
     private static Pipeline pipeline;
 
@@ -64,40 +61,37 @@ abstract class Pipeline {
     protected Pipeline() {
     }
 
+private static class PipelineCreator
+implements java.security.PrivilegedAction<Pipeline> {
+private final Type pipeType;
+
+PipelineCreator(Type type) {
+	pipeType = type;
+}
+
+public Pipeline run() {
+	try {
+		switch (pipeType) {
+		case JOGL:
+			return (Pipeline)Class.forName("javax.media.j3d.JoglPipeline").newInstance();
+		case NOOP:
+			return (Pipeline)Class.forName("javax.media.j3d.NoopPipeline").newInstance();
+		}
+	} catch (Exception e) {
+		throw new RuntimeException(e);
+	}
+	return null;
+}
+}
+
     /**
      * Initialize the Pipeline. Called exactly once by
      * MasterControl.loadLibraries() to create the singleton
      * Pipeline object.
      */
     static void createPipeline(Type pipelineType) {
-        String className = null;
-        switch (pipelineType) {
-        case JOGL:
-            className = CLASSNAME_JOGL;
-            break;
-        case NOOP:
-            className = CLASSNAME_NOOP;
-            break;
-        default:
-            // Should not get here
-            throw new AssertionError("missing case statement");
-        }
-
-        final String pipelineClassName = className;
-        pipeline = (Pipeline)
-            java.security.AccessController.doPrivileged(new
-                java.security.PrivilegedAction() {
-                    public Object run() {
-                        try {
-                            Class pipelineClass = Class.forName(pipelineClassName);
-                            return pipelineClass.newInstance();
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
-
-        pipeline.initialize(pipelineType);
+		pipeline = java.security.AccessController.doPrivileged(new PipelineCreator(pipelineType));
+		pipeline.initialize(pipelineType);
     }
 
     /**
