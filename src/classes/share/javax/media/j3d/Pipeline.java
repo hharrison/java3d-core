@@ -1008,12 +1008,6 @@ public Pipeline run() {
     // The native method for swapBuffers
     abstract int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable);
 
-    // notify D3D that Canvas is resize
-    abstract int resizeD3DCanvas(Canvas3D cv, Context ctx);
-
-    // notify D3D to toggle between FullScreen and window mode
-    abstract int toggleFullScreenMode(Canvas3D cv, Context ctx);
-
     // native method for setting Material when no material is present
     abstract void updateMaterialColor(Context ctx, float r, float g, float b, float a);
 

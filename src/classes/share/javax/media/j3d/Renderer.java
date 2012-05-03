@@ -628,12 +628,10 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 		}
 
 		if (renderType == J3dMessage.RESIZE_CANVAS) {
-		    canvas.d3dResize();
 		    // render the image again after resize
 		    VirtualUniverse.mc.sendRunMessage(canvas.view, J3dThread.RENDER_THREAD);
 		    m[nmesg++].decRefcount();
 		} else if (renderType == J3dMessage.TOGGLE_CANVAS) {
-		    canvas.d3dToggle();
 		    VirtualUniverse.mc.sendRunMessage(canvas.view, J3dThread.RENDER_THREAD);
 		    m[nmesg++].decRefcount();
 		} else if (renderType == J3dMessage.RENDER_IMMEDIATE) {

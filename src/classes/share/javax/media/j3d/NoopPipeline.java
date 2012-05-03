@@ -1008,16 +1008,6 @@ class NoopPipeline extends Pipeline {
         return 0;
     }
 
-    // notify D3D that Canvas is resize
-    int resizeD3DCanvas(Canvas3D cv, Context ctx) {
-        return 0;
-    }
-
-    // notify D3D to toggle between FullScreen and window mode
-    int toggleFullScreenMode(Canvas3D cv, Context ctx) {
-        return 0;
-    }
-
     // native method for setting Material when no material is present
     void updateMaterialColor(Context ctx, float r, float g, float b, float a) {
     }

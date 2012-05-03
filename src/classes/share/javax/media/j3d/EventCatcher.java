@@ -178,9 +178,6 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 		System.err.println(e);
 	    }
 	    canvas.sendEventToBehaviorScheduler(e);
-	    if (VirtualUniverse.mc.isD3D()) {
-		canvas.notifyD3DPeer(Canvas3D.RESIZE);
-	    }
 	    canvas.evaluateVisiblilty();
             canvas.redraw();
 	}
@@ -244,12 +241,6 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 
     public void keyPressed(KeyEvent e) {
 	canvas.sendEventToBehaviorScheduler(e);
-
-	if (VirtualUniverse.mc.isD3D() &&
-	    e.isAltDown() &&
-	    (e.getKeyCode() == KeyEvent.VK_ENTER)) {
-	    canvas.notifyD3DPeer(Canvas3D.TOGGLEFULLSCREEN);
-	}
 
 	if (DEBUG) {
 	    System.err.println(e);

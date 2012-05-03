@@ -785,9 +785,6 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
     // each canvas has to build its own displayList.
     boolean needToRebuildDisplayList = false;
 
-    // Use by D3D when canvas resize/toggle in pure immediate mode
-    int reEvaluateCanvasCmd = 0;
-
     // Read-only flag that indicates whether the following texture features
     // are supported for this canvas.
 
@@ -2432,23 +2429,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	// Increment the elapsedFrame for the behavior structure
 	// to trigger any interpolators
 	view.universe.behaviorStructure.incElapsedFrames();
-	// waitup user thread in PureImmediate mode to continue
-	if (reEvaluateCanvasCmd != 0) {
-	    int status;
-
-	    antialiasingSet = false;
-	    if (reEvaluateCanvasCmd == RESIZE) {
-                assert VirtualUniverse.mc.isD3D();
-		status = resizeD3DCanvas(ctx);
-	    } else {
-		status = toggleFullScreenMode(ctx);
-	    }
-	    // reset everything
-	    if (status != NOCHANGE) {
-		resetImmediateRendering(status);
-	    }
-	    reEvaluateCanvasCmd = 0;
-	}
 	graphicsContext3D.runMonitor(J3dThread.NOTIFY);
     }
 
@@ -3898,11 +3878,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	}
 	texUnitState[texUnitIndex].mirror = null;
 	texUnitState[texUnitIndex].texture = null;
-
-	if (VirtualUniverse.mc.isD3D()) {
-	    texUnitState[texUnitIndex].texAttrs = null;
-	    texUnitState[texUnitIndex].texGen = null;
-	}
     }
 
 
@@ -3925,68 +3900,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			tex.resourceCreationMask &= ~canvasBit;
 
 		}
-	}
-    }
-
-
-    void d3dResize() {
-        assert VirtualUniverse.mc.isD3D();
-	int status = resizeD3DCanvas(ctx);
-
-	antialiasingSet = false;
-
-	// We need to reevaluate everything since d3d may create
-	// a new ctx
-	if (status != NOCHANGE) {
-	    resetRendering(status);
-	}
-    }
-
-    void d3dToggle() {
-        assert VirtualUniverse.mc.isD3D();
-	int status = toggleFullScreenMode(ctx);
-
-	antialiasingSet = false;
-	if (status != NOCHANGE) {
-	    resetRendering(status);
-	}
-    }
-
-    // use by D3D only
-    void notifyD3DPeer(int cmd) {
-        assert VirtualUniverse.mc.isD3D();
-	if (active) {
-	    if (isRunning) {
-		if ((view != null) &&
-		    (view.active) &&
-		    // it is possible that view is set active by MC
-		    // but renderer not yet set
-		    (screen.renderer != null)) {
-		    VirtualUniverse.mc.postRequest(MasterControl.STOP_RENDERER, this);
-
-		    while (isRunningStatus) {
-			MasterControl.threadYield();
-		    }
-		    J3dMessage renderMessage = new J3dMessage();
-		    renderMessage.threads = J3dThread.RENDER_THREAD;
-		    if (cmd == RESIZE) {
-			renderMessage.type = J3dMessage.RESIZE_CANVAS;
-		    } else {
-			renderMessage.type = J3dMessage.TOGGLE_CANVAS;
-		    }
-		    renderMessage.universe = null;
-		    renderMessage.view = null;
-		    renderMessage.args[0] = this;
-
-		    screen.renderer.rendererStructure.addMessage(renderMessage);
-		    VirtualUniverse.mc.postRequest(MasterControl.START_RENDERER, this);
-		    VirtualUniverse.mc.sendRunMessage(view,
-						      J3dThread.RENDER_THREAD);
-		}
-	    } else {
-		// may be in immediate mode
-		reEvaluateCanvasCmd = cmd;
-	    }
 	}
     }
 
@@ -4932,16 +4845,6 @@ void addTextureResource(int id, TextureRetained obj) {
     // The native method for swapBuffers
     int swapBuffers(Context ctx, long dpy, Drawable drawable) {
         return Pipeline.getPipeline().swapBuffers(this, ctx, dpy, drawable);
-    }
-
-    // notify D3D that Canvas is resize
-    private int resizeD3DCanvas(Context ctx) {
-        return Pipeline.getPipeline().resizeD3DCanvas(this, ctx);
-    }
-
-    // notify D3D to toggle between FullScreen and window mode
-    private int toggleFullScreenMode(Context ctx) {
-        return Pipeline.getPipeline().toggleFullScreenMode(this, ctx);
     }
 
     // -----------------------------------------------------------------------------
