@@ -649,10 +649,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                     }
 
                   try {
-		    if (canvas.ctx != null) {
-			// ctx may not construct until doClear();
-			canvas.beginScene();
-		    }
 
                     switch (command) {
                     case GraphicsContext3D.CLEAR:
@@ -774,9 +770,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                         break;
                     }
 
-		    if (canvas.ctx != null) {
-			canvas.endScene();
-		    }
                   } catch (RuntimeException ex) {
                     ex.printStackTrace();
 
@@ -1179,8 +1172,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 					     Canvas3D.FIELD_ALL,
 					     canvas.useDoubleBuffer);
 
-			canvas.beginScene();
-
 			// this is if the background image resizes with the canvas
 			int winWidth = cvCache.getCanvasWidth();
 			int winHeight = cvCache.getCanvasHeight();
@@ -1468,8 +1459,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                             }
                         }
 
-			canvas.endScene();
-
                         if (MasterControl.isStatsLoggable(Level.INFO)) {
                             // Instrumentation of Java 3D renderer
                             long deltaTime = System.nanoTime() - startRenderTime;
@@ -1496,9 +1485,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
            // Print NPE, but otherwise ignore it
 	    ne.printStackTrace();
 	    if (canvas != null) {
-		if (canvas.ctx != null) {
-		    canvas.endScene();
-		}
 		// drawingSurfaceObject will safely ignore
 		// this request if this is not lock before
 		canvas.drawingSurfaceObject.unLock();
@@ -1508,9 +1494,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
             ex.printStackTrace();
 
 	    if (canvas != null) {
-		if (canvas.ctx != null) {
-		    canvas.endScene();
-		}
 		// drawingSurfaceObject will safely ignore
 		// this request if this is not lock before
 		canvas.drawingSurfaceObject.unLock();

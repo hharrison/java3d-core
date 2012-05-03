@@ -1064,10 +1064,6 @@ public Pipeline run() {
     // Native method to update separate specular color control
     abstract void updateSeparateSpecularColorEnable(Context ctx, boolean control);
 
-    // Initialization for D3D when scene begin
-    abstract void beginScene(Context ctx);
-    abstract void endScene(Context ctx);
-
     // True under Solaris,
     // False under windows when display mode <= 8 bit
     abstract boolean validGraphicsMode();

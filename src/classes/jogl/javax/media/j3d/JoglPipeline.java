@@ -6616,12 +6616,6 @@ class JoglPipeline extends Pipeline {
         }
     }
 
-    // Initialization for D3D when scene begins and ends
-    void beginScene(Context ctx) {
-    }
-    void endScene(Context ctx) {
-    }
-
     // True under Solaris,
     // False under windows when display mode <= 8 bit
     boolean validGraphicsMode() {

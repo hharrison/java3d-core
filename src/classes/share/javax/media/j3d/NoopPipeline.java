@@ -1086,12 +1086,6 @@ class NoopPipeline extends Pipeline {
     void updateSeparateSpecularColorEnable(Context ctx, boolean control) {
     }
 
-    // Initialization for D3D when scene begin
-    void beginScene(Context ctx) {
-    }
-    void endScene(Context ctx) {
-    }
-
     // True under Solaris,
     // False under windows when display mode <= 8 bit
     boolean validGraphicsMode() {

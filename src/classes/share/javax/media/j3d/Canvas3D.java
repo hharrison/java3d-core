@@ -4315,15 +4315,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
         updateSeparateSpecularColorEnable(ctx, enable);
     }
 
-    final void beginScene() {
-	beginScene(ctx);
-    }
-
-    final void endScene() {
-	endScene(ctx);
-    }
-
-
     // Send a createOffScreenBuffer message to Renderer (via
     // MasterControl) and wait for it to be done
     private void sendCreateOffScreenBuffer() {
@@ -5036,14 +5027,6 @@ void addTextureResource(int id, TextureRetained obj) {
     // Native method to update separate specular color control
     void updateSeparateSpecularColorEnable(Context ctx, boolean control) {
         Pipeline.getPipeline().updateSeparateSpecularColorEnable(ctx, control);
-    }
-
-    // Initialization for D3D when scene begin
-    private void beginScene(Context ctx) {
-        Pipeline.getPipeline().beginScene(ctx);
-    }
-    private void endScene(Context ctx) {
-        Pipeline.getPipeline().endScene(ctx);
     }
 
     // True under Solaris,

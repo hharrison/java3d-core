@@ -1747,8 +1747,6 @@ public class GraphicsContext3D extends Object   {
                         canvas3d.screen.renderer.listOfCtxs.add(canvas3d.ctx);
                         canvas3d.screen.renderer.listOfCanvases.add(canvas3d);
 
-                        canvas3d.beginScene();
-
                         if (canvas3d.graphics2D != null) {
                             canvas3d.graphics2D.init();
                         }
