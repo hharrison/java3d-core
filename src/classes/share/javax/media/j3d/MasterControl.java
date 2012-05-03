@@ -919,7 +919,6 @@ class MasterControl {
         Pipeline.Type pipelineType = Pipeline.Type.JOGL;
 
         final String rendStr = getProperty("j3d.rend");
-        boolean nativeOglRequested = false;
         if (rendStr == null) {
             // Use default pipeline
         } else if (rendStr.equals("jogl")) {
@@ -929,15 +928,6 @@ class MasterControl {
         } else {
             System.err.println("Java 3D: Unrecognized renderer: " + rendStr);
             // Use default pipeline
-        }
-
-        // Issue 452 : if we are on 32-bit Windows, then check whether we
-        // can and should use OpenGL. Note that we can't do this on 64-bit
-        // Windows until we have a 64-bit D3D pipeline.
-        if (isWindowsOs && !is64Bit && pipelineType == Pipeline.Type.NATIVE_OGL) {
-            if (!Pipeline.useNativeOgl(isWindowsVista, nativeOglRequested)) {
-                pipelineType = Pipeline.Type.NATIVE_D3D;
-            }
         }
 
         // Construct the singleton Pipeline instance
@@ -1272,7 +1262,7 @@ class MasterControl {
      * TODO: most code that cares about this should move into the pipeline
      */
     final boolean isD3D() {
-	return Pipeline.getPipeline().getPipelineType() == Pipeline.Type.NATIVE_D3D;
+	return false;
     }
 
     /**
