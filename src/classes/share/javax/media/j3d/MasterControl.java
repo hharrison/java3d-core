@@ -323,9 +323,6 @@ class MasterControl {
     // Flag indicating that we are on a Windows OS
     private static boolean isWindowsOs = false;
 
-    // Flag indicating we are on MacOS
-    private static boolean isMacOs = false;
-
     // This is a counter for texture id's, valid id starts from 1
     private int textureIdCount = 0;
 
@@ -886,7 +883,6 @@ class MasterControl {
         String sunArchDataModel = getProperty("sun.arch.data.model");
 
         // Set global flags based on platform architecture
-        isMacOs = osName != null && osName.startsWith("mac");
         isWindowsOs = osName != null && osName.startsWith("windows");
         boolean isWindowsVista = isWindowsOs && osName.indexOf("vista") != -1;
         boolean is64Bit = (sunArchDataModel != null) && sunArchDataModel.equals("64");
@@ -908,8 +904,6 @@ class MasterControl {
                     append(is64Bit).
                     append(", isWindowsOs = ").
                     append(isWindowsOs).
-                    append(", isMacOs = ").
-                    append(isMacOs).
                     append(", isWindowsVista = ").
                     append(isWindowsVista);
             getCoreLogger().config(strBuf.toString());
@@ -921,20 +915,13 @@ class MasterControl {
         // XXXX : We should consider adding support for a more flexible,
         // dynamic selection scheme via an API call.
 
-        // Default rendering pipeline is the JOGL pipeline on MacOS and the
-        // native OpenGL pipeline on all other platforms.
-        Pipeline.Type pipelineType =
-                isMacOs ? Pipeline.Type.JOGL : Pipeline.Type.NATIVE_OGL;
+        // Default rendering pipeline is the JOGL pipeline
+        Pipeline.Type pipelineType = Pipeline.Type.JOGL;
 
         final String rendStr = getProperty("j3d.rend");
         boolean nativeOglRequested = false;
         if (rendStr == null) {
             // Use default pipeline
-        } else if (rendStr.equals("ogl") && !isMacOs) {
-            pipelineType = Pipeline.Type.NATIVE_OGL;
-            nativeOglRequested = true;
-        } else if (rendStr.equals("d3d") && isWindowsOs) {
-            pipelineType = Pipeline.Type.NATIVE_D3D;
         } else if (rendStr.equals("jogl")) {
             pipelineType = Pipeline.Type.JOGL;
         } else if (rendStr.equals("noop")) {
