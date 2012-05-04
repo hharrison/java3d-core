@@ -6350,17 +6350,10 @@ class JoglPipeline extends Pipeline {
         // those only enumerate the on-screen visuals, and we need to find one which is
         // pbuffer capable
         GLCapabilities caps = jcfg.getGLCapabilities();
-        //FIXME use the real AWTGraphicsDevice
-        //((JoglDrawable)cv.drawable).getGLDrawable().
-        if (!GLDrawableFactory.getFactory(getDefaultProfile()).canCreateGLPbuffer(jcfg.getAwtGraphicsDevice())) {
-
-            // FIXME: do anything else here? Throw exception?
-            return null;
-        }
 
         //FIXME use the real AWTGraphicsDevice
-        GLPbuffer pbuffer = GLDrawableFactory.getFactory(getDefaultProfile()).createGLPbuffer(jcfg.getAwtGraphicsDevice() ,caps, null,
-                width, height, GLContext.getCurrent());
+        GLPbuffer pbuffer = GLDrawableFactory.getFactory(getDefaultProfile()).createGLPbuffer(GLDrawableFactory.getDesktopFactory().getDefaultDevice() ,caps, null,width, height, GLContext.getCurrent());
+
         return new JoglDrawable(pbuffer);
     }
 
