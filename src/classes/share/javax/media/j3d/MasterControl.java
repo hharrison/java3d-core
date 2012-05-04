@@ -386,7 +386,6 @@ class MasterControl {
     // to check for the actual extension support when the Canvas3D with its associated context
     // is created. Note that these are qualifed by the above globalShadingLanguage, so at
     // most one of these two flags will be true;
-    static boolean cgLibraryAvailable = false;
     static boolean glslLibraryAvailable = false;
 
 
@@ -928,9 +927,6 @@ class MasterControl {
         // Construct the singleton Pipeline instance
 		Pipeline.createPipeline(pipelineType);
 		glslLibraryAvailable = Pipeline.getPipeline().isGLSLLibraryAvailable();
-
-        assert !(glslLibraryAvailable && cgLibraryAvailable) :
-            "ERROR: cannot support both GLSL and CG at the same time";
 
         librariesLoaded = true;
     }
