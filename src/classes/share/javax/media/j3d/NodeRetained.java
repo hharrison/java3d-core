@@ -317,13 +317,13 @@ ArrayList<BranchGroupRetained[]> branchGroupPaths = new ArrayList<BranchGroupRet
 	this.parent = parent;
     }
 
-    /**
-     * Returns the parent of the node.
-     * @return the parent.
-     */
-    NodeRetained getParent() {
-	return (NodeRetained)parent;
-    }
+/**
+ * Returns the parent of the node.
+ * @return the parent.
+ */
+NodeRetained getParent() {
+	return parent;
+}
 
     // Transform the input bound by the current LocalToVWorld
     void transformBounds(SceneGraphPath path, Bounds bound) {
@@ -364,7 +364,7 @@ ArrayList<BranchGroupRetained[]> branchGroupPaths = new ArrayList<BranchGroupRet
 	}
 	else {
 
-	    NodeRetained nodeParentR =(NodeRetained)nodeR.getParent();
+		NodeRetained nodeParentR = nodeR.getParent();
 
 	    if(nodeParentR == null) {
 		// Base case. It has to be a BG attached to a locale.
@@ -376,7 +376,7 @@ ArrayList<BranchGroupRetained[]> branchGroupPaths = new ArrayList<BranchGroupRet
 		}
 	    }
 	    else {
-		computeLocalToVworld(caller, (NodeRetained)nodeParentR, key, l2Vw);
+			computeLocalToVworld(caller, nodeParentR, key, l2Vw);
 
 	    }
 
