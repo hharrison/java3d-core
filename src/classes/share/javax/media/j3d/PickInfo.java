@@ -454,11 +454,11 @@ public class PickInfo extends Object {
 	    if (nodeR instanceof SharedGroupRetained) {
 		// retrieve the last node ID
 		String nodeId = key.getLastNodeId();
-		Vector parents = ((SharedGroupRetained) nodeR).parents;
+		Vector<NodeRetained> parents = ((SharedGroupRetained)nodeR).parents;
 		int sz = parents.size();
 		NodeRetained prevNodeR = nodeR;
 		for(int i=0; i< sz; i++) {
-		    NodeRetained linkR = (NodeRetained) parents.elementAt(i);
+			NodeRetained linkR = parents.get(i);
 		    if (linkR.nodeId.equals(nodeId)) {
 			nodeR = linkR;
 			// Need to add Link to the path report

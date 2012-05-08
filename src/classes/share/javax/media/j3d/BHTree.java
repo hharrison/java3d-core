@@ -518,9 +518,9 @@ class BHTree  {
 		    // retrieve the last node ID
 		    String nodeId = key.getLastNodeId();
 		    NodeRetained prevNode = node;
-		    Vector parents = ((SharedGroupRetained) node).parents;
+			Vector<NodeRetained> parents = ((SharedGroupRetained)node).parents;
 		    for(int i=parents.size()-1; i >=0; i--) {
-			NodeRetained link = (NodeRetained) parents.elementAt(i);
+				NodeRetained link = parents.get(i);
 			if (link.nodeId.equals(nodeId)) {
 			    node = link;
 			    break;

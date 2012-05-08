@@ -490,8 +490,7 @@ public class SceneGraphPath {
 		if (interior == null)
 		    return false;
 		while (--idx > 0) {
-		    if (((SharedGroupRetained)
-			 node).parents.contains(interior[idx].retained)) {
+		    if (((SharedGroupRetained)node).parents.contains(interior[idx].retained)) {
 			break;
 		    }
 		}

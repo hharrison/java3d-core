@@ -65,10 +65,10 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
     // key which identifies a unique path from a locale to this switch link
     HashKey switchKey = new HashKey();
 
-    /**
-     * The Shared Group Node's parent vector.
-     */
-    Vector parents = new Vector(1);
+/**
+ * The Shared Group Node's parent vector.
+ */
+Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
 
     // J3d copy.
     CachedTargets[] j3dCTs = null;
@@ -637,10 +637,9 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
 
     void traverseSwitchParent() {
         int i;
-        NodeRetained ln;
 
         for(i=0; i<parents.size(); i++) {
-            ln = (NodeRetained) parents.elementAt(i);
+			NodeRetained ln = parents.get(i);
             if (ln.parentSwitchLink != null) {
                 if (parentSwitchLink instanceof SwitchRetained) {
                     ((SwitchRetained)parentSwitchLink).traverseSwitchParent();

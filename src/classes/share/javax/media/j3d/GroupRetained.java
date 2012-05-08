@@ -2914,10 +2914,10 @@ synchronized void setAltAppScope() {
 		if (node instanceof SharedGroupRetained) {
 		    // retrieve the last node ID
 		    String nodeId = key.getLastNodeId();
-		    Vector parents = ((SharedGroupRetained) node).parents;
+			Vector<NodeRetained> parents = ((SharedGroupRetained)node).parents;
 		    // find the matching link
 		    for(int i=parents.size()-1; i >=0; i--) {
-			NodeRetained link = (NodeRetained) parents.get(i);
+			NodeRetained link = parents.get(i);
 			if (link.nodeId.equals(nodeId)) {
 			    node = link;
 			    break;
@@ -3148,8 +3148,7 @@ synchronized void setAltAppScope() {
 		        }
 		    } else if (parent instanceof SharedGroupRetained) {
                         String nodeId = key.getLastNodeId();
-                        Vector parents = ((SharedGroupRetained) parent).parents;
-                        NodeRetained ln;
+						Vector<NodeRetained> parents = ((SharedGroupRetained)parent).parents;
 
 		        if (parentSwitchLinkChildIndex == -1) {
 		            parentSwitchLinkChildIndex =
@@ -3157,7 +3156,7 @@ synchronized void setAltAppScope() {
 		        }
 
                         for(j=0; j< parents.size(); j++) {
-                            ln = (NodeRetained)parents.get(j);
+                        	NodeRetained ln = parents.get(j);
                             if (ln.nodeId.equals(nodeId)) {
                                 parent = ln;
                                 break;

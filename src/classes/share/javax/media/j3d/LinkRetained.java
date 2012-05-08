@@ -84,7 +84,7 @@ class LinkRetained extends LeafRetained {
 		((GroupRetained) parent).checkClearLive(this.sharedGroup,
 							newKeys, true, null,
 							0, 0, this);
-		this.sharedGroup.parents.removeElement(this);
+		this.sharedGroup.parents.remove(this);
 	    }
 	}
 
@@ -97,7 +97,7 @@ class LinkRetained extends LeafRetained {
 
       if (source.isLive() && (sharedGroup != null)) {
 
-	  this.sharedGroup.parents.addElement(this);
+	  this.sharedGroup.parents.add(this);
 	  visited = true;
 	  try {
 	      int ci = ((GroupRetained) parent).indexOfChild((Node)this.sharedGroup.source);
@@ -163,7 +163,7 @@ class LinkRetained extends LeafRetained {
 	}
 
 	if (sharedGroup != null) {
-	    this.sharedGroup.parents.addElement(this);
+	    this.sharedGroup.parents.add(this);
 	    HashKey newKeys[] = getNewKeys(s.locale.nodeId, s.keys);
 	    HashKey oldKeys[] = s.keys;
 	    s.keys = newKeys;
@@ -230,7 +230,7 @@ class LinkRetained extends LeafRetained {
 	    HashKey oldKeys[] = s.keys;
 	    s.keys = newKeys;
 	    s.inSharedGroup = true;
-	    this.sharedGroup.parents.removeElement(this);
+	    this.sharedGroup.parents.remove(this);
 	    this.sharedGroup.clearLive(s);
 	    s.inSharedGroup = inSharedGroup;
 	    s.keys = oldKeys;

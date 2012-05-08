@@ -514,8 +514,6 @@ public final class WakeupOnCollisionEntry extends WakeupCriterion {
 	    NodeRetained nodeR = target;
 	    Locale locale = nodeR.locale;
 	    String nodeId;
-	    Vector parents;
-	    NodeRetained linkR;
 
 	    if (nodeR.inSharedGroup) {
 		// getlastNodeId() will destroy this key
@@ -535,10 +533,10 @@ public final class WakeupOnCollisionEntry extends WakeupCriterion {
 
 		    // retrieve the last node ID
 		    nodeId = key.getLastNodeId();
-		    parents = ((SharedGroupRetained) nodeR).parents;
+			Vector<NodeRetained> parents = ((SharedGroupRetained)nodeR).parents;
 		    NodeRetained prevNodeR = nodeR;
 		    for(int i=parents.size()-1; i >=0; i--) {
-			linkR = (NodeRetained) parents.elementAt(i);
+			NodeRetained linkR = parents.get(i);
 			if (linkR.nodeId.equals(nodeId)) {
 			    nodeR = linkR;
 			    break;

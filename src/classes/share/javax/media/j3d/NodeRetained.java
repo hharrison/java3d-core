@@ -352,13 +352,10 @@ ArrayList<BranchGroupRetained[]> branchGroupPaths = new ArrayList<BranchGroupRet
 	    // Search for the right parent.
 	    for(i=0; i<sgRetained.parents.size(); i++) {
 
-		if(nodeId.equals((String)(((NodeRetained)
-					   (sgRetained.parents.elementAt(i))).nodeId))) {
+			if (nodeId.equals(sgRetained.parents.get(i).nodeId)) {
 		    // Found the right link. Now traverse upward.
 
-		    computeLocalToVworld(caller,
-					 (NodeRetained)(sgRetained.parents.elementAt(i)),
-					 key, l2Vw);
+			computeLocalToVworld(caller, sgRetained.parents.get(i), key, l2Vw);
 		    return;
 		}
 	    }
@@ -774,11 +771,11 @@ ArrayList<BranchGroupRetained[]> branchGroupPaths = new ArrayList<BranchGroupRet
 		do {
 		    if (nodeR instanceof SharedGroupRetained) {
 			String nodeId = key.getLastNodeId();
-			Vector parents = ((SharedGroupRetained) nodeR).parents;
+			Vector<NodeRetained> parents = ((SharedGroupRetained)nodeR).parents;
 			int sz = parents.size();
 			NodeRetained prevNodeR = nodeR;
 			for(int j=0; j< sz; j++) {
-			    NodeRetained linkR = (NodeRetained) parents.elementAt(j);
+				NodeRetained linkR = parents.get(j);
 			    if (linkR.nodeId.equals(nodeId)) {
 				nodeR = linkR;
 				break;
@@ -827,11 +824,11 @@ ArrayList<BranchGroupRetained[]> branchGroupPaths = new ArrayList<BranchGroupRet
 		do {
 		    if (nodeR instanceof SharedGroupRetained) {
 			String nodeId = key.getLastNodeId();
-			Vector parents = ((SharedGroupRetained) nodeR).parents;
+			Vector<NodeRetained> parents = ((SharedGroupRetained)nodeR).parents;
 			int sz = parents.size();
 			NodeRetained prevNodeR = nodeR;
 			for(int j=0; j< sz; j++) {
-			    NodeRetained linkR = (NodeRetained) parents.elementAt(j);
+				NodeRetained linkR = parents.get(j);
 			    if (linkR.nodeId.equals(nodeId)) {
 				nodeR = linkR;
 				break;
@@ -882,12 +879,11 @@ ArrayList<BranchGroupRetained[]> branchGroupPaths = new ArrayList<BranchGroupRet
 		    else if (nodeR instanceof SharedGroupRetained) {
 			// note that key is truncated after getLastNodeId
                         String nodeId = key.getLastNodeId();
-                        Vector parents = ((SharedGroupRetained) nodeR).parents;
+						Vector<NodeRetained> parents = ((SharedGroupRetained)nodeR).parents;
                         int sz = parents.size();
                         NodeRetained prevNodeR = nodeR;
                         for (j=0; j< sz; j++) {
-                            NodeRetained linkR =
-				(NodeRetained) parents.elementAt(j);
+							NodeRetained linkR = parents.get(j);
                             if (linkR.nodeId.equals(nodeId)) {
                                 nodeR = linkR;
                                 break;
