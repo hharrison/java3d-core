@@ -2077,8 +2077,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 		// is shared by another onScreen Canvas and this callback
 		// is from that Canvas. In this case it need one more
 		// round before the renderer.
-		screen.renderer = (Renderer) screen.deviceRendererMap.get(
-							screen.graphicsDevice);
+		screen.renderer = Screen3D.deviceRendererMap.get(screen.graphicsDevice);
 		// screen.renderer may equal to null when multiple
 		// screen is used and this Canvas3D is in different
 		// screen sharing the same View not yet initialize.

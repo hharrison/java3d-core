@@ -166,8 +166,8 @@ public class Screen3D extends Object {
     // The renderer for this screen
     Renderer renderer = null;
 
-    // Hashtable that maps a GraphicsDevice to its associated renderer
-    static Hashtable deviceRendererMap = new Hashtable();
+// Hashtable that maps a GraphicsDevice to its associated renderer
+static Hashtable<GraphicsDevice, Renderer> deviceRendererMap = new Hashtable<GraphicsDevice, Renderer>();
 
     // A count of the number of canvases associated with this screen
     int canvasCount = 0;

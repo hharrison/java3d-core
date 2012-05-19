@@ -1100,7 +1100,7 @@ class MasterControl {
     private Renderer createRenderer(GraphicsConfiguration gc) {
 	final GraphicsDevice gd = gc.getDevice();
 
-	Renderer rdr = (Renderer) Screen3D.deviceRendererMap.get(gd);
+	Renderer rdr = Screen3D.deviceRendererMap.get(gd);
 	if (rdr != null) {
 	    return rdr;
 	}
@@ -1122,7 +1122,7 @@ class MasterControl {
 
 	threadListsChanged = true;
 
-	return (Renderer) Screen3D.deviceRendererMap.get(gd);
+	return Screen3D.deviceRendererMap.get(gd);
     }
 
     /**
@@ -2047,9 +2047,9 @@ class MasterControl {
 				 "MC: Destroy all Renderers");
 	    }
 	    // remove all Renderers if this is the last View
-	    for (Enumeration e = Screen3D.deviceRendererMap.elements();
+	    for (Enumeration<Renderer> e = Screen3D.deviceRendererMap.elements();
 		 e.hasMoreElements(); ) {
-		Renderer rdr = (Renderer) e.nextElement();
+		Renderer rdr = e.nextElement();
 		Screen3D scr;
 
 		rendererCleanupArgs[2] = REMOVEALLCTXS_CLEANUP;
@@ -2078,10 +2078,9 @@ class MasterControl {
 	    }
 
 	    // cleanup ThreadData corresponds to the view in renderer
-	    for (Enumeration e = Screen3D.deviceRendererMap.elements();
+	    for (Enumeration<Renderer> e = Screen3D.deviceRendererMap.elements();
 		 e.hasMoreElements(); ) {
-		Renderer rdr = (Renderer) e.nextElement();
-		rdr.cleanup();
+	    	e.nextElement().cleanup();
 	    }
 	    // We have to reuse renderer even though MC exit
 	    // see bug 4363279
@@ -2089,10 +2088,9 @@ class MasterControl {
 
 	} else {
 	    // cleanup ThreadData corresponds to the view in renderer
-	    for (Enumeration e = Screen3D.deviceRendererMap.elements();
+	    for (Enumeration<Renderer> e = Screen3D.deviceRendererMap.elements();
 		 e.hasMoreElements(); ) {
-		Renderer rdr = (Renderer) e.nextElement();
-		rdr.cleanupView();
+		e.nextElement().cleanupView();
 	    }
 	}
 
@@ -2276,9 +2274,7 @@ class MasterControl {
 			        // device of the screen of the canvas
 				// No need to synchronized since only
 				// MC use it.
-				    Renderer rdr =
-					(Renderer) screen.deviceRendererMap.get(
-							cv.screen.graphicsDevice);
+				    Renderer rdr = Screen3D.deviceRendererMap.get(cv.screen.graphicsDevice);
 				    if (rdr == null) {
 					java.security.AccessController.doPrivileged(
 					    new java.security.PrivilegedAction() {
@@ -2294,8 +2290,7 @@ class MasterControl {
                                           }
 					});
 					screen.renderer.initialize();
-					screen.deviceRendererMap.put(
-					     screen.graphicsDevice, screen.renderer);
+					Screen3D.deviceRendererMap.put(screen.graphicsDevice, screen.renderer);
 				    } else {
 					screen.renderer = rdr;
 				    }
@@ -2826,9 +2821,9 @@ class MasterControl {
 
 	thread = null;
 
-	for (Enumeration e = Screen3D.deviceRendererMap.elements();
+	for (Enumeration<Renderer> e = Screen3D.deviceRendererMap.elements();
 	     e.hasMoreElements(); ) {
-	    Renderer rdr = (Renderer) e.nextElement();
+	    Renderer rdr = e.nextElement();
 	    thread = rdr.getThreadData(null, null);
 	    requestRenderWorkThreads.add(thread);
 	    thread.threadOpts = J3dThreadData.CONT_THREAD;
