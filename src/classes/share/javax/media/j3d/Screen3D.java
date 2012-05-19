@@ -465,8 +465,6 @@ synchronized void notifyUsers() {
      * Update the view cache associated with this screen.
      */
     void updateViewCache() {
-	if (false)
-	    System.err.println("Screen3D.updateViewCache()");
 	synchronized(this) {
 	    screenViewCache.snapshot();
 	}
