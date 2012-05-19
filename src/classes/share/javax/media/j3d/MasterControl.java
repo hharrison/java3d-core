@@ -516,10 +516,7 @@ class MasterControl {
 	}
 
 	// Check to see whether shared contexts are allowed
-	if (!isD3D()) {
-	    isSharedCtx =
-		getBooleanProperty("j3d.sharedctx", isSharedCtx, "shared contexts");
-	}
+    isSharedCtx = getBooleanProperty("j3d.sharedctx", isSharedCtx, "shared contexts");
 
 	doCompaction = getBooleanProperty("j3d.docompaction", doCompaction,
 					  "compaction");
@@ -1211,14 +1208,6 @@ class MasterControl {
 		return false;
 	    }
 	}
-    }
-
-    /**
-     * Returns whether we are using D3D.
-     * TODO: most code that cares about this should move into the pipeline
-     */
-    final boolean isD3D() {
-	return false;
     }
 
     /**

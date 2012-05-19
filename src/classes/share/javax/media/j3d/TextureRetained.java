@@ -1796,20 +1796,6 @@ abstract class TextureRetained extends NodeComponentRetained {
 	    }
 	}
 
-
-	if (VirtualUniverse.mc.isD3D()) {
-	    if (texTimestamp != VirtualUniverse.mc.resendTexTimestamp) {
-		texTimestamp = VirtualUniverse.mc.resendTexTimestamp;
-		reloadTexture = true;
-	    }
-
-	    if (!reloadTexture) {
-		// D3D didn't store texture properties during Texture binding
-		updateTextureFields(cv);
-	    }
-	}
-
-
 //System.err.println("......... reloadTexture= " + reloadTexture +
 //		 " updateTexture= " + updateTexture +
 //		 " updateTextureLod= " + updateTextureLod);

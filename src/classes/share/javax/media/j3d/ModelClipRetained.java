@@ -599,39 +599,13 @@ class ModelClipRetained extends LeafRetained {
 	update(cv.ctx, enableMask, getLastLocalToVworld());
     }
 
-    void update(Context ctx, int enableMask, Transform3D trans) {
-	if (!VirtualUniverse.mc.isD3D()) {
-	    for (int i = 0; i < 6; i ++) {
-	         Pipeline.getPipeline().updateModelClip(ctx, i, ((enableMask & (1 << i)) != 0),
-			xformPlanes[i].x, xformPlanes[i].y,
-			xformPlanes[i].z, xformPlanes[i].w);
-	    }
-	    return;
+void update(Context ctx, int enableMask, Transform3D trans) {
+	for (int i = 0; i < 6; i++) {
+		Pipeline.getPipeline().updateModelClip(ctx, i,
+				((enableMask & (1 << i)) != 0), xformPlanes[i].x,
+				xformPlanes[i].y, xformPlanes[i].z, xformPlanes[i].w);
 	}
-
-	// For D3D we need to transform the plane equations from local to
-	// world coordinate.
-	Transform3D invtrans = new Transform3D(trans);
-
-	// can't call getNormalTransform() since it will cache
-	// normalTransform and may return previous result next time.
-	invtrans.invert();
-	invtrans.transpose();
-
-	for (int i=0; i < 6; i++) {
-	    if ((enableMask & (1 << i)) != 0) {
-
-		Vector4d vec = new Vector4d(xformPlanes[i].x, xformPlanes[i].y,
-					    xformPlanes[i].z, xformPlanes[i].w);
-		vec.normalize();
-		invtrans.transform(vec);
-		Pipeline.getPipeline().updateModelClip(ctx, i, true, vec.x, vec.y, vec.z, vec.w);
-
- 	    } else {
-		Pipeline.getPipeline().updateModelClip(ctx, i, false, 0, 0, 0, 0);
-	    }
-	}
-    }
+}
 
     void initMirrorObject(Object[] args) {
 	Shape3DRetained shape;

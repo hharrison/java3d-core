@@ -194,9 +194,6 @@ class RenderAtom extends Object implements ObjectUpdate {
         }
 
 	TransparencyAttributesRetained ta = app.transparencyAttributes;
-
-	if (!VirtualUniverse.mc.isD3D()) {
-	    // D3D doesn't support line/point antialiasing
 	    switch (geometryAtom.geoType) {
 	    case GeometryRetained.GEO_TYPE_POINT_SET:
 	    case GeometryRetained.GEO_TYPE_INDEXED_POINT_SET:
@@ -239,11 +236,6 @@ class RenderAtom extends Object implements ObjectUpdate {
 		     TransparencyAttributes.NONE) ||
 		    (ta.transparencyMode ==
 		     TransparencyAttributes.SCREEN_DOOR));
-	} else {
-	    return ((ta == null) ||
-		    (ta.transparencyMode ==
-		     TransparencyAttributes.NONE));
-	}
     }
 
     boolean inRenderBin() {

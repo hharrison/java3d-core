@@ -506,7 +506,7 @@ class BehaviorStructure extends J3dStructure {
 		incTimestamp = true;
 		universe.disableFocusEvents();
 	    }
-	    if (!VirtualUniverse.mc.isD3D() && !keyEnable && universe.enableKey) {
+	    if (!keyEnable && universe.enableKey) {
 		// key event use for toggle to fullscreen/window mode
 		incTimestamp = true;
 		universe.disableKeyEvents();

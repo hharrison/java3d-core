@@ -1091,8 +1091,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			if (canvas.view.getSceneAntialiasingEnable() &&
 			    canvas.sceneAntialiasingAvailable) {
 
-			    if (!VirtualUniverse.mc.isD3D() &&
-				((canvas.extensionsSupported & Canvas3D.MULTISAMPLE) == 0) ||
+			    if (((canvas.extensionsSupported & Canvas3D.MULTISAMPLE) == 0) ||
 				!canvas.sceneAntialiasingMultiSamplesAvailable) {
 				doAccum = true;
 				num_accum_passes = NUM_ACCUMULATION_SAMPLES;

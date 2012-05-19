@@ -1242,22 +1242,6 @@ class TextureBin extends Object implements ObjectUpdate {
 
 	// include this TextureBin to the to-be-updated state set in canvas
 	cv.setStateToUpdate(Canvas3D.TEXTUREBIN_BIT, this);
-
-        // For D3D - set the texLinearMode flag in the canvas if texcoord
-        // generation is enabled in object_linear mode for any texture unit.
-	if ((texUnitState != null) && VirtualUniverse.mc.isD3D()) {
-	    TextureUnitStateRetained tus;
-	    for (int i = 0; i < texUnitState.length; i++) {
-		tus = texUnitState[i];
-		if ((tus != null) && tus.isTextureEnabled()) {
-		    if ((tus.texGen != null) &&
-			(tus.texGen.genMode == TexCoordGeneration.OBJECT_LINEAR)) {
-			cv.texLinearMode = true;
-		    }
-		}
-	    }
-        }
-
         renderList(cv, USE_DISPLAYLIST, rlist);
     }
 

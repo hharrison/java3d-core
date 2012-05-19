@@ -843,15 +843,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		((gr.texCoordSetMap == null) && (this.texCoordSetMapLen != 0))) {
 		return (false);
 	    }
-
-	    if (VirtualUniverse.mc.isD3D() &&
-		(((geo.getClassType() == GeometryRetained.QUAD_TYPE)
-		  && !isQuadGeometryArray) ||
-		 ((geo.getClassType() == GeometryRetained.TRIANGLE_TYPE)
-		  && !isTriGeometryArray))) {
-		return false;
-	    }
-
 	} else if (geo instanceof CompressedGeometryRetained) {
 	    if (this.vertexFormat !=
 		((CompressedGeometryRetained)geo).getVertexFormat()) {
@@ -1809,16 +1800,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	// we'll have to punt to vertex array as well.
 
 	if ((pass != TextureBin.USE_DISPLAYLIST) ||
-	    (texCoordSetMapLen > cv.maxTexCoordSets) ||
-	    (VirtualUniverse.mc.isD3D() &&
-	      (((definingPolygonAttributes != null) &&
-		((isQuadGeometryArray &&
-		  (definingPolygonAttributes.polygonMode ==
-		   PolygonAttributes.POLYGON_LINE))||
-		 (isTriGeometryArray &&
-		  (definingPolygonAttributes.polygonMode ==
-		   PolygonAttributes.POLYGON_POINT)))) ||
-	       cv.texLinearMode))) {
+	    (texCoordSetMapLen > cv.maxTexCoordSets)) {
 	    modeSupportDL = false;
 	}
 
@@ -2116,17 +2098,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
         // instead.
 
 	if ((pass != TextureBin.USE_DISPLAYLIST) ||
-	    (texCoordSetMapLen > cv.maxTexCoordSets) ||
-                       	     (VirtualUniverse.mc.isD3D() &&
-			     (((definingPolygonAttributes != null) &&
-			       ((isQuadGeometryArray &&
-				 (definingPolygonAttributes.polygonMode ==
-				  PolygonAttributes.POLYGON_LINE)) ||
-				(isTriGeometryArray &&
-				 (definingPolygonAttributes.polygonMode ==
-				  PolygonAttributes.POLYGON_POINT))))
-			      ||
-			      cv.texLinearMode))) {
+	    (texCoordSetMapLen > cv.maxTexCoordSets)) {
 	    modeSupportDL = false;
 	}
 
@@ -2395,8 +2367,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 
 
     boolean isOpaque() {
-	if (!VirtualUniverse.mc.isD3D()) {
-	    // D3D doesn't support line/point antialiasing
 	    if ((geometryType & SURFACE) != 0) {
 		if (definingPolygonAttributes != null) {
 		    if ((definingPolygonAttributes.polygonMode ==
@@ -2427,11 +2397,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		     TransparencyAttributes.NONE) ||
 		    (definingTransparency.transparencyMode ==
 		     TransparencyAttributes.SCREEN_DOOR));
-	} else {
-	    return ((definingTransparency == null) ||
-		    (definingTransparency.transparencyMode ==
-		     TransparencyAttributes.NONE));
-	}
     }
 
 
