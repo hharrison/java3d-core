@@ -315,9 +315,6 @@ class MasterControl {
      */
     static long systemStartTime = 0L;
 
-    // Flag indicating that we are on a Windows OS
-    private static boolean isWindowsOs = false;
-
     // This is a counter for texture id's, valid id starts from 1
     private int textureIdCount = 0;
 
@@ -870,8 +867,6 @@ class MasterControl {
         String sunArchDataModel = getProperty("sun.arch.data.model");
 
         // Set global flags based on platform architecture
-        isWindowsOs = osName != null && osName.startsWith("windows");
-        boolean isWindowsVista = isWindowsOs && osName.indexOf("vista") != -1;
         boolean is64Bit = (sunArchDataModel != null) && sunArchDataModel.equals("64");
 
         // Issue 257: check to see if the sun.jnlp.applet.launcher property is set to true
@@ -890,9 +885,9 @@ class MasterControl {
                     append("    is64Bit = ").
                     append(is64Bit).
                     append(", isWindowsOs = ").
-                    append(isWindowsOs).
+                    append(false).
                     append(", isWindowsVista = ").
-                    append(isWindowsVista);
+                    append(false);
             getCoreLogger().config(strBuf.toString());
         }
 
@@ -1208,14 +1203,6 @@ class MasterControl {
 		return false;
 	    }
 	}
-    }
-
-    /**
-     * Returns whether we are running on Windows
-     * TODO: most code that cares about this should move into the pipeline
-     */
-    static final boolean isWindows() {
-	return isWindowsOs;
     }
 
     /**
