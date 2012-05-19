@@ -180,12 +180,6 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
                 System.err.println(e);
             }
             canvas.sendEventToBehaviorScheduler(e);
-
-            // Issue 458 - the following is not needed for a move
-//            if (VirtualUniverse.mc.isD3D()) {
-//                canvas.notifyD3DPeer(Canvas3D.RESIZE);
-//            }
-//            canvas.evaluateVisiblilty(true);
         }
     }
 
