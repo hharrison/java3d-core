@@ -2312,7 +2312,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
         ImageComponent2DRetained icRetained = (ImageComponent2DRetained)offScreenBuffer.retained;
         boolean isByRef = icRetained.isByReference();
-        boolean isYUp = icRetained.isYUp();
         ImageComponentRetained.ImageData imageData = icRetained.getImageData(false);
 
         if(!isByRef) {
@@ -2804,9 +2803,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
     public void getInverseVworldProjection(Transform3D leftInverseProjection,
 					   Transform3D rightInverseProjection) {
         if (canvasViewCache != null) {
-            ViewPlatformRetained viewPlatformRetained =
-               (ViewPlatformRetained)view.getViewPlatform().retained;
-
             synchronized(canvasViewCache) {
                   leftInverseProjection.set(
                     canvasViewCache.getLeftCcToVworld());
@@ -4695,9 +4691,7 @@ void addTextureResource(int id, TextureRetained obj) {
     // handle free resource in the FreeList
     void freeResourcesInFreeList(Context ctx) {
 	Iterator<Integer> it;
-	ArrayList list;
-	int i, val;
-	GeometryArrayRetained geo;
+	int val;
 
 	// free resource for those canvases that
 	// don't use shared ctx
