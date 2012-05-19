@@ -459,9 +459,6 @@ class MasterControl {
     // Maximum number of lights
     int maxLights;
 
-    // This is used for D3D only
-    int resendTexTimestamp = 0;
-
     // Indicates that the property to disable Xinerama mode was set and
     // successfully disabled.
     boolean xineramaDisabled = false;

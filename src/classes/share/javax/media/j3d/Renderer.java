@@ -160,7 +160,6 @@ ArrayList<TextureRetained> textureReloadList = new ArrayList<TextureRetained>();
     ArrayList<Canvas3D> listOfCanvases = new ArrayList<Canvas3D>();
 
     boolean needToRebuildDisplayList = false;
-    boolean needToResendTextureDown = false;
 
     // True when either one of dirtyRenderMoleculeList,
     // dirtyDlistPerRinfoList, dirtyRenderAtomList size > 0
@@ -260,9 +259,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                                             status = cv.swapBuffers(cv.ctx,
                                                     cv.screen.display,
                                                     cv.drawable);
-                                            if (status != Canvas3D.NOCHANGE) {
-                                                cv.resetRendering(status);
-                                            }
                                             cv.drawingSurfaceObject.unLock();
                                         } else {
                                             cv.makeCtxCurrent();
@@ -271,10 +267,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                                             status = cv.swapBuffers(cv.ctx,
                                                     cv.screen.display,
                                                     cv.drawable);
-                                            if (status != Canvas3D.NOCHANGE) {
-                                                cv.resetRendering(status);
-                                            }
-
                                         }
                                     }
                                 }
@@ -631,10 +623,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 		} else if (renderType == J3dMessage.RENDER_IMMEDIATE) {
                     int command = ((Integer)m[nmesg].args[1]).intValue();
 		    //System.err.println("command= " + command);
-		    if (needToResendTextureDown) {
-			VirtualUniverse.mc.resendTexTimestamp++;
-			needToResendTextureDown = false;
-		    }
 
                     if (canvas.isFatalError()) {
                         continue;
@@ -951,7 +939,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                             canvas.createTexUnitState();
                         }
 
-                        canvas.resetImmediateRendering(Canvas3D.NOCHANGE);
+                        canvas.resetImmediateRendering();
                         canvas.drawingSurfaceObject.contextValidated();
 
                         if (!canvas.useSharedCtx) {
@@ -977,10 +965,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			    break doneRender;
 			}
 
-			if (needToResendTextureDown) {
-			    VirtualUniverse.mc.resendTexTimestamp++;
-			    needToResendTextureDown = false;
-			}
 		        // handle free resource
 			if (canvas.useSharedCtx) {
 			    freeResourcesInFreeList(canvas);
@@ -1496,9 +1480,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                     new RenderingError(RenderingError.UNEXPECTED_RENDERING_ERROR,
                         J3dI18N.getString("Renderer8"));
             err.setCanvas3D(canvas);
-            if (canvas != null) {
-                err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
-            }
+            err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
             notifyErrorListeners(err);
       }
     }

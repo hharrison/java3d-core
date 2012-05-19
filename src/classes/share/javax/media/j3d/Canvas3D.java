@@ -342,13 +342,6 @@ public class Canvas3D extends Canvas {
     static final int VIEW_MATRIX_DIRTY         = 0x8000;
     // static final int SHADER_DIRTY              = 0x10000; Not ready for this yet -- JADA
 
-    // Use to notify D3D Canvas when window change
-    static final int RESIZE = 1;
-    static final int TOGGLEFULLSCREEN = 2;
-    static final int NOCHANGE = 0;
-    static final int RESETSURFACE = 1;
-    static final int RECREATEDDRAW = 2;
-
     //
     // Flag that indicates whether this Canvas3D is an off-screen Canvas3D
     //
@@ -2407,9 +2400,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			    }
 			    this.syncRender(ctx, true);
 			    int status = swapBuffers(ctx, screen.display, drawable);
-			    if (status != NOCHANGE) {
-				resetImmediateRendering(status);
-			    }
 			    drawingSurfaceObject.unLock();
 			}
 		    }
@@ -3870,38 +3860,9 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
     }
 
 
-    // use by D3D only
-    void resetTextureBin() {
-	TextureRetained tex;
-
-	// We don't use rdr.objectId for background texture in D3D
-	// so there is no need to handle rdr.objectId
-	if ((graphics2D != null) &&
-	    (graphics2D.objectId != -1)) {
-	    VirtualUniverse.mc.freeTexture2DId(graphics2D.objectId);
-	    // let J3DGraphics2DImpl to initialize texture again
-	    graphics2D.objectId = -1;
-	}
-
-	for (int id = textureIDResourceTable.size() - 1; id >= 0; id--) {
-		tex = textureIDResourceTable.get(id);
-		if (tex != null) {
-			tex.resourceCreationMask &= ~canvasBit;
-
-		}
-	}
-    }
-
     // reset all attributes so that everything e.g. display list,
     // texture will recreate again in the next frame
-    void resetRendering(int status) {
-
-	if (status == RECREATEDDRAW) {
-	    // D3D use MANAGE_POOL when createTexture, so there
-	    // is no need to download texture again in case of RESETSURFACE
-	    resetTextureBin();
-	    screen.renderer.needToResendTextureDown = true;
-	}
+    void resetRendering() {
 
 	reset();
 
@@ -3998,7 +3959,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
     }
 
 
-    void resetImmediateRendering(int status) {
+    void resetImmediateRendering() {
 	canvasDirty = 0xffff;
 	ra = null;
 
@@ -4023,7 +3984,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 				1.0f, 1.0f,
 				1.0f, 1.0f, false);
 	updateMaterial(ctx, 1.0f, 1.0f, 1.0f, 1.0f);
-	resetRendering(NOCHANGE);
+	resetRendering();
 	makeCtxCurrent();
         synchronized (dirtyMaskLock) {
             cvDirtyMask[0] |= VIEW_INFO_DIRTY;
@@ -4032,9 +3993,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	needToRebuildDisplayList = true;
 
 	ctxTimeStamp = VirtualUniverse.mc.getContextTimeStamp();
-	if (status == RECREATEDDRAW) {
-	    screen.renderer.needToResendTextureDown = true;
-	}
     }
 
 
