@@ -751,8 +751,8 @@ public class Canvas3D extends Canvas {
 
 ArrayList<RenderMolecule> dirtyRenderMoleculeList = new ArrayList<RenderMolecule>();
 ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomListInfo>();
-    // List of (Rm, rInfo) pair of individual dlists that need to be rebuilt
-    ArrayList dirtyDlistPerRinfoList = new ArrayList();
+// List of (Rm, rInfo) pair of individual dlists that need to be rebuilt
+ArrayList<Object[]> dirtyDlistPerRinfoList = new ArrayList<Object[]>();
 
 ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>();
 ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();

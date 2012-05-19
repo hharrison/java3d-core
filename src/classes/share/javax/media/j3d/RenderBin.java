@@ -3173,7 +3173,7 @@ System.err.println("......tb.soleUser= " +
     }
 
     void updateDirtyDisplayLists(Canvas3D cv,
-				 ArrayList<RenderMolecule> rmList, ArrayList dlistPerRinfoList,
+				 ArrayList<RenderMolecule> rmList, ArrayList<Object[]> dlistPerRinfoList,
 				 ArrayList<RenderAtomListInfo> raList, boolean useSharedCtx ) {
 	int size, i, bitMask;
 	Context ctx;
@@ -3204,7 +3204,7 @@ System.err.println("......tb.soleUser= " +
 
 	if (size > 0) {
 	    for (i = size-1; i >= 0 ; i--) {
-		Object[] obj = (Object[])dlistPerRinfoList.get(i);
+		Object[] obj = dlistPerRinfoList.get(i);
 		dlistRenderMethod.buildDlistPerRinfo((RenderAtomListInfo)obj[0], (RenderMolecule)obj[1], cv);
 	    }
 	    dlistPerRinfoList.clear();

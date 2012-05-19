@@ -125,9 +125,8 @@ ArrayList<RenderMolecule> dirtyRenderMoleculeList = new ArrayList<RenderMolecule
 // List of individual dlists that need to be rebuilt
 ArrayList<RenderAtomListInfo> dirtyRenderAtomList = new ArrayList<RenderAtomListInfo>();
 
-    // List of (Rm, rInfo) pair of individual dlists that need to be rebuilt
-    ArrayList dirtyDlistPerRinfoList = new ArrayList();
-
+// List of (Rm, rInfo) pair of individual dlists that need to be rebuilt
+ArrayList<Object[]> dirtyDlistPerRinfoList = new ArrayList<Object[]>();
 
 // Texture and display list that should be freed
 ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
