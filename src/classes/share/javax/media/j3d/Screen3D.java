@@ -172,23 +172,8 @@ static Hashtable<GraphicsDevice, Renderer> deviceRendererMap = new Hashtable<Gra
     // A count of the number of canvases associated with this screen
     int canvasCount = 0;
 
-    // A count of the number of active View associated with this screen
-    UnorderList activeViews = new UnorderList(1, View.class);
-
 	// A list of Canvas3D Objects that refer to this
 	private final ArrayList<Canvas3D> users = new ArrayList<Canvas3D>();
-
-    void addActiveView(View v) {
-	activeViews.addUnique(v);
-    }
-
-    void removeActiveView(View v) {
-	activeViews.remove(v);
-    }
-
-    boolean activeViewEmpty() {
-	return activeViews.isEmpty();
-    }
 
 // Add a user to the list of users
 synchronized void removeUser(Canvas3D c) {
