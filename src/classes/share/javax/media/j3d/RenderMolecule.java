@@ -296,12 +296,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	(VertexArrayRenderMethod)
 	VirtualUniverse.mc.getVertexArrayRenderMethod();
 
-    // In D3D separate Quad/Triangle Geometry with others in RenderMolecule
-    // Since we need to dynamically switch whether to use DisplayList
-    // or not in render() as a group.
-    boolean isQuadGeometryArray = false;
-    boolean isTriGeometryArray = false;
-
     // display list id, valid id starts from 1
     int displayListId = 0;
     Integer displayListIdObj = null;
@@ -509,11 +503,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    }
 	    break;
 	}
-
-	isQuadGeometryArray = (geo.getClassType() ==
-			       GeometryRetained.QUAD_TYPE);
-	isTriGeometryArray = (geo.getClassType() ==
-			      GeometryRetained.TRIANGLE_TYPE);
 
 	this.localToVworld = transform;
 	this.localToVworldIndex = transformIndex;

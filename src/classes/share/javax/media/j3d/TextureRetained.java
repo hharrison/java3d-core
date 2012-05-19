@@ -178,10 +178,6 @@ abstract class TextureRetained extends NodeComponentRetained {
     private HashMap<RenderBin,Integer> textureBinRefCount =
             new HashMap<RenderBin,Integer>();
 
-    // This is used for D3D only to check whether texture need to
-    // resend down
-    private int texTimestamp = 0;
-
     // need to synchronize access from multiple rendering threads
     Object resourceLock = new Object();
 
