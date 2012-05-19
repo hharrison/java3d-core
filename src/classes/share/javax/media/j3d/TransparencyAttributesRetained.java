@@ -335,6 +335,12 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
 	}
     }
 
-
+    static boolean useAlpha(TransparencyAttributesRetained ta) {
+    	if (ta == null)
+    		return false;
+    	
+    	int mode = ta.transparencyMode;
+    	return (mode != TransparencyAttributes.NONE && mode != TransparencyAttributes.SCREEN_DOOR);
+    }
 
 }
