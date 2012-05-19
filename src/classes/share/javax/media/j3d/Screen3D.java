@@ -471,19 +471,4 @@ synchronized void notifyUsers() {
 	    screenViewCache.snapshot();
 	}
     }
-
-    /**
-     * Increment canvas count, initialize renderer if needed
-     */
-    synchronized void incCanvasCount() {
-	canvasCount++;
-    }
-
-    /**
-     * Decrement canvas count, kill renderer if needed
-     */
-    synchronized void decCanvasCount() {
-	canvasCount--;
-    }
-
 }
