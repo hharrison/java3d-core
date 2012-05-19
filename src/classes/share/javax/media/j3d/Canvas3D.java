@@ -2100,13 +2100,12 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
 		// modify the args to reflect offScreen rendering
 		screen.renderer.args = new Object[4];
-		((Object[])screen.renderer.args)[0] =
-		    new Integer(Renderer.REQUESTRENDER);
-		((Object[])screen.renderer.args)[1] = this;
-		((Object[])screen.renderer.args)[2] = view;
+		screen.renderer.args[0] = new Integer(Renderer.REQUESTRENDER);
+		screen.renderer.args[1] = this;
+		screen.renderer.args[2] = view;
 		// This extra argument 3 is needed in MasterControl to
 		// test whether offscreen Rendering is used or not
-		((Object[])screen.renderer.args)[3] = null;
+		screen.renderer.args[3] = null;
 
 		// call renderer doWork directly since we are already in
 		// the renderer thread
