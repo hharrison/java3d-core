@@ -60,11 +60,21 @@ public class J3DBuffer {
     static final int TYPE_FLOAT = 7;
     static final int TYPE_DOUBLE = 8;
 
-    static boolean unsupportedOperation = false;
-
     private java.nio.Buffer originalBuffer = null;
     private BufferWrapper bufferImpl = null;
     private int bufferType = TYPE_NULL;
+
+private static final boolean unsupportedOperation;
+
+static {
+	// Allocate a direct byte buffer and verify that we can
+	// access the data pointer from native code
+	java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocateDirect(8);
+	if (buffer == null)
+		unsupportedOperation = true;
+	else
+		unsupportedOperation = false;
+}
 
     /**
      * Constructs a J3DBuffer object and initializes it with
@@ -218,24 +228,5 @@ public class J3DBuffer {
 
     BufferWrapper getBufferImpl() {
 	return bufferImpl;
-    }
-
-    private static boolean checkNativeBufferAccess(java.nio.Buffer buffer) {
-	if (buffer == null /*|| !Pipeline.getPipeline().checkNativeBufferAccess(buffer)*/) {
-	    return false;
-	}
-	else {
-	    return true;
-	}
-    }
-
-    static {
-	// Allocate a direct byte buffer and verify that we can
-	// access the data pointer from native code
-	java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocateDirect(8);
-
-	if (!checkNativeBufferAccess(buffer)) {
-	    unsupportedOperation = true;
-	}
     }
 }
