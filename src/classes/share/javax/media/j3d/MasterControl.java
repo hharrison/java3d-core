@@ -1824,7 +1824,6 @@ class MasterControl {
 		    J3dMessage m;
 		    int i = 0;
 
-		    Object oldRef= null;
 		    while (i < size) {
 			m = mess[i];
 			if ((v == null) || (m.view == v) ||
@@ -3180,8 +3179,7 @@ class MasterControl {
 		rendererRun = true;
 	    } else if ((type == SET_GRAPHICSCONFIG_FEATURES) ||
 		       (type == SET_QUERYPROPERTIES)) {
-		GraphicsConfiguration gc = (GraphicsConfiguration)
-		          ((Canvas3D) o).graphicsConfiguration;
+		GraphicsConfiguration gc = ((Canvas3D)o).graphicsConfiguration;
 		sendRenderMessage(gc, o, type);
 		rendererRun = true;
 	    } else if (type == SET_VIEW) {
