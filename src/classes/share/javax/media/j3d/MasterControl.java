@@ -445,7 +445,7 @@ class MasterControl {
 
     static private Object mcThreadLock = new Object();
 
-    private ArrayList timestampUpdateList = new ArrayList(3);
+	private ArrayList<View> timestampUpdateList = new ArrayList<View>(3);
 
     private UnorderList freeMessageList = new UnorderList(8);
 
@@ -2157,7 +2157,7 @@ class MasterControl {
 		renderingAttributesStructure.updateThread = null;
 	    }
 	    renderingAttributesStructure.messageList.clear();
-	    renderingAttributesStructure.objList = new ArrayList();
+	    renderingAttributesStructure.objList = new ArrayList<J3dMessage>();
 	    renderingAttributesStructure = new RenderingAttributesStructure();
 	    if (timerThread != null) {
 		timerThread.finish();
@@ -3497,12 +3497,11 @@ class MasterControl {
                     (currentRenderThread == renderThreadSize) &&
                     (currentRequestRenderThread == requestRenderThreadSize) &&
 		    (threadPending == 0)) {
-		    for (int k=timestampUpdateList.size()-1; k >=0;
-			 k--) {
-			View v = (View) timestampUpdateList.get(k);
-			v.setFrameTimingValues();
-			v.universe.behaviorStructure.incElapsedFrames();
-		    }
+			for (int k = timestampUpdateList.size() - 1; k >= 0; k--) {
+				View v = timestampUpdateList.get(k);
+				v.setFrameTimingValues();
+				v.universe.behaviorStructure.incElapsedFrames();
+			}
 		    timestampUpdateList.clear();
 		    updateMirrorObjects();
 		    done = true;

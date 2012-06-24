@@ -36,7 +36,7 @@ import java.util.Arrays;
 
 class RenderingAttributesStructure extends J3dStructure implements ObjectUpdate {
     // List of textures whose resourceCreation mask should be updated
-    ArrayList objList = new ArrayList();
+    ArrayList<J3dMessage> objList = new ArrayList<J3dMessage>();
 
     RenderingAttributesStructure() {
 	super(null, J3dThread.UPDATE_RENDERING_ATTRIBUTES);
@@ -183,7 +183,7 @@ class RenderingAttributesStructure extends J3dStructure implements ObjectUpdate 
 
 	int size = objList.size();
 	for (int i = 0; i < size; i++) {
-	    J3dMessage m = (J3dMessage)objList.get(i);
+	    J3dMessage m = objList.get(i);
 	    // Message Only sent to RenderingAttributesStructure
 	    // when the geometry type is indexed
 	    if (m.type == J3dMessage.GEOMETRY_CHANGED) {
