@@ -340,13 +340,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     static final int INIT_MIRROR_GEOMETRY      = 0x02;
 
 
-    // A list of Universes that this Geometry is referenced in Morph from
-    ArrayList morphUniverseList = null;
+// A list of Universes that this Geometry is referenced in Morph from
+ArrayList<VirtualUniverse> morphUniverseList = null;
 
-    // A list of ArrayLists which contain all the MorphRetained objects
-    // refering to this geometry.  Each list corresponds to the universe
-    // above.
-    ArrayList morphUserLists = null;
+// A list of ArrayLists which contain all the MorphRetained objects
+// refering to this geometry. Each list corresponds to the universe
+// above.
+ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
     // The following variables are only used in compile mode
 
@@ -3476,8 +3476,6 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     void sendDataChangedMessage(boolean coordinatesChanged) {
 	J3dMessage[] m;
 	int i, j, k, index, numShapeMessages, numMorphMessages;
-	ArrayList morphList;
-	MorphRetained morph;
 
 	synchronized(liveStateLock) {
 	    if (source != null && source.isLive()) {
@@ -3547,11 +3545,10 @@ abstract class GeometryArrayRetained extends GeometryRetained{
 			if (numMorphMessages > 0) {
 			    synchronized (morphUniverseList) {
 				for (i = 0; i < numMorphMessages; i++, k++) {
-				    morphList = (ArrayList)morphUserLists.get(i);
-				    for (j=0; j<morphList.size(); j++) {
-					morph = (MorphRetained)morphList.get(j);
-					morph.updateMorphedGeometryArray(this, coordinatesChanged);
-				    }
+					ArrayList<MorphRetained> morphList = morphUserLists.get(i);
+					for (j = 0; j < morphList.size(); j++) {
+						morphList.get(j).updateMorphedGeometryArray(this, coordinatesChanged);
+					}
 				}
 			    }
 			}
@@ -10684,20 +10681,18 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     // This adds a MorphRetained to the list of users of this geometry
     void addMorphUser(MorphRetained m) {
         int index;
-        ArrayList morphList;
 
 	if(morphUniverseList == null) {
-	    morphUniverseList = new ArrayList(1);
-	    morphUserLists = new ArrayList(1);
+	    morphUniverseList = new ArrayList<VirtualUniverse>(1);
+	    morphUserLists = new ArrayList<ArrayList<MorphRetained>>(1);
 	}
         synchronized (morphUniverseList) {
             if (morphUniverseList.contains(m.universe)) {
                 index = morphUniverseList.indexOf(m.universe);
-                morphList = (ArrayList)morphUserLists.get(index);
-                morphList.add(m);
+                morphUserLists.get(index).add(m);
             } else {
                 morphUniverseList.add(m.universe);
-                morphList = new ArrayList(5);
+                ArrayList<MorphRetained> morphList = new ArrayList<MorphRetained>(5);
                 morphList.add(m);
                 morphUserLists.add(morphList);
             }
@@ -10707,14 +10702,13 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     // This adds a MorphRetained to the list of users of this geometry
     void removeMorphUser(MorphRetained m) {
         int index;
-        ArrayList morphList;
 
 	if(morphUniverseList == null)
 	    return;
 
         synchronized (morphUniverseList) {
             index = morphUniverseList.indexOf(m.universe);
-            morphList = (ArrayList)morphUserLists.get(index);
+            ArrayList<MorphRetained> morphList = morphUserLists.get(index);
             morphList.remove(morphList.indexOf(m));
             if (morphList.size() == 0) {
                 morphUserLists.remove(index);
