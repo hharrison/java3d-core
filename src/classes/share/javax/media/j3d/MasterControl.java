@@ -615,14 +615,12 @@ class MasterControl {
 
 	// Get the maximum number of concurrent threads (CPUs)
 	final int defaultThreadLimit = getNumberOfProcessors() + 1;
-	Integer threadLimit =
-	    (Integer) java.security.AccessController.doPrivileged(
-	    new java.security.PrivilegedAction() {
-		public Object run() {
-		    return Integer.getInteger("j3d.threadLimit",
-					      defaultThreadLimit);
+	Integer threadLimit = java.security.AccessController.doPrivileged(
+	new java.security.PrivilegedAction<Integer>() {
+		public Integer run() {
+			return Integer.getInteger("j3d.threadLimit", defaultThreadLimit);
 		}
-	    });
+	});
 
 	cpuLimit = threadLimit.intValue();
 	if (cpuLimit < 1)
@@ -633,13 +631,12 @@ class MasterControl {
 	}
 
 	// Get the input device scheduler sampling time
-	Integer samplingTime  =
-	    (Integer) java.security.AccessController.doPrivileged(
-	    new java.security.PrivilegedAction() {
-		public Object run() {
-		    return Integer.getInteger("j3d.deviceSampleTime", 0);
+	Integer samplingTime = java.security.AccessController.doPrivileged(
+	new java.security.PrivilegedAction<Integer>() {
+		public Integer run() {
+			return Integer.getInteger("j3d.deviceSampleTime", 0);
 		}
-	    });
+	});
 
 	if (samplingTime.intValue() > 0) {
 	    InputDeviceScheduler.samplingTime =
@@ -650,14 +647,13 @@ class MasterControl {
 
 	// Get the glslVertexAttrOffset
 	final int defaultGLSLVertexAttrOffset = glslVertexAttrOffset;
-	Integer vattrOffset =
-	    (Integer) java.security.AccessController.doPrivileged(
-	    new java.security.PrivilegedAction() {
-		public Object run() {
-		    return Integer.getInteger("j3d.glslVertexAttrOffset",
-					      defaultGLSLVertexAttrOffset);
+	Integer vattrOffset = java.security.AccessController.doPrivileged(
+	new java.security.PrivilegedAction<Integer>() {
+		public Integer run() {
+			return Integer.getInteger("j3d.glslVertexAttrOffset",
+					defaultGLSLVertexAttrOffset);
 		}
-	    });
+	});
 
 	glslVertexAttrOffset = vattrOffset.intValue();
         if (glslVertexAttrOffset < 1) {
@@ -820,14 +816,14 @@ class MasterControl {
         return coreLoggerEnabled && coreLogger.isLoggable(level);
     }
 
-    private static String getProperty(final String prop) {
-	return (String) java.security.AccessController.doPrivileged(
-	    new java.security.PrivilegedAction() {
-		public Object run() {
-		    return System.getProperty(prop);
-		}
-   	    });
-    }
+private static String getProperty(final String prop) {
+	return java.security.AccessController.doPrivileged(
+		new java.security.PrivilegedAction<String>() {
+			public String run() {
+				return System.getProperty(prop);
+			}
+		});
+}
 
     static boolean getBooleanProperty(String prop,
 					      boolean defaultValue,
@@ -924,19 +920,17 @@ class MasterControl {
     InputDeviceBlockingThread getInputDeviceBlockingThread(
 					   final InputDevice device) {
 
-	return (InputDeviceBlockingThread)
-	    java.security.AccessController.doPrivileged(
-		 new java.security.PrivilegedAction() {
-                     public Object run() {
-			 synchronized (rootThreadGroup) {
-			     Thread thread = new InputDeviceBlockingThread(
-				 	    rootThreadGroup, device);
-			     thread.setPriority(threadPriority);
-			     return thread;
-			 }
-		     }
-		 }
-        );
+	return java.security.AccessController.doPrivileged(
+		new java.security.PrivilegedAction<InputDeviceBlockingThread>() {
+			public InputDeviceBlockingThread run() {
+				synchronized (rootThreadGroup) {
+					InputDeviceBlockingThread thread = new InputDeviceBlockingThread(
+							rootThreadGroup, device);
+					thread.setPriority(threadPriority);
+					return thread;
+				}
+			}
+		});
     }
 
     /**
