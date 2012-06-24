@@ -1166,13 +1166,11 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	    canvasViewEventCatcher = new CanvasViewEventCatcher(this);
 
 	    synchronized(VirtualUniverse.mc.deviceScreenMap) {
-		screen = (Screen3D) VirtualUniverse.mc.
-		                   deviceScreenMap.get(graphicsDevice);
+			screen = VirtualUniverse.mc.deviceScreenMap.get(graphicsDevice);
 
 		if (screen == null) {
 		    screen = new Screen3D(graphicsConfiguration, offScreen);
-		    VirtualUniverse.mc.deviceScreenMap.put(graphicsDevice,
-							   screen);
+			VirtualUniverse.mc.deviceScreenMap.put(graphicsDevice, screen);
 		}
 	    }
 

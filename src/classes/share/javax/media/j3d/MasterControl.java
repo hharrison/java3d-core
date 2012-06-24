@@ -430,7 +430,7 @@ class MasterControl {
 
     // Hashtable that maps a GraphicsDevice to its associated
     // Screen3D--this is only used for on-screen Canvas3Ds
-    Hashtable deviceScreenMap = new Hashtable();
+    Hashtable<GraphicsDevice, Screen3D> deviceScreenMap = new Hashtable<GraphicsDevice, Screen3D>();
 
     // Use to store all requests from user threads.
     UnorderList requestObjList = new UnorderList();
