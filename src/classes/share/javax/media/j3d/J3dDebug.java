@@ -208,7 +208,6 @@ class J3dDebug  {
     static final int j3dDebug = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int j3dI18N = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int j3dMessage = !devPhase?NO_DEBUG:NO_DEBUG;
-    static final int j3dNodeTable = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int j3dQueryProps = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int j3dStructure = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int j3dThread = !devPhase?NO_DEBUG:NO_DEBUG;
