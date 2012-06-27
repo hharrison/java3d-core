@@ -105,8 +105,7 @@ class CachedTargets {
         System.arraycopy(targetArr[type], 0, newArr,
                          0, targetArr[type].length);
         targetArr[type] = newArr;
-        NnuIdManager.replace((NnuId)oldObj, (NnuId)newObj,
-				(NnuId[])targetArr[type]);
+		NnuIdManager.replace(oldObj, newObj, targetArr[type]);
     }
 
     void dump() {
