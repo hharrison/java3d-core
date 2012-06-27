@@ -38,47 +38,47 @@ import javax.vecmath.Vector3d;
  */
 
 class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate {
-    /**
-     * The list of light nodes
-     */
-    ArrayList nonViewScopedLights = new ArrayList();
-    HashMap viewScopedLights = new HashMap();
-    int numberOfLights = 0;
+/**
+ * The list of light nodes
+ */
+ArrayList<LightRetained> nonViewScopedLights = new ArrayList<LightRetained>();
+HashMap<View, ArrayList<LightRetained>> viewScopedLights = new HashMap<View, ArrayList<LightRetained>>();
+int numberOfLights = 0;
 
-    /**
-     * The list of fog nodes
-     */
-    ArrayList nonViewScopedFogs = new ArrayList();
-    HashMap viewScopedFogs = new HashMap();
-    int numberOfFogs = 0;
+/**
+ * The list of fog nodes
+ */
+ArrayList<FogRetained> nonViewScopedFogs = new ArrayList<FogRetained>();
+HashMap<View, ArrayList<FogRetained>> viewScopedFogs = new HashMap<View, ArrayList<FogRetained>>();
+int numberOfFogs = 0;
 
-    /**
-     * The list of alternate app nodes
-     */
-    ArrayList nonViewScopedAltAppearances = new ArrayList();
-    HashMap viewScopedAltAppearances = new HashMap();
-    int numberOfAltApps = 0;
+/**
+ * The list of alternate app nodes
+ */
+ArrayList<AlternateAppearanceRetained> nonViewScopedAltAppearances = new ArrayList<AlternateAppearanceRetained>();
+HashMap<View, ArrayList<AlternateAppearanceRetained>> viewScopedAltAppearances = new HashMap<View, ArrayList<AlternateAppearanceRetained>>();
+int numberOfAltApps = 0;
 
-    /**
-     * The list of model clip nodes
-     */
-    ArrayList nonViewScopedModelClips = new ArrayList();
-    HashMap viewScopedModelClips = new HashMap();
-    int numberOfModelClips = 0;
+/**
+ * The list of model clip nodes
+ */
+ArrayList<ModelClipRetained> nonViewScopedModelClips = new ArrayList<ModelClipRetained>();
+HashMap<View, ArrayList<ModelClipRetained>> viewScopedModelClips = new HashMap<View, ArrayList<ModelClipRetained>>();
+int numberOfModelClips = 0;
 
-    /**
-     * The list of background nodes
-     */
-    ArrayList nonViewScopedBackgrounds = new ArrayList();
-    HashMap viewScopedBackgrounds = new HashMap();
-    int numberOfBgs = 0;
+/**
+ * The list of background nodes
+ */
+ArrayList<BackgroundRetained> nonViewScopedBackgrounds = new ArrayList<BackgroundRetained>();
+HashMap<View, ArrayList<BackgroundRetained>> viewScopedBackgrounds = new HashMap<View, ArrayList<BackgroundRetained>>();
+int numberOfBgs = 0;
 
-    /**
-     * The list of clip nodes
-     */
-    ArrayList nonViewScopedClips = new ArrayList();
-    HashMap viewScopedClips = new HashMap();
-    int numberOfClips = 0;
+/**
+ * The list of clip nodes
+ */
+ArrayList<ClipRetained> nonViewScopedClips = new ArrayList<ClipRetained>();
+HashMap<View, ArrayList<ClipRetained>> viewScopedClips = new HashMap<View, ArrayList<ClipRetained>>();
+int numberOfClips = 0;
 
     // For closest Background selection
     BackgroundRetained[] intersectedBacks = new BackgroundRetained[1];
@@ -368,15 +368,12 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 	int i;
 	GeometryAtom ga;
 	int num;
-	LightRetained lt;
-	FogRetained fg;
-	ModelClipRetained mc;
 	ArrayList list;
 
 	for (i=0; i<nodes.length; i++) {
 	    n = nodes[i];
 	    if (n instanceof LightRetained) {
-                lt = (LightRetained)n;
+         LightRetained lt = (LightRetained)n;
 		numberOfLights++;
 
 		// If this particulat light is not scoped, added it
@@ -387,7 +384,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		    nonViewScopedLights.add(lt);
 
 	    } else if (n instanceof FogRetained) {
-                fg = (FogRetained)n;
+                FogRetained fg = (FogRetained)n;
 		numberOfFogs++;
 		// If the fog is scoped to a view , then ..
 
@@ -403,25 +400,25 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 
 		numberOfAltApps++;
 
-		nonViewScopedAltAppearances.add(n);
+		nonViewScopedAltAppearances.add(altApp);
 
 	    } else if (n instanceof BackgroundRetained) {
 		BackgroundRetained bg = (BackgroundRetained)n;
 		numberOfBgs++;
 
-		nonViewScopedBackgrounds.add(n);
+		nonViewScopedBackgrounds.add(bg);
 
 	    } else if (n instanceof ClipRetained) {
 		ClipRetained cl = (ClipRetained)n;
 		numberOfClips++;
 
-		nonViewScopedClips.add(n);
+		nonViewScopedClips.add(cl);
 
 	    } else if (n instanceof ModelClipRetained) {
-		mc = (ModelClipRetained)n;
+		ModelClipRetained mc = (ModelClipRetained)n;
 		numberOfModelClips++;
 
-		nonViewScopedModelClips.add(n);
+		nonViewScopedModelClips.add(mc);
 
 	    }
 
@@ -546,7 +543,7 @@ class RenderingEnvironmentStructure extends J3dStructure implements ObjectUpdate
 		    lt.geometryBackground.lights.remove(lt);
 		}
 		else {
-		    nonViewScopedLights.remove(nonViewScopedLights.indexOf(n));
+		    nonViewScopedLights.remove(lt);
 		}
 
 		numberOfLights--;
