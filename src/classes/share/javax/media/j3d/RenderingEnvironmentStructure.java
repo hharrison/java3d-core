@@ -116,8 +116,8 @@ int numberOfClips = 0;
     ArrayList xformChangeList = new ArrayList();
 
 
-    // freelist management of objects
-    ArrayList objFreeList = new ArrayList();
+// freelist management of objects
+private final ArrayList<Object[]> objFreeList = new ArrayList<Object[]>();
 
     LightRetained[] retlights = new LightRetained[5];
 
@@ -142,33 +142,21 @@ int numberOfClips = 0;
     }
 
 
-    /**
-     * Returns a object array of length 5 to save the 5 objects in the message list.
-     */
-    Object[] getObjectArray() {
-	Object[] objs;
-	int size;
+/**
+ * Returns a object array of length 5 to save the 5 objects in the message list.
+ */
+Object[] getObjectArray() {
+	int size = objFreeList.size();
+	if (size == 0)
+		return new Object[5];
+	
+	return objFreeList.remove(size - 1);
+}
 
-	size = objFreeList.size();
-	if (size == 0) {
-	    objs = new Object[5];
-	}
-	else {
-	    objs = (Object[]) objFreeList.get(size - 1);
-	    objFreeList.remove(size -1);
-	}
-	return objs;
-    }
-
-    void addObjArrayToFreeList(Object[] objs) {
-	int i;
-
-	for (i = 0; i < objs.length; i++)
-	    objs[i] = null;
-
+void addObjArrayToFreeList(Object[] objs) {
+	Arrays.fill(objs, null);
 	objFreeList.add(objs);
-    }
-
+}
 
 
     public void updateObject() {
