@@ -271,7 +271,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
 	Transform3D savedLocalToVworld[][] = s.localToVworld;
 	int savedLocalToVworldIndex[][] = s.localToVworldIndex;
 	HashKey savedLocalToVworldKeys[] = s.localToVworldKeys;
-        ArrayList savedOrderedPaths = s.orderedPaths;
+	ArrayList<OrderedPath> savedOrderedPaths = s.orderedPaths;
 	ArrayList savedViewList = s.viewLists;
 	ArrayList<ArrayList<LightRetained>> savedLights = s.lights;
 	ArrayList<ArrayList<FogRetained>> savedFogs = s.fogs;
@@ -324,7 +324,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
 	s.localToVworld = savedLocalToVworld;
 	s.localToVworldIndex = savedLocalToVworldIndex;
 	s.localToVworldKeys = savedLocalToVworldKeys;
-        s.orderedPaths = savedOrderedPaths;
+	s.orderedPaths = savedOrderedPaths;
 	s.viewLists = savedViewList;
 
 	s.lights = savedLights;
