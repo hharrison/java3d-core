@@ -1338,7 +1338,7 @@ FogRetained getInfluencingFog(RenderAtom ra, View view) {
     // in effect
     Object[]  getInfluencingAppearance(RenderAtom ra, View view) {
 	AlternateAppearanceRetained altApp = null;
-	int i, j, k, n, nAltApp;;
+	int j, nAltApp;;
 	Bounds closestBounds;
         Bounds bounds;
 	Object[] retVal;
@@ -1487,7 +1487,6 @@ FogRetained getInfluencingFog(RenderAtom ra, View view) {
 	ArrayList altAppList = null;
 	ArrayList bgList = null;
 	ArrayList clipList = null;
-	int idx;
 
 	if (((component & ViewSpecificGroupRetained.ADD_VIEW) != 0) ||
 	    ((component & ViewSpecificGroupRetained.SET_VIEW) != 0)) {
@@ -1652,7 +1651,7 @@ FogRetained getInfluencingFog(RenderAtom ra, View view) {
 			    ((ModelClipRetained)obj).isViewScoped = false;
 			    numberOfModelClips--;
 			    if (mclipList == null) {
-				mclipList = (ArrayList)viewScopedModelClips.get(view);
+				mclipList = viewScopedModelClips.get(view);
 			    }
 			    mclipList.remove(obj);
 			}
@@ -1702,74 +1701,72 @@ FogRetained getInfluencingFog(RenderAtom ra, View view) {
 
     }
 
-    boolean isLightScopedToThisView(Object obj, View view) {
+boolean isLightScopedToThisView(Object obj, View view) {
 	LightRetained light = (LightRetained)obj;
 	if (light.isViewScoped) {
-	    ArrayList l = (ArrayList)viewScopedLights.get(view);
-	    // If this is a scoped lights, but has no views then ..
-	    if (l == null || !l.contains(light))
-		return false;
+		ArrayList<LightRetained> l = viewScopedLights.get(view);
+		// If this is a scoped lights, but has no views then ..
+		if (l == null || !l.contains(light))
+			return false;
 	}
 	return true;
-    }
+}
 
-    boolean isFogScopedToThisView(Object obj, View view) {
+boolean isFogScopedToThisView(Object obj, View view) {
 	FogRetained fog = (FogRetained)obj;
 	if (fog.isViewScoped) {
-	    ArrayList l = (ArrayList)viewScopedFogs.get(view);
-	    // If this is a scoped fog, but has no views then ..
-	    if (l ==null || !l.contains(fog))
-		return false;
+		ArrayList<FogRetained> l = viewScopedFogs.get(view);
+		// If this is a scoped fog, but has no views then ..
+		if (l == null || !l.contains(fog))
+			return false;
 	}
 	return true;
-    }
+}
 
-    boolean isAltAppScopedToThisView(Object obj, View view) {
+boolean isAltAppScopedToThisView(Object obj, View view) {
 	AlternateAppearanceRetained altApp = (AlternateAppearanceRetained)obj;
 	if (altApp.isViewScoped) {
-	    ArrayList l = (ArrayList)viewScopedAltAppearances.get(view);
-	    // If this is a scoped altapp, but has no views then ..
-	    if (l == null || !l.contains(altApp))
-		return false;
+		ArrayList<AlternateAppearanceRetained> l = viewScopedAltAppearances.get(view);
+		// If this is a scoped altapp, but has no views then ..
+		if (l == null || !l.contains(altApp))
+			return false;
 	}
 	return true;
-    }
+}
 
-    boolean isBgScopedToThisView(Object obj, View view) {
+boolean isBgScopedToThisView(Object obj, View view) {
 	BackgroundRetained bg = (BackgroundRetained)obj;
 	if (bg.isViewScoped) {
-	    ArrayList l = (ArrayList)viewScopedBackgrounds.get(view);
-	    // If this is a scoped bg, but has no views then ..
-	    if (l == null || !l.contains(bg))
-		return false;
+		ArrayList<BackgroundRetained> l = viewScopedBackgrounds.get(view);
+		// If this is a scoped bg, but has no views then ..
+		if (l == null || !l.contains(bg))
+			return false;
 	}
 	return true;
-    }
+}
 
-    boolean isClipScopedToThisView(Object obj, View view) {
+boolean isClipScopedToThisView(Object obj, View view) {
 	ClipRetained clip = (ClipRetained)obj;
 	if (clip.isViewScoped) {
-	    ArrayList l = (ArrayList)viewScopedClips.get(view);
-	    // If this is a scoped clip, but has no views then ..
-	    if (l == null || !l.contains(clip))
-		return false;
+		ArrayList<ClipRetained> l = viewScopedClips.get(view);
+		// If this is a scoped clip, but has no views then ..
+		if (l == null || !l.contains(clip))
+			return false;
 	}
 	return true;
-    }
-
-
-    boolean isMclipScopedToThisView(Object obj, View view) {
-	ModelClipRetained mclip = (ModelClipRetained)obj;
-	if (mclip.isViewScoped) {
-	    ArrayList l = (ArrayList)viewScopedModelClips.get(view);
-	    // If this is a scoped mclip, but has no views then ..
-	    if (l == null || !l.contains(mclip))
-		return false;
-	}
-	return true;
-    }
-
-    void cleanup() {}
 }
 
 
+boolean isMclipScopedToThisView(Object obj, View view) {
+	ModelClipRetained mclip = (ModelClipRetained)obj;
+	if (mclip.isViewScoped) {
+		ArrayList<ModelClipRetained> l = viewScopedModelClips.get(view);
+		// If this is a scoped mclip, but has no views then ..
+		if (l == null || !l.contains(mclip))
+			return false;
+	}
+	return true;
+}
+
+void cleanup() {}
+}
