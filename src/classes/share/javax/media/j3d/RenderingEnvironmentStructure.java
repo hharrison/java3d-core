@@ -338,13 +338,12 @@ public void updateObject() {
 
     void insertNodes(J3dMessage m) {
 	Object[] nodes = (Object[])m.args[0];
-	ArrayList viewScopedNodes = (ArrayList)m.args[3];
+	ArrayList<NodeRetained> viewScopedNodes = (ArrayList<NodeRetained>)m.args[3];
 	ArrayList<ArrayList<View>> scopedNodesViewList = (ArrayList<ArrayList<View>>)m.args[4];
-	Object n;
 	int i;
 
 	for (i=0; i<nodes.length; i++) {
-	    n = nodes[i];
+	    Object n = nodes[i];
 	    if (n instanceof LightRetained) {
          LightRetained lt = (LightRetained)n;
 		numberOfLights++;
@@ -404,7 +403,7 @@ public void updateObject() {
 
 
 	    for (i = 0; i < size; i++) {
-		n = (NodeRetained)viewScopedNodes.get(i);
+		NodeRetained n = viewScopedNodes.get(i);
 		ArrayList<View> vl = scopedNodesViewList.get(i);
 			if (n instanceof LightRetained) {
 				LightRetained lt = (LightRetained) n;
@@ -516,9 +515,8 @@ public void updateObject() {
 
     void removeNodes(J3dMessage m) {
 	Object[] nodes = (Object[])m.args[0];
-	ArrayList viewScopedNodes = (ArrayList)m.args[3];
+	ArrayList<NodeRetained> viewScopedNodes = (ArrayList<NodeRetained>)m.args[3];
 	ArrayList<ArrayList<View>> scopedNodesViewList = (ArrayList<ArrayList<View>>)m.args[4];
-        Object n;
         int i;
 	GeometryAtom ga;
 	LeafRetained oldsrc = null;
@@ -527,7 +525,7 @@ public void updateObject() {
 	// System.err.println("RE : removeNodes m.args[0] " + m.args[0]);
 
 	for (i=0; i<nodes.length; i++) {
-	    n = nodes[i];
+	    Object n = nodes[i];
 	    if (n instanceof LightRetained) {
 		LightRetained lt = (LightRetained)n;
 		if (lt.inBackgroundGroup) {
@@ -580,7 +578,7 @@ public void updateObject() {
 	    int size = viewScopedNodes.size();
 	    int vlsize;
 	    for (i = 0; i < size; i++) {
-		n = (NodeRetained)viewScopedNodes.get(i);
+		NodeRetained n = viewScopedNodes.get(i);
 		ArrayList<View> vl = scopedNodesViewList.get(i);
 			if (n instanceof LightRetained) {
 				LightRetained lt = (LightRetained) n;
