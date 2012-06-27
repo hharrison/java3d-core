@@ -86,8 +86,8 @@ public class Font3D extends NodeComponent {
     // Used by triangulateGlyphs method to split contour data into islands.
     final static float EPS = 0.000001f;
 
-    // Map glyph code to GeometryArrayRetained
-    Hashtable geomHash = new Hashtable(20);
+// Map glyph code to GeometryArrayRetained
+Hashtable<Character, GeometryArrayRetained> geomHash = new Hashtable<Character, GeometryArrayRetained>(20);
 
     /**
      * Constructs a Font3D object from the specified Font and
@@ -247,7 +247,7 @@ public class Font3D extends NodeComponent {
   // Triangulate glyph with 'unicode' if not already done.
     GeometryArrayRetained triangulateGlyphs(GlyphVector gv, char c) {
 	Character ch = new Character(c);
-	GeometryArrayRetained geo = (GeometryArrayRetained) geomHash.get(ch);
+	GeometryArrayRetained geo = geomHash.get(ch);
 
 	if (geo == null) {
 	  // Font Y-axis is downwards, so send affine transform to flip it.
@@ -446,7 +446,7 @@ public class Font3D extends NodeComponent {
 
 	    contourCounts = new int[1];
 	    int currCoordIndex = 0, vertOffset = 0;
-	    ArrayList triangData = new ArrayList();
+		ArrayList<GeometryArray> triangData = new ArrayList<GeometryArray>();
 
 	    Point3f q1 = new Point3f(), q2 = new Point3f(), q3 = new Point3f();
 	    Vector3f n1 = new Vector3f(), n2 = new Vector3f();
@@ -494,7 +494,7 @@ public class Font3D extends NodeComponent {
 
 
 	    for (j=0;j < islandCounts.length;j++) {
-		GeometryArray ga = (GeometryArray)triangData.get(j);
+			GeometryArray ga = triangData.get(j);
 		vertOffset = ga.getVertexCount();
 
 		findOrient = false;
@@ -978,7 +978,7 @@ public class Font3D extends NodeComponent {
 
     static int check2Contours(int begin1, int end1, int begin2, int end2,
 			      Point3f[] vertices) {
-	int i, j;
+	int i;
 	boolean inside2, inside1;
 
 	inside2 = pointInPolygon2D(vertices[begin1].x, vertices[begin1].y,
@@ -1083,7 +1083,7 @@ public class Font3D extends NodeComponent {
     // in to triangular to workaround its limitation.
     static private class IslandsNode {
 
-	private ArrayList islandsList = null;
+private ArrayList<IslandsNode> islandsList = null;
 	int startIdx, endIdx;
 
 	IslandsNode(int startIdx, int endIdx) {
@@ -1092,21 +1092,19 @@ public class Font3D extends NodeComponent {
 	    islandsList = null;
 	}
 
-	void addChild(IslandsNode node) {
-
-	    if (islandsList == null) {
-		islandsList = new ArrayList(5);
-	    }
-	    islandsList.add(node);
-	}
+void addChild(IslandsNode node) {
+	if (islandsList == null)
+		islandsList = new ArrayList<IslandsNode>(5);
+	islandsList.add(node);
+}
 
 	void removeChild(IslandsNode node) {
 	    islandsList.remove(islandsList.indexOf(node));
 	}
 
-	IslandsNode getChild(int idx) {
-	    return (IslandsNode) islandsList.get(idx);
-	}
+IslandsNode getChild(int idx) {
+	return islandsList.get(idx);
+}
 
 	int numChild() {
 	    return (islandsList == null ? 0 : islandsList.size());
