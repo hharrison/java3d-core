@@ -741,8 +741,8 @@ private int processLights(ArrayList<LightRetained> globalLights, RenderAtom ra, 
 		if (light.lightOn && light.switchState.currentSwitchOn &&
 		    (ra.geometryAtom.source.inBackgroundGroup || bounds.intersect(light.region))){
 		    // Get the mirror Shape3D node
-		    n = ((Shape3DRetained)ra.geometryAtom.source).numlights;
-		    shapeScopedLt = ((Shape3DRetained)ra.geometryAtom.source).lights;
+		    n = ra.geometryAtom.source.numlights;
+		    shapeScopedLt = ra.geometryAtom.source.lights;
 
 		    // System.err.println("numLights per shape= "+n);
 		    // scoped Fog/light is kept in the original
@@ -831,8 +831,8 @@ FogRetained getInfluencingFog(RenderAtom ra, View view) {
 		// Note : There is no enable check for fog
 		if (fog.region != null && fog.switchState.currentSwitchOn &&
 		    (ra.geometryAtom.source.inBackgroundGroup || fog.region.intersect(bounds))) {
-		    n = ((Shape3DRetained)ra.geometryAtom.source).numfogs;
-		    shapeScopedFog = ((Shape3DRetained)ra.geometryAtom.source).fogs;
+		    n = ra.geometryAtom.source.numfogs;
+		    shapeScopedFog = ra.geometryAtom.source.fogs;
 
 		    if (fog.isScoped) {
 			for (k = 0; k < n; k++) {
@@ -904,8 +904,8 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 		if (modelClip.enableFlag == true &&
 		    modelClip.region != null && modelClip.switchState.currentSwitchOn) {
 		    if (modelClip.region.intersect(bounds) == true) {
-			n = ((Shape3DRetained)ra.geometryAtom.source).numModelClips;
-			shapeScopedModelClip = ((Shape3DRetained)ra.geometryAtom.source).modelClips;
+			n = ra.geometryAtom.source.numModelClips;
+			shapeScopedModelClip = ra.geometryAtom.source.modelClips;
 
 			if (modelClip.isScoped) {
 			    for (k = 0; k < n; k++) {
@@ -1386,8 +1386,8 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 		// Note : There is no enable check for fog
 		if (altApp.region != null && altApp.switchState.currentSwitchOn) {
 		    if (altApp.region.intersect(bounds) == true) {
-			n = ((Shape3DRetained)ra.geometryAtom.source).numAltApps;
-			shapeScopedAltApp = ((Shape3DRetained)ra.geometryAtom.source).altApps;
+			n = ra.geometryAtom.source.numAltApps;
+			shapeScopedAltApp = ra.geometryAtom.source.altApps;
 			if (altApp.isScoped) {
 			    for (k = 0; k < n; k++) {
 				// then check if the light is scoped to
