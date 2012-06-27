@@ -61,10 +61,10 @@ abstract class FogRetained extends LeafRetained{
      */
     BoundingLeafRetained boundingLeaf = null;
 
-    /**
-     * Vector of GroupRetained  nodes that scopes this fog.
-     */
-    Vector scopes = new Vector();
+/**
+ * Vector of GroupRetained nodes that scopes this fog.
+ */
+Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 
     // An int that is set when this fog is changed
     int isDirty = 0xffff;
@@ -243,11 +243,10 @@ abstract class FogRetained extends LeafRetained{
 
 	ArrayList addScopeList = new ArrayList();
 	ArrayList removeScopeList = new ArrayList();
-	GroupRetained group;
 	Object[] scopeInfo = new Object[3];
 
 
-	group = (GroupRetained) scopes.get(index);
+	GroupRetained group = scopes.get(index);
 	tempKey.reset();
 	group.removeAllNodesForScopedFog(mirrorFog, removeScopeList, tempKey);
 
@@ -299,7 +298,7 @@ abstract class FogRetained extends LeafRetained{
 
 
     void initRemoveScope(int index) {
-	GroupRetained group  = (GroupRetained)scopes.elementAt(index);
+	GroupRetained group = scopes.elementAt(index);
 	scopes.removeElementAt(index);
 	group.removeFogScope();
 
@@ -309,7 +308,7 @@ abstract class FogRetained extends LeafRetained{
 
 	Object[] scopeInfo = new Object[3];
 	ArrayList removeScopeList = new ArrayList();
-	GroupRetained group  = (GroupRetained)scopes.elementAt(index);
+	GroupRetained group = scopes.elementAt(index);
 
 	tempKey.reset();
 	group.removeAllNodesForScopedFog(mirrorFog, removeScopeList, tempKey);
@@ -328,7 +327,7 @@ abstract class FogRetained extends LeafRetained{
      * @return the scoperen at location index
      */
     Group getScope(int index) {
-	return (Group)(((GroupRetained)(scopes.elementAt(index))).source);
+	return (Group)(scopes.elementAt(index).source);
     }
 
     /**
@@ -336,10 +335,10 @@ abstract class FogRetained extends LeafRetained{
      * @return an enumeration object of the scoperen
      */
     Enumeration getAllScopes() {
-	Enumeration elm = scopes.elements();
-	Vector v = new Vector(scopes.size());
+	Enumeration<GroupRetained> elm = scopes.elements();
+	Vector<Group> v = new Vector<Group>(scopes.size());
 	while (elm.hasMoreElements()) {
-	    v.add( ((GroupRetained) elm.nextElement()).source);
+		v.add((Group)elm.nextElement().source);
 	}
 	return v.elements();
     }
@@ -351,7 +350,7 @@ abstract class FogRetained extends LeafRetained{
      */
     void initAddScope(Group scope) {
         GroupRetained group = (GroupRetained)scope.retained;
-	scopes.addElement((GroupRetained)(scope.retained));
+	scopes.addElement(group);
 	group.setFogScope();
     }
 
@@ -389,7 +388,7 @@ abstract class FogRetained extends LeafRetained{
    */
   int indexOfScope(Group scope) {
     if(scope != null)
-      return scopes.indexOf((GroupRetained)scope.retained);
+      return scopes.indexOf(scope.retained);
     else
       return scopes.indexOf(null);
   }
@@ -419,12 +418,11 @@ abstract class FogRetained extends LeafRetained{
   void removeAllScopes() {
     Object[] scopeInfo = new Object[3];
     ArrayList removeScopeList = new ArrayList();
-    GroupRetained group;
     int n = scopes.size();
 
     tempKey.reset();
-    for(int index = n-1; index >= 0; index--) {
-       group  = (GroupRetained)scopes.elementAt(index);
+	for (int index = n - 1; index >= 0; index--) {
+		GroupRetained group = scopes.elementAt(index);
        group.removeAllNodesForScopedFog(mirrorFog, removeScopeList, tempKey);
        initRemoveScope(index);
     }
@@ -755,7 +753,7 @@ abstract class FogRetained extends LeafRetained{
              fr.initInfluencingBounds(b);
          }
 
-         fr.scopes = new Vector();
+	fr.scopes = new Vector<GroupRetained>();
          fr.isDirty = 0xffff;
          fr.inImmCtx = false;
          fr.region = null;

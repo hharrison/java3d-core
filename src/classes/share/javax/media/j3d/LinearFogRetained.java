@@ -121,8 +121,6 @@ class LinearFogRetained extends FogRetained {
 
 
     void setLive(SetLiveState s) {
-	GroupRetained group;
-
 	super.setLive(s);
 
 	// Initialize the mirror object, this needs to be done, when
@@ -137,7 +135,7 @@ class LinearFogRetained extends FogRetained {
 	createMessage.args[1]= new Integer(INIT_MIRROR);
 	ArrayList addScopeList = new ArrayList();
 	for (int i = 0; i < scopes.size(); i++) {
-	    group = (GroupRetained)scopes.get(i);
+		GroupRetained group = scopes.get(i);
 	    tempKey.reset();
 	    group.addAllNodesForScopedFog(mirrorFog, addScopeList, tempKey);
 	}

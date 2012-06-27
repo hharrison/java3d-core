@@ -81,7 +81,6 @@ class ExponentialFogRetained extends FogRetained {
 
     void setLive(SetLiveState s) {
 	super.setLive(s);
-	GroupRetained group;
 
 	// Initialize the mirror object, this needs to be done, when
 	// renderBin is not accessing any of the fields
@@ -95,7 +94,7 @@ class ExponentialFogRetained extends FogRetained {
 	createMessage.args[1]= new Integer(INIT_MIRROR);
 	ArrayList addScopeList = new ArrayList();
 	for (int i = 0; i < scopes.size(); i++) {
-	    group = (GroupRetained)scopes.get(i);
+		GroupRetained group = scopes.get(i);
 	    tempKey.reset();
 	    group.addAllNodesForScopedFog(mirrorFog, addScopeList, tempKey);
 	}
