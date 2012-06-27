@@ -29,24 +29,23 @@ package javax.media.j3d;
 import java.util.ArrayList;
 
 class OrderedPath extends Object {
-    ArrayList pathElements = new ArrayList(1);
+ArrayList<OrderedPathElement> pathElements = new ArrayList<OrderedPathElement>(1);
 
 
     void addElementToPath(OrderedGroupRetained og, Integer orderedId) {
         pathElements.add(new OrderedPathElement(og, orderedId));
     }
 
-    OrderedPath clonePath() {
-        OrderedPath path = new OrderedPath();
-        path.pathElements = (ArrayList)pathElements.clone();
-        return path;
-    }
+OrderedPath clonePath() {
+	OrderedPath path = new OrderedPath();
+	path.pathElements = new ArrayList<OrderedPathElement>(pathElements);
+	return path;
+}
 
     void printPath() {
         System.err.println("orderedPath: [");
-        OrderedPathElement ope;
         for (int i=0; i<pathElements.size(); i++) {
-            ope = (OrderedPathElement)pathElements.get(i);
+        	OrderedPathElement ope = pathElements.get(i);
             System.err.println("(" + ope.orderedGroup + "," + ope.childId);
         }
         System.err.println("]");
