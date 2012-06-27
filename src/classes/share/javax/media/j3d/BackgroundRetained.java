@@ -97,14 +97,14 @@ ArrayList<LightRetained> lights = new ArrayList<LightRetained>();
 // list of fog nodes for background geometry
 ArrayList<FogRetained> fogs = new ArrayList<FogRetained>();
 
-    // a list of background geometry atoms
-    ArrayList bgGeometryAtomList = new ArrayList();
+// a list of background geometry atoms
+ArrayList<GeometryAtom> bgGeometryAtomList = new ArrayList<GeometryAtom>();
 
-    // false is background geometry atoms list has changed
-    boolean bgGeometryAtomListDirty = true;
+// false is background geometry atoms list has changed
+boolean bgGeometryAtomListDirty = true;
 
-    // an array of background geometry atoms
-    GeometryAtom[] bgGeometryAtoms = null;
+// an array of background geometry atoms
+GeometryAtom[] bgGeometryAtoms = null;
 
     // Target threads to be notified when light changes
     // Note, the rendering env structure only get notified
@@ -734,31 +734,29 @@ ArrayList<FogRetained> fogs = new ArrayList<FogRetained>();
 	VirtualUniverse.mc.processMessage(createMessage);
     }
 
-    void addBgGeometryAtomList(GeometryAtom geomAtom) {
-        bgGeometryAtomList.add(geomAtom);
-        bgGeometryAtomListDirty = true;
-    }
+void addBgGeometryAtomList(GeometryAtom geomAtom) {
+	bgGeometryAtomList.add(geomAtom);
+	bgGeometryAtomListDirty = true;
+}
 
-    void removeBgGeometryAtomList(GeometryAtom geomAtom) {
-        bgGeometryAtomList.remove(bgGeometryAtomList.indexOf(geomAtom));
-        bgGeometryAtomListDirty = true;
-    }
+void removeBgGeometryAtomList(GeometryAtom geomAtom) {
+	bgGeometryAtomList.remove(geomAtom);
+	bgGeometryAtomListDirty = true;
+}
 
-    GeometryAtom[] getBackgroundGeometryAtoms() {
-        if (bgGeometryAtomListDirty) {
-            int nAtoms = bgGeometryAtomList.size();
-            if (nAtoms == 0) {
-                bgGeometryAtoms = null;
-            } else {
-                bgGeometryAtoms = new GeometryAtom[nAtoms];
-                for (int i=0; i<bgGeometryAtoms.length; i++) {
-                    bgGeometryAtoms[i] = (GeometryAtom)bgGeometryAtomList.get(i) ;
-                }
-            bgGeometryAtomListDirty = false;
-           }
-        }
-        return(bgGeometryAtoms);
-    }
+GeometryAtom[] getBackgroundGeometryAtoms() {
+	if (bgGeometryAtomListDirty) {
+		int nAtoms = bgGeometryAtomList.size();
+		if (nAtoms == 0) {
+			bgGeometryAtoms = null;
+		}
+		else {
+			bgGeometryAtoms = bgGeometryAtomList.toArray(new GeometryAtom[nAtoms]);
+			bgGeometryAtomListDirty = false;
+		}
+	}
+	return bgGeometryAtoms;
+}
 
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);
