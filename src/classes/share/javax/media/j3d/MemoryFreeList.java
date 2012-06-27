@@ -36,7 +36,7 @@ import java.util.Arrays;
 class MemoryFreeList {
 
     // never go smaller than the initial capacity
-    ArrayList elementData = null;
+    ArrayList<Object[]> elementData = null;
     int size = 0;
     int currBlockSize = 10;
     Object[] currBlock = null;
@@ -51,7 +51,7 @@ class MemoryFreeList {
     // the minimum size since the last shrink
     int minSize = 0;
 
-    Class c = null;
+    Class<?> c = null;
 
     MemoryFreeList(String className) {
 	this(className, 10);
@@ -73,7 +73,7 @@ class MemoryFreeList {
 	initcap = initialCapacity;
 	currBlockSize = initialCapacity;
 	minBlockSize = currBlockSize;
-	elementData = new ArrayList();
+	elementData = new ArrayList<Object[]>();
 	// add the first block of memory to the arraylist
 	currBlock = new Object[currBlockSize];
 	elementData.add(currBlock);
@@ -131,7 +131,7 @@ class MemoryFreeList {
 // 			   currBlockIndex + " currBlock = " + currBlock);
 	if ((currBlockIndex == -1) || (spaceUsed >= currBlockSize)) {
 	    currBlockIndex++;
-	    currBlock = (Object[])elementData.get(currBlockIndex);
+	    currBlock = elementData.get(currBlockIndex);
 	    currBlockSize = currBlock.length;
 	    spaceUsed = 0;
 	}
@@ -160,7 +160,7 @@ class MemoryFreeList {
 		currBlockSize = 0;
 	    }
 	    else {
-		currBlock = (Object[])elementData.get(currBlockIndex);
+		currBlock = elementData.get(currBlockIndex);
 		currBlockSize = currBlock.length;
 	    }
 	    spaceUsed = currBlockSize;
@@ -183,7 +183,7 @@ class MemoryFreeList {
 // 	    System.err.println("free memory before shrink: " + r.freeMemory());
 
 	    // remove the last block
-	    Object[] block = (Object[])elementData.remove(numBlocks-1);
+	    Object[] block = elementData.remove(numBlocks-1);
 	    numBlocks--;
 	    capacity -= block.length;
 
@@ -193,7 +193,7 @@ class MemoryFreeList {
 		size -= spaceUsed;
 		// set the current block to the last one
 		currBlockIndex = numBlocks-1;
-		currBlock = (Object[])elementData.get(currBlockIndex);
+		currBlock = elementData.get(currBlockIndex);
 		currBlockSize = currBlock.length;
 
 		spaceUsed = currBlockSize;
@@ -218,13 +218,11 @@ class MemoryFreeList {
 
 	if (minCapacity > capacity) {
 // 	    System.err.println("adding a block: numBlocks = " + numBlocks);
-	    int lastBlockSize =
-		((Object[])elementData.get(numBlocks-1)).length;
+		int lastBlockSize = elementData.get(numBlocks - 1).length;
 	    int prevBlockSize = 0;
-	    if (numBlocks > 1) {
-		prevBlockSize =
-		((Object[])elementData.get(numBlocks-2)).length;
-	    }
+		if (numBlocks > 1) {
+			prevBlockSize = elementData.get(numBlocks - 2).length;
+		}
 	    currBlockSize = lastBlockSize + prevBlockSize;
 	    currBlock = new Object[currBlockSize];
 	    elementData.add(currBlock);
