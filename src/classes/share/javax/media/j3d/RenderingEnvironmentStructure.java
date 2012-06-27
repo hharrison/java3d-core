@@ -660,25 +660,25 @@ void addObjArrayToFreeList(Object[] objs) {
 
     LightRetained[] getInfluencingLights(RenderAtom ra, View view) {
 	LightRetained[] lightAry = null;
-        ArrayList globalLights;
-	int numLights;
-	int i, j, n;
+	int i, j;
 
 	// Need to lock retlights, since on a multi-processor
 	// system with 2 views on a single universe, there might
 	// be councurrent access
 	synchronized (retlights) {
-	    numLights = 0;
-	    if (ra.geometryAtom.source.inBackgroundGroup) {
-		globalLights = ra.geometryAtom.source.geometryBackground.lights;
-		numLights = processLights(globalLights, ra, numLights);
-	    } else {
-		if ((globalLights = (ArrayList)viewScopedLights.get(view)) != null) {
-		    numLights = processLights(globalLights, ra, numLights);
+		ArrayList<LightRetained> globalLights;
+		int numLights = 0;
+		if (ra.geometryAtom.source.inBackgroundGroup) {
+			globalLights = ra.geometryAtom.source.geometryBackground.lights;
+			numLights = processLights(globalLights, ra, numLights);
 		}
-		// now process the common lights
-		numLights = processLights(nonViewScopedLights, ra, numLights);
-	    }
+		else {
+			if ((globalLights = viewScopedLights.get(view)) != null) {
+				numLights = processLights(globalLights, ra, numLights);
+			}
+			// now process the common lights
+			numLights = processLights(nonViewScopedLights, ra, numLights);
+		}
 
 	    boolean newLights = false;
 	    if (ra.lights != null && ra.lights.length == numLights) {
@@ -708,8 +708,8 @@ void addObjArrayToFreeList(Object[] objs) {
 	}
     }
 
-    // Called while holding the retlights lock
-    int processLights(ArrayList globalLights, RenderAtom ra, int numLights) {
+// Called while holding the retlights lock
+private int processLights(ArrayList<LightRetained> globalLights, RenderAtom ra, int numLights) {
 	LightRetained[] shapeScopedLt;
         Bounds bounds;
 	int i, j, n;
@@ -718,7 +718,7 @@ void addObjArrayToFreeList(Object[] objs) {
 
 	if (size > 0) {
 	    for (i=0; i<size; i++) {
-		LightRetained light = (LightRetained)globalLights.get(i);
+			LightRetained light = globalLights.get(i);
 		//		System.err.println("vwcBounds = "+bounds);
 		//		System.err.println("light.region = "+light.region);
 		//		System.err.println("Intersected = "+bounds.intersect(light.region));
@@ -755,12 +755,11 @@ void addObjArrayToFreeList(Object[] objs) {
 	return numLights;
 
     }
-    FogRetained getInfluencingFog(RenderAtom ra, View view) {
+    
+FogRetained getInfluencingFog(RenderAtom ra, View view) {
 	FogRetained fog = null;
 	int i, j, k, n, nfogs;
 	Bounds closestBounds;
-        ArrayList globalFogs;
-	int numFogs;
 
 	// Need to lock lockObj, since on a multi-processor
 	// system with 2 views on a single universe, there might
@@ -772,17 +771,19 @@ void addObjArrayToFreeList(Object[] objs) {
 	    if (intersectedBounds.length < numberOfFogs)
 		intersectedBounds = new Bounds[numberOfFogs];
 
-	    if (ra.geometryAtom.source.inBackgroundGroup) {
-		globalFogs = ra.geometryAtom.source.geometryBackground.fogs;
-		nfogs = processFogs(globalFogs, ra, nfogs);
-		// If background, then nfogs > 1, take the first one
-		if (nfogs >= 1)
-		    fog = intersectedFogs[0];
+	    ArrayList<FogRetained> globalFogs;
+		if (ra.geometryAtom.source.inBackgroundGroup) {
+			globalFogs = ra.geometryAtom.source.geometryBackground.fogs;
+			nfogs = processFogs(globalFogs, ra, nfogs);
+			// If background, then nfogs > 1, take the first one
+			if (nfogs >= 1)
+				fog = intersectedFogs[0];
 
-	    } else {
-		if ((globalFogs = (ArrayList)viewScopedFogs.get(view)) != null) {
-		    nfogs = processFogs(globalFogs, ra, nfogs);
 		}
+		else {
+			if ((globalFogs = viewScopedFogs.get(view)) != null) {
+				nfogs = processFogs(globalFogs, ra, nfogs);
+			}
 		// now process the common fogs
 		nfogs = processFogs(nonViewScopedFogs, ra, nfogs);
 
@@ -805,7 +806,7 @@ void addObjArrayToFreeList(Object[] objs) {
     }
 
     // Called while holding lockObj lock
-    int processFogs(ArrayList globalFogs, RenderAtom ra, int numFogs) {
+    int processFogs(ArrayList<FogRetained> globalFogs, RenderAtom ra, int numFogs) {
 	int size = globalFogs.size();
 	FogRetained fog;
 	int i, k, n;
@@ -814,7 +815,7 @@ void addObjArrayToFreeList(Object[] objs) {
 
 	if (globalFogs.size() > 0) {
 	    for (i = 0 ; i < size; i++) {
-		fog = (FogRetained) globalFogs.get(i);
+		fog = globalFogs.get(i);
 		// Note : There is no enable check for fog
 		if (fog.region != null && fog.switchState.currentSwitchOn &&
 		    (ra.geometryAtom.source.inBackgroundGroup || fog.region.intersect(bounds))) {

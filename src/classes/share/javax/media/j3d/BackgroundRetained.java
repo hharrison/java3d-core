@@ -91,11 +91,11 @@ class BackgroundRetained extends LeafRetained {
     // This is true when this background is referenced in an immediate mode context
     boolean inImmCtx = false;
 
-    // list of light nodes for background geometry
-    ArrayList lights = new ArrayList();
+// list of light nodes for background geometry
+ArrayList<LightRetained> lights = new ArrayList<LightRetained>();
 
-    // list of fog nodes for background geometry
-    ArrayList fogs = new ArrayList();
+// list of fog nodes for background geometry
+ArrayList<FogRetained> fogs = new ArrayList<FogRetained>();
 
     // a list of background geometry atoms
     ArrayList bgGeometryAtomList = new ArrayList();
