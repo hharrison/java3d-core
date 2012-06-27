@@ -160,10 +160,9 @@ void addObjArrayToFreeList(Object[] objs) {
 
 
     public void updateObject() {
-	int i, j;
+	int i;
 	Object[] args;
 	LeafRetained leaf;
-	Boolean masks;
 	int size;
 
 	size = objList.size();
@@ -277,8 +276,6 @@ void addObjArrayToFreeList(Object[] objs) {
 	Object[] ogChildIdList = (Object[])m.args[1];
 	Object[] ogOrderedIdList = (Object[])m.args[2];
 	OrderedGroupRetained og;
-	int index;
-	Object[] objs;
 
 	for (int n = 0; n < ogList.length; n++) {
 	    og = (OrderedGroupRetained)ogList[n];
@@ -292,8 +289,6 @@ void addObjArrayToFreeList(Object[] objs) {
 	Object[] ogList = (Object[])m.args[0];
 	Object[] ogChildIdList = (Object[])m.args[1];
 	OrderedGroupRetained og;
-	int index;
-	Object[] objs;
 
 	for (int n = 0; n < ogList.length; n++) {
 	    og = (OrderedGroupRetained)ogList[n];
@@ -354,8 +349,6 @@ void addObjArrayToFreeList(Object[] objs) {
 	ArrayList scopedNodesViewList = (ArrayList)m.args[4];
 	Object n;
 	int i;
-	GeometryAtom ga;
-	int num;
 	ArrayList list;
 
 	for (i=0; i<nodes.length; i++) {
@@ -555,7 +548,7 @@ void addObjArrayToFreeList(Object[] objs) {
 	    } else if (n instanceof ModelClipRetained) {
 		ModelClipRetained mc = (ModelClipRetained)n;
 		numberOfModelClips--;
-		nonViewScopedModelClips.remove(nonViewScopedModelClips.indexOf(n));
+		nonViewScopedModelClips.remove(mc);
 
 	    }
 	    else if (n instanceof GeometryAtom) {
@@ -758,7 +751,7 @@ private int processLights(ArrayList<LightRetained> globalLights, RenderAtom ra, 
     
 FogRetained getInfluencingFog(RenderAtom ra, View view) {
 	FogRetained fog = null;
-	int i, j, k, n, nfogs;
+	int j, nfogs;
 	Bounds closestBounds;
 
 	// Need to lock lockObj, since on a multi-processor
@@ -845,7 +838,7 @@ FogRetained getInfluencingFog(RenderAtom ra, View view) {
 
     ModelClipRetained getInfluencingModelClip(RenderAtom ra, View view) {
 	ModelClipRetained modelClip = null;
-	int i, j, k, n, nModelClips;
+	int j, nModelClips;
 	Bounds closestBounds;
         ArrayList globalModelClips;
 
@@ -933,8 +926,7 @@ FogRetained getInfluencingFog(RenderAtom ra, View view) {
     BackgroundRetained getApplicationBackground(BoundingSphere bounds, Locale viewLocale, View view) {
 	BackgroundRetained bg = null;
 	Bounds closestBounds;
-	BackgroundRetained back;
-	int i = 0, j = 0;
+	int j = 0;
 	int nbacks;
         ArrayList globalBgs;
 
@@ -1007,10 +999,9 @@ FogRetained getInfluencingFog(RenderAtom ra, View view) {
     }
 
     double[] backClipDistanceInVworld (BoundingSphere bounds, View view) {
-	int i,j;
+	int j;
         int nclips;
         Bounds closestBounds;
-	ClipRetained clip;
 	boolean backClipActive;
 	double[] backClipDistance;
 	double distance;
