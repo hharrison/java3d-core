@@ -90,14 +90,14 @@ ArrayList<OrderedPath> orderedPaths = null;
      */
     BoundingBox collisionVwcBounds;
 
-    /**
-     * Mirror group of this node, it is only used when
-     * collisionTarget = true. Otherwise it is set to null.
-     * If not in shared group,
-     * only entry 0 is used.
-     *
-     */
-    ArrayList mirrorGroup;
+/**
+ * Mirror group of this node, it is only used when
+ * collisionTarget = true. Otherwise it is set to null.
+ * If not in shared group,
+ * only entry 0 is used.
+ *
+ */
+ArrayList<GroupRetained> mirrorGroup;
 
     /**
      * key of mirror GroupRetained.
@@ -1409,7 +1409,7 @@ synchronized void setAltAppScope() {
 		    for (int i=0; i<numPath; i++) {
                         ct = ti.getCachedTargets(TargetsInterface.TRANSFORM_TARGETS, i, -1);
 			if (ct != null) {
-		            targets.addNode((NnuId)mirrorGroup.get(i),
+		            targets.addNode(mirrorGroup.get(i),
 					    Targets.GRP_TARGETS);
                             newCtArr[i] = targets.snapShotAdd(ct);
 			} else {
@@ -1444,7 +1444,7 @@ synchronized void setAltAppScope() {
 		    for (int i=0; i<numPath; i++) {
                         ct = ti.getCachedTargets(TargetsInterface.TRANSFORM_TARGETS, i, -1);
 			if (ct != null) {
-                            targets.addNode((NnuId)mirrorGroup.get(i),
+                            targets.addNode(mirrorGroup.get(i),
 					    Targets.GRP_TARGETS);
 			    //Note snapShotRemove calls targets.clearNode()
                             newCtArr[i] = targets.snapShotRemove(ct);
@@ -2376,9 +2376,9 @@ synchronized void setAltAppScope() {
     void processCollisionTarget(SetLiveState s) {
 
 	    GroupRetained g;
-	    if (mirrorGroup == null) {
-		mirrorGroup = new ArrayList();
-	    }
+	if (mirrorGroup == null) {
+		mirrorGroup = new ArrayList<GroupRetained>();
+	}
 	    Bounds bound = (collisionBound != null ?
 			    collisionBound : getEffectiveBounds());
 	    if (inSharedGroup) {
@@ -2839,7 +2839,7 @@ synchronized void setAltAppScope() {
 		for (i=s.keys.length-1; i >=0; i--) {
 		    HashKey hkey = s.keys[i];
 		    for (int j = mirrorGroup.size()-1; j >=0 ; j--) {
-			g = (GroupRetained) mirrorGroup.get(j);
+			g = mirrorGroup.get(j);
 			if (g.key.equals(hkey)) {
 			    s.nodeList.add(mirrorGroup.remove(j));
 			    if (s.transformTargets != null &&
@@ -2852,7 +2852,7 @@ synchronized void setAltAppScope() {
 		    }
 		}
 	    } else {
-                g = (GroupRetained)mirrorGroup.get(0);
+                g = mirrorGroup.get(0);
                 if (s.transformTargets != null &&
 			s.transformTargets[0] != null) {
                     s.transformTargets[0].addNode(g, Targets.GRP_TARGETS);
@@ -2977,7 +2977,7 @@ synchronized void setAltAppScope() {
     void createMirrorGroup() {
 	GroupRetained g;
 
-	mirrorGroup = new ArrayList();
+	mirrorGroup = new ArrayList<GroupRetained>();
 
 	Bounds bound = (collisionBound != null ?
 			collisionBound : getEffectiveBounds());
