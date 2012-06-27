@@ -346,10 +346,9 @@ void addObjArrayToFreeList(Object[] objs) {
     void insertNodes(J3dMessage m) {
 	Object[] nodes = (Object[])m.args[0];
 	ArrayList viewScopedNodes = (ArrayList)m.args[3];
-	ArrayList scopedNodesViewList = (ArrayList)m.args[4];
+	ArrayList<ArrayList<View>> scopedNodesViewList = (ArrayList<ArrayList<View>>)m.args[4];
 	Object n;
 	int i;
-	ArrayList list;
 
 	for (i=0; i<nodes.length; i++) {
 	    n = nodes[i];
@@ -413,78 +412,96 @@ void addObjArrayToFreeList(Object[] objs) {
 
 	    for (i = 0; i < size; i++) {
 		n = (NodeRetained)viewScopedNodes.get(i);
-		ArrayList vl = (ArrayList) scopedNodesViewList.get(i);
-		if (n instanceof LightRetained) {
-		    ((LightRetained)n).isViewScoped = true;
-		    numberOfLights++;
-		    vlsize = vl.size();
-		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			if ((list = (ArrayList)viewScopedLights.get(view)) == null) {
-			    list = new ArrayList();
-			    viewScopedLights.put(view, list);
+		ArrayList<View> vl = scopedNodesViewList.get(i);
+			if (n instanceof LightRetained) {
+				LightRetained lt = (LightRetained) n;
+				lt.isViewScoped = true;
+				numberOfLights++;
+				vlsize = vl.size();
+				for (int k = 0; k < vlsize; k++) {
+					View view = vl.get(k);
+					ArrayList<LightRetained> list = viewScopedLights.get(view);
+					if (list == null) {
+						list = new ArrayList<LightRetained>();
+						viewScopedLights.put(view, list);
+					}
+					list.add(lt);
+				}
 			}
-			list.add(n);
-		    }
-		} else if (n instanceof FogRetained) {
-		    ((FogRetained)n).isViewScoped = true;
-		    numberOfFogs++;
-		    vlsize = vl.size();
-		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			if ((list = (ArrayList)viewScopedFogs.get(view)) == null) {
-			    list = new ArrayList();
-			    viewScopedFogs.put(view, list);
+			else if (n instanceof FogRetained) {
+				FogRetained ft = (FogRetained) n;
+				ft.isViewScoped = true;
+				numberOfFogs++;
+				vlsize = vl.size();
+				for (int k = 0; k < vlsize; k++) {
+					View view = vl.get(k);
+					ArrayList<FogRetained> list = viewScopedFogs.get(view);
+					if (list == null) {
+						list = new ArrayList<FogRetained>();
+						viewScopedFogs.put(view, list);
+					}
+					list.add(ft);
+				}
 			}
-			list.add(n);
-		    }
-		} else if (n instanceof AlternateAppearanceRetained) {
-		    ((AlternateAppearanceRetained)n).isViewScoped = true;
-		    numberOfAltApps++;
-		    vlsize = vl.size();
-		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			if ((list = (ArrayList)viewScopedAltAppearances.get(view)) == null) {
-			    list = new ArrayList();
-			    viewScopedAltAppearances.put(view, list);
+			else if (n instanceof AlternateAppearanceRetained) {
+				AlternateAppearanceRetained aart = (AlternateAppearanceRetained) n;
+				aart.isViewScoped = true;
+				numberOfAltApps++;
+				vlsize = vl.size();
+				for (int k = 0; k < vlsize; k++) {
+					View view = vl.get(k);
+					ArrayList<AlternateAppearanceRetained> list = viewScopedAltAppearances
+							.get(view);
+					if (list == null) {
+						list = new ArrayList<AlternateAppearanceRetained>();
+						viewScopedAltAppearances.put(view, list);
+					}
+					list.add(aart);
+				}
 			}
-			list.add(n);
-		    }
-		} else if (n instanceof BackgroundRetained) {
-		    ((BackgroundRetained)n).isViewScoped = true;
-		    numberOfBgs++;
-		    vlsize = vl.size();
-		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			if ((list = (ArrayList)viewScopedBackgrounds.get(view)) == null) {
-			    list = new ArrayList();
-			    viewScopedBackgrounds.put(view, list);
+			else if (n instanceof BackgroundRetained) {
+				BackgroundRetained bt = (BackgroundRetained) n;
+				bt.isViewScoped = true;
+				numberOfBgs++;
+				vlsize = vl.size();
+				for (int k = 0; k < vlsize; k++) {
+					View view = vl.get(k);
+					ArrayList<BackgroundRetained> list = viewScopedBackgrounds
+							.get(view);
+					if (list == null) {
+						list = new ArrayList<BackgroundRetained>();
+						viewScopedBackgrounds.put(view, list);
+					}
+					list.add(bt);
+				}
 			}
-			list.add(n);
-		    }
-		} else if (n instanceof ClipRetained) {
-		    ((ClipRetained)n).isViewScoped = true;
-		    numberOfClips++;
-		    vlsize = vl.size();
-		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			if ((list = (ArrayList)viewScopedClips.get(view)) == null) {
-			    list = new ArrayList();
-			    viewScopedClips.put(view, list);
-			}
-			list.add(n);
-		    }
+			else if (n instanceof ClipRetained) {
+				ClipRetained ct = (ClipRetained) n;
+				ct.isViewScoped = true;
+				numberOfClips++;
+				vlsize = vl.size();
+				for (int k = 0; k < vlsize; k++) {
+					View view = vl.get(k);
+					ArrayList<ClipRetained> list = viewScopedClips.get(view);
+					if (list == null) {
+						list = new ArrayList<ClipRetained>();
+						viewScopedClips.put(view, list);
+					}
+					list.add(ct);
+				}
 		} else if (n instanceof ModelClipRetained) {
-		    ((ModelClipRetained)n).isViewScoped = true;
+			ModelClipRetained mt = (ModelClipRetained)n; 
+		    mt.isViewScoped = true;
 		    numberOfModelClips++;
 		    vlsize = vl.size();
 		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			if ((list = (ArrayList)viewScopedModelClips.get(view)) == null) {
-			    list = new ArrayList();
+			View view = vl.get(k);
+			ArrayList<ModelClipRetained> list = viewScopedModelClips.get(view);
+			if (list == null) {
+			    list = new ArrayList<ModelClipRetained>();
 			    viewScopedModelClips.put(view, list);
 			}
-			list.add(n);
+			list.add(mt);
 		    }
 		}
 	    }
@@ -507,7 +524,7 @@ void addObjArrayToFreeList(Object[] objs) {
     void removeNodes(J3dMessage m) {
 	Object[] nodes = (Object[])m.args[0];
 	ArrayList viewScopedNodes = (ArrayList)m.args[3];
-	ArrayList scopedNodesViewList = (ArrayList)m.args[4];
+	ArrayList<ArrayList<View>> scopedNodesViewList = (ArrayList<ArrayList<View>>)m.args[4];
         Object n;
         int i;
 	GeometryAtom ga;
@@ -569,78 +586,87 @@ void addObjArrayToFreeList(Object[] objs) {
 	if (viewScopedNodes != null) {
 	    int size = viewScopedNodes.size();
 	    int vlsize;
-	    ArrayList list;
 	    for (i = 0; i < size; i++) {
 		n = (NodeRetained)viewScopedNodes.get(i);
-		ArrayList vl = (ArrayList) scopedNodesViewList.get(i);
-		if (n instanceof LightRetained) {
-		    ((LightRetained)n).isViewScoped = false;
-		    numberOfLights--;
-		    vlsize = vl.size();
-		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			list = (ArrayList)viewScopedLights.get(view);
-			list.remove(n);
-			if (list.size() == 0) {
-			    viewScopedLights.remove(view);
+		ArrayList<View> vl = scopedNodesViewList.get(i);
+			if (n instanceof LightRetained) {
+				LightRetained lt = (LightRetained) n;
+				lt.isViewScoped = false;
+				numberOfLights--;
+				vlsize = vl.size();
+				for (int k = 0; k < vlsize; k++) {
+					View view = vl.get(k);
+					ArrayList<LightRetained> list = viewScopedLights.get(view);
+					list.remove(lt);
+					if (list.size() == 0) {
+						viewScopedLights.remove(view);
+					}
+				}
 			}
-		    }
-		} else if (n instanceof FogRetained) {
-		    ((FogRetained)n).isViewScoped = false;
-		    numberOfFogs--;
-		    vlsize = vl.size();
-		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			list = (ArrayList)viewScopedFogs.get(view);
-			list.remove(n);
-			if (list.size() == 0) {
-			    viewScopedFogs.remove(view);
+			else if (n instanceof FogRetained) {
+				FogRetained ft = (FogRetained)n;
+				ft.isViewScoped = false;
+				numberOfFogs--;
+				vlsize = vl.size();
+				for (int k = 0; k < vlsize; k++) {
+					View view = vl.get(k);
+					ArrayList<FogRetained> list = viewScopedFogs.get(view);
+					list.remove(ft);
+					if (list.size() == 0) {
+						viewScopedFogs.remove(view);
+					}
+				}
+			} else if (n instanceof AlternateAppearanceRetained) {
+				AlternateAppearanceRetained aart = (AlternateAppearanceRetained) n;
+				aart.isViewScoped = false;
+				numberOfAltApps--;
+				vlsize = vl.size();
+				for (int k = 0; k < vlsize; k++) {
+					View view = vl.get(k);
+					ArrayList<AlternateAppearanceRetained> list = viewScopedAltAppearances
+							.get(view);
+					list.remove(aart);
+					if (list.size() == 0) {
+						viewScopedAltAppearances.remove(view);
+					}
+				}
 			}
-		    }
-		} else if (n instanceof AlternateAppearanceRetained) {
-		    ((AlternateAppearanceRetained)n).isViewScoped = false;
-		    numberOfAltApps--;
-		    vlsize = vl.size();
-		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			list = (ArrayList)viewScopedAltAppearances.get(view);
-			list.remove(n);
-			if (list.size() == 0) {
-			    viewScopedAltAppearances.remove(view);
+			else if (n instanceof BackgroundRetained) {
+				BackgroundRetained bt = (BackgroundRetained)n;
+				bt.isViewScoped = false;
+				numberOfBgs--;
+				vlsize = vl.size();
+				for (int k = 0; k < vlsize; k++) {
+					View view = vl.get(k);
+					ArrayList<BackgroundRetained> list = viewScopedBackgrounds.get(view);
+					list.remove(bt);
+					if (list.size() == 0) {
+						viewScopedBackgrounds.remove(view);
+					}
+				}
 			}
-		    }
-		} else if (n instanceof BackgroundRetained) {
-		    ((BackgroundRetained)n).isViewScoped = false;
-		    numberOfBgs--;
-		    vlsize = vl.size();
-		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			list = (ArrayList)viewScopedBackgrounds.get(view);
-			list.remove(n);
-			if (list.size() == 0) {
-			    viewScopedBackgrounds.remove(view);
-			}
-		    }
-		} else if (n instanceof ClipRetained) {
-		    ((ClipRetained)n).isViewScoped = false;
-		    numberOfClips--;
-		    vlsize = vl.size();
-		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			list = (ArrayList)viewScopedClips.get(view);
-			list.remove(n);
-			if (list.size() == 0) {
-			    viewScopedClips.remove(view);
-			}
-		    }
+			else if (n instanceof ClipRetained) {
+				ClipRetained ct = (ClipRetained) n;
+				ct.isViewScoped = false;
+				numberOfClips--;
+				vlsize = vl.size();
+				for (int k = 0; k < vlsize; k++) {
+					View view = vl.get(k);
+					ArrayList<ClipRetained> list = viewScopedClips.get(view);
+					list.remove(ct);
+					if (list.size() == 0) {
+						viewScopedClips.remove(view);
+					}
+				}
 		} else if (n instanceof ModelClipRetained) {
-		    ((ModelClipRetained)n).isViewScoped = false;
+			ModelClipRetained mt = (ModelClipRetained)n; 
+		    mt.isViewScoped = false;
 		    numberOfModelClips--;
 		    vlsize = vl.size();
 		    for (int k = 0; k < vlsize; k++) {
-			View view = (View)vl.get(k);
-			list = (ArrayList)viewScopedModelClips.get(view);
-			list.remove(n);
+			View view = vl.get(k);
+			ArrayList<ModelClipRetained> list = viewScopedModelClips.get(view);
+			list.remove(mt);
 			if (list.size() == 0) {
 			    viewScopedModelClips.remove(view);
 			}
