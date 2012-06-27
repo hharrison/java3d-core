@@ -78,8 +78,8 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
     // the immediate childIndex of a parentSwitchLink
     int parentSwitchLinkChildIndex = -1;
 
-    // per shared path ordered path data
-    ArrayList orderedPaths = null;
+// per shared path ordered path data
+ArrayList<OrderedPath> orderedPaths = null;
 
     /**
      * If collisionBound is set, this is equal to the
@@ -1518,7 +1518,7 @@ synchronized void setAltAppScope() {
 	    // branchGroupArray since they will get replace (not append)
 	    // by creating a new reference in child's group.
 		s.branchGroupPaths = new ArrayList<BranchGroupRetained[]>(branchGroupPaths);
-            s.orderedPaths = orderedPaths;
+		s.orderedPaths = orderedPaths;
 
 	    // Make the scoped fogs and lights of the child to include, the
 	    // the scoped fog of this group
@@ -2713,7 +2713,7 @@ synchronized void setAltAppScope() {
 		    s.ogList.add(this);
 		    s.ogChildIdList.add(new Integer(i));
 		}
-                s.orderedPaths = (ArrayList)og.childrenOrderedPaths.get(i);
+			s.orderedPaths = og.childrenOrderedPaths.get(i);
 	    }
 
 	    if (child != null) {

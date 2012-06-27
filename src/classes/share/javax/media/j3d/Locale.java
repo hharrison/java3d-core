@@ -215,11 +215,11 @@ public class Locale extends Object {
 	s.branchGroupPaths = new ArrayList<BranchGroupRetained[]>();
 	s.branchGroupPaths.add(new BranchGroupRetained[0]);
 
-        s.orderedPaths = new ArrayList(1);
-        s.orderedPaths.add(new OrderedPath());
+	s.orderedPaths = new ArrayList<OrderedPath>(1);
+	s.orderedPaths.add(new OrderedPath());
 
-        s.switchStates = new ArrayList(1);
-        s.switchStates.add(new SwitchState(false));
+	s.switchStates = new ArrayList<SwitchState>(1);
+	s.switchStates.add(new SwitchState(false));
 
 	bgr.setLive(s);
 
@@ -501,11 +501,11 @@ public class Locale extends Object {
 	universe.setLiveState.branchGroupPaths = new ArrayList<BranchGroupRetained[]>();
 	universe.setLiveState.branchGroupPaths.add(new BranchGroupRetained[0]);
 
-        universe.setLiveState.orderedPaths = new ArrayList(1);
-        universe.setLiveState.orderedPaths.add(new OrderedPath());
+	universe.setLiveState.orderedPaths = new ArrayList<OrderedPath>(1);
+	universe.setLiveState.orderedPaths.add(new OrderedPath());
 
-        universe.setLiveState.switchStates = new ArrayList(1);
-        universe.setLiveState.switchStates.add(new SwitchState(false));
+	universe.setLiveState.switchStates = new ArrayList<SwitchState>(1);
+	universe.setLiveState.switchStates.add(new SwitchState(false));
 
 	nbgr.setLive(universe.setLiveState);
 

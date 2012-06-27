@@ -787,7 +787,7 @@ class Shape3DRetained extends LeafRetained {
 	ms.localBounds = localBounds;
 	// End new 1.3.2
 
-        OrderedPath op = (OrderedPath)s.orderedPaths.get(index);
+        OrderedPath op = s.orderedPaths.get(index);
         if (op.pathElements.size() == 0) {
             ms.orderedPath = null;
         } else {
@@ -2175,7 +2175,7 @@ class Shape3DRetained extends LeafRetained {
         parent = morph.parent;
 	locale = morph.locale;
 
-        OrderedPath op = (OrderedPath)s.orderedPaths.get(index);
+        OrderedPath op = s.orderedPaths.get(index);
         if (op.pathElements.size() == 0) {
             orderedPath = null;
         } else {

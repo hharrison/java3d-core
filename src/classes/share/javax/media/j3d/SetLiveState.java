@@ -107,7 +107,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
     // The current bitmask of types in transformTragets
     //int transformTargetThreads = 0;
 
-    ArrayList orderedPaths = null;
+ArrayList<OrderedPath> orderedPaths = null;
 
     ArrayList ogList = new ArrayList(5);
     ArrayList ogChildIdList = new ArrayList(5);
@@ -190,7 +190,7 @@ ArrayList<BranchGroupRetained[]> parentBranchGroupPaths = null;
     // currently used by Switch, can be extended for other node types
     int[] hashkeyIndex = null;
 
-    ArrayList switchStates = null;
+ArrayList<SwitchState> switchStates = null;
 
     SetLiveState(VirtualUniverse u) {
 	universe = u;

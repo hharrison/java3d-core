@@ -76,7 +76,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
     // combined localTargetThreads and decendants' localTargetThreads
     int targetThreads = 0;
 
-    ArrayList switchStates = null;
+    ArrayList<SwitchState> switchStates = null;
 
     SharedGroupRetained() {
         this.nodeType = NodeRetained.SHAREDGROUP;
@@ -92,13 +92,13 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
 	branchGroupPaths.add(hkIndex, s.branchGroupPaths.get(index));
 
         if (orderedPaths == null) {
-            orderedPaths = new ArrayList(1);
+            orderedPaths = new ArrayList<OrderedPath>(1);
         }
         orderedPaths.add(hkIndex, s.orderedPaths.get(index));
 
-        if (switchStates == null) {
-            switchStates = new ArrayList(1);
-        }
+		if (switchStates == null) {
+			switchStates = new ArrayList<SwitchState>(1);
+		}
         switchStates.add(hkIndex, s.switchStates.get(index));
 
 	if (viewLists == null) {
@@ -470,7 +470,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
         Transform3D savedLocalToVworld[][] = s.localToVworld;
         int savedLocalToVworldIndex[][] = s.localToVworldIndex;
         HashKey savedLocalToVworldKeys[] = s.localToVworldKeys;
-        ArrayList savedOrderedPaths = s.orderedPaths;
+	ArrayList<OrderedPath> savedOrderedPaths = s.orderedPaths;
         ArrayList savedViewLists = s.viewLists;
 
 	ArrayList<ArrayList<LightRetained>> savedLights = s.lights;
@@ -829,7 +829,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
 	if (type == TargetsInterface.SWITCH_TARGETS) {
             // child info is not used, SG does not have per child states
             if (index < switchStates.size()) {
-                SwitchState switchState = (SwitchState)switchStates.get(index);
+                SwitchState switchState = switchStates.get(index);
                 return switchState.cachedTargets;
             } else {
                 return null;
@@ -851,7 +851,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
                 System.err.println("  resetCachedTargets: " + this);
             }
             for (int i=0; i<newCtArr.length; i++) {
-                switchState = (SwitchState)switchStates.get(i);
+                switchState = switchStates.get(i);
                 switchState.cachedTargets = newCtArr[i];
             }
 

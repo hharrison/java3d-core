@@ -490,12 +490,11 @@ GeometryAtom[] bgGeometryAtoms = null;
 	setLiveState.branchGroupPaths = new ArrayList<BranchGroupRetained[]>();
 	setLiveState.branchGroupPaths.add(new BranchGroupRetained[0]);
 
-        setLiveState.orderedPaths = new ArrayList(1);
-        setLiveState.orderedPaths.add(new OrderedPath());
+	setLiveState.orderedPaths = new ArrayList<OrderedPath>(1);
+	setLiveState.orderedPaths.add(new OrderedPath());
 
-        setLiveState.switchStates = new ArrayList(1);
-        setLiveState.switchStates.add(new SwitchState(false));
-
+	setLiveState.switchStates = new ArrayList<SwitchState>(1);
+	setLiveState.switchStates.add(new SwitchState(false));
 
 	branch.setLive(setLiveState);
 

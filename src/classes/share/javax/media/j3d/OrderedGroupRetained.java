@@ -52,9 +52,8 @@ private OrderedBin[] orderedBin = new OrderedBin[0];
     // orderedCollection in each orderedBin (per view)
     int childCount = 0;
 
-    // per children ordered path data
-    ArrayList childrenOrderedPaths = new ArrayList(1);
-
+// per children ordered path data
+ArrayList<ArrayList<OrderedPath>> childrenOrderedPaths = new ArrayList<ArrayList<OrderedPath>>(1);
 
     // child index order - set by the user.
     int[] userChildIndexOrder = null;
@@ -309,10 +308,7 @@ OrderedBin getOrderedBin(int index) {
     }
 
     void setAuxData(SetLiveState s, int index, int hkIndex) {
-        OrderedPath setLiveStateOrderedPath, newOrderedPath;
-        ArrayList childOrderedPaths;
-
-        setLiveStateOrderedPath = (OrderedPath) s.orderedPaths.get(hkIndex);
+        OrderedPath setLiveStateOrderedPath = s.orderedPaths.get(hkIndex);
         for (int i=0; i<children.size(); i++) {
 		NodeRetained child = children.get(i);
             if (refCount == s.refCount) {
@@ -321,10 +317,9 @@ OrderedBin getOrderedBin(int index) {
                 child.orderedId = getOrderedChildId();
             }
 
-            newOrderedPath = setLiveStateOrderedPath.clonePath();
+            OrderedPath newOrderedPath = setLiveStateOrderedPath.clonePath();
             newOrderedPath.addElementToPath(this, child.orderedId);
-            childOrderedPaths = (ArrayList)childrenOrderedPaths.get(i);
-            childOrderedPaths.add(hkIndex, newOrderedPath);
+            childrenOrderedPaths.get(i).add(hkIndex, newOrderedPath);
         }
     }
 
@@ -386,7 +381,7 @@ OrderedBin getOrderedBin(int index) {
 
         if((inSharedGroup) && (s.keys.length != localToVworld.length)) {
             int i, index;
-            ArrayList childOrderedPaths;
+            ArrayList<OrderedPath> childOrderedPaths;
 
             // Must be in reverse, to preserve right indexing.
             for (i = s.keys.length-1; i >= 0; i--) {
@@ -394,7 +389,7 @@ OrderedBin getOrderedBin(int index) {
                                         localToVworldKeys.length);
                 if(index >= 0) {
                     for (int j=0; j<children.size(); j++) {
-                        childOrderedPaths = (ArrayList)childrenOrderedPaths.get(j);
+                        childOrderedPaths = childrenOrderedPaths.get(j);
                         childOrderedPaths.remove(index);
                     }
                 }
@@ -449,11 +444,11 @@ OrderedBin getOrderedBin(int index) {
    }
 
     void insertChildrenData(int index) {
-        childrenOrderedPaths.add(index, new ArrayList(1));
+        childrenOrderedPaths.add(index, new ArrayList<OrderedPath>(1));
     }
 
     void appendChildrenData() {
-        childrenOrderedPaths.add(new ArrayList(1));
+        childrenOrderedPaths.add(new ArrayList<OrderedPath>(1));
     }
 
     void doRemoveChild(int index, J3dMessage messages[], int messageIndex) {
@@ -476,19 +471,18 @@ OrderedBin getOrderedBin(int index) {
             s.ogChildIdList.add(new Integer(childIndex));
             s.ogOrderedIdList.add(child.orderedId);
         }
-        s.orderedPaths = (ArrayList)childrenOrderedPaths.get(childIndex);
+        s.orderedPaths = childrenOrderedPaths.get(childIndex);
         if(child!=null)
             child.setLive(s);
     }
 
     void childCheckSetLive(NodeRetained child, int childIndex,
                                 SetLiveState s, NodeRetained linkNode) {
-        OrderedPath childOrderedPath;
-        ArrayList childOrderedPaths;
+        ArrayList<OrderedPath> childOrderedPaths;
 
         if (linkNode != null) {
             int ci = children.indexOf(linkNode);
-            childOrderedPaths = (ArrayList)childrenOrderedPaths.get(ci);
+            childOrderedPaths = childrenOrderedPaths.get(ci);
         } else {
             child.orderedId = getOrderedChildId();
             // set this regardless of refCount
@@ -505,11 +499,10 @@ OrderedBin getOrderedBin(int index) {
 		s.ogCIOTableList.add(newArr);
 	    }
 
-	    childOrderedPaths = (ArrayList)childrenOrderedPaths.get(childIndex);
+	    childOrderedPaths = childrenOrderedPaths.get(childIndex);
 
             for(int i=0; i< orderedPaths.size();i++){
-                childOrderedPath =
-                            ((OrderedPath)orderedPaths.get(i)).clonePath();
+                OrderedPath childOrderedPath = orderedPaths.get(i).clonePath();
                 childOrderedPath.addElementToPath(this, child.orderedId);
                 childOrderedPaths.add(childOrderedPath);
             }
