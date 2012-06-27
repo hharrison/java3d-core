@@ -709,7 +709,7 @@ public void updateObject() {
 	    if (newLights) {
 		lightAry = new LightRetained[numLights];
 		for (i = 0; i < numLights; i++) {
-		    lightAry[i] = (LightRetained)retlights[i];
+		    lightAry[i] = retlights[i];
 		}
 		return (lightAry);
 	    } else {
