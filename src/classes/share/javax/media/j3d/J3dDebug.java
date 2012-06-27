@@ -324,7 +324,6 @@ class J3dDebug  {
     static final int Switch = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int switchRetained = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int switchValueInterpolator = !devPhase?NO_DEBUG:NO_DEBUG;
-    static final int table = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int texCoordGeneration = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int texCoordGenerationRetained = !devPhase?NO_DEBUG:NO_DEBUG;
     static final int text3D = !devPhase?NO_DEBUG:NO_DEBUG;
