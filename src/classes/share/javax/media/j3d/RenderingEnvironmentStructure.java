@@ -1469,12 +1469,12 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 	int component = ((Integer)m.args[0]).intValue();
 	Object[] objAry = (Object[])m.args[1];
 
-	ArrayList ltList = null;
-	ArrayList fogList = null;
-	ArrayList mclipList = null;
-	ArrayList altAppList = null;
-	ArrayList bgList = null;
-	ArrayList clipList = null;
+	ArrayList<LightRetained> ltList = null;
+	ArrayList<FogRetained> fogList = null;
+	ArrayList<ModelClipRetained> mclipList = null;
+	ArrayList<AlternateAppearanceRetained> altAppList = null;
+	ArrayList<BackgroundRetained> bgList = null;
+	ArrayList<ClipRetained> clipList = null;
 
 	if (((component & ViewSpecificGroupRetained.ADD_VIEW) != 0) ||
 	    ((component & ViewSpecificGroupRetained.SET_VIEW) != 0)) {
@@ -1502,71 +1502,78 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 		    for( i = 0; i < size; i++) {
 			obj = leafList.get(i);
 			if (obj instanceof LightRetained) {
-			    ((LightRetained)obj).isViewScoped = true;
-			    numberOfLights++;
-			    if (ltList == null) {
-				if ((ltList = (ArrayList)viewScopedLights.get(view)) == null) {
-				    ltList = new ArrayList();
-				    viewScopedLights.put(view, ltList);
-				}
-			    }
-			    ltList.add(obj);
+						LightRetained lt = (LightRetained)obj;
+						lt.isViewScoped = true;
+						numberOfLights++;
+						if (ltList == null) {
+							if ((ltList = viewScopedLights.get(view)) == null) {
+								ltList = new ArrayList<LightRetained>();
+								viewScopedLights.put(view, ltList);
+							}
+						}
+						ltList.add(lt);
 			}
 			if (obj instanceof FogRetained) {
-			    ((FogRetained)obj).isViewScoped = true;
-			    numberOfFogs++;
-			    if (fogList == null) {
-				if ((fogList= (ArrayList)viewScopedFogs.get(view)) == null) {
-				    fogList = new ArrayList();
-				    viewScopedFogs.put(view, fogList);
-				}
-			    }
-			    fogList.add(obj);
+						FogRetained ft = (FogRetained)obj;
+						ft.isViewScoped = true;
+						numberOfFogs++;
+						if (fogList == null) {
+							if ((fogList = viewScopedFogs.get(view)) == null) {
+								fogList = new ArrayList<FogRetained>();
+								viewScopedFogs.put(view, fogList);
+							}
+						}
+						fogList.add(ft);
 			}
 			if (obj instanceof ModelClipRetained) {
-			    ((ModelClipRetained)obj).isViewScoped = true;
-			    numberOfModelClips++;
-			    if (mclipList == null) {
-				if ((mclipList= (ArrayList)viewScopedModelClips.get(view)) == null) {
-				    mclipList = new ArrayList();
-				    viewScopedModelClips.put(view, mclipList);
-				}
-			    }
-			    mclipList.add(obj);
+						ModelClipRetained mc = (ModelClipRetained)obj;
+						mc.isViewScoped = true;
+						numberOfModelClips++;
+						if (mclipList == null) {
+							if ((mclipList = viewScopedModelClips.get(view)) == null) {
+								mclipList = new ArrayList<ModelClipRetained>();
+								viewScopedModelClips.put(view, mclipList);
+							}
+						}
+						mclipList.add(mc);
 			}
 			if (obj instanceof AlternateAppearanceRetained) {
-			    ((AlternateAppearanceRetained)obj).isViewScoped = true;
-			    numberOfAltApps++;
-			    if (altAppList == null) {
-				if ((altAppList= (ArrayList)viewScopedAltAppearances.get(view)) == null) {
-				    altAppList = new ArrayList();
-				    viewScopedAltAppearances.put(view, altAppList);
-				}
-			    }
-			    altAppList.add(obj);
+						AlternateAppearanceRetained aart = (AlternateAppearanceRetained)obj;
+						aart.isViewScoped = true;
+						numberOfAltApps++;
+						if (altAppList == null) {
+							if ((altAppList = viewScopedAltAppearances
+									.get(view)) == null) {
+								altAppList = new ArrayList<AlternateAppearanceRetained>();
+								viewScopedAltAppearances.put(view, altAppList);
+							}
+						}
+						altAppList.add(aart);
 			}
 			if (obj instanceof ClipRetained) {
-			    ((ClipRetained)obj).isViewScoped = true;
-			    numberOfClips++;
-			    if (clipList == null) {
-				if ((clipList= (ArrayList)viewScopedClips.get(view)) == null) {
-				    clipList = new ArrayList();
-				    viewScopedClips.put(view, clipList);
-				}
-			    }
-			    clipList.add(obj);
+						ClipRetained ct = (ClipRetained) obj;
+						ct.isViewScoped = true;
+						numberOfClips++;
+						if (clipList == null) {
+							if ((clipList = viewScopedClips.get(view)) == null) {
+								clipList = new ArrayList<ClipRetained>();
+								viewScopedClips.put(view, clipList);
+							}
+						}
+						clipList.add(ct);
 			}
 			if (obj instanceof BackgroundRetained) {
-			    ((BackgroundRetained)obj).isViewScoped = true;
-			    numberOfBgs++;
-			    if (bgList == null) {
-				if ((bgList= (ArrayList)viewScopedBackgrounds.get(view)) == null) {
-				    bgList = new ArrayList();
-				    viewScopedBackgrounds.put(view, bgList);
-				}
-			    }
-			    bgList.add(obj);
-			}
+						BackgroundRetained bg = (BackgroundRetained) obj;
+						bg.isViewScoped = true;
+						numberOfBgs++;
+						if (bgList == null) {
+							if ((bgList = viewScopedBackgrounds.get(view)) == null) {
+								bgList = new ArrayList<BackgroundRetained>();
+								viewScopedBackgrounds.put(view, bgList);
+							}
+						}
+						bgList.add(bg);
+					}
 		    }
 		    if (numberOfLights > retlights.length)
 			retlights = new LightRetained[numberOfLights];
@@ -1623,7 +1630,7 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 			    ((LightRetained)obj).isViewScoped = false;
 			    numberOfLights--;
 			    if (ltList == null) {
-				ltList = (ArrayList)viewScopedLights.get(view);
+				ltList = viewScopedLights.get(view);
 			    }
 			    ltList.remove(obj);
 			}
@@ -1631,7 +1638,7 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 			    ((FogRetained)obj).isViewScoped = false;
 			    numberOfFogs--;
 			    if (fogList == null) {
-				fogList = (ArrayList)viewScopedFogs.get(view);
+				fogList = viewScopedFogs.get(view);
 			    }
 			    fogList.remove(obj);
 			}
@@ -1647,7 +1654,7 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 			    ((AlternateAppearanceRetained)obj).isViewScoped = false;
 			    numberOfAltApps--;
 			    if (altAppList == null) {
-				altAppList = (ArrayList)viewScopedAltAppearances.get(view);
+				altAppList = viewScopedAltAppearances.get(view);
 			    }
 			    altAppList.remove(obj);
 			}
@@ -1655,7 +1662,7 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 			    ((ClipRetained)obj).isViewScoped = false;
 			    numberOfClips--;
 			    if (clipList == null) {
-				clipList = (ArrayList)viewScopedClips.get(view);
+				clipList = viewScopedClips.get(view);
 			    }
 			    clipList.remove(obj);
 			}
@@ -1663,7 +1670,7 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 			    ((BackgroundRetained)obj).isViewScoped = false;
 			    numberOfBgs++;
 			    if (bgList == null) {
-				bgList = (ArrayList)viewScopedBackgrounds.get(view);
+				bgList = viewScopedBackgrounds.get(view);
 			    }
 			    bgList.remove(obj);
 			}
