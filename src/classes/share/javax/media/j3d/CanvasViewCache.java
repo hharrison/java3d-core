@@ -1248,7 +1248,6 @@ class CanvasViewCache extends Object {
      * This call works for both fixed screen and HMD displays.
      */
     private void computeView(boolean doInfinite) {
-	int		i,j;
 	int		backClipPolicy;
 	double		Fl, Fr, B, scale, backClipDistance;
 
