@@ -31,10 +31,9 @@ import java.util.ArrayList;
 class OrderedPath extends Object {
 ArrayList<OrderedPathElement> pathElements = new ArrayList<OrderedPathElement>(1);
 
-
-    void addElementToPath(OrderedGroupRetained og, Integer orderedId) {
-        pathElements.add(new OrderedPathElement(og, orderedId));
-    }
+void addElementToPath(OrderedGroupRetained og, Integer orderedId) {
+	pathElements.add(new OrderedPathElement(og, orderedId));
+}
 
 OrderedPath clonePath() {
 	OrderedPath path = new OrderedPath();
@@ -42,12 +41,12 @@ OrderedPath clonePath() {
 	return path;
 }
 
-    void printPath() {
-        System.err.println("orderedPath: [");
-        for (int i=0; i<pathElements.size(); i++) {
-        	OrderedPathElement ope = pathElements.get(i);
-            System.err.println("(" + ope.orderedGroup + "," + ope.childId);
-        }
-        System.err.println("]");
-    }
+void printPath() {
+	System.err.println("orderedPath: [");
+	for (int i = 0; i < pathElements.size(); i++) {
+		OrderedPathElement ope = pathElements.get(i);
+		System.err.println("(" + ope.orderedGroup + "," + ope.childId);
+	}
+	System.err.println("]");
+}
 }
