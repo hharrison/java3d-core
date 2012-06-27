@@ -517,9 +517,6 @@ ArrayList<FogRetained> fogs = new ArrayList<FogRetained>();
      * it adds itself to the list of lights
      */
     void setLive(SetLiveState s) {
-	TransformGroupRetained[] tlist;
-	int i;
-
 	super.doSetLive(s);
 
         if (inImmCtx) {
@@ -583,8 +580,7 @@ ArrayList<FogRetained> fogs = new ArrayList<FogRetained>();
 
 	// Initialize some mirror values
 	if (boundingLeaf != null) {
-	    transformedRegion =
-		(Bounds)boundingLeaf.mirrorBoundingLeaf.transformedRegion;
+	    transformedRegion = boundingLeaf.mirrorBoundingLeaf.transformedRegion;
 	}
 	else { // Evaluate applicationRegion if not null
 	    if (applicationRegion != null) {
@@ -638,9 +634,8 @@ ArrayList<FogRetained> fogs = new ArrayList<FogRetained>();
         }
 
         if (geometryBranch != null) {
-            BranchGroupRetained branch =
-                (BranchGroupRetained)geometryBranch.retained;
-            clearGeometryBranch((BranchGroupRetained)geometryBranch.retained);
+            BranchGroupRetained branch = (BranchGroupRetained)geometryBranch.retained;
+            clearGeometryBranch(branch);
             // add background geometry nodes to setLiveState's nodeList
             s.nodeList.addAll(setLiveState.nodeList);
             s.ogList.addAll(setLiveState.ogList);
@@ -663,13 +658,12 @@ ArrayList<FogRetained> fogs = new ArrayList<FogRetained>();
     // The update Object function.
     synchronized void updateImmediateMirrorObject(Object[] objs) {
 	int component = ((Integer)objs[1]).intValue();
-	Transform3D trans;
 	// If initialization
 
 	// Bounds message only sent when boundingleaf is null
 	if  ((component & BOUNDS_CHANGED) != 0) {
 	    if (objs[2] != null) {
-		transformedRegion = ((Bounds)((Bounds) objs[2])).copy(transformedRegion);
+		transformedRegion = ((Bounds) objs[2]).copy(transformedRegion);
 		transformedRegion.transform(
 			(Bounds) objs[2], getCurrentLocalToVworld());
 	    }
