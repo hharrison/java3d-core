@@ -196,25 +196,25 @@ public void updateObject() {
 		removeNodes(m);
 		break;
 	    case J3dMessage.LIGHT_CHANGED:
-		updateLight((Object[])m.args);
+		updateLight(m.args);
 		break;
 	    case J3dMessage.BOUNDINGLEAF_CHANGED:
-		updateBoundingLeaf((Object[])m.args);
+		updateBoundingLeaf(m.args);
 		break;
 	    case J3dMessage.FOG_CHANGED:
-		updateFog((Object[])m.args);
+		updateFog(m.args);
 		break;
 	    case J3dMessage.ALTERNATEAPPEARANCE_CHANGED:
-		updateAltApp((Object[])m.args);
+		updateAltApp(m.args);
 		break;
 	    case J3dMessage.SHAPE3D_CHANGED:
-		updateShape3D((Object[])m.args);
+		updateShape3D(m.args);
 		break;
 	    case J3dMessage.ORIENTEDSHAPE3D_CHANGED:
-		updateOrientedShape3D((Object[])m.args);
+		updateOrientedShape3D(m.args);
 		break;
 	    case J3dMessage.MORPH_CHANGED:
-		updateMorph((Object[])m.args);
+		updateMorph(m.args);
 		break;
 	    case J3dMessage.TRANSFORM_CHANGED:
 		transformMsg = true;
@@ -227,13 +227,13 @@ public void updateObject() {
 		}
 		break;
 	    case J3dMessage.MODELCLIP_CHANGED:
-		updateModelClip((Object[])m.args);
+		updateModelClip(m.args);
 		break;
 	    case J3dMessage.BACKGROUND_CHANGED:
-		updateBackground((Object[])m.args);
+		updateBackground(m.args);
 		break;
 	    case J3dMessage.CLIP_CHANGED:
-		updateClip((Object[])m.args);
+		updateClip(m.args);
 		break;
 	    case J3dMessage.ORDERED_GROUP_INSERTED:
 		updateOrderedGroupInserted(m);
