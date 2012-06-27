@@ -107,14 +107,13 @@ int numberOfClips = 0;
     // Back clip distance in V world
     double backClipDistance;
 
-   // ArrayList of leafRetained object whose mirrorObjects
-    // should be updated
-    ArrayList objList = new ArrayList();
+// ArrayList of leafRetained object whose mirrorObjects
+// should be updated
+ArrayList<Object[]> objList = new ArrayList<Object[]>();
 
-    // ArrayList of leafRetained object whose boundingleaf xform
-    // should be updated
-    ArrayList xformChangeList = new ArrayList();
-
+// ArrayList of leafRetained object whose boundingleaf xform
+// should be updated
+ArrayList<LeafRetained> xformChangeList = new ArrayList<LeafRetained>();
 
 // freelist management of objects
 private final ArrayList<Object[]> objFreeList = new ArrayList<Object[]>();
@@ -158,30 +157,24 @@ void addObjArrayToFreeList(Object[] objs) {
 	objFreeList.add(objs);
 }
 
-
-    public void updateObject() {
-	int i;
-	Object[] args;
-	LeafRetained leaf;
+public void updateObject() {
 	int size;
 
 	size = objList.size();
-	for (i = 0; i < size; i++) {
-	    args = (Object[])objList.get(i);
-	    leaf = (LeafRetained)args[0];
-	    leaf.updateMirrorObject(args);
-	    addObjArrayToFreeList(args);
+	for (int i = 0; i < size; i++) {
+		Object[] args = objList.get(i);
+		LeafRetained leaf = (LeafRetained)args[0];
+		leaf.updateMirrorObject(args);
+		addObjArrayToFreeList(args);
 	}
 	objList.clear();
 
 	size = xformChangeList.size();
-	for (i = 0; i < size; i++) {
-	    leaf = (LeafRetained)xformChangeList.get(i);
-	    leaf.updateTransformChange();
+	for (int i = 0; i < size; i++) {
+		xformChangeList.get(i).updateTransformChange();
 	}
 	xformChangeList.clear();
-
-    }
+}
 
     void processMessages(long referenceTime) {
 	J3dMessage[] messages = getMessages(referenceTime);;
@@ -1247,7 +1240,6 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 	int i,j;
  	Object[] nodes, nodesArr;
 	BoundingLeafRetained bl;
-	LightRetained ml;
         UnorderList arrList;
         int size;
 
@@ -1265,20 +1257,20 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 
                 for (i = 0; i < nodes.length; i++) {
 	    	    if (nodes[i] instanceof LightRetained) {
-			ml = (LightRetained)nodes[i];
+			LightRetained ml = (LightRetained)nodes[i];
 			ml.updateImmediateTransformChange();
-			xformChangeList.add(nodes[i]);
+			xformChangeList.add(ml);
 
 	    	    } else if (nodes[i] instanceof FogRetained) {
 			FogRetained mfog = (FogRetained) nodes[i];
 			mfog.updateImmediateTransformChange();
-			xformChangeList.add(nodes[i]);
+			xformChangeList.add(mfog);
 
 	    	    } else if (nodes[i] instanceof AlternateAppearanceRetained){
 			AlternateAppearanceRetained mAltApp =
 					(AlternateAppearanceRetained) nodes[i];
 			mAltApp.updateImmediateTransformChange();
-			xformChangeList.add(nodes[i]);
+			xformChangeList.add(mAltApp);
 
 	    	    } else if (nodes[i] instanceof BackgroundRetained) {
                 	BackgroundRetained bg = (BackgroundRetained) nodes[i];
