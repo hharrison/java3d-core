@@ -4449,7 +4449,6 @@ private void processOrderedGroupInserted(J3dMessage m) {
 	ArrayList<OrderedBin> parentChildOrderedBins;
         OrderedBin parentOrderedBin;
         int parentOrderedChildId;
-        OrderedPathElement ope;
 
 	// Since the table has been incremented, in response to OG addition,
 	// but the ordered collecyions has not been added yet, we need to
@@ -4467,7 +4466,7 @@ private void processOrderedGroupInserted(J3dMessage m) {
         parentOrderedChildId = -1;
 
         for (i=0; i<ga.source.orderedPath.pathElements.size(); i++) {
-            ope = (OrderedPathElement)ga.source.orderedPath.pathElements.get(i);
+        	OrderedPathElement ope = ga.source.orderedPath.pathElements.get(i);
             og = ope.orderedGroup;
             oi = ope.childId.intValue();
 

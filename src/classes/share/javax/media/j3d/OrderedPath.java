@@ -28,7 +28,7 @@ package javax.media.j3d;
 
 import java.util.ArrayList;
 
-class OrderedPath extends Object {
+class OrderedPath {
 ArrayList<OrderedPathElement> pathElements = new ArrayList<OrderedPathElement>(1);
 
 void addElementToPath(OrderedGroupRetained og, Integer orderedId) {
