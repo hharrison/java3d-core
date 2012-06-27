@@ -44,10 +44,10 @@ public abstract class LOD extends Behavior {
     WakeupOnElapsedFrames wakeupFrame = new WakeupOnElapsedFrames(0, true);
 
 
-    /**
-     * The LOD Node's vector of switch nodes.
-     */
-    Vector switches = new Vector(5);
+/**
+ * The LOD Node's vector of switch nodes.
+ */
+Vector<Switch> switches = new Vector<Switch>(5);
 
     /**
      * Constructs and initializes an LOD node.
@@ -91,14 +91,14 @@ public abstract class LOD extends Behavior {
 	switches.removeElementAt(index);
     }
 
-    /**
-     * Returns the switch node specified by the index.
-     * @param index which switch node to return
-     * @return the switch node at location index
-     */
-    public Switch getSwitch(int index) {
-	return (Switch) switches.elementAt(index);
-    }
+/**
+ * Returns the switch node specified by the index.
+ * @param index which switch node to return
+ * @return the switch node at location index
+ */
+public Switch getSwitch(int index) {
+	return switches.elementAt(index);
+}
 
     /**
      * Returns the enumeration object of all switches.
