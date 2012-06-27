@@ -347,7 +347,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 
         // save setLiveState
         Targets[] savedSwitchTargets = s.switchTargets;
-        ArrayList savedSwitchStates = s.switchStates;
+	ArrayList<SwitchState> savedSwitchStates = s.switchStates;
         SwitchRetained[] savedClosestSwitchParents = s.closestSwitchParents;
         int[] savedClosestSwitchIndices = s.closestSwitchIndices;
         ArrayList savedChildSwitchLinks = s.childSwitchLinks;
@@ -847,13 +847,12 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 	SwitchState switchState;
         if (! inSharedGroup) {
             cachedTargets = s.switchTargets[0].snapShotInit();
-            switchState = (SwitchState) s.switchStates.get(0);
+		switchState = s.switchStates.get(0);
             switchState.cachedTargets = cachedTargets;
         } else {
             for(int i=0; i<numPaths; i++) {
                 cachedTargets = s.switchTargets[i].snapShotInit();
-                switchState = (SwitchState)s.switchStates.get(
-                                                        s.hashkeyIndex[i]);
+			switchState = s.switchStates.get(s.hashkeyIndex[i]);
                 switchState.cachedTargets = cachedTargets;
             }
         }

@@ -1017,7 +1017,7 @@ class Shape3DRetained extends LeafRetained {
                     shape.closestSwitchParent = s.closestSwitchParents[i];
                     shape.closestSwitchIndex = s.closestSwitchIndices[i];
                 }
-        	shape.switchState = (SwitchState)s.switchStates.get(j);
+        	shape.switchState = s.switchStates.get(j);
 
 			// Add any scoped lights to the mirror shape
 			if (s.lights != null) {
@@ -1133,7 +1133,7 @@ class Shape3DRetained extends LeafRetained {
                 shape.closestSwitchParent = s.closestSwitchParents[0];
                 shape.closestSwitchIndex = s.closestSwitchIndices[0];
             }
-            shape.switchState = (SwitchState)s.switchStates.get(0);
+		shape.switchState = s.switchStates.get(0);
 	}
 
 	for (k = 0; k < msList.size(); k++) {

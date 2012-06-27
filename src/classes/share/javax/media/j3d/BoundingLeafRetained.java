@@ -162,7 +162,7 @@ class BoundingLeafRetained extends LeafRetained {
             s.switchTargets[0].addNode(mirrorBoundingLeaf,
                                                 Targets.BLN_TARGETS);
         }
-        mirrorBoundingLeaf.switchState = (SwitchState)s.switchStates.get(0);
+	mirrorBoundingLeaf.switchState = s.switchStates.get(0);
 	super.markAsLive();
     }
 

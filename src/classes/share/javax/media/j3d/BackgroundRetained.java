@@ -575,7 +575,7 @@ GeometryAtom[] bgGeometryAtoms = null;
         if (s.switchTargets != null && s.switchTargets[0] != null) {
             s.switchTargets[0].addNode(this, Targets.ENV_TARGETS);
         }
-        switchState = (SwitchState)s.switchStates.get(0);
+	switchState = s.switchStates.get(0);
 
 	// Initialize some mirror values
 	if (boundingLeaf != null) {

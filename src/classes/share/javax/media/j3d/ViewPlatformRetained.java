@@ -318,7 +318,7 @@ void removeView(View v) {
                         s.switchTargets[0] != null) {
             s.switchTargets[0].addNode(this, Targets.VPF_TARGETS);
         }
-        switchState = (SwitchState)s.switchStates.get(0);
+	switchState = s.switchStates.get(0);
 	s.nodeList.add(this);
 	s.notifyThreads |= (J3dThread.UPDATE_BEHAVIOR);
 	super.markAsLive();

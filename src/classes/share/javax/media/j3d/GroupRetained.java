@@ -2016,7 +2016,7 @@ synchronized void setAltAppScope() {
 					TargetsInterface.SWITCH_TARGETS,
 					parentSwitchLinkChildIndex);
             } else {
-                s.switchStates = new ArrayList(1);
+			s.switchStates = new ArrayList<SwitchState>(1);
                 s.switchStates.add(new SwitchState(false));
             }
 	}

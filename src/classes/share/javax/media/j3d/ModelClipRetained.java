@@ -850,7 +850,7 @@ class ModelClipRetained extends LeafRetained {
                         s.switchTargets[0] != null) {
             s.switchTargets[0].addNode(mirrorModelClip, Targets.ENV_TARGETS);
         }
-        mirrorModelClip.switchState = (SwitchState)s.switchStates.get(0);
+	mirrorModelClip.switchState = s.switchStates.get(0);
 
 	// add this model clip to the transform target
         if (s.transformTargets != null && s.transformTargets[0] != null) {

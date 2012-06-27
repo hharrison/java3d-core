@@ -588,7 +588,7 @@ class AlternateAppearanceRetained extends LeafRetained {
                         s.switchTargets[0] != null) {
             s.switchTargets[0].addNode(mirrorAltApp, Targets.ENV_TARGETS);
 	}
-        mirrorAltApp.switchState = (SwitchState)s.switchStates.get(0);
+	mirrorAltApp.switchState = s.switchStates.get(0);
 
 	s.notifyThreads |= J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 	    J3dThread.UPDATE_RENDER;

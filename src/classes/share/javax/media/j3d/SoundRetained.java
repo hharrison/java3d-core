@@ -1107,7 +1107,7 @@ abstract class SoundRetained extends LeafRetained
                 if (s.switchTargets != null && s.switchTargets[i] != null) {
                     s.switchTargets[i].addNode(ms, Targets.SND_TARGETS);
                 }
-                ms.switchState = (SwitchState)s.switchStates.get(j);
+			ms.switchState = s.switchStates.get(j);
                 if (s.transformTargets != null &&
 		    s.transformTargets[i] != null) {
                     s.transformTargets[i].addNode(ms, Targets.SND_TARGETS);
@@ -1133,7 +1133,7 @@ abstract class SoundRetained extends LeafRetained
             if (s.switchTargets != null && s.switchTargets[0] != null) {
                 s.switchTargets[0].addNode(ms, Targets.SND_TARGETS);
             }
-            ms.switchState = (SwitchState)s.switchStates.get(0);
+		ms.switchState = s.switchStates.get(0);
             if (s.transformTargets != null &&
 		s.transformTargets[0] != null) {
                 s.transformTargets[0].addNode(ms, Targets.SND_TARGETS);

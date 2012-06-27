@@ -306,7 +306,7 @@ class BehaviorRetained extends LeafRetained  {
                         s.switchTargets[0] != null) {
             s.switchTargets[0].addNode(this, Targets.BEH_TARGETS);
         }
-        switchState = (SwitchState)s.switchStates.get(0);
+	switchState = s.switchStates.get(0);
 
 	if (boundingLeaf != null) {
 	    boundingLeaf.mirrorBoundingLeaf.addUser(this);

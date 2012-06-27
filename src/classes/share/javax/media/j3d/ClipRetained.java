@@ -237,7 +237,7 @@ class ClipRetained extends LeafRetained {
                         s.switchTargets[0] != null) {
             s.switchTargets[0].addNode(this, Targets.ENV_TARGETS);
         }
-        switchState = (SwitchState)s.switchStates.get(0);
+	switchState = s.switchStates.get(0);
 
         // add this node to the transform target
         if (s.transformTargets != null && s.transformTargets[0] != null) {

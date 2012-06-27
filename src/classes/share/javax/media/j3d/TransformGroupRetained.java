@@ -361,8 +361,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
     void setAuxData(SetLiveState s, int index, int hkIndex) {
         super.setAuxData(s, index, hkIndex);
         perPathData[hkIndex] = new TransformGroupData();
-        perPathData[hkIndex].switchState =
-                                (SwitchState)s.switchStates.get(hkIndex);
+	perPathData[hkIndex].switchState = s.switchStates.get(hkIndex);
     }
 
 

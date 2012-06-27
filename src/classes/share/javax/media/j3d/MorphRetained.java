@@ -1359,7 +1359,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
                     shape.closestSwitchParent = s.closestSwitchParents[i];
                     shape.closestSwitchIndex = s.closestSwitchIndices[i];
                 }
-        	shape.switchState = (SwitchState)s.switchStates.get(j);
+			shape.switchState = s.switchStates.get(j);
 
 	    }
 	} else {
@@ -1437,7 +1437,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
                 shape.closestSwitchParent = s.closestSwitchParents[0];
                 shape.closestSwitchIndex = s.closestSwitchIndices[0];
             }
-            shape.switchState = (SwitchState)s.switchStates.get(0);
+		shape.switchState = s.switchStates.get(0);
 	}
 	if (appearance != null) {
 	    synchronized(appearance.liveStateLock) {

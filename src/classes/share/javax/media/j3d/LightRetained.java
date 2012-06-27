@@ -821,7 +821,7 @@ abstract class LightRetained extends LeafRetained {
 		    s.switchTargets[i] != null) {
                     s.switchTargets[i].addNode(ml, Targets.ENV_TARGETS);
                 }
-	        ml.switchState = (SwitchState)s.switchStates.get(j);
+			ml.switchState = s.switchStates.get(j);
 
 	    }
 	} else {
@@ -853,7 +853,7 @@ abstract class LightRetained extends LeafRetained {
                         s.switchTargets[0] != null) {
                 s.switchTargets[0].addNode(ml, Targets.ENV_TARGETS);
             }
-	    ml.switchState = (SwitchState)s.switchStates.get(0);
+		ml.switchState = s.switchStates.get(0);
 	}
 	s.notifyThreads |= J3dThread.UPDATE_RENDERING_ENVIRONMENT|
 	    J3dThread.UPDATE_RENDER;

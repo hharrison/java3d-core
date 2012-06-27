@@ -386,7 +386,7 @@ class SoundscapeRetained extends LeafRetained
                         s.switchTargets[0] != null) {
             s.switchTargets[0].addNode(this, Targets.SND_TARGETS);
         }
-        switchState = (SwitchState)s.switchStates.get(0);
+	switchState = s.switchStates.get(0);
 	s.notifyThreads |= (J3dThread.UPDATE_SOUND |
 			    J3dThread.SOUND_SCHEDULER);
 

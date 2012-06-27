@@ -280,7 +280,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
 
 	SharedGroupRetained savedLastSharedGroup = s.lastSharedGroup;
         Targets[] savedSwitchTargets = s.switchTargets;
-        ArrayList savedSwitchStates = s.switchStates;
+	ArrayList<SwitchState> savedSwitchStates = s.switchStates;
         ArrayList savedChildSwitchLinks = s.childSwitchLinks;
         GroupRetained savedParentSwitchLink = s.parentSwitchLink;
         ArrayList savedChildTransformLinks = s.childTransformLinks;
