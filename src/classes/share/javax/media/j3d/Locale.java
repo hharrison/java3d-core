@@ -65,10 +65,10 @@ public class Locale extends Object {
      */
     HiResCoord 	hiRes;
 
-    /**
-     * List of BranchGroup objects included in this Locale
-     */
-    Vector	branchGroups = new Vector();
+/**
+ * List of BranchGroup objects included in this Locale
+ */
+Vector<BranchGroup> branchGroups = new Vector<BranchGroup>();
 
     // locale's identifier
     String nodeId = null;
