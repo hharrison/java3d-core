@@ -274,8 +274,6 @@ class Shape3DRetained extends LeafRetained {
      * @since Java 3D 1.2
      */
     void addGeometry(Geometry geometry) {
-	int i;
-	Shape3DRetained s;
 	GeometryRetained newGeom = null;
 
 	checkEquivalenceClass(geometry, -1);
@@ -382,10 +380,7 @@ class Shape3DRetained extends LeafRetained {
      * @since Java 3D 1.2
      */
     void insertGeometry(Geometry geometry, int index) {
-	int i;
-	Shape3DRetained mShape;
 	GeometryRetained newGeom = null;
-	GeometryRetained oldGeom = null;
 
 	checkEquivalenceClass(geometry, -1);
 
@@ -824,10 +819,9 @@ class Shape3DRetained extends LeafRetained {
 
     void updateImmediateMirrorObject(Object[] objs) {
 	int component = ((Integer)objs[1]).intValue();
-	GeometryArrayRetained ga;
 
 	Shape3DRetained[] msArr = (Shape3DRetained[]) objs[2];
-	int i, j;
+	int i;
 	if ((component & APPEARANCE_CHANGED) != 0) {
 	    Object[] arg = (Object[])objs[3];
 	    int val = ((Integer)arg[1]).intValue();
@@ -1512,7 +1506,6 @@ class Shape3DRetained extends LeafRetained {
 
     boolean shapeIsMergeable(CompileState  compState) {
 	boolean mergeable = true;
-	AppearanceRetained newApp;
 	int i;
 
 	GeometryRetained geometry = null;
@@ -1600,8 +1593,7 @@ class Shape3DRetained extends LeafRetained {
     // Called on the mirror Object
     void addLight(LightRetained light) {
 	 LightRetained[] newlights;
-	 int i, n;
-	 Shape3DRetained ms;
+	 int i;
 
 	 if (lights == null) {
 	     lights = new LightRetained[10];
@@ -1810,7 +1802,6 @@ class Shape3DRetained extends LeafRetained {
 	int i, j, gaCnt;
 	GeometryAtom[] newGAArray =  null;
 	GeometryAtom[] oldGAArray = null;
-	GeometryAtom[] newGeometryAtoms = null;
 	int geometryCnt = 0;
 	GeometryRetained geometry = null;
 
@@ -2099,7 +2090,6 @@ class Shape3DRetained extends LeafRetained {
 	int gaSize =  gaList.size();
 	Transform3D otherLocalToVworld = otherShape.getCurrentLocalToVworld();
 	Transform3D thisLocalToVworld = getCurrentLocalToVworld();
-	View views = null;
 	int primaryViewIdx = -1;
 
 
@@ -2166,8 +2156,6 @@ class Shape3DRetained extends LeafRetained {
 
 	GeometryRetained geometry;
 
-	GeometryAtom[] newGeometryAtoms = null;
-
 	universe = morph.universe;
 	inSharedGroup = morph.inSharedGroup;
         inBackgroundGroup = morph.inBackgroundGroup;
@@ -2233,7 +2221,6 @@ class Shape3DRetained extends LeafRetained {
     void setMorphGeometry(Geometry geometry, ArrayList mirrorShapes) {
         GeometryAtom oldGA, newGA;
 	Shape3DRetained ms;
-        TransformGroupRetained tg;
         int nMirrorShapes = mirrorShapes.size();
 	int i;
 
