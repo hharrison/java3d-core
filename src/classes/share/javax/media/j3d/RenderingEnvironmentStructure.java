@@ -862,55 +862,43 @@ FogRetained getInfluencingFog(RenderAtom ra, View view) {
 	return numFogs;
     }
 
-    ModelClipRetained getInfluencingModelClip(RenderAtom ra, View view) {
-	ModelClipRetained modelClip = null;
-	int j, nModelClips;
-	Bounds closestBounds;
-        ArrayList globalModelClips;
+ModelClipRetained getInfluencingModelClip(RenderAtom ra, View view) {
+	if (ra.geometryAtom.source.inBackgroundGroup)
+		return null;
 
-
-
-	if (ra.geometryAtom.source.inBackgroundGroup) {
-	    return null;
-	}
 	// Need to lock lockObj, since on a multi-processor
 	// system with 2 views on a single universe, there might
 	// be councurrent access
-	synchronized(lockObj) {
-	    Bounds bounds = ra.localeVwcBounds;
-	    nModelClips = 0;
-	    if (intersectedBounds.length < numberOfModelClips)
-		intersectedBounds = new Bounds[numberOfModelClips];
+	synchronized (lockObj) {
+		Bounds bounds = ra.localeVwcBounds;
+		int nModelClips = 0;
+		if (intersectedBounds.length < numberOfModelClips)
+			intersectedBounds = new Bounds[numberOfModelClips];
 
-	    if ((globalModelClips = (ArrayList)viewScopedModelClips.get(view)) != null) {
-		nModelClips = processModelClips(globalModelClips, ra, nModelClips);
-	    }
+		ArrayList<ModelClipRetained> globalModelClips = viewScopedModelClips.get(view); 
+		if (globalModelClips  != null)
+			nModelClips = processModelClips(globalModelClips, ra, nModelClips);
 
-	    // now process the common clips
-	    nModelClips = processModelClips(nonViewScopedModelClips, ra, nModelClips);
+		// now process the common clips
+		nModelClips = processModelClips(nonViewScopedModelClips, ra, nModelClips);
 
-
-
-
-
-	    modelClip = null;
-	    if (nModelClips == 1)
-		modelClip = intersectedModelClips[0];
-	    else if (nModelClips > 1) {
-		closestBounds = bounds.closestIntersection(intersectedBounds);
-		for (j= 0; j < nModelClips; j++) {
-		    if (intersectedBounds[j] == closestBounds) {
-			modelClip = intersectedModelClips[j];
-			break;
-		    }
+		ModelClipRetained modelClip = null;
+		if (nModelClips == 1)
+			modelClip = intersectedModelClips[0];
+		else if (nModelClips > 1) {
+			Bounds closestBounds = bounds.closestIntersection(intersectedBounds);
+			for (int j = 0; j < nModelClips; j++) {
+				if (intersectedBounds[j] == closestBounds) {
+					modelClip = intersectedModelClips[j];
+					break;
+				}
+			}
 		}
-	    }
-	    return (modelClip);
+		return modelClip;
 	}
+}
 
-    }
-
-    int processModelClips(ArrayList globalModelClips, RenderAtom ra, int nModelClips) {
+int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom ra, int nModelClips) {
     	int size = globalModelClips.size();
 	int i, k, n;
 	ModelClipRetained modelClip;
@@ -919,7 +907,7 @@ FogRetained getInfluencingFog(RenderAtom ra, View view) {
 
 	if (size > 0) {
 	    for (i = 0; i < size; i++) {
-		modelClip = (ModelClipRetained) globalModelClips.get(i);
+		modelClip = globalModelClips.get(i);
 		if (modelClip.enableFlag == true &&
 		    modelClip.region != null && modelClip.switchState.currentSwitchOn) {
 		    if (modelClip.region.intersect(bounds) == true) {
