@@ -565,7 +565,7 @@ class AppearanceRetained extends NodeComponentRetained {
 		    TextureUnitStateRetained mirrorStateArray[] =
 			new TextureUnitStateRetained[stateArray.length];
 
-		    args[1] = (Object) mirrorStateArray;
+		    args[1] = mirrorStateArray;
 
 		    for (i = 0; i < stateArray.length; i++) {
 			TextureUnitState tu = stateArray[i];
@@ -1325,7 +1325,6 @@ class AppearanceRetained extends NodeComponentRetained {
 
     boolean isOpaque(int geoType) {
 	TransparencyAttributesRetained ta;
-	int i;
 
         ta = transparencyAttributes;
         if (ta != null &&
