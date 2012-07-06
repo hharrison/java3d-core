@@ -54,10 +54,10 @@ class AlternateAppearanceRetained extends LeafRetained {
      */
     BoundingLeafRetained boundingLeaf = null;
 
-    /**
-     * Vector of GroupRetained  nodes that scopes this alternate app .
-     */
-    Vector scopes = new Vector();
+/**
+ * Vector of GroupRetained nodes that scopes this alternate app .
+ */
+Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 
     // This is true when this alternate app  is referenced in an immediate mode context
     boolean inImmCtx = false;
@@ -224,11 +224,10 @@ class AlternateAppearanceRetained extends LeafRetained {
     void setScope(Group scope, int index) {
 
 	ArrayList removeScopeList = new ArrayList();
-	GroupRetained group;
 	ArrayList addScopeList = new ArrayList();
 	Object[] scopeInfo = new Object[3];
 
-	group = (GroupRetained) scopes.get(index);
+	GroupRetained group = scopes.get(index);
 	tempKey.reset();
 	group.removeAllNodesForScopedAltApp(mirrorAltApp, removeScopeList, tempKey);
 
@@ -247,7 +246,7 @@ class AlternateAppearanceRetained extends LeafRetained {
     }
 
      Group getScope(int index) {
-	return (Group)(((GroupRetained)(scopes.elementAt(index))).source);
+	return (Group)scopes.elementAt(index).source;
     }
 
 
@@ -259,7 +258,7 @@ class AlternateAppearanceRetained extends LeafRetained {
      */
     void initInsertScope(Node scope, int index) {
 	GroupRetained group = (GroupRetained)scope.retained;
-	scopes.insertElementAt((GroupRetained)(scope.retained), index);
+	scopes.insertElementAt(group, index);
 	group.setAltAppScope();
     }
 
@@ -288,8 +287,7 @@ class AlternateAppearanceRetained extends LeafRetained {
 
 
     void initRemoveScope(int index) {
-	GroupRetained group  = (GroupRetained)scopes.elementAt(index);
-	scopes.removeElementAt(index);
+	GroupRetained group = scopes.remove(index);
 	group.removeAltAppScope();
 
     }
@@ -298,7 +296,7 @@ class AlternateAppearanceRetained extends LeafRetained {
 
 	Object[] scopeInfo = new Object[3];
 	ArrayList removeScopeList = new ArrayList();
-	GroupRetained group  = (GroupRetained)scopes.elementAt(index);
+	GroupRetained group = scopes.elementAt(index);
 
 	tempKey.reset();
 	group.removeAllNodesForScopedAltApp(mirrorAltApp, removeScopeList, tempKey);
@@ -329,11 +327,10 @@ class AlternateAppearanceRetained extends LeafRetained {
     }
 
     void removeAllScopes() {
-      GroupRetained group;
       ArrayList removeScopeList = new ArrayList();
       int n = scopes.size();
       for(int index = n-1; index >= 0; index--) {
-	group  = (GroupRetained)scopes.elementAt(index);
+		GroupRetained group = scopes.elementAt(index);
 	tempKey.reset();
 	group.removeAllNodesForScopedAltApp(mirrorAltApp, removeScopeList, tempKey);
 	initRemoveScope(index);
@@ -356,10 +353,10 @@ class AlternateAppearanceRetained extends LeafRetained {
      * @return an enumeration object of the scoperen
      */
     Enumeration getAllScopes() {
-	Enumeration elm = scopes.elements();
+	Enumeration<GroupRetained> elm = scopes.elements();
 	Vector v = new Vector(scopes.size());
 	while (elm.hasMoreElements()) {
-	    v.add( ((GroupRetained) elm.nextElement()).source);
+		v.add(elm.nextElement().source);
 	}
 	return v.elements();
     }
@@ -370,7 +367,7 @@ class AlternateAppearanceRetained extends LeafRetained {
    */
   int indexOfScope(Group scope) {
     if(scope != null)
-      return scopes.indexOf((GroupRetained)scope.retained);
+		return scopes.indexOf(scope.retained);
     else
       return scopes.indexOf(null);
   }
@@ -382,7 +379,7 @@ class AlternateAppearanceRetained extends LeafRetained {
      */
     void initAddScope(Group scope) {
         GroupRetained group = (GroupRetained)scope.retained;
-	scopes.addElement((GroupRetained)(scope.retained));
+	scopes.addElement(group);
 	group.setAltAppScope();
     }
 
@@ -523,7 +520,6 @@ class AlternateAppearanceRetained extends LeafRetained {
     }
 
     void setLive(SetLiveState s) {
-        GroupRetained group;
 	Vector currentScopes;
 	int i, nscopes;
 	TransformGroupRetained[] tlist;
@@ -608,7 +604,7 @@ class AlternateAppearanceRetained extends LeafRetained {
 	createMessage.args[1]= new Integer(INIT_MIRROR);
 	ArrayList addScopeList = new ArrayList();
 	for (i = 0; i < scopes.size(); i++) {
-	    group = (GroupRetained)scopes.get(i);
+		GroupRetained group = scopes.get(i);
 	    tempKey.reset();
 	    group.addAllNodesForScopedAltApp(mirrorAltApp, addScopeList, tempKey);
 	}
@@ -740,7 +736,7 @@ class AlternateAppearanceRetained extends LeafRetained {
 	    createMessage.args[1]= new Integer(CLEAR_MIRROR);
 	    ArrayList removeScopeList = new ArrayList();
 	    for (i = 0; i < scopes.size(); i++) {
-		group = (GroupRetained)scopes.get(i);
+			group = scopes.get(i);
 		tempKey.reset();
 		group.removeAllNodesForScopedAltApp(mirrorAltApp, removeScopeList, tempKey);
 	    }
