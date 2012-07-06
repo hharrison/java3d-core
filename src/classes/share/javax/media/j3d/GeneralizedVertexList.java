@@ -45,8 +45,8 @@ import javax.vecmath.Vector3f;
  */
 class GeneralizedVertexList implements GeneralizedStripFlags {
 
-    // The ArrayList containing the vertices.
-    private ArrayList vertices ;
+// The ArrayList containing the vertices.
+private ArrayList<Vertex> vertices;
 
     // Booleans for individual vertex components.
     private boolean hasColor3 = false ;
@@ -91,9 +91,9 @@ class GeneralizedVertexList implements GeneralizedStripFlags {
 	setVertexFormat(vertexFormat) ;
 
 	if (initSize == 0)
-	    vertices = new ArrayList() ;
+		vertices = new ArrayList<Vertex>();
 	else
-	    vertices = new ArrayList(initSize) ;
+		vertices = new ArrayList<Vertex>(initSize);
 
 	stripCount = 0 ;
 	vertexCount = 0 ;
@@ -177,7 +177,7 @@ class GeneralizedVertexList implements GeneralizedStripFlags {
 
     // GeneralizedStripFlags interface implementation
     public int getFlag(int index) {
-	return ((Vertex)vertices.get(index)).flag ;
+	return vertices.get(index).flag;
     }
 
     // Copy vertices in the given order to a fixed-length GeometryArray.
@@ -186,7 +186,6 @@ class GeneralizedVertexList implements GeneralizedStripFlags {
     // fixed-length arrays to hold the vertex elements.
     private void copyVertexData(GeometryArray ga,
 				GeneralizedStrip.IntList indices) {
-	Vertex v ;
 	Point3f p3f[] = new Point3f[indices.count] ;
 
 	if (hasNormals) {
@@ -194,7 +193,7 @@ class GeneralizedVertexList implements GeneralizedStripFlags {
 	    if (hasColor3) {
 		Color3f c3f[] = new Color3f[indices.count] ;
 		for (int i = 0 ; i < indices.count ; i++) {
-		    v = (Vertex)vertices.get(indices.ints[i]) ;
+				Vertex v = vertices.get(indices.ints[i]);
 		    p3f[i] = v.coord ;
 		    v3f[i] = v.normal ;
 		    c3f[i] = v.color3 ;
@@ -204,7 +203,7 @@ class GeneralizedVertexList implements GeneralizedStripFlags {
 	    } else if (hasColor4) {
 		Color4f c4f[] = new Color4f[indices.count] ;
 		for (int i = 0 ; i < indices.count ; i++) {
-		    v = (Vertex)vertices.get(indices.ints[i]) ;
+				Vertex v = vertices.get(indices.ints[i]);
 		    p3f[i] = v.coord ;
 		    v3f[i] = v.normal ;
 		    c4f[i] = v.color4 ;
@@ -213,7 +212,7 @@ class GeneralizedVertexList implements GeneralizedStripFlags {
 
 	    } else {
 		for (int i = 0 ; i < indices.count ; i++) {
-		    v = (Vertex)vertices.get(indices.ints[i]) ;
+				Vertex v = vertices.get(indices.ints[i]);
 		    p3f[i] = v.coord ;
 		    v3f[i] = v.normal ;
 		}
@@ -224,7 +223,7 @@ class GeneralizedVertexList implements GeneralizedStripFlags {
 	    if (hasColor3) {
 		Color3f c3f[] = new Color3f[indices.count] ;
 		for (int i = 0 ; i < indices.count ; i++) {
-		    v = (Vertex)vertices.get(indices.ints[i]) ;
+				Vertex v = vertices.get(indices.ints[i]);
 		    p3f[i] = v.coord ;
 		    c3f[i] = v.color3 ;
 		}
@@ -233,7 +232,7 @@ class GeneralizedVertexList implements GeneralizedStripFlags {
 	    } else if (hasColor4) {
 		Color4f c4f[] = new Color4f[indices.count] ;
 		for (int i = 0 ; i < indices.count ; i++) {
-		    v = (Vertex)vertices.get(indices.ints[i]) ;
+				Vertex v = vertices.get(indices.ints[i]);
 		    p3f[i] = v.coord ;
 		    c4f[i] = v.color4 ;
 		}
@@ -241,7 +240,7 @@ class GeneralizedVertexList implements GeneralizedStripFlags {
 
 	    } else {
 		for (int i = 0 ; i < indices.count ; i++) {
-		    v = (Vertex)vertices.get(indices.ints[i]) ;
+				Vertex v = vertices.get(indices.ints[i]);
 		    p3f[i] = v.coord ;
 		}
 	    }
