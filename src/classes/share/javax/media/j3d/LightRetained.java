@@ -55,10 +55,10 @@ abstract class LightRetained extends LeafRetained {
     // The color of the light (white by default).
     Color3f	color = new Color3f(1.0f, 1.0f, 1.0f);
 
-    // This node which specifies the hierarchical scope of the
-    // light.  A null reference means that this light has universal
-    // scope.
-    Vector scopes = new Vector();
+// This node which specifies the hierarchical scope of the
+// light. A null reference means that this light has universal
+// scope.
+Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 
     /**
      * The Boundary object defining the lights's region of influence.
@@ -207,10 +207,9 @@ abstract class LightRetained extends LeafRetained {
     void setScope(Group scope, int index) {
 	ArrayList addScopeList = new ArrayList();
 	ArrayList removeScopeList = new ArrayList();
-	GroupRetained group;
 	Object[] scopeInfo = new Object[3];
 
-	group = (GroupRetained) scopes.get(index);
+	GroupRetained group = scopes.get(index);
 	tempKey.reset();
 	group.removeAllNodesForScopedLight((inSharedGroup?numMirrorLights:1), mirrorLights, removeScopeList, tempKey);
 
@@ -269,8 +268,7 @@ abstract class LightRetained extends LeafRetained {
      * @param index which scope to remove
      */
     void initRemoveScope(int index) {
-        GroupRetained group = (GroupRetained)scopes.elementAt(index);
-        scopes.removeElementAt(index);
+	GroupRetained group = scopes.remove(index);
 	group.removeLightScope();
     }
 
@@ -284,7 +282,7 @@ abstract class LightRetained extends LeafRetained {
 	Object[] scopeInfo = new Object[3];
 	ArrayList removeScopeList = new ArrayList();
 
-        GroupRetained group = (GroupRetained)scopes.elementAt(index);
+	GroupRetained group = scopes.elementAt(index);
 	tempKey.reset();
 	group.removeAllNodesForScopedLight((inSharedGroup?numMirrorLights:1), mirrorLights, removeScopeList, tempKey);
 	initRemoveScope(index);	scopeInfo[0] = null;
@@ -317,10 +315,9 @@ abstract class LightRetained extends LeafRetained {
       int n = scopes.size();
       Object[] scopeInfo = new Object[3];
       ArrayList removeScopeList = new ArrayList();
-      GroupRetained group;
 
       for(int index = n-1; index >= 0; index--) {
-	group = (GroupRetained)scopes.elementAt(index);
+		GroupRetained group = scopes.elementAt(index);
 	tempKey.reset();
 	group.removeAllNodesForScopedLight((inSharedGroup?numMirrorLights:1), mirrorLights, removeScopeList, tempKey);
 	initRemoveScope(index);
@@ -343,7 +340,7 @@ abstract class LightRetained extends LeafRetained {
      * @return the scope at location index
      */
     Group getScope(int index) {
-      return (Group)(((GroupRetained)(scopes.elementAt(index))).source);
+	return (Group)scopes.elementAt(index).source;
     }
 
     /**
@@ -351,10 +348,10 @@ abstract class LightRetained extends LeafRetained {
      * @return an enumeration object of the scope
      */
     Enumeration getAllScopes() {
-	Enumeration elm = scopes.elements();
+	Enumeration<GroupRetained> elm = scopes.elements();
 	Vector v = new Vector(scopes.size());
 	while (elm.hasMoreElements()) {
-	    v.add( ((GroupRetained) elm.nextElement()).source);
+		v.add(elm.nextElement().source);
 	}
 	return v.elements();
     }
@@ -401,7 +398,7 @@ abstract class LightRetained extends LeafRetained {
      */
   int indexOfScope(Group scope) {
     if(scope != null)
-      return scopes.indexOf((GroupRetained)scope.retained);
+		return scopes.indexOf(scope.retained);
     else
       return scopes.indexOf(null);
   }
@@ -887,7 +884,7 @@ abstract class LightRetained extends LeafRetained {
 
 	ArrayList addScopeList = new ArrayList();
 	for (int i = 0; i < scopes.size(); i++) {
-	    GroupRetained group = (GroupRetained)scopes.get(i);
+		GroupRetained group = scopes.get(i);
 	    tempKey.reset();
 	    group.addAllNodesForScopedLight(mlts.length, mlts, addScopeList, tempKey);
 	}
@@ -979,7 +976,7 @@ abstract class LightRetained extends LeafRetained {
 	    createMessage.args[1]= new Integer(CLEAR_MIRROR);
 	    ArrayList removeScopeList = new ArrayList();
 	    for (int i = 0; i < scopes.size(); i++) {
-		GroupRetained group = (GroupRetained)scopes.get(i);
+			GroupRetained group = scopes.get(i);
 		tempKey.reset();
 		group.removeAllNodesForScopedLight(mlts.length, mlts, removeScopeList, tempKey);
 	    }
@@ -1016,7 +1013,7 @@ abstract class LightRetained extends LeafRetained {
     protected Object clone() {
          LightRetained lr = (LightRetained)super.clone();
          lr.color = new Color3f(color);
-	 lr.scopes = (Vector) scopes.clone();
+	lr.scopes = new Vector<GroupRetained>(scopes);
 	 lr.initInfluencingBoundingLeaf(getInfluencingBoundingLeaf());
  	 lr.region = null;
          lr.lightDirty = 0xffff;
