@@ -8334,7 +8334,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	Point3d origin = new Point3d();
 	Point3d end = new Point3d();
 	Vector3d direction = new Vector3d();
-        Point3d iPnt = new Point3d();
+	Point3d iPnt = new Point3d();
 	Vector3d originToIpnt = new Vector3d();
 
 	// Get cone information
@@ -8343,10 +8343,6 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	double radius;
 	double distance;
 	double sqDist;
-
-	if (iPnt == null) {
-	    iPnt = new Point3d();
-	}
 
 	if (cone instanceof PickConeSegment) {
 	    ((PickConeSegment)cone).getEnd (end);
