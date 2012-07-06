@@ -433,11 +433,6 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 
 
     void updateImmediateMirrorObject(Object[] objs) {
-	GroupRetained group;
-	Vector currentScopes;
-	int i, nscopes;
-	Transform3D trans;
-
 	int component = ((Integer)objs[1]).intValue();
 	if ((component & APPEARANCE_CHANGED) != 0) {
 	    mirrorAltApp.appearance = (AppearanceRetained)objs[2];
@@ -482,7 +477,7 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 
 	    if (addList != null) {
 		mirrorAltApp.isScoped = isScoped;
-		for (i = 0; i < addList.size(); i++) {
+			for (int i = 0; i < addList.size(); i++) {
 		    Shape3DRetained obj = ((GeometryAtom)addList.get(i)).source;
 		    obj.addAltApp(mirrorAltApp);
 		}
@@ -490,7 +485,7 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 
 	    if (removeList != null) {
 		mirrorAltApp.isScoped = isScoped;
-		for (i = 0; i < removeList.size(); i++) {
+			for (int i = 0; i < removeList.size(); i++) {
 		    Shape3DRetained obj = ((GeometryAtom)removeList.get(i)).source;
 		    obj.removeAltApp(mirrorAltApp);
 		}
@@ -520,9 +515,6 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
     }
 
     void setLive(SetLiveState s) {
-	Vector currentScopes;
-	int i, nscopes;
-	TransformGroupRetained[] tlist;
 
         if (inImmCtx) {
 	    throw new IllegalSharingException(J3dI18N.getString("AlternateAppearanceRetained13"));
@@ -603,7 +595,7 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 	// in the mirror object
 	createMessage.args[1]= new Integer(INIT_MIRROR);
 	ArrayList addScopeList = new ArrayList();
-	for (i = 0; i < scopes.size(); i++) {
+	for (int i = 0; i < scopes.size(); i++) {
 		GroupRetained group = scopes.get(i);
 	    tempKey.reset();
 	    group.addAllNodesForScopedAltApp(mirrorAltApp, addScopeList, tempKey);
