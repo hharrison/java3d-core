@@ -947,11 +947,6 @@ class NoopPipeline extends Pipeline {
     // MasterControl methods
     //
 
-    // Method to initialize the native J3D library
-    boolean initializeJ3D(boolean disableXinerama) {
-        return true;
-    }
-
     // Maximum lights supported by the native API
     int getMaximumLights() {
         return 8;

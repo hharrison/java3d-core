@@ -963,9 +963,6 @@ public Pipeline run() {
     // MasterControl methods
     //
 
-    // Method to initialize the native J3D library
-    abstract boolean initializeJ3D(boolean disableXinerama);
-
     // Maximum lights supported by the native API
     abstract int getMaximumLights();
 

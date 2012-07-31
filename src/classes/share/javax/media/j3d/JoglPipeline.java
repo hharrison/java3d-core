@@ -6160,12 +6160,6 @@ class JoglPipeline extends Pipeline {
     // MasterControl methods
     //
 
-    // Method to initialize the native J3D library
-    boolean initializeJ3D(boolean disableXinerama) {
-        // Dummy method in JOGL pipeline
-        return true;
-    }
-
     // Maximum lights supported by the native API
     int getMaximumLights() {
         if (VERBOSE) System.err.println("JoglPipeline.getMaximumLights()");

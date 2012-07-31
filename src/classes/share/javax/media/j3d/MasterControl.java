@@ -455,10 +455,6 @@ class MasterControl {
     // This is used for D3D only
     int resendTexTimestamp = 0;
 
-    // Indicates that the property to disable Xinerama mode was set and
-    // successfully disabled.
-    boolean xineramaDisabled = false;
-
     // Set by the -Dj3d.sortShape3DBounds property, When this flag is
     // set to true, the bounds of the Shape3D node will be used in
     // place of the computed GeometryArray bounds for transparency
@@ -658,12 +654,6 @@ class MasterControl {
 			       glslVertexAttrOffset);
 	}
 
-        // See if Xinerama should be disabled for better performance.
-	boolean disableXinerama = false;
-	if (getProperty("j3d.disableXinerama") != null) {
-	    disableXinerama = true;
-	}
-
         // Issue 480 : Cache bounds returned by getBounds()
         cacheAutoComputedBounds =
                 getBooleanProperty("j3d.cacheAutoComputeBounds",
@@ -675,20 +665,6 @@ class MasterControl {
                 getBooleanProperty("j3d.useBoxForGroupBounds",
                 useBoxForGroupBounds,
                 "Use of BoundingBox for group geometric bounds");
-
-        // Initialize the native J3D library
-	if (!Pipeline.getPipeline().initializeJ3D(disableXinerama)) {
-	    throw new RuntimeException(J3dI18N.getString("MasterControl0"));
-	}
-
-	if (xineramaDisabled) {
-	    // initializeJ3D() successfully disabled Xinerama.
-	    System.err.println("Java 3D: Xinerama disabled");
-	}
-	else if (disableXinerama) {
-	    // j3d.disableXinerama is true, but attempt failed.
-	    System.err.println("Java 3D: could not disable Xinerama");
-	}
 
         // Check for obsolete properties
         String[] obsoleteProps = {
