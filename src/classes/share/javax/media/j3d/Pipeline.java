@@ -963,9 +963,6 @@ public Pipeline run() {
     // MasterControl methods
     //
 
-    // Method to return the AWT object
-    abstract long getAWT();
-
     // Method to initialize the native J3D library
     abstract boolean initializeJ3D(boolean disableXinerama);
 

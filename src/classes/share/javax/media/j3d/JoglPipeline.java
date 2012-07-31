@@ -6160,15 +6160,6 @@ class JoglPipeline extends Pipeline {
     // MasterControl methods
     //
 
-    // Method to return the AWT object
-    long getAWT() {
-        if (VERBOSE) System.err.println("JoglPipeline.getAWT()");
-
-        // FIXME: probably completely unneeded in this implementation,
-        // but should probably remove this dependence in the shared code
-        return 0;
-    }
-
     // Method to initialize the native J3D library
     boolean initializeJ3D(boolean disableXinerama) {
         // Dummy method in JOGL pipeline

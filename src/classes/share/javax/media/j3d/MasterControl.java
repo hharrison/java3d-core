@@ -449,9 +449,6 @@ class MasterControl {
 
     private UnorderList freeMessageList = new UnorderList(8);
 
-    // Native AWT object
-    long awt;
-
     // Maximum number of lights
     int maxLights;
 
@@ -492,9 +489,6 @@ class MasterControl {
      */
     MasterControl() {
         assert librariesLoaded;
-
-	// Get AWT handle
-	awt = Pipeline.getPipeline().getAWT();
 
         // Initialize the start time upon which alpha's and behaviors
         // are synchronized to (if it isn't already set).

@@ -947,11 +947,6 @@ class NoopPipeline extends Pipeline {
     // MasterControl methods
     //
 
-    // Method to return the AWT object
-    long getAWT() {
-        return 0L;
-    }
-
     // Method to initialize the native J3D library
     boolean initializeJ3D(boolean disableXinerama) {
         return true;
