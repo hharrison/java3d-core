@@ -818,33 +818,6 @@ private static String getProperty(final String prop) {
     static void loadLibraries() {
         assert !librariesLoaded;
 
-        // Get platform system properties
-        String osName = getProperty("os.name").toLowerCase();
-        String sunArchDataModel = getProperty("sun.arch.data.model");
-
-        // Set global flags based on platform architecture
-        boolean isWindowsOs = osName != null && osName.startsWith("windows");
-        boolean isWindowsVista = isWindowsOs && osName.indexOf("vista") != -1;
-        boolean is64Bit = (sunArchDataModel != null) && sunArchDataModel.equals("64");
-
-        if (isCoreLoggable(Level.CONFIG)) {
-            StringBuffer strBuf = new StringBuffer();
-            strBuf.append("MasterControl.loadLibraries()\n").
-                    append("    osName [lower-case] = \"").
-                    append(osName).
-                    append("\"").
-                    append(", sunArchDataModel = ").
-                    append(sunArchDataModel).
-                    append("\n").
-                    append("    is64Bit = ").
-                    append(is64Bit).
-                    append(", isWindowsOs = ").
-                    append(isWindowsOs).
-                    append(", isWindowsVista = ").
-                    append(isWindowsVista);
-            getCoreLogger().config(strBuf.toString());
-        }
-
         // Initialize the Pipeline object associated with the
         // renderer specified by the "j3d.rend" system property.
         //
