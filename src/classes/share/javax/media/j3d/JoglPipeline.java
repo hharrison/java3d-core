@@ -7574,10 +7574,14 @@ class JoglPipeline extends Pipeline {
     private void checkGLSLShaderExtensions(Canvas3D cv,
             JoglContext ctx,
             GL gl,
-            boolean glslLibraryAvailable) {
-        if (glslLibraryAvailable &&
-                gl.isExtensionAvailable("GL_ARB_shader_objects") &&
-                gl.isExtensionAvailable("GL_ARB_shading_language_100")) {
+            boolean hasgl13) {
+
+		// Force shaders to be disabled, since no multitexture support
+		if (!hasgl13)
+			return;
+
+        if (gl.isExtensionAvailable("GL_ARB_shader_objects") &&
+            gl.isExtensionAvailable("GL_ARB_shading_language_100")) {
             // Initialize shader vertex attribute function pointers
             ctx.initGLSLVertexAttributeImpl();
 
@@ -7744,12 +7748,7 @@ class JoglPipeline extends Pipeline {
         checkTextureExtensions(cv, ctx, gl, gl13);
 
         // Check shader extensions
-        if (gl13) {
-            checkGLSLShaderExtensions(cv, ctx, gl, true);
-        } else {
-            // Force shaders to be disabled, since no multitexture support
-            checkGLSLShaderExtensions(cv, ctx, gl, false);
-        }
+        checkGLSLShaderExtensions(cv, ctx, gl, gl13);
 
         // Setup GL_SUN_gloabl_alpha
 // FIXME: SUN_global_alpha
