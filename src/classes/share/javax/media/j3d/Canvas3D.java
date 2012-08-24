@@ -616,12 +616,6 @@ public class Canvas3D extends Canvas {
     // is defined by the Pipeline.
     Drawable drawable = null;
 
-    // offScreenBufferInfo is a pointer to additional information about the
-    // offScreenBuffer in this Canvas.
-    //
-    // For Windows : Fix for issue 76.
-    long offScreenBufferInfo = 0;
-
     // graphicsConfigTable is a static hashtable which allows getBestConfiguration()
     // in NativeConfigTemplate3D to map a GraphicsConfiguration to the pointer
     // to the actual GLXFBConfig that glXChooseFBConfig() returns.  The Canvas3D
