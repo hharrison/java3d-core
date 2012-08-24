@@ -6169,7 +6169,7 @@ class JoglPipeline extends Pipeline {
 
     // This is the native method for creating the underlying graphics context.
     Context createNewContext(Canvas3D cv, long display, Drawable drawable,
-            long fbConfig, Context shareCtx, boolean isSharedCtx,
+            Context shareCtx, boolean isSharedCtx,
             boolean offScreen) {
         if (VERBOSE) System.err.println("JoglPipeline.createNewContext()");
         GLDrawable draw = null;
@@ -6259,7 +6259,7 @@ class JoglPipeline extends Pipeline {
 	}
 
     void createQueryContext(Canvas3D cv, long display, Drawable drawable,
-            long fbConfig, boolean offScreen, int width, int height) {
+            boolean offScreen, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.createQueryContext()");
 
         // FIXME: for now, ignoring the "offscreen" flag -- unclear how
@@ -6302,7 +6302,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // This is the native for creating an offscreen buffer
-    Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height) {
+    Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.createOffScreenBuffer()");
 
         // Note 1: when this is called, the incoming Context argument is
@@ -6326,7 +6326,7 @@ class JoglPipeline extends Pipeline {
         return new JoglDrawable(pbuffer);
     }
 
-    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, Drawable drawable) {
+    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, Drawable drawable) {
         if (VERBOSE) System.err.println("JoglPipeline.destroyOffScreenBuffer()");
 
         JoglDrawable jdraw = (JoglDrawable) drawable;
@@ -7896,13 +7896,6 @@ class JoglPipeline extends Pipeline {
         return gconfig;
        */
     }
-
-    // Get the native FBconfig pointer
-    long getFbConfig(GraphicsConfigInfo gcInfo) {
-        if (VERBOSE) System.err.println("JoglPipeline.getFbConfig()");
-        return 0L; // Dummy method in JOGL
-    }
-
 
     private static final int DISABLE_STEREO = 1;
     private static final int DISABLE_AA = 2;

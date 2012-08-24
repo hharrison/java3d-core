@@ -616,20 +616,6 @@ public class Canvas3D extends Canvas {
     // is defined by the Pipeline.
     Drawable drawable = null;
 
-    // fbConfig is a pointer to the fbConfig object that is associated with
-    // the GraphicsConfiguration object used to create this Canvas.
-    //
-    // For Unix : Fix for issue 20.
-    // The fbConfig is only used when running X11.  It contains a pointer
-    // to the native GLXFBConfig structure list, since in some cases the visual id
-    // alone isn't sufficient for the native OpenGL renderer (e.g., when using
-    // Solaris OpenGL with Xinerama mode disabled).
-    //
-    // For Windows : Fix for issue 76.  This is use as a holder of the
-    // PixelFormat structure ( see also gldef.h ) to allow value such
-    // as offScreen's pixelformat, and ARB function pointers to be stored.
-    long fbConfig = 0;
-
     // offScreenBufferInfo is a pointer to additional information about the
     // offScreenBuffer in this Canvas.
     //
@@ -1110,8 +1096,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
     	GraphicsConfigInfo gcInfo = graphicsConfigTable.get(graphicsConfiguration);
         requestedStencilSize = gcInfo.getGraphicsConfigTemplate3D().getStencilSize();
-
-        fbConfig = Pipeline.getPipeline().getFbConfig(gcInfo);
 
 	if (offScreen) {
 
@@ -2428,7 +2412,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
     Context createNewContext(Context shareCtx, boolean isSharedCtx) {
         Context retVal = createNewContext(this.screen.display,
                 this.drawable,
-                this.fbConfig,
                 shareCtx, isSharedCtx,
                 this.offScreen);
         // compute the max available texture units
@@ -3654,8 +3637,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	// extensions, the context will destroy immediately
 	// inside the native code after setting the various
 	// fields in this object
-	createQueryContext(screen.display, drawable,
-	                   fbConfig, offScreen, 1, 1);
+	createQueryContext(screen.display, drawable, offScreen, 1, 1);
         // compute the max available texture units
         maxAvailableTextureUnits = Math.max(maxTextureUnits, maxTextureImageUnits);
     }
@@ -4792,28 +4774,28 @@ void addTextureResource(int id, TextureRetained obj) {
 
     // This is the native method for creating the underlying graphics context.
     private Context createNewContext(long display, Drawable drawable,
-            long fbConfig, Context shareCtx, boolean isSharedCtx,
+            Context shareCtx, boolean isSharedCtx,
             boolean offScreen) {
         return Pipeline.getPipeline().createNewContext(this, display, drawable,
-                fbConfig, shareCtx, isSharedCtx,
+                shareCtx, isSharedCtx,
                 offScreen);
     }
 
     private void createQueryContext(long display, Drawable drawable,
-            long fbConfig, boolean offScreen, int width, int height) {
+            boolean offScreen, int width, int height) {
         Pipeline.getPipeline().createQueryContext(this, display, drawable,
-                fbConfig, offScreen, width, height);
+                offScreen, width, height);
     }
 
     // This is the native for creating offscreen buffer
-    Drawable createOffScreenBuffer(Context ctx, long display, long fbConfig, int width, int height) {
+    Drawable createOffScreenBuffer(Context ctx, long display, int width, int height) {
         return Pipeline.getPipeline().createOffScreenBuffer(this,
-                ctx, display, fbConfig, width, height);
+                ctx, display, width, height);
     }
 
-    void destroyOffScreenBuffer(Context ctx, long display, long fbConfig, Drawable drawable) {
+    void destroyOffScreenBuffer(Context ctx, long display, Drawable drawable) {
         assert drawable != null;
-        Pipeline.getPipeline().destroyOffScreenBuffer(this, ctx, display, fbConfig, drawable);
+        Pipeline.getPipeline().destroyOffScreenBuffer(this, ctx, display, drawable);
     }
 
     // This is the native for reading the image from the offscreen buffer

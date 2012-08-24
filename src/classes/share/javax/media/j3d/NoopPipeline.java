@@ -952,21 +952,21 @@ class NoopPipeline extends Pipeline {
 
     // This is the native method for creating the underlying graphics context.
     Context createNewContext(Canvas3D cv, long display, Drawable drawable,
-            long fbConfig, Context shareCtx, boolean isSharedCtx,
+            Context shareCtx, boolean isSharedCtx,
             boolean offScreen) {
         return new NoopContext();
     }
 
     void createQueryContext(Canvas3D cv, long display, Drawable drawable,
-            long fbConfig, boolean offScreen, int width, int height) {
+            boolean offScreen, int width, int height) {
     }
 
     // This is the native for creating offscreen buffer
-    Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height) {
+    Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, int width, int height) {
         return null;
     }
 
-    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, Drawable drawable) {
+    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, Drawable drawable) {
     }
 
     // This is the native for reading the image from the offscreen buffer
@@ -1218,12 +1218,6 @@ class NoopPipeline extends Pipeline {
         System.err.println("NoopPipeline.getGraphicsConfig()");
         return gconfig;
     }
-
-    // Get the native FBconfig pointer
-    long getFbConfig(GraphicsConfigInfo gcInfo) {
-        return 0L;
-    }
-
 
     // Get best graphics config from pipeline
     GraphicsConfiguration getBestConfiguration(GraphicsConfigTemplate3D gct,

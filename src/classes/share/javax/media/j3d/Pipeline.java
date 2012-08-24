@@ -965,16 +965,16 @@ public Pipeline run() {
 
     // This is the native method for creating the underlying graphics context.
     abstract Context createNewContext(Canvas3D cv, long display, Drawable drawable,
-            long fbConfig, Context shareCtx, boolean isSharedCtx,
+            Context shareCtx, boolean isSharedCtx,
             boolean offScreen);
 
     abstract void createQueryContext(Canvas3D cv, long display, Drawable drawable,
-            long fbConfig, boolean offScreen, int width, int height);
+            boolean offScreen, int width, int height);
 
     // This is the native for creating offscreen buffer
-    abstract Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height);
+    abstract Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, int width, int height);
 
-    abstract void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, Drawable drawable);
+    abstract void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, Drawable drawable);
 
     // This is the native for reading the image from the offscreen buffer
     abstract void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int type, Object data, int width, int height);
@@ -1166,9 +1166,6 @@ public Pipeline run() {
     // This method must return a valid GraphicsConfig, or else it must throw
     // an exception if one cannot be returned.
     abstract GraphicsConfiguration getGraphicsConfig(GraphicsConfiguration gconfig);
-
-    // Get the native FBconfig pointer
-    abstract long getFbConfig(GraphicsConfigInfo gcInfo);
 
     // Get best graphics config from pipeline
     abstract GraphicsConfiguration getBestConfiguration(GraphicsConfigTemplate3D gct,

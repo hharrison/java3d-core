@@ -564,7 +564,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                         canvas.drawable =
                                 canvas.createOffScreenBuffer(null,
                                     canvas.screen.display,
-                                    canvas.fbConfig,
                                     canvas.offScreenCanvasSize.width,
                                     canvas.offScreenCanvasSize.height);
                     } catch (RuntimeException ex) {
@@ -1607,7 +1606,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	    // Since we are now the renderer thread,
 	    // we can safely execute destroyOffScreenBuffer.
 	    if(destroyOffScreenBuffer) {
-		cv.destroyOffScreenBuffer(ctx, display, cv.fbConfig, drawable);
+		cv.destroyOffScreenBuffer(ctx, display, drawable);
 		cv.offScreenBufferPending = false;
 	    }
 	}
