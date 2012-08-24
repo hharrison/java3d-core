@@ -114,15 +114,6 @@ class JoglPipeline extends Pipeline {
         // TODO: finish this with any other needed initialization
     }
 
-    /**
-     * Returns true if the GLSL library is loaded and available. Note that this
-     * does not necessarily mean that GLSL is supported by the graphics card.
-     */
-    boolean isGLSLLibraryAvailable() {
-        return true;
-    }
-
-
     // ---------------------------------------------------------------------
 
     //
@@ -6179,8 +6170,7 @@ class JoglPipeline extends Pipeline {
     // This is the native method for creating the underlying graphics context.
     Context createNewContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
-            boolean offScreen,
-            boolean glslLibraryAvailable) {
+            boolean offScreen) {
         if (VERBOSE) System.err.println("JoglPipeline.createNewContext()");
         GLDrawable draw = null;
         GLCapabilitiesChooser indexChooser = null;
@@ -6240,7 +6230,7 @@ class JoglPipeline extends Pipeline {
 
             if(!isSharedCtx){
                 // Set up fields in Canvas3D
-                setupCanvasProperties(cv, ctx, gl, glslLibraryAvailable);
+                setupCanvasProperties(cv, ctx, gl);
             }
 
             // Enable rescale normal
@@ -6269,8 +6259,7 @@ class JoglPipeline extends Pipeline {
 	}
 
     void createQueryContext(Canvas3D cv, long display, Drawable drawable,
-            long fbConfig, boolean offScreen, int width, int height,
-            boolean glslLibraryAvailable) {
+            long fbConfig, boolean offScreen, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.createQueryContext()");
 
         // FIXME: for now, ignoring the "offscreen" flag -- unclear how
@@ -6283,7 +6272,7 @@ class JoglPipeline extends Pipeline {
         f.setUndecorated(true);
         f.setLayout(new BorderLayout());
         GLCapabilities caps = new GLCapabilities(getDefaultProfile());
-        ContextQuerier querier = new ContextQuerier(cv, glslLibraryAvailable);
+        ContextQuerier querier = new ContextQuerier(cv);
         // FIXME: should know what GraphicsDevice on which to create
         // this Canvas / Frame, and this should probably be known from
         // the incoming "display" parameter
@@ -7617,8 +7606,7 @@ class JoglPipeline extends Pipeline {
 
     private void setupCanvasProperties(Canvas3D cv,
             JoglContext ctx,
-            GL gl,
-            boolean glslLibraryAvailable) {
+            GL gl) {
         // Note: this includes relevant portions from both the
         // NativePipeline's getPropertiesFromCurrentContext and setupCanvasProperties
 
@@ -7757,7 +7745,7 @@ class JoglPipeline extends Pipeline {
 
         // Check shader extensions
         if (gl13) {
-            checkGLSLShaderExtensions(cv, ctx, gl, glslLibraryAvailable);
+            checkGLSLShaderExtensions(cv, ctx, gl, true);
         } else {
             // Force shaders to be disabled, since no multitexture support
             checkGLSLShaderExtensions(cv, ctx, gl, false);
@@ -8327,13 +8315,10 @@ class JoglPipeline extends Pipeline {
     // than just a GLCapabilitiesChooser
     class ContextQuerier extends DefaultGLCapabilitiesChooser implements ExtendedCapabilitiesChooser {
         private Canvas3D canvas;
-        private boolean glslLibraryAvailable;
         private boolean done;
 
-        public ContextQuerier(Canvas3D canvas,
-                boolean glslLibraryAvailable) {
+        public ContextQuerier(Canvas3D canvas) {
             this.canvas = canvas;
-            this.glslLibraryAvailable = glslLibraryAvailable;
         }
 
         public boolean done() {
@@ -8345,8 +8330,7 @@ class JoglPipeline extends Pipeline {
             JoglContext jctx = new JoglContext(context);
             // Set up various properties
             if (getPropertiesFromCurrentContext(jctx)) {
-                setupCanvasProperties(canvas, jctx, context.getGL(),
-                        glslLibraryAvailable);
+                setupCanvasProperties(canvas, jctx, context.getGL());
             }
             markDone();
         }

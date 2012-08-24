@@ -149,16 +149,6 @@ public Pipeline run() {
         }
     }
 
-
-    // ---------------------------------------------------------------------
-
-    /**
-     * Returns true if the GLSL library is loaded and available. Note that this
-     * does not necessarily mean that GLSL is supported by the graphics card.
-     */
-    abstract boolean isGLSLLibraryAvailable();
-
-
     // ---------------------------------------------------------------------
 
     //
@@ -976,12 +966,10 @@ public Pipeline run() {
     // This is the native method for creating the underlying graphics context.
     abstract Context createNewContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
-            boolean offScreen,
-            boolean glslLibraryAvailable);
+            boolean offScreen);
 
     abstract void createQueryContext(Canvas3D cv, long display, Drawable drawable,
-            long fbConfig, boolean offScreen, int width, int height,
-            boolean glslLibraryAvailable);
+            long fbConfig, boolean offScreen, int width, int height);
 
     // This is the native for creating offscreen buffer
     abstract Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, long fbConfig, int width, int height);

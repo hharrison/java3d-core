@@ -2430,8 +2430,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                 this.drawable,
                 this.fbConfig,
                 shareCtx, isSharedCtx,
-                this.offScreen,
-                VirtualUniverse.mc.glslLibraryAvailable);
+                this.offScreen);
         // compute the max available texture units
         maxAvailableTextureUnits = Math.max(maxTextureUnits, maxTextureImageUnits);
 
@@ -3656,8 +3655,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	// inside the native code after setting the various
 	// fields in this object
 	createQueryContext(screen.display, drawable,
-	                   fbConfig, offScreen, 1, 1,
-	                   VirtualUniverse.mc.glslLibraryAvailable);
+	                   fbConfig, offScreen, 1, 1);
         // compute the max available texture units
         maxAvailableTextureUnits = Math.max(maxTextureUnits, maxTextureImageUnits);
     }
@@ -4795,20 +4793,16 @@ void addTextureResource(int id, TextureRetained obj) {
     // This is the native method for creating the underlying graphics context.
     private Context createNewContext(long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
-            boolean offScreen,
-            boolean glslLibraryAvailable) {
+            boolean offScreen) {
         return Pipeline.getPipeline().createNewContext(this, display, drawable,
                 fbConfig, shareCtx, isSharedCtx,
-                offScreen,
-                glslLibraryAvailable);
+                offScreen);
     }
 
     private void createQueryContext(long display, Drawable drawable,
-            long fbConfig, boolean offScreen, int width, int height,
-            boolean glslLibraryAvailable) {
+            long fbConfig, boolean offScreen, int width, int height) {
         Pipeline.getPipeline().createQueryContext(this, display, drawable,
-                fbConfig, offScreen, width, height,
-                glslLibraryAvailable);
+                fbConfig, offScreen, width, height);
     }
 
     // This is the native for creating offscreen buffer

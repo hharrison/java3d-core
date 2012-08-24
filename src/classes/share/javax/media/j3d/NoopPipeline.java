@@ -50,15 +50,6 @@ class NoopPipeline extends Pipeline {
         assert pipelineType == Pipeline.Type.NOOP;
     }
 
-    /**
-     * Returns true if the GLSL library is loaded and available. Note that this
-     * does not necessarily mean that GLSL is supported by the graphics card.
-     */
-    boolean isGLSLLibraryAvailable() {
-        return true;
-    }
-
-
     // ---------------------------------------------------------------------
 
     //
@@ -962,14 +953,12 @@ class NoopPipeline extends Pipeline {
     // This is the native method for creating the underlying graphics context.
     Context createNewContext(Canvas3D cv, long display, Drawable drawable,
             long fbConfig, Context shareCtx, boolean isSharedCtx,
-            boolean offScreen,
-            boolean glslLibraryAvailable) {
+            boolean offScreen) {
         return new NoopContext();
     }
 
     void createQueryContext(Canvas3D cv, long display, Drawable drawable,
-            long fbConfig, boolean offScreen, int width, int height,
-            boolean glslLibraryAvailable) {
+            long fbConfig, boolean offScreen, int width, int height) {
     }
 
     // This is the native for creating offscreen buffer

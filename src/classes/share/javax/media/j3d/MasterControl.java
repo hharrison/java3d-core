@@ -370,13 +370,6 @@ class MasterControl {
     // to control this.
     boolean stencilClear = false;
 
-    // Flags indicating whether the Cg or GLSL libraries are available; we still need
-    // to check for the actual extension support when the Canvas3D with its associated context
-    // is created. Note that these are qualifed by the above globalShadingLanguage, so at
-    // most one of these two flags will be true;
-    static boolean glslLibraryAvailable = false;
-
-
     // REQUESTCLEANUP messages argument
     static Integer REMOVEALLCTXS_CLEANUP = new Integer(1);
     static Integer REMOVECTX_CLEANUP     = new Integer(2);
@@ -567,9 +560,7 @@ class MasterControl {
 
             // Build display lists for geometry with vertex attributes
             // ONLY if we are in GLSL mode and GLSL shaders are available
-            if (glslLibraryAvailable) {
-                vertexAttrsInDisplayList = true;
-            }
+            vertexAttrsInDisplayList = true;
         }
 
         // Check to see whether Renderer can run without DSI lock
@@ -877,7 +868,6 @@ private static String getProperty(final String prop) {
 
         // Construct the singleton Pipeline instance
 		Pipeline.createPipeline(pipelineType);
-		glslLibraryAvailable = Pipeline.getPipeline().isGLSLLibraryAvailable();
 
         librariesLoaded = true;
     }
