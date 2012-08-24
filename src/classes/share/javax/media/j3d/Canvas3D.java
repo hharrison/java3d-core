@@ -2382,7 +2382,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 				return;
 			    }
 			    this.syncRender(ctx, true);
-			    int status = swapBuffers(ctx, screen.display, drawable);
+			    int status = swapBuffers(ctx, drawable);
 			    if (status != NOCHANGE) {
 				resetImmediateRendering(status);
 			    }
@@ -2404,7 +2404,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
      * Wrapper for native createNewContext method.
      */
     Context createNewContext(Context shareCtx, boolean isSharedCtx) {
-        Context retVal = createNewContext(this.screen.display,
+        Context retVal = createNewContext(
                 this.drawable,
                 shareCtx, isSharedCtx,
                 this.offScreen);
@@ -2418,24 +2418,24 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
      * Make the context associated with the specified canvas current.
      */
     final void makeCtxCurrent() {
-	makeCtxCurrent(ctx, screen.display, drawable);
+	makeCtxCurrent(ctx, drawable);
     }
 
     /**
      * Make the specified context current.
      */
     final void makeCtxCurrent(Context ctx) {
-	makeCtxCurrent(ctx, screen.display, drawable);
+	makeCtxCurrent(ctx, drawable);
     }
 
-    final void makeCtxCurrent(Context ctx, long dpy, Drawable drawable) {
+    final void makeCtxCurrent(Context ctx, Drawable drawable) {
         if (ctx != screen.renderer.currentCtx || drawable != screen.renderer.currentDrawable) {
 	    if (!drawingSurfaceObject.isLocked()) {
 		drawingSurfaceObject.renderLock();
-		useCtx(ctx, dpy, drawable);
+		useCtx(ctx, drawable);
 		drawingSurfaceObject.unLock();
 	    } else {
-		useCtx(ctx, dpy, drawable);
+		useCtx(ctx, drawable);
 	    }
             screen.renderer.currentCtx = ctx;
             screen.renderer.currentDrawable = drawable;
@@ -2450,7 +2450,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
             if (needLock) {
                 drawingSurfaceObject.renderLock();
             }
-            if (releaseCtx(screen.renderer.currentCtx, screen.display)) {
+            if (releaseCtx(screen.renderer.currentCtx)) {
                 screen.renderer.currentCtx = null;
                 screen.renderer.currentDrawable = null;
             }
@@ -3631,7 +3631,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	// extensions, the context will destroy immediately
 	// inside the native code after setting the various
 	// fields in this object
-	createQueryContext(screen.display, drawable, offScreen, 1, 1);
+	createQueryContext(drawable, offScreen, 1, 1);
         // compute the max available texture units
         maxAvailableTextureUnits = Math.max(maxTextureUnits, maxTextureImageUnits);
     }
@@ -4257,7 +4257,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	    (ctx != null)) {
             VirtualUniverse.mc.postRequest(MasterControl.FREE_CONTEXT,
                     new Object[]{this,
-                            new Long(screen.display),
+                            Long.valueOf(0L),
                             drawable,
                             ctx});
 	    // Fix for Issue 19
@@ -4767,29 +4767,29 @@ void addTextureResource(int id, TextureRetained obj) {
     // *****************************************************************
 
     // This is the native method for creating the underlying graphics context.
-    private Context createNewContext(long display, Drawable drawable,
+    private Context createNewContext(Drawable drawable,
             Context shareCtx, boolean isSharedCtx,
             boolean offScreen) {
-        return Pipeline.getPipeline().createNewContext(this, display, drawable,
+        return Pipeline.getPipeline().createNewContext(this, drawable,
                 shareCtx, isSharedCtx,
                 offScreen);
     }
 
-    private void createQueryContext(long display, Drawable drawable,
+    private void createQueryContext(Drawable drawable,
             boolean offScreen, int width, int height) {
-        Pipeline.getPipeline().createQueryContext(this, display, drawable,
+        Pipeline.getPipeline().createQueryContext(this, drawable,
                 offScreen, width, height);
     }
 
     // This is the native for creating offscreen buffer
-    Drawable createOffScreenBuffer(Context ctx, long display, int width, int height) {
+    Drawable createOffScreenBuffer(Context ctx, int width, int height) {
         return Pipeline.getPipeline().createOffScreenBuffer(this,
-                ctx, display, width, height);
+                ctx, width, height);
     }
 
-    void destroyOffScreenBuffer(Context ctx, long display, Drawable drawable) {
+    void destroyOffScreenBuffer(Context ctx, Drawable drawable) {
         assert drawable != null;
-        Pipeline.getPipeline().destroyOffScreenBuffer(this, ctx, display, drawable);
+        Pipeline.getPipeline().destroyOffScreenBuffer(this, ctx, drawable);
     }
 
     // This is the native for reading the image from the offscreen buffer
@@ -4798,8 +4798,8 @@ void addTextureResource(int id, TextureRetained obj) {
     }
 
     // The native method for swapBuffers
-    int swapBuffers(Context ctx, long dpy, Drawable drawable) {
-        return Pipeline.getPipeline().swapBuffers(this, ctx, dpy, drawable);
+    int swapBuffers(Context ctx, Drawable drawable) {
+        return Pipeline.getPipeline().swapBuffers(this, ctx, drawable);
     }
 
     // -----------------------------------------------------------------------------
@@ -4809,8 +4809,8 @@ void addTextureResource(int id, TextureRetained obj) {
         Pipeline.getPipeline().updateMaterialColor(ctx, r, g, b, a);
     }
 
-    static void destroyContext(long display, Drawable drawable, Context ctx) {
-        Pipeline.getPipeline().destroyContext(display, drawable, ctx);
+    static void destroyContext(Drawable drawable, Context ctx) {
+        Pipeline.getPipeline().destroyContext(drawable, ctx);
     }
 
     // This is the native method for doing accumulation.
@@ -4986,14 +4986,14 @@ void addTextureResource(int id, TextureRetained obj) {
     }
 
     // The native method that sets this ctx to be the current one
-    static boolean useCtx(Context ctx, long display, Drawable drawable) {
-        return Pipeline.getPipeline().useCtx(ctx, display, drawable);
+    static boolean useCtx(Context ctx, Drawable drawable) {
+        return Pipeline.getPipeline().useCtx(ctx, drawable);
     }
 
     // Give the Pipeline a chance to release the context. The return
     // value indicates whether the context was released.
-    private boolean releaseCtx(Context ctx, long dpy) {
-        return Pipeline.getPipeline().releaseCtx(ctx, dpy);
+    private boolean releaseCtx(Context ctx) {
+        return Pipeline.getPipeline().releaseCtx(ctx);
     }
 
     void clear(Context ctx, float r, float g, float b, boolean clearStencil) {

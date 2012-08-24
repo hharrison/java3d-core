@@ -113,9 +113,6 @@ public class Screen3D extends Object {
     // an off-screen Canvas3D or with one or more on-screen Canvas3Ds
     boolean offScreen;
 
-    // The display connection (native OGL pipeline on X11 only)
-    long display;
-
     // Screen number
     int screen;
 
@@ -353,12 +350,10 @@ synchronized void notifyUsers() {
 	screenViewCache = new ScreenViewCache(this);
 
 	// Get the display handle and the screen number from the Pipeline
-	display = Pipeline.getPipeline().getDisplay();
 	screen = Pipeline.getPipeline().getScreen(graphicsDevice);
 
 	if (debug)
-	    System.err.println("Screen3D: display " + display +
-			       " screen " + screen + " hashcode " +
+	    System.err.println("Screen3D: screen " + screen + " hashcode " +
 			       this.hashCode());
 
 	if (!offScreen) {

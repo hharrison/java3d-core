@@ -964,28 +964,28 @@ public Pipeline run() {
     //
 
     // This is the native method for creating the underlying graphics context.
-    abstract Context createNewContext(Canvas3D cv, long display, Drawable drawable,
+    abstract Context createNewContext(Canvas3D cv, Drawable drawable,
             Context shareCtx, boolean isSharedCtx,
             boolean offScreen);
 
-    abstract void createQueryContext(Canvas3D cv, long display, Drawable drawable,
+    abstract void createQueryContext(Canvas3D cv, Drawable drawable,
             boolean offScreen, int width, int height);
 
     // This is the native for creating offscreen buffer
-    abstract Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, int width, int height);
+    abstract Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, int width, int height);
 
-    abstract void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, Drawable drawable);
+    abstract void destroyOffScreenBuffer(Canvas3D cv, Context ctx, Drawable drawable);
 
     // This is the native for reading the image from the offscreen buffer
     abstract void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int type, Object data, int width, int height);
 
     // The native method for swapBuffers
-    abstract int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable);
+    abstract int swapBuffers(Canvas3D cv, Context ctx, Drawable drawable);
 
     // native method for setting Material when no material is present
     abstract void updateMaterialColor(Context ctx, float r, float g, float b, float a);
 
-    abstract void destroyContext(long display, Drawable drawable, Context ctx);
+    abstract void destroyContext(Drawable drawable, Context ctx);
 
     // This is the native method for doing accumulation.
     abstract void accum(Context ctx, float value);
@@ -1092,11 +1092,11 @@ public Pipeline run() {
     abstract void syncRender(Context ctx, boolean wait);
 
     // The native method that sets this ctx to be the current one
-    abstract boolean useCtx(Context ctx, long display, Drawable drawable);
+    abstract boolean useCtx(Context ctx, Drawable drawable);
 
     // Optionally release the context. A pipeline may override this and
     // returns true if the context was released.
-    boolean releaseCtx(Context ctx, long dpy) {
+    boolean releaseCtx(Context ctx) {
         return false;
     }
 
@@ -1183,7 +1183,6 @@ public Pipeline run() {
     abstract boolean hasSceneAntialiasingAccum(Canvas3D cv);
 
     // Methods to get native WS display and screen
-    abstract long getDisplay();
     abstract int getScreen(GraphicsDevice graphicsDevice);
 
 

@@ -6168,7 +6168,7 @@ class JoglPipeline extends Pipeline {
     //
 
     // This is the native method for creating the underlying graphics context.
-    Context createNewContext(Canvas3D cv, long display, Drawable drawable,
+    Context createNewContext(Canvas3D cv, Drawable drawable,
             Context shareCtx, boolean isSharedCtx,
             boolean offScreen) {
         if (VERBOSE) System.err.println("JoglPipeline.createNewContext()");
@@ -6258,7 +6258,7 @@ class JoglPipeline extends Pipeline {
 		return GLProfile.getMaxFixedFunc(true);
 	}
 
-    void createQueryContext(Canvas3D cv, long display, Drawable drawable,
+    void createQueryContext(Canvas3D cv, Drawable drawable,
             boolean offScreen, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.createQueryContext()");
 
@@ -6302,7 +6302,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // This is the native for creating an offscreen buffer
-    Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, int width, int height) {
+    Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.createOffScreenBuffer()");
 
         // Note 1: when this is called, the incoming Context argument is
@@ -6326,7 +6326,7 @@ class JoglPipeline extends Pipeline {
         return new JoglDrawable(pbuffer);
     }
 
-    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, Drawable drawable) {
+    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, Drawable drawable) {
         if (VERBOSE) System.err.println("JoglPipeline.destroyOffScreenBuffer()");
 
         JoglDrawable jdraw = (JoglDrawable) drawable;
@@ -6433,7 +6433,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // The native method for swapBuffers
-    int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable) {
+    int swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
         if (VERBOSE) System.err.println("JoglPipeline.swapBuffers()");
         GLDrawable draw = drawable(drawable);
         draw.swapBuffers();
@@ -6449,7 +6449,7 @@ class JoglPipeline extends Pipeline {
         gl.glDisable(GL2.GL_LIGHTING);
     }
 
-    void destroyContext(long display, Drawable drawable, Context ctx) {
+    void destroyContext(Drawable drawable, Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.destroyContext()");
         GLDrawable draw     = drawable(drawable);
         GLContext  context  = context(ctx);
@@ -6872,7 +6872,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // The native method that sets this ctx to be the current one
-    boolean useCtx(Context ctx, long display, Drawable drawable) {
+    boolean useCtx(Context ctx, Drawable drawable) {
         if (VERBOSE) System.err.println("JoglPipeline.useCtx()");
         GLContext context = context(ctx);
         int res = context.makeCurrent();
@@ -6880,7 +6880,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // Optionally release the context. Returns true if the context was released.
-    boolean releaseCtx(Context ctx, long dpy) {
+    boolean releaseCtx(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.releaseCtx()");
         GLContext context = context(ctx);
         context.release();
@@ -8127,12 +8127,6 @@ class JoglPipeline extends Pipeline {
         return (caps.getAccumRedBits() > 0 &&
                 caps.getAccumGreenBits() > 0 &&
                 caps.getAccumBlueBits() > 0);
-    }
-
-    // Methods to get native WS display and screen
-    long getDisplay() {
-        if (VERBOSE) System.err.println("JoglPipeline.getDisplay()");
-        return 0L; // Dummy method in JOGL
     }
 
     private boolean checkedForGetScreenMethod = false;

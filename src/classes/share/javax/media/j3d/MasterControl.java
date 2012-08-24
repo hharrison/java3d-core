@@ -2860,7 +2860,7 @@ private static String getProperty(final String prop) {
 	    createMessage.view = null;
 	    createMessage.args[0] = c;
             // Fix for issue 340: send display, drawable & ctx in msg
-            createMessage.args[1] = new Long(c.screen.display);
+            createMessage.args[1] = Long.valueOf(0L);
             createMessage.args[2] = c.drawable;
             createMessage.args[3] = c.ctx;
 	    rdr.rendererStructure.addMessage(createMessage);

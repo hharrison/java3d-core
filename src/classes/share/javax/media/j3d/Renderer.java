@@ -99,7 +99,6 @@ class Renderer extends J3dThread {
     long sharedCtxTimeStamp = 0;
 
     // display and drawable, used to free shared context
-    private long sharedCtxDisplay = 0;
     private Drawable sharedCtxDrawable = null;
 
     /**
@@ -258,7 +257,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                                             cv.makeCtxCurrent();
                                             cv.syncRender(cv.ctx, true);
                                             status = cv.swapBuffers(cv.ctx,
-                                                    cv.screen.display,
                                                     cv.drawable);
                                             if (status != Canvas3D.NOCHANGE) {
                                                 cv.resetRendering(status);
@@ -269,7 +267,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
                                             cv.syncRender(cv.ctx, true);
                                             status = cv.swapBuffers(cv.ctx,
-                                                    cv.screen.display,
                                                     cv.drawable);
                                             if (status != Canvas3D.NOCHANGE) {
                                                 cv.resetRendering(status);
@@ -366,7 +363,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	    } else if (mtype == MasterControl.FREECONTEXT_CLEANUP) {
 		// from MasterControl freeContext(View v)
 		cv = (Canvas3D) args[1];
-		removeCtx(cv, cv.screen.display, cv.drawable, cv.ctx,
+		removeCtx(cv, cv.drawable, cv.ctx,
 			  true, true, false);
 	    } else if (mtype == MasterControl.RESETCANVAS_CLEANUP) {
 		// from MasterControl RESET_CANVAS postRequest
@@ -380,7 +377,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 		Object[] obj = (Object []) args[1];
 		Canvas3D c = (Canvas3D) obj[0];
 		removeCtx(c,
-			  ((Long) obj[1]).longValue(),
 			  (Drawable) obj[2],
 			  (Context) obj[3],
 			  false, !c.offScreen,
@@ -563,7 +559,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                         //   2) canvas.ctx should be null.
                         canvas.drawable =
                                 canvas.createOffScreenBuffer(null,
-                                    canvas.screen.display,
                                     canvas.offScreenCanvasSize.width,
                                     canvas.offScreenCanvasSize.height);
                     } catch (RuntimeException ex) {
@@ -591,7 +586,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 		    // Fix for issue 175: destroy ctx & off-screen buffer
                     // Fix for issue 340: get display, drawable & ctx from msg
                     removeCtx(canvas,
-                            ((Long) obj[1]).longValue(),
                             (Drawable) obj[2],
                             (Context) obj[3],
                             false, !canvas.offScreen, true);
@@ -832,7 +826,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                     if (canvas.useSharedCtx) {
 
                         if (sharedCtx == null) {
-                            sharedCtxDisplay = canvas.screen.display;
                             sharedCtxDrawable = canvas.drawable;
 
 			    // Always lock for context create
@@ -1516,7 +1509,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	bgVworldToVpc = new Transform3D();
 	sharedCtx = null;
 	sharedCtxTimeStamp = 0;
-	sharedCtxDisplay = 0;
         sharedCtxDrawable = null;
 	dirtyRenderMoleculeList.clear();
 	dirtyRenderAtomList.clear();
@@ -1532,9 +1524,9 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
     // This is only invoked from removeCtx()/removeAllCtxs()
     // with drawingSurface already lock
-    final void makeCtxCurrent(Context sharedCtx, long display, Drawable drawable) {
+    final void makeCtxCurrent(Context sharedCtx, Drawable drawable) {
         if (sharedCtx != currentCtx || drawable != currentDrawable) {
-	    Canvas3D.useCtx(sharedCtx, display, drawable);
+	    Canvas3D.useCtx(sharedCtx, drawable);
 	    /*
             if(!Canvas3D.useCtx(sharedCtx, display, drawable)) {
                 Thread.dumpStack();
@@ -1550,7 +1542,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
     // Canvas3D postRequest() offScreen rendering since the
     // user thread will not wait for it. Also we can just
     // reuse it as Canvas3D did not destroy.
-    private void removeCtx(Canvas3D cv, long display, Drawable drawable, Context ctx,
+    private void removeCtx(Canvas3D cv, Drawable drawable, Context ctx,
 			   boolean resetCtx, boolean freeBackground,
 			   boolean destroyOffScreenBuffer) {
 
@@ -1568,22 +1560,22 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			    // if it is the last one, free shared resources
 			    if (sharedCtx != null) {
 				if (listOfCtxs.isEmpty()) {
-				    makeCtxCurrent(sharedCtx, sharedCtxDisplay, sharedCtxDrawable);
+				    makeCtxCurrent(sharedCtx, sharedCtxDrawable);
 				    freeResourcesInFreeList(null);
 				    freeContextResources();
-				    Canvas3D.destroyContext(sharedCtxDisplay, sharedCtxDrawable, sharedCtx);
+				    Canvas3D.destroyContext(sharedCtxDrawable, sharedCtx);
 				    currentCtx = null;
                                     currentDrawable = null;
 				} else {
 				    freeResourcesInFreeList(cv);
 				}
-				cv.makeCtxCurrent(ctx, display, drawable);
+				cv.makeCtxCurrent(ctx, drawable);
 			    } else {
-				cv.makeCtxCurrent(ctx, display, drawable);
+				cv.makeCtxCurrent(ctx, drawable);
 				cv.freeResourcesInFreeList(ctx);
 			    }
 			    cv.freeContextResources(this, freeBackground, ctx);
-			    Canvas3D.destroyContext(display, drawable, ctx);
+			    Canvas3D.destroyContext(drawable, ctx);
 			    currentCtx = null;
                             currentDrawable = null;
 			    cv.drawingSurfaceObject.unLock();
@@ -1606,7 +1598,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	    // Since we are now the renderer thread,
 	    // we can safely execute destroyOffScreenBuffer.
 	    if(destroyOffScreenBuffer) {
-		cv.destroyOffScreenBuffer(ctx, display, drawable);
+		cv.destroyOffScreenBuffer(ctx, drawable);
 		cv.offScreenBufferPending = false;
 	    }
 	}
@@ -1629,19 +1621,17 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			    // workaround Nvidia driver bug under Linux
 			    // that crash on freeTexture ID:4685156
 			    if ((i == 0) && (sharedCtx != null)) {
-				makeCtxCurrent(sharedCtx, sharedCtxDisplay, sharedCtxDrawable);
+				makeCtxCurrent(sharedCtx, sharedCtxDrawable);
 				freeResourcesInFreeList(null);
 				freeContextResources();
-				Canvas3D.destroyContext(sharedCtxDisplay, sharedCtxDrawable, sharedCtx);
+				Canvas3D.destroyContext(sharedCtxDrawable, sharedCtx);
 				currentCtx = null;
                                 currentDrawable = null;
 			    }
 			    cv.makeCtxCurrent();
 			    cv.freeResourcesInFreeList(cv.ctx);
 			    cv.freeContextResources(this, true, cv.ctx);
-			    Canvas3D.destroyContext(cv.screen.display,
-						    cv.drawable,
-						    cv.ctx);
+			    Canvas3D.destroyContext(cv.drawable, cv.ctx);
 			    currentCtx = null;
                             currentDrawable = null;
 			    cv.drawingSurfaceObject.unLock();

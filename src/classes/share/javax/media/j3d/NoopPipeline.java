@@ -951,22 +951,22 @@ class NoopPipeline extends Pipeline {
     //
 
     // This is the native method for creating the underlying graphics context.
-    Context createNewContext(Canvas3D cv, long display, Drawable drawable,
+    Context createNewContext(Canvas3D cv, Drawable drawable,
             Context shareCtx, boolean isSharedCtx,
             boolean offScreen) {
         return new NoopContext();
     }
 
-    void createQueryContext(Canvas3D cv, long display, Drawable drawable,
+    void createQueryContext(Canvas3D cv, Drawable drawable,
             boolean offScreen, int width, int height) {
     }
 
     // This is the native for creating offscreen buffer
-    Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, long display, int width, int height) {
+    Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, int width, int height) {
         return null;
     }
 
-    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, long display, Drawable drawable) {
+    void destroyOffScreenBuffer(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // This is the native for reading the image from the offscreen buffer
@@ -974,7 +974,7 @@ class NoopPipeline extends Pipeline {
     }
 
     // The native method for swapBuffers
-    int swapBuffers(Canvas3D cv, Context ctx, long dpy, Drawable drawable) {
+    int swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
         return 0;
     }
 
@@ -982,7 +982,7 @@ class NoopPipeline extends Pipeline {
     void updateMaterialColor(Context ctx, float r, float g, float b, float a) {
     }
 
-    void destroyContext(long display, Drawable drawable, Context ctx) {
+    void destroyContext(Drawable drawable, Context ctx) {
     }
 
     // This is the native method for doing accumulation.
@@ -1123,7 +1123,7 @@ class NoopPipeline extends Pipeline {
     }
 
     // The native method that sets this ctx to be the current one
-    boolean useCtx(Context ctx, long display, Drawable drawable) {
+    boolean useCtx(Context ctx, Drawable drawable) {
         return true;
     }
 
@@ -1261,11 +1261,6 @@ class NoopPipeline extends Pipeline {
 
     boolean hasSceneAntialiasingAccum(Canvas3D cv) {
         return false;
-    }
-
-    // Methods to get native WS display and screen
-    long getDisplay() {
-        return 0L;
     }
 
     int getScreen(GraphicsDevice graphicsDevice) {
