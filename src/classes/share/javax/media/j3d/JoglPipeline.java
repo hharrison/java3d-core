@@ -7582,8 +7582,6 @@ class JoglPipeline extends Pipeline {
 
         if (gl.isExtensionAvailable("GL_ARB_shader_objects") &&
             gl.isExtensionAvailable("GL_ARB_shading_language_100")) {
-            // Initialize shader vertex attribute function pointers
-            ctx.initGLSLVertexAttributeImpl();
 
             // FIXME: this isn't complete and would need to set up the
             // JoglContext for dispatch of various routines such as those

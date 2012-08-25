@@ -48,51 +48,6 @@ class JoglContext implements Context {
   // Needed for vertex attribute implementation
   private JoglShaderObject shaderProgram;
 
-  // Implementation of vertex attribute methods
-  static interface VertexAttributeImpl {
-    public void vertexAttrPointer(GL gl,
-                                  int index, int size, int type, int stride, Buffer pointer);
-    public void enableVertexAttrArray(GL gl, int index);
-    public void disableVertexAttrArray(GL gl, int index);
-    public void vertexAttr1fv(GL gl, int index, FloatBuffer buf);
-    public void vertexAttr2fv(GL gl, int index, FloatBuffer buf);
-    public void vertexAttr3fv(GL gl, int index, FloatBuffer buf);
-    public void vertexAttr4fv(GL gl, int index, FloatBuffer buf);
-  }
-  private VertexAttributeImpl vertexAttrImpl;
-
-  class GLSLVertexAttributeImpl implements VertexAttributeImpl {
-    public void vertexAttrPointer(GL gl,
-                                  int index, int size, int type, int stride, Buffer pointer) {
-		gl.getGL2().glVertexAttribPointerARB(index + glslVertexAttrOffset,
-                                  size, type, false, stride, pointer);
-    }
-
-    public void enableVertexAttrArray(GL gl, int index) {
-		gl.getGL2().glEnableVertexAttribArrayARB(index + glslVertexAttrOffset);
-    }
-
-    public void disableVertexAttrArray(GL gl, int index) {
-		gl.getGL2().glDisableVertexAttribArrayARB(index + glslVertexAttrOffset);
-    }
-
-    public void vertexAttr1fv(GL gl, int index, FloatBuffer buf) {
-		gl.getGL2().glVertexAttrib1fvARB(index + glslVertexAttrOffset, buf);
-    }
-
-    public void vertexAttr2fv(GL gl, int index, FloatBuffer buf) {
-		gl.getGL2().glVertexAttrib2fvARB(index + glslVertexAttrOffset, buf);
-    }
-
-    public void vertexAttr3fv(GL gl, int index, FloatBuffer buf) {
-		gl.getGL2().glVertexAttrib3fvARB(index + glslVertexAttrOffset, buf);
-    }
-
-    public void vertexAttr4fv(GL gl, int index, FloatBuffer buf) {
-		gl.getGL2().glVertexAttrib4fvARB(index + glslVertexAttrOffset, buf);
-    }
-  }
-
   // Only used when GLSL shader library is active
   private int        glslVertexAttrOffset;
 
@@ -115,41 +70,34 @@ class JoglContext implements Context {
   boolean getHasMultisample()           { return hasMultisample;      }
   void    setHasMultisample(boolean val){ hasMultisample = val;       }
 
-  void  initGLSLVertexAttributeImpl() {
-    if (vertexAttrImpl != null) {
-      throw new RuntimeException("Should not initialize the vertex attribute implementation twice");
-    }
-    vertexAttrImpl = new GLSLVertexAttributeImpl();
-  }
+void vertexAttrPointer(GL gl, int index, int size, int type, int stride, Buffer pointer) {
+	gl.getGL2().glVertexAttribPointerARB(index + glslVertexAttrOffset, size,
+	                                     type, false, stride, pointer);
+}
 
-  void vertexAttrPointer(GL gl,
-                         int index, int size, int type, int stride, Buffer pointer) {
-    vertexAttrImpl.vertexAttrPointer(gl, index, size, type, stride, pointer);
-  }
+void enableVertexAttrArray(GL gl, int index) {
+	gl.getGL2().glEnableVertexAttribArrayARB(index + glslVertexAttrOffset);
+}
 
-  void enableVertexAttrArray(GL gl, int index) {
-    vertexAttrImpl.enableVertexAttrArray(gl, index);
-  }
+void disableVertexAttrArray(GL gl, int index) {
+	gl.getGL2().glDisableVertexAttribArrayARB(index + glslVertexAttrOffset);
+}
 
-  void disableVertexAttrArray(GL gl, int index) {
-    vertexAttrImpl.disableVertexAttrArray(gl, index);
-  }
+void vertexAttr1fv(GL gl, int index, FloatBuffer buf) {
+	gl.getGL2().glVertexAttrib1fvARB(index + glslVertexAttrOffset, buf);
+}
 
-  void vertexAttr1fv(GL gl, int index, FloatBuffer buf) {
-    vertexAttrImpl.vertexAttr1fv(gl, index, buf);
-  }
+void vertexAttr2fv(GL gl, int index, FloatBuffer buf) {
+	gl.getGL2().glVertexAttrib2fvARB(index + glslVertexAttrOffset, buf);
+}
 
-  void vertexAttr2fv(GL gl, int index, FloatBuffer buf) {
-    vertexAttrImpl.vertexAttr2fv(gl, index, buf);
-  }
+void vertexAttr3fv(GL gl, int index, FloatBuffer buf) {
+	gl.getGL2().glVertexAttrib3fvARB(index + glslVertexAttrOffset, buf);
+}
 
-  void vertexAttr3fv(GL gl, int index, FloatBuffer buf) {
-    vertexAttrImpl.vertexAttr3fv(gl, index, buf);
-  }
-
-  void vertexAttr4fv(GL gl, int index, FloatBuffer buf) {
-    vertexAttrImpl.vertexAttr4fv(gl, index, buf);
-  }
+void vertexAttr4fv(GL gl, int index, FloatBuffer buf) {
+	gl.getGL2().glVertexAttrib4fvARB(index + glslVertexAttrOffset, buf);
+}
 
   // Used in vertex attribute implementation
   JoglShaderObject getShaderProgram()                        { return shaderProgram;   }
