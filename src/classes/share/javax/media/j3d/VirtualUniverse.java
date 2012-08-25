@@ -81,18 +81,6 @@ private ArrayList<ViewPlatformRetained> viewPlatforms = new ArrayList<ViewPlatfo
 private boolean vpChanged = false;
 private ViewPlatformRetained[] viewPlatformList = new ViewPlatformRetained[0];
 
-    // The list of backgrounds
-    Vector backgrounds = new Vector();
-
-    // The list of clips
-    Vector clips = new Vector();
-
-    // The list of sounds
-    Vector sounds = new Vector();
-
-    // The list of soundscapes
-    Vector soundscapes = new Vector();
-
     // The Behavior Scheduler Thread for this Virtual Universe.
     BehaviorScheduler behaviorScheduler = null;
 
@@ -140,9 +128,6 @@ ArrayList<Integer> viewIdFreeList = new ArrayList<Integer>();
 
     // The number of valid entries in updateObjects
     int updateObjectsLen = 0;
-
-    // A list of all mirror geometry object that are dirty
-    ArrayList dirtyGeomList = new ArrayList();
 
     // The current primary view for this universe
     View currentView;
