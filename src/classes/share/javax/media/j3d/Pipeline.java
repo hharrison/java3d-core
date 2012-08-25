@@ -546,29 +546,6 @@ public Pipeline run() {
     // ---------------------------------------------------------------------
 
     //
-    // J3DBuffer methods
-    //
-
-    // Method to verify that we can access a direct NIO buffer
-    // from native code
-    boolean checkNativeBufferAccess(java.nio.Buffer buffer) {
-        // Return true by default. Pipeline can override and implement, if
-        // we decide that it is necessary.
-        return true;
-    }
-
-    // ---------------------------------------------------------------------
-
-    //
-    // Renderer methods
-    //
-
-    abstract void cleanupRenderer();
-
-
-    // ---------------------------------------------------------------------
-
-    //
     // ColoringAttributesRetained methods
     //
 

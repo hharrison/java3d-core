@@ -3340,17 +3340,6 @@ class JoglPipeline extends Pipeline {
     // ---------------------------------------------------------------------
 
     //
-    // Renderer methods
-    //
-
-    void cleanupRenderer() {
-        // Nothing to do
-    }
-
-
-    // ---------------------------------------------------------------------
-
-    //
     // ColoringAttributesRetained methods
     //
 

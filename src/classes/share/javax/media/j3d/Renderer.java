@@ -1496,11 +1496,10 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
       }
     }
 
-    // resource clean up
-    void shutdown() {
+// resource clean up
+void shutdown() {
 	removeAllCtxs();
-        Pipeline.getPipeline().cleanupRenderer();
-    }
+}
 
     void cleanup() {
 	super.cleanup();

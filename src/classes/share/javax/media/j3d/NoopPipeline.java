@@ -495,16 +495,6 @@ class NoopPipeline extends Pipeline {
     // ---------------------------------------------------------------------
 
     //
-    // Renderer methods
-    //
-
-    void cleanupRenderer() {
-    }
-
-
-    // ---------------------------------------------------------------------
-
-    //
     // ColoringAttributesRetained methods
     //
 
