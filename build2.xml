@@ -11,8 +11,8 @@
   <property name="j3dtools.src.dir"  location="${j3dtools.dir}/src"/>
 
   <property name="vecmath.lib"       location="../vecmath/build/jars/vecmath.jar"/>
-  <property name="jogl.lib"          location="../../jogl-rc8/jogl.all.jar"/>
-  <property name="gluegen.lib"       location="../../jogl-rc8/gluegen.jar"/>
+  <property name="jogl.lib"          location="../../jogl-rc10/jogl-all.jar"/>
+  <property name="gluegen.lib"       location="../../jogl-rc10/gluegen.jar"/>
   
   <property name="version_base"             value="1.6.0"/>
   <property name="build.spec.title"         value="3D Graphics API for the Java Platform"/>
@@ -27,7 +27,7 @@
   <property name="is_dev_phase"             value="true"/>
   <property name="is_production"            value="false"/>
   <property name="use_verbose_buildtime"    value="true"/>
-  <property name="version_buildnum"         value="2"/>
+  <property name="version_buildnum"         value="3"/>
   <property name="version_build"            value="pre${version_buildnum}"/>
   <property name="version_suffix"           value="${version_build}"/>
 
