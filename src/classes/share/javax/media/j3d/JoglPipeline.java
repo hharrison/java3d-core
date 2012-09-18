@@ -60,6 +60,7 @@ import javax.media.nativewindow.CapabilitiesImmutable;
 import javax.media.nativewindow.GraphicsConfigurationFactory;
 import javax.media.nativewindow.NativeWindow;
 import javax.media.nativewindow.NativeWindowFactory;
+import javax.media.nativewindow.VisualIDHolder;
 import javax.media.opengl.DefaultGLCapabilitiesChooser;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -6169,10 +6170,10 @@ class JoglPipeline extends Pipeline {
         }
         if (cv.drawable == null) {
 			AWTGraphicsScreen awtGraphicsScreen = new AWTGraphicsScreen(config.getAwtGraphicsDevice());
-			GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(config.getAwtGraphicsDevice());
+			GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(config.getAwtGraphicsDevice().getClass(), GLCapabilities.class);
 			AWTGraphicsConfiguration awtGraphicsConfiguration = (AWTGraphicsConfiguration)factory.chooseGraphicsConfiguration(config.getGLCapabilities(),
 					config.getGLCapabilities(),
-					indexChooser, awtGraphicsScreen);
+					indexChooser, awtGraphicsScreen, VisualIDHolder.VID_UNDEFINED);
 			NativeWindow nativeWindow = NativeWindowFactory.getNativeWindow(cv, awtGraphicsConfiguration);
 			draw = GLDrawableFactory.getFactory(getDefaultProfile()).createGLDrawable(nativeWindow);
             cv.drawable = new JoglDrawable(draw);
@@ -7864,11 +7865,11 @@ class JoglPipeline extends Pipeline {
         }
 
         AWTGraphicsDevice awtGraphicsDevice = ((JoglGraphicsConfiguration)gconfig).getAwtGraphicsDevice()/*new AWTGraphicsDevice(config.getDevice(), 0)*/;
-        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(awtGraphicsDevice);
+        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(awtGraphicsDevice.getClass(), GLCapabilities.class);
 
         AbstractGraphicsConfiguration absConfig =
                 factory.chooseGraphicsConfiguration(config.getGLCapabilities(), config.getGLCapabilities(),
-                indexChooser, new AWTGraphicsScreen(awtGraphicsDevice));
+                indexChooser, new AWTGraphicsScreen(awtGraphicsDevice), VisualIDHolder.VID_UNDEFINED);
         if (absConfig == null) {
             return null;
         }
@@ -8214,18 +8215,18 @@ class JoglPipeline extends Pipeline {
             GraphicsDevice device) {
         //FIXME unit id?
         AWTGraphicsDevice awtGraphicsDevice = new AWTGraphicsDevice(device, 0);
-        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(awtGraphicsDevice);
+        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(awtGraphicsDevice.getClass(), GLCapabilities.class);
         AWTGraphicsConfiguration awtGraphicsConfiguration = (AWTGraphicsConfiguration) factory.chooseGraphicsConfiguration(capabilities, capabilities,
-        chooser, new AWTGraphicsScreen(awtGraphicsDevice));
+        chooser, new AWTGraphicsScreen(awtGraphicsDevice), VisualIDHolder.VID_UNDEFINED);
         return awtGraphicsConfiguration;
     }
 
     private static AWTGraphicsConfiguration createAwtGraphicsConfiguration(GLCapabilities capabilities,
             CapabilitiesChooser chooser,
             AWTGraphicsDevice awtGraphicsDevice) {
-        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(awtGraphicsDevice);
+        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(awtGraphicsDevice.getClass(), GLCapabilities.class);
         AWTGraphicsConfiguration awtGraphicsConfiguration = (AWTGraphicsConfiguration) factory.chooseGraphicsConfiguration(capabilities, capabilities,
-        chooser, new AWTGraphicsScreen(awtGraphicsDevice));
+        chooser, new AWTGraphicsScreen(awtGraphicsDevice), VisualIDHolder.VID_UNDEFINED);
         return awtGraphicsConfiguration;
     }
 
