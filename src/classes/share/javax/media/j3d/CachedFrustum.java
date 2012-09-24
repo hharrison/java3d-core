@@ -198,7 +198,7 @@ class CachedFrustum {
     }
 
     private void computeVertex( int a, int b, int c, Point3d vert) {
-	double det,x,y,z;
+	double det;
 
 	det = clipPlanes[a].x*clipPlanes[b].y*clipPlanes[c].z + clipPlanes[a].y*clipPlanes[b].z*clipPlanes[c].x +
 	    clipPlanes[a].z*clipPlanes[b].x*clipPlanes[c].y - clipPlanes[a].z*clipPlanes[b].y*clipPlanes[c].x -

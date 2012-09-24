@@ -384,7 +384,6 @@ public class BoundingPolytope extends Bounds {
      */
     public void set(Bounds  boundsObject) {
 	int i,k;
-	double dis;
 
 	// no polytope exists yet so initialize one using the boundsObject
 	if( boundsObject == null )  {
@@ -806,15 +805,15 @@ public class BoundingPolytope extends Bounds {
 	}
 
 	if( boundsObject.boundId == BOUNDING_SPHERE ) {
-	    BoundingSphere sphere = new BoundingSphere((BoundingSphere)boundsObject);
+	    BoundingSphere sphere = new BoundingSphere(boundsObject);
 	    sphere.transform(matrix);
 	    this.set(sphere);
 	} else if( boundsObject.boundId == BOUNDING_BOX){
-	    BoundingBox box = new BoundingBox( (BoundingBox)boundsObject);
+	    BoundingBox box = new BoundingBox(boundsObject);
 	    box.transform(matrix);
 	    this.set(box);
 	} else if(boundsObject.boundId == BOUNDING_POLYTOPE) {
-	    BoundingPolytope polytope = new BoundingPolytope( (BoundingPolytope)boundsObject);
+	    BoundingPolytope polytope = new BoundingPolytope(boundsObject);
 	    polytope.transform(matrix);
 	    this.set(polytope);
 	} else {
@@ -930,7 +929,7 @@ public class BoundingPolytope extends Bounds {
     boolean intersect(Point3d origin, Vector3d direction, Point4d position ) {
 	double t,v0,vd,x,y,z,invMag;
 	double dx, dy, dz;
-	int i,j;
+	int i;
 
 	if( boundsIsEmpty ) {
 	    return false;
@@ -1021,7 +1020,7 @@ public class BoundingPolytope extends Bounds {
      */
     boolean intersect( Point3d start, Point3d end, Point4d position ) {
 	double t,v0,vd,x,y,z;
-	int i,j;
+	int i;
 
 	//System.err.println("line segment intersect : planes.length " + planes.length);
 
@@ -1092,7 +1091,7 @@ public class BoundingPolytope extends Bounds {
 	// compute intersection point of ray and each plane then test if point is in polytope
 
 	double t,v0,vd,x,y,z;
-	int i,j;
+	int i;
 
         if( boundsIsEmpty ) {
 	    return false;
