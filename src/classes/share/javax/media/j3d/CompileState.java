@@ -26,7 +26,6 @@
 
 package javax.media.j3d;
 
-import java.security.AccessControlException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,16 +53,12 @@ import java.util.Vector;
 class CompileState {
 // Appearance mapping stuff:
 private final HashMap<AppearanceRetained, AppearanceRetained> knownAppearances;
-    int	    numAppearances = 0;
-    int	    numShared = 0;
     int numShapes = 0;
 
-    // Shape merging stuff:
-    private final HashMap<AppearanceRetained, Vector<Shape3DRetained>> shapeLists;
+// Shape merging stuff:
+private final HashMap<AppearanceRetained, Vector<Shape3DRetained>> shapeLists;
     int	numMergeSets = 0;
     int	numMergeShapes = 0;
-    boolean compileVerbose = false;
-
 
     static final int BOUNDS_READ		= 0x00001;
     static final int GEOMETRY_READ		= 0x00002;
@@ -96,15 +91,10 @@ private final HashMap<AppearanceRetained, AppearanceRetained> knownAppearances;
     int numOrderedGroups = 0;
     int numMorphs = 0;
 
-    CompileState() {
-	try {
-	    compileVerbose = Boolean.getBoolean("javax.media.j3d.compileVerbose");
-	} catch (AccessControlException e) {
-	    compileVerbose = false;
-	}
+CompileState() {
 	knownAppearances = new HashMap<AppearanceRetained, AppearanceRetained>();
 	shapeLists = new HashMap<AppearanceRetained, Vector<Shape3DRetained>>();
-    }
+}
 
     // Appearance mapping:
 /**
@@ -116,7 +106,6 @@ private final HashMap<AppearanceRetained, AppearanceRetained> knownAppearances;
 AppearanceRetained getAppearance(AppearanceRetained app) {
 	// see if the appearance has allready been classified
 	if (app.map == this && app.mapAppearance != null) {
-		numShared++;
 		return app.mapAppearance;
 	}
 
@@ -125,10 +114,8 @@ AppearanceRetained getAppearance(AppearanceRetained app) {
 	if (retval == null) {
 		// not found, put this appearance in the map
 		knownAppearances.put(app, app);
-		numAppearances++;
 		retval = app;
 	}
-	numShared++;
 
 	// cache this result on the appearance in case it appears again
 	app.map = this;
