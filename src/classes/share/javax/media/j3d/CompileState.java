@@ -27,7 +27,6 @@
 package javax.media.j3d;
 
 import java.security.AccessControlException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -84,15 +83,6 @@ class CompileState {
 
 				// parent group
     GroupRetained parentGroup = null;
-
-				// list of transform group
-				// for the current transform group
-    ArrayList transformGroupChildrenList = null;
-
-				// list of objects that have a static
-				// transform that can be deferenced
-				// after compile
-    ArrayList staticTransformObjects = new ArrayList(1);
 
     int numTransformGroups = 0;
     int numStaticTransformGroups = 0;
