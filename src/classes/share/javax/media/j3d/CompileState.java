@@ -52,8 +52,8 @@ import java.util.Vector;
  */
 
 class CompileState {
-    // Appearance mapping stuff:
-    HashMap knownAppearances = new HashMap();
+// Appearance mapping stuff:
+private final HashMap<AppearanceRetained, AppearanceRetained> knownAppearances;
     int	    numAppearances = 0;
     int	    numShared = 0;
     int numShapes = 0;
@@ -102,44 +102,40 @@ class CompileState {
 	} catch (AccessControlException e) {
 	    compileVerbose = false;
 	}
+	knownAppearances = new HashMap<AppearanceRetained, AppearanceRetained>();
 	shapeLists = new HashMap<AppearanceRetained, Vector<Shape3DRetained>>();
     }
 
     // Appearance mapping:
-    /**
-     * Returns an unique appearance which equals app.  If appearance does not
-     * equal any previously found, the appearance will be added to the known
-     * appearances and be returned.  If the apperance equals a previously known
-     * appearance, then the prevously known apperance will be returned
-     */
-    AppearanceRetained getAppearance(AppearanceRetained app) {
-        AppearanceRetained retval;
+/**
+ * Returns an unique appearance which equals app. If appearance does not equal
+ * any previously found, the appearance will be added to the known appearances
+ * and be returned. If the apperance equals a previously known appearance, then
+ * the prevously known apperance will be returned
+ */
+AppearanceRetained getAppearance(AppearanceRetained app) {
+	// see if the appearance has allready been classified
+	if (app.map == this && app.mapAppearance != null) {
+		numShared++;
+		return app.mapAppearance;
+	}
 
-        // see if the appearance has allready been classified
-        if (app.map == this) {
-            if (app.mapAppearance != null) {
-                numShared++;
-                return app.mapAppearance;
-            }
-        }
+	// check if this appearance equals one one in the Map
+	AppearanceRetained retval = knownAppearances.get(app);
+	if (retval == null) {
+		// not found, put this appearance in the map
+		knownAppearances.put(app, app);
+		numAppearances++;
+		retval = app;
+	}
+	numShared++;
 
-        // check if this appearance equals one one in the Map
-        if ((retval = (AppearanceRetained)knownAppearances.get(app)) != null) {
-            numShared++;
-        } else {
-             // not found, put this appearance in the map
-             knownAppearances.put(app, app);
-             numAppearances++;
-	     numShared++; // sharing with self...
-             retval = app;
-        }
+	// cache this result on the appearance in case it appears again
+	app.map = this;
+	app.mapAppearance = retval;
 
-        // cache this result on the appearance in case it appears again
-        app.map = this;
-        app.mapAppearance = retval;
-
-        return retval;
-    }
+	return retval;
+}
 
     void addShape(Shape3DRetained shape) {
 	if (parentGroup != null) {
