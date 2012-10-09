@@ -59,7 +59,7 @@ class CompileState {
     int numShapes = 0;
 
     // Shape merging stuff:
-    HashMap shapeLists = null; // top entry in shapeListStack
+    private final HashMap<AppearanceRetained, Vector<Shape3DRetained>> shapeLists;
     int	numMergeSets = 0;
     int	numMergeShapes = 0;
     boolean compileVerbose = false;
@@ -102,7 +102,7 @@ class CompileState {
 	} catch (AccessControlException e) {
 	    compileVerbose = false;
 	}
-	initShapeMerge();
+	shapeLists = new HashMap<AppearanceRetained, Vector<Shape3DRetained>>();
     }
 
     // Appearance mapping:
@@ -141,20 +141,14 @@ class CompileState {
         return retval;
     }
 
-    // Shape Merging:
-    private void initShapeMerge() {
-	shapeLists = new HashMap();
-
-    }
-
     void addShape(Shape3DRetained shape) {
 	if (parentGroup != null) {
 	    // sort the shapes into lists with equivalent appearances
-	    Vector list;
-	    if ((list = (Vector)shapeLists.get(shape.appearance)) == null) {
-		list = new Vector();
-		shapeLists.put(shape.appearance, list);
-	    }
+		Vector<Shape3DRetained> list = shapeLists.get(shape.appearance);
+		if (list == null) {
+			list = new Vector<Shape3DRetained>();
+			shapeLists.put(shape.appearance, list);
+		}
 	    // Add the shape to the list only if at its parent level
 	    // no children can be added or removed ..
 	    // Look for the first non-null geometry, there should be atleast
@@ -195,15 +189,15 @@ class CompileState {
 	if (shapeLists != null) {
 	    // loop over the shapes in each list, creating a single shape
 	    // for each.  Add the shape to the group
-	    Collection lists = shapeLists.values();
-	    Iterator listIterator = lists.iterator();
+		Collection<Vector<Shape3DRetained>> lists = shapeLists.values();
+		Iterator<Vector<Shape3DRetained>> listIterator = lists.iterator();
 	    Shape3DRetained mergeShape;
 	    GeometryRetained firstGeo;
 	    int num = 0;
 	    int compileFlags = 0;
 
 	    while (listIterator.hasNext()) {
-		Vector curList = (Vector)listIterator.next();
+			Vector<Shape3DRetained> curList = listIterator.next();
 		int numShapes = curList.size();
 		Shape3DRetained[] shapes = new Shape3DRetained[numShapes];
 		curList.copyInto(shapes);
