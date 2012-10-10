@@ -40,10 +40,9 @@ class Shape3DCompileRetained extends Shape3DRetained {
 
     int numShapes = 0;
 
-    // Each element in the arraylist is an array of geometries for a
-    // particular merged shape
-    ArrayList geometryInfo = null;
-
+// Each element in the arraylist is an array of geometries for a
+// particular merged shape
+ArrayList<ArrayList<Geometry>> geometryInfo = null;
 
     Object[] srcList = null;
 
@@ -86,7 +85,7 @@ class Shape3DCompileRetained extends Shape3DRetained {
 
 
 	if ((compileFlags & CompileState.GEOMETRY_READ) != 0)
-	    geometryInfo = new ArrayList();
+		geometryInfo = new ArrayList<ArrayList<Geometry>>();
 
 	for (i = 0; i < nShapes; i++) {
 	    shape = shapes[i];
@@ -120,19 +119,19 @@ class Shape3DCompileRetained extends Shape3DRetained {
 
 	    }
 
-	    // Point to the geometryList's source, so the
-	    // retained side will be garbage collected
-	    if ((compileFlags & CompileState.GEOMETRY_READ) != 0) {
-		ArrayList sList = new ArrayList();
-		for (j = 0; j < shape.geometryList.size(); j++) {
-		    GeometryRetained g = (GeometryRetained)shape.geometryList.get(j);
-		    if (g != null)
-			sList.add(g.source);
-		    else
-			sList.add(null);
+		// Point to the geometryList's source, so the
+		// retained side will be garbage collected
+		if ((compileFlags & CompileState.GEOMETRY_READ) != 0) {
+			ArrayList<Geometry> sList = new ArrayList<Geometry>();
+			for (j = 0; j < shape.geometryList.size(); j++) {
+				GeometryRetained g = (GeometryRetained)shape.geometryList.get(j);
+				if (g != null)
+					sList.add((Geometry)g.source);
+				else
+					sList.add(null);
+			}
+			geometryInfo.add(sList);
 		}
-		geometryInfo.add(sList);
-	    }
 
 	}
 	// Now, merged the mergelist and separate list based on geoType,
@@ -377,59 +376,51 @@ class Shape3DCompileRetained extends Shape3DRetained {
     }
 
 
-    int numGeometries(int childIndex) {
-	ArrayList geo = (ArrayList) geometryInfo.get(childIndex);
-	return geo.size();
-    }
+int numGeometries(int childIndex) {
+	return geometryInfo.get(childIndex).size();
+}
 
+Geometry getGeometry(int i, int childIndex) {
+	return geometryInfo.get(childIndex).get(i);
+}
 
-    Geometry getGeometry(int i, int childIndex) {
-	ArrayList geoInfo = (ArrayList) geometryInfo.get(childIndex);
-	return (Geometry)geoInfo.get(i);
+Enumeration<Geometry> getAllGeometries(int childIndex) {
+	ArrayList<Geometry> geoInfo = geometryInfo.get(childIndex);
+	Vector<Geometry> geomList = new Vector<Geometry>();
 
-
-    }
-
-    Enumeration getAllGeometries(int childIndex) {
-	ArrayList geoInfo = (ArrayList) geometryInfo.get(childIndex);
-	Vector geomList = new Vector();
-
-	for(int i=0; i<geoInfo.size(); i++) {
-	    geomList.add(geoInfo.get(i));
+	for (int i = 0; i < geoInfo.size(); i++) {
+		geomList.add(geoInfo.get(i));
 	}
 
 	return geomList.elements();
-    }
+}
 
-    Bounds getBounds(int childIndex) {
-        if(boundsAutoCompute) {
-	    ArrayList glist = (ArrayList) geometryInfo.get(childIndex);
+Bounds getBounds(int childIndex) {
+	if (!boundsAutoCompute)
+		return super.getBounds();
 
-	    if(glist != null) {
-		BoundingBox bbox = new BoundingBox((Bounds) null);
-		for(int i=0; i<glist.size(); i++) {
-		    Geometry g = (Geometry) glist.get(i);
-		    if (g != null) {
-			GeometryRetained geometry = (GeometryRetained)g.retained;
-			if (geometry.geoType != GeometryRetained.GEO_TYPE_NONE) {
-			    geometry.computeBoundingBox();
-			    synchronized(geometry.geoBounds) {
-				bbox.combine(geometry.geoBounds);
-			    }
-			}
-		    }
-		}
-
-		return (Bounds) bbox;
-
-	    } else {
+	ArrayList<Geometry> glist = geometryInfo.get(childIndex);
+	if (glist == null)
 		return null;
-            }
 
-        } else {
-            return super.getBounds();
-        }
-    }
+	BoundingBox bbox = new BoundingBox((Bounds)null);
+	for (int i = 0; i < glist.size(); i++) {
+		Geometry g = glist.get(i);
+		if (g == null)
+			continue;
+
+		GeometryRetained geometry = (GeometryRetained)g.retained;
+		if (geometry.geoType == GeometryRetained.GEO_TYPE_NONE)
+			continue;
+
+		geometry.computeBoundingBox();
+		synchronized (geometry.geoBounds) {
+			bbox.combine(geometry.geoBounds);
+		}
+	}
+
+	return bbox;
+}
 
 
     /**
@@ -456,7 +447,7 @@ class Shape3DCompileRetained extends Shape3DRetained {
         Shape3D shape  = (Shape3D) path.getObject();
 	// Get the geometries for this shape only, since the compiled
 	// geomtryList contains several shapes
-	ArrayList glist =  (ArrayList) geometryInfo.get(shape.id);
+	ArrayList<Geometry> glist = geometryInfo.get(shape.id);
 
         // System.err.println("Shape3DCompileRetained.intersect() : ");
         if (dist == null) {
