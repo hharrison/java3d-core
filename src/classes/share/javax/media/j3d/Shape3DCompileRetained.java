@@ -50,7 +50,6 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	int i, j;
 	Shape3DRetained shape;
 	GeometryArrayRetained geo;
-	Vector list;
 	// Merged list, only merged if geometry is mergeable
 	Object[] mergedList = new Object[GeometryRetained.GEO_TYPE_GEOMETRYARRAY+1];
 	// Sorted list of separate geometry by geoType
@@ -58,8 +57,6 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 
 	// Assign the num of shapes
 	numShapes = nShapes;
-
-	Bounds shapeBounds;
 
 	srcList = new Object[nShapes];
 
