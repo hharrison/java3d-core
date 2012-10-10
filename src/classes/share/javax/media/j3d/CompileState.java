@@ -139,7 +139,7 @@ AppearanceRetained getAppearance(AppearanceRetained app) {
 	    GeometryRetained geometry = null;
 	    int i = 0;
 	    while (geometry == null && i < shape.geometryList.size()) {
-		geometry = (GeometryRetained) shape.geometryList.get(i);
+			geometry = shape.geometryList.get(i);
 		i++;
 	    }
 	    if (shape.parent instanceof GroupRetained && ((GroupRetained)shape.parent).isStaticChildren() && geometry.geoType < GeometryArrayRetained.GEO_TYPE_RASTER) {
@@ -193,7 +193,7 @@ AppearanceRetained getAppearance(AppearanceRetained app) {
 		    num = 0;
 		    // Get the first non-null geometry
 		    while (firstGeo == null && num < shapes[i].geometryList.size()) {
-			firstGeo = (GeometryRetained) shapes[i].geometryList.get(num);
+					firstGeo = shapes[i].geometryList.get(num);
 			num++;
 		    }
 
@@ -214,7 +214,7 @@ AppearanceRetained getAppearance(AppearanceRetained app) {
 			    num = 0;
 			    // Get the first non-null geometry
 			    while (firstGeo == null && num < shapes[j].geometryList.size()) {
-				firstGeo = (GeometryRetained) shapes[j].geometryList.get(num);
+							firstGeo = shapes[j].geometryList.get(num);
 				num++;
 			    }
 
@@ -262,11 +262,11 @@ AppearanceRetained getAppearance(AppearanceRetained app) {
 				    System.err.println("Dest is "+ parentGroup);
 				    System.err.println("Compile Shape "+mergeShape);
 				    System.err.println(mergeShape.geometryList.size()+" geoemtryList");
-				    for (int j = 0; j < mergeShape.geometryList.size(); j++) {
-					GeometryRetained geo = ((GeometryRetained)mergeShape.geometryList.get(j));
-					if (geo != null)
-					    System.err.println("\t Geo_type = "+geo.geoType);
-				    }
+								for (int j = 0; j < mergeShape.geometryList.size(); j++) {
+									GeometryRetained geo = mergeShape.geometryList.get(j);
+									if (geo != null)
+										System.err.println("\t Geo_type = " + geo.geoType);
+								}
 
 				    System.err.println(numMerge+" Shapes were merged ");
 				    for (int j = 0; j < numMerge; j++) {

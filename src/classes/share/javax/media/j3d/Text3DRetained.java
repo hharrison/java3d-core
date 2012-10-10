@@ -498,8 +498,7 @@ class Text3DRetained extends GeometryRetained {
 
 			    int geometryCnt = 0;
 			    for(k = 0; k<gSize; k++) {
-				GeometryRetained geomRetained =
-				    (GeometryRetained) s.geometryList.get(k);
+				GeometryRetained geomRetained = s.geometryList.get(k);
 				if(geomRetained != null) {
 				    Text3DRetained tempT3d = (Text3DRetained)geomRetained;
 				    geometryCnt += tempT3d.numChars;
@@ -521,7 +520,7 @@ class Text3DRetained extends GeometryRetained {
 			    int gaCnt=0;
 			    GeometryRetained geometry = null;
 			    for(; gaCnt<gSize; gaCnt++) {
-				geometry = (GeometryRetained) s.geometryList.get(gaCnt);
+				geometry = s.geometryList.get(gaCnt);
 				if(geometry != null) {
 				    newGA.geoType = geometry.geoType;
 				    newGA.alphaEditable = s.isAlphaEditable(geometry);
@@ -530,7 +529,7 @@ class Text3DRetained extends GeometryRetained {
 			    }
 
 			    for(; gaCnt<gSize; gaCnt++) {
-				geometry = (GeometryRetained) s.geometryList.get(gaCnt);
+				geometry = s.geometryList.get(gaCnt);
 				if(geometry == null) {
 				    newGA.geometryArray[gaCnt] = null;
 				}
@@ -660,7 +659,7 @@ class Text3DRetained extends GeometryRetained {
 
 			    // Find the right geometry.
 			    for(sCnt=0; sCnt<s.geometryList.size(); sCnt++) {
-				geomR = (GeometryRetained) s.geometryList.get(sCnt);
+				geomR = s.geometryList.get(sCnt);
 				if(geomR == this) {
 				    break;
 				}

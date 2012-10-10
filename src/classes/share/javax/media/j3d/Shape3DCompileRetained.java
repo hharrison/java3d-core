@@ -116,7 +116,7 @@ Shape3DCompileRetained(Shape3DRetained[] shapes, int nShapes, int compileFlags) 
 		if ((compileFlags & CompileState.GEOMETRY_READ) != 0) {
 			ArrayList<Geometry> sList = new ArrayList<Geometry>();
 			for (j = 0; j < shape.geometryList.size(); j++) {
-				GeometryRetained g = (GeometryRetained)shape.geometryList.get(j);
+				GeometryRetained g = shape.geometryList.get(j);
 				if (g != null)
 					sList.add((Geometry)g.source);
 				else

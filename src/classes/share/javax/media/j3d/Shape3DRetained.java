@@ -55,10 +55,10 @@ class Shape3DRetained extends LeafRetained {
      */
     AppearanceRetained appearance = null;
 
-    /**
-     * The arraylist of geometry component of the shape node.
-     */
-    ArrayList geometryList = null;
+/**
+ * The arraylist of geometry component of the shape node.
+ */
+ArrayList<GeometryRetained> geometryList = null;
 
     /**
      * A 2D storage of all geometry atoms associated with this shape node.
@@ -189,7 +189,7 @@ class Shape3DRetained extends LeafRetained {
 	localBounds = new BoundingBox((BoundingBox) null);
 
 	mirrorShape3DLock = new MRSWLock();
-	geometryList = new ArrayList(1);
+	geometryList = new ArrayList<GeometryRetained>(1);
 	geometryList.add(null);
     }
 
@@ -329,7 +329,7 @@ class Shape3DRetained extends LeafRetained {
 
 	if (((Shape3D)this.source).isLive()) {
 
-	    oldGeom = (GeometryRetained) (geometryList.get(index));
+	    oldGeom = geometryList.get(index);
 	    if (oldGeom != null) {
 		oldGeom.clearLive(refCount);
 		for (i=0; i<mirrorShape3D.size(); i++) {
@@ -352,7 +352,7 @@ class Shape3DRetained extends LeafRetained {
 
         } else {
 
-	    oldGeom = (GeometryRetained) (geometryList.get(index));
+	    oldGeom = geometryList.get(index);
 	    if (oldGeom != null) {
 		oldGeom.decRefCnt();
 	    }
@@ -425,7 +425,7 @@ class Shape3DRetained extends LeafRetained {
 
 	if (((Shape3D)this.source).isLive()) {
 
-	    oldGeom = (GeometryRetained) (geometryList.get(index));
+	    oldGeom = geometryList.get(index);
 	    if (oldGeom != null) {
 		oldGeom.clearLive(refCount);
 		oldGeom.decRefCnt();
@@ -440,7 +440,7 @@ class Shape3DRetained extends LeafRetained {
 	    sendDataChangedMessage(null);
 
 	} else {
-	    oldGeom = (GeometryRetained) (geometryList.get(index));
+	    oldGeom = geometryList.get(index);
 	    if (oldGeom != null) {
 		oldGeom.decRefCnt();
 	    }
@@ -451,17 +451,18 @@ class Shape3DRetained extends LeafRetained {
 
     }
 
-    /**
-     * Retrieves the geometry component of this Shape3D node.
-     * @return the geometry component of this shape node
-     *
-     * @since Java 3D 1.2
-     */
-    Geometry getGeometry(int index, int id) {
-	GeometryRetained ga = (GeometryRetained) geometryList.get(index);
-        return (ga == null ? null : (Geometry)ga.source);
-    }
-
+/**
+ * Retrieves the geometry component of this Shape3D node.
+ * @return the geometry component of this shape node
+ * @since Java 3D 1.2
+ */
+Geometry getGeometry(int index, int id) {
+	GeometryRetained ga = geometryList.get(index);
+	if (ga == null)
+		return null;
+	else
+		return (Geometry)ga.source;
+}
 
     /**
      * Returns an enumeration of this Shape3D node's list of geometry
@@ -471,20 +472,19 @@ class Shape3DRetained extends LeafRetained {
      *
      * @since Java 3D 1.2
      */
-    Enumeration getAllGeometries(int id) {
-	GeometryRetained ga = null;
-	Vector geomList = new Vector(geometryList.size());
+Enumeration getAllGeometries(int id) {
+	Vector<Geometry> geomList = new Vector<Geometry>(geometryList.size());
 
-	for(int i=0; i<geometryList.size(); i++) {
-	    ga = (GeometryRetained) geometryList.get(i);
-	    if(ga != null)
-		geomList.add((Geometry)ga.source);
-	    else
-		geomList.add(null);
+	for (int i = 0; i < geometryList.size(); i++) {
+		GeometryRetained ga = geometryList.get(i);
+		if (ga != null)
+			geomList.add((Geometry) ga.source);
+		else
+			geomList.add(null);
 	}
 
 	return geomList.elements();
-    }
+}
 
     /**
      * Returns the number of geometry components in this Shape3D node's
@@ -654,7 +654,7 @@ class Shape3DRetained extends LeafRetained {
                 ((flags & PickInfo.ALL_GEOM_INFO) == 0)) {
 
             for (int i=0; i < geomListSize; i++) {
-                geometry =  (GeometryRetained) geometryList.get(i);
+                geometry = geometryList.get(i);
                 if (geometry != null) {
                     if (geometry.mirrorGeometry != null) {
                         geometry = geometry.mirrorGeometry;
@@ -672,7 +672,7 @@ class Shape3DRetained extends LeafRetained {
             Point3d iPntVW = new Point3d();
 
             for (int i=0; i < geomListSize; i++) {
-                geometry =  (GeometryRetained) geometryList.get(i);
+                geometry = geometryList.get(i);
                 if (geometry != null) {
                     if (geometry.mirrorGeometry != null) {
                         geometry = geometry.mirrorGeometry;
@@ -858,7 +858,7 @@ class Shape3DRetained extends LeafRetained {
 		BoundingBox bbox = new BoundingBox((Bounds) null);
 		GeometryRetained geometry;
 		for(int i=0; i<geometryList.size(); i++) {
-		    geometry = (GeometryRetained) geometryList.get(i);
+		    geometry = geometryList.get(i);
 		    if ((geometry != null) &&
 			(geometry.geoType != GeometryRetained.GEO_TYPE_NONE)) {
 			geometry.computeBoundingBox();
@@ -905,7 +905,7 @@ class Shape3DRetained extends LeafRetained {
 
                 if (!VirtualUniverse.mc.cacheAutoComputedBounds) {
                     for(int i=0; i<geometryList.size(); i++) {
-                        geometry = (GeometryRetained) geometryList.get(i);
+                        geometry = geometryList.get(i);
                         if ((geometry != null) &&
                                 (geometry.geoType != GeometryRetained.GEO_TYPE_NONE)) {
                             geometry.computeBoundingBox();
@@ -928,7 +928,7 @@ class Shape3DRetained extends LeafRetained {
                         cachedBounds = new BoundingBox((BoundingBox) null);
 
                         for(int i=0; i<geometryList.size(); i++) {
-                            geometry = (GeometryRetained) geometryList.get(i);
+                            geometry = geometryList.get(i);
                             if ((geometry != null) &&
                                     (geometry.geoType != GeometryRetained.GEO_TYPE_NONE)) {
                                 geometry.computeBoundingBox();
@@ -1152,7 +1152,7 @@ class Shape3DRetained extends LeafRetained {
 
 	    if (geometryList != null) {
 		for(gaCnt=0; gaCnt<geometryList.size(); gaCnt++) {
-		    geometry = (GeometryRetained) geometryList.get(gaCnt);
+		    geometry = geometryList.get(gaCnt);
 		    if(geometry != null) {
 			synchronized(geometry.liveStateLock) {
 			    if (k == 0) { // Do only first time
@@ -1332,7 +1332,7 @@ class Shape3DRetained extends LeafRetained {
 	    }
 	    if (geometryList != null) {
 		for(gaCnt=0; gaCnt<geometryList.size(); gaCnt++) {
-		    geometry = (GeometryRetained) geometryList.get(gaCnt);
+		    geometry = geometryList.get(gaCnt);
 		    if(geometry != null) {
 			synchronized(geometry.liveStateLock) {
 			    if (k == 0) {
@@ -1413,7 +1413,7 @@ class Shape3DRetained extends LeafRetained {
 	boolean alphaEditable;
 
 	for (int i=0; i<geometryList.size(); i++) {
-	    geo = (GeometryRetained) geometryList.get(i);
+	    geo = geometryList.get(i);
 	    if (geo != null) {
 		if (geo.refCnt > 1) {
 		    return false;
@@ -1475,7 +1475,7 @@ class Shape3DRetained extends LeafRetained {
 	}
 
 	for (int i = 0; i < geometryList.size(); i++) {
-	    GeometryRetained geo = (GeometryRetained)geometryList.get(i);
+	    GeometryRetained geo = geometryList.get(i);
 	    if (geo != null)
 		geo.compile(compState);
 	}
@@ -1528,7 +1528,7 @@ class Shape3DRetained extends LeafRetained {
 
 	// Get the first geometry that is non-null
 	while (geometry == null && index < geometryList.size()) {
-	    geometry = (GeometryRetained) geometryList.get(index);
+	    geometry = geometryList.get(index);
 	    index++;
 	}
 
@@ -1539,7 +1539,7 @@ class Shape3DRetained extends LeafRetained {
 	GeometryArrayRetained firstGeo = (GeometryArrayRetained) geometry;
 
 	for(i=index; (i<geometryList.size() && mergeable); i++) {
-	    geometry = (GeometryRetained) geometryList.get(i);
+	    geometry = geometryList.get(i);
 	    if (geometry != null) {
 		GeometryArrayRetained geo = (GeometryArrayRetained)geometry;
 
@@ -1825,7 +1825,7 @@ class Shape3DRetained extends LeafRetained {
 	int gSize = geometryList.size();
 
 	for(i=0; i<gSize; i++) {
-	    geometry = (GeometryRetained) geometryList.get(i);
+	    geometry = geometryList.get(i);
 	    if(geometry != null) {
 		newGA.geoType = geometry.geoType;
 		newGA.alphaEditable = mS3d.isAlphaEditable(geometry);
@@ -1837,7 +1837,7 @@ class Shape3DRetained extends LeafRetained {
 	   (geometry.geoType == GeometryRetained.GEO_TYPE_TEXT3D)) {
 
 	    for(i = 0; i<gSize; i++) {
-		geometry = (GeometryRetained) geometryList.get(i);
+		geometry = geometryList.get(i);
 		if(geometry != null) {
 		    Text3DRetained tempT3d = (Text3DRetained)geometry;
 		    geometryCnt += tempT3d.numChars;
@@ -1863,7 +1863,7 @@ class Shape3DRetained extends LeafRetained {
 
 
 	for(gaCnt = 0; gaCnt<gSize; gaCnt++) {
-	    geometry = (GeometryRetained) geometryList.get(gaCnt);
+	    geometry = geometryList.get(gaCnt);
 	    if(geometry == null) {
 		newGA.geometryArray[geometryCnt++] = null;
 	    }
@@ -2018,7 +2018,7 @@ class Shape3DRetained extends LeafRetained {
 		if (source.isLive() && geometryList != null) {
 		    int size = geometryList.size()*mirrorShape3D.size();
 		    for (int i=0; i<size; i++) {
-			geometry = (GeometryRetained) geometryList.get(i);
+			geometry = geometryList.get(i);
 			geometry.incrComputeGeoBounds();
 		    }
 		}
@@ -2029,7 +2029,7 @@ class Shape3DRetained extends LeafRetained {
 		if (source.isLive() && geometryList != null) {
 		    int size = geometryList.size()*mirrorShape3D.size();
 		    for (int i=0; i<size; i++) {
-			geometry = (GeometryRetained) geometryList.get(i);
+			geometry = geometryList.get(i);
 			geometry.decrComputeGeoBounds();
 		    }
 
@@ -2076,7 +2076,7 @@ class Shape3DRetained extends LeafRetained {
 	GeometryRetained ga = null;
 
 	for(int i=0; i<geometryList.size(); i++) {
-	    ga = (GeometryRetained) geometryList.get(i);
+	    ga = geometryList.get(i);
 	    if(ga != null)
 		if (!ga.source.getCapability(Geometry.ALLOW_INTERSECT)) {
 		    return false;
@@ -2086,7 +2086,7 @@ class Shape3DRetained extends LeafRetained {
     }
     boolean intersectGeometryList(Shape3DRetained otherShape) {
 	GeometryRetained geom1, geom2;
-	ArrayList gaList = otherShape.geometryList;
+	ArrayList<GeometryRetained> gaList = otherShape.geometryList;
 	int gaSize =  gaList.size();
 	Transform3D otherLocalToVworld = otherShape.getCurrentLocalToVworld();
 	Transform3D thisLocalToVworld = getCurrentLocalToVworld();
@@ -2108,10 +2108,10 @@ class Shape3DRetained extends LeafRetained {
 	}
 
 	for (int i=geometryList.size()-1; i >=0; i--) {
-	    geom1 = (GeometryRetained) geometryList.get(i);
+	    geom1 = geometryList.get(i);
 	    if (geom1 != null) {
 		for (int j=gaSize-1; j >=0; j--) {
-		    geom2 = (GeometryRetained) gaList.get(j);
+		    geom2 = gaList.get(j);
 		    if ((geom2 != null) &&
 			geom1.intersect(thisLocalToVworld,
 					otherLocalToVworld, geom2)) {
@@ -2136,7 +2136,7 @@ class Shape3DRetained extends LeafRetained {
 	}
 
 	for (int i=geometryList.size() - 1; i >=0; i--) {
-	    geometry = (GeometryRetained) geometryList.get(i);
+	    geometry = geometryList.get(i);
 	    if ((geometry != null) &&
 		geometry.intersect(thisLocalToVworld, targetBound)) {
 		return true;
@@ -2190,7 +2190,7 @@ class Shape3DRetained extends LeafRetained {
 	appearanceOverrideEnable = morph.appearanceOverrideEnable;
 
 	// mga is the final geometry we're interested.
-	geometryList = new ArrayList(1);
+	geometryList = new ArrayList<GeometryRetained>(1);
 	geometryList.add((GeometryArrayRetained)morph.morphedGeometryArray.retained);
 
 	GeometryAtom gAtom = new GeometryAtom();
@@ -2200,7 +2200,7 @@ class Shape3DRetained extends LeafRetained {
 	gAtom.visible = morph.visible;
 	gAtom.source = this;
 
-	geometry = (GeometryRetained) geometryList.get(0);
+	geometry = geometryList.get(0);
 
 	if(geometry ==null) {
 	    gAtom.geometryArray[0] = null;
@@ -2233,7 +2233,7 @@ class Shape3DRetained extends LeafRetained {
 
 	    oldGA = Shape3DRetained.getGeomAtom(ms);
 
-            ms.geometryList = new ArrayList(1);
+            ms.geometryList = new ArrayList<GeometryRetained>(1);
             ms.geometryList.add((GeometryArrayRetained)geometry.retained);
 
             newGA = new GeometryAtom();
@@ -2496,7 +2496,7 @@ final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userL
                 bounds.setLower( 1.0, 1.0, 1.0);
                 bounds.setUpper(-1.0,-1.0,-1.0);
                 for(int i=0; i<geometryList.size(); i++) {
-                    geometry = (GeometryRetained) geometryList.get(i);
+                    geometry = geometryList.get(i);
                     if ((geometry != null) &&
                         (geometry.geoType != GeometryRetained.GEO_TYPE_NONE)) {
                         synchronized(geometry.geoBounds) {
@@ -2602,7 +2602,7 @@ final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userL
 	}
 	GeometryAtom gAtom = new GeometryAtom();
 	for(gaCnt=0; gaCnt<gSize; gaCnt++) {
-	    geometry = (GeometryRetained) geometryList.get(gaCnt);
+	    geometry = geometryList.get(gaCnt);
 	    if(geometry != null) {
 		gAtom.geoType = geometry.geoType;
 		gAtom.alphaEditable = ms.isAlphaEditable(geometry);
@@ -2613,7 +2613,7 @@ final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userL
 	   (geometry.geoType == GeometryRetained.GEO_TYPE_TEXT3D)) {
 
 	    for(gaCnt = 0; gaCnt<gSize; gaCnt++) {
-		geometry = (GeometryRetained) geometryList.get(gaCnt);
+		geometry = geometryList.get(gaCnt);
 		if(geometry != null) {
 		    Text3DRetained tempT3d = (Text3DRetained)geometry;
 		    geometryCnt += tempT3d.numChars;
@@ -2635,7 +2635,7 @@ final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userL
 
 
 	for(gaCnt = 0; gaCnt<geometryList.size(); gaCnt++) {
-	    geometry = (GeometryRetained) geometryList.get(gaCnt);
+	    geometry = geometryList.get(gaCnt);
 	    if(geometry == null) {
 		gAtom.geometryArray[gaCnt] = null;
 	    }
@@ -2672,7 +2672,7 @@ final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userL
 
 	if (geometry != null) {
 	    for (int i=geometryList.size()-1; i >= 0; i--) {
-		GeometryRetained geomRetained = (GeometryRetained) geometryList.get(i);
+		GeometryRetained geomRetained = geometryList.get(i);
 		if ((geomRetained != null) &&
 		    (index != i)) { // this geometry will replace
 		    // current one so there is no need to check
@@ -2710,7 +2710,7 @@ final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userL
 
       if (((Shape3D)this.source).isLive()) {
 	for(int index = n-1; index >= 0; index--) {
-	  oldGeom = (GeometryRetained) (geometryList.get(index));
+	  oldGeom = geometryList.get(index);
 	  if (oldGeom != null) {
 	    oldGeom.clearLive(refCount);
 	    oldGeom.decRefCnt();
@@ -2724,7 +2724,7 @@ final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userL
 	sendDataChangedMessage(null);
       } else {
 	for(int index = n-1; index >= 0; index--) {
-	  oldGeom = (GeometryRetained) (geometryList.get(index));
+	  oldGeom = geometryList.get(index);
 	  if (oldGeom != null) {
 	    oldGeom.decRefCnt();
 	  }

@@ -634,7 +634,7 @@ public class PickInfo extends Object {
                 Shape3DRetained s3dR = (Shape3DRetained) srcNode;
                 GeometryRetained geomR = null;
                 for(int cnt=0; cnt<s3dR.geometryList.size(); cnt++) {
-                    geomR = (GeometryRetained) s3dR.geometryList.get(cnt);
+				geomR = s3dR.geometryList.get(cnt);
                     if(geomR != null)
                         break;
                 }
