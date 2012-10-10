@@ -51,9 +51,9 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	Shape3DRetained shape;
 	GeometryArrayRetained geo;
 	// Merged list, only merged if geometry is mergeable
-	Object[] mergedList = new Object[GeometryRetained.GEO_TYPE_GEOMETRYARRAY+1];
+	ArrayList<GeometryArrayRetained>[] mergedList = new ArrayList[GeometryRetained.GEO_TYPE_GEOMETRYARRAY + 1];
 	// Sorted list of separate geometry by geoType
-	Object[] separateList = new Object[GeometryRetained.GEO_TYPE_GEOMETRYARRAY+1];
+	ArrayList<GeometryArrayRetained>[] separateList = new ArrayList[GeometryRetained.GEO_TYPE_GEOMETRYARRAY + 1];
 
 	// Assign the num of shapes
 	numShapes = nShapes;
@@ -100,17 +100,17 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 		if (geo != null) {
 		    if (shape.willRemainOpaque(geo.geoType) && geo.isMergeable()) {
 			if (mergedList[geo.geoType] == null) {
-			    mergedList[geo.geoType] = new ArrayList();
+			    mergedList[geo.geoType] = new ArrayList<GeometryArrayRetained>();
 			}
-			((ArrayList)mergedList[geo.geoType]).add(geo);
+			mergedList[geo.geoType].add(geo);
 		    }
 		    else {
 			// Keep a sorted list based on geoType;
 			if (separateList[geo.geoType] == null) {
-			    separateList[geo.geoType] = new ArrayList();
+			    separateList[geo.geoType] = new ArrayList<GeometryArrayRetained>();
 			}
 			// add it to the geometryList separately
-			((ArrayList)separateList[geo.geoType]).add(geo);
+			separateList[geo.geoType].add(geo);
 		    }
 		}
 
@@ -135,18 +135,18 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	// this enables dlist optmization
 	for (i = 1; i <= GeometryRetained.GEO_TYPE_GEOMETRYARRAY;  i++) {
 	    GeometryArrayRetained cgeo = null;
-	    ArrayList curList;
+		ArrayList<GeometryArrayRetained> curList;
 	    switch (i) {
 	    case GeometryArrayRetained.GEO_TYPE_QUAD_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new QuadArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -156,13 +156,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_TRI_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new TriangleArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -172,13 +172,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_POINT_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new PointArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -188,13 +188,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_LINE_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new LineArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -204,13 +204,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_TRI_STRIP_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new TriangleStripArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -220,13 +220,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_TRI_FAN_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new TriangleFanArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -236,13 +236,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_LINE_STRIP_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new LineStripArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -252,13 +252,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_INDEXED_QUAD_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new IndexedQuadArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -268,13 +268,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_INDEXED_TRI_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new IndexedTriangleArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -284,13 +284,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_INDEXED_POINT_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new IndexedPointArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -300,13 +300,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_INDEXED_LINE_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new IndexedLineArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -316,13 +316,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new IndexedTriangleStripArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -332,13 +332,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_INDEXED_TRI_FAN_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new IndexedTriangleFanArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
@@ -348,13 +348,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    case GeometryArrayRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET:
 		if (mergedList[i] != null) {
 		    cgeo = new IndexedLineStripArrayRetained();
-		    curList = (ArrayList)mergedList[i];
+		    curList = mergedList[i];
 		    cgeo.setCompiled(curList);
 		    geometryList.add(cgeo);
 		    cgeo.setSource(((SceneGraphObjectRetained)curList.get(0)).source);
 		}
 		if (separateList[i] != null) {
-		    ArrayList glist = (ArrayList)separateList[i];
+		    ArrayList<GeometryArrayRetained> glist = separateList[i];
 		    for (int k = 0; k < glist.size(); k++) {
 			geometryList.add(glist.get(k));
 		    }
