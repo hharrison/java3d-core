@@ -48,8 +48,6 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 
     Shape3DCompileRetained(Shape3DRetained[] shapes, int nShapes, int compileFlags) {
 	int i, j;
-	Shape3DRetained shape;
-	GeometryArrayRetained geo;
 	// Merged list, only merged if geometry is mergeable
 	ArrayList<GeometryArrayRetained>[] mergedList = new ArrayList[GeometryRetained.GEO_TYPE_GEOMETRYARRAY + 1];
 	// Sorted list of separate geometry by geoType
@@ -85,7 +83,7 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 		geometryInfo = new ArrayList<ArrayList<Geometry>>();
 
 	for (i = 0; i < nShapes; i++) {
-	    shape = shapes[i];
+	    Shape3DRetained shape = shapes[i];
 	    ((Shape3D)shape.source).id = i;
 	    shape.source.retained = this;
 	    srcList[i] = shape.source;
@@ -95,26 +93,26 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	    // Put it in a separate list sorted by geo_type
 	    // Have to handle shape.isPickable
 
-	    for (j = 0; j < shape.geometryList.size(); j++) {
-		geo = (GeometryArrayRetained)shape.geometryList.get(j);
-		if (geo != null) {
-		    if (shape.willRemainOpaque(geo.geoType) && geo.isMergeable()) {
-			if (mergedList[geo.geoType] == null) {
-			    mergedList[geo.geoType] = new ArrayList<GeometryArrayRetained>();
-			}
-			mergedList[geo.geoType].add(geo);
-		    }
-		    else {
-			// Keep a sorted list based on geoType;
-			if (separateList[geo.geoType] == null) {
-			    separateList[geo.geoType] = new ArrayList<GeometryArrayRetained>();
-			}
-			// add it to the geometryList separately
-			separateList[geo.geoType].add(geo);
-		    }
-		}
+		for (j = 0; j < shape.geometryList.size(); j++) {
+			GeometryArrayRetained geo = (GeometryArrayRetained)shape.geometryList.get(j);
+			if (geo == null)
+				continue;
 
-	    }
+			if (shape.willRemainOpaque(geo.geoType) && geo.isMergeable()) {
+				if (mergedList[geo.geoType] == null) {
+					mergedList[geo.geoType] = new ArrayList<GeometryArrayRetained>();
+				}
+				mergedList[geo.geoType].add(geo);
+			}
+			else {
+				// Keep a sorted list based on geoType;
+				if (separateList[geo.geoType] == null) {
+					separateList[geo.geoType] = new ArrayList<GeometryArrayRetained>();
+				}
+				// add it to the geometryList separately
+				separateList[geo.geoType].add(geo);
+			}
+		}
 
 		// Point to the geometryList's source, so the
 		// retained side will be garbage collected
