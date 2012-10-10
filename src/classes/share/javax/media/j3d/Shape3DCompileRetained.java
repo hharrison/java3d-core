@@ -65,7 +65,6 @@ Shape3DCompileRetained(Shape3DRetained[] shapes, int nShapes, int compileFlags) 
 
 	// Remove the null that was added by Shape3DRetained constructor
 	geometryList.remove(0);
-	int geoIndex = 0;
 
 	// Assign the fields for this compile shape
 	boundsAutoCompute = shapes[0].boundsAutoCompute;
@@ -316,8 +315,8 @@ Bounds getBounds(int childIndex) {
 
       }
 
-      boolean intersect(PickInfo pickInfo, PickShape pickShape, int flags,
-              ArrayList geometryList) {
+boolean intersect(PickInfo pickInfo, PickShape pickShape, int flags,
+		ArrayList<Geometry> geometryList) {
 
         Transform3D localToVworld = pickInfo.getLocalToVWorldRef();
 
@@ -327,14 +326,13 @@ Bounds getBounds(int childIndex) {
 
 	int geomListSize = geometryList.size();
 	GeometryRetained geometry;
-
         if (((flags & PickInfo.CLOSEST_INTERSECTION_POINT) == 0) &&
             ((flags & PickInfo.CLOSEST_DISTANCE) == 0) &&
             ((flags & PickInfo.CLOSEST_GEOM_INFO) == 0) &&
             ((flags & PickInfo.ALL_GEOM_INFO) == 0)) {
 
 	    for (int i=0; i < geomListSize; i++) {
-		geometry =  (GeometryRetained) geometryList.get(i);
+		geometry =  (GeometryRetained) geometryList.get(i).retained;
 		if (geometry != null) {
 		    if (geometry.mirrorGeometry != null) {
 			geometry = geometry.mirrorGeometry;
@@ -355,7 +353,7 @@ Bounds getBounds(int childIndex) {
             Point3d iPntVW = new Point3d();
 
 	    for (int i=0; i < geomListSize; i++) {
-		geometry =  (GeometryRetained) geometryList.get(i);
+		geometry =  (GeometryRetained) geometryList.get(i).retained;
 		if (geometry != null) {
 		    if (geometry.mirrorGeometry != null) {
 			geometry = geometry.mirrorGeometry;
