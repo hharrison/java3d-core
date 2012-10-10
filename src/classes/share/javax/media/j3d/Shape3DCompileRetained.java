@@ -46,7 +46,7 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 
     Object[] srcList = null;
 
-    Shape3DCompileRetained(Shape3DRetained[] shapes, int nShapes, int compileFlags) {
+Shape3DCompileRetained(Shape3DRetained[] shapes, int nShapes, int compileFlags) {
 	int i, j;
 	// Merged list, only merged if geometry is mergeable
 	ArrayList<GeometryArrayRetained>[] mergedList = new ArrayList[GeometryRetained.GEO_TYPE_GEOMETRYARRAY + 1];
@@ -59,15 +59,13 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	srcList = new Object[nShapes];
 
 	if (nShapes > 0) {
-	    boundsAutoCompute = shapes[0].boundsAutoCompute;
-	    source = shapes[0].source;
+		boundsAutoCompute = shapes[0].boundsAutoCompute;
+		source = shapes[0].source;
 	}
 
 	// Remove the null that was added by Shape3DRetained constructor
 	geometryList.remove(0);
 	int geoIndex = 0;
-
-
 
 	// Assign the fields for this compile shape
 	boundsAutoCompute = shapes[0].boundsAutoCompute;
@@ -78,20 +76,19 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 	collisionBound = shapes[0].collisionBound;
 	localBounds = shapes[0].localBounds;
 
-
 	if ((compileFlags & CompileState.GEOMETRY_READ) != 0)
 		geometryInfo = new ArrayList<ArrayList<Geometry>>();
 
 	for (i = 0; i < nShapes; i++) {
-	    Shape3DRetained shape = shapes[i];
-	    ((Shape3D)shape.source).id = i;
-	    shape.source.retained = this;
-	    srcList[i] = shape.source;
-	    // If the transform has been pushd down
-	    // to the shape, don't merge its geometry with other shapes
-	    // geometry
-	    // Put it in a separate list sorted by geo_type
-	    // Have to handle shape.isPickable
+		Shape3DRetained shape = shapes[i];
+		((Shape3D)shape.source).id = i;
+		shape.source.retained = this;
+		srcList[i] = shape.source;
+		// If the transform has been pushd down
+		// to the shape, don't merge its geometry with other shapes
+		// geometry
+		// Put it in a separate list sorted by geo_type
+		// Have to handle shape.isPickable
 
 		for (j = 0; j < shape.geometryList.size(); j++) {
 			GeometryArrayRetained geo = (GeometryArrayRetained)shape.geometryList.get(j);
@@ -127,87 +124,88 @@ ArrayList<ArrayList<Geometry>> geometryInfo = null;
 			}
 			geometryInfo.add(sList);
 		}
-
 	}
+
 	// Now, merged the mergelist and separate list based on geoType,
 	// this enables dlist optmization
-	for (i = 1; i <= GeometryRetained.GEO_TYPE_GEOMETRYARRAY;  i++) {
-	    switch (i) {
-	    case GeometryArrayRetained.GEO_TYPE_QUAD_SET:
+	for (i = 1; i <= GeometryRetained.GEO_TYPE_GEOMETRYARRAY; i++) {
+		switch (i) {
+		case GeometryArrayRetained.GEO_TYPE_QUAD_SET:
 			if (mergedList[i] != null)
 				addMergedList(mergedList[i], new QuadArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_TRI_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_TRI_SET:
 			if (mergedList[i] != null)
 				addMergedList(mergedList[i], new TriangleArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_POINT_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_POINT_SET:
 			if (mergedList[i] != null)
 				addMergedList(mergedList[i], new PointArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_LINE_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_LINE_SET:
 			if (mergedList[i] != null)
 				addMergedList(mergedList[i], new LineArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_TRI_STRIP_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_TRI_STRIP_SET:
 			if (mergedList[i] != null)
 				addMergedList(mergedList[i], new TriangleStripArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_TRI_FAN_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_TRI_FAN_SET:
 			if (mergedList[i] != null)
 				addMergedList(mergedList[i], new TriangleFanArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_LINE_STRIP_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_LINE_STRIP_SET:
 			if (mergedList[i] != null)
 				addMergedList(mergedList[i], new LineStripArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_INDEXED_QUAD_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_INDEXED_QUAD_SET:
 			if (mergedList[i] != null)
 				addMergedList(mergedList[i], new IndexedQuadArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_INDEXED_TRI_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_INDEXED_TRI_SET:
 			if (mergedList[i] != null)
 				addMergedList(mergedList[i], new IndexedTriangleArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_INDEXED_POINT_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_INDEXED_POINT_SET:
 			if (mergedList[i] != null)
 				addMergedList(mergedList[i], new IndexedPointArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_INDEXED_LINE_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_INDEXED_LINE_SET:
 			if (mergedList[i] != null)
 				addMergedList(mergedList[i], new IndexedLineArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_INDEXED_TRI_STRIP_SET:
 			if (mergedList[i] != null)
-				addMergedList(mergedList[i], new IndexedTriangleStripArrayRetained());
+				addMergedList(mergedList[i],
+						new IndexedTriangleStripArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_INDEXED_TRI_FAN_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_INDEXED_TRI_FAN_SET:
 			if (mergedList[i] != null)
-				addMergedList(mergedList[i], new IndexedTriangleFanArrayRetained());
+				addMergedList(mergedList[i],
+						new IndexedTriangleFanArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    case GeometryArrayRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET:
+			break;
+		case GeometryArrayRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET:
 			if (mergedList[i] != null)
-				addMergedList(mergedList[i], new IndexedLineStripArrayRetained());
+				addMergedList(mergedList[i],
+						new IndexedLineStripArrayRetained());
 			addSeparateList(separateList[i]);
-		break;
-	    }
+			break;
+		}
 	}
-
-
-    }
+}
 
 private void addMergedList(ArrayList<GeometryArrayRetained> glist,
                            GeometryArrayRetained cgeo) {
