@@ -272,20 +272,12 @@ class TexCoordGenerationRetained extends NodeComponentRetained {
 
     void updateNative(Canvas3D cv) {
 	int gMode = genMode;
-	Transform3D trans = null;
 	Transform3D m = cv.vworldToEc;
 
 	if (((cv.textureExtendedFeatures & Canvas3D.TEXTURE_CUBE_MAP) == 0) &&
 	    ((genMode == TexCoordGeneration.NORMAL_MAP) ||
 	    (genMode == TexCoordGeneration.REFLECTION_MAP))) {
 	    gMode = TexCoordGeneration.SPHERE_MAP;
-	}
-
-	if (VirtualUniverse.mc.isD3D() &&
-	    (gMode == TexCoordGeneration.EYE_LINEAR)) {
-	    trans = new Transform3D(cv.vworldToEc);
-	    trans.invert();
-	    m = trans;
 	}
 
 	Pipeline.getPipeline().updateTexCoordGeneration(cv.ctx,

@@ -2395,43 +2395,36 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 
 
     boolean isOpaque() {
-	if (!VirtualUniverse.mc.isD3D()) {
-	    // D3D doesn't support line/point antialiasing
-	    if ((geometryType & SURFACE) != 0) {
-		if (definingPolygonAttributes != null) {
-		    if ((definingPolygonAttributes.polygonMode ==
-			 PolygonAttributes.POLYGON_POINT) &&
-			(definingPointAttributes != null) &&
-			definingPointAttributes.pointAntialiasing) {
-			return false;
-		    } else if ((definingPolygonAttributes.polygonMode ==
-				PolygonAttributes.POLYGON_LINE) &&
-			       (definingLineAttributes != null) &&
-			       definingLineAttributes.lineAntialiasing) {
-			return false;
-		    }
-		}
-            } else if ((geometryType & POINT) != 0) {
-		if ((definingPointAttributes != null) &&
-		    definingPointAttributes.pointAntialiasing) {
-		    return false;
-		}
-	    } else if ((geometryType & LINE) != 0) {
-		if ((definingLineAttributes != null) &&
-		    definingLineAttributes.lineAntialiasing) {
-		    return false;
-		}
+    if ((geometryType & SURFACE) != 0) {
+	if (definingPolygonAttributes != null) {
+	    if ((definingPolygonAttributes.polygonMode ==
+		 PolygonAttributes.POLYGON_POINT) &&
+		(definingPointAttributes != null) &&
+		definingPointAttributes.pointAntialiasing) {
+		return false;
+	    } else if ((definingPolygonAttributes.polygonMode ==
+			PolygonAttributes.POLYGON_LINE) &&
+		       (definingLineAttributes != null) &&
+		       definingLineAttributes.lineAntialiasing) {
+		return false;
 	    }
-	    return ((definingTransparency == null) ||
-		    (definingTransparency.transparencyMode ==
-		     TransparencyAttributes.NONE) ||
-		    (definingTransparency.transparencyMode ==
-		     TransparencyAttributes.SCREEN_DOOR));
-	} else {
-	    return ((definingTransparency == null) ||
-		    (definingTransparency.transparencyMode ==
-		     TransparencyAttributes.NONE));
 	}
+        } else if ((geometryType & POINT) != 0) {
+	if ((definingPointAttributes != null) &&
+	    definingPointAttributes.pointAntialiasing) {
+	    return false;
+	}
+    } else if ((geometryType & LINE) != 0) {
+	if ((definingLineAttributes != null) &&
+	    definingLineAttributes.lineAntialiasing) {
+	    return false;
+	}
+    }
+    return ((definingTransparency == null) ||
+	    (definingTransparency.transparencyMode ==
+	     TransparencyAttributes.NONE) ||
+	    (definingTransparency.transparencyMode ==
+	     TransparencyAttributes.SCREEN_DOOR));
     }
 
 

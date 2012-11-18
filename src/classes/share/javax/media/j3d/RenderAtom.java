@@ -195,55 +195,48 @@ class RenderAtom extends Object implements ObjectUpdate {
 
 	TransparencyAttributesRetained ta = app.transparencyAttributes;
 
-	if (!VirtualUniverse.mc.isD3D()) {
-	    // D3D doesn't support line/point antialiasing
-	    switch (geometryAtom.geoType) {
-	    case GeometryRetained.GEO_TYPE_POINT_SET:
-	    case GeometryRetained.GEO_TYPE_INDEXED_POINT_SET:
-		if ((app.pointAttributes != null) &&
-		    app.pointAttributes.pointAntialiasing) {
-		    return false;
-		}
-		break;
-	    case GeometryRetained.GEO_TYPE_LINE_SET:
-	    case GeometryRetained.GEO_TYPE_LINE_STRIP_SET:
-	    case GeometryRetained.GEO_TYPE_INDEXED_LINE_SET:
-	    case GeometryRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET:
-		if ((app.lineAttributes != null) &&
-		    app.lineAttributes.lineAntialiasing) {
-		    return false;
-		}
-		break;
-	    case GeometryRetained.GEO_TYPE_RASTER:
-	    case GeometryRetained.GEO_TYPE_COMPRESSED:
-		break;
-	    default:
-		if (app.polygonAttributes != null) {
-		    if ((app.polygonAttributes.polygonMode ==
-			 PolygonAttributes.POLYGON_POINT) &&
-			(app.pointAttributes != null) &&
-			app.pointAttributes.pointAntialiasing) {
-			return false;
-		    } else if ((app.polygonAttributes.polygonMode ==
-				PolygonAttributes.POLYGON_LINE) &&
-			       (app.lineAttributes != null) &&
-			       app.lineAttributes.lineAntialiasing) {
-			return false;
-		    }
-		}
-		break;
-	    }
-
-	    return ((ta == null) ||
-		    (ta.transparencyMode ==
-		     TransparencyAttributes.NONE) ||
-		    (ta.transparencyMode ==
-		     TransparencyAttributes.SCREEN_DOOR));
-	} else {
-	    return ((ta == null) ||
-		    (ta.transparencyMode ==
-		     TransparencyAttributes.NONE));
+    switch (geometryAtom.geoType) {
+    case GeometryRetained.GEO_TYPE_POINT_SET:
+    case GeometryRetained.GEO_TYPE_INDEXED_POINT_SET:
+	if ((app.pointAttributes != null) &&
+	    app.pointAttributes.pointAntialiasing) {
+	    return false;
 	}
+	break;
+    case GeometryRetained.GEO_TYPE_LINE_SET:
+    case GeometryRetained.GEO_TYPE_LINE_STRIP_SET:
+    case GeometryRetained.GEO_TYPE_INDEXED_LINE_SET:
+    case GeometryRetained.GEO_TYPE_INDEXED_LINE_STRIP_SET:
+	if ((app.lineAttributes != null) &&
+	    app.lineAttributes.lineAntialiasing) {
+	    return false;
+	}
+	break;
+    case GeometryRetained.GEO_TYPE_RASTER:
+    case GeometryRetained.GEO_TYPE_COMPRESSED:
+	break;
+    default:
+	if (app.polygonAttributes != null) {
+	    if ((app.polygonAttributes.polygonMode ==
+		 PolygonAttributes.POLYGON_POINT) &&
+		(app.pointAttributes != null) &&
+		app.pointAttributes.pointAntialiasing) {
+		return false;
+	    } else if ((app.polygonAttributes.polygonMode ==
+			PolygonAttributes.POLYGON_LINE) &&
+		       (app.lineAttributes != null) &&
+		       app.lineAttributes.lineAntialiasing) {
+		return false;
+	    }
+	}
+	break;
+    }
+
+    return ((ta == null) ||
+	    (ta.transparencyMode ==
+	     TransparencyAttributes.NONE) ||
+	    (ta.transparencyMode ==
+	     TransparencyAttributes.SCREEN_DOOR));
     }
 
     boolean inRenderBin() {
