@@ -2382,10 +2382,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 				return;
 			    }
 			    this.syncRender(ctx, true);
-			    int status = swapBuffers(ctx, drawable);
-			    if (status != NOCHANGE) {
-				resetImmediateRendering(status);
-			    }
+			    swapBuffers(ctx, drawable);
 			    drawingSurfaceObject.unLock();
 			}
 		    }
@@ -4797,10 +4794,10 @@ void addTextureResource(int id, TextureRetained obj) {
         Pipeline.getPipeline().readOffScreenBuffer(this, ctx, format, type, data, width, height);
     }
 
-    // The native method for swapBuffers
-    int swapBuffers(Context ctx, Drawable drawable) {
-        return Pipeline.getPipeline().swapBuffers(this, ctx, drawable);
-    }
+// The native method for swapBuffers
+void swapBuffers(Context ctx, Drawable drawable) {
+	Pipeline.getPipeline().swapBuffers(this, ctx, drawable);
+}
 
     // -----------------------------------------------------------------------------
 

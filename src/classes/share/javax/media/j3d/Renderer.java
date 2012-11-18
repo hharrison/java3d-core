@@ -216,7 +216,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 		accumRightX = 0.0, accumRightY = 0.0,
 		accumInfLeftX = 0.0, accumInfLeftY = 0.0,
 		accumInfRightX = 0.0, accumInfRightY = 0.0;
-	int opArg, status;
+	int opArg;
 	Transform3D t3d = null;
 
         opArg = ((Integer)args[0]).intValue();
@@ -256,22 +256,12 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                                             }
                                             cv.makeCtxCurrent();
                                             cv.syncRender(cv.ctx, true);
-                                            status = cv.swapBuffers(cv.ctx,
-                                                    cv.drawable);
-                                            if (status != Canvas3D.NOCHANGE) {
-                                                cv.resetRendering(status);
-                                            }
+                                            cv.swapBuffers(cv.ctx, cv.drawable);
                                             cv.drawingSurfaceObject.unLock();
                                         } else {
                                             cv.makeCtxCurrent();
-
                                             cv.syncRender(cv.ctx, true);
-                                            status = cv.swapBuffers(cv.ctx,
-                                                    cv.drawable);
-                                            if (status != Canvas3D.NOCHANGE) {
-                                                cv.resetRendering(status);
-                                            }
-
+                                            cv.swapBuffers(cv.ctx, cv.drawable);
                                         }
                                     }
                                 }

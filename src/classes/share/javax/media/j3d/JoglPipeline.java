@@ -6427,7 +6427,7 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.swapBuffers()");
         GLDrawable draw = drawable(drawable);
         draw.swapBuffers();
-        return 0;
+		return Canvas3D.NOCHANGE;
     }
 
     // native method for setting Material when no material is present
