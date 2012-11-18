@@ -206,15 +206,6 @@ class TextureUnitStateRetained extends NodeComponentRetained {
         if (this.texAttrs == null) {
 	    if (reload || dirty || cv.texUnitState[index].texAttrs != null) {
                 cv.resetTextureAttributes(cv.ctx);
-		if (VirtualUniverse.mc.isD3D() &&
-		    (texGen != null) &&
-		    ((texGen.genMode == TexCoordGeneration.EYE_LINEAR) ||
-		    ((texGen.genMode == TexCoordGeneration.SPHERE_MAP)))) {
-		    // We need to reload tex since eye linear
-		    // and sphere map in D3D will change the
-		    // texture transform matrix also.
-		    dirty = true;
-		}
 		cv.setBlendFunc(cv.ctx, TransparencyAttributes.BLEND_ONE,
 				TransparencyAttributes.BLEND_ZERO);
 	    	cv.texUnitState[index].texAttrs = null;
@@ -239,12 +230,6 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 
 	    if (reload || dirty || cv.texUnitState[index].texAttrs != mTexAttrs) {
                 this.texAttrs.updateNative(cv, simulate, texture.format);
-		if (VirtualUniverse.mc.isD3D() &&
-		    (texGen != null) &&
-		    ((texGen.genMode == TexCoordGeneration.EYE_LINEAR) ||
-		    ((texGen.genMode == TexCoordGeneration.SPHERE_MAP)))) {
-		    dirty = true;
-		}
 	    	cv.texUnitState[index].texAttrs = mTexAttrs;
 	    }
         }

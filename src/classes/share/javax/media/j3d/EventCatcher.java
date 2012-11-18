@@ -65,10 +65,6 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 
     EventCatcher(Canvas3D c) {
 	canvas = c;
-
-	if (VirtualUniverse.mc.isD3D()) {
-	    enableKeyEvents();
-	}
     }
 
     void enableFocusEvents() {

@@ -844,14 +844,6 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		return (false);
 	    }
 
-	    if (VirtualUniverse.mc.isD3D() &&
-		(((geo.getClassType() == GeometryRetained.QUAD_TYPE)
-		  && !isQuadGeometryArray) ||
-		 ((geo.getClassType() == GeometryRetained.TRIANGLE_TYPE)
-		  && !isTriGeometryArray))) {
-		return false;
-	    }
-
 	} else if (geo instanceof CompressedGeometryRetained) {
 	    if (this.vertexFormat !=
 		((CompressedGeometryRetained)geo).getVertexFormat()) {
