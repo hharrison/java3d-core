@@ -178,10 +178,6 @@ abstract class TextureRetained extends NodeComponentRetained {
     private HashMap<RenderBin,Integer> textureBinRefCount =
             new HashMap<RenderBin,Integer>();
 
-    // This is used for D3D only to check whether texture need to
-    // resend down
-    private int texTimestamp = 0;
-
     // need to synchronize access from multiple rendering threads
     Object resourceLock = new Object();
 
@@ -1795,20 +1791,6 @@ abstract class TextureRetained extends NodeComponentRetained {
 		}
 	    }
 	}
-
-
-	if (VirtualUniverse.mc.isD3D()) {
-	    if (texTimestamp != VirtualUniverse.mc.resendTexTimestamp) {
-		texTimestamp = VirtualUniverse.mc.resendTexTimestamp;
-		reloadTexture = true;
-	    }
-
-	    if (!reloadTexture) {
-		// D3D didn't store texture properties during Texture binding
-		updateTextureFields(cv);
-	    }
-	}
-
 
 //System.err.println("......... reloadTexture= " + reloadTexture +
 //		 " updateTexture= " + updateTexture +

@@ -445,9 +445,6 @@ class MasterControl {
     // Maximum number of lights
     int maxLights;
 
-    // This is used for D3D only
-    int resendTexTimestamp = 0;
-
     // Set by the -Dj3d.sortShape3DBounds property, When this flag is
     // set to true, the bounds of the Shape3D node will be used in
     // place of the computed GeometryArray bounds for transparency

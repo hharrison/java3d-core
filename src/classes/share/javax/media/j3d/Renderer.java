@@ -159,7 +159,6 @@ ArrayList<TextureRetained> textureReloadList = new ArrayList<TextureRetained>();
     ArrayList<Canvas3D> listOfCanvases = new ArrayList<Canvas3D>();
 
     boolean needToRebuildDisplayList = false;
-    boolean needToResendTextureDown = false;
 
     // True when either one of dirtyRenderMoleculeList,
     // dirtyDlistPerRinfoList, dirtyRenderAtomList size > 0
@@ -614,11 +613,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 		} else if (renderType == J3dMessage.RENDER_IMMEDIATE) {
                     int command = ((Integer)m[nmesg].args[1]).intValue();
 		    //System.err.println("command= " + command);
-		    if (needToResendTextureDown) {
-			VirtualUniverse.mc.resendTexTimestamp++;
-			needToResendTextureDown = false;
-		    }
-
                     if (canvas.isFatalError()) {
                         continue;
                     }
@@ -959,10 +953,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			    break doneRender;
 			}
 
-			if (needToResendTextureDown) {
-			    VirtualUniverse.mc.resendTexTimestamp++;
-			    needToResendTextureDown = false;
-			}
 		        // handle free resource
 			if (canvas.useSharedCtx) {
 			    freeResourcesInFreeList(canvas);
