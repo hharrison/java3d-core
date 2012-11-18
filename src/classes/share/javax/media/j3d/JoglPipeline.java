@@ -6422,13 +6422,12 @@ class JoglPipeline extends Pipeline {
         }
     }
 
-    // The native method for swapBuffers
-    int swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
-        if (VERBOSE) System.err.println("JoglPipeline.swapBuffers()");
-        GLDrawable draw = drawable(drawable);
-        draw.swapBuffers();
-		return Canvas3D.NOCHANGE;
-    }
+// The native method for swapBuffers
+void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
+	if (VERBOSE) System.err.println("JoglPipeline.swapBuffers()");
+	GLDrawable draw = drawable(drawable);
+	draw.swapBuffers();
+}
 
     // native method for setting Material when no material is present
     void updateMaterialColor(Context ctx, float r, float g, float b, float a) {

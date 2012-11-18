@@ -933,7 +933,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                             canvas.createTexUnitState();
                         }
 
-                        canvas.resetImmediateRendering(Canvas3D.NOCHANGE);
+                        canvas.resetImmediateRendering();
                         canvas.drawingSurfaceObject.contextValidated();
 
                         if (!canvas.useSharedCtx) {

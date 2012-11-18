@@ -957,7 +957,7 @@ public Pipeline run() {
     abstract void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int type, Object data, int width, int height);
 
     // The native method for swapBuffers
-    abstract int swapBuffers(Canvas3D cv, Context ctx, Drawable drawable);
+    abstract void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable);
 
     // native method for setting Material when no material is present
     abstract void updateMaterialColor(Context ctx, float r, float g, float b, float a);

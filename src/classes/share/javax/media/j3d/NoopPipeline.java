@@ -964,9 +964,7 @@ class NoopPipeline extends Pipeline {
     }
 
 // The native method for swapBuffers
-int swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
-	return Canvas3D.NOCHANGE;
-}
+void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {}
 
     // native method for setting Material when no material is present
     void updateMaterialColor(Context ctx, float r, float g, float b, float a) {
