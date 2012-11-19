@@ -1698,15 +1698,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 			TextureUnitStateRetained[] texUnits) {
         boolean alphaBlend, alphaTest, textureBlend = false;
 
-        alphaBlend =
-            definingTransparency != null &&
-            definingTransparency.transparencyMode !=
-	    TransparencyAttributes.NONE &&
-	    (VirtualUniverse.mc.isD3D() ||
-	     !VirtualUniverse.mc.isD3D() &&
-	     definingTransparency.transparencyMode !=
-	     TransparencyAttributes.SCREEN_DOOR);
-
+	alphaBlend = TransparencyAttributesRetained.useAlpha(definingTransparency);
 
 	if (texUnits != null) {
 	    for (int i = 0;
@@ -2420,11 +2412,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    return false;
 	}
     }
-    return ((definingTransparency == null) ||
-	    (definingTransparency.transparencyMode ==
-	     TransparencyAttributes.NONE) ||
-	    (definingTransparency.transparencyMode ==
-	     TransparencyAttributes.SCREEN_DOOR));
+    return !TransparencyAttributesRetained.useAlpha(definingTransparency);
     }
 
 

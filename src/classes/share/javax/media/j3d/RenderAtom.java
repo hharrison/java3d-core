@@ -232,11 +232,7 @@ class RenderAtom extends Object implements ObjectUpdate {
 	break;
     }
 
-    return ((ta == null) ||
-	    (ta.transparencyMode ==
-	     TransparencyAttributes.NONE) ||
-	    (ta.transparencyMode ==
-	     TransparencyAttributes.SCREEN_DOOR));
+	return !TransparencyAttributesRetained.useAlpha(ta);
     }
 
     boolean inRenderBin() {

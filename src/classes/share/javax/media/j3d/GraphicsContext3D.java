@@ -2763,14 +2763,9 @@ public class GraphicsContext3D extends Object   {
 		canvas3d.canvasDirty |= Canvas3D.TRANSPARENCYATTRS_DIRTY;
 		canvas3d.transparency = app.transparencyAttributes;
 
-		useAlpha = useAlpha || ((app.transparencyAttributes.transparencyMode !=
-					TransparencyAttributes.NONE)
-					&&
-					(VirtualUniverse.mc.isD3D()
-					 ||
-					 (!VirtualUniverse.mc.isD3D() &&
-					  (app.transparencyAttributes. transparencyMode !=
-					   TransparencyAttributes.SCREEN_DOOR))));
+		if (!useAlpha)
+			useAlpha = TransparencyAttributesRetained.useAlpha(app.transparencyAttributes);
+
 	    } else {
 		canvas3d.resetTransparency(canvas3d.ctx, geometryType,
 					       polygonMode, lineAA, pointAA);

@@ -1324,17 +1324,8 @@ class AppearanceRetained extends NodeComponentRetained {
     }
 
     boolean isOpaque(int geoType) {
-	TransparencyAttributesRetained ta;
-
-        ta = transparencyAttributes;
-        if (ta != null &&
-            ta.transparencyMode != TransparencyAttributes.NONE &&
-	    (VirtualUniverse.mc.isD3D() ||
-	     (!VirtualUniverse.mc.isD3D() &&
-	     (ta.transparencyMode !=
-	      TransparencyAttributes.SCREEN_DOOR)))) {
-           return(false);
-        }
+	if (TransparencyAttributesRetained.useAlpha(transparencyAttributes))
+		return false;
 
 	switch (geoType) {
 	case GeometryRetained.GEO_TYPE_POINT_SET:

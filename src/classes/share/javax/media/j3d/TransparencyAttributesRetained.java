@@ -229,6 +229,15 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
 	}
     }
 
+static boolean useAlpha(TransparencyAttributesRetained ta) {
+	if (ta != null &&
+	    ta.transparencyMode != TransparencyAttributes.NONE &&
+	    ta.transparencyMode != TransparencyAttributes.SCREEN_DOOR) {
+		return true;
+	}
+	return false;
+}
+
     void updateNative(Context ctx,
 		      float alpha, int geometryType, int polygonMode,
 		      boolean lineAA,
