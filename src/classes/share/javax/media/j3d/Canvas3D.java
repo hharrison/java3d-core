@@ -37,7 +37,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.IllegalComponentStateException;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -731,13 +730,6 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
     Object cvLock = new Object();
     Object evaluateLock = new Object();
     Object dirtyMaskLock = new Object();
-
-    // Use by D3D when toggle between window/fullscreen mode.
-    // Note that in fullscreen mode, the width and height get
-    // by canvas is smaller than expected.
-    boolean fullScreenMode = false;
-    int fullscreenWidth;
-    int fullscreenHeight;
 
     // For D3D, instead of using the same variable in Renderer,
     // each canvas has to build its own displayList.
@@ -3953,118 +3945,14 @@ void resetImmediateRendering() {
 	ctxTimeStamp = VirtualUniverse.mc.getContextTimeStamp();
 }
 
-
-    // overide Canvas.getSize()
-    public Dimension getSize() {
-	if (!fullScreenMode) {
-	    return super.getSize();
-	} else {
-	    return new Dimension(fullscreenWidth, fullscreenHeight);
-	}
-    }
-
-    public Dimension getSize(Dimension rv) {
-	if (!fullScreenMode) {
-	    return super.getSize(rv);
-	} else {
-	    if (rv == null) {
-		return new Dimension(fullscreenWidth, fullscreenHeight);
-	    } else {
-		rv.setSize(fullscreenWidth, fullscreenHeight);
-		return rv;
-	    }
-	}
-    }
-
-    public Point getLocationOnScreen() {
-	if (!fullScreenMode) {
-	    try {
+public Point getLocationOnScreen() {
+	try {
 		return super.getLocationOnScreen();
-	    } catch (IllegalComponentStateException e) {}
 	}
+	catch (IllegalComponentStateException e) {}
+
 	return new Point();
-    }
-
-    public int getX() {
-	if (!fullScreenMode) {
-	    return super.getX();
-	} else {
-	    return 0;
-	}
-    }
-
-
-    public int getY() {
-	if (!fullScreenMode) {
-	    return super.getY();
-	} else {
-	    return 0;
-	}
-    }
-
-    public int getWidth() {
-	if (!fullScreenMode) {
-	    return super.getWidth();
-	} else {
-	    return screen.screenSize.width;
-	}
-    }
-
-    public int getHeight() {
-	if (!fullScreenMode) {
-	    return super.getHeight();
-	} else {
-	    return screen.screenSize.height;
-	}
-    }
-
-    public Point getLocation(Point rv) {
-	if (!fullScreenMode) {
-	    return super.getLocation(rv);
-	} else {
-	    if (rv != null) {
-		rv.setLocation(0, 0);
-		return rv;
-	    } else {
-		return new Point();
-	    }
-	}
-    }
-
-    public Point getLocation() {
-	if (!fullScreenMode) {
-	    return super.getLocation();
-	} else {
-	    return new Point();
-	}
-    }
-
-    public Rectangle getBounds() {
-	if (!fullScreenMode) {
-	    return super.getBounds();
-	} else {
-	    return new Rectangle(0, 0,
-				 screen.screenSize.width,
-				 screen.screenSize.height);
-	}
-    }
-
-    public Rectangle getBounds(Rectangle rv) {
-	if (!fullScreenMode) {
-	    return super.getBounds(rv);
-	} else {
-	    if (rv != null) {
-		rv.setBounds(0, 0,
-			     screen.screenSize.width,
-			     screen.screenSize.height);
-		return rv;
-	    } else {
-		return new Rectangle(0, 0,
-				     screen.screenSize.width,
-				     screen.screenSize.height);
-	    }
-	}
-    }
+}
 
     void setProjectionMatrix(Context ctx, Transform3D projTrans) {
        this.projTrans = projTrans;
