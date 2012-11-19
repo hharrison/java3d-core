@@ -703,16 +703,6 @@ public class Canvas3D extends Canvas {
     Object appHandle = null;
 
     /**
-     * Set to true when any one of texture state use
-     * Texture Generation linear mode. This is used for D3D
-     * temporary turn displayList off and do its own coordinate
-     * generation since D3D don't support it.
-     *
-     * TODO aces : is this still true in DX9?
-     */
-    boolean texLinearMode = false;
-
-    /**
      * Dirty bit to determine if the NodeComponent needs to be re-sent
      * down to the underlying API
      */
@@ -3889,7 +3879,6 @@ void resetRendering() {
 	modelMatrix = null;
 	modelClip = null;
 	fog = null;
-	texLinearMode = false;
 	sceneAmbient = new Color3f();
 
 

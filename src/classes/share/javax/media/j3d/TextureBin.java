@@ -1231,9 +1231,6 @@ class TextureBin extends Object implements ObjectUpdate {
     }
 
     void render(Canvas3D cv, Object rlist) {
-
-	cv.texLinearMode = false;
-
 	/*
 	System.err.println("TextureBin/render " + this +
 		" numActiveTexUnit= " + numActiveTexUnit +
