@@ -1801,16 +1801,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	// we'll have to punt to vertex array as well.
 
 	if ((pass != TextureBin.USE_DISPLAYLIST) ||
-	    (texCoordSetMapLen > cv.maxTexCoordSets) ||
-	    (VirtualUniverse.mc.isD3D() &&
-	      (((definingPolygonAttributes != null) &&
-		((isQuadGeometryArray &&
-		  (definingPolygonAttributes.polygonMode ==
-		   PolygonAttributes.POLYGON_LINE))||
-		 (isTriGeometryArray &&
-		  (definingPolygonAttributes.polygonMode ==
-		   PolygonAttributes.POLYGON_POINT)))) ||
-	       cv.texLinearMode))) {
+	    (texCoordSetMapLen > cv.maxTexCoordSets)) {
 	    modeSupportDL = false;
 	}
 
@@ -2108,17 +2099,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
         // instead.
 
 	if ((pass != TextureBin.USE_DISPLAYLIST) ||
-	    (texCoordSetMapLen > cv.maxTexCoordSets) ||
-                       	     (VirtualUniverse.mc.isD3D() &&
-			     (((definingPolygonAttributes != null) &&
-			       ((isQuadGeometryArray &&
-				 (definingPolygonAttributes.polygonMode ==
-				  PolygonAttributes.POLYGON_LINE)) ||
-				(isTriGeometryArray &&
-				 (definingPolygonAttributes.polygonMode ==
-				  PolygonAttributes.POLYGON_POINT))))
-			      ||
-			      cv.texLinearMode))) {
+	    (texCoordSetMapLen > cv.maxTexCoordSets)) {
 	    modeSupportDL = false;
 	}
 

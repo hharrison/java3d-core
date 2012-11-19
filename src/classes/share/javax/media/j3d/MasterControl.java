@@ -1124,14 +1124,6 @@ private static String getProperty(final String prop) {
     }
 
     /**
-     * Returns whether we are using D3D.
-     * TODO: most code that cares about this should move into the pipeline
-     */
-    final boolean isD3D() {
-	return false;
-    }
-
-    /**
      * This method increments and returns the next time value
      * timeLock must get before this procedure is invoked
      */
