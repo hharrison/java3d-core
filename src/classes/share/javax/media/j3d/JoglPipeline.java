@@ -26,11 +26,7 @@
 
 package javax.media.j3d;
 
-import java.awt.BorderLayout;
-import java.awt.Canvas;
 import java.awt.DisplayMode;
-import java.awt.EventQueue;
-import java.awt.Frame;
 import java.awt.GraphicsConfigTemplate;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -51,9 +47,6 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.jogamp.nativewindow.awt.AWTGraphicsConfiguration;
-import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
-import com.jogamp.nativewindow.awt.AWTGraphicsScreen;
 import javax.media.nativewindow.AbstractGraphicsConfiguration;
 import javax.media.nativewindow.CapabilitiesChooser;
 import javax.media.nativewindow.CapabilitiesImmutable;
@@ -69,13 +62,14 @@ import javax.media.opengl.GLCapabilitiesChooser;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLDrawable;
 import javax.media.opengl.GLDrawableFactory;
-import javax.media.opengl.GLException;
-import javax.media.opengl.GLPbuffer;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.Threading;
 import javax.media.opengl.glu.GLU;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.nativewindow.awt.AWTGraphicsConfiguration;
+import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
+import com.jogamp.nativewindow.awt.AWTGraphicsScreen;
 
 /**
  * Concrete implementation of Pipeline class for the JOGL rendering
@@ -95,6 +89,8 @@ class JoglPipeline extends Pipeline {
     // Configurable constant just in case we want to change this later
     private static final int MIN_FRAME_SIZE = 1;
 
+	private GLProfile profile;
+
     /**
      * Constructor for singleton JoglPipeline instance
      */
@@ -112,7 +108,7 @@ class JoglPipeline extends Pipeline {
         // Java3D maintains strict control over which threads perform OpenGL work
         Threading.disableSingleThreading();
 
-        // TODO: finish this with any other needed initialization
+        profile = GLProfile.getMaxFixedFunc(true);
     }
 
     // ---------------------------------------------------------------------
@@ -6175,7 +6171,7 @@ class JoglPipeline extends Pipeline {
 					config.getGLCapabilities(),
 					indexChooser, awtGraphicsScreen, VisualIDHolder.VID_UNDEFINED);
 			NativeWindow nativeWindow = NativeWindowFactory.getNativeWindow(cv, awtGraphicsConfiguration);
-			draw = GLDrawableFactory.getFactory(getDefaultProfile()).createGLDrawable(nativeWindow);
+			draw = GLDrawableFactory.getFactory(profile).createGLDrawable(nativeWindow);
             cv.drawable = new JoglDrawable(draw);
         } else {
             draw = drawable(cv.drawable);
@@ -6244,52 +6240,8 @@ class JoglPipeline extends Pipeline {
         return ctx;
     }
 
-	private GLProfile getDefaultProfile() {
-		return GLProfile.getMaxFixedFunc(true);
-	}
-
     void createQueryContext(Canvas3D cv, Drawable drawable,
-            boolean offScreen, int width, int height) {
-        if (VERBOSE) System.err.println("JoglPipeline.createQueryContext()");
-
-        // FIXME: for now, ignoring the "offscreen" flag -- unclear how
-        // to create an offscreen buffer at this point -- very likely
-        // need Canvas3D.offScreenBufferInfo promoted to an Object --
-        // this logic will need to be revisited to make sure we capture
-        // all of the functionality of the NativePipeline
-
-        Frame f = new Frame();
-        f.setUndecorated(true);
-        f.setLayout(new BorderLayout());
-        GLCapabilities caps = new GLCapabilities(getDefaultProfile());
-        ContextQuerier querier = new ContextQuerier(cv);
-        // FIXME: should know what GraphicsDevice on which to create
-        // this Canvas / Frame, and this should probably be known from
-        // the incoming "display" parameter
-
-        JoglGraphicsConfiguration joglGraphicsConfiguration = (JoglGraphicsConfiguration) cv.graphicsConfiguration;
-        AWTGraphicsDevice awtGraphicsDevice = joglGraphicsConfiguration.getAwtGraphicsDevice();
-        AWTGraphicsConfiguration awtGraphicsConfiguration = createAwtGraphicsConfiguration(caps, querier, awtGraphicsDevice/*null*/);
-
-        QueryCanvas canvas = new QueryCanvas(awtGraphicsConfiguration, querier);
-        f.add(canvas, BorderLayout.CENTER);
-        f.setSize(MIN_FRAME_SIZE, MIN_FRAME_SIZE);
-        f.setVisible(true);
-        canvas.doQuery();
-        // Attempt to wait for the frame to become visible, but don't block the EDT
-        if (!EventQueue.isDispatchThread()) {
-            synchronized(querier) {
-                if (!querier.done()) {
-                    try {
-                        querier.wait(WAIT_TIME);
-                    } catch (InterruptedException e) {
-                    }
-                }
-            }
-        }
-
-        disposeOnEDT(f);
-    }
+            boolean offScreen, int width, int height) {}
 
     // This is the native for creating an offscreen buffer
     Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, int width, int height) {
@@ -6311,17 +6263,16 @@ class JoglPipeline extends Pipeline {
         GLCapabilities caps = jcfg.getGLCapabilities();
 
         //FIXME use the real AWTGraphicsDevice
-        GLPbuffer pbuffer = GLDrawableFactory.getFactory(getDefaultProfile()).createGLPbuffer(GLDrawableFactory.getDesktopFactory().getDefaultDevice() ,caps, null,width, height, GLContext.getCurrent());
-
-        return new JoglDrawable(pbuffer);
+        GLDrawable draw = GLDrawableFactory.getFactory(profile).createOffscreenDrawable(null, caps, null, width, height);
+        return new JoglDrawable(draw);
     }
 
     void destroyOffScreenBuffer(Canvas3D cv, Context ctx, Drawable drawable) {
         if (VERBOSE) System.err.println("JoglPipeline.destroyOffScreenBuffer()");
 
-        JoglDrawable jdraw = (JoglDrawable) drawable;
-        GLPbuffer pbuffer = (GLPbuffer) jdraw.getGLDrawable();
-        pbuffer.destroy();
+//        JoglDrawable jdraw = (JoglDrawable) drawable;
+//        GLPbuffer pbuffer = (GLPbuffer) jdraw.getGLDrawable();
+//        pbuffer.destroy();
     }
 
     // This is the native for reading the image from the offscreen buffer
@@ -7903,7 +7854,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
        */
 
         // Create a GLCapabilities based on the GraphicsConfigTemplate3D
-        GLCapabilities caps = new GLCapabilities(getDefaultProfile());
+        GLCapabilities caps = new GLCapabilities(profile);
         caps.setDoubleBuffered(gct.getDoubleBuffer() <= GraphicsConfigTemplate.PREFERRED);
         caps.setStereo        (gct.getStereo() <= GraphicsConfigTemplate.PREFERRED);
         caps.setDepthBits     (gct.getDepthSize());
@@ -7937,84 +7888,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
         GraphicsDevice dev = gc[0].getDevice();
 
         // Create a Frame and dummy GLCanvas to perform eager pixel format selection
-
-        // Note that we loop in similar fashion to the NativePipeline's
-        // native code in the situation where we need to disable certain
-        // capabilities which aren't required
-        boolean tryAgain = true;
-        CapabilitiesCapturer capturer = null;
-        while (tryAgain) {
-            Frame f = new Frame(dev.getDefaultConfiguration());
-            f.setUndecorated(true);
-            f.setLayout(new BorderLayout());
-            capturer = new CapabilitiesCapturer();
-            try {
-                AWTGraphicsConfiguration awtGraphicsConfiguration = createAwtGraphicsConfiguration(caps, capturer, dev/*null*/);
-                QueryCanvas canvas = new QueryCanvas(awtGraphicsConfiguration, capturer);
-                f.add(canvas, BorderLayout.CENTER);
-                f.setSize(MIN_FRAME_SIZE, MIN_FRAME_SIZE);
-                f.setVisible(true);
-                canvas.doQuery();
-                if (DEBUG_CONFIG) {
-                    System.err.println("Waiting for CapabilitiesCapturer");
-                }
-                // Try to wait for result without blocking EDT
-                if (!EventQueue.isDispatchThread()) {
-                    synchronized(capturer) {
-                        if (!capturer.done()) {
-                            try {
-                                capturer.wait(WAIT_TIME);
-                            } catch (InterruptedException e) {
-                            }
-                        }
-                    }
-                }
-                disposeOnEDT(f);
-                tryAgain = false;
-            } catch (GLException e) {
-                // Failure to select a pixel format; try switching off one
-                // of the only-preferred capabilities
-                if (capsToDisable.size() == 0) {
-                    tryAgain = false;
-                } else {
-                    int whichToDisable = capsToDisable.remove(0).intValue();
-                    switch (whichToDisable) {
-                        case DISABLE_STEREO:
-                            caps.setStereo(false);
-                            break;
-
-                        case DISABLE_AA:
-                            caps.setSampleBuffers(false);
-                            break;
-
-                        case DISABLE_DOUBLE_BUFFER:
-                            caps.setDoubleBuffered(false);
-                            break;
-
-                        default:
-                            throw new AssertionError("missing case statement");
-                    }
-                }
-            }
-        }
-        int chosenIndex = capturer.getChosenIndex();
-        GLCapabilities chosenCaps = null;
-        if (chosenIndex < 0) {
-            if (DEBUG_CONFIG) {
-                System.err.println("CapabilitiesCapturer returned invalid index");
-            }
-            // It's possible some platforms or implementations might not
-            // support the GLCapabilitiesChooser mechanism; feed in the
-            // same GLCapabilities later which we gave to the selector
-            chosenCaps = caps;
-        } else {
-            if (DEBUG_CONFIG) {
-                System.err.println("CapabilitiesCapturer returned index=" + chosenIndex);
-            }
-            chosenCaps = capturer.getCapabilities();
-        }
-
-        JoglGraphicsConfiguration config = new JoglGraphicsConfiguration(chosenCaps, chosenIndex, dev);
+        JoglGraphicsConfiguration config = new JoglGraphicsConfiguration(caps, 0, dev);
 
         // FIXME: because of the fact that JoglGraphicsConfiguration
         // doesn't override hashCode() or equals(), we will basically be
@@ -8157,58 +8031,6 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
         public void init(GLContext context);
     }
 
-    // Canvas subclass to help with various query operations such as the
-    // "query context" mechanism and pixel format selection.
-    // Must defeat and simplify the single-threading behavior of JOGL's
-    // GLCanvas in order to be able to set up a temporary pixel format
-    // and OpenGL context. Apparently simply turning off the
-    // single-threaded mode isn't enough to do this.
-    class QueryCanvas extends Canvas {
-        private GLDrawable drawable;
-        private ExtendedCapabilitiesChooser chooser;
-        private boolean alreadyRan;
-
-        public QueryCanvas(AWTGraphicsConfiguration awtGraphicsConfiguration, ExtendedCapabilitiesChooser chooser) {
-            // The platform-specific GLDrawableFactory will only provide a
-            // non-null GraphicsConfiguration on platforms where this is
-            // necessary (currently only X11, as Windows allows the pixel
-            // format of the window to be set later and Mac OS X seems to
-            // handle this very differently than all other platforms). On
-            // other platforms this method returns null; it is the case (at
-            // least in the Sun AWT implementation) that this will result in
-            // equivalent behavior to calling the no-arg super() constructor
-            // for Canvas.
-            super(unwrap(awtGraphicsConfiguration));
-            NativeWindow nativeWindow = NativeWindowFactory.getNativeWindow(this, awtGraphicsConfiguration);
-            drawable = GLDrawableFactory.getFactory(getDefaultProfile()).createGLDrawable(nativeWindow);
-            this.chooser = chooser;
-        }
-
-        public void addNotify() {
-            super.addNotify();
-            drawable.setRealized(true);
-        }
-
-        // It seems that at least on Mac OS X we need to do the OpenGL
-        // context-related work outside of the addNotify call because the
-        // Canvas hasn't been resized to a non-zero size by that point
-        public void doQuery() {
-            if (alreadyRan)
-                return;
-            GLContext context = drawable.createContext(null);
-            int res = context.makeCurrent();
-            if (res != GLContext.CONTEXT_NOT_CURRENT) {
-                try {
-                    chooser.init(context);
-                } finally {
-                    context.release();
-                }
-            }
-            context.destroy();
-            alreadyRan = true;
-        }
-    }
-
     private static AWTGraphicsConfiguration createAwtGraphicsConfiguration(GLCapabilities capabilities,
             CapabilitiesChooser chooser,
             GraphicsDevice device) {
@@ -8336,21 +8158,6 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
             return indexToChoose;
         }
     }
-
-    private void disposeOnEDT(final Frame f) {
-        Runnable r = new Runnable() {
-            public void run() {
-                f.setVisible(false);
-                f.dispose();
-            }
-        };
-        if (!EventQueue.isDispatchThread()) {
-            EventQueue.invokeLater(r);
-        } else {
-            r.run();
-        }
-    }
-
 
     // ---------------------------------------------------------------------
 
