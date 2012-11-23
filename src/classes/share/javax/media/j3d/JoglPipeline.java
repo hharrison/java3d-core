@@ -95,6 +95,7 @@ class JoglPipeline extends Pipeline {
     // Configurable constant just in case we want to change this later
     private static final int MIN_FRAME_SIZE = 1;
 
+    private GLProfile profile;
     /**
      * Constructor for singleton JoglPipeline instance
      */
@@ -112,6 +113,7 @@ class JoglPipeline extends Pipeline {
         // Java3D maintains strict control over which threads perform OpenGL work
         Threading.disableSingleThreading();
 
+        profile = GLProfile.getMaxFixedFunc(true);
         // TODO: finish this with any other needed initialization
     }
 
@@ -6175,7 +6177,7 @@ class JoglPipeline extends Pipeline {
 					config.getGLCapabilities(),
 					indexChooser, awtGraphicsScreen, VisualIDHolder.VID_UNDEFINED);
 			NativeWindow nativeWindow = NativeWindowFactory.getNativeWindow(cv, awtGraphicsConfiguration);
-			draw = GLDrawableFactory.getFactory(getDefaultProfile()).createGLDrawable(nativeWindow);
+			draw = GLDrawableFactory.getFactory(profile).createGLDrawable(nativeWindow);
             cv.drawable = new JoglDrawable(draw);
         } else {
             draw = drawable(cv.drawable);
@@ -6244,10 +6246,6 @@ class JoglPipeline extends Pipeline {
         return ctx;
     }
 
-	private GLProfile getDefaultProfile() {
-		return GLProfile.getMaxFixedFunc(true);
-	}
-
     void createQueryContext(Canvas3D cv, Drawable drawable,
             boolean offScreen, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.createQueryContext()");
@@ -6261,7 +6259,7 @@ class JoglPipeline extends Pipeline {
         Frame f = new Frame();
         f.setUndecorated(true);
         f.setLayout(new BorderLayout());
-        GLCapabilities caps = new GLCapabilities(getDefaultProfile());
+        GLCapabilities caps = new GLCapabilities(profile);
         ContextQuerier querier = new ContextQuerier(cv);
         // FIXME: should know what GraphicsDevice on which to create
         // this Canvas / Frame, and this should probably be known from
@@ -6311,7 +6309,7 @@ class JoglPipeline extends Pipeline {
         GLCapabilities caps = jcfg.getGLCapabilities();
 
         //FIXME use the real AWTGraphicsDevice
-        GLPbuffer pbuffer = GLDrawableFactory.getFactory(getDefaultProfile()).createGLPbuffer(GLDrawableFactory.getDesktopFactory().getDefaultDevice() ,caps, null,width, height, GLContext.getCurrent());
+        GLPbuffer pbuffer = GLDrawableFactory.getFactory(profile).createGLPbuffer(GLDrawableFactory.getDesktopFactory().getDefaultDevice() ,caps, null,width, height, GLContext.getCurrent());
 
         return new JoglDrawable(pbuffer);
     }
@@ -7903,7 +7901,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
        */
 
         // Create a GLCapabilities based on the GraphicsConfigTemplate3D
-        GLCapabilities caps = new GLCapabilities(getDefaultProfile());
+        GLCapabilities caps = new GLCapabilities(profile);
         caps.setDoubleBuffered(gct.getDoubleBuffer() <= GraphicsConfigTemplate.PREFERRED);
         caps.setStereo        (gct.getStereo() <= GraphicsConfigTemplate.PREFERRED);
         caps.setDepthBits     (gct.getDepthSize());
@@ -8180,7 +8178,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
             // for Canvas.
             super(unwrap(awtGraphicsConfiguration));
             NativeWindow nativeWindow = NativeWindowFactory.getNativeWindow(this, awtGraphicsConfiguration);
-            drawable = GLDrawableFactory.getFactory(getDefaultProfile()).createGLDrawable(nativeWindow);
+            drawable = GLDrawableFactory.getFactory(profile).createGLDrawable(nativeWindow);
             this.chooser = chooser;
         }
 
