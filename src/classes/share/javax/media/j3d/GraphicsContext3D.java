@@ -2334,13 +2334,15 @@ public class GraphicsContext3D extends Object   {
                 Point rasterSrcOffset = new Point();
                 ras.getSrcOffset(rasterSrcOffset);
 
-                DepthComponentRetained depthComp = ras.depthComponent;
                 int depthType = 0;
 				Object depthBuffer = null;
-                if(depthComp != null) {
-                    depthType = depthComp.type;
-					depthBuffer = (depthType == DepthComponentRetained.DEPTH_COMPONENT_TYPE_FLOAT) ? floatBuffer : intBuffer;
-                }
+				if (ras.depthComponent != null) {
+					depthType = ras.depthComponent.type;
+					if (depthType == DepthComponentRetained.DEPTH_COMPONENT_TYPE_FLOAT)
+						depthBuffer = floatBuffer;
+					else
+						depthBuffer = intBuffer;
+				}
 
 				int imageDataType = 0;
 				int imageFormatType = 0;
