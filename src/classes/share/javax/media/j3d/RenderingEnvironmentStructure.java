@@ -1305,12 +1305,10 @@ int processClips(ArrayList<ClipRetained> globalClips, BoundingSphere bounds, int
     // if the appearance is null or if the alternate app in not
     // in effect
     Object[]  getInfluencingAppearance(RenderAtom ra, View view) {
-	AlternateAppearanceRetained altApp = null;
-	int j, nAltApp;;
+	int j;
 	Bounds closestBounds;
         Bounds bounds;
 	Object[] retVal;
-	ArrayList globalAltApps;
 	retVal = new Object[2];
 
 	if (ra.geometryAtom.source.inBackgroundGroup) {
@@ -1322,19 +1320,18 @@ int processClips(ArrayList<ClipRetained> globalClips, BoundingSphere bounds, int
 	// system with 2 views on a single universe, there might
 	// be councurrent access
 	synchronized(lockObj) {
-	    nAltApp = 0;
+	    int nAltApp = 0;
 	    bounds = ra.localeVwcBounds;
 
 	    if (intersectedBounds.length < numberOfAltApps)
 		intersectedBounds = new Bounds[numberOfAltApps];
 
-	    if ((globalAltApps =(ArrayList)viewScopedAltAppearances.get(view)) != null) {
-		nAltApp = processAltApps(globalAltApps, ra, nAltApp);
-	    }
-	    nAltApp = processAltApps(nonViewScopedAltAppearances, ra, nAltApp);
+		ArrayList<AlternateAppearanceRetained> globalAltApps = viewScopedAltAppearances.get(view);
+		if (globalAltApps != null)
+			nAltApp = processAltApps(globalAltApps, ra, nAltApp);
 
-
-	    altApp = null;
+		nAltApp = processAltApps(nonViewScopedAltAppearances, ra, nAltApp);
+		AlternateAppearanceRetained altApp = null;
 	    if (nAltApp == 1)
 		altApp = intersectedAltApps[0];
 	    else if (nAltApp > 1) {
@@ -1357,47 +1354,47 @@ int processClips(ArrayList<ClipRetained> globalClips, BoundingSphere bounds, int
 	}
     }
 
-    // Called while holding lockObj lock
-    int processAltApps(ArrayList globalAltApps, RenderAtom ra, int nAltApp) {
+// Called while holding lockObj lock
+int processAltApps(ArrayList<AlternateAppearanceRetained> globalAltApps, RenderAtom ra, int nAltApp) {
 	int size = globalAltApps.size();
-	AlternateAppearanceRetained altApp;
-	int i, k, n;
-        Bounds bounds = ra.localeVwcBounds;
+	Bounds bounds = ra.localeVwcBounds;
 	AlternateAppearanceRetained[] shapeScopedAltApp;
 
+	if (size == 0)
+		return nAltApp;
 
-	if (size > 0) {
-	    for (i = 0; i < size; i++) {
-		altApp = (AlternateAppearanceRetained) globalAltApps.get(i);
-		//		    System.err.println("altApp.region = "+altApp.region+" altApp.switchState.currentSwitchOn = "+altApp.switchState.currentSwitchOn+" intersect = "+altApp.region.intersect(ra.geometryAtom.vwcBounds));
-		//		    System.err.println("altApp.isScoped = "+altApp.isScoped);
+	for (int i = 0; i < size; i++) {
+		AlternateAppearanceRetained altApp = globalAltApps.get(i);
+		// System.err.println("altApp.region = "+altApp.region+" altApp.switchState.currentSwitchOn = "+altApp.switchState.currentSwitchOn+" intersect = "+altApp.region.intersect(ra.geometryAtom.vwcBounds));
+		// System.err.println("altApp.isScoped = "+altApp.isScoped);
 		// Note : There is no enable check for fog
-		if (altApp.region != null && altApp.switchState.currentSwitchOn) {
-		    if (altApp.region.intersect(bounds) == true) {
-			n = ra.geometryAtom.source.numAltApps;
+		if (altApp.region == null || !altApp.switchState.currentSwitchOn)
+			continue;
+
+		if (altApp.region.intersect(bounds) == true) {
+			int n = ra.geometryAtom.source.numAltApps;
 			shapeScopedAltApp = ra.geometryAtom.source.altApps;
 			if (altApp.isScoped) {
-			    for (k = 0; k < n; k++) {
-				// then check if the light is scoped to
-				// this group
-				if (altApp == shapeScopedAltApp[k]) {
+				for (int k = 0; k < n; k++) {
+					// then check if the light is scoped to
+					// this group
+					if (altApp == shapeScopedAltApp[k]) {
 
-				    intersectedBounds[nAltApp] = altApp.region;
-				    intersectedAltApps[nAltApp++] = altApp;
-				    break;
+						intersectedBounds[nAltApp] = altApp.region;
+						intersectedAltApps[nAltApp++] = altApp;
+						break;
+					}
 				}
-			    }
 			}
 			else {
-			    intersectedBounds[nAltApp] = altApp.region;
-			    intersectedAltApps[nAltApp++] = altApp;
+				intersectedBounds[nAltApp] = altApp.region;
+				intersectedAltApps[nAltApp++] = altApp;
 			}
-		    }
 		}
-	    }
 	}
+
 	return nAltApp;
-    }
+}
 
     void initViewSpecificInfo(J3dMessage m) {
 	int[] keys = (int[])m.args[2];
