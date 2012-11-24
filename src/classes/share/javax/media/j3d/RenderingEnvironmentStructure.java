@@ -1426,18 +1426,16 @@ int processAltApps(ArrayList<AlternateAppearanceRetained> globalAltApps, RenderA
 	    for (int i = 0; i < size; i++) {
 		ViewSpecificGroupRetained v = (ViewSpecificGroupRetained)vsgs.get(i);
 		int index = keys[i];
-		if (index == -1) {
-		    int csize = v.cachedViewList.size();
-		    for (int j = 0; j< csize; j++) {
-			ArrayList l = (ArrayList)v.cachedViewList.get(j);
-			l.clear();
-		    }
-		    v.cachedViewList.clear();
-		}
-		else {
-		    ArrayList l = (ArrayList) v.cachedViewList.remove(index);
-		    l.clear();
-		}
+			if (index == -1) {
+				int csize = v.cachedViewList.size();
+				for (int j = 0; j < csize; j++) {
+					v.cachedViewList.get(j).clear();
+				}
+				v.cachedViewList.clear();
+			}
+			else {
+				v.cachedViewList.remove(index).clear();
+			}
 	    }
 	}
     }

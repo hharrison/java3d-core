@@ -40,7 +40,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 
     // Used by leaf objects particularly GAs
     // Updated in a MT Safe manner and also used by RenderBin
-    ArrayList cachedViewList = new ArrayList();
+    ArrayList<ArrayList<View>> cachedViewList = new ArrayList<ArrayList<View>>();
 
    // The object that contains the dynamic HashKey - a string type object
     // Used in scoping
@@ -633,8 +633,8 @@ class ViewSpecificGroupRetained extends GroupRetained {
         super.removeNodeData(s);
     }
 
-    void updateCachedInformation(int component, View view, int index ) {
-	ArrayList list = (ArrayList) cachedViewList.get(index);
+void updateCachedInformation(int component, View view, int index) {
+	ArrayList<View> list = cachedViewList.get(index);
 
 	/*
 	System.err.println("updateCachedInformation v = "+this+" index = "+index+" list = "+list+" cachedViewList.size() = "+cachedViewList.size());
