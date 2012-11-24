@@ -148,7 +148,7 @@ Object[] getObjectArray() {
 	int size = objFreeList.size();
 	if (size == 0)
 		return new Object[5];
-	
+
 	return objFreeList.remove(size - 1);
 }
 
@@ -482,7 +482,7 @@ public void updateObject() {
 					list.add(ct);
 				}
 		} else if (n instanceof ModelClipRetained) {
-			ModelClipRetained mt = (ModelClipRetained)n; 
+			ModelClipRetained mt = (ModelClipRetained)n;
 		    mt.isViewScoped = true;
 		    numberOfModelClips++;
 		    vlsize = vl.size();
@@ -650,7 +650,7 @@ public void updateObject() {
 					}
 				}
 		} else if (n instanceof ModelClipRetained) {
-			ModelClipRetained mt = (ModelClipRetained)n; 
+			ModelClipRetained mt = (ModelClipRetained)n;
 		    mt.isViewScoped = false;
 		    numberOfModelClips--;
 		    vlsize = vl.size();
@@ -765,7 +765,7 @@ private int processLights(ArrayList<LightRetained> globalLights, RenderAtom ra, 
 	return numLights;
 
     }
-    
+
 FogRetained getInfluencingFog(RenderAtom ra, View view) {
 	FogRetained fog = null;
 	int j, nfogs;
@@ -866,7 +866,7 @@ ModelClipRetained getInfluencingModelClip(RenderAtom ra, View view) {
 		if (intersectedBounds.length < numberOfModelClips)
 			intersectedBounds = new Bounds[numberOfModelClips];
 
-		ArrayList<ModelClipRetained> globalModelClips = viewScopedModelClips.get(view); 
+		ArrayList<ModelClipRetained> globalModelClips = viewScopedModelClips.get(view);
 		if (globalModelClips  != null)
 			nModelClips = processModelClips(globalModelClips, ra, nModelClips);
 

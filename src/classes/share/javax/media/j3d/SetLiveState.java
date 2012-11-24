@@ -120,7 +120,7 @@ ArrayList<OrderedPath> orderedPaths = null;
 /**
  * List of BranchGroup from this node to the root of tree This is used by
  * BranchGroupRetained to construct BranchGroup lists for picking.
- * 
+ *
  * @see NodeRetained.branchGroupPaths
  */
 ArrayList<BranchGroupRetained[]> branchGroupPaths = null;

@@ -76,7 +76,7 @@ public class VirtualUniverse extends Object {
 // A list of locales that are contained within this universe
 Vector<Locale> listOfLocales = new Vector<Locale>();
 
-// The list of view platforms, a changed flag and a cached array 
+// The list of view platforms, a changed flag and a cached array
 private ArrayList<ViewPlatformRetained> viewPlatforms = new ArrayList<ViewPlatformRetained>();
 private boolean vpChanged = false;
 private ViewPlatformRetained[] viewPlatformList = new ViewPlatformRetained[0];
@@ -655,7 +655,7 @@ ViewPlatformRetained[] getViewPlatformList() {
 	synchronized (viewPlatforms) {
 		if (vpChanged) {
 			viewPlatformList = viewPlatforms.toArray(new ViewPlatformRetained[viewPlatforms.size()]);
-			vpChanged = false;	
+			vpChanged = false;
 		}
 
 		return viewPlatformList;
