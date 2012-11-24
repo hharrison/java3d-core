@@ -1000,12 +1000,10 @@ int processBgs(ArrayList<BackgroundRetained> globalBgs, BoundingSphere bounds, i
 
     double[] backClipDistanceInVworld (BoundingSphere bounds, View view) {
 	int j;
-        int nclips;
         Bounds closestBounds;
 	boolean backClipActive;
 	double[] backClipDistance;
 	double distance;
-	ArrayList globalClips;
 
 	// Need to lock intersectedBounds, since on a multi-processor
 	// system with 2 views on a single universe, there might
@@ -1013,17 +1011,16 @@ int processBgs(ArrayList<BackgroundRetained> globalBgs, BoundingSphere bounds, i
 	synchronized(lockObj) {
 	    backClipDistance = null;
 	    backClipActive = false;
-	    nclips = 0;
+		int nclips = 0;
 	    distance = 0.0;
 	    if (intersectedBounds.length < numberOfClips)
 		intersectedBounds = new Bounds[numberOfClips];
 
-	    if ((globalClips = (ArrayList)viewScopedClips.get(view)) != null) {
-		nclips = processClips(globalClips, bounds, nclips);
-	    }
-	    nclips = processClips(nonViewScopedClips, bounds, nclips);
+		ArrayList<ClipRetained> globalClips = viewScopedClips.get(view);
+		if (globalClips != null)
+			nclips = processClips(globalClips, bounds, nclips);
 
-
+		nclips = processClips(nonViewScopedClips, bounds, nclips);
 
 
 	    if (nclips == 1)  {
@@ -1048,22 +1045,20 @@ int processBgs(ArrayList<BackgroundRetained> globalBgs, BoundingSphere bounds, i
 	}
     }
 
-    int processClips(ArrayList globalClips, BoundingSphere bounds, int nclips) {
-	int i;
+int processClips(ArrayList<ClipRetained> globalClips, BoundingSphere bounds, int nclips) {
 	int size = globalClips.size();
-	ClipRetained clip;
 
-	for (i=0 ; i<size; i++) {
-	    clip = (ClipRetained)globalClips.get(i);
-	    if (clip.transformedRegion != null &&
-                    clip.transformedRegion.intersect(bounds) == true &&
-                    clip.switchState.currentSwitchOn) {
-		intersectedBounds[nclips] = clip.transformedRegion;
-		intersectedClips[nclips++] = clip;
-	    }
+	for (int i = 0; i < size; i++) {
+		ClipRetained clip = globalClips.get(i);
+		if (clip.transformedRegion != null &&
+		    clip.transformedRegion.intersect(bounds) == true &&
+		    clip.switchState.currentSwitchOn) {
+			intersectedBounds[nclips] = clip.transformedRegion;
+			intersectedClips[nclips++] = clip;
+		}
 	}
 	return nclips;
-    }
+}
 
 
     void updateLight(Object[] args) {
