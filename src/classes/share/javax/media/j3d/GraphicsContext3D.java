@@ -2332,20 +2332,33 @@ public class GraphicsContext3D extends Object   {
                 canvas3d.makeCtxCurrent();
                 canvas3d.syncRender(canvas3d.ctx, true);
                 Point rasterSrcOffset = new Point();
-                ras.getDstOffset(rasterSrcOffset);
+                ras.getSrcOffset(rasterSrcOffset);
 
                 DepthComponentRetained depthComp = ras.depthComponent;
                 int depthType = 0;
+				Object depthBuffer = null;
                 if(depthComp != null) {
                     depthType = depthComp.type;
+					depthBuffer = (depthType == DepthComponentRetained.DEPTH_COMPONENT_TYPE_FLOAT) ? floatBuffer : intBuffer;
                 }
+
+				int imageDataType = 0;
+				int imageFormatType = 0;
+				Object imageBuffer = null;
+
+				if ( (ras.type & Raster.RASTER_COLOR) != 0) {
+					imageDataType = image.getImageDataTypeIntValue();
+					imageFormatType = image.getImageFormatTypeIntValue(false);
+					imageBuffer = image.imageData.get();
+				}
+
                 Pipeline.getPipeline().readRaster(canvas3d.ctx,
                         ras.type, rasterSrcOffset.x, rasterSrcOffset.y,
                         rasterSize.width, rasterSize.height, canvasSize.height,
-                        image.getImageDataTypeIntValue(),
-                        image.getImageFormatTypeIntValue(false),
-                        image.imageData.get(),
-                        depthType, depthComp);
+                        imageDataType,
+                        imageFormatType,
+                        imageBuffer,
+                        depthType, depthBuffer);
 
                 canvas3d.drawingSurfaceObject.unLock();
             }
