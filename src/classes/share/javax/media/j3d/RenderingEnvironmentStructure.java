@@ -92,7 +92,6 @@ int numberOfClips = 0;
 
     Transform3D localeXform = new Transform3D();
     Vector3d localeTranslation = new Vector3d();
-    Bounds localeBounds = null;
 
     // For closest Fog selection
     FogRetained[] intersectedFogs = new FogRetained[1];
@@ -933,9 +932,6 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 	Bounds closestBounds;
 	int j = 0;
 	int nbacks;
-        ArrayList globalBgs;
-
-
 
 	// Need to lock lockObj, since on a multi-processor
 	// system with 2 views on a single universe, there might
@@ -946,11 +942,11 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
 		intersectedBounds = new Bounds[numberOfBgs];
 
 
+		ArrayList<BackgroundRetained> globalBgs = viewScopedBackgrounds.get(view);
+		if (globalBgs != null)
+			nbacks = processBgs(globalBgs, bounds, nbacks, viewLocale);
 
-	    if ((globalBgs = (ArrayList)viewScopedBackgrounds.get(view)) != null) {
-		nbacks = processBgs(globalBgs,  bounds, nbacks, viewLocale);
-	    }
-	    nbacks = processBgs(nonViewScopedBackgrounds,  bounds, nbacks, viewLocale);
+		nbacks = processBgs(nonViewScopedBackgrounds, bounds, nbacks, viewLocale);
 
 	    // If there are no intersections, set to black.
 	    if (nbacks == 1) {
@@ -971,37 +967,36 @@ int processModelClips(ArrayList<ModelClipRetained> globalModelClips, RenderAtom 
     }
 
 
-    // Called while holding lockObj lock
-    int processBgs(ArrayList globalBgs, BoundingSphere bounds, int nbacks, Locale viewLocale) {
+// Called while holding lockObj lock
+int processBgs(ArrayList<BackgroundRetained> globalBgs, BoundingSphere bounds, int nbacks, Locale viewLocale) {
 	int size = globalBgs.size();
-	int i;
-	BackgroundRetained back;
 
-	for (i=0; i<size; i++) {
-	    back = (BackgroundRetained)globalBgs.get(i);
-	    if (back.transformedRegion != null && back.switchState.currentSwitchOn) {
+	for (int i = 0; i < size; i++) {
+		BackgroundRetained back = globalBgs.get(i);
+		if (back.transformedRegion == null || !back.switchState.currentSwitchOn)
+			continue;
+
 		if (back.cachedLocale != viewLocale) {
-		    localeBounds = (Bounds) back.transformedRegion.clone();
-		    // Translate the transformed region
-		    back.cachedLocale.hiRes.difference(viewLocale.hiRes, localeTranslation);
-		    localeXform.setIdentity();
-		    localeXform.setTranslation(localeTranslation);
-		    localeBounds.transform(localeXform);
-		    if (localeBounds.intersect(bounds) == true) {
-			intersectedBounds[nbacks] = localeBounds;
-			intersectedBacks[nbacks++] = back;
-		    }
+			Bounds localeBounds = (Bounds)back.transformedRegion.clone();
+			// Translate the transformed region
+			back.cachedLocale.hiRes.difference(viewLocale.hiRes, localeTranslation);
+			localeXform.setIdentity();
+			localeXform.setTranslation(localeTranslation);
+			localeBounds.transform(localeXform);
+			if (localeBounds.intersect(bounds) == true) {
+				intersectedBounds[nbacks] = localeBounds;
+				intersectedBacks[nbacks++] = back;
+			}
 		}
 		else {
-		    if (back.transformedRegion.intersect(bounds) == true) {
-			intersectedBounds[nbacks] = back.transformedRegion;
-			intersectedBacks[nbacks++] = back;
-		    }
+			if (back.transformedRegion.intersect(bounds) == true) {
+				intersectedBounds[nbacks] = back.transformedRegion;
+				intersectedBacks[nbacks++] = back;
+			}
 		}
-	    }
 	}
 	return nbacks;
-    }
+}
 
     double[] backClipDistanceInVworld (BoundingSphere bounds, View view) {
 	int j;
