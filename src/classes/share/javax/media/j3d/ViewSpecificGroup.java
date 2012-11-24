@@ -183,21 +183,20 @@ public class ViewSpecificGroup extends Group {
     }
 
 
-    /**
-     * Returns an enumeration of this ViewSpecificGroup node's list
-     * of views.
-     *
-     * @return an Enumeration object containing all the views.
-     * @exception CapabilityNotSetException if appropriate capability is
-     * not set and this object is part of live or compiled scene graph
-     */
-    public Enumeration getAllViews() {
-	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_VIEW_READ))
+/**
+ * Returns an enumeration of this ViewSpecificGroup node's list
+ * of views.
+ *
+ * @return an Enumeration object containing all the views.
+ * @exception CapabilityNotSetException if appropriate capability is
+ * not set and this object is part of live or compiled scene graph
+ */
+public Enumeration<View> getAllViews() {
+	if (isLiveOrCompiled() && !this.getCapability(ALLOW_VIEW_READ))
 		throw new CapabilityNotSetException(J3dI18N.getString("ViewSpecificGroup2"));
 
-	return ((ViewSpecificGroupRetained)this.retained).getAllViews();
-    }
+	return ((ViewSpecificGroupRetained) this.retained).getAllViews();
+}
 
 
     /**
@@ -350,8 +349,8 @@ public class ViewSpecificGroup extends Group {
         ViewSpecificGroupRetained attr = (ViewSpecificGroupRetained) originalNode.retained;
 	ViewSpecificGroupRetained rt = (ViewSpecificGroupRetained) retained;
 
-	for (Enumeration e = attr.getAllViews(); e.hasMoreElements(); ) {
-	    rt.addView((View)e.nextElement());
+	for (Enumeration<View> e = attr.getAllViews(); e.hasMoreElements(); ) {
+	    rt.addView(e.nextElement());
 	}
     }
 

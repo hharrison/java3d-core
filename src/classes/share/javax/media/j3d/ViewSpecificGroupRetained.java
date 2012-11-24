@@ -36,7 +36,7 @@ import java.util.Vector;
 
 class ViewSpecificGroupRetained extends GroupRetained {
 
-    ArrayList apiViewList = new ArrayList();
+ArrayList<View> apiViewList = new ArrayList<View>();
 
     // Used by leaf objects particularly GAs
     // Updated in a MT Safe manner and also used by RenderBin
@@ -154,10 +154,8 @@ class ViewSpecificGroupRetained extends GroupRetained {
     }
 
 
-    void setView(View view, int index) {
-	int i;
-
-	View oldView =  (View)apiViewList.get(index);
+void setView(View view, int index) {
+	View oldView =  apiViewList.get(index);
 	Integer mtype = new Integer(SET_VIEW);
 
 	if (oldView == view)
@@ -315,9 +313,9 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	return keyList;
     }
 
-    View getView(int index) {
-	return (View)apiViewList.get(index);
-    }
+View getView(int index) {
+	return apiViewList.get(index);
+}
 
     void insertView(View view, int index) {
 	int i;
@@ -414,7 +412,7 @@ class ViewSpecificGroupRetained extends GroupRetained {
 
     void removeView(int index) {
 	int i;
-	View v = (View) apiViewList.remove(index);
+	View v = apiViewList.remove(index);
 	if (source.isLive() && v != null) {
 	    // Gather all affected leaf nodes and send a message to
 	    // RenderingEnv and RenderBin
@@ -500,13 +498,13 @@ class ViewSpecificGroupRetained extends GroupRetained {
 	}
     }
 
-    Enumeration getAllViews() {
-	Vector viewList = new Vector();
+Enumeration<View> getAllViews() {
+	Vector<View> viewList = new Vector<View>(apiViewList.size());
 	for (int i = 0; i < apiViewList.size(); i++) {
-	    viewList.add(apiViewList.get(i));
+		viewList.add(apiViewList.get(i));
 	}
 	return viewList.elements();
-    }
+}
 
     int numViews() {
 	return apiViewList.size();
