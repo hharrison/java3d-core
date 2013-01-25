@@ -363,22 +363,21 @@ public class AlternateAppearance extends Leaf {
     }
 
 
-    /**
-     * Returns an enumeration of this AlternateAppearance node's list
-     * of scopes.
-     * @return an Enumeration object containing all nodes in this
-     * AlternateAppearance node's list of scopes.
-     * @exception CapabilityNotSetException if appropriate capability is
-     * not set and this object is part of live or compiled scene graph
-     */
-    public Enumeration getAllScopes() {
+/**
+ * Returns an enumeration of this AlternateAppearance node's list
+ * of scopes.
+ * @return an Enumeration object containing all nodes in this
+ * AlternateAppearance node's list of scopes.
+ * @exception CapabilityNotSetException if appropriate capability is
+ * not set and this object is part of live or compiled scene graph
+ */
+public Enumeration<Group> getAllScopes() {
 	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_SCOPE_READ))
-		throw new CapabilityNotSetException(J3dI18N.getString("AlternateAppearance11"));
+		if (!this.getCapability(ALLOW_SCOPE_READ))
+			throw new CapabilityNotSetException(J3dI18N.getString("AlternateAppearance11"));
 
-
-	return (Enumeration) ((AlternateAppearanceRetained)this.retained).getAllScopes();
-    }
+	return ((AlternateAppearanceRetained)this.retained).getAllScopes();
+}
 
 
     /**
@@ -537,10 +536,10 @@ public class AlternateAppearance extends Leaf {
 
 	rt.initInfluencingBounds(attr.getInfluencingBounds());
 
-	Enumeration elm = attr.getAllScopes();
+	Enumeration<Group> elm = attr.getAllScopes();
 	while (elm.hasMoreElements()) {
 	  // this reference will set correctly in updateNodeReferences() callback
-	    rt.initAddScope((Group) elm.nextElement());
+	    rt.initAddScope(elm.nextElement());
 	}
 
 	// correct value will set in updateNodeReferences

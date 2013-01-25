@@ -348,18 +348,18 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 	initRemoveScope(i);
     }
 
-    /**
-     * Returns an enumeration object of the scoperen.
-     * @return an enumeration object of the scoperen
-     */
-    Enumeration getAllScopes() {
+/**
+ * Returns an enumeration object of the scoperen.
+ * @return an enumeration object of the scoperen
+ */
+Enumeration<Group> getAllScopes() {
 	Enumeration<GroupRetained> elm = scopes.elements();
-	Vector v = new Vector(scopes.size());
+	Vector<Group> v = new Vector<Group>(scopes.size());
 	while (elm.hasMoreElements()) {
-		v.add(elm.nextElement().source);
+		v.add((Group)elm.nextElement().source);
 	}
 	return v.elements();
-    }
+}
 
   /**
    * Returns the index of the specified Group node in this node's list of scopes.
