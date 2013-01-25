@@ -137,9 +137,8 @@ abstract class GeometryArrayRetained extends GeometryRetained{
     // update messages
     boolean inUpdater = false;
 
-    // Array List used for messages
-    ArrayList gaList = new ArrayList(1);
-
+// Array List used for messages
+ArrayList<GeometryAtom> gaList = new ArrayList<GeometryAtom>(1);
 
     // Target threads to be notified when morph changes
     static final int targetThreads = (J3dThread.UPDATE_RENDER |
