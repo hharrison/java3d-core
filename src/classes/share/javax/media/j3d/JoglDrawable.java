@@ -26,19 +26,60 @@
 
 package javax.media.j3d;
 
+import javax.media.nativewindow.NativeWindow;
+import javax.media.opengl.GL;
 import javax.media.opengl.GLDrawable;
+import javax.media.opengl.GLFBODrawable;
+
+import com.jogamp.opengl.FBObject;
 
 /**
  * Drawable class for the Jogl rendering pipeline.
  */
 class JoglDrawable implements Drawable {
-  private GLDrawable  drawable;
+  
+	private GLDrawable drawable = null;
+	private NativeWindow nativeWindow = null;
 
-  JoglDrawable(GLDrawable drawable) {
-    this.drawable = drawable;
-  }
+	// offscreen
+	JoglDrawable(GLDrawable drawable) {
+		this.drawable = drawable;
+	}
+	
+	// onscreen
+	JoglDrawable(GLDrawable drawable, NativeWindow nativeWindow) {
+		this.drawable = drawable;
+		this.nativeWindow = nativeWindow;
+	}
 
-  GLDrawable getGLDrawable() {
-    return drawable;
-  }
+	GLDrawable getGLDrawable() {
+		return drawable;
+	}
+	
+	void setGLDrawable(GLDrawable drawable) {
+		this.drawable = drawable;
+	}
+	
+	NativeWindow getNativeWindow() {
+		return nativeWindow;
+	}
+	
+	void destroyNativeWindow() {
+		if (nativeWindow != null) {
+			nativeWindow.destroy();
+			nativeWindow = null;
+		}
+	}
+	
+	// Called from Renderer, only while onscreen rendering on Mac OS X / JRE 7
+	boolean hasFBObjectSizeChanged(int width, int height) {
+		boolean isChanged = false;
+		if (drawable != null && drawable instanceof GLFBODrawable) {
+			FBObject fboBack = ((GLFBODrawable)drawable).getFBObject(GL.GL_BACK);
+			if (fboBack != null) {
+				isChanged = ( width != fboBack.getWidth() || height != fboBack.getHeight() );
+			}			
+		}				
+		return isChanged;
+	}
 }

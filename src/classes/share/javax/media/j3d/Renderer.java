@@ -32,6 +32,8 @@
 
 package javax.media.j3d;
 
+import static javax.media.opengl.GL.GL_BACK;
+
 import java.awt.GraphicsConfiguration;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -40,6 +42,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.logging.Level;
+
+import javax.media.opengl.GL2;
+import javax.media.opengl.GLContext;
+import javax.media.opengl.GLDrawable;
+import javax.media.opengl.GLFBODrawable;
+
+import com.jogamp.opengl.FBObject;
 
 
 class Renderer extends J3dThread {
@@ -241,7 +250,9 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
                         if (cv.active && (cv.ctx != null) &&
                                 (cv.view != null) && (cv.imageReady)) {
-                            if (cv.useDoubleBuffer) {
+                        	// don't swap double buffered AuoOffScreenCanvas3D/JCanvas3D
+                        	// manual offscreen rendering doesn't pass this code (opArg == SWAP)
+                            if (cv.useDoubleBuffer && !cv.offScreen) { 
                                 synchronized (cv.drawingSurfaceObject) {
                                     if (cv.validCtx) {
                                         if (VirtualUniverse.mc.doDsiRenderLock) {
@@ -410,49 +421,47 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			Integer reqType = (Integer) m[nmesg].args[2];
 			Canvas3D c = (Canvas3D) secondArg;
 			if (reqType == MasterControl.SET_GRAPHICSCONFIG_FEATURES) {
-                          try {
-			    if (c.offScreen) {
-				// offScreen canvas neither supports
-				// double buffering nor  stereo
-				c.doubleBufferAvailable = false;
-				c.stereoAvailable = false;
-			    } else {
-				c.doubleBufferAvailable = c.hasDoubleBuffer();
-				c.stereoAvailable = c.hasStereo();
-			    }
-
-			    // Setup stencil related variables.
-                            c.actualStencilSize = c.getStencilSize();
-                            boolean userOwnsStencil = c.requestedStencilSize > 0;
-
-                            c.userStencilAvailable =
-                                    (userOwnsStencil && (c.actualStencilSize > 0));
-                            c.systemStencilAvailable =
-                                    (!userOwnsStencil && (c.actualStencilSize > 0));
-
-                            c.sceneAntialiasingMultiSamplesAvailable =
-				c.hasSceneAntialiasingMultisample();
-
-			    if (c.sceneAntialiasingMultiSamplesAvailable) {
-				c.sceneAntialiasingAvailable = true;
-			    } else {
-				c.sceneAntialiasingAvailable =
-				    c.hasSceneAntialiasingAccum();
-			    }
-                          } catch (RuntimeException ex) {
-                              ex.printStackTrace();
-
-                              // Issue 260 : indicate fatal error and notify error listeners
-                              c.setFatalError();
-                              RenderingError err =
-                                      new RenderingError(RenderingError.GRAPHICS_CONFIG_ERROR,
-                                          J3dI18N.getString("Renderer1"));
-                              err.setCanvas3D(c);
-                              err.setGraphicsDevice(c.graphicsConfiguration.getDevice());
-                              notifyErrorListeners(err);
-                          }
-			    GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
-			} else if (reqType == MasterControl.SET_QUERYPROPERTIES){
+				try {
+				    if (c.offScreen) {
+				    	// NEW : offscreen supports double buffering
+				    	c.doubleBufferAvailable = c.hasDoubleBuffer(); // was : false
+				    	// offScreen canvas doesn't supports stereo
+				    	c.stereoAvailable = false;
+				    } 
+				    else {
+				    	c.doubleBufferAvailable = c.hasDoubleBuffer();
+				    	c.stereoAvailable = c.hasStereo();
+				    }
+	
+				    // Setup stencil related variables.
+	                c.actualStencilSize = c.getStencilSize();
+	                boolean userOwnsStencil = c.requestedStencilSize > 0;
+	
+	                c.userStencilAvailable = (userOwnsStencil && (c.actualStencilSize > 0));
+	                c.systemStencilAvailable = (!userOwnsStencil && (c.actualStencilSize > 0));
+	
+	                c.sceneAntialiasingMultiSamplesAvailable = c.hasSceneAntialiasingMultisample();
+	
+				    if (c.sceneAntialiasingMultiSamplesAvailable) {
+				    	c.sceneAntialiasingAvailable = true;
+				    } 
+				    else {
+				    	c.sceneAntialiasingAvailable = c.hasSceneAntialiasingAccum();
+				    }
+				} 
+				catch (RuntimeException ex) {
+	              ex.printStackTrace();
+	
+	              // Issue 260 : indicate fatal error and notify error listeners
+	              c.setFatalError();
+	              RenderingError err = new RenderingError(RenderingError.GRAPHICS_CONFIG_ERROR, J3dI18N.getString("Renderer1"));
+	              err.setCanvas3D(c);
+	              err.setGraphicsDevice(c.graphicsConfiguration.getDevice());
+	              notifyErrorListeners(err);
+				}
+				GraphicsConfigTemplate3D.runMonitor(J3dThread.NOTIFY);
+			} 
+			else if (reqType == MasterControl.SET_QUERYPROPERTIES){
                             try {
                                 c.createQueryContext();
                             } catch (RuntimeException ex) {
@@ -939,8 +948,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			if (canvas.isRunning) {
                     	    canvas.makeCtxCurrent();
 			}
-            	    }
-
+            	    }            			            			
 
 	            if (renderBin != null) {
 			if ((VirtualUniverse.mc.doDsiRenderLock) &&
@@ -964,14 +972,13 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			    canvas.drawingSurfaceObject.unLock();
 			}
 
-                        // Issue 109 : removed copyOfCvCache now that we have
-                        // a separate canvasViewCache for computing view frustum
-                        CanvasViewCache cvCache = canvas.canvasViewCache;
+                // Issue 109 : removed copyOfCvCache now that we have
+                // a separate canvasViewCache for computing view frustum
+                CanvasViewCache cvCache = canvas.canvasViewCache;
 
-			// Deadlock if we include updateViewCache in
-			// drawingSurfaceObject sync.
-			canvas.updateViewCache(false, null, null,
-					       renderBin.geometryBackground != null);
+				// Deadlock if we include updateViewCache in
+				// drawingSurfaceObject sync.
+				canvas.updateViewCache(false, null, null, renderBin.geometryBackground != null);
 
 			if ((VirtualUniverse.mc.doDsiRenderLock) &&
 			    (!canvas.drawingSurfaceObject.renderLock())) {
@@ -982,11 +989,23 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                             canvas.offScreenRendering = false;
 			    break doneRender;
 			}
+			
+			// this is the current size of the canvas
+			int cvWidth = cvCache.getCanvasWidth();
+			int cvHeight = cvCache.getCanvasHeight();
+			
+			/* Mac/JRE 7 issue */         				
+			if (!canvas.offScreen && canvas.isOffscreenLayerSurfaceEnabled()) {
+				if ( ((JoglDrawable)canvas.drawable).hasFBObjectSizeChanged(cvWidth, cvHeight) ) {
+					int newWidth = Math.max(1, cvWidth); 
+					int newHeight = Math.max(1, cvHeight);
+//System.out.println("Renderer calls resizeOffscreenLayerSurface w/h = " +newWidth+"/"+newHeight);					
+					Pipeline.getPipeline().resizeOffscreenLayerSurface(canvas, newWidth, newHeight);
+				}		
+			}			
 
                         // setup viewport
-                        canvas.setViewport(canvas.ctx, 0, 0,
-                           cvCache.getCanvasWidth(),
-                           cvCache.getCanvasHeight());
+                        canvas.setViewport(canvas.ctx, 0, 0, cvWidth, cvHeight);
 
 
 
@@ -1135,17 +1154,12 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 					     Canvas3D.FIELD_ALL,
 					     canvas.useDoubleBuffer);
 
-			// this is if the background image resizes with the canvas
-			int winWidth = cvCache.getCanvasWidth();
-			int winHeight = cvCache.getCanvasHeight();
-
-
 		        // clear background if not full screen antialiasing
                         // and not in stereo mode
                         if (!doAccum && !sharedStereoZBuffer) {
 			    BackgroundRetained bg = renderBin.background;
 
-                            canvas.clear(bg, winWidth, winHeight);
+                            canvas.clear(bg, cvWidth, cvHeight);
 
                         }
 
@@ -1243,7 +1257,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                                 if (doAccum || sharedStereoZBuffer) {
 				    BackgroundRetained bg = renderBin.background;
 
-                                    canvas.clear(bg, winWidth, winHeight);
+                                    canvas.clear(bg, cvWidth, cvHeight);
 
                                 }
 
@@ -1392,7 +1406,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                         // end offscreen rendering
                         if (canvas.offScreenRendering) {
 
-			    canvas.syncRender(canvas.ctx, true);
+                        	canvas.syncRender(canvas.ctx, true);
                             canvas.endOffScreenRendering();
                             canvas.offScreenRendering = false;
 
@@ -1475,30 +1489,29 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
       }
     }
 
-// resource clean up
-void shutdown() {
-	removeAllCtxs();
-}
+	// resource clean up
+	void shutdown() {
+		removeAllCtxs();
+	}
 
     void cleanup() {
-	super.cleanup();
-        renderMessage = new J3dMessage[1];
-	rendererStructure = new RendererStructure();
-	bgVworldToVpc = new Transform3D();
-	sharedCtx = null;
-	sharedCtxTimeStamp = 0;
-        sharedCtxDrawable = null;
-	dirtyRenderMoleculeList.clear();
-	dirtyRenderAtomList.clear();
-	dirtyDlistPerRinfoList.clear();
-	textureIdResourceFreeList.clear();
-	displayListResourceFreeList.clear();
-	onScreen = null;
-	offScreen = null;
-	m = null;
-	nmesg = 0;
+		super.cleanup();
+		renderMessage = new J3dMessage[1];
+		rendererStructure = new RendererStructure();
+		bgVworldToVpc = new Transform3D();
+		sharedCtx = null;
+		sharedCtxTimeStamp = 0;
+		sharedCtxDrawable = null;
+		dirtyRenderMoleculeList.clear();
+		dirtyRenderAtomList.clear();
+		dirtyDlistPerRinfoList.clear();
+		textureIdResourceFreeList.clear();
+		displayListResourceFreeList.clear();
+		onScreen = null;
+		offScreen = null;
+		m = null;
+		nmesg = 0;
     }
-
 
     // This is only invoked from removeCtx()/removeAllCtxs()
     // with drawingSurface already lock
@@ -1521,202 +1534,204 @@ void shutdown() {
     // user thread will not wait for it. Also we can just
     // reuse it as Canvas3D did not destroy.
     private void removeCtx(Canvas3D cv, Drawable drawable, Context ctx,
-			   boolean resetCtx, boolean freeBackground,
-			   boolean destroyOffScreenBuffer) {
+			               boolean resetCtx, boolean freeBackground,
+			               boolean destroyOffScreenBuffer) {
 
-	synchronized (VirtualUniverse.mc.contextCreationLock) {
-	    if (ctx != null) {
-		int idx = listOfCtxs.indexOf(ctx);
-		if (idx >= 0) {
-		    listOfCtxs.remove(idx);
-		    listOfCanvases.remove(idx);
-		    // Issue 326 : don't check display variable here
-		    if ((drawable != null) && cv.added) {
-			// cv.ctx may reset to -1 here so we
-			// always use the ctx pass in.
-			if (cv.drawingSurfaceObject.renderLock()) {
-			    // if it is the last one, free shared resources
-			    if (sharedCtx != null) {
-				if (listOfCtxs.isEmpty()) {
-				    makeCtxCurrent(sharedCtx, sharedCtxDrawable);
-				    freeResourcesInFreeList(null);
-				    freeContextResources();
-				    Canvas3D.destroyContext(sharedCtxDrawable, sharedCtx);
-				    currentCtx = null;
-                                    currentDrawable = null;
-				} else {
-				    freeResourcesInFreeList(cv);
+		synchronized (VirtualUniverse.mc.contextCreationLock) {
+		    if (ctx != null) {
+				int idx = listOfCtxs.indexOf(ctx);
+				if (idx >= 0) {
+				    listOfCtxs.remove(idx);
+				    listOfCanvases.remove(idx);
+				    // Issue 326 : don't check display variable here
+				    if ((drawable != null) && cv.added) {
+						// cv.ctx may reset to -1 here so we
+						// always use the ctx pass in.
+						if (cv.drawingSurfaceObject.renderLock()) {
+						    // if it is the last one, free shared resources
+						    if (sharedCtx != null) {
+								if (listOfCtxs.isEmpty()) {
+								    makeCtxCurrent(sharedCtx, sharedCtxDrawable);
+								    freeResourcesInFreeList(null);
+								    freeContextResources();
+								    Canvas3D.destroyContext(sharedCtxDrawable, sharedCtx);
+								    currentCtx = null;
+								    currentDrawable = null;
+								} 
+								else {
+								    freeResourcesInFreeList(cv);
+								}
+								cv.makeCtxCurrent(ctx, drawable);
+						    } 
+						    else {
+						    	cv.makeCtxCurrent(ctx, drawable);
+						    	cv.freeResourcesInFreeList(ctx);
+						    }
+						    cv.freeContextResources(this, freeBackground, ctx);
+						    Canvas3D.destroyContext(drawable, ctx);
+						    currentCtx = null;
+			                currentDrawable = null;
+						    cv.drawingSurfaceObject.unLock();
+						}
+				    }
 				}
-				cv.makeCtxCurrent(ctx, drawable);
-			    } else {
-				cv.makeCtxCurrent(ctx, drawable);
-				cv.freeResourcesInFreeList(ctx);
-			    }
-			    cv.freeContextResources(this, freeBackground, ctx);
-			    Canvas3D.destroyContext(drawable, ctx);
-			    currentCtx = null;
-                            currentDrawable = null;
-			    cv.drawingSurfaceObject.unLock();
-			}
+		
+				if (resetCtx) {
+				    cv.ctx = null;
+				}
+		
+				if ((sharedCtx != null) && listOfCtxs.isEmpty()) {
+				    sharedCtx = null;
+				    sharedCtxTimeStamp = 0;
+				}
+				cv.ctxTimeStamp = 0;
+		    }
+	
+		    // Fix for issue 18.
+		    // Since we are now the renderer thread,
+		    // we can safely execute destroyOffScreenBuffer.
+		    if (destroyOffScreenBuffer) {
+		    	cv.destroyOffScreenBuffer(ctx, drawable);
+		    	cv.offScreenBufferPending = false;
 		    }
 		}
-
-		if (resetCtx) {
-		    cv.ctx = null;
-		}
-
-		if ((sharedCtx != null) && listOfCtxs.isEmpty()) {
-		    sharedCtx = null;
-		    sharedCtxTimeStamp = 0;
-		}
-		cv.ctxTimeStamp = 0;
-	    }
-
-	    // Fix for issue 18.
-	    // Since we are now the renderer thread,
-	    // we can safely execute destroyOffScreenBuffer.
-	    if(destroyOffScreenBuffer) {
-		cv.destroyOffScreenBuffer(ctx, drawable);
-		cv.offScreenBufferPending = false;
-	    }
-	}
     }
 
     void removeAllCtxs() {
-	Canvas3D cv;
-
-	synchronized (VirtualUniverse.mc.contextCreationLock) {
-
-	    for (int i=listOfCanvases.size()-1; i >=0; i--) {
-			cv = listOfCanvases.get(i);
-
-		if ((cv.screen != null) && (cv.ctx != null)) {
-                    // Issue 326 : don't check display variable here
-		    if ((cv.drawable != null) && cv.added) {
-			if (cv.drawingSurfaceObject.renderLock()) {
-			    // We need to free sharedCtx resource
-			    // first before last non-sharedCtx to
-			    // workaround Nvidia driver bug under Linux
-			    // that crash on freeTexture ID:4685156
-			    if ((i == 0) && (sharedCtx != null)) {
-				makeCtxCurrent(sharedCtx, sharedCtxDrawable);
-				freeResourcesInFreeList(null);
-				freeContextResources();
-				Canvas3D.destroyContext(sharedCtxDrawable, sharedCtx);
-				currentCtx = null;
-                                currentDrawable = null;
-			    }
-			    cv.makeCtxCurrent();
-			    cv.freeResourcesInFreeList(cv.ctx);
-			    cv.freeContextResources(this, true, cv.ctx);
-			    Canvas3D.destroyContext(cv.drawable, cv.ctx);
-			    currentCtx = null;
-                            currentDrawable = null;
-			    cv.drawingSurfaceObject.unLock();
-			}
+		Canvas3D cv;
+	
+		synchronized (VirtualUniverse.mc.contextCreationLock) {
+	
+		    for (int i=listOfCanvases.size()-1; i >=0; i--) {
+				cv = listOfCanvases.get(i);
+		
+				if ((cv.screen != null) && (cv.ctx != null)) {
+					// Issue 326 : don't check display variable here
+				    if ((cv.drawable != null) && cv.added) {
+						if (cv.drawingSurfaceObject.renderLock()) {
+						    // We need to free sharedCtx resource
+						    // first before last non-sharedCtx to
+						    // workaround Nvidia driver bug under Linux
+						    // that crash on freeTexture ID:4685156
+						    if ((i == 0) && (sharedCtx != null)) {
+								makeCtxCurrent(sharedCtx, sharedCtxDrawable);
+								freeResourcesInFreeList(null);
+								freeContextResources();
+								Canvas3D.destroyContext(sharedCtxDrawable, sharedCtx);
+								currentCtx = null;
+								currentDrawable = null;
+						    }
+						    cv.makeCtxCurrent();
+						    cv.freeResourcesInFreeList(cv.ctx);
+						    cv.freeContextResources(this, true, cv.ctx);
+						    Canvas3D.destroyContext(cv.drawable, cv.ctx);
+						    currentCtx = null;
+						    currentDrawable = null;
+						    cv.drawingSurfaceObject.unLock();
+						}
+				    }
+				}
+		
+				cv.ctx = null;
+				cv.ctxTimeStamp = 0;
 		    }
+	
+		    if (sharedCtx != null) {
+		    	sharedCtx = null;
+		    	sharedCtxTimeStamp = 0;
+		    }
+		    listOfCanvases.clear();
+		    listOfCtxs.clear();
 		}
-
-		cv.ctx = null;
-		cv.ctxTimeStamp = 0;
-	    }
-
-	    if (sharedCtx != null) {
-		sharedCtx = null;
-		sharedCtxTimeStamp = 0;
-	    }
-	    listOfCanvases.clear();
-	    listOfCtxs.clear();
-	}
     }
-
+    
     // handle free resource in the FreeList
     void freeResourcesInFreeList(Canvas3D cv) {
-	Iterator<Integer> it;
-	boolean isFreeTex = (textureIdResourceFreeList.size() > 0);
-	boolean isFreeDL = (displayListResourceFreeList.size() > 0);
-	int val;
-
-	if (isFreeTex || isFreeDL) {
-	    if (cv != null) {
-		cv.makeCtxCurrent(sharedCtx);
-	    }
-
-	    if (isFreeDL) {
-		for (it = displayListResourceFreeList.iterator(); it.hasNext();) {
-				val = it.next().intValue();
-		    if (val <= 0) {
-			continue;
+		Iterator<Integer> it;
+		boolean isFreeTex = (textureIdResourceFreeList.size() > 0);
+		boolean isFreeDL = (displayListResourceFreeList.size() > 0);
+		int val;
+	
+		if (isFreeTex || isFreeDL) {
+		    if (cv != null) {
+		    	cv.makeCtxCurrent(sharedCtx);
 		    }
-		    Canvas3D.freeDisplayList(sharedCtx, val);
+	
+		    if (isFreeDL) {
+				for (it = displayListResourceFreeList.iterator(); it.hasNext();) {
+					val = it.next().intValue();
+				    if (val <= 0) {
+				    	continue;
+				    }
+				    Canvas3D.freeDisplayList(sharedCtx, val);
+				}
+				displayListResourceFreeList.clear();
+		    }
+		    
+		    if (isFreeTex) {
+				for (it = textureIdResourceFreeList.iterator(); it.hasNext();) {
+					val = it.next().intValue();
+				    if (val <= 0) {
+				    	continue;
+				    }
+				    if (val >= textureIDResourceTable.size()) {
+				    	MasterControl.getCoreLogger().severe(
+		                                "Error in freeResourcesInFreeList : ResourceIDTableSize = " +
+		                                textureIDResourceTable.size() + " val = " + val);
+				    } 
+				    else {
+				    	TextureRetained tex = textureIDResourceTable.get(val);
+				    	if (tex != null) {
+				    		synchronized (tex.resourceLock) {
+				    			tex.resourceCreationMask &= ~rendererBit;
+				    			if (tex.resourceCreationMask == 0) {
+				    				tex.freeTextureId(val);
+				    			}
+				    		}
+				    	}		
+				    	textureIDResourceTable.set(val, null);
+				    }
+				    Canvas3D.freeTexture(sharedCtx, val);
+				}
+				textureIdResourceFreeList.clear();
+		    }
+		    if (cv != null) {
+		    	cv.makeCtxCurrent(cv.ctx);
+		    }
 		}
-		displayListResourceFreeList.clear();
-	    }
-	    if (isFreeTex) {
-		for (it = textureIdResourceFreeList.iterator(); it.hasNext();) {
-				val = it.next().intValue();
-		    if (val <= 0) {
-			continue;
-		    }
-		    if (val >= textureIDResourceTable.size()) {
-			MasterControl.getCoreLogger().severe(
-                                "Error in freeResourcesInFreeList : ResourceIDTableSize = " +
-                                textureIDResourceTable.size() +
-                                " val = " + val);
-		    } else {
-					TextureRetained tex = textureIDResourceTable.get(val);
-					if (tex != null) {
-                            synchronized (tex.resourceLock) {
-                                tex.resourceCreationMask &= ~rendererBit;
-                                if (tex.resourceCreationMask == 0) {
-                                    tex.freeTextureId(val);
-                                }
-                            }
-                        }
-
-                        textureIDResourceTable.set(val, null);
-		    }
-		    Canvas3D.freeTexture(sharedCtx, val);
-		}
-		textureIdResourceFreeList.clear();
-	    }
-	    if (cv != null) {
-		cv.makeCtxCurrent(cv.ctx);
-	    }
-	}
     }
 
-final void addTextureResource(int id, TextureRetained obj) {
-	if (textureIDResourceTable.size() <= id) {
-	    for (int i=textureIDResourceTable.size();
-		 i < id; i++) {
-		textureIDResourceTable.add(null);
-	    }
-	    textureIDResourceTable.add(obj);
-	} else {
-	    textureIDResourceTable.set(id, obj);
-	}
+    final void addTextureResource(int id, TextureRetained obj) {
+		if (textureIDResourceTable.size() <= id) {
+		    for (int i=textureIDResourceTable.size(); i < id; i++) {
+		    	textureIDResourceTable.add(null);
+		    }
+		    textureIDResourceTable.add(obj);
+		} 
+		else {
+		    textureIDResourceTable.set(id, obj);
+		}
     }
 
     void freeContextResources() {
-	TextureRetained tex;
-
-	for (int id = textureIDResourceTable.size()-1; id >= 0; id--) {
-		tex = textureIDResourceTable.get(id);
-		if (tex == null) {
-			continue;
+		TextureRetained tex;
+	
+		for (int id = textureIDResourceTable.size()-1; id >= 0; id--) {
+			tex = textureIDResourceTable.get(id);
+			if (tex == null) {
+				continue;
+			}
+		    Canvas3D.freeTexture(sharedCtx, id);
+			synchronized (tex.resourceLock) {
+			    tex.resourceCreationMask &= ~rendererBit;
+			    if (tex.resourceCreationMask == 0) {
+			    	tex.freeTextureId(id);
+			    }
+			}
 		}
-	    Canvas3D.freeTexture(sharedCtx, id);
-		synchronized (tex.resourceLock) {
-		    tex.resourceCreationMask &= ~rendererBit;
-		    if (tex.resourceCreationMask == 0) {
-			tex.freeTextureId(id);
-		    }
-		}
-	}
-	textureIDResourceTable.clear();
-
-	// displayList is free in Canvas.freeContextResources()
+		textureIDResourceTable.clear();
+	
+		// displayList is free in Canvas.freeContextResources()
     }
 
     /**

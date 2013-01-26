@@ -939,6 +939,8 @@ public Pipeline run() {
     //
     // Canvas3D methods - native wrappers
     //
+    
+    abstract void resizeOffscreenLayerSurface(Canvas3D cv, int newWidth, int newHeight);
 
     // This is the native method for creating the underlying graphics context.
     abstract Context createNewContext(Canvas3D cv, Drawable drawable,
@@ -1105,6 +1107,8 @@ public Pipeline run() {
 
     abstract void freeDisplayList(Context ctx, int id);
     abstract void freeTexture(Context ctx, int id);
+    
+    abstract int generateTexture(Context ctx);
 
     abstract void texturemapping(Context ctx,
             int px, int py,

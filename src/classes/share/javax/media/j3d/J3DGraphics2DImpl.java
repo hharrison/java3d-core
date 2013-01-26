@@ -940,8 +940,8 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
         }
 
         if (objectId != -1) {
-            canvas3d.freeTexture(canvas3d.ctx, objectId);
-            VirtualUniverse.mc.freeTexture2DId(objectId);
+            Canvas3D.freeTexture(canvas3d.ctx, objectId);
+//          VirtualUniverse.mc.freeTexture2DId(objectId);
             objectId = -1;
         }
 
@@ -1043,54 +1043,52 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
     }
 
 
-    void copyDataToCanvas(int px, int py, int x1, int y1,
-			  int x2, int y2, int w, int h) {
-	try {
-	    if (!canvas3d.drawingSurfaceObject.renderLock()) {
-		return;
-	    }
+    void copyDataToCanvas(int px, int py, int x1, int y1, int x2, int y2, int w, int h) {
+    	try {
+    		if (!canvas3d.drawingSurfaceObject.renderLock()) {
+    			return;
+    		}
 
             if (!initTexMap) {
                 if (objectId == -1) {
-                    objectId = VirtualUniverse.mc.getTexture2DId();
+//                  objectId = VirtualUniverse.mc.getTexture2DId();
+                    objectId = Canvas3D.generateTexture(canvas3d.ctx);
                 }
                 texWidth = getGreaterPowerOf2(w);
                 texHeight = getGreaterPowerOf2(h);
 
                 // Canvas got resize, need to init texture map again
                 // in Renderer thread
-                if (!canvas3d.initTexturemapping(canvas3d.ctx,
-                        texWidth, texHeight,
-                        objectId)) {
+                if (!canvas3d.initTexturemapping(canvas3d.ctx, texWidth, texHeight, objectId)) {
                     // Fail to get the texture surface, most likely
                     // there is not enough texture memory
                     initTexMap = false;
-                    VirtualUniverse.mc.freeTexture2DId(objectId);
+//                  VirtualUniverse.mc.freeTexture2DId(objectId);
+                    Canvas3D.freeTexture(canvas3d.ctx, objectId);
                     objectId = -1;
                     // TODO : Need to find a better way to report no resource problem --- Chien.
                     System.err.println("J3DGraphics2DImpl.copyDataToCanvas() : Fail to get texture resources ...");
-
-                } else {
+                } 
+                else {
                     initTexMap = true;
                 }
             }
             if (initTexMap) {
-                canvas3d.texturemapping(canvas3d.ctx, px, py,
-                        x1, y1, x2, y2,
-                        texWidth, texHeight, w,
+                canvas3d.texturemapping(canvas3d.ctx, px, py, x1, y1, x2, y2, 
+                		texWidth, texHeight, w,
                         (abgr ? ImageComponentRetained.TYPE_BYTE_ABGR:
-                            ImageComponentRetained.TYPE_BYTE_RGBA),
-                        objectId, data, width, height);
+                            ImageComponentRetained.TYPE_BYTE_RGBA), objectId, data, width, height);
             }
 
-	    canvas3d.drawingSurfaceObject.unLock();
-	} catch (NullPointerException ne) {
-	    canvas3d.drawingSurfaceObject.unLock();
-	    throw ne;
-	}
+            canvas3d.drawingSurfaceObject.unLock();
+    	} 
+    	catch (NullPointerException ne) {
+    		canvas3d.drawingSurfaceObject.unLock();
+    		throw ne;
+    	}
 
-	clearOffScreen();
-	runMonitor(J3dThread.NOTIFY);
+    	clearOffScreen();
+		runMonitor(J3dThread.NOTIFY);
     }
 
     void clearOffScreen() {

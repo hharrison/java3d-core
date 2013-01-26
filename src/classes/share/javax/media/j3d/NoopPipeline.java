@@ -939,6 +939,9 @@ class NoopPipeline extends Pipeline {
     //
     // Canvas3D methods - native wrappers
     //
+    
+    void resizeOffscreenLayerSurface(Canvas3D cv, int newWidth, int newHeight) {   	
+    }
 
     // This is the native method for creating the underlying graphics context.
     Context createNewContext(Canvas3D cv, Drawable drawable,
@@ -1159,6 +1162,10 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {}
     void freeDisplayList(Context ctx, int id) {
     }
     void freeTexture(Context ctx, int id) {
+    }
+    
+    int generateTexture(Context ctx) {
+    	return 0;
     }
 
     void texturemapping(Context ctx,

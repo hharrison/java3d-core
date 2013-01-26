@@ -1102,21 +1102,19 @@ abstract class TextureRetained extends NodeComponentRetained {
                 lodOffsetX, lodOffsetY, lodOffsetZ);
     }
 
-
-    // get an ID for Texture 2D
+    /* get an ID for Texture 2D
     int getTextureId() {
-	return (VirtualUniverse.mc.getTexture2DId());
-    }
-
+    	return (VirtualUniverse.mc.getTexture2DId());
+    }*/
 
     // free a Texture2D id
-    void freeTextureId(int id) {
-	synchronized (resourceLock) {
-	    if (objectId == id) {
-		objectId = -1;
-		VirtualUniverse.mc.freeTexture2DId(id);
-	    }
-	}
+    final void freeTextureId(int id) {
+		synchronized (resourceLock) {
+		    if (objectId == id) {
+		    	objectId = -1;
+//		    	VirtualUniverse.mc.freeTexture2DId(id);
+		    }
+		}
     }
 
     private boolean isEnabled(Canvas3D cv) {
@@ -1132,14 +1130,14 @@ abstract class TextureRetained extends NodeComponentRetained {
     void bindTexture(Canvas3D cv) {
 
         synchronized(resourceLock) {
-	    if (objectId == -1) {
-		objectId = getTextureId();
-	    }
-	    cv.addTextureResource(objectId, this);
- 	}
-	bindTexture(cv.ctx, objectId, isEnabled(cv));
+		    if (objectId == -1) {
+//	    		objectId = getTextureId();
+		    	objectId = Canvas3D.generateTexture(cv.ctx);
+		    }
+		    cv.addTextureResource(objectId, this);
+	 	}
+		bindTexture(cv.ctx, objectId, isEnabled(cv));
     }
-
 
     /**
      * load level 0 explicitly with null pointer to enable

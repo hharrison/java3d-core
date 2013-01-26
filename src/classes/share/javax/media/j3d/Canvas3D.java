@@ -50,6 +50,8 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector4d;
 
+import javax.media.nativewindow.OffscreenLayerOption;
+import com.jogamp.nativewindow.awt.JAWTWindow;
 
 /**
  * The Canvas3D class provides a drawing canvas for 3D rendering.  It
@@ -298,7 +300,7 @@ import javax.vecmath.Vector4d;
  * @see View
  * @see GraphicsContext3D
  */
-public class Canvas3D extends Canvas {
+public class Canvas3D extends Canvas implements OffscreenLayerOption {
     /**
      * Specifies the left field of a field-sequential stereo rendering loop.
      * A left field always precedes a right field.
@@ -608,6 +610,7 @@ public class Canvas3D extends Canvas {
     // is defined by the Pipeline.
     Drawable drawable = null;
 
+    // TODO Replace Hashtable with IdentityHashMap to avoid conflict with shared configs for on- and offscreen ??
     // graphicsConfigTable is a static hashtable which allows getBestConfiguration()
     // in NativeConfigTemplate3D to map a GraphicsConfiguration to the pointer
     // to the actual GLXFBConfig that glXChooseFBConfig() returns.  The Canvas3D
@@ -1154,7 +1157,44 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
         assert (offScreen && useDoubleBuffer) == false;
         assert (offScreen && useStereo) == false;
     }
+    
+    
+ // Interface OffscreenLayerOption
+    
+ // Accessed in JoglPipeline.createNewContext    
+ boolean shallUseOffscreenLayer = false;
 
+ /**
+  * {@inheritDoc}
+  */
+  @Override
+  public void setShallUseOffscreenLayer(boolean v) {
+      shallUseOffscreenLayer = v;
+  }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public final boolean getShallUseOffscreenLayer() {
+      return shallUseOffscreenLayer;
+  }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public final boolean isOffscreenLayerSurfaceEnabled() {
+ 	 if (drawable != null && !offScreen) {
+ 		 JoglDrawable joglDrawble = (JoglDrawable)drawable;
+ 		 // Canvas3D is an AWT window
+ 	     final JAWTWindow jawtwindow = (JAWTWindow)joglDrawble.getNativeWindow();
+ 	     if (jawtwindow != null) {
+ 	         return jawtwindow.isOffscreenLayerSurfaceEnabled();
+ 	     }
+ 	 }
+      return false;
+  }
+
+  
     /**
      * This method overrides AWT's handleEvent class...
      */
@@ -1806,7 +1846,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
      * @since Java 3D 1.2
      */
     public void setOffScreenBuffer(ImageComponent2D buffer) {
-	int width, height;
+    	int width, height;
         boolean freeCanvasId = false;
 
         if (!offScreen)
@@ -1815,8 +1855,8 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
         if (offScreenRendering)
             throw new RestrictedAccessException(J3dI18N.getString("Canvas3D2"));
 
-	// Check that offScreenBufferPending is not already set
-	J3dDebug.doAssert(!offScreenBufferPending, "!offScreenBufferPending");
+        // Check that offScreenBufferPending is not already set
+        J3dDebug.doAssert(!offScreenBufferPending, "!offScreenBufferPending");
 
         if (offScreenBuffer != null && offScreenBuffer != buffer) {
             ImageComponent2DRetained i2dRetained =
@@ -1824,19 +1864,18 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
             i2dRetained.setUsedByOffScreen(false);
         }
 
-	if (buffer != null) {
-	    ImageComponent2DRetained bufferRetained =
-		(ImageComponent2DRetained)buffer.retained;
-
-	    if (bufferRetained.byReference &&
-		!(bufferRetained.getRefImage(0) instanceof BufferedImage)) {
-
-		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D15"));
-	    }
-
-	    if (bufferRetained.getNumberOfComponents() < 3 ) {
-		throw new IllegalArgumentException(J3dI18N.getString("Canvas3D16"));
-	    }
+		if (buffer != null) {
+		    ImageComponent2DRetained bufferRetained = (ImageComponent2DRetained)buffer.retained;
+	
+		    if (bufferRetained.byReference &&
+			    !(bufferRetained.getRefImage(0) instanceof BufferedImage)) {
+	
+		    	throw new IllegalArgumentException(J3dI18N.getString("Canvas3D15"));
+		    }
+	
+		    if (bufferRetained.getNumberOfComponents() < 3 ) {
+		    	throw new IllegalArgumentException(J3dI18N.getString("Canvas3D16"));
+		    }
 
             if (buffer.isLive()) {
                 throw new IllegalSharingException(J3dI18N.getString("Canvas3D26"));
@@ -1852,16 +1891,16 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
             bufferRetained.setUsedByOffScreen(true);
 
-	    width = bufferRetained.width;
-	    height = bufferRetained.height;
+            width = bufferRetained.width;
+            height = bufferRetained.height;
 
             // Issues 347, 348 - assign a canvasId for off-screen Canvas3D
             if (manualRendering) {
                 sendAllocateCanvasId();
             }
         }
-	else {
-	    width = height = 0;
+		else {
+			width = height = 0;
 
             // Issues 347, 348 - release canvasId for off-screen Canvas3D
             if (manualRendering) {
@@ -1869,30 +1908,30 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
             }
         }
 
-	if ((offScreenCanvasSize.width != width) ||
-	    (offScreenCanvasSize.height != height)) {
-
-	    if (drawable != null) {
-		// Fix for Issue 18 and Issue 175
-		// Will do destroyOffScreenBuffer in the Renderer thread.
-		sendDestroyCtxAndOffScreenBuffer();
-		drawable = null;
-            }
-            // Issue 396. Since context is invalid here, we should set it to null.
-            ctx = null;
-
-            // set the canvas dimension according to the buffer dimension
-	    offScreenCanvasSize.setSize(width, height);
-	    this.setSize(offScreenCanvasSize);
-
-	    if (width > 0 && height > 0) {
-		sendCreateOffScreenBuffer();
-	    }
-
-	}
-	else if (ctx != null) {
-            removeCtx();
-	}
+		if ((offScreenCanvasSize.width != width) ||
+		    (offScreenCanvasSize.height != height)) {
+	
+		    if (drawable != null) {
+			// Fix for Issue 18 and Issue 175
+			// Will do destroyOffScreenBuffer in the Renderer thread.
+			sendDestroyCtxAndOffScreenBuffer();
+			drawable = null;
+	            }
+	            // Issue 396. Since context is invalid here, we should set it to null.
+	            ctx = null;
+	
+	            // set the canvas dimension according to the buffer dimension
+		    offScreenCanvasSize.setSize(width, height);
+		    this.setSize(offScreenCanvasSize);
+	
+		    if (width > 0 && height > 0) {
+		    	sendCreateOffScreenBuffer();
+		    }
+	
+		}
+		else if (ctx != null) {
+			removeCtx();
+		}
 
         if (freeCanvasId) {
                 sendFreeCanvasId();
@@ -2382,6 +2421,10 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                 this.offScreen);
         // compute the max available texture units
         maxAvailableTextureUnits = Math.max(maxTextureUnits, maxTextureImageUnits);
+        
+		// reset 'antialiasingSet' if new context is created for an already existing Canvas3D, 
+        // e.g. resizing offscreen Canvas3D
+        antialiasingSet = false; 
 
         return retVal;
     }
@@ -4434,7 +4477,6 @@ public Point getLocationOnScreen() {
 
     }
 
-
     void clear(BackgroundRetained bg, int winWidth, int winHeight) {
 
         // Issue 239 - clear stencil if requested and available
@@ -4469,45 +4511,45 @@ public Point getLocationOnScreen() {
      * of texture is -1 one time only.
      * This is always call from Renderer thread.
      */
-void addTextureResource(int id, TextureRetained obj) {
-	if (id <= 0) {
-	    return;
-	}
-
-	if (useSharedCtx) {
-	    screen.renderer.addTextureResource(id, obj);
-	} else {
-	    // This will replace the previous key if exists
-	    if (textureIDResourceTable.size() <= id) {
-		for (int i=textureIDResourceTable.size();
-		     i < id; i++) {
-		    textureIDResourceTable.add(null);
+	void addTextureResource(int id, TextureRetained obj) {
+		if (id <= 0) {
+		    return;
 		}
-		textureIDResourceTable.add(obj);
-	    } else {
-		textureIDResourceTable.set(id, obj);
-	    }
-
-	}
+	
+		if (useSharedCtx) {
+		    screen.renderer.addTextureResource(id, obj);
+		} 
+		else {
+		    // This will replace the previous key if exists
+		    if (textureIDResourceTable.size() <= id) {
+				for (int i=textureIDResourceTable.size(); i < id; i++) {
+				    textureIDResourceTable.add(null);
+				}
+				textureIDResourceTable.add(obj);
+		    } 
+		    else {
+		    	textureIDResourceTable.set(id, obj);
+		    }	
+		}
     }
 
     // handle free resource in the FreeList
     void freeResourcesInFreeList(Context ctx) {
-	Iterator<Integer> it;
-	int val;
+    	Iterator<Integer> it;
+    	int val;
 
-	// free resource for those canvases that
-	// don't use shared ctx
-	if (displayListResourceFreeList.size() > 0) {
-	    for (it = displayListResourceFreeList.iterator(); it.hasNext();) {
-			val = it.next().intValue();
-		if (val <= 0) {
-		    continue;
-		}
-		freeDisplayList(ctx, val);
-	    }
-	    displayListResourceFreeList.clear();
-	}
+    	// free resource for those canvases that
+    	// don't use shared ctx
+    	if (displayListResourceFreeList.size() > 0) {
+    		for (it = displayListResourceFreeList.iterator(); it.hasNext();) {
+    			val = it.next().intValue();
+    			if (val <= 0) {
+    				continue;
+    			}
+    			freeDisplayList(ctx, val);
+    		}
+    		displayListResourceFreeList.clear();
+    	}
 
         if (textureIdResourceFreeList.size() > 0) {
             for (it = textureIdResourceFreeList.iterator(); it.hasNext();) {
@@ -4517,11 +4559,11 @@ void addTextureResource(int id, TextureRetained obj) {
                 }
                 if (val >= textureIDResourceTable.size()) {
                     System.err.println("Error in freeResourcesInFreeList : ResourceIDTableSize = " +
-                            textureIDResourceTable.size() +
-                            " val = " + val);
-                } else {
-				TextureRetained tex = textureIDResourceTable.get(val);
-				if (tex != null) {
+                            textureIDResourceTable.size() + " val = " + val);
+                } 
+                else {
+                	TextureRetained tex = textureIDResourceTable.get(val);
+                	if (tex != null) {
                         synchronized (tex.resourceLock) {
                             tex.resourceCreationMask &= ~canvasBit;
                             if (tex.resourceCreationMask == 0) {
@@ -4538,59 +4580,56 @@ void addTextureResource(int id, TextureRetained obj) {
         }
     }
 
-    void freeContextResources(Renderer rdr, boolean freeBackground,
-			      Context ctx) {
-	TextureRetained tex;
+    void freeContextResources(Renderer rdr, boolean freeBackground, Context ctx) {
+    	TextureRetained tex;
 
-	// Just return if we don't have a valid renderer or context
-	if (rdr == null || ctx == null) {
-	    return;
-	}
+    	// Just return if we don't have a valid renderer or context
+    	if (rdr == null || ctx == null) {
+    		return;
+    	}
 
-	if (freeBackground) {
-	    // Dispose of Graphics2D Texture
+    	if (freeBackground) {
+    		// Dispose of Graphics2D Texture
             if (graphics2D != null) {
                 graphics2D.dispose();
             }
-	}
+    	}
 
-	for (int id = textureIDResourceTable.size()-1; id >= 0; id--) {
-		tex = textureIDResourceTable.get(id);
-		if (tex == null) {
-			continue;
-		}
+    	for (int id = textureIDResourceTable.size()-1; id >= 0; id--) {
+    		tex = textureIDResourceTable.get(id);
+    		if (tex == null) {
+    			continue;
+    		}
 
             // Issue 403 : this assertion doesn't hold in some cases
             // TODO KCR : determine why this is the case
 //            assert id == ((TextureRetained)obj).objectId;
 
-	    freeTexture(ctx, id);
-		synchronized (tex.resourceLock) {
-		    tex.resourceCreationMask &= ~canvasBit;
-		    if (tex.resourceCreationMask == 0) {
+    		freeTexture(ctx, id);
+    		synchronized (tex.resourceLock) {
+    			tex.resourceCreationMask &= ~canvasBit;
+    			if (tex.resourceCreationMask == 0) {
+    				tex.freeTextureId(id);
+		    	}
+			}
+    	}
+    	textureIDResourceTable.clear();
 
-			tex.freeTextureId(id);
-		    }
-		}
-	}
-	textureIDResourceTable.clear();
-
-	freeAllDisplayListResources(ctx);
+		freeAllDisplayListResources(ctx);
     }
 
     void freeAllDisplayListResources(Context ctx) {
-	if ((view != null) && (view.renderBin != null)) {
-	    view.renderBin.freeAllDisplayListResources(this, ctx);
-	    if (useSharedCtx) {
-		// We need to rebuild all other Canvas3D resource
-		// shared by this Canvas3D. Since we didn't
-		// remember resource in Renderer but RenderBin only.
-		if ((screen != null) && (screen.renderer != null)) {
-		    screen.renderer.needToRebuildDisplayList = true;
-		}
-	    }
-	}
-
+    	if ((view != null) && (view.renderBin != null)) {
+    		view.renderBin.freeAllDisplayListResources(this, ctx);
+    		if (useSharedCtx) {
+    			// We need to rebuild all other Canvas3D resource
+    			// shared by this Canvas3D. Since we didn't
+    			// remember resource in Renderer but RenderBin only.
+    			if ((screen != null) && (screen.renderer != null)) {
+    				screen.renderer.needToRebuildDisplayList = true;
+    			}
+    		}
+    	}
     }
 
 
@@ -4629,10 +4668,10 @@ void addTextureResource(int id, TextureRetained obj) {
         Pipeline.getPipeline().readOffScreenBuffer(this, ctx, format, type, data, width, height);
     }
 
-// The native method for swapBuffers
-void swapBuffers(Context ctx, Drawable drawable) {
-	Pipeline.getPipeline().swapBuffers(this, ctx, drawable);
-}
+	// The native method for swapBuffers
+	void swapBuffers(Context ctx, Drawable drawable) {
+		Pipeline.getPipeline().swapBuffers(this, ctx, drawable);
+	}
 
     // -----------------------------------------------------------------------------
 
@@ -4882,6 +4921,10 @@ void swapBuffers(Context ctx, Drawable drawable) {
     }
     static void freeTexture(Context ctx, int id) {
         Pipeline.getPipeline().freeTexture(ctx, id);
+    }
+    
+    static int generateTexture(Context ctx) {
+    	return Pipeline.getPipeline().generateTexture(ctx);
     }
 
     void texturemapping(Context ctx,
