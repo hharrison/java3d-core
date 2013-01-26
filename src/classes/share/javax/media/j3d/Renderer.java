@@ -241,7 +241,9 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
                         if (cv.active && (cv.ctx != null) &&
                                 (cv.view != null) && (cv.imageReady)) {
-                            if (cv.useDoubleBuffer) {
+                        	// don't swap double buffered AuoOffScreenCanvas3D/JCanvas3D
+                        	// manual offscreen rendering doesn't pass this code (opArg == SWAP)
+                            if (cv.useDoubleBuffer && !cv.offScreen) {
                                 synchronized (cv.drawingSurfaceObject) {
                                     if (cv.validCtx) {
                                         if (VirtualUniverse.mc.doDsiRenderLock) {
@@ -412,9 +414,9 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			if (reqType == MasterControl.SET_GRAPHICSCONFIG_FEATURES) {
                           try {
 			    if (c.offScreen) {
-				// offScreen canvas neither supports
-				// double buffering nor  stereo
-				c.doubleBufferAvailable = false;
+				    	// NEW : offscreen supports double buffering
+				    	c.doubleBufferAvailable = c.hasDoubleBuffer(); // was : false
+				    	// offScreen canvas doesn't supports stereo
 				c.stereoAvailable = false;
 			    } else {
 				c.doubleBufferAvailable = c.hasDoubleBuffer();
