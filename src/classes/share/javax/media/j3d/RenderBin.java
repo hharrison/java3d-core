@@ -359,8 +359,8 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
      */
     private boolean visQuery = false;
 
-    // Temporary dirtylist
-    ArrayList dirtyList = new ArrayList(5);
+// Temporary dirtylist
+ArrayList<RenderAtomListInfo> dirtyList = new ArrayList<RenderAtomListInfo>(5);
 
     // Transaprency sort mode
     int transpSortMode = View.TRANSPARENCY_SORT_NONE;
@@ -1042,7 +1042,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 	}
 	if ((size = dirtyList.size()) > 0) {
 	    for (i = 0; i < size; i++) {
-		ra = (RenderAtomListInfo)dirtyList.get(i);
+			ra = dirtyList.get(i);
 		GeometryArrayRetained geo = (GeometryArrayRetained)ra.geometry();
 		if ( (geo.resourceCreationMask & rdr.rendererBit) != 0) {
 		    rdr.dirtyRenderAtomList.add(ra);
@@ -1128,7 +1128,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 	    }
 	    if ((size = dirtyList.size()) > 0) {
 		for (i = 0; i <size; i++) {
-		    ra = (RenderAtomListInfo)dirtyList.get(i);
+				ra = dirtyList.get(i);
 		    GeometryArrayRetained geo = (GeometryArrayRetained)ra.geometry();
 		    if ((geo.resourceCreationMask & cv.canvasBit) != 0) {
 			cv.dirtyRenderAtomList.add(ra);
