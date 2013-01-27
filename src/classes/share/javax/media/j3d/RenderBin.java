@@ -5285,7 +5285,7 @@ void renderOrderedBins(Canvas3D cv, ArrayList<OrderedBin> bins, boolean doInfini
     }
 
 
-    void reEvaluateFog(ArrayList fogs, boolean updateDirty,
+    void reEvaluateFog(ArrayList<FogRetained> fogs, boolean updateDirty,
 		       boolean altAppDirty) {
 	EnvironmentSet e;
 	FogRetained newfog;
@@ -5359,7 +5359,7 @@ void renderOrderedBins(Canvas3D cv, ArrayList<OrderedBin> bins, boolean doInfini
     }
 
 
-    void updateCanvasForDirtyFog(ArrayList fogs) {
+void updateCanvasForDirtyFog(ArrayList<FogRetained> fogs) {
 	int i, j;
 	EnvironmentSet e;
 	UnorderList list;
@@ -5368,7 +5368,7 @@ void renderOrderedBins(Canvas3D cv, ArrayList<OrderedBin> bins, boolean doInfini
 	int sz = fogs.size();
 
 	for (i = 0; i < sz; i++) {
-	    FogRetained fog = (FogRetained)fogs.get(i);
+	    FogRetained fog = fogs.get(i);
 	    list = fog.environmentSets;
 	    synchronized (list) {
 		envsize = list.size();
@@ -5385,7 +5385,7 @@ void renderOrderedBins(Canvas3D cv, ArrayList<OrderedBin> bins, boolean doInfini
 	}
     }
 
-    void reEvaluateModelClip(ArrayList modelClips,
+    void reEvaluateModelClip(ArrayList<ModelClipRetained> modelClips,
 			     boolean updateDirty,
 			     boolean altAppDirty) {
         EnvironmentSet e;
@@ -5462,7 +5462,7 @@ void renderOrderedBins(Canvas3D cv, ArrayList<OrderedBin> bins, boolean doInfini
     }
 
 
-    void updateCanvasForDirtyModelClip(ArrayList modelClips) {
+    void updateCanvasForDirtyModelClip(ArrayList<ModelClipRetained> modelClips) {
         int i, j;
         EnvironmentSet e;
         int enableMCMaskCache = 0;
@@ -5472,7 +5472,7 @@ void renderOrderedBins(Canvas3D cv, ArrayList<OrderedBin> bins, boolean doInfini
 	int envsize;
 
         for (i = 0; i < sz; i++) {
-            ModelClipRetained modelClip = (ModelClipRetained)modelClips.get(i);
+            ModelClipRetained modelClip = modelClips.get(i);
 
 	    // evaluate the modelClip enable mask
 	    enableMCMaskCache = 0;
@@ -5566,7 +5566,7 @@ void renderOrderedBins(Canvas3D cv, ArrayList<OrderedBin> bins, boolean doInfini
 
     }
 
-    void updateCanvasForDirtyLights(ArrayList mLts) {
+    void updateCanvasForDirtyLights(ArrayList<LightRetained> mLts) {
 	int n, i, j, lmask;
 	EnvironmentSet e;
 	UnorderList list;
@@ -5576,7 +5576,7 @@ void renderOrderedBins(Canvas3D cv, ArrayList<OrderedBin> bins, boolean doInfini
 	int ltsize;
 
 	for (n = 0; n < sz; n++) {
-	    LightRetained lt = (LightRetained)mLts.get(n);
+	    LightRetained lt = mLts.get(n);
 	    list = lt.environmentSets;
 	    synchronized (list) {
 		envsets = (EnvironmentSet []) list.toArray(false);
@@ -5633,10 +5633,9 @@ void renderOrderedBins(Canvas3D cv, ArrayList<OrderedBin> bins, boolean doInfini
     }
 
 
-    void reEvaluateEnv(ArrayList mLts, ArrayList fogs,
-		       ArrayList modelClips,
-		       boolean updateDirty,
-		       boolean altAppDirty) {
+void reEvaluateEnv(ArrayList<LightRetained> mLts, ArrayList<FogRetained> fogs,
+                   ArrayList<ModelClipRetained> modelClips,
+                   boolean updateDirty, boolean altAppDirty) {
 
 	reEvaluateAllRenderAtoms(altAppDirty);
 
