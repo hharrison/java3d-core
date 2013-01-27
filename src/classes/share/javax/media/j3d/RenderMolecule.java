@@ -2217,14 +2217,14 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 		while (ra != null) {
 		    id = ra.renderAtom.dlistIds[ra.index];
 		    if (id > 0) {
-			cv.freeDisplayList(ctx, id);
+			Canvas3D.freeDisplayList(ctx, id);
 		    }
 		    ra = ra.next;
 		}
 	    }
 	    else if (primaryMoleculeType == DLIST_MOLECULE) {
 		if (displayListId > 0) {
-		    cv.freeDisplayList(ctx, displayListId);
+			Canvas3D.freeDisplayList(ctx, displayListId);
 		}
 	    }
 	}

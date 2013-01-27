@@ -940,7 +940,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
         }
 
         if (objectId != -1) {
-            canvas3d.freeTexture(canvas3d.ctx, objectId);
+        	Canvas3D.freeTexture(canvas3d.ctx, objectId);
             VirtualUniverse.mc.freeTexture2DId(objectId);
             objectId = -1;
         }

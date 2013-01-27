@@ -4504,7 +4504,7 @@ void addTextureResource(int id, TextureRetained obj) {
 		if (val <= 0) {
 		    continue;
 		}
-		freeDisplayList(ctx, val);
+		Canvas3D.freeDisplayList(ctx, val);
 	    }
 	    displayListResourceFreeList.clear();
 	}
@@ -4532,7 +4532,7 @@ void addTextureResource(int id, TextureRetained obj) {
 
                     textureIDResourceTable.set(val, null);
                 }
-                freeTexture(ctx, val);
+                Canvas3D.freeTexture(ctx, val);
             }
             textureIdResourceFreeList.clear();
         }
@@ -4564,7 +4564,7 @@ void addTextureResource(int id, TextureRetained obj) {
             // TODO KCR : determine why this is the case
 //            assert id == ((TextureRetained)obj).objectId;
 
-	    freeTexture(ctx, id);
+		Canvas3D.freeTexture(ctx, id);
 		synchronized (tex.resourceLock) {
 		    tex.resourceCreationMask &= ~canvasBit;
 		    if (tex.resourceCreationMask == 0) {

@@ -6888,7 +6888,7 @@ void removeNodes(J3dMessage m) {
 		    // Canvas in the renderer.  However, since the
 		    // display lists will be recreated, it doesn't
 		    // really matter.
-		    cv.freeDisplayList(ctx, geo.dlistId);
+			Canvas3D.freeDisplayList(ctx, geo.dlistId);
 		    geo.resourceCreationMask &= ~mask;
 		}
 	    }
