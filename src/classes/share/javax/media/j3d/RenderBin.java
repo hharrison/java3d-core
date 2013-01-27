@@ -252,11 +252,11 @@ ArrayList<J3dMessage> ogCIOList = new ArrayList<J3dMessage>(5);
  */
 ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 
-    /**
-     * Ordered Bin processing
-     */
-    ArrayList orderedBinsList = new ArrayList(5);
-    ArrayList toBeAddedBinList = new ArrayList(5);
+/**
+ * Ordered Bin processing
+ */
+ArrayList<ArrayList<OrderedBin>> orderedBinsList = new ArrayList<ArrayList<OrderedBin>>(5);
+ArrayList<ArrayList<OrderedBin>> toBeAddedBinList = new ArrayList<ArrayList<OrderedBin>>(5);
 
     /**
      * arraylist of geometry that should be locked to ensure
@@ -505,8 +505,8 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 	if (size > 0 ) {
 
 	    for (i = 0; i < size; i++) {
-		ArrayList obs= (ArrayList) orderedBinsList.get(i);
-		ArrayList list = (ArrayList) toBeAddedBinList.get(i);
+			ArrayList<OrderedBin> obs = orderedBinsList.get(i);
+			ArrayList<OrderedBin> list = toBeAddedBinList.get(i);
 
 		int lSize = list.size();
 		for (j = 0; j < lSize; j++) {
@@ -4439,7 +4439,6 @@ private void processOrderedGroupInserted(J3dMessage m) {
         int i, n;
         int oi; // an id which identifies a children of the orderedGroup
         int ci; // child index of the ordered group
-	ArrayList list = null;
 	int val;
 
         OrderedGroupRetained og;
@@ -4484,12 +4483,12 @@ private void processOrderedGroupInserted(J3dMessage m) {
 			}
 			if (index == -1) {
 				orderedBinsList.add(parentChildOrderedBins);
-				list = new ArrayList(5);
+				ArrayList<OrderedBin> list = new ArrayList<OrderedBin>(5);
 				list.add(ob);
 				toBeAddedBinList.add(list);
 			}
 			else {
-				list = (ArrayList)toBeAddedBinList.get(index);
+				ArrayList<OrderedBin> list = toBeAddedBinList.get(index);
 				list.add(ob);
 			}
 		}
