@@ -42,9 +42,6 @@ class TextureBin extends Object implements ObjectUpdate {
 
     TextureUnitStateRetained [] texUnitState = null;
 
-    // last active texture unit
-    private int lastActiveTexUnitIndex;
-
     // number of active texture unit
     private int numActiveTexUnit;
 
@@ -203,7 +200,6 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
         int i;
 	boolean foundDisableUnit = false;
 	numActiveTexUnit = 0;
-	lastActiveTexUnitIndex = 0;
 	boolean soleUser = ((tbFlag & TextureBin.SOLE_USER) != 0);
 	TextureRetained prevFirstTexture = null;
 	TextureRetained tex;
@@ -355,7 +351,6 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
                     // now includes disabled units so that there is always
                     // a one-to-one mapping. We no longer remap texture units.
 		    if (texUnitState[i].isTextureEnabled()) {
-			lastActiveTexUnitIndex = i;
                         numActiveTexUnit = i + 1;
 
 			if (foundDisableUnit) {
@@ -721,7 +716,6 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
 	    boolean foundDisableUnit = false;
 
 	    numActiveTexUnit = 0;
-	    lastActiveTexUnitIndex = 0;
 	    tbFlag |= TextureBin.CONTIGUOUS_ACTIVE_UNITS;
 	    for (int i = 0; i < texUnitState.length; i++) {
 
@@ -731,7 +725,6 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
                 // a one-to-one mapping. We no longer remap texture units.
                 if (texUnitState[i] != null &&
 			texUnitState[i].isTextureEnabled()) {
-                    lastActiveTexUnitIndex = i;
                     numActiveTexUnit = i + 1;
 
                     if (foundDisableUnit) {
