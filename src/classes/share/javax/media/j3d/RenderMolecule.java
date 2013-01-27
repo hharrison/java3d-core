@@ -1137,7 +1137,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	    r.nextRemove = null;
 	    r.prevRemove = null;
 	    if (r.isOriented()) {
-		renderBin.orientedRAs.remove(renderBin.orientedRAs.indexOf(r));
+		renderBin.orientedRAs.remove(r);
 	    }
 
 	    if ((textureBin.environmentSet.lightBin.geometryBackground == null) &&

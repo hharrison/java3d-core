@@ -313,14 +313,14 @@ ArrayList<TextureBin> textureBinList = new ArrayList<TextureBin>(5);
      */
     ArrayList dirtyReferenceGeomList = new ArrayList(5);
 
-    // list of all Oriented RenderAtoms
-    ArrayList orientedRAs = new ArrayList(5);
+// list of all Oriented RenderAtoms
+ArrayList<RenderAtom> orientedRAs = new ArrayList<RenderAtom>(5);
 
-    // list of Oriented RenderAtoms whose orientedTransforms require update
-    ArrayList dirtyOrientedRAs = new ArrayList(5);
+// list of Oriented RenderAtoms whose orientedTransforms require update
+ArrayList<RenderAtom> dirtyOrientedRAs = new ArrayList<RenderAtom>(5);
 
-    // Cached copy of dirty oriented RAs to be updated in MasterControl
-    ArrayList cachedDirtyOrientedRAs = null;
+// Cached copy of dirty oriented RAs to be updated in MasterControl
+ArrayList<RenderAtom> cachedDirtyOrientedRAs = null;
 
     // list of offScreen message that
     ArrayList offScreenMessage = new ArrayList(5);
@@ -799,7 +799,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 	// by mastercontrol
 	if (dirtyOrientedRAs.size() > 0) {
 	    // Keep a copy to be handled by mastercontrol
-	    cachedDirtyOrientedRAs = (ArrayList)dirtyOrientedRAs.clone();
+		cachedDirtyOrientedRAs = new ArrayList<RenderAtom>(dirtyOrientedRAs);
 	}
 	boolean sortAll = false;
 	if (reEvaluateSortMode && transpSortMode != cachedTranspSortMode) {
@@ -5756,7 +5756,7 @@ void reEvaluateEnv(ArrayList<LightRetained> mLts, ArrayList<FogRetained> fogs,
 
 	// clear the dirtyMask
 	for(i=0; i<nRAs; i++) {
-	    ra = (RenderAtom)dirtyOrientedRAs.get(i);
+	    ra = dirtyOrientedRAs.get(i);
 	    ra.dirtyMask &= ~RenderAtom.IN_DIRTY_ORIENTED_RAs;
 	}
 	dirtyOrientedRAs.clear();
@@ -5784,13 +5784,13 @@ void reEvaluateEnv(ArrayList<LightRetained> mLts, ArrayList<FogRetained> fogs,
 	    // Mark Oriented shape as dirty, since multiple ra could point
 	    // to the same OrientShape3D, compute the xform only once
             for(i=0; i<nRAs; i++) {
-                ra = (RenderAtom)orientedRAs.get(i);
+                ra = orientedRAs.get(i);
 		os = (OrientedShape3DRetained)ra.geometryAtom.source;
                 os.orientedTransformDirty = true;
             }
             // Update ra's localToVworld given orientedTransform
             for(i=0; i<nRAs; i++) {
-                ra = (RenderAtom)orientedRAs.get(i);
+                ra = orientedRAs.get(i);
 		os = (OrientedShape3DRetained)ra.geometryAtom.source;
                 if (os.orientedTransformDirty) {
                     os.updateOrientedTransform(cv, view.viewIndex);
@@ -5804,13 +5804,13 @@ void reEvaluateEnv(ArrayList<LightRetained> mLts, ArrayList<FogRetained> fogs,
 	    // Mark Oriented shape as dirty, since multiple ra could point
 	    // to the same OrientShape3D, compute the xform only once
             for(i=0; i<nRAs; i++) {
-                ra = (RenderAtom)cachedDirtyOrientedRAs.get(i);
+				ra = cachedDirtyOrientedRAs.get(i);
                 os = (OrientedShape3DRetained)ra.geometryAtom.source;
                 os.orientedTransformDirty = true;
             }
             // Update ra's localToVworld given orientedTransform
             for(i=0; i<nRAs; i++) {
-                ra = (RenderAtom)cachedDirtyOrientedRAs.get(i);
+                ra = cachedDirtyOrientedRAs.get(i);
                 os = (OrientedShape3DRetained)ra.geometryAtom.source;
                 if (os.orientedTransformDirty) {
                     os.updateOrientedTransform(cv, view.viewIndex);
@@ -5833,7 +5833,7 @@ void reEvaluateEnv(ArrayList<LightRetained> mLts, ArrayList<FogRetained> fogs,
 	ra.setRenderBin(false);
 	ra.renderMolecule.removeRenderAtom(ra);
 	if (ra.inDirtyOrientedRAs()) {
-	    dirtyOrientedRAs.remove(dirtyOrientedRAs.indexOf(ra));
+	    dirtyOrientedRAs.remove(ra);
 	    ra.dirtyMask &= ~RenderAtom.IN_DIRTY_ORIENTED_RAs;
 	}
 	if (ra.inDepthSortList()) {
