@@ -121,10 +121,10 @@ class TextureBin extends Object implements ObjectUpdate {
     HashMap addTransparentRMs = new HashMap();
 
 
-    // A hashmap based on localToVworld for fast
-    // insertion of new renderMolecules
-    HashMap opaqueRenderMoleculeMap = new HashMap();
-    HashMap transparentRenderMoleculeMap = new HashMap();
+// A hashmap based on localToVworld for fast
+// insertion of new renderMolecules
+HashMap<Transform3D[], RenderMolecule> opaqueRenderMoleculeMap = new HashMap<Transform3D[], RenderMolecule>();
+HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMap<Transform3D[], RenderMolecule>();
 
     // List of renderMolecules  - used in rendering ..
     RenderMolecule opaqueRMList = null;
@@ -829,7 +829,7 @@ class TextureBin extends Object implements ObjectUpdate {
      * with the same localToVworld and attributes in
      * findRenderMolecule().
      */
-    RenderMolecule addAll(HashMap renderMoleculeMap, HashMap addRMs,
+    RenderMolecule addAll(HashMap<Transform3D[], RenderMolecule> renderMoleculeMap, HashMap addRMs,
 				RenderMolecule startList,
 				boolean opaqueList) {
         int i;
@@ -853,8 +853,7 @@ class TextureBin extends Object implements ObjectUpdate {
 		continue;
 	    }
 	    // Get the list of renderMolecules for this transform
-	    renderMoleculeList = (RenderMolecule)renderMoleculeMap.get(
-							r.localToVworld);
+	    renderMoleculeList = renderMoleculeMap.get(r.localToVworld);
             if (renderMoleculeList == null) {
                 renderMoleculeList = r;
 		renderMoleculeMap.put(r.localToVworld, renderMoleculeList);
@@ -1010,7 +1009,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	boolean found = false;
 	RenderMolecule renderMoleculeList, rmlist;
 	HashMap addMap;
-	HashMap allMap;
+	HashMap<Transform3D[], RenderMolecule> allMap;
         r.textureBin = null;
 
 	if (r.isOpaqueOrInOG) {
@@ -1307,7 +1306,7 @@ class TextureBin extends Object implements ObjectUpdate {
 
     void changeLists(RenderMolecule r) {
 	RenderMolecule renderMoleculeList, rmlist = null, head;
-	HashMap allMap = null;
+	HashMap<Transform3D[], RenderMolecule> allMap = null;
 	ArrayList list;
 	int index;
 	boolean newRM = false;
@@ -1357,7 +1356,7 @@ class TextureBin extends Object implements ObjectUpdate {
 		}
 	    }
 	}
-	HashMap renderMoleculeMap;
+	HashMap<Transform3D[], RenderMolecule> renderMoleculeMap;
 	RenderMolecule startList;
 
 	// Now insert in the other bin
@@ -1403,7 +1402,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	    }
 
 	}
-	renderMoleculeList = (RenderMolecule)renderMoleculeMap.get(r.localToVworld);
+	renderMoleculeList = renderMoleculeMap.get(r.localToVworld);
 
 	if (renderMoleculeList == null) {
 	    renderMoleculeList = r;
@@ -1470,7 +1469,7 @@ class TextureBin extends Object implements ObjectUpdate {
 	}
     }
 
-    RenderMolecule removeOneRM(RenderMolecule r, HashMap allMap, RenderMolecule list) {
+    RenderMolecule removeOneRM(RenderMolecule r, HashMap<Transform3D[], RenderMolecule> allMap, RenderMolecule list) {
 	RenderMolecule rmlist = list;
 	// In the middle, just remove and update
 	if (r.prev != null && r.next != null) {
