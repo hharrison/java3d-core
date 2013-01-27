@@ -305,7 +305,7 @@ ArrayList<OrderedBin> bgOrderedBins = new ArrayList<OrderedBin>(5);
     ArrayList removeNodeComponentList = new ArrayList(5);
     ArrayList dirtyNodeComponentList = new ArrayList(5);
 
-    ArrayList textureBinList = new ArrayList(5);
+ArrayList<TextureBin> textureBinList = new ArrayList<TextureBin>(5);
 
     /**
      * arraylist of refernce geometry that should be locked when transparency
@@ -647,7 +647,7 @@ ArrayList<RenderAtomListInfo> removeDlistPerRinfo = new ArrayList<RenderAtomList
 
 	    for (int m = 0; m <size; m++) {
 		k = 0;
-		TextureBin tb = (TextureBin) textureBinList.get(m);
+		TextureBin tb = textureBinList.get(m);
 		tb.tbFlag |= TextureBin.ON_RENDER_BIN_LIST;
 
 		if (tb.texUnitState == null)
@@ -3140,14 +3140,13 @@ System.err.println("......tb.soleUser= " +
 
     }
 
-    void addTextureBin(TextureBin tb) {
+void addTextureBin(TextureBin tb) {
 	textureBinList.add(tb);
-    }
+}
 
-
-    void removeTextureBin(TextureBin tb) {
+void removeTextureBin(TextureBin tb) {
 	textureBinList.remove(tb);
-    }
+}
 
     void addDirtyRenderMolecule(RenderMolecule rm) {
 
