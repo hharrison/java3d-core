@@ -190,11 +190,11 @@ private ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>(
 // a list of top level OrderedGroups
 ArrayList<OrderedBin> orderedBins = new ArrayList<OrderedBin>(5);
 
-    // List of changed elements in the environment that needs to
-    // be reloaded
-    ArrayList changedLts = new ArrayList(5);
-    ArrayList changedFogs = new ArrayList(5);
-    ArrayList changedModelClips = new ArrayList(5);
+// List of changed elements in the environment that needs to
+// be reloaded
+ArrayList<LightRetained> changedLts = new ArrayList<LightRetained>(5);
+ArrayList<FogRetained> changedFogs = new ArrayList<FogRetained>(5);
+ArrayList<ModelClipRetained> changedModelClips = new ArrayList<ModelClipRetained>(5);
 
     // Flag to indicate whether the canvas should be marked
     static int REEVALUATE_LIGHTS  =  0x1;
@@ -3629,17 +3629,17 @@ private void processOrderedGroupInserted(J3dMessage m) {
 
 		    if (list[i] instanceof LightRetained && universe.renderingEnvironmentStructure.isLightScopedToThisView(list[i], view)) {
 			if (!changedLts.contains(list[i]) )
-			    changedLts.add(list[i]);
+			    changedLts.add((LightRetained)list[i]);
 			envDirty |= REEVALUATE_LIGHTS; // mark the canvas as dirty as well
 		    }
 		    else if (list[i] instanceof ModelClipRetained && universe.renderingEnvironmentStructure.isMclipScopedToThisView(list[i], view)) {
 			if (!changedModelClips.contains(list[i]))
-			    changedModelClips.add(list[i]);
+			    changedModelClips.add((ModelClipRetained)list[i]);
 			envDirty |= REEVALUATE_MCLIP; // mark the canvas as dirty as well
 		    }
 		    else if (list[i] instanceof FogRetained && universe.renderingEnvironmentStructure.isFogScopedToThisView(list[i], view)) {
 			if (!changedFogs.contains(list[i]))
-			    changedFogs.add(list[i]);
+			    changedFogs.add((FogRetained)list[i]);
 			envDirty |= REEVALUATE_FOG; // mark the canvas as dirty as well
 		    }
 		    else if (list[i] instanceof AlternateAppearanceRetained && universe.renderingEnvironmentStructure.isAltAppScopedToThisView(list[i], view)) {
@@ -6593,12 +6593,12 @@ void addGeometryDlist(RenderAtomListInfo ra) {
 		    if (obj instanceof LightRetained) {
 			envDirty |=  REEVALUATE_LIGHTS;
 			if (!changedLts.contains(obj))
-			    changedLts.add(obj);
+			    changedLts.add((LightRetained)obj);
 		    }
 		    else if (obj instanceof FogRetained) {
 			envDirty |=  REEVALUATE_FOG;
 			if (!changedFogs.contains(obj))
-			    changedFogs.add(obj);
+			    changedFogs.add((FogRetained)obj);
 		    }
 		    else if (obj instanceof AlternateAppearanceRetained) {
 			altAppearanceDirty = true;
@@ -6607,7 +6607,7 @@ void addGeometryDlist(RenderAtomListInfo ra) {
 		    else if (obj instanceof ModelClipRetained) {
 			envDirty |=  REEVALUATE_MCLIP;
 			if (!changedModelClips.contains(obj))
-			    changedModelClips.add(obj);
+			    changedModelClips.add((ModelClipRetained)obj);
 		    }
 		    else if (obj instanceof BackgroundRetained) {
 			reEvaluateBg = true;
@@ -6684,36 +6684,36 @@ void insertNodes(J3dMessage m) {
 	ArrayList scopedNodesViewList = (ArrayList) m.args[4];
 	int i;
 	Object[] nodes = (Object[])m.args[0];
-	for (int j = 0; j < nodes.length; j++) {
-		if (nodes[j] instanceof LightRetained) {
+	for (Object n : nodes) {
+		if (n instanceof LightRetained) {
 			envDirty |= REEVALUATE_LIGHTS;
-			if (!changedLts.contains(nodes[j]))
-				changedLts.add(nodes[j]);
+			if (!changedLts.contains(n))
+				changedLts.add((LightRetained)n);
 		}
-		else if (nodes[j] instanceof FogRetained) {
+		else if (n instanceof FogRetained) {
 			envDirty |= REEVALUATE_FOG;
-			if (!changedFogs.contains(nodes[j]))
-				changedFogs.add(nodes[j]);
+			if (!changedFogs.contains(n))
+				changedFogs.add((FogRetained)n);
 		}
-		else if (nodes[j] instanceof BackgroundRetained) {
+		else if (n instanceof BackgroundRetained) {
 			// If a new background is inserted, then
 			// re_evaluate to determine if this background
 			// should be used
 			reEvaluateBg = true;
 		}
-		else if (nodes[j] instanceof ClipRetained) {
+		else if (n instanceof ClipRetained) {
 			reEvaluateClip = true;
 		}
-		else if (nodes[j] instanceof ModelClipRetained) {
+		else if (n instanceof ModelClipRetained) {
 			envDirty |= REEVALUATE_MCLIP;
-			if (!changedModelClips.contains(nodes[j]))
-				changedModelClips.add(nodes[j]);
+			if (!changedModelClips.contains(n))
+				changedModelClips.add((ModelClipRetained)n);
 		}
-		else if (nodes[j] instanceof GeometryAtom) {
+		else if (n instanceof GeometryAtom) {
 			visGAIsDirty = true;
 			visQuery = true;
 		}
-		else if (nodes[j] instanceof AlternateAppearanceRetained) {
+		else if (n instanceof AlternateAppearanceRetained) {
 			altAppearanceDirty = true;
 		}
 	}
@@ -6730,12 +6730,12 @@ void insertNodes(J3dMessage m) {
 				if (n instanceof LightRetained) {
 					envDirty |= REEVALUATE_LIGHTS;
 					if (!changedLts.contains(n))
-						changedLts.add(n);
+						changedLts.add((LightRetained)n);
 				}
 				else if (n instanceof FogRetained) {
 					envDirty |= REEVALUATE_FOG;
 					if (!changedFogs.contains(n))
-						changedFogs.add(n);
+						changedFogs.add((FogRetained)n);
 				}
 				else if (n instanceof BackgroundRetained) {
 					// If a new background is inserted, then
@@ -6749,7 +6749,7 @@ void insertNodes(J3dMessage m) {
 				else if (n instanceof ModelClipRetained) {
 					envDirty |= REEVALUATE_MCLIP;
 					if (!changedModelClips.contains(n))
-						changedModelClips.add(n);
+						changedModelClips.add((ModelClipRetained)n);
 				}
 				else if (n instanceof AlternateAppearanceRetained) {
 					altAppearanceDirty = true;
@@ -6757,7 +6757,6 @@ void insertNodes(J3dMessage m) {
 			}
 			// Note: geometryAtom is not part of viewScopedNodes
 			// Its a part of orginal nodes even if scoped
-
 		}
 	}
 }
