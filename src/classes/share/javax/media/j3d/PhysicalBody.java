@@ -96,8 +96,8 @@ public class PhysicalBody extends Object {
     // This is used in both SCREEN_VIEW and HMD_VIEW modes.
     Transform3D headToHeadTracker = new Transform3D();
 
-    // A list of View Objects that refer to this
-    ArrayList users = new ArrayList();
+// A list of View Objects that refer to this
+ArrayList<View> users = new ArrayList<View>();
 
     // Mask that indicates this PhysicalBody's view dependence info. has changed,
     // and CanvasViewCache may need to recompute the final view matries.
@@ -124,26 +124,21 @@ public class PhysicalBody extends Object {
 	initHeadToHeadTracker();
     }
 
-    // Add a user to the list of users
-    synchronized void removeUser(View view) {
-	int idx = users.indexOf(view);
-	if (idx >= 0) {
-	    users.remove(idx);
-	}
-    }
+// Add a user to the list of users
+synchronized void removeUser(View view) {
+	users.remove(view);
+}
 
-    // Add a user to the list of users
-    synchronized void addUser(View view) {
-	int idx = users.indexOf(view);
-	if (idx < 0) {
-	    users.add(view);
-	}
-    }
+// Add a user to the list of users
+synchronized void addUser(View view) {
+	if (!users.contains(view))
+		users.add(view);
+}
 
     // Add a user to the list of users
     synchronized void notifyUsers() {
 	for (int i=users.size()-1; i>=0; i--) {
-	    View view = (View)users.get(i);
+		View view = users.get(i);
             // XXXX: notifyUsers should have a parameter denoting field changed
             if (view.soundScheduler != null) {
                 view.soundScheduler.setListenerFlag(
