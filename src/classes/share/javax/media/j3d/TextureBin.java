@@ -113,13 +113,12 @@ class TextureBin extends Object implements ObjectUpdate {
     static final int SOLE_USER_DIRTY_TUS		= 0x10;
 
 
-    /**
-     * The hashMap of RenderMolecules in this TextureBin
-     * this is used in rendering, the key used is localToVworld
-     */
-    HashMap addOpaqueRMs = new HashMap();
-    HashMap addTransparentRMs = new HashMap();
-
+/**
+ * The hashMap of RenderMolecules in this TextureBin this is used in rendering,
+ * the key used is localToVworld
+ */
+HashMap<Transform3D[], ArrayList<RenderMolecule>> addOpaqueRMs = new HashMap<Transform3D[], ArrayList<RenderMolecule>>();
+HashMap<Transform3D[], ArrayList<RenderMolecule>> addTransparentRMs = new HashMap<Transform3D[], ArrayList<RenderMolecule>>();
 
 // A hashmap based on localToVworld for fast
 // insertion of new renderMolecules
@@ -829,19 +828,18 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
      * with the same localToVworld and attributes in
      * findRenderMolecule().
      */
-    RenderMolecule addAll(HashMap<Transform3D[], RenderMolecule> renderMoleculeMap, HashMap addRMs,
-				RenderMolecule startList,
-				boolean opaqueList) {
+RenderMolecule addAll(HashMap<Transform3D[], RenderMolecule> renderMoleculeMap,
+                      HashMap<Transform3D[], ArrayList<RenderMolecule>> addRMs,
+                      RenderMolecule startList, boolean opaqueList) {
         int i;
-        RenderMolecule r;
-	Collection c = addRMs.values();
-	Iterator listIterator = c.iterator();
+	Collection<ArrayList<RenderMolecule>> c = addRMs.values();
+	Iterator<ArrayList<RenderMolecule>> listIterator = c.iterator();
 	RenderMolecule renderMoleculeList, head;
 
 	while (listIterator.hasNext()) {
 	    boolean changed = false;
-	    ArrayList curList = (ArrayList)listIterator.next();
-            r = (RenderMolecule)curList.get(0);
+		ArrayList<RenderMolecule> curList = listIterator.next();
+		RenderMolecule r = curList.get(0);
 	    // If this is a opaque one , but has been switched to a transparentList or
 	    // vice-versa (dur to changeLists function called before this), then
 	    // do nothing!
@@ -887,7 +885,7 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
 		}
             }
 	    for (i = 1; i < curList.size(); i++) {
-               r = (RenderMolecule)curList.get(i);
+			r = curList.get(i);
 	       // If this is a opaque one , but has been switched to a transparentList or
 	       // vice-versa (dur to changeLists function called before this), then
 	       // do nothing!
@@ -978,19 +976,18 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
      * Adds the given RenderMolecule to this TextureBin
      */
     void addRenderMolecule(RenderMolecule r, RenderBin rb) {
-        RenderMolecule rm;
-	ArrayList list;
-	HashMap map;
         r.textureBin = this;
 
+	HashMap<Transform3D[], ArrayList<RenderMolecule>> map;
 	if (r.isOpaqueOrInOG)
 	    map = addOpaqueRMs;
 	else
 	    map = addTransparentRMs;
 
-	if ((list = (ArrayList)map.get(r.localToVworld)) == null) {
-	    list = new ArrayList();
-	    map.put(r.localToVworld, list);
+	ArrayList<RenderMolecule> list = map.get(r.localToVworld);
+	if (list == null) {
+		list = new ArrayList<RenderMolecule>();
+		map.put(r.localToVworld, list);
 	}
 	list.add(r);
 
@@ -1004,11 +1001,10 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
      * Removes the given RenderMolecule from this TextureBin
      */
     void removeRenderMolecule(RenderMolecule r) {
-	ArrayList list;
 	int index;
 	boolean found = false;
-	RenderMolecule renderMoleculeList, rmlist;
-	HashMap addMap;
+	RenderMolecule rmlist;
+	HashMap<Transform3D[], ArrayList<RenderMolecule>> addMap;
 	HashMap<Transform3D[], RenderMolecule> allMap;
         r.textureBin = null;
 
@@ -1024,7 +1020,8 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
 	}
 	// If the renderMolecule being remove is contained in addRMs, then
 	// remove the renderMolecule from the addList
-	if ((list = (ArrayList) addMap.get(r.localToVworld)) != null) {
+	ArrayList<RenderMolecule> list = addMap.get(r.localToVworld);
+	if (list != null) {
 	    if ((index = list.indexOf(r)) != -1) {
 		list.remove(index);
 		// If this was the last element for this localToVworld, then remove

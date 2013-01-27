@@ -4743,10 +4743,8 @@ private void processOrderedGroupInserted(J3dMessage m) {
 	ColoringAttributesRetained coloringAttributes;
 	TransparencyAttributesRetained transparencyAttributes;
 	int i;
-	ArrayList list;
 	TextureUnitStateRetained texUnitState[];
 	RenderingAttributesRetained renderingAttributes;
-	HashMap addmap = null;
 
 	if (ra.app == null) {
 	    polygonAttributes = null;
@@ -4770,6 +4768,7 @@ private void processOrderedGroupInserted(J3dMessage m) {
 
 	// Get the renderMoleculelist for this xform
 	HashMap<Transform3D[], RenderMolecule> rmap = null;
+	HashMap<Transform3D[], ArrayList<RenderMolecule>> addmap = null;
 	if (ra.isOpaque()) {
 	    rmap = textureBin.opaqueRenderMoleculeMap;
 	    addmap = textureBin.addOpaqueRMs;
@@ -4797,9 +4796,10 @@ private void processOrderedGroupInserted(J3dMessage m) {
 	    currentBin = currentBin.next;
 	}
 	// Check the "to-be-added" list of renderMolecules for a match
-	if ((list = (ArrayList)addmap.get(ra.geometryAtom.source.localToVworld[0])) != null) {
+	ArrayList<RenderMolecule> list = addmap.get(ra.geometryAtom.source.localToVworld[0]);
+	if (list != null) {
 	    for (i = 0; i < list.size(); i++) {
-		currentBin = (RenderMolecule)list.get(i);
+		currentBin = list.get(i);
 		if (currentBin.equals(ra,
 				      polygonAttributes, lineAttributes,
 				      pointAttributes, material,
