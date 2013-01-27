@@ -1219,40 +1219,24 @@ RenderMolecule addAll(HashMap<Transform3D[], RenderMolecule> renderMoleculeMap,
     }
 
 
-    /**
-     * Renders this TextureBin
-     */
-    void render(Canvas3D cv) {
-	render(cv, (Object) opaqueRMList);
-    }
+/**
+ * Renders this TextureBin
+ */
+void render(Canvas3D cv) {
+	render(cv, opaqueRMList);
+}
 
-    void render(Canvas3D cv, Object rlist) {
-	/*
-	System.err.println("TextureBin/render " + this +
-		" numActiveTexUnit= " + numActiveTexUnit +
-		" maxTextureUnits= " + cv.maxTextureUnits);
-	*/
-
+void render(Canvas3D cv, RenderMolecule rlist) {
 	// include this TextureBin to the to-be-updated state set in canvas
 	cv.setStateToUpdate(Canvas3D.TEXTUREBIN_BIT, this);
+	renderList(cv, USE_DISPLAYLIST, rlist);
+}
 
-        renderList(cv, USE_DISPLAYLIST, rlist);
-    }
-
-
-    /**
-     * render a render list
-     */
-    void renderList(Canvas3D cv, int pass, Object rlist) {
-        assert pass < 0;
-
-	if (rlist instanceof RenderMolecule) {
-	    renderList(cv, pass, (RenderMolecule) rlist);
-	} else if (rlist instanceof TransparentRenderingInfo) {
-	    renderList(cv, pass, (TransparentRenderingInfo) rlist);
-	}
-    }
-
+void render(Canvas3D cv, TransparentRenderingInfo rlist) {
+	// include this TextureBin to the to-be-updated state set in canvas
+	cv.setStateToUpdate(Canvas3D.TEXTUREBIN_BIT, this);
+	renderList(cv, USE_DISPLAYLIST, rlist);
+}
 
     /**
      * render list of RenderMolecule
