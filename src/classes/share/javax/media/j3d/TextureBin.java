@@ -200,7 +200,7 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
 
     void resetTextureState(TextureUnitStateRetained[] state) {
 
-        int i, j;
+        int i;
 	boolean foundDisableUnit = false;
 	numActiveTexUnit = 0;
 	lastActiveTexUnitIndex = 0;
@@ -448,10 +448,6 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
      * This tests if the qiven textureUnitState matches this TextureBin
      */
     boolean equals(TextureUnitStateRetained state[], RenderAtom ra) {
-
-	int i, j, k = 0;
-	TextureRetained texture;
-
 	// if this TextureBin is a soleUser case or the incoming
 	// app has changedFrequent bit set for any of the texture
 	// related component, then either the current TextureBin
@@ -500,7 +496,7 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
 	if (state.length != texUnitState.length)
 	    return (false);
 
-	for (i = 0; i < texUnitState.length; i++) {
+	for (int i = 0; i < texUnitState.length; i++) {
 	    // If texture Unit State is null
 	    if (texUnitState[i] == null) {
 		if (state[i] != null)
@@ -1288,8 +1284,6 @@ void render(Canvas3D cv, TransparentRenderingInfo rlist) {
     void changeLists(RenderMolecule r) {
 	RenderMolecule renderMoleculeList, rmlist = null, head;
 	HashMap<Transform3D[], RenderMolecule> allMap = null;
-	ArrayList list;
-	int index;
 	boolean newRM = false;
 	//	System.err.println("changeLists r = "+r+" tBin = "+this);
 	// If its a new RM then do nothing, otherwise move lists
