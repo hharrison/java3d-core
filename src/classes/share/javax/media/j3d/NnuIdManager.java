@@ -280,7 +280,7 @@ class NnuIdManager {
 
 	for(i=nnuIdArr0.length, j=0; i<size; i++, j++) {
 	    // True or false, it doesn't matter.
-	    equals((NnuId[])newNnuIdArr, nnuIdArr1[j], index, 0, i);
+	    equals(newNnuIdArr, nnuIdArr1[j], index, 0, i);
 
 	    if(index[0] == i) { // Append to last.
 		newNnuIdArr[i] = nnuIdArr1[j];

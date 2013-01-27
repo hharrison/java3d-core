@@ -605,7 +605,6 @@ class ConeSoundRetained extends PointSoundRetained {
     void updateMirrorObject(Object[] objs) {
         if (debugFlag)
             debugPrint("PointSoundRetained:updateMirrorObj()");
-        Transform3D trans = null;
         int component = ((Integer)objs[1]).intValue();
         int numSnds = ((Integer)objs[2]).intValue();
         SoundRetained[] mSnds = (SoundRetained[]) objs[3];

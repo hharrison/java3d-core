@@ -335,7 +335,7 @@ class IndexedTriangleFanArrayRetained extends IndexedGeometryStripArrayRetained 
 
     // intersect pnts[] with every triangle in this object
     boolean intersect(Point3d[] pnts) {
-	int j, end;
+	int j;
 	Point3d[] points = new Point3d[3];
 	double dist[] = new double[1];
 	int i = 0, scount, count = 0;

@@ -241,7 +241,7 @@ class ImageComponent3DRetained extends ImageComponentRetained {
         else {
             for (i = 0; i < depth; i++) {
                 bi[i] = imageData.createBufferedImage(i);
-                if (!(bi[i] instanceof BufferedImage)) {
+                if (bi[i] == null) {
                     throw new IllegalStateException(J3dI18N.getString("ImageComponent3DRetained0"));
                 }
 

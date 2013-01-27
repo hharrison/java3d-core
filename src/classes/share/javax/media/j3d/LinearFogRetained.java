@@ -166,7 +166,6 @@ class LinearFogRetained extends FogRetained {
     synchronized void updateMirrorObject(Object[] objs) {
 
 	int component = ((Integer)objs[1]).intValue();
-	Transform3D trans;
 
 	if ((component & FRONT_DISTANCE_CHANGED) != 0)
 	    ((LinearFogRetained)mirrorFog).frontDistance = ((Double)objs[2]).doubleValue();

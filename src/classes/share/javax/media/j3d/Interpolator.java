@@ -51,8 +51,7 @@ public abstract class Interpolator extends Behavior {
      * Interpolator; this can be done with the following method call:
      * wakeupOn(defaultWakeupCriterion).
      */
-    protected WakeupCriterion defaultWakeupCriterion =
-	(WakeupCriterion) new WakeupOnElapsedFrames(0);
+    protected WakeupCriterion defaultWakeupCriterion = new WakeupOnElapsedFrames(0);
 
 
     /**

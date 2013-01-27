@@ -79,7 +79,6 @@ class LightSet extends Object {
     boolean equals(RenderBin rb, LightRetained[] lights, int nlights,
 		   boolean lightOn) {
 	int i, j;
-	LightRetained light;
 
 	if (this.nlights != nlights)
 	   return(false);

@@ -38,9 +38,6 @@ class CompressedGeometryRenderMethod implements RenderMethod {
      */
     public boolean render(RenderMolecule rm, Canvas3D cv,
 			  RenderAtomListInfo ra, int dirtyBits) {
-
-	CompressedGeometryRetained cgr ;
-
 	if (rm.doInfinite) {
 	    cv.updateState(dirtyBits);
 	    while (ra != null) {

@@ -146,7 +146,6 @@ class DirectionalLightRetained extends LightRetained
     void updateMirrorObject(Object[] objs) {
 	int i;
 	int component = ((Integer)objs[1]).intValue();
-	Transform3D trans;
 	int numLgts =  ((Integer)objs[2]).intValue();
 
 	LightRetained[] mLgts = (LightRetained[]) objs[3];

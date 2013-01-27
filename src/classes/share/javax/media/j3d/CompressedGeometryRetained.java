@@ -278,7 +278,7 @@ class CompressedGeometryRetained extends GeometryRetained {
 	else {
 	    // Return this object if hardware decompression is available.
 	    if (hardwareDecompression)
-		return (GeometryRetained)this ;
+		return this;
 
 	    // Check to see if hardware decompression is available.
 	    if (decompressHW(cv.ctx, majorVersionNumber, minorVersionNumber)) {
@@ -289,7 +289,7 @@ class CompressedGeometryRetained extends GeometryRetained {
 		    createByCopy(compressedGeometry) ;
 		}
 
-		return (GeometryRetained)this ;
+		return this;
 	    }
 
 	    // Decompress the data into a GeometryArrayRetained representation
