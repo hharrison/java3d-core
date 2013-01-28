@@ -687,13 +687,11 @@ void update(Context ctx, int enableMask, Transform3D trans) {
 	if  ((component & BOUNDINGLEAF_CHANGED) != 0) {
 	    mirrorModelClip.boundingLeaf = (BoundingLeafRetained)objs[2];
 	    if (objs[2] != null) {
-		mirrorModelClip.region =
-		    (Bounds)mirrorModelClip.boundingLeaf.transformedRegion;
+		mirrorModelClip.region = mirrorModelClip.boundingLeaf.transformedRegion;
 	    }
 	    else {
 		if (mirrorModelClip.regionOfInfluence != null) {
-		    mirrorModelClip.region =
-			((Bounds)mirrorModelClip.regionOfInfluence).copy(mirrorModelClip.region);
+		    mirrorModelClip.region = mirrorModelClip.regionOfInfluence.copy(mirrorModelClip.region);
 		    mirrorModelClip.region.transform(mirrorModelClip.regionOfInfluence,
 						     getCurrentLocalToVworld());
 		}
@@ -708,8 +706,7 @@ void update(Context ctx, int enableMask, Transform3D trans) {
 	    mirrorModelClip.regionOfInfluence = (Bounds) objs[2];
 	    if (mirrorModelClip.boundingLeaf == null) {
 		if (objs[2] != null) {
-		    mirrorModelClip.region =
-			((Bounds)mirrorModelClip.regionOfInfluence).copy(mirrorModelClip.region);
+		    mirrorModelClip.region = mirrorModelClip.regionOfInfluence.copy(mirrorModelClip.region);
 
 		    mirrorModelClip.region.transform(mirrorModelClip.regionOfInfluence,
 						     getCurrentLocalToVworld());

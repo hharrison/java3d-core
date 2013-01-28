@@ -2499,11 +2499,11 @@ synchronized void setAltAppScope() {
             for (int i = children.size() - 1; i >= 0; i--) {
 			NodeRetained child = children.get(i);
                 if (child != null) {
-                    child.computeCombineBounds((Bounds) boundingObject);
+                    child.computeCombineBounds(boundingObject);
                 }
             }
 
-            return (Bounds) boundingObject;
+            return boundingObject;
         }
         return super.getBounds();
     }

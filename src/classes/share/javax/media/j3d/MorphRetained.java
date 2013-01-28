@@ -652,13 +652,13 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		(GeometryArrayRetained)morphedGeometryArray.retained;
 	    if (mga != null) {
 		synchronized(mga.geoBounds) {
-		    bounds.combine((Bounds) mga.geoBounds);
+		    bounds.combine(mga.geoBounds);
 		}
 	    }
 	} else {
 	    // Should this be lock too ? ( MT safe  ? )
 	    synchronized(localBounds) {
-		bounds.combine((Bounds) localBounds);
+		bounds.combine(localBounds);
 	    }
 	}
     }
@@ -709,7 +709,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	    normal[] = new float[3], texCoord[] = new float[3];
 
 	vFormat = geometryArrays[0].vertexFormat;
-	geoType = ((GeometryArrayRetained)geometryArrays[0]).geoType;
+	geoType = geometryArrays[0].geoType;
 	texCoordSetCount = geometryArrays[0].getTexCoordSetCount();
 
 

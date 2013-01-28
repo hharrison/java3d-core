@@ -441,7 +441,7 @@ Enumeration<Group> getAllScopes() {
 	    mirrorAltApp.regionOfInfluence = (Bounds) objs[2];
 	    if (mirrorAltApp.boundingLeaf == null) {
 		if (objs[2] != null) {
-		    mirrorAltApp.region = (Bounds)mirrorAltApp.regionOfInfluence.copy(mirrorAltApp.region);
+		    mirrorAltApp.region = mirrorAltApp.regionOfInfluence.copy(mirrorAltApp.region);
 		    mirrorAltApp.region.transform(
 				mirrorAltApp.regionOfInfluence,
 				getCurrentLocalToVworld());
@@ -454,7 +454,7 @@ Enumeration<Group> getAllScopes() {
 	else if  ((component & BOUNDINGLEAF_CHANGED) != 0) {
 	    mirrorAltApp.boundingLeaf = (BoundingLeafRetained)objs[2];
 	    if (objs[2] != null) {
-		mirrorAltApp.region = (Bounds)mirrorAltApp.boundingLeaf.transformedRegion;
+		mirrorAltApp.region = mirrorAltApp.boundingLeaf.transformedRegion;
 	    }
 	    else {
 		if (mirrorAltApp.regionOfInfluence != null) {

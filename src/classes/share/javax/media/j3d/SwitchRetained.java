@@ -721,7 +721,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
 			for (int i = 0; i < children.size(); i++) {
 				NodeRetained child = children.get(i);
                     if (child != null) {
-                        child.computeCombineBounds((Bounds) boundingObject);
+                        child.computeCombineBounds(boundingObject);
                     }
                 }
             } else if (whichChild == Switch.CHILD_MASK) {
@@ -729,7 +729,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
                     if (childMask.get(i)) {
 					NodeRetained child = children.get(i);
                         if (child != null) {
-                            child.computeCombineBounds((Bounds) boundingObject);
+                            child.computeCombineBounds(boundingObject);
                         }
                     }
                 }
@@ -739,11 +739,11 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
 
 			NodeRetained child = children.get(whichChild);
                 if (child != null) {
-                    child.computeCombineBounds((Bounds) boundingObject);
+                    child.computeCombineBounds(boundingObject);
                 }
             }
 
-            return (Bounds) boundingObject;
+            return boundingObject;
         } else {
             return super.getBounds();
         }

@@ -281,7 +281,7 @@ class ClipRetained extends LeafRetained {
 	Transform3D lastLocalToVworld = getLastLocalToVworld();
 
 	if (boundingLeaf != null) {
-	    transformedRegion = (Bounds)boundingLeaf.mirrorBoundingLeaf.transformedRegion;
+	    transformedRegion = boundingLeaf.mirrorBoundingLeaf.transformedRegion;
 	}
 	else { // Evaluate applicationRegion if not null
 	    if (applicationRegion != null) {
@@ -322,7 +322,7 @@ class ClipRetained extends LeafRetained {
 	    else { // Evaluate applicationRegion if not null
 		Bounds appRegion = (Bounds)objs[3];
 		if (appRegion != null) {
-		    transformedRegion = ((Bounds)appRegion).copy(transformedRegion);
+		    transformedRegion = appRegion.copy(transformedRegion);
 		    transformedRegion.transform(appRegion,
 						currentLocalToVworld);
 		}

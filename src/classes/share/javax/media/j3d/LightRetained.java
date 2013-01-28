@@ -599,8 +599,7 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 		mLgts[i].regionOfInfluence = (Bounds) objs[4];
 		if (mLgts[i].boundingLeaf == null) {
 		    if (objs[4] != null) {
-			mLgts[i].region =
-			    ((Bounds)mLgts[i].regionOfInfluence).copy(mLgts[i].region);
+			mLgts[i].region = mLgts[i].regionOfInfluence.copy(mLgts[i].region);
 			mLgts[i].region.transform(mLgts[i].regionOfInfluence,
 						  mLgts[i].getCurrentLocalToVworld());
 		    }
@@ -614,12 +613,11 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 	    for (int i = 0; i < numLgts; i++) {
 		mLgts[i].boundingLeaf=((BoundingLeafRetained)objs[4]);
 		if (objs[4] != null) {
-		    mLgts[i].region = (Bounds)mLgts[i].boundingLeaf.transformedRegion;
+		    mLgts[i].region = mLgts[i].boundingLeaf.transformedRegion;
 		}
 		else { // evaluate regionOfInfluence if not null
 		    if (mLgts[i].regionOfInfluence != null) {
-			mLgts[i].region =
-			    ((Bounds)mLgts[i].regionOfInfluence).copy(mLgts[i].region);
+			mLgts[i].region = mLgts[i].regionOfInfluence.copy(mLgts[i].region);
 			mLgts[i].region.transform(mLgts[i].regionOfInfluence,
 						  mLgts[i].getCurrentLocalToVworld());
 		    }
@@ -653,7 +651,7 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 		    mLgts[i].isScoped = isScoped;
 		    for (j = 0; j < removeList.size(); j++) {
 			Shape3DRetained obj = ((GeometryAtom)removeList.get(j)).source;
-			((Shape3DRetained)obj).removeLight(mLgts[i]);
+			obj.removeLight(mLgts[i]);
 		    }
 		}
 	    }

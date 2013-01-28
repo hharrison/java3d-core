@@ -867,7 +867,7 @@ Enumeration getAllGeometries(int id) {
 			}
 		    }
 		}
-		return (Bounds) bbox;
+		return bbox;
 
 	    } else {
 		return null;
@@ -914,9 +914,9 @@ Enumeration getAllGeometries(int id) {
                                 if (staticTransform != null) {
                                     bbox.set(geometry.geoBounds);
                                     bbox.transform(staticTransform.transform);
-                                    bounds.combine((Bounds)bbox);
+                                    bounds.combine(bbox);
                                 } else {
-                                    bounds.combine((Bounds)geometry.geoBounds);
+                                    bounds.combine(geometry.geoBounds);
                                 }
                             }
                         }
@@ -937,9 +937,9 @@ Enumeration getAllGeometries(int id) {
                                     if (staticTransform != null) {
                                         bbox.set(geometry.geoBounds);
                                         bbox.transform(staticTransform.transform);
-                                        cachedBounds.combine((Bounds)bbox);
+                                        cachedBounds.combine(bbox);
                                     } else {
-                                        cachedBounds.combine((Bounds)geometry.geoBounds);
+                                        cachedBounds.combine(geometry.geoBounds);
                                     }
                                 }
                             }
@@ -952,7 +952,7 @@ Enumeration getAllGeometries(int id) {
 
             // Should this be lock too ? ( MT safe  ? )
             synchronized(localBounds) {
-                bounds.combine((Bounds) localBounds);
+                bounds.combine(localBounds);
             }
         }
     }
@@ -2503,9 +2503,9 @@ final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userL
                             if (staticTransform != null) {
                                 bbox.set(geometry.geoBounds);
                                 bbox.transform(staticTransform.transform);
-                                bounds.combine((Bounds)bbox);
+                                bounds.combine(bbox);
                             } else {
-                                bounds.combine((Bounds)geometry.geoBounds);
+                                bounds.combine(geometry.geoBounds);
                             }
                         }
                     }

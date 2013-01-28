@@ -477,7 +477,7 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 	    mirrorFog.regionOfInfluence = (Bounds) objs[2];
 	    if (mirrorFog.boundingLeaf == null) {
 		if (objs[2] != null) {
-		    mirrorFog.region = ((Bounds)mirrorFog.regionOfInfluence).copy(mirrorFog.region);
+		    mirrorFog.region = mirrorFog.regionOfInfluence.copy(mirrorFog.region);
 		    mirrorFog.region.transform(
 				mirrorFog.regionOfInfluence,
 				getCurrentLocalToVworld());
@@ -490,11 +490,11 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 	else if  ((component & BOUNDINGLEAF_CHANGED) != 0) {
 	    mirrorFog.boundingLeaf = (BoundingLeafRetained)objs[2];
 	    if (objs[2] != null) {
-		mirrorFog.region = (Bounds)mirrorFog.boundingLeaf.transformedRegion;
+		mirrorFog.region = mirrorFog.boundingLeaf.transformedRegion;
 	    }
 	    else {
 		if (mirrorFog.regionOfInfluence != null) {
-		    mirrorFog.region = ((Bounds)mirrorFog.regionOfInfluence).copy(mirrorFog.region);
+		    mirrorFog.region = mirrorFog.regionOfInfluence.copy(mirrorFog.region);
 		    mirrorFog.region.transform(
 				mirrorFog.regionOfInfluence,
 				getCurrentLocalToVworld());

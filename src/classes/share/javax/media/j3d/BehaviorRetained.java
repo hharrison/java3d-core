@@ -489,7 +489,7 @@ class BehaviorRetained extends LeafRetained  {
     // Note: This routine will only to update the object's
     // transformed region
     void updateBoundingLeaf(long refTime) {
-	transformedRegion = (Bounds)boundingLeaf.mirrorBoundingLeaf.transformedRegion;
+	transformedRegion = boundingLeaf.mirrorBoundingLeaf.transformedRegion;
     }
 
 

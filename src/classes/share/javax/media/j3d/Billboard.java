@@ -310,8 +310,7 @@ public class Billboard extends Behavior {
      */
     public void processStimulus(Enumeration criteria) {
         double angle = 0.0;
-        double mag,sign;
-	double tx,ty,tz;
+        double sign;
 
         if( tg == null ){
 	   wakeupOn(wakeupFrame);
@@ -324,7 +323,7 @@ public class Billboard extends Behavior {
 	    wakeupOn(wakeupFrame);
  	    return;
         }
-        Canvas3D canvas = (Canvas3D)v.getCanvas3D(0);
+        Canvas3D canvas = v.getCanvas3D(0);
 	boolean status;
 
 	Transform3D xform = new Transform3D();
