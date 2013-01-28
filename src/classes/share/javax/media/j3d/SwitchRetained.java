@@ -92,7 +92,7 @@ ArrayList<ArrayList<SwitchState>> childrenSwitchStates = null;
 
         if (source != null && source.isLive()) {
             updateTargets = new UpdateTargets();
-            ArrayList updateList = new ArrayList(1);
+            ArrayList<SwitchState> updateList = new ArrayList<SwitchState>(1);
             nchildren = children.size();
             switch (whichChild) {
             case Switch.CHILD_ALL:
@@ -180,7 +180,7 @@ ArrayList<ArrayList<SwitchState>> childrenSwitchStates = null;
         if (source != null && source.isLive() &&
                 whichChild == Switch.CHILD_MASK) {
             updateTargets = new UpdateTargets();
-            ArrayList updateList = new ArrayList(1);
+            ArrayList<SwitchState> updateList = new ArrayList<SwitchState>(1);
             nchildren = children.size();
             for (i=0; i<nchildren; i++) {
                 if (childMask.get(i) == true) {
@@ -200,7 +200,7 @@ ArrayList<ArrayList<SwitchState>> childrenSwitchStates = null;
         dirtyBoundsCache();
     }
 
-    void sendMessage(ArrayList updateList) {
+void sendMessage(ArrayList<SwitchState> updateList) {
 
         J3dMessage m ;
         int i,j,size,threads;
@@ -274,7 +274,7 @@ ArrayList<ArrayList<SwitchState>> childrenSwitchStates = null;
 	    return getChild(whichChild);
     }
 
-    void updateSwitchChild(int child, boolean switchOn, ArrayList updateList) {
+void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updateList) {
         int i;
         int switchLevel;
 
@@ -505,7 +505,7 @@ ArrayList<ArrayList<SwitchState>> childrenSwitchStates = null;
     void traverseSwitchChild(int child, HashKey key, int index,
 			     SwitchRetained switchRoot, boolean init,
 			     boolean swChanged, boolean switchOn,
-			     int switchLevel, ArrayList updateList) {
+			     int switchLevel, ArrayList<SwitchState> updateList) {
 	int i,j,k;
 	SwitchRetained sw;
 	LinkRetained ln;

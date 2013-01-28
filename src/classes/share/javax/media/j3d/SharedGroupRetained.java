@@ -584,7 +584,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
 			     int index, SwitchRetained switchRoot,
 			     boolean init, boolean swChanged,
 			     boolean switchOn, int switchLevel,
-			     ArrayList updateList) {
+			     ArrayList<SwitchState> updateList) {
 
         SwitchRetained sw;
         LinkRetained ln;
