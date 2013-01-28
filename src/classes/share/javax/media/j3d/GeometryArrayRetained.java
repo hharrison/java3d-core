@@ -44,7 +44,6 @@ import javax.vecmath.Point4f;
 import javax.vecmath.TexCoord2f;
 import javax.vecmath.TexCoord3f;
 import javax.vecmath.TexCoord4f;
-import javax.vecmath.Tuple3d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
@@ -6849,7 +6848,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    double pD, pNrmDotrDir, tr;
 
 	    // Compute plane D.
-	    tempV3d.set((Tuple3d) pnt);
+	    tempV3d.set(pnt);
 	    pD = normal.dot(tempV3d);
 
 	    direction.x = end.x - start.x;
@@ -6864,7 +6863,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 		return false;
 	    }
 
-	    tempV3d.set((Tuple3d) start);
+	    tempV3d.set(start);
 
 	    tr = (pD - normal.dot(tempV3d))/ pNrmDotrDir;
 
@@ -7236,11 +7235,11 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    return false;  // Degenerate triangle.
 	}
 
-	tempV3d.set((Tuple3d) v0);
+	tempV3d.set(v0);
 	d1 = - n1.dot(tempV3d); // plane equation 1: n1.x + d1 = 0
 
 	// put u to compute signed distance to the plane.
-	tempV3d.set((Tuple3d) u);
+	tempV3d.set(u);
 	du = n1.dot(tempV3d) + d1;
 
 	// coplanarity robustness check
@@ -7342,16 +7341,16 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    return false;  // Degenerate triangle.
 	}
 
-	tempV3d.set((Tuple3d) v0);
+	tempV3d.set(v0);
 	d1 = - n1.dot(tempV3d); // plane equation 1: n1.x + d1 = 0
 
 	// put u0, u1, and u2 into plane equation 1
 	// to compute signed distance to the plane.
-	tempV3d.set((Tuple3d) u0);
+	tempV3d.set(u0);
 	du0 = n1.dot(tempV3d) + d1;
-	tempV3d.set((Tuple3d) u1);
+	tempV3d.set(u1);
 	du1 = n1.dot(tempV3d) + d1;
-	tempV3d.set((Tuple3d) u2);
+	tempV3d.set(u2);
 	du2 = n1.dot(tempV3d) + d1;
 
 	// coplanarity robustness check
@@ -7385,16 +7384,16 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    return false;  // Degenerate triangle.
 	}
 
-	tempV3d.set((Tuple3d) u0);
+	tempV3d.set(u0);
 	d2 = - n2.dot(tempV3d); // plane equation 2: n2.x + d2 = 0
 
 	// put v0, v1, and v2 into plane equation 2
 	// to compute signed distance to the plane.
-	tempV3d.set((Tuple3d) v0);
+	tempV3d.set(v0);
 	dv0 = n2.dot(tempV3d) + d2;
-	tempV3d.set((Tuple3d) v1);
+	tempV3d.set(v1);
 	dv1 = n2.dot(tempV3d) + d2;
-	tempV3d.set((Tuple3d) v2);
+	tempV3d.set(v2);
 	dv2 = n2.dot(tempV3d) + d2;
 
 	// coplanarity robustness check
@@ -7768,9 +7767,9 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
 	// Plane equation: (p - p0)*pNrm = 0 or p*pNrm = pD;
 	tempV3d = new Vector3d();
-	tempV3d.set((Tuple3d) coordinates[0]);
+	tempV3d.set(coordinates[0]);
 	pD = pNrm.dot(tempV3d);
-	tempV3d.set((Tuple3d) origin);
+	tempV3d.set(origin);
 
 	// Substitute Ray equation:
 	// p = origin + pi.distance*direction
@@ -8009,9 +8008,9 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    return false;  // Degenerate polygon.
 	}
 	// Compute plane D.
-	tempV3d.set((Tuple3d) coordinates[0]);
+	tempV3d.set(coordinates[0]);
 	pD = pNrm.dot(tempV3d);
-	tempV3d.set((Tuple3d) point.location);
+	tempV3d.set(point.location);
 
 	return ((pD - pNrm.dot(tempV3d)) <= 0);
     }

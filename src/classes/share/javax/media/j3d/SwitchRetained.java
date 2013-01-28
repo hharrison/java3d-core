@@ -446,7 +446,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
                                         localToVworldKeys.length);
                 if(hkIndex >= 0) {
                     for (j=0; j<numChildren; j++) {
-                	switchStates = (ArrayList)childrenSwitchStates.get(j);
+                	switchStates = childrenSwitchStates.get(j);
                 	switchStates.remove(hkIndex);
                     }
                     switchLevels.remove(hkIndex);
