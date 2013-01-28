@@ -60,8 +60,8 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
     // A boolean indication that something changed
     boolean isDirty = true;
 
-    // switchLevel per key, used in traversing switch children
-    ArrayList switchLevels = new ArrayList(1);
+// switchLevel per key, used in traversing switch children
+ArrayList<Integer> switchLevels = new ArrayList<Integer>(1);
 
     // key which identifies a unique path from a locale to this switch link
     HashKey switchKey = new HashKey();
@@ -280,12 +280,12 @@ ArrayList<ArrayList<SwitchState>> childrenSwitchStates = null;
 
         if (inSharedGroup) {
             for (i=0; i<localToVworldKeys.length; i++) {
-                switchLevel = ((Integer)switchLevels.get(i)).intValue();
+                switchLevel = switchLevels.get(i).intValue();
                 traverseSwitchChild(child, localToVworldKeys[i], i, this,
                                                 false, false, switchOn, switchLevel, updateList);
             }
         } else {
-            switchLevel = ((Integer)switchLevels.get(0)).intValue();
+            switchLevel = switchLevels.get(0).intValue();
             traverseSwitchChild(child, null, 0, this, false, false,
                                                 switchOn, switchLevel, updateList);
         }
@@ -593,7 +593,7 @@ ArrayList<ArrayList<SwitchState>> childrenSwitchStates = null;
         // first traverse this node's child
         if (inSharedGroup) {
             for (j=0; j<localToVworldKeys.length; j++) {
-                switchLevel = ((Integer)switchLevels.get(j)).intValue();
+                switchLevel = switchLevels.get(j).intValue();
                 switchRoot = (switchLevel == 0)? this : null;
 		size = children.size();
 		for (i=0; i<size; i++) {
@@ -603,7 +603,7 @@ ArrayList<ArrayList<SwitchState>> childrenSwitchStates = null;
                 }
             }
         } else {
-            switchLevel = ((Integer)switchLevels.get(0)).intValue();
+            switchLevel = switchLevels.get(0).intValue();
             switchRoot = (switchLevel == 0)? this : null;
              size = children.size();
 	     for (i=0; i<size; i++) {
