@@ -29,7 +29,6 @@ package javax.media.j3d;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 import javax.vecmath.Color3b;
 import javax.vecmath.Color3f;
@@ -321,7 +320,7 @@ ArrayList<GeometryAtom> gaList = new ArrayList<GeometryAtom>(1);
     //   key   = the RenderBin
     //   value = a set of RenderAtomListInfo objects using this
     //           geometry array for display list purposes
-    private HashMap dlistUsers = null;
+private HashMap<RenderBin, HashSet<RenderAtomListInfo>> dlistUsers = null;
 
     // timestamp used to create display list. This is either
     // one per renderer for useSharedCtx, or one per Canvas for non-shared
@@ -10448,59 +10447,54 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	}
     }
 
-    // Add the specified render atom as a user of this geometry array
-    // (for the specified render bin)
-    void addDlistUser(RenderBin renderBin, RenderAtomListInfo ra) {
-	if (dlistUsers == null) {
-	    dlistUsers = new HashMap(2, 1.0f);
-	}
+// Add the specified render atom as a user of this geometry array
+// (for the specified render bin)
+void addDlistUser(RenderBin renderBin, RenderAtomListInfo ra) {
+	if (dlistUsers == null)
+		dlistUsers = new HashMap<RenderBin, HashSet<RenderAtomListInfo>>(2, 1.0f);
 
-	Set raSet = (Set)dlistUsers.get(renderBin);
+	HashSet<RenderAtomListInfo> raSet = dlistUsers.get(renderBin);
 	if (raSet == null) {
-	    raSet = new HashSet();
-	    dlistUsers.put(renderBin, raSet);
+		raSet = new HashSet<RenderAtomListInfo>();
+		dlistUsers.put(renderBin, raSet);
 	}
 	raSet.add(ra);
-    }
+}
 
-    // Remove the specified render atom from the set of users of this
-    // geometry array (for the specified render bin)
-    void removeDlistUser(RenderBin renderBin, RenderAtomListInfo ra) {
-	if (dlistUsers == null) {
-	    // Nothing to do
-	    return;
-	}
+// Remove the specified render atom from the set of users of this
+// geometry array (for the specified render bin)
+void removeDlistUser(RenderBin renderBin, RenderAtomListInfo ra) {
+	if (dlistUsers == null)
+		return;
 
-	Set raSet = (Set)dlistUsers.get(renderBin);
-	if (raSet == null) {
-	    // Nothing to do
-	    return;
-	}
+	HashSet<RenderAtomListInfo> raSet = dlistUsers.get(renderBin);
+	if (raSet == null)
+		return;
+
 	raSet.remove(ra);
-    }
+}
 
-    // Returns true if the set of render atoms using this geometry
-    // array in the specified render bin is empty.
-    boolean isDlistUserSetEmpty(RenderBin renderBin) {
-	if (dlistUsers == null) {
-	    return true;
-	}
+// Returns true if the set of render atoms using this geometry
+// array in the specified render bin is empty.
+boolean isDlistUserSetEmpty(RenderBin renderBin) {
+	if (dlistUsers == null)
+		return true;
 
-	Set raSet = (Set)dlistUsers.get(renderBin);
+	HashSet<RenderAtomListInfo> raSet = dlistUsers.get(renderBin);
 	if (raSet == null) {
-	    return true;
+		return true;
 	}
 	return raSet.isEmpty();
-    }
+}
 
-    // This method is used for debugging only
-    int numDlistUsers(RenderBin renderBin) {
-	if (isDlistUserSetEmpty(renderBin)) {
-	    return 0;
-	}
-	Set raSet = (Set)dlistUsers.get(renderBin);
+// This method is used for debugging only
+int numDlistUsers(RenderBin renderBin) {
+	if (isDlistUserSetEmpty(renderBin))
+		return 0;
+
+	HashSet<RenderAtomListInfo> raSet = dlistUsers.get(renderBin);
 	return raSet.size();
-    }
+}
 
     void setDlistTimeStamp(int rdrBit, long timeStamp) {
 	int index = getIndex(rdrBit);
