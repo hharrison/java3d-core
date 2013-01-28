@@ -44,6 +44,6 @@ interface TargetsInterface {
     abstract void propagateTargetThreads(int type, int childTargetThreads);
     abstract void copyCachedTargets(int type, CachedTargets[] newCt);
 
-    // used by Switch and SharedGroup
-    abstract ArrayList getTargetsData(int type, int index);
+// used by Switch and SharedGroup
+abstract ArrayList<SwitchState> getTargetsData(int type, int index);
 }

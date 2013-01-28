@@ -72,7 +72,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
     // for message processing
     UpdateTargets updateTargets = null;
 
-    ArrayList childrenSwitchStates = null;
+ArrayList<ArrayList<SwitchState>> childrenSwitchStates = null;
 
     SwitchRetained() {
         this.nodeType = NodeRetained.SWITCH;
@@ -294,14 +294,14 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
     // Switch specific data at SetLive.
     void setAuxData(SetLiveState s, int index, int hkIndex) {
 	int size;
-	ArrayList switchStates;
+	ArrayList<SwitchState> switchStates;
 
 	// Group's setAuxData()
 	super.setAuxData(s, index, hkIndex);
 	switchLevels.add(new Integer(s.switchLevels[index]));
 	int nchildren = children.size();
         for (int i=0; i<nchildren; i++) {
-            switchStates = (ArrayList)childrenSwitchStates.get(i);
+            switchStates = childrenSwitchStates.get(i);
             switchStates.add(hkIndex, new SwitchState(true));
         }
     }
@@ -415,7 +415,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 
         int numChildren = children.size();
         int i, j;
-        ArrayList switchStates;
+	ArrayList<SwitchState> switchStates;
 
 	if (refCount <= 0) {
         // remove this node from parentSwitchLink's childSwitchLinks
@@ -432,7 +432,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 		}
             }
             for (j=0; j<numChildren; j++) {
-                switchStates = (ArrayList)childrenSwitchStates.get(j);
+                switchStates = childrenSwitchStates.get(j);
                 switchStates.clear();
             }
             switchLevels.remove(0);
@@ -513,9 +513,8 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
         ArrayList childSwitchLinks;
 
 	boolean newSwChanged = false;
-        ArrayList childSwitchStates =
-                        (ArrayList)childrenSwitchStates.get(child);
-        SwitchState switchState = (SwitchState)childSwitchStates.get(index);
+        ArrayList<SwitchState> childSwitchStates = childrenSwitchStates.get(child);
+        SwitchState switchState = childSwitchStates.get(index);
         switchState.updateCompositeSwitchMask(switchLevel, switchOn);
 
         if (switchRoot != null) {
@@ -779,13 +778,13 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 
     void insertChildrenData(int index) {
         if (childrenSwitchStates == null) {
-            childrenSwitchStates = new ArrayList(1);
+		childrenSwitchStates = new ArrayList<ArrayList<SwitchState>>(1);
             childrenSwitchLinks = new ArrayList(1);
         }
 
         childrenSwitchLinks.add(index, new ArrayList(1));
 
-        ArrayList switchStates = new ArrayList(1);
+	ArrayList<SwitchState> switchStates = new ArrayList<SwitchState>(1);
         childrenSwitchStates.add(index, switchStates);
         if (source != null && source.isLive()) {
             for (int i=0; i<localToVworld.length; i++) {
@@ -796,12 +795,12 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 
     void appendChildrenData() {
         if (childrenSwitchStates == null) {
-            childrenSwitchStates = new ArrayList(1);
+            childrenSwitchStates = new ArrayList<ArrayList<SwitchState>>(1);
             childrenSwitchLinks = new ArrayList(1);
         }
         childrenSwitchLinks.add(new ArrayList(1));
 
-        ArrayList switchStates = new ArrayList(1);
+        ArrayList<SwitchState> switchStates = new ArrayList<SwitchState>(1);
         childrenSwitchStates.add(switchStates);
         if (source != null && source.isLive()) {
             for (int i=0; i<localToVworld.length; i++) {
@@ -811,8 +810,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
     }
 
     void removeChildrenData(int index) {
-        ArrayList oldSwitchStates = (ArrayList)childrenSwitchStates.get(index)
-;
+	ArrayList<SwitchState> oldSwitchStates = childrenSwitchStates.get(index);
         oldSwitchStates.clear();
         childrenSwitchStates.remove(index);
 
@@ -838,7 +836,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
             newTargets[i] = new Targets();
         }
         s.switchTargets = newTargets;
-	s.switchStates = (ArrayList)childrenSwitchStates.get(childIndex);
+	s.switchStates = childrenSwitchStates.get(childIndex);
 
         if(child!=null)
             child.setLive(s);
@@ -870,11 +868,9 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 
     public CachedTargets getCachedTargets(int type, int index, int child) {
         if (type == TargetsInterface.SWITCH_TARGETS) {
-            ArrayList switchStates =
-                        (ArrayList)childrenSwitchStates.get(child);
+		ArrayList<SwitchState> switchStates = childrenSwitchStates.get(child);
             if (index < switchStates.size()) {
-                SwitchState switchState =
-                        (SwitchState)switchStates.get(index);
+                SwitchState switchState = switchStates.get(index);
                 return switchState.cachedTargets;
             } else {
                 return null;
@@ -888,8 +884,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
     public void resetCachedTargets(int type,
 			CachedTargets[] newCtArr, int child) {
         if (type == TargetsInterface.SWITCH_TARGETS) {
-            ArrayList switchStates = (ArrayList)childrenSwitchStates.get(
-								child);
+            ArrayList<SwitchState> switchStates = childrenSwitchStates.get(child);
             if (newCtArr.length != switchStates.size()) {
                 System.err.println("resetCachedTargets: unmatched length!" +
 				   newCtArr.length + " " + switchStates.size());
@@ -897,7 +892,7 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
             }
             SwitchState switchState;
             for (int i=0; i<newCtArr.length; i++) {
-                switchState = (SwitchState)switchStates.get(i);
+                switchState = switchStates.get(i);
                 switchState.cachedTargets = newCtArr[i];
             }
 	} else {
@@ -905,14 +900,15 @@ class SwitchRetained extends GroupRetained implements TargetsInterface
 	}
     }
 
-    public ArrayList getTargetsData(int type, int child) {
-        if (type == TargetsInterface.SWITCH_TARGETS) {
-            return (ArrayList)childrenSwitchStates.get(child);
-	} else {
-            System.err.println("getTargetsData: wrong arguments");
-	    return null;
+public ArrayList<SwitchState> getTargetsData(int type, int child) {
+	if (type == TargetsInterface.SWITCH_TARGETS) {
+		return childrenSwitchStates.get(child);
 	}
-    }
+	else {
+		System.err.println("getTargetsData: wrong arguments");
+		return null;
+	}
+}
 
     public int getTargetThreads(int type) {
         System.err.println("getTargetsThreads: wrong arguments");

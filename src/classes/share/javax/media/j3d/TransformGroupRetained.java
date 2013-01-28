@@ -1232,10 +1232,10 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	}
     }
 
-    public ArrayList getTargetsData(int type, int index) {
-        // not used
+public ArrayList<SwitchState> getTargetsData(int type, int index) {
+	// not used
 	return null;
-    }
+}
 
     void childCheckSetLive(NodeRetained child, int childIndex,
                                 SetLiveState s, NodeRetained linkNode) {

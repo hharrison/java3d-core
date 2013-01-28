@@ -861,16 +861,16 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
         }
     }
 
-    public ArrayList getTargetsData(int type, int index) {
-        // index is ignores for SharedGroup
+public ArrayList<SwitchState> getTargetsData(int type, int index) {
+	// index is ignores for SharedGroup
 	if (type == TargetsInterface.SWITCH_TARGETS) {
-            return switchStates;
-        } else {
-            System.err.println("getTargetsData: wrong arguments");
-	    return null;
-        }
-    }
-
+		return switchStates;
+	}
+	else {
+		System.err.println("getTargetsData: wrong arguments");
+		return null;
+	}
+}
 
     void childDoSetLive(NodeRetained child, int childIndex, SetLiveState s) {
 
