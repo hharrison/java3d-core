@@ -76,10 +76,10 @@ class ModelClipRetained extends LeafRetained {
      */
     Bounds region = null;
 
-    /**
-     * Vector of GroupRetained  nodes that scopes this model clip.
-     */
-    Vector scopes = new Vector();
+/**
+ * Vector of GroupRetained nodes that scopes this model clip.
+ */
+Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 
     //Boolean to indicate if this object is scoped (only used for mirror objects
     boolean isScoped = false;
@@ -380,7 +380,7 @@ class ModelClipRetained extends LeafRetained {
         GroupRetained group;
         Object[] scopeInfo = new Object[3];
 
-        group = (GroupRetained) scopes.get(index);
+        group = scopes.get(index);
         tempKey.reset();
 	group.removeAllNodesForScopedModelClip(mirrorModelClip, removeScopeList, tempKey);
 
@@ -430,7 +430,7 @@ class ModelClipRetained extends LeafRetained {
 
 
     void initRemoveScope(int index) {
-        GroupRetained group  = (GroupRetained)scopes.elementAt(index);
+        GroupRetained group  = scopes.elementAt(index);
 	group.removeMclipScope();
         scopes.removeElementAt(index);
 
@@ -440,7 +440,7 @@ class ModelClipRetained extends LeafRetained {
 
         Object[] scopeInfo = new Object[3];
         ArrayList removeScopeList = new ArrayList();
-        GroupRetained group  = (GroupRetained)scopes.elementAt(index);
+        GroupRetained group  = scopes.elementAt(index);
 
 	initRemoveScope(index);
         tempKey.reset();
@@ -480,7 +480,7 @@ class ModelClipRetained extends LeafRetained {
       ArrayList removeScopeList = new ArrayList();
       int n = scopes.size();
       for(int index = n-1; index >= 0; index--) {
-	GroupRetained group  = (GroupRetained)scopes.elementAt(index);
+	GroupRetained group  = scopes.elementAt(index);
 	initRemoveScope(index);
 	tempKey.reset();
 	group.removeAllNodesForScopedModelClip(mirrorModelClip, removeScopeList, tempKey);
@@ -506,21 +506,21 @@ class ModelClipRetained extends LeafRetained {
      * @return the scoperen at location index
      */
     Group getScope(int index) {
-        return (Group)(((GroupRetained)(scopes.elementAt(index))).source);
+        return (Group)scopes.elementAt(index).source;
     }
 
-    /**
-     * Returns an enumeration object of the scoperen.
-     * @return an enumeration object of the scoperen
-     */
-    Enumeration getAllScopes() {
-        Enumeration elm = scopes.elements();
-        Vector v = new Vector(scopes.size());
-        while (elm.hasMoreElements()) {
-            v.add( ((GroupRetained) elm.nextElement()).source);
-        }
-        return v.elements();
-    }
+/**
+ * Returns an enumeration object of the scoperen.
+ * @return an enumeration object of the scoperen
+ */
+Enumeration<Group> getAllScopes() {
+	Enumeration<GroupRetained> elm = scopes.elements();
+	Vector<Group> v = new Vector<Group>(scopes.size());
+	while (elm.hasMoreElements()) {
+		v.add((Group)elm.nextElement().source);
+	}
+	return v.elements();
+}
 
     /**
      * Appends the specified scope to this node's list of scopes before
@@ -568,7 +568,7 @@ class ModelClipRetained extends LeafRetained {
      */
     int indexOfScope(Group node) {
       if(node != null)
-	return scopes.indexOf((GroupRetained)node.retained);
+	return scopes.indexOf(node.retained);
       else
 	return scopes.indexOf(null);
     }
@@ -847,7 +847,7 @@ void update(Context ctx, int enableMask, Transform3D trans) {
 	createMessage.args[1]= new Integer(INIT_MIRROR);
 	ArrayList addScopeList = new ArrayList();
 	for (int i = 0; i < scopes.size(); i++) {
-	    group = (GroupRetained)scopes.get(i);
+	    group = scopes.get(i);
 	    tempKey.reset();
 	    group.addAllNodesForScopedModelClip(mirrorModelClip, addScopeList, tempKey);
 	}
@@ -906,7 +906,7 @@ void update(Context ctx, int enableMask, Transform3D trans) {
 	    createMessage.args[1]= new Integer(CLEAR_MIRROR);
 	    ArrayList removeScopeList = new ArrayList();
 	    for (int i = 0; i < scopes.size(); i++) {
-		GroupRetained group = (GroupRetained)scopes.get(i);
+		GroupRetained group = scopes.get(i);
 		tempKey.reset();
 		group.removeAllNodesForScopedModelClip(mirrorModelClip, removeScopeList, tempKey);
 	    }
