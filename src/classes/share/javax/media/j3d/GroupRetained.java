@@ -1723,11 +1723,11 @@ synchronized void setAltAppScope() {
 
 	    if (this instanceof OrderedGroupRetained && linkNode == null) {
                 // set this regardless of refCount
-		s.ogList.add(this);
-		s.ogChildIdList.add(new Integer(childIndex));
-		s.ogCIOList.add(this);
-		int[] newArr = null;
 		OrderedGroupRetained og = (OrderedGroupRetained)this;
+		s.ogList.add(og);
+		s.ogChildIdList.add(new Integer(childIndex));
+		s.ogCIOList.add(og);
+		int[] newArr = null;
 		if(og.userChildIndexOrder != null) {
 		    newArr = new int[og.userChildIndexOrder.length];
 		    System.arraycopy(og.userChildIndexOrder, 0, newArr,
@@ -2710,7 +2710,7 @@ synchronized void setAltAppScope() {
 		if ((refCount+1) == s.refCount) {
 		    //only need to do it once if in shared group. Add
 		    //all the children to the list of OG_REMOVED message
-		    s.ogList.add(this);
+		    s.ogList.add(og);
 		    s.ogChildIdList.add(new Integer(i));
 		}
 			s.orderedPaths = og.childrenOrderedPaths.get(i);

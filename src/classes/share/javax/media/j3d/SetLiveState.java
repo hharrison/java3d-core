@@ -109,13 +109,13 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 
 ArrayList<OrderedPath> orderedPaths = null;
 
-    ArrayList ogList = new ArrayList(5);
-    ArrayList ogChildIdList = new ArrayList(5);
-    ArrayList ogOrderedIdList = new ArrayList(5);
-    // ogCIOList contains a list of OG with affected child index order.
-    ArrayList ogCIOList =  new ArrayList(5);
-    // ogCIOTableList contains a list of affected child index order.
-    ArrayList ogCIOTableList = new ArrayList(5);
+ArrayList<OrderedGroupRetained> ogList = new ArrayList<OrderedGroupRetained>(5);
+ArrayList<Integer> ogChildIdList = new ArrayList<Integer>(5);
+ArrayList<Integer> ogOrderedIdList = new ArrayList<Integer>(5);
+// ogCIOList contains a list of OG with affected child index order.
+ArrayList<OrderedGroupRetained> ogCIOList = new ArrayList<OrderedGroupRetained>(5);
+// ogCIOTableList contains a list of affected child index order.
+ArrayList<int[]> ogCIOTableList = new ArrayList<int[]>(5);
 
 /**
  * List of BranchGroup from this node to the root of tree This is used by
