@@ -126,7 +126,7 @@ public class GraphicsContext3D extends Object   {
     private Appearance uAppearance = null;
     private Vector<Light> uLights = new Vector<Light>();
     private HiResCoord uHiRes = new HiResCoord();
-    private Vector uSounds = new Vector();
+    private Vector<Sound> uSounds = new Vector<Sound>();
     private AuralAttributes uAuralAttributes = null;
     private boolean uBufferOverride = false;
     private boolean uFrontBufferRendering = false;
@@ -1218,7 +1218,7 @@ public int numLights() {
         if (sound.isLive()) {
            throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D23"));
         }
-        uSounds.setElementAt(sound, index);
+        uSounds.set(index, sound);
         if ((canvas3d.view == null) ||
 	    (canvas3d.view.universe == null) ||
 	    (!canvas3d.view.active) ||
@@ -1269,7 +1269,7 @@ public int numLights() {
         if (sound.isLive()) {
            throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D23"));
         }
-        uSounds.insertElementAt(sound, index);
+        uSounds.add(index, sound);
         if ((canvas3d.view == null) ||
 	    (canvas3d.view.universe == null) ||
 	    (!canvas3d.view.active) ||
@@ -1297,7 +1297,7 @@ public int numLights() {
      * @param index which sound to remove
      */
     public void removeSound(int index) {
-        uSounds.removeElementAt(index);
+        uSounds.remove(index);
         if ((canvas3d.view == null) ||
 	    (canvas3d.view.universe == null) ||
 	    (!canvas3d.view.active) ||
@@ -1323,23 +1323,22 @@ public int numLights() {
         sendSoundMessage(GraphicsContext3D.REMOVE_SOUND, null, sound);
      }
 
-    /**
-     * Retrieves the index selected sound.
-     * @param index which sound to return
-     * @return the sound at location index
-     */
-    public Sound getSound(int index) {
-	Sound sound = (Sound)(uSounds.elementAt(index));
-	return sound;
-    }
+/**
+ * Retrieves the index selected sound.
+ * @param index which sound to return
+ * @return the sound at location index
+ */
+public Sound getSound(int index) {
+	return uSounds.get(index);
+}
 
-    /**
-     * Retrieves the enumeration object of all the sounds.
-     * @return the enumeration object of all the sounds
-     */
-    public Enumeration getAllSounds() {
-        return uSounds.elements();
-    }
+/**
+ * Retrieves the enumeration object of all the sounds.
+ * @return the enumeration object of all the sounds
+ */
+public Enumeration<Sound> getAllSounds() {
+	return uSounds.elements();
+}
 
     /**
      * Appends the specified sound to this graphics context's list of sounds.
@@ -1361,7 +1360,7 @@ public int numLights() {
            throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D23"));
 
         }
-        uSounds.addElement(sound);
+        uSounds.add(sound);
         if ((canvas3d.view == null) ||
 	    (canvas3d.view.universe == null) ||
 	    (!canvas3d.view.active) ||
@@ -1383,13 +1382,13 @@ public int numLights() {
         sendSoundMessage(GraphicsContext3D.ADD_SOUND, sound, null);
     }
 
-    /**
-     * Retrieves the current number of sounds in this graphics context.
-     * @return the current number of sounds
-     */
-    public int numSounds() {
+/**
+ * Retrieves the current number of sounds in this graphics context.
+ * @return the current number of sounds
+ */
+public int numSounds() {
 	return uSounds.size();
-    }
+}
 
     SoundScheduler getSoundScheduler() {
         if (canvas3d != null && canvas3d.view != null)
