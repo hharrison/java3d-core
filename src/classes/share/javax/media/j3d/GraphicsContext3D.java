@@ -167,7 +167,7 @@ public class GraphicsContext3D extends Object   {
     boolean normalTransformNeedToUpdate = true;
 
     // The vector of sounds
-    Vector sounds = new Vector();
+    Vector<Sound> sounds = new Vector<Sound>();
 
     // Current AuralAttributes state parameters
     AuralAttributes auralAttributes = null;
@@ -1235,15 +1235,14 @@ public int numLights() {
     }
 
     void doSetSound(Sound sound, int index) {
-        Sound oldSound;
-        oldSound = (Sound)(this.sounds.elementAt(index));
+        Sound oldSound = this.sounds.get(index);
         ((SoundRetained)sound.retained).setInImmCtx(true);
         if (oldSound != null) {
            ((SoundRetained)oldSound.retained).setInImmCtx(false);
         }
         ((SoundRetained)sound.retained).setInImmCtx(true);
         updateSoundState((SoundRetained)(sound.retained));
-	this.sounds.setElementAt(sound, index);
+	this.sounds.set(index, sound);
         this.soundsChanged = true;
 
         sendSoundMessage(GraphicsContext3D.SET_SOUND, sound, oldSound);
@@ -1287,7 +1286,7 @@ public int numLights() {
 
     void doInsertSound(Sound sound, int index) {
         updateSoundState((SoundRetained)sound.retained);
-	this.sounds.insertElementAt(sound, index);
+	this.sounds.add(index, sound);
         this.soundsChanged = true;
         sendSoundMessage(GraphicsContext3D.INSERT_SOUND, sound, null);
     }
@@ -1314,10 +1313,10 @@ public int numLights() {
     }
 
     void doRemoveSound(int index) {
-        Sound sound = (Sound)(this.sounds.elementAt(index));
+        Sound sound = this.sounds.get(index);
         SoundScheduler soundScheduler = getSoundScheduler();
         ((SoundRetained)(sound.retained)).setInImmCtx(false);
-	this.sounds.removeElementAt(index);
+	this.sounds.remove(index);
         this.soundsChanged = true;
         // stop sound if playing on audioDevice
         sendSoundMessage(GraphicsContext3D.REMOVE_SOUND, null, sound);
@@ -1377,7 +1376,7 @@ public Enumeration<Sound> getAllSounds() {
     void doAddSound(Sound sound) {
         ((SoundRetained)(sound.retained)).setInImmCtx(true);
         updateSoundState((SoundRetained)(sound.retained));
-	this.sounds.addElement(sound);
+	this.sounds.add(sound);
         this.soundsChanged = true;
         sendSoundMessage(GraphicsContext3D.ADD_SOUND, sound, null);
     }
@@ -1437,7 +1436,7 @@ public int numSounds() {
     public boolean isSoundPlaying(int index) {
         Sound sound;
         // uSounds isPlaying field is NOT updated, sounds elements are used
-	sound = (Sound)(this.sounds.elementAt(index));
+	sound = this.sounds.get(index);
 	return sound.isPlaying();
     }
 
@@ -1907,9 +1906,6 @@ public int numSounds() {
 	}
 
 	RenderBin rb = canvas3d.view.renderBin;
-	int i, nlights, activeLights;
-	LightRetained light;
-	boolean lightingOn = true;
 
 	if (canvas3d.ctx == null) {
 	    // Force an initial clear if one has not yet been done
@@ -1941,7 +1937,6 @@ public int numSounds() {
 	    }
 
 	    CanvasViewCache cvCache = canvas3d.canvasViewCache;
-	    Transform3D proj;
 
 //  	    vpcToEc = cvCache.getLeftVpcToEc();
 	    if (bufferOverride) {
