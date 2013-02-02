@@ -153,7 +153,7 @@ public class GraphicsContext3D extends Object   {
     AppearanceRetained defaultAppearanceRetained = new AppearanceRetained();
 
     // The vector of lights
-    Vector lights = new Vector();
+    Vector<Light> lights = new Vector<Light>();
 
     // Current High resolution coordinate
     HiResCoord hiRes = new HiResCoord();
@@ -878,14 +878,13 @@ public class GraphicsContext3D extends Object   {
 
     void doSetLight(Light light, int index) {
 
-	Light oldlight;
-	oldlight = (Light)this.lights.elementAt(index);
+	Light oldlight = this.lights.get(index);
 	if (oldlight != null) {
 	   ((LightRetained)oldlight.retained).setInImmCtx(false);
 	}
 	((LightRetained)light.retained).setInImmCtx(true);
 	updateLightState((LightRetained)light.retained);
-	this.lights.setElementAt(light, index);
+	this.lights.set(index, light);
 	this.lightsChanged = true;
     }
 
@@ -923,7 +922,7 @@ public class GraphicsContext3D extends Object   {
     void doInsertLight(Light light, int index) {
 	((LightRetained)light.retained).setInImmCtx(true);
 	updateLightState((LightRetained)light.retained);
-	this.lights.insertElementAt(light, index);
+	this.lights.add(index, light);
 	this.lightsChanged = true;
     }
 
@@ -949,10 +948,10 @@ public class GraphicsContext3D extends Object   {
     }
 
     void doRemoveLight(int index) {
-	Light light = (Light) this.lights.elementAt(index);
+	Light light = this.lights.get(index);
 
 	((LightRetained)light.retained).setInImmCtx(false);
-	this.lights.removeElementAt(index);
+	this.lights.remove(index);
 	this.lightsChanged = true;
     }
 
@@ -1010,7 +1009,7 @@ public Enumeration<Light> getAllLights() {
 
 	((LightRetained)light.retained).setInImmCtx(true);
 	updateLightState((LightRetained)light.retained);
-	this.lights.addElement(light);
+	this.lights.add(light);
 	this.lightsChanged = true;
     }
 
@@ -2439,7 +2438,7 @@ public int numSounds() {
 	int n = 0;
 	int nLight = lights.size();;
 	for (i = 0; i < nLight;i++) {
-	    LightRetained lt = (LightRetained)((Light)lights.get(i)).retained;
+	    LightRetained lt = (LightRetained)(lights.get(i)).retained;
 	    if (lt instanceof AmbientLightRetained) {
 		sceneAmbient.x += lt.color.x;
 		sceneAmbient.y += lt.color.y;
