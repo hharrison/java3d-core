@@ -124,7 +124,7 @@ public class GraphicsContext3D extends Object   {
     private Background uBackground = null;
     private Fog uFog = null;
     private Appearance uAppearance = null;
-    private Vector uLights = new Vector();
+    private Vector<Light> uLights = new Vector<Light>();
     private HiResCoord uHiRes = new HiResCoord();
     private Vector uSounds = new Vector();
     private AuralAttributes uAuralAttributes = null;
@@ -860,7 +860,7 @@ public class GraphicsContext3D extends Object   {
         if (light.isLive()) {
            throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D14"));
         }
-        uLights.setElementAt(light, index);
+        uLights.set(index, light);
         if ((canvas3d.view == null) ||
 	    (canvas3d.view.universe == null) ||
 	    (!canvas3d.view.active) ||
@@ -904,7 +904,7 @@ public class GraphicsContext3D extends Object   {
         if (light.isLive()) {
            throw new IllegalSharingException(J3dI18N.getString("GraphicsContext3D14"));
         }
-        uLights.insertElementAt(light, index);
+        uLights.add(index, light);
         if ((canvas3d.view == null) ||
 	    (canvas3d.view.universe == null) ||
 	    (!canvas3d.view.active) ||
@@ -932,7 +932,7 @@ public class GraphicsContext3D extends Object   {
      * @param index which light to remove
      */
     public void removeLight(int index) {
-        uLights.removeElementAt(index);
+        uLights.remove(index);
         if ((canvas3d.view == null) ||
 	    (canvas3d.view.universe == null) ||
 	    (!canvas3d.view.active) ||
@@ -956,22 +956,22 @@ public class GraphicsContext3D extends Object   {
 	this.lightsChanged = true;
     }
 
-    /**
-     * Retrieves the index selected light.
-     * @param index which light to return
-     * @return the light at location index
-     */
-    public Light getLight(int index) {
-	return (Light) uLights.elementAt(index);
-    }
+/**
+ * Retrieves the index selected light.
+ * @param index which light to return
+ * @return the light at location index
+ */
+public Light getLight(int index) {
+	return uLights.get(index);
+}
 
-    /**
-     * Retrieves the enumeration object of all the lights.
-     * @return the enumeration object of all the lights
-     */
-    public Enumeration getAllLights() {
-        return uLights.elements();
-    }
+/**
+ * Retrieves the enumeration object of all the lights.
+ * @return the enumeration object of all the lights
+ */
+public Enumeration<Light> getAllLights() {
+	return uLights.elements();
+}
 
     /**
      * Appends the specified light to this graphics context's list of lights.
@@ -1014,14 +1014,13 @@ public class GraphicsContext3D extends Object   {
 	this.lightsChanged = true;
     }
 
-    /**
-     * Retrieves the current number of lights in this graphics context.
-     * @return the current number of lights
-     */
-    public int numLights() {
+/**
+ * Retrieves the current number of lights in this graphics context.
+ * @return the current number of lights
+ */
+public int numLights() {
 	return this.uLights.size();
-    }
-
+}
 
     private Transform3D getNormalTransform() {
 	if (compTransform.isRigid()) {
