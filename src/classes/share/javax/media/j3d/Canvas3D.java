@@ -4884,6 +4884,10 @@ void swapBuffers(Context ctx, Drawable drawable) {
         Pipeline.getPipeline().freeTexture(ctx, id);
     }
 
+    static int generateTexID(Context ctx) {
+        return Pipeline.getPipeline().generateTexID(ctx);
+    }
+
     void texturemapping(Context ctx,
             int px, int py,
             int xmin, int ymin, int xmax, int ymax,

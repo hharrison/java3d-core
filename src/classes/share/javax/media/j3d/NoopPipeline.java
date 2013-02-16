@@ -1161,6 +1161,10 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {}
     void freeTexture(Context ctx, int id) {
     }
 
+	int generateTexID(Context ctx) {
+		return 0;
+	}
+
     void texturemapping(Context ctx,
             int px, int py,
             int xmin, int ymin, int xmax, int ymax,

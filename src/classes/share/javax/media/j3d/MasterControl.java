@@ -311,12 +311,6 @@ class MasterControl {
      */
     static long systemStartTime = 0L;
 
-    // This is a counter for texture id's, valid id starts from 1
-    private int textureIdCount = 0;
-
-    // This is lock for both 2D/3D textureIds;
-    private Object textureIdLock = new Object();
-
     // This is a time stamp used when context is created
     private long contextTimeStamp = 0;
 
@@ -922,49 +916,6 @@ private static String getProperty(final String prop) {
 
     void freeDisplayListId(Integer id) {
 	FreeListManager.freeObject(FreeListManager.DISPLAYLIST, id);
-    }
-
-    /**
-     * This returns the a unused textureId
-     */
-    int getTexture2DId() {
-	// MasterControl has to handle the ID itself.  2D and 3D ideas must
-	// never be the same, so the counter has to be in the MasterControl
-	MemoryFreeList textureIds =
-	    FreeListManager.getFreeList(FreeListManager.TEXTURE2D);
-	int id;
-
-	synchronized (textureIdLock) {
-	    if (textureIds.size() > 0) {
-		id = ((Integer)FreeListManager.
-			getObject(FreeListManager.TEXTURE2D)).intValue();
-	    } else {
-		id = (++textureIdCount);
-	    }
-            return id;
-	}
-    }
-
-    int getTexture3DId() {
-	// MasterControl has to handle the ID itself.  2D and 3D ideas must
-	// never be the same, so the counter has to be in the MasterControl
-	MemoryFreeList textureIds =
-	    FreeListManager.getFreeList(FreeListManager.TEXTURE3D);
-	synchronized (textureIdLock) {
-	    if (textureIds.size > 0) {
-		return ((Integer)FreeListManager.
-			getObject(FreeListManager.TEXTURE3D)).intValue();
-	    }
-	    else return (++textureIdCount);
-	}
-    }
-
-    void freeTexture2DId(int id) {
-	FreeListManager.freeObject(FreeListManager.TEXTURE2D, new Integer(id));
-    }
-
-    void freeTexture3DId(int id) {
-	FreeListManager.freeObject(FreeListManager.TEXTURE3D, new Integer(id));
     }
 
     int getCanvasId() {

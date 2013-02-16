@@ -1102,20 +1102,11 @@ abstract class TextureRetained extends NodeComponentRetained {
                 lodOffsetX, lodOffsetY, lodOffsetZ);
     }
 
-
-    // get an ID for Texture 2D
-    int getTextureId() {
-	return (VirtualUniverse.mc.getTexture2DId());
-    }
-
-
     // free a Texture2D id
     void freeTextureId(int id) {
 	synchronized (resourceLock) {
-	    if (objectId == id) {
-		objectId = -1;
-		VirtualUniverse.mc.freeTexture2DId(id);
-	    }
+		if (objectId == id)
+			objectId = -1;
 	}
     }
 
@@ -1132,9 +1123,8 @@ abstract class TextureRetained extends NodeComponentRetained {
     void bindTexture(Canvas3D cv) {
 
         synchronized(resourceLock) {
-	    if (objectId == -1) {
-		objectId = getTextureId();
-	    }
+		if (objectId == -1)
+			objectId = Canvas3D.generateTexID(cv.ctx);
 	    cv.addTextureResource(objectId, this);
  	}
 	bindTexture(cv.ctx, objectId, isEnabled(cv));

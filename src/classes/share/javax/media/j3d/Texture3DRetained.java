@@ -146,26 +146,6 @@ class Texture3DRetained extends TextureRetained {
                 imageDataType, imageData, useAutoMipMapGeneration(cv));
     }
 
-
-    // get an ID for Texture3D
-
-    int getTextureId() {
-        return (VirtualUniverse.mc.getTexture3DId());
-    }
-
-
-    // get a Texture3D Id
-
-    void freeTextureId(int id) {
-	synchronized (resourceLock) {
-	    if (objectId == id) {
-		objectId = -1;
-		VirtualUniverse.mc.freeTexture3DId(id);
-	    }
-	}
-    }
-
-
     // load level 0 image with null data pointer, just to enable
     // mipmapping when level 0 is not the base level
 

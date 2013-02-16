@@ -941,7 +941,6 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 
         if (objectId != -1) {
         	Canvas3D.freeTexture(canvas3d.ctx, objectId);
-            VirtualUniverse.mc.freeTexture2DId(objectId);
             objectId = -1;
         }
 
@@ -1052,7 +1051,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
 
             if (!initTexMap) {
                 if (objectId == -1) {
-                    objectId = VirtualUniverse.mc.getTexture2DId();
+                    objectId = Canvas3D.generateTexID(canvas3d.ctx);
                 }
                 texWidth = getGreaterPowerOf2(w);
                 texHeight = getGreaterPowerOf2(h);
@@ -1065,7 +1064,7 @@ final class J3DGraphics2DImpl extends J3DGraphics2D {
                     // Fail to get the texture surface, most likely
                     // there is not enough texture memory
                     initTexMap = false;
-                    VirtualUniverse.mc.freeTexture2DId(objectId);
+                    Canvas3D.freeTexture(canvas3d.ctx, objectId);
                     objectId = -1;
                     // TODO : Need to find a better way to report no resource problem --- Chien.
                     System.err.println("J3DGraphics2DImpl.copyDataToCanvas() : Fail to get texture resources ...");

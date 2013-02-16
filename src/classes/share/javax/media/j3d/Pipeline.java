@@ -1106,6 +1106,7 @@ public Pipeline run() {
     abstract void freeDisplayList(Context ctx, int id);
     abstract void freeTexture(Context ctx, int id);
 
+    abstract int generateTexID(Context ctx);
     abstract void texturemapping(Context ctx,
             int px, int py,
             int xmin, int ymin, int xmax, int ymax,

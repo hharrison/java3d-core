@@ -7223,6 +7223,18 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
         }
     }
 
+	int generateTexID(Context ctx) {
+		if (VERBOSE) System.err.println("JoglPipeline.generateTexID()");
+
+		GL gl = context(ctx).getGL();
+		int[] tmp = new int[] { -1 };
+		gl.glGenTextures(1, tmp, 0);
+
+		if (tmp[0] < 1)
+			return -1;
+
+		return tmp[0];
+	}
 
     void texturemapping(Context ctx,
             int px, int py,
