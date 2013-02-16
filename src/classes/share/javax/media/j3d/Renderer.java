@@ -1109,19 +1109,17 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 				}
 			    } else {
 
-				if (!canvas.antialiasingSet) {
+				if (!canvas.isAntialiasingSet()) {
 				    // System.err.println("Renderer : Enable FullSceneAntialiasing");
 
 				    canvas.setFullSceneAntialiasing(canvas.ctx, true);
-				    canvas.antialiasingSet = true;
 				}
 			    }
 		        } else {
 
-			    if (canvas.antialiasingSet) {
+			    if (canvas.isAntialiasingSet()) {
 				// System.err.println("Renderer : Disable SceneAntialiasing");
 				canvas.setFullSceneAntialiasing(canvas.ctx, false);
-				canvas.antialiasingSet = false;
 			    }
 			}
 

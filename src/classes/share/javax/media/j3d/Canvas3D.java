@@ -449,7 +449,7 @@ public class Canvas3D extends Canvas {
     boolean sceneAntialiasingMultiSamplesAvailable;
 
     // Use to see whether antialiasing is already set
-    boolean antialiasingSet = false;
+    private boolean antialiasingSet = false;
 
     //
     // Read-only flag that indicates the size of the texture color
@@ -2382,6 +2382,9 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                 this.offScreen);
         // compute the max available texture units
         maxAvailableTextureUnits = Math.max(maxTextureUnits, maxTextureImageUnits);
+        // reset 'antialiasingSet' if new context is created for an already existing Canvas3D,
+        // e.g. resizing offscreen Canvas3D
+        antialiasingSet = false;
 
         return retVal;
     }
@@ -4705,9 +4708,14 @@ void swapBuffers(Context ctx, Drawable drawable) {
         Pipeline.getPipeline().setFogEnableFlag(ctx, enableFlag);
     }
 
+boolean isAntialiasingSet() {
+	return antialiasingSet;
+}
+
     // Setup the full scene antialising in D3D and ogl when GL_ARB_multisamle supported
     void setFullSceneAntialiasing(Context ctx, boolean enable) {
         Pipeline.getPipeline().setFullSceneAntialiasing(ctx, enable);
+        antialiasingSet = enable;
     }
 
     void setGlobalAlpha(Context ctx, float alpha) {
