@@ -54,6 +54,9 @@ import java.util.regex.Pattern;
 import com.jogamp.nativewindow.awt.AWTGraphicsConfiguration;
 import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
 import com.jogamp.nativewindow.awt.AWTGraphicsScreen;
+import com.jogamp.nativewindow.awt.JAWTWindow;
+import com.jogamp.opengl.FBObject;
+
 import javax.media.nativewindow.AbstractGraphicsConfiguration;
 import javax.media.nativewindow.CapabilitiesChooser;
 import javax.media.nativewindow.CapabilitiesImmutable;
@@ -70,6 +73,7 @@ import javax.media.opengl.GLContext;
 import javax.media.opengl.GLDrawable;
 import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLException;
+import javax.media.opengl.GLFBODrawable;
 import javax.media.opengl.GLPbuffer;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.Threading;
@@ -6178,7 +6182,7 @@ class JoglPipeline extends Pipeline {
 					indexChooser, awtGraphicsScreen, VisualIDHolder.VID_UNDEFINED);
 			NativeWindow nativeWindow = NativeWindowFactory.getNativeWindow(cv, awtGraphicsConfiguration);
 			draw = GLDrawableFactory.getFactory(profile).createGLDrawable(nativeWindow);
-            cv.drawable = new JoglDrawable(draw);
+            cv.drawable = new JoglDrawable(draw, null);
         } else {
             draw = drawable(cv.drawable);
         }
@@ -6311,7 +6315,7 @@ class JoglPipeline extends Pipeline {
         //FIXME use the real AWTGraphicsDevice
         GLPbuffer pbuffer = GLDrawableFactory.getFactory(profile).createGLPbuffer(GLDrawableFactory.getDesktopFactory().getDefaultDevice() ,caps, null,width, height, GLContext.getCurrent());
 
-        return new JoglDrawable(pbuffer);
+        return new JoglDrawable(pbuffer, null);
     }
 
     void destroyOffScreenBuffer(Canvas3D cv, Context ctx, Drawable drawable) {
@@ -7147,6 +7151,29 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
             gl.glLoadMatrixd(p, 0);
         }
     }
+
+private boolean isOffscreenLayerSurfaceEnabled(Canvas3D cv) {
+	if (cv.drawable == null || cv.offScreen)
+		return false;
+
+	JoglDrawable joglDrawble = (JoglDrawable)cv.drawable;
+	final JAWTWindow jawtwindow = (JAWTWindow)joglDrawble.getNativeWindow();
+	if (jawtwindow == null)
+		return false;
+
+	return jawtwindow.isOffscreenLayerSurfaceEnabled();
+}
+
+private boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height) {
+	if (!(jdraw.getGLDrawable() instanceof GLFBODrawable))
+		return false;
+
+	FBObject fboBack = ((GLFBODrawable)jdraw.getGLDrawable()).getFBObject(GL.GL_BACK);
+	if (fboBack == null)
+		return false;
+
+	return (width != fboBack.getWidth() || height != fboBack.getHeight());
+}
 
     // The native method for setting the Viewport.
     void setViewport(Context ctx, int x, int y, int width, int height) {

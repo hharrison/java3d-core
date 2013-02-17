@@ -26,19 +26,38 @@
 
 package javax.media.j3d;
 
+import javax.media.nativewindow.NativeWindow;
 import javax.media.opengl.GLDrawable;
 
 /**
  * Drawable class for the Jogl rendering pipeline.
  */
 class JoglDrawable implements Drawable {
-  private GLDrawable  drawable;
+	private GLDrawable drawable;
+	private NativeWindow nativeWindow;
 
-  JoglDrawable(GLDrawable drawable) {
-    this.drawable = drawable;
-  }
+	JoglDrawable(GLDrawable drawable, NativeWindow nativeWindow) {
+		this.drawable = drawable;
+		this.nativeWindow = nativeWindow;
+	}
 
-  GLDrawable getGLDrawable() {
-    return drawable;
-  }
+	GLDrawable getGLDrawable() {
+		return drawable;
+	}
+
+	void setGLDrawable(GLDrawable drawable) {
+		this.drawable = drawable;
+	}
+
+	NativeWindow getNativeWindow() {
+		return nativeWindow;
+	}
+
+	void destroyNativeWindow() {
+		if (nativeWindow == null)
+			return;
+
+		nativeWindow.destroy();
+		nativeWindow = null;
+	}
 }
