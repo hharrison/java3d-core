@@ -983,12 +983,11 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 			    break doneRender;
 			}
 
-                        // setup viewport
-                        canvas.setViewport(canvas.ctx, 0, 0,
-                           cvCache.getCanvasWidth(),
-                           cvCache.getCanvasHeight());
-
-
+			int cvWidth = cvCache.getCanvasWidth();
+			int cvHeight = cvCache.getCanvasHeight();
+			Pipeline.getPipeline().resizeOffscreenLayer(canvas, cvWidth, cvHeight);
+			// setup viewport
+			canvas.setViewport(canvas.ctx, 0, 0, cvWidth, cvHeight);
 
                         // rebuild the display list of all dirty renderMolecules.
                         if (canvas.useSharedCtx) {
@@ -1133,19 +1132,14 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 					     Canvas3D.FIELD_ALL,
 					     canvas.useDoubleBuffer);
 
-			// this is if the background image resizes with the canvas
-			int winWidth = cvCache.getCanvasWidth();
-			int winHeight = cvCache.getCanvasHeight();
+						// clear background if not full screen antialiasing
+						// and not in stereo mode
+						if (!doAccum && !sharedStereoZBuffer) {
+							BackgroundRetained bg = renderBin.background;
 
+							canvas.clear(bg, cvWidth, cvHeight);
 
-		        // clear background if not full screen antialiasing
-                        // and not in stereo mode
-                        if (!doAccum && !sharedStereoZBuffer) {
-			    BackgroundRetained bg = renderBin.background;
-
-                            canvas.clear(bg, winWidth, winHeight);
-
-                        }
+						}
 
 		        // handle preRender callback
 			if (VirtualUniverse.mc.doDsiRenderLock) {
@@ -1236,14 +1230,14 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                                     }
 			        }
 
-                                // clear background for stereo and
-                                //  accumulation buffer cases
-                                if (doAccum || sharedStereoZBuffer) {
-				    BackgroundRetained bg = renderBin.background;
+								// clear background for stereo and
+								// accumulation buffer cases
+								if (doAccum || sharedStereoZBuffer) {
+									BackgroundRetained bg = renderBin.background;
 
-                                    canvas.clear(bg, winWidth, winHeight);
+									canvas.clear(bg, cvWidth, cvHeight);
 
-                                }
+								}
 
 			        // render background geometry
 	    	                if (renderBin.geometryBackground != null) {

@@ -1095,6 +1095,8 @@ public Pipeline run() {
     // The native method for setting the Projection matrix.
     abstract void setProjectionMatrix(Context ctx, double[] projMatrix);
 
+    abstract void resizeOffscreenLayer(Canvas3D cv, int width, int height);
+
     // The native method for setting the Viewport.
     abstract void setViewport(Context ctx, int x, int y, int width, int height);
 

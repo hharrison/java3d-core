@@ -7175,6 +7175,8 @@ private boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height
 	return (width != fboBack.getWidth() || height != fboBack.getHeight());
 }
 
+	void resizeOffscreenLayer(Canvas3D cv, int width, int height) {}
+
     // The native method for setting the Viewport.
     void setViewport(Context ctx, int x, int y, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.setViewport()");

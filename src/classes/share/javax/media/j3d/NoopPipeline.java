@@ -1144,6 +1144,8 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {}
     void setProjectionMatrix(Context ctx, double[] projMatrix) {
     }
 
+    void resizeOffscreenLayer(Canvas3D cv, int width, int height) {}
+
     // The native method for setting the Viewport.
     void setViewport(Context ctx, int x, int y, int width, int height) {
     }
