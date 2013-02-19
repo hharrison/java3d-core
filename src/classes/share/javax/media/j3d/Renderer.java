@@ -1462,9 +1462,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                     new RenderingError(RenderingError.UNEXPECTED_RENDERING_ERROR,
                         J3dI18N.getString("Renderer8"));
             err.setCanvas3D(canvas);
-            if (canvas != null) {
-                err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
-            }
+            err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
             notifyErrorListeners(err);
       }
     }
