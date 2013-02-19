@@ -322,8 +322,8 @@ ArrayList<RenderAtom> dirtyOrientedRAs = new ArrayList<RenderAtom>(5);
 // Cached copy of dirty oriented RAs to be updated in MasterControl
 ArrayList<RenderAtom> cachedDirtyOrientedRAs = null;
 
-    // list of offScreen message that
-    ArrayList offScreenMessage = new ArrayList(5);
+// list of offScreen message that
+ArrayList<J3dMessage> offScreenMessage = new ArrayList<J3dMessage>(5);
 
     // Vector used for locale translation
     Vector3d localeTranslation = new Vector3d();
@@ -783,9 +783,8 @@ ArrayList<RenderAtomListInfo> dirtyList = new ArrayList<RenderAtomListInfo>(5);
 	// renderBin is ready now, so send the offScreen message
 	size = offScreenMessage.size();
 	if ( size > 0) {
-	    J3dMessage m;
 	    for (i=size-1; i>=0; i--) {
-		m = (J3dMessage) offScreenMessage.get(i);
+		J3dMessage m = offScreenMessage.get(i);
 		m.threads = J3dThread.RENDER_THREAD;
 		((Canvas3D)m.args[0]).screen.renderer.rendererStructure.addMessage(m);
 
