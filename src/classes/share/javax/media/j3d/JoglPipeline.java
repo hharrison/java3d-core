@@ -8472,81 +8472,6 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
             nativeWindow.destroy();
         }
     }
-    /*
-    private static AWTGraphicsConfiguration createAwtGraphicsConfiguration(GLCapabilities capabilities,
-            CapabilitiesChooser chooser,
-            GraphicsDevice device) {
-        //FIXME unit id?
-        AWTGraphicsDevice awtGraphicsDevice = new AWTGraphicsDevice(device, 0);
-        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(awtGraphicsDevice.getClass(), GLCapabilities.class);
-        AWTGraphicsConfiguration awtGraphicsConfiguration = (AWTGraphicsConfiguration) factory.chooseGraphicsConfiguration(capabilities, capabilities,
-        chooser, new AWTGraphicsScreen(awtGraphicsDevice), VisualIDHolder.VID_UNDEFINED);
-        return awtGraphicsConfiguration;
-    }
-
-    private static AWTGraphicsConfiguration createAwtGraphicsConfiguration(GLCapabilities capabilities,
-            CapabilitiesChooser chooser,
-            AWTGraphicsDevice awtGraphicsDevice) {
-        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(awtGraphicsDevice.getClass(), GLCapabilities.class);
-        AWTGraphicsConfiguration awtGraphicsConfiguration = (AWTGraphicsConfiguration) factory.chooseGraphicsConfiguration(capabilities, capabilities,
-        chooser, new AWTGraphicsScreen(awtGraphicsDevice), VisualIDHolder.VID_UNDEFINED);
-        return awtGraphicsConfiguration;
-    }*/
-
-    private static GraphicsConfiguration unwrap(AWTGraphicsConfiguration config) {
-        if (config == null) {
-            return null;
-        }
-        return config.getAWTGraphicsConfiguration();
-    }
-
-    /* Used in conjunction with IndexCapabilitiesChooser in pixel format
-    // selection -- see getBestConfiguration
-    class CapabilitiesCapturer extends DefaultGLCapabilitiesChooser implements ExtendedCapabilitiesChooser {
-        private boolean done;
-        private GLCapabilities capabilities;
-        private int chosenIndex = -1;
-
-        public boolean done() {
-            return done;
-        }
-
-        public GLCapabilities getCapabilities() {
-            return capabilities;
-        }
-
-        public int getChosenIndex() {
-            return chosenIndex;
-        }
-
-        public int chooseCapabilities(GLCapabilities desired,
-                GLCapabilities[] available,
-                int windowSystemRecommendedChoice) {
-            int res = super.chooseCapabilities(desired, Arrays.asList(available), windowSystemRecommendedChoice);
-            capabilities = available[res];
-            chosenIndex = res;
-            markDone();
-            return res;
-        }
-
-        public void init(GLContext context) {
-            // Avoid hanging things up for several seconds
-            kick();
-        }
-
-        private void markDone() {
-            synchronized (this) {
-                done = true;
-                notifyAll();
-            }
-        }
-
-        private void kick() {
-            synchronized (this) {
-                notifyAll();
-            }
-        }
-    }*/
 
     // Used to support the query context mechanism -- needs to be more
     // than just a GLCapabilitiesChooser
@@ -8581,27 +8506,6 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
             }
         }
     }
-
-    /* Used in two phases of pixel format selection: transforming the
-    // JoglGraphicsConfiguration to a real AWT GraphicsConfiguration and
-    // during context creation to select exactly the same graphics
-    // configuration as was done during getBestConfiguration.
-    class IndexCapabilitiesChooser implements GLCapabilitiesChooser {
-        private int indexToChoose;
-
-        IndexCapabilitiesChooser(int indexToChoose) {
-            this.indexToChoose = indexToChoose;
-        }
-
-        public int chooseCapabilities(CapabilitiesImmutable desired,
-                List available,
-                int windowSystemRecommendedChoice) {
-            if (DEBUG_CONFIG) {
-                System.err.println("IndexCapabilitiesChooser returning index=" + indexToChoose);
-            }
-            return indexToChoose;
-        }
-    }*/
 
     private void disposeOnEDT(final Frame f) {
         Runnable r = new Runnable() {
@@ -9089,17 +8993,5 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
 	    		}
 	    	}
     	}
-    	/*
-    	private int getMaxPowerOf2LE(int value) {
-    		int powerValue = 1;
-    	    if (value < 1)
-    	        return value;
-
-    		while (value >= powerValue) {
-    	        powerValue *= 2;
-    		}
-    	    powerValue = (powerValue >> 1);
-    	    return powerValue;
-    	}*/
     }
 }
