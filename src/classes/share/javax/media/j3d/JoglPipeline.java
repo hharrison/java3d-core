@@ -26,18 +26,6 @@
 
 package javax.media.j3d;
 
-import static javax.media.opengl.GL.GL_BACK;
-import static javax.media.opengl.GL.GL_FRONT;
-import static javax.media.opengl.GL.GL_FRONT_AND_BACK;
-import static javax.media.opengl.GL.GL_LEQUAL;
-import static javax.media.opengl.GL.GL_UNPACK_ALIGNMENT;
-import static javax.media.opengl.GL2.GL_LIGHT_MODEL_COLOR_CONTROL;
-import static javax.media.opengl.GL2.GL_SEPARATE_SPECULAR_COLOR;
-import static javax.media.opengl.GL2ES1.GL_RESCALE_NORMAL;
-import static javax.media.opengl.GL2GL3.GL_READ_BUFFER;
-import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_COLOR_MATERIAL;
-import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_DIFFUSE;
-
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.DisplayMode;
@@ -51,7 +39,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -62,12 +49,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.jogamp.nativewindow.awt.AWTGraphicsConfiguration;
-import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
-import com.jogamp.nativewindow.awt.AWTGraphicsScreen;
-import com.jogamp.nativewindow.awt.JAWTWindow;
-import com.jogamp.opengl.FBObject;
 
 import javax.media.nativewindow.AbstractGraphicsDevice;
 import javax.media.nativewindow.AbstractGraphicsScreen;
@@ -93,6 +74,11 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.Threading;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.nativewindow.awt.AWTGraphicsConfiguration;
+import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
+import com.jogamp.nativewindow.awt.AWTGraphicsScreen;
+import com.jogamp.nativewindow.awt.JAWTWindow;
+import com.jogamp.opengl.FBObject;
 
 /**
  * Concrete implementation of Pipeline class for the JOGL rendering
@@ -6223,7 +6209,7 @@ class JoglPipeline extends Pipeline {
 				// Alternative: resize GL_BACK FBObject directly,
 				// if multisampled the FBO sink (GL_FRONT) will be resized before the swap is executed
 				int numSamples = ((GLFBODrawable)glDrawble).getChosenGLCapabilities().getNumSamples();
-				FBObject fboObjectBack = ((GLFBODrawable)glDrawble).getFBObject( GL_BACK );
+				FBObject fboObjectBack = ((GLFBODrawable)glDrawble).getFBObject( GL.GL_BACK );
 				fboObjectBack.reset(gl, newWidth, newHeight, numSamples, false); // false = don't reset SamplingSinkFBO immediately
 				fboObjectBack.bind(gl);
 
@@ -6352,11 +6338,11 @@ class JoglPipeline extends Pipeline {
             }
 
             // Enable rescale normal
-            gl.glEnable(GL_RESCALE_NORMAL);
+            gl.glEnable(GL2.GL_RESCALE_NORMAL);
 
-            gl.glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
-            gl.glDepthFunc(GL_LEQUAL);
-            gl.glEnable(GL_COLOR_MATERIAL);
+            gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE);
+            gl.glDepthFunc(GL.GL_LEQUAL);
+            gl.glEnable(GL2.GL_COLOR_MATERIAL);
 
             /*
             OpenGL specs:
@@ -6369,10 +6355,10 @@ class JoglPipeline extends Pipeline {
 
             // Issue 417: JOGL: Mip-mapped NPOT textures rendered incorrectly
             // J3D images are aligned to 1 byte
-            gl.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
 
             // Workaround for issue 400: Enable separate specular by default
-            gl.glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
+            gl.glLightModeli(GL2.GL_LIGHT_MODEL_COLOR_CONTROL, GL2.GL_SEPARATE_SPECULAR_COLOR);
 
 
             // Mac OS X / JRE 7 : onscreen rendering = offscreen rendering
@@ -6381,7 +6367,7 @@ class JoglPipeline extends Pipeline {
             	GLFBODrawable fboDrawable = (GLFBODrawable)glDrawable;
             	// bind GLFBODrawable's drawing FBObject
             	// GL_BACK returns the correct FBOObject for single/double buffering, incl. multisampling
-            	fboDrawable.getFBObject( GL_BACK ).bind(gl);
+            	fboDrawable.getFBObject( GL.GL_BACK ).bind(gl);
             }
 
 
@@ -6396,17 +6382,17 @@ class JoglPipeline extends Pipeline {
                 	GLFBODrawable fboDrawable = (GLFBODrawable)glDrawable;
                 	// bind GLFBODrawable's drawing FBObject
                 	// GL_BACK returns the correct FBOObject for single/double buffering, incl. multisampling
-                	fboDrawable.getFBObject( GL_BACK ).bind(gl);
+                	fboDrawable.getFBObject( GL.GL_BACK ).bind(gl);
             	}
             	// pbuffer
             	else {
 	            	// Double buffering: read from back buffer, as we don't swap
 					// Even this setting is identical to the initially mode it is set explicitly
 					if (chosenCaps.getDoubleBuffered()) {
-						gl.glReadBuffer(GL_BACK);
+						gl.glReadBuffer(GL.GL_BACK);
 					}
 					else {
-						gl.glReadBuffer(GL_FRONT);
+						gl.glReadBuffer(GL.GL_FRONT);
 					}
             	}
             }
@@ -6578,7 +6564,7 @@ class JoglPipeline extends Pipeline {
         	// GL_FRONT if double buffered ( = GL_BAck before swap was called)
         	// GL_FRONT = GL_BACK if single buffered (single FBO)
 
-        	fboDrawable.getFBObject( GL_FRONT ).bind(gl);
+        	fboDrawable.getFBObject( GL.GL_FRONT ).bind(gl);
         }
         // else pbuffer
 
@@ -6678,7 +6664,7 @@ class JoglPipeline extends Pipeline {
         // If FBO
         if (chosenCaps.isFBO()) {
         	// bind FBO for drawing
-        	fboDrawable.getFBObject( GL_BACK ).bind(gl);
+        	fboDrawable.getFBObject( GL.GL_BACK ).bind(gl);
         }
     }
 
