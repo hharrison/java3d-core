@@ -783,7 +783,8 @@ private static String getProperty(final String prop) {
 
 	if (propValue != null) {
 	    value = Boolean.valueOf(propValue).booleanValue();
-	    System.err.println("Java 3D: " + (value ? trueMsg : falseMsg));
+		if (J3dDebug.debug)
+			System.err.println("Java 3D: " + (value ? trueMsg : falseMsg));
 	}
 	return value;
     }
