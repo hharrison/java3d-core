@@ -44,8 +44,6 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4d;
 import javax.vecmath.Vector4f;
 
-import com.sun.j3d.internal.HashCodeUtil;
-
 /**
  * A generalized transform object represented internally as a 4x4
  * double-precision floating point matrix.  The mathematical
@@ -4089,9 +4087,9 @@ public class Transform3D {
 	long bits = 1L;
 
 	for (int i = 0; i < 16; i++) {
-	    bits = 31L * bits + HashCodeUtil.doubleToLongBits(mat[i]);
+		bits = J3dHash.mixDoubleBits(bits, mat[i]);
 	}
-	return (int) (bits ^ (bits >> 32));
+	return J3dHash.finish(bits);
     }
 
 

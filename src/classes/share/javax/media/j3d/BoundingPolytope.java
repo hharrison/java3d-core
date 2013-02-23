@@ -31,8 +31,6 @@ import javax.vecmath.Point4d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4d;
 
-import com.sun.j3d.internal.HashCodeUtil;
-
 /**
  * A BoundingPolytope defines a polyhedral bounding region using the
  * intersection of four or more half spaces.  The region defined by a
@@ -531,13 +529,13 @@ public class BoundingPolytope extends Bounds {
 	long bits = 1L;
 
 	for (int i = 0; i < planes.length; i++) {
-	    bits = 31L * bits + HashCodeUtil.doubleToLongBits(planes[i].x);
-	    bits = 31L * bits + HashCodeUtil.doubleToLongBits(planes[i].y);
-	    bits = 31L * bits + HashCodeUtil.doubleToLongBits(planes[i].z);
-	    bits = 31L * bits + HashCodeUtil.doubleToLongBits(planes[i].w);
+		bits = J3dHash.mixDoubleBits(bits, planes[i].x);
+		bits = J3dHash.mixDoubleBits(bits, planes[i].y);
+		bits = J3dHash.mixDoubleBits(bits, planes[i].z);
+		bits = J3dHash.mixDoubleBits(bits, planes[i].w);
 	}
 
-	return (int) (bits ^ (bits >> 32));
+	return J3dHash.finish(bits);
     }
 
 

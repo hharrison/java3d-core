@@ -31,8 +31,6 @@ import javax.vecmath.Point4d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4d;
 
-import com.sun.j3d.internal.HashCodeUtil;
-
 /**
  *  This class defines an axis aligned bounding box which is used for
  *  bounding regions.
@@ -399,13 +397,13 @@ public void setUpper(Point3d p1) {
      */
     public int hashCode() {
 	long bits = 1L;
-	bits = 31L * bits + HashCodeUtil.doubleToLongBits(lower.x);
-	bits = 31L * bits + HashCodeUtil.doubleToLongBits(lower.y);
-	bits = 31L * bits + HashCodeUtil.doubleToLongBits(lower.z);
-	bits = 31L * bits + HashCodeUtil.doubleToLongBits(upper.x);
-	bits = 31L * bits + HashCodeUtil.doubleToLongBits(upper.y);
-	bits = 31L * bits + HashCodeUtil.doubleToLongBits(upper.z);
-	return (int) (bits ^ (bits >> 32));
+	bits = J3dHash.mixDoubleBits(bits, lower.x);
+	bits = J3dHash.mixDoubleBits(bits, lower.y);
+	bits = J3dHash.mixDoubleBits(bits, lower.z);
+	bits = J3dHash.mixDoubleBits(bits, upper.x);
+	bits = J3dHash.mixDoubleBits(bits, upper.y);
+	bits = J3dHash.mixDoubleBits(bits, upper.z);
+	return J3dHash.finish(bits);
     }
 
 

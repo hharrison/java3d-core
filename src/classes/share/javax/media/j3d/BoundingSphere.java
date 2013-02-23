@@ -31,8 +31,6 @@ import javax.vecmath.Point4d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4d;
 
-import com.sun.j3d.internal.HashCodeUtil;
-
 /**
  * This class defines a spherical bounding region which is defined by a
  * center point and a radius.
@@ -410,11 +408,11 @@ public void setCenter(Point3d center) {
      */
     public int hashCode() {
 	long bits = 1L;
-	bits = 31L * bits + HashCodeUtil.doubleToLongBits(radius);
-	bits = 31L * bits + HashCodeUtil.doubleToLongBits(center.x);
-	bits = 31L * bits + HashCodeUtil.doubleToLongBits(center.y);
-	bits = 31L * bits + HashCodeUtil.doubleToLongBits(center.z);
-	return (int) (bits ^ (bits >> 32));
+	bits = J3dHash.mixDoubleBits(bits, radius);
+	bits = J3dHash.mixDoubleBits(bits, center.x);
+	bits = J3dHash.mixDoubleBits(bits, center.y);
+	bits = J3dHash.mixDoubleBits(bits, center.z);
+	return J3dHash.finish(bits);
     }
 
 
