@@ -223,7 +223,6 @@ ArrayList<LightRetained> newlyAddedMirrorLights = new ArrayList<LightRetained>()
 
 
 	initScope(scope, index);
-	J3dMessage createMessage = new J3dMessage();
 	scopeInfo[0] = addScopeList;
 	scopeInfo[1] = removeScopeList;
 	scopeInfo[2] = (scopes.size() > 0 ? Boolean.TRUE: Boolean.FALSE);
@@ -579,7 +578,6 @@ ArrayList<LightRetained> newlyAddedMirrorLights = new ArrayList<LightRetained>()
     // get a message, this routine updates values in the mirror object
     // that are not used by the renderer
     void updateImmediateMirrorObject(Object[] objs) {
-	Transform3D trans = null;
 	int component = ((Integer)objs[1]).intValue();
 	int numLgts = ((Integer)objs[2]).intValue();
 	LightRetained[] mLgts = (LightRetained[]) objs[3];
@@ -628,9 +626,7 @@ ArrayList<LightRetained> newlyAddedMirrorLights = new ArrayList<LightRetained>()
 	    }
 	}
 	else if ((component & SCOPE_CHANGED) != 0) {
-	    int nscopes, j, i;
-	    GroupRetained group;
-	    Vector currentScopes;
+	    int j, i;
 	    Object[] scopeList = (Object[])objs[4];
 	    ArrayList addList = (ArrayList)scopeList[0];
 	    ArrayList removeList = (ArrayList)scopeList[1];
@@ -667,7 +663,6 @@ ArrayList<LightRetained> newlyAddedMirrorLights = new ArrayList<LightRetained>()
     // updateLight() in RenderingEnvironmentStructure
     void updateMirrorObject(Object[] objs) {
 
-	Transform3D trans = null;
 	int component = ((Integer)objs[1]).intValue();
 	int numLgts = ((Integer)objs[2]).intValue();
 	LightRetained[] mLgts = (LightRetained[]) objs[3];
@@ -988,7 +983,6 @@ ArrayList<LightRetained> newlyAddedMirrorLights = new ArrayList<LightRetained>()
     void clearMirrorObject(Object[] args) {
 	Shape3DRetained shape;
 	ArrayList shapeList = (ArrayList)args[2];
-	ArrayList removeScopeList = new ArrayList();
 	LightRetained[] mLgts = (LightRetained[]) args[4];
 	int numLgts = ((Integer)args[3]).intValue();
 
