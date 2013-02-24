@@ -125,10 +125,10 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
     boolean isViewScoped = false;
 
 
-    /**
-     * Temporary list of newly added mirror lights, during any setlive
-     */
-    ArrayList newlyAddedMirrorLights = new ArrayList();
+/**
+ * Temporary list of newly added mirror lights, during any setlive
+ */
+ArrayList<LightRetained> newlyAddedMirrorLights = new ArrayList<LightRetained>();
 
     // Target threads to be notified when light changes
     static final int targetThreads = J3dThread.UPDATE_RENDERING_ENVIRONMENT |
@@ -868,7 +868,7 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 
 	LightRetained[] mlts = new LightRetained[newlyAddedMirrorLights.size()];
 	for (int i = 0; i < mlts.length; i++) {
-	    mlts[i] = (LightRetained)newlyAddedMirrorLights.get(i);
+	    mlts[i] = newlyAddedMirrorLights.get(i);
 	}
 	createMessage.args[2] = new Integer(mlts.length);
 	createMessage.args[3] = mlts;
@@ -965,7 +965,7 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 	    J3dMessage createMessage = new J3dMessage();
 	    LightRetained[] mlts = new LightRetained[newlyAddedMirrorLights.size()];
 	    for (int i = 0; i < mlts.length; i++) {
-		mlts[i] = (LightRetained)newlyAddedMirrorLights.get(i);
+		mlts[i] = newlyAddedMirrorLights.get(i);
 	    }
 	    createMessage.threads = J3dThread.UPDATE_RENDERING_ENVIRONMENT;
 	    createMessage.universe = universe;
