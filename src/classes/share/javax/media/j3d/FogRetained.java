@@ -467,10 +467,7 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 
 
     void updateImmediateMirrorObject(Object[] objs) {
-	GroupRetained group;
-	Vector currentScopes;
-	int i, nscopes;
-	Transform3D trans;
+	int i;
 
 	int component = ((Integer)objs[1]).intValue();
 	if ((component & BOUNDS_CHANGED) != 0) {
@@ -571,11 +568,6 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
      * subclasses of fog to add themselves to the list of fogs
      */
     void setLive(SetLiveState s) {
-        GroupRetained group;
-	Vector currentScopes;
-	int i, nscopes;
-	TransformGroupRetained[] tlist;
-
         if (inImmCtx) {
 	    throw new IllegalSharingException(J3dI18N.getString("FogRetained0"));
         }
@@ -678,16 +670,12 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
     void clearMirrorObject(Object[] args) {
 	Shape3DRetained shape;
 	ArrayList shapeList = (ArrayList)args[2];
-	ArrayList removeScopeList = new ArrayList();
 
 	for (int i = 0; i < shapeList.size(); i++) {
 	    shape = ((GeometryAtom)shapeList.get(i)).source;
 	    shape.removeFog(mirrorFog);
 	}
 	mirrorFog.isScoped = false;
-
-
-
     }
 
 
@@ -697,7 +685,7 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
      * it removes itself to the list of fogs
      */
     void clearLive(SetLiveState s) {
-	int i, j;
+	int i;
         GroupRetained group;
 
         super.clearLive(s);
@@ -734,7 +722,7 @@ Vector<GroupRetained> scopes = new Vector<GroupRetained>();
 	    createMessage.args[1]= new Integer(CLEAR_MIRROR);
 	    ArrayList removeScopeList = new ArrayList();
 	    for (i = 0; i < scopes.size(); i++) {
-		group = (GroupRetained)scopes.get(i);
+		group = scopes.get(i);
 		tempKey.reset();
 		group.removeAllNodesForScopedFog(mirrorFog, removeScopeList, tempKey);
 	    }
