@@ -681,8 +681,6 @@ void update(Context ctx, int enableMask, Transform3D trans) {
     // The update Object function.
     void updateImmediateMirrorObject(Object[] objs) {
 	int component = ((Integer)objs[1]).intValue();
-	Transform3D trans;
-
 
 	if  ((component & BOUNDINGLEAF_CHANGED) != 0) {
 	    mirrorModelClip.boundingLeaf = (BoundingLeafRetained)objs[2];
@@ -919,7 +917,6 @@ void update(Context ctx, int enableMask, Transform3D trans) {
     void clearMirrorObject(Object[] args) {
 	Shape3DRetained shape;
 	ArrayList shapeList = (ArrayList)args[2];
-	ArrayList removeScopeList = new ArrayList();
 
 	for (int i = 0; i < shapeList.size(); i++) {
 	    shape = ((GeometryAtom)shapeList.get(i)).source;
