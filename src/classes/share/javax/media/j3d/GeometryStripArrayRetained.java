@@ -672,7 +672,7 @@ abstract class GeometryStripArrayRetained extends GeometryArrayRetained {
 
 			    for (k = 0, tOffset = vOffset;
 					k < texCoordSetCount; k++) {
-				texBuffer = (FloatBufferWrapper)(((J3DBuffer) (src.refTexCoordsBuffer[k])).getBufferImpl());
+				texBuffer = (FloatBufferWrapper)(((src.refTexCoordsBuffer[k])).getBufferImpl());
 				texBuffer.position(src.indexTexCoord[k][index]*texCoordStride);
 				texBuffer.get(vertexData, tOffset, texCoordStride);
 				tOffset += texCoordStride;

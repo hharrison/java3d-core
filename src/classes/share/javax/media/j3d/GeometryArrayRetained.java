@@ -245,7 +245,7 @@ ArrayList<GeometryAtom> gaList = new ArrayList<GeometryAtom>(1);
     TexCoord3f[] t3fRefTexCoords = null;
 
     // Used for NIO buffer tex coords
-    Object[] refTexCoordsBuffer = null;
+    J3DBuffer[] refTexCoordsBuffer = null;
     //FloatBufferWrapper[] floatBufferRefTexCoords = null;
 
 
@@ -1628,7 +1628,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
                 this.mirrorRefTexCoords = new Object[texCoordSetCount];
                 this.refTexCoords = new Object[texCoordSetCount]; // keep J3DBufferImp object in nio buffer case
 		if((vertexFormat & GeometryArray.USE_NIO_BUFFER) != 0 )
-		    this.refTexCoordsBuffer = new Object[texCoordSetCount]; // keep J3DBuffer object
+		    this.refTexCoordsBuffer = new J3DBuffer[texCoordSetCount]; // keep J3DBuffer object
 	    }
             if ((vertexFormat & GeometryArray.VERTEX_ATTRIBUTES) != 0) {
                 this.floatRefVertexAttrs = new float[vertexAttrCount][];
@@ -3087,7 +3087,6 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
         int vOffset = 0, srcOffset, tOffset = 0;
         int index, colorStride = 0;
-	float[] vdata = null;
         int i;
 	int start, end;
 	start = src.initialIndexIndex;
@@ -3193,7 +3192,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 		    for (index=start; index < end; index++) {
 			for (i = 0, tOffset = vOffset;
 				i < texCoordSetCount; i++) {
-			    texBuffer = (FloatBufferWrapper)(((J3DBuffer) (src.refTexCoordsBuffer[i])).getBufferImpl());
+			    texBuffer = (FloatBufferWrapper)(( (src.refTexCoordsBuffer[i])).getBufferImpl());
 			    texBuffer.position(src.indexTexCoord[i][index]*texCoordStride);
 			    texBuffer.get(vertexData, tOffset, texCoordStride);
 			    tOffset += texCoordStride;
@@ -3472,7 +3471,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
     void sendDataChangedMessage(boolean coordinatesChanged) {
 	J3dMessage[] m;
-	int i, j, k, index, numShapeMessages, numMorphMessages;
+	int i, j, k, numShapeMessages, numMorphMessages;
 
 	synchronized(liveStateLock) {
 	    if (source != null && source.isLive()) {
@@ -6118,7 +6117,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 				  BoundingBox box,
 				  double dist[],
 				  Point3d iPnt) {
-	int i, j;
+	int i;
 	int out[] = new int[6];
 
 	//Do trivial vertex test.
@@ -6544,7 +6543,6 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	boolean optimal = false;
 	int i, pivotRowIndex, pivotColIndex;
 	double maxElement, element, endElement, ratio, prevRatio;
-	int count = 0;
 	double multiplier;
 
 	if(debug) {
@@ -7960,11 +7958,8 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	Vector3d vec0 = new Vector3d(); // Edge vector from point 0 to point 1;
 	Vector3d vec1 = new Vector3d(); // Edge vector from point 0 to point 2 or 3;
 	Vector3d pNrm = new Vector3d();
-	double  absNrmX, absNrmY, absNrmZ, pD = 0.0;
+	double pD = 0.0;
 	Vector3d tempV3d = new Vector3d();
-	double pNrmDotrDir = 0.0;
-
-	double tempD;
 
 	int i, j;
 
@@ -8227,7 +8222,6 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	double distance;
 
 	Point3d iPnt1 = new Point3d();
-	Vector3d vector = new Vector3d();
 
 	if (iPnt == null) {
 	    iPnt = new Point3d();
@@ -9348,7 +9342,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
     }
 
     J3DBuffer getTexCoordRefBuffer(int texCoordSet) {
-	return (J3DBuffer)(refTexCoordsBuffer[texCoordSet]);
+	return refTexCoordsBuffer[texCoordSet];
     }
 
     void setTexCoordRef2f(int texCoordSet, TexCoord2f[] texCoords) {
@@ -9847,7 +9841,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 		case TF:
 		    FloatBufferWrapper texBuffer;
 		    for (int i = 0; i < texCoordSetCount; i++) {
-			texBuffer = (FloatBufferWrapper)(((J3DBuffer)refTexCoordsBuffer[i]).getBufferImpl());
+			texBuffer = (FloatBufferWrapper)((refTexCoordsBuffer[i]).getBufferImpl());
 			if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_2) != 0) {
 			    if (texBuffer.limit() <  2 * (initialTexCoordIndex[i] + validVertexCount) ) {
 				throw new ArrayIndexOutOfBoundsException(
@@ -10343,7 +10337,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
 	if((vertexFormat & GeometryArray.USE_NIO_BUFFER) != 0){
 	    if((vertexType & TEXCOORD_DEFINED) == TF) {
-		FloatBufferWrapper texBuffer = (FloatBufferWrapper)(((J3DBuffer) refTexCoordsBuffer[texCoordSet]).getBufferImpl());
+		FloatBufferWrapper texBuffer = (FloatBufferWrapper)((refTexCoordsBuffer[texCoordSet]).getBufferImpl());
 		if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_2) != 0) {
 		    if (texBuffer.limit() < 2 * (initialTexCoordIndex+ validVertexCount) ) {
 			throw new ArrayIndexOutOfBoundsException(
@@ -11031,7 +11025,7 @@ int numDlistUsers(RenderBin renderBin) {
 	    else { // nio buffer
 		if ((vertexFormat & GeometryArray.INTERLEAVED) == 0){
 		    if ((vertexType & TEXCOORD_DEFINED) == TF) {
-			FloatBufferWrapper texBuffer = (FloatBufferWrapper)(((J3DBuffer) refTexCoordsBuffer[i]).getBufferImpl());
+			FloatBufferWrapper texBuffer = (FloatBufferWrapper)refTexCoordsBuffer[i].getBufferImpl();
 			if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_2) != 0) {
 			    count = texBuffer.limit()/2;
 			} else if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_3) != 0) {

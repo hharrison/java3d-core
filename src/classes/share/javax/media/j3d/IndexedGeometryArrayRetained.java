@@ -393,7 +393,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		    switch ((vertexType & GeometryArrayRetained.TEXCOORD_DEFINED)) {
 		    case TF:
 			FloatBufferWrapper texBuffer;
-			texBuffer = (FloatBufferWrapper)(((J3DBuffer) refTexCoordsBuffer[texCoordSet]).getBufferImpl());
+			texBuffer = (FloatBufferWrapper)((refTexCoordsBuffer[texCoordSet]).getBufferImpl());
 			if(refTexCoords[texCoordSet] != null &&  multiplier * newMax >= texBuffer.limit()) {
 			    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray25"));
 			}
