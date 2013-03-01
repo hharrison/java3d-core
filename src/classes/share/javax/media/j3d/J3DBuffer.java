@@ -64,18 +64,6 @@ public class J3DBuffer {
     private BufferWrapper bufferImpl = null;
     private int bufferType = TYPE_NULL;
 
-private static final boolean unsupportedOperation;
-
-static {
-	// Allocate a direct byte buffer and verify that we can
-	// access the data pointer from native code
-	java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocateDirect(8);
-	if (buffer == null)
-		unsupportedOperation = true;
-	else
-		unsupportedOperation = false;
-}
-
     /**
      * Constructs a J3DBuffer object and initializes it with
      * a null NIO buffer object.  The NIO buffer object
@@ -105,9 +93,6 @@ static {
      * platform.
      */
     public J3DBuffer(java.nio.Buffer buffer) {
-	if (unsupportedOperation)
-	    throw new UnsupportedOperationException(J3dI18N.getString("J3DBuffer0"));
-
 	setBuffer(buffer);
     }
 
