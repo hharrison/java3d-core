@@ -3155,7 +3155,6 @@ class JoglPipeline extends Pipeline {
             String attrName, int attrIndex) {
         if (VERBOSE) System.err.println("JoglPipeline.bindGLSLVertexAttrName()");
 
-        JoglContext jctx = (JoglContext) ctx;
 		GL2 gl = context(ctx).getGL().getGL2();
 		gl.glBindAttribLocation(unbox(shaderProgramId),
                 attrIndex + VirtualUniverse.mc.glslVertexAttrOffset,
@@ -3625,8 +3624,6 @@ class JoglPipeline extends Pipeline {
 
         color[0] = sRed; color[1] = sGreen; color[2] = sBlue;
         gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, color, 0);
-
-        float cr, cg, cb;
 
         if (lightEnable) {
             color[0] = dRed; color[1] = dGreen; color[2] = dBlue;
@@ -4840,7 +4837,6 @@ class JoglPipeline extends Pipeline {
         if (VERBOSE) System.err.println("JoglPipeline.updateTextureUnitState()");
 
 		GL2 gl = context(ctx).getGL().getGL2();
-        JoglContext jctx = (JoglContext) ctx;
 
         if (index >= 0 && gl.isExtensionAvailable("GL_VERSION_1_3")) {
             gl.glActiveTexture(index + GL.GL_TEXTURE0);
@@ -6237,7 +6233,7 @@ class JoglPipeline extends Pipeline {
 	         	try {
 	         		glDrawble.setRealized(false);
 	         		// New GLDrawable
-	         		glDrawble = (GLDrawable)factory.createGLDrawable(surface);
+	         		glDrawble = factory.createGLDrawable(surface);
 	         		glDrawble.setRealized(true);
 
 	         		joglDrawable.setGLDrawable(glDrawble);
@@ -8370,7 +8366,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
             // All of the Sun GraphicsDevice implementations have a method
             //   int getScreen();
             // which we want to call reflectively if it's available.
-            AccessController.doPrivileged(new PrivilegedAction() {
+            AccessController.doPrivileged(new PrivilegedAction<Object>() {
                 public Object run() {
                     try {
                         getScreenMethod = graphicsDevice.getClass().getDeclaredMethod("getScreen", new Class[] {});
