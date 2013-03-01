@@ -8438,7 +8438,6 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
             super.addNotify();
 
     		nativeWindow = (JAWTWindow)NativeWindowFactory.getNativeWindow(this, awtConfig);
-			nativeWindow.setShallUseOffscreenLayer(false); // TODOcv.shallUseOffscreenLayer
 			nativeWindow.lockSurface();
 		    try {
 	    		glDrawable = GLDrawableFactory.getFactory(profile).createGLDrawable(nativeWindow);
