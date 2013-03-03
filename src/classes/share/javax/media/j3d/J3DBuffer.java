@@ -50,19 +50,22 @@ import com.sun.j3d.internal.FloatBufferWrapper;
  */
 
 public class J3DBuffer {
-    static final int TYPE_NULL = 0;
-    static final int TYPE_UNKNOWN = 1;
-    static final int TYPE_BYTE = 2;
-    static final int TYPE_CHAR = 3;
-    static final int TYPE_SHORT = 4;
-    static final int TYPE_INT = 5;
-    static final int TYPE_LONG = 6;
-    static final int TYPE_FLOAT = 7;
-    static final int TYPE_DOUBLE = 8;
+
+enum Type {
+	NULL,
+	UNKNOWN,
+	BYTE,
+	CHAR,
+	SHORT,
+	INT,
+	LONG,
+	FLOAT,
+	DOUBLE,
+}
 
     private java.nio.Buffer originalBuffer = null;
     private BufferWrapper bufferImpl = null;
-    private int bufferType = TYPE_NULL;
+    Type bufferType = Type.NULL;
 
     /**
      * Constructs a J3DBuffer object and initializes it with
@@ -109,50 +112,50 @@ public class J3DBuffer {
      * platform.
      */
     public void setBuffer(java.nio.Buffer buffer) {
-	int bType = TYPE_NULL;
+	Type bType = Type.NULL;
 	boolean direct = false;
 	java.nio.ByteOrder order = java.nio.ByteOrder.BIG_ENDIAN;
 
 	if (buffer == null) {
-	    bType = TYPE_NULL;
+	    bType = Type.NULL;
 	}
 	else if (buffer instanceof java.nio.ByteBuffer) {
-	    bType = TYPE_BYTE;
+	    bType = Type.BYTE;
 	    direct = ((java.nio.ByteBuffer)buffer).isDirect();
 	    order = ((java.nio.ByteBuffer)buffer).order();
 	}
 	else if (buffer instanceof java.nio.CharBuffer) {
-	    bType = TYPE_CHAR;
+	    bType = Type.CHAR;
 	    direct = ((java.nio.CharBuffer)buffer).isDirect();
 	    order = ((java.nio.CharBuffer)buffer).order();
 	}
 	else if (buffer instanceof java.nio.ShortBuffer) {
-	    bType = TYPE_SHORT;
+	    bType = Type.SHORT;
 	    direct = ((java.nio.ShortBuffer)buffer).isDirect();
 	    order = ((java.nio.ShortBuffer)buffer).order();
 	}
 	else if (buffer instanceof java.nio.IntBuffer) {
-	    bType = TYPE_INT;
+	    bType = Type.INT;
 	    direct = ((java.nio.IntBuffer)buffer).isDirect();
 	    order = ((java.nio.IntBuffer)buffer).order();
 	}
 	else if (buffer instanceof java.nio.LongBuffer) {
-	    bType = TYPE_LONG;
+	    bType = Type.LONG;
 	    direct = ((java.nio.LongBuffer)buffer).isDirect();
 	    order = ((java.nio.LongBuffer)buffer).order();
 	}
 	else if (buffer instanceof java.nio.FloatBuffer) {
-	    bType = TYPE_FLOAT;
+	    bType = Type.FLOAT;
 	    direct = ((java.nio.FloatBuffer)buffer).isDirect();
 	    order = ((java.nio.FloatBuffer)buffer).order();
 	}
 	else if (buffer instanceof java.nio.DoubleBuffer) {
-	    bType = TYPE_DOUBLE;
+	    bType = Type.DOUBLE;
 	    direct = ((java.nio.DoubleBuffer)buffer).isDirect();
 	    order = ((java.nio.DoubleBuffer)buffer).order();
 	}
 	else {
-	    bType = TYPE_UNKNOWN;
+	    bType = Type.UNKNOWN;
 	}
 
 	// Verify that the buffer is direct and has the correct byte order
@@ -172,19 +175,19 @@ public class J3DBuffer {
 	// Make a read-only view of the buffer if the type is one
 	// of the internally supported types: byte, float, or double
 	switch (bufferType) {
-	case TYPE_BYTE:
+	case BYTE:
 	    java.nio.ByteBuffer byteBuffer =
 		((java.nio.ByteBuffer)buffer).asReadOnlyBuffer();
 	    byteBuffer.rewind();
 	    bufferImpl = new ByteBufferWrapper(byteBuffer);
 	    break;
-	case TYPE_FLOAT:
+	case FLOAT:
 	    java.nio.FloatBuffer floatBuffer =
 		((java.nio.FloatBuffer)buffer).asReadOnlyBuffer();
 	    floatBuffer.rewind();
 	    bufferImpl = new FloatBufferWrapper(floatBuffer);
 	    break;
-	case TYPE_DOUBLE:
+	case DOUBLE:
 	    java.nio.DoubleBuffer doubleBuffer =
 		((java.nio.DoubleBuffer)buffer).asReadOnlyBuffer();
 	    doubleBuffer.rewind();
@@ -204,12 +207,6 @@ public class J3DBuffer {
     public java.nio.Buffer getBuffer() {
 	return originalBuffer;
     }
-
-
-    int getBufferType() {
-	return bufferType;
-    }
-
 
     BufferWrapper getBufferImpl() {
 	return bufferImpl;

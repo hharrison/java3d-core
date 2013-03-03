@@ -8355,14 +8355,14 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
     void setCoordRefBuffer(J3DBuffer coords) {
 	if (coords != null) {
-	    switch (coords.getBufferType()) {
-	    case J3DBuffer.TYPE_FLOAT:
+	    switch (coords.bufferType) {
+	    case FLOAT:
 		assert ((FloatBufferWrapper)coords.getBufferImpl()).isDirect();
 		break;
-	    case J3DBuffer.TYPE_DOUBLE:
+	    case DOUBLE:
 		assert ((DoubleBufferWrapper)coords.getBufferImpl()).isDirect();
 		break;
-	    case J3DBuffer.TYPE_NULL:
+	    case NULL:
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray115"));
 
 	    default:
@@ -8394,15 +8394,15 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    vertexType &= ~PD;
 	    vertexType &= ~PF;
 	}else {
-	    switch (coords.getBufferType()) {
-	    case J3DBuffer.TYPE_FLOAT:
+	    switch (coords.bufferType) {
+	    case FLOAT:
 		floatBufferRefCoords =
 		    (FloatBufferWrapper)coords.getBufferImpl();
 		doubleBufferRefCoords = null;
 		vertexType |= PF;
 		vertexType &= ~PD;
 		break;
-	    case J3DBuffer.TYPE_DOUBLE:
+	    case DOUBLE:
 		floatBufferRefCoords = null;
 		doubleBufferRefCoords =
 		    (DoubleBufferWrapper)coords.getBufferImpl();
@@ -8707,14 +8707,14 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
     // set the color with nio buffer
     void setColorRefBuffer(J3DBuffer colors) {
 	if (colors != null) {
-	    switch(colors.getBufferType()) {
-	    case J3DBuffer.TYPE_FLOAT:
+	    switch(colors.bufferType) {
+	    case FLOAT:
 		assert ((FloatBufferWrapper)colors.getBufferImpl()).isDirect();
 		break;
-	    case J3DBuffer.TYPE_BYTE:
+	    case BYTE:
 		assert ((ByteBufferWrapper)colors.getBufferImpl()).isDirect();
 		break;
-	    case J3DBuffer.TYPE_NULL:
+	    case NULL:
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray115"));
 
 	    default:
@@ -8748,13 +8748,13 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    floatBufferRefColors = null;
 	    byteBufferRefColors = null;
 	} else {
-	    switch (colors.getBufferType()) {
-	    case J3DBuffer.TYPE_FLOAT:
+	    switch (colors.bufferType) {
+	    case FLOAT:
 		floatBufferRefColors = (FloatBufferWrapper)colors.getBufferImpl();
 		byteBufferRefColors = null;
 		break;
 
-	    case J3DBuffer.TYPE_BYTE:
+	    case BYTE:
 		byteBufferRefColors = (ByteBufferWrapper)colors.getBufferImpl();
 		floatBufferRefColors = null;
 		break;
@@ -8768,13 +8768,13 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 		vertexType &= ~CF;
 		vertexType &= ~CUB;
 	    } else {
-		switch (colors.getBufferType()) {
-		case J3DBuffer.TYPE_FLOAT:
+		switch (colors.bufferType) {
+		case FLOAT:
 		    vertexType |= CF;
 		    vertexType &= ~CUB;
 		    break;
 
-		case J3DBuffer.TYPE_BYTE:
+		case BYTE:
 		    vertexType |= CUB;
 		    vertexType &= ~CF;
 		    break;
@@ -9126,7 +9126,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	FloatBufferWrapper bufferImpl = null;
 
 	if (normals != null) {
-	    if(normals.getBufferType() != J3DBuffer.TYPE_FLOAT)
+	    if(normals.bufferType != J3DBuffer.Type.FLOAT)
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray116"));
 
 	    bufferImpl = (FloatBufferWrapper)normals.getBufferImpl();
@@ -9298,7 +9298,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	FloatBufferWrapper bufferImpl = null;
 
 	if (texCoords != null) {
-	    if(texCoords.getBufferType() != J3DBuffer.TYPE_FLOAT)
+	    if(texCoords.bufferType != J3DBuffer.Type.FLOAT)
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray116"));
 
 	    bufferImpl = (FloatBufferWrapper)texCoords.getBufferImpl();
@@ -9539,7 +9539,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	FloatBufferWrapper bufferImpl = null;
 
 	if (vertexAttrs != null) {
-	    if(vertexAttrs.getBufferType() != J3DBuffer.TYPE_FLOAT)
+	    if(vertexAttrs.bufferType != J3DBuffer.Type.FLOAT)
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray116"));
 
 	    bufferImpl = (FloatBufferWrapper)vertexAttrs.getBufferImpl();
@@ -9657,7 +9657,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
 	if (vertexData != null ){
 
-	    if (vertexData.getBufferType() != J3DBuffer.TYPE_FLOAT)
+	    if (vertexData.bufferType != J3DBuffer.Type.FLOAT)
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray116"));
 
 	    bufferImpl = (FloatBufferWrapper)vertexData.getBufferImpl();
