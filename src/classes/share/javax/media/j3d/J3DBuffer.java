@@ -26,6 +26,16 @@
 
 package javax.media.j3d;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.CharBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
+
 import com.sun.j3d.internal.BufferWrapper;
 import com.sun.j3d.internal.ByteBufferWrapper;
 import com.sun.j3d.internal.DoubleBufferWrapper;
@@ -63,7 +73,7 @@ enum Type {
 	DOUBLE,
 }
 
-    private java.nio.Buffer originalBuffer = null;
+    private Buffer originalBuffer = null;
     private BufferWrapper bufferImpl = null;
     Type bufferType = Type.NULL;
 
@@ -95,7 +105,7 @@ enum Type {
      * buffer does not match the native byte order of the underlying
      * platform.
      */
-    public J3DBuffer(java.nio.Buffer buffer) {
+    public J3DBuffer(Buffer buffer) {
 	setBuffer(buffer);
     }
 
@@ -111,48 +121,48 @@ enum Type {
      * buffer does not match the native byte order of the underlying
      * platform.
      */
-    public void setBuffer(java.nio.Buffer buffer) {
+    public void setBuffer(Buffer buffer) {
 	Type bType = Type.NULL;
 	boolean direct = false;
-	java.nio.ByteOrder order = java.nio.ByteOrder.BIG_ENDIAN;
+	ByteOrder order = ByteOrder.BIG_ENDIAN;
 
 	if (buffer == null) {
 	    bType = Type.NULL;
 	}
-	else if (buffer instanceof java.nio.ByteBuffer) {
+	else if (buffer instanceof ByteBuffer) {
 	    bType = Type.BYTE;
-	    direct = ((java.nio.ByteBuffer)buffer).isDirect();
-	    order = ((java.nio.ByteBuffer)buffer).order();
+	    direct = ((ByteBuffer)buffer).isDirect();
+	    order = ((ByteBuffer)buffer).order();
 	}
-	else if (buffer instanceof java.nio.CharBuffer) {
+	else if (buffer instanceof CharBuffer) {
 	    bType = Type.CHAR;
-	    direct = ((java.nio.CharBuffer)buffer).isDirect();
-	    order = ((java.nio.CharBuffer)buffer).order();
+	    direct = ((CharBuffer)buffer).isDirect();
+	    order = ((CharBuffer)buffer).order();
 	}
-	else if (buffer instanceof java.nio.ShortBuffer) {
+	else if (buffer instanceof ShortBuffer) {
 	    bType = Type.SHORT;
-	    direct = ((java.nio.ShortBuffer)buffer).isDirect();
-	    order = ((java.nio.ShortBuffer)buffer).order();
+	    direct = ((ShortBuffer)buffer).isDirect();
+	    order = ((ShortBuffer)buffer).order();
 	}
-	else if (buffer instanceof java.nio.IntBuffer) {
+	else if (buffer instanceof IntBuffer) {
 	    bType = Type.INT;
-	    direct = ((java.nio.IntBuffer)buffer).isDirect();
-	    order = ((java.nio.IntBuffer)buffer).order();
+	    direct = ((IntBuffer)buffer).isDirect();
+	    order = ((IntBuffer)buffer).order();
 	}
-	else if (buffer instanceof java.nio.LongBuffer) {
+	else if (buffer instanceof LongBuffer) {
 	    bType = Type.LONG;
-	    direct = ((java.nio.LongBuffer)buffer).isDirect();
-	    order = ((java.nio.LongBuffer)buffer).order();
+	    direct = ((LongBuffer)buffer).isDirect();
+	    order = ((LongBuffer)buffer).order();
 	}
-	else if (buffer instanceof java.nio.FloatBuffer) {
+	else if (buffer instanceof FloatBuffer) {
 	    bType = Type.FLOAT;
-	    direct = ((java.nio.FloatBuffer)buffer).isDirect();
-	    order = ((java.nio.FloatBuffer)buffer).order();
+	    direct = ((FloatBuffer)buffer).isDirect();
+	    order = ((FloatBuffer)buffer).order();
 	}
-	else if (buffer instanceof java.nio.DoubleBuffer) {
+	else if (buffer instanceof DoubleBuffer) {
 	    bType = Type.DOUBLE;
-	    direct = ((java.nio.DoubleBuffer)buffer).isDirect();
-	    order = ((java.nio.DoubleBuffer)buffer).order();
+	    direct = ((DoubleBuffer)buffer).isDirect();
+	    order = ((DoubleBuffer)buffer).order();
 	}
 	else {
 	    bType = Type.UNKNOWN;
@@ -164,7 +174,7 @@ enum Type {
 		throw new IllegalArgumentException(J3dI18N.getString("J3DBuffer1"));
 	    }
 
-	    if (order != java.nio.ByteOrder.nativeOrder()) {
+	    if (order != ByteOrder.nativeOrder()) {
 		throw new IllegalArgumentException(J3dI18N.getString("J3DBuffer2"));
 	    }
 	}
@@ -176,20 +186,17 @@ enum Type {
 	// of the internally supported types: byte, float, or double
 	switch (bufferType) {
 	case BYTE:
-	    java.nio.ByteBuffer byteBuffer =
-		((java.nio.ByteBuffer)buffer).asReadOnlyBuffer();
+	    ByteBuffer byteBuffer =	((ByteBuffer)buffer).asReadOnlyBuffer();
 	    byteBuffer.rewind();
 	    bufferImpl = new ByteBufferWrapper(byteBuffer);
 	    break;
 	case FLOAT:
-	    java.nio.FloatBuffer floatBuffer =
-		((java.nio.FloatBuffer)buffer).asReadOnlyBuffer();
+	    FloatBuffer floatBuffer = ((FloatBuffer)buffer).asReadOnlyBuffer();
 	    floatBuffer.rewind();
 	    bufferImpl = new FloatBufferWrapper(floatBuffer);
 	    break;
 	case DOUBLE:
-	    java.nio.DoubleBuffer doubleBuffer =
-		((java.nio.DoubleBuffer)buffer).asReadOnlyBuffer();
+	    DoubleBuffer doubleBuffer = ((DoubleBuffer)buffer).asReadOnlyBuffer();
 	    doubleBuffer.rewind();
 	    bufferImpl = new DoubleBufferWrapper(doubleBuffer);
 	    break;
@@ -204,7 +211,7 @@ enum Type {
      *
      * @return the current NIO buffer wrapped by this J3DBuffer
      */
-    public java.nio.Buffer getBuffer() {
+    public Buffer getBuffer() {
 	return originalBuffer;
     }
 
