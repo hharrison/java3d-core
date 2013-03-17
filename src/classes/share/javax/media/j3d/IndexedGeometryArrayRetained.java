@@ -1479,7 +1479,8 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		    }
 
 		    Buffer vcoord = null;
-		    Object cdataBuffer=null, normal=null;
+		    Buffer cdataBuffer = null;
+		    Object normal=null;
 
 		    int vdefined = 0;
 		    if((vertexType & PF)  != 0) {
@@ -1491,10 +1492,10 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		    }
 		    if((vertexType & CF ) != 0) {
 			vdefined |= COLOR_FLOAT;
-			cdataBuffer = floatBufferRefColors.getBufferAsObject();
+			cdataBuffer = floatBufferRefColors;
 		    } else if((vertexType & CUB) != 0) {
 			vdefined |= COLOR_BYTE;
-			cdataBuffer = byteBufferRefColors.getBufferAsObject();
+			cdataBuffer = byteBufferRefColors;
 		    }
 
 		    if((vertexType & NORMAL_DEFINED) != 0) {

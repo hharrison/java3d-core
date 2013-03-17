@@ -50,9 +50,7 @@ import javax.vecmath.TexCoord4f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
-import com.sun.j3d.internal.ByteBufferWrapper;
 import com.sun.j3d.internal.Distance;
-import com.sun.j3d.internal.DoubleBufferWrapper;
 import com.sun.j3d.internal.FloatBufferWrapper;
 
 
@@ -176,8 +174,8 @@ ArrayList<GeometryAtom> gaList = new ArrayList<GeometryAtom>(1);
 
     // Used for NIO buffer colors
     J3DBuffer colorRefBuffer = null;
-    FloatBufferWrapper floatBufferRefColors = null;
-    ByteBufferWrapper byteBufferRefColors = null;
+    FloatBuffer floatBufferRefColors = null;
+    ByteBuffer byteBufferRefColors = null;
 
     // flag to indicate if the "by reference" component is already set
     int vertexType = 0;
@@ -2555,7 +2553,8 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 		    }
 
 		    Buffer vcoord = null;
-		    Object cdataBuffer=null, normal=null;
+		    Buffer cdataBuffer = null;
+		    Object normal=null;
 
 		    int vdefined = 0;
 		    if((vertexType & PF)  != 0) {
@@ -2568,10 +2567,10 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
 		    if((vertexType & CF ) != 0) {
 			vdefined |= COLOR_FLOAT;
-			cdataBuffer = floatBufferRefColors.getBufferAsObject();
+			cdataBuffer = floatBufferRefColors;
 		    } else if((vertexType & CUB) != 0) {
 			vdefined |= COLOR_BYTE;
-			cdataBuffer = byteBufferRefColors.getBufferAsObject();
+			cdataBuffer = byteBufferRefColors;
 		    }
 
 		    if((vertexType & NORMAL_DEFINED) != 0) {
@@ -8752,12 +8751,12 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	} else {
 	    switch (colors.bufferType) {
 	    case FLOAT:
-		floatBufferRefColors = (FloatBufferWrapper)colors.getBufferImpl();
+		floatBufferRefColors = (FloatBuffer)colors.getROBuffer();
 		byteBufferRefColors = null;
 		break;
 
 	    case BYTE:
-		byteBufferRefColors = (ByteBufferWrapper)colors.getBufferImpl();
+		byteBufferRefColors = (ByteBuffer)colors.getROBuffer();
 		floatBufferRefColors = null;
 		break;
 	    default:
