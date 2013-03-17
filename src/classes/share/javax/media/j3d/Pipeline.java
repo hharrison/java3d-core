@@ -29,6 +29,7 @@ package javax.media.j3d;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.nio.Buffer;
+import java.nio.FloatBuffer;
 
 /**
  * Abstract pipeline class for rendering pipeline methods. All rendering
@@ -222,7 +223,7 @@ public Pipeline run() {
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            Object varray, float[] cdata, int cdirty);
+            FloatBuffer varray, float[] cdata, int cdirty);
 
     abstract void setVertexFormat(Context ctx, GeometryArrayRetained geo,
             int vformat, boolean useAlpha, boolean ignoreVertexColors);
@@ -322,7 +323,7 @@ public Pipeline run() {
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            Object varray, float[] cdata,
+            FloatBuffer varray, float[] cdata,
             int cdirty,
             int[] indexCoord);
 

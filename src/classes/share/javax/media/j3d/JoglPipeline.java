@@ -356,7 +356,7 @@ class JoglPipeline extends Pipeline {
             int texCoordSetMapLen,
             int[] texUnitOffset,
             int numActiveTexUnit,
-            Object varray, float[] cdata, int cdirty) {
+            FloatBuffer varray, float[] cdata, int cdirty) {
         if (VERBOSE) System.err.println("JoglPipeline.executeInterleavedBuffer()");
 
         executeGeometryArray(ctx, geo, geo_type,
@@ -364,7 +364,7 @@ class JoglPipeline extends Pipeline {
                 startVIndex, vcount, vformat,
                 texCoordSetCount, texCoordSetMap, texCoordSetMapLen,
                 texUnitOffset, numActiveTexUnit, 0, null,
-                null, (Buffer) varray, cdata, cdirty);
+                null, varray, cdata, cdirty);
     }
 
     void setVertexFormat(Context ctx, GeometryArrayRetained geo,
@@ -1172,7 +1172,7 @@ class JoglPipeline extends Pipeline {
             int[] texCoordSetMapOffset,
             int numActiveTexUnitState,
             int vertexAttrCount, int[] vertexAttrSizes,
-            float[] varray, Buffer varrayBuffer,
+            float[] varray, FloatBuffer varrayBuffer,
             float[] carray, int cDirty) {
         if (VERBOSE) System.err.println("JoglPipeline.executeGeometryArray()");
         JoglContext ctx = (JoglContext) absCtx;
@@ -1263,7 +1263,7 @@ class JoglPipeline extends Pipeline {
         if (varray != null) {
             verts = getVertexArrayBuffer(varray);
         } else if (varrayBuffer != null) {
-            verts = (FloatBuffer) varrayBuffer;
+            verts = varrayBuffer;
         } else {
             // This should never happen
             throw new AssertionError("Unable to get vertex pointer");
@@ -1714,7 +1714,7 @@ class JoglPipeline extends Pipeline {
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            Object vdata, float[] carray,
+            FloatBuffer vdata, float[] carray,
             int cDirty,
             int[] indexCoord) {
         if (VERBOSE) System.err.println("JoglPipeline.executeIndexedGeometryBuffer()");
@@ -1725,7 +1725,7 @@ class JoglPipeline extends Pipeline {
                 0, null,
                 texCoordSetCount, texCoordSetMap, texCoordSetMapLen, texCoordSetOffset,
                 numActiveTexUnitState,
-                null, (FloatBuffer) vdata, carray,
+                null, vdata, carray,
                 cDirty, indexCoord);
     }
 

@@ -1408,7 +1408,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
                         (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
                         texCoordSetMapOffset,
                         cv.numActiveTexUnit,
-                        interleavedFloatBufferImpl.getBufferAsObject(), cdata,
+                        interleavedFloatBufferImpl, cdata,
                         cdirty, indexCoord);
 	    }  //end of interleaved
 	    else {

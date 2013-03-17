@@ -256,7 +256,7 @@ ArrayList<GeometryAtom> gaList = new ArrayList<GeometryAtom>(1);
 
     // used by interleaved NIO buffer
     J3DBuffer interleavedVertexBuffer = null;
-    FloatBufferWrapper interleavedFloatBufferImpl = null;
+    FloatBuffer interleavedFloatBufferImpl = null;
 
     // pointers used, when transparency is turned on
     // or when its an object such as C3F, P3F etc ..
@@ -555,7 +555,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
     }
 
     // Compute boundingbox for interleaved nio buffer
-    void computeBoundingBox(int vIndex,   FloatBufferWrapper vdata) {
+    void computeBoundingBox(int vIndex,   FloatBuffer vdata) {
 	int i, offset;
 	double xmin, xmax, ymin, ymax, zmin, zmax;
 
@@ -2476,7 +2476,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
                         (texCoordSetMap == null) ? 0 : texCoordSetMap.length,
                         texCoordSetMapOffset,
                         cv.numActiveTexUnit,
-                        interleavedFloatBufferImpl.getBufferAsObject(), cdata,
+                        interleavedFloatBufferImpl, cdata,
                         cdirty);
 
 	    } // end of interleaved case
@@ -9654,14 +9654,14 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
     // set the interleaved vertex with NIO buffer
     void setInterleavedVertexBuffer(J3DBuffer vertexData) {
 
-	FloatBufferWrapper bufferImpl = null;
+	FloatBuffer bufferImpl = null;
 
 	if (vertexData != null ){
 
 	    if (vertexData.bufferType != J3DBuffer.Type.FLOAT)
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray116"));
 
-	    bufferImpl = (FloatBufferWrapper)vertexData.getBufferImpl();
+	    bufferImpl = (FloatBuffer)vertexData.getROBuffer();
 
             assert bufferImpl.isDirect();
 

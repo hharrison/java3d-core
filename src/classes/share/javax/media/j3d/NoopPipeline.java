@@ -30,6 +30,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.nio.Buffer;
+import java.nio.FloatBuffer;
 
 /**
  * Concrete implementation of Pipeline class for the noop rendering
@@ -126,7 +127,7 @@ class NoopPipeline extends Pipeline {
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            Object varray, float[] cdata, int cdirty) {
+            FloatBuffer varray, float[] cdata, int cdirty) {
     }
 
     void setVertexFormat(Context ctx, GeometryArrayRetained geo,
@@ -211,7 +212,7 @@ class NoopPipeline extends Pipeline {
             int texCoordSetMapLen,
             int[] texCoordSetOffset,
             int numActiveTexUnitState,
-            Object varray, float[] cdata,
+            FloatBuffer varray, float[] cdata,
             int cdirty,
             int[] indexCoord) {
     }
