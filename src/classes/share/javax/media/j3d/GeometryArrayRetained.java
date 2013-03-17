@@ -231,7 +231,7 @@ ArrayList<GeometryAtom> gaList = new ArrayList<GeometryAtom>(1);
 
     // Used for NIO buffer normals
     J3DBuffer normalRefBuffer = null;
-    FloatBufferWrapper floatBufferRefNormals = null;
+    FloatBuffer floatBufferRefNormals = null;
 
     // used for "by reference" vertex attrs
     float[][] floatRefVertexAttrs = null;
@@ -2554,7 +2554,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
 		    Buffer vcoord = null;
 		    Buffer cdataBuffer = null;
-		    Object normal=null;
+		    FloatBuffer normal=null;
 
 		    int vdefined = 0;
 		    if((vertexType & PF)  != 0) {
@@ -2575,7 +2575,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
 		    if((vertexType & NORMAL_DEFINED) != 0) {
 			vdefined |= NORMAL_FLOAT;
-			normal = floatBufferRefNormals.getBufferAsObject();
+			normal = floatBufferRefNormals;
                     }
 
                     if ((vertexType & VATTR_DEFINED) != 0) {
@@ -9124,13 +9124,13 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
     // setup the normal with nio buffer
     void setNormalRefBuffer(J3DBuffer normals) {
 
-	FloatBufferWrapper bufferImpl = null;
+	FloatBuffer bufferImpl = null;
 
 	if (normals != null) {
 	    if(normals.bufferType != J3DBuffer.Type.FLOAT)
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray116"));
 
-	    bufferImpl = (FloatBufferWrapper)normals.getBufferImpl();
+	    bufferImpl = (FloatBuffer)normals.getROBuffer();
 
 	    assert bufferImpl.isDirect();
 

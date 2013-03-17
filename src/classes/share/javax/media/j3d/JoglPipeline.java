@@ -252,7 +252,7 @@ class JoglPipeline extends Pipeline {
             int initialColorIndex,
             Buffer cdataBuffer,
             float[] cfdata, byte[] cbdata,
-            int initialNormalIndex, Object ndata,
+            int initialNormalIndex, FloatBuffer ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
             int[] vertexAttrIndices, Object[] vertexAttrData,
             int texCoordMapLength,
@@ -317,7 +317,7 @@ class JoglPipeline extends Pipeline {
 
         // get normal array
         if (normalsDefined) {
-            norms = (FloatBuffer) ndata;
+            norms = ndata;
         }
 
         int[] sarray = null;
@@ -1834,7 +1834,7 @@ class JoglPipeline extends Pipeline {
             Buffer vcoords,
             Buffer cdataBuffer,
             float[] cfdata, byte[] cbdata,
-            Object ndata,
+            FloatBuffer ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
             Object[] vertexAttrData,
             int texCoordMapLength,
@@ -1909,7 +1909,7 @@ class JoglPipeline extends Pipeline {
 
         // get normal array
         if (normalsDefined) {
-            norms = (FloatBuffer) ndata;
+            norms = ndata;
         }
 
         executeIndexedGeometryArrayVA(ctx, geo, geo_type,

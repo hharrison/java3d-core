@@ -1480,7 +1480,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 
 		    Buffer vcoord = null;
 		    Buffer cdataBuffer = null;
-		    Object normal=null;
+		    FloatBuffer normal = null;
 
 		    int vdefined = 0;
 		    if((vertexType & PF)  != 0) {
@@ -1500,7 +1500,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 
 		    if((vertexType & NORMAL_DEFINED) != 0) {
 			vdefined |= NORMAL_FLOAT;
-			normal = floatBufferRefNormals.getBufferAsObject();
+			normal = floatBufferRefNormals;
 		    }
 
                     if ((vertexType & VATTR_DEFINED) != 0) {
