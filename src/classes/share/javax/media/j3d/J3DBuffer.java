@@ -74,6 +74,7 @@ enum Type {
 }
 
     private Buffer originalBuffer = null;
+    private Buffer readonlyBuffer = null;
     private BufferWrapper bufferImpl = null;
     Type bufferType = Type.NULL;
 
@@ -188,19 +189,23 @@ enum Type {
 	case BYTE:
 	    ByteBuffer byteBuffer =	((ByteBuffer)buffer).asReadOnlyBuffer();
 	    byteBuffer.rewind();
+	    readonlyBuffer = byteBuffer;
 	    bufferImpl = new ByteBufferWrapper(byteBuffer);
 	    break;
 	case FLOAT:
 	    FloatBuffer floatBuffer = ((FloatBuffer)buffer).asReadOnlyBuffer();
 	    floatBuffer.rewind();
+	    readonlyBuffer = floatBuffer;
 	    bufferImpl = new FloatBufferWrapper(floatBuffer);
 	    break;
 	case DOUBLE:
 	    DoubleBuffer doubleBuffer = ((DoubleBuffer)buffer).asReadOnlyBuffer();
 	    doubleBuffer.rewind();
+	    readonlyBuffer = doubleBuffer;
 	    bufferImpl = new DoubleBufferWrapper(doubleBuffer);
 	    break;
 	default:
+		readonlyBuffer = null;
 	    bufferImpl = null;
 	}
     }
@@ -214,6 +219,14 @@ enum Type {
     public Buffer getBuffer() {
 	return originalBuffer;
     }
+
+/**
+ * Gets the readonly view of the nio buffer we wrapped with J3DBuffer
+ * @return
+ */
+Buffer getROBuffer() {
+	return readonlyBuffer;
+}
 
     BufferWrapper getBufferImpl() {
 	return bufferImpl;
