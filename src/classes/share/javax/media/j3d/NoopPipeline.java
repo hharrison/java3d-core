@@ -29,6 +29,7 @@ package javax.media.j3d;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.nio.Buffer;
 
 /**
  * Concrete implementation of Pipeline class for the noop rendering
@@ -100,7 +101,7 @@ class NoopPipeline extends Pipeline {
             int vformat,
             int vdefined,
             int coordIndex,
-            Object vcoords,
+            Buffer vcoords,
             int colorIndex,
             Object cdataBuffer,
             float[] cfdata, byte[] cbdata,
@@ -248,7 +249,7 @@ class NoopPipeline extends Pipeline {
             int vertexCount,
             int vformat,
             int vdefined,
-            Object vcoords,
+            Buffer vcoords,
             Object cdataBuffer,
             float[] cfdata, byte[] cbdata,
             Object normal,

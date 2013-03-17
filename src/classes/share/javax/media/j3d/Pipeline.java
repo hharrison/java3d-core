@@ -28,6 +28,7 @@ package javax.media.j3d;
 
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
+import java.nio.Buffer;
 
 /**
  * Abstract pipeline class for rendering pipeline methods. All rendering
@@ -197,7 +198,7 @@ public Pipeline run() {
             int vformat,
             int vdefined,
             int coordIndex,
-            Object vcoords,
+            Buffer vcoords,
             int colorIndex,
             Object cdataBuffer,
             float[] cfdata, byte[] cbdata,
@@ -357,7 +358,7 @@ public Pipeline run() {
             int vertexCount,
             int vformat,
             int vdefined,
-            Object vcoords,
+            Buffer vcoords,
             Object cdataBuffer,
             float[] cfdata, byte[] cbdata,
             Object normal,

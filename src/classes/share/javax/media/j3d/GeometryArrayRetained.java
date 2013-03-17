@@ -26,6 +26,9 @@
 
 package javax.media.j3d;
 
+import java.nio.Buffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -150,8 +153,8 @@ ArrayList<GeometryAtom> gaList = new ArrayList<GeometryAtom>(1);
 
     // Used for NIO buffer geometry
     J3DBuffer coordRefBuffer = null;
-    FloatBufferWrapper floatBufferRefCoords = null;
-    DoubleBufferWrapper doubleBufferRefCoords = null;
+    FloatBuffer floatBufferRefCoords = null;
+    DoubleBuffer doubleBufferRefCoords = null;
 
     // Initial index to use for rendering
     int initialCoordIndex = 0;
@@ -600,8 +603,8 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
     }
 
 
-    // compute bounding box for coord with noi buffer
-    void computeBoundingBox( DoubleBufferWrapper buffer) {
+    // compute bounding box for coord with nio buffer
+    void computeBoundingBox( DoubleBuffer buffer) {
 	int i, j, k, sIndex;
 	double xmin, xmax, ymin, ymax, zmin, zmax;
 
@@ -648,8 +651,8 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	}
     }
 
-    // compute bounding box for coord with noi buffer
-    void computeBoundingBox( FloatBufferWrapper buffer) {
+    // compute bounding box for coord with nio buffer
+    void computeBoundingBox( FloatBuffer buffer) {
 	int i, j, k, sIndex;
 	double xmin, xmax, ymin, ymax, zmin, zmax;
 
@@ -2550,15 +2553,16 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 			cdirty = dirtyFlag;
 		    }
 
-		    Object vcoord = null, cdataBuffer=null, normal=null;
+		    Buffer vcoord = null;
+		    Object cdataBuffer=null, normal=null;
 
 		    int vdefined = 0;
 		    if((vertexType & PF)  != 0) {
 			vdefined |= COORD_FLOAT;
-			vcoord = floatBufferRefCoords.getBufferAsObject();
+			vcoord = floatBufferRefCoords;
 		    } else if((vertexType & PD ) != 0) {
 			vdefined |= COORD_DOUBLE;
-			vcoord = doubleBufferRefCoords.getBufferAsObject();
+			vcoord = doubleBufferRefCoords;
 		    }
 
 		    if((vertexType & CF ) != 0) {
@@ -8396,16 +8400,14 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	}else {
 	    switch (coords.bufferType) {
 	    case FLOAT:
-		floatBufferRefCoords =
-		    (FloatBufferWrapper)coords.getBufferImpl();
+		floatBufferRefCoords = (FloatBuffer)coords.getROBuffer();
 		doubleBufferRefCoords = null;
 		vertexType |= PF;
 		vertexType &= ~PD;
 		break;
 	    case DOUBLE:
 		floatBufferRefCoords = null;
-		doubleBufferRefCoords =
-		    (DoubleBufferWrapper)coords.getBufferImpl();
+		doubleBufferRefCoords = (DoubleBuffer)coords.getROBuffer();
 		vertexType |= PD;
 		vertexType &= ~PF;
 		break;

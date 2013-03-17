@@ -26,6 +26,7 @@
 
 package javax.media.j3d;
 
+import java.nio.Buffer;
 import java.util.ArrayList;
 
 import javax.vecmath.TexCoord2f;
@@ -1479,15 +1480,16 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 			cdirty = dirtyFlag;
 		    }
 
-		    Object vcoord = null, cdataBuffer=null, normal=null;
+		    Buffer vcoord = null;
+		    Object cdataBuffer=null, normal=null;
 
 		    int vdefined = 0;
 		    if((vertexType & PF)  != 0) {
 			vdefined |= COORD_FLOAT;
-			vcoord = floatBufferRefCoords.getBufferAsObject();
+			vcoord = floatBufferRefCoords;
 		    } else if((vertexType & PD ) != 0) {
 			vdefined |= COORD_DOUBLE;
-			vcoord = doubleBufferRefCoords.getBufferAsObject();
+			vcoord = doubleBufferRefCoords;
 		    }
 		    if((vertexType & CF ) != 0) {
 			vdefined |= COLOR_FLOAT;
