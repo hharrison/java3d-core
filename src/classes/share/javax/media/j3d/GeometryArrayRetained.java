@@ -27,6 +27,7 @@
 package javax.media.j3d;
 
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -3191,12 +3192,11 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
             if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
 		vOffset = textureOffset;
-		 FloatBufferWrapper texBuffer;
 		if ((src.vertexType & TEXCOORD_DEFINED) != 0) {
 		    for (index=start; index < end; index++) {
 			for (i = 0, tOffset = vOffset;
 				i < texCoordSetCount; i++) {
-			    texBuffer = (FloatBufferWrapper)(( (src.refTexCoordsBuffer[i])).getBufferImpl());
+			    FloatBuffer texBuffer = (FloatBuffer)src.refTexCoordsBuffer[i].getROBuffer();
 			    texBuffer.position(src.indexTexCoord[i][index]*texCoordStride);
 			    texBuffer.get(vertexData, tOffset, texCoordStride);
 			    tOffset += texCoordStride;
@@ -8361,10 +8361,10 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	if (coords != null) {
 	    switch (coords.bufferType) {
 	    case FLOAT:
-		assert ((FloatBufferWrapper)coords.getBufferImpl()).isDirect();
+		assert ((FloatBuffer)coords.getROBuffer()).isDirect();
 		break;
 	    case DOUBLE:
-		assert ((DoubleBufferWrapper)coords.getBufferImpl()).isDirect();
+		assert ((DoubleBuffer)coords.getROBuffer()).isDirect();
 		break;
 	    case NULL:
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray115"));
@@ -8375,10 +8375,10 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
 	    if (this instanceof IndexedGeometryArrayRetained) {
 		IndexedGeometryArrayRetained idx = (IndexedGeometryArrayRetained)this;
-		if (3 * idx.maxCoordIndex >= coords.getBufferImpl().limit()) {
+		if (3 * idx.maxCoordIndex >= coords.getROBuffer().limit()) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray23"));
 		}
-	    } else if (coords.getBufferImpl().limit() < (3*(initialCoordIndex+validVertexCount))) {
+	    } else if (coords.getROBuffer().limit() < (3*(initialCoordIndex+validVertexCount))) {
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray99"));
 	    }
 	}
@@ -8711,10 +8711,10 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	if (colors != null) {
 	    switch(colors.bufferType) {
 	    case FLOAT:
-		assert ((FloatBufferWrapper)colors.getBufferImpl()).isDirect();
+		assert ((FloatBuffer)colors.getROBuffer()).isDirect();
 		break;
 	    case BYTE:
-		assert ((ByteBufferWrapper)colors.getBufferImpl()).isDirect();
+		assert ((ByteBuffer)colors.getROBuffer()).isDirect();
 		break;
 	    case NULL:
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray115"));
@@ -8730,10 +8730,10 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    if (this instanceof IndexedGeometryArrayRetained) {
 		IndexedGeometryArrayRetained idx = (IndexedGeometryArrayRetained)this;
 
-		if (getColorStride() * idx.maxColorIndex >= colors.getBufferImpl().limit()) {
+		if (getColorStride() * idx.maxColorIndex >= colors.getROBuffer().limit()) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray24"));
 		}
-	    } else if (colors.getBufferImpl().limit() <
+	    } else if (colors.getROBuffer().limit() <
 		       getColorStride() * (initialColorIndex+validVertexCount)) {
 		throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("GeometryArray112"));
 	    }
@@ -9142,7 +9142,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    if (this instanceof IndexedGeometryArrayRetained) {
 		IndexedGeometryArrayRetained idx = (IndexedGeometryArrayRetained)this;
 		if (idx.maxNormalIndex * 3 >=
-		    ((FloatBufferWrapper)normals.getBufferImpl()).limit()) {
+		    ((FloatBuffer)normals.getROBuffer()).limit()) {
 		    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray26"));
 		}
 	    } else if (bufferImpl.limit() < 3 * (initialNormalIndex + validVertexCount )) {
@@ -9841,9 +9841,9 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 		}
 		switch ((vertexType & GeometryArrayRetained.TEXCOORD_DEFINED)) {
 		case TF:
-		    FloatBufferWrapper texBuffer;
+		    FloatBuffer texBuffer;
 		    for (int i = 0; i < texCoordSetCount; i++) {
-			texBuffer = (FloatBufferWrapper)((refTexCoordsBuffer[i]).getBufferImpl());
+			texBuffer = (FloatBuffer)refTexCoordsBuffer[i].getROBuffer();
 			if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_2) != 0) {
 			    if (texBuffer.limit() <  2 * (initialTexCoordIndex[i] + validVertexCount) ) {
 				throw new ArrayIndexOutOfBoundsException(
@@ -10339,7 +10339,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
 	if((vertexFormat & GeometryArray.USE_NIO_BUFFER) != 0){
 	    if((vertexType & TEXCOORD_DEFINED) == TF) {
-		FloatBufferWrapper texBuffer = (FloatBufferWrapper)((refTexCoordsBuffer[texCoordSet]).getBufferImpl());
+		FloatBuffer texBuffer = (FloatBuffer)refTexCoordsBuffer[texCoordSet].getROBuffer();
 		if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_2) != 0) {
 		    if (texBuffer.limit() < 2 * (initialTexCoordIndex+ validVertexCount) ) {
 			throw new ArrayIndexOutOfBoundsException(
@@ -11027,7 +11027,7 @@ int numDlistUsers(RenderBin renderBin) {
 	    else { // nio buffer
 		if ((vertexFormat & GeometryArray.INTERLEAVED) == 0){
 		    if ((vertexType & TEXCOORD_DEFINED) == TF) {
-			FloatBufferWrapper texBuffer = (FloatBufferWrapper)refTexCoordsBuffer[i].getBufferImpl();
+			FloatBuffer texBuffer = (FloatBuffer)refTexCoordsBuffer[i].getROBuffer();
 			if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_2) != 0) {
 			    count = texBuffer.limit()/2;
 			} else if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE_3) != 0) {

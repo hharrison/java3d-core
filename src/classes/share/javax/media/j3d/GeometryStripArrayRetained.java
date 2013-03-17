@@ -26,6 +26,7 @@
 
 package javax.media.j3d;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import javax.vecmath.TexCoord2f;
@@ -664,7 +665,6 @@ abstract class GeometryStripArrayRetained extends GeometryArrayRetained {
             if ((vertexFormat & GeometryArray.TEXTURE_COORDINATE) != 0) {
 		base = src.initialIndexIndex;
 		vOffset = textureOffset;
-		FloatBufferWrapper texBuffer;
 		if((src.vertexType & TEXCOORD_DEFINED) != 0) {
 		    for (i=0; i < src.stripIndexCounts.length; i++) {
 			for (j=0; j < src.stripIndexCounts[i]; j++) {
@@ -672,7 +672,7 @@ abstract class GeometryStripArrayRetained extends GeometryArrayRetained {
 
 			    for (k = 0, tOffset = vOffset;
 					k < texCoordSetCount; k++) {
-				texBuffer = (FloatBufferWrapper)(((src.refTexCoordsBuffer[k])).getBufferImpl());
+				FloatBuffer texBuffer = (FloatBuffer)src.refTexCoordsBuffer[k].getROBuffer();
 				texBuffer.position(src.indexTexCoord[k][index]*texCoordStride);
 				texBuffer.get(vertexData, tOffset, texCoordStride);
 				tOffset += texCoordStride;

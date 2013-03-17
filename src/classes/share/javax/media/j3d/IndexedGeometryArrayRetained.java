@@ -27,12 +27,11 @@
 package javax.media.j3d;
 
 import java.nio.Buffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import javax.vecmath.TexCoord2f;
 import javax.vecmath.TexCoord3f;
-
-import com.sun.j3d.internal.FloatBufferWrapper;
 
 /**
  * The IndexedGeometryArray object contains arrays of positional coordinates,
@@ -393,8 +392,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 		if ((vertexFormat & GeometryArray.INTERLEAVED) == 0) {
 		    switch ((vertexType & GeometryArrayRetained.TEXCOORD_DEFINED)) {
 		    case TF:
-			FloatBufferWrapper texBuffer;
-			texBuffer = (FloatBufferWrapper)((refTexCoordsBuffer[texCoordSet]).getBufferImpl());
+			FloatBuffer texBuffer = (FloatBuffer)refTexCoordsBuffer[texCoordSet].getROBuffer();
 			if(refTexCoords[texCoordSet] != null &&  multiplier * newMax >= texBuffer.limit()) {
 			    throw new ArrayIndexOutOfBoundsException(J3dI18N.getString("IndexedGeometryArray25"));
 			}
