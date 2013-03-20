@@ -27,7 +27,7 @@
   <property name="is_dev_phase"             value="true"/>
   <property name="is_production"            value="false"/>
   <property name="use_verbose_buildtime"    value="true"/>
-  <property name="version_buildnum"         value="6"/>
+  <property name="version_buildnum"         value="7"/>
   <property name="version_build"            value="pre${version_buildnum}"/>
   <property name="version_suffix"           value="${version_build}"/>
 
