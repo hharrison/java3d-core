@@ -146,10 +146,10 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
     int numXTiles = 0;
     int numYTiles = 0;
 
-    // lists of Node Components that are referencing this ImageComponent
-    // object. This list is used to notify the referencing node components
-    // of any changes of this ImageComponent.
-    ArrayList userList = new ArrayList();
+// lists of Node Components that are referencing this ImageComponent
+// object. This list is used to notify the referencing node components
+// of any changes of this ImageComponent.
+private ArrayList<NodeComponentRetained> userList = new ArrayList<NodeComponentRetained>();
 
     /**
      * Retrieves the width of this image component object.
@@ -2161,28 +2161,23 @@ abstract class ImageComponentRetained extends NodeComponentRetained {
      * the changes to the users
      */
     synchronized void updateMirrorObject(int component, Object value) {
+		// System.err.println("ImageComponent.updateMirrorObject");
+		if ((component & IMAGE_CHANGED) == 0 &&
+		    (component & SUBIMAGE_CHANGED) == 0)
+			return;
 
-        //System.err.println("ImageComponent.updateMirrorObject");
+		for (int i = userList.size() - 1; i >= 0; i--) {
+			NodeComponentRetained user = userList.get(i);
+			if (user == null)
+				continue;
 
-        Object user;
-
-        if (((component & IMAGE_CHANGED) != 0) ||
-                ((component & SUBIMAGE_CHANGED) != 0)) {
-            synchronized(userList) {
-                for (int i = userList.size()-1; i >=0; i--) {
-                    user = userList.get(i);
-                    if (user != null) {
-                        if (user instanceof TextureRetained) {
-                            ((TextureRetained)user).notifyImageComponentImageChanged(this, (ImageComponentUpdateInfo)value);
-                        } else if (user instanceof RasterRetained) {
-                            ((RasterRetained)user).notifyImageComponentImageChanged(this, (ImageComponentUpdateInfo)value);
-                        } else if (user instanceof BackgroundRetained) {
-                            ((BackgroundRetained)user).notifyImageComponentImageChanged(this, (ImageComponentUpdateInfo)value);
-                        }
-                    }
-                }
-            }
-        }
+			if (user instanceof TextureRetained) {
+				((TextureRetained)user).notifyImageComponentImageChanged(this, (ImageComponentUpdateInfo)value);
+			}
+			else if (user instanceof RasterRetained) {
+				((RasterRetained)user).notifyImageComponentImageChanged(this, (ImageComponentUpdateInfo)value);
+			}
+		}
     }
 
     final void sendMessage(int attrMask, Object attr) {
