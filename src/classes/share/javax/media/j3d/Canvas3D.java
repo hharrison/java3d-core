@@ -1150,8 +1150,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
         // Issue 131: assert that only an off-screen canvas can be demand-driven
         assert (!offScreen && manualRendering) == false;
 
-        // Assert that offScreen is *not* double-buffered or stereo
-        assert (offScreen && useDoubleBuffer) == false;
+        // Assert that offScreen is *not* stereo
         assert (offScreen && useStereo) == false;
     }
 
