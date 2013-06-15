@@ -35,13 +35,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import com.sun.j3d.internal.FastVector;
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
 
@@ -200,6 +200,28 @@ Hashtable<Character, GeometryArrayRetained> geomHash = new Hashtable<Character, 
       bounds.setUpper(upper);
     }
 
+/**
+ * An append-only array-based integer list
+ */
+private static class IntVector {
+	int[] data;
+	int size;
+
+	IntVector() {
+		data = new int[10];
+		size = 0;
+	}
+
+	void add(int i) {
+		// need to expand backing
+		if (size == data.length)
+			data = Arrays.copyOf(data, 2 * size);
+
+		data[size] = i;
+		size++;
+	}
+}
+
     // BY MIK OF CLASSX
     /**
      * Returns a GeometryArray of a glyph in this Font3D.
@@ -260,14 +282,14 @@ Hashtable<Character, GeometryArrayRetained> geomHash = new Hashtable<Character, 
 	    aTran.translate(tx, -ty);
 	    Shape shape = gv.getOutline();
 	    PathIterator pIt = shape.getPathIterator(aTran, tessellationTolerance);
-	    int flag= -1, numContours = 0, numPoints = 0, i, j, k, num=0, vertCnt;
+	    int flag= -1, numPoints = 0, i, j, k, num=0, vertCnt;
 	    UnorderList coords = new UnorderList(100, Point3f.class);
 	    float tmpCoords[] = new float[6];
 	    float lastX= .0f, lastY= .0f;
 	    float firstPntx = Float.MAX_VALUE, firstPnty = Float.MAX_VALUE;
 	    GeometryInfo gi = null;
 	    NormalGenerator ng = new NormalGenerator();
-	    FastVector contours = new FastVector(10);
+	    IntVector contours = new IntVector();
 	    float maxY = -Float.MAX_VALUE;
 	    int maxYIndex = 0, beginIdx = 0, endIdx = 0, start = 0;
 
@@ -284,9 +306,8 @@ Hashtable<Character, GeometryArrayRetained> geomHash = new Hashtable<Character, 
 			    beginIdx = start;
 			    endIdx = numPoints-1;
 			}
-			contours.addElement(num);
+			contours.add(num);
 			num = 0;
-			numContours++;
 		    }
 		} else if (flag == PathIterator.SEG_MOVETO){
 			 vertex.x = tmpCoords[0];
@@ -303,9 +324,8 @@ Hashtable<Character, GeometryArrayRetained> geomHash = new Hashtable<Character, 
 			 firstPntx = lastX;
 			 firstPnty = lastY;
 			 if (num> 0){
-			     contours.addElement(num);
+			     contours.add(num);
 			     num = 0;
-			     numContours++;
 			 }
 			 num++;
 			 numPoints++;
@@ -391,18 +411,15 @@ Hashtable<Character, GeometryArrayRetained> geomHash = new Hashtable<Character, 
 	    // Build a Tree of Islands
 	    int  startIdx = 0;
 	    IslandsNode islandsTree = new IslandsNode(-1, -1);
-	    int contourCounts[] = contours.getData();
 
-
-	    for (i= 0;i < contours.getSize(); i++) {
-		endIdx = startIdx + contourCounts[i];
+		for (int cIdx = 0; cIdx < contours.size; cIdx++) {
+		endIdx = startIdx + contours.data[cIdx];
 		islandsTree.insert(new IslandsNode(startIdx, endIdx), vertices);
 		startIdx = endIdx;
 	    }
 
 	    coords = null;   // Free memory
 	    contours = null;
-	    contourCounts = null;
 
 	    // Compute islandCounts[][] and outVerts[][]
 	    UnorderList islandsList = new UnorderList(10, IslandsNode.class);
@@ -444,7 +461,7 @@ Hashtable<Character, GeometryArrayRetained> geomHash = new Hashtable<Character, 
 	    islandsList = null;
 	    vertices = null;
 
-	    contourCounts = new int[1];
+	    int[] contourCounts = new int[1];
 	    int currCoordIndex = 0, vertOffset = 0;
 		ArrayList<GeometryArray> triangData = new ArrayList<GeometryArray>();
 
