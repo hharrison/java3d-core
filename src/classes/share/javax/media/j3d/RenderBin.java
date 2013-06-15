@@ -367,8 +367,8 @@ ArrayList<RenderAtomListInfo> dirtyList = new ArrayList<RenderAtomListInfo>(5);
     int cachedTranspSortMode = View.TRANSPARENCY_SORT_NONE;
 
 
-    // Temporary dirtylist
-    private LinkedHashSet dirtyDepthSortRenderAtom = new LinkedHashSet();
+// Temporary dirtylist
+private LinkedHashSet<RenderAtom> dirtyDepthSortRenderAtom = new LinkedHashSet<RenderAtom>();
     private int numDirtyTinfo = 0;
 
     // Eye position in vworld
@@ -861,9 +861,9 @@ ArrayList<RenderAtomListInfo> dirtyList = new ArrayList<RenderAtomListInfo>(5);
 
 	    if (size > 0) {
 		TransparentRenderingInfo dirtyList = null;
-		Iterator dirtyDepthSortIterator = dirtyDepthSortRenderAtom.iterator();
+		Iterator<RenderAtom> dirtyDepthSortIterator = dirtyDepthSortRenderAtom.iterator();
 		while (dirtyDepthSortIterator.hasNext()) {
-		    RenderAtom renderAtom = (RenderAtom)dirtyDepthSortIterator.next();
+		    RenderAtom renderAtom = dirtyDepthSortIterator.next();
 		    if (!renderAtom.inRenderBin())
 			continue;
 		    renderAtom.dirtyMask &= ~RenderAtom.IN_SORTED_POS_DIRTY_TRANSP_LIST;
