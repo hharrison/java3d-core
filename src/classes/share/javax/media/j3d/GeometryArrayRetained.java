@@ -8303,10 +8303,10 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
 	if (cyl instanceof PickCylinderSegment) {
 	    ((PickCylinderSegment)cyl).getEnd (end);
-	    sqDist = Distance.pointToSegment(pt, origin, end, iPnt, null);
+	    sqDist = Utils.ptToSegSquare(pt, origin, end, iPnt);
 	}
 	else {
-	    sqDist = Distance.pointToRay(pt, origin, direction, iPnt, null);
+	    sqDist = Utils.ptToRaySquare(pt, origin, direction, iPnt);
 	}
 	if (sqDist <= radius*radius) {
 	    originToIpnt.sub (iPnt, origin);
@@ -8337,10 +8337,10 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
 	if (cone instanceof PickConeSegment) {
 	    ((PickConeSegment)cone).getEnd (end);
-	    sqDist = Distance.pointToSegment (pt, origin, end, iPnt, null);
+	    sqDist = Utils.ptToSegSquare(pt, origin, end, iPnt);
 	}
 	else {
-	    sqDist = Distance.pointToRay (pt, origin, direction, iPnt, null);
+	    sqDist = Utils.ptToRaySquare(pt, origin, direction, iPnt);
 	}
 	originToIpnt.sub(iPnt, origin);
 	distance = originToIpnt.length();
@@ -11065,10 +11065,7 @@ int numDlistUsers(RenderBin renderBin) {
 
 	if (coordinates.length == 2) {
 	    // a line
-	    dist[0] = Math.sqrt(Distance.pointToSegment(center,
-							coordinates[0],
-							coordinates[1],
-							iPnt, null));
+	    dist[0] = Math.sqrt(Utils.ptToSegSquare(center, coordinates[0], coordinates[1], iPnt));
 	    return;
 	}
 
@@ -11135,18 +11132,15 @@ int numDlistUsers(RenderBin renderBin) {
 	    double minDist;
 	    Point3d minPnt = new Point3d();
 
-	    dist[0] = Distance.pointToSegment(center, coordinates[0],
-					      coordinates[1], iPnt, null);
-	    minDist = Distance.pointToSegment(center, coordinates[1],
-					      coordinates[2], minPnt, null);
+	    dist[0] = Utils.ptToSegSquare(center, coordinates[0], coordinates[1], iPnt);
+	    minDist = Utils.ptToSegSquare(center, coordinates[1], coordinates[2], minPnt);
 	    if (minDist < dist[0]) {
 		dist[0] = minDist;
 		iPnt.x = minPnt.x;
 		iPnt.y = minPnt.y;
 		iPnt.z = minPnt.z;
 	    }
-	    minDist = Distance.pointToSegment(center, coordinates[2],
-					      coordinates[0], minPnt, null);
+	    minDist = Utils.ptToSegSquare(center, coordinates[2], coordinates[0], minPnt);
 	    if (minDist < dist[0]) {
 		dist[0] = minDist;
 		iPnt.x = minPnt.x;
@@ -11181,18 +11175,15 @@ int numDlistUsers(RenderBin renderBin) {
 	double minDist;
 	Point3d minPnt = new Point3d();
 
-	dist[0] = Distance.pointToSegment(center, coordinates[0],
-					  coordinates[1], iPnt, null);
-	minDist = Distance.pointToSegment(center, coordinates[1],
-					  coordinates[2], minPnt, null);
+	dist[0] = Utils.ptToSegSquare(center, coordinates[0], coordinates[1], iPnt);
+	minDist = Utils.ptToSegSquare(center, coordinates[1], coordinates[2], minPnt);
 	if (minDist < dist[0]) {
 	    dist[0] = minDist;
 	    iPnt.x = minPnt.x;
 	    iPnt.y = minPnt.y;
 	    iPnt.z = minPnt.z;
 	}
-	minDist = Distance.pointToSegment(center, coordinates[2],
-					  coordinates[3], minPnt, null);
+	minDist = Utils.ptToSegSquare(center, coordinates[2], coordinates[3], minPnt);
 	if (minDist < dist[0]) {
 	    dist[0] = minDist;
 	    iPnt.x = minPnt.x;
@@ -11200,8 +11191,7 @@ int numDlistUsers(RenderBin renderBin) {
 	    iPnt.z = minPnt.z;
 	}
 
-	minDist = Distance.pointToSegment(center, coordinates[3],
-					  coordinates[0], minPnt, null);
+	minDist = Utils.ptToSegSquare(center, coordinates[3], coordinates[0], minPnt);
 	if (minDist < dist[0]) {
 	    dist[0] = minDist;
 	    iPnt.x = minPnt.x;

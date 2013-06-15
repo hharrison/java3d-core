@@ -122,8 +122,7 @@ public final class PickConeSegment extends PickCone {
 	if (bounds instanceof BoundingSphere) {
 	    Point3d sphCenter = ((BoundingSphere)bounds).getCenter();
 	    double sphRadius = ((BoundingSphere)bounds).getRadius();
-	    double sqDist =
-		Distance.pointToSegment (sphCenter, origin, end, rayPt, null);
+	    double sqDist = Utils.ptToSegSquare(sphCenter, origin, end, rayPt);
 
 	    vector.sub (rayPt, origin);
 	    distance = vector.length();
@@ -144,8 +143,7 @@ public final class PickConeSegment extends PickCone {
 	    Point3d center = ((BoundingBox)bounds).getCenter ();
 
 	    // First, see if cone is too far away from BoundingBox
-	    double sqDist =
-		Distance.pointToSegment (center, origin, end, rayPt, null);
+	    double sqDist = Utils.ptToSegSquare(center, origin, end, rayPt);
 
 	    vector.sub (rayPt, origin);
 	    distance = vector.length();
@@ -226,8 +224,7 @@ public final class PickConeSegment extends PickCone {
 	    bsphere.getCenter (sphCenter);
 	    double sphRadius = bsphere.getRadius();
 
-	    double sqDist =
-		Distance.pointToSegment (sphCenter, origin, end, rayPt, null);
+	    double sqDist = Utils.ptToSegSquare(sphCenter, origin, end, rayPt);
 
 	    vector.sub (rayPt, origin);
 	    distance = vector.length();

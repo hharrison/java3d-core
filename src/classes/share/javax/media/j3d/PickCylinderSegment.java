@@ -116,8 +116,7 @@ public final class PickCylinderSegment extends PickCylinder {
 	if (bounds instanceof BoundingSphere) {
 	    Point3d sphCenter = ((BoundingSphere)bounds).getCenter();
 	    double sphRadius = ((BoundingSphere)bounds).getRadius();
-	    double sqDist =
-		Distance.pointToSegment (sphCenter, origin, end);
+	    double sqDist = Utils.ptToSegSquare(sphCenter, origin, end, null);
 	    if (sqDist <= (sphRadius+radius)*(sphRadius+radius)) {
 		return true;
 	    }
@@ -141,8 +140,7 @@ public final class PickCylinderSegment extends PickCylinder {
 	    boxRadiusSquared += temp*temp;
 
 	    // First, see if cylinder is too far away from BoundingBox
-	    double sqDist =
-		Distance.pointToSegment (center, origin, end);
+	    double sqDist = Utils.ptToSegSquare(center, origin, end, null);
 	    if (sqDist > boxRadiusSquared) {
 		return false; // we are too far to intersect
 	    }
@@ -202,8 +200,7 @@ public final class PickCylinderSegment extends PickCylinder {
 	    bsphere.getCenter (sphCenter);
 	    double sphRadius = bsphere.getRadius();
 
-	    double sqDist =
-		Distance.pointToSegment (sphCenter, origin, end);
+	    double sqDist = Utils.ptToSegSquare(sphCenter, origin, end, null);
 	    if (sqDist > (sphRadius+radius)*(sphRadius+radius)) {
 		return false; // we are too far to intersect
 	    }
