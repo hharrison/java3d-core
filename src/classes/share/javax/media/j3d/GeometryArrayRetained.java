@@ -51,7 +51,6 @@ import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
 import com.sun.j3d.internal.Distance;
-import com.sun.j3d.internal.FloatBufferWrapper;
 
 
 /**
@@ -238,8 +237,7 @@ ArrayList<GeometryAtom> gaList = new ArrayList<GeometryAtom>(1);
 
     // Used for NIO buffer vertex attrs
     J3DBuffer[] vertexAttrsRefBuffer = null;
-    FloatBufferWrapper[] floatBufferRefVertexAttrs = null;
-    Object[] nioFloatBufferRefVertexAttrs = null;
+    FloatBuffer[] floatBufferRefVertexAttrs = null;
 
     // used by "by reference" tex coords
     Object[] refTexCoords = null;
@@ -1538,7 +1536,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
             }
         } else {
             for (int i = 0; i < vertexAttrCount; i++) {
-                if (nioFloatBufferRefVertexAttrs[i] == null) {
+                if (floatBufferRefVertexAttrs[i] == null) {
                     allNonNull = false;
                 } else {
                     allNull = false;
@@ -1637,8 +1635,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
                 this.mirrorFloatRefVertexAttrs = new float[vertexAttrCount][];
 		if ((vertexFormat & GeometryArray.USE_NIO_BUFFER) != 0) {
 		    this.vertexAttrsRefBuffer = new J3DBuffer[vertexAttrCount];
-                    this.floatBufferRefVertexAttrs = new FloatBufferWrapper[vertexAttrCount];
-                    this.nioFloatBufferRefVertexAttrs = new Object[vertexAttrCount];
+                    this.floatBufferRefVertexAttrs = new FloatBuffer[vertexAttrCount];
                 }
 	    }
 	}
@@ -2600,7 +2597,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
                             normal,
                             vertexAttrCount, vertexAttrSizes,
                             initialVertexAttrIndex,
-                            nioFloatBufferRefVertexAttrs,
+                            floatBufferRefVertexAttrs,
                             ((texCoordSetMap == null) ? 0:texCoordSetMap.length),
                             texCoordSetMap,
                             cv.numActiveTexUnit,
@@ -3211,7 +3208,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 		    for (index=start; index < end; index++) {
 			for (i = 0; i < vertexAttrCount; i++) {
                             int vaOffset = vOffset + vertexAttrOffsets[i];
-			    FloatBufferWrapper vaBuffer = src.floatBufferRefVertexAttrs[i];
+			    FloatBuffer vaBuffer = src.floatBufferRefVertexAttrs[i];
 			    vaBuffer.position(src.indexVertexAttr[i][index]*vertexAttrSizes[i]);
 			    vaBuffer.get(vertexData, vaOffset, vertexAttrSizes[i]);
 			}
@@ -9296,13 +9293,13 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
     // set the tex coord with nio buffer
     void setTexCoordRefBuffer(int texCoordSet, J3DBuffer texCoords) {
 
-	FloatBufferWrapper bufferImpl = null;
+	FloatBuffer bufferImpl = null;
 
 	if (texCoords != null) {
 	    if(texCoords.bufferType != J3DBuffer.Type.FLOAT)
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray116"));
 
-	    bufferImpl = (FloatBufferWrapper)texCoords.getBufferImpl();
+	    bufferImpl = (FloatBuffer)texCoords.getROBuffer();
 	    int bufferSize = bufferImpl.limit();
 
 	    assert bufferImpl.isDirect();
@@ -9330,7 +9327,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	}
 	else {
 	    // refTexCoords contains NIOBuffer object for tex coord
-	    refTexCoords[texCoordSet] = bufferImpl.getBufferAsObject();
+	    refTexCoords[texCoordSet] = bufferImpl;
 	}
         texCoordType = TF;
         validateTexCoordPointerType();
@@ -9537,13 +9534,13 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
      */
     void setVertexAttrRefBuffer(int vertexAttrNum, J3DBuffer vertexAttrs) {
 
-	FloatBufferWrapper bufferImpl = null;
+	FloatBuffer bufferImpl = null;
 
 	if (vertexAttrs != null) {
 	    if(vertexAttrs.bufferType != J3DBuffer.Type.FLOAT)
 		throw new IllegalArgumentException(J3dI18N.getString("GeometryArray116"));
 
-	    bufferImpl = (FloatBufferWrapper)vertexAttrs.getBufferImpl();
+	    bufferImpl = (FloatBuffer)vertexAttrs.getROBuffer();
 	    int bufferSize = bufferImpl.limit();
 
 	    assert bufferImpl.isDirect();
@@ -9568,12 +9565,9 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
         vertexAttrsRefBuffer[vertexAttrNum] = vertexAttrs;
         if (vertexAttrs == null) {
             floatBufferRefVertexAttrs[vertexAttrNum] = null;
-            nioFloatBufferRefVertexAttrs[vertexAttrNum] = null;
         }
         else {
             floatBufferRefVertexAttrs[vertexAttrNum] = bufferImpl;
-            nioFloatBufferRefVertexAttrs[vertexAttrNum] =
-                bufferImpl.getBufferAsObject();
         }
         vertexAttrType = AF;
         validateVertexAttrPointerType();

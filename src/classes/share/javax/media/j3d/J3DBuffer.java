@@ -36,11 +36,6 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
-import com.sun.j3d.internal.BufferWrapper;
-import com.sun.j3d.internal.ByteBufferWrapper;
-import com.sun.j3d.internal.DoubleBufferWrapper;
-import com.sun.j3d.internal.FloatBufferWrapper;
-
 /**
  * Java 3D wrapper class for java.nio.Buffer objects.
  * When used to wrap a non-null NIO buffer object, this class will
@@ -75,7 +70,6 @@ enum Type {
 
     private Buffer originalBuffer = null;
     private Buffer readonlyBuffer = null;
-    private BufferWrapper bufferImpl = null;
     Type bufferType = Type.NULL;
 
     /**
@@ -190,23 +184,19 @@ enum Type {
 	    ByteBuffer byteBuffer =	((ByteBuffer)buffer).asReadOnlyBuffer();
 	    byteBuffer.rewind();
 	    readonlyBuffer = byteBuffer;
-	    bufferImpl = new ByteBufferWrapper(byteBuffer);
 	    break;
 	case FLOAT:
 	    FloatBuffer floatBuffer = ((FloatBuffer)buffer).asReadOnlyBuffer();
 	    floatBuffer.rewind();
 	    readonlyBuffer = floatBuffer;
-	    bufferImpl = new FloatBufferWrapper(floatBuffer);
 	    break;
 	case DOUBLE:
 	    DoubleBuffer doubleBuffer = ((DoubleBuffer)buffer).asReadOnlyBuffer();
 	    doubleBuffer.rewind();
 	    readonlyBuffer = doubleBuffer;
-	    bufferImpl = new DoubleBufferWrapper(doubleBuffer);
 	    break;
 	default:
 		readonlyBuffer = null;
-	    bufferImpl = null;
 	}
     }
 
@@ -227,8 +217,4 @@ enum Type {
 Buffer getROBuffer() {
 	return readonlyBuffer;
 }
-
-    BufferWrapper getBufferImpl() {
-	return bufferImpl;
-    }
 }

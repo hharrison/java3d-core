@@ -254,7 +254,7 @@ class JoglPipeline extends Pipeline {
             float[] cfdata, byte[] cbdata,
             int initialNormalIndex, FloatBuffer ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
-            int[] vertexAttrIndices, Object[] vertexAttrData,
+            int[] vertexAttrIndices, FloatBuffer[] vertexAttrData,
             int texCoordMapLength,
             int[] texcoordoffset,
             int numActiveTexUnitState,
@@ -279,9 +279,8 @@ class JoglPipeline extends Pipeline {
         FloatBuffer[] vertexAttrBufs = null;
 
         // Get vertex attribute arrays
-        if (vattrDefined) {
-            vertexAttrBufs = getVertexAttrSetBuffer(vertexAttrData);
-        }
+        if (vattrDefined)
+            vertexAttrBufs = vertexAttrData;
 
         // get texture arrays
         if (textureDefined) {
@@ -1836,7 +1835,7 @@ class JoglPipeline extends Pipeline {
             float[] cfdata, byte[] cbdata,
             FloatBuffer ndata,
             int vertexAttrCount, int[] vertexAttrSizes,
-            Object[] vertexAttrData,
+            FloatBuffer[] vertexAttrData,
             int texCoordMapLength,
             int[] texcoordoffset,
             int numActiveTexUnitState,
@@ -1863,7 +1862,7 @@ class JoglPipeline extends Pipeline {
 
         // Get vertex attribute arrays
         if (vattrDefined) {
-            vertexAttrBufs = getVertexAttrSetBuffer(vertexAttrData);
+            vertexAttrBufs = vertexAttrData;
         }
 
         // get texture arrays

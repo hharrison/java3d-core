@@ -1524,7 +1524,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
                             cfdata, cbdata,
                             normal,
                             vertexAttrCount, vertexAttrSizes,
-                            nioFloatBufferRefVertexAttrs,
+                            floatBufferRefVertexAttrs,
                             ((texCoordSetMap == null) ? 0:texCoordSetMap.length),
                             texCoordSetMap,
                             cv.numActiveTexUnit,

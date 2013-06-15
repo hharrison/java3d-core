@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import javax.vecmath.TexCoord2f;
 import javax.vecmath.TexCoord3f;
 
-import com.sun.j3d.internal.FloatBufferWrapper;
-
 
 /**
  * The GeometryStripArray object is an abstract class that is extended for
@@ -694,7 +692,7 @@ abstract class GeometryStripArrayRetained extends GeometryArrayRetained {
 
 			    for (k = 0; k < vertexAttrCount; k++) {
                                 int vaOffset = vOffset + vertexAttrOffsets[k];
-                                FloatBufferWrapper vaBuffer = src.floatBufferRefVertexAttrs[k];
+                                FloatBuffer vaBuffer = src.floatBufferRefVertexAttrs[k];
 				vaBuffer.position(src.indexVertexAttr[k][index]*vertexAttrSizes[k]);
 				vaBuffer.get(vertexData, vaOffset, vertexAttrSizes[k]);
                             }
