@@ -258,12 +258,12 @@ ArrayList<OrderedBin> obList = new ArrayList<OrderedBin>(5);
 ArrayList<ArrayList<OrderedBin>> orderedBinsList = new ArrayList<ArrayList<OrderedBin>>(5);
 ArrayList<ArrayList<OrderedBin>> toBeAddedBinList = new ArrayList<ArrayList<OrderedBin>>(5);
 
-    /**
-     * arraylist of geometry that should be locked to ensure
-     * that the same snapshot of the geometry is rendered
-     * across all canvases
-     */
-    ArrayList lockGeometryList = new ArrayList(5);
+/**
+ * arraylist of geometry that should be locked to ensure
+ * that the same snapshot of the geometry is rendered
+ * across all canvases
+ */
+ArrayList<GeometryRetained> lockGeometryList = new ArrayList<GeometryRetained>(5);
 
 
     /**
@@ -307,11 +307,11 @@ ArrayList<OrderedBin> bgOrderedBins = new ArrayList<OrderedBin>(5);
 
 ArrayList<TextureBin> textureBinList = new ArrayList<TextureBin>(5);
 
-    /**
-     * arraylist of refernce geometry that should be locked when transparency
-     * is on, so that we can make a mirror copy of the colors safely
-     */
-    ArrayList dirtyReferenceGeomList = new ArrayList(5);
+/**
+ * arraylist of refernce geometry that should be locked when transparency
+ * is on, so that we can make a mirror copy of the colors safely
+ */
+ArrayList<GeometryArrayRetained> dirtyReferenceGeomList = new ArrayList(5);
 
 // list of all Oriented RenderAtoms
 ArrayList<RenderAtom> orientedRAs = new ArrayList<RenderAtom>(5);
@@ -599,7 +599,7 @@ ArrayList<RenderAtomListInfo> dirtyList = new ArrayList<RenderAtomListInfo>(5);
 	    Canvas3D canvases[] = view.getCanvases();
 
 	    for (i = 0; i < size; i++) {
-		geo = (GeometryArrayRetained) dirtyReferenceGeomList.get(i);
+		geo = dirtyReferenceGeomList.get(i);
 		// Evaluate the nodeComponentList for all the canvases
 		geo.geomLock.getLock();
 		j = 0;
@@ -5660,29 +5660,27 @@ void reEvaluateEnv(ArrayList<LightRetained> mLts, ArrayList<FogRetained> fogs,
     // release after building the display list (which happens
     // for the first canvas rendered)
     void lockGeometry() {
-	GeometryRetained geo;
-	int i, size;
+	int size;
 
 
 	// Vertex array is locked for every time renderer is run
 	size =  lockGeometryList.size();
-	for (i = 0; i < size; i++) {
-	    geo = (GeometryRetained) lockGeometryList.get(i);
-	    geo.geomLock.getLock();
-
+	for (int i = 0; i < size; i++) {
+		GeometryRetained geo = lockGeometryList.get(i);
+		geo.geomLock.getLock();
 	}
 
 	// dlist is locked only when they are rebuilt
 	size = dlistLockList.size();
-	for (i = 0; i < size ; i++) {
-	    geo = (GeometryRetained) dlistLockList.get(i);
+	for (int i = 0; i < size ; i++) {
+		GeometryRetained geo = (GeometryRetained) dlistLockList.get(i);
 	    geo.geomLock.getLock();
 
 	}
 
 	// Lock all the by reference image components
 	size = nodeComponentList.size();
-	for (i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
 	    ImageComponentRetained nc = (ImageComponentRetained)nodeComponentList.get(i);
 	    nc.geomLock.getLock();
 	}
@@ -5690,49 +5688,48 @@ void reEvaluateEnv(ArrayList<LightRetained> mLts, ArrayList<FogRetained> fogs,
 
     // Release all geometry after rendering to the last canvas
     void releaseGeometry() {
-	GeometryRetained geo;
-	int i, size;
+	int size;
 
 	size = lockGeometryList.size();
-	for (i = 0; i < size; i++) {
-	    geo = (GeometryRetained) lockGeometryList.get(i);
-	    geo.geomLock.unLock();
+	for (int i = 0; i < size; i++) {
+		GeometryRetained geo = lockGeometryList.get(i);
+		geo.geomLock.unLock();
 	}
 
 	size =  dlistLockList.size();
-	for (i = 0; i < size; i++) {
-	    geo = (GeometryRetained) dlistLockList.get(i);
+	for (int i = 0; i < size; i++) {
+		GeometryRetained geo = (GeometryRetained) dlistLockList.get(i);
 	    geo.geomLock.unLock();
 	}
 	// Clear the display list clear list
 	dlistLockList.clear();
 	// Lock all the by reference image components
 	size =  nodeComponentList.size();
-	for (i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
 	    ImageComponentRetained nc = (ImageComponentRetained)nodeComponentList.get(i);
 	    nc.geomLock.unLock();
 	}
     }
 
-    void addGeometryToLockList(Object geo) {
+    void addGeometryToLockList(GeometryRetained geo) {
 	// just add it to the list, if its a shared geometry
 	// it may be added more than once, thats OK since we
 	// now have nested locks!
 	lockGeometryList.add(geo);
     }
 
-    void removeGeometryFromLockList(Object geo) {
+    void removeGeometryFromLockList(GeometryRetained geo) {
 	lockGeometryList.remove(geo);
 
     }
 
 
-    void addDirtyReferenceGeometry(Object geo) {
+void addDirtyReferenceGeometry(GeometryArrayRetained geo) {
 	// just add it to the list, if its a shared geometry
 	// it may be added more than once, thats OK since we
 	// now have nested locks!
 	dirtyReferenceGeomList.add(geo);
-    }
+}
 
 
     void addNodeComponent(Object nc) {
