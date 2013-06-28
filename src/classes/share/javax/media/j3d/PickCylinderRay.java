@@ -30,8 +30,6 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Point4d;
 import javax.vecmath.Vector3d;
 
-import com.sun.j3d.internal.Distance;
-
 /**
  * PickCylinderRay is an infinite cylindrical ray pick shape.  It can
  * be used as an argument to the picking methods in BranchGroup and Locale.
@@ -158,7 +156,7 @@ public final class PickCylinderRay extends PickCylinder {
 	    for (int i=0;i<edges.length;i++) {
 		//	System.err.println ("Testing edge: "+edges[i][0]+" - "+edges[i][1]);
 		double distToEdge =
-		    Distance.rayToSegment (origin, direction, edges[i][0], edges[i][1]);
+		    Utils.rayToSegment (origin, direction, edges[i][0], edges[i][1], null, null, null);
 		if (distToEdge <= radius*radius) {
 		    //	  System.err.println ("Intersects!");
 		    return true;
@@ -210,8 +208,8 @@ public final class PickCylinderRay extends PickCylinder {
 			continue;
 		    }
 		    distToEdge =
-			Distance.rayToSegment (origin, direction,
-					       ptope.verts[i], ptope.verts[j]);
+			Utils.rayToSegment (origin, direction,
+					       ptope.verts[i], ptope.verts[j], null, null, null);
 		    if (distToEdge <= radius*radius) {
 			return true;
 		    }

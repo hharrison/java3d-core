@@ -30,8 +30,6 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Point4d;
 import javax.vecmath.Vector3d;
 
-import com.sun.j3d.internal.Distance;
-
 /**
  * PickConeRay is an infinite cone ray pick shape.  It can
  * be used as an argument to the picking methods in BranchGroup and Locale.
@@ -169,7 +167,7 @@ public final class PickConeRay extends PickCone {
 	    for (int i=0;i<edges.length;i++) {
 		// System.err.println ("Testing edge: "+edges[i][0]+" - "+edges[i][1]);
 		double distToEdge =
-		    Distance.rayToSegment (origin, direction, edges[i][0], edges[i][1],
+		    Utils.rayToSegment (origin, direction, edges[i][0], edges[i][1],
 					   rayPt, null, null);
 
 		vector.sub (rayPt, origin);
@@ -229,7 +227,7 @@ public final class PickConeRay extends PickCone {
 			continue;
 		    }
 		    distToEdge =
-			Distance.rayToSegment (origin, direction,
+			Utils.rayToSegment (origin, direction,
 					       ptope.verts[i], ptope.verts[j],
 					       rayPt, null, null);
 		    vector.sub (rayPt, origin);

@@ -50,8 +50,6 @@ import javax.vecmath.TexCoord4f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
-import com.sun.j3d.internal.Distance;
-
 
 /**
  * The GeometryArray object contains arrays of positional coordinates,
@@ -8189,13 +8187,13 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    j = (i < coordinates.length-1 ? i+1: 0);
 	    if (cyl instanceof PickCylinderSegment) {
 		sqDistToEdge =
-		    Distance.segmentToSegment(origin, end,
+		    Utils.segmentToSegment(origin, end,
 					      coordinates[i], coordinates[j],
 					      iPnt1, iPnt, null);
 	    }
 	    else {
 		sqDistToEdge =
-		    Distance.rayToSegment(origin, direction,
+		    Utils.rayToSegment(origin, direction,
 					  coordinates[i], coordinates[j],
 					  iPnt1, iPnt, null);
 	    }
@@ -8259,13 +8257,13 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    j = (i < coordinates.length-1 ? i+1: 0);
 	    if (cone instanceof PickConeSegment) {
 		sqDistToEdge =
-		    Distance.segmentToSegment (origin, end,
+		    Utils.segmentToSegment (origin, end,
 					       coordinates[i], coordinates[j],
 					       iPnt1, iPnt, null);
 	    }
 	    else {
 		sqDistToEdge =
-		    Distance.rayToSegment (origin, direction,
+		    Utils.rayToSegment (origin, direction,
 					   coordinates[i], coordinates[j],
 					   iPnt1, iPnt, null);
 	    }

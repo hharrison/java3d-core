@@ -30,8 +30,6 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Point4d;
 import javax.vecmath.Vector3d;
 
-import com.sun.j3d.internal.Distance;
-
 /**
  * PickConeSegment is a finite cone segment pick shape.  It can
  * be used as an argument to the picking methods in BranchGroup and Locale.
@@ -192,7 +190,7 @@ public final class PickConeSegment extends PickCone {
 	    for (int i=0;i<edges.length;i++) {
 		//	System.err.println ("Testing edge: "+edges[i][0]+" - "+edges[i][1]);
 		double distToEdge =
-		    Distance.segmentToSegment (origin, end, edges[i][0], edges[i][1],
+		    Utils.segmentToSegment (origin, end, edges[i][0], edges[i][1],
 					       rayPt, null, null);
 
 		vector.sub (rayPt, origin);
@@ -258,7 +256,7 @@ public final class PickConeSegment extends PickCone {
 			continue;
 		    }
 		    distToEdge =
-			Distance.segmentToSegment (origin, end,
+			Utils.segmentToSegment (origin, end,
 						   ptope.verts[i], ptope.verts[j],
 						   rayPt, null, null);
 		    vector.sub (rayPt, origin);
