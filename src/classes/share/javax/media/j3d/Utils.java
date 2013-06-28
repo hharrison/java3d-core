@@ -111,166 +111,216 @@ private static final double ZERO_TOL = 1e-5d;
 static public double rayToSegment(Point3d rayorig, Vector3d raydir,
                                   Point3d segstart, Point3d segend,
                                   Point3d rayint, Point3d segint, double[] param) {
-//    Vector3<Real> diff = mRay->Origin- mSegment->Center;
-//    Real a01 = -mRay->Direction.Dot(mSegment->Direction);
-//    Real b0 = diff.Dot(mRay->Direction);
-//    Real b1 = -diff.Dot(mSegment->Direction);
-//    Real c = diff.SquaredLength();
-//    Real det = Math<Real>::FAbs((Real)1 - a01*a01);
-//    Real s0, s1, sqrDist, extDet;
-//
-//    if (det >= Math<Real>::ZERO_TOLERANCE)
-//    {
-//        // The ray and segment are not parallel.
-//        s0 = a01*b1 - b0;
-//        s1 = a01*b0 - b1;
-//        extDet = mSegment->Extent*det;
-//
-//        if (s0 >= (Real)0)
-//        {
-//            if (s1 >= -extDet)
-//            {
-//                if (s1 <= extDet)  // region 0
-//                {
-//                    // Minimum at interior points of ray and segment.
-//                    Real invDet = ((Real)1)/det;
-//                    s0 *= invDet;
-//                    s1 *= invDet;
-//                    sqrDist = s0*(s0 + a01*s1 + ((Real)2)*b0) +
-//                        s1*(a01*s0 + s1 + ((Real)2)*b1) + c;
-//                }
-//                else  // region 1
-//                {
-//                    s1 = mSegment->Extent;
-//                    s0 = -(a01*s1 + b0);
-//                    if (s0 > (Real)0)
-//                    {
-//                        sqrDist = -s0*s0 + s1*(s1 + ((Real)2)*b1) + c;
-//                    }
-//                    else
-//                    {
-//                        s0 = (Real)0;
-//                        sqrDist = s1*(s1 + ((Real)2)*b1) + c;
-//                    }
-//                }
-//            }
-//            else  // region 5
-//            {
-//                s1 = -mSegment->Extent;
-//                s0 = -(a01*s1 + b0);
-//                if (s0 > (Real)0)
-//                {
-//                    sqrDist = -s0*s0 + s1*(s1 + ((Real)2)*b1) + c;
-//                }
-//                else
-//                {
-//                    s0 = (Real)0;
-//                    sqrDist = s1*(s1 + ((Real)2)*b1) + c;
-//                }
-//            }
-//        }
-//        else
-//        {
-//            if (s1 <= -extDet)  // region 4
-//            {
-//                s0 = -(-a01*mSegment->Extent + b0);
-//                if (s0 > (Real)0)
-//                {
-//                    s1 = -mSegment->Extent;
-//                    sqrDist = -s0*s0 + s1*(s1 + ((Real)2)*b1) + c;
-//                }
-//                else
-//                {
-//                    s0 = (Real)0;
-//                    s1 = -b1;
-//                    if (s1 < -mSegment->Extent)
-//                    {
-//                        s1 = -mSegment->Extent;
-//                    }
-//                    else if (s1 > mSegment->Extent)
-//                    {
-//                        s1 = mSegment->Extent;
-//                    }
-//                    sqrDist = s1*(s1 + ((Real)2)*b1) + c;
-//                }
-//            }
-//            else if (s1 <= extDet)  // region 3
-//            {
-//                s0 = (Real)0;
-//                s1 = -b1;
-//                if (s1 < -mSegment->Extent)
-//                {
-//                    s1 = -mSegment->Extent;
-//                }
-//                else if (s1 > mSegment->Extent)
-//                {
-//                    s1 = mSegment->Extent;
-//                }
-//                sqrDist = s1*(s1 + ((Real)2)*b1) + c;
-//            }
-//            else  // region 2
-//            {
-//                s0 = -(a01*mSegment->Extent + b0);
-//                if (s0 > (Real)0)
-//                {
-//                    s1 = mSegment->Extent;
-//                    sqrDist = -s0*s0 + s1*(s1 + ((Real)2)*b1) + c;
-//                }
-//                else
-//                {
-//                    s0 = (Real)0;
-//                    s1 = -b1;
-//                    if (s1 < -mSegment->Extent)
-//                    {
-//                        s1 = -mSegment->Extent;
-//                    }
-//                    else if (s1 > mSegment->Extent)
-//                    {
-//                        s1 = mSegment->Extent;
-//                    }
-//                    sqrDist = s1*(s1 + ((Real)2)*b1) + c;
-//                }
-//            }
-//        }
-//    }
-//    else
-//    {
-//        // Ray and segment are parallel.
-//        if (a01 > (Real)0)
-//        {
-//            // Opposite direction vectors.
-//            s1 = -mSegment->Extent;
-//        }
-//        else
-//        {
-//            // Same direction vectors.
-//            s1 = mSegment->Extent;
-//        }
-//
-//        s0 = -(a01*s1 + b0);
-//        if (s0 > (Real)0)
-//        {
-//            sqrDist = -s0*s0 + s1*(s1 + ((Real)2)*b1) + c;
-//        }
-//        else
-//        {
-//            s0 = (Real)0;
-//            sqrDist = s1*(s1 + ((Real)2)*b1) + c;
-//        }
-//    }
-//
-//    mClosestPoint0 = mRay->Origin + s0*mRay->Direction;
-//    mClosestPoint1 = mSegment->Center + s1*mSegment->Direction;
-//    mRayParameter = s0;
-//    mSegmentParameter = s1;
-//
-//    // Account for numerical round-off errors.
-//    if (sqrDist < (Real)0)
-//    {
-//        sqrDist = (Real)0;
-//    }
-//    return sqrDist;
-	return 0.0d;
+	double s, t;
+
+	Vector3d diff = new Vector3d();
+	diff.sub(rayorig, segstart);
+	Vector3d segdir = new Vector3d();
+	segdir.sub(segend, segstart);
+
+	double A = raydir.dot(raydir);// Dot(ray.m,ray.m);
+	double B = -raydir.dot(segdir);// -Dot(ray.m,seg.m);
+	double C = segdir.dot(segdir);// Dot(seg.m,seg.m);
+	double D = raydir.dot(diff);// Dot(ray.m,diff);
+	double E; // -Dot(seg.m,diff), defer until needed
+	double F = diff.dot(diff);// Dot(diff,diff);
+	double det = Math.abs(A * C - B * B); // A*C-B*B = |Cross(M0,M1)|^2 >= 0
+
+	double tmp;
+
+	if (det >= ZERO_TOL) {
+		// ray and segment are not parallel
+		E = -segdir.dot(diff);// -Dot(seg.m,diff);
+		s = B * E - C * D;
+		t = B * D - A * E;
+
+		if (s >= 0) {
+			if (t >= 0) {
+				if (t <= det) { // region 0
+					// minimum at interior points of ray and segment
+					double invDet = 1.0f / det;
+					s *= invDet;
+					t *= invDet;
+					if (rayint != null) rayint.scaleAdd(s, raydir, rayorig);
+					if (segint != null) segint.scaleAdd(t, segdir, segstart);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(s * (A * s + B * t + 2 * D) + t
+							* (B * s + C * t + 2 * E) + F);
+				}
+				else { // region 1
+
+					t = 1;
+					if (D >= 0) {
+						s = 0;
+						if (rayint != null) rayint.set(rayorig);
+						if (segint != null) segint.set(segend);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(C + 2 * E + F);
+					}
+					else {
+						s = -D / A;
+						if (rayint != null) rayint.scaleAdd(s, raydir, rayorig);
+						if (segint != null) segint.set(segend);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs((D + 2 * B) * s + C + 2 * E + F);
+					}
+				}
+			}
+			else { // region 5
+				t = 0;
+				if (D >= 0) {
+					s = 0;
+					if (rayint != null) rayint.set(rayorig);
+					if (segint != null) segint.set(segstart);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(F);
+				}
+				else {
+					s = -D / A;
+					if (rayint != null) rayint.scaleAdd(s, raydir, rayorig);
+					if (segint != null) segint.set(segstart);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(D * s + F);
+				}
+			}
+		}
+		else {
+			if (t <= 0) { // region 4
+				if (D < 0) {
+					s = -D / A;
+					t = 0;
+					if (rayint != null) rayint.scaleAdd(s, raydir, rayorig);
+					if (segint != null) segint.set(segstart);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(D * s + F);
+				}
+				else {
+					s = 0;
+					if (E >= 0) {
+						t = 0;
+						if (rayint != null) rayint.set(rayorig);
+						if (segint != null) segint.set(segstart);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(F);
+					}
+					else if (-E >= C) {
+						t = 1;
+						if (rayint != null) rayint.set(rayorig);
+						if (segint != null) segint.set(segend);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(C + 2 * E + F);
+					}
+					else {
+						t = -E / C;
+						if (rayint != null) rayint.set(rayorig);
+						if (segint != null) segint.scaleAdd(t, segdir, segstart);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(E * t + F);
+					}
+				}
+			}
+			else if (t <= det) { // region 3
+				s = 0;
+				if (E >= 0) {
+					t = 0;
+					if (rayint != null) rayint.set(rayorig);
+					if (segint != null) segint.set(segstart);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(F);
+				}
+				else if (-E >= C) {
+					t = 1;
+					if (rayint != null) rayint.set(rayorig);
+					if (segint != null) segint.set(segend);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(C + 2 * E + F);
+				}
+				else {
+					t = -E / C;
+					if (rayint != null) rayint.set(rayorig);
+					if (segint != null) segint.scaleAdd(t, segdir, segstart);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(E * t + F);
+				}
+			}
+			else { // region 2
+				tmp = B + D;
+				if (tmp < 0) {
+					s = -tmp / A;
+					t = 1;
+					if (rayint != null) rayint.scaleAdd(s, raydir, rayorig);
+					if (segint != null) segint.set(segend);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(tmp * s + C + 2 * E + F);
+				}
+				else {
+					s = 0;
+					if (E >= 0) {
+						t = 0;
+						if (rayint != null) rayint.set(rayorig);
+						if (segint != null) segint.set(segstart);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(F);
+					}
+					else if (-E >= C) {
+						t = 1;
+						if (rayint != null) rayint.set(rayorig);
+						if (segint != null) segint.set(segend);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(C + 2 * E + F);
+					}
+					else {
+						t = -E / C;
+						if (rayint != null) rayint.set(rayorig);
+						if (segint != null) segint.scaleAdd(t, segdir, segstart);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(E * t + F);
+					}
+				}
+			}
+		}
+	}
+	else {
+		// ray and segment are parallel
+		if (B > 0) {
+			// opposite direction vectors
+			t = 0;
+			if (D >= 0) {
+				s = 0;
+				if (rayint != null) rayint.set(rayorig);
+				if (segint != null) segint.set(segstart);
+				if (param != null) { param[0] = s; param[1] = t; }
+				return Math.abs(F);
+			}
+			else {
+				s = -D / A;
+				if (rayint != null) rayint.scaleAdd(s, raydir, rayorig);
+				if (segint != null) segint.set(segstart);
+				if (param != null) { param[0] = s; param[1] = t; }
+				return Math.abs(D * s + F);
+			}
+		}
+		else {
+			// same direction vectors
+			E = segdir.dot(diff);// -Dot(seg.m,diff);
+			t = 1;
+			tmp = B + D;
+			if (tmp >= 0) {
+				s = 0;
+				if (rayint != null) rayint.set(rayorig);
+				if (segint != null) segint.set(segend);
+				if (param != null) { param[0] = s; param[1] = t; }
+				return Math.abs(C + 2 * E + F);
+			}
+			else {
+				s = -tmp / A;
+				if (rayint != null) rayint.scaleAdd(s, raydir, rayorig);
+				if (segint != null) segint.set(segend);
+				if (param != null) { param[0] = s; param[1] = t; }
+				return Math.abs(tmp * s + C + 2 * E + F);
+			}
+		}
+	}
 }
 
 /**
