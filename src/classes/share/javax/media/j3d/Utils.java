@@ -110,332 +110,412 @@ private static final double ZERO_TOL = 1e-5d;
  * http://www.geometrictools.com/LibMathematics/Distance/Wm5DistSegment3Segment3.cpp
  * File Version: 5.0.1 (2010/10/01)
  */
-static public double segmentToSegment (Point3d s0start, Point3d s0end,
-                                       Point3d s1start, Point3d s1end,
-                                       Point3d s0int, Point3d s1int, double[] param) {
-//    Vector3<Real> diff = mSegment0->Center - mSegment1->Center;
-//    Real a01 = -mSegment0->Direction.Dot(mSegment1->Direction);
-//    Real b0 = diff.Dot(mSegment0->Direction);
-//    Real b1 = -diff.Dot(mSegment1->Direction);
-//    Real c = diff.SquaredLength();
-//    Real det = Math<Real>::FAbs((Real)1 - a01*a01);
-//    Real s0, s1, sqrDist, extDet0, extDet1, tmpS0, tmpS1;
-//
-//    if (det >= Math<Real>::ZERO_TOLERANCE)
-//    {
-//        // Segments are not parallel.
-//        s0 = a01*b1 - b0;
-//        s1 = a01*b0 - b1;
-//        extDet0 = mSegment0->Extent*det;
-//        extDet1 = mSegment1->Extent*det;
-//
-//        if (s0 >= -extDet0)
-//        {
-//            if (s0 <= extDet0)
-//            {
-//                if (s1 >= -extDet1)
-//                {
-//                    if (s1 <= extDet1)  // region 0 (interior)
-//                    {
-//                        // Minimum at interior points of segments.
-//                        Real invDet = ((Real)1)/det;
-//                        s0 *= invDet;
-//                        s1 *= invDet;
-//                        sqrDist = s0*(s0 + a01*s1 + ((Real)2)*b0) +
-//                            s1*(a01*s0 + s1 + ((Real)2)*b1) + c;
-//                    }
-//                    else  // region 3 (side)
-//                    {
-//                        s1 = mSegment1->Extent;
-//                        tmpS0 = -(a01*s1 + b0);
-//                        if (tmpS0 < -mSegment0->Extent)
-//                        {
-//                            s0 = -mSegment0->Extent;
-//                            sqrDist = s0*(s0 - ((Real)2)*tmpS0) +
-//                                s1*(s1 + ((Real)2)*b1) + c;
-//                        }
-//                        else if (tmpS0 <= mSegment0->Extent)
-//                        {
-//                            s0 = tmpS0;
-//                            sqrDist = -s0*s0 + s1*(s1 + ((Real)2)*b1) + c;
-//                        }
-//                        else
-//                        {
-//                            s0 = mSegment0->Extent;
-//                            sqrDist = s0*(s0 - ((Real)2)*tmpS0) +
-//                                s1*(s1 + ((Real)2)*b1) + c;
-//                        }
-//                    }
-//                }
-//                else  // region 7 (side)
-//                {
-//                    s1 = -mSegment1->Extent;
-//                    tmpS0 = -(a01*s1 + b0);
-//                    if (tmpS0 < -mSegment0->Extent)
-//                    {
-//                        s0 = -mSegment0->Extent;
-//                        sqrDist = s0*(s0 - ((Real)2)*tmpS0) +
-//                            s1*(s1 + ((Real)2)*b1) + c;
-//                    }
-//                    else if (tmpS0 <= mSegment0->Extent)
-//                    {
-//                        s0 = tmpS0;
-//                        sqrDist = -s0*s0 + s1*(s1 + ((Real)2)*b1) + c;
-//                    }
-//                    else
-//                    {
-//                        s0 = mSegment0->Extent;
-//                        sqrDist = s0*(s0 - ((Real)2)*tmpS0) +
-//                            s1*(s1 + ((Real)2)*b1) + c;
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                if (s1 >= -extDet1)
-//                {
-//                    if (s1 <= extDet1)  // region 1 (side)
-//                    {
-//                        s0 = mSegment0->Extent;
-//                        tmpS1 = -(a01*s0 + b1);
-//                        if (tmpS1 < -mSegment1->Extent)
-//                        {
-//                            s1 = -mSegment1->Extent;
-//                            sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                                s0*(s0 + ((Real)2)*b0) + c;
-//                        }
-//                        else if (tmpS1 <= mSegment1->Extent)
-//                        {
-//                            s1 = tmpS1;
-//                            sqrDist = -s1*s1 + s0*(s0 + ((Real)2)*b0) + c;
-//                        }
-//                        else
-//                        {
-//                            s1 = mSegment1->Extent;
-//                            sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                                s0*(s0 + ((Real)2)*b0) + c;
-//                        }
-//                    }
-//                    else  // region 2 (corner)
-//                    {
-//                        s1 = mSegment1->Extent;
-//                        tmpS0 = -(a01*s1 + b0);
-//                        if (tmpS0 < -mSegment0->Extent)
-//                        {
-//                            s0 = -mSegment0->Extent;
-//                            sqrDist = s0*(s0 - ((Real)2)*tmpS0) +
-//                                s1*(s1 + ((Real)2)*b1) + c;
-//                        }
-//                        else if (tmpS0 <= mSegment0->Extent)
-//                        {
-//                            s0 = tmpS0;
-//                            sqrDist = -s0*s0 + s1*(s1 + ((Real)2)*b1) + c;
-//                        }
-//                        else
-//                        {
-//                            s0 = mSegment0->Extent;
-//                            tmpS1 = -(a01*s0 + b1);
-//                            if (tmpS1 < -mSegment1->Extent)
-//                            {
-//                                s1 = -mSegment1->Extent;
-//                                sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                                    s0*(s0 + ((Real)2)*b0) + c;
-//                            }
-//                            else if (tmpS1 <= mSegment1->Extent)
-//                            {
-//                                s1 = tmpS1;
-//                                sqrDist = -s1*s1 + s0*(s0 + ((Real)2)*b0) + c;
-//                            }
-//                            else
-//                            {
-//                                s1 = mSegment1->Extent;
-//                                sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                                    s0*(s0 + ((Real)2)*b0) + c;
-//                            }
-//                        }
-//                    }
-//                }
-//                else  // region 8 (corner)
-//                {
-//                    s1 = -mSegment1->Extent;
-//                    tmpS0 = -(a01*s1 + b0);
-//                    if (tmpS0 < -mSegment0->Extent)
-//                    {
-//                        s0 = -mSegment0->Extent;
-//                        sqrDist = s0*(s0 - ((Real)2)*tmpS0) +
-//                            s1*(s1 + ((Real)2)*b1) + c;
-//                    }
-//                    else if (tmpS0 <= mSegment0->Extent)
-//                    {
-//                        s0 = tmpS0;
-//                        sqrDist = -s0*s0 + s1*(s1 + ((Real)2)*b1) + c;
-//                    }
-//                    else
-//                    {
-//                        s0 = mSegment0->Extent;
-//                        tmpS1 = -(a01*s0 + b1);
-//                        if (tmpS1 > mSegment1->Extent)
-//                        {
-//                            s1 = mSegment1->Extent;
-//                            sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                                s0*(s0 + ((Real)2)*b0) + c;
-//                        }
-//                        else if (tmpS1 >= -mSegment1->Extent)
-//                        {
-//                            s1 = tmpS1;
-//                            sqrDist = -s1*s1 + s0*(s0 + ((Real)2)*b0) + c;
-//                        }
-//                        else
-//                        {
-//                            s1 = -mSegment1->Extent;
-//                            sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                                s0*(s0 + ((Real)2)*b0) + c;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        else
-//        {
-//            if (s1 >= -extDet1)
-//            {
-//                if (s1 <= extDet1)  // region 5 (side)
-//                {
-//                    s0 = -mSegment0->Extent;
-//                    tmpS1 = -(a01*s0 + b1);
-//                    if (tmpS1 < -mSegment1->Extent)
-//                    {
-//                        s1 = -mSegment1->Extent;
-//                        sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                            s0*(s0 + ((Real)2)*b0) + c;
-//                    }
-//                    else if (tmpS1 <= mSegment1->Extent)
-//                    {
-//                        s1 = tmpS1;
-//                        sqrDist = -s1*s1 + s0*(s0 + ((Real)2)*b0) + c;
-//                    }
-//                    else
-//                    {
-//                        s1 = mSegment1->Extent;
-//                        sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                            s0*(s0 + ((Real)2)*b0) + c;
-//                    }
-//                }
-//                else  // region 4 (corner)
-//                {
-//                    s1 = mSegment1->Extent;
-//                    tmpS0 = -(a01*s1 + b0);
-//                    if (tmpS0 > mSegment0->Extent)
-//                    {
-//                        s0 = mSegment0->Extent;
-//                        sqrDist = s0*(s0 - ((Real)2)*tmpS0) +
-//                            s1*(s1 + ((Real)2)*b1) + c;
-//                    }
-//                    else if (tmpS0 >= -mSegment0->Extent)
-//                    {
-//                        s0 = tmpS0;
-//                        sqrDist = -s0*s0 + s1*(s1 + ((Real)2)*b1) + c;
-//                    }
-//                    else
-//                    {
-//                        s0 = -mSegment0->Extent;
-//                        tmpS1 = -(a01*s0 + b1);
-//                        if (tmpS1 < -mSegment1->Extent)
-//                        {
-//                            s1 = -mSegment1->Extent;
-//                            sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                                s0*(s0 + ((Real)2)*b0) + c;
-//                        }
-//                        else if (tmpS1 <= mSegment1->Extent)
-//                        {
-//                            s1 = tmpS1;
-//                            sqrDist = -s1*s1 + s0*(s0 + ((Real)2)*b0) + c;
-//                        }
-//                        else
-//                        {
-//                            s1 = mSegment1->Extent;
-//                            sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                                s0*(s0 + ((Real)2)*b0) + c;
-//                        }
-//                    }
-//                }
-//            }
-//            else   // region 6 (corner)
-//            {
-//                s1 = -mSegment1->Extent;
-//                tmpS0 = -(a01*s1 + b0);
-//                if (tmpS0 > mSegment0->Extent)
-//                {
-//                    s0 = mSegment0->Extent;
-//                    sqrDist = s0*(s0 - ((Real)2)*tmpS0) +
-//                        s1*(s1 + ((Real)2)*b1) + c;
-//                }
-//                else if (tmpS0 >= -mSegment0->Extent)
-//                {
-//                    s0 = tmpS0;
-//                    sqrDist = -s0*s0 + s1*(s1 + ((Real)2)*b1) + c;
-//                }
-//                else
-//                {
-//                    s0 = -mSegment0->Extent;
-//                    tmpS1 = -(a01*s0 + b1);
-//                    if (tmpS1 < -mSegment1->Extent)
-//                    {
-//                        s1 = -mSegment1->Extent;
-//                        sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                            s0*(s0 + ((Real)2)*b0) + c;
-//                    }
-//                    else if (tmpS1 <= mSegment1->Extent)
-//                    {
-//                        s1 = tmpS1;
-//                        sqrDist = -s1*s1 + s0*(s0 + ((Real)2)*b0) + c;
-//                    }
-//                    else
-//                    {
-//                        s1 = mSegment1->Extent;
-//                        sqrDist = s1*(s1 - ((Real)2)*tmpS1) +
-//                            s0*(s0 + ((Real)2)*b0) + c;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    else
-//    {
-//        // The segments are parallel.  The average b0 term is designed to
-//        // ensure symmetry of the function.  That is, dist(seg0,seg1) and
-//        // dist(seg1,seg0) should produce the same number.
-//        Real e0pe1 = mSegment0->Extent + mSegment1->Extent;
-//        Real sign = (a01 > (Real)0 ? (Real)-1 : (Real)1);
-//        Real b0Avr = ((Real)0.5)*(b0 - sign*b1);
-//        Real lambda = -b0Avr;
-//        if (lambda < -e0pe1)
-//        {
-//            lambda = -e0pe1;
-//        }
-//        else if (lambda > e0pe1)
-//        {
-//            lambda = e0pe1;
-//        }
-//
-//        s1 = -sign*lambda*mSegment1->Extent/e0pe1;
-//        s0 = lambda + sign*s1;
-//        sqrDist = lambda*(lambda + ((Real)2)*b0Avr) + c;
-//    }
-//
-//    mClosestPoint0 = mSegment0->Center + s0*mSegment0->Direction;
-//    mClosestPoint1 = mSegment1->Center + s1*mSegment1->Direction;
-//    mSegment0Parameter = s0;
-//    mSegment1Parameter = s1;
-//
-//    // Account for numerical round-off errors.
-//    if (sqrDist < (Real)0)
-//    {
-//        sqrDist = (Real)0;
-//    }
-//    return sqrDist;
-//}
-	return 0.0d;
-}
-}
+static public double segmentToSegment(Point3d s0start, Point3d s0end,
+                                      Point3d s1start, Point3d s1end,
+                                      Point3d s0int, Point3d s1int, double[] param) {
+	double s, t;
 
+	Vector3d diff = new Vector3d();
+	diff.sub(s0start, s1start);
+
+	Vector3d seg0dir = new Vector3d();
+	seg0dir.sub(s0end, s0start);
+	Vector3d seg1dir = new Vector3d();
+	seg1dir.sub(s1end, s1start);
+
+	double A = seg0dir.dot(seg0dir); // Dot(seg0dir,seg0dir);
+	double B = -seg0dir.dot(seg1dir); // -Dot(seg0dir,seg1dir);
+	double C = seg1dir.dot(seg1dir); // Dot(seg1dir,seg1dir);
+	double D = seg0dir.dot(diff); // Dot(seg0dir,diff);
+	double E; // -Dot(seg1dir,diff), defer until needed
+	double F = diff.dot(diff); // Dot(diff,diff);
+	double det = Math.abs(A * C - B * B); // A*C-B*B = |Cross(M0,M1)|^2 >= 0
+
+	double tmp;
+
+	if (det >= ZERO_TOL) {
+		// line segments are not parallel
+		E = -seg1dir.dot(diff); // -Dot(seg1dir,diff);
+		s = B * E - C * D;
+		t = B * D - A * E;
+
+		if (s >= 0) {
+			if (s <= det) {
+				if (t >= 0) {
+					if (t <= det) { // region 0 (interior)
+						// minimum at two interior points of 3D lines
+						double invDet = 1.0f / det;
+						s *= invDet;
+						t *= invDet;
+						if (s0int != null) s0int.scaleAdd(s, seg0dir, s0start);
+						if (s1int != null) s1int.scaleAdd(t, seg1dir, s1start);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(s * (A * s + B * t + 2 * D) + t
+								* (B * s + C * t + 2 * E) + F);
+					}
+					else { // region 3 (side)
+						t = 1;
+						tmp = B + D;
+						if (tmp >= 0) {
+							s = 0;
+							if (s0int != null) s0int.set(s0start);
+							if (s1int != null) s1int.set(s1end);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(C + 2 * E + F);
+						}
+						else if (-tmp >= A) {
+							s = 1;
+							if (s0int != null) s0int.set(s0end);
+							if (s1int != null) s1int.set(s1end);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(A + C + F + 2 * (E + tmp));
+						}
+						else {
+							s = -tmp / A;
+							if (s0int != null) s0int.scaleAdd(s, seg0dir, s0start);
+							if (s1int != null) s1int.set(s1end);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(tmp * s + C + 2 * E + F);
+						}
+					}
+				}
+				else { // region 7 (side)
+					t = 0;
+					if (D >= 0) {
+						s = 0;
+						if (s0int != null) s0int.set(s0start);
+						if (s1int != null) s1int.set(s1start);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(F);
+					}
+					else if (-D >= A) {
+						s = 1;
+						if (s0int != null) s0int.set(s0end);
+						if (s1int != null) s1int.set(s1start);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(A + 2 * D + F);
+					}
+					else {
+						s = -D / A;
+						if (s0int != null) s0int.scaleAdd(s, seg0dir, s0start);
+						if (s1int != null) s1int.set(s1start);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(D * s + F);
+					}
+				}
+			}
+			else {
+				if (t >= 0) {
+					if (t <= det) { // region 1 (side)
+						s = 1;
+						tmp = B + E;
+						if (tmp >= 0) {
+							t = 0;
+							if (s0int != null) s0int.set(s0end);
+							if (s1int != null) s1int.set(s1start);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(A + 2 * D + F);
+						}
+						else if (-tmp >= C) {
+							t = 1;
+							if (s0int != null) s0int.set(s0end);
+							if (s1int != null) s1int.set(s1end);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(A + C + F + 2 * (D + tmp));
+						}
+						else {
+							t = -tmp / C;
+							if (s0int != null) s0int.set(s0end);
+							if (s1int != null) s1int.scaleAdd(t, seg1dir, s1start);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(tmp * t + A + 2 * D + F);
+						}
+					}
+					else { // region 2 (corner)
+						tmp = B + D;
+						if (-tmp <= A) {
+							t = 1;
+							if (tmp >= 0) {
+								s = 0;
+								if (s0int != null) s0int.set(s0start);
+								if (s1int != null) s1int.set(s1end);
+								if (param != null) { param[0] = s; param[1] = t; }
+								return Math.abs(C + 2 * E + F);
+							}
+							else {
+								s = -tmp / A;
+								if (s0int != null) s0int.scaleAdd(s, seg0dir, s0start);
+								if (s1int != null) s1int.set(s1end);
+								if (param != null) { param[0] = s; param[1] = t; }
+								return Math.abs(tmp * s + C + 2 * E + F);
+							}
+						}
+						else {
+							s = 1;
+							tmp = B + E;
+							if (tmp >= 0) {
+								t = 0;
+								if (s0int != null) s0int.set(s0end);
+								if (s1int != null) s1int.set(s1start);
+								if (param != null) { param[0] = s; param[1] = t; }
+								return Math.abs(A + 2 * D + F);
+							}
+							else if (-tmp >= C) {
+								t = 1;
+								if (s0int != null) s0int.set(s0end);
+								if (s1int != null) s1int.set(s1end);
+								if (param != null) { param[0] = s; param[1] = t; }
+								return Math.abs(A + C + F + 2 * (D + tmp));
+							}
+							else {
+								t = -tmp / C;
+								if (s0int != null) s0int.set(s0end);
+								if (s1int != null) s1int.scaleAdd(t, seg1dir, s1start);
+								if (param != null) { param[0] = s; param[1] = t; }
+								return Math.abs(tmp * t + A + 2 * D + F);
+							}
+						}
+					}
+				}
+				else { // region 8 (corner)
+					if (-D < A) {
+						t = 0;
+						if (D >= 0) {
+							s = 0;
+							if (s0int != null) s0int.set(s0start);
+							if (s1int != null) s1int.set(s1start);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(F);
+						}
+						else {
+							s = -D / A;
+							if (s0int != null) s0int.scaleAdd(s, seg0dir, s0start);
+							if (s1int != null) s1int.set(s1start);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(D * s + F);
+						}
+					}
+					else {
+						s = 1;
+						tmp = B + E;
+						if (tmp >= 0) {
+							t = 0;
+							if (s0int != null) s0int.set(s0end);
+							if (s1int != null) s1int.set(s1start);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(A + 2 * D + F);
+						}
+						else if (-tmp >= C) {
+							t = 1;
+							if (s0int != null) s0int.set(s0end);
+							if (s1int != null) s1int.set(s1end);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(A + C + F + 2 * (D + tmp));
+						}
+						else {
+							t = -tmp / C;
+							if (s0int != null) s0int.set(s0end);
+							if (s1int != null) s1int.scaleAdd(t, seg1dir, s1start);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(tmp * t + A + 2 * D + F);
+						}
+					}
+				}
+			}
+		}
+		else {
+			if (t >= 0) {
+				if (t <= det) { // region 5 (side)
+					s = 0;
+					if (E >= 0) {
+						t = 0;
+						if (s0int != null) s0int.set(s0start);
+						if (s1int != null) s1int.set(s1start);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(F);
+					}
+					else if (-E >= C) {
+						t = 1;
+						if (s0int != null) s0int.set(s0start);
+						if (s1int != null) s1int.set(s1end);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(C + 2 * E + F);
+					}
+					else {
+						t = -E / C;
+						if (s0int != null) s0int.set(s0start);
+						if (s1int != null) s1int.scaleAdd(t, seg1dir, s1start);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(E * t + F);
+					}
+				}
+				else { // region 4 (corner)
+					tmp = B + D;
+					if (tmp < 0) {
+						t = 1;
+						if (-tmp >= A) {
+							s = 1;
+							if (s0int != null) s0int.set(s0end);
+							if (s1int != null) s1int.set(s1end);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(A + C + F + 2 * (E + tmp));
+						}
+						else {
+							s = -tmp / A;
+							if (s0int != null) s0int.scaleAdd(s, seg0dir, s0start);
+							if (s1int != null) s1int.set(s1end);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(tmp * s + C + 2 * E + F);
+						}
+					}
+					else {
+						s = 0;
+						if (E >= 0) {
+							t = 0;
+							if (s0int != null) s0int.set(s0start);
+							if (s1int != null) s1int.set(s1start);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(F);
+						}
+						else if (-E >= C) {
+							t = 1;
+							if (s0int != null) s0int.set(s0start);
+							if (s1int != null) s1int.set(s1end);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(C + 2 * E + F);
+						}
+						else {
+							t = -E / C;
+							if (s0int != null) s0int.set(s0start);
+							if (s1int != null) s1int.scaleAdd(t, seg1dir, s1start);
+							if (param != null) { param[0] = s; param[1] = t; }
+							return Math.abs(E * t + F);
+						}
+					}
+				}
+			}
+			else { // region 6 (corner)
+				if (D < 0) {
+					t = 0;
+					if (-D >= A) {
+						s = 1;
+						if (s0int != null) s0int.set(s0end);
+						if (s1int != null) s1int.set(s1start);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(A + 2 * D + F);
+					}
+					else {
+						s = -D / A;
+						if (s0int != null) s0int.scaleAdd(s, seg0dir, s0start);
+						if (s1int != null) s1int.set(s1start);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(D * s + F);
+					}
+				}
+				else {
+					s = 0;
+					if (E >= 0) {
+						t = 0;
+						if (s0int != null) s0int.set(s0start);
+						if (s1int != null) s1int.set(s1start);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(F);
+					}
+					else if (-E >= C) {
+						t = 1;
+						if (s0int != null) s0int.set(s0start);
+						if (s1int != null) s1int.set(s1end);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(C + 2 * E + F);
+					}
+					else {
+						t = -E / C;
+						if (s0int != null) s0int.set(s0start);
+						if (s1int != null) s1int.scaleAdd(t, seg1dir, s1start);
+						if (param != null) { param[0] = s; param[1] = t; }
+						return Math.abs(E * t + F);
+					}
+				}
+			}
+		}
+	}
+	else {
+		// line segments are parallel
+		if (B > 0) {
+			// direction vectors form an obtuse angle
+			if (D >= 0) {
+				s = 0;
+				t = 0;
+				if (s0int != null) s0int.set(s0start);
+				if (s1int != null) s1int.set(s1start);
+				if (param != null) { param[0] = s; param[1] = t; }
+				return Math.abs(F);
+			}
+			else if (-D <= A) {
+				s = -D / A;
+				t = 0;
+				if (s0int != null) s0int.scaleAdd(s, seg0dir, s0start);
+				if (s1int != null) s1int.set(s1start);
+				if (param != null) { param[0] = s; param[1] = t; }
+				return Math.abs(D * s + F);
+			}
+			else {
+				E = -seg1dir.dot(diff); // -Dot(seg1dir,diff);
+				s = 1;
+				tmp = A + D;
+				if (-tmp >= B) {
+					t = 1;
+					if (s0int != null) s0int.set(s0end);
+					if (s1int != null) s1int.set(s1end);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(A + C + F + 2 * (B + D + E));
+				}
+				else {
+					t = -tmp / B;
+					if (s0int != null) s0int.set(s0end);
+					if (s1int != null) s1int.scaleAdd(t, seg1dir, s1start);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(A + 2 * D + F + t * (C * t + 2 * (B + E)));
+				}
+			}
+		}
+		else {
+			// direction vectors form an acute angle
+			if (-D >= A) {
+				s = 1;
+				t = 0;
+				if (s0int != null) s0int.set(s0end);
+				if (s1int != null) s1int.set(s1start);
+				if (param != null) { param[0] = s; param[1] = t; }
+				return Math.abs(A + 2 * D + F);
+			}
+			else if (D <= 0) {
+				s = -D / A;
+				t = 0;
+				if (s0int != null) s0int.scaleAdd(s, seg0dir, s0start);
+				if (s1int != null) s1int.set(s1start);
+				if (param != null) { param[0] = s; param[1] = t; }
+				return Math.abs(D * s + F);
+			}
+			else {
+				E = -seg1dir.dot(diff); // -Dot(seg1dir,diff);
+				s = 0;
+				if (D >= -B) {
+					t = 1;
+					if (s0int != null) s0int.set(s0start);
+					if (s1int != null) s1int.set(s1end);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(C + 2 * E + F);
+				}
+				else {
+					t = -D / B;
+					if (s0int != null) s0int.set(s0start);
+					if (s1int != null) s1int.scaleAdd(t, seg1dir, s1start);
+					if (param != null) { param[0] = s; param[1] = t; }
+					return Math.abs(F + t * (2 * E + C * t));
+				}
+			}
+		}
+	}
+}
+}
