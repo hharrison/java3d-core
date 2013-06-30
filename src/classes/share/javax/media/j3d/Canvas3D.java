@@ -4870,6 +4870,7 @@ boolean isAntialiasingSet() {
 
     // The native method for setting the Viewport.
     void setViewport(Context ctx, int x, int y, int width, int height) {
+        Pipeline.getPipeline().resizeOffscreenLayer(this, width, height);
         Pipeline.getPipeline().setViewport(ctx, x, y, width, height);
     }
 

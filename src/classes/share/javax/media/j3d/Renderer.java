@@ -987,7 +987,6 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
 			int cvWidth = cvCache.getCanvasWidth();
 			int cvHeight = cvCache.getCanvasHeight();
-			Pipeline.getPipeline().resizeOffscreenLayer(canvas, cvWidth, cvHeight);
 			// setup viewport
 			canvas.setViewport(canvas.ctx, 0, 0, cvWidth, cvHeight);
 
