@@ -312,7 +312,6 @@ class GeometryStructure extends J3dStructure {
     private void insertNodes(Object[] nodes) {
 	Object node;
 	GeometryAtom geomAtom;
-	BHTree  currTree = null;
 
 	clearBhNodeArr();
 
@@ -352,28 +351,22 @@ class GeometryStructure extends J3dStructure {
 	}
 
 	// Look for the right BHTree to insert to.
-	if (currTree == null) {
-	    // We must separate the following two calls
-	    // since the first Call will allocate storage bhTreeArr
-	    // for the second index operation. (see bug 4361998)
-	    int idx = getOrAddBHTreeIndex(((BHLeafNode)bhNodeArr[0]).getLocale());
-	    currTree = bhTreeArr[idx];
-
-	}
-
+	// We must separate the following two calls
+	// since the first Call will allocate storage bhTreeArr
+	// for the second index operation. (see bug 4361998)
+	int idx = getOrAddBHTreeIndex(((BHLeafNode)bhNodeArr[0]).getLocale());
+	BHTree currTree = bhTreeArr[idx];
 	currTree.insert(bhNodeArr, bhNodeCount);
 
-        // Issue 353: must clear array after we are done with it
-        clearBhNodeArr();
+	// Issue 353: must clear array after we are done with it
+	clearBhNodeArr();
 
 	// currTree.gatherTreeStatistics();
     }
 
     void removeNodes(J3dMessage m) {
 	Object[] nodes = (Object[]) m.args[0];
-	BHTree  currTree = null;
 	Object node;
-	int index;
 
 	clearBhNodeArr();
 
@@ -445,20 +438,17 @@ class GeometryStructure extends J3dStructure {
 	    return;
 	}
 
-	if (currTree == null) {
-	    index = getBHTreeIndex(((BHLeafNode)bhNodeArr[0]).getLocale());
-	    if (index<0) {
-                // Issue 353: must clear array after we are done with it
-                clearBhNodeArr();
-
+	int index = getBHTreeIndex(((BHLeafNode) bhNodeArr[0]).getLocale());
+	if (index < 0) {
+		// Issue 353: must clear array after we are done with it
+		clearBhNodeArr();
 		return;
-            }
-	    currTree = bhTreeArr[index];
 	}
+	BHTree currTree = bhTreeArr[index];
 	currTree.delete(bhNodeArr, bhNodeCount);
 
-        // Issue 353: must clear array after we are done with it
-        clearBhNodeArr();
+	// Issue 353: must clear array after we are done with it
+	clearBhNodeArr();
 
         // It is safe to do it here since only GeometryStructure
 	// thread invoke wakeupOnCollisionEntry/Exit .toArray()
@@ -1161,11 +1151,11 @@ class GeometryStructure extends J3dStructure {
      */
     private void processSwitchChanged(J3dMessage m) {
 
-        int i;
-        UnorderList arrList;
-        int size, treeIndex;
-        Object[] nodes;
-        LeafRetained leaf;
+//        int i;
+//        UnorderList arrList;
+//        int size, treeIndex;
+//        Object[] nodes;
+//        LeafRetained leaf;
 
 /* is now a NOOP
 
