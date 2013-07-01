@@ -6675,7 +6675,7 @@ void addGeometryDlist(RenderAtomListInfo ra) {
 
 void insertNodes(J3dMessage m) {
 	ArrayList viewScopedNodes = (ArrayList) m.args[3];
-	ArrayList scopedNodesViewList = (ArrayList) m.args[4];
+	ArrayList<ArrayList<View>> scopedNodesViewList = (ArrayList<ArrayList<View>>)m.args[4];
 	int i;
 	Object[] nodes = (Object[])m.args[0];
 	for (Object n : nodes) {
@@ -6715,10 +6715,9 @@ void insertNodes(J3dMessage m) {
 	// Handle ViewScoped Nodes
 	if (viewScopedNodes != null) {
 		int size = viewScopedNodes.size();
-		int vlsize;
 		for (i = 0; i < size; i++) {
 			NodeRetained n = (NodeRetained)viewScopedNodes.get(i);
-			ArrayList vl = (ArrayList)scopedNodesViewList.get(i);
+			ArrayList<View> vl = scopedNodesViewList.get(i);
 			// If the node object is scoped to this view, then ..
 			if (vl.contains(view)) {
 				if (n instanceof LightRetained) {
@@ -6757,7 +6756,7 @@ void insertNodes(J3dMessage m) {
 
 void removeNodes(J3dMessage m) {
 	ArrayList viewScopedNodes = (ArrayList) m.args[3];
-	ArrayList scopedNodesViewList = (ArrayList) m.args[4];
+	ArrayList<ArrayList<View>> scopedNodesViewList = (ArrayList<ArrayList<View>>)m.args[4];
 	int i;
 	Object[] nodes = (Object[])m.args[0];
 	for (int n = 0; n < nodes.length; n++) {
@@ -6805,10 +6804,9 @@ void removeNodes(J3dMessage m) {
 	// Handle ViewScoped Nodes
 	if (viewScopedNodes != null) {
 		int size = viewScopedNodes.size();
-		int vlsize;
 		for (i = 0; i < size; i++) {
 			NodeRetained node = (NodeRetained)viewScopedNodes.get(i);
-			ArrayList vl = (ArrayList)scopedNodesViewList.get(i);
+			ArrayList<View> vl = scopedNodesViewList.get(i);
 			// If the node object is scoped to this view, then ..
 			if (vl.contains(view)) {
 				if (node instanceof LightRetained) {

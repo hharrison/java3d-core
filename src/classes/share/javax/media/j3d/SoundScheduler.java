@@ -327,7 +327,7 @@ class SoundScheduler extends J3dStructure {
     void insertNodes(J3dMessage m) {
 	Object[] nodes = (Object[])m.args[0];
 	ArrayList viewScopedNodes = (ArrayList)m.args[3];
-	ArrayList scopedNodesViewList = (ArrayList)m.args[4];
+	ArrayList<ArrayList<View>> scopedNodesViewList = (ArrayList<ArrayList<View>>)m.args[4];
 	Object node;
 
 	for (int i=0; i<nodes.length; i++) {
@@ -361,7 +361,7 @@ class SoundScheduler extends J3dStructure {
 	    int vlsize;
 	    for (int i = 0; i < size; i++) {
 		node = (NodeRetained)viewScopedNodes.get(i);
-		ArrayList vl = (ArrayList) scopedNodesViewList.get(i);
+		ArrayList<View> vl = scopedNodesViewList.get(i);
 		// If the node object is scoped to this view, then ..
 		if (vl.contains(view)) {
 		    if (node instanceof SoundRetained) {
@@ -397,7 +397,7 @@ class SoundScheduler extends J3dStructure {
     void removeNodes(J3dMessage m) {
 	Object[] nodes = (Object[])m.args[0];
 	ArrayList viewScopedNodes = (ArrayList)m.args[3];
-	ArrayList scopedNodesViewList = (ArrayList)m.args[4];
+	ArrayList<ArrayList<View>> scopedNodesViewList = (ArrayList<ArrayList<View>>)m.args[4];
 	Object node;
 
 	for (int i=0; i<nodes.length; i++) {
@@ -438,7 +438,7 @@ class SoundScheduler extends J3dStructure {
 	    int vlsize;
 	    for (int i = 0; i < size; i++) {
 		node = (NodeRetained)viewScopedNodes.get(i);
-		ArrayList vl = (ArrayList) scopedNodesViewList.get(i);
+		ArrayList<View> vl = scopedNodesViewList.get(i);
 		// If the node object is scoped to this view, then ..
 		if (vl.contains(view)) {
 		    if (node instanceof SoundRetained) {
