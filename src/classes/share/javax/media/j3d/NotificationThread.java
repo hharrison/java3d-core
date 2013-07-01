@@ -26,7 +26,7 @@
 
 package javax.media.j3d;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 /**
  * The NotificationThread class is used for asynchronous error notification,
@@ -42,7 +42,7 @@ class NotificationThread extends Thread {
     private boolean waiting = false;
     private boolean ready = false;
 
-    private LinkedList notificationQueue = new LinkedList();
+    private ArrayList<J3dNotification> notificationQueue = new ArrayList<J3dNotification>();
 
     /**
      * Creates a new instance of NotificationThread
@@ -64,9 +64,10 @@ class NotificationThread extends Thread {
      * Gets the list of queued notification messages
      */
     private synchronized J3dNotification[] getNotifications() {
-        J3dNotification[] notifications = (J3dNotification[])notificationQueue.toArray(new J3dNotification[0]);
+        J3dNotification[] n = new J3dNotification[notificationQueue.size()];
+        n = notificationQueue.toArray(n);
         notificationQueue.clear();
-        return notifications;
+        return n;
     }
 
     /**
