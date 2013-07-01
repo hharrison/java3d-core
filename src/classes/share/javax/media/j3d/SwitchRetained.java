@@ -27,6 +27,7 @@
 package javax.media.j3d;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 
 /**
@@ -357,7 +358,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
         // update setLiveState for this node
         s.closestSwitchParents = (SwitchRetained[])
 					savedClosestSwitchParents.clone();
-        s.closestSwitchIndices = (int[])savedClosestSwitchIndices.clone();
+        s.closestSwitchIndices = Arrays.copyOf(savedClosestSwitchIndices, savedClosestSwitchIndices.length);
 
         // Note that s.containsNodesList is updated in super.setLive
         // Note that s.closestSwitchIndices is updated in super.setLive

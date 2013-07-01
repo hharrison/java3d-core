@@ -31,6 +31,7 @@ import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -1596,7 +1597,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    this.texCoordSetMap = null;
 	}
 	else {
-	    this.texCoordSetMap = (int[])texCoordSetMap.clone();
+	    this.texCoordSetMap = Arrays.copyOf(texCoordSetMap, texCoordSetMap.length);
 	}
 
         this.vertexAttrCount = vertexAttrCount;
@@ -1604,7 +1605,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	    this.vertexAttrSizes = null;
 	}
 	else {
-	    this.vertexAttrSizes = (int[])vertexAttrSizes.clone();
+	    this.vertexAttrSizes = Arrays.copyOf(vertexAttrSizes, vertexAttrSizes.length);
 	}
 
         this.vertexAttrStride = this.vertexAttrStride();
