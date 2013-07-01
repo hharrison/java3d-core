@@ -696,44 +696,41 @@ void updateCachedInformation(int component, View view, int index) {
     }
 
     void setAuxData(SetLiveState s, int index, int hkIndex) {
-	ArrayList vl;
+	ArrayList<View> vl = new ArrayList<View>();
 	ArrayList parentList = null;
 	int size = apiViewList.size();
 	if (s.viewLists != null) {
 	    //	    System.err.println("=====> VSG: = "+this+" hkIndex = "+hkIndex+" s.viewLists = "+s.viewLists);
 	    parentList = (ArrayList) s.viewLists.get(hkIndex);
 	    if (parentList != null) {
-		vl = new ArrayList();
-		for (int i = 0; i < size; i++) {
-		    Object obj1 = apiViewList.get(i);
-		    // Get the intersection of the parentlist and this vsg's api list
-		    for (int j = 0; j < parentList.size(); j++) {
-			if (obj1 == parentList.get(j)) {
-			    vl.add(obj1);
-			    break;
+			for (int i = 0; i < size; i++) {
+				View v = apiViewList.get(i);
+				// Get the intersection of the parentlist and this vsg's api list
+				for (int j = 0; j < parentList.size(); j++) {
+					if (v == parentList.get(j)) {
+						vl.add(v);
+						break;
+					}
+				}
 			}
-		    }
-		}
 	    }
 	    else {
-		vl = new ArrayList();
 		// Only include the non null ones in the apiViewList
 		for (int i = 0; i < size; i++) {
-		    Object obj = apiViewList.get(i);
-		    if (obj != null) {
-			vl.add(obj);
-		    }
+				View v = apiViewList.get(i);
+				if (v != null) {
+					vl.add(v);
+				}
 		}
 	    }
 	}
 	else {
-	    vl = new ArrayList();
 	    // Only include the non null ones in the apiViewList
 	    for (int i = 0; i < size; i++) {
-		Object obj = apiViewList.get(i);
-		if (obj != null) {
-		    vl.add(obj);
-		}
+			View v = apiViewList.get(i);
+			if (v != null) {
+				vl.add(v);
+			}
 	    }
 	}
 	if (parentList != null) {
