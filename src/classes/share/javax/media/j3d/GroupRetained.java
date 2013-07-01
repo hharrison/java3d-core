@@ -424,37 +424,36 @@ ArrayList<ArrayList<View>> viewLists = null;
 
     }
 
-    /**
-     * Returns the child specified by the index.
-     * @param index which child to return
-     * @return the children at location index
-     */
-    Node getChild(int index) {
-
-	NodeRetained sgo = children.get(index);
-	if(sgo == null)
-	    return null;
-	else
-	    return (Node) sgo.source;
-    }
-
-    /**
-     * Returns an enumeration object of the children.
-     * @return an enumeration object of the children
-     */
-    Enumeration getAllChildren() {
-        Vector userChildren=new Vector(children.size());
-
-	for(int i=0; i<children.size(); i++) {
-		NodeRetained sgo = children.get(i);
-	    if(sgo != null)
-		userChildren.add(sgo.source);
-	    else
-		userChildren.add(null);
+	/**
+	 * Returns the child specified by the index.
+	 * @param index which child to return
+	 * @return the children at location index
+	 */
+	Node getChild(int index) {
+		NodeRetained sgo = children.get(index);
+		if (sgo == null)
+			return null;
+		else
+			return (Node)sgo.source;
 	}
 
-        return userChildren.elements();
-    }
+	/**
+	 * Returns an enumeration object of the children.
+	 * @return an enumeration object of the children
+	 */
+	Enumeration<Node> getAllChildren() {
+		Vector<Node> userChildren = new Vector<Node>(children.size());
+
+		for (int i = 0; i < children.size(); i++) {
+			NodeRetained sgo = children.get(i);
+			if (sgo != null)
+				userChildren.add((Node)sgo.source);
+			else
+				userChildren.add(null);
+		}
+
+		return userChildren.elements();
+	}
 
     void checkValidChild(Node child, String s) {
 

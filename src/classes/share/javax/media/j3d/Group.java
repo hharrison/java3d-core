@@ -222,24 +222,23 @@ public class Group extends Node {
 	((GroupRetained)this.retained).removeChild(index);
     }
 
-    /**
-     * Retrieves the child node at the specified index in
-     * this group node's list of children.
-     * @param index which child to return.
-     * @return the children at location index.  The <code>index</code>
-     * must be a value
-     * greater than or equal to 0 and less than <code>numChildren()</code>.
-     * @exception CapabilityNotSetException if the appropriate capability is
-     * not set and this group node is part of live or compiled scene graph
-     * @exception IndexOutOfBoundsException if <code>index</code> is invalid.
-     */
-    public Node getChild(int index) {
-	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_CHILDREN_READ))
-		throw new CapabilityNotSetException(J3dI18N.getString("Group9"));
+	/**
+	 * Retrieves the child node at the specified index in
+	 * this group node's list of children.
+	 * @param index which child to return.
+	 * @return the children at location index.  The <code>index</code>
+	 * must be a value
+	 * greater than or equal to 0 and less than <code>numChildren()</code>.
+	 * @exception CapabilityNotSetException if the appropriate capability is
+	 * not set and this group node is part of live or compiled scene graph
+	 * @exception IndexOutOfBoundsException if <code>index</code> is invalid.
+	 */
+	public Node getChild(int index) {
+		if (isLiveOrCompiled() && !this.getCapability(ALLOW_CHILDREN_READ))
+			throw new CapabilityNotSetException(J3dI18N.getString("Group9"));
 
-	return (Node) ((GroupRetained)this.retained).getChild(index);
-    }
+		return ((GroupRetained)this.retained).getChild(index);
+	}
 
     /**
      * Returns an Enumeration object of this group node's list of children.
@@ -247,13 +246,12 @@ public class Group extends Node {
      * @exception CapabilityNotSetException if the appropriate capability is
      * not set and this group node is part of live or compiled scene graph
      */
-    public Enumeration getAllChildren() {
-	if (isLiveOrCompiled())
-	    if(!this.getCapability(ALLOW_CHILDREN_READ))
-		throw new CapabilityNotSetException(J3dI18N.getString("Group9"));
+	public Enumeration<Node> getAllChildren() {
+		if (isLiveOrCompiled() && !this.getCapability(ALLOW_CHILDREN_READ))
+			throw new CapabilityNotSetException(J3dI18N.getString("Group9"));
 
-	return (Enumeration)((GroupRetained)this.retained).getAllChildren();
-    }
+		return ((GroupRetained)this.retained).getAllChildren();
+	}
 
     /**
      * Appends the specified child node to this group node's list of children.
