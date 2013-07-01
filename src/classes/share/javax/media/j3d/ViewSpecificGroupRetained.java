@@ -539,7 +539,7 @@ Enumeration<View> getAllViews() {
 	ArrayList<ArrayList<View>> savedViewList = s.viewLists;
 	if (s.changedViewGroup == null) {
 	    s.changedViewGroup = new ArrayList<ViewSpecificGroupRetained>();
-	    s.changedViewList = new ArrayList();
+	    s.changedViewList = new ArrayList<ArrayList<View>>();
 	    s.keyList = new int[10];
 	    s.viewScopedNodeList = new ArrayList<NodeRetained>();
 	    s.scopedNodesViewList = new ArrayList<ArrayList<View>>();
@@ -553,7 +553,7 @@ Enumeration<View> getAllViews() {
 	ArrayList<ArrayList<View>> savedViewList = s.viewLists;
 	if (s.changedViewGroup == null) {
 	    s.changedViewGroup = new ArrayList<ViewSpecificGroupRetained>();
-	    s.changedViewList = new ArrayList();
+	    s.changedViewList = new ArrayList<ArrayList<View>>();
 	    s.keyList = new int[10];
 	    s.viewScopedNodeList = new ArrayList<NodeRetained>();
 	    s.scopedNodesViewList = new ArrayList<ArrayList<View>>();

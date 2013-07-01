@@ -1398,14 +1398,14 @@ int processAltApps(ArrayList<AlternateAppearanceRetained> globalAltApps, RenderA
 
     void initViewSpecificInfo(J3dMessage m) {
 	int[] keys = (int[])m.args[2];
-	ArrayList vlists = (ArrayList)m.args[1];
+	ArrayList<ArrayList<View>> vlists = (ArrayList<ArrayList<View>>)m.args[1];
 	ArrayList<ViewSpecificGroupRetained> vsgs = (ArrayList<ViewSpecificGroupRetained>)m.args[0];
 	if (vsgs != null) {
 	    //	    System.err.println("===> non null Vsg");
 	    int size = vsgs.size();
 	    for (int i = 0; i < size; i++) {
 		ViewSpecificGroupRetained v = vsgs.get(i);
-		ArrayList l = (ArrayList)vlists.get(i);
+		ArrayList<View> l = vlists.get(i);
 		int index = keys[i];
 		//		System.err.println("v = "+v+" index = "+index+" l = "+l);
 		v.cachedViewList.add(index, l);

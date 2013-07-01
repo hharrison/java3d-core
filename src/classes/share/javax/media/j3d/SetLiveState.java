@@ -100,7 +100,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 // false then only viewList(0) is valid
 ArrayList<ArrayList<View>> viewLists = null;
 ArrayList<ViewSpecificGroupRetained> changedViewGroup = null;
-    ArrayList changedViewList = null;
+ArrayList<ArrayList<View>> changedViewList = null;
     int[] keyList = null;
 
 
