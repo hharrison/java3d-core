@@ -32,9 +32,6 @@ package javax.media.j3d;
  */
 
 class DefaultRenderMethod implements RenderMethod {
-
-    boolean geometryIsLocked = false;
-
     /**
      * The actual rendering code for this RenderMethod
      */

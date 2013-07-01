@@ -266,8 +266,6 @@ public class GraphicsContext3D extends Object   {
 
     private Appearance defaultAppearance = null;
 
-    private boolean geometryIsLocked = false;
-
     private boolean ignoreVertexColors = false;
 
     static final int CLEAR 		= 0;
