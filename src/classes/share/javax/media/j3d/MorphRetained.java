@@ -1337,7 +1337,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 			}
 
 		if (s.viewLists != null)
-		    shape.viewList = (ArrayList)s.viewLists.get(i);
+		    shape.viewList = s.viewLists.get(i);
 		else
 		    shape.viewList = null;
 
@@ -1416,7 +1416,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 		}
 
 	    if (s.viewLists != null)
-		shape.viewList = (ArrayList)s.viewLists.get(0);
+		shape.viewList = s.viewLists.get(0);
 	    else
 		shape.viewList = null;
 

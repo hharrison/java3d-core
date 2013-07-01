@@ -1058,7 +1058,7 @@ Enumeration getAllGeometries(int id) {
 
 		msList.add(shape);
 		if (s.viewLists != null) {
-		    shape.viewList = (ArrayList)s.viewLists.get(j);
+		    shape.viewList = s.viewLists.get(j);
 		} else {
 		    shape.viewList = null;
 		}
@@ -1117,7 +1117,7 @@ Enumeration getAllGeometries(int id) {
 
 	    msList.add(shape);
 	    if (s.viewLists != null)
-		shape.viewList = (ArrayList)s.viewLists.get(0);
+		shape.viewList = s.viewLists.get(0);
 	    else
 		shape.viewList = null;
 

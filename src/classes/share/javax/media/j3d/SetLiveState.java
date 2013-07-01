@@ -66,11 +66,11 @@ class SetLiveState extends Object {
      */
     ArrayList viewScopedNodeList = null;
 
-    /**
-     * Parallel list to viewScopedNodeList containing a list of views
-     * that the viewScopedNode is scoped to
-     */
-    ArrayList scopedNodesViewList = null;
+/**
+ * Parallel list to viewScopedNodeList containing a list of views
+ * that the viewScopedNode is scoped to
+ */
+ArrayList<ArrayList<View>> scopedNodesViewList = null;
 
     // Threads to notify after setLive/clearLive
     int notifyThreads = 0;
@@ -93,12 +93,12 @@ ArrayList<ArrayList<ModelClipRetained>> modelClips = null;
 // List of scoped alt app
 ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 
-    // List of viewes scoped to this Group, for all subclasses
-    // of group, except ViewSpecificGroup its a pointer to closest
-    // ViewSpecificGroup parent
-    // viewList for this node, if inSharedGroup is
-    // false then only viewList(0) is valid
-    ArrayList viewLists = null;
+// List of viewes scoped to this Group, for all subclasses
+// of group, except ViewSpecificGroup its a pointer to closest
+// ViewSpecificGroup parent
+// viewList for this node, if inSharedGroup is
+// false then only viewList(0) is valid
+ArrayList<ArrayList<View>> viewLists = null;
     ArrayList changedViewGroup = null;
     ArrayList changedViewList = null;
     int[] keyList = null;

@@ -46,9 +46,8 @@ ArrayList<View> apiViewList = new ArrayList<View>();
     // Used in scoping
     HashKey tempKey = new HashKey(250);
 
-    // ArrayList of Integer indices
-    ArrayList parentLists = new ArrayList();
-
+// ArrayList of Integer indices
+ArrayList<ArrayList<View>> parentLists = new ArrayList<ArrayList<View>>();
 
     static final int SET_VIEW       = 0x1;
     static final int ADD_VIEW       = 0x2;
@@ -57,7 +56,7 @@ ArrayList<View> apiViewList = new ArrayList<View>();
     // Construct retained object
     ViewSpecificGroupRetained() {
           this.nodeType = NodeRetained.VIEWSPECIFICGROUP;
-	  viewLists = new ArrayList();
+	  viewLists = new ArrayList<ArrayList<View>>();
     }
 
     void addView(View view) {
@@ -69,9 +68,8 @@ ArrayList<View> apiViewList = new ArrayList<View>();
 	    // Gather all affected leaf nodes and send a message to
 	    // RenderingEnv and RenderBin
 	    if (inSharedGroup) {
-		ArrayList parentList;
 		for (int k = 0; k < localToVworldKeys.length; k++) {
-		    parentList = (ArrayList)parentLists.get(k);
+		    ArrayList<View> parentList = parentLists.get(k);
 		    // If the parentList contains this view or if this is the
 		    // first VSG then ..
 		    if (parentList == null || parentList.contains(view)) {
@@ -109,7 +107,7 @@ ArrayList<View> apiViewList = new ArrayList<View>();
 
 	    }
 	    else {
-		ArrayList parentList = (ArrayList)parentLists.get(0);
+			ArrayList<View> parentList = parentLists.get(0);
 
 		// If the parentList contains this view or if this is the
 		// first VSG then ..
@@ -166,9 +164,8 @@ void setView(View view, int index) {
 	    // Gather all affected leaf nodes and send a message to
 	    // RenderingEnv and RenderBin
 	    if (inSharedGroup) {
-		ArrayList parentList;
 		for (int k = 0; k < localToVworldKeys.length; k++) {
-		    parentList = (ArrayList)parentLists.get(k);
+			ArrayList<View> parentList = parentLists.get(k);
 		    Object[] objAry = new Object[8];
 		    ArrayList addVsgList = new ArrayList();
 		    ArrayList removeVsgList = new ArrayList();
@@ -212,7 +209,7 @@ void setView(View view, int index) {
 
 	    }
 	    else {
-		ArrayList parentList = (ArrayList)parentLists.get(0);
+		ArrayList<View> parentList = parentLists.get(0);
 		Object[] objAry = new Object[8];
 		ArrayList addVsgList = new ArrayList();
 		ArrayList removeVsgList = new ArrayList();
@@ -274,11 +271,11 @@ void setView(View view, int index) {
 	    }
 
 	    if (mode == ADD_VIEW) {
-		ArrayList parentList = (ArrayList)parentLists.get(hkIndex);
+		ArrayList<View> parentList = parentLists.get(hkIndex);
 		parentList.add(v);
 	    }
 	    else if (mode == REMOVE_VIEW) {
-		ArrayList parentList = (ArrayList)parentLists.get(hkIndex);
+		ArrayList<View> parentList = parentLists.get(hkIndex);
 		parentList.remove(v);
 	    }
 	    if(apiViewList.contains(v)) {
@@ -326,9 +323,8 @@ View getView(int index) {
 	    // Gather all affected leaf nodes and send a message to
 	    // RenderingEnv and RenderBin
 	    if (inSharedGroup) {
-		ArrayList parentList;
 		for (int k = 0; k < localToVworldKeys.length; k++) {
-		    parentList = (ArrayList)parentLists.get(k);
+			ArrayList<View> parentList = parentLists.get(k);
 		    // If the parentList contains this view or if this is the
 		    // first VSG then ..
 		    if (parentList == null || parentList.contains(view)) {
@@ -366,7 +362,7 @@ View getView(int index) {
 
 	    }
 	    else {
-		ArrayList parentList = (ArrayList)parentLists.get(0);
+	    	ArrayList<View> parentList = parentLists.get(0);
 
 		// If the parentList contains this view or if this is the
 		// first VSG then ..
@@ -417,9 +413,8 @@ View getView(int index) {
 	    // Gather all affected leaf nodes and send a message to
 	    // RenderingEnv and RenderBin
 	    if (inSharedGroup) {
-		ArrayList parentList;
 		for (int k = 0; k < localToVworldKeys.length; k++) {
-		    parentList = (ArrayList)parentLists.get(k);
+			ArrayList<View> parentList = parentLists.get(k);
 		    // If the parentList contains this view or if this is the
 		    // first VSG then ..
 		    if (parentList == null || parentList.contains(v)) {
@@ -456,7 +451,7 @@ View getView(int index) {
 
 	    }
 	    else {
-		ArrayList parentList = (ArrayList)parentLists.get(0);
+	    	ArrayList<View> parentList = parentLists.get(0);
 
 		// If the parentList contains this view or if this is the
 		// first VSG then ..
@@ -541,13 +536,13 @@ Enumeration<View> getAllViews() {
         }
 
 	s.inViewSpecificGroup = true;
-	ArrayList savedViewList = s.viewLists;
+	ArrayList<ArrayList<View>> savedViewList = s.viewLists;
 	if (s.changedViewGroup == null) {
 	    s.changedViewGroup = new ArrayList();
 	    s.changedViewList = new ArrayList();
 	    s.keyList = new int[10];
 	    s.viewScopedNodeList = new ArrayList();
-	    s.scopedNodesViewList = new ArrayList();
+	    s.scopedNodesViewList = new ArrayList<ArrayList<View>>();
 	}
 	super.setLive(s);
         s.viewLists = savedViewList;
@@ -555,13 +550,13 @@ Enumeration<View> getAllViews() {
     }
 
     void clearLive(SetLiveState s) {
-	ArrayList savedViewList = s.viewLists;
+	ArrayList<ArrayList<View>> savedViewList = s.viewLists;
 	if (s.changedViewGroup == null) {
 	    s.changedViewGroup = new ArrayList();
 	    s.changedViewList = new ArrayList();
 	    s.keyList = new int[10];
 	    s.viewScopedNodeList = new ArrayList();
-	    s.scopedNodesViewList = new ArrayList();
+	    s.scopedNodesViewList = new ArrayList<ArrayList<View>>();
 	}
 	// XXXX: This is a hack since removeNodeData is called before
 	// children are clearLives
@@ -697,11 +692,11 @@ void updateCachedInformation(int component, View view, int index) {
 
     void setAuxData(SetLiveState s, int index, int hkIndex) {
 	ArrayList<View> vl = new ArrayList<View>();
-	ArrayList parentList = null;
+	ArrayList<View> parentList = null;
 	int size = apiViewList.size();
 	if (s.viewLists != null) {
 	    //	    System.err.println("=====> VSG: = "+this+" hkIndex = "+hkIndex+" s.viewLists = "+s.viewLists);
-	    parentList = (ArrayList) s.viewLists.get(hkIndex);
+	    parentList = s.viewLists.get(hkIndex);
 	    if (parentList != null) {
 			for (int i = 0; i < size; i++) {
 				View v = apiViewList.get(i);
@@ -734,7 +729,7 @@ void updateCachedInformation(int component, View view, int index) {
 	    }
 	}
 	if (parentList != null) {
-	    parentLists.add(hkIndex, parentList.clone());
+	    parentLists.add(hkIndex, new ArrayList<View>(parentList));
 	}
 	else {
 	    parentLists.add(hkIndex, null);

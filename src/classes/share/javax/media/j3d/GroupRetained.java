@@ -137,14 +137,14 @@ ArrayList<NodeRetained> compiledChildrenList = null;
 
     boolean isInClearLive = false;
 
-    // List of viewes scoped to this Group, for all subclasses
-    // of group, except ViewSpecificGroup its a pointer to closest
-    // ViewSpecificGroup parent
-    // viewList for this node, if inSharedGroup is
-    // false then only viewList(0) is valid
-    // For VSGs, this list is an intersection of
-    // higher level VSGs
-    ArrayList viewLists = null;
+// List of viewes scoped to this Group, for all subclasses
+// of group, except ViewSpecificGroup its a pointer to closest
+// ViewSpecificGroup parent
+// viewList for this node, if inSharedGroup is
+// false then only viewList(0) is valid
+// For VSGs, this list is an intersection of
+// higher level VSGs
+ArrayList<ArrayList<View>> viewLists = null;
 
     // True if this Node is descendent of ViewSpecificGroup;
     boolean inViewSpecificGroup = false;
@@ -1556,7 +1556,7 @@ synchronized void setAltAppScope() {
 		s.changedViewList = new ArrayList();
 		s.keyList = new int[10];
 		s.viewScopedNodeList = new ArrayList();
-		s.scopedNodesViewList = new ArrayList();
+		s.scopedNodesViewList = new ArrayList<ArrayList<View>>();
 	    }
 
             childCheckSetLive(child, childIndex, s, linkNode);
@@ -1718,7 +1718,7 @@ synchronized void setAltAppScope() {
 		s.changedViewList = new ArrayList();
 		s.keyList = new int[10];
 		s.viewScopedNodeList = new ArrayList();
-		s.scopedNodesViewList = new ArrayList();
+		s.scopedNodesViewList = new ArrayList<ArrayList<View>>();
 	    }
 
 	    if (this instanceof OrderedGroupRetained && linkNode == null) {

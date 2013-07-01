@@ -102,7 +102,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
         switchStates.add(hkIndex, s.switchStates.get(index));
 
 	if (viewLists == null) {
-	    viewLists = new ArrayList(1);
+	    viewLists = new ArrayList<ArrayList<View>>(1);
 	}
 	// If there are some ViewSpecificGroups in the path above this SharedGroup
 	//	System.err.println("====> hkIndex = "+hkIndex+" s.viewLists = "+s.viewLists);
@@ -272,7 +272,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
 	int savedLocalToVworldIndex[][] = s.localToVworldIndex;
 	HashKey savedLocalToVworldKeys[] = s.localToVworldKeys;
 	ArrayList<OrderedPath> savedOrderedPaths = s.orderedPaths;
-	ArrayList savedViewList = s.viewLists;
+	ArrayList<ArrayList<View>> savedViewList = s.viewLists;
 	ArrayList<ArrayList<LightRetained>> savedLights = s.lights;
 	ArrayList<ArrayList<FogRetained>> savedFogs = s.fogs;
 	ArrayList<ArrayList<ModelClipRetained>> savedMclips = s.modelClips;
@@ -471,7 +471,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
         int savedLocalToVworldIndex[][] = s.localToVworldIndex;
         HashKey savedLocalToVworldKeys[] = s.localToVworldKeys;
 	ArrayList<OrderedPath> savedOrderedPaths = s.orderedPaths;
-        ArrayList savedViewLists = s.viewLists;
+	ArrayList<ArrayList<View>> savedViewLists = s.viewLists;
 
 	ArrayList<ArrayList<LightRetained>> savedLights = s.lights;
 	ArrayList<ArrayList<FogRetained>> savedFogs = s.fogs;
