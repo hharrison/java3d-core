@@ -1555,7 +1555,7 @@ synchronized void setAltAppScope() {
 		s.changedViewGroup = new ArrayList();
 		s.changedViewList = new ArrayList();
 		s.keyList = new int[10];
-		s.viewScopedNodeList = new ArrayList();
+		s.viewScopedNodeList = new ArrayList<NodeRetained>();
 		s.scopedNodesViewList = new ArrayList<ArrayList<View>>();
 	    }
 
@@ -1717,7 +1717,7 @@ synchronized void setAltAppScope() {
 		s.changedViewGroup = new ArrayList();
 		s.changedViewList = new ArrayList();
 		s.keyList = new int[10];
-		s.viewScopedNodeList = new ArrayList();
+		s.viewScopedNodeList = new ArrayList<NodeRetained>();
 		s.scopedNodesViewList = new ArrayList<ArrayList<View>>();
 	    }
 

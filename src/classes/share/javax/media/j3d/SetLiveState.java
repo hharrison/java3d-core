@@ -57,14 +57,14 @@ class SetLiveState extends Object {
      */
     ArrayList nodeList = new ArrayList();
 
-    /**
-     * List of nodes that are viewScoped.  Note that all nodes
-     * except Shape3D nodes can be in viewScopedNodeList, shape3D
-     * nodes will always be in the nodeList regardless of scoped
-     * or not. Also, only renderbin and renderingEnv structure is
-     * interested in viewScopedNodeList
-     */
-    ArrayList viewScopedNodeList = null;
+/**
+ * List of nodes that are viewScoped.  Note that all nodes
+ * except Shape3D nodes can be in viewScopedNodeList, shape3D
+ * nodes will always be in the nodeList regardless of scoped
+ * or not. Also, only renderbin and renderingEnv structure is
+ * interested in viewScopedNodeList
+ */
+ArrayList<NodeRetained> viewScopedNodeList = null;
 
 /**
  * Parallel list to viewScopedNodeList containing a list of views

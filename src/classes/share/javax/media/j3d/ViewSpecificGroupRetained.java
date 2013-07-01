@@ -541,7 +541,7 @@ Enumeration<View> getAllViews() {
 	    s.changedViewGroup = new ArrayList();
 	    s.changedViewList = new ArrayList();
 	    s.keyList = new int[10];
-	    s.viewScopedNodeList = new ArrayList();
+	    s.viewScopedNodeList = new ArrayList<NodeRetained>();
 	    s.scopedNodesViewList = new ArrayList<ArrayList<View>>();
 	}
 	super.setLive(s);
@@ -555,7 +555,7 @@ Enumeration<View> getAllViews() {
 	    s.changedViewGroup = new ArrayList();
 	    s.changedViewList = new ArrayList();
 	    s.keyList = new int[10];
-	    s.viewScopedNodeList = new ArrayList();
+	    s.viewScopedNodeList = new ArrayList<NodeRetained>();
 	    s.scopedNodesViewList = new ArrayList<ArrayList<View>>();
 	}
 	// XXXX: This is a hack since removeNodeData is called before
