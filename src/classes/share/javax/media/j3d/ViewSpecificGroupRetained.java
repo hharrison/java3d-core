@@ -538,7 +538,7 @@ Enumeration<View> getAllViews() {
 	s.inViewSpecificGroup = true;
 	ArrayList<ArrayList<View>> savedViewList = s.viewLists;
 	if (s.changedViewGroup == null) {
-	    s.changedViewGroup = new ArrayList();
+	    s.changedViewGroup = new ArrayList<ViewSpecificGroupRetained>();
 	    s.changedViewList = new ArrayList();
 	    s.keyList = new int[10];
 	    s.viewScopedNodeList = new ArrayList<NodeRetained>();
@@ -552,7 +552,7 @@ Enumeration<View> getAllViews() {
     void clearLive(SetLiveState s) {
 	ArrayList<ArrayList<View>> savedViewList = s.viewLists;
 	if (s.changedViewGroup == null) {
-	    s.changedViewGroup = new ArrayList();
+	    s.changedViewGroup = new ArrayList<ViewSpecificGroupRetained>();
 	    s.changedViewList = new ArrayList();
 	    s.keyList = new int[10];
 	    s.viewScopedNodeList = new ArrayList<NodeRetained>();

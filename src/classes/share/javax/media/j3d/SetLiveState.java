@@ -99,7 +99,7 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
 // viewList for this node, if inSharedGroup is
 // false then only viewList(0) is valid
 ArrayList<ArrayList<View>> viewLists = null;
-    ArrayList changedViewGroup = null;
+ArrayList<ViewSpecificGroupRetained> changedViewGroup = null;
     ArrayList changedViewList = null;
     int[] keyList = null;
 

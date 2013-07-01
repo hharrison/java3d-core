@@ -1552,7 +1552,7 @@ synchronized void setAltAppScope() {
 
 	    if (s.inViewSpecificGroup &&
 		(s.changedViewGroup == null)) {
-		s.changedViewGroup = new ArrayList();
+		s.changedViewGroup = new ArrayList<ViewSpecificGroupRetained>();
 		s.changedViewList = new ArrayList();
 		s.keyList = new int[10];
 		s.viewScopedNodeList = new ArrayList<NodeRetained>();
@@ -1714,7 +1714,7 @@ synchronized void setAltAppScope() {
             // Issue 312: Allocate data structures if we are in a ViewSpecificGroup
 	    if (s.inViewSpecificGroup &&
 		(s.changedViewGroup == null)) {
-		s.changedViewGroup = new ArrayList();
+		s.changedViewGroup = new ArrayList<ViewSpecificGroupRetained>();
 		s.changedViewList = new ArrayList();
 		s.keyList = new int[10];
 		s.viewScopedNodeList = new ArrayList<NodeRetained>();

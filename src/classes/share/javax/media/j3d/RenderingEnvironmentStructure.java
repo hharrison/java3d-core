@@ -1399,12 +1399,12 @@ int processAltApps(ArrayList<AlternateAppearanceRetained> globalAltApps, RenderA
     void initViewSpecificInfo(J3dMessage m) {
 	int[] keys = (int[])m.args[2];
 	ArrayList vlists = (ArrayList)m.args[1];
-	ArrayList vsgs = (ArrayList)m.args[0];
+	ArrayList<ViewSpecificGroupRetained> vsgs = (ArrayList<ViewSpecificGroupRetained>)m.args[0];
 	if (vsgs != null) {
 	    //	    System.err.println("===> non null Vsg");
 	    int size = vsgs.size();
 	    for (int i = 0; i < size; i++) {
-		ViewSpecificGroupRetained v = (ViewSpecificGroupRetained)vsgs.get(i);
+		ViewSpecificGroupRetained v = vsgs.get(i);
 		ArrayList l = (ArrayList)vlists.get(i);
 		int index = keys[i];
 		//		System.err.println("v = "+v+" index = "+index+" l = "+l);
@@ -1420,11 +1420,11 @@ int processAltApps(ArrayList<AlternateAppearanceRetained> globalAltApps, RenderA
 
     void clearViewSpecificInfo(J3dMessage m) {
 	int[] keys = (int[])m.args[1];
-	ArrayList vsgs = (ArrayList)m.args[0];
+	ArrayList<ViewSpecificGroupRetained> vsgs = (ArrayList<ViewSpecificGroupRetained>)m.args[0];
 	if (vsgs != null) {
 	    int size = vsgs.size();
 	    for (int i = 0; i < size; i++) {
-		ViewSpecificGroupRetained v = (ViewSpecificGroupRetained)vsgs.get(i);
+		ViewSpecificGroupRetained v = vsgs.get(i);
 		int index = keys[i];
 			if (index == -1) {
 				int csize = v.cachedViewList.size();
