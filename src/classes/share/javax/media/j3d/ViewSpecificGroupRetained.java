@@ -90,7 +90,7 @@ ArrayList<ArrayList<View>> parentLists = new ArrayList<ArrayList<View>>();
 			}
 			*/
 		      objAry[3] = super.processViewSpecificInfo(ADD_VIEW,
-						      (HashKey)key, view,
+						      key, view,
 						      addVsgList, addKeyList, addLeafList);
 			J3dMessage message = new J3dMessage();
 			message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
@@ -185,14 +185,14 @@ void setView(View view, int index) {
 		    if (oldView != null && (parentList == null || parentList.contains(oldView))) {
 			removeVsgList.add(this);
 			removeKeyList[0] = k;
-			objAry[7] = super.processViewSpecificInfo(REMOVE_VIEW, (HashKey)key,
+			objAry[7] = super.processViewSpecificInfo(REMOVE_VIEW, key,
 						      oldView, removeVsgList, removeKeyList, removeLeafList);
 		    }
 
 		    if (view != null && (parentList == null || parentList.contains(view))) {
 			addVsgList.add(this);
 			addKeyList[0] = k;
-			objAry[3] = super.processViewSpecificInfo(ADD_VIEW, (HashKey)key,
+			objAry[3] = super.processViewSpecificInfo(ADD_VIEW, key,
 						      view, addVsgList, addKeyList, addLeafList);
 		    }
 		    J3dMessage message = new J3dMessage();
@@ -231,14 +231,14 @@ void setView(View view, int index) {
 		if (oldView != null && (parentList == null || parentList.contains(oldView))) {
 		    removeVsgList.add(this);
 		    removeKeyList[0] = 0;
-		    objAry[7] = super.processViewSpecificInfo(REMOVE_VIEW, (HashKey)tempKey,
+		    objAry[7] = super.processViewSpecificInfo(REMOVE_VIEW, tempKey,
 						  oldView, removeVsgList, removeKeyList, removeLeafList);
 		}
 		if (view != null && (parentList == null || parentList.contains(view))) {
 		    tempKey.reset();
 		    addVsgList.add(this);
 		    addKeyList[0] = 0;
-		    objAry[3] =  super.processViewSpecificInfo(ADD_VIEW, (HashKey)tempKey,
+		    objAry[3] =  super.processViewSpecificInfo(ADD_VIEW, tempKey,
 					      view, addVsgList, addKeyList, addLeafList);
 		}
 		J3dMessage message = new J3dMessage();
@@ -345,7 +345,7 @@ View getView(int index) {
 			}
 			*/
 		      objAry[3] = super.processViewSpecificInfo(ADD_VIEW,
-						      (HashKey)key, view,
+						      key, view,
 						      addVsgList, addKeyList, addLeafList);
 			J3dMessage message = new J3dMessage();
 			message.type = J3dMessage.VIEWSPECIFICGROUP_CHANGED;
@@ -432,7 +432,7 @@ View getView(int index) {
 			removeKeyList[0] = k;
 
 			objAry[3] =  super.processViewSpecificInfo(REMOVE_VIEW,
-						      (HashKey)key,v,
+						      key,v,
 						      removeVsgList, removeKeyList, removeLeafList);
 
 
@@ -469,7 +469,7 @@ View getView(int index) {
 
 		    tempKey.reset();
 		    objAry[3] = super.processViewSpecificInfo(REMOVE_VIEW,
-						  (HashKey)tempKey, v,
+						  tempKey, v,
 						  removeVsgList, removeKeyList, removeLeafList);
 
 		    /*
