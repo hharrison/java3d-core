@@ -139,7 +139,7 @@ class WakeupCriteriaEnumerator implements Enumeration {
 
    public Object nextElement() {
 	if (currentIndex < length) {
-	   return ((Object)criterion[currentIndex++]);
+	   return criterion[currentIndex++];
 	} else {
 	   throw new NoSuchElementException(J3dI18N.getString("WakeupCriteriaEnumerator0"));
 	}

@@ -52,8 +52,7 @@ public class PositionInterpolator extends TransformInterpolator {
     // once at alpha.finish(). So the best way is to
     // detect alpha value change.
     private float prevAlphaValue = Float.NaN;
-    private WakeupCriterion passiveWakeupCriterion =
-    (WakeupCriterion) new WakeupOnElapsedFrames(0, true);
+    private WakeupCriterion passiveWakeupCriterion = new WakeupOnElapsedFrames(0, true);
 
     // non-public, default constructor used by cloneNode
     PositionInterpolator() {

@@ -60,8 +60,7 @@ public class ColorInterpolator extends Interpolator {
     // detect alpha value change.
     private float prevAlphaValue = Float.NaN;
     private int prevColorTarget = -1;
-    private WakeupCriterion passiveWakeupCriterion =
-	(WakeupCriterion) new WakeupOnElapsedFrames(0, true);
+    private WakeupCriterion passiveWakeupCriterion = new WakeupOnElapsedFrames(0, true);
 
     // non-public, no parameter constructor used by cloneNode
     ColorInterpolator() {

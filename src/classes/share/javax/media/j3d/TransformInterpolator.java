@@ -63,8 +63,7 @@ public abstract class TransformInterpolator extends Interpolator {
     // once at alpha.finish(). So the best way is to
     // detect alpha value change.
     private float prevAlphaValue = Float.NaN;
-    private WakeupCriterion passiveWakeupCriterion =
-    (WakeupCriterion) new WakeupOnElapsedFrames(0, true);
+    private WakeupCriterion passiveWakeupCriterion = new WakeupOnElapsedFrames(0, true);
 
 
     /**
