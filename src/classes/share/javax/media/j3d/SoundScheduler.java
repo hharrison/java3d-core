@@ -120,7 +120,7 @@ class SoundScheduler extends J3dStructure {
      */
     // XXXX: (Enhancement) should have a seperate list for
     //       background sound and a list for positional sounds
-    ArrayList prioritizedSounds = new ArrayList();
+    ArrayList<SoundSchedulerAtom> prioritizedSounds = new ArrayList<SoundSchedulerAtom>();
 
     /**
      * Current number of scene graph sound nodes in the universe
@@ -468,8 +468,7 @@ class SoundScheduler extends J3dStructure {
 		// find sound in list and remove it
 		int arrSize = prioritizedSounds.size();
 		for (int index=0; index<arrSize; index++) {
-		    SoundSchedulerAtom soundAtom = (SoundSchedulerAtom)
-			prioritizedSounds.get(index);
+		    SoundSchedulerAtom soundAtom = prioritizedSounds.get(index);
 		    // QUESTION: which???
 		    if (soundAtom.sound == sound ||
 			soundAtom.sound.sgSound == sound) {
@@ -563,7 +562,7 @@ class SoundScheduler extends J3dStructure {
 		    SoundSchedulerAtom soundAtom;
 		    SoundRetained soundRetained = (SoundRetained) node;
 		    for (int i=prioritizedSounds.size()-1; i >=0; i--) {
-			soundAtom = ((SoundSchedulerAtom)prioritizedSounds.get(i));
+			soundAtom = prioritizedSounds.get(i);
 			if (soundAtom.sound.sgSound == soundRetained) {
 			    // ignore soundRetained.release
 			    // flag which is not implement
@@ -1132,7 +1131,7 @@ class SoundScheduler extends J3dStructure {
 	    int   jsounds = (prioritizedSounds.size() - 1);
 	    float soundPriority = sound.priority;
 	    for (j=jsounds; j>=0; j--) {
-		jAtom = (SoundSchedulerAtom)prioritizedSounds.get(j);
+		jAtom = prioritizedSounds.get(j);
 		jSound = jAtom.sound;
 		if (debugFlag)
 		    debugPrint(": priority of sound " + jSound.sgSound +
@@ -1745,7 +1744,7 @@ class SoundScheduler extends J3dStructure {
 	    // Those sounds remaining are inserted into a prioritized list
 
 	    for (int i=0; i<nSounds; i++) {
-		soundAtom = ((SoundSchedulerAtom)prioritizedSounds.get(i));
+		soundAtom = prioritizedSounds.get(i);
 		mirSound = soundAtom.sound;
 		sound = mirSound.sgSound;
 		if (debugFlag) {
@@ -1866,7 +1865,7 @@ class SoundScheduler extends J3dStructure {
 		debugPrint(".muteSilentSounds(): Loop over prioritizedSounds list, " +
 			   "size = " + nAtoms);
 	    for (int i=0; i<nAtoms; i++) {
-		soundAtom = (SoundSchedulerAtom)prioritizedSounds.get(i);
+		soundAtom = prioritizedSounds.get(i);
 		mirSound = (SoundRetained)soundAtom.sound;
 		sound = mirSound.sgSound;
 		int sampleId   = soundAtom.sampleId;
@@ -2013,7 +2012,7 @@ class SoundScheduler extends J3dStructure {
 	synchronized (prioritizedSounds) {
 	    int nAtoms = prioritizedSounds.size();
 	    for (int i=0; i<nAtoms; i++) {
-		soundAtom = (SoundSchedulerAtom)prioritizedSounds.get(i);
+		soundAtom = prioritizedSounds.get(i);
 		if (soundAtom.status == SoundSchedulerAtom.SOUND_OFF ||
 		    soundAtom.status == SoundSchedulerAtom.SOUND_COMPLETE )
 		    continue;
@@ -2078,7 +2077,7 @@ class SoundScheduler extends J3dStructure {
 	    for (int i=0; i<nAtoms; i++) {
 		// XXXX: (Enhancement) Get all sound node fields here
 		//          and store locally for performance
-		soundAtom = (SoundSchedulerAtom)prioritizedSounds.get(i);
+		soundAtom = prioritizedSounds.get(i);
 		mirSound = soundAtom.sound;
 		sound = mirSound.sgSound;
 		sampleId = soundAtom.sampleId;
@@ -2401,7 +2400,7 @@ class SoundScheduler extends J3dStructure {
 		for (int i=0; i<nAtoms; i++) {
 		    // XXXX: (Enhancement) Get all sound node fields here
 		    //          and store locally for performance
-		    soundAtom = (SoundSchedulerAtom)prioritizedSounds.get(i);
+		    soundAtom = prioritizedSounds.get(i);
 		    mirSound = soundAtom.sound;
 		    sound = mirSound.sgSound;
 		    if (sound.continuous) {
@@ -2458,8 +2457,7 @@ class SoundScheduler extends J3dStructure {
 		for (int i=0; i<nAtoms; i++) {
 		    // XXXX: (Enhancement) Get all sound node fields here
 		    //          and store locally for performance
-		    SoundSchedulerAtom soundAtom =
-			(SoundSchedulerAtom)prioritizedSounds.get(i);
+		    SoundSchedulerAtom soundAtom = prioritizedSounds.get(i);
 		    mirSound = soundAtom.sound;
 		    sound = mirSound.sgSound;
 
@@ -2503,8 +2501,7 @@ class SoundScheduler extends J3dStructure {
 		for (int i=0; i<nAtoms; i++) {
 		    // XXXX: (Enhancement) Get all sound node fields here
 		    //          and store locally for performance
-		    SoundSchedulerAtom soundAtom  =
-			(SoundSchedulerAtom)prioritizedSounds.get(i);
+		    SoundSchedulerAtom soundAtom  = prioritizedSounds.get(i);
 		    mirSound = soundAtom.sound;
 		    sound = mirSound.sgSound;
 
@@ -2556,8 +2553,7 @@ class SoundScheduler extends J3dStructure {
 		for (int i=0; i<nAtoms; i++) {
 		    // XXXX: (Enhancement) Get all sound node fields here
 		    //          and store locally for performance
-		    SoundSchedulerAtom soundAtom =
-			(SoundSchedulerAtom)prioritizedSounds.get(i);
+		    SoundSchedulerAtom soundAtom = prioritizedSounds.get(i);
 		    if (debugFlag)
 			debugPrint("      stop(" + soundAtom + ")");
 		    // stop playing Sound  - optionally set pending enabled
@@ -3045,7 +3041,7 @@ class SoundScheduler extends J3dStructure {
 		// find sound in list and remove it
 		int arrSize = prioritizedSounds.size();
 		for (int index=0; index<arrSize; index++) {
-		    soundAtom = (SoundSchedulerAtom)prioritizedSounds.get(index);
+		    soundAtom = prioritizedSounds.get(index);
 		    if (soundAtom.sound == null)
 			continue;
 		    // soundAtom.sound is address of mirror sound not org node
