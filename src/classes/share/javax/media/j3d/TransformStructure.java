@@ -70,7 +70,7 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
             new ArrayList<TransformGroupRetained>();
 
     // contains TG that have been previously changed but just switched-on
-    private ArrayList switchDirtyTgList = new ArrayList(1);
+    private ArrayList<TransformGroupRetained> switchDirtyTgList = new ArrayList<TransformGroupRetained>(1);
 
     private boolean lazyUpdate = false;
 
@@ -285,8 +285,7 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
 
         // activeTraverseList contains switched-on tg as well
         tSize = activeTraverseList.size();
-        TransformGroupRetained[] tgs =
-                (TransformGroupRetained[])activeTraverseList.toArray(new TransformGroupRetained[tSize]);
+        TransformGroupRetained[] tgs = activeTraverseList.toArray(new TransformGroupRetained[tSize]);
 
         // process active TGs
         if (tSize > 0) {
