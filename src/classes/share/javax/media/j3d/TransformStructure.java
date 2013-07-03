@@ -57,8 +57,8 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
      */
     private ArrayList collisionObjectList = new ArrayList();
 
-    // List of dirty TransformGroups
-    private ArrayList dirtyTransformGroups = new ArrayList();
+// List of dirty TransformGroups
+private ArrayList<TransformGroupRetained> dirtyTransformGroups = new ArrayList<TransformGroupRetained>();
 
     // Associated Keys with the dirtyNodeGroup
     private ArrayList keySet = new ArrayList();
@@ -372,7 +372,6 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
 
     void processLastLocalToVworld() {
 	int i, j, k;
-	TransformGroupRetained tg;
 	HashKey key;
 
 
@@ -383,7 +382,7 @@ class TransformStructure extends J3dStructure implements ObjectUpdate {
 	}
 
 	for (i=0, k=0; i < dTGSize; i++) {
-	    tg  = (TransformGroupRetained)dirtyTransformGroups.get(i);
+		TransformGroupRetained tg  = dirtyTransformGroups.get(i);
 	    // Check if the transformGroup is still alive
 
 	    // XXXX: This is a hack, should be fixed after EA

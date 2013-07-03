@@ -527,7 +527,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
     }
 
     void updateChildLocalToVworld(HashKey key, int index,
-                                        ArrayList dirtyTransformGroups,
+                                  ArrayList<TransformGroupRetained> dirtyTransformGroups,
                                         ArrayList keySet,
 		                        UpdateTargets targets,
                                         ArrayList blUsers) {

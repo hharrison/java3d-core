@@ -830,7 +830,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
     }
 
-    void processChildLocalToVworld(ArrayList dirtyTransformGroups,
+    void processChildLocalToVworld(ArrayList<TransformGroupRetained> dirtyTransformGroups,
                                                 ArrayList keySet,
 						UpdateTargets targets,
 						ArrayList blUsers) {
@@ -863,7 +863,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
     // for shared case
     void updateChildLocalToVworld(HashKey key, int index,
-				  ArrayList dirtyTransformGroups,
+				  ArrayList<TransformGroupRetained> dirtyTransformGroups,
 				  ArrayList keySet,
 				  UpdateTargets targets,
 				  ArrayList blUsers) {
@@ -943,7 +943,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
     }
 
     // for non-shared case
-    void updateChildLocalToVworld(ArrayList dirtyTransformGroups,
+    void updateChildLocalToVworld(ArrayList<TransformGroupRetained> dirtyTransformGroups,
                                   ArrayList keySet,
 				  UpdateTargets targets,
 				  ArrayList blUsers) {
