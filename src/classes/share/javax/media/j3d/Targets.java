@@ -40,22 +40,14 @@ class Targets {
     static final int BLN_TARGETS = 5; // For boundingLeaf nodes.
     static final int GRP_TARGETS = 6; // For group nodes.
 
-    ArrayList[] targetList = new ArrayList[MAX_NODELIST];
+    ArrayList<NnuId>[] targetList = new ArrayList[MAX_NODELIST];
 
     void addNode(NnuId node, int targetType) {
 	if(targetList[targetType] == null)
-	    targetList[targetType] = new ArrayList(1);
+	    targetList[targetType] = new ArrayList<NnuId>(1);
 
 	targetList[targetType].add(node);
     }
-
-    void addNodeArray(NnuId[] nodeArr, int targetType) {
-	if(targetList[targetType] == null)
-	    targetList[targetType] = new ArrayList(1);
-
-	targetList[targetType].add(nodeArr);
-    }
-
 
     void removeNode(int index, int targetType) {
         if(targetList[targetType] != null) {
@@ -64,9 +56,9 @@ class Targets {
     }
 
 
-    void addNodes(ArrayList nodeList, int targetType) {
+    void addNodes(ArrayList<NnuId> nodeList, int targetType) {
 	if(targetList[targetType] == null)
-	    targetList[targetType] = new ArrayList(1);
+	    targetList[targetType] = new ArrayList<NnuId>(1);
 
 	targetList[targetType].addAll(nodeList);
     }
@@ -93,7 +85,7 @@ class Targets {
 		cachedTargets.targetArr[i] = nArr;
 		// System.err.println("Before sort : ");
 		// NnuIdManager.printIds(cachedTargets.targetArr[i]);
-		NnuIdManager.sort((NnuId[])cachedTargets.targetArr[i]);
+		NnuIdManager.sort(cachedTargets.targetArr[i]);
 		// System.err.println("After sort : ");
 		// NnuIdManager.printIds(cachedTargets.targetArr[i]);
 	    } else {
@@ -189,14 +181,6 @@ class Targets {
             }
         }
 	return empty;
-    }
-
-    void addCachedTargets(CachedTargets cachedTargets) {
-	for(int i=0; i<MAX_NODELIST; i++) {
-	    if (cachedTargets.targetArr[i] != null ) {
-	        addNodeArray(cachedTargets.targetArr[i], i);
-	    }
-        }
     }
 
     void dump() {
