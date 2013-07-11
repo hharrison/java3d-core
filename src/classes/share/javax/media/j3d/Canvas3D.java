@@ -1049,7 +1049,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
         // canvas3d implements the AutoOffScreenCanvas3D tagging interface.
         // Eventually, we may replace this with an actual API.
         boolean autoOffScreenCanvas3D = false;
-        if (this instanceof com.sun.j3d.exp.swing.impl.AutoOffScreenCanvas3D) {
+        if (this instanceof AutoOffScreenCanvas3D) {
             autoOffScreenCanvas3D = true;
         }
 
