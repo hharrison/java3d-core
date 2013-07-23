@@ -1,0 +1,908 @@
+<?xml version="1.0"?>
+
+<project name="j3d-1.6.0" default="jar-debug" basedir=".">
+
+  <!--
+  *********************************************************************
+  *
+  * The following properties may be set on the command line to
+  * specify the compiler used or the renderer to be built. They are
+  * specified using "ant -Dprop.name=value", where the actual
+  * property and and value are substituted for "prop.name" and
+  * "value"
+  *
+  *   build.comp=gcc    Use GCC compilers (default, all platforms)
+  *   build.comp=forte  Use Forte compilers (Solaris only)
+  *   build.comp=vc     Use Visual C++ compilers (Windows only)
+  *
+  *   build.rend=ogl    build OpenGL native library (default)
+  *   build.rend=d3d    build DirectX (D3D) native library
+  *
+  * For example:
+  *
+  *   ant -Dbuild.comp=vc -Dbuild.rend=d3d ...
+  *
+  *********************************************************************
+  -->
+
+  <!-- *************************************** -->
+  <!-- *** Begin build-specific properties *** -->
+  <!-- *************************************** -->
+
+  <!--
+  * The following property specifies the build number of the current
+  * version of 3D being built. This build number is a monotonically
+  * increasing number that is incremented for each new stable, beta,
+  * fcs, or patch build.  Each non-daily build will have a unique
+  * build number that is greater than the previous build's build
+  * number.
+  -->
+  <property name="version_buildnum"   value="1"/>
+
+  <!--
+  * The following property specifies the beta revision of the current
+  * version of 3D being built. It is ignored for non-beta builds.
+  -->
+  <property name="version_betastr"    value="beta1"/>
+
+  <!--
+  * The following property specifies the patch revision of the current
+  * version of 3D being built. It is ignored for non-beta builds.
+  -->
+  <property name="version_patchstr"   value="01"/>
+
+  <!--
+  * The following properties specify the current version of 3D.
+  * The "version_base" property specifies the dot-dot base version
+  * number of 3D; it must contain exactly three integer numbers
+  * separated by "periods ("."). The version_base_file property must
+  * be the same version number as version_base with "_" replacing ".".
+  -->
+  <property name="version_base"       value="1.6.0"/>
+  <property name="version_base_file"  value="1_6_0"/>
+
+
+  <!-- ************************************* -->
+  <!-- *** End build-specific properties *** -->
+  <!-- ************************************* -->
+
+  <!--
+  *********************************************************************
+  *
+  * A build of j3d is one of the following five types: daily
+  * build, stable build, beta build (or release candidate), fcs build,
+  * patch build. Daily builds are identified with a "-preN-YYMMDDHHMM"
+  * suffix; stable builds are identified with a "-buildN" suffix; beta
+  * builds are identified with a "-betaN" or "-rcN" suffix; fcs builds
+  * have no suffix; and patch builds are identified with an "_N"
+  * suffix.
+  *
+  * The default is to do a daily build. This may be overriden by setting
+  * the build.type property on the command line to do a different kind
+  * of build:
+  *
+  *   build.type=daily   Do a daily build (default)
+  *   build.type=stable  Do a stable build : -buildN
+  *   build.type=beta    Do a beta or RC production build : -betaN or -rcN
+  *   build.type=fcs     Do an FCS production build : [no suffix]
+  *   build.type=patch   Do an FCS+patch production build : _PP
+  *
+  * For example:
+  *
+  *   ant -Dbuild.type=stable ...
+  *
+  *********************************************************************
+  -->
+
+  <!-- Set global properties for this build -->
+  <property name="vecmath_home" location="../vecmath"/>
+  <property name="core_utils_home" location="../j3d-core-utils"/>
+
+  <property name="src"     location="src"/>
+  <property name="vecmath_src" location="${vecmath_home}/src"/>
+  <property name="core_utils_src" location="${core_utils_home}/src"/>
+  <property name="build-tools" location="build-tools"/>
+  <property name="build"   location="build"/>
+  <property name="dist"    location="dist"/>
+  <property name="build.comp" value="gcc"/>
+  <property name="build.rend" value="ogl"/>
+
+  <property name="build.spec.title" value="3D Graphics API for the Java Platform"/>
+  <property name="build.impl.title" value="3D Graphics API for the Java Platform"/>
+  <property name="build.spec.vendor" value=""/>
+  <property name="build.impl.vendor" value=""/>
+  <property name="build.impl.vendor.id" value=""/>
+  <property name="build.javadoc.name" value="3D"/>
+  <property name="build.relprefix" value="j3d"/>
+
+  <target name="echo" depends="setupPlatform">	
+    <echo message="platform        = ${platform}"/>
+    <echo message="wstype          = ${wstype}"/>
+    <echo message="os.arch         = ${os.arch}"/>
+    <echo message="os.name         = ${os.name}"/>	
+    <echo message="ant.home        = ${ant.home}"/>
+    <echo message="java.home       = ${java.home}"/>
+    <echo message="core_utils_home = ${core_utils_home}"/>
+    <echo message="vecmath_home    = ${vecmath_home}"/>
+    <echo message="user.name       = ${user.name}"/>
+    <echo message="user.home       = ${user.home}"/>
+
+    <echo message=""/>
+    <echo message="build.type      = ${build.type}"/>
+    <echo message="build.rend      = ${build.rend}"/>
+    <echo message="build.comp      = ${build.comp}"/>
+    <echo message="is_dev_phase    = ${is_dev_phase}"/>
+    <echo message="is_production   = ${is_production}"/>
+    <echo message="use_verbose_buildtime = ${use_verbose_buildtime}"/>
+
+    <echo message="version_build   = ${version_build}"/>
+    <echo message="version_suffix  = ${version_suffix}"/>
+
+    <echo message="version         = ${version}"/>
+    <echo message="version_file    = ${version_file}"/>
+  </target>
+
+  <target name="setupSolaris" if="isSolarisOnSparc">
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/usr/bin/ksh"/>
+    <property name="wstype" value="x11"/>
+    <property name="platformname" value="solaris-sparc"/>
+    <property name="platform" value="solaris-sparc-${build.comp}"/>
+    <property name="install.bin" value="lib/sparc"/>
+  </target>
+
+  <target name="setupSolarisX86" if="isSolarisOnX86">
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/usr/bin/ksh"/>
+    <property name="wstype" value="x11"/>
+    <property name="platformname" value="solaris-x86"/>
+    <property name="platform" value="solaris-x86-${build.comp}"/>
+    <property name="install.bin" value="lib/i386"/>
+  </target>
+
+  <target name="setupLinux" if="isLinuxOnX86">	
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/bin/sh"/>
+    <property name="wstype" value="x11"/>
+    <property name="platformname" value="linux-i586"/>
+    <property name="platform" value="linux-i586"/>
+    <property name="install.bin" value="lib/i386"/>
+  </target>
+
+  <target name="setupLinuxAmd64" if="isLinuxOnAmd64">
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/bin/sh"/>
+    <property name="wstype" value="x11"/>
+    <property name="platformname" value="linux-amd64"/>
+    <property name="platform" value="linux-amd64"/>
+    <property name="install.bin" value="lib/amd64"/>
+  </target>
+
+  <target name="setupLinuxIA64" if="isLinuxOnIA64">
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/bin/sh"/>
+    <property name="wstype" value="x11"/>
+    <property name="platformname" value="linux-ia64"/>
+    <property name="platform" value="linux-ia64"/>
+    <property name="install.bin" value="lib/ia64"/>
+  </target>
+
+  <target name="setupLinuxPPC" if="isLinuxOnPPC">
+    <property name="isUnix" value="true"/>
+    <property name="shell" value="/bin/sh"/>
+    <property name="wstype" value="x11"/>
+    <property name="platformname" value="linux-ppc"/>
+    <property name="platform" value="linux-ppc"/>
+    <property name="install.bin" value="lib/ppc"/>
+  </target>
+
+    <!-- win32 should be rename as windows -->
+  <target name="setupWindows" if="isWindowsOnX86">
+    <property name="isWindows" value="true"/>
+    <property name="wstype" value="win32"/>
+    <property name="platformname" value="windows-i586"/>
+    <property name="platform" value="windows-i586-${build.comp}"/>
+    <property name="install.bin" value="bin"/>
+  </target>
+
+  <target name="setupWindowsAmd64" if="isWindowsOnAmd64">
+    <property name="isWindows" value="true"/>
+    <property name="wstype" value="win32"/>
+    <property name="platformname" value="windows-amd64"/>
+    <property name="platform" value="windows-amd64-${build.comp}"/>
+    <property name="install.bin" value="bin"/>
+  </target>
+
+  <target name="setupMacOSX" if="isMacOSX">
+    <property name="wstype" value="jogl"/>
+    <property name="platformname" value="macosx"/>
+    <property name="platform" value="macosx"/>
+  </target>
+
+  <target name="init-jogl" if="build.jogl">
+    <property name="jogl.pipeline.srcdir" location="${src}/classes/jogl"/>
+    <echo message="Building JoglPipeline"/>
+  </target>
+
+  <target name="init-no-jogl" unless="build.jogl">
+    <property name="jogl.pipeline.srcdir" value=""/>
+  </target>
+
+  <target name="setupJogl" depends="init-jogl,init-no-jogl">
+  </target>
+
+  <target name="setupPlatform"
+       depends="init, setupBuildType, setupSolaris, setupSolarisX86, setupLinux, setupLinuxAmd64, setupLinuxIA64, setupLinuxPPC, setupWindows, setupWindowsAmd64, setupMacOSX, setupJogl">
+    <property name="build-debug-gen" location="${build}/${platform}/debug/gen"/>
+    <property name="build-opt-gen" location="${build}/${platform}/opt/gen"/>
+    <property name="docname" value="${build.relprefix}-${version_file}-doc"/>
+  </target>
+
+
+  <target name="setupBuildType" depends="initBuildType, setupBuildPatch, setupBuildFcs, setupBuildBeta, setupBuildStable, setupBuildDaily, checkBuildType">
+    <echo message="build.type = ${build.type}"/>
+  </target>
+
+  <target name="initBuildType">
+    <!-- Default value is "daily", overridden on command line -->
+    <property name="build.type" value="daily"/>
+    <property name="buildType_${build.type}" value="true"/>
+  </target>
+
+
+  <!-- Set properties for PATCH build -->
+  <target name="setupBuildPatch" if="buildType_patch">
+    <property name="buildTypeSet" value="true"/>
+
+    <property name="releaseType_final" value="true"/>
+    <property name="is_dev_phase" value="false"/>
+    <property name="is_production" value="true"/>
+    <property name="use_verbose_buildtime" value="false"/>
+
+    <property name="version_build" value="build${version_buildnum}"/>
+    <property name="version_suffix" value="${version_patchstr}"/>
+
+    <property name="version" value="${version_base}_${version_suffix}"/>
+    <property name="version_file" value="${version_base_file}_${version_suffix}"/>
+  </target>
+
+
+  <!-- Set properties for FCS build -->
+  <target name="setupBuildFcs" if="buildType_fcs">
+    <property name="buildTypeSet" value="true"/>
+
+    <property name="releaseType_final" value="true"/>
+    <property name="is_dev_phase" value="false"/>
+    <property name="is_production" value="true"/>
+    <property name="use_verbose_buildtime" value="false"/>
+
+    <property name="version_build" value="build${version_buildnum}"/>
+    <property name="version_suffix" value=""/>
+
+    <property name="version" value="${version_base}"/>
+    <property name="version_file" value="${version_base_file}"/>
+  </target>
+
+
+  <!-- Set properties for BETA build -->
+  <target name="setupBuildBeta" if="buildType_beta">
+    <property name="buildTypeSet" value="true"/>
+
+    <property name="releaseType_milestone" value="true"/>
+    <property name="releaseType_dailyOrMilestone" value="true"/>
+    <property name="is_dev_phase" value="false"/>
+    <property name="is_production" value="true"/>
+    <property name="use_verbose_buildtime" value="true"/>
+
+    <property name="version_build" value="build${version_buildnum}"/>
+    <property name="version_suffix" value="${version_betastr}"/>
+
+    <property name="version" value="${version_base}-${version_suffix}"/>
+    <property name="version_file" value="${version_base_file}-${version_suffix}"/>
+  </target>
+
+
+  <!-- Set properties for STABLE build -->
+  <target name="setupBuildStable" if="buildType_stable">
+    <property name="buildTypeSet" value="true"/>
+
+    <property name="releaseType_milestone" value="true"/>
+    <property name="releaseType_dailyOrMilestone" value="true"/>
+    <property name="is_dev_phase" value="true"/>
+    <property name="is_production" value="false"/>
+    <property name="use_verbose_buildtime" value="true"/>
+
+    <property name="version_build" value="build${version_buildnum}"/>
+    <property name="version_suffix" value="${version_build}"/>
+
+    <property name="version" value="${version_base}-${version_suffix}"/>
+    <property name="version_file" value="${version_base_file}-${version_suffix}"/>
+  </target>
+
+
+  <!-- Set properties for DAILY build -->
+  <target name="setupBuildDaily" if="buildType_daily">
+    <property name="buildTypeSet" value="true"/>
+
+    <property name="releaseType_daily" value="true"/>
+    <property name="releaseType_dailyOrMilestone" value="true"/>
+    <property name="is_dev_phase" value="true"/>
+    <property name="is_production" value="false"/>
+    <property name="use_verbose_buildtime" value="true"/>
+
+    <property name="version_build" value="pre${version_buildnum}"/>
+    <property name="version_suffix" value="${version_build}"/>
+
+    <property name="version" value="${version_base}-${version_suffix}-${buildtime}"/>
+    <property name="version_file" value="${version_base_file}-${version_suffix}-${buildtime}"/>
+  </target>
+
+
+  <!-- Check buildType -->
+  <target name="checkBuildType" unless="buildTypeSet">
+    <fail message="Unknown build.type = ${build.type}"/>
+  </target>
+
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp>
+        <format property="buildtime_verbose" pattern="dd MMM yyyy HH:mm:ss z"/>
+        <format property="buildtime" pattern="yyMMddHHmm"/>
+    </tstamp>
+  
+    <echo message="buildtime = ${buildtime_verbose}"/>
+
+    <!-- Create the base build directory -->
+    <mkdir dir="${build}"/>
+
+    <!-- ========== determine platform ========== -->
+    <condition property="isWindowsOnX86">
+	<os family="windows" arch="x86"/>
+    </condition> 
+
+
+    <condition property="isWindowsOnAmd64">
+	<os family="windows" arch="amd64"/>
+    </condition> 
+
+    <condition property="isLinuxOnX86">
+        <os name="linux" arch="i386"/>
+    </condition>
+
+    <condition property="isLinuxOnAmd64">
+        <os name="linux" arch="amd64"/>
+    </condition>
+
+    <condition property="isLinuxOnIA64">
+        <os name="linux" arch="ia64"/>
+    </condition>
+    
+    <condition property="isLinuxOnPPC">
+        <os name="linux" arch="ppc"/>
+    </condition>
+
+    <condition property="isSolarisOnSparc">
+        <os name="SunOS" arch="sparc"/>
+    </condition>   
+
+    <condition property="isSolarisOnX86">
+        <os name="SunOS" arch="x86"/>
+    </condition>
+
+    <condition property="isa_amd64">
+      <contains string="${sun.cpu.isalist}" substring="amd64"/>
+    </condition>
+
+    <condition property="isMacOSX">
+      <and>
+        <os family="mac"/>
+        <os family="unix"/>
+      </and>
+    </condition> 
+
+    <available file="${java.home}/lib/amd64/libjawt.so" property="jre_amd64_present"/>
+
+    <!-- flag indicating that a 64-bit JVM is available for Solaris/x86 -->
+    <condition property="isSolarisOnX86_64">
+      <and>
+        <isset property="isSolarisOnX86"/>
+        <isset property="isa_amd64"/>
+        <isset property="jre_amd64_present"/>
+      </and>
+    </condition>
+
+  </target>
+
+  <target name="compile-debug" depends="setupPlatform">
+<!--	<ant dir="${vecmath_home}" target="jar-debug"/>-->
+	<ant dir="src/classes" target="compile-debug"/>
+        <antcall target="compile-debug-native"/>
+  </target>
+  
+  <target name="compile-debug-native" unless="build.javaonly">
+	<ant dir="src/native" target="compile-debug"/>
+  </target>
+
+  <target name="compile-opt" depends="setupPlatform">
+<!--	<ant dir="${vecmath_home}" target="jar-opt"/>-->
+	<ant dir="src/classes" target="compile-opt"/>
+        <antcall target="compile-opt-native"/>
+  </target>
+  
+  <target name="compile-opt-native" unless="build.javaonly">
+	<ant dir="src/native" target="compile-opt"/>
+  </target>
+
+  <target name="compile" depends="compile-debug,compile-opt" />
+
+  <target name="jar-debug" depends="compile-debug">
+	<ant dir="src/classes" target="jar-debug"/>
+  </target>
+  
+  <target name="jar-debug-javaonly">
+        <property name="build.javaonly" value="true"/>
+        <antcall target="jar-debug"/>
+  </target>
+
+  <target name="jar-opt" depends="compile-opt">
+	<ant dir="src/classes" target="jar-opt"/>
+  </target>
+
+  <target name="jar-opt-javaonly">
+        <property name="build.javaonly" value="true"/>
+        <antcall target="jar-opt"/>
+  </target>
+
+  <target name="jar" depends="jar-debug,jar-opt" />
+
+  <target name="docs-jcp" depends="setupPlatform">
+	<ant dir="src/classes" target="docs-jcp"/>
+  </target>
+
+  <target name="docs-public" depends="setupPlatform" unless="nojavadoc">
+	<ant dir="src/classes" target="docs-public"/>
+  </target>
+
+  <target name="docs-private" depends="setupPlatform">
+	<ant dir="src/classes" target="docs-private"/>
+  </target>
+
+  <target name="docs" depends="setupPlatform">
+	<ant dir="src/classes" target="docs"/>
+  </target>
+
+  <target name="setupCheckBuild" depends="setupPlatform">
+    <available file="${build}/linux-i586/opt/lib/ext/j3dcore.jar" property="buildLinuxFilesExist"/>
+    <available file="${build}/windows-i586-vc/opt/lib/ext/j3dcore.jar" property="buildWindowsFilesExist"/>
+  </target>
+
+  <target name="checkBuildLinux" unless="buildLinuxFilesExist">
+      <fail message="You must run the jar-opt target on Linux before running dist-common" />
+  </target>
+
+  <target name="checkBuildWindows" unless="buildWindowsFilesExist">
+      <fail message="You must run the jar-opt target on Windows before running dist-common" />
+  </target>
+  
+  <target name="checkBuildPlatform" unless="isLinuxOnX86">
+      <fail message="You must run the dist-common target on linux-i586 platform" />
+  </target>
+
+  <target name="checkBuild" depends="setupCheckBuild,checkBuildPlatform,checkBuildLinux,checkBuildWindows">
+  </target>
+
+  <target name="dist-common" depends="setupPlatform,checkBuild">
+	<ant dir="src/classes" target="dist-common"/>
+  </target>
+
+  <target name="setupCheckDist" depends="setupPlatform">
+    <available file="${dist}/common/lib/ext/j3dcore.jar" property="distCommonFilesExist"/>
+  </target>
+
+  <target name="checkDistCommon" unless="distCommonFilesExist">
+      <fail message="You must run the dist-common target before running dist" />
+  </target>
+
+  <target name="checkDist" depends="setupCheckDist,checkDistCommon">
+  </target>
+
+  <!-- NOTE: the dist target no longer depends on jar-opt; you must run the
+       jar-opt and dist-common (linux-only) targets prior to dist -->
+  <target name="dist" depends="setupPlatform,checkDist,src">
+	<ant dir="src/classes" target="dist"/>
+	<ant dir="src/native" target="dist"/>
+  </target>
+
+  <!-- NOTE: the all target no longer depends on dist, which must be run separately -->
+  <target name="all" depends="jar,docs"/>
+
+  <target name="release" description="Package distribution for release"
+	depends="dist,init-release,release-daily,release-milestone,release-final">
+  </target>
+
+  <target name="init-release">
+      <property name="platformTmp" location="${dist}/${platform}/tmp"/>
+      <property name="platformTmpBund" location="${platformTmp}/bund"/>
+      <property name="platformTmpInst" location="${platformTmp}/inst"/>
+      <property name="release_name" value="${build.relprefix}-${version_file}-${platformname}"/>
+      <property name="inst_name" value="j3d-instfiles-${version_file}-${platformname}"/>
+      <mkdir dir="${dist}/release"/>
+  </target>
+
+  <target name="release-daily" depends="init-release,release-zip-bund-pre" if="releaseType_daily">
+  </target>
+  
+  <target name="release-zip-bund-pre" if="releaseType_dailyOrMilestone">
+      <mkdir dir="${platformTmpBund}/${release_name}"/>
+
+      <zip destfile="${platformTmpBund}/${release_name}/j3d-jre.zip">
+          <fileset dir="${dist}/${platform}"
+              includes="lib/**"
+          />
+          <fileset dir="${dist}/${platform}"
+              includes="bin/**"
+          />
+      </zip>
+      <copy todir="${platformTmpBund}/${release_name}">
+          <fileset dir="." includes="COPYRIGHT.txt"/>
+          <fileset dir="release-info/pre-release"
+              includes="LICENSE*.txt README*.txt README-unzip.html"
+          />
+      </copy>
+      <zip destfile="${dist}/release/${release_name}.zip">
+          <fileset dir="${platformTmpBund}"
+              includes="${release_name}/**"
+          />
+      </zip>
+  </target>
+
+  <target name="release-milestone" depends="init-release,release-zip-bund-pre,release-zip-inst-pre" if="releaseType_milestone">
+  </target>
+
+  <target name="release-zip-inst-pre" if="releaseType_milestone">
+      <antcall target="release-zip-inst-pre-unix"/>
+      <antcall target="release-zip-inst-pre-windows"/>
+  </target>
+
+  <target name="release-zip-inst-pre-unix" if="isUnix">
+    <mkdir dir="${platformTmpInst}/${release_name}"/>
+
+    <copy todir="${platformTmpInst}/${release_name}">
+      <fileset dir="${dist}/${platform}"
+          includes="lib/**"/>
+      <fileset dir="${dist}/${platform}"
+          includes="bin/**"/>
+    </copy>
+
+    <copy tofile="${platformTmpInst}/${release_name}/LICENSE.txt">
+      <fileset dir="release-info/pre-release"
+        includes="LICENSE*.txt"/>
+    </copy>
+
+    <chmod dir="${platformTmpInst}/${release_name}" perm="755"
+       includes="**/*.so"/>
+
+    <copy todir="${platformTmpInst}">
+        <fileset dir="${build-tools}/${platformname}"
+            includes="script*.txt, unzipsfx"/>
+    </copy>
+
+    <exec dir="${platformTmpInst}/${release_name}" executable="${shell}">
+      <arg line="${build-tools}/genzip ${release_name} LICENSE.txt lib"/>
+    </exec>
+
+    <copy file="${platformTmpInst}/${release_name}.bin" todir="${dist}/release"/>
+
+    <chmod file="${dist}/release/${release_name}.bin" perm="755"/>
+  </target>
+
+  <target name="release-zip-inst-pre-windows" if="isWindows">
+    <property name="tmpInstDir" location="${platformTmpInst}/${inst_name}"/>
+    <mkdir dir="${tmpInstDir}/j3d-binaries"/>
+
+    <copy todir="${tmpInstDir}">
+      <fileset dir="release-info/pre-release"
+        includes="LICENSE*.rtf README.html"/>
+    </copy>
+
+    <copy todir="${tmpInstDir}/j3d-binaries">
+      <fileset dir="${dist}/${platform}"
+          includes="lib/**"/>
+      <fileset dir="${dist}/${platform}"
+          includes="bin/**"/>
+    </copy>
+
+    <chmod dir="${tmpInstDir}/j3d-binaries" perm="755"
+       includes="**/*.dll"/>
+
+    <zip destfile="${dist}/release/${inst_name}.zip">
+      <fileset dir="${platformTmpInst}"
+          includes="${inst_name}/**"/>
+    </zip>
+  </target>
+
+  <target name="release-final" depends="init-release,release-zip-bund-final,release-zip-inst-final" if="releaseType_final">
+  </target>
+
+  <target name="release-zip-bund-final" if="releaseType_final">
+      <mkdir dir="${platformTmpBund}/${release_name}"/>
+
+      <zip destfile="${platformTmpBund}/${release_name}/j3d-jre.zip">
+          <fileset dir="${dist}/${platform}"
+              includes="lib/**"
+          />
+          <fileset dir="${dist}/${platform}"
+              includes="bin/**"
+          />
+      </zip>
+      <copy todir="${platformTmpBund}/${release_name}">
+          <fileset dir="." includes="COPYRIGHT.txt"/>
+          <fileset dir="release-info/fcs-${version_base_file}"
+              includes="LICENSE*.txt README*.txt README-unzip.html"
+          />
+      </copy>
+      <zip destfile="${dist}/release/${release_name}.zip">
+          <fileset dir="${platformTmpBund}"
+              includes="${release_name}/**"
+          />
+      </zip>
+  </target>
+
+  <target name="release-zip-inst-final" if="releaseType_final">
+      <antcall target="release-zip-inst-final-unix"/>
+      <antcall target="release-zip-inst-final-windows"/>
+  </target>
+
+  <target name="release-zip-inst-final-unix" if="isUnix">
+    <mkdir dir="${platformTmpInst}/${release_name}"/>
+
+    <copy todir="${platformTmpInst}/${release_name}">
+      <fileset dir="${dist}/${platform}"
+          includes="lib/**"/>
+      <fileset dir="${dist}/${platform}"
+          includes="bin/**"/>
+    </copy>
+
+    <copy tofile="${platformTmpInst}/${release_name}/LICENSE.txt">
+      <fileset dir="release-info/fcs-${version_base_file}"
+        includes="LICENSE*.txt"/>
+    </copy>
+
+    <chmod dir="${platformTmpInst}/${release_name}" perm="755"
+       includes="**/*.so"/>
+
+    <copy todir="${platformTmpInst}">
+        <fileset dir="${build-tools}/${platformname}"
+            includes="script*.txt, unzipsfx"/>
+    </copy>
+
+    <exec dir="${platformTmpInst}/${release_name}" executable="${shell}">
+      <arg line="${build-tools}/genzip ${release_name} LICENSE.txt lib"/>
+    </exec>
+
+    <copy file="${platformTmpInst}/${release_name}.bin" todir="${dist}/release"/>
+
+    <chmod file="${dist}/release/${release_name}.bin" perm="755"/>
+  </target>
+
+  <target name="release-zip-inst-final-windows" if="isWindows">
+    <property name="tmpInstDir" location="${platformTmpInst}/${inst_name}"/>
+    <mkdir dir="${tmpInstDir}/j3d-binaries"/>
+
+    <copy todir="${tmpInstDir}">
+      <fileset dir="release-info/fcs-${version_base_file}"
+        includes="LICENSE*.rtf README.html"/>
+    </copy>
+
+    <copy todir="${tmpInstDir}/j3d-binaries">
+      <fileset dir="${dist}/${platform}"
+          includes="lib/**"/>
+      <fileset dir="${dist}/${platform}"
+          includes="bin/**"/>
+    </copy>
+
+    <chmod dir="${tmpInstDir}/j3d-binaries" perm="755"
+       includes="**/*.dll"/>
+
+    <zip destfile="${dist}/release/${inst_name}.zip">
+      <fileset dir="${platformTmpInst}"
+          includes="${inst_name}/**"/>
+    </zip>
+  </target>
+
+  <target name="initSrc" depends="setupPlatform">
+      <property name="platformSrc" location="${dist}/${platform}/src"/>
+      <property name="j3dZip" value="j3d-${version_file}-src.zip"/>
+      <property name="vecmathZip" value="vecmath-${version_file}-src.zip"/>
+
+      <property name="j3dZipFile" location="${platformSrc}/${j3dZip}"/>
+      <property name="vecmathZipFile" location="${platformSrc}/${vecmathZip}"/>
+      <property name="cvsRootDir" location=".."/>
+
+      <mkdir dir="${platformSrc}"/>
+  </target>
+
+  <target name="echoSrc"> 
+    <echo message="j3dZipFile = ${j3dZipFile}"/>
+    <echo message="vecmathZipFile = ${vecmathZipFile}"/>
+    <echo message="cvsRootDir = ${cvsRootDir}"/>
+  </target>
+
+  <target name="src" depends="initSrc, echoSrc, j3dSrc, vecmathSrc">
+  </target>
+
+  <target name="j3dSrc">
+    <zip destfile="${j3dZipFile}">
+
+      <fileset dir="${cvsRootDir}/j3d-core/release-info/src-release/j3d"
+          includes="README.txt"/>
+     
+      <zipfileset dir="${cvsRootDir}/j3d-core" prefix="javax"
+          includes="COPYRIGHT.txt *LICENSE*.*"/>
+
+      <fileset dir="${cvsRootDir}/j3d-core/src/classes/share"
+          includes="*/**"
+          excludes="**/doc-files/** **/package.html"/>
+
+      <fileset dir="${cvsRootDir}/j3d-core/src/classes/jogl"
+          includes="*/**"
+          excludes="**/doc-files/** **/package.html"/>
+
+<!-- We will not include platform specific source files in this release
+
+      <fileset dir="${cvsRootDir}/j3d-core/src/classes/win32"
+          includes="*/**"
+          excludes="**/doc-files/** **/package.html"/>
+      <fileset dir="${cvsRootDir}/j3d-core/src/classes/x11"
+          includes="*/**"
+          excludes="**/doc-files/** **/package.html"/>
+-->
+
+      <zipfileset dir="${cvsRootDir}/j3d-core-utils" prefix="com"
+          includes="COPYRIGHT.txt *LICENSE*.*"/>
+
+      <fileset dir="${cvsRootDir}/j3d-core-utils/src/classes/share"
+          includes="*/**"
+          excludes="**/doc-files/** **/package.html"/>
+    </zip>
+  </target>
+
+  <target name="vecmathSrc">
+    <zip destfile="${vecmathZipFile}">
+
+      <fileset dir="${cvsRootDir}/j3d-core/release-info/src-release/vecmath"
+          includes="README.txt"/>
+     
+      <zipfileset dir="${cvsRootDir}/vecmath" prefix="javax"
+          includes="COPYRIGHT.txt *LICENSE*.*"/>
+
+      <fileset dir="${cvsRootDir}/vecmath/src"
+          includes="*/**"
+          excludes="*/doc-files/** **/package.html VECMATH.MF"/>
+    </zip>
+  </target>
+
+  <target name="clean-dist">
+    <!-- Delete the ${dist} directory tree  -->
+    <delete dir="${dist}"/>
+  </target>
+  
+  <target name="clean-default" unless="build.concurrent">
+    <delete dir="${build}/default"/>
+  </target>
+
+  <target name="clean-dist-common" if="isLinuxOnX86">
+    <delete dir="${dist}/common"/>
+  </target>
+
+  <target name="clean" depends="setupPlatform,clean-default,clean-dist-common">
+    <!-- Delete the ${build}, and ${dist} directory trees for current platform -->
+    <delete dir="${build}/${platform}"/>
+    <delete dir="${dist}/${platform}"/>
+  </target>
+  
+  <target name="clean-all">
+    <!-- Delete the ${build}, and ${dist} directory trees  -->
+    <delete dir="${build}"/>	
+    <delete dir="${dist}"/>
+  </target>
+
+    <target name="clean-javaonly" depends="setupPlatform">
+        <!-- Delete only the java portions of $[build} for the current platform -->
+        <delete dir="${build}/${platform}/debug/classes"/>
+        <delete dir="${build}/${platform}/debug/lib/ext"/>
+        <delete dir="${build}/${platform}/opt/classes"/>
+        <delete dir="${build}/${platform}/opt/lib/ext"/>
+  </target>
+
+  <target name="install-debug" depends="jar-debug">
+	<ant dir="src/classes" target="install-debug"/>
+  </target>
+
+  <target name="install-opt" depends="jar-opt">
+	<ant dir="src/classes" target="install-opt"/>
+  </target>
+
+  <target name="uninstall" depends="setupPlatform">
+	<ant dir="src/classes" target="uninstall"/>
+  </target>
+
+  <description>
+The following ant targets are available ("jar-opt" is the default):
+
+      all            - execute targets jar-debug and dist.
+
+      clean          - removes build/ and dist/ for current platform
+      
+      clean-all      - removes build/ and dist/ for all platforms
+
+      clean-dist     - removes dist.
+      
+      clean-javaonly - removes java portion of build for current platform 
+
+      compile        - execute targets compile-debug and compile-opt.
+ 
+      compile-debug  - builds all classes and native layer in src into 
+                      class files under build/${platform}/debug/classes/ and
+                      native files under build/${platform}/debug/native/
+
+      compile-opt    - builds all classes and native layer in src into 
+                      class files under build/${platform}/opt/classes/ and
+                      native files under build/${platform}/opt/native/
+
+      dist           - THIS TARGET IS FOR RELEASE ENGINEERING ONLY; DEVELOPERS NEED NOT
+                       USE THIS TARGET.
+                       Copies the shared jars, and the platform-specific native
+                       libraries, src files, and javadoc to dist/${platform}.
+                       The dist-common target must be run first.
+
+      dist-common    - THIS TARGET IS FOR RELEASE ENGINEERING ONLY; DEVELOPERS NEED NOT
+                       USE THIS TARGET.
+                       This target must be run on a 32-bit Linux-x86 system.
+                       Creates the shared jar from the linux-i586 and
+                       windows-i586-vc build directories.
+                       The jar-opt target must be run first.
+
+      docs           - builds all classes in src into javadoc under 
+                       build/javadocs.
+
+      docs-jcp       - builds JCP docs of all classes in src into javadoc 
+                       under build/javadocs/docs-jcp.
+
+      docs-private   - builds private docs of all classes in src into javadoc 
+                       under build/javadocs/docs-private.
+
+      docs-public    - builds public docs of all classes in src into javadoc 
+                      under build/javadocs/docs-public.
+
+      echo           - echo some useful information, such as user.home,
+                      ant.home, java.home and platform.
+
+      jar            - execute targets jar-debug and jar-opt.
+
+      jar-debug      - creates build/${platform}/debug/lib for all jar
+                      files and libraries from class and native code files under 
+                      build/${platform}/debug/classes and 
+                      build/${platform}/debug/native.
+                      
+      jar-debug-javaonly 
+                     - compiles only the java portion of j3d and builds
+                      jars in same locations as jar-debug
+
+      jar-opt        - creates build/${platform}/opt/lib for all jar
+                      files and libraries from class and native code files under 
+                      build/${platform}/opt/classes and 
+                      build/${platform}/opt/native.
+                      
+      jar-opt-javaonly 
+                     - compiles only the java portion of j3d and builds
+                      jars in same location as jar-opt
+
+      install-debug  - installs the debug build into the JDK pointed to by JAVA_HOME
+      
+      src            - generate a zip file j3d project source code.
+
+      uninstall      - uninstalls j3d from the JDK pointed to by JAVA_HOME
+  </description>
+</project>
