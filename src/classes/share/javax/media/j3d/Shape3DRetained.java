@@ -85,7 +85,7 @@ ArrayList<GeometryRetained> geometryList = null;
      * Do not change the following private variables to public, its access need to synchronize
      * via mirrorShape3DLock.
      */
-    ArrayList mirrorShape3D = new ArrayList(1);
+    ArrayList<Shape3DRetained> mirrorShape3D = new ArrayList<Shape3DRetained>(1);
 
     /**
      * This field is used for mirror Shape3D nodes accessing their
@@ -335,7 +335,7 @@ ArrayList<GeometryRetained> geometryList = null;
 	    if (oldGeom != null) {
 		oldGeom.clearLive(refCount);
 		for (i=0; i<mirrorShape3D.size(); i++) {
-		    mShape = (Shape3DRetained)mirrorShape3D.get(i);
+		    mShape = mirrorShape3D.get(i);
 		    oldGeom.removeUser(mShape);
 		}
 		oldGeom.decRefCnt();
@@ -432,7 +432,7 @@ ArrayList<GeometryRetained> geometryList = null;
 		oldGeom.clearLive(refCount);
 		oldGeom.decRefCnt();
 		for (i=0; i<mirrorShape3D.size(); i++) {
-		    mShape = (Shape3DRetained)mirrorShape3D.get(i);
+		    mShape = mirrorShape3D.get(i);
 		    oldGeom.removeUser(mShape);
 
 		}
@@ -514,7 +514,7 @@ Enumeration getAllGeometries(int id) {
 	    if (appearance != null) {
 	        appearance.clearLive(refCount);
 		for (int i=0; i<mirrorShape3D.size(); i++) {
-		    s = (Shape3DRetained)mirrorShape3D.get(i);
+		    s = mirrorShape3D.get(i);
 		    appearance.removeAMirrorUser(s);
 		}
 	    }
@@ -523,7 +523,7 @@ Enumeration getAllGeometries(int id) {
 	       ((AppearanceRetained)newAppearance.retained).setLive(inBackgroundGroup, refCount);
 		appearance = ((AppearanceRetained)newAppearance.retained);
 		for (int i=0; i<mirrorShape3D.size(); i++) {
-		    s = (Shape3DRetained)mirrorShape3D.get(i);
+		    s = mirrorShape3D.get(i);
 		    appearance.addAMirrorUser(s);
 		}
 		if((appearance.renderingAttributes != null) &&
@@ -1267,10 +1267,8 @@ Enumeration getAllGeometries(int id) {
 	//System.err.println("S3DRetained : clearLive " + s);
 
 	int i, j, gaCnt;
-	Shape3DRetained shape;
 	GeometryRetained geometry;
-	Object[] shapes;
-	ArrayList msList = new ArrayList();
+	ArrayList<Shape3DRetained> msList = new ArrayList<Shape3DRetained>();
 
 	super.clearLive(s);
 
@@ -1278,10 +1276,10 @@ Enumeration getAllGeometries(int id) {
 
 	if (inSharedGroup) {
 	    synchronized(mirrorShape3D) {
-		shapes = mirrorShape3D.toArray();
+		Shape3DRetained[] shapes = mirrorShape3D.toArray(new Shape3DRetained[mirrorShape3D.size()]);
 		for (i=0; i<s.keys.length; i++) {
 		    for (j=0; j<shapes.length; j++) {
-			shape = (Shape3DRetained)shapes[j];
+		    	Shape3DRetained shape = shapes[j];
 			if (shape.key.equals(s.keys[i])) {
 			    mirrorShape3D.remove(mirrorShape3D.indexOf(shape));
             		    if (s.switchTargets != null &&
@@ -1304,7 +1302,7 @@ Enumeration getAllGeometries(int id) {
 	    }
 	} else {
 	    // Only entry 0 is valid
-	    shape = (Shape3DRetained)mirrorShape3D.get(0);
+		Shape3DRetained shape = mirrorShape3D.get(0);
 	    synchronized(mirrorShape3D) {
 		mirrorShape3D.remove(0);
 	    }
@@ -1329,7 +1327,7 @@ Enumeration getAllGeometries(int id) {
 
 
 	for (int k = 0; k < msList.size(); k++) {
-	    Shape3DRetained sh = (Shape3DRetained)msList.get(k);
+	    Shape3DRetained sh = msList.get(k);
 	    if (appearance != null) {
 		synchronized(appearance.liveStateLock) {
 		    if (k == 0) {
@@ -1594,7 +1592,7 @@ Enumeration getAllGeometries(int id) {
 	    }
 	}
 	else {
-	    ms = (Shape3DRetained)mirrorShape3D.get(0);
+	    ms = mirrorShape3D.get(0);
 	}
 
 	list.add(getGeomAtom(ms));
@@ -1761,13 +1759,13 @@ Enumeration getAllGeometries(int id) {
       Shape3DRetained shape;
 
       if (!inSharedGroup) {
-	  shape = (Shape3DRetained) mirrorShape3D.get(0);
+	  shape = mirrorShape3D.get(0);
 	  shape.isPickable = pick[0];
       } else {
 	  int size = mirrorShape3D.size();
 	  for (int j=0; j< keys.length; j++) {
 	      for (int i=0; i < size; i++) {
-		  shape = (Shape3DRetained) mirrorShape3D.get(i);
+		  shape = mirrorShape3D.get(i);
 		  if (keys[j].equals(shape.key)) {
 		      shape.isPickable = pick[j];
 		      break;
@@ -1785,13 +1783,13 @@ Enumeration getAllGeometries(int id) {
       Shape3DRetained shape;
 
       if (!inSharedGroup) {
-	  shape = (Shape3DRetained) mirrorShape3D.get(0);
+	  shape = mirrorShape3D.get(0);
 	  shape.isCollidable = collide[0];
       } else {
 	  int size = mirrorShape3D.size();
 	  for (int j=0; j< keys.length; j++) {
 	      for (int i=0; i < size; i++) {
-		  shape = (Shape3DRetained) mirrorShape3D.get(i);
+		  shape = mirrorShape3D.get(i);
 		  if (keys[j].equals(shape.key)) {
 		      shape.isCollidable = collide[j];
 		      break;
@@ -1824,7 +1822,7 @@ Enumeration getAllGeometries(int id) {
 	if(s3dMSize < 1)
 	    return;
 
-	Shape3DRetained mS3d = (Shape3DRetained) mirrorShape3D.get(0);
+	Shape3DRetained mS3d = mirrorShape3D.get(0);
 
 	mS3d.mirrorShape3DLock.writeLock();
 
@@ -1917,7 +1915,7 @@ Enumeration getAllGeometries(int id) {
 	// its source.
 
 	for (i = 1; i < s3dMSize; i++) {
-	    mS3d = (Shape3DRetained) mirrorShape3D.get(i);
+	    mS3d = mirrorShape3D.get(i);
 	    mS3d.mirrorShape3DLock.writeLock();
 	    oldGA = mS3d.geomAtom;
 	    newGA = new GeometryAtom();
@@ -2002,7 +2000,7 @@ Enumeration getAllGeometries(int id) {
 
     Shape3DRetained getMirrorShape(SceneGraphPath path) {
 	if (!inSharedGroup) {
-	    return (Shape3DRetained) mirrorShape3D.get(0);
+	    return mirrorShape3D.get(0);
 	}
 	HashKey key = new HashKey("");
 	path.getHashKey(key);
@@ -2011,12 +2009,12 @@ Enumeration getAllGeometries(int id) {
 
     Shape3DRetained getMirrorShape(HashKey key) {
 	if (key == null) {
-	    return (Shape3DRetained) mirrorShape3D.get(0);
+	    return mirrorShape3D.get(0);
 	} else {
 	    int i = key.equals(localToVworldKeys, 0, localToVworldKeys.length);
 
 	    if (i>=0) {
-		return (Shape3DRetained) mirrorShape3D.get(i);
+		return mirrorShape3D.get(i);
 	    }
 	}
 	// Not possible
@@ -2323,7 +2321,7 @@ Enumeration getAllGeometries(int id) {
      * This is used to send a message of the snapshot of the
      * geometry atoms that are affected by this change.
      */
-    final static GeometryAtom[] getGeomAtomsArray(ArrayList userList) {
+    final static GeometryAtom[] getGeomAtomsArray(ArrayList<Shape3DRetained> userList) {
 	Shape3DRetained ms = null;
 	GeometryAtom[] gaArr = null;
 	int size, nullCnt=0, i, j;
@@ -2332,7 +2330,7 @@ Enumeration getAllGeometries(int id) {
 	    size = userList.size();
 	    gaArr = new GeometryAtom[size];
 	    for (i = 0; i < size; i++) {
-		ms = (Shape3DRetained) userList.get(i);
+		ms = userList.get(i);
 		ms.mirrorShape3DLock.readLock();
 		if(ms.geomAtom == null) {
 		    nullCnt++;
@@ -2731,7 +2729,7 @@ final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userL
 	    oldGeom.clearLive(refCount);
 	    oldGeom.decRefCnt();
 	    for (i=0; i<mirrorShape3D.size(); i++) {
-	      mShape = (Shape3DRetained)mirrorShape3D.get(i);
+	      mShape = mirrorShape3D.get(i);
 	      oldGeom.removeUser(mShape);
 	    }
 	  }

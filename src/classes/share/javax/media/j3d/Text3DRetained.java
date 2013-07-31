@@ -581,7 +581,7 @@ class Text3DRetained extends GeometryRetained {
             		        newCtArr = new CachedTargets[numMS3D];
 
 				for (k=0; k<numMS3D; k++) {
-				    ms = (Shape3DRetained)src.mirrorShape3D.get(k);
+				    ms = src.mirrorShape3D.get(k);
 
 				    GeometryAtom ga =
 					Shape3DRetained.getGeomAtom(ms);
