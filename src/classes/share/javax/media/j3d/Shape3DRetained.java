@@ -978,7 +978,7 @@ Enumeration getAllGeometries(int id) {
 	Shape3DRetained shape;
 	GeometryRetained geometry;
 	int i, j, k, gaCnt;
-	ArrayList msList = new ArrayList();
+	ArrayList<Shape3DRetained> msList = new ArrayList<Shape3DRetained>();
 
 	super.doSetLive(s);
 
@@ -1138,7 +1138,7 @@ Enumeration getAllGeometries(int id) {
 	}
 
 	for (k = 0; k < msList.size(); k++) {
-	    Shape3DRetained sh = (Shape3DRetained)msList.get(k);
+	    Shape3DRetained sh = msList.get(k);
 
 	    if (appearance != null) {
 		synchronized(appearance.liveStateLock) {
