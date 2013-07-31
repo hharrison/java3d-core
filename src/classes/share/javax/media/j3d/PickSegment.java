@@ -96,6 +96,7 @@ public final class PickSegment extends PickShape {
      * Return true if shape intersect with bounds.
      * The point of intersection is stored in pickPos.
      */
+    @Override
     final boolean intersect(Bounds bounds, Point4d pickPos) {
 	return bounds.intersect(start, end, pickPos);
     }
@@ -104,6 +105,7 @@ public final class PickSegment extends PickShape {
 
     // Only use within J3D.
     // Return a new PickSegment that is the transformed (t3d) of this pickSegment.
+    @Override
     PickShape transform(Transform3D t3d) {
 	PickSegment newPS = new PickSegment(start, end);
 	t3d.transform(newPS.start);
@@ -111,10 +113,12 @@ public final class PickSegment extends PickShape {
 	return newPS;
     }
 
+    @Override
     Point3d getStartPoint() {
 	return start;
     }
 
+    @Override
     int getPickType() {
 	return PICKSEGMENT;
     }

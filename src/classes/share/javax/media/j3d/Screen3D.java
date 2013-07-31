@@ -320,6 +320,7 @@ synchronized void notifyUsers() {
 	return physicalScreenHeight;
     }
 
+    @Override
     public String toString() {
 	return "Screen3D: size = " +
 	    "(" + getSize().width + " x " + getSize().height + ")" +

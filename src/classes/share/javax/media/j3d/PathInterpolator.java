@@ -275,6 +275,7 @@ public abstract class PathInterpolator extends TransformInterpolator {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

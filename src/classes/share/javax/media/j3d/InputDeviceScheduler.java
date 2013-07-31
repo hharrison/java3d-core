@@ -64,6 +64,7 @@ class InputDeviceScheduler extends J3dThread {
 	return (++numInstances);
     }
 
+    @Override
     int getInstanceNum() {
 	if (instanceNum == -1)
 	    instanceNum = newInstanceNum();
@@ -189,6 +190,7 @@ class InputDeviceScheduler extends J3dThread {
 	return threadData;
     }
 
+    @Override
     void doWork(long referenceTime) {
 	synchronized (nonBlockingDevices) {
 	    for (int i = nonBlockingDevices.size()-1; i >=0; i--) {
@@ -197,6 +199,7 @@ class InputDeviceScheduler extends J3dThread {
 	}
     }
 
+    @Override
     void shutdown() {
 	// stop all spawn threads
 	for (int i=threads.size()-1; i >=0; i--) {

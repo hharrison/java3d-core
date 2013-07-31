@@ -2147,6 +2147,7 @@ private ArrayList<NodeComponentRetained> userList = new ArrayList<NodeComponentR
      * @exception IllegalSharingException if this image is
      * being used by a Canvas3D as an off-screen buffer.
      */
+    @Override
     void setLive(boolean inBackgroundGroup, int refCount) {
         // Do illegalSharing check.
         if(getUsedByOffScreen()) {
@@ -2160,6 +2161,7 @@ private ArrayList<NodeComponentRetained> userList = new ArrayList<NodeComponentR
      * But it's using the updateMirrorObject interface to propagate
      * the changes to the users
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 		// System.err.println("ImageComponent.updateMirrorObject");
 		if ((component & IMAGE_CHANGED) == 0 &&
@@ -2194,6 +2196,7 @@ private ArrayList<NodeComponentRetained> userList = new ArrayList<NodeComponentR
         VirtualUniverse.mc.processMessage(createMessage);
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
         if (bit == ImageComponent.ALLOW_IMAGE_WRITE) {
             setFrequencyChangeMask(ImageComponent.ALLOW_IMAGE_WRITE, 0x1);

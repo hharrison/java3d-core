@@ -204,6 +204,7 @@ public class Texture3D extends Texture {
      * Creates a retained mode Texture3DRetained object that this
      * Texture3D component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new Texture3DRetained();
 	this.retained.setSource(this);
@@ -212,6 +213,7 @@ public class Texture3D extends Texture {
    /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
 	Texture3DRetained t3d = (Texture3DRetained) retained;
 	Texture3D t = new Texture3D(t3d.getMipMapMode(), t3d.format,
@@ -228,6 +230,7 @@ public class Texture3D extends Texture {
      * @deprecated replaced with duplicateNodeComponent(
      *  NodeComponent originalNodeComponent, boolean forceDuplicate)
      */
+    @Override
     public void duplicateNodeComponent(NodeComponent originalNodeComponent) {
 	checkDuplicateNodeComponent(originalNodeComponent);
     }
@@ -250,6 +253,7 @@ public class Texture3D extends Texture {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);

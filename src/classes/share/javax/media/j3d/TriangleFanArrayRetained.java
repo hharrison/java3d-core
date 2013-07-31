@@ -46,6 +46,7 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	this.geoType = GEO_TYPE_TRI_FAN_SET;
     }
 
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
 	Point3d pnts[] = new Point3d[3];
@@ -342,6 +343,7 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
     }
 
     // intersect pnts[] with every triangle in this object
+    @Override
     boolean intersect(Point3d[] pnts) {
 	int j, end;
 	Point3d[] points = new Point3d[3];
@@ -425,6 +427,7 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	return false;
     }
 
+    @Override
     boolean intersect(Transform3D thisToOtherVworld, GeometryRetained geom) {
 	int i = 0, j, end;
 	Point3d[] pnts = new Point3d[3];
@@ -452,6 +455,7 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
     }
 
     // the bounds argument is already transformed
+    @Override
     boolean intersect(Bounds targetBound) {
 	int i = 0;
 	int j, end;
@@ -522,6 +526,7 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
     }
 
     // From Graphics Gems IV (pg5) and Graphics Gems II, Pg170
+    @Override
     void computeCentroid() {
 	Vector3d vec = new Vector3d();
 	Vector3d normal = new Vector3d();
@@ -585,6 +590,7 @@ class TriangleFanArrayRetained extends GeometryStripArrayRetained {
 	}
     }
 
+    @Override
     int getClassType() {
 	return TRIANGLE_TYPE;
     }

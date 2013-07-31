@@ -295,6 +295,7 @@ ArrayList<AttributeBin> addAttributeBins = new ArrayList<AttributeBin>();
     }
 
 
+    @Override
     public void updateObject() {
 	int i;
 	AttributeBin a;

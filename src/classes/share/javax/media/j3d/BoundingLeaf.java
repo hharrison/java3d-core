@@ -125,6 +125,7 @@ public class BoundingLeaf extends Leaf {
      * Creates the BoundingLeafRetained object that this
      * BoundingLeaf object will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new BoundingLeafRetained();
         this.retained.setSource(this);
@@ -144,6 +145,7 @@ public class BoundingLeaf extends Leaf {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         BoundingLeaf bl = new BoundingLeaf();
         bl.duplicateNode(this, forceDuplicate);
@@ -173,6 +175,7 @@ public class BoundingLeaf extends Leaf {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

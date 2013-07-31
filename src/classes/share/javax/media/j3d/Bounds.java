@@ -60,6 +60,7 @@ public abstract class Bounds extends Object implements Cloneable {
     /**
      * Makes a copy of a bounds object.
      */
+    @Override
     public abstract Object clone();
 
 
@@ -76,6 +77,7 @@ public abstract class Bounds extends Object implements Cloneable {
      *
      * @since Java 3D 1.2
      */
+    @Override
     public abstract boolean equals(Object bounds);
 
 
@@ -90,6 +92,7 @@ public abstract class Bounds extends Object implements Cloneable {
      *
      * @since Java 3D 1.2
      */
+    @Override
     public abstract int hashCode();
 
 

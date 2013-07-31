@@ -106,6 +106,7 @@ public final class PickConeSegment extends PickCone {
      * @param pickPos the location of the point of intersection (not used for
      * method. Provided for compatibility).
      */
+    @Override
     final boolean intersect(Bounds bounds, Point4d pickPos) {
 	Point4d iPnt = new Point4d();
 	Vector3d vector = new Vector3d();
@@ -279,6 +280,7 @@ public final class PickConeSegment extends PickCone {
 
     // Only use within J3D.
     // Return a new PickConeSegment that is the transformed (t3d) of this pickConeSegment.
+    @Override
     PickShape transform(Transform3D t3d) {
 
 	PickConeSegment newPCS = new PickConeSegment();

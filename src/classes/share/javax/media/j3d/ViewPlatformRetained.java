@@ -275,6 +275,7 @@ void removeView(View v) {
      * it evaluates the view platform transform, and then it activates
      * all canvases that are associated with the attached view.
      */
+    @Override
     void setLive(SetLiveState s) {
 	View views[] = getViewList();
 
@@ -336,6 +337,7 @@ void removeView(View v) {
      * it deactivates all canvases that are associated with the attached
      * view.
      */
+    @Override
     void clearLive(SetLiveState s) {
         super.clearLive(s);
         if (s.switchTargets != null &&
@@ -404,6 +406,7 @@ boolean isActiveViewPlatform() {
     }
 
 
+    @Override
     void compile(CompileState compState) {
 
         super.compile(compState);

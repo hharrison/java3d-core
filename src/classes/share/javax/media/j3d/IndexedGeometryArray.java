@@ -404,6 +404,7 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void setInitialVertexIndex(int initialVertexIndex) {
 	throw new UnsupportedOperationException();
     }
@@ -417,6 +418,7 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void setInitialCoordIndex(int initialCoordIndex) {
 	throw new UnsupportedOperationException();
     }
@@ -430,6 +432,7 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void setInitialColorIndex(int initialColorIndex) {
 	throw new UnsupportedOperationException();
     }
@@ -443,6 +446,7 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void setInitialNormalIndex(int initialNormalIndex) {
 	throw new UnsupportedOperationException();
     }
@@ -456,6 +460,7 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void setInitialTexCoordIndex(int texCoordSet,
 					int initialTexCoordIndex) {
 	throw new UnsupportedOperationException();
@@ -470,6 +475,7 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      *
      * @since Java 3D 1.4
      */
+    @Override
     public void setInitialVertexAttrIndex(int vertexAttrNum,
 					  int initialVertexAttrIndex) {
         throw new UnsupportedOperationException();
@@ -486,6 +492,7 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void setValidVertexCount(int validVertexCount) {
 	throw new UnsupportedOperationException();
     }
@@ -1219,6 +1226,7 @@ public abstract class IndexedGeometryArray extends GeometryArray {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);

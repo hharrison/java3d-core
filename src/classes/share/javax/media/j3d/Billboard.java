@@ -297,6 +297,7 @@ public class Billboard extends Behavior {
     /**
      * Initialize method that sets up initial wakeup criteria.
      */
+    @Override
     public void initialize() {
 	// Insert wakeup condition into queue
 	wakeupOn(wakeupFrame);
@@ -308,6 +309,7 @@ public class Billboard extends Behavior {
      * @param criteria an enumeration of the criteria that caused the
      * stimulus
      */
+    @Override
     public void processStimulus(Enumeration criteria) {
         double angle = 0.0;
         double sign;
@@ -583,6 +585,7 @@ private boolean projectToPlane(Vector3d projVec, Vector3d planeVec)  {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         Billboard b = new Billboard();
         b.duplicateNode(this, forceDuplicate);
@@ -611,6 +614,7 @@ private boolean projectToPlane(Vector3d projVec, Vector3d planeVec)  {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
@@ -657,6 +661,7 @@ private boolean projectToPlane(Vector3d projVec, Vector3d planeVec)  {
      * @see Node#cloneTree
      * @see DanglingReferenceException
      */
+    @Override
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
 	super.updateNodeReferences(referenceTable);
 

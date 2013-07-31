@@ -228,6 +228,7 @@ class WakeupIndexedList implements Cloneable, java.io.Serializable  {
      *
      * @return  a clone of this <tt>ArrayList</tt> instance.
      */
+    @Override
     synchronized protected final Object clone() {
 	try {
 	    WakeupIndexedList v = (WakeupIndexedList)super.clone();
@@ -535,6 +536,7 @@ class WakeupIndexedList implements Cloneable, java.io.Serializable  {
 	return componentType;
     }
 
+    @Override
     synchronized public String toString() {
 	StringBuffer sb = new StringBuffer(hashCode() + " Size = " + size + "[");
 	int len = size-1;

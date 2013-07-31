@@ -86,6 +86,7 @@ class SoundStructure extends J3dStructure {
             debugPrint("SoundStructure constructed");
     }
 
+    @Override
     void processMessages(long referenceTime) {
 	J3dMessage messages[] = getMessages(referenceTime);
 	int nMsg = getNumMessage();
@@ -251,6 +252,7 @@ class SoundStructure extends J3dStructure {
     }
 
 
+    @Override
     void removeNodes(J3dMessage m) {
 	Object[] nodes = (Object[])m.args[0];
 	ArrayList<NodeRetained> viewScopedNodes = (ArrayList<NodeRetained>)m.args[3];
@@ -733,6 +735,7 @@ class SoundStructure extends J3dStructure {
 
     }
 
+    @Override
     void cleanup() {}
 
 }

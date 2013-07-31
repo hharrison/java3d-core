@@ -82,6 +82,7 @@ public final class PickConeRay extends PickCone {
      * @param pickPos the location of the point of intersection (not used for
      * method. Provided for compatibility).
      */
+    @Override
     final boolean intersect(Bounds bounds, Point4d pickPos) {
 
 	Point4d iPnt = new Point4d();
@@ -250,6 +251,7 @@ public final class PickConeRay extends PickCone {
 
     // Only use within J3D.
     // Return a new PickConeRay that is the transformed (t3d) of this pickConeRay.
+    @Override
     PickShape transform(Transform3D t3d) {
 
 	Point3d end = new Point3d();

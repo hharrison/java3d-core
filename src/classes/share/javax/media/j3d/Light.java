@@ -657,6 +657,7 @@ return ((LightRetained)this.retained).getAllScopes();
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
@@ -706,6 +707,7 @@ return ((LightRetained)this.retained).getAllScopes();
      * @see Node#cloneTree
      * @see DanglingReferenceException
      */
+    @Override
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
 
 

@@ -210,6 +210,7 @@ public class LinearFog extends Fog {
      * Creates the retained mode LinearFogRetained object that this
      * LinearFog node will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new LinearFogRetained();
         this.retained.setSource(this);
@@ -229,6 +230,7 @@ public class LinearFog extends Fog {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         LinearFog lf = new LinearFog();
         lf.duplicateNode(this, forceDuplicate);
@@ -257,6 +259,7 @@ public class LinearFog extends Fog {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

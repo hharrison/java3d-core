@@ -48,6 +48,7 @@ ArrayList<OrderedBin> childOrderedBins = new ArrayList<OrderedBin>();
 
     boolean onUpdateList = false;
 
+    @Override
     public void updateObject() {
 	int i;
 	LightBin lb;

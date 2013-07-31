@@ -66,6 +66,7 @@ class BehaviorScheduler extends J3dThread {
 	return (++numInstances);
     }
 
+    @Override
     int getInstanceNum() {
 	if (instanceNum == -1)
 	    instanceNum = newInstanceNum();
@@ -120,6 +121,7 @@ class BehaviorScheduler extends J3dThread {
      * clean (emptying out satisfied conditions) and processStimulus
      * (adding conditions again if wakeupOn called) calls.
      */
+    @Override
     void doWork(long referenceTime) {
 	BehaviorRetained arr[];
 	UnorderList list;

@@ -40,6 +40,7 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 	this.geoType = GEO_TYPE_LINE_SET;
     }
 
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
 	Point3d pnts[] = new Point3d[2];
@@ -286,6 +287,7 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 
     }
 
+    @Override
     boolean intersect(Point3d[] pnts) {
 	Point3d[] points = new Point3d[2];
 	double dist[] = new double[1];
@@ -341,6 +343,7 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 	return false;
     }
 
+    @Override
     boolean intersect(Transform3D thisToOtherVworld,
 		      GeometryRetained geom) {
 	Point3d[] pnts = new Point3d[2];
@@ -362,6 +365,7 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
     }
 
     // the bounds argument is already transformed
+    @Override
     boolean intersect(Bounds targetBound) {
 	Point3d[] pnts = new Point3d[2];
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
@@ -414,6 +418,7 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 	return false;
     }
     // From Graphics Gems IV (pg5) and Graphics Gems II, Pg170
+    @Override
     void computeCentroid() {
 	Point3d pnt0 = new Point3d();
 	Point3d pnt1 = new Point3d();
@@ -444,6 +449,7 @@ class LineArrayRetained extends GeometryArrayRetained implements Cloneable {
 	}
     }
 
+    @Override
     int getClassType() {
 	return LINE_TYPE;
     }

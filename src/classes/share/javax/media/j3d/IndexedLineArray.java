@@ -182,6 +182,7 @@ public class IndexedLineArray extends IndexedGeometryArray {
      * Creates the retained mode IndexedLineArrayRetained object that this
      * IndexedLineArray object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new IndexedLineArrayRetained();
 	this.retained.setSource(this);
@@ -190,6 +191,7 @@ public class IndexedLineArray extends IndexedGeometryArray {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         IndexedLineArrayRetained rt = (IndexedLineArrayRetained) retained;
         int texSetCount = rt.getTexCoordSetCount();

@@ -131,6 +131,7 @@ ArrayList<TextureBin> addTextureBins = new ArrayList<TextureBin>();
 
     }
 
+    @Override
     public void updateObject() {
 	TextureBin t;
 	int i;

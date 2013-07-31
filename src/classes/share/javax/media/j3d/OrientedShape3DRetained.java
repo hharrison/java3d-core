@@ -261,6 +261,7 @@ class OrientedShape3DRetained extends Shape3DRetained {
         VirtualUniverse.mc.processMessage(changeMessage);
     }
 
+    @Override
     void updateImmediateMirrorObject(Object[] args) {
 	int component = ((Integer)args[1]).intValue();
 	if ((component & (ALIGNMENT_CHANGED      |
@@ -591,6 +592,7 @@ class OrientedShape3DRetained extends Shape3DRetained {
 	return true;
     }
 
+    @Override
     void compile(CompileState compState) {
 
 	super.compile(compState);
@@ -604,6 +606,7 @@ class OrientedShape3DRetained extends Shape3DRetained {
         compState.keepTG = true;
     }
 
+    @Override
     void searchGeometryAtoms(UnorderList list) {
 	list.add(getGeomAtom(getMirrorShape(key)));
     }

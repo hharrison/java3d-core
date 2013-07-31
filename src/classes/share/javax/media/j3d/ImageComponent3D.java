@@ -869,6 +869,7 @@ public class ImageComponent3D extends ImageComponent {
      * Creates a retained mode ImageComponent3DRetained object that this
      * ImageComponent3D component object will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new ImageComponent3DRetained();
         this.retained.setSource(this);
@@ -879,6 +880,7 @@ public class ImageComponent3D extends ImageComponent {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
 	ImageComponent3DRetained rt = (ImageComponent3DRetained) retained;
 
@@ -918,6 +920,7 @@ public class ImageComponent3D extends ImageComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
       super.duplicateAttributes(originalNodeComponent, forceDuplicate);

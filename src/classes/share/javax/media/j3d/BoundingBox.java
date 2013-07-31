@@ -291,6 +291,7 @@ public void setUpper(Point3d p1) {
      * Sets the the value of this BoundingBox
      * @param boundsObject another bounds object
      */
+    @Override
     public void set(Bounds  boundsObject) {
       int i;
 
@@ -350,6 +351,7 @@ public void setUpper(Point3d p1) {
      * Creates a copy of this bounding box.
      * @return a new bounding box
      */
+    @Override
     public Object clone() {
 	return new BoundingBox(this.lower, this.upper);
     }
@@ -368,6 +370,7 @@ public void setUpper(Point3d p1) {
      *
      * @since Java 3D 1.2
      */
+    @Override
     public boolean equals(Object bounds) {
 	try {
 	    BoundingBox box = (BoundingBox)bounds;
@@ -395,6 +398,7 @@ public void setUpper(Point3d p1) {
      *
      * @since Java 3D 1.2
      */
+    @Override
     public int hashCode() {
 	long bits = 1L;
 	bits = J3dHash.mixDoubleBits(bits, lower.x);
@@ -413,6 +417,7 @@ public void setUpper(Point3d p1) {
      * specified bounds object.
      * @param boundsObject another bounds object
      */
+    @Override
     public void combine(Bounds boundsObject) {
 
 	if((boundsObject == null) || (boundsObject.boundsIsEmpty)
@@ -475,6 +480,7 @@ public void setUpper(Point3d p1) {
      * box and the array of bounding objects.
      * @param bounds an array of bounds objects
      */
+    @Override
     public void combine(Bounds[] bounds) {
        int i=0;
 
@@ -551,6 +557,7 @@ public void setUpper(Point3d p1) {
      * bounding box encloses the original bounding box and the point.
      * @param point a 3d point in space
      */
+    @Override
     public void combine(Point3d point) {
 
 	if( boundsIsInfinite) {
@@ -580,6 +587,7 @@ public void setUpper(Point3d p1) {
      * array of points.
      * @param points an array of 3d points in space
      */
+    @Override
     public void combine(Point3d[] points) {
 
 	int i;
@@ -612,6 +620,7 @@ public void setUpper(Point3d p1) {
      * @param boundsObject the bounding object to be transformed
      * @param matrix a transformation matrix
      */
+    @Override
     public void transform( Bounds boundsObject, Transform3D matrix) {
 
 	if (boundsObject == null || boundsObject.boundsIsEmpty) {
@@ -647,6 +656,7 @@ public void setUpper(Point3d p1) {
      * Transforms this bounding box by the given matrix.
      * @param matrix a transformation matrix
      */
+    @Override
     public void transform(Transform3D matrix) {
 
 	if (boundsIsInfinite)
@@ -739,6 +749,7 @@ public void setUpper(Point3d p1) {
      * @param position3 a point defining the location of the pick w= distance to pick
      * @return true or false indicating if an intersection occured
      */
+    @Override
     boolean intersect(Point3d origin, Vector3d direction, Point4d position ) {
         double t1,t2,tmp,tnear,tfar,invDir,invMag;
 	double dirx, diry, dirz;
@@ -888,6 +899,7 @@ public void setUpper(Point3d p1) {
      * @param position a point defining the location  of the pick w= distance to pick
      * @return true or false indicating if an intersection occured
      */
+    @Override
     boolean intersect(Point3d point,  Point4d position ) {
 
         if( boundsIsEmpty ) {
@@ -922,6 +934,7 @@ public void setUpper(Point3d p1) {
     * @param position a point defining the location  of the pick w= distance to pick
     * @return true or false indicating if an intersection occured
     */
+  @Override
   boolean intersect( Point3d start, Point3d end, Point4d position ) {
       double t1,t2,tmp,tnear,tfar,invDir,invMag;
       double dirx, diry, dirz;
@@ -1087,6 +1100,7 @@ public void setUpper(Point3d p1) {
      * @param direction the direction of the ray
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Point3d origin, Vector3d direction ) {
 
         if( boundsIsEmpty ) {
@@ -1152,6 +1166,7 @@ public void setUpper(Point3d p1) {
      * @param point a point defining a position in 3-space
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Point3d point ) {
 
         if( boundsIsEmpty ) {
@@ -1175,6 +1190,7 @@ public void setUpper(Point3d p1) {
      * with a volume of zero is <i>not</i> empty.
      * @return true if the bounding box is empty; otherwise, it returns false
      */
+    @Override
     public boolean isEmpty() {
 
 	 return boundsIsEmpty;
@@ -1185,6 +1201,7 @@ public void setUpper(Point3d p1) {
      * @param boundsObject another bounds object
      * @return true or false indicating if an intersection occured
      */
+    @Override
     boolean intersect(Bounds boundsObject, Point4d position) {
 	return intersect(boundsObject);
     }
@@ -1194,6 +1211,7 @@ public void setUpper(Point3d p1) {
      * @param boundsObject another bounds object
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Bounds boundsObject) {
 
 	if( boundsObject == null ) {
@@ -1258,6 +1276,7 @@ public void setUpper(Point3d p1) {
      * @param boundsObjects an array of bounding objects
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Bounds[] boundsObjects) {
 
 	int i;
@@ -1544,6 +1563,7 @@ public void setUpper(Point3d p1) {
      * @param boundsObjects an array of bounds objects
      * @return closest bounding object
      */
+    @Override
     public Bounds closestIntersection( Bounds[] boundsObjects) {
 
 	if( boundsObjects == null || boundsObjects.length <= 0  ) {
@@ -1762,6 +1782,7 @@ public void setUpper(Point3d p1) {
     /**
      * Returns a string representation of this class.
      */
+    @Override
     public String toString() {
 	return new String( "Bounding box: Lower="+lower.x+" "+
 			   lower.y+" "+lower.z+" Upper="+upper.x+" "+
@@ -1817,6 +1838,7 @@ private void setInfiniteBounds() {
     }
 
 // For a infinite bounds. What is the centroid ?
+@Override
 Point3d getCenter() {
 	Point3d cent = new Point3d();
 	cent.add(upper, lower);
@@ -1824,6 +1846,7 @@ Point3d getCenter() {
 	return cent;
 }
 
+@Override
 public void getCenter(Point3d center) {
 	center.add(lower, upper);
 	center.scale(0.5d);
@@ -1854,6 +1877,7 @@ public void getCenter(Point3d center) {
      * then do a copy, otherwise clone the Bounds  and
      * return
      */
+    @Override
     Bounds copy(Bounds r) {
 	if (r != null && this.boundId == r.boundId) {
 	    BoundingBox region = (BoundingBox) r;
@@ -1872,6 +1896,7 @@ public void getCenter(Point3d center) {
 	}
     }
 
+    @Override
     int getPickType() {
 	return PickShape.PICKBOUNDINGBOX;
     }

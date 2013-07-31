@@ -588,6 +588,7 @@ public class TransparencyAttributes extends NodeComponent {
      * Creates a retained mode TransparencyAttributesRetained object that this
      * TransparencyAttributes component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new TransparencyAttributesRetained();
 	this.retained.setSource(this);
@@ -597,6 +598,7 @@ public class TransparencyAttributes extends NodeComponent {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         TransparencyAttributes transa = new TransparencyAttributes();
         transa.duplicateNodeComponent(this);
@@ -622,6 +624,7 @@ public class TransparencyAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);

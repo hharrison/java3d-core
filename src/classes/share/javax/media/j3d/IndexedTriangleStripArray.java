@@ -206,6 +206,7 @@ public class IndexedTriangleStripArray extends IndexedGeometryStripArray {
      * Creates the retained mode IndexedTriangleStripArrayRetained object that this
      * IndexedTriangleStripArray object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new IndexedTriangleStripArrayRetained();
 	this.retained.setSource(this);
@@ -215,6 +216,7 @@ public class IndexedTriangleStripArray extends IndexedGeometryStripArray {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         IndexedTriangleStripArrayRetained rt =
                 (IndexedTriangleStripArrayRetained) retained;

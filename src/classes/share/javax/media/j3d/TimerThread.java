@@ -95,6 +95,7 @@ class TimerThread extends Thread {
 	}
     }
 
+    @Override
     public void run() {
 	long waitTime = -1;
 	long time;

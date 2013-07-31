@@ -37,17 +37,20 @@ class JoglDrawingSurfaceObject extends DrawingSurfaceObject {
         // System.err.println("JoglDrawingSurfaceObject constructed");
     }
 
+    @Override
     synchronized boolean renderLock() {
       //        System.err.println("JoglDrawingSurfaceObject.renderLock()");
         gotDsiLock = true;
         return true;
     }
 
+    @Override
     synchronized void unLock() {
       //        System.err.println("JoglDrawingSurfaceObject.unLock()");
         gotDsiLock = false;
     }
 
+    @Override
     synchronized void getDrawingSurfaceObjectInfo() {
       // FIXME: we don't have all of the information we need here to
       // create a GLDrawable for the Canvas3D, so for now, do nothing
@@ -68,6 +71,7 @@ class JoglDrawingSurfaceObject extends DrawingSurfaceObject {
       */
     }
 
+    @Override
     synchronized void invalidate() {
         System.err.println("JoglDrawingSurfaceObject.invalidate()");
     }

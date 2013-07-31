@@ -176,6 +176,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	return (++numInstances);
     }
 
+    @Override
     int getInstanceNum() {
 	if (instanceNum == -1)
 	    instanceNum = newInstanceNum();
@@ -199,6 +200,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
     /**
      * The main loop for the renderer.
      */
+    @Override
     void doWork(long referenceTime) {
 	RenderBin renderBin = null;
 	Canvas3D cv, canvas=null;
@@ -1467,10 +1469,12 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
     }
 
 // resource clean up
+@Override
 void shutdown() {
 	removeAllCtxs();
 }
 
+    @Override
     void cleanup() {
 	super.cleanup();
         renderMessage = new J3dMessage[1];
@@ -1735,6 +1739,7 @@ final void addTextureResource(int id, TextureRetained obj) {
     }
 
     static class DefaultErrorListener implements RenderingErrorListener {
+        @Override
         public void errorOccurred(RenderingError error) {
             System.err.println();
             System.err.println("DefaultRenderingErrorListener.errorOccurred:");

@@ -124,6 +124,7 @@ public class TextureUnitState extends NodeComponent {
      * Creates the retained mode TextureUnitStateRetained object that this
      * TextureUnitState component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new TextureUnitStateRetained();
 	this.retained.setSource(this);
@@ -292,6 +293,7 @@ public class TextureUnitState extends NodeComponent {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         TextureUnitState ts = new TextureUnitState();
         ts.duplicateNodeComponent(this);
@@ -305,6 +307,7 @@ public class TextureUnitState extends NodeComponent {
      * @deprecated replaced with duplicateNodeComponent(
      *  NodeComponent originalNodeComponent, boolean forceDuplicate)
      */
+    @Override
     public void duplicateNodeComponent(NodeComponent originalNodeComponent) {
 	checkDuplicateNodeComponent(originalNodeComponent);
     }
@@ -329,6 +332,7 @@ public class TextureUnitState extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
@@ -361,6 +365,7 @@ public class TextureUnitState extends NodeComponent {
      *  duplicate also even though current duplicateOnCloneTree flag is false.
      *  This should be overwrite by NodeComponent which contains sub-NodeComponent.
      */
+    @Override
     boolean duplicateChild() {
 	if (getDuplicateOnCloneTree())
 	    return true;

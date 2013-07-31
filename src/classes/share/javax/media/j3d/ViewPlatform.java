@@ -144,6 +144,7 @@ public class ViewPlatform extends Leaf {
      * Creates the retained mode ViewPlatformRetained object that this
      * ViewPlatform component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new ViewPlatformRetained();
 	this.retained.setSource(this);
@@ -237,6 +238,7 @@ public class ViewPlatform extends Leaf {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         ViewPlatform v = new ViewPlatform();
         v.duplicateNode(this, forceDuplicate);
@@ -272,6 +274,7 @@ public class ViewPlatform extends Leaf {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
 
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 	super.duplicateAttributes(originalNode, forceDuplicate);
 

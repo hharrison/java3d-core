@@ -92,10 +92,12 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
 	nnuId = NnuIdManager.getId();
     }
 
+    @Override
     public int getId() {
 	return nnuId;
     }
 
+    @Override
     public int equal(NnuId obj) {
 	int keyId = obj.getId();
 	if(nnuId < keyId) {
@@ -109,6 +111,7 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
 	}
     }
 
+    @Override
     public BoundingBox computeBoundingHull() {
 	/*
 	  System.err.println("Bounds is " + source.vwcBounds);
@@ -122,6 +125,7 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
     }
 
     // This method is use by picking and collision queries.
+    @Override
     public boolean isEnable() {
 	return ((source.vwcBounds != null) &&
 		(source.vwcBounds.isEmpty() == false) &&
@@ -129,6 +133,7 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
     }
 
     // This method is use by visibility query.
+    @Override
     public boolean isEnable(int vis) {
 	if((source.vwcBounds != null) && (source.vwcBounds.isEmpty() == false) &&
 	   (source.switchState.currentSwitchOn)) {
@@ -144,6 +149,7 @@ class GeometryAtom extends Object implements BHLeafInterface, NnuId {
 	return false;
     }
 
+    @Override
     public Locale getLocale2() {
 	return locale;
     }

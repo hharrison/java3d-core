@@ -116,6 +116,7 @@ public final class WakeupOnViewPlatformExit extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
+    @Override
     void addBehaviorCondition(BehaviorStructure bs) {
 	updateTransformRegion(behav);
 	behav.wakeupArray[BehaviorRetained.WAKEUP_VP_EXIT_INDEX]++;
@@ -128,6 +129,7 @@ public final class WakeupOnViewPlatformExit extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
+    @Override
     void removeBehaviorCondition(BehaviorStructure bs) {
 	bs.removeVPExitCondition(this);
 	behav.wakeupArray[BehaviorRetained.WAKEUP_VP_EXIT_INDEX]--;
@@ -141,6 +143,7 @@ public final class WakeupOnViewPlatformExit extends WakeupCriterion {
      * Perform task in addBehaviorCondition() that has to be
      * set every time the condition met.
      */
+    @Override
     void resetBehaviorCondition(BehaviorStructure bs) {
 	// updateTransformRegion() is invoked in BehaviorStructure
 	// whenever Behavior transform change so there is

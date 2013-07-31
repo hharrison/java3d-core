@@ -149,6 +149,7 @@ public class PointArray extends GeometryArray {
      * Creates the retained mode PointArrayRetained object that this
      * PointArray object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new PointArrayRetained();
 	this.retained.setSource(this);
@@ -158,6 +159,7 @@ public class PointArray extends GeometryArray {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         PointArrayRetained rt = (PointArrayRetained) retained;
         int texSetCount = rt.getTexCoordSetCount();

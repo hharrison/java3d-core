@@ -202,6 +202,7 @@ abstract class IndexedGeometryStripArrayRetained extends IndexedGeometryArrayRet
       }
   }
 
+    @Override
     void mergeGeometryArrays(ArrayList list) {
 	int numMerge = list.size();
 	int numCount = 0;

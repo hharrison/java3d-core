@@ -59,6 +59,7 @@ class AudioDeviceEnumerator implements Enumeration {
      * Query that tells whether the enumerator has more elements
      * @return true if the enumerator has more elements, false otherwise
      */
+    @Override
     public boolean hasMoreElements() {
         if(endOfList == false)
             return true;
@@ -70,6 +71,7 @@ class AudioDeviceEnumerator implements Enumeration {
      * Return the next element in the enumerators
      * @return the next element in this enumerator
      */
+    @Override
     public Object nextElement() {
         if (this.hasMoreElements()) {
             endOfList = true;

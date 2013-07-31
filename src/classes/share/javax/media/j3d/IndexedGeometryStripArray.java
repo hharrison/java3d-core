@@ -253,6 +253,7 @@ public abstract class IndexedGeometryStripArray extends IndexedGeometryArray {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void setValidIndexCount(int validIndexCount) {
 	throw new UnsupportedOperationException();
     }

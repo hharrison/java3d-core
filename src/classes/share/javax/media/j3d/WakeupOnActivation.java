@@ -52,6 +52,7 @@ public final class WakeupOnActivation extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
+    @Override
     void addBehaviorCondition(BehaviorStructure bs) {
 	behav.wakeupArray[BehaviorRetained.WAKEUP_ACTIVATE_INDEX]++;
 	behav.wakeupMask |= BehaviorRetained.WAKEUP_ACTIVATE;
@@ -63,6 +64,7 @@ public final class WakeupOnActivation extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
+    @Override
     void removeBehaviorCondition(BehaviorStructure bs) {
 	behav.wakeupArray[BehaviorRetained.WAKEUP_ACTIVATE_INDEX]--;
 	if (behav.wakeupArray[BehaviorRetained.WAKEUP_ACTIVATE_INDEX] == 0) {
@@ -75,5 +77,6 @@ public final class WakeupOnActivation extends WakeupCriterion {
      * Perform task in addBehaviorCondition() that has to be
      * set every time the condition met.
      */
+    @Override
     void resetBehaviorCondition(BehaviorStructure bs) {}
 }

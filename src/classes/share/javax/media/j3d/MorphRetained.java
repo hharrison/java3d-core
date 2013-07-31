@@ -171,6 +171,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      * Sets the geometric bounds of a node.
      * @param bounds the bounding object for the node
      */
+    @Override
     void setBounds(Bounds bounds) {
 	super.setBounds(bounds);
 	if (source.isLive() && !boundsAutoCompute) {
@@ -616,6 +617,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      * Gets the bounding object of a node.
      * @return the node's bounding object
      */
+    @Override
     Bounds getBounds() {
         if(boundsAutoCompute) {
             GeometryArrayRetained mga =
@@ -632,6 +634,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
         }
     }
 
+    @Override
     Bounds getEffectiveBounds() {
         if(boundsAutoCompute) {
 	    return getBounds();
@@ -645,6 +648,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      * ONLY needed for SHAPE, MORPH, and LINK node type.
      * Compute the combine bounds of bounds and its localBounds.
      */
+    @Override
     void computeCombineBounds(Bounds bounds) {
 
 	if(boundsAutoCompute) {
@@ -699,6 +703,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
      * Update GeometryArray computed by morphing input GeometryArrays
      * with weights
      */
+    @Override
     public void updateData(Geometry mga) {
 
 	int i,j,k, vFormat, geoType, stripVCount[];
@@ -1236,6 +1241,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     /**
      * assign a name to this node when it is made live.
      */
+    @Override
     void setLive(SetLiveState s) {
 	int i, j;
 	Shape3DRetained shape;
@@ -1483,6 +1489,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     /**
      * assign a name to this node when it is made live.
      */
+    @Override
     void clearLive(SetLiveState s) {
 	int i, j;
 	Shape3DRetained shape;
@@ -1576,6 +1583,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     }
 
 
+    @Override
     void updatePickable(HashKey keys[], boolean pick[]) {
 	super.updatePickable(keys, pick);
 
@@ -1600,6 +1608,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
     }
 
 
+    @Override
     void updateCollidable(HashKey keys[], boolean collide[]) {
 	super.updateCollidable(keys, collide);
 	Shape3DRetained shape;
@@ -1641,6 +1650,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	throw new RuntimeException("Shape3DRetained: MirrorShape Not found!");
     }
 
+    @Override
     void getMirrorObjects(ArrayList leafList, HashKey key) {
 	Shape3DRetained ms;
 	if (inSharedGroup) {
@@ -1654,6 +1664,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 
     }
 
+    @Override
     void setBoundsAutoCompute(boolean autoCompute) {
         if (autoCompute != boundsAutoCompute) {
             if (autoCompute) {
@@ -1683,6 +1694,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
         }
     }
 
+    @Override
     void updateBounds() {
 	localBounds = getEffectiveBounds();
 	if (source.isLive()) {
@@ -1857,6 +1869,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 
     }
 
+    @Override
     void compile(CompileState compState) {
 
         super.compile(compState);
@@ -1928,6 +1941,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	}
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
 	int mask = 0;
 	if (bit == Morph.ALLOW_GEOMETRY_ARRAY_WRITE) {
@@ -1948,6 +1962,7 @@ class MorphRetained extends LeafRetained implements GeometryUpdater {
 	}
     }
 
+    @Override
     void searchGeometryAtoms(UnorderList list) {
 	list.add(Shape3DRetained.getGeomAtom(
 	     (Shape3DRetained) mirrorShape3D.get(0)));

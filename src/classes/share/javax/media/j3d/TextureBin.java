@@ -766,6 +766,7 @@ HashMap<Transform3D[], RenderMolecule> transparentRenderMoleculeMap = new HashMa
 	soleUserCompDirty = 0;
     }
 
+    @Override
     public void updateObject() {
 	if (!addOpaqueRMs.isEmpty()) {
 	    opaqueRMList = addAll(opaqueRenderMoleculeMap, addOpaqueRMs,

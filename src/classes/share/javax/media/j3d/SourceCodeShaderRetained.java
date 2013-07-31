@@ -71,6 +71,7 @@ class SourceCodeShaderRetained extends ShaderRetained {
 	this.shaderSource = shaderSource;
     }
 
+    @Override
     synchronized void createMirrorObject() {
 	// System.err.println("SourceCodeShaderRetained : createMirrorObject");
 
@@ -85,6 +86,7 @@ class SourceCodeShaderRetained extends ShaderRetained {
     /**
      * Initializes a mirror object.
      */
+    @Override
     synchronized void initMirrorObject() {
 	mirror.source = source;
 
@@ -92,6 +94,7 @@ class SourceCodeShaderRetained extends ShaderRetained {
 	((SourceCodeShaderRetained) mirror).shaderData = null;
     }
 
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 	System.err.println("SourceCodeShader.updateMirrorObject not implemented yet!");
     }

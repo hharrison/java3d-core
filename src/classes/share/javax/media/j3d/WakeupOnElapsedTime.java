@@ -64,6 +64,7 @@ public final class WakeupOnElapsedTime extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
+    @Override
     void addBehaviorCondition(BehaviorStructure bs) {
 	this.triggeredTime = wait + J3dClock.currentTimeMillis();
 	behav.wakeupArray[BehaviorRetained.WAKEUP_TIME_INDEX]++;
@@ -76,6 +77,7 @@ public final class WakeupOnElapsedTime extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
+    @Override
     void removeBehaviorCondition(BehaviorStructure bs) {
 	behav.wakeupArray[BehaviorRetained.WAKEUP_TIME_INDEX]--;
 	if (behav.wakeupArray[BehaviorRetained.WAKEUP_TIME_INDEX] == 0) {
@@ -90,6 +92,7 @@ public final class WakeupOnElapsedTime extends WakeupCriterion {
      * reinsert the wakeupOnElapseTime condition back to the
      * TimerThread wakeup heap
      */
+    @Override
     void reInsertElapseTimeCond() {
 	super.reInsertElapseTimeCond();
 	this.triggeredTime = wait + J3dClock.currentTimeMillis();
@@ -101,6 +104,7 @@ public final class WakeupOnElapsedTime extends WakeupCriterion {
      * Perform task in addBehaviorCondition() that has to be
      * set every time the condition met.
      */
+    @Override
     void resetBehaviorCondition(BehaviorStructure bs) {
 	this.triggeredTime = wait + J3dClock.currentTimeMillis();
 	VirtualUniverse.mc.timerThread.add(this);

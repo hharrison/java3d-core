@@ -62,6 +62,7 @@ public final class WakeupAndOfOrs extends WakeupCondition {
     /**
      * This sets the bit for the given child, then checks if the full condition is met
      */
+    @Override
     void setConditionMet(int id, Boolean checkSchedulingRegion) {
 	conditionsMet[id] = true;
 
@@ -81,6 +82,7 @@ public final class WakeupAndOfOrs extends WakeupCondition {
     /**
      * This gets called when this condition is added to the AndOr tree.
      */
+    @Override
     void buildTree(WakeupCondition parent, int id, BehaviorRetained b) {
 
 	super.buildTree(parent, id, b);
@@ -96,6 +98,7 @@ public final class WakeupAndOfOrs extends WakeupCondition {
      * This goes through the AndOr tree to remove the various criterion from the
      * BehaviorStructure lists
      */
+    @Override
     void cleanTree(BehaviorStructure bs) {
 	for (int i=0; i<conditions.length; i++) {
 	    conditions[i].cleanTree(bs);
@@ -104,6 +107,7 @@ public final class WakeupAndOfOrs extends WakeupCondition {
     }
 
 
+    @Override
     void reInsertElapseTimeCond() {
 	super.reInsertElapseTimeCond();
 	for(int i = 0; i < conditions.length; i++) {
@@ -117,6 +121,7 @@ public final class WakeupAndOfOrs extends WakeupCondition {
      * This goes through the AndOr tree to remove the various criterion from the
      * BehaviorStructure.
      */
+    @Override
     void resetTree() {
 	super.resetTree();
 	for(int i = 0; i < conditions.length; i++) {

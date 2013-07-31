@@ -586,6 +586,7 @@ class MasterControl {
 	final int defaultThreadLimit = getNumberOfProcessors() + 1;
 	Integer threadLimit = java.security.AccessController.doPrivileged(
 	new java.security.PrivilegedAction<Integer>() {
+		@Override
 		public Integer run() {
 			return Integer.getInteger("j3d.threadLimit", defaultThreadLimit);
 		}
@@ -602,6 +603,7 @@ class MasterControl {
 	// Get the input device scheduler sampling time
 	Integer samplingTime = java.security.AccessController.doPrivileged(
 	new java.security.PrivilegedAction<Integer>() {
+		@Override
 		public Integer run() {
 			return Integer.getInteger("j3d.deviceSampleTime", 0);
 		}
@@ -618,6 +620,7 @@ class MasterControl {
 	final int defaultGLSLVertexAttrOffset = glslVertexAttrOffset;
 	Integer vattrOffset = java.security.AccessController.doPrivileged(
 	new java.security.PrivilegedAction<Integer>() {
+		@Override
 		public Integer run() {
 			return Integer.getInteger("j3d.glslVertexAttrOffset",
 					defaultGLSLVertexAttrOffset);
@@ -705,6 +708,7 @@ class MasterControl {
 
         java.security.AccessController.doPrivileged(
             new java.security.PrivilegedAction<Object>() {
+                @Override
                 public Object run() {
                     coreLoggerEnabled = initLogger(coreLogger, null);
                     devLoggerEnabled = initLogger(devLogger, Level.OFF);
@@ -768,6 +772,7 @@ class MasterControl {
 private static String getProperty(final String prop) {
 	return java.security.AccessController.doPrivileged(
 		new java.security.PrivilegedAction<String>() {
+			@Override
 			public String run() {
 				return System.getProperty(prop);
 			}
@@ -844,6 +849,7 @@ private static String getProperty(final String prop) {
 
 	return java.security.AccessController.doPrivileged(
 		new java.security.PrivilegedAction<InputDeviceBlockingThread>() {
+			@Override
 			public InputDeviceBlockingThread run() {
 				synchronized (rootThreadGroup) {
 					InputDeviceBlockingThread thread = new InputDeviceBlockingThread(
@@ -863,6 +869,7 @@ private static String getProperty(final String prop) {
 	    threadPriority = pri;
 	    java.security.AccessController.doPrivileged(
                 new java.security.PrivilegedAction<Object>() {
+                    @Override
                     public Object run() {
 			Thread list[] = new
 			    Thread[rootThreadGroup.activeCount()];
@@ -970,6 +977,7 @@ private static String getProperty(final String prop) {
 
 	java.security.AccessController.doPrivileged(
 	     new java.security.PrivilegedAction<Object>() {
+                    @Override
                     public Object run() {
 			Renderer r;
 		        synchronized (rootThreadGroup) {
@@ -1137,6 +1145,7 @@ private static String getProperty(final String prop) {
 	state = RUNNING;
 	java.security.AccessController.doPrivileged(
 	    new java.security.PrivilegedAction<Object>() {
+                @Override
                 public Object run() {
 		    synchronized (rootThreadGroup) {
 			mcThread = new
@@ -1634,6 +1643,7 @@ private static String getProperty(final String prop) {
 	if (s.updateThread == null) {
 	    java.security.AccessController.doPrivileged(
 	        new java.security.PrivilegedAction<Object>() {
+                   @Override
                    public Object run() {
 		       synchronized (rootThreadGroup) {
                            s.updateThread = new StructureUpdateThread(
@@ -1759,6 +1769,7 @@ private static String getProperty(final String prop) {
 	if (univ.behaviorScheduler == null) {
 	    java.security.AccessController.doPrivileged(
 		new java.security.PrivilegedAction<Object>() {
+                       @Override
                        public Object run() {
 			   synchronized (rootThreadGroup) {
 			       univ.behaviorScheduler = new BehaviorScheduler(
@@ -1957,6 +1968,7 @@ private static String getProperty(final String prop) {
 	// Create timer thread
 	java.security.AccessController.doPrivileged(
 			    new java.security.PrivilegedAction<Object>() {
+              @Override
               public Object run() {
 		  synchronized (rootThreadGroup) {
 		      timerThread = new TimerThread(rootThreadGroup);
@@ -1970,6 +1982,7 @@ private static String getProperty(final String prop) {
         // Create notification thread
 	java.security.AccessController.doPrivileged(
 			    new java.security.PrivilegedAction<Object>() {
+              @Override
               public Object run() {
 		  synchronized (rootThreadGroup) {
 		      notificationThread = new NotificationThread(rootThreadGroup);
@@ -2115,6 +2128,7 @@ private static String getProperty(final String prop) {
 				    if (rdr == null) {
 					java.security.AccessController.doPrivileged(
 					    new java.security.PrivilegedAction<Object>() {
+                                              @Override
                                               public Object run() {
 
 						  synchronized (rootThreadGroup) {
@@ -2194,6 +2208,7 @@ private static String getProperty(final String prop) {
 	if (env.inputsched == null) {
 	    java.security.AccessController.doPrivileged(
 		 new java.security.PrivilegedAction<Object>() {
+                      @Override
                       public Object run() {
 			  synchronized (rootThreadGroup) {
 			      env.inputsched = new InputDeviceScheduler(
@@ -3465,6 +3480,7 @@ private static String getProperty(final String prop) {
         // create ThreadGroup
         java.security.AccessController.doPrivileged(
             new java.security.PrivilegedAction<Object>() {
+                @Override
                 public Object run() {
                     ThreadGroup parent;
                     Thread thread = Thread.currentThread();

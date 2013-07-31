@@ -163,6 +163,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
     }
 
 
+    @Override
     public void componentResized(ComponentEvent e) {
 	if (e.getSource() == canvas) {
 	    if (DEBUG) {
@@ -174,6 +175,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void componentMoved(ComponentEvent e) {
 	if (e.getSource() == canvas) {
             if (DEBUG) {
@@ -189,6 +191,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
         }
     }
 
+    @Override
     public void componentHidden(ComponentEvent e) {
 	if (DEBUG) {
 	    System.err.println(e);
@@ -199,6 +202,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	canvas.evaluateVisiblilty();
     }
 
+    @Override
     public void componentShown(ComponentEvent e) {
 	if (DEBUG) {
 	    System.err.println(e);
@@ -209,6 +213,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	canvas.evaluateVisiblilty();
     }
 
+    @Override
     public void focusGained(FocusEvent e) {
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
@@ -216,6 +221,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void focusLost(FocusEvent e) {
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
@@ -223,6 +229,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void keyTyped(KeyEvent e) {
 	canvas.sendEventToBehaviorScheduler(e);
 	if (DEBUG) {
@@ -230,6 +237,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void keyPressed(KeyEvent e) {
 	canvas.sendEventToBehaviorScheduler(e);
 
@@ -238,6 +246,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void keyReleased(KeyEvent e) {
 	canvas.sendEventToBehaviorScheduler(e);
 	if (stopped) {
@@ -250,6 +259,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void mouseClicked(MouseEvent e) {
 //	if (keyEvents &&
 //            (VirtualUniverse.mc.getRenderingAPI() !=
@@ -266,6 +276,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void mouseEntered(MouseEvent e) {
 //	if (keyEvents &&
 //           (VirtualUniverse.mc.getRenderingAPI() ==
@@ -281,6 +292,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void mouseExited(MouseEvent e) {
         if (mouseEvents)
 	    canvas.sendEventToBehaviorScheduler(e);
@@ -289,6 +301,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         if (mouseEvents)
 	    canvas.sendEventToBehaviorScheduler(e);
@@ -297,6 +310,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         if (mouseEvents)
 	    canvas.sendEventToBehaviorScheduler(e);
@@ -305,6 +319,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
 	// Note : We don't have to test for mouseMotionEvent here because
 	// this routine will never be called unless mouseMotionEvent is enabled.
@@ -314,6 +329,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
 	// Note : We don't have to test for mouseMotionEvent here because
 	// this routine will never be called unless mouseMotionEvent is enabled.
@@ -323,6 +339,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	}
     }
 
+    @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
 	// Note : We don't have to test for mouseWheelEvent here because
 	// this routine will never be called unless mouseWheelEvent is enabled.
@@ -335,6 +352,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
     /*
      * WindowListener methods
      */
+    @Override
     public void windowClosed(WindowEvent e) {
 	if (DEBUG) {
 	    System.err.println(e);
@@ -343,6 +361,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
        // Issue 458 - Don't set canvas visible to false
     }
 
+    @Override
     public void windowClosing(WindowEvent e) {
 	if (DEBUG) {
 	    System.err.println(e);
@@ -351,6 +370,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
         // Issue 458 - Don't set canvas.visible to false
     }
 
+    @Override
     public void windowActivated(WindowEvent e) {
 	if (DEBUG) {
 	    System.err.println(e);
@@ -358,6 +378,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	canvas.sendEventToBehaviorScheduler(e);
     }
 
+    @Override
     public void windowDeactivated(WindowEvent e) {
 	if (DEBUG) {
 	    System.err.println(e);
@@ -365,6 +386,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	canvas.sendEventToBehaviorScheduler(e);
     }
 
+    @Override
     public void windowDeiconified(WindowEvent e) {
 	if (DEBUG) {
 	    System.err.println(e);
@@ -376,6 +398,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
         canvas.evaluateVisiblilty();
     }
 
+    @Override
     public void windowIconified(WindowEvent e) {
 	if (DEBUG) {
 	    System.err.println(e);
@@ -387,6 +410,7 @@ class EventCatcher extends Object implements ComponentListener, FocusListener,
 	canvas.evaluateVisiblilty();
     }
 
+    @Override
     public void windowOpened(WindowEvent e) {
 	if (DEBUG) {
 	    System.err.println(e);

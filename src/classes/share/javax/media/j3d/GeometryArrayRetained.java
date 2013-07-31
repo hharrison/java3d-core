@@ -366,6 +366,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
     }
 
 
+    @Override
     void setLive(boolean inBackgroundGroup, int refCount) {
 	dirtyFlag = VERTEX_CHANGED|INDEX_CHANGED;
         isEditable = !isWriteStatic();
@@ -404,6 +405,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
     }
 
+    @Override
     void clearLive(int refCount) {
 	super.clearLive(refCount);
 
@@ -412,6 +414,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	}
     }
 
+    @Override
     void computeBoundingBox() {
 
 	//	System.err.println("computeBoundingBox ....");
@@ -878,6 +881,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
     }
 
 
+    @Override
     synchronized void update() {
     }
 
@@ -2220,6 +2224,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
     //		 data in one pass
     // pass >= 0 implies one pass for one texture unit state
 
+    @Override
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale,
 		 boolean updateAlpha, float alpha,
 		 int screen,
@@ -3436,6 +3441,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
      * Returns vertexFormat in the GeometryArray
      * @return vertexFormat format of vertices in the GeometryArray
      */
+    @Override
     int getVertexFormat(){
 	return vertexFormat;
     }
@@ -10640,6 +10646,7 @@ int numDlistUsers(RenderBin renderBin) {
 	return true;
     }
 
+    @Override
     void compile(CompileState compState) {
         super.compile(compState);
 
@@ -10648,6 +10655,7 @@ int numDlistUsers(RenderBin renderBin) {
 	}
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	if (geoBounds != null) {
 	    geoBounds.transform(xform.transform);
@@ -10800,6 +10808,7 @@ int numDlistUsers(RenderBin renderBin) {
     }
 
 
+    @Override
     boolean intersect(Transform3D thisLocalToVworld,
 		      Transform3D otherLocalToVworld, GeometryRetained  geom) {
 
@@ -11201,6 +11210,7 @@ int numDlistUsers(RenderBin renderBin) {
 	dist[0] = Math.sqrt(dist[0]);
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
 	int mask = 0;
 	if ((vertexFormat & GeometryArray.BY_REFERENCE) == 0) {

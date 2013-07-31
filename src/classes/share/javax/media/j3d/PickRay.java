@@ -96,6 +96,7 @@ public final class PickRay extends PickShape {
      * Return true if shape intersect with bounds.
      * The point of intersection is stored in pickPos.
      */
+    @Override
     final boolean intersect(Bounds bounds, Point4d pickPos) {
 	return bounds.intersect(origin, direction,  pickPos);
     }
@@ -103,6 +104,7 @@ public final class PickRay extends PickShape {
 
     // Only use within J3D.
     // Return a new PickRay that is the transformed (t3d) of this pickRay.
+    @Override
     PickShape transform(Transform3D t3d) {
 
 	Point3d end = new Point3d();
@@ -125,10 +127,12 @@ public final class PickRay extends PickShape {
     }
 
 
+    @Override
     Point3d getStartPoint() {
 	return origin;
     }
 
+    @Override
     int getPickType() {
 	return PICKRAY;
     }

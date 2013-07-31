@@ -184,6 +184,7 @@ public class IndexedQuadArray extends IndexedGeometryArray {
      * Creates the retained mode IndexedQuadArrayRetained object that this
      * IndexedQuadArray object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new IndexedQuadArrayRetained();
 	this.retained.setSource(this);
@@ -193,6 +194,7 @@ public class IndexedQuadArray extends IndexedGeometryArray {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         IndexedQuadArrayRetained rt = (IndexedQuadArrayRetained) retained;
         int texSetCount = rt.getTexCoordSetCount();

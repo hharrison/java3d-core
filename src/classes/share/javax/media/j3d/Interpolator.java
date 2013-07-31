@@ -95,6 +95,7 @@ public abstract class Interpolator extends Behavior {
      * This is the default Interpolator behavior initialization routine.
      * It schedules the behavior to awaken at the next frame.
      */
+    @Override
     public void initialize() {
 	// Reset alpha
 	//alpha.setStartTime(J3dClock.currentTimeMillis());
@@ -125,6 +126,7 @@ public abstract class Interpolator extends Behavior {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

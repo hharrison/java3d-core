@@ -127,6 +127,7 @@ class DirectionalLightRetained extends LightRetained
 
 
 
+    @Override
     void setLive(SetLiveState s) {
 	super.setLive(s);
 	J3dMessage createMessage = super.initMessage(8);
@@ -141,6 +142,7 @@ class DirectionalLightRetained extends LightRetained
      * updates a directional light.  This includes its
      * color and its transformed direction.
      */
+    @Override
     // Note : if you add any more fields here , you need to update
     // updateLight() in RenderingEnvironmentStructure
     void updateMirrorObject(Object[] objs) {
@@ -179,6 +181,7 @@ class DirectionalLightRetained extends LightRetained
     }
 
 
+    @Override
     void update(Context ctx, int lightSlot, double scale) {
         Pipeline.getPipeline().updateDirectionalLight(ctx,
                 lightSlot, color.x, color.y, color.z,
@@ -187,6 +190,7 @@ class DirectionalLightRetained extends LightRetained
     }
 
     // Clones only the retained side, internal use only
+     @Override
      protected Object clone() {
          DirectionalLightRetained dr =
             (DirectionalLightRetained)super.clone();
@@ -197,6 +201,7 @@ class DirectionalLightRetained extends LightRetained
 
 
     // Called on the mirror object
+    @Override
     void updateTransformChange() {
 	super.updateTransformChange();
 
@@ -205,6 +210,7 @@ class DirectionalLightRetained extends LightRetained
 
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);
         xform.transform.transform(direction, direction);

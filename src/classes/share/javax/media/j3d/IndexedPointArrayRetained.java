@@ -39,6 +39,7 @@ class IndexedPointArrayRetained extends IndexedGeometryArrayRetained {
         this.geoType = GEO_TYPE_INDEXED_POINT_SET;
     }
 
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
 	double sdist[] = new double[1];
@@ -212,6 +213,7 @@ class IndexedPointArrayRetained extends IndexedGeometryArrayRetained {
 	return false;
     }
 
+    @Override
     boolean intersect(Point3d[] pnts) {
 	Point3d point = new Point3d();
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
@@ -264,6 +266,7 @@ class IndexedPointArrayRetained extends IndexedGeometryArrayRetained {
 	return false;
     }
 
+    @Override
     boolean intersect(Transform3D thisToOtherVworld,
 		      GeometryRetained geom) {
 	Point3d[] pnt = new Point3d[1];
@@ -283,6 +286,7 @@ class IndexedPointArrayRetained extends IndexedGeometryArrayRetained {
     }
 
     // the bounds argument is already transformed
+    @Override
     boolean intersect(Bounds targetBound) {
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
 		 initialVertexIndex : initialCoordIndex);
@@ -297,6 +301,7 @@ class IndexedPointArrayRetained extends IndexedGeometryArrayRetained {
 	return false;
     }
 
+    @Override
     int getClassType() {
 	return POINT_TYPE;
     }

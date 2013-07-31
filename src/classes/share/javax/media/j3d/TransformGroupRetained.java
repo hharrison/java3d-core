@@ -207,6 +207,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
     }
 
     // synchronized with TransformStructure
+    @Override
     synchronized void setNodeData(SetLiveState s) {
 	int i;
 
@@ -358,6 +359,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         s.parentTransformLink = this;
     }
 
+    @Override
     void setAuxData(SetLiveState s, int index, int hkIndex) {
         super.setAuxData(s, index, hkIndex);
         perPathData[hkIndex] = new TransformGroupData();
@@ -389,6 +391,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	}
     }
 
+    @Override
     boolean isStatic() {
 	if (!super.isStatic() ||
 	    source.getCapability(TransformGroup.ALLOW_TRANSFORM_READ) ||
@@ -399,11 +402,13 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	}
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);
 	transform.mul(xform.transform, transform);
     }
 
+    @Override
     void traverse(boolean sameLevel, int level) {
 
 	System.err.println();
@@ -422,6 +427,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	super.traverse(true, level);
     }
 
+    @Override
     void compile(CompileState compState) {
 
 	// save and reset the keepTG and needNormalsTransform flags
@@ -466,6 +472,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         compState.needNormalsTransform = saveNeedNormalsTransform;
     }
 
+    @Override
     void merge(CompileState compState) {
 
 	TransformGroupRetained saveStaticTransform;
@@ -516,6 +523,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
      * This setlive simply concatinates it's transform onto all the ones
      * passed in.
      */
+    @Override
     void setLive(SetLiveState s) {
       int i,j;
       Transform3D trans = null;
@@ -627,6 +635,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
     /**
      * remove the localToVworld transform for a  transformGroup
      */
+    @Override
     void removeNodeData(SetLiveState s) {
 
 	synchronized (this) { // synchronized with TransformStructure
@@ -732,6 +741,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	}
     }
 
+    @Override
     void clearLive(SetLiveState s) {
 
         Targets[] savedTransformTargets = null;
@@ -781,6 +791,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
     }
 
 
+    @Override
     void computeCombineBounds(Bounds bounds) {
         // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
         if (validCachedBounds && boundsAutoCompute) {
@@ -1027,6 +1038,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
      * TransformGroup, it has to use currentChildLocalToVworld
      * instead of currentLocalToVworld
      */
+    @Override
     void transformBounds(SceneGraphPath path, Bounds bound) {
 	if (!((NodeRetained) path.item.retained).inSharedGroup) {
 	    bound.transform(getCurrentChildLocalToVworld());
@@ -1098,6 +1110,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
     // TargetsInterface methods
     // ****************************
 
+    @Override
     public int getTargetThreads(int type) {
         // type is ignored here, only need for SharedGroup
         if (type == TargetsInterface.TRANSFORM_TARGETS) {
@@ -1108,6 +1121,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	}
     }
 
+    @Override
     public CachedTargets getCachedTargets(int type, int index, int child) {
         // type is ignored here, only need for SharedGroup
         // child is ignored here
@@ -1119,6 +1133,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	}
     }
 
+    @Override
     TargetsInterface getClosestTargetsInterface(int type) {
         return (type == TargetsInterface.TRANSFORM_TARGETS)?
                 (TargetsInterface)this:
@@ -1127,6 +1142,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
     // re-evalute localTargetThreads using newCachedTargets and
     // re-evaluate targetThreads
+    @Override
     public void computeTargetThreads(int type,
 				CachedTargets[] newCachedTargets) {
 
@@ -1166,6 +1182,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
     // re-compute localTargetThread, targetThreads and
     // propagate changes to ancestors
+    @Override
     public void updateTargetThreads(int type,
 				CachedTargets[] newCachedTargets) {
         // type is ignored here, only need for SharedGroup
@@ -1183,6 +1200,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
     // re-evaluate targetThreads using childTargetThreads and
     // propagate changes to ancestors
+    @Override
     public void propagateTargetThreads(int type, int childTargetThreads) {
         // type is ignored here, only need for SharedGroup
 
@@ -1200,6 +1218,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         }
     }
 
+    @Override
     public void updateCachedTargets(int type, CachedTargets[] newCt) {
         // type is ignored here, only need for SharedGroup
         if (type == TargetsInterface.TRANSFORM_TARGETS) {
@@ -1209,6 +1228,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	}
     }
 
+    @Override
     public void copyCachedTargets(int type, CachedTargets[] newCt) {
         // type is ignored here, only need for SharedGroup
         if (type == TargetsInterface.TRANSFORM_TARGETS) {
@@ -1221,6 +1241,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
         }
     }
 
+    @Override
     public void resetCachedTargets(int type,
 				CachedTargets[] newCtArr, int child) {
         // type is ignored here, only need for SharedGroup
@@ -1232,11 +1253,13 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 	}
     }
 
+@Override
 public ArrayList<SwitchState> getTargetsData(int type, int index) {
 	// not used
 	return null;
 }
 
+    @Override
     void childCheckSetLive(NodeRetained child, int childIndex,
                                 SetLiveState s, NodeRetained linkNode) {
         s.currentTransforms = childLocalToVworld;

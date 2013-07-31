@@ -197,6 +197,7 @@ class BehaviorStructure extends J3dStructure {
 
     }
 
+    @Override
     void processMessages(long referenceTime) {
 
 	J3dMessage[] messages = getMessages(referenceTime);
@@ -418,6 +419,7 @@ class BehaviorStructure extends J3dStructure {
 
     }
 
+    @Override
     void removeNodes(J3dMessage m) {
 	Object[] nodes = (Object[]) m.args[0];
 	boolean behavRemove = false;
@@ -1651,6 +1653,7 @@ Sensor sensorIntersect(Bounds behregion) {
 
     }
 
+    @Override
     void cleanup() {
 	behaviors.clear();
 	viewPlatforms.clear();

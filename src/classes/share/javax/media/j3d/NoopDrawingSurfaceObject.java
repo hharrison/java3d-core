@@ -37,17 +37,20 @@ class NoopDrawingSurfaceObject extends DrawingSurfaceObject {
         System.err.println("NoopDrawingSurfaceObject constructed");
     }
 
+    @Override
     synchronized boolean renderLock() {
 //        System.err.println("NoopDrawingSurfaceObject.renderLock()");
         gotDsiLock = true;
         return true;
     }
 
+    @Override
     synchronized void unLock() {
 //        System.err.println("NoopDrawingSurfaceObject.unLock()");
         gotDsiLock = false;
     }
 
+    @Override
     synchronized void getDrawingSurfaceObjectInfo() {
         if (canvas.drawable == null) {
             System.err.println(
@@ -58,6 +61,7 @@ class NoopDrawingSurfaceObject extends DrawingSurfaceObject {
         }
     }
 
+    @Override
     synchronized void invalidate() {
         System.err.println("NoopDrawingSurfaceObject.invalidate()");
     }

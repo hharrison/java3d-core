@@ -90,6 +90,7 @@ class BHInternalNode extends BHNode {
 	bHull.set(this.bHull);
     }
 
+    @Override
     void computeBoundingHull() {
 	BoundingBox rChildBound = null;
 	BoundingBox lChildBound = null;
@@ -127,6 +128,7 @@ class BHInternalNode extends BHNode {
 
     }
 
+    @Override
     void updateMarkedBoundingHull() {
 
 	if(mark == false)
@@ -191,6 +193,7 @@ class BHInternalNode extends BHNode {
 	}
     }
 
+    @Override
     void destroyTree(BHNode[] bhArr, int[] index) {
 
 	if(rChild != null)

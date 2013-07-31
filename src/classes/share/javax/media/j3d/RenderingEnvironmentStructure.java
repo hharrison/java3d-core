@@ -156,6 +156,7 @@ void addObjArrayToFreeList(Object[] objs) {
 	objFreeList.add(objs);
 }
 
+@Override
 public void updateObject() {
 	int size;
 
@@ -175,6 +176,7 @@ public void updateObject() {
 	xformChangeList.clear();
 }
 
+    @Override
     void processMessages(long referenceTime) {
 	J3dMessage[] messages = getMessages(referenceTime);;
 	J3dMessage m;
@@ -512,6 +514,7 @@ public void updateObject() {
 	    intersectedModelClips = new ModelClipRetained[numberOfModelClips];
     }
 
+    @Override
     void removeNodes(J3dMessage m) {
 	Object[] nodes = (Object[])m.args[0];
 	ArrayList<NodeRetained> viewScopedNodes = (ArrayList<NodeRetained>)m.args[3];
@@ -1738,5 +1741,6 @@ boolean isMclipScopedToThisView(Object obj, View view) {
 	return true;
 }
 
+@Override
 void cleanup() {}
 }

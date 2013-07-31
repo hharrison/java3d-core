@@ -83,6 +83,7 @@ public class Group extends Node {
      * Creates the retained mode GroupRetained object that this
      * Group component object will point to.
      */
+    @Override
     void createRetained() {
 	retained = new GroupRetained();
 	retained.setSource(this);
@@ -460,6 +461,7 @@ public class Group extends Node {
      *
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     Node cloneTree(boolean forceDuplicate, Hashtable nodeHashtable) {
         Group g = (Group) super.cloneTree(forceDuplicate, nodeHashtable);
 	GroupRetained rt = (GroupRetained) retained;
@@ -499,6 +501,7 @@ public class Group extends Node {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
@@ -529,6 +532,7 @@ public class Group extends Node {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+     @Override
      public Node cloneNode(boolean forceDuplicate) {
 	 Group g = new Group();
 	 g.duplicateNode(this, forceDuplicate);

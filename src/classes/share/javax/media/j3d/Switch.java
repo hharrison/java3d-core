@@ -126,6 +126,7 @@ public class Switch extends Group {
      * Creates the retained mode SwitchRetained object that this
      * Switch object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new SwitchRetained();
 	this.retained.setSource(this);
@@ -234,6 +235,7 @@ public class Switch extends Group {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         Switch s = new Switch();
         s.duplicateNode(this, forceDuplicate);
@@ -262,6 +264,7 @@ public class Switch extends Group {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

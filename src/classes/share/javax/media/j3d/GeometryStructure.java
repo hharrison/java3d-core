@@ -130,6 +130,7 @@ class GeometryStructure extends J3dStructure {
 							  WakeupOnCollisionMovement.COND_IN_GS_LIST, u);
     }
 
+    @Override
     void processMessages(long referenceTime) {
 	J3dMessage m;
 	J3dMessage[] messages = getMessages(referenceTime);
@@ -364,6 +365,7 @@ class GeometryStructure extends J3dStructure {
 	// currTree.gatherTreeStatistics();
     }
 
+    @Override
     void removeNodes(J3dMessage m) {
 	Object[] nodes = (Object[]) m.args[0];
 	Object node;
@@ -1176,6 +1178,7 @@ class GeometryStructure extends J3dStructure {
 */
     }
 
+    @Override
     void cleanup() {
 	collideEntryList.clear();
 	collideExitList.clear();

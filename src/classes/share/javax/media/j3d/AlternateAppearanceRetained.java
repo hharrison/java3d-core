@@ -501,6 +501,7 @@ Enumeration<Group> getAllScopes() {
      * cached region and transformed region
      */
 
+    @Override
     void updateBoundingLeaf() {
         if (boundingLeaf != null && boundingLeaf.switchState.currentSwitchOn) {
             region = boundingLeaf.transformedRegion;
@@ -514,6 +515,7 @@ Enumeration<Group> getAllScopes() {
         }
     }
 
+    @Override
     void setLive(SetLiveState s) {
 
         if (inImmCtx) {
@@ -684,6 +686,7 @@ Enumeration<Group> getAllScopes() {
      * This clearLive routine first calls the superclass's method, then
      * it removes itself to the list of alt app
      */
+    @Override
     void clearLive(SetLiveState s) {
 	int i, j;
         GroupRetained group;
@@ -739,6 +742,7 @@ Enumeration<Group> getAllScopes() {
 
 
 
+    @Override
     void updateTransformChange() {
     }
 
@@ -769,6 +773,7 @@ Enumeration<Group> getAllScopes() {
     }
 
 
+    @Override
     void getMirrorObjects(ArrayList leafList, HashKey key) {
 	leafList.add(mirrorAltApp);
     }

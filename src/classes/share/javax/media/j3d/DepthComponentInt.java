@@ -79,6 +79,7 @@ public class DepthComponentInt extends DepthComponent {
      * Creates a retained mode DepthComponentIntRetained object that this
      * DepthComponentInt component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new DepthComponentIntRetained();
 	this.retained.setSource(this);
@@ -88,6 +89,7 @@ public class DepthComponentInt extends DepthComponent {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
 	DepthComponentIntRetained rt = (DepthComponentIntRetained) retained;
         DepthComponentInt d = new DepthComponentInt(rt.width,
@@ -114,6 +116,7 @@ public class DepthComponentInt extends DepthComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);

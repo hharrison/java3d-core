@@ -1326,6 +1326,7 @@ synchronized void setAltAppScope() {
      }
 
 
+    @Override
     void updatePickable(HashKey keys[], boolean pick[]) {
 	int numChildLessOne = children.size() - 1;
 	super.updatePickable(keys, pick);
@@ -1351,6 +1352,7 @@ synchronized void setAltAppScope() {
     }
 
 
+    @Override
     void updateCollidable(HashKey keys[], boolean collide[]) {
 	int numChildLessOne = children.size() - 1;
 	super.updateCollidable(keys, collide);
@@ -2129,6 +2131,7 @@ synchronized void setAltAppScope() {
     }
 
 
+    @Override
     synchronized void updateLocalToVworld() {
 	// For each children call .....
 	for (int i=children.size()-1; i>=0; i--) {
@@ -2138,11 +2141,13 @@ synchronized void setAltAppScope() {
 	}
     }
 
+    @Override
     void setNodeData(SetLiveState s) {
 	super.setNodeData(s);
         orderedPaths = s.orderedPaths;
     }
 
+    @Override
     void removeNodeData(SetLiveState s) {
 
         if((!inSharedGroup) || (s.keys.length == localToVworld.length)) {
@@ -2158,6 +2163,7 @@ synchronized void setAltAppScope() {
 
 
 
+    @Override
     void setLive(SetLiveState s) {
 	doSetLive(s);
 	super.markAsLive();
@@ -2180,6 +2186,7 @@ synchronized void setAltAppScope() {
     /**
      * This version of setLive calls setLive on all of its chidren.
      */
+    @Override
     void doSetLive(SetLiveState s) {
       	int i, nchildren;
         super.doSetLive(s);
@@ -2431,6 +2438,7 @@ synchronized void setAltAppScope() {
 	    }
     }
 
+    @Override
     void computeCombineBounds(Bounds bounds) {
         if (!VirtualUniverse.mc.cacheAutoComputedBounds) {
             if (boundsAutoCompute) {
@@ -2481,6 +2489,7 @@ synchronized void setAltAppScope() {
      * Gets the bounding object of a node.
      * @return the node's bounding object
      */
+    @Override
     Bounds getBounds() {
 
 	if ( boundsAutoCompute) {
@@ -2511,6 +2520,7 @@ synchronized void setAltAppScope() {
      * Gets the bounding object of a node.
      * @return the node's bounding object
      */
+    @Override
     Bounds getEffectiveBounds() {
 	if ( boundsAutoCompute) {
 	    return getBounds();
@@ -2537,6 +2547,7 @@ synchronized void setAltAppScope() {
     }
 
 
+    @Override
     boolean isStatic() {
 	return (super.isStatic() && isStaticChildren());
     }
@@ -2544,6 +2555,7 @@ synchronized void setAltAppScope() {
     /**
      * This compiles() a group
      */
+    @Override
     void setCompiled() {
 	super.setCompiled();
 	for (int i=children.size()-1; i>=0; i--) {
@@ -2553,6 +2565,7 @@ synchronized void setAltAppScope() {
 	}
     }
 
+    @Override
     void traverse(boolean sameLevel, int level) {
 	if (!sameLevel) {
 	    super.traverse(true, level);
@@ -2575,6 +2588,7 @@ synchronized void setAltAppScope() {
 	}
     }
 
+    @Override
     void compile(CompileState compState) {
 	super.compile(compState);
 
@@ -2604,6 +2618,7 @@ synchronized void setAltAppScope() {
 	}
     }
 
+    @Override
     void merge(CompileState compState) {
 
 	GroupRetained saveParentGroup = null;
@@ -2652,6 +2667,7 @@ synchronized void setAltAppScope() {
     /**
      * This version of clearLive calls clearLive on all of its chidren.
      */
+    @Override
     void clearLive(SetLiveState s) {
 	int i, k, hkIndex, nchildren;
 	int parentScopedLtSize = 0;
@@ -2867,22 +2883,26 @@ synchronized void setAltAppScope() {
     }
 
     // This is only used by alternateCollisionTarget
+    @Override
     public BoundingBox computeBoundingHull() {
 	return collisionVwcBounds;
     }
 
     // If isSwitchOn cached here, we don't need to traverse up the tree
+    @Override
     public boolean isEnable() {
 	return isNodeSwitchOn(this.sourceNode, key);
     }
 
     // If isSwitchOn cached here, we don't need to traverse up the tree
     // This method does nothing with vis.
+    @Override
     public boolean isEnable(int vis) {
 	return isNodeSwitchOn(this.sourceNode, key);
     }
 
     // Can't use getLocale, it is used by BranchGroupRetained
+    @Override
     public Locale getLocale2() {
 	return locale;
     }
@@ -3009,6 +3029,7 @@ synchronized void setAltAppScope() {
 	}
     }
 
+    @Override
     void setBoundsAutoCompute(boolean autoCompute) {
         if (autoCompute != boundsAutoCompute) {
             super.setBoundsAutoCompute(autoCompute);
@@ -3029,6 +3050,7 @@ synchronized void setAltAppScope() {
         }
     }
 
+    @Override
     void setBounds(Bounds bounds) {
         super.setBounds(bounds);
         if (source.isLive() && !boundsAutoCompute &&
@@ -3045,6 +3067,7 @@ synchronized void setAltAppScope() {
     }
 
 
+    @Override
     int[] processViewSpecificInfo(int mode, HashKey k, View v, ArrayList vsgList, int[] keyList,
 				  ArrayList leafList) {
 	int nchildren = children.size();
@@ -3176,6 +3199,7 @@ synchronized void setAltAppScope() {
     }
 
     // recursively found all geometryAtoms under this Group
+    @Override
     void searchGeometryAtoms(UnorderList list) {
 	for (int i = children.size()-1; i >=0; i--) {
 		NodeRetained child = children.get(i);

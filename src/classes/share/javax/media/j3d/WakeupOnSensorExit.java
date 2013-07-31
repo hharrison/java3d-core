@@ -81,6 +81,7 @@ public final class WakeupOnSensorExit extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
+    @Override
     void addBehaviorCondition(BehaviorStructure bs) {
 	bs.addSensorExitCondition(this);
 	if ((behav != null) && behav.enable) {
@@ -93,6 +94,7 @@ public final class WakeupOnSensorExit extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
+    @Override
     void removeBehaviorCondition(BehaviorStructure bs) {
 	bs.removeSensorExitCondition(this);
 	if ((behav != null) && behav.enable) {
@@ -138,5 +140,6 @@ public final class WakeupOnSensorExit extends WakeupCriterion {
      * Perform task in addBehaviorCondition() that has to be
      * set every time the condition met.
      */
+    @Override
     void resetBehaviorCondition(BehaviorStructure bs) {}
 }

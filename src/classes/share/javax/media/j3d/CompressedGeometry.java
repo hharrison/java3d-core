@@ -400,6 +400,7 @@ public class CompressedGeometry extends Geometry {
      * Creates the retained mode CompressedGeometryRetained object that this
      * CompressedGeometry object will point to.
      */
+    @Override
     void createRetained() {
   	this.retained = new CompressedGeometryRetained() ;
 	this.retained.setSource(this) ;
@@ -408,6 +409,7 @@ public class CompressedGeometry extends Geometry {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
 	CompressedGeometry cg = new CompressedGeometry() ;
 

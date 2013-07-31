@@ -395,6 +395,7 @@ private HashSet<ShaderAttribute> shaderAttrErrorSet = null;
     abstract boolean isSupported(Canvas3D cv);
 
 
+    @Override
     void setLive(boolean backgroundGroup, int refCount) {
 
 	// System.err.println("ShaderProgramRetained.setLive()");
@@ -410,6 +411,7 @@ private HashSet<ShaderAttribute> shaderAttrErrorSet = null;
 
     }
 
+    @Override
     void clearLive(int refCount) {
 
         // System.err.println("ShaderProgramRetained.clearLive()");
@@ -445,6 +447,7 @@ private HashSet<ShaderAttribute> shaderAttrErrorSet = null;
     /**
      * Initializes a mirror object.
      */
+    @Override
     synchronized void initMirrorObject() {
 
         // Create mirror copy of shaders
@@ -484,6 +487,7 @@ private HashSet<ShaderAttribute> shaderAttrErrorSet = null;
     /**
      * Update the "component" field of the mirror object with the  given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 
 	// ShaderProgram can't be modified once it is live.

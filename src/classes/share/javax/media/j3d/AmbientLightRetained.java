@@ -39,12 +39,14 @@ class AmbientLightRetained extends LightRetained {
 	localBounds = new BoundingBox((Bounds)null);
     }
 
+    @Override
     void setLive(SetLiveState s) {
 	super.setLive(s);
 	J3dMessage createMessage = super.initMessage(7);
 	VirtualUniverse.mc.processMessage(createMessage);
     }
 
+    @Override
     void update(Context ctx, int lightSlot, double scale) {
     }
 }

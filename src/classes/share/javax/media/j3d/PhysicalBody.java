@@ -185,6 +185,7 @@ synchronized void addUser(View view) {
      * Returns a string representation of this PhysicalBody's values.
      */
 
+    @Override
     public String toString() {
 	return "eyePosition = (" + this.leftEyePosition + ", " +
 		this.rightEyePosition + ")\n" +

@@ -58,6 +58,7 @@ class J3dQueryProps extends AbstractMap {
     /**
      * Gets value corresponding to specified key
      */
+    @Override
     public Object get(Object key) {
 	return table.get(key);
     }
@@ -65,6 +66,7 @@ class J3dQueryProps extends AbstractMap {
     /**
      * Returns true if the specified key is contained in this Map
      */
+    @Override
     public boolean containsKey(Object key) {
 	return table.containsKey(key);
     }
@@ -72,6 +74,7 @@ class J3dQueryProps extends AbstractMap {
     /**
      * Returns true if the specified value is contained in this Map
      */
+    @Override
     public boolean containsValue(Object value) {
 	return table.containsValue(value);
     }
@@ -79,6 +82,7 @@ class J3dQueryProps extends AbstractMap {
     /**
      * Returns a new Set object for the entries of this map
      */
+    @Override
     public Set entrySet() {
 	if (entrySet == null)
 	    entrySet = new EntrySet();
@@ -94,10 +98,12 @@ class J3dQueryProps extends AbstractMap {
 	private EntrySet() {
 	}
 
+	@Override
 	public int size() {
 	    return table.size();
 	}
 
+	@Override
 	public Iterator iterator() {
 	    return new MapIterator();
 	}
@@ -114,14 +120,17 @@ class J3dQueryProps extends AbstractMap {
 	    i = table.entrySet().iterator();
 	}
 
+	@Override
 	public boolean hasNext() {
 	    return i.hasNext();
 	}
 
+	@Override
 	public Object next() {
 	    return i.next();
 	}
 
+	@Override
 	public void remove() {
 	    throw new UnsupportedOperationException();
 	}

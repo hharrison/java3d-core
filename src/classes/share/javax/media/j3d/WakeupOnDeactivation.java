@@ -52,6 +52,7 @@ public final class WakeupOnDeactivation extends WakeupCriterion {
      * Set the Criterion's trigger flag to true.
      * No need to check for scheduling region in this case
      */
+    @Override
     void setTriggered(){
 	this.triggered = true;
 	if (this.parent == null) {
@@ -65,6 +66,7 @@ public final class WakeupOnDeactivation extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
+    @Override
     void addBehaviorCondition(BehaviorStructure bs) {
 	behav.wakeupArray[BehaviorRetained.WAKEUP_DEACTIVATE_INDEX]++;
 	behav.wakeupMask |= BehaviorRetained.WAKEUP_DEACTIVATE;
@@ -76,6 +78,7 @@ public final class WakeupOnDeactivation extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
+    @Override
     void removeBehaviorCondition(BehaviorStructure bs) {
 	behav.wakeupArray[BehaviorRetained.WAKEUP_DEACTIVATE_INDEX]--;
 	if (behav.wakeupArray[BehaviorRetained.WAKEUP_DEACTIVATE_INDEX] == 0) {
@@ -88,5 +91,6 @@ public final class WakeupOnDeactivation extends WakeupCriterion {
      * Perform task in addBehaviorCondition() that has to be
      * set every time the condition met.
      */
+    @Override
     void resetBehaviorCondition(BehaviorStructure bs) {}
 }

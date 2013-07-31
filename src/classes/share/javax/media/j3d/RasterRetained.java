@@ -338,6 +338,7 @@ class RasterRetained extends GeometryRetained {
 		(DepthComponent)depthComponent.source);
     }
 
+    @Override
     void setLive(boolean inBackgroundGroup, int refCount) {
         super.doSetLive(inBackgroundGroup, refCount);
 	if (texture != null) {
@@ -358,6 +359,7 @@ class RasterRetained extends GeometryRetained {
 	super.markAsLive();
     }
 
+    @Override
     void clearLive(int refCount) {
 	super.clearLive(refCount);
 	if (texture != null)
@@ -378,6 +380,7 @@ class RasterRetained extends GeometryRetained {
     }
     */
 
+    @Override
     void computeBoundingBox() {
 	if(clipMode == Raster.CLIP_IMAGE) {
 	    // Disable view frustum culling by setting the raster's bounds to
@@ -400,6 +403,7 @@ class RasterRetained extends GeometryRetained {
 	}
     }
 
+    @Override
     void update() {
 	computeBoundingBox();
     }
@@ -431,6 +435,7 @@ class RasterRetained extends GeometryRetained {
     }
 
 
+    @Override
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale,
             boolean updateAlpha, float alpha,
             int screen, boolean ignoreVertexColors) {
@@ -632,6 +637,7 @@ class RasterRetained extends GeometryRetained {
         return clipCoord3;
     }
 
+    @Override
     int getClassType() {
 	return RASTER_TYPE;
     }
@@ -644,31 +650,38 @@ class RasterRetained extends GeometryRetained {
                                         ImageComponentUpdateInfo value) {
     }
 
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
          return false;
      }
 
+    @Override
     boolean intersect(Bounds targetBound) {
 	return false;
     }
 
+    @Override
     boolean intersect(Point3d[] pnts) {
 	return false;
     }
+    @Override
     boolean intersect(Transform3D thisToOtherVworld, GeometryRetained
 		      geom) {
 	return false;
     }
+    @Override
     boolean intersect(Transform3D thisLocalToVworld,
 		       Transform3D otherLocalToVworld,
 		       GeometryRetained geom) {
 	return false;
     }
 
+    @Override
     boolean intersect(Transform3D thisLocalToVworld, Bounds targetBound) {
 	return false;
     }
+    @Override
     void handleFrequencyChange(int bit) {
 	if (bit == Raster.ALLOW_IMAGE_WRITE)
 	    setFrequencyChangeMask(bit, 0x1);

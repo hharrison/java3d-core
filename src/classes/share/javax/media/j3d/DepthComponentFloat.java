@@ -80,6 +80,7 @@ public class DepthComponentFloat extends DepthComponent {
      * Creates a retained mode DepthComponentFloatRetained object that this
      * DepthComponentFloat component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new DepthComponentFloatRetained();
 	this.retained.setSource(this);
@@ -89,6 +90,7 @@ public class DepthComponentFloat extends DepthComponent {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
 	DepthComponentFloatRetained rt = (DepthComponentFloatRetained) retained;
 	DepthComponentFloat d = new DepthComponentFloat(rt.width,
@@ -115,6 +117,7 @@ public class DepthComponentFloat extends DepthComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+     @Override
      void duplicateAttributes(NodeComponent originalNodeComponent,
 			      boolean forceDuplicate) {
 	 super.duplicateAttributes(originalNodeComponent,

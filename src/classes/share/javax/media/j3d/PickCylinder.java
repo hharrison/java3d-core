@@ -84,6 +84,7 @@ public abstract class PickCylinder extends PickShape {
      * Return true if shape intersect with bounds.
      * The point of intersection is stored in pickPos.
      */
+    @Override
     abstract boolean intersect(Bounds bounds, Point4d pickPos);
 
     // This is a duplicate of the same method, declared private inside of
@@ -104,10 +105,12 @@ public abstract class PickCylinder extends PickShape {
 	return true;
     }
 
+    @Override
     Point3d getStartPoint() {
 	return origin;
     }
 
+    @Override
     int getPickType() {
 	return PICKCYLINDER;
     }

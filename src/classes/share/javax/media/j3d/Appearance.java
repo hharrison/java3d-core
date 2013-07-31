@@ -329,6 +329,7 @@ public class Appearance extends NodeComponent {
      * Creates the retained mode AppearanceRetained object that this
      * Appearance component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new AppearanceRetained();
 	this.retained.setSource(this);
@@ -855,6 +856,7 @@ public class Appearance extends NodeComponent {
    /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         Appearance a = new Appearance();
         a.duplicateNodeComponent(this);
@@ -868,6 +870,7 @@ public class Appearance extends NodeComponent {
      * @deprecated replaced with duplicateNodeComponent(
      *  NodeComponent originalNodeComponent, boolean forceDuplicate)
      */
+    @Override
     public void duplicateNodeComponent(NodeComponent originalNodeComponent) {
 	checkDuplicateNodeComponent(originalNodeComponent);
     }
@@ -892,6 +895,7 @@ public class Appearance extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
@@ -975,6 +979,7 @@ public class Appearance extends NodeComponent {
      *  duplicate also even though current duplicateOnCloneTree flag is false.
      *  This should be overwrite by NodeComponent which contains sub-NodeComponent.
      */
+    @Override
     boolean duplicateChild() {
 	if (getDuplicateOnCloneTree())
 	    return true;

@@ -269,6 +269,7 @@ public BoundingSphere(Bounds[] boundsObjects) {
  * Returns the position of this bounding sphere as a point.
  * @param center a Point to receive the center of the bounding sphere
  */
+@Override
 public void getCenter(Point3d center) {
 	center.set(this.center);
 }
@@ -286,6 +287,7 @@ public void setCenter(Point3d center) {
      * Sets the value of this BoundingSphere.
      * @param boundsObject another bounds object
      */
+    @Override
     public void set(Bounds  boundsObject){
 	int i;
 
@@ -361,6 +363,7 @@ public void setCenter(Point3d center) {
      * Creates a copy of the bounding sphere.
      * @return a BoundingSphere
      */
+    @Override
     public Object clone() {
 	return new BoundingSphere(this.center, this.radius);
     }
@@ -379,6 +382,7 @@ public void setCenter(Point3d center) {
      *
      * @since Java 3D 1.2
      */
+    @Override
     public boolean equals(Object bounds) {
 	try {
 	    BoundingSphere sphere = (BoundingSphere)bounds;
@@ -406,6 +410,7 @@ public void setCenter(Point3d center) {
      *
      * @since Java 3D 1.2
      */
+    @Override
     public int hashCode() {
 	long bits = 1L;
 	bits = J3dHash.mixDoubleBits(bits, radius);
@@ -422,6 +427,7 @@ public void setCenter(Point3d center) {
      * given bounds object.
      * @param boundsObject another bounds object
      */
+    @Override
     public void combine(Bounds boundsObject) {
         double t,dis,d1,u,l,x,y,z,oldc_to_new_c;
         BoundingSphere sphere;
@@ -543,6 +549,7 @@ public void setCenter(Point3d center) {
      * given array of bounds object.
      * @param boundsObjects an array of bounds objects
      */
+    @Override
     public void combine(Bounds[] boundsObjects) {
 	BoundingSphere sphere;
 	BoundingBox b;
@@ -666,6 +673,7 @@ public void setCenter(Point3d center) {
      * Combines this bounding sphere with a point.
      * @param point a 3D point in space
      */
+    @Override
     public void combine(Point3d point) {
 	double dis,oldc_to_new_c;
 
@@ -699,6 +707,7 @@ public void setCenter(Point3d center) {
      * Combines this bounding sphere with an array of points.
      * @param points an array of 3D points in space
      */
+    @Override
     public void combine(Point3d[] points) {
 	int i;
 	double dis,dis_sq,rad_sq,oldc_to_new_c;
@@ -742,6 +751,7 @@ public void setCenter(Point3d center) {
      * @param boundsObject the bounding object to be transformed
      * @param matrix a transformation matrix
      */
+    @Override
     public void transform( Bounds boundsObject, Transform3D matrix) {
 	if (boundsObject == null || boundsObject.boundsIsEmpty) {
 		setEmptyBounds();
@@ -774,6 +784,7 @@ public void setCenter(Point3d center) {
     /**
      * Transforms this bounding sphere by the given matrix.
      */
+    @Override
     public void transform( Transform3D trans) {
 	double scale;
 
@@ -796,6 +807,7 @@ public void setCenter(Point3d center) {
      * @param position3 a point defining the location of the pick w= distance to pick
      * @return true or false indicating if an intersection occured
      */
+    @Override
     boolean intersect(Point3d origin, Vector3d direction, Point4d position ) {
 
 	if( boundsIsEmpty ) {
@@ -862,6 +874,7 @@ public void setCenter(Point3d center) {
      * @param position a point defining the location  of the pick w= distance to pick
      * @return true or false indicating if an intersection occured
      */
+    @Override
     boolean intersect(Point3d point,  Point4d position ) {
 	double x,y,z,dist;
 
@@ -901,6 +914,7 @@ public void setCenter(Point3d center) {
      * @param position a point defining the location  of the pick w= distance to pick
      * @return true or false indicating if an intersection occured
      */
+    @Override
     boolean intersect( Point3d start, Point3d end, Point4d position ) {
 
 	if( boundsIsEmpty ) {
@@ -973,6 +987,7 @@ public void setCenter(Point3d center) {
      * @param direction the direction of the ray
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Point3d origin, Vector3d direction ) {
 
 	if( boundsIsEmpty ) {
@@ -1092,6 +1107,7 @@ public void setCenter(Point3d center) {
      * @param point a point defining a position in 3-space
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Point3d point ) {
 	double x,y,z,dist;
 
@@ -1122,6 +1138,7 @@ public void setCenter(Point3d center) {
      * @return true if the bounding sphere is empty;
      * otherwise, it returns false
      */
+    @Override
     public boolean isEmpty() {
 	return boundsIsEmpty;
     }
@@ -1131,6 +1148,7 @@ public void setCenter(Point3d center) {
      * @param boundsObject another bounds object
      * @return true or false indicating if an intersection occured
      */
+    @Override
     boolean intersect(Bounds boundsObject, Point4d position) {
 	return intersect(boundsObject);
     }
@@ -1140,6 +1158,7 @@ public void setCenter(Point3d center) {
      * @param boundsObject another bounds object
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Bounds boundsObject) {
 	double distsq, radsq;
 	BoundingSphere sphere;
@@ -1200,6 +1219,7 @@ public void setCenter(Point3d center) {
      * @param boundsObjects an array of bounding objects
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Bounds[] boundsObjects) {
 	double distsq, radsq;
 	BoundingSphere sphere;
@@ -1445,6 +1465,7 @@ public void setCenter(Point3d center) {
      * @param boundsObjects an array of  bounds objects
      * @return closest bounding object
      */
+    @Override
     public Bounds closestIntersection( Bounds[] boundsObjects) {
 
 	if( boundsObjects == null || boundsObjects.length <= 0  ) {
@@ -1637,6 +1658,7 @@ public void setCenter(Point3d center) {
     /**
      * Returns a string representation of this class.
      */
+    @Override
     public String toString() {
 	return new String( "Center="+center+"  Radius="+radius);
     }
@@ -1677,6 +1699,7 @@ private void setInfiniteBounds() {
 	}
     }
 
+    @Override
     Point3d getCenter() {
 	return center;
     }
@@ -1686,6 +1709,7 @@ private void setInfiniteBounds() {
      * then do a copy, otherwise clone the Bounds  and
      * return
      */
+    @Override
     Bounds copy(Bounds r) {
 	if (r != null && this.boundId == r.boundId) {
 	    BoundingSphere region = (BoundingSphere)r;
@@ -1702,6 +1726,7 @@ private void setInfiniteBounds() {
 	}
     }
 
+    @Override
     int getPickType() {
 	return PickShape.PICKBOUNDINGSPHERE;
     }

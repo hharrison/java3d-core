@@ -534,6 +534,7 @@ abstract class SoundRetained extends LeafRetained
     }
 
     // The update Object function.
+    @Override
     synchronized void updateMirrorObject(Object[] objs) {
         Transform3D trans = null;
         int component = ((Integer)objs[1]).intValue();
@@ -1053,6 +1054,7 @@ abstract class SoundRetained extends LeafRetained
         }
     }
 
+    @Override
     void setLive(SetLiveState s) {
         SoundRetained ms;
         int i, j;
@@ -1144,6 +1146,7 @@ abstract class SoundRetained extends LeafRetained
         s.notifyThreads |= targetThreads;
     }
 
+    @Override
     void clearLive(SetLiveState s) {
 	SoundRetained ms;
 
@@ -1198,6 +1201,7 @@ abstract class SoundRetained extends LeafRetained
 	}
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
         super.mergeTransform(xform);
         if (schedulingRegion != null) {
@@ -1264,6 +1268,7 @@ abstract class SoundRetained extends LeafRetained
 
     // Called on mirror object
 // QUESTION: doesn't transformed region need to be saved???
+    @Override
     void updateTransformChange() {
         // If bounding leaf is null, tranform the bounds object
         if (debugFlag)
@@ -1292,6 +1297,7 @@ abstract class SoundRetained extends LeafRetained
             System.err.println(message);
 	}
     }
+    @Override
     void getMirrorObjects(ArrayList leafList, HashKey key) {
 	if (key == null) {
 	    leafList.add(mirrorSounds[0]);

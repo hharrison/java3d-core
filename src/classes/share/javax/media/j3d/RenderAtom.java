@@ -268,6 +268,7 @@ class RenderAtom extends Object implements ObjectUpdate {
 	return ((dirtyMask & IN_DIRTY_ORIENTED_RAs) != 0);
     }
 
+    @Override
     public void updateObject() {
 	if (inRenderBin()) {
 	    int lastLVWIndex =

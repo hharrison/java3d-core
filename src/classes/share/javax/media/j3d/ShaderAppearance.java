@@ -139,6 +139,7 @@ public class ShaderAppearance extends Appearance {
      * Creates the retained mode ShaderAppearanceRetained object that this
      * ShaderAppearance component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new ShaderAppearanceRetained();
 	this.retained.setSource(this);
@@ -218,6 +219,7 @@ public class ShaderAppearance extends Appearance {
    /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         ShaderAppearance a = new ShaderAppearance();
         a.duplicateNodeComponent(this);
@@ -231,6 +233,7 @@ public class ShaderAppearance extends Appearance {
      * @deprecated replaced with duplicateNodeComponent(
      *  NodeComponent originalNodeComponent, boolean forceDuplicate)
      */
+    @Override
     public void duplicateNodeComponent(NodeComponent originalNodeComponent) {
 	checkDuplicateNodeComponent(originalNodeComponent);
     }
@@ -255,6 +258,7 @@ public class ShaderAppearance extends Appearance {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
@@ -278,6 +282,7 @@ public class ShaderAppearance extends Appearance {
      *  duplicate also even though current duplicateOnCloneTree flag is false.
      *  This should be overwrite by NodeComponent which contains sub-NodeComponent.
      */
+    @Override
     boolean duplicateChild() {
 	if (super.duplicateChild())
 	    return true;

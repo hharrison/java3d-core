@@ -194,6 +194,7 @@ class SoundScheduler extends J3dStructure {
 
 
     // NOTE: processMessage only called with updatethread.active true
+    @Override
     void processMessages(long referenceTime) {
 	J3dMessage[] messages = getMessages(referenceTime);
 	int nMsg = getNumMessage();
@@ -392,6 +393,7 @@ class SoundScheduler extends J3dStructure {
     /**
      * Node removed from tree
      */
+    @Override
     void removeNodes(J3dMessage m) {
 	Object[] nodes = (Object[])m.args[0];
 	ArrayList<NodeRetained> viewScopedNodes = (ArrayList<NodeRetained>)m.args[3];
@@ -3227,6 +3229,7 @@ class SoundScheduler extends J3dStructure {
 	}
     }
 
+    @Override
     void cleanup() {
 	// clean up any messages that are queued up, since they are
 	// irrelevant

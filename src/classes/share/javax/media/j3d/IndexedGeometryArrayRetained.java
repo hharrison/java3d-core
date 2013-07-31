@@ -1154,6 +1154,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
     }
 
 
+    @Override
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale,
 		 boolean updateAlpha, float alpha,
 		 int screen, boolean ignoreVertexColors) {
@@ -1536,6 +1537,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	} // end of nio buffer
     }
 
+    @Override
     void buildGA(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale,
 		 boolean updateAlpha, float alpha, boolean ignoreVertexColors,
 		 Transform3D xform, Transform3D nxform) {
@@ -1603,6 +1605,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	}
     }
 
+    @Override
     void mergeGeometryArrays(ArrayList list) {
 	int numMerge = list.size();
 	int[] texCoord = null;
@@ -1660,6 +1663,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
     }
 
 
+    @Override
     boolean isWriteStatic() {
 
         if (!super.isWriteStatic() ||
@@ -1903,6 +1907,7 @@ abstract class IndexedGeometryArrayRetained extends GeometryArrayRetained {
 	return validIndexCount;
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
 	if ((bit == IndexedGeometryArray.ALLOW_COORDINATE_INDEX_WRITE) ||
 	    (((vertexFormat & GeometryArray.USE_COORD_INDEX_ONLY) == 0) &&

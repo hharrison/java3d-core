@@ -122,6 +122,7 @@ public class Soundscape extends Leaf {
      * Creates the retained mode SoundscapeRetained object that this
      * component object will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new SoundscapeRetained();
         this.retained.setSource(this);
@@ -236,6 +237,7 @@ public class Soundscape extends Leaf {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         Soundscape s = new Soundscape();
         s.duplicateNode(this, forceDuplicate);
@@ -273,6 +275,7 @@ public class Soundscape extends Leaf {
      * @see Node#cloneNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public void duplicateNode(Node originalNode, boolean forceDuplicate) {
 	checkDuplicateNode(originalNode, forceDuplicate);
     }
@@ -298,6 +301,7 @@ public class Soundscape extends Leaf {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+   @Override
    void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
@@ -341,6 +345,7 @@ public class Soundscape extends Leaf {
      * @see Node#cloneTree
      * @see DanglingReferenceException
      */
+    @Override
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
 
 	SoundscapeRetained rt = (SoundscapeRetained) retained;

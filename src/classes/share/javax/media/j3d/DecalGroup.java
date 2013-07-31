@@ -63,6 +63,7 @@ public class DecalGroup extends OrderedGroup {
      * Creates the retained mode DecalGroupRetained object that this
      * DecalGroup component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new DecalGroupRetained();
 	this.retained.setSource(this);
@@ -83,6 +84,7 @@ public class DecalGroup extends OrderedGroup {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+     @Override
      public Node cloneNode(boolean forceDuplicate) {
 	 DecalGroup dg = new DecalGroup();
 	 dg.duplicateNode(this, forceDuplicate);

@@ -217,6 +217,7 @@ ArrayList<GeometryRetained> geometryList = null;
 	}
     }
 
+    @Override
     Bounds getLocalBounds(Bounds bounds) {
 	if(localBounds != null) {
 	    localBounds.set(bounds);
@@ -232,6 +233,7 @@ ArrayList<GeometryRetained> geometryList = null;
      * Sets the geometric bounds of a node.
      * @param bounds the bounding object for the node
      */
+    @Override
     void setBounds(Bounds bounds) {
 	super.setBounds(bounds);
 
@@ -845,6 +847,7 @@ Enumeration getAllGeometries(int id) {
      * @return the node's bounding object
      */
 
+    @Override
     Bounds getBounds() {
 
         if(boundsAutoCompute) {
@@ -878,6 +881,7 @@ Enumeration getAllGeometries(int id) {
         }
     }
 
+    @Override
     Bounds getEffectiveBounds() {
         if(boundsAutoCompute) {
 	    return getBounds();
@@ -892,6 +896,7 @@ Enumeration getAllGeometries(int id) {
      * ONLY needed for SHAPE, MORPH, and LINK node type.
      * Compute the combine bounds of bounds and its localBounds.
      */
+    @Override
     void computeCombineBounds(Bounds bounds) {
 
         if(boundsAutoCompute) {
@@ -961,11 +966,13 @@ Enumeration getAllGeometries(int id) {
    * assign a name to this node when it is made live.
    */
 
+    @Override
     void setLive(SetLiveState s) {
 	doSetLive(s);
 	markAsLive();
     }
 
+    @Override
     void doSetLive(SetLiveState s) {
 	// System.err.println("S3DRetained : setLive " + s);
 	Shape3DRetained shape;
@@ -1254,6 +1261,7 @@ Enumeration getAllGeometries(int id) {
     /**
      * assign a name to this node when it is made live.
      */
+    @Override
     void clearLive(SetLiveState s) {
 
 	//System.err.println("S3DRetained : clearLive " + s);
@@ -1376,6 +1384,7 @@ Enumeration getAllGeometries(int id) {
 	}
     }
 
+    @Override
     boolean isStatic() {
 	if (source.getCapability(Shape3D.ALLOW_APPEARANCE_WRITE) ||
 	    source.getCapability(Shape3D.ALLOW_GEOMETRY_WRITE) ||
@@ -1441,6 +1450,7 @@ Enumeration getAllGeometries(int id) {
     }
 
 
+    @Override
     void compile(CompileState compState) {
 	AppearanceRetained newApp;
 
@@ -1482,6 +1492,7 @@ Enumeration getAllGeometries(int id) {
 
     }
 
+    @Override
     void merge(CompileState compState) {
 
 
@@ -1570,6 +1581,7 @@ Enumeration getAllGeometries(int id) {
     }
 
 
+    @Override
     void getMirrorObjects( ArrayList list, HashKey k) {
 	Shape3DRetained ms;
 	if (inSharedGroup) {
@@ -1743,6 +1755,7 @@ Enumeration getAllGeometries(int id) {
 
 
 
+    @Override
     void updatePickable(HashKey keys[], boolean pick[]) {
       super.updatePickable(keys, pick);
       Shape3DRetained shape;
@@ -1766,6 +1779,7 @@ Enumeration getAllGeometries(int id) {
     }
 
 
+    @Override
     void updateCollidable(HashKey keys[], boolean collide[]) {
       super.updateCollidable(keys, collide);
       Shape3DRetained shape;
@@ -2009,6 +2023,7 @@ Enumeration getAllGeometries(int id) {
 	throw new RuntimeException("Shape3DRetained: MirrorShape Not found!");
     }
 
+    @Override
     void setBoundsAutoCompute(boolean autoCompute) {
 	GeometryRetained geometry;
         if (autoCompute != boundsAutoCompute) {
@@ -2053,6 +2068,7 @@ Enumeration getAllGeometries(int id) {
     // This method is called when coordinates of a geometry in the geometrylist
     // changed and autoBoundsCompute is true
 
+    @Override
     void updateBounds() {
 	localBounds = new BoundingBox((BoundingBox) null);
 	getCombineBounds((BoundingBox)localBounds);
@@ -2746,6 +2762,7 @@ final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userL
 
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
 	int mask = 0;
 	if (bit == Shape3D.ALLOW_GEOMETRY_WRITE) {
@@ -2821,6 +2838,7 @@ final static ArrayList<ArrayList<GeometryAtom>> getGeomAtomsList(ArrayList userL
 	return 0;
     }
 
+    @Override
     void searchGeometryAtoms(UnorderList list) {
 	list.add(getGeomAtom(getMirrorShape(key)));
     }

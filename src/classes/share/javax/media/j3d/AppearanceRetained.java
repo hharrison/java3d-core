@@ -709,6 +709,7 @@ class AppearanceRetained extends NodeComponentRetained {
     }
 
 
+    @Override
     synchronized void createMirrorObject() {
 	if (mirror == null) {
 	    // we can't check isStatic() since it sub-NodeComponent
@@ -725,6 +726,7 @@ class AppearanceRetained extends NodeComponentRetained {
      * It also calls the update method for each node component if it
      * is not null.
      */
+    @Override
     synchronized void initMirrorObject() {
 
 	AppearanceRetained mirrorApp = (AppearanceRetained)mirror;
@@ -820,6 +822,7 @@ class AppearanceRetained extends NodeComponentRetained {
    * Update the "component" field of the mirror object with the
    *  given "value"
    */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
       AppearanceRetained mirrorApp = (AppearanceRetained)mirror;
       if ((component & MATERIAL) != 0) {
@@ -885,6 +888,7 @@ class AppearanceRetained extends NodeComponentRetained {
 
     }
 
+    @Override
     void setLive(boolean backgroundGroup, int refCount) {
 	// System.err.println("AppearceRetained.setLive()");
 	doSetLive(backgroundGroup, refCount);
@@ -895,6 +899,7 @@ class AppearanceRetained extends NodeComponentRetained {
      * This method calls the setLive method of all appearance bundle
      * objects.
      */
+    @Override
     void doSetLive(boolean backgroundGroup, int refCount) {
 	// System.err.println("AppearceRetained.doSetLive()");
 
@@ -960,6 +965,7 @@ class AppearanceRetained extends NodeComponentRetained {
      * This method calls the clearLive method of all appearance bundle
      * objects.
      */
+    @Override
     void clearLive(int refCount) {
 	super.clearLive(refCount);
 
@@ -1012,6 +1018,7 @@ class AppearanceRetained extends NodeComponentRetained {
     }
 
 
+    @Override
     boolean isStatic() {
 	boolean flag;
 
@@ -1053,6 +1060,7 @@ class AppearanceRetained extends NodeComponentRetained {
 
     // Issue 209 - enable this method (was previously commented out)
     // Simply pass along to the NodeComponents
+    @Override
     void compile(CompileState compState) {
 	setCompiled();
 
@@ -1115,10 +1123,12 @@ class AppearanceRetained extends NodeComponentRetained {
      * Since hashCode is only used by AppearanceMap (at present) we may be
      * able to improve efficency by calcing a hashCode from the values.
      */
+    @Override
     public int hashCode() {
 	return getClass().hashCode();
     }
 
+    @Override
     public boolean equals(Object obj) {
 	return ((obj instanceof AppearanceRetained) &&
 		equals((AppearanceRetained) obj));
@@ -1184,6 +1194,7 @@ class AppearanceRetained extends NodeComponentRetained {
 
 
 
+    @Override
     synchronized void addAMirrorUser(Shape3DRetained shape) {
 
 	super.addAMirrorUser(shape);
@@ -1218,6 +1229,7 @@ class AppearanceRetained extends NodeComponentRetained {
 	    pointAttributes.addAMirrorUser(shape);
     }
 
+  @Override
   synchronized void removeAMirrorUser(Shape3DRetained shape) {
 	super.removeAMirrorUser(shape);
 	if (material != null)
@@ -1367,6 +1379,7 @@ class AppearanceRetained extends NodeComponentRetained {
         return(true);
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
 	int mask = 0;
 	if (bit == Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE)

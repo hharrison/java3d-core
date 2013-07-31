@@ -153,6 +153,7 @@ public class PositionInterpolator extends TransformInterpolator {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void computeTransform(float alphaValue, Transform3D transform) {
 
 	double val = (1.0-alphaValue)*startPosition + alphaValue*endPosition;
@@ -179,6 +180,7 @@ public class PositionInterpolator extends TransformInterpolator {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         PositionInterpolator pi = new PositionInterpolator();
         pi.duplicateNode(this, forceDuplicate);
@@ -206,6 +208,7 @@ public class PositionInterpolator extends TransformInterpolator {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

@@ -178,6 +178,7 @@ public class TriangleFanArray extends GeometryStripArray {
      * Creates the retained mode TriangleFanArrayRetained object that this
      * TriangleFanArray object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new TriangleFanArrayRetained();
 	this.retained.setSource(this);
@@ -187,6 +188,7 @@ public class TriangleFanArray extends GeometryStripArray {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         TriangleFanArrayRetained rt = (TriangleFanArrayRetained) retained;
         int stripcounts[] = new int[rt.getNumStrips()];

@@ -403,6 +403,7 @@ class MaterialRetained extends NodeComponentRetained {
 	return colorTarget;
     }
 
+    @Override
     synchronized void createMirrorObject() {
 	if (mirror == null) {
 	    // Check the capability bits and let the mirror object
@@ -440,6 +441,7 @@ class MaterialRetained extends NodeComponentRetained {
      * Creates a mirror object, point the mirror object to the retained
      * object if the object is not editable
      */
+    @Override
     synchronized void initMirrorObject() {
 	MaterialRetained mirrorMaterial = (MaterialRetained)mirror;
 	mirrorMaterial.set(this);
@@ -449,6 +451,7 @@ class MaterialRetained extends NodeComponentRetained {
      * Update the "component" field of the mirror object with the
      * given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 	MaterialRetained mirrorMaterial = (MaterialRetained)mirror;
 	if ((component & AMBIENT_COLOR_CHANGED) != 0) {
@@ -490,6 +493,7 @@ class MaterialRetained extends NodeComponentRetained {
 
     // This functions clones the retained side only and is used
     // internally
+     @Override
      protected Object clone() {
          MaterialRetained mr = (MaterialRetained)super.clone();
 	 // color can't share the same reference
@@ -550,6 +554,7 @@ class MaterialRetained extends NodeComponentRetained {
 
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
 	if (bit == Material.ALLOW_COMPONENT_WRITE) {
 	    setFrequencyChangeMask(Material.ALLOW_COMPONENT_WRITE, 0x1);

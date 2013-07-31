@@ -242,6 +242,7 @@ class IndexedUnorderSet implements Cloneable, java.io.Serializable  {
      *
      * @return  a clone of this <tt>ArrayList</tt> instance.
      */
+    @Override
     synchronized protected final Object clone() {
 	try {
 	    IndexedUnorderSet v = (IndexedUnorderSet)super.clone();

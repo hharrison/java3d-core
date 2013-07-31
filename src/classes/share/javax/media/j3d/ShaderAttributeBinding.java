@@ -133,6 +133,7 @@ public class ShaderAttributeBinding extends ShaderAttribute {
      * Creates a retained mode ShaderAttributeBindingRetained object that this
      * ShaderAttributeBinding component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new ShaderAttributeBindingRetained();
 	this.retained.setSource(this);

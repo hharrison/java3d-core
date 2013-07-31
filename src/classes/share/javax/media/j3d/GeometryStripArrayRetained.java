@@ -775,6 +775,7 @@ abstract class GeometryStripArrayRetained extends GeometryArrayRetained {
     }
 
     // Called only for "by-copy" geometry
+    @Override
     void mergeGeometryArrays(ArrayList list) {
 	int numMerge = list.size();
 	int numStrips = 0;

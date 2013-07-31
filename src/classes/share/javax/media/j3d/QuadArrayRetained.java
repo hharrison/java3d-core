@@ -41,6 +41,7 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	this.geoType = GEO_TYPE_QUAD_SET;
     }
 
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
 
@@ -283,6 +284,7 @@ class QuadArrayRetained extends GeometryArrayRetained {
     }
 
     // intersect pnts[] with every quad in this object
+    @Override
     boolean intersect(Point3d[] pnts) {
 	Point3d[] points = new Point3d[4];
 	double dist[] = new double[1];
@@ -359,6 +361,7 @@ class QuadArrayRetained extends GeometryArrayRetained {
     }
 
 
+    @Override
     boolean intersect(Transform3D thisToOtherVworld,  GeometryRetained geom) {
 
 	Point3d[] points = new Point3d[4];
@@ -387,6 +390,7 @@ class QuadArrayRetained extends GeometryArrayRetained {
     }
 
     // the bounds argument is already transformed
+    @Override
     boolean intersect(Bounds targetBound) {
 	Point3d[] points = new Point3d[4];
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
@@ -448,6 +452,7 @@ class QuadArrayRetained extends GeometryArrayRetained {
     // From Graphics Gems IV (pg5) and Graphics Gems II, Pg170
     // The centroid is the area-weighted sum of the centroids of
     // disjoint triangles that make up the polygon.
+    @Override
     void computeCentroid() {
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
 		 initialVertexIndex : initialCoordIndex);
@@ -513,6 +518,7 @@ class QuadArrayRetained extends GeometryArrayRetained {
 	}
     }
 
+    @Override
     int getClassType() {
 	return QUAD_TYPE;
     }

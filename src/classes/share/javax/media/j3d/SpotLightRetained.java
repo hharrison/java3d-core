@@ -78,6 +78,7 @@ class SpotLightRetained extends PointLightRetained {
     }
 
 
+    @Override
     void setLive(SetLiveState s) {
 	super.doSetLive(s);
 	J3dMessage createMessage = super.initMessage(12);
@@ -197,6 +198,7 @@ class SpotLightRetained extends PointLightRetained {
      * transformed position, spread angle, concentration,
      * and its transformed position.
      */
+    @Override
     void update(Context ctx, int lightSlot, double scale) {
 	validateAttenuationInEc(scale);
         Pipeline.getPipeline().updateSpotLight(ctx,
@@ -215,6 +217,7 @@ class SpotLightRetained extends PointLightRetained {
      * updates a directional light.  This includes its
      * color and its transformed direction.
      */
+    @Override
     // Note : if you add any more fields here , you need to update
     // updateLight() in RenderingEnvironmentStructure
     void updateMirrorObject(Object[] objs) {
@@ -273,6 +276,7 @@ class SpotLightRetained extends PointLightRetained {
 
 
     // Clones only the retained side, internal use only
+     @Override
      protected Object clone() {
          SpotLightRetained sr = (SpotLightRetained)super.clone();
          sr.direction = new Vector3f(direction);
@@ -283,6 +287,7 @@ class SpotLightRetained extends PointLightRetained {
 
 
     // Called on the mirror object
+    @Override
     void updateTransformChange() {
 	super.updateTransformChange();
 
@@ -291,6 +296,7 @@ class SpotLightRetained extends PointLightRetained {
 
     }
 
+    @Override
     final void sendMessage(int attrMask, Object attr) {
 	J3dMessage createMessage = new J3dMessage();
 	createMessage.threads = targetThreads;
@@ -308,6 +314,7 @@ class SpotLightRetained extends PointLightRetained {
     }
 
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);
         xform.transform.transform(direction, direction);

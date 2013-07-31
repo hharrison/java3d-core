@@ -61,6 +61,7 @@ class BranchGroupRetained extends GroupRetained {
     /**
      * This gets the current locale
      */
+    @Override
     Locale getLocale() {
          return locale;
     }
@@ -109,6 +110,7 @@ class BranchGroupRetained extends GroupRetained {
 	}
     }
 
+    @Override
     void setNodeData(SetLiveState s) {
 	// super.setNodeData will set branchGroupPaths
 	// based on s.parentBranchGroupPaths, we need to
@@ -138,6 +140,7 @@ class BranchGroupRetained extends GroupRetained {
     }
 
 
+    @Override
     void setAuxData(SetLiveState s, int index, int hkIndex) {
 	super.setAuxData(s, index, hkIndex);
 
@@ -153,6 +156,7 @@ class BranchGroupRetained extends GroupRetained {
     /**
      * remove the localToVworld transform for this node.
      */
+    @Override
     void removeNodeData(SetLiveState s) {
 
 	if((!inSharedGroup) || (s.keys.length == localToVworld.length)) {
@@ -175,6 +179,7 @@ class BranchGroupRetained extends GroupRetained {
         super.removeNodeData(s);
     }
 
+    @Override
     void setLive(SetLiveState s) {
 	// recursively call child
 	super.doSetLive(s);
@@ -211,6 +216,7 @@ class BranchGroupRetained extends GroupRetained {
 	}
     }
 
+    @Override
     void compile(CompileState compState) {
 	// if this branch group is previously compiled, don't
 	// go any further. Mark the keepTG flag for now. Static

@@ -228,6 +228,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
     * Creates and initializes a mirror object, point the mirror object
     * to the retained object if the object is not editable
     */
+    @Override
     synchronized void createMirrorObject() {
 	if (mirror == null) {
 	    // Check the capability bits and let the mirror object
@@ -259,6 +260,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
     * Initializes a mirror object, point the mirror object to the retained
     * object if the object is not editable
     */
+    @Override
     synchronized void initMirrorObject() {
 	((PolygonAttributesRetained) mirror).set(this);
     }
@@ -267,6 +269,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
      * Update the "component" field of the mirror object with the
      * given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 
       PolygonAttributesRetained mirrorPa = (PolygonAttributesRetained) mirror;
@@ -344,6 +347,7 @@ class PolygonAttributesRetained extends NodeComponentRetained {
 
 
     }
+    @Override
     void handleFrequencyChange(int bit) {
 	if (bit == PolygonAttributes.ALLOW_CULL_FACE_WRITE ||
 	    bit == PolygonAttributes.ALLOW_NORMAL_FLIP_WRITE||

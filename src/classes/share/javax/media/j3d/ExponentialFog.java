@@ -169,6 +169,7 @@ public class ExponentialFog extends Fog {
      * Creates the retained mode ExponentialFogRetained object that this
      * ExponentialFog node will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new ExponentialFogRetained();
         this.retained.setSource(this);
@@ -188,6 +189,7 @@ public class ExponentialFog extends Fog {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         ExponentialFog ef = new ExponentialFog();
         ef.duplicateNode(this, forceDuplicate);
@@ -216,6 +218,7 @@ public class ExponentialFog extends Fog {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

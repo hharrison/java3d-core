@@ -158,6 +158,7 @@ public class SwitchValueInterpolator extends Interpolator {
      * @param criteria an enumeration of the criteria that triggered
      * this stimulus
      */
+    @Override
     public void processStimulus(Enumeration criteria) {
 	// Handle stimulus
 	WakeupCriterion criterion = passiveWakeupCriterion;
@@ -211,6 +212,7 @@ public class SwitchValueInterpolator extends Interpolator {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         SwitchValueInterpolator svi = new SwitchValueInterpolator();
         svi.duplicateNode(this, forceDuplicate);
@@ -239,6 +241,7 @@ public class SwitchValueInterpolator extends Interpolator {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
@@ -276,6 +279,7 @@ public class SwitchValueInterpolator extends Interpolator {
      * @see Node#cloneTree
      * @see DanglingReferenceException
      */
+    @Override
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
         super.updateNodeReferences(referenceTable);
 

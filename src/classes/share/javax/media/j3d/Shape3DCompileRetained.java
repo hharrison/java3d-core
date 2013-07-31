@@ -221,19 +221,23 @@ private void addSeparateList(ArrayList<GeometryArrayRetained> glist) {
 		geometryList.add(glist.get(k));
 	}
 }
+    @Override
     Bounds getCollisionBounds(int childIndex) {
 	return collisionBound;
     }
 
 
+@Override
 int numGeometries(int childIndex) {
 	return geometryInfo.get(childIndex).size();
 }
 
+@Override
 Geometry getGeometry(int i, int childIndex) {
 	return geometryInfo.get(childIndex).get(i);
 }
 
+@Override
 Enumeration<Geometry> getAllGeometries(int childIndex) {
 	ArrayList<Geometry> geoInfo = geometryInfo.get(childIndex);
 	Vector<Geometry> geomList = new Vector<Geometry>();
@@ -282,6 +286,7 @@ Bounds getBounds(int childIndex) {
      * @exception IllegalArgumentException if <code>path</code> is
      * invalid.
      */
+    @Override
     boolean intersect(SceneGraphPath path,
             PickShape pickShape, double[] dist) {
 

@@ -675,6 +675,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
     * Creates and initializes a mirror object, point the mirror object
     * to the retained object if the object is not editable
     */
+    @Override
     synchronized void createMirrorObject() {
 
 	if (mirror == null) {
@@ -696,6 +697,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
    /**
     * Initializes a mirror object
     */
+    @Override
     synchronized void initMirrorObject() {
 	((TextureAttributesRetained)mirror).set(this);
     }
@@ -865,6 +867,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
     }
 
 
+    @Override
     protected Object clone() {
 	TextureAttributesRetained tr = (TextureAttributesRetained)super.clone();
 	tr.transform = new Transform3D(transform);
@@ -984,6 +987,7 @@ class TextureAttributesRetained extends NodeComponentRetained {
 	}
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
 	switch (bit) {
 	case TextureAttributes.ALLOW_MODE_WRITE:

@@ -443,6 +443,7 @@ public class LineAttributes extends NodeComponent {
      * Creates a retained mode LineAttributesRetained object that this
      * LineAttributes component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new LineAttributesRetained();
 	this.retained.setSource(this);
@@ -453,6 +454,7 @@ public class LineAttributes extends NodeComponent {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         LineAttributes la = new LineAttributes();
         la.duplicateNodeComponent(this);
@@ -478,6 +480,7 @@ public class LineAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+     @Override
      void duplicateAttributes(NodeComponent originalNodeComponent,
 			      boolean forceDuplicate) {
 	 super.duplicateAttributes(originalNodeComponent,

@@ -264,6 +264,7 @@ abstract class J3dThread extends Thread {
      * This thread controls the syncing of all the canvases attached to
      * this view.
      */
+    @Override
     public void run() {
 	runMonitor(WAIT, 0, null);
 	while (running) {

@@ -67,6 +67,7 @@ public class BranchGroup extends Group {
      * Creates the retained mode BranchGroupRetained object that this
      * BranchGroup component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new BranchGroupRetained();
 	this.retained.setSource(this);
@@ -567,6 +568,7 @@ public class BranchGroup extends Group {
     * @see Node#duplicateNode
     * @see NodeComponent#setDuplicateOnCloneTree
     */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
 
         BranchGroup bg = new BranchGroup();

@@ -100,6 +100,7 @@ class HashKey extends Object {
         return this;
     }
 
+    @Override
     public int hashCode() {
         int h = 0;
         int off = 0;
@@ -120,6 +121,7 @@ class HashKey extends Object {
         return h;
     }
 
+    @Override
     public boolean equals(Object anObject) {
         if ((anObject != null) && (anObject instanceof HashKey)) {
             HashKey anotherHashKey = (HashKey)anObject;
@@ -225,6 +227,7 @@ class HashKey extends Object {
 	return  false;
     }
 
+    @Override
     public String toString() {
 	return new String(value, 0, count);
     }

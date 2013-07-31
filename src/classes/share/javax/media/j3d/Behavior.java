@@ -284,6 +284,7 @@ public abstract class Behavior extends Leaf {
      * Creates the retained mode BehaviorRetained object that this
      * Behavior object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new BehaviorRetained();
 	this.retained.setSource(this);
@@ -463,6 +464,7 @@ public abstract class Behavior extends Leaf {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
@@ -505,6 +507,7 @@ public abstract class Behavior extends Leaf {
      * @see Node#cloneTree
      * @see DanglingReferenceException
      */
+    @Override
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
         super.updateNodeReferences(referenceTable);
 

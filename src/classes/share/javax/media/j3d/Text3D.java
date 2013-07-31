@@ -318,6 +318,7 @@ public class Text3D extends Geometry {
      * Creates the retained mode Text3DRetained object that this
      * Text3D component object will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new Text3DRetained();
         this.retained.setSource(this);
@@ -606,6 +607,7 @@ public class Text3D extends Geometry {
    /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         Text3D t = new Text3D();
         t.duplicateNodeComponent(this);
@@ -630,6 +632,7 @@ public class Text3D extends Geometry {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);

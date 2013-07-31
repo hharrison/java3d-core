@@ -505,6 +505,7 @@ public abstract class SceneGraphObject extends Object {
      * If its name is non-null, then it is concatenated with
      * super.toString().
      */
+    @Override
     public String toString() {
 	return getNamePrefix() + super.toString();
     }

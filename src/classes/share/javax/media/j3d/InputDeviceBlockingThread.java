@@ -59,6 +59,7 @@ class InputDeviceBlockingThread extends Thread {
     }
 
 
+    @Override
     public void run() {
 	// Since this thread is blocking, this thread should not be
 	// taking an inordinate amount of CPU time.  Note that the

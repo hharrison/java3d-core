@@ -193,10 +193,12 @@ ArrayList<BranchGroupRetained[]> branchGroupPaths = new ArrayList<BranchGroupRet
     }
 
 
+    @Override
     public int getId() {
 	return nnuId;
     }
 
+    @Override
     public int equal(NnuId obj) {
 	int keyId = obj.getId();
 	if(nnuId < keyId) {
@@ -625,6 +627,7 @@ NodeRetained getParent() {
     synchronized void updateLocalToVworld() {}
 
 
+    @Override
     void setLive(SetLiveState s) {
 	int oldrefCount = refCount;
 
@@ -634,6 +637,7 @@ NodeRetained getParent() {
     }
 
     // The default set of setLive actions.
+    @Override
     void doSetLive(SetLiveState s) {
 	int i;
 	int oldrefCount = refCount;
@@ -910,6 +914,7 @@ NodeRetained getParent() {
     }
 
 
+    @Override
     boolean isStatic() {
 	if (source.getCapability(Node.ALLOW_LOCAL_TO_VWORLD_READ) ||
 	    source.getCapability(Node.ALLOW_PARENT_READ) ||
@@ -928,6 +933,7 @@ NodeRetained getParent() {
 	return true;
     }
 
+    @Override
     void merge(CompileState compState) {
 	staticTransform = compState.staticTransform;
 	if (compState.parentGroup != null) {
@@ -939,6 +945,7 @@ NodeRetained getParent() {
 	}
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	if (localBounds != null) {
 	    localBounds.transform(xform.transform);
@@ -950,6 +957,7 @@ NodeRetained getParent() {
 
     }
 
+    @Override
     VirtualUniverse getVirtualUniverse() {
 	return universe;
     }

@@ -123,6 +123,7 @@ class BoundingLeafRetained extends LeafRetained {
     }
 
 
+    @Override
     void setLive(SetLiveState s) {
 	super.doSetLive(s);
 
@@ -260,6 +261,7 @@ class BoundingLeafRetained extends LeafRetained {
 	}
     }
 
+    @Override
     void clearLive(SetLiveState s) {
 	super.clearLive();
         if (s.switchTargets != null &&
@@ -274,6 +276,7 @@ class BoundingLeafRetained extends LeafRetained {
         }
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);
 	region.transform(xform.transform);

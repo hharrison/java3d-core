@@ -65,10 +65,12 @@ class BHLeafNode extends BHNode {
 	nodeType = BH_TYPE_LEAF;
     }
 
+    @Override
     void computeBoundingHull() {
 	bHull = leafIF.computeBoundingHull();
     }
 
+    @Override
     void updateMarkedBoundingHull() {
 
 	if(mark == false)
@@ -90,6 +92,7 @@ class BHLeafNode extends BHNode {
 	return leafIF.getLocale2();
     }
 
+    @Override
     void destroyTree(BHNode[] bhArr, int[] index) {
 	if(bhArr.length <= index[0]) {
 	    // System.err.println("BHLeafNode : Problem bhArr overflow!!!");

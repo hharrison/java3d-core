@@ -177,6 +177,7 @@ public class TriangleStripArray extends GeometryStripArray {
      * Creates the retained mode TriangleStripArrayRetained object that this
      * TriangleStripArray object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new TriangleStripArrayRetained();
 	this.retained.setSource(this);
@@ -186,6 +187,7 @@ public class TriangleStripArray extends GeometryStripArray {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         TriangleStripArrayRetained rt = (TriangleStripArrayRetained) retained;
         int stripcounts[] = new int[rt.getNumStrips()];

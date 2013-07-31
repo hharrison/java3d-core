@@ -84,6 +84,7 @@ public final class PickCylinderRay extends PickCylinder {
      * @param pickPos the location of the point of intersection (not used for
      * method. Provided for compatibility).
      */
+    @Override
     final boolean intersect(Bounds bounds, Point4d pickPos) {
 	Point4d iPnt = new Point4d();
 
@@ -228,6 +229,7 @@ public final class PickCylinderRay extends PickCylinder {
 
     // Only use within J3D.
     // Return a new PickCylinderRay that is the transformed (t3d) of this pickCylinderRay.
+    @Override
     PickShape transform(Transform3D t3d) {
 
 	PickCylinderRay newPCR = new PickCylinderRay();

@@ -1802,6 +1802,7 @@ public abstract class Texture extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 
@@ -1857,6 +1858,7 @@ public abstract class Texture extends NodeComponent {
    *  duplicate also even though current duplicateOnCloneTree flag is false.
    *  This should be overwrite by NodeComponent which contains sub-NodeComponent.
    */
+   @Override
    boolean duplicateChild() {
       if (getDuplicateOnCloneTree())
 	return true;

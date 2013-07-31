@@ -158,6 +158,7 @@ public abstract class TransformInterpolator extends Interpolator {
      * @param criteria an enumeration of the criteria that caused the
      * stimulus
      */
+    @Override
     public void processStimulus(Enumeration criteria) {
 	// Handle stimulus
 	WakeupCriterion criterion = passiveWakeupCriterion;
@@ -197,6 +198,7 @@ public abstract class TransformInterpolator extends Interpolator {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
@@ -234,6 +236,7 @@ public abstract class TransformInterpolator extends Interpolator {
      * @see Node#cloneTree
      * @see DanglingReferenceException
      */
+    @Override
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
         super.updateNodeReferences(referenceTable);
 

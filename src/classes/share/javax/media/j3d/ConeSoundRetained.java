@@ -602,6 +602,7 @@ class ConeSoundRetained extends PointSoundRetained {
      * Neither Angular gain Attenuation and Filtering fields, nor
      * back distance gain not maintained in mirror object
      */
+    @Override
     void updateMirrorObject(Object[] objs) {
         if (debugFlag)
             debugPrint("PointSoundRetained:updateMirrorObj()");
@@ -633,6 +634,7 @@ class ConeSoundRetained extends PointSoundRetained {
     }
 
     // Called on the mirror object
+    @Override
     void updateTransformChange() {
 	Transform3D lastLocalToVworld = getLastLocalToVworld();
 
@@ -646,6 +648,7 @@ class ConeSoundRetained extends PointSoundRetained {
                     + xformDirection.y + ", "+ xformDirection.z + ")");
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
         super.mergeTransform(xform);
 	xform.transform.transform(direction);

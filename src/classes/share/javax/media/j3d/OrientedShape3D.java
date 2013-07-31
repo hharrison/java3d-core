@@ -327,6 +327,7 @@ public class OrientedShape3D extends Shape3D {
      * Creates the retained mode OrientedShape3DRetained object that this
      * OrientedShape3D object will point to.
      */
+    @Override
     void createRetained() {
         retained = new OrientedShape3DRetained();
         retained.setSource(this);
@@ -606,6 +607,7 @@ public class OrientedShape3D extends Shape3D {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         OrientedShape3D s = new OrientedShape3D();
         s.duplicateNode(this, forceDuplicate);
@@ -643,6 +645,7 @@ public class OrientedShape3D extends Shape3D {
      * @see Node#cloneNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public void duplicateNode(Node originalNode, boolean forceDuplicate) {
 	checkDuplicateNode(originalNode, forceDuplicate);
     }
@@ -670,6 +673,7 @@ public class OrientedShape3D extends Shape3D {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 
 	super.duplicateAttributes(originalNode, forceDuplicate);

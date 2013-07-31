@@ -35,6 +35,7 @@ class DefaultRenderMethod implements RenderMethod {
     /**
      * The actual rendering code for this RenderMethod
      */
+    @Override
     public boolean render(RenderMolecule rm, Canvas3D cv,
 			  RenderAtomListInfo ra, int dirtyBits) {
 

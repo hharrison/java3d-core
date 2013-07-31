@@ -1368,6 +1368,7 @@ public class TextureAttributes extends NodeComponent {
      * Creates a retained mode TextureAttributesRetained object that this
      * TextureAttributes component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new TextureAttributesRetained();
 	this.retained.setSource(this);
@@ -1377,6 +1378,7 @@ public class TextureAttributes extends NodeComponent {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         TextureAttributes ta = new TextureAttributes();
         ta.duplicateNodeComponent(this);
@@ -1401,6 +1403,7 @@ public class TextureAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 

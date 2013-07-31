@@ -154,6 +154,7 @@ public class QuadArray extends GeometryArray {
      * Creates the retained mode QuadArrayRetained object that this
      * QuadArray object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new QuadArrayRetained();
 	this.retained.setSource(this);
@@ -163,6 +164,7 @@ public class QuadArray extends GeometryArray {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         QuadArrayRetained rt = (QuadArrayRetained) retained;
         int texSetCount = rt.getTexCoordSetCount();

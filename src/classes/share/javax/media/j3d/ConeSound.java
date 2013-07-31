@@ -561,6 +561,7 @@ public class ConeSound extends PointSound {
      * Creates the retained mode ConeSoundRetained object that this
      * ConeSound object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new ConeSoundRetained();
 	this.retained.setSource(this);
@@ -859,6 +860,7 @@ public class ConeSound extends PointSound {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         ConeSound c = new ConeSound();
         c.duplicateNode(this, forceDuplicate);
@@ -897,6 +899,7 @@ public class ConeSound extends PointSound {
      * @see Node#cloneNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public void duplicateNode(Node originalNode, boolean forceDuplicate) {
 	checkDuplicateNode(originalNode, forceDuplicate);
     }
@@ -923,6 +926,7 @@ public class ConeSound extends PointSound {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 	super.duplicateAttributes(originalNode, forceDuplicate);
 

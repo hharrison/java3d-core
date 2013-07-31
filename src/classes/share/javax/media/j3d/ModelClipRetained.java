@@ -656,6 +656,7 @@ void update(Context ctx, int enableMask, Transform3D trans) {
 
 
 
+    @Override
     void updateMirrorObject(Object[] objs) {
 	int component = ((Integer)objs[1]).intValue();
 	if ((component & PLANES_CHANGED) != 0) {
@@ -771,6 +772,7 @@ void update(Context ctx, int enableMask, Transform3D trans) {
      * the mirror object - will update the object's
      * cached region and transformed region
      */
+    @Override
     void updateBoundingLeaf() {
         if (boundingLeaf != null && boundingLeaf.switchState.currentSwitchOn) {
             region = boundingLeaf.transformedRegion;
@@ -785,6 +787,7 @@ void update(Context ctx, int enableMask, Transform3D trans) {
     }
 
 
+    @Override
     void setLive(SetLiveState s) {
 	GroupRetained group;
 
@@ -870,6 +873,7 @@ void update(Context ctx, int enableMask, Transform3D trans) {
      * This clearLive routine first calls the superclass's method, then
      * it removes itself to the list of model clip
      */
+    @Override
     void clearLive(SetLiveState s) {
 
         super.clearLive(s);
@@ -929,6 +933,7 @@ void update(Context ctx, int enableMask, Transform3D trans) {
 
 
     // Clone the retained side only, internal use only
+    @Override
     protected Object clone() {
         ModelClipRetained mc = (ModelClipRetained)super.clone();
 
@@ -1018,6 +1023,7 @@ void update(Context ctx, int enableMask, Transform3D trans) {
 	VirtualUniverse.mc.processMessage(createMessage);
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained staticTransform) {
 	super.mergeTransform(staticTransform);
 
@@ -1030,6 +1036,7 @@ void update(Context ctx, int enableMask, Transform3D trans) {
 	     xform.transform(planes[i], xformPlanes[i]);
 	}
     }
+    @Override
     void getMirrorObjects(ArrayList leafList, HashKey key) {
 	leafList.add(mirrorModelClip);
     }

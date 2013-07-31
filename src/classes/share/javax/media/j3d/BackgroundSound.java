@@ -86,6 +86,7 @@ public class BackgroundSound extends Sound {
      * Creates the retained mode BackgroundSoundRetained object that this
      * BackgroundSound component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new BackgroundSoundRetained();
 	this.retained.setSource(this);
@@ -106,6 +107,7 @@ public class BackgroundSound extends Sound {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         BackgroundSound b = new BackgroundSound();
         b.duplicateNode(this, forceDuplicate);
@@ -144,6 +146,7 @@ public class BackgroundSound extends Sound {
      * @see Node#cloneNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public void duplicateNode(Node originalNode, boolean forceDuplicate) {
 	checkDuplicateNode(originalNode, forceDuplicate);
     }

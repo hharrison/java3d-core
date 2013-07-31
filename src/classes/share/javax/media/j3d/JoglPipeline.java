@@ -108,6 +108,7 @@ class JoglPipeline extends Pipeline {
     /**
      * Initialize the pipeline
      */
+    @Override
     void initialize(Pipeline.Type pipelineType) {
         super.initialize(pipelineType);
 
@@ -127,6 +128,7 @@ class JoglPipeline extends Pipeline {
     //
 
     // used for GeometryArrays by Copy or interleaved
+    @Override
     void execute(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
@@ -150,6 +152,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // used by GeometryArray by Reference with java arrays
+    @Override
     void executeVA(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
@@ -240,6 +243,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // used by GeometryArray by Reference with NIO buffer
+    @Override
     void executeVABuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
@@ -345,6 +349,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // used by GeometryArray by Reference in interleaved format with NIO buffer
+    @Override
     void executeInterleavedBuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
@@ -366,6 +371,7 @@ class JoglPipeline extends Pipeline {
                 null, varray, cdata, cdirty);
     }
 
+    @Override
     void setVertexFormat(Context ctx, GeometryArrayRetained geo,
             int vformat, boolean useAlpha, boolean ignoreVertexColors) {
         if (VERBOSE) System.err.println("JoglPipeline.setVertexFormat()");
@@ -400,6 +406,7 @@ class JoglPipeline extends Pipeline {
         }
     }
 
+    @Override
     void disableGlobalAlpha(Context ctx, GeometryArrayRetained geo, int vformat,
             boolean useAlpha, boolean ignoreVertexColors) {
         if (VERBOSE) System.err.println("JoglPipeline.disableGlobalAlpha()");
@@ -416,6 +423,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // used for GeometryArrays
+    @Override
     void buildGA(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale, boolean updateAlpha,
@@ -863,6 +871,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // used to Build Dlist GeometryArray by Reference with java arrays
+    @Override
     void buildGAForByRef(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,  boolean updateAlpha,
@@ -1670,6 +1679,7 @@ class JoglPipeline extends Pipeline {
     //
 
     // by-copy or interleaved, by reference, Java arrays
+    @Override
     void executeIndexedGeometry(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
@@ -1701,6 +1711,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // interleaved, by reference, nio buffer
+    @Override
     void executeIndexedGeometryBuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
@@ -1729,6 +1740,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // non interleaved, by reference, Java arrays
+    @Override
     void executeIndexedGeometryVA(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
@@ -1821,6 +1833,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // non interleaved, by reference, nio buffer
+    @Override
     void executeIndexedGeometryVABuffer(Context ctx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale,
@@ -1927,6 +1940,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // by-copy geometry
+    @Override
     void buildIndexedGeometry(Context absCtx,
             GeometryArrayRetained geo, int geo_type,
             boolean isNonUniformScale, boolean updateAlpha,
@@ -2686,6 +2700,7 @@ class JoglPipeline extends Pipeline {
     //
 
     // Native method for readRaster
+    @Override
     void readRaster(Context ctx,
             int type, int xSrcOffset, int ySrcOffset,
             int width, int height, int hCanvas,
@@ -2816,6 +2831,7 @@ class JoglPipeline extends Pipeline {
 
     // ShaderAttributeValue methods
 
+    @Override
     ShaderError setGLSLUniform1i(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2826,6 +2842,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform1f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2837,6 +2854,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform2i(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2848,6 +2866,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform2f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2859,6 +2878,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform3i(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2870,6 +2890,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform3f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2881,6 +2902,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform4i(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2892,6 +2914,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform4f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2903,6 +2926,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniformMatrix3f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2916,6 +2940,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniformMatrix4f(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2931,6 +2956,7 @@ class JoglPipeline extends Pipeline {
 
     // ShaderAttributeArray methods
 
+    @Override
     ShaderError setGLSLUniform1iArray(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2943,6 +2969,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform1fArray(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2955,6 +2982,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform2iArray(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2967,6 +2995,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform2fArray(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2979,6 +3008,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform3iArray(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -2991,6 +3021,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform3fArray(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -3003,6 +3034,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform4iArray(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -3015,6 +3047,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniform4fArray(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -3027,6 +3060,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniformMatrix3fArray(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -3041,6 +3075,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError setGLSLUniformMatrix4fArray(Context ctx,
             ShaderProgramId shaderProgramId,
             ShaderAttrLoc uniformLocation,
@@ -3056,6 +3091,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // interfaces for shader compilation, etc.
+    @Override
     ShaderError createGLSLShader(Context ctx, int shaderType, ShaderId[] shaderId) {
         if (VERBOSE) System.err.println("JoglPipeline.createGLSLShader()");
 
@@ -3076,6 +3112,7 @@ class JoglPipeline extends Pipeline {
         shaderId[0] = new JoglShaderObject(shaderHandle);
         return null;
     }
+    @Override
     ShaderError destroyGLSLShader(Context ctx, ShaderId shaderId) {
         if (VERBOSE) System.err.println("JoglPipeline.destroyGLSLShader()");
 
@@ -3083,6 +3120,7 @@ class JoglPipeline extends Pipeline {
         gl.glDeleteObjectARB(unbox(shaderId));
         return null;
     }
+    @Override
     ShaderError compileGLSLShader(Context ctx, ShaderId shaderId, String program) {
         if (VERBOSE) System.err.println("JoglPipeline.compileGLSLShader()");
 
@@ -3110,6 +3148,7 @@ class JoglPipeline extends Pipeline {
         return null;
     }
 
+    @Override
     ShaderError createGLSLShaderProgram(Context ctx, ShaderProgramId[] shaderProgramId) {
         if (VERBOSE) System.err.println("JoglPipeline.createGLSLShaderProgram()");
 
@@ -3123,12 +3162,14 @@ class JoglPipeline extends Pipeline {
         shaderProgramId[0] = new JoglShaderObject(shaderProgramHandle);
         return null;
     }
+    @Override
     ShaderError destroyGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
         if (VERBOSE) System.err.println("JoglPipeline.destroyGLSLShaderProgram()");
 		GL2 gl = context(ctx).getGL().getGL2();
 		gl.glDeleteObjectARB(unbox(shaderProgramId));
         return null;
     }
+    @Override
     ShaderError linkGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId,
             ShaderId[] shaderIds) {
         if (VERBOSE) System.err.println("JoglPipeline.linkGLSLShaderProgram()");
@@ -3150,6 +3191,7 @@ class JoglPipeline extends Pipeline {
         }
         return null;
     }
+    @Override
     ShaderError bindGLSLVertexAttrName(Context ctx, ShaderProgramId shaderProgramId,
             String attrName, int attrIndex) {
         if (VERBOSE) System.err.println("JoglPipeline.bindGLSLVertexAttrName()");
@@ -3160,6 +3202,7 @@ class JoglPipeline extends Pipeline {
                 attrName);
         return null;
     }
+    @Override
     void lookupGLSLShaderAttrNames(Context ctx, ShaderProgramId shaderProgramId,
             int numAttrNames, String[] attrNames, ShaderAttrLoc[] locArr,
             int[] typeArr, int[] sizeArr, boolean[] isArrayArr) {
@@ -3241,6 +3284,7 @@ class JoglPipeline extends Pipeline {
         }
     }
 
+    @Override
     ShaderError useGLSLShaderProgram(Context ctx, ShaderProgramId shaderProgramId) {
         if (VERBOSE) System.err.println("JoglPipeline.useGLSLShaderProgram()");
 
@@ -3347,6 +3391,7 @@ class JoglPipeline extends Pipeline {
     // ColoringAttributesRetained methods
     //
 
+    @Override
     void updateColoringAttributes(Context ctx,
             float dRed, float dGreen, float dBlue,
             float red, float green, float blue,
@@ -3380,6 +3425,7 @@ class JoglPipeline extends Pipeline {
     //
 
     private static final float[] black = new float[4];
+    @Override
     void updateDirectionalLight(Context ctx,
             int lightSlot, float red, float green,
             float blue, float dirx, float diry, float dirz) {
@@ -3416,6 +3462,7 @@ class JoglPipeline extends Pipeline {
     // PointLightRetained methods
     //
 
+    @Override
     void updatePointLight(Context ctx,
             int lightSlot, float red, float green,
             float blue, float attenx, float atteny, float attenz,
@@ -3452,6 +3499,7 @@ class JoglPipeline extends Pipeline {
     // SpotLightRetained methods
     //
 
+    @Override
     void updateSpotLight(Context ctx,
             int lightSlot, float red, float green,
             float blue, float attenx, float atteny, float attenz,
@@ -3494,6 +3542,7 @@ class JoglPipeline extends Pipeline {
     // ExponentialFogRetained methods
     //
 
+    @Override
     void updateExponentialFog(Context ctx,
             float red, float green, float blue,
             float density) {
@@ -3518,6 +3567,7 @@ class JoglPipeline extends Pipeline {
     // LinearFogRetained methods
     //
 
+    @Override
     void updateLinearFog(Context ctx,
             float red, float green, float blue,
             double fdist, double bdist) {
@@ -3543,6 +3593,7 @@ class JoglPipeline extends Pipeline {
     // LineAttributesRetained methods
     //
 
+    @Override
     void updateLineAttributes(Context ctx,
             float lineWidth, int linePattern,
             int linePatternMask,
@@ -3583,6 +3634,7 @@ class JoglPipeline extends Pipeline {
     // MaterialRetained methods
     //
 
+    @Override
     void updateMaterial(Context ctx,
             float red, float green, float blue, float alpha,
             float aRed, float aGreen, float aBlue,
@@ -3647,6 +3699,7 @@ class JoglPipeline extends Pipeline {
     // ModelClipRetained methods
     //
 
+    @Override
     void updateModelClip(Context ctx, int planeNum, boolean enableFlag,
             double A, double B, double C, double D) {
         if (VERBOSE) System.err.println("JoglPipeline.updateModelClip()");
@@ -3676,6 +3729,7 @@ class JoglPipeline extends Pipeline {
     // PointAttributesRetained methods
     //
 
+    @Override
     void updatePointAttributes(Context ctx, float pointSize, boolean pointAntialiasing) {
         if (VERBOSE) System.err.println("JoglPipeline.updatePointAttributes()");
 
@@ -3697,6 +3751,7 @@ class JoglPipeline extends Pipeline {
     // PolygonAttributesRetained methods
     //
 
+    @Override
     void updatePolygonAttributes(Context ctx,
             int polygonMode, int cullFace,
             boolean backFaceNormalFlip,
@@ -3765,6 +3820,7 @@ class JoglPipeline extends Pipeline {
     // RenderingAttributesRetained methods
     //
 
+    @Override
     void updateRenderingAttributes(Context ctx,
             boolean depthBufferWriteEnableOverride,
             boolean depthBufferEnableOverride,
@@ -3955,6 +4011,7 @@ class JoglPipeline extends Pipeline {
      * trans contains eyeTovworld transform in d3d
      * trans contains vworldToEye transform in ogl
      */
+    @Override
     void updateTexCoordGeneration(Context ctx,
             boolean enable, int genMode, int format,
             float planeSx, float planeSy, float planeSz, float planeSw,
@@ -4312,6 +4369,7 @@ class JoglPipeline extends Pipeline {
         blendFunctionTable[TransparencyAttributes.BLEND_CONSTANT_COLOR] = GL2.GL_CONSTANT_COLOR;
     }
 
+    @Override
     void updateTransparencyAttributes(Context ctx,
             float alpha, int geometryType,
             int polygonMode,
@@ -4352,6 +4410,7 @@ class JoglPipeline extends Pipeline {
     // TextureAttributesRetained methods
     //
 
+    @Override
     void updateTextureAttributes(Context ctx,
             double[] transform, boolean isIdentity, int textureMode,
             int perspCorrectionMode,
@@ -4415,6 +4474,7 @@ class JoglPipeline extends Pipeline {
 //        }
     }
 
+    @Override
     void updateRegisterCombiners(Context absCtx,
             double[] transform, boolean isIdentity, int textureMode,
             int perspCorrectionMode,
@@ -4628,6 +4688,7 @@ class JoglPipeline extends Pipeline {
         // GL_SGI_texture_color_table
     }
 
+    @Override
     void updateTextureColorTable(Context ctx, int numComponents,
             int colorTableSize,
             int[] textureColorTable) {
@@ -4647,6 +4708,7 @@ class JoglPipeline extends Pipeline {
 //        }
     }
 
+    @Override
     void updateCombiner(Context ctx,
             int combineRgbMode, int combineAlphaMode,
             int[] combineRgbSrc, int[] combineAlphaSrc,
@@ -4832,6 +4894,7 @@ class JoglPipeline extends Pipeline {
     // TextureUnitStateRetained methods
     //
 
+    @Override
     void updateTextureUnitState(Context ctx, int index, boolean enable) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTextureUnitState()");
 
@@ -4868,6 +4931,7 @@ class JoglPipeline extends Pipeline {
     // Texture2DRetained methods
     //
 
+    @Override
     void bindTexture2D(Context ctx, int objectId, boolean enable) {
         if (VERBOSE) System.err.println("JoglPipeline.bindTexture2D(objectId=" + objectId + ",enable=" + enable + ")");
 
@@ -4883,6 +4947,7 @@ class JoglPipeline extends Pipeline {
         }
     }
 
+    @Override
     void updateTexture2DImage(Context ctx,
             int numLevels, int level,
             int textureFormat, int imageFormat,
@@ -4896,6 +4961,7 @@ class JoglPipeline extends Pipeline {
                 width, height, boundaryWidth, dataType, data, useAutoMipMap);
     }
 
+    @Override
     void updateTexture2DSubImage(Context ctx,
             int level, int xoffset, int yoffset,
             int textureFormat, int imageFormat,
@@ -4914,6 +4980,7 @@ class JoglPipeline extends Pipeline {
                 dataType, data);
     }
 
+    @Override
     void updateTexture2DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLOD, float maximumLOD) {
@@ -4924,6 +4991,7 @@ class JoglPipeline extends Pipeline {
                 minimumLOD, maximumLOD);
     }
 
+    @Override
     void updateTexture2DLodOffset(Context ctx,
             float lodOffsetS, float lodOffsetT,
             float lodOffsetR) {
@@ -4933,6 +5001,7 @@ class JoglPipeline extends Pipeline {
                 lodOffsetS, lodOffsetT, lodOffsetR);
     }
 
+    @Override
     void updateTexture2DBoundary(Context ctx,
             int boundaryModeS, int boundaryModeT,
             float boundaryRed, float boundaryGreen,
@@ -4945,6 +5014,7 @@ class JoglPipeline extends Pipeline {
                 boundaryBlue, boundaryAlpha);
     }
 
+    @Override
     void updateTexture2DFilterModes(Context ctx,
             int minFilter, int magFilter) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DFilterModes()");
@@ -4952,6 +5022,7 @@ class JoglPipeline extends Pipeline {
         updateTextureFilterModes(ctx, GL.GL_TEXTURE_2D, minFilter, magFilter);
     }
 
+    @Override
     void updateTexture2DSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts) {
@@ -4961,6 +5032,7 @@ class JoglPipeline extends Pipeline {
                 numSharpenTextureFuncPts, sharpenTextureFuncPts);
     }
 
+    @Override
     void updateTexture2DFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts) {
@@ -4970,6 +5042,7 @@ class JoglPipeline extends Pipeline {
                 numFilter4FuncPts, filter4FuncPts);
     }
 
+    @Override
     void updateTexture2DAnisotropicFilter(Context ctx, float degree) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture2DAnisotropicFilter()");
 
@@ -5017,6 +5090,7 @@ class JoglPipeline extends Pipeline {
     // Texture3DRetained methods
     //
 
+    @Override
     void bindTexture3D(Context ctx, int objectId, boolean enable) {
         if (VERBOSE) System.err.println("JoglPipeline.bindTexture3D()");
 
@@ -5032,6 +5106,7 @@ class JoglPipeline extends Pipeline {
         }
     }
 
+    @Override
     void updateTexture3DImage(Context ctx,
             int numLevels, int level,
             int textureFormat, int imageFormat,
@@ -5193,6 +5268,7 @@ class JoglPipeline extends Pipeline {
         }
     }
 
+    @Override
     void updateTexture3DSubImage(Context ctx,
             int level,
             int xoffset, int yoffset, int zoffset,
@@ -5379,6 +5455,7 @@ class JoglPipeline extends Pipeline {
     }
 
 
+    @Override
     void updateTexture3DLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod) {
@@ -5389,6 +5466,7 @@ class JoglPipeline extends Pipeline {
                 minimumLod, maximumLod);
     }
 
+    @Override
     void updateTexture3DLodOffset(Context ctx,
             float lodOffsetS, float lodOffsetT,
             float lodOffsetR) {
@@ -5398,6 +5476,7 @@ class JoglPipeline extends Pipeline {
                 lodOffsetS, lodOffsetT, lodOffsetR);
     }
 
+    @Override
     void updateTexture3DBoundary(Context ctx,
             int boundaryModeS, int boundaryModeT,
             int boundaryModeR, float boundaryRed,
@@ -5411,6 +5490,7 @@ class JoglPipeline extends Pipeline {
                 boundaryBlue, boundaryAlpha);
     }
 
+    @Override
     void updateTexture3DFilterModes(Context ctx,
             int minFilter, int magFilter) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DFilterModes()");
@@ -5419,6 +5499,7 @@ class JoglPipeline extends Pipeline {
                 minFilter, magFilter);
     }
 
+    @Override
     void updateTexture3DSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts) {
@@ -5428,6 +5509,7 @@ class JoglPipeline extends Pipeline {
                 numSharpenTextureFuncPts, sharpenTextureFuncPts);
     }
 
+    @Override
     void updateTexture3DFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts) {
@@ -5437,6 +5519,7 @@ class JoglPipeline extends Pipeline {
                 numFilter4FuncPts, filter4FuncPts);
     }
 
+    @Override
     void updateTexture3DAnisotropicFilter(Context ctx, float degree) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DAnisotropicFilter()");
 
@@ -5450,6 +5533,7 @@ class JoglPipeline extends Pipeline {
     // TextureCubeMapRetained methods
     //
 
+    @Override
     void bindTextureCubeMap(Context ctx, int objectId, boolean enable) {
         if (VERBOSE) System.err.println("JoglPipeline.bindTextureCubeMap()");
 
@@ -5464,6 +5548,7 @@ class JoglPipeline extends Pipeline {
         }
     }
 
+    @Override
     void updateTextureCubeMapImage(Context ctx,
             int face, int numLevels, int level,
             int textureFormat, int imageFormat,
@@ -5477,6 +5562,7 @@ class JoglPipeline extends Pipeline {
                 width, height, boundaryWidth, dataType, data, useAutoMipMap);
     }
 
+    @Override
     void updateTextureCubeMapSubImage(Context ctx,
             int face, int level, int xoffset, int yoffset,
             int textureFormat,int imageFormat,
@@ -5494,6 +5580,7 @@ class JoglPipeline extends Pipeline {
                 width, height, dataType, data);
     }
 
+    @Override
     void updateTextureCubeMapLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod) {
@@ -5505,6 +5592,7 @@ class JoglPipeline extends Pipeline {
                 minimumLod, maximumLod);
     }
 
+    @Override
     void updateTextureCubeMapLodOffset(Context ctx,
             float lodOffsetS, float lodOffsetT,
             float lodOffsetR) {
@@ -5515,6 +5603,7 @@ class JoglPipeline extends Pipeline {
                 lodOffsetS, lodOffsetT, lodOffsetR);
     }
 
+    @Override
     void updateTextureCubeMapBoundary(Context ctx,
             int boundaryModeS, int boundaryModeT,
             float boundaryRed, float boundaryGreen,
@@ -5528,6 +5617,7 @@ class JoglPipeline extends Pipeline {
                 boundaryBlue, boundaryAlpha);
     }
 
+    @Override
     void updateTextureCubeMapFilterModes(Context ctx,
             int minFilter, int magFilter) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTextureCubeMapFilterModes()");
@@ -5537,6 +5627,7 @@ class JoglPipeline extends Pipeline {
                 minFilter, magFilter);
     }
 
+    @Override
     void updateTextureCubeMapSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts) {
@@ -5547,6 +5638,7 @@ class JoglPipeline extends Pipeline {
                 numSharpenTextureFuncPts, sharpenTextureFuncPts);
     }
 
+    @Override
     void updateTextureCubeMapFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts) {
@@ -5557,6 +5649,7 @@ class JoglPipeline extends Pipeline {
                 numFilter4FuncPts, filter4FuncPts);
     }
 
+    @Override
     void updateTextureCubeMapAnisotropicFilter(Context ctx, float degree) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTextureCubeMapAnisotropicFilter()");
 
@@ -6142,6 +6235,7 @@ class JoglPipeline extends Pipeline {
     //
 
     // Maximum lights supported by the native API
+    @Override
     int getMaximumLights() {
         if (VERBOSE) System.err.println("JoglPipeline.getMaximumLights()");
 
@@ -6159,6 +6253,7 @@ class JoglPipeline extends Pipeline {
 
     // Mac/JRE 7; called from Renderer when resizing is dedected
     // Implementation follows the approach in jogamp.opengl.GLDrawableHelper.resizeOffscreenDrawable(..)
+    @Override
     void resizeOffscreenLayer(Canvas3D cv, int cvWidth, int cvHeight) {
 		if (!isOffscreenLayerSurfaceEnabled(cv))
 			return;
@@ -6257,6 +6352,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // This is the native method for creating the underlying graphics context.
+    @Override
     Context createNewContext(Canvas3D cv, Drawable drawable,
             Context shareCtx, boolean isSharedCtx,
             boolean offScreen) {
@@ -6399,6 +6495,7 @@ class JoglPipeline extends Pipeline {
         return ctx;
     }
 
+    @Override
     void createQueryContext(Canvas3D cv, Drawable drawable,
             boolean offScreen, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.createQueryContext()");
@@ -6469,6 +6566,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // This is the native for creating an offscreen buffer
+    @Override
     Drawable createOffScreenBuffer(Canvas3D cv, Context ctx, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.createOffScreenBuffer()");
 
@@ -6526,6 +6624,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // 'destroyContext' is called first if context exists
+    @Override
     void destroyOffScreenBuffer(Canvas3D cv, Context ctx, Drawable drawable) {
         if (VERBOSE) System.err.println("JoglPipeline.destroyOffScreenBuffer()");
 
@@ -6533,6 +6632,7 @@ class JoglPipeline extends Pipeline {
     }
 
     // This is the native for reading the image from the offscreen buffer
+    @Override
     void readOffScreenBuffer(Canvas3D cv, Context ctx, int format, int dataType, Object data, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.readOffScreenBuffer()");
 
@@ -6664,6 +6764,7 @@ class JoglPipeline extends Pipeline {
     }
 
 	// The native method for swapBuffers - onscreen only
+@Override
 void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
 	if (VERBOSE) System.err.println("JoglPipeline.swapBuffers()");
 	GLDrawable draw = drawable(drawable);
@@ -6671,6 +6772,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
 }
 
     // native method for setting Material when no material is present
+    @Override
     void updateMaterialColor(Context ctx, float r, float g, float b, float a) {
         if (VERBOSE) System.err.println("JoglPipeline.updateMaterialColor()");
 
@@ -6679,6 +6781,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
         gl.glDisable(GL2.GL_LIGHTING);
     }
 
+    @Override
     void destroyContext(Drawable drawable, Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.destroyContext()");
 
@@ -6697,6 +6800,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // This is the native method for doing accumulation.
+    @Override
     void accum(Context ctx, float value) {
         if (VERBOSE) System.err.println("JoglPipeline.accum()");
 
@@ -6707,6 +6811,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // This is the native method for doing accumulation return.
+    @Override
     void accumReturn(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.accumReturn()");
 
@@ -6715,6 +6820,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // This is the native method for clearing the accumulation buffer.
+    @Override
     void clearAccum(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.clearAccum()");
 
@@ -6724,6 +6830,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
 
     // This is the native method for getting the number of lights the underlying
     // native library can support.
+    @Override
     int getNumCtxLights(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.getNumCtxLights()");
 
@@ -6734,6 +6841,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // Native method for decal 1st child setup
+    @Override
     boolean decal1stChildSetup(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.decal1stChildSetup()");
 
@@ -6750,6 +6858,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // Native method for decal nth child setup
+    @Override
     void decalNthChildSetup(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.decalNthChildSetup()");
 
@@ -6760,6 +6869,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // Native method for decal reset
+    @Override
     void decalReset(Context ctx, boolean depthBufferEnable) {
         if (VERBOSE) System.err.println("JoglPipeline.decalReset()");
 
@@ -6770,6 +6880,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // Native method for eye lighting
+    @Override
     void ctxUpdateEyeLightingEnable(Context ctx, boolean localEyeLightingEnable) {
         if (VERBOSE) System.err.println("JoglPipeline.ctxUpdateEyeLightingEnable()");
 
@@ -6785,6 +6896,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     // The following three methods are used in multi-pass case
 
     // native method for setting blend color
+    @Override
     void setBlendColor(Context ctx, float red, float green,
             float blue, float alpha) {
         if (VERBOSE) System.err.println("JoglPipeline.setBlendColor()");
@@ -6796,6 +6908,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting blend func
+    @Override
     void setBlendFunc(Context ctx, int srcBlendFunction, int dstBlendFunction) {
         if (VERBOSE) System.err.println("JoglPipeline.setBlendFunc()");
 
@@ -6806,6 +6919,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting fog enable flag
+    @Override
     void setFogEnableFlag(Context ctx, boolean enable) {
         if (VERBOSE) System.err.println("JoglPipeline.setFogEnableFlag()");
 
@@ -6818,6 +6932,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // Setup the full scene antialising in D3D and ogl when GL_ARB_multisamle supported
+    @Override
     void setFullSceneAntialiasing(Context absCtx, boolean enable) {
         if (VERBOSE) System.err.println("JoglPipeline.setFullSceneAntialiasing()");
 
@@ -6832,6 +6947,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
         }
     }
 
+    @Override
     void setGlobalAlpha(Context ctx, float alpha) {
         if (VERBOSE) System.err.println("JoglPipeline.setGlobalAlpha()");
 // FIXME: SUN_global_alpha
@@ -6843,6 +6959,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // Native method to update separate specular color control
+    @Override
     void updateSeparateSpecularColorEnable(Context ctx, boolean enable) {
         if (VERBOSE) System.err.println("JoglPipeline.updateSeparateSpecularColorEnable()");
 
@@ -6857,6 +6974,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
 
     // True under Solaris,
     // False under windows when display mode <= 8 bit
+    @Override
     boolean validGraphicsMode() {
         if (VERBOSE) System.err.println("JoglPipeline.validGraphicsMode()");
 
@@ -6876,6 +6994,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting light enables
+    @Override
     void setLightEnables(Context ctx, long enableMask, int maxLights) {
         if (VERBOSE) System.err.println("JoglPipeline.setLightEnables()");
 
@@ -6891,6 +7010,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting scene ambient
+    @Override
     void setSceneAmbient(Context ctx, float red, float green, float blue) {
         if (VERBOSE) System.err.println("JoglPipeline.setSceneAmbient()");
 
@@ -6905,6 +7025,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for disabling fog
+    @Override
     void disableFog(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.disableFog()");
 
@@ -6913,6 +7034,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for disabling modelClip
+    @Override
     void disableModelClip(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.disableModelClip()");
 
@@ -6927,6 +7049,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting default RenderingAttributes
+    @Override
     void resetRenderingAttributes(Context ctx,
             boolean depthBufferWriteEnableOverride,
             boolean depthBufferEnableOverride) {
@@ -6947,6 +7070,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting default texture
+    @Override
     void resetTextureNative(Context ctx, int texUnitIndex) {
         if (VERBOSE) System.err.println("JoglPipeline.resetTextureNative()");
 
@@ -6964,6 +7088,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for activating a particular texture unit
+    @Override
     void activeTextureUnit(Context ctx, int texUnitIndex) {
         if (VERBOSE) System.err.println("JoglPipeline.activeTextureUnit()");
 
@@ -6975,6 +7100,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting default TexCoordGeneration
+    @Override
     void resetTexCoordGeneration(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.resetTexCoordGeneration()");
 
@@ -6986,6 +7112,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting default TextureAttributes
+    @Override
     void resetTextureAttributes(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.resetTextureAttributes()");
 
@@ -7013,6 +7140,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting default PolygonAttributes
+    @Override
     void resetPolygonAttributes(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.resetPolygonAttributes()");
 
@@ -7032,6 +7160,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting default LineAttributes
+    @Override
     void resetLineAttributes(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.resetLineAttributes()");
 
@@ -7044,6 +7173,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting default PointAttributes
+    @Override
     void resetPointAttributes(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.resetPointAttributes()");
 
@@ -7055,6 +7185,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting default TransparencyAttributes
+    @Override
     void resetTransparency(Context ctx, int geometryType,
             int polygonMode, boolean lineAA,
             boolean pointAA) {
@@ -7077,6 +7208,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // native method for setting default ColoringAttributes
+    @Override
     void resetColoringAttributes(Context ctx,
             float r, float g,
             float b, float a,
@@ -7095,6 +7227,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
      *  This native method makes sure that the rendering for this canvas
      *  gets done now.
      */
+    @Override
     void syncRender(Context ctx, boolean wait) {
         if (VERBOSE) System.err.println("JoglPipeline.syncRender()");
 
@@ -7107,6 +7240,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // The native method that sets this ctx to be the current one
+    @Override
     boolean useCtx(Context ctx, Drawable drawable) {
         if (VERBOSE) System.err.println("JoglPipeline.useCtx()");
         GLContext context = context(ctx);
@@ -7115,6 +7249,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // Optionally release the context. Returns true if the context was released.
+    @Override
     boolean releaseCtx(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.releaseCtx()");
         GLContext context = context(ctx);
@@ -7122,6 +7257,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
         return true;
     }
 
+    @Override
     void clear(Context ctx, float r, float g, float b, boolean clearStencil) {
         if (VERBOSE) System.err.println("JoglPipeline.clear()");
 
@@ -7171,6 +7307,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
 
     }
 
+    @Override
     void textureFillBackground(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, boolean useBilinearFilter)  {
         if (VERBOSE) System.err.println("JoglPipeline.textureFillBackground()");
@@ -7223,6 +7360,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
 
     }
 
+    @Override
     void textureFillRaster(Context ctx, float texMinU, float texMaxU, float texMinV, float texMaxV,
             float mapMinX, float mapMaxX, float mapMinY, float mapMaxY, float mapZ, float alpha,
             boolean useBilinearFilter)  {
@@ -7278,6 +7416,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
 
     }
 
+    @Override
     void executeRasterDepth(Context ctx, float posX, float posY, float posZ,
             int srcOffsetX, int srcOffsetY, int rasterWidth, int rasterHeight,
             int depthWidth, int depthHeight, int depthFormat, Object depthData) {
@@ -7341,6 +7480,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // The native method for setting the ModelView matrix.
+    @Override
     void setModelViewMatrix(Context ctx, double[] viewMatrix, double[] modelMatrix) {
         if (VERBOSE) System.err.println("JoglPipeline.setModelViewMatrix()");
         GLContext context = context(ctx);
@@ -7362,6 +7502,7 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
     }
 
     // The native method for setting the Projection matrix.
+    @Override
     void setProjectionMatrix(Context ctx, double[] projMatrix) {
         if (VERBOSE) System.err.println("JoglPipeline.setProjectionMatrix()");
         GLContext context = context(ctx);
@@ -7421,6 +7562,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
 
 
     // The native method for setting the Viewport.
+    @Override
     void setViewport(Context ctx, int x, int y, int width, int height) {
         if (VERBOSE) System.err.println("JoglPipeline.setViewport()");
         GL gl = context(ctx).getGL();
@@ -7428,6 +7570,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
     }
 
     // used for display Lists
+    @Override
     void newDisplayList(Context ctx, int displayListId) {
         if (VERBOSE) System.err.println("JoglPipeline.newDisplayList()");
         if (displayListId <= 0) {
@@ -7438,6 +7581,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
         gl.glNewList(displayListId, GL2.GL_COMPILE);
     }
 
+    @Override
     void endDisplayList(Context ctx) {
         if (VERBOSE) System.err.println("JoglPipeline.endDisplayList()");
 		GL2 gl = context(ctx).getGL().getGL2();
@@ -7445,6 +7589,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
     }
 
     int numInvalidLists = 0;
+    @Override
     void callDisplayList(Context ctx, int id, boolean isNonUniformScale) {
         if (VERBOSE) System.err.println("JoglPipeline.callDisplayList()");
         if (id <= 0) {
@@ -7472,6 +7617,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
         }
     }
 
+    @Override
     void freeDisplayList(Context ctx, int id) {
         if (VERBOSE) System.err.println("JoglPipeline.freeDisplayList()");
         if (id <= 0) {
@@ -7482,6 +7628,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
         gl.glDeleteLists(id, 1);
     }
 
+    @Override
     void freeTexture(Context ctx, int id) {
         if (VERBOSE) System.err.println("JoglPipeline.freeTexture()");
 
@@ -7496,6 +7643,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
         }
     }
 
+	@Override
 	int generateTexID(Context ctx) {
 		if (VERBOSE) System.err.println("JoglPipeline.generateTexID()");
 
@@ -7509,6 +7657,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
 		return tmp[0];
 	}
 
+    @Override
     void texturemapping(Context ctx,
             int px, int py,
             int minX, int minY, int maxX, int maxY,
@@ -7603,6 +7752,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
         gl.glPopAttrib();
     }
 
+    @Override
     boolean initTexturemapping(Context ctx, int texWidth,
             int texHeight, int objectId) {
         if (VERBOSE) System.err.println("JoglPipeline.initTexturemapping()");
@@ -7637,6 +7787,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
     // stereo is available before setting the mode to FIELD_LEFT or
     // FIELD_RIGHT.  The boolean isTRUE for double buffered mode, FALSE
     // foe single buffering.
+    @Override
     void setRenderMode(Context ctx, int mode, boolean doubleBuffer) {
         if (VERBOSE) System.err.println("JoglPipeline.setRenderMode()");
 
@@ -7674,6 +7825,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
     }
 
     // Set glDepthMask.
+    @Override
     void setDepthBufferWriteEnable(Context ctx, boolean mode) {
         if (VERBOSE) System.err.println("JoglPipeline.setDepthBufferWriteEnable()");
 
@@ -8136,6 +8288,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
     // GraphicsConfigTemplate3D.
     // This method must return a valid GraphicsConfig, or else it must throw
     // an exception if one cannot be returned.
+    @Override
     GraphicsConfiguration getGraphicsConfig(GraphicsConfiguration gconfig) {
         if (VERBOSE) System.err.println("JoglPipeline.getGraphicsConfig()");
 
@@ -8146,6 +8299,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
     }
 
     // Get best graphics config from pipeline
+    @Override
     GraphicsConfiguration getBestConfiguration(GraphicsConfigTemplate3D gct,
             GraphicsConfiguration[] gc) {
         if (VERBOSE) System.err.println("JoglPipeline.getBestConfiguration()");
@@ -8296,6 +8450,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
     }
 
     // Determine whether specified graphics config is supported by pipeline
+    @Override
     boolean isGraphicsConfigSupported(GraphicsConfigTemplate3D gct,
             GraphicsConfiguration gc) {
         if (VERBOSE) System.err.println("JoglPipeline.isGraphicsConfigSupported()");
@@ -8320,24 +8475,28 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
     }
 
     // Methods to get actual capabilities from Canvas3D
+    @Override
     boolean hasDoubleBuffer(Canvas3D cv) {
         if (VERBOSE) System.err.println("JoglPipeline.hasDoubleBuffer()");
         if (VERBOSE) System.err.println("  Returning " + caps(cv).getDoubleBuffered());
         return caps(cv).getDoubleBuffered();
     }
 
+    @Override
     boolean hasStereo(Canvas3D cv) {
         if (VERBOSE) System.err.println("JoglPipeline.hasStereo()");
         if (VERBOSE) System.err.println("  Returning " + caps(cv).getStereo());
         return caps(cv).getStereo();
     }
 
+    @Override
     int getStencilSize(Canvas3D cv) {
         if (VERBOSE) System.err.println("JoglPipeline.getStencilSize()");
         if (VERBOSE) System.err.println("  Returning " + caps(cv).getStencilBits());
         return caps(cv).getStencilBits();
     }
 
+    @Override
     boolean hasSceneAntialiasingMultisample(Canvas3D cv) {
         if (VERBOSE) System.err.println("JoglPipeline.hasSceneAntialiasingMultisample()");
         if (VERBOSE) System.err.println("  Returning " + caps(cv).getSampleBuffers());
@@ -8345,6 +8504,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
         return caps(cv).getSampleBuffers();
     }
 
+    @Override
     boolean hasSceneAntialiasingAccum(Canvas3D cv) {
         if (VERBOSE) System.err.println("JoglPipeline.hasSceneAntialiasingAccum()");
         GLCapabilities caps = caps(cv);
@@ -8358,6 +8518,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
 
     private boolean checkedForGetScreenMethod = false;
     private Method getScreenMethod = null;
+    @Override
     int getScreen(final GraphicsDevice graphicsDevice) {
         if (VERBOSE) System.err.println("JoglPipeline.getScreen()");
 
@@ -8366,6 +8527,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
             //   int getScreen();
             // which we want to call reflectively if it's available.
             AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                @Override
                 public Object run() {
                     try {
                         getScreenMethod = graphicsDevice.getClass().getDeclaredMethod("getScreen", new Class[] {});
@@ -8429,6 +8591,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
             this.chooser = chooser;
         }
 
+        @Override
         public void addNotify() {
             super.addNotify();
 
@@ -8482,6 +8645,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
             return done;
         }
 
+        @Override
         public void init(GLContext context) {
             // This is basically a temporary
             JoglContext jctx = new JoglContext(context);
@@ -8503,6 +8667,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
 
     private void disposeOnEDT(final Frame f) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 f.setVisible(false);
                 f.dispose();
@@ -8523,18 +8688,21 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
     //
 
     // Method to construct a new DrawingSurfaceObject
+    @Override
     DrawingSurfaceObject createDrawingSurfaceObject(Canvas3D cv) {
         if (VERBOSE) System.err.println("JoglPipeline.createDrawingSurfaceObject()");
         return new JoglDrawingSurfaceObject(cv);
     }
 
     // Method to free the drawing surface object
+    @Override
     void freeDrawingSurface(Canvas3D cv, DrawingSurfaceObject drawingSurfaceObject) {
         if (VERBOSE) System.err.println("JoglPipeline.freeDrawingSurface()");
         // This method is a no-op
     }
 
     // Method to free the native drawing surface object
+    @Override
     void freeDrawingSurfaceNative(Object o) {
         if (VERBOSE) System.err.println("JoglPipeline.freeDrawingSurfaceNative()");
         // This method is a no-op

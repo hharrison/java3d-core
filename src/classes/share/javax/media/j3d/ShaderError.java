@@ -383,6 +383,7 @@ public class ShaderError extends Object {
      *
      * @return a string representation of this shader error.
      */
+    @Override
     public String toString() {
 	// Concatenate string representation of error code with error message
 	String errorCodeStr;

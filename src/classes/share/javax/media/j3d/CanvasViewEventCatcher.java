@@ -45,6 +45,7 @@ class CanvasViewEventCatcher extends ComponentAdapter {
 	canvas = c;
     }
 
+    @Override
     public void componentResized(ComponentEvent e) {
 	if (DEBUG) {
 	    System.err.println("Component resized " + e);
@@ -71,6 +72,7 @@ class CanvasViewEventCatcher extends ComponentAdapter {
 	}
     }
 
+    @Override
     public void componentMoved(ComponentEvent e) {
 	if (DEBUG) {
 	    System.err.println("Component moved " + e);

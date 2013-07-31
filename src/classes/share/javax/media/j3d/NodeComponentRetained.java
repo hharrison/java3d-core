@@ -235,6 +235,7 @@ class NodeComponentRetained extends SceneGraphObjectRetained {
 	}
     }
 
+     @Override
      protected Object clone() {
          NodeComponentRetained ncr = (NodeComponentRetained)super.clone();
 	 ncr.changedFrequent = changedFrequent;

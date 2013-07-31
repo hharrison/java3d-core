@@ -103,6 +103,7 @@ public class ViewSpecificGroup extends Group {
      * Creates the retained mode ViewSpecificGroupRetained object that this
      * ViewSpecificGroup component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new ViewSpecificGroupRetained();
 	this.retained.setSource(this);
@@ -312,6 +313,7 @@ public Enumeration<View> getAllViews() {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
 	ViewSpecificGroup vsg = new ViewSpecificGroup();
 	vsg.duplicateNode(this, forceDuplicate);
@@ -341,6 +343,7 @@ public Enumeration<View> getAllViews() {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 
 	// XXXX: implement this?

@@ -153,6 +153,7 @@ public class ScaleInterpolator extends TransformInterpolator {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void computeTransform(float alphaValue, Transform3D transform) {
 
 	double val = (1.0-alphaValue)*minimumScale + alphaValue*maximumScale;
@@ -177,6 +178,7 @@ public class ScaleInterpolator extends TransformInterpolator {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         ScaleInterpolator si = new ScaleInterpolator();
         si.duplicateNode(this, forceDuplicate);
@@ -205,6 +207,7 @@ public class ScaleInterpolator extends TransformInterpolator {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 
         super.duplicateAttributes(originalNode, forceDuplicate);

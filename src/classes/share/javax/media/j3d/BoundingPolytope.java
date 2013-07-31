@@ -380,6 +380,7 @@ public class BoundingPolytope extends Bounds {
      * to enclose the given bounds object.
      * @param boundsObject another bounds object
      */
+    @Override
     public void set(Bounds  boundsObject) {
 	int i,k;
 
@@ -475,6 +476,7 @@ public class BoundingPolytope extends Bounds {
      * Creates a copy of a polytope.
      * @return a new BoundingPolytope
      */
+    @Override
     public Object clone() {
 	return new BoundingPolytope(planes);
     }
@@ -493,6 +495,7 @@ public class BoundingPolytope extends Bounds {
      *
      * @since Java 3D 1.2
      */
+    @Override
     public boolean equals(Object bounds) {
 	try {
 	    BoundingPolytope polytope = (BoundingPolytope)bounds;
@@ -525,6 +528,7 @@ public class BoundingPolytope extends Bounds {
      *
      * @since Java 3D 1.2
      */
+    @Override
     public int hashCode() {
 	long bits = 1L;
 
@@ -545,6 +549,7 @@ public class BoundingPolytope extends Bounds {
      * given bounds object.
      * @param boundsObject another bounds object
      */
+    @Override
     public void combine(Bounds boundsObject) {
         BoundingSphere sphere;
 
@@ -606,6 +611,7 @@ public class BoundingPolytope extends Bounds {
      * given array of bounds object.
      * @param boundsObjects an array of bounds objects
      */
+    @Override
     public void combine(Bounds[] boundsObjects) {
         int i=0;
 	double dis;
@@ -678,6 +684,7 @@ public class BoundingPolytope extends Bounds {
      * Combines this bounding polytope with a point.
      * @param point a 3d point in space
      */
+    @Override
     public void combine(Point3d point) {
 	int i;
 	double dis;
@@ -731,6 +738,7 @@ public class BoundingPolytope extends Bounds {
      * Combines this bounding polytope with an array of points.
      * @param points an array of 3d points in space
      */
+    @Override
     public void combine(Point3d[] points) {
 	int i,j;
 	double dis;
@@ -788,6 +796,7 @@ public class BoundingPolytope extends Bounds {
      * @param boundsObject the bounding object to be transformed
      * @param matrix a transformation matrix
      */
+    @Override
     public void transform( Bounds boundsObject, Transform3D matrix) {
 
 	if( boundsObject == null || boundsObject.boundsIsEmpty)  {
@@ -823,6 +832,7 @@ public class BoundingPolytope extends Bounds {
      * Transforms this  bounding polytope by the given transformation matrix.
      * @param matrix a transformation matrix
      */
+    @Override
     public void transform( Transform3D matrix) {
 
 	if(boundsIsInfinite)
@@ -924,6 +934,7 @@ public class BoundingPolytope extends Bounds {
      * @param position is a point defining the location  of the pick w= distance to pick
      * @return true or false indicating if an intersection occured
      */
+    @Override
     boolean intersect(Point3d origin, Vector3d direction, Point4d position ) {
 	double t,v0,vd,x,y,z,invMag;
 	double dx, dy, dz;
@@ -983,6 +994,7 @@ public class BoundingPolytope extends Bounds {
      * @param position is a point defining the location  of the pick w= distance to pick
      * @return true or false indicating if an intersection occured
      */
+    @Override
     boolean intersect(Point3d point,  Point4d position ) {
 	int i;
 
@@ -1016,6 +1028,7 @@ public class BoundingPolytope extends Bounds {
      * @param position is a point defining the location  of the pick w= distance to pick
      * @return true or false indicating if an intersection occured
      */
+    @Override
     boolean intersect( Point3d start, Point3d end, Point4d position ) {
 	double t,v0,vd,x,y,z;
 	int i;
@@ -1084,6 +1097,7 @@ public class BoundingPolytope extends Bounds {
      * @param direction the direction of the ray
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Point3d origin, Vector3d direction ) {
 
 	// compute intersection point of ray and each plane then test if point is in polytope
@@ -1134,6 +1148,7 @@ public class BoundingPolytope extends Bounds {
      * @return true if the bounding polytope is empty;
      * otherwise, it returns false
      */
+    @Override
     public boolean isEmpty() {
 	// if nVerts > 0 after computeAllVerts(), that means
 	// there is some intersection between 3 planes.
@@ -1145,6 +1160,7 @@ public class BoundingPolytope extends Bounds {
      * @param point a Point defining a position in 3-space
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Point3d point ) {
 
 	int i;
@@ -1171,6 +1187,7 @@ public class BoundingPolytope extends Bounds {
      * @param boundsObject another bounds object
      * @return true or false indicating if an intersection occured
      */
+    @Override
     boolean intersect(Bounds boundsObject, Point4d position) {
 	return intersect(boundsObject);
     }
@@ -1180,6 +1197,7 @@ public class BoundingPolytope extends Bounds {
      * @param boundsObject another bounds object
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Bounds boundsObject) {
 
 	if( boundsObject == null ) {
@@ -1210,6 +1228,7 @@ public class BoundingPolytope extends Bounds {
      * @param boundsObjects an array of bounding objects
      * @return true or false indicating if an intersection occured
      */
+    @Override
     public boolean intersect(Bounds[] boundsObjects) {
 
 	double distsq, radsq;
@@ -1425,6 +1444,7 @@ public class BoundingPolytope extends Bounds {
      * @param boundsObjects is an array of  bounds objects
      * @return closest bounding object
      */
+    @Override
     public Bounds closestIntersection( Bounds[] boundsObjects) {
 
 	if( boundsObjects == null || boundsObjects.length <= 0  ) {
@@ -1557,6 +1577,7 @@ public class BoundingPolytope extends Bounds {
     /**
      * Returns a string representation of this class
      */
+    @Override
     public String toString() {
 	int i;
 
@@ -1702,10 +1723,12 @@ public class BoundingPolytope extends Bounds {
 	checkBoundsIsEmpty();
     }
 
+    @Override
     Point3d getCenter() {
 	return centroid;
     }
 
+@Override
 public void getCenter(Point3d center) {
 	center.set(centroid);
 }
@@ -1715,6 +1738,7 @@ public void getCenter(Point3d center) {
      * then do a copy, otherwise clone the Bounds  and
      * return
      */
+    @Override
     Bounds copy(Bounds r) {
 	int i, k;
 
@@ -1752,6 +1776,7 @@ public void getCenter(Point3d center) {
 	}
     }
 
+    @Override
     int getPickType() {
 	return PickShape.PICKBOUNDINGPOLYTOPE;
     }

@@ -192,6 +192,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
      * Initialize the vertex output list based on the vertex format provided
      * by the SetState decompression command.
      */
+    @Override
     void outputVertexFormat(boolean bundlingNorm, boolean bundlingColor,
 			    boolean doingAlpha) {
 
@@ -216,6 +217,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
     /**
      * Process a decompressed vertex.
      */
+    @Override
     void outputVertex(Point3f position, Vector3f normal,
 		      Color4f color, int vertexReplaceCode) {
 
@@ -253,6 +255,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
      * succeeding vertex.  The outputColor() method is never called if
      * colors are bundled with each vertex in the compressed buffer.
      */
+    @Override
     void outputColor(Color4f color) {
 	if (boundsOnly || positionsOnly) return ;
 	if (debug) System.err.println("outputColor: " + color.toString()) ;
@@ -276,6 +279,7 @@ class GeometryDecompressorRetained extends GeometryDecompressor {
      * called if normals are bundled with each vertex in the compressed
      * buffer.
      */
+    @Override
     void outputNormal(Vector3f normal) {
 	if (boundsOnly || positionsOnly) return ;
 	if (debug) System.err.println("outputNormal: " + normal.toString()) ;

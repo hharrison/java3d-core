@@ -661,6 +661,7 @@ Enumeration<Group> getAllScopes() {
     // The update Object function called during RenderingEnv objUpdate
     // Note : if you add any more fields here , you need to update
     // updateLight() in RenderingEnvironmentStructure
+    @Override
     void updateMirrorObject(Object[] objs) {
 
 	int component = ((Integer)objs[1]).intValue();
@@ -686,6 +687,7 @@ Enumeration<Group> getAllScopes() {
      * cached region and transformed region
      */
 
+    @Override
     void updateBoundingLeaf() {
 	// This is necessary, if for example, the region
 	// changes from sphere to box.
@@ -700,6 +702,7 @@ Enumeration<Group> getAllScopes() {
             }
         }
     }
+    @Override
     void getMirrorObjects(ArrayList leafList, HashKey key) {
 	if (!inSharedGroup) {
 	    leafList.add(mirrorLights[0]);
@@ -765,6 +768,7 @@ Enumeration<Group> getAllScopes() {
 	}
     }
 
+    @Override
     void setLive(SetLiveState s) {
 	LightRetained ml;
 	int i, j;
@@ -893,6 +897,7 @@ Enumeration<Group> getAllScopes() {
     }
 
     // The default set of clearLive actions
+    @Override
     void clearLive(SetLiveState s) {
 	LightRetained ml;
 	newlyAddedMirrorLights.clear();
@@ -1002,6 +1007,7 @@ Enumeration<Group> getAllScopes() {
     /**
      * Clones only the retained side, internal use only
      */
+    @Override
     protected Object clone() {
          LightRetained lr = (LightRetained)super.clone();
          lr.color = new Color3f(color);
@@ -1023,6 +1029,7 @@ Enumeration<Group> getAllScopes() {
 
 
     // Called during RenderingEnv object update
+    @Override
     void updateTransformChange() {
     }
 
@@ -1056,6 +1063,7 @@ Enumeration<Group> getAllScopes() {
 	VirtualUniverse.mc.processMessage(createMessage);
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);
         if (regionOfInfluence != null) {

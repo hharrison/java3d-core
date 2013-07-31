@@ -230,6 +230,7 @@ class SoundscapeRetained extends LeafRetained
 */
 
     // The update Object function.
+    @Override
     synchronized void updateMirrorObject(Object[] objs) {
         // NOTE: There doesn't seem to be a use for mirror objects since
         //     Soundscapes can't be shared.
@@ -266,6 +267,7 @@ class SoundscapeRetained extends LeafRetained
     }
 
     // The update tranform fields
+    @Override
     synchronized void updateTransformChange() {
             if (boundingLeaf != null) {
                 transformedRegion = boundingLeaf.transformedRegion;
@@ -352,6 +354,7 @@ class SoundscapeRetained extends LeafRetained
      * This setLive routine first calls the superclass's method, then
      * it adds itself to the list of soundscapes
      */
+    @Override
     void setLive(SetLiveState s) {
         super.doSetLive(s);
 
@@ -397,6 +400,7 @@ class SoundscapeRetained extends LeafRetained
      * This clearLive routine first calls the superclass's method, then
      * it removes itself to the list of lights
      */
+    @Override
     void clearLive(SetLiveState s) {
         super.clearLive(s);
         if (s.switchTargets != null &&
@@ -439,6 +443,7 @@ class SoundscapeRetained extends LeafRetained
         attributes = ss.attributes;
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
         super.mergeTransform(xform);
         if (applicationRegion != null) {
@@ -446,6 +451,7 @@ class SoundscapeRetained extends LeafRetained
         }
     }
 
+    @Override
     void getMirrorObjects(ArrayList leafList, HashKey key) {
 	leafList.add(this);
     }

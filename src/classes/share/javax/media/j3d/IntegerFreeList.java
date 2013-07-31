@@ -41,11 +41,13 @@ class IntegerFreeList extends MemoryFreeList {
 	count = initialCount;
     }
 
+    @Override
     synchronized Object getObject() {
 	if (size > 0) return super.removeLastElement();
 	else return new Integer(++count);
     }
 
+    @Override
     public synchronized void clear() {
 	super.clear();
 	count = 0;

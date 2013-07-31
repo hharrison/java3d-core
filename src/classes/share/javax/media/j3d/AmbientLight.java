@@ -76,6 +76,7 @@ public class AmbientLight extends Light {
      * Creates the retained mode AmbientLightRetained object that this
      * AmbientLight component object will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new AmbientLightRetained();
         this.retained.setSource(this);
@@ -95,6 +96,7 @@ public class AmbientLight extends Light {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         AmbientLight a = new AmbientLight();
         a.duplicateNode(this, forceDuplicate);

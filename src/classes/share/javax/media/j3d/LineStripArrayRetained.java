@@ -44,6 +44,7 @@ class LineStripArrayRetained extends GeometryStripArrayRetained {
 	this.geoType = GEO_TYPE_LINE_STRIP_SET;
     }
 
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
 	Point3d pnts[] = new Point3d[2];
@@ -331,6 +332,7 @@ class LineStripArrayRetained extends GeometryStripArrayRetained {
 	return false;
     }
 
+    @Override
     boolean intersect(Point3d[] pnts) {
 	int j, end;
 	Point3d[] points = new Point3d[2];
@@ -404,6 +406,7 @@ class LineStripArrayRetained extends GeometryStripArrayRetained {
 	return false;
     }
 
+    @Override
     boolean intersect(Transform3D thisToOtherVworld,
 		      GeometryRetained geom) {
 	int i = 0;
@@ -431,6 +434,7 @@ class LineStripArrayRetained extends GeometryStripArrayRetained {
     }
 
     // the bounds argument is already transformed
+    @Override
     boolean intersect(Bounds targetBound) {
 	int i = 0;
 	int j, offset, end;
@@ -499,6 +503,7 @@ class LineStripArrayRetained extends GeometryStripArrayRetained {
     }
 
     // From Graphics Gems IV (pg5) and Graphics Gems II, Pg170
+    @Override
     void computeCentroid() {
 	int i = 0;
 	int j;
@@ -543,6 +548,7 @@ class LineStripArrayRetained extends GeometryStripArrayRetained {
 	}
     }
 
+    @Override
     int getClassType() {
 	return LINE_TYPE;
     }

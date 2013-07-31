@@ -269,6 +269,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
     * Creates and initializes a mirror object, point the mirror object
     * to the retained object if the object is not editable
     */
+    @Override
     synchronized void createMirrorObject() {
 
 	if (mirror == null) {
@@ -281,6 +282,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 
     }
 
+    @Override
     synchronized void initMirrorObject() {
 
 	TextureUnitStateRetained mirrorTus =
@@ -307,6 +309,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
     /** Update the "component" field of the mirror object with the
      *  given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 
 	TextureUnitStateRetained mirrorTus = (TextureUnitStateRetained)mirror;
@@ -357,6 +360,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 	return true;
     }
 
+    @Override
     protected Object clone() {
 	TextureUnitStateRetained tr = (TextureUnitStateRetained)super.clone();
 
@@ -412,6 +416,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 	this.texGen = texGen;
     }
 
+    @Override
     synchronized void addAMirrorUser(Shape3DRetained shape) {
 
 	super.addAMirrorUser(shape);
@@ -424,6 +429,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
             texGen.addAMirrorUser(shape);
     }
 
+    @Override
     synchronized void removeAMirrorUser(Shape3DRetained shape) {
 	super.removeAMirrorUser(shape);
 
@@ -435,6 +441,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 	    texGen.removeAMirrorUser(shape);
     }
 
+    @Override
     synchronized void removeMirrorUsers(NodeComponentRetained node) {
 	super.removeMirrorUsers(node);
 
@@ -446,6 +453,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 	    texGen.removeMirrorUsers(node);
     }
 
+    @Override
     synchronized void copyMirrorUsers(NodeComponentRetained node) {
 	super.copyMirrorUsers(node);
 
@@ -458,6 +466,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
     }
 
 
+    @Override
     void setLive(boolean backgroundGroup, int refCount) {
 	if (texture != null)
 	    texture.setLive(backgroundGroup, refCount);
@@ -476,6 +485,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
     }
 
 
+    @Override
     void clearLive(int refCount) {
 	super.clearLive(refCount);
 
@@ -487,6 +497,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 	    texGen.clearLive(refCount);
     }
 
+    @Override
     boolean isStatic() {
 
 	return (source.capabilityBitsEmpty() &&
@@ -497,6 +508,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 
     // Issue 209 - enable this method (was previously commented out)
     // Simply pass along to the NodeComponent
+    @Override
     void compile (CompileState compState) {
 	setCompiled();
 
@@ -520,6 +532,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
     }
 
 
+    @Override
     void setInImmCtx(boolean flag) {
         super.setInImmCtx(flag);
 	if (texture != null)
@@ -530,6 +543,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 	    texGen.setInImmCtx(flag);
     }
 
+    @Override
     boolean getInImmCtx() {
         return (super.getInImmCtx() ||
                 ((texture != null) && (texture.getInImmCtx())) ||
@@ -587,6 +601,7 @@ class TextureUnitStateRetained extends NodeComponentRetained {
 	return (texture != null && texture.enable);
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
         switch (bit) {
         case TextureUnitState.ALLOW_STATE_WRITE: {

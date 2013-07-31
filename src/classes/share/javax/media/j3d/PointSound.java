@@ -343,6 +343,7 @@ public class PointSound extends Sound {
      * Creates the retained mode PointSoundRetained object that this
      * PointSound object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new PointSoundRetained();
 	this.retained.setSource(this);
@@ -493,6 +494,7 @@ public class PointSound extends Sound {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         PointSound p = new PointSound();
         p.duplicateNode(this, forceDuplicate);
@@ -530,6 +532,7 @@ public class PointSound extends Sound {
      * @see Node#cloneNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public void duplicateNode(Node originalNode, boolean forceDuplicate) {
 	checkDuplicateNode(originalNode, forceDuplicate);
     }
@@ -556,6 +559,7 @@ public class PointSound extends Sound {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 	super.duplicateAttributes(originalNode, forceDuplicate);
 

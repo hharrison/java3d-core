@@ -164,6 +164,7 @@ abstract class SceneGraphObjectRetained extends IndexedObject
         return source.capabilityBitsEmpty();
     }
 
+    @Override
     protected Object clone() {
 	try {
 	    return super.clone();
@@ -175,6 +176,7 @@ abstract class SceneGraphObjectRetained extends IndexedObject
     void handleFrequencyChange(int bit) {
     }
 
+    @Override
     VirtualUniverse getVirtualUniverse() {
 	return null;
     }

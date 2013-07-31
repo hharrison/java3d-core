@@ -58,6 +58,7 @@ abstract class ShaderAttributeRetained extends NodeComponentRetained {
 	return attrName;
     }
 
+    @Override
     void initMirrorObject() {
 	((ShaderAttributeObjectRetained)mirror).initializeAttrName(this.attrName);
     }

@@ -124,6 +124,7 @@ class CompressedGeometryRetained extends GeometryRetained {
     /**
      * Method for calling native execute() method on behalf of the J3D renderer.
      */
+    @Override
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale,
 		 boolean updateAlpha, float alpha,
                  int screen, boolean ignoreVertexColors) {
@@ -148,6 +149,7 @@ class CompressedGeometryRetained extends GeometryRetained {
     /**
      * Compressed geometry is immutable so this method does nothing.
      */
+    @Override
     void computeBoundingBox() {
     }
 
@@ -155,6 +157,7 @@ class CompressedGeometryRetained extends GeometryRetained {
      * Update this object.  Compressed geometry is immutable so there's
      * nothing to do.
      */
+    @Override
     void update() {
 	isDirty = 0 ;
     }
@@ -334,6 +337,7 @@ class CompressedGeometryRetained extends GeometryRetained {
     // The following intersect() methods are used to implement geometry-based
     // picking and collision.
     //
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
 	GeometryRetained geomR = getPickGeometry() ;
@@ -341,17 +345,20 @@ class CompressedGeometryRetained extends GeometryRetained {
 		geomR.intersect(pickShape, pickInfo, flags, iPnt, geom, geomIndex) : false);
     }
 
+    @Override
     boolean intersect(Bounds targetBound) {
 	GeometryRetained geom = getPickGeometry() ;
 	return (geom != null ? geom.intersect(targetBound) : false);
     }
 
+    @Override
     boolean intersect(Transform3D thisToOtherVworld,  GeometryRetained g) {
 	GeometryRetained geom = getPickGeometry() ;
 	return (geom != null ?
 		geom.intersect(thisToOtherVworld, g) : false);
     }
 
+    @Override
     boolean intersect(Point3d[] pnts) {
 	GeometryRetained geom = getPickGeometry() ;
 	return (geom != null ? geom.intersect(pnts) : false);
@@ -361,6 +368,7 @@ class CompressedGeometryRetained extends GeometryRetained {
      * Return a vertex format mask that's compatible with GeometryArray
      * objects.
      */
+    @Override
     int getVertexFormat() {
 	int vertexFormat = GeometryArray.COORDINATES ;
 
@@ -455,6 +463,7 @@ class CompressedGeometryRetained extends GeometryRetained {
 	}
     }
 
+    @Override
     int getClassType() {
 	return COMPRESS_TYPE;
     }

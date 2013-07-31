@@ -76,12 +76,14 @@ public final class PickBounds extends PickShape {
      * Return true if shape intersect with bounds.
      * The point of intersection is stored in pickPos.
      */
+    @Override
     final boolean intersect(Bounds bounds, Point4d pickPos) {
 	return bounds.intersect(this.bounds, pickPos);
     }
 
     // Only use within J3D.
     // Return a new PickBounds that is the transformed (t3d) of this pickBounds.
+    @Override
     PickShape transform(Transform3D t3d) {
 	// If the bounds is a BoundingBox, then the transformed bounds will
 	// get bigger. So this is a potential bug, and we'll have to deal with
@@ -93,10 +95,12 @@ public final class PickBounds extends PickShape {
 	return newPB;
     }
 
+    @Override
     Point3d getStartPoint() {
 	return bounds.getCenter();
     }
 
+    @Override
     int getPickType() {
 	return (bounds != null ? bounds.getPickType() :
 		                 PickShape.PICKUNKNOWN);

@@ -304,6 +304,7 @@ public class RotPosScalePathInterpolator extends PathInterpolator {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void computeTransform(float alphaValue, Transform3D transform) {
 
 	float scale;
@@ -401,6 +402,7 @@ public class RotPosScalePathInterpolator extends PathInterpolator {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         RotPosScalePathInterpolator ri = new RotPosScalePathInterpolator();
         ri.duplicateNode(this, forceDuplicate);
@@ -429,6 +431,7 @@ public class RotPosScalePathInterpolator extends PathInterpolator {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 
         super.duplicateAttributes(originalNode, forceDuplicate);

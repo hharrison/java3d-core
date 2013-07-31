@@ -117,6 +117,7 @@ class LinkRetained extends LeafRetained {
 		(SharedGroup)this.sharedGroup.source : null);
     }
 
+    @Override
     void computeCombineBounds(Bounds bounds) {
 
 	if (boundsAutoCompute) {
@@ -134,6 +135,7 @@ class LinkRetained extends LeafRetained {
      * Gets the bounding object of a node.
      * @return the node's bounding object
      */
+    @Override
     Bounds getBounds() {
 	return (boundsAutoCompute ?
 	        (Bounds)sharedGroup.getBounds().clone() :
@@ -144,6 +146,7 @@ class LinkRetained extends LeafRetained {
     /**
      * assign a name to this node when it is made live.
      */
+    @Override
     void setLive(SetLiveState s) {
 
         super.doSetLive(s);
@@ -184,6 +187,7 @@ class LinkRetained extends LeafRetained {
 	super.markAsLive();
     }
 
+    @Override
     void setNodeData(SetLiveState s) {
 
         super.setNodeData(s);
@@ -209,6 +213,7 @@ class LinkRetained extends LeafRetained {
     }
 
 
+    @Override
     void recombineAbove() {
         localBounds.setWithLock(sharedGroup.localBounds);
 	parent.recombineAbove();
@@ -217,6 +222,7 @@ class LinkRetained extends LeafRetained {
     /**
      * assign a name to this node when it is made live.
      */
+    @Override
     void clearLive(SetLiveState s) {
 
 	if (sharedGroup != null) {
@@ -234,6 +240,7 @@ class LinkRetained extends LeafRetained {
 	}
     }
 
+    @Override
     void removeNodeData(SetLiveState s) {
         if(refCount <= 0) {
 	    // either not in sharedGroup or last instance in sharedGroup
@@ -269,6 +276,7 @@ class LinkRetained extends LeafRetained {
     }
 
 
+    @Override
     void updatePickable(HashKey keys[], boolean pick[]) {
 	super.updatePickable(keys, pick);
 
@@ -278,6 +286,7 @@ class LinkRetained extends LeafRetained {
 	}
     }
 
+    @Override
     void updateCollidable(HashKey keys[], boolean collide[]) {
 	 super.updateCollidable(keys, collide);
 
@@ -287,6 +296,7 @@ class LinkRetained extends LeafRetained {
 	 }
     }
 
+    @Override
     void setBoundsAutoCompute(boolean autoCompute) {
         super.setBoundsAutoCompute(autoCompute);
         if (!autoCompute) {
@@ -294,6 +304,7 @@ class LinkRetained extends LeafRetained {
         }
     }
 
+    @Override
     void setCompiled() {
 	super.setCompiled();
 	if (sharedGroup != null) {
@@ -301,6 +312,7 @@ class LinkRetained extends LeafRetained {
 	}
     }
 
+    @Override
     void compile(CompileState compState) {
 
 	super.compile(compState);
@@ -334,6 +346,7 @@ class LinkRetained extends LeafRetained {
 	return newKeys;
     }
 
+    @Override
     void searchGeometryAtoms(UnorderList list) {
 	if (sharedGroup != null) {
 	    sharedGroup.searchGeometryAtoms(list);

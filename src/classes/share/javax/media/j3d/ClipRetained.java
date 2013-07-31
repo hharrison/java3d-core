@@ -207,6 +207,7 @@ class ClipRetained extends LeafRetained {
      * This setLive routine first calls the superclass's method, then
      * it adds itself to the list of lights
      */
+    @Override
     void setLive(SetLiveState s) {
         if (inImmCtx) {
            throw new IllegalSharingException(J3dI18N.getString("ClipRetained0"));
@@ -255,6 +256,7 @@ class ClipRetained extends LeafRetained {
      * This clearLive routine first calls the superclass's method, then
      * it removes itself to the list of lights
      */
+    @Override
     void clearLive(SetLiveState s) {
         super.clearLive(s);
 	if ((s.viewScopedNodeList != null) && (s.viewLists != null)) {
@@ -344,6 +346,7 @@ class ClipRetained extends LeafRetained {
      * cached region and transformed region
      */
 
+    @Override
     void updateBoundingLeaf() {
         if (boundingLeaf != null &&
 		boundingLeaf.mirrorBoundingLeaf.switchState.currentSwitchOn) {
@@ -383,12 +386,14 @@ class ClipRetained extends LeafRetained {
 	VirtualUniverse.mc.processMessage(createMessage);
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);
         if (applicationRegion != null) {
             applicationRegion.transform(xform.transform);
         }
     }
+    @Override
     void getMirrorObjects(ArrayList leafList, HashKey key) {
 	leafList.add(this);
     }

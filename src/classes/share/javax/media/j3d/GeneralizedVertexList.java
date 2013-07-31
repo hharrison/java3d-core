@@ -171,11 +171,13 @@ private ArrayList<Vertex> vertices;
     }
 
     // GeneralizedStripFlags interface implementation
+    @Override
     public int getFlagCount() {
 	return vertices.size() ;
     }
 
     // GeneralizedStripFlags interface implementation
+    @Override
     public int getFlag(int index) {
 	return vertices.get(index).flag;
     }

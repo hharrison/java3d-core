@@ -40,6 +40,7 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
         this.geoType = GEO_TYPE_INDEXED_LINE_SET;
     }
 
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
             GeometryRetained geom, int geomIndex) {
         Point3d pnts[] = new Point3d[2];
@@ -289,6 +290,7 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
 
     }
 
+    @Override
     boolean intersect(Point3d[] pnts) {
         Point3d[] points = new Point3d[2];
         Vector3d dir;
@@ -346,6 +348,7 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
     }
 
 
+    @Override
     boolean intersect(Transform3D thisToOtherVworld,
             GeometryRetained geom) {
 
@@ -370,6 +373,7 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
     }
 
     // the bounds argument is already transformed
+    @Override
     boolean intersect(Bounds targetBound) {
         Point3d[] pnts = new Point3d[2];
         //NVaidya
@@ -420,6 +424,7 @@ class IndexedLineArrayRetained extends IndexedGeometryArrayRetained {
         return false;
     }
 
+    @Override
     int getClassType() {
 	return LINE_TYPE;
     }

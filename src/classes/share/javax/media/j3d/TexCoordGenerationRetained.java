@@ -253,6 +253,7 @@ class TexCoordGenerationRetained extends NodeComponentRetained {
     * Creates a mirror object, point the mirror object to the retained
     * object if the object is not editable
     */
+    @Override
     synchronized void createMirrorObject() {
 	if (mirror == null) {
 	    // Check the capability bits and let the mirror object
@@ -292,6 +293,7 @@ class TexCoordGenerationRetained extends NodeComponentRetained {
     * Initializes a mirror object, point the mirror object to the retained
     * object if the object is not editable
     */
+    @Override
     synchronized void initMirrorObject() {
 	((TexCoordGenerationRetained)mirror).set(this);
     }
@@ -299,6 +301,7 @@ class TexCoordGenerationRetained extends NodeComponentRetained {
     /** Update the "component" field of the mirror object with the
      *  given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 
 	TexCoordGenerationRetained mirrorTc = (TexCoordGenerationRetained) mirror;
@@ -340,6 +343,7 @@ class TexCoordGenerationRetained extends NodeComponentRetained {
     		tr.planeR.equals(planeR));
     }
 
+    @Override
     protected Object clone() {
 	TexCoordGenerationRetained tr = (TexCoordGenerationRetained)super.clone();
 	tr.planeS = new Vector4f(planeS);
@@ -398,6 +402,7 @@ class TexCoordGenerationRetained extends NodeComponentRetained {
 	}
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
         switch (bit) {
         case TexCoordGeneration.ALLOW_ENABLE_WRITE:

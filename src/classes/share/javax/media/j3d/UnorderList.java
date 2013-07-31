@@ -227,6 +227,7 @@ class UnorderList implements Cloneable, java.io.Serializable  {
      *
      * @return  a clone of this <tt>ArrayList</tt> instance.
      */
+    @Override
     synchronized protected final Object clone() {
 	try {
 	    UnorderList v = (UnorderList)super.clone();
@@ -525,6 +526,7 @@ class UnorderList implements Cloneable, java.io.Serializable  {
 	return componentType;
     }
 
+    @Override
     synchronized public String toString() {
 	StringBuffer sb = new StringBuffer("Size = " + size + "\n[");
 	int len = size-1;

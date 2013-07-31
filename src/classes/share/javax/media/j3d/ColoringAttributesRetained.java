@@ -139,6 +139,7 @@ class ColoringAttributesRetained extends NodeComponentRetained {
      * Creates and initializes a mirror object, point the mirror object
      * to the retained object if the object is not editable
      */
+    @Override
     synchronized void createMirrorObject() {
 	if (mirror == null) {
 	    // Check the capability bits and let the mirror object
@@ -170,6 +171,7 @@ class ColoringAttributesRetained extends NodeComponentRetained {
     * Creates a mirror object, point the mirror object to the retained
     * object if the object is not editable
     */
+    @Override
     synchronized void initMirrorObject() {
 	((ColoringAttributesRetained)mirror).set(this);
     }
@@ -177,6 +179,7 @@ class ColoringAttributesRetained extends NodeComponentRetained {
     /** Update the "component" field of the mirror object with the
      *  given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 
 	ColoringAttributesRetained mirrorCa =
@@ -199,6 +202,7 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 
     // This functions clones the retained side only and is used
     // internally
+     @Override
      protected Object clone() {
 	 ColoringAttributesRetained cr =
 	     (ColoringAttributesRetained)super.clone();
@@ -250,6 +254,7 @@ class ColoringAttributesRetained extends NodeComponentRetained {
 	    VirtualUniverse.mc.processMessage(createMessage);
 	}
     }
+    @Override
     void handleFrequencyChange(int bit) {
 	if (bit == ColoringAttributes.ALLOW_COLOR_WRITE ||
 	    bit == ColoringAttributes.ALLOW_SHADE_MODEL_WRITE) {

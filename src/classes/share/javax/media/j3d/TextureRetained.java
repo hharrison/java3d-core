@@ -954,6 +954,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
 
 
+    @Override
     void setLive(boolean backgroundGroup, int refCount) {
 
 	// This line should be assigned before calling doSetLive, so that
@@ -1025,6 +1026,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	super.markAsLive();
     }
 
+    @Override
     void clearLive(int refCount) {
 	super.clearLive(refCount);
 
@@ -1864,6 +1866,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 	}
     }
 
+    @Override
     synchronized void createMirrorObject() {
        if (mirror == null) {
 	   if (this instanceof Texture3DRetained) {
@@ -1901,6 +1904,7 @@ abstract class TextureRetained extends NodeComponentRetained {
      * Initializes a mirror object, point the mirror object to the retained
      * object if the object is not editable
      */
+    @Override
     synchronized void initMirrorObject() {
 	mirror.source = source;
 	if (this instanceof Texture3DRetained) {
@@ -2112,6 +2116,7 @@ abstract class TextureRetained extends NodeComponentRetained {
      * Update the "component" field of the mirror object with the
      *  given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 
 	TextureRetained mirrorTexture = (TextureRetained)mirror;
@@ -2468,6 +2473,7 @@ abstract class TextureRetained extends NodeComponentRetained {
 
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
         switch (bit) {
         case Texture.ALLOW_ENABLE_WRITE:

@@ -624,6 +624,7 @@ public class TexCoordGeneration extends NodeComponent {
      * Creates a retained mode TexCoordGenerationRetained object that this
      * TexCoordGeneration component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new TexCoordGenerationRetained();
 	this.retained.setSource(this);
@@ -632,6 +633,7 @@ public class TexCoordGeneration extends NodeComponent {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         TexCoordGeneration tga = new TexCoordGeneration();
         tga.duplicateNodeComponent(this);
@@ -657,6 +659,7 @@ public class TexCoordGeneration extends NodeComponent {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
 
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 

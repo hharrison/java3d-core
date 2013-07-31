@@ -60,9 +60,12 @@ class RendererStructure extends J3dStructure{
     }
 
 
+    @Override
     void processMessages(long referenceTime) {}
 
+    @Override
     void removeNodes(J3dMessage m) {}
 
+    @Override
     void cleanup() {}
 }

@@ -136,10 +136,12 @@ class TransparentRenderingInfo extends Object implements com.sun.j3d.utils.scene
 	}
     }
 
+    @Override
     public double getDistanceSquared() {
         return zVal;
     }
 
+    @Override
     public Geometry getGeometry() {
         // XXXX: verify 0 is always the correct index. Assumption is that for
         // Shape3D with multiple geometry each geometry is put in it's
@@ -149,10 +151,12 @@ class TransparentRenderingInfo extends Object implements com.sun.j3d.utils.scene
         return (Geometry)geometryAtom.geometryArray[0].source;
     }
 
+    @Override
     public void getLocalToVWorld(Transform3D localToVW) {
         localToVW.set(rm.localToVworld[NodeRetained.LAST_LOCAL_TO_VWORLD]);
     }
 
+    @Override
     public Shape3D getShape3D() {
         return (Shape3D)geometryAtom.source.source;
     }

@@ -265,6 +265,7 @@ public class ShaderAttributeSet extends NodeComponent {
      * Creates a retained mode ShaderAttributeSetRetained object that this
      * ShaderAttributeSet component object will point to.
      */
+    @Override
     void createRetained() {
 	// System.err.println("ShaderAttributeSet : createRetained() ...");
 	this.retained = new ShaderAttributeSetRetained();

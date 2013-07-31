@@ -156,6 +156,7 @@ public class LineArray extends GeometryArray {
      * Creates the retained mode LineArrayRetained object that this
      * LineArray object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new LineArrayRetained();
 	this.retained.setSource(this);
@@ -165,6 +166,7 @@ public class LineArray extends GeometryArray {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
 	LineArrayRetained rt = (LineArrayRetained) retained;
         int texSetCount = rt.getTexCoordSetCount();

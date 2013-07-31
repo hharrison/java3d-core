@@ -78,6 +78,7 @@ public class Link extends Leaf {
      * Creates the retained mode LinkRetained object that this
      * Link object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new LinkRetained();
 	this.retained.setSource(this);
@@ -129,6 +130,7 @@ public class Link extends Leaf {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
 	Link l = new Link();
 	l.duplicateNode(this, forceDuplicate);
@@ -156,6 +158,7 @@ public class Link extends Leaf {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode,  boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 	((LinkRetained) retained).setSharedGroup(

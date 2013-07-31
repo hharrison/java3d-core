@@ -439,6 +439,7 @@ public class PolygonAttributes extends NodeComponent {
      * Creates a retained mode PolygonAttributesRetained object that this
      * PolygonAttributes component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new PolygonAttributesRetained();
 	this.retained.setSource(this);
@@ -447,6 +448,7 @@ public class PolygonAttributes extends NodeComponent {
    /**
     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
     */
+    @Override
     public NodeComponent cloneNodeComponent() {
         PolygonAttributes pga = new PolygonAttributes();
         pga.duplicateNodeComponent(this);
@@ -472,6 +474,7 @@ public class PolygonAttributes extends NodeComponent {
      * @see NodeComponent#setDuplicateOnCloneTree
      */
 
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 

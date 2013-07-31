@@ -41,6 +41,7 @@ class TriangleArrayRetained extends GeometryArrayRetained {
 	this.geoType = GEO_TYPE_TRI_SET;
     }
 
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
  	Point3d pnts[] = new Point3d[3];
@@ -282,6 +283,7 @@ class TriangleArrayRetained extends GeometryArrayRetained {
     }
 
 
+    @Override
     boolean intersect(Point3d[] pnts) {
 	Point3d[] points = new Point3d[3];
 	double dist[] = new double[1];
@@ -343,6 +345,7 @@ class TriangleArrayRetained extends GeometryArrayRetained {
 	return false;
     }
 
+    @Override
     boolean intersect(Transform3D thisToOtherVworld,
 		      GeometryRetained geom) {
 
@@ -368,6 +371,7 @@ class TriangleArrayRetained extends GeometryArrayRetained {
     }
 
     // the bounds argument is already transformed
+    @Override
     boolean intersect(Bounds targetBound) {
 	Point3d[] pnts = new Point3d[3];
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
@@ -424,6 +428,7 @@ class TriangleArrayRetained extends GeometryArrayRetained {
     }
 
     // From Graphics Gems IV (pg5) and Graphics Gems II, Pg170
+    @Override
     void computeCentroid() {
 	int i = ((vertexFormat & GeometryArray.BY_REFERENCE) == 0 ?
 		 initialVertexIndex : initialCoordIndex);
@@ -479,6 +484,7 @@ class TriangleArrayRetained extends GeometryArrayRetained {
 	}
     }
 
+    @Override
     int getClassType() {
 	return TRIANGLE_TYPE;
     }

@@ -328,6 +328,7 @@ public class TextureCubeMap extends Texture {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void setImage(int level, ImageComponent image) {
 	throw new UnsupportedOperationException();
     }
@@ -342,6 +343,7 @@ public class TextureCubeMap extends Texture {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void setImages(ImageComponent[] images) {
 	throw new UnsupportedOperationException();
     }
@@ -355,6 +357,7 @@ public class TextureCubeMap extends Texture {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public ImageComponent getImage(int level) {
         throw new UnsupportedOperationException();
     }
@@ -369,6 +372,7 @@ public class TextureCubeMap extends Texture {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public ImageComponent[] getImages() {
         throw new UnsupportedOperationException();
     }
@@ -378,6 +382,7 @@ public class TextureCubeMap extends Texture {
      * Creates a retained mode TextureCubeMapRetained object that this
      * TextureCubeMap component object will point to.
      */
+    @Override
     void createRetained() {
     	this.retained = new TextureCubeMapRetained();
     	this.retained.setSource(this);
@@ -390,6 +395,7 @@ public class TextureCubeMap extends Texture {
      * @deprecated replaced with duplicateNodeComponent(
      *  NodeComponent originalNodeComponent, boolean forceDuplicate)
      */
+    @Override
     public void duplicateNodeComponent(NodeComponent originalNodeComponent) {
     	checkDuplicateNodeComponent(originalNodeComponent);
     }

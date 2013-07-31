@@ -51,6 +51,7 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     ShaderAttributeValueRetained() {
     }
 
+    @Override
     synchronized void createMirrorObject() {
 	// System.err.println("ShaderAttributeValueRetained : createMirrorObject");
         // This method should only call by setLive().
@@ -69,6 +70,7 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
      * ClassCastException is thrown if the object is not an instance
      * of one of the allowed classes.
      */
+    @Override
     int computeClassType(Object value) {
 	Class objClass = value.getClass();
 	if (objClass.isArray()) {
@@ -86,6 +88,7 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     /**
      * Returns the base class represented by the specified class type.
      */
+    @Override
     Class getBaseClass(int classType) {
 	return classTable[classType];
     }
@@ -94,6 +97,7 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
      * Creates an attribute wrapper object of the specified class
      * type, and stores the specified object.
      */
+    @Override
     AttrWrapper createAttrWrapper(Object value, int classType) {
 	ValueWrapper attrWrapper = null;
 	switch (classType) {
@@ -170,14 +174,17 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     static class IntegerWrapper extends ValueWrapper {
 	private int[] value = new int[1];
 
+	@Override
 	void set(Object value) {
 	    this.value[0] = ((Integer)value).intValue();
 	}
 
+	@Override
 	Object get() {
 	    return new Integer(this.value[0]);
 	}
 
+	@Override
 	Object getRef() {
 	    return this.value;
 	}
@@ -187,14 +194,17 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     static class FloatWrapper extends ValueWrapper {
 	private float[] value = new float[1];
 
+	@Override
 	void set(Object value) {
 	    this.value[0] = ((Float)value).floatValue();
 	}
 
+	@Override
 	Object get() {
 	    return new Float(this.value[0]);
 	}
 
+	@Override
 	Object getRef() {
 	    return this.value;
 	}
@@ -223,14 +233,17 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     static class Tuple2iWrapper extends ValueWrapper {
 	private int[] value = new int[2];
 
+	@Override
 	void set(Object value) {
 	    ((Tuple2i)value).get(this.value);
 	}
 
+	@Override
 	Object get() {
 	    return new Point2i(value);
 	}
 
+	@Override
 	Object getRef() {
 	    return value;
 	}
@@ -240,14 +253,17 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     static class Tuple2fWrapper extends ValueWrapper {
 	private float[] value = new float[2];
 
+	@Override
 	void set(Object value) {
 	    ((Tuple2f)value).get(this.value);
 	}
 
+	@Override
 	Object get() {
 	    return new Point2f(value);
 	}
 
+	@Override
 	Object getRef() {
 	    return value;
 	}
@@ -276,14 +292,17 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     static class Tuple3iWrapper extends ValueWrapper {
 	private int[] value = new int[3];
 
+	@Override
 	void set(Object value) {
 	    ((Tuple3i)value).get(this.value);
 	}
 
+	@Override
 	Object get() {
 	    return new Point3i(value);
 	}
 
+	@Override
 	Object getRef() {
 	    return value;
 	}
@@ -293,14 +312,17 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     static class Tuple3fWrapper extends ValueWrapper {
 	private float[] value = new float[3];
 
+	@Override
 	void set(Object value) {
 	    ((Tuple3f)value).get(this.value);
 	}
 
+	@Override
 	Object get() {
 	    return new Point3f(value);
 	}
 
+	@Override
 	Object getRef() {
 	    return value;
 	}
@@ -329,14 +351,17 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     static class Tuple4iWrapper extends ValueWrapper {
 	private int[] value = new int[4];
 
+	@Override
 	void set(Object value) {
 	    ((Tuple4i)value).get(this.value);
 	}
 
+	@Override
 	Object get() {
 	    return new Point4i(value);
 	}
 
+	@Override
 	Object getRef() {
 	    return value;
 	}
@@ -346,14 +371,17 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     static class Tuple4fWrapper extends ValueWrapper {
 	private float[] value = new float[4];
 
+	@Override
 	void set(Object value) {
 	    ((Tuple4f)value).get(this.value);
 	}
 
+	@Override
 	Object get() {
 	    return new Point4f(value);
 	}
 
+	@Override
 	Object getRef() {
 	    return value;
 	}
@@ -382,6 +410,7 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     static class Matrix3fWrapper extends ValueWrapper {
 	private float[] value = new float[9];
 
+	@Override
 	void set(Object value) {
 	    Matrix3f m = (Matrix3f)value;
 	    this.value[0] = m.m00;
@@ -395,10 +424,12 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
 	    this.value[8] = m.m22;
 	}
 
+	@Override
 	Object get() {
 	    return new Matrix3f(value);
 	}
 
+	@Override
 	Object getRef() {
 	    return value;
 	}
@@ -436,6 +467,7 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
     static class Matrix4fWrapper extends ValueWrapper {
 	private float[] value = new float[16];
 
+	@Override
 	void set(Object value) {
 	    Matrix4f m = (Matrix4f)value;
 	    this.value[0]  = m.m00;
@@ -456,10 +488,12 @@ class ShaderAttributeValueRetained extends ShaderAttributeObjectRetained {
 	    this.value[15] = m.m33;
 	}
 
+	@Override
 	Object get() {
 	    return new Matrix4f(value);
 	}
 
+	@Override
 	Object getRef() {
 	    return value;
 	}

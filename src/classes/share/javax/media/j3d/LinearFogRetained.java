@@ -112,6 +112,7 @@ class LinearFogRetained extends FogRetained {
      * This method and its native counterpart update the native context
      * fog values.
      */
+    @Override
     void update(Context ctx, double scale) {
 	validateDistancesInEc(scale);
 	Pipeline.getPipeline().updateLinearFog(ctx,
@@ -120,6 +121,7 @@ class LinearFogRetained extends FogRetained {
 
 
 
+    @Override
     void setLive(SetLiveState s) {
 	super.setLive(s);
 
@@ -163,6 +165,7 @@ class LinearFogRetained extends FogRetained {
     // The update Object function.
     // Note : if you add any more fields here , you need to update
     // updateFog() in RenderingEnvironmentStructure
+    @Override
     synchronized void updateMirrorObject(Object[] objs) {
 
 	int component = ((Integer)objs[1]).intValue();
@@ -184,6 +187,7 @@ class LinearFogRetained extends FogRetained {
     /**
      * Scale distances from local to eye coordinate
      */
+    @Override
     protected void validateDistancesInEc(double vworldToCoexistenceScale) {
         // vworldToCoexistenceScale can be used here since
         // CoexistenceToEc has a unit scale

@@ -515,6 +515,7 @@ GeometryAtom[] bgGeometryAtoms = null;
      * This setLive routine first calls the superclass's method, then
      * it adds itself to the list of lights
      */
+    @Override
     void setLive(SetLiveState s) {
 	super.doSetLive(s);
 
@@ -615,6 +616,7 @@ GeometryAtom[] bgGeometryAtoms = null;
      * This clearLive routine first calls the superclass's method, then
      * it removes itself to the list of lights
      */
+    @Override
     void clearLive(SetLiveState s) {
         super.clearLive(s);
 	if ((s.viewScopedNodeList != null) && (s.viewLists != null)) {
@@ -694,6 +696,7 @@ GeometryAtom[] bgGeometryAtoms = null;
      * to  update the object's
      * transformed region
      */
+    @Override
     void updateBoundingLeaf() {
         if (boundingLeaf != null &&
 		boundingLeaf.mirrorBoundingLeaf.switchState.currentSwitchOn) {
@@ -757,6 +760,7 @@ GeometryAtom[] getBackgroundGeometryAtoms() {
 	return bgGeometryAtoms;
 }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);
         if (applicationRegion != null) {
@@ -771,6 +775,7 @@ GeometryAtom[] getBackgroundGeometryAtoms() {
     void notifyImageComponentImageChanged(ImageComponentRetained image,
                                         ImageComponentUpdateInfo value) {
     }
+    @Override
     void getMirrorObjects(ArrayList leafList, HashKey key) {
 	leafList.add(this); // No Mirror in this case
     }

@@ -193,6 +193,7 @@ public class Shape3D extends Leaf {
      * Creates the retained mode Shape3DRetained object that this
      * Shape3D object will point to.
      */
+    @Override
     void createRetained() {
 	retained = new Shape3DRetained();
 	retained.setSource(this);
@@ -676,6 +677,7 @@ public class Shape3D extends Leaf {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         Shape3D s = new Shape3D();
         s.duplicateNode(this, forceDuplicate);
@@ -713,6 +715,7 @@ public class Shape3D extends Leaf {
      * @see Node#cloneNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public void duplicateNode(Node originalNode, boolean forceDuplicate) {
 	checkDuplicateNode(originalNode, forceDuplicate);
     }
@@ -740,6 +743,7 @@ public class Shape3D extends Leaf {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 
 	super.duplicateAttributes(originalNode, forceDuplicate);
@@ -771,6 +775,7 @@ public class Shape3D extends Leaf {
     /**
      * See parent class for the documentation on getBounds().
      */
+    @Override
     public Bounds getBounds() {
 	if (isLiveOrCompiled()) {
 	    if(!this.getCapability(ALLOW_BOUNDS_READ)) {

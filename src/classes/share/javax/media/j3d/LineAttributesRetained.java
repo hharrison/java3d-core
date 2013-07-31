@@ -210,6 +210,7 @@ class LineAttributesRetained extends NodeComponentRetained {
     * Creates and initializes a mirror object, point the mirror object
     * to the retained object if the object is not editable
     */
+    @Override
     synchronized void createMirrorObject() {
 	if (mirror == null) {
 	    // Check the capability bits and let the mirror object
@@ -242,6 +243,7 @@ class LineAttributesRetained extends NodeComponentRetained {
      * Initializes a mirror object, point the mirror object to the retained
      * object if the object is not editable
      */
+    @Override
     synchronized void initMirrorObject() {
 	((LineAttributesRetained)mirror).set(this);
     }
@@ -249,6 +251,7 @@ class LineAttributesRetained extends NodeComponentRetained {
     /** Update the "component" field of the mirror object with the
      *  given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 
 	LineAttributesRetained mirrorLa = (LineAttributesRetained) mirror;
@@ -329,6 +332,7 @@ class LineAttributesRetained extends NodeComponentRetained {
 
 
     }
+    @Override
     void handleFrequencyChange(int bit) {
 	if (bit == LineAttributes.ALLOW_WIDTH_WRITE ||
 	    bit == LineAttributes.ALLOW_PATTERN_WRITE||

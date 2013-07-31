@@ -207,6 +207,7 @@ ArrayList<ShaderBin> addShaderBins = new ArrayList<ShaderBin>();
 	return (true);
     }
 
+    @Override
     public void updateObject() {
 	ShaderBin sb;
 	int i, size;

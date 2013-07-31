@@ -95,6 +95,7 @@ public abstract class J3DGraphics2D extends Graphics2D {
      *
      * @see Canvas3D#getGraphics2D
      */
+    @Override
     public final Graphics create() {
 	throw new UnsupportedOperationException();
     }
@@ -107,6 +108,7 @@ public abstract class J3DGraphics2D extends Graphics2D {
      *
      * @see Canvas3D#getGraphics2D
      */
+    @Override
     public final Graphics create(int x, int y, int width, int height) {
 	throw new UnsupportedOperationException();
     }
@@ -122,6 +124,7 @@ public abstract class J3DGraphics2D extends Graphics2D {
      * @see GraphicsContext3D#setBackground
      * @see GraphicsContext3D#clear
      */
+    @Override
     public final void setBackground(Color color) {
 	throw new UnsupportedOperationException();
     }
@@ -137,6 +140,7 @@ public abstract class J3DGraphics2D extends Graphics2D {
      * @see GraphicsContext3D#getBackground
      * @see GraphicsContext3D#clear
      */
+    @Override
     public final Color getBackground() {
 	throw new UnsupportedOperationException();
     }
@@ -152,6 +156,7 @@ public abstract class J3DGraphics2D extends Graphics2D {
      * @see GraphicsContext3D#setBackground
      * @see GraphicsContext3D#clear
      */
+    @Override
     public final void clearRect(int x, int y, int width, int height) {
 	throw new UnsupportedOperationException();
     }

@@ -252,6 +252,7 @@ class PointSoundRetained extends SoundRetained {
      *
      * Distance gain attenuation field not maintained in mirror object.
      */
+    @Override
     void updateMirrorObject(Object[] objs) {
         if (debugFlag)
             debugPrint("PointSoundRetained:updateMirrorObj()");
@@ -286,6 +287,7 @@ class PointSoundRetained extends SoundRetained {
     }
 
     // Called on the mirror object
+    @Override
     void updateTransformChange() {
         super.updateTransformChange();
         getLastLocalToVworld().transform(position, xformPosition);
@@ -296,6 +298,7 @@ class PointSoundRetained extends SoundRetained {
                        ", " + xformPosition.y + ", "+ xformPosition.z + ")");
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);
 	xform.transform.transform(position, position);

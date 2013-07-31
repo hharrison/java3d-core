@@ -186,6 +186,7 @@ public class PointAttributes extends NodeComponent {
      * Creates a retained mode PointAttributesRetained object that this
      * PointAttributes component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new PointAttributesRetained();
 	this.retained.setSource(this);
@@ -194,6 +195,7 @@ public class PointAttributes extends NodeComponent {
    /**
     * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
     */
+    @Override
     public NodeComponent cloneNodeComponent() {
         PointAttributes pa = new PointAttributes();
         pa.duplicateNodeComponent(this);
@@ -218,6 +220,7 @@ public class PointAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);

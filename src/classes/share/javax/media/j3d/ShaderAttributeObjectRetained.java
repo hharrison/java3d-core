@@ -122,6 +122,7 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
    /**
      * Initializes a mirror object.
      */
+    @Override
     synchronized void initMirrorObject() {
 	super.initMirrorObject();
 	((ShaderAttributeObjectRetained)mirror).initValue(getValue());
@@ -130,6 +131,7 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
      /**
      * Update the "component" field of the mirror object with the  given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 
 	//System.err.println("ShaderAttributeObjectRetained : updateMirrorObject");
@@ -310,6 +312,7 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
     // to be set whenever the capability is writable, regardless of whether
     // it is frequently writable. We must do this because the ShaderBin doesn't
     // support updating shader attributes when changedFrequent is 0.
+    @Override
     void setFrequencyChangeMask(int bit, int mask) {
         if (source.getCapability(bit)) {
             changedFrequent |= mask;
@@ -319,6 +322,7 @@ abstract class ShaderAttributeObjectRetained extends ShaderAttributeRetained {
         }
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
 	if (bit == ShaderAttributeObject.ALLOW_VALUE_WRITE) {
 	    setFrequencyChangeMask(bit, 0x1);

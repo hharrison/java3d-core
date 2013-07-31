@@ -34,6 +34,7 @@ package javax.media.j3d;
 class VertexArrayRenderMethod implements RenderMethod {
 
 
+    @Override
     public boolean render(RenderMolecule rm, Canvas3D cv,
 			  RenderAtomListInfo ra, int dirtyBits) {
 

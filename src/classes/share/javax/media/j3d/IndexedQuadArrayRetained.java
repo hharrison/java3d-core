@@ -40,6 +40,7 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
 	this.geoType = GEO_TYPE_INDEXED_QUAD_SET;
     }
 
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
 	Point3d pnts[] = new Point3d[4];
@@ -280,6 +281,7 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
     }
 
     // intersect pnts[] with every quad in this object
+    @Override
     boolean intersect(Point3d[] pnts) {
 	Point3d[] points = new Point3d[4];
         double dist[] = new double[1];
@@ -357,6 +359,7 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
     }
 
 
+    @Override
     boolean intersect(Transform3D thisToOtherVworld,
 		      GeometryRetained geom) {
 
@@ -388,6 +391,7 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
     }
 
     // the bounds argument is already transformed
+    @Override
     boolean intersect(Bounds targetBound) {
         Point3d[] points = new Point3d[4];
         //NVaidya
@@ -448,6 +452,7 @@ class IndexedQuadArrayRetained extends IndexedGeometryArrayRetained {
     }
 
 
+    @Override
     int getClassType() {
 	return QUAD_TYPE;
     }

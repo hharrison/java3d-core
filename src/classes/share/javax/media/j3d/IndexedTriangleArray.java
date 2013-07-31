@@ -184,6 +184,7 @@ public class IndexedTriangleArray extends IndexedGeometryArray {
      * Creates the retained mode IndexedTriangleArrayRetained object that this
      * IndexedTriangleArray object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new IndexedTriangleArrayRetained();
 	this.retained.setSource(this);
@@ -193,6 +194,7 @@ public class IndexedTriangleArray extends IndexedGeometryArray {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         IndexedTriangleArrayRetained rt = (IndexedTriangleArrayRetained) retained;
         int texSetCount = rt.getTexCoordSetCount();

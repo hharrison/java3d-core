@@ -73,6 +73,7 @@ public abstract class WakeupCriterion extends WakeupCondition {
      * Initialize And/Or tree and add criterion to the BehaviourStructure.
      *
      */
+    @Override
     void buildTree(WakeupCondition parent, int id, BehaviorRetained b) {
 	super.buildTree(parent, id, b);
 	triggered = false;
@@ -87,6 +88,7 @@ public abstract class WakeupCriterion extends WakeupCondition {
      * may reassign to another universe at this time.
      *
      */
+    @Override
     void cleanTree(BehaviorStructure bs){
 	conditionMet = false;
 	removeBehaviorCondition(bs);
@@ -96,6 +98,7 @@ public abstract class WakeupCriterion extends WakeupCondition {
     /**
      * This goes through the AndOr tree to reset various criterion.
      */
+    @Override
     void resetTree() {
 	conditionMet = false;
 	triggered = false;

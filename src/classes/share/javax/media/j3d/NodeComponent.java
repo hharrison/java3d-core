@@ -264,6 +264,7 @@ public abstract class NodeComponent extends SceneGraphObject {
      * Creates the retained mode NodeComponentRetained object that this
      * NodeComponent object will point to.
     */
+    @Override
     void createRetained() {
         this.retained = new NodeComponentRetained();
 	this.retained.setSource(this);

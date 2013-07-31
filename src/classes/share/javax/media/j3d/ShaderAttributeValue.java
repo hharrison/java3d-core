@@ -74,6 +74,7 @@ public class ShaderAttributeValue extends ShaderAttributeObject {
     }
 
     // Implement abstract getValue method
+    @Override
     public Object getValue() {
 
         if (isLiveOrCompiled())
@@ -84,6 +85,7 @@ public class ShaderAttributeValue extends ShaderAttributeObject {
     }
 
     // Implement abstract setValue method
+    @Override
     public void setValue(Object value) {
 
         if (value == null) {
@@ -105,6 +107,7 @@ public class ShaderAttributeValue extends ShaderAttributeObject {
      * Creates a retained mode ShaderAttributeValueRetained object that this
      * ShaderAttributeValue component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new ShaderAttributeValueRetained();
 	this.retained.setSource(this);

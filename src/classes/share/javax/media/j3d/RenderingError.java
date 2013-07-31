@@ -234,6 +234,7 @@ public class RenderingError extends Object {
      *
      * @return a string representation of this rendering error.
      */
+    @Override
     public String toString() {
 	// Concatenate string representation of error code with error message
 	String errorCodeStr;

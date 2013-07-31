@@ -210,6 +210,7 @@ class TransparencyAttributesRetained extends NodeComponentRetained {
     * Creates and initializes a mirror object, point the mirror object
     * to the retained object if the object is not editable
     */
+    @Override
     synchronized void createMirrorObject() {
 	if (mirror == null) {
 	    // Check the capability bits and let the mirror object
@@ -251,6 +252,7 @@ static boolean useAlpha(TransparencyAttributesRetained ta) {
     * Initializes a mirror object, point the mirror object to the retained
     * object if the object is not editable
     */
+    @Override
     synchronized void initMirrorObject() {
         ((TransparencyAttributesRetained)mirror).set(this);
     }
@@ -259,6 +261,7 @@ static boolean useAlpha(TransparencyAttributesRetained ta) {
      * Update the "component" field of the mirror object with the
      * given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 
 	TransparencyAttributesRetained mirrorTa =
@@ -336,6 +339,7 @@ static boolean useAlpha(TransparencyAttributesRetained ta) {
 
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
 	if (bit == TransparencyAttributes.ALLOW_MODE_WRITE ||
 	    bit == TransparencyAttributes.ALLOW_VALUE_WRITE||

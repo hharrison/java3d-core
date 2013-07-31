@@ -154,6 +154,7 @@ public class TriangleArray extends GeometryArray {
      * Creates the retained mode TriangleArrayRetained object that this
      * TriangleArray object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new TriangleArrayRetained();
 	this.retained.setSource(this);
@@ -163,6 +164,7 @@ public class TriangleArray extends GeometryArray {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         TriangleArrayRetained rt = (TriangleArrayRetained) retained;
         int texSetCount = rt.getTexCoordSetCount();

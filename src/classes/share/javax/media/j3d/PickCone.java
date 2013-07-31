@@ -93,12 +93,15 @@ public abstract class PickCone extends PickShape {
      * Return true if shape intersect with bounds.
      * The point of intersection is stored in pickPos.
      */
+    @Override
     abstract boolean intersect(Bounds bounds, Point4d pickPos);
 
+    @Override
     Point3d getStartPoint() {
 	return origin;
     }
 
+    @Override
     int getPickType() {
 	return PICKCONE;
     }

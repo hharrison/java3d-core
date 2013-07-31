@@ -96,6 +96,7 @@ class NotificationThread extends Thread {
 	runMonitor(STOP);
     }
 
+    @Override
     public void run() {
 	while (running) {
 	    runMonitor(WAIT);

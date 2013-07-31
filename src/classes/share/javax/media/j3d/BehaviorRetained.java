@@ -286,6 +286,7 @@ class BehaviorRetained extends LeafRetained  {
    * it activates all canvases that are associated with the attached
    * view.
    */
+    @Override
     synchronized void setLive(SetLiveState s) {
 
 	super.doSetLive(s);
@@ -323,6 +324,7 @@ class BehaviorRetained extends LeafRetained  {
      * it deactivates all canvases that are associated with the attached
      * view.
      */
+    @Override
     synchronized void clearLive(SetLiveState s) {
 	super.clearLive(s);
 	s.nodeList.add(this);
@@ -510,6 +512,7 @@ class BehaviorRetained extends LeafRetained  {
 	sendMessage(mtype, null);
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
         super.mergeTransform(xform);
         if (schedulingRegion != null) {

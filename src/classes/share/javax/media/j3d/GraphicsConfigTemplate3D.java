@@ -290,6 +290,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      *
      * @see GraphicsDevice
      */
+    @Override
     public GraphicsConfiguration
       getBestConfiguration(GraphicsConfiguration[] gc) {
 	if ((gc == null) || (gc.length == 0) || (gc[0] == null)) {
@@ -332,6 +333,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      *  <code>false</code> if the GraphicsConfiguration can not be used
      *  to create a drawing surface usable by this API.
      */
+    @Override
     public boolean isGraphicsConfigSupported(GraphicsConfiguration gc) {
 	if (gc == null) {
 	    return false;
@@ -430,6 +432,7 @@ public class GraphicsConfigTemplate3D extends GraphicsConfigTemplate {
      * Returns a string representation of this object.
      * @return a string representation of this object.
      */
+    @Override
     public String toString() {
 	return
 	    "redSize : " + redSize + ", " +

@@ -191,6 +191,7 @@ class WakeupOnElapsedTimeHeap implements Cloneable {
     /**
      * Clone this heap
      */
+    @Override
     protected final Object clone() {
 	try {
 	    WakeupOnElapsedTimeHeap heap = (WakeupOnElapsedTimeHeap)super.clone();
@@ -205,6 +206,7 @@ class WakeupOnElapsedTimeHeap implements Cloneable {
     }
 
 
+    @Override
     public String toString() {
 	StringBuffer sb = new StringBuffer("[ ");
 

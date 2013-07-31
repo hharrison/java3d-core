@@ -146,6 +146,7 @@ public class AlternateAppearance extends Leaf {
      * Creates the retained mode AlternateAppearanceRetained object that this
      * Alternate Appearance component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new AlternateAppearanceRetained();
 	this.retained.setSource(this);
@@ -522,6 +523,7 @@ public Enumeration<Group> getAllScopes() {
     * @see Node#cloneTree
     * @see NodeComponent#setDuplicateOnCloneTree
     */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
 	super.duplicateAttributes(originalNode, forceDuplicate);
 
@@ -572,6 +574,7 @@ public Enumeration<Group> getAllScopes() {
      * @see Node#cloneTree
      * @see DanglingReferenceException
      */
+    @Override
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
 
 	AlternateAppearanceRetained rt = (AlternateAppearanceRetained)
@@ -606,6 +609,7 @@ public Enumeration<Group> getAllScopes() {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         AlternateAppearance app = new AlternateAppearance();
         app.duplicateNode(this, forceDuplicate);

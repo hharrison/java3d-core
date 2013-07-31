@@ -188,6 +188,7 @@ public class SpotLight extends PointLight {
      * Creates the retained mode SpotLightRetained object that this
      * SpotLight component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new SpotLightRetained();
 	this.retained.setSource(this);
@@ -326,6 +327,7 @@ public class SpotLight extends PointLight {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         SpotLight s = new SpotLight();
         s.duplicateNode(this, forceDuplicate);
@@ -354,6 +356,7 @@ public class SpotLight extends PointLight {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean
 			     forceDuplicate) {
 

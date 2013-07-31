@@ -87,6 +87,7 @@ class Text3DRetained extends GeometryRetained {
     }
 
 
+    @Override
     synchronized void computeBoundingBox() {
 	Point3d l = new Point3d();
 	Point3d u = new Point3d();
@@ -187,6 +188,7 @@ class Text3DRetained extends GeometryRetained {
 	}
     }
 
+    @Override
     void update() {}
 
 
@@ -843,6 +845,7 @@ class Text3DRetained extends GeometryRetained {
      * used by this.string are tesselated in this method, to avoid wait during
      * traversal and rendering.
      */
+    @Override
     void setLive(boolean inBackgroundGroup, int refCount) {
       // Tesselate all character data and update character transforms
       updateCharacterData();
@@ -851,6 +854,7 @@ class Text3DRetained extends GeometryRetained {
     }
 
     // TODO -- Need to rethink. Might have to consider charTransform[] in returns pickInfo.
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
 	Transform3D tempT3D = new Transform3D();
@@ -891,6 +895,7 @@ class Text3DRetained extends GeometryRetained {
 	return false;
     }
 
+    @Override
     boolean intersect(Point3d[] pnts) {
 	Transform3D tempT3D = new Transform3D();
 	GeometryArrayRetained ga;
@@ -917,6 +922,7 @@ class Text3DRetained extends GeometryRetained {
     }
 
 
+    @Override
     boolean intersect(Transform3D thisToOtherVworld, GeometryRetained geom) {
 	GeometryArrayRetained ga;
 
@@ -930,6 +936,7 @@ class Text3DRetained extends GeometryRetained {
 	return false;
     }
 
+    @Override
     boolean intersect(Bounds targetBound) {
 	GeometryArrayRetained ga;
 
@@ -950,6 +957,7 @@ class Text3DRetained extends GeometryRetained {
     }
 
 
+    @Override
     void execute(Canvas3D cv, RenderAtom ra, boolean isNonUniformScale,
 		 boolean updateAlpha, float alpha,
 		 int screen,
@@ -966,6 +974,7 @@ class Text3DRetained extends GeometryRetained {
 	}
     }
 
+    @Override
     int getClassType() {
 	return TEXT3D_TYPE;
     }

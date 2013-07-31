@@ -65,11 +65,13 @@ abstract class ShaderRetained extends NodeComponentRetained {
 	return shaderType;
     }
 
+    @Override
     void setLive(boolean inBackgroundGroup, int refCount) {
 	// System.err.println("SourceCodeShaderRetained.setLive()");
 	super.setLive(inBackgroundGroup, refCount);
     }
 
+    @Override
     void clearLive(int refCount) {
 	// System.err.println("SourceCodeShaderRetained.clearLive()");
 	super.clearLive(refCount);
@@ -80,10 +82,12 @@ abstract class ShaderRetained extends NodeComponentRetained {
       * But it's using the updateMirrorObject interface to propagate
       * the changes to the users
       */
+     @Override
      synchronized void updateMirrorObject(int component, Object value) {
 	System.err.println("Shader.updateMirrorObject not implemented yet!");
      }
 
+    @Override
     void handleFrequencyChange(int bit) {
 	System.err.println("Shader.handleFrequencyChange not implemented yet!");
     }

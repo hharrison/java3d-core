@@ -260,6 +260,7 @@ public abstract class GeometryStripArray extends GeometryArray {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void setValidVertexCount(int validVertexCount) {
 	throw new UnsupportedOperationException();
     }

@@ -79,6 +79,7 @@ class ExponentialFogRetained extends FogRetained {
     }
 
 
+    @Override
     void setLive(SetLiveState s) {
 	super.setLive(s);
 
@@ -122,6 +123,7 @@ class ExponentialFogRetained extends FogRetained {
      * This method and its native counterpart update the native context
      * fog values.
      */
+    @Override
     void update(Context ctx, double scale) {
         // Issue 144: recompute the density in EC, and send it to native code
 	validateDistancesInEc(scale);
@@ -133,6 +135,7 @@ class ExponentialFogRetained extends FogRetained {
     // The update Object function.
     // Note : if you add any more fields here , you need to update
     // updateFog() in RenderingEnvironmentStructure
+    @Override
     void updateMirrorObject(Object[] objs) {
 
 	int component = ((Integer)objs[1]).intValue();
@@ -153,6 +156,7 @@ class ExponentialFogRetained extends FogRetained {
 
 
     // Clone the retained side only, internal use only
+    @Override
     protected Object clone() {
 	ExponentialFogRetained efr =
              (ExponentialFogRetained)super.clone();
@@ -167,6 +171,7 @@ class ExponentialFogRetained extends FogRetained {
     /**
      * Scale distances from local to eye coordinate.
      */
+    @Override
     protected void validateDistancesInEc(double vworldToCoexistenceScale) {
         // vworldToCoexistenceScale can be used here since
         // CoexistenceToEc has a unit scale

@@ -76,49 +76,60 @@ class JoglGraphicsConfiguration extends GraphicsConfiguration {
     return chosenIndex;
   }
 
+  @Override
   public BufferedImage createCompatibleImage(int width, int height) {
     throw new RuntimeException("Unimplemented");
   }
 
+  @Override
   public BufferedImage createCompatibleImage(int width, int height,
                                              int transparency) {
     throw new RuntimeException("Unimplemented");
   }
 
+  @Override
   public VolatileImage createCompatibleVolatileImage(int width, int height) {
     throw new RuntimeException("Unimplemented");
   }
 
+  @Override
   public VolatileImage createCompatibleVolatileImage(int width, int height, int transparency) {
     throw new RuntimeException("Unimplemented");
   }
 
+  @Override
   public VolatileImage createCompatibleVolatileImage(int width, int height,
                                                      ImageCapabilities caps) throws AWTException {
     throw new RuntimeException("Unimplemented");
   }
 
+  @Override
   public VolatileImage createCompatibleVolatileImage(int width, int height,
                                                      ImageCapabilities caps, int transparency) throws AWTException {
     throw new RuntimeException("Unimplemented");
   }
 
+  @Override
   public Rectangle getBounds() {
     return new Rectangle(0, 0, width, height);
   }
 
+  @Override
   public ColorModel getColorModel() {
     throw new RuntimeException("Unimplemented");
   }
 
+  @Override
   public ColorModel getColorModel(int transparency) {
     throw new RuntimeException("Unimplemented");
   }
 
+  @Override
   public AffineTransform getDefaultTransform() {
     throw new RuntimeException("Unimplemented");
   }
 
+  @Override
   public GraphicsDevice getDevice() {
     return device;
   }
@@ -127,6 +138,7 @@ class JoglGraphicsConfiguration extends GraphicsConfiguration {
     return awtGraphicsDevice;
   }
 
+  @Override
   public AffineTransform getNormalizingTransform() {
     throw new RuntimeException("Unimplemented");
   }

@@ -93,6 +93,7 @@ class StructureUpdateThread extends J3dThread {
 
     }
 
+    @Override
     void doWork(long referenceTime) {
 	structure.processMessages(referenceTime);
     }

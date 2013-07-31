@@ -75,6 +75,7 @@ public class ShaderAttributeArray extends ShaderAttributeObject {
     }
 
     // Implement abstract getValue method
+    @Override
     public Object getValue() {
         if (isLiveOrCompiled())
 	    if (!this.getCapability(ALLOW_VALUE_READ))
@@ -84,6 +85,7 @@ public class ShaderAttributeArray extends ShaderAttributeObject {
     }
 
     // Implement abstract setValue method
+    @Override
     public void setValue(Object value) {
 	if (value == null) {
 	    throw new NullPointerException();
@@ -153,6 +155,7 @@ public class ShaderAttributeArray extends ShaderAttributeObject {
      * Creates a retained mode ShaderAttributeArrayRetained object that this
      * ShaderAttributeArray component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new ShaderAttributeArrayRetained();
 	this.retained.setSource(this);

@@ -185,6 +185,7 @@ class PointLightRetained extends LightRetained {
      * updates a point light.  This includes its color, attenuation,
      * and its transformed position.
      */
+    @Override
     void update(Context ctx, int lightSlot, double scale) {
 	validateAttenuationInEc(scale);
         Pipeline.getPipeline().updatePointLight(ctx,
@@ -195,6 +196,7 @@ class PointLightRetained extends LightRetained {
                 xformPosition.z);
     }
 
+    @Override
     void setLive(SetLiveState s) {
 	super.setLive(s);
 	J3dMessage createMessage = super.initMessage(9);
@@ -208,10 +210,12 @@ class PointLightRetained extends LightRetained {
     // This is called only from SpotLightRetained, so as
     // to not create a message for initialization. for spotlight
     // the initialization of the message is done by SpotLightRetained
+    @Override
     void doSetLive(SetLiveState s) {
 	super.setLive(s);
     }
 
+    @Override
     J3dMessage initMessage(int num) {
 	J3dMessage createMessage = super.initMessage(num);
 	Object[] objs = (Object[])createMessage.args[4];
@@ -223,6 +227,7 @@ class PointLightRetained extends LightRetained {
 
     // Note : if you add any more fields here , you need to update
     // updateLight() in RenderingEnvironmentStructure
+    @Override
     void updateMirrorObject(Object[] objs) {
 
 	int component = ((Integer)objs[1]).intValue();
@@ -283,6 +288,7 @@ class PointLightRetained extends LightRetained {
 
 
     // Clones only the retained side, internal use only
+     @Override
      protected Object clone() {
          PointLightRetained pr =
             (PointLightRetained)super.clone();
@@ -295,6 +301,7 @@ class PointLightRetained extends LightRetained {
 
 
     // Called on the mirror object
+    @Override
     void updateTransformChange() {
 	super.updateTransformChange();
 
@@ -306,6 +313,7 @@ class PointLightRetained extends LightRetained {
 	validateAttenuationInEc(0.0861328125);
     }
 
+    @Override
     void sendMessage(int attrMask, Object attr) {
 
 	J3dMessage createMessage = new J3dMessage();
@@ -323,6 +331,7 @@ class PointLightRetained extends LightRetained {
 	VirtualUniverse.mc.processMessage(createMessage);
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);
         xform.transform.transform(position, position);

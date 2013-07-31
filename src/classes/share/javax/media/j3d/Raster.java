@@ -350,6 +350,7 @@ public class Raster extends Geometry {
      * Creates the retained mode Raster object that this
      * Raster object will point to.
      */
+    @Override
     void createRetained() {
         retained = new RasterRetained();
         retained.setSource(this);
@@ -723,6 +724,7 @@ public class Raster extends Geometry {
    /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         Raster r = new Raster();
         r.duplicateNodeComponent(this);
@@ -737,6 +739,7 @@ public class Raster extends Geometry {
      * @deprecated replaced with duplicateNodeComponent(
      *  NodeComponent originalNodeComponent, boolean forceDuplicate)
      */
+    @Override
     public void duplicateNodeComponent(NodeComponent originalNodeComponent) {
 	checkDuplicateNodeComponent(originalNodeComponent);
     }
@@ -760,6 +763,7 @@ public class Raster extends Geometry {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);
@@ -798,6 +802,7 @@ public class Raster extends Geometry {
    *  duplicate also even though current duplicateOnCloneTree flag is false.
    *  This should be overwrite by NodeComponent which contains sub-NodeComponent.
    */
+   @Override
    boolean duplicateChild() {
       if (getDuplicateOnCloneTree())
 	return true;

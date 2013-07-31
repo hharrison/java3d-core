@@ -1226,6 +1226,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
      * to function properly.
      * @param g the graphics context
      */
+    @Override
     public void paint(Graphics g) {
 
 	if (!firstPaintCalled && added && validCanvas &&
@@ -1258,6 +1259,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
      * method need to call super.addNotify() in their addNotify() method for Java 3D
      * to function properly.
      */
+    @Override
     public void addNotify() {
         // Return immediately if addNotify called twice with no removeNotify
         if (addNotifyCalled) {
@@ -1367,6 +1369,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
      * method need to call super.removeNotify() in their removeNotify()
      * method for Java 3D to function properly.
      */
+    @Override
     public void removeNotify() {
         // Return immediately if addNotify not called first
         if (!addNotifyCalled) {
@@ -3947,6 +3950,7 @@ void resetImmediateRendering() {
 	ctxTimeStamp = VirtualUniverse.mc.getContextTimeStamp();
 }
 
+@Override
 public Point getLocationOnScreen() {
 	try {
 		return super.getLocationOnScreen();

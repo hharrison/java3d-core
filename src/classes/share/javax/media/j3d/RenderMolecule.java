@@ -1182,6 +1182,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	numEditingRenderAtoms = numRenderAtoms;
     }
 
+    @Override
     public void updateObject() {
 	int i;
 	RenderAtom renderAtom;
@@ -2908,6 +2909,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
 	return false;
     }
 
+    @Override
     VirtualUniverse getVirtualUniverse() {
 	return null;
     }
@@ -2963,6 +2965,7 @@ class RenderMolecule extends IndexedObject implements ObjectUpdate, NodeComponen
      * come when there is no active renderAtom associated with the
      * TextureBin. See bug# 4503926 for details.
      */
+    @Override
     public void updateNodeComponentCheck() {
 
 	// If the renderMolecule has been removed, do nothing ..

@@ -268,6 +268,7 @@ public class Morph extends Leaf {
      * Creates the retained mode MorphRetained object that this
      * Morph object will point to.
      */
+    @Override
     void createRetained() {
 	retained = new MorphRetained();
 	retained.setSource(this);
@@ -593,6 +594,7 @@ public class Morph extends Leaf {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         Morph m = new Morph();
         m.duplicateNode(this, forceDuplicate);
@@ -630,6 +632,7 @@ public class Morph extends Leaf {
      * @see Node#cloneNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public void duplicateNode(Node originalNode, boolean forceDuplicate) {
 	checkDuplicateNode(originalNode, forceDuplicate);
     }
@@ -655,6 +658,7 @@ public class Morph extends Leaf {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

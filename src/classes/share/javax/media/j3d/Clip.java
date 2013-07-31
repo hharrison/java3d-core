@@ -210,6 +210,7 @@ public class Clip extends Leaf {
      * Creates the retained mode ClipRetained object that this
      * Clip component object will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new ClipRetained();
         this.retained.setSource(this);
@@ -229,6 +230,7 @@ public class Clip extends Leaf {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         Clip c = new Clip();
         c.duplicateNode(this, forceDuplicate);
@@ -261,6 +263,7 @@ public class Clip extends Leaf {
      * @see Node#cloneTree
      * @see DanglingReferenceException
      */
+    @Override
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
 	ClipRetained rt = (ClipRetained) retained;
         BoundingLeaf bl = rt.getApplicationBoundingLeaf();
@@ -294,6 +297,7 @@ public class Clip extends Leaf {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

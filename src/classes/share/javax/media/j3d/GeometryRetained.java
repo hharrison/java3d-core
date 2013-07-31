@@ -204,6 +204,7 @@ abstract class GeometryRetained extends NodeComponentRetained {
 
     abstract void computeBoundingBox();
 
+    @Override
     void setLive(boolean inBackgroundGroup, int refCount) {
 	doSetLive(inBackgroundGroup,refCount);
 	super.markAsLive();
@@ -213,6 +214,7 @@ abstract class GeometryRetained extends NodeComponentRetained {
      * This setLive routine calls the superclass's method when reference
      * count is 1
      */
+    @Override
     void doSetLive(boolean inBackgroundGroup, int refCount) {
         super.doSetLive(inBackgroundGroup, refCount);
 	this.update();

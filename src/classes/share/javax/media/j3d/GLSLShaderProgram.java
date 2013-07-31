@@ -47,6 +47,7 @@ public class GLSLShaderProgram extends ShaderProgram {
     }
 
     // Implement abstract setVertexAttrNames method (inherit javadoc from parent class)
+    @Override
     public void setVertexAttrNames(String[] vertexAttrNames) {
 	checkForLiveOrCompiled();
 
@@ -62,6 +63,7 @@ public class GLSLShaderProgram extends ShaderProgram {
     }
 
     // Implement abstract getVertexAttrNames method (inherit javadoc from parent class)
+    @Override
     public String[] getVertexAttrNames() {
 
 	if (isLiveOrCompiled()) {
@@ -75,6 +77,7 @@ public class GLSLShaderProgram extends ShaderProgram {
     }
 
     // Implement abstract setShaderAttrNames method (inherit javadoc from parent class)
+    @Override
     public void setShaderAttrNames(String[] shaderAttrNames) {
 	checkForLiveOrCompiled();
 
@@ -90,6 +93,7 @@ public class GLSLShaderProgram extends ShaderProgram {
     }
 
     // Implement abstract getShaderAttrNames method (inherit javadoc from parent class)
+    @Override
     public String[] getShaderAttrNames() {
 
 	if (isLiveOrCompiled()) {
@@ -127,6 +131,7 @@ public class GLSLShaderProgram extends ShaderProgram {
      * @exception NullPointerException if any element in the
      * shaders array is null.
      */
+    @Override
     public void setShaders(Shader[] shaders) {
 	checkForLiveOrCompiled();
 
@@ -148,6 +153,7 @@ public class GLSLShaderProgram extends ShaderProgram {
     }
 
     // Implement abstract getShaders method (inherit javadoc from parent class)
+    @Override
     public Shader[] getShaders() {
 
 	if (isLiveOrCompiled()) {
@@ -163,6 +169,7 @@ public class GLSLShaderProgram extends ShaderProgram {
      * Creates a retained mode GLSLShaderProgramRetained object that this
      * GLSLShaderProgram component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new GLSLShaderProgramRetained();
 	this.retained.setSource(this);

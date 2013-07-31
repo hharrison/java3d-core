@@ -130,6 +130,7 @@ class WakeupCriteriaEnumerator implements Enumeration {
         }
    }
 
+   @Override
    public boolean hasMoreElements() {
         if (currentIndex == length) {
 	   return false;
@@ -137,6 +138,7 @@ class WakeupCriteriaEnumerator implements Enumeration {
 	return true;
    }
 
+   @Override
    public Object nextElement() {
 	if (currentIndex < length) {
 	   return criterion[currentIndex++];

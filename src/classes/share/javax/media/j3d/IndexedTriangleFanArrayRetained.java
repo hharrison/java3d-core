@@ -45,6 +45,7 @@ class IndexedTriangleFanArrayRetained extends IndexedGeometryStripArrayRetained 
 	geoType = GEO_TYPE_INDEXED_TRI_FAN_SET;
     }
 
+    @Override
     boolean intersect(PickShape pickShape, PickInfo pickInfo, int flags, Point3d iPnt,
                       GeometryRetained geom, int geomIndex) {
 	Point3d pnts[] = new Point3d[3];
@@ -334,6 +335,7 @@ class IndexedTriangleFanArrayRetained extends IndexedGeometryStripArrayRetained 
     }
 
     // intersect pnts[] with every triangle in this object
+    @Override
     boolean intersect(Point3d[] pnts) {
 	int j;
 	Point3d[] points = new Point3d[3];
@@ -411,6 +413,7 @@ class IndexedTriangleFanArrayRetained extends IndexedGeometryStripArrayRetained 
 	return false;
     }
 
+    @Override
     boolean intersect(Transform3D thisToOtherVworld, GeometryRetained geom) {
 	int i = 0, j, scount, count = 0;
 	Point3d[] pnts = new Point3d[3];
@@ -437,6 +440,7 @@ class IndexedTriangleFanArrayRetained extends IndexedGeometryStripArrayRetained 
     }
 
     // the bounds argument is already transformed
+    @Override
     boolean intersect(Bounds targetBound) {
 	int i = 0;
 	int j, scount, count = 0;
@@ -501,6 +505,7 @@ class IndexedTriangleFanArrayRetained extends IndexedGeometryStripArrayRetained 
 	return false;
     }
 
+    @Override
     int getClassType() {
 	return TRIANGLE_TYPE;
     }

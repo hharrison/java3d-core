@@ -171,6 +171,7 @@ public class Material extends NodeComponent {
      * Creates a retained mode MaterialRetained object that this
      * Material component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new MaterialRetained();
 	this.retained.setSource(this);
@@ -624,6 +625,7 @@ public class Material extends NodeComponent {
 	 * If the scene graph is live only those values with their
 	 * Capability read bit set will be displayed.
 	 */
+	@Override
 	public String toString() {
 		StringBuffer str = new StringBuffer(getNamePrefix());
 		str.append("javax.media.j3d.Material: ");
@@ -662,6 +664,7 @@ public class Material extends NodeComponent {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         Material m = new Material();
         m.duplicateNodeComponent(this);
@@ -686,6 +689,7 @@ public class Material extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent,

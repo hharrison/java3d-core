@@ -163,6 +163,7 @@ public class DistanceLOD extends LOD {
     /**
      * Initialize method that sets up initial wakeup criteria.
      */
+    @Override
     public void initialize() {
 	// Insert wakeup condition into queue
 	wakeupOn(wakeupFrame);
@@ -173,6 +174,7 @@ public class DistanceLOD extends LOD {
      * @param criteria an enumeration of the criteria that caused the
      * stimulus
      */
+    @Override
     public void processStimulus(Enumeration criteria) {
 
 
@@ -254,6 +256,7 @@ public class DistanceLOD extends LOD {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         DistanceLOD d = new DistanceLOD();
         d.duplicateNode(this, forceDuplicate);
@@ -282,6 +285,7 @@ public class DistanceLOD extends LOD {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

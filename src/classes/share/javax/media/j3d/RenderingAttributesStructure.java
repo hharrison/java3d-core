@@ -42,6 +42,7 @@ class RenderingAttributesStructure extends J3dStructure implements ObjectUpdate 
 	super(null, J3dThread.UPDATE_RENDERING_ATTRIBUTES);
     }
 
+    @Override
     void processMessages(long referenceTime) {
 	J3dMessage m;
 	boolean addMirrorObj = false;
@@ -179,6 +180,7 @@ class RenderingAttributesStructure extends J3dStructure implements ObjectUpdate 
 	Arrays.fill(messages, 0, nMsg, null);
     }
 
+    @Override
     public void updateObject() {
 
 	int size = objList.size();
@@ -234,8 +236,10 @@ class RenderingAttributesStructure extends J3dStructure implements ObjectUpdate 
       n.updateMirrorObject(((Integer)args[1]).intValue(), args[2], args[3]);
     }
 
+    @Override
     void removeNodes(J3dMessage m) {}
 
+    @Override
     void cleanup() {}
 
 

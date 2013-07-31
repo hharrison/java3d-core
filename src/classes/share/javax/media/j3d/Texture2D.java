@@ -238,6 +238,7 @@ public class Texture2D extends Texture {
      *
      * @since Java 3D 1.3
      */
+    @Override
     public void setMagFilter(int magFilter) {
 	checkForLiveOrCompiled();
 
@@ -501,6 +502,7 @@ public class Texture2D extends Texture {
      * Creates a retained mode Texture2DRetained object that this
      * Texture2D component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new Texture2DRetained();
 	this.retained.setSource(this);
@@ -511,6 +513,7 @@ public class Texture2D extends Texture {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
 	Texture2DRetained t2d = (Texture2DRetained) retained;
 
@@ -527,6 +530,7 @@ public class Texture2D extends Texture {
      * @deprecated replaced with duplicateNodeComponent(
      *  NodeComponent originalNodeComponent, boolean forceDuplicate)
      */
+    @Override
     public void duplicateNodeComponent(NodeComponent originalNodeComponent) {
 	checkDuplicateNodeComponent(originalNodeComponent);
     }
@@ -548,6 +552,7 @@ public class Texture2D extends Texture {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
                              boolean forceDuplicate) {
         super.duplicateAttributes(originalNodeComponent, forceDuplicate);

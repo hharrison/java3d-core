@@ -35,6 +35,7 @@ package javax.media.j3d;
 
 class OrientedShape3DRenderMethod implements RenderMethod {
 
+    @Override
     public boolean render(RenderMolecule rm, Canvas3D cv,
 			  RenderAtomListInfo ra, int dirtyBits) {
         boolean useAlpha;

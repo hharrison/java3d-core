@@ -303,6 +303,7 @@ public class SceneGraphPath {
      * @param o1 the object we will compare this SceneGraphPath's path against.
      * @return  true or false
      */
+    @Override
     public boolean equals(Object o1) {
 	boolean result = true;
 
@@ -348,6 +349,7 @@ public class SceneGraphPath {
      * may return the same hash value, although this is not likely.
      * @return the integer hash value
      */
+    @Override
     public int hashCode() {
        HashKey key = new HashKey(250);
        // NOTE: Needed to add interior != null because this method is called
@@ -414,6 +416,7 @@ public class SceneGraphPath {
      * if it is not null.
      *  @return String representation of this object
      */
+    @Override
     public String toString() {
 
 	StringBuffer str = new StringBuffer();

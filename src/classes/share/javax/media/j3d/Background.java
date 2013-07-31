@@ -631,6 +631,7 @@ public class Background extends Leaf {
      * Creates the retained mode BackgroundRetained object that this
      * Background component object will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new BackgroundRetained();
         this.retained.setSource(this);
@@ -654,6 +655,7 @@ public class Background extends Leaf {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         Background b = new Background();
         b.duplicateNode(this, forceDuplicate);
@@ -693,6 +695,7 @@ public class Background extends Leaf {
      * @see Node#cloneNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public void duplicateNode(Node originalNode, boolean
 			      forceDuplicate) {
 	checkDuplicateNode(originalNode, forceDuplicate);
@@ -720,6 +723,7 @@ public class Background extends Leaf {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
@@ -770,6 +774,7 @@ public class Background extends Leaf {
      * @see Node#cloneTree
      * @see DanglingReferenceException
      */
+    @Override
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
         super.updateNodeReferences(referenceTable);
 

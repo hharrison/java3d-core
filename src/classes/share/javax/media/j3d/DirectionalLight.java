@@ -107,6 +107,7 @@ public class DirectionalLight extends Light {
      * Creates the retained mode DirectionalLightRetained object that this
      * DirectionalLight component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new DirectionalLightRetained();
 	this.retained.setSource(this);
@@ -179,6 +180,7 @@ public class DirectionalLight extends Light {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         DirectionalLight d = new DirectionalLight();
         d.duplicateNode(this, forceDuplicate);
@@ -207,6 +209,7 @@ public class DirectionalLight extends Light {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

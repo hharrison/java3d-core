@@ -168,6 +168,7 @@ public class TransparencyInterpolator extends Interpolator {
      * @param criteria an enumeration of the criteria that caused the
      * stimulus
      */
+    @Override
     public void processStimulus(Enumeration criteria) {
 	// Handle stimulus
 	WakeupCriterion criterion = passiveWakeupCriterion;
@@ -203,6 +204,7 @@ public class TransparencyInterpolator extends Interpolator {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         TransparencyInterpolator ti = new TransparencyInterpolator();
         ti.duplicateNode(this, forceDuplicate);
@@ -231,6 +233,7 @@ public class TransparencyInterpolator extends Interpolator {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 
@@ -269,6 +272,7 @@ public class TransparencyInterpolator extends Interpolator {
      * @see Node#cloneTree
      * @see DanglingReferenceException
      */
+    @Override
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
         super.updateNodeReferences(referenceTable);
 

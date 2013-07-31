@@ -248,6 +248,7 @@ ArrayList<PointLightRetained> pointLts = new ArrayList<PointLightRetained>();
 
     }
 
+    @Override
     public void updateObject() {
 	int i;
 	EnvironmentSet e ;

@@ -1122,6 +1122,7 @@ public abstract class GeometryArray extends Geometry {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
                              boolean forceDuplicate) {
 

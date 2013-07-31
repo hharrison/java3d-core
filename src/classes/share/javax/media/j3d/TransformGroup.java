@@ -110,6 +110,7 @@ public class TransformGroup extends Group {
      * Creates the retained mode TransformGroupRetained object that this
      * TransformGroup object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new TransformGroupRetained();
 	this.retained.setSource(this);
@@ -165,6 +166,7 @@ public class TransformGroup extends Group {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         TransformGroup tg = new TransformGroup();
         tg.duplicateNode(this, forceDuplicate);
@@ -193,6 +195,7 @@ public class TransformGroup extends Group {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

@@ -675,6 +675,7 @@ public class AuralAttributes extends NodeComponent {
      * Creates the retained mode AuralAttributesRetained object that this
      * component object will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new AuralAttributesRetained();
         this.retained.setSource(this);
@@ -1255,6 +1256,7 @@ public class AuralAttributes extends NodeComponent {
      * @deprecated As of Java 3D version 1.2, replaced by
      * <code>cloneNodeComponent(boolean forceDuplicate)</code>
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         AuralAttributes a = new AuralAttributes();
         a.duplicateNodeComponent(this, this.forceDuplicate);
@@ -1279,6 +1281,7 @@ public class AuralAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+     @Override
      void duplicateAttributes(NodeComponent originalNodeComponent,
 			      boolean forceDuplicate) {
 	 super.duplicateAttributes(originalNodeComponent,

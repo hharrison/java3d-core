@@ -767,6 +767,7 @@ public class Transform3D {
      * Returns the matrix elements of this transform as a string.
      * @return  the matrix elements of this transform
      */
+    @Override
     public String toString() {
 	// also, print classification?
 	return
@@ -4047,6 +4048,7 @@ public class Transform3D {
      * @param o1  the object with which the comparison is made.
      * @return  true or false
      */
+    @Override
     public boolean equals(Object o1) {
 	return (o1 instanceof Transform3D) && equals((Transform3D) o1);
     }
@@ -4083,6 +4085,7 @@ public class Transform3D {
      * likely.
      * @return the integer hash code value
      */
+    @Override
     public int hashCode() {
 	long bits = 1L;
 

@@ -286,6 +286,7 @@ public class ColoringAttributes extends NodeComponent {
      * Creates a retained mode ColoringAttributesRetained object that this
      * ColoringAttributes component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new ColoringAttributesRetained();
 	this.retained.setSource(this);
@@ -296,6 +297,7 @@ public class ColoringAttributes extends NodeComponent {
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
 
+    @Override
     public NodeComponent cloneNodeComponent() {
         ColoringAttributes ca = new ColoringAttributes();
         ca.duplicateNodeComponent(this);
@@ -320,6 +322,7 @@ public class ColoringAttributes extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 
@@ -342,6 +345,7 @@ public class ColoringAttributes extends NodeComponent {
      * If the scene graph is live only those values with their
      * Capability read bit set will be displayed.
      */
+    @Override
     public String toString() {
         StringBuffer str = new StringBuffer(getNamePrefix());
         str.append("javax.media.j3d.ColoringAttributes: ");

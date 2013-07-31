@@ -255,6 +255,7 @@ public final class WakeupOnCollisionMovement extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to add wakeupCondition to behavior structure.
      */
+    @Override
     void addBehaviorCondition(BehaviorStructure bs) {
 
 	switch (nodeType) {
@@ -311,6 +312,7 @@ public final class WakeupOnCollisionMovement extends WakeupCriterion {
      * This is a callback from BehaviorStructure. It is
      * used to remove wakeupCondition from behavior structure.
      */
+    @Override
     void removeBehaviorCondition(BehaviorStructure bs) {
 	vwcBounds = null;
 	if (geometryAtoms != null) {
@@ -378,6 +380,7 @@ public final class WakeupOnCollisionMovement extends WakeupCriterion {
 	}
     }
 
+    @Override
     void setTriggered(){
 	// if path not set, probably the branch is just detach.
 	if (collidingPath != null) {
@@ -390,6 +393,7 @@ public final class WakeupOnCollisionMovement extends WakeupCriterion {
      * Perform task in addBehaviorCondition() that has to be
      * set every time the condition met.
      */
+    @Override
     void resetBehaviorCondition(BehaviorStructure bs) {
 	// The reference geometryAtom will not change once
 	// Shape3D create so there is no need to set this.

@@ -531,6 +531,7 @@ Enumeration<Group> getAllScopes() {
     /**
      * The update Object function.
      */
+    @Override
     void updateMirrorObject(Object[] objs) {
 
 	int component = ((Integer)objs[1]).intValue();
@@ -548,6 +549,7 @@ Enumeration<Group> getAllScopes() {
      * the mirror object - will update the object's
      * cached region and transformed region
      */
+    @Override
     void updateBoundingLeaf() {
         if (boundingLeaf != null && boundingLeaf.switchState.currentSwitchOn) {
             region = boundingLeaf.transformedRegion;
@@ -567,6 +569,7 @@ Enumeration<Group> getAllScopes() {
      * checking for use by an immediate context).  It is up to the
      * subclasses of fog to add themselves to the list of fogs
      */
+    @Override
     void setLive(SetLiveState s) {
         if (inImmCtx) {
 	    throw new IllegalSharingException(J3dI18N.getString("FogRetained0"));
@@ -684,6 +687,7 @@ Enumeration<Group> getAllScopes() {
      * This clearLive routine first calls the superclass's method, then
      * it removes itself to the list of fogs
      */
+    @Override
     void clearLive(SetLiveState s) {
 	int i;
         GroupRetained group;
@@ -732,6 +736,7 @@ Enumeration<Group> getAllScopes() {
     }
 
     // Clone the retained side only, internal use only
+     @Override
      protected Object clone() {
          FogRetained fr = (FogRetained)super.clone();
 
@@ -751,6 +756,7 @@ Enumeration<Group> getAllScopes() {
          return fr;
      }
 
+    @Override
     void updateTransformChange() {
 	super.updateTransformChange();
         setLocalToVworldScale(sgFog.getLastLocalToVworld().getDistanceScale());
@@ -780,12 +786,14 @@ Enumeration<Group> getAllScopes() {
 	VirtualUniverse.mc.processMessage(createMessage);
     }
 
+    @Override
     void mergeTransform(TransformGroupRetained xform) {
 	super.mergeTransform(xform);
         if (regionOfInfluence != null) {
             regionOfInfluence.transform(xform.transform);
         }
     }
+    @Override
     void getMirrorObjects(ArrayList leafList, HashKey key) {
 	leafList.add(mirrorFog);
     }

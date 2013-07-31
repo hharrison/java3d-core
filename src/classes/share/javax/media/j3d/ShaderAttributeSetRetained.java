@@ -199,6 +199,7 @@ Map<String, ShaderAttributeRetained> getAttrs() {
 	return attrs;
 }
 
+    @Override
     void setLive(boolean backgroundGroup, int refCount) {
 
 	// System.err.println("ShaderAttributeSetRetained.setLive()");
@@ -212,6 +213,7 @@ Map<String, ShaderAttributeRetained> getAttrs() {
         super.markAsLive();
     }
 
+    @Override
     synchronized void addAMirrorUser(Shape3DRetained shape) {
 
 	super.addAMirrorUser(shape);
@@ -223,6 +225,7 @@ Map<String, ShaderAttributeRetained> getAttrs() {
 	}
     }
 
+    @Override
     synchronized void removeAMirrorUser(Shape3DRetained shape) {
 	super.removeAMirrorUser(shape);
 
@@ -234,6 +237,7 @@ Map<String, ShaderAttributeRetained> getAttrs() {
     }
 
 
+    @Override
     synchronized void removeMirrorUsers(NodeComponentRetained node) {
 	super.removeMirrorUsers(node);
 
@@ -244,6 +248,7 @@ Map<String, ShaderAttributeRetained> getAttrs() {
 	}
     }
 
+    @Override
     synchronized void copyMirrorUsers(NodeComponentRetained node) {
 	super.copyMirrorUsers(node);
 
@@ -254,6 +259,7 @@ Map<String, ShaderAttributeRetained> getAttrs() {
 	}
     }
 
+    @Override
     void clearLive(int refCount) {
 	// System.err.println("ShaderAttributeSetRetained.clearLive()");
 
@@ -266,6 +272,7 @@ Map<String, ShaderAttributeRetained> getAttrs() {
 	}
     }
 
+    @Override
     synchronized void createMirrorObject() {
 	// System.err.println("ShaderAttributeSetRetained : createMirrorObject");
         // This method should only call by setLive().
@@ -278,6 +285,7 @@ Map<String, ShaderAttributeRetained> getAttrs() {
 	initMirrorObject();
     }
 
+    @Override
     void initMirrorObject() {
 
 	ShaderAttributeRetained[] sAttrs = new ShaderAttributeRetained[attrs.size()];
@@ -293,6 +301,7 @@ Map<String, ShaderAttributeRetained> getAttrs() {
      /**
      * Update the "component" field of the mirror object with the  given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 
 	// System.err.println("ShaderAttributeSetRetained : updateMirrorObject");
@@ -362,6 +371,7 @@ Map<String, ShaderAttributeRetained> getAttrs() {
     // to be set whenever the capability is writable, regardless of whether
     // it is frequently writable. We must do this because the ShaderBin doesn't
     // support updating shader attributes when changedFrequent is 0.
+    @Override
     void setFrequencyChangeMask(int bit, int mask) {
         if (source.getCapability(bit)) {
             changedFrequent |= mask;
@@ -371,6 +381,7 @@ Map<String, ShaderAttributeRetained> getAttrs() {
         }
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
         if (bit == ShaderAttributeSet.ALLOW_ATTRIBUTES_WRITE) {
             setFrequencyChangeMask(bit, 0x1);

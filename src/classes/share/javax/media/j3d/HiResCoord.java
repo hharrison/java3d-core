@@ -429,6 +429,7 @@ private double scales[] = {
      * @param o1 the second HiResCoord
      * @return true if equal, false if not equal
      */
+    @Override
     public boolean equals(Object  o1) {
         try {
 	   HiResCoord h1 = (HiResCoord)o1;

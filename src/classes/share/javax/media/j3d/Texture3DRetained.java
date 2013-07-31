@@ -69,6 +69,7 @@ class Texture3DRetained extends TextureRetained {
     /**
      * This method updates the native context.
      */
+    @Override
     void bindTexture(Context ctx, int objectId, boolean enable) {
         Pipeline.getPipeline().bindTexture3D(ctx, objectId, enable);
     }
@@ -85,6 +86,7 @@ class Texture3DRetained extends TextureRetained {
                 boundaryBlue, boundaryAlpha);
     }
 
+    @Override
     void updateTextureFilterModes(Context ctx,
             int minFilter, int magFilter) {
 
@@ -92,6 +94,7 @@ class Texture3DRetained extends TextureRetained {
                 minFilter, magFilter);
     }
 
+    @Override
     void updateTextureSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts) {
@@ -100,6 +103,7 @@ class Texture3DRetained extends TextureRetained {
             numSharpenTextureFuncPts, sharpenTextureFuncPts);
     }
 
+    @Override
     void updateTextureFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts) {
@@ -108,6 +112,7 @@ class Texture3DRetained extends TextureRetained {
                 numFilter4FuncPts, filter4FuncPts);
     }
 
+    @Override
     void updateTextureAnisotropicFilter(Context ctx, float degree) {
         Pipeline.getPipeline().updateTexture3DAnisotropicFilter(ctx, degree);
     }
@@ -149,6 +154,7 @@ class Texture3DRetained extends TextureRetained {
     // load level 0 image with null data pointer, just to enable
     // mipmapping when level 0 is not the base level
 
+    @Override
     void updateTextureDimensions(Canvas3D cv) {
         if(images[0][0] != null) {
             updateTextureImage(cv, maxLevels, 0, 0,
@@ -159,6 +165,7 @@ class Texture3DRetained extends TextureRetained {
     }
 
 
+    @Override
     void updateTextureBoundary(Canvas3D cv) {
         updateTextureBoundary(cv.ctx,
                 boundaryModeS, boundaryModeT, boundaryModeR,
@@ -166,6 +173,7 @@ class Texture3DRetained extends TextureRetained {
                 boundaryColor.z, boundaryColor.w);
     }
 
+    @Override
     void updateTextureLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod) {
@@ -174,6 +182,7 @@ class Texture3DRetained extends TextureRetained {
                 minimumLod, maximumLod);
     }
 
+    @Override
     void updateTextureLodOffset(Context ctx,
             float lodOffsetX, float lodOffsetY,
             float lodOffsetZ) {
@@ -182,6 +191,7 @@ class Texture3DRetained extends TextureRetained {
                 lodOffsetX, lodOffsetY, lodOffsetZ);
     }
 
+    @Override
     void reloadTextureImage(Canvas3D cv, int face, int level,
 			ImageComponentRetained image, int numLevels) {
 
@@ -203,6 +213,7 @@ class Texture3DRetained extends TextureRetained {
                 imageData.get());
     }
 
+    @Override
     void reloadTextureSubImage(Canvas3D cv, int level, int face,
 				ImageComponentUpdateInfo info,
 				ImageComponentRetained image) {

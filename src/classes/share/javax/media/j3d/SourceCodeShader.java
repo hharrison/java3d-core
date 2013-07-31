@@ -84,6 +84,7 @@ public class SourceCodeShader extends Shader {
      * Creates a retained mode SourceCodeShaderRetained object that this
      * SourceCodeShader component object will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new SourceCodeShaderRetained();
 	this.retained.setSource(this);
@@ -93,6 +94,7 @@ public class SourceCodeShader extends Shader {
     /**
      * @deprecated replaced with cloneNodeComponent(boolean forceDuplicate)
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
 	SourceCodeShaderRetained scsRetained = (SourceCodeShaderRetained) retained;
 
@@ -121,6 +123,7 @@ public class SourceCodeShader extends Shader {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 	super.duplicateAttributes(originalNodeComponent, forceDuplicate);

@@ -36,6 +36,7 @@ class TextureCubeMapRetained extends TextureRetained {
     static final int NUMFACES = 6;
 
 
+    @Override
     void initialize(int	format, int width, int widPower,
 			int height, int heiPower, int mipmapMode,
 			int boundaryWidth) {
@@ -229,10 +230,12 @@ class TextureCubeMapRetained extends TextureRetained {
     }
 
 
+    @Override
     void bindTexture(Context ctx, int objectId, boolean enable) {
         Pipeline.getPipeline().bindTextureCubeMap(ctx, objectId, enable);
     }
 
+    @Override
     void updateTextureBoundary(Context ctx,
             int boundaryModeS, int boundaryModeT,
             float boundaryRed, float boundaryGreen,
@@ -244,6 +247,7 @@ class TextureCubeMapRetained extends TextureRetained {
                 boundaryBlue, boundaryAlpha);
     }
 
+    @Override
     void updateTextureFilterModes(Context ctx,
             int minFilter, int magFilter) {
 
@@ -251,6 +255,7 @@ class TextureCubeMapRetained extends TextureRetained {
                 minFilter, magFilter);
     }
 
+    @Override
     void updateTextureSharpenFunc(Context ctx,
             int numSharpenTextureFuncPts,
             float[] sharpenTextureFuncPts) {
@@ -259,6 +264,7 @@ class TextureCubeMapRetained extends TextureRetained {
             numSharpenTextureFuncPts, sharpenTextureFuncPts);
     }
 
+    @Override
     void updateTextureFilter4Func(Context ctx,
             int numFilter4FuncPts,
             float[] filter4FuncPts) {
@@ -267,11 +273,13 @@ class TextureCubeMapRetained extends TextureRetained {
                 numFilter4FuncPts, filter4FuncPts);
     }
 
+    @Override
     void updateTextureAnisotropicFilter(Context ctx, float degree) {
         Pipeline.getPipeline().updateTextureCubeMapAnisotropicFilter(ctx, degree);
     }
 
 
+    @Override
     void updateTextureLodRange(Context ctx,
             int baseLevel, int maximumLevel,
             float minimumLod, float maximumLod) {
@@ -280,6 +288,7 @@ class TextureCubeMapRetained extends TextureRetained {
                 minimumLod, maximumLod);
     }
 
+    @Override
     void updateTextureLodOffset(Context ctx,
             float lodOffsetX, float lodOffsetY,
             float lodOffsetZ) {
@@ -293,6 +302,7 @@ class TextureCubeMapRetained extends TextureRetained {
      * Load level 0 explicitly with null data pointer to allow
      * mipmapping when level 0 is not the base level
      */
+    @Override
     void updateTextureDimensions(Canvas3D cv) {
         if(images[0][0] != null) {
             // All faces should have the same image format and type.
@@ -309,6 +319,7 @@ class TextureCubeMapRetained extends TextureRetained {
     }
 
     // This is just a wrapper of the native method.
+    @Override
     void updateTextureImage(Canvas3D cv,
             int face, int numLevels, int level,
             int textureFormat, int imageFormat,
@@ -324,6 +335,7 @@ class TextureCubeMapRetained extends TextureRetained {
     }
 
     // This is just a wrapper of the native method.
+    @Override
     void updateTextureSubImage(Canvas3D cv,
             int face, int level,
             int xoffset, int yoffset,

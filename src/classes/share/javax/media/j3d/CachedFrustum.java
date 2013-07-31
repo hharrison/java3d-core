@@ -104,6 +104,7 @@ class CachedFrustum {
     /**
      * Returns a string containing the values of the CachedFrustum.
      */
+    @Override
     public String toString() {
 	return( clipPlanes[0].toString()+"\n"+
 	        clipPlanes[1].toString()+"\n"+

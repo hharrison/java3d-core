@@ -293,6 +293,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
     }
 
     // Switch specific data at SetLive.
+    @Override
     void setAuxData(SetLiveState s, int index, int hkIndex) {
 	int size;
 	ArrayList<SwitchState> switchStates;
@@ -307,6 +308,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
         }
     }
 
+    @Override
     void setNodeData(SetLiveState s) {
         super.setNodeData(s);
         // add this node to parent's childSwitchLink
@@ -340,6 +342,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
         }
     }
 
+    @Override
     void setLive(SetLiveState s) {
     	int i,j,k;
         boolean switchOn;
@@ -412,6 +415,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
     }
 
 
+    @Override
     void removeNodeData(SetLiveState s) {
 
         int numChildren = children.size();
@@ -461,6 +465,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
 
 
     // synchronized with setWhichChild and setChildMask
+    @Override
     synchronized void clearLive(SetLiveState s) {
         Targets[] savedSwitchTargets = s.switchTargets;
 	s.switchTargets = null;
@@ -625,6 +630,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
     }
 
 
+    @Override
     void computeCombineBounds(Bounds bounds) {
         if (boundsAutoCompute) {
             if (!VirtualUniverse.mc.cacheAutoComputedBounds) {
@@ -703,6 +709,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
    * Gets the bounding object of a node.
    * @return the node's bounding object
    */
+    @Override
     Bounds getBounds() {
         if (boundsAutoCompute) {
             // Issue 514 : NPE in Wonderland : triggered in cached bounds computation
@@ -764,6 +771,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
      * Compiles the children of the switch, preventing shape merging at
      * this level or above
      */
+    @Override
     void compile(CompileState compState) {
 
 
@@ -777,6 +785,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
         }
     }
 
+    @Override
     void insertChildrenData(int index) {
         if (childrenSwitchStates == null) {
 		childrenSwitchStates = new ArrayList<ArrayList<SwitchState>>(1);
@@ -794,6 +803,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
         }
     }
 
+    @Override
     void appendChildrenData() {
         if (childrenSwitchStates == null) {
             childrenSwitchStates = new ArrayList<ArrayList<SwitchState>>(1);
@@ -810,6 +820,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
         }
     }
 
+    @Override
     void removeChildrenData(int index) {
 	ArrayList<SwitchState> oldSwitchStates = childrenSwitchStates.get(index);
         oldSwitchStates.clear();
@@ -820,6 +831,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
         childrenSwitchLinks.remove(index);
     }
 
+    @Override
     void childDoSetLive(NodeRetained child, int childIndex, SetLiveState s) {
 
         int numPaths = (inSharedGroup)? s.keys.length : 1;
@@ -861,12 +873,14 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
     // TargetsInterface methods
     // ***************************
 
+    @Override
     TargetsInterface getClosestTargetsInterface(int type) {
         return (type == TargetsInterface.SWITCH_TARGETS)?
                 (TargetsInterface)this:
                 (TargetsInterface)parentTransformLink;
     }
 
+    @Override
     public CachedTargets getCachedTargets(int type, int index, int child) {
         if (type == TargetsInterface.SWITCH_TARGETS) {
 		ArrayList<SwitchState> switchStates = childrenSwitchStates.get(child);
@@ -882,6 +896,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
         }
     }
 
+    @Override
     public void resetCachedTargets(int type,
 			CachedTargets[] newCtArr, int child) {
         if (type == TargetsInterface.SWITCH_TARGETS) {
@@ -901,6 +916,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
 	}
     }
 
+@Override
 public ArrayList<SwitchState> getTargetsData(int type, int child) {
 	if (type == TargetsInterface.SWITCH_TARGETS) {
 		return childrenSwitchStates.get(child);
@@ -911,27 +927,33 @@ public ArrayList<SwitchState> getTargetsData(int type, int child) {
 	}
 }
 
+    @Override
     public int getTargetThreads(int type) {
         System.err.println("getTargetsThreads: wrong arguments");
 	return -1;
     }
 
+    @Override
     public void updateCachedTargets(int type, CachedTargets[] newCt) {
         System.err.println("updateCachedTarget: wrong arguments");
     }
 
+    @Override
     public void computeTargetThreads(int type, CachedTargets[] newCt) {
         System.err.println("computeTargetThreads: wrong arguments");
     }
 
+    @Override
     public void updateTargetThreads(int type, CachedTargets[] newCt) {
         System.err.println("updateTargetThreads: wrong arguments");
     }
 
+    @Override
     public void propagateTargetThreads(int type, int newTargetThreads) {
         System.err.println("propagateTargetThreads: wrong arguments");
     }
 
+    @Override
     public void copyCachedTargets(int type, CachedTargets[] newCt) {
         System.err.println("copyCachedTarget: wrong arguments");
     }

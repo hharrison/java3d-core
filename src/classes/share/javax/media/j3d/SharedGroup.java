@@ -115,6 +115,7 @@ public class SharedGroup extends Group {
      * Creates the retained mode SharedGroupRetained object that this
      * SharedGroup component object will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new SharedGroupRetained();
         this.retained.setSource(this);
@@ -158,6 +159,7 @@ public class SharedGroup extends Group {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         SharedGroup sg = new SharedGroup();
         sg.duplicateNode(this, forceDuplicate);

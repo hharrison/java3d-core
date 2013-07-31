@@ -87,6 +87,7 @@ private ArrayList<TransformGroupRetained> dirtyTransformGroups = new ArrayList<T
 	super(u, J3dThread.UPDATE_TRANSFORM);
     }
 
+    @Override
     void processMessages(long referenceTime) {
 	J3dMessage[] messages = getMessages(referenceTime);
 	int nMsg = getNumMessage();
@@ -350,6 +351,7 @@ private ArrayList<TransformGroupRetained> dirtyTransformGroups = new ArrayList<T
     }
 
 
+    @Override
     public void updateObject() {
 	processLastLocalToVworld();
 	processLastSwitchOn();
@@ -703,6 +705,7 @@ private ArrayList<TransformGroupRetained> dirtyTransformGroups = new ArrayList<T
  	return lazyUpdate;
     }
 
+    @Override
     void removeNodes(J3dMessage m) {
 	if (m.args[1] != null) {
 	    TargetsInterface ti = (TargetsInterface)m.args[1];
@@ -712,6 +715,7 @@ private ArrayList<TransformGroupRetained> dirtyTransformGroups = new ArrayList<T
 	}
     }
 
+    @Override
     void cleanup() {}
 
     // Wrapper for a (TransformGroupRetained, Transform3D) pair

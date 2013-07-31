@@ -66,6 +66,7 @@ PipelineCreator(Type type) {
 	pipeType = type;
 }
 
+@Override
 public Pipeline run() {
 	try {
 		switch (pipeType) {

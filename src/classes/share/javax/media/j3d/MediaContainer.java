@@ -140,6 +140,7 @@ public class MediaContainer extends NodeComponent {
      * Creates the retained mode MediaContainerRetained object that this
      * component object will point to.
      */
+    @Override
     void createRetained() {
         this.retained = new MediaContainerRetained();
         this.retained.setSource(this);
@@ -307,6 +308,7 @@ public class MediaContainer extends NodeComponent {
      * @deprecated As of Java 3D version 1.2, replaced with
      * <code>cloneNodeComponent(boolean forceDuplicate)</code>
      */
+    @Override
     public NodeComponent cloneNodeComponent() {
         MediaContainer mc = new MediaContainer();
         mc.duplicateNodeComponent(this);
@@ -335,6 +337,7 @@ public class MediaContainer extends NodeComponent {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(NodeComponent originalNodeComponent,
 			     boolean forceDuplicate) {
 

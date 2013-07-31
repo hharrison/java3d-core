@@ -613,6 +613,7 @@ public Enumeration<Group> getAllScopes() {
      * Creates the retained mode ModelClipRetained object that
      * this ModelClip node will point to.
      */
+    @Override
     void createRetained() {
 	this.retained = new ModelClipRetained();
         this.retained.setSource(this);
@@ -634,6 +635,7 @@ public Enumeration<Group> getAllScopes() {
      * @see Node#duplicateNode
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     public Node cloneNode(boolean forceDuplicate) {
         ModelClip c = new ModelClip();
         c.duplicateNode(this, forceDuplicate);
@@ -666,6 +668,7 @@ public Enumeration<Group> getAllScopes() {
      * @see Node#cloneTree
      * @see DanglingReferenceException
      */
+    @Override
     public void updateNodeReferences(NodeReferenceTable referenceTable) {
 	ModelClipRetained rt = (ModelClipRetained) retained;
         BoundingLeaf bl = rt.getInfluencingBoundingLeaf();
@@ -705,6 +708,7 @@ public Enumeration<Group> getAllScopes() {
      * @see Node#cloneTree
      * @see NodeComponent#setDuplicateOnCloneTree
      */
+    @Override
     void duplicateAttributes(Node originalNode, boolean forceDuplicate) {
         super.duplicateAttributes(originalNode, forceDuplicate);
 

@@ -136,6 +136,7 @@ ArrayList<ArrayList<OrderedPath>> childrenOrderedPaths = new ArrayList<ArrayList
 	return count;
     }
 
+    @Override
     void addChild(Node child) {
 	if(userChildIndexOrder != null) {
 	    doAddChildIndexEntry();
@@ -164,6 +165,7 @@ ArrayList<ArrayList<OrderedPath>> childrenOrderedPaths = new ArrayList<ArrayList
 
     }
 
+    @Override
     void moveTo(BranchGroup bg) {
 	if(userChildIndexOrder != null) {
 	    doAddChildIndexEntry();
@@ -209,6 +211,7 @@ ArrayList<ArrayList<OrderedPath>> childrenOrderedPaths = new ArrayList<ArrayList
      * Compiles the children of the OrderedGroup, preventing shape merging at
      * this level or above
      */
+    @Override
     void compile(CompileState compState) {
 
         super.compile(compState);
@@ -307,6 +310,7 @@ OrderedBin getOrderedBin(int index) {
 
     }
 
+    @Override
     void setAuxData(SetLiveState s, int index, int hkIndex) {
         OrderedPath setLiveStateOrderedPath = s.orderedPaths.get(hkIndex);
         for (int i=0; i<children.size(); i++) {
@@ -324,6 +328,7 @@ OrderedBin getOrderedBin(int index) {
     }
 
 
+    @Override
     void setLive(SetLiveState s) {
 	super.setLive(s);
         s.orderedPaths = orderedPaths;
@@ -337,6 +342,7 @@ OrderedBin getOrderedBin(int index) {
 	}
     }
 
+    @Override
     void clearLive(SetLiveState s) {
 	super.clearLive(s);
 	// This is used to clear the childIdTable and set the orderedBin
@@ -353,6 +359,7 @@ OrderedBin getOrderedBin(int index) {
         s.orderedPaths = orderedPaths;
     }
 
+    @Override
     void setNodeData(SetLiveState s) {
         super.setNodeData(s);
         if (!inSharedGroup) {
@@ -377,6 +384,7 @@ OrderedBin getOrderedBin(int index) {
         // for each of its children
     }
 
+    @Override
     void removeNodeData(SetLiveState s) {
 
         if((inSharedGroup) && (s.keys.length != localToVworld.length)) {
@@ -443,14 +451,17 @@ OrderedBin getOrderedBin(int index) {
 	System.err.println("");
    }
 
+    @Override
     void insertChildrenData(int index) {
         childrenOrderedPaths.add(index, new ArrayList<OrderedPath>(1));
     }
 
+    @Override
     void appendChildrenData() {
         childrenOrderedPaths.add(new ArrayList<OrderedPath>(1));
     }
 
+    @Override
     void doRemoveChild(int index, J3dMessage messages[], int messageIndex) {
 
     	if(userChildIndexOrder != null) {
@@ -461,10 +472,12 @@ OrderedBin getOrderedBin(int index) {
 
     }
 
+    @Override
     void removeChildrenData(int index) {
         childrenOrderedPaths.remove(index);
     }
 
+    @Override
     void childDoSetLive(NodeRetained child, int childIndex, SetLiveState s) {
         if (refCount == s.refCount) {
             s.ogList.add(this);
@@ -476,6 +489,7 @@ OrderedBin getOrderedBin(int index) {
             child.setLive(s);
     }
 
+    @Override
     void childCheckSetLive(NodeRetained child, int childIndex,
                                 SetLiveState s, NodeRetained linkNode) {
         ArrayList<OrderedPath> childOrderedPaths;

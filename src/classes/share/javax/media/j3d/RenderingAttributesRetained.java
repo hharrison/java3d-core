@@ -525,6 +525,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
     * Creates and initializes a mirror object, point the mirror object
     * to the retained object if the object is not editable
     */
+    @Override
     synchronized void createMirrorObject() {
 	if (mirror == null) {
 	    // Check the capability bits and let the mirror object
@@ -548,6 +549,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
     * Initializes a mirror object, point the mirror object to the retained
     * object if the object is not editable
     */
+    @Override
     synchronized void initMirrorObject() {
 	((RenderingAttributesRetained)mirror).set(this);
     }
@@ -556,6 +558,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
      * Update the "component" field of the mirror object with the
      *  given "value"
      */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 	RenderingAttributesRetained mirrorRa = (RenderingAttributesRetained)mirror;
 
@@ -692,6 +695,7 @@ class RenderingAttributesRetained extends NodeComponentRetained {
     }
 
     // TODO : Need to handle stencil operation -- Chien
+    @Override
     void handleFrequencyChange(int bit) {
 	int mask = 0;
 

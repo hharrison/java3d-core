@@ -329,6 +329,7 @@ class ImageComponent2DRetained extends ImageComponentRetained {
 	}
     }
 
+    @Override
     void clearLive(int refCount) {
 	super.clearLive(refCount);
     }

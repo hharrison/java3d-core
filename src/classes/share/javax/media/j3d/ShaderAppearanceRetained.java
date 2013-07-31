@@ -140,6 +140,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
     }
 
 
+    @Override
     public boolean equals(Object obj) {
 	return ((obj instanceof ShaderAppearanceRetained) &&
 	 	equals((ShaderAppearanceRetained) obj));
@@ -168,6 +169,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 
 
 
+    @Override
     synchronized void createMirrorObject() {
 	// System.err.println("ShaderAppearanceRetained : createMirrorObject()");
 
@@ -187,6 +189,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
      * It also calls the update method for each node component if it
      * is not null.
      */
+    @Override
     synchronized void initMirrorObject() {
 	// System.err.println("ShaderAppearanceRetained : initMirrorObject()");
 
@@ -216,6 +219,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
    * Update the "component" field of the mirror object with the
    *  given "value"
    */
+    @Override
     synchronized void updateMirrorObject(int component, Object value) {
 
 //	System.err.println("ShaderAppearanceRetained : updateMirrorObject(): " +
@@ -235,6 +239,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
      * This method calls the setLive method of all appearance bundle
      * objects.
      */
+    @Override
     void doSetLive(boolean backgroundGroup, int refCount) {
 	// System.err.println("ShaderAppearceRetained.doSetLive()");
 
@@ -258,6 +263,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
      * This clearLive routine first calls the superclass's method, then
      * it removes itself to the list of lights
      */
+    @Override
     void clearLive(int refCount) {
 	super.clearLive(refCount);
 
@@ -270,6 +276,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	}
     }
 
+    @Override
     synchronized void addAMirrorUser(Shape3DRetained shape) {
 
 	super.addAMirrorUser(shape);
@@ -279,6 +286,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	    shaderAttributeSet.addAMirrorUser(shape);
     }
 
+    @Override
     synchronized void removeAMirrorUser(Shape3DRetained shape) {
 
 	super.removeAMirrorUser(shape);
@@ -326,6 +334,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
     }
 
 
+    @Override
     boolean isStatic() {
 	if (!super.isStatic()) {
 	    return false;
@@ -343,6 +352,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 
     // Issue 209 - implement the compile method
     // Simply pass along to the NodeComponents
+    @Override
     void compile(CompileState compState) {
 	super.compile(compState);
 
@@ -355,6 +365,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	}
     }
 
+    @Override
     boolean isOpaque(int geoType) {
 
 	if (!super.isOpaque(geoType)) {
@@ -366,6 +377,7 @@ class ShaderAppearanceRetained extends AppearanceRetained {
 	return true;
     }
 
+    @Override
     void handleFrequencyChange(int bit) {
 	// System.err.println("ShaderAppearanceRetained : handleFrequencyChange()");
 	super.handleFrequencyChange(bit);
