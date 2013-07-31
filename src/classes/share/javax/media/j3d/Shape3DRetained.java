@@ -174,8 +174,8 @@ ArrayList<GeometryRetained> geometryList = null;
     // a path of OrderedGroup, childrenId pairs which leads to this node
     OrderedPath orderedPath = null;
 
-    // List of views that a mirror object is scoped to
-    ArrayList viewList = null;
+// List of views that a mirror object is scoped to
+ArrayList<View> viewList = null;
 
     int changedFrequent = 0;
 
