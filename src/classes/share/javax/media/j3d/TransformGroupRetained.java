@@ -79,9 +79,9 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
      */
     WakeupIndexedList transformChange = null;
 
-    // The current list of child transform group nodes or link nodes
-    // under a transform group
-    ArrayList childTransformLinks = new ArrayList(1);
+// The current list of child transform group nodes or link nodes
+// under a transform group
+ArrayList<NodeRetained> childTransformLinks = new ArrayList<NodeRetained>(1);
 
     // working area while compile
     boolean needNormalsTransform = false; // true if normals transformation
@@ -560,7 +560,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
       currentTransform.set(trans);
 
 
-      ArrayList savedChildTransformLinks = s.childTransformLinks;
+      ArrayList<NodeRetained> savedChildTransformLinks = s.childTransformLinks;
       GroupRetained savedParentTransformLink = s.parentTransformLink;
       Transform3D[][] oldCurrentList = s.currentTransforms;
       int[][] oldCurrentIndexList = s.currentTransformsIndex;
@@ -651,7 +651,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
 
                 if (parentTransformLink != null) {
-                    ArrayList obj;
+                    ArrayList<NodeRetained> obj;
                     if (parentTransformLink
                         instanceof TransformGroupRetained) {
                         obj = ((TransformGroupRetained)
@@ -880,7 +880,6 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 				  ArrayList blUsers) {
 
 	int i, j;
-	Object obj;
 	Transform3D lToVw, childLToVw;
 	TransformGroupRetained tg;
 	LinkRetained ln;
@@ -917,7 +916,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 		// transformLink may contain link nodes
 		synchronized(childTransformLinks) {
 		    for (i=0; i<childTransformLinks.size(); i++) {
-			obj = childTransformLinks.get(i);
+			NodeRetained obj = childTransformLinks.get(i);
 
 			if (obj instanceof TransformGroupRetained) {
 			    tg = (TransformGroupRetained)obj;
@@ -959,7 +958,6 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 				  UpdateTargets targets,
 				  ArrayList blUsers) {
 	int i, j;
-	Object obj;
 	Transform3D lToVw, childLToVw;
 	TransformGroupRetained tg;
         LinkRetained ln;
@@ -995,7 +993,7 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 		// and link nodes
 		synchronized(childTransformLinks) {
 		    for (i=0; i<childTransformLinks.size(); i++) {
-			obj = childTransformLinks.get(i);
+			NodeRetained obj = childTransformLinks.get(i);
 
 			if (obj instanceof TransformGroupRetained) {
 			    tg = (TransformGroupRetained)obj;
@@ -1159,10 +1157,8 @@ class TransformGroupRetained extends GroupRetained implements TargetsInterface
 
             int numLinks = childTransformLinks.size();
             TargetsInterface childLink;
- 	    NodeRetained node;
             for(int i=0; i<numLinks; i++) {
-
-                node = (NodeRetained)childTransformLinks.get(i);
+            	NodeRetained node = childTransformLinks.get(i);
     	        if (node.nodeType == NodeRetained.LINK) {
 		    childLink = (TargetsInterface)
 				((LinkRetained)node).sharedGroup;

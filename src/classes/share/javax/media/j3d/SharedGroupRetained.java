@@ -49,9 +49,9 @@ class SharedGroupRetained extends GroupRetained implements TargetsInterface {
                           1 << NodeRetained.BOUNDINGLEAF;
     */
 
-    // The current list of child transform group nodes or link nodes
-    // under a transform group
-    ArrayList childTransformLinks = new ArrayList(1);
+// The current list of child transform group nodes or link nodes
+// under a transform group
+ArrayList<NodeRetained> childTransformLinks = new ArrayList<NodeRetained>(1);
 
     // key which identifies a unique path from a
     // locale to this transform group
@@ -286,7 +286,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
 	ArrayList<SwitchState> savedSwitchStates = s.switchStates;
         ArrayList savedChildSwitchLinks = s.childSwitchLinks;
         GroupRetained savedParentSwitchLink = s.parentSwitchLink;
-        ArrayList savedChildTransformLinks = s.childTransformLinks;
+        ArrayList<NodeRetained> savedChildTransformLinks = s.childTransformLinks;
         GroupRetained savedParentTransformLink = s.parentTransformLink;
         int[] savedHashkeyIndex = s.hashkeyIndex;
 

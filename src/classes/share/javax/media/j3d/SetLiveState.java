@@ -150,9 +150,9 @@ ArrayList<BranchGroupRetained[]> parentBranchGroupPaths = null;
     // behavior nodes
     ArrayList behaviorNodes = new ArrayList(1);
 
-    // The current list of child transform group nodes or link nodes
-    // under a transform group
-    ArrayList childTransformLinks = null;
+// The current list of child transform group nodes or link nodes
+// under a transform group
+ArrayList<NodeRetained> childTransformLinks = null;
 
     // closest parent which is a TransformGroupRetained or sharedGroupRetained
     GroupRetained parentTransformLink = null;

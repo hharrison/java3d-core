@@ -246,7 +246,7 @@ class LinkRetained extends LeafRetained {
 	    // either not in sharedGroup or last instance in sharedGroup
             // remove this node from parentTransformLink's childTransformLink
             if (parentTransformLink != null) {
-                ArrayList obj;
+                ArrayList<NodeRetained> obj;
                 if (parentTransformLink instanceof TransformGroupRetained) {
                     obj = ((TransformGroupRetained)
                         parentTransformLink).childTransformLinks;
