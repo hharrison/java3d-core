@@ -73,7 +73,7 @@ public class PickInfo extends Object {
     private IntersectionInfo[] intersectionInfoArr;
 
     /* The following references are for internal geometry computation use only */
-    private ArrayList intersectionInfoList = new ArrayList();
+    private ArrayList<IntersectionInfo> intersectionInfoList = new ArrayList<IntersectionInfo>();
     private boolean intersectionInfoListSorted = false;
     private Transform3D l2vwRef;
     private Node nodeRef;
@@ -359,8 +359,7 @@ public class PickInfo extends Object {
     public IntersectionInfo[] getIntersectionInfos() {
         if (intersectionInfoListSorted == false) {
             intersectionInfoArr = new IntersectionInfo[intersectionInfoList.size()];
-            intersectionInfoArr =
-                    (IntersectionInfo []) intersectionInfoList.toArray(intersectionInfoArr);
+            intersectionInfoArr = intersectionInfoList.toArray(intersectionInfoArr);
 
             sortIntersectionInfoArray(intersectionInfoArr);
          }
@@ -368,30 +367,30 @@ public class PickInfo extends Object {
         return intersectionInfoArr;
     }
 
-    /**
-     * Search the path from nodeR up to Locale.
-     * Return the search path as ArrayList if found.
-     * Note that the locale will not insert into path.
-     */
-    static ArrayList initSceneGraphPath(NodeRetained nodeR) {
-	ArrayList path = new ArrayList(5);
+/**
+ * Search the path from nodeR up to Locale.
+ * Return the search path as ArrayList if found.
+ * Note that the locale will not insert into path.
+ */
+static ArrayList<NodeRetained> initSceneGraphPath(NodeRetained nodeR) {
+	ArrayList<NodeRetained> path = new ArrayList<NodeRetained>(5);
 
 	do {
-	    if (nodeR.source.getCapability(Node.ENABLE_PICK_REPORTING)){
-		path.add(nodeR);
-	    }
-	    nodeR = nodeR.parent;
-	} while (nodeR != null);  // reach Locale
+		if (nodeR.source.getCapability(Node.ENABLE_PICK_REPORTING)) {
+			path.add(nodeR);
+		}
+		nodeR = nodeR.parent;
+	} while (nodeR != null); // reach Locale
 
 	return path;
-    }
+}
 
     static private Node[] createPath(NodeRetained srcNode,
 				     BranchGroupRetained bgRetained,
 				     GeometryAtom geomAtom,
-				     ArrayList initpath) {
+				     ArrayList<NodeRetained> initpath) {
 
-        ArrayList path = retrievePath(srcNode, bgRetained,
+        ArrayList<NodeRetained> path = retrievePath(srcNode, bgRetained,
 				      geomAtom.source.key);
         assert(path != null);
 
@@ -425,11 +424,11 @@ public class PickInfo extends Object {
      * including, endNode or return null if endNode not hit
      * during the search.
      */
-    static private ArrayList retrievePath(NodeRetained startNode,
+    static private ArrayList<NodeRetained> retrievePath(NodeRetained startNode,
 					  NodeRetained endNode,
 					  HashKey key) {
 
-	ArrayList path = new ArrayList(5);
+	ArrayList<NodeRetained> path = new ArrayList<NodeRetained>(5);
 	NodeRetained nodeR = startNode;
 
 	if (nodeR.inSharedGroup) {
@@ -487,7 +486,7 @@ public class PickInfo extends Object {
      * copy p1, (follow by) p2 into a new array, p2 can be null
      * The path is then reverse before return.
      */
-    static private Node[] mergePath(ArrayList p1, ArrayList p2) {
+    static private Node[] mergePath(ArrayList<NodeRetained> p1, ArrayList<NodeRetained> p2) {
 	int s = p1.size();
 	int len;
 	int i;
@@ -501,10 +500,10 @@ public class PickInfo extends Object {
 	Node nodes[] = new Node[len];
 	l = len-1;
 	for (i=0; i < s; i++) {
-	    nodes[l-i] = (Node) ((NodeRetained) p1.get(i)).source;
+	    nodes[l-i] = (Node)p1.get(i).source;
 	}
 	for (int j=0; i< len; i++, j++) {
-	    nodes[l-i] = (Node) ((NodeRetained) p2.get(j)).source;
+	    nodes[l-i] = (Node)p2.get(j).source;
 	}
 	return nodes;
     }
@@ -593,12 +592,12 @@ public class PickInfo extends Object {
      * Otherwise, the path is search up to node or
      * null is return if it is not hit.
      */
-    static ArrayList getPickInfos(ArrayList initpath,
+    static ArrayList<PickInfo> getPickInfos(ArrayList<NodeRetained> initpath,
                                   BranchGroupRetained bgRetained,
 				  GeometryAtom geomAtoms[],
 			          Locale locale, int flags, int pickType) {
 
-        ArrayList pickInfoList = new ArrayList(5);
+        ArrayList<PickInfo> pickInfoList = new ArrayList<PickInfo>(5);
         NodeRetained srcNode;
         ArrayList text3dList = null;
 
@@ -797,8 +796,7 @@ public class PickInfo extends Object {
         PickInfo[] pickInfoArr = null;
         Locale locale = null;
         BranchGroupRetained bgRetained = null;
-        ArrayList initPath = null;
-        ArrayList pickInfoList = null;
+        ArrayList<PickInfo> pickInfoList = null;
 
         if (node instanceof Locale) {
             locale = (Locale) node;
@@ -808,6 +806,7 @@ public class PickInfo extends Object {
             locale = bgRetained.locale;
         }
         synchronized (locale.universe.sceneGraphLock) {
+            ArrayList<NodeRetained> initPath = null;
             if ( bgRetained != null) {
                 initPath = initSceneGraphPath(bgRetained);
             }
@@ -820,12 +819,11 @@ public class PickInfo extends Object {
 	   ((pickInfoListSize = pickInfoList.size()) > 0)) {
 
             //System.err.println("PickInfo.pick() - In geometry case : pickInfoList.size() is " + pickInfoListSize);
-            PickInfo pickInfo = null;
             Node pickNode = null;
 
             // Order is impt. Need to do in reverse order.
             for(int i = pickInfoListSize - 1; i >= 0; i--) {
-                pickInfo = (PickInfo) pickInfoList.get(i);
+            	PickInfo pickInfo = pickInfoList.get(i);
 
                 pickNode = pickInfo.getNode();
                 if( pickNode == null) {
@@ -970,7 +968,7 @@ public class PickInfo extends Object {
 	    // System.err.println("   ---  : pickInfoList's sgp " +
 	    // ((PickInfo)(pickInfoList.get(0))).getSceneGraphPath());
 	    pickInfoArr = new PickInfo[pickInfoList.size()];
-	    return (PickInfo []) pickInfoList.toArray(pickInfoArr);
+	    return pickInfoList.toArray(pickInfoArr);
 	}
 
 	return null;
