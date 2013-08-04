@@ -354,7 +354,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
 	ArrayList<SwitchState> savedSwitchStates = s.switchStates;
         SwitchRetained[] savedClosestSwitchParents = s.closestSwitchParents;
         int[] savedClosestSwitchIndices = s.closestSwitchIndices;
-        ArrayList savedChildSwitchLinks = s.childSwitchLinks;
+        ArrayList<NodeRetained> savedChildSwitchLinks = s.childSwitchLinks;
         GroupRetained savedParentSwitchLink = s.parentSwitchLink;
         int[] savedHashkeyIndex = s.hashkeyIndex;
 
@@ -425,11 +425,9 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
 	if (refCount <= 0) {
         // remove this node from parentSwitchLink's childSwitchLinks
         // clear childSwitchLinks
-            ArrayList switchLinks;
             if (parentSwitchLink != null) {
                 for(i=0; i<parentSwitchLink.childrenSwitchLinks.size();i++) {
-                    switchLinks = (ArrayList)
-                                parentSwitchLink.childrenSwitchLinks.get(i);
+                    ArrayList<NodeRetained> switchLinks = parentSwitchLink.childrenSwitchLinks.get(i);
                     if (switchLinks.contains(this)) {
                         switchLinks.remove(this);
                         break;
@@ -516,7 +514,6 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
 	SwitchRetained sw;
 	LinkRetained ln;
 	Object obj;
-        ArrayList childSwitchLinks;
 
 	boolean newSwChanged = false;
         ArrayList<SwitchState> childSwitchStates = childrenSwitchStates.get(child);
@@ -542,7 +539,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
         }
 
 
-        childSwitchLinks = (ArrayList)childrenSwitchLinks.get(child);
+	ArrayList<NodeRetained> childSwitchLinks = childrenSwitchLinks.get(child);
 	int cslSize =childSwitchLinks.size();
         for (i=0; i<cslSize; i++) {
 
@@ -789,10 +786,10 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
     void insertChildrenData(int index) {
         if (childrenSwitchStates == null) {
 		childrenSwitchStates = new ArrayList<ArrayList<SwitchState>>(1);
-            childrenSwitchLinks = new ArrayList(1);
+            childrenSwitchLinks = new ArrayList<ArrayList<NodeRetained>>(1);
         }
 
-        childrenSwitchLinks.add(index, new ArrayList(1));
+        childrenSwitchLinks.add(index, new ArrayList<NodeRetained>(1));
 
 	ArrayList<SwitchState> switchStates = new ArrayList<SwitchState>(1);
         childrenSwitchStates.add(index, switchStates);
@@ -807,9 +804,9 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
     void appendChildrenData() {
         if (childrenSwitchStates == null) {
             childrenSwitchStates = new ArrayList<ArrayList<SwitchState>>(1);
-            childrenSwitchLinks = new ArrayList(1);
+            childrenSwitchLinks = new ArrayList<ArrayList<NodeRetained>>(1);
         }
-        childrenSwitchLinks.add(new ArrayList(1));
+        childrenSwitchLinks.add(new ArrayList<NodeRetained>(1));
 
         ArrayList<SwitchState> switchStates = new ArrayList<SwitchState>(1);
         childrenSwitchStates.add(switchStates);
@@ -826,7 +823,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
         oldSwitchStates.clear();
         childrenSwitchStates.remove(index);
 
-        ArrayList oldSwitchLinks = (ArrayList)childrenSwitchLinks.get(index);
+        ArrayList<NodeRetained> oldSwitchLinks = childrenSwitchLinks.get(index);
         oldSwitchLinks.clear();
         childrenSwitchLinks.remove(index);
     }
@@ -835,7 +832,7 @@ void updateSwitchChild(int child, boolean switchOn, ArrayList<SwitchState> updat
     void childDoSetLive(NodeRetained child, int childIndex, SetLiveState s) {
 
         int numPaths = (inSharedGroup)? s.keys.length : 1;
-        s.childSwitchLinks = (ArrayList)childrenSwitchLinks.get(childIndex);
+        s.childSwitchLinks = childrenSwitchLinks.get(childIndex);
         for (int j=0; j< numPaths; j++) {
             s.closestSwitchIndices[j] = switchIndexCount;
             s.closestSwitchParents[j] = this;

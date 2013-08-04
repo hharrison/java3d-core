@@ -170,9 +170,9 @@ ArrayList<NodeRetained> childTransformLinks = null;
     // The current list of leaf nodes for switch targets
     Targets[] switchTargets = null;
 
-    // The current list of closest child switch nodes or
-    // link nodes under a switch node
-    ArrayList childSwitchLinks = null;
+// The current list of closest child switch nodes or
+// link nodes under a switch node
+ArrayList<NodeRetained> childSwitchLinks = null;
 
     // closest parent which is a SwitchRetained or sharedGroupRetained
     GroupRetained parentSwitchLink = null;

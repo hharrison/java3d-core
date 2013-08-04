@@ -72,8 +72,8 @@ ArrayList<ArrayList<AlternateAppearanceRetained>> altAppearances = null;
     // indicates whether this Group node can be the target of a collision
     boolean collisionTarget = false;
 
-    // per child switchLinks
-    ArrayList childrenSwitchLinks = null;
+// per child switchLinks
+ArrayList<ArrayList<NodeRetained>> childrenSwitchLinks = null;
 
     // the immediate childIndex of a parentSwitchLink
     int parentSwitchLinkChildIndex = -1;
@@ -1994,21 +1994,20 @@ synchronized void setAltAppScope() {
 	    // set switch states
             if (nodeType == NodeRetained.SWITCH) {
                 i = parentSwitchLinkChildIndex;
-                s.childSwitchLinks = (ArrayList)childrenSwitchLinks.get(i);
+                s.childSwitchLinks = childrenSwitchLinks.get(i);
                 s.parentSwitchLink = this;
 
             } else {
                 if (nodeType == NodeRetained.SHAREDGROUP) {
                     i = parentSwitchLinkChildIndex;
-                    s.childSwitchLinks = (ArrayList)childrenSwitchLinks.get(i);
+                    s.childSwitchLinks = childrenSwitchLinks.get(i);
                     s.parentSwitchLink = this;
 
                 } else {
 		    s.parentSwitchLink = parentSwitchLink;
                     if (parentSwitchLink != null) {
                         i = parentSwitchLinkChildIndex;
-                        s.childSwitchLinks = (ArrayList)
-                                parentSwitchLink.childrenSwitchLinks.get(i);
+                        s.childSwitchLinks = parentSwitchLink.childrenSwitchLinks.get(i);
                     }
                 }
             }

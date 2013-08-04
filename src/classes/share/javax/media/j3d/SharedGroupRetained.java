@@ -284,7 +284,7 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
 	SharedGroupRetained savedLastSharedGroup = s.lastSharedGroup;
         Targets[] savedSwitchTargets = s.switchTargets;
 	ArrayList<SwitchState> savedSwitchStates = s.switchStates;
-        ArrayList savedChildSwitchLinks = s.childSwitchLinks;
+        ArrayList<NodeRetained> savedChildSwitchLinks = s.childSwitchLinks;
         GroupRetained savedParentSwitchLink = s.parentSwitchLink;
         ArrayList<NodeRetained> savedChildTransformLinks = s.childTransformLinks;
         GroupRetained savedParentTransformLink = s.parentTransformLink;
@@ -594,10 +594,9 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
         SwitchRetained sw;
         LinkRetained ln;
         Object obj;
-        ArrayList childSwitchLinks;
 	int i,j,k;
 
-        childSwitchLinks = (ArrayList)childrenSwitchLinks.get(child);
+        ArrayList<NodeRetained> childSwitchLinks = childrenSwitchLinks.get(child);
         for (i=0; i<childSwitchLinks.size(); i++) {
             obj = childSwitchLinks.get(i);
 
@@ -702,22 +701,22 @@ Vector<NodeRetained> parents = new Vector<NodeRetained>(1);
     @Override
     void insertChildrenData(int index) {
         if (childrenSwitchLinks == null) {
-            childrenSwitchLinks = new ArrayList(1);
+            childrenSwitchLinks = new ArrayList<ArrayList<NodeRetained>>(1);
         }
-        childrenSwitchLinks.add(index, new ArrayList(1));
+        childrenSwitchLinks.add(index, new ArrayList<NodeRetained>(1));
     }
 
     @Override
     void appendChildrenData() {
         if (childrenSwitchLinks == null) {
-            childrenSwitchLinks = new ArrayList(1);
+            childrenSwitchLinks = new ArrayList<ArrayList<NodeRetained>>(1);
         }
-        childrenSwitchLinks.add(new ArrayList(1));
+        childrenSwitchLinks.add(new ArrayList<NodeRetained>(1));
     }
 
     @Override
     void removeChildrenData(int index) {
-        ArrayList oldSwitchLinks = (ArrayList)childrenSwitchLinks.get(index);
+        ArrayList<NodeRetained> oldSwitchLinks = childrenSwitchLinks.get(index);
         oldSwitchLinks.clear();
         childrenSwitchLinks.remove(index);
     }
@@ -894,7 +893,7 @@ public ArrayList<SwitchState> getTargetsData(int type, int index) {
     void childDoSetLive(NodeRetained child, int childIndex, SetLiveState s) {
 
 	int i;
-        s.childSwitchLinks = (ArrayList)childrenSwitchLinks.get(childIndex);
+        s.childSwitchLinks = childrenSwitchLinks.get(childIndex);
         s.switchStates = switchStates;
 
         if(child!=null)

@@ -261,10 +261,8 @@ class LinkRetained extends LeafRetained {
 
             // remove this node from parentSwitchLink's childSwitchLink
             if (parentSwitchLink != null) {
-                ArrayList switchLinks;
                 for(int i=0; i<parentSwitchLink.childrenSwitchLinks.size();i++){
-                    switchLinks = (ArrayList)
-                                parentSwitchLink.childrenSwitchLinks.get(i);
+                	ArrayList<NodeRetained> switchLinks = parentSwitchLink.childrenSwitchLinks.get(i);
                     if (switchLinks.contains(this)) {
                         switchLinks.remove(this);
                         break;
