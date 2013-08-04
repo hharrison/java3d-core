@@ -1641,8 +1641,7 @@ synchronized void setAltAppScope() {
 	    int sz = s.behaviorNodes.size();
 
             for (int i=0; i < sz; i++) {
-                BehaviorRetained b;
-                b = (BehaviorRetained)s.behaviorNodes.get(i);
+                BehaviorRetained b = s.behaviorNodes.get(i);
                 b.executeInitialize();
             }
 

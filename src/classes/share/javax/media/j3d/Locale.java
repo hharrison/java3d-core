@@ -260,8 +260,7 @@ Vector<BranchGroup> branchGroups = new Vector<BranchGroup>();
 
 	int sz = s.behaviorNodes.size();
 	for (int i=0; i< sz; i++) {
-	    BehaviorRetained b;
-	    b = (BehaviorRetained)s.behaviorNodes.get(i);
+	    BehaviorRetained b = s.behaviorNodes.get(i);
 	    b.executeInitialize();
 	}
 
@@ -535,15 +534,16 @@ Vector<BranchGroup> branchGroups = new Vector<BranchGroup>();
 	}
         VirtualUniverse.mc.processMessage(createMessage);
 
-	Object behaviorNodes[] = universe.setLiveState.behaviorNodes.toArray();
+	BehaviorRetained[] behavNodes = new BehaviorRetained[universe.setLiveState.behaviorNodes.size()];
+	behavNodes = universe.setLiveState.behaviorNodes.toArray(behavNodes);
 
 	if (universe.isEmpty()) {
 	    VirtualUniverse.mc.postRequest(MasterControl.EMPTY_UNIVERSE,
 					   universe);
 	}
 
-        for (int i=0; i< behaviorNodes.length; i++) {
-            ((BehaviorRetained) behaviorNodes[i]).executeInitialize();
+        for (int i=0; i< behavNodes.length; i++) {
+            behavNodes[i].executeInitialize();
         }
 
 	createMessage = new J3dMessage();

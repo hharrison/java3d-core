@@ -147,8 +147,8 @@ ArrayList<BranchGroupRetained[]> parentBranchGroupPaths = null;
     // background node whose geometry branch contains this node
     BackgroundRetained geometryBackground = null;
 
-    // behavior nodes
-    ArrayList behaviorNodes = new ArrayList(1);
+// behavior nodes
+ArrayList<BehaviorRetained> behaviorNodes = new ArrayList<BehaviorRetained>(1);
 
 // The current list of child transform group nodes or link nodes
 // under a transform group
@@ -221,7 +221,7 @@ ArrayList<SwitchState> switchStates = null;
 	changedViewList = null;
 	keyList = null;
 
-        behaviorNodes.clear();
+	behaviorNodes.clear();
 	traverseFlags = 0;
 
 	ogList.clear();
