@@ -27,7 +27,7 @@
 package javax.media.j3d;
 
 
-class TransparentRenderingInfo extends Object implements com.sun.j3d.utils.scenegraph.transparency.TransparencySortGeom {
+class TransparentRenderingInfo extends Object implements TransparencySortGeom {
     // For DepthSortedTransparency, rm is the rendermolecule
     // that this rInfo is part of
     // For non depth sorted transparency, rm is one of the rendermolecules

@@ -182,7 +182,7 @@ ArrayList<RenderAtom> positionDirtyList = new ArrayList<RenderAtom>(5);
      */
     View view = null;
 
-    private Comparator transparencySortComparator = null;
+    private Comparator<TransparencySortGeom> transparencySortComparator = null;
 
 private ArrayList<TextureRetained> toBeAddedTextureResourceFreeList = new ArrayList<TextureRetained>(5);
 private ArrayList<Integer> displayListResourceFreeList = new ArrayList<Integer>(5);
@@ -6449,7 +6449,7 @@ void addGeometryDlist(RenderAtomListInfo ra) {
 
 
     TransparentRenderingInfo depthSortAll(TransparentRenderingInfo startinfo) {
-        transparencySortComparator = com.sun.j3d.utils.scenegraph.transparency.TransparencySortController.getComparator(view);
+        transparencySortComparator = TransparencySortMap.getComparator(view);
 	TransparentRenderingInfo tinfo, previnfo, nextinfo;
 	double curZ;
 	//	System.err.println("&&&&&&&&&&&depthSortAll");
