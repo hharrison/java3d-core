@@ -3533,7 +3533,7 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 			m[k].args[1] = this;
 			m[k].args[2]= null;
 			m[k].args[3] = new Integer(changedFrequent);
-			m[k].universe=(VirtualUniverse)universeList.get(i);
+			m[k].universe = universeList.get(i);
 		    }
 		    VirtualUniverse.mc.processMessage(m);
 		}

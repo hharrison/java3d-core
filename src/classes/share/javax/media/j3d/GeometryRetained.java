@@ -90,8 +90,8 @@ abstract class GeometryRetained extends NodeComponentRetained {
     // indicates whether the geometry in editable
     boolean isEditable = true;
 
-    // A list of Universes that this Geometry is referenced from
-    ArrayList universeList = new ArrayList();
+// A list of Universes that this Geometry is referenced from
+ArrayList<VirtualUniverse> universeList = new ArrayList<VirtualUniverse>();
 
     // A list of ArrayLists which contain all the Shape3DRetained objects
     // refering to this geometry.  Each list corresponds to the universe

@@ -621,7 +621,7 @@ class Text3DRetained extends GeometryRetained {
 
 			m[i].args[0] = oldGAArray;
 			m[i].args[1] = newGAArray;
-			m[i].universe = (VirtualUniverse)universeList.get(i);
+			m[i].universe = universeList.get(i);
 
 			if(tiArrList.size() > 0) {
 			    m[i].args[2] = tiArrList.toArray();
@@ -673,7 +673,7 @@ class Text3DRetained extends GeometryRetained {
 			}
 			m[i].args[0] = gaList.toArray();
 			m[i].args[1] = charTransforms;
-			m[i].universe = (VirtualUniverse)universeList.get(i);
+			m[i].universe = universeList.get(i);
 		    }
 		    VirtualUniverse.mc.processMessage(m);
 		}

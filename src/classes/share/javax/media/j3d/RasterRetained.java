@@ -426,7 +426,7 @@ class RasterRetained extends GeometryRetained {
 			obj[1] = arg2;
 			m[i].args[2] = obj;
 			m[i].args[3] = new Integer(changedFrequent);
-			m[i].universe = (VirtualUniverse)universeList.get(i);
+			m[i].universe = universeList.get(i);
 		    }
 		    VirtualUniverse.mc.processMessage(m);
 		}
