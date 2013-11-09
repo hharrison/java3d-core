@@ -6266,7 +6266,7 @@ class JoglPipeline extends Pipeline {
 		int newHeight = Math.max(1, cvHeight);
 
 		GLDrawable glDrawble = joglDrawable.getGLDrawable();
-		GLContext glContext = ((JoglContext)cv.ctx).getGLContext();
+		GLContext glContext = context(cv.ctx);
 
 		// Assuming glContext != null
 
