@@ -5484,7 +5484,7 @@ class JoglPipeline extends Pipeline {
             float boundaryAlpha) {
         if (VERBOSE) System.err.println("JoglPipeline.updateTexture3DBoundary()");
 
-        updateTextureBoundary(ctx, GL.GL_TEXTURE_2D,
+        updateTextureBoundary(ctx, GL2.GL_TEXTURE_3D,
                 boundaryModeS, boundaryModeT, boundaryModeR,
                 boundaryRed, boundaryGreen,
                 boundaryBlue, boundaryAlpha);
