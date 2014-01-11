@@ -110,12 +110,6 @@ class OrientedShape3DRenderMethod implements RenderMethod {
 	    ra = ra.next;
 
 	}
-
-
-        geo.disableGlobalAlpha(cv.ctx,
-			       (rm.useAlpha &&
-				((geo.vertexFormat & GeometryArray.COLOR) != 0)),
-			       rm.textureBin.attributeBin.ignoreVertexColors);
 	return isVisible;
     }
 }

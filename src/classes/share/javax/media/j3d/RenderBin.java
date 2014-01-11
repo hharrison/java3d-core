@@ -607,7 +607,6 @@ private LinkedHashSet<RenderAtom> dirtyDepthSortRenderAtom = new LinkedHashSet<R
 		// Do the setup  only once{if necessary} for each geometry
 		boolean found = false;
 		while(j < canvases.length && !found) {
-		    if ((canvases[j].extensionsSupported & Canvas3D.SUN_GLOBAL_ALPHA) == 0) {
 			if ((geo.vertexFormat & GeometryArray.INTERLEAVED) != 0) {
 			    geo.setupMirrorInterleavedColorPointer(true);
 			    found = true;
@@ -616,7 +615,6 @@ private LinkedHashSet<RenderAtom> dirtyDepthSortRenderAtom = new LinkedHashSet<R
 			    geo.setupMirrorColorPointer((geo.vertexType & GeometryArrayRetained.COLOR_DEFINED),true);
 			    found = true;
 			}
-		    }
 		    j++;
 		}
 		geo.geomLock.unLock();

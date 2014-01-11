@@ -2035,7 +2035,7 @@ public int numSounds() {
 	        if ((( geoRetained.vertexFormat & GeometryArray.BY_REFERENCE)!=0) &&
 		    (geoRetained.c4fAllocated == 0) &&
 		    ((geoRetained.vertexFormat & GeometryArray.COLOR) != 0) &&
-		    useAlpha && (canvas3d.extensionsSupported &Canvas3D.SUN_GLOBAL_ALPHA) == 0 ) {
+		    useAlpha) {
 
 		    if ((geoRetained.vertexFormat & GeometryArray.INTERLEAVED) != 0) {
 		        geoRetained.setupMirrorInterleavedColorPointer(true);

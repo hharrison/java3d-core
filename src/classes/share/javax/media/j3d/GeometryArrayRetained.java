@@ -1658,25 +1658,12 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
                 this, vertexFormat, useAlpha, ignoreVC);
     }
 
-    void disableGlobalAlpha(Context ctx, boolean useAlpha, boolean ignoreVC) {
-	// If global alpha was turned on, then disable it
-	Pipeline.getPipeline().disableGlobalAlpha(ctx,
-                this, vertexFormat, useAlpha, ignoreVC);
-    }
-
-
     float[] updateAlphaInFloatRefColors(Canvas3D cv, int screen, float alpha) {
 
 	//System.err.println("updateAlphaInFloatRefColors  screen = " + screen +
 	//		   " alpha " + alpha );
 
-	// no need to update alpha values if canvas supports global alpha
-	if (cv.supportGlobalAlpha()) {
-	    cv.setGlobalAlpha(cv.ctx, alpha);
-	    return mirrorFloatRefColors[0];
-	}
-
-	// update alpha only if vertex format includes alpha
+    	// update alpha only if vertex format includes alpha
 	if (((vertexFormat | c4fAllocated) & GeometryArray.WITH_ALPHA) == 0)
 	    return mirrorFloatRefColors[0];
 
@@ -1820,13 +1807,6 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	  " alpha " + alpha );
 	*/
 
-	// no need to update alpha values if canvas supports global alpha
-
-	if (cv.supportGlobalAlpha()) {
-	    cv.setGlobalAlpha(cv.ctx, alpha);
-	    return mirrorUnsignedByteRefColors[0];
-	}
-
 	// update alpha only if vertex format includes alpha
 	if (((vertexFormat | c4fAllocated) & GeometryArray.WITH_ALPHA) == 0)
 	    return mirrorUnsignedByteRefColors[0];
@@ -1961,13 +1941,6 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 	Object[] retVal = new Object[2];
 	retVal[0] = Boolean.FALSE;
 
-	// no need to update alpha values if canvas supports global alpha
-	if (cv.supportGlobalAlpha()) {
-	    cv.setGlobalAlpha(cv.ctx, alpha);
-	    retVal[1] = vertexData;
-	    return retVal;
-	}
-
 	// update alpha only if vertex format includes alpha
 	if ((vertexFormat & GeometryArray.COLOR) == 0) {
 	    retVal[1] = vertexData;
@@ -2090,13 +2063,6 @@ ArrayList<ArrayList<MorphRetained>> morphUserLists = null;
 
 	Object[] retVal = new Object[2];
 	retVal[0] = Boolean.FALSE;
-
-	// no need to update alpha values if canvas supports global alpha
-	if (cv.supportGlobalAlpha()) {
-	    cv.setGlobalAlpha(cv.ctx, alpha);
-	    retVal[1] = null;
-	    return retVal;
-	}
 
 	// update alpha only if vertex format includes alpha
 	if (((vertexFormat | c4fAllocated) & GeometryArray.WITH_ALPHA) == 0) {

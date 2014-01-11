@@ -229,9 +229,6 @@ public Pipeline run() {
     abstract void setVertexFormat(Context ctx, GeometryArrayRetained geo,
             int vformat, boolean useAlpha, boolean ignoreVertexColors);
 
-    abstract void disableGlobalAlpha(Context ctx, GeometryArrayRetained geo, int vformat,
-            boolean useAlpha, boolean ignoreVertexColors);
-
     // used for GeometryArrays
     abstract void buildGA(Context ctx,
             GeometryArrayRetained geo, int geo_type,
@@ -1006,8 +1003,6 @@ public Pipeline run() {
 
     // Setup the full scene antialising in D3D and ogl when GL_ARB_multisamle supported
     abstract void setFullSceneAntialiasing(Context ctx, boolean enable);
-
-    abstract void setGlobalAlpha(Context ctx, float alpha);
 
     // Native method to update separate specular color control
     abstract void updateSeparateSpecularColorEnable(Context ctx, boolean control);

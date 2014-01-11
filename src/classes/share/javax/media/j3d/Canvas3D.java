@@ -764,7 +764,8 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
     //
     // NOTE: we should remove EXT_BGR and EXT_ABGR when the imaging code is
     // rewritten
-    static final int SUN_GLOBAL_ALPHA            = 0x1;
+    // killed global alpha
+    //static final int SUN_GLOBAL_ALPHA            = 0x1;
     static final int EXT_ABGR                    = 0x2;
     static final int EXT_BGR                     = 0x4;
     static final int MULTISAMPLE                 = 0x8;
@@ -4014,10 +4015,6 @@ public Point getLocationOnScreen() {
         }
     }
 
-    boolean supportGlobalAlpha() {
-	return ((extensionsSupported & SUN_GLOBAL_ALPHA) != 0);
-    }
-
     /**
      * Enable separate specular color if it is not overriden by the
      * property j3d.disableSeparateSpecular.
@@ -4719,10 +4716,6 @@ boolean isAntialiasingSet() {
     void setFullSceneAntialiasing(Context ctx, boolean enable) {
         Pipeline.getPipeline().setFullSceneAntialiasing(ctx, enable);
         antialiasingSet = enable;
-    }
-
-    void setGlobalAlpha(Context ctx, float alpha) {
-        Pipeline.getPipeline().setGlobalAlpha(ctx, alpha);
     }
 
     // Native method to update separate specular color control

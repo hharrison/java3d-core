@@ -140,11 +140,6 @@ class NoopPipeline extends Pipeline {
             int vformat, boolean useAlpha, boolean ignoreVertexColors) {
     }
 
-    @Override
-    void disableGlobalAlpha(Context ctx, GeometryArrayRetained geo, int vformat,
-            boolean useAlpha, boolean ignoreVertexColors) {
-    }
-
     // used for GeometryArrays
     @Override
     void buildGA(Context ctx,
@@ -1141,10 +1136,6 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {}
     // Setup the full scene antialising in D3D and ogl when GL_ARB_multisamle supported
     @Override
     void setFullSceneAntialiasing(Context ctx, boolean enable) {
-    }
-
-    @Override
-    void setGlobalAlpha(Context ctx, float alpha) {
     }
 
     // Native method to update separate specular color control

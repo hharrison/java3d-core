@@ -402,36 +402,11 @@ class JoglPipeline extends Pipeline {
             gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
         }
 
-// FIXME: SUN_global_alpha
-//        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-//            if (useAlpha) {
-//                gl.glEnable(GL.GL_GLOBAL_ALPHA_SUN);
-//            } else {
-//                gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
-//            }
-//        }
-
         if ((vformat & GeometryArray.COORDINATES) != 0) {
             gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
         } else {
             gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
         }
-    }
-
-    @Override
-    void disableGlobalAlpha(Context ctx, GeometryArrayRetained geo, int vformat,
-            boolean useAlpha, boolean ignoreVertexColors) {
-        if (VERBOSE) System.err.println("JoglPipeline.disableGlobalAlpha()");
-// FIXME: SUN_global_alpha
-//        GL gl = context(ctx).getGL();
-
-//        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-//            if (!ignoreVertexColors && ((vformat & GeometryArray.COLOR) != 0)) {
-//                if (useAlpha) {
-//                    gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
-//                }
-//            }
-//        }
     }
 
     // used for GeometryArrays
@@ -6984,17 +6959,6 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
         }
     }
 
-    @Override
-    void setGlobalAlpha(Context ctx, float alpha) {
-        if (VERBOSE) System.err.println("JoglPipeline.setGlobalAlpha()");
-// FIXME: SUN_global_alpha
-//        GL gl = context(ctx).getGL();
-//        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-//            gl.glEnable(GL.GL_GLOBAL_ALPHA_SUN);
-//            gl.glGlobalAlphaFactorfSUN(alpha);
-//        }
-    }
-
     // Native method to update separate specular color control
     @Override
     void updateSeparateSpecularColorEnable(Context ctx, boolean enable) {
@@ -8207,12 +8171,6 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
         // Check shader extensions
         checkGLSLShaderExtensions(cv, ctx, gl, gl13);
 
-        // Setup GL_SUN_gloabl_alpha
-// FIXME: SUN_global_alpha
-//        if (gl.isExtensionAvailable("GL_SUN_gloabl_alpha")) {
-//            cv.extensionsSupported |= Canvas3D.SUN_GLOBAL_ALPHA;
-//        }
-
         cv.textureBoundaryWidthMax = 1;
         {
             int[] tmp = new int[1];
@@ -8268,11 +8226,6 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
 //        if (gl.isExtensionAvailable("GL_SGI_texture_color_table")) {
 //            gl.glDisable(GL.GL_TEXTURE_COLOR_TABLE_SGI);
 //        }
-// FIXME: SUN_global_alpha
-//        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-//            gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
-//        }
-
     }
 
     private void disableAttribForRaster(GL gl) {
@@ -8288,10 +8241,6 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
 //          gl.glDisable(GL2.GL_CLIP_PLANE0 + i);
 //      }
 
-// FIXME: SUN_global_alpha
-//        if (gl.isExtensionAvailable("GL_SUN_global_alpha")) {
-//            gl.glDisable(GL.GL_GLOBAL_ALPHA_SUN);
-//        }
     }
 
     private void copyTranspose(double[] src, double[] dst) {
