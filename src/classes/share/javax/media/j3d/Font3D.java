@@ -287,8 +287,6 @@ private static class IntVector {
 	    float tmpCoords[] = new float[6];
 	    float lastX= .0f, lastY= .0f;
 	    float firstPntx = Float.MAX_VALUE, firstPnty = Float.MAX_VALUE;
-	    GeometryInfo gi = null;
-	    NormalGenerator ng = new NormalGenerator();
 	    IntVector contours = new IntVector();
 	    float maxY = -Float.MAX_VALUE;
 	    int maxYIndex = 0, beginIdx = 0, endIdx = 0, start = 0;
@@ -470,20 +468,21 @@ private static class IntVector {
 	    numPoints = 0;
 	    //Now loop thru each island, calling triangulator once per island.
 	    //Combine triangle data for all islands together in one object.
-	    for (i=0;i < islandCounts.length;i++) {
-		contourCounts[0] = islandCounts[i].length;
-		numPoints += outVerts[i].length;
-		gi = new GeometryInfo(GeometryInfo.POLYGON_ARRAY);
-		gi.setCoordinates(outVerts[i]);
-		gi.setStripCounts(islandCounts[i]);
-		gi.setContourCounts(contourCounts);
-		ng.generateNormals(gi);
+		NormalGenerator ng = new NormalGenerator();
+		for (i = 0; i < islandCounts.length; i++) {
+			contourCounts[0] = islandCounts[i].length;
+			numPoints += outVerts[i].length;
+			GeometryInfo gi = new GeometryInfo(GeometryInfo.POLYGON_ARRAY);
+			gi.setCoordinates(outVerts[i]);
+			gi.setStripCounts(islandCounts[i]);
+			gi.setContourCounts(contourCounts);
+			ng.generateNormals(gi);
 
-		GeometryArray ga = gi.getGeometryArray(false, false, false);
-		vertOffset += ga.getVertexCount();
+			GeometryArray ga = gi.getGeometryArray(false, false, false);
+			vertOffset += ga.getVertexCount();
 
-		triangData.add(ga);
-	      }
+			triangData.add(ga);
+		}
 	    // Multiply by 2 since we create 2 faces of the font
 	    // Second term is for side-faces along depth of the font
 	    if (fontExtrusion == null)
