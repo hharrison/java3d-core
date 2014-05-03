@@ -6365,25 +6365,26 @@ class JoglPipeline extends Pipeline {
 
     // Fix for Bug 983
     private void checkAppContext() {
-        if (mainThreadContext != null) {
-            try {
-                // Check by reflection that sun.awt.AppContext.getAppContext() doesn't return null
-                // (required by ImageIO.write() and other JMF internal calls) to apply workaround proposed at
-                // http://stackoverflow.com/questions/17223304/appcontext-is-null-from-rmi-thread-with-java-7-update-25
-                final Class<?> appContextClass = Class.forName("sun.awt.AppContext");
-                if (appContextClass.getMethod("getAppContext").invoke(null) == null) {
-                    final Field field = appContextClass.getDeclaredField("threadGroup2appContext");
-                    field.setAccessible(true);
-                    final Map threadGroup2appContext = (Map)field.get(null);
-                    final ThreadGroup currentThreadGroup = Thread.currentThread().getThreadGroup();
-                    threadGroup2appContext.put(currentThreadGroup, mainThreadContext);
-                }
-            } catch (final Throwable ex) {
-                // Let's consider app context is not necessary for the program
+        if (mainThreadContext == null)
+            return;
+
+        try {
+            // Check by reflection that sun.awt.AppContext.getAppContext() doesn't return null
+            // (required by ImageIO.write() and other JMF internal calls) to apply workaround proposed at
+            // http://stackoverflow.com/questions/17223304/appcontext-is-null-from-rmi-thread-with-java-7-update-25
+            final Class<?> appContextClass = Class.forName("sun.awt.AppContext");
+            if (appContextClass.getMethod("getAppContext").invoke(null) == null) {
+                final Field field = appContextClass.getDeclaredField("threadGroup2appContext");
+                field.setAccessible(true);
+                final Map threadGroup2appContext = (Map)field.get(null);
+                final ThreadGroup currentThreadGroup = Thread.currentThread().getThreadGroup();
+                threadGroup2appContext.put(currentThreadGroup, mainThreadContext);
             }
-            // Don't need mainThreadContext anymore
-            mainThreadContext = null;
+        } catch (Throwable ex) {
+            // Let's consider app context is not necessary for the program
         }
+        // Don't need mainThreadContext anymore
+        mainThreadContext = null;
     }
 
     // This is the native method for creating the underlying graphics context.
