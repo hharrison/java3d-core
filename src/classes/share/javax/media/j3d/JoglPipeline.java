@@ -36,6 +36,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -46,6 +47,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -99,10 +101,20 @@ class JoglPipeline extends Pipeline {
     private static final int MIN_FRAME_SIZE = 1;
 
     private GLProfile profile;
+
+    private Object mainThreadContext;    // Fix for Bug 983
+
     /**
      * Constructor for singleton JoglPipeline instance
      */
     protected JoglPipeline() {
+        // Fix for Bug 983
+        try {
+            // Retrieve main thread AppContext instance by reflection
+            mainThreadContext = Class.forName("sun.awt.AppContext").getMethod("getAppContext").invoke(null);
+        } catch (final Throwable ex) {
+            // Let's consider app context is not necessary for the program
+        }
     }
 
     /**
@@ -6351,6 +6363,29 @@ class JoglPipeline extends Pipeline {
 		}
     }
 
+    // Fix for Bug 983
+    private void checkAppContext() {
+        if (mainThreadContext != null) {
+            try {
+                // Check by reflection that sun.awt.AppContext.getAppContext() doesn't return null
+                // (required by ImageIO.write() and other JMF internal calls) to apply workaround proposed at
+                // http://stackoverflow.com/questions/17223304/appcontext-is-null-from-rmi-thread-with-java-7-update-25
+                final Class<?> appContextClass = Class.forName("sun.awt.AppContext");
+                if (appContextClass.getMethod("getAppContext").invoke(null) == null) {
+                    final Field field = appContextClass.getDeclaredField("threadGroup2appContext");
+                    field.setAccessible(true);
+                    final Map threadGroup2appContext = (Map)field.get(null);
+                    final ThreadGroup currentThreadGroup = Thread.currentThread().getThreadGroup();
+                    threadGroup2appContext.put(currentThreadGroup, mainThreadContext);
+                }
+            } catch (final Throwable ex) {
+                // Let's consider app context is not necessary for the program
+            }
+            // Don't need mainThreadContext anymore
+            mainThreadContext = null;
+        }
+    }
+
     // This is the native method for creating the underlying graphics context.
     @Override
     Context createNewContext(Canvas3D cv, Drawable drawable,
@@ -6358,6 +6393,7 @@ class JoglPipeline extends Pipeline {
             boolean offScreen) {
         if (VERBOSE) System.err.println("JoglPipeline.createNewContext()");
 
+        checkAppContext();
 	    GLDrawable	glDrawable 	= null;
 	    GLContext 	glContext	= null;
 
