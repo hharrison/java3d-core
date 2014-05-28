@@ -46,6 +46,7 @@ import java.nio.IntBuffer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -71,6 +72,7 @@ import javax.media.opengl.GLCapabilitiesImmutable;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLDrawable;
 import javax.media.opengl.GLDrawableFactory;
+import javax.media.opengl.GLException;
 import javax.media.opengl.GLFBODrawable;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.Threading;
@@ -8284,156 +8286,179 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
     	return awtConfig.getAWTGraphicsConfiguration();
     }
 
+    private static final int DISABLE_STEREO = 1;
+    private static final int DISABLE_AA = 2;
+    private static final int DISABLE_DOUBLE_BUFFER = 3;
+    
     // Get best graphics config from pipeline
     @Override
     GraphicsConfiguration getBestConfiguration(GraphicsConfigTemplate3D gct,
             GraphicsConfiguration[] gc) {
         if (VERBOSE) System.err.println("JoglPipeline.getBestConfiguration()");
-
-        // Device / Screen
-	    GraphicsDevice device = gc[0].getDevice();
-	    AbstractGraphicsScreen screen = (device != null) ? AWTGraphicsScreen.createScreenDevice(device, AbstractGraphicsDevice.DEFAULT_UNIT) :
-					                                       AWTGraphicsScreen.createDefault();
-
+        
         // Create a GLCapabilities based on the GraphicsConfigTemplate3D
-
         final GLCapabilities caps = new GLCapabilities(profile);
-
-        // On Linux, Windows
-
-        // Only minimum values and REQUIRED capabilities are set !!
-        // PREFERRED capabilities are checked by J3DCapsChooser
-
-        // TODO GraphicsConfigTemplate3D doesn't support number of antialiasing samples
-        // TODO 4 or 8 samples
-        // 4 samples are taken as default maximum number, a smaller number will be chosen by
-        // J3DCapsChooser if the requested number is not supported
-        // so we require only 2 samples
-        // (all available configs with 2 and more samples can then be checked by J3DCapsChooser)
-
-        // REQUIRED
-
-        caps.setStereo( (gct.getStereo() == GraphicsConfigTemplate.REQUIRED) );
-
-        caps.setDoubleBuffered( (gct.getDoubleBuffer() == GraphicsConfigTemplate.REQUIRED) );
-
+        
+        caps.setDoubleBuffered(gct.getDoubleBuffer() != GraphicsConfigTemplate.UNNECESSARY);
+        
+        caps.setStereo(gct.getStereo() != GraphicsConfigTemplate.UNNECESSARY);
+        
         // Scene antialiasing only if double buffering
-        if (gct.getDoubleBuffer() == GraphicsConfigTemplate.REQUIRED &&
-        	gct.getSceneAntialiasing() == GraphicsConfigTemplate.REQUIRED) {
-        	caps.setSampleBuffers(true);
-        	caps.setNumSamples(2);
+        if(gct.getSceneAntialiasing() != GraphicsConfigTemplate.UNNECESSARY 
+                && gct.getDoubleBuffer() != GraphicsConfigTemplate.UNNECESSARY) {
+            caps.setSampleBuffers(true);
+            caps.setNumSamples(2);
+        } else {
+            caps.setSampleBuffers(false);
+            caps.setNumSamples(0);
         }
-        else {
-        	caps.setSampleBuffers(false);
-        	caps.setNumSamples(0);
-        }
-
-        // Minimum values
-
-        caps.setDepthBits     (gct.getDepthSize());
-        caps.setStencilBits   (gct.getStencilSize());
-
-        caps.setRedBits       (Math.max(5, gct.getRedSize()));
-        caps.setGreenBits     (Math.max(5, gct.getGreenSize()));
-        caps.setBlueBits      (Math.max(5, gct.getBlueSize()));
+        
+        caps.setDepthBits(gct.getDepthSize());
+        caps.setStencilBits(gct.getStencilSize());
+        
+        caps.setRedBits(Math.max(5, gct.getRedSize()));
+        caps.setGreenBits(Math.max(5, gct.getGreenSize()));
+        caps.setBlueBits(Math.max(5, gct.getBlueSize()));
+        
 
         // Issue 399: Request alpha buffer if transparentOffScreen is set
         if (VirtualUniverse.mc.transparentOffScreen) {
             caps.setAlphaBits(1);
         }
 
-	    // Custom chooser instead of DefaultGLCapabilitiesChooser
-        J3DCapsChooser chooser = new J3DCapsChooser(gct);
+        
+        // Add PREFERRED capabilities in order of least to highest priority and we will try disabling them        
+        java.util.List<Integer> capsToDisable = new ArrayList<Integer>();
+                
+        if (gct.getStereo() == GraphicsConfigTemplate.PREFERRED) {
+            capsToDisable.add(new Integer(DISABLE_STEREO));
+        }
+        
+        if (gct.getSceneAntialiasing() == GraphicsConfigTemplate.PREFERRED) {
+            capsToDisable.add(new Integer(DISABLE_AA));
+        }
+        
+        // if AA is required, so is double buffering.
+        if (gct.getSceneAntialiasing() != GraphicsConfigTemplate.REQUIRED 
+                && gct.getDoubleBuffer() == GraphicsConfigTemplate.PREFERRED) {
+            capsToDisable.add(new Integer(DISABLE_DOUBLE_BUFFER));
+        }
+        
+        
+        // Pick an arbitrary graphics device.
+        GraphicsDevice device = gc[0].getDevice();
+        AbstractGraphicsScreen screen = (device != null) ? AWTGraphicsScreen.createScreenDevice(device, AbstractGraphicsDevice.DEFAULT_UNIT) :
+            AWTGraphicsScreen.createDefault();
 
-        GraphicsConfigurationFactory gcFactory = GraphicsConfigurationFactory.getFactory(AWTGraphicsDevice.class, GLCapabilitiesImmutable.class);
+     // Create a Frame and dummy GLCanvas to perform eager pixel format selection
 
-		// !! deadlock if getBestConfiguration is called on EDT (calling thread is waitung !!)
-    	AWTGraphicsConfiguration awtConfig = getAWTGraphicsConfiguration(gcFactory, caps, chooser, screen);
-
-    	// If minimum requirements are fulfilled (awtConfig != null),
-		// but J3DCapsChooser wasn't called ( e.g. on Mac OS X (2.0-rc11) ) :
-    	// set also PREFERRED caps and max sample number
-    	if (awtConfig != null && chooser.isCalled() == false) {
-
-			// 1. Double buffering and scene antialiasing : let Mac OS X decide
-
-			boolean isDoubleBuffering = ( gct.getDoubleBuffer() == GraphicsConfigTemplate.REQUIRED ||
-			                              gct.getDoubleBuffer() == GraphicsConfigTemplate.PREFERRED  );
-
-			caps.setDoubleBuffered(isDoubleBuffering);
-
-			if (isDoubleBuffering &&
-				(gct.getSceneAntialiasing() == GraphicsConfigTemplate.REQUIRED ||
-				 gct.getSceneAntialiasing() == GraphicsConfigTemplate.PREFERRED  ) ) {
-				caps.setSampleBuffers(true);
-				caps.setNumSamples(4); // TODO
-                    }
-			else {
-				caps.setSampleBuffers(false);
-				caps.setNumSamples(0);
+        // Note that we loop in similar fashion to the NativePipeline's
+        // native code in the situation where we need to disable certain
+        // capabilities which aren't required
+        boolean tryAgain = true;
+        CapabilitiesCapturer capturer = null;
+        AWTGraphicsConfiguration awtConfig = null;
+        while (tryAgain) {
+            Frame f = new Frame(device.getDefaultConfiguration());
+            f.setUndecorated(true);
+            f.setLayout(new BorderLayout());
+            capturer = new CapabilitiesCapturer();
+            try {
+                awtConfig = createAwtGraphicsConfiguration(caps, capturer, screen);
+                QueryCanvas canvas = new QueryCanvas(awtConfig, capturer);
+                f.add(canvas, BorderLayout.CENTER);
+                f.setSize(MIN_FRAME_SIZE, MIN_FRAME_SIZE);
+                f.setVisible(true);
+                canvas.doQuery();
+                if (DEBUG_CONFIG) {
+                    System.err.println("Waiting for CapabilitiesCapturer");
                 }
-
-			AWTGraphicsConfiguration config = getAWTGraphicsConfiguration(gcFactory, caps, chooser, screen);
-
-			// 2. PREFERRED stereo
-
-			if (gct.getStereo() == GraphicsConfigTemplate.PREFERRED) {
-				// config is fine so far, now add stereo requirement
-				if (config != null) {
-					caps.setStereo(true);
-					AWTGraphicsConfiguration configStereo = getAWTGraphicsConfiguration(gcFactory, caps, chooser, screen);
-					if (configStereo != null) {
-						config = configStereo;
+                // Try to wait for result without blocking EDT
+                if (!EventQueue.isDispatchThread()) {
+                    synchronized(capturer) {
+                        if (!capturer.done()) {
+                            try {
+                                capturer.wait(WAIT_TIME);
+                            } catch (InterruptedException e) {
+                            }
+                        }
                     }
                 }
-				// start again with awtConfig
-				else {
-					GLCapabilities stereoCaps = new GLCapabilities(profile);
-					stereoCaps.copyFrom((GLCapabilities)awtConfig.getChosenCapabilities());
-					stereoCaps.setStereo(true);
-					AWTGraphicsConfiguration configStereo = getAWTGraphicsConfiguration(gcFactory, stereoCaps, chooser, screen);
-					if (configStereo != null) {
-						config = configStereo;
+                disposeOnEDT(f);
+                tryAgain = false;
+            } catch (GLException e) {
+                // Failure to select a pixel format; try switching off one
+                // of the only-preferred capabilities
+                if (capsToDisable.size() == 0) {
+                    tryAgain = false;
+                } else {
+                    int whichToDisable = capsToDisable.remove(0).intValue();
+                    switch (whichToDisable) {
+                        case DISABLE_STEREO:
+                            caps.setStereo(false);
+                            break;
+
+                        case DISABLE_AA:
+                            caps.setSampleBuffers(false);
+                            break;
+
+                        case DISABLE_DOUBLE_BUFFER:
+                            caps.setDoubleBuffered(false);
+                            break;
+
+                        default:
+                            throw new AssertionError("missing case statement");
+                    }
+                    
+                    awtConfig = null;
+                }
             }
         }
+        int chosenIndex = capturer.getChosenIndex();
+        GLCapabilities chosenCaps = null;
+        if (chosenIndex < 0) {
+            if (DEBUG_CONFIG) {
+                System.err.println("CapabilitiesCapturer returned invalid index");
             }
-
-			// a 'better' config found ?
-			if (config != null) {
-				awtConfig = config;
+            // It's possible some platforms or implementations might not
+            // support the GLCapabilitiesChooser mechanism; feed in the
+            // same GLCapabilities later which we gave to the selector
+            chosenCaps = caps;
+        } else {
+            if (DEBUG_CONFIG) {
+                System.err.println("CapabilitiesCapturer returned index=" + chosenIndex);
             }
+            chosenCaps = capturer.getCapabilities();
         }
 
-    	// GraphicsConfigTemplate3D API :
-    	// 	 If no such "best" GraphicsConfiguration is found, null is returned.
-	    if (awtConfig == null) {
-	    	System.out.println("J3D JoglPipeline.getBestConfiguration : no best GraphicsConfiguration is found !");
-	    	return null;
-        }
+        // FIXME chosenIndex isn't used anymore, used -1 instead of finding it.
+        JoglGraphicsConfiguration config = new JoglGraphicsConfiguration(chosenCaps, chosenIndex, device);
+        
+        
 
-	    // !! these chosen caps are not final as long as the corresponding context is made current
-	    GLCapabilities chosenCaps = (GLCapabilities)awtConfig.getChosenCapabilities();
-//System.out.println("getBestConfiguration chosenCaps = " + chosenCaps);
-	    // Index isn't used anymore
-		JoglGraphicsConfiguration bestGC = new JoglGraphicsConfiguration(chosenCaps, -1, device);
+        // FIXME: because of the fact that JoglGraphicsConfiguration
+        // doesn't override hashCode() or equals(), we will basically be
+        // creating a new one each time getBestConfiguration() is
+        // called; in theory, we should probably map the same
+        // GLCapabilities on the same GraphicsDevice to the same
+        // JoglGraphicsConfiguration object
 
-		GraphicsConfigInfo gcInf0 = new GraphicsConfigInfo(gct);
-    	gcInf0.setPrivateData(awtConfig);
+        // Cache the GraphicsTemplate3D
+        GraphicsConfigInfo gcInf0 = new GraphicsConfigInfo(gct);
+        gcInf0.setPrivateData(awtConfig);
 
         synchronized (Canvas3D.graphicsConfigTable) {
-    		Canvas3D.graphicsConfigTable.put(bestGC, gcInf0);
+            Canvas3D.graphicsConfigTable.put(config, gcInf0);
           }
 
-    	return bestGC;
-        }
+        return config;
+        
 
-    private static AWTGraphicsConfiguration getAWTGraphicsConfiguration(GraphicsConfigurationFactory gcFactory,
-                                                                        CapabilitiesImmutable capsRequested,
-                                                                        CapabilitiesChooser chooser,
-                                                                        AbstractGraphicsScreen screen) {
-    	return (AWTGraphicsConfiguration)gcFactory.chooseGraphicsConfiguration(
-    			capsRequested, capsRequested, chooser, screen, VisualIDHolder.VID_UNDEFINED);
-    }
+	    
+		
+		
+    	
+        }
 
     // Determine whether specified graphics config is supported by pipeline
     @Override
@@ -8613,6 +8638,63 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
 
             glDrawable.setRealized(false);
             nativeWindow.destroy();
+        }
+    }
+    
+    private static AWTGraphicsConfiguration createAwtGraphicsConfiguration(GLCapabilities capabilities,
+            CapabilitiesChooser chooser,
+            AbstractGraphicsScreen screen) {
+        GraphicsConfigurationFactory factory = GraphicsConfigurationFactory.getFactory(AWTGraphicsDevice.class, GLCapabilities.class);
+        AWTGraphicsConfiguration awtGraphicsConfiguration = (AWTGraphicsConfiguration) factory.chooseGraphicsConfiguration(capabilities, capabilities,
+        chooser, screen, VisualIDHolder.VID_UNDEFINED);
+        return awtGraphicsConfiguration;
+    }
+
+    // Used in conjunction with IndexCapabilitiesChooser in pixel format
+    // selection -- see getBestConfiguration
+    class CapabilitiesCapturer extends DefaultGLCapabilitiesChooser implements ExtendedCapabilitiesChooser {
+        private boolean done;
+        private GLCapabilities capabilities;
+        private int chosenIndex = -1;
+
+        public boolean done() {
+            return done;
+        }
+
+        public GLCapabilities getCapabilities() {
+            return capabilities;
+        }
+
+        public int getChosenIndex() {
+            return chosenIndex;
+        }
+
+        public int chooseCapabilities(GLCapabilities desired,
+                GLCapabilities[] available,
+                int windowSystemRecommendedChoice) {
+            int res = super.chooseCapabilities(desired, Arrays.asList(available), windowSystemRecommendedChoice);
+            capabilities = available[res];
+            chosenIndex = res;
+            markDone();
+            return res;
+        }
+
+        public void init(GLContext context) {
+            // Avoid hanging things up for several seconds
+            kick();
+        }
+
+        private void markDone() {
+            synchronized (this) {
+                done = true;
+                notifyAll();
+            }
+        }
+
+        private void kick() {
+            synchronized (this) {
+                notifyAll();
+            }
         }
     }
 
