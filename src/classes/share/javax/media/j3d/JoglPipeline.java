@@ -7797,30 +7797,18 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
 		GL2 gl = context(ctx).getGL().getGL2();
         int drawBuf = 0;
         if (doubleBuffer) {
-            drawBuf = GL.GL_BACK;
-            switch (mode) {
-                case Canvas3D.FIELD_LEFT:
-                    drawBuf = GL2.GL_BACK_LEFT;
-                    break;
-                case Canvas3D.FIELD_RIGHT:
-                    drawBuf = GL2.GL_BACK_RIGHT;
-                    break;
-                case Canvas3D.FIELD_ALL:
-                    drawBuf = GL.GL_BACK;
-                    break;
+            drawBuf = GL.GL_BACK; // mode == Canvas3D.FIELD_ALL
+            if(mode == Canvas3D.FIELD_LEFT) {
+                drawBuf = GL2.GL_BACK_LEFT;
+            } else if(mode == Canvas3D.FIELD_RIGHT) {
+                drawBuf = GL2.GL_BACK_RIGHT;
             }
         } else {
-            drawBuf = GL.GL_FRONT;
-            switch (mode) {
-                case Canvas3D.FIELD_LEFT:
-                    drawBuf = GL2.GL_FRONT_LEFT;
-                    break;
-                case Canvas3D.FIELD_RIGHT:
-                    drawBuf = GL2.GL_FRONT_RIGHT;
-                    break;
-                case Canvas3D.FIELD_ALL:
-                    drawBuf = GL.GL_FRONT;
-                    break;
+            drawBuf = GL.GL_FRONT; // mode == Canvas3D.FIELD_ALL
+            if(mode == Canvas3D.FIELD_LEFT) {
+                drawBuf = GL2.GL_FRONT_LEFT;
+            } else if(mode == Canvas3D.FIELD_RIGHT) {
+                drawBuf = GL2.GL_FRONT_RIGHT;
             }
         }
 

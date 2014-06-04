@@ -303,13 +303,18 @@ public class Canvas3D extends Canvas {
      * Specifies the left field of a field-sequential stereo rendering loop.
      * A left field always precedes a right field.
      */
-    public static final int FIELD_LEFT = 0;
+    public static int FIELD_LEFT = 0;
 
     /**
      * Specifies the right field of a field-sequential stereo rendering loop.
      * A right field always follows a left field.
      */
-    public static final int FIELD_RIGHT = 1;
+    public static int FIELD_RIGHT = 1;
+    
+    /**
+     * Indicates whether eyes are currently swapped in stereo mode.
+     */
+    private static boolean areEyesSwapped = false;
 
     /**
      * Specifies a single-field rendering loop.
@@ -4931,6 +4936,23 @@ boolean isAntialiasingSet() {
     void setDepthBufferWriteEnable(Context ctx, boolean mode) {
         Pipeline.getPipeline().setDepthBufferWriteEnable(ctx, mode);
     }
+    
+    /**
+     * A simple implementation of eye swapping. It is reccomended that this be taken care
+     * of at hardware level, but if that is not an available option, eye swapping can be done
+     * in the code.
+     */
+    public void swapEyes() {
+        int temp = FIELD_LEFT;
+        FIELD_LEFT = FIELD_RIGHT;
+        FIELD_RIGHT = temp;
+        areEyesSwapped = !areEyesSwapped;
+    }
+    
+    public boolean areEyesSwapped() {
+        return areEyesSwapped;
+    }
+    
 
     // Methods to get actual capabilities from Canvas3D
 

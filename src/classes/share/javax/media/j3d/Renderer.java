@@ -1048,7 +1048,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                         boolean useStereo = cvCache.getUseStereo();
                         if (useStereo) {
                             num_stereo_passes = 2;
-                            stereo_mode = Canvas3D.FIELD_LEFT;
+                            stereo_mode = (!canvas.areEyesSwapped()) ? Canvas3D.FIELD_LEFT : Canvas3D.FIELD_RIGHT;
 
                             sharedStereoZBuffer =
                                 VirtualUniverse.mc.sharedStereoZBuffer;
@@ -1354,7 +1354,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                             if (doAccum)
                                 canvas.accumReturn(canvas.ctx);
                             if (useStereo) {
-                                stereo_mode = Canvas3D.FIELD_RIGHT;
+                                stereo_mode = (!canvas.areEyesSwapped()) ? Canvas3D.FIELD_RIGHT : Canvas3D.FIELD_LEFT;
 				canvas.rightStereoPass = true;
 			    }
 		        }
