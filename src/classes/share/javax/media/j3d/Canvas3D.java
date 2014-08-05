@@ -571,12 +571,6 @@ public class Canvas3D extends Canvas {
     // so swap is valid.
     boolean imageReady = false;
 
-
-    //
-    // The current fog enable state
-    //
-    int fogOn = 0;
-
     // The 3D Graphics context used for immediate mode rendering
     // into this canvas.
     GraphicsContext3D graphicsContext3D = null;
