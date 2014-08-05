@@ -8286,65 +8286,67 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
     	return awtConfig.getAWTGraphicsConfiguration();
     }
 
-    private static final int DISABLE_STEREO = 1;
-    private static final int DISABLE_AA = 2;
-    private static final int DISABLE_DOUBLE_BUFFER = 3;
-    
+	private enum DisabledCaps {
+		STEREO,
+		AA,
+		DOUBLE_BUFFER,
+	}
+
     // Get best graphics config from pipeline
     @Override
     GraphicsConfiguration getBestConfiguration(GraphicsConfigTemplate3D gct,
             GraphicsConfiguration[] gc) {
         if (VERBOSE) System.err.println("JoglPipeline.getBestConfiguration()");
-        
+
         // Create a GLCapabilities based on the GraphicsConfigTemplate3D
         final GLCapabilities caps = new GLCapabilities(profile);
-        
+
         caps.setDoubleBuffered(gct.getDoubleBuffer() != GraphicsConfigTemplate.UNNECESSARY);
-        
+
         caps.setStereo(gct.getStereo() != GraphicsConfigTemplate.UNNECESSARY);
-        
+
         // Scene antialiasing only if double buffering
-        if(gct.getSceneAntialiasing() != GraphicsConfigTemplate.UNNECESSARY 
-                && gct.getDoubleBuffer() != GraphicsConfigTemplate.UNNECESSARY) {
+        if (gct.getSceneAntialiasing() != GraphicsConfigTemplate.UNNECESSARY &&
+            gct.getDoubleBuffer() != GraphicsConfigTemplate.UNNECESSARY) {
             caps.setSampleBuffers(true);
             caps.setNumSamples(2);
         } else {
             caps.setSampleBuffers(false);
             caps.setNumSamples(0);
         }
-        
+
         caps.setDepthBits(gct.getDepthSize());
         caps.setStencilBits(gct.getStencilSize());
-        
+
         caps.setRedBits(Math.max(5, gct.getRedSize()));
         caps.setGreenBits(Math.max(5, gct.getGreenSize()));
         caps.setBlueBits(Math.max(5, gct.getBlueSize()));
-        
+
 
         // Issue 399: Request alpha buffer if transparentOffScreen is set
         if (VirtualUniverse.mc.transparentOffScreen) {
             caps.setAlphaBits(1);
         }
 
-        
-        // Add PREFERRED capabilities in order of least to highest priority and we will try disabling them        
-        java.util.List<Integer> capsToDisable = new ArrayList<Integer>();
-                
+
+        // Add PREFERRED capabilities in order of least to highest priority and we will try disabling them
+        ArrayList<DisabledCaps> capsToDisable = new ArrayList<DisabledCaps>();
+
         if (gct.getStereo() == GraphicsConfigTemplate.PREFERRED) {
-            capsToDisable.add(new Integer(DISABLE_STEREO));
+            capsToDisable.add(DisabledCaps.STEREO);
         }
-        
+
         if (gct.getSceneAntialiasing() == GraphicsConfigTemplate.PREFERRED) {
-            capsToDisable.add(new Integer(DISABLE_AA));
+            capsToDisable.add(DisabledCaps.AA);
         }
-        
+
         // if AA is required, so is double buffering.
-        if (gct.getSceneAntialiasing() != GraphicsConfigTemplate.REQUIRED 
-                && gct.getDoubleBuffer() == GraphicsConfigTemplate.PREFERRED) {
-            capsToDisable.add(new Integer(DISABLE_DOUBLE_BUFFER));
+        if (gct.getSceneAntialiasing() != GraphicsConfigTemplate.REQUIRED &&
+            gct.getDoubleBuffer() == GraphicsConfigTemplate.PREFERRED) {
+            capsToDisable.add(DisabledCaps.DOUBLE_BUFFER);
         }
-        
-        
+
+
         // Pick an arbitrary graphics device.
         GraphicsDevice device = gc[0].getDevice();
         AbstractGraphicsScreen screen = (device != null) ? AWTGraphicsScreen.createScreenDevice(device, AbstractGraphicsDevice.DEFAULT_UNIT) :
@@ -8392,24 +8394,17 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
                 if (capsToDisable.size() == 0) {
                     tryAgain = false;
                 } else {
-                    int whichToDisable = capsToDisable.remove(0).intValue();
-                    switch (whichToDisable) {
-                        case DISABLE_STEREO:
-                            caps.setStereo(false);
-                            break;
-
-                        case DISABLE_AA:
-                            caps.setSampleBuffers(false);
-                            break;
-
-                        case DISABLE_DOUBLE_BUFFER:
-                            caps.setDoubleBuffered(false);
-                            break;
-
-                        default:
-                            throw new AssertionError("missing case statement");
+                    switch (capsToDisable.remove(0)) {
+                    case STEREO:
+                        caps.setStereo(false);
+                        break;
+                    case AA:
+                        caps.setSampleBuffers(false);
+                        break;
+                    case DOUBLE_BUFFER:
+                        caps.setDoubleBuffered(false);
+                        break;
                     }
-                    
                     awtConfig = null;
                 }
             }
@@ -8433,8 +8428,8 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
 
         // FIXME chosenIndex isn't used anymore, used -1 instead of finding it.
         JoglGraphicsConfiguration config = new JoglGraphicsConfiguration(chosenCaps, chosenIndex, device);
-        
-        
+
+
 
         // FIXME: because of the fact that JoglGraphicsConfiguration
         // doesn't override hashCode() or equals(), we will basically be
@@ -8452,13 +8447,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
           }
 
         return config;
-        
-
-	    
-		
-		
-    	
-        }
+    }
 
     // Determine whether specified graphics config is supported by pipeline
     @Override
@@ -8640,7 +8629,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
             nativeWindow.destroy();
         }
     }
-    
+
     private static AWTGraphicsConfiguration createAwtGraphicsConfiguration(GLCapabilities capabilities,
             CapabilitiesChooser chooser,
             AbstractGraphicsScreen screen) {
@@ -8679,6 +8668,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
             return res;
         }
 
+        @Override
         public void init(GLContext context) {
             // Avoid hanging things up for several seconds
             kick();
