@@ -47,7 +47,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -56,7 +55,6 @@ import java.util.regex.Pattern;
 import javax.media.nativewindow.AbstractGraphicsDevice;
 import javax.media.nativewindow.AbstractGraphicsScreen;
 import javax.media.nativewindow.CapabilitiesChooser;
-import javax.media.nativewindow.CapabilitiesImmutable;
 import javax.media.nativewindow.GraphicsConfigurationFactory;
 import javax.media.nativewindow.NativeSurface;
 import javax.media.nativewindow.NativeWindowFactory;
@@ -8641,7 +8639,7 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
 
     // Used in conjunction with IndexCapabilitiesChooser in pixel format
     // selection -- see getBestConfiguration
-    class CapabilitiesCapturer extends DefaultGLCapabilitiesChooser implements ExtendedCapabilitiesChooser {
+    static class CapabilitiesCapturer extends DefaultGLCapabilitiesChooser implements ExtendedCapabilitiesChooser {
         private boolean done;
         private GLCapabilities capabilities;
         private int chosenIndex = -1;
