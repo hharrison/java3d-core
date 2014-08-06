@@ -52,11 +52,8 @@ class TextureAttributesRetained extends NodeComponentRetained {
     static final int COMBINE_RGB_SCALE_CHANGED		= 0x0800;
     static final int COMBINE_ALPHA_SCALE_CHANGED	= 0x1000;
 
-    // static class variable for commands used in messages
-    static Integer commandInt[] = null;
-
     // static class variable for enums. Currently only supports 0 - 9.
-    static Integer enums[] = null;
+    static final Integer[] enums;
 
     // Texture transform
     Transform3D	transform = new Transform3D();
@@ -95,25 +92,20 @@ class TextureAttributesRetained extends NodeComponentRetained {
     // true when mirror texCoord component set
     boolean mirrorCompDirty = false;
 
-    static final void initTextureEnums() {
-	// create some of the enums Integer to be used in the messages
-	// this can be eliminated if the message is modified to take
-	// integer itself
-	//
-	// NOTE: check with the actual enum value before using this
-	//       list. This list only supports 0 - 9
-	if (enums == null) {
-	    enums = new Integer[10];
-	    for (int i = 0; i < 10; i++) {
-		 enums[i] = new Integer(i);
-	    }
+	static {
+		// create some of the enums Integer to be used in the messages
+		// this can be eliminated if the message is modified to take
+		// integer itself
+		//
+		// NOTE: check with the actual enum value before using this
+		//       list. This list only supports 0 - 9
+		enums = new Integer[10];
+		for (int i = 0; i < enums.length; i++) {
+			enums[i] = new Integer(i);
+		}
 	}
-    }
 
-
-    TextureAttributesRetained() {
-	initTextureEnums();
-    }
+	TextureAttributesRetained() {}
 
     // initCombineMode -- initializes the combine mode related fields
     //			  delay the allocation of memory to minimize
