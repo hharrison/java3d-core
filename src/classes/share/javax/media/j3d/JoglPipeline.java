@@ -7798,10 +7798,10 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
             drawBuf = GL.GL_BACK;
             switch (mode) {
                 case Canvas3D.FIELD_LEFT:
-                    drawBuf = GL2.GL_BACK_LEFT;
+                    drawBuf = VirtualUniverse.mc.swapStereoRendering ? GL2.GL_BACK_RIGHT : GL2.GL_BACK_LEFT;
                     break;
                 case Canvas3D.FIELD_RIGHT:
-                    drawBuf = GL2.GL_BACK_RIGHT;
+                    drawBuf = VirtualUniverse.mc.swapStereoRendering ? GL2.GL_BACK_LEFT :GL2.GL_BACK_RIGHT;
                     break;
                 case Canvas3D.FIELD_ALL:
                     drawBuf = GL.GL_BACK;
@@ -7811,10 +7811,10 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
             drawBuf = GL.GL_FRONT;
             switch (mode) {
                 case Canvas3D.FIELD_LEFT:
-                    drawBuf = GL2.GL_FRONT_LEFT;
+                    drawBuf = VirtualUniverse.mc.swapStereoRendering ? GL2.GL_FRONT_RIGHT : GL2.GL_FRONT_LEFT;
                     break;
                 case Canvas3D.FIELD_RIGHT:
-                    drawBuf = GL2.GL_FRONT_RIGHT;
+                    drawBuf = VirtualUniverse.mc.swapStereoRendering ? GL2.GL_FRONT_LEFT : GL2.GL_FRONT_RIGHT;
                     break;
                 case Canvas3D.FIELD_ALL:
                     drawBuf = GL.GL_FRONT;

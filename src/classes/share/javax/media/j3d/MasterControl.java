@@ -131,6 +131,12 @@ class MasterControl {
     boolean usePbuffer = true;
 
     /**
+     * Flag to indicate if the backend rendering should be swapped left-to-right
+     * in the rendering when hardware is unable to do so.
+     */
+    boolean swapStereoRendering = false;
+
+    /**
      * Flag to indicate whether should renderer view frustum culling is done;
      * true by default.
      * Set by the -Dj3d.viewFrustumCulling property, When this flag is
@@ -494,6 +500,10 @@ class MasterControl {
 	usePbuffer = getBooleanProperty("j3d.usePbuffer",
 					usePbuffer,
 					"Off-screen Pbuffer");
+
+	swapStereoRendering = getBooleanProperty("j3d.swapStereoRendering",
+					swapStereoRendering,
+					"Swap stereo fields");
 
 	viewFrustumCulling = getBooleanProperty("j3d.viewFrustumCulling", viewFrustumCulling,"View frustum culling in the renderer is");
 
