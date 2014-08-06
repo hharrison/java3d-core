@@ -83,7 +83,8 @@ class OrientedShape3DRetained extends Shape3DRetained {
 
     boolean orientedTransformDirty = true;
 
-    Transform3D[] orientedTransforms = new Transform3D[1];
+    private final Object transformLock = new Object();
+    private Transform3D[] orientedTransforms = new Transform3D[1];
     static final double EPSILON = 1.0e-6;
 
 
@@ -308,25 +309,21 @@ class OrientedShape3DRetained extends Shape3DRetained {
     }
 
 
-    Transform3D getOrientedTransform(int viewIndex) {
-	synchronized(orientedTransforms) {
-	    if (viewIndex >= orientedTransforms.length) {
-		Transform3D xform = new Transform3D();
-		Transform3D[] newList = new Transform3D[viewIndex+1];
-		for (int i = 0; i < orientedTransforms.length; i++) {
-		    newList[i] = orientedTransforms[i];
+	Transform3D getOrientedTransform(int viewIndex) {
+		synchronized (transformLock) {
+			// check if the transforms list needs to be expanded
+			if (viewIndex >= orientedTransforms.length) {
+				Transform3D[] newList = new Transform3D[viewIndex + 1];
+				System.arraycopy(orientedTransforms, 0, newList, 0, orientedTransforms.length);
+				orientedTransforms = newList;
+			}
+
+			if (orientedTransforms[viewIndex] == null)
+				orientedTransforms[viewIndex] = new Transform3D();
+
+			return orientedTransforms[viewIndex];
 		}
-		newList[viewIndex] = xform;
-		orientedTransforms = newList;
-	    }
-	    else {
-		if (orientedTransforms[viewIndex] == null) {
-		    orientedTransforms[viewIndex] = new Transform3D();
-		}
-	    }
 	}
-	return orientedTransforms[viewIndex];
-    }
 
     // called on the parent object
     // Should be synchronized so that the user thread does not modify the
