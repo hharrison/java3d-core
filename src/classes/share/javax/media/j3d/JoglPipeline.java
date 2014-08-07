@@ -6267,7 +6267,7 @@ class JoglPipeline extends Pipeline {
 			if (proxySurface != null) {
 				final UpstreamSurfaceHook ush = proxySurface.getUpstreamSurfaceHook();
 				if (ush instanceof UpstreamSurfaceHook.MutableSize) {
-					((UpstreamSurfaceHook.MutableSize)ush).setSize(newWidth, newHeight);
+					((UpstreamSurfaceHook.MutableSize)ush).setSurfaceSize(newWidth, newHeight);
 				}
 			}
 			/*else if(DEBUG) { // we have to assume surface contains the new size already, hence size check @ bottom
