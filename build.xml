@@ -7,7 +7,7 @@
   <property name="gen.dir"       location="${build.dir}/gen"/>
   <property name="class.dir"     location="${build.dir}/classes"/>
 
-  <property name="j3dtools.dir"      location="../j3dutils"/>
+  <property name="j3dtools.dir"      location="../j3d-utils"/>
   <property name="j3dtools.src.dir"  location="${j3dtools.dir}/src"/>
 
   <property name="vecmath.lib"       location="../vecmath/build/jars/vecmath.jar"/>
