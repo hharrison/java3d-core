@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.jogamp.java3d</groupId>
+	<artifactId>j3dcore</artifactId>
+	<version>1.6.0-SNAPSHOT</version>
+
+	<name>Java 3D Core</name>
+	<description>3D Graphics API for the Java Platform</description>
+
+	<licenses>
+		<license>
+			<name>GPLv2 with Classpath exception</name>
+			<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>gouessej</id>
+			<name>Julien Gouesse</name>
+			<url>https://github.com/gouessej</url>
+			<organization>JogAmp</organization>
+			<organizationUrl>http://jogamp.org/</organizationUrl>
+		</developer>
+		<developer>
+			<id>hharrison</id>
+			<name>Harvey Harrison</name>
+			<url>https://github.com/hharrison</url>
+			<organization>JogAmp</organization>
+			<organizationUrl>http://jogamp.org/</organizationUrl>
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
+			<name>Kevin Rushforth</name>
+			<url>https://www.linkedin.com/in/kevin-rushforth-8ba3b43</url>
+			<organization>Oracle Corporation</organization>
+			<organizationUrl>http://oracle.com/</organizationUrl>
+		</contributor>
+		<contributor>
+			<name>Chien Yang</name>
+			<url>https://www.linkedin.com/in/chien-yang-0884122</url>
+			<organization>Oracle Corporation</organization>
+			<organizationUrl>http://oracle.com/</organizationUrl>
+		</contributor>
+		<contributor>
+			<name>Curtis Rueden</name>
+			<url>http://loci.wisc.edu/people/curtis-rueden</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+		</contributor>
+		<contributor>
+			<name>Alessandro Borges</name>
+		</contributor>
+		<contributor>
+			<name>August Lammersdorf</name>
+		</contributor>
+		<contributor>
+			<name>Kavon Farvardin</name>
+		</contributor>
+		<contributor>
+			<name>Ken Russell</name>
+		</contributor>
+		<contributor>
+			<name>Saeid Nourian</name>
+		</contributor>
+		<contributor>
+			<name>Ken Mc Neill</name>
+		</contributor>
+		<contributor>
+			<name>Julian Ibarz</name>
+		</contributor>
+	</contributors>
+
+	<properties>
+		<jogl.version>2.3.2</jogl.version>
+
+		<!-- NB: Token values for filtering VersionInfo.java. -->
+		<version_base>1.6.0</version_base>
+		<build.spec.title>${project.name}</build.spec.title>
+		<build.spec.vendor></build.spec.vendor>
+		<build.impl.title>${project.name}</build.impl.title>
+		<build.impl.vendor></build.impl.vendor>
+		<build.impl.vendor.id></build.impl.vendor.id>
+		<build.type>daily</build.type>
+		<buildtime>daily</buildtime>
+		<buildtime_verbose>daily</buildtime_verbose>
+		<is_debug>false</is_debug>
+		<is_dev_phase>true</is_dev_phase>
+		<is_production>false</is_production>
+		<use_verbose_buildtime>true</use_verbose_buildtime>
+		<version_buildnum>11</version_buildnum>
+		<version_build>pre${version_buildnum}</version_build>
+		<version_suffix>${version_build}</version_suffix>
+
+		<!-- NB: Avoid platform encoding warning when copying resources. -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vecmath</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.gluegen</groupId>
+			<artifactId>gluegen-rt</artifactId>
+			<version>${jogl.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.jogl</groupId>
+			<artifactId>jogl-all</artifactId>
+			<version>${jogl.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<defaultGoal>install</defaultGoal>
+
+		<sourceDirectory>${basedir}/src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>${project.basedir}/src</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+					<exclude>**/package.html</exclude>
+				</excludes>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<javadocDirectory>${project.basedir}/src</javadocDirectory>
+					<links>
+						<link>http://docs.oracle.com/javase/7/docs/api/</link>
+					</links>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>templating-maven-plugin</artifactId>
+				<version>1.0-alpha-3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>filter-sources</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<sourceDirectory>${basedir}/templates</sourceDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>only-eclipse</id>
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<!--
+							NB: Make Eclipse generate code in a full build; see:
+							http://wiki.eclipse.org/M2E_plugin_execution_not_covered
+							-->
+							<groupId>org.eclipse.m2e</groupId>
+							<artifactId>lifecycle-mapping</artifactId>
+							<version>1.0.0</version>
+							<configuration>
+								<lifecycleMappingMetadata>
+									<pluginExecutions>
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>org.codehaus.mojo</groupId>
+												<artifactId>templating-maven-plugin</artifactId>
+												<versionRange>1.0-alpha-3</versionRange>
+												<goals>
+													<goal>filter-sources</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<execute>
+													<runOnConfiguration>true</runOnConfiguration>
+													<runOnIncremental>false</runOnIncremental>
+												</execute>
+											</action>
+										</pluginExecution>
+									</pluginExecutions>
+								</lifecycleMappingMetadata>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
+</project>

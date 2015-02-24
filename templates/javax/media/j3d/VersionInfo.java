@@ -51,7 +51,7 @@ package javax.media.j3d;
  * </ol>
  *
  * <p>
- * The tags of the form @STRING@ are populated by ant when the project is built
+ * The tags of the form ${string} are populated by Maven when the project is built
  *
  * @see VirtualUniverse#getProperties
  */
@@ -86,7 +86,7 @@ class VersionInfo extends Object {
     /**
      * Constant that indicates whether or not this is a debug build.
      */
-    static final boolean isDebug = @IS_DEBUG@;
+    static final boolean isDebug = ${is_debug};
 
     /**
      * This static final variable is used to enable debugging and
@@ -100,7 +100,7 @@ class VersionInfo extends Object {
      * This parameter is controlled by ant via the build.xml file. The
      * default value is true.
      */
-    static final boolean isDevPhase = @IS_DEV_PHASE@;
+    static final boolean isDevPhase = ${is_dev_phase};
 
     /**
      * This static final variable is used indicate a production
@@ -109,7 +109,7 @@ class VersionInfo extends Object {
      * This parameter is controlled by ant via the build.xml file. The
      * default value is false.
      */
-    static final boolean isProduction = @IS_PRODUCTION@;
+    static final boolean isProduction = ${is_production};
 
     /**
      * If this flag is set to true, the verbose buildtime string
@@ -118,14 +118,14 @@ class VersionInfo extends Object {
      * This parameter is controlled by ant via the build.xml file. The
      * default value is true.
      */
-    private static final boolean useVerboseBuildTime = @USE_VERBOSE_BUILDTIME@;
+    private static final boolean useVerboseBuildTime = ${use_verbose_buildtime};
 
     /**
      * String identifying the type of build, one of:
      * "daily", "stable", "beta", "fcs", or "patch". The default value
      * is "daily".
      */
-    private static final String BUILD_TYPE = "@BUILD_TYPE@";
+    private static final String BUILD_TYPE = "${build.type}";
 
     /**
      * String identifying the build number in the format
@@ -136,7 +136,7 @@ class VersionInfo extends Object {
      * For production builds, this string appears parenthetically,
      * after the first space.
      */
-    private static final String VERSION_BUILD = "@VERSION_BUILD@";
+    private static final String VERSION_BUILD = "${version_build}";
 
     /**
      * String identifying the particular build of the 3D API, for
@@ -149,14 +149,14 @@ class VersionInfo extends Object {
      * This us used as part of the j3d.version that appears before the
      * optional first space.
      */
-    private static final String VERSION_SUFFIX = "@VERSION_SUFFIX@";
+    private static final String VERSION_SUFFIX = "${version_suffix}";
 
     /**
      * Date stamp
      *
      * This is only used for daily builds.
      */
-    private static final String BUILDTIME = "@BUILDTIME@";
+    private static final String BUILDTIME = "${buildtime}";
 
     /**
      * Specification version (major and minor version only). This
@@ -167,12 +167,12 @@ class VersionInfo extends Object {
     /**
      * Specification vendor.
      */
-    private static final String SPECIFICATION_VENDOR = "@SPEC_VENDOR@";
+    private static final String SPECIFICATION_VENDOR = "${build.spec.vendor}";
 
     /**
      * Primary implementation vendor.
      */
-    private static final String VENDOR_PRIMARY = "@IMPL_VENDOR@";
+    private static final String VENDOR_PRIMARY = "${build.impl.vendor}";
 
     /**
      * Base version number. This is the major.minor.subminor version
@@ -180,7 +180,7 @@ class VersionInfo extends Object {
      * major and minor version <i>must</i> be the same as the specification
      * version.
      */
-    private static final String VERSION_BASE = "@VERSION_BASE@";
+    private static final String VERSION_BASE = "${project.version}";
 
     /**
      * Boolean flag indicating that the version of the 3D API is
@@ -210,7 +210,7 @@ class VersionInfo extends Object {
      * will automatically be added) and before the optional dev
      * string.  This string is only used for non-fcs builds.
      */
-    private static final String BUILDTIME_VERBOSE = "@BUILDTIME_VERBOSE@";
+    private static final String BUILDTIME_VERBOSE = "${buildtime_verbose}";
 
     private static boolean isNonEmpty(String str) {
 	if ((str == null) || (str.length() == 0)) {
