@@ -26,8 +26,8 @@
 
 package javax.media.j3d;
 
-import javax.media.nativewindow.NativeWindow;
-import javax.media.opengl.GLDrawable;
+import com.jogamp.nativewindow.NativeWindow;
+import com.jogamp.opengl.GLDrawable;
 
 /**
  * Drawable class for the Jogl rendering pipeline.

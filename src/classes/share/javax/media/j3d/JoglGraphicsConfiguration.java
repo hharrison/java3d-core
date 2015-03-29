@@ -38,7 +38,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.VolatileImage;
 
 import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
-import javax.media.opengl.GLCapabilities;
+import com.jogamp.opengl.GLCapabilities;
 
 /**
  * Class implementing the GraphicsConfiguration API, but not a "real"
