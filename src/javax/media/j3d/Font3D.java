@@ -37,13 +37,12 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
-
-import com.sun.j3d.utils.geometry.GeometryInfo;
-import com.sun.j3d.utils.geometry.NormalGenerator;
 
 /**
  * The Font3D object is used to store extruded 2D glyphs.  These
@@ -468,8 +467,11 @@ private static class IntVector {
 	    for (i = 0; i < islandCounts.length; i++) {
 	      numPoints += outVerts[i].length;
 	    }
+
+	    final GeometryService gs = newGeometryService();
 	    int vertOffset =
-	      triangulateIslands(islandCounts, outVerts, contourCounts, triangData);
+	      gs.triangulateIslands(islandCounts, outVerts, contourCounts, triangData);
+
 	    // Multiply by 2 since we create 2 faces of the font
 	    // Second term is for side-faces along depth of the font
 	    if (fontExtrusion == null)
@@ -944,30 +946,15 @@ private static class IntVector {
 	return geo;
     }
 
-	/**
-	 * Loops through each island, calling triangulator once per island. Combines
-	 * triangle data for all islands together in one object.
-	 */
-	private int triangulateIslands(final int[][] islandCounts,
-		final Point3f[][] outVerts, final int[] contourCounts,
-		final ArrayList<GeometryArray> triangData)
-	{
-		int vertOffset = 0;
-		NormalGenerator ng = new NormalGenerator();
-		for (int i = 0; i < islandCounts.length; i++) {
-			contourCounts[0] = islandCounts[i].length;
-			GeometryInfo gi = new GeometryInfo(GeometryInfo.POLYGON_ARRAY);
-			gi.setCoordinates(outVerts[i]);
-			gi.setStripCounts(islandCounts[i]);
-			gi.setContourCounts(contourCounts);
-			ng.generateNormals(gi);
+	private GeometryService newGeometryService() {
+		final ServiceLoader<GeometryService> gsLoader =
+			ServiceLoader.load(GeometryService.class);
 
-			GeometryArray ga = gi.getGeometryArray(false, false, false);
-			vertOffset += ga.getVertexCount();
+		final Iterator<GeometryService> iter = gsLoader.iterator();
+		if (iter.hasNext()) return iter.next();
 
-			triangData.add(ga);
-		}
-		return vertOffset;
+		throw new IllegalStateException("No GeometryService implementation found. "
+			+ "Please add j3d-core-utils to the classpath.");
 	}
 
     static boolean getNormal(Point3f p1, Point3f p2, Point3f p3, Vector3f normal) {
