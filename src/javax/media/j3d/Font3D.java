@@ -466,12 +466,14 @@ private static class IntVector {
 	    Point3f q1 = new Point3f(), q2 = new Point3f(), q3 = new Point3f();
 	    Vector3f n1 = new Vector3f(), n2 = new Vector3f();
 	    numPoints = 0;
+	    for (i = 0; i < islandCounts.length; i++) {
+	      numPoints += outVerts[i].length;
+	    }
 	    //Now loop thru each island, calling triangulator once per island.
 	    //Combine triangle data for all islands together in one object.
 		NormalGenerator ng = new NormalGenerator();
 		for (i = 0; i < islandCounts.length; i++) {
 			contourCounts[0] = islandCounts[i].length;
-			numPoints += outVerts[i].length;
 			GeometryInfo gi = new GeometryInfo(GeometryInfo.POLYGON_ARRAY);
 			gi.setCoordinates(outVerts[i]);
 			gi.setStripCounts(islandCounts[i]);
