@@ -468,23 +468,8 @@ private static class IntVector {
 	    for (i = 0; i < islandCounts.length; i++) {
 	      numPoints += outVerts[i].length;
 	    }
-	    //Now loop thru each island, calling triangulator once per island.
-	    //Combine triangle data for all islands together in one object.
-	    int vertOffset = 0;
-		NormalGenerator ng = new NormalGenerator();
-		for (i = 0; i < islandCounts.length; i++) {
-			contourCounts[0] = islandCounts[i].length;
-			GeometryInfo gi = new GeometryInfo(GeometryInfo.POLYGON_ARRAY);
-			gi.setCoordinates(outVerts[i]);
-			gi.setStripCounts(islandCounts[i]);
-			gi.setContourCounts(contourCounts);
-			ng.generateNormals(gi);
-
-			GeometryArray ga = gi.getGeometryArray(false, false, false);
-			vertOffset += ga.getVertexCount();
-
-			triangData.add(ga);
-		}
+	    int vertOffset =
+	      triangulateIslands(islandCounts, outVerts, contourCounts, triangData);
 	    // Multiply by 2 since we create 2 faces of the font
 	    // Second term is for side-faces along depth of the font
 	    if (fontExtrusion == null)
@@ -959,6 +944,31 @@ private static class IntVector {
 	return geo;
     }
 
+	/**
+	 * Loops through each island, calling triangulator once per island. Combines
+	 * triangle data for all islands together in one object.
+	 */
+	private int triangulateIslands(final int[][] islandCounts,
+		final Point3f[][] outVerts, final int[] contourCounts,
+		final ArrayList<GeometryArray> triangData)
+	{
+		int vertOffset = 0;
+		NormalGenerator ng = new NormalGenerator();
+		for (int i = 0; i < islandCounts.length; i++) {
+			contourCounts[0] = islandCounts[i].length;
+			GeometryInfo gi = new GeometryInfo(GeometryInfo.POLYGON_ARRAY);
+			gi.setCoordinates(outVerts[i]);
+			gi.setStripCounts(islandCounts[i]);
+			gi.setContourCounts(contourCounts);
+			ng.generateNormals(gi);
+
+			GeometryArray ga = gi.getGeometryArray(false, false, false);
+			vertOffset += ga.getVertexCount();
+
+			triangData.add(ga);
+		}
+		return vertOffset;
+	}
 
     static boolean getNormal(Point3f p1, Point3f p2, Point3f p3, Vector3f normal) {
 	Vector3f v1 = new Vector3f();
