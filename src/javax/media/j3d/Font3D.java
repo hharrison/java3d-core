@@ -461,7 +461,7 @@ private static class IntVector {
 
 	    int[] contourCounts = new int[1];
 	    int currCoordIndex = 0, vertOffset = 0;
-		ArrayList<GeometryArray> triangData = new ArrayList<GeometryArray>();
+	    ArrayList<GeometryArray> triangData = new ArrayList<GeometryArray>();
 
 	    Point3f q1 = new Point3f(), q2 = new Point3f(), q3 = new Point3f();
 	    Vector3f n1 = new Vector3f(), n2 = new Vector3f();
