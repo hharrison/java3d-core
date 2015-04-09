@@ -460,7 +460,6 @@ private static class IntVector {
 	    vertices = null;
 
 	    int[] contourCounts = new int[1];
-	    int currCoordIndex = 0, vertOffset = 0;
 	    ArrayList<GeometryArray> triangData = new ArrayList<GeometryArray>();
 
 	    Point3f q1 = new Point3f(), q2 = new Point3f(), q3 = new Point3f();
@@ -471,6 +470,7 @@ private static class IntVector {
 	    }
 	    //Now loop thru each island, calling triangulator once per island.
 	    //Combine triangle data for all islands together in one object.
+	    int vertOffset = 0;
 		NormalGenerator ng = new NormalGenerator();
 		for (i = 0; i < islandCounts.length; i++) {
 			contourCounts[0] = islandCounts[i].length;
@@ -510,7 +510,7 @@ private static class IntVector {
 	    // last known non-degenerate normal
 	    Vector3f goodNormal = new Vector3f();
 
-
+	    int currCoordIndex = 0;
 	    for (j=0;j < islandCounts.length;j++) {
 			GeometryArray ga = triangData.get(j);
 		vertOffset = ga.getVertexCount();
