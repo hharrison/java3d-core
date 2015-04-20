@@ -72,7 +72,7 @@
   </target>
 
   <target name="compile" depends="gen">
-    <javac srcdir="${src.dir}/classes/share:${j3dtools.src.dir}/classes/share:${gen.dir}/src"
+    <javac srcdir="${src.dir}:${j3dtools.src.dir}/classes/share:${gen.dir}/src"
            destdir="${class.dir}"
            source="1.5"
            target="1.5"
@@ -83,7 +83,7 @@
            classpath="${vecmath.lib}:${jogl.lib}:${gluegen.lib}"/>
 
     <copy todir="${class.dir}">
-      <fileset dir="${src.dir}/classes/share"          includes="**/*.properties"/>
+      <fileset dir="${src.dir}"          includes="**/*.properties"/>
       <fileset dir="${j3dtools.src.dir}/classes/share" includes="**/*.properties"/>
     </copy>
   </target>
@@ -122,7 +122,7 @@
     </jar>
     
     <zip destfile="${build.dir}/jars/j3dcore-src.zip">
-      <fileset dir="${src.dir}/classes/share" includes="javax/**/*.java"/>
+      <fileset dir="${src.dir}" includes="javax/**/*.java"/>
       <fileset dir="${gen.dir}/src" includes="javax/**/*.java"/>
       <fileset dir="." includes="COPYRIGHT.txt"/>
       <fileset dir="." includes="LICENSE.txt"/>
