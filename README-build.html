@@ -23,14 +23,17 @@ repositories:<br>
 <p>These three top-level directories must be named exactly as
 shown above and they must be sibling directories. To ensure this, run
 the git clone command for each of the respositories from the same
-parent
-directory. For example:<br>
+parent directory. You will also need the gluegen and jogl builds for at least
+version 2.3.1. For example:<br>
 </p>
 <ul>
   <code>cd &lt;j3d-root-dir&gt;</code><br>
   <code>git clone git://github.com/hharrison/vecmath</code><br>
   <code>git clone git://github.com/hharrison/java3d-core j3d-core</code><br>
-  <code>git clone git://github.com/hharrison/java3d-utils j3d-utils</code>
+  <code>git clone git://github.com/hharrison/java3d-utils j3d-utils</code><br>
+  <code>mkdir jogl-v2.3.1</code><br>
+  <code>curl http://jogamp.org/deployment/v2.3.1/jar/gluegen-rt.jar > jogl-v2.3.1/gluegen-rt.jar</code><br>
+  <code>curl http://jogamp.org/deployment/v2.3.1/jar/jogl-all.jar > jogl-v2.3.1/jogl-all.jar</code>
 </ul>
 <p>NOTE: you must first build the javax.vecmath package before building
 the javax.media.j3d and com.sun.j3d.* packages. See the <a
