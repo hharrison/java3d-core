@@ -84,7 +84,7 @@
 
     <copy todir="${class.dir}">
       <fileset dir="${src.dir}"          includes="**/*.properties"/>
-      <fileset dir="${j3dtools.src.dir}/classes/share" includes="**/*.properties"/>
+      <fileset dir="${j3dtools.src.dir}/classes/share" includes="META-INF/** **/*.properties"/>
     </copy>
   </target>
   
@@ -118,7 +118,7 @@
         <attribute name="Extension-Name"            value="javax.media.j3d"/>
         <attribute name="Implementation-Vendor-Id"  value="${build.impl.vendor.id}"/>
       </manifest>
-      <fileset dir="${class.dir}" includes="com/**/*"/>
+      <fileset dir="${class.dir}" includes="META-INF/** com/**/*"/>
     </jar>
     
     <zip destfile="${build.dir}/jars/j3dcore-src.zip">
