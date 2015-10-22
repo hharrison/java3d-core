@@ -37,13 +37,12 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
-
-import com.sun.j3d.utils.geometry.GeometryInfo;
-import com.sun.j3d.utils.geometry.NormalGenerator;
 
 /**
  * The Font3D object is used to store extruded 2D glyphs.  These
@@ -460,29 +459,19 @@ private static class IntVector {
 	    vertices = null;
 
 	    int[] contourCounts = new int[1];
-	    int currCoordIndex = 0, vertOffset = 0;
-		ArrayList<GeometryArray> triangData = new ArrayList<GeometryArray>();
+	    ArrayList<GeometryArray> triangData = new ArrayList<GeometryArray>();
 
 	    Point3f q1 = new Point3f(), q2 = new Point3f(), q3 = new Point3f();
 	    Vector3f n1 = new Vector3f(), n2 = new Vector3f();
 	    numPoints = 0;
-	    //Now loop thru each island, calling triangulator once per island.
-	    //Combine triangle data for all islands together in one object.
-		NormalGenerator ng = new NormalGenerator();
-		for (i = 0; i < islandCounts.length; i++) {
-			contourCounts[0] = islandCounts[i].length;
-			numPoints += outVerts[i].length;
-			GeometryInfo gi = new GeometryInfo(GeometryInfo.POLYGON_ARRAY);
-			gi.setCoordinates(outVerts[i]);
-			gi.setStripCounts(islandCounts[i]);
-			gi.setContourCounts(contourCounts);
-			ng.generateNormals(gi);
+	    for (i = 0; i < islandCounts.length; i++) {
+	      numPoints += outVerts[i].length;
+	    }
 
-			GeometryArray ga = gi.getGeometryArray(false, false, false);
-			vertOffset += ga.getVertexCount();
+	    final GeometryService gs = newGeometryService();
+	    int vertOffset =
+	      gs.triangulateIslands(islandCounts, outVerts, contourCounts, triangData);
 
-			triangData.add(ga);
-		}
 	    // Multiply by 2 since we create 2 faces of the font
 	    // Second term is for side-faces along depth of the font
 	    if (fontExtrusion == null)
@@ -508,7 +497,7 @@ private static class IntVector {
 	    // last known non-degenerate normal
 	    Vector3f goodNormal = new Vector3f();
 
-
+	    int currCoordIndex = 0;
 	    for (j=0;j < islandCounts.length;j++) {
 			GeometryArray ga = triangData.get(j);
 		vertOffset = ga.getVertexCount();
@@ -957,6 +946,16 @@ private static class IntVector {
 	return geo;
     }
 
+	private GeometryService newGeometryService() {
+		final ServiceLoader<GeometryService> gsLoader =
+			ServiceLoader.load(GeometryService.class);
+
+		final Iterator<GeometryService> iter = gsLoader.iterator();
+		if (iter.hasNext()) return iter.next();
+
+		throw new IllegalStateException("No GeometryService implementation found. "
+			+ "Please add j3d-core-utils to the classpath.");
+	}
 
     static boolean getNormal(Point3f p1, Point3f p2, Point3f p3, Vector3f normal) {
 	Vector3f v1 = new Vector3f();
