@@ -7,12 +7,12 @@
   <property name="gen.dir"       location="${build.dir}/gen"/>
   <property name="class.dir"     location="${build.dir}/classes"/>
 
-  <property name="j3dtools.dir"      location="../j3dutils"/>
+  <property name="j3dtools.dir"      location="../j3d-utils"/>
   <property name="j3dtools.src.dir"  location="${j3dtools.dir}/src"/>
 
   <property name="vecmath.lib"       location="../vecmath/build/jars/vecmath.jar"/>
-  <property name="jogl.lib"          location="../../jogl-v2.3.1/jogl-all.jar"/>
-  <property name="gluegen.lib"       location="../../jogl-v2.3.1/gluegen-rt.jar"/>
+  <property name="jogl.lib"          location="../jogl-v2.3.1/jogl-all.jar"/>
+  <property name="gluegen.lib"       location="../jogl-v2.3.1/gluegen-rt.jar"/>
   
   <property name="version_base"             value="1.6.0"/>
   <property name="build.spec.title"         value="3D Graphics API for the Java Platform"/>
@@ -27,7 +27,7 @@
   <property name="is_dev_phase"             value="true"/>
   <property name="is_production"            value="false"/>
   <property name="use_verbose_buildtime"    value="true"/>
-  <property name="version_buildnum"         value="11"/>
+  <property name="version_buildnum"         value="12"/>
   <property name="version_build"            value="pre${version_buildnum}"/>
   <property name="version_suffix"           value="${version_build}"/>
 
@@ -37,19 +37,6 @@
 
   <target name="gen">
     <mkdir dir="${gen.dir}"/>
-
-    <copy todir="${gen.dir}"  overwrite="true">
-      <fileset dir="${src.dir}/classes"          includes="J3dVersion"/>
-      <fileset dir="${j3dtools.src.dir}/classes" includes="ToolsVersion"/>
-      <filterset>
-        <filter token="VERSION_BASE"    value="${version_base}"/>
-        <filter token="SPEC_TITLE"      value="${build.spec.title}"/>
-        <filter token="SPEC_VENDOR"     value="${build.spec.vendor}"/>
-        <filter token="IMPL_TITLE"      value="${build.impl.title}"/>
-        <filter token="IMPL_VENDOR"     value="${build.impl.vendor}"/>
-        <filter token="IMPL_VENDOR_ID"  value="${build.impl.vendor.id}"/>
-      </filterset>
-    </copy>
 
     <copy todir="${class.dir}/javax">
       <fileset dir="." includes="COPYRIGHT.txt"/>
@@ -85,7 +72,7 @@
   </target>
 
   <target name="compile" depends="gen">
-    <javac srcdir="${src.dir}/classes/share:${j3dtools.src.dir}/classes/share:${gen.dir}/src"
+    <javac srcdir="${src.dir}:${j3dtools.src.dir}/classes/share:${gen.dir}/src"
            destdir="${class.dir}"
            source="1.5"
            target="1.5"
@@ -96,24 +83,46 @@
            classpath="${vecmath.lib}:${jogl.lib}:${gluegen.lib}"/>
 
     <copy todir="${class.dir}">
-      <fileset dir="${src.dir}/classes/share"          includes="**/*.properties"/>
+      <fileset dir="${src.dir}"          includes="**/*.properties"/>
       <fileset dir="${j3dtools.src.dir}/classes/share" includes="**/*.properties"/>
     </copy>
   </target>
   
   <target name="jar" depends="compile">
     <jar jarfile="${build.dir}/jars/j3dcore.jar"
-         manifest="${gen.dir}/J3dVersion" update="no" compress="false">
+         update="no" compress="false">
+      <manifest>
+        <attribute name="Manifest-Version"          value="1.0"/>
+        <attribute name="Specification-Title"       value="${build.spec.title}"/>
+        <attribute name="Specification-Version"     value="1.6"/>
+        <attribute name="Specification-Vendor"      value="${build.spec.vendor}"/>
+        <attribute name="Implementation-Title"      value="${build.impl.title}"/>
+        <attribute name="Implementation-Version"    value="${version_base}"/>
+        <attribute name="Implementation-Vendor"     value="${build.impl.vendor}"/>
+        <attribute name="Extension-Name"            value="javax.media.j3d"/>
+        <attribute name="Implementation-Vendor-Id"  value="${build.impl.vendor.id}"/>
+      </manifest>
       <fileset dir="${class.dir}" includes="javax/**/*"/>
     </jar>
 
     <jar jarfile="${build.dir}/jars/j3dutils.jar"
-         manifest="${gen.dir}/ToolsVersion" update="no" compress="false">
+         update="no" compress="false">
+      <manifest>
+        <attribute name="Manifest-Version"          value="1.0"/>
+        <attribute name="Specification-Title"       value="${build.spec.title}"/>
+        <attribute name="Specification-Version"     value="1.6"/>
+        <attribute name="Specification-Vendor"      value="${build.spec.vendor}"/>
+        <attribute name="Implementation-Title"      value="3D Utilities"/>
+        <attribute name="Implementation-Version"    value="${version_base}"/>
+        <attribute name="Implementation-Vendor"     value="${build.impl.vendor}"/>
+        <attribute name="Extension-Name"            value="javax.media.j3d"/>
+        <attribute name="Implementation-Vendor-Id"  value="${build.impl.vendor.id}"/>
+      </manifest>
       <fileset dir="${class.dir}" includes="com/**/*"/>
     </jar>
     
     <zip destfile="${build.dir}/jars/j3dcore-src.zip">
-      <fileset dir="${src.dir}/classes/share" includes="javax/**/*.java"/>
+      <fileset dir="${src.dir}" includes="javax/**/*.java"/>
       <fileset dir="${gen.dir}/src" includes="javax/**/*.java"/>
       <fileset dir="." includes="COPYRIGHT.txt"/>
       <fileset dir="." includes="LICENSE.txt"/>

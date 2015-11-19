@@ -12,26 +12,28 @@ the 3D packages</span></h3>
  style="font-weight: bold;"></span></span><span
  style="font-weight: bold; text-decoration: underline;"> </span></p>
 <p>To
-build the 3D packages, you must checkout the following three
-svn
+build the 3D packages, you must clone the following three
 repositories:<br>
 </p>
 <ul>
-  <li><a href="http://j3d-core.dev.java.net/">j3d-core</a></li>
-  <li><a href="http://j3d-core-utils.dev.java.net/">j3d-core-utils</a></li>
-  <li><a href="http://vecmath.dev.java.net/">vecmath</a></li>
+  <li><a href="https://github.com/hharrison/java3d-core/">j3d-core</a></li>
+  <li><a href="https://github.com/hharrison/java3d-utils/">j3d-utils</a></li>
+  <li><a href="https://github.com/hharrison/vecmath/">vecmath</a></li>
 </ul>
 <p>These three top-level directories must be named exactly as
 shown above and they must be sibling directories. To ensure this, run
-the svn checkout command for each of the respositories from the same
-parent
-directory. For example:<br>
+the git clone command for each of the respositories from the same
+parent directory. You will also need the gluegen and jogl builds for at least
+version 2.3.1. For example:<br>
 </p>
 <ul>
   <code>cd &lt;j3d-root-dir&gt;</code><br>
-  <code>svn checkout https://vecmath.dev.java.net/svn/vecmath/branches/dev-1_6 vecmath</code><br>
-  <code>svn checkout https://j3d-core.dev.java.net/svn/j3d-core/branches/dev-1_6 j3d-core</code><br>
-  <code>svn checkout https://j3d-core-utils.dev.java.net/svn/j3d-core-utils/branches/dev-1_6 j3d-core-utils</code>
+  <code>git clone git://github.com/hharrison/vecmath</code><br>
+  <code>git clone git://github.com/hharrison/java3d-core j3d-core</code><br>
+  <code>git clone git://github.com/hharrison/java3d-utils j3d-utils</code><br>
+  <code>mkdir jogl-v2.3.1</code><br>
+  <code>curl http://jogamp.org/deployment/v2.3.1/jar/gluegen-rt.jar > jogl-v2.3.1/gluegen-rt.jar</code><br>
+  <code>curl http://jogamp.org/deployment/v2.3.1/jar/jogl-all.jar > jogl-v2.3.1/jogl-all.jar</code>
 </ul>
 <p>NOTE: you must first build the javax.vecmath package before building
 the javax.media.j3d and com.sun.j3d.* packages. See the <a
