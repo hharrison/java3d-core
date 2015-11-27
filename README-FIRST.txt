@@ -9,8 +9,6 @@ The source code license information for this project is in LICENSE.txt
 Additional information and license restrictions for third party source
 code are found in the THIRDPARTY-LICENSE-*.txt files.
 
-Instructions for building this project are in README-build.html
-
 Note that the source code in this directory is untested and presumed
 incompatible with the Java 3D(TM) API specification. You must only use
 this code in accordance with the terms under which the code is
