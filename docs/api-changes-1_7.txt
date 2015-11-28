@@ -1,0 +1,6 @@
+This document contains the proposed API changes to the Java 3D 1.7 API
+that deviate from the 1.6 API:
+
+I. Relocation of the javax.media package into org.jogamp to be consistent 
+with the Maven group identifier and to avoid name clashes with the obsolete
+versions of Java3D shipped with OS X and loaded as extensions.
