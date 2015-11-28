@@ -76,7 +76,7 @@
 	</contributors>
 
 	<properties>
-		<jogl.version>2.3.2</jogl.version>
+		<jogamp.version>2.3.2</jogamp.version>
 
 		<!-- NB: Token values for filtering VersionInfo.java. -->
 		<version_base>1.6.0</version_base>
@@ -110,12 +110,12 @@
 		<dependency>
 			<groupId>org.jogamp.gluegen</groupId>
 			<artifactId>gluegen-rt</artifactId>
-			<version>${jogl.version}</version>
+			<version>${jogamp.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jogamp.jogl</groupId>
 			<artifactId>jogl-all</artifactId>
-			<version>${jogl.version}</version>
+			<version>${jogamp.version}</version>
 		</dependency>
 	</dependencies>
 
