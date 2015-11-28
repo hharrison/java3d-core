@@ -120,19 +120,6 @@
 	</dependencies>
 
 	<build>
-		<defaultGoal>install</defaultGoal>
-
-		<sourceDirectory>${basedir}/src</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>${project.basedir}/src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-					<exclude>**/package.html</exclude>
-				</excludes>
-			</resource>
-		</resources>
-
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -155,11 +142,11 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
+				<version>2.10.3</version>
 				<configuration>
-					<javadocDirectory>${project.basedir}/src</javadocDirectory>
+					<javadocDirectory>${project.basedir}/src/main/java</javadocDirectory>
 					<links>
-						<link>http://docs.oracle.com/javase/7/docs/api/</link>
+						<link>http://docs.oracle.com/javase/8/docs/api/</link>
 					</links>
 				</configuration>
 			</plugin>
