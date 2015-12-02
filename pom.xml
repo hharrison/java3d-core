@@ -161,9 +161,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<sourceDirectory>${basedir}/templates</sourceDirectory>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
