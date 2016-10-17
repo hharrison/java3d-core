@@ -7068,6 +7068,8 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
         gl.glDepthFunc(GL.GL_LEQUAL);
         gl.glEnable(GL2.GL_COLOR_MATERIAL);
         gl.glDisable(GL.GL_COLOR_LOGIC_OP);
+        gl.glDisable(GL.GL_STENCIL_TEST);
+       
     }
 
     // native method for setting default texture
