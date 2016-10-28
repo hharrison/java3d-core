@@ -833,6 +833,11 @@ private static String getProperty(final String prop) {
             // Use default pipeline
         }
 
+		// Java 3D cannot run in headless mode unless using the noop renderer
+		if (java.awt.GraphicsEnvironment.isHeadless() && pipelineType != Pipeline.Type.NOOP) {
+			throw new java.awt.HeadlessException();
+		}
+
         // Construct the singleton Pipeline instance
 		Pipeline.createPipeline(pipelineType);
 
