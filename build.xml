@@ -1,19 +1,23 @@
 <?xml version="1.0"?>
 
-<project name="j3dall" default="jar" basedir=".">
+<project name="j3dall" default="all" basedir=".">
 
   <property name="src.dir"       location="src"/>
   <property name="build.dir"     location="build"/>
   <property name="gen.dir"       location="${build.dir}/gen"/>
   <property name="class.dir"     location="${build.dir}/classes"/>
+  <property name="javadoc.dir"   location="${build.dir}/javadoc"/>
 
   <property name="j3dtools.dir"      location="../j3d-utils"/>
   <property name="j3dtools.src.dir"  location="${j3dtools.dir}/src"/>
 
-  <property name="vecmath.lib"       location="../vecmath/build/jars/vecmath.jar"/>
+  <property name="vecmath.dir"      location="../vecmath"/>
+  <property name="vecmath.src.dir"  location="${vecmath.dir}/src"/>
+  <property name="vecmath.lib"       location="${vecmath.dir}/build/jars/vecmath.jar"/>
+
   <property name="jogl.lib"          location="../jogl-v2.3.2/jogl-all.jar"/>
   <property name="gluegen.lib"       location="../jogl-v2.3.2/gluegen-rt.jar"/>
-  
+
   <property name="version_base"             value="1.6.0"/>
   <property name="build.spec.title"         value="3D Graphics API for the Java Platform"/>
   <property name="build.spec.vendor"        value=""/>
@@ -87,7 +91,7 @@
       <fileset dir="${j3dtools.src.dir}" includes="**/*.properties"/>
     </copy>
   </target>
-  
+
   <target name="jar" depends="compile">
     <jar jarfile="${build.dir}/jars/j3dcore.jar"
          update="no" compress="false">
@@ -120,7 +124,7 @@
       </manifest>
       <fileset dir="${class.dir}" includes="com/**/*"/>
     </jar>
-    
+
     <zip destfile="${build.dir}/jars/j3dcore-src.zip">
       <fileset dir="${src.dir}" includes="javax/**/*.java"/>
       <fileset dir="${gen.dir}/src" includes="javax/**/*.java"/>
@@ -135,4 +139,16 @@
     </zip>
 
   </target>
+
+  <target name="docs">
+    <mkdir dir="${javadoc.dir}"/>
+
+    <javadoc sourcepath="${src.dir}:${j3dtools.src.dir}:${vecmath.src.dir}"
+             packagenames="javax.media.j3d.*,com.sun.j3d.*,javax.vecmath.*"
+             destdir="${javadoc.dir}"
+             windowtitle="Java3D ${version_base}">
+    </javadoc>
+  </target>
+
+  <target name="all" depends="jar,docs" />
 </project>
