@@ -6789,7 +6789,8 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
         if (VERBOSE) System.err.println("JoglPipeline.updateMaterialColor()");
 
 		GL2 gl = context(ctx).getGL().getGL2();
-        gl.glColor4f(r, g, b, a);
+		// FIXME: Removed call to glColor4f because of segfault issues in Parallels Desktop driver
+		// gl.glColor4f(r, g, b, a);
         gl.glDisable(GL2.GL_LIGHTING);
     }
 
@@ -7218,9 +7219,10 @@ void swapBuffers(Canvas3D cv, Context ctx, Drawable drawable) {
 
 		GL2 gl = context(ctx).getGL().getGL2();
 
-        if (!enableLight) {
-            gl.glColor4f(r, g, b, a);
-        }
+		if (!enableLight) {
+			// FIXME: Removed call to glColor4f because of segfault issues in Parallels Desktop driver
+			// gl.glColor4f(r, g, b, a);
+		}
         gl.glShadeModel(GL2.GL_SMOOTH);
     }
 
