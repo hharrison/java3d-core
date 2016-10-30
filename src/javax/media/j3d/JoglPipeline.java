@@ -52,6 +52,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.jogamp.common.nio.Buffers;
 import com.jogamp.nativewindow.AbstractGraphicsDevice;
 import com.jogamp.nativewindow.AbstractGraphicsScreen;
 import com.jogamp.nativewindow.CapabilitiesChooser;
@@ -61,7 +62,12 @@ import com.jogamp.nativewindow.NativeWindowFactory;
 import com.jogamp.nativewindow.ProxySurface;
 import com.jogamp.nativewindow.UpstreamSurfaceHook;
 import com.jogamp.nativewindow.VisualIDHolder;
+import com.jogamp.nativewindow.awt.AWTGraphicsConfiguration;
+import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
+import com.jogamp.nativewindow.awt.AWTGraphicsScreen;
+import com.jogamp.nativewindow.awt.JAWTWindow;
 import com.jogamp.opengl.DefaultGLCapabilitiesChooser;
+import com.jogamp.opengl.FBObject;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLCapabilities;
@@ -74,13 +80,6 @@ import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.GLFBODrawable;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.Threading;
-
-import com.jogamp.common.nio.Buffers;
-import com.jogamp.nativewindow.awt.AWTGraphicsConfiguration;
-import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
-import com.jogamp.nativewindow.awt.AWTGraphicsScreen;
-import com.jogamp.nativewindow.awt.JAWTWindow;
-import com.jogamp.opengl.FBObject;
 
 /**
  * Concrete implementation of Pipeline class for the JOGL rendering
@@ -8309,7 +8308,8 @@ static boolean hasFBObjectSizeChanged(JoglDrawable jdraw, int width, int height)
         if (gct.getSceneAntialiasing() != GraphicsConfigTemplate.UNNECESSARY &&
             gct.getDoubleBuffer() != GraphicsConfigTemplate.UNNECESSARY) {
             caps.setSampleBuffers(true);
-            caps.setNumSamples(2);
+            int numSamples = MasterControl.getIntegerProperty("j3d.numSamples", 2);
+            caps.setNumSamples(numSamples);
         } else {
             caps.setSampleBuffers(false);
             caps.setNumSamples(0);
