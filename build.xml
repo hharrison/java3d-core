@@ -25,14 +25,14 @@
   <property name="build.impl.vendor"        value=""/>
   <property name="build.impl.vendor.id"     value=""/>
 
-  <property name="build.type"               value="daily"/>
-  <property name="buildtime"                value="daily"/>
-  <property name="buildtime_verbose"        value="daily"/>
-  <property name="is_dev_phase"             value="true"/>
-  <property name="is_production"            value="false"/>
+  <property name="build.type"               value="fcs"/>
+  <property name="buildtime"                value="fcs"/>
+  <property name="buildtime_verbose"        value="fcs"/>
+  <property name="is_dev_phase"             value="false"/>
+  <property name="is_production"            value="true"/>
   <property name="use_verbose_buildtime"    value="true"/>
-  <property name="version_buildnum"         value="12"/>
-  <property name="version_build"            value="pre${version_buildnum}"/>
+  <property name="version_buildnum"         value=""/>
+  <property name="version_build"            value=""/>
   <property name="version_suffix"           value="${version_build}"/>
 
   <target name="clean">
