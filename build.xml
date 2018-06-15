@@ -146,6 +146,7 @@
     <javadoc sourcepath="${src.dir}:${j3dtools.src.dir}:${vecmath.src.dir}"
              packagenames="javax.media.j3d.*,com.sun.j3d.*,javax.vecmath.*"
              destdir="${javadoc.dir}"
+             additionalparam="-Xdoclint:none"
              windowtitle="Java3D ${version_base}">
     </javadoc>
   </target>
