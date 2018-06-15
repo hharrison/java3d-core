@@ -624,9 +624,6 @@ NodeRetained getParent() {
 
     void recombineAbove() {}
 
-    synchronized void updateLocalToVworld() {}
-
-
     @Override
     void setLive(SetLiveState s) {
 	int oldrefCount = refCount;

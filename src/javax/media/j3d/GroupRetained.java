@@ -2128,17 +2128,6 @@ synchronized void setAltAppScope() {
                 (TargetsInterface)parentSwitchLink;
     }
 
-
-    @Override
-    synchronized void updateLocalToVworld() {
-	// For each children call .....
-	for (int i=children.size()-1; i>=0; i--) {
-		NodeRetained child = children.get(i);
-	    if(child != null)
-		child.updateLocalToVworld();
-	}
-    }
-
     @Override
     void setNodeData(SetLiveState s) {
 	super.setNodeData(s);
