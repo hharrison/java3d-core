@@ -78,8 +78,8 @@
   <target name="compile" depends="gen">
     <javac srcdir="${src.dir}:${j3dtools.src.dir}:${gen.dir}/src"
            destdir="${class.dir}"
-           source="1.5"
-           target="1.5"
+           source="1.6"
+           target="1.6"
            debug="true"
            debuglevel="lines,source"
            deprecation="off"
