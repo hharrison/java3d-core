@@ -26,18 +26,8 @@
 
 package javax.media.j3d;
 
-import java.awt.AWTEvent;
-import java.awt.Canvas;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.IllegalComponentStateException;
-import java.awt.Point;
-import java.awt.Window;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -1227,9 +1217,13 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	if (!firstPaintCalled && added && validCanvas &&
 	    validGraphicsMode()) {
 
+        final Graphics2D g2d = (Graphics2D) g;
+        final AffineTransform t = g2d.getTransform();
+
 	    try {
-		newSize = getSize();
-		newPosition = getLocationOnScreen();
+	        Dimension scaledSize = getSize();
+	        newSize = new Dimension((int)(scaledSize.getWidth()*t.getScaleX()), (int)(scaledSize.getHeight()*t.getScaleY()));
+		    newPosition = getLocationOnScreen();
 	    } catch (IllegalComponentStateException e) {
 		return;
 	    }
