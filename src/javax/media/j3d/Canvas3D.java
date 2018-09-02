@@ -32,6 +32,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -821,6 +822,8 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
     // CanvasViewEventCatcher.
     Point newPosition = new Point();
     Dimension newSize = new Dimension();
+    double xscale = 1.0;
+    double yscale = 1.0;
 
 // Remember OGL context resources to free
 // before context is destroy.
@@ -1233,7 +1236,9 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 
 	    try {
 	        Dimension scaledSize = getSize();
-	        newSize = new Dimension((int)(scaledSize.getWidth()*t.getScaleX()), (int)(scaledSize.getHeight()*t.getScaleY()));
+	        xscale = t.getScaleX();
+	        yscale = t.getScaleY();
+	        newSize = new Dimension((int)(scaledSize.getWidth()*xscale), (int)(scaledSize.getHeight()*yscale));
 		    newPosition = getLocationOnScreen();
 	    } catch (IllegalComponentStateException e) {
 		return;
