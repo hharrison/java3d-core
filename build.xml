@@ -18,7 +18,7 @@
   <property name="jogl.lib"          location="../jogl-v2.3.2/jogl-all.jar"/>
   <property name="gluegen.lib"       location="../jogl-v2.3.2/gluegen-rt.jar"/>
 
-  <property name="version_base"             value="1.6.0"/>
+  <property name="version_base"             value="1.6.1"/>
   <property name="build.spec.title"         value="3D Graphics API for the Java Platform"/>
   <property name="build.spec.vendor"        value=""/>
   <property name="build.impl.title"         value="3D Graphics API for the Java Platform"/>
