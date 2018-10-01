@@ -32,12 +32,14 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.IllegalComponentStateException;
 import java.awt.Point;
 import java.awt.Window;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -820,6 +822,8 @@ ArrayList<Integer> textureIdResourceFreeList = new ArrayList<Integer>();
     // CanvasViewEventCatcher.
     Point newPosition = new Point();
     Dimension newSize = new Dimension();
+    double xscale = 1.0;
+    double yscale = 1.0;
 
 // Remember OGL context resources to free
 // before context is destroy.
@@ -1227,9 +1231,15 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
 	if (!firstPaintCalled && added && validCanvas &&
 	    validGraphicsMode()) {
 
+        final Graphics2D g2d = (Graphics2D) g;
+        final AffineTransform t = g2d.getTransform();
+
 	    try {
-		newSize = getSize();
-		newPosition = getLocationOnScreen();
+	        Dimension scaledSize = getSize();
+	        xscale = t.getScaleX();
+	        yscale = t.getScaleY();
+	        newSize = new Dimension((int)(scaledSize.getWidth()*xscale), (int)(scaledSize.getHeight()*yscale));
+		    newPosition = getLocationOnScreen();
 	    } catch (IllegalComponentStateException e) {
 		return;
 	    }
