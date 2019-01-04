@@ -1,15 +1,12 @@
 <?xml version="1.0"?>
 
-<project name="j3dall" default="all" basedir=".">
+<project name="j3dcore" default="all" basedir=".">
 
   <property name="src.dir"       location="src"/>
   <property name="build.dir"     location="build"/>
   <property name="gen.dir"       location="${build.dir}/gen"/>
   <property name="class.dir"     location="${build.dir}/classes"/>
   <property name="javadoc.dir"   location="${build.dir}/javadoc"/>
-
-  <property name="j3dtools.dir"      location="../j3d-utils"/>
-  <property name="j3dtools.src.dir"  location="${j3dtools.dir}/src"/>
 
   <property name="vecmath.dir"      location="../vecmath"/>
   <property name="vecmath.src.dir"  location="${vecmath.dir}/src"/>
@@ -47,12 +44,6 @@
       <fileset dir="." includes="LICENSE.txt"/>
     </copy>
 
-    <copy todir="${class.dir}/com">
-      <fileset dir="${j3dtools.dir}" includes="COPYRIGHT.txt"/>
-      <fileset dir="${j3dtools.dir}" includes="*LICENSE*.txt"/>
-    </copy>
-
-
     <copy file="build-tools/VersionInfo.java"
           todir="${gen.dir}/src/javax/media/j3d"
           overwrite="true">
@@ -76,7 +67,7 @@
   </target>
 
   <target name="compile" depends="gen">
-    <javac srcdir="${src.dir}:${j3dtools.src.dir}:${gen.dir}/src"
+    <javac srcdir="${src.dir}:${gen.dir}/src"
            destdir="${class.dir}"
            source="1.6"
            target="1.6"
@@ -88,7 +79,6 @@
 
     <copy todir="${class.dir}">
       <fileset dir="${src.dir}"          includes="**/*.properties"/>
-      <fileset dir="${j3dtools.src.dir}" includes="META-INF/** **/*.properties"/>
     </copy>
   </target>
 
@@ -109,22 +99,6 @@
       <fileset dir="${class.dir}" includes="javax/**/*"/>
     </jar>
 
-    <jar jarfile="${build.dir}/jars/j3dutils.jar"
-         update="no" compress="false">
-      <manifest>
-        <attribute name="Manifest-Version"          value="1.0"/>
-        <attribute name="Specification-Title"       value="${build.spec.title}"/>
-        <attribute name="Specification-Version"     value="1.6"/>
-        <attribute name="Specification-Vendor"      value="${build.spec.vendor}"/>
-        <attribute name="Implementation-Title"      value="3D Utilities"/>
-        <attribute name="Implementation-Version"    value="${version_base}"/>
-        <attribute name="Implementation-Vendor"     value="${build.impl.vendor}"/>
-        <attribute name="Extension-Name"            value="javax.media.j3d"/>
-        <attribute name="Implementation-Vendor-Id"  value="${build.impl.vendor.id}"/>
-      </manifest>
-      <fileset dir="${class.dir}" includes="META-INF/** com/**/*"/>
-    </jar>
-
     <zip destfile="${build.dir}/jars/j3dcore-src.zip">
       <fileset dir="${src.dir}" includes="javax/**/*.java"/>
       <fileset dir="${gen.dir}/src" includes="javax/**/*.java"/>
@@ -132,19 +106,13 @@
       <fileset dir="." includes="LICENSE.txt"/>
     </zip>
 
-    <zip destfile="${build.dir}/jars/j3dutils-src.zip">
-      <fileset dir="${j3dtools.src.dir}" includes="com/**/*.java"/>
-      <fileset dir="${j3dtools.dir}" includes="COPYRIGHT.txt"/>
-      <fileset dir="${j3dtools.dir}" includes="*LICENSE*.txt"/>
-    </zip>
-
   </target>
 
   <target name="docs">
     <mkdir dir="${javadoc.dir}"/>
 
-    <javadoc sourcepath="${src.dir}:${j3dtools.src.dir}:${vecmath.src.dir}"
-             packagenames="javax.media.j3d.*,com.sun.j3d.*,javax.vecmath.*"
+    <javadoc sourcepath="${src.dir}"
+             packagenames="javax.media.j3d.*"
              destdir="${javadoc.dir}"
              additionalparam="-Xdoclint:none"
              windowtitle="Java3D ${version_base}">
