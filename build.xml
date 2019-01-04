@@ -10,12 +10,12 @@
 
   <property name="vecmath.dir"      location="../vecmath"/>
   <property name="vecmath.src.dir"  location="${vecmath.dir}/src"/>
-  <property name="vecmath.lib"       location="${vecmath.dir}/build/jars/vecmath.jar"/>
+  <property name="vecmath.lib"      location="${vecmath.dir}/build/jars/vecmath.jar"/>
 
   <property name="jogl.lib"          location="../jogl-v2.3.2/jogl-all.jar"/>
   <property name="gluegen.lib"       location="../jogl-v2.3.2/gluegen-rt.jar"/>
 
-  <property name="version_base"             value="1.6.1"/>
+  <property name="version_base"             value="1.6.2"/>
   <property name="build.spec.title"         value="3D Graphics API for the Java Platform"/>
   <property name="build.spec.vendor"        value=""/>
   <property name="build.impl.title"         value="3D Graphics API for the Java Platform"/>
