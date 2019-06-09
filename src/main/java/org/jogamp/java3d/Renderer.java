@@ -620,7 +620,62 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                     if (canvas.isFatalError()) {
                         continue;
                     }
+                    if (canvas.ctx == null) {
+                        synchronized (VirtualUniverse.mc.contextCreationLock) {
+                        	canvas.ctx = canvas.createNewContext(null, false);                            
+                                                        
+                            if (canvas.ctx == null) {
+                				canvas.drawingSurfaceObject.unLock();
+                                // Issue 260 : indicate fatal error and notify error listeners
+                                canvas.setFatalError();
+                                RenderingError err =
+                                        new RenderingError(RenderingError.CONTEXT_CREATION_ERROR,
+                                            J3dI18N.getString("Renderer7"));
+                                err.setCanvas3D(canvas);
+                                err.setGraphicsDevice(canvas.graphicsConfiguration.getDevice());
+                                notifyErrorListeners(err);
 
+                                break doneRender;
+                			}
+                            // createNewContext finishes with a release, re-make current so the init calls below work
+                            canvas.makeCtxCurrent();
+                            
+                            if (canvas.graphics2D != null) {
+                            	canvas.graphics2D.init();
+                            }
+                            
+                            canvas.ctxTimeStamp = VirtualUniverse.mc.getContextTimeStamp();
+                            canvas.screen.renderer.listOfCtxs.add(canvas.ctx);
+                            canvas.screen.renderer.listOfCanvases.add(canvas);
+
+                            // enable separate specular color
+                            canvas.enableSeparateSpecularColor();
+                        }
+
+                        // create the cache texture state in canvas
+                        // for state download checking purpose
+                        if (canvas.texUnitState == null) {
+                        	canvas.createTexUnitState();
+                        }
+
+                        canvas.drawingSurfaceObject.contextValidated();
+                        canvas.screen.renderer.currentCtx = canvas.ctx;
+                        canvas.screen.renderer.currentDrawable = canvas.drawable;
+                        canvas.graphicsContext3D.initializeState();
+                        canvas.ctxChanged = true;
+                        canvas.canvasDirty = 0xffff;
+                        // Update Appearance
+                        canvas.graphicsContext3D.updateState(canvas.view.renderBin, RenderMolecule.SURFACE);
+
+
+                        canvas.currentLights = new LightRetained[canvas.getNumCtxLights(canvas.ctx)];
+
+                        for (j=0; j<canvas.currentLights.length; j++) {
+                        	canvas.currentLights[j] = null;
+                        }
+                    }
+                    
+                    canvas.makeCtxCurrent();
                   try {
 
                     switch (command) {
@@ -757,6 +812,7 @@ ArrayList<TextureRetained> textureIDResourceTable = new ArrayList<TextureRetaine
                   }
 
 		    m[nmesg++].decRefcount();
+		    canvas.releaseCtx();
 		} else { // retained mode rendering
                     long startRenderTime = 0L;
                     if (MasterControl.isStatsLoggable(Level.INFO)) {
