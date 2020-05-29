@@ -1731,6 +1731,9 @@ public int numSounds() {
                             return;
                         }
 
+                        // createNewContext finishes with a release, re-make current so the init calls below work
+                        canvas3d.makeCtxCurrent();
+
                         canvas3d.ctxTimeStamp =
                                 VirtualUniverse.mc.getContextTimeStamp();
                         canvas3d.screen.renderer.listOfCtxs.add(canvas3d.ctx);
