@@ -6540,14 +6540,6 @@ class JoglPipeline extends Pipeline {
     		glDrawable.setRealized(false);
     	}
         else {
-
-        	// TODO can't find an implementation which avoids the use of QueryCanvas
-        	// JOGL requires a visible Frame for an onscreen context
-
-        Frame f = new Frame();
-        f.setUndecorated(true);
-        f.setLayout(new BorderLayout());
-
         ContextQuerier querier = new ContextQuerier(cv);
 
 		    AWTGraphicsConfiguration awtConfig =
@@ -6555,6 +6547,13 @@ class JoglPipeline extends Pipeline {
 
 		    QueryCanvas canvas = new QueryCanvas(awtConfig, querier);
 
+        	// TODO can't find an implementation which avoids the use of QueryCanvas
+        	// JOGL requires a visible Frame for an onscreen context
+
+        Frame f = new Frame(canvas.getGraphicsConfiguration());
+        f.setUndecorated(true);
+        f.setLayout(new BorderLayout());
+		
         f.add(canvas, BorderLayout.CENTER);
         f.setSize(MIN_FRAME_SIZE, MIN_FRAME_SIZE);
         f.setVisible(true);
